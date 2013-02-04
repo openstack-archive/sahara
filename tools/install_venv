@@ -87,14 +87,14 @@ def create_virtualenv(venv=VENV):
     run_command(['virtualenv', '-q', '--no-site-packages', VENV])
     print 'done.'
     print 'Installing pip in virtualenv...',
-    if not run_command(['tools/with_venv.sh', 'easy_install',
+    if not run_command(['tools/with_venv', 'easy_install',
                         'pip>1.0']).strip():
         die("Failed to install pip.")
     print 'done.'
 
 
 def pip_install(*args):
-    run_command(['tools/with_venv.sh',
+    run_command(['tools/with_venv',
                  'pip', 'install', '--upgrade'] + list(args),
                 redirect_output=False)
 
@@ -138,7 +138,7 @@ def print_help():
  Or, if you prefer, you can run commands in the virtualenv on a case by case
  basis by running:
 
- $ tools/with_venv.sh <your command>
+ $ tools/with_venv <your command>
 
  Also, build_docs and run_tests will automatically use the virtualenv.
     """
