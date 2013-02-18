@@ -6,7 +6,6 @@ from eho.server.api import v01 as api_v01
 from werkzeug.exceptions import default_exceptions
 from werkzeug.exceptions import HTTPException
 from eho.server.storage.storage import setup_storage
-from eho.server.scheduler import setup_scheduler
 
 
 def make_app():

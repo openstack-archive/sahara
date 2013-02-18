@@ -5,7 +5,6 @@ dist
 build
 eggs
 parts
-bin
 var
 sdist
 develop-eggs
@@ -26,3 +25,4 @@ target
 *.iws
 doc/html
 doc/source/apidoc
+bin/eho-server.db
