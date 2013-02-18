@@ -1,0 +1,5 @@
+#!/bin/sh
+
+echo "Running PEP8 check"
+
+.venv/bin/pep8 --show-source bin eho tests
