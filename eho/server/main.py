@@ -18,7 +18,6 @@ def make_app():
 
     app.register_blueprint(api_v01.rest, url_prefix='/v0.1')
     setup_storage(app)
-    setup_scheduler()
     setup_defaults()
 
     def make_json_error(ex):
