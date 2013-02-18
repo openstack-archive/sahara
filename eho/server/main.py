@@ -9,9 +9,6 @@ from eho.server.storage.storage import setup_storage
 from eho.server.scheduler import setup_scheduler
 
 
-
-
-
 def make_app():
     """
     Entry point for Elastic Hadoop on OpenStack REST API server
