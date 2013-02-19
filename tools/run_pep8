@@ -3,4 +3,4 @@
 echo "Running PEP8 checks"
 echo "==================="
 
-.venv/bin/pep8 --show-source bin eho tests
+.venv/bin/pep8 --show-source bin bin/eho-api eho

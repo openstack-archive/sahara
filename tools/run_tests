@@ -1,0 +1,6 @@
+#!/bin/bash
+
+echo "Running tests"
+echo "============="
+
+.venv/bin/python tools/run_tests.py $@

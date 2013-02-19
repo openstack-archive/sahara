@@ -26,3 +26,4 @@ target
 doc/html
 doc/source/apidoc
 bin/eho-server.db
+.coverage
