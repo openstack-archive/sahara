@@ -25,5 +25,5 @@ target
 *.iws
 doc/html
 doc/source/apidoc
-bin/eho-server.db
+*.db
 .coverage
