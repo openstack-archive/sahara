@@ -27,3 +27,4 @@ doc/html
 doc/source/apidoc
 *.db
 .coverage
+nosetests.xml
