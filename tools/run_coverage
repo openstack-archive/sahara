@@ -3,4 +3,4 @@
 echo "Running coverage"
 echo "================"
 
-.venv/bin/python tools/run_tests.py --with-coverage --cover-package=eho $@
+.venv/bin/python tools/run_tests.py --with-coverage --cover-package=eho --with-xunit $@
