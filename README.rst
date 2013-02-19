@@ -5,6 +5,8 @@ Quickstart
 ----------
 ::
 
+    # apt-get install python-virtualenv
+    # apt-get install python-dev
     # tools/install_venv
     # tools/with_venv python
     # tools/build_docs
