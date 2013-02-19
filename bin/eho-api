@@ -4,4 +4,4 @@ import eho.server.main as server
 
 if __name__ == '__main__':
     app = server.make_app()
-    app.run(debug=True)
+    app.run()

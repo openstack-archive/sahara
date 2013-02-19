@@ -8,15 +8,24 @@ from werkzeug.exceptions import HTTPException
 from eho.server.storage.storage import setup_storage
 
 
-def make_app():
+def make_app(**local_conf):
     """
     Entry point for Elastic Hadoop on OpenStack REST API server
     """
     app = Flask('eho.api')
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///eho-server.db'
-    app.config['SQLALCHEMY_ECHO'] = True
+    #TODO(slukjanov): is it needed?
+    app.config.from_pyfile('etc/eho-api.cfg', silent=True)
+    app.config.from_pyfile('../etc/eho-api.cfg', silent=True)
+    app.config.from_envvar('EHO_API_CFG', silent=True)
+    app.config.update(**local_conf)
 
     app.register_blueprint(api_v01.rest, url_prefix='/v0.1')
+
+    if app.config['DEBUG']:
+        print 'Configuration:'
+        for k in app.config:
+            print '\t%s = %s' % (k, app.config[k])
+
     setup_storage(app)
     setup_defaults()
 
