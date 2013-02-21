@@ -10,9 +10,7 @@ from werkzeug.exceptions import default_exceptions
 from werkzeug.exceptions import HTTPException
 from eho.server.storage.storage import setup_storage
 
-# monkey_patch(os=True, select=True, socket=True,
-#              thread=True, time=True, psycopg=True, MySQLdb=True)
-monkey_patch(time=True)
+monkey_patch(os=True, select=True, socket=True, thread=True, time=True)
 
 
 def make_app(**local_conf):
