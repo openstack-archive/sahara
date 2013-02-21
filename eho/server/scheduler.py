@@ -1,6 +1,8 @@
 import logging
 import eventlet
 
+pool = eventlet.GreenPool()
+
 
 def test_job_fun(idx):
     logging.info("Test periodic job, iteration #%s", idx)

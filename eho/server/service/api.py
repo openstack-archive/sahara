@@ -1,6 +1,9 @@
+import logging
+from eho.server import scheduler
 from eho.server.storage.models import *
 from eho.server.storage.storage import db
 from eho.server.utils.api import abort_and_log
+import eventlet
 
 
 def _clean_nones(obj):
@@ -166,4 +169,27 @@ def create_cluster(values):
         db.session.add(cnc)
     db.session.commit()
 
+    eventlet.spawn(cluster_creation_job, cluster.id)
+
     return get_cluster(id=cluster.id)
+
+
+def cluster_creation_job(cluster_id):
+    cluster = get_cluster(id=cluster_id)
+    logging.debug("Starting cluster '%s' creation: %s", cluster_id,
+                  cluster.dict)
+
+    pile = eventlet.GreenPile(scheduler.pool)
+
+    for template in cluster.node_templates:
+        node_count = cluster.node_templates.get(template)
+        for idx in xrange(0, node_count):
+            pile.spawn(vm_creation_job, template)
+
+    for (ip, vm_id, template) in pile:
+        logging.info("VM '%s/%s/%s' created", ip, vm_id, template)
+
+
+def vm_creation_job(template):
+    eventlet.sleep(5)
+    return 'ip-address', 'vm-id', template
