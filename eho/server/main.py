@@ -1,11 +1,17 @@
+from eho.server.scheduler import setup_scheduler
 from eho.server.storage.defaults import setup_defaults
 from eho.server.utils.api import render
+from eventlet import monkey_patch
 
 from flask import Flask
 from eho.server.api import v01 as api_v01
 from werkzeug.exceptions import default_exceptions
 from werkzeug.exceptions import HTTPException
 from eho.server.storage.storage import setup_storage
+
+# monkey_patch(os=True, select=True, socket=True,
+#              thread=True, time=True, psycopg=True, MySQLdb=True)
+monkey_patch(time=True)
 
 
 def make_app(**local_conf):
@@ -28,6 +34,7 @@ def make_app(**local_conf):
 
     setup_storage(app)
     setup_defaults()
+    setup_scheduler(app)
 
     def make_json_error(ex):
         status_code = (ex.code
