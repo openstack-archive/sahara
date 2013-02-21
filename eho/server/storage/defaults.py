@@ -105,7 +105,7 @@ def setup_defaults():
               % (nt.id, nt.name, [p.name.__str__() for p in nt.processes])
 
     # example usage
-    tmpl_master = create_node_template('tmpl_1', nt_jt_nn.id, 't_1', 'f_1', {
+    tmpl_master = create_node_template('jt+nn', nt_jt_nn.id, 't_1', 'f_1', {
         'job_tracker': {
             'heap_size': '1024'
         },
@@ -113,9 +113,17 @@ def setup_defaults():
             'heap_size': '512'
         }
     })
-
-    cluster = create_cluster('cluster_1', 'base_image_1', 'tenant_1', {
-        'tmpl_1': 100
+    tmpl_worker = create_node_template('tt+dn', nt_jt_nn.id, 't_1', 'f_1', {
+        'task_tracker': {
+            'heap_size': '1024'
+        },
+        'data_node': {
+            'heap_size': '512'
+        }
     })
+
+    # cluster = create_cluster('cluster_1', 'base_image_1', 'tenant_1', {
+    #     'tmpl_1': 100
+    # })
 
     print 'All defaults has been inserted'
