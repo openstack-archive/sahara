@@ -29,7 +29,8 @@ if __name__ == '__main__':
 
     app = server.make_app(**opts)
 
-    if args.dev:
-        app.run(args.host, args.port, True)
-    else:
-        wsgi.server(eventlet.listen((args.host, args.port), backlog=500), app)
+    # if args.dev:
+    #     app.run(args.host, args.port, True)
+    # else:
+    wsgi.server(eventlet.listen((args.host, args.port), backlog=500), app,
+                debug=args.dev)
