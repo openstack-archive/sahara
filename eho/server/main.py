@@ -1,3 +1,4 @@
+import logging
 from eho.server.scheduler import setup_scheduler
 from eho.server.storage.defaults import setup_defaults
 from eho.server.utils.api import render
@@ -24,6 +25,11 @@ def make_app(**local_conf):
     app.config.from_pyfile('../etc/eho-api.cfg', silent=True)
     app.config.from_envvar('EHO_API_CFG', silent=True)
     app.config.update(**local_conf)
+
+    rootLogger = logging.getLogger()
+    ll = app.config.pop('LOG_LEVEL', 'WARN')
+    if ll:
+        rootLogger.setLevel(ll)
 
     app.register_blueprint(api_v01.rest, url_prefix='/v0.1')
 
