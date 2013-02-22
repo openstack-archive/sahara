@@ -37,7 +37,7 @@ def make_app(**local_conf):
             print '\t%s = %s' % (k, app.config[k])
 
     setup_storage(app)
-    setup_defaults()
+    setup_defaults(app)
     setup_scheduler(app)
 
     def make_json_error(ex):
