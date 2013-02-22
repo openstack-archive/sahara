@@ -7,5 +7,8 @@ def setup_storage(app):
     global db
     db.app = app
     db.init_app(app)
-    db.drop_all()
+
+    if app.config.get('RESET_DB', False):
+        db.drop_all()
+
     db.create_all()
