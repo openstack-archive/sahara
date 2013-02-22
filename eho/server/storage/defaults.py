@@ -93,10 +93,10 @@ def setup_defaults(app):
 
     if app.config.get('RESET_DB', False):
         # setup default processes
-        p_jt = create_node_process('Job Tracker', [('Heap Size', True, None)])
-        p_nn = create_node_process('Name Node', [('Heap Size', True, None)])
-        p_tt = create_node_process('Task Tracker', [('Heap Size', True, None)])
-        p_dn = create_node_process('Data Node', [('Heap Size', True, None)])
+        p_jt = create_node_process('job_tracker', [('heap_size', True, None)])
+        p_nn = create_node_process('name_node', [('heap_size', True, None)])
+        p_tt = create_node_process('task_tracker', [('heap_size', True, None)])
+        p_dn = create_node_process('data_node', [('heap_size', True, None)])
 
         for p in [p_jt, p_nn, p_tt, p_dn]:
             logging.info('New NodeProcess has been created: %s \'%s\'',
@@ -119,80 +119,80 @@ def setup_defaults(app):
         jt_nn_large = create_node_template('jt_nn.large', nt_jt_nn.id, 't_1',
                                            'm1.large',
                                            {
-                                               'Job Tracker': {
-                                                   'Heap Size': '3072'
+                                               'job_tracker': {
+                                                   'heap_size': '3072'
                                                },
-                                               'Name Node': {
-                                                   'Heap Size': '3072'
+                                               'name_node': {
+                                                   'heap_size': '3072'
                                                }
                                            })
         jt_nn_xlarge = create_node_template('jt_nn.xlarge', nt_jt_nn.id, 't_1',
                                             'm1.xlarge',
                                             {
-                                                'Job Tracker': {
-                                                    'Heap Size': '6144'
+                                                'job_tracker': {
+                                                    'heap_size': '6144'
                                                 },
-                                                'Name Node': {
-                                                    'Heap Size': '6144'
+                                                'name_node': {
+                                                    'heap_size': '6144'
                                                 }
                                             })
         jt_large = create_node_template('jt.large', nt_jt.id, 't_1',
                                         'm1.large',
                                         {
-                                            'Job Tracker': {
-                                                'Heap Size': '3072'
+                                            'job_tracker': {
+                                                'heap_size': '3072'
                                             }
                                         })
         jt_xlarge = create_node_template('jt.xlarge', nt_jt.id, 't_1',
                                          'm1.xlarge',
                                          {
-                                             'Job Tracker': {
-                                                 'Heap Size': '6144'
+                                             'job_tracker': {
+                                                 'heap_size': '6144'
                                              }
                                          })
         nn_large = create_node_template('nn.large', nt_nn.id, 't_1',
                                         'm1.large',
                                         {
-                                            'Name Node': {
-                                                'Heap Size': '3072'
+                                            'name_node': {
+                                                'heap_size': '3072'
                                             }
                                         })
         nn_xlarge = create_node_template('nn.xlarge', nt_nn.id, 't_1',
                                          'm1.xlarge',
                                          {
-                                             'Name Node': {
-                                                 'Heap Size': '6144'
+                                             'name_node': {
+                                                 'heap_size': '6144'
                                              }
                                          })
 
         tt_dn_medium = create_node_template('tt_dn.medium', nt_tt_dn.id, 't_1',
                                             'm1.medium',
                                             {
-                                                'Task Tracker': {
-                                                    'Heap Size': '1536'
+                                                'task_tracker': {
+                                                    'heap_size': '1536'
                                                 },
-                                                'Data Node': {
-                                                    'Heap Size': '1536'
+                                                'data_node': {
+                                                    'heap_size': '1536'
                                                 }
                                             })
         tt_dn_large = create_node_template('tt_dn.large', nt_tt_dn.id, 't_1',
                                            'm1.large',
                                            {
-                                               'Task Tracker': {
-                                                   'Heap Size': '3072'
+                                               'task_tracker': {
+                                                   'heap_size': '3072'
                                                },
-                                               'Data Node': {
-                                                   'Heap Size': '3072'
+                                               'data_node': {
+                                                   'heap_size': '3072'
                                                }
                                            })
         tt_dn_xlarge = create_node_template('tt_dn.xlarge', nt_tt_dn.id, 't_1',
                                             'm1.xlarge',
                                             {
-                                                'Task Tracker': {
-                                                    'Heap Size': '6144'
+                                                'task_tracker': {
+                                                    'heap_size': '6144'
                                                 },
-                                                'Data Node': {
-                                                    'Heap Size': '6144'
+                                                'data_node': {
+                                                    'heap_size': '6144'
                                                 }
                                             })
 
