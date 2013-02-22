@@ -1,7 +1,7 @@
 from eho.server.storage.models import *
 from eho.server.storage.storage import db
 from eho.server.utils.api import abort_and_log
-
+from eho.server.service.cluster_ops import launch_cluster
 
 def _clean_nones(obj):
     d_type = type(obj)
@@ -165,5 +165,7 @@ def create_cluster(values):
         cnc = ClusterNodeCount(cluster.id, template_id, int(count))
         db.session.add(cnc)
     db.session.commit()
+
+    launch_cluster(cluster)
 
     return get_cluster(id=cluster.id)

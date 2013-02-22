@@ -105,12 +105,21 @@ def setup_defaults():
               % (nt.id, nt.name, [p.name.__str__() for p in nt.processes])
 
     # example usage
-    tmpl_master = create_node_template('tmpl_1', nt_jt_nn.id, 't_1', 'f_1', {
+    tmpl_master = create_node_template('tmpl_1', nt_jt_nn.id, 't_1', '2', {
         'job_tracker': {
             'heap_size': '1024'
         },
         'name_node': {
             'heap_size': '512'
+        }
+    })
+
+    create_node_template('tt+dn', nt_tt_dn.id, 't_1', '1', {
+        'task_tracker': {
+            'heap_size': '512'
+        },
+        'data_node': {
+            'heap_size': '384'
         }
     })
 
