@@ -22,23 +22,20 @@ if __name__ == '__main__':
         help='set logging level (default: WARN)'
     )
     parser.add_argument(
-        '--drop-db', action='store_true', dest='drop_db', help='drop db'
+        '--reset-db, --reset_db', action='store_true', dest='reset_db',
+        help='reset db'
     )
     parser.add_argument(
-        '--init-db', action='store_true', dest='init_db', help='init db'
-    )
-    parser.add_argument(
-        '--put-defaults', action='store_true', dest='put_defaults',
-        help='put defaults into db'
+        '--stub-data, --stub_data', action='store_true', dest='stub_data',
+        help='put stub templates and clusters into db'
     )
 
     args = parser.parse_args()
     opts = dict()
     opts['DEBUG'] = args.dev
     opts['LOG_LEVEL'] = args.log_level
-    opts['DROP_DB'] = args.drop_db
-    opts['INIT_DB'] = args.init_db
-    opts['PUT_DEFAULTS'] = args.put_defaults
+    opts['RESET_DB'] = args.reset_db
+    opts['STUB_DATA'] = args.stub_data
 
     app = server.make_app(**opts)
 
