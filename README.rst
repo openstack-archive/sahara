@@ -1,17 +1,31 @@
-Elastic Hadoop on Openstack
+Elastic Hadoop on OpenStack
 ===========================
 
-Quickstart
+QuickStart (Ubuntu)
 ----------
+1. Install Python with headers and virtualenv:
 ::
+    apt-get install python-dev python-virtualenv
 
-    # apt-get install python-virtualenv
-    # apt-get install python-dev
-    # tools/install_venv
-    # tools/with_venv python
-    # tools/build_docs
-    # tools/run_pep8
-    # tools/run_tests
+2. Prepare virtual environment:
+::
+    tools/install_venv
+
+3. To run Python fro created environment just call:
+::
+    tools/with_venv python
+
+4. Run PEP8 checks:
+::
+    tools/run_pep8
+
+5. Build docs:
+::
+    tools/build_docs
+
+6. Run all tests:
+::
+    tools/run_tests
 
 
 Pip speedup
@@ -33,3 +47,5 @@ Just add the following lines to .git/hooks/pre-commit and do chmod +x for it.
     #!/bin/sh
     # Auto-check for pep8
     tools/run_pep8
+
+You can added the same check for pre-push, for example, run all tests.
