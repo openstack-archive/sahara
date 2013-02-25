@@ -147,6 +147,94 @@ class TestApi(unittest.TestCase):
             ]
         })
 
+    def test_delete_node_template_for_id(self):
+        rv = self.app.post('/v0.1/node-templates.json', data=json.dumps(dict(
+            name='test_template_2',
+            node_type='JT+NN',
+            tenant_id='test_tenant_2',
+            flavor_id='test_flavor_2',
+            configs={
+                'job_tracker': {
+                    'heap_size': '1234'
+                },
+                'name_node': {
+                    'heap_size': '2345'
+                }
+            }
+        )))
+        self.assertEquals(rv.status_code, 200)
+        data = json.loads(rv.data)
+        node_template_id = data.pop(u'id')
+
+        rv = self.app.get('/v0.1/node-templates/%s.json' % node_template_id)
+        self.assertEquals(rv.status_code, 200)
+        data = json.loads(rv.data)
+        del data[u'id']
+        del data.get(u'node_type')[u'id']
+        self.assertEquals(data, {
+            u'job_tracker': {
+                u'heap_size': u'1234'
+            }, u'name': u'test_template_2',
+            u'tenant_id': u'test_tenant_2',
+            u'node_type': {
+                u'processes': [
+                    u'job_tracker', u'name_node'
+                ],
+                u'name': u'JT+NN'
+            },
+            u'flavor_id': u'test_flavor_2',
+            u'name_node': {
+                u'heap_size': u'2345'
+            }
+        })
+
+        rv = self.app.delete('/v0.1/node-templates/%s.json' % node_template_id)
+        self.assertEquals(rv.status_code, 204)
+
+        rv = self.app.get('/v0.1/node-templates/%s.json' % node_template_id)
+
+        #todo(vrovachev): change success code to 404
+        self.assertEquals(rv.status_code, 500)
+
+    def test_delete_cluster_for_id(self):
+        rv = self.app.post('/v0.1/clusters.json', data=json.dumps(dict(
+            name='test-cluster_2',
+            base_image_id='base-image-id_2',
+            tenant_id='tenant-id_2',
+            templates={
+                'jt_nn.xlarge': 1,
+                'tt_dn.large': 5
+            }
+        )))
+        self.assertEquals(rv.status_code, 200)
+        data = json.loads(rv.data)
+        cluster_id = data.pop(u'id')
+
+        rv = self.app.get('/v0.1/clusters/%s.json' % cluster_id)
+        self.assertEquals(rv.status_code, 200)
+        data = json.loads(rv.data)
+        del data[u'id']
+        self.assertEquals(data, {
+            u'status': u'Starting',
+            u'service_urls': {},
+            u'name': u'test-cluster_2',
+            u'tenant_id': u'tenant-id_2',
+            u'base_image_id': u'base-image-id_2',
+            u'node_templates': {
+                u'jt_nn.xlarge': 1,
+                u'tt_dn.large': 5
+            },
+            u'nodes': []
+        })
+
+        rv = self.app.delete('/v0.1/clusters/%s.json' % cluster_id)
+        self.assertEquals(rv.status_code, 204)
+
+        rv = self.app.get('/v0.1/clusters/%s.json' % cluster_id)
+
+        #todo(vrovachev): change success code to 404
+        self.assertEquals(rv.status_code, 500)
+
     def _get_templates_stub_data(self):
         return {
             u'templates': [
