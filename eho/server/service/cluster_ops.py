@@ -27,10 +27,24 @@ def _find_by_name(lst, name):
 
   return None
 
-def _connect_to_node(ssh, node):
-  ssh.set_missing_host_key_policy(AutoAddPolicy())
-  #ssh.connect(node['ip'], username='ubuntu', key_filename='/home/dmitryme/.ssh/srtlab-eho')
-  ssh.connect(node['ip'], username='root', password='swordfish')
+def _ensure_zero(ret):
+  if ret != 0:
+    raise RuntimeError('Command returned non-zero status code - %i' %ret)
+
+#def _connect_to_node(ssh, host):
+#  ssh.set_missing_host_key_policy(AutoAddPolicy())
+#  ssh.connect(host, username='root', password='swordfish')
+
+def _execute_command_on_node(host, cmd):
+  ssh = SSHClient()
+  try:
+    ssh.set_missing_host_key_policy(AutoAddPolicy())
+    ssh.connect(host, username='root', password='swordfish')
+    chan = ssh.get_transport().open_session()
+    chan.exec_command(cmd)
+    return chan.recv_exit_status()
+  finally:
+    ssh.close()
 
 def launch_cluster(cluster):
   nova_client = _create_nova_client()
@@ -53,7 +67,7 @@ def launch_cluster(cluster):
     ntype = nc.node_template.node_type.name
     templ_id = nc.node_template.id
     flv_id = nc.node_template.flavor_id
-    flv = _find_by_id(nova_client.flavors.list(), flv_id)
+    flv = _find_by_name(nova_client.flavors.list(), flv_id)
     _check_finding(flv, 'id', flv_id)
 
     for i in xrange(0, nc.count):
@@ -67,10 +81,8 @@ def launch_cluster(cluster):
       node['isup'] = False
       clmap['nodes'].append(node)
 
-  print clmap
-
   for node in clmap['nodes']:
-    _launch_node(nova_client, node)
+    _launch_node(nova_client, node, clmap['image'])
 
   all_set = False
 
@@ -90,9 +102,11 @@ def launch_cluster(cluster):
     _setup_node(node, clmap)
     _register_node(node, cluster)
 
-def _launch_node(nova_client, node):
-  #srv = nova_client.servers.create(node['name'], node['flavor'], clmap['image'])
-  srv = _find_by_name(nova_client.servers.list(), node['name'])
+  _start_cluster(clmap)
+
+def _launch_node(nova_client, node, image):
+  srv = nova_client.servers.create(node['name'], image, node['flavor'])
+  #srv = _find_by_name(nova_client.servers.list(), node['name'])
   node['id'] = srv.id
 
 def _check_if_up(nova_client, node):
@@ -111,34 +125,30 @@ def _check_if_up(nova_client, node):
       # public IP is not defined yet
       return
     node['ip'] = ips[-1]
+    node['ip_internal'] = ips[0]
 
-  ssh = SSHClient()
   try:
-    _connect_to_node(ssh, node)
-    ssh.exec_command('ls -l /')
+    ret = _execute_command_on_node(node['ip'], 'ls -l /')
+    _ensure_zero(ret)
   except:
     # ssh not ready yet
     # TODO log error if it takes more than 5 minutes to start-up
     return
-  finally:
-    ssh.close()
 
   node['isup'] = True
 
 def _pre_cluster_setup(clmap):
-  master = None
-  slaves = []
+  clmap['master'] = None
+  clmap['slaves'] = []
   for node in clmap['nodes']:
-    if node['type'] == 'jt+nn':
-      master = node['ip']
-    elif node['type'] == 'tt+dn':
-      slaves.append(node['ip'])
+    if node['type'] == 'JT+NN':
+      clmap['master'] = node['ip']
+      clmap['master_internal'] = node['ip_internal']
+    elif node['type'] == 'TT+DN':
+      clmap['slaves'].append((node['ip'], node['ip_internal']))
 
-  if master == None:
+  if clmap['master'] == None:
     raise RuntimeError("No master node is defined in the cluster")
-
-  clmap['master'] = master
-  clmap['slaves'] = slaves
 
 def _sed_escape(s):
   result = ''
@@ -168,17 +178,13 @@ def _wrap_command(command):
   return result + ' ; ' + command + ' >> /tmp/eho_setup_log 2>&1'
 
 def debug(s):
- fl = open('/tmp/mydebug', 'wt')
- fl.write(str(s))
+ fl = open('/tmp/mydebug', 'at')
+ fl.write(str(s) + "\n")
  fl.close()
 
 def _setup_node(node, clmap):
-  ssh = SSHClient()
-
-  _connect_to_node(ssh, node)
-
-  node['configs']['%%%hdfs_namenode_url%%%'] = 'hdfs://%s:8020' %clmap['master']
-  node['configs']['%%%mapred_jobtracker_url%%%'] = '%s:8021' %clmap['master']
+  node['configs']['%%%hdfs_namenode_url%%%'] = 'hdfs://%s:8020' %clmap['master_internal']
+  node['configs']['%%%mapred_jobtracker_url%%%'] = '%s:8021' %clmap['master_internal']
   cmd = 'echo 123'
   command = _prepare_config_cmd('/etc/hadoop/core-site.xml', node['configs'])
   cmd += _wrap_command(command)
@@ -188,24 +194,21 @@ def _setup_node(node, clmap):
   command = '/etc/hadoop/create_dirs.sh'
   cmd += _wrap_command(command)
 
-  if node['type'] == 'jt+nn':
+  if node['type'] == 'JT+NN':
     command = 'echo -e "'
     for slave in clmap['slaves']:
-      command += slave + '\\n'
+      command += slave[1] + '\\n'
     command += '" | tee /etc/hadoop/slaves'
     cmd += _wrap_command(command)
 
-    command = 'echo \'%s\' | tee /etc/hadoop/masters' %node['ip']
+    command = 'echo \'%s\' | tee /etc/hadoop/masters' %node['ip_internal']
     cmd += _wrap_command(command)
 
     command = 'su -c \'hadoop namenode -format -force\' hadoop'
     cmd += _wrap_command(command)
 
-  chan = ssh.get_transport().open_session()
-  chan.exec_command(cmd)
-  debug(chan.recv_exit_status())
-
-  ssh.close()
+  ret = _execute_command_on_node(node['ip'], cmd)
+  _ensure_zero(ret)
 
 def _register_node(node, cluster):
   debug(node['templ_id'])
@@ -218,3 +221,7 @@ def _register_node(node, cluster):
   db.session.add(srv_url_nn)
 
   db.session.commit()
+
+def _start_cluster(clmap):
+  ret = _execute_command_on_node(clmap['master'], 'su -c /usr/sbin/start-all.sh hadoop')
+  _ensure_zero(ret)
