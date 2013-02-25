@@ -93,8 +93,8 @@ class TestApi(unittest.TestCase):
             base_image_id='base-image-id',
             tenant_id='tenant-id',
             templates={
-                'jt_nn.xlarge': 1,
-                'tt_dn.large': 5
+                'jt_nn.medium': 1,
+                'tt_dn.small': 5
             }
         )))
         self.assertEquals(rv.status_code, 200)
@@ -109,8 +109,8 @@ class TestApi(unittest.TestCase):
             u'tenant_id': u'tenant-id',
             u'base_image_id': u'base-image-id',
             u'node_templates': {
-                u'jt_nn.xlarge': 1,
-                u'tt_dn.large': 5
+                u'jt_nn.medium': 1,
+                u'tt_dn.small': 5
             },
             u'nodes': []
         })
@@ -134,16 +134,16 @@ class TestApi(unittest.TestCase):
             u'tenant_id': u'tenant-id',
             u'base_image_id': u'base-image-id',
             u'node_templates': {
-                u'jt_nn.xlarge': 1,
-                u'tt_dn.large': 5
+                u'jt_nn.medium': 1,
+                u'tt_dn.small': 5
             },
             u'nodes': [
-                {u'node_template': {u'name': u'jt_nn.xlarge'}},
-                {u'node_template': {u'name': u'tt_dn.large'}},
-                {u'node_template': {u'name': u'tt_dn.large'}},
-                {u'node_template': {u'name': u'tt_dn.large'}},
-                {u'node_template': {u'name': u'tt_dn.large'}},
-                {u'node_template': {u'name': u'tt_dn.large'}}
+                {u'node_template': {u'name': u'jt_nn.medium'}},
+                {u'node_template': {u'name': u'tt_dn.small'}},
+                {u'node_template': {u'name': u'tt_dn.small'}},
+                {u'node_template': {u'name': u'tt_dn.small'}},
+                {u'node_template': {u'name': u'tt_dn.small'}},
+                {u'node_template': {u'name': u'tt_dn.small'}}
             ]
         })
 
@@ -152,45 +152,42 @@ class TestApi(unittest.TestCase):
             u'templates': [
                 {
                     u'job_tracker': {
-                        u'heap_size': u'3072'
+                        u'heap_size': u'896'
                     },
-                    u'name': u'jt_nn.large',
+                    u'name': u'jt_nn.small',
                     u'tenant_id': u't_1',
                     u'node_type': {
                         u'processes': [
-                            u'job_tracker',
-                            u'name_node'
+                            u'job_tracker', u'name_node'
                         ],
                         u'name': u'JT+NN'
                     },
-                    u'flavor_id': u'm1.large',
+                    u'flavor_id': u'm1.small',
                     u'name_node': {
-                        u'heap_size': u'3072'
+                        u'heap_size': u'896'
                     }
                 },
                 {
                     u'job_tracker': {
-                        u'heap_size': u'6144'
+                        u'heap_size': u'1792'
                     },
-                    u'name': u'jt_nn.xlarge',
+                    u'name': u'jt_nn.medium',
                     u'tenant_id': u't_1',
                     u'node_type': {
                         u'processes': [
-                            u'job_tracker',
-                            u'name_node'
-                        ],
-                        u'name': u'JT+NN'
+                            u'job_tracker', u'name_node'
+                        ], u'name': u'JT+NN'
                     },
-                    u'flavor_id': u'm1.xlarge',
+                    u'flavor_id': u'm1.medium',
                     u'name_node': {
-                        u'heap_size': u'6144'
+                        u'heap_size': u'1792'
                     }
                 },
                 {
                     u'job_tracker': {
-                        u'heap_size': u'3072'
+                        u'heap_size': u'1792'
                     },
-                    u'name': u'jt.large',
+                    u'name': u'jt.small',
                     u'tenant_id': u't_1',
                     u'node_type': {
                         u'processes': [
@@ -198,24 +195,23 @@ class TestApi(unittest.TestCase):
                         ],
                         u'name': u'JT'
                     },
-                    u'flavor_id': u'm1.large'
+                    u'flavor_id': u'm1.small'
                 },
                 {
                     u'job_tracker': {
-                        u'heap_size': u'6144'
+                        u'heap_size': u'3712'
                     },
-                    u'name': u'jt.xlarge',
+                    u'name': u'jt.medium',
                     u'tenant_id': u't_1',
                     u'node_type': {
                         u'processes': [
                             u'job_tracker'
                         ],
-                        u'name': u'JT'
-                    },
-                    u'flavor_id': u'm1.xlarge'
+                        u'name': u'JT'},
+                    u'flavor_id': u'm1.medium'
                 },
                 {
-                    u'name': u'nn.large',
+                    u'name': u'nn.small',
                     u'tenant_id': u't_1',
                     u'node_type': {
                         u'processes': [
@@ -223,76 +219,58 @@ class TestApi(unittest.TestCase):
                         ],
                         u'name': u'NN'
                     },
-                    u'flavor_id': u'm1.large',
+                    u'flavor_id': u'm1.small',
                     u'name_node': {
-                        u'heap_size': u'3072'
+                        u'heap_size': u'1792'
                     }
                 },
                 {
-                    u'name': u'nn.xlarge',
+                    u'name': u'nn.medium',
                     u'tenant_id': u't_1',
                     u'node_type': {
                         u'processes': [
                             u'name_node'
                         ],
                         u'name': u'NN'
-                    }, u'flavor_id': u'm1.xlarge',
+                    },
+                    u'flavor_id': u'm1.medium',
                     u'name_node': {
-                        u'heap_size': u'6144'
+                        u'heap_size': u'3712'
                     }
+                },
+                {
+                    u'name': u'tt_dn.small',
+                    u'task_tracker': {
+                        u'heap_size': u'896'
+                    },
+                    u'tenant_id': u't_1',
+                    u'data_node': {
+                        u'heap_size': u'896'
+                    },
+                    u'node_type': {
+                        u'processes': [
+                            u'task_tracker', u'data_node'
+                        ],
+                        u'name': u'TT+DN'
+                    },
+                    u'flavor_id': u'm1.small'
                 },
                 {
                     u'name': u'tt_dn.medium',
                     u'task_tracker': {
-                        u'heap_size': u'1536'
+                        u'heap_size': u'1792'
                     },
                     u'tenant_id': u't_1',
                     u'data_node': {
-                        u'heap_size': u'1536'
+                        u'heap_size': u'1792'
                     },
                     u'node_type': {
                         u'processes': [
-                            u'task_tracker',
-                            u'data_node'
+                            u'task_tracker', u'data_node'
                         ],
                         u'name': u'TT+DN'
                     },
                     u'flavor_id': u'm1.medium'
-                },
-                {
-                    u'name': u'tt_dn.large',
-                    u'task_tracker': {
-                        u'heap_size': u'3072'
-                    },
-                    u'tenant_id': u't_1',
-                    u'data_node': {
-                        u'heap_size': u'3072'
-                    },
-                    u'node_type': {
-                        u'processes': [
-                            u'task_tracker',
-                            u'data_node'
-                        ],
-                        u'name': u'TT+DN'
-                    },
-                    u'flavor_id': u'm1.large'
-                },
-                {
-                    u'name': u'tt_dn.xlarge',
-                    u'task_tracker': {
-                        u'heap_size': u'6144'
-                    },
-                    u'tenant_id': u't_1',
-                    u'data_node': {
-                        u'heap_size': u'6144'
-                    },
-                    u'node_type': {
-                        u'processes': [
-                            u'task_tracker',
-                            u'data_node'
-                        ],
-                        u'name': u'TT+DN'},
-                    u'flavor_id': u'm1.xlarge'
                 }
             ]
         }
