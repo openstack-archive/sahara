@@ -66,6 +66,8 @@ def _node_template(nt):
         'tenant_id': nt.tenant_id,
         'flavor_id': nt.flavor_id
     }
+
+    # todo(slukjanov): move all configs to 'configs' sub-object??
     for conf in nt.node_template_configs:
         c_section = conf.node_process_property.node_process.name
         c_name = conf.node_process_property.name
