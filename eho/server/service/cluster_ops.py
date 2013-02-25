@@ -7,9 +7,22 @@ from eho.server.storage.models import *
 from eho.server.storage.storage import db
 
 
+def setup_ops():
+    global OPENSTACK_USER, OPENSTACK_PASSWORD, OPENSTACK_TENANT, OPENSTACK_URL
+    global NODE_USER, NODE_PASSWORD
+
+    OPENSTACK_USER = 'admin'
+    OPENSTACK_PASSWORD = 'nova'
+    OPENSTACK_TENANT = 'admin'
+    OPENSTACK_URL = 'http://172.18.79.139:5000/v2.0/'
+
+    NODE_USER = 'root'
+    NODE_PASSWORD = 'swordfish'
+
+
 def _create_nova_client():
-    return nova_client.Client("admin", "nova", "admin",
-                              "http://172.18.79.139:5000/v2.0/")
+    return nova_client.Client(OPENSTACK_USER, OPENSTACK_PASSWORD,
+                              OPENSTACK_TENANT, OPENSTACK_URL)
 
 
 def _check_finding(entity, attr, value):
@@ -38,16 +51,12 @@ def _ensure_zero(ret):
     if ret != 0:
         raise RuntimeError('Command returned non-zero status code - %i' % ret)
 
-#def _connect_to_node(ssh, host):
-#  ssh.set_missing_host_key_policy(AutoAddPolicy())
-#  ssh.connect(host, username='root', password='swordfish')
-
 
 def _execute_command_on_node(host, cmd):
     ssh = SSHClient()
     try:
         ssh.set_missing_host_key_policy(AutoAddPolicy())
-        ssh.connect(host, username='root', password='swordfish')
+        ssh.connect(host, username=NODE_USER, password=NODE_PASSWORD)
         chan = ssh.get_transport().open_session()
         chan.exec_command(cmd)
         return chan.recv_exit_status()

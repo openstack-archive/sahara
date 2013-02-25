@@ -9,6 +9,7 @@ from eho.server.api import v01 as api_v01
 from werkzeug.exceptions import default_exceptions
 from werkzeug.exceptions import HTTPException
 from eho.server.storage.storage import setup_storage
+from eho.server.service.cluster_ops import setup_ops
 
 monkey_patch(os=True, select=True, socket=True, thread=True, time=True)
 
@@ -39,6 +40,7 @@ def make_app(**local_conf):
     setup_storage(app)
     setup_defaults(app)
     setup_scheduler(app)
+    setup_ops()
 
     def make_json_error(ex):
         status_code = (ex.code
