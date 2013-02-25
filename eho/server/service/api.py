@@ -1,7 +1,11 @@
+import logging
+from eho.server import scheduler
 from eho.server.storage.models import *
 from eho.server.storage.storage import db
 from eho.server.utils.api import abort_and_log
 from eho.server.service.cluster_ops import launch_cluster
+import eventlet
+
 
 def _clean_nones(obj):
     d_type = type(obj)
@@ -63,6 +67,8 @@ def _node_template(nt):
         'tenant_id': nt.tenant_id,
         'flavor_id': nt.flavor_id
     }
+
+    # todo(slukjanov): move all configs to 'configs' sub-object??
     for conf in nt.node_template_configs:
         c_section = conf.node_process_property.node_process.name
         c_name = conf.node_process_property.name
@@ -134,7 +140,10 @@ def _cluster(c):
         'service_urls': {},
         'node_templates': {},
         'nodes': [{'vm_id': n.vm_id,
-                   'node_template': {'id': n.node_template.id}}
+                   'node_template': {
+                       'id': n.node_template.id,
+                       'name': n.node_template.name
+                   }}
                   for n in c.nodes]
     }
     for ntc in c.node_counts:
@@ -167,5 +176,55 @@ def create_cluster(values):
     db.session.commit()
 
     launch_cluster(cluster)
+    #eventlet.spawn(cluster_creation_job, cluster.id)
 
     return get_cluster(id=cluster.id)
+
+
+def cluster_creation_job(cluster_id):
+    cluster = get_cluster(id=cluster_id)
+    logging.debug("Starting cluster '%s' creation: %s", cluster_id,
+                  cluster.dict)
+
+    pile = eventlet.GreenPile(scheduler.pool)
+
+    for template in cluster.node_templates:
+        node_count = cluster.node_templates.get(template)
+        for idx in xrange(0, node_count):
+            pile.spawn(vm_creation_job, template)
+
+    for (ip, vm_id, template) in pile:
+        db.session.add(Node(vm_id, cluster_id, template))
+        logging.info("VM '%s/%s/%s' created", ip, vm_id, template)
+    db.session.commit()
+
+
+def vm_creation_job(template_name):
+    template = NodeTemplate.query.filter_by(name=template_name).first()
+    eventlet.sleep(2)
+    return 'ip-address', uuid4().hex, template.id
+
+
+def terminate_cluster(**args):
+    cluster = Cluster.query.filter_by(**args).first()
+
+    # terminate all vms and then delete cluster
+
+    db.session.delete(cluster)
+    db.session.commit()
+
+
+def terminate_node_template(**args):
+    template = NodeTemplate.query.filter_by(**args).first()
+    if template:
+        if len(template.nodes):
+            abort_and_log(500, "There are active nodes created using "
+                               "template '%s' you trying to terminate"
+                               % args)
+        else:
+            db.session.delete(template)
+            db.session.commit()
+
+        return True
+    else:
+        return False

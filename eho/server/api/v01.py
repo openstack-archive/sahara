@@ -25,7 +25,7 @@ def templates():
             abort_and_log(500, "Exception while adding NodeTemplate: %s" % e)
 
 
-@rest.route('/node-templates/<template_id>', methods=['GET', 'PUT'])
+@rest.route('/node-templates/<template_id>', methods=['GET', 'PUT', 'DELETE'])
 def template(template_id):
     if request.method == 'GET':
         nt = None
@@ -41,6 +41,9 @@ def template(template_id):
         return render(nt.dict)
     elif request.method == 'PUT':
         raise NotImplementedError("Template update op isn't implemented yet")
+    elif request.method == 'DELETE':
+        api.terminate_node_template(id=template_id)
+        return render(status=204)
 
 
 @rest.route('/clusters', methods=['GET', 'POST'])
@@ -59,7 +62,7 @@ def clusters():
             abort_and_log(500, "Exception while adding new Cluster: %s" % e)
 
 
-@rest.route('/clusters/<cluster_id>', methods=['GET', 'PUT'])
+@rest.route('/clusters/<cluster_id>', methods=['GET', 'PUT', 'DELETE'])
 def cluster(cluster_id):
     if request.method == 'GET':
         c = None
@@ -75,3 +78,6 @@ def cluster(cluster_id):
         return render(c.dict)
     elif request.method == 'PUT':
         raise NotImplementedError("Cluster update op isn't implemented yet")
+    elif request.method == 'DELETE':
+        api.terminate_cluster(id=cluster_id)
+        return render(status=204)

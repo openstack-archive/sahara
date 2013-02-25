@@ -22,9 +22,13 @@ class NodeTemplate(db.Model, BaseModel):
     flavor_id = db.Column(db.String(36), nullable=False)
 
     node_template_configs = db.relationship('NodeTemplateConfig',
+                                            cascade="all,delete",
                                             backref='node_template')
     cluster_node_counts = db.relationship('ClusterNodeCount',
+                                          cascade="all,delete",
                                           backref='node_template')
+    nodes = db.relationship('Node', cascade="all,delete",
+                            backref='node_template')
 
     def __init__(self, name, node_type_id, tenant_id, flavor_id):
         self.id = uuid4().hex
@@ -46,9 +50,11 @@ class Cluster(db.Model, BaseModel):
     status = db.Column(db.String(80))
     tenant_id = db.Column(db.String(36), nullable=False)
 
-    nodes = db.relationship('Node', backref='cluster')
-    service_urls = db.relationship('ServiceUrl', backref='cluster')
-    node_counts = db.relationship('ClusterNodeCount', backref='cluster')
+    nodes = db.relationship('Node', cascade="all,delete", backref='cluster')
+    service_urls = db.relationship('ServiceUrl', cascade="all,delete",
+                                   backref='cluster')
+    node_counts = db.relationship('ClusterNodeCount', cascade="all,delete",
+                                  backref='cluster')
 
     # node_templates: [(node_template_id, count), ...]
 
@@ -76,9 +82,11 @@ class NodeType(db.Model, BaseModel):
     id = db.Column(db.String(36), primary_key=True)
     name = db.Column(db.String(80), unique=True, nullable=False)
     processes = db.relationship('NodeProcess',
+                                cascade="all,delete",
                                 secondary=node_type_node_process,
                                 backref='node_types')
-    node_templates = db.relationship('NodeTemplate', backref='node_type')
+    node_templates = db.relationship('NodeTemplate', cascade="all,delete",
+                                     backref='node_type')
 
     def __init__(self, name):
         self.id = uuid4().hex
@@ -94,6 +102,7 @@ class NodeProcess(db.Model, BaseModel):
     id = db.Column(db.String(36), primary_key=True)
     name = db.Column(db.String(80), unique=True, nullable=False)
     node_process_properties = db.relationship('NodeProcessProperty',
+                                              cascade="all,delete",
                                               backref='node_process')
 
     def __init__(self, name):
@@ -116,6 +125,7 @@ class NodeProcessProperty(db.Model, BaseModel):
     required = db.Column(db.Boolean, nullable=False)
     default = db.Column(db.String(36))
     node_template_configs = db.relationship('NodeTemplateConfig',
+                                            cascade="all,delete",
                                             backref='node_process_property')
 
     def __init__(self, node_process_id, name, required=True, default=None):

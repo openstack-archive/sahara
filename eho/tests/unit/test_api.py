@@ -13,7 +13,10 @@ class TestApi(unittest.TestCase):
 
         app = make_app(
             TESTING=True,
-            SQLALCHEMY_DATABASE_URI='sqlite:///' + self.db_path
+            RESET_DB=True,
+            STUB_DATA=True,
+            SQLALCHEMY_DATABASE_URI='sqlite:///' + self.db_path,
+            SQLALCHEMY_ECHO=False
         )
         print 'Test db path: %s' % self.db_path
 
@@ -27,49 +30,166 @@ class TestApi(unittest.TestCase):
         rv = self.app.get('/v0.1/node-templates.json')
         self.assertEquals(rv.status_code, 200)
         data = json.loads(rv.data)
-        del data.get(u'templates')[0][u'id']
-        del data.get(u'templates')[0][u'node_type'][u'id']
+
+        # clean all ids
+        for idx in xrange(0, len(data.get(u'templates'))):
+            del data.get(u'templates')[idx][u'id']
+            del data.get(u'templates')[idx][u'node_type'][u'id']
+
         self.assertEquals(data, {
             u'templates': [
                 {
-                    u'flavor_id': u'f_1',
-                    # u'id': u'<random id>',
                     u'job_tracker': {
-                        u'heap_size': u'1024'
+                        u'heap_size': u'3072'
                     },
-                    u'name': u'tmpl_1',
-                    u'name_node': {
-                        u'heap_size': u'512'
-                    },
+                    u'name': u'jt_nn.large',
+                    u'tenant_id': u't_1',
                     u'node_type': {
-                        # u'id': u'<random id>',
-                        u'name': u'jt+nn',
                         u'processes': [
                             u'job_tracker',
                             u'name_node'
-                        ]
+                        ],
+                        u'name': u'JT+NN'
                     },
-                    u'tenant_id': u't_1'
-                }
-            ]
-        })
+                    u'flavor_id': u'm1.large',
+                    u'name_node': {
+                        u'heap_size': u'3072'
+                    }
+                },
+                {
+                    u'job_tracker': {
+                        u'heap_size': u'6144'
+                    },
+                    u'name': u'jt_nn.xlarge',
+                    u'tenant_id': u't_1',
+                    u'node_type': {
+                        u'processes': [
+                            u'job_tracker',
+                            u'name_node'
+                        ],
+                        u'name': u'JT+NN'
+                    },
+                    u'flavor_id': u'm1.xlarge',
+                    u'name_node': {
+                        u'heap_size': u'6144'
+                    }
+                },
+                {
+                    u'job_tracker': {
+                        u'heap_size': u'3072'
+                    },
+                    u'name': u'jt.large',
+                    u'tenant_id': u't_1',
+                    u'node_type': {
+                        u'processes': [
+                            u'job_tracker'
+                        ],
+                        u'name': u'JT'
+                    },
+                    u'flavor_id': u'm1.large'
+                },
+                {
+                    u'job_tracker': {
+                        u'heap_size': u'6144'
+                    },
+                    u'name': u'jt.xlarge',
+                    u'tenant_id': u't_1',
+                    u'node_type': {
+                        u'processes': [
+                            u'job_tracker'
+                        ],
+                        u'name': u'JT'
+                    },
+                    u'flavor_id': u'm1.xlarge'
+                },
+                {
+                    u'name': u'nn.large',
+                    u'tenant_id': u't_1',
+                    u'node_type': {
+                        u'processes': [
+                            u'name_node'
+                        ],
+                        u'name': u'NN'
+                    },
+                    u'flavor_id': u'm1.large',
+                    u'name_node': {
+                        u'heap_size': u'3072'
+                    }
+                },
+                {
+                    u'name': u'nn.xlarge',
+                    u'tenant_id': u't_1',
+                    u'node_type': {
+                        u'processes': [
+                            u'name_node'
+                        ],
+                        u'name': u'NN'
+                    }, u'flavor_id': u'm1.xlarge',
+                    u'name_node': {
+                        u'heap_size': u'6144'
+                    }
+                },
+                {
+                    u'name': u'tt_dn.medium',
+                    u'task_tracker': {
+                        u'heap_size': u'1536'
+                    },
+                    u'tenant_id': u't_1',
+                    u'data_node': {
+                        u'heap_size': u'1536'
+                    },
+                    u'node_type': {
+                        u'processes': [
+                            u'task_tracker',
+                            u'data_node'
+                        ],
+                        u'name': u'TT+DN'
+                    },
+                    u'flavor_id': u'm1.medium'
+                },
+                {
+                    u'name': u'tt_dn.large',
+                    u'task_tracker': {
+                        u'heap_size': u'3072'
+                    },
+                    u'tenant_id': u't_1',
+                    u'data_node': {
+                        u'heap_size': u'3072'
+                    },
+                    u'node_type': {
+                        u'processes': [
+                            u'task_tracker',
+                            u'data_node'
+                        ],
+                        u'name': u'TT+DN'
+                    },
+                    u'flavor_id': u'm1.large'
+                },
+                {
+                    u'name': u'tt_dn.xlarge',
+                    u'task_tracker': {
+                        u'heap_size': u'6144'
+                    },
+                    u'tenant_id': u't_1',
+                    u'data_node': {
+                        u'heap_size': u'6144'
+                    },
+                    u'node_type': {
+                        u'processes': [
+                            u'task_tracker',
+                            u'data_node'
+                        ],
+                        u'name': u'TT+DN'},
+                    u'flavor_id': u'm1.xlarge'
+                }]})
 
     def test_list_clusters(self):
         rv = self.app.get('/v0.1/clusters.json')
         self.assertEquals(rv.status_code, 200)
         data = json.loads(rv.data)
-        del data.get(u'clusters')[0][u'id']
+
         self.assertEquals(data, {
-            u'clusters': [
-                {u'base_image_id': u'base_image_1',
-                 # u'id': u'random id',
-                 u'name': u'cluster_1',
-                 u'node_templates': {u'tmpl_1': 100},
-                 u'nodes': [],
-                 u'service_urls': {},
-                 u'status': None,
-                 u'tenant_id': u'tenant_1'}
-            ]
+            u'clusters': []
         })
 
 

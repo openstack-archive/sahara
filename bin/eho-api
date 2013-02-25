@@ -1,7 +1,43 @@
 #!/usr/bin/env python
+import argparse
 
 import eho.server.main as server
+from eventlet import wsgi
+import eventlet
 
 if __name__ == '__main__':
-    app = server.make_app()
-    app.run()
+    parser = argparse.ArgumentParser(description='EHO server')
+    parser.add_argument(
+        '--dev', action='store_true', dest='dev', help='enable dev mode'
+    )
+    parser.add_argument(
+        '--host', default='', dest='host', help='set host (default: \'\' all)'
+    )
+    parser.add_argument(
+        '-p', '--port', type=int, default=8080, dest='port',
+        help='specify http port (default: 8080)'
+    )
+    parser.add_argument(
+        '--log-level, --log_level', default='WARN', dest='log_level',
+        help='set logging level (default: WARN)'
+    )
+    parser.add_argument(
+        '--reset-db, --reset_db', action='store_true', dest='reset_db',
+        help='reset db'
+    )
+    parser.add_argument(
+        '--stub-data, --stub_data', action='store_true', dest='stub_data',
+        help='put stub templates and clusters into db'
+    )
+
+    args = parser.parse_args()
+    opts = dict()
+    opts['DEBUG'] = args.dev
+    opts['LOG_LEVEL'] = args.log_level
+    opts['RESET_DB'] = args.reset_db
+    opts['STUB_DATA'] = args.stub_data
+
+    app = server.make_app(**opts)
+
+    wsgi.server(eventlet.listen((args.host, args.port), backlog=500), app,
+                debug=args.dev)
