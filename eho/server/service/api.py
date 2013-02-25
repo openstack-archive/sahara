@@ -194,6 +194,10 @@ def cluster_creation_job(cluster_id):
     for (ip, vm_id, template) in pile:
         db.session.add(Node(vm_id, cluster_id, template))
         logging.info("VM '%s/%s/%s' created", ip, vm_id, template)
+
+    cluster = Cluster.query.filter_by(id=cluster_id).first()
+    cluster.status = 'Active'
+    db.session.add(cluster)
     db.session.commit()
 
 

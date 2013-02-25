@@ -62,6 +62,8 @@ class Cluster(db.Model, BaseModel):
         self.id = uuid4().hex
         self.name = name
         self.base_image_id = base_image_id
+        if not status:
+            status = 'Starting'
         self.status = status
         self.tenant_id = tenant_id
 
