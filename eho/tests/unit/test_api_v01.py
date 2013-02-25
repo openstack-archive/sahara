@@ -192,7 +192,9 @@ class TestApi(unittest.TestCase):
         self.assertEquals(rv.status_code, 204)
 
         rv = self.app.get('/v0.1/node-templates/%s.json' % node_template_id)
-        self.assertEquals(rv.status_code, 500) #TODO(vrovachev):chagne sucsess code to 404
+
+        #todo(vrovachev): change success code to 404
+        self.assertEquals(rv.status_code, 500)
 
     def test_delete_cluster_for_id(self):
         rv = self.app.post('/v0.1/clusters.json', data=json.dumps(dict(
@@ -229,7 +231,9 @@ class TestApi(unittest.TestCase):
         self.assertEquals(rv.status_code, 204)
 
         rv = self.app.get('/v0.1/clusters/%s.json' % cluster_id)
-        self.assertEquals(rv.status_code, 500) #TODO(vrovachev):chagne sucsess code to 404
+
+        #todo(vrovachev): change success code to 404
+        self.assertEquals(rv.status_code, 500)
 
     def _get_templates_stub_data(self):
         return {
