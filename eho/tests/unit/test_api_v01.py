@@ -202,8 +202,8 @@ class TestApi(unittest.TestCase):
             base_image_id='base-image-id_2',
             tenant_id='tenant-id_2',
             templates={
-                'jt_nn.xlarge': 1,
-                'tt_dn.large': 5
+                'jt_nn.medium': 1,
+                'tt_dn.small': 5
             }
         )))
         self.assertEquals(rv.status_code, 200)
@@ -221,8 +221,8 @@ class TestApi(unittest.TestCase):
             u'tenant_id': u'tenant-id_2',
             u'base_image_id': u'base-image-id_2',
             u'node_templates': {
-                u'jt_nn.xlarge': 1,
-                u'tt_dn.large': 5
+                u'jt_nn.medium': 1,
+                u'tt_dn.small': 5
             },
             u'nodes': []
         })
