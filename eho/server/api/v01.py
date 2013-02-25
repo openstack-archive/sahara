@@ -3,8 +3,6 @@ from flask import request
 
 from eho.server.utils.api import Rest, render, abort_and_log, request_data
 
-import traceback
-
 
 rest = Rest('v01', __name__)
 
@@ -58,7 +56,6 @@ def clusters():
         try:
             return render(api.create_cluster(data).dict)
         except Exception, e:
-            traceback.print_exc(e)
             abort_and_log(500, "Exception while adding new Cluster: %s" % e)
 
 
