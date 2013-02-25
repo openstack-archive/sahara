@@ -24,10 +24,10 @@ def make_app(**local_conf):
     app.config.from_envvar('EHO_API_CFG', silent=True)
     app.config.update(**local_conf)
 
-    rootLogger = logging.getLogger()
+    root_logger = logging.getLogger()
     ll = app.config.pop('LOG_LEVEL', 'WARN')
     if ll:
-        rootLogger.setLevel(ll)
+        root_logger.setLevel(ll)
 
     app.register_blueprint(api_v01.rest, url_prefix='/v0.1')
 
