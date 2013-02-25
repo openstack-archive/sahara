@@ -1,7 +1,7 @@
 import logging
 import eventlet
 
-pool = eventlet.GreenPool()
+POOL = eventlet.GreenPool()
 
 
 def test_job_fun(idx):
@@ -10,4 +10,5 @@ def test_job_fun(idx):
 
 
 def setup_scheduler(app):
+    app.pool = POOL
     eventlet.spawn(test_job_fun, 0)

@@ -1,5 +1,6 @@
 import logging
-from eho.server.storage.models import *
+from eho.server.storage.models import NodeProcess, NodeProcessProperty, \
+    NodeType, NodeTemplate, NodeTemplateConfig, Cluster, ClusterNodeCount
 from eho.server.storage.storage import db
 
 
@@ -113,90 +114,79 @@ def setup_defaults(app):
                          nt.id, nt.name,
                          [p.name.__str__() for p in nt.processes])
 
-        logging.info('All defaults has been inserted')
-
     if app.config.get('STUB_DATA', False):
-        jt_nn_large = create_node_template('jt_nn.large', nt_jt_nn.id, 't_1',
-                                           'm1.large',
+        jt_nn_small = create_node_template('jt_nn.small', nt_jt_nn.id, 't_1',
+                                           'm1.small',
                                            {
                                                'job_tracker': {
-                                                   'heap_size': '3072'
+                                                   'heap_size': '896'
                                                },
                                                'name_node': {
-                                                   'heap_size': '3072'
+                                                   'heap_size': '896'
                                                }
                                            })
-        jt_nn_xlarge = create_node_template('jt_nn.xlarge', nt_jt_nn.id, 't_1',
-                                            'm1.xlarge',
+        jt_nn_medium = create_node_template('jt_nn.medium', nt_jt_nn.id, 't_1',
+                                            'm1.medium',
                                             {
                                                 'job_tracker': {
-                                                    'heap_size': '6144'
+                                                    'heap_size': '1792'
                                                 },
                                                 'name_node': {
-                                                    'heap_size': '6144'
+                                                    'heap_size': '1792'
                                                 }
                                             })
-        jt_large = create_node_template('jt.large', nt_jt.id, 't_1',
-                                        'm1.large',
+        jt_small = create_node_template('jt.small', nt_jt.id, 't_1',
+                                        'm1.small',
                                         {
                                             'job_tracker': {
-                                                'heap_size': '3072'
+                                                'heap_size': '1792'
                                             }
                                         })
-        jt_xlarge = create_node_template('jt.xlarge', nt_jt.id, 't_1',
-                                         'm1.xlarge',
+        jt_medium = create_node_template('jt.medium', nt_jt.id, 't_1',
+                                         'm1.medium',
                                          {
                                              'job_tracker': {
-                                                 'heap_size': '6144'
+                                                 'heap_size': '3712'
                                              }
                                          })
-        nn_large = create_node_template('nn.large', nt_nn.id, 't_1',
-                                        'm1.large',
+        nn_small = create_node_template('nn.small', nt_nn.id, 't_1',
+                                        'm1.small',
                                         {
                                             'name_node': {
-                                                'heap_size': '3072'
+                                                'heap_size': '1792'
                                             }
                                         })
-        nn_xlarge = create_node_template('nn.xlarge', nt_nn.id, 't_1',
-                                         'm1.xlarge',
+        nn_medium = create_node_template('nn.medium', nt_nn.id, 't_1',
+                                         'm1.medium',
                                          {
                                              'name_node': {
-                                                 'heap_size': '6144'
+                                                 'heap_size': '3712'
                                              }
                                          })
-
+        tt_dn_small = create_node_template('tt_dn.small', nt_tt_dn.id, 't_1',
+                                           'm1.small',
+                                           {
+                                               'task_tracker': {
+                                                   'heap_size': '896'
+                                               },
+                                               'data_node': {
+                                                   'heap_size': '896'
+                                               }
+                                           })
         tt_dn_medium = create_node_template('tt_dn.medium', nt_tt_dn.id, 't_1',
                                             'm1.medium',
                                             {
                                                 'task_tracker': {
-                                                    'heap_size': '1536'
+                                                    'heap_size': '1792'
                                                 },
                                                 'data_node': {
-                                                    'heap_size': '1536'
-                                                }
-                                            })
-        tt_dn_large = create_node_template('tt_dn.large', nt_tt_dn.id, 't_1',
-                                           'm1.large',
-                                           {
-                                               'task_tracker': {
-                                                   'heap_size': '3072'
-                                               },
-                                               'data_node': {
-                                                   'heap_size': '3072'
-                                               }
-                                           })
-        tt_dn_xlarge = create_node_template('tt_dn.xlarge', nt_tt_dn.id, 't_1',
-                                            'm1.xlarge',
-                                            {
-                                                'task_tracker': {
-                                                    'heap_size': '6144'
-                                                },
-                                                'data_node': {
-                                                    'heap_size': '6144'
+                                                    'heap_size': '1792'
                                                 }
                                             })
 
-        # cluster = create_cluster('cluster_1', 'base_image_1', 'tenant_1', {
-        # 'jt+nn': 1,
-        # 'tt+dn': 5
-        # })
+        for tmpl in [jt_nn_small, jt_nn_medium, jt_small, jt_medium, nn_small,
+                     nn_medium, tt_dn_small, tt_dn_medium]:
+            logging.info('New NodeTemplate has been created: %s \'%s\' %s',
+                         tmpl.id, tmpl.name, tmpl.flavor_id)
+
+        logging.info('All defaults has been inserted')

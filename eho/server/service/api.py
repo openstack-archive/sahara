@@ -1,6 +1,8 @@
 import logging
+import uuid
 from eho.server import scheduler
-from eho.server.storage.models import *
+from eho.server.storage.models import NodeTemplate, NodeType, NodeProcess, \
+    NodeTemplateConfig, Cluster, ClusterNodeCount, Node
 from eho.server.storage.storage import db
 from eho.server.utils.api import abort_and_log
 import eventlet
@@ -39,11 +41,6 @@ class Resource(object):
         if k not in self.__dict__:
             return self._info.get(k)
         return self.__dict__[k]
-
-    def __eq__(self, other):
-        if not isinstance(other, self.__class__):
-            return False
-        return self._info == other._info
 
     def __repr__(self):
         return '<%s %s>' % (self._name, self._info)
@@ -92,7 +89,8 @@ def get_node_template(**args):
 
 
 def get_node_templates(**args):
-    return map(_node_template, NodeTemplate.query.filter_by(**args).all())
+    return [_node_template(tmpl) for tmpl
+            in NodeTemplate.query.filter_by(**args).all()]
 
 
 def create_node_template(values):
@@ -127,15 +125,15 @@ def create_node_template(values):
     return get_node_template(id=nt.id)
 
 
-def _cluster(c):
-    if not c:
+def _cluster(cluster):
+    if not cluster:
         abort_and_log(404, 'Cluster not found')
     d = {
-        'id': c.id,
-        'name': c.name,
-        'base_image_id': c.base_image_id,
-        'status': c.status,
-        'tenant_id': c.tenant_id,
+        'id': cluster.id,
+        'name': cluster.name,
+        'base_image_id': cluster.base_image_id,
+        'status': cluster.status,
+        'tenant_id': cluster.tenant_id,
         'service_urls': {},
         'node_templates': {},
         'nodes': [{'vm_id': n.vm_id,
@@ -143,9 +141,9 @@ def _cluster(c):
                        'id': n.node_template.id,
                        'name': n.node_template.name
                    }}
-                  for n in c.nodes]
+                  for n in cluster.nodes]
     }
-    for ntc in c.node_counts:
+    for ntc in cluster.node_counts:
         d['node_templates'][ntc.node_template.name] = ntc.count
 
     return Resource('Cluster', d)
@@ -156,7 +154,8 @@ def get_cluster(**args):
 
 
 def get_clusters(**args):
-    return map(_cluster, Cluster.query.filter_by(**args).all())
+    return [_cluster(cluster) for cluster in
+            Cluster.query.filter_by(**args).all()]
 
 
 def create_cluster(values):
@@ -184,7 +183,7 @@ def cluster_creation_job(cluster_id):
     logging.debug("Starting cluster '%s' creation: %s", cluster_id,
                   cluster.dict)
 
-    pile = eventlet.GreenPile(scheduler.pool)
+    pile = eventlet.GreenPile(scheduler.POOL)
 
     for template in cluster.node_templates:
         node_count = cluster.node_templates.get(template)
@@ -204,7 +203,7 @@ def cluster_creation_job(cluster_id):
 def vm_creation_job(template_name):
     template = NodeTemplate.query.filter_by(name=template_name).first()
     eventlet.sleep(2)
-    return 'ip-address', uuid4().hex, template.id
+    return 'ip-address', uuid.uuid4().hex, template.id
 
 
 def terminate_cluster(**args):
