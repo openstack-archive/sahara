@@ -1,6 +1,10 @@
 import time
+
 from novaclient.v1_1 import client as nova_client
 from paramiko import SSHClient, AutoAddPolicy 
+
+from eho.server.storage.models import *
+from eho.server.storage.storage import db
 
 def _create_nova_client():
   return nova_client.Client("admin", "nova", "admin", "http://172.18.79.139:5000/v2.0/")
@@ -47,6 +51,7 @@ def launch_cluster(cluster):
       configs[name] = cf.value
 
     ntype = nc.node_template.node_type.name
+    templ_id = nc.node_template.id
     flv_id = nc.node_template.flavor_id
     flv = _find_by_id(nova_client.flavors.list(), flv_id)
     _check_finding(flv, 'id', flv_id)
@@ -56,6 +61,7 @@ def launch_cluster(cluster):
       node['name'] = '%s-%i' %(cluster.name, num)
       num += 1
       node['type'] = ntype
+      node['templ_id'] = templ_id
       node['flavor'] = flv
       node['configs'] = configs
       node['isup'] = False
@@ -63,8 +69,8 @@ def launch_cluster(cluster):
 
   print clmap
 
-#  for node in clmap['nodes']:
-#    _launch_node(nova_client, node['name'], node['flavor'], clmap['image'])
+  for node in clmap['nodes']:
+    _launch_node(nova_client, node)
 
   all_set = False
 
@@ -82,10 +88,12 @@ def launch_cluster(cluster):
   _pre_cluster_setup(clmap)
   for node in clmap['nodes']:
     _setup_node(node, clmap)
+    _register_node(node, cluster)
 
-def _launch_node(nova_client, name, flavor, image):
-  #nova_client.servers.create(name, image, flavor, key_name='srtlab-eho')
-  nova_client.servers.create(name, image, flavor)
+def _launch_node(nova_client, node):
+  #srv = nova_client.servers.create(node['name'], node['flavor'], clmap['image'])
+  srv = _find_by_name(nova_client.servers.list(), node['name'])
+  node['id'] = srv.id
 
 def _check_if_up(nova_client, node):
   if node['isup']:
@@ -143,13 +151,26 @@ def _sed_escape(s):
 def _prepare_config_cmd(filename, configs):
   command = 'cat %s.eho_template' %filename
   for key, value in configs.items():
-    command += ' | sed -e \"s/%s/%s/g\"' %(_sed_escape(key), _sed_escape(value))
+    command += ' | sed -e "s/%s/%s/g" 2>&1' %(_sed_escape(key), _sed_escape(value))
 
   return command + ' | tee %s' %filename
 
+def escape_doublequotes(s):
+  result = ""
+  for ch in s:
+    if (ch == '"'):
+      result += "\\"
+    result += ch
+  return result
+
 def _wrap_command(command):
-  result = ' && echo -e \"Running\\n%s\\n-------------------------\" >> /tmp/eho_setup_log' %command
-  return result + ' && ' + command + ' >> /tmp/eho_setup_log 2>&1"'
+  result = ' ; echo -e \"-------------------------------\\n[$(date)] Running\\n%s\\n\" >> /tmp/eho_setup_log' %escape_doublequotes(command)
+  return result + ' ; ' + command + ' >> /tmp/eho_setup_log 2>&1'
+
+def debug(s):
+ fl = open('/tmp/mydebug', 'wt')
+ fl.write(str(s))
+ fl.close()
 
 def _setup_node(node, clmap):
   ssh = SSHClient()
@@ -158,7 +179,7 @@ def _setup_node(node, clmap):
 
   node['configs']['%%%hdfs_namenode_url%%%'] = 'hdfs://%s:8020' %clmap['master']
   node['configs']['%%%mapred_jobtracker_url%%%'] = '%s:8021' %clmap['master']
-  cmd = 'echo 1'
+  cmd = 'echo 123'
   command = _prepare_config_cmd('/etc/hadoop/core-site.xml', node['configs'])
   cmd += _wrap_command(command)
   command = _prepare_config_cmd('/etc/hadoop/mapred-site.xml', node['configs'])
@@ -167,24 +188,33 @@ def _setup_node(node, clmap):
   command = '/etc/hadoop/create_dirs.sh'
   cmd += _wrap_command(command)
 
-
   if node['type'] == 'jt+nn':
     command = 'echo -e "'
     for slave in clmap['slaves']:
       command += slave + '\\n'
-    command += '" > /etc/hadoop/slaves'
+    command += '" | tee /etc/hadoop/slaves'
     cmd += _wrap_command(command)
 
-    command = 'echo %s > /etc/hadoop/masters' %node['ip']
+    command = 'echo \'%s\' | tee /etc/hadoop/masters' %node['ip']
     cmd += _wrap_command(command)
 
     command = 'su -c \'hadoop namenode -format -force\' hadoop'
     cmd += _wrap_command(command)
 
-    cmd += "echo \"-lastline-\""
-
-  inp, outp, err = ssh.exec_command(cmd)
-  while outp.readline().find("-lastline-")  == -1:
-    pass
+  chan = ssh.get_transport().open_session()
+  chan.exec_command(cmd)
+  debug(chan.recv_exit_status())
 
   ssh.close()
+
+def _register_node(node, cluster):
+  debug(node['templ_id'])
+  node_obj = Node(node['id'], cluster.id, node['templ_id'])
+  srv_url_jt = ServiceUrl(cluster.id, 'jobtracker', 'http://%s:50030' %node['ip'])
+  srv_url_nn = ServiceUrl(cluster.id, 'namenode', 'http://%s:50070' %node['ip'])
+
+  db.session.add(node_obj)
+  db.session.add(srv_url_jt)
+  db.session.add(srv_url_nn)
+
+  db.session.commit()
