@@ -7,6 +7,14 @@ from eho.server.service import cluster_ops
 import eventlet
 
 
+ALLOW_CLUSTER_OPS = False
+
+
+def setup_api(app):
+    global ALLOW_CLUSTER_OPS
+    ALLOW_CLUSTER_OPS = app.config['ALLOW_CLUSTER_OPS']
+
+
 def _clean_nones(obj):
     d_type = type(obj)
     if d_type is not dict or d_type is not list:
@@ -183,7 +191,10 @@ def cluster_creation_job(cluster_id):
     logging.debug("Starting cluster '%s' creation: %s", cluster_id,
                   _cluster(cluster).dict)
 
-    cluster_ops.launch_cluster(cluster)
+    if ALLOW_CLUSTER_OPS:
+        cluster_ops.launch_cluster(cluster)
+    else:
+        logging.info("Cluster ops are disabled, use --allow-cluster-ops flag")
 
     # update cluster status
     cluster = Cluster.query.filter_by(id=cluster.id).first()
