@@ -155,6 +155,8 @@ class TestApi(unittest.TestCase):
             del data.get(u'nodes')[idx][u'vm_id']
             del data.get(u'nodes')[idx][u'node_template'][u'id']
 
+        nodes = data.pop(u'nodes')
+
         self.assertEquals(data, {
             u'status': u'Active',
             u'service_urls': {},
@@ -164,16 +166,20 @@ class TestApi(unittest.TestCase):
             u'node_templates': {
                 u'jt_nn.medium': 1,
                 u'tt_dn.small': 5
-            },
-            u'nodes': [
-                {u'node_template': {u'name': u'jt_nn.medium'}},
-                {u'node_template': {u'name': u'tt_dn.small'}},
-                {u'node_template': {u'name': u'tt_dn.small'}},
-                {u'node_template': {u'name': u'tt_dn.small'}},
-                {u'node_template': {u'name': u'tt_dn.small'}},
-                {u'node_template': {u'name': u'tt_dn.small'}}
-            ]
+            }
         })
+
+        self.assertEquals(self._sorted_nodes(nodes), self._sorted_nodes([
+            {u'node_template': {u'name': u'tt_dn.small'}},
+            {u'node_template': {u'name': u'tt_dn.small'}},
+            {u'node_template': {u'name': u'tt_dn.small'}},
+            {u'node_template': {u'name': u'tt_dn.small'}},
+            {u'node_template': {u'name': u'tt_dn.small'}},
+            {u'node_template': {u'name': u'jt_nn.medium'}}
+        ]))
+
+    def _sorted_nodes(self, nodes):
+        return sorted(nodes, key=lambda elem: elem[u'node_template'][u'name'])
 
     def test_delete_node_template_for_id(self):
         rv = self.app.post('/v0.1/node-templates.json', data=json.dumps(dict(
