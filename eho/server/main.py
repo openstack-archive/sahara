@@ -18,7 +18,7 @@ def make_app(**local_conf):
     Entry point for Elastic Hadoop on OpenStack REST API server
     """
     app = Flask('eho.api')
-    #TODO(slukjanov): is it needed?
+    # todo(slukjanov): is it needed?
     app.config.from_pyfile('etc/eho-api.cfg', silent=True)
     app.config.from_pyfile('../etc/eho-api.cfg', silent=True)
     app.config.from_envvar('EHO_API_CFG', silent=True)
