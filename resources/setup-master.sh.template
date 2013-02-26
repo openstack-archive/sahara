@@ -1,0 +1,11 @@
+{% extends "resources/setup-general.sh" %}
+
+echo -e '
+{%- for slave in slaves -%}
+slave\n
+{%- endfor -%}
+' | tee /etc/hadoop/slaves
+
+echo {{master_internal}} | tee /etc/hadoop/masters
+
+su -c 'hadoop namenode -format -force' hadoop
