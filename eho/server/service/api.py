@@ -213,7 +213,7 @@ def vm_creation_job(template_name):
 def terminate_cluster(**args):
     cluster = Cluster.query.filter_by(**args).first()
 
-    # terminate all vms and then delete cluster
+    # todo(slukjanov):terminate all vms and then delete cluster
 
     db.session.delete(cluster)
     db.session.commit()
