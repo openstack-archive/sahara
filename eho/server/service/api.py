@@ -1,10 +1,9 @@
 import logging
-import uuid
 from eho.server.storage.models import NodeTemplate, NodeType, NodeProcess, \
     NodeTemplateConfig, Cluster, ClusterNodeCount
 from eho.server.storage.storage import db
 from eho.server.utils.api import abort_and_log
-from eho.server.service.cluster_ops import launch_cluster
+from eho.server.service import cluster_ops
 import eventlet
 
 
@@ -184,30 +183,13 @@ def cluster_creation_job(cluster_id):
     logging.debug("Starting cluster '%s' creation: %s", cluster_id,
                   _cluster(cluster).dict)
 
-    # pile = eventlet.GreenPile(scheduler.POOL)
-    #
-    # for template in cluster.node_templates:
-    #     node_count = cluster.node_templates.get(template)
-    #     for idx in xrange(0, node_count):
-    #         pile.spawn(vm_creation_job, template)
-    #
-    # for (ip, vm_id, template) in pile:
-    #     db.session.add(Node(vm_id, cluster_id, template))
-    #     logging.info("VM '%s/%s/%s' created", ip, vm_id, template)
-
-    launch_cluster(cluster)
+    cluster_ops.launch_cluster(cluster)
 
     # update cluster status
     cluster = Cluster.query.filter_by(id=cluster.id).first()
     cluster.status = 'Active'
     db.session.add(cluster)
     db.session.commit()
-
-
-def vm_creation_job(template_name):
-    template = NodeTemplate.query.filter_by(name=template_name).first()
-    eventlet.sleep(2)
-    return 'ip-address', uuid.uuid4().hex, template.id
 
 
 def terminate_cluster(**args):

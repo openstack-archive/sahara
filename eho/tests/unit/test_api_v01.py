@@ -1,10 +1,35 @@
 import json
+import logging
 import tempfile
 import unittest
+import uuid
+from eho.server import scheduler
 
 from eho.server.main import make_app
+from eho.server.service import api
 import eventlet
 import os
+from eho.server.storage.models import Node, NodeTemplate
+from eho.server.storage.storage import db
+
+
+def _stub_vm_creation_job(template_id):
+    template = NodeTemplate.query.filter_by(id=template_id).first()
+    eventlet.sleep(2)
+    return 'ip-address', uuid.uuid4().hex, template.id
+
+
+def _stub_cluster_ops_launch_cluster(cluster):
+    pile = eventlet.GreenPile(scheduler.POOL)
+
+    for elem in cluster.node_counts:
+        node_count = elem.count
+        for idx in xrange(0, node_count):
+            pile.spawn(_stub_vm_creation_job, elem.node_template_id)
+
+    for (ip, vm_id, elem) in pile:
+        db.session.add(Node(vm_id, cluster.id, elem))
+        logging.debug("VM '%s/%s/%s' created", ip, vm_id, elem)
 
 
 class TestApi(unittest.TestCase):
@@ -16,10 +41,13 @@ class TestApi(unittest.TestCase):
             TESTING=True,
             RESET_DB=True,
             STUB_DATA=True,
+            LOG_LEVEL="DEBUG",
             SQLALCHEMY_DATABASE_URI='sqlite:///' + self.db_path,
             SQLALCHEMY_ECHO=False
         )
         print 'Test db path: %s' % self.db_path
+
+        api.cluster_ops.launch_cluster = _stub_cluster_ops_launch_cluster
 
         self.app = app.test_client()
 
@@ -115,7 +143,7 @@ class TestApi(unittest.TestCase):
             u'nodes': []
         })
 
-        eventlet.sleep(3)
+        eventlet.sleep(4)
 
         rv = self.app.get('/v0.1/clusters/%s.json' % cluster_id)
         self.assertEquals(rv.status_code, 200)
