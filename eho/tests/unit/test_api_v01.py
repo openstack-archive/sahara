@@ -262,6 +262,8 @@ class TestApi(unittest.TestCase):
         rv = self.app.delete('/v0.1/clusters/%s.json' % cluster_id)
         self.assertEquals(rv.status_code, 204)
 
+        eventlet.sleep(1)
+
         rv = self.app.get('/v0.1/clusters/%s.json' % cluster_id)
 
         # todo(vrovachev): change success code to 404

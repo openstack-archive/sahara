@@ -270,3 +270,11 @@ def _start_cluster(cluster, clmap):
     _ensure_zero(ret)
 
     logging.info("Cluster '%s' successfully started!" % cluster.name)
+
+
+def stop_cluster(cluster):
+    nova = _create_nova_client()
+
+    for node in cluster.nodes:
+        nova.servers.delete(node.vm_id)
+        logging.debug("VM '%s' has been stopped" % node.vm_id)

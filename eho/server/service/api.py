@@ -180,13 +180,12 @@ def create_cluster(values):
         db.session.add(cnc)
     db.session.commit()
 
-    # launch_cluster(cluster)
-    eventlet.spawn(cluster_creation_job, cluster.id)
+    eventlet.spawn(_cluster_creation_job, cluster.id)
 
     return get_cluster(id=cluster.id)
 
 
-def cluster_creation_job(cluster_id):
+def _cluster_creation_job(cluster_id):
     cluster = Cluster.query.filter_by(id=cluster_id).first()
     logging.debug("Starting cluster '%s' creation: %s", cluster_id,
                   _cluster(cluster).dict)
@@ -204,12 +203,13 @@ def cluster_creation_job(cluster_id):
 
 
 def terminate_cluster(**args):
+    # update cluster status
     cluster = Cluster.query.filter_by(**args).first()
-
-    # todo(slukjanov):terminate all vms and then delete cluster
-
-    db.session.delete(cluster)
+    cluster.status = 'Stoping'
+    db.session.add(cluster)
     db.session.commit()
+
+    eventlet.spawn(_cluster_termination_job, cluster.id)
 
 
 def terminate_node_template(**args):
@@ -226,3 +226,17 @@ def terminate_node_template(**args):
         return True
     else:
         return False
+
+
+def _cluster_termination_job(cluster_id):
+    cluster = Cluster.query.filter_by(id=cluster_id).first()
+    logging.debug("Stoping cluster '%s' creation: %s", cluster_id,
+                  _cluster(cluster).dict)
+
+    if ALLOW_CLUSTER_OPS:
+        cluster_ops.stop_cluster(cluster)
+    else:
+        logging.info("Cluster ops are disabled, use --allow-cluster-ops flag")
+
+    db.session.delete(cluster)
+    db.session.commit()
