@@ -15,9 +15,9 @@ QuickStart (Ubuntu)
 ::
     tools/with_venv python
 
-4. Run PEP8 checks:
+4. Run PEP8 (style) and PyFlakes (static analysis) checks:
 ::
-    tools/run_pep8
+    tools/run_fast_checks
 
 5. Build docs:
 ::
