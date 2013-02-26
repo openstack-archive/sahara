@@ -1,11 +1,18 @@
 import logging
-import uuid
-from eho.server import scheduler
 from eho.server.storage.models import NodeTemplate, NodeType, NodeProcess, \
-    NodeTemplateConfig, Cluster, ClusterNodeCount, Node
+    NodeTemplateConfig, Cluster, ClusterNodeCount
 from eho.server.storage.storage import db
 from eho.server.utils.api import abort_and_log
+from eho.server.service import cluster_ops
 import eventlet
+
+
+ALLOW_CLUSTER_OPS = False
+
+
+def setup_api(app):
+    global ALLOW_CLUSTER_OPS
+    ALLOW_CLUSTER_OPS = app.config['ALLOW_CLUSTER_OPS']
 
 
 def _clean_nones(obj):
@@ -173,43 +180,33 @@ def create_cluster(values):
         db.session.add(cnc)
     db.session.commit()
 
+    # launch_cluster(cluster)
     eventlet.spawn(cluster_creation_job, cluster.id)
 
     return get_cluster(id=cluster.id)
 
 
 def cluster_creation_job(cluster_id):
-    cluster = get_cluster(id=cluster_id)
-    logging.debug("Starting cluster '%s' creation: %s", cluster_id,
-                  cluster.dict)
-
-    pile = eventlet.GreenPile(scheduler.POOL)
-
-    for template in cluster.node_templates:
-        node_count = cluster.node_templates.get(template)
-        for idx in xrange(0, node_count):
-            pile.spawn(vm_creation_job, template)
-
-    for (ip, vm_id, template) in pile:
-        db.session.add(Node(vm_id, cluster_id, template))
-        logging.info("VM '%s/%s/%s' created", ip, vm_id, template)
-
     cluster = Cluster.query.filter_by(id=cluster_id).first()
+    logging.debug("Starting cluster '%s' creation: %s", cluster_id,
+                  _cluster(cluster).dict)
+
+    if ALLOW_CLUSTER_OPS:
+        cluster_ops.launch_cluster(cluster)
+    else:
+        logging.info("Cluster ops are disabled, use --allow-cluster-ops flag")
+
+    # update cluster status
+    cluster = Cluster.query.filter_by(id=cluster.id).first()
     cluster.status = 'Active'
     db.session.add(cluster)
     db.session.commit()
 
 
-def vm_creation_job(template_name):
-    template = NodeTemplate.query.filter_by(name=template_name).first()
-    eventlet.sleep(2)
-    return 'ip-address', uuid.uuid4().hex, template.id
-
-
 def terminate_cluster(**args):
     cluster = Cluster.query.filter_by(**args).first()
 
-    # terminate all vms and then delete cluster
+    # todo(slukjanov):terminate all vms and then delete cluster
 
     db.session.delete(cluster)
     db.session.commit()

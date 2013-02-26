@@ -1,5 +1,6 @@
 import logging
 from eho.server.scheduler import setup_scheduler
+from eho.server.service.api import setup_api
 from eho.server.storage.defaults import setup_defaults
 from eho.server.utils.api import render
 from eventlet import monkey_patch
@@ -18,7 +19,7 @@ def make_app(**local_conf):
     Entry point for Elastic Hadoop on OpenStack REST API server
     """
     app = Flask('eho.api')
-    #TODO(slukjanov): is it needed?
+    # todo(slukjanov): is it needed?
     app.config.from_pyfile('etc/eho-api.cfg', silent=True)
     app.config.from_pyfile('../etc/eho-api.cfg', silent=True)
     app.config.from_envvar('EHO_API_CFG', silent=True)
@@ -39,6 +40,7 @@ def make_app(**local_conf):
     setup_storage(app)
     setup_defaults(app)
     setup_scheduler(app)
+    setup_api(app)
 
     def make_json_error(ex):
         status_code = (ex.code
