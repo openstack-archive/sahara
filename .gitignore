@@ -28,3 +28,4 @@ doc/source/apidoc
 *.db
 .coverage
 nosetests.xml
+pylint-report.txt

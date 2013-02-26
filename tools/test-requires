@@ -1,4 +1,6 @@
 pep8>=1.0.1
+pylint
+pyflakes
 sphinx>=1.1.2
 sphinxcontrib-httpdomain>=1.1.7
 nose

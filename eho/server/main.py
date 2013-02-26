@@ -18,16 +18,16 @@ def make_app(**local_conf):
     Entry point for Elastic Hadoop on OpenStack REST API server
     """
     app = Flask('eho.api')
-    #TODO(slukjanov): is it needed?
+    # todo(slukjanov): is it needed?
     app.config.from_pyfile('etc/eho-api.cfg', silent=True)
     app.config.from_pyfile('../etc/eho-api.cfg', silent=True)
     app.config.from_envvar('EHO_API_CFG', silent=True)
     app.config.update(**local_conf)
 
-    rootLogger = logging.getLogger()
+    root_logger = logging.getLogger()
     ll = app.config.pop('LOG_LEVEL', 'WARN')
     if ll:
-        rootLogger.setLevel(ll)
+        root_logger.setLevel(ll)
 
     app.register_blueprint(api_v01.rest, url_prefix='/v0.1')
 

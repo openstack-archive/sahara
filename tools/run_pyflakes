@@ -1,0 +1,6 @@
+#!/bin/sh
+
+echo "Running PyFlakes checks"
+echo "======================="
+
+.venv/bin/pyflakes bin bin/eho-api eho

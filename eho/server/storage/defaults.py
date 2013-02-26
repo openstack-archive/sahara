@@ -1,5 +1,6 @@
 import logging
-from eho.server.storage.models import *
+from eho.server.storage.models import NodeProcess, NodeProcessProperty, \
+    NodeType, NodeTemplate, NodeTemplateConfig, Cluster, ClusterNodeCount
 from eho.server.storage.storage import db
 
 
@@ -113,8 +114,6 @@ def setup_defaults(app):
                          nt.id, nt.name,
                          [p.name.__str__() for p in nt.processes])
 
-        logging.info('All defaults has been inserted')
-
     if app.config.get('STUB_DATA', False):
         jt_nn_small = create_node_template('jt_nn.small', nt_jt_nn.id, 't_1',
                                            'm1.small',
@@ -184,3 +183,10 @@ def setup_defaults(app):
                                                     'heap_size': '1792'
                                                 }
                                             })
+
+        for tmpl in [jt_nn_small, jt_nn_medium, jt_small, jt_medium, nn_small,
+                     nn_medium, tt_dn_small, tt_dn_medium]:
+            logging.info('New NodeTemplate has been created: %s \'%s\' %s',
+                         tmpl.id, tmpl.name, tmpl.flavor_id)
+
+        logging.info('All defaults has been inserted')
