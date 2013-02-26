@@ -2,8 +2,8 @@ import time
 
 from novaclient.v1_1 import client as nova_client
 from paramiko import SSHClient, AutoAddPolicy
+from eho.server.storage.models import Node, ServiceUrl
 
-from eho.server.storage.models import *
 from eho.server.storage.storage import db
 
 
@@ -56,12 +56,12 @@ def _execute_command_on_node(host, cmd):
 
 
 def launch_cluster(cluster):
-    nova_client = _create_nova_client()
+    nova = _create_nova_client()
 
     clmap = dict()
     clmap['id'] = cluster.id
     clmap['name'] = cluster.name
-    clmap['image'] = _find_by_id(nova_client.images.list(),
+    clmap['image'] = _find_by_id(nova.images.list(),
                                  cluster.base_image_id)
     _check_finding(clmap['image'], 'id', cluster.base_image_id)
 
@@ -77,10 +77,10 @@ def launch_cluster(cluster):
         ntype = nc.node_template.node_type.name
         templ_id = nc.node_template.id
         flv_id = nc.node_template.flavor_id
-        flv = _find_by_name(nova_client.flavors.list(), flv_id)
+        flv = _find_by_name(nova.flavors.list(), flv_id)
         _check_finding(flv, 'id', flv_id)
 
-        for i in xrange(0, nc.count):
+        for _ in xrange(0, nc.count):
             node = dict()
             node['name'] = '%s-%i' % (cluster.name, num)
             num += 1
@@ -92,7 +92,7 @@ def launch_cluster(cluster):
             clmap['nodes'].append(node)
 
     for node in clmap['nodes']:
-        _launch_node(nova_client, node, clmap['image'])
+        _launch_node(nova, node, clmap['image'])
 
     all_set = False
 
@@ -100,7 +100,7 @@ def launch_cluster(cluster):
         all_set = True
 
         for node in clmap['nodes']:
-            _check_if_up(nova_client, node)
+            _check_if_up(nova, node)
 
             if not node['isup']:
                 all_set = False
@@ -115,19 +115,19 @@ def launch_cluster(cluster):
     _start_cluster(clmap)
 
 
-def _launch_node(nova_client, node, image):
-    srv = nova_client.servers.create(node['name'], image, node['flavor'])
+def _launch_node(nova, node, image):
+    srv = nova.servers.create(node['name'], image, node['flavor'])
     #srv = _find_by_name(nova_client.servers.list(), node['name'])
     node['id'] = srv.id
 
 
-def _check_if_up(nova_client, node):
+def _check_if_up(nova, node):
     if node['isup']:
         # all set
         return
 
     if not 'ip' in node:
-        srv = _find_by_name(nova_client.servers.list(), node['name'])
+        srv = _find_by_name(nova.servers.list(), node['name'])
         nets = srv.networks
         if not 'supernetwork' in nets:
             # it does not have interfaces yet
@@ -142,7 +142,7 @@ def _check_if_up(nova_client, node):
     try:
         ret = _execute_command_on_node(node['ip'], 'ls -l /')
         _ensure_zero(ret)
-    except:
+    except Exception:
         # ssh not ready yet
         # TODO log error if it takes more than 5 minutes to start-up
         return
@@ -164,10 +164,10 @@ def _pre_cluster_setup(clmap):
         raise RuntimeError("No master node is defined in the cluster")
 
 
-def _sed_escape(s):
+def _sed_escape(str):
     result = ''
-    for ch in s:
-        if (ch == '/'):
+    for ch in str:
+        if ch == '/':
             result += "\\\\"
         result += ch
     return result
@@ -182,10 +182,10 @@ def _prepare_config_cmd(filename, configs):
     return command + ' | tee %s' % filename
 
 
-def escape_doublequotes(s):
+def escape_doublequotes(str):
     result = ""
-    for ch in s:
-        if (ch == '"'):
+    for ch in str:
+        if ch == '"':
             result += "\\"
         result += ch
     return result
@@ -198,9 +198,9 @@ def _wrap_command(command):
     return result + ' ; ' + command + ' >> /tmp/eho_setup_log 2>&1'
 
 
-def debug(s):
+def debug(str):
     fl = open('/tmp/mydebug', 'at')
-    fl.write(str(s) + "\n")
+    fl.write(str(str) + "\n")
     fl.close()
 
 
