@@ -1,8 +1,7 @@
 import logging
 import uuid
-from eho.server import scheduler
 from eho.server.storage.models import NodeTemplate, NodeType, NodeProcess, \
-    NodeTemplateConfig, Cluster, ClusterNodeCount, Node
+    NodeTemplateConfig, Cluster, ClusterNodeCount
 from eho.server.storage.storage import db
 from eho.server.utils.api import abort_and_log
 from eho.server.service.cluster_ops import launch_cluster
@@ -174,29 +173,32 @@ def create_cluster(values):
         db.session.add(cnc)
     db.session.commit()
 
-    launch_cluster(cluster)
-    #eventlet.spawn(cluster_creation_job, cluster.id)
+    # launch_cluster(cluster)
+    eventlet.spawn(cluster_creation_job, cluster.id)
 
     return get_cluster(id=cluster.id)
 
 
 def cluster_creation_job(cluster_id):
-    cluster = get_cluster(id=cluster_id)
-    logging.debug("Starting cluster '%s' creation: %s", cluster_id,
-                  cluster.dict)
-
-    pile = eventlet.GreenPile(scheduler.POOL)
-
-    for template in cluster.node_templates:
-        node_count = cluster.node_templates.get(template)
-        for idx in xrange(0, node_count):
-            pile.spawn(vm_creation_job, template)
-
-    for (ip, vm_id, template) in pile:
-        db.session.add(Node(vm_id, cluster_id, template))
-        logging.info("VM '%s/%s/%s' created", ip, vm_id, template)
-
     cluster = Cluster.query.filter_by(id=cluster_id).first()
+    logging.debug("Starting cluster '%s' creation: %s", cluster_id,
+                  _cluster(cluster).dict)
+
+    # pile = eventlet.GreenPile(scheduler.POOL)
+    #
+    # for template in cluster.node_templates:
+    #     node_count = cluster.node_templates.get(template)
+    #     for idx in xrange(0, node_count):
+    #         pile.spawn(vm_creation_job, template)
+    #
+    # for (ip, vm_id, template) in pile:
+    #     db.session.add(Node(vm_id, cluster_id, template))
+    #     logging.info("VM '%s/%s/%s' created", ip, vm_id, template)
+
+    launch_cluster(cluster)
+
+    # update cluster status
+    cluster = Cluster.query.filter_by(id=cluster.id).first()
     cluster.status = 'Active'
     db.session.add(cluster)
     db.session.commit()

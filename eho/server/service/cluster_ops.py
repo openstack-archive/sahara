@@ -164,9 +164,9 @@ def _pre_cluster_setup(clmap):
         raise RuntimeError("No master node is defined in the cluster")
 
 
-def _sed_escape(str):
+def _sed_escape(line):
     result = ''
-    for ch in str:
+    for ch in line:
         if ch == '/':
             result += "\\\\"
         result += ch
@@ -182,9 +182,9 @@ def _prepare_config_cmd(filename, configs):
     return command + ' | tee %s' % filename
 
 
-def escape_doublequotes(str):
+def escape_doublequotes(line):
     result = ""
-    for ch in str:
+    for ch in line:
         if ch == '"':
             result += "\\"
         result += ch
@@ -198,9 +198,9 @@ def _wrap_command(command):
     return result + ' ; ' + command + ' >> /tmp/eho_setup_log 2>&1'
 
 
-def debug(str):
+def debug(line):
     fl = open('/tmp/mydebug', 'at')
-    fl.write(str(str) + "\n")
+    fl.write(str(line) + "\n")
     fl.close()
 
 
