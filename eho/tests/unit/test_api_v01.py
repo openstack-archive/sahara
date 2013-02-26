@@ -42,6 +42,7 @@ class TestApi(unittest.TestCase):
             RESET_DB=True,
             STUB_DATA=True,
             LOG_LEVEL="DEBUG",
+            ALLOW_CLUSTER_OPS=True,
             SQLALCHEMY_DATABASE_URI='sqlite:///' + self.db_path,
             SQLALCHEMY_ECHO=False
         )
