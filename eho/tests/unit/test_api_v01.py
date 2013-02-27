@@ -83,7 +83,7 @@ class TestApi(unittest.TestCase):
                 }
             }
         )))
-        self.assertEquals(rv.status_code, 200)
+        self.assertEquals(rv.status_code, 202)
         data = json.loads(rv.data)
 
         # clean all ids
@@ -126,7 +126,7 @@ class TestApi(unittest.TestCase):
                 'tt_dn.small': 5
             }
         )))
-        self.assertEquals(rv.status_code, 200)
+        self.assertEquals(rv.status_code, 202)
         data = json.loads(rv.data)
 
         cluster_id = data.pop(u'id')
@@ -194,7 +194,7 @@ class TestApi(unittest.TestCase):
                 }
             }
         )))
-        self.assertEquals(rv.status_code, 200)
+        self.assertEquals(rv.status_code, 202)
         data = json.loads(rv.data)
         node_template_id = data.pop(u'id')
 
@@ -228,7 +228,7 @@ class TestApi(unittest.TestCase):
         # todo(vrovachev): change success code to 404
         self.assertEquals(rv.status_code, 500)
 
-    def test_delete_cluster_for_id(self):
+    def test_delete_cluster(self):
         rv = self.app.post('/v0.1/clusters.json', data=json.dumps(dict(
             name='test-cluster_2',
             base_image_id='base-image-id_2',
@@ -238,7 +238,7 @@ class TestApi(unittest.TestCase):
                 'tt_dn.small': 5
             }
         )))
-        self.assertEquals(rv.status_code, 200)
+        self.assertEquals(rv.status_code, 202)
         data = json.loads(rv.data)
         cluster_id = data.pop(u'id')
 
