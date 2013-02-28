@@ -10,6 +10,14 @@ from eho.server.storage.models import Node, ServiceUrl
 from eho.server.storage.storage import db
 
 
+OPENSTACK_USER = None
+OPENSTACK_PASSWORD = None
+OPENSTACK_TENANT = None
+OPENSTACK_URL = None
+NODE_USER = None
+NODE_PASSWORD = None
+
+
 def setup_ops():
     global OPENSTACK_USER, OPENSTACK_PASSWORD, OPENSTACK_TENANT, OPENSTACK_URL
     global NODE_USER, NODE_PASSWORD
@@ -186,7 +194,7 @@ def _check_if_up(nova, node):
 
 def _render_template(template_name, **kwargs):
     env = Environment(loader=PackageLoader('eho', '..'))
-    templ = env.get_template('resources/%s.template' %template_name)
+    templ = env.get_template('resources/%s.template' % template_name)
     return templ.render(**kwargs)
 
 
@@ -200,7 +208,8 @@ def _pre_cluster_setup(clmap):
             clmap['master_hostname'] = node['name']
             node['is_master'] = True
         elif node['type'] == 'TT+DN':
-            clmap['slaves'].append((node['ip'], node['name'], node['ip_internal']))
+            clmap['slaves'].append((node['ip'], node['name'],
+                                    node['ip_internal']))
             node['is_master'] = False
 
     if clmap['master'] is None:
@@ -209,20 +218,19 @@ def _pre_cluster_setup(clmap):
     configfiles = ['/etc/hadoop/core-site.xml',
                    '/etc/hadoop/mapred-site.xml']
 
-    configs = [('%%%hdfs_namenode_url%%%',
-                'hdfs:\\/\\/%s:8020' % clmap['master_hostname']),
-               ('%%%mapred_jobtracker_url%%%',
-                '%s:8021' % clmap['master_hostname'])
+    configs = [
+        ('%%%hdfs_namenode_url%%%', 'hdfs:\\/\\/%s:8020'
+                                    % clmap['master_hostname']),
+        ('%%%mapred_jobtracker_url%%%', '%s:8021' % clmap['master_hostname'])
     ]
 
     templ_args = {'configfiles': configfiles,
-                     'configs': configs,
-                     'slaves': clmap['slaves'],
-                     'master_internal': clmap['master_hostname']}
+                  'configs': configs,
+                  'slaves': clmap['slaves'],
+                  'master_internal': clmap['master_hostname']}
 
     clmap['slave_script'] = _render_template('setup-general.sh', **templ_args)
     clmap['master_script'] = _render_template('setup-master.sh', **templ_args)
-
 
 
 def escape_doublequotes(s):
