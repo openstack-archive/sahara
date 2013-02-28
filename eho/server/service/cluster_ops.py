@@ -1,12 +1,12 @@
-import time, logging
+import logging
+import time
 
 from jinja2 import Environment
 from jinja2 import PackageLoader
 
 from novaclient.v1_1 import client as nova_client
 from paramiko import SSHClient, AutoAddPolicy
-
-from eho.server.storage.models import *
+from eho.server.storage.models import Node, ServiceUrl
 from eho.server.storage.storage import db
 
 
@@ -76,12 +76,12 @@ def _execute_command_on_node(host, cmd):
 
 
 def launch_cluster(cluster):
-    nova_client = _create_nova_client()
+    nova = _create_nova_client()
 
     clmap = dict()
     clmap['id'] = cluster.id
     clmap['name'] = cluster.name
-    clmap['image'] = _find_by_id(nova_client.images.list(),
+    clmap['image'] = _find_by_id(nova.images.list(),
                                  cluster.base_image_id)
     _check_finding(clmap['image'], 'id', cluster.base_image_id)
 
@@ -97,10 +97,10 @@ def launch_cluster(cluster):
         ntype = nc.node_template.node_type.name
         templ_id = nc.node_template.id
         flv_id = nc.node_template.flavor_id
-        flv = _find_by_name(nova_client.flavors.list(), flv_id)
+        flv = _find_by_name(nova.flavors.list(), flv_id)
         _check_finding(flv, 'id', flv_id)
 
-        for i in xrange(0, nc.count):
+        for _ in xrange(0, nc.count):
             node = dict()
             if ntype == 'JT+NN':
                 node['name'] = '%s-master' % cluster.name
@@ -115,42 +115,53 @@ def launch_cluster(cluster):
             clmap['nodes'].append(node)
 
     for node in clmap['nodes']:
-        _launch_node(nova_client, node, clmap['image'])
+        logging.debug("Starting node for cluster '%s', node: %s, iamge: %s",
+                      cluster.name, node, clmap['image'])
+        _launch_node(nova, node, clmap['image'])
 
     all_set = False
+
+    logging.debug("All nodes for cluster '%s' has been started, waiting isup",
+                  cluster.name)
 
     while not all_set:
         all_set = True
 
         for node in clmap['nodes']:
-            _check_if_up(nova_client, node)
+            _check_if_up(nova, node)
 
             if not node['isup']:
                 all_set = False
 
         time.sleep(1)
 
+    logging.debug("All nodes of cluster '%s' are up: %s",
+                  cluster.name, all_set)
+
     _pre_cluster_setup(clmap)
     for node in clmap['nodes']:
         _setup_node(node, clmap)
         _register_node(node, cluster)
 
-    _start_cluster(clmap)
+    logging.debug("All nodes of cluster '%s' are configured and registered, "
+                  "starting cluster...", cluster.name)
+
+    _start_cluster(cluster, clmap)
 
 
-def _launch_node(nova_client, node, image):
-    srv = nova_client.servers.create(node['name'], image, node['flavor'])
+def _launch_node(nova, node, image):
+    srv = nova.servers.create(node['name'], image, node['flavor'])
     #srv = _find_by_name(nova_client.servers.list(), node['name'])
     node['id'] = srv.id
 
 
-def _check_if_up(nova_client, node):
+def _check_if_up(nova, node):
     if node['isup']:
         # all set
         return
 
     if not 'ip' in node:
-        srv = _find_by_name(nova_client.servers.list(), node['name'])
+        srv = _find_by_name(nova.servers.list(), node['name'])
         nets = srv.networks
         if not 'supernetwork' in nets:
             # it does not have interfaces yet
@@ -165,7 +176,7 @@ def _check_if_up(nova_client, node):
     try:
         ret = _execute_command_on_node(node['ip'], 'ls -l /')
         _ensure_zero(ret)
-    except:
+    except Exception:
         # ssh not ready yet
         # TODO log error if it takes more than 5 minutes to start-up
         return
@@ -213,6 +224,29 @@ def _pre_cluster_setup(clmap):
     clmap['master_script'] = _render_template('setup-master.sh', **templ_args)
 
 
+
+def escape_doublequotes(s):
+    result = ""
+    for ch in s:
+        if (ch == '"'):
+            result += "\\"
+        result += ch
+    return result
+
+
+def _wrap_command(command):
+    result = ' ; echo -e \"-------------------------------\\n[$(date)] ' \
+             'Running\\n%s\\n\" >> /tmp/eho_setup_log' \
+             % escape_doublequotes(command)
+    return result + ' ; ' + command + ' >> /tmp/eho_setup_log 2>&1'
+
+
+def debug(s):
+    fl = open('/tmp/mydebug', 'at')
+    fl.write(str(s) + "\n")
+    fl.close()
+
+
 def _setup_node(node, clmap):
     if (node['ip'] == clmap['master']):
         script_body = clmap['master_script']
@@ -251,7 +285,17 @@ def _register_node(node, cluster):
     db.session.commit()
 
 
-def _start_cluster(clmap):
+def _start_cluster(cluster, clmap):
     ret = _execute_command_on_node(clmap['master'],
                                    'su -c /usr/sbin/start-all.sh hadoop')
     _ensure_zero(ret)
+
+    logging.info("Cluster '%s' successfully started!", cluster.name)
+
+
+def stop_cluster(cluster):
+    nova = _create_nova_client()
+
+    for node in cluster.nodes:
+        nova.servers.delete(node.vm_id)
+        logging.debug("VM '%s' has been stopped", node.vm_id)

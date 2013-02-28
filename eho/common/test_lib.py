@@ -1,4 +1,5 @@
 # vim: tabstop=4 shiftwidth=4 softtabstop=4
+#pylint: disable-all
 
 # Copyright (c) 2010 OpenStack, LLC
 # All Rights Reserved.
@@ -75,8 +76,7 @@ class _AnsiColorizer(object):
                 except curses.error:
                     curses.setupterm()
                     return curses.tigetnum("colors") > 2
-            except:
-                raise
+            except Exception:
                 # guess false in case of error
                 return False
     supported = classmethod(supported)

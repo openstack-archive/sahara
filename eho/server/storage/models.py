@@ -3,15 +3,7 @@ from uuid import uuid4
 from eho.server.storage.storage import db
 
 
-class BaseModel(object):
-    def __getitem__(self, item):
-        return getattr(self, item)
-
-    def __setitem__(self, key, value):
-        setattr(self, key, value)
-
-
-class NodeTemplate(db.Model, BaseModel):
+class NodeTemplate(db.Model):
     __tablename__ = 'NodeTemplate'
 
     id = db.Column(db.String(36), primary_key=True)
@@ -41,7 +33,7 @@ class NodeTemplate(db.Model, BaseModel):
         return '<NodeTemplate %s / %s>' % (self.name, self.node_type_id)
 
 
-class Cluster(db.Model, BaseModel):
+class Cluster(db.Model):
     __tablename__ = 'Cluster'
 
     id = db.Column(db.String(36), primary_key=True)
@@ -71,21 +63,21 @@ class Cluster(db.Model, BaseModel):
         return '<Cluster %s / %s>' % (self.name, self.status)
 
 
-node_type_node_process = db.Table('NodeType_NodeProcess', db.metadata,
-                                  db.Column('node_type_id', db.String(36),
-                                            db.ForeignKey('NodeType.id')),
-                                  db.Column('node_process_id', db.String(36),
-                                            db.ForeignKey('NodeProcess.id')))
+NodeType_NodeProcess = db.Table('NodeType_NodeProcess', db.metadata,
+                                db.Column('node_type_id', db.String(36),
+                                          db.ForeignKey('NodeType.id')),
+                                db.Column('node_process_id', db.String(36),
+                                          db.ForeignKey('NodeProcess.id')))
 
 
-class NodeType(db.Model, BaseModel):
+class NodeType(db.Model):
     __tablename__ = 'NodeType'
 
     id = db.Column(db.String(36), primary_key=True)
     name = db.Column(db.String(80), unique=True, nullable=False)
     processes = db.relationship('NodeProcess',
                                 cascade="all,delete",
-                                secondary=node_type_node_process,
+                                secondary=NodeType_NodeProcess,
                                 backref='node_types')
     node_templates = db.relationship('NodeTemplate', cascade="all,delete",
                                      backref='node_type')
@@ -98,7 +90,7 @@ class NodeType(db.Model, BaseModel):
         return '<NodeType %s>' % self.name
 
 
-class NodeProcess(db.Model, BaseModel):
+class NodeProcess(db.Model):
     __tablename__ = 'NodeProcess'
 
     id = db.Column(db.String(36), primary_key=True)
@@ -115,7 +107,7 @@ class NodeProcess(db.Model, BaseModel):
         return '<NodeProcess %s>' % self.name
 
 
-class NodeProcessProperty(db.Model, BaseModel):
+class NodeProcessProperty(db.Model):
     __tablename__ = 'NodeProcessProperty'
     __table_args__ = (
         db.UniqueConstraint('node_process_id', 'name'),
@@ -141,7 +133,7 @@ class NodeProcessProperty(db.Model, BaseModel):
         return '<NodeProcessProperty %s>' % self.name
 
 
-class NodeTemplateConfig(db.Model, BaseModel):
+class NodeTemplateConfig(db.Model):
     __tablename__ = 'NodeTemplateConfig'
     __table_args__ = (
         db.UniqueConstraint('node_template_id', 'node_process_property_id'),
@@ -168,7 +160,7 @@ class NodeTemplateConfig(db.Model, BaseModel):
                   self.value)
 
 
-class ClusterNodeCount(db.Model, BaseModel):
+class ClusterNodeCount(db.Model):
     __tablename__ = 'ClusterNodeCount'
     __table_args__ = (
         db.UniqueConstraint('cluster_id', 'node_template_id'),
@@ -191,7 +183,7 @@ class ClusterNodeCount(db.Model, BaseModel):
                % (self.node_template_id, self.count)
 
 
-class Node(db.Model, BaseModel):
+class Node(db.Model):
     __tablename__ = 'Node'
 
     # do we need own id?
@@ -209,7 +201,7 @@ class Node(db.Model, BaseModel):
         return '<Node based on %s>' % self.node_template.name
 
 
-class ServiceUrl(db.Model, BaseModel):
+class ServiceUrl(db.Model):
     __tablename__ = 'ServiceUrl'
 
     id = db.Column(db.String(36), primary_key=True)

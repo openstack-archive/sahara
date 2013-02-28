@@ -15,9 +15,9 @@ QuickStart (Ubuntu)
 ::
     tools/with_venv python
 
-4. Run PEP8 checks:
+4. Run PEP8 (style) and PyFlakes (static analysis) checks:
 ::
-    tools/run_pep8
+    tools/run_fast_checks
 
 5. Build docs:
 ::
@@ -33,19 +33,25 @@ Pip speedup
 
 Add the following lines to ~/.pip/pip.conf
 ::
-    # [global]
-    # download-cache = /home/<username>/.pip/cache
-    # index-url = <mirror url> 
+    [global]
+    download-cache = /home/<username>/.pip/cache
+    index-url = <mirror url>
 
 Note! The ~/.pip/cache folder should be created.
 For Saratov location the http://mirrors.sgu.ru/pypi/simple is preferred.
 
-Git hook for pep8 check
------------------------
+Git hook for fast checks
+------------------------
 Just add the following lines to .git/hooks/pre-commit and do chmod +x for it.
 ::
     #!/bin/sh
-    # Auto-check for pep8
-    tools/run_pep8
+    # Run fast checks (PEP8 style check and PyFlakes fast static analysis)
+    tools/run_fast_checks
 
-You can added the same check for pre-push, for example, run all tests.
+You can added the same check for pre-push, for example, run_tests and run_pylint.
+
+Running static analysis (PyLint)
+--------------------------------
+Just run the following command
+::
+    tools/run_pylint

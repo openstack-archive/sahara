@@ -1,0 +1,6 @@
+#!/bin/sh
+
+echo "Running PyLint checks"
+echo "====================="
+
+.venv/bin/pylint --output-format=parseable --rcfile=.pylintrc bin/eho-api eho | tee pylint-report.txt

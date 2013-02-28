@@ -1,10 +1,18 @@
 import logging
-from eho.server import scheduler
-from eho.server.storage.models import *
+from eho.server.storage.models import NodeTemplate, NodeType, NodeProcess, \
+    NodeTemplateConfig, Cluster, ClusterNodeCount
 from eho.server.storage.storage import db
 from eho.server.utils.api import abort_and_log
-from eho.server.service.cluster_ops import launch_cluster
+from eho.server.service import cluster_ops
 import eventlet
+
+
+ALLOW_CLUSTER_OPS = False
+
+
+def setup_api(app):
+    global ALLOW_CLUSTER_OPS
+    ALLOW_CLUSTER_OPS = app.config['ALLOW_CLUSTER_OPS']
 
 
 def _clean_nones(obj):
@@ -40,11 +48,6 @@ class Resource(object):
         if k not in self.__dict__:
             return self._info.get(k)
         return self.__dict__[k]
-
-    def __eq__(self, other):
-        if not isinstance(other, self.__class__):
-            return False
-        return self._info == other._info
 
     def __repr__(self):
         return '<%s %s>' % (self._name, self._info)
@@ -93,7 +96,8 @@ def get_node_template(**args):
 
 
 def get_node_templates(**args):
-    return map(_node_template, NodeTemplate.query.filter_by(**args).all())
+    return [_node_template(tmpl) for tmpl
+            in NodeTemplate.query.filter_by(**args).all()]
 
 
 def create_node_template(values):
@@ -128,28 +132,28 @@ def create_node_template(values):
     return get_node_template(id=nt.id)
 
 
-def _cluster(c):
-    if not c:
+def _cluster(cluster):
+    if not cluster:
         abort_and_log(404, 'Cluster not found')
     d = {
-        'id': c.id,
-        'name': c.name,
-        'base_image_id': c.base_image_id,
-        'status': c.status,
-        'tenant_id': c.tenant_id,
+        'id': cluster.id,
+        'name': cluster.name,
+        'base_image_id': cluster.base_image_id,
+        'status': cluster.status,
+        'tenant_id': cluster.tenant_id,
         'service_urls': [{'name': surl.name,
                           'url': surl.url
                          }
-                         for surl in c.service_urls],
+                         for surl in cluster.service_urls],
         'node_templates': {},
         'nodes': [{'vm_id': n.vm_id,
                    'node_template': {
                        'id': n.node_template.id,
                        'name': n.node_template.name
                    }}
-                  for n in c.nodes]
+                  for n in cluster.nodes]
     }
-    for ntc in c.node_counts:
+    for ntc in cluster.node_counts:
         d['node_templates'][ntc.node_template.name] = ntc.count
 
     return Resource('Cluster', d)
@@ -160,7 +164,8 @@ def get_cluster(**args):
 
 
 def get_clusters(**args):
-    return map(_cluster, Cluster.query.filter_by(**args).all())
+    return [_cluster(cluster) for cluster in
+            Cluster.query.filter_by(**args).all()]
 
 
 def create_cluster(values):
@@ -178,47 +183,36 @@ def create_cluster(values):
         db.session.add(cnc)
     db.session.commit()
 
-    launch_cluster(cluster)
-    #eventlet.spawn(cluster_creation_job, cluster.id)
+    eventlet.spawn(_cluster_creation_job, cluster.id)
 
     return get_cluster(id=cluster.id)
 
 
-def cluster_creation_job(cluster_id):
-    cluster = get_cluster(id=cluster_id)
-    logging.debug("Starting cluster '%s' creation: %s", cluster_id,
-                  cluster.dict)
-
-    pile = eventlet.GreenPile(scheduler.pool)
-
-    for template in cluster.node_templates:
-        node_count = cluster.node_templates.get(template)
-        for idx in xrange(0, node_count):
-            pile.spawn(vm_creation_job, template)
-
-    for (ip, vm_id, template) in pile:
-        db.session.add(Node(vm_id, cluster_id, template))
-        logging.info("VM '%s/%s/%s' created", ip, vm_id, template)
-
+def _cluster_creation_job(cluster_id):
     cluster = Cluster.query.filter_by(id=cluster_id).first()
+    logging.debug("Starting cluster '%s' creation: %s", cluster_id,
+                  _cluster(cluster).dict)
+
+    if ALLOW_CLUSTER_OPS:
+        cluster_ops.launch_cluster(cluster)
+    else:
+        logging.info("Cluster ops are disabled, use --allow-cluster-ops flag")
+
+    # update cluster status
+    cluster = Cluster.query.filter_by(id=cluster.id).first()
     cluster.status = 'Active'
     db.session.add(cluster)
     db.session.commit()
 
 
-def vm_creation_job(template_name):
-    template = NodeTemplate.query.filter_by(name=template_name).first()
-    eventlet.sleep(2)
-    return 'ip-address', uuid4().hex, template.id
-
-
 def terminate_cluster(**args):
+    # update cluster status
     cluster = Cluster.query.filter_by(**args).first()
-
-    # terminate all vms and then delete cluster
-
-    db.session.delete(cluster)
+    cluster.status = 'Stoping'
+    db.session.add(cluster)
     db.session.commit()
+
+    eventlet.spawn(_cluster_termination_job, cluster.id)
 
 
 def terminate_node_template(**args):
@@ -235,3 +229,17 @@ def terminate_node_template(**args):
         return True
     else:
         return False
+
+
+def _cluster_termination_job(cluster_id):
+    cluster = Cluster.query.filter_by(id=cluster_id).first()
+    logging.debug("Stoping cluster '%s' creation: %s", cluster_id,
+                  _cluster(cluster).dict)
+
+    if ALLOW_CLUSTER_OPS:
+        cluster_ops.stop_cluster(cluster)
+    else:
+        logging.info("Cluster ops are disabled, use --allow-cluster-ops flag")
+
+    db.session.delete(cluster)
+    db.session.commit()
