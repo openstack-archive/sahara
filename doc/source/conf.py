@@ -23,8 +23,6 @@ sys.path.insert(0, os.path.abspath('../../eho'))
 sys.path.append(os.path.abspath('..'))
 sys.path.append(os.path.abspath('../bin'))
 
-print "sys.path = %s" % sys.path
-
 # -- General configuration -----------------------------------------------------
 
 # If your documentation needs a minimal Sphinx version, state it here.
