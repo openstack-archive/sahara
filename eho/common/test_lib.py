@@ -79,6 +79,7 @@ class _AnsiColorizer(object):
             except Exception:
                 # guess false in case of error
                 return False
+
     supported = classmethod(supported)
 
     def write(self, text, color):
@@ -97,10 +98,12 @@ class _Win32Colorizer(object):
     """
     See _AnsiColorizer docstring.
     """
+
     def __init__(self, stream):
         from win32console import GetStdHandle, STD_OUT_HANDLE
         from win32console import FOREGROUND_RED, FOREGROUND_BLUE
         from win32console import FOREGROUND_GREEN, FOREGROUND_INTENSITY
+
         red, green, blue, bold = (FOREGROUND_RED, FOREGROUND_GREEN,
                                   FOREGROUND_BLUE, FOREGROUND_INTENSITY)
         self.stream = stream
@@ -118,11 +121,13 @@ class _Win32Colorizer(object):
     def supported(cls, stream=sys.stdout):
         try:
             import win32console
+
             screenBuffer = win32console.GetStdHandle(
                 win32console.STD_OUT_HANDLE)
         except ImportError:
             return False
         import pywintypes
+
         try:
             screenBuffer.SetConsoleTextAttribute(
                 win32console.FOREGROUND_RED |
@@ -132,6 +137,7 @@ class _Win32Colorizer(object):
             return False
         else:
             return True
+
     supported = classmethod(supported)
 
     def write(self, text, color):
@@ -145,11 +151,13 @@ class _NullColorizer(object):
     """
     See _AnsiColorizer docstring.
     """
+
     def __init__(self, stream):
         self.stream = stream
 
     def supported(cls, stream=sys.stdout):
         return True
+
     supported = classmethod(supported)
 
     def write(self, text, color):
@@ -239,7 +247,7 @@ class QuantumTestResult(result.TextTestResult):
             if current_case != self._last_case:
                 self.stream.writeln(current_case)
                 self._last_case = current_case
-            #NOTE(salvatore-orlando):
+                #NOTE(salvatore-orlando):
             #slightly changed in order to print test case class
             #together with unit test name
             self.stream.write(

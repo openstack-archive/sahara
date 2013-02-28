@@ -1,15 +1,17 @@
 import logging
+
+from eventlet import monkey_patch
+from flask import Flask
+from werkzeug.exceptions import default_exceptions
+from werkzeug.exceptions import HTTPException
+
 from eho.server.scheduler import setup_scheduler
 from eho.server.service.api import setup_api
 from eho.server.storage.defaults import setup_defaults
 from eho.server.utils.api import render
-from eventlet import monkey_patch
-
-from flask import Flask
 from eho.server.api import v01 as api_v01
-from werkzeug.exceptions import default_exceptions
-from werkzeug.exceptions import HTTPException
 from eho.server.storage.storage import setup_storage
+
 
 monkey_patch(os=True, select=True, socket=True, thread=True, time=True)
 

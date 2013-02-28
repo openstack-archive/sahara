@@ -1,10 +1,12 @@
 import logging
+
+import eventlet
+
 from eho.server.storage.models import NodeTemplate, NodeType, NodeProcess, \
     NodeTemplateConfig, Cluster, ClusterNodeCount
 from eho.server.storage.storage import DB
 from eho.server.utils.api import abort_and_log
 from eho.server.service import cluster_ops
-import eventlet
 
 
 ALLOW_CLUSTER_OPS = False

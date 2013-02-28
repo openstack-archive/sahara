@@ -3,12 +3,13 @@ import logging
 import tempfile
 import unittest
 import uuid
-from eho.server import scheduler
+import os
 
+import eventlet
+
+from eho.server import scheduler
 from eho.server.main import make_app
 from eho.server.service import api
-import eventlet
-import os
 from eho.server.storage.models import Node, NodeTemplate
 from eho.server.storage.storage import DB
 
