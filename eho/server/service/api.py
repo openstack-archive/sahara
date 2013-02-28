@@ -137,7 +137,10 @@ def _cluster(c):
         'base_image_id': c.base_image_id,
         'status': c.status,
         'tenant_id': c.tenant_id,
-        'service_urls': {},
+        'service_urls': [{'name': surl.name,
+                          'url': surl.url
+                         }
+                         for surl in c.service_urls],
         'node_templates': {},
         'nodes': [{'vm_id': n.vm_id,
                    'node_template': {

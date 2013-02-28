@@ -1,4 +1,7 @@
-import time
+import time, logging
+
+from jinja2 import Environment
+from jinja2 import PackageLoader
 
 from novaclient.v1_1 import client as nova_client
 from paramiko import SSHClient, AutoAddPolicy
@@ -52,14 +55,22 @@ def _ensure_zero(ret):
         raise RuntimeError('Command returned non-zero status code - %i' % ret)
 
 
+def _setup_ssh_connection(host, ssh):
+    ssh.set_missing_host_key_policy(AutoAddPolicy())
+    ssh.connect(host, username=NODE_USER, password=NODE_PASSWORD)
+
+
+def _open_channel_and_execute(ssh, cmd):
+    chan = ssh.get_transport().open_session()
+    chan.exec_command(cmd)
+    return chan.recv_exit_status()
+
+
 def _execute_command_on_node(host, cmd):
     ssh = SSHClient()
     try:
-        ssh.set_missing_host_key_policy(AutoAddPolicy())
-        ssh.connect(host, username=NODE_USER, password=NODE_PASSWORD)
-        chan = ssh.get_transport().open_session()
-        chan.exec_command(cmd)
-        return chan.recv_exit_status()
+        _setup_ssh_connection(host, ssh)
+        return _open_channel_and_execute(ssh, cmd)
     finally:
         ssh.close()
 
@@ -91,8 +102,11 @@ def launch_cluster(cluster):
 
         for i in xrange(0, nc.count):
             node = dict()
-            node['name'] = '%s-%i' % (cluster.name, num)
-            num += 1
+            if ntype == 'JT+NN':
+                node['name'] = '%s-master' % cluster.name
+            else:
+                node['name'] = '%s-%i' % (cluster.name, num)
+                num += 1
             node['type'] = ntype
             node['templ_id'] = templ_id
             node['flavor'] = flv
@@ -159,6 +173,12 @@ def _check_if_up(nova_client, node):
     node['isup'] = True
 
 
+def _render_template(template_name, **kwargs):
+    env = Environment(loader=PackageLoader('eho', '..'))
+    templ = env.get_template('resources/%s.template' %template_name)
+    return templ.render(**kwargs)
+
+
 def _pre_cluster_setup(clmap):
     clmap['master'] = None
     clmap['slaves'] = []
@@ -166,97 +186,67 @@ def _pre_cluster_setup(clmap):
         if node['type'] == 'JT+NN':
             clmap['master'] = node['ip']
             clmap['master_internal'] = node['ip_internal']
+            clmap['master_hostname'] = node['name']
+            node['is_master'] = True
         elif node['type'] == 'TT+DN':
-            clmap['slaves'].append((node['ip'], node['ip_internal']))
+            clmap['slaves'].append((node['ip'], node['name'], node['ip_internal']))
+            node['is_master'] = False
 
     if clmap['master'] is None:
         raise RuntimeError("No master node is defined in the cluster")
 
+    configfiles = ['/etc/hadoop/core-site.xml',
+                   '/etc/hadoop/mapred-site.xml']
 
-def _sed_escape(s):
-    result = ''
-    for ch in s:
-        if (ch == '/'):
-            result += "\\\\"
-        result += ch
-    return result
+    configs = [('%%%hdfs_namenode_url%%%',
+                'hdfs:\\/\\/%s:8020' % clmap['master_hostname']),
+               ('%%%mapred_jobtracker_url%%%',
+                '%s:8021' % clmap['master_hostname'])
+    ]
 
+    templ_args = {'configfiles': configfiles,
+                     'configs': configs,
+                     'slaves': clmap['slaves'],
+                     'master_internal': clmap['master_hostname']}
 
-def _prepare_config_cmd(filename, configs):
-    command = 'cat %s.eho_template' % filename
-    for key, value in configs.items():
-        command += ' | sed -e "s/%s/%s/g" 2>&1' \
-                   % (_sed_escape(key), _sed_escape(value))
-
-    return command + ' | tee %s' % filename
-
-
-def escape_doublequotes(s):
-    result = ""
-    for ch in s:
-        if (ch == '"'):
-            result += "\\"
-        result += ch
-    return result
-
-
-def _wrap_command(command):
-    result = ' ; echo -e \"-------------------------------\\n[$(date)] ' \
-             'Running\\n%s\\n\" >> /tmp/eho_setup_log' \
-             % escape_doublequotes(command)
-    return result + ' ; ' + command + ' >> /tmp/eho_setup_log 2>&1'
-
-
-def debug(s):
-    fl = open('/tmp/mydebug', 'at')
-    fl.write(str(s) + "\n")
-    fl.close()
+    clmap['slave_script'] = _render_template('setup-general.sh', **templ_args)
+    clmap['master_script'] = _render_template('setup-master.sh', **templ_args)
 
 
 def _setup_node(node, clmap):
-    node['configs']['%%%hdfs_namenode_url%%%'] = 'hdfs://%s:8020' \
-                                                 % clmap['master_internal']
-    node['configs']['%%%mapred_jobtracker_url%%%'] = '%s:8021' \
-                                                     % clmap['master_internal']
-    cmd = 'echo 123'
-    command = _prepare_config_cmd('/etc/hadoop/core-site.xml',
-                                  node['configs'])
-    cmd += _wrap_command(command)
-    command = _prepare_config_cmd('/etc/hadoop/mapred-site.xml',
-                                  node['configs'])
-    cmd += _wrap_command(command)
+    if (node['ip'] == clmap['master']):
+        script_body = clmap['master_script']
+    else:
+        script_body = clmap['slave_script']
 
-    command = '/etc/hadoop/create_dirs.sh'
-    cmd += _wrap_command(command)
+    ssh = SSHClient()
+    try:
+        _setup_ssh_connection(node['ip'], ssh)
+        sftp = ssh.open_sftp()
+        fl = sftp.file('/tmp/eho-hadoop-init.sh', 'w')
+        fl.write(script_body)
+        fl.close()
+        sftp.chmod('/tmp/eho-hadoop-init.sh', 0500)
 
-    if node['type'] == 'JT+NN':
-        command = 'echo -e "'
-        for slave in clmap['slaves']:
-            command += slave[1] + '\\n'
-        command += '" | tee /etc/hadoop/slaves'
-        cmd += _wrap_command(command)
-
-        command = 'echo \'%s\' | tee /etc/hadoop/masters' % node['ip_internal']
-        cmd += _wrap_command(command)
-
-        command = 'su -c \'hadoop namenode -format -force\' hadoop'
-        cmd += _wrap_command(command)
-
-    ret = _execute_command_on_node(node['ip'], cmd)
-    _ensure_zero(ret)
+        ret = _open_channel_and_execute(ssh, '/tmp/eho-hadoop-init.sh '
+                                             '>>/tmp/eho-hadoop-init.log 2>&1')
+        _ensure_zero(ret)
+    finally:
+        ssh.close()
 
 
 def _register_node(node, cluster):
-    debug(node['templ_id'])
     node_obj = Node(node['id'], cluster.id, node['templ_id'])
-    srv_url_jt = ServiceUrl(cluster.id, 'jobtracker', 'http://%s:50030'
-                                                      % node['ip'])
-    srv_url_nn = ServiceUrl(cluster.id, 'namenode', 'http://%s:50070'
-                                                    % node['ip'])
-
     db.session.add(node_obj)
-    db.session.add(srv_url_jt)
-    db.session.add(srv_url_nn)
+
+    if node['is_master']:
+        srv_url_jt = ServiceUrl(cluster.id, 'jobtracker', 'http://%s:50030'
+                                                          % node['ip'])
+        srv_url_nn = ServiceUrl(cluster.id, 'namenode', 'http://%s:50070'
+                                                        % node['ip'])
+
+        db.session.add(srv_url_jt)
+        db.session.add(srv_url_nn)
 
     db.session.commit()
 

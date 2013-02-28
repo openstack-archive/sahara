@@ -1,5 +1,6 @@
 from eho.server.service import api
 from flask import request
+import traceback
 
 from eho.server.utils.api import Rest, render, abort_and_log, request_data
 
@@ -56,6 +57,7 @@ def clusters():
         try:
             return render(api.create_cluster(data).dict)
         except Exception, e:
+            traceback.print_exc()
             abort_and_log(500, "Exception while adding new Cluster: %s" % e)
 
 

@@ -1,11 +1,21 @@
-{% extends "resources/setup-general.sh" %}
+{% extends "resources/setup-general.sh.template" %}
+
+{% block master %}
+echo "----- Populating slaves file"
 
 echo -e '
 {%- for slave in slaves -%}
-slave\n
+{{slave[1]}}\n
 {%- endfor -%}
 ' | tee /etc/hadoop/slaves
 
+
+echo "----- Populating master file"
+
 echo {{master_internal}} | tee /etc/hadoop/masters
 
+
+echo "----- Formatting Hadoop NameNode"
+
 su -c 'hadoop namenode -format -force' hadoop
+{% endblock %}
