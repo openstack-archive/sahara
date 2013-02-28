@@ -1,7 +1,7 @@
 import logging
 from eho.server.storage.models import NodeTemplate, NodeType, NodeProcess, \
     NodeTemplateConfig, Cluster, ClusterNodeCount
-from eho.server.storage.storage import db
+from eho.server.storage.storage import DB
 from eho.server.utils.api import abort_and_log
 from eho.server.service import cluster_ops
 import eventlet
@@ -113,7 +113,7 @@ def create_node_template(values):
     configs = values.pop('configs', None)
 
     nt = NodeTemplate(name, node_type_id, tenant_id, flavor_id)
-    db.session.add(nt)
+    DB.session.add(nt)
     if configs:
         for process_name in configs:
             process = NodeProcess.query.filter_by(name=process_name).first()
@@ -126,8 +126,8 @@ def create_node_template(values):
                                            'for required param: %s %s'
                                            % (name, process.name, prop.name))
                     val = prop.default
-                db.session.add(NodeTemplateConfig(nt.id, prop.id, val))
-    db.session.commit()
+                DB.session.add(NodeTemplateConfig(nt.id, prop.id, val))
+    DB.session.commit()
 
     return get_node_template(id=nt.id)
 
@@ -172,13 +172,13 @@ def create_cluster(values):
     templates = values.pop('templates')
 
     cluster = Cluster(name, base_image_id, tenant_id)
-    db.session.add(cluster)
+    DB.session.add(cluster)
     for template in templates:
         count = templates.get(template)
         template_id = _template_id_by_name(template)
         cnc = ClusterNodeCount(cluster.id, template_id, int(count))
-        db.session.add(cnc)
-    db.session.commit()
+        DB.session.add(cnc)
+    DB.session.commit()
 
     eventlet.spawn(_cluster_creation_job, cluster.id)
 
@@ -198,16 +198,16 @@ def _cluster_creation_job(cluster_id):
     # update cluster status
     cluster = Cluster.query.filter_by(id=cluster.id).first()
     cluster.status = 'Active'
-    db.session.add(cluster)
-    db.session.commit()
+    DB.session.add(cluster)
+    DB.session.commit()
 
 
 def terminate_cluster(**args):
     # update cluster status
     cluster = Cluster.query.filter_by(**args).first()
     cluster.status = 'Stoping'
-    db.session.add(cluster)
-    db.session.commit()
+    DB.session.add(cluster)
+    DB.session.commit()
 
     eventlet.spawn(_cluster_termination_job, cluster.id)
 
@@ -220,8 +220,8 @@ def terminate_node_template(**args):
                                "template '%s' you trying to terminate"
                                % args)
         else:
-            db.session.delete(template)
-            db.session.commit()
+            DB.session.delete(template)
+            DB.session.commit()
 
         return True
     else:
@@ -238,5 +238,5 @@ def _cluster_termination_job(cluster_id):
     else:
         logging.info("Cluster ops are disabled, use --allow-cluster-ops flag")
 
-    db.session.delete(cluster)
-    db.session.commit()
+    DB.session.delete(cluster)
+    DB.session.commit()

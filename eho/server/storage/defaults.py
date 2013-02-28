@@ -1,7 +1,7 @@
 import logging
 from eho.server.storage.models import NodeProcess, NodeProcessProperty, \
     NodeType, NodeTemplate, NodeTemplateConfig, Cluster, ClusterNodeCount
-from eho.server.storage.storage import db
+from eho.server.storage.storage import DB
 
 
 def create_node_process(name, properties):
@@ -12,12 +12,12 @@ def create_node_process(name, properties):
     :return: created node process
     """
     process = NodeProcess(name)
-    db.session.add(process)
-    db.session.commit()
+    DB.session.add(process)
+    DB.session.commit()
     for p in properties:
         prop = NodeProcessProperty(process.id, p[0], p[1], p[2])
-        db.session.add(prop)
-    db.session.commit()
+        DB.session.add(prop)
+    DB.session.commit()
     return process
 
 
@@ -30,8 +30,8 @@ def create_node_type(name, processes):
     """
     node_type = NodeType(name)
     node_type.processes = processes
-    db.session.add(node_type)
-    db.session.commit()
+    DB.session.add(node_type)
+    DB.session.commit()
     return node_type
 
 
@@ -46,7 +46,7 @@ def create_node_template(name, node_type_id, tenant_id, flavor_id, configs):
     :return: created node template
     """
     node_template = NodeTemplate(name, node_type_id, tenant_id, flavor_id)
-    db.session.add(node_template)
+    DB.session.add(node_template)
     for process_name in configs:
         process = NodeProcess.query.filter_by(name=process_name).first()
         conf = configs.get(process_name)
@@ -58,8 +58,8 @@ def create_node_template(name, node_type_id, tenant_id, flavor_id, configs):
                                        'for required param: %s %s'
                                        % (name, process.name, prop.name))
                 val = prop.default
-            db.session.add(NodeTemplateConfig(node_template.id, prop.id, val))
-    db.session.commit()
+            DB.session.add(NodeTemplateConfig(node_template.id, prop.id, val))
+    DB.session.commit()
 
     return node_template
 
@@ -74,14 +74,14 @@ def create_cluster(name, base_image_id, tenant_id, templates):
     :return: created cluster
     """
     cluster = Cluster(name, base_image_id, tenant_id)
-    db.session.add(cluster)
+    DB.session.add(cluster)
     for template in templates:
         count = templates.get(template)
         cnc = ClusterNodeCount(cluster.id,
                                NodeTemplate.query.filter_by(name=template)
                                .first().id, int(count))
-        db.session.add(cnc)
-    db.session.commit()
+        DB.session.add(cnc)
+    DB.session.commit()
 
     return cluster
 

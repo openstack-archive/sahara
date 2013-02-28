@@ -10,7 +10,7 @@ from eho.server.service import api
 import eventlet
 import os
 from eho.server.storage.models import Node, NodeTemplate
-from eho.server.storage.storage import db
+from eho.server.storage.storage import DB
 
 
 def _stub_vm_creation_job(template_id):
@@ -28,7 +28,7 @@ def _stub_launch_cluster(cluster):
             pile.spawn(_stub_vm_creation_job, elem.node_template_id)
 
     for (ip, vm_id, elem) in pile:
-        db.session.add(Node(vm_id, cluster.id, elem))
+        DB.session.add(Node(vm_id, cluster.id, elem))
         logging.debug("VM '%s/%s/%s' created", ip, vm_id, elem)
 
 

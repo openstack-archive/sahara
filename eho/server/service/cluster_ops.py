@@ -5,7 +5,7 @@ from novaclient.v1_1 import client as nova_client
 from paramiko import SSHClient, AutoAddPolicy
 from eho.server.storage.models import Node, ServiceUrl
 
-from eho.server.storage.storage import db
+from eho.server.storage.storage import DB
 
 
 def _create_nova_client():
@@ -257,11 +257,11 @@ def _register_node(node, cluster):
     srv_url_nn = ServiceUrl(cluster.id, 'namenode', 'http://%s:50070'
                                                     % node['ip'])
 
-    db.session.add(node_obj)
-    db.session.add(srv_url_jt)
-    db.session.add(srv_url_nn)
+    DB.session.add(node_obj)
+    DB.session.add(srv_url_jt)
+    DB.session.add(srv_url_nn)
 
-    db.session.commit()
+    DB.session.commit()
 
 
 def _start_cluster(cluster, clmap):
