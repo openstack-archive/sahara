@@ -5,7 +5,9 @@ from jinja2 import Environment
 from jinja2 import PackageLoader
 
 from novaclient.v1_1 import client as nova_client
+
 from paramiko import SSHClient, AutoAddPolicy
+
 from eho.server.storage.models import Node, ServiceUrl
 from eho.server.storage.storage import db
 
@@ -14,6 +16,10 @@ OPENSTACK_USER = None
 OPENSTACK_PASSWORD = None
 OPENSTACK_TENANT = None
 OPENSTACK_URL = None
+
+OPENSTACK_PUBLIC_NET = None
+OPENSTACK_VM_INTERNAL_NET = None
+
 NODE_USER = None
 NODE_PASSWORD = None
 
@@ -21,11 +27,15 @@ NODE_PASSWORD = None
 def setup_ops():
     global OPENSTACK_USER, OPENSTACK_PASSWORD, OPENSTACK_TENANT, OPENSTACK_URL
     global NODE_USER, NODE_PASSWORD
+    global OPENSTACK_PUBLIC_NET, OPENSTACK_VM_INTERNAL_NET
 
     OPENSTACK_USER = 'admin'
     OPENSTACK_PASSWORD = 'nova'
     OPENSTACK_TENANT = 'admin'
     OPENSTACK_URL = 'http://172.18.79.139:5000/v2.0/'
+
+    OPENSTACK_PUBLIC_NET = "publicnet"
+    OPENSTACK_VM_INTERNAL_NET = "novanetwork"
 
     NODE_USER = 'root'
     NODE_PASSWORD = 'swordfish'
@@ -34,12 +44,6 @@ def setup_ops():
 def _create_nova_client():
     return nova_client.Client(OPENSTACK_USER, OPENSTACK_PASSWORD,
                               OPENSTACK_TENANT, OPENSTACK_URL)
-
-
-def _check_finding(entity, attr, value):
-    if entity is None:
-        raise RuntimeError("Unable to find entity with %s "
-                           "\'%s\'" % (attr, value))
 
 
 def _find_by_id(lst, id):
@@ -56,6 +60,12 @@ def _find_by_name(lst, name):
             return entity
 
     return None
+
+
+def _check_finding(entity, attr, value):
+    if entity is None:
+        raise RuntimeError("Unable to find entity with %s "
+                           "\'%s\'" % (attr, value))
 
 
 def _ensure_zero(ret):
@@ -119,7 +129,7 @@ def launch_cluster(cluster):
             node['templ_id'] = templ_id
             node['flavor'] = flv
             node['configs'] = configs
-            node['isup'] = False
+            node['is_up'] = False
             clmap['nodes'].append(node)
 
     for node in clmap['nodes']:
@@ -129,8 +139,8 @@ def launch_cluster(cluster):
 
     all_set = False
 
-    logging.debug("All nodes for cluster '%s' has been started, waiting isup",
-                  cluster.name)
+    logging.debug("All nodes for cluster '%s' have been started, "
+                  "waiting for them to come up", cluster.name)
 
     while not all_set:
         all_set = True
@@ -138,7 +148,7 @@ def launch_cluster(cluster):
         for node in clmap['nodes']:
             _check_if_up(nova, node)
 
-            if not node['isup']:
+            if not node['is_up']:
                 all_set = False
 
         time.sleep(1)
@@ -152,7 +162,7 @@ def launch_cluster(cluster):
         _register_node(node, cluster)
 
     logging.debug("All nodes of cluster '%s' are configured and registered, "
-                  "starting cluster...", cluster.name)
+                  "starting the cluster...", cluster.name)
 
     _start_cluster(cluster, clmap)
 
@@ -164,32 +174,34 @@ def _launch_node(nova, node, image):
 
 
 def _check_if_up(nova, node):
-    if node['isup']:
+    if node['is_up']:
         # all set
         return
 
     if not 'ip' in node:
-        srv = _find_by_name(nova.servers.list(), node['name'])
+        srv = _find_by_id(nova.servers.list(), node['id'])
         nets = srv.networks
-        if not 'supernetwork' in nets:
-            # it does not have interfaces yet
+
+        if not OPENSTACK_PUBLIC_NET in nets:
+            # vm does not have public network interfaces assigned yet
             return
-        ips = nets['supernetwork']
-        if len(ips) < 2:
-            # public IP is not defined yet
+
+        ips = nets[OPENSTACK_PUBLIC_NET]
+        if len(ips) == 0:
+            # public IP is not assigned yet
             return
-        node['ip'] = ips[-1]
-        node['ip_internal'] = ips[0]
+
+        node['ip'] = ips[0]
 
     try:
         ret = _execute_command_on_node(node['ip'], 'ls -l /')
         _ensure_zero(ret)
     except Exception:
-        # ssh not ready yet
+        # ssh is not up yet
         # TODO log error if it takes more than 5 minutes to start-up
         return
 
-    node['isup'] = True
+    node['is_up'] = True
 
 
 def _render_template(template_name, **kwargs):
@@ -199,20 +211,18 @@ def _render_template(template_name, **kwargs):
 
 
 def _pre_cluster_setup(clmap):
-    clmap['master'] = None
+    clmap['master_ip'] = None
     clmap['slaves'] = []
     for node in clmap['nodes']:
         if node['type'] == 'JT+NN':
-            clmap['master'] = node['ip']
-            clmap['master_internal'] = node['ip_internal']
+            clmap['master_ip'] = node['ip']
             clmap['master_hostname'] = node['name']
             node['is_master'] = True
         elif node['type'] == 'TT+DN':
-            clmap['slaves'].append((node['ip'], node['name'],
-                                    node['ip_internal']))
+            clmap['slaves'].append(node['name'])
             node['is_master'] = False
 
-    if clmap['master'] is None:
+    if clmap['master_ip'] is None:
         raise RuntimeError("No master node is defined in the cluster")
 
     configfiles = ['/etc/hadoop/core-site.xml',
@@ -227,36 +237,14 @@ def _pre_cluster_setup(clmap):
     templ_args = {'configfiles': configfiles,
                   'configs': configs,
                   'slaves': clmap['slaves'],
-                  'master_internal': clmap['master_hostname']}
+                  'master_hostname': clmap['master_hostname']}
 
     clmap['slave_script'] = _render_template('setup-general.sh', **templ_args)
     clmap['master_script'] = _render_template('setup-master.sh', **templ_args)
 
 
-def escape_doublequotes(s):
-    result = ""
-    for ch in s:
-        if (ch == '"'):
-            result += "\\"
-        result += ch
-    return result
-
-
-def _wrap_command(command):
-    result = ' ; echo -e \"-------------------------------\\n[$(date)] ' \
-             'Running\\n%s\\n\" >> /tmp/eho_setup_log' \
-             % escape_doublequotes(command)
-    return result + ' ; ' + command + ' >> /tmp/eho_setup_log 2>&1'
-
-
-def debug(s):
-    fl = open('/tmp/mydebug', 'at')
-    fl.write(str(s) + "\n")
-    fl.close()
-
-
 def _setup_node(node, clmap):
-    if (node['ip'] == clmap['master']):
+    if node['is_master']:
         script_body = clmap['master_script']
     else:
         script_body = clmap['slave_script']
@@ -294,7 +282,7 @@ def _register_node(node, cluster):
 
 
 def _start_cluster(cluster, clmap):
-    ret = _execute_command_on_node(clmap['master'],
+    ret = _execute_command_on_node(clmap['master_ip'],
                                    'su -c /usr/sbin/start-all.sh hadoop')
     _ensure_zero(ret)
 

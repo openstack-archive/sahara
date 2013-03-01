@@ -5,14 +5,14 @@ echo "----- Populating slaves file"
 
 echo -e '
 {%- for slave in slaves -%}
-{{slave[1]}}\n
+{{slave}}\n
 {%- endfor -%}
 ' | tee /etc/hadoop/slaves
 
 
 echo "----- Populating master file"
 
-echo {{master_internal}} | tee /etc/hadoop/masters
+echo {{master_hostname}} | tee /etc/hadoop/masters
 
 
 echo "----- Formatting Hadoop NameNode"
