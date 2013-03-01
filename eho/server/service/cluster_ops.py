@@ -16,15 +16,16 @@ OPENSTACK_CONF = {}
 OPENSTACK_NODE_CONF = {}
 
 
-def setup_ops():
-    OPENSTACK_CONF['user'] = 'admin'
-    OPENSTACK_CONF['password'] = 'nova'
-    OPENSTACK_CONF['tenant'] = 'admin'
-    OPENSTACK_CONF['auth_url'] = 'http://172.18.79.139:5000/v2.0/'
-    OPENSTACK_CONF['vm_internal_net'] = "novanetwork"
+def setup_ops(app):
+    OPENSTACK_CONF['user'] = app.config.get('OPENSTACK_USER')
+    OPENSTACK_CONF['password'] = app.config.get('OPENSTACK_PASSWORD')
+    OPENSTACK_CONF['tenant'] = app.config.get('OPENSTACK_TENANT')
+    OPENSTACK_CONF['auth_url'] = app.config.get('OPENSTACK_AUTH_URL')
+    OPENSTACK_CONF['vm_internal_net'] = \
+        app.config.get('OPENSTACK_VM_INTERNAL_NET')
 
-    OPENSTACK_NODE_CONF['user'] = 'root'
-    OPENSTACK_NODE_CONF['password'] = 'swordfish'
+    OPENSTACK_NODE_CONF['user'] = app.config.get('NODE_USER')
+    OPENSTACK_NODE_CONF['password'] = app.config.get('NODE_PASSWORD')
 
 
 def _create_nova_client():
