@@ -17,7 +17,6 @@ OPENSTACK_PASSWORD = None
 OPENSTACK_TENANT = None
 OPENSTACK_URL = None
 
-OPENSTACK_PUBLIC_NET = None
 OPENSTACK_VM_INTERNAL_NET = None
 
 NODE_USER = None
@@ -27,14 +26,13 @@ NODE_PASSWORD = None
 def setup_ops():
     global OPENSTACK_USER, OPENSTACK_PASSWORD, OPENSTACK_TENANT, OPENSTACK_URL
     global NODE_USER, NODE_PASSWORD
-    global OPENSTACK_PUBLIC_NET, OPENSTACK_VM_INTERNAL_NET
+    global OPENSTACK_VM_INTERNAL_NET
 
     OPENSTACK_USER = 'admin'
     OPENSTACK_PASSWORD = 'nova'
     OPENSTACK_TENANT = 'admin'
     OPENSTACK_URL = 'http://172.18.79.139:5000/v2.0/'
 
-    OPENSTACK_PUBLIC_NET = "publicnet"
     OPENSTACK_VM_INTERNAL_NET = "novanetwork"
 
     NODE_USER = 'root'
@@ -182,16 +180,17 @@ def _check_if_up(nova, node):
         srv = _find_by_id(nova.servers.list(), node['id'])
         nets = srv.networks
 
-        if not OPENSTACK_PUBLIC_NET in nets:
-            # vm does not have public network interfaces assigned yet
+        if not OPENSTACK_VM_INTERNAL_NET in nets:
+            # VM's networking is not configured yet
             return
 
-        ips = nets[OPENSTACK_PUBLIC_NET]
-        if len(ips) == 0:
+        ips = nets[OPENSTACK_VM_INTERNAL_NET]
+        if len(ips) < 2:
             # public IP is not assigned yet
             return
 
-        node['ip'] = ips[0]
+        # we assume that public floating IP comes last in the list
+        node['ip'] = ips[-1]
 
     try:
         ret = _execute_command_on_node(node['ip'], 'ls -l /')
