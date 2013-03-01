@@ -289,5 +289,8 @@ def stop_cluster(cluster):
     nova = _create_nova_client()
 
     for node in cluster.nodes:
-        nova.servers.delete(node.vm_id)
-        logging.debug("VM '%s' has been stopped", node.vm_id)
+        try:
+            nova.servers.delete(node.vm_id)
+            logging.debug("vm '%s' has been stopped", node.vm_id)
+        except Exception, e:
+            logging.info("Can't stop vm '%s': %s", node.vm_id, e)
