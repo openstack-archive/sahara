@@ -66,14 +66,12 @@ def _node_template(nt):
         'id': nt.id,
         'name': nt.name,
         'node_type': {
-            'id': nt.node_type.id,
             'name': nt.node_type.name,
             'processes': [p.name for p in nt.node_type.processes]},
         'tenant_id': nt.tenant_id,
         'flavor_id': nt.flavor_id
     }
 
-    # todo(slukjanov): move all configs to 'configs' sub-object??
     for conf in nt.node_template_configs:
         c_section = conf.node_process_property.node_process.name
         c_name = conf.node_process_property.name
@@ -112,23 +110,21 @@ def create_node_template(values):
     node_type_id = _type_id_by_name(values.pop('node_type'))
     tenant_id = values.pop('tenant_id')
     flavor_id = values.pop('flavor_id')
-    configs = values.pop('configs', None)
 
     nt = NodeTemplate(name, node_type_id, tenant_id, flavor_id)
     DB.session.add(nt)
-    if configs:
-        for process_name in configs:
-            process = NodeProcess.query.filter_by(name=process_name).first()
-            conf = configs.get(process_name)
-            for prop in process.node_process_properties:
-                val = conf.get(prop.name, None)
-                if not val and prop.required:
-                    if not prop.default:
-                        raise RuntimeError('Template \'%s\', value missed '
-                                           'for required param: %s %s'
-                                           % (name, process.name, prop.name))
-                    val = prop.default
-                DB.session.add(NodeTemplateConfig(nt.id, prop.id, val))
+    for process_name in values:
+        process = NodeProcess.query.filter_by(name=process_name).first()
+        conf = values.get(process_name)
+        for prop in process.node_process_properties:
+            val = conf.get(prop.name, None)
+            if not val and prop.required:
+                if not prop.default:
+                    raise RuntimeError('Template \'%s\', value missed '
+                                       'for required param: %s %s'
+                                       % (name, process.name, prop.name))
+                val = prop.default
+            DB.session.add(NodeTemplateConfig(nt.id, prop.id, val))
     DB.session.commit()
 
     return get_node_template(id=nt.id)
@@ -171,7 +167,7 @@ def create_cluster(values):
     name = values.pop('name')
     base_image_id = values.pop('base_image_id')
     tenant_id = values.pop('tenant_id')
-    templates = values.pop('templates')
+    templates = values.pop('node_templates')
 
     cluster = Cluster(name, base_image_id, tenant_id)
     DB.session.add(cluster)

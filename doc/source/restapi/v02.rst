@@ -44,13 +44,13 @@ Example:
 
 .. sourcecode:: http
 
-    GET /v0.1/clusters.json
+    GET /v0.2/clusters.json
 
 or
 
 .. sourcecode:: http
 
-    GET /v0.1/clusters
+    GET /v0.2/clusters
     Accept: application/json
 
 1.3 Filtering and Column Selection
@@ -65,14 +65,14 @@ For example, the following request returns all clusters named 'foobar':
 
 .. sourcecode:: http
 
-    GET /v0.1/clusters?name=foobar
+    GET /v0.2/clusters?name=foobar
 
 When you specify multiple filters, the EHO API returns only objects that meet all filtering criteria.
 The operation applies an AND condition among the filters, for example:
 
 .. sourcecode:: http
 
-    GET /v0.1/clusters?name=foo1&some_attr=some_value
+    GET /v0.2/clusters?name=foo1&some_attr=some_value
 
 Currently, there is no OR mechanism for filtering. Alternatively, you can issue a distinct request
 for each filter and build a response set from the received responses on the client-side.
@@ -85,7 +85,7 @@ For example, the following request returns only id, name and status for each clu
 
 .. sourcecode:: http
 
-    GET /v0.1/clusters.json?fields=id&fields=name&fields=status
+    GET /v0.2/clusters.json?fields=id&fields=name&fields=status
 
 Such selector could be useful for displaying some info about running clusters on GUI.
 
@@ -155,7 +155,11 @@ All node types are predefined and new types might be added in the future.
 +------------------------------------+--------------------------------------------+-----------------------------------------------------+
 | name                               | string                                     | A name of the node template                         |
 +------------------------------------+--------------------------------------------+-----------------------------------------------------+
-| node_type                          | string (enum)                              | A type of the node                                  |
+| node_type                          | object                                     | NodeType info                                       |
++------------------------------------+--------------------------------------------+-----------------------------------------------------+
+| node_type.name                     | string                                     | Name of the node type                               |
++------------------------------------+--------------------------------------------+-----------------------------------------------------+
+| node_type.processes                | array of strings                           | List of process names that will be executed on node |
 +------------------------------------+--------------------------------------------+-----------------------------------------------------+
 | tenant_id                          | string                                     | An id of the OpenStack's tenant                     |
 +------------------------------------+--------------------------------------------+-----------------------------------------------------+
@@ -191,7 +195,10 @@ All node types are predefined and new types might be added in the future.
     {
         "id": "3412",
         "name": "taskTracker_and_dataNode.medium",
-        "node_type": "TT+DN",
+        "node_type": {
+            "name": "TT+DN",
+            "processes": ["task_tracker", "data_node"]
+        },
         "tenant_id": "23451",
         "flavor_id": "1234",
         "task_tracker": {
@@ -224,9 +231,9 @@ the existing cluster.
 +====================================+============================================+=====================================================+
 | id                                 | [required for update] string               |                                                     |
 +------------------------------------+--------------------------------------------+-----------------------------------------------------+
-| tenant_id                          | string                                     | An id of the OpenStack's tenant                     |
-+------------------------------------+--------------------------------------------+-----------------------------------------------------+
 | name                               | string                                     | A name of the cluster                               |
++------------------------------------+--------------------------------------------+-----------------------------------------------------+
+| tenant_id                          | string                                     | An id of the OpenStack's tenant                     |
 +------------------------------------+--------------------------------------------+-----------------------------------------------------+
 | node_templates                     | map (object)                               | Map Node Template -> count                          |
 +------------------------------------+--------------------------------------------+-----------------------------------------------------+
@@ -325,7 +332,11 @@ In fact, a node is a virtual machine managed by OpenStack Nova.
 +====================================+============================================+=====================================================+
 | vm_id                              | string                                     | VM id in OpenStack cluster                          |
 +------------------------------------+--------------------------------------------+-----------------------------------------------------+
-| node_template_id                   | string                                     | Node Template name used to create this node         |
+| node_template                      | object                                     | Node Template used to create this node              |
++------------------------------------+--------------------------------------------+-----------------------------------------------------+
+| node_template.id                   | string                                     | Node Template id used to create this node           |
++------------------------------------+--------------------------------------------+-----------------------------------------------------+
+| node_template.name                 | string                                     | Node Template name used to create this node         |
 +------------------------------------+--------------------------------------------+-----------------------------------------------------+
 
 
@@ -335,7 +346,10 @@ In fact, a node is a virtual machine managed by OpenStack Nova.
 
     {
         "vm_id": "dee040e1-f58f-4d54-846b-fec8e2bd9b21",
-        "node_template_id": "123456"
+        "node_template": {
+            "id": "123456",
+            "name": "jt_nn.xlarge"
+        }
     }
 
 
@@ -353,25 +367,25 @@ Use the following APIs to manage templates:
 +------------------------------------+--------------------------------------------+-----------------------------------------------------+
 | Verb                               | URI                                        | Description                                         |
 +====================================+============================================+=====================================================+
-| GET                                | /v0.1/node-templates                       | Lists summary for all Node Templates in EHO that are|
+| GET                                | /v0.2/node-templates                       | Lists summary for all Node Templates in EHO that are|
 |                                    |                                            | accessible to the tenant who submits the request    |
 +------------------------------------+--------------------------------------------+-----------------------------------------------------+
-| POST                               | /v0.1/node-templates                       | Creates a new Node Template                         |
+| POST                               | /v0.2/node-templates                       | Creates a new Node Template                         |
 +------------------------------------+--------------------------------------------+-----------------------------------------------------+
-| GET                                | /v0.1/node-templates/{node_template_id}    | Lists information for the specified Node Template   |
+| GET                                | /v0.2/node-templates/{node_template_id}    | Lists information for the specified Node Template   |
 +------------------------------------+--------------------------------------------+-----------------------------------------------------+
-| PUT                                | /v0.1/node-templates/{node_template_id}    | Updates a specific Node Template identified by      |
+| PUT                                | /v0.2/node-templates/{node_template_id}    | Updates a specific Node Template identified by      |
 |                                    |                                            | node_template_id                                    |
 |                                    |                                            | (only unused Node Templates could be modified)      |
 +------------------------------------+--------------------------------------------+-----------------------------------------------------+
-| DELETE                             | /v0.1/node-templates/{node_template_id}    | Destroyed a specified Node Template                 |
+| DELETE                             | /v0.2/node-templates/{node_template_id}    | Destroyed a specified Node Template                 |
 |                                    |                                            | (only unused Node Templates could be removed)       |
 +------------------------------------+--------------------------------------------+-----------------------------------------------------+
 
 3.1.2 List all Node Templates
 -----------------------------
 
-.. http:get:: /v0.1/node-templates
+.. http:get:: /v0.2/node-templates
 
 Normal Response Code: 200 (OK)
 
@@ -390,7 +404,7 @@ This operation returns a response body. It returns a (potentially empty) list, e
 
     .. sourcecode:: http
 
-        GET /v0.1/node-templates
+        GET /v0.2/node-templates
         Accept: application/json
         X-Auth-Token: SOME_AUTH_TOKEN
 
@@ -409,7 +423,10 @@ This operation returns a response body. It returns a (potentially empty) list, e
                 {
                     "id": "3412",
                     "name": "tt_dn.medium",
-                    "node_type": "TT+DN",
+                    "node_type": {
+                        "name": "TT+DN",
+                        "processes": ["task_tracker", "data_node"]
+                    },
                     "tenant_id": "23451",
                     "flavor_id": "1234",
                     "task_tracker": {
@@ -425,7 +442,10 @@ This operation returns a response body. It returns a (potentially empty) list, e
                 {
                     "id": "3413",
                     "name": "tt_dn.xlarge",
-                    "node_type": "TT+DN",
+                    "node_type": {
+                        "name": "TT+DN",
+                        "processes": ["task_tracker", "data_node"]
+                    },
                     "tenant_id": "23451",
                     "flavor_id": "1235",
                     "task_tracker": {
@@ -444,7 +464,7 @@ This operation returns a response body. It returns a (potentially empty) list, e
 3.1.3 Create a Node Template
 ----------------------------
 
-.. http:post:: /v0.1/node-templates
+.. http:post:: /v0.2/node-templates
 
 Normal Response Code: 202 (Accepted)
 
@@ -471,13 +491,16 @@ defined in section 2.1.
 
     .. sourcecode:: http
 
-        POST http://eho/v0.1/node-templates
+        POST http://eho/v0.2/node-templates
 
     .. sourcecode:: json
 
         {
             "name": "tt_dn.medium",
-            "node_type": "TT+DN",
+            "node_type": {
+                "name": "TT+DN",
+                "processes": ["task_tracker", "data_node"]
+            },
             "tenant_id": "23451",
             "flavor_id": "1234",
             "task_tracker": {
@@ -504,7 +527,10 @@ defined in section 2.1.
         {
             "id": "3412",
             "name": "tt_dn.medium",
-            "node_type": "TT+DN",
+            "node_type": {
+                "name": "TT+DN",
+                "processes": ["task_tracker", "data_node"]
+            },
             "tenant_id": "23451",
             "flavor_id": "1234",
             "task_tracker": {
@@ -521,7 +547,7 @@ defined in section 2.1.
 3.1.4 Retrieve a specific Node Template
 ---------------------------------------
 
-.. http:get:: /v0.1/node-templates/{node_template_id}
+.. http:get:: /v0.2/node-templates/{node_template_id}
 
 Normal Response Code: 200 (OK)
 
@@ -542,7 +568,7 @@ This operation returns a response body. It contains node template as "Node Templ
 
     .. sourcecode:: http
 
-        GET http://eho/v0.1/node-templates/3421
+        GET http://eho/v0.2/node-templates/3421
 
     **response**
 
@@ -556,7 +582,10 @@ This operation returns a response body. It contains node template as "Node Templ
         {
             "id": "3421",
             "name": "tt_dn.medium",
-            "node_type": "TT+DN",
+            "node_type": {
+                "name": "TT+DN",
+                "processes": ["task_tracker", "data_node"]
+            },
             "tenant_id": "23451",
             "flavor_id": "1234",
             "task_tracker": {
@@ -573,7 +602,7 @@ This operation returns a response body. It contains node template as "Node Templ
 3.1.5 Update a Node Template
 ----------------------------
 
-.. http:put:: /v0.1/node-templates/{node_template_id}
+.. http:put:: /v0.2/node-templates/{node_template_id}
 
 Normal Response Code: 202 (Accepted)
 
@@ -595,14 +624,17 @@ This operation returns response body. It contains updated Node Template object d
 
     .. sourcecode:: http
 
-        PUT http://eho/v0.1/node-templates/3413
+        PUT http://eho/v0.2/node-templates/3413
 
     .. sourcecode:: json
     
         {
             "id": "3413",
             "name": "tt_dn.medium",
-            "node_type": "TT+DN",
+            "node_type": {
+                "name": "TT+DN",
+                "processes": ["task_tracker", "data_node"]
+            },
             "tenant_id": "23451",
             "flavor_id": "1234",
             "task_tracker": {
@@ -628,7 +660,10 @@ This operation returns response body. It contains updated Node Template object d
         {
             "id": "3413",
             "name": "tt_dn.medium",
-            "node_type": "TT+DN",
+            "node_type": {
+                "name": "TT+DN",
+                "processes": ["task_tracker", "data_node"]
+            },
             "tenant_id": "23451",
             "flavor_id": "1234",
             "task_tracker": {
@@ -646,7 +681,7 @@ This operation returns response body. It contains updated Node Template object d
 3.1.6 Remove a Node Template
 ----------------------------
 
-.. http:delete:: /v0.1/node-templates/{node_template_id}
+.. http:delete:: /v0.2/node-templates/{node_template_id}
 
 Normal Response Code: 204 (No Content)
 
@@ -669,7 +704,7 @@ This operation does not return a response body.
 
     .. sourcecode:: http
 
-        DELETE http://eho/v0.1/node-templates/3421
+        DELETE http://eho/v0.2/node-templates/3421
 
     **response**
 
@@ -687,22 +722,22 @@ Use the following APIs to manage clusters:
 +------------------------------------+--------------------------------------------+-----------------------------------------------------+
 | Verb                               | URI                                        | Description                                         |
 +====================================+============================================+=====================================================+
-| GET                                | /v0.1/clusters                             | Lists summary for all clusters in EHO that are      |
+| GET                                | /v0.2/clusters                             | Lists summary for all clusters in EHO that are      |
 |                                    |                                            | accessible to the tenant who submits the request    |
 +------------------------------------+--------------------------------------------+-----------------------------------------------------+
-| POST                               | /v0.1/clusters                             | Creates a new cluster                               |
+| POST                               | /v0.2/clusters                             | Creates a new cluster                               |
 +------------------------------------+--------------------------------------------+-----------------------------------------------------+
-| GET                                | /v0.1/clusters/{cluster_id}                | Lists detailed information for the specified cluster|
+| GET                                | /v0.2/clusters/{cluster_id}                | Lists detailed information for the specified cluster|
 +------------------------------------+--------------------------------------------+-----------------------------------------------------+
-| PUT                                | /v0.1/clusters/{cluster_id}                | Updates a specific cluster identified by cluster_id |
+| PUT                                | /v0.2/clusters/{cluster_id}                | Updates a specific cluster identified by cluster_id |
 +------------------------------------+--------------------------------------------+-----------------------------------------------------+
-| DELETE                             | /v0.1/clusters/{cluster_id}                | Destroys a specified cluster                        |
+| DELETE                             | /v0.2/clusters/{cluster_id}                | Destroys a specified cluster                        |
 +------------------------------------+--------------------------------------------+-----------------------------------------------------+
 
 3.2.2 List all clusters
 -----------------------
 
-.. http:get:: /v0.1/clusters
+.. http:get:: /v0.2/clusters
 
 Normal Response Code: 200 (OK)
 
@@ -721,7 +756,7 @@ each element in the list is a "Cluster object" that described in section 2.2.
 
     .. sourcecode:: http
 
-        GET http://eho/v0.1/clusters
+        GET http://eho/v0.2/clusters
 
     **response**
 
@@ -779,7 +814,7 @@ each element in the list is a "Cluster object" that described in section 2.2.
 3.2.3 Create a cluster
 ----------------------
 
-.. http:post:: /v0.1/clusters
+.. http:post:: /v0.2/clusters
 
 Normal Response Code: 202 (Accepted)
 
@@ -813,7 +848,7 @@ master node type, for example, 1 JobTracker node and 1 NameNode node.
 
         .. sourcecode:: http
 
-            POST http://eho/v0.1/clusters
+            POST http://eho/v0.2/clusters
 
         .. sourcecode:: json
 
@@ -859,7 +894,7 @@ master node type, for example, 1 JobTracker node and 1 NameNode node.
 3.2.4 Retrieve a specific cluster
 ---------------------------------
 
-.. http:get:: /v0.1/clusters/{cluster-id}
+.. http:get:: /v0.2/clusters/{cluster-id}
 
 Normal Response Code: 200 (OK)
 
@@ -879,7 +914,7 @@ This operation returns a response body. It contains cluster as "Cluster object",
 
     .. sourcecode:: http
 
-        GET http://eho/v0.1/clusters/1234
+        GET http://eho/v0.2/clusters/1234
 
     **response**
 
@@ -913,7 +948,7 @@ This operation returns a response body. It contains cluster as "Cluster object",
 3.2.5 Update a cluster
 ----------------------
 
-.. http:put:: /v0.1/clusters/{cluster-id}
+.. http:put:: /v0.2/clusters/{cluster-id}
 
 Normal Response Code: 202 (Accepted)
 
@@ -942,7 +977,7 @@ take a look on cluster creation operation. All needed Node Templates should be s
 
     .. sourcecode:: http
 
-        PUT http://eho/v0.1/clusters/1234
+        PUT http://eho/v0.2/clusters/1234
 
     .. sourcecode:: json
 
@@ -989,7 +1024,7 @@ take a look on cluster creation operation. All needed Node Templates should be s
 3.2.6 Remove a cluster
 ----------------------
 
-.. http:delete:: /v0.1/clusters/{cluster-id}
+.. http:delete:: /v0.2/clusters/{cluster-id}
 
 Normal Response Code: 204 (No Content)
 
@@ -1010,7 +1045,7 @@ This operation does not return a response body.
 
     .. sourcecode:: http
 
-        DELETE http://eho/v0.1/clusters/1234
+        DELETE http://eho/v0.2/clusters/1234
 
     **response**
 

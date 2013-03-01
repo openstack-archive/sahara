@@ -129,4 +129,4 @@ Useful links
     :maxdepth: 4
 
     architecture
-    restapi/v02
+    restapi/v01

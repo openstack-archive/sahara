@@ -9,7 +9,7 @@ from eho.server.scheduler import setup_scheduler
 from eho.server.service.api import setup_api
 from eho.server.storage.defaults import setup_defaults
 from eho.server.utils.api import render
-from eho.server.api import v01 as api_v01
+from eho.server.api import v02 as api_v02
 from eho.server.storage.storage import setup_storage
 
 
@@ -32,7 +32,7 @@ def make_app(**local_conf):
     if ll:
         root_logger.setLevel(ll)
 
-    app.register_blueprint(api_v01.rest, url_prefix='/v0.1')
+    app.register_blueprint(api_v02.rest, url_prefix='/v0.2')
 
     if app.config['DEBUG']:
         print 'Configuration:'

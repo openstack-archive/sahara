@@ -58,30 +58,27 @@ class TestApi(unittest.TestCase):
         os.unlink(self.db_path)
 
     def test_list_node_templates(self):
-        rv = self.app.get('/v0.1/node-templates.json')
+        rv = self.app.get('/v0.2/node-templates.json')
         self.assertEquals(rv.status_code, 200)
         data = json.loads(rv.data)
 
         # clean all ids
-        for idx in xrange(0, len(data.get(u'templates'))):
-            del data.get(u'templates')[idx][u'id']
-            del data.get(u'templates')[idx][u'node_type'][u'id']
+        for idx in xrange(0, len(data.get(u'node_templates'))):
+            del data.get(u'node_templates')[idx][u'id']
 
         self.assertEquals(data, _get_templates_stub_data())
 
     def test_create_node_template(self):
-        rv = self.app.post('/v0.1/node-templates.json', data=json.dumps(dict(
+        rv = self.app.post('/v0.2/node-templates.json', data=json.dumps(dict(
             name='test_template',
             node_type='JT+NN',
             tenant_id='test_tenant',
             flavor_id='test_flavor',
-            configs={
-                'job_tracker': {
-                    'heap_size': '1234'
-                },
-                'name_node': {
-                    'heap_size': '2345'
-                }
+            job_tracker={
+                'heap_size': '1234'
+            },
+            name_node={
+                'heap_size': '2345'
             }
         )))
         self.assertEquals(rv.status_code, 202)
@@ -89,7 +86,6 @@ class TestApi(unittest.TestCase):
 
         # clean all ids
         del data[u'id']
-        del data.get(u'node_type')[u'id']
 
         self.assertEquals(data, {
             u'job_tracker': {
@@ -109,7 +105,7 @@ class TestApi(unittest.TestCase):
         })
 
     def test_list_clusters(self):
-        rv = self.app.get('/v0.1/clusters.json')
+        rv = self.app.get('/v0.2/clusters.json')
         self.assertEquals(rv.status_code, 200)
         data = json.loads(rv.data)
 
@@ -118,11 +114,11 @@ class TestApi(unittest.TestCase):
         })
 
     def test_create_clusters(self):
-        rv = self.app.post('/v0.1/clusters.json', data=json.dumps(dict(
+        rv = self.app.post('/v0.2/clusters.json', data=json.dumps(dict(
             name='test-cluster',
             base_image_id='base-image-id',
             tenant_id='tenant-id',
-            templates={
+            node_templates={
                 'jt_nn.medium': 1,
                 'tt_dn.small': 5
             }
@@ -147,7 +143,7 @@ class TestApi(unittest.TestCase):
 
         eventlet.sleep(4)
 
-        rv = self.app.get('/v0.1/clusters/%s.json' % cluster_id)
+        rv = self.app.get('/v0.2/clusters/%s.json' % cluster_id)
         self.assertEquals(rv.status_code, 200)
         data = json.loads(rv.data)
         self.assertEquals(data.pop(u'id'), cluster_id)
@@ -181,29 +177,29 @@ class TestApi(unittest.TestCase):
         ]))
 
     def test_delete_node_template(self):
-        rv = self.app.post('/v0.1/node-templates.json', data=json.dumps(dict(
+        rv = self.app.post('/v0.2/node-templates.json', data=json.dumps(dict(
             name='test_template_2',
             node_type='JT+NN',
             tenant_id='test_tenant_2',
             flavor_id='test_flavor_2',
-            configs={
-                'job_tracker': {
-                    'heap_size': '1234'
-                },
-                'name_node': {
-                    'heap_size': '2345'
-                }
+            job_tracker={
+                'heap_size': '1234'
+            },
+            name_node={
+                'heap_size': '2345'
             }
         )))
         self.assertEquals(rv.status_code, 202)
         data = json.loads(rv.data)
         node_template_id = data.pop(u'id')
 
-        rv = self.app.get('/v0.1/node-templates/%s.json' % node_template_id)
+        rv = self.app.get('/v0.2/node-templates/%s.json' % node_template_id)
         self.assertEquals(rv.status_code, 200)
         data = json.loads(rv.data)
+
+        # clean all ids
         del data[u'id']
-        del data.get(u'node_type')[u'id']
+
         self.assertEquals(data, {
             u'job_tracker': {
                 u'heap_size': u'1234'
@@ -221,20 +217,20 @@ class TestApi(unittest.TestCase):
             }
         })
 
-        rv = self.app.delete('/v0.1/node-templates/%s.json' % node_template_id)
+        rv = self.app.delete('/v0.2/node-templates/%s.json' % node_template_id)
         self.assertEquals(rv.status_code, 204)
 
-        rv = self.app.get('/v0.1/node-templates/%s.json' % node_template_id)
+        rv = self.app.get('/v0.2/node-templates/%s.json' % node_template_id)
 
         # todo(vrovachev): change success code to 404
         self.assertEquals(rv.status_code, 500)
 
     def test_delete_cluster(self):
-        rv = self.app.post('/v0.1/clusters.json', data=json.dumps(dict(
+        rv = self.app.post('/v0.2/clusters.json', data=json.dumps(dict(
             name='test-cluster_2',
             base_image_id='base-image-id_2',
             tenant_id='tenant-id_2',
-            templates={
+            node_templates={
                 'jt_nn.medium': 1,
                 'tt_dn.small': 5
             }
@@ -243,10 +239,13 @@ class TestApi(unittest.TestCase):
         data = json.loads(rv.data)
         cluster_id = data.pop(u'id')
 
-        rv = self.app.get('/v0.1/clusters/%s.json' % cluster_id)
+        rv = self.app.get('/v0.2/clusters/%s.json' % cluster_id)
         self.assertEquals(rv.status_code, 200)
         data = json.loads(rv.data)
+
+        # delete all ids
         del data[u'id']
+
         self.assertEquals(data, {
             u'status': u'Starting',
             u'service_urls': {},
@@ -260,12 +259,12 @@ class TestApi(unittest.TestCase):
             u'nodes': []
         })
 
-        rv = self.app.delete('/v0.1/clusters/%s.json' % cluster_id)
+        rv = self.app.delete('/v0.2/clusters/%s.json' % cluster_id)
         self.assertEquals(rv.status_code, 204)
 
         eventlet.sleep(1)
 
-        rv = self.app.get('/v0.1/clusters/%s.json' % cluster_id)
+        rv = self.app.get('/v0.2/clusters/%s.json' % cluster_id)
 
         # todo(vrovachev): change success code to 404
         self.assertEquals(rv.status_code, 500)
@@ -277,7 +276,7 @@ def _sorted_nodes(nodes):
 
 def _get_templates_stub_data():
     return {
-        u'templates': [
+        u'node_templates': [
             {
                 u'job_tracker': {
                     u'heap_size': u'896'
