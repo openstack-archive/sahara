@@ -9,7 +9,7 @@ from novaclient.v1_1 import client as nova_client
 from paramiko import SSHClient, AutoAddPolicy
 
 from eho.server.storage.models import Node, ServiceUrl
-from eho.server.storage.storage import db
+from eho.server.storage.storage import DB
 
 
 OPENSTACK_USER = None
@@ -266,7 +266,7 @@ def _setup_node(node, clmap):
 
 def _register_node(node, cluster):
     node_obj = Node(node['id'], cluster.id, node['templ_id'])
-    db.session.add(node_obj)
+    DB.session.add(node_obj)
 
     if node['is_master']:
         srv_url_jt = ServiceUrl(cluster.id, 'jobtracker', 'http://%s:50030'
@@ -274,10 +274,10 @@ def _register_node(node, cluster):
         srv_url_nn = ServiceUrl(cluster.id, 'namenode', 'http://%s:50070'
                                                         % node['ip'])
 
-        db.session.add(srv_url_jt)
-        db.session.add(srv_url_nn)
+        DB.session.add(srv_url_jt)
+        DB.session.add(srv_url_nn)
 
-    db.session.commit()
+    DB.session.commit()
 
 
 def _start_cluster(cluster, clmap):

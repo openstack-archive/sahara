@@ -1,0 +1,1054 @@
+*****************
+EHO REST API v0.2
+*****************
+
+1 General API information
+=========================
+
+This section contains base info about the EHO REST API design.
+
+1.1 Authentication and Authorization
+------------------------------------
+
+The EHO API uses the Keystone Identity Service as the default authentication service.
+When Keystone is enabled, users who submit requests to the EHO service must provide an authentication token
+in X-Auth-Token request header. User could obtain the token by authenticating to the Keystone endpoint.
+For more information about Keystone, see the OpenStack Identity Developer Guide.
+
+Each of the EHO objects described in section 2 ('Object Model') belongs to some tenant,
+which is determined by its creator.
+
+Regular users are allowed to perform 'create', 'read' and 'list' operations only in the tenants they have access to.
+They can also perform 'update' and 'delete' operations, but only on the objects they created.
+
+Admin users could perform any operation in any tenant and on any object.
+
+Whenever a user wants to perform an operation in a tenant, which is not his default,
+the user must specify 'tenant_id' attribute for the object. Since admin user does not have a default tenant,
+he must specify 'tenant_id' for every operation he performs.
+
+In current EHO design, all authenticated users can perform all operations.
+In the future we are planning to add some RBAC or policy-based rules to manage privileges in EHO.
+
+1.2 Request / Response Types
+----------------------------
+
+The EHO API supports the JSON data serialization format.
+This means that for requests that contain a body, the Content-Type header must be set to the MIME type value
+"application/json". Also, clients should accept JSON serialized responses by specifying the Accept header
+with the MIME type value "application/json" or adding ".json" extension to the resource name.
+The default response format is "application/json" if the client omits to specify an Accept header
+or append the ".json" extension in the URL path.
+
+Example:
+
+.. sourcecode:: http
+
+    GET /v0.2/clusters.json
+
+or
+
+.. sourcecode:: http
+
+    GET /v0.2/clusters
+    Accept: application/json
+
+1.3 Filtering and Column Selection
+----------------------------------
+
+(It's not implemented yet)
+
+The EHO API supports filtering based on all top level attributes of a resource.
+Filters are applicable to all list requests.
+
+For example, the following request returns all clusters named 'foobar':
+
+.. sourcecode:: http
+
+    GET /v0.2/clusters?name=foobar
+
+When you specify multiple filters, the EHO API returns only objects that meet all filtering criteria.
+The operation applies an AND condition among the filters, for example:
+
+.. sourcecode:: http
+
+    GET /v0.2/clusters?name=foo1&some_attr=some_value
+
+Currently, there is no OR mechanism for filtering. Alternatively, you can issue a distinct request
+for each filter and build a response set from the received responses on the client-side.
+
+By default, the EHO service returns all attributes for any show or list call.
+The EHO API has a mechanism to limit the set of attributes returned.
+You can use the fields query parameter to control the attributes returned from the EHO API.
+
+For example, the following request returns only id, name and status for each cluster:
+
+.. sourcecode:: http
+
+    GET /v0.2/clusters.json?fields=id&fields=name&fields=status
+
+Such selector could be useful for displaying some info about running clusters on GUI.
+
+Filtering and column selection features could be used together too.
+
+1.4 Faults
+----------
+
+The EHO API returns an error response if a failure occurs while processing a request.
+EHO uses only standard HTTP error codes. 4xx errors indicate problems in the particular
+request being sent from the client and 5xx errors indicate server-side problems.
+
+Here we can add table with all used error codes.
+
+The response body will contain richer information about the cause of the error.
+An error response follows the format illustrated by the following example:
+
+.. sourcecode:: http
+
+    HTTP/1.1 409 Conflict
+    Content-type: application/json
+    Content-length: XX
+
+    {
+        "error_code": 409,
+        "error_name": "CLUSTER_EXISTS",
+        "error_message": "Cluster with name 'cluster #123' already exists"
+    }
+
+
+The 'error_code' attribute equals to HTTP response code. The 'error_name' attribute
+indicates generic error type without any concrete ids or names, etc.
+And the last attribute is 'error_message' that contains human readable error description.
+
+2 Object Model
+==============
+
+2.1 Node Template object
+------------------------
+
+**2.1.1 Description**
+
+Node Template object is an abstraction for storing VM hardware parameters (vCPU, RAM, HDD, etc.), VM node type (JobTracker+NameNode, JobTracker+DataNode, JobTracker only, etc.) and some Hadoop-relative configurations (processes heap sizes, # of MapReduce tasks per node, etc.).
+
+Expected node types:
+
+JT+NN - node with both JobTracker and NameNode running;
+
+JT - node with only JobTracker running;
+
+NN - node with only NameNode running;
+
+TT+DN - node with both TaskTracker and DataNode running;
+
+TT - node with only TaskTracker running;
+
+DN - node with only DataNode running.
+
+All node types are predefined and new types might be added in the future.
+
+**2.1.2 Object Fields**
+
++------------------------------------+--------------------------------------------+-----------------------------------------------------+
+| Name                               | Type                                       | Description                                         |
++====================================+============================================+=====================================================+
+| id                                 | [required for update/get] string           |                                                     |
++------------------------------------+--------------------------------------------+-----------------------------------------------------+
+| name                               | string                                     | A name of the node template                         |
++------------------------------------+--------------------------------------------+-----------------------------------------------------+
+| node_type                          | object                                     | NodeType info                                       |
++------------------------------------+--------------------------------------------+-----------------------------------------------------+
+| node_type.name                     | string                                     | Name of the node type                               |
++------------------------------------+--------------------------------------------+-----------------------------------------------------+
+| node_type.processes                | array of strings                           | List of process names that will be executed on node |
++------------------------------------+--------------------------------------------+-----------------------------------------------------+
+| tenant_id                          | string                                     | An id of the OpenStack's tenant                     |
++------------------------------------+--------------------------------------------+-----------------------------------------------------+
+| flavor_id                          | string                                     | An id of the OpenStack's flavor                     |
++------------------------------------+--------------------------------------------+-----------------------------------------------------+
+| job_tracker                        | section                                    | Section with job_tracker conf                       |
++------------------------------------+--------------------------------------------+-----------------------------------------------------+
+| job_tracker.heap_size              | [JT required] int                          | Job Tracker heap size in MB                         |
++------------------------------------+--------------------------------------------+-----------------------------------------------------+
+| name_node                          | section                                    | Section with name_node conf                         |
++------------------------------------+--------------------------------------------+-----------------------------------------------------+
+| name_node.heap_size                | [NN required] int                          | Name Node heap size in MB                           |
++------------------------------------+--------------------------------------------+-----------------------------------------------------+
+| task_tracker                       | section                                    | Section with task_tracker conf                      |
++------------------------------------+--------------------------------------------+-----------------------------------------------------+
+| task_tracker.heap_size             | [TT required] int                          | Task Tracker heap size in MB                        |
++------------------------------------+--------------------------------------------+-----------------------------------------------------+
+| task_tracker.max_map_tasks         | [TT optional] int                          | Max number of map tasks per task tracker            |
++------------------------------------+--------------------------------------------+-----------------------------------------------------+
+| task_tracker.max_reduce_tasks      | [TT optional] int                          | Max number of reduce tasks per task tracker         |
++------------------------------------+--------------------------------------------+-----------------------------------------------------+
+| task_tracker.task_heap_size        | [TT required] int                          | Task (map or reduce) heap size in MB                |
++------------------------------------+--------------------------------------------+-----------------------------------------------------+
+| data_node                          | section                                    | Section with data_node-related configurations       |
++------------------------------------+--------------------------------------------+-----------------------------------------------------+
+| data_node.heap_size                | [DN required] int                          | Data Node heap size in megabytes                    |
++------------------------------------+--------------------------------------------+-----------------------------------------------------+
+
+**2.1.3 Example**
+
+.. sourcecode:: json
+
+    {
+        "id": "3412",
+        "name": "taskTracker_and_dataNode.medium",
+        "node_type": {
+            "name": "TT+DN",
+            "processes": ["task_tracker", "data_node"]
+        },
+        "tenant_id": "23451",
+        "flavor_id": "1234",
+        "task_tracker": {
+            "heap_size": 384,
+            "max_map_tasks": 3,
+            "max_reduce_tasks": 1,
+            "task_heap_size": 640
+        },
+        "data_node": {
+            "heap_size": 384
+        }
+    }
+
+2.2 Cluster Create/Update object
+--------------------------------
+
+**2.2.1 Description**
+
+This object is used to create and update existing clusters.
+It contains cluster's name and 'node_templates' section that provides information about number of instances of
+some Node Templates that we want to use. Additionally, it includes the 'base_image' id to specify image
+that should be the base for VMs creation. Such image should be prepared by installing Hadoop with special layout.
+The 'id' field should not be specified during cluster creation, but it should be specified while updating
+the existing cluster.
+
+**2.2.2 Object fields**
+
++------------------------------------+--------------------------------------------+-----------------------------------------------------+
+| Name                               | Type                                       | Description                                         |
++====================================+============================================+=====================================================+
+| id                                 | [required for update] string               |                                                     |
++------------------------------------+--------------------------------------------+-----------------------------------------------------+
+| name                               | string                                     | A name of the cluster                               |
++------------------------------------+--------------------------------------------+-----------------------------------------------------+
+| tenant_id                          | string                                     | An id of the OpenStack's tenant                     |
++------------------------------------+--------------------------------------------+-----------------------------------------------------+
+| node_templates                     | map (object)                               | Map Node Template -> count                          |
++------------------------------------+--------------------------------------------+-----------------------------------------------------+
+| base_image_id                      | string                                     | An id of the image stored in Glance that will be    |
+|                                    |                                            | used for VM creation (the image should have Hadoop  |
+|                                    |                                            | installed with the specific layout)                 |
++------------------------------------+--------------------------------------------+-----------------------------------------------------+
+
+**2.2.3 Example**
+
+.. sourcecode:: json
+
+    {
+        "id": "1234",
+        "tenant_id": "23451",
+        "name": "cluster #123",
+        "node_templates": {
+            "jobTracker_and_nameNode.medium": 1,
+            "taskTracker_and_dataNode.medium": 4
+        },
+        "base_image_id": "image #1"
+    }
+
+2.3 Cluster object
+------------------
+
+**2.3.1 Description**
+
+This object used in REST API responses to return information about clusters.
+
+**2.3.2 Object fields**
+
++------------------------------------+--------------------------------------------+-----------------------------------------------------+
+| Name                               | Type                                       | Description                                         |
++====================================+============================================+=====================================================+
+| id                                 | [required for update] string               |                                                     |
++------------------------------------+--------------------------------------------+-----------------------------------------------------+
+| tenant_id                          | string                                     | An id of the OpenStack's tenant                     |
++------------------------------------+--------------------------------------------+-----------------------------------------------------+
+| name                               | string                                     | A name of the cluster                               |
++------------------------------------+--------------------------------------------+-----------------------------------------------------+
+| node_templates                     | map (object)                               | Map Node Template -> count                          |
++------------------------------------+--------------------------------------------+-----------------------------------------------------+
+| base_image_id                      | string                                     | An id of the image stored in Glance that will be    |
+|                                    |                                            | used for VM creation (the image should have Hadoop  |
+|                                    |                                            | installed with the specific layout)                 |
++------------------------------------+--------------------------------------------+-----------------------------------------------------+
+| status                             | string                                     | Status of the current cluster                       |
++------------------------------------+--------------------------------------------+-----------------------------------------------------+
+| nodes                              | objects array                              | List of vms used by current Hadoop cluster          |
++------------------------------------+--------------------------------------------+-----------------------------------------------------+
+| service_urls                       | section                                    | Section with urls for installed services            |
++------------------------------------+--------------------------------------------+-----------------------------------------------------+
+| service_urls.job_tracker           | string                                     | Url for JobTracker                                  |
++------------------------------------+--------------------------------------------+-----------------------------------------------------+
+| service_urls.name_node             | string                                     | Url for NameNode                                    |
++------------------------------------+--------------------------------------------+-----------------------------------------------------+
+
+
+**2.3.3 Example**
+
+.. sourcecode:: json
+
+    {
+        "id": "1234",
+        "tenant_id": "23451",
+        "name": "cluster #123",
+        "node_templates": {
+            "jobTracker_and_nameNode.medium": 1,
+            "taskTracker_and_dataNode.medium": 10
+        },
+        "base_image": "image #1",
+        "status": "online",
+        "nodes": [
+            "<Node object>",
+            "<Node object>"
+        ],
+        "service_urls": {
+            "job_tracker": "http://10.0.1.10:50030",
+            "name_node": "http://10.0.1.10:50070"
+        }
+    }
+
+2.4 Node object
+---------------
+
+**2.4.1 Description**
+
+This object is used in REST API responses to return information about cluster's nodes.
+In fact, a node is a virtual machine managed by OpenStack Nova.
+
+**2.4.2 Object fields**
+
++------------------------------------+--------------------------------------------+-----------------------------------------------------+
+| Name                               | Type                                       | Description                                         |
++====================================+============================================+=====================================================+
+| vm_id                              | string                                     | VM id in OpenStack cluster                          |
++------------------------------------+--------------------------------------------+-----------------------------------------------------+
+| node_template                      | object                                     | Node Template used to create this node              |
++------------------------------------+--------------------------------------------+-----------------------------------------------------+
+| node_template.id                   | string                                     | Node Template id used to create this node           |
++------------------------------------+--------------------------------------------+-----------------------------------------------------+
+| node_template.name                 | string                                     | Node Template name used to create this node         |
++------------------------------------+--------------------------------------------+-----------------------------------------------------+
+
+
+**2.4.3 Example**
+
+.. sourcecode:: json
+
+    {
+        "vm_id": "dee040e1-f58f-4d54-846b-fec8e2bd9b21",
+        "node_template": {
+            "id": "123456",
+            "name": "jt_nn.xlarge"
+        }
+    }
+
+
+
+3 API operations
+================
+
+3.1 Node Templates ops
+----------------------
+
+**Summary**
+
+Use the following APIs to manage templates:
+
++------------------------------------+--------------------------------------------+-----------------------------------------------------+
+| Verb                               | URI                                        | Description                                         |
++====================================+============================================+=====================================================+
+| GET                                | /v0.2/node-templates                       | Lists summary for all Node Templates in EHO that are|
+|                                    |                                            | accessible to the tenant who submits the request    |
++------------------------------------+--------------------------------------------+-----------------------------------------------------+
+| POST                               | /v0.2/node-templates                       | Creates a new Node Template                         |
++------------------------------------+--------------------------------------------+-----------------------------------------------------+
+| GET                                | /v0.2/node-templates/{node_template_id}    | Lists information for the specified Node Template   |
++------------------------------------+--------------------------------------------+-----------------------------------------------------+
+| PUT                                | /v0.2/node-templates/{node_template_id}    | Updates a specific Node Template identified by      |
+|                                    |                                            | node_template_id                                    |
+|                                    |                                            | (only unused Node Templates could be modified)      |
++------------------------------------+--------------------------------------------+-----------------------------------------------------+
+| DELETE                             | /v0.2/node-templates/{node_template_id}    | Destroyed a specified Node Template                 |
+|                                    |                                            | (only unused Node Templates could be removed)       |
++------------------------------------+--------------------------------------------+-----------------------------------------------------+
+
+3.1.2 List all Node Templates
+-----------------------------
+
+.. http:get:: /v0.2/node-templates
+
+Normal Response Code: 200 (OK)
+
+Errors: none
+
+This operations returns the list of all Node Templates associated with your tenant.
+If you have an admin role, then this request returns all the Node Templates of all tenants.
+
+This operation does not require a request body.
+
+This operation returns a response body. It returns a (potentially empty) list, each element in the list is a
+"Node Template object" that described in section 2.1.
+
+**Example**:
+    **request**
+
+    .. sourcecode:: http
+
+        GET /v0.2/node-templates
+        Accept: application/json
+        X-Auth-Token: SOME_AUTH_TOKEN
+
+    **response**
+
+    .. sourcecode:: http
+
+        HTTP/1.1 200 OK
+        Content-Type: application/json
+        Content-Length: XX
+
+    .. sourcecode:: json
+
+        {
+            "node_templates": [
+                {
+                    "id": "3412",
+                    "name": "tt_dn.medium",
+                    "node_type": {
+                        "name": "TT+DN",
+                        "processes": ["task_tracker", "data_node"]
+                    },
+                    "tenant_id": "23451",
+                    "flavor_id": "1234",
+                    "task_tracker": {
+                        "heap_size": 384,
+                        "max_map_tasks": 3,
+                        "max_reduce_tasks": 1,
+                        "task_heap_size": 640
+                    },
+                    "data_node": {
+                        "heap_size": 384
+                    }
+                },
+                {
+                    "id": "3413",
+                    "name": "tt_dn.xlarge",
+                    "node_type": {
+                        "name": "TT+DN",
+                        "processes": ["task_tracker", "data_node"]
+                    },
+                    "tenant_id": "23451",
+                    "flavor_id": "1235",
+                    "task_tracker": {
+                        "heap_size": 2048,
+                        "max_map_tasks": 6,
+                        "max_reduce_tasks": 3,
+                        "task_heap_size": 2048
+                    },
+                    "data_node": {
+                        "heap_size": 2048
+                    }
+                }
+            ]
+        }
+
+3.1.3 Create a Node Template
+----------------------------
+
+.. http:post:: /v0.2/node-templates
+
+Normal Response Code: 202 (Accepted)
+
+Errors:
+
+400, NODE_TEMPLATE_EXISTS, "Node Template with name 'cluster #123' already exists"
+
+400, WRONG_PARAMETER_FORMAT, "Some input field is specified incorrectly or is missing"
+
+This operation creates a new Node Template from the parameters specified in request object.
+All parameters has been described in section 2.1.
+
+Users with an admin role can create Node Templates on behalf of other tenants by specifying a tenant_id parameter
+different than their own. The tenant_id attribute is only required if the caller has an admin role and wants to
+create a Node Template for another tenant.
+
+This operation requires request body.
+
+This operation returns a response body. It contains newly created node template as "Node Template object",
+defined in section 2.1.
+
+**Example**:
+    **request**
+
+    .. sourcecode:: http
+
+        POST http://eho/v0.2/node-templates
+
+    .. sourcecode:: json
+
+        {
+            "name": "tt_dn.medium",
+            "node_type": {
+                "name": "TT+DN",
+                "processes": ["task_tracker", "data_node"]
+            },
+            "tenant_id": "23451",
+            "flavor_id": "1234",
+            "task_tracker": {
+                "heap_size": 384,
+                "max_map_tasks": 3,
+                "max_reduce_tasks": 1,
+                "task_heap_size": 640
+            },
+            "data_node": {
+                "heap_size": 384
+            }
+        }
+
+    **response**
+
+    .. sourcecode:: http
+
+        HTTP/1.1 202 Accepted
+        Content-Type: application/json
+        Content-Length: XX
+
+    .. sourcecode:: json
+
+        {
+            "id": "3412",
+            "name": "tt_dn.medium",
+            "node_type": {
+                "name": "TT+DN",
+                "processes": ["task_tracker", "data_node"]
+            },
+            "tenant_id": "23451",
+            "flavor_id": "1234",
+            "task_tracker": {
+                "heap_size": 384,
+                "max_map_tasks": 3,
+                "max_reduce_tasks": 1,
+                "task_heap_size": 640
+            },
+            "data_node": {
+                "heap_size": 384
+            }
+        }
+
+3.1.4 Retrieve a specific Node Template
+---------------------------------------
+
+.. http:get:: /v0.2/node-templates/{node_template_id}
+
+Normal Response Code: 200 (OK)
+
+Errors:
+
+404, NODE_TEMPLATE_NOT_FOUND, "Node Template with such a name does not exist"
+
+This operation returns a Node Template object identified by node_template_id.
+If the user is not an admin, and the Node Template object doesn't belong to user's tenant,
+user would receive a 403 (Forbidden) error.
+
+This operation does not require a request body.
+
+This operation returns a response body. It contains node template as "Node Template object", defined in section 2.1.
+
+**Example**:
+    **request**
+
+    .. sourcecode:: http
+
+        GET http://eho/v0.2/node-templates/3421
+
+    **response**
+
+    .. sourcecode:: http
+
+        HTTP/1.1 200 OK
+        Content-Type: application/json
+
+    .. sourcecode:: json
+
+        {
+            "id": "3421",
+            "name": "tt_dn.medium",
+            "node_type": {
+                "name": "TT+DN",
+                "processes": ["task_tracker", "data_node"]
+            },
+            "tenant_id": "23451",
+            "flavor_id": "1234",
+            "task_tracker": {
+                "heap_size": 384,
+                "max_map_tasks": 3,
+                "max_reduce_tasks": 1,
+                "task_heap_size": 640
+            },
+            "data_node": {
+                "heap_size": 384
+            }
+        }
+
+3.1.5 Update a Node Template
+----------------------------
+
+.. http:put:: /v0.2/node-templates/{node_template_id}
+
+Normal Response Code: 202 (Accepted)
+
+Errors:
+
+400, WRONG_PARAMETER_FORMAT, "Some input field is specified incorrectly or is missing"
+
+This operation updates the attributes of the node template identified by node_template_id.
+All attributes should be specified while updating resource. Only node templates that are not in use could be updated.
+So, if any cluster used any node template than such node template could not be modified or removed.
+
+This operation requires request body. It should contains the full Node Template object (defined in section 2.1)
+with new data.
+
+This operation returns response body. It contains updated Node Template object defined in section 2.1.
+
+**Example**:
+    **request**
+
+    .. sourcecode:: http
+
+        PUT http://eho/v0.2/node-templates/3413
+
+    .. sourcecode:: json
+    
+        {
+            "id": "3413",
+            "name": "tt_dn.medium",
+            "node_type": {
+                "name": "TT+DN",
+                "processes": ["task_tracker", "data_node"]
+            },
+            "tenant_id": "23451",
+            "flavor_id": "1234",
+            "task_tracker": {
+                "heap_size": 402,
+                "max_map_tasks": 3,
+                "max_reduce_tasks": 1,
+                "task_heap_size": 500
+            },
+            "data_node": {
+                "heap_size": 402
+            }
+        }
+
+    **response**
+    
+    .. sourcecode:: http
+    
+        HTTP/1.1 202 Accepted
+        Content-Type: application/json
+
+    .. sourcecode:: json
+
+        {
+            "id": "3413",
+            "name": "tt_dn.medium",
+            "node_type": {
+                "name": "TT+DN",
+                "processes": ["task_tracker", "data_node"]
+            },
+            "tenant_id": "23451",
+            "flavor_id": "1234",
+            "task_tracker": {
+                "heap_size": 402,
+                "max_map_tasks": 3,
+                "max_reduce_tasks": 1,
+                "task_heap_size": 500
+            },
+            "data_node": {
+                "heap_size": 402
+            }
+        }
+
+
+3.1.6 Remove a Node Template
+----------------------------
+
+.. http:delete:: /v0.2/node-templates/{node_template_id}
+
+Normal Response Code: 204 (No Content)
+
+Errors:
+
+404, NODE_TEMPLATE_NOT_FOUND, "Node Template with name 'node template #1' does not exist"
+
+This operation removes the specified Node Template and its associated resources.
+Any and all data is immediately purged and is not recoverable. If the user is not an admin, and the Node Template
+object doesn't belong to user's tenant, user would receive a 403 (Forbidden) error. Only Node Templates that are
+not in use could be removed. So, if any cluster used any Node Template than such Node Template could not be modified
+or removed.
+
+This operation does not require a request body.
+
+This operation does not return a response body.
+
+**Example**:
+    **request**
+
+    .. sourcecode:: http
+
+        DELETE http://eho/v0.2/node-templates/3421
+
+    **response**
+
+    .. sourcecode:: http
+
+        HTTP/1.1 204 No Content
+
+3.2 Clusters ops
+----------------
+
+**Summary**
+
+Use the following APIs to manage clusters:
+
++------------------------------------+--------------------------------------------+-----------------------------------------------------+
+| Verb                               | URI                                        | Description                                         |
++====================================+============================================+=====================================================+
+| GET                                | /v0.2/clusters                             | Lists summary for all clusters in EHO that are      |
+|                                    |                                            | accessible to the tenant who submits the request    |
++------------------------------------+--------------------------------------------+-----------------------------------------------------+
+| POST                               | /v0.2/clusters                             | Creates a new cluster                               |
++------------------------------------+--------------------------------------------+-----------------------------------------------------+
+| GET                                | /v0.2/clusters/{cluster_id}                | Lists detailed information for the specified cluster|
++------------------------------------+--------------------------------------------+-----------------------------------------------------+
+| PUT                                | /v0.2/clusters/{cluster_id}                | Updates a specific cluster identified by cluster_id |
++------------------------------------+--------------------------------------------+-----------------------------------------------------+
+| DELETE                             | /v0.2/clusters/{cluster_id}                | Destroys a specified cluster                        |
++------------------------------------+--------------------------------------------+-----------------------------------------------------+
+
+3.2.2 List all clusters
+-----------------------
+
+.. http:get:: /v0.2/clusters
+
+Normal Response Code: 200 (OK)
+
+Errors: none
+
+This operations returns the list of all clusters associated with your tenant.
+If you have an admin role, then this request returns all the clusters of all tenants.
+
+This operation does not require a request body.
+
+This operation returns a response body. It returns a (potentially empty) list,
+each element in the list is a "Cluster object" that described in section 2.2.
+
+**Example**:
+    **request**
+
+    .. sourcecode:: http
+
+        GET http://eho/v0.2/clusters
+
+    **response**
+
+    .. sourcecode:: http
+
+        HTTP/1.1 200 OK
+        Content-Type: application/json
+
+    .. sourcecode:: json
+
+        {
+            "clusters": [
+                {
+                    "id": "1234",
+                    "tenant_id": "23451",
+                    "name": "cluster #123",
+                    "node_templates": {
+                        "jobTracker_and_nameNode": 1,
+                        "taskTracker_and_dataNode": 10
+                    },
+                    "base_image": "image #1",
+                    "status": "online",
+                    "service_urls": {
+                        "job_tracker": "10.0.1.10:12345",
+                        "name_node": "10.0.1.10:12346"
+                    },
+                    "nodes": [
+                        "<Node object>",
+                        "<Node object>"
+                    ]
+                },
+                {
+                    "id": "1235",
+                    "tenant_id": "23451",
+                    "name": "cluster #124",
+                    "node_templates": {
+                        "jobTracker": 1,
+                        "nameNode": 1,
+                        "taskTracker_and_dataNode": 10
+                    },
+                    "base_image": "image #1",
+                    "status": "online",
+                    "service_urls": {
+                        "job_tracker": "10.0.1.10:12345",
+                        "name_node": "10.0.1.10:12346"
+                    },
+                    "nodes": [
+                        "<Node object>",
+                        "<Node object>"
+                    ]
+                }
+             ]
+        }
+
+3.2.3 Create a cluster
+----------------------
+
+.. http:post:: /v0.2/clusters
+
+Normal Response Code: 202 (Accepted)
+
+Errors:
+
+    400, CLUSTER_EXISTS, "Cluster with name 'cluster #123' already exists"
+
+    400, WRONG_PARAMETER_FORMAT, "Some input field is specified incorrectly or is missing"
+
+    400, WRONG_TOPOLOGY_CONFIG, "Some required cluster components is missing or conflict between components detected"
+
+This operation creates a new cluster from the parameters specified in request object.
+All parameters has been described in section 2.2.
+
+Users with an admin role can create clusters on behalf of other tenants by specifying a tenant_id parameter
+different than their own. The tenant_id attribute is only required if the caller has an admin role and wants
+to create a cluster for another tenant.
+
+This operation requires request body.
+
+This operation returns a response body. It contains newly created Node Template as "Cluster Create/Update object",
+defined in section 2.2.
+
+The main idea is to specify number of required instances of some Node Template.
+It means that if you want 10 nodes with both TaskTracker and DataNode than you should specify Node Template
+with type like "TT+NN" and specify number of instances 10. Number of master nodes should be equals 1 for each
+master node type, for example, 1 JobTracker node and 1 NameNode node.
+
+**Example**:
+    **request**
+
+        .. sourcecode:: http
+
+            POST http://eho/v0.2/clusters
+
+        .. sourcecode:: json
+
+            {
+                "tenant_id": "23451",
+                "name": "cluster #123",
+                "node_templates": {
+                    "jobTracker_and_nameNode": 1,
+                    "taskTracker_and_dataNode": 10
+                },
+                "base_image": "image #1"
+            }
+
+    **response**
+
+        .. sourcecode:: http
+
+            HTTP/1.1 202 Accepted
+            Content-Type: application/json
+
+        .. sourcecode:: json
+
+            {
+                "id": "1234",
+                "tenant_id": "23451",
+                "name": "cluster #123",
+                "node_templates": {
+                    "jobTracker_and_nameNode": 1,
+                    "taskTracker_and_dataNode": 10
+                },
+                "base_image": "image #1",
+                "status": "online",
+                "service_urls": {
+                    "job_tracker": "10.0.1.10:12345",
+                    "name_node": "10.0.1.10:12346"
+                },
+                "nodes": [
+                    "<Node object>",
+                    "<Node object>"
+                ]
+            }
+
+3.2.4 Retrieve a specific cluster
+---------------------------------
+
+.. http:get:: /v0.2/clusters/{cluster-id}
+
+Normal Response Code: 200 (OK)
+
+Errors:
+
+    404, CLUSTER_NOT_FOUND, "Cluster with name 'cluster#123' does not exists"
+
+This operation returns a cluster object identified by cluster_id. If the user is not an admin,
+and the cluster object doesn't belong to user's tenant, user would receive a 403 (Forbidden) error.
+
+This operation does not require a request body.
+
+This operation returns a response body. It contains cluster as "Cluster object", defined in section 2.2.
+
+**Example**:
+    **request**
+
+    .. sourcecode:: http
+
+        GET http://eho/v0.2/clusters/1234
+
+    **response**
+
+    .. sourcecode:: http
+
+        HTTP/1.1 200 OK
+        Content-Type: application/json
+
+    .. sourcecode:: json
+
+        {
+            "id": "1234",
+            "tenant_id": "23451",
+            "name": "cluster #123",
+            "node_templates": {
+                "jobTracker_and_nameNode": 1,
+                "taskTracker_and_dataNode": 10
+            },
+            "base_image": "image #1",
+            "status": "online",
+            "service_urls": {
+                "job_tracker": "10.0.1.10:12345",
+                "name_node": "10.0.1.10:12346"
+            },
+            "nodes": [
+                "<Node object>",
+                "<Node object>"
+            ]
+        }
+
+3.2.5 Update a cluster
+----------------------
+
+.. http:put:: /v0.2/clusters/{cluster-id}
+
+Normal Response Code: 202 (Accepted)
+
+Errors:
+
+    400, CLUSTER_EXISTS, "Cluster with name 'cluster #123' already exists"
+
+    400, WRONG_PARAMETER_FORMAT, "Some input field is specified incorrectly or is missing"
+
+    400, WRONG_TOPOLOGY_CONFIG, "Some required cluster components is missing or conflict between components detected"
+
+This operation updates the attributes of the cluster identified by cluster_id.
+All attributes should be specified while updating resource.
+
+This operation requires request body. It should contains the full "Cluster Create/Update object"
+(defined in section 2.2)  with new data.
+
+This operation returns response body. It contains updated cluster object defined in section 2.2.
+
+This operation should be used for adding and removing nodes. For more information, please,
+take a look on cluster creation operation. All needed Node Templates should be specified while scaling cluster
+(not only new Node Templates), all missed Node Templates would be removed from cluster.
+
+**Example**:
+    **request**
+
+    .. sourcecode:: http
+
+        PUT http://eho/v0.2/clusters/1234
+
+    .. sourcecode:: json
+
+        {
+            "id": "1234",
+            "tenant_id": "23451",
+            "name": "the new cluster #123",
+            "node_templates": {
+                "jobTracker_and_nameNode": 1,
+                "taskTracker_and_dataNode": 20
+            },
+            "base_image": "image #1"
+        }
+
+    **response**
+
+    .. sourcecode:: http
+
+        HTTP/1.1 202 Accepted
+        Content-Type: application/json
+
+    .. sourcecode:: json
+
+        {
+            "id": "1234",
+            "tenant_id": "23451",
+            "name": "the new cluster #123",
+            "node_templates": {
+                "jobTracker_and_nameNode": 1,
+                "taskTracker_and_dataNode": 20
+            },
+            "base_image": "image #1",
+            "status": "online",
+            "service_urls": {
+                "job_tracker": "10.0.1.10:12345",
+                "name_node": "10.0.1.10:12346"
+            },
+            "nodes": [
+                "<Node object>",
+                "<Node object>"
+            ]
+        }
+
+3.2.6 Remove a cluster
+----------------------
+
+.. http:delete:: /v0.2/clusters/{cluster-id}
+
+Normal Response Code: 204 (No Content)
+
+Errors:
+
+404, CLUSTER_NOT_FOUND, "Cluster with such name does not exist"
+
+This operation removes the specified cluster (identified by cluster_id) and its associated resources.
+Any and all data is immediately purged and is not recoverable. If the user is not an admin, and the cluster object
+doesn't belong to user's tenant, user would receive a 403 (Forbidden) error.
+
+This operation does not require a request body.
+
+This operation does not return a response body.
+
+**Example**:
+    **request**
+
+    .. sourcecode:: http
+
+        DELETE http://eho/v0.2/clusters/1234
+
+    **response**
+
+    .. sourcecode:: http
+
+        HTTP/1.1 204 No Content

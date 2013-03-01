@@ -1,10 +1,11 @@
 import mimetypes
 import json
 import logging
-from eho.server.utils import xml
 
 from flask import abort, request, Blueprint, Response
 from werkzeug.datastructures import MIMEAccept
+
+from eho.server.utils import xml
 
 
 class Rest(Blueprint):

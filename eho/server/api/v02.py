@@ -9,7 +9,8 @@ rest = Rest('v01', __name__)
 @rest.get('/node-templates')
 def templates_list():
     try:
-        return render(templates=[nt.dict for nt in api.get_node_templates()])
+        return render(
+            node_templates=[nt.dict for nt in api.get_node_templates()])
     except Exception, e:
         abort_and_log(500, "Exception while listing NodeTemplates: %s" % e)
 

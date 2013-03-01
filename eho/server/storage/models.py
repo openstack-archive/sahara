@@ -1,25 +1,25 @@
 from uuid import uuid4
 
-from eho.server.storage.storage import db
+from eho.server.storage.storage import DB
 
 
-class NodeTemplate(db.Model):
+class NodeTemplate(DB.Model):
     __tablename__ = 'NodeTemplate'
 
-    id = db.Column(db.String(36), primary_key=True)
-    name = db.Column(db.String(80), unique=True, nullable=False)
-    node_type_id = db.Column(db.String(36), db.ForeignKey('NodeType.id'),
+    id = DB.Column(DB.String(36), primary_key=True)
+    name = DB.Column(DB.String(80), unique=True, nullable=False)
+    node_type_id = DB.Column(DB.String(36), DB.ForeignKey('NodeType.id'),
                              nullable=False)
-    tenant_id = db.Column(db.String(36), nullable=False)  # is it needed?
-    flavor_id = db.Column(db.String(36), nullable=False)
+    tenant_id = DB.Column(DB.String(36), nullable=False)  # is it needed?
+    flavor_id = DB.Column(DB.String(36), nullable=False)
 
-    node_template_configs = db.relationship('NodeTemplateConfig',
+    node_template_configs = DB.relationship('NodeTemplateConfig',
                                             cascade="all,delete",
                                             backref='node_template')
-    cluster_node_counts = db.relationship('ClusterNodeCount',
+    cluster_node_counts = DB.relationship('ClusterNodeCount',
                                           cascade="all,delete",
                                           backref='node_template')
-    nodes = db.relationship('Node', cascade="all,delete",
+    nodes = DB.relationship('Node', cascade="all,delete",
                             backref='node_template')
 
     def __init__(self, name, node_type_id, tenant_id, flavor_id):
@@ -33,19 +33,19 @@ class NodeTemplate(db.Model):
         return '<NodeTemplate %s / %s>' % (self.name, self.node_type_id)
 
 
-class Cluster(db.Model):
+class Cluster(DB.Model):
     __tablename__ = 'Cluster'
 
-    id = db.Column(db.String(36), primary_key=True)
-    name = db.Column(db.String(80), unique=True, nullable=False)
-    base_image_id = db.Column(db.String(36), nullable=False)
-    status = db.Column(db.String(80))
-    tenant_id = db.Column(db.String(36), nullable=False)
+    id = DB.Column(DB.String(36), primary_key=True)
+    name = DB.Column(DB.String(80), unique=True, nullable=False)
+    base_image_id = DB.Column(DB.String(36), nullable=False)
+    status = DB.Column(DB.String(80))
+    tenant_id = DB.Column(DB.String(36), nullable=False)
 
-    nodes = db.relationship('Node', cascade="all,delete", backref='cluster')
-    service_urls = db.relationship('ServiceUrl', cascade="all,delete",
+    nodes = DB.relationship('Node', cascade="all,delete", backref='cluster')
+    service_urls = DB.relationship('ServiceUrl', cascade="all,delete",
                                    backref='cluster')
-    node_counts = db.relationship('ClusterNodeCount', cascade="all,delete",
+    node_counts = DB.relationship('ClusterNodeCount', cascade="all,delete",
                                   backref='cluster')
 
     # node_templates: [(node_template_id, count), ...]
@@ -63,23 +63,23 @@ class Cluster(db.Model):
         return '<Cluster %s / %s>' % (self.name, self.status)
 
 
-NodeType_NodeProcess = db.Table('NodeType_NodeProcess', db.metadata,
-                                db.Column('node_type_id', db.String(36),
-                                          db.ForeignKey('NodeType.id')),
-                                db.Column('node_process_id', db.String(36),
-                                          db.ForeignKey('NodeProcess.id')))
+NODE_TYPE_NODE_PROCESS = DB.Table('NodeType_NodeProcess', DB.metadata,
+                                  DB.Column('node_type_id', DB.String(36),
+                                            DB.ForeignKey('NodeType.id')),
+                                  DB.Column('node_process_id', DB.String(36),
+                                            DB.ForeignKey('NodeProcess.id')))
 
 
-class NodeType(db.Model):
+class NodeType(DB.Model):
     __tablename__ = 'NodeType'
 
-    id = db.Column(db.String(36), primary_key=True)
-    name = db.Column(db.String(80), unique=True, nullable=False)
-    processes = db.relationship('NodeProcess',
+    id = DB.Column(DB.String(36), primary_key=True)
+    name = DB.Column(DB.String(80), unique=True, nullable=False)
+    processes = DB.relationship('NodeProcess',
                                 cascade="all,delete",
-                                secondary=NodeType_NodeProcess,
+                                secondary=NODE_TYPE_NODE_PROCESS,
                                 backref='node_types')
-    node_templates = db.relationship('NodeTemplate', cascade="all,delete",
+    node_templates = DB.relationship('NodeTemplate', cascade="all,delete",
                                      backref='node_type')
 
     def __init__(self, name):
@@ -90,12 +90,12 @@ class NodeType(db.Model):
         return '<NodeType %s>' % self.name
 
 
-class NodeProcess(db.Model):
+class NodeProcess(DB.Model):
     __tablename__ = 'NodeProcess'
 
-    id = db.Column(db.String(36), primary_key=True)
-    name = db.Column(db.String(80), unique=True, nullable=False)
-    node_process_properties = db.relationship('NodeProcessProperty',
+    id = DB.Column(DB.String(36), primary_key=True)
+    name = DB.Column(DB.String(80), unique=True, nullable=False)
+    node_process_properties = DB.relationship('NodeProcessProperty',
                                               cascade="all,delete",
                                               backref='node_process')
 
@@ -107,18 +107,18 @@ class NodeProcess(db.Model):
         return '<NodeProcess %s>' % self.name
 
 
-class NodeProcessProperty(db.Model):
+class NodeProcessProperty(DB.Model):
     __tablename__ = 'NodeProcessProperty'
     __table_args__ = (
-        db.UniqueConstraint('node_process_id', 'name'),
+        DB.UniqueConstraint('node_process_id', 'name'),
     )
 
-    id = db.Column(db.String(36), primary_key=True)
-    node_process_id = db.Column(db.String(36), db.ForeignKey('NodeProcess.id'))
-    name = db.Column(db.String(80), nullable=False)
-    required = db.Column(db.Boolean, nullable=False)
-    default = db.Column(db.String(36))
-    node_template_configs = db.relationship('NodeTemplateConfig',
+    id = DB.Column(DB.String(36), primary_key=True)
+    node_process_id = DB.Column(DB.String(36), DB.ForeignKey('NodeProcess.id'))
+    name = DB.Column(DB.String(80), nullable=False)
+    required = DB.Column(DB.Boolean, nullable=False)
+    default = DB.Column(DB.String(36))
+    node_template_configs = DB.relationship('NodeTemplateConfig',
                                             cascade="all,delete",
                                             backref='node_process_property')
 
@@ -133,20 +133,20 @@ class NodeProcessProperty(db.Model):
         return '<NodeProcessProperty %s>' % self.name
 
 
-class NodeTemplateConfig(db.Model):
+class NodeTemplateConfig(DB.Model):
     __tablename__ = 'NodeTemplateConfig'
     __table_args__ = (
-        db.UniqueConstraint('node_template_id', 'node_process_property_id'),
+        DB.UniqueConstraint('node_template_id', 'node_process_property_id'),
     )
 
-    id = db.Column(db.String(36), primary_key=True)
-    node_template_id = db.Column(
-        db.String(36),
-        db.ForeignKey('NodeTemplate.id'))
-    node_process_property_id = db.Column(
-        db.String(36),
-        db.ForeignKey('NodeProcessProperty.id'))
-    value = db.Column(db.String(36))
+    id = DB.Column(DB.String(36), primary_key=True)
+    node_template_id = DB.Column(
+        DB.String(36),
+        DB.ForeignKey('NodeTemplate.id'))
+    node_process_property_id = DB.Column(
+        DB.String(36),
+        DB.ForeignKey('NodeProcessProperty.id'))
+    value = DB.Column(DB.String(36))
 
     def __init__(self, node_template_id, node_process_property_id, value):
         self.id = uuid4().hex
@@ -160,17 +160,17 @@ class NodeTemplateConfig(db.Model):
                   self.value)
 
 
-class ClusterNodeCount(db.Model):
+class ClusterNodeCount(DB.Model):
     __tablename__ = 'ClusterNodeCount'
     __table_args__ = (
-        db.UniqueConstraint('cluster_id', 'node_template_id'),
+        DB.UniqueConstraint('cluster_id', 'node_template_id'),
     )
 
-    id = db.Column(db.String(36), primary_key=True)
-    cluster_id = db.Column(db.String(36), db.ForeignKey('Cluster.id'))
-    node_template_id = db.Column(db.String(36),
-                                 db.ForeignKey('NodeTemplate.id'))
-    count = db.Column(db.Integer, nullable=False)
+    id = DB.Column(DB.String(36), primary_key=True)
+    cluster_id = DB.Column(DB.String(36), DB.ForeignKey('Cluster.id'))
+    node_template_id = DB.Column(DB.String(36),
+                                 DB.ForeignKey('NodeTemplate.id'))
+    count = DB.Column(DB.Integer, nullable=False)
 
     def __init__(self, cluster_id, node_template_id, count):
         self.id = uuid4().hex
@@ -183,14 +183,14 @@ class ClusterNodeCount(db.Model):
                % (self.node_template_id, self.count)
 
 
-class Node(db.Model):
+class Node(DB.Model):
     __tablename__ = 'Node'
 
     # do we need own id?
-    vm_id = db.Column(db.String(36), primary_key=True)
-    cluster_id = db.Column(db.String(36), db.ForeignKey('Cluster.id'))
-    node_template_id = db.Column(db.String(36),
-                                 db.ForeignKey('NodeTemplate.id'))
+    vm_id = DB.Column(DB.String(36), primary_key=True)
+    cluster_id = DB.Column(DB.String(36), DB.ForeignKey('Cluster.id'))
+    node_template_id = DB.Column(DB.String(36),
+                                 DB.ForeignKey('NodeTemplate.id'))
 
     def __init__(self, vm_id, cluster_id, node_template_id):
         self.vm_id = vm_id
@@ -201,13 +201,13 @@ class Node(db.Model):
         return '<Node based on %s>' % self.node_template.name
 
 
-class ServiceUrl(db.Model):
+class ServiceUrl(DB.Model):
     __tablename__ = 'ServiceUrl'
 
-    id = db.Column(db.String(36), primary_key=True)
-    cluster_id = db.Column(db.String(36), db.ForeignKey('Cluster.id'))
-    name = db.Column(db.String(80))
-    url = db.Column(db.String(80), nullable=False)
+    id = DB.Column(DB.String(36), primary_key=True)
+    cluster_id = DB.Column(DB.String(36), DB.ForeignKey('Cluster.id'))
+    name = DB.Column(DB.String(80))
+    url = DB.Column(DB.String(80), nullable=False)
 
     def __init__(self, cluster_id, name, url):
         self.id = uuid4().hex

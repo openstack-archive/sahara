@@ -1,16 +1,18 @@
 import logging
+
+from eventlet import monkey_patch
+from flask import Flask
+from werkzeug.exceptions import default_exceptions
+from werkzeug.exceptions import HTTPException
+
 from eho.server.scheduler import setup_scheduler
 from eho.server.service.api import setup_api
 from eho.server.storage.defaults import setup_defaults
 from eho.server.utils.api import render
-from eventlet import monkey_patch
-
-from flask import Flask
-from eho.server.api import v01 as api_v01
-from werkzeug.exceptions import default_exceptions
-from werkzeug.exceptions import HTTPException
+from eho.server.api import v02 as api_v02
 from eho.server.storage.storage import setup_storage
 from eho.server.service.cluster_ops import setup_ops
+
 
 monkey_patch(os=True, select=True, socket=True, thread=True, time=True)
 
@@ -31,7 +33,7 @@ def make_app(**local_conf):
     if ll:
         root_logger.setLevel(ll)
 
-    app.register_blueprint(api_v01.rest, url_prefix='/v0.1')
+    app.register_blueprint(api_v02.rest, url_prefix='/v0.2')
 
     if app.config['DEBUG']:
         print 'Configuration:'
