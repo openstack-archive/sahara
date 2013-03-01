@@ -12,36 +12,28 @@ from eho.server.storage.models import Node, ServiceUrl
 from eho.server.storage.storage import DB
 
 
-OPENSTACK_USER = None
-OPENSTACK_PASSWORD = None
-OPENSTACK_TENANT = None
-OPENSTACK_URL = None
-
-OPENSTACK_VM_INTERNAL_NET = None
-
-NODE_USER = None
-NODE_PASSWORD = None
+OPENSTACK_CONF = {}
+OPENSTACK_NODE_CONF = {}
 
 
 def setup_ops():
-    global OPENSTACK_USER, OPENSTACK_PASSWORD, OPENSTACK_TENANT, OPENSTACK_URL
-    global NODE_USER, NODE_PASSWORD
-    global OPENSTACK_VM_INTERNAL_NET
+    OPENSTACK_CONF['user'] = 'admin'
+    OPENSTACK_CONF['password'] = 'nova'
+    OPENSTACK_CONF['tenant'] = 'admin'
+    OPENSTACK_CONF['auth_url'] = 'http://172.18.79.139:5000/v2.0/'
+    OPENSTACK_CONF['vm_internal_net'] = "novanetwork"
 
-    OPENSTACK_USER = 'admin'
-    OPENSTACK_PASSWORD = 'nova'
-    OPENSTACK_TENANT = 'admin'
-    OPENSTACK_URL = 'http://172.18.79.139:5000/v2.0/'
-
-    OPENSTACK_VM_INTERNAL_NET = "novanetwork"
-
-    NODE_USER = 'root'
-    NODE_PASSWORD = 'swordfish'
+    OPENSTACK_NODE_CONF['user'] = 'root'
+    OPENSTACK_NODE_CONF['password'] = 'swordfish'
 
 
 def _create_nova_client():
-    return nova_client.Client(OPENSTACK_USER, OPENSTACK_PASSWORD,
-                              OPENSTACK_TENANT, OPENSTACK_URL)
+    return nova_client.Client(
+        OPENSTACK_CONF['user'],
+        OPENSTACK_CONF['password'],
+        OPENSTACK_CONF['tenant'],
+        OPENSTACK_CONF['auth_url']
+    )
 
 
 def _find_by_id(lst, id):
@@ -73,7 +65,11 @@ def _ensure_zero(ret):
 
 def _setup_ssh_connection(host, ssh):
     ssh.set_missing_host_key_policy(AutoAddPolicy())
-    ssh.connect(host, username=NODE_USER, password=NODE_PASSWORD)
+    ssh.connect(
+        host,
+        username=OPENSTACK_NODE_CONF['user'],
+        password=OPENSTACK_NODE_CONF['password']
+    )
 
 
 def _open_channel_and_execute(ssh, cmd):
@@ -180,11 +176,11 @@ def _check_if_up(nova, node):
         srv = _find_by_id(nova.servers.list(), node['id'])
         nets = srv.networks
 
-        if not OPENSTACK_VM_INTERNAL_NET in nets:
+        if not OPENSTACK_CONF['vm_internal_net'] in nets:
             # VM's networking is not configured yet
             return
 
-        ips = nets[OPENSTACK_VM_INTERNAL_NET]
+        ips = nets[OPENSTACK_CONF['vm_internal_net']]
         if len(ips) < 2:
             # public IP is not assigned yet
             return
