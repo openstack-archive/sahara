@@ -130,7 +130,7 @@ class TestApi(unittest.TestCase):
 
         self.assertEquals(data, {
             u'status': u'Starting',
-            u'service_urls': [],
+            u'service_urls': {},
             u'name': u'test-cluster',
             u'tenant_id': u'tenant-id',
             u'base_image_id': u'base-image-id',
@@ -157,7 +157,7 @@ class TestApi(unittest.TestCase):
 
         self.assertEquals(data, {
             u'status': u'Active',
-            u'service_urls': [],
+            u'service_urls': {},
             u'name': u'test-cluster',
             u'tenant_id': u'tenant-id',
             u'base_image_id': u'base-image-id',
@@ -248,7 +248,7 @@ class TestApi(unittest.TestCase):
 
         self.assertEquals(data, {
             u'status': u'Starting',
-            u'service_urls': [],
+            u'service_urls': {},
             u'name': u'test-cluster_2',
             u'tenant_id': u'tenant-id_2',
             u'base_image_id': u'base-image-id_2',
