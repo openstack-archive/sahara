@@ -1,0 +1,26 @@
+#!/bin/bash
+
+echo "----- Setting up Hadoop configs"
+
+{% for filename in configfiles -%}
+  cat {{filename}}.eho_template |
+  {%- for item in configs -%}
+    sed -e "s/{{item[0]}}/{{item[1]}}/g" |
+  {%- endfor -%}
+  tee {{filename}}
+{% endfor %}
+
+echo "----- Creating directories"
+
+mkdir -p /mnt/lib/hadoop/hdfs/namenode
+mkdir -p /mnt/lib/hadoop/hdfs/datanode
+mkdir -p /mnt/mapred/mapredsystem
+
+mkdir -p /mnt/lib/hadoop/mapred
+mkdir -p /mnt/log/hadoop
+
+chmod -R 700 /mnt
+chown -R hadoop:hadoop /mnt
+
+{% block master %}
+{% endblock %}

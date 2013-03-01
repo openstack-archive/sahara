@@ -33,6 +33,10 @@ def _stub_launch_cluster(cluster):
         logging.debug("VM '%s/%s/%s' created", ip, vm_id, elem)
 
 
+def _stub_stop_cluster(cluster):
+    logging.debug("del cluster %s", cluster)
+
+
 class TestApi(unittest.TestCase):
     def setUp(self):
         self.db_fd, self.db_path = tempfile.mkstemp()
@@ -47,9 +51,11 @@ class TestApi(unittest.TestCase):
             SQLALCHEMY_DATABASE_URI='sqlite:///' + self.db_path,
             SQLALCHEMY_ECHO=False
         )
-        print 'Test db path: %s' % self.db_path
+        logging.debug('Test db path: %s', self.db_path)
+        logging.debug('Test app.config: %s', app.config)
 
         api.cluster_ops.launch_cluster = _stub_launch_cluster
+        api.cluster_ops.stop_cluster = _stub_stop_cluster
 
         self.app = app.test_client()
 

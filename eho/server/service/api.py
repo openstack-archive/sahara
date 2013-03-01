@@ -151,6 +151,9 @@ def _cluster(cluster):
     for ntc in cluster.node_counts:
         d['node_templates'][ntc.node_template.name] = ntc.count
 
+    for service in cluster.service_urls:
+        d['service_urls'][service.name] = service.url
+
     return Resource('Cluster', d)
 
 
