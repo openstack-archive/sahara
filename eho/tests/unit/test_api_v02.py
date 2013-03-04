@@ -43,7 +43,10 @@ def _stub_auth_token(*args, **kwargs):
     logging.debug('stub filter_factory called with %s, %s', args, kwargs)
 
     def _filter(app):
-        return lambda env, start_response: app(env, start_response)
+        def _handler(env, start_response):
+            return app(env, start_response)
+
+        return _handler
 
     return _filter
 
