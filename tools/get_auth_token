@@ -1,0 +1,3 @@
+#!/bin/bash
+
+.venv/bin/python tools/get_auth_token.py
