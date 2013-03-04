@@ -66,7 +66,7 @@ def make_app(**local_conf):
     for code in default_exceptions.iterkeys():
         app.error_handler_spec[None][code] = make_json_error
 
-    return filter_factory(
+    app.wsgi_app = filter_factory(
         app.config,
         auth_host=app.config['OS_AUTH_HOST'],
         auth_port=app.config['OS_AUTH_PORT'],
@@ -74,4 +74,6 @@ def make_app(**local_conf):
         admin_user=app.config['OS_ADMIN_USER'],
         admin_password=app.config['OS_ADMIN_PASSWORD'],
         admin_tenant=['OS_ADMIN_TENANT']
-    )(app)
+    )(app.wsgi_app)
+
+    return app
