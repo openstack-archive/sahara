@@ -3,5 +3,6 @@ SQLAlchemy
 Flask-SQLAlchemy
 eventlet
 paramiko
+webob
 python-keystoneclient
 python-novaclient>=2.10.0,<3
