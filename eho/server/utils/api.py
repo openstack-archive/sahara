@@ -1,6 +1,7 @@
 import mimetypes
 import json
 import logging
+import traceback
 
 from flask import abort, request, Blueprint, Response
 from werkzeug.datastructures import MIMEAccept
@@ -103,7 +104,11 @@ def request_data():
     return json.loads(request.data)
 
 
-def abort_and_log(status_code, descr):
+def abort_and_log(status_code, descr, exc=None):
     logging.error("Request aborted with status code %s and message '%s'",
                   status_code, descr)
+
+    if exc is not None:
+        logging.error(traceback.format_exc())
+
     abort(status_code, description=descr)
