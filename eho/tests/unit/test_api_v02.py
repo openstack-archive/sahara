@@ -54,12 +54,18 @@ class TestApi(unittest.TestCase):
         logging.debug('Test db path: %s', self.db_path)
         logging.debug('Test app.config: %s', app.config)
 
+        self._prev_cluster_launch = api.cluster_ops.launch_cluster
+        self._prev_cluster_stop = api.cluster_ops.stop_cluster
+
         api.cluster_ops.launch_cluster = _stub_launch_cluster
         api.cluster_ops.stop_cluster = _stub_stop_cluster
 
         self.app = app.test_client()
 
     def tearDown(self):
+        api.cluster_ops.launch_cluster = self._prev_cluster_launch
+        api.cluster_ops.stop_cluster = self._prev_cluster_stop
+
         os.close(self.db_fd)
         os.unlink(self.db_path)
 
