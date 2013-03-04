@@ -12,6 +12,7 @@ from eho.server.main import make_app
 from eho.server.service import api
 from eho.server.storage.models import Node, NodeTemplate
 from eho.server.storage.storage import DB
+import eho.server.main
 
 
 def _stub_vm_creation_job(template_id):
@@ -20,7 +21,8 @@ def _stub_vm_creation_job(template_id):
     return 'ip-address', uuid.uuid4().hex, template.id
 
 
-def _stub_launch_cluster(cluster):
+def _stub_launch_cluster(headers, cluster):
+    logging.debug('stub launch_cluster called with %s, %s', headers, cluster)
     pile = eventlet.GreenPile(scheduler.POOL)
 
     for elem in cluster.node_counts:
@@ -33,14 +35,33 @@ def _stub_launch_cluster(cluster):
         logging.debug("VM '%s/%s/%s' created", ip, vm_id, elem)
 
 
-def _stub_stop_cluster(cluster):
-    logging.debug("del cluster %s", cluster)
+def _stub_stop_cluster(headers, cluster):
+    logging.debug("stub stop_cluster called with %s, %s", headers, cluster)
+
+
+def _stub_auth_token(*args, **kwargs):
+    logging.debug('stub filter_factory called with %s, %s', args, kwargs)
+
+    def _filter(app):
+        return lambda env, start_response: app(env, start_response)
+
+    return _filter
 
 
 class TestApi(unittest.TestCase):
     def setUp(self):
         self.db_fd, self.db_path = tempfile.mkstemp()
         self.maxDiff = 10000
+
+        # store functions that will be stubbed
+        self._prev_auth_filter = eho.server.main.filter_factory
+        self._prev_cluster_launch = api.cluster_ops.launch_cluster
+        self._prev_cluster_stop = api.cluster_ops.stop_cluster
+
+        # stub functions
+        eho.server.main.filter_factory = _stub_auth_token
+        api.cluster_ops.launch_cluster = _stub_launch_cluster
+        api.cluster_ops.stop_cluster = _stub_stop_cluster
 
         app = make_app(
             TESTING=True,
@@ -49,20 +70,22 @@ class TestApi(unittest.TestCase):
             LOG_LEVEL="DEBUG",
             ALLOW_CLUSTER_OPS=True,
             SQLALCHEMY_DATABASE_URI='sqlite:///' + self.db_path,
-            SQLALCHEMY_ECHO=False
+            SQLALCHEMY_ECHO=False,
+            OS_AUTH_HOST='localhost',
+            OS_AUTH_PORT='12345',
+            OS_AUTH_PROTOCOL='http',
+            OS_ADMIN_USER='admin',
+            OS_ADMIN_PASSWORD='admin',
+            OS_ADMIN_TENANT='admin'
         )
         logging.debug('Test db path: %s', self.db_path)
         logging.debug('Test app.config: %s', app.config)
 
-        self._prev_cluster_launch = api.cluster_ops.launch_cluster
-        self._prev_cluster_stop = api.cluster_ops.stop_cluster
-
-        api.cluster_ops.launch_cluster = _stub_launch_cluster
-        api.cluster_ops.stop_cluster = _stub_stop_cluster
-
         self.app = app.test_client()
 
     def tearDown(self):
+        # unstub functions
+        eho.server.main.filter_factory = self._prev_auth_filter
         api.cluster_ops.launch_cluster = self._prev_cluster_launch
         api.cluster_ops.stop_cluster = self._prev_cluster_stop
 
