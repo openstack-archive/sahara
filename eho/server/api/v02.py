@@ -12,7 +12,7 @@ def templates_list():
         return render(
             node_templates=[nt.dict for nt in api.get_node_templates()])
     except Exception, e:
-        abort_and_log(500, "Exception while listing NodeTemplates: %s" % e)
+        abort_and_log(500, "Exception while listing NodeTemplates", e)
 
 
 @rest.post('/node-templates')
@@ -21,7 +21,7 @@ def templates_create():
     try:
         return render(api.create_node_template(data).dict)
     except Exception, e:
-        abort_and_log(500, "Exception while adding NodeTemplate: %s" % e)
+        abort_and_log(500, "Exception while adding NodeTemplate", e)
 
 
 @rest.get('/node-templates/<template_id>')
@@ -31,7 +31,7 @@ def templates_get(template_id):
         nt = api.get_node_template(id=template_id)
     except Exception, e:
         abort_and_log(500, "Exception while getting NodeTemplate by id "
-                           "'%s': %s" % (template_id, e))
+                           "'%s'" % template_id, e)
     if nt is None:
         abort_and_log(404, "NodeTemplate with id '%s' not found"
                            % template_id)
@@ -56,7 +56,7 @@ def clusters_list():
     try:
         return render(clusters=[c.dict for c in api.get_clusters()])
     except Exception, e:
-        abort_and_log(500, 'Exception while listing Clusters: %s' % e)
+        abort_and_log(500, 'Exception while listing Clusters', e)
 
 
 @rest.post('/clusters')
@@ -65,7 +65,7 @@ def clusters_create():
     try:
         return render(api.create_cluster(data).dict)
     except Exception, e:
-        abort_and_log(500, "Exception while adding new Cluster: %s" % e)
+        abort_and_log(500, "Exception while adding new Cluster", e)
 
 
 @rest.get('/clusters/<cluster_id>')
@@ -75,7 +75,7 @@ def clusters_get(cluster_id):
         c = api.get_cluster(id=cluster_id)
     except Exception, e:
         abort_and_log(500, 'Exception while getting Cluster with id '
-                           '\'%s\': %s' % (cluster_id, e))
+                           '\'%s\'' % cluster_id, e)
 
     if c is None:
         abort_and_log(404, 'Cluster with id \'%s\' not found' % cluster_id)
