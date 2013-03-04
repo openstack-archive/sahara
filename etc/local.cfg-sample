@@ -1,10 +1,12 @@
 # OPENSTACK CONF
-OPENSTACK_USER = 'admin'
-OPENSTACK_PASSWORD = 'nova'
-OPENSTACK_TENANT = 'admin'
-OPENSTACK_AUTH_URL = 'http://openstack:5000/v2.0/'
-OPENSTACK_VM_INTERNAL_NET = 'novanetwork'
+OS_AUTH_PROTOCOL = 'http'
+OS_AUTH_HOST = 'openstack'
+OS_AUTH_PORT = '35357'
+OS_ADMIN_USER = 'admin'
+OS_ADMIN_PASSWORD = 'nova'
+OS_ADMIN_TENANT = 'admin'
 
 # NODE CONF
 NODE_USER = 'root'
-NODE_PASSWORD = 'swordfish'
+NODE_PASSWORD = 'password'
+NODE_INTERNAL_NET = 'novanetwork'

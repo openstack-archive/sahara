@@ -1,10 +1,9 @@
 import logging
 import time
+from eho.server.utils.openstack.nova import novaclient
 
 from jinja2 import Environment
 from jinja2 import PackageLoader
-
-from novaclient.v1_1 import client as nova_client
 
 from paramiko import SSHClient, AutoAddPolicy
 
@@ -12,29 +11,14 @@ from eho.server.storage.models import Node, ServiceUrl
 from eho.server.storage.storage import DB
 
 
-OPENSTACK_CONF = {}
-OPENSTACK_NODE_CONF = {}
+NODE_CONF = {}
 
 
 def setup_ops(app):
-    OPENSTACK_CONF['user'] = app.config.get('OPENSTACK_USER')
-    OPENSTACK_CONF['password'] = app.config.get('OPENSTACK_PASSWORD')
-    OPENSTACK_CONF['tenant'] = app.config.get('OPENSTACK_TENANT')
-    OPENSTACK_CONF['auth_url'] = app.config.get('OPENSTACK_AUTH_URL')
-    OPENSTACK_CONF['vm_internal_net'] = \
-        app.config.get('OPENSTACK_VM_INTERNAL_NET')
-
-    OPENSTACK_NODE_CONF['user'] = app.config.get('NODE_USER')
-    OPENSTACK_NODE_CONF['password'] = app.config.get('NODE_PASSWORD')
-
-
-def _create_nova_client():
-    return nova_client.Client(
-        OPENSTACK_CONF['user'],
-        OPENSTACK_CONF['password'],
-        OPENSTACK_CONF['tenant'],
-        OPENSTACK_CONF['auth_url']
-    )
+    NODE_CONF['user'] = app.config.get('NODE_USER')
+    NODE_CONF['password'] = app.config.get('NODE_PASSWORD')
+    NODE_CONF['vm_internal_net'] = \
+        app.config.get('NODE_INTERNAL_NET')
 
 
 def _find_by_id(lst, id):
@@ -68,8 +52,8 @@ def _setup_ssh_connection(host, ssh):
     ssh.set_missing_host_key_policy(AutoAddPolicy())
     ssh.connect(
         host,
-        username=OPENSTACK_NODE_CONF['user'],
-        password=OPENSTACK_NODE_CONF['password']
+        username=NODE_CONF['user'],
+        password=NODE_CONF['password']
     )
 
 
@@ -88,8 +72,8 @@ def _execute_command_on_node(host, cmd):
         ssh.close()
 
 
-def launch_cluster(cluster):
-    nova = _create_nova_client()
+def launch_cluster(headers, cluster):
+    nova = novaclient(headers)
 
     clmap = dict()
     clmap['id'] = cluster.id
@@ -177,11 +161,11 @@ def _check_if_up(nova, node):
         srv = _find_by_id(nova.servers.list(), node['id'])
         nets = srv.networks
 
-        if not OPENSTACK_CONF['vm_internal_net'] in nets:
+        if not NODE_CONF['vm_internal_net'] in nets:
             # VM's networking is not configured yet
             return
 
-        ips = nets[OPENSTACK_CONF['vm_internal_net']]
+        ips = nets[NODE_CONF['vm_internal_net']]
         if len(ips) < 2:
             # public IP is not assigned yet
             return
@@ -285,8 +269,8 @@ def _start_cluster(cluster, clmap):
     logging.info("Cluster '%s' successfully started!", cluster.name)
 
 
-def stop_cluster(cluster):
-    nova = _create_nova_client()
+def stop_cluster(headers, cluster):
+    nova = novaclient(headers)
 
     for node in cluster.nodes:
         try:

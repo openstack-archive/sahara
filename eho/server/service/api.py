@@ -7,6 +7,7 @@ from eho.server.storage.models import NodeTemplate, NodeType, NodeProcess, \
 from eho.server.storage.storage import DB
 from eho.server.utils.api import abort_and_log
 from eho.server.service import cluster_ops
+from flask import request
 
 
 ALLOW_CLUSTER_OPS = False
@@ -181,18 +182,18 @@ def create_cluster(values):
         DB.session.add(cnc)
     DB.session.commit()
 
-    eventlet.spawn(_cluster_creation_job, cluster.id)
+    eventlet.spawn(_cluster_creation_job, request.headers, cluster.id)
 
     return get_cluster(id=cluster.id)
 
 
-def _cluster_creation_job(cluster_id):
+def _cluster_creation_job(headers, cluster_id):
     cluster = Cluster.query.filter_by(id=cluster_id).first()
     logging.debug("Starting cluster '%s' creation: %s", cluster_id,
                   _cluster(cluster).dict)
 
     if ALLOW_CLUSTER_OPS:
-        cluster_ops.launch_cluster(cluster)
+        cluster_ops.launch_cluster(headers, cluster)
     else:
         logging.info("Cluster ops are disabled, use --allow-cluster-ops flag")
 
@@ -210,7 +211,21 @@ def terminate_cluster(**args):
     DB.session.add(cluster)
     DB.session.commit()
 
-    eventlet.spawn(_cluster_termination_job, cluster.id)
+    eventlet.spawn(_cluster_termination_job, request.headers, cluster.id)
+
+
+def _cluster_termination_job(headers, cluster_id):
+    cluster = Cluster.query.filter_by(id=cluster_id).first()
+    logging.debug("Stoping cluster '%s' creation: %s", cluster_id,
+                  _cluster(cluster).dict)
+
+    if ALLOW_CLUSTER_OPS:
+        cluster_ops.stop_cluster(headers, cluster)
+    else:
+        logging.info("Cluster ops are disabled, use --allow-cluster-ops flag")
+
+    DB.session.delete(cluster)
+    DB.session.commit()
 
 
 def terminate_node_template(**args):
@@ -227,17 +242,3 @@ def terminate_node_template(**args):
         return True
     else:
         return False
-
-
-def _cluster_termination_job(cluster_id):
-    cluster = Cluster.query.filter_by(id=cluster_id).first()
-    logging.debug("Stoping cluster '%s' creation: %s", cluster_id,
-                  _cluster(cluster).dict)
-
-    if ALLOW_CLUSTER_OPS:
-        cluster_ops.stop_cluster(cluster)
-    else:
-        logging.info("Cluster ops are disabled, use --allow-cluster-ops flag")
-
-    DB.session.delete(cluster)
-    DB.session.commit()

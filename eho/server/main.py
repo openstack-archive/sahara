@@ -2,6 +2,7 @@ import logging
 
 from eventlet import monkey_patch
 from flask import Flask
+from keystoneclient.middleware.auth_token import filter_factory
 from werkzeug.exceptions import default_exceptions
 from werkzeug.exceptions import HTTPException
 
@@ -65,4 +66,12 @@ def make_app(**local_conf):
     for code in default_exceptions.iterkeys():
         app.error_handler_spec[None][code] = make_json_error
 
-    return app
+    return filter_factory(
+        app.config,
+        auth_host=app.config['OS_AUTH_HOST'],
+        auth_port=app.config['OS_AUTH_PORT'],
+        auth_protocol=app.config['OS_AUTH_PROTOCOL'],
+        admin_user=app.config['OS_ADMIN_USER'],
+        admin_password=app.config['OS_ADMIN_PASSWORD'],
+        admin_tenant=['OS_ADMIN_TENANT']
+    )(app)
