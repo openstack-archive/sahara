@@ -5,7 +5,7 @@ echo "Building docs..."
 rm -rf doc/html
 rm -rf doc/source/apidoc
 
-.venv/bin/sphinx-apidoc -f -o doc/source/apidoc/ eho
+# .venv/bin/sphinx-apidoc -f -o doc/source/apidoc/ eho
 .venv/bin/sphinx-build doc/source/ doc/html/
 
 echo "Done."
