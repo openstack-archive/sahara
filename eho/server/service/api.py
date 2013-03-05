@@ -173,6 +173,8 @@ def create_cluster(values):
     tenant_id = values.pop('tenant_id')
     templates = values.pop('node_templates')
 
+    # todo(slukjanov): check that we can create objects in the specified tenant
+
     cluster = Cluster(name, base_image_id, tenant_id)
     DB.session.add(cluster)
     for template in templates:
