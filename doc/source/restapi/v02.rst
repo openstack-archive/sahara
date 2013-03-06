@@ -186,7 +186,7 @@ All node types are predefined and new types might be added in the future.
 .. sourcecode:: json
 
     {
-        "node-template": {
+        "node_template": {
             "id": "3412",
             "name": "taskTracker_and_dataNode.medium",
             "node_type": {
@@ -483,7 +483,7 @@ defined in section 2.1.
     .. sourcecode:: json
 
         {
-            "node-template": {
+            "node_template": {
                 "name": "tt_dn.medium",
                 "node_type": {
                     "name": "TT+DN",
@@ -513,7 +513,7 @@ defined in section 2.1.
     .. sourcecode:: json
 
         {
-            "node-template": {
+            "node_template": {
                 "id": "3412",
                 "name": "tt_dn.medium",
                 "node_type": {
@@ -567,7 +567,7 @@ This operation returns a response body. It contains node template as "Node Templ
     .. sourcecode:: json
 
         {
-            "node-template": {
+            "node_template": {
                 "id": "3421",
                 "name": "tt_dn.medium",
                 "node_type": {
@@ -617,7 +617,7 @@ This operation returns response body. It contains updated Node Template object d
     .. sourcecode:: json
 
         {
-            "node-template": {
+            "node_template": {
                 "id": "3413",
                 "name": "tt_dn.medium",
                 "node_type": {
@@ -647,7 +647,7 @@ This operation returns response body. It contains updated Node Template object d
     .. sourcecode:: json
 
         {
-            "node-template": {
+            "node_template": {
                 "id": "3413",
                 "name": "tt_dn.medium",
                 "node_type": {
