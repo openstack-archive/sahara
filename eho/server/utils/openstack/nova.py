@@ -3,14 +3,15 @@ from eho.server.utils.openstack.base import url_for
 from novaclient.v1_1 import client as nova_client
 
 
-def novaclient(headers, tenant_id=None):
+def novaclient(headers):
     username = headers['X-User-Name']
     token = headers['X-Auth-Token']
-    tenant = tenant_id or headers['X-Tenant-Id']
+    tenant = headers['X-Tenant-Id']
     compute_url = url_for(headers, 'compute')
 
     logging.debug('novaclient connection created using token '
-                  '"%s" and url "%s"', token, compute_url)
+                  '"%s", tenant "%s" and url "%s"',
+                  token, tenant, compute_url)
 
     nova = nova_client.Client(username, token, tenant,
                               auth_url=compute_url)

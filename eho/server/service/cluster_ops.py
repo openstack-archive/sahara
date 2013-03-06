@@ -73,7 +73,7 @@ def _execute_command_on_node(host, cmd):
 
 
 def launch_cluster(headers, cluster):
-    nova = novaclient(headers, cluster.tenant_id)
+    nova = novaclient(headers)
 
     clmap = dict()
     clmap['id'] = cluster.id
@@ -270,7 +270,7 @@ def _start_cluster(cluster, clmap):
 
 
 def stop_cluster(headers, cluster):
-    nova = novaclient(headers, cluster.tenant_id)
+    nova = novaclient(headers)
 
     for node in cluster.nodes:
         try:
