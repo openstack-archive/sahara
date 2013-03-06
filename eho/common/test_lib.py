@@ -1,5 +1,5 @@
 # vim: tabstop=4 shiftwidth=4 softtabstop=4
-#pylint: disable-all
+# pylint: disable-all
 
 # Copyright (c) 2010 OpenStack, LLC
 # All Rights Reserved.
@@ -37,6 +37,8 @@
 #    LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
 #    OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 #    WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+# stolen from OpenStack Quantum
 
 import sys
 import unittest
