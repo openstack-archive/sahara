@@ -18,14 +18,9 @@ For more information about Keystone, see the OpenStack Identity Developer Guide.
 Each of the EHO objects described in section 2 ('Object Model') belongs to some tenant,
 which is determined by its creator.
 
-Regular users are allowed to perform 'create', 'read' and 'list' operations only in the tenants they have access to.
-They can also perform 'update' and 'delete' operations, but only on the objects they created.
+Users are allowed to perform 'create', 'read', 'list', 'update' and 'delete' operations only in the tenants they have access to.
 
-Admin users could perform any operation in any tenant and on any object.
-
-Whenever a user wants to perform an operation in a tenant, which is not his default,
-the user must specify 'tenant_id' attribute for the object. Since admin user does not have a default tenant,
-he must specify 'tenant_id' for every operation he performs.
+Tenant should be specified in url attribute, like '/v0.2/{tenant_id}/clusters'.
 
 In current EHO design, all authenticated users can perform all operations.
 In the future we are planning to add some RBAC or policy-based rules to manage privileges in EHO.
@@ -161,8 +156,6 @@ All node types are predefined and new types might be added in the future.
 +------------------------------------+--------------------------------------------+-----------------------------------------------------+
 | node_type.processes                | array of strings                           | List of process names that will be executed on node |
 +------------------------------------+--------------------------------------------+-----------------------------------------------------+
-| tenant_id                          | string                                     | An id of the OpenStack's tenant                     |
-+------------------------------------+--------------------------------------------+-----------------------------------------------------+
 | flavor_id                          | string                                     | An id of the OpenStack's flavor                     |
 +------------------------------------+--------------------------------------------+-----------------------------------------------------+
 | job_tracker                        | section                                    | Section with job_tracker conf                       |
@@ -193,22 +186,23 @@ All node types are predefined and new types might be added in the future.
 .. sourcecode:: json
 
     {
-        "id": "3412",
-        "name": "taskTracker_and_dataNode.medium",
-        "node_type": {
-            "name": "TT+DN",
-            "processes": ["task_tracker", "data_node"]
-        },
-        "tenant_id": "23451",
-        "flavor_id": "1234",
-        "task_tracker": {
-            "heap_size": 384,
-            "max_map_tasks": 3,
-            "max_reduce_tasks": 1,
-            "task_heap_size": 640
-        },
-        "data_node": {
-            "heap_size": 384
+        "node-template": {
+            "id": "3412",
+            "name": "taskTracker_and_dataNode.medium",
+            "node_type": {
+                "name": "TT+DN",
+                "processes": ["task_tracker", "data_node"]
+            },
+            "flavor_id": "1234",
+            "task_tracker": {
+                "heap_size": 384,
+                "max_map_tasks": 3,
+                "max_reduce_tasks": 1,
+                "task_heap_size": 640
+            },
+            "data_node": {
+                "heap_size": 384
+            }
         }
     }
 
@@ -233,8 +227,6 @@ the existing cluster.
 +------------------------------------+--------------------------------------------+-----------------------------------------------------+
 | name                               | string                                     | A name of the cluster                               |
 +------------------------------------+--------------------------------------------+-----------------------------------------------------+
-| tenant_id                          | string                                     | An id of the OpenStack's tenant                     |
-+------------------------------------+--------------------------------------------+-----------------------------------------------------+
 | node_templates                     | map (object)                               | Map Node Template -> count                          |
 +------------------------------------+--------------------------------------------+-----------------------------------------------------+
 | base_image_id                      | string                                     | An id of the image stored in Glance that will be    |
@@ -247,14 +239,15 @@ the existing cluster.
 .. sourcecode:: json
 
     {
-        "id": "1234",
-        "tenant_id": "23451",
-        "name": "cluster #123",
-        "node_templates": {
-            "jobTracker_and_nameNode.medium": 1,
-            "taskTracker_and_dataNode.medium": 4
-        },
-        "base_image_id": "image #1"
+        "cluster": {
+            "id": "1234",
+            "name": "cluster #123",
+            "node_templates": {
+                "jobTracker_and_nameNode.medium": 1,
+                "taskTracker_and_dataNode.medium": 4
+            },
+            "base_image_id": "image #1"
+        }
     }
 
 2.3 Cluster object
@@ -270,8 +263,6 @@ This object used in REST API responses to return information about clusters.
 | Name                               | Type                                       | Description                                         |
 +====================================+============================================+=====================================================+
 | id                                 | [required for update] string               |                                                     |
-+------------------------------------+--------------------------------------------+-----------------------------------------------------+
-| tenant_id                          | string                                     | An id of the OpenStack's tenant                     |
 +------------------------------------+--------------------------------------------+-----------------------------------------------------+
 | name                               | string                                     | A name of the cluster                               |
 +------------------------------------+--------------------------------------------+-----------------------------------------------------+
@@ -298,22 +289,23 @@ This object used in REST API responses to return information about clusters.
 .. sourcecode:: json
 
     {
-        "id": "1234",
-        "tenant_id": "23451",
-        "name": "cluster #123",
-        "node_templates": {
-            "jobTracker_and_nameNode.medium": 1,
-            "taskTracker_and_dataNode.medium": 10
-        },
-        "base_image": "image #1",
-        "status": "online",
-        "nodes": [
-            "<Node object>",
-            "<Node object>"
-        ],
-        "service_urls": {
-            "job_tracker": "http://10.0.1.10:50030",
-            "name_node": "http://10.0.1.10:50070"
+        "cluster": {
+            "id": "1234",
+            "name": "cluster #123",
+            "node_templates": {
+                "jobTracker_and_nameNode.medium": 1,
+                "taskTracker_and_dataNode.medium": 10
+            },
+            "base_image": "image #1",
+            "status": "online",
+            "nodes": [
+                "<Node object>",
+                "<Node object>"
+            ],
+            "service_urls": {
+                "job_tracker": "http://10.0.1.10:50030",
+                "name_node": "http://10.0.1.10:50070"
+            }
         }
     }
 
@@ -323,7 +315,7 @@ This object used in REST API responses to return information about clusters.
 **2.4.1 Description**
 
 This object is used in REST API responses to return information about cluster's nodes.
-In fact, a node is a virtual machine managed by OpenStack Nova.
+In fact, a node is a virtual machine managed by OpenStack Nova. This object used only as nested element of Cluster objects.
 
 **2.4.2 Object fields**
 
@@ -368,7 +360,7 @@ Use the following APIs to manage templates:
 | Verb                               | URI                                        | Description                                         |
 +====================================+============================================+=====================================================+
 | GET                                | /v0.2/node-templates                       | Lists summary for all Node Templates in EHO that are|
-|                                    |                                            | accessible to the tenant who submits the request    |
+|                                    |                                            | accessible to the tenant_id                         |
 +------------------------------------+--------------------------------------------+-----------------------------------------------------+
 | POST                               | /v0.2/node-templates                       | Creates a new Node Template                         |
 +------------------------------------+--------------------------------------------+-----------------------------------------------------+
@@ -391,8 +383,7 @@ Normal Response Code: 200 (OK)
 
 Errors: none
 
-This operations returns the list of all Node Templates associated with your tenant.
-If you have an admin role, then this request returns all the Node Templates of all tenants.
+This operations returns the list of all Node Templates associated with specified tenant (url attribute 'tenant_id').
 
 This operation does not require a request body.
 
@@ -427,7 +418,6 @@ This operation returns a response body. It returns a (potentially empty) list, e
                         "name": "TT+DN",
                         "processes": ["task_tracker", "data_node"]
                     },
-                    "tenant_id": "23451",
                     "flavor_id": "1234",
                     "task_tracker": {
                         "heap_size": 384,
@@ -446,7 +436,6 @@ This operation returns a response body. It returns a (potentially empty) list, e
                         "name": "TT+DN",
                         "processes": ["task_tracker", "data_node"]
                     },
-                    "tenant_id": "23451",
                     "flavor_id": "1235",
                     "task_tracker": {
                         "heap_size": 2048,
@@ -477,9 +466,7 @@ Errors:
 This operation creates a new Node Template from the parameters specified in request object.
 All parameters has been described in section 2.1.
 
-Users with an admin role can create Node Templates on behalf of other tenants by specifying a tenant_id parameter
-different than their own. The tenant_id attribute is only required if the caller has an admin role and wants to
-create a Node Template for another tenant.
+Node Template will be created in the specified tenant (url attribute 'tenant_id').
 
 This operation requires request body.
 
@@ -496,21 +483,22 @@ defined in section 2.1.
     .. sourcecode:: json
 
         {
-            "name": "tt_dn.medium",
-            "node_type": {
-                "name": "TT+DN",
-                "processes": ["task_tracker", "data_node"]
-            },
-            "tenant_id": "23451",
-            "flavor_id": "1234",
-            "task_tracker": {
-                "heap_size": 384,
-                "max_map_tasks": 3,
-                "max_reduce_tasks": 1,
-                "task_heap_size": 640
-            },
-            "data_node": {
-                "heap_size": 384
+            "node-template": {
+                "name": "tt_dn.medium",
+                "node_type": {
+                    "name": "TT+DN",
+                    "processes": ["task_tracker", "data_node"]
+                },
+                "flavor_id": "1234",
+                "task_tracker": {
+                    "heap_size": 384,
+                    "max_map_tasks": 3,
+                    "max_reduce_tasks": 1,
+                    "task_heap_size": 640
+                },
+                "data_node": {
+                    "heap_size": 384
+                }
             }
         }
 
@@ -525,22 +513,23 @@ defined in section 2.1.
     .. sourcecode:: json
 
         {
-            "id": "3412",
-            "name": "tt_dn.medium",
-            "node_type": {
-                "name": "TT+DN",
-                "processes": ["task_tracker", "data_node"]
-            },
-            "tenant_id": "23451",
-            "flavor_id": "1234",
-            "task_tracker": {
-                "heap_size": 384,
-                "max_map_tasks": 3,
-                "max_reduce_tasks": 1,
-                "task_heap_size": 640
-            },
-            "data_node": {
-                "heap_size": 384
+            "node-template": {
+                "id": "3412",
+                "name": "tt_dn.medium",
+                "node_type": {
+                    "name": "TT+DN",
+                    "processes": ["task_tracker", "data_node"]
+                },
+                "flavor_id": "1234",
+                "task_tracker": {
+                    "heap_size": 384,
+                    "max_map_tasks": 3,
+                    "max_reduce_tasks": 1,
+                    "task_heap_size": 640
+                },
+                "data_node": {
+                    "heap_size": 384
+                }
             }
         }
 
@@ -556,8 +545,6 @@ Errors:
 404, NODE_TEMPLATE_NOT_FOUND, "Node Template with such a name does not exist"
 
 This operation returns a Node Template object identified by node_template_id.
-If the user is not an admin, and the Node Template object doesn't belong to user's tenant,
-user would receive a 403 (Forbidden) error.
 
 This operation does not require a request body.
 
@@ -580,22 +567,23 @@ This operation returns a response body. It contains node template as "Node Templ
     .. sourcecode:: json
 
         {
-            "id": "3421",
-            "name": "tt_dn.medium",
-            "node_type": {
-                "name": "TT+DN",
-                "processes": ["task_tracker", "data_node"]
-            },
-            "tenant_id": "23451",
-            "flavor_id": "1234",
-            "task_tracker": {
-                "heap_size": 384,
-                "max_map_tasks": 3,
-                "max_reduce_tasks": 1,
-                "task_heap_size": 640
-            },
-            "data_node": {
-                "heap_size": 384
+            "node-template": {
+                "id": "3421",
+                "name": "tt_dn.medium",
+                "node_type": {
+                    "name": "TT+DN",
+                    "processes": ["task_tracker", "data_node"]
+                },
+                "flavor_id": "1234",
+                "task_tracker": {
+                    "heap_size": 384,
+                    "max_map_tasks": 3,
+                    "max_reduce_tasks": 1,
+                    "task_heap_size": 640
+                },
+                "data_node": {
+                    "heap_size": 384
+                }
             }
         }
 
@@ -627,24 +615,25 @@ This operation returns response body. It contains updated Node Template object d
         PUT http://eho/v0.2/node-templates/3413
 
     .. sourcecode:: json
-    
+
         {
-            "id": "3413",
-            "name": "tt_dn.medium",
-            "node_type": {
-                "name": "TT+DN",
-                "processes": ["task_tracker", "data_node"]
-            },
-            "tenant_id": "23451",
-            "flavor_id": "1234",
-            "task_tracker": {
-                "heap_size": 402,
-                "max_map_tasks": 3,
-                "max_reduce_tasks": 1,
-                "task_heap_size": 500
-            },
-            "data_node": {
-                "heap_size": 402
+            "node-template": {
+                "id": "3413",
+                "name": "tt_dn.medium",
+                "node_type": {
+                    "name": "TT+DN",
+                    "processes": ["task_tracker", "data_node"]
+                },
+                "flavor_id": "1234",
+                "task_tracker": {
+                    "heap_size": 402,
+                    "max_map_tasks": 3,
+                    "max_reduce_tasks": 1,
+                    "task_heap_size": 500
+                },
+                "data_node": {
+                    "heap_size": 402
+                }
             }
         }
 
@@ -658,22 +647,23 @@ This operation returns response body. It contains updated Node Template object d
     .. sourcecode:: json
 
         {
-            "id": "3413",
-            "name": "tt_dn.medium",
-            "node_type": {
-                "name": "TT+DN",
-                "processes": ["task_tracker", "data_node"]
-            },
-            "tenant_id": "23451",
-            "flavor_id": "1234",
-            "task_tracker": {
-                "heap_size": 402,
-                "max_map_tasks": 3,
-                "max_reduce_tasks": 1,
-                "task_heap_size": 500
-            },
-            "data_node": {
-                "heap_size": 402
+            "node-template": {
+                "id": "3413",
+                "name": "tt_dn.medium",
+                "node_type": {
+                    "name": "TT+DN",
+                    "processes": ["task_tracker", "data_node"]
+                },
+                "flavor_id": "1234",
+                "task_tracker": {
+                    "heap_size": 402,
+                    "max_map_tasks": 3,
+                    "max_reduce_tasks": 1,
+                    "task_heap_size": 500
+                },
+                "data_node": {
+                    "heap_size": 402
+                }
             }
         }
 
@@ -690,9 +680,9 @@ Errors:
 404, NODE_TEMPLATE_NOT_FOUND, "Node Template with name 'node template #1' does not exist"
 
 This operation removes the specified Node Template and its associated resources.
-Any and all data is immediately purged and is not recoverable. If the user is not an admin, and the Node Template
-object doesn't belong to user's tenant, user would receive a 403 (Forbidden) error. Only Node Templates that are
-not in use could be removed. So, if any cluster used any Node Template than such Node Template could not be modified
+Any and all data is immediately purged and is not recoverable.
+Only Node Templates that are not in use could be removed.
+So, if any cluster used any Node Template than such Node Template could not be modified
 or removed.
 
 This operation does not require a request body.
@@ -723,7 +713,7 @@ Use the following APIs to manage clusters:
 | Verb                               | URI                                        | Description                                         |
 +====================================+============================================+=====================================================+
 | GET                                | /v0.2/clusters                             | Lists summary for all clusters in EHO that are      |
-|                                    |                                            | accessible to the tenant who submits the request    |
+|                                    |                                            | accessible to the specified tenant                  |
 +------------------------------------+--------------------------------------------+-----------------------------------------------------+
 | POST                               | /v0.2/clusters                             | Creates a new cluster                               |
 +------------------------------------+--------------------------------------------+-----------------------------------------------------+
@@ -743,8 +733,7 @@ Normal Response Code: 200 (OK)
 
 Errors: none
 
-This operations returns the list of all clusters associated with your tenant.
-If you have an admin role, then this request returns all the clusters of all tenants.
+This operations returns the list of all clusters associated with the specified tenant (url attribute 'tenant_id').
 
 This operation does not require a request body.
 
@@ -771,7 +760,6 @@ each element in the list is a "Cluster object" that described in section 2.2.
             "clusters": [
                 {
                     "id": "1234",
-                    "tenant_id": "23451",
                     "name": "cluster #123",
                     "node_templates": {
                         "jobTracker_and_nameNode": 1,
@@ -790,7 +778,6 @@ each element in the list is a "Cluster object" that described in section 2.2.
                 },
                 {
                     "id": "1235",
-                    "tenant_id": "23451",
                     "name": "cluster #124",
                     "node_templates": {
                         "jobTracker": 1,
@@ -829,10 +816,6 @@ Errors:
 This operation creates a new cluster from the parameters specified in request object.
 All parameters has been described in section 2.2.
 
-Users with an admin role can create clusters on behalf of other tenants by specifying a tenant_id parameter
-different than their own. The tenant_id attribute is only required if the caller has an admin role and wants
-to create a cluster for another tenant.
-
 This operation requires request body.
 
 This operation returns a response body. It contains newly created Node Template as "Cluster Create/Update object",
@@ -853,13 +836,14 @@ master node type, for example, 1 JobTracker node and 1 NameNode node.
         .. sourcecode:: json
 
             {
-                "tenant_id": "23451",
-                "name": "cluster #123",
-                "node_templates": {
-                    "jobTracker_and_nameNode": 1,
-                    "taskTracker_and_dataNode": 10
-                },
-                "base_image": "image #1"
+                "cluster": {
+                    "name": "cluster #123",
+                    "node_templates": {
+                        "jobTracker_and_nameNode": 1,
+                        "taskTracker_and_dataNode": 10
+                    },
+                    "base_image": "image #1"
+                }
             }
 
     **response**
@@ -872,23 +856,24 @@ master node type, for example, 1 JobTracker node and 1 NameNode node.
         .. sourcecode:: json
 
             {
-                "id": "1234",
-                "tenant_id": "23451",
-                "name": "cluster #123",
-                "node_templates": {
-                    "jobTracker_and_nameNode": 1,
-                    "taskTracker_and_dataNode": 10
-                },
-                "base_image": "image #1",
-                "status": "online",
-                "service_urls": {
-                    "job_tracker": "10.0.1.10:12345",
-                    "name_node": "10.0.1.10:12346"
-                },
-                "nodes": [
-                    "<Node object>",
-                    "<Node object>"
-                ]
+                "cluster": {
+                    "id": "1234",
+                    "name": "cluster #123",
+                    "node_templates": {
+                        "jobTracker_and_nameNode": 1,
+                        "taskTracker_and_dataNode": 10
+                    },
+                    "base_image": "image #1",
+                    "status": "online",
+                    "service_urls": {
+                        "job_tracker": "10.0.1.10:12345",
+                        "name_node": "10.0.1.10:12346"
+                    },
+                    "nodes": [
+                        "<Node object>",
+                        "<Node object>"
+                    ]
+                }
             }
 
 3.2.4 Retrieve a specific cluster
@@ -902,8 +887,7 @@ Errors:
 
     404, CLUSTER_NOT_FOUND, "Cluster with name 'cluster#123' does not exists"
 
-This operation returns a cluster object identified by cluster_id. If the user is not an admin,
-and the cluster object doesn't belong to user's tenant, user would receive a 403 (Forbidden) error.
+This operation returns a cluster object identified by cluster_id.
 
 This operation does not require a request body.
 
@@ -926,23 +910,24 @@ This operation returns a response body. It contains cluster as "Cluster object",
     .. sourcecode:: json
 
         {
-            "id": "1234",
-            "tenant_id": "23451",
-            "name": "cluster #123",
-            "node_templates": {
-                "jobTracker_and_nameNode": 1,
-                "taskTracker_and_dataNode": 10
-            },
-            "base_image": "image #1",
-            "status": "online",
-            "service_urls": {
-                "job_tracker": "10.0.1.10:12345",
-                "name_node": "10.0.1.10:12346"
-            },
-            "nodes": [
-                "<Node object>",
-                "<Node object>"
-            ]
+            "cluster": {
+                "id": "1234",
+                "name": "cluster #123",
+                "node_templates": {
+                    "jobTracker_and_nameNode": 1,
+                    "taskTracker_and_dataNode": 10
+                },
+                "base_image": "image #1",
+                "status": "online",
+                "service_urls": {
+                    "job_tracker": "10.0.1.10:12345",
+                    "name_node": "10.0.1.10:12346"
+                },
+                "nodes": [
+                    "<Node object>",
+                    "<Node object>"
+                ]
+            }
         }
 
 3.2.5 Update a cluster
@@ -982,14 +967,15 @@ take a look on cluster creation operation. All needed Node Templates should be s
     .. sourcecode:: json
 
         {
-            "id": "1234",
-            "tenant_id": "23451",
-            "name": "the new cluster #123",
-            "node_templates": {
-                "jobTracker_and_nameNode": 1,
-                "taskTracker_and_dataNode": 20
-            },
-            "base_image": "image #1"
+            "cluster": {
+                "id": "1234",
+                "name": "the new cluster #123",
+                "node_templates": {
+                    "jobTracker_and_nameNode": 1,
+                    "taskTracker_and_dataNode": 20
+                },
+                "base_image": "image #1"
+            }
         }
 
     **response**
@@ -1002,23 +988,24 @@ take a look on cluster creation operation. All needed Node Templates should be s
     .. sourcecode:: json
 
         {
-            "id": "1234",
-            "tenant_id": "23451",
-            "name": "the new cluster #123",
-            "node_templates": {
-                "jobTracker_and_nameNode": 1,
-                "taskTracker_and_dataNode": 20
-            },
-            "base_image": "image #1",
-            "status": "online",
-            "service_urls": {
-                "job_tracker": "10.0.1.10:12345",
-                "name_node": "10.0.1.10:12346"
-            },
-            "nodes": [
-                "<Node object>",
-                "<Node object>"
-            ]
+            "cluster": {
+                "id": "1234",
+                "name": "the new cluster #123",
+                "node_templates": {
+                    "jobTracker_and_nameNode": 1,
+                    "taskTracker_and_dataNode": 20
+                },
+                "base_image": "image #1",
+                "status": "online",
+                "service_urls": {
+                    "job_tracker": "10.0.1.10:12345",
+                    "name_node": "10.0.1.10:12346"
+                },
+                "nodes": [
+                    "<Node object>",
+                    "<Node object>"
+                ]
+            }
         }
 
 3.2.6 Remove a cluster
@@ -1033,8 +1020,7 @@ Errors:
 404, CLUSTER_NOT_FOUND, "Cluster with such name does not exist"
 
 This operation removes the specified cluster (identified by cluster_id) and its associated resources.
-Any and all data is immediately purged and is not recoverable. If the user is not an admin, and the cluster object
-doesn't belong to user's tenant, user would receive a 403 (Forbidden) error.
+Any and all data is immediately purged and is not recoverable.
 
 This operation does not require a request body.
 
