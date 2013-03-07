@@ -51,10 +51,13 @@ class Rest(Blueprint):
                 if status:
                     request.status_code = status
 
+                kwargs.pop("tenant_id")
+
                 return func(**kwargs)
 
-            self.add_url_rule(rule, endpoint, handler, **options)
-            ext_rule = rule + '.<resp_type>'
+            f_rule = "/<tenant_id>" + rule
+            self.add_url_rule(f_rule, endpoint, handler, **options)
+            ext_rule = f_rule + '.<resp_type>'
             self.add_url_rule(ext_rule, endpoint, handler, **options)
 
             return func

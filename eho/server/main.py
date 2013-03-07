@@ -2,10 +2,11 @@ import logging
 
 from eventlet import monkey_patch
 from flask import Flask
-from keystoneclient.middleware.auth_token import filter_factory
+from keystoneclient.middleware.auth_token import filter_factory as auth_token
 from werkzeug.exceptions import default_exceptions
 from werkzeug.exceptions import HTTPException
 
+from eho.server.middleware.auth_valid import filter_factory as auth_valid
 from eho.server.scheduler import setup_scheduler
 from eho.server.service.api import setup_api
 from eho.server.storage.defaults import setup_defaults
@@ -66,7 +67,9 @@ def make_app(**local_conf):
     for code in default_exceptions.iterkeys():
         app.error_handler_spec[None][code] = make_json_error
 
-    app.wsgi_app = filter_factory(
+    app.wsgi_app = auth_valid(app.config)(app.wsgi_app)
+
+    app.wsgi_app = auth_token(
         app.config,
         auth_host=app.config['OS_AUTH_HOST'],
         auth_port=app.config['OS_AUTH_PORT'],

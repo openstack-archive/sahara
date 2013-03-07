@@ -40,7 +40,19 @@ def _stub_stop_cluster(headers, cluster):
 
 
 def _stub_auth_token(*args, **kwargs):
-    logging.debug('stub filter_factory called with %s, %s', args, kwargs)
+    logging.debug('stub token filter called with %s, %s', args, kwargs)
+
+    def _filter(app):
+        def _handler(env, start_response):
+            return app(env, start_response)
+
+        return _handler
+
+    return _filter
+
+
+def _stub_auth_valid(*args, **kwargs):
+    logging.debug('stub token validation called with %s, %s', args, kwargs)
 
     def _filter(app):
         def _handler(env, start_response):
@@ -57,12 +69,14 @@ class TestApi(unittest.TestCase):
         self.maxDiff = 10000
 
         # store functions that will be stubbed
-        self._prev_auth_filter = eho.server.main.filter_factory
+        self._prev_auth_token = eho.server.main.auth_token
+        self._prev_auth_valid = eho.server.main.auth_valid
         self._prev_cluster_launch = api.cluster_ops.launch_cluster
         self._prev_cluster_stop = api.cluster_ops.stop_cluster
 
         # stub functions
-        eho.server.main.filter_factory = _stub_auth_token
+        eho.server.main.auth_token = _stub_auth_token
+        eho.server.main.auth_valid = _stub_auth_valid
         api.cluster_ops.launch_cluster = _stub_launch_cluster
         api.cluster_ops.stop_cluster = _stub_stop_cluster
 
@@ -88,7 +102,8 @@ class TestApi(unittest.TestCase):
 
     def tearDown(self):
         # unstub functions
-        eho.server.main.filter_factory = self._prev_auth_filter
+        eho.server.main.auth_token = self._prev_auth_token
+        eho.server.main.auth_valid = self._prev_auth_valid
         api.cluster_ops.launch_cluster = self._prev_cluster_launch
         api.cluster_ops.stop_cluster = self._prev_cluster_stop
 
@@ -96,7 +111,7 @@ class TestApi(unittest.TestCase):
         os.unlink(self.db_path)
 
     def test_list_node_templates(self):
-        rv = self.app.get('/v0.2/node-templates.json')
+        rv = self.app.get('/v0.2/some-tenant-id/node-templates.json')
         self.assertEquals(rv.status_code, 200)
         data = json.loads(rv.data)
 
@@ -107,20 +122,23 @@ class TestApi(unittest.TestCase):
         self.assertEquals(data, _get_templates_stub_data())
 
     def test_create_node_template(self):
-        rv = self.app.post('/v0.2/node-templates.json', data=json.dumps(dict(
-            name='test_template',
-            node_type='JT+NN',
-            tenant_id='test_tenant',
-            flavor_id='test_flavor',
-            job_tracker={
-                'heap_size': '1234'
-            },
-            name_node={
-                'heap_size': '2345'
-            }
-        )))
+        rv = self.app.post('/v0.2/some-tenant-id/node-templates.json',
+                           data=json.dumps(dict(
+                               node_template=dict(
+                                   name='test_template',
+                                   node_type='JT+NN',
+                                   flavor_id='test_flavor',
+                                   job_tracker={
+                                       'heap_size': '1234'
+                                   },
+                                   name_node={
+                                       'heap_size': '2345'
+                                   }
+                               ))))
         self.assertEquals(rv.status_code, 202)
         data = json.loads(rv.data)
+
+        data = data['node_template']
 
         # clean all ids
         del data[u'id']
@@ -129,7 +147,7 @@ class TestApi(unittest.TestCase):
             u'job_tracker': {
                 u'heap_size': u'1234'
             }, u'name': u'test_template',
-            u'tenant_id': u'test_tenant',
+            u'tenant_id': u'tenant-01',
             u'node_type': {
                 u'processes': [
                     u'job_tracker', u'name_node'
@@ -143,7 +161,7 @@ class TestApi(unittest.TestCase):
         })
 
     def test_list_clusters(self):
-        rv = self.app.get('/v0.2/clusters.json')
+        rv = self.app.get('/v0.2/some-tenant-id/clusters.json')
         self.assertEquals(rv.status_code, 200)
         data = json.loads(rv.data)
 
@@ -152,17 +170,20 @@ class TestApi(unittest.TestCase):
         })
 
     def test_create_clusters(self):
-        rv = self.app.post('/v0.2/clusters.json', data=json.dumps(dict(
-            name='test-cluster',
-            base_image_id='base-image-id',
-            tenant_id='tenant-id',
-            node_templates={
-                'jt_nn.medium': 1,
-                'tt_dn.small': 5
-            }
-        )))
+        rv = self.app.post('/v0.2/some-tenant-id/clusters.json',
+                           data=json.dumps(dict(
+                               cluster=dict(
+                                   name='test-cluster',
+                                   base_image_id='base-image-id',
+                                   node_templates={
+                                       'jt_nn.medium': 1,
+                                       'tt_dn.small': 5
+                                   }
+                               ))))
         self.assertEquals(rv.status_code, 202)
         data = json.loads(rv.data)
+
+        data = data['cluster']
 
         cluster_id = data.pop(u'id')
 
@@ -170,7 +191,7 @@ class TestApi(unittest.TestCase):
             u'status': u'Starting',
             u'service_urls': {},
             u'name': u'test-cluster',
-            u'tenant_id': u'tenant-id',
+            u'tenant_id': u'tenant-01',
             u'base_image_id': u'base-image-id',
             u'node_templates': {
                 u'jt_nn.medium': 1,
@@ -181,9 +202,12 @@ class TestApi(unittest.TestCase):
 
         eventlet.sleep(4)
 
-        rv = self.app.get('/v0.2/clusters/%s.json' % cluster_id)
+        rv = self.app.get('/v0.2/some-tenant-id/clusters/%s.json' % cluster_id)
         self.assertEquals(rv.status_code, 200)
         data = json.loads(rv.data)
+
+        data = data['cluster']
+
         self.assertEquals(data.pop(u'id'), cluster_id)
 
         # clean all ids
@@ -197,7 +221,7 @@ class TestApi(unittest.TestCase):
             u'status': u'Active',
             u'service_urls': {},
             u'name': u'test-cluster',
-            u'tenant_id': u'tenant-id',
+            u'tenant_id': u'tenant-01',
             u'base_image_id': u'base-image-id',
             u'node_templates': {
                 u'jt_nn.medium': 1,
@@ -215,25 +239,32 @@ class TestApi(unittest.TestCase):
         ]))
 
     def test_delete_node_template(self):
-        rv = self.app.post('/v0.2/node-templates.json', data=json.dumps(dict(
-            name='test_template_2',
-            node_type='JT+NN',
-            tenant_id='test_tenant_2',
-            flavor_id='test_flavor_2',
-            job_tracker={
-                'heap_size': '1234'
-            },
-            name_node={
-                'heap_size': '2345'
-            }
-        )))
+        rv = self.app.post('/v0.2/some-tenant-id/node-templates.json',
+                           data=json.dumps(dict(
+                               node_template=dict(
+                                   name='test_template_2',
+                                   node_type='JT+NN',
+                                   flavor_id='test_flavor_2',
+                                   job_tracker={
+                                       'heap_size': '1234'
+                                   },
+                                   name_node={
+                                       'heap_size': '2345'
+                                   }
+                               ))))
         self.assertEquals(rv.status_code, 202)
         data = json.loads(rv.data)
+
+        data = data['node_template']
+
         node_template_id = data.pop(u'id')
 
-        rv = self.app.get('/v0.2/node-templates/%s.json' % node_template_id)
+        rv = self.app.get(
+            '/v0.2/some-tenant-id/node-templates/%s.json' % node_template_id)
         self.assertEquals(rv.status_code, 200)
         data = json.loads(rv.data)
+
+        data = data['node_template']
 
         # clean all ids
         del data[u'id']
@@ -242,7 +273,7 @@ class TestApi(unittest.TestCase):
             u'job_tracker': {
                 u'heap_size': u'1234'
             }, u'name': u'test_template_2',
-            u'tenant_id': u'test_tenant_2',
+            u'tenant_id': u'tenant-01',
             u'node_type': {
                 u'processes': [
                     u'job_tracker', u'name_node'
@@ -255,31 +286,39 @@ class TestApi(unittest.TestCase):
             }
         })
 
-        rv = self.app.delete('/v0.2/node-templates/%s.json' % node_template_id)
+        rv = self.app.delete(
+            '/v0.2/some-tenant-id/node-templates/%s.json' % node_template_id)
         self.assertEquals(rv.status_code, 204)
 
-        rv = self.app.get('/v0.2/node-templates/%s.json' % node_template_id)
+        rv = self.app.get(
+            '/v0.2/some-tenant-id/node-templates/%s.json' % node_template_id)
 
         # todo(vrovachev): change success code to 404
         self.assertEquals(rv.status_code, 500)
 
     def test_delete_cluster(self):
-        rv = self.app.post('/v0.2/clusters.json', data=json.dumps(dict(
-            name='test-cluster_2',
-            base_image_id='base-image-id_2',
-            tenant_id='tenant-id_2',
-            node_templates={
-                'jt_nn.medium': 1,
-                'tt_dn.small': 5
-            }
-        )))
+        rv = self.app.post('/v0.2/some-tenant-id/clusters.json',
+                           data=json.dumps(dict(
+                               cluster=dict(
+                                   name='test-cluster_2',
+                                   base_image_id='base-image-id_2',
+                                   node_templates={
+                                       'jt_nn.medium': 1,
+                                       'tt_dn.small': 5
+                                   }
+                               ))))
         self.assertEquals(rv.status_code, 202)
         data = json.loads(rv.data)
+
+        data = data['cluster']
+
         cluster_id = data.pop(u'id')
 
-        rv = self.app.get('/v0.2/clusters/%s.json' % cluster_id)
+        rv = self.app.get('/v0.2/some-tenant-id/clusters/%s.json' % cluster_id)
         self.assertEquals(rv.status_code, 200)
         data = json.loads(rv.data)
+
+        data = data['cluster']
 
         # delete all ids
         del data[u'id']
@@ -288,7 +327,7 @@ class TestApi(unittest.TestCase):
             u'status': u'Starting',
             u'service_urls': {},
             u'name': u'test-cluster_2',
-            u'tenant_id': u'tenant-id_2',
+            u'tenant_id': u'tenant-01',
             u'base_image_id': u'base-image-id_2',
             u'node_templates': {
                 u'jt_nn.medium': 1,
@@ -297,12 +336,13 @@ class TestApi(unittest.TestCase):
             u'nodes': []
         })
 
-        rv = self.app.delete('/v0.2/clusters/%s.json' % cluster_id)
+        rv = self.app.delete(
+            '/v0.2/some-tenant-id/clusters/%s.json' % cluster_id)
         self.assertEquals(rv.status_code, 204)
 
         eventlet.sleep(1)
 
-        rv = self.app.get('/v0.2/clusters/%s.json' % cluster_id)
+        rv = self.app.get('/v0.2/some-tenant-id/clusters/%s.json' % cluster_id)
 
         # todo(vrovachev): change success code to 404
         self.assertEquals(rv.status_code, 500)
@@ -320,7 +360,7 @@ def _get_templates_stub_data():
                     u'heap_size': u'896'
                 },
                 u'name': u'jt_nn.small',
-                u'tenant_id': u't_1',
+                u'tenant_id': u'tenant-01',
                 u'node_type': {
                     u'processes': [
                         u'job_tracker', u'name_node'
@@ -337,7 +377,7 @@ def _get_templates_stub_data():
                     u'heap_size': u'1792'
                 },
                 u'name': u'jt_nn.medium',
-                u'tenant_id': u't_1',
+                u'tenant_id': u'tenant-01',
                 u'node_type': {
                     u'processes': [
                         u'job_tracker', u'name_node'
@@ -353,7 +393,7 @@ def _get_templates_stub_data():
                     u'heap_size': u'1792'
                 },
                 u'name': u'jt.small',
-                u'tenant_id': u't_1',
+                u'tenant_id': u'tenant-01',
                 u'node_type': {
                     u'processes': [
                         u'job_tracker'
@@ -367,7 +407,7 @@ def _get_templates_stub_data():
                     u'heap_size': u'3712'
                 },
                 u'name': u'jt.medium',
-                u'tenant_id': u't_1',
+                u'tenant_id': u'tenant-01',
                 u'node_type': {
                     u'processes': [
                         u'job_tracker'
@@ -377,7 +417,7 @@ def _get_templates_stub_data():
             },
             {
                 u'name': u'nn.small',
-                u'tenant_id': u't_1',
+                u'tenant_id': u'tenant-01',
                 u'node_type': {
                     u'processes': [
                         u'name_node'
@@ -391,7 +431,7 @@ def _get_templates_stub_data():
             },
             {
                 u'name': u'nn.medium',
-                u'tenant_id': u't_1',
+                u'tenant_id': u'tenant-01',
                 u'node_type': {
                     u'processes': [
                         u'name_node'
@@ -408,7 +448,7 @@ def _get_templates_stub_data():
                 u'task_tracker': {
                     u'heap_size': u'896'
                 },
-                u'tenant_id': u't_1',
+                u'tenant_id': u'tenant-01',
                 u'data_node': {
                     u'heap_size': u'896'
                 },
@@ -425,7 +465,7 @@ def _get_templates_stub_data():
                 u'task_tracker': {
                     u'heap_size': u'1792'
                 },
-                u'tenant_id': u't_1',
+                u'tenant_id': u'tenant-01',
                 u'data_node': {
                     u'heap_size': u'1792'
                 },

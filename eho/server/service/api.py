@@ -59,6 +59,10 @@ class Resource(object):
     def dict(self):
         return self._info
 
+    @property
+    def wrapped_dict(self):
+        return {self._name: self._info}
+
 
 def _node_template(nt):
     if not nt:
@@ -81,7 +85,7 @@ def _node_template(nt):
             d[c_section] = dict()
         d[c_section][c_name] = c_value
 
-    return Resource('NodeTemplate', d)
+    return Resource('node_template', d)
 
 
 def _template_id_by_name(template):
@@ -107,9 +111,12 @@ def create_node_template(values):
     :param values: dict
     :return: created node template resource
     """
+    values = values.pop('node_template')
+
     name = values.pop('name')
     node_type_id = _type_id_by_name(values.pop('node_type'))
-    tenant_id = values.pop('tenant_id')
+    # todo(slukjanov): take tenant_id from headers
+    tenant_id = "tenant-01"
     flavor_id = values.pop('flavor_id')
 
     nt = NodeTemplate(name, node_type_id, tenant_id, flavor_id)
@@ -155,7 +162,7 @@ def _cluster(cluster):
     for service in cluster.service_urls:
         d['service_urls'][service.name] = service.url
 
-    return Resource('Cluster', d)
+    return Resource('cluster', d)
 
 
 def get_cluster(**args):
@@ -168,9 +175,12 @@ def get_clusters(**args):
 
 
 def create_cluster(values):
+    values = values.pop('cluster')
+
     name = values.pop('name')
     base_image_id = values.pop('base_image_id')
-    tenant_id = values.pop('tenant_id')
+    # todo(slukjanov): take tenant_id from headers
+    tenant_id = "tenant-01"
     templates = values.pop('node_templates')
 
     # todo(slukjanov): check that we can create objects in the specified tenant

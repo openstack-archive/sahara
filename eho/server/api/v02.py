@@ -3,7 +3,7 @@ from eho.server.service import api
 from eho.server.utils.api import Rest, render, abort_and_log, request_data
 
 
-rest = Rest('v01', __name__)
+rest = Rest('v02', __name__)
 
 
 @rest.get('/node-templates')
@@ -19,7 +19,7 @@ def templates_list():
 def templates_create():
     data = request_data()
     try:
-        return render(api.create_node_template(data).dict)
+        return render(api.create_node_template(data).wrapped_dict)
     except Exception, e:
         abort_and_log(500, "Exception while adding NodeTemplate", e)
 
@@ -36,7 +36,7 @@ def templates_get(template_id):
         abort_and_log(404, "NodeTemplate with id '%s' not found"
                            % template_id)
 
-    return render(nt.dict)
+    return render(nt.wrapped_dict)
 
 
 @rest.put('/node-templates/<template_id>')
@@ -63,7 +63,7 @@ def clusters_list():
 def clusters_create():
     data = request_data()
     try:
-        return render(api.create_cluster(data).dict)
+        return render(api.create_cluster(data).wrapped_dict)
     except Exception, e:
         abort_and_log(500, "Exception while adding new Cluster", e)
 
@@ -80,7 +80,7 @@ def clusters_get(cluster_id):
     if c is None:
         abort_and_log(404, 'Cluster with id \'%s\' not found' % cluster_id)
 
-    return render(c.dict)
+    return render(c.wrapped_dict)
 
 
 @rest.put('/clusters/<cluster_id>')
