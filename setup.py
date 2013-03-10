@@ -1,6 +1,6 @@
 import setuptools
 
-from eho.common import setup_utils as common_setup
+from eho.openstack.common import setup as common_setup
 
 requires = common_setup.parse_requirements()
 depend_links = common_setup.parse_dependency_links()
