@@ -1,6 +1,17 @@
 Welcome to Elastic Hadoop on OpenStack documentation!
 =====================================================
 
+Useful links
+------------
+
+.. toctree::
+    :maxdepth: 1
+
+    architecture
+    roadmap
+    restapi/v02
+    horizon/index
+
 Introduction
 ------------
 
@@ -136,3 +147,4 @@ Useful links
     architecture
     roadmap
     restapi/v02
+    horizon/index
