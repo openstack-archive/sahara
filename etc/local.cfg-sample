@@ -8,5 +8,5 @@ OS_ADMIN_TENANT = 'admin'
 
 # NODE CONF
 NODE_USER = 'root'
-NODE_PASSWORD = 'password'
+NODE_PASSWORD = 'swordfish'
 NODE_INTERNAL_NET = 'novanetwork'
