@@ -14,14 +14,13 @@
 # limitations under the License.
 
 import mimetypes
-import json
 import logging
 import traceback
+from eho.openstack.common.wsgi import JSONDictSerializer, XMLDictSerializer, \
+    JSONDeserializer, XMLDeserializer
 
 from flask import abort, request, Blueprint, Response
 from werkzeug.datastructures import MIMEAccept
-
-from eho.server.utils import xml
 
 
 class Rest(Blueprint):
@@ -102,24 +101,36 @@ def render(res=None, resp_type=None, status=None, **kwargs):
     if not resp_type:
         resp_type = getattr(request, 'resp_type', RT_JSON)
 
-    body = None
+    serializer = None
     if "application/json" in resp_type:
         resp_type = RT_JSON
-        body = json.dumps(res)
+        serializer = JSONDictSerializer()
     elif "application/xml" in resp_type:
         resp_type = RT_XML
-        body = xml.dumps(res)
+        serializer = XMLDictSerializer()
     else:
-        raise abort_and_log(400, "%s isn't supported" % resp_type)
+        abort_and_log(400, "Content type '%s' isn't supported" % resp_type)
 
-    resp_type = resp_type.__str__()
+    body = serializer.serialize(res)
+    resp_type = str(resp_type)
     return Response(response=body, status=status_code, mimetype=resp_type)
 
 
 def request_data():
-    # should check body, content type, etc
-    # should support different request types
-    return json.loads(request.data)
+    if not request.content_length > 0:
+        logging.debug("Empty body provided in request")
+        return dict()
+
+    deserializer = None
+    content_type = request.mimetype
+    if content_type in RT_JSON:
+        deserializer = JSONDeserializer()
+    elif content_type in RT_XML:
+        deserializer = XMLDeserializer()
+    else:
+        abort_and_log(400, "Content type '%s' isn't supported" % content_type)
+
+    return deserializer.deserialize(request.data)['body']
 
 
 def abort_and_log(status_code, descr, exc=None):
