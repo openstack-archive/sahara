@@ -3,7 +3,7 @@ Elastic Hadoop on OpenStack Roadmap
 
 Phase 1 - Basic Cluster Provisioning
 ------------------------------------
-completion - April 4, with the OpenStack Grizzly release
+completion - early April
 
 * Cluster provisioning
 * Deployment Engine implementation for pre-installed images
@@ -13,7 +13,7 @@ completion - April 4, with the OpenStack Grizzly release
 
 Phase 2 - Cluster Operations
 ----------------------------
-completion - end of June, with the intermediate OpenStack Grizzly release
+completion - end of June
 
 * Manual cluster scaling (add/remove nodes)
 * Hadoop cluster topology configuration parameters
@@ -27,14 +27,14 @@ completion - end of June, with the intermediate OpenStack Grizzly release
 
 Phase 3 - Analytics as a Service
 --------------------------------
-completion - end of September, with the OpenStack Havana release
+completion - end of September
 
 * API to execute Map/Reduce jobs without exposing details of underlying infrastructure (similar to AWS EMR)
 * User-friendly UI for ad-hoc analytics queries based on Hive or Pig
 
 Further Roadmap
 ---------------
-completion - TBD, with the next OpenStack release
+completion - TBD
 
 * HDFS and Swift integration
 
