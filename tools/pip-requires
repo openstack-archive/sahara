@@ -6,3 +6,4 @@ paramiko
 webob
 python-keystoneclient
 python-novaclient>=2.10.0,<3
+http://tarballs.openstack.org/oslo-config/oslo-config-2013.1b4.tar.gz#egg=oslo-config
