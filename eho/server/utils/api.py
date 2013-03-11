@@ -123,7 +123,7 @@ def request_data():
 
     deserializer = None
     content_type = request.mimetype
-    if content_type in RT_JSON:
+    if not content_type or content_type in RT_JSON:
         deserializer = JSONDeserializer()
     elif content_type in RT_XML:
         abort_and_log(400, "XML requests are not supported yet")
