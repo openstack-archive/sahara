@@ -17,7 +17,7 @@ import mimetypes
 import logging
 import traceback
 from eho.openstack.common.wsgi import JSONDictSerializer, XMLDictSerializer, \
-    JSONDeserializer, XMLDeserializer
+    JSONDeserializer
 
 from flask import abort, request, Blueprint, Response
 from werkzeug.datastructures import MIMEAccept
@@ -126,7 +126,8 @@ def request_data():
     if content_type in RT_JSON:
         deserializer = JSONDeserializer()
     elif content_type in RT_XML:
-        deserializer = XMLDeserializer()
+        abort_and_log(400, "XML requests are not supported yet")
+        # deserializer = XMLDeserializer()
     else:
         abort_and_log(400, "Content type '%s' isn't supported" % content_type)
 
