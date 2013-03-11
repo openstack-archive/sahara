@@ -55,3 +55,9 @@ Running static analysis (PyLint)
 Just run the following command
 ::
     tools/run_pylint
+
+License
+-------
+Copyright (c) 2013 Mirantis Inc.
+
+Apache License Version 2.0 http://www.apache.org/licenses/LICENSE-2.0
