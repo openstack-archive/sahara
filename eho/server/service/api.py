@@ -88,7 +88,6 @@ def _node_template(nt):
         'node_type': {
             'name': nt.node_type.name,
             'processes': [p.name for p in nt.node_type.processes]},
-        'tenant_id': nt.tenant_id,
         'flavor_id': nt.flavor_id
     }
 
@@ -161,7 +160,6 @@ def _cluster(cluster):
         'name': cluster.name,
         'base_image_id': cluster.base_image_id,
         'status': cluster.status,
-        'tenant_id': cluster.tenant_id,
         'service_urls': {},
         'node_templates': {},
         'nodes': [{'vm_id': n.vm_id,
