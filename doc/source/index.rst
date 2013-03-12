@@ -11,6 +11,7 @@ Useful links
     roadmap
     restapi/v02
     horizon/index
+    quickstart
 
 Introduction
 ------------
@@ -148,3 +149,4 @@ Useful links
     roadmap
     restapi/v02
     horizon/index
+    quickstart
