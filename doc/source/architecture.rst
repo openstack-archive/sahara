@@ -1,5 +1,5 @@
-Elastic Hadoop on OpenStack Architecture (draft)
-================================================
+EHO Architecture (draft)
+========================
 
 .. image:: images/eho-architecture.png
 

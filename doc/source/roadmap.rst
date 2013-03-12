@@ -1,5 +1,5 @@
-Elastic Hadoop on OpenStack Roadmap
-===================================
+EHO Roadmap
+===========
 
 Phase 1 - Basic Cluster Provisioning
 ------------------------------------
