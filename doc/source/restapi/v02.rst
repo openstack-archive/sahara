@@ -105,7 +105,7 @@ An error response follows the format illustrated by the following example:
     {
         "error_code": 409,
         "error_name": "CLUSTER_EXISTS",
-        "error_message": "Cluster with name 'cluster #123' already exists"
+        "error_message": "Cluster with name 'dev-cluster' already exists"
     }
 
 
@@ -148,7 +148,10 @@ All node types are predefined and new types might be added in the future.
 +------------------------------------+--------------------------------------------+-----------------------------------------------------+
 | name                               | string                                     | A name of the node template                         |
 +------------------------------------+--------------------------------------------+-----------------------------------------------------+
-| node_type                          | object                                     | NodeType info                                       |
+| node_type                          | string/object                              | That parameter type depends on the operation: if    |
+|                                    |                                            | create, then node type name should be provided as   |
+|                                    |                                            | string. List and retrieve operations return node    |
+|                                    |                                            | type as object (see below its fields)               |
 +------------------------------------+--------------------------------------------+-----------------------------------------------------+
 | node_type.name                     | string                                     | Name of the node type                               |
 +------------------------------------+--------------------------------------------+-----------------------------------------------------+
@@ -181,6 +184,9 @@ All node types are predefined and new types might be added in the future.
 
 **2.1.3 Example**
 
+The example below corresponds to Node Template returned by retrieve operation. For example of Node Template used in create operation see
+ that operation details further below
+
 .. sourcecode:: json
 
     {
@@ -211,7 +217,7 @@ All node types are predefined and new types might be added in the future.
 
 This object is used to create and update existing clusters.
 It contains cluster's name and 'node_templates' section that provides information about number of instances of
-Node Templates that we want to use. Additionally, it includes the 'base_image' id which specifies image
+Node Templates that we want to use. Additionally, it includes the 'base_image_id' id which specifies image
 that should be the base for VMs creation. Such image should be prepared by installing Hadoop with special layout.
 The 'id' field should not be specified during cluster creation, but it should be specified while updating
 the existing cluster.
@@ -239,12 +245,12 @@ the existing cluster.
     {
         "cluster": {
             "id": "1234",
-            "name": "cluster #123",
+            "name": "dev-cluster",
             "node_templates": {
                 "jobTracker_and_nameNode.medium": 1,
                 "taskTracker_and_dataNode.medium": 4
             },
-            "base_image_id": "image #1"
+            "base_image_id": "123456"
         }
     }
 
@@ -262,7 +268,8 @@ This object used in REST API responses to return information about clusters.
 +====================================+============================================+=====================================================+
 | id                                 | [required for update] string               |                                                     |
 +------------------------------------+--------------------------------------------+-----------------------------------------------------+
-| name                               | string                                     | A name of the cluster                               |
+| name                               | string                                     | A name of the cluster. Name could consist of        |
+|                                    |                                            | english letters, digits and hyphens                 |
 +------------------------------------+--------------------------------------------+-----------------------------------------------------+
 | node_templates                     | map (object)                               | Map <Node Template name> -> count                   |
 +------------------------------------+--------------------------------------------+-----------------------------------------------------+
@@ -289,13 +296,13 @@ This object used in REST API responses to return information about clusters.
     {
         "cluster": {
             "id": "1234",
-            "name": "cluster #123",
+            "name": "dev-cluster",
             "node_templates": {
                 "jobTracker_and_nameNode.medium": 1,
                 "taskTracker_and_dataNode.medium": 10
             },
-            "base_image": "image #1",
-            "status": "online",
+            "base_image_id": "123456",
+            "status": "Active",
             "nodes": [
                 "<Node object>",
                 "<Node object>"
@@ -457,7 +464,7 @@ Normal Response Code: 202 (Accepted)
 
 Errors:
 
-400, NODE_TEMPLATE_EXISTS, "Node Template with name 'cluster #123' already exists"
+400, NODE_TEMPLATE_EXISTS, "Node Template with name 'custom_user_template' already exists"
 
 400, WRONG_PARAMETER_FORMAT, "Some input field is specified incorrectly or is missing"
 
@@ -482,11 +489,8 @@ defined in section 2.1.
 
         {
             "node_template": {
-                "name": "tt_dn.medium",
-                "node_type": {
-                    "name": "TT+DN",
-                    "processes": ["task_tracker", "data_node"]
-                },
+                "name": "custom_user_template",
+                "node_type": "TT+DN",
                 "flavor_id": "1234",
                 "task_tracker": {
                     "heap_size": 384,
@@ -513,7 +517,7 @@ defined in section 2.1.
         {
             "node_template": {
                 "id": "3412",
-                "name": "tt_dn.medium",
+                "name": "custom_user_template",
                 "node_type": {
                     "name": "TT+DN",
                     "processes": ["task_tracker", "data_node"]
@@ -758,16 +762,16 @@ each element in the list is a "Cluster object" described in section 2.2.
             "clusters": [
                 {
                     "id": "1234",
-                    "name": "cluster #123",
+                    "name": "dev-cluster",
                     "node_templates": {
-                        "jobTracker_and_nameNode": 1,
-                        "taskTracker_and_dataNode": 10
+                        "jt_nn.medium": 1,
+                        "tt_dn.medium": 10
                     },
-                    "base_image": "image #1",
-                    "status": "online",
+                    "base_image_id": "123456",
+                    "status": "Active",
                     "service_urls": {
-                        "job_tracker": "10.0.1.10:12345",
-                        "name_node": "10.0.1.10:12346"
+                        "job_tracker": "10.0.1.10:50030",
+                        "name_node": "10.0.1.10:50070"
                     },
                     "nodes": [
                         "<Node object>",
@@ -776,17 +780,17 @@ each element in the list is a "Cluster object" described in section 2.2.
                 },
                 {
                     "id": "1235",
-                    "name": "cluster #124",
+                    "name": "qa-cluster",
                     "node_templates": {
-                        "jobTracker": 1,
-                        "nameNode": 1,
-                        "taskTracker_and_dataNode": 10
+                        "jobTracker.medium": 1,
+                        "nameNode.medium": 1,
+                        "tt_dn.medium": 10
                     },
-                    "base_image": "image #1",
-                    "status": "online",
+                    "base_image_id": "123456",
+                    "status": "Active",
                     "service_urls": {
-                        "job_tracker": "10.0.1.10:12345",
-                        "name_node": "10.0.1.10:12346"
+                        "job_tracker": "10.0.1.25:50030",
+                        "name_node": "10.0.1.25:50070"
                     },
                     "nodes": [
                         "<Node object>",
@@ -805,7 +809,7 @@ Normal Response Code: 202 (Accepted)
 
 Errors:
 
-    400, CLUSTER_EXISTS, "Cluster with name 'cluster #123' already exists"
+    400, CLUSTER_EXISTS, "Cluster with name 'dev-cluster' already exists"
 
     400, WRONG_PARAMETER_FORMAT, "Some input field is specified incorrectly or is missing"
 
@@ -835,12 +839,12 @@ master node type, i.e. there must be exactly 1 JobTracker node and 1 NameNode no
 
             {
                 "cluster": {
-                    "name": "cluster #123",
+                    "name": "dev-cluster",
                     "node_templates": {
-                        "jobTracker_and_nameNode": 1,
-                        "taskTracker_and_dataNode": 10
+                        "jt_nn.medium": 1,
+                        "tt_dn.medium": 10
                     },
-                    "base_image": "image #1"
+                    "base_image_id": "123456"
                 }
             }
 
@@ -856,21 +860,15 @@ master node type, i.e. there must be exactly 1 JobTracker node and 1 NameNode no
             {
                 "cluster": {
                     "id": "1234",
-                    "name": "cluster #123",
+                    "name": "dev-cluster",
                     "node_templates": {
-                        "jobTracker_and_nameNode": 1,
-                        "taskTracker_and_dataNode": 10
+                        "jt_nn.medium": 1,
+                        "tt_dn.medium": 10
                     },
-                    "base_image": "image #1",
-                    "status": "online",
-                    "service_urls": {
-                        "job_tracker": "10.0.1.10:12345",
-                        "name_node": "10.0.1.10:12346"
-                    },
-                    "nodes": [
-                        "<Node object>",
-                        "<Node object>"
-                    ]
+                    "base_image_id": "123456",
+                    "status": "Starting",
+                    "service_urls": {},
+                    "nodes": []
                 }
             }
 
@@ -883,9 +881,9 @@ Normal Response Code: 200 (OK)
 
 Errors:
 
-    404, CLUSTER_NOT_FOUND, "Cluster with name 'cluster#123' does not exists"
+    404, CLUSTER_NOT_FOUND, "Cluster with name 'dev-cluster' does not exists"
 
-This operation returns a cluster object identified by cluster_id.
+This operation returns a cluster object identified by id.
 
 This operation does not require a request body.
 
@@ -910,16 +908,16 @@ This operation returns a response body. It contains cluster as "Cluster object",
         {
             "cluster": {
                 "id": "1234",
-                "name": "cluster #123",
+                "name": "dev-cluster",
                 "node_templates": {
-                    "jobTracker_and_nameNode": 1,
-                    "taskTracker_and_dataNode": 10
+                    "jt_nn.medium": 1,
+                    "tt_dn.medium": 10
                 },
-                "base_image": "image #1",
-                "status": "online",
+                "base_image_id": "123456",
+                "status": "Active",
                 "service_urls": {
-                    "job_tracker": "10.0.1.10:12345",
-                    "name_node": "10.0.1.10:12346"
+                    "job_tracker": "10.0.1.10:50030",
+                    "name_node": "10.0.1.10:50070"
                 },
                 "nodes": [
                     "<Node object>",
@@ -937,7 +935,7 @@ Normal Response Code: 202 (Accepted)
 
 Errors:
 
-    400, CLUSTER_EXISTS, "Cluster with name 'cluster #123' already exists"
+    400, CLUSTER_EXISTS, "Cluster with name 'dev-cluster' already exists"
 
     400, WRONG_PARAMETER_FORMAT, "Some input field is specified incorrectly or is missing"
 
@@ -967,12 +965,12 @@ take a look on cluster creation operation. All cluster Node Templates should be 
         {
             "cluster": {
                 "id": "1234",
-                "name": "the new cluster #123",
+                "name": "dev-cluster",
                 "node_templates": {
-                    "jobTracker_and_nameNode": 1,
-                    "taskTracker_and_dataNode": 20
+                    "jt_nn.medium": 1,
+                    "tt_dn.medium": 15
                 },
-                "base_image": "image #1"
+                "base_image_id": "123456"
             }
         }
 
@@ -988,16 +986,16 @@ take a look on cluster creation operation. All cluster Node Templates should be 
         {
             "cluster": {
                 "id": "1234",
-                "name": "the new cluster #123",
+                "name": "dev-cluster",
                 "node_templates": {
-                    "jobTracker_and_nameNode": 1,
-                    "taskTracker_and_dataNode": 20
+                    "jt_nn.medium": 1,
+                    "tt_dn.medium": 15
                 },
-                "base_image": "image #1",
-                "status": "online",
+                "base_image_id": "123456",
+                "status": "Active",
                 "service_urls": {
-                    "job_tracker": "10.0.1.10:12345",
-                    "name_node": "10.0.1.10:12346"
+                    "job_tracker": "10.0.1.10:50030",
+                    "name_node": "10.0.1.10:50070"
                 },
                 "nodes": [
                     "<Node object>",
