@@ -80,9 +80,9 @@ For the fast cluster provisioning generic workflow will be as following:
 
 * provision the cluster: EHO will provision VMs, install and configure Hadoop;
 * operation on the cluster: add/remove nodes;
-* terminate the cluster when it’s not needed any more.
+* terminate the cluster when it’s not needed anymore.
 
-For analytic as a service generic workflow will be as follows:
+For analytic as a service generic workflow will be as following:
 
 * select one of predefined Hadoop versions;
 * configure the job:
@@ -96,6 +96,7 @@ For analytic as a service generic workflow will be as follows:
 * execute the job:
 
     * all cluster provisioning and job execution will happen transparently to the user;
+    * cluster will be removed automatically after job completion;
 
 * get the results of computations (for example, from Swift).
 
@@ -132,7 +133,7 @@ First, a FileSystem implementation for Swift: `HADOOP-8545 <https://issues.apach
 With that thing in place, Hadoop jobs can work with Swift
 as naturally as with HDFS.
 
-On the Swift side, we have the change request: `Change I6b1ba25b <https://review.openstack.org/#/c/21015/>`_.
+On the Swift side, we have the change request: `Change I6b1ba25b <https://review.openstack.org/#/c/21015/>`_ (merged).
 It implements the ability to list endpoints for an object, account or container, to make it possible to integrate swift
 with software that relies on data locality information to avoid network overhead.
 
