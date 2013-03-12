@@ -12,6 +12,7 @@ Useful links
     restapi/v02
     horizon/index
     quickstart
+    how-to-participate
 
 * `Sources repo <https://github.com/mirantis/eho>`_
 * `Launchpad project <https://launchpad.net/eho>`_
