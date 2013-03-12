@@ -157,7 +157,9 @@ All node types are predefined and new types might be added in the future.
 +------------------------------------+--------------------------------------------+-----------------------------------------------------+
 | node_type.processes                | array of strings                           | List of process names that will be executed on node |
 +------------------------------------+--------------------------------------------+-----------------------------------------------------+
-| flavor_id                          | string                                     | An id of the OpenStack's flavor                     |
+| flavor_id                          | string                                     | Name of OpenStack flavor which will be used to      |
+|                                    |                                            | provision nodes. Actually this should be an id,     |
+|                                    |                                            | we use names temporarily for our convenience        |
 +------------------------------------+--------------------------------------------+-----------------------------------------------------+
 | job_tracker                        | section                                    | Section for Job Tracker configuration               |
 +------------------------------------+--------------------------------------------+-----------------------------------------------------+
@@ -197,7 +199,7 @@ The example below corresponds to Node Template returned by retrieve operation. F
                 "name": "TT+DN",
                 "processes": ["task_tracker", "data_node"]
             },
-            "flavor_id": "1234",
+            "flavor_id": "m1.medium",
             "task_tracker": {
                 "heap_size": 384,
                 "max_map_tasks": 3,
@@ -423,7 +425,7 @@ This operation returns a response body. It returns a (potentially empty) list, e
                         "name": "TT+DN",
                         "processes": ["task_tracker", "data_node"]
                     },
-                    "flavor_id": "1234",
+                    "flavor_id": "m1.medium",
                     "task_tracker": {
                         "heap_size": 384,
                         "max_map_tasks": 3,
@@ -441,7 +443,7 @@ This operation returns a response body. It returns a (potentially empty) list, e
                         "name": "TT+DN",
                         "processes": ["task_tracker", "data_node"]
                     },
-                    "flavor_id": "1235",
+                    "flavor_id": "m1.medium",
                     "task_tracker": {
                         "heap_size": 2048,
                         "max_map_tasks": 6,
@@ -491,7 +493,7 @@ defined in section 2.1.
             "node_template": {
                 "name": "custom_user_template",
                 "node_type": "TT+DN",
-                "flavor_id": "1234",
+                "flavor_id": "m1.medium",
                 "task_tracker": {
                     "heap_size": 384,
                     "max_map_tasks": 3,
@@ -522,7 +524,7 @@ defined in section 2.1.
                     "name": "TT+DN",
                     "processes": ["task_tracker", "data_node"]
                 },
-                "flavor_id": "1234",
+                "flavor_id": "m1.medium",
                 "task_tracker": {
                     "heap_size": 384,
                     "max_map_tasks": 3,
@@ -576,7 +578,7 @@ This operation returns a response body. It contains node template as "Node Templ
                     "name": "TT+DN",
                     "processes": ["task_tracker", "data_node"]
                 },
-                "flavor_id": "1234",
+                "flavor_id": "m1.medium",
                 "task_tracker": {
                     "heap_size": 384,
                     "max_map_tasks": 3,
@@ -626,7 +628,7 @@ This operation returns response body. It contains updated Node Template object d
                     "name": "TT+DN",
                     "processes": ["task_tracker", "data_node"]
                 },
-                "flavor_id": "1234",
+                "flavor_id": "m1.medium",
                 "task_tracker": {
                     "heap_size": 402,
                     "max_map_tasks": 3,
@@ -656,7 +658,7 @@ This operation returns response body. It contains updated Node Template object d
                     "name": "TT+DN",
                     "processes": ["task_tracker", "data_node"]
                 },
-                "flavor_id": "1234",
+                "flavor_id": "m1.medium",
                 "task_tracker": {
                     "heap_size": 402,
                     "max_map_tasks": 3,
