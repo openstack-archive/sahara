@@ -16,7 +16,7 @@ EHO quickstart guide
 2 Image setup
 =============
 
-2.1 Go to OpenStack management node:
+2.1 Go to OpenStack management node or you can configure ENV at another machine:
 
 .. sourcecode:: bash
 
