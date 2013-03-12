@@ -13,6 +13,9 @@ Useful links
     horizon/index
     quickstart
 
+* `Sources repo <https://github.com/mirantis/eho>`_
+* `Launchpad project <https://launchpad.net/eho>`_
+
 Introduction
 ------------
 
@@ -143,10 +146,13 @@ Useful links
 ------------
 
 .. toctree::
-    :maxdepth: 4
+    :maxdepth: 2
 
     architecture
     roadmap
     restapi/v02
     horizon/index
     quickstart
+
+* `Sources repo <https://github.com/mirantis/eho>`_
+* `Launchpad project <https://launchpad.net/eho>`_
