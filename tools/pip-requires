@@ -1,5 +1,5 @@
 Flask
-SQLAlchemy
+SQLAlchemy>=0.7,<0.8a0
 Flask-SQLAlchemy
 eventlet
 paramiko
