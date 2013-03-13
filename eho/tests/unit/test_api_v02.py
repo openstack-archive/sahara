@@ -162,7 +162,6 @@ class TestApi(unittest.TestCase):
             u'job_tracker': {
                 u'heap_size': u'1234'
             }, u'name': u'test_template',
-            u'tenant_id': u'tenant-01',
             u'node_type': {
                 u'processes': [
                     u'job_tracker', u'name_node'
@@ -206,7 +205,6 @@ class TestApi(unittest.TestCase):
             u'status': u'Starting',
             u'service_urls': {},
             u'name': u'test-cluster',
-            u'tenant_id': u'tenant-01',
             u'base_image_id': u'base-image-id',
             u'node_templates': {
                 u'jt_nn.medium': 1,
@@ -236,7 +234,6 @@ class TestApi(unittest.TestCase):
             u'status': u'Active',
             u'service_urls': {},
             u'name': u'test-cluster',
-            u'tenant_id': u'tenant-01',
             u'base_image_id': u'base-image-id',
             u'node_templates': {
                 u'jt_nn.medium': 1,
@@ -288,7 +285,6 @@ class TestApi(unittest.TestCase):
             u'job_tracker': {
                 u'heap_size': u'1234'
             }, u'name': u'test_template_2',
-            u'tenant_id': u'tenant-01',
             u'node_type': {
                 u'processes': [
                     u'job_tracker', u'name_node'
@@ -342,7 +338,6 @@ class TestApi(unittest.TestCase):
             u'status': u'Starting',
             u'service_urls': {},
             u'name': u'test-cluster_2',
-            u'tenant_id': u'tenant-01',
             u'base_image_id': u'base-image-id_2',
             u'node_templates': {
                 u'jt_nn.medium': 1,
@@ -375,7 +370,6 @@ def _get_templates_stub_data():
                     u'heap_size': u'896'
                 },
                 u'name': u'jt_nn.small',
-                u'tenant_id': u'tenant-01',
                 u'node_type': {
                     u'processes': [
                         u'job_tracker', u'name_node'
@@ -392,7 +386,6 @@ def _get_templates_stub_data():
                     u'heap_size': u'1792'
                 },
                 u'name': u'jt_nn.medium',
-                u'tenant_id': u'tenant-01',
                 u'node_type': {
                     u'processes': [
                         u'job_tracker', u'name_node'
@@ -408,7 +401,6 @@ def _get_templates_stub_data():
                     u'heap_size': u'1792'
                 },
                 u'name': u'jt.small',
-                u'tenant_id': u'tenant-01',
                 u'node_type': {
                     u'processes': [
                         u'job_tracker'
@@ -422,7 +414,6 @@ def _get_templates_stub_data():
                     u'heap_size': u'3712'
                 },
                 u'name': u'jt.medium',
-                u'tenant_id': u'tenant-01',
                 u'node_type': {
                     u'processes': [
                         u'job_tracker'
@@ -432,7 +423,6 @@ def _get_templates_stub_data():
             },
             {
                 u'name': u'nn.small',
-                u'tenant_id': u'tenant-01',
                 u'node_type': {
                     u'processes': [
                         u'name_node'
@@ -446,7 +436,6 @@ def _get_templates_stub_data():
             },
             {
                 u'name': u'nn.medium',
-                u'tenant_id': u'tenant-01',
                 u'node_type': {
                     u'processes': [
                         u'name_node'
@@ -463,7 +452,6 @@ def _get_templates_stub_data():
                 u'task_tracker': {
                     u'heap_size': u'896'
                 },
-                u'tenant_id': u'tenant-01',
                 u'data_node': {
                     u'heap_size': u'896'
                 },
@@ -480,7 +468,6 @@ def _get_templates_stub_data():
                 u'task_tracker': {
                     u'heap_size': u'1792'
                 },
-                u'tenant_id': u'tenant-01',
                 u'data_node': {
                     u'heap_size': u'1792'
                 },

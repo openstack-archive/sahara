@@ -11,12 +11,17 @@ EHO quickstart guide
 
 1.3 Git should be installed on the machine where EHO_API will be deployed.
 
-1.4 Your OpenStack should have flavors with the following names defined: 'm1.small', 'm1.medium',
+1.4 Your OpenStack should have flavors with 'm1.small' and 'm1.medium' names defined because these flavors are referenced by EHO's default Node Templates.
+You can check which flavors you have by running
+
+.. sourcecode:: bash
+
+    nova flavor-list
 
 2 Image setup
 =============
 
-2.1 Go to OpenStack management node:
+2.1 Go to OpenStack management node or you can configure ENV at another machine:
 
 .. sourcecode:: bash
 
@@ -60,7 +65,7 @@ You should see the output similar to the following:
     | updated_at       | 2013-03-11T14:53:05                  |
     +------------------+--------------------------------------+
 
-
+
 3 EHO API SETUP
 ===============
 
@@ -111,7 +116,32 @@ You should see the output similar to the following:
     NODE_PASSWORD = 'swordfish'
     NODE_INTERNAL_NET = 'novanetwork' <- name of the OpenStack network from which IPs are assigned to VMs
 
-3.7 Then you have to get authentification token from OpenStack Keystone service:
+3.7 To run EHO from created environment just call:
+
+.. sourcecode:: bash
+
+    .venv/bin/python bin/eho-api --reset-db --stub-data --allow-cluster-ops
+
+**Note:** ``--reset-db`` and ``--stub-data`` parameters should be inserted only with the first EHO-API startup.
+With these parameters supplied EHO will create sqlite db with predefined data in ``/tmp/eho-server.db``
+
+Next times these parameters should be omited:
+
+.. sourcecode:: bash
+
+    .venv/bin/python/ bin/eho-api --allow-cluster-ops
+
+Now EHO service is running. Further steps show how you can verify from console that EHO API works properly.
+
+3.8 First install httpie program. It allows you to send http requests to EHO API service.
+
+.. sourcecode:: bash
+
+    sudo easy_install httpie
+
+**Note:** sure you can use another HTTP client like curl to send requests to EHO service
+
+3.9 Then you need to get authentification token from OpenStack Keystone service:
 
 .. sourcecode:: bash
 
@@ -136,32 +166,8 @@ If authentication succeed, output will be as follows:
     Auth token: d61e47a1423d477f9c77ecb23c64d424
     Tenant [eho-dev] id: 0677a89acc834e38bf8bb41665912416
 
-**Note: Save token because you have to use it in Requests headers as x-auth-token header.**
-
-You will also use tenant Id in request URL
-
-3.8 To run EHO from created environment just call:
-
-.. sourcecode:: bash
-
-    .venv/bin/python bin/eho-api --reset-db --stub-data --allow-cluster-ops
-
-**Note:** ``--reset-db`` and ``--stub-data`` parameters should be inserted only with the first EHO-API startup
-reset-db and stub-data params will create sqlite db with predefined data in ``/tmp/eho-server.db``.
-
-Next times these parameters should be omited:
-
-.. sourcecode:: bash
-
-    .venv/bin/python/ bin/eho-api --allow-cluster-ops
-
-Now EHO service is running. You can check it by the following steps:
-
-3.9 Install httpie program. It allows you to send http requests to EHO API service.
-
-.. sourcecode:: bash
-
-    sudo easy_install httpie
+**Note:** Save the token because you have to supply it with every request to EHO in X-Auth-Token header.
+You will also use tenant id in request URL
 
 3.10 Send http request to the EHO service:
 
@@ -173,9 +179,9 @@ Where:
 
 * eho_api_ip - hostname where EHO API service is running
 
-* tenant_id - tenant id of OpenStack user which is configured in local.cfg config. You can get tenant_id from OpenStack using the command:  keystone tenant-list
+* tenant_id - id of the tenant for which you got token in previous item
 
-* X-Auth-Token - token which was taken from OpenStack Keystone
+* auth_token - token obtained in previous item
 
 For example:
 
@@ -200,8 +206,6 @@ Output of this command will look as follows:
                 //Non-empty list of Node Templates
             }
     }
-
-**Note:** sure you could use another HTTP client like curl to send requests to EHO service
 
 4 Hadoop Cluster startup
 ========================
@@ -234,7 +238,7 @@ You can list available node templates by sending the following request to EHO AP
 
     http http://{eho_api_ip}:8080/v0.2/{tenant-id}/node-templates X-Auth-Token:{auth_token}
 
-"base_image_id" - OpenStack image id of image which was downloaded in the Item 2.
+* "base_image_id" - OpenStack image id of image which was downloaded in the Item 2.
 
 You can see image id in the OpenStack UI or by calling the following command of the OS Glance service:
 
@@ -340,6 +344,8 @@ Initially the cluster will be in "Starting" state, but eventually (in several mi
     
 and you actually could access them via browser
 
+4.4 To check that your Hadoop installation works correctly:
+
 * Go to NameNode via ssh:
 
 .. sourcecode:: bash
@@ -366,4 +372,4 @@ and you actually could access them via browser
 
     "jobtracker": "http://JobTracker_IP:50030"
 
-Now you have installed Hadoop on the OpenStack cloud!
+Congratulations! Now you have Hadoop cluster ready on the OpenStack cloud!
