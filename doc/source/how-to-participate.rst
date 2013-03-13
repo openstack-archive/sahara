@@ -1,7 +1,7 @@
 How to Participate
 ==================
 
-You can browse the code at `our github repo <https://github.com/Mirantis/eho>`_ and `here <https://github.com/Mirantis/eho>`_ are the instructions on how to launch EHO.
+You can browse the code at `our github repo <https://github.com/Mirantis/eho>`_ and `here <http://eho.mirantis.com/quickstart.html>`_ are the instructions on how to launch EHO.
 
 If you would like to ask some questions, feel free to reach us on #eho irc channel at `freenode <http://freenode.net>`_. Most likely we will be there from 6 to 20 UTC. If you prefer email, you can contact Sergey Lukjanov (mailto:slukjanov@mirantis.com)
 
