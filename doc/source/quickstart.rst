@@ -234,7 +234,7 @@ You can list available node templates by sending the following request to EHO AP
 
     http http://{eho_api_ip}:8080/v0.2/{tenant-id}/node-templates X-Auth-Token:{auth_token}
 
-"base_image_id" - OpenStack image id of image which was downloaded in the Item 2.
+* "base_image_id" - OpenStack image id of image which was downloaded in the Item 2.
 
 You can see image id in the OpenStack UI or by calling the following command of the OS Glance service:
 
