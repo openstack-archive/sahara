@@ -14,15 +14,19 @@
 # limitations under the License.
 
 from flask.ext.sqlalchemy import SQLAlchemy
+from oslo.config import cfg
 
 DB = SQLAlchemy()
+
+CONF = cfg.CONF
+CONF.import_opt('reset_db', 'eho.config')
 
 
 def setup_storage(app):
     DB.app = app
     DB.init_app(app)
 
-    if app.config.get('RESET_DB', False):
+    if CONF.reset_db:
         DB.drop_all()
 
     DB.create_all()
