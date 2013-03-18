@@ -11,6 +11,7 @@ Useful links
     roadmap
     restapi/v02
     horizon/index
+    horizon/howto
     quickstart
     how-to-participate
 
