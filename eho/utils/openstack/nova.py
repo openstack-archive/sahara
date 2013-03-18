@@ -14,8 +14,10 @@
 # limitations under the License.
 
 import logging
-from eho.server.utils.openstack.base import url_for
+
 from novaclient.v1_1 import client as nova_client
+
+from eho.utils.openstack.base import url_for
 
 
 def novaclient(headers):

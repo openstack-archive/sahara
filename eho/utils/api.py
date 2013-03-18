@@ -16,11 +16,12 @@
 import mimetypes
 import logging
 import traceback
-from eho.openstack.common.wsgi import JSONDictSerializer, XMLDictSerializer, \
-    JSONDeserializer
 
 from flask import abort, request, Blueprint, Response
 from werkzeug.datastructures import MIMEAccept
+
+from eho.openstack.common.wsgi import JSONDictSerializer, XMLDictSerializer, \
+    JSONDeserializer
 
 
 class Rest(Blueprint):

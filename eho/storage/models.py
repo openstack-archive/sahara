@@ -15,7 +15,7 @@
 
 from uuid import uuid4
 
-from eho.server.storage.storage import DB
+from eho.storage.storage import DB
 
 
 class NodeTemplate(DB.Model):

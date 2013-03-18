@@ -17,9 +17,9 @@ import logging
 
 from oslo.config import cfg
 
-from eho.server.storage.models import NodeProcess, NodeProcessProperty, \
+from eho.storage.models import NodeProcess, NodeProcessProperty, \
     NodeType, NodeTemplate, NodeTemplateConfig, Cluster, ClusterNodeCount
-from eho.server.storage.storage import DB
+from eho.storage.storage import DB
 
 
 CONF = cfg.CONF

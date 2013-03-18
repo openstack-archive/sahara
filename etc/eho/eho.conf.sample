@@ -4,9 +4,6 @@
 # Options defined in eho.config
 #
 
-# enable dev mode (boolean value)
-#dev=false
-
 # set host (string value)
 #host=
 
@@ -26,6 +23,37 @@
 # and does not  send any requests to the OpenStack cluster
 # (boolean value)
 #allow_cluster_ops=false
+
+
+#
+# Options defined in eho.main
+#
+
+# Protocol used to access OpenStack Identity service (string
+# value)
+#os_auth_protocol=http
+
+# IP or hostname of machine on which OpenStack Identity
+# service is located (string value)
+#os_auth_host=openstack
+
+# Port of OpenStack Identity service (string value)
+#os_auth_port=35357
+
+# This OpenStack user is used to verify provided tokens. The
+# user must have admin role in <os_admin_tenant_name> tenant
+# (string value)
+#os_admin_username=admin
+
+# Password of the admin user (string value)
+#os_admin_password=nova
+
+# Name of tenant where the user is admin (string value)
+#os_admin_tenant_name=admin
+
+# Name of network which IPs are given to the VMs (string
+# value)
+#nova_internal_net_name=novanetwork
 
 
 #
@@ -128,41 +156,10 @@
 #default_publisher_id=$host
 
 
-#
-# Options defined in eho.server.main
-#
-
-# Protocol used to access OpenStack Identity service (string
-# value)
-#os_auth_protocol=http
-
-# IP or hostname of machine on which OpenStack Identity
-# service is located (string value)
-#os_auth_host=openstack
-
-# Port of OpenStack Identity service (string value)
-#os_auth_port=35357
-
-# This OpenStack user is used to verify provided tokens. The
-# user must have admin role in <os_admin_tenant_name> tenant
-# (string value)
-#os_admin_username=admin
-
-# Password of the admin user (string value)
-#os_admin_password=nova
-
-# Name of tenant where the user is admin (string value)
-#os_admin_tenant_name=admin
-
-# Name of network which IPs are given to the VMs (string
-# value)
-#nova_internal_net_name=novanetwork
-
-
 [cluster_node]
 
 #
-# Options defined in eho.server.service.cluster_ops
+# Options defined in eho.service.cluster_ops
 #
 
 # An existing user on Hadoop image (string value)
@@ -175,7 +172,7 @@
 [sqlalchemy]
 
 #
-# Options defined in eho.server.main
+# Options defined in eho.main
 #
 
 # URL for sqlalchemy database (string value)
@@ -185,4 +182,4 @@
 #echo=false
 
 
-# Total option count: 41
+# Total option count: 40

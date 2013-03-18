@@ -1,9 +1,10 @@
-import sys
-
 import os
-from eho.common.test_lib import run_tests
+
 from nose import config
 from nose import core
+
+import sys
+from eho.openstack.common.test_lib import run_tests
 import eho.tests
 
 

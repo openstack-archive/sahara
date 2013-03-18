@@ -21,13 +21,13 @@ from keystoneclient.middleware.auth_token import filter_factory as auth_token
 from oslo.config import cfg
 from werkzeug.exceptions import default_exceptions
 from werkzeug.exceptions import HTTPException
+from eho.api import v02 as api_v02
 
-from eho.server.middleware.auth_valid import filter_factory as auth_valid
-from eho.server.scheduler import setup_scheduler
-from eho.server.storage.defaults import setup_defaults
-from eho.server.utils.api import render
-from eho.server.api import v02 as api_v02
-from eho.server.storage.storage import setup_storage
+from eho.middleware.auth_valid import filter_factory as auth_valid
+from eho.utils.scheduler import setup_scheduler
+from eho.storage.defaults import setup_defaults
+from eho.utils.api import render
+from eho.storage.storage import setup_storage
 
 
 monkey_patch(os=True, select=True, socket=True, thread=True, time=True)

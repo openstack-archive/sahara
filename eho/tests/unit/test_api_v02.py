@@ -23,12 +23,12 @@ import os
 import eventlet
 from oslo.config import cfg
 
-from eho.server import scheduler
-from eho.server.main import make_app
-from eho.server.service import api
-from eho.server.storage.models import Node, NodeTemplate
-from eho.server.storage.storage import DB
-import eho.server.main
+from eho.main import make_app
+from eho.service import api
+from eho.storage.models import Node, NodeTemplate
+from eho.storage.storage import DB
+import eho.main
+from eho.utils import scheduler
 
 
 def _stub_vm_creation_job(template_id):
@@ -84,8 +84,8 @@ CONF.import_opt('reset_db', 'eho.config')
 CONF.import_opt('stub_data', 'eho.config')
 CONF.import_opt('log_level', 'eho.config')
 CONF.import_opt('allow_cluster_ops', 'eho.config')
-CONF.import_opt('database_uri', 'eho.server.main', group='sqlalchemy')
-CONF.import_opt('echo', 'eho.server.main', group='sqlalchemy')
+CONF.import_opt('database_uri', 'eho.main', group='sqlalchemy')
+CONF.import_opt('echo', 'eho.main', group='sqlalchemy')
 
 
 class TestApi(unittest.TestCase):
@@ -103,14 +103,14 @@ class TestApi(unittest.TestCase):
         CONF.set_override('echo', False, group='sqlalchemy')
 
         # store functions that will be stubbed
-        self._prev_auth_token = eho.server.main.auth_token
-        self._prev_auth_valid = eho.server.main.auth_valid
+        self._prev_auth_token = eho.main.auth_token
+        self._prev_auth_valid = eho.main.auth_valid
         self._prev_cluster_launch = api.cluster_ops.launch_cluster
         self._prev_cluster_stop = api.cluster_ops.stop_cluster
 
         # stub functions
-        eho.server.main.auth_token = _stub_auth_token
-        eho.server.main.auth_valid = _stub_auth_valid
+        eho.main.auth_token = _stub_auth_token
+        eho.main.auth_valid = _stub_auth_valid
         api.cluster_ops.launch_cluster = _stub_launch_cluster
         api.cluster_ops.stop_cluster = _stub_stop_cluster
 
@@ -123,8 +123,8 @@ class TestApi(unittest.TestCase):
 
     def tearDown(self):
         # unstub functions
-        eho.server.main.auth_token = self._prev_auth_token
-        eho.server.main.auth_valid = self._prev_auth_valid
+        eho.main.auth_token = self._prev_auth_token
+        eho.main.auth_valid = self._prev_auth_valid
         api.cluster_ops.launch_cluster = self._prev_cluster_launch
         api.cluster_ops.stop_cluster = self._prev_cluster_stop
 
