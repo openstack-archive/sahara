@@ -21,6 +21,7 @@ import uuid
 import os
 
 import eventlet
+from oslo.config import cfg
 
 from eho.server import scheduler
 from eho.server.main import make_app
@@ -78,6 +79,15 @@ def _stub_auth_valid(*args, **kwargs):
     return _filter
 
 
+CONF = cfg.CONF
+CONF.import_opt('reset_db', 'eho.config')
+CONF.import_opt('stub_data', 'eho.config')
+CONF.import_opt('log_level', 'eho.config')
+CONF.import_opt('allow_cluster_ops', 'eho.config')
+CONF.import_opt('database_uri', 'eho.server.main', group='sqlalchemy')
+CONF.import_opt('echo', 'eho.server.main', group='sqlalchemy')
+
+
 class TestApi(unittest.TestCase):
     def setUp(self):
         self.db_fd, self.db_path = tempfile.mkstemp()
@@ -95,21 +105,15 @@ class TestApi(unittest.TestCase):
         api.cluster_ops.launch_cluster = _stub_launch_cluster
         api.cluster_ops.stop_cluster = _stub_stop_cluster
 
-        app = make_app(
-            TESTING=True,
-            RESET_DB=True,
-            STUB_DATA=True,
-            LOG_LEVEL="DEBUG",
-            ALLOW_CLUSTER_OPS=True,
-            SQLALCHEMY_DATABASE_URI='sqlite:///' + self.db_path,
-            SQLALCHEMY_ECHO=False,
-            OS_AUTH_HOST='localhost',
-            OS_AUTH_PORT='12345',
-            OS_AUTH_PROTOCOL='http',
-            OS_ADMIN_USER='admin',
-            OS_ADMIN_PASSWORD='admin',
-            OS_ADMIN_TENANT='admin'
-        )
+        CONF.set_override('reset_db', True)
+        CONF.set_override('stub_data', True)
+        CONF.set_override('log_level', 'DEBUG')
+        CONF.set_override('allow_cluster_ops', False)
+        CONF.set_override('database_uri', 'sqlite:///' + self.db_path, group='sqlalchemy')
+        CONF.set_override('echo', False, group='sqlalchemy')
+
+        app = make_app()
+
         logging.debug('Test db path: %s', self.db_path)
         logging.debug('Test app.config: %s', app.config)
 

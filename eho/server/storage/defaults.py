@@ -14,9 +14,17 @@
 # limitations under the License.
 
 import logging
+
+from oslo.config import cfg
+
 from eho.server.storage.models import NodeProcess, NodeProcessProperty, \
     NodeType, NodeTemplate, NodeTemplateConfig, Cluster, ClusterNodeCount
 from eho.server.storage.storage import DB
+
+
+CONF = cfg.CONF
+CONF.import_opt('reset_db', 'eho.config')
+CONF.import_opt('stub_data', 'eho.config')
 
 
 def create_node_process(name, properties):
@@ -107,7 +115,7 @@ def setup_defaults(app):
     nt_nn = None
     nt_tt_dn = None
 
-    if app.config.get('RESET_DB', False):
+    if CONF.reset_db:
         # setup default processes
         p_jt = create_node_process('job_tracker', [('heap_size', True, None)])
         p_nn = create_node_process('name_node', [('heap_size', True, None)])
@@ -129,7 +137,7 @@ def setup_defaults(app):
                          nt.id, nt.name,
                          [p.name.__str__() for p in nt.processes])
 
-    if app.config.get('STUB_DATA', False):
+    if CONF.stub_data:
         _setup_stub_data(nt_jt_nn, nt_jt, nt_nn, nt_tt_dn)
 
 

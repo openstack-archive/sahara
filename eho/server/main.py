@@ -18,56 +18,85 @@ import logging
 from eventlet import monkey_patch
 from flask import Flask
 from keystoneclient.middleware.auth_token import filter_factory as auth_token
+from oslo.config import cfg
 from werkzeug.exceptions import default_exceptions
 from werkzeug.exceptions import HTTPException
 
 from eho.server.middleware.auth_valid import filter_factory as auth_valid
 from eho.server.scheduler import setup_scheduler
-from eho.server.service.api import setup_api
 from eho.server.storage.defaults import setup_defaults
 from eho.server.utils.api import render
 from eho.server.api import v02 as api_v02
 from eho.server.storage.storage import setup_storage
-from eho.server.service.cluster_ops import setup_ops
 
 
 monkey_patch(os=True, select=True, socket=True, thread=True, time=True)
 
+opts = [
+    cfg.StrOpt('os_auth_protocol', 
+               default='http',
+               help='Protocol used to access OpenStack Identity service'),
+    cfg.StrOpt('os_auth_host', 
+               default='openstack', 
+               help='IP or hostname of machine on which OpenStack Identity' \
+               ' service is located'),
+    cfg.StrOpt('os_auth_port', 
+               default='35357',
+               help='Port of OpenStack Identity service'),
+    cfg.StrOpt('os_admin_username', 
+               default='admin', 
+               help='This OpenStack user is used to verify provided tokens.' \
+               ' The user must have admin role in <os_admin_tenant_name>' \
+               ' tenant'),
+    cfg.StrOpt('os_admin_password', 
+               default='nova', 
+               help='Password of the admin user'),
+    cfg.StrOpt('os_admin_tenant_name', 
+               default='admin',
+               help='Name of tenant where the user is admin'),
+    cfg.StrOpt('nova_internal_net_name', 
+               default='novanetwork', 
+               help='Name of network which IPs are given to the VMs')
+]
 
-def make_app(**local_conf):
+sqlalchemy_opts = [
+    cfg.StrOpt('database_uri', 
+               default='sqlite:////tmp/eho-server.db', 
+               help='URL for sqlalchemy database'),
+    cfg.BoolOpt('echo', 
+                default=False,
+                help='Sqlalchemy echo')
+]
+
+CONF = cfg.CONF
+CONF.register_opts(opts)
+CONF.register_opts(sqlalchemy_opts, group='sqlalchemy')
+CONF.import_opt('log_level', 'eho.config')
+
+
+def make_app():
     """
     Entry point for Elastic Hadoop on OpenStack REST API server
     """
     app = Flask('eho.api')
 
-    # reading defaults
-    app.config.from_pyfile('etc/default.cfg', silent=True)
-    app.config.from_pyfile('../etc/default.cfg', silent=True)
-
-    # read local conf
-    app.config.from_pyfile('etc/local.cfg', silent=True)
-    app.config.from_pyfile('../etc/local.cfg', silent=True)
-
-    app.config.from_envvar('EHO_API_CFG', silent=True)
-    app.config.update(**local_conf)
+    app.config['SQLALCHEMY_DATABASE_URI'] = CONF.sqlalchemy.database_uri
+    app.config['SQLALCHEMY_ECHO'] = CONF.sqlalchemy.echo
 
     root_logger = logging.getLogger()
-    ll = app.config.pop('LOG_LEVEL', 'WARN')
-    if ll:
-        root_logger.setLevel(ll)
+    root_logger.setLevel(CONF.log_level)
 
     app.register_blueprint(api_v02.rest, url_prefix='/v0.2')
 
-    if app.config['DEBUG']:
+    if CONF.log_level == 'DEBUG':
         print 'Configuration:'
-        for k in app.config:
-            print '\t%s = %s' % (k, app.config[k])
+
+        for key in CONF:
+          print "%s = %s" %(key, CONF[key])
 
     setup_storage(app)
     setup_defaults(app)
     setup_scheduler(app)
-    setup_ops(app)
-    setup_api(app)
 
     def make_json_error(ex):
         status_code = (ex.code
@@ -86,12 +115,12 @@ def make_app(**local_conf):
 
     app.wsgi_app = auth_token(
         app.config,
-        auth_host=app.config['OS_AUTH_HOST'],
-        auth_port=app.config['OS_AUTH_PORT'],
-        auth_protocol=app.config['OS_AUTH_PROTOCOL'],
-        admin_user=app.config['OS_ADMIN_USER'],
-        admin_password=app.config['OS_ADMIN_PASSWORD'],
-        admin_tenant=['OS_ADMIN_TENANT']
+        auth_host=CONF.os_auth_host,
+        auth_port=CONF.os_auth_port,
+        auth_protocol=CONF.os_auth_protocol,
+        admin_user=CONF.os_admin_username,
+        admin_password=CONF.os_admin_password,
+        admin_tenant=CONF.os_admin_tenant_name
     )(app.wsgi_app)
 
     return app
