@@ -123,8 +123,7 @@ def setup_defaults(app):
         p_dn = create_node_process('data_node', [('heap_size', True, None)])
 
         for p in [p_jt, p_nn, p_tt, p_dn]:
-            LOG.info('New NodeProcess has been created: %s \'%s\'',
-                     p.id, p.name)
+            LOG.info('New NodeProcess: \'%s\'', p.name)
 
         # setup default node types
         nt_jt_nn = create_node_type('JT+NN', [p_jt, p_nn])
@@ -133,9 +132,8 @@ def setup_defaults(app):
         nt_tt_dn = create_node_type('TT+DN', [p_tt, p_dn])
 
         for nt in [nt_jt_nn, nt_jt, nt_nn, nt_tt_dn]:
-            LOG.info('New NodeType has been created: %s \'%s\' %s',
-                     nt.id, nt.name,
-                     [p.name.__str__() for p in nt.processes])
+            LOG.info('New NodeType: \'%s\' %s',
+                     nt.name, [p.name.__str__() for p in nt.processes])
 
     if CONF.stub_data:
         _setup_stub_data(nt_jt_nn, nt_jt, nt_nn, nt_tt_dn)
@@ -214,7 +212,7 @@ def _setup_stub_data(nt_jt_nn, nt_jt, nt_nn, nt_tt_dn):
 
     for tmpl in [jt_nn_small, jt_nn_medium, jt_small, jt_medium, nn_small,
                  nn_medium, tt_dn_small, tt_dn_medium]:
-        LOG.info('New NodeTemplate has been created: %s \'%s\' %s',
+        LOG.info('New NodeTemplate: %s \'%s\' %s',
                  tmpl.id, tmpl.name, tmpl.flavor_id)
 
     LOG.info('All defaults has been inserted')
