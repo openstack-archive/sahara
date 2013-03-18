@@ -17,7 +17,7 @@ import logging
 
 from webob.exc import HTTPServiceUnavailable, HTTPNotFound, HTTPUnauthorized
 
-from eho.openstack.common.common import split_path
+from eho.openstack.commons import split_path
 
 
 class AuthValidator:
