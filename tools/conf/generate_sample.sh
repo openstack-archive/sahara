@@ -25,7 +25,7 @@ BINS=$(echo bin/eho-*)
 
 PYTHONPATH=./:${PYTHONPATH} \
     tools/with_venv python $(dirname "$0")/extract_opts.py ${FILES} ${BINS} > \
-    etc/eho/eho.conf.sample
+    etc/eho/eho.conf.sample-full
 
 # Remove compiled files created by imp.import_source()
 for bin in ${BINS}; do
