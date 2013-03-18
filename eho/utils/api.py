@@ -14,7 +14,6 @@
 # limitations under the License.
 
 import mimetypes
-import logging
 import traceback
 
 from flask import abort, request, Blueprint, Response
@@ -22,6 +21,9 @@ from werkzeug.datastructures import MIMEAccept
 
 from eho.openstack.common.wsgi import JSONDictSerializer, XMLDictSerializer, \
     JSONDeserializer
+from eho.openstack.common import log as logging
+
+LOG = logging.getLogger(__name__)
 
 
 class Rest(Blueprint):
@@ -119,7 +121,7 @@ def render(res=None, resp_type=None, status=None, **kwargs):
 
 def request_data():
     if not request.content_length > 0:
-        logging.debug("Empty body provided in request")
+        LOG.debug("Empty body provided in request")
         return dict()
 
     deserializer = None
@@ -136,10 +138,10 @@ def request_data():
 
 
 def abort_and_log(status_code, descr, exc=None):
-    logging.error("Request aborted with status code %s and message '%s'",
-                  status_code, descr)
+    LOG.error("Request aborted with status code %s and message '%s'",
+              status_code, descr)
 
     if exc is not None:
-        logging.error(traceback.format_exc())
+        LOG.error(traceback.format_exc())
 
     abort(status_code, description=descr)

@@ -13,11 +13,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import logging
-
 from webob.exc import HTTPServiceUnavailable, HTTPNotFound, HTTPUnauthorized
 
 from eho.openstack.commons import split_path
+from eho.openstack.common import log as logging
+
+LOG = logging.getLogger(__name__)
 
 
 class AuthValidator:
@@ -40,7 +41,7 @@ class AuthValidator:
         """
         token_tenant = env['HTTP_X_TENANT_ID']
         if not token_tenant:
-            logging.warn("Can't get tenant_id from env")
+            LOG.warn("Can't get tenant_id from env")
             resp = HTTPServiceUnavailable()
             return resp(env, start_response)
 
@@ -48,12 +49,12 @@ class AuthValidator:
         version, url_tenant, rest = split_path(path, 3, 3, True)
 
         if not version or not url_tenant or not rest:
-            logging.info("Incorrect path: %s", path)
+            LOG.info("Incorrect path: %s", path)
             resp = HTTPNotFound("Incorrect path")
             resp(env, start_response)
 
         if token_tenant != url_tenant:
-            logging.debug("Unauthorized: token tenant != requested tenant")
+            LOG.debug("Unauthorized: token tenant != requested tenant")
             resp = HTTPUnauthorized('Token tenant != requested tenant')
             return resp(env, start_response)
 

@@ -13,8 +13,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import logging
-
 from jinja2 import Environment
 from jinja2 import PackageLoader
 from paramiko import SSHClient, AutoAddPolicy
@@ -24,7 +22,9 @@ import time
 from eho.storage.models import Node, ServiceUrl
 from eho.storage.storage import DB
 from eho.utils.openstack.nova import novaclient
+from eho.openstack.common import log as logging
 
+LOG = logging.getLogger(__name__)
 
 CONF = cfg.CONF
 
@@ -132,14 +132,14 @@ def launch_cluster(headers, cluster):
             clmap['nodes'].append(node)
 
     for node in clmap['nodes']:
-        logging.debug("Starting node for cluster '%s', node: %s, iamge: %s",
-                      cluster.name, node, clmap['image'])
+        LOG.debug("Starting node for cluster '%s', node: %s, iamge: %s",
+                  cluster.name, node, clmap['image'])
         _launch_node(nova, node, clmap['image'])
 
     all_set = False
 
-    logging.debug("All nodes for cluster '%s' have been started, "
-                  "waiting for them to come up", cluster.name)
+    LOG.debug("All nodes for cluster '%s' have been started, "
+              "waiting for them to come up", cluster.name)
 
     while not all_set:
         all_set = True
@@ -152,16 +152,16 @@ def launch_cluster(headers, cluster):
 
         time.sleep(1)
 
-    logging.debug("All nodes of cluster '%s' are up: %s",
-                  cluster.name, all_set)
+    LOG.debug("All nodes of cluster '%s' are up: %s",
+              cluster.name, all_set)
 
     _pre_cluster_setup(clmap)
     for node in clmap['nodes']:
         _setup_node(node, clmap)
         _register_node(node, cluster)
 
-    logging.debug("All nodes of cluster '%s' are configured and registered, "
-                  "starting the cluster...", cluster.name)
+    LOG.debug("All nodes of cluster '%s' are configured and registered, "
+              "starting the cluster...", cluster.name)
 
     _start_cluster(cluster, clmap)
 
@@ -286,7 +286,7 @@ def _start_cluster(cluster, clmap):
                                    'su -c /usr/sbin/start-all.sh hadoop')
     _ensure_zero(ret)
 
-    logging.info("Cluster '%s' successfully started!", cluster.name)
+    LOG.info("Cluster '%s' successfully started!", cluster.name)
 
 
 def stop_cluster(headers, cluster):
@@ -295,6 +295,6 @@ def stop_cluster(headers, cluster):
     for node in cluster.nodes:
         try:
             nova.servers.delete(node.vm_id)
-            logging.debug("vm '%s' has been stopped", node.vm_id)
+            LOG.debug("vm '%s' has been stopped", node.vm_id)
         except Exception, e:
-            logging.info("Can't stop vm '%s': %s", node.vm_id, e)
+            LOG.info("Can't stop vm '%s': %s", node.vm_id, e)

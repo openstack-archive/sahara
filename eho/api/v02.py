@@ -16,7 +16,9 @@
 from eho.service import api
 
 from eho.utils.api import Rest, render, abort_and_log, request_data
+from eho.openstack.common import log as logging
 
+LOG = logging.getLogger(__name__)
 
 rest = Rest('v02', __name__)
 

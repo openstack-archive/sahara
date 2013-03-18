@@ -13,14 +13,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import logging
-
 from oslo.config import cfg
 
 from eho.storage.models import NodeProcess, NodeProcessProperty, \
     NodeType, NodeTemplate, NodeTemplateConfig, Cluster, ClusterNodeCount
 from eho.storage.storage import DB
+from eho.openstack.common import log as logging
 
+LOG = logging.getLogger(__name__)
 
 CONF = cfg.CONF
 CONF.import_opt('reset_db', 'eho.config')
@@ -123,8 +123,8 @@ def setup_defaults(app):
         p_dn = create_node_process('data_node', [('heap_size', True, None)])
 
         for p in [p_jt, p_nn, p_tt, p_dn]:
-            logging.info('New NodeProcess has been created: %s \'%s\'',
-                         p.id, p.name)
+            LOG.info('New NodeProcess has been created: %s \'%s\'',
+                     p.id, p.name)
 
         # setup default node types
         nt_jt_nn = create_node_type('JT+NN', [p_jt, p_nn])
@@ -133,9 +133,9 @@ def setup_defaults(app):
         nt_tt_dn = create_node_type('TT+DN', [p_tt, p_dn])
 
         for nt in [nt_jt_nn, nt_jt, nt_nn, nt_tt_dn]:
-            logging.info('New NodeType has been created: %s \'%s\' %s',
-                         nt.id, nt.name,
-                         [p.name.__str__() for p in nt.processes])
+            LOG.info('New NodeType has been created: %s \'%s\' %s',
+                     nt.id, nt.name,
+                     [p.name.__str__() for p in nt.processes])
 
     if CONF.stub_data:
         _setup_stub_data(nt_jt_nn, nt_jt, nt_nn, nt_tt_dn)
@@ -214,7 +214,7 @@ def _setup_stub_data(nt_jt_nn, nt_jt, nt_nn, nt_tt_dn):
 
     for tmpl in [jt_nn_small, jt_nn_medium, jt_small, jt_medium, nn_small,
                  nn_medium, tt_dn_small, tt_dn_medium]:
-        logging.info('New NodeTemplate has been created: %s \'%s\' %s',
-                     tmpl.id, tmpl.name, tmpl.flavor_id)
+        LOG.info('New NodeTemplate has been created: %s \'%s\' %s',
+                 tmpl.id, tmpl.name, tmpl.flavor_id)
 
-    logging.info('All defaults has been inserted')
+    LOG.info('All defaults has been inserted')

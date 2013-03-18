@@ -13,8 +13,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import logging
-
 from eventlet import monkey_patch
 from flask import Flask
 from keystoneclient.middleware.auth_token import filter_factory as auth_token
@@ -29,6 +27,9 @@ from eho.storage.defaults import setup_defaults
 from eho.utils.api import render
 from eho.storage.storage import setup_storage
 
+from eho.openstack.common import log
+
+LOG = log.getLogger(__name__)
 
 monkey_patch(os=True, select=True, socket=True, thread=True, time=True)
 
@@ -82,9 +83,6 @@ def make_app():
 
     app.config['SQLALCHEMY_DATABASE_URI'] = CONF.sqlalchemy.database_uri
     app.config['SQLALCHEMY_ECHO'] = CONF.sqlalchemy.echo
-
-    root_logger = logging.getLogger()
-    root_logger.setLevel(CONF.log_level)
 
     app.register_blueprint(api_v02.rest, url_prefix='/v0.2')
 

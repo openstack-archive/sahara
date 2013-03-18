@@ -14,7 +14,6 @@
 # limitations under the License.
 
 import json
-import logging
 import tempfile
 import unittest
 import uuid
@@ -29,6 +28,9 @@ from eho.storage.models import Node, NodeTemplate
 from eho.storage.storage import DB
 import eho.main
 from eho.utils import scheduler
+from eho.openstack.common import log as logging
+
+LOG = logging.getLogger(__name__)
 
 
 def _stub_vm_creation_job(template_id):
@@ -38,7 +40,7 @@ def _stub_vm_creation_job(template_id):
 
 
 def _stub_launch_cluster(headers, cluster):
-    logging.debug('stub launch_cluster called with %s, %s', headers, cluster)
+    LOG.debug('stub launch_cluster called with %s, %s', headers, cluster)
     pile = eventlet.GreenPile(scheduler.POOL)
 
     for elem in cluster.node_counts:
@@ -48,15 +50,15 @@ def _stub_launch_cluster(headers, cluster):
 
     for (ip, vm_id, elem) in pile:
         DB.session.add(Node(vm_id, cluster.id, elem))
-        logging.debug("VM '%s/%s/%s' created", ip, vm_id, elem)
+        LOG.debug("VM '%s/%s/%s' created", ip, vm_id, elem)
 
 
 def _stub_stop_cluster(headers, cluster):
-    logging.debug("stub stop_cluster called with %s, %s", headers, cluster)
+    LOG.debug("stub stop_cluster called with %s, %s", headers, cluster)
 
 
 def _stub_auth_token(*args, **kwargs):
-    logging.debug('stub token filter called with %s, %s', args, kwargs)
+    LOG.debug('stub token filter called with %s, %s', args, kwargs)
 
     def _filter(app):
         def _handler(env, start_response):
@@ -68,7 +70,7 @@ def _stub_auth_token(*args, **kwargs):
 
 
 def _stub_auth_valid(*args, **kwargs):
-    logging.debug('stub token validation called with %s, %s', args, kwargs)
+    LOG.debug('stub token validation called with %s, %s', args, kwargs)
 
     def _filter(app):
         def _handler(env, start_response):
@@ -116,8 +118,8 @@ class TestApi(unittest.TestCase):
 
         app = make_app()
 
-        logging.debug('Test db path: %s', self.db_path)
-        logging.debug('Test app.config: %s', app.config)
+        LOG.debug('Test db path: %s', self.db_path)
+        LOG.debug('Test app.config: %s', app.config)
 
         self.app = app.test_client()
 

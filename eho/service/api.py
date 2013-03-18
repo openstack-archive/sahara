@@ -13,8 +13,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import logging
-
 import eventlet
 from oslo.config import cfg
 from flask import request
@@ -24,7 +22,9 @@ from eho.storage.models import NodeTemplate, NodeType, NodeProcess, \
 from eho.storage.storage import DB
 from eho.utils.api import abort_and_log
 from eho.service import cluster_ops
+from eho.openstack.common import log as logging
 
+LOG = logging.getLogger(__name__)
 
 CONF = cfg.CONF
 CONF.import_opt('allow_cluster_ops', 'eho.config')
@@ -211,13 +211,13 @@ def create_cluster(values):
 
 def _cluster_creation_job(headers, cluster_id):
     cluster = Cluster.query.filter_by(id=cluster_id).first()
-    logging.debug("Starting cluster '%s' creation: %s", cluster_id,
-                  _cluster(cluster).dict)
+    LOG.debug("Starting cluster '%s' creation: %s", cluster_id,
+              _cluster(cluster).dict)
 
     if CONF.allow_cluster_ops:
         cluster_ops.launch_cluster(headers, cluster)
     else:
-        logging.info("Cluster ops are disabled, use --allow-cluster-ops flag")
+        LOG.info("Cluster ops are disabled, use --allow-cluster-ops flag")
 
     # update cluster status
     cluster = Cluster.query.filter_by(id=cluster.id).first()
@@ -238,13 +238,13 @@ def terminate_cluster(**args):
 
 def _cluster_termination_job(headers, cluster_id):
     cluster = Cluster.query.filter_by(id=cluster_id).first()
-    logging.debug("Stoping cluster '%s' creation: %s", cluster_id,
-                  _cluster(cluster).dict)
+    LOG.debug("Stoping cluster '%s' creation: %s", cluster_id,
+              _cluster(cluster).dict)
 
     if CONF.allow_cluster_ops:
         cluster_ops.stop_cluster(headers, cluster)
     else:
-        logging.info("Cluster ops are disabled, use --allow-cluster-ops flag")
+        LOG.info("Cluster ops are disabled, use --allow-cluster-ops flag")
 
     DB.session.delete(cluster)
     DB.session.commit()
