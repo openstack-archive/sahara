@@ -15,25 +15,31 @@
 
 import logging
 import time
-from eho.server.utils.openstack.nova import novaclient
 
 from jinja2 import Environment
 from jinja2 import PackageLoader
-
 from paramiko import SSHClient, AutoAddPolicy
+
+from oslo.config import cfg
 
 from eho.server.storage.models import Node, ServiceUrl
 from eho.server.storage.storage import DB
+from eho.server.utils.openstack.nova import novaclient
 
 
-NODE_CONF = {}
+CONF = cfg.CONF
 
+cluster_node_opts = [
+    cfg.StrOpt('username',
+               default='root',
+               help='An existing user on Hadoop image'),
+    cfg.StrOpt('password',
+               default='swordfish',
+               help='User\'s password')
+]
 
-def setup_ops(app):
-    NODE_CONF['user'] = app.config.get('NODE_USER')
-    NODE_CONF['password'] = app.config.get('NODE_PASSWORD')
-    NODE_CONF['vm_internal_net'] = \
-        app.config.get('NODE_INTERNAL_NET')
+CONF.register_opts(cluster_node_opts, 'cluster_node')
+#CONF.import_opt('nova_internal_net_name', 'eho.server.main')
 
 
 def _find_by_id(lst, id):
@@ -67,8 +73,8 @@ def _setup_ssh_connection(host, ssh):
     ssh.set_missing_host_key_policy(AutoAddPolicy())
     ssh.connect(
         host,
-        username=NODE_CONF['user'],
-        password=NODE_CONF['password']
+        username=CONF.cluster_node.username,
+        password=CONF.cluster_node.password
     )
 
 
@@ -176,11 +182,11 @@ def _check_if_up(nova, node):
         srv = _find_by_id(nova.servers.list(), node['id'])
         nets = srv.networks
 
-        if not NODE_CONF['vm_internal_net'] in nets:
+        if not CONF.nova_internal_net_name in nets:
             # VM's networking is not configured yet
             return
 
-        ips = nets[NODE_CONF['vm_internal_net']]
+        ips = nets[CONF.nova_internal_net_name]
         if len(ips) < 2:
             # public IP is not assigned yet
             return

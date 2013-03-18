@@ -17,6 +17,8 @@ import logging
 
 import eventlet
 
+from oslo.config import cfg
+
 from eho.server.storage.models import NodeTemplate, NodeType, NodeProcess, \
     NodeTemplateConfig, Cluster, ClusterNodeCount
 from eho.server.storage.storage import DB
@@ -25,12 +27,8 @@ from eho.server.service import cluster_ops
 from flask import request
 
 
-ALLOW_CLUSTER_OPS = False
-
-
-def setup_api(app):
-    global ALLOW_CLUSTER_OPS
-    ALLOW_CLUSTER_OPS = app.config['ALLOW_CLUSTER_OPS']
+CONF = cfg.CONF
+CONF.import_opt('allow_cluster_ops', 'eho.config')
 
 
 def _clean_nones(obj):
@@ -217,7 +215,7 @@ def _cluster_creation_job(headers, cluster_id):
     logging.debug("Starting cluster '%s' creation: %s", cluster_id,
                   _cluster(cluster).dict)
 
-    if ALLOW_CLUSTER_OPS:
+    if CONF.allow_cluster_ops:
         cluster_ops.launch_cluster(headers, cluster)
     else:
         logging.info("Cluster ops are disabled, use --allow-cluster-ops flag")
@@ -244,7 +242,7 @@ def _cluster_termination_job(headers, cluster_id):
     logging.debug("Stoping cluster '%s' creation: %s", cluster_id,
                   _cluster(cluster).dict)
 
-    if ALLOW_CLUSTER_OPS:
+    if CONF.allow_cluster_ops:
         cluster_ops.stop_cluster(headers, cluster)
     else:
         logging.info("Cluster ops are disabled, use --allow-cluster-ops flag")
