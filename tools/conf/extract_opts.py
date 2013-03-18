@@ -18,6 +18,8 @@
 # @author: Zhongyue Luo, SINA Corporation.
 #
 
+# stolen from the OpenStack Nova
+
 """Extracts OpenStack config option info from module(s)."""
 
 import imp
@@ -215,7 +217,7 @@ def _sanitize_default(s):
     elif s == _get_my_ip():
         return '10.0.0.1'
     elif s == socket.getfqdn():
-        return 'nova'
+        return 'eho'
     elif s.strip() != s:
         return '"%s"' % s
     return s

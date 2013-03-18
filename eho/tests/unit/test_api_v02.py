@@ -93,6 +93,15 @@ class TestApi(unittest.TestCase):
         self.db_fd, self.db_path = tempfile.mkstemp()
         self.maxDiff = 10000
 
+        # override configs
+        CONF.set_override('reset_db', True)
+        CONF.set_override('stub_data', True)
+        CONF.set_override('log_level', 'DEBUG')
+        CONF.set_override('allow_cluster_ops', True)  # stub process
+        CONF.set_override('database_uri', 'sqlite:///' + self.db_path,
+                          group='sqlalchemy')
+        CONF.set_override('echo', False, group='sqlalchemy')
+
         # store functions that will be stubbed
         self._prev_auth_token = eho.server.main.auth_token
         self._prev_auth_valid = eho.server.main.auth_valid
@@ -104,13 +113,6 @@ class TestApi(unittest.TestCase):
         eho.server.main.auth_valid = _stub_auth_valid
         api.cluster_ops.launch_cluster = _stub_launch_cluster
         api.cluster_ops.stop_cluster = _stub_stop_cluster
-
-        CONF.set_override('reset_db', True)
-        CONF.set_override('stub_data', True)
-        CONF.set_override('log_level', 'DEBUG')
-        CONF.set_override('allow_cluster_ops', False)
-        CONF.set_override('database_uri', 'sqlite:///' + self.db_path, group='sqlalchemy')
-        CONF.set_override('echo', False, group='sqlalchemy')
 
         app = make_app()
 

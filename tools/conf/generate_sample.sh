@@ -17,6 +17,8 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+# stolen from the OpenStack Nova
+
 FILES=$(find eho -type f -name "*.py" ! -path "eho/tests/*" -exec \
     grep -l "Opt(" {} \; | sort -u)
 BINS=$(echo bin/eho-*)

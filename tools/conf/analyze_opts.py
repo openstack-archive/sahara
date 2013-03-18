@@ -15,12 +15,16 @@
 #    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 #    License for the specific language governing permissions and limitations
 #    under the License.
-'''
+
+# stolen from the OpenStack Nova
+
+"""
 find_unused_options.py
 
-Compare the nova.conf file with the nova.conf.sample file to find any unused
-options or default values in nova.conf
-'''
+Compare the eho.conf file with the eho.conf.sample file to find any unused
+options or default values in eho.conf
+"""
+
 import argparse
 import os
 import sys
@@ -44,7 +48,7 @@ class PropertyCollecter(iniparser.BaseParser):
     def collect_properties(cls, lineiter, sample_format=False):
         def clean_sample(f):
             for line in f:
-                if line.startswith("# ") and line != '# nova.conf sample #\n':
+                if line.startswith("# ") and line != '# eho.conf sample #\n':
                     line = line[2:]
                 yield line
         pc = cls()
@@ -55,17 +59,17 @@ class PropertyCollecter(iniparser.BaseParser):
 
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description='''Compare the nova.conf
-    file with the nova.conf.sample file to find any unused options or
-    default values in nova.conf''')
+    parser = argparse.ArgumentParser(description='''Compare the eho.conf
+    file with the eho.conf.sample file to find any unused options or
+    default values in eho.conf''')
 
     parser.add_argument('-c', action='store',
-                        default='/etc/nova/nova.conf',
-                        help='path to nova.conf\
-                        (defaults to /etc/nova/nova.conf)')
-    parser.add_argument('-s', default='./etc/nova/nova.conf.sample',
-                        help='path to nova.conf.sample\
-                        (defaults to ./etc/nova/nova.conf.sample')
+                        default='/etc/eho/eho.conf',
+                        help='path to eho.conf\
+                        (defaults to /etc/eho/eho.conf)')
+    parser.add_argument('-s', default='./etc/eho/eho.conf.sample',
+                        help='path to eho.conf.sample\
+                        (defaults to ./etc/eho/eho.conf.sample')
     options = parser.parse_args()
 
     conf_file_options = PropertyCollecter.collect_properties(open(options.c))
