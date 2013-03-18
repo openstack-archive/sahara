@@ -109,7 +109,7 @@ def create_cluster(name, base_image_id, tenant_id, templates):
     return cluster
 
 
-def setup_defaults(app):
+def setup_defaults():
     nt_jt_nn = None
     nt_jt = None
     nt_nn = None

@@ -87,7 +87,7 @@ def make_app():
     app.register_blueprint(api_v02.rest, url_prefix='/v0.2')
 
     setup_storage(app)
-    setup_defaults(app)
+    setup_defaults()
     setup_scheduler(app)
 
     def make_json_error(ex):
