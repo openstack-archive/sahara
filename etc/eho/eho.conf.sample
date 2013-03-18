@@ -8,7 +8,7 @@
 #dev=false
 
 # set host (string value)
-#host=openstack
+#host=
 
 # set port (integer value)
 #port=8080
@@ -112,6 +112,23 @@
 
 
 #
+# Options defined in eho.openstack.common.notifier.api
+#
+
+# Driver or drivers to handle sending notifications (multi
+# valued)
+#notification_driver=
+
+# Default notification level for outgoing notifications
+# (string value)
+#default_notification_level=INFO
+
+# Default publisher_id for outgoing notifications (string
+# value)
+#default_publisher_id=$host
+
+
+#
 # Options defined in eho.server.main
 #
 
@@ -168,4 +185,4 @@
 #echo=false
 
 
-# Total option count: 38
+# Total option count: 41

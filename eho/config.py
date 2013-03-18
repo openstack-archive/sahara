@@ -16,8 +16,6 @@
 from oslo.config import cfg
 
 cli_opts = [
-    cfg.BoolOpt('dev', default=False,
-                help='enable dev mode'),
     cfg.StrOpt('host', default='',
                help='set host'),
     cfg.IntOpt('port', default=8080,

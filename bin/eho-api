@@ -31,8 +31,7 @@ def main():
 
     app = server.make_app()
 
-    wsgi.server(eventlet.listen((CONF.host, CONF.port), backlog=500), app,
-                debug=CONF.dev)
+    wsgi.server(eventlet.listen((CONF.host, CONF.port), backlog=500), app)
 
 
 if __name__ == '__main__':
