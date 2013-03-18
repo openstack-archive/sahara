@@ -14,8 +14,10 @@
 # limitations under the License.
 
 import logging
-from eho.common.common import split_path
+
 from webob.exc import HTTPServiceUnavailable, HTTPNotFound, HTTPUnauthorized
+
+from eho.openstack.common.common import split_path
 
 
 class AuthValidator:

@@ -16,15 +16,14 @@
 import logging
 
 import eventlet
-
 from oslo.config import cfg
-
-from eho.server.storage.models import NodeTemplate, NodeType, NodeProcess, \
-    NodeTemplateConfig, Cluster, ClusterNodeCount
-from eho.server.storage.storage import DB
-from eho.server.utils.api import abort_and_log
-from eho.server.service import cluster_ops
 from flask import request
+
+from eho.storage.models import NodeTemplate, NodeType, NodeProcess, \
+    NodeTemplateConfig, Cluster, ClusterNodeCount
+from eho.storage.storage import DB
+from eho.utils.api import abort_and_log
+from eho.service import cluster_ops
 
 
 CONF = cfg.CONF

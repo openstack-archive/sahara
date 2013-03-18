@@ -23,7 +23,7 @@ import eventlet
 from oslo.config.cfg import CONF
 
 from eho import config
-import eho.server.main as server
+import eho.main as server
 
 
 def main():

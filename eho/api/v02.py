@@ -13,9 +13,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from eho.server.service import api
+from eho.service import api
 
-from eho.server.utils.api import Rest, render, abort_and_log, request_data
+from eho.utils.api import Rest, render, abort_and_log, request_data
 
 
 rest = Rest('v02', __name__)

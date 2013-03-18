@@ -14,17 +14,16 @@
 # limitations under the License.
 
 import logging
-import time
 
 from jinja2 import Environment
 from jinja2 import PackageLoader
 from paramiko import SSHClient, AutoAddPolicy
-
 from oslo.config import cfg
 
-from eho.server.storage.models import Node, ServiceUrl
-from eho.server.storage.storage import DB
-from eho.server.utils.openstack.nova import novaclient
+import time
+from eho.storage.models import Node, ServiceUrl
+from eho.storage.storage import DB
+from eho.utils.openstack.nova import novaclient
 
 
 CONF = cfg.CONF
@@ -39,7 +38,7 @@ cluster_node_opts = [
 ]
 
 CONF.register_opts(cluster_node_opts, 'cluster_node')
-#CONF.import_opt('nova_internal_net_name', 'eho.server.main')
+#CONF.import_opt('nova_internal_net_name', 'eho.main')
 
 
 def _find_by_id(lst, id):
