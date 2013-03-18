@@ -88,12 +88,6 @@ def make_app():
 
     app.register_blueprint(api_v02.rest, url_prefix='/v0.2')
 
-    if CONF.log_level == 'DEBUG':
-        print 'Configuration:'
-
-        for key in CONF:
-            print "%s = %s" % (key, CONF[key])
-
     setup_storage(app)
     setup_defaults(app)
     setup_scheduler(app)
