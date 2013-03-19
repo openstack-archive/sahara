@@ -1,12 +1,11 @@
-#!/bin/bash
+#!/bin/bash -e
 
 echo "Building docs..."
 
-rm -rf doc/html
-rm -rf doc/source/apidoc
+rm -rf doc/html doc/build
+rm -rf doc/source/apidoc doc/source/api
 
-# .venv/bin/sphinx-apidoc -f -o doc/source/apidoc/ eho
-.venv/bin/sphinx-build doc/source/ doc/html/
+.venv/bin/python setup.py build_sphinx
 
 echo "Done."
-echo "Docs are now available in 'doc/html/'"
+echo "Docs are now available in 'doc/build/html/'"

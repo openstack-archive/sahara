@@ -25,6 +25,8 @@ target
 *.iws
 doc/html
 doc/source/apidoc
+doc/source/api
+doc/build
 *.db
 .coverage
 nosetests.xml
