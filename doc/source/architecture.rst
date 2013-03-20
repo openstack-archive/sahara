@@ -1,9 +1,9 @@
-EHO Architecture (draft)
-========================
+Savanna Architecture (draft)
+============================
 
-.. image:: images/eho-architecture.png
+.. image:: images/savanna-architecture.png
 
-The EHO architecture consists of several components:
+The Savanna architecture consists of several components:
 
 * Cluster Configuration Manager  - all the business logic resides here
 
@@ -16,8 +16,8 @@ The EHO architecture consists of several components:
 * Deployment Engine - pluggable mechanism responsible for deploying Hadoop on provisioned VMs;
   existing management solutions like Apache Ambari and Cloudera Management Console could be utilized for that matter
 
-* REST API - exposes EHO functionality via REST
+* REST API - exposes Savanna functionality via REST
 
-* Python EHO Client - similar to other OpenStack components EHO has its own python client
+* Python Savanna Client - similar to other OpenStack components Savanna has its own python client
 
-* EHO pages - GUI for the EHO is located on Horizon
+* Savanna pages - GUI for the Savanna is located on Horizon

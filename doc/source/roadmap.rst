@@ -1,5 +1,5 @@
-EHO Roadmap
-===========
+Savanna Roadmap
+===============
 
 Phase 1 - Basic Cluster Provisioning
 ------------------------------------

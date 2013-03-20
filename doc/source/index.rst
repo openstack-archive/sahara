@@ -1,5 +1,5 @@
-Welcome to Elastic Hadoop on OpenStack documentation!
-=====================================================
+Welcome to Savanna documentation!
+=================================
 
 Useful links
 ------------
@@ -15,8 +15,8 @@ Useful links
     quickstart
     how-to-participate
 
-* `Sources repo <https://github.com/mirantis/eho>`_
-* `Launchpad project <https://launchpad.net/eho>`_
+* `Sources repo <https://github.com/mirantis/savanna>`_
+* `Launchpad project <https://launchpad.net/savanna>`_
 
 Introduction
 ------------
@@ -25,10 +25,10 @@ Apache Hadoop is an industry standard and widely adopted MapReduce implementatio
 The aim of this project is to enable users to easily provision and manage Hadoop clusters on OpenStack.
 It is worth mentioning that Amazon provides Hadoop for several years as Amazon Elastic MapReduce (EMR) service.
 
-Elastic Hadoop on OpenStack (EHO) aims to provide users with simple means to provision a Hadoop cluster
+Savanna aims to provide users with simple means to provision a Hadoop cluster
 by specifying several parameters like Hadoop version, cluster topology, nodes hardware details
-and a few more. After user fills in all the parameters, EHO deploys the cluster in a few minutes.
-Also EHO provides means to scale already provisioned cluster by adding/removing worker nodes on demand.
+and a few more. After user fills in all the parameters, Savanna deploys the cluster in a few minutes.
+Also Savanna provides means to scale already provisioned cluster by adding/removing worker nodes on demand.
 
 The solution will address following use cases:
 
@@ -50,11 +50,11 @@ Key features are:
 Details
 -------
 
-The EHO product communicates with the following OpenStack components:
+The Savanna product communicates with the following OpenStack components:
 
-* Horizon - provides GUI with ability to use all of EHO’s features;
+* Horizon - provides GUI with ability to use all of Savanna’s features;
 * Keystone - authenticates users and provides security token that is used to work with the OpenStack,
-  hence limiting user abilities in EHO to his OpenStack privileges;
+  hence limiting user abilities in Savanna to his OpenStack privileges;
 * Nova - is used to provision VMs for Hadoop Cluster;
 * Glance - Hadoop VM images are stored there, each image containing an installed OS and Hadoop;
   the pre-installed Hadoop should give us good handicap on node start-up;
@@ -65,7 +65,7 @@ The EHO product communicates with the following OpenStack components:
 General Workflow
 ----------------
 
-EHO will provide two level of abstraction for API and UI based on the addressed use cases:
+Savanna will provide two level of abstraction for API and UI based on the addressed use cases:
 cluster provisioning and analytics as a service.
 
 For the fast cluster provisioning generic workflow will be as following:
@@ -73,13 +73,13 @@ For the fast cluster provisioning generic workflow will be as following:
 * select Hadoop version;
 * select base image with or without pre-installed Hadoop:
 
-    * for base images without Hadoop pre-installed EHO will support pluggable deployment engines integrated with vendor tooling;
+    * for base images without Hadoop pre-installed Savanna will support pluggable deployment engines integrated with vendor tooling;
 
 * define cluster configuration, including size and topology of the cluster and setting the different type of Hadoop parameters (e.g. heap size):
 
     * to ease the configuration of such parameters mechanism of configurable templates will be provided;
 
-* provision the cluster: EHO will provision VMs, install and configure Hadoop;
+* provision the cluster: Savanna will provision VMs, install and configure Hadoop;
 * operation on the cluster: add/remove nodes;
 * terminate the cluster when it’s not needed anymore.
 
@@ -104,7 +104,7 @@ For analytic as a service generic workflow will be as following:
 User’s Perspective
 ------------------
 
-While provisioning cluster through EHO, user operates on two types of entities: Node Templates and Clusters.
+While provisioning cluster through Savanna, user operates on two types of entities: Node Templates and Clusters.
 
 Node Template describes a node within cluster and it has several parameters. Node Type is one of the Node Template’s
 properties that determines what Hadoop processes will be running on the node and thereby its role in the cluster.
@@ -113,15 +113,15 @@ Also template encapsulates hardware parameters (flavor) for the node VM and conf
 
 Cluster entity simply represents Hadoop Cluster. It is mainly characterized by VM image with pre-installed Hadoop which
 will be used for cluster deployment and cluster topology. The topology is a list of node templates and respectively
-amount of nodes being deployed for each template. With respect to topology, EHO checks only that cluster has one JobTracker and one NameNode.
+amount of nodes being deployed for each template. With respect to topology, Savanna checks only that cluster has one JobTracker and one NameNode.
 
 Each node template and cluster belongs to some tenant determined by user. Users have access only to objects located in
 tenants they have access to. Users could edit/delete only objects they created. Naturally admin users have full access to every object.
-That way EHO complies with general OpenStack access policy.
+That way Savanna complies with general OpenStack access policy.
 
-EHO provides several kinds of Hadoop cluster topology. JobTracker and NameNode processes could be run either on a single
+Savanna provides several kinds of Hadoop cluster topology. JobTracker and NameNode processes could be run either on a single
 VM or two separate ones. Also cluster could contain worker nodes of different types. Worker nodes could run both TaskTracker and DataNode,
-or either of these processes alone. EHO allows user to create cluster with any combination of these options.
+or either of these processes alone. Savanna allows user to create cluster with any combination of these options.
 
 Integration with Swift
 ----------------------
@@ -141,7 +141,7 @@ with software that relies on data locality information to avoid network overhead
 Pluggable Deployment and Monitoring
 -----------------------------------
 
-In addition to the monitoring capabilities provided by vendor-specific Hadoop management tooling, EHO will provide pluggable integration with external monitoring systems such as Nagios or Zabbix.
+In addition to the monitoring capabilities provided by vendor-specific Hadoop management tooling, Savanna will provide pluggable integration with external monitoring systems such as Nagios or Zabbix.
 
 Both deployment and monitoring tools will be installed on stand-alone VMs, thus allowing a single instance to manage/monitor several clusters at once.
 
@@ -157,5 +157,5 @@ Useful links
     horizon/index
     quickstart
 
-* `Sources repo <https://github.com/mirantis/eho>`_
-* `Launchpad project <https://launchpad.net/eho>`_
+* `Sources repo <https://github.com/mirantis/savanna>`_
+* `Launchpad project <https://launchpad.net/savanna>`_

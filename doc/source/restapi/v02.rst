@@ -1,32 +1,32 @@
-*****************
-EHO REST API v0.2
-*****************
+*********************
+Savanna REST API v0.2
+*********************
 
 1 General API information
 =========================
 
-This section contains base info about the EHO REST API design.
+This section contains base info about the Savanna REST API design.
 
 1.1 Authentication and Authorization
 ------------------------------------
 
-The EHO API uses the Keystone Identity Service as the default authentication service.
-When Keystone is enabled, users who submit requests to the EHO service must provide an authentication token
+The Savanna API uses the Keystone Identity Service as the default authentication service.
+When Keystone is enabled, users who submit requests to the Savanna service must provide an authentication token
 in X-Auth-Token request header. User could obtain the token by authenticating to the Keystone endpoint.
 For more information about Keystone, see the OpenStack Identity Developer Guide.
 
 Also with each request user must specify OpenStack tenant in url path like that: '/v0.2/{tenant_id}/clusters'. 
-EHO will perform the requested operation in that tenant using provided credentials. Therefore, user will be able 
+Savanna will perform the requested operation in that tenant using provided credentials. Therefore, user will be able
 to create and manage clusters only within tenants he have access to.
 
-Currently EHO does not perform its own authorization checks. We are planning to implement them later. Each 
-of the EHO objects described in section 2 ('Object Model') will belong to some tenant. User will be able to 
+Currently Savanna does not perform its own authorization checks. We are planning to implement them later. Each
+of the Savanna objects described in section 2 ('Object Model') will belong to some tenant. User will be able to
 perform operations only on objects he created or if he is an admin in the tenant to which object belongs.
 
 1.2 Request / Response Types
 ----------------------------
 
-The EHO API supports the JSON data serialization format.
+The Savanna API supports the JSON data serialization format.
 This means that for requests that contain a body, the Content-Type header must be set to the MIME type value
 "application/json". Also, clients should accept JSON serialized responses by specifying the Accept header
 with the MIME type value "application/json" or adding ".json" extension to the resource name.
@@ -51,7 +51,7 @@ or
 
 (It's not implemented yet)
 
-The EHO API supports filtering based on all top level attributes of a resource.
+The Savanna API supports filtering based on all top level attributes of a resource.
 Filters are applicable to all list requests.
 
 For example, the following request returns all clusters named 'foobar':
@@ -60,7 +60,7 @@ For example, the following request returns all clusters named 'foobar':
 
     GET /v0.2/{tenant_id}/clusters?name=foobar
 
-When you specify multiple filters, the EHO API returns only objects that meet all filtering criteria.
+When you specify multiple filters, the Savanna API returns only objects that meet all filtering criteria.
 The operation applies an AND condition among the filters, for example:
 
 .. sourcecode:: http
@@ -70,9 +70,9 @@ The operation applies an AND condition among the filters, for example:
 Currently, there is no OR mechanism for filtering. Alternatively, you can issue a distinct request
 for each filter and build a response set from the received responses on the client-side.
 
-By default, the EHO service returns all attributes for any show or list call.
-The EHO API has a mechanism to limit the set of attributes returned.
-You can use the fields query parameter to control the attributes returned from the EHO API.
+By default, the Savanna service returns all attributes for any show or list call.
+The Savanna API has a mechanism to limit the set of attributes returned.
+You can use the fields query parameter to control the attributes returned from the Savanna API.
 
 For example, the following request returns only id, name and status for each cluster:
 
@@ -87,8 +87,8 @@ Filtering and column selection features could be used together too.
 1.4 Faults
 ----------
 
-The EHO API returns an error response if a failure occurs while processing a request.
-EHO uses only standard HTTP error codes. 4xx errors indicate problems in the particular
+The Savanna API returns an error response if a failure occurs while processing a request.
+Savanna uses only standard HTTP error codes. 4xx errors indicate problems in the particular
 request being sent from the client and 5xx errors indicate server-side problems.
 
 Here we can add table with all used error codes.
@@ -366,8 +366,8 @@ Use the following APIs to manage templates:
 +------------------------------------+--------------------------------------------------------+-----------------------------------------------------+
 | Verb                               | URI                                                    | Description                                         |
 +====================================+========================================================+=====================================================+
-| GET                                | /v0.2/{tenant_id}/node-templates                       | Lists summary for all Node Templates in EHO which   |
-|                                    |                                                        | belong to the Tenant with id <tenant_id>            |
+| GET                                | /v0.2/{tenant_id}/node-templates                       | Lists summary for all Node Templates in Savanna     |
+|                                    |                                                        | which belong to the Tenant with id <tenant_id>      |
 +------------------------------------+--------------------------------------------------------+-----------------------------------------------------+
 | POST                               | /v0.2/{tenant_id}/node-templates                       | Creates a new Node Template                         |
 +------------------------------------+--------------------------------------------------------+-----------------------------------------------------+
@@ -402,7 +402,7 @@ This operation returns a response body. It returns a (potentially empty) list, e
 
     .. sourcecode:: http
 
-        GET http://eho/v0.2/775181/node-templates
+        GET http://savanna/v0.2/775181/node-templates
         Accept: application/json
         X-Auth-Token: SOME_AUTH_TOKEN
 
@@ -485,7 +485,7 @@ defined in section 2.1.
 
     .. sourcecode:: http
 
-        POST http://eho/v0.2/775181/node-templates
+        POST http://savanna/v0.2/775181/node-templates
 
     .. sourcecode:: json
 
@@ -559,7 +559,7 @@ This operation returns a response body. It contains node template as "Node Templ
 
     .. sourcecode:: http
 
-        GET http://eho/v0.2/775181/node-templates/3421
+        GET http://savanna/v0.2/775181/node-templates/3421
 
     **response**
 
@@ -616,7 +616,7 @@ This operation returns response body. It contains updated Node Template object d
 
     .. sourcecode:: http
 
-        PUT http://eho/v0.2/775181/node-templates/3413
+        PUT http://savanna/v0.2/775181/node-templates/3413
 
     .. sourcecode:: json
 
@@ -698,7 +698,7 @@ This operation does not return a response body.
 
     .. sourcecode:: http
 
-        DELETE http://eho/v0.2/775181/node-templates/3421
+        DELETE http://savanna/v0.2/775181/node-templates/3421
 
     **response**
 
@@ -716,8 +716,8 @@ Use the following APIs to manage clusters:
 +------------------------------------+--------------------------------------------------------+-----------------------------------------------------+
 | Verb                               | URI                                                    | Description                                         |
 +====================================+========================================================+=====================================================+
-| GET                                | /v0.2/{tenant_id}/clusters                             | Lists summary for all clusters in EHO which         |
-|                                    |                                                        | belong to the specified tenant                      |
+| GET                                | /v0.2/{tenant_id}/clusters                             | Lists summary for all clusters in Savanna           |
+|                                    |                                                        | which belong to the specified tenant                |
 +------------------------------------+--------------------------------------------------------+-----------------------------------------------------+
 | POST                               | /v0.2/{tenant_id}/clusters                             | Creates a new cluster                               |
 +------------------------------------+--------------------------------------------------------+-----------------------------------------------------+
@@ -749,7 +749,7 @@ each element in the list is a "Cluster object" described in section 2.2.
 
     .. sourcecode:: http
 
-        GET http://eho/v0.2/775181/clusters
+        GET http://savanna/v0.2/775181/clusters
 
     **response**
 
@@ -835,7 +835,7 @@ master node type, i.e. there must be exactly 1 JobTracker node and 1 NameNode no
 
         .. sourcecode:: http
 
-            POST http://eho/v0.2/775181/clusters
+            POST http://savanna/v0.2/775181/clusters
 
         .. sourcecode:: json
 
@@ -896,7 +896,7 @@ This operation returns a response body. It contains cluster as "Cluster object",
 
     .. sourcecode:: http
 
-        GET http://eho/v0.2/775181/clusters/1234
+        GET http://savanna/v0.2/775181/clusters/1234
 
     **response**
 
@@ -960,7 +960,7 @@ take a look on cluster creation operation. All cluster Node Templates should be 
 
     .. sourcecode:: http
 
-        PUT http://eho/v0.2/775181/clusters/1234
+        PUT http://savanna/v0.2/775181/clusters/1234
 
     .. sourcecode:: json
 
@@ -1029,7 +1029,7 @@ This operation does not return a response body.
 
     .. sourcecode:: http
 
-        DELETE http://eho/v0.2/775181/clusters/1234
+        DELETE http://savanna/v0.2/775181/clusters/1234
 
     **response**
 

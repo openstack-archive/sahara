@@ -1,18 +1,18 @@
-*****************
-EHO Horizon Setup
-*****************
+*********************
+Savanna Horizon Setup
+*********************
 
 1 Setup prerequisites
 =====================
 
 1.1 OpenStack environment (Folsom+ version) installed.
 
-1.2 EHO REST API service installed and configured. You can find `quickstart guide here <http://eho.mirantis.com/quickstart.html>`_.
+1.2 Savanna REST API service installed and configured. You can find :doc:`quickstart guide here <..\quickstart>`.
 
-1.3 Operating system, where EHO Horizon’s service installed, has to be connected to internal OpenStack network.
+1.3 Operating system, where Savanna Horizon’s service installed, has to be connected to internal OpenStack network.
 
-2 EHO-Horizon Installation
-==========================
+2 Savanna-Horizon Installation
+==============================
 
 2.1 Go to your Horizon’s machine and install the following packets:
 
@@ -38,7 +38,7 @@ On Ubuntu 12.10 and higer you have to install the following lib as well:
 
 .. sourcecode:: bash
 
-    git clone https://github.com/Frostman/eho-horizon.git
+    git clone -b savanna https://github.com/Mirantis/openstack-horizon.git
 
 **Note:** Above link will be changed soon when project moved to StackForge.
 
@@ -46,7 +46,7 @@ On Ubuntu 12.10 and higer you have to install the following lib as well:
 
 .. sourcecode:: bash
 
-    cd eho-horizon
+    cd openstack-horizon
 
 2.5 Install Python virtual environment:
 
@@ -91,4 +91,4 @@ Now all installations are ready and your Horizon service can be started:
 
     sudo tools/with_venv.sh ./manage.py runserver 0.0.0.0:80
 
-You can check that service has been started successfully. Go to Horizon URL and you'll be able to see `EHO pages <http://eho.mirantis.com/horizon/index.html>`_ in the Project tab.
+You can check that service has been started successfully. Go to Horizon URL and you'll be able to see :doc:`Savanna pages <\index>` in the Project tab.
