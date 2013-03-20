@@ -3,7 +3,7 @@
 echo "----- Setting up Hadoop configs"
 
 {% for filename in configfiles -%}
-  cat {{filename}}.eho_template |
+  cat {{filename}}.savanna_template |
   {%- for item in configs -%}
     sed -e "s/{{item[0]}}/{{item[1]}}/g" |
   {%- endfor -%}

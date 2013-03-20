@@ -1,4 +1,4 @@
-This generate_sample.sh tool is used to generate etc/eho/eho.conf.sample-full
+This generate_sample.sh tool is used to generate etc/savanna/savanna.conf.sample-full
 
 Run it from the top-level working directory i.e.
 

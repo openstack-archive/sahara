@@ -1,18 +1,18 @@
 import setuptools
 
-from eho.openstack.common import setup as common_setup
+from savanna.openstack.common import setup as common_setup
 
 requires = common_setup.parse_requirements()
 depend_links = common_setup.parse_dependency_links()
-project = 'eho'
+project = 'savanna'
 
 setuptools.setup(
     name=project,
     version=common_setup.get_version(project, '0.1'),
-    description='elastic hadoop on openstack',
+    description='Savanna project',
     author='Mirantis Inc.',
-    author_email='elastic-hadoop-all@mirantis.com',
-    url='http://eho.mirantis.com',
+    author_email='savanna@mirantis.com',
+    url='http://savanna.mirantis.com',
     classifiers=[
         'Environment :: OpenStack',
         'Intended Audience :: Information Technology',
@@ -30,6 +30,6 @@ setuptools.setup(
     include_package_data=True,
     test_suite='nose.collector',
     setup_requires=['setuptools_git>=0.4'],
-    scripts=['bin/eho-api'],
+    scripts=['bin/savanna-api'],
     py_modules=[]
 )

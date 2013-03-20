@@ -1,9 +1,7 @@
-#!/usr/bin/env bash
 # vim: tabstop=4 shiftwidth=4 softtabstop=4
 
-# Copyright 2012 SINA Corporation
+# Copyright 2012 Red Hat, Inc.
 # All Rights Reserved.
-# Author: Zhongyue Luo <lzyeval@gmail.com>
 #
 #    Licensed under the Apache License, Version 2.0 (the "License"); you may
 #    not use this file except in compliance with the License. You may obtain
@@ -17,17 +15,19 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-# stolen from the OpenStack Nova
+"""
+gettext for openstack-common modules.
 
-FILES=$(find savanna -type f -name "*.py" ! -path "savanna/tests/*" -exec \
-    grep -l "Opt(" {} \; | sort -u)
-BINS=$(echo bin/savanna-*)
+Usual usage in an openstack.common module:
 
-PYTHONPATH=./:${PYTHONPATH} \
-    tools/with_venv python $(dirname "$0")/extract_opts.py ${FILES} ${BINS} > \
-    etc/savanna/savanna.conf.sample-full
+    from savanna.openstack.common.gettextutils import _
+"""
 
-# Remove compiled files created by imp.import_source()
-for bin in ${BINS}; do
-    [ -f ${bin}c ] && rm ${bin}c
-done
+import gettext
+
+
+t = gettext.translation('openstack-common', 'locale', fallback=True)
+
+
+def _(msg):
+    return t.ugettext(msg)

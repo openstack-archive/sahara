@@ -13,9 +13,9 @@ cli_opts = [
 ]
 
 CONF = cfg.CONF
-CONF.import_opt('os_admin_username', 'eho.main')
-CONF.import_opt('os_admin_password', 'eho.main')
-CONF.import_opt('os_admin_tenant_name', 'eho.main')
+CONF.import_opt('os_admin_username', 'savanna.main')
+CONF.import_opt('os_admin_password', 'savanna.main')
+CONF.import_opt('os_admin_tenant_name', 'savanna.main')
 CONF.register_cli_opts(cli_opts)
 
 

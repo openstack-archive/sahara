@@ -23,7 +23,7 @@ import os
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #sys.path.insert(0, os.path.abspath('.'))
-sys.path.insert(0, os.path.abspath('../../eho'))
+sys.path.insert(0, os.path.abspath('../../savanna'))
 sys.path.append(os.path.abspath('..'))
 sys.path.append(os.path.abspath('../bin'))
 
@@ -50,7 +50,7 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = u'Elastic Hadoop on OpenStack'
+project = u'Savanna'
 copyright = u'2013, Mirantis Inc.'
 
 # The version info for the project you're documenting, acts as replacement for
@@ -175,7 +175,7 @@ html_static_path = ['_static']
 #html_file_suffix = None
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = 'EHODoc'
+htmlhelp_basename = 'SavannaDoc'
 
 
 # -- Options for LaTeX output --------------------------------------------------
@@ -194,7 +194,7 @@ latex_elements = {
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title, author, documentclass [howto/manual]).
 latex_documents = [
-    ('index', 'ehodoc.tex', u'Elastic Hadoop on OpenStack Documentation',
+    ('index', 'savannadoc.tex', u'Savanna',
      u'Mirantis Inc.', 'manual'),
 ]
 
@@ -224,7 +224,7 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    ('index', 'eho', u'Elastic Hadoop on OpenStack Documentation',
+    ('index', 'savanna', u'Savanna',
      [u'Mirantis Inc.'], 1)
 ]
 
@@ -238,8 +238,8 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-    ('index', 'EHO', u'Elastic Hadoop on OpenStack Documentation',
-     u'Mirantis Inc.', 'EHO', 'Elastic Hadoop on OpenStack',
+    ('index', 'Savanna', u'Savanna',
+     u'Mirantis Inc.', 'Savanna', 'Savanna',
      'Miscellaneous'),
 ]
 
