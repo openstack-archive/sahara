@@ -6,7 +6,7 @@ You can browse the code at `our github repo <https://github.com/Mirantis/savanna
 If you would like to ask some questions or make proposals,
 feel free to reach us on #savanna irc channel at `freenode <http://freenode.net/>`_.
 Typically somebody from our team will be online at irc from 6:00 to 20:00 UTC.
-You can also contact Savanna community directly by mailto:savanna@lists.launchpad.net
+You can also contact Savanna community directly by mailto:savanna-all@lists.launchpad.net
 (please, note that your email address should be registered in launchpad,
 otherwise your mail will be ignored by mailing system).
 
