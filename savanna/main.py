@@ -72,7 +72,6 @@ sqlalchemy_opts = [
 CONF = cfg.CONF
 CONF.register_opts(opts)
 CONF.register_opts(sqlalchemy_opts, group='sqlalchemy')
-CONF.import_opt('log_level', 'savanna.config')
 
 
 def make_app():

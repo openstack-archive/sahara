@@ -84,7 +84,7 @@ def _stub_auth_valid(*args, **kwargs):
 CONF = cfg.CONF
 CONF.import_opt('reset_db', 'savanna.config')
 CONF.import_opt('stub_data', 'savanna.config')
-CONF.import_opt('log_level', 'savanna.config')
+CONF.import_opt('debug', 'savanna.openstack.common.log')
 CONF.import_opt('allow_cluster_ops', 'savanna.config')
 CONF.import_opt('database_uri', 'savanna.main', group='sqlalchemy')
 CONF.import_opt('echo', 'savanna.main', group='sqlalchemy')
@@ -98,7 +98,7 @@ class TestApi(unittest.TestCase):
         # override configs
         CONF.set_override('reset_db', True)
         CONF.set_override('stub_data', True)
-        CONF.set_override('log_level', 'DEBUG')
+        CONF.set_override('debug', True)
         CONF.set_override('allow_cluster_ops', True)  # stub process
         CONF.set_override('database_uri', 'sqlite:///' + self.db_path,
                           group='sqlalchemy')

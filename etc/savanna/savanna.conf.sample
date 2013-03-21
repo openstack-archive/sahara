@@ -2,7 +2,6 @@
 
 # REST API config
 #port=8080
-#log_level=WARN
 #allow_cluster_ops=false
 
 # Address and credentials that will be used to check auth tokens

@@ -10,9 +10,6 @@
 # set port (integer value)
 #port=8080
 
-# set application log level (string value)
-#log_level=WARN
-
 # resets DB (boolean value)
 #reset_db=false
 
