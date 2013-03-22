@@ -42,7 +42,6 @@ Add the following lines to ~/.pip/pip.conf
     index-url = <mirror url>
 
 Note! The ~/.pip/cache folder should be created.
-For Saratov location the http://mirrors.sgu.ru/pypi/simple is preferred.
 
 Git hook for fast checks
 ------------------------
