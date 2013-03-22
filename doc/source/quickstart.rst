@@ -97,24 +97,45 @@ You should see the output similar to the following:
 
 .. sourcecode:: bash
 
-    cp ./etc/local.cfg-sample ./etc/local.cfg
+    cp ./etc/savanna/savanna.conf.sample ./etc/savanna/savanna.conf
 
-3.6 In local.cfg you should edit the following parameters:
+3.6 In savanna.conf you should edit the following parameters:
 
 .. sourcecode:: bash
 
-    # OPENSTACK CONF
-    OS_AUTH_PROTOCOL = 'http'
-    OS_AUTH_HOST = 'hostname' <- OpenStack hostname
-    OS_AUTH_PORT = '35357'
-    OS_ADMIN_USER = 'admin'  <- OpenStack user/password/tenant that will be used to check auth tokens
-    OS_ADMIN_PASSWORD = 'nova'
-    OS_ADMIN_TENANT = 'admin'
+    [DEFAULT]
 
-    # NODE CONF
-    NODE_USER = 'root'
-    NODE_PASSWORD = 'swordfish'
-    NODE_INTERNAL_NET = 'novanetwork' <- name of the OpenStack network from which IPs are assigned to VMs
+    # REST API config
+    #port=8080
+    #allow_cluster_ops=false
+
+    # Address and credentials that will be used to check auth tokens
+    #os_auth_host=openstack
+    #os_auth_port=35357
+    #os_admin_username=admin
+    #os_admin_password=nova
+    #os_admin_tenant_name=admin
+
+    # Nova network name that will be used to access VMs
+    #nova_internal_net_name=novanetwork
+
+    # (Optional) Name of log file to output to. If not set,
+    # logging will go to stdout. (string value)
+    #log_file=<None>
+
+    [cluster_node]
+
+    # An existing user on Hadoop image (string value)
+    #username=root
+
+    # User's password (string value)
+    #password=swordfish
+
+    [sqlalchemy]
+
+    # URL for sqlalchemy database (string value)
+    #database_uri=sqlite:////tmp/savanna-server.db
+
 
 3.7 To run Savanna from created environment just call:
 
