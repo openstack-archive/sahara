@@ -11,12 +11,12 @@ Useful links
     roadmap
     restapi/v02
     horizon/index
-    horizon/howto
     quickstart
     how-to-participate
 
 * `Sources repo <https://github.com/mirantis/savanna>`_
 * `Launchpad project <https://launchpad.net/savanna>`_
+* `Savanna REST API and custom Horizon screencast <http://www.youtube.com/watch?v=UUt2gqGHcPg>`_
 
 Introduction
 ------------
@@ -61,6 +61,9 @@ The Savanna product communicates with the following OpenStack components:
 * Swift - can be used as a storage for data that will be processed by Hadoop jobs.
 
 .. image:: images/openstack-interop.png
+    :width: 800 px
+    :scale: 99 %
+    :align: left
 
 General Workflow
 ----------------
@@ -159,3 +162,4 @@ Useful links
 
 * `Sources repo <https://github.com/mirantis/savanna>`_
 * `Launchpad project <https://launchpad.net/savanna>`_
+* `Savanna REST API and custom Horizon screencast <http://www.youtube.com/watch?v=UUt2gqGHcPg>`_

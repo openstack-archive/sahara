@@ -2,6 +2,10 @@ Savanna Architecture (draft)
 ============================
 
 .. image:: images/savanna-architecture.png
+    :width: 800 px
+    :scale: 99 %
+    :align: left
+
 
 The Savanna architecture consists of several components:
 

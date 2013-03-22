@@ -11,7 +11,6 @@ Screencast and sources of customized Horizon will be published at an early date.
 .. image:: ../images/horizon/01-savanna-empty.png
     :width: 800 px
     :scale: 99 %
-    :alt: alternate text
     :align: left
 
 2. Node template details page
@@ -19,7 +18,6 @@ Screencast and sources of customized Horizon will be published at an early date.
 .. image:: ../images/horizon/02-savanna-tmpl.png
     :width: 800 px
     :scale: 99 %
-    :alt: alternate text
     :align: left
 
 3. Hadoop cluster creation wizard
@@ -27,7 +25,6 @@ Screencast and sources of customized Horizon will be published at an early date.
 .. image:: ../images/horizon/03-savanna-create.png
     :width: 800 px
     :scale: 99 %
-    :alt: alternate text
     :align: left
 
 4. Hadoop clusters page with new cluster in 'Starting' state
@@ -35,7 +32,6 @@ Screencast and sources of customized Horizon will be published at an early date.
 .. image:: ../images/horizon/04-savanna-starting.png
     :width: 800 px
     :scale: 99 %
-    :alt: alternate text
     :align: left
 
 5. After some time, cluster is active
@@ -43,7 +39,6 @@ Screencast and sources of customized Horizon will be published at an early date.
 .. image:: ../images/horizon/05-savanna-active.png
     :width: 800 px
     :scale: 99 %
-    :alt: alternate text
     :align: left
 
 6. Hadoop cluster details page
@@ -51,5 +46,4 @@ Screencast and sources of customized Horizon will be published at an early date.
 .. image:: ../images/horizon/06-savanna-details.png
     :width: 800 px
     :scale: 99 %
-    :alt: alternate text
     :align: left
