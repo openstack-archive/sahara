@@ -83,6 +83,14 @@ def make_app():
     app.config['SQLALCHEMY_DATABASE_URI'] = CONF.sqlalchemy.database_uri
     app.config['SQLALCHEMY_ECHO'] = CONF.sqlalchemy.echo
 
+    @app.route('/', methods=['GET'])
+    def version_list():
+        return render({
+            "versions": [
+                {"id": "v0.2", "status": "CURRENT"}
+            ]
+        })
+
     app.register_blueprint(api_v02.rest, url_prefix='/v0.2')
 
     setup_storage(app)

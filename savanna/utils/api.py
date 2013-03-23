@@ -104,6 +104,9 @@ def render(res=None, resp_type=None, status=None, **kwargs):
     if not resp_type:
         resp_type = getattr(request, 'resp_type', RT_JSON)
 
+    if not resp_type:
+        resp_type = RT_JSON
+
     serializer = None
     if "application/json" in resp_type:
         resp_type = RT_JSON
@@ -116,10 +119,14 @@ def render(res=None, resp_type=None, status=None, **kwargs):
 
     body = serializer.serialize(res)
     resp_type = str(resp_type)
+
     return Response(response=body, status=status_code, mimetype=resp_type)
 
 
 def request_data():
+    if hasattr(request, 'parsed_data'):
+        return request.parsed_data
+
     if not request.content_length > 0:
         LOG.debug("Empty body provided in request")
         return dict()
@@ -134,7 +141,10 @@ def request_data():
     else:
         abort_and_log(400, "Content type '%s' isn't supported" % content_type)
 
-    return deserializer.deserialize(request.data)['body']
+    # parsed request data to avoid unwanted re-parsings
+    request.parsed_data = deserializer.deserialize(request.data)['body']
+
+    return request.parsed_data
 
 
 def abort_and_log(status_code, descr, exc=None):
