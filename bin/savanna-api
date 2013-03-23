@@ -15,11 +15,22 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from eventlet import wsgi
+import os
+import sys
 import eventlet
+from eventlet import wsgi
 from oslo.config.cfg import CONF
 
-import sys
+# If ../savanna/__init__.py exists, add ../ to Python search path, so that
+# it will override what happens to be installed in /usr/(local/)lib/python...
+possible_topdir = os.path.normpath(os.path.join(os.path.abspath(__file__),
+                                                os.pardir,
+                                                os.pardir))
+if os.path.exists(os.path.join(possible_topdir,
+                               'savanna',
+                               '__init__.py')):
+    sys.path.insert(0, possible_topdir)
+
 from savanna import config
 import savanna.main as server
 from savanna.openstack.common import log as logging
@@ -28,7 +39,15 @@ LOG = logging.getLogger(__name__)
 
 
 def main():
-    config.parse_args(sys.argv[1:])
+    dev_conf = os.path.join(possible_topdir,
+                            'etc',
+                            'savanna',
+                            'savanna.conf')
+    config_files = None
+    if os.path.exists(dev_conf):
+        config_files = [dev_conf]
+
+    config.parse_args(sys.argv[1:], config_files)
     logging.setup("savanna")
 
     app = server.make_app()

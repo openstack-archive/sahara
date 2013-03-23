@@ -32,3 +32,5 @@ doc/build
 nosetests.xml
 pylint-report.txt
 etc/local.cfg
+etc/savanna/savanna.conf
+etc/savanna.conf

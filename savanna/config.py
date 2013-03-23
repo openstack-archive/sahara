@@ -34,5 +34,5 @@ CONF = cfg.CONF
 CONF.register_cli_opts(cli_opts)
 
 
-def parse_args(argv):
-    CONF(argv, project='savanna')
+def parse_args(argv, conf_files):
+    CONF(argv, project='savanna', default_config_files=conf_files)
