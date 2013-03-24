@@ -24,6 +24,7 @@ from oslo.config import cfg
 
 from savanna.main import make_app
 from savanna.service import api
+from savanna.storage.defaults import setup_defaults
 from savanna.storage.models import Node, NodeTemplate
 from savanna.storage.storage import DB
 import savanna.main
@@ -82,12 +83,10 @@ def _stub_auth_valid(*args, **kwargs):
 
 
 CONF = cfg.CONF
-CONF.import_opt('reset_db', 'savanna.config')
-CONF.import_opt('stub_data', 'savanna.config')
 CONF.import_opt('debug', 'savanna.openstack.common.log')
 CONF.import_opt('allow_cluster_ops', 'savanna.config')
-CONF.import_opt('database_uri', 'savanna.main', group='sqlalchemy')
-CONF.import_opt('echo', 'savanna.main', group='sqlalchemy')
+CONF.import_opt('database_uri', 'savanna.storage.storage', group='sqlalchemy')
+CONF.import_opt('echo', 'savanna.storage.storage', group='sqlalchemy')
 
 
 class TestApi(unittest.TestCase):
@@ -96,8 +95,6 @@ class TestApi(unittest.TestCase):
         self.maxDiff = 10000
 
         # override configs
-        CONF.set_override('reset_db', True)
-        CONF.set_override('stub_data', True)
         CONF.set_override('debug', True)
         CONF.set_override('allow_cluster_ops', True)  # stub process
         CONF.set_override('database_uri', 'sqlite:///' + self.db_path,
@@ -117,6 +114,10 @@ class TestApi(unittest.TestCase):
         api.cluster_ops.stop_cluster = _stub_stop_cluster
 
         app = make_app()
+
+        DB.drop_all()
+        DB.create_all()
+        setup_defaults(True, True)
 
         LOG.debug('Test db path: %s', self.db_path)
         LOG.debug('Test app.config: %s', app.config)

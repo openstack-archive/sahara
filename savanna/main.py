@@ -23,7 +23,6 @@ from savanna.api import v02 as api_v02
 
 from savanna.middleware.auth_valid import filter_factory as auth_valid
 from savanna.utils.scheduler import setup_scheduler
-from savanna.storage.defaults import setup_defaults
 from savanna.utils.api import render
 from savanna.storage.storage import setup_storage
 
@@ -60,18 +59,8 @@ opts = [
                help='Name of network which IPs are given to the VMs')
 ]
 
-sqlalchemy_opts = [
-    cfg.StrOpt('database_uri',
-               default='sqlite:////tmp/savanna-server.db',
-               help='URL for sqlalchemy database'),
-    cfg.BoolOpt('echo',
-                default=False,
-                help='Sqlalchemy echo')
-]
-
 CONF = cfg.CONF
 CONF.register_opts(opts)
-CONF.register_opts(sqlalchemy_opts, group='sqlalchemy')
 
 
 def make_app():
@@ -79,9 +68,6 @@ def make_app():
     Entry point for Savanna REST API server
     """
     app = Flask('savanna.api')
-
-    app.config['SQLALCHEMY_DATABASE_URI'] = CONF.sqlalchemy.database_uri
-    app.config['SQLALCHEMY_ECHO'] = CONF.sqlalchemy.echo
 
     @app.route('/', methods=['GET'])
     def version_list():
@@ -94,7 +80,6 @@ def make_app():
     app.register_blueprint(api_v02.rest, url_prefix='/v0.2')
 
     setup_storage(app)
-    setup_defaults()
     setup_scheduler(app)
 
     def make_json_error(ex):

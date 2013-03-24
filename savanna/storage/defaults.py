@@ -13,18 +13,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from oslo.config import cfg
-
 from savanna.storage.models import NodeProcess, NodeProcessProperty, \
     NodeType, NodeTemplate, NodeTemplateConfig, Cluster, ClusterNodeCount
 from savanna.storage.storage import DB
 from savanna.openstack.common import log as logging
 
 LOG = logging.getLogger(__name__)
-
-CONF = cfg.CONF
-CONF.import_opt('reset_db', 'savanna.config')
-CONF.import_opt('stub_data', 'savanna.config')
 
 
 def create_node_process(name, properties):
@@ -109,13 +103,13 @@ def create_cluster(name, base_image_id, tenant_id, templates):
     return cluster
 
 
-def setup_defaults():
+def setup_defaults(reset_db=False, gen_templates=False):
     nt_jt_nn = None
     nt_jt = None
     nt_nn = None
     nt_tt_dn = None
 
-    if CONF.reset_db:
+    if reset_db:
         # setup default processes
         p_jt = create_node_process('job_tracker', [('heap_size', True, None)])
         p_nn = create_node_process('name_node', [('heap_size', True, None)])
@@ -135,11 +129,13 @@ def setup_defaults():
             LOG.info('New NodeType: \'%s\' %s',
                      nt.name, [p.name.__str__() for p in nt.processes])
 
-    if CONF.stub_data:
-        _setup_stub_data(nt_jt_nn, nt_jt, nt_nn, nt_tt_dn)
+    if gen_templates:
+        _generate_templates(nt_jt_nn, nt_jt, nt_nn, nt_tt_dn)
+
+    LOG.info('All defaults has been inserted')
 
 
-def _setup_stub_data(nt_jt_nn, nt_jt, nt_nn, nt_tt_dn):
+def _generate_templates(nt_jt_nn, nt_jt, nt_nn, nt_tt_dn):
     jt_nn_small = create_node_template('jt_nn.small', nt_jt_nn.id, 'tenant-01',
                                        'm1.small',
                                        {
@@ -212,7 +208,4 @@ def _setup_stub_data(nt_jt_nn, nt_jt, nt_nn, nt_tt_dn):
 
     for tmpl in [jt_nn_small, jt_nn_medium, jt_small, jt_medium, nn_small,
                  nn_medium, tt_dn_small, tt_dn_medium]:
-        LOG.info('New NodeTemplate: %s \'%s\' %s',
-                 tmpl.id, tmpl.name, tmpl.flavor_id)
-
-    LOG.info('All defaults has been inserted')
+        LOG.info('New NodeTemplate: \'%s\' %s', tmpl.name, tmpl.flavor_id)

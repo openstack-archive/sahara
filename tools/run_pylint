@@ -3,4 +3,4 @@
 echo "Running PyLint checks"
 echo "====================="
 
-.venv/bin/pylint --output-format=parseable --rcfile=.pylintrc bin/savanna-api savanna | tee pylint-report.txt
+.venv/bin/pylint --output-format=parseable --rcfile=.pylintrc bin/savanna-api bin/savanna-manage savanna | tee pylint-report.txt

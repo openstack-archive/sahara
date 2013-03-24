@@ -18,15 +18,23 @@ from oslo.config import cfg
 
 DB = SQLAlchemy()
 
+opts = [
+    cfg.StrOpt('database_uri',
+               default='sqlite:////tmp/savanna.db',
+               help='URL for sqlalchemy database'),
+    cfg.BoolOpt('echo',
+                default=False,
+                help='Sqlalchemy echo')
+]
+
 CONF = cfg.CONF
-CONF.import_opt('reset_db', 'savanna.config')
+CONF.register_opts(opts, group='sqlalchemy')
 
 
 def setup_storage(app):
+    app.config['SQLALCHEMY_DATABASE_URI'] = CONF.sqlalchemy.database_uri
+    app.config['SQLALCHEMY_ECHO'] = CONF.sqlalchemy.echo
+
     DB.app = app
     DB.init_app(app)
-
-    if CONF.reset_db:
-        DB.drop_all()
-
     DB.create_all()

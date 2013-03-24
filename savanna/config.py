@@ -20,10 +20,6 @@ cli_opts = [
                help='set host'),
     cfg.IntOpt('port', default=8080,
                help='set port'),
-    cfg.BoolOpt('reset-db', default=False,
-                help='resets DB'),
-    cfg.BoolOpt('stub-data', default=False,
-                help='populates DB with stub data'),
     cfg.BoolOpt('allow-cluster-ops', default=False,
                 help='without that option'
                      ' the application operates in dry run mode and does not '

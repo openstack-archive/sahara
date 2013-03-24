@@ -3,4 +3,4 @@
 echo "Running PyFlakes checks"
 echo "======================="
 
-.venv/bin/pyflakes bin bin/savanna-api savanna
+.venv/bin/pyflakes bin bin/savanna-api bin/savanna-manage savanna

@@ -136,25 +136,25 @@ You should see the output similar to the following:
     # URL for sqlalchemy database (string value)
     #database_uri=sqlite:////tmp/savanna-server.db
 
+**Note:** Config file could be specified for ``savanna-api`` and ``savanna-manage`` commands using ``--config-file`` flag.
 
-3.7 To run Savanna from created environment just call:
-
-.. sourcecode:: bash
-
-    .venv/bin/python bin/savanna-api --reset-db --stub-data --allow-cluster-ops
-
-**Note:** ``--reset-db`` and ``--stub-data`` parameters should be inserted only with the first Savanna-API startup.
-With these parameters supplied Savanna will create sqlite db with predefined data in ``/tmp/savanna-server.db``
-
-Next times these parameters should be omited:
+3.7 To initialize database and generate templates call:
 
 .. sourcecode:: bash
 
-    .venv/bin/python/ bin/savanna-api --allow-cluster-ops
+    .venv/bin/python bin/savanna-manage reset-db --with-gen-templates
+
+This command creates database file from scratch and generates some node templates.
+
+3.8 To run Savanna from created environment just call:
+
+.. sourcecode:: bash
+
+    .venv/bin/python bin/savanna-api --allow-cluster-ops
 
 Now Savanna service is running. Further steps show how you can verify from console that Savanna API works properly.
 
-3.8 First install httpie program. It allows you to send http requests to Savanna API service.
+3.9 First install httpie program. It allows you to send http requests to Savanna API service.
 
 .. sourcecode:: bash
 
@@ -162,7 +162,7 @@ Now Savanna service is running. Further steps show how you can verify from conso
 
 **Note:** sure you can use another HTTP client like curl to send requests to Savanna service
 
-3.9 Then you need to get authentification token from OpenStack Keystone service:
+3.10 Then you need to get authentification token from OpenStack Keystone service:
 
 .. sourcecode:: bash
 
@@ -190,7 +190,7 @@ If authentication succeed, output will be as follows:
 **Note:** Save the token because you have to supply it with every request to Savanna in X-Auth-Token header.
 You will also use tenant id in request URL
 
-3.10 Send http request to the Savanna service:
+3.11 Send http request to the Savanna service:
 
 .. sourcecode:: bash
 
