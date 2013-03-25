@@ -29,6 +29,7 @@ from savanna.storage.models import Node, NodeTemplate
 from savanna.storage.db import DB
 import savanna.main
 from savanna.utils import scheduler
+from savanna.utils.openstack import nova
 from savanna.openstack.common import log as logging
 
 LOG = logging.getLogger(__name__)
@@ -82,6 +83,16 @@ def _stub_auth_valid(*args, **kwargs):
     return _filter
 
 
+def _stub_get_flavors(headers):
+    LOG.debug('Stub get_flavors called with %s', headers)
+    return [u'test_flavor', u'test_flavor_2']
+
+
+def _stub_get_images(headers):
+    LOG.debug('Stub get_images called with %s', headers)
+    return [u'base-image-id', u'base-image-id_2']
+
+
 CONF = cfg.CONF
 CONF.import_opt('debug', 'savanna.openstack.common.log')
 CONF.import_opt('allow_cluster_ops', 'savanna.config')
@@ -106,12 +117,16 @@ class TestApi(unittest.TestCase):
         self._prev_auth_valid = savanna.main.auth_valid
         self._prev_cluster_launch = api.cluster_ops.launch_cluster
         self._prev_cluster_stop = api.cluster_ops.stop_cluster
+        self._prev_get_flavors = nova.get_flavors
+        self._prev_get_images = nova.get_images
 
         # stub functions
         savanna.main.auth_token = _stub_auth_token
         savanna.main.auth_valid = _stub_auth_valid
         api.cluster_ops.launch_cluster = _stub_launch_cluster
         api.cluster_ops.stop_cluster = _stub_stop_cluster
+        nova.get_flavors = _stub_get_flavors
+        nova.get_images = _stub_get_images
 
         app = make_app()
 
@@ -130,6 +145,8 @@ class TestApi(unittest.TestCase):
         savanna.main.auth_valid = self._prev_auth_valid
         api.cluster_ops.launch_cluster = self._prev_cluster_launch
         api.cluster_ops.stop_cluster = self._prev_cluster_stop
+        nova.get_flavors = self._prev_get_flavors
+        nova.get_images = self._prev_get_images
 
         os.close(self.db_fd)
         os.unlink(self.db_path)
@@ -149,7 +166,7 @@ class TestApi(unittest.TestCase):
         rv = self.app.post('/v0.2/some-tenant-id/node-templates.json',
                            data=json.dumps(dict(
                                node_template=dict(
-                                   name='test_template',
+                                   name='test-template',
                                    node_type='JT+NN',
                                    flavor_id='test_flavor',
                                    job_tracker={
@@ -170,7 +187,7 @@ class TestApi(unittest.TestCase):
         self.assertEquals(data, {
             u'job_tracker': {
                 u'heap_size': u'1234'
-            }, u'name': u'test_template',
+            }, u'name': u'test-template',
             u'node_type': {
                 u'processes': [
                     u'job_tracker', u'name_node'
@@ -263,7 +280,7 @@ class TestApi(unittest.TestCase):
         rv = self.app.post('/v0.2/some-tenant-id/node-templates.json',
                            data=json.dumps(dict(
                                node_template=dict(
-                                   name='test_template_2',
+                                   name='test-template-2',
                                    node_type='JT+NN',
                                    flavor_id='test_flavor_2',
                                    job_tracker={
@@ -293,7 +310,7 @@ class TestApi(unittest.TestCase):
         self.assertEquals(data, {
             u'job_tracker': {
                 u'heap_size': u'1234'
-            }, u'name': u'test_template_2',
+            }, u'name': u'test-template-2',
             u'node_type': {
                 u'processes': [
                     u'job_tracker', u'name_node'
@@ -320,7 +337,7 @@ class TestApi(unittest.TestCase):
         rv = self.app.post('/v0.2/some-tenant-id/clusters.json',
                            data=json.dumps(dict(
                                cluster=dict(
-                                   name='test-cluster_2',
+                                   name='test-cluster-2',
                                    base_image_id='base-image-id_2',
                                    node_templates={
                                        'jt_nn.medium': 1,
@@ -346,7 +363,7 @@ class TestApi(unittest.TestCase):
         self.assertEquals(data, {
             u'status': u'Starting',
             u'service_urls': {},
-            u'name': u'test-cluster_2',
+            u'name': u'test-cluster-2',
             u'base_image_id': u'base-image-id_2',
             u'node_templates': {
                 u'jt_nn.medium': 1,

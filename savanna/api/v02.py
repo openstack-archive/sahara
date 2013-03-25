@@ -16,6 +16,8 @@
 from savanna.service import api
 
 from savanna.utils.api import Rest, render, abort_and_log, request_data
+from savanna.service.validation import validate, validate_cluster_create, \
+    validate_node_template_create
 from savanna.openstack.common import log as logging
 
 LOG = logging.getLogger(__name__)
@@ -33,12 +35,9 @@ def templates_list():
 
 
 @rest.post('/node-templates')
+@validate(validate_node_template_create)
 def templates_create():
-    data = request_data()
-    try:
-        return render(api.create_node_template(data).wrapped_dict)
-    except Exception, e:
-        abort_and_log(500, "Exception while adding NodeTemplate", e)
+    return render(api.create_node_template(request_data()).wrapped_dict)
 
 
 @rest.get('/node-templates/<template_id>')
@@ -77,12 +76,9 @@ def clusters_list():
 
 
 @rest.post('/clusters')
+@validate(validate_cluster_create)
 def clusters_create():
-    data = request_data()
-    try:
-        return render(api.create_cluster(data).wrapped_dict)
-    except Exception, e:
-        abort_and_log(500, "Exception while adding new Cluster", e)
+    return render(api.create_cluster(request_data()).wrapped_dict)
 
 
 @rest.get('/clusters/<cluster_id>')

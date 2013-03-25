@@ -155,3 +155,36 @@ def abort_and_log(status_code, descr, exc=None):
         LOG.error(traceback.format_exc())
 
     abort(status_code, description=descr)
+
+
+def render_error_message(error_code, error_message, error_name):
+    message = {
+        "error_code": error_code,
+        "error_message": error_message,
+        "error_name": error_name
+    }
+
+    resp = render(message)
+    resp.status_code = error_code
+
+    return resp
+
+
+def internal_error(status_code, descr, exc=None):
+    LOG.error("Request aborted with status code %s and message '%s'",
+              status_code, descr)
+
+    if exc is not None:
+        LOG.error(traceback.format_exc())
+
+    return render_error_message(status_code, descr, "INTERNAL_SERVER_ERROR")
+
+
+def bad_request(error):
+    error_code = 400
+
+    LOG.debug("Validation Error occurred: "
+              "error_code=%s, error_message=%s, error_name=%s",
+              error_code, error.message, error.code)
+
+    return render_error_message(error_code, error.message, error.code)

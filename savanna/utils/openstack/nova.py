@@ -37,3 +37,15 @@ def novaclient(headers):
     nova.client.management_url = compute_url
 
     return nova
+
+
+def get_flavors(headers):
+    flavors = [flavor.name for flavor
+               in novaclient(headers).flavors.list()]
+    return flavors
+
+
+def get_images(headers):
+    images = [image.name for image
+              in novaclient(headers).images.list()]
+    return images

@@ -147,6 +147,10 @@ def get_node_type(**args):
     return NodeType.query.filter_by(**args).first()
 
 
+def get_node_types(**args):
+    return NodeType.query.filter_by(**args).all()
+
+
 def create_node_type(name, processes):
     """
     Creates new node type using specified list of processes

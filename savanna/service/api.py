@@ -125,6 +125,16 @@ def _cluster_termination_job(headers, cluster_id):
     storage.terminate_cluster(id=cluster.id)
 
 
+## Node Type ops:
+
+def get_node_type(**args):
+    return _node_type(storage.get_node_type(**args))
+
+
+def get_node_types(**args):
+    return [_node_type(t) for t in storage.get_node_types(**args)]
+
+
 ## Utils and DB object to Resource converters
 
 def _clean_nones(obj):
@@ -220,3 +230,16 @@ def _cluster(cluster):
         d['service_urls'][service.name] = service.url
 
     return Resource('cluster', d)
+
+
+def _node_type(nt):
+    if not nt:
+        abort_and_log(404, 'NodeType not found')
+
+    d = {
+        'id': nt.id,
+        'name': nt.name,
+        'processes': [p.name for p in nt.processes]
+    }
+
+    return Resource('node_type', d)
