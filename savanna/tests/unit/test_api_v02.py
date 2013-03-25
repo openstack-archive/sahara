@@ -26,7 +26,7 @@ from savanna.main import make_app
 from savanna.service import api
 from savanna.storage.defaults import setup_defaults
 from savanna.storage.models import Node, NodeTemplate
-from savanna.storage.storage import DB
+from savanna.storage.db import DB
 import savanna.main
 from savanna.utils import scheduler
 from savanna.openstack.common import log as logging
@@ -85,8 +85,8 @@ def _stub_auth_valid(*args, **kwargs):
 CONF = cfg.CONF
 CONF.import_opt('debug', 'savanna.openstack.common.log')
 CONF.import_opt('allow_cluster_ops', 'savanna.config')
-CONF.import_opt('database_uri', 'savanna.storage.storage', group='sqlalchemy')
-CONF.import_opt('echo', 'savanna.storage.storage', group='sqlalchemy')
+CONF.import_opt('database_uri', 'savanna.storage.db', group='sqlalchemy')
+CONF.import_opt('echo', 'savanna.storage.db', group='sqlalchemy')
 
 
 class TestApi(unittest.TestCase):

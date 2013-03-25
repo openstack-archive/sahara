@@ -24,7 +24,7 @@ from savanna.api import v02 as api_v02
 from savanna.middleware.auth_valid import filter_factory as auth_valid
 from savanna.utils.scheduler import setup_scheduler
 from savanna.utils.api import render
-from savanna.storage.storage import setup_storage
+from savanna.storage.db import setup_storage
 
 from savanna.openstack.common import log
 

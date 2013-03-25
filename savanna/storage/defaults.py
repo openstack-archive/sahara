@@ -13,94 +13,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from savanna.storage.models import NodeProcess, NodeProcessProperty, \
-    NodeType, NodeTemplate, NodeTemplateConfig, Cluster, ClusterNodeCount
-from savanna.storage.storage import DB
+from savanna.storage.storage import create_node_type, \
+    create_node_template, create_node_process
 from savanna.openstack.common import log as logging
 
 LOG = logging.getLogger(__name__)
-
-
-def create_node_process(name, properties):
-    """
-    Creates new node process and node process properties
-    :param name: process name
-    :param properties: array of triples (name, required, default)
-    :return: created node process
-    """
-    process = NodeProcess(name)
-    DB.session.add(process)
-    DB.session.commit()
-    for p in properties:
-        prop = NodeProcessProperty(process.id, p[0], p[1], p[2])
-        DB.session.add(prop)
-    DB.session.commit()
-    return process
-
-
-def create_node_type(name, processes):
-    """
-    Creates new node type using specified list of processes
-    :param name:
-    :param processes:
-    :return:
-    """
-    node_type = NodeType(name)
-    node_type.processes = processes
-    DB.session.add(node_type)
-    DB.session.commit()
-    return node_type
-
-
-def create_node_template(name, node_type_id, tenant_id, flavor_id, configs):
-    """
-    Creates new node templates
-    :param name: template name
-    :param node_type_id: node type
-    :param tenant_id: tenant
-    :param flavor_id: flavor
-    :param configs: dict of process->property->value
-    :return: created node template
-    """
-    node_template = NodeTemplate(name, node_type_id, tenant_id, flavor_id)
-    DB.session.add(node_template)
-    for process_name in configs:
-        process = NodeProcess.query.filter_by(name=process_name).first()
-        conf = configs.get(process_name)
-        for prop in process.node_process_properties:
-            val = conf.get(prop.name, None)
-            if not val and prop.required:
-                if not prop.default:
-                    raise RuntimeError('Template \'%s\', value missed '
-                                       'for required param: %s %s'
-                                       % (name, process.name, prop.name))
-                val = prop.default
-            DB.session.add(NodeTemplateConfig(node_template.id, prop.id, val))
-    DB.session.commit()
-
-    return node_template
-
-
-def create_cluster(name, base_image_id, tenant_id, templates):
-    """
-    Creates new cluster
-    :param name: cluster name
-    :param base_image_id: base image
-    :param tenant_id: tenant
-    :param templates: dict of template->count
-    :return: created cluster
-    """
-    cluster = Cluster(name, base_image_id, tenant_id)
-    DB.session.add(cluster)
-    for template in templates:
-        count = templates.get(template)
-        cnc = ClusterNodeCount(cluster.id,
-                               NodeTemplate.query.filter_by(name=template)
-                               .first().id, int(count))
-        DB.session.add(cnc)
-    DB.session.commit()
-
-    return cluster
 
 
 def setup_defaults(reset_db=False, gen_templates=False):

@@ -20,7 +20,7 @@ from jinja2 import PackageLoader
 from paramiko import SSHClient, AutoAddPolicy
 from oslo.config import cfg
 from savanna.storage.models import Node, ServiceUrl
-from savanna.storage.storage import DB
+from savanna.storage.db import DB
 from savanna.utils.openstack.nova import novaclient
 from savanna.openstack.common import log as logging
 

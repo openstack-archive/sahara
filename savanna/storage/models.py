@@ -15,7 +15,7 @@
 
 from uuid import uuid4
 
-from savanna.storage.storage import DB
+from savanna.storage.db import DB
 
 
 class NodeTemplate(DB.Model):

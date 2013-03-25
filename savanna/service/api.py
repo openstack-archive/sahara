@@ -17,18 +17,115 @@ import eventlet
 from oslo.config import cfg
 from flask import request
 
-from savanna.storage.models import NodeTemplate, NodeType, NodeProcess, \
-    NodeTemplateConfig, Cluster, ClusterNodeCount
-from savanna.storage.storage import DB
 from savanna.utils.api import abort_and_log
 from savanna.service import cluster_ops
 from savanna.openstack.common import log as logging
+import savanna.storage.storage as storage
 
 LOG = logging.getLogger(__name__)
 
 CONF = cfg.CONF
 CONF.import_opt('allow_cluster_ops', 'savanna.config')
 
+
+## Node Template ops:
+
+def get_node_template(**args):
+    return _node_template(storage.get_node_template(**args))
+
+
+def get_node_templates(**args):
+    return [_node_template(tmpl) for tmpl
+            in storage.get_node_templates(**args)]
+
+
+def create_node_template(values):
+    """
+    Creates new node template from values dict
+    :param values: dict
+    :return: created node template resource
+    """
+    values = values.pop('node_template')
+
+    name = values.pop('name')
+    node_type_id = storage.get_node_type(name=values.pop('node_type')).id
+    # todo(slukjanov): take tenant_id from headers
+    tenant_id = "tenant-01"
+    flavor_id = values.pop('flavor_id')
+
+    nt = storage.create_node_template(name, node_type_id, tenant_id,
+                                      flavor_id, values)
+
+    return get_node_template(id=nt.id)
+
+
+def terminate_node_template(**args):
+    return storage.terminate_node_template(**args)
+
+
+## Cluster ops:
+
+def get_cluster(**args):
+    return _cluster(storage.get_cluster(**args))
+
+
+def get_clusters(**args):
+    return [_cluster(cluster) for cluster in
+            storage.get_clusters(**args)]
+
+
+def create_cluster(values):
+    values = values.pop('cluster')
+
+    name = values.pop('name')
+    base_image_id = values.pop('base_image_id')
+    # todo(slukjanov): take tenant_id from headers
+    tenant_id = "tenant-01"
+    templates = values.pop('node_templates')
+
+    # todo(slukjanov): check that we can create objects in the specified tenant
+
+    cluster = storage.create_cluster(name, base_image_id, tenant_id, templates)
+
+    eventlet.spawn(_cluster_creation_job, request.headers, cluster.id)
+
+    return get_cluster(id=cluster.id)
+
+
+def _cluster_creation_job(headers, cluster_id):
+    cluster = storage.get_cluster(id=cluster_id)
+    LOG.debug("Starting cluster '%s' creation: %s", cluster_id,
+              _cluster(cluster).dict)
+
+    if CONF.allow_cluster_ops:
+        cluster_ops.launch_cluster(headers, cluster)
+    else:
+        LOG.info("Cluster ops are disabled, use --allow-cluster-ops flag")
+
+    # update cluster status
+    storage.update_cluster_status('Active', id=cluster.id)
+
+
+def terminate_cluster(**args):
+    cluster = storage.update_cluster_status('Stoping', **args)
+
+    eventlet.spawn(_cluster_termination_job, request.headers, cluster.id)
+
+
+def _cluster_termination_job(headers, cluster_id):
+    cluster = storage.get_cluster(id=cluster_id)
+    LOG.debug("Stoping cluster '%s' creation: %s", cluster_id,
+              _cluster(cluster).dict)
+
+    if CONF.allow_cluster_ops:
+        cluster_ops.stop_cluster(headers, cluster)
+    else:
+        LOG.info("Cluster ops are disabled, use --allow-cluster-ops flag")
+
+    storage.terminate_cluster(id=cluster.id)
+
+
+## Utils and DB object to Resource converters
 
 def _clean_nones(obj):
     d_type = type(obj)
@@ -99,56 +196,6 @@ def _node_template(nt):
     return Resource('node_template', d)
 
 
-def _template_id_by_name(template):
-    return NodeTemplate.query.filter_by(name=template).first().id
-
-
-def _type_id_by_name(_type):
-    return NodeType.query.filter_by(name=_type).first().id
-
-
-def get_node_template(**args):
-    return _node_template(NodeTemplate.query.filter_by(**args).first())
-
-
-def get_node_templates(**args):
-    return [_node_template(tmpl) for tmpl
-            in NodeTemplate.query.filter_by(**args).all()]
-
-
-def create_node_template(values):
-    """
-    Creates new node template from values dict
-    :param values: dict
-    :return: created node template resource
-    """
-    values = values.pop('node_template')
-
-    name = values.pop('name')
-    node_type_id = _type_id_by_name(values.pop('node_type'))
-    # todo(slukjanov): take tenant_id from headers
-    tenant_id = "tenant-01"
-    flavor_id = values.pop('flavor_id')
-
-    nt = NodeTemplate(name, node_type_id, tenant_id, flavor_id)
-    DB.session.add(nt)
-    for process_name in values:
-        process = NodeProcess.query.filter_by(name=process_name).first()
-        conf = values.get(process_name)
-        for prop in process.node_process_properties:
-            val = conf.get(prop.name, None)
-            if not val and prop.required:
-                if not prop.default:
-                    raise RuntimeError('Template \'%s\', value missed '
-                                       'for required param: %s %s'
-                                       % (name, process.name, prop.name))
-                val = prop.default
-            DB.session.add(NodeTemplateConfig(nt.id, prop.id, val))
-    DB.session.commit()
-
-    return get_node_template(id=nt.id)
-
-
 def _cluster(cluster):
     if not cluster:
         abort_and_log(404, 'Cluster not found')
@@ -173,94 +220,3 @@ def _cluster(cluster):
         d['service_urls'][service.name] = service.url
 
     return Resource('cluster', d)
-
-
-def get_cluster(**args):
-    return _cluster(Cluster.query.filter_by(**args).first())
-
-
-def get_clusters(**args):
-    return [_cluster(cluster) for cluster in
-            Cluster.query.filter_by(**args).all()]
-
-
-def create_cluster(values):
-    values = values.pop('cluster')
-
-    name = values.pop('name')
-    base_image_id = values.pop('base_image_id')
-    # todo(slukjanov): take tenant_id from headers
-    tenant_id = "tenant-01"
-    templates = values.pop('node_templates')
-
-    # todo(slukjanov): check that we can create objects in the specified tenant
-
-    cluster = Cluster(name, base_image_id, tenant_id)
-    DB.session.add(cluster)
-    for template in templates:
-        count = templates.get(template)
-        template_id = _template_id_by_name(template)
-        cnc = ClusterNodeCount(cluster.id, template_id, int(count))
-        DB.session.add(cnc)
-    DB.session.commit()
-
-    eventlet.spawn(_cluster_creation_job, request.headers, cluster.id)
-
-    return get_cluster(id=cluster.id)
-
-
-def _cluster_creation_job(headers, cluster_id):
-    cluster = Cluster.query.filter_by(id=cluster_id).first()
-    LOG.debug("Starting cluster '%s' creation: %s", cluster_id,
-              _cluster(cluster).dict)
-
-    if CONF.allow_cluster_ops:
-        cluster_ops.launch_cluster(headers, cluster)
-    else:
-        LOG.info("Cluster ops are disabled, use --allow-cluster-ops flag")
-
-    # update cluster status
-    cluster = Cluster.query.filter_by(id=cluster.id).first()
-    cluster.status = 'Active'
-    DB.session.add(cluster)
-    DB.session.commit()
-
-
-def terminate_cluster(**args):
-    # update cluster status
-    cluster = Cluster.query.filter_by(**args).first()
-    cluster.status = 'Stoping'
-    DB.session.add(cluster)
-    DB.session.commit()
-
-    eventlet.spawn(_cluster_termination_job, request.headers, cluster.id)
-
-
-def _cluster_termination_job(headers, cluster_id):
-    cluster = Cluster.query.filter_by(id=cluster_id).first()
-    LOG.debug("Stoping cluster '%s' creation: %s", cluster_id,
-              _cluster(cluster).dict)
-
-    if CONF.allow_cluster_ops:
-        cluster_ops.stop_cluster(headers, cluster)
-    else:
-        LOG.info("Cluster ops are disabled, use --allow-cluster-ops flag")
-
-    DB.session.delete(cluster)
-    DB.session.commit()
-
-
-def terminate_node_template(**args):
-    template = NodeTemplate.query.filter_by(**args).first()
-    if template:
-        if len(template.nodes):
-            abort_and_log(500, "There are active nodes created using "
-                               "template '%s' you trying to terminate"
-                               % args)
-        else:
-            DB.session.delete(template)
-            DB.session.commit()
-
-        return True
-    else:
-        return False
