@@ -12,6 +12,7 @@
 # implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+from flask import request
 
 from savanna.service import api
 
@@ -37,7 +38,10 @@ def templates_list():
 @rest.post('/node-templates')
 @validate(validate_node_template_create)
 def templates_create():
-    return render(api.create_node_template(request_data()).wrapped_dict)
+    data = request_data()
+    headers = request.headers
+
+    return render(api.create_node_template(data, headers).wrapped_dict)
 
 
 @rest.get('/node-templates/<template_id>')
@@ -78,7 +82,10 @@ def clusters_list():
 @rest.post('/clusters')
 @validate(validate_cluster_create)
 def clusters_create():
-    return render(api.create_cluster(request_data()).wrapped_dict)
+    data = request_data()
+    headers = request.headers
+
+    return render(api.create_cluster(data, headers).wrapped_dict)
 
 
 @rest.get('/clusters/<cluster_id>')
@@ -104,5 +111,7 @@ def clusters_update(cluster_id):
 
 @rest.delete('/clusters/<cluster_id>')
 def clusters_delete(cluster_id):
-    api.terminate_cluster(id=cluster_id)
+    headers = request.headers
+    api.terminate_cluster(headers, id=cluster_id)
+
     return render()

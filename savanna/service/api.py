@@ -15,7 +15,6 @@
 
 import eventlet
 from oslo.config import cfg
-from flask import request
 
 from savanna.utils.api import abort_and_log
 from savanna.service import cluster_ops
@@ -39,7 +38,7 @@ def get_node_templates(**args):
             in storage.get_node_templates(**args)]
 
 
-def create_node_template(values):
+def create_node_template(values, headers):
     """
     Creates new node template from values dict
     :param values: dict
@@ -49,7 +48,7 @@ def create_node_template(values):
 
     name = values.pop('name')
     node_type_id = storage.get_node_type(name=values.pop('node_type')).id
-    tenant_id = request.headers['X-Tenant-Id']
+    tenant_id = headers['X-Tenant-Id']
     flavor_id = values.pop('flavor_id')
 
     nt = storage.create_node_template(name, node_type_id, tenant_id,
@@ -73,19 +72,19 @@ def get_clusters(**args):
             storage.get_clusters(**args)]
 
 
-def create_cluster(values):
+def create_cluster(values, headers):
     values = values.pop('cluster')
 
     name = values.pop('name')
     base_image_id = values.pop('base_image_id')
-    tenant_id = request.headers['X-Tenant-Id']
+    tenant_id = headers['X-Tenant-Id']
     templates = values.pop('node_templates')
 
     # todo(slukjanov): check that we can create objects in the specified tenant
 
     cluster = storage.create_cluster(name, base_image_id, tenant_id, templates)
 
-    eventlet.spawn(_cluster_creation_job, request.headers, cluster.id)
+    eventlet.spawn(_cluster_creation_job, headers, cluster.id)
 
     return get_cluster(id=cluster.id)
 
@@ -104,10 +103,10 @@ def _cluster_creation_job(headers, cluster_id):
     storage.update_cluster_status('Active', id=cluster.id)
 
 
-def terminate_cluster(**args):
+def terminate_cluster(headers, **args):
     cluster = storage.update_cluster_status('Stoping', **args)
 
-    eventlet.spawn(_cluster_termination_job, request.headers, cluster.id)
+    eventlet.spawn(_cluster_termination_job, headers, cluster.id)
 
 
 def _cluster_termination_job(headers, cluster_id):
