@@ -49,8 +49,7 @@ def create_node_template(values):
 
     name = values.pop('name')
     node_type_id = storage.get_node_type(name=values.pop('node_type')).id
-    # todo(slukjanov): take tenant_id from headers
-    tenant_id = "tenant-01"
+    tenant_id = request.headers['X-Tenant-Id']
     flavor_id = values.pop('flavor_id')
 
     nt = storage.create_node_template(name, node_type_id, tenant_id,
@@ -79,8 +78,7 @@ def create_cluster(values):
 
     name = values.pop('name')
     base_image_id = values.pop('base_image_id')
-    # todo(slukjanov): take tenant_id from headers
-    tenant_id = "tenant-01"
+    tenant_id = request.headers['X-Tenant-Id']
     templates = values.pop('node_templates')
 
     # todo(slukjanov): check that we can create objects in the specified tenant
@@ -173,6 +171,9 @@ class Resource(object):
 
     def __repr__(self):
         return '<%s %s>' % (self._name, self._info)
+
+    def __eq__(self, other):
+        return self._name == other._name and self._info == other._info
 
     @property
     def dict(self):

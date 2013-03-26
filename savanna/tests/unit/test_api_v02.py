@@ -64,6 +64,7 @@ def _stub_auth_token(*args, **kwargs):
 
     def _filter(app):
         def _handler(env, start_response):
+            env['HTTP_X_TENANT_ID'] = 'tenant-id-1'
             return app(env, start_response)
 
         return _handler
