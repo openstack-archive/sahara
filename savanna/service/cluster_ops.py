@@ -23,6 +23,7 @@ import paramiko
 from savanna.openstack.common import log as logging
 from savanna.storage.db import DB
 from savanna.storage.models import Node, ServiceUrl
+from savanna.storage.storage import update_cluster_status
 from savanna.utils.openstack.nova import novaclient
 
 
@@ -121,6 +122,7 @@ def launch_cluster(headers, cluster):
 
         for _ in xrange(0, nc.count):
             node = dict()
+            node['id'] = None
             if ntype == 'JT+NN':
                 node['name'] = '%s-master' % cluster.name
             else:
@@ -133,10 +135,14 @@ def launch_cluster(headers, cluster):
             node['is_up'] = False
             clmap['nodes'].append(node)
 
-    for node in clmap['nodes']:
-        LOG.debug("Starting node for cluster '%s', node: %s, iamge: %s",
-                  cluster.name, node, clmap['image'])
-        _launch_node(nova, node, clmap['image'])
+    try:
+        for node in clmap['nodes']:
+            LOG.debug("Starting node for cluster '%s', node: %s, image: %s",
+                      cluster.name, node, clmap['image'])
+            _launch_node(nova, node, clmap['image'])
+    except Exception, e:
+        _rollback_cluster_creation(cluster, clmap, nova, e)
+        return
 
     all_set = False
 
@@ -170,8 +176,26 @@ def launch_cluster(headers, cluster):
 
 def _launch_node(nova, node, image):
     srv = nova.servers.create(node['name'], image, node['flavor'])
-    #srv = _find_by_name(nova_client.servers.list(), node['name'])
     node['id'] = srv.id
+
+
+def _rollback_cluster_creation(cluster, clmap, nova, error):
+    update_cluster_status("Error", id=cluster.id)
+
+    LOG.warn("Can't launch all vms for cluster '%s': %s", cluster.id, error)
+    for node in clmap['nodes']:
+        if node['id']:
+            _stop_node_silently(nova, cluster, node['id'])
+
+    LOG.info("All vms of cluster '%s' has been stopped", cluster.id)
+
+
+def _stop_node_silently(nova, cluster, vm_id):
+    LOG.debug("Stopping vm '%s' of cluster '%s'", vm_id, cluster.id)
+    try:
+        nova.servers.delete(vm_id)
+    except Exception, e:
+        LOG.error("Can't silently remove node '%s': %s", vm_id, e)
 
 
 def _check_if_up(nova, node):

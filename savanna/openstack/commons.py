@@ -22,8 +22,7 @@
 
 
 def split_path(path, minsegs=1, maxsegs=None, rest_with_last=False):
-    """
-    Validate and split the given HTTP request path.
+    """Validate and split the given HTTP request path.
 
     **Examples**::
 

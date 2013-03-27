@@ -46,6 +46,6 @@ def get_flavors(headers):
 
 
 def get_images(headers):
-    images = [image.name for image
+    images = [image.id for image
               in novaclient(headers).images.list()]
     return images

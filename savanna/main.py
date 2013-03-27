@@ -64,7 +64,8 @@ CONF.register_opts(opts)
 
 
 def make_app():
-    """
+    """App builder (wsgi)
+
     Entry point for Savanna REST API server
     """
     app = Flask('savanna.api')

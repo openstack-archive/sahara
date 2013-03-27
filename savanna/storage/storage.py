@@ -31,8 +31,8 @@ def get_node_templates(**args):
 
 
 def create_node_template(name, node_type_id, tenant_id, flavor_id, configs):
-    """
-    Creates new node templates
+    """Creates new node templates.
+
     :param name: template name
     :param node_type_id: node type
     :param tenant_id: tenant
@@ -86,8 +86,8 @@ def get_clusters(**args):
 
 
 def create_cluster(name, base_image_id, tenant_id, templates):
-    """
-    Creates new cluster
+    """Creates new cluster.
+
     :param name: cluster name
     :param base_image_id: base image
     :param tenant_id: tenant
@@ -124,8 +124,8 @@ def update_cluster_status(new_status, **args):
 ## Node Process ops:
 
 def create_node_process(name, properties):
-    """
-    Creates new node process and node process properties
+    """Creates new node process and node process properties.
+
     :param name: process name
     :param properties: array of triples (name, required, default)
     :return: created node process
@@ -152,8 +152,8 @@ def get_node_types(**args):
 
 
 def create_node_type(name, processes):
-    """
-    Creates new node type using specified list of processes
+    """Creates new node type using specified list of processes
+
     :param name:
     :param processes:
     :return:

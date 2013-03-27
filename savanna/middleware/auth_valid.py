@@ -22,16 +22,15 @@ LOG = logging.getLogger(__name__)
 
 
 class AuthValidator:
-    """
-    Auth Validation Middleware handles token auth results and tenants
-    """
+    """Handles token auth results and tenants."""
 
     def __init__(self, app, conf):
         self.app = app
         self.conf = conf
 
     def __call__(self, env, start_response):
-        """
+        """Ensures that tenants in url and token are equal.
+
         Handle incoming request by checking tenant info prom the headers and
         url ({tenant_id} url attribute).
 

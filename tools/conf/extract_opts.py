@@ -122,7 +122,7 @@ def _guess_groups(opt, mod_obj):
 
     # is it in the DEFAULT group?
     if (opt.dest in cfg.CONF and
-        not isinstance(cfg.CONF[opt.dest], cfg.CONF.GroupAttr)):
+            not isinstance(cfg.CONF[opt.dest], cfg.CONF.GroupAttr)):
         groups.append('DEFAULT')
 
     # what other groups is it in?

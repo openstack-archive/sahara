@@ -39,8 +39,8 @@ def get_node_templates(**args):
 
 
 def create_node_template(values, headers):
-    """
-    Creates new node template from values dict
+    """Creates new node template from values dict.
+
     :param values: dict
     :return: created node template resource
     """
@@ -104,14 +104,14 @@ def _cluster_creation_job(headers, cluster_id):
 
 
 def terminate_cluster(headers, **args):
-    cluster = storage.update_cluster_status('Stoping', **args)
+    cluster = storage.update_cluster_status('Stopping', **args)
 
     eventlet.spawn(_cluster_termination_job, headers, cluster.id)
 
 
 def _cluster_termination_job(headers, cluster_id):
     cluster = storage.get_cluster(id=cluster_id)
-    LOG.debug("Stoping cluster '%s' creation: %s", cluster_id,
+    LOG.debug("Stopping cluster '%s' creation: %s", cluster_id,
               _cluster(cluster).dict)
 
     if CONF.allow_cluster_ops:

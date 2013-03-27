@@ -238,7 +238,7 @@ class TestServiceLayer(unittest.TestCase):
 
         api.terminate_cluster({"X-Tenant-Id": "tenant-01"}, id="cluster-id")
 
-        update_status.assert_called_once_with('Stoping', id="cluster-id")
+        update_status.assert_called_once_with('Stopping', id="cluster-id")
         spawn.assert_called_once_with(api._cluster_termination_job,
                                       {"X-Tenant-Id": "tenant-01"},
                                       "cluster-id")
