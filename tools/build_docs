@@ -1,11 +1,19 @@
 #!/bin/bash -e
 
+if [ ${VIRTUAL_ENV:+x} ]
+    then echo "VIRTUAL_ENV is already specified"
+    else export VIRTUAL_ENV=.venv
+fi
+
+echo "VIRTUAL_ENV = $VIRTUAL_ENV"
+
 echo "Building docs..."
+echo "================"
 
 rm -rf doc/html doc/build
 rm -rf doc/source/apidoc doc/source/api
 
-.venv/bin/python setup.py build_sphinx
+$VIRTUAL_ENV/bin/python setup.py build_sphinx
 
 echo "Done."
 echo "Docs are now available in 'doc/build/html/'"

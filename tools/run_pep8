@@ -1,6 +1,16 @@
 #!/bin/sh
 
+set -e
+
+if [ ${VIRTUAL_ENV:+x} ]
+    then echo "VIRTUAL_ENV is already specified"
+    else export VIRTUAL_ENV=.venv
+fi
+
+echo "VIRTUAL_ENV = $VIRTUAL_ENV"
+
 echo "Running PEP8 checks"
 echo "==================="
 
-.venv/bin/pep8 --show-source bin bin/savanna-api bin/savanna-manage savanna
+$VIRTUAL_ENV/bin/pep8 --repeat --show-source --exclude=.venv,.tox,dist,doc,test,resources,tools .
+$VIRTUAL_ENV/bin/pep8 --repeat --show-pep8 --show-source --filename=savanna* bin

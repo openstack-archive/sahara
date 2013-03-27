@@ -4,6 +4,7 @@ pyflakes
 sphinx>=1.1.2
 sphinxcontrib-httpdomain>=1.1.7
 nose
+openstack.nose_plugin
 unittest2
 coverage
 mock

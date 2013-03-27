@@ -1,6 +1,13 @@
 #!/bin/sh
 
+if [ ${VIRTUAL_ENV:+x} ]
+    then echo "VIRTUAL_ENV is already specified"
+    else export VIRTUAL_ENV=.venv
+fi
+
+echo "VIRTUAL_ENV = $VIRTUAL_ENV"
+
 echo "Running PyLint checks"
 echo "====================="
 
-.venv/bin/pylint --output-format=parseable --rcfile=.pylintrc bin/savanna-api bin/savanna-manage savanna | tee pylint-report.txt
+$VIRTUAL_ENV/bin/pylint --output-format=parseable --rcfile=.pylintrc bin/savanna-api bin/savanna-manage savanna | tee pylint-report.txt
