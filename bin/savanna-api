@@ -15,11 +15,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import os
-import sys
 import eventlet
 from eventlet import wsgi
+import os
 from oslo.config.cfg import CONF
+import sys
 
 # If ../savanna/__init__.py exists, add ../ to Python search path, so that
 # it will override what happens to be installed in /usr/(local/)lib/python...

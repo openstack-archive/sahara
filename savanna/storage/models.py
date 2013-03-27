@@ -13,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from uuid import uuid4
+import uuid
 
 from savanna.storage.db import DB
 
@@ -38,7 +38,7 @@ class NodeTemplate(DB.Model):
                             backref='node_template')
 
     def __init__(self, name, node_type_id, tenant_id, flavor_id):
-        self.id = uuid4().hex
+        self.id = uuid.uuid4().hex
         self.name = name
         self.node_type_id = node_type_id
         self.tenant_id = tenant_id
@@ -66,7 +66,7 @@ class Cluster(DB.Model):
     # node_templates: [(node_template_id, count), ...]
 
     def __init__(self, name, base_image_id, tenant_id, status=None):
-        self.id = uuid4().hex
+        self.id = uuid.uuid4().hex
         self.name = name
         self.base_image_id = base_image_id
         if not status:
@@ -98,7 +98,7 @@ class NodeType(DB.Model):
                                      backref='node_type')
 
     def __init__(self, name):
-        self.id = uuid4().hex
+        self.id = uuid.uuid4().hex
         self.name = name
 
     def __repr__(self):
@@ -115,7 +115,7 @@ class NodeProcess(DB.Model):
                                               backref='node_process')
 
     def __init__(self, name):
-        self.id = uuid4().hex
+        self.id = uuid.uuid4().hex
         self.name = name
 
     def __repr__(self):
@@ -138,7 +138,7 @@ class NodeProcessProperty(DB.Model):
                                             backref='node_process_property')
 
     def __init__(self, node_process_id, name, required=True, default=None):
-        self.id = uuid4().hex
+        self.id = uuid.uuid4().hex
         self.node_process_id = node_process_id
         self.name = name
         self.required = required
@@ -164,7 +164,7 @@ class NodeTemplateConfig(DB.Model):
     value = DB.Column(DB.String(36))
 
     def __init__(self, node_template_id, node_process_property_id, value):
-        self.id = uuid4().hex
+        self.id = uuid.uuid4().hex
         self.node_template_id = node_template_id
         self.node_process_property_id = node_process_property_id
         self.value = value
@@ -188,7 +188,7 @@ class ClusterNodeCount(DB.Model):
     count = DB.Column(DB.Integer, nullable=False)
 
     def __init__(self, cluster_id, node_template_id, count):
-        self.id = uuid4().hex
+        self.id = uuid.uuid4().hex
         self.cluster_id = cluster_id
         self.node_template_id = node_template_id
         self.count = count
@@ -225,7 +225,7 @@ class ServiceUrl(DB.Model):
     url = DB.Column(DB.String(80), nullable=False)
 
     def __init__(self, cluster_id, name, url):
-        self.id = uuid4().hex
+        self.id = uuid.uuid4().hex
         self.cluster_id = cluster_id
         self.name = name
         self.url = url

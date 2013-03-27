@@ -14,34 +14,32 @@
 # limitations under the License.
 from flask import request
 
-from savanna.service import api
-
-from savanna.utils.api import Rest, render, abort_and_log, request_data
-from savanna.service.validation import validate, validate_cluster_create, \
-    validate_node_template_create
 from savanna.openstack.common import log as logging
+from savanna.service import api
+import savanna.service.validation as v
+import savanna.utils.api as api_u
 
 LOG = logging.getLogger(__name__)
 
-rest = Rest('v02', __name__)
+rest = api_u.Rest('v02', __name__)
 
 
 @rest.get('/node-templates')
 def templates_list():
     try:
-        return render(
+        return api_u.render(
             node_templates=[nt.dict for nt in api.get_node_templates()])
     except Exception, e:
-        abort_and_log(500, "Exception while listing NodeTemplates", e)
+        api_u.abort_and_log(500, "Exception while listing NodeTemplates", e)
 
 
 @rest.post('/node-templates')
-@validate(validate_node_template_create)
+@v.validate(v.validate_node_template_create)
 def templates_create():
-    data = request_data()
+    data = api_u.request_data()
     headers = request.headers
 
-    return render(api.create_node_template(data, headers).wrapped_dict)
+    return api_u.render(api.create_node_template(data, headers).wrapped_dict)
 
 
 @rest.get('/node-templates/<template_id>')
@@ -50,13 +48,13 @@ def templates_get(template_id):
     try:
         nt = api.get_node_template(id=template_id)
     except Exception, e:
-        abort_and_log(500, "Exception while getting NodeTemplate by id "
-                           "'%s'" % template_id, e)
+        api_u.abort_and_log(500, "Exception while getting NodeTemplate by id "
+                                 "'%s'" % template_id, e)
     if nt is None:
-        abort_and_log(404, "NodeTemplate with id '%s' not found"
-                           % template_id)
+        api_u.abort_and_log(404, "NodeTemplate with id '%s' not found"
+                                 % template_id)
 
-    return render(nt.wrapped_dict)
+    return api_u.render(nt.wrapped_dict)
 
 
 @rest.put('/node-templates/<template_id>')
@@ -68,24 +66,24 @@ def templates_update(template_id):
 @rest.delete('/node-templates/<template_id>')
 def templates_delete(template_id):
     api.terminate_node_template(id=template_id)
-    return render()
+    return api_u.render()
 
 
 @rest.get('/clusters')
 def clusters_list():
     try:
-        return render(clusters=[c.dict for c in api.get_clusters()])
+        return api_u.render(clusters=[c.dict for c in api.get_clusters()])
     except Exception, e:
-        abort_and_log(500, 'Exception while listing Clusters', e)
+        api_u.abort_and_log(500, 'Exception while listing Clusters', e)
 
 
 @rest.post('/clusters')
-@validate(validate_cluster_create)
+@v.validate(v.validate_cluster_create)
 def clusters_create():
-    data = request_data()
+    data = api_u.request_data()
     headers = request.headers
 
-    return render(api.create_cluster(data, headers).wrapped_dict)
+    return api_u.render(api.create_cluster(data, headers).wrapped_dict)
 
 
 @rest.get('/clusters/<cluster_id>')
@@ -94,13 +92,14 @@ def clusters_get(cluster_id):
     try:
         c = api.get_cluster(id=cluster_id)
     except Exception, e:
-        abort_and_log(500, 'Exception while getting Cluster with id '
-                           '\'%s\'' % cluster_id, e)
+        api_u.abort_and_log(500, 'Exception while getting Cluster with id '
+                                 '\'%s\'' % cluster_id, e)
 
     if c is None:
-        abort_and_log(404, 'Cluster with id \'%s\' not found' % cluster_id)
+        api_u.abort_and_log(404, 'Cluster with id \'%s\' not found'
+                                 % cluster_id)
 
-    return render(c.wrapped_dict)
+    return api_u.render(c.wrapped_dict)
 
 
 @rest.put('/clusters/<cluster_id>')
@@ -114,4 +113,4 @@ def clusters_delete(cluster_id):
     headers = request.headers
     api.terminate_cluster(headers, id=cluster_id)
 
-    return render()
+    return api_u.render()

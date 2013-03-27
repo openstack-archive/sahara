@@ -14,23 +14,22 @@
 # limitations under the License.
 
 import json
+import os
 import tempfile
 import unittest
 import uuid
-import os
 
 import eventlet
 from oslo.config import cfg
 
-from savanna.main import make_app
+import savanna.main
+from savanna.openstack.common import log as logging
 from savanna.service import api
+from savanna.storage.db import DB
 from savanna.storage.defaults import setup_defaults
 from savanna.storage.models import Node, NodeTemplate
-from savanna.storage.db import DB
-import savanna.main
-from savanna.utils import scheduler
 from savanna.utils.openstack import nova
-from savanna.openstack.common import log as logging
+from savanna.utils import scheduler
 
 LOG = logging.getLogger(__name__)
 
@@ -129,7 +128,7 @@ class TestApi(unittest.TestCase):
         nova.get_flavors = _stub_get_flavors
         nova.get_images = _stub_get_images
 
-        app = make_app()
+        app = savanna.main.make_app()
 
         DB.drop_all()
         DB.create_all()

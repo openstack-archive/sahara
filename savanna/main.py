@@ -19,12 +19,12 @@ from keystoneclient.middleware.auth_token import filter_factory as auth_token
 from oslo.config import cfg
 from werkzeug.exceptions import default_exceptions
 from werkzeug.exceptions import HTTPException
-from savanna.api import v02 as api_v02
 
+from savanna.api import v02 as api_v02
 from savanna.middleware.auth_valid import filter_factory as auth_valid
-from savanna.utils.scheduler import setup_scheduler
-from savanna.utils.api import render
 from savanna.storage.db import setup_storage
+from savanna.utils.api import render
+from savanna.utils.scheduler import setup_scheduler
 
 from savanna.openstack.common import log
 

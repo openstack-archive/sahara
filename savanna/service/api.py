@@ -16,10 +16,10 @@
 import eventlet
 from oslo.config import cfg
 
-from savanna.utils.api import abort_and_log
-from savanna.service import cluster_ops
 from savanna.openstack.common import log as logging
+from savanna.service import cluster_ops
 import savanna.storage.storage as storage
+from savanna.utils.api import abort_and_log
 
 LOG = logging.getLogger(__name__)
 

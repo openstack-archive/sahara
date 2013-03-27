@@ -13,10 +13,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from webob.exc import HTTPServiceUnavailable, HTTPNotFound, HTTPUnauthorized
+import webob.exc as ex
 
-from savanna.openstack.commons import split_path
 from savanna.openstack.common import log as logging
+import savanna.openstack.commons as commons
 
 LOG = logging.getLogger(__name__)
 
@@ -42,20 +42,20 @@ class AuthValidator:
         token_tenant = env['HTTP_X_TENANT_ID']
         if not token_tenant:
             LOG.warn("Can't get tenant_id from env")
-            resp = HTTPServiceUnavailable()
+            resp = ex.HTTPServiceUnavailable()
             return resp(env, start_response)
 
         path = env['PATH_INFO']
-        version, url_tenant, rest = split_path(path, 3, 3, True)
+        version, url_tenant, rest = commons.split_path(path, 3, 3, True)
 
         if not version or not url_tenant or not rest:
             LOG.info("Incorrect path: %s", path)
-            resp = HTTPNotFound("Incorrect path")
+            resp = ex.HTTPNotFound("Incorrect path")
             resp(env, start_response)
 
         if token_tenant != url_tenant:
             LOG.debug("Unauthorized: token tenant != requested tenant")
-            resp = HTTPUnauthorized('Token tenant != requested tenant')
+            resp = ex.HTTPUnauthorized('Token tenant != requested tenant')
             return resp(env, start_response)
 
         return self.app(env, start_response)

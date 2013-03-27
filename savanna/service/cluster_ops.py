@@ -17,12 +17,13 @@ import time
 
 from jinja2 import Environment
 from jinja2 import PackageLoader
-from paramiko import SSHClient, AutoAddPolicy
 from oslo.config import cfg
-from savanna.storage.models import Node, ServiceUrl
-from savanna.storage.db import DB
-from savanna.utils.openstack.nova import novaclient
+import paramiko
+
 from savanna.openstack.common import log as logging
+from savanna.storage.db import DB
+from savanna.storage.models import Node, ServiceUrl
+from savanna.utils.openstack.nova import novaclient
 
 
 LOG = logging.getLogger(__name__)
@@ -70,7 +71,7 @@ def _ensure_zero(ret):
 
 
 def _setup_ssh_connection(host, ssh):
-    ssh.set_missing_host_key_policy(AutoAddPolicy())
+    ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
     ssh.connect(
         host,
         username=CONF.cluster_node.username,
@@ -85,7 +86,7 @@ def _open_channel_and_execute(ssh, cmd):
 
 
 def _execute_command_on_node(host, cmd):
-    ssh = SSHClient()
+    ssh = paramiko.SSHClient()
     try:
         _setup_ssh_connection(host, ssh)
         return _open_channel_and_execute(ssh, cmd)
@@ -178,11 +179,11 @@ def _check_if_up(nova, node):
         # all set
         return
 
-    if not 'ip' in node:
+    if 'ip' not in node:
         srv = _find_by_id(nova.servers.list(), node['id'])
         nets = srv.networks
 
-        if not CONF.nova_internal_net_name in nets:
+        if CONF.nova_internal_net_name not in nets:
             # VM's networking is not configured yet
             return
 
@@ -199,7 +200,7 @@ def _check_if_up(nova, node):
         _ensure_zero(ret)
     except Exception:
         # ssh is not up yet
-        # TODO log error if it takes more than 5 minutes to start-up
+        # TODO(dmescheryakov) log error that takes > 5 minutes to start-up
         return
 
     node['is_up'] = True
@@ -250,7 +251,7 @@ def _setup_node(node, clmap):
     else:
         script_body = clmap['slave_script']
 
-    ssh = SSHClient()
+    ssh = paramiko.SSHClient()
     try:
         _setup_ssh_connection(node['ip'], ssh)
         sftp = ssh.open_sftp()

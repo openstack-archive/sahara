@@ -13,10 +13,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from savanna.openstack.common.exception import ApiError
+import savanna.openstack.common.exception as ex
 
 
-class SavannaException(ApiError):
+class SavannaException(ex.ApiError):
     """
     Base Exception
 

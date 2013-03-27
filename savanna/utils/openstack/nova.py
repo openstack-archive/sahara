@@ -17,14 +17,14 @@ import logging
 
 from novaclient.v1_1 import client as nova_client
 
-from savanna.utils.openstack.base import url_for
+import savanna.utils.openstack.base as base
 
 
 def novaclient(headers):
     username = headers['X-User-Name']
     token = headers['X-Auth-Token']
     tenant = headers['X-Tenant-Id']
-    compute_url = url_for(headers, 'compute')
+    compute_url = base.url_for(headers, 'compute')
 
     logging.debug('novaclient connection created using token '
                   '"%s", tenant "%s" and url "%s"',

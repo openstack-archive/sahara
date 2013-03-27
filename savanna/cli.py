@@ -17,8 +17,9 @@ from flask import Flask
 
 from oslo.config import cfg
 from savanna.openstack.common import log
+from savanna.storage.db import DB
+from savanna.storage.db import setup_storage
 from savanna.storage.defaults import setup_defaults
-from savanna.storage.db import setup_storage, DB
 
 CONF = cfg.CONF
 LOG = log.getLogger(__name__)

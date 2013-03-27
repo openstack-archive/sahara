@@ -13,16 +13,18 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from flask import request
 import functools
 import jsonschema
-from flask import request
+from oslo.config import cfg
+
+from savanna import exceptions as ex
+import savanna.openstack.common.exception as os_ex
+from savanna.openstack.common import log as logging
 from savanna.service import api
 from savanna.utils.api import request_data, bad_request, internal_error
 from savanna.utils.openstack import nova
-from savanna import exceptions as ex
-from savanna.openstack.common.exception import MalformedRequestBody
-from oslo.config import cfg
-from savanna.openstack.common import log as logging
+
 
 LOG = logging.getLogger(__name__)
 
@@ -85,7 +87,7 @@ def validate(validate_func):
                 return bad_request(e)
             except ex.SavannaException, e:
                 return bad_request(e)
-            except MalformedRequestBody, e:
+            except os_ex.MalformedRequestBody, e:
                 e.code = "MALFORMED_REQUEST_BODY"
                 return bad_request(e)
             except Exception, e:
