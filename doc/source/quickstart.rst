@@ -69,11 +69,11 @@ You should see the output similar to the following:
 3 Savanna API SETUP
 ===================
 
-3.1 Git clone repo from the https://github.com/Mirantis/savanna
+3.1 Git clone repo from the https://github.com/stackforge/savanna
 
 .. sourcecode:: bash
 
-    git clone git://github.com/Mirantis/savanna.git
+    git clone git://github.com/stackforge/savanna.git
 
 3.2 Go to the cloned repo directory
 
@@ -85,6 +85,7 @@ You should see the output similar to the following:
 
 .. sourcecode:: bash
 
+    apt-get update
     apt-get install python-dev python-virtualenv
 
 3.4 Prepare virtual environment:
@@ -138,19 +139,17 @@ You should see the output similar to the following:
 
 **Note:** Config file could be specified for ``savanna-api`` and ``savanna-manage`` commands using ``--config-file`` flag.
 
-3.7 To initialize database and generate templates call:
+3.7 To initialize Savanna database with created configuration just call:
 
 .. sourcecode:: bash
 
-    .venv/bin/python bin/savanna-manage reset-db --with-gen-templates
+    .venv/bin/python bin/savanna-manage --config-file etc/savanna/savanna.conf reset-db --with-gen-templates
 
-This command creates database file from scratch and generates some node templates.
-
-3.8 To run Savanna from created environment just call:
+3.8 To start Savanna call:
 
 .. sourcecode:: bash
 
-    .venv/bin/python bin/savanna-api --allow-cluster-ops
+    .venv/bin/python bin/savanna-api --config-file etc/savanna/savanna.conf --allow-cluster-ops
 
 Now Savanna service is running. Further steps show how you can verify from console that Savanna API works properly.
 
@@ -166,26 +165,26 @@ Now Savanna service is running. Further steps show how you can verify from conso
 
 .. sourcecode:: bash
 
-    tools/get_auth_token <username> <password> <tenant>
+    tools/get_auth_token --config-file <path to config file>
 
 E.g.:
 
 .. sourcecode:: bash
 
-    tools/get_auth_token savanna-user nova savanna-dev
+    tools/get_auth_token --config-file etc/savanna/savanna.conf
 
 If authentication succeed, output will be as follows:
 
 .. sourcecode:: bash
 
-    Configuration has been loaded from 'etc/local.cfg'
-    User: savanna-user
-    Password: nova
-    Tenant: savanna-dev
+    Configuration has been loaded from 'etc/savanna/savanna.conf'
+    User: admin
+    Password: swordfish
+    Tenant: admin
     Auth URL: http://172.18.79.139:35357/v2.0/
     Auth succeed: True
     Auth token: d61e47a1423d477f9c77ecb23c64d424
-    Tenant [savanna-dev] id: 0677a89acc834e38bf8bb41665912416
+    Tenant [admin] id: 0677a89acc834e38bf8bb41665912416
 
 **Note:** Save the token because you have to supply it with every request to Savanna in X-Auth-Token header.
 You will also use tenant id in request URL
@@ -286,7 +285,6 @@ Response for this request will look like:
             },
             "service_urls": {},
             "name": "hdp",
-            "tenant_id": "tenant-01",
             "nodes": [],
             "id": "254d8a8c483046ab9209d7993cad2da2",
             "base_image_id": "7989fd9a-5e30-49af-affa-dea4d7b23b9f"
@@ -318,7 +316,6 @@ Initially the cluster will be in "Starting" state, but eventually (in several mi
                 "jobtracker": "http://172.18.79.196:50030"
             },
             "name": "hdp",
-            "tenant_id": "tenant-01",
             "nodes": [
                 {
                     "node_template": {
