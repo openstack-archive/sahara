@@ -15,12 +15,12 @@ echo "=============================="
 # python tools/hacking.py --doctest
 
 # Until all these issues get fixed, ignore.
-PEP8='python tools/hacking.py --ignore=N301'
+PEP8="$VIRTUAL_ENV/bin/python tools/hacking.py --ignore=N301"
 
-EXCLUDE='--exclude=.venv,.git,.tox,dist,doc,*openstack/common*,*lib/python*'
-EXCLUDE+=',*egg,build,*hacking.py'
+EXCLUDE="--exclude=.venv,.git,.tox,dist,doc,*openstack/common*,*lib/python*"
+EXCLUDE=$EXCLUDE:",*egg,build,*hacking.py"
 ${PEP8} ${EXCLUDE} .
 
 ${PEP8} --filename=savanna* bin
 
-! pyflakes savanna/ | grep "imported but unused\|redefinition of function"
+! $VIRTUAL_ENV/bin/pyflakes savanna/ | grep "imported but unused\|redefinition of function"

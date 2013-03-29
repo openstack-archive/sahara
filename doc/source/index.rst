@@ -14,7 +14,7 @@ Useful links
     quickstart
     how-to-participate
 
-* `Sources repo <https://github.com/mirantis/savanna>`_
+* `Sources repo <https://github.com/stackforge/savanna>`_
 * `Launchpad project <https://launchpad.net/savanna>`_
 * `Savanna REST API and custom Horizon screencast <http://www.youtube.com/watch?v=UUt2gqGHcPg>`_
 
@@ -160,6 +160,6 @@ Useful links
     horizon/index
     quickstart
 
-* `Sources repo <https://github.com/mirantis/savanna>`_
+* `Sources repo <https://github.com/stackforge/savanna>`_
 * `Launchpad project <https://launchpad.net/savanna>`_
 * `Savanna REST API and custom Horizon screencast <http://www.youtube.com/watch?v=UUt2gqGHcPg>`_

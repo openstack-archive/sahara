@@ -3,33 +3,8 @@ Savanna project
 
 QuickStart (Ubuntu)
 ----------
-1. Install Python with headers and virtualenv:
-::
-    apt-get install python-dev python-virtualenv
 
-2. Prepare virtual environment:
-::
-    tools/install_venv
-
-3. To run Python fro created environment just call:
-::
-    tools/with_venv python
-
-4. Run PEP8 (style) and PyFlakes (static analysis) checks:
-::
-    tools/run_fast_checks
-
-5. Build docs:
-::
-    tools/build_docs
-
-6. Run all tests:
-::
-    tools/run_tests
-
-7. Run Savanna REST API with stub data and cluster ops on port 8080
-::
-    .venv/bin/python bin/savanna-api --reset-db --stub-data --allow-cluster-ops
+Please, take a look at http://savanna.mirantis.com/quickstart.html
 
 
 Pip speedup
