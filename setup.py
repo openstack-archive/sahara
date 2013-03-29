@@ -30,6 +30,9 @@ setuptools.setup(
     include_package_data=True,
     test_suite='nose.collector',
     setup_requires=['setuptools_git>=0.4'],
-    scripts=['bin/savanna-api'],
+    scripts=[
+        'bin/savanna-api',
+        'bin/savanna-manage',
+    ],
     py_modules=[]
 )
