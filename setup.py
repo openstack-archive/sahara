@@ -25,6 +25,7 @@ setuptools.setup(
     ],
     cmdclass=common_setup.get_cmdclass(),
     packages=setuptools.find_packages(exclude=['bin']),
+    package_data={'savanna': ['resources/*.template']},
     install_requires=requires,
     dependency_links=depend_links,
     include_package_data=True,
@@ -34,5 +35,12 @@ setuptools.setup(
         'bin/savanna-api',
         'bin/savanna-manage',
     ],
-    py_modules=[]
+    py_modules=[],
+    data_files=[
+        ('share/savanna',
+         [
+             'etc/savanna/savanna.conf.sample',
+             'etc/savanna/savanna.conf.sample-full',
+         ]),
+    ],
 )

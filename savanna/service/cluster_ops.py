@@ -231,8 +231,8 @@ def _check_if_up(nova, node):
 
 
 def _render_template(template_name, **kwargs):
-    env = Environment(loader=PackageLoader('savanna', '..'))
-    templ = env.get_template('resources/%s.template' % template_name)
+    env = Environment(loader=PackageLoader('savanna', 'resources'))
+    templ = env.get_template('%s.template' % template_name)
     return templ.render(**kwargs)
 
 

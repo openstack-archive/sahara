@@ -1,4 +1,4 @@
-{% extends "resources/setup-general.sh.template" %}
+{% extends "setup-general.sh.template" %}
 
 {% block master %}
 echo "----- Populating slaves file"
