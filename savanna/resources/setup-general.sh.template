@@ -1,6 +1,6 @@
 #!/bin/bash
 
-echo "----- Setting up Hadoop configs"
+echo "----- Setting up Hadoop configs from templates"
 
 {% for filename in configfiles -%}
   cat {{filename}}.eho_template |
@@ -9,6 +9,27 @@ echo "----- Setting up Hadoop configs"
   {%- endfor -%}
   tee {{filename}}
 {% endfor %}
+
+
+echo "----- Setting up Hadoop enviroment config"
+
+{% for envconf in env_configs -%}
+  echo "{{envconf}}" >> /tmp/hadoop-env.sh
+{% endfor %}
+
+cat /etc/hadoop/hadoop-env.sh >> /tmp/hadoop-env.sh
+mv /tmp/hadoop-env.sh /etc/hadoop/hadoop-env.sh
+
+
+echo "----- Setting up Hadoop config through XSLT"
+
+apt-get install -y xsltproc
+xsltproc /tmp/savanna-hadoop-cfg.xsl /etc/hadoop/core-site.xml | tee /tmp/core-site.xml
+mv /tmp/core-site.xml /etc/hadoop/core-site.xml
+xsltproc /tmp/savanna-hadoop-cfg.xsl /etc/hadoop/mapred-site.xml | tee /tmp/mapred-site.xml
+mv /tmp/mapred-site.xml /etc/hadoop/mapred-site.xml
+
+
 
 echo "----- Creating directories"
 

@@ -111,8 +111,12 @@ def launch_cluster(headers, cluster):
     for nc in cluster.node_counts:
         configs = dict()
         for cf in nc.node_template.node_template_configs:
+            proc_name = cf.node_process_property.node_process.name
+            if not proc_name in configs:
+                configs[proc_name] = dict()
+
             name = cf.node_process_property.name
-            configs[name] = cf.value
+            configs[proc_name][name] = cf.value
 
         ntype = nc.node_template.node_type.name
         templ_id = nc.node_template.id
@@ -230,10 +234,65 @@ def _check_if_up(nova, node):
     node['is_up'] = True
 
 
+env = Environment(loader=PackageLoader('savanna', 'resources'))
+
+
 def _render_template(template_name, **kwargs):
-    env = Environment(loader=PackageLoader('savanna', 'resources'))
     templ = env.get_template('%s.template' % template_name)
     return templ.render(**kwargs)
+
+
+ENV_CONFS = {
+    'job_tracker': {
+        'heap_size': 'HADOOP_JOBTRACKER_OPTS=\\"-Xmx%sm\\"'
+    },
+    'name_node': {
+        'heap_size': 'HADOOP_NAMENODE_OPTS=\\"-Xmx%sm\\"'
+    },
+    'task_tracker': {
+        'heap_size': 'HADOOP_TASKTRACKER_OPTS=\\"-Xmx%sm\\"'
+    },
+    'data_node': {
+        'heap_size': 'HADOOP_DATANODE_OPTS=\\"-Xmx%sm\\"'
+    }
+}
+
+
+def _keys_exist(map, key1, key2):
+    return key1 in map and key2 in map[key1]
+
+
+def _extract_environment_confs(node_configs):
+    "Returns list of Hadoop parameters which should be passed via environment"
+
+    lst = []
+
+    for process, proc_confs in ENV_CONFS.items():
+        for param_name, param_format_str in proc_confs.items():
+            if (_keys_exist(node_configs, process, param_name) and
+                    not node_configs[process][param_name] is None):
+                lst.append(param_format_str %
+                           node_configs[process][param_name])
+
+    return lst
+
+
+def _extract_xml_confs(node_configs):
+    """Returns list of Hadoop parameters which should be passed into general
+    configs like core-site.xml"""
+
+    # For now we assume that all parameters outside of ENV_CONFS
+    # are passed to xml files
+
+    lst = []
+
+    for process, proc_confs in node_configs.items():
+        for param_name, param_value in proc_confs.items():
+            if (not _keys_exist(ENV_CONFS, process, param_name) and
+                    not param_value is None):
+                lst.append((param_name, param_value))
+
+    return lst
 
 
 def _pre_cluster_setup(clmap):
@@ -260,28 +319,40 @@ def _pre_cluster_setup(clmap):
         ('%%%mapred_jobtracker_url%%%', '%s:8021' % clmap['master_hostname'])
     ]
 
-    templ_args = {'configfiles': configfiles,
-                  'configs': configs,
-                  'slaves': clmap['slaves'],
-                  'master_hostname': clmap['master_hostname']}
+    for node in clmap['nodes']:
+        if node['is_master']:
+            script_file = 'setup-master.sh'
+        else:
+            script_file = 'setup-general.sh'
 
-    clmap['slave_script'] = _render_template('setup-general.sh', **templ_args)
-    clmap['master_script'] = _render_template('setup-master.sh', **templ_args)
+        templ_args = {
+            'configfiles': configfiles,
+            'configs': configs,
+            'slaves': clmap['slaves'],
+            'master_hostname': clmap['master_hostname'],
+            'env_configs': _extract_environment_confs(node['configs'])
+        }
+
+        node['setup_script'] = _render_template(script_file, **templ_args)
+
+        xsl_args = {'props': _extract_xml_confs(node['configs'])}
+        node['xsl'] = _render_template('config-transform.xsl', **xsl_args)
 
 
 def _setup_node(node, clmap):
-    if node['is_master']:
-        script_body = clmap['master_script']
-    else:
-        script_body = clmap['slave_script']
-
     ssh = paramiko.SSHClient()
     try:
         _setup_ssh_connection(node['ip'], ssh)
         sftp = ssh.open_sftp()
-        fl = sftp.file('/tmp/savanna-hadoop-init.sh', 'w')
-        fl.write(script_body)
+
+        fl = sftp.file('/tmp/savanna-hadoop-cfg.xsl', 'w')
+        fl.write(node['xsl'])
         fl.close()
+
+        fl = sftp.file('/tmp/savanna-hadoop-init.sh', 'w')
+        fl.write(node['setup_script'])
+        fl.close()
+
         sftp.chmod('/tmp/savanna-hadoop-init.sh', 0500)
 
         ret = _open_channel_and_execute(ssh,
@@ -309,8 +380,10 @@ def _register_node(node, cluster):
 
 
 def _start_cluster(cluster, clmap):
-    ret = _execute_command_on_node(clmap['master_ip'],
-                                   'su -c /usr/sbin/start-all.sh hadoop')
+    ret = _execute_command_on_node(
+        clmap['master_ip'],
+        'su -c /usr/sbin/start-all.sh hadoop >>'
+        ' /tmp/savanna-hadoop-start-all.log')
     _ensure_zero(ret)
 
     LOG.info("Cluster '%s' successfully started!", cluster.name)

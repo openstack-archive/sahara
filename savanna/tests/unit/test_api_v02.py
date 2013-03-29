@@ -297,60 +297,12 @@ def _get_templates_stub_data():
                 }
             },
             {
-                u'job_tracker': {
-                    u'heap_size': u'1792'
-                },
-                u'name': u'jt.small',
-                u'node_type': {
-                    u'processes': [
-                        u'job_tracker'
-                    ],
-                    u'name': u'JT'
-                },
-                u'flavor_id': u'm1.small'
-            },
-            {
-                u'job_tracker': {
-                    u'heap_size': u'3712'
-                },
-                u'name': u'jt.medium',
-                u'node_type': {
-                    u'processes': [
-                        u'job_tracker'
-                    ],
-                    u'name': u'JT'},
-                u'flavor_id': u'm1.medium'
-            },
-            {
-                u'name': u'nn.small',
-                u'node_type': {
-                    u'processes': [
-                        u'name_node'
-                    ],
-                    u'name': u'NN'
-                },
-                u'flavor_id': u'm1.small',
-                u'name_node': {
-                    u'heap_size': u'1792'
-                }
-            },
-            {
-                u'name': u'nn.medium',
-                u'node_type': {
-                    u'processes': [
-                        u'name_node'
-                    ],
-                    u'name': u'NN'
-                },
-                u'flavor_id': u'm1.medium',
-                u'name_node': {
-                    u'heap_size': u'3712'
-                }
-            },
-            {
                 u'name': u'tt_dn.small',
                 u'task_tracker': {
-                    u'heap_size': u'896'
+                    u'heap_size': u'896',
+                    u'mapred.child.java.opts': None,
+                    u'mapred.tasktracker.map.tasks.maximum': None,
+                    u'mapred.tasktracker.reduce.tasks.maximum': None
                 },
                 u'data_node': {
                     u'heap_size': u'896'
@@ -366,7 +318,10 @@ def _get_templates_stub_data():
             {
                 u'name': u'tt_dn.medium',
                 u'task_tracker': {
-                    u'heap_size': u'1792'
+                    u'heap_size': u'1792',
+                    u'mapred.child.java.opts': None,
+                    u'mapred.tasktracker.map.tasks.maximum': None,
+                    u'mapred.tasktracker.reduce.tasks.maximum': None
                 },
                 u'data_node': {
                     u'heap_size': u'1792'

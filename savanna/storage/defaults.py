@@ -30,7 +30,14 @@ def setup_defaults(reset_db=False, gen_templates=False):
         # setup default processes
         p_jt = create_node_process('job_tracker', [('heap_size', True, None)])
         p_nn = create_node_process('name_node', [('heap_size', True, None)])
-        p_tt = create_node_process('task_tracker', [('heap_size', True, None)])
+        p_tt = create_node_process('task_tracker',
+                                   [('heap_size', True, None),
+                                    ('mapred.child.java.opts', False, None),
+                                    ('mapred.tasktracker.map.tasks.maximum',
+                                     False, None),
+                                    ('mapred.tasktracker.reduce.tasks.maximum',
+                                     False, None)])
+
         p_dn = create_node_process('data_node', [('heap_size', True, None)])
 
         for p in [p_jt, p_nn, p_tt, p_dn]:
@@ -73,34 +80,6 @@ def _generate_templates(nt_jt_nn, nt_jt, nt_nn, nt_tt_dn):
                                                 'heap_size': '1792'
                                             }
                                         })
-    jt_small = create_node_template('jt.small', nt_jt.id, 'tenant-01',
-                                    'm1.small',
-                                    {
-                                        'job_tracker': {
-                                            'heap_size': '1792'
-                                        }
-                                    })
-    jt_medium = create_node_template('jt.medium', nt_jt.id, 'tenant-01',
-                                     'm1.medium',
-                                     {
-                                         'job_tracker': {
-                                             'heap_size': '3712'
-                                         }
-                                     })
-    nn_small = create_node_template('nn.small', nt_nn.id, 'tenant-01',
-                                    'm1.small',
-                                    {
-                                        'name_node': {
-                                            'heap_size': '1792'
-                                        }
-                                    })
-    nn_medium = create_node_template('nn.medium', nt_nn.id, 'tenant-01',
-                                     'm1.medium',
-                                     {
-                                         'name_node': {
-                                             'heap_size': '3712'
-                                         }
-                                     })
     tt_dn_small = create_node_template('tt_dn.small', nt_tt_dn.id, 'tenant-01',
                                        'm1.small',
                                        {
@@ -123,6 +102,5 @@ def _generate_templates(nt_jt_nn, nt_jt, nt_nn, nt_tt_dn):
                                             }
                                         })
 
-    for tmpl in [jt_nn_small, jt_nn_medium, jt_small, jt_medium, nn_small,
-                 nn_medium, tt_dn_small, tt_dn_medium]:
+    for tmpl in [jt_nn_small, jt_nn_medium, tt_dn_small, tt_dn_medium]:
         LOG.info('New NodeTemplate: \'%s\' %s', tmpl.name, tmpl.flavor_id)
