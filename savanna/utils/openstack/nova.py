@@ -45,7 +45,16 @@ def get_flavors(headers):
     return flavors
 
 
+def get_flavor(headers, **kwargs):
+    return novaclient(headers).flavors.find(**kwargs)
+
+
 def get_images(headers):
     images = [image.id for image
               in novaclient(headers).images.list()]
     return images
+
+
+def get_limits(headers):
+    limits = novaclient(headers).limits.get().absolute
+    return dict((l.name, l.value) for l in limits)

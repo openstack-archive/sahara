@@ -31,6 +31,13 @@ class SavannaException(ex.ApiError):
 
 ## Cluster operations exceptions
 
+class NotEnoughResourcesException(SavannaException):
+    def __init__(self, list):
+        self.message = "Nova available instances=%s, VCPUs=%s, RAM=%s. " \
+                       "Requested instances=%s, VCPUs=%s, RAM=%s" % tuple(list)
+        self.code = "NOT_ENOUGH_RESOURCES"
+
+
 class ClusterNameExistedException(SavannaException):
     def __init__(self, value):
         self.message = "Cluster with name '%s' already exists" % value

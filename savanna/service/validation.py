@@ -91,7 +91,8 @@ def validate(validate_func):
                 e.code = "MALFORMED_REQUEST_BODY"
                 return bad_request(e)
             except Exception, e:
-                internal_error(500, "Exception occurred during validation", e)
+                return internal_error(500,
+                                      "Error occurred during validation", e)
 
             return func(*args, **kwargs)
 
@@ -144,6 +145,10 @@ def validate_cluster_create(cluster_values):
         if image_id not in nova_images:
             LOG.debug("Could not find %s image in %s", image_id, nova_images)
             raise ex.ImageNotFoundException(values['base_image_id'])
+
+        # check available Nova absolute limits
+        _check_limits(nova.get_limits(request.headers),
+                      values['node_templates'])
     else:
         LOG.info("Cluster ops are disabled, use --allow-cluster-ops flag")
 
@@ -195,3 +200,34 @@ def validate_node_template_create(nt_values):
             raise ex.FlavorNotFoundException(flavor)
     else:
         LOG.info("Cluster ops are disabled, use --allow-cluster-ops flag")
+
+
+def _check_limits(limits, node_templates):
+    all_vcpus = limits['maxTotalCores'] - limits['totalCoresUsed']
+    all_ram = limits['maxTotalRAMSize'] - limits['totalRAMUsed']
+    all_inst = limits['maxTotalInstances'] - limits['totalInstancesUsed']
+    LOG.info("List of available VCPUs: %d, RAM: %d, Instances: %d",
+             all_vcpus, all_ram, all_inst)
+
+    need_vcpus = 0
+    need_ram = 0
+    need_inst = 0
+    for nt_name in node_templates:
+        nt_flavor_name = api.get_node_template(name=nt_name).dict['flavor_id']
+        nt_flavor_count = node_templates[nt_name]
+        LOG.debug("User requested flavor: %s, count: %s",
+                  nt_flavor_name, nt_flavor_count)
+        nova_flavor = nova.get_flavor(request.headers, name=nt_flavor_name)
+        LOG.debug("Nova has flavor %s with VCPUs=%d, RAM=%d",
+                  nova_flavor.name, nova_flavor.vcpus, nova_flavor.ram)
+
+        need_vcpus += nova_flavor.vcpus * nt_flavor_count
+        need_ram += nova_flavor.ram * nt_flavor_count
+        need_inst += nt_flavor_count
+
+    LOG.info("User requested %d instances with total VCPUs=%d and RAM=%d",
+             need_inst, need_vcpus, need_ram)
+
+    if need_inst > all_inst or need_vcpus > all_vcpus or need_ram > all_ram:
+        raise ex.NotEnoughResourcesException([all_inst, all_vcpus, all_ram,
+                                              need_inst, need_vcpus, need_ram])

@@ -92,6 +92,30 @@ def _stub_get_images(headers):
     return [u'base-image-id', u'base-image-id_2']
 
 
+def _stub_get_limits(headers):
+    limits = dict(maxTotalCores=100,
+                  maxTotalRAMSize=51200,
+                  maxTotalInstances=100,
+                  totalCoresUsed=0,
+                  totalRAMUsed=0,
+                  totalInstancesUsed=0)
+
+    LOG.debug('Stub get_limits called with headers %s and limits %s',
+              headers, limits)
+
+    return limits
+
+
+class StubFlavor:
+    def __init__(self, name, vcpus, ram):
+        self.name = name
+        self.vcpus = int(vcpus)
+        self.ram = int(ram)
+
+
+def _stub_get_flavor(headers, **kwargs):
+    return StubFlavor('test_flavor', 1, 512)
+
 CONF = cfg.CONF
 CONF.import_opt('debug', 'savanna.openstack.common.log')
 CONF.import_opt('allow_cluster_ops', 'savanna.config')
@@ -118,6 +142,8 @@ class SavannaTestCase(unittest.TestCase):
         self._prev_cluster_stop = api.cluster_ops.stop_cluster
         self._prev_get_flavors = nova.get_flavors
         self._prev_get_images = nova.get_images
+        self._prev_get_limits = nova.get_limits
+        self._prev_get_flavor = nova.get_flavor
 
         # stub functions
         savanna.main.auth_token = _stub_auth_token
@@ -126,6 +152,8 @@ class SavannaTestCase(unittest.TestCase):
         api.cluster_ops.stop_cluster = _stub_stop_cluster
         nova.get_flavors = _stub_get_flavors
         nova.get_images = _stub_get_images
+        nova.get_limits = _stub_get_limits
+        nova.get_flavor = _stub_get_flavor
 
         app = savanna.main.make_app()
 
@@ -146,6 +174,8 @@ class SavannaTestCase(unittest.TestCase):
         api.cluster_ops.stop_cluster = self._prev_cluster_stop
         nova.get_flavors = self._prev_get_flavors
         nova.get_images = self._prev_get_images
+        nova.get_limits = self._prev_get_limits
+        nova.get_flavor = self._prev_get_flavor
 
         os.close(self.db_fd)
         os.unlink(self.db_path)
