@@ -1,7 +1,16 @@
 from keystoneclient.v2_0 import Client as keystone_client
+import os
 from oslo.config import cfg
-
 import sys
+
+
+possible_topdir = os.path.normpath(os.path.join(os.path.abspath(sys.argv[0]),
+                                                os.pardir,
+                                                os.pardir))
+if os.path.exists(os.path.join(possible_topdir,
+                               'savanna',
+                               '__init__.py')):
+    sys.path.insert(0, possible_topdir)
 
 cli_opts = [
     cfg.StrOpt('username', default='',
@@ -20,7 +29,16 @@ CONF.register_cli_opts(cli_opts)
 
 
 def main():
-    CONF(sys.argv[1:], project='get_auth_token')
+    dev_conf = os.path.join(possible_topdir,
+                            'etc',
+                            'savanna',
+                            'savanna.conf')
+    config_files = None
+    if os.path.exists(dev_conf):
+        config_files = [dev_conf]
+
+    CONF(sys.argv[1:], project='get_auth_token',
+         default_config_files=config_files)
 
     user = CONF.username or CONF.os_admin_username
     password = CONF.password or CONF.os_admin_password
