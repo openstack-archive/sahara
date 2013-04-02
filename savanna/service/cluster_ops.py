@@ -37,11 +37,18 @@ cluster_node_opts = [
                help='An existing user on Hadoop image'),
     cfg.StrOpt('password',
                default='swordfish',
-               help='User\'s password')
+               help='User\'s password'),
+    cfg.BoolOpt('use_floating_ips',
+                default=True,
+                help='When set to false, Savanna uses only internal IP of VMs.'
+                     ' When set to true, Savanna expects OpenStack to auto-'
+                     'assign floating IPs to cluster nodes. Internal IPs will '
+                     'be used for inter-cluster communication, while floating '
+                     'ones will be used by Savanna to configure nodes. Also '
+                     'floating IPs will be exposed in service URLs')
 ]
 
 CONF.register_opts(cluster_node_opts, 'cluster_node')
-#CONF.import_opt('nova_internal_net_name', 'savanna.main')
 
 
 def _find_by_id(lst, id):
@@ -211,24 +218,30 @@ def _check_if_up(nova, node):
         srv = _find_by_id(nova.servers.list(), node['id'])
         nets = srv.networks
 
-        if CONF.nova_internal_net_name not in nets:
+        if len(nets) == 0:
             # VM's networking is not configured yet
             return
 
-        ips = nets[CONF.nova_internal_net_name]
-        if len(ips) < 2:
-            # public IP is not assigned yet
-            return
+        ips = nets.values()[0]
 
-        # we assume that public floating IP comes last in the list
-        node['ip'] = ips[-1]
+        if CONF.cluster_node.use_floating_ips:
+            if len(ips) < 2:
+                # floating IP is not assigned yet
+                return
+
+            # we assume that floating IP comes last in the list
+            node['ip'] = ips[-1]
+        else:
+            if len(ips) < 1:
+                # private IP is not assigned yet
+                return
+            node['ip'] = ips[0]
 
     try:
         ret = _execute_command_on_node(node['ip'], 'ls -l /')
         _ensure_zero(ret)
     except Exception:
         # ssh is not up yet
-        # TODO(dmescheryakov) log error that takes > 5 minutes to start-up
         return
 
     node['is_up'] = True

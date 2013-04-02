@@ -53,10 +53,7 @@ opts = [
                help='Password of the admin user'),
     cfg.StrOpt('os_admin_tenant_name',
                default='admin',
-               help='Name of tenant where the user is admin'),
-    cfg.StrOpt('nova_internal_net_name',
-               default='novanetwork',
-               help='Name of network which IPs are given to the VMs')
+               help='Name of tenant where the user is admin')
 ]
 
 CONF = cfg.CONF

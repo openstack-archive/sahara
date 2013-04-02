@@ -23,7 +23,6 @@ mv /tmp/hadoop-env.sh /etc/hadoop/hadoop-env.sh
 
 echo "----- Setting up Hadoop config through XSLT"
 
-apt-get install -y xsltproc
 xsltproc /tmp/savanna-hadoop-cfg.xsl /etc/hadoop/core-site.xml | tee /tmp/core-site.xml
 mv /tmp/core-site.xml /etc/hadoop/core-site.xml
 xsltproc /tmp/savanna-hadoop-cfg.xsl /etc/hadoop/mapred-site.xml | tee /tmp/mapred-site.xml

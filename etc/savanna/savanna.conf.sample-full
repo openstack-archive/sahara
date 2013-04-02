@@ -10,12 +10,6 @@
 # set port (integer value)
 #port=8080
 
-# resets DB (boolean value)
-#reset_db=false
-
-# populates DB with stub data (boolean value)
-#stub_data=false
-
 # without that option the application operates in dry run mode
 # and does not  send any requests to the OpenStack cluster
 # (boolean value)
@@ -47,10 +41,6 @@
 
 # Name of tenant where the user is admin (string value)
 #os_admin_tenant_name=admin
-
-# Name of network which IPs are given to the VMs (string
-# value)
-#nova_internal_net_name=novanetwork
 
 
 #
@@ -165,18 +155,26 @@
 # User's password (string value)
 #password=swordfish
 
+# When set to false, Savanna uses only internal IP of VMs.
+# When set to true, Savanna expects OpenStack to auto-assign
+# floating IPs to cluster nodes. Internal IPs will be used for
+# inter-cluster communication, while floating ones will be
+# used by Savanna to configure nodes. Also floating IPs will
+# be exposed in service URLs (boolean value)
+#use_floating_ips=true
+
 
 [sqlalchemy]
 
 #
-# Options defined in savanna.main
+# Options defined in savanna.storage.db
 #
 
 # URL for sqlalchemy database (string value)
-#database_uri=sqlite:////tmp/savanna-server.db
+#database_uri=sqlite:////tmp/savanna.db
 
 # Sqlalchemy echo (boolean value)
 #echo=false
 
 
-# Total option count: 40
+# Total option count: 37
