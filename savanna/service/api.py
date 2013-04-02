@@ -135,23 +135,23 @@ def get_node_types(**args):
 ## Utils and DB object to Resource converters
 
 def _clean_nones(obj):
-    d_type = type(obj)
-    if d_type is not dict or d_type is not list:
+    if not isinstance(obj, dict) and not isinstance(obj, list):
         return obj
 
-    if d_type is dict:
+    if isinstance(obj, dict):
         remove = []
-        for key in obj:
-            value = _clean_nones(obj.get(key))
-            if value is None or len(value) == 0:
+        for key, value in obj.iteritems():
+            if value is None:
                 remove.append(key)
         for key in remove:
             obj.pop(key)
-    elif d_type is list:
+        for value in obj.values():
+            _clean_nones(value)
+    elif isinstance(obj, list):
         new_list = []
         for elem in obj:
             elem = _clean_nones(elem)
-            if elem is not None and len(elem) == 0:
+            if elem is not None:
                 new_list.append(elem)
         return new_list
 

@@ -295,10 +295,7 @@ def _get_templates_stub_data():
             {
                 u'name': u'tt_dn.small',
                 u'task_tracker': {
-                    u'heap_size': u'896',
-                    u'mapred.child.java.opts': None,
-                    u'mapred.tasktracker.map.tasks.maximum': None,
-                    u'mapred.tasktracker.reduce.tasks.maximum': None
+                    u'heap_size': u'896'
                 },
                 u'data_node': {
                     u'heap_size': u'896'
@@ -315,9 +312,6 @@ def _get_templates_stub_data():
                 u'name': u'tt_dn.medium',
                 u'task_tracker': {
                     u'heap_size': u'1792',
-                    u'mapred.child.java.opts': None,
-                    u'mapred.tasktracker.map.tasks.maximum': None,
-                    u'mapred.tasktracker.reduce.tasks.maximum': None
                 },
                 u'data_node': {
                     u'heap_size': u'1792'
