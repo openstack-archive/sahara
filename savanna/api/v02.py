@@ -30,7 +30,8 @@ def templates_list():
         return api_u.render(
             node_templates=[nt.dict for nt in api.get_node_templates()])
     except Exception, e:
-        api_u.abort_and_log(500, "Exception while listing NodeTemplates", e)
+        return api_u.internal_error(500,
+                                    "Exception while listing NodeTemplates", e)
 
 
 @rest.post('/node-templates')
@@ -43,27 +44,21 @@ def templates_create():
 
 
 @rest.get('/node-templates/<template_id>')
+@v.exists_by_id(api.get_node_template, 'template_id')
 def templates_get(template_id):
-    nt = None
-    try:
-        nt = api.get_node_template(id=template_id)
-    except Exception, e:
-        api_u.abort_and_log(500, "Exception while getting NodeTemplate by id "
-                                 "'%s'" % template_id, e)
-    if nt is None:
-        api_u.abort_and_log(404, "NodeTemplate with id '%s' not found"
-                                 % template_id)
-
+    nt = api.get_node_template(id=template_id)
     return api_u.render(nt.wrapped_dict)
 
 
 @rest.put('/node-templates/<template_id>')
 def templates_update(template_id):
-    raise NotImplementedError("Template update op isn't implemented (id '%s')"
-                              % template_id)
+    return api_u.internal_error(501, NotImplementedError(
+        "Template update op isn't implemented (id '%s')"
+        % template_id))
 
 
 @rest.delete('/node-templates/<template_id>')
+@v.exists_by_id(api.get_node_template, 'template_id')
 def templates_delete(template_id):
     api.terminate_node_template(id=template_id)
     return api_u.render()
@@ -74,7 +69,7 @@ def clusters_list():
     try:
         return api_u.render(clusters=[c.dict for c in api.get_clusters()])
     except Exception, e:
-        api_u.abort_and_log(500, 'Exception while listing Clusters', e)
+        return api_u.internal_error(500, 'Exception while listing Clusters', e)
 
 
 @rest.post('/clusters')
@@ -87,28 +82,21 @@ def clusters_create():
 
 
 @rest.get('/clusters/<cluster_id>')
+@v.exists_by_id(api.get_cluster, 'cluster_id')
 def clusters_get(cluster_id):
-    c = None
-    try:
-        c = api.get_cluster(id=cluster_id)
-    except Exception, e:
-        api_u.abort_and_log(500, 'Exception while getting Cluster with id '
-                                 '\'%s\'' % cluster_id, e)
-
-    if c is None:
-        api_u.abort_and_log(404, 'Cluster with id \'%s\' not found'
-                                 % cluster_id)
-
+    c = api.get_cluster(id=cluster_id)
     return api_u.render(c.wrapped_dict)
 
 
 @rest.put('/clusters/<cluster_id>')
 def clusters_update(cluster_id):
-    raise NotImplementedError("Cluster update op isn't implemented (id '%s')"
-                              % cluster_id)
+    return api_u.internal_error(501, NotImplementedError(
+        "Cluster update op isn't implemented (id '%s')"
+        % cluster_id))
 
 
 @rest.delete('/clusters/<cluster_id>')
+@v.exists_by_id(api.get_cluster, 'cluster_id')
 def clusters_delete(cluster_id):
     headers = request.headers
     api.terminate_cluster(headers, id=cluster_id)

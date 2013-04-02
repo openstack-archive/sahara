@@ -22,7 +22,7 @@ from savanna import exceptions as ex
 import savanna.openstack.common.exception as os_ex
 from savanna.openstack.common import log as logging
 from savanna.service import api
-from savanna.utils.api import request_data, bad_request, internal_error
+import savanna.utils.api as api_u
 from savanna.utils.openstack import nova
 
 
@@ -36,16 +36,26 @@ CLUSTER_CREATE_SCHEMA = {
     "title": "Cluster creation schema",
     "type": "object",
     "properties": {
-        "name": {"type": "string", "minLength": 1, "maxLength": 240,
-                 "pattern": "^(([a-zA-Z]|[a-zA-Z][a-zA-Z0-9\-]"
-                            "*[a-zA-Z0-9])\.)*([A-Za-z]|[A-Za-z]"
-                            "[A-Za-z0-9\-]*[A-Za-z0-9])$"},
-        "base_image_id": {"type": "string", "minLength": 1, "maxLength": 240},
-        "node_templates": {
-            "type": "object"
+        "cluster": {
+            "type": "object",
+            "properties": {
+                "name": {"type": "string",
+                         "minLength": 1,
+                         "maxLength": 240,
+                         "pattern": "^(([a-zA-Z]|[a-zA-Z][a-zA-Z0-9\-]"
+                                    "*[a-zA-Z0-9])\.)*([A-Za-z]|[A-Za-z]"
+                                    "[A-Za-z0-9\-]*[A-Za-z0-9])$"},
+                "base_image_id": {"type": "string",
+                                  "minLength": 1,
+                                  "maxLength": 240},
+                "node_templates": {
+                    "type": "object"
+                }
+            },
+            "required": ["name", "base_image_id", "node_templates"]
         }
     },
-    "required": ["name", "base_image_id", "node_templates"]
+    "required": ["cluster"]
 }
 
 # Base validation schema of node template creation operation
@@ -53,26 +63,38 @@ TEMPLATE_CREATE_SCHEMA = {
     "title": "Node Template creation schema",
     "type": "object",
     "properties": {
-        "name": {"type": "string", "minLength": 1, "maxLength": 240,
-                 "pattern": "^(([a-zA-Z]|[a-zA-Z][a-zA-Z0-9\-]"
-                            "*[a-zA-Z0-9])\.)*([A-Za-z]|[A-Za-z]"
-                            "[A-Za-z0-9\-]*[A-Za-z0-9])$"},
-        "node_type": {"type": "string", "minLength": 1, "maxLength": 240},
-        "flavor_id": {"type": "string", "minLength": 1, "maxLength": 240},
-        "task_tracker": {
-            "type": "object"
-        },
-        "job_tracker": {
-            "type": "object"
-        },
-        "name_node": {
-            "type": "object"
-        },
-        "data_node": {
-            "type": "object"
+        "node_template": {
+            "type": "object",
+            "properties": {
+                "name": {"type": "string",
+                         "minLength": 1,
+                         "maxLength": 240,
+                         "pattern": "^(([a-zA-Z]|[a-zA-Z][a-zA-Z0-9\-]"
+                                    "*[a-zA-Z0-9])\.)*([A-Za-z]|[A-Za-z]"
+                                    "[A-Za-z0-9\-]*[A-Za-z0-9])$"},
+                "node_type": {"type": "string",
+                              "minLength": 1,
+                              "maxLength": 240},
+                "flavor_id": {"type": "string",
+                              "minLength": 1,
+                              "maxLength": 240},
+                "task_tracker": {
+                    "type": "object"
+                },
+                "job_tracker": {
+                    "type": "object"
+                },
+                "name_node": {
+                    "type": "object"
+                },
+                "data_node": {
+                    "type": "object"
+                }
+            },
+            "required": ["name", "node_type", "flavor_id"]
         }
     },
-    "required": ["name", "node_type", "flavor_id"]
+    "required": ["node_template"]
 }
 
 
@@ -81,18 +103,18 @@ def validate(validate_func):
         @functools.wraps(func)
         def handler(*args, **kwargs):
             try:
-                validate_func(request_data())
+                validate_func(api_u.request_data())
             except jsonschema.ValidationError, e:
                 e.code = "VALIDATION_ERROR"
-                return bad_request(e)
+                return api_u.bad_request(e)
             except ex.SavannaException, e:
-                return bad_request(e)
+                return api_u.bad_request(e)
             except os_ex.MalformedRequestBody, e:
                 e.code = "MALFORMED_REQUEST_BODY"
-                return bad_request(e)
+                return api_u.bad_request(e)
             except Exception, e:
-                return internal_error(500,
-                                      "Error occurred during validation", e)
+                return api_u.internal_error(
+                    500, "Error occurred during validation", e)
 
             return func(*args, **kwargs)
 
@@ -101,9 +123,28 @@ def validate(validate_func):
     return decorator
 
 
+def exists_by_id(service_func, id_prop):
+    def decorator(func):
+        @functools.wraps(func)
+        def handler(*args, **kwargs):
+            try:
+                service_func(*args, id=kwargs[id_prop])
+                return func(*args, **kwargs)
+            except ex.NotFoundException, e:
+                e.__init__(kwargs[id_prop])
+                return api_u.not_found(e)
+            except Exception, e:
+                return api_u.internal_error(
+                    500, "Unexpected error occurred", e)
+
+        return handler
+
+    return decorator
+
+
 def validate_cluster_create(cluster_values):
+    jsonschema.validate(cluster_values, CLUSTER_CREATE_SCHEMA)
     values = cluster_values['cluster']
-    jsonschema.validate(values, CLUSTER_CREATE_SCHEMA)
 
     # check that requested cluster name is unique
     unique_names = [cluster.name for cluster in api.get_clusters()]
@@ -154,8 +195,8 @@ def validate_cluster_create(cluster_values):
 
 
 def validate_node_template_create(nt_values):
+    jsonschema.validate(nt_values, TEMPLATE_CREATE_SCHEMA)
     values = nt_values['node_template']
-    jsonschema.validate(values, TEMPLATE_CREATE_SCHEMA)
 
     # check that requested node_template name is unique
     unique_names = [nt.name for nt in api.get_node_templates()]

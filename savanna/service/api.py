@@ -19,7 +19,7 @@ from oslo.config import cfg
 from savanna.openstack.common import log as logging
 from savanna.service import cluster_ops
 import savanna.storage.storage as storage
-from savanna.utils.api import abort_and_log
+from savanna import exceptions as ex
 
 LOG = logging.getLogger(__name__)
 
@@ -185,7 +185,8 @@ class Resource(object):
 
 def _node_template(nt):
     if not nt:
-        abort_and_log(404, 'NodeTemplate not found')
+        raise ex.NodeTemplateNotFoundException(nt)
+
     d = {
         'id': nt.id,
         'name': nt.name,
@@ -208,7 +209,8 @@ def _node_template(nt):
 
 def _cluster(cluster):
     if not cluster:
-        abort_and_log(404, 'Cluster not found')
+        raise ex.ClusterNotFoundException(cluster)
+
     d = {
         'id': cluster.id,
         'name': cluster.name,
@@ -234,7 +236,7 @@ def _cluster(cluster):
 
 def _node_type(nt):
     if not nt:
-        abort_and_log(404, 'NodeType not found')
+        raise ex.NodeTypeNotFoundException(nt)
 
     d = {
         'id': nt.id,
