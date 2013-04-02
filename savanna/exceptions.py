@@ -29,6 +29,16 @@ class SavannaException(ex.ApiError):
         return self.message
 
 
+class NotFoundException(SavannaException):
+
+    # It could be a various property of object which was not found
+    value = None
+
+    def __init__(self, value):
+        self.code = "NOT_FOUND"
+        self.value = value
+
+
 ## Cluster operations exceptions
 
 class NotEnoughResourcesException(SavannaException):
@@ -64,11 +74,19 @@ class NotSingleJobTrackerException(SavannaException):
         self.code = "NOT_SINGLE_JOB_TRACKER"
 
 
+class ClusterNotFoundException(NotFoundException):
+    def __init__(self, value):
+        self.value = value
+        self.message = "Cluster '%s' not found" % self.value
+        self.code = "CLUSTER_NOT_FOUND"
+
+
 ## NodeTemplates operations exceptions
 
-class NodeTemplateNotFoundException(SavannaException):
+class NodeTemplateNotFoundException(NotFoundException):
     def __init__(self, value):
-        self.message = "Cannot find NodeTemplate '%s'" % value
+        self.value = value
+        self.message = "NodeTemplate '%s' not found" % self.value
         self.code = "NODE_TEMPLATE_NOT_FOUND"
 
 
@@ -92,7 +110,8 @@ class DiscrepancyNodeProcessException(SavannaException):
 
 ## NodeTypes operations exceptions
 
-class NodeTypeNotFoundException(SavannaException):
+class NodeTypeNotFoundException(NotFoundException):
     def __init__(self, value):
-        self.message = "Cannot find NodeType '%s'" % value
+        self.value = value
+        self.message = "NodeType '%s' not found" % self.value
         self.code = "NODE_TYPE_NOT_FOUND"

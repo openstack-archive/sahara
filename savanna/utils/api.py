@@ -177,13 +177,27 @@ def internal_error(status_code, descr, exc=None):
     if exc is not None:
         LOG.error(traceback.format_exc())
 
-    return render_error_message(status_code, descr, "INTERNAL_SERVER_ERROR")
+    error_code = "INTERNAL_SERVER_ERROR"
+    if status_code == 501:
+        error_code = "NOT_IMPLEMENTED_ERROR"
+
+    return render_error_message(status_code, descr, error_code)
 
 
 def bad_request(error):
     error_code = 400
 
     LOG.debug("Validation Error occurred: "
+              "error_code=%s, error_message=%s, error_name=%s",
+              error_code, error.message, error.code)
+
+    return render_error_message(error_code, error.message, error.code)
+
+
+def not_found(error):
+    error_code = 404
+
+    LOG.debug("Not Found exception occurred: "
               "error_code=%s, error_message=%s, error_name=%s",
               error_code, error.message, error.code)
 

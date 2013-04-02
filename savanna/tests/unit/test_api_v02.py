@@ -203,9 +203,7 @@ class TestApi(SavannaTestCase):
 
         rv = self.app.get(
             '/v0.2/some-tenant-id/node-templates/%s.json' % node_template_id)
-
-        # todo(vrovachev): change success code to 404
-        self.assertEquals(rv.status_code, 500)
+        self.assertEquals(rv.status_code, 404)
 
     def test_delete_cluster(self):
         rv = self.app.post('/v0.2/some-tenant-id/clusters.json',
@@ -253,9 +251,7 @@ class TestApi(SavannaTestCase):
         eventlet.sleep(1)
 
         rv = self.app.get('/v0.2/some-tenant-id/clusters/%s.json' % cluster_id)
-
-        # todo(vrovachev): change success code to 404
-        self.assertEquals(rv.status_code, 500)
+        self.assertEquals(rv.status_code, 404)
 
 
 def _sorted_nodes(nodes):
