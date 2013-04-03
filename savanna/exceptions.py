@@ -63,14 +63,14 @@ class ImageNotFoundException(SavannaException):
 class NotSingleNameNodeException(SavannaException):
     def __init__(self, nn_count):
         self.message = "Hadoop cluster should contain only 1 NameNode. " \
-                       "Actual NN count is %s " % nn_count
+                       "Actual NN count is %s" % nn_count
         self.code = "NOT_SINGLE_NAME_NODE"
 
 
 class NotSingleJobTrackerException(SavannaException):
     def __init__(self, jt_count):
         self.message = "Hadoop cluster should contain only 1 JobTracker. " \
-                       "Actual JT count is %s " % jt_count
+                       "Actual JT count is %s" % jt_count
         self.code = "NOT_SINGLE_JOB_TRACKER"
 
 
