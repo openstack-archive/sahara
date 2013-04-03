@@ -1,6 +1,6 @@
 # vim: tabstop=4 shiftwidth=4 softtabstop=4
 
-# Copyright 2012 Red Hat, Inc.
+# Copyright (c) 2012 Intel Corporation.
 # All Rights Reserved.
 #
 #    Licensed under the Apache License, Version 2.0 (the "License"); you may
@@ -16,18 +16,24 @@
 #    under the License.
 
 """
-gettext for openstack-common modules.
-
-Usual usage in an openstack.common module:
-
-    from savanna.openstack.common.gettextutils import _
+UUID related utilities and helper functions.
 """
 
-import gettext
+import uuid
 
 
-t = gettext.translation('savanna', 'locale', fallback=True)
+def generate_uuid():
+    return str(uuid.uuid4())
 
 
-def _(msg):
-    return t.ugettext(msg)
+def is_uuid_like(val):
+    """Returns validation of a value as a UUID.
+
+    For our purposes, a UUID is a canonical form string:
+    aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa
+
+    """
+    try:
+        return str(uuid.UUID(val)) == val
+    except (TypeError, ValueError, AttributeError):
+        return False
