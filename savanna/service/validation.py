@@ -42,9 +42,9 @@ CLUSTER_CREATE_SCHEMA = {
                 "name": {"type": "string",
                          "minLength": 1,
                          "maxLength": 240,
-                         "pattern": "^(([a-zA-Z]|[a-zA-Z][a-zA-Z0-9\-]"
-                                    "*[a-zA-Z0-9])\.)*([A-Za-z]|[A-Za-z]"
-                                    "[A-Za-z0-9\-]*[A-Za-z0-9])$"},
+                         "pattern": r"^(([a-zA-Z]|[a-zA-Z][a-zA-Z0-9\-]"
+                                    r"*[a-zA-Z0-9])\.)*([A-Za-z]|[A-Za-z]"
+                                    r"[A-Za-z0-9\-]*[A-Za-z0-9])$"},
                 "base_image_id": {"type": "string",
                                   "minLength": 1,
                                   "maxLength": 240},
@@ -69,9 +69,9 @@ TEMPLATE_CREATE_SCHEMA = {
                 "name": {"type": "string",
                          "minLength": 1,
                          "maxLength": 240,
-                         "pattern": "^(([a-zA-Z]|[a-zA-Z][a-zA-Z0-9\-]"
-                                    "*[a-zA-Z0-9])\.)*([A-Za-z]|[A-Za-z]"
-                                    "[A-Za-z0-9\-]*[A-Za-z0-9])$"},
+                         "pattern": r"^(([a-zA-Z]|[a-zA-Z][a-zA-Z0-9\-_]"
+                                    r"*[a-zA-Z0-9])\.)*([A-Za-z]|[A-Za-z]"
+                                    r"[A-Za-z0-9\-_]*[A-Za-z0-9])$"},
                 "node_type": {"type": "string",
                               "minLength": 1,
                               "maxLength": 240},
