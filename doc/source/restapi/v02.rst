@@ -98,14 +98,14 @@ An error response follows the format illustrated by the following example:
 
 .. sourcecode:: http
 
-    HTTP/1.1 409 Conflict
+    HTTP/1.1 400 BAD REQUEST
     Content-type: application/json
-    Content-length: XX
+    Content-length: 126
 
     {
-        "error_code": 409,
-        "error_name": "CLUSTER_EXISTS",
-        "error_message": "Cluster with name 'dev-cluster' already exists"
+        "error_name": "CLUSTER_NAME_ALREADY_EXISTS",
+        "error_message": "Cluster with name 'test-cluster' already exists",
+        "error_code": 400
     }
 
 
@@ -466,9 +466,17 @@ Normal Response Code: 202 (Accepted)
 
 Errors:
 
-400, NODE_TEMPLATE_EXISTS, "Node Template with name 'custom_user_template' already exists"
+400, VALIDATION_ERROR, "Some input field is specified incorrectly or is missing"
 
-400, WRONG_PARAMETER_FORMAT, "Some input field is specified incorrectly or is missing"
+400, MALFORMED_REQUEST_BODY, "Malformed message body with 'reason'"
+
+400, NODE_TEMPLATE_ALREADY_EXISTS, "Node Template with name 'custom_user_template' already exists"
+
+400, NODE_TYPE_NOT_FOUND, "NodeType 'wrong-node-type' not found"
+
+400, NODE_PROCESS_DISCREPANCY, "Discrepancies in Node Processes. Required: ['process1', 'process2']"
+
+400, FLAVOR_NOT_FOUND, "Cannot find flavor with name 'some-flavor'"
 
 This operation creates a new Node Template from the parameters specified in request object.
 All parameters has been described in section 2.1.
@@ -546,7 +554,7 @@ Normal Response Code: 200 (OK)
 
 Errors:
 
-404, NODE_TEMPLATE_NOT_FOUND, "Node Template with such a name does not exist"
+404, NODE_TEMPLATE_NOT_FOUND, "NodeTemplate 'node_template_id' not found"
 
 This operation returns a Node Template object identified by node_template_id.
 
@@ -600,7 +608,21 @@ Normal Response Code: 202 (Accepted)
 
 Errors:
 
-400, WRONG_PARAMETER_FORMAT, "Some input field is specified incorrectly or is missing"
+400, VALIDATION_ERROR, "Some input field is specified incorrectly or is missing"
+
+400, MALFORMED_REQUEST_BODY, "Malformed message body with 'reason'"
+
+400, NODE_TEMPLATE_ALREADY_EXISTS, "Node Template with name 'custom_user_template' already exists"
+
+400, NODE_TYPE_NOT_FOUND, "NodeType 'wrong-node-type' not found"
+
+400, NODE_PROCESS_DISCREPANCY, "Discrepancies in Node Processes. Required: ['process1', 'process2']"
+
+400, FLAVOR_NOT_FOUND, "Cannot find flavor with name 'some-flavor'"
+
+400, NODE_TEMPLATE_ALREADY_IN_USE, "NodeTemplate 'node_template_id' is used by running cluster"
+
+404, NODE_TEMPLATE_NOT_FOUND, "NodeTemplate 'node_template_id' not found"
 
 This operation updates the attributes of the node template identified by node_template_id.
 All attributes should be specified while updating resource. Only node templates that are not in use could be updated.
@@ -677,11 +699,11 @@ This operation returns response body. It contains updated Node Template object d
 
 .. http:delete:: /v0.2/{tenant_id}/node-templates/{node_template_id}
 
-Normal Response Code: 204 (No Content)
+Normal Response Code: 204 (NO CONTENT)
 
 Errors:
 
-404, NODE_TEMPLATE_NOT_FOUND, "Node Template with name 'node template #1' does not exist"
+404, NODE_TEMPLATE_NOT_FOUND, "NodeTemplate 'node_template_id' not found"
 
 This operation removes the specified Node Template and its associated resources.
 Any and all data is immediately purged and is not recoverable.
@@ -811,11 +833,21 @@ Normal Response Code: 202 (Accepted)
 
 Errors:
 
-    400, CLUSTER_EXISTS, "Cluster with name 'dev-cluster' already exists"
+    400, VALIDATION_ERROR, "Some input field is specified incorrectly or is missing"
 
-    400, WRONG_PARAMETER_FORMAT, "Some input field is specified incorrectly or is missing"
+    400, MALFORMED_REQUEST_BODY, "Malformed message body with 'reason'"
 
-    400, WRONG_TOPOLOGY_CONFIG, "Some required cluster components is missing or conflict between components detected"
+    400, CLUSTER_ALREADY_EXISTS, "Cluster with name 'custom_cluster' already exists"
+
+    400, NODE_TEMPLATE_NOT_FOUND, "NodeTemplate 'node_template_id' not found"
+
+    400, NOT_SINGLE_NAME_NODE, "Hadoop cluster should contain only 1 NameNode. "Actual NN count is 'nn_count'"
+
+    400, NOT_SINGLE_JOB_TRACKER, "Hadoop cluster should contain only 1 JobTracker. "Actual JT count is 'jt_count'"
+
+    400, IMAGE_NOT_FOUND, "Cannot find image with id 'base_image_id'"
+
+    400, NOT_ENOUGH_RESOURCES, "Nova available instances='instances_count', VCPUs='vcpus_count', RAM='ram_count'. Requested instances='req_instances', VCPUs='req_vcpus', RAM='req_ram'"
 
 This operation creates a new cluster from the parameters specified in request object.
 All parameters have been described in section 2.2.
@@ -883,7 +915,7 @@ Normal Response Code: 200 (OK)
 
 Errors:
 
-    404, CLUSTER_NOT_FOUND, "Cluster with name 'dev-cluster' does not exists"
+    404, CLUSTER_NOT_FOUND, "Cluster 'cluster_id' not found"
 
 This operation returns a cluster object identified by id.
 
@@ -937,11 +969,23 @@ Normal Response Code: 202 (Accepted)
 
 Errors:
 
-    400, CLUSTER_EXISTS, "Cluster with name 'dev-cluster' already exists"
+    400, VALIDATION_ERROR, "Some input field is specified incorrectly or is missing"
 
-    400, WRONG_PARAMETER_FORMAT, "Some input field is specified incorrectly or is missing"
+    400, MALFORMED_REQUEST_BODY, "Malformed message body with 'reason'"
 
-    400, WRONG_TOPOLOGY_CONFIG, "Some required cluster components is missing or conflict between components detected"
+    400, CLUSTER_ALREADY_EXISTS, "Cluster with name 'custom_cluster' already exists"
+
+    400, NODE_TEMPLATE_NOT_FOUND, "NodeTemplate 'node_template_id' not found"
+
+    400, NOT_SINGLE_NAME_NODE, "Hadoop cluster should contain only 1 NameNode. "Actual NN count is 'nn_count'"
+
+    400, NOT_SINGLE_JOB_TRACKER, "Hadoop cluster should contain only 1 JobTracker. "Actual JT count is 'jt_count'"
+
+    400, IMAGE_NOT_FOUND, "Cannot find image with id 'base_image_id'"
+
+    400, NOT_ENOUGH_RESOURCES, "Nova available instances='instances_count', VCPUs='vcpus_count', RAM='ram_count'. Requested instances='req_instances', VCPUs='req_vcpus', RAM='req_ram'"
+
+    404, CLUSTER_NOT_FOUND, "Cluster 'cluster_id' not found"
 
 This operation updates the attributes of the cluster identified by cluster_id.
 All attributes should be specified while updating resource.
@@ -1011,11 +1055,11 @@ take a look on cluster creation operation. All cluster Node Templates should be 
 
 .. http:delete:: /v0.2/{tenant_id}/clusters/{cluster-id}
 
-Normal Response Code: 204 (No Content)
+Normal Response Code: 204 (NO CONTENT)
 
 Errors:
 
-404, CLUSTER_NOT_FOUND, "Cluster with such name does not exist"
+    404, CLUSTER_NOT_FOUND, "Cluster 'cluster_id' not found"
 
 This operation removes the specified cluster (identified by cluster_id) and its associated instances or other resources.
 Any and all data is immediately purged and is not recoverable.
