@@ -179,3 +179,10 @@ class SavannaTestCase(unittest.TestCase):
 
         os.close(self.db_fd)
         os.unlink(self.db_path)
+
+        # place back default configs
+        CONF.set_override('debug', False)
+        CONF.set_override('allow_cluster_ops', False)
+        CONF.set_override('database_uri', 'sqlite:////tmp/savanna.db',
+                          group='sqlalchemy')
+        CONF.set_override('echo', False, group='sqlalchemy')
