@@ -2,6 +2,40 @@
 Savanna quickstart guide
 ************************
 
+1 Get Savanna archive from http://tarballs.openstack.org/savanna/ and install it using pip:
+
+    .. sourcecode:: bash
+
+        pip install http://tarballs.openstack.org/savanna/savanna-master.tar.gz #egg=savanna
+
+**Note:**
+savanna-master.tar.gz contains the latest changes in the source code.
+savanna-some_version.tar.gz contains features related to specified Savanna release.
+
+
+2 After installation you should create configuration file or change default config to run Savanna properly. Default config file is located in:
+
+    .. sourcecode:: bash
+
+        /usr/local/share/savanna/savanna.conf.sample
+
+3 To initialize Savanna database with created configuration just call:
+
+    .. sourcecode:: bash
+
+        savanna-manage --config-file /pathToConfig reset-db --with-gen-templates
+
+4 To start Savanna call:
+
+    .. sourcecode:: bash
+
+        savanna-api --config-file /pathToConfig
+
+
+***********************
+Full installation guide
+***********************
+
 1 Setup prerequisites
 =====================
 
