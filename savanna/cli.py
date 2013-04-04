@@ -14,7 +14,6 @@
 # limitations under the License.
 
 from flask import Flask
-import os
 
 from oslo.config import cfg
 from savanna.openstack.common import log
@@ -63,36 +62,8 @@ class ResetDbCmd(BaseCmd):
                  "gen templates: %s", gen)
 
 
-class SampleConfCmd(BaseCmd):
-    """Generates sample conf"""
-
-    name = 'sample-conf'
-
-    @classmethod
-    def add_argument_parser(cls, subparsers):
-        parser = super(SampleConfCmd, cls).add_argument_parser(subparsers)
-        parser.add_argument('--full', action='store_true')
-        return parser
-
-    @staticmethod
-    def main():
-        possible_topdir = os.path.normpath(
-            os.path.join(os.path.abspath(__file__), os.pardir, os.pardir))
-
-        sample_path = possible_topdir + "/etc/savanna/savanna.conf.sample"
-        if CONF.command.full:
-            sample_path += "-full"
-        try:
-            f = open(sample_path, 'r')
-            print f.read(),
-            f.close()
-        except IOError:
-            print "File '" + sample_path + "' does not exist."
-
-
 CLI_COMMANDS = [
     ResetDbCmd,
-    SampleConfCmd
 ]
 
 
