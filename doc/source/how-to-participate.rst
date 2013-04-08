@@ -13,4 +13,6 @@ otherwise your mail will be ignored by mailing system).
 We're going to hold public weekly meetings on Thursday at 18:00 UTC on #openstack-meeting-alt irc channel.
 
 If you want to contribute either to docs or to code, simply send us change request via review.openstack.org (gerrit).
-You can file bugs and register blueprints at `Savanna launchpad page <https://launchpad.net/savanna>`_.
+You can file `bugs <https://bugs.launchpad.net/savanna>`_ and register `blueprints <https://blueprints.launchpad.net/savanna>`_ at 
+`Savanna launchpad page <https://launchpad.net/savanna>`_.
+
