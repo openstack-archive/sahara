@@ -15,7 +15,7 @@ Useful links
     how-to-participate
 
 * `Sources repo <https://github.com/stackforge/savanna>`_
-* `Launchpad project <https://launchpad.net/savanna>`_
+* `Launchpad project (bugs, blueprints, etc.) <https://launchpad.net/savanna>`_
 * `Savanna REST API and custom Horizon screencast <http://www.youtube.com/watch?v=UUt2gqGHcPg>`_
 
 Introduction
@@ -161,5 +161,5 @@ Useful links
     quickstart
 
 * `Sources repo <https://github.com/stackforge/savanna>`_
-* `Launchpad project <https://launchpad.net/savanna>`_
+* `Launchpad project (bugs, blueprints, etc.) <https://launchpad.net/savanna>`_
 * `Savanna REST API and custom Horizon screencast <http://www.youtube.com/watch?v=UUt2gqGHcPg>`_
