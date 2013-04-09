@@ -136,6 +136,8 @@ You should see the output similar to the following:
 
 **Note:** Config file could be specified for ``savanna-api`` and ``savanna-manage`` commands using ``--config-file`` flag.
 
+**Note:** If your OpenStack cluster doesn't automatically assign floating ips then you should set ``use_floating_ips`` configuration option to ``False``. 
+
 3.7 To initialize Savanna database with created configuration just call:
 
 .. sourcecode:: bash
