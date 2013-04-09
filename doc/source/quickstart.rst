@@ -6,7 +6,7 @@ Savanna quickstart guide
 
     .. sourcecode:: bash
 
-        pip install http://tarballs.openstack.org/savanna/savanna-master.tar.gz #egg=savanna
+        pip install http://tarballs.openstack.org/savanna/savanna-master.tar.gz#egg=savanna
 
 **Note:**
 savanna-master.tar.gz contains the latest changes in the source code.
@@ -63,14 +63,14 @@ You can check which flavors you have by running
 
 .. sourcecode:: bash
 
-    wget http://savanna-files.mirantis.com/savanna-0.1a1-hdp-img.tar.gz
+    wget http://savanna-files.mirantis.com/savanna-0.1-hdp-img.tar.gz
 
 2.3 Unpack image and import it into Glance:
 
 .. sourcecode:: bash
 
     tar -xzf savanna-xxxx-hdp-img.tar.gz
-    glance image-create --name=hdp.image --disk-format=qcow2 --container-format=bare < ./hdp.img
+    glance image-create --name=hdp.image --disk-format=qcow2 --container-format=bare < ./savanna-xxxx-hdp-img.img
 
 You should see the output similar to the following:
 
