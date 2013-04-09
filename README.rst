@@ -1,6 +1,12 @@
 Savanna project
 ===============
 
+Project blueprint: https://wiki.openstack.org/wiki/Savanna | http://savanna.mirantis.com/index.html
+Architecture draft: https://wiki.openstack.org/wiki/Savanna/Architecture | http://savanna.mirantis.com/architecture.html
+Roadmap: https://wiki.openstack.org/wiki/Savanna/Roadmap | http://savanna.mirantis.com/roadmap.html
+API draft: http://savanna.mirantis.com/restapi/v02.html
+Launchpad project: https://launchpad.net/savanna
+
 QuickStart (Ubuntu)
 ----------
 
