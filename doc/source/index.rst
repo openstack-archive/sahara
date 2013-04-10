@@ -10,8 +10,9 @@ Useful links
     architecture
     roadmap
     restapi/v02
-    horizon/index
     quickstart
+    horizon/index
+    horizon/howto
     how-to-participate
 
 * `Sources repo <https://github.com/stackforge/savanna>`_
@@ -157,8 +158,10 @@ Useful links
     architecture
     roadmap
     restapi/v02
-    horizon/index
     quickstart
+    horizon/index
+    horizon/howto
+    how-to-participate
 
 * `Sources repo <https://github.com/stackforge/savanna>`_
 * `Launchpad project (bugs, blueprints, etc.) <https://launchpad.net/savanna>`_
