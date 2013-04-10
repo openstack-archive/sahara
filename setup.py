@@ -17,7 +17,6 @@ setuptools.setup(
         'Environment :: OpenStack',
         'Intended Audience :: Information Technology',
         'Intended Audience :: System Administrators',
-        'Intended Audience :: BigDate',
         'License :: OSI Approved :: Apache Software License',
         'Operating System :: POSIX :: Linux',
         'Programming Language :: Python',
