@@ -2,7 +2,13 @@
 Savanna quickstart guide
 ************************
 
-1 Get Savanna archive from http://tarballs.openstack.org/savanna/ and install it using pip:
+1 You can install the latest Savanna release version (currently, 0.1) from pypi:
+
+    .. sourcecode:: bash
+
+        pip install savanna
+
+Or you can get Savanna archive from http://tarballs.openstack.org/savanna/ and install it using pip:
 
     .. sourcecode:: bash
 
