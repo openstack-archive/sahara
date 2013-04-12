@@ -41,7 +41,7 @@ CLUSTER_CREATE_SCHEMA = {
             "properties": {
                 "name": {"type": "string",
                          "minLength": 1,
-                         "maxLength": 240,
+                         "maxLength": 50,
                          "pattern": r"^(([a-zA-Z]|[a-zA-Z][a-zA-Z0-9\-]"
                                     r"*[a-zA-Z0-9])\.)*([A-Za-z]|[A-Za-z]"
                                     r"[A-Za-z0-9\-]*[A-Za-z0-9])$"},

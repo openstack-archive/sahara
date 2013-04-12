@@ -244,9 +244,9 @@ class TestValidation(unittest.TestCase):
                        u"'' is too short")
         )
         self._assert_create_object_validation(
-            _cluster(cluster, name="a" * 241),
+            _cluster(cluster, name="a" * 51),
             bad_req_i=(1, "VALIDATION_ERROR",
-                       u"'%s' is too long" % ('a' * 241))
+                       u"'%s' is too long" % ('a' * 51))
         )
 
         def _assert_cluster_name_pattern(self, name):
