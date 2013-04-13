@@ -201,19 +201,19 @@ class TestValidation(unittest.TestCase):
         self._assert_create_object_validation(
             {},
             bad_req_i=(1, "VALIDATION_ERROR",
-                       u"'cluster' is required property")
+                       u"'cluster' is a required property")
         )
         self._assert_create_object_validation(
             {"cluster": {}},
             bad_req_i=(1, "VALIDATION_ERROR",
-                       u"'name' is required property")
+                       u"'name' is a required property")
         )
         self._assert_create_object_validation(
             {"cluster": {
                 "name": "some-name"
             }},
             bad_req_i=(1, "VALIDATION_ERROR",
-                       u"'base_image_id' is required property")
+                       u"'base_image_id' is a required property")
         )
         self._assert_create_object_validation(
             {"cluster": {
@@ -221,7 +221,7 @@ class TestValidation(unittest.TestCase):
                 "base_image_id": "some-image-id"
             }},
             bad_req_i=(1, "VALIDATION_ERROR",
-                       u"'node_templates' is required property")
+                       u"'node_templates' is a required property")
         )
 
     def test_cluster_create_v_name(self):
@@ -311,19 +311,19 @@ class TestValidation(unittest.TestCase):
         self._assert_create_object_validation(
             {},
             bad_req_i=(1, "VALIDATION_ERROR",
-                       u"'node_template' is required property")
+                       u"'node_template' is a required property")
         )
         self._assert_create_object_validation(
             {"node_template": {}},
             bad_req_i=(1, "VALIDATION_ERROR",
-                       u"'name' is required property")
+                       u"'name' is a required property")
         )
         self._assert_create_object_validation(
             {"node_template": {
                 "name": "some-name"
             }},
             bad_req_i=(1, "VALIDATION_ERROR",
-                       u"'node_type' is required property")
+                       u"'node_type' is a required property")
         )
         self._assert_create_object_validation(
             {"node_template": {
@@ -331,7 +331,7 @@ class TestValidation(unittest.TestCase):
                 "node_type": "some-node-type"
             }},
             bad_req_i=(1, "VALIDATION_ERROR",
-                       u"'flavor_id' is required property")
+                       u"'flavor_id' is a required property")
         )
         self._assert_create_object_validation(
             {"node_template": {
@@ -340,7 +340,7 @@ class TestValidation(unittest.TestCase):
                 "flavor_id": "flavor-1"
             }},
             bad_req_i=(1, "VALIDATION_ERROR",
-                       u"'name_node' is required property")
+                       u"'name_node' is a required property")
         )
         self._assert_create_object_validation(
             {"node_template": {
@@ -350,7 +350,7 @@ class TestValidation(unittest.TestCase):
                 "name_node": {}
             }},
             bad_req_i=(1, "VALIDATION_ERROR",
-                       u"'job_tracker' is required property")
+                       u"'job_tracker' is a required property")
         )
         self._assert_create_object_validation(
             {"node_template": {
