@@ -29,6 +29,7 @@ setuptools.setup(
     package_data={'savanna': ['resources/*.template']},
     install_requires=requires,
     dependency_links=depend_links,
+    setup_requires=['setuptools-git>=0.4'],
     include_package_data=True,
     test_suite='nose.collector',
     scripts=[
