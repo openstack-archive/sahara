@@ -16,10 +16,10 @@
 import eventlet
 from oslo.config import cfg
 
+from savanna import exceptions as ex
 from savanna.openstack.common import log as logging
 from savanna.service import cluster_ops
 import savanna.storage.storage as storage
-from savanna import exceptions as ex
 
 LOG = logging.getLogger(__name__)
 

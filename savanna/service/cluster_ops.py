@@ -119,7 +119,7 @@ def launch_cluster(headers, cluster):
         configs = dict()
         for cf in nc.node_template.node_template_configs:
             proc_name = cf.node_process_property.node_process.name
-            if not proc_name in configs:
+            if proc_name not in configs:
                 configs[proc_name] = dict()
 
             name = cf.node_process_property.name
@@ -276,7 +276,8 @@ def _keys_exist(map, key1, key2):
 
 
 def _extract_environment_confs(node_configs):
-    "Returns list of Hadoop parameters which should be passed via environment"
+    """Returns list of Hadoop parameters which should be passed via environment
+    """
 
     lst = []
 
@@ -292,7 +293,8 @@ def _extract_environment_confs(node_configs):
 
 def _extract_xml_confs(node_configs):
     """Returns list of Hadoop parameters which should be passed into general
-    configs like core-site.xml"""
+    configs like core-site.xml
+    """
 
     # For now we assume that all parameters outside of ENV_CONFS
     # are passed to xml files

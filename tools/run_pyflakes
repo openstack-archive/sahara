@@ -1,13 +1,3 @@
 #!/bin/sh
 
-if [ ${VIRTUAL_ENV:+x} ]
-    then echo "VIRTUAL_ENV is already specified"
-    else export VIRTUAL_ENV=.venv
-fi
-
-echo "VIRTUAL_ENV = $VIRTUAL_ENV"
-
-echo "Running PyFlakes checks"
-echo "======================="
-
-$VIRTUAL_ENV/bin/pyflakes bin bin/savanna-api bin/savanna-manage savanna setup.py
+echo "Please, use tools/run_pep8 instead of tools/run_pyflakes"

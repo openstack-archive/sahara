@@ -1,26 +1,3 @@
 #!/bin/sh
 
-set -e
-
-if [ ${VIRTUAL_ENV:+x} ]
-    then echo "VIRTUAL_ENV is already specified"
-    else export VIRTUAL_ENV=.venv
-fi
-
-echo "VIRTUAL_ENV = $VIRTUAL_ENV"
-
-echo "Running pep8/hacking.py checks"
-echo "=============================="
-
-# python tools/hacking.py --doctest
-
-# Until all these issues get fixed, ignore.
-PEP8="$VIRTUAL_ENV/bin/python tools/hacking.py --ignore=N301"
-
-EXCLUDE="--exclude=.venv,.git,.tox,dist,doc,*openstack/common*,*lib/python*"
-EXCLUDE=$EXCLUDE:",*egg,build,*hacking.py"
-${PEP8} ${EXCLUDE} .
-
-${PEP8} --filename=savanna* bin
-
-! $VIRTUAL_ENV/bin/pyflakes savanna/ | grep "imported but unused\|redefinition of function"
+tox -epep8
