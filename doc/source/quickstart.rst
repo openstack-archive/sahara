@@ -119,12 +119,13 @@ You should see the output similar to the following:
 
     cd savanna
 
-3.3 Install python headers and virtualenv:
+3.3 Install python headers, virtualenv and tox:
 
 .. sourcecode:: bash
 
     apt-get update
     apt-get install python-dev python-virtualenv
+    pip install tox
 
 3.4 Prepare virtual environment:
 
@@ -148,13 +149,15 @@ You should see the output similar to the following:
 
 .. sourcecode:: bash
 
-    .venv/bin/python bin/savanna-manage --config-file etc/savanna/savanna.conf reset-db --with-gen-templates
+    tox -evenv -- savanna-manage --config-file etc/savanna/savanna.conf reset-db --with-gen-templates
+
+Virtualenv with all requirements installed into it is now available in ``.tox/venv``. You can create it by executing ``tools/install_venv``.
 
 3.8 To start Savanna call:
 
 .. sourcecode:: bash
 
-    .venv/bin/python bin/savanna-api --config-file etc/savanna/savanna.conf --allow-cluster-ops
+    tox -evenv -- savanna-api --config-file etc/savanna/savanna.conf --allow-cluster-ops
 
 Now Savanna service is running. Further steps show how you can verify from console that Savanna API works properly.
 
