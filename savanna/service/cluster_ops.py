@@ -231,11 +231,13 @@ def _check_if_up(nova, node):
 
             # we assume that floating IP comes last in the list
             node['ip'] = ips[-1]
+            node['internal_ip'] = ips[0]
         else:
             if len(ips) < 1:
                 # private IP is not assigned yet
                 return
             node['ip'] = ips[0]
+            node['internal_ip'] = ips[0]
 
     try:
         ret = _execute_command_on_node(node['ip'], 'ls -l /')
@@ -310,7 +312,7 @@ def _extract_xml_confs(node_configs):
     return lst
 
 
-def _pre_cluster_setup(clmap):
+def _analyze_templates(clmap):
     clmap['master_ip'] = None
     clmap['slaves'] = []
     for node in clmap['nodes']:
@@ -325,8 +327,18 @@ def _pre_cluster_setup(clmap):
     if clmap['master_ip'] is None:
         raise RuntimeError("No master node is defined in the cluster")
 
-    configfiles = ['/etc/hadoop/core-site.xml',
-                   '/etc/hadoop/mapred-site.xml']
+
+def _generate_hosts(clmap):
+    hosts = "127.0.0.1 localhost\n"
+    for node in clmap['nodes']:
+        hosts += "%s %s\n" % (node['internal_ip'], node['name'])
+
+    clmap['hosts'] = hosts
+
+
+def _pre_cluster_setup(clmap):
+    _analyze_templates(clmap)
+    _generate_hosts(clmap)
 
     configs = [
         ('%%%hdfs_namenode_url%%%', 'hdfs:\\/\\/%s:8020'
@@ -341,7 +353,10 @@ def _pre_cluster_setup(clmap):
             script_file = 'setup-general.sh'
 
         templ_args = {
-            'configfiles': configfiles,
+            'configfiles': [
+                '/etc/hadoop/core-site.xml',
+                '/etc/hadoop/mapred-site.xml'
+            ],
             'configs': configs,
             'slaves': clmap['slaves'],
             'master_hostname': clmap['master_hostname'],
@@ -359,6 +374,10 @@ def _setup_node(node, clmap):
     try:
         _setup_ssh_connection(node['ip'], ssh)
         sftp = ssh.open_sftp()
+
+        fl = sftp.file('/etc/hosts', 'w')
+        fl.write(clmap['hosts'])
+        fl.close()
 
         fl = sftp.file('/tmp/savanna-hadoop-cfg.xsl', 'w')
         fl.write(node['xsl'])
