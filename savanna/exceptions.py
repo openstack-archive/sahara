@@ -108,6 +108,13 @@ class DiscrepancyNodeProcessException(SavannaException):
         self.code = "NODE_PROCESS_DISCREPANCY"
 
 
+class RequiredParamMissedException(SavannaException):
+    def __init__(self, process, param):
+        self.message = "Required parameter '%s' of process '%s' should be " \
+                       "specified" % (param, process)
+        self.code = "REQUIRED_PARAM_MISSED"
+
+
 ## NodeTypes operations exceptions
 
 class NodeTypeNotFoundException(NotFoundException):

@@ -233,6 +233,12 @@ def validate_node_template_create(nt_values):
         if proc not in req_procs:
             raise ex.DiscrepancyNodeProcessException(req_procs)
 
+    req_params = api.get_node_type_required_params(name=values['node_type'])
+    for process in req_params:
+        for param in req_params[process]:
+            if param not in values[process] or not values[process][param]:
+                raise ex.RequiredParamMissedException(process, param)
+
     if api.CONF.allow_cluster_ops:
         flavor = values['flavor_id']
         nova_flavors = nova.get_flavors(request.headers)

@@ -124,9 +124,11 @@ class TestValidation(unittest.TestCase):
         get_templates_p = patch("savanna.service.api.get_node_templates")
         get_template_p = patch("savanna.service.api.get_node_template")
         get_types_p = patch("savanna.service.api.get_node_types")
+        get_node_type_required_params_p = \
+            patch("savanna.service.api.get_node_type_required_params")
         patchers = (request_data_p, bad_req_p, not_found_p, int_err_p,
                     get_clusters_p, get_templates_p, get_template_p,
-                    get_types_p)
+                    get_types_p, get_node_type_required_params_p)
 
         request_data = request_data_p.start()
         bad_req = bad_req_p.start()
@@ -136,6 +138,7 @@ class TestValidation(unittest.TestCase):
         get_templates = get_templates_p.start()
         get_template = get_template_p.start()
         get_types = get_types_p.start()
+        get_node_type_required_params = get_node_type_required_params_p.start()
 
         # stub clusters list
         get_clusters.return_value = getattr(self, "_clusters_data", [
@@ -162,9 +165,9 @@ class TestValidation(unittest.TestCase):
             })
         ])
 
-        def _get_template(**kwargs):
+        def _get_template(name):
             for template in get_templates():
-                if template.name == kwargs['name']:
+                if template.name == name:
                     return template
             return None
 
@@ -176,6 +179,13 @@ class TestValidation(unittest.TestCase):
                 "processes": ["job_tracker", "name_node"]
             })
         ])
+
+        def _get_r_params(name):
+            if name == "JT+NN":
+                return {"job_tracker": ["jt_param"]}
+            return dict()
+
+        get_node_type_required_params.side_effect = _get_r_params
 
         # mock function that should be validated
         m_func = Mock()
@@ -359,6 +369,30 @@ class TestValidation(unittest.TestCase):
                 "flavor_id": "flavor-1",
                 "name_node": {},
                 "job_tracker": {}
+            }},
+            bad_req_i=(1, "REQUIRED_PARAM_MISSED",
+                       u"Required parameter 'jt_param' of process "
+                       u"'job_tracker' should be specified")
+        )
+        self._assert_create_object_validation(
+            {"node_template": {
+                "name": "some-name",
+                "node_type": "JT+NN",
+                "flavor_id": "flavor-1",
+                "name_node": {},
+                "job_tracker": {"jt_param": ""}
+            }},
+            bad_req_i=(1, "REQUIRED_PARAM_MISSED",
+                       u"Required parameter 'jt_param' of process "
+                       u"'job_tracker' should be specified")
+        )
+        self._assert_create_object_validation(
+            {"node_template": {
+                "name": "some-name",
+                "node_type": "JT+NN",
+                "flavor_id": "flavor-1",
+                "name_node": {},
+                "job_tracker": {"jt_param": "some value"}
             }}
         )
         self._assert_create_object_validation(
