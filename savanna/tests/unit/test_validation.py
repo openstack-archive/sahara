@@ -234,7 +234,7 @@ class TestValidation(unittest.TestCase):
                        u"'node_templates' is a required property")
         )
 
-    def test_cluster_create_v_name(self):
+    def test_cluster_create_v_name_base(self):
         self._create_object_fun = v.validate_cluster_create
 
         cluster = {
@@ -259,6 +259,16 @@ class TestValidation(unittest.TestCase):
                        u"'%s' is too long" % ('a' * 51))
         )
 
+    def test_cluster_create_v_name_pattern(self):
+        self._create_object_fun = v.validate_cluster_create
+
+        cluster = {
+            "cluster": {
+                "base_image_id": "some-image-id",
+                "node_templates": {}
+            }
+        }
+
         def _assert_cluster_name_pattern(self, name):
             cluster_schema = v.CLUSTER_CREATE_SCHEMA['properties']['cluster']
             name_p = cluster_schema['properties']['name']['pattern']
@@ -272,6 +282,16 @@ class TestValidation(unittest.TestCase):
         _assert_cluster_name_pattern(self, "asd_123")
         _assert_cluster_name_pattern(self, "123")
         _assert_cluster_name_pattern(self, "asd?")
+
+    def test_cluster_create_v_name_exists(self):
+        self._create_object_fun = v.validate_cluster_create
+
+        cluster = {
+            "cluster": {
+                "base_image_id": "some-image-id",
+                "node_templates": {}
+            }
+        }
 
         self._assert_create_object_validation(
             _cluster(cluster, name="some-cluster-1"),
@@ -409,7 +429,7 @@ class TestValidation(unittest.TestCase):
                        u"Required: ['name_node', 'job_tracker']")
         )
 
-    def test_node_template_create_v_name(self):
+    def test_node_template_create_v_name_base(self):
         self._create_object_fun = v.validate_node_template_create
 
         template = {
@@ -436,6 +456,18 @@ class TestValidation(unittest.TestCase):
                        u"'%s' is too long" % ('a' * 241))
         )
 
+    def test_node_template_create_v_name_pattern(self):
+        self._create_object_fun = v.validate_node_template_create
+
+        template = {
+            "node_template": {
+                "node_type": "JT+NN",
+                "flavor_id": "flavor-1",
+                "name_node": {},
+                "job_tracker": {}
+            }
+        }
+
         def _assert_template_name_pattern(self, name):
             schema_props = v.TEMPLATE_CREATE_SCHEMA['properties']
             template_schema = schema_props['node_template']
@@ -450,6 +482,18 @@ class TestValidation(unittest.TestCase):
         _assert_template_name_pattern(self, "asd;123")
         _assert_template_name_pattern(self, "123")
         _assert_template_name_pattern(self, "asd?")
+
+    def test_node_template_create_v_name_exists(self):
+        self._create_object_fun = v.validate_node_template_create
+
+        template = {
+            "node_template": {
+                "node_type": "JT+NN",
+                "flavor_id": "flavor-1",
+                "name_node": {},
+                "job_tracker": {}
+            }
+        }
 
         self._assert_create_object_validation(
             _template(template, name="jt_nn.small"),
