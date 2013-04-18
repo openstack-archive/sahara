@@ -18,17 +18,8 @@ Useful links
 * `Sources repo <https://github.com/stackforge/savanna>`_
 * `Launchpad project (bugs, blueprints, etc.) <https://launchpad.net/savanna>`_
 * `Savanna REST API and custom Horizon screencast <http://www.youtube.com/watch?v=UUt2gqGHcPg>`_
+* `Savanna talk slides from OpenStack Summit'13 <http://www.slideshare.net/mirantis/savanna-hadoop-on-openstack>`_
 
-April 2013, OpenStack Summit
-----------------------------
-
-We'll be presenting Savanna (Hadoop on OpenStack project) at "Unconference track" on April 15th, Monday 11:50am during OpenStack Summit in Portland.
-
-We'll cover the background of what Savanna is, roadmap, show live demo of the current functionality and talk about plans for the next phase.
-
-Everybody who'll be on the summit are welcome to attend!
-
-"Unconference track" is a room dedicated to technical discussion and presentation of the new projects with no official schedule published, we have Monday 11:50 slot booked for Savanna. The room # is A104.
 
 Introduction
 ------------
@@ -177,3 +168,4 @@ Useful links
 * `Sources repo <https://github.com/stackforge/savanna>`_
 * `Launchpad project (bugs, blueprints, etc.) <https://launchpad.net/savanna>`_
 * `Savanna REST API and custom Horizon screencast <http://www.youtube.com/watch?v=UUt2gqGHcPg>`_
+* `Savanna talk slides from OpenStack Summit'13 <http://www.slideshare.net/mirantis/savanna-hadoop-on-openstack>`_
