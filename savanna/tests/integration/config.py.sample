@@ -1,0 +1,7 @@
+OS_USERNAME = "admin" # username for nova
+OS_PASSWORD = "nova" # password for nova
+OS_TENANT_NAME = "admin"
+OS_AUTH_URL = "http://192.168.1.1:35357/v2.0/" # URL for keystone
+SAVANNA_HOST = '192.168.1.1' # IP for Savanna API
+SAVANNA_PORT = '8080'
+SAVANNA_IMAGE_ID = '42' # ID for instance image
