@@ -51,7 +51,7 @@ class TestValidation(unittest.TestCase):
 
     def tearDown(self):
         self._create_object_fun = None
-        CONF.set_override('allow_cluster_ops', False)
+        CONF.clear_override('allow_cluster_ops')
 
     @patch("savanna.utils.api.bad_request")
     @patch("savanna.utils.api.request_data")
