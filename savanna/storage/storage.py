@@ -30,17 +30,16 @@ def get_node_templates(**args):
     return NodeTemplate.query.filter_by(**args).all()
 
 
-def create_node_template(name, node_type_id, tenant_id, flavor_id, configs):
+def create_node_template(name, node_type_id, flavor_id, configs):
     """Creates new node templates.
 
     :param name: template name
     :param node_type_id: node type
-    :param tenant_id: tenant
     :param flavor_id: flavor
     :param configs: dict of process->property->value
     :return: created node template
     """
-    node_template = NodeTemplate(name, node_type_id, tenant_id, flavor_id)
+    node_template = NodeTemplate(name, node_type_id, flavor_id)
     DB.session.add(node_template)
     for process_name in configs:
         process = NodeProcess.query.filter_by(name=process_name).first()

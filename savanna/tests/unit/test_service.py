@@ -97,7 +97,7 @@ class TestServiceLayer(unittest.TestCase):
 
         get_n_type.assert_called_once_with(name="JT+NN")
         create_tmpl.assert_called_once_with("nt-1", "node-type-1",
-                                            "tenant-01", "flavor-1", {})
+                                            "flavor-1", {})
         get_tmpl.assert_called_once_with(id="tmpl-1")
 
     @patch('savanna.storage.storage.terminate_node_template')

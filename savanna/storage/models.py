@@ -25,7 +25,6 @@ class NodeTemplate(DB.Model):
     name = DB.Column(DB.String(80), unique=True, nullable=False)
     node_type_id = DB.Column(DB.String(36), DB.ForeignKey('NodeType.id'),
                              nullable=False)
-    tenant_id = DB.Column(DB.String(36), nullable=False)  # is it needed?
     flavor_id = DB.Column(DB.String(36), nullable=False)
 
     node_template_configs = DB.relationship('NodeTemplateConfig',
@@ -37,11 +36,10 @@ class NodeTemplate(DB.Model):
     nodes = DB.relationship('Node', cascade="all,delete",
                             backref='node_template')
 
-    def __init__(self, name, node_type_id, tenant_id, flavor_id):
+    def __init__(self, name, node_type_id, flavor_id):
         self.id = uuid.uuid4().hex
         self.name = name
         self.node_type_id = node_type_id
-        self.tenant_id = tenant_id
         self.flavor_id = flavor_id
 
     def __repr__(self):
