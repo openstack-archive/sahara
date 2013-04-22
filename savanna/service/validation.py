@@ -123,12 +123,16 @@ def validate(validate_func):
     return decorator
 
 
-def exists_by_id(service_func, id_prop):
+def exists_by_id(service_func, id_prop, tenant_specific=False):
     def decorator(func):
         @functools.wraps(func)
         def handler(*args, **kwargs):
             try:
-                service_func(*args, id=kwargs[id_prop])
+                if tenant_specific:
+                    tenant = request.headers['X-Tenant-Id']
+                    service_func(*args, id=kwargs[id_prop], tenant_id=tenant)
+                else:
+                    service_func(*args, id=kwargs[id_prop])
                 return func(*args, **kwargs)
             except ex.NotFoundException, e:
                 e.__init__(kwargs[id_prop])

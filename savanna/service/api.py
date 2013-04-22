@@ -48,11 +48,9 @@ def create_node_template(values, headers):
 
     name = values.pop('name')
     node_type_id = storage.get_node_type(name=values.pop('node_type')).id
-    tenant_id = headers['X-Tenant-Id']
     flavor_id = values.pop('flavor_id')
 
-    nt = storage.create_node_template(name, node_type_id, tenant_id,
-                                      flavor_id, values)
+    nt = storage.create_node_template(name, node_type_id, flavor_id, values)
 
     return get_node_template(id=nt.id)
 

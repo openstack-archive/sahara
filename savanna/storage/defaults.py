@@ -60,8 +60,7 @@ def setup_defaults(reset_db=False, gen_templates=False):
 
 
 def _generate_templates(nt_jt_nn, nt_jt, nt_nn, nt_tt_dn):
-    jt_nn_small = create_node_template('jt_nn.small', nt_jt_nn.id, 'tenant-01',
-                                       'm1.small',
+    jt_nn_small = create_node_template('jt_nn.small', nt_jt_nn.id, 'm1.small',
                                        {
                                            'job_tracker': {
                                                'heap_size': '896'
@@ -71,7 +70,7 @@ def _generate_templates(nt_jt_nn, nt_jt, nt_nn, nt_tt_dn):
                                            }
                                        })
     jt_nn_medium = create_node_template('jt_nn.medium', nt_jt_nn.id,
-                                        'tenant-01', 'm1.medium',
+                                        'm1.medium',
                                         {
                                             'job_tracker': {
                                                 'heap_size': '1792'
@@ -80,8 +79,7 @@ def _generate_templates(nt_jt_nn, nt_jt, nt_nn, nt_tt_dn):
                                                 'heap_size': '1792'
                                             }
                                         })
-    tt_dn_small = create_node_template('tt_dn.small', nt_tt_dn.id, 'tenant-01',
-                                       'm1.small',
+    tt_dn_small = create_node_template('tt_dn.small', nt_tt_dn.id, 'm1.small',
                                        {
                                            'task_tracker': {
                                                'heap_size': '896'
@@ -91,7 +89,6 @@ def _generate_templates(nt_jt_nn, nt_jt, nt_nn, nt_tt_dn):
                                            }
                                        })
     tt_dn_medium = create_node_template('tt_dn.medium', nt_tt_dn.id,
-                                        'tenant-01',
                                         'm1.medium',
                                         {
                                             'task_tracker': {
