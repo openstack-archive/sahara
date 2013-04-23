@@ -1,10 +1,13 @@
+# This file is managed by openstack-depends
+coverage>=3.6
 flake8
 hacking
-pylint
-sphinx>=1.1.2
-sphinxcontrib-httpdomain>=1.1.7
+mock>=0.8.0
 nose
-openstack.nose_plugin
+openstack.nose_plugin>=0.7
+pylint==0.25.2
+sphinx>=1.1.2
 unittest2
-coverage
-mock
+
+# Additional dependencies
+sphinxcontrib-httpdomain>=1.1.7
