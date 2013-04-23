@@ -1,10 +1,13 @@
-Flask
-SQLAlchemy>=0.7,<0.8a0
-Flask-SQLAlchemy
-eventlet
-paramiko
-webob
-python-keystoneclient
-python-novaclient>=2.10.0,<3
-oslo.config>=1.1.0
+# This file is managed by openstack-depends
+eventlet>=0.9.12
+flask==0.9
 jsonschema
+oslo.config>=1.1.0
+paramiko>=1.8.0
+python-keystoneclient>=0.2,<0.3
+python-novaclient>=2.12.0,<3
+sqlalchemy>=0.7,<=0.7.99
+webob>=1.0.8
+
+# Additional depends
+flask-sqlalchemy
