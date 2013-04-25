@@ -13,8 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import time
-
+import eventlet
 from jinja2 import Environment
 from jinja2 import PackageLoader
 from oslo.config import cfg
@@ -169,7 +168,7 @@ def launch_cluster(headers, cluster):
             if not node['is_up']:
                 all_set = False
 
-        time.sleep(1)
+        eventlet.sleep(1)
 
     LOG.debug("All nodes of cluster '%s' are up: %s",
               cluster.name, all_set)
