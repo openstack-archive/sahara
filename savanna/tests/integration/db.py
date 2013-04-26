@@ -34,22 +34,23 @@ SAVANNA_HOST = _get_conf("SAVANNA_HOST", "192.168.1.1")
 SAVANNA_PORT = _get_conf("SAVANNA_PORT", "8080")
 SAVANNA_IMAGE_ID = _get_conf("SAVANNA_IMAGE_ID", "42")
 
-keystone = keystone_client(
-    username=OS_USERNAME,
-    password=OS_PASSWORD,
-    tenant_name=OS_TENANT_NAME,
-    auth_url=OS_AUTH_URL
-)
-
 
 class ValidationTestCase(unittest.TestCase):
+
+    keystone = keystone_client(
+        username=OS_USERNAME,
+        password=OS_PASSWORD,
+        tenant_name=OS_TENANT_NAME,
+        auth_url=OS_AUTH_URL
+    )
+
     def setUp(self):
         self.host = SAVANNA_HOST
         self.maxDiff = None
         self.port = SAVANNA_PORT
         self.baseurl = 'http://' + self.host + ':' + self.port
-        self.tenant = keystone.tenant_id
-        self.token = keystone.auth_token
+        self.tenant = self.keystone.tenant_id
+        self.token = self.keystone.auth_token
         self.flavor_id = 'm1.medium'
         self.image_id = SAVANNA_IMAGE_ID
         self.url_nt = '/v0.2/%s/node-templates' % self.tenant
