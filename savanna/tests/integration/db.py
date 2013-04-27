@@ -37,18 +37,17 @@ SAVANNA_IMAGE_ID = _get_conf("SAVANNA_IMAGE_ID", "42")
 
 class ValidationTestCase(unittest.TestCase):
 
-    keystone = keystone_client(
-        username=OS_USERNAME,
-        password=OS_PASSWORD,
-        tenant_name=OS_TENANT_NAME,
-        auth_url=OS_AUTH_URL
-    )
-
     def setUp(self):
         self.host = SAVANNA_HOST
         self.maxDiff = None
         self.port = SAVANNA_PORT
         self.baseurl = 'http://' + self.host + ':' + self.port
+        self.keystone = keystone_client(
+            username=OS_USERNAME,
+            password=OS_PASSWORD,
+            tenant_name=OS_TENANT_NAME,
+            auth_url=OS_AUTH_URL
+        )
         self.tenant = self.keystone.tenant_id
         self.token = self.keystone.auth_token
         self.flavor_id = 'm1.medium'
