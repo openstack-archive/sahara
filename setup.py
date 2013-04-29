@@ -26,7 +26,10 @@ setuptools.setup(
     license='Apache Software License',
     cmdclass=common_setup.get_cmdclass(),
     packages=setuptools.find_packages(exclude=['bin']),
-    package_data={'savanna': ['resources/*.template']},
+    package_data={'savanna': [
+        'resources/*.template',
+        'resources/*.xml'
+    ]},
     install_requires=requires,
     dependency_links=depend_links,
     setup_requires=['setuptools-git>=0.4'],

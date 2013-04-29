@@ -18,6 +18,8 @@ from jinja2 import Environment
 from jinja2 import PackageLoader
 from oslo.config import cfg
 import paramiko
+from pkg_resources import resource_filename
+import xml.dom.minidom as xml
 
 from savanna.openstack.common import log as logging
 from savanna.storage.db import DB
@@ -272,6 +274,73 @@ ENV_CONFS = {
 }
 
 
+def _load_xml_default_configs(file_name):
+    doc = xml.parse(resource_filename("savanna", 'resources/%s' % file_name))
+    properties = doc.getElementsByTagName("name")
+    return [prop.childNodes[0].data for prop in properties]
+
+CORE_CONF = _load_xml_default_configs('core-default.xml')
+MAPRED_CONF = _load_xml_default_configs('mapred-default.xml')
+HDFS_CONF = _load_xml_default_configs('hdfs-default.xml')
+
+
+def _generate_xml_configs(clmap):
+    cfg = {
+        'fs.default.name': 'hdfs://%s:8020' % clmap['master_hostname'],
+        'mapred.job.tracker': '%s:8021' % clmap['master_hostname'],
+        'dfs.name.dir': '/mnt/lib/hadoop/hdfs/namenode',
+        'dfs.data.dir': '/mnt/lib/hadoop/hdfs/datanode',
+        'mapred.system.dir': '/mnt/mapred/mapredsystem',
+        'mapred.local.dir': '/mnt/lib/hadoop/mapred'
+    }
+
+    xml_configs = {
+        'core-site': _create_xml(cfg, CORE_CONF),
+        'mapred-site': _create_xml(cfg, MAPRED_CONF),
+        'hdfs-site': _create_xml(cfg, HDFS_CONF)
+    }
+
+    return xml_configs
+
+
+def _create_xml(configs, global_conf):
+    doc = xml.Document()
+
+    pi = doc.createProcessingInstruction('xml-stylesheet',
+                                         'type="text/xsl" '
+                                         'href="configuration.xsl"')
+    doc.insertBefore(pi, doc.firstChild)
+
+    # Create the <configuration> base element
+    configuration = doc.createElement("configuration")
+    doc.appendChild(configuration)
+
+    for prop_name, prop_value in configs.items():
+        if prop_name in global_conf:
+            # Create the <property> element
+            property = doc.createElement("property")
+            configuration.appendChild(property)
+
+            # Create a <name> element in <property>
+            name = doc.createElement("name")
+            property.appendChild(name)
+
+            # Give the <name> element some hadoop config name
+            name_text = doc.createTextNode(prop_name)
+            name.appendChild(name_text)
+
+            # Create a <value> element in <property>
+            value = doc.createElement("value")
+            property.appendChild(value)
+
+            # Give the <value> element some hadoop config value
+            value_text = doc.createTextNode(prop_value)
+            value.appendChild(value_text)
+
+    # Return newly created XML
+    return doc.toprettyxml(indent="  ")
+
+
 def _keys_exist(map, key1, key2):
     return key1 in map and key2 in map[key1]
 
@@ -339,12 +408,6 @@ def _pre_cluster_setup(clmap):
     _analyze_templates(clmap)
     _generate_hosts(clmap)
 
-    configs = [
-        ('%%%hdfs_namenode_url%%%', 'hdfs:\\/\\/%s:8020'
-                                    % clmap['master_hostname']),
-        ('%%%mapred_jobtracker_url%%%', '%s:8021' % clmap['master_hostname'])
-    ]
-
     for node in clmap['nodes']:
         if node['is_master']:
             script_file = 'setup-master.sh'
@@ -352,20 +415,13 @@ def _pre_cluster_setup(clmap):
             script_file = 'setup-general.sh'
 
         templ_args = {
-            'configfiles': [
-                '/etc/hadoop/core-site.xml',
-                '/etc/hadoop/mapred-site.xml'
-            ],
-            'configs': configs,
             'slaves': clmap['slaves'],
             'master_hostname': clmap['master_hostname'],
             'env_configs': _extract_environment_confs(node['configs'])
         }
 
         node['setup_script'] = _render_template(script_file, **templ_args)
-
-        xsl_args = {'props': _extract_xml_confs(node['configs'])}
-        node['xsl'] = _render_template('config-transform.xsl', **xsl_args)
+        node['xml'] = _generate_xml_configs(clmap)
 
 
 def _setup_node(node, clmap):
@@ -378,8 +434,16 @@ def _setup_node(node, clmap):
         fl.write(clmap['hosts'])
         fl.close()
 
-        fl = sftp.file('/tmp/savanna-hadoop-cfg.xsl', 'w')
-        fl.write(node['xsl'])
+        fl = sftp.file('/etc/hadoop/core-site.xml', 'w')
+        fl.write(node['xml']['core-site'])
+        fl.close()
+
+        fl = sftp.file('/etc/hadoop/hdfs-site.xml', 'w')
+        fl.write(node['xml']['hdfs-site'])
+        fl.close()
+
+        fl = sftp.file('/etc/hadoop/mapred-site.xml', 'w')
+        fl.write(node['xml']['mapred-site'])
         fl.close()
 
         fl = sftp.file('/tmp/savanna-hadoop-init.sh', 'w')

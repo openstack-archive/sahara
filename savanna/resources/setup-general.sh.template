@@ -1,16 +1,5 @@
 #!/bin/bash
 
-echo "----- Setting up Hadoop configs from templates"
-
-{% for filename in configfiles -%}
-  cat {{filename}}.eho_template |
-  {%- for item in configs -%}
-    sed -e "s/{{item[0]}}/{{item[1]}}/g" |
-  {%- endfor -%}
-  tee {{filename}}
-{% endfor %}
-
-
 echo "----- Setting up Hadoop enviroment config"
 
 {% for envconf in env_configs -%}
@@ -21,26 +10,11 @@ cat /etc/hadoop/hadoop-env.sh >> /tmp/hadoop-env.sh
 mv /tmp/hadoop-env.sh /etc/hadoop/hadoop-env.sh
 
 
-echo "----- Setting up Hadoop config through XSLT"
+echo "----- Creating directories permissions"
 
-xsltproc /tmp/savanna-hadoop-cfg.xsl /etc/hadoop/core-site.xml | tee /tmp/core-site.xml
-mv /tmp/core-site.xml /etc/hadoop/core-site.xml
-xsltproc /tmp/savanna-hadoop-cfg.xsl /etc/hadoop/mapred-site.xml | tee /tmp/mapred-site.xml
-mv /tmp/mapred-site.xml /etc/hadoop/mapred-site.xml
-
-
-
-echo "----- Creating directories"
-
-mkdir -p /mnt/lib/hadoop/hdfs/namenode
-mkdir -p /mnt/lib/hadoop/hdfs/datanode
-mkdir -p /mnt/mapred/mapredsystem
-
-mkdir -p /mnt/lib/hadoop/mapred
-mkdir -p /mnt/log/hadoop
-
-chmod -R 700 /mnt
+#TODO(aignatov): Need to put here /mnt via args in the future when HDFS placement feature will be ready
 chown -R hadoop:hadoop /mnt
+chmod -R 755 /mnt
 
 {% block master %}
 {% endblock %}
