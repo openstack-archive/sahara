@@ -38,6 +38,11 @@ def get_node_templates(**args):
             in storage.get_node_templates(**args)]
 
 
+def get_node_template_nodes_count(**args):
+    nt = storage.get_node_template(**args)
+    return len(nt.nodes) if nt else 0
+
+
 def create_node_template(values, headers):
     """Creates new node template from values dict.
 

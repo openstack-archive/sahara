@@ -17,7 +17,6 @@ from savanna.storage.db import DB
 
 from savanna.storage.models import NodeTemplate, NodeProcess, Cluster, \
     ClusterNodeCount, NodeTemplateConfig, NodeType, NodeProcessProperty
-from savanna.utils.api import abort_and_log
 
 
 ## Node Template ops:
@@ -59,16 +58,10 @@ def create_node_template(name, node_type_id, flavor_id, configs):
 
 
 def terminate_node_template(**args):
-    template = NodeTemplate.query.filter_by(**args).first()
+    template = get_node_template(**args)
     if template:
-        if len(template.nodes):
-            abort_and_log(500, "There are active nodes created using "
-                               "template '%s' you trying to terminate"
-                               % args)
-        else:
-            DB.session.delete(template)
-            DB.session.commit()
-
+        DB.session.delete(template)
+        DB.session.commit()
         return True
     else:
         return False

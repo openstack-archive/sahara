@@ -115,6 +115,13 @@ class RequiredParamMissedException(SavannaException):
         self.code = "REQUIRED_PARAM_MISSED"
 
 
+class AssociatedNodeTemplateTerminationException(SavannaException):
+    def __init__(self, value):
+        self.message = ("The are active nodes created using NodeTemplate '%s'"
+                        " you trying to terminate") % value
+        self.code = "ASSOCIATED_NODE_TEMPLATE_TERMINATION"
+
+
 ## NodeTypes operations exceptions
 
 class NodeTypeNotFoundException(NotFoundException):

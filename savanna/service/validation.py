@@ -103,7 +103,7 @@ def validate(validate_func):
         @functools.wraps(func)
         def handler(*args, **kwargs):
             try:
-                validate_func(api_u.request_data())
+                validate_func(api_u.request_data(), **kwargs)
             except jsonschema.ValidationError, e:
                 e.code = "VALIDATION_ERROR"
                 return api_u.bad_request(e)
@@ -282,3 +282,9 @@ def _check_limits(limits, node_templates):
     if need_inst > all_inst or need_vcpus > all_vcpus or need_ram > all_ram:
         raise ex.NotEnoughResourcesException([all_inst, all_vcpus, all_ram,
                                               need_inst, need_vcpus, need_ram])
+
+
+def validate_node_template_terminate(_, template_id):
+    if api.get_node_template_nodes_count(id=template_id):
+        name = api.get_node_template(id=template_id).name
+        raise ex.AssociatedNodeTemplateTerminationException(name)

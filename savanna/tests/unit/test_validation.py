@@ -194,7 +194,7 @@ class TestValidation(unittest.TestCase):
         # request data to validate
         request_data.return_value = data
 
-        v.validate(self._create_object_fun)(m_func)(id="some-id")
+        v.validate(self._create_object_fun)(m_func)()
 
         self.assertEqual(request_data.call_count, 1)
 

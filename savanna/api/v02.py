@@ -59,6 +59,7 @@ def templates_update(template_id):
 
 @rest.delete('/node-templates/<template_id>')
 @v.exists_by_id(api.get_node_template, 'template_id')
+@v.validate(v.validate_node_template_terminate)
 def templates_delete(template_id):
     api.terminate_node_template(id=template_id)
     return api_u.render()
