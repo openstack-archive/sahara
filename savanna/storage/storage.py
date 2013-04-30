@@ -29,6 +29,11 @@ def get_node_templates(**args):
     return NodeTemplate.query.filter_by(**args).all()
 
 
+def is_node_template_associated(**args):
+    nt = get_node_template(**args)
+    return nt and (len(nt.nodes) or len(nt.cluster_node_counts))
+
+
 def create_node_template(name, node_type_id, flavor_id, configs):
     """Creates new node templates.
 
