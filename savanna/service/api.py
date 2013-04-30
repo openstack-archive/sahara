@@ -146,6 +146,14 @@ def get_node_type_required_params(**args):
     return result
 
 
+def get_node_type_all_params(**args):
+    result = {}
+    for process in storage.get_node_type(**args).processes:
+        result[process.name] = [prop.name
+                                for prop in process.node_process_properties]
+    return result
+
+
 ## Utils and DB object to Resource converters
 
 def _clean_nones(obj):

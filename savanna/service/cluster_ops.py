@@ -284,7 +284,8 @@ MAPRED_CONF = _load_xml_default_configs('mapred-default.xml')
 HDFS_CONF = _load_xml_default_configs('hdfs-default.xml')
 
 
-def _generate_xml_configs(clmap):
+def _generate_xml_configs(node, clmap):
+    # inserting common configs depends on provisioned VMs and HDFS placement
     cfg = {
         'fs.default.name': 'hdfs://%s:8020' % clmap['master_hostname'],
         'mapred.job.tracker': '%s:8021' % clmap['master_hostname'],
@@ -294,6 +295,11 @@ def _generate_xml_configs(clmap):
         'mapred.local.dir': '/mnt/lib/hadoop/mapred'
     }
 
+    # inserting user-defined configs from NodeTemplates
+    for key, value in _extract_xml_confs(node['configs']):
+        cfg[key] = value
+
+    # invoking applied configs to appropriate xml files
     xml_configs = {
         'core-site': _create_xml(cfg, CORE_CONF),
         'mapred-site': _create_xml(cfg, MAPRED_CONF),
@@ -421,7 +427,7 @@ def _pre_cluster_setup(clmap):
         }
 
         node['setup_script'] = _render_template(script_file, **templ_args)
-        node['xml'] = _generate_xml_configs(clmap)
+        node['xml'] = _generate_xml_configs(node, clmap)
 
 
 def _setup_node(node, clmap):

@@ -243,6 +243,12 @@ def validate_node_template_create(nt_values):
             if param not in values[process] or not values[process][param]:
                 raise ex.RequiredParamMissedException(process, param)
 
+    all_params = api.get_node_type_all_params(name=values['node_type'])
+    for process in all_params:
+        for param in processes[process]:
+            if param not in all_params[process]:
+                raise ex.ParamNotAllowedException(param, process)
+
     if api.CONF.allow_cluster_ops:
         flavor = values['flavor_id']
         nova_flavors = nova.get_flavors(request.headers)

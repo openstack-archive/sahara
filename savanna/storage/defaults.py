@@ -28,17 +28,33 @@ def setup_defaults(reset_db=False, gen_templates=False):
 
     if reset_db:
         # setup default processes
-        p_jt = create_node_process('job_tracker', [('heap_size', True, None)])
-        p_nn = create_node_process('name_node', [('heap_size', True, None)])
+        p_jt = create_node_process('job_tracker',
+                                   [('heap_size', True, None),
+                                    ('mapred.job.tracker.handler.count',
+                                     False, None)])
+        p_nn = create_node_process('name_node',
+                                   [('heap_size', True, None),
+                                    ('dfs.namenode.handler.count',
+                                     False, None),
+                                    ('dfs.block.size', False, None),
+                                    ('dfs.replication', False, None)])
         p_tt = create_node_process('task_tracker',
                                    [('heap_size', True, None),
                                     ('mapred.child.java.opts', False, None),
+                                    (' mapred.map.tasks', False, None),
                                     ('mapred.tasktracker.map.tasks.maximum',
                                      False, None),
+                                    ('mapred.reduce.tasks', False, None),
                                     ('mapred.tasktracker.reduce.tasks.maximum',
                                      False, None)])
 
-        p_dn = create_node_process('data_node', [('heap_size', True, None)])
+        p_dn = create_node_process('data_node',
+                                   [('heap_size', True, None),
+                                    ('dfs.datanode.max.xcievers', False, None),
+                                    ('dfs.block.size', False, None),
+                                    ('dfs.replication', False, None),
+                                    ('dfs.datanode.handler.count',
+                                     False, None)])
 
         for p in [p_jt, p_nn, p_tt, p_dn]:
             LOG.info('New NodeProcess: \'%s\'', p.name)

@@ -122,6 +122,13 @@ class AssociatedNodeTemplateTerminationException(SavannaException):
         self.code = "ASSOCIATED_NODE_TEMPLATE_TERMINATION"
 
 
+class ParamNotAllowedException(SavannaException):
+    def __init__(self, param, process):
+        self.message = "Parameter '%s' of process '%s' is not " \
+                       "allowed to change" % (param, process)
+        self.code = "PARAM_IS_NOT_ALLOWED"
+
+
 ## NodeTypes operations exceptions
 
 class NodeTypeNotFoundException(NotFoundException):
