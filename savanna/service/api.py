@@ -38,9 +38,8 @@ def get_node_templates(**args):
             in storage.get_node_templates(**args)]
 
 
-def get_node_template_nodes_count(**args):
-    nt = storage.get_node_template(**args)
-    return len(nt.nodes) if nt else 0
+def is_node_template_associated(**args):
+    return storage.is_node_template_associated(**args)
 
 
 def create_node_template(values, headers):

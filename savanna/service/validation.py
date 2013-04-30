@@ -285,6 +285,6 @@ def _check_limits(limits, node_templates):
 
 
 def validate_node_template_terminate(_, template_id):
-    if api.get_node_template_nodes_count(id=template_id):
+    if api.is_node_template_associated(id=template_id):
         name = api.get_node_template(id=template_id).name
         raise ex.AssociatedNodeTemplateTerminationException(name)
