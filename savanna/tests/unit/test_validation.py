@@ -435,6 +435,15 @@ class TestValidation(unittest.TestCase):
                 "node_type": "JT+NN",
                 "flavor_id": "flavor-1",
                 "name_node": {},
+                "job_tracker": {"jt_param": "some value"}
+            }},
+        )
+        self._assert_create_object_validation(
+            {"node_template": {
+                "name": "some-name",
+                "node_type": "JT+NN",
+                "flavor_id": "flavor-1",
+                "name_node": {},
                 "job_tracker": {},
                 "task_tracker": {}
             }},
