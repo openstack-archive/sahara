@@ -26,6 +26,7 @@ from savanna.storage.db import DB
 from savanna.storage.models import Node, ServiceUrl
 from savanna.storage.storage import update_cluster_status
 from savanna.utils.openstack.nova import novaclient
+from savanna.utils.patches import patch_minidom_writexml
 
 
 LOG = logging.getLogger(__name__)
@@ -307,6 +308,11 @@ def _generate_xml_configs(node, clmap):
     }
 
     return xml_configs
+
+
+# Patches minidom's writexml to avoid excess whitespaces in generated xml
+# configuration files that brakes Hadoop.
+patch_minidom_writexml()
 
 
 def _create_xml(configs, global_conf):
