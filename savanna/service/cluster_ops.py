@@ -155,7 +155,7 @@ def launch_cluster(headers, cluster):
             _launch_node(nova, node, clmap['image'])
     except Exception, e:
         _rollback_cluster_creation(cluster, clmap, nova, e)
-        return
+        return False
 
     all_set = False
 
@@ -185,6 +185,8 @@ def launch_cluster(headers, cluster):
               "starting the cluster...", cluster.name)
 
     _start_cluster(cluster, clmap)
+
+    return True
 
 
 def _launch_node(nova, node, image):

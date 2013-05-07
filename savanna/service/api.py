@@ -97,12 +97,13 @@ def _cluster_creation_job(headers, cluster_id):
               _cluster(cluster).dict)
 
     if CONF.allow_cluster_ops:
-        cluster_ops.launch_cluster(headers, cluster)
+        launched = cluster_ops.launch_cluster(headers, cluster)
     else:
         LOG.info("Cluster ops are disabled, use --allow-cluster-ops flag")
+        launched = True
 
-    # update cluster status
-    storage.update_cluster_status('Active', id=cluster.id)
+    if launched:
+        storage.update_cluster_status('Active', id=cluster.id)
 
 
 def terminate_cluster(headers, **args):

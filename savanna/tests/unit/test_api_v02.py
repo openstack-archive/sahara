@@ -23,7 +23,7 @@ from savanna.tests.unit.base import SavannaTestCase
 LOG = logging.getLogger(__name__)
 
 
-class TestApi(SavannaTestCase):
+class TestApiV02(SavannaTestCase):
 
     def test_list_node_templates(self):
         rv = self.app.get('/v0.2/some-tenant-id/node-templates.json')
