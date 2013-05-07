@@ -41,7 +41,7 @@ def setup_defaults(reset_db=False, gen_templates=False):
         p_tt = create_node_process('task_tracker',
                                    [('heap_size', True, None),
                                     ('mapred.child.java.opts', False, None),
-                                    (' mapred.map.tasks', False, None),
+                                    ('mapred.map.tasks', False, None),
                                     ('mapred.tasktracker.map.tasks.maximum',
                                      False, None),
                                     ('mapred.reduce.tasks', False, None),
