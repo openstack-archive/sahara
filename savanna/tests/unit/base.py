@@ -52,6 +52,8 @@ def _stub_launch_cluster(headers, cluster):
         DB.session.add(Node(vm_id, cluster.id, elem))
         LOG.debug("VM '%s/%s/%s' created", ip, vm_id, elem)
 
+    return True
+
 
 def _stub_stop_cluster(headers, cluster):
     LOG.debug("stub stop_cluster called with %s, %s", headers, cluster)
