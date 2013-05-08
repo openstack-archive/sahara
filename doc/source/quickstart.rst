@@ -2,7 +2,7 @@
 Savanna quickstart guide
 ************************
 
-1 You can install the latest Savanna release version (currently, 0.1) from pypi:
+1 You can install the latest Savanna release version (0.1, 0.1.1 and etc.) from pypi:
 
     .. sourcecode:: bash
 

@@ -1,20 +1,22 @@
 Savanna project
 ===============
 
-Project blueprint: https://wiki.openstack.org/wiki/Savanna | http://savanna.mirantis.com/index.html
-
-Architecture draft: https://wiki.openstack.org/wiki/Savanna/Architecture | http://savanna.mirantis.com/architecture.html
-
-Roadmap: https://wiki.openstack.org/wiki/Savanna/Roadmap | http://savanna.mirantis.com/roadmap.html
-
-API draft: http://savanna.mirantis.com/restapi/v02.html
+Savanna at wiki.openstack.org: https://wiki.openstack.org/wiki/Savanna
 
 Launchpad project: https://launchpad.net/savanna
+
+Project blueprint: https://savanna.readthedocs.org/en/latest/index.html
+
+Architecture draft: https://savanna.readthedocs.org/en/latest/architecture.html
+
+Roadmap: https://savanna.readthedocs.org/en/latest/roadmap.html
+
+API draft: https://savanna.readthedocs.org/en/latest/restapi/v02.html
 
 QuickStart (Ubuntu)
 ----------
 
-Please, take a look at http://savanna.mirantis.com/quickstart.html
+Please, take a look at https://savanna.readthedocs.org/en/latest/quickstart.html
 
 
 Pip speedup
