@@ -8,7 +8,7 @@ project = 'savanna'
 
 setuptools.setup(
     name=project,
-    version=common_setup.get_version(project, '0.1.1'),
+    version=common_setup.get_version(project, '0.1.2'),
     description='Savanna project',
     author='Mirantis Inc.',
     author_email='savanna-team@mirantis.com',
