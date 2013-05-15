@@ -13,7 +13,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import copy
 from savanna.tests.integration.db import ValidationTestCase
 from telnetlib import Telnet
 
@@ -25,10 +24,20 @@ class TestValidationApiForClusters(ValidationTestCase):
         Telnet(self.host, self.port)
 
     def test_crud_operation_for_cluster(self):
-        get_body = copy.deepcopy(self.get_cluster_data_jtnn_ttdn)
-        self._crud_object(
-            self.cluster_data_jtnn_ttdn, get_body, self.url_cluster)
+        nt_body = self.make_nt('master_node.medium', 'JT+NN', 1234, 2345)
+        data_nt_master = self._post_object(self.url_nt, nt_body, 202)
 
-    def test_crud_operation_for_cluster_with_one_node(self):
-        get_body = copy.deepcopy(self.get_cluster_data_jtnn)
-        self._crud_object(self.cluster_data_jtnn, get_body, self.url_cluster)
+        nt_body = self.make_nt('worker_node.medium', 'TT+DN', 1234, 2345)
+        data_nt_worker = self._post_object(self.url_nt, nt_body, 202)
+
+        try:
+            cluster_body = self.make_cluster_body(
+                'QA-cluster', 'master_node.medium', 'worker_node.medium', 3)
+            get_cluster_body = self._get_body_cluster(
+                'QA-cluster', 'master_node.medium', 'worker_node.medium', 3)
+
+            self._crud_object(cluster_body, get_cluster_body, self.url_cluster)
+
+        finally:
+            self.delete_node_template(data_nt_master)
+            self.delete_node_template(data_nt_worker)
