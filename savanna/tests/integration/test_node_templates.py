@@ -18,31 +18,22 @@ from telnetlib import Telnet
 
 
 class TestValidationApiForNodetemplates(ValidationTestCase):
-
     def setUp(self):
         super(TestValidationApiForNodetemplates, self).setUp()
         Telnet(self.host, self.port)
 
     def test_crud_nt_jtnn(self):
-        nt_jtnn = self.make_nt('jtnn', 'JT+NN', 1024, 1024)
-        get_jtnn = self._get_body_nt('jtnn', 'JT+NN', 1024, 1024)
-
-        self._crud_object(nt_jtnn, get_jtnn, self.url_nt)
+        self._crud_object(self.jtnn, self.get_jtnn.copy(),
+                          self.url_nt)
 
     def test_crud_nt_ttdn(self):
-        nt_ttdn = self.make_nt('ttdn', 'TT+DN', 1024, 1024)
-        get_ttdn = self._get_body_nt('ttdn', 'TT+DN', 1024, 1024)
-
-        self._crud_object(nt_ttdn, get_ttdn, self.url_nt)
+        self._crud_object(self.ttdn, self.get_ttdn.copy(),
+                          self.url_nt)
 
     def test_crud_nt_nn(self):
-        nt_nn = self.make_nt('nn', 'NN', 1024, 1024)
-        get_nn = self._get_body_nt('nn', 'NN', 1024, 1024)
-
-        self._crud_object(nt_nn, get_nn, self.url_nt)
+        self._crud_object(self.nn, self.get_nn.copy(),
+                          self.url_nt)
 
     def test_crud_nt_jt(self):
-        nt_jt = self.make_nt('jt', 'JT', 1024, 1024)
-        get_jt = self._get_body_nt('jt', 'JT', 1024, 1024)
-
-        self._crud_object(nt_jt, get_jt, self.url_nt)
+        self._crud_object(self.jt, self.get_jt.copy(),
+                          self.url_nt)
