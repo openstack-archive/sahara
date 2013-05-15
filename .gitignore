@@ -37,3 +37,4 @@ etc/savanna.conf
 AUTHORS
 ChangeLog
 savanna/tests/integration/config.py
+cscope.out
