@@ -2,7 +2,7 @@
 
 # REST API config
 #port=8080
-#allow_cluster_ops=false
+#allow_cluster_ops=true
 
 # Address and credentials that will be used to check auth tokens
 #os_auth_host=openstack
