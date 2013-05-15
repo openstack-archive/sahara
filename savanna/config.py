@@ -20,7 +20,7 @@ cli_opts = [
                help='set host'),
     cfg.IntOpt('port', default=8080,
                help='set port'),
-    cfg.BoolOpt('allow-cluster-ops', default=False,
+    cfg.BoolOpt('allow-cluster-ops', default=True,
                 help='without that option'
                      ' the application operates in dry run mode and does not '
                      ' send any requests to the OpenStack cluster')
