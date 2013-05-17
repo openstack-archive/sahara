@@ -17,258 +17,76 @@ import eventlet
 import json
 from keystoneclient.v2_0 import Client as keystone_client
 import requests
-import savanna.openstack.common.importutils as importutils
+import savanna.tests.integration.parameters as param
 import unittest
 
-_CONF = importutils.try_import("savanna.tests.integration.config")
 
-
-def _get_conf(key, default):
-    return getattr(_CONF, key) if _CONF and hasattr(_CONF, key) else default
-
-OS_USERNAME = _get_conf("OS_USERNAME", "admin")
-OS_PASSWORD = _get_conf("OS_PASSWORD", "nova")
-OS_TENANT_NAME = _get_conf("OS_TENANT_NAME", "admin")
-OS_AUTH_URL = _get_conf("OS_AUTH_URL", "http://localhost:35357/v2.0/")
-SAVANNA_HOST = _get_conf("SAVANNA_HOST", "192.168.1.1")
-SAVANNA_PORT = _get_conf("SAVANNA_PORT", "8080")
-SAVANNA_IMAGE_ID = _get_conf("SAVANNA_IMAGE_ID", "42")
-
-
-class ValidationTestCase(unittest.TestCase):
+class ITestCase(unittest.TestCase):
 
     def setUp(self):
-        self.host = SAVANNA_HOST
+        self.port = param.SAVANNA_PORT
+        self.host = param.SAVANNA_HOST
+
         self.maxDiff = None
-        self.port = SAVANNA_PORT
+
         self.baseurl = 'http://' + self.host + ':' + self.port
+
         self.keystone = keystone_client(
-            username=OS_USERNAME,
-            password=OS_PASSWORD,
-            tenant_name=OS_TENANT_NAME,
-            auth_url=OS_AUTH_URL
+            username=param.OS_USERNAME,
+            password=param.OS_PASSWORD,
+            tenant_name=param.OS_TENANT_NAME,
+            auth_url=param.OS_AUTH_URL
         )
+
         self.tenant = self.keystone.tenant_id
         self.token = self.keystone.auth_token
-        self.flavor_id = 'm1.medium'
-        self.image_id = SAVANNA_IMAGE_ID
+
+        self.flavor_id = param.FLAVOR_ID
+        self.image_id = param.IMAGE_ID
+
         self.url_nt = '/v0.2/%s/node-templates' % self.tenant
-        self.url_nt_not_json = '/v0.2/%s/node-templates/' % self.tenant
-
-#----------------------add_value_for_node_templates----------------------------
-
-        self.jtnn = dict(
-            node_template=dict(
-                name='test-template-1',
-                node_type='JT+NN',
-                flavor_id=self.flavor_id,
-                job_tracker={
-                    'heap_size': '1234'
-                },
-                name_node={
-                    'heap_size': '2345'
-                }
-            ))
-        self.ttdn = dict(
-            node_template=dict(
-                name='test-template-2',
-                node_type='TT+DN',
-                flavor_id=self.flavor_id,
-                task_tracker={
-                    'heap_size': '1234'
-                },
-                data_node={
-                    'heap_size': '2345'
-                }
-            ))
-        self.jt = dict(
-            node_template=dict(
-                name='test-template-3',
-                node_type='JT',
-                flavor_id=self.flavor_id,
-                job_tracker={
-                    'heap_size': '1234'
-                }
-            ))
-        self.nn = dict(
-            node_template=dict(
-                name='test-template-4',
-                node_type='NN',
-                flavor_id=self.flavor_id,
-                name_node={
-                    'heap_size': '2345'
-                }
-            ))
-        self.tt = dict(
-            node_template=dict(
-                name='test-template-5',
-                node_type='TT',
-                flavor_id=self.flavor_id,
-                task_tracker={
-                    'heap_size': '2345'
-                }
-            ))
-        self.dn = dict(
-            node_template=dict(
-                name='test-template-6',
-                node_type='DN',
-                flavor_id=self.flavor_id,
-                data_node={
-                    'heap_size': '2345'
-                }
-            ))
-
-        self.get_ttdn = {
-            u'name': u'test-template-2',
-            u'data_node': {u'heap_size': u'2345'},
-            u'task_tracker': {u'heap_size': u'1234'},
-            u'node_type': {
-                u'processes': [u'task_tracker',
-                               u'data_node'],
-                u'name': u'TT+DN'},
-            u'flavor_id': u'm1.medium'
-        }
-
-        self.get_jtnn = {
-            u'name': u'test-template-1',
-            u'name_node': {u'heap_size': u'2345'},
-            u'job_tracker': {u'heap_size': u'1234'},
-            u'node_type': {
-                u'processes': [u'job_tracker',
-                               u'name_node'],
-                u'name': u'JT+NN'},
-            u'flavor_id': u'm1.medium'
-        }
-
-        self.get_nn = {
-            u'name': u'test-template-4',
-            u'name_node': {u'heap_size': u'2345'},
-            u'node_type': {
-                u'processes': [u'name_node'],
-                u'name': u'NN'},
-            u'flavor_id': u'm1.medium'
-        }
-
-        self.get_jt = {
-            u'name': u'test-template-3',
-            u'job_tracker': {u'heap_size': u'1234'},
-            u'node_type': {
-                u'processes': [u'job_tracker'],
-                u'name': u'JT'},
-            u'flavor_id': u'm1.medium'
-        }
-
-#----------------------add_value_for_clusters----------------------------------
-
+        self.url_nt_with_slash = '/v0.2/%s/node-templates/' % self.tenant
         self.url_cluster = '/v0.2/%s/clusters' % self.tenant
-        self.url_cluster_without_json = '/v0.2/%s/clusters/' % self.tenant
+        self.url_cl_with_slash = '/v0.2/%s/clusters/' % self.tenant
 
-        self.cluster_data_jtnn_ttdn = dict(
-            cluster=dict(
-                name='QA-test-cluster',
-                base_image_id=self.image_id,
-                node_templates={
-                    'jt_nn.medium': 1,
-                    'tt_dn.medium': 2
-                }
-            ))
-
-        self.cluster_data_jtnn_ttdn_small = dict(
-            cluster=dict(
-                name='QA-test-cluster',
-                base_image_id=self.image_id,
-                node_templates={
-                    'jt_nn.small': 1,
-                    'tt_dn.small': 1
-                }
-            ))
-
-        self.cluster_data_jtnn = dict(
-            cluster=dict(
-                name='test-cluster',
-                base_image_id=self.image_id,
-                node_templates={
-                    'jt_nn.medium': 1
-                }
-            ))
-
-        self.get_cluster_data_jtnn_ttdn = {
-            u'status': u'Starting',
-            u'service_urls': {},
-            u'name': u'QA-test-cluster',
-            u'base_image_id': u'%s' % self.image_id,
-            u'node_templates':
-            {
-                u'jt_nn.medium': 1,
-                u'tt_dn.medium': 2
-            },
-            u'nodes': []
-        }
-
-        self.get_cluster_data_jtnn_ttdn_small = {
-            u'status': u'Starting',
-            u'service_urls': {},
-            u'name': u'QA-test-cluster',
-            u'base_image_id': u'%s' % self.image_id,
-            u'node_templates':
-            {
-                u'jt_nn.small': 1,
-                u'tt_dn.small': 1
-            },
-            u'nodes': []
-        }
-
-        self.get_cluster_data_jtnn = {
-            u'status': u'Starting',
-            u'service_urls': {},
-            u'name': u'test-cluster',
-            u'base_image_id': u'%s' % self.image_id,
-            u'node_templates':
-            {
-                u'jt_nn.medium': 1
-            },
-            u'nodes': []
-        }
-
-#---------------------close_setUp----------------------------------------------
+#----------------------CRUD_comands--------------------------------------------
 
     def post(self, url, body):
         URL = self.baseurl + url
         resp = requests.post(URL, data=body, headers={
-            "x-auth-token": self.token, "Content-Type": "application/json"})
-        if resp.status_code == 202:
-            data = json.loads(resp.content)
-        else:
-            data = resp.content
-        print("URL = %s\ndata = %s\nresponse = %s\ndata = %s\n"
+            'x-auth-token': self.token, 'Content-Type': 'application/json'})
+        data = json.loads(resp.content) if resp.status_code == 202 \
+            else resp.content
+        print('URL = %s\ndata = %s\nresponse = %s\ndata = %s\n'
               % (URL, body, resp.status_code, data))
         return resp
 
     def put(self, url, body):
         URL = self.baseurl + url
         resp = requests.put(URL, data=body, headers={
-            "x-auth-token": self.token, "Content-Type": "application/json"})
+            'x-auth-token': self.token, 'Content-Type': 'application/json'})
         data = json.loads(resp.content)
-        print("URL = %s\ndata = %s\nresponse = %s\ndata = %s\n"
+        print('URL = %s\ndata = %s\nresponse = %s\ndata = %s\n'
               % (URL, body, resp.status_code, data))
         return resp
 
-    def get(self, url):
+    def get(self, url, printing):
         URL = self.baseurl + url
-        resp = requests.get(URL, headers={"x-auth-token": self.token})
-        print("URL = %s\nresponse = %s\n" % (URL, resp.status_code))
+        resp = requests.get(URL, headers={'x-auth-token': self.token})
+        if printing:
+            print('URL = %s\nresponse = %s\n' % (URL, resp.status_code))
         if resp.status_code != 200:
             data = json.loads(resp.content)
-            print("data= %s\n") % data
+            print('data= %s\n') % data
         return resp
 
     def delete(self, url):
         URL = self.baseurl + url
-        resp = requests.delete(URL, headers={"x-auth-token": self.token})
-        print("URL = %s\nresponse = %s\n" % (URL, resp.status_code))
+        resp = requests.delete(URL, headers={'x-auth-token': self.token})
+        print('URL = %s\nresponse = %s\n' % (URL, resp.status_code))
         if resp.status_code != 204:
             data = json.loads(resp.content)
-            print("data= %s\n") % data
+            print('data= %s\n') % data
         return resp
 
     def _post_object(self, url, body, code):
@@ -277,8 +95,8 @@ class ValidationTestCase(unittest.TestCase):
         data = json.loads(post.content)
         return data
 
-    def _get_object(self, url, obj_id, code):
-        rv = self.get(url + obj_id)
+    def _get_object(self, url, obj_id, code, printing=False):
+        rv = self.get(url + obj_id, printing)
         self.assertEquals(rv.status_code, code)
         data = json.loads(rv.content)
         return data
@@ -295,39 +113,125 @@ class ValidationTestCase(unittest.TestCase):
                 eventlet.sleep(1)
                 code = self.delete(url + obj_id).status_code
 
+#----------------------other_commands------------------------------------------
+
+    def _get_body_nt(self, name, nt_type, hs1, hs2):
+        node = 'name' if nt_type in ['JT+NN', 'NN'] else 'data'
+        tracker = 'job' if nt_type in ['JT+NN', 'JT'] else 'task'
+        processes_name = nt_type
+        nt = {
+            u'name': u'%s' % name,
+            u'%s_node' % node: {u'heap_size': u'%d' % hs1},
+            u'%s_tracker' % tracker: {u'heap_size': u'%d' % hs2},
+            u'node_type': {
+                u'processes': [u'%s_tracker' % tracker,
+                               u'%s_node' % node],
+                u'name': u'%s' % processes_name},
+            u'flavor_id': u'%s' % self.flavor_id
+        }
+        if nt_type == 'NN':
+            del nt[u'%s_tracker' % tracker]
+            nt[u'node_type'][u'processes'] = [u'%s_node' % node]
+        elif nt_type == 'JT':
+            del nt[u'%s_node' % node]
+            nt[u'node_type'][u'processes'] = [u'%s_tracker' % tracker]
+        return nt
+
+    def _get_body_cluster(self, name, master_name, worker_name, node_number):
+        return {
+            u'status': u'Starting',
+            u'service_urls': {},
+            u'name': u'%s' % name,
+            u'base_image_id': u'%s' % self.image_id,
+            u'node_templates':
+            {
+                u'%s' % master_name: 1,
+                u'%s' % worker_name: node_number
+            },
+            u'nodes': []
+        }
+
+    def change_field_nt(self, data, old_field, new_field):
+        val = data['node_template'][old_field]
+        del data['node_template'][old_field]
+        data['node_template'][new_field] = val
+        return data
+
+    def make_nt(self, nt_name, node_type, jt_heap_size, nn_heap_size):
+        nt = dict(
+            node_template=dict(
+                name=nt_name,
+                node_type='JT+NN',
+                flavor_id=self.flavor_id,
+                job_tracker={
+                    'heap_size': '%d' % jt_heap_size
+                },
+                name_node={
+                    'heap_size': '%d' % nn_heap_size
+                }
+            ))
+        if node_type == 'TT+DN':
+            nt['node_template']['node_type'] = 'TT+DN'
+            nt = self.change_field_nt(nt, 'job_tracker', 'task_tracker')
+            nt = self.change_field_nt(nt, 'name_node', 'data_node')
+        elif node_type == 'NN':
+            nt['node_template']['node_type'] = 'NN'
+            del nt['node_template']['job_tracker']
+        elif node_type == 'JT':
+            nt['node_template']['node_type'] = 'JT'
+            del nt['node_template']['name_node']
+        return nt
+
+    def make_cluster_body(self, cluster_name, name_master_node,
+                          name_worker_node, number_workers):
+        body = dict(
+            cluster=dict(
+                name=cluster_name,
+                base_image_id=self.image_id,
+                node_templates={
+                    '%s' % name_master_node: 1,
+                    '%s' % name_worker_node: number_workers
+                }
+            ))
+        return body
+
+    def delete_node_template(self, data):
+        data = data['node_template']
+        object_id = data.pop(u'id')
+        self._del_object(self.url_nt_with_slash, object_id, 204)
+
     def _crud_object(self, body, get_body, url):
         data = self._post_object(url, body, 202)
         get_url = None
         object_id = None
         try:
-            obj = "cluster"
-            get_url = self.url_cluster_without_json
-            if url == self.url_nt:
-                obj = "node_template"
-                get_url = self.url_nt_not_json
-            data = data["%s" % obj]
+            obj = 'node_template' if url == self.url_nt else 'cluster'
+            get_url = self.url_nt_with_slash if url == self.url_nt \
+                else self.url_cl_with_slash
+            data = data['%s' % obj]
             object_id = data.pop(u'id')
             self.assertEquals(data, get_body)
             get_data = self._get_object(get_url, object_id, 200)
             get_data = get_data['%s' % obj]
             del get_data[u'id']
-            if obj == "cluster":
-                self._asrtCluster(get_body, get_data, get_url, object_id)
+            if obj == 'cluster':
+                self._await_cluster_active(
+                    get_body, get_data, get_url, object_id)
         except Exception as e:
-            print("failure:" + str(e))
+            self.fail('failure:' + str(e))
         finally:
             self._del_object(get_url, object_id, 204)
         return object_id
 
-    def _asrtCluster(self, get_body, get_data, get_url, object_id):
+    def _await_cluster_active(self, get_body, get_data, get_url, object_id):
         get_body[u'status'] = u'Active'
         del get_body[u'service_urls']
         del get_body[u'nodes']
         i = 1
         while get_data[u'status'] != u'Active':
             if i > 60:
-                print(self.fail(
-                    "cluster not Starting -> Active, remaining 10 minutes"))
+                self.fail(
+                    'cluster not Starting -> Active, passed 10 minutes')
             get_data = self._get_object(get_url, object_id, 200)
             get_data = get_data['cluster']
             del get_data[u'id']
