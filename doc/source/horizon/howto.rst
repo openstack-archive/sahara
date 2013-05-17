@@ -27,14 +27,7 @@ On Ubuntu 12.10 and higer you have to install the following lib as well:
 
     sudo apt-get install nodejs-legacy
 
-2.2 Create the following structure of directories:
-
-.. sourcecode:: bash
-
-    sudo mkdir -p /opt/stack/horizon/bin/less
-    sudo ln -s /usr/bin/lessc /opt/stack/horizon/bin/less/lessc
-
-2.3 Clone Horizon’s Git repo:
+2.2 Clone Horizon’s Git repo:
 
 .. sourcecode:: bash
 
@@ -42,11 +35,18 @@ On Ubuntu 12.10 and higer you have to install the following lib as well:
 
 **Note:** Above link will be changed soon when project moved to StackForge.
 
+2.3 Create the following structure of directories:
+
+.. sourcecode:: bash
+
+    sudo mkdir -p <path_to_horizon>/bin/less
+    sudo ln -s /usr/bin/lessc <path_to_horizon>/bin/less/lessc
+
 2.4 Go to cloned directory:
 
 .. sourcecode:: bash
 
-    cd openstack-horizon
+    cd <path_to_horizon>
 
 2.5 Install Python virtual environment:
 
@@ -78,7 +78,7 @@ Here is a snippet of code with the changed parameter:
 
     [skipped]
 
-2.8 Change **opesntack_dashboard/wsgi/django.wsgi** file to make virtualenv packages available for apache
+2.8 Change **openstack_dashboard/wsgi/django.wsgi** file to make virtualenv packages available for apache
 
 Here are the required modifications
 
@@ -88,7 +88,7 @@ Here are the required modifications
     import os
     import sys
 
-    venv_path = "/opt/horizon/.vnev/"    <---------- Horizon .venv directory
+    venv_path = "<path_to_horizon>/.venv/"    <---------- Horizon .venv directory
     activate_this = os.path.join(venv_path, "bin/activate_this.py")
     execfile(activate_this, dict(__file__=activate_this))
 
@@ -118,8 +118,8 @@ Here is the apache configuration
 	WSGIDaemonProcess horizon user=<user> group=<group> processes=3 threads=10 home=<horizon-path> python-path=<horizon-path>:<horizon-path>/.venv/lib/python-2.7/site-packages
 	WSGIApplicationGroup %{GLOBAL}
 
-        SetEnv APACHE_RUN_USER user
-        SetEnv APACHE_RUN_GROUP user
+        SetEnv APACHE_RUN_USER <user>
+        SetEnv APACHE_RUN_GROUP <user>
         WSGIProcessGroup horizon
 
         DocumentRoot <horizon-path>/.blackhole/
