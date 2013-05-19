@@ -1,18 +1,17 @@
-*********************
 Savanna Horizon Setup
-*********************
+=====================
 
 1 Setup prerequisites
-=====================
+---------------------
 
 1.1 OpenStack environment (Folsom+ version) installed.
 
-1.2 Savanna REST API service installed and configured. You can find :doc:`quickstart guide here <..\quickstart>`.
+1.2 Savanna REST API service installed and configured.
 
 1.3 Operating system, where Savanna Horizon’s service installed, has to be connected to internal OpenStack network.
 
 2 Savanna-Horizon Installation
-==============================
+------------------------------
 
 2.1 Go to your Horizon’s machine and install the following packets:
 
@@ -99,7 +98,7 @@ Here are the required modifications
 
 
 3 Configure apache2 server
-==========================
+--------------------------
 
 3.1 Install apache and mod_wsgi
 
@@ -164,4 +163,4 @@ Now all installations are done and Horizon can be started:
     sudo service apache2 restart
 
 
-You can check that service has been started successfully. Go to Horizon URL and you'll be able to see :doc:`Savanna pages <\index>` in the Project tab.
+You can check that service has been started successfully. Go to Horizon URL and you'll be able to see Savanna pages in the Project tab.
