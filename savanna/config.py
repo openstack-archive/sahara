@@ -20,15 +20,21 @@ cli_opts = [
                help='set host'),
     cfg.IntOpt('port', default=8080,
                help='set port'),
-    cfg.BoolOpt('allow-cluster-ops', default=True,
-                help='without that option'
-                     ' the application operates in dry run mode and does not '
-                     ' send any requests to the OpenStack cluster')
 ]
 
 CONF = cfg.CONF
 CONF.register_cli_opts(cli_opts)
 
+ARGV = []
 
-def parse_args(argv, conf_files):
-    CONF(argv, project='savanna', default_config_files=conf_files)
+
+def parse_configs(argv=None, conf_files=None):
+    if argv is not None:
+        global ARGV
+        ARGV = argv
+    try:
+        CONF(ARGV, project='savanna', default_config_files=conf_files)
+    except cfg.RequiredOptError as roe:
+        # todo replace RuntimeError with Savanna-specific exception
+        raise RuntimeError("Option '%s' is required for config group "
+                           "'%s'" % (roe.opt_name, roe.group.name))

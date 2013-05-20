@@ -29,7 +29,7 @@ def patch_minidom_writexml():
     if sys.version_info >= (2, 7, 3):
         return
 
-    from xml.dom.minidom import Element, Node, Text, _write_data
+    import xml.dom.minidom as md
 
     def writexml(self, writer, indent="", addindent="", newl=""):
         # indent = current indentation
@@ -43,12 +43,12 @@ def patch_minidom_writexml():
 
         for a_name in a_names:
             writer.write(" %s=\"" % a_name)
-            _write_data(writer, attrs[a_name].value)
+            md._write_data(writer, attrs[a_name].value)
             writer.write("\"")
         if self.childNodes:
             writer.write(">")
             if (len(self.childNodes) == 1
-                    and self.childNodes[0].nodeType == Node.TEXT_NODE):
+                    and self.childNodes[0].nodeType == md.Node.TEXT_NODE):
                 self.childNodes[0].writexml(writer, '', '', '')
             else:
                 writer.write(newl)
@@ -59,9 +59,9 @@ def patch_minidom_writexml():
         else:
             writer.write("/>%s" % (newl))
 
-    Element.writexml = writexml
+    md.Element.writexml = writexml
 
     def writexml(self, writer, indent="", addindent="", newl=""):
-        _write_data(writer, "%s%s%s" % (indent, self.data, newl))
+        md._write_data(writer, "%s%s%s" % (indent, self.data, newl))
 
-    Text.writexml = writexml
+    md.Text.writexml = writexml

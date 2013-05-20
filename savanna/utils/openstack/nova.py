@@ -16,11 +16,14 @@
 import logging
 
 from novaclient.v1_1 import client as nova_client
+from savanna.context import ctx
 
 import savanna.utils.openstack.base as base
+from savanna.utils.openstack.images import SavannaImageManager
 
 
-def novaclient(headers):
+def novaclient():
+    headers = ctx().headers
     username = headers['X-User-Name']
     token = headers['X-Auth-Token']
     tenant = headers['X-Tenant-Id']
@@ -35,26 +38,31 @@ def novaclient(headers):
 
     nova.client.auth_token = token
     nova.client.management_url = compute_url
+    nova.images = SavannaImageManager(nova)
 
     return nova
 
 
-def get_flavors(headers):
+def get_flavors():
+    headers = ctx().headers
     flavors = [flavor.name for flavor
                in novaclient(headers).flavors.list()]
     return flavors
 
 
-def get_flavor(headers, **kwargs):
+def get_flavor(**kwargs):
+    headers = ctx().headers
     return novaclient(headers).flavors.find(**kwargs)
 
 
-def get_images(headers):
+def get_images():
+    headers = ctx().headers
     images = [image.id for image
               in novaclient(headers).images.list()]
     return images
 
 
-def get_limits(headers):
+def get_limits():
+    headers = ctx().headers
     limits = novaclient(headers).limits.get().absolute
     return dict((l.name, l.value) for l in limits)

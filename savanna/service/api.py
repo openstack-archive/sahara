@@ -13,257 +13,57 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import eventlet
-from oslo.config import cfg
-
-from savanna import exceptions as ex
+import savanna.db.storage as s
 from savanna.openstack.common import log as logging
-from savanna.service import cluster_ops
-import savanna.storage.storage as storage
+import savanna.plugins.base as plugin_base
+from savanna.plugins.provisioning import ProvisioningPluginBase
 
 LOG = logging.getLogger(__name__)
 
-CONF = cfg.CONF
-CONF.import_opt('allow_cluster_ops', 'savanna.config')
 
+## Cluster ops
 
-## Node Template ops:
+get_clusters = s.get_clusters
+get_cluster = s.get_cluster
 
-def get_node_template(**args):
-    return _node_template(storage.get_node_template(**args))
 
+def create_cluster(values):
+    # todo initiate cluster creation here :)
+    return s.create_cluster(values)
 
-def get_node_templates(**args):
-    return [_node_template(tmpl) for tmpl
-            in storage.get_node_templates(**args)]
 
+def terminate_cluster(**args):
+    # todo initiate cluster termination here :)
+    cluster = get_cluster(**args)
+    s.terminate_cluster(cluster)
 
-def is_node_template_associated(**args):
-    return storage.is_node_template_associated(**args)
 
+## ClusterTemplate ops
 
-def create_node_template(values, headers):
-    """Creates new node template from values dict.
+get_cluster_templates = s.get_cluster_templates
+get_cluster_template = s.get_cluster_template
+create_cluster_template = s.create_cluster_template
+terminate_cluster_template = s.terminate_cluster_template
 
-    :param values: dict
-    :return: created node template resource
-    """
-    values = values.pop('node_template')
 
-    name = values.pop('name')
-    node_type_id = storage.get_node_type(name=values.pop('node_type')).id
-    flavor_id = values.pop('flavor_id')
+## NodeGroupTemplate ops
 
-    nt = storage.create_node_template(name, node_type_id, flavor_id, values)
+get_node_group_templates = s.get_node_group_templates
+get_node_group_template = s.get_node_group_template
+create_node_group_template = s.create_node_group_template
+terminate_node_group_template = s.terminate_node_group_template
 
-    return get_node_template(id=nt.id)
 
+## Plugins ops
 
-def terminate_node_template(**args):
-    return storage.terminate_node_template(**args)
+def get_plugins():
+    return plugin_base.PLUGINS.get_plugins(base=ProvisioningPluginBase)
 
 
-## Cluster ops:
-
-def get_cluster(**args):
-    return _cluster(storage.get_cluster(**args))
-
-
-def get_clusters(**args):
-    return [_cluster(cluster) for cluster in
-            storage.get_clusters(**args)]
-
-
-def create_cluster(values, headers):
-    values = values.pop('cluster')
-
-    name = values.pop('name')
-    base_image_id = values.pop('base_image_id')
-    tenant_id = headers['X-Tenant-Id']
-    templates = values.pop('node_templates')
-
-    # todo(slukjanov): check that we can create objects in the specified tenant
-
-    cluster = storage.create_cluster(name, base_image_id, tenant_id, templates)
-
-    eventlet.spawn(_cluster_creation_job, headers, cluster.id)
-
-    return get_cluster(id=cluster.id)
-
-
-def _cluster_creation_job(headers, cluster_id):
-    cluster = storage.get_cluster(id=cluster_id)
-    LOG.debug("Starting cluster '%s' creation: %s", cluster_id,
-              _cluster(cluster).dict)
-
-    if CONF.allow_cluster_ops:
-        launched = cluster_ops.launch_cluster(headers, cluster)
-    else:
-        LOG.info("Cluster ops are disabled, use --allow-cluster-ops flag")
-        launched = True
-
-    if launched:
-        storage.update_cluster_status('Active', id=cluster.id)
-
-
-def terminate_cluster(headers, **args):
-    cluster = storage.update_cluster_status('Stopping', **args)
-
-    eventlet.spawn(_cluster_termination_job, headers, cluster.id)
-
-
-def _cluster_termination_job(headers, cluster_id):
-    cluster = storage.get_cluster(id=cluster_id)
-    LOG.debug("Stopping cluster '%s' creation: %s", cluster_id,
-              _cluster(cluster).dict)
-
-    if CONF.allow_cluster_ops:
-        cluster_ops.stop_cluster(headers, cluster)
-    else:
-        LOG.info("Cluster ops are disabled, use --allow-cluster-ops flag")
-
-    storage.terminate_cluster(id=cluster.id)
-
-
-## Node Type ops:
-
-def get_node_type(**args):
-    return _node_type(storage.get_node_type(**args))
-
-
-def get_node_types(**args):
-    return [_node_type(t) for t in storage.get_node_types(**args)]
-
-
-def get_node_type_required_params(**args):
-    result = {}
-    for process in storage.get_node_type(**args).processes:
-        result[process.name] = []
-        for prop in process.node_process_properties:
-            if prop.required and not prop.default:
-                result[process.name] += [prop.name]
-
-    return result
-
-
-def get_node_type_all_params(**args):
-    result = {}
-    for process in storage.get_node_type(**args).processes:
-        result[process.name] = [prop.name
-                                for prop in process.node_process_properties]
-    return result
-
-
-## Utils and DB object to Resource converters
-
-def _clean_nones(obj):
-    if not isinstance(obj, dict) and not isinstance(obj, list):
-        return obj
-
-    if isinstance(obj, dict):
-        remove = []
-        for key, value in obj.iteritems():
-            if value is None:
-                remove.append(key)
-        for key in remove:
-            obj.pop(key)
-        for value in obj.values():
-            _clean_nones(value)
-    elif isinstance(obj, list):
-        new_list = []
-        for elem in obj:
-            elem = _clean_nones(elem)
-            if elem is not None:
-                new_list.append(elem)
-        return new_list
-
-    return obj
-
-
-class Resource(object):
-    def __init__(self, _name, _info):
-        self._name = _name
-        self._info = _clean_nones(_info)
-
-    def __getattr__(self, k):
-        if k not in self.__dict__:
-            return self._info.get(k)
-        return self.__dict__[k]
-
-    def __repr__(self):
-        return '<%s %s>' % (self._name, self._info)
-
-    def __eq__(self, other):
-        return self._name == other._name and self._info == other._info
-
-    @property
-    def dict(self):
-        return self._info
-
-    @property
-    def wrapped_dict(self):
-        return {self._name: self._info}
-
-
-def _node_template(nt):
-    if not nt:
-        raise ex.NodeTemplateNotFoundException(nt)
-
-    d = {
-        'id': nt.id,
-        'name': nt.name,
-        'node_type': {
-            'name': nt.node_type.name,
-            'processes': [p.name for p in nt.node_type.processes]},
-        'flavor_id': nt.flavor_id
-    }
-
-    for conf in nt.node_template_configs:
-        c_section = conf.node_process_property.node_process.name
-        c_name = conf.node_process_property.name
-        c_value = conf.value
-        if c_section not in d:
-            d[c_section] = dict()
-        d[c_section][c_name] = c_value
-
-    return Resource('node_template', d)
-
-
-def _cluster(cluster):
-    if not cluster:
-        raise ex.ClusterNotFoundException(cluster)
-
-    d = {
-        'id': cluster.id,
-        'name': cluster.name,
-        'base_image_id': cluster.base_image_id,
-        'status': cluster.status,
-        'service_urls': {},
-        'node_templates': {},
-        'nodes': [{'vm_id': n.vm_id,
-                   'node_template': {
-                       'id': n.node_template.id,
-                       'name': n.node_template.name
-                   }}
-                  for n in cluster.nodes]
-    }
-    for ntc in cluster.node_counts:
-        d['node_templates'][ntc.node_template.name] = ntc.count
-
-    for service in cluster.service_urls:
-        d['service_urls'][service.name] = service.url
-
-    return Resource('cluster', d)
-
-
-def _node_type(nt):
-    if not nt:
-        raise ex.NodeTypeNotFoundException(nt)
-
-    d = {
-        'id': nt.id,
-        'name': nt.name,
-        'processes': [p.name for p in nt.processes]
-    }
-
-    return Resource('node_type', d)
+def get_plugin(plugin_name, version=None):
+    plugin = plugin_base.PLUGINS.get_plugin(plugin_name)
+    res = plugin.as_resource()
+    if version:
+        res._info['configs'] = [c.dict for c in plugin.get_configs(version)]
+        res._info['node_processes'] = plugin.get_node_processes(version)
+    return res

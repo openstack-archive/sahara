@@ -43,12 +43,11 @@ import traceback
 from oslo.config import cfg
 
 from savanna.openstack.common.gettextutils import _
+from savanna.openstack.common import importutils
 from savanna.openstack.common import jsonutils
 from savanna.openstack.common import local
-from savanna.openstack.common import notifier
 
 
-_DEFAULT_LOG_FORMAT = "%(asctime)s %(levelname)8s [%(name)s] %(message)s"
 _DEFAULT_LOG_DATE_FORMAT = "%Y-%m-%d %H:%M:%S"
 
 common_cli_opts = [
@@ -73,11 +72,13 @@ logging_cli_opts = [
                     'documentation for details on logging configuration '
                     'files.'),
     cfg.StrOpt('log-format',
-               default=_DEFAULT_LOG_FORMAT,
+               default=None,
                metavar='FORMAT',
                help='A logging.Formatter log message format string which may '
                     'use any of the available logging.LogRecord attributes. '
-                    'Default: %(default)s'),
+                    'This option is deprecated.  Please use '
+                    'logging_context_format_string and '
+                    'logging_default_format_string instead.'),
     cfg.StrOpt('log-date-format',
                default=_DEFAULT_LOG_DATE_FORMAT,
                metavar='DATE_FORMAT',
@@ -207,7 +208,27 @@ def _get_log_file_path(binary=None):
         return '%s.log' % (os.path.join(logdir, binary),)
 
 
-class ContextAdapter(logging.LoggerAdapter):
+class BaseLoggerAdapter(logging.LoggerAdapter):
+
+    def audit(self, msg, *args, **kwargs):
+        self.log(logging.AUDIT, msg, *args, **kwargs)
+
+
+class LazyAdapter(BaseLoggerAdapter):
+    def __init__(self, name='unknown', version='unknown'):
+        self._logger = None
+        self.extra = {}
+        self.name = name
+        self.version = version
+
+    @property
+    def logger(self):
+        if not self._logger:
+            self._logger = getLogger(self.name, self.version)
+        return self._logger
+
+
+class ContextAdapter(BaseLoggerAdapter):
     warn = logging.LoggerAdapter.warning
 
     def __init__(self, logger, project_name, version_string):
@@ -215,8 +236,9 @@ class ContextAdapter(logging.LoggerAdapter):
         self.project = project_name
         self.version = version_string
 
-    def audit(self, msg, *args, **kwargs):
-        self.log(logging.AUDIT, msg, *args, **kwargs)
+    @property
+    def handlers(self):
+        return self.logger.handlers
 
     def deprecated(self, msg, *args, **kwargs):
         stdmsg = _("Deprecated: %s") % msg
@@ -298,17 +320,6 @@ class JSONFormatter(logging.Formatter):
             message['traceback'] = self.formatException(record.exc_info)
 
         return jsonutils.dumps(message)
-
-
-class PublishErrorsHandler(logging.Handler):
-    def emit(self, record):
-        if ('savanna.openstack.common.notifier.log_notifier' in
-                CONF.notification_driver):
-            return
-        notifier.api.notify(None, 'error.publisher',
-                            'error_notification',
-                            notifier.api.ERROR,
-                            dict(error=record.msg))
 
 
 def _create_logging_excepthook(product_name):
@@ -406,15 +417,22 @@ def _setup_logging_from_conf():
         log_root.addHandler(streamlog)
 
     if CONF.publish_errors:
-        log_root.addHandler(PublishErrorsHandler(logging.ERROR))
+        handler = importutils.import_object(
+            "savanna.openstack.common.log_handler.PublishErrorsHandler",
+            logging.ERROR)
+        log_root.addHandler(handler)
 
+    datefmt = CONF.log_date_format
     for handler in log_root.handlers:
-        datefmt = CONF.log_date_format
+        # NOTE(alaski): CONF.log_format overrides everything currently.  This
+        # should be deprecated in favor of context aware formatting.
         if CONF.log_format:
             handler.setFormatter(logging.Formatter(fmt=CONF.log_format,
                                                    datefmt=datefmt))
+            log_root.info('Deprecated: log_format is now deprecated and will '
+                          'be removed in the next release')
         else:
-            handler.setFormatter(LegacyFormatter(datefmt=datefmt))
+            handler.setFormatter(ContextFormatter(datefmt=datefmt))
 
     if CONF.debug:
         log_root.setLevel(logging.DEBUG)
@@ -440,6 +458,15 @@ def getLogger(name='unknown', version='unknown'):
     return _loggers[name]
 
 
+def getLazyLogger(name='unknown', version='unknown'):
+    """
+    create a pass-through logger that does not create the real logger
+    until it is really needed and delegates all calls to the real logger
+    once it is created
+    """
+    return LazyAdapter(name, version)
+
+
 class WritableLogger(object):
     """A thin wrapper that responds to `write` and logs."""
 
@@ -451,7 +478,7 @@ class WritableLogger(object):
         self.logger.log(self.level, msg)
 
 
-class LegacyFormatter(logging.Formatter):
+class ContextFormatter(logging.Formatter):
     """A context.RequestContext aware formatter configured through flags.
 
     The flags used to set format strings are: logging_context_format_string

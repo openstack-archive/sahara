@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 # Copyright (c) 2013 Mirantis Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,27 +15,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import savanna.openstack.common.exception as ex
+import os
+import sys
 
 
-class SavannaException(ex.ApiError):
-    """Base Exception for the project
+sys.path.insert(0, os.getcwd())
 
-    To correctly use this class, inherit from it and define
-    a 'message' and 'code' properties.
-    """
-    message = "An unknown exception occurred"
-    code = "UNKNOWN_EXCEPTION"
+from savanna.db.migration.cli import main
 
-    def __str__(self):
-        return self.message
-
-
-class NotFoundException(SavannaException):
-
-    # It could be a various property of object which was not found
-    value = None
-
-    def __init__(self, value):
-        self.code = "NOT_FOUND"
-        self.value = value
+if __name__ == '__main__':
+    main()

@@ -1,0 +1,50 @@
+# Copyright (c) 2013 Mirantis Inc.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
+# implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+You can then upgrade to the latest database version via:
+$ savanna-db-manage --config-file /path/to/savanna.conf upgrade head
+
+To check the current database version:
+$ savanna-db-manage --config-file /path/to/savanna.conf current
+
+To create a script to run the migration offline:
+$ savanna-db-manage --config-file /path/to/savanna.conf upgrade head --sql
+
+To run the offline migration between specific migration versions:
+$ savanna-db-manage --config-file /path/to/savanna.conf upgrade \
+    <start version>:<end version> --sql
+
+Upgrade the database incrementally:
+$ savanna-db-manage --config-file /path/to/savanna.conf upgrade --delta \
+    <# of revs>
+
+Downgrade the database by a certain number of revisions:
+$ savanna-db-manage --config-file /path/to/savanna.conf downgrade --delta \
+    <# of revs>
+
+
+Create new revision:
+$ savanna-db-manage --config-file /path/to/savanna.conf revision \
+    -m "description of revision" --autogenerate
+
+Create a blank file:
+$ savanna-db-manage --config-file /path/to/savanna.conf revision \
+    -m "description of revision"
+
+To verify that the timeline does branch, you can run this command:
+$ savanna-db-manage --config-file /path/to/savanna.conf check_migration
+
+If the migration path does branch, you can find the branch point via:
+$ savanna-db-manage --config-file /path/to/savanna.conf history

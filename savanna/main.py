@@ -17,12 +17,14 @@ from eventlet import monkey_patch
 from flask import Flask
 from keystoneclient.middleware.auth_token import filter_factory as auth_token
 from oslo.config import cfg
+from savanna.context import ctx
+from savanna.plugins.base import setup_plugins
 from werkzeug.exceptions import default_exceptions
 from werkzeug.exceptions import HTTPException
 
-from savanna.api import v02 as api_v02
+from savanna.api import v10 as api_v10
+from savanna.db import api as db_api
 from savanna.middleware.auth_valid import filter_factory as auth_valid
-from savanna.storage.db import setup_storage
 from savanna.utils.api import render
 from savanna.utils.scheduler import setup_scheduler
 
@@ -71,14 +73,22 @@ def make_app():
     def version_list():
         return render({
             "versions": [
-                {"id": "v0.2", "status": "CURRENT"}
+                {"id": "v1.0", "status": "CURRENT"}
             ]
         })
 
-    app.register_blueprint(api_v02.rest, url_prefix='/v0.2')
+    @app.teardown_request
+    def teardown_request(_ex=None):
+        # todo how it'll work in case of exception?
+        session = ctx().session
+        if session.transaction:
+            session.transaction.commit()
 
-    setup_storage(app)
+    app.register_blueprint(api_v10.rest, url_prefix='/v1.0')
+
+    db_api.configure_db()
     setup_scheduler(app)
+    setup_plugins()
 
     def make_json_error(ex):
         status_code = (ex.code

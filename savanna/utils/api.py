@@ -13,20 +13,21 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import flask as f
+import inspect
 import mimetypes
 import traceback
-
-from flask import abort, request, Blueprint, Response
 from werkzeug.datastructures import MIMEAccept
 
-from savanna.openstack.common.wsgi import JSONDictSerializer, \
-    XMLDictSerializer, JSONDeserializer
+from savanna.context import Context
+from savanna.context import set_ctx
 from savanna.openstack.common import log as logging
+from savanna.openstack.common import wsgi
 
 LOG = logging.getLogger(__name__)
 
 
-class Rest(Blueprint):
+class Rest(f.Blueprint):
     def get(self, rule, status_code=200):
         return self._mroute('GET', rule, status_code)
 
@@ -52,23 +53,34 @@ class Rest(Blueprint):
 
             def handler(**kwargs):
                 # extract response content type
-                resp_type = request.accept_mimetypes
+                resp_type = f.request.accept_mimetypes
                 type_suffix = kwargs.pop('resp_type', None)
                 if type_suffix:
                     suffix_mime = mimetypes.guess_type("res." + type_suffix)[0]
                     if suffix_mime:
                         resp_type = MIMEAccept([(suffix_mime, 1)])
-                request.resp_type = resp_type
+                f.request.resp_type = resp_type
 
-                # extract fields (column selection)
-                fields = list(set(request.args.getlist('fields')))
-                fields.sort()
-                request.fields_selector = fields
-
+                # update status code
                 if status:
-                    request.status_code = status
+                    f.request.status_code = status
 
                 kwargs.pop("tenant_id")
+
+                context = Context(f.request.headers['X-User-Id'],
+                                  f.request.headers['X-Tenant-Id'],
+                                  f.request.headers['X-Auth-Token'],
+                                  f.request.headers)
+                set_ctx(context)
+
+                # set func implicit args
+                args = inspect.getargspec(func).args
+
+                if 'ctx' in args:
+                    kwargs['ctx'] = context
+
+                if f.request.method in ['POST', 'PUT'] and 'data' in args:
+                    kwargs['data'] = request_data()
 
                 return func(**kwargs)
 
@@ -77,13 +89,40 @@ class Rest(Blueprint):
             ext_rule = f_rule + '.<resp_type>'
             self.add_url_rule(ext_rule, endpoint, handler, **options)
 
-            return func
+            try:
+                return func
+            except Exception, e:
+                return internal_error(500, 'Exception in API call', e)
 
         return decorator
 
 
 RT_JSON = MIMEAccept([("application/json", 1)])
 RT_XML = MIMEAccept([("application/xml", 1)])
+
+
+def _clean_nones(obj):
+    if not isinstance(obj, dict) and not isinstance(obj, list):
+        return obj
+
+    if isinstance(obj, dict):
+        remove = []
+        for key, value in obj.iteritems():
+            if value is None:
+                remove.append(key)
+        for key in remove:
+            obj.pop(key)
+        for value in obj.values():
+            _clean_nones(value)
+    elif isinstance(obj, list):
+        new_list = []
+        for elem in obj:
+            elem = _clean_nones(elem)
+            if elem is not None:
+                new_list.append(elem)
+        return new_list
+
+    return obj
 
 
 def render(res=None, resp_type=None, status=None, **kwargs):
@@ -95,14 +134,16 @@ def render(res=None, resp_type=None, status=None, **kwargs):
         # can't merge kwargs into the non-dict res
         abort_and_log(500, "Non-dict and non-empty kwargs passed to render")
 
-    status_code = getattr(request, 'status_code', None)
+    res = _clean_nones(res)
+
+    status_code = getattr(f.request, 'status_code', None)
     if status:
         status_code = status
     if not status_code:
         status_code = 200
 
     if not resp_type:
-        resp_type = getattr(request, 'resp_type', RT_JSON)
+        resp_type = getattr(f.request, 'resp_type', RT_JSON)
 
     if not resp_type:
         resp_type = RT_JSON
@@ -110,31 +151,31 @@ def render(res=None, resp_type=None, status=None, **kwargs):
     serializer = None
     if "application/json" in resp_type:
         resp_type = RT_JSON
-        serializer = JSONDictSerializer()
+        serializer = wsgi.JSONDictSerializer()
     elif "application/xml" in resp_type:
         resp_type = RT_XML
-        serializer = XMLDictSerializer()
+        serializer = wsgi.XMLDictSerializer()
     else:
         abort_and_log(400, "Content type '%s' isn't supported" % resp_type)
 
     body = serializer.serialize(res)
     resp_type = str(resp_type)
 
-    return Response(response=body, status=status_code, mimetype=resp_type)
+    return f.Response(response=body, status=status_code, mimetype=resp_type)
 
 
 def request_data():
-    if hasattr(request, 'parsed_data'):
-        return request.parsed_data
+    if hasattr(f.request, 'parsed_data'):
+        return f.request.parsed_data
 
-    if not request.content_length > 0:
+    if not f.request.content_length > 0:
         LOG.debug("Empty body provided in request")
         return dict()
 
     deserializer = None
-    content_type = request.mimetype
+    content_type = f.request.mimetype
     if not content_type or content_type in RT_JSON:
-        deserializer = JSONDeserializer()
+        deserializer = wsgi.JSONDeserializer()
     elif content_type in RT_XML:
         abort_and_log(400, "XML requests are not supported yet")
         # deserializer = XMLDeserializer()
@@ -142,9 +183,9 @@ def request_data():
         abort_and_log(400, "Content type '%s' isn't supported" % content_type)
 
     # parsed request data to avoid unwanted re-parsings
-    request.parsed_data = deserializer.deserialize(request.data)['body']
+    f.request.parsed_data = deserializer.deserialize(f.request.data)['body']
 
-    return request.parsed_data
+    return f.request.parsed_data
 
 
 def abort_and_log(status_code, descr, exc=None):
@@ -154,7 +195,7 @@ def abort_and_log(status_code, descr, exc=None):
     if exc is not None:
         LOG.error(traceback.format_exc())
 
-    abort(status_code, description=descr)
+    f.abort(status_code, description=descr)
 
 
 def render_error_message(error_code, error_message, error_name):

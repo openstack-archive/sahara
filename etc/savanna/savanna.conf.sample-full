@@ -58,13 +58,9 @@
 # Log output to standard error (boolean value)
 #use_stderr=true
 
-# Default file mode used when creating log files (string
-# value)
-#logfile_mode=0644
-
 # format string to use for log messages with context (string
 # value)
-#logging_context_format_string=%(asctime)s.%(msecs)03d %(levelname)s %(name)s [%(request_id)s %(user)s %(tenant)s] %(instance)s%(message)s
+#logging_context_format_string=%(asctime)s.%(msecs)03d %(process)d %(levelname)s %(name)s [%(request_id)s %(user)s %(tenant)s] %(instance)s%(message)s
 
 # format string to use for log messages without context
 # (string value)
@@ -111,12 +107,12 @@
 # %(default)s (string value)
 #log_date_format=%Y-%m-%d %H:%M:%S
 
-# (Optional) Name of log file to output to. If not set,
-# logging will go to stdout. (string value)
+# (Optional) Name of log file to output to. If no default is
+# set, logging will go to stdout. (string value)
 #log_file=<None>
 
-# (Optional) The directory to keep log files in (will be
-# prepended to --log-file) (string value)
+# (Optional) The base directory used for relative --log-file
+# paths (string value)
 #log_dir=<None>
 
 # Use syslog for logging. (boolean value)
@@ -141,6 +137,14 @@
 # Default publisher_id for outgoing notifications (string
 # value)
 #default_publisher_id=$host
+
+
+#
+# Options defined in savanna.plugins.base
+#
+
+# List of plugins to be loaded (list value)
+#plugins=
 
 
 [cluster_node]

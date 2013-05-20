@@ -1,4 +1,5 @@
 # This file is managed by openstack-depends
+alembic>=0.4.1
 eventlet>=0.9.12
 flask==0.9
 jsonschema>=1.0.0
@@ -6,8 +7,6 @@ oslo.config>=1.1.0
 paramiko>=1.8.0
 python-keystoneclient>=0.2,<0.3
 python-novaclient>=2.12.0,<3
+six
 sqlalchemy>=0.7,<=0.7.99
 webob>=1.0.8
-
-# Additional depends
-flask-sqlalchemy

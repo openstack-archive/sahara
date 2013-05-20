@@ -47,7 +47,7 @@ def main():
     if os.path.exists(dev_conf):
         config_files = [dev_conf]
 
-    config.parse_args(sys.argv[1:], config_files)
+    config.parse_configs(sys.argv[1:], config_files)
     logging.setup("savanna")
 
     app = server.make_app()

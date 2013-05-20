@@ -8,7 +8,7 @@ project = 'savanna'
 
 setuptools.setup(
     name=project,
-    version=common_setup.get_version(project, '0.1.2'),
+    version=common_setup.get_version(project, '0.2'),
     description='Savanna project',
     author='Mirantis Inc.',
     author_email='savanna-team@mirantis.com',
@@ -37,7 +37,7 @@ setuptools.setup(
     test_suite='nose.collector',
     scripts=[
         'bin/savanna-api',
-        'bin/savanna-manage',
+        'bin/savanna-db-manage',
     ],
     py_modules=[],
     data_files=[
