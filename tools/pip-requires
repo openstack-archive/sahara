@@ -1,7 +1,7 @@
 # This file is managed by openstack-depends
 eventlet>=0.9.12
 flask==0.9
-jsonschema
+jsonschema>=1.0.0
 oslo.config>=1.1.0
 paramiko>=1.8.0
 python-keystoneclient>=0.2,<0.3
