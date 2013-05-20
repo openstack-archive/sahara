@@ -6,13 +6,13 @@ Savanna quickstart guide
 
     .. sourcecode:: bash
 
-        pip install savanna
+        sudo pip install savanna
 
 Or you can get Savanna archive from http://tarballs.openstack.org/savanna/ and install it using pip:
 
     .. sourcecode:: bash
 
-        pip install http://tarballs.openstack.org/savanna/savanna-master.tar.gz#egg=savanna
+        sudo pip install http://tarballs.openstack.org/savanna/savanna-master.tar.gz#egg=savanna
 
 **Note:**
 savanna-master.tar.gz contains the latest changes in the source code.
@@ -75,8 +75,8 @@ You can check which flavors you have by running
 
 .. sourcecode:: bash
 
-    tar -xzf savanna-xxxx-hdp-img.tar.gz
-    glance image-create --name=hdp.image --disk-format=qcow2 --container-format=bare < ./savanna-xxxx-hdp-img.img
+    tar -xzf savanna-0.1-hdp-img.tar.gz
+    glance image-create --name=hdp.image --disk-format=qcow2 --container-format=bare < ./savanna-0.1-hdp-img.img
 
 You should see the output similar to the following:
 
@@ -123,9 +123,9 @@ You should see the output similar to the following:
 
 .. sourcecode:: bash
 
-    apt-get update
-    apt-get install python-dev python-virtualenv
-    pip install tox
+    sudo apt-get update
+    sudo apt-get install python-dev python-virtualenv
+    sudo pip install tox
 
 3.4 Prepare virtual environment:
 
