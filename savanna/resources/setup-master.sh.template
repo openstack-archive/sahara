@@ -17,5 +17,5 @@ echo {{master_hostname}} | tee /etc/hadoop/masters
 
 echo "----- Formatting Hadoop NameNode"
 
-su -c 'hadoop namenode -format -force' hadoop
+su -c 'hadoop namenode -format' hadoop
 {% endblock %}
