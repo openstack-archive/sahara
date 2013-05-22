@@ -1,82 +1,33 @@
-************************
-Savanna quickstart guide
-************************
+Savanna v0.1.1 quickstart guide
+===============================
 
-1 You can install the latest Savanna release version (0.1, 0.1.1 and etc.) from pypi:
+1. Install Savanna
+------------------
 
-    .. sourcecode:: bash
+* If you want to hack follow :doc:`devref/development.environment`.
+* If you want just to install and use Savanna follow :doc:`installation.guide`.
 
-        sudo pip install savanna
+2. Image setup
+--------------
 
-Or you can get Savanna archive from http://tarballs.openstack.org/savanna/ and install it using pip:
-
-    .. sourcecode:: bash
-
-        sudo pip install http://tarballs.openstack.org/savanna/savanna-master.tar.gz#egg=savanna
-
-**Note:**
-savanna-master.tar.gz contains the latest changes in the source code.
-savanna-some_version.tar.gz contains features related to specified Savanna release.
-
-
-2 After installation you should create configuration file or change default config to run Savanna properly. Default config file is located in:
-
-    .. sourcecode:: bash
-
-        /usr/local/share/savanna/savanna.conf.sample
-
-3 To initialize Savanna database with created configuration just call:
-
-    .. sourcecode:: bash
-
-        savanna-manage --config-file /pathToConfig reset-db --with-gen-templates
-
-4 To start Savanna call:
-
-    .. sourcecode:: bash
-
-        savanna-api --config-file /pathToConfig
-
-
-***********************
-Full installation guide
-***********************
-
-1 Setup prerequisites
-=====================
-
-1.1 OpenStack environment (Folsom+ version) installed.
-
-1.2 Git should be installed on the machine where Savanna_API will be deployed.
-
-1.3 Your OpenStack should have flavors with 'm1.small' and 'm1.medium' names defined because these flavors are referenced by Savanna's default Node Templates.
-You can check which flavors you have by running
-
-.. sourcecode:: bash
-
-    nova flavor-list
-
-2 Image setup
-=============
-
-2.1 Go to OpenStack management node or you can configure ENV at another machine:
+2.1. Go to OpenStack management node or you can configure ENV at another machine:
 
 .. sourcecode:: bash
 
     ssh user@hostname
 
-2.2 Download tarball from the following URL:
+2.2. Download tarball from the following URL:
 
 .. sourcecode:: bash
 
     wget http://savanna-files.mirantis.com/savanna-0.1-hdp-img.tar.gz
 
-2.3 Unpack image and import it into Glance:
+2.3. Unpack image and import it into Glance:
 
 .. sourcecode:: bash
 
     tar -xzf savanna-0.1-hdp-img.tar.gz
-    glance image-create --name=hdp.image --disk-format=qcow2 --container-format=bare < ./savanna-0.1-hdp-img.img
+    glance image-create --name=vanilla-hadoop.image --disk-format=qcow2 --container-format=bare < ./savanna-0.1-hdp-img.img
 
 You should see the output similar to the following:
 
@@ -95,7 +46,7 @@ You should see the output similar to the following:
     | is_public        | False                                |
     | min_disk         | 0                                    |
     | min_ram          | 0                                    |
-    | name             | hdp.image                            |
+    | name             | vanilla-hadoop.image                 |
     | owner            | 6b26f08455ec449ea7a2d3da75339255     |
     | protected        | False                                |
     | size             | 1675296768                           |
@@ -104,82 +55,26 @@ You should see the output similar to the following:
     +------------------+--------------------------------------+
 
 
-3 Savanna API SETUP
-===================
-
-3.1 Git clone repo from the https://github.com/stackforge/savanna
-
-.. sourcecode:: bash
-
-    git clone git://github.com/stackforge/savanna.git
-
-3.2 Go to the cloned repo directory
-
-.. sourcecode:: bash
-
-    cd savanna
-
-3.3 Install python headers, virtualenv and tox:
-
-.. sourcecode:: bash
-
-    sudo apt-get update
-    sudo apt-get install python-dev python-virtualenv
-    sudo pip install tox
-
-3.4 Prepare virtual environment:
-
-.. sourcecode:: bash
-
-    tools/install_venv
-
-3.5 Create config file from default template local.cfg-sample:
-
-.. sourcecode:: bash
-
-    cp ./etc/savanna/savanna.conf.sample ./etc/savanna/savanna.conf
-
-3.6 Look through the savanna.conf and change parameters which default values do not suite you.
-
-**Note:** Config file could be specified for ``savanna-api`` and ``savanna-manage`` commands using ``--config-file`` flag.
-
-**Note:** If your OpenStack cluster doesn't automatically assign floating ips then you should set ``use_floating_ips`` configuration option to ``False``. 
-
-3.7 To initialize Savanna database with created configuration just call:
-
-.. sourcecode:: bash
-
-    tox -evenv -- savanna-manage --config-file etc/savanna/savanna.conf reset-db --with-gen-templates
-
-Virtualenv with all requirements installed into it is now available in ``.tox/venv``. You can create it by executing ``tools/install_venv``.
-
-3.8 To start Savanna call:
-
-.. sourcecode:: bash
-
-    tox -evenv -- savanna-api --config-file etc/savanna/savanna.conf --allow-cluster-ops
+3. Savanna API SETUP
+--------------------
 
 Now Savanna service is running. Further steps show how you can verify from console that Savanna API works properly.
 
-3.9 First install httpie program. It allows you to send http requests to Savanna API service.
+3.1. First install httpie program. It allows you to send http requests to Savanna API service.
 
 .. sourcecode:: bash
 
-    sudo easy_install httpie
+    pip httpie
 
 **Note:** sure you can use another HTTP client like curl to send requests to Savanna service
 
-3.10 Then you need to get authentification token from OpenStack Keystone service:
+3.2. Then you need to get authentification token from OpenStack Keystone service.
+This steps assumes you have keystone client configured:
 
 .. sourcecode:: bash
 
-    tools/get_auth_token --config-file <path to config file>
+    keystone token-get
 
-E.g.:
-
-.. sourcecode:: bash
-
-    tools/get_auth_token --config-file etc/savanna/savanna.conf
 
 If authentication succeed, output will be as follows:
 
@@ -197,7 +92,7 @@ If authentication succeed, output will be as follows:
 **Note:** Save the token because you have to supply it with every request to Savanna in X-Auth-Token header.
 You will also use tenant id in request URL
 
-3.11 Send http request to the Savanna service:
+3.3. Send http request to the Savanna service:
 
 .. sourcecode:: bash
 
@@ -206,9 +101,7 @@ You will also use tenant id in request URL
 Where:
 
 * savanna_api_ip - hostname where Savanna API service is running
-
 * tenant_id - id of the tenant for which you got token in previous item
-
 * auth_token - token obtained in previous item
 
 For example:
@@ -235,10 +128,10 @@ Output of this command will look as follows:
             }
     }
 
-4 Hadoop Cluster startup
-========================
+4. Hadoop Cluster startup
+-------------------------
 
-4.1 Send the POST request to Savanna API to create Hadoop Cluster.
+4.1. Send the POST request to Savanna API to create Hadoop Cluster.
 
 Create file with name ``cluster_create.json`` and fill it with the following content:
 
@@ -300,7 +193,7 @@ Response for this request will look like:
     }
 
 
-4.2 If the response in the 3.1. was ``202 ACCEPTED`` then you can check status of new cluster:
+4.2. If the response in the 3.1. was ``202 ACCEPTED`` then you can check status of new cluster:
 
 .. sourcecode:: bash
 
@@ -359,7 +252,7 @@ Initially the cluster will be in "Starting" state, but eventually (in several mi
         }
     }
 
-4.3 So you recieved NameNode's and JobTracker's URLs like this:
+4.3. So you recieved NameNode's and JobTracker's URLs like this:
 
 .. sourcecode:: json
 
@@ -370,7 +263,7 @@ Initially the cluster will be in "Starting" state, but eventually (in several mi
     
 and you actually could access them via browser
 
-4.4 To check that your Hadoop installation works correctly:
+4.4. To check that your Hadoop installation works correctly:
 
 * Go to NameNode via ssh:
 
