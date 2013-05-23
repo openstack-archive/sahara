@@ -14,3 +14,5 @@ NODE_PASSWORD = "password" # password for master node
 
 CLUSTER_NAME_CRUD = 'cluster-name-crud' # cluster name for crud operations
 CLUSTER_NAME_HADOOP = 'cluster-name-hadoop' # cluster name for hadoop testing
+
+TIMEOUT = 15 # cluster creation timeout (in minutes)

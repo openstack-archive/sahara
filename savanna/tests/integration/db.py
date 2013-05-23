@@ -120,7 +120,7 @@ class ITestCase(unittest.TestCase):
         tracker = 'job' if nt_type in ['JT+NN', 'JT'] else 'task'
         processes_name = nt_type
         nt = {
-            u'name': u'%s' % name,
+            u'name': u'%s.%s' % (name, param.FLAVOR_ID),
             u'%s_node' % node: {u'heap_size': u'%d' % hs1},
             u'%s_tracker' % tracker: {u'heap_size': u'%d' % hs2},
             u'node_type': {
@@ -145,8 +145,8 @@ class ITestCase(unittest.TestCase):
             u'base_image_id': u'%s' % self.image_id,
             u'node_templates':
             {
-                u'%s' % master_name: 1,
-                u'%s' % worker_name: node_number
+                u'%s.%s' % (master_name, param.FLAVOR_ID): 1,
+                u'%s.%s' % (worker_name, param.FLAVOR_ID): node_number
             },
             u'nodes': []
         }
@@ -160,7 +160,7 @@ class ITestCase(unittest.TestCase):
     def make_nt(self, nt_name, node_type, jt_heap_size, nn_heap_size):
         nt = dict(
             node_template=dict(
-                name=nt_name,
+                name='%s.%s' % (nt_name, param.FLAVOR_ID),
                 node_type='JT+NN',
                 flavor_id=self.flavor_id,
                 job_tracker={
@@ -189,8 +189,9 @@ class ITestCase(unittest.TestCase):
                 name=cluster_name,
                 base_image_id=self.image_id,
                 node_templates={
-                    '%s' % name_master_node: 1,
-                    '%s' % name_worker_node: number_workers
+                    '%s.%s' % (name_master_node, param.FLAVOR_ID): 1,
+                    '%s.%s' %
+                    (name_worker_node, param.FLAVOR_ID): number_workers
                 }
             ))
         return body
@@ -229,9 +230,10 @@ class ITestCase(unittest.TestCase):
         del get_body[u'nodes']
         i = 1
         while get_data[u'status'] != u'Active':
-            if i > 60:
+            if i > int(param.TIMEOUT) * 6:
                 self.fail(
-                    'cluster not Starting -> Active, passed 10 minutes')
+                    'cluster not Starting -> Active, passed %d minutes'
+                    % param.TIMEOUT)
             get_data = self._get_object(get_url, object_id, 200)
             get_data = get_data['cluster']
             del get_data[u'id']
