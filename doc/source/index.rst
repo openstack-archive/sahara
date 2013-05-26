@@ -9,7 +9,6 @@ Useful links
     overview
     architecture
     devref/index
-    installation.guide
     quickstart
 
 * `Savanna wiki <https://wiki.openstack.org/wiki/Savanna>`_

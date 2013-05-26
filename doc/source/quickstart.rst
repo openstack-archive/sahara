@@ -292,3 +292,37 @@ and you actually could access them via browser
     "jobtracker": "http://JobTracker_IP:50030"
 
 Congratulations! Now you have Hadoop cluster ready on the OpenStack cloud!
+
+5. Keystone endpoints setup
+---------------------------
+
+To use CLI tools, such as OpenStack's python clients, we should specify
+environment variables with addresses and credentials. Let's mind that we have
+keystone at `127.0.0.1:5000` with tenant `admin`, credentials `admin`:`nova`
+and Savanna API at `127.0.0.1:8080`. Here is a list of commands to set env:
+
+.. sourcecode:: bash
+
+    export OS_AUTH_URL=http://127.0.0.1:5000/v2.0/
+    export OS_TENANT_NAME=admin
+    export OS_USERNAME=admin
+    export OS_PASSWORD=nova
+
+We should create service in Keystone:
+
+.. sourcecode:: bash
+
+    keystone service-create --name=savanna --type=mapreduce --description="Savanna Elastic Hadoop Service"
+
+And then we should create endpoint for created service:
+
+.. sourcecode:: bash
+
+    keystone endpoint-create \
+        --region RegionOne \
+        --service-id=<SERVICE_ID> \
+        --publicurl="http://127.0.0.1:8080/v0.2/%(tenant_id)s" \
+        --internalurl="http://127.0.0.1:8080/v0.2/%(tenant_id)s" \
+        --adminurl="http://127.0.0.1:8080/v0.2/%(tenant_id)s"
+
+Now Keystone know endpoints of service `mapreduce`.

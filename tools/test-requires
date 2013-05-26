@@ -7,4 +7,5 @@ nose
 openstack.nose_plugin>=0.7
 pylint==0.25.2
 sphinx>=1.1.2
+sphinxcontrib-httpdomain
 unittest2
