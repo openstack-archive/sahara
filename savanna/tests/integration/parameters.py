@@ -23,4 +23,11 @@ NODE_PASSWORD = _get_conf('NODE_PASSWORD', 'password')
 CLUSTER_NAME_CRUD = _get_conf('CLUSTER_NAME_CRUD', 'cluster-crud')
 CLUSTER_NAME_HADOOP = _get_conf('CLUSTER_NAME_HADOOP', 'cluster-hadoop')
 
+IP_PREFIX = _get_conf('IP_PREFIX', '10.')
+
 TIMEOUT = _get_conf('TIMEOUT', '15')
+
+HADOOP_VERSION = _get_conf('HADOOP_VERSION', '1.1.1')
+HADOOP_DIRECTORY = _get_conf('HADOOP_DIRECTORY', '/usr/share/hadoop')
+HADOOP_LOG_DIRECTORY = _get_conf('HADOOP_LOG_DIRECTORY',
+                                 '/mnt/log/hadoop/hadoop/userlogs')
