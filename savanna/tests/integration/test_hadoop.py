@@ -116,16 +116,16 @@ class TestHadoop(ITestCase):
 
     def test_hadoop_single_master_node(self):
         data_nt_master = self._post_object(
-            self.url_nt, self.make_nt('master_node.medium', 'JT+NN',
-                                      1234, 1234), 202)
+            self.url_nt, self.make_nt('master-node', 'JT+NN',
+                                      1234, 2345), 202)
         data_nt_worker = self._post_object(
-            self.url_nt, self.make_nt('worker_node.medium', 'TT+DN',
-                                      1234, 1234), 202)
+            self.url_nt, self.make_nt('worker-node', 'TT+DN',
+                                      1234, 2345), 202)
 
         try:
             self._hadoop_testing(
-                param.CLUSTER_NAME_HADOOP, 'master_node.medium',
-                'worker_node.medium', 2)
+                param.CLUSTER_NAME_HADOOP, 'master-node',
+                'worker-node', 2)
 
         except Exception as e:
             self.fail("failure:" + str(e))
