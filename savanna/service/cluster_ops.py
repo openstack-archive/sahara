@@ -493,8 +493,7 @@ def _register_node(node, cluster):
 def _start_cluster(cluster, clmap):
     ret = _execute_command_on_node(
         clmap['master_ip'],
-        'su -c /usr/sbin/start-all.sh hadoop >>'
-        ' /tmp/savanna-hadoop-start-all.log')
+        'su -c start-all.sh hadoop >> /tmp/savanna-hadoop-start-all.log')
     _ensure_zero(ret)
 
     LOG.info("Cluster '%s' successfully started!", cluster.name)
