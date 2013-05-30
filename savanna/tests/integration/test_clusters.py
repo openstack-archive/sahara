@@ -33,11 +33,9 @@ class ITestClusterApi(ITestCase):
 
         try:
             cluster_body = self.make_cluster_body(
-                param.CLUSTER_NAME_CRUD, 'master-node',
-                'worker-node', 2)
+                param.CLUSTER_NAME_CRUD, 'master-node', 'worker-node', 2)
             get_cluster_body = self._get_body_cluster(
-                param.CLUSTER_NAME_CRUD, 'master-node',
-                'worker-node', 2)
+                param.CLUSTER_NAME_CRUD, 'master-node', 'worker-node', 2)
 
             self._crud_object(cluster_body, get_cluster_body, self.url_cluster)
 
