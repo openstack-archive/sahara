@@ -4,7 +4,7 @@ Savanna REST API v0.2
 
 .. note::
 
-    REST API v0.2 corresponds to Savanna v0.1.1
+    REST API v0.2 corresponds to Savanna v0.1.X
 
 1 General API information
 =========================

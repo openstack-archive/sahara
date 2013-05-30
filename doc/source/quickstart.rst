@@ -1,4 +1,4 @@
-Savanna v0.1.1 quickstart guide
+Savanna v0.1.2 quickstart guide
 ===============================
 
 1. Install Savanna
@@ -16,18 +16,19 @@ Savanna v0.1.1 quickstart guide
 
     ssh user@hostname
 
-2.2. Download tarball from the following URL:
+2.2. Download qcow2 image(Apache Hadoop 1.1.2 inside) from the following URL:
 
 .. sourcecode:: bash
 
-    wget http://savanna-files.mirantis.com/savanna-0.1-hdp-img.tar.gz
+    wget http://savanna-files.mirantis.com/savanna-0.1.2-hadoop.qcow2
 
-2.3. Unpack image and import it into Glance:
+Or you can use `Diskimage-builder tool for creating your own images with Apache Hadoop <https://github.com/stackforge/savanna-extra/blob/master/elements/README.rst>`_
+
+2.3. Import it into Glance:
 
 .. sourcecode:: bash
 
-    tar -xzf savanna-0.1-hdp-img.tar.gz
-    glance image-create --name=vanilla-hadoop.image --disk-format=qcow2 --container-format=bare < ./savanna-0.1-hdp-img.img
+    glance image-create --name=vanilla-hadoop.image --disk-format=qcow2 --container-format=bare < ./savanna-0.1.2-hadoop.qcow2
 
 You should see the output similar to the following:
 
