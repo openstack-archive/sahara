@@ -120,11 +120,14 @@ class Instance(mb.SavannaBase, mb.ExtraMixin):
 
     node_group_id = sa.Column(sa.String(36), sa.ForeignKey('NodeGroup.id'))
     instance_id = sa.Column(sa.String(36), primary_key=True)
+    instance_name = sa.Column(sa.String(80), nullable=False)
     management_ip = sa.Column(sa.String(15), nullable=False)
 
-    def __init__(self, node_group_id, instance_id, management_ip, extra=None):
+    def __init__(self, node_group_id, instance_id, instance_name,
+                 management_ip, extra=None):
         self.node_group_id = node_group_id
         self.instance_id = instance_id
+        self.instance_name = instance_name
         self.management_ip = management_ip
         self.extra = extra or {}
 
@@ -133,7 +136,16 @@ class Instance(mb.SavannaBase, mb.ExtraMixin):
         """Returns info from nova about instance."""
         return novaclient().servers.get(self.instance_id)
 
-    # todo hostname and username should be available here
+    @property
+    def username(self):
+        ng = self.node_group
+        if not hasattr(ng, '_image_username'):
+            ng._image_username = novaclient().images.get(ng.image_id).username
+        return ng._image_username
+
+    @property
+    def hostname(self):
+        return self.instance_name
 
     def remote(self):
         return remote.InstanceInteropHelper(self)
