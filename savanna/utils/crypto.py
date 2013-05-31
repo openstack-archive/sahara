@@ -16,7 +16,7 @@
 from Crypto.PublicKey import RSA
 from Crypto import Random
 import paramiko
-import StringIO
+from six import StringIO
 
 
 def generate_private_key(length=2048):
