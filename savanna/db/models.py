@@ -18,6 +18,7 @@ from sqlalchemy.ext.associationproxy import association_proxy
 from sqlalchemy.orm import relationship
 
 from savanna.db import model_base as mb
+from savanna.utils import crypto
 from savanna.utils.openstack.nova import novaclient
 from savanna.utils.sqlatypes import JsonDictType
 from savanna.utils.sqlatypes import JsonListType
@@ -42,7 +43,7 @@ class Cluster(mb.SavannaBase, mb.IdMixin, mb.TenantMixin,
     # todo replace String type with sa.Enum(*CLUSTER_STATUSES)
     status = sa.Column(sa.String(80))
     status_description = sa.Column(sa.String(200))
-    # todo instances' credentials should be stored in cluster
+    private_key = sa.Column(sa.Text, default=crypto.generate_private_key())
     base_cluster_template_id = sa.Column(sa.String(36),
                                          sa.ForeignKey('ClusterTemplate.id'))
     base_cluster_template = relationship('ClusterTemplate',
@@ -51,7 +52,7 @@ class Cluster(mb.SavannaBase, mb.IdMixin, mb.TenantMixin,
     def __init__(self, name, tenant_id, plugin_name, hadoop_version,
                  status=None, status_description=None, default_image_id=None,
                  cluster_configs=None, base_cluster_template_id=None,
-                 extra=None):
+                 private_key=None, extra=None):
         self.name = name
         self.tenant_id = tenant_id
         self.plugin_name = plugin_name
@@ -61,6 +62,7 @@ class Cluster(mb.SavannaBase, mb.IdMixin, mb.TenantMixin,
         self.default_image_id = default_image_id
         self.cluster_configs = cluster_configs or {}
         self.base_cluster_template_id = base_cluster_template_id
+        self.private_key = private_key
         self.extra = extra or {}
 
     def to_dict(self):
