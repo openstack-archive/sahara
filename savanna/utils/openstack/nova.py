@@ -44,25 +44,17 @@ def novaclient():
 
 
 def get_flavors():
-    headers = ctx().headers
-    flavors = [flavor.name for flavor
-               in novaclient(headers).flavors.list()]
-    return flavors
+    return [flavor.name for flavor in novaclient().flavors.list()]
 
 
 def get_flavor(**kwargs):
-    headers = ctx().headers
-    return novaclient(headers).flavors.find(**kwargs)
+    return novaclient().flavors.find(**kwargs)
 
 
 def get_images():
-    headers = ctx().headers
-    images = [image.id for image
-              in novaclient(headers).images.list()]
-    return images
+    return [image.id for image in novaclient().images.list()]
 
 
 def get_limits():
-    headers = ctx().headers
-    limits = novaclient(headers).limits.get().absolute
+    limits = novaclient().limits.get().absolute
     return dict((l.name, l.value) for l in limits)
