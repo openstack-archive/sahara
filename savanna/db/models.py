@@ -20,6 +20,7 @@ from sqlalchemy.orm import relationship
 from savanna.db import model_base as mb
 from savanna.utils import crypto
 from savanna.utils.openstack.nova import novaclient
+from savanna.utils import remote
 from savanna.utils.sqlatypes import JsonDictType
 from savanna.utils.sqlatypes import JsonListType
 
@@ -121,15 +122,21 @@ class Instance(mb.SavannaBase, mb.ExtraMixin):
     instance_id = sa.Column(sa.String(36), primary_key=True)
     management_ip = sa.Column(sa.String(15), nullable=False)
 
-    def info(self):
-        """Returns info from nova about instance."""
-        return novaclient().servers.get(self.instance_id)
-
     def __init__(self, node_group_id, instance_id, management_ip, extra=None):
         self.node_group_id = node_group_id
         self.instance_id = instance_id
         self.management_ip = management_ip
         self.extra = extra or {}
+
+    @property
+    def nova_info(self):
+        """Returns info from nova about instance."""
+        return novaclient().servers.get(self.instance_id)
+
+    # todo hostname and username should be available here
+
+    def remote(self):
+        return remote.InstanceInteropHelper(self)
 
 
 class ClusterTemplate(mb.SavannaBase, mb.IdMixin, mb.TenantMixin,
