@@ -34,7 +34,6 @@ pylint-report.txt
 etc/local.cfg
 etc/savanna/*.conf
 etc/savanna.conf
-AUTHORS
 ChangeLog
 savanna/tests/integration/config.py
 cscope.out
