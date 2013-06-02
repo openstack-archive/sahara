@@ -45,6 +45,7 @@ class Cluster(mb.SavannaBase, mb.IdMixin, mb.TenantMixin,
     status = sa.Column(sa.String(80))
     status_description = sa.Column(sa.String(200))
     private_key = sa.Column(sa.Text, default=crypto.generate_private_key())
+    user_keypair_id = sa.Column(sa.String(80))
     base_cluster_template_id = sa.Column(sa.String(36),
                                          sa.ForeignKey('ClusterTemplate.id'))
     base_cluster_template = relationship('ClusterTemplate',
@@ -53,7 +54,7 @@ class Cluster(mb.SavannaBase, mb.IdMixin, mb.TenantMixin,
     def __init__(self, name, tenant_id, plugin_name, hadoop_version,
                  status=None, status_description=None, default_image_id=None,
                  cluster_configs=None, base_cluster_template_id=None,
-                 private_key=None, extra=None):
+                 private_key=None, user_keypair_id=None, extra=None):
         self.name = name
         self.tenant_id = tenant_id
         self.plugin_name = plugin_name
@@ -64,12 +65,23 @@ class Cluster(mb.SavannaBase, mb.IdMixin, mb.TenantMixin,
         self.cluster_configs = cluster_configs or {}
         self.base_cluster_template_id = base_cluster_template_id
         self.private_key = private_key
+        self.user_keypair_id = user_keypair_id
         self.extra = extra or {}
 
     def to_dict(self):
         d = super(Cluster, self).to_dict()
         d['node_groups'] = [ng.dict for ng in self.node_groups]
         return d
+
+    @property
+    def user_keypair(self):
+        """Extract user keypair object from nova.
+
+        It contains 'public_key' and 'fingerprint' fields.
+        """
+        if not hasattr(self, '_user_kp'):
+            self._user_kp = novaclient().keypairs.get(self.user_keypair_id)
+        return self._user_kp
 
 
 class NodeGroup(mb.SavannaBase, mb.IdMixin, mb.ExtraMixin):
