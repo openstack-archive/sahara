@@ -26,7 +26,7 @@ rest = u.Rest('v10', __name__)
 ## Cluster ops
 
 @rest.get('/clusters')
-def clusters_list(ctx):
+def clusters_list():
     return u.render(clusters=[c.dict for c in api.get_clusters()])
 
 
