@@ -20,6 +20,7 @@ from savanna.context import ctx
 
 import savanna.utils.openstack.base as base
 from savanna.utils.openstack.images import SavannaImageManager
+from savanna.utils.openstack.keypairs import SavannaKeypairManager
 
 
 def novaclient():
@@ -39,6 +40,8 @@ def novaclient():
     nova.client.auth_token = token
     nova.client.management_url = compute_url
     nova.images = SavannaImageManager(nova)
+    if not hasattr(nova.keypairs, 'get'):
+        nova.keypairs = SavannaKeypairManager(nova)
 
     return nova
 
