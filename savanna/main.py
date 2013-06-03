@@ -102,7 +102,7 @@ def make_app():
         auth_protocol=CONF.os_auth_protocol,
         admin_user=CONF.os_admin_username,
         admin_password=CONF.os_admin_password,
-        admin_tenant=CONF.os_admin_tenant_name
+        admin_tenant_name=CONF.os_admin_tenant_name
     )(app.wsgi_app)
 
     return app
