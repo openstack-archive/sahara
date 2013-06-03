@@ -13,12 +13,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import functools
 import paramiko
+
+from savanna.utils.crypto import to_paramiko_private_key
 
 
 def setup_ssh_connection(host, username, private_key):
     """Setup SSH connection to the host using username and private key."""
+    if type(private_key) in [str, unicode]:
+        private_key = to_paramiko_private_key(private_key)
     ssh = paramiko.SSHClient()
     ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
     ssh.connect(host, username=username, pkey=private_key)
@@ -71,15 +74,17 @@ def read_file_from(ssh_connection, remote_file):
 class InstanceInteropHelper(object):
     def __init__(self, instance):
         self.instance = instance
-        self.execute_command = functools.partial(
-            execute_command, ssh_connection=self.ssh_connection)
-        self.write_file_to = functools.partial(
-            write_file_to, ssh_connection=self.ssh_connection)
-        self.read_file_from = functools.partial(
-            read_file_from, ssh_connection=self.ssh_connection)
 
-    @property
     def ssh_connection(self):
-        return setup_ssh_connection(self.instance.hostname,
-                                    self.instance.username,
-                                    self.instance.private_key)
+        return setup_ssh_connection(
+            self.instance.management_ip, self.instance.username,
+            self.instance.node_group.cluster.private_key)
+
+    def execute_command(self, cmd):
+        return execute_command(self.ssh_connection(), cmd)
+
+    def write_file_to(self, remote_file, data):
+        return write_file_to(self.ssh_connection(), remote_file, data)
+
+    def read_file_from(self, remote_file):
+        return read_file_from(self.ssh_connection(), remote_file)
