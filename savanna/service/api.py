@@ -17,6 +17,7 @@ import savanna.db.storage as s
 from savanna.openstack.common import log as logging
 import savanna.plugins.base as plugin_base
 from savanna.plugins.provisioning import ProvisioningPluginBase
+from savanna.service import instances as i
 
 LOG = logging.getLogger(__name__)
 
@@ -28,13 +29,14 @@ get_cluster = s.get_cluster
 
 
 def create_cluster(values):
-    # todo initiate cluster creation here :)
-    return s.create_cluster(values)
+    cluster = s.create_cluster(values)
+    i.create_cluster(cluster)
+    return cluster
 
 
 def terminate_cluster(**args):
-    # todo initiate cluster termination here :)
     cluster = get_cluster(**args)
+    i.shutdown_cluster(cluster)
     s.terminate_cluster(cluster)
 
 
