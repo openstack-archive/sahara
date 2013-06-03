@@ -32,6 +32,7 @@ class Cluster(mb.SavannaBase, mb.IdMixin, mb.TenantMixin,
               mb.PluginSpecificMixin, mb.ExtraMixin):
     """Contains all info about cluster."""
 
+    __filter_cols__ = ['private_key']
     __table_args__ = (
         sa.UniqueConstraint('name', 'tenant_id'),
     )
@@ -121,6 +122,12 @@ class NodeGroup(mb.SavannaBase, mb.IdMixin, mb.ExtraMixin):
         self.extra = extra or {}
         self.base_node_group_template_id = base_node_group_template_id
 
+    @property
+    def username(self):
+        if not hasattr(self, '_username'):
+            self._username = novaclient().images.get(self.image_id).username
+        return self._username
+
 
 class Instance(mb.SavannaBase, mb.ExtraMixin):
     """An OpenStack instance created for the cluster."""
@@ -133,10 +140,10 @@ class Instance(mb.SavannaBase, mb.ExtraMixin):
     node_group_id = sa.Column(sa.String(36), sa.ForeignKey('NodeGroup.id'))
     instance_id = sa.Column(sa.String(36), primary_key=True)
     instance_name = sa.Column(sa.String(80), nullable=False)
-    management_ip = sa.Column(sa.String(15), nullable=False)
+    management_ip = sa.Column(sa.String(15))
 
     def __init__(self, node_group_id, instance_id, instance_name,
-                 management_ip, extra=None):
+                 management_ip=None, extra=None):
         self.node_group_id = node_group_id
         self.instance_id = instance_id
         self.instance_name = instance_name
@@ -150,15 +157,13 @@ class Instance(mb.SavannaBase, mb.ExtraMixin):
 
     @property
     def username(self):
-        ng = self.node_group
-        if not hasattr(ng, '_image_username'):
-            ng._image_username = novaclient().images.get(ng.image_id).username
-        return ng._image_username
+        return self.node_group.username
 
     @property
     def hostname(self):
         return self.instance_name
 
+    @property
     def remote(self):
         return remote.InstanceInteropHelper(self)
 
