@@ -27,8 +27,8 @@ setuptools.setup(
     cmdclass=common_setup.get_cmdclass(),
     packages=setuptools.find_packages(exclude=['bin']),
     package_data={'savanna': [
-        'resources/*.template',
-        'resources/*.xml'
+        'plugins/vanilla/resources/*.template',
+        'plugins/vanilla/resources/*.xml'
     ]},
     install_requires=requires,
     dependency_links=depend_links,
