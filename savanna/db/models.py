@@ -47,27 +47,22 @@ class Cluster(mb.SavannaBase, mb.IdMixin, mb.TenantMixin,
     status_description = sa.Column(sa.String(200))
     private_key = sa.Column(sa.Text, default=crypto.generate_private_key())
     user_keypair_id = sa.Column(sa.String(80))
-    base_cluster_template_id = sa.Column(sa.String(36),
-                                         sa.ForeignKey('ClusterTemplate.id'))
-    base_cluster_template = relationship('ClusterTemplate',
-                                         backref="clusters")
+    cluster_template_id = sa.Column(sa.String(36),
+                                    sa.ForeignKey('ClusterTemplate.id'))
+    cluster_template = relationship('ClusterTemplate',
+                                    backref="clusters")
 
     def __init__(self, name, tenant_id, plugin_name, hadoop_version,
-                 status=None, status_description=None, default_image_id=None,
-                 cluster_configs=None, base_cluster_template_id=None,
-                 private_key=None, user_keypair_id=None, extra=None):
+                 default_image_id=None, cluster_configs=None,
+                 cluster_template_id=None, user_keypair_id=None):
         self.name = name
         self.tenant_id = tenant_id
         self.plugin_name = plugin_name
         self.hadoop_version = hadoop_version
-        self.status = status
-        self.status_description = status_description
         self.default_image_id = default_image_id
         self.cluster_configs = cluster_configs or {}
-        self.base_cluster_template_id = base_cluster_template_id
-        self.private_key = private_key
+        self.cluster_template_id = cluster_template_id
         self.user_keypair_id = user_keypair_id
-        self.extra = extra or {}
 
     def to_dict(self):
         d = super(Cluster, self).to_dict()
@@ -103,15 +98,15 @@ class NodeGroup(mb.SavannaBase, mb.IdMixin, mb.ExtraMixin):
     count = sa.Column(sa.Integer, nullable=False)
     instances = relationship('Instance', cascade="all,delete",
                              backref='node_group')
-    base_node_group_template_id = sa.Column(sa.String(36),
-                                            sa.ForeignKey(
-                                                'NodeGroupTemplate.id'))
-    base_node_group_template = relationship('NodeGroupTemplate',
-                                            backref="node_groups")
+    node_group_template_id = sa.Column(sa.String(36),
+                                       sa.ForeignKey(
+                                           'NodeGroupTemplate.id'))
+    node_group_template = relationship('NodeGroupTemplate',
+                                       backref="node_groups")
 
     def __init__(self, name, flavor_id, image_id, node_processes, count,
-                 node_configs=None, anti_affinity_group=None, extra=None,
-                 base_node_group_template_id=None):
+                 node_configs=None, anti_affinity_group=None,
+                 node_group_template_id=None):
         self.name = name
         self.flavor_id = flavor_id
         self.image_id = image_id
@@ -119,8 +114,7 @@ class NodeGroup(mb.SavannaBase, mb.IdMixin, mb.ExtraMixin):
         self.count = count
         self.node_configs = node_configs or {}
         self.anti_affinity_group = anti_affinity_group
-        self.extra = extra or {}
-        self.base_node_group_template_id = base_node_group_template_id
+        self.node_group_template_id = node_group_template_id
 
     @property
     def username(self):
@@ -163,12 +157,11 @@ class Instance(mb.SavannaBase, mb.ExtraMixin):
     management_ip = sa.Column(sa.String(15))
 
     def __init__(self, node_group_id, instance_id, instance_name,
-                 management_ip=None, extra=None):
+                 management_ip=None):
         self.node_group_id = node_group_id
         self.instance_id = instance_id
         self.instance_name = instance_name
         self.management_ip = management_ip
-        self.extra = extra or {}
 
     @property
     def nova_info(self):
@@ -251,6 +244,7 @@ class NodeGroupTemplate(mb.SavannaBase, mb.IdMixin, mb.TenantMixin,
         self.description = description
 
 
+# todo it should be replaced with NodeGroup-based relation
 class TemplatesRelation(mb.SavannaBase):
     """NodeGroupTemplate - ClusterTemplate relationship."""
 
