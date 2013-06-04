@@ -128,6 +128,26 @@ class NodeGroup(mb.SavannaBase, mb.IdMixin, mb.ExtraMixin):
             self._username = novaclient().images.get(self.image_id).username
         return self._username
 
+    @property
+    def configuration(self):
+        if hasattr(self, '_all_configs'):
+            return self._all_configs
+        result = {}
+
+        configs = [self.cluster.base_cluster_template.cluster_configs,
+                   self.cluster.cluster_configs,
+                   self.base_node_group_template.node_configs,
+                   self.node_configs]
+
+        for config in configs:
+            for key in config:
+                d = result.get(key, {})
+                d.update(config[key])
+                result[key] = d
+
+        self._all_configs = result
+        return self._all_configs
+
 
 class Instance(mb.SavannaBase, mb.ExtraMixin):
     """An OpenStack instance created for the cluster."""

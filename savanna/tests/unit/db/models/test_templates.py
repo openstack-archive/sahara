@@ -17,6 +17,7 @@ from savanna.context import ctx
 import savanna.db.models as m
 from savanna.tests.unit.db.models.base import ModelTestCase
 
+import unittest2
 
 SAMPLE_CONFIGS = {
     'a': 'av',
@@ -96,3 +97,67 @@ class TemplatesModelTest(ModelTestCase):
             self.assertEqual(len(res.node_group_templates), 3)
             self.assertEqual(set(t.name for t in res.node_group_templates),
                              set('ngt-%s' % i for i in xrange(0, 3)))
+
+
+class NestedTemplateTest(unittest2.TestCase):
+    def test_nested_templates(self):
+        ct = m.ClusterTemplate('ct', 't-1', 'p-1', 'hv-1')
+        ct.cluster_configs = {
+            "service:map-reduce": {
+                "ct": 0,
+                "nt": 0,
+                "c": 0,
+                "n": 0
+            },
+            "service:hdfs": {
+                "ct": 0,
+                "nt": 0,
+                "c": 0,
+                "n": 0
+            }
+        }
+
+        c = m.Cluster('c-1', 't-1', 'p-1', 'hv-1')
+        c.cluster_configs = {
+            "service:map-reduce": {
+                "c": 1,
+                "nt": 1,
+                "n": 1
+            },
+            "service:hdfs": {
+                "c": 1,
+                "nt": 1,
+                "n": 1
+            }
+        }
+        c.base_cluster_template = ct
+
+        ngt = m.NodeGroupTemplate("ngt", "t-1", "f-1", "p-1",
+                                  "h-1", ["tt", "dn"])
+        ngt.node_configs = {
+            "service:map-reduce": {
+                "nt": 2,
+                "n": 2
+            },
+            "service:hdfs": {
+                "nt": 2,
+                "n": 2
+            }
+        }
+
+        ng = m.NodeGroup("ng", "f-i", "i-i", ["tt", "dn"], 1)
+        ng.cluster = c
+        ng.base_node_group_template = ngt
+        ng.node_configs = {
+            "service:map-reduce": {
+                "n": 3
+            },
+            "service:hdfs": {
+                "n": 3
+            }
+        }
+
+        self.assertEqual(ng.configuration["service:map-reduce"]["ct"], 0)
+        self.assertEqual(ng.configuration["service:map-reduce"]["c"], 1)
+        self.assertEqual(ng.configuration["service:map-reduce"]["nt"], 2)
+        self.assertEqual(ng.configuration["service:map-reduce"]["n"], 3)
