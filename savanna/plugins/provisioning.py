@@ -35,31 +35,31 @@ class ProvisioningPluginBase(PluginInterface):
         pass
 
     @abstractmethod
-    def get_configs(self, ctx, hadoop_version):
+    def get_configs(self, hadoop_version):
         pass
 
     @abstractmethod
-    def get_node_processes(self, ctx, hadoop_version):
+    def get_node_processes(self, hadoop_version):
         pass
 
-    def validate(self, ctx, cluster):
+    def validate(self, cluster):
         pass
 
-    def update_infra(self, ctx, cluster):
-        pass
-
-    @abstractmethod
-    def configure_cluster(self, ctx, cluster):
+    def update_infra(self, cluster):
         pass
 
     @abstractmethod
-    def start_cluster(self, ctx, cluster):
+    def configure_cluster(self, cluster):
         pass
 
-    def convert(self, ctx, cluster, input_file):
+    @abstractmethod
+    def start_cluster(self, cluster):
         pass
 
-    def on_terminate_cluster(self, ctx, cluster):
+    def convert(self, cluster, input_file):
+        pass
+
+    def on_terminate_cluster(self, cluster):
         pass
 
     def to_dict(self):

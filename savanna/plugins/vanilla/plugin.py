@@ -35,25 +35,25 @@ class VanillaProvider(ProvisioningPluginBase):
     def get_versions(self):
         return ['Hadoop 1.1.1']
 
-    def get_configs(self, ctx, hadoop_version):
+    def get_configs(self, hadoop_version):
         return [
             Config('heap_size', 'tasktracker', default_value='1024M')
         ]
 
-    def get_node_processes(self, ctx, hadoop_version):
+    def get_node_processes(self, hadoop_version):
         return [
             'jobtracker', 'tasktracker',
             'namenode', 'datanode',
         ]
 
-    def validate(self, ctx, cluster):
+    def validate(self, cluster):
         pass
 
-    def update_infra(self, ctx, cluster):
+    def update_infra(self, cluster):
         pass
 
-    def configure_cluster(self, ctx, cluster):
+    def configure_cluster(self, cluster):
         pass
 
-    def start_cluster(self, ctx, cluster):
+    def start_cluster(self, cluster):
         pass
