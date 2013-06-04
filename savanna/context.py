@@ -61,3 +61,10 @@ def set_ctx(new_ctx):
 def model_query(model, context=None):
     context = context or ctx()
     return context.session.query(model)
+
+
+def model_save(model, context=None):
+    context = context or ctx()
+    with context.session.begin():
+        context.session.add(model)
+    return model
