@@ -15,7 +15,7 @@
 
 import time
 
-from savanna.context import ctx
+from savanna import context
 from savanna.db import models as m
 from savanna.openstack.common import log as logging
 from savanna.utils.crypto import private_key_to_public_key
@@ -26,8 +26,19 @@ LOG = logging.getLogger(__name__)
 
 def create_cluster(cluster):
     try:
+        # create all instances
+        cluster.status = 'Spawning'
+        context.model_save(cluster)
         _create_instances(cluster)
+
+        # wait for all instances are up and accessible
+        cluster.status = 'Waiting'
+        context.model_save(cluster)
         _await_instances(cluster)
+
+        # prepare all instances
+        cluster.status = 'Preparing'
+        context.model_save(cluster)
         _configure_instances(cluster)
     except Exception as ex:
         LOG.warn("Can't start cluster: %s", ex)
@@ -36,7 +47,7 @@ def create_cluster(cluster):
 
 def _create_instances(cluster):
     """Create all instances using nova client and persist them into DB."""
-    session = ctx().session
+    session = context.ctx().session
     aa_groups = _generate_anti_affinity_groups(cluster)
     for node_group in cluster.node_groups:
         files = _generate_instance_files(node_group)

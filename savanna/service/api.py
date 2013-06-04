@@ -13,6 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from savanna import context
 import savanna.db.storage as s
 from savanna.openstack.common import log as logging
 import savanna.plugins.base as plugin_base
@@ -30,12 +31,50 @@ get_cluster = s.get_cluster
 
 def create_cluster(values):
     cluster = s.create_cluster(values)
+    plugin = plugin_base.PLUGINS.get_plugin(cluster.plugin_name)
+
+    # todo validate configs and etc.
+
+    # validating cluster
+    cluster.status = 'Validating'
+    context.model_save(cluster)
+    plugin.validate(cluster)
+
+    # todo run all following commands in background thread
+
+    # updating cluster infra
+    cluster.status = 'InfraUpdating'
+    context.model_save(cluster)
+    plugin.update_infra(cluster)
+
+    # creating instances and configuring them
     i.create_cluster(cluster)
+
+    # configure cluster
+    cluster.status = 'Configuring'
+    context.model_save(cluster)
+    plugin.configure_cluster(cluster)
+
+    # starting prepared and configured cluster
+    cluster.status = 'Starting'
+    context.model_save(cluster)
+    plugin.start_cluster(cluster)
+
+    # cluster is now up and ready
+    cluster.status = 'Active'
+    context.model_save(cluster)
+
     return cluster
 
 
 def terminate_cluster(**args):
     cluster = get_cluster(**args)
+    cluster.status = 'Deleting'
+    context.model_save(cluster)
+
+    plugin = plugin_base.PLUGINS.get_plugin(cluster.plugin_name)
+    plugin.on_terminate_cluster(cluster)
+
     i.shutdown_cluster(cluster)
     s.terminate_cluster(cluster)
 
