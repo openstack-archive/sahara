@@ -72,7 +72,7 @@ class TemplatesModelTest(models_test_base.ModelTestCase):
             'hadoop_version': 'hv-1',
             'name': 'c-1',
             'plugin_name': 'p-1',
-            'node_group_templates': []
+            'node_groups': []
         })
 
     def testCreateClusterTemplateWithNodeGroupTemplates(self):
@@ -87,7 +87,11 @@ class TemplatesModelTest(models_test_base.ModelTestCase):
                                           'hv-1', ['np-1', 'np-2'])
                 session.add(ngt)
                 session.flush()
-                rel = ct.add_node_group_template(ngt.id, 'group-%s' % i, 5 + i)
+                rel = ct.add_node_group_template({
+                    'node_group_template_id': ngt.id,
+                    'name': 'group-%s' % i,
+                    'count': 5 + i
+                })
                 session.add(rel)
                 ngts.append(ngt)
 
