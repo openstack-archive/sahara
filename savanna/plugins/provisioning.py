@@ -72,21 +72,26 @@ class ProvisioningPluginBase(plugins_base.PluginInterface):
 class Config(resources.BaseResource):
     """Describes a single config parameter.
 
+    Config type - could be 'str', 'integer', 'boolean', 'enum'.
+    If config type is 'enum' then list of valid values should be specified in
+    config_values property.
+
     For example:
 
-        "some_conf", "jot_tracker", is_optional=True
+        "some_conf", "map_reduce", "node", is_optional=True
     """
 
-    def __init__(self, name, applicable_target, config_type="str",
+    def __init__(self, name, applicable_target, scope, config_type="str",
                  config_values=None, default_value=None, is_optional=False,
                  description=None):
         self.name = name
-        self.applicable_target = applicable_target
+        self.description = description
         self.config_type = config_type
         self.config_values = config_values
         self.default_value = default_value
+        self.applicable_target = applicable_target
+        self.scope = scope
         self.is_optional = is_optional
-        self.description = description
 
     def to_dict(self):
         res = super(Config, self).to_dict()
