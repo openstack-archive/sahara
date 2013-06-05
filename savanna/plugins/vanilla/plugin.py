@@ -32,7 +32,7 @@ class VanillaProvider(p.ProvisioningPluginBase):
             "cluster without any management consoles.")
 
     def get_versions(self):
-        return ['Hadoop 1.1.1']
+        return ['1.1.1']
 
     def get_configs(self, hadoop_version):
         return [
@@ -40,10 +40,10 @@ class VanillaProvider(p.ProvisioningPluginBase):
         ]
 
     def get_node_processes(self, hadoop_version):
-        return [
-            'jobtracker', 'tasktracker',
-            'namenode', 'datanode',
-        ]
+        return {
+            'mapreduce': ['jobtracker', 'tasktracker'],
+            'hdfs': ['namenode', 'datanode']
+        }
 
     def validate(self, cluster):
         pass
