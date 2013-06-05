@@ -41,10 +41,8 @@ def clusters_get(cluster_id):
 
 
 @rest.put('/clusters/<cluster_id>')
-def clusters_update(cluster_id):
-    return u.internal_error(501, NotImplementedError(
-        "Cluster update op isn't implemented (id '%s')"
-        % cluster_id))
+def clusters_update(_cluster_id):
+    return _not_implemented()
 
 
 @rest.delete('/clusters/<cluster_id>')
@@ -74,7 +72,7 @@ def cluster_templates_get(cluster_template_id):
 
 @rest.put('/cluster-templates/<cluster_template_id>')
 def cluster_templates_update(_cluster_template_id):
-    pass
+    return _not_implemented()
 
 
 @rest.delete('/cluster-templates/<cluster_template_id>')
@@ -88,7 +86,7 @@ def cluster_templates_delete(cluster_template_id):
 @rest.get('/node-group-templates')
 def node_group_templates_list():
     return u.render(
-        node_group_template=[t.dict for t in api.get_node_group_templates()])
+        node_group_templates=[t.dict for t in api.get_node_group_templates()])
 
 
 @rest.post('/node-group-templates')
@@ -104,7 +102,7 @@ def node_group_templates_get(node_group_template_id):
 
 @rest.put('/node-group-templates/<node_group_template_id>')
 def node_group_templates_update(_node_group_template_id):
-    pass
+    return _not_implemented()
 
 
 @rest.delete('/node-group-templates/<node_group_template_id>')
@@ -166,3 +164,8 @@ def image_tags_delete(image_id, data):
     novaclient = nova.client()
     novaclient.images.untag(image_id, **data)
     return _render_image(image_id, novaclient)
+
+
+def _not_implemented():
+    return u.internal_error(
+        501, NotImplementedError("This API operation isn't implemented"))
