@@ -1,0 +1,25 @@
+{
+    "name": "demo-cluster-template",
+    "description": "Demo Cluster template",
+    "plugin_name": "vanilla",
+    "hadoop_version": "1.1.1",
+    "cluster_configs": {
+        "general": {
+            "some_general_conf": "qwerty"
+        }
+    },
+    "node_groups": [
+        {
+            "name": "master",
+            "node_group_template_id": "9291e73c-0982-4728-820e-0ee77f8e317c",
+            "count": 1
+        },
+        {
+            "name": "worker",
+            "flavor_id": "42",
+            "node_processes": ["tasktracker", "datanode"],
+            "node_configs": {},
+            "count": 2
+        }
+    ]
+}
