@@ -47,3 +47,4 @@ Installation guides
 
     installation.guide
     horizon/installation.guide
+    horizon/dev.environment.guide
