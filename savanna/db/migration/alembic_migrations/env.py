@@ -14,7 +14,7 @@
 # limitations under the License.
 
 from alembic import context
-from logging.config import fileConfig
+from logging import config as logging_config
 from savanna.openstack.common import importutils
 from sqlalchemy import create_engine, pool
 
@@ -26,7 +26,7 @@ importutils.import_module('savanna.db.models')
 config = context.config
 savanna_config = config.savanna_config
 
-fileConfig(config.config_file_name)
+logging_config.fileConfig(config.config_file_name)
 
 # set the target for 'autogenerate' support
 target_metadata = model_base.SavannaBase.metadata

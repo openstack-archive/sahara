@@ -12,12 +12,13 @@
 # implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from savanna.context import ctx
-
-import savanna.db.models as m
-from savanna.tests.unit.db.models.base import ModelTestCase
 
 import unittest2
+
+from savanna import context as ctx
+import savanna.db.models as m
+from savanna.tests.unit.db.models import base as models_test_base
+
 
 SAMPLE_CONFIGS = {
     'a': 'av',
@@ -26,9 +27,9 @@ SAMPLE_CONFIGS = {
 }
 
 
-class TemplatesModelTest(ModelTestCase):
+class TemplatesModelTest(models_test_base.ModelTestCase):
     def testCreateNodeGroupTemplate(self):
-        session = ctx().session
+        session = ctx.current().session
         with session.begin():
             ngt = m.NodeGroupTemplate('ngt-1', 't-1', 'f-1', 'p-1', 'hv-1',
                                       ['np-1', 'np-2'], SAMPLE_CONFIGS, "d")
@@ -53,7 +54,7 @@ class TemplatesModelTest(ModelTestCase):
         })
 
     def testCreateClusterTemplate(self):
-        session = ctx().session
+        session = ctx.current().session
         with session.begin():
             c = m.ClusterTemplate('c-1', 't-1', 'p-1', 'hv-1', SAMPLE_CONFIGS,
                                   "d")
@@ -75,7 +76,7 @@ class TemplatesModelTest(ModelTestCase):
         })
 
     def testCreateClusterTemplateWithNodeGroupTemplates(self):
-        session = ctx().session
+        session = ctx.current().session
         with session.begin():
             ct = m.ClusterTemplate('ct', 't-1', 'p-1', 'hv-1')
             session.add(ct)

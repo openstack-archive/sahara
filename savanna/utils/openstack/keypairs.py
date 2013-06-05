@@ -14,10 +14,10 @@
 # limitations under the License.
 
 from novaclient import base
-from novaclient.v1_1.keypairs import KeypairManager
+from novaclient.v1_1 import keypairs
 
 
-class SavannaKeypairManager(KeypairManager):
+class SavannaKeypairManager(keypairs.KeypairManager):
     def get(self, keypair):
         """Get a keypair.
 

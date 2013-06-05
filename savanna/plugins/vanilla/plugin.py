@@ -13,11 +13,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from savanna.plugins.provisioning import Config
-from savanna.plugins.provisioning import ProvisioningPluginBase
+from savanna.plugins import provisioning as p
 
 
-class VanillaProvider(ProvisioningPluginBase):
+class VanillaProvider(p.ProvisioningPluginBase):
     def get_plugin_opts(self):
         return []
 
@@ -37,7 +36,7 @@ class VanillaProvider(ProvisioningPluginBase):
 
     def get_configs(self, hadoop_version):
         return [
-            Config('heap_size', 'tasktracker', default_value='1024M')
+            p.Config('heap_size', 'tasktracker', default_value='1024M')
         ]
 
     def get_node_processes(self, hadoop_version):

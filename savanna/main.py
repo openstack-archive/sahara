@@ -13,26 +13,26 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from eventlet import monkey_patch
-from flask import Flask
-from keystoneclient.middleware.auth_token import filter_factory as auth_token
+import eventlet
+import flask
+from keystoneclient.middleware import auth_token
 from oslo.config import cfg
-from savanna.context import ctx
-from savanna.plugins.base import setup_plugins
-from werkzeug.exceptions import default_exceptions
-from werkzeug.exceptions import HTTPException
+from werkzeug import exceptions as werkzeug_exceptions
 
 from savanna.api import v10 as api_v10
+from savanna import context
 from savanna.db import api as db_api
-from savanna.middleware.auth_valid import filter_factory as auth_valid
-from savanna.utils.api import render
-from savanna.utils.scheduler import setup_scheduler
+from savanna.middleware import auth_valid
+from savanna.plugins import base as plugins_base
+from savanna.utils import api as api_utils
+from savanna.utils import scheduler
 
 from savanna.openstack.common import log
 
 LOG = log.getLogger(__name__)
 
-monkey_patch(os=True, select=True, socket=True, thread=True, time=True)
+eventlet.monkey_patch(
+    os=True, select=True, socket=True, thread=True, time=True)
 
 opts = [
     cfg.StrOpt('os_auth_protocol',
@@ -67,11 +67,11 @@ def make_app():
 
     Entry point for Savanna REST API server
     """
-    app = Flask('savanna.api')
+    app = flask.Flask('savanna.api')
 
     @app.route('/', methods=['GET'])
     def version_list():
-        return render({
+        return api_utils.render({
             "versions": [
                 {"id": "v1.0", "status": "CURRENT"}
             ]
@@ -80,32 +80,33 @@ def make_app():
     @app.teardown_request
     def teardown_request(_ex=None):
         # todo how it'll work in case of exception?
-        session = ctx().session
+        session = context.session()
         if session.transaction:
             session.transaction.commit()
 
     app.register_blueprint(api_v10.rest, url_prefix='/v1.0')
 
     db_api.configure_db()
-    setup_scheduler(app)
-    setup_plugins()
+    scheduler.setup_scheduler(app)
+    plugins_base.setup_plugins()
 
     def make_json_error(ex):
         status_code = (ex.code
-                       if isinstance(ex, HTTPException)
+                       if isinstance(ex, werkzeug_exceptions.HTTPException)
                        else 500)
         description = (ex.description
-                       if isinstance(ex, HTTPException)
+                       if isinstance(ex, werkzeug_exceptions.HTTPException)
                        else str(ex))
-        return render({'error': status_code, 'error_message': description},
-                      status=status_code)
+        return api_utils.render({'error': status_code,
+                                 'error_message': description},
+                                status=status_code)
 
-    for code in default_exceptions.iterkeys():
+    for code in werkzeug_exceptions.default_exceptions.iterkeys():
         app.error_handler_spec[None][code] = make_json_error
 
-    app.wsgi_app = auth_valid(app.config)(app.wsgi_app)
+    app.wsgi_app = auth_valid.filter_factory(app.config)(app.wsgi_app)
 
-    app.wsgi_app = auth_token(
+    app.wsgi_app = auth_token.filter_factory(
         app.config,
         auth_host=CONF.os_auth_host,
         auth_port=CONF.os_auth_port,

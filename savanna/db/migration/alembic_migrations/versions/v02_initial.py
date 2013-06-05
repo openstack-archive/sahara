@@ -28,9 +28,9 @@ down_revision = None
 from alembic import op
 import sqlalchemy as sa
 
-from savanna.utils.sqlatypes import JSONEncoded
+from savanna.utils import sqlatypes as st
 
-sa.JSONEncoded = JSONEncoded
+sa.JSONEncoded = st.JSONEncoded
 
 
 def upgrade():

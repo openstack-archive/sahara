@@ -13,21 +13,21 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import flask as f
 import inspect
 import mimetypes
 import traceback
-from werkzeug.datastructures import MIMEAccept
 
-from savanna.context import Context
-from savanna.context import set_ctx
+import flask
+from werkzeug import datastructures
+
+from savanna import context
 from savanna.openstack.common import log as logging
 from savanna.openstack.common import wsgi
 
 LOG = logging.getLogger(__name__)
 
 
-class Rest(f.Blueprint):
+class Rest(flask.Blueprint):
     def get(self, rule, status_code=200):
         return self._mroute('GET', rule, status_code)
 
@@ -53,33 +53,36 @@ class Rest(f.Blueprint):
 
             def handler(**kwargs):
                 # extract response content type
-                resp_type = f.request.accept_mimetypes
+                resp_type = flask.request.accept_mimetypes
                 type_suffix = kwargs.pop('resp_type', None)
                 if type_suffix:
                     suffix_mime = mimetypes.guess_type("res." + type_suffix)[0]
                     if suffix_mime:
-                        resp_type = MIMEAccept([(suffix_mime, 1)])
-                f.request.resp_type = resp_type
+                        resp_type = datastructures.MIMEAccept(
+                            [(suffix_mime, 1)])
+                flask.request.resp_type = resp_type
 
                 # update status code
                 if status:
-                    f.request.status_code = status
+                    flask.request.status_code = status
 
                 kwargs.pop("tenant_id")
 
-                context = Context(f.request.headers['X-User-Id'],
-                                  f.request.headers['X-Tenant-Id'],
-                                  f.request.headers['X-Auth-Token'],
-                                  f.request.headers)
-                set_ctx(context)
+                ctx = context.Context(
+                    flask.request.headers['X-User-Id'],
+                    flask.request.headers['X-Tenant-Id'],
+                    flask.request.headers[
+                        'X-Auth-Token'],
+                    flask.request.headers)
+                context.set_ctx(ctx)
 
                 # set func implicit args
                 args = inspect.getargspec(func).args
 
                 if 'ctx' in args:
-                    kwargs['ctx'] = context
+                    kwargs['ctx'] = ctx
 
-                if f.request.method in ['POST', 'PUT'] and 'data' in args:
+                if flask.request.method in ['POST', 'PUT'] and 'data' in args:
                     kwargs['data'] = request_data()
 
                 return func(**kwargs)
@@ -97,8 +100,8 @@ class Rest(f.Blueprint):
         return decorator
 
 
-RT_JSON = MIMEAccept([("application/json", 1)])
-RT_XML = MIMEAccept([("application/xml", 1)])
+RT_JSON = datastructures.MIMEAccept([("application/json", 1)])
+RT_XML = datastructures.MIMEAccept([("application/xml", 1)])
 
 
 def _clean_nones(obj):
@@ -136,14 +139,14 @@ def render(res=None, resp_type=None, status=None, **kwargs):
 
     res = _clean_nones(res)
 
-    status_code = getattr(f.request, 'status_code', None)
+    status_code = getattr(flask.request, 'status_code', None)
     if status:
         status_code = status
     if not status_code:
         status_code = 200
 
     if not resp_type:
-        resp_type = getattr(f.request, 'resp_type', RT_JSON)
+        resp_type = getattr(flask.request, 'resp_type', RT_JSON)
 
     if not resp_type:
         resp_type = RT_JSON
@@ -161,19 +164,20 @@ def render(res=None, resp_type=None, status=None, **kwargs):
     body = serializer.serialize(res)
     resp_type = str(resp_type)
 
-    return f.Response(response=body, status=status_code, mimetype=resp_type)
+    return flask.Response(response=body, status=status_code,
+                          mimetype=resp_type)
 
 
 def request_data():
-    if hasattr(f.request, 'parsed_data'):
-        return f.request.parsed_data
+    if hasattr(flask.request, 'parsed_data'):
+        return flask.request.parsed_data
 
-    if not f.request.content_length > 0:
+    if not flask.request.content_length > 0:
         LOG.debug("Empty body provided in request")
         return dict()
 
     deserializer = None
-    content_type = f.request.mimetype
+    content_type = flask.request.mimetype
     if not content_type or content_type in RT_JSON:
         deserializer = wsgi.JSONDeserializer()
     elif content_type in RT_XML:
@@ -183,9 +187,10 @@ def request_data():
         abort_and_log(400, "Content type '%s' isn't supported" % content_type)
 
     # parsed request data to avoid unwanted re-parsings
-    f.request.parsed_data = deserializer.deserialize(f.request.data)['body']
+    parsed_data = deserializer.deserialize(flask.request.data)['body']
+    flask.request.parsed_data = parsed_data
 
-    return f.request.parsed_data
+    return flask.request.parsed_data
 
 
 def abort_and_log(status_code, descr, exc=None):
@@ -195,7 +200,7 @@ def abort_and_log(status_code, descr, exc=None):
     if exc is not None:
         LOG.error(traceback.format_exc())
 
-    f.abort(status_code, description=descr)
+    flask.abort(status_code, description=descr)
 
 
 def render_error_message(error_code, error_message, error_name):

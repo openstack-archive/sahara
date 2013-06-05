@@ -14,15 +14,16 @@
 # limitations under the License.
 
 import mock
-import savanna.context as ctx
+
+from savanna import context as ctx
 import savanna.db.models as m
-from savanna.service.instances import _create_instances
-from savanna.tests.unit.db.models.base import ModelTestCase
+from savanna.service import instances
+from savanna.tests.unit.db.models import base as models_test_base
 import savanna.utils.crypto as c
 
 
-class NodePlacementTest(ModelTestCase):
-    @mock.patch('savanna.utils.openstack.nova.novaclient')
+class NodePlacementTest(models_test_base.ModelTestCase):
+    @mock.patch('savanna.utils.openstack.nova.client')
     def test_one_node_groups_and_one_affinity_group(self, novaclient):
         node_groups = [m.NodeGroup("test_group",
                                    "test_flavor",
@@ -36,7 +37,7 @@ class NodePlacementTest(ModelTestCase):
 
         nova = _create_nova_mock(novaclient)
 
-        _create_instances(cluster)
+        instances._create_instances(cluster)
         files = _generate_files(cluster)
 
         nova.servers.create.assert_has_calls(
@@ -56,7 +57,7 @@ class NodePlacementTest(ModelTestCase):
         with session.begin():
             self.assertEqual(session.query(m.Instance).count(), 2)
 
-    @mock.patch('savanna.utils.openstack.nova.novaclient')
+    @mock.patch('savanna.utils.openstack.nova.client')
     def test_one_node_groups_and_no_affinity_group(self, novaclient):
         node_groups = [m.NodeGroup("test_group",
                                    "test_flavor",
@@ -69,7 +70,7 @@ class NodePlacementTest(ModelTestCase):
 
         nova = _create_nova_mock(novaclient)
 
-        _create_instances(cluster)
+        instances._create_instances(cluster)
 
         files = _generate_files(cluster)
         nova.servers.create.assert_has_calls(
@@ -89,7 +90,7 @@ class NodePlacementTest(ModelTestCase):
         with session.begin():
             self.assertEqual(session.query(m.Instance).count(), 2)
 
-    @mock.patch('savanna.utils.openstack.nova.novaclient')
+    @mock.patch('savanna.utils.openstack.nova.client')
     def test_two_node_groups_and_one_affinity_group(self, novaclient):
         node_groups = [m.NodeGroup("test_group_1",
                                    "test_flavor",
@@ -110,7 +111,7 @@ class NodePlacementTest(ModelTestCase):
         cluster = _create_cluster_mock(node_groups)
         nova = _create_nova_mock(novaclient)
 
-        _create_instances(cluster)
+        instances._create_instances(cluster)
 
         files = _generate_files(cluster)
         nova.servers.create.assert_has_calls(

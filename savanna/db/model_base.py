@@ -12,6 +12,7 @@
 # implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+
 import re
 
 import sqlalchemy as sa
@@ -20,11 +21,11 @@ from sqlalchemy import orm
 
 from savanna.openstack.common import timeutils
 from savanna.openstack.common import uuidutils
-from savanna.utils.resources import BaseResource
-from savanna.utils.sqlatypes import JsonDictType
+from savanna.utils import resources
+from savanna.utils import sqlatypes as st
 
 
-class _SavannaBase(BaseResource):
+class _SavannaBase(resources.BaseResource):
     """Base class for all Savanna Models."""
 
     created = sa.Column(sa.DateTime, default=timeutils.utcnow,
@@ -140,4 +141,4 @@ class ExtraMixin(object):
 
     __filter_cols__ = ['extra']
 
-    extra = sa.Column(JsonDictType())
+    extra = sa.Column(st.JsonDictType())

@@ -16,15 +16,15 @@
 import logging
 
 from novaclient.v1_1 import client as nova_client
-from savanna.context import ctx
 
+from savanna import context
 import savanna.utils.openstack.base as base
-from savanna.utils.openstack.images import SavannaImageManager
-from savanna.utils.openstack.keypairs import SavannaKeypairManager
+from savanna.utils.openstack import images
+from savanna.utils.openstack import keypairs
 
 
-def novaclient():
-    headers = ctx().headers
+def client():
+    headers = context.current().headers
     username = headers['X-User-Name']
     token = headers['X-Auth-Token']
     tenant = headers['X-Tenant-Id']
@@ -39,25 +39,25 @@ def novaclient():
 
     nova.client.auth_token = token
     nova.client.management_url = compute_url
-    nova.images = SavannaImageManager(nova)
+    nova.images = images.SavannaImageManager(nova)
     if not hasattr(nova.keypairs, 'get'):
-        nova.keypairs = SavannaKeypairManager(nova)
+        nova.keypairs = keypairs.SavannaKeypairManager(nova)
 
     return nova
 
 
 def get_flavors():
-    return [flavor.name for flavor in novaclient().flavors.list()]
+    return [flavor.name for flavor in client().flavors.list()]
 
 
 def get_flavor(**kwargs):
-    return novaclient().flavors.find(**kwargs)
+    return client().flavors.find(**kwargs)
 
 
 def get_images():
-    return [image.id for image in novaclient().images.list()]
+    return [image.id for image in client().images.list()]
 
 
 def get_limits():
-    limits = novaclient().limits.get().absolute
+    limits = client().limits.get().absolute
     return dict((l.name, l.value) for l in limits)

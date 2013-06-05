@@ -51,6 +51,15 @@ def ctx():
     return _CTXS._curr_ctx
 
 
+def current():
+    return ctx()
+
+
+def session(context=None):
+    context = context or ctx()
+    return context.session
+
+
 def set_ctx(new_ctx):
     if not new_ctx and hasattr(_CTXS, '_curr_ctx'):
         del _CTXS._curr_ctx

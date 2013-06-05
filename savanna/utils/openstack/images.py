@@ -13,8 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from novaclient.v1_1.images import Image
-from novaclient.v1_1.images import ImageManager
+from novaclient.v1_1 import images
 
 
 PROP_DESCR = '_savanna_description'
@@ -32,7 +31,7 @@ def _ensure_tags(tags):
     return [tags] if type(tags) in [str, unicode] else tags
 
 
-class SavannaImage(Image):
+class SavannaImage(images.Image):
     def __init__(self, manager, info, loaded=False):
         info['description'] = info.get('metadata', {}).get(PROP_DESCR)
         info['username'] = info.get('metadata', {}).get(PROP_USERNAME)
@@ -60,7 +59,7 @@ class SavannaImage(Image):
         return self._info.copy()
 
 
-class SavannaImageManager(ImageManager):
+class SavannaImageManager(images.ImageManager):
     """Manage :class:`SavannaImage` resources.
 
     This is an extended version of nova client's ImageManager with support of

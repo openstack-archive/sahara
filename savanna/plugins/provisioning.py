@@ -13,32 +13,33 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from abc import abstractmethod
+import abc
 import functools
-from savanna.plugins.base import PluginInterface
-import savanna.utils.openstack.nova as nova
-from savanna.utils.resources import BaseResource
+
+from savanna.plugins import base as plugins_base
+from savanna.utils.openstack import nova
+from savanna.utils import resources
 
 
 class ProvisioningPluginContext(object):
     def __init__(self, headers):
         self.headers = headers
-        self.nova = self._autoheaders(nova.novaclient)
+        self.nova = self._autoheaders(nova.client)
 
     def _autoheaders(self, func):
         return functools.partial(func, headers=self.headers)
 
 
-class ProvisioningPluginBase(PluginInterface):
-    @abstractmethod
+class ProvisioningPluginBase(plugins_base.PluginInterface):
+    @abc.abstractmethod
     def get_versions(self):
         pass
 
-    @abstractmethod
+    @abc.abstractmethod
     def get_configs(self, hadoop_version):
         pass
 
-    @abstractmethod
+    @abc.abstractmethod
     def get_node_processes(self, hadoop_version):
         pass
 
@@ -48,11 +49,11 @@ class ProvisioningPluginBase(PluginInterface):
     def update_infra(self, cluster):
         pass
 
-    @abstractmethod
+    @abc.abstractmethod
     def configure_cluster(self, cluster):
         pass
 
-    @abstractmethod
+    @abc.abstractmethod
     def start_cluster(self, cluster):
         pass
 
@@ -68,7 +69,7 @@ class ProvisioningPluginBase(PluginInterface):
         return res
 
 
-class Config(BaseResource):
+class Config(resources.BaseResource):
     """Describes a single config parameter.
 
     For example:

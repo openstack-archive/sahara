@@ -19,10 +19,9 @@ from sqlalchemy.orm import relationship
 
 from savanna.db import model_base as mb
 from savanna.utils import crypto
-from savanna.utils.openstack.nova import novaclient
+from savanna.utils.openstack import nova
 from savanna.utils import remote
-from savanna.utils.sqlatypes import JsonDictType
-from savanna.utils.sqlatypes import JsonListType
+from savanna.utils import sqlatypes as st
 
 
 CLUSTER_STATUSES = ['Starting', 'Active', 'Stopping', 'Error']
@@ -39,7 +38,7 @@ class Cluster(mb.SavannaBase, mb.IdMixin, mb.TenantMixin,
 
     name = sa.Column(sa.String(80), nullable=False)
     default_image_id = sa.Column(sa.String(36))
-    cluster_configs = sa.Column(JsonDictType())
+    cluster_configs = sa.Column(st.JsonDictType())
     node_groups = relationship('NodeGroup', cascade="all,delete",
                                backref='cluster')
     # todo replace String type with sa.Enum(*CLUSTER_STATUSES)
@@ -76,7 +75,7 @@ class Cluster(mb.SavannaBase, mb.IdMixin, mb.TenantMixin,
         It contains 'public_key' and 'fingerprint' fields.
         """
         if not hasattr(self, '_user_kp'):
-            self._user_kp = novaclient().keypairs.get(self.user_keypair_id)
+            self._user_kp = nova.client().keypairs.get(self.user_keypair_id)
         return self._user_kp
 
 
@@ -92,8 +91,8 @@ class NodeGroup(mb.SavannaBase, mb.IdMixin, mb.ExtraMixin):
     name = sa.Column(sa.String(80), nullable=False)
     flavor_id = sa.Column(sa.String(36), nullable=False)
     image_id = sa.Column(sa.String(36), nullable=False)
-    node_processes = sa.Column(JsonListType())
-    node_configs = sa.Column(JsonDictType())
+    node_processes = sa.Column(st.JsonListType())
+    node_configs = sa.Column(st.JsonDictType())
     anti_affinity_group = sa.Column(sa.String(36))
     count = sa.Column(sa.Integer, nullable=False)
     instances = relationship('Instance', cascade="all,delete",
@@ -119,7 +118,7 @@ class NodeGroup(mb.SavannaBase, mb.IdMixin, mb.ExtraMixin):
     @property
     def username(self):
         if not hasattr(self, '_username'):
-            self._username = novaclient().images.get(self.image_id).username
+            self._username = nova.client().images.get(self.image_id).username
         return self._username
 
     @property
@@ -166,7 +165,7 @@ class Instance(mb.SavannaBase, mb.ExtraMixin):
     @property
     def nova_info(self):
         """Returns info from nova about instance."""
-        return novaclient().servers.get(self.instance_id)
+        return nova.client().servers.get(self.instance_id)
 
     @property
     def username(self):
@@ -191,7 +190,7 @@ class ClusterTemplate(mb.SavannaBase, mb.IdMixin, mb.TenantMixin,
 
     name = sa.Column(sa.String(80), nullable=False)
     description = sa.Column(sa.String(200))
-    cluster_configs = sa.Column(JsonDictType())
+    cluster_configs = sa.Column(st.JsonDictType())
 
     # todo add node_groups_suggestion helper
 
@@ -228,8 +227,8 @@ class NodeGroupTemplate(mb.SavannaBase, mb.IdMixin, mb.TenantMixin,
     name = sa.Column(sa.String(80), nullable=False)
     description = sa.Column(sa.String(200))
     flavor_id = sa.Column(sa.String(36), nullable=False)
-    node_processes = sa.Column(JsonListType())
-    node_configs = sa.Column(JsonDictType())
+    node_processes = sa.Column(st.JsonListType())
+    node_configs = sa.Column(st.JsonDictType())
 
     def __init__(self, name, tenant_id, flavor_id, plugin_name,
                  hadoop_version, node_processes, node_configs=None,

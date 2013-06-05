@@ -13,14 +13,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from savanna.context import ctx
-import savanna.db.models as m
-from savanna.tests.unit.db.models.base import ModelTestCase
+from savanna import context as ctx
+from savanna.db import models as m
+from savanna.tests.unit.db.models import base as models_test_base
 
 
-class ClusterModelTest(ModelTestCase):
+class ClusterModelTest(models_test_base.ModelTestCase):
     def testCreateCluster(self):
-        session = ctx().session
+        session = ctx.current().session
         with session.begin():
             c = m.Cluster('c-1', 't-1', 'p-1', 'hv-1')
             session.add(c)

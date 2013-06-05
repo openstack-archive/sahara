@@ -13,14 +13,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from savanna.utils.patches import patch_minidom_writexml
-import unittest
+import unittest2
 import xml.dom.minidom as xml
 
+from savanna.utils import patches
 
-class MinidomPatchesTest(unittest.TestCase):
+
+class MinidomPatchesTest(unittest2.TestCase):
     def setUp(self):
-        patch_minidom_writexml()
+        patches.patch_minidom_writexml()
 
     def _generate_n_prettify_xml(self):
         doc = xml.Document()

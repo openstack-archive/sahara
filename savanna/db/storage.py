@@ -13,8 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from savanna.context import ctx
-from savanna.context import model_query
+from savanna import context as ctx
 import savanna.db.models as m
 
 
@@ -22,17 +21,17 @@ import savanna.db.models as m
 # todo check tenant_id and etc.
 
 def get_clusters(**args):
-    return model_query(m.Cluster).filter_by(**args).all()
+    return ctx.model_query(m.Cluster).filter_by(**args).all()
 
 
 def get_cluster(**args):
-    return model_query(m.Cluster).filter_by(**args).first()
+    return ctx.model_query(m.Cluster).filter_by(**args).first()
 
 
 def create_cluster(values):
-    session = ctx().session
+    session = ctx.current().session
     with session.begin():
-        values['tenant_id'] = ctx().tenant_id
+        values['tenant_id'] = ctx.current().tenant_id
         ngs_vals = values.pop('node_groups', [])
         cluster = m.Cluster(**values)
         for ng in ngs_vals:
@@ -45,24 +44,24 @@ def create_cluster(values):
 
 
 def terminate_cluster(cluster):
-    with ctx().session.begin():
-        ctx().session.delete()
+    with ctx.current().session.begin():
+        ctx.current().session.delete(cluster)
 
 
 ## ClusterTemplate ops
 
 def get_cluster_templates(**args):
-    return model_query(m.ClusterTemplate).filter_by(**args).all()
+    return ctx.model_query(m.ClusterTemplate).filter_by(**args).all()
 
 
 def get_cluster_template(**args):
-    return model_query(m.ClusterTemplate).filter_by(**args).first()
+    return ctx.model_query(m.ClusterTemplate).filter_by(**args).first()
 
 
 def create_cluster_template(values):
-    session = ctx().session
+    session = ctx.current().session
     with session.begin():
-        values['tenant_id'] = ctx().tenant_id
+        values['tenant_id'] = ctx.current().tenant_id
         ngts_vals = values.pop('node_group_templates', [])
         cluster_template = m.ClusterTemplate(**values)
         for ngt in ngts_vals:
@@ -76,29 +75,29 @@ def create_cluster_template(values):
 
 
 def terminate_cluster_template(**args):
-    with ctx().session.begin():
-        ctx().session.delete(get_cluster_template(**args))
+    with ctx.current().session.begin():
+        ctx.current().session.delete(get_cluster_template(**args))
 
 
 ## NodeGroupTemplate ops
 
 def get_node_group_templates(**args):
-    return model_query(m.NodeGroupTemplate).filter_by(**args).all()
+    return ctx.model_query(m.NodeGroupTemplate).filter_by(**args).all()
 
 
 def get_node_group_template(**args):
-    return model_query(m.NodeGroupTemplate).filter_by(**args).first()
+    return ctx.model_query(m.NodeGroupTemplate).filter_by(**args).first()
 
 
 def create_node_group_template(values):
-    session = ctx().session
+    session = ctx.current().session
     with session.begin():
-        values['tenant_id'] = ctx().tenant_id
+        values['tenant_id'] = ctx.current().tenant_id
         node_group_template = m.NodeGroupTemplate(**values)
         session.add(node_group_template)
         return node_group_template
 
 
 def terminate_node_group_template(**args):
-    with ctx().session.begin():
-        ctx().session.delete(get_node_group_template(**args))
+    with ctx.current().session.begin():
+        ctx.current().session.delete(get_node_group_template(**args))

@@ -18,10 +18,8 @@ import os
 import tempfile
 import unittest2
 
-from savanna.context import Context
-from savanna.context import set_ctx
-from savanna.db.api import clear_db
-from savanna.db.api import configure_db
+from savanna import context
+from savanna.db import api as db_api
 from savanna.openstack.common.db.sqlalchemy import session
 from savanna.openstack.common import timeutils
 from savanna.openstack.common import uuidutils
@@ -29,16 +27,17 @@ from savanna.openstack.common import uuidutils
 
 class ModelTestCase(unittest2.TestCase):
     def setUp(self):
-        set_ctx(Context('test_user', 'test_tenant', 'test_auth_token', {}))
+        context.set_ctx(
+            context.Context('test_user', 'test_tenant', 'test_auth_token', {}))
         self.db_fd, self.db_path = tempfile.mkstemp()
         session.set_defaults('sqlite:///' + self.db_path, self.db_path)
-        configure_db()
+        db_api.configure_db()
 
     def tearDown(self):
-        clear_db()
+        db_api.clear_db()
         os.close(self.db_fd)
         os.unlink(self.db_path)
-        set_ctx(None)
+        context.set_ctx(None)
 
     def assertIsValidModelObject(self, res):
         self.assertIsNotNone(res)

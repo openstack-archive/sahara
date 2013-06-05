@@ -13,14 +13,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from abc import ABCMeta
-from abc import abstractmethod
+import abc
 import inspect
+
 from oslo.config import cfg
-from savanna.config import parse_configs
+
+from savanna import config
 from savanna.openstack.common import importutils
 from savanna.openstack.common import log as logging
-from savanna.utils.resources import BaseResource
+from savanna.utils import resources
 
 LOG = logging.getLogger(__name__)
 
@@ -34,8 +35,8 @@ CONF = cfg.CONF
 CONF.register_opts(opts)
 
 
-class PluginInterface(BaseResource):
-    __metaclass__ = ABCMeta
+class PluginInterface(resources.BaseResource):
+    __metaclass__ = abc.ABCMeta
 
     name = 'plugin_interface'
 
@@ -59,7 +60,7 @@ class PluginInterface(BaseResource):
         """
         pass
 
-    @abstractmethod
+    @abc.abstractmethod
     def get_title(self):
         """Plugin title
 
@@ -102,13 +103,13 @@ class PluginManager(object):
             ]
             CONF.register_opts(opts, group='plugin:%s' % plugin)
 
-        parse_configs()
+        config.parse_configs()
 
         # register plugin-specific configs
         for plugin_name in CONF.plugins:
             self.plugins[plugin_name] = self._get_plugin_instance(plugin_name)
 
-        parse_configs()
+        config.parse_configs()
 
         titles = []
         for plugin_name in CONF.plugins:

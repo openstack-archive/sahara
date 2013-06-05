@@ -18,8 +18,8 @@ import time
 from savanna import context
 from savanna.db import models as m
 from savanna.openstack.common import log as logging
-from savanna.utils.crypto import private_key_to_public_key
-import savanna.utils.openstack.nova as nova
+from savanna.utils import crypto
+from savanna.utils.openstack import nova
 
 LOG = logging.getLogger(__name__)
 
@@ -57,7 +57,7 @@ def _create_instances(cluster):
             ids = aa_groups[aa_group]
             hints = {'different_host': list(ids)} if ids else None
 
-            nova_instance = nova.novaclient().servers.create(
+            nova_instance = nova.client().servers.create(
                 name, node_group.image_id, node_group.flavor_id,
                 scheduler_hints=hints, files=files)
 
@@ -80,7 +80,7 @@ def _generate_instance_files(node_group):
         path_to_root = "/home/" + node_group.username
 
     authorized_keys = user_key.public_key + '\n'
-    authorized_keys += private_key_to_public_key(cluster.private_key)
+    authorized_keys += crypto.private_key_to_public_key(cluster.private_key)
 
     return {
         path_to_root + "/.ssh/authorized_keys": authorized_keys,
@@ -173,7 +173,7 @@ def _shutdown_instances(cluster, quiet=False):
     """Shutdown all instances related to the specified cluster."""
     for node_group in cluster.node_groups:
         for instance in node_group.instances:
-            nova.novaclient().servers.delete(instance.instance_id)
+            nova.client().servers.delete(instance.instance_id)
 
 
 def shutdown_cluster(cluster):

@@ -14,10 +14,10 @@
 # limitations under the License.
 
 from savanna import context
-import savanna.db.storage as s
+from savanna.db import storage as s
 from savanna.openstack.common import log as logging
-import savanna.plugins.base as plugin_base
-from savanna.plugins.provisioning import ProvisioningPluginBase
+from savanna.plugins import base as plugin_base
+from savanna.plugins import provisioning
 from savanna.service import instances as i
 
 LOG = logging.getLogger(__name__)
@@ -98,7 +98,8 @@ terminate_node_group_template = s.terminate_node_group_template
 ## Plugins ops
 
 def get_plugins():
-    return plugin_base.PLUGINS.get_plugins(base=ProvisioningPluginBase)
+    return plugin_base.PLUGINS.get_plugins(
+        base=provisioning.ProvisioningPluginBase)
 
 
 def get_plugin(plugin_name, version=None):

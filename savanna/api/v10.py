@@ -16,7 +16,7 @@
 from savanna.openstack.common import log as logging
 from savanna.service import api
 import savanna.utils.api as u
-from savanna.utils.openstack.nova import novaclient
+from savanna.utils.openstack import nova
 
 LOG = logging.getLogger(__name__)
 
@@ -135,34 +135,34 @@ def plugins_get_version(plugin_name, version):
 @rest.get('/images')
 def images_list():
     return u.render(
-        images=[i.dict for i in novaclient().images.list_registered()])
+        images=[i.dict for i in nova.client().images.list_registered()])
 
 
 @rest.get('/images/<image_id>')
 def images_get(image_id):
-    return u.render(novaclient().images.get(image_id).dict)
+    return u.render(nova.client().images.get(image_id).dict)
 
 
-def _render_image(image_id, nova):
-    return u.render(nova.images.get(image_id).wrapped_dict)
+def _render_image(image_id, novaclient):
+    return u.render(novaclient.images.get(image_id).wrapped_dict)
 
 
 @rest.post('/images/<image_id>')
 def images_set(image_id, data):
-    nova = novaclient()
-    nova.images.set_description(image_id, **data)
-    return _render_image(image_id, nova)
+    novaclient = nova.client()
+    novaclient.images.set_description(image_id, **data)
+    return _render_image(image_id, novaclient)
 
 
 @rest.post('/images/<image_id>/tag')
 def image_tags_add(image_id, data):
-    nova = novaclient()
-    nova.images.tag(image_id, **data)
-    return _render_image(image_id, nova)
+    novaclient = nova.client()
+    novaclient.images.tag(image_id, **data)
+    return _render_image(image_id, novaclient)
 
 
 @rest.post('/images/<image_id>/untag')
 def image_tags_delete(image_id, data):
-    nova = novaclient()
-    nova.images.untag(image_id, **data)
-    return _render_image(image_id, nova)
+    novaclient = nova.client()
+    novaclient.images.untag(image_id, **data)
+    return _render_image(image_id, novaclient)

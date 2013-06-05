@@ -13,16 +13,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from sqlalchemy.ext.mutable import Mutable
-from sqlalchemy.types import TypeDecorator, VARCHAR
+from sqlalchemy.ext import mutable
+from sqlalchemy import types as st
 
 from savanna.openstack.common import jsonutils
 
 
-class JSONEncoded(TypeDecorator):
+class JSONEncoded(st.TypeDecorator):
     """Represents an immutable structure as a json-encoded string."""
 
-    impl = VARCHAR
+    impl = st.VARCHAR
 
     def process_bind_param(self, value, dialect):
         if value is not None:
@@ -36,7 +36,7 @@ class JSONEncoded(TypeDecorator):
 
 
 # todo verify this implementation
-class MutableDict(Mutable, dict):
+class MutableDict(mutable.Mutable, dict):
     @classmethod
     def coerce(cls, key, value):
         """Convert plain dictionaries to MutableDict."""
@@ -45,7 +45,7 @@ class MutableDict(Mutable, dict):
                 return MutableDict(value)
 
             # this call will raise ValueError
-            return Mutable.coerce(key, value)
+            return mutable.Mutable.coerce(key, value)
         else:
             return value
 
@@ -66,7 +66,7 @@ class MutableDict(Mutable, dict):
 
 
 # todo verify this implementation
-class MutableList(Mutable, list):
+class MutableList(mutable.Mutable, list):
     @classmethod
     def coerce(cls, key, value):
         """Convert plain lists to MutableList."""
@@ -75,7 +75,7 @@ class MutableList(Mutable, list):
                 return MutableList(value)
 
             # this call will raise ValueError
-            return Mutable.coerce(key, value)
+            return mutable.Mutable.coerce(key, value)
         else:
             return value
 

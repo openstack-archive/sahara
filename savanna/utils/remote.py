@@ -15,13 +15,13 @@
 
 import paramiko
 
-from savanna.utils.crypto import to_paramiko_private_key
+from savanna.utils import crypto
 
 
 def setup_ssh_connection(host, username, private_key):
     """Setup SSH connection to the host using username and private key."""
     if type(private_key) in [str, unicode]:
-        private_key = to_paramiko_private_key(private_key)
+        private_key = crypto.to_paramiko_private_key(private_key)
     ssh = paramiko.SSHClient()
     ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
     ssh.connect(host, username=username, pkey=private_key)

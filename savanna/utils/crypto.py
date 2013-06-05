@@ -16,7 +16,7 @@
 from Crypto.PublicKey import RSA
 from Crypto import Random
 import paramiko
-from six import StringIO
+import six
 
 
 def generate_private_key(length=2048):
@@ -27,7 +27,7 @@ def generate_private_key(length=2048):
 
 def to_paramiko_private_key(pkey):
     """Convert private key (str) to paramiko-specific RSAKey object."""
-    return paramiko.RSAKey(file_obj=StringIO(pkey))
+    return paramiko.RSAKey(file_obj=six.StringIO(pkey))
 
 
 def private_key_to_public_key(key):
