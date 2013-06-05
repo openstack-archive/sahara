@@ -24,9 +24,6 @@ from savanna.utils import remote
 from savanna.utils import sqlatypes as st
 
 
-CLUSTER_STATUSES = ['Starting', 'Active', 'Stopping', 'Error']
-
-
 class Cluster(mb.SavannaBase, mb.IdMixin, mb.TenantMixin,
               mb.PluginSpecificMixin, mb.ExtraMixin):
     """Contains all info about cluster."""
@@ -203,16 +200,15 @@ class ClusterTemplate(mb.SavannaBase, mb.IdMixin, mb.TenantMixin,
         self.cluster_configs = cluster_configs or {}
         self.description = description
 
-    def add_node_group_template(self, node_group_template_id, name, count):
-        relation = TemplatesRelation(self.id, node_group_template_id, name,
-                                     count)
+    def add_node_group_template(self, kwargs):
+        relation = TemplatesRelation(self.id, **kwargs)
         self.templates_relations.append(relation)
         return relation
 
     def to_dict(self):
         d = super(ClusterTemplate, self).to_dict()
-        d['node_group_templates'] = [tr.dict for tr in
-                                     self.templates_relations]
+        d['node_groups'] = [tr.dict for tr in
+                            self.templates_relations]
         return d
 
 
@@ -244,29 +240,36 @@ class NodeGroupTemplate(mb.SavannaBase, mb.IdMixin, mb.TenantMixin,
 
 
 # todo it should be replaced with NodeGroup-based relation
-class TemplatesRelation(mb.SavannaBase):
+class TemplatesRelation(mb.SavannaBase, mb.IdMixin):
     """NodeGroupTemplate - ClusterTemplate relationship."""
 
-    __filter_cols__ = ['cluster_template_id', 'created', 'updated']
+    __filter_cols__ = ['cluster_template_id', 'created', 'updated', 'id']
 
     cluster_template_id = sa.Column(sa.String(36),
-                                    sa.ForeignKey('ClusterTemplate.id'),
-                                    primary_key=True)
-    node_group_template_id = sa.Column(sa.String(36),
-                                       sa.ForeignKey('NodeGroupTemplate.id'),
-                                       primary_key=True)
+                                    sa.ForeignKey('ClusterTemplate.id'))
     cluster_template = relationship(ClusterTemplate,
                                     backref='templates_relations')
+
+    node_group_template_id = sa.Column(sa.String(36),
+                                       sa.ForeignKey('NodeGroupTemplate.id'))
     node_group_template = relationship(NodeGroupTemplate,
                                        backref='templates_relations')
-    node_group_name = sa.Column(sa.String(80), nullable=False)
-    count = sa.Column(sa.Integer, nullable=False)
 
-    def __init__(self, cluster_template_id, node_group_template_id,
-                 node_group_name, count):
+    name = sa.Column(sa.String(80), nullable=False)
+    flavor_id = sa.Column(sa.String(36))
+    node_processes = sa.Column(st.JsonListType())
+    node_configs = sa.Column(st.JsonDictType())
+    count = sa.Column(sa.Integer)
+
+    def __init__(self, cluster_template_id, name, count,
+                 node_processes=None, flavor_id=None, node_configs=None,
+                 node_group_template_id=None):
         self.cluster_template_id = cluster_template_id
         self.node_group_template_id = node_group_template_id
-        self.node_group_name = node_group_name
+        self.name = name
+        self.flavor_id = flavor_id
+        self.node_processes = node_processes
+        self.node_configs = node_configs or {}
         self.count = count
 
 

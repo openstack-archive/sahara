@@ -62,12 +62,10 @@ def create_cluster_template(values):
     session = ctx.current().session
     with session.begin():
         values['tenant_id'] = ctx.current().tenant_id
-        ngts_vals = values.pop('node_group_templates', [])
+        ngts_vals = values.pop('node_groups', [])
         cluster_template = m.ClusterTemplate(**values)
         for ngt in ngts_vals:
-            relation = cluster_template.add_node_group_template(
-                ngt['node_group_template_id'], ngt['node_group_name'],
-                ngt['count'])
+            relation = cluster_template.add_node_group_template(ngt)
             session.add(relation)
         session.add(cluster_template)
 
