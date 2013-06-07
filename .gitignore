@@ -37,3 +37,5 @@ etc/savanna.conf
 ChangeLog
 savanna/tests/integration/config.py
 cscope.out
+tools/lintstack.head.py
+tools/pylint_exceptions
