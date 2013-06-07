@@ -37,7 +37,7 @@ Developer Docs
     :maxdepth: 1
 
     restapi/v02
-
+    hadoop-swift/hadoop-swift
 
 Installation guides
 -------------------
