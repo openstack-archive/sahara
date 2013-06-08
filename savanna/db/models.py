@@ -135,6 +135,12 @@ class NodeGroup(mb.SavannaBase, mb.IdMixin, mb.ExtraMixin):
 
         return self._all_configs
 
+    def to_dict(self):
+        d = super(NodeGroup, self).to_dict()
+        d['instances'] = [i.dict for i in self.instances]
+
+        return d
+
 
 class Instance(mb.SavannaBase, mb.ExtraMixin):
     """An OpenStack instance created for the cluster."""

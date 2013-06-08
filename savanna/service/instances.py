@@ -131,7 +131,8 @@ def _check_if_up(instance):
         if exit_code:
             return False
     except Exception as ex:
-        LOG.debug("Can't login to node %s reason %s", server.name, ex)
+        LOG.debug("Can't login to node %s (%s), reason %s",
+                  server.name, instance.management_ip, ex)
         return False
 
     instance._is_up = True
