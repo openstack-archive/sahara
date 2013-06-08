@@ -58,7 +58,7 @@ def _create_instances(cluster):
             hints = {'different_host': list(ids)} if ids else None
 
             nova_instance = nova.client().servers.create(
-                name, node_group.image_id, node_group.flavor_id,
+                name, node_group.get_image_id(), node_group.flavor_id,
                 scheduler_hints=hints, files=files)
 
             with session.begin():

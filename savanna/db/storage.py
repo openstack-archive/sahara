@@ -33,9 +33,19 @@ def create_cluster(values):
     with session.begin():
         values['tenant_id'] = ctx.current().tenant_id
         ngs_vals = values.pop('node_groups', [])
+        # cluster_tmpl_id = values.pop('cluster_template_id', None)
+        # if cluster_tmpl_id:
+        #     tmpl = get_cluster_template(id=cluster_tmpl_id)
+        #     cluster = tmpl.to_cluster(values)
+        # else:
         cluster = m.Cluster(**values)
         for ng in ngs_vals:
-            node_group = m.NodeGroup(**ng)
+            tmpl_id = ng.get('node_group_template_id')
+            if tmpl_id:
+                tmpl = get_node_group_template(id=tmpl_id)
+                node_group = tmpl.to_object(ng, m.NodeGroup)
+            else:
+                node_group = m.NodeGroup(**ng)
             cluster.node_groups.append(node_group)
             session.add(node_group)
         session.add(cluster)
