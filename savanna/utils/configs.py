@@ -23,9 +23,10 @@ def merge_configs(*configs):
     """
     result = {}
     for config in configs:
-        for a_target in config:
-            if a_target not in result or not result[a_target]:
-                result[a_target] = {}
-            result[a_target].update(config[a_target])
+        if config:
+            for a_target in config:
+                if a_target not in result or not result[a_target]:
+                    result[a_target] = {}
+                result[a_target].update(config[a_target])
 
     return result
