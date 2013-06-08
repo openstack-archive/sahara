@@ -27,7 +27,6 @@ class NodePlacementTest(models_test_base.ModelTestCase):
     def test_one_node_groups_and_one_affinity_group(self, novaclient):
         node_groups = [m.NodeGroup("test_group",
                                    "test_flavor",
-                                   "test_image",
                                    ["data node", "test tracker"],
                                    2,
                                    anti_affinity_group="1")]
@@ -42,12 +41,12 @@ class NodePlacementTest(models_test_base.ModelTestCase):
 
         nova.servers.create.assert_has_calls(
             [mock.call("test_cluster-test_group-001",
-                       "test_image",
+                       "initial",
                        "test_flavor",
                        scheduler_hints=None,
                        files=files),
              mock.call("test_cluster-test_group-002",
-                       "test_image",
+                       "initial",
                        "test_flavor",
                        scheduler_hints={'different_host': ["1"]},
                        files=files)],
@@ -61,7 +60,6 @@ class NodePlacementTest(models_test_base.ModelTestCase):
     def test_one_node_groups_and_no_affinity_group(self, novaclient):
         node_groups = [m.NodeGroup("test_group",
                                    "test_flavor",
-                                   "test_image",
                                    ["data node", "test tracker"],
                                    2)]
         node_groups[0]._username = "root"
@@ -75,12 +73,12 @@ class NodePlacementTest(models_test_base.ModelTestCase):
         files = _generate_files(cluster)
         nova.servers.create.assert_has_calls(
             [mock.call("test_cluster-test_group-001",
-                       "test_image",
+                       "initial",
                        "test_flavor",
                        scheduler_hints=None,
                        files=files),
              mock.call("test_cluster-test_group-002",
-                       "test_image",
+                       "initial",
                        "test_flavor",
                        scheduler_hints=None,
                        files=files)],
@@ -94,14 +92,12 @@ class NodePlacementTest(models_test_base.ModelTestCase):
     def test_two_node_groups_and_one_affinity_group(self, novaclient):
         node_groups = [m.NodeGroup("test_group_1",
                                    "test_flavor",
-                                   "test_image",
                                    ["data node",
                                     "test tracker"],
                                    2,
                                    anti_affinity_group="1"),
                        m.NodeGroup("test_group_2",
                                    "test_flavor",
-                                   "test_image",
                                    ["data node", "test tracker"],
                                    1,
                                    anti_affinity_group="1")]
@@ -116,17 +112,17 @@ class NodePlacementTest(models_test_base.ModelTestCase):
         files = _generate_files(cluster)
         nova.servers.create.assert_has_calls(
             [mock.call("test_cluster-test_group_1-001",
-                       "test_image",
+                       "initial",
                        "test_flavor",
                        scheduler_hints=None,
                        files=files),
              mock.call("test_cluster-test_group_1-002",
-                       "test_image",
+                       "initial",
                        "test_flavor",
                        scheduler_hints={'different_host': ["1"]},
                        files=files),
              mock.call("test_cluster-test_group_2-001",
-                       "test_image",
+                       "initial",
                        "test_flavor",
                        scheduler_hints={'different_host': ["1", "2"]},
                        files=files)],

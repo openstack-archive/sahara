@@ -18,6 +18,7 @@ from sqlalchemy.ext.associationproxy import association_proxy
 from sqlalchemy.orm import relationship
 
 from savanna.db import model_base as mb
+from savanna.utils import configs
 from savanna.utils import crypto
 from savanna.utils.openstack import nova
 from savanna.utils import remote
@@ -87,7 +88,7 @@ class NodeGroup(mb.SavannaBase, mb.IdMixin, mb.ExtraMixin):
     cluster_id = sa.Column(sa.String(36), sa.ForeignKey('Cluster.id'))
     name = sa.Column(sa.String(80), nullable=False)
     flavor_id = sa.Column(sa.String(36), nullable=False)
-    image_id = sa.Column(sa.String(36), nullable=False)
+    image_id = sa.Column(sa.String(36))
     node_processes = sa.Column(st.JsonListType())
     node_configs = sa.Column(st.JsonDictType())
     anti_affinity_group = sa.Column(sa.String(36))
@@ -100,7 +101,7 @@ class NodeGroup(mb.SavannaBase, mb.IdMixin, mb.ExtraMixin):
     node_group_template = relationship('NodeGroupTemplate',
                                        backref="node_groups")
 
-    def __init__(self, name, flavor_id, image_id, node_processes, count,
+    def __init__(self, name, flavor_id, node_processes, count, image_id=None,
                  node_configs=None, anti_affinity_group=None,
                  node_group_template_id=None):
         self.name = name
@@ -112,30 +113,26 @@ class NodeGroup(mb.SavannaBase, mb.IdMixin, mb.ExtraMixin):
         self.anti_affinity_group = anti_affinity_group
         self.node_group_template_id = node_group_template_id
 
+    def get_image_id(self):
+        return self.image_id or self.cluster.default_image_id
+
     @property
     def username(self):
         if not hasattr(self, '_username'):
-            self._username = nova.client().images.get(self.image_id).username
+            image_id = self.get_image_id()
+            self._username = nova.client().images.get(image_id).username
         return self._username
 
     @property
     def configuration(self):
         if hasattr(self, '_all_configs'):
             return self._all_configs
-        result = {}
 
-        configs = [self.cluster.base_cluster_template.cluster_configs,
-                   self.cluster.cluster_configs,
-                   self.base_node_group_template.node_configs,
-                   self.node_configs]
+        self._all_configs = configs.merge_configs(
+            self.cluster.cluster_configs,
+            self.node_configs
+        )
 
-        for config in configs:
-            for key in config:
-                d = result.get(key, {})
-                d.update(config[key])
-                result[key] = d
-
-        self._all_configs = result
         return self._all_configs
 
 
@@ -237,6 +234,17 @@ class NodeGroupTemplate(mb.SavannaBase, mb.IdMixin, mb.TenantMixin,
         self.node_processes = node_processes
         self.node_configs = node_configs or {}
         self.description = description
+
+    def to_object(self, values, cls, additional_values=None):
+        additional_values = additional_values or {}
+        return cls(
+            name=values.get('name') or self.name,
+            flavor_id=values.get('flavor_id') or self.flavor_id,
+            node_processes=values.get('node_processes') or self.node_processes,
+            count=values.get('count') or self.count,
+            node_configs=configs.merge_configs(self.node_configs,
+                                               values.get('node_configs')),
+            node_group_template_id=self.id, **additional_values)
 
 
 # todo it should be replaced with NodeGroup-based relation

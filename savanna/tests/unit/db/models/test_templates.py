@@ -105,6 +105,7 @@ class TemplatesModelTest(models_test_base.ModelTestCase):
 
 
 class NestedTemplateTest(unittest2.TestCase):
+    @unittest2.skip('template to obj conversions are not fully implemented')
     def test_nested_templates(self):
         ct = m.ClusterTemplate('ct', 't-1', 'p-1', 'hv-1')
         ct.cluster_configs = {
@@ -150,7 +151,7 @@ class NestedTemplateTest(unittest2.TestCase):
             }
         }
 
-        ng = m.NodeGroup("ng", "f-i", "i-i", ["tt", "dn"], 1)
+        ng = m.NodeGroup("ng", "f-i", ["tt", "dn"], 1)
         ng.cluster = c
         ng.base_node_group_template = ngt
         ng.node_configs = {
