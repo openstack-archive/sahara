@@ -110,7 +110,7 @@ def _check_if_up(instance):
 
     server = instance.nova_info
     if server.status == 'ERROR':
-        # todo replace with specific error
+        # TODO(slukjanov): replace with specific error
         raise RuntimeError("node %s has error status" % server.name)
 
     if server.status != 'ACTIVE':
@@ -120,7 +120,7 @@ def _check_if_up(instance):
         return False
 
     if instance.management_ip is None:
-        # todo support floating ips and different networks
+        # TODO(slukjanov): support floating ips and different networks
         ip = server.networks.values()[0][1]
         if not ip:
             return False

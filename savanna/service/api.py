@@ -33,14 +33,14 @@ def create_cluster(values):
     cluster = s.create_cluster(values)
     plugin = plugin_base.PLUGINS.get_plugin(cluster.plugin_name)
 
-    # todo validate configs and etc.
+    # TODO(slukjanov): validate configs and etc.
 
     # validating cluster
     cluster.status = 'Validating'
     context.model_save(cluster)
     plugin.validate(cluster)
 
-    # todo run all following commands in background thread
+    # TODO(slukjanov): run all following commands in background thread
 
     # updating cluster infra
     cluster.status = 'InfraUpdating'

@@ -46,7 +46,7 @@ _CTXS = threading.local()
 
 def ctx():
     if not hasattr(_CTXS, '_curr_ctx'):
-        # todo replace with specific error
+        # TODO(slukjanov): replace with specific error
         raise RuntimeError("Context isn't available here")
     return _CTXS._curr_ctx
 

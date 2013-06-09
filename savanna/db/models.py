@@ -39,7 +39,7 @@ class Cluster(mb.SavannaBase, mb.IdMixin, mb.TenantMixin,
     cluster_configs = sa.Column(st.JsonDictType())
     node_groups = relationship('NodeGroup', cascade="all,delete",
                                backref='cluster')
-    # todo replace String type with sa.Enum(*CLUSTER_STATUSES)
+    # TODO(slukjanov): replace String type with sa.Enum(*CLUSTER_STATUSES)
     status = sa.Column(sa.String(80))
     status_description = sa.Column(sa.String(200))
     private_key = sa.Column(sa.Text, default=crypto.generate_private_key())
@@ -192,7 +192,7 @@ class ClusterTemplate(mb.SavannaBase, mb.IdMixin, mb.TenantMixin,
     description = sa.Column(sa.String(200))
     cluster_configs = sa.Column(st.JsonDictType())
 
-    # todo add node_groups_suggestion helper
+    # TODO(slukjanov): add node_groups_suggestion helper
 
     def __init__(self, name, tenant_id, plugin_name, hadoop_version,
                  cluster_configs=None, description=None):
@@ -253,7 +253,7 @@ class NodeGroupTemplate(mb.SavannaBase, mb.IdMixin, mb.TenantMixin,
             node_group_template_id=self.id, **additional_values)
 
 
-# todo it should be replaced with NodeGroup-based relation
+# TODO(slukjanov): it should be replaced with NodeGroup-based relation
 class TemplatesRelation(mb.SavannaBase, mb.IdMixin):
     """NodeGroupTemplate - ClusterTemplate relationship."""
 
