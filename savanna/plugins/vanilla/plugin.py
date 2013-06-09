@@ -36,7 +36,8 @@ class VanillaProvider(p.ProvisioningPluginBase):
 
     def get_configs(self, hadoop_version):
         return [
-            p.Config('heap_size', 'tasktracker', default_value='1024M')
+            p.Config('Task Tracker heap size', 'mapreduce', "node",
+                     default_value='1024M')
         ]
 
     def get_node_processes(self, hadoop_version):
