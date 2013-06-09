@@ -28,6 +28,8 @@ def _iter_tags(meta):
 
 
 def _ensure_tags(tags):
+    if not tags:
+        return []
     return [tags] if type(tags) in [str, unicode] else tags
 
 
@@ -56,7 +58,9 @@ class SavannaImage(images.Image):
         return {'image': self.dict}
 
     def to_dict(self):
-        return self._info.copy()
+        result = self._info.copy()
+        del result['links']
+        return result
 
 
 class SavannaImageManager(images.ImageManager):
@@ -96,5 +100,7 @@ class SavannaImageManager(images.ImageManager):
         tags = _ensure_tags(tags)
         return [i for i in self.list() if set(tags).issubset(i.tags)]
 
-    def list_registered(self):
-        return [i for i in self.list() if i.description and i.username]
+    def list_registered(self, tags=None):
+        tags = _ensure_tags(tags)
+        return [i for i in self.list()
+                if i.username and set(tags).issubset(i.tags)]

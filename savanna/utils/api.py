@@ -81,6 +81,8 @@ class Rest(flask.Blueprint):
 
                 if 'ctx' in args:
                     kwargs['ctx'] = ctx
+                if 'request' in args:
+                    kwargs['request'] = flask.request
 
                 if flask.request.method in ['POST', 'PUT'] and 'data' in args:
                     kwargs['data'] = request_data()

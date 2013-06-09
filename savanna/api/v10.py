@@ -131,9 +131,10 @@ def plugins_get_version(plugin_name, version):
 ## Image Registry ops
 
 @rest.get('/images')
-def images_list():
+def images_list(request):
+    tags = request.args.getlist('tags')
     return u.render(
-        images=[i.dict for i in nova.client().images.list_registered()])
+        images=[i.dict for i in nova.client().images.list_registered(tags)])
 
 
 @rest.get('/images/<image_id>')
