@@ -35,6 +35,6 @@ def parse_configs(argv=None, conf_files=None):
     try:
         CONF(ARGV, project='savanna', default_config_files=conf_files)
     except cfg.RequiredOptError as roe:
-        # todo replace RuntimeError with Savanna-specific exception
+        # TODO(slukjanov): replace RuntimeError with Savanna-specific exception
         raise RuntimeError("Option '%s' is required for config group "
                            "'%s'" % (roe.opt_name, roe.group.name))

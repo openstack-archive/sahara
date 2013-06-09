@@ -35,7 +35,7 @@ class JSONEncoded(st.TypeDecorator):
         return value
 
 
-# todo verify this implementation
+# TODO(slukjanov): verify this implementation
 class MutableDict(mutable.Mutable, dict):
     @classmethod
     def coerce(cls, key, value):
@@ -65,7 +65,7 @@ class MutableDict(mutable.Mutable, dict):
         self.changed()
 
 
-# todo verify this implementation
+# TODO(slukjanov): verify this implementation
 class MutableList(mutable.Mutable, list):
     @classmethod
     def coerce(cls, key, value):

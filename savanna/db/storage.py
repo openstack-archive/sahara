@@ -18,7 +18,7 @@ import savanna.db.models as m
 
 
 ## Cluster ops
-# todo check tenant_id and etc.
+# TODO(slukjanov): check tenant_id and etc.
 
 def get_clusters(**args):
     return ctx.model_query(m.Cluster).filter_by(**args).all()

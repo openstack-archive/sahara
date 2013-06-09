@@ -129,17 +129,17 @@ class PluginManager(object):
         plugin_path = CONF['plugin:%s' % plugin_name].plugin_class
         module_path, klass = [s.strip() for s in plugin_path.split(':')]
         if not module_path or not klass:
-            # todo replace with specific error
+            # TODO(slukjanov): replace with specific error
             raise RuntimeError("Incorrect plugin_class: '%s'" %
                                plugin_path)
         module = importutils.try_import(module_path)
         if not hasattr(module, klass):
-            # todo replace with specific error
+            # TODO(slukjanov): replace with specific error
             raise RuntimeError("Class not found: '%s'" % plugin_path)
 
         plugin_class = getattr(module, klass)
         if not inspect.isclass(plugin_class):
-            # todo replace with specific error
+            # TODO(slukjanov): replace with specific error
             raise RuntimeError("'%s' isn't a class" % plugin_path)
 
         plugin = plugin_class()

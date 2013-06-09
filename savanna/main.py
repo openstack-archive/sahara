@@ -79,7 +79,7 @@ def make_app():
 
     @app.teardown_request
     def teardown_request(_ex=None):
-        # todo how it'll work in case of exception?
+        # TODO(slukjanov): how it'll work in case of exception?
         session = context.session()
         if session.transaction:
             session.transaction.commit()

@@ -95,7 +95,7 @@ class Config(resources.BaseResource):
 
     def to_dict(self):
         res = super(Config, self).to_dict()
-        # todo all custom fields from res
+        # TODO(slukjanov): all custom fields from res
         return res
 
     def __repr__(self):
