@@ -38,6 +38,8 @@ CONF.register_opts(opts)
 class PluginInterface(resources.BaseResource):
     __metaclass__ = abc.ABCMeta
 
+    __resource_name__ = 'plugin'
+
     name = 'plugin_interface'
 
     def get_plugin_opts(self):

@@ -53,6 +53,7 @@ class BaseResource(object):
 class Resource(BaseResource):
     def __init__(self, _name, _info):
         self._name = _name
+        self.__resource_name__ = _name
         self._info = _info
 
     def __getattr__(self, k):
