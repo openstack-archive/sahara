@@ -137,13 +137,13 @@ def images_list(request):
         images=[i.dict for i in nova.client().images.list_registered(tags)])
 
 
-@rest.get('/images/<image_id>')
-def images_get(image_id):
-    return u.render(nova.client().images.get(image_id).dict)
-
-
 def _render_image(image_id, novaclient):
     return u.render(novaclient.images.get(image_id).wrapped_dict)
+
+
+@rest.get('/images/<image_id>')
+def images_get(image_id):
+    return _render_image(image_id, nova.client())
 
 
 @rest.post('/images/<image_id>')
