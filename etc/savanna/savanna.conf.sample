@@ -33,10 +33,10 @@ plugins=vanilla
 # be exposed in service URLs (boolean value)
 #use_floating_ips=true
 
-[sqlalchemy]
+[database]
 
 # URL for sqlalchemy database (string value)
-#database_uri=sqlite:////tmp/savanna-server.db
+connection=sqlite:////tmp/savanna-server.db
 
 [plugin:vanilla]
 plugin_class=savanna.plugins.vanilla.plugin:VanillaProvider
