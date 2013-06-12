@@ -128,6 +128,12 @@ def plugins_get_version(plugin_name, version):
     return u.render(api.get_plugin(plugin_name, version).wrapped_dict)
 
 
+@rest.post_file('/plugins/<plugin_name>/<version>/convert-config')
+def plugins_convert_to_cluster_template(plugin_name, version, data):
+    return u.render(
+        api.convert_to_cluster_template(plugin_name, version, data))
+
+
 ## Image Registry ops
 
 @rest.get('/images')

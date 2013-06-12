@@ -82,6 +82,14 @@ def create_cluster_template(values):
         return cluster_template
 
 
+def persist_cluster_template(cluster_template):
+    session = ctx.current().session
+    with session.begin():
+        session.add(cluster_template)
+
+    return cluster_template
+
+
 def terminate_cluster_template(**args):
     with ctx.current().session.begin():
         ctx.current().session.delete(get_cluster_template(**args))
