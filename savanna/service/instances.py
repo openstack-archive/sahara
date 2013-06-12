@@ -18,6 +18,7 @@ import time
 from savanna import context
 from savanna.db import models as m
 from savanna.openstack.common import log as logging
+from savanna.service import networks
 from savanna.utils import crypto
 from savanna.utils.openstack import nova
 
@@ -119,20 +120,8 @@ def _check_if_up(instance):
     if len(server.networks) == 0:
         return False
 
-    # TODO(slukjanov): https://blueprints.launchpad.net/savanna?searchtext=ip
-    # NOTE(slukjanov): first IP of the first network
-    if not instance.internal_ip:
-        ip = server.networks.values()[0][0]
-        if not ip:
-            return False
-        instance.internal_ip = ip
-
-    # NOTE(slukjanov): second IP of the first network
-    if not instance.management_ip:
-        ip = server.networks.values()[0][1]
-        if not ip:
-            return False
-        instance.management_ip = ip
+    if not networks.init_instances_ips(instance, server):
+        return False
 
     try:
         exit_code, _ = instance.remote.execute_command("hostname")

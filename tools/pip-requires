@@ -3,6 +3,7 @@ alembic>=0.4.1
 eventlet>=0.9.12
 flask==0.9
 jsonschema>=1.0.0
+netaddr
 oslo.config>=1.1.0
 paramiko>=1.8.0
 pbr>=0.5.13,<0.6
