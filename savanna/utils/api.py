@@ -34,19 +34,23 @@ class Rest(flask.Blueprint):
     def post(self, rule, status_code=202):
         return self._mroute('POST', rule, status_code)
 
+    def post_file(self, rule, status_code=202):
+        return self._mroute('POST', rule, status_code, file_upload=True)
+
     def put(self, rule, status_code=202):
         return self._mroute('PUT', rule, status_code)
 
     def delete(self, rule, status_code=204):
         return self._mroute('DELETE', rule, status_code)
 
-    def _mroute(self, methods, rule, status_code=None):
+    def _mroute(self, methods, rule, status_code=None, **kw):
         if type(methods) is str:
             methods = [methods]
-        return self.route(rule, methods=methods, status_code=status_code)
+        return self.route(rule, methods=methods, status_code=status_code, **kw)
 
     def route(self, rule, **options):
         status = options.pop('status_code', None)
+        file_upload = options.pop('file_upload', False)
 
         def decorator(func):
             endpoint = options.pop('endpoint', func.__name__)
@@ -61,6 +65,7 @@ class Rest(flask.Blueprint):
                         resp_type = datastructures.MIMEAccept(
                             [(suffix_mime, 1)])
                 flask.request.resp_type = resp_type
+                flask.request.file_upload = file_upload
 
                 # update status code
                 if status:
@@ -177,6 +182,9 @@ def request_data():
     if not flask.request.content_length > 0:
         LOG.debug("Empty body provided in request")
         return dict()
+
+    if flask.request.file_upload:
+        return flask.request.data
 
     deserializer = None
     content_type = flask.request.mimetype
