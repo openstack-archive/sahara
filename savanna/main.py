@@ -28,11 +28,16 @@ from savanna.utils import api as api_utils
 from savanna.utils import scheduler
 
 from savanna.openstack.common import log
+from savanna.utils import patches
 
 LOG = log.getLogger(__name__)
 
 eventlet.monkey_patch(
     os=True, select=True, socket=True, thread=True, time=True)
+
+# Patches minidom's writexml to avoid excess whitespaces in generated xml
+# configuration files that brakes Hadoop.
+patches.patch_minidom_writexml()
 
 opts = [
     cfg.StrOpt('os_auth_protocol',
