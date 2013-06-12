@@ -46,8 +46,8 @@ class SavannaImage(images.Image):
     def untag(self, tags):
         self.manager.untag(self, tags)
 
-    def set_description(self, description=None, username=None):
-        self.manager.set_description(self, description, username)
+    def set_description(self, username, description=None):
+        self.manager.set_description(self, username, description)
 
     @property
     def dict(self):
@@ -71,7 +71,7 @@ class SavannaImageManager(images.ImageManager):
     """
     resource_class = SavannaImage
 
-    def set_description(self, image, description, username):
+    def set_description(self, image, username, description=None):
         """Sets human-readable information for image.
 
         For example:
