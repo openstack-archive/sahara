@@ -15,7 +15,7 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-"""Greenthread local db of variables using weak references"""
+"""Greenthread local storage of variables using weak references"""
 
 import weakref
 
@@ -41,7 +41,7 @@ class WeakLocal(corolocal.local):
 store = WeakLocal()
 
 # A "weak" store uses weak references and allows an object to fall out of scope
-# when it falls out of scope in the code that uses the thread local db. A
+# when it falls out of scope in the code that uses the thread local storage. A
 # "strong" store will hold a reference to the object so that it never falls out
 # of scope.
 weak_store = WeakLocal()
