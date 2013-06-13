@@ -45,17 +45,18 @@ class AuthValidator:
             return resp(env, start_response)
 
         path = env['PATH_INFO']
-        version, url_tenant, rest = commons.split_path(path, 3, 3, True)
+        if path != '/':
+            version, url_tenant, rest = commons.split_path(path, 3, 3, True)
 
-        if not version or not url_tenant or not rest:
-            LOG.info("Incorrect path: %s", path)
-            resp = ex.HTTPNotFound("Incorrect path")
-            resp(env, start_response)
+            if not version or not url_tenant or not rest:
+                LOG.info("Incorrect path: %s", path)
+                resp = ex.HTTPNotFound("Incorrect path")
+                resp(env, start_response)
 
-        if token_tenant != url_tenant:
-            LOG.debug("Unauthorized: token tenant != requested tenant")
-            resp = ex.HTTPUnauthorized('Token tenant != requested tenant')
-            return resp(env, start_response)
+            if token_tenant != url_tenant:
+                LOG.debug("Unauthorized: token tenant != requested tenant")
+                resp = ex.HTTPUnauthorized('Token tenant != requested tenant')
+                return resp(env, start_response)
 
         return self.app(env, start_response)
 
