@@ -40,6 +40,10 @@ def create_cluster(values):
         else:
             cluster = m.Cluster(**values)
 
+        if not ngs_vals and cluster_tmpl_id:
+            # copy node groups from cluster template
+            ngs_vals = cluster_tmpl.dict['node_groups']
+
         for ng in ngs_vals:
             tmpl_id = ng.get('node_group_template_id')
             if tmpl_id:
