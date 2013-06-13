@@ -122,15 +122,14 @@ class VanillaProvider(p.ProvisioningPluginBase):
 
     def _push_configs_to_nodes(self, cluster):
         for ng in cluster.node_groups:
+            files = {
+                '/etc/hadoop/core-site.xml': ng.extra['xml']['core-site'],
+                '/etc/hadoop/mapred-site.xml': ng.extra['xml']['mapred-site'],
+                '/etc/hadoop/hdfs-site.xml': ng.extra['xml']['hdfs-site'],
+                '/tmp/savanna-hadoop-init.sh': ng.extra['setup_script']
+            }
             for inst in ng.instances:
-                inst.remote.write_file_to('/etc/hadoop/core-site.xml',
-                                          ng.extra['xml']['core-site'])
-                inst.remote.write_file_to('/etc/hadoop/mapred-site.xml',
-                                          ng.extra['xml']['mapred-site'])
-                inst.remote.write_file_to('/etc/hadoop/hdfs-site.xml',
-                                          ng.extra['xml']['hdfs-site'])
-                inst.remote.write_file_to('/tmp/savanna-hadoop-init.sh',
-                                          ng.extra['setup_script'])
+                inst.remote.write_files_to(files)
                 inst.remote.execute_command(
                     'sudo chmod 0500 /tmp/savanna-hadoop-init.sh'
                 )
@@ -141,12 +140,13 @@ class VanillaProvider(p.ProvisioningPluginBase):
         nn = utils.get_namenode(cluster)
         jt = utils.get_jobtracker(cluster)
 
-        nn.remote.write_file_to('/etc/hadoop/slaves',
-                                utils.generate_host_names(
-                                utils.get_datanodes(cluster)))
-        nn.remote.write_file_to('/etc/hadoop/masters',
-                                utils.generate_host_names(
-                                utils.get_secondarynamenodes(cluster)))
+        nn.remote.write_files_to({
+            '/etc/hadoop/slaves': utils.generate_host_names(
+                utils.get_datanodes(cluster)),
+            '/etc/hadoop/masters': utils.generate_host_names(
+                utils.get_secondarynamenodes(cluster))
+        })
+
         nn.remote.execute_command(
             "sudo su -c 'hadoop namenode -format' hadoop")
 
