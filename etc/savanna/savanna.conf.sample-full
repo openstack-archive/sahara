@@ -10,11 +10,6 @@
 # set port (integer value)
 #port=8080
 
-# without that option the application operates in dry run mode
-# and does not  send any requests to the OpenStack cluster
-# (boolean value)
-#allow_cluster_ops=true
-
 
 #
 # Options defined in savanna.main
@@ -41,6 +36,29 @@
 
 # Name of tenant where the user is admin (string value)
 #os_admin_tenant_name=admin
+
+
+#
+# Options defined in savanna.openstack.common.db.sqlalchemy.session
+#
+
+# the filename to use with sqlite (string value)
+#sqlite_db=savanna.sqlite
+
+# If true, use synchronous mode for sqlite (boolean value)
+#sqlite_synchronous=true
+
+
+#
+# Options defined in savanna.openstack.common.lockutils
+#
+
+# Whether to disable inter-process locks (boolean value)
+#disable_process_locking=false
+
+# Directory to use for lock files. Default to a temp directory
+# (string value)
+#lock_path=<None>
 
 
 #
@@ -99,9 +117,11 @@
 #log_config=<None>
 
 # A logging.Formatter log message format string which may use
-# any of the available logging.LogRecord attributes. Default:
-# %(default)s (string value)
-#log_format=%(asctime)s %(levelname)8s [%(name)s] %(message)s
+# any of the available logging.LogRecord attributes. This
+# option is deprecated.  Please use
+# logging_context_format_string and
+# logging_default_format_string instead. (string value)
+#log_format=<None>
 
 # Format string for %%(asctime)s in log records. Default:
 # %(default)s (string value)
@@ -147,38 +167,88 @@
 #plugins=
 
 
-[cluster_node]
-
 #
-# Options defined in savanna.service.cluster_ops
+# Options defined in savanna.service.networks
 #
-
-# An existing user on Hadoop image (string value)
-#username=root
-
-# User's password (string value)
-#password=swordfish
 
 # When set to false, Savanna uses only internal IP of VMs.
 # When set to true, Savanna expects OpenStack to auto-assign
 # floating IPs to cluster nodes. Internal IPs will be used for
 # inter-cluster communication, while floating ones will be
 # used by Savanna to configure nodes. Also floating IPs will
-# be exposed in service URLs (boolean value)
+# be exposed in service URLs. (boolean value)
 #use_floating_ips=true
 
 
-[sqlalchemy]
+[database]
 
 #
-# Options defined in savanna.storage.db
+# Options defined in savanna.db.migration.cli
 #
 
-# URL for sqlalchemy database (string value)
-#database_uri=sqlite:////tmp/savanna.db
-
-# Sqlalchemy echo (boolean value)
-#echo=false
+# URL to database (string value)
+#connection=
 
 
-# Total option count: 37
+#
+# Options defined in savanna.openstack.common.db.api
+#
+
+# The backend to use for db (string value)
+#backend=sqlalchemy
+
+# Enable the experimental use of thread pooling for all DB API
+# calls (boolean value)
+#use_tpool=false
+
+
+#
+# Options defined in savanna.openstack.common.db.sqlalchemy.session
+#
+
+# The SQLAlchemy connection string used to connect to the
+# database (string value)
+#connection=sqlite:////savanna/openstack/common/db/$sqlite_db
+
+# The SQLAlchemy connection string used to connect to the
+# slave database (string value)
+#slave_connection=
+
+# timeout before idle sql connections are reaped (integer
+# value)
+#idle_timeout=3600
+
+# Minimum number of SQL connections to keep open in a pool
+# (integer value)
+#min_pool_size=1
+
+# Maximum number of SQL connections to keep open in a pool
+# (integer value)
+#max_pool_size=<None>
+
+# maximum db connection retries during startup. (setting -1
+# implies an infinite retry count) (integer value)
+#max_retries=10
+
+# interval between retries of opening a sql connection
+# (integer value)
+#retry_interval=10
+
+# If set, use this value for max_overflow with sqlalchemy
+# (integer value)
+#max_overflow=<None>
+
+# Verbosity of SQL debugging information. 0=None,
+# 100=Everything (integer value)
+#connection_debug=0
+
+# Add python stack traces to SQL as comment strings (boolean
+# value)
+#connection_trace=false
+
+# If set, use this value for pool_timeout with sqlalchemy
+# (integer value)
+#pool_timeout=<None>
+
+
+# Total option count: 50
