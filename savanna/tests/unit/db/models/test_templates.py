@@ -75,6 +75,7 @@ class TemplatesModelTest(models_test_base.ModelTestCase):
             'node_groups': []
         })
 
+    @unittest2.skip('add_node_group_template has been removed')
     def testCreateClusterTemplateWithNodeGroupTemplates(self):
         session = ctx.current().session
         with session.begin():

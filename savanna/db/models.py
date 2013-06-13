@@ -202,11 +202,6 @@ class ClusterTemplate(mb.SavannaBase, mb.IdMixin, mb.TenantMixin,
         self.cluster_configs = cluster_configs or {}
         self.description = description
 
-    def add_node_group_template(self, kwargs):
-        relation = TemplatesRelation(self.id, **kwargs)
-        self.templates_relations.append(relation)
-        return relation
-
     def to_dict(self):
         d = super(ClusterTemplate, self).to_dict()
         d['node_groups'] = [tr.dict for tr in
