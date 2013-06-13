@@ -34,41 +34,37 @@ def execute_command(ssh_connection, cmd):
 
     Return exit code and stdout data of the executed command.
     """
-    try:
-        chan = ssh_connection.get_transport().open_session()
-        chan.exec_command(cmd)
-        retcode = chan.recv_exit_status()
-        buf = ''
-        while chan.recv_ready():
-            buf += chan.recv(1024)
-        return retcode, buf
-    finally:
-        ssh_connection.close()
+    chan = ssh_connection.get_transport().open_session()
+    chan.exec_command(cmd)
+    retcode = chan.recv_exit_status()
+    buf = ''
+    while chan.recv_ready():
+        buf += chan.recv(1024)
+    return retcode, buf
 
 
-def write_file_to(ssh_connection, remote_file, data):
+def write_file_to(sftp, remote_file, data):
     """Create remote file using existing ssh connection and write the given
     data to it.
     """
-    try:
-        sftp = ssh_connection.open_sftp()
-        fl = sftp.file(remote_file, 'w')
-        fl.write(data)
-        fl.close()
-    finally:
-        ssh_connection.close()
+    fl = sftp.file(remote_file, 'w')
+    fl.write(data)
+    fl.close()
 
 
-def read_file_from(ssh_connection, remote_file):
+def write_files_to(sftp, files):
+    """Copy file->data dictionary in a single ssh connection.
+    """
+    for fl, data in files.iteritems():
+        write_file_to(sftp, fl, data)
+
+
+def read_file_from(sftp, remote_file):
     """Read remote file from the specified host and return given data."""
-    try:
-        sftp = ssh_connection.open_sftp()
-        fl = sftp.file(remote_file, 'r')
-        data = fl.read()
-        fl.close()
-        return data
-    finally:
-        ssh_connection.close()
+    fl = sftp.file(remote_file, 'r')
+    data = fl.read()
+    fl.close()
+    return data
 
 
 class InstanceInteropHelper(object):
@@ -81,10 +77,29 @@ class InstanceInteropHelper(object):
             self.instance.node_group.cluster.private_key)
 
     def execute_command(self, cmd):
-        return execute_command(self.ssh_connection(), cmd)
+        ssh = self.ssh_connection()
+        try:
+            return execute_command(ssh, cmd)
+        finally:
+            ssh.close()
 
     def write_file_to(self, remote_file, data):
-        return write_file_to(self.ssh_connection(), remote_file, data)
+        ssh = self.ssh_connection()
+        try:
+            return write_file_to(ssh.open_sftp(), remote_file, data)
+        finally:
+            ssh.close()
+
+    def write_files_to(self, files):
+        ssh = self.ssh_connection()
+        try:
+            return write_files_to(ssh.open_sftp(), files)
+        finally:
+            ssh.close()
 
     def read_file_from(self, remote_file):
-        return read_file_from(self.ssh_connection(), remote_file)
+        ssh = self.ssh_connection()
+        try:
+            return read_file_from(ssh.open_sftp(), remote_file)
+        finally:
+            ssh.close()
