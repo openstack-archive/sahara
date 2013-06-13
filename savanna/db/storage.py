@@ -75,8 +75,17 @@ def create_cluster_template(values):
         ngts_vals = values.pop('node_groups', [])
         cluster_template = m.ClusterTemplate(**values)
         for ngt in ngts_vals:
-            relation = cluster_template.add_node_group_template(ngt)
-            session.add(relation)
+            tmpl_id = ngt.get('node_group_template_id')
+            if tmpl_id:
+                tmpl = get_node_group_template(id=tmpl_id)
+                node_group = tmpl.to_object(
+                    ngt, m.TemplatesRelation,
+                    dict(cluster_template_id=cluster_template.id))
+            else:
+                node_group = m.TemplatesRelation(
+                    cluster_template_id=cluster_template.id, **ngt)
+            cluster_template.templates_relations.append(node_group)
+            session.add(node_group)
         session.add(cluster_template)
 
         return cluster_template
