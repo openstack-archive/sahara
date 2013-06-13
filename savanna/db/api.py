@@ -32,6 +32,8 @@ def configure_db():
     """
     global _DB_ENGINE
     if not _DB_ENGINE:
+        session.set_defaults('sqlite:////tmp/savanna-server.db',
+                             'savanna-server.db')
         _DB_ENGINE = session.get_engine(sqlite_fk=True)
         register_models()
 
