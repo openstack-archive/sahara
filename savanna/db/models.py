@@ -208,6 +208,17 @@ class ClusterTemplate(mb.SavannaBase, mb.IdMixin, mb.TenantMixin,
                             self.templates_relations]
         return d
 
+    def to_cluster(self, values):
+        return Cluster(
+            name=values.pop('name', None) or self.name,
+            tenant_id=values.pop('tenant_id'),
+            plugin_name=values.pop('plugin_name', None) or self.plugin_name,
+            hadoop_version=(values.pop('hadoop_version', None)
+                            or self.hadoop_version),
+            cluster_configs=configs.merge_configs(
+                self.cluster_configs, values.pop('cluster_configs', None)),
+            **values)
+
 
 class NodeGroupTemplate(mb.SavannaBase, mb.IdMixin, mb.TenantMixin,
                         mb.PluginSpecificMixin):
