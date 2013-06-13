@@ -14,6 +14,7 @@
 # limitations under the License.
 
 import time
+import traceback
 
 from savanna import context
 from savanna.db import models as m
@@ -43,6 +44,7 @@ def create_cluster(cluster):
         _configure_instances(cluster)
     except Exception as ex:
         LOG.warn("Can't start cluster: %s", ex)
+        traceback.print_exc()
         _rollback_cluster_creation(cluster, ex)
 
 
