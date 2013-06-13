@@ -13,6 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from oslo.config import cfg
 import sqlalchemy as sa
 from sqlalchemy.ext.associationproxy import association_proxy
 from sqlalchemy.orm import relationship
@@ -23,6 +24,10 @@ from savanna.utils import crypto
 from savanna.utils.openstack import nova
 from savanna.utils import remote
 from savanna.utils import sqlatypes as st
+
+
+CONF = cfg.CONF
+CONF.import_opt('node_domain', 'savanna.service.networks')
 
 
 class Cluster(mb.SavannaBase, mb.IdMixin, mb.TenantMixin,
@@ -173,6 +178,10 @@ class Instance(mb.SavannaBase, mb.ExtraMixin):
     @property
     def hostname(self):
         return self.instance_name
+
+    @property
+    def fqdn(self):
+        return self.instance_name + '.' + CONF.node_domain
 
     @property
     def remote(self):

@@ -157,7 +157,9 @@ def _generate_etc_hosts(cluster):
     hosts = "127.0.0.1 localhost\n"
     for node_group in cluster.node_groups:
         for instance in node_group.instances:
-            hosts += "%s %s\n" % (instance.internal_ip, instance.hostname)
+            hosts += "%s %s %s\n" % (instance.internal_ip,
+                                     instance.fqdn,
+                                     instance.hostname)
 
     return hosts
 

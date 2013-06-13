@@ -14,6 +14,7 @@
 # limitations under the License.
 
 import netaddr
+
 from oslo.config import cfg
 
 from savanna.utils.openstack import nova
@@ -28,7 +29,11 @@ cluster_node_opts = [
                      'assign floating IPs to cluster nodes. Internal IPs will '
                      'be used for inter-cluster communication, while floating '
                      'ones will be used by Savanna to configure nodes. Also '
-                     'floating IPs will be exposed in service URLs.')
+                     'floating IPs will be exposed in service URLs.'),
+    cfg.StrOpt('node_domain',
+               default='novalocal',
+               help="The suffix of the node's FQDN. In nova-network that is "
+                    "dhcp_domain config parameter")
 ]
 
 CONF.register_opts(cluster_node_opts)
