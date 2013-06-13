@@ -109,3 +109,13 @@ def get_plugin(plugin_name, version=None):
         res._info['configs'] = [c.dict for c in plugin.get_configs(version)]
         res._info['node_processes'] = plugin.get_node_processes(version)
     return res
+
+
+def convert_to_cluster_template(plugin_name, version, config_file):
+    plugin = plugin_base.PLUGINS.get_plugin(plugin_name)
+    cluster_template = plugin.convert(version, config_file)
+    if not cluster_template:
+        # TODO(slukjanov): replace with specific error
+        raise RuntimeError("Plugin doesn't convert config file")
+
+    return s.persist_cluster_template(cluster_template)

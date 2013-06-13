@@ -57,7 +57,7 @@ class ProvisioningPluginBase(plugins_base.PluginInterface):
     def start_cluster(self, cluster):
         pass
 
-    def convert(self, cluster, input_file):
+    def convert(self, hadoop_version, config_file):
         pass
 
     def on_terminate_cluster(self, cluster):
