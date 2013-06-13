@@ -85,9 +85,10 @@ def make_app():
     @app.teardown_request
     def teardown_request(_ex=None):
         # TODO(slukjanov): how it'll work in case of exception?
-        session = context.session()
-        if session.transaction:
-            session.transaction.commit()
+        if flask.request.path != '/':
+            session = context.session()
+            if session.transaction:
+                session.transaction.commit()
 
     app.register_blueprint(api_v10.rest, url_prefix='/v1.0')
 
