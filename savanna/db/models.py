@@ -80,7 +80,7 @@ class Cluster(mb.SavannaBase, mb.IdMixin, mb.TenantMixin,
 class NodeGroup(mb.SavannaBase, mb.IdMixin, mb.ExtraMixin):
     """Specifies group of nodes within a cluster."""
 
-    __filter_cols__ = ['cluster_id']
+    __filter_cols__ = ['id', 'cluster_id']
     __table_args__ = (
         sa.UniqueConstraint('name', 'cluster_id'),
     )
