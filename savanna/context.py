@@ -35,6 +35,12 @@ class Context(object):
         self.headers = headers
         self._db_session = None
 
+    def clone(self):
+        return Context(self.user_id,
+                       self.tenant_id,
+                       self.auth_token,
+                       self.headers)
+
     @property
     def session(self):
         if self._db_session is None:

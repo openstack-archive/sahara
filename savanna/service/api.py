@@ -13,6 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import eventlet
 from savanna import context
 from savanna.db import storage as s
 from savanna.openstack.common import log as logging
@@ -39,8 +40,17 @@ def create_cluster(values):
     cluster.status = 'Validating'
     context.model_save(cluster)
     plugin.validate(cluster)
+    ctx = context.ctx().clone()
 
-    # TODO(slukjanov): run all following commands in background thread
+    eventlet.spawn(_provision_cluster, cluster.id, ctx)
+
+    return cluster
+
+
+def _provision_cluster(cluster_id, ctx):
+    context.set_ctx(ctx)
+    cluster = get_cluster(id=cluster_id)
+    plugin = plugin_base.PLUGINS.get_plugin(cluster.plugin_name)
 
     # updating cluster infra
     cluster.status = 'InfraUpdating'
