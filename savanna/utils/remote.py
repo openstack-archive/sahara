@@ -13,6 +13,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import contextlib
+
 import paramiko
 
 from savanna.utils import crypto
@@ -71,35 +73,65 @@ class InstanceInteropHelper(object):
     def __init__(self, instance):
         self.instance = instance
 
+    def __enter__(self):
+        self.bulk = BulkInstanceInteropHelper(self)
+        return self.bulk
+
+    def __exit__(self, *exc_info):
+        self.bulk.close()
+
     def ssh_connection(self):
         return setup_ssh_connection(
             self.instance.management_ip, self.instance.username,
             self.instance.node_group.cluster.private_key)
 
     def execute_command(self, cmd):
-        ssh = self.ssh_connection()
-        try:
+        with contextlib.closing(self.ssh_connection()) as ssh:
             return execute_command(ssh, cmd)
-        finally:
-            ssh.close()
 
     def write_file_to(self, remote_file, data):
-        ssh = self.ssh_connection()
-        try:
+        with contextlib.closing(self.ssh_connection()) as ssh:
             return write_file_to(ssh.open_sftp(), remote_file, data)
-        finally:
-            ssh.close()
 
     def write_files_to(self, files):
-        ssh = self.ssh_connection()
-        try:
+        with contextlib.closing(self.ssh_connection()) as ssh:
             return write_files_to(ssh.open_sftp(), files)
-        finally:
-            ssh.close()
 
     def read_file_from(self, remote_file):
-        ssh = self.ssh_connection()
-        try:
+        with contextlib.closing(self.ssh_connection()) as ssh:
             return read_file_from(ssh.open_sftp(), remote_file)
-        finally:
-            ssh.close()
+
+
+class BulkInstanceInteropHelper(object):
+    def __init__(self, helper):
+        self.helper = helper
+        self._ssh = None
+        self._sftp = None
+
+    def close(self):
+        if self._sftp:
+            self._sftp.close()
+        if self._ssh:
+            self._ssh.close()
+
+    def ssh_connection(self):
+        if not self._ssh:
+            self._ssh = self.helper.ssh_connection()
+        return self._ssh
+
+    def sftp_connection(self):
+        if not self._sftp:
+            self._sftp = self.ssh_connection().open_sftp()
+        return self._sftp
+
+    def execute_command(self, cmd):
+        return execute_command(self.ssh_connection(), cmd)
+
+    def write_file_to(self, remote_file, data):
+        return write_file_to(self.sftp_connection(), remote_file, data)
+
+    def write_files_to(self, files):
+        return write_files_to(self.sftp_connection(), files)
+
+    def read_file_from(self, remote_file):
+        return read_file_from(self.sftp_connection(), remote_file)
