@@ -13,6 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from eventlet import corolocal
 import threading
 
 from savanna.db import api as db_api
@@ -42,13 +43,14 @@ class Context(object):
 
 
 _CTXS = threading.local()
+_CTXS._curr_ctxs = {}
 
 
 def ctx():
-    if not hasattr(_CTXS, '_curr_ctx'):
+    if corolocal.get_ident() not in _CTXS._curr_ctxs:
         # TODO(slukjanov): replace with specific error
         raise RuntimeError("Context isn't available here")
-    return _CTXS._curr_ctx
+    return _CTXS._curr_ctxs[corolocal.get_ident()]
 
 
 def current():
@@ -61,10 +63,10 @@ def session(context=None):
 
 
 def set_ctx(new_ctx):
-    if not new_ctx and hasattr(_CTXS, '_curr_ctx'):
-        del _CTXS._curr_ctx
-    elif new_ctx:
-        _CTXS._curr_ctx = new_ctx
+    if not new_ctx:
+        del _CTXS._curr_ctxs[corolocal.get_ident()]
+    else:
+        _CTXS._curr_ctxs[corolocal.get_ident()] = new_ctx
 
 
 def model_query(model, context=None):
