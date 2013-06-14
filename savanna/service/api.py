@@ -34,6 +34,7 @@ def create_cluster(values):
     plugin = plugin_base.PLUGINS.get_plugin(cluster.plugin_name)
 
     # TODO(slukjanov): validate configs and etc.
+    _validate(cluster, plugin)
 
     # validating cluster
     cluster.status = 'Validating'
@@ -119,3 +120,25 @@ def convert_to_cluster_template(plugin_name, version, config_file):
         raise RuntimeError("Plugin doesn't convert config file")
 
     return s.persist_cluster_template(cluster_template)
+
+
+def _validate(cluster, plugin):
+
+    # Validate that user configs are not included in plugin configs set
+    pl_confs = {}
+    for config in plugin.get_configs(cluster.hadoop_version):
+        if pl_confs.get(config.applicable_target):
+            pl_confs[config.applicable_target].append(config.name)
+        else:
+            pl_confs[config.applicable_target] = [config.name]
+
+    for ng in cluster.node_groups:
+        for app_target, configs in ng.configuration.items():
+            if app_target not in pl_confs:
+                raise RuntimeError("Plugin doesn't contain applicable "
+                                   "target '%s'" % app_target)
+            for name, values in configs.items():
+                if name not in pl_confs[app_target]:
+                    raise RuntimeError("Plugin's applicable target '%s' "
+                                       "doesn't contain config with name '%s'"
+                                       % (app_target,  name))
