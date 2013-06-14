@@ -179,6 +179,10 @@
 # be exposed in service URLs. (boolean value)
 #use_floating_ips=true
 
+# The suffix of the node's FQDN. In nova-network that is
+# dhcp_domain config parameter (string value)
+#node_domain=novalocal
+
 
 [database]
 
@@ -251,4 +255,4 @@
 #pool_timeout=<None>
 
 
-# Total option count: 50
+# Total option count: 51
