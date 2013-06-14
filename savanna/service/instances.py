@@ -148,9 +148,10 @@ def _configure_instances(cluster):
     hosts = _generate_etc_hosts(cluster)
     for node_group in cluster.node_groups:
         for instance in node_group.instances:
-            instance.remote.write_file_to('etc-hosts', hosts)
-            instance.remote.execute_command('sudo mv etc-hosts /etc/hosts')
-            instance.remote.execute_command('chmod 400 .ssh/id_rsa')
+            with instance.remote as remote:
+                remote.write_file_to('etc-hosts', hosts)
+                remote.execute_command('sudo mv etc-hosts /etc/hosts')
+                remote.execute_command('chmod 400 .ssh/id_rsa')
 
 
 def _generate_etc_hosts(cluster):
