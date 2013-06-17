@@ -177,9 +177,13 @@ def _rollback_cluster_creation(cluster, ex):
 
 def _shutdown_instances(cluster, quiet=False):
     """Shutdown all instances related to the specified cluster."""
+    session = context.ctx().session
+
     for node_group in cluster.node_groups:
         for instance in node_group.instances:
             nova.client().servers.delete(instance.instance_id)
+            with session.begin():
+                session.delete(instance)
 
 
 def shutdown_cluster(cluster):
