@@ -44,12 +44,14 @@ class NodePlacementTest(models_test_base.ModelTestCase):
                        "initial",
                        "test_flavor",
                        scheduler_hints=None,
-                       files=files),
+                       files=files,
+                       key_name='user_keypair'),
              mock.call("test_cluster-test_group-002",
                        "initial",
                        "test_flavor",
                        scheduler_hints={'different_host': ["1"]},
-                       files=files)],
+                       files=files,
+                       key_name='user_keypair')],
             any_order=False)
 
         session = ctx.ctx().session
@@ -76,12 +78,14 @@ class NodePlacementTest(models_test_base.ModelTestCase):
                        "initial",
                        "test_flavor",
                        scheduler_hints=None,
-                       files=files),
+                       files=files,
+                       key_name='user_keypair'),
              mock.call("test_cluster-test_group-002",
                        "initial",
                        "test_flavor",
                        scheduler_hints=None,
-                       files=files)],
+                       files=files,
+                       key_name='user_keypair')],
             any_order=False)
 
         session = ctx.ctx().session
@@ -115,17 +119,20 @@ class NodePlacementTest(models_test_base.ModelTestCase):
                        "initial",
                        "test_flavor",
                        scheduler_hints=None,
-                       files=files),
+                       files=files,
+                       key_name='user_keypair'),
              mock.call("test_cluster-test_group_1-002",
                        "initial",
                        "test_flavor",
                        scheduler_hints={'different_host': ["1"]},
-                       files=files),
+                       files=files,
+                       key_name='user_keypair'),
              mock.call("test_cluster-test_group_2-001",
                        "initial",
                        "test_flavor",
                        scheduler_hints={'different_host': ["1", "2"]},
-                       files=files)],
+                       files=files,
+                       key_name='user_keypair')],
             any_order=False)
 
         session = ctx.ctx().session
@@ -138,7 +145,8 @@ def _create_cluster_mock(node_groups):
                         "tenant_id",
                         "mock_plugin",
                         "mock_version",
-                        "initial")
+                        "initial",
+                        user_keypair_id='user_keypair')
 
     cluster._user_kp = mock.Mock()
     cluster._user_kp.public_key = "123"
