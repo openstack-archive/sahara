@@ -46,6 +46,7 @@ def create_cluster(cluster):
         LOG.warn("Can't start cluster: %s", ex)
         traceback.print_exc()
         _rollback_cluster_creation(cluster, ex)
+        raise RuntimeError('Error while instances creation', ex)
 
 
 def _create_instances(cluster):
