@@ -76,6 +76,10 @@ class Config(resources.BaseResource):
     If config type is 'enum' then list of valid values should be specified in
     config_values property.
 
+    Priority - integer parameter which helps to differentiate all
+    configurations in the UI. Priority decreases from the lower values to
+    higher values.
+
     For example:
 
         "some_conf", "map_reduce", "node", is_optional=True
@@ -83,7 +87,7 @@ class Config(resources.BaseResource):
 
     def __init__(self, name, applicable_target, scope, config_type="str",
                  config_values=None, default_value=None, is_optional=False,
-                 description=None):
+                 description=None, priority=2):
         self.name = name
         self.description = description
         self.config_type = config_type
@@ -92,6 +96,7 @@ class Config(resources.BaseResource):
         self.applicable_target = applicable_target
         self.scope = scope
         self.is_optional = is_optional
+        self.priority = priority
 
     def to_dict(self):
         res = super(Config, self).to_dict()

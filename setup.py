@@ -30,6 +30,7 @@ setuptools.setup(
         'plugins/vanilla/resources/*.template',
         'plugins/vanilla/resources/*.xml',
         'swift/resources/*.xml',
+        'tests/unit/resources/*.xml'
     ]},
     install_requires=requires,
     dependency_links=depend_links,
