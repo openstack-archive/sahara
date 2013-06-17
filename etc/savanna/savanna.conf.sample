@@ -16,7 +16,7 @@
 # be used for inter-cluster communication, while floating
 # ones will be used by Savanna to configure nodes. Also
 # floating IPs will be exposed in service URLs.
-#use_floating_ip=True
+#use_floating_ips=True
 
 # The suffix of the node's FQDN. In nova-network that is
 # dhcp_domain config parameter (string value)
