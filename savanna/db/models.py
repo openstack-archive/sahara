@@ -13,6 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from novaclient import exceptions as nova_ex
 from oslo.config import cfg
 import sqlalchemy as sa
 from sqlalchemy.ext.associationproxy import association_proxy
@@ -78,7 +79,11 @@ class Cluster(mb.SavannaBase, mb.IdMixin, mb.TenantMixin,
         It contains 'public_key' and 'fingerprint' fields.
         """
         if not hasattr(self, '_user_kp'):
-            self._user_kp = nova.client().keypairs.get(self.user_keypair_id)
+            try:
+                self._user_kp = nova.client().keypairs.get(
+                    self.user_keypair_id)
+            except nova_ex.NotFound:
+                self._user_kp = None
         return self._user_kp
 
 

@@ -62,7 +62,8 @@ def _create_instances(cluster):
 
             nova_instance = nova.client().servers.create(
                 name, node_group.get_image_id(), node_group.flavor_id,
-                scheduler_hints=hints, files=files)
+                scheduler_hints=hints, files=files,
+                key_name=cluster.user_keypair_id)
 
             with session.begin():
                 instance = m.Instance(node_group.id, nova_instance.id, name)
@@ -75,14 +76,15 @@ def _create_instances(cluster):
 
 def _generate_instance_files(node_group):
     cluster = node_group.cluster
-    user_key = cluster.user_keypair
 
     if node_group.username == "root":
         path_to_root = "/root"
     else:
         path_to_root = "/home/" + node_group.username
 
-    authorized_keys = user_key.public_key + '\n'
+    authorized_keys = ''
+    if cluster.user_keypair:
+        authorized_keys = cluster.user_keypair.public_key + '\n'
     authorized_keys += crypto.private_key_to_public_key(cluster.private_key)
 
     return {
