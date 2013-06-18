@@ -159,6 +159,13 @@ def images_set(image_id, data):
     return _render_image(image_id, novaclient)
 
 
+@rest.delete('/images/<image_id>')
+def images_unset(image_id):
+    novaclient = nova.client()
+    novaclient.images.unset_description(image_id)
+    return u.render()
+
+
 @rest.post('/images/<image_id>/tag')
 def image_tags_add(image_id, data):
     novaclient = nova.client()
