@@ -98,6 +98,9 @@ class NodeGroup(mb.SavannaBase, mb.IdMixin, mb.ExtraMixin):
     node_configs = sa.Column(st.JsonDictType())
     anti_affinity_group = sa.Column(sa.String(36))
     count = sa.Column(sa.Integer, nullable=False)
+    volumes_per_node = sa.Column(sa.Integer)
+    volumes_size = sa.Column(sa.Integer)
+    volume_mount_prefix = sa.Column(sa.String(80))
     instances = relationship('Instance', cascade="all,delete",
                              backref='node_group')
     node_group_template_id = sa.Column(sa.String(36),
@@ -108,7 +111,8 @@ class NodeGroup(mb.SavannaBase, mb.IdMixin, mb.ExtraMixin):
 
     def __init__(self, name, flavor_id, node_processes, count, image_id=None,
                  node_configs=None, anti_affinity_group=None,
-                 node_group_template_id=None):
+                 node_group_template_id=None, volumes_per_node=0,
+                 volumes_size=10, volume_mount_prefix='/volumes/disk'):
         self.name = name
         self.flavor_id = flavor_id
         self.image_id = image_id
@@ -117,6 +121,9 @@ class NodeGroup(mb.SavannaBase, mb.IdMixin, mb.ExtraMixin):
         self.node_configs = node_configs or {}
         self.anti_affinity_group = anti_affinity_group
         self.node_group_template_id = node_group_template_id
+        self.volumes_per_node = volumes_per_node
+        self.volumes_size = volumes_size
+        self.volume_mount_prefix = volume_mount_prefix
 
     def get_image_id(self):
         return self.image_id or self.cluster.default_image_id
@@ -140,6 +147,14 @@ class NodeGroup(mb.SavannaBase, mb.IdMixin, mb.ExtraMixin):
 
         return self._all_configs
 
+    @property
+    def storage_paths(self):
+        mp = []
+        for idx in xrange(1, self.volumes_per_node + 1):
+            mp.append(self.volume_mount_prefix + chr(idx))
+
+        return mp
+
     def to_dict(self):
         d = super(NodeGroup, self).to_dict()
         d['instances'] = [i.dict for i in self.instances]
@@ -160,11 +175,14 @@ class Instance(mb.SavannaBase, mb.ExtraMixin):
     instance_name = sa.Column(sa.String(80), nullable=False)
     internal_ip = sa.Column(sa.String(15))
     management_ip = sa.Column(sa.String(15))
+    volumes = sa.Column(st.JsonListType())
 
-    def __init__(self, node_group_id, instance_id, instance_name):
+    def __init__(self, node_group_id, instance_id, instance_name,
+                 volumes=None):
         self.node_group_id = node_group_id
         self.instance_id = instance_id
         self.instance_name = instance_name
+        self.volumes = volumes or []
 
     @property
     def nova_info(self):
