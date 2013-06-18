@@ -49,6 +49,9 @@ class SavannaImage(images.Image):
     def set_description(self, username, description=None):
         self.manager.set_description(self, username, description)
 
+    def unset_description(self):
+        self.manager.unset_description(self)
+
     @property
     def dict(self):
         return self.to_dict()
@@ -82,6 +85,19 @@ class SavannaImageManager(images.ImageManager):
             PROP_DESCR: description,
             PROP_USERNAME: username,
         })
+
+    def unset_description(self, image):
+        """Unsets all Savanna-related information.
+
+        It removes username, description and tags from the specified image.
+        """
+        image = self.get(image)
+        meta = [PROP_TAG + tag for tag in image.tags]
+        if image.description is not None:
+            meta += [PROP_DESCR]
+        if image.username is not None:
+            meta += [PROP_USERNAME]
+        self.delete_meta(image, meta)
 
     def tag(self, image, tags):
         """Adds tags to the specified image."""
