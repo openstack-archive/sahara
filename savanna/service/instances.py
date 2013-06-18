@@ -14,10 +14,10 @@
 # limitations under the License.
 
 import time
-import traceback
 
 from savanna import context
 from savanna.db import models as m
+from savanna.openstack.common import excutils
 from savanna.openstack.common import log as logging
 from savanna.service import networks
 from savanna.utils import crypto
@@ -44,9 +44,8 @@ def create_cluster(cluster):
         _configure_instances(cluster)
     except Exception as ex:
         LOG.warn("Can't start cluster: %s", ex)
-        traceback.print_exc()
-        _rollback_cluster_creation(cluster, ex)
-        raise RuntimeError('Error while instances creation', ex)
+        with excutils.save_and_reraise_exception():
+            _rollback_cluster_creation(cluster, ex)
 
 
 def _create_instances(cluster):

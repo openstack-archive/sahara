@@ -37,10 +37,9 @@ class TestClusterRollBack(models_test_base.ModelTestCase):
         nova = _create_nova_mock(novaclient)
         nova.servers.create.side_effect = [_mock_instance(1),
                                            Exception("test")]
-        try:
+
+        with self.assertRaises(Exception):
             instances.create_cluster(cluster)
-        except RuntimeError:
-            pass
 
         session = ctx.ctx().session
         with session.begin():
