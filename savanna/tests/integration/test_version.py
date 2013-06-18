@@ -13,9 +13,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import telnetlib
 
 from savanna.tests.integration import base
-import telnetlib
 
 
 class RestApiVersionsTest(base.ITestCase):
@@ -25,6 +25,6 @@ class RestApiVersionsTest(base.ITestCase):
         telnetlib.Telnet(self.host, self.port)
 
     def test_version(self):
-        version_data = self._get_object(self.url_version, '', 200)
+        version_data = self.get_object(self.url_version, '', 200)
         get_version_data = {"versions": [{"status": "CURRENT", "id": "v1.0"}]}
         self.assertEquals(version_data, get_version_data)
