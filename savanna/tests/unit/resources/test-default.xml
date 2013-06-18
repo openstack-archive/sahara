@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<configuration>
+<!--Common hadoop property 1-->
+<property>
+  <name>name1</name>
+  <value>value1</value>
+  <description>descr1</description>
+</property>
+<!--Common hadoop property 2-->
+<property>
+  <name>name2</name>
+  <value>value2</value>
+  <description>descr2</description>
+</property>
+<!--Common hadoop property 3 without text in 'value' tag-->
+<property>
+  <name>name3</name>
+  <value></value>
+  <description>descr3</description>
+</property>
+<!--Common hadoop property 4 without 'value' tag-->
+<property>
+    <name>name4</name>
+    <description>descr4</description>
+</property>
+<!--Common hadoop property 5 without description-->
+<property>
+    <name>name5</name>
+    <value>value5</value>
+</property>
+</configuration>

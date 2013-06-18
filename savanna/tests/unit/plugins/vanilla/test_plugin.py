@@ -16,6 +16,7 @@
 import unittest2
 
 from savanna.db import models as m
+from savanna.plugins.vanilla import config_helper as c_h
 from savanna.plugins.vanilla import exceptions as ex
 from savanna.plugins.vanilla import plugin as p
 
@@ -27,6 +28,7 @@ class VanillaPluginTest(unittest2.TestCase):
         self.ng1 = m.NodeGroup("nn", "f1", ["namenode"], 1)
         self.ng2 = m.NodeGroup("jt", "f1", ["jobtracker"], 1)
         self.ng3 = m.NodeGroup("tt", "f1", ["tasktracker"], 10)
+        self.cl_configs = self.pl.get_configs("1.1.2")
 
     def test_validate(self):
         self.cl.node_groups = [self.ng1]
@@ -51,3 +53,53 @@ class VanillaPluginTest(unittest2.TestCase):
         with self.assertRaises(ex.TaskTrackersWithoutJobTracker):
             self.ng2.count = 0
             self.pl.validate(self.cl)
+
+    def test_get_configs(self):
+        for cfg in self.cl_configs:
+            if cfg.config_type is "bool":
+                self.assertIsInstance(cfg.default_value, bool)
+            elif cfg.config_type is "int":
+                self.assertIsInstance(cfg.default_value, int)
+            else:
+                self.assertIsInstance(cfg.default_value, str)
+
+    def test_extract_environment_configs(self):
+        env_configs = {
+            "MAPREDUCE": {
+                'Job Tracker Heap Size': 1000,
+                'Task Tracker Heap Size': "2000"
+            },
+            "HDFS": {
+                'Name Node Heap Size': 3000,
+                'Data Node Heap Size': "4000"
+            },
+            "Wrong-applicable-target": {
+                't1': 4
+            }}
+        self.assertListEqual(c_h.extract_environment_confs(env_configs),
+                             ['HADOOP_NAMENODE_OPTS=\\"-Xmx3000m\\"',
+                              'HADOOP_DATANODE_OPTS=\\"-Xmx4000m\\"',
+                              'HADOOP_JOBTRACKER_OPTS=\\"-Xmx1000m\\"',
+                              'HADOOP_TASKTRACKER_OPTS=\\"-Xmx2000m\\"'])
+
+    def test_extract_xml_configs(self):
+        xml_configs = {
+            "HDFS": {
+                'dfs.replication': 3,
+                'fs.default.name': 'hdfs://',
+                'key': 'value'
+            },
+            "MAPREDUCE": {
+                'io.sort.factor': 10,
+                'mapred.reduce.tasks': 2
+            },
+            "Wrong-applicable-target": {
+                'key': 'value'
+            }
+        }
+
+        self.assertListEqual(c_h.extract_xml_confs(xml_configs),
+                             [('fs.default.name', 'hdfs://'),
+                              ('dfs.replication', 3),
+                              ('mapred.reduce.tasks', 2),
+                              ('io.sort.factor', 10)])

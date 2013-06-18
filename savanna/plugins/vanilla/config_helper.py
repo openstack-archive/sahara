@@ -13,28 +13,22 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import pkg_resources as pkg
-import xml.dom.minidom as xml
-
 import jinja2 as j2
 
+from savanna.openstack.common import log as logging
 from savanna.plugins import provisioning as p
-from savanna import version
+from savanna.utils import xmlutils as x
 
+LOG = logging.getLogger(__name__)
 
-def _load_xml_default_configs(file_name):
-    doc = xml.parse(
-        pkg.resource_filename(version.version_info.package,
-                              'plugins/vanilla/resources/%s' % file_name)
-    )
+CORE_DEFAULT = x.load_hadoop_xml_defaults(
+    'plugins/vanilla/resources/core-default.xml')
 
-    properties = doc.getElementsByTagName("name")
-    return [prop.childNodes[0].data for prop in properties]
+HDFS_DEFAULT = x.load_hadoop_xml_defaults(
+    'plugins/vanilla/resources/hdfs-default.xml')
 
-
-CORE_DEFAULT = _load_xml_default_configs('core-default.xml')
-HDFS_DEFAULT = _load_xml_default_configs('hdfs-default.xml')
-MAPRED_DEFAULT = _load_xml_default_configs('mapred-default.xml')
+MAPRED_DEFAULT = x.load_hadoop_xml_defaults(
+    'plugins/vanilla/resources/mapred-default.xml')
 
 XML_CONFS = {
     "HDFS": [CORE_DEFAULT, HDFS_DEFAULT],
@@ -44,12 +38,12 @@ XML_CONFS = {
 # TODO(aignatov): Environmental configs could be more complex
 ENV_CONFS = {
     "MAPREDUCE": {
-        'job_tracker_heap_size': 'HADOOP_JOBTRACKER_OPTS=\\"-Xmx%sm\\"',
-        'task_tracker_heap_size': 'HADOOP_TASKTRACKER_OPTS=\\"-Xmx%sm\\"'
+        'Job Tracker Heap Size': 'HADOOP_JOBTRACKER_OPTS=\\"-Xmx%sm\\"',
+        'Task Tracker Heap Size': 'HADOOP_TASKTRACKER_OPTS=\\"-Xmx%sm\\"'
     },
     "HDFS": {
-        'name_node_heap_size': 'HADOOP_NAMENODE_OPTS=\\"-Xmx%sm\\"',
-        'data_node_heap_size': 'HADOOP_DATANODE_OPTS=\\"-Xmx%sm\\"'
+        'Name Node Heap Size': 'HADOOP_NAMENODE_OPTS=\\"-Xmx%sm\\"',
+        'Data Node Heap Size': 'HADOOP_DATANODE_OPTS=\\"-Xmx%sm\\"'
     }
 }
 
@@ -58,14 +52,24 @@ def _initialise_configs():
     configs = []
     for service, config_lists in XML_CONFS.iteritems():
         for config_list in config_lists:
-            for config_name in config_list:
-                # TODO(aignatov): Need to add default values and types
-                configs.append(
-                    p.Config(config_name, service, "node", is_optional=True))
+            for config in config_list:
+                cfg = p.Config(config['name'], service, "node",
+                               is_optional=True, config_type="str",
+                               default_value=str(config['value']),
+                               description=config['description'])
+                if cfg.default_value in ["true", "false"]:
+                    cfg.config_type = "bool"
+                    cfg.default_value = (cfg.default_value == 'true')
+                if str(cfg.default_value).isdigit():
+                    cfg.config_type = "int"
+                    cfg.default_value = int(cfg.default_value)
+                configs.append(cfg)
 
     for service, config_items in ENV_CONFS.iteritems():
         for name, param_format_str in config_items.iteritems():
-            configs.append(p.Config(name, service, "node", default_value=1024))
+            configs.append(p.Config(name, service, "node",
+                                    default_value=1024, priority=1,
+                                    config_type="int"))
 
     return configs
 
@@ -75,44 +79,6 @@ PLUGIN_CONFIGS = _initialise_configs()
 
 def get_plugin_configs():
     return PLUGIN_CONFIGS
-
-
-def _create_xml(configs, global_conf):
-    doc = xml.Document()
-
-    pi = doc.createProcessingInstruction('xml-stylesheet',
-                                         'type="text/xsl" '
-                                         'href="configuration.xsl"')
-    doc.insertBefore(pi, doc.firstChild)
-
-    # Create the <configuration> base element
-    configuration = doc.createElement("configuration")
-    doc.appendChild(configuration)
-
-    for prop_name, prop_value in configs.items():
-        if prop_name in global_conf:
-            # Create the <property> element
-            property = doc.createElement("property")
-            configuration.appendChild(property)
-
-            # Create a <name> element in <property>
-            name = doc.createElement("name")
-            property.appendChild(name)
-
-            # Give the <name> element some hadoop config name
-            name_text = doc.createTextNode(prop_name)
-            name.appendChild(name_text)
-
-            # Create a <value> element in <property>
-            value = doc.createElement("value")
-            property.appendChild(value)
-
-            # Give the <value> element some hadoop config value
-            value_text = doc.createTextNode(prop_value)
-            value.appendChild(value_text)
-
-    # Return newly created XML
-    return doc.toprettyxml(indent="  ")
 
 
 def generate_xml_configs(configs, nn_hostname, jt_hostname=None):
@@ -138,9 +104,9 @@ def generate_xml_configs(configs, nn_hostname, jt_hostname=None):
 
     # invoking applied configs to appropriate xml files
     xml_configs = {
-        'core-site': _create_xml(cfg, CORE_DEFAULT),
-        'mapred-site': _create_xml(cfg, MAPRED_DEFAULT),
-        'hdfs-site': _create_xml(cfg, HDFS_DEFAULT)
+        'core-site': x.create_hadoop_xml(cfg, CORE_DEFAULT),
+        'mapred-site': x.create_hadoop_xml(cfg, MAPRED_DEFAULT),
+        'hdfs-site': x.create_hadoop_xml(cfg, HDFS_DEFAULT)
     }
 
     return xml_configs
@@ -151,10 +117,14 @@ def extract_environment_confs(configs):
     """
     lst = []
     for service, srv_confs in configs.items():
-        for param_name, param_value in srv_confs.items():
-            for cfg_name, cfg_format_str in ENV_CONFS[service].items():
-                if param_name == cfg_name and param_value is not None:
-                    lst.append(cfg_format_str % param_value)
+        if ENV_CONFS.get(service):
+            for param_name, param_value in srv_confs.items():
+                for cfg_name, cfg_format_str in ENV_CONFS[service].items():
+                    if param_name == cfg_name and param_value is not None:
+                        lst.append(cfg_format_str % param_value)
+        else:
+            LOG.warn("Plugin recieved wrong applicable target '%s' in "
+                     "environmental configs" % service)
     return lst
 
 
@@ -164,10 +134,15 @@ def extract_xml_confs(configs):
     """
     lst = []
     for service, srv_confs in configs.items():
-        for param_name, param_value in srv_confs.items():
-            for cfg_list in XML_CONFS[service]:
-                if param_name in cfg_list and param_value is not None:
-                    lst.append((param_name, param_value))
+        if XML_CONFS.get(service):
+            for param_name, param_value in srv_confs.items():
+                for cfg_list in XML_CONFS[service]:
+                    names = [cfg['name'] for cfg in cfg_list]
+                    if param_name in names and param_value is not None:
+                        lst.append((param_name, param_value))
+        else:
+            LOG.warn("Plugin recieved wrong applicable target '%s' for "
+                     "xml configs" % service)
     return lst
 
 
