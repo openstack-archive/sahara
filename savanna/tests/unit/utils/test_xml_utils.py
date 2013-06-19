@@ -45,13 +45,13 @@ class XMLUtilsTestCase(unittest2.TestCase):
         conf = x.load_hadoop_xml_defaults(
             'tests/unit/resources/test-default.xml')
         self.assertEquals(x.create_hadoop_xml({'name1': 'some_val1',
-                                               'name2': 'some_val2'}, conf),
+                                               'name2': 2}, conf),
                           """<?xml version="1.0" ?>
 <?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
 <configuration>
   <property>
     <name>name2</name>
-    <value>some_val2</value>
+    <value>2</value>
   </property>
   <property>
     <name>name1</name>

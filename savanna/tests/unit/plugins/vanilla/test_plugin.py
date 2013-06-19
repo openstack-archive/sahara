@@ -62,6 +62,7 @@ class VanillaPluginTest(unittest2.TestCase):
                 self.assertIsInstance(cfg.default_value, int)
             else:
                 self.assertIsInstance(cfg.default_value, str)
+            self.assertNotIn(cfg.name, c_h.HIDDEN_CONFS)
 
     def test_extract_environment_configs(self):
         env_configs = {

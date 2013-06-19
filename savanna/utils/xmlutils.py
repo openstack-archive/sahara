@@ -72,7 +72,7 @@ def create_hadoop_xml(configs, global_conf):
             xml_prop.appendChild(name_element)
 
             # Give the <name> element some hadoop config name
-            name_text = doc.createTextNode(name)
+            name_text = doc.createTextNode(str(name))
             name_element.appendChild(name_text)
 
             # Create a <value> element in <property>
@@ -80,7 +80,7 @@ def create_hadoop_xml(configs, global_conf):
             xml_prop.appendChild(value_element)
 
             # Give the <value> element some hadoop config value
-            value_text = doc.createTextNode(value)
+            value_text = doc.createTextNode(str(value))
             value_element.appendChild(value_text)
 
     # Return newly created XML

@@ -85,7 +85,7 @@ class Config(resources.BaseResource):
         "some_conf", "map_reduce", "node", is_optional=True
     """
 
-    def __init__(self, name, applicable_target, scope, config_type="str",
+    def __init__(self, name, applicable_target, scope, config_type="string",
                  config_values=None, default_value=None, is_optional=False,
                  description=None, priority=2):
         self.name = name

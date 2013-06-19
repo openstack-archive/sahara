@@ -47,23 +47,27 @@ ENV_CONFS = {
     }
 }
 
+HIDDEN_CONFS = ['fs.default.name', 'dfs.name.dir', 'dfs.data.dir',
+                'mapred.job.tracker', 'mapred.system.dir', 'mapred.local.dir']
+
 
 def _initialise_configs():
     configs = []
     for service, config_lists in XML_CONFS.iteritems():
         for config_list in config_lists:
             for config in config_list:
-                cfg = p.Config(config['name'], service, "node",
-                               is_optional=True, config_type="str",
-                               default_value=str(config['value']),
-                               description=config['description'])
-                if cfg.default_value in ["true", "false"]:
-                    cfg.config_type = "bool"
-                    cfg.default_value = (cfg.default_value == 'true')
-                if str(cfg.default_value).isdigit():
-                    cfg.config_type = "int"
-                    cfg.default_value = int(cfg.default_value)
-                configs.append(cfg)
+                if config['name'] not in HIDDEN_CONFS:
+                    cfg = p.Config(config['name'], service, "node",
+                                   is_optional=True, config_type="string",
+                                   default_value=str(config['value']),
+                                   description=config['description'])
+                    if cfg.default_value in ["true", "false"]:
+                        cfg.config_type = "bool"
+                        cfg.default_value = (cfg.default_value == 'true')
+                    if str(cfg.default_value).isdigit():
+                        cfg.config_type = "int"
+                        cfg.default_value = int(cfg.default_value)
+                    configs.append(cfg)
 
     for service, config_items in ENV_CONFS.iteritems():
         for name, param_format_str in config_items.iteritems():
