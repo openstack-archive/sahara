@@ -50,6 +50,26 @@ ENV_CONFS = {
 HIDDEN_CONFS = ['fs.default.name', 'dfs.name.dir', 'dfs.data.dir',
                 'mapred.job.tracker', 'mapred.system.dir', 'mapred.local.dir']
 
+CLUSTER_WIDE_CONFS = ['dfs.block.size', 'dfs.permissions', 'dfs.replication',
+                      'dfs.replication.min', 'dfs.replication.max',
+                      'io.file.buffer.size', 'mapreduce.job.counters.max',
+                      'mapred.output.compress', 'io.compression.codecs',
+                      'mapred.output.compression.codec',
+                      'mapred.output.compression.type',
+                      'mapred.compress.map.output',
+                      'mapred.map.output.compression.codec']
+
+PRIORITY_1_CONFS = ['dfs.datanode.du.reserved',
+                    'dfs.datanode.failed.volumes.tolerated',
+                    'dfs.datanode.max.xcievers', 'dfs.datanode.handler.count',
+                    'dfs.namenode.handler.count', 'mapred.child.java.opts',
+                    'mapred.jobtracker.maxtasks.per.job',
+                    'mapred.job.tracker.handler.count',
+                    'mapred.map.child.java.opts',
+                    'mapred.reduce.child.java.opts',
+                    'io.sort.mb', 'mapred.tasktracker.map.tasks.maximum',
+                    'mapred.tasktracker.reduce.tasks.maximum']
+
 
 def _initialise_configs():
     configs = []
@@ -67,6 +87,10 @@ def _initialise_configs():
                     if str(cfg.default_value).isdigit():
                         cfg.config_type = "int"
                         cfg.default_value = int(cfg.default_value)
+                    if config['name'] in CLUSTER_WIDE_CONFS:
+                        cfg.scope = 'cluster'
+                    if config['name'] in PRIORITY_1_CONFS:
+                        cfg.priority = 1
                     configs.append(cfg)
 
     for service, config_items in ENV_CONFS.iteritems():
