@@ -17,6 +17,7 @@ import jinja2 as j2
 
 from savanna.openstack.common import log as logging
 from savanna.plugins import provisioning as p
+from savanna.swift import swift_helper as swift
 from savanna.utils import xmlutils as x
 
 LOG = logging.getLogger(__name__)
@@ -46,6 +47,11 @@ ENV_CONFS = {
         'Data Node Heap Size': 'HADOOP_DATANODE_OPTS=\\"-Xmx%sm\\"'
     }
 }
+
+
+ENABLE_SWIFT = p.Config('Enable Swift', 'General', 'cluster',
+                        config_type="bool",
+                        default_value=True, is_optional=True)
 
 HIDDEN_CONFS = ['fs.default.name', 'dfs.name.dir', 'dfs.data.dir',
                 'mapred.job.tracker', 'mapred.system.dir', 'mapred.local.dir']
@@ -99,6 +105,8 @@ def _initialise_configs():
                                     default_value=1024, priority=1,
                                     config_type="int"))
 
+    configs.append(ENABLE_SWIFT)
+
     return configs
 
 # Initialise plugin Hadoop configurations
@@ -130,9 +138,18 @@ def generate_xml_configs(configs, nn_hostname, jt_hostname=None):
     for key, value in extract_xml_confs(configs):
         cfg[key] = value
 
+    # applying swift configs if user enabled it
+    swift_xml_confs = [{}]
+    #TODO(aignatov): should be changed. General configs not only Swift
+    if not (('General' in configs) and (
+            configs['General'][ENABLE_SWIFT.name] == 'false')):
+        swift_xml_confs = swift.get_swift_configs()
+        cfg.update(extract_name_values(swift_xml_confs))
+        LOG.info("Swift integration is enabled")
+
     # invoking applied configs to appropriate xml files
     xml_configs = {
-        'core-site': x.create_hadoop_xml(cfg, CORE_DEFAULT),
+        'core-site': x.create_hadoop_xml(cfg, CORE_DEFAULT + swift_xml_confs),
         'mapred-site': x.create_hadoop_xml(cfg, MAPRED_DEFAULT),
         'hdfs-site': x.create_hadoop_xml(cfg, HDFS_DEFAULT)
     }
@@ -181,3 +198,7 @@ env = j2.Environment(loader=j2.PackageLoader('savanna',
 def render_template(template_name, **kwargs):
     template = env.get_template('%s.template' % template_name)
     return template.render(**kwargs)
+
+
+def extract_name_values(configs):
+    return dict((cfg['name'], cfg['value']) for cfg in configs)
