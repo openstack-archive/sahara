@@ -18,6 +18,7 @@ from savanna.db import models as m
 from savanna.openstack.common import excutils
 from savanna.openstack.common import log as logging
 from savanna.service import networks
+from savanna.service import volumes
 from savanna.utils import crypto
 from savanna.utils.openstack import nova
 
@@ -35,6 +36,9 @@ def create_cluster(cluster):
         cluster.status = 'Waiting'
         context.model_save(cluster)
         _await_instances(cluster)
+
+        # attach volumes
+        volumes.attach(cluster)
 
         # prepare all instances
         cluster.status = 'Preparing'
@@ -221,6 +225,7 @@ def _rollback_cluster_creation(cluster, ex):
     # update cluster status description
     session = context.ctx().session
     _shutdown_instances(cluster, True)
+    volumes.detach(cluster)
     alive_instances = set([srv.id for srv in nova.client().servers.list()])
 
     for node_group in cluster.node_groups:
@@ -261,4 +266,5 @@ def _shutdown_instance(instance):
 
 def shutdown_cluster(cluster):
     """Shutdown specified cluster and all related resources."""
+    volumes.detach(cluster)
     _shutdown_instances(cluster)
