@@ -107,12 +107,13 @@ class VanillaProvider(p.ProvisioningPluginBase):
         for ng in cluster.node_groups:
             ng.extra = {
                 'xml': c_helper.generate_xml_configs(ng.configuration,
+                                                     ng.storage_paths,
                                                      nn.hostname,
                                                      jt.hostname
                                                      if jt else None),
                 'setup_script': c_helper.generate_setup_script(
+                    ng.storage_paths,
                     c_helper.extract_environment_confs(ng.configuration)
-
                 )
             }
 

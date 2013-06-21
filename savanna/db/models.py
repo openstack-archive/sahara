@@ -158,6 +158,10 @@ class NodeGroup(mb.SavannaBase, mb.IdMixin, mb.ExtraMixin):
         for idx in xrange(1, self.volumes_per_node + 1):
             mp.append(self.volume_mount_prefix + chr(idx))
 
+        # Here we assume that NG will use ephemeral drive if no volumes
+        if not mp:
+            mp = ['/mnt']
+
         return mp
 
     def to_dict(self):
