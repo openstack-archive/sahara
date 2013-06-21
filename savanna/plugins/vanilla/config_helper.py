@@ -13,8 +13,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import jinja2 as j2
-
 from savanna.openstack.common import log as logging
 from savanna.plugins import provisioning as p
 from savanna.swift import swift_helper as swift
@@ -191,13 +189,15 @@ def extract_xml_confs(configs):
     return lst
 
 
-env = j2.Environment(loader=j2.PackageLoader('savanna',
-                                             'plugins/vanilla/resources'))
-
-
-def render_template(template_name, **kwargs):
-    template = env.get_template('%s.template' % template_name)
-    return template.render(**kwargs)
+def generate_setup_script(env_configs):
+    script_lines = ["#!/bin/bash -x"]
+    for line in env_configs:
+        script_lines.append('echo "%s" >> /tmp/hadoop-env.sh' % line)
+    script_lines.append("cat /etc/hadoop/hadoop-env.sh >> /tmp/hadoop-env.sh")
+    script_lines.append("mv /tmp/hadoop-env.sh /etc/hadoop/hadoop-env.sh")
+    script_lines.append("chown -R hadoop:hadoop /mnt")
+    script_lines.append("chmod -R 755 /mnt")
+    return "\n".join(script_lines)
 
 
 def extract_name_values(configs):

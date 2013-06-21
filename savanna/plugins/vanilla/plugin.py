@@ -105,18 +105,14 @@ class VanillaProvider(p.ProvisioningPluginBase):
         nn = utils.get_namenode(cluster)
         jt = utils.get_jobtracker(cluster)
         for ng in cluster.node_groups:
-            #TODO(aignatov): setup_script should be replaced with remote calls
             ng.extra = {
                 'xml': c_helper.generate_xml_configs(ng.configuration,
                                                      nn.hostname,
                                                      jt.hostname
                                                      if jt else None),
-                'setup_script': c_helper.render_template(
-                    'setup-general.sh',
-                    args={
-                        'env_configs': c_helper.extract_environment_confs(
-                            ng.configuration)
-                    }
+                'setup_script': c_helper.generate_setup_script(
+                    c_helper.extract_environment_confs(ng.configuration)
+
                 )
             }
 

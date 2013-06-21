@@ -27,7 +27,6 @@ setuptools.setup(
     cmdclass=common_setup.get_cmdclass(),
     packages=setuptools.find_packages(exclude=['bin']),
     package_data={'savanna': [
-        'plugins/vanilla/resources/*.template',
         'plugins/vanilla/resources/*.xml',
         'swift/resources/*.xml',
         'tests/unit/resources/*.xml'
