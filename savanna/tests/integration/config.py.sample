@@ -1,18 +1,20 @@
 OS_USERNAME = 'admin'  # username for nova
 OS_PASSWORD = 'password'  # password for nova
 OS_TENANT_NAME = 'admin'
-OS_AUTH_URL = 'http://192.168.1.1:35357/v2.0/'  # URL for keystone
+OS_AUTH_URL = 'http://localhost:5000/v2.0/'  # URL for keystone
 
-SAVANNA_HOST = '192.168.1.1'  # IP for Savanna API
+SAVANNA_HOST = 'localhost'  # IP for Savanna API
 SAVANNA_PORT = '8080'  # port for Savanna API
 
-IMAGE_ID = '42'  # ID for instance image
-FLAVOR_ID = 'abc'
+IMAGE_ID = '2'  # ID for instance image
+FLAVOR_ID = 'abc9de12-fdc42ea25'
 
 CLUSTER_NAME_CRUD = 'cluster-crud'  # cluster name for crud operations
-CLUSTER_NAME_HADOOP = 'cluster-hadoop'  # cluster name for hadoop testing
 
-HADOOP_VERSION = '1.1.2'
+TIMEOUT = 15 # time of waiting provisioning cluster
 
-SSH_KEY = 'jenkins'
-PLUGIN_NAME = 'vanilla'
+PLUGIN_NAME = 'vanilla' # name for plugin
+
+HADOOP_VERSION = '1.1.2' # version of Hadoop
+
+SSH_KEY = 'vpupkin' # ssh public key which Savanna transfers to nodes of cluster for access of users to virtual machines via key

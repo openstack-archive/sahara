@@ -26,5 +26,5 @@ class RestApiVersionsTest(base.ITestCase):
 
     def test_version(self):
         version_data = self.get_object(self.url_version, '', 200)
-        get_version_data = {"versions": [{"status": "CURRENT", "id": "v1.0"}]}
+        get_version_data = {'versions': [{'status': 'CURRENT', 'id': 'v1.0'}]}
         self.assertEquals(version_data, get_version_data)
