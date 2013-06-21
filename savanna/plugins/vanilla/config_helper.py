@@ -47,7 +47,7 @@ ENV_CONFS = {
 }
 
 
-ENABLE_SWIFT = p.Config('Enable Swift', 'General', 'cluster',
+ENABLE_SWIFT = p.Config('Enable Swift', 'general', 'cluster',
                         config_type="bool",
                         default_value=True, is_optional=True)
 
@@ -139,8 +139,8 @@ def generate_xml_configs(configs, nn_hostname, jt_hostname=None):
     # applying swift configs if user enabled it
     swift_xml_confs = [{}]
     #TODO(aignatov): should be changed. General configs not only Swift
-    if not (('General' in configs) and (
-            configs['General'][ENABLE_SWIFT.name] == 'false')):
+    if not (('general' in configs) and (
+            configs['general'][ENABLE_SWIFT.name] == 'false')):
         swift_xml_confs = swift.get_swift_configs()
         cfg.update(extract_name_values(swift_xml_confs))
         LOG.info("Swift integration is enabled")
