@@ -115,20 +115,24 @@ def get_plugin_configs():
     return PLUGIN_CONFIGS
 
 
-def generate_xml_configs(configs, nn_hostname, jt_hostname=None):
+def generate_xml_configs(configs, storage_path, nn_hostname, jt_hostname=None):
     # inserting common configs depends on provisioned VMs and HDFS placement
     # TODO(aignatov): should be moved to cluster context
     cfg = {
         'fs.default.name': 'hdfs://%s:8020' % nn_hostname,
-        'dfs.name.dir': '/mnt/lib/hadoop/hdfs/namenode',
-        'dfs.data.dir': '/mnt/lib/hadoop/hdfs/datanode',
+        'dfs.name.dir': extract_hadoop_path(storage_path,
+                                            '/lib/hadoop/hdfs/namenode'),
+        'dfs.data.dir': extract_hadoop_path(storage_path,
+                                            '/lib/hadoop/hdfs/datanode'),
     }
 
     if jt_hostname:
         mr_cfg = {
             'mapred.job.tracker': '%s:8021' % jt_hostname,
-            'mapred.system.dir': '/mnt/mapred/mapredsystem',
-            'mapred.local.dir': '/mnt/lib/hadoop/mapred'
+            'mapred.system.dir': extract_hadoop_path(storage_path,
+                                                     '/mapred/mapredsystem'),
+            'mapred.local.dir': extract_hadoop_path(storage_path,
+                                                    '/lib/hadoop/mapred')
         }
         cfg.update(mr_cfg)
 
@@ -189,16 +193,32 @@ def extract_xml_confs(configs):
     return lst
 
 
-def generate_setup_script(env_configs):
+def generate_setup_script(storage_paths, env_configs):
     script_lines = ["#!/bin/bash -x"]
     for line in env_configs:
         script_lines.append('echo "%s" >> /tmp/hadoop-env.sh' % line)
     script_lines.append("cat /etc/hadoop/hadoop-env.sh >> /tmp/hadoop-env.sh")
     script_lines.append("mv /tmp/hadoop-env.sh /etc/hadoop/hadoop-env.sh")
-    script_lines.append("chown -R hadoop:hadoop /mnt")
-    script_lines.append("chmod -R 755 /mnt")
+
+    hadoop_log = storage_paths[0] + "/log/hadoop/\$USER/"
+    script_lines.append('sed -i "s,export HADOOP_LOG_DIR=.*,'
+                        'export HADOOP_LOG_DIR=%s," /etc/hadoop/hadoop-env.sh'
+                        % hadoop_log)
+
+    hadoop_log = storage_paths[0] + "/log/hadoop/hdfs"
+    script_lines.append('sed -i "s,export HADOOP_SECURE_DN_LOG_DIR=.*,'
+                        'export HADOOP_SECURE_DN_LOG_DIR=%s," '
+                        '/etc/hadoop/hadoop-env.sh' % hadoop_log)
+
+    for path in storage_paths:
+        script_lines.append("chown -R hadoop:hadoop %s" % path)
+        script_lines.append("chmod -R 755 %s" % path)
     return "\n".join(script_lines)
 
 
 def extract_name_values(configs):
     return dict((cfg['name'], cfg['value']) for cfg in configs)
+
+
+def extract_hadoop_path(lst, hadoop_dir):
+    return ",".join([p + hadoop_dir for p in lst])
