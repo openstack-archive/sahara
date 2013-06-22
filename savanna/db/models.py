@@ -311,14 +311,23 @@ class NodeGroupTemplate(mb.SavannaBase, mb.TenantMixin, mb.PluginSpecificMixin,
         self.description = description
 
     def to_object(self, values, cls):
-        # TODO(slukjanov): don't forget to copy anti_affinity_group!!!
+        values.pop('node_group_template_id', None)
         return cls(
             name=values.pop('name', None) or self.name,
             flavor_id=values.pop('flavor_id', None) or self.flavor_id,
             image_id=values.pop('image_id', None) or self.image_id,
-            node_processes=values.get('node_processes') or self.node_processes,
-            node_configs=configs.merge_configs(self.node_configs,
-                                               values.get('node_configs')),
+            node_processes=(values.pop('node_processes', None)
+                            or self.node_processes),
+            node_configs=configs.merge_configs(
+                self.node_configs, values.pop('node_configs', None)),
+            anti_affinity_group=(values.pop('anti_affinity_group', None)
+                                 or self.anti_affinity_group),
+            volumes_per_node=(values.pop('volumes_per_node', None)
+                              or self.volumes_per_node),
+            volumes_size=(values.pop('volumes_size', None)
+                          or self.volumes_size),
+            volume_mount_prefix=(values.pop('volume_mount_prefix', None)
+                                 or self.volume_mount_prefix),
             node_group_template_id=self.id, **values)
 
 
