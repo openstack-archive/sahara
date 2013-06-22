@@ -15,14 +15,14 @@
 
 """v02_initial
 
-Revision ID: 177f06c249e5
+Revision ID: 2853ae6264d2
 Revises: None
-Create Date: 2013-06-22 18:16:30.002766
+Create Date: 2013-06-22 23:18:03.306641
 
 """
 
 # revision identifiers, used by Alembic.
-revision = '177f06c249e5'
+revision = '2853ae6264d2'
 down_revision = None
 
 from alembic import op
@@ -34,24 +34,6 @@ sa.JSONEncoded = st.JSONEncoded
 
 
 def upgrade():
-    op.create_table('ClusterTemplate',
-                    sa.Column('created', sa.DateTime(), nullable=False),
-                    sa.Column('updated', sa.DateTime(), nullable=False),
-                    sa.Column('id', sa.String(length=36), nullable=False),
-                    sa.Column('tenant_id', sa.String(length=36),
-                              nullable=True),
-                    sa.Column('plugin_name', sa.String(length=80),
-                              nullable=False),
-                    sa.Column('hadoop_version', sa.String(length=80),
-                              nullable=False),
-                    sa.Column('name', sa.String(length=80), nullable=False),
-                    sa.Column('description', sa.String(length=200),
-                              nullable=True),
-                    sa.Column('cluster_configs', sa.JSONEncoded(),
-                              nullable=True),
-                    sa.PrimaryKeyConstraint('id'),
-                    sa.UniqueConstraint('name', 'tenant_id'))
-
     op.create_table('NodeGroupTemplate',
                     sa.Column('created', sa.DateTime(), nullable=False),
                     sa.Column('updated', sa.DateTime(), nullable=False),
@@ -63,13 +45,41 @@ def upgrade():
                     sa.Column('hadoop_version', sa.String(length=80),
                               nullable=False),
                     sa.Column('name', sa.String(length=80), nullable=False),
-                    sa.Column('description', sa.String(length=200),
-                              nullable=True),
                     sa.Column('flavor_id', sa.String(length=36),
                               nullable=False),
+                    sa.Column('image_id', sa.String(length=36), nullable=True),
                     sa.Column('node_processes', sa.JSONEncoded(),
                               nullable=True),
                     sa.Column('node_configs', sa.JSONEncoded(), nullable=True),
+                    sa.Column('anti_affinity_group', sa.String(length=36),
+                              nullable=True),
+                    sa.Column('volumes_per_node', sa.Integer(), nullable=True),
+                    sa.Column('volumes_size', sa.Integer(), nullable=True),
+                    sa.Column('volume_mount_prefix', sa.String(length=80),
+                              nullable=True),
+                    sa.Column('description', sa.String(length=200),
+                              nullable=True),
+                    sa.PrimaryKeyConstraint('id'),
+                    sa.UniqueConstraint('name', 'tenant_id'))
+
+    op.create_table('ClusterTemplate',
+                    sa.Column('created', sa.DateTime(), nullable=False),
+                    sa.Column('updated', sa.DateTime(), nullable=False),
+                    sa.Column('id', sa.String(length=36), nullable=False),
+                    sa.Column('tenant_id', sa.String(length=36),
+                              nullable=True),
+                    sa.Column('plugin_name', sa.String(length=80),
+                              nullable=False),
+                    sa.Column('hadoop_version', sa.String(length=80),
+                              nullable=False),
+                    sa.Column('extra', sa.JSONEncoded(), nullable=True),
+                    sa.Column('name', sa.String(length=80), nullable=False),
+                    sa.Column('cluster_configs', sa.JSONEncoded(),
+                              nullable=True),
+                    sa.Column('default_image_id', sa.String(length=36),
+                              nullable=True),
+                    sa.Column('description', sa.String(length=200),
+                              nullable=True),
                     sa.PrimaryKeyConstraint('id'),
                     sa.UniqueConstraint('name', 'tenant_id'))
 
@@ -85,9 +95,9 @@ def upgrade():
                               nullable=False),
                     sa.Column('extra', sa.JSONEncoded(), nullable=True),
                     sa.Column('name', sa.String(length=80), nullable=False),
-                    sa.Column('default_image_id', sa.String(length=36),
-                              nullable=True),
                     sa.Column('cluster_configs', sa.JSONEncoded(),
+                              nullable=True),
+                    sa.Column('default_image_id', sa.String(length=36),
                               nullable=True),
                     sa.Column('status', sa.String(length=80), nullable=True),
                     sa.Column('status_description', sa.String(length=200),
@@ -106,17 +116,24 @@ def upgrade():
                     sa.Column('created', sa.DateTime(), nullable=False),
                     sa.Column('updated', sa.DateTime(), nullable=False),
                     sa.Column('id', sa.String(length=36), nullable=False),
+                    sa.Column('name', sa.String(length=80), nullable=False),
+                    sa.Column('flavor_id', sa.String(length=36),
+                              nullable=False),
+                    sa.Column('image_id', sa.String(length=36), nullable=True),
+                    sa.Column('node_processes', sa.JSONEncoded(),
+                              nullable=True),
+                    sa.Column('node_configs', sa.JSONEncoded(), nullable=True),
+                    sa.Column('anti_affinity_group', sa.String(length=36),
+                              nullable=True),
+                    sa.Column('volumes_per_node', sa.Integer(), nullable=True),
+                    sa.Column('volumes_size', sa.Integer(), nullable=True),
+                    sa.Column('volume_mount_prefix', sa.String(length=80),
+                              nullable=True),
+                    sa.Column('count', sa.Integer(), nullable=False),
                     sa.Column('cluster_template_id', sa.String(length=36),
                               nullable=True),
                     sa.Column('node_group_template_id', sa.String(length=36),
                               nullable=True),
-                    sa.Column('name', sa.String(length=80), nullable=False),
-                    sa.Column('flavor_id', sa.String(length=36),
-                              nullable=True),
-                    sa.Column('node_processes', sa.JSONEncoded(),
-                              nullable=True),
-                    sa.Column('node_configs', sa.JSONEncoded(), nullable=True),
-                    sa.Column('count', sa.Integer(), nullable=True),
                     sa.ForeignKeyConstraint(['cluster_template_id'],
                                             ['ClusterTemplate.id'], ),
                     sa.ForeignKeyConstraint(['node_group_template_id'],
@@ -127,9 +144,6 @@ def upgrade():
                     sa.Column('created', sa.DateTime(), nullable=False),
                     sa.Column('updated', sa.DateTime(), nullable=False),
                     sa.Column('id', sa.String(length=36), nullable=False),
-                    sa.Column('extra', sa.JSONEncoded(), nullable=True),
-                    sa.Column('cluster_id', sa.String(length=36),
-                              nullable=True),
                     sa.Column('name', sa.String(length=80), nullable=False),
                     sa.Column('flavor_id', sa.String(length=36),
                               nullable=False),
@@ -139,10 +153,12 @@ def upgrade():
                     sa.Column('node_configs', sa.JSONEncoded(), nullable=True),
                     sa.Column('anti_affinity_group', sa.String(length=36),
                               nullable=True),
-                    sa.Column('count', sa.Integer(), nullable=False),
                     sa.Column('volumes_per_node', sa.Integer(), nullable=True),
                     sa.Column('volumes_size', sa.Integer(), nullable=True),
                     sa.Column('volume_mount_prefix', sa.String(length=80),
+                              nullable=True),
+                    sa.Column('count', sa.Integer(), nullable=False),
+                    sa.Column('cluster_id', sa.String(length=36),
                               nullable=True),
                     sa.Column('node_group_template_id', sa.String(length=36),
                               nullable=True),
@@ -178,5 +194,5 @@ def downgrade():
     op.drop_table('NodeGroup')
     op.drop_table('TemplatesRelation')
     op.drop_table('Cluster')
-    op.drop_table('NodeGroupTemplate')
     op.drop_table('ClusterTemplate')
+    op.drop_table('NodeGroupTemplate')
