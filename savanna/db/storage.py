@@ -87,7 +87,7 @@ def create_cluster_template(values):
                 node_group.cluster_template_id = cluster_template.id
             else:
                 node_group = m.TemplatesRelation(**ngt)
-            cluster_template.templates_relations.append(node_group)
+            cluster_template.node_groups.append(node_group)
             session.add(node_group)
         session.add(cluster_template)
 
