@@ -32,7 +32,8 @@ class TemplatesModelTest(models_test_base.ModelTestCase):
         session = ctx.current().session
         with session.begin():
             ngt = m.NodeGroupTemplate('ngt-1', 't-1', 'f-1', 'p-1', 'hv-1',
-                                      ['np-1', 'np-2'], SAMPLE_CONFIGS, "d")
+                                      ['np-1', 'np-2'],
+                                      node_configs=SAMPLE_CONFIGS)
             session.add(ngt)
 
         res = session.query(m.NodeGroupTemplate).filter_by().first()
@@ -44,20 +45,25 @@ class TemplatesModelTest(models_test_base.ModelTestCase):
         res_dict = self.get_clean_dict(res)
 
         self.assertEqual(res_dict, {
-            'description': 'd',
             'flavor_id': 'f-1',
             'hadoop_version': 'hv-1',
             'name': 'ngt-1',
             'node_configs': SAMPLE_CONFIGS,
             'node_processes': ['np-1', 'np-2'],
-            'plugin_name': 'p-1'
+            'plugin_name': 'p-1',
+            'image_id': None,
+            'volume_mount_prefix': '/volumes/disk',
+            'volumes_per_node': 0,
+            'volumes_size': 10,
+            'anti_affinity_group': None,
+            'description': None
         })
 
     def testCreateClusterTemplate(self):
         session = ctx.current().session
         with session.begin():
-            c = m.ClusterTemplate('c-1', 't-1', 'p-1', 'hv-1', SAMPLE_CONFIGS,
-                                  "d")
+            c = m.ClusterTemplate('c-1', 't-1', 'p-1', 'hv-1',
+                                  cluster_configs=SAMPLE_CONFIGS)
             session.add(c)
 
         res = session.query(m.ClusterTemplate).filter_by().first()
@@ -68,11 +74,12 @@ class TemplatesModelTest(models_test_base.ModelTestCase):
 
         self.assertEqual(res_dict, {
             'cluster_configs': SAMPLE_CONFIGS,
-            'description': 'd',
             'hadoop_version': 'hv-1',
             'name': 'c-1',
             'plugin_name': 'p-1',
-            'node_groups': []
+            'node_groups': [],
+            'default_image_id': None,
+            'description': None
         })
 
     @unittest2.skip('add_node_group_template has been removed')
