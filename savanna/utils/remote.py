@@ -69,6 +69,12 @@ def read_file_from(sftp, remote_file):
     return data
 
 
+def replace_remote_string(ssh_connection, remote_file, old_str, new_str):
+    """Replaces strings in remote file using sed command."""
+    cmd = "sudo sed -i 's,%s,%s,g' %s" % (old_str, new_str, remote_file)
+    return execute_command(ssh_connection, cmd)
+
+
 class InstanceInteropHelper(object):
     def __init__(self, instance):
         self.instance = instance
@@ -100,6 +106,10 @@ class InstanceInteropHelper(object):
     def read_file_from(self, remote_file):
         with contextlib.closing(self.ssh_connection()) as ssh:
             return read_file_from(ssh.open_sftp(), remote_file)
+
+    def replace_remote_string(self, remote_file, old_str, new_str):
+        with contextlib.closing(self.ssh_connection()) as ssh:
+            return replace_remote_string(ssh, remote_file, old_str, new_str)
 
 
 class BulkInstanceInteropHelper(object):
@@ -135,3 +145,7 @@ class BulkInstanceInteropHelper(object):
 
     def read_file_from(self, remote_file):
         return read_file_from(self.sftp_connection(), remote_file)
+
+    def replace_remote_string(self, remote_file, old_str, new_str):
+        return replace_remote_string(self.ssh_connection(), remote_file,
+                                     old_str, new_str)
