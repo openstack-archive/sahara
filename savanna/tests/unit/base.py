@@ -25,7 +25,7 @@ from savanna.openstack.common import timeutils
 from savanna.openstack.common import uuidutils
 
 
-class ModelTestCase(unittest2.TestCase):
+class DbTestCase(unittest2.TestCase):
     def setUp(self):
         context.set_ctx(
             context.Context('test_user', 'test_tenant', 'test_auth_token', {}))
