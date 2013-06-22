@@ -14,9 +14,12 @@
 # limitations under the License.
 
 import eventlet
+
 from savanna import context
+from savanna.db import models as m
 from savanna.db import storage as s
 from savanna.openstack.common import log as logging
+from savanna.openstack.common import uuidutils
 from savanna.plugins import base as plugin_base
 from savanna.plugins import provisioning
 from savanna.service import instances as i
@@ -124,16 +127,15 @@ def get_plugin(plugin_name, version=None):
 
 def convert_to_cluster_template(plugin_name, version, config_file):
     plugin = plugin_base.PLUGINS.get_plugin(plugin_name)
-    cluster_template = plugin.convert(version, config_file)
-    if not cluster_template:
-        # TODO(slukjanov): replace with specific error
-        raise RuntimeError("Plugin doesn't convert config file")
+    tenant_id = context.current().tenant_id
+    name = uuidutils.generate_uuid()
+    ct = m.ClusterTemplate(name, tenant_id, plugin_name, version)
+    plugin.convert(ct, config_file)
 
-    return s.persist_cluster_template(cluster_template)
+    return s.persist_cluster_template(ct)
 
 
 def _validate(cluster, plugin):
-
     # Validate that user configs are not included in plugin configs set
     pl_confs = {}
     for config in plugin.get_configs(cluster.hadoop_version):
@@ -151,4 +153,4 @@ def _validate(cluster, plugin):
                 if name not in pl_confs[app_target]:
                     raise RuntimeError("Plugin's applicable target '%s' "
                                        "doesn't contain config with name '%s'"
-                                       % (app_target,  name))
+                                       % (app_target, name))
