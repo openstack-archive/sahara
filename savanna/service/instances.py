@@ -53,7 +53,7 @@ def _create_instances(cluster):
     session = context.ctx().session
     aa_groups = _generate_anti_affinity_groups(cluster)
     for node_group in cluster.node_groups:
-        files = _generate_instance_files(node_group)
+        userdata = _generate_user_data_script(node_group)
         for idx in xrange(1, node_group.count + 1):
             name = '%s-%s-%03d' % (cluster.name, node_group.name, idx)
             aa_group = node_group.anti_affinity_group
@@ -62,7 +62,7 @@ def _create_instances(cluster):
 
             nova_instance = nova.client().servers.create(
                 name, node_group.get_image_id(), node_group.flavor_id,
-                scheduler_hints=hints, files=files,
+                scheduler_hints=hints, userdata=userdata,
                 key_name=cluster.user_keypair_id)
 
             with session.begin():
@@ -74,22 +74,22 @@ def _create_instances(cluster):
                 aa_groups[aa_group].append(nova_instance.id)
 
 
-def _generate_instance_files(node_group):
+def _generate_user_data_script(node_group):
+    script_template = """#!/bin/bash
+echo "%(public_key)s" >> %(user_home)s/.ssh/authorized_keys
+echo "%(private_key)s" > %(user_home)s/.ssh/id_rsa
+"""
+
     cluster = node_group.cluster
-
     if node_group.username == "root":
-        path_to_root = "/root"
+        user_home = "/root/"
     else:
-        path_to_root = "/home/" + node_group.username
+        user_home = "/home/%s/" % node_group.username
 
-    authorized_keys = ''
-    if cluster.user_keypair:
-        authorized_keys = cluster.user_keypair.public_key + '\n'
-    authorized_keys += crypto.private_key_to_public_key(cluster.private_key)
-
-    return {
-        path_to_root + "/.ssh/authorized_keys": authorized_keys,
-        path_to_root + "/.ssh/id_rsa": cluster.private_key
+    return script_template % {
+        "public_key": crypto.private_key_to_public_key(cluster.private_key),
+        "private_key": cluster.private_key,
+        "user_home": user_home
     }
 
 
