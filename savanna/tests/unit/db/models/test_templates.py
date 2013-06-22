@@ -17,7 +17,7 @@ import unittest2
 
 from savanna import context as ctx
 import savanna.db.models as m
-from savanna.tests.unit.db.models import base as models_test_base
+from savanna.tests.unit import base as models_test_base
 
 
 SAMPLE_CONFIGS = {
@@ -27,7 +27,7 @@ SAMPLE_CONFIGS = {
 }
 
 
-class TemplatesModelTest(models_test_base.ModelTestCase):
+class TemplatesModelTest(models_test_base.DbTestCase):
     def testCreateNodeGroupTemplate(self):
         session = ctx.current().session
         with session.begin():

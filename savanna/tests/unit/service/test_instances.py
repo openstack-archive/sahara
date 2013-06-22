@@ -18,11 +18,11 @@ import mock
 from savanna import context as ctx
 import savanna.db.models as m
 from savanna.service import instances
-from savanna.tests.unit.db.models import base as models_test_base
+from savanna.tests.unit import base as models_test_base
 import savanna.utils.crypto as c
 
 
-class TestClusterRollBack(models_test_base.ModelTestCase):
+class TestClusterRollBack(models_test_base.DbTestCase):
     @mock.patch('savanna.utils.openstack.nova.client')
     def test_cluster_creation_with_errors(self, novaclient):
         node_groups = [m.NodeGroup("test_group",
@@ -46,7 +46,7 @@ class TestClusterRollBack(models_test_base.ModelTestCase):
             self.assertEqual(session.query(m.Instance).count(), 0)
 
 
-class NodePlacementTest(models_test_base.ModelTestCase):
+class NodePlacementTest(models_test_base.DbTestCase):
     @mock.patch('savanna.utils.openstack.nova.client')
     def test_one_node_groups_and_one_affinity_group(self, novaclient):
         node_groups = [m.NodeGroup("test_group",
