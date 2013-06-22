@@ -55,26 +55,23 @@ class NodePlacementTest(models_test_base.ModelTestCase):
                                    2,
                                    anti_affinity_group="1")]
         node_groups[0]._username = "root"
-
         cluster = _create_cluster_mock(node_groups)
-
         nova = _create_nova_mock(novaclient)
-
         instances._create_instances(cluster)
-        files = _generate_files(cluster)
+        userdata = _generate_user_data_script(cluster)
 
         nova.servers.create.assert_has_calls(
             [mock.call("test_cluster-test_group-001",
                        "initial",
                        "test_flavor",
                        scheduler_hints=None,
-                       files=files,
+                       userdata=userdata,
                        key_name='user_keypair'),
              mock.call("test_cluster-test_group-002",
                        "initial",
                        "test_flavor",
                        scheduler_hints={'different_host': ["1"]},
-                       files=files,
+                       userdata=userdata,
                        key_name='user_keypair')],
             any_order=False)
 
@@ -89,26 +86,23 @@ class NodePlacementTest(models_test_base.ModelTestCase):
                                    ["data node", "test tracker"],
                                    2)]
         node_groups[0]._username = "root"
-
         cluster = _create_cluster_mock(node_groups)
-
         nova = _create_nova_mock(novaclient)
-
         instances._create_instances(cluster)
+        userdata = _generate_user_data_script(cluster)
 
-        files = _generate_files(cluster)
         nova.servers.create.assert_has_calls(
             [mock.call("test_cluster-test_group-001",
                        "initial",
                        "test_flavor",
                        scheduler_hints=None,
-                       files=files,
+                       userdata=userdata,
                        key_name='user_keypair'),
              mock.call("test_cluster-test_group-002",
                        "initial",
                        "test_flavor",
                        scheduler_hints=None,
-                       files=files,
+                       userdata=userdata,
                        key_name='user_keypair')],
             any_order=False)
 
@@ -131,31 +125,29 @@ class NodePlacementTest(models_test_base.ModelTestCase):
                                    anti_affinity_group="1")]
         node_groups[0]._username = "root"
         node_groups[1]._username = "root"
-
         cluster = _create_cluster_mock(node_groups)
         nova = _create_nova_mock(novaclient)
-
         instances._create_instances(cluster)
+        userdata = _generate_user_data_script(cluster)
 
-        files = _generate_files(cluster)
         nova.servers.create.assert_has_calls(
             [mock.call("test_cluster-test_group_1-001",
                        "initial",
                        "test_flavor",
                        scheduler_hints=None,
-                       files=files,
+                       userdata=userdata,
                        key_name='user_keypair'),
              mock.call("test_cluster-test_group_1-002",
                        "initial",
                        "test_flavor",
                        scheduler_hints={'different_host': ["1"]},
-                       files=files,
+                       userdata=userdata,
                        key_name='user_keypair'),
              mock.call("test_cluster-test_group_2-001",
                        "initial",
                        "test_flavor",
                        scheduler_hints={'different_host': ["1", "2"]},
-                       files=files,
+                       userdata=userdata,
                        key_name='user_keypair')],
             any_order=False)
 
@@ -190,11 +182,17 @@ def _mock_instances(count):
     return [_mock_instance(str(i)) for i in range(1, count + 1)]
 
 
-def _generate_files(cluster):
+def _generate_user_data_script(cluster):
+    script_template = """#!/bin/bash
+echo "%(public_key)s" >> %(user_home)s/.ssh/authorized_keys
+echo "%(private_key)s" > %(user_home)s/.ssh/id_rsa
+"""
     key = c.private_key_to_public_key(cluster.private_key)
-    files = {"/root/.ssh/authorized_keys": "123\n" + key,
-             '/root/.ssh/id_rsa': cluster.private_key}
-    return files
+    return script_template % {
+        "public_key": key,
+        "private_key": cluster.private_key,
+        "user_home": "/root/"
+    }
 
 
 def _create_nova_mock(novalcient):
