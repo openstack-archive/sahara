@@ -40,3 +40,4 @@ cscope.out
 tools/lintstack.head.py
 tools/pylint_exceptions
 savanna/tests/cover
+savanna/tests/coverage.xml
