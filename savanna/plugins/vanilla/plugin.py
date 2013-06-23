@@ -101,6 +101,8 @@ class VanillaProvider(p.ProvisioningPluginBase):
 
         LOG.info('Cluster %s has been started successfully' % cluster.name)
 
+        self._set_cluster_info(cluster)
+
     def _extract_configs(self, cluster):
         nn = utils.get_namenode(cluster)
         jt = utils.get_jobtracker(cluster)
@@ -150,4 +152,16 @@ class VanillaProvider(p.ProvisioningPluginBase):
         if jt and nn.instance_id != jt.instance_id:
             jt.remote.write_file_to('/etc/hadoop/slaves',
                                     utils.generate_host_names(
-                                    utils.get_tasktrackers(cluster)))
+                                        utils.get_tasktrackers(cluster)))
+
+    def _set_cluster_info(self, cluster):
+        nn = utils.get_namenode(cluster)
+        jt = utils.get_jobtracker(cluster)
+
+        info = cluster.info
+        info['jobtracker'] = {
+            'Web UI': 'http://%s:50030' % jt.management_ip
+        }
+        info['namenode'] = {
+            'Web UI': 'http://%s:50070' % nn.management_ip
+        }

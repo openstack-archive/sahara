@@ -75,6 +75,8 @@ class Cluster(mb.SavannaBase, ClusterMixin):
     node_groups = relationship('NodeGroup', cascade="all,delete",
                                backref='cluster')
 
+    info = sa.Column(st.JsonDictType())
+
     cluster_template_id = sa.Column(sa.String(36),
                                     sa.ForeignKey('ClusterTemplate.id'))
     cluster_template = relationship('ClusterTemplate',
@@ -91,6 +93,7 @@ class Cluster(mb.SavannaBase, ClusterMixin):
         self.cluster_configs = cluster_configs or {}
         self.cluster_template_id = cluster_template_id
         self.user_keypair_id = user_keypair_id
+        self.info = {}
 
     def to_dict(self):
         d = super(Cluster, self).to_dict()
