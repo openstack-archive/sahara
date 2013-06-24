@@ -1,0 +1,13 @@
+include AUTHORS
+include README.rst
+include ChangeLog
+include LICENSE
+include savanna/db/migration/README
+include savanna/db/migration/alembic.ini
+include savanna/db/migration/alembic_migrations/script.py.mako
+include savanna/db/migration/alembic_migrations/versions/README
+
+exclude .gitignore
+exclude .gitreview
+
+global-exclude *.pyc
