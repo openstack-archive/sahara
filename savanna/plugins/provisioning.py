@@ -43,6 +43,9 @@ class ProvisioningPluginBase(plugins_base.PluginInterface):
     def get_node_processes(self, hadoop_version):
         pass
 
+    def get_required_image_tags(self, hadoop_version):
+        return [self.name, hadoop_version]
+
     def validate(self, cluster):
         pass
 
