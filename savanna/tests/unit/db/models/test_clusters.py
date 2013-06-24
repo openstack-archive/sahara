@@ -39,6 +39,7 @@ class ClusterModelTest(models_test_base.DbTestCase):
         del c_dict['node_groups']
         del c_dict['status']
         del c_dict['status_description']
+        del c_dict['info']
 
         c_dict.update({
             'tenant_id': 't-1'
