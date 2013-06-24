@@ -68,6 +68,38 @@ class ProvisioningPluginBase(plugins_base.PluginInterface):
         res['versions'] = self.get_versions()
         return res
 
+    # Some helpers for plugins
+
+    def _map_to_user_inputs(self, hadoop_version, configs):
+        config_objs = self.get_configs(hadoop_version)
+
+        # convert config objects to applicable_target -> config_name -> obj
+        config_objs_map = {}
+        for config_obj in config_objs:
+            applicable_target = config_obj.applicable_target
+            confs = config_objs_map.get(applicable_target, {})
+            confs[config_obj.name] = config_obj
+            config_objs_map[applicable_target] = confs
+
+        # iterate over all configs and append UserInputs to result list
+        result = []
+        for applicable_target in configs:
+            for config_name in configs[applicable_target]:
+                confs = config_objs_map.get(applicable_target)
+                if not confs:
+                    # TODO(slukjanov): raise specific exception
+                    raise RuntimeError("Can't find applicable target '%s'"
+                                       % applicable_target)
+                conf = confs.get(config_name)
+                if not conf:
+                    # TODO(slukjanov): raise specific exception
+                    raise RuntimeError("Can't find config '%s' in '%s'"
+                                       % (config_name, applicable_target))
+                result.append(UserInput(
+                    conf, configs[applicable_target][config_name]))
+
+        return result
+
 
 class Config(resources.BaseResource):
     """Describes a single config parameter.
@@ -113,6 +145,9 @@ class UserInput(object):
     def __init__(self, config, value):
         self.config = config
         self.value = value
+
+    def __eq__(self, other):
+        return self.config == other.config and self.value == other.value
 
     def __repr__(self):
         return '<UserInput %s = %s>' % (self.config.name, self.value)
