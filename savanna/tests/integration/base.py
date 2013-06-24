@@ -15,9 +15,9 @@
 
 import json
 
-import eventlet
 import keystoneclient.v2_0
 import requests
+import time
 import unittest2
 
 import savanna.tests.integration.parameters as param
@@ -130,6 +130,7 @@ class ITestCase(unittest2.TestCase):
         data = self.post_object(url, body, 202)
         get_url = None
         object_id = None
+        crud_object = None
         try:
             if url == self.url_cluster:
                 crud_object = 'cluster'
@@ -145,9 +146,11 @@ class ITestCase(unittest2.TestCase):
             if crud_object == 'cluster':
                 self.await_cluster_active(get_url, object_id)
         except Exception as e:
-            self.fail('failure: ' + e.message)
+            self.fail('failure: ' + str(e))
         finally:
             self.del_object(get_url, object_id, 204)
+            if crud_object == 'cluster':
+                time.sleep(30)
         return object_id
 
     def await_cluster_active(self, get_url, object_id):
@@ -157,12 +160,13 @@ class ITestCase(unittest2.TestCase):
         while get_data['status'] != 'Active':
             print 'GET_STATUS: ', get_data['status']
             if i > int(param.TIMEOUT) * 6:
+                print("json for cluster: \n" + get_data + "\n")
                 self.fail(
                     'cluster not Starting -> Active, passed %d minutes'
                     % param.TIMEOUT)
             get_data = self.get_object(get_url, object_id, 200)
             get_data = get_data['cluster']
-            eventlet.sleep(10)
+            time.sleep(10)
             i += 1
 
     def get_object_id(self, obj, body):
@@ -316,41 +320,41 @@ class ITestCase(unittest2.TestCase):
         self.id_tt = self.get_object_id(
             'node_group_template', self.post_object(
                 self.url_ngt, self.make_node_group_template(
-                    'worker_tt', 'qa probe', 'TT'), 202))
+                    'worker-tt', 'qa probe', 'TT'), 202))
         self.id_jt = self.get_object_id(
             'node_group_template', self.post_object(
                 self.url_ngt, self.make_node_group_template(
-                    'master_jt', 'qa probe', 'JT'), 202))
+                    'master-jt', 'qa probe', 'JT'), 202))
 
         self.id_nn = self.get_object_id(
             'node_group_template', self.post_object(
                 self.url_ngt, self.make_node_group_template(
-                    'master_nn', 'qa probe', 'NN'), 202))
+                    'master-nn', 'qa probe', 'NN'), 202))
 
         self.id_dn = self.get_object_id(
             'node_group_template', self.post_object(
                 self.url_ngt, self.make_node_group_template(
-                    'worker_dn', 'qa probe', 'DN'), 202))
+                    'worker-dn', 'qa probe', 'DN'), 202))
 
         self.id_tt_dn = self.get_object_id(
             'node_group_template', self.post_object(
                 self.url_ngt, self.make_node_group_template(
-                    'worker_tt_dn', 'qa probe', 'TT+DN'), 202))
+                    'worker-tt-dn', 'qa probe', 'TT+DN'), 202))
 
         self.id_jt_nn = self.get_object_id(
             'node_group_template', self.post_object(
                 self.url_ngt, self.make_node_group_template(
-                    'master_jt_nn', 'qa probe', 'JT+NN'), 202))
+                    'master-jt-nn', 'qa probe', 'JT+NN'), 202))
 
         self.id_nn_tt_dn = self.get_object_id(
             'node_group_template', self.post_object(
                 self.url_ngt, self.make_node_group_template(
-                    'nn_tt_dn', 'qa probe', 'NN+TT+DN'), 202))
+                    'nn-tt-dn', 'qa probe', 'NN+TT+DN'), 202))
 
         self.id_jt_tt_dn = self.get_object_id(
             'node_group_template', self.post_object(
                 self.url_ngt, self.make_node_group_template(
-                    'jt_tt_dn', 'qa probe', 'JT+TT+DN'), 202))
+                    'jt-tt-dn', 'qa probe', 'JT+TT+DN'), 202))
 
 #---------------------delete_node_group_template-------------------------------
 
