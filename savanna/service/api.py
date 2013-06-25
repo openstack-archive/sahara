@@ -23,6 +23,7 @@ from savanna.openstack.common import uuidutils
 from savanna.plugins import base as plugin_base
 from savanna.plugins import provisioning
 from savanna.service import instances as i
+from savanna.utils.openstack import nova
 
 LOG = logging.getLogger(__name__)
 
@@ -118,13 +119,16 @@ def get_plugins():
 
 def get_plugin(plugin_name, version=None):
     plugin = plugin_base.PLUGINS.get_plugin(plugin_name)
-    res = plugin.as_resource()
-    if version:
-        res._info['configs'] = [c.dict for c in plugin.get_configs(version)]
-        res._info['node_processes'] = plugin.get_node_processes(version)
-        required_image_tags = plugin.get_required_image_tags(version)
-        res._info['required_image_tags'] = required_image_tags
-    return res
+    if plugin:
+        res = plugin.as_resource()
+        if version:
+            configs = plugin.get_configs(version)
+            res._info['configs'] = [c.dict for c in configs]
+            processes = plugin.get_node_processes(version)
+            res._info['node_processes'] = processes
+            required_image_tags = plugin.get_required_image_tags(version)
+            res._info['required_image_tags'] = required_image_tags
+        return res
 
 
 def convert_to_cluster_template(plugin_name, version, config_file):
@@ -156,3 +160,16 @@ def _validate(cluster, plugin):
                     raise RuntimeError("Plugin's applicable target '%s' "
                                        "doesn't contain config with name '%s'"
                                        % (app_target, name))
+
+
+## Image Registry
+
+def get_images(tags):
+    return nova.client().images.list_registered(tags)
+
+
+def get_image(**kwargs):
+    if len(kwargs) == 1 and 'id' in kwargs:
+        return nova.client().images.get(kwargs['id'])
+    else:
+        return nova.client().images.find(**kwargs)
