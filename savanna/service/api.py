@@ -18,6 +18,7 @@ import eventlet
 from savanna import context
 from savanna.db import models as m
 from savanna.db import storage as s
+from savanna.openstack.common import excutils
 from savanna.openstack.common import log as logging
 from savanna.openstack.common import uuidutils
 from savanna.plugins import base as plugin_base
@@ -42,11 +43,16 @@ def create_cluster(values):
     _validate(cluster, plugin)
 
     # validating cluster
-    cluster.status = 'Validating'
-    context.model_save(cluster)
-    plugin.validate(cluster)
-    ctx = context.ctx().clone()
+    try:
+        cluster.status = 'Validating'
+        context.model_save(cluster)
+        plugin.validate(cluster)
+    except Exception:
+        with excutils.save_and_reraise_exception():
+            cluster.status = 'Error'
+            context.model_save(cluster)
 
+    ctx = context.ctx().clone()
     eventlet.spawn(_provision_cluster, cluster.id, ctx)
 
     return cluster
