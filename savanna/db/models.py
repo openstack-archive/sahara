@@ -180,7 +180,7 @@ class NodeGroup(mb.SavannaBase, NodeGroupMixin):
     def storage_paths(self):
         mp = []
         for idx in xrange(1, self.volumes_per_node + 1):
-            mp.append(self.volume_mount_prefix + chr(idx))
+            mp.append(self.volume_mount_prefix + str(idx))
 
         # Here we assume that NG will use ephemeral drive if no volumes
         if not mp:
