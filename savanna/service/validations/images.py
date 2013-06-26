@@ -23,6 +23,7 @@ image_register_schema = {
             "type": "string",
         },
     },
+    "additionalProperties": False,
     "required": ["username"]
 }
 
@@ -36,5 +37,6 @@ image_tags_schema = {
             },
         },
     },
+    "additionalProperties": False,
     "required": ["tags"]
 }
