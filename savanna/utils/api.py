@@ -13,7 +13,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import inspect
 import mimetypes
 import traceback
 
@@ -76,33 +75,24 @@ class Rest(flask.Blueprint):
                 ctx = context.Context(
                     flask.request.headers['X-User-Id'],
                     flask.request.headers['X-Tenant-Id'],
-                    flask.request.headers[
-                        'X-Auth-Token'],
+                    flask.request.headers['X-Auth-Token'],
                     flask.request.headers)
                 context.set_ctx(ctx)
 
-                # set func implicit args
-                args = inspect.getargspec(func).args
-
-                if 'ctx' in args:
-                    kwargs['ctx'] = ctx
-                if 'request' in args:
-                    kwargs['request'] = flask.request
-
-                if flask.request.method in ['POST', 'PUT'] and 'data' in args:
+                if flask.request.method in ['POST', 'PUT']:
                     kwargs['data'] = request_data()
 
-                return func(**kwargs)
+                try:
+                    return func(**kwargs)
+                except Exception, e:
+                    return internal_error(500, 'Exception in REST API call', e)
 
             f_rule = "/<tenant_id>" + rule
             self.add_url_rule(f_rule, endpoint, handler, **options)
             ext_rule = f_rule + '.<resp_type>'
             self.add_url_rule(ext_rule, endpoint, handler, **options)
 
-            try:
-                return func
-            except Exception, e:
-                return internal_error(500, 'Exception in API call', e)
+            return func
 
         return decorator
 
@@ -201,6 +191,10 @@ def request_data():
     flask.request.parsed_data = parsed_data
 
     return flask.request.parsed_data
+
+
+def get_request_args():
+    return flask.request.args
 
 
 def abort_and_log(status_code, descr, exc=None):
