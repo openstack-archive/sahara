@@ -16,6 +16,7 @@
 from savanna.openstack.common import log as logging
 from savanna.service import api
 from savanna.service import validation as v
+from savanna.service.validations import images as v_images
 import savanna.utils.api as u
 
 LOG = logging.getLogger(__name__)
@@ -162,6 +163,7 @@ def images_get(image_id):
 
 @rest.post('/images/<image_id>')
 @v.check_exists(api.get_image, id='image_id')
+@v.validate(v_images.image_register_schema)
 def images_set(image_id, data):
     return u.render(api.register_image(image_id, **data).wrapped_dict)
 
@@ -175,12 +177,14 @@ def images_unset(image_id):
 
 @rest.post('/images/<image_id>/tag')
 @v.check_exists(api.get_image, id='image_id')
+@v.validate(v_images.image_tags_schema)
 def image_tags_add(image_id, data):
     return u.render(api.add_image_tags(image_id, **data).wrapped_dict)
 
 
 @rest.post('/images/<image_id>/untag')
 @v.check_exists(api.get_image, id='image_id')
+@v.validate(v_images.image_tags_schema)
 def image_tags_delete(image_id, data):
     return u.render(api.remove_image_tags(image_id, **data).wrapped_dict)
 
