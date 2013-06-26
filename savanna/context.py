@@ -13,8 +13,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from eventlet import corolocal
 import threading
+
+import eventlet
+from eventlet import corolocal
 
 from savanna.db import api as db_api
 from savanna.openstack.common import log as logging
@@ -85,3 +87,17 @@ def model_save(model, context=None):
     with context.session.begin():
         context.session.add(model)
     return model
+
+
+def spawn(func, *args, **kwargs):
+    ctx = current().clone()
+
+    def wrapper(ctx, func, *args, **kwargs):
+        set_ctx(ctx)
+        func(*args, **kwargs)
+
+    eventlet.spawn(wrapper, ctx, func, *args, **kwargs)
+
+
+def sleep(seconds=0):
+    eventlet.sleep(seconds)
