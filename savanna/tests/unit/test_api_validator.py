@@ -167,3 +167,61 @@ class ApiValidatorTest(unittest2.TestCase):
         self._validate_failure(schema, "_123")
         self._validate_failure(schema, "a" * 64)
         self._validate_failure(schema, "")
+
+    def test_validate_configs(self):
+        schema = {
+            "type": "object",
+            "properties": {
+                "configs": {
+                    "type": "configs",
+                }
+            },
+            "additionalProperties": False
+        }
+
+        self._validate_success(schema, {
+            "configs": {
+                "at-1": {
+                    "c-1": "c",
+                    "c-2": 1,
+                    "c-3": True,
+                },
+                "at-2": {
+                    "c-4": "c",
+                    "c-5": 1,
+                    "c-6": True,
+                },
+            },
+        })
+
+        self._validate_failure(schema, {
+            "configs": {
+                "at-1": {
+                    "c-1": 1.5
+                },
+            }
+        })
+
+        self._validate_failure(schema, {
+            "configs": {
+                1: {
+                    "c-1": "c"
+                },
+            }
+        })
+
+        self._validate_failure(schema, {
+            "configs": {
+                "at-1": {
+                    1: "asd",
+                },
+            }
+        })
+
+        self._validate_failure(schema, {
+            "configs": {
+                "at-1": [
+                    "a", "b", "c",
+                ],
+            }
+        })
