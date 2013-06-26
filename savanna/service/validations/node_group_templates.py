@@ -19,10 +19,6 @@ node_group_template_schema = {
         "name": {
             "type": "string",
         },
-        "tenant_id": {
-            "type": "string",
-            "format": "uuid",
-        },
         "flavor_id": {
             "type": "string",
             "format": "uuid",
@@ -67,7 +63,6 @@ node_group_template_schema = {
     "additionalProperties": False,
     "required": [
         "name",
-        "tenant_id",
         "flavor_id",
         "plugin_name",
         "hadoop_version",
