@@ -13,8 +13,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import time
-
 from savanna import context
 from savanna.db import models as m
 from savanna.openstack.common import excutils
@@ -106,7 +104,7 @@ def _await_instances(cluster):
             for instance in node_group.instances:
                 if not _check_if_up(instance):
                     all_up = False
-        time.sleep(1)
+        context.sleep(1)
 
 
 def _check_if_up(instance):

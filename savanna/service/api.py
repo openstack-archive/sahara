@@ -13,8 +13,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import eventlet
-
 from savanna import context
 from savanna.db import models as m
 from savanna.db import storage as s
@@ -52,14 +50,12 @@ def create_cluster(values):
             cluster.status = 'Error'
             context.model_save(cluster)
 
-    ctx = context.ctx().clone()
-    eventlet.spawn(_provision_cluster, cluster.id, ctx)
+    context.spawn(_provision_cluster, cluster.id)
 
     return cluster
 
 
-def _provision_cluster(cluster_id, ctx):
-    context.set_ctx(ctx)
+def _provision_cluster(cluster_id):
     cluster = get_cluster(id=cluster_id)
     plugin = plugin_base.PLUGINS.get_plugin(cluster.plugin_name)
 
