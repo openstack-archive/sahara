@@ -12,3 +12,65 @@
 # implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+
+node_group_template_schema = {
+    "type": "object",
+    "properties": {
+        "name": {
+            "type": "string",
+        },
+        "tenant_id": {
+            "type": "string",
+            "format": "uuid",
+        },
+        "flavor_id": {
+            "type": "string",
+            "format": "uuid",
+        },
+        "plugin_name": {
+            "type": "string",
+        },
+        "hadoop_version": {
+            "type": "string",
+        },
+        "node_processes": {
+            "type": "array",
+            "items": {
+                "type": "string",
+            }
+        },
+        "image_id": {
+            "type": "string",
+            "format": "uuid",
+        },
+        "node_configs": {
+            "type": "configs",
+        },
+        "anti-affinity-group": {
+            "type": "string",
+        },
+        "volumes_per_node": {
+            "type": "integer",
+            "minimum": 0,
+        },
+        "volumes_size": {
+            "type": "integer",
+            "minimum": 0,
+        },
+        "volumes_mount_prefix": {
+            "type": "string",
+        },
+        "description": {
+            "type": "string",
+        },
+    },
+    "additionalProperties": False,
+    "required": [
+        "name",
+        "tenant_id",
+        "flavor_id",
+        "plugin_name",
+        "hadoop_version",
+        "node_processes",
+    ]
+}

@@ -17,6 +17,7 @@ from savanna.openstack.common import log as logging
 from savanna.service import api
 from savanna.service import validation as v
 from savanna.service.validations import images as v_images
+from savanna.service.validations import node_group_templates as v_ngt
 import savanna.utils.api as u
 
 LOG = logging.getLogger(__name__)
@@ -97,6 +98,7 @@ def node_group_templates_list():
 
 
 @rest.post('/node-group-templates')
+@v.validate(v_ngt.node_group_template_schema)
 def node_group_templates_create(data):
     return u.render(api.create_node_group_template(data).wrapped_dict)
 
