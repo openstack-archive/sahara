@@ -20,8 +20,7 @@ node_group_template_schema = {
             "type": "string",
         },
         "flavor_id": {
-            "type": "string",
-            "format": "uuid",
+            'type': 'flavor',
         },
         "plugin_name": {
             "type": "string",
