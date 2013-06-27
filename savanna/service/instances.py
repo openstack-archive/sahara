@@ -176,9 +176,12 @@ def _shutdown_instances(cluster, quiet=False):
     """Shutdown all instances related to the specified cluster."""
     session = context.ctx().session
 
+    alive_instances = set([srv.id for srv in nova.client().servers.list()])
+
     for node_group in cluster.node_groups:
         for instance in node_group.instances:
-            nova.client().servers.delete(instance.instance_id)
+            if instance.instance_id in alive_instances:
+                nova.client().servers.delete(instance.instance_id)
             with session.begin():
                 session.delete(instance)
 

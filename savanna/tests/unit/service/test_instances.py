@@ -38,6 +38,8 @@ class TestClusterRollBack(models_test_base.DbTestCase):
         nova.servers.create.side_effect = [_mock_instance(1),
                                            Exception("test")]
 
+        nova.servers.list = mock.MagicMock(return_value=[_mock_instance(1)])
+
         with self.assertRaises(Exception):
             instances.create_cluster(cluster)
 
