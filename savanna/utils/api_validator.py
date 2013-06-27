@@ -58,10 +58,26 @@ class ConfigsType(dict):
     __metaclass__ = ConfigTypeMeta
 
 
+class FlavorTypeMeta(type):
+    def __instancecheck__(cls, instance):
+        try:
+            int(instance)
+        except (ValueError, TypeError):
+            return (isinstance(instance, six.string_types)
+                    and uuidutils.is_uuid_like(instance))
+        return (isinstance(instance, six.integer_types + six.string_types)
+                and type(instance) != bool)
+
+
+class FlavorType(object):
+    __metaclass__ = FlavorTypeMeta
+
+
 class ApiValidator(jsonschema.Draft4Validator):
     def __init__(self, schema):
         format_checker = jsonschema.FormatChecker()
         super(ApiValidator, self).__init__(
             schema, format_checker=format_checker, types={
-                "configs": ConfigsType
+                "configs": ConfigsType,
+                "flavor": FlavorType,
             })

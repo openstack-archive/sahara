@@ -225,3 +225,18 @@ class ApiValidatorTest(unittest2.TestCase):
                 ],
             }
         })
+
+    def test_validate_flavor(self):
+        schema = {
+            'type': "flavor",
+        }
+
+        self._validate_success(schema, 0)
+        self._validate_success(schema, 1)
+        self._validate_success(schema, "0")
+        self._validate_success(schema, "1")
+        self._validate_success(schema, uuidutils.generate_uuid())
+        self._validate_failure(schema, True)
+        self._validate_failure(schema, 0.1)
+        self._validate_failure(schema, "0.1")
+        self._validate_failure(schema, "asd")
