@@ -23,6 +23,7 @@ from savanna.api import v10 as api_v10
 from savanna import context
 from savanna.db import api as db_api
 from savanna.middleware import auth_valid
+from savanna.openstack.common.middleware import debug
 from savanna.plugins import base as plugins_base
 from savanna.utils import api as api_utils
 from savanna.utils import scheduler
@@ -109,6 +110,9 @@ def make_app():
 
     for code in werkzeug_exceptions.default_exceptions.iterkeys():
         app.error_handler_spec[None][code] = make_json_error
+
+    if CONF.debug:
+        app.wsgi_app = debug.Debug.factory(app.config)(app.wsgi_app)
 
     app.wsgi_app = auth_valid.filter_factory(app.config)(app.wsgi_app)
 
