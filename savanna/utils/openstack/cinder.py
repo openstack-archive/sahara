@@ -13,8 +13,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import logging
-
 from cinderclient.v1 import client as cinder_client
 
 from savanna import context
@@ -28,14 +26,11 @@ def client():
     tenant = headers['X-Tenant-Id']
     volume_url = base.url_for(headers, 'volume')
 
-    logging.debug('cinderclient connection created using token '
-                  '"%s", tenant "%s" and url "%s"',
-                  token, tenant, volume_url)
-
     cinder = cinder_client.Client(username, token, tenant. volume_url)
 
     cinder.client.auth_token = token
     cinder.client.management_url = volume_url
+
     return cinder
 
 

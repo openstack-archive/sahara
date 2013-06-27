@@ -13,8 +13,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import logging
-
 from novaclient.v1_1 import client as nova_client
 
 from savanna import context
@@ -29,10 +27,6 @@ def client():
     token = headers['X-Auth-Token']
     tenant = headers['X-Tenant-Id']
     compute_url = base.url_for(headers, 'compute')
-
-    logging.debug('novaclient connection created using token '
-                  '"%s", tenant "%s" and url "%s"',
-                  token, tenant, compute_url)
 
     nova = nova_client.Client(username, token, tenant,
                               auth_url=compute_url)
