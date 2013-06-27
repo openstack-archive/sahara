@@ -26,7 +26,7 @@ def client():
     tenant = headers['X-Tenant-Id']
     volume_url = base.url_for(headers, 'volume')
 
-    cinder = cinder_client.Client(username, token, tenant. volume_url)
+    cinder = cinder_client.Client(username, token, tenant, volume_url)
 
     cinder.client.auth_token = token
     cinder.client.management_url = volume_url
