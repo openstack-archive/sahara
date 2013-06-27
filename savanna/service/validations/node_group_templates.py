@@ -51,7 +51,7 @@ node_group_template_schema = {
         },
         "volumes_size": {
             "type": "integer",
-            "minimum": 0,
+            "minimum": 1,
         },
         "volumes_mount_prefix": {
             "type": "string",
