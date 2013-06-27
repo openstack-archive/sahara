@@ -18,30 +18,33 @@ import telnetlib
 from savanna.tests.integration import base
 
 
-class ClusterNodeGroupTemplatesCrudTest(base.ITestCase):
+class ClusterNodeProcessesNodeGroupTemplatesCrudTest(base.ITestCase):
 
     def setUp(self):
-        super(ClusterNodeGroupTemplatesCrudTest, self).setUp()
+        super(ClusterNodeProcessesNodeGroupTemplatesCrudTest, self).setUp()
 
         telnetlib.Telnet(self.host, self.port)
 
         self.create_node_group_templates()
 
-    def test_crud_cluster_ngt_jtnn_ttdn(self):
-        """This test checks cluster creation with topology | JT+NN | TT+DN |
-        via node group templates.
+    def test_crud_cluster_nn_jt_dn(self):
+        """This test checks cluster creation with topology | JT | NN | DN | via
+        node processes and node group template. Node processes are JT
+        and NN.
         """
-        ngt_id_list = {self.id_jt_nn: 1, self.id_tt_dn: 2}
-        body = self.make_cl_body_node_group_templates(ngt_id_list)
+        node_processes = {'JT': 1, 'NN': 1}
+        ngt_id_list = {self.id_dn: 2}
+        body = self.make_cl_node_processes_ngt(node_processes, ngt_id_list)
         self.crud_object(body, self.url_cluster)
 
-    def test_crud_cluster_ngt_jt_nn_tt_dn(self):
-        """This test checks cluster creation with
-        topology | JT | NN | TT | DN | via node group templates.
+    def test_crud_cluster_nn_jt_ttdn(self):
+        """This test checks cluster creation with topology | JT | NN | TT+DN |
+        via node processes and node group template. Node processes are
+        JT and NN.
         """
-        ngt_id_list = {self.id_jt: 1, self.id_nn: 1, self.id_tt: 1,
-                       self.id_dn: 1}
-        body = self.make_cl_body_node_group_templates(ngt_id_list)
+        node_processes = {'JT': 1, 'NN': 1}
+        ngt_id_list = {self.id_tt_dn: 2}
+        body = self.make_cl_node_processes_ngt(node_processes, ngt_id_list)
         self.crud_object(body, self.url_cluster)
 
     def tearDown(self):

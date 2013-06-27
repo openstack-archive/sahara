@@ -73,7 +73,7 @@ class ITestCase(unittest2.TestCase):
             'x-auth-token': self.token, 'Content-Type': 'application/json'})
         data = json.loads(resp.content) if resp.status_code == 202 \
             else resp.content
-        print('URL = %s\ndata = %s\nresponse = %s\ndata = %s\n'
+        print('URL = %s \n data = %s \n response = %s \n data = %s \n'
               % (URL, body, resp.status_code, data))
         return resp
 
@@ -82,7 +82,7 @@ class ITestCase(unittest2.TestCase):
         resp = requests.put(URL, data=body, headers={
             'x-auth-token': self.token, 'Content-Type': 'application/json'})
         data = json.loads(resp.content)
-        print('URL = %s\ndata = %s\nresponse = %s\ndata = %s\n'
+        print('URL = %s \n data = %s \n response = %s \n data = %s \n'
               % (URL, body, resp.status_code, data))
         return resp
 
@@ -90,19 +90,19 @@ class ITestCase(unittest2.TestCase):
         URL = self.baseurl + url
         resp = requests.get(URL, headers={'x-auth-token': self.token})
         if printing:
-            print('URL = %s\nresponse = %s\n' % (URL, resp.status_code))
+            print('URL = %s \n response = %s \n' % (URL, resp.status_code))
         if resp.status_code != 200:
             data = json.loads(resp.content)
-            print('data= %s\n') % data
+            print('data= %s \n' % data)
         return resp
 
     def _delete(self, url):
         URL = self.baseurl + url
         resp = requests.delete(URL, headers={'x-auth-token': self.token})
-        print('URL = %s\nresponse = %s\n' % (URL, resp.status_code))
+        print('URL = %s \n response = %s \n' % (URL, resp.status_code))
         if resp.status_code != 204:
             data = json.loads(resp.content)
-            print('data= %s\n') % data
+            print('data= %s \n' % data)
         return resp
 
     def post_object(self, url, body, code):
@@ -162,8 +162,8 @@ class ITestCase(unittest2.TestCase):
             if i > int(param.TIMEOUT) * 6:
                 print("json for cluster: \n" + get_data + "\n")
                 self.fail(
-                    'cluster not Starting -> Active, passed %d minutes'
-                    % param.TIMEOUT)
+                    'cluster is not getting status \'Active\', '
+                    'passed %d minutes' % param.TIMEOUT)
             get_data = self.get_object(get_url, object_id, 200)
             get_data = get_data['cluster']
             time.sleep(10)
@@ -195,7 +195,7 @@ class ITestCase(unittest2.TestCase):
         group_template = dict(
             name='%s' % gr_name,
             description='%s' % desc,
-            flavor_id='%s' % self.flavor_id,
+            flavor_id='%s' % param.FLAVOR_ID,
             plugin_name='%s' % param.PLUGIN_NAME,
             hadoop_version='%s' % param.HADOOP_VERSION,
             node_processes=processes,
@@ -235,7 +235,7 @@ class ITestCase(unittest2.TestCase):
             plugin_name='%s' % plugin_name,
             hadoop_version='%s' % hadoop_ver,
             cluster_template_id='%s' % cl_tmpl_id,
-            default_image_id='%s' % self.image_id,
+            default_image_id='%s' % param.IMAGE_ID,
             user_keypair_id='%s' % param.SSH_KEY
         )
         return cluster_body
@@ -252,10 +252,10 @@ class ITestCase(unittest2.TestCase):
         )
         for key, value in node_processes.items():
             processes = ['jobtracker', 'namenode']
-            ng_name = 'jt_nn'
+            ng_name = 'jt-nn'
             if key == 'TT+DN':
                 processes = ['tasktracker', 'datanode']
-                ng_name = 'tt_dn'
+                ng_name = 'tt-dn'
             elif key == 'JT':
                 processes = ['jobtracker']
                 ng_name = 'jt'
@@ -270,10 +270,10 @@ class ITestCase(unittest2.TestCase):
                 ng_name = 'dn'
             elif key == 'JT+TT+DN':
                 processes = ['jobtracker', 'tasktracker', 'datanode']
-                ng_name = 'jt_tt_dn'
+                ng_name = 'jt-tt-dn'
             elif key == 'NN+TT+DN':
                 processes = ['namenode', 'tasktracker', 'datanode']
-                ng_name = 'nn_tt_dn'
+                ng_name = 'nn-tt-dn'
             cluster_body['node_groups'].append(dict(
                 name=ng_name,
                 flavor_id=param.FLAVOR_ID,
