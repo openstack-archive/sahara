@@ -77,9 +77,14 @@ def set_ctx(new_ctx):
         _CTXS._curr_ctxs[corolocal.get_ident()] = new_ctx
 
 
-def model_query(model, context=None):
+def model_query(model, context=None, project_only=None):
     context = context or ctx()
-    return context.session.query(model)
+    query = context.session.query(model)
+
+    if project_only:
+        query = query.filter_by(tenant_id=context.tenant_id)
+
+    return query
 
 
 def model_save(model, context=None):
