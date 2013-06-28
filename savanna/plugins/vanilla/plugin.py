@@ -159,9 +159,12 @@ class VanillaProvider(p.ProvisioningPluginBase):
         jt = utils.get_jobtracker(cluster)
 
         info = cluster.info
-        info['jobtracker'] = {
-            'Web UI': 'http://%s:50030' % jt.management_ip
-        }
-        info['namenode'] = {
-            'Web UI': 'http://%s:50070' % nn.management_ip
-        }
+
+        if jt and jt.management_ip:
+            info['jobtracker'] = {
+                'Web UI': 'http://%s:50030' % jt.management_ip
+            }
+        if nn and nn.management_ip:
+            info['namenode'] = {
+                'Web UI': 'http://%s:50070' % nn.management_ip
+            }
