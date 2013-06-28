@@ -74,6 +74,10 @@ PRIORITY_1_CONFS = ['dfs.datanode.du.reserved',
                     'io.sort.mb', 'mapred.tasktracker.map.tasks.maximum',
                     'mapred.tasktracker.reduce.tasks.maximum']
 
+# for now we have not so many cluster-wide configs
+# lets consider all of them having high priority
+PRIORITY_1_CONFS += CLUSTER_WIDE_CONFS
+
 
 def _initialise_configs():
     configs = []
