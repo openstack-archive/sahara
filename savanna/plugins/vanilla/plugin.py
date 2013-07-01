@@ -18,6 +18,7 @@ from savanna.plugins import provisioning as p
 from savanna.plugins.vanilla import config_helper as c_helper
 from savanna.plugins.vanilla import exceptions as ex
 from savanna.plugins.vanilla import utils
+from savanna.utils import crypto
 
 LOG = logging.getLogger(__name__)
 
@@ -81,6 +82,7 @@ class VanillaProvider(p.ProvisioningPluginBase):
 
         self._extract_configs(cluster)
         self._push_configs_to_nodes(cluster)
+        self._write_hadoop_user_keys(cluster)
 
     def start_cluster(self, cluster):
         nn_instance = utils.get_namenode(cluster)
@@ -168,3 +170,23 @@ class VanillaProvider(p.ProvisioningPluginBase):
             info['HDFS'] = {
                 'Web UI': 'http://%s:50070' % nn.management_ip
             }
+
+    def _write_hadoop_user_keys(self, cluster):
+        private_key = cluster.private_key
+        public_key = crypto.private_key_to_public_key(cluster.private_key)
+
+        files = {
+            'id_rsa': private_key,
+            'authorized_keys': public_key
+        }
+
+        mv_cmd = 'sudo mkdir -p /home/hadoop/.ssh/; ' \
+                 'sudo mv id_rsa authorized_keys /home/hadoop/.ssh ; ' \
+                 'sudo chown -R hadoop:hadoop /home/hadoop/.ssh; ' \
+                 'sudo chmod 600 /home/hadoop/.ssh/{id_rsa,authorized_keys}'
+
+        for node_group in cluster.node_groups:
+            for instance in node_group.instances:
+                with instance.remote as remote:
+                    remote.write_files_to(files)
+                    remote.execute_command(mv_cmd)
