@@ -66,8 +66,8 @@ class TestHadoop(base.ITestCase):
             cl_tmpl_id = self.get_object_id(
                 'cluster_template', self.post_object(self.url_cl_tmpl,
                                                      cl_tmpl_body, 202))
-            clstr_body = self.make_cl_body_cluster_template(
-                param.PLUGIN_NAME, param.HADOOP_VERSION, cl_tmpl_id)
+            clstr_body = self.make_cl_body_cluster_template(cl_tmpl_id)
+            clstr_body['name'] = param.CLUSTER_NAME_HADOOP
             data = self.post_object(self.url_cluster, clstr_body, 202)
             data = data['cluster']
             cluster_id = data.pop('id')
@@ -138,7 +138,7 @@ class TestHadoop(base.ITestCase):
                 job_name = execute_command(
                     namenode_ip, './script.sh gn -hd %s'
                                  % param.HADOOP_DIRECTORY)[1]
-                if job_name == "JobId":
+                if job_name == 'JobId':
                     self.fail()
             except Exception as e:
                 self.fail('fail in get job name: ' + str(e))
@@ -171,6 +171,8 @@ class TestHadoop(base.ITestCase):
             self.del_object(self.url_cl_tmpl_with_slash, cl_tmpl_id, 204)
 
     def test_hadoop_single_master(self):
+        """This test checks hadoop work
+        """
         node_list = {self.id_jt_nn: 1, self.id_tt_dn: 1}
         self._hadoop_testing(node_list)
 

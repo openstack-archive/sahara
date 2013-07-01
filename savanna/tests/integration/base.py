@@ -41,11 +41,6 @@ class ITestCase(unittest2.TestCase):
         self.tenant = self.keystone.tenant_id
         self.token = self.keystone.auth_token
 
-        self.flavor_id = param.FLAVOR_ID
-        self.image_id = param.IMAGE_ID
-
-        self.maxDiff = None
-
         self.url_version = '/'
 
         self.url_ngt = '/v1.0/%s/node-group-templates' % self.tenant
@@ -159,8 +154,8 @@ class ITestCase(unittest2.TestCase):
         i = 1
         while get_data['status'] != 'Active':
             print 'GET_STATUS: ', get_data['status']
-            if i > int(param.TIMEOUT) * 6:
-                print("json for cluster: \n" + get_data + "\n")
+            if i > param.TIMEOUT * 6:
+                print('\n Data for cluster: ' + str(get_data) + '\n')
                 self.fail(
                     'cluster is not getting status \'Active\', '
                     'passed %d minutes' % param.TIMEOUT)
@@ -228,12 +223,11 @@ class ITestCase(unittest2.TestCase):
             cluster_template['node_groups'].append(ngt)
         return cluster_template
 
-    def make_cl_body_cluster_template(self, plugin_name, hadoop_ver,
-                                      cl_tmpl_id):
+    def make_cl_body_cluster_template(self, cl_tmpl_id):
         cluster_body = dict(
             name='%s' % param.CLUSTER_NAME_CRUD,
-            plugin_name='%s' % plugin_name,
-            hadoop_version='%s' % hadoop_ver,
+            plugin_name='%s' % param.PLUGIN_NAME,
+            hadoop_version='%s' % param.HADOOP_VERSION,
             cluster_template_id='%s' % cl_tmpl_id,
             default_image_id='%s' % param.IMAGE_ID,
             user_keypair_id='%s' % param.SSH_KEY
