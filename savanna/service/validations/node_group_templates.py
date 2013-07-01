@@ -68,3 +68,7 @@ node_group_template_schema = {
         "node_processes",
     ]
 }
+
+
+def check_node_group_template_create(data):
+    pass
