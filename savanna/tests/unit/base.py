@@ -26,9 +26,13 @@ from savanna.openstack.common import uuidutils
 
 
 class DbTestCase(unittest2.TestCase):
-    def setUp(self):
+
+    def set_tenant(self, tenant_id="tenant_1"):
         context.set_ctx(
-            context.Context('test_user', 'test_tenant', 'test_auth_token', {}))
+            context.Context('test_user', tenant_id, 'test_auth_token', {}))
+
+    def setUp(self):
+        self.set_tenant()
         self.db_fd, self.db_path = tempfile.mkstemp()
         session.set_defaults('sqlite:///' + self.db_path, self.db_path)
         db_api.configure_db()
