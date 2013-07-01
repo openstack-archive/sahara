@@ -16,6 +16,8 @@
 from savanna.openstack.common import log as logging
 from savanna.service import api
 from savanna.service import validation as v
+from savanna.service.validations import cluster_templates as v_ct
+from savanna.service.validations import clusters as v_c
 from savanna.service.validations import images as v_images
 from savanna.service.validations import node_group_templates as v_ngt
 import savanna.utils.api as u
@@ -33,6 +35,7 @@ def clusters_list():
 
 
 @rest.post('/clusters')
+@v.validate(v_c.cluster_schema, v_c.check_cluster_create)
 def clusters_create(data):
     return u.render(api.create_cluster(data).wrapped_dict)
 
@@ -65,6 +68,7 @@ def cluster_templates_list():
 
 
 @rest.post('/cluster-templates')
+@v.validate(v_ct.cluster_template_schema, v_ct.check_cluster_template_create)
 def cluster_templates_create(data):
     return u.render(api.create_cluster_template(data).wrapped_dict)
 
@@ -98,7 +102,8 @@ def node_group_templates_list():
 
 
 @rest.post('/node-group-templates')
-@v.validate(v_ngt.node_group_template_schema)
+@v.validate(v_ngt.node_group_template_schema,
+            v_ngt.check_node_group_template_create)
 def node_group_templates_create(data):
     return u.render(api.create_node_group_template(data).wrapped_dict)
 
@@ -165,7 +170,7 @@ def images_get(image_id):
 
 @rest.post('/images/<image_id>')
 @v.check_exists(api.get_image, id='image_id')
-@v.validate(v_images.image_register_schema)
+@v.validate(v_images.image_register_schema, v_images.check_image_register)
 def images_set(image_id, data):
     return u.render(api.register_image(image_id, **data).wrapped_dict)
 
@@ -179,7 +184,7 @@ def images_unset(image_id):
 
 @rest.post('/images/<image_id>/tag')
 @v.check_exists(api.get_image, id='image_id')
-@v.validate(v_images.image_tags_schema)
+@v.validate(v_images.image_tags_schema, v_images.check_tags)
 def image_tags_add(image_id, data):
     return u.render(api.add_image_tags(image_id, **data).wrapped_dict)
 

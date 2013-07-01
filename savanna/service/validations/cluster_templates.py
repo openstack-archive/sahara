@@ -12,3 +12,11 @@
 # implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+
+
+cluster_template_schema = {
+}
+
+
+def check_cluster_template_create(data):
+    pass

@@ -40,3 +40,11 @@ image_tags_schema = {
     "additionalProperties": False,
     "required": ["tags"]
 }
+
+
+def check_image_register(data):
+    pass
+
+
+def check_tags(data):
+    pass
