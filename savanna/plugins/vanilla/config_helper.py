@@ -48,7 +48,7 @@ ENV_CONFS = {
 
 
 ENABLE_SWIFT = p.Config('Enable Swift', 'general', 'cluster',
-                        config_type="bool",
+                        config_type="bool", priority=1,
                         default_value=True, is_optional=True)
 
 HIDDEN_CONFS = ['fs.default.name', 'dfs.name.dir', 'dfs.data.dir',
