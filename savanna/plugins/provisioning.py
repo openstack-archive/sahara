@@ -49,6 +49,9 @@ class ProvisioningPluginBase(plugins_base.PluginInterface):
     def validate(self, cluster):
         pass
 
+    def validate_scaling(self, cluster, existing, additional):
+        pass
+
     def update_infra(self, cluster):
         pass
 
@@ -58,6 +61,9 @@ class ProvisioningPluginBase(plugins_base.PluginInterface):
 
     @abc.abstractmethod
     def start_cluster(self, cluster):
+        pass
+
+    def scale_cluster(self, cluster, instances):
         pass
 
     def convert(self, hadoop_version, config_file):
