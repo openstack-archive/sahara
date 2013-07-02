@@ -66,7 +66,7 @@ class VanillaPluginTest(unittest2.TestCase):
 
     def test_extract_environment_configs(self):
         env_configs = {
-            "MAPREDUCE": {
+            "MapReduce": {
                 'Job Tracker Heap Size': 1000,
                 'Task Tracker Heap Size': "2000"
             },
@@ -90,7 +90,7 @@ class VanillaPluginTest(unittest2.TestCase):
                 'fs.default.name': 'hdfs://',
                 'key': 'value'
             },
-            "MAPREDUCE": {
+            "MapReduce": {
                 'io.sort.factor': 10,
                 'mapred.reduce.tasks': 2
             },

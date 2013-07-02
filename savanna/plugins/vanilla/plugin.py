@@ -26,7 +26,7 @@ class VanillaProvider(p.ProvisioningPluginBase):
     def __init__(self):
         self.processes = {
             "HDFS": ["namenode", "datanode", "secondarynamenode"],
-            "MAPREDUCE": ["tasktracker", "jobtracker"]
+            "MapReduce": ["tasktracker", "jobtracker"]
         }
 
     def get_plugin_opts(self):
@@ -96,7 +96,7 @@ class VanillaProvider(p.ProvisioningPluginBase):
             jt_instance.remote.execute_command(
                 'sudo su -c /usr/sbin/start-mapred.sh hadoop >>'
                 ' /tmp/savanna-hadoop-start-mapred.log')
-            LOG.info("MAPREDUCE service at '%s' has been started",
+            LOG.info("MapReduce service at '%s' has been started",
                      jt_instance.hostname)
 
         LOG.info('Cluster %s has been started successfully' % cluster.name)
@@ -161,10 +161,10 @@ class VanillaProvider(p.ProvisioningPluginBase):
         info = cluster.info
 
         if jt and jt.management_ip:
-            info['jobtracker'] = {
+            info['MapReduce'] = {
                 'Web UI': 'http://%s:50030' % jt.management_ip
             }
         if nn and nn.management_ip:
-            info['namenode'] = {
+            info['HDFS'] = {
                 'Web UI': 'http://%s:50070' % nn.management_ip
             }

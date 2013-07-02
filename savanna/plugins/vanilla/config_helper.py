@@ -31,12 +31,12 @@ MAPRED_DEFAULT = x.load_hadoop_xml_defaults(
 
 XML_CONFS = {
     "HDFS": [CORE_DEFAULT, HDFS_DEFAULT],
-    "MAPREDUCE": [MAPRED_DEFAULT]
+    "MapReduce": [MAPRED_DEFAULT]
 }
 
 # TODO(aignatov): Environmental configs could be more complex
 ENV_CONFS = {
-    "MAPREDUCE": {
+    "MapReduce": {
         'Job Tracker Heap Size': 'HADOOP_JOBTRACKER_OPTS=\\"-Xmx%sm\\"',
         'Task Tracker Heap Size': 'HADOOP_TASKTRACKER_OPTS=\\"-Xmx%sm\\"'
     },
