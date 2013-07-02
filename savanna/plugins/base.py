@@ -28,7 +28,8 @@ LOG = logging.getLogger(__name__)
 opts = [
     cfg.ListOpt('plugins',
                 default=[],
-                help='List of plugins to be loaded'),
+                help='List of plugins to be loaded. Savanna preserves the '
+                     'order of the list when returning it.'),
 ]
 
 CONF = cfg.CONF
@@ -154,7 +155,7 @@ class PluginManager(object):
 
     def get_plugins(self, base):
         return [
-            self.plugins[plugin] for plugin in self.plugins
+            self.plugins[plugin] for plugin in CONF.plugins
             if not base or issubclass(self.plugins[plugin].__class__, base)
         ]
 

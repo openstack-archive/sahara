@@ -163,7 +163,8 @@
 # Options defined in savanna.plugins.base
 #
 
-# List of plugins to be loaded (list value)
+# List of plugins to be loaded. Savanna preserves the order of
+# the list when returning it. (list value)
 #plugins=
 
 

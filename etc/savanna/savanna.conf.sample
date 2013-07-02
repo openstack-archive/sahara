@@ -22,11 +22,14 @@
 # dhcp_domain config parameter (string value)
 #node_domain=novalocal
 
-
+# List of plugins to be loaded. Savanna preserves the order of
+# the list when returning it. (list value)
 plugins=vanilla
+
 
 [plugin:vanilla]
 plugin_class=savanna.plugins.vanilla.plugin:VanillaProvider
+
 
 [database]
 
