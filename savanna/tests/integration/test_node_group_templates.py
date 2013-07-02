@@ -72,14 +72,14 @@ class NodeGroupTemplatesCrudTest(base.ITestCase):
         """This test checks node group template creation with
         configuration | NN + TT + DN |.
         """
-        body_tt_dn = self.make_node_group_template('nn-dn-tt', 'qa probe',
-                                                   'NN+TT+DN')
-        self.crud_object(body_tt_dn, self.url_ngt)
+        body_nn_tt_dn = self.make_node_group_template('nn-dn-tt', 'qa probe',
+                                                      'NN+TT+DN')
+        self.crud_object(body_nn_tt_dn, self.url_ngt)
 
     def test_crud_ngt_jtttdn(self):
         """This test checks node group template creation with
         configuration | JT + TT + DN |.
         """
-        body_tt_dn = self.make_node_group_template('jt-dn-tt', 'qa probe',
-                                                   'JT+TT+DN')
-        self.crud_object(body_tt_dn, self.url_ngt)
+        body_jt_tt_dn = self.make_node_group_template('jt-dn-tt', 'qa probe',
+                                                      'JT+TT+DN')
+        self.crud_object(body_jt_tt_dn, self.url_ngt)

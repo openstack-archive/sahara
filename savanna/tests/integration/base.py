@@ -196,7 +196,7 @@ class ITestCase(unittest2.TestCase):
             node_processes=processes,
             node_configs={
                 'HDFS': {},
-                'MAPREDUCE': {}
+                'MapReduce': {}
             }
         )
         return group_template
