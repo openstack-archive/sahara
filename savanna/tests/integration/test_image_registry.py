@@ -61,6 +61,8 @@ class ImageRegistryCrudTest(base.ITestCase):
         telnetlib.Telnet(self.host, self.port)
 
     def test_image_registry(self):
+        """This test checks image registry work
+        """
         username = 'ubuntu'
         tag1_name = 'animal'
         tag2_name = 'dog'
@@ -72,16 +74,27 @@ class ImageRegistryCrudTest(base.ITestCase):
         self.assertEquals(data['image']['description'], description)
         self.assertEquals(data['image']['username'], username)
 
+        tag_data = data['image']['tags']
+
         try:
             data = self.set_tags_untags_image('/tag', tag1_name)
-            self.assertEquals(data['image']['tags'], [tag1_name])
+            data['image']['tags'].sort()
+            tag_data.append(tag1_name)
+            tag_data.sort()
+            self.assertEquals(data['image']['tags'], tag_data)
+
             data = self.set_tags_untags_image('/tag', tag2_name)
-            self.assertEquals(data['image']['tags'], [tag1_name, tag2_name])
+            data['image']['tags'].sort()
+            tag_data.append(tag2_name)
+            tag_data.sort()
+            self.assertEquals(data['image']['tags'], tag_data)
+
+            untag_data = data['image']['tags']
 
         except Exception as e:
             self.set_tags_untags_image('/untag', tag1_name)
             self.set_tags_untags_image('/untag', tag2_name)
-            self.fail(e.message)
+            self.fail(str(e))
 
         data = self.get_image_by_tags(tag1_name)
         self.assertEquals(data['images'][0]['id'], param.IMAGE_ID)
@@ -96,22 +109,30 @@ class ImageRegistryCrudTest(base.ITestCase):
         del data['image']['metadata']
         del data['image']['created']
         del data['image']['name']
+        data['image']['tags'].sort()
         self.assertEquals(data, dict(image=dict(
             status='ACTIVE',
             username='%s' % username,
-            tags=['%s' % tag1_name, '%s' % tag2_name],
+            tags=tag_data,
             description='%s' % description,
             id='%s' % param.IMAGE_ID
         )))
 
         data = self.set_tags_untags_image('/untag', tag1_name)
-        self.assertEquals(data['image']['tags'], [tag2_name])
+        data['image']['tags'].sort()
+        untag_data.remove(tag1_name)
+        untag_data.sort()
+        self.assertEquals(data['image']['tags'], untag_data)
+
         data = self.set_tags_untags_image('/untag', tag2_name)
-        self.assertEquals(data['image']['tags'], [])
+        data['image']['tags'].sort()
+        untag_data.remove(tag2_name)
+        untag_data.sort()
+        self.assertEquals(data['image']['tags'], untag_data)
 
         data = self.get_image_by_tags(tag1_name)
         self.assertEquals(data['images'], [])
-        data = self.get_image_by_tags(tag1_name)
+        data = self.get_image_by_tags(tag2_name)
         self.assertEquals(data['images'], [])
 
         self.check_images_list_accessible()
