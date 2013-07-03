@@ -55,6 +55,8 @@ class Rest(flask.Blueprint):
             endpoint = options.pop('endpoint', func.__name__)
 
             def handler(**kwargs):
+                LOG.debug("Rest.route.decorator.handler, kwargs=%s", kwargs)
+
                 # extract response content type
                 resp_type = flask.request.accept_mimetypes
                 type_suffix = kwargs.pop('resp_type', None)
@@ -89,8 +91,14 @@ class Rest(flask.Blueprint):
 
             f_rule = "/<tenant_id>" + rule
             self.add_url_rule(f_rule, endpoint, handler, **options)
-            ext_rule = f_rule + '.<resp_type>'
-            self.add_url_rule(ext_rule, endpoint, handler, **options)
+            # Commented out because the rule for extension parsing can
+            # be tricked by requests such as GET /plugins/vanilla/1.1.2
+            #
+            # The code's motivation is to allow for .json / .xml
+            # extensions the dynamically control serialization. An
+            # alternative should be developed.
+            #ext_rule = f_rule + '.<resp_type>'
+            #self.add_url_rule(ext_rule, endpoint, handler, **options)
 
             return func
 
