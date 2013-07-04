@@ -13,10 +13,20 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import re
+
 import jsonschema
 import six
 
 from savanna.openstack.common import uuidutils
+
+
+@jsonschema.FormatChecker.cls_checks('valid_name')
+def validate_name_format(entry):
+    res = re.match(r"^(([a-zA-Z]|[a-zA-Z][a-zA-Z0-9\-_]"
+                   r"*[a-zA-Z0-9])\.)*([A-Za-z]|[A-Za-z]"
+                   r"[A-Za-z0-9\-_]*[A-Za-z0-9])$", entry)
+    return res is not None
 
 
 @jsonschema.FormatChecker.cls_checks('uuid')

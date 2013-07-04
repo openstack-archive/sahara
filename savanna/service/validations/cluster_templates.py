@@ -13,10 +13,91 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import copy
 
-cluster_template_schema = {
+import savanna.service.validations.base as b
+import savanna.service.validations.node_group_templates as ng_tml
+
+
+def _build_ng_schema_for_cluster_tmpl():
+    cl_tmpl_ng_schema = copy.deepcopy(ng_tml.NODE_GROUP_TEMPLATE_SCHEMA)
+    cl_tmpl_ng_schema['properties'].update({"count": {"type": "integer"}})
+    cl_tmpl_ng_schema["required"] = ['name', 'flavor_id',
+                                     'node_processes', 'count']
+    del cl_tmpl_ng_schema['properties']['hadoop_version']
+    del cl_tmpl_ng_schema['properties']['plugin_name']
+    return cl_tmpl_ng_schema
+
+
+_cluster_tmpl_ng_schema = _build_ng_schema_for_cluster_tmpl()
+
+
+def _build_ng_tmpl_schema_for_cluster_template():
+    cl_tmpl_ng_tmpl_schema = copy.deepcopy(_cluster_tmpl_ng_schema)
+    cl_tmpl_ng_tmpl_schema['properties'].update(
+        {
+            "node_group_template_id": {
+                "type": "string",
+                "format": "uuid",
+            }
+        })
+    cl_tmpl_ng_tmpl_schema["required"] = ["node_group_template_id",
+                                          "name", "count"]
+    return cl_tmpl_ng_tmpl_schema
+
+_cluster_tmpl_ng_tmpl_schema = _build_ng_tmpl_schema_for_cluster_template()
+
+
+CLUSTER_TEMPLATE_SCHEMA = {
+    "type": "object",
+    "properties": {
+        "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 50,
+            "format": "valid_name",
+        },
+        "plugin_name": {
+            "type": "string",
+        },
+        "hadoop_version": {
+            "type": "string",
+        },
+        "default_image_id": {
+            "type": "string",
+            "format": "uuid",
+        },
+        "cluster_configs": {
+            "type": "configs",
+        },
+        "node_groups": {
+            "type": "array",
+            "items": {
+                "oneOf": [_cluster_tmpl_ng_tmpl_schema,
+                          _cluster_tmpl_ng_schema]
+            }
+        },
+        "anti_affinity_group": {
+            "type": "string",
+        },
+        "description": {
+            "type": "string",
+        },
+    },
+    "additionalProperties": False,
+    "required": [
+        "name",
+        "plugin_name",
+        "hadoop_version",
+    ]
 }
 
 
 def check_cluster_template_create(data):
-    pass
+    b.check_cluster_template_unique_name(data['name'])
+    b.check_plugin_name_exists(data['plugin_name'])
+    b.check_plugin_supports_version(data['plugin_name'],
+                                    data['hadoop_version'])
+
+    if data.get('default_image_id'):
+        b.check_image_exists(data['default_image_id'])

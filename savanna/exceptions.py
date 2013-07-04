@@ -40,3 +40,23 @@ class NotFoundException(SavannaException):
         self.value = value
         if message:
             self.message = message % value
+
+
+class NameAlreadyExistsException(SavannaException):
+
+    message = "Name already exists"
+
+    def __init__(self, message=None):
+        self.code = "NAME_ALREADY_EXISTS"
+        if message:
+            self.message = message
+
+
+class InvalidException(SavannaException):
+
+    message = "Invalid object reference"
+
+    def __init__(self, message=None):
+        self.code = "INVALID_REFERENCE"
+        if message:
+            self.message = message
