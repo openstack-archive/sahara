@@ -124,12 +124,15 @@ def get_plugin(plugin_name, version=None):
     if plugin:
         res = plugin.as_resource()
         if version:
-            configs = plugin.get_configs(version)
-            res._info['configs'] = [c.dict for c in configs]
-            processes = plugin.get_node_processes(version)
-            res._info['node_processes'] = processes
-            required_image_tags = plugin.get_required_image_tags(version)
-            res._info['required_image_tags'] = required_image_tags
+            if version in plugin.get_versions():
+                configs = plugin.get_configs(version)
+                res._info['configs'] = [c.dict for c in configs]
+                processes = plugin.get_node_processes(version)
+                res._info['node_processes'] = processes
+                required_image_tags = plugin.get_required_image_tags(version)
+                res._info['required_image_tags'] = required_image_tags
+            else:
+                return None
         return res
 
 
