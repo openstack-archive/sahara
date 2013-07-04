@@ -41,7 +41,7 @@ node_group_template_schema = {
         "node_configs": {
             "type": "configs",
         },
-        "anti-affinity-group": {
+        "anti_affinity_group": {
             "type": "string",
         },
         "volumes_per_node": {
