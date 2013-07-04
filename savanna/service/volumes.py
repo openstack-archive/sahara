@@ -30,6 +30,11 @@ def attach(cluster):
             _attach_volumes_to_node(node_group, instance)
 
 
+def attach_to_instances(instances):
+    for instance in instances:
+        _attach_volumes_to_node(instance.node_group, instance)
+
+
 def _await_attach_volume(instance, device_path):
     timeout = 10
     for _ in six.moves.xrange(timeout):
@@ -124,11 +129,20 @@ def _mount_volume(instance, device_path, mount_point):
 def detach(cluster):
     for node_group in cluster.node_groups:
         for instance in node_group.instances:
-            for volume_id in instance.volumes:
-                volume = cinder.get_volume(volume_id)
-                try:
-                    volume.detach()
-                    volume.delete()
-                except Exception:
-                    LOG.error("Can't detach volume %s" % volume.id)
-                    raise
+            _detach_volume_from_instance(instance)
+
+
+def detach_from_instances(instances):
+    for instance in instances:
+        _detach_volume_from_instance(instance)
+
+
+def _detach_volume_from_instance(instance):
+    for volume_id in instance.volumes:
+        volume = cinder.get_volume(volume_id)
+        try:
+            volume.detach()
+            volume.delete()
+        except Exception:
+            LOG.error("Can't detach volume %s" % volume.id)
+            raise

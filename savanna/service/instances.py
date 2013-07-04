@@ -62,6 +62,7 @@ def scale_cluster(cluster, node_group_names_map):
         instances_list = _scale_cluster_instances(
             cluster, node_groups_map)
         _await_instances(cluster)
+        volumes.attach_to_instances(instances_list)
     except Exception as ex:
         LOG.warn("Can't scale cluster: %s", ex)
         with excutils.save_and_reraise_exception():
@@ -261,16 +262,21 @@ def _rollback_cluster_creation(cluster, ex):
 
 
 def _rollback_cluster_scaling(instances):
-    # if some nodes are up we should shut them down and update "count" in
-    # node_group
-    ng_to_delete = []
-    for i in instances:
-        ng = i.node_group
-        _shutdown_instance(i)
-        ng.count -= 1
-        if ng.count == 0:
-            ng_to_delete.append(ng)
-    return ng_to_delete
+    try:
+        volumes.detach_from_instances(instances)
+    except Exception:
+        raise
+    finally:
+        #if some nodes are up we should shut them down and update "count" in
+        # node_group
+        ng_to_delete = []
+        for i in instances:
+            ng = i.node_group
+            _shutdown_instance(i)
+            ng.count -= 1
+            if ng.count == 0:
+                ng_to_delete.append(ng)
+        return ng_to_delete
 
 
 def _shutdown_instances(cluster, quiet=False):
