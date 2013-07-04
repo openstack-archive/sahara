@@ -46,30 +46,81 @@ def create_cluster(cluster):
             _rollback_cluster_creation(cluster, ex)
 
 
+#node_group_names: {node_group_name:desired_amount_of_instances}
+def scale_cluster(cluster, node_group_names_map):
+    #Now let's work with real node_groups, not names:
+    node_groups_map = {}
+    for ng in cluster.node_groups:
+        if ng.name in node_group_names_map:
+            node_groups_map.update({ng: node_group_names_map[ng.name]})
+
+    try:
+        instances_list = _create_cluster_instances(
+            cluster, node_groups_map)
+        _await_instances(cluster)
+    except Exception as ex:
+        LOG.warn("Can't scale cluster: %s", ex)
+        with excutils.save_and_reraise_exception():
+            _rollback_cluster_scaling(instances_list)
+            instances_list = []
+            cluster.status = 'Active'
+            context.model_save(cluster)
+
+    # we should be here with valid cluster: if instances creation
+    # was not successful all extra-instances will be removed above
+    _configure_instances(cluster)
+    return instances_list
+
+
 def _create_instances(cluster):
-    """Create all instances using nova client and persist them into DB."""
-    session = context.ctx().session
     aa_groups = _generate_anti_affinity_groups(cluster)
     for node_group in cluster.node_groups:
         userdata = _generate_user_data_script(node_group)
         for idx in xrange(1, node_group.count + 1):
-            name = '%s-%s-%03d' % (cluster.name, node_group.name, idx)
-            aa_group = node_group.anti_affinity_group
-            ids = aa_groups[aa_group]
-            hints = {'different_host': list(ids)} if ids else None
+            _run_instance(cluster, node_group, idx, aa_groups, userdata)
 
-            nova_instance = nova.client().servers.create(
-                name, node_group.get_image_id(), node_group.flavor_id,
-                scheduler_hints=hints, userdata=userdata,
-                key_name=cluster.user_keypair_id)
 
-            with session.begin():
-                instance = m.Instance(node_group.id, nova_instance.id, name)
-                node_group.instances.append(instance)
-                session.add(instance)
+def _create_cluster_instances(cluster, node_groups_map):
+    aa_groups = _generate_anti_affinity_groups(cluster)
+    instances = []
+    for node_group in node_groups_map:
+        count = node_groups_map[node_group]
+        userdata = _generate_user_data_script(node_group)
+        for idx in xrange(node_group.count + 1, count + 1):
+            instance = _run_instance(cluster, node_group, idx,
+                                     aa_groups, userdata)
+            instances.append(instance)
 
-            if aa_group:
-                aa_groups[aa_group].append(nova_instance.id)
+        node_group.count = count
+        context.model_save(node_group)
+        context.model_save(cluster)
+
+    return instances
+
+
+#extracted method. Return
+def _run_instance(cluster, node_group, idx, aa_groups, userdata):
+    """Create instance using nova client and persist them into DB."""
+    session = context.ctx().session
+    name = '%s-%s-%03d' % (cluster.name, node_group.name, idx)
+    aa_group = node_group.anti_affinity_group
+    ids = aa_groups[aa_group]
+    hints = {'different_host': list(ids)} if ids else None
+    context.model_save(node_group)
+    nova_instance = nova.client().servers.create(
+        name, node_group.get_image_id(), node_group.flavor_id,
+        scheduler_hints=hints, userdata=userdata,
+        key_name=cluster.user_keypair_id)
+
+    with session.begin():
+        instance = m.Instance(node_group.id, nova_instance.id, name)
+        node_group.instances.append(instance)
+        session.add(instance)
+
+    if aa_group:
+        aa_groups[aa_group].append(nova_instance.id)
+
+    return instance
 
 
 def _generate_user_data_script(node_group):
@@ -77,7 +128,6 @@ def _generate_user_data_script(node_group):
 echo "%(public_key)s" >> %(user_home)s/.ssh/authorized_keys
 echo "%(private_key)s" > %(user_home)s/.ssh/id_rsa
 """
-
     cluster = node_group.cluster
     if node_group.username == "root":
         user_home = "/root/"
@@ -169,13 +219,8 @@ def _rollback_cluster_creation(cluster, ex):
     """Shutdown all instances and update cluster status."""
     # update cluster status
     # update cluster status description
-    _shutdown_instances(cluster, True)
-
-
-def _shutdown_instances(cluster, quiet=False):
-    """Shutdown all instances related to the specified cluster."""
     session = context.ctx().session
-
+    _shutdown_instances(cluster, True)
     alive_instances = set([srv.id for srv in nova.client().servers.list()])
 
     for node_group in cluster.node_groups:
@@ -184,6 +229,34 @@ def _shutdown_instances(cluster, quiet=False):
                 nova.client().servers.delete(instance.instance_id)
             with session.begin():
                 session.delete(instance)
+
+
+def _rollback_cluster_scaling(instances):
+    #if some nodes are up we should shut them down and update "count" in
+    # node_group
+    session = context.ctx().session
+    for i in instances:
+        ng = i.node_group
+        _shutdown_instance(i)
+        ng.count -= 1
+        context.model_save(ng)
+        if ng.count == 0:
+            with session.begin():
+                session.delete(ng)
+
+
+def _shutdown_instances(cluster, quiet=False):
+    for node_group in cluster.node_groups:
+        for instance in node_group.instances:
+            _shutdown_instance(instance)
+
+
+def _shutdown_instance(instance):
+    session = context.ctx().session
+    nova.client().servers.delete(instance.instance_id)
+    with session.begin():
+        instance.node_group = None
+        session.delete(instance)
 
 
 def shutdown_cluster(cluster):

@@ -40,16 +40,16 @@ def clusters_create(data):
     return u.render(api.create_cluster(data).wrapped_dict)
 
 
+@rest.put('/clusters/<cluster_id>')
+@v.check_exists(api.get_cluster, 'cluster_id')
+def clusters_scale(cluster_id, data):
+    return u.render(api.scale_cluster(cluster_id, data).wrapped_dict)
+
+
 @rest.get('/clusters/<cluster_id>')
 @v.check_exists(api.get_cluster, 'cluster_id')
 def clusters_get(cluster_id):
     return u.render(api.get_cluster(id=cluster_id).wrapped_dict)
-
-
-@rest.put('/clusters/<cluster_id>')
-@v.check_exists(api.get_cluster, 'cluster_id')
-def clusters_update(cluster_id):
-    return _not_implemented()
 
 
 @rest.delete('/clusters/<cluster_id>')

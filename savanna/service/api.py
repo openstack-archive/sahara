@@ -33,6 +33,41 @@ get_clusters = s.get_clusters
 get_cluster = s.get_cluster
 
 
+def scale_cluster(cluster_id, data):
+    cluster = get_cluster(id=cluster_id)
+    plugin = plugin_base.PLUGINS.get_plugin(cluster.plugin_name)
+    existing_node_groups = data.get('resize_node_groups', [])
+    additional_node_groups = data.get('add_node_groups', [])
+
+    #the next map is the main object we will work with
+    #to_be_enlarged : {node_group_name: desired_amount_of_instances}
+    to_be_enlarged = {}
+    for ng in existing_node_groups:
+        to_be_enlarged.update({ng['name']: ng['count']})
+
+    additional = construct_ngs_for_scaling(additional_node_groups)
+
+    try:
+        cluster.status = 'Validating'
+        context.model_save(cluster)
+        _validate_cluster(cluster, plugin, additional)
+        plugin.validate_scaling(cluster, to_be_enlarged, additional)
+    except Exception:
+        with excutils.save_and_reraise_exception():
+            cluster.status = 'Active'
+            context.model_save(cluster)
+
+    # If we are here validation is successful.
+    # So let's update bd and to_be_enlarged map:
+    for add_n_g in additional:
+        cluster.node_groups.append(add_n_g)
+        to_be_enlarged.update({add_n_g.name: additional[add_n_g]})
+    context.model_save(cluster)
+
+    context.spawn(_provision_nodes, cluster_id, to_be_enlarged)
+    return cluster
+
+
 def create_cluster(values):
     cluster = s.create_cluster(values)
     plugin = plugin_base.PLUGINS.get_plugin(cluster.plugin_name)
@@ -53,6 +88,24 @@ def create_cluster(values):
     context.spawn(_provision_cluster, cluster.id)
 
     return cluster
+
+
+#node_group_names_map = {node_group_name:desired_amount_of_instances}
+def _provision_nodes(cluster_id, node_group_names_map):
+    cluster = get_cluster(id=cluster_id)
+    plugin = plugin_base.PLUGINS.get_plugin(cluster.plugin_name)
+
+    cluster.status = 'Scaling'
+    context.model_save(cluster)
+    instances = i.scale_cluster(cluster, node_group_names_map)
+
+    cluster.status = 'Configuring'
+    context.model_save(cluster)
+    plugin.scale_cluster(cluster, instances)
+
+    # cluster is now up and ready
+    cluster.status = 'Active'
+    context.model_save(cluster)
 
 
 def _provision_cluster(cluster_id):
@@ -148,26 +201,59 @@ def convert_to_cluster_template(plugin_name, version, config_file):
 
 def _validate(cluster, plugin):
     # Validate that user configs are not included in plugin configs set
+    pl_confs = _get_plugin_configs(cluster, plugin)
+    for ng in cluster.node_groups:
+        _validate_node_group(pl_confs, ng)
+
+
+def _validate_cluster(cluster, plugin, node_groups):
+    # Validate that user configs are not included in plugin configs set
+    pl_confs = _get_plugin_configs(cluster, plugin)
+    for ng in node_groups:
+        ng.cluster = cluster
+        _validate_node_group(pl_confs, ng)
+        ng.cluster = None
+
+
+def _get_plugin_configs(cluster, plugin):
     pl_confs = {}
     for config in plugin.get_configs(cluster.hadoop_version):
         if pl_confs.get(config.applicable_target):
             pl_confs[config.applicable_target].append(config.name)
         else:
             pl_confs[config.applicable_target] = [config.name]
+    return pl_confs
 
-    for ng in cluster.node_groups:
-        for app_target, configs in ng.configuration.items():
-            if app_target not in pl_confs:
-                raise RuntimeError("Plugin doesn't contain applicable "
-                                   "target '%s'" % app_target)
-            for name, values in configs.items():
-                if name not in pl_confs[app_target]:
-                    raise RuntimeError("Plugin's applicable target '%s' "
-                                       "doesn't contain config with name '%s'"
-                                       % (app_target, name))
 
+def _validate_node_group(pl_confs, node_group):
+    for app_target, configs in node_group.configuration.items():
+        if app_target not in pl_confs:
+            raise RuntimeError("Plugin doesn't contain applicable "
+                               "target '%s'" % app_target)
+        for name, values in configs.items():
+            if name not in pl_confs[app_target]:
+                raise RuntimeError("Plugin's applicable target '%s' "
+                                   "doesn't contain config with name '%s'"
+                                   % (app_target, name))
+
+
+def construct_ngs_for_scaling(additional_node_groups):
+    additional = {}
+    for ng in additional_node_groups:
+        tmpl_id = ng['node_group_template_id']
+        count = ng['count']
+        if tmpl_id:
+            tmpl = get_node_group_template(id=tmpl_id)
+            node_group = tmpl.to_object(ng, m.NodeGroup)
+        else:
+            node_group = m.NodeGroup(**ng)
+            #need to set 0 because tmpl.to_object overwrote count
+        node_group.count = 0
+        additional.update({node_group: count})
+    return additional
 
 ## Image Registry
+
 
 def get_images(tags):
     return nova.client().images.list_registered(tags)

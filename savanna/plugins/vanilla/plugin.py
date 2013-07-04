@@ -74,15 +74,14 @@ class VanillaProvider(p.ProvisioningPluginBase):
         pass
 
     def configure_cluster(self, cluster):
-        for ng in cluster.node_groups:
-            for inst in ng.instances:
-                inst.remote.execute_command(
-                    'sudo chown -R $USER:$USER /etc/hadoop'
-                )
-
         self._extract_configs(cluster)
         self._push_configs_to_nodes(cluster)
-        self._write_hadoop_user_keys(cluster)
+        self._write_hadoop_user_keys(cluster.private_key,
+                                     utils.get_instances(cluster))
+
+        nn = utils.get_namenode(cluster)
+        nn.remote.execute_command(
+            "sudo su -c 'hadoop namenode -format' hadoop")
 
     def start_cluster(self, cluster):
         nn_instance = utils.get_namenode(cluster)
@@ -121,35 +120,82 @@ class VanillaProvider(p.ProvisioningPluginBase):
                 )
             }
 
-    def _push_configs_to_nodes(self, cluster):
+    def validate_scaling(self, cluster, existing, additional):
+        ng_names = existing.copy()
+        allowed = ["datanode", "tasktracker"]
+        #validate existing n_g scaling at first:
         for ng in cluster.node_groups:
+            if ng.name in ng_names:
+                del ng_names[ng.name]
+                if not set(ng.node_processes).issubset(allowed):
+                    raise ex.NodeGroupCannotBeScaled(ng.name)
+        if len(ng_names) != 0:
+            raise ex.NodeGroupsDoNotExist(ng_names.keys())
+        #validate additional n_g
+        jt = utils.get_jobtracker(cluster)
+        nn = utils.get_namenode(cluster)
+        for ng in additional:
+            if (not set(ng.node_processes).issubset(allowed)) or (
+                    not jt and 'tasktracker' in ng.node_processes) or (
+                    not nn and 'datanode' in ng.node_processes):
+                raise ex.NodeGroupCannotBeScaled(ng.name)
+
+    def scale_cluster(self, cluster, instances):
+        self._extract_configs(cluster)
+        self._push_configs_to_nodes(cluster, instances=instances)
+        self._write_hadoop_user_keys(cluster.private_key,
+                                     instances)
+
+        for i in instances:
+            with i.remote as remote:
+                if "datanode" in i.node_group.node_processes:
+                    remote.execute_command('sudo su -c '
+                                           '"/usr/sbin/hadoop-daemon.sh '
+                                           'start datanode" hadoop'
+                                           '>> /tmp/savanna-start-datanode.log'
+                                           ' 2>&1')
+
+                if "tasktracker" in i.node_group.node_processes:
+                    remote.execute_command('sudo su -c '
+                                           '"/usr/sbin/hadoop-daemon.sh '
+                                           'start tasktracker" hadoop'
+                                           '>> /tmp/savanna-start-'
+                                           'tasktracker.log 2>&1')
+
+    def _push_configs_to_nodes(self, cluster, instances=None):
+        if not instances:
+            instances = utils.get_instances(cluster)
+
+        for inst in instances:
             files = {
-                '/etc/hadoop/core-site.xml': ng.extra['xml']['core-site'],
-                '/etc/hadoop/mapred-site.xml': ng.extra['xml']['mapred-site'],
-                '/etc/hadoop/hdfs-site.xml': ng.extra['xml']['hdfs-site'],
-                '/tmp/savanna-hadoop-init.sh': ng.extra['setup_script']
+                '/etc/hadoop/core-site.xml': inst.node_group.extra['xml'][
+                    'core-site'],
+                '/etc/hadoop/mapred-site.xml': inst.node_group.extra['xml'][
+                    'mapred-site'],
+                '/etc/hadoop/hdfs-site.xml': inst.node_group.extra['xml'][
+                    'hdfs-site'],
+                '/tmp/savanna-hadoop-init.sh': inst.node_group.extra[
+                    'setup_script']
             }
-            for inst in ng.instances:
-                inst.remote.write_files_to(files)
-                inst.remote.execute_command(
+            with inst.remote as r:
+                r.execute_command(
+                    'sudo chown -R $USER:$USER /etc/hadoop'
+                )
+                r.write_files_to(files)
+                r.execute_command(
                     'sudo chmod 0500 /tmp/savanna-hadoop-init.sh'
                 )
-                inst.remote.execute_command(
+                r.execute_command(
                     'sudo /tmp/savanna-hadoop-init.sh '
                     '>> /tmp/savanna-hadoop-init.log 2>&1')
-
         nn = utils.get_namenode(cluster)
         jt = utils.get_jobtracker(cluster)
-
         nn.remote.write_files_to({
             '/etc/hadoop/slaves': utils.generate_host_names(
                 utils.get_datanodes(cluster)),
             '/etc/hadoop/masters': utils.generate_host_names(
                 utils.get_secondarynamenodes(cluster))
         })
-
-        nn.remote.execute_command(
-            "sudo su -c 'hadoop namenode -format' hadoop")
 
         if jt and nn.instance_id != jt.instance_id:
             jt.remote.write_file_to('/etc/hadoop/slaves',
@@ -171,9 +217,8 @@ class VanillaProvider(p.ProvisioningPluginBase):
                 'Web UI': 'http://%s:50070' % nn.management_ip
             }
 
-    def _write_hadoop_user_keys(self, cluster):
-        private_key = cluster.private_key
-        public_key = crypto.private_key_to_public_key(cluster.private_key)
+    def _write_hadoop_user_keys(self, private_key, instances):
+        public_key = crypto.private_key_to_public_key(private_key)
 
         files = {
             'id_rsa': private_key,
@@ -185,8 +230,7 @@ class VanillaProvider(p.ProvisioningPluginBase):
                  'sudo chown -R hadoop:hadoop /home/hadoop/.ssh; ' \
                  'sudo chmod 600 /home/hadoop/.ssh/{id_rsa,authorized_keys}'
 
-        for node_group in cluster.node_groups:
-            for instance in node_group.instances:
-                with instance.remote as remote:
-                    remote.write_files_to(files)
-                    remote.execute_command(mv_cmd)
+        for instance in instances:
+            with instance.remote as remote:
+                remote.write_files_to(files)
+                remote.execute_command(mv_cmd)
