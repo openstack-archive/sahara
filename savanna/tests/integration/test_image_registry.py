@@ -16,7 +16,6 @@
 import telnetlib
 
 from savanna.tests.integration import base
-
 import savanna.tests.integration.parameters as param
 
 
@@ -32,21 +31,15 @@ class ImageRegistryCrudTest(base.ITestCase):
     def set_description_username(self, description, username):
         url = self.url_images + '/' + param.IMAGE_ID
         body = dict(
-            description='%s' % description,
-            username='%s' % username
+            description=description,
+            username=username
         )
         data = self.post_object(url, body, 202)
         return data
 
-    def get_image_by_tags(self, tag_name):
-        url = self.url_images + '?tags=' + tag_name
-        data = self.get_object(url, empty_object_id(True), 200)
-        return data
-
-    def set_tags_untags_image(self, url_part, tag_name):
+    def send_rest_on_tag(self, url_part, tag_name):
         url = self.url_images + '/' + param.IMAGE_ID + url_part
-        tag = []
-        tag.append('%s' % tag_name)
+        tag = [tag_name]
         body = dict(tags=tag)
         data = self.post_object(url, body, 202)
         return data
@@ -55,6 +48,36 @@ class ImageRegistryCrudTest(base.ITestCase):
         url = self.url_images + '/'
         data = self.get_object(url, empty_object_id(False), 200)
         return data
+
+    def set_and_compare_tags(self, tag):
+        data = self.get_image_description()
+        tag_data = data['image']['tags']
+        if tag not in data['image']['tags']:
+            data = self.send_rest_on_tag('/tag', tag)
+            tag_data.append(tag)
+        self.assertItemsEqual(data['image']['tags'], tag_data,
+                              'tags comparison has failed')
+        return tag_data
+
+    def delete_tag_and_check(self, tag):
+        data = self.get_image_description()
+        untag_data = data['image']['tags']
+        data = self.send_rest_on_tag('/untag', tag)
+        untag_data.remove(tag)
+        self.assertItemsEqual(data['image']['tags'], untag_data,
+                              'tags comparison has failed')
+
+    def get_image_by_tags(self, tag_name):
+        url = self.url_images + '?tags=' + tag_name
+        data = self.get_object(url, empty_object_id(True), 200)
+        if param.IMAGE_ID not in [img['id'] for img in data['images']]:
+            self.fail('image by tag \'%s\' not found' % tag_name)
+
+    def get_image_by_delete_tags(self, tag_name):
+        url = self.url_images + '?tags=' + tag_name
+        data = self.get_object(url, empty_object_id(True), 200)
+        if param.IMAGE_ID in [img['id'] for img in data['images']]:
+            self.fail('image tag \'%s\' is not deleted' % tag_name)
 
     def setUp(self):
         super(ImageRegistryCrudTest, self).setUp()
@@ -74,65 +97,29 @@ class ImageRegistryCrudTest(base.ITestCase):
         self.assertEquals(data['image']['description'], description)
         self.assertEquals(data['image']['username'], username)
 
-        tag_data = data['image']['tags']
-
         try:
-            data = self.set_tags_untags_image('/tag', tag1_name)
-            data['image']['tags'].sort()
-            tag_data.append(tag1_name)
-            tag_data.sort()
-            self.assertEquals(data['image']['tags'], tag_data)
+            self.set_and_compare_tags(tag1_name)
+            tag_data = self.set_and_compare_tags(tag2_name)
 
-            data = self.set_tags_untags_image('/tag', tag2_name)
-            data['image']['tags'].sort()
-            tag_data.append(tag2_name)
-            tag_data.sort()
-            self.assertEquals(data['image']['tags'], tag_data)
+            self.get_image_by_tags(tag1_name)
+            self.get_image_by_tags(tag2_name)
 
-            untag_data = data['image']['tags']
+            data = self.get_image_description()
+            self.assertEquals(data['image']['status'], 'ACTIVE')
+            self.assertEquals(data['image']['username'], username)
+            self.assertItemsEqual(data['image']['tags'], tag_data)
+            self.assertEquals(data['image']['description'], description)
+            self.assertEquals(data['image']['id'], param.IMAGE_ID)
+
+            self.delete_tag_and_check(tag1_name)
+            self.delete_tag_and_check(tag2_name)
+
+            self.get_image_by_delete_tags(tag1_name)
+            self.get_image_by_delete_tags(tag2_name)
+
+            self.check_images_list_accessible()
 
         except Exception as e:
-            self.set_tags_untags_image('/untag', tag1_name)
-            self.set_tags_untags_image('/untag', tag2_name)
+            self.send_rest_on_tag('/untag', tag1_name)
+            self.send_rest_on_tag('/untag', tag2_name)
             self.fail(str(e))
-
-        data = self.get_image_by_tags(tag1_name)
-        self.assertEquals(data['images'][0]['id'], param.IMAGE_ID)
-        data = self.get_image_by_tags(tag2_name)
-        self.assertEquals(data['images'][0]['id'], param.IMAGE_ID)
-
-        data = self.get_image_description()
-        del data['image']['updated']
-        del data['image']['progress']
-        del data['image']['minRam']
-        del data['image']['minDisk']
-        del data['image']['metadata']
-        del data['image']['created']
-        del data['image']['name']
-        data['image']['tags'].sort()
-        self.assertEquals(data, dict(image=dict(
-            status='ACTIVE',
-            username='%s' % username,
-            tags=tag_data,
-            description='%s' % description,
-            id='%s' % param.IMAGE_ID
-        )))
-
-        data = self.set_tags_untags_image('/untag', tag1_name)
-        data['image']['tags'].sort()
-        untag_data.remove(tag1_name)
-        untag_data.sort()
-        self.assertEquals(data['image']['tags'], untag_data)
-
-        data = self.set_tags_untags_image('/untag', tag2_name)
-        data['image']['tags'].sort()
-        untag_data.remove(tag2_name)
-        untag_data.sort()
-        self.assertEquals(data['image']['tags'], untag_data)
-
-        data = self.get_image_by_tags(tag1_name)
-        self.assertEquals(data['images'], [])
-        data = self.get_image_by_tags(tag2_name)
-        self.assertEquals(data['images'], [])
-
-        self.check_images_list_accessible()
