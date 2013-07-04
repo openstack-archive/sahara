@@ -39,14 +39,13 @@ class TaskTrackersWithoutJobTracker(e.SavannaException):
 class NodeGroupsDoNotExist(e.SavannaException):
     def __init__(self, ng_names):
         names = ''.join(ng_names)
-        self.message = "Cluster does not contain required node groups " +\
+        self.message = "Cluster does not contain node groups: " +\
                        names
         self.code = "NODE_GROUP_DOES_NOT_EXIST"
 
 
 class NodeGroupCannotBeScaled(e.SavannaException):
-    def __init__(self, ng_name):
-        self.message = "Chosen node group " + ng_name + " cannot be " \
-            "scaled : Vanilla plugin supports only datanode and " \
-            "tasktracker scaling"
+    def __init__(self, ng_name, reason):
+        self.message = "Chosen node group %s cannot be " \
+                       "scaled : %s" % (ng_name, reason)
         self.code = "NODE_GROUP_CANNOT_BE_SCALED"

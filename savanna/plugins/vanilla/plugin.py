@@ -125,20 +125,31 @@ class VanillaProvider(p.ProvisioningPluginBase):
         allowed = ["datanode", "tasktracker"]
         #validate existing n_g scaling at first:
         for ng in cluster.node_groups:
+            #we do not support deletion now
             if ng.name in ng_names:
                 del ng_names[ng.name]
+                #we do not support deletion now
+                if ng.count > existing[ng.name]:
+                    raise ex.NodeGroupCannotBeScaled(
+                        ng.name, "Vanilla plugin cannot shrink node_group")
                 if not set(ng.node_processes).issubset(allowed):
-                    raise ex.NodeGroupCannotBeScaled(ng.name)
+                    raise ex.NodeGroupCannotBeScaled(
+                        ng.name, "Vanilla plugin cannot scale nodegroup"
+                                 " with processes: " +
+                                 ' '.join(ng.node_processes))
         if len(ng_names) != 0:
             raise ex.NodeGroupsDoNotExist(ng_names.keys())
-        #validate additional n_g
+            #validate additional n_g
         jt = utils.get_jobtracker(cluster)
         nn = utils.get_namenode(cluster)
         for ng in additional:
             if (not set(ng.node_processes).issubset(allowed)) or (
                     not jt and 'tasktracker' in ng.node_processes) or (
                     not nn and 'datanode' in ng.node_processes):
-                raise ex.NodeGroupCannotBeScaled(ng.name)
+                raise ex.NodeGroupCannotBeScaled(
+                    ng.name, "Vanilla plugin cannot scale node group with "
+                             "processes which have no master-processes run "
+                             "in cluster")
 
     def scale_cluster(self, cluster, instances):
         self._extract_configs(cluster)
