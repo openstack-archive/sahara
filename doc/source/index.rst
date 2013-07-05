@@ -1,50 +1,65 @@
 Welcome to Savanna!
 ===================
 
-Useful links
-------------
-.. toctree::
-    :maxdepth: 1
+Savanna project aims to provide users with simple means to provision a Hadoop
+cluster at OpenStack by specifying several parameters like Hadoop version,
+cluster topology, nodes hardware details and a few more.
 
-    overview
-    architecture
-    devref/index
-    quickstart
-
-* `Savanna wiki <https://wiki.openstack.org/wiki/Savanna>`_
-* `Savanna roadmap <https://wiki.openstack.org/wiki/Savanna/Roadmap>`_
-
-.. include:: introduction.rst.inc
-
-Project overview
-----------------
-
+Overview
+========
 .. toctree::
     :maxdepth: 1
 
     overview
     architecture
 
-Developer Docs
---------------
+Links
+=====
 
-.. toctree::
-    :maxdepth: 3
+* `Roadmap <https://wiki.openstack.org/wiki/Savanna/Roadmap>`_
+* `Savanna on OpenStack Wiki <https://wiki.openstack.org/wiki/Savanna>`_
+* `Savanna on Launchpad <https://launchpad.net/savanna>`_
 
-    devref/index
+Developer Guide
+===============
 
-.. toctree::
-    :maxdepth: 1
-
-    restapi/v02
-    hadoop-swift/hadoop-swift
-
-Installation guides
--------------------
-
+Programming HowTos and Tutorials
+--------------------------------
 .. toctree::
     :maxdepth: 1
 
-    installation.guide
-    horizon/installation.guide
+    devref/development.guidelines
+    devref/development.environment
     horizon/dev.environment.guide
+    devref/quickstart
+    devref/unit_tests
+    devref/how_to_participate
+
+Background Concepts for Savanna
+-------------------------------
+.. toctree::
+    :maxdepth: 1
+
+    devref/plugins
+    devref/templates
+    devref/plugin.spi
+
+Other Resources
+---------------
+.. toctree::
+   :maxdepth: 1
+
+   devref/launchpad
+   devref/gerrit
+   devref/jenkins
+
+User guide
+==========
+.. toctree::
+   :maxdepth: 1
+
+   userdoc/installation.guide
+   horizon/installation.guide
+   userdoc/rest_api_v1.0
+   userdoc/features
+   userdoc/hadoop-swift.rst

@@ -1,5 +1,5 @@
-Savanna Architecture (draft)
-============================
+Architecture
+============
 
 .. image:: images/savanna-architecture.png
     :width: 800 px
