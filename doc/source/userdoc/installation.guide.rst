@@ -1,39 +1,67 @@
 Savanna Installation Guide
 ==========================
 
-1. You can install the latest Savanna release version from pypi:
+We recommend installing Savanna into virtual environment. That guaranties that if you already
+have some python packages installed ith OS package manager, Savanna installation will not
+mess with them. Still, installing Savanna into system makes sense if that system is dedicated to
+Savanna.
 
-.. sourcecode:: bash
-
-    sudo pip install savanna
-
-Or you can get Savanna archive from http://tarballs.openstack.org/savanna/ and install it using pip:
-
-.. sourcecode:: bash
-
-    sudo pip install http://tarballs.openstack.org/savanna/savanna-master.tar.gz#egg=savanna
-
-.. note::
-
-    savanna-master.tar.gz contains the latest changes in the source code.
-    savanna-some_version.tar.gz contains features related to specified Savanna release.
+Further steps describe Savanna installation into virtual environment. All steps except
+#1 do not require superuser privileges.
 
 
-2. After installation you should create configuration file or change default config to run Savanna properly. Default config file is located in:
+1.  First you need to install `python-setuptools`, `python-virtualenv` and python headers using your
+    OS package manager. The python headers package name depends on OS. For Ubuntu it is `python-dev`,
+    for Red Hat - `python-devel` So for Ubuntu run :
 
-.. sourcecode:: bash
+    .. sourcecode:: bash
 
-    sudo mkdir /etc/savanna
-    sudo cp /usr/local/share/savanna/savanna.conf.sample /etc/savanna/savanna.conf
+        sudo apt-get install python-setuptools python-virtualenv python-dev
 
-3. To initialize Savanna database with created configuration just call:
+    For Red Hat:
 
-.. sourcecode:: bash
+    .. sourcecode:: bash
 
-    savanna-manage --config-file /etc/savanna/savanna.conf reset-db --with-gen-templates
+        sudo yum install python-setuptools python-virtualenv python-devel
 
-4. To start Savanna call:
+2.  Setup virtual environment for Savanna:
 
-.. sourcecode:: bash
+    .. sourcecode:: bash
 
-    savanna-api --config-file /etc/savanna/savanna.conf
+        virtualenv savanna-venv
+
+3.  You can install the latest Savanna release version from pypi:
+
+    .. sourcecode:: bash
+
+        savanna-venv/bin/pip install savanna
+
+    Or you can get Savanna archive from ``http://tarballs.openstack.org/savanna/`` and install it using pip:
+
+    .. sourcecode:: bash
+
+        savanna-venv/bin/pip install http://tarballs.openstack.org/savanna/savanna-master.tar.gz#egg=savanna
+
+    Note that savanna-master contains the latest changes and might not be stable at the moment.
+    We recommend browsing ``http://tarballs.openstack.org/savanna/`` and selecting the latest stable release.
+
+3.  After installation you should create configuration file. Sample config file location
+    depends on your OS. For Ubuntu it is ``/usr/local/share/savanna/savanna.conf.sample``,
+    for Red Hat - ``/usr/share/savanna/savanna.conf.sample``. Below is an example for Ubuntu:
+
+    .. sourcecode:: bash
+
+        mkdir savanna-venv/etc
+        cp savanna-venv/share/savanna/savanna.conf.sample savanna-venv/etc/savanna.conf
+
+4.  To start Savanna call:
+
+    .. sourcecode:: bash
+
+        savanna-venv/bin/python savanna-venv/bin/savanna-api --config-file savanna-venv/etc/savanna.conf
+
+    To get the list of all possible options run:
+
+    .. sourcecode:: bash
+
+        savanna-venv/bin/python savanna-venv/bin/savanna-api --help
