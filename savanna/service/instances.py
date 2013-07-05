@@ -54,6 +54,7 @@ def create_cluster(cluster):
 def scale_cluster(cluster, node_group_names_map):
     #Now let's work with real node_groups, not names:
     node_groups_map = {}
+    session = context.ctx().session
     for ng in cluster.node_groups:
         if ng.name in node_group_names_map:
             node_groups_map.update({ng: node_group_names_map[ng.name]})
@@ -65,14 +66,17 @@ def scale_cluster(cluster, node_group_names_map):
     except Exception as ex:
         LOG.warn("Can't scale cluster: %s", ex)
         with excutils.save_and_reraise_exception():
-            _rollback_cluster_scaling(instances_list)
+            ng_to_delete = _rollback_cluster_scaling(instances_list)
             instances_list = []
-            cluster.status = 'Active'
-            context.model_save(cluster)
+            with session.begin():
+                for ng in ng_to_delete:
+                    session.delete(ng)
+                cluster.status = 'Active'
 
     # we should be here with valid cluster: if instances creation
     # was not successful all extra-instances will be removed above
-    _configure_instances(cluster)
+    if instances_list:
+        _configure_instances(cluster)
     return instances_list
 
 
@@ -239,15 +243,14 @@ def _rollback_cluster_creation(cluster, ex):
 def _rollback_cluster_scaling(instances):
     #if some nodes are up we should shut them down and update "count" in
     # node_group
-    session = context.ctx().session
+    ng_to_delete = []
     for i in instances:
         ng = i.node_group
         _shutdown_instance(i)
         ng.count -= 1
-        context.model_save(ng)
         if ng.count == 0:
-            with session.begin():
-                session.delete(ng)
+            ng_to_delete.append(ng)
+    return ng_to_delete
 
 
 def _shutdown_instances(cluster, quiet=False):
@@ -260,7 +263,6 @@ def _shutdown_instance(instance):
     session = context.ctx().session
     nova.client().servers.delete(instance.instance_id)
     with session.begin():
-        instance.node_group = None
         session.delete(instance)
 
 
