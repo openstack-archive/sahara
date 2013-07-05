@@ -121,6 +121,12 @@ class IdMixin(object):
                    default=_generate_unicode_uuid)
 
 
+class DescriptionMixin(object):
+    """Description mixin, add to subclasses that have a description."""
+
+    description = sa.Column(sa.String(200))
+
+
 class TenantMixin(object):
     """Tenant mixin, add to subclasses that have a tenant."""
 

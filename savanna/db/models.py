@@ -46,7 +46,7 @@ class NodeGroupMixin(mb.IdMixin):
 
 
 class ClusterMixin(mb.IdMixin, mb.TenantMixin,
-                   mb.PluginSpecificMixin, mb.ExtraMixin):
+                   mb.PluginSpecificMixin, mb.ExtraMixin, mb.DescriptionMixin):
     """Base Cluster mixin, add it to subclass is like cluster object."""
 
     name = sa.Column(sa.String(80), nullable=False)
@@ -85,7 +85,7 @@ class Cluster(mb.SavannaBase, ClusterMixin):
     def __init__(self, name, tenant_id, plugin_name, hadoop_version,
                  default_image_id=None, cluster_configs=None,
                  cluster_template_id=None, user_keypair_id=None,
-                 anti_affinity=None):
+                 anti_affinity=None, description=None):
         self.name = name
         self.tenant_id = tenant_id
         self.plugin_name = plugin_name
@@ -95,6 +95,7 @@ class Cluster(mb.SavannaBase, ClusterMixin):
         self.cluster_template_id = cluster_template_id
         self.user_keypair_id = user_keypair_id
         self.anti_affinity = anti_affinity or []
+        self.description = description
         self.info = {}
 
     def to_dict(self):
@@ -249,7 +250,6 @@ class ClusterTemplate(mb.SavannaBase, ClusterMixin):
         sa.UniqueConstraint('name', 'tenant_id'),
     )
 
-    description = sa.Column(sa.String(200))
     node_groups = relationship('TemplatesRelation', cascade="all,delete",
                                backref='cluster_template')
 
@@ -282,20 +282,20 @@ class ClusterTemplate(mb.SavannaBase, ClusterMixin):
                               or self.default_image_id),
             cluster_configs=configs.merge_configs(
                 self.cluster_configs, values.pop('cluster_configs', None)),
+            cluster_template_id=self.id,
             anti_affinity=(values.pop('anti_affinity', None)
                            or self.anti_affinity),
+            description=values.pop('description', None),
             **values)
 
 
 class NodeGroupTemplate(mb.SavannaBase, mb.TenantMixin, mb.PluginSpecificMixin,
-                        NodeGroupMixin):
+                        NodeGroupMixin, mb.DescriptionMixin):
     """Template for NodeGroup."""
 
     __table_args__ = (
         sa.UniqueConstraint('name', 'tenant_id'),
     )
-
-    description = sa.Column(sa.String(200))
 
     def __init__(self, name, tenant_id, flavor_id, plugin_name, hadoop_version,
                  node_processes, image_id=None, node_configs=None,
