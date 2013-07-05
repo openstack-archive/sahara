@@ -174,7 +174,7 @@ class VanillaProvider(p.ProvisioningPluginBase):
                                            'tasktracker.log 2>&1')
 
     def _push_configs_to_nodes(self, cluster, instances=None):
-        if not instances:
+        if instances is None:
             instances = utils.get_instances(cluster)
 
         for inst in instances:

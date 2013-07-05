@@ -99,9 +99,10 @@ def _provision_nodes(cluster_id, node_group_names_map):
     context.model_save(cluster)
     instances = i.scale_cluster(cluster, node_group_names_map)
 
-    cluster.status = 'Configuring'
-    context.model_save(cluster)
-    plugin.scale_cluster(cluster, instances)
+    if instances:
+        cluster.status = 'Configuring'
+        context.model_save(cluster)
+        plugin.scale_cluster(cluster, instances)
 
     # cluster is now up and ready
     cluster.status = 'Active'
