@@ -31,4 +31,4 @@ NN_PORT = 000002 # port for process 'namenode'
 TT_PORT = 000003 # port for process 'tasktracker'
 DN_PORT = 000004 # port for process 'datanode'
 
-ENABLE_SWIFT_TESTS = False
+ENABLE_SWIFT_TESTS = True
