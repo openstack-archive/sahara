@@ -1,9 +1,20 @@
 Savanna Horizon Plugin dev environment setup
 ============================================
 
-1. **Install nodejs 0.10.10**
+1. Install prerequisites
 
-2. Checkout stable horizon from git git@github.com:openstack/horizon.git according to your version of OpenStack (stable/grizzly or stable/folsom) and install venv
+.. sourcecode:: bash
+
+    sudo apt-get update
+    sudo apt-get install git python-dev gcc python-setuptools python-virtualenv node-less
+
+On Ubuntu 12.10 and higher you have to install the following lib as well:
+
+.. sourcecode:: bash
+
+    sudo apt-get install nodejs-legacy
+
+2. Checkout stable horizon from git `git@github.com:openstack/horizon.git` according to your version of OpenStack (stable/grizzly or stable/folsom) and install venv
 
 .. sourcecode:: bash
 
@@ -61,3 +72,15 @@ and add savannadashboard to
 .. sourcecode:: bash
 
     tools/with_venv.sh  python manage.py runserver 0.0.0.0:8080
+
+This will start horizon in debug mode. That means the logs will be written to console,
+and if any exceptions happen, you will see the stack-trace rendered as a web-page.
+
+It is not recommended to use horizon in this mode for production.
+
+9. Applying changes
+
+If you have changed any `*.py` files in $SAVANNA_DASHBOARD_HOME directory,
+horizon will notice that and reload automatically.
+However changes made to non-python files may not be noticed,
+so you have to start horizon again manually, as described in step 8.
