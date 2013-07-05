@@ -55,7 +55,6 @@ class TemplatesModelTest(models_test_base.DbTestCase):
             'volume_mount_prefix': '/volumes/disk',
             'volumes_per_node': 0,
             'volumes_size': 10,
-            'anti_affinity_group': None,
             'description': None
         })
 
@@ -79,7 +78,8 @@ class TemplatesModelTest(models_test_base.DbTestCase):
             'plugin_name': 'p-1',
             'node_groups': [],
             'default_image_id': None,
-            'description': None
+            'description': None,
+            'anti_affinity': []
         })
 
     @unittest2.skip('add_node_group_template has been removed')
