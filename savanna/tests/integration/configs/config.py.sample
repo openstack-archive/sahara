@@ -13,6 +13,7 @@ NODE_USERNAME = 'username' # username for master node
 
 CLUSTER_NAME_CRUD = 'cluster-name-crud' # cluster name for crud operations
 CLUSTER_NAME_HADOOP = 'cluster-name-hadoop' # cluster name for hadoop testing
+CLUSTER_NAME_SWIFT = 'cluster-name-swift' # cluster name for swift testing
 
 TIMEOUT = 15 # cluster creation timeout (in minutes)
 
@@ -21,6 +22,13 @@ HADOOP_DIRECTORY = '/usr/share/hadoop'
 HADOOP_LOG_DIRECTORY = '/mnt/log/hadoop/hadoop/userlogs'
 
 SSH_KEY = 'ssh_key' # ssh public key which Savanna transfers to nodes of cluster for access of users to virtual machines via key
-PATH_TO_SSH = '/home/user/.ssh/id_rsa'
+PATH_TO_SSH = '/home/user/.ssh/id_rsa' # path to folder where put id_rsa key
 
 PLUGIN_NAME = 'vanilla'
+
+JT_PORT = 000001 # port for process 'jobtracker'
+NN_PORT = 000002 # port for process 'namenode'
+TT_PORT = 000003 # port for process 'tasktracker'
+DN_PORT = 000004 # port for process 'datanode'
+
+ENABLE_SWIFT_TESTS = False

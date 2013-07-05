@@ -15,7 +15,7 @@
 
 import savanna.openstack.common.importutils as importutils
 
-_CONF = importutils.try_import('savanna.tests.integration.config')
+_CONF = importutils.try_import('savanna.tests.integration.configs.config')
 
 
 def _get_conf(key, default):
@@ -36,6 +36,7 @@ NODE_USERNAME = _get_conf('NODE_USERNAME', 'username')
 
 CLUSTER_NAME_CRUD = _get_conf('CLUSTER_NAME_CRUD', 'cluster-crud')
 CLUSTER_NAME_HADOOP = _get_conf('CLUSTER_NAME_HADOOP', 'cluster-hadoop')
+CLUSTER_NAME_SWIFT = _get_conf('CLUSTER_NAME_SWIFT', 'cluster-swift')
 
 TIMEOUT = _get_conf('TIMEOUT', 15)
 
@@ -48,3 +49,10 @@ SSH_KEY = _get_conf('SSH_KEY', 'jenkins')
 PATH_TO_SSH = _get_conf('PATH_TO_SSH', '/home/user/.ssh/id_rsa')
 
 PLUGIN_NAME = _get_conf('PLUGIN_NAME', 'vanilla')
+
+JT_PORT = _get_conf('JT_PORT', 50030)
+NN_PORT = _get_conf('NN_PORT', 50070)
+TT_PORT = _get_conf('TT_PORT', 50060)
+DN_PORT = _get_conf('DN_PORT', 50075)
+
+ENABLE_SWIFT_TESTS = _get_conf('ENABLE_SWIFT_TESTS', False)

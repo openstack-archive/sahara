@@ -16,7 +16,7 @@
 import telnetlib
 
 from savanna.tests.integration import base
-import savanna.tests.integration.parameters as param
+import savanna.tests.integration.configs.parameters as param
 
 
 def empty_object_id(expr):

@@ -20,7 +20,14 @@ import requests
 import time
 import unittest2
 
-import savanna.tests.integration.parameters as param
+import savanna.tests.integration.configs.parameters as param
+
+
+def swift_test(fun):
+    if param.ENABLE_SWIFT_TESTS:
+        return fun
+
+    return unittest2.skip("Swift tests has been disabled")(fun)
 
 
 class ITestCase(unittest2.TestCase):
@@ -145,7 +152,7 @@ class ITestCase(unittest2.TestCase):
         finally:
             self.del_object(get_url, object_id, 204)
             if crud_object == 'cluster':
-                time.sleep(30)
+                time.sleep(5)
         return object_id
 
     def await_cluster_active(self, get_url, object_id):

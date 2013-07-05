@@ -19,7 +19,7 @@ import telnetlib
 import time
 
 from savanna.tests.integration import base
-import savanna.tests.integration.parameters as param
+import savanna.tests.integration.configs.parameters as param
 from savanna.utils import remote
 
 
@@ -46,7 +46,7 @@ def read_file_from(host, remote_file):
 def _transfer_script_to_node(host, directory):
     write_file_to(str(host),
                   'script.sh',
-                  open('%s/integration/hadoop_test_script.sh'
+                  open('%s/integration/hadoop_test/hadoop_test_script.sh'
                        % directory).read())
     execute_command(str(host), 'chmod 777 script.sh')
 
@@ -167,7 +167,7 @@ class TestHadoop(base.ITestCase):
 
         finally:
             self.del_object(self.url_cluster_with_slash, cluster_id, 204)
-            time.sleep(20)
+            time.sleep(5)
             self.del_object(self.url_cl_tmpl_with_slash, cl_tmpl_id, 204)
 
     def test_hadoop_single_master(self):
