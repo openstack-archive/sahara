@@ -50,16 +50,15 @@ def create_cluster(cluster):
             _rollback_cluster_creation(cluster, ex)
 
 
-#node_group_names: {node_group_name:desired_amount_of_instances}
 def scale_cluster(cluster, node_group_names_map):
-    #Now let's work with real node_groups, not names:
+    # Now let's work with real node_groups, not names:
     node_groups_map = {}
     for ng in cluster.node_groups:
         if ng.name in node_group_names_map:
             node_groups_map.update({ng: node_group_names_map[ng.name]})
 
     try:
-        instances_list = _create_cluster_instances(
+        instances_list = _scale_cluster_instances(
             cluster, node_groups_map)
         _await_instances(cluster)
     except Exception as ex:
@@ -76,6 +75,21 @@ def scale_cluster(cluster, node_group_names_map):
     return instances_list
 
 
+def _generate_anti_affinity_groups(cluster):
+    aa_groups = {}
+
+    for node_group in cluster.node_groups:
+        for instance in node_group.instances:
+            if instance.instance_id:
+                for process in node_group.node_processes:
+                    if process in cluster.anti_affinity:
+                        aa_group = aa_groups.get(process, [])
+                        aa_group.append(instance.instance_id)
+                        aa_groups[process] = aa_group
+
+    return aa_groups
+
+
 def _create_instances(cluster):
     aa_groups = _generate_anti_affinity_groups(cluster)
     for node_group in cluster.node_groups:
@@ -84,7 +98,7 @@ def _create_instances(cluster):
             _run_instance(cluster, node_group, idx, aa_groups, userdata)
 
 
-def _create_cluster_instances(cluster, node_groups_map):
+def _scale_cluster_instances(cluster, node_groups_map):
     aa_groups = _generate_anti_affinity_groups(cluster)
     instances = []
     for node_group in node_groups_map:
@@ -102,15 +116,21 @@ def _create_cluster_instances(cluster, node_groups_map):
     return instances
 
 
-#extracted method. Return
 def _run_instance(cluster, node_group, idx, aa_groups, userdata):
     """Create instance using nova client and persist them into DB."""
     session = context.ctx().session
     name = '%s-%s-%03d' % (cluster.name, node_group.name, idx)
-    aa_group = node_group.anti_affinity_group
-    ids = aa_groups[aa_group]
-    hints = {'different_host': list(ids)} if ids else None
+
+    # aa_groups: node process -> instance ids
+    aa_ids = []
+    for node_process in node_group.node_processes:
+        aa_ids += aa_groups.get(node_process) or []
+
+    # create instances only at hosts w/ no instances w/ aa-enabled processes
+    hints = {'different_host': list(set(aa_ids))} if aa_ids else None
+
     context.model_save(node_group)
+
     nova_instance = nova.client().servers.create(
         name, node_group.get_image_id(), node_group.flavor_id,
         scheduler_hints=hints, userdata=userdata,
@@ -121,8 +141,12 @@ def _run_instance(cluster, node_group, idx, aa_groups, userdata):
         node_group.instances.append(instance)
         session.add(instance)
 
-    if aa_group:
-        aa_groups[aa_group].append(nova_instance.id)
+    # save instance id to aa_groups to support aa feature
+    for node_process in node_group.node_processes:
+        if node_process in cluster.anti_affinity:
+            aa_group_ids = aa_groups.get(node_process, [])
+            aa_group_ids.append(nova_instance.id)
+            aa_groups[node_process] = aa_group_ids
 
     return instance
 
@@ -143,10 +167,6 @@ echo "%(private_key)s" > %(user_home)s/.ssh/id_rsa
         "private_key": cluster.private_key,
         "user_home": user_home
     }
-
-
-def _generate_anti_affinity_groups(cluster):
-    return dict((ng.anti_affinity_group, []) for ng in cluster.node_groups)
 
 
 def _await_instances(cluster):
@@ -237,7 +257,7 @@ def _rollback_cluster_creation(cluster, ex):
 
 
 def _rollback_cluster_scaling(instances):
-    #if some nodes are up we should shut them down and update "count" in
+    # if some nodes are up we should shut them down and update "count" in
     # node_group
     session = context.ctx().session
     for i in instances:

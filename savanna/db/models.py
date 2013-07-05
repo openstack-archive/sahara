@@ -40,7 +40,6 @@ class NodeGroupMixin(mb.IdMixin):
     image_id = sa.Column(sa.String(36))
     node_processes = sa.Column(st.JsonListType())
     node_configs = sa.Column(st.JsonDictType())
-    anti_affinity_group = sa.Column(sa.String(36))
     volumes_per_node = sa.Column(sa.Integer)
     volumes_size = sa.Column(sa.Integer)
     volume_mount_prefix = sa.Column(sa.String(80))
@@ -53,6 +52,7 @@ class ClusterMixin(mb.IdMixin, mb.TenantMixin,
     name = sa.Column(sa.String(80), nullable=False)
     cluster_configs = sa.Column(st.JsonDictType())
     default_image_id = sa.Column(sa.String(36))
+    anti_affinity = sa.Column(st.JsonListType())
 
 
 ## Main objects: Cluster, NodeGroup, Instance
@@ -84,7 +84,8 @@ class Cluster(mb.SavannaBase, ClusterMixin):
 
     def __init__(self, name, tenant_id, plugin_name, hadoop_version,
                  default_image_id=None, cluster_configs=None,
-                 cluster_template_id=None, user_keypair_id=None):
+                 cluster_template_id=None, user_keypair_id=None,
+                 anti_affinity=None):
         self.name = name
         self.tenant_id = tenant_id
         self.plugin_name = plugin_name
@@ -93,6 +94,7 @@ class Cluster(mb.SavannaBase, ClusterMixin):
         self.cluster_configs = cluster_configs or {}
         self.cluster_template_id = cluster_template_id
         self.user_keypair_id = user_keypair_id
+        self.anti_affinity = anti_affinity or []
         self.info = {}
 
     def to_dict(self):
@@ -137,8 +139,7 @@ class NodeGroup(mb.SavannaBase, NodeGroupMixin):
                                        backref="node_groups")
 
     def __init__(self, name, flavor_id, node_processes, count, image_id=None,
-                 node_configs=None, anti_affinity_group=None,
-                 volumes_per_node=0, volumes_size=10,
+                 node_configs=None, volumes_per_node=0, volumes_size=10,
                  volume_mount_prefix='/volumes/disk',
                  node_group_template_id=None):
         self.name = name
@@ -146,7 +147,6 @@ class NodeGroup(mb.SavannaBase, NodeGroupMixin):
         self.image_id = image_id
         self.node_processes = node_processes
         self.node_configs = node_configs or {}
-        self.anti_affinity_group = anti_affinity_group
         self.volumes_per_node = volumes_per_node
         self.volumes_size = volumes_size
         self.volume_mount_prefix = volume_mount_prefix
@@ -255,13 +255,14 @@ class ClusterTemplate(mb.SavannaBase, ClusterMixin):
 
     def __init__(self, name, tenant_id, plugin_name, hadoop_version,
                  default_image_id=None, cluster_configs=None,
-                 description=None):
+                 description=None, anti_affinity=None):
         self.name = name
         self.tenant_id = tenant_id
         self.plugin_name = plugin_name
         self.hadoop_version = hadoop_version
         self.default_image_id = default_image_id
         self.cluster_configs = cluster_configs or {}
+        self.anti_affinity = anti_affinity or []
         self.description = description
 
     def to_dict(self):
@@ -281,6 +282,8 @@ class ClusterTemplate(mb.SavannaBase, ClusterMixin):
                               or self.default_image_id),
             cluster_configs=configs.merge_configs(
                 self.cluster_configs, values.pop('cluster_configs', None)),
+            anti_affinity=(values.pop('anti_affinity', None)
+                           or self.anti_affinity),
             **values)
 
 
@@ -296,14 +299,13 @@ class NodeGroupTemplate(mb.SavannaBase, mb.TenantMixin, mb.PluginSpecificMixin,
 
     def __init__(self, name, tenant_id, flavor_id, plugin_name, hadoop_version,
                  node_processes, image_id=None, node_configs=None,
-                 anti_affinity_group=None, volumes_per_node=0, volumes_size=10,
+                 volumes_per_node=0, volumes_size=10,
                  volume_mount_prefix='/volumes/disk', description=None):
         self.name = name
         self.flavor_id = flavor_id
         self.image_id = image_id
         self.node_processes = node_processes
         self.node_configs = node_configs or {}
-        self.anti_affinity_group = anti_affinity_group
         self.volumes_per_node = volumes_per_node
         self.volumes_size = volumes_size
         self.volume_mount_prefix = volume_mount_prefix
@@ -323,8 +325,6 @@ class NodeGroupTemplate(mb.SavannaBase, mb.TenantMixin, mb.PluginSpecificMixin,
                             or self.node_processes),
             node_configs=configs.merge_configs(
                 self.node_configs, values.pop('node_configs', None)),
-            anti_affinity_group=(values.pop('anti_affinity_group', None)
-                                 or self.anti_affinity_group),
             volumes_per_node=(values.pop('volumes_per_node', None)
                               or self.volumes_per_node),
             volumes_size=(values.pop('volumes_size', None)
@@ -354,8 +354,7 @@ class TemplatesRelation(mb.SavannaBase, NodeGroupMixin):
                                        backref="templates_relations")
 
     def __init__(self, name, flavor_id, node_processes, count, image_id=None,
-                 node_configs=None, anti_affinity_group=None,
-                 volumes_per_node=0, volumes_size=10,
+                 node_configs=None, volumes_per_node=0, volumes_size=10,
                  volume_mount_prefix='/volumes/disk',
                  node_group_template_id=None):
         self.name = name
@@ -363,7 +362,6 @@ class TemplatesRelation(mb.SavannaBase, NodeGroupMixin):
         self.image_id = image_id
         self.node_processes = node_processes
         self.node_configs = node_configs or {}
-        self.anti_affinity_group = anti_affinity_group
         self.volumes_per_node = volumes_per_node
         self.volumes_size = volumes_size
         self.volume_mount_prefix = volume_mount_prefix
