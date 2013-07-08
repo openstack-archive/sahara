@@ -55,6 +55,8 @@ class Rest(flask.Blueprint):
             endpoint = options.pop('endpoint', func.__name__)
 
             def handler(**kwargs):
+                context.set_ctx(None)
+
                 LOG.debug("Rest.route.decorator.handler, kwargs=%s", kwargs)
 
                 # extract response content type
