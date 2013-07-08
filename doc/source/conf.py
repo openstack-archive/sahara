@@ -115,7 +115,7 @@ html_theme = '_theme'
 
 # The name for this set of Sphinx documents.  If None, it defaults to
 # "<project> v<release> documentation".
-#html_title = None
+html_title = 'Savanna'
 
 # A shorter title for the navigation bar.  Default is the same as html_title.
 #html_short_title = None
@@ -145,7 +145,11 @@ html_last_updated_fmt = os.popen(git_cmd).read()
 #html_use_smartypants = True
 
 # Custom sidebar templates, maps document names to template names.
-#html_sidebars = {}
+html_sidebars = {
+    'index':    ['sidebarlinks.html', 'localtoc.html', 'searchbox.html', 'sourcelink.html'],
+    '**':       ['localtoc.html', 'relations.html',
+                 'searchbox.html', 'sourcelink.html']
+}
 
 # Additional templates that should be rendered to pages, maps page names to
 # template names.

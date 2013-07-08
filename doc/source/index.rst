@@ -6,25 +6,29 @@ cluster at OpenStack by specifying several parameters like Hadoop version,
 cluster topology, nodes hardware details and a few more.
 
 Overview
-========
-.. toctree::
-    :maxdepth: 1
+--------
 
-    overview
-    architecture
-
-Links
-=====
-
+* :doc:`overview`
+* :doc:`architecture`
 * `Roadmap <https://wiki.openstack.org/wiki/Savanna/Roadmap>`_
-* `Savanna on OpenStack Wiki <https://wiki.openstack.org/wiki/Savanna>`_
-* `Savanna on Launchpad <https://launchpad.net/savanna>`_
+
+
+User guide
+----------
+.. toctree::
+   :maxdepth: 1
+
+   userdoc/installation.guide
+   horizon/installation.guide
+   userdoc/rest_api_v1.0
+   userdoc/features
+   userdoc/hadoop-swift.rst
+
 
 Developer Guide
-===============
+---------------
+**Programming HowTos and Tutorials**
 
-Programming HowTos and Tutorials
---------------------------------
 .. toctree::
     :maxdepth: 1
 
@@ -35,8 +39,9 @@ Programming HowTos and Tutorials
     devref/unit_tests
     devref/how_to_participate
 
-Background Concepts for Savanna
--------------------------------
+
+**Background Concepts for Savanna**
+
 .. toctree::
     :maxdepth: 1
 
@@ -44,22 +49,12 @@ Background Concepts for Savanna
     devref/templates
     devref/plugin.spi
 
-Other Resources
----------------
+
+**Other Resources**
+
 .. toctree::
    :maxdepth: 1
 
    devref/launchpad
    devref/gerrit
    devref/jenkins
-
-User guide
-==========
-.. toctree::
-   :maxdepth: 1
-
-   userdoc/installation.guide
-   horizon/installation.guide
-   userdoc/rest_api_v1.0
-   userdoc/features
-   userdoc/hadoop-swift.rst
