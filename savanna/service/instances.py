@@ -45,8 +45,10 @@ def create_cluster(cluster):
         context.model_save(cluster)
         _configure_instances(cluster)
     except Exception as ex:
-        LOG.warn("Can't start cluster: %s", ex)
+        LOG.warn("Can't start cluster '%s' (reason: %s)", cluster.name, ex)
         with excutils.save_and_reraise_exception():
+            cluster.status = 'Error'
+            context.model_save(cluster)
             _rollback_cluster_creation(cluster, ex)
 
 
@@ -64,9 +66,10 @@ def scale_cluster(cluster, node_group_names_map):
         _await_instances(cluster)
         volumes.attach_to_instances(instances_list)
     except Exception as ex:
-        LOG.warn("Can't scale cluster: %s", ex)
+        LOG.warn("Can't scale cluster '%s' (reason: %s)", cluster.name, ex)
         with excutils.save_and_reraise_exception():
-            ng_to_delete = _rollback_cluster_scaling(instances_list)
+            ng_to_delete = _rollback_cluster_scaling(cluster, instances_list,
+                                                     ex)
             instances_list = []
             with session.begin():
                 for ng in ng_to_delete:
@@ -246,8 +249,8 @@ def _generate_etc_hosts(cluster):
 
 def _rollback_cluster_creation(cluster, ex):
     """Shutdown all instances and update cluster status."""
-    # update cluster status
-    # update cluster status description
+    LOG.info("Cluster '%s' creation rollback (reason: %s)", cluster.name, ex)
+
     session = context.ctx().session
     _shutdown_instances(cluster, True)
     volumes.detach(cluster)
@@ -261,7 +264,10 @@ def _rollback_cluster_creation(cluster, ex):
                 session.delete(instance)
 
 
-def _rollback_cluster_scaling(instances):
+def _rollback_cluster_scaling(cluster, instances, ex):
+    """Attempt to rollback cluster scaling."""
+    LOG.info("Cluster '%s' scaling rollback (reason: %s)", cluster.name, ex)
+
     try:
         volumes.detach_from_instances(instances)
     except Exception:
