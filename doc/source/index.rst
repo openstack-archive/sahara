@@ -20,9 +20,10 @@ User guide
 
    userdoc/installation.guide
    horizon/installation.guide
-   userdoc/rest_api_v1.0
+   userdoc/overview
    userdoc/features
    userdoc/hadoop-swift.rst
+   userdoc/rest_api_v1.0
 
 
 Developer Guide
