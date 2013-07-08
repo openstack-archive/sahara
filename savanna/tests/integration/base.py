@@ -153,7 +153,7 @@ class ITestCase(unittest2.TestCase):
         get_data = get_data['cluster']
         i = 1
         while get_data['status'] != 'Active':
-            print 'GET_STATUS: ', get_data['status']
+            print('GET_STATUS: ', get_data['status'])
             if i > param.TIMEOUT * 6:
                 print('\n Data for cluster: ' + str(get_data) + '\n')
                 self.fail(
