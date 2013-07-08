@@ -1,76 +1,34 @@
-Savanna v0.1.2 quickstart guide
-===============================
+Quickstart guide
+================
+
+This guide will help you to setup vanilla Hadoop cluster using
+:doc:`../userdoc/rest_api_v1.0`.
 
 1. Install Savanna
 ------------------
 
-* If you want to hack follow :doc:`devref/development.environment`.
-* If you want just to install and use Savanna follow :doc:`installation.guide`.
+* If you want to hack the code follow :doc:`development.environment`.
+* If you just want to install and use Savanna follow :doc:`../userdoc/installation.guide`.
 
-2. Image setup
---------------
 
-2.1. Go to OpenStack management node or you can configure ENV at another machine:
+2. Keystone endpoints setup
+---------------------------
 
-.. sourcecode:: bash
-
-    ssh user@hostname
-
-2.2. Download qcow2 image(Apache Hadoop 1.1.2 inside) from the following URL:
+To use CLI tools, such as OpenStack's python clients, we should specify
+environment variables with addresses and credentials. Let's mind that we have
+keystone at ``127.0.0.1:5000`` with tenant ``admin``, credentials ``admin:nova``
+and Savanna API at ``127.0.0.1:8080``. Here is a list of commands to set env:
 
 .. sourcecode:: bash
 
-    wget http://savanna-files.mirantis.com/savanna-0.1.2-hadoop.qcow2
-
-Or you can use `Diskimage-builder tool for creating your own images with Apache Hadoop <https://github.com/stackforge/savanna-extra/blob/master/elements/README.rst>`_
-
-2.3. Import it into Glance:
-
-.. sourcecode:: bash
-
-    glance image-create --name=vanilla-hadoop.image --disk-format=qcow2 --container-format=bare < ./savanna-0.1.2-hadoop.qcow2
-
-You should see the output similar to the following:
-
-.. sourcecode:: bash
-
-    +------------------+--------------------------------------+
-    | Property         | Value                                |
-    +------------------+--------------------------------------+
-    | checksum         | e5c77ac14b916de552199f09548adc2a     |
-    | container_format | bare                                 |
-    | created_at       | 2013-03-11T14:52:09                  |
-    | deleted          | False                                |
-    | deleted_at       | None                                 |
-    | disk_format      | qcow2                                |
-    | id               | 7989fd9a-5e30-49af-affa-dea4d7b23b9f |
-    | is_public        | False                                |
-    | min_disk         | 0                                    |
-    | min_ram          | 0                                    |
-    | name             | vanilla-hadoop.image                 |
-    | owner            | 6b26f08455ec449ea7a2d3da75339255     |
-    | protected        | False                                |
-    | size             | 1675296768                           |
-    | status           | active                               |
-    | updated_at       | 2013-03-11T14:53:05                  |
-    +------------------+--------------------------------------+
+    export OS_AUTH_URL=http://127.0.0.1:5000/v2.0/
+    export OS_TENANT_NAME=admin
+    export OS_USERNAME=admin
+    export OS_PASSWORD=nova
 
 
-3. Savanna API SETUP
---------------------
-
-Now Savanna service is running. Further steps show how you can verify from console that Savanna API works properly.
-
-3.1. First install httpie program. It allows you to send http requests to Savanna API service.
-
-.. sourcecode:: bash
-
-    pip httpie
-
-**Note:** sure you can use another HTTP client like curl to send requests to Savanna service
-
-3.2. Then you need to get authentification token from OpenStack Keystone service.
-This steps assumes you have keystone client configured:
+You can append these lines to the ``.bashrc`` and execute ``source .bashrc``.
+Now you can get authentification token from OpenStack Keystone service.
 
 .. sourcecode:: bash
 
@@ -81,197 +39,385 @@ If authentication succeed, output will be as follows:
 
 .. sourcecode:: bash
 
-    Configuration has been loaded from 'etc/savanna/savanna.conf'
-    User: admin
-    Password: swordfish
-    Tenant: admin
-    Auth URL: http://172.18.79.139:35357/v2.0/
-    Auth succeed: True
-    Auth token: d61e47a1423d477f9c77ecb23c64d424
-    Tenant [admin] id: 0677a89acc834e38bf8bb41665912416
+    +-----------+----------------------------------+
+    |  Property |              Value               |
+    +-----------+----------------------------------+
+    |  expires  |       2013-07-08T15:21:18Z       |
+    |     id    | dd92e3cdb4e1462690cd444d6b01b746 |
+    | tenant_id | 62bd2046841e4e94a87b4a22aa886c13 |
+    |  user_id  | 720fb87141a14fd0b204f977f5f02512 |
+    +-----------+----------------------------------+
 
-**Note:** Save the token because you have to supply it with every request to Savanna in X-Auth-Token header.
-You will also use tenant id in request URL
-
-3.3. Send http request to the Savanna service:
+Save ``tenant_id`` which is obviously your Tenant ID and ``id`` which is your
+authentication token (X-Auth-Token):
 
 .. sourcecode:: bash
 
-    http http://{savanna_api_ip}:8080/v0.2/{tenant_id}/node-templates X-Auth-Token:{auth_token}
+    export AUTH_TOKEN="dd92e3cdb4e1462690cd444d6b01b746"
+    export TENANT_ID="62bd2046841e4e94a87b4a22aa886c13"
 
-Where:
 
-* savanna_api_ip - hostname where Savanna API service is running
-* tenant_id - id of the tenant for which you got token in previous item
-* auth_token - token obtained in previous item
-
-For example:
-
-.. sourcecode:: bash
-
-    http http://10.0.0.2:8080/v0.2/0677a89acc834e38bf8bb41665912416/node-templates X-Auth-Token:d61e47a1423d477f9c77ecb23c64d424
-
-Output of this command will look as follows:
-
-.. sourcecode:: bash
-
-    HTTP/1.1 200 OK
-    Content-Length: 1936
-    Content-Type: application/json
-    Date: Mon, 11 Mar 2013 17:17:03 GMT
-
-.. sourcecode:: json
-
-    {
-        "node_templates": [
-            {
-                //Non-empty list of Node Templates
-            }
-    }
-
-4. Hadoop Cluster startup
+3. Upload image to Glance
 -------------------------
 
-4.1. Send the POST request to Savanna API to create Hadoop Cluster.
+You can download pre-built images with vanilla Apache Hadoop or build this
+images yourself:
 
-Create file with name ``cluster_create.json`` and fill it with the following content:
+* Download and install pre-built image
+
+.. sourcecode:: bash
+
+    ssh user@hostname
+    curl http://savanna-files.mirantis.com/savanna-0.2-vanilla-hadoop-ubuntu.qcow2
+    glance image-create --name=savanna-0.2-vanilla-hadoop-ubuntu.qcow2\
+     --disk-format=qcow2 --container-format=bare < ./savanna-0.2-vanilla-hadoop-ubuntu.qcow2
+
+* OR build image using :doc:`../userdoc/diskimagebuilder`.
+
+
+Save image id. You can get image id from command ``glance image-list``:
+
+.. sourcecode:: bash
+
+    glance image-list --name vanilla_02_ubuntu.qcow2
+    > +--------------------------------------+-----------------------------------------+
+    > | ID                                   | Name                                    |
+    > +--------------------------------------+-----------------------------------------+
+    > | 3f9fc974-b484-4756-82a4-bff9e116919b | savanna-0.2-vanilla-hadoop-ubuntu.qcow2 |
+    > +--------------------------------------+-----------------------------------------+
+
+    export IMAGE_ID="3f9fc974-b484-4756-82a4-bff9e116919b"
+
+
+4. Register image in Image Registry
+-----------------------------------
+
+* Now we will actually start to interact with Savanna.
+
+.. sourcecode:: bash
+
+    export SAVANNA_URL="http://localhost:9000/v1.0/$TENANT_ID"
+
+* Send POST request to Savanna API to register image with username ``ubuntu``.
+
+.. sourcecode:: bash
+
+    http $SAVANNA_URL/images/$IMAGE_ID X-Auth-Token:$AUTH_TOKEN\
+     '{ "username": "ubuntu" }'
+
+
+* Tag the image:
+
+.. sourcecode:: bash
+
+    http $SAVANNA_URL/images/$IMAGE_ID/tag X-Auth-Token:$AUTH_TOKEN\
+     '{ "tags": ["vanilla", "1.1.2", "ubuntu"] }'
+
+* Make sure that image is registered correctly:
+
+.. sourcecode:: bash
+
+    http $SAVANNA_URL/images X-Auth-Token:$AUTH_TOKEN
+
+* Output should look like:
 
 .. sourcecode:: json
 
     {
-        "cluster": {
-            "name": "hdp",
-            "node_templates": {
-                "jt_nn.small": 1,
-                "tt_dn.small": 3
-            },
-            "base_image_id": "image id"
-        }
+        "images": [
+            {
+                "OS-EXT-IMG-SIZE:size": 550744576,
+                "created": "2013-07-07T15:18:50Z",
+                "description": "None",
+                "id": "3f9fc974-b484-4756-82a4-bff9e116919b",
+                "metadata": {
+                    "_savanna_description": "None",
+                    "_savanna_tag_1.1.2": "True",
+                    "_savanna_tag_ubuntu": "True",
+                    "_savanna_tag_vanilla": "True",
+                    "_savanna_username": "ubuntu"
+                },
+                "minDisk": 0,
+                "minRam": 0,
+                "name": "savanna-0.2-vanilla-hadoop-ubuntu.qcow2",
+                "progress": 100,
+                "status": "ACTIVE",
+                "tags": [
+                    "vanilla",
+                    "ubuntu",
+                    "1.1.2"
+                ],
+                "updated": "2013-07-07T16:25:19Z",
+                "username": "ubuntu"
+            }
+        ]
     }
 
-Where:
 
-* "name" - name of the cluster being created
-* "jt_nn.small": 1 and "tt_dn.small": 3 - names and numbers of Node Templates for Hadoop NameNodes and JobTracker; DataNodes and TaskTrackers.
+5. Setup NodeGroup templates
+----------------------------
 
-You can list available node templates by sending the following request to Savanna API:
-
-.. sourcecode:: bash
-
-    http http://{savanna_api_ip}:8080/v0.2/{tenant-id}/node-templates X-Auth-Token:{auth_token}
-
-* "base_image_id" - OpenStack image id of image which was downloaded in the Item 2.
-
-You can see image id in the OpenStack UI or by calling the following command of the OS Glance service:
-
-.. sourcecode:: bash
-
-    glance image-list
-
-After creating the file you can send the request:
-
-.. sourcecode:: bash
-
-    http http://{savanna_api_ip}:8080/v0.2/{tenant-id}/clusters X-Auth-Token:{auth_token} < cluster_create.json
-
-Response for this request will look like:
+Create file with name ``ng_master_template_create.json`` and fill it with the
+following content:
 
 .. sourcecode:: json
 
     {
-        "cluster": {
-            "status": "Starting",
-            "node_templates": {
-                "jt_nn.small": 1,
-                "tt_dn.small": 3
-            },
-            "service_urls": {},
-            "name": "hdp",
-            "nodes": [],
-            "id": "254d8a8c483046ab9209d7993cad2da2",
-            "base_image_id": "7989fd9a-5e30-49af-affa-dea4d7b23b9f"
-        }
+        "name": "test-master-tmpl",
+        "flavor_id": "2",
+        "plugin_name": "vanilla",
+        "hadoop_version": "1.1.2",
+        "node_processes": ["jobtracker", "namenode"]
     }
 
-
-4.2. If the response in the 3.1. was ``202 ACCEPTED`` then you can check status of new cluster:
-
-.. sourcecode:: bash
-
-    http http://{savanna_api_ip}:8080/v0.2/{tenant-id}/clusters/{cluster_id} X-Auth-Token:{auth_token}
-
-Where "cluster_id" - id of created cluster. In our example above it the id is "254d8a8c483046ab9209d7993cad2da2"
-
-Initially the cluster will be in "Starting" state, but eventually (in several minutes) you should get response with status "Active", like the following:
+Create file with name ``ng_worker_template_create.json`` and fill it with the
+following content:
 
 .. sourcecode:: json
 
     {
-        "cluster": {
-            "status": "Active",
-            "node_templates": {
-                "jt_nn.small": 1,
-                "tt_dn.small": 3
-            },
-            "service_urls": {
-                "namenode": "http://172.18.79.196:50070",
-                "jobtracker": "http://172.18.79.196:50030"
-            },
-            "name": "hdp",
-            "nodes": [
-                {
-                    "node_template": {
-                        "id": "d19264649a5e47f98d1fcecccefbf748",
-                        "name": "tt_dn.small"
-                    },
-                    "vm_id": "2a145a8b-0414-4d88-8335-9f3722d41724"
-                },
-                {
-                    "node_template": {
-                        "id": "d19264649a5e47f98d1fcecccefbf748",
-                        "name": "tt_dn.small"
-                    },
-                    "vm_id": "c968c5d5-5825-4521-82b5-1c730ab8b1e4"
-                },
-                {
-                    "node_template": {
-                        "id": "d19264649a5e47f98d1fcecccefbf748",
-                        "name": "tt_dn.small"
-                    },
-                    "vm_id": "6be15767-ff4e-4e49-9ff7-fb4b65a868d6"
-                },
-                {
-                    "node_template": {
-                        "id": "e675e9720f1e47dea5027ed7c13cc665",
-                        "name": "jt_nn.small"
-                    },
-                    "vm_id": "11d120b2-f501-435f-a2f6-515fbacd86cf"
-                }
-            ],
-            "id": "254d8a8c483046ab9209d7993cad2da2",
-            "base_image_id": "7989fd9a-5e30-49af-affa-dea4d7b23b9f"
-        }
+        "name": "test-master-tmpl",
+        "flavor_id": "2",
+        "plugin_name": "vanilla",
+        "hadoop_version": "1.1.2",
+        "node_processes": ["tasktracker", "datanode"]
     }
 
-4.3. So you recieved NameNode's and JobTracker's URLs like this:
+Send POST requests to Savanna API to upload NodeGroup templates:
 
 .. sourcecode:: json
 
-    "service_urls": {
-        "namenode": "http://NameNode_IP:50070",
-        "jobtracker": "http://JobTracker_IP:50030"
-    }
-    
-and you actually could access them via browser
+    http $SAVANNA_URL/node-group-templates X-Auth-Token:$AUTH_TOKEN\
+     < ng_master_template_create.json
 
-4.4. To check that your Hadoop installation works correctly:
+    http $SAVANNA_URL/node-group-templates X-Auth-Token:$AUTH_TOKEN\
+     < ng_worker_template_create.json
+
+
+You can list available NodeGroup templates by sending the following request to
+Savanna API:
+
+.. sourcecode:: bash
+
+    http $SAVANNA_URL/node-group-templates X-Auth-Token:$AUTH_TOKEN
+
+Output should look like:
+
+.. sourcecode:: json
+
+    {
+        "node_group_templates": [
+            {
+                "created": "2013-07-07T18:53:55",
+                "flavor_id": "2",
+                "hadoop_version": "1.1.2",
+                "id": "b38227dc-64fe-42bf-8792-d1456b453ef3",
+                "name": "demo-master",
+                "node_configs": {},
+                "node_processes": [
+                    "jobtracker",
+                    "namenode"
+                ],
+                "plugin_name": "vanilla",
+                "updated": "2013-07-07T18:53:55",
+                "volume_mount_prefix": "/volumes/disk",
+                "volumes_per_node": 0,
+                "volumes_size": 10
+            },
+            {
+                "created": "2013-07-07T18:54:00",
+                "flavor_id": "2",
+                "hadoop_version": "1.1.2",
+                "id": "634827b9-6a18-4837-ae15-5371d6ecf02c",
+                "name": "demo-worker",
+                "node_configs": {},
+                "node_processes": [
+                    "tasktracker",
+                    "datanode"
+                ],
+                "plugin_name": "vanilla",
+                "updated": "2013-07-07T18:54:00",
+                "volume_mount_prefix": "/volumes/disk",
+                "volumes_per_node": 0,
+                "volumes_size": 10
+            }
+        ]
+    }
+
+
+Save id for the master and worker NodeGroup templates. For example:
+
+* Master NodeGroup template id: ``b38227dc-64fe-42bf-8792-d1456b453ef3``
+* Worker NodeGroup template id: ``634827b9-6a18-4837-ae15-5371d6ecf02c``
+
+
+6. Setup Cluster Template
+-------------------------
+
+Create file with name ``cluster_template_create.json`` and fill it with the
+following content:
+
+.. sourcecode:: json
+
+    {
+        "name": "demo-cluster-template",
+        "plugin_name": "vanilla",
+        "hadoop_version": "1.1.2",
+        "node_groups": [
+            {
+                "name": "master",
+                "node_group_template_id": "b1ac3f04-c67f-445f-b06c-fb722736ccc6",
+                "count": 1
+            },
+            {
+                "name": "workers",
+                "node_group_template_id": "dbc6147e-4020-4695-8b5d-04f2efa978c5",
+                "count": 2
+            }
+        ]
+    }
+
+Send POST request to Savanna API to upload Cluster template:
+
+.. sourcecode:: bash
+
+    http $SAVANNA_URL/cluster-templates X-Auth-Token:$AUTH_TOKEN\
+     < cluster_template_create.json
+
+Save template id. For example ``ce897df2-1610-4caa-bdb8-408ef90561cf``.
+
+7. Create cluster
+-----------------
+
+Create file with name ``cluster_create.json`` and fill it with the
+following content:
+
+.. sourcecode:: json
+
+    {
+        "name": "cluster-1",
+        "plugin_name": "vanilla",
+        "hadoop_version": "1.1.2",
+        "cluster_template_id" : "ce897df2-1610-4caa-bdb8-408ef90561cf",
+        "user_keypair_id": "stack",
+        "default_image_id": "3f9fc974-b484-4756-82a4-bff9e116919b"
+    }
+
+
+Send POST request to Savanna API to create and start the cluster:
+
+.. sourcecode:: bash
+
+    http $SAVANNA_URL/clusters X-Auth-Token:$AUTH_TOKEN\
+     < cluster_create.json
+
+
+Once cluster started, you'll similar output:
+
+.. sourcecode:: json
+
+    {
+        "clusters": [
+            {
+                "anti_affinity": [],
+                "cluster_configs": {},
+                "cluster_template_id": "ce897df2-1610-4caa-bdb8-408ef90561cf",
+                "created": "2013-07-07T19:01:51",
+                "default_image_id": "3f9fc974-b484-4756-82a4-bff9e116919b",
+                "hadoop_version": "1.1.2",
+                "id": "c5e755a2-b3f9-417b-948b-e99ed7fbf1e3",
+                "info": {
+                    "HDFS": {
+                        "Web UI": "http://172.24.4.225:50070"
+                    },
+                    "MapReduce": {
+                        "Web UI": "http://172.24.4.225:50030"
+                    }
+                },
+                "name": "cluster-1",
+                "node_groups": [
+                    {
+                        "count": 1,
+                        "created": "2013-07-07T19:01:51",
+                        "flavor_id": "999",
+                        "instances": [
+                            {
+                                "created": "2013-07-07T19:01:51",
+                                "instance_id": "4f6dc715-9c65-4d74-bddd-5f1820e6ce02",
+                                "instance_name": "cluster-1-master-001",
+                                "internal_ip": "10.0.0.5",
+                                "management_ip": "172.24.4.225",
+                                "updated": "2013-07-07T19:06:07",
+                                "volumes": []
+                            }
+                        ],
+                        "name": "master",
+                        "node_configs": {},
+                        "node_group_template_id": "b38227dc-64fe-42bf-8792-d1456b453ef3",
+                        "node_processes": [
+                            "jobtracker",
+                            "namenode"
+                        ],
+                        "updated": "2013-07-07T19:01:51",
+                        "volume_mount_prefix": "/volumes/disk",
+                        "volumes_per_node": 0,
+                        "volumes_size": 10
+                    },
+                    {
+                        "count": 2,
+                        "created": "2013-07-07T19:01:51",
+                        "flavor_id": "999",
+                        "instances": [
+                            {
+                                "created": "2013-07-07T19:01:52",
+                                "instance_id": "11089dd0-8832-4473-a835-d3dd36bc3d00",
+                                "instance_name": "cluster-1-workers-001",
+                                "internal_ip": "10.0.0.6",
+                                "management_ip": "172.24.4.227",
+                                "updated": "2013-07-07T19:06:07",
+                                "volumes": []
+                            },
+                            {
+                                "created": "2013-07-07T19:01:52",
+                                "instance_id": "d59ee54f-19e6-401b-8662-04a156ba811f",
+                                "instance_name": "cluster-1-workers-002",
+                                "internal_ip": "10.0.0.7",
+                                "management_ip": "172.24.4.226",
+                                "updated": "2013-07-07T19:06:07",
+                                "volumes": []
+                            }
+                        ],
+                        "name": "workers",
+                        "node_configs": {},
+                        "node_group_template_id": "634827b9-6a18-4837-ae15-5371d6ecf02c",
+                        "node_processes": [
+                            "tasktracker",
+                            "datanode"
+                        ],
+                        "updated": "2013-07-07T19:01:51",
+                        "volume_mount_prefix": "/volumes/disk",
+                        "volumes_per_node": 0,
+                        "volumes_size": 10
+                    }
+                ],
+                "plugin_name": "vanilla",
+                "status": "Active",
+                "updated": "2013-07-07T19:06:24",
+                "user_keypair_id": "stack"
+            }
+        ]
+    }
+
+8. Run MapReduce job
+--------------------
+
+To check that your Hadoop installation works correctly:
 
 * Go to NameNode via ssh:
 
 .. sourcecode:: bash
 
-    ssh root@NameNode_IP
-    using 'swordfish' as password
+    ssh ubuntu@172.24.4.225
 
 * Switch to hadoop user:
 
@@ -283,47 +429,7 @@ and you actually could access them via browser
 
 .. sourcecode:: bash
 
-    cd ~
-    ./run_simple_MR_job.sh
-
-* You can check status of MR job running by browsing JobTracker url:
-
-.. sourcecode:: bash
-
-    "jobtracker": "http://JobTracker_IP:50030"
+    cd /usr/share/hadoop
+    hadoop jar hadoope-examples.jar pi 10 100
 
 Congratulations! Now you have Hadoop cluster ready on the OpenStack cloud!
-
-5. Keystone endpoints setup
----------------------------
-
-To use CLI tools, such as OpenStack's python clients, we should specify
-environment variables with addresses and credentials. Let's mind that we have
-keystone at `127.0.0.1:5000` with tenant `admin`, credentials `admin`:`nova`
-and Savanna API at `127.0.0.1:8080`. Here is a list of commands to set env:
-
-.. sourcecode:: bash
-
-    export OS_AUTH_URL=http://127.0.0.1:5000/v2.0/
-    export OS_TENANT_NAME=admin
-    export OS_USERNAME=admin
-    export OS_PASSWORD=nova
-
-We should create service in Keystone:
-
-.. sourcecode:: bash
-
-    keystone service-create --name=savanna --type=mapreduce --description="Savanna Elastic Hadoop Service"
-
-And then we should create endpoint for created service:
-
-.. sourcecode:: bash
-
-    keystone endpoint-create \
-        --region RegionOne \
-        --service-id=<SERVICE_ID> \
-        --publicurl="http://127.0.0.1:8080/v0.2/%(tenant_id)s" \
-        --internalurl="http://127.0.0.1:8080/v0.2/%(tenant_id)s" \
-        --adminurl="http://127.0.0.1:8080/v0.2/%(tenant_id)s"
-
-Now Keystone know endpoints of service `mapreduce`.
