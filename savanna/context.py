@@ -71,10 +71,13 @@ def session(context=None):
 
 
 def set_ctx(new_ctx):
-    if not new_ctx:
-        del _CTXS._curr_ctxs[corolocal.get_ident()]
-    else:
-        _CTXS._curr_ctxs[corolocal.get_ident()] = new_ctx
+    ident = corolocal.get_ident()
+
+    if not new_ctx and ident in _CTXS._curr_ctxs:
+        del _CTXS._curr_ctxs[ident]
+
+    if new_ctx:
+        _CTXS._curr_ctxs[ident] = new_ctx
 
 
 def model_query(model, context=None, project_only=None):
