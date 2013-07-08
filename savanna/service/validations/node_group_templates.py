@@ -84,3 +84,7 @@ def check_node_group_template_create(data):
 
     if data.get('image_id'):
         b.check_image_exists(data['image_id'])
+
+    if data.get('node_configs'):
+        b.check_node_group_configs(data['plugin_name'], data['hadoop_version'],
+                                   data['node_configs'])

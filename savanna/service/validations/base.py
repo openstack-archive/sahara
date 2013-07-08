@@ -21,7 +21,19 @@ import savanna.service.api as api
 import savanna.utils.openstack.nova as nova
 
 
-# Common validation checks
+def _get_plugin_configs(plugin_name, hadoop_version, scope=None):
+    pl_confs = {}
+    for config in plugin_base.PLUGINS.get_plugin(
+            plugin_name).get_configs(hadoop_version):
+        if pl_confs.get(config.applicable_target):
+            pl_confs[config.applicable_target].append(config.name)
+        else:
+            pl_confs[config.applicable_target] = [config.name]
+    return pl_confs
+
+
+## Common validation checks
+
 def check_plugin_name_exists(name):
     if name not in [p.name for p in api.get_plugins()]:
         raise ex.InvalidException("Savanna doesn't contain plugin with name %s"
@@ -65,7 +77,41 @@ def check_node_processes(plugin_name, version, node_processes):
                                   "node procesess: " % plugin_procesess)
 
 
-# Cluster creation related checks
+def check_node_group_configs(plugin_name, hadoop_version, ng_configs,
+                             plugin_configs=None):
+    # TODO(aignatov): Should have scope and config type validations
+    pl_confs = plugin_configs or _get_plugin_configs(plugin_name,
+                                                     hadoop_version)
+    for app_target, configs in ng_configs.items():
+        if app_target not in pl_confs:
+            raise ex.InvalidException("Plugin doesn't contain applicable "
+                                      "target '%s'" % app_target)
+        for name, values in configs.items():
+            if name not in pl_confs[app_target]:
+                raise ex.InvalidException("Plugin's applicable target '%s' "
+                                          "doesn't contain config with name "
+                                          "'%s'" % (app_target, name))
+
+
+def check_all_configurations(data):
+    pl_confs = _get_plugin_configs(data['plugin_name'], data['hadoop_version'])
+
+    if data.get('cluster_configs'):
+        check_node_group_configs(data['plugin_name'], data['hadoop_version'],
+                                 data['cluster_configs'],
+                                 plugin_configs=pl_confs)
+
+    if data.get('node_groups'):
+        for ng in data['node_groups']:
+            if ng.get('node_configs'):
+                check_node_group_configs(data['plugin_name'],
+                                         data['hadoop_version'],
+                                         ng['node_configs'],
+                                         plugin_configs=pl_confs)
+
+
+## Cluster creation related checks
+
 def check_cluster_unique_name(name):
     if name in [cluster.name for cluster in api.get_clusters()]:
         raise ex.NameAlreadyExistsException("Cluster with name '%s' already"
@@ -79,14 +125,16 @@ def check_keypair_exists(keypair):
         raise ex.InvalidException("Requested keypair '%s' not found" % keypair)
 
 
-# Cluster templates creation related checks
+## Cluster templates creation related checks
+
 def check_cluster_template_unique_name(name):
     if name in [t.name for t in api.get_cluster_templates()]:
         raise ex.NameAlreadyExistsException("Cluster template with name '%s'"
                                             " already exists" % name)
 
 
-# NodeGroup templates related checks
+## NodeGroup templates related checks
+
 def check_node_group_template_unique_name(name):
     if name in [t.name for t in api.get_node_group_templates()]:
         raise ex.NameAlreadyExistsException("NodeGroup template with name '%s'"
