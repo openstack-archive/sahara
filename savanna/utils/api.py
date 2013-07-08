@@ -13,7 +13,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import mimetypes
 import traceback
 
 import flask
@@ -59,16 +58,7 @@ class Rest(flask.Blueprint):
 
                 LOG.debug("Rest.route.decorator.handler, kwargs=%s", kwargs)
 
-                # extract response content type
-                resp_type = flask.request.accept_mimetypes
-                type_suffix = kwargs.pop('resp_type', None)
-                if type_suffix:
-                    suffix_mime = mimetypes.guess_type("res." + type_suffix)[0]
-                    if suffix_mime:
-                        resp_type = datastructures.MIMEAccept(
-                            [(suffix_mime, 1)])
-                flask.request.resp_type = resp_type
-                flask.request.file_upload = file_upload
+                _init_resp_type(file_upload)
 
                 # update status code
                 if status:
@@ -93,14 +83,8 @@ class Rest(flask.Blueprint):
 
             f_rule = "/<tenant_id>" + rule
             self.add_url_rule(f_rule, endpoint, handler, **options)
-            # Commented out because the rule for extension parsing can
-            # be tricked by requests such as GET /plugins/vanilla/1.1.2
-            #
-            # The code's motivation is to allow for .json / .xml
-            # extensions the dynamically control serialization. An
-            # alternative should be developed.
-            #ext_rule = f_rule + '.<resp_type>'
-            #self.add_url_rule(ext_rule, endpoint, handler, **options)
+            self.add_url_rule(f_rule + '.json', endpoint, handler, **options)
+            self.add_url_rule(f_rule + '.xml', endpoint, handler, **options)
 
             return func
 
@@ -109,6 +93,26 @@ class Rest(flask.Blueprint):
 
 RT_JSON = datastructures.MIMEAccept([("application/json", 1)])
 RT_XML = datastructures.MIMEAccept([("application/xml", 1)])
+
+
+def _init_resp_type(file_upload):
+    """Extracts response content type."""
+
+    # get content type from Accept header
+    resp_type = flask.request.accept_mimetypes
+
+    # url /foo.xml
+    if flask.request.path.endswith('.xml'):
+        resp_type = RT_XML
+
+    # url /foo.json
+    if flask.request.path.endswith('.json'):
+        resp_type = RT_JSON
+
+    flask.request.resp_type = resp_type
+
+    # set file upload flag
+    flask.request.file_upload = file_upload
 
 
 def _clean_nones(obj):
