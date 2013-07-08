@@ -35,7 +35,7 @@ def clusters_list():
 
 
 @rest.post('/clusters')
-@v.validate(v_c.cluster_schema, v_c.check_cluster_create)
+@v.validate(v_c.CLUSTER_SCHEMA, v_c.check_cluster_create)
 def clusters_create(data):
     return u.render(api.create_cluster(data).wrapped_dict)
 
@@ -68,7 +68,7 @@ def cluster_templates_list():
 
 
 @rest.post('/cluster-templates')
-@v.validate(v_ct.cluster_template_schema, v_ct.check_cluster_template_create)
+@v.validate(v_ct.CLUSTER_TEMPLATE_SCHEMA, v_ct.check_cluster_template_create)
 def cluster_templates_create(data):
     return u.render(api.create_cluster_template(data).wrapped_dict)
 
@@ -102,7 +102,7 @@ def node_group_templates_list():
 
 
 @rest.post('/node-group-templates')
-@v.validate(v_ngt.node_group_template_schema,
+@v.validate(v_ngt.NODE_GROUP_TEMPLATE_SCHEMA,
             v_ngt.check_node_group_template_create)
 def node_group_templates_create(data):
     return u.render(api.create_node_group_template(data).wrapped_dict)

@@ -13,9 +13,37 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-cluster_schema = {
-}
+import copy
+
+import savanna.service.validations.base as b
+import savanna.service.validations.cluster_templates as cl_tmpl
+
+
+def _build_cluster_schema():
+    cluster_schema = copy.deepcopy(cl_tmpl.CLUSTER_TEMPLATE_SCHEMA)
+    cluster_schema['properties']['name']['format'] = "hostname"
+    cluster_schema['properties'].update({
+        "user_keypair_id": {
+            "type": "string",
+            "format": "valid_name",
+        },
+        "cluster_template_id": {
+            "type": "string",
+            "format": "uuid",
+        }})
+    return cluster_schema
+
+CLUSTER_SCHEMA = _build_cluster_schema()
 
 
 def check_cluster_create(data):
-    pass
+    b.check_cluster_unique_name(data['name'])
+    b.check_plugin_name_exists(data['plugin_name'])
+    b.check_plugin_supports_version(data['plugin_name'],
+                                    data['hadoop_version'])
+
+    if data.get('user_keypair_id'):
+        b.check_keypair_exists(data['user_keypair_id'])
+
+    if data.get('default_image_id'):
+        b.check_image_exists(data['default_image_id'])

@@ -13,11 +13,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-node_group_template_schema = {
+import savanna.service.validations.base as b
+
+NODE_GROUP_TEMPLATE_SCHEMA = {
     "type": "object",
     "properties": {
         "name": {
             "type": "string",
+            "minLength": 1,
+            "maxLength": 50,
+            "format": "valid_name",
         },
         "flavor_id": {
             'type': 'flavor',
@@ -32,7 +37,8 @@ node_group_template_schema = {
             "type": "array",
             "items": {
                 "type": "string",
-            }
+            },
+            "minItems": 1
         },
         "image_id": {
             "type": "string",
@@ -68,4 +74,13 @@ node_group_template_schema = {
 
 
 def check_node_group_template_create(data):
-    pass
+    b.check_node_group_template_unique_name(data['name'])
+    b.check_plugin_name_exists(data['plugin_name'])
+    b.check_plugin_supports_version(data['plugin_name'],
+                                    data['hadoop_version'])
+    b.check_flavor_exists(data['flavor_id'])
+    b.check_node_processes(data['plugin_name'], data['hadoop_version'],
+                           data['node_processes'])
+
+    if data.get('image_id'):
+        b.check_image_exists(data['image_id'])
