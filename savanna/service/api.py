@@ -188,6 +188,7 @@ def convert_to_cluster_template(plugin_name, version, config_file):
     return s.persist_cluster_template(ct)
 
 
+# TODO(aignatov): Will be removed after implementing scaling validation
 def _validate(cluster, plugin):
     # Validate that user configs are not included in plugin configs set
     pl_confs = _get_plugin_configs(cluster, plugin)
@@ -195,6 +196,7 @@ def _validate(cluster, plugin):
         _validate_node_group(pl_confs, ng)
 
 
+# TODO(aignatov): Will be removed after implementing scaling validation
 def _validate_cluster(cluster, plugin, node_groups):
     # Validate that user configs are not included in plugin configs set
     pl_confs = _get_plugin_configs(cluster, plugin)
@@ -204,6 +206,7 @@ def _validate_cluster(cluster, plugin, node_groups):
         ng.cluster = None
 
 
+# TODO(aignatov): Will be removed after implementing scaling validation
 def _get_plugin_configs(cluster, plugin):
     pl_confs = {}
     for config in plugin.get_configs(cluster.hadoop_version):
@@ -214,6 +217,7 @@ def _get_plugin_configs(cluster, plugin):
     return pl_confs
 
 
+# TODO(aignatov): Will be removed after implementing scaling validation
 def _validate_node_group(pl_confs, node_group):
     for app_target, configs in node_group.configuration.items():
         if app_target not in pl_confs:
