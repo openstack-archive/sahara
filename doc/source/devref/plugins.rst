@@ -1,13 +1,22 @@
-Pluggable mechanism
-===================
+Pluggable Provisioning Mechanism
+================================
 
-Savanna Pluggable Provisioning Mechanism aims to deploy Hadoop clusters and integrate them with 3rd party vendor
-management tools like Cloudera Management Console, Hortonworks Ambari, Intel Hadoop Distribution and monitoring tools
-like NagiOS, Zabbix, Ganglia.
+Savanna could be integrated with 3rd party management tools like Apache Ambari
+and Cloudera Management Console. The integration is achieved using plugin
+mechanism.
 
-`Read full specification here <https://wiki.openstack.org/wiki/Savanna/PluggableProvisioning>`_.
+In short, responsibilities are divided between Savanna core and plugin as
+follows. Savanna interacts with user and provisions infrastructure (VMs).
+Plugin installs and configures Hadoop cluster on the VMs. Optionally Plugin
+could deploy management and monitoring tools for the cluster. Savanna
+provides plugin with utility methods to work with VMs.
 
+A plugin must extend `savanna.plugins.provisioning:ProvisioningPluginBase`
+class and implement all the required methods. Read :doc:`plugin.spi` for
+details.
 
-.. note::
-
-    Object model, flow and detailed description will be moved here once this functionality is checked into repository.
+The `instance` objects provided by Savanna have `remote` property which
+could be used to work with VM. The `remote` is a context manager so you
+can use it in `with instance.remote:` statements. The list of available
+commands could be found in `savanna.utils.remote.InstanceInteropHelper`.
+See Vanilla plugin source for usage examples.
