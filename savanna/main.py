@@ -77,6 +77,7 @@ def make_app():
 
     @app.route('/', methods=['GET'])
     def version_list():
+        context.set_ctx(None)
         return api_utils.render({
             "versions": [
                 {"id": "v1.0", "status": "CURRENT"}
@@ -90,6 +91,8 @@ def make_app():
             session = context.session()
             if session.transaction:
                 session.transaction.commit()
+
+        context.set_ctx(None)
 
     app.register_blueprint(api_v10.rest, url_prefix='/v1.0')
 
