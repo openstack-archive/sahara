@@ -94,6 +94,23 @@ def model_save(model, context=None):
     return model
 
 
+def model_update(model, context=None, **kwargs):
+    if not hasattr(model, '__table__'):
+        # TODO(slikjanov): replace with specific exception
+        raise RuntimeError("Specified object isn't model, class: %s"
+                           % model.__class__.__name__)
+    columns = model.__table__.columns
+    for prop in kwargs:
+        if prop not in columns:
+            # TODO(slukjanov): replace with specific exception
+            raise RuntimeError(
+                "Model class '%s' doesn't contains specified property '%s'"
+                % (model.__class__.__name__, prop))
+        setattr(model, prop, kwargs[prop])
+
+    return model_save(model, context)
+
+
 def spawn(func, *args, **kwargs):
     ctx = current().clone()
 

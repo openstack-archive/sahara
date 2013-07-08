@@ -48,14 +48,12 @@ def scale_cluster(cluster_id, data):
     additional = construct_ngs_for_scaling(additional_node_groups)
 
     try:
-        cluster.status = 'Validating'
-        context.model_save(cluster)
+        context.model_update(cluster, status='Validating')
         _validate_cluster(cluster, plugin, additional)
         plugin.validate_scaling(cluster, to_be_enlarged, additional)
     except Exception:
         with excutils.save_and_reraise_exception():
-            cluster.status = 'Active'
-            context.model_save(cluster)
+            context.model_update(cluster, status='Active')
 
     # If we are here validation is successful.
     # So let's update bd and to_be_enlarged map:
@@ -77,13 +75,11 @@ def create_cluster(values):
 
     # validating cluster
     try:
-        cluster.status = 'Validating'
-        context.model_save(cluster)
+        context.model_update(cluster, status='Validating')
         plugin.validate(cluster)
     except Exception:
         with excutils.save_and_reraise_exception():
-            cluster.status = 'Error'
-            context.model_save(cluster)
+            context.model_update(cluster, status='Error')
 
     context.spawn(_provision_cluster, cluster.id)
 
@@ -95,18 +91,15 @@ def _provision_nodes(cluster_id, node_group_names_map):
     cluster = get_cluster(id=cluster_id)
     plugin = plugin_base.PLUGINS.get_plugin(cluster.plugin_name)
 
-    cluster.status = 'Scaling'
-    context.model_save(cluster)
+    context.model_update(cluster, status='Scaling')
     instances = i.scale_cluster(cluster, node_group_names_map)
 
     if instances:
-        cluster.status = 'Configuring'
-        context.model_save(cluster)
+        context.model_update(cluster, status='Configuring')
         plugin.scale_cluster(cluster, instances)
 
     # cluster is now up and ready
-    cluster.status = 'Active'
-    context.model_save(cluster)
+    context.model_update(cluster, status='Active')
 
 
 def _provision_cluster(cluster_id):
@@ -114,34 +107,29 @@ def _provision_cluster(cluster_id):
     plugin = plugin_base.PLUGINS.get_plugin(cluster.plugin_name)
 
     # updating cluster infra
-    cluster.status = 'InfraUpdating'
-    context.model_save(cluster)
+    context.model_update(cluster, status='InfraUpdating')
     plugin.update_infra(cluster)
 
     # creating instances and configuring them
     i.create_cluster(cluster)
 
     # configure cluster
-    cluster.status = 'Configuring'
-    context.model_save(cluster)
+    context.model_update(cluster, status='Configuring')
     plugin.configure_cluster(cluster)
 
     # starting prepared and configured cluster
-    cluster.status = 'Starting'
-    context.model_save(cluster)
+    context.model_update(cluster, status='Starting')
     plugin.start_cluster(cluster)
 
     # cluster is now up and ready
-    cluster.status = 'Active'
-    context.model_save(cluster)
+    context.model_update(cluster, status='Active')
 
     return cluster
 
 
 def terminate_cluster(**args):
     cluster = get_cluster(**args)
-    cluster.status = 'Deleting'
-    context.model_save(cluster)
+    context.model_update(cluster, status='Deleting')
 
     plugin = plugin_base.PLUGINS.get_plugin(cluster.plugin_name)
     plugin.on_terminate_cluster(cluster)

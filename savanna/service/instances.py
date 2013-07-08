@@ -28,27 +28,23 @@ LOG = logging.getLogger(__name__)
 def create_cluster(cluster):
     try:
         # create all instances
-        cluster.status = 'Spawning'
-        context.model_save(cluster)
+        context.model_update(cluster, status='Spawning')
         _create_instances(cluster)
 
         # wait for all instances are up and accessible
-        cluster.status = 'Waiting'
-        context.model_save(cluster)
+        context.model_update(cluster, status='Waiting')
         _await_instances(cluster)
 
         # attach volumes
         volumes.attach(cluster)
 
         # prepare all instances
-        cluster.status = 'Preparing'
-        context.model_save(cluster)
+        context.model_update(cluster, status='Preparing')
         _configure_instances(cluster)
     except Exception as ex:
         LOG.warn("Can't start cluster '%s' (reason: %s)", cluster.name, ex)
         with excutils.save_and_reraise_exception():
-            cluster.status = 'Error'
-            context.model_save(cluster)
+            context.model_update(cluster, status='Error')
             _rollback_cluster_creation(cluster, ex)
 
 
