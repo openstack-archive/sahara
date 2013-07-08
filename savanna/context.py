@@ -54,8 +54,13 @@ _CTXS = threading.local()
 _CTXS._curr_ctxs = {}
 
 
+def has_ctx():
+    ident = corolocal.get_ident()
+    return ident in _CTXS._curr_ctxs and _CTXS._curr_ctxs[ident]
+
+
 def ctx():
-    if corolocal.get_ident() not in _CTXS._curr_ctxs:
+    if not has_ctx():
         # TODO(slukjanov): replace with specific error
         raise RuntimeError("Context isn't available here")
     return _CTXS._curr_ctxs[corolocal.get_ident()]
