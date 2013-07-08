@@ -122,6 +122,26 @@ def hacking_has_correct_license(physical_line, filename, lines, line_number):
                              "License notice")
 
 
+def hacking_python3x_print_function(logical_line):
+    r"""Check that all occurrences look like print functions, not
+        print operator.
+
+    As of Python 3.x, the print operator has been removed.
+
+
+    Okay: print(msg)
+    Okay: print (msg)
+    H233: print msg
+    H233: print >>sys.stderr, "hello"
+    H233: print msg,
+    """
+
+    for match in re.finditer(r"\bprint\s+[^\(]", logical_line):
+        yield match.start(0), (
+            "H233: Python 3.x incompatible use of print operator")
+
+
 def factory(register):
     register(hacking_has_license)
     register(hacking_has_correct_license)
+    register(hacking_python3x_print_function)
