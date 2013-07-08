@@ -49,7 +49,6 @@ def scale_cluster(cluster_id, data):
 
     try:
         context.model_update(cluster, status='Validating')
-        _validate_cluster(cluster, plugin, additional)
         plugin.validate_scaling(cluster, to_be_enlarged, additional)
     except Exception:
         with excutils.save_and_reraise_exception():
@@ -69,9 +68,6 @@ def scale_cluster(cluster_id, data):
 def create_cluster(values):
     cluster = s.create_cluster(values)
     plugin = plugin_base.PLUGINS.get_plugin(cluster.plugin_name)
-
-    # TODO(slukjanov): validate configs and etc.
-    _validate(cluster, plugin)
 
     # validating cluster
     try:
@@ -186,48 +182,6 @@ def convert_to_cluster_template(plugin_name, version, config_file):
     plugin.convert(ct, config_file)
 
     return s.persist_cluster_template(ct)
-
-
-# TODO(aignatov): Will be removed after implementing scaling validation
-def _validate(cluster, plugin):
-    # Validate that user configs are not included in plugin configs set
-    pl_confs = _get_plugin_configs(cluster, plugin)
-    for ng in cluster.node_groups:
-        _validate_node_group(pl_confs, ng)
-
-
-# TODO(aignatov): Will be removed after implementing scaling validation
-def _validate_cluster(cluster, plugin, node_groups):
-    # Validate that user configs are not included in plugin configs set
-    pl_confs = _get_plugin_configs(cluster, plugin)
-    for ng in node_groups:
-        ng.cluster = cluster
-        _validate_node_group(pl_confs, ng)
-        ng.cluster = None
-
-
-# TODO(aignatov): Will be removed after implementing scaling validation
-def _get_plugin_configs(cluster, plugin):
-    pl_confs = {}
-    for config in plugin.get_configs(cluster.hadoop_version):
-        if pl_confs.get(config.applicable_target):
-            pl_confs[config.applicable_target].append(config.name)
-        else:
-            pl_confs[config.applicable_target] = [config.name]
-    return pl_confs
-
-
-# TODO(aignatov): Will be removed after implementing scaling validation
-def _validate_node_group(pl_confs, node_group):
-    for app_target, configs in node_group.configuration.items():
-        if app_target not in pl_confs:
-            raise RuntimeError("Plugin doesn't contain applicable "
-                               "target '%s'" % app_target)
-        for name, values in configs.items():
-            if name not in pl_confs[app_target]:
-                raise RuntimeError("Plugin's applicable target '%s' "
-                                   "doesn't contain config with name '%s'"
-                                   % (app_target, name))
 
 
 def construct_ngs_for_scaling(additional_node_groups):

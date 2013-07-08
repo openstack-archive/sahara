@@ -55,28 +55,6 @@ def check_image_exists(image_id):
                                   % image_id)
 
 
-def check_flavor_exists(flavor_id):
-    try:
-        nova.client().flavors.get(flavor_id)
-    except nova_ex.NotFound:
-        raise ex.InvalidException("Requested flavor '%s' not found"
-                                  % flavor_id)
-
-
-def check_node_processes(plugin_name, version, node_processes):
-    if len(set(node_processes)) != len(node_processes):
-        raise ex.InvalidException("Duplicates in node processes "
-                                  "have been detected")
-    plugin_procesess = []
-    for process in plugin_base.PLUGINS.get_plugin(
-            plugin_name).get_node_processes(version).values():
-        plugin_procesess += process
-
-    if not set(node_processes).issubset(set(plugin_procesess)):
-        raise ex.InvalidException("Plugin supports the following "
-                                  "node procesess: %s" % plugin_procesess)
-
-
 def check_node_group_configs(plugin_name, hadoop_version, ng_configs,
                              plugin_configs=None):
     # TODO(aignatov): Should have scope and config type validations
@@ -103,11 +81,59 @@ def check_all_configurations(data):
 
     if data.get('node_groups'):
         for ng in data['node_groups']:
-            if ng.get('node_configs'):
-                check_node_group_configs(data['plugin_name'],
-                                         data['hadoop_version'],
-                                         ng['node_configs'],
-                                         plugin_configs=pl_confs)
+            check_node_group_basic_fields(data['plugin_name'],
+                                          data['hadoop_version'],
+                                          ng, pl_confs)
+
+## NodeGroup related checks
+
+
+def check_node_group_basic_fields(plugin_name, hadoop_version, ng,
+                                  plugin_configs=None):
+
+    if ng.get('node_group_template_id'):
+        check_node_group_template_exists(ng['node_group_template_id'])
+
+    if ng.get('node_configs'):
+        check_node_group_configs(plugin_name, hadoop_version,
+                                 ng['node_configs'], plugin_configs)
+    if ng.get('flavor_id'):
+        check_flavor_exists(ng['flavor_id'])
+
+    if ng.get('node_processes'):
+        check_node_processes(plugin_name, hadoop_version, ng['node_processes'])
+
+    if ng.get('image_id'):
+        check_image_exists(ng['image_id'])
+
+
+def check_flavor_exists(flavor_id):
+    try:
+        nova.client().flavors.get(flavor_id)
+    except nova_ex.NotFound:
+        raise ex.InvalidException("Requested flavor '%s' not found"
+                                  % flavor_id)
+
+
+def check_node_processes(plugin_name, version, node_processes):
+    if len(set(node_processes)) != len(node_processes):
+        raise ex.InvalidException("Duplicates in node processes "
+                                  "have been detected")
+    plugin_procesess = []
+    for process in plugin_base.PLUGINS.get_plugin(
+            plugin_name).get_node_processes(version).values():
+        plugin_procesess += process
+
+    if not set(node_processes).issubset(set(plugin_procesess)):
+        raise ex.InvalidException("Plugin supports the following "
+                                  "node procesess: %s" % plugin_procesess)
+
+
+def check_duplicates_node_groups_names(node_groups):
+    ng_names = [ng['name'] for ng in node_groups]
+    if len(set(ng_names)) < len(node_groups):
+        raise ex.InvalidException("Duplicates in node group names "
+                                  "are detected")
 
 
 ## Cluster creation related checks
@@ -139,3 +165,39 @@ def check_node_group_template_unique_name(name):
     if name in [t.name for t in api.get_node_group_templates()]:
         raise ex.NameAlreadyExistsException("NodeGroup template with name '%s'"
                                             " already exists" % name)
+
+
+def check_node_group_template_exists(ng_tmpl_id):
+    if not api.get_node_group_templates(id=ng_tmpl_id):
+        raise ex.InvalidException("NodeGroup template with id '%s'"
+                                  " doesn't exist" % ng_tmpl_id)
+
+
+## Cluster scaling
+
+def check_resize(cluster, r_node_groups):
+    cluster_ng_names = [ng.name for ng in cluster.node_groups]
+
+    check_duplicates_node_groups_names(r_node_groups)
+
+    for ng in r_node_groups:
+        if ng['name'] not in cluster_ng_names:
+            raise ex.InvalidException("Cluster doesn't contain node group "
+                                      "with name '%s'" % ng['name'])
+
+
+def check_add_node_groups(cluster, add_node_groups):
+    cluster_ng_names = [ng.name for ng in cluster.node_groups]
+
+    check_duplicates_node_groups_names(add_node_groups)
+
+    pl_confs = _get_plugin_configs(cluster.plugin_name, cluster.hadoop_version)
+
+    for ng in add_node_groups:
+        if ng['name'] in cluster_ng_names:
+            raise ex.InvalidException("Can't add new nodegroup. Cluster "
+                                      "already has nodegroup with name '%s'"
+                                      % ng['name'])
+
+        check_node_group_basic_fields(cluster.plugin_name,
+                                      cluster.hadoop_version, ng, pl_confs)
