@@ -51,13 +51,13 @@ On Fedora-based distributions (e.g., Fedora/RHEL/CentOS/Scientific Linux):
 
 3. Prepare virtual environment:
 
-.. sourcecode:: bash
+.. sourcecode:: console
 
     tools/install_venv
 
 4. Create config file from default template:
 
-.. sourcecode:: bash
+.. sourcecode:: console
 
     cp ./etc/savanna/savanna.conf.sample ./etc/savanna/savanna.conf
 
@@ -70,9 +70,9 @@ Set ``os_auth_host`` to the address of your VM with DevStack.
 
 6. To start Savanna call:
 
-.. sourcecode:: bash
+.. sourcecode:: console
 
-    tox -evenv -- savanna-api --config-file etc/savanna/savanna.conf --allow-cluster-ops
+    tox -evenv -- savanna-api --config-file etc/savanna/savanna.conf -d
 
 
 Setup local OpenStack dashboard with Savanna plugin
