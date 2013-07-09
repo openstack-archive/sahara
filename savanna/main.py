@@ -23,13 +23,12 @@ from savanna.api import v10 as api_v10
 from savanna import context
 from savanna.db import api as db_api
 from savanna.middleware import auth_valid
+from savanna.openstack.common import log
 from savanna.openstack.common.middleware import debug
 from savanna.plugins import base as plugins_base
 from savanna.utils import api as api_utils
-from savanna.utils import scheduler
-
-from savanna.openstack.common import log
 from savanna.utils import patches
+from savanna.utils import scheduler
 
 LOG = log.getLogger(__name__)
 
@@ -87,10 +86,15 @@ def make_app():
     @app.teardown_request
     def teardown_request(_ex=None):
         # TODO(slukjanov): how it'll work in case of exception?
-        if flask.request.path != '/':
-            session = context.session()
-            if session.transaction:
-                session.transaction.commit()
+        if context.has_ctx():
+            if flask.request.path != '/':
+                try:
+                    session = context.session()
+                    if session.transaction:
+                        session.transaction.commit()
+                except Exception, e:
+                    return api_utils.internal_error(
+                        500, 'Exception in REST API call', e)
 
         context.set_ctx(None)
 
