@@ -44,7 +44,7 @@ opts = [
                default='http',
                help='Protocol used to access OpenStack Identity service'),
     cfg.StrOpt('os_auth_host',
-               default='openstack',
+               default='127.0.0.1',
                help='IP or hostname of machine on which OpenStack Identity '
                     'service is located'),
     cfg.StrOpt('os_auth_port',

@@ -21,7 +21,7 @@
 
 # IP or hostname of machine on which OpenStack Identity
 # service is located (string value)
-#os_auth_host=openstack
+#os_auth_host=127.0.0.1
 
 # Port of OpenStack Identity service (string value)
 #os_auth_port=35357
