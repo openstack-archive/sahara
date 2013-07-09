@@ -17,9 +17,9 @@ from oslo.config import cfg
 
 cli_opts = [
     cfg.StrOpt('host', default='',
-               help='set host'),
+               help='Hostname of IP address that will be used to listen on'),
     cfg.IntOpt('port', default=8080,
-               help='set port'),
+               help='Port that will be used to listen on'),
 ]
 
 CONF = cfg.CONF
