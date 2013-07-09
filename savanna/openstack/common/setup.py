@@ -175,10 +175,11 @@ def generate_authors():
                           " log | grep -i Co-authored-by: | sort -u")
             signed_entries = _run_shell_command(signed_cmd)
             if signed_entries:
-                new_entries = "\n".join(
-                    [signed.split(":", 1)[1].strip()
-                     for signed in signed_entries.split("\n") if signed])
-                changelog = "\n".join((changelog, new_entries))
+                new_entries = [signed.split(":", 1)[1].strip()
+                     for signed in signed_entries.split("\n") if signed]
+                for new_entry in new_entries:
+                    if new_entry not in changelog:
+                        changelog += "\n" + new_entry
             mailmap = _parse_git_mailmap(git_dir)
             with open(new_authors, 'w') as new_authors_fh:
                 new_authors_fh.write(canonicalize_emails(changelog, mailmap))
