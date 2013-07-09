@@ -27,7 +27,7 @@ OS_TENANT_NAME = _get_conf('OS_TENANT_NAME', 'admin')
 OS_AUTH_URL = _get_conf('OS_AUTH_URL', 'http://192.168.1.1:35357/v2.0/')
 
 SAVANNA_HOST = _get_conf('SAVANNA_HOST', '192.168.1.1')
-SAVANNA_PORT = _get_conf('SAVANNA_PORT', '8080')
+SAVANNA_PORT = _get_conf('SAVANNA_PORT', '8386')
 
 IMAGE_ID = _get_conf('IMAGE_ID', '42abc')
 FLAVOR_ID = _get_conf('FLAVOR_ID', '42')
