@@ -37,6 +37,7 @@ Developer Guide
     horizon/dev.environment.guide
     devref/quickstart
     devref/unit_tests
+    devref/docs
     devref/how_to_participate
 
 
