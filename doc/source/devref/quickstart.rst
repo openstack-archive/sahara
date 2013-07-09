@@ -17,27 +17,27 @@ This guide will help you to setup vanilla Hadoop cluster using
 To use CLI tools, such as OpenStack's python clients, we should specify
 environment variables with addresses and credentials. Let's mind that we have
 keystone at ``127.0.0.1:5000`` with tenant ``admin``, credentials ``admin:nova``
-and Savanna API at ``127.0.0.1:8080``. Here is a list of commands to set env:
+and Savanna API at ``127.0.0.1:8386``. Here is a list of commands to set env:
 
-.. sourcecode:: bash
+.. sourcecode:: console
 
-    export OS_AUTH_URL=http://127.0.0.1:5000/v2.0/
-    export OS_TENANT_NAME=admin
-    export OS_USERNAME=admin
-    export OS_PASSWORD=nova
+    $ export OS_AUTH_URL=http://127.0.0.1:5000/v2.0/
+    $ export OS_TENANT_NAME=admin
+    $ export OS_USERNAME=admin
+    $ export OS_PASSWORD=nova
 
 
 You can append these lines to the ``.bashrc`` and execute ``source .bashrc``.
 Now you can get authentification token from OpenStack Keystone service.
 
-.. sourcecode:: bash
+.. sourcecode:: console
 
-    keystone token-get
+    $ keystone token-get
 
 
 If authentication succeed, output will be as follows:
 
-.. sourcecode:: bash
+.. sourcecode:: console
 
     +-----------+----------------------------------+
     |  Property |              Value               |
@@ -51,10 +51,10 @@ If authentication succeed, output will be as follows:
 Save ``tenant_id`` which is obviously your Tenant ID and ``id`` which is your
 authentication token (X-Auth-Token):
 
-.. sourcecode:: bash
+.. sourcecode:: console
 
-    export AUTH_TOKEN="dd92e3cdb4e1462690cd444d6b01b746"
-    export TENANT_ID="62bd2046841e4e94a87b4a22aa886c13"
+    $ export AUTH_TOKEN="dd92e3cdb4e1462690cd444d6b01b746"
+    $ export TENANT_ID="62bd2046841e4e94a87b4a22aa886c13"
 
 
 3. Upload image to Glance
@@ -65,28 +65,28 @@ images yourself:
 
 * Download and install pre-built image
 
-.. sourcecode:: bash
+.. sourcecode:: console
 
-    ssh user@hostname
-    curl http://savanna-files.mirantis.com/savanna-0.2-vanilla-hadoop-ubuntu.qcow2
-    glance image-create --name=savanna-0.2-vanilla-hadoop-ubuntu.qcow2\
-     --disk-format=qcow2 --container-format=bare < ./savanna-0.2-vanilla-hadoop-ubuntu.qcow2
+    $ ssh user@hostname
+    $ curl http://savanna-files.mirantis.com/savanna-0.2-vanilla-hadoop-ubuntu.qcow2
+    $ glance image-create --name=savanna-0.2-vanilla-hadoop-ubuntu.qcow2 \
+      --disk-format=qcow2 --container-format=bare < ./savanna-0.2-vanilla-hadoop-ubuntu.qcow2
 
 * OR build image using :doc:`../userdoc/diskimagebuilder`.
 
 
 Save image id. You can get image id from command ``glance image-list``:
 
-.. sourcecode:: bash
+.. sourcecode:: console
 
-    glance image-list --name vanilla_02_ubuntu.qcow2
-    > +--------------------------------------+-----------------------------------------+
-    > | ID                                   | Name                                    |
-    > +--------------------------------------+-----------------------------------------+
-    > | 3f9fc974-b484-4756-82a4-bff9e116919b | savanna-0.2-vanilla-hadoop-ubuntu.qcow2 |
-    > +--------------------------------------+-----------------------------------------+
+    $ glance image-list --name vanilla_02_ubuntu.qcow2
+    +--------------------------------------+-----------------------------------------+
+    | ID                                   | Name                                    |
+    +--------------------------------------+-----------------------------------------+
+    | 3f9fc974-b484-4756-82a4-bff9e116919b | savanna-0.2-vanilla-hadoop-ubuntu.qcow2 |
+    +--------------------------------------+-----------------------------------------+
 
-    export IMAGE_ID="3f9fc974-b484-4756-82a4-bff9e116919b"
+    $ export IMAGE_ID="3f9fc974-b484-4756-82a4-bff9e116919b"
 
 
 4. Register image in Image Registry
@@ -94,30 +94,36 @@ Save image id. You can get image id from command ``glance image-list``:
 
 * Now we will actually start to interact with Savanna.
 
-.. sourcecode:: bash
+.. sourcecode:: console
 
-    export SAVANNA_URL="http://localhost:9000/v1.0/$TENANT_ID"
+    $ export SAVANNA_URL="http://localhost:8386/v1.0/$TENANT_ID"
+
+* Install ``httpie`` REST client
+
+.. sourcecode:: console
+
+    $ sudo pip install httpie
 
 * Send POST request to Savanna API to register image with username ``ubuntu``.
 
-.. sourcecode:: bash
+.. sourcecode:: console
 
-    http $SAVANNA_URL/images/$IMAGE_ID X-Auth-Token:$AUTH_TOKEN\
-     '{ "username": "ubuntu" }'
+    $ http POST $SAVANNA_URL/images/$IMAGE_ID X-Auth-Token:$AUTH_TOKEN \
+     username=ubuntu
 
 
 * Tag the image:
 
-.. sourcecode:: bash
+.. sourcecode:: console
 
-    http $SAVANNA_URL/images/$IMAGE_ID/tag X-Auth-Token:$AUTH_TOKEN\
-     '{ "tags": ["vanilla", "1.1.2", "ubuntu"] }'
+    $ http $SAVANNA_URL/images/$IMAGE_ID/tag X-Auth-Token:$AUTH_TOKEN \
+     tags:='["vanilla", "1.1.2", "ubuntu"]'
 
 * Make sure that image is registered correctly:
 
-.. sourcecode:: bash
+.. sourcecode:: console
 
-    http $SAVANNA_URL/images X-Auth-Token:$AUTH_TOKEN
+    $ http $SAVANNA_URL/images X-Auth-Token:$AUTH_TOKEN
 
 * Output should look like:
 
@@ -176,7 +182,7 @@ following content:
 .. sourcecode:: json
 
     {
-        "name": "test-master-tmpl",
+        "name": "test-worker-tmpl",
         "flavor_id": "2",
         "plugin_name": "vanilla",
         "hadoop_version": "1.1.2",
@@ -185,21 +191,21 @@ following content:
 
 Send POST requests to Savanna API to upload NodeGroup templates:
 
-.. sourcecode:: json
+.. sourcecode:: console
 
-    http $SAVANNA_URL/node-group-templates X-Auth-Token:$AUTH_TOKEN\
+    $ http $SAVANNA_URL/node-group-templates X-Auth-Token:$AUTH_TOKEN \
      < ng_master_template_create.json
 
-    http $SAVANNA_URL/node-group-templates X-Auth-Token:$AUTH_TOKEN\
+    $ http $SAVANNA_URL/node-group-templates X-Auth-Token:$AUTH_TOKEN \
      < ng_worker_template_create.json
 
 
 You can list available NodeGroup templates by sending the following request to
 Savanna API:
 
-.. sourcecode:: bash
+.. sourcecode:: console
 
-    http $SAVANNA_URL/node-group-templates X-Auth-Token:$AUTH_TOKEN
+    $ http $SAVANNA_URL/node-group-templates X-Auth-Token:$AUTH_TOKEN
 
 Output should look like:
 
@@ -279,9 +285,9 @@ following content:
 
 Send POST request to Savanna API to upload Cluster template:
 
-.. sourcecode:: bash
+.. sourcecode:: console
 
-    http $SAVANNA_URL/cluster-templates X-Auth-Token:$AUTH_TOKEN\
+    $ http $SAVANNA_URL/cluster-templates X-Auth-Token:$AUTH_TOKEN \
      < cluster_template_create.json
 
 Save template id. For example ``ce897df2-1610-4caa-bdb8-408ef90561cf``.
@@ -306,9 +312,9 @@ following content:
 
 Send POST request to Savanna API to create and start the cluster:
 
-.. sourcecode:: bash
+.. sourcecode:: console
 
-    http $SAVANNA_URL/clusters X-Auth-Token:$AUTH_TOKEN\
+    $ http $SAVANNA_URL/clusters X-Auth-Token:$AUTH_TOKEN \
      < cluster_create.json
 
 
@@ -415,21 +421,21 @@ To check that your Hadoop installation works correctly:
 
 * Go to NameNode via ssh:
 
-.. sourcecode:: bash
+.. sourcecode:: console
 
-    ssh ubuntu@172.24.4.225
+    $ ssh ubuntu@<namenode_ip>
 
 * Switch to hadoop user:
 
-.. sourcecode:: bash
+.. sourcecode:: console
 
-    su hadoop
+    $ sudo su hadoop
 
 * Go to hadoop home directory and run the simpliest MapReduce example:
 
-.. sourcecode:: bash
+.. sourcecode:: console
 
-    cd /usr/share/hadoop
-    hadoop jar hadoope-examples.jar pi 10 100
+    $ cd /usr/share/hadoop
+    $ hadoop jar hadoop-examples.jar pi 10 100
 
 Congratulations! Now you have Hadoop cluster ready on the OpenStack cloud!

@@ -21,19 +21,20 @@ If you are still using Folsom you need to follow these steps:
   new filter is not very important, you will use it only for configuration.
   E.g. let it be ``${list_endpoints}``:
 
-  .. sourcecode:: bash
+.. sourcecode:: cfg
 
     [pipeline:main]
-    pipeline = catch_errors healthcheck cache ratelimit swift3 s3token
-    list_endpoints authtoken keystone proxy-server
+    pipeline = catch_errors healthcheck cache ratelimit swift3 s3token list_endpoints authtoken keystone proxy-server
+..
 
-    The next thing you need to do here is to add the description of new filter:
+  The next thing you need to do here is to add the description of new filter:
 
-  .. sourcecode:: bash
+.. sourcecode:: cfg
 
     [filter:list_endpoints]
     use = egg:swift#${list_endpoints}
     # list_endpoints_path = /endpoints/
+..
 
   ``list_endpoints_path`` is not mandatory and is "endpoints" by default.
   This param is used for http-request construction. See details below.
@@ -42,7 +43,7 @@ If you are still using Folsom you need to follow these steps:
   ``/usr/lib/python2.7/dist-packages/swift-1.7.4.egg-info/entry_points.txt``.
   Add the following description to ``[paste.filter_factory]`` section:
 
-  .. sourcecode:: bash
+.. sourcecode:: cfg
 
     ${list_endpoints} = swift.common.middleware.list_endpoints:filter_factory
 
@@ -137,11 +138,11 @@ determined from tenant name from configs. Actually, account=tenant.
 
 Let's run the job:
 
-.. sourcecode:: bash
+.. sourcecode:: console
 
-    hadoop distcp -D fs.swift.service.savanna.username=admin\
-     -D fs.swift.service.savanna.password=swordfish\
-      swift://integration.savanna/temp swift://integration.savanna/temp1
+    $ hadoop distcp -D fs.swift.service.savanna.username=admin \
+     -D fs.swift.service.savanna.password=swordfish \
+     swift://integration.savanna/temp swift://integration.savanna/temp1
 
 After that just check if temp1 is created.
 

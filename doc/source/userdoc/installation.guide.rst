@@ -10,58 +10,62 @@ Further steps describe Savanna installation into virtual environment. All steps 
 #1 do not require superuser privileges.
 
 
-1.  First you need to install `python-setuptools`, `python-virtualenv` and python headers using your
-    OS package manager. The python headers package name depends on OS. For Ubuntu it is `python-dev`,
-    for Red Hat - `python-devel` So for Ubuntu run :
+1. First you need to install `python-setuptools`, `python-virtualenv` and python headers using your
+   OS package manager. The python headers package name depends on OS. For Ubuntu it is `python-dev`,
+   for Red Hat - `python-devel` So for Ubuntu run :
 
-    .. sourcecode:: bash
+.. sourcecode:: console
 
-        sudo apt-get install python-setuptools python-virtualenv python-dev
+    $ sudo apt-get install python-setuptools python-virtualenv python-dev
+..
 
-    For Red Hat:
+   For Red Hat:
 
-    .. sourcecode:: bash
+.. sourcecode:: console
 
-        sudo yum install python-setuptools python-virtualenv python-devel
+    $ sudo yum install python-setuptools python-virtualenv python-devel
 
-2.  Setup virtual environment for Savanna:
+2. Setup virtual environment for Savanna:
 
-    .. sourcecode:: bash
+.. sourcecode:: console
 
-        virtualenv savanna-venv
+    $ virtualenv savanna-venv
 
-3.  You can install the latest Savanna release version from pypi:
+3. You can install the latest Savanna release version from pypi:
 
-    .. sourcecode:: bash
+.. sourcecode:: console
 
-        savanna-venv/bin/pip install savanna
+    $ savanna-venv/bin/pip install savanna
+..
 
-    Or you can get Savanna archive from ``http://tarballs.openstack.org/savanna/`` and install it using pip:
+   Or you can get Savanna archive from `<http://tarballs.openstack.org/savanna/>`_ and install it using pip:
 
-    .. sourcecode:: bash
+.. sourcecode:: console
 
-        savanna-venv/bin/pip install http://tarballs.openstack.org/savanna/savanna-master.tar.gz#egg=savanna
+    $ savanna-venv/bin/pip install 'http://tarballs.openstack.org/savanna/savanna-master.tar.gz#egg=savanna'
+..
 
-    Note that savanna-master contains the latest changes and might not be stable at the moment.
-    We recommend browsing ``http://tarballs.openstack.org/savanna/`` and selecting the latest stable release.
+   Note that savanna-master contains the latest changes and might not be stable at the moment.
+   We recommend browsing `<http://tarballs.openstack.org/savanna/>`_ and selecting the latest stable release.
 
-3.  After installation you should create configuration file. Sample config file location
-    depends on your OS. For Ubuntu it is ``/usr/local/share/savanna/savanna.conf.sample``,
-    for Red Hat - ``/usr/share/savanna/savanna.conf.sample``. Below is an example for Ubuntu:
+4. After installation you should create configuration file. Sample config file location
+   depends on your OS. For Ubuntu it is ``/usr/local/share/savanna/savanna.conf.sample``,
+   for Red Hat - ``/usr/share/savanna/savanna.conf.sample``. Below is an example for Ubuntu:
 
-    .. sourcecode:: bash
+.. sourcecode:: console
 
-        mkdir savanna-venv/etc
-        cp savanna-venv/share/savanna/savanna.conf.sample savanna-venv/etc/savanna.conf
+    $ mkdir savanna-venv/etc
+    $ cp savanna-venv/share/savanna/savanna.conf.sample savanna-venv/etc/savanna.conf
 
-4.  To start Savanna call:
+5. To start Savanna call:
 
-    .. sourcecode:: bash
+.. sourcecode:: console
 
-        savanna-venv/bin/python savanna-venv/bin/savanna-api --config-file savanna-venv/etc/savanna.conf
+    $ savanna-venv/bin/python savanna-venv/bin/savanna-api --config-file savanna-venv/etc/savanna.conf
+..
 
-    To get the list of all possible options run:
+   To get the list of all possible options run:
 
-    .. sourcecode:: bash
+.. sourcecode:: console
 
-        savanna-venv/bin/python savanna-venv/bin/savanna-api --help
+    $ savanna-venv/bin/python savanna-venv/bin/savanna-api --help

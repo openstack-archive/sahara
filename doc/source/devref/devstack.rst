@@ -16,19 +16,19 @@ Recommended settings:
 
 **How to set fixed IP address for your VM**
 
-1. Open file /Library/Preferences/VMware Fusion/vmnet8/dhcpd.conf
+1. Open file ``/Library/Preferences/VMware Fusion/vmnet8/dhcpd.conf``
 2. There is a block named "subnet". It might look like this:
 
-.. sourcecode:: bash
+.. sourcecode:: text
 
     subnet 192.168.55.0 netmask 255.255.255.0 {
             range 192.168.55.128 192.168.55.254;
 
-3. You need to pick an IP address outside of that range. For example - 192.168.55.20.
+3. You need to pick an IP address outside of that range. For example - ``192.168.55.20``
 4. Copy VM MAC address from VM settings->Network->Advanced
-5. Append the following block to file dhcpd.conf (don't forget to replace VM_HOSTNAME and VM_MAC_ADDRESS with actual values):
+5. Append the following block to file ``dhcpd.conf`` (don't forget to replace ``VM_HOSTNAME`` and ``VM_MAC_ADDRESS`` with actual values):
 
-.. sourcecode:: bash
+.. sourcecode:: text
 
     host VM_HOSTNAME {
             hardware ethernet VM_MAC_ADDRESS;
@@ -37,7 +37,7 @@ Recommended settings:
 
 6. Now quit all the VmWare Fusion applications and restart vmnet:
 
-.. sourcecode:: bash
+.. sourcecode:: console
 
     $ sudo /Applications/VMware\ Fusion.app/Contents/Library/vmnet-cli --stop
     $ sudo /Applications/VMware\ Fusion.app/Contents/Library/vmnet-cli --start
@@ -52,12 +52,12 @@ Now we are going to install DevStack in VM we just created. So, connect to VM wi
 
 1. Clone DevStack:
 
-.. sourcecode:: bash
+.. sourcecode:: console
 
-	sudo apt-get install git-core
-	git clone https://github.com/openstack-dev/devstack.git
+    $ sudo apt-get install git-core
+    $ git clone https://github.com/openstack-dev/devstack.git
 
-2. Create file localrc in devstack directory with the following content:
+2. Create file ``localrc`` in devstack directory with the following content:
 
 .. sourcecode:: bash
 
@@ -100,18 +100,21 @@ Now we are going to install DevStack in VM we just created. So, connect to VM wi
 
 3. Start DevStack:
 
-.. sourcecode:: bash
+.. sourcecode:: console
 
-	./stack.sh
+    $ ./stack.sh
 
-4. Once previous step is finished Devstack will print Horizon URL.
-Navigate to this URL and login with login "admin" and password from localrc.
+4. Once previous step is finished Devstack will print Horizon URL. Navigate to this URL and login with login "admin" and password from localrc.
 
-5. Now we need to modify security rules. It will allow to connect to VMs directly from your host.
-Navigate to project's "Admin" security tab and edit default Security Group rules:
+5. Now we need to modify security rules. It will allow to connect to VMs directly from your host. Navigate to project's "Admin" security tab and edit default Security Group rules:
 
-	TCP, Port range 1-65535, CIDR, 0.0.0.0/0
-	ICMP, -1, -1, CIDR, 0.0.0.0/0
+   +-------------+-----------+---------+--------------+-----------+
+   | IP Protocol | From Port | To Port | Source Group | CIDR      |
+   +=============+===========+=========+==============+===========+
+   | TCP         | 1         | 65535   | CIDR         | 0.0.0.0/0 |
+   +-------------+-----------+---------+--------------+-----------+
+   | ICMP        | -1        | -1      | CIDR         | 0.0.0.0/0 |
+   +-------------+-----------+---------+--------------+-----------+
 
 
 6. Congratulations! You have OpenStack running in your VM and ready to launch VMs inside that VM :)

@@ -8,9 +8,9 @@ For all the code in Savanna we have a rule - it should pass `PEP 8`_.
 
 To check your code against PEP 8 run:
 
-.. sourcecode:: bash
+.. sourcecode:: console
 
-  tox -e pep8
+    $ tox -e pep8
 
 .. note::
   For more details on coding guidelines see file ``HACKING.rst`` in the root of Savanna repo.
@@ -27,9 +27,9 @@ test suite up-to-date with any submitted code changes.
 Savanna's suite of unit tests can be executed in an isolated environment
 with `Tox`_. To execute the unit tests run the following from the root of Savanna repo:
 
-.. sourcecode:: bash
+.. sourcecode:: console
 
-    tox -e py27
+    $ tox -e py27
 
 
 Documentation Guidelines
@@ -40,22 +40,22 @@ The documentation in docstrings should follow the `PEP 257`_ conventions
 
 More specifically:
 
-    1.  Triple quotes should be used for all docstrings.
-    2.  If the docstring is simple and fits on one line, then just use
-        one line.
-    3.  For docstrings that take multiple lines, there should be a newline
-        after the opening quotes, and before the closing quotes.
-    4.  `Sphinx`_ is used to build documentation, so use the restructured text
-        markup to designate parameters, return values, etc.  Documentation on
-        the sphinx specific markup can be found here:
+1. Triple quotes should be used for all docstrings.
+2. If the docstring is simple and fits on one line, then just use
+   one line.
+3. For docstrings that take multiple lines, there should be a newline
+   after the opening quotes, and before the closing quotes.
+4. `Sphinx`_ is used to build documentation, so use the restructured text
+   markup to designate parameters, return values, etc.  Documentation on
+   the sphinx specific markup can be found here:
 
 
 
 To build documentation execute. You will find html pages at ``doc/build/html``:
 
-.. sourcecode:: bash
+.. sourcecode:: console
 
-    tox -e docs
+    $ tox -e docs
 
 
 .. note::

@@ -11,9 +11,9 @@ Building docs
 
 You should run the following command to build docs locally.
 
-.. sourcecode:: bash
+.. sourcecode:: console
 
-    tox -e docs
+    $ tox -e docs
 
 After it you can access builded docs in ``doc/build/`` directory, for example,
 main page - ``doc/build/html/index.html``.
@@ -21,14 +21,14 @@ main page - ``doc/build/html/index.html``.
 For developers needs you can make docs building faster using the following
 command :
 
-.. sourcecode:: bash
+.. sourcecode:: console
 
-    SPHINX_DEBUG=1 tox -e docs
+    $ SPHINX_DEBUG=1 tox -e docs
 
 or to avoid savanna reinstallation to virtual env each time you want to rebuild
 docs you can use the following command (it could be executed only after
 running ``tox -e docs`` first time):
 
-.. sourcecode:: bash
+.. sourcecode:: console
 
-    SPHINX_DEBUG=1 .tox/docs/bin/python setup.py build_sphinx
+    $ SPHINX_DEBUG=1 .tox/docs/bin/python setup.py build_sphinx

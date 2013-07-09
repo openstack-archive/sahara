@@ -11,9 +11,9 @@ Running the tests
 -----------------
 Run the unit tests by doing:
 
-.. sourcecode:: bash
+.. sourcecode:: console 
 
-    ./tools/run_tests.sh
+    $ ./tools/run_tests.sh
 
 
 

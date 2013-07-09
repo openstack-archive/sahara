@@ -22,57 +22,57 @@ Now we are going to setup development environment for Savanna on your OS.
 
 On OS X Systems:
 
-.. sourcecode:: bash
+.. sourcecode:: console
 
-	# we actually need pip, which is part of python package
-	brew install python
-	pip install virtualenv tox
+     # we actually need pip, which is part of python package
+    $ brew install python
+    $ pip install virtualenv tox
 
 On Ubuntu:
 
-.. sourcecode:: bash
+.. sourcecode:: console
 
-	sudo apt-get install python-dev python-virtualenv
-	sydo pip install tox
+    $ sudo apt-get install python-dev python-virtualenv
+    $ sudo pip install tox
 
 On Fedora-based distributions (e.g., Fedora/RHEL/CentOS/Scientific Linux):
 
-.. sourcecode:: bash
+.. sourcecode:: console
 
-	sudo yum install python-devel python-virtualenv
-	sudo pip install tox
+    $ sudo yum install python-devel python-virtualenv
+    $ sudo pip install tox
 
 2. Grab the code from GitHub:
 
-.. sourcecode:: bash
+.. sourcecode:: console
 
-    git clone git://github.com/stackforge/savanna.git
-    cd savanna
+    $ git clone git://github.com/stackforge/savanna.git
+    $ cd savanna
 
 3. Prepare virtual environment:
 
 .. sourcecode:: console
 
-    tools/install_venv
+    $ tools/install_venv
 
 4. Create config file from default template:
 
 .. sourcecode:: console
 
-    cp ./etc/savanna/savanna.conf.sample ./etc/savanna/savanna.conf
+    $ cp ./etc/savanna/savanna.conf.sample ./etc/savanna/savanna.conf
 
 5. Look through the savanna.conf and change parameters which default values do not suite you.
 Set ``os_auth_host`` to the address of your VM with DevStack.
 
 .. note::
 
-	Config file can be specified for ``savanna-api`` command using ``--config-file`` flag.
+    Config file can be specified for ``savanna-api`` command using ``--config-file`` flag.
 
 6. To start Savanna call:
 
 .. sourcecode:: console
 
-    tox -evenv -- savanna-api --config-file etc/savanna/savanna.conf -d
+    $ tox -evenv -- savanna-api --config-file etc/savanna/savanna.conf -d
 
 
 Setup local OpenStack dashboard with Savanna plugin
