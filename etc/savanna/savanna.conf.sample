@@ -1,7 +1,7 @@
 [DEFAULT]
 
 # REST API config
-#port=8080
+#port=8386
 
 # Address and credentials that will be used to check auth tokens
 #os_auth_host=127.0.0.1

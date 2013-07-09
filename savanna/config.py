@@ -18,7 +18,7 @@ from oslo.config import cfg
 cli_opts = [
     cfg.StrOpt('host', default='',
                help='Hostname of IP address that will be used to listen on'),
-    cfg.IntOpt('port', default=8080,
+    cfg.IntOpt('port', default=8386,
                help='Port that will be used to listen on'),
     cfg.BoolOpt('log-exchange', default=False,
                 help='Log request/response exchange details: environ, '
