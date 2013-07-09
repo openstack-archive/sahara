@@ -89,7 +89,7 @@ def _provision_nodes(cluster_id, node_group_names_map):
     plugin = plugin_base.PLUGINS.get_plugin(cluster.plugin_name)
 
     context.model_update(cluster, status='Scaling')
-    instances = i.scale_cluster(cluster, node_group_names_map)
+    instances = i.scale_cluster(cluster, node_group_names_map, plugin)
 
     if instances:
         context.model_update(cluster, status='Configuring')

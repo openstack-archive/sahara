@@ -49,30 +49,30 @@ def create_cluster(cluster):
             _rollback_cluster_creation(cluster, ex)
 
 
-def scale_cluster(cluster, node_group_names_map):
+def scale_cluster(cluster, node_group_names_map, plugin):
     # Now let's work with real node_groups, not names:
     node_groups_map = {}
-    session = context.ctx().session
     for ng in cluster.node_groups:
         if ng.name in node_group_names_map:
             node_groups_map.update({ng: node_group_names_map[ng.name]})
-
+    instances_list = []
     try:
         instances_list = _scale_cluster_instances(
-            cluster, node_groups_map)
+            cluster, node_groups_map, plugin)
+        _clean_cluster_from_empty_ng(cluster)
         _await_instances(cluster)
         volumes.attach_to_instances(instances_list)
+
     except Exception as ex:
         LOG.warn("Can't scale cluster '%s' (reason: %s)", cluster.name, ex)
         with excutils.save_and_reraise_exception():
-            ng_to_delete = _rollback_cluster_scaling(cluster, instances_list,
-                                                     ex)
+            _rollback_cluster_scaling(cluster, instances_list, ex)
             instances_list = []
-            with session.begin():
-                for ng in ng_to_delete:
-                    session.delete(ng)
+            _clean_cluster_from_empty_ng(cluster)
+            if cluster.status == 'Decommissioning':
+                cluster.status = 'Error'
+            else:
                 cluster.status = 'Active'
-
     # we should be here with valid cluster: if instances creation
     # was not successful all extra-instances will be removed above
     if instances_list:
@@ -103,22 +103,42 @@ def _create_instances(cluster):
             _run_instance(cluster, node_group, idx, aa_groups, userdata)
 
 
-def _scale_cluster_instances(cluster, node_groups_map):
+def _scale_cluster_instances(cluster, node_groups_map, plugin):
     aa_groups = _generate_anti_affinity_groups(cluster)
-    instances = []
+    instances_to_delete = []
+    node_groups_to_enlarge = []
+
     for node_group in node_groups_map:
         count = node_groups_map[node_group]
-        userdata = _generate_user_data_script(node_group)
-        for idx in xrange(node_group.count + 1, count + 1):
-            instance = _run_instance(cluster, node_group, idx,
-                                     aa_groups, userdata)
-            instances.append(instance)
+        if count < node_group.count:
+            instances_to_delete += node_group.instances[count:node_group.count]
+        else:
+            node_groups_to_enlarge.append(node_group)
 
-        node_group.count = count
-        context.model_save(node_group)
-        context.model_save(cluster)
+    if instances_to_delete:
+        cluster.status = 'Decommissioning'
+        plugin.decommission_nodes(cluster, instances_to_delete)
+        cluster.status = 'Deleting Instances'
+        for instance in instances_to_delete:
+            node_group = instance.node_group
+            node_group.instances.remove(instance)
+            _shutdown_instance(instance)
+            node_group.count -= 1
+            context.model_save(node_group)
 
-    return instances
+    instances_to_add = []
+    if node_groups_to_enlarge:
+        cluster.status = 'Adding Instances'
+        for node_group in node_groups_to_enlarge:
+            count = node_groups_map[node_group]
+            userdata = _generate_user_data_script(node_group)
+            for idx in xrange(node_group.count + 1, count + 1):
+                instance = _run_instance(cluster, node_group, idx,
+                                         aa_groups, userdata)
+                instances_to_add.append(instance)
+            node_group.count = count
+
+    return instances_to_add
 
 
 def _run_instance(cluster, node_group, idx, aa_groups, userdata):
@@ -264,22 +284,15 @@ def _rollback_cluster_creation(cluster, ex):
 def _rollback_cluster_scaling(cluster, instances, ex):
     """Attempt to rollback cluster scaling."""
     LOG.info("Cluster '%s' scaling rollback (reason: %s)", cluster.name, ex)
-
     try:
         volumes.detach_from_instances(instances)
     except Exception:
         raise
     finally:
-        #if some nodes are up we should shut them down and update "count" in
-        # node_group
-        ng_to_delete = []
         for i in instances:
             ng = i.node_group
             _shutdown_instance(i)
             ng.count -= 1
-            if ng.count == 0:
-                ng_to_delete.append(ng)
-        return ng_to_delete
 
 
 def _shutdown_instances(cluster, quiet=False):
@@ -299,3 +312,13 @@ def shutdown_cluster(cluster):
     """Shutdown specified cluster and all related resources."""
     volumes.detach(cluster)
     _shutdown_instances(cluster)
+
+
+def _clean_cluster_from_empty_ng(cluster):
+    session = context.ctx().session
+    with session.begin():
+        all_ng = cluster.node_groups
+    for ng in all_ng:
+        if ng.count == 0:
+            session.delete(ng)
+            cluster.node_groups.remove(ng)

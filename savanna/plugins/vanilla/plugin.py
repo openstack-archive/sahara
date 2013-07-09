@@ -17,8 +17,11 @@ from savanna.openstack.common import log as logging
 from savanna.plugins import provisioning as p
 from savanna.plugins.vanilla import config_helper as c_helper
 from savanna.plugins.vanilla import exceptions as ex
+from savanna.plugins.vanilla import run_scripts as run
+from savanna.plugins.vanilla import scaling as sc
 from savanna.plugins.vanilla import utils
 from savanna.utils import crypto
+
 
 LOG = logging.getLogger(__name__)
 
@@ -79,34 +82,39 @@ class VanillaProvider(p.ProvisioningPluginBase):
         self._write_hadoop_user_keys(cluster.private_key,
                                      utils.get_instances(cluster))
 
-        nn = utils.get_namenode(cluster)
-        nn.remote.execute_command(
-            "sudo su -c 'hadoop namenode -format' hadoop")
-
     def start_cluster(self, cluster):
         nn_instance = utils.get_namenode(cluster)
+        datanodes = utils.get_datanodes(cluster)
         jt_instance = utils.get_jobtracker(cluster)
+        tasktrackers = utils.get_tasktrackers(cluster)
 
-        nn_instance.remote.execute_command(
-            'sudo su -c /usr/sbin/start-dfs.sh hadoop >>'
-            ' /tmp/savanna-hadoop-start-dfs.log')
+        with nn_instance.remote as remote:
+            run.format_namenode(remote)
+            run.start_process(remote, "namenode")
 
-        LOG.info("HDFS service at '%s' has been started", nn_instance.hostname)
+        snns = utils.get_secondarynamenodes(cluster)
+        if snns:
+            for snn in snns:
+                run.start_process(snn.remote, "secondarynamenode")
+        for dn in datanodes:
+            run.start_process(dn.remote, "datanode")
+        LOG.info("HDFS service at '%s' has been started",
+                 nn_instance.hostname)
 
         if jt_instance:
-            jt_instance.remote.execute_command(
-                'sudo su -c /usr/sbin/start-mapred.sh hadoop >>'
-                ' /tmp/savanna-hadoop-start-mapred.log')
+            run.start_process(jt_instance.remote, "jobtracker")
+            for tt in tasktrackers:
+                run.start_process(tt.remote, "tasktracker")
             LOG.info("MapReduce service at '%s' has been started",
                      jt_instance.hostname)
 
         LOG.info('Cluster %s has been started successfully' % cluster.name)
-
         self._set_cluster_info(cluster)
 
     def _extract_configs(self, cluster):
         nn = utils.get_namenode(cluster)
         jt = utils.get_jobtracker(cluster)
+
         for ng in cluster.node_groups:
             ng.extra = {
                 'xml': c_helper.generate_xml_configs(ng.configuration,
@@ -120,58 +128,47 @@ class VanillaProvider(p.ProvisioningPluginBase):
                 )
             }
 
-    def validate_scaling(self, cluster, existing, additional):
-        ng_names = existing.copy()
-        allowed = ["datanode", "tasktracker"]
-        #validate existing n_g scaling at first:
-        for ng in cluster.node_groups:
-            #we do not support deletion now
-            if ng.name in ng_names:
-                del ng_names[ng.name]
-                #we do not support deletion now
-                if ng.count > existing[ng.name]:
-                    raise ex.NodeGroupCannotBeScaled(
-                        ng.name, "Vanilla plugin cannot shrink node_group")
-                if not set(ng.node_processes).issubset(allowed):
-                    raise ex.NodeGroupCannotBeScaled(
-                        ng.name, "Vanilla plugin cannot scale nodegroup"
-                                 " with processes: " +
-                                 ' '.join(ng.node_processes))
-        if len(ng_names) != 0:
-            raise ex.NodeGroupsDoNotExist(ng_names.keys())
-            #validate additional n_g
-        jt = utils.get_jobtracker(cluster)
+    def decommission_nodes(self, cluster, instances):
+        tts = utils.get_tasktrackers(cluster)
+        dns = utils.get_datanodes(cluster)
+        decommission_dns = False
+        decommission_tts = False
+
+        for i in instances:
+            if 'datanode' in i.node_group.node_processes:
+                dns.remove(i)
+                decommission_dns = True
+            if 'tasktracker' in i.node_group.node_processes:
+                tts.remove(i)
+                decommission_tts = True
+
         nn = utils.get_namenode(cluster)
-        for ng in additional:
-            if (not set(ng.node_processes).issubset(allowed)) or (
-                    not jt and 'tasktracker' in ng.node_processes) or (
-                    not nn and 'datanode' in ng.node_processes):
-                raise ex.NodeGroupCannotBeScaled(
-                    ng.name, "Vanilla plugin cannot scale node group with "
-                             "processes which have no master-processes run "
-                             "in cluster")
+        jt = utils.get_jobtracker(cluster)
+
+        if decommission_tts:
+            sc.decommission_tt(jt, instances, tts)
+        if decommission_dns:
+            sc.decommission_dn(nn, instances, dns)
+
+    def validate_scaling(self, cluster, existing, additional):
+        self._validate_existing_ng_scaling(cluster, existing)
+        self._validate_additional_ng_scaling(cluster, additional)
 
     def scale_cluster(self, cluster, instances):
         self._extract_configs(cluster)
         self._push_configs_to_nodes(cluster, instances=instances)
         self._write_hadoop_user_keys(cluster.private_key,
                                      instances)
+        run.refresh_nodes(utils.get_namenode(cluster).remote, "dfsadmin")
+        run.refresh_nodes(utils.get_jobtracker(cluster).remote, "mradmin")
 
         for i in instances:
             with i.remote as remote:
                 if "datanode" in i.node_group.node_processes:
-                    remote.execute_command('sudo su -c '
-                                           '"/usr/sbin/hadoop-daemon.sh '
-                                           'start datanode" hadoop'
-                                           '>> /tmp/savanna-start-datanode.log'
-                                           ' 2>&1')
+                    run.start_process(remote, "datanode")
 
                 if "tasktracker" in i.node_group.node_processes:
-                    remote.execute_command('sudo su -c '
-                                           '"/usr/sbin/hadoop-daemon.sh '
-                                           'start tasktracker" hadoop'
-                                           '>> /tmp/savanna-start-'
-                                           'tasktracker.log 2>&1')
+                    run.start_process(remote, "tasktracker")
 
     def _push_configs_to_nodes(self, cluster, instances=None):
         if instances is None:
@@ -199,19 +196,19 @@ class VanillaProvider(p.ProvisioningPluginBase):
                 r.execute_command(
                     'sudo /tmp/savanna-hadoop-init.sh '
                     '>> /tmp/savanna-hadoop-init.log 2>&1')
+
         nn = utils.get_namenode(cluster)
         jt = utils.get_jobtracker(cluster)
-        nn.remote.write_files_to({
-            '/etc/hadoop/slaves': utils.generate_host_names(
-                utils.get_datanodes(cluster)),
-            '/etc/hadoop/masters': utils.generate_host_names(
-                utils.get_secondarynamenodes(cluster))
-        })
 
-        if jt and nn.instance_id != jt.instance_id:
-            jt.remote.write_file_to('/etc/hadoop/slaves',
-                                    utils.generate_host_names(
-                                        utils.get_tasktrackers(cluster)))
+        with nn.remote as r:
+            r.write_file_to('/etc/hadoop/dn.incl', utils.
+                            generate_fqdn_host_names(
+                            utils.get_datanodes(cluster)))
+        if jt:
+            with jt.remote as r:
+                r.write_file_to('/etc/hadoop/tt.incl', utils.
+                                generate_fqdn_host_names(
+                                utils.get_tasktrackers(cluster)))
 
     def _set_cluster_info(self, cluster):
         nn = utils.get_namenode(cluster)
@@ -245,3 +242,50 @@ class VanillaProvider(p.ProvisioningPluginBase):
             with instance.remote as remote:
                 remote.write_files_to(files)
                 remote.execute_command(mv_cmd)
+
+    def _get_scalable_processes(self):
+        return ["datanode", "tasktracker"]
+
+    def _validate_additional_ng_scaling(self, cluster, additional):
+        jt = utils.get_jobtracker(cluster)
+        scalable_processes = self._get_scalable_processes()
+
+        for ng in additional:
+            if not set(ng.node_processes).issubset(scalable_processes):
+                raise ex.NodeGroupCannotBeScaled(
+                    ng.name, "Vanilla plugin cannot scale nodegroup"
+                             " with processes: " +
+                             ' '.join(ng.node_processes))
+            if not jt and 'tasktracker' in ng.node_processes:
+                raise ex.NodeGroupCannotBeScaled(
+                    ng.name, "Vanilla plugin cannot scale node group with "
+                             "processes which have no master-processes run "
+                             "in cluster")
+
+    def _validate_existing_ng_scaling(self, cluster, existing):
+        ng_names = existing.copy()
+        scalable_processes = self._get_scalable_processes()
+        dn_to_delete = 0
+        for ng in cluster.node_groups:
+            if ng.name in existing:
+                del ng_names[ng.name]
+                if ng.count > existing[ng.name] and "datanode" in \
+                        ng.node_processes:
+                    dn_to_delete += 1
+                if not set(ng.node_processes).issubset(scalable_processes):
+                    raise ex.NodeGroupCannotBeScaled(
+                        ng.name, "Vanilla plugin cannot scale nodegroup"
+                                 " with processes: " +
+                                 ' '.join(ng.node_processes))
+
+        dn_amount = len(utils.get_datanodes(cluster))
+        rep_factor = c_helper.determine_cluster_config(cluster,
+                                                       "dfs.replication")
+
+        if dn_to_delete > 0 and dn_amount - dn_to_delete < rep_factor:
+            raise Exception("Vanilla plugin cannot shrink cluster because "
+                            "it would be not enough nodes for replicas "
+                            "(replication factor is %s )" % rep_factor)
+
+        if len(ng_names) != 0:
+            raise ex.NodeGroupsDoNotExist(ng_names.keys())

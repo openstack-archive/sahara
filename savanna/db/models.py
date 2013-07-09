@@ -129,7 +129,8 @@ class NodeGroup(mb.SavannaBase, NodeGroupMixin):
 
     count = sa.Column(sa.Integer, nullable=False)
     instances = relationship('Instance', cascade="all,delete",
-                             backref='node_group')
+                             backref='node_group',
+                             order_by="Instance.instance_name")
 
     cluster_id = sa.Column(sa.String(36), sa.ForeignKey('Cluster.id'))
 

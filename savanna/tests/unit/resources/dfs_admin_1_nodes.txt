@@ -1,0 +1,15 @@
+Configured Capacity: 31706750976 (29.53 GB)
+Present Capacity: 29622116382 (27.59 GB)
+DFS Remaining: 29622018048 (27.59 GB)
+DFS Used: 98334 (96.03 KB)
+DFS Used%: 0%
+Under replicated blocks: 0
+Blocks with corrupt replicas: 0
+Missing blocks: 0
+
+-------------------------------------------------
+Datanodes available: 3 (3 total, 0 dead)
+
+Name: 10.155.0.94:50010
+Decommission Status : Normal
+

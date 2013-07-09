@@ -128,6 +128,8 @@ def generate_xml_configs(configs, storage_path, nn_hostname, jt_hostname=None):
                                             '/lib/hadoop/hdfs/namenode'),
         'dfs.data.dir': extract_hadoop_path(storage_path,
                                             '/lib/hadoop/hdfs/datanode'),
+        'dfs.hosts': '/etc/hadoop/dn.incl',
+        'dfs.hosts.exclude': '/etc/hadoop/dn.excl',
     }
 
     if jt_hostname:
@@ -136,7 +138,9 @@ def generate_xml_configs(configs, storage_path, nn_hostname, jt_hostname=None):
             'mapred.system.dir': extract_hadoop_path(storage_path,
                                                      '/mapred/mapredsystem'),
             'mapred.local.dir': extract_hadoop_path(storage_path,
-                                                    '/lib/hadoop/mapred')
+                                                    '/lib/hadoop/mapred'),
+            'mapred.hosts': '/etc/hadoop/tt.incl',
+            'mapred.hosts.exclude': '/etc/hadoop/tt.excl',
         }
         cfg.update(mr_cfg)
 
@@ -227,3 +231,12 @@ def extract_name_values(configs):
 
 def extract_hadoop_path(lst, hadoop_dir):
     return ",".join([p + hadoop_dir for p in lst])
+
+
+def determine_cluster_config(cluster, config_name):
+    if config_name in cluster.cluster_configs:
+        cluster.cluster_configs.get(config_name)
+    all_conf = get_plugin_configs()
+    for conf in all_conf:
+        if conf.name == config_name:
+            return conf.default_value

@@ -1,0 +1,11 @@
+Configured Capacity: 0 (0 KB)
+Present Capacity: 0 (0 KB)
+DFS Remaining: 0 (0 KB)
+DFS Used: 0 (0 KB)
+DFS Used%: �%
+Under replicated blocks: 0
+Blocks with corrupt replicas: 0
+Missing blocks: 0
+
+-------------------------------------------------
+Datanodes available: 0 (0 total, 0 dead)

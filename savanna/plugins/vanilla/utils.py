@@ -49,3 +49,7 @@ def get_secondarynamenodes(cluster):
 
 def generate_host_names(nodes):
     return "\n".join([n.hostname for n in nodes])
+
+
+def generate_fqdn_host_names(nodes):
+    return "\n".join([n.fqdn for n in nodes])

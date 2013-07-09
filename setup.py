@@ -44,7 +44,8 @@ setuptools.setup(
     package_data={'savanna': [
         'plugins/vanilla/resources/*.xml',
         'swift/resources/*.xml',
-        'tests/unit/resources/*.xml'
+        'tests/unit/resources/*.xml',
+        'tests/unit/resources/*.txt',
     ]},
     install_requires=requires,
     dependency_links=depend_links,

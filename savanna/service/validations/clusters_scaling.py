@@ -40,7 +40,7 @@ CLUSTER_SCALING_SCHEMA = {
                     },
                     "count": {
                         "type": "integer",
-                        "minimum": 1,
+                        "minimum": 0,
                     },
                 },
                 "additionalProperties": False,
@@ -68,8 +68,10 @@ CLUSTER_SCALING_SCHEMA = {
 
 def check_cluster_scaling(data, cluster_id, **kwargs):
     cluster = api.get_cluster(id=cluster_id)
-    if not plugin_base.PLUGINS.is_plugin_implements(cluster.plugin_name,
-                                                    'scale_cluster'):
+    if not (plugin_base.PLUGINS.is_plugin_implements(cluster.plugin_name,
+                                                     'scale_cluster') and (
+            plugin_base.PLUGINS.is_plugin_implements(cluster.plugin_name,
+                                                     'decommission_nodes'))):
         raise ex.InvalidException(
             "Requested plugin '%s' doesn't support cluster scaling feature"
             % cluster.plugin_name)
