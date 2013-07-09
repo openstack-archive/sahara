@@ -55,4 +55,4 @@ NN_PORT = _get_conf('NN_PORT', 50070)
 TT_PORT = _get_conf('TT_PORT', 50060)
 DN_PORT = _get_conf('DN_PORT', 50075)
 
-ENABLE_SWIFT_TESTS = _get_conf('ENABLE_SWIFT_TESTS', False)
+ENABLE_SWIFT_TESTS = _get_conf('ENABLE_SWIFT_TESTS', True)

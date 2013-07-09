@@ -13,42 +13,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import contextlib
 import os
 import telnetlib
 import time
 
 from savanna.tests.integration import base
 import savanna.tests.integration.configs.parameters as param
-from savanna.utils import remote
-
-
-def ssh_connection(host):
-    return remote.setup_ssh_connection(host, param.NODE_USERNAME,
-                                       open(param.PATH_TO_SSH).read())
-
-
-def execute_command(host, cmd):
-    with contextlib.closing(ssh_connection(host)) as ssh:
-        return remote.execute_command(ssh, cmd)
-
-
-def write_file_to(host, remote_file, data):
-    with contextlib.closing(ssh_connection(host)) as ssh:
-        return remote.write_file_to(ssh.open_sftp(), remote_file, data)
-
-
-def read_file_from(host, remote_file):
-    with contextlib.closing(ssh_connection(host)) as ssh:
-        return remote.read_file_from(ssh.open_sftp(), remote_file)
-
-
-def _transfer_script_to_node(host, directory):
-    write_file_to(str(host),
-                  'script.sh',
-                  open('%s/integration/hadoop_test/hadoop_test_script.sh'
-                       % directory).read())
-    execute_command(str(host), 'chmod 777 script.sh')
 
 
 class TestHadoop(base.ITestCase):
@@ -82,7 +52,7 @@ class TestHadoop(base.ITestCase):
                 instances = node_group['instances']
                 for instans in instances:
                     management_ip = instans['management_ip']
-                    ip_instances['%s' % management_ip] = node_group[
+                    ip_instances[management_ip] = node_group[
                         'node_processes']
             namenode_ip = None
             tasktracker_count = 0
@@ -109,33 +79,32 @@ class TestHadoop(base.ITestCase):
 
             try:
                 for key in ip_instances:
-                    _transfer_script_to_node(key, this_dir)
+                    self.transfer_script_to_node(key, this_dir, 'hadoop_test',
+                                                 'hadoop_test_script.sh')
             except Exception as e:
                 self.fail('failure in transfer script: ' + str(e))
 
-            self.assertEqual(int(execute_command(
+            self.assertEqual(int(self.execute_command(
                 namenode_ip, './script.sh lt -hd %s'
                              % param.HADOOP_DIRECTORY)[1]), tasktracker_count,
                              msg='compare number active trackers is failure: ')
-            self.assertEqual(int(execute_command(
+            self.assertEqual(int(self.execute_command(
                 namenode_ip, './script.sh ld -hd %s' %
                              param.HADOOP_DIRECTORY)[1]), datanode_count,
                              msg='compare number active datanodes is failure:')
 
             try:
-                execute_command(
+                self.execute_command(
                     namenode_ip, './script.sh pi -nc %s -hv %s -hd %s'
                                  % (node_count, param.HADOOP_VERSION,
                                     param.HADOOP_DIRECTORY))
             except Exception as e:
-                print(read_file_from(namenode_ip,
-                                     '/tmp/outputTestMapReduce/log.txt'))
-                self.fail(
-                    'run pi script is failure: '
-                    + str(e))
+                print(self.read_file_from(namenode_ip,
+                                          '/tmp/outputTestMapReduce/log.txt'))
+                self.fail('run pi script is failure: ' + str(e))
 
             try:
-                job_name = execute_command(
+                job_name = self.execute_command(
                     namenode_ip, './script.sh gn -hd %s'
                                  % param.HADOOP_DIRECTORY)[1]
                 if job_name == 'JobId':
@@ -146,7 +115,7 @@ class TestHadoop(base.ITestCase):
             for key, value in ip_instances.items():
                 if 'datanode' in value or 'tasktracker' in value:
                     self.assertEquals(
-                        execute_command(
+                        self.execute_command(
                             key, './script.sh ed -jn %s -hld %s'
                                  % (job_name[:-1],
                                     param.HADOOP_LOG_DIRECTORY))[0], 0,
@@ -154,13 +123,13 @@ class TestHadoop(base.ITestCase):
 
             try:
                 self.assertEquals(
-                    execute_command(
+                    self.execute_command(
                         namenode_ip, './script.sh mr -hv %s -hd %s'
                                      % (param.HADOOP_VERSION,
                                         param.HADOOP_DIRECTORY))[0], 0)
             except Exception as e:
-                print(read_file_from(namenode_ip,
-                                     '/tmp/outputTestMapReduce/log.txt'))
+                print(self.read_file_from(namenode_ip,
+                                          '/tmp/outputTestMapReduce/log.txt'))
                 self.fail('run hdfs script is failure: ' + str(e))
         except Exception as e:
             self.fail(str(e))
