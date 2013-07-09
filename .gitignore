@@ -35,7 +35,7 @@ etc/local.cfg
 etc/savanna/*.conf
 etc/savanna.conf
 ChangeLog
-savanna/tests/integration/config.py
+savanna/tests/integration/configs/config.py
 cscope.out
 tools/lintstack.head.py
 tools/pylint_exceptions

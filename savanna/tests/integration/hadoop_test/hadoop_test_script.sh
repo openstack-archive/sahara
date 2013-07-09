@@ -14,12 +14,6 @@ case $1 in
         gn)
                 FUNC="get_job_name"
         ;;
-        lt)
-                FUNC="get_list_active_trackers"
-        ;;
-        ld)
-                FUNC="get_list_active_datanodes"
-        ;;
         ed)
                 FUNC="check_exist_directory"
         ;;
@@ -128,18 +122,6 @@ run_pi_job() {
 get_job_name() {
     f_var_check v_hadoop_directory
     sudo su -c "cd $HADOOP_DIRECTORY && hadoop job -list all | tail -n1" hadoop | awk '{print $1}' 2>>$log
-}
-
-get_list_active_trackers() {
-    f_create_log_dir
-    f_var_check v_hadoop_directory
-    sudo su -c "cd $HADOOP_DIRECTORY && hadoop job -list-active-trackers" hadoop | wc -l 2>>$log
-}
-
-get_list_active_datanodes() {
-    f_create_log_dir
-    f_var_check v_hadoop_directory
-    sudo su -c "hadoop dfsadmin -report" hadoop | grep "Datanodes available:.*" | awk '{print $3}' 2>>$log
 }
 
 check_exist_directory() {

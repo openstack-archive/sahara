@@ -15,6 +15,7 @@
 
 import contextlib
 import json
+import os
 import telnetlib
 import time
 
@@ -149,7 +150,7 @@ class ITestCase(unittest2.TestCase):
             data = data[crud_object]
             object_id = data.get('id')
             if crud_object == 'cluster':
-                self.await_cluster_active(get_url, object_id)
+                self.await_cluster_active(object_id)
         except Exception as e:
             self.fail('failure: ' + str(e))
         finally:
@@ -353,8 +354,8 @@ class ITestCase(unittest2.TestCase):
 
 #------------------------------helper_methods----------------------------------
 
-    def await_cluster_active(self, get_url, object_id):
-        get_data = self.get_object(get_url, object_id, 200)
+    def await_cluster_active(self, object_id):
+        get_data = self.get_object(self.url_cluster_with_slash, object_id, 200)
         get_data = get_data['cluster']
         i = 1
         while get_data['status'] != 'Active':
@@ -364,7 +365,8 @@ class ITestCase(unittest2.TestCase):
                 self.fail(
                     'cluster is not getting status \'Active\', '
                     'passed %d minutes' % param.TIMEOUT)
-            get_data = self.get_object(get_url, object_id, 200)
+            get_data = self.get_object(
+                self.url_cluster_with_slash, object_id, 200)
             get_data = get_data['cluster']
             time.sleep(10)
             i += 1
@@ -389,10 +391,12 @@ class ITestCase(unittest2.TestCase):
         with contextlib.closing(self.ssh_connection(host)) as ssh:
             return remote.read_file_from(ssh.open_sftp(), remote_file)
 
-    def transfer_script_to_node(self, host, directory, folder, script):
-        self.write_file_to(
-            str(host), 'script.sh',
-            open('%s/integration/%s/%s' % (directory, folder, script)).read())
+    def transfer_script_to_node(self, host,
+                                script='hadoop_test/hadoop_test_script.sh'):
+        self.write_file_to(str(host),
+                           'script.sh',
+                           open('%s/integration/%s' % (os.getcwd(),
+                                                       script)).read())
         self.execute_command(str(host), 'chmod 777 script.sh')
 
     def try_telnet(self, host, port):
@@ -407,9 +411,24 @@ class ITestCase(unittest2.TestCase):
         data = self.post_object(self.url_cluster, cluster_body, 202)
         cluster_id = data['cluster']['id']
 
-        self.await_cluster_active(self.url_cluster_with_slash, cluster_id)
+        self.await_cluster_active(cluster_id)
 
         return cluster_id
+
+    def create_cluster_using_ngt_and_get_id(self, node_list, name):
+        cl_tmpl_id = None
+        try:
+            cl_tmpl_body = self.make_cluster_template('cl-tmpl', node_list)
+            cl_tmpl_id = self.get_object_id(
+                'cluster_template', self.post_object(self.url_cl_tmpl,
+                                                     cl_tmpl_body, 202))
+            clstr_body = self.make_cl_body_cluster_template(cl_tmpl_id)
+            clstr_body['name'] = name
+            return self.create_cluster_and_get_id(clstr_body)
+        except Exception as e:
+            print(str(e))
+        finally:
+            self.del_object(self.url_cl_tmpl_with_slash, cl_tmpl_id, 204)
 
     def get_instances_ip_and_node_processes_list(self, cluster_id):
         get_data = self.get_object(
