@@ -20,6 +20,9 @@ cli_opts = [
                help='Hostname of IP address that will be used to listen on'),
     cfg.IntOpt('port', default=8080,
                help='Port that will be used to listen on'),
+    cfg.BoolOpt('log-exchange', default=False,
+                help='Log request/response exchange details: environ, '
+                     'headers and bodies')
 ]
 
 CONF = cfg.CONF

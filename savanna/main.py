@@ -118,7 +118,11 @@ def make_app():
     for code in werkzeug_exceptions.default_exceptions.iterkeys():
         app.error_handler_spec[None][code] = make_json_error
 
-    if CONF.debug:
+    if CONF.debug and not CONF.log_exchange:
+        LOG.debug('Logging of request/response exchange could be enabled using'
+                  ' flag --log-exchange')
+
+    if CONF.log_exchange:
         app.wsgi_app = debug.Debug.factory(app.config)(app.wsgi_app)
 
     app.wsgi_app = auth_valid.filter_factory(app.config)(app.wsgi_app)
