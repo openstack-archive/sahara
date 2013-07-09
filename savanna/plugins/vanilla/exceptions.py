@@ -16,7 +16,7 @@
 import savanna.exceptions as e
 
 
-class NotSingleNameNodeException(e.SavannaException):
+class NotSingleNameNodeException(Exception):
     def __init__(self, nn_count):
         self.message = "Hadoop cluster should contain only 1 NameNode " \
                        "instance. Actual NN count is %s" % nn_count
