@@ -94,7 +94,7 @@ def make_app():
                         session.transaction.commit()
                 except Exception, e:
                     return api_utils.internal_error(
-                        500, 'Exception in REST API call', e)
+                        500, 'Internal Server Error', e)
 
         context.set_ctx(None)
 

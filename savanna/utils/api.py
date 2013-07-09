@@ -79,7 +79,7 @@ class Rest(flask.Blueprint):
                 try:
                     return func(**kwargs)
                 except Exception, e:
-                    return internal_error(500, 'Exception in REST API call', e)
+                    return internal_error(500, 'Internal Server Error', e)
 
             f_rule = "/<tenant_id>" + rule
             self.add_url_rule(f_rule, endpoint, handler, **options)
