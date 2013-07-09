@@ -49,3 +49,7 @@ def check_cluster_create(data):
         b.check_image_exists(data['default_image_id'])
 
     b.check_all_configurations(data)
+
+    if data.get('anti_affinity'):
+        b.check_node_processes(data['plugin_name'], data['hadoop_version'],
+                               data['anti_affinity'])

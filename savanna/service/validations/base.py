@@ -74,7 +74,7 @@ def check_node_processes(plugin_name, version, node_processes):
 
     if not set(node_processes).issubset(set(plugin_procesess)):
         raise ex.InvalidException("Plugin supports the following "
-                                  "node procesess: " % plugin_procesess)
+                                  "node procesess: %s" % plugin_procesess)
 
 
 def check_node_group_configs(plugin_name, hadoop_version, ng_configs,
