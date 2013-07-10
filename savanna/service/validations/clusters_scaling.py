@@ -13,9 +13,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import savanna.exceptions as ex
+from savanna.plugins import base as plugin_base
+
 
 CLUSTER_SCALING_SCHEMA = None
 
 
 def check_cluster_scaling(data, cluster_id, **kwargs):
-    pass
+    plugin_name = data['plugin_name']
+    if not plugin_base.PLUGINS.is_plugin_implements(plugin_name, 'convert'):
+        raise ex.InvalidException(
+            "Requested plugin '%s' doesn't support cluster scaling feature"
+            % plugin_name)

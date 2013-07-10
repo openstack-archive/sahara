@@ -13,8 +13,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import savanna.exceptions as ex
+from savanna.plugins import base as plugin_base
+
+
 CONVERT_TO_TEMPLATE_SCHEMA = None
 
 
-def check_convert_to_template(data, plugin_name, version, **kwargs):
-    pass
+def check_convert_to_template(plugin_name, version, **kwargs):
+    if not plugin_base.PLUGINS.is_plugin_implements(plugin_name, 'convert'):
+        raise ex.InvalidException(
+            "Requested plugin '%s' doesn't support converting config files "
+            "to cluster templates" % plugin_name)

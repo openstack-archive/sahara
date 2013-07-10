@@ -13,7 +13,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import abc
 import functools
 
 from savanna.plugins import base as plugins_base
@@ -31,44 +30,51 @@ class ProvisioningPluginContext(object):
 
 
 class ProvisioningPluginBase(plugins_base.PluginInterface):
-    @abc.abstractmethod
+    @plugins_base.required
     def get_versions(self):
         pass
 
-    @abc.abstractmethod
+    @plugins_base.required
     def get_configs(self, hadoop_version):
         pass
 
-    @abc.abstractmethod
+    @plugins_base.required
     def get_node_processes(self, hadoop_version):
         pass
 
+    @plugins_base.required_with_default
     def get_required_image_tags(self, hadoop_version):
         return [self.name, hadoop_version]
 
+    @plugins_base.required_with_default
     def validate(self, cluster):
         pass
 
+    @plugins_base.required_with_default
     def validate_scaling(self, cluster, existing, additional):
         pass
 
+    @plugins_base.required_with_default
     def update_infra(self, cluster):
         pass
 
-    @abc.abstractmethod
+    @plugins_base.required
     def configure_cluster(self, cluster):
         pass
 
-    @abc.abstractmethod
+    @plugins_base.required
     def start_cluster(self, cluster):
         pass
 
+    @plugins_base.optional
     def scale_cluster(self, cluster, instances):
         pass
 
+    @plugins_base.optional
     def convert(self, hadoop_version, config_file):
         pass
 
+    @plugins_base.required_with_default
     def on_terminate_cluster(self, cluster):
         pass
 
