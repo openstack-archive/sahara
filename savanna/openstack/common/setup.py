@@ -180,6 +180,7 @@ def generate_authors():
                 for new_entry in new_entries:
                     if new_entry not in changelog:
                         changelog += "\n" + new_entry
+            changelog += "\n"
             mailmap = _parse_git_mailmap(git_dir)
             with open(new_authors, 'w') as new_authors_fh:
                 new_authors_fh.write(canonicalize_emails(changelog, mailmap))
