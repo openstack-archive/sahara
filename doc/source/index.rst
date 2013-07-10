@@ -48,7 +48,6 @@ Developer Guide
     :maxdepth: 1
 
     devref/plugins
-    devref/templates
     devref/plugin.spi
 
 

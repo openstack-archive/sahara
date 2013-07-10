@@ -31,6 +31,11 @@ templates have the very same parameters as corresponding entities. Their aim
 is to remove burden of specifying all the required parameters each time user
 wants to launch a cluster.
 
+In the REST interface templates have extended functionality. First you can
+specify node-scoped parameters here, they will work as a defaults for node
+groups. Also with REST interface during cluster creation user can override
+template parameters for both cluster and node groups.
+
 Provisioning Plugins
 --------------------
 
