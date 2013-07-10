@@ -78,13 +78,5 @@ def check_node_group_template_create(data, **kwargs):
     b.check_plugin_name_exists(data['plugin_name'])
     b.check_plugin_supports_version(data['plugin_name'],
                                     data['hadoop_version'])
-    b.check_flavor_exists(data['flavor_id'])
-    b.check_node_processes(data['plugin_name'], data['hadoop_version'],
-                           data['node_processes'])
-
-    if data.get('image_id'):
-        b.check_image_exists(data['image_id'])
-
-    if data.get('node_configs'):
-        b.check_node_group_configs(data['plugin_name'], data['hadoop_version'],
-                                   data['node_configs'])
+    b.check_node_group_basic_fields(data['plugin_name'],
+                                    data['hadoop_version'], data)
