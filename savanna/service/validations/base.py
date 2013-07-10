@@ -46,12 +46,9 @@ def check_plugin_supports_version(p_name, version):
                                   " version '%s'" % (p_name, version))
 
 
-def check_image_exists(image_id):
-    try:
-        # TODO(aignatov): Check supported images by plugin instead of it
-        api.get_image(id=image_id)
-    except nova_ex.NotFound:
-        raise ex.InvalidException("Requested image '%s' not found"
+def check_image_registered(image_id):
+    if image_id not in [i.id for i in nova.client().images.list_registered()]:
+        raise ex.InvalidException("Requested image '%s' is not registered"
                                   % image_id)
 
 
@@ -104,7 +101,7 @@ def check_node_group_basic_fields(plugin_name, hadoop_version, ng,
         check_node_processes(plugin_name, hadoop_version, ng['node_processes'])
 
     if ng.get('image_id'):
-        check_image_exists(ng['image_id'])
+        check_image_registered(ng['image_id'])
 
 
 def check_flavor_exists(flavor_id):
@@ -151,12 +148,18 @@ def check_keypair_exists(keypair):
         raise ex.InvalidException("Requested keypair '%s' not found" % keypair)
 
 
-## Cluster templates creation related checks
+## Cluster templates related checks
 
 def check_cluster_template_unique_name(name):
     if name in [t.name for t in api.get_cluster_templates()]:
         raise ex.NameAlreadyExistsException("Cluster template with name '%s'"
                                             " already exists" % name)
+
+
+def check_cluster_template_exists(cluster_template_id):
+    if not api.get_cluster_templates(id=cluster_template_id):
+        raise ex.InvalidException("Cluster template with id '%s'"
+                                  " doesn't exist" % cluster_template_id)
 
 
 ## NodeGroup templates related checks

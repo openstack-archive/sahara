@@ -103,7 +103,7 @@ def check_cluster_template_create(data, **kwargs):
                                     data['hadoop_version'])
 
     if data.get('default_image_id'):
-        b.check_image_exists(data['default_image_id'])
+        b.check_image_registered(data['default_image_id'])
 
     b.check_all_configurations(data)
 

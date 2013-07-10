@@ -41,12 +41,14 @@ def check_cluster_create(data, **kwargs):
     b.check_plugin_name_exists(data['plugin_name'])
     b.check_plugin_supports_version(data['plugin_name'],
                                     data['hadoop_version'])
+    if data.get('cluster_template_id'):
+        b.check_cluster_template_exists(data['cluster_template_id'])
 
     if data.get('user_keypair_id'):
         b.check_keypair_exists(data['user_keypair_id'])
 
     if data.get('default_image_id'):
-        b.check_image_exists(data['default_image_id'])
+        b.check_image_registered(data['default_image_id'])
 
     b.check_all_configurations(data)
 
