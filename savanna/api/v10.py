@@ -18,8 +18,10 @@ from savanna.service import api
 from savanna.service import validation as v
 from savanna.service.validations import cluster_templates as v_ct
 from savanna.service.validations import clusters as v_c
+from savanna.service.validations import clusters_scaling as v_c_s
 from savanna.service.validations import images as v_images
 from savanna.service.validations import node_group_templates as v_ngt
+from savanna.service.validations import plugins as v_p
 import savanna.utils.api as u
 
 LOG = logging.getLogger(__name__)
@@ -42,6 +44,7 @@ def clusters_create(data):
 
 @rest.put('/clusters/<cluster_id>')
 @v.check_exists(api.get_cluster, 'cluster_id')
+@v.validate(v_c_s.CLUSTER_SCALING_SCHEMA, v_c_s.check_cluster_scaling)
 def clusters_scale(cluster_id, data):
     return u.render(api.scale_cluster(cluster_id, data).wrapped_dict)
 
@@ -149,6 +152,7 @@ def plugins_get_version(plugin_name, version):
 
 @rest.post_file('/plugins/<plugin_name>/<version>/convert-config')
 @v.check_exists(api.get_plugin, plugin_name='plugin_name', version='version')
+@v.validate(v_p.CONVERT_TO_TEMPLATE_SCHEMA, v_p.check_convert_to_template)
 def plugins_convert_to_cluster_template(plugin_name, version, data):
     return u.render(
         api.convert_to_cluster_template(plugin_name, version, data))

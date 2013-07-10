@@ -13,8 +13,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-CONVERT_TO_TEMPLATE_SCHEMA = None
+
+CLUSTER_SCALING_SCHEMA = None
 
 
-def check_convert_to_template(data, plugin_name, version, **kwargs):
+def check_cluster_scaling(data, cluster_id, **kwargs):
     pass
