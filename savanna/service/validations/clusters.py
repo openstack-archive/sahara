@@ -36,7 +36,7 @@ def _build_cluster_schema():
 CLUSTER_SCHEMA = _build_cluster_schema()
 
 
-def check_cluster_create(data):
+def check_cluster_create(data, **kwargs):
     b.check_cluster_unique_name(data['name'])
     b.check_plugin_name_exists(data['plugin_name'])
     b.check_plugin_supports_version(data['plugin_name'],

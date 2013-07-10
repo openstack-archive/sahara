@@ -34,7 +34,7 @@ def validate(schema, *validators):
                     validator.validate(request_data)
                 if validators:
                     for validator in validators:
-                        validator(request_data)
+                        validator(**kwargs)
             except jsonschema.ValidationError, e:
                 e.code = "VALIDATION_ERROR"
                 return u.bad_request(e)

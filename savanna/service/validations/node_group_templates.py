@@ -73,7 +73,7 @@ NODE_GROUP_TEMPLATE_SCHEMA = {
 }
 
 
-def check_node_group_template_create(data):
+def check_node_group_template_create(data, **kwargs):
     b.check_node_group_template_unique_name(data['name'])
     b.check_plugin_name_exists(data['plugin_name'])
     b.check_plugin_supports_version(data['plugin_name'],

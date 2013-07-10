@@ -42,9 +42,9 @@ image_tags_schema = {
 }
 
 
-def check_image_register(data):
+def check_image_register(data, **kwargs):
     pass
 
 
-def check_tags(data):
+def check_tags(data, **kwargs):
     pass
