@@ -14,7 +14,7 @@ On Ubuntu 12.10 and higher you have to install the following lib as well:
 
     $ sudo apt-get install nodejs-legacy
 
-2. Checkout stable horizon from git ``git@github.com:openstack/horizon.git`` according to your version of OpenStack (stable/grizzly or stable/folsom) and install venv
+2. Checkout stable horizon from git `https://github.com/openstack/horizon.git` according to your version of OpenStack (stable/grizzly or stable/folsom) and install venv
 
 .. sourcecode:: console
 
@@ -40,19 +40,27 @@ and set right value for variables:
    OPENSTACK_HOST = "your ip of controller"
    SAVANNA_URL = "url for savanna (e.g. "http://localhost:8386/v1.0")"
 
-5. Install savanna-dashboard module to horizon's venv:
+5. Clone savanna-dashboard sources from ``https://github.com/stackforge/savanna-dashboard.git``
+
+.. sourcecode:: console
+
+    git clone https://github.com/stackforge/savanna-dashboard.git
+
+6. Export SAVANNA_DASHBOARD_HOME environment variable with path to savanna-dashboard folder.
+
+7. Install savanna-dashboard module to horizon's venv:
 
 .. sourcecode:: console
 
     $ .venv/bin/python $SAVANNA_DASHBOARD_HOME/setup.py install
 
-6. Create a symlink to
+8. Create a symlink to
 
 .. sourcecode:: console
 
    $ ln -s $SAVANNA_DASHBOARD_HOME/savannadashboard .venv/lib/python2.7/site-packages/savannadashboard
 
-7. In ``openstack_dashboard/settings.py`` add savanna to
+9. In ``openstack_dashboard/settings.py`` add savanna to
 
 .. sourcecode:: python
 
@@ -67,7 +75,7 @@ and add savannadashboard to
         'savannadashboard',
         ....
 
-8. Start horizon
+10. Start horizon
 
 .. sourcecode:: console
 
@@ -78,7 +86,7 @@ and if any exceptions happen, you will see the stack-trace rendered as a web-pag
 
 It is not recommended to use horizon in this mode for production.
 
-9. Applying changes
+11. Applying changes
 
 If you have changed any ``*.py`` files in ``$SAVANNA_DASHBOARD_HOME`` directory,
 horizon will notice that and reload automatically.
