@@ -14,7 +14,7 @@ On Ubuntu 12.10 and higher you have to install the following lib as well:
 
     $ sudo apt-get install nodejs-legacy
 
-2. Checkout stable horizon from git ``git@github.com:openstack/horizon.git`` according to your version of OpenStack (stable/grizzly or stable/folsom) and install venv
+2. Checkout stable horizon from git `https://github.com/openstack/horizon.git` according to your version of OpenStack (stable/grizzly or stable/folsom) and install venv
 
 .. sourcecode:: console
 
