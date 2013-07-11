@@ -22,7 +22,7 @@ User guide
    horizon/installation.guide
    userdoc/overview
    userdoc/features
-   userdoc/hadoop-swift.rst
+   userdoc/hadoop-swift
    userdoc/rest_api_v1.0
 
 
