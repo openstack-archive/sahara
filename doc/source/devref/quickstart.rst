@@ -63,14 +63,25 @@ authentication token (X-Auth-Token):
 You can download pre-built images with vanilla Apache Hadoop or build this
 images yourself:
 
-* Download and install pre-built image
+* Download and install pre-built image with Ubuntu 12.10
 
 .. sourcecode:: console
 
     $ ssh user@hostname
-    $ curl http://savanna-files.mirantis.com/savanna-0.2-vanilla-hadoop-ubuntu.qcow2
+    $ wget http://savanna-files.mirantis.com/savanna-0.2-vanilla-1.1.2-ubuntu-12.10.qcow2
     $ glance image-create --name=savanna-0.2-vanilla-hadoop-ubuntu.qcow2 \
-      --disk-format=qcow2 --container-format=bare < ./savanna-0.2-vanilla-hadoop-ubuntu.qcow2
+      --disk-format=qcow2 --container-format=bare < ./savanna-0.2-vanilla-1.1.2-ubuntu-12.10.qcow2
+
+
+* OR with Fedora 18
+
+.. sourcecode:: console
+
+    $ ssh user@hostname
+    $ wget http://savanna-files.mirantis.com/savanna-0.2-vanilla-1.1.2-fedora-18.qcow2
+    $ glance image-create --name=savanna-0.2-vanilla-hadoop-ubuntu.qcow2 \
+      --disk-format=qcow2 --container-format=bare < ./savanna-0.2-vanilla-1.1.2-fedora-18.qcow2
+
 
 * OR build image using :doc:`../userdoc/diskimagebuilder`.
 
@@ -308,6 +319,13 @@ following content:
         "user_keypair_id": "stack",
         "default_image_id": "3f9fc974-b484-4756-82a4-bff9e116919b"
     }
+
+There is a parameter ``user_keypair_id`` with value ``stack``. You can create
+your own keypair in in Horizon UI, or using the command line client:
+
+.. sourcecode:: console
+
+    nova keypair-add stack --pub-key $PATH_TO_PUBLIC_KEY
 
 
 Send POST request to Savanna API to create and start the cluster:

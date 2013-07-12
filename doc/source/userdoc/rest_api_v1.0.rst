@@ -140,7 +140,7 @@ This operation does not require a request body.
         }
 
 2.2 Short Plugin information
--------------------------------
+----------------------------
 
 .. http:get:: /v1.0/{tenant_id}/plugins/{plugin_name}
 
@@ -257,7 +257,7 @@ This operation does not require a request body.
         }
 
 2.4 Convert configuration file
--------------------------------
+------------------------------
 
 .. http:post:: /v1.0/{tenant_id}/plugins/{plugin_name}/{version}/convert-config
 
@@ -474,7 +474,7 @@ This operation does not require a request body.
 
 
 3.3 Show Image
--------------------
+--------------
 
 .. http:get:: /v1.0/{tenant_id}/images/{image_id}
 
@@ -525,7 +525,7 @@ This operation does not require a request body.
 
 
 3.4 Register Image
--------------------
+------------------
 
 .. http:post:: /v1.0/{tenant_id}/images/{image_id}
 
@@ -576,7 +576,7 @@ This operation returns registered image.
         }
 
 3.5 Delete Image
--------------------
+----------------
 
 .. http:delete:: /v1.0/{tenant_id}/images/{image_id}
 
@@ -627,7 +627,7 @@ Add Tags to Image.
     .. sourcecode:: json
 
         {
-            "tags": ["tag1", "some_other_tag"],
+            "tags": ["tag1", "some_other_tag"]
         }
 
     **response**
@@ -983,7 +983,7 @@ This operation returns created Node Group Template.
 
 
 4.4 Delete Node Group Template
--------------------
+------------------------------
 
 .. http:delete:: /v1.0/{tenant_id}/node-group-templates/{node_group_template_id}
 
@@ -1012,7 +1012,7 @@ This operation does not require a request body.
         Content-Type: application/json
 
 5 Cluster Templates
-======================
+===================
 
 **Description**
 
@@ -1038,7 +1038,7 @@ Also cluster scoped configurations can be defined in a Cluster Template.
 **Examples**
 
 5.1 List all Cluster Templates
----------------------------------
+------------------------------
 
 .. http:get:: /v1.0/{tenant_id}/cluster-templates
 
@@ -1121,7 +1121,7 @@ This operation does not require a request body.
         }
 
 5.2 Show Cluster Template
-----------------------------
+-------------------------
 
 
 .. http:get:: /v1.0/{tenant_id}/cluster-templates/{cluster_template_id}
@@ -1203,7 +1203,7 @@ This operation does not require a request body.
         }
 
 5.3 Create Cluster Template
-------------------------------
+---------------------------
 
 .. http:post:: /v1.0/{tenant_id}/cluster-templates
 
@@ -1392,7 +1392,7 @@ This operation returns created Cluster Template.
 
 
 5.4 Delete Cluster Template
--------------------
+---------------------------
 
 .. http:delete:: /v1.0/{tenant_id}/cluster-templates/{cluster_template_id}
 
@@ -1421,7 +1421,7 @@ This operation does not require a request body.
         Content-Type: application/json
 
 6 Clusters
-======================
+==========
 
 **Description**
 
@@ -1449,7 +1449,7 @@ User should provide an OpenStack keypair to get access to cluster nodes via SSH.
 **Examples**
 
 6.1 List all Clusters
----------------------------------
+---------------------
 
 .. http:get:: /v1.0/{tenant_id}/cluster-templates
 
@@ -1563,7 +1563,7 @@ This operation does not require a request body.
         }
 
 6.2 Show Cluster
-----------------------------
+----------------
 
 
 .. http:get:: /v1.0/{tenant_id}/clusters/{cluster_id}
@@ -1676,7 +1676,7 @@ This operation does not require a request body.
         }
 
 6.3 Start Cluster
-------------------------------
+-----------------
 
 .. http:post:: /v1.0/{tenant_id}/clusters
 

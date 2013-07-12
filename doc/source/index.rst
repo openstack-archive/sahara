@@ -24,6 +24,7 @@ User guide
    userdoc/features
    userdoc/hadoop-swift.rst
    userdoc/rest_api_v1.0
+   userdoc/diskimagebuilder
 
 
 Developer Guide

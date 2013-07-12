@@ -2,7 +2,7 @@ Savanna Dashboard Setup
 =======================
 
 1. Setup prerequisites
----------------------
+----------------------
 
 1) OpenStack environment (Folsom or Grizzly version) installed.
 
@@ -11,7 +11,7 @@ Savanna Dashboard Setup
 3) Operating system, where OpenStack Dashboard service installed, has to be connected to internal OpenStack network.
 
 2. Savanna Dashboard Installation
---------------------------------
+---------------------------------
 
 1) Go to your Horizon’s machine and install Savanna Dashboard:
 
