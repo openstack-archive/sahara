@@ -19,11 +19,20 @@ Further steps describe Savanna installation into virtual environment. All steps 
     $ sudo apt-get install python-setuptools python-virtualenv python-dev
 ..
 
-   For Red Hat:
+   For Fedora:
 
 .. sourcecode:: console
 
-    $ sudo yum install python-setuptools python-virtualenv python-devel
+    $ sudo yum install gcc python-setuptools python-virtualenv python-devel
+..
+
+   For CentOS:
+
+.. sourcecode:: console
+
+    $ sudo yum install gcc python-setuptools python-devel
+    $ sudo easy_install pip
+    $ sudo install virtualenv
 
 2. Setup virtual environment for Savanna:
 
