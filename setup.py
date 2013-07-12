@@ -25,9 +25,9 @@ setuptools.setup(
     name=project,
     version=common_setup.get_version(project, '0.2'),
     description='Savanna project',
-    author='Mirantis Inc.',
-    author_email='savanna-team@mirantis.com',
-    url='http://savanna.mirantis.com',
+    author='OpenStack',
+    author_email='openstack-dev@lists.openstack.org',
+    url='https://savanna.readthedocs.org',
     classifiers=[
         'Environment :: OpenStack',
         'Intended Audience :: Information Technology',
