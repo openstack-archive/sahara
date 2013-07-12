@@ -13,26 +13,28 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# open file 'hadoop-job-file.txt' for write and read
-f = open('hadoop-job-file.txt', 'wr')
+if __name__ == '__main__':
 
-s = '1234567890'
+    # open file 'hadoop-job-file.txt' for write and read
+    f = open('hadoop-job-file.txt', 'wr')
 
-i = 0
-j = 0
+    s = '1234567890'
 
-# strings number in file
-str_number = 1000000
-
-# repetitions number 's' in each string of file
-rep_number = 10
-
-while i < str_number:
-    while j < rep_number:
-        f.write(s)
-        j += 1
-    f.write('\n')
-    i += 1
+    i = 0
     j = 0
 
-f.close()
+    # strings number in file
+    str_number = 1000000
+
+    # repetitions number 's' in each string of file
+    rep_number = 10
+
+    while i < str_number:
+        while j < rep_number:
+            f.write(s)
+            j += 1
+        f.write('\n')
+        i += 1
+        j = 0
+
+    f.close()
