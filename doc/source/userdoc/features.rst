@@ -10,29 +10,14 @@ User may change number of instances in existing Node groups or even add any new 
 
 Cluster scaling requests are also validated as well as requests to create a cluster.
 
-Currently only Vanilla plugin supports this feature.
+Currently only Vanilla plugin supports this feature. Please visit :doc:`vanilla_plugin` for info about cluster topology limitations.
+
 If cluster cannot be scaled properly all changes will be rolled back.
-
-Limitations
-~~~~~~~~~~~
-
-When user scales a Hadoop cluster using a reference plugin implementation (Vanilla plugin),
-the cluster topology requested by user is verified for consistency as well as during cluster creation.
-
-Currently there are the following limitations in cluster topology for Vanilla plugin:
-
-* If namenode and jobtracker are on one node cluster cannot contain datanode or tasktracker running separately;
-  We are planning to remove the restriction according https://blueprints.launchpad.net/savanna/+spec/get-rid-of-slaves-file
-
-* Cluster should contain only one namenode and may contain only one jobtracker
-
-* Cluster cannot be created if it contains processes without containing corresponding master-processes. E.g. it cannot
-  contain tasktracker is there is no jobtracker
 
 
 Swift support
 -------------
-
+This feature supports only by :doc:`vanilla_plugin` .
 If you want to work with swift, e.g. to run jobs on data located in swift or put jobs` result to swift, you need to use patched Hadoop and Swift.
 For more info about this patching and configuring please see :doc:`hadoop-swift`. There are a lot of possible configs for swift which can be set but
 currently Savanna automatically set information about swift filesystem implementation, location awarenass, url and tenant name for authorization in swift.
