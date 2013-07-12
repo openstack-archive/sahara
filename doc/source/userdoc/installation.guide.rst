@@ -2,7 +2,7 @@ Savanna Installation Guide
 ==========================
 
 We recommend installing Savanna into virtual environment. That guaranties that if you already
-have some python packages installed ith OS package manager, Savanna installation will not
+have some python packages installed with OS package manager, Savanna installation will not
 mess with them. Still, installing Savanna into system makes sense if that system is dedicated to
 Savanna.
 
@@ -12,7 +12,7 @@ Further steps describe Savanna installation into virtual environment. All steps 
 
 1. First you need to install `python-setuptools`, `python-virtualenv` and python headers using your
    OS package manager. The python headers package name depends on OS. For Ubuntu it is `python-dev`,
-   for Red Hat - `python-devel` So for Ubuntu run :
+   for Red Hat - `python-devel`. So for Ubuntu run :
 
 .. sourcecode:: console
 
@@ -45,7 +45,7 @@ Further steps describe Savanna installation into virtual environment. All steps 
     $ savanna-venv/bin/pip install 'http://tarballs.openstack.org/savanna/savanna-master.tar.gz#egg=savanna'
 ..
 
-   Note that savanna-master contains the latest changes and might not be stable at the moment.
+   Note that savanna-master.tar.gz contains the latest changes and might not be stable at the moment.
    We recommend browsing `<http://tarballs.openstack.org/savanna/>`_ and selecting the latest stable release.
 
 4. After installation you should create configuration file. Sample config file location

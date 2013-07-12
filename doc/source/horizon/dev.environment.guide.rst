@@ -1,5 +1,17 @@
-Savanna Horizon Plugin dev environment setup
+Savanna UI Dev Environment Setup
 ============================================
+
+These installation steps suite for two purposes:
+ * to setup dev environment
+ * to setup isolated Dashboard for Savanna
+
+Note that the host where you're going to perform installation has to be
+able to connected to all OpenStack endpoints. You can list all available
+endpoints using the following command:
+
+.. sourcecode:: console
+
+    $ keystone endpoint-list
 
 1. Install prerequisites
 
@@ -8,17 +20,26 @@ Savanna Horizon Plugin dev environment setup
     $ sudo apt-get update
     $ sudo apt-get install git-core python-dev gcc python-setuptools python-virtualenv node-less
 
-On Ubuntu 12.10 and higher you have to install the following lib as well:
+   On Ubuntu 12.10 and higher you have to install the following lib as well:
 
 .. sourcecode:: console
 
     $ sudo apt-get install nodejs-legacy
 
-2. Checkout stable horizon from git `https://github.com/openstack/horizon.git` according to your version of OpenStack (stable/grizzly or stable/folsom) and install venv
+2. Checkout Horizon from git and switch to your version of OpenStack (stable/grizzly or stable/folsom).
+Here is an example for grizzly:
 
 .. sourcecode:: console
 
-   $ python tools/install_venv.py
+    $ git clone https://github.com/openstack/horizon
+    $ git checkout -b stable/grizzly origin/stable/grizzly
+..
+
+    Then install virtual environment:
+
+.. sourcecode:: console
+
+    $ python tools/install_venv.py
 
 3. Create ``local_settings.py`` file:
 
@@ -37,24 +58,28 @@ and set right value for variables:
 
 .. sourcecode:: python
 
-   OPENSTACK_HOST = "your ip of controller"
+   OPENSTACK_HOST = "ip of your controller"
    SAVANNA_URL = "url for savanna (e.g. "http://localhost:8386/v1.0")"
 
 5. Clone savanna-dashboard sources from ``https://github.com/stackforge/savanna-dashboard.git``
 
 .. sourcecode:: console
 
-    git clone https://github.com/stackforge/savanna-dashboard.git
+    $ git clone https://github.com/stackforge/savanna-dashboard.git
 
-6. Export SAVANNA_DASHBOARD_HOME environment variable with path to savanna-dashboard folder.
+6. Export SAVANNA_DASHBOARD_HOME environment variable with path to savanna-dashboard folder. E.g.:
 
-7. Install savanna-dashboard module to horizon's venv:
+.. sourcecode:: console
+
+    $ export SAVANNA_DASHBOARD_HOME=$(pwd)/savanna-dashboard
+
+7. Install savanna-dashboard module to horizon's venv. Go to horizon folder and execute:
 
 .. sourcecode:: console
 
     $ .venv/bin/python $SAVANNA_DASHBOARD_HOME/setup.py install
 
-8. Create a symlink to
+8. Create a symlink to savannadashboard source
 
 .. sourcecode:: console
 
@@ -79,10 +104,18 @@ and add savannadashboard to
 
 .. sourcecode:: console
 
-    $ tools/with_venv.sh  python manage.py runserver 0.0.0.0:8080
+    $ tools/with_venv.sh python manage.py runserver 0.0.0.0:8080
 
 This will start horizon in debug mode. That means the logs will be written to console,
 and if any exceptions happen, you will see the stack-trace rendered as a web-page.
+
+The debug could be disabled by changing ``DEBUG=True`` to ``False`` in
+``local_settings.py``. In that case Horizon should be started slightly
+differently, otherwise it will not serve static files:
+
+.. sourcecode:: console
+
+    $ tools/with_venv.sh  python manage.py runserver --insecure 0.0.0.0:8080
 
 It is not recommended to use horizon in this mode for production.
 
@@ -91,4 +124,4 @@ It is not recommended to use horizon in this mode for production.
 If you have changed any ``*.py`` files in ``$SAVANNA_DASHBOARD_HOME`` directory,
 horizon will notice that and reload automatically.
 However changes made to non-python files may not be noticed,
-so you have to start horizon again manually, as described in step 8.
+so you have to restart horizon again manually, as described in step 10.

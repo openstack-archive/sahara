@@ -1,34 +1,41 @@
-Savanna Dashboard Setup
+Savanna UI Installation Guide
 =======================
 
-1. Setup prerequisites
-----------------------
+Savanna UI is a plugin for OpenStack Dashboard. There are two ways to install
+it. One is to plug it into existing Dashboard installation and another is
+to setup another Dashboard and plug Savanna UI there. The first approach
+advantage is that you will have Savanna UI in the very same Dashboard with
+which you work with OpenStack. The disadvantage is that you have to tweak
+your Dashboard configuration in order to enable the plugin. The second
+approach does not have this disadvantage.
+
+Further steps describe installation for the first approach. For the second
+approach see :doc:`/horizon/dev.environment.guide`
+
+1. Prerequisites
+---------------------
 
 1) OpenStack environment (Folsom or Grizzly version) installed.
 
-2) Savanna REST API service installed, configured and running.
-
-3) Operating system, where OpenStack Dashboard service installed, has to be connected to internal OpenStack network.
+2) Savanna installed, configured and running.
 
 2. Savanna Dashboard Installation
 ---------------------------------
 
-1) Go to your Horizon’s machine and install Savanna Dashboard:
+1) Go to the machine where Dashboard resides and install Savanna UI:
 
 .. sourcecode:: console
 
     $ sudo pip install savannadashboard
 ..
 
-   This will install latest release of Savanna Dashboard. If you want to install master branch of Savanna Dashboard:
+   This will install latest stable release of Savanna UI. If you want to install master branch of Savanna UI:
 
 .. sourcecode:: console
 
     $ sudo pip install 'http://tarballs.openstack.org/savanna-dashboard/savanna-dashboard-master.tar.gz'
 
-2) Configure OpenStack Dashboard
-
-   In ``settings.py`` add savanna to
+2) Configure OpenStack Dashboard. In ``settings.py`` add savanna to
 
 .. sourcecode:: python
 
@@ -36,7 +43,7 @@ Savanna Dashboard Setup
         'dashboards': ('nova', 'syspanel', 'settings', 'savanna'),
 ..
 
-   and add savannadashboard to
+   and also add savannadashboard to
 
 .. sourcecode:: python
 
@@ -45,18 +52,18 @@ Savanna Dashboard Setup
         ....
 ..
 
-   Note: ``settings.py`` file is located in ``/usr/share/openstack-dashboard`` by default.
+   Note: ``settings.py`` file is located in ``/usr/share/openstack_dashboard/openstack-dashboard/`` by default.
 
-   Also you have to specify **SAVANNA_URL** in local_settings.py
+3) Also you have to specify **SAVANNA_URL** in local_settings.py. For example:
 
 .. sourcecode:: python
 
-    SAVANNA_URL = "url for savanna (e.g. "http://localhost:8386/v1.0")"
+    SAVANNA_URL = 'http://localhost:8386/v1.0'
 ..
 
-   Note: ``local_settings.py`` file is located in ``/usr/share/openstack-dashboard/local`` by default.
+   Note: ``local_settings.py`` file is located in ``/usr/share/openstack-dashboard/openstack_dashboard/local/`` by default.
 
-3) Now all installations are done and apache web server can be restarted for the changes to take effect:
+4) Now all installations are done and apache web server can be restarted for the changes to take effect:
 
 .. sourcecode:: console
 
