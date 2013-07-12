@@ -22,6 +22,7 @@ User guide
    horizon/installation.guide
    userdoc/overview
    userdoc/features
+   userdoc/vanilla_plugin
    userdoc/hadoop-swift
    userdoc/rest_api_v1.0
    userdoc/diskimagebuilder

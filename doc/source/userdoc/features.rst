@@ -23,9 +23,9 @@ E.g. :
 
 .. sourcecode:: console
 
-    hadoop distcp -D fs.swift.service.savanna.username=admin \
+    $ hadoop distcp -D fs.swift.service.savanna.username=admin \
      -D fs.swift.service.savanna.password=swordfish \
-      swift://integration.savanna/temp swift://integration.savanna/temp1
+     swift://integration.savanna/temp swift://integration.savanna/temp1
 
 How to compose a swift URL? The template is: ``swift://${container}.${provider}/${object}``.
 We don't need to point out the account because it will be automatically
@@ -40,6 +40,17 @@ Currently user can only enable/disable Swift for a Hadoop cluster. But there is 
 more configurable: https://blueprints.launchpad.net/savanna/+spec/swift-configuration-through-rest-and-ui
 
 Currently this feature is supported only by :doc:`vanilla_plugin`.
+
+Cinder support
+--------------
+This feature is supported only by :doc:`vanilla_plugin`.
+
+Cinder is a block storage service that can be used as an alternative for an ephemeral drive. Using Cinder volumes increases reliability of data which is important for HDFS service.
+
+User can set how many volumes will be attached to each node in a Node Group and the size of each volume.
+
+All volumes are attached during Cluster creation/scaling operations.
+
 
 Anti-affinity
 -------------
