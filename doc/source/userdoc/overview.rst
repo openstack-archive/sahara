@@ -1,4 +1,4 @@
-General Overview
+Getting Started
 ================
 
 Clusters
@@ -59,7 +59,7 @@ plugins might require images with pre-installed Hadoop.
 The Savanna Image Registry is a feature which helps filter out images during
 cluster creation. Before creating a cluster, user should register an image in
 Image Registry and tag it with specific tags. Each plugin has its own set of
-tags which help it to determine if an image is suitable for a specific
+tags which helps it to determine if an image is suitable for a specific
 Hadoop version.
 
 Features

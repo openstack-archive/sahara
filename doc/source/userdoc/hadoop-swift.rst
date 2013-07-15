@@ -9,7 +9,7 @@ marriage. There were two steps to achieve this:
     https://github.com/stackforge/savanna-extra/blob/master/hadoop-swift/hadoop-swift-latest.jar
 * Swift side: https://review.openstack.org/#/c/21015
     This patch is merged into Grizzly. If you want to make it work in Folsom
-    please see the instructions in the section below.
+    see the instructions in the section below.
 
 
 Swift patching
