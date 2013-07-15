@@ -157,7 +157,7 @@ An object, describing one configuration entry
 +-------------------+--------+--------------------------------------------------------------------------------+
 
 
-Use Input
+User Input
 ---------
 
 Value provided by user for a specific config.
