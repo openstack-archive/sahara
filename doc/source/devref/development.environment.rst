@@ -83,3 +83,33 @@ Setup local OpenStack dashboard with Savanna plugin
 
 
     ../horizon/dev.environment.guide
+
+Tips and tricks for dev environment
+-----------------------------------
+
+1. Pip speedup
+
+Add the following lines to ~/.pip/pip.conf
+::
+    [global]
+    download-cache = /home/<username>/.pip/cache
+    index-url = <mirror url>
+
+Note! The ~/.pip/cache folder should be created.
+
+2. Git hook for fast checks
+
+Just add the following lines to .git/hooks/pre-commit and do chmod +x for it.
+::
+    #!/bin/sh
+    # Run fast checks (PEP8 style check and PyFlakes fast static analysis)
+    tools/run_fast_checks
+
+You can added the same check for pre-push, for example, run_tests and run_pylint.
+
+3. Running static analysis (PyLint)
+
+Just run the following command
+::
+    tools/run_pylint
+
