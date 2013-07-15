@@ -117,6 +117,7 @@ Notes:
 
 - cluster and node_group have ‘extra’ field allowing plugin to persist any complementary info about the cluster.
 - node_process is just a process that runs at some node in cluster.
+
 Example list of node processes:
 
 1. jobtracker
@@ -158,7 +159,7 @@ An object, describing one configuration entry
 
 
 User Input
----------
+----------
 
 Value provided by user for a specific config.
 

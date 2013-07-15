@@ -1,5 +1,5 @@
 Savanna UI Installation Guide
-=======================
+=============================
 
 Savanna UI is a plugin for OpenStack Dashboard. There are two ways to install
 it. One is to plug it into existing Dashboard installation and another is
@@ -13,7 +13,7 @@ Further steps describe installation for the first approach. For the second
 approach see :doc:`/horizon/dev.environment.guide`
 
 1. Prerequisites
----------------------
+----------------
 
 1) OpenStack environment (Folsom or Grizzly version) installed.
 
