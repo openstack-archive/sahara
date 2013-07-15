@@ -61,10 +61,3 @@ Developer Guide
    devref/gerrit
    devref/jenkins
 
-
-**Autoindex**
-
-.. toctree::
-    :maxdepth
-
-    api/autoindex
