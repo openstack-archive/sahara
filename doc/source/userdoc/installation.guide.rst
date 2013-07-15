@@ -9,10 +9,13 @@ Savanna.
 Further steps describe Savanna installation into virtual environment. All steps except
 #1 do not require superuser privileges.
 
+One of the :doc:`Savanna features <features>`, Anti-Affinity, requires a Nova adjustment.
+See :doc:`anti_affinity` for details. But that is purely optional.
+
 
 1. First you need to install `python-setuptools`, `python-virtualenv` and python headers using your
    OS package manager. The python headers package name depends on OS. For Ubuntu it is `python-dev`,
-   for Red Hat - `python-devel`. So for Ubuntu run :
+   for Red Hat - `python-devel`. So for Ubuntu run:
 
 .. sourcecode:: console
 
