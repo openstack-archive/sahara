@@ -1,5 +1,5 @@
 Features Overview
-================
+=================
 
 Cluster Scaling
 ---------------

@@ -60,3 +60,11 @@ Developer Guide
    devref/launchpad
    devref/gerrit
    devref/jenkins
+
+
+**Autoindex**
+
+.. toctree::
+    :maxdepth
+
+    api/autoindex

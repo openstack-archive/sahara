@@ -24,7 +24,7 @@ On OS X Systems:
 
 .. sourcecode:: console
 
-     # we actually need pip, which is part of python package
+    # we actually need pip, which is part of python package
     $ brew install python
     $ pip install virtualenv tox
 
@@ -90,17 +90,21 @@ Tips and tricks for dev environment
 1. Pip speedup
 
 Add the following lines to ~/.pip/pip.conf
-::
+
+.. sourcecode:: cfg
+
     [global]
     download-cache = /home/<username>/.pip/cache
     index-url = <mirror url>
 
-Note! The ~/.pip/cache folder should be created.
+Note! The ``~/.pip/cache`` folder should be created.
 
 2. Git hook for fast checks
 
 Just add the following lines to .git/hooks/pre-commit and do chmod +x for it.
-::
+
+.. sourcecode:: console
+
     #!/bin/sh
     # Run fast checks (PEP8 style check and PyFlakes fast static analysis)
     tools/run_fast_checks
@@ -110,6 +114,8 @@ You can added the same check for pre-push, for example, run_tests and run_pylint
 3. Running static analysis (PyLint)
 
 Just run the following command
-::
+
+.. sourcecode:: console
+
     tools/run_pylint
 

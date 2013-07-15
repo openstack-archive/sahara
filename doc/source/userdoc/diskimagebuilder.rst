@@ -26,15 +26,18 @@ images with Apache Hadoop 1.1.2.
 
     1.1 Clone the repository "https://github.com/stackforge/diskimage-builder" locally.
 
-    .. sourcecode:: concole
+    .. sourcecode:: console
 
         git clone https://github.com/stackforge/diskimage-builder
 
+    We've tested it with commit: ``7e0fe78cf227b0cca8e40d20c884c385bbb2b3c5``.
+
     1.2 Clone the repository "https://github.com/stackforge/savanna-extra" locally.
 
-    .. sourcecode:: concole
+    .. sourcecode:: console
 
         git clone https://github.com/stackforge/savanna-extra
+        git checkout 0.2
 
     1.3 You will need Oracle JDK 7 downloaded.
 
