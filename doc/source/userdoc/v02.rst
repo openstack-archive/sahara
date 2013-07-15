@@ -999,7 +999,7 @@ This operation requires request body. It should contains the full "Cluster Creat
 
 This operation returns response body. It contains updated cluster object defined in section 2.2.
 
-This operation should be used for adding and removing nodes. For more information, please,
+This operation should be used for adding and removing nodes. For more information
 take a look on cluster creation operation. All cluster Node Templates should be specified while scaling cluster
 , not only new Node Templates or those with changed number of instances. All missing Node Templates will be removed from cluster.
 
