@@ -81,3 +81,7 @@ See :doc:`anti_affinity` for details. But that is purely optional.
 .. sourcecode:: console
 
     $ savanna-venv/bin/python savanna-venv/bin/savanna-api --help
+
+
+Further consider reading :doc:`overview` for general Savanna concepts and
+:doc:`plugins` for specific plugin features/requirements

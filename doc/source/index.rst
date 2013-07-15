@@ -23,6 +23,7 @@ User guide
    userdoc/overview
    userdoc/features
    userdoc/vanilla_plugin
+   userdoc/registering_image
    userdoc/hadoop-swift
    userdoc/rest_api_v1.0
    userdoc/diskimagebuilder

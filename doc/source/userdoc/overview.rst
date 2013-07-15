@@ -48,6 +48,8 @@ Since Hadoop parameters vary depending on distribution and Hadoop version,
 templates are always plugin and Hadoop version specific. A template could not
 be used with plugun/Hadoop version different than ones it was created for.
 
+You may find the list of available plugins on that page: :doc:`plugins`
+
 Image Registry
 --------------
 
@@ -57,10 +59,8 @@ require just basic cloud image and install Hadoop on VMs from scratch. Some
 plugins might require images with pre-installed Hadoop.
 
 The Savanna Image Registry is a feature which helps filter out images during
-cluster creation. Before creating a cluster, user should register an image in
-Image Registry and tag it with specific tags. Each plugin has its own set of
-tags which helps it to determine if an image is suitable for a specific
-Hadoop version.
+cluster creation. See :doc:`registering_image` for details on how to
+work with Image Registry.
 
 Features
 --------
