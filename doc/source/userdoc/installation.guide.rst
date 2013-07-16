@@ -42,6 +42,12 @@ See :doc:`anti_affinity` for details. But that is purely optional.
 .. sourcecode:: console
 
     $ virtualenv savanna-venv
+..
+
+   This will install python virtual environment into ``savanna-venv`` directory
+   in your current working directory. This command does not require super
+   user privileges and could be executed in any directory current user has
+   write permission.
 
 3. You can install the latest Savanna release version from pypi:
 
