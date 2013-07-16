@@ -19,6 +19,7 @@ import flask
 from werkzeug import datastructures
 
 from savanna import context
+from savanna import exceptions as ex
 from savanna.openstack.common import log as logging
 from savanna.openstack.common import wsgi
 
@@ -78,6 +79,8 @@ class Rest(flask.Blueprint):
 
                 try:
                     return func(**kwargs)
+                except ex.SavannaException, e:
+                    return bad_request(e)
                 except Exception, e:
                     return internal_error(500, 'Internal Server Error', e)
 
