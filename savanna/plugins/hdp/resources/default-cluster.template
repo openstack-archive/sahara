@@ -1,0 +1,364 @@
+{
+  "services" : [
+    {
+      "name" : "HDFS",
+      "components" : [
+        {
+          "name" : "NAMENODE",
+          "type" : "MASTER",
+          "cardinality" : "1"
+        },
+        {
+          "name" : "DATANODE",
+          "type" : "SLAVE",
+          "cardinality" : "1+"
+        },
+        {
+          "name" : "SECONDARY_NAMENODE",
+          "type" : "MASTER",
+          "cardinality" : "1"
+        },
+        {
+          "name" : "HDFS_CLIENT",
+          "type" : "CLIENT",
+          "cardinality" : "1+"
+        }
+      ] ,
+      "configurations" : [
+      ]
+    },
+    {
+      "name" : "MAPREDUCE",
+      "components" : [
+        {
+          "name" : "JOBTRACKER",
+          "type" : "MASTER",
+          "cardinality" : "1"
+        },
+        {
+          "name" : "TASKTRACKER",
+          "type" : "SLAVE",
+          "cardinality" : "1+"
+        },
+        {
+          "name" : "MAPREDUCE_CLIENT",
+          "type" : "CLIENT",
+          "cardinality" : "1+"
+        }
+      ],
+      "configurations" : [
+      ]
+    },
+    {
+      "name" : "GANGLIA",
+      "components" : [
+        {
+          "name" : "GANGLIA_SERVER",
+          "type" : "MASTER",
+          "cardinality" : "1"
+        },
+        {
+          "name" : "GANGLIA_MONITOR",
+          "type" : "SLAVE",
+          "cardinality" : "1+"
+        }
+      ],
+      "configurations" : [
+      ]
+    },
+    {
+      "name" : "NAGIOS",
+      "components" : [
+        {
+          "name" : "NAGIOS_SERVER",
+          "type" : "MASTER",
+          "cardinality" : "1"
+        }
+      ],
+      "configurations" : [
+      ]
+    },
+    {
+      "name" : "AMBARI",
+      "components" : [
+        {
+          "name" : "AMBARI_SERVER",
+          "type" : "MASTER",
+          "cardinality" : "1"
+        },
+        {
+          "name" : "AMBARI_AGENT",
+          "type" : "SLAVE",
+          "cardinality" : "1+"
+        }
+      ],
+      "configurations" : [
+      ]
+    }
+  ],
+  "host_role_mappings" : [
+    {
+      "name" : "MASTER",
+      "components" : [
+        { "name" : "NAMENODE" },
+        { "name" : "JOBTRACKER" },
+        { "name" : "SECONDARY_NAMENODE" },
+        { "name" : "GANGLIA_SERVER" },
+        { "name" : "GANGLIA_MONITOR" },
+        { "name" : "NAGIOS_SERVER" },
+        { "name" : "AMBARI_SERVER" },
+        { "name" : "AMBARI_AGENT" }
+      ],
+      "hosts" : [
+        {
+          "cardinality" : "1",
+          "default_count" : 1
+        }
+      ]
+    },
+    {
+      "name" : "SLAVE",
+      "components" : [
+        { "name" : "DATANODE" },
+        { "name" : "TASKTRACKER" },
+        { "name" : "GANGLIA_MONITOR" },
+        { "name" : "HDFS_CLIENT" },
+        { "name" : "MAPREDUCE_CLIENT" },
+        { "name" : "AMBARI_AGENT" }
+      ],
+      "hosts" : [
+        {
+          "cardinality" : "1+",
+          "default_count" : 2
+        }
+      ]
+    }
+  ],
+  "configurations" : [
+    {
+      "name" : "global",
+      "properties" : [
+        { "name" : "dfs_name_dir", "value" : "/hadoop/hdfs/namenode" },
+        { "name" : "fs_checkpoint_dir", "value" : "/hadoop/hdfs/namesecondary" },
+        { "name" : "dfs_data_dir", "value" : "/hadoop/hdfs/data" },
+        { "name" : "hdfs_log_dir_prefix", "value" : "/var/log/hadoop" },
+        { "name" : "hadoop_pid_dir_prefix", "value" : "/var/run/hadoop" },
+        { "name" : "dfs_webhdfs_enabled", "value" : false },
+        { "name" : "hadoop_heapsize", "value" : "1024" },
+        { "name" : "namenode_heapsize", "value" : "1024m" },
+        { "name" : "namenode_opt_newsize", "value" : "200m" },
+        { "name" : "namenode_opt_maxnewsize", "value" : "640m" },
+        { "name" : "datanode_du_reserved", "value" : "1" },
+        { "name" : "dtnode_heapsize", "value" : "1024m" },
+        { "name" : "dfs_datanode_failed_volume_tolerated", "value" : "0" },
+        { "name" : "fs_checkpoint_period", "value" : "21600" },
+        { "name" : "fs_checkpoint_size", "value" : "0.5" },
+        { "name" : "dfs_exclude", "value" : "dfs.exclude" },
+        { "name" : "dfs_include", "value" : "dfs.include" },
+        { "name" : "dfs_replication", "value" : "3" },
+        { "name" : "dfs_block_local_path_access_user", "value" : "hbase" },
+        { "name" : "dfs_datanode_data_dir_perm", "value" : "750" },
+        { "name" : "security_enabled", "value" : false },
+        { "name" : "kerberos_domain", "value" : "EXAMPLE.COM" },
+        { "name" : "kadmin_pw", "value" : "" },
+        { "name" : "keytab_path", "value" : "/etc/security/keytabs" },
+        { "name" : "namenode_formatted_mark_dir", "value" : "/var/run/hadoop/hdfs/namenode/formatted/" },
+        { "name" : "hcat_conf_dir", "value" : "" },
+        { "name" : "mapred_local_dir", "value" : "/hadoop/mapred" },
+        { "name" : "mapred_system_dir", "value" : "/mapred/system" },
+        { "name" : "scheduler_name", "value" : "org.apache.hadoop.mapred.CapacityTaskScheduler" },
+        { "name" : "jtnode_opt_newsize", "value" : "200m" },
+        { "name" : "jtnode_opt_maxnewsize", "value" : "200m" },
+        { "name" : "jtnode_heapsize", "value" : "1024m" },
+        { "name" : "mapred_map_tasks_max", "value" : "4" },
+        { "name" : "mapred_red_tasks_max", "value" : "2" },
+        { "name" : "mapred_cluster_map_mem_mb", "value" : "-1" },
+        { "name" : "mapred_cluster_red_mem_mb", "value" : "-1" },
+        { "name" : "mapred_cluster_max_map_mem_mb", "value" : "-1" },
+        { "name" : "mapred_cluster_max_red_mem_mb", "value" : "-1" },
+        { "name" : "mapred_job_map_mem_mb", "value" : "-1" },
+        { "name" : "mapred_job_red_mem_mb", "value" : "-1" },
+        { "name" : "mapred_child_java_opts_sz", "value" : "768" },
+        { "name" : "io_sort_mb", "value" : "200" },
+        { "name" : "io_sort_spill_percent", "value" : "0.9" },
+        { "name" : "mapreduce_userlog_retainhours", "value" : "24" },
+        { "name" : "maxtasks_per_job", "value" : "-1" },
+        { "name" : "lzo_enabled", "value" : false },
+        { "name" : "snappy_enabled", "value" : true },
+        { "name" : "rca_enabled", "value" : true },
+        { "name" : "mapred_hosts_exclude", "value" : "mapred.exclude" },
+        { "name" : "mapred_hosts_include", "value" : "mapred.include" },
+        { "name" : "mapred_jobstatus_dir", "value" : "file:////mapred/jobstatus" },
+        { "name" : "task_controller", "value" : "org.apache.hadoop.mapred.DefaultTaskController" },
+        { "name" : "nagios_user", "value" : "nagios" },
+        { "name" : "nagios_group", "value" : "nagios" },
+        { "name" : "nagios_web_login", "value" : "nagiosadmin" },
+        { "name" : "nagios_web_password", "value" : "admin" },
+        { "name" : "nagios_contact", "value" : "default@REPLACEME.com" },
+        { "name" : "hbase_conf_dir", "value" : "/etc/hbase" },
+        { "name" : "proxyuser_group", "value" : "users" },
+        { "name" : "dfs_datanode_address", "value" : "50010" },
+        { "name" : "dfs_datanode_http_address", "value" : "50075" },
+        { "name" : "gpl_artifacts_download_url", "value" : "" },
+        { "name" : "apache_artifacts_download_url", "value" : "" },
+        { "name" : "ganglia_runtime_dir", "value" : "/var/run/ganglia/hdp" },
+        { "name" : "gmetad_user", "value" : "nobody" },
+        { "name" : "gmond_user", "value" : "nobody" },
+        { "name" : "run_dir", "value" : "/var/run/hadoop" },
+        { "name" : "hadoop_conf_dir", "value" : "/etc/hadoop" },
+        { "name" : "hdfs_user", "value" : "hdfs" },
+        { "name" : "mapred_user", "value" : "mapred" },
+        { "name" : "hbase_user", "value" : "hbase" },
+        { "name" : "hive_user", "value" : "hive" },
+        { "name" : "hcat_user", "value" : "hcat" },
+        { "name" : "webhcat_user", "value" : "hcat" },
+        { "name" : "oozie_user", "value" : "oozie" },
+        { "name" : "zk_user", "value" : "zookeeper" },
+        { "name" : "user_group", "value" : "hadoop" }
+      ]
+    },
+    {
+      "name" : "core-site",
+      "properties" : [
+        { "name" : "io.file.buffer.size", "value" : "131072" },
+        { "name" : "io.serializations", "value" : "org.apache.hadoop.io.serializer.WritableSerialization" },
+        { "name" : "io.compression.codec.lzo.class", "value" : "com.hadoop.compression.lzo.LzoCodec" },
+        { "name" : "fs.trash.interval", "value" : "360" },
+        { "name" : "ipc.client.idlethreshold", "value" : "8000" },
+        { "name" : "ipc.client.connection.maxidletime", "value" : "30000" },
+        { "name" : "ipc.client.connect.max.retries", "value" : "50" },
+        { "name" : "webinterface.private.actions", "value" : "false" },
+        { "name" : "fs.default.name", "value" : "hdfs://%AMBARI_HOST%:8020" },
+        { "name" : "fs.checkpoint.dir", "value" : "/hadoop/hdfs/namesecondary" },
+        { "name" : "fs.checkpoint.period", "value" : "21600" },
+        { "name" : "fs.checkpoint.size", "value" : "0.5" },
+        { "name" : "fs.checkpoint.edits.dir", "value" : "/hadoop/hdfs/namesecondary" }
+      ]
+    },
+    {
+      "name" : "mapred-site",
+      "properties" : [
+        { "name" : "io.sort.record.percent", "value" : ".2" },
+        { "name" : "io.sort.factor", "value" : "100" },
+        { "name" : "mapred.tasktracker.tasks.sleeptime-before-sigkill", "value" : "250" },
+        { "name" : "mapred.job.tracker.handler.count", "value" : "50" },
+        { "name" : "mapreduce.cluster.administrators", "value" : " hadoop" },
+        { "name" : "mapred.reduce.parallel.copies", "value" : "30" },
+        { "name" : "tasktracker.http.threads", "value" : "50" },
+        { "name" : "mapred.map.tasks.speculative.execution", "value" : "false" },
+        { "name" : "mapred.reduce.tasks.speculative.execution", "value" : "false" },
+        { "name" : "mapred.reduce.slowstart.completed.maps", "value" : "0.05" },
+        { "name" : "mapred.inmem.merge.threshold", "value" : "1000" },
+        { "name" : "mapred.job.shuffle.merge.percent", "value" : "0.66" },
+        { "name" : "mapred.job.shuffle.input.buffer.percent", "value" : "0.7" },
+        { "name" : "mapred.output.compression.type", "value" : "BLOCK" },
+        { "name" : "mapred.jobtracker.completeuserjobs.maximum", "value" : "0" },
+        { "name" : "mapred.jobtracker.restart.recover", "value" : "false" },
+        { "name" : "mapred.job.reduce.input.buffer.percent", "value" : "0.0" },
+        { "name" : "mapreduce.reduce.input.limit", "value" : "10737418240" },
+        { "name" : "mapred.task.timeout", "value" : "600000" },
+        { "name" : "jetty.connector", "value" : "org.mortbay.jetty.nio.SelectChannelConnector" },
+        { "name" : "mapred.child.root.logger", "value" : "INFO,TLA" },
+        { "name" : "mapred.max.tracker.blacklists", "value" : "16" },
+        { "name" : "mapred.healthChecker.interval", "value" : "135000" },
+        { "name" : "mapred.healthChecker.script.timeout", "value" : "60000" },
+        { "name" : "mapred.job.tracker.persist.jobstatus.active", "value" : "false" },
+        { "name" : "mapred.job.tracker.persist.jobstatus.hours", "value" : "1" },
+        { "name" : "mapred.jobtracker.retirejob.check", "value" : "10000" },
+        { "name" : "mapred.jobtracker.retirejob.interval", "value" : "0" },
+        { "name" : "mapred.job.tracker.history.completed.location", "value" : "/mapred/history/done" },
+        { "name" : "mapreduce.fileoutputcommitter.marksuccessfuljobs", "value" : "false" },
+        { "name" : "mapred.job.reuse.jvm.num.tasks", "value" : "1" },
+        { "name" : "hadoop.job.history.user.location", "value" : "none" },
+        { "name" : "mapreduce.jobtracker.staging.root.dir", "value" : "/user" },
+        { "name" : "mapreduce.tasktracker.group", "value" : "hadoop" },
+        { "name" : "mapreduce.jobtracker.split.metainfo.maxsize", "value" : "50000000" },
+        { "name" : "mapred.jobtracker.blacklist.fault-timeout-window", "value" : "180" },
+        { "name" : "mapred.jobtracker.blacklist.fault-bucket-width", "value" : "15" },
+        { "name" : "mapred.queue.names", "value" : "default" },
+        { "name" : "mapred.local.dir", "value" : "/hadoop/mapred" },
+        { "name" : "mapred.jobtracker.taskScheduler", "value" : "org.apache.hadoop.mapred.CapacityTaskScheduler" },
+        { "name" : "mapred.tasktracker.map.tasks.maximum", "value" : "4" },
+        { "name" : "mapred.tasktracker.reduce.tasks.maximum", "value" : "2" },
+        { "name" : "mapred.cluster.reduce.memory.mb", "value" : "-1" },
+        { "name" : "mapred.job.map.memory.mb", "value" : "-1" },
+        { "name" : "mapred.cluster.max.map.memory.mb", "value" : "-1" },
+        { "name" : "mapred.cluster.max.reduce.memory.mb", "value" : "-1" },
+        { "name" : "mapred.job.reduce.memory.mb", "value" : "-1" },
+        { "name" : "mapred.hosts", "value" : "/etc/hadoop/mapred.include" },
+        { "name" : "mapred.hosts.exclude", "value" : "/etc/hadoop/mapred.exclude" },
+        { "name" : "mapred.healthChecker.script.path", "value" : "file:////mapred/jobstatus" },
+        { "name" : "mapred.job.tracker.persist.jobstatus.dir", "value" : "/etc/hadoop/health_check" },
+        { "name" : "mapred.child.java.opts", "value" : "-server -Xmx768m -Djava.net.preferIPv4Stack=true" },
+        { "name" : "mapred.cluster.map.memory.mb", "value" : "-1" },
+        { "name" : "io.sort.mb", "value" : "200" },
+        { "name" : "io.sort.spill.percent", "value" : "0.9" },
+        { "name" : "mapred.system.dir", "value" : "/mapred/system" },
+        { "name" : "mapred.job.tracker", "value" : "%AMBARI_HOST%:50300" },
+        { "name" : "mapred.job.tracker.http.address", "value" : "%AMBARI_HOST%:50030" },
+        { "name" : "mapred.userlog.retain.hours", "value" : "24" },
+        { "name" : "mapred.jobtracker.maxtasks.per.job", "value" : "-1" },
+        { "name" : "mapred.task.tracker.task-controller", "value" : "org.apache.hadoop.mapred.DefaultTaskController" },
+        { "name" : "mapreduce.jobtracker.kerberos.principal", "value" : "jt/_HOST@EXAMPLE.COM" },
+        { "name" : "mapreduce.tasktracker.kerberos.principal", "value" : "tt/_HOST@EXAMPLE.COM" },
+        { "name" : "mapreduce.jobtracker.keytab.file", "value" : "/etc/security/keytabs/jt.service.keytab" },
+        { "name" : "mapreduce.tasktracker.keytab.file", "value" : "/etc/security/keytabs/tt.service.keytab" },
+        { "name" : "mapreduce.history.server.embedded", "value" : "false" },
+        { "name" : "mapreduce.history.server.http.address", "value" : "%AMBARI_HOST%:51111" },
+        { "name" : "mapreduce.jobhistory.kerberos.principal", "value" : "jt/_HOST@EXAMPLE.COM" },
+        { "name" : "mapreduce.jobhistory.keytab.file", "value" : "/etc/security/keytabs/jt.service.keytab" }
+      ]
+    },
+    {
+      "name" : "hdfs-site",
+      "properties" : [
+        { "name" : "dfs.datanode.socket.write.timeout", "value" : "0" },
+        { "name" : "dfs.replication.max", "value" : "50" },
+        { "name" : "dfs.heartbeat.interval", "value" : "3" },
+        { "name" : "dfs.safemode.threshold.pct", "value" : "1.0f" },
+        { "name" : "dfs.balance.bandwidthPerSec", "value" : "6250000" },
+        { "name" : "dfs.block.size", "value" : "134217728" },
+        { "name" : "dfs.datanode.ipc.address", "value" : "0.0.0.0:8010" },
+        { "name" : "dfs.blockreport.initialDelay", "value" : "120" },
+        { "name" : "dfs.datanode.du.pct", "value" : "0.85f" },
+        { "name" : "dfs.namenode.handler.count", "value" : "40" },
+        { "name" : "dfs.datanode.max.xcievers", "value" : "4096" },
+        { "name" : "dfs.umaskmode", "value" : "077" },
+        { "name" : "dfs.web.ugi", "value" : "gopher,gopher" },
+        { "name" : "dfs.permissions", "value" : "true" },
+        { "name" : "dfs.permissions.supergroup", "value" : "hdfs" },
+        { "name" : "ipc.server.max.response.size", "value" : "5242880" },
+        { "name" : "dfs.block.access.token.enable", "value" : "true" },
+        { "name" : "dfs.secondary.https.port", "value" : "50490" },
+        { "name" : "dfs.https.port", "value" : "50470" },
+        { "name" : "dfs.access.time.precision", "value" : "0" },
+        { "name" : "dfs.cluster.administrators", "value" : " hdfs" },
+        { "name" : "ipc.server.read.threadpool.size", "value" : "5" },
+        { "name" : "dfs.name.dir", "value" : "/hadoop/hdfs/namenode" },
+        { "name" : "dfs.webhdfs.enabled", "value" : "false" },
+        { "name" : "dfs.datanode.failed.volumes.tolerated", "value" : "0" },
+        { "name" : "dfs.block.local-path-access.user", "value" : "hbase" },
+        { "name" : "dfs.data.dir", "value" : "/hadoop/hdfs/data" },
+        { "name" : "dfs.hosts.exclude", "value" : "/etc/hadoop/dfs.exclude" },
+        { "name" : "dfs.hosts", "value" : "/etc/hadoop/dfs.include" },
+        { "name" : "dfs.replication", "value" : "3" },
+        { "name" : "dfs.datanode.address", "value" : "0.0.0.0:50010" },
+        { "name" : "dfs.datanode.http.address", "value" : "0.0.0.0:50075" },
+        { "name" : "dfs.http.address", "value" : "%AMBARI_HOST%:50070" },
+        { "name" : "dfs.datanode.du.reserved", "value" : "1" },
+        { "name" : "dfs.namenode.kerberos.principal", "value" : "nn/_HOST@EXAMPLE.COM" },
+        { "name" : "dfs.secondary.namenode.kerberos.principal", "value" : "nn/_HOST@EXAMPLE.COM" },
+        { "name" : "dfs.namenode.kerberos.https.principal", "value" : "host/_HOST@EXAMPLE.COM" },
+        { "name" : "dfs.secondary.namenode.kerberos.https.principal", "value" : "host/_HOST@EXAMPLE.COM" },
+        { "name" : "dfs.secondary.http.address", "value" : "%AMBARI_HOST%:50090" },
+        { "name" : "dfs.web.authentication.kerberos.keytab", "value" : "/etc/security/keytabs/spnego.service.keytab" },
+        { "name" : "dfs.datanode.kerberos.principal", "value" : "dn/_HOST@EXAMPLE.COM" },
+        { "name" : "dfs.namenode.keytab.file", "value" : "/etc/security/keytabs/nn.service.keytab" },
+        { "name" : "dfs.secondary.namenode.keytab.file", "value" : "/etc/security/keytabs/nn.service.keytab" },
+        { "name" : "dfs.datanode.keytab.file", "value" : "/etc/security/keytabs/dn.service.keytab" },
+        { "name" : "dfs.https.address", "value" : "%AMBARI_HOST%:50470" },
+        { "name" : "dfs.datanode.data.dir.perm", "value" : "750" }
+      ]
+    }
+  ]
+}
