@@ -16,36 +16,45 @@
 import savanna.exceptions as e
 
 
-class NotSingleNameNodeException(Exception):
+class NotSingleNameNodeException(e.SavannaException):
     def __init__(self, nn_count):
-        self.message = "Hadoop cluster should contain only 1 NameNode " \
-                       "instance. Actual NN count is %s" % nn_count
-        self.code = "NOT_SINGLE_NAME_NODE"
+        message = ("Hadoop cluster should contain only 1 NameNode "
+                   "instance. Actual NN count is %s" % nn_count)
+        code = "NOT_SINGLE_NAME_NODE"
+
+        super(NotSingleNameNodeException, self).__init__(message, code)
 
 
 class NotSingleJobTrackerException(e.SavannaException):
     def __init__(self, jt_count):
-        self.message = "Hadoop cluster should contain 0 or 1 JobTracker " \
-                       "instances. Actual JT count is %s" % jt_count
-        self.code = "NOT_SINGLE_JOB_TRACKER"
+        message = ("Hadoop cluster should contain 0 or 1 JobTracker "
+                   "instances. Actual JT count is %s" % jt_count)
+        code = "NOT_SINGLE_JOB_TRACKER"
+
+        super(NotSingleJobTrackerException, self).__init__(message, code)
 
 
 class TaskTrackersWithoutJobTracker(e.SavannaException):
     def __init__(self):
-        self.message = "TaskTrackers cannot be configures without JobTracker"
-        self.code = "TASK_TRACKERS_WITHOUT_JOB_TRACKER"
+        message = "TaskTrackers cannot be configures without JobTracker"
+        code = "TASK_TRACKERS_WITHOUT_JOB_TRACKER"
+
+        super(TaskTrackersWithoutJobTracker, self).__init__(message, code)
 
 
 class NodeGroupsDoNotExist(e.SavannaException):
     def __init__(self, ng_names):
         names = ''.join(ng_names)
-        self.message = "Cluster does not contain node groups: " +\
-                       names
-        self.code = "NODE_GROUP_DOES_NOT_EXIST"
+        message = "Cluster does not contain node groups: %s" % names
+        code = "NODE_GROUP_DOES_NOT_EXIST"
+
+        super(NodeGroupsDoNotExist, self).__init__(message, code)
 
 
 class NodeGroupCannotBeScaled(e.SavannaException):
     def __init__(self, ng_name, reason):
-        self.message = "Chosen node group %s cannot be " \
-                       "scaled : %s" % (ng_name, reason)
-        self.code = "NODE_GROUP_CANNOT_BE_SCALED"
+        message = ("Chosen node group %s cannot be scaled : "
+                   "%s" % (ng_name, reason))
+        code = "NODE_GROUP_CANNOT_BE_SCALED"
+
+        super(NodeGroupCannotBeScaled, self).__init__(message, code)
