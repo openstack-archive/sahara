@@ -22,7 +22,7 @@ from savanna.openstack.common import jsonutils
 class JSONEncoded(st.TypeDecorator):
     """Represents an immutable structure as a json-encoded string."""
 
-    impl = st.VARCHAR
+    impl = st.TEXT
 
     def process_bind_param(self, value, dialect):
         if value is not None:
