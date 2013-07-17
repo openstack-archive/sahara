@@ -73,9 +73,10 @@ def create_cluster(values):
     try:
         context.model_update(cluster, status='Validating')
         plugin.validate(cluster)
-    except Exception:
+    except Exception as ex:
         with excutils.save_and_reraise_exception():
-            context.model_update(cluster, status='Error')
+            context.model_update(cluster, status='Error',
+                                 status_description=str(ex))
 
     context.spawn(_provision_cluster, cluster.id)
 

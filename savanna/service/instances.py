@@ -44,7 +44,8 @@ def create_cluster(cluster):
     except Exception as ex:
         LOG.warn("Can't start cluster '%s' (reason: %s)", cluster.name, ex)
         with excutils.save_and_reraise_exception():
-            context.model_update(cluster, status='Error')
+            context.model_update(cluster, status='Error',
+                                 status_description=str(ex))
             _rollback_cluster_creation(cluster, ex)
 
 
