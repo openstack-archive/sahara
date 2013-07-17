@@ -50,6 +50,14 @@ PATH_TO_SSH = _get_conf('PATH_TO_SSH', '/home/user/.ssh/id_rsa')
 
 PLUGIN_NAME = _get_conf('PLUGIN_NAME', 'vanilla')
 
+NAMENODE_CONFIG = _get_conf('NAMENODE_CONFIG', {})
+JOBTRACKER_CONFIG = _get_conf('JOBTRACKER_CONFIG', {})
+DATANODE_CONFIG = _get_conf('DATANODE_CONFIG', {})
+TASKTRACKER_CONFIG = _get_conf('TASKTRACKER_CONFIG', {})
+GENERAL_CONFIG = _get_conf('GENERAL_CONFIG', {})
+CLUSTER_HDFS_CONFIG = _get_conf('CLUSTER_HDFS_CONFIG', {})
+CLUSTER_MAPREDUCE_CONFIG = _get_conf('CLUSTER_MAPREDUCE_CONFIG', {})
+
 JT_PORT = _get_conf('JT_PORT', 50030)
 NN_PORT = _get_conf('NN_PORT', 50070)
 TT_PORT = _get_conf('TT_PORT', 50060)

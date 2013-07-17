@@ -13,7 +13,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import os
 import telnetlib
 import time
 
@@ -29,70 +28,26 @@ class TestHadoop(base.ITestCase):
         self.create_node_group_templates()
 
     def _hadoop_testing(self, node_list):
-        cl_tmpl_id = None
         cluster_id = None
         try:
-            cl_tmpl_body = self.make_cluster_template('cl-tmpl', node_list)
-            cl_tmpl_id = self.get_object_id(
-                'cluster_template', self.post_object(self.url_cl_tmpl,
-                                                     cl_tmpl_body, 202))
-            clstr_body = self.make_cl_body_cluster_template(cl_tmpl_id)
-            clstr_body['name'] = param.CLUSTER_NAME_HADOOP
-            data = self.post_object(self.url_cluster, clstr_body, 202)
-            data = data['cluster']
-            cluster_id = data.pop('id')
-            self.await_cluster_active(self.url_cluster_with_slash, cluster_id)
-            time.sleep(30)
-            get_data = self.get_object(
-                self.url_cluster_with_slash, cluster_id, 200, True)
-            get_data = get_data['cluster']
-            node_groups = get_data['node_groups']
-            ip_instances = {}
-            for node_group in node_groups:
-                instances = node_group['instances']
-                for instans in instances:
-                    management_ip = instans['management_ip']
-                    ip_instances[management_ip] = node_group[
-                        'node_processes']
+            cluster_id = self.create_cluster_using_ngt_and_get_id(
+                node_list, param.CLUSTER_NAME_HADOOP)
+            ip_instances = self.get_instances_ip_and_node_processes_list(
+                cluster_id)
             namenode_ip = None
-            tasktracker_count = 0
-            datanode_count = 0
             node_count = 0
             try:
-                for key, value in ip_instances.items():
-                    telnetlib.Telnet(key, '22')
-                    if 'namenode' in value:
-                        namenode_ip = key
-                        telnetlib.Telnet(key, '50070')
-                    if 'tasktracker' in value:
-                        tasktracker_count += 1
-                        telnetlib.Telnet(key, '50060')
-                    if 'datanode' in value:
-                        datanode_count += 1
-                        telnetlib.Telnet(key, '50075')
-                    if 'jobtracker' in value:
-                        telnetlib.Telnet(key, '50030')
-                    node_count += 1
+                clstr_info = self.get_namenode_ip_and_tt_dn_count(ip_instances)
+                namenode_ip = clstr_info['namenode_ip']
+                node_count = clstr_info['node_count']
+                self.await_active_workers_for_namenode(clstr_info)
             except Exception as e:
-                self.fail('telnet instances has failure: ' + str(e))
-            this_dir = os.getcwd()
-
+                self.fail(str(e))
             try:
                 for key in ip_instances:
-                    self.transfer_script_to_node(key, this_dir, 'hadoop_test',
-                                                 'hadoop_test_script.sh')
+                    self.transfer_script_to_node(key)
             except Exception as e:
                 self.fail('failure in transfer script: ' + str(e))
-
-            self.assertEqual(int(self.execute_command(
-                namenode_ip, './script.sh lt -hd %s'
-                             % param.HADOOP_DIRECTORY)[1]), tasktracker_count,
-                             msg='compare number active trackers is failure: ')
-            self.assertEqual(int(self.execute_command(
-                namenode_ip, './script.sh ld -hd %s' %
-                             param.HADOOP_DIRECTORY)[1]), datanode_count,
-                             msg='compare number active datanodes is failure:')
-
             try:
                 self.execute_command(
                     namenode_ip, './script.sh pi -nc %s -hv %s -hd %s'
@@ -101,8 +56,9 @@ class TestHadoop(base.ITestCase):
             except Exception as e:
                 print(self.read_file_from(namenode_ip,
                                           '/tmp/outputTestMapReduce/log.txt'))
-                self.fail('run pi script is failure: ' + str(e))
-
+                self.fail(
+                    'run pi script has failed: '
+                    + str(e))
             try:
                 job_name = self.execute_command(
                     namenode_ip, './script.sh gn -hd %s'
@@ -137,7 +93,6 @@ class TestHadoop(base.ITestCase):
         finally:
             self.del_object(self.url_cluster_with_slash, cluster_id, 204)
             time.sleep(5)
-            self.del_object(self.url_cl_tmpl_with_slash, cl_tmpl_id, 204)
 
     def test_hadoop_single_master(self):
         """This test checks hadoop work
