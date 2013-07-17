@@ -77,6 +77,7 @@ class TestValidation(unittest2.TestCase):
         get_cl_template_p = \
             mock.patch("savanna.service.api.get_cluster_template")
         nova_p = mock.patch("savanna.utils.openstack.nova.client")
+        keystone_p = mock.patch("savanna.utils.openstack.keystone.client")
 
         request_data = request_data_p.start()
         bad_req = bad_req_p.start()
@@ -91,6 +92,8 @@ class TestValidation(unittest2.TestCase):
         get_cl_template_p.start()
         get_image = get_image_p.start()
         nova = nova_p.start()
+        keystone = keystone_p.start()
+
         get_cl_templates.return_value = []
 
         def _get_keypair(name):
@@ -103,6 +106,16 @@ class TestValidation(unittest2.TestCase):
 
         nova().flavors.get.side_effect = _get_flavor
         nova().keypairs.get.side_effect = _get_keypair
+
+        class Service:
+            @property
+            def name(self):
+                return 'cinder'
+
+        def _services_list():
+            return [Service()]
+
+        keystone().services.list.side_effect = _services_list
 
         # stub clusters list
         get_clusters.return_value = getattr(self, "_clusters_data", [
@@ -150,7 +163,7 @@ class TestValidation(unittest2.TestCase):
         patchers = (request_data_p, bad_req_p, not_found_p, int_err_p,
                     get_clusters_p, get_ng_templates_p, get_ng_template_p,
                     get_plugins_p, get_plugin_p, get_image_p,
-                    get_cl_template_p, get_cl_templates_p, nova_p)
+                    get_cl_template_p, get_cl_templates_p, nova_p, keystone_p)
         return bad_req, int_err, not_found, request_data, patchers
 
     def stop_patch(self, patchers):
@@ -456,7 +469,7 @@ class TestValidation(unittest2.TestCase):
             }
         )
 
-    def test_ng_template_create_v_minimum_ints(self):
+    def test_ng_template_cinder(self):
         self._create_object_fun = nt.check_node_group_template_create
         scheme = nt.NODE_GROUP_TEMPLATE_SCHEMA
         self._assert_create_object_validation(
@@ -484,6 +497,34 @@ class TestValidation(unittest2.TestCase):
             },
             bad_req_i=(1, 'VALIDATION_ERROR',
                        u'0.0 is less than the minimum of 1')
+        )
+        self._assert_create_object_validation(
+            scheme,
+            {
+                'name': 'a',
+                'flavor_id': '42',
+                'plugin_name': 'vanilla',
+                'hadoop_version': '1.1.2',
+                'node_processes': ['datanode', 'tasktracker'],
+                'volumes_per_node': 1,
+                'volumes_size': 1,
+                'volume_mount_prefix': '/mnt/volume'
+            }
+        )
+        data = {
+            'name': 'a',
+            'flavor_id': '42',
+            'plugin_name': 'vanilla',
+            'hadoop_version': '1.1.2',
+            'node_processes': ['datanode', 'tasktracker'],
+            'volumes_per_node': 1,
+            'volumes_size': 1,
+            'volume_mount_prefix': 'qwerty'
+        }
+        self._assert_create_object_validation(
+            scheme,
+            data,
+            bad_req_i=(1, 'VALIDATION_ERROR', "'qwerty' is not a 'posix_path'")
         )
 
     def _assert_types(self, default_data, scheme):

@@ -18,6 +18,7 @@ import novaclient.exceptions as nova_ex
 import savanna.exceptions as ex
 import savanna.plugins.base as plugin_base
 import savanna.service.api as api
+import savanna.utils.openstack.keystone as keystone
 import savanna.utils.openstack.nova as nova
 
 
@@ -102,6 +103,9 @@ def check_node_group_basic_fields(plugin_name, hadoop_version, ng,
 
     if ng.get('image_id'):
         check_image_registered(ng['image_id'])
+
+    if ng.get('volumes_per_node'):
+        check_cinder_exists()
 
 
 def check_flavor_exists(flavor_id):
@@ -204,3 +208,12 @@ def check_add_node_groups(cluster, add_node_groups):
 
         check_node_group_basic_fields(cluster.plugin_name,
                                       cluster.hadoop_version, ng, pl_confs)
+
+
+## Cinder
+
+def check_cinder_exists():
+    services = [service.name for service in
+                keystone.client().services.list()]
+    if 'cinder' not in services:
+        raise ex.InvalidException("Cinder is not supported")
