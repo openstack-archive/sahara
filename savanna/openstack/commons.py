@@ -52,7 +52,7 @@ def split_path(path, minsegs=1, maxsegs=None, rest_with_last=False):
         count = len(segs)
         if (segs[0] or count < minsegs or count > maxsegs or
                 '' in segs[1:minsegs]):
-            raise ValueError('Invalid path: %s' % path)
+            return None, None, None
     else:
         minsegs += 1
         maxsegs += 1
