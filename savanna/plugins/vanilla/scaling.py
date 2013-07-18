@@ -61,8 +61,7 @@ def decommission_dn(nn, inst_to_be_deleted, survived_inst):
                                   '/etc/hadoop/dn.excl': "",
                                   })
                 break
-            else:
-                att_amount -= 1
+            att_amount -= 1
 
         if not att_amount:
             raise Exception("Cannot finish decommission")

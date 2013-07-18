@@ -188,7 +188,7 @@ def convert_to_cluster_template(plugin_name, version, config_file):
 def construct_ngs_for_scaling(additional_node_groups):
     additional = {}
     for ng in additional_node_groups:
-        tmpl_id = ng['node_group_template_id']
+        tmpl_id = ng.get('node_group_template_id')
         count = ng['count']
         if tmpl_id:
             tmpl = get_node_group_template(id=tmpl_id)
