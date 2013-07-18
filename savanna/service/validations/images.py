@@ -34,6 +34,7 @@ image_tags_schema = {
             "type": "array",
             "items": {
                 "type": "string",
+                "format": "valid_tag"
             },
         },
     },

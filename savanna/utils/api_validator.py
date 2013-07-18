@@ -29,6 +29,14 @@ def validate_name_format(entry):
     return res is not None
 
 
+@jsonschema.FormatChecker.cls_checks('valid_tag')
+def validate_valid_tag_format(entry):
+    res = re.match(r"^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-_]"
+                   r"*[a-zA-Z0-9])\.)*([A-Za-z0-9]|[A-Za-z0-9]"
+                   r"[A-Za-z0-9\-_]*[A-Za-z0-9])$", entry)
+    return res is not None
+
+
 @jsonschema.FormatChecker.cls_checks('uuid')
 def validate_uuid_format(entry):
     return uuidutils.is_uuid_like(entry)
