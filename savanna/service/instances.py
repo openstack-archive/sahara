@@ -72,9 +72,9 @@ def scale_cluster(cluster, node_group_names_map, plugin):
             instances_list = []
             _clean_cluster_from_empty_ng(cluster)
             if cluster.status == 'Decommissioning':
-                cluster.status = 'Error'
+                context.model_update(cluster, status='Error')
             else:
-                cluster.status = 'Active'
+                context.model_update(cluster, status='Active')
     # we should be here with valid cluster: if instances creation
     # was not successful all extra-instances will be removed above
     if instances_list:
