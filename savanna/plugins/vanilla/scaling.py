@@ -13,6 +13,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import os
+
 from savanna import context
 from savanna.plugins.vanilla import run_scripts as run
 from savanna.plugins.vanilla import utils
@@ -44,9 +46,7 @@ def decommission_dn(nn, inst_to_be_deleted, survived_inst):
             cmd = r.execute_command(
                 "sudo su -c 'hadoop dfsadmin -report' hadoop")
             all_found = True
-
             datanodes_info = parse_dfs_report(cmd[1])
-
             for i in inst_to_be_deleted:
                 for dn in datanodes_info:
                     if (dn["Name"].startswith(i.internal_ip)) and (
@@ -67,27 +67,27 @@ def decommission_dn(nn, inst_to_be_deleted, survived_inst):
             raise Exception("Cannot finish decommission")
 
 
-def parse_dfs_report(report):
+def parse_dfs_report(cmd_output):
+    report = cmd_output.rstrip().split(os.linesep)
     array = []
     started = False
     for line in report:
         if started:
             array.append(line)
-        if line.startswith("---"):
+        if line.startswith("Datanodes available"):
             started = True
 
     res = []
-    i = 0
-    while i < len(array) - 1:
-        i += 2
-        datanode_info = {}
-        d = array[i]
-        while d != '\n':
-            idx = str.find(d, ':')
-            name = d[0:idx]
-            value = d[idx + 2:len(d) - 1]
+    datanode_info = {}
+    for i in xrange(0, len(array)):
+        if array[i]:
+            idx = str.find(array[i], ':')
+            name = array[i][0:idx]
+            value = array[i][idx + 2:]
             datanode_info[name.strip()] = value.strip()
-            i += 1
-            d = array[i]
+        if not array[i] and datanode_info:
+            res.append(datanode_info)
+            datanode_info = {}
+    if datanode_info:
         res.append(datanode_info)
     return res

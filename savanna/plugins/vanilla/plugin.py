@@ -271,7 +271,7 @@ class VanillaProvider(p.ProvisioningPluginBase):
                 del ng_names[ng.name]
                 if ng.count > existing[ng.name] and "datanode" in \
                         ng.node_processes:
-                    dn_to_delete += 1
+                    dn_to_delete += ng.count - existing[ng.name]
                 if not set(ng.node_processes).issubset(scalable_processes):
                     raise ex.NodeGroupCannotBeScaled(
                         ng.name, "Vanilla plugin cannot scale nodegroup"
