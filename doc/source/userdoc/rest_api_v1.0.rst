@@ -1451,7 +1451,7 @@ User should provide an OpenStack keypair to get access to cluster nodes via SSH.
 6.1 List all Clusters
 ---------------------
 
-.. http:get:: /v1.0/{tenant_id}/cluster-templates
+.. http:get:: /v1.0/{tenant_id}/clusters
 
 Normal Response Code: 200 (OK)
 
@@ -1699,7 +1699,7 @@ This operation returns created Cluster.
             "plugin_name": "vanilla",
             "hadoop_version": "1.1.2",
             "cluster_template_id": "1bb1cced-765e-4a2b-a5b6-ac6bbb0bb798",
-            "default_iamge_id": "db12c199-d0b5-47d3-8a97-e95eeaeae615",
+            "default_image_id": "db12c199-d0b5-47d3-8a97-e95eeaeae615",
             "user_keypair_id": "doc-keypair",
             "name": "doc-cluster",
             "cluster_configs": {}
@@ -1807,7 +1807,7 @@ This operation returns created Cluster.
         {
             "plugin_name": "vanilla",
             "hadoop_version": "1.1.2",
-            "default_iamge_id": "db12c199-d0b5-47d3-8a97-e95eeaeae615",
+            "default_image_id": "db12c199-d0b5-47d3-8a97-e95eeaeae615",
             "user_keypair_id": "doc-keypair",
             "node_groups": [
                 {
