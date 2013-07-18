@@ -13,6 +13,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from novaclient import exceptions as nova_exceptions
+
 from savanna import context
 from savanna.db import models as m
 from savanna.openstack.common import excutils
@@ -303,7 +305,12 @@ def _shutdown_instances(cluster, quiet=False):
 
 def _shutdown_instance(instance):
     session = context.ctx().session
-    nova.client().servers.delete(instance.instance_id)
+    try:
+        nova.client().servers.delete(instance.instance_id)
+    except nova_exceptions.NotFound:
+        #Just ignore non-existing instances
+        pass
+
     with session.begin():
         session.delete(instance)
 
