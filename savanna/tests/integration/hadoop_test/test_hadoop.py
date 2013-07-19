@@ -27,11 +27,15 @@ class TestHadoop(base.ITestCase):
         telnetlib.Telnet(self.host, self.port)
         self.create_node_group_templates()
 
-    def _hadoop_testing(self, node_list):
+    def _hadoop_testing(self, cluster_tmpl_body):
+        cl_tmpl_id = None
         cluster_id = None
         try:
+            cl_tmpl_id = self.get_object_id(
+                'cluster_template', self.post_object(self.url_cl_tmpl,
+                                                     cluster_tmpl_body, 202))
             cluster_id = self.create_cluster_using_ngt_and_get_id(
-                node_list, param.CLUSTER_NAME_HADOOP)
+                cl_tmpl_id, param.CLUSTER_NAME_HADOOP)
             ip_instances = self.get_instances_ip_and_node_processes_list(
                 cluster_id)
             namenode_ip = None
@@ -93,12 +97,16 @@ class TestHadoop(base.ITestCase):
         finally:
             self.del_object(self.url_cluster_with_slash, cluster_id, 204)
             time.sleep(5)
+            self.del_object(self.url_cl_tmpl_with_slash, cl_tmpl_id, 204)
 
     def test_hadoop_single_master(self):
         """This test checks hadoop work
         """
         node_list = {self.id_jt_nn: 1, self.id_tt_dn: 1}
-        self._hadoop_testing(node_list)
+
+        cl_tmpl_body = self.make_cluster_template('cl-tmpl-for-hadoop-test',
+                                                  node_list)
+        self._hadoop_testing(cl_tmpl_body)
 
     def tearDown(self):
         self.delete_node_group_templates()
