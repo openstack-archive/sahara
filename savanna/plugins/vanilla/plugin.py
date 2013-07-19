@@ -160,7 +160,9 @@ class VanillaProvider(p.ProvisioningPluginBase):
         self._write_hadoop_user_keys(cluster.private_key,
                                      instances)
         run.refresh_nodes(utils.get_namenode(cluster).remote, "dfsadmin")
-        run.refresh_nodes(utils.get_jobtracker(cluster).remote, "mradmin")
+        jt = utils.get_jobtracker(cluster)
+        if jt:
+            run.refresh_nodes(jt.remote, "mradmin")
 
         for i in instances:
             with i.remote as remote:
