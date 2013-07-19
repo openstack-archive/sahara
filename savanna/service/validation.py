@@ -35,15 +35,15 @@ def validate(schema, *validators):
                 if validators:
                     for validator in validators:
                         validator(**kwargs)
-            except jsonschema.ValidationError, e:
+            except jsonschema.ValidationError as e:
                 e.code = "VALIDATION_ERROR"
                 return u.bad_request(e)
-            except ex.SavannaException, e:
+            except ex.SavannaException as e:
                 return u.bad_request(e)
-            except os_ex.MalformedRequestBody, e:
+            except os_ex.MalformedRequestBody as e:
                 e.code = "MALFORMED_REQUEST_BODY"
                 return u.bad_request(e)
-            except Exception, e:
+            except Exception as e:
                 return u.internal_error(
                     500, "Error occurred during validation", e)
 
@@ -68,7 +68,7 @@ def check_exists(get_func, *id_prop, **get_args):
             obj = None
             try:
                 obj = get_func(**get_kwargs)
-            except Exception, e:
+            except Exception as e:
                 if 'notfound' not in e.__class__.__name__.lower():
                     raise e
             if obj is None:

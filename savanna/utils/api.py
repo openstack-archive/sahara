@@ -79,9 +79,9 @@ class Rest(flask.Blueprint):
 
                 try:
                     return func(**kwargs)
-                except ex.SavannaException, e:
+                except ex.SavannaException as e:
                     return bad_request(e)
-                except Exception, e:
+                except Exception as e:
                     return internal_error(500, 'Internal Server Error', e)
 
             f_rule = "/<tenant_id>" + rule

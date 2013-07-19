@@ -960,7 +960,7 @@ class TestScalingValidation(unittest2.TestCase):
         with self.assertRaises(ex.InvalidException):
             try:
                 c_s.check_cluster_scaling(data, cluster.id)
-            except ex.InvalidException, e:
+            except ex.InvalidException as e:
                 self.assertEqual(expected_message, e.message)
                 raise e
 

@@ -92,7 +92,7 @@ def make_app():
                     session = context.session()
                     if session.transaction:
                         session.transaction.commit()
-                except Exception, e:
+                except Exception as e:
                     return api_utils.internal_error(
                         500, 'Internal Server Error', e)
 
