@@ -13,6 +13,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from savanna import exceptions as ex
+from savanna.service import api
 import savanna.service.validations.base as b
 
 NODE_GROUP_TEMPLATE_SCHEMA = {
@@ -81,3 +83,20 @@ def check_node_group_template_create(data, **kwargs):
                                     data['hadoop_version'])
     b.check_node_group_basic_fields(data['plugin_name'],
                                     data['hadoop_version'], data)
+
+
+def check_node_group_template_usage(node_group_template_id, **kwargs):
+    node_groups = []
+
+    for cluster in api.get_clusters():
+        node_groups += cluster.node_groups
+
+    for cluster_template in api.get_cluster_templates():
+        node_groups += cluster_template.node_groups
+
+    node_group_template_ids = set([node_group.node_group_template_id
+                                   for node_group in node_groups])
+
+    if node_group_template_id in node_group_template_ids:
+        raise ex.InvalidException(
+            "Node group template %s is use" % node_group_template_id)
