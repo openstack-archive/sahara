@@ -37,6 +37,7 @@ NODE_USERNAME = _get_conf('NODE_USERNAME', 'username')
 CLUSTER_NAME_CRUD = _get_conf('CLUSTER_NAME_CRUD', 'cluster-crud')
 CLUSTER_NAME_HADOOP = _get_conf('CLUSTER_NAME_HADOOP', 'cluster-hadoop')
 CLUSTER_NAME_SWIFT = _get_conf('CLUSTER_NAME_SWIFT', 'cluster-swift')
+CLUSTER_NAME_SCALING = _get_conf('CLUSTER_NAME_SCALING', 'cluster-scaling')
 
 TIMEOUT = _get_conf('TIMEOUT', 15)
 

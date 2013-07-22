@@ -14,6 +14,7 @@ NODE_USERNAME = 'username' # username for master node
 CLUSTER_NAME_CRUD = 'cluster-name-crud' # cluster name for crud operations
 CLUSTER_NAME_HADOOP = 'cluster-name-hadoop' # cluster name for hadoop testing
 CLUSTER_NAME_SWIFT = 'cluster-name-swift' # cluster name for swift testing
+CLUSTER_NAME_SCALING = 'cluster-name-scaling' # cluster name for scaling testing
 
 TIMEOUT = 15 # cluster creation timeout (in minutes)
 
@@ -26,9 +27,18 @@ PATH_TO_SSH = '/home/user/.ssh/id_rsa' # path to folder where put id_rsa key
 
 PLUGIN_NAME = 'vanilla'
 
+NAMENODE_CONFIG = {'Name Node Heap Size': 1234}
+JOBTRACKER_CONFIG = {'Job Tracker Heap Size': 1345}
+DATANODE_CONFIG = {'Data Node Heap Size': 1456}
+TASKTRACKER_CONFIG = {'Task Tracker Heap Size': 1567}
+GENERAL_CONFIG = {'Enable Swift': True}
+CLUSTER_HDFS_CONFIG = {'dfs.replication': 2}
+CLUSTER_MAPREDUCE_CONFIG = {'mapred.map.tasks.speculative.execution': False,
+                            'mapred.child.java.opts': '-Xmx100m'}
+
 JT_PORT = 000001 # port for process 'jobtracker'
 NN_PORT = 000002 # port for process 'namenode'
 TT_PORT = 000003 # port for process 'tasktracker'
 DN_PORT = 000004 # port for process 'datanode'
 
-ENABLE_SWIFT_TESTS = True
+ENABLE_SWIFT_TESTS = True # enable swift test
