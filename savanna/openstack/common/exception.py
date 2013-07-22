@@ -21,7 +21,7 @@ Exceptions common to OpenStack projects
 
 import logging
 
-from savanna.openstack.common.gettextutils import _
+from savanna.openstack.common.gettextutils import _  # noqa
 
 _FATAL_EXCEPTION_FORMAT_ERRORS = False
 

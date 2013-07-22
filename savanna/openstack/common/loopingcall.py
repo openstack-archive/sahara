@@ -22,7 +22,7 @@ import sys
 from eventlet import event
 from eventlet import greenthread
 
-from savanna.openstack.common.gettextutils import _
+from savanna.openstack.common.gettextutils import _  # noqa
 from savanna.openstack.common import log as logging
 from savanna.openstack.common import timeutils
 
