@@ -29,7 +29,6 @@ LOG = logging.getLogger(__name__)
 
 
 class AmbariPlugin(p.ProvisioningPluginBase):
-
     def __init__(self):
         self.cluster_name_to_ambari_host_mapping = {}
         self.default_config = self._get_default_cluster_configuration()
@@ -65,6 +64,8 @@ class AmbariPlugin(p.ProvisioningPluginBase):
                     'GANGLIA_SERVER',
                     cluster_spec, hosts).internal_ip
                 self.update_ganglia_configurations(ganglia_server_ip, servers)
+                # add service urls
+                self._set_cluster_info(cluster, cluster_spec, hosts)
             else:
                 LOG.warning("Install of Hadoop stack failed.")
         else:
@@ -397,6 +398,39 @@ class AmbariPlugin(p.ProvisioningPluginBase):
         with open(os.path.join(os.path.dirname(__file__), 'resources',
                                'default-cluster.template'), 'r') as f:
             return clusterspec.ClusterSpec(f.read())
+
+    def _set_cluster_info(self, cluster, cluster_spec, hosts):
+        info = cluster.info
+
+        try:
+            jobtracker_ip = self._determine_host_for_server_component(
+                'JOBTRACKER', cluster_spec, hosts).management_ip
+        except Exception:
+            pass
+        else:
+            info['MapReduce'] = {
+                'Web UI': 'http://%s:50030' % jobtracker_ip
+            }
+
+        try:
+            namenode_ip = self._determine_host_for_server_component(
+                'NAMENODE', cluster_spec, hosts).management_ip
+        except Exception:
+            pass
+        else:
+            info['HDFS'] = {
+                'Web UI': 'http://%s:50070' % namenode_ip
+            }
+
+        try:
+            ambari_ip = self._determine_host_for_server_component(
+                'AMBARI_SERVER', cluster_spec, hosts).management_ip
+        except Exception:
+            pass
+        else:
+            info['Ambari Console'] = {
+                'Web UI': 'http://%s:8080/#/main' % ambari_ip
+            }
 
     # SAVANNA PLUGIN SPI METHODS:
     def configure_cluster(self, cluster):
