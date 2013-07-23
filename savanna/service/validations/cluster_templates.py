@@ -15,6 +15,8 @@
 
 import copy
 
+from savanna import exceptions as ex
+from savanna.service import api
 import savanna.service.validations.base as b
 import savanna.service.validations.node_group_templates as ng_tml
 
@@ -45,8 +47,8 @@ def _build_ng_tmpl_schema_for_cluster_template():
                                           "name", "count"]
     return cl_tmpl_ng_tmpl_schema
 
-_cluster_tmpl_ng_tmpl_schema = _build_ng_tmpl_schema_for_cluster_template()
 
+_cluster_tmpl_ng_tmpl_schema = _build_ng_tmpl_schema_for_cluster_template()
 
 CLUSTER_TEMPLATE_SCHEMA = {
     "type": "object",
@@ -110,3 +112,13 @@ def check_cluster_template_create(data, **kwargs):
     if data.get('anti_affinity'):
         b.check_node_processes(data['plugin_name'], data['hadoop_version'],
                                data['anti_affinity'])
+
+
+def check_cluster_template_usage(cluster_template_id, **kwargs):
+    clusters = api.get_clusters()
+    use_cluster_template_ids = [cluster.cluster_template_id
+                                for cluster in clusters]
+
+    if cluster_template_id in use_cluster_template_ids:
+        raise ex.InvalidException(
+            "Cluster template %s is use" % cluster_template_id)

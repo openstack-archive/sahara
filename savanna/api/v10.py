@@ -91,6 +91,7 @@ def cluster_templates_update(cluster_template_id):
 
 @rest.delete('/cluster-templates/<cluster_template_id>')
 @v.check_exists(api.get_cluster_template, 'cluster_template_id')
+@v.validate(None, v_ct.check_cluster_template_usage)
 def cluster_templates_delete(cluster_template_id):
     api.terminate_cluster_template(id=cluster_template_id)
     return u.render()
@@ -126,6 +127,7 @@ def node_group_templates_update(node_group_template_id):
 
 @rest.delete('/node-group-templates/<node_group_template_id>')
 @v.check_exists(api.get_node_group_template, 'node_group_template_id')
+@v.validate(None, v_ngt.check_node_group_template_usage)
 def node_group_templates_delete(node_group_template_id):
     api.terminate_node_group_template(id=node_group_template_id)
     return u.render()
