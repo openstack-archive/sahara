@@ -415,20 +415,15 @@ class ITestCase(unittest2.TestCase):
 
         return cluster_id
 
-    def create_cluster_using_ngt_and_get_id(self, node_list, name):
-        cl_tmpl_id = None
+    def create_cluster_using_ngt_and_get_id(self, cl_tmpl_id, name):
         try:
-            cl_tmpl_body = self.make_cluster_template('cl-tmpl', node_list)
-            cl_tmpl_id = self.get_object_id(
-                'cluster_template', self.post_object(self.url_cl_tmpl,
-                                                     cl_tmpl_body, 202))
             clstr_body = self.make_cl_body_cluster_template(cl_tmpl_id)
             clstr_body['name'] = name
             return self.create_cluster_and_get_id(clstr_body)
+
         except Exception as e:
-            print(str(e))
-        finally:
             self.del_object(self.url_cl_tmpl_with_slash, cl_tmpl_id, 204)
+            self.fail('failure: ' + str(e))
 
     def get_instances_ip_and_node_processes_list(self, cluster_id):
         get_data = self.get_object(
