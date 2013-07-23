@@ -13,6 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from novaclient import exceptions as nova_ex
 from novaclient.v1_1 import client as nova_client
 
 from savanna import context
@@ -55,3 +56,19 @@ def get_images():
 def get_limits():
     limits = client().limits.get().absolute
     return dict((l.name, l.value) for l in limits)
+
+
+def get_user_keypair(cluster):
+    try:
+        return client().keypairs.get(cluster.user_keypair_id)
+    except nova_ex.NotFound:
+        return None
+
+
+def get_instance_info(instance):
+    return client().servers.get(instance.instance_id)
+
+
+def get_node_group_image_username(node_group):
+    image_id = node_group.get_image_id()
+    return client().images.get(image_id).username

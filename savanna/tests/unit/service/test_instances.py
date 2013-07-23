@@ -183,4 +183,7 @@ def _create_nova_mock(novalcient):
     nova = mock.Mock()
     novalcient.return_value = nova
     nova.servers.create.side_effect = _mock_instances(3)
+    images = mock.Mock()
+    images.username = "root"
+    nova.images.get = lambda x: images
     return nova

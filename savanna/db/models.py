@@ -13,7 +13,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from novaclient import exceptions as nova_ex
 from oslo.config import cfg
 import sqlalchemy as sa
 from sqlalchemy.orm import relationship
@@ -21,7 +20,6 @@ from sqlalchemy.orm import relationship
 from savanna.db import model_base as mb
 from savanna.utils import configs
 from savanna.utils import crypto
-from savanna.utils.openstack import nova
 from savanna.utils import sqlatypes as st
 
 
@@ -102,20 +100,6 @@ class Cluster(mb.SavannaBase, ClusterMixin):
         d['node_groups'] = [ng.dict for ng in self.node_groups]
         return d
 
-    @property
-    def user_keypair(self):
-        """Extract user keypair object from nova.
-
-        It contains 'public_key' and 'fingerprint' fields.
-        """
-        if not hasattr(self, '_user_kp'):
-            try:
-                self._user_kp = nova.client().keypairs.get(
-                    self.user_keypair_id)
-            except nova_ex.NotFound:
-                self._user_kp = None
-        return self._user_kp
-
 
 class NodeGroup(mb.SavannaBase, NodeGroupMixin):
     """Specifies group of nodes within a cluster."""
@@ -157,13 +141,6 @@ class NodeGroup(mb.SavannaBase, NodeGroupMixin):
 
     def get_image_id(self):
         return self.image_id or self.cluster.default_image_id
-
-    @property
-    def username(self):
-        if not hasattr(self, '_username'):
-            image_id = self.get_image_id()
-            self._username = nova.client().images.get(image_id).username
-        return self._username
 
     @property
     def configuration(self):
@@ -218,15 +195,6 @@ class Instance(mb.SavannaBase, mb.ExtraMixin):
         self.instance_id = instance_id
         self.instance_name = instance_name
         self.volumes = volumes or []
-
-    @property
-    def nova_info(self):
-        """Returns info from nova about instance."""
-        return nova.client().servers.get(self.instance_id)
-
-    @property
-    def username(self):
-        return self.node_group.username
 
     @property
     def hostname(self):

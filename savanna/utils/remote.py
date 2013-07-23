@@ -18,6 +18,7 @@ import contextlib
 import paramiko
 
 from savanna.utils import crypto
+from savanna.utils.openstack import nova
 
 
 def setup_ssh_connection(host, username, private_key):
@@ -87,8 +88,9 @@ class InstanceInteropHelper(object):
         self.bulk.close()
 
     def ssh_connection(self):
+        username = nova.get_node_group_image_username(self.instance.node_group)
         return setup_ssh_connection(
-            self.instance.management_ip, self.instance.username,
+            self.instance.management_ip, username,
             self.instance.node_group.cluster.private_key)
 
     def execute_command(self, cmd):
