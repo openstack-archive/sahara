@@ -200,3 +200,6 @@ class TestClusterTemplateCreateValidation(u.ValidationTestCase):
             bad_req_i=(1, 'NAME_ALREADY_EXISTS',
                        "Cluster template with name 'test' already exists")
         )
+
+    def test_cluster_create_v_default_image_required_tags(self):
+            self._assert_cluster_default_image_tags_validation()

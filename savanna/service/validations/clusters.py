@@ -49,6 +49,9 @@ def check_cluster_create(data, **kwargs):
 
     if data.get('default_image_id'):
         b.check_image_registered(data['default_image_id'])
+        b.check_required_image_tags(data['plugin_name'],
+                                    data['hadoop_version'],
+                                    data['default_image_id'])
 
     b.check_all_configurations(data)
 
