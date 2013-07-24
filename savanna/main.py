@@ -20,6 +20,7 @@ from oslo.config import cfg
 from werkzeug import exceptions as werkzeug_exceptions
 
 from savanna.api import v10 as api_v10
+from savanna.api import v11 as api_v11
 from savanna import context
 from savanna.db import api as db_api
 from savanna.middleware import auth_valid
@@ -99,6 +100,8 @@ def make_app():
         context.set_ctx(None)
 
     app.register_blueprint(api_v10.rest, url_prefix='/v1.0')
+    app.register_blueprint(api_v10.rest, url_prefix='/v1.1')
+    app.register_blueprint(api_v11.rest, url_prefix='/v1.1')
 
     db_api.configure_db()
     scheduler.setup_scheduler(app)
