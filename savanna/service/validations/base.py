@@ -78,6 +78,7 @@ def check_all_configurations(data):
                                  plugin_configs=pl_confs)
 
     if data.get('node_groups'):
+        check_duplicates_node_groups_names(data['node_groups'])
         for ng in data['node_groups']:
             check_node_group_basic_fields(data['plugin_name'],
                                           data['hadoop_version'],
