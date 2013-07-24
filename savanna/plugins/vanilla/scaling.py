@@ -18,14 +18,15 @@ import os
 from savanna import context
 from savanna.plugins.vanilla import run_scripts as run
 from savanna.plugins.vanilla import utils
+from savanna.utils import remote
 
 
 def decommission_tt(jt, inst_to_be_deleted, survived_inst):
-    with jt.remote as r:
+    with remote.get_remote(jt) as r:
         r.write_file_to('/etc/hadoop/tt.excl',
                         utils.generate_fqdn_host_names(
                             inst_to_be_deleted))
-        run.refresh_nodes(jt.remote, "mradmin")
+        run.refresh_nodes(remote.get_remote(jt), "mradmin")
         context.sleep(3)
         r.write_files_to({'/etc/hadoop/tt.incl':
                          utils.generate_fqdn_host_names(survived_inst),
@@ -34,11 +35,11 @@ def decommission_tt(jt, inst_to_be_deleted, survived_inst):
 
 
 def decommission_dn(nn, inst_to_be_deleted, survived_inst):
-    with nn.remote as r:
+    with remote.get_remote(nn) as r:
         r.write_file_to('/etc/hadoop/dn.excl',
                         utils.generate_fqdn_host_names(
                             inst_to_be_deleted))
-        run.refresh_nodes(nn.remote, "dfsadmin")
+        run.refresh_nodes(remote.get_remote(nn), "dfsadmin")
         context.sleep(3)
 
         att_amount = 10

@@ -32,7 +32,7 @@ class HadoopServer:
     def _connect_to_vm(self):
         LOG.info(
             'Connecting to VM: {0}'.format(self.instance.management_ip))
-        return self.instance.remote.ssh_connection()
+        return remote.get_remote(self.instance).ssh_connection()
 
     def provision_ambari(self, ambari_server_ip):
         self.install_rpms()

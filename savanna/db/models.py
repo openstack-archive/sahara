@@ -22,7 +22,6 @@ from savanna.db import model_base as mb
 from savanna.utils import configs
 from savanna.utils import crypto
 from savanna.utils.openstack import nova
-from savanna.utils import remote
 from savanna.utils import sqlatypes as st
 
 
@@ -236,10 +235,6 @@ class Instance(mb.SavannaBase, mb.ExtraMixin):
     @property
     def fqdn(self):
         return self.instance_name + '.' + CONF.node_domain
-
-    @property
-    def remote(self):
-        return remote.InstanceInteropHelper(self)
 
 
 ## Template objects: ClusterTemplate, NodeGroupTemplate, TemplatesRelation

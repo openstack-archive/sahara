@@ -112,6 +112,10 @@ class InstanceInteropHelper(object):
             return replace_remote_string(ssh, remote_file, old_str, new_str)
 
 
+def get_remote(instance):
+    return InstanceInteropHelper(instance)
+
+
 class BulkInstanceInteropHelper(object):
     def __init__(self, helper):
         self.helper = helper

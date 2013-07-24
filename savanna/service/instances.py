@@ -23,6 +23,7 @@ from savanna.service import networks
 from savanna.service import volumes
 from savanna.utils import crypto
 from savanna.utils.openstack import nova
+from savanna.utils import remote
 
 LOG = logging.getLogger(__name__)
 
@@ -227,7 +228,7 @@ def _check_if_up(instance):
         return False
 
     try:
-        exit_code, _ = instance.remote.execute_command("hostname")
+        exit_code, _ = remote.get_remote(instance).execute_command("hostname")
         if exit_code:
             return False
     except Exception as ex:
@@ -249,10 +250,10 @@ def _configure_instances(cluster):
     hosts = _generate_etc_hosts(cluster)
     for node_group in cluster.node_groups:
         for instance in node_group.instances:
-            with instance.remote as remote:
-                remote.write_file_to('etc-hosts', hosts)
-                remote.execute_command('sudo mv etc-hosts /etc/hosts')
-                remote.execute_command('chmod 400 .ssh/id_rsa')
+            with remote.get_remote(instance) as r:
+                r.write_file_to('etc-hosts', hosts)
+                r.execute_command('sudo mv etc-hosts /etc/hosts')
+                r.execute_command('chmod 400 .ssh/id_rsa')
 
 
 def _generate_etc_hosts(cluster):

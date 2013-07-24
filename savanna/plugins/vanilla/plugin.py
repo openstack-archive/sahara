@@ -21,6 +21,7 @@ from savanna.plugins.vanilla import run_scripts as run
 from savanna.plugins.vanilla import scaling as sc
 from savanna.plugins.vanilla import utils
 from savanna.utils import crypto
+from savanna.utils import remote
 
 
 LOG = logging.getLogger(__name__)
@@ -88,23 +89,23 @@ class VanillaProvider(p.ProvisioningPluginBase):
         jt_instance = utils.get_jobtracker(cluster)
         tasktrackers = utils.get_tasktrackers(cluster)
 
-        with nn_instance.remote as remote:
-            run.format_namenode(remote)
-            run.start_process(remote, "namenode")
+        with remote.get_remote(nn_instance) as r:
+            run.format_namenode(r)
+            run.start_process(r, "namenode")
 
         snns = utils.get_secondarynamenodes(cluster)
         if snns:
             for snn in snns:
-                run.start_process(snn.remote, "secondarynamenode")
+                run.start_process(remote.get_remote(snn), "secondarynamenode")
         for dn in datanodes:
-            run.start_process(dn.remote, "datanode")
+            run.start_process(remote.get_remote(dn), "datanode")
         LOG.info("HDFS service at '%s' has been started",
                  nn_instance.hostname)
 
         if jt_instance:
-            run.start_process(jt_instance.remote, "jobtracker")
+            run.start_process(remote.get_remote(jt_instance), "jobtracker")
             for tt in tasktrackers:
-                run.start_process(tt.remote, "tasktracker")
+                run.start_process(remote.get_remote(tt), "tasktracker")
             LOG.info("MapReduce service at '%s' has been started",
                      jt_instance.hostname)
 
@@ -159,18 +160,19 @@ class VanillaProvider(p.ProvisioningPluginBase):
         self._push_configs_to_nodes(cluster, instances=instances)
         self._write_hadoop_user_keys(cluster.private_key,
                                      instances)
-        run.refresh_nodes(utils.get_namenode(cluster).remote, "dfsadmin")
+        run.refresh_nodes(remote.get_remote(
+            utils.get_namenode(cluster)), "dfsadmin")
         jt = utils.get_jobtracker(cluster)
         if jt:
-            run.refresh_nodes(jt.remote, "mradmin")
+            run.refresh_nodes(remote.get_remote(jt), "mradmin")
 
         for i in instances:
-            with i.remote as remote:
+            with remote.get_remote(i) as r:
                 if "datanode" in i.node_group.node_processes:
-                    run.start_process(remote, "datanode")
+                    run.start_process(r, "datanode")
 
                 if "tasktracker" in i.node_group.node_processes:
-                    run.start_process(remote, "tasktracker")
+                    run.start_process(r, "tasktracker")
 
     def _push_configs_to_nodes(self, cluster, instances=None):
         if instances is None:
@@ -187,7 +189,7 @@ class VanillaProvider(p.ProvisioningPluginBase):
                 '/tmp/savanna-hadoop-init.sh': inst.node_group.extra[
                     'setup_script']
             }
-            with inst.remote as r:
+            with remote.get_remote(inst) as r:
                 r.execute_command(
                     'sudo chown -R $USER:$USER /etc/hadoop'
                 )
@@ -202,12 +204,12 @@ class VanillaProvider(p.ProvisioningPluginBase):
         nn = utils.get_namenode(cluster)
         jt = utils.get_jobtracker(cluster)
 
-        with nn.remote as r:
+        with remote.get_remote(nn) as r:
             r.write_file_to('/etc/hadoop/dn.incl', utils.
                             generate_fqdn_host_names(
                             utils.get_datanodes(cluster)))
         if jt:
-            with jt.remote as r:
+            with remote.get_remote(jt) as r:
                 r.write_file_to('/etc/hadoop/tt.incl', utils.
                                 generate_fqdn_host_names(
                                 utils.get_tasktrackers(cluster)))
@@ -241,9 +243,9 @@ class VanillaProvider(p.ProvisioningPluginBase):
                  'sudo chmod 600 /home/hadoop/.ssh/{id_rsa,authorized_keys}'
 
         for instance in instances:
-            with instance.remote as remote:
-                remote.write_files_to(files)
-                remote.execute_command(mv_cmd)
+            with remote.get_remote(instance) as r:
+                r.write_files_to(files)
+                r.execute_command(mv_cmd)
 
     def _get_scalable_processes(self):
         return ["datanode", "tasktracker"]

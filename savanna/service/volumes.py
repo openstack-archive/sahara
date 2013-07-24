@@ -20,6 +20,7 @@ from savanna import context
 from savanna.openstack.common import log as logging
 from savanna.utils.openstack import cinder
 from savanna.utils.openstack import nova
+from savanna.utils import remote
 
 LOG = logging.getLogger(__name__)
 
@@ -84,7 +85,8 @@ def _create_attach_volume(instance, size, device_path, display_name=None,
 
 
 def _get_device_paths(instance):
-    code, part_info = instance.remote.execute_command('cat /proc/partitions')
+    code, part_info = remote.get_remote(instance).execute_command(
+        'cat /proc/partitions')
     if code:
         raise RuntimeError("Unable get device paths info")
 
@@ -112,13 +114,13 @@ def _get_free_device_path(instance):
 
 def _mount_volume(instance, device_path, mount_point):
     codes = []
-    with instance.remote as remote:
-        code, _ = remote.execute_command('sudo mkdir -p %s' % mount_point)
+    with remote.get_remote(instance) as r:
+        code, _ = r.execute_command('sudo mkdir -p %s' % mount_point)
         codes.append(code)
-        code, _ = remote.execute_command('sudo mkfs.ext4 %s' % device_path)
+        code, _ = r.execute_command('sudo mkfs.ext4 %s' % device_path)
         codes.append(code)
-        code, _ = remote.execute_command('sudo mount %s %s' % (device_path,
-                                                               mount_point))
+        code, _ = r.execute_command('sudo mount %s %s' % (device_path,
+                                                          mount_point))
         codes.append(code)
 
     if any(codes):
