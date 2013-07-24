@@ -73,6 +73,29 @@ class TestClusterTemplateCreateValidation(u.ValidationTestCase):
                        "'flavor_id': '42'} "
                        "is not valid under any of the given schemas")
         )
+        self._assert_create_object_validation(
+            data={
+                'name': "test-name",
+                'plugin_name': "vanilla",
+                'hadoop_version': "1.1.2",
+                'node_groups': [
+                    {
+                        'name': 'a',
+                        'flavor_id': '42',
+                        'node_processes': ['namenode'],
+                        'count': 1
+                    },
+                    {
+                        "node_group_template_id": "550e8400-e29b-41d4-a716-"
+                                                  "446655440000",
+                        "name": "a",
+                        'count': 2
+                    }
+                ]
+            },
+            bad_req_i=(1, "INVALID_REFERENCE",
+                       "Duplicates in node group names are detected")
+        )
 
     def test_cluster_template_create_v_ng_templates(self):
         self._assert_create_object_validation(
