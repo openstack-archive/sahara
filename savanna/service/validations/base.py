@@ -218,3 +218,19 @@ def check_cinder_exists():
                 keystone.client().services.list()]
     if 'cinder' not in services:
         raise ex.InvalidException("Cinder is not supported")
+
+
+##Tags
+
+
+def check_required_image_tags(plugin_name, hadoop_version, image_id):
+    image = api.get_image(id=image_id)
+    plugin = plugin_base.PLUGINS.get_plugin(plugin_name)
+    req_tags = set(plugin.get_required_image_tags(hadoop_version))
+    if not req_tags.issubset(set(image.tags)):
+            raise ex.InvalidException("Tags of requested image '%s' don't "
+                                      "contain required tags "
+                                      "['%s', '%s']" %
+                                      (image_id,
+                                       plugin_name,
+                                       hadoop_version))

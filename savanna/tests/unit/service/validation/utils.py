@@ -74,7 +74,9 @@ def start_patch():
         mock.patch("savanna.service.api.get_cluster_template")
     nova_p = mock.patch("savanna.utils.openstack.nova.client")
     keystone_p = mock.patch("savanna.utils.openstack.keystone.client")
+    get_image_p = mock.patch("savanna.service.api.get_image")
 
+    get_image = get_image_p.start()
     get_clusters = get_clusters_p.start()
     get_cluster = get_cluster_p.start()
     get_ng_templates = get_ng_templates_p.start()
@@ -103,11 +105,32 @@ def start_patch():
     keystone().services.list.side_effect = _services_list
 
     class Image:
+        def __init__(self, name='test'):
+            self.name = name
+
         @property
         def id(self):
-            return '550e8400-e29b-41d4-a716-446655440000'
+            if self.name == 'test':
+                return '550e8400-e29b-41d4-a716-446655440000'
+            else:
+                return '813fe450-40d2-4acc-ade5-ea753a1bd5bc'
 
-    nova().images.list_registered.return_value = [Image()]
+        @property
+        def tags(self):
+            if self.name == 'test':
+                return ['vanilla', '1.1.2']
+            else:
+                return ['wrong_tag']
+
+    def _get_image(id):
+        if id == '550e8400-e29b-41d4-a716-446655440000':
+            return Image()
+        else:
+            return Image('wrong_test')
+
+    get_image.side_effect = _get_image
+    nova().images.list_registered.return_value = [Image(),
+                                                  Image(name='wrong_name')]
     cluster = m.Cluster('test', 't', 'vanilla', '1.2.2')
     cluster.id = 1
     cluster.status = 'Active'
@@ -143,7 +166,8 @@ def start_patch():
     # request data to validate
     patchers = (get_clusters_p, get_ng_templates_p, get_ng_template_p,
                 get_plugins_p, get_plugin_p,
-                get_cl_template_p, get_cl_templates_p, nova_p, keystone_p)
+                get_cl_template_p, get_cl_templates_p, nova_p, keystone_p,
+                get_image_p)
     return patchers
 
 
@@ -278,3 +302,25 @@ class ValidationTestCase(unittest2.TestCase):
                        "Plugin's applicable target 'HDFS' doesn't "
                        "contain config with name 's'")
         )
+
+    def _assert_cluster_default_image_tags_validation(self):
+        data = {
+            'name': 'test-cluster',
+            'plugin_name': 'vanilla',
+            'hadoop_version': '1.1.2',
+            'default_image_id': '550e8400-e29b-41d4-a716-446655440000'
+        }
+        self._assert_create_object_validation(data=data)
+        data = {
+            'name': 'test-cluster',
+            'plugin_name': 'vanilla',
+            'hadoop_version': '1.1.2',
+            'default_image_id': '813fe450-40d2-4acc-ade5-ea753a1bd5bc'
+        }
+        self._assert_create_object_validation(
+            data=data,
+            bad_req_i=(1, 'INVALID_REFERENCE',
+                       "Tags of requested image "
+                       "'813fe450-40d2-4acc-ade5-ea753a1bd5bc' "
+                       "don't contain required tags "
+                       "['vanilla', '1.1.2']"))

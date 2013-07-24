@@ -162,3 +162,6 @@ class TestClusterCreateValidation(u.ValidationTestCase):
                 'default_image_id': '550e8400-e29b-41d4-a716-446655440000'
             }
         )
+
+    def test_cluster_create_v_default_image_required_tags(self):
+        self._assert_cluster_default_image_tags_validation()
