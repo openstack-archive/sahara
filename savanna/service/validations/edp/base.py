@@ -14,37 +14,9 @@
 # limitations under the License.
 
 
-def get_jobs():
-    return []
+## Cluster creation related checks
 
-
-def get_job(job_id):
-    pass
-
-
-def create_job(values):
-    pass
-
-
-def delete_job(job_id):
-    pass
-
-
-def execute_job(job_id, input_id, output_id):
-    pass
-
-
-def get_data_sources():
-    return []
-
-
-def get_data_source(data_source_id):
-    pass
-
-
-def delete_data_sources(data_source_id):
-    pass
-
-
-def register_data_source(values):
-    pass
+data_source_type = {
+    "type": "string",
+    "enum": ["Swift"]
+}
