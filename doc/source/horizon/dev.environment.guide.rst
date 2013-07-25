@@ -20,7 +20,7 @@ endpoints using the following command:
     $ sudo apt-get update
     $ sudo apt-get install git-core python-dev gcc python-setuptools python-virtualenv node-less
 
-   On Ubuntu 12.10 and higher you have to install the following lib as well:
+On Ubuntu 12.10 and higher you have to install the following lib as well:
 
 .. sourcecode:: console
 
@@ -79,11 +79,11 @@ and set right value for variables:
 
     $ .venv/bin/python $SAVANNA_DASHBOARD_HOME/setup.py install
 
-8. Create a symlink to savannadashboard source
+8. Create a symlink to savanna-dashboard source
 
 .. sourcecode:: console
 
-   $ ln -s $SAVANNA_DASHBOARD_HOME/savannadashboard .venv/lib/python2.7/site-packages/savannadashboard
+   $ ln -s $SAVANNA_DASHBOARD_HOME/savanna-dashboard .venv/lib/python2.7/site-packages/savanna-dashboard
 
 9. In ``openstack_dashboard/settings.py`` add savanna to
 

@@ -26,7 +26,7 @@ approach see :doc:`/horizon/dev.environment.guide`
 
 .. sourcecode:: console
 
-    $ sudo pip install savannadashboard
+    $ sudo pip install savanna-dashboard
 ..
 
    This will install latest stable release of Savanna UI. If you want to install master branch of Savanna UI:
@@ -52,7 +52,7 @@ approach see :doc:`/horizon/dev.environment.guide`
         ....
 ..
 
-   Note: ``settings.py`` file is located in ``/usr/share/openstack_dashboard/openstack-dashboard/`` by default.
+   Note: ``settings.py`` file is located in ``/usr/share/openstack-dashboard/openstack_dashboard/`` by default.
 
 3) Also you have to specify **SAVANNA_URL** in local_settings.py. For example:
 
