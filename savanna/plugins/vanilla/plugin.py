@@ -78,7 +78,6 @@ class VanillaProvider(p.ProvisioningPluginBase):
         pass
 
     def configure_cluster(self, cluster):
-        self._extract_configs(cluster)
         self._push_configs_to_nodes(cluster)
         self._write_hadoop_user_keys(cluster.private_key,
                                      utils.get_instances(cluster))
@@ -112,12 +111,13 @@ class VanillaProvider(p.ProvisioningPluginBase):
         LOG.info('Cluster %s has been started successfully' % cluster.name)
         self._set_cluster_info(cluster)
 
-    def _extract_configs(self, cluster):
+    def _extract_configs_to_extra(self, cluster):
         nn = utils.get_namenode(cluster)
         jt = utils.get_jobtracker(cluster)
 
+        extra = dict()
         for ng in cluster.node_groups:
-            ng.extra = {
+            extra[ng.id] = {
                 'xml': c_helper.generate_xml_configs(ng.configuration,
                                                      ng.storage_paths,
                                                      nn.hostname,
@@ -128,6 +128,8 @@ class VanillaProvider(p.ProvisioningPluginBase):
                     c_helper.extract_environment_confs(ng.configuration)
                 )
             }
+
+        return extra
 
     def decommission_nodes(self, cluster, instances):
         tts = utils.get_tasktrackers(cluster)
@@ -156,7 +158,6 @@ class VanillaProvider(p.ProvisioningPluginBase):
         self._validate_additional_ng_scaling(cluster, additional)
 
     def scale_cluster(self, cluster, instances):
-        self._extract_configs(cluster)
         self._push_configs_to_nodes(cluster, instances=instances)
         self._write_hadoop_user_keys(cluster.private_key,
                                      instances)
@@ -175,19 +176,18 @@ class VanillaProvider(p.ProvisioningPluginBase):
                     run.start_process(r, "tasktracker")
 
     def _push_configs_to_nodes(self, cluster, instances=None):
+        extra = self._extract_configs_to_extra(cluster)
+
         if instances is None:
             instances = utils.get_instances(cluster)
 
         for inst in instances:
+            ng_extra = extra[inst.node_group.id]
             files = {
-                '/etc/hadoop/core-site.xml': inst.node_group.extra['xml'][
-                    'core-site'],
-                '/etc/hadoop/mapred-site.xml': inst.node_group.extra['xml'][
-                    'mapred-site'],
-                '/etc/hadoop/hdfs-site.xml': inst.node_group.extra['xml'][
-                    'hdfs-site'],
-                '/tmp/savanna-hadoop-init.sh': inst.node_group.extra[
-                    'setup_script']
+                '/etc/hadoop/core-site.xml': ng_extra['xml']['core-site'],
+                '/etc/hadoop/mapred-site.xml': ng_extra['xml']['mapred-site'],
+                '/etc/hadoop/hdfs-site.xml': ng_extra['xml']['hdfs-site'],
+                '/tmp/savanna-hadoop-init.sh': ng_extra['setup_script']
             }
             with remote.get_remote(inst) as r:
                 r.execute_command(
