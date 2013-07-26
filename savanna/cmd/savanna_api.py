@@ -15,11 +15,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import os
+import sys
+
 import eventlet
 from eventlet import wsgi
-import os
-from oslo.config.cfg import CONF
-import sys
+
+from oslo.config import cfg
 
 # If ../savanna/__init__.py exists, add ../ to Python search path, so that
 # it will override what happens to be installed in /usr/(local/)lib/python...
@@ -52,8 +54,5 @@ def main():
 
     app = server.make_app()
 
-    wsgi.server(eventlet.listen((CONF.host, CONF.port), backlog=500), app)
-
-
-if __name__ == '__main__':
-    main()
+    wsgi.server(eventlet.listen((cfg.CONF.host, cfg.CONF.port), backlog=500),
+                app)

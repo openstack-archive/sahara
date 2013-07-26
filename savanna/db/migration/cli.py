@@ -16,6 +16,11 @@
 # Based on Quantum's migration/cli.py
 
 import os
+import sys
+
+
+sys.path.insert(0, os.getcwd())
+
 
 from alembic import command as alembic_cmd
 from alembic import config as alembic_cfg

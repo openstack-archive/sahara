@@ -52,10 +52,12 @@ setuptools.setup(
     setup_requires=['setuptools-git>=0.4'],
     include_package_data=True,
     test_suite='nose.collector',
-    scripts=[
-        'bin/savanna-api',
-        'bin/savanna-db-manage',
-    ],
+    entry_points={
+        'console_scripts': [
+            'savanna-api = savanna.cmd.savanna_api:main',
+            'savanna-db-manage = savanna.db.migration.cli:main',
+        ]
+    },
     py_modules=[],
     data_files=[
         ('share/savanna',
