@@ -185,10 +185,11 @@ echo "%(public_key)s" >> %(user_home)s/.ssh/authorized_keys
 echo "%(private_key)s" > %(user_home)s/.ssh/id_rsa
 """
     cluster = node_group.cluster
-    if node_group.username == "root":
+    if nova.get_node_group_image_username(node_group) == "root":
         user_home = "/root/"
     else:
-        user_home = "/home/%s/" % node_group.username
+        user_home = "/home/%s/" % nova.get_node_group_image_username(
+            node_group)
 
     return script_template % {
         "public_key": crypto.private_key_to_public_key(cluster.private_key),
@@ -213,7 +214,7 @@ def _check_if_up(instance):
     if hasattr(instance, '_is_up'):
         return True
 
-    server = instance.nova_info
+    server = nova.get_instance_info(instance)
     if server.status == 'ERROR':
         # TODO(slukjanov): replace with specific error
         raise RuntimeError("node %s has error status" % server.name)
