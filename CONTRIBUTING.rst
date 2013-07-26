@@ -1,6 +1,6 @@
 If you would like to contribute to Savanna, please, take a look at the following page:
 
-http://savanna-mirantis.com/how-to-participate.html
+https://savanna.readthedocs.org/en/latest/devref/how_to_participate.html
 
 Once those steps have been completed, changes to Savanna should be submitted for review via the Gerrit tool, following the workflow documented at:
 
