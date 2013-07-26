@@ -18,7 +18,7 @@
 
 """DB related custom exceptions."""
 
-from savanna.openstack.common.gettextutils import _
+from savanna.openstack.common.gettextutils import _  # noqa
 
 
 class DBError(Exception):
