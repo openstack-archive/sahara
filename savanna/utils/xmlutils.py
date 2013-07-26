@@ -49,7 +49,7 @@ def _adjust_description(text):
     return re.sub(r"\n *|\t", "", str(text))
 
 
-def create_hadoop_xml(configs, global_conf):
+def create_hadoop_xml(configs, config_filter=None):
     doc = xml.Document()
 
     pi = doc.createProcessingInstruction('xml-stylesheet',
@@ -61,8 +61,12 @@ def create_hadoop_xml(configs, global_conf):
     configuration = doc.createElement("configuration")
     doc.appendChild(configuration)
 
+    default_configs = []
+    if config_filter is not None:
+        default_configs = [cfg['name'] for cfg in config_filter]
+
     for name, value in configs.items():
-        if name in [cfg['name'] for cfg in global_conf]:
+        if name in default_configs or config_filter is None:
             # Create the <property> element
             xml_prop = doc.createElement("property")
             configuration.appendChild(xml_prop)
