@@ -1,4 +1,3 @@
-# This file is managed by openstack-depends
 alembic>=0.4.1
 eventlet>=0.9.12
 flask==0.9
