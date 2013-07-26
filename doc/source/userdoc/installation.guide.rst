@@ -35,7 +35,7 @@ See :doc:`anti_affinity` for details. But that is purely optional.
 
     $ sudo yum install gcc python-setuptools python-devel
     $ sudo easy_install pip
-    $ sudo install virtualenv
+    $ sudo pip install virtualenv
 
 2. Setup virtual environment for Savanna:
 
@@ -60,7 +60,7 @@ See :doc:`anti_affinity` for details. But that is purely optional.
 
 .. sourcecode:: console
 
-    $ savanna-venv/bin/pip install 'http://tarballs.openstack.org/savanna/savanna-master.tar.gz#egg=savanna'
+    $ savanna-venv/bin/pip install 'http://tarballs.openstack.org/savanna/savanna-master.tar.gz'
 ..
 
    Note that savanna-master.tar.gz contains the latest changes and might not be stable at the moment.
@@ -81,6 +81,11 @@ See :doc:`anti_affinity` for details. But that is purely optional.
 
     $ savanna-venv/bin/python savanna-venv/bin/savanna-api --config-file savanna-venv/etc/savanna.conf
 ..
+
+Note:
+-----
+Make sure that your operating system is not blocking Savanna port (default: 8386).
+You may need to configure iptables in CentOS and some other operating systems.
 
    To get the list of all possible options run:
 
