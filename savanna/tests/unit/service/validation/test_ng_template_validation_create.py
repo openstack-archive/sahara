@@ -102,7 +102,7 @@ class TestNGTemplateCreateValidation(u.ValidationTestCase):
             bad_req_i=(1, 'INVALID_REFERENCE',
                        "Plugin supports the following node procesess: "
                        "['namenode', 'datanode', 'secondarynamenode', "
-                       "'tasktracker', 'jobtracker']")
+                       "'oozie', 'tasktracker', 'jobtracker']")
         )
 
     def test_ng_template_create_v_right(self):

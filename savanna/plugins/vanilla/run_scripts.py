@@ -26,3 +26,13 @@ def refresh_nodes(remote, service):
 
 def format_namenode(nn_remote):
     nn_remote.execute_command("sudo su -c 'hadoop namenode -format' hadoop")
+
+
+def oozie_share_lib(remote, nn_hostname):
+    remote.execute_command('sudo su -c "/opt/oozie/bin/oozie-setup.sh sharelib'
+                           ' create -fs hdfs://%s:8020"' % nn_hostname)
+
+
+def start_oozie(remote):
+    remote.execute_command(
+        'sudo su hadoop -c "/opt/oozie/bin/oozied.sh start"')

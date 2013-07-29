@@ -35,6 +35,10 @@ def get_jobtracker(cluster):
     return jt[0] if jt else None
 
 
+def get_oozies(cluster):
+    return get_instances(cluster, "oozie")
+
+
 def get_datanodes(cluster):
     return get_instances(cluster, 'datanode')
 

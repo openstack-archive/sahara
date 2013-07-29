@@ -29,6 +29,18 @@ HDFS_DEFAULT = x.load_hadoop_xml_defaults(
 MAPRED_DEFAULT = x.load_hadoop_xml_defaults(
     'plugins/vanilla/resources/mapred-default.xml')
 
+## Append Oozie configs fore core-site.xml
+CORE_DEFAULT += [
+    {
+        'name': 'hadoop.proxyuser.hadoop.hosts',
+        'value': "localhost"
+    },
+    {
+        'name': 'hadoop.proxyuser.hadoop.groups',
+        'value': 'hadoop'
+    }]
+
+
 XML_CONFS = {
     "HDFS": [CORE_DEFAULT, HDFS_DEFAULT],
     "MapReduce": [MAPRED_DEFAULT]
@@ -52,7 +64,9 @@ ENABLE_SWIFT = p.Config('Enable Swift', 'general', 'cluster',
                         default_value=True, is_optional=True)
 
 HIDDEN_CONFS = ['fs.default.name', 'dfs.name.dir', 'dfs.data.dir',
-                'mapred.job.tracker', 'mapred.system.dir', 'mapred.local.dir']
+                'mapred.job.tracker', 'mapred.system.dir', 'mapred.local.dir',
+                'hadoop.proxyuser.hadoop.hosts',
+                'hadoop.proxyuser.hadoop.groups']
 
 CLUSTER_WIDE_CONFS = ['dfs.block.size', 'dfs.permissions', 'dfs.replication',
                       'dfs.replication.min', 'dfs.replication.max',
@@ -119,7 +133,8 @@ def get_plugin_configs():
     return PLUGIN_CONFIGS
 
 
-def generate_xml_configs(configs, storage_path, nn_hostname, jt_hostname=None):
+def generate_xml_configs(configs, storage_path, nn_hostname,
+                         jt_hostname, oozies_hostnames):
     # inserting common configs depends on provisioned VMs and HDFS placement
     # TODO(aignatov): should be moved to cluster context
     cfg = {
@@ -143,6 +158,15 @@ def generate_xml_configs(configs, storage_path, nn_hostname, jt_hostname=None):
             'mapred.hosts.exclude': '/etc/hadoop/tt.excl',
         }
         cfg.update(mr_cfg)
+
+    if oozies_hostnames:
+        oozies_hostnames.append('localhost')
+        o_cfg = {
+            'hadoop.proxyuser.hadoop.hosts': ",".join(oozies_hostnames),
+            'hadoop.proxyuser.hadoop.groups': 'hadoop'
+        }
+        cfg.update(o_cfg)
+        LOG.debug('Applied Oozie configs for core-site.xml')
 
     # inserting user-defined configs
     for key, value in extract_xml_confs(configs):

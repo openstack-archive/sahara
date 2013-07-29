@@ -34,6 +34,14 @@ class NotSingleJobTrackerException(e.SavannaException):
         super(NotSingleJobTrackerException, self).__init__(message, code)
 
 
+class OozieWithoutJobTracker(e.SavannaException):
+    def __init__(self):
+        message = "Oozie cannot be configured without JobTracker"
+        code = "OOZIE_WITHOUT_JOB_TRACKER"
+
+        super(OozieWithoutJobTracker, self).__init__(message, code)
+
+
 class TaskTrackersWithoutJobTracker(e.SavannaException):
     def __init__(self):
         message = "TaskTrackers cannot be configures without JobTracker"
