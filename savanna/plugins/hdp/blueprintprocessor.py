@@ -17,31 +17,33 @@ from savanna.plugins.hdp import baseprocessor as b
 
 
 class BlueprintProcessor(b.BaseProcessor):
-
     def __init__(self, blueprint):
         self.blueprint = blueprint
 
     def process_user_inputs(self, user_inputs):
-        for ui in user_inputs:
+        for conf_name in user_inputs:
+            params = user_inputs[conf_name]
             configurations = self.blueprint['configurations']
             properties_dict = self._find_blueprint_section(configurations,
                                                            'name',
-                                                           ui.config.file)
+                                                           params['file'])
 
             if properties_dict is None:
-                properties_dict = {'name': ui.config.file, 'properties': []}
+                properties_dict = {'name': params['file'],
+                                   'properties': []}
                 configurations.append(properties_dict)
 
             # need to look for property with
             # the same name
             properties = properties_dict['properties']
             prop = self._find_blueprint_section(properties, 'name',
-                                                ui.config.name)
+                                                conf_name)
             if prop is not None:
                 # time to change the value
-                prop['value'] = ui.value
+                prop['value'] = params['value']
             else:
-                prop = {'name': ui.config.name, 'value': ui.value}
+                prop = {'name': conf_name,
+                        'value': params['value']}
                 properties.append(prop)
 
     def process_node_groups(self, node_groups):
