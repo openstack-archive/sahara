@@ -17,6 +17,7 @@ import contextlib
 
 import paramiko
 
+from savanna import exceptions as ex
 from savanna.utils import crypto
 from savanna.utils.openstack import nova
 
@@ -32,18 +33,33 @@ def setup_ssh_connection(host, username, private_key):
     return ssh
 
 
-def execute_command(ssh_connection, cmd):
+def execute_command(ssh_connection, cmd, get_stderr=False,
+                    raise_when_error=True):
     """Execute specified command remotely using existing ssh connection.
 
-    Return exit code and stdout data of the executed command.
+    Return exit code, stdout data and stderr data of the executed command.
     """
     chan = ssh_connection.get_transport().open_session()
     chan.exec_command(cmd)
-    retcode = chan.recv_exit_status()
-    buf = ''
+    ret_code = chan.recv_exit_status()
+
+    stdout = ''
     while chan.recv_ready():
-        buf += chan.recv(1024)
-    return retcode, buf
+        stdout += chan.recv(1024)
+
+    stderr = ''
+    while chan.recv_stderr_ready():
+        stderr += chan.recv_stderr(1024)
+
+    if ret_code and raise_when_error:
+        raise ex.RemoteCommandException(cmd=cmd, ret_code=ret_code,
+                                        stdout=stdout, stderr=stderr)
+
+    if get_stderr:
+        return ret_code, stdout, stderr
+
+    else:
+        return ret_code, stdout
 
 
 def write_file_to(sftp, remote_file, data):
@@ -72,8 +88,10 @@ def read_file_from(sftp, remote_file):
 
 def replace_remote_string(ssh_connection, remote_file, old_str, new_str):
     """Replaces strings in remote file using sed command."""
+    old_str = old_str.replace("\'", "\''")
+    new_str = new_str.replace("\'", "\''")
     cmd = "sudo sed -i 's,%s,%s,g' %s" % (old_str, new_str, remote_file)
-    return execute_command(ssh_connection, cmd)
+    execute_command(ssh_connection, cmd)
 
 
 class InstanceInteropHelper(object):
@@ -93,9 +111,9 @@ class InstanceInteropHelper(object):
             self.instance.management_ip, username,
             self.instance.node_group.cluster.private_key)
 
-    def execute_command(self, cmd):
+    def execute_command(self, cmd, get_stderr=False, raise_when_error=True):
         with contextlib.closing(self.ssh_connection()) as ssh:
-            return execute_command(ssh, cmd)
+            return execute_command(ssh, cmd, get_stderr, raise_when_error)
 
     def write_file_to(self, remote_file, data):
         with contextlib.closing(self.ssh_connection()) as ssh:
@@ -111,7 +129,7 @@ class InstanceInteropHelper(object):
 
     def replace_remote_string(self, remote_file, old_str, new_str):
         with contextlib.closing(self.ssh_connection()) as ssh:
-            return replace_remote_string(ssh, remote_file, old_str, new_str)
+            replace_remote_string(ssh, remote_file, old_str, new_str)
 
 
 def get_remote(instance):
@@ -140,8 +158,9 @@ class BulkInstanceInteropHelper(object):
             self._sftp = self.ssh_connection().open_sftp()
         return self._sftp
 
-    def execute_command(self, cmd):
-        return execute_command(self.ssh_connection(), cmd)
+    def execute_command(self, cmd, get_stderr=False, raise_when_error=True):
+        return execute_command(self.ssh_connection(), cmd, get_stderr,
+                               raise_when_error)
 
     def write_file_to(self, remote_file, data):
         return write_file_to(self.sftp_connection(), remote_file, data)
@@ -153,5 +172,5 @@ class BulkInstanceInteropHelper(object):
         return read_file_from(self.sftp_connection(), remote_file)
 
     def replace_remote_string(self, remote_file, old_str, new_str):
-        return replace_remote_string(self.ssh_connection(), remote_file,
-                                     old_str, new_str)
+        replace_remote_string(self.ssh_connection(), remote_file,
+                              old_str, new_str)
