@@ -16,6 +16,7 @@
 import os
 from savanna.openstack.common import jsonutils as json
 from savanna.plugins.hdp import configprovider as cfg
+import savanna.utils.openstack.nova as n_helper
 
 
 class ClusterSpec():
@@ -122,11 +123,12 @@ class ClusterSpec():
         host_id = 1
 
         for server in servers:
+            instance_info = n_helper.get_instance_info(server)
             hosts.append({'host_id': host_id,
                           'hostname': server.hostname,
                           'role': server.role,
-                          'vm_image': server.nova_info.image,
-                          'vm_flavor': server.nova_info.flavor,
+                          'vm_image': instance_info.image,
+                          'vm_flavor': instance_info.flavor,
                           'public_ip': server.management_ip,
                           'private_ip': server.internal_ip})
             host_id += 1

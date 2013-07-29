@@ -17,13 +17,16 @@ import os
 from savanna.plugins.hdp import clusterspec as cs
 import unittest2
 
+import mock
+
 
 class ClusterSpecTest(unittest2.TestCase):
     service_validators = {}
 
     #TODO(jspeidel): test host manifest
-
-    def test_parse_default_with_hosts(self):
+    @mock.patch("savanna.utils.openstack.nova.get_instance_info")
+    def test_parse_default_with_hosts(self, patched):
+        patched.side_effect = test_get_instance_info
         with open(os.path.join(os.path.realpath('../plugins'), 'hdp',
                                'resources',
                                'default-cluster.template'), 'r') as f:
@@ -54,7 +57,9 @@ class ClusterSpecTest(unittest2.TestCase):
 
         return cluster_config
 
-    def test_select_correct_server_for_ambari_host(self):
+    @mock.patch("savanna.utils.openstack.nova.get_instance_info")
+    def test_select_correct_server_for_ambari_host(self, patched):
+        patched.side_effect = test_get_instance_info
         with open(os.path.join(os.path.realpath('../plugins'), 'hdp',
                                'resources',
                                'default-cluster.template'), 'r') as f:
@@ -326,18 +331,21 @@ class TestServer():
         self.hostname = hostname
         self.fqdn = hostname
         self.role = role
-        self.nova_info = TestNova
-        self.nova_info.image = img
-        self.nova_info.flavor = flavor
+        self.nova_info = TestNova(img, flavor)
         self.management_ip = public_ip
         self.public_ip = public_ip
         self.internal_ip = private_ip
         self.node_processes = node_processes
 
 
+def test_get_instance_info(*args, **kwargs):
+    return TestNova("test_img", "test_flavor")
+
+
 class TestNova():
-    image = None
-    flavor = None
+    def __init__(self, image, flavor):
+        self.image = image
+        self.flavor = flavor
 
 
 class TestCluster():
