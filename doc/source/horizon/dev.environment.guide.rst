@@ -83,7 +83,7 @@ and set right value for variables:
 
 .. sourcecode:: console
 
-   $ ln -s $SAVANNA_DASHBOARD_HOME/savanna-dashboard .venv/lib/python2.7/site-packages/savanna-dashboard
+   $ ln -s $SAVANNA_DASHBOARD_HOME/savannadashboard .venv/lib/python2.7/site-packages/savannadashboard
 
 9. In ``openstack_dashboard/settings.py`` add savanna to
 
