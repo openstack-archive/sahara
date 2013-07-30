@@ -123,7 +123,7 @@
                 {
                     "applicable_target": "HDFS",
                     "config_type": "bool",
-                    "default_value": "false",
+                    "default_value": false,
                     "description": "If set to true, the web interfaces of JT and NN may contain\n                actions, such as kill job, delete file, etc., that should\n                not be exposed to public. Enable this option if the interfaces\n                are only reachable by those who have the right authorization.",
                     "is_optional": true,
                     "name": "webinterface.private.actions",
@@ -141,7 +141,7 @@
                 {
                     "applicable_target": "TODO",
                     "config_type": "bool",
-                    "default_value": "false",
+                    "default_value": false,
                     "description": "Enable authorization for different protocols.",
                     "is_optional": true,
                     "name": "hadoop.security.authorization",
@@ -173,7 +173,7 @@
                 {
                     "applicable_target": "HDFS",
                     "config_type": "bool",
-                    "default_value": "true",
+                    "default_value": true,
                     "description": "to enable dfs append",
                     "is_optional": true,
                     "name": "dfs.support.append",
@@ -182,7 +182,7 @@
                 {
                     "applicable_target": "HDFS",
                     "config_type": "bool",
-                    "default_value": "true",
+                    "default_value": true,
                     "description": "to enable webhdfs",
                     "is_optional": true,
                     "name": "dfs.webhdfs.enabled",
@@ -380,7 +380,7 @@
                 {
                     "applicable_target": "HDFS",
                     "config_type": "bool",
-                    "default_value": "true",
+                    "default_value": true,
                     "description": "If \"true\", enable permission checking in HDFS.\n    If \"false\", permission checking is turned off,\n    but all other behavior is unchanged.\n    Switching from one parameter value to the other does not change the mode,\n    owner or group of files or directories.",
                     "is_optional": true,
                     "name": "dfs.permissions",
@@ -416,7 +416,7 @@
                 {
                     "applicable_target": "HDFS",
                     "config_type": "bool",
-                    "default_value": "true",
+                    "default_value": true,
                     "description": "If \"true\", access tokens are used as capabilities for accessing datanodes.\n    If \"false\", no access tokens are checked on accessing datanodes.",
                     "is_optional": true,
                     "name": "dfs.block.access.token.enable",
@@ -628,7 +628,7 @@
                 {
                     "applicable_target": "MAPREDUCE",
                     "config_type": "string",
-                    "default_value": null,
+                    "default_value": "",
                     "description": "No description",
                     "is_optional": true,
                     "name": "mapreduce.cluster.local.dir",
@@ -637,7 +637,7 @@
                 {
                     "applicable_target": "MAPREDUCE",
                     "config_type": "bool",
-                    "default_value": "false",
+                    "default_value": false,
                     "description": "If true, then multiple instances of some map tasks\n               may be executed in parallel.",
                     "is_optional": true,
                     "name": "mapred.map.tasks.speculative.execution",
@@ -646,7 +646,7 @@
                 {
                     "applicable_target": "MAPREDUCE",
                     "config_type": "bool",
-                    "default_value": "false",
+                    "default_value": false,
                     "description": "If true, then multiple instances of some reduce tasks\n               may be executed in parallel.",
                     "is_optional": true,
                     "name": "mapred.reduce.tasks.speculative.execution",
@@ -790,7 +790,7 @@
                 {
                     "applicable_target": "MAPREDUCE",
                     "config_type": "bool",
-                    "default_value": "false",
+                    "default_value": false,
                     "description": "...",
                     "is_optional": true,
                     "name": "mapred.compress.map.output",
@@ -916,7 +916,7 @@
                 {
                     "applicable_target": "MAPREDUCE",
                     "config_type": "bool",
-                    "default_value": "false",
+                    "default_value": false,
                     "description": "...",
                     "is_optional": true,
                     "name": "yarn.app.mapreduce.am.create-intermediate-jh-base-dir",
