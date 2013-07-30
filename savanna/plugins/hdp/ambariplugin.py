@@ -21,6 +21,7 @@ from savanna.openstack.common import log as logging
 from savanna.plugins.hdp import blueprintprocessor as bp
 from savanna.plugins.hdp import clusterspec
 from savanna.plugins.hdp import configprovider as cfg
+from savanna.plugins.hdp import exceptions as ex
 from savanna.plugins.hdp import hadoopserver as h
 from savanna.plugins.hdp import savannautils as s
 from savanna.plugins import provisioning as p
@@ -123,7 +124,7 @@ class AmbariPlugin(p.ProvisioningPluginBase):
             ambari_public_ip, name)
         #TODO(jspeidel): get stack info from advanced config
         result = requests.post(add_cluster_url,
-                               data='{"Clusters": {"version" : "HDP-1.2.0"}}',
+                               data='{"Clusters": {"version" : "HDP-1.3.0"}}',
                                auth=('admin', 'admin'))
         if result.status_code != 201:
             LOG.warning(
@@ -330,6 +331,7 @@ class AmbariPlugin(p.ProvisioningPluginBase):
                                                    ambari_host)
             if success:
                 LOG.info("Install of Hadoop stack successful.")
+                self._finalize_ambari_state(ambari_host.management_ip)
             else:
                 LOG.critical('Install command failed.')
                 raise RuntimeError('Hadoop service install failed')
@@ -378,8 +380,8 @@ class AmbariPlugin(p.ProvisioningPluginBase):
         result = requests.put(start_url, data=body, auth=('admin', 'admin'))
         if result.status_code == 202:
             # don't hard code request id
-            success = self._wait_for_async_request(2, cluster_name,
-                                                   ambari_host)
+            success = self._wait_for_async_request(
+                2, cluster_name, ambari_host)
             if success:
                 LOG.info(
                     "Successfully started Hadoop cluster '{0}'.".format(
@@ -431,6 +433,23 @@ class AmbariPlugin(p.ProvisioningPluginBase):
             info['Ambari Console'] = {
                 'Web UI': 'http://%s:8080/#/main' % ambari_ip
             }
+
+    def _finalize_ambari_state(self, ambari_public_ip):
+        LOG.info('Finalizing Ambari cluster state.')
+
+        persist_state_uri = 'http://{0}:8080/api/v1/persist'.format(
+            ambari_public_ip)
+        # this post data has non-standard format because persist
+        # resource doesn't comply with Ambari API standards
+        persist_data = '{ "CLUSTER_CURRENT_STATUS":' \
+                       '"{\\"clusterState\\":\\"CLUSTER_STARTED_5\\"}" }'
+        result = requests.post(persist_state_uri, data=persist_data,
+                               auth=('admin', 'admin'))
+
+        if result.status_code != 201 and result.status_code != 202:
+            LOG.warning('Finalizing of Ambari cluster state failed. {0}'.
+                        format(result.text))
+            raise ex.HadoopProvisionError('Unable to finalize Ambari state.')
 
     # SAVANNA PLUGIN SPI METHODS:
     def configure_cluster(self, cluster):
