@@ -254,6 +254,7 @@ def _configure_instances(cluster):
             with remote.get_remote(instance) as r:
                 r.write_file_to('etc-hosts', hosts)
                 r.execute_command('sudo mv etc-hosts /etc/hosts')
+                r.execute_command('sudo chown $USER:$USER .ssh/id_rsa')
                 r.execute_command('chmod 400 .ssh/id_rsa')
 
 
