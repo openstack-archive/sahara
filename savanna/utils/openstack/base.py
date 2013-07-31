@@ -26,7 +26,7 @@ def url_for(headers, service_type, admin=False, endpoint_type=None):
     service = _get_service_from_catalog(catalog, service_type)
 
     if service:
-        return service['endpoints'][0][endpoint_type]
+        return _get_case_insensitive(service['endpoints'][0], endpoint_type)
     else:
         raise Exception('Service "%s" not found' % service_type)
 
@@ -39,3 +39,12 @@ def _get_service_from_catalog(catalog, service_type):
                 return service
 
     return None
+
+
+def _get_case_insensitive(dictionary, key):
+    for k, v in dictionary.items():
+        if str(k).lower() == str(key).lower():
+            return v
+
+    #this will raise an exception as usual if key was not found
+    return dictionary[key]
