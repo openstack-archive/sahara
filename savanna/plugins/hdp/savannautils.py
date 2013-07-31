@@ -14,24 +14,27 @@
 # limitations under the License.
 
 import savanna.db.models as m
-from savanna.plugins import provisioning as p
+from savanna.openstack.common import log as logging
+
+LOG = logging.getLogger(__name__)
 
 
 def convert(cluster_template, normalized_config):
     cluster_template.hadoop_version = normalized_config.hadoop_version
     for ng in normalized_config.node_groups:
-        ct_node_group = m.NodeGroup(ng.name, ng.flavor,
-                                    ng.node_processes,
-                                    ng.count)
-        cluster_template.node_groups.append(ct_node_group)
+        template_relation = m.TemplatesRelation(ng.name, ng.flavor,
+                                                ng.node_processes,
+                                                ng.count)
+        cluster_template.node_groups.append(template_relation)
     for entry in normalized_config.cluster_configs:
         ci = entry.config
-        ct_config = {"config": p.Config(ci.name, ci.applicable_target,
-                     ci.scope, config_type=ci.type,
-                     default_value=ci.default_value,
-                     is_optional=ci.is_optional,
-                     description=ci.description),
-                     "value": entry.value}
-        cluster_template.cluster_configs.append(ct_config)
+        # get the associated service dictionary
+        service_dict = cluster_template.cluster_configs.get(
+            entry.config.applicable_target, {})
+        service_dict[ci.name] = entry.value
+        cluster_template.cluster_configs[entry.config.applicable_target] = \
+            service_dict
+
+    LOG.debug('Cluster configs: {0}'.format(cluster_template.cluster_configs))
 
     return cluster_template

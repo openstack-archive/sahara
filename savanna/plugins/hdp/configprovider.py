@@ -32,18 +32,20 @@ class ConfigurationProvider(bp.BaseProcessor):
     def get_applicable_target(self, name):
         return self.config_mapper.get(name)
 
-    # temp method:  will not be required when all config values are researched
-    def _get_target(self, applicable_target):
-        if applicable_target == 'TODO':
-            return 'general'
+    def _get_target(self, apptarget):
+        if apptarget == 'TODO':
+            apptarget = 'general'
+        if apptarget != 'general':
+            apptarget = 'service:' + apptarget
 
-        return applicable_target
+        return apptarget
 
     def _initialize(self, config):
         for configuration in self.config['configurations']:
             for service_property in configuration['properties']:
                 config = p.Config(service_property['name'],
-                                  service_property['applicable_target'],
+                                  self._get_target(
+                                      service_property['applicable_target']),
                                   service_property['scope'],
                                   config_type=
                                   service_property['config_type'],
@@ -53,6 +55,9 @@ class ConfigurationProvider(bp.BaseProcessor):
                                       'is_optional'],
                                   description=service_property[
                                       'description'])
+                setattr(config, 'file',
+                        configuration['file'].rsplit(".", 1)[0])
                 self.config_items.append(config)
                 self.config_mapper[service_property['name']] = \
-                    self._get_target(service_property['applicable_target'])
+                    self._get_target(
+                        service_property['applicable_target'])

@@ -158,7 +158,7 @@ class ClusterSpecTest(unittest2.TestCase):
         for i in range(2):
             node_group = node_groups[i]
             components = node_group.node_processes
-            if node_group.name == "MASTER":
+            if node_group.name == "master":
                 contains_master_group = True
                 self.assertEquals(8, len(components))
                 self.assertIn('NAMENODE', components)
@@ -171,7 +171,7 @@ class ClusterSpecTest(unittest2.TestCase):
                 self.assertIn('AMBARI_AGENT', components)
                 #TODO(jspeidel): node configs
                 #TODO(jspeidel): vm_requirements
-            elif node_group.name == 'SLAVE':
+            elif node_group.name == 'slave':
                 contains_slave_group = True
                 self.assertEquals(6, len(components))
                 self.assertIn('DATANODE', components)
@@ -286,11 +286,11 @@ class ClusterSpecTest(unittest2.TestCase):
 
     def _assert_host_role_mappings(self, node_groups):
         self.assertEquals(2, len(node_groups))
-        self.assertIn('MASTER', node_groups)
-        self.assertIn('SLAVE', node_groups)
+        self.assertIn('master', node_groups)
+        self.assertIn('slave', node_groups)
 
-        master_node_group = node_groups['MASTER']
-        self.assertEquals('MASTER', master_node_group.name)
+        master_node_group = node_groups['master']
+        self.assertEquals('master', master_node_group.name)
         self.assertEquals(None, master_node_group.predicate)
         self.assertEquals('1', master_node_group.cardinality)
         self.assertEquals(1, master_node_group.default_count)
@@ -304,8 +304,8 @@ class ClusterSpecTest(unittest2.TestCase):
         self.assertIn('AMBARI_SERVER', master_node_group.components)
         self.assertIn('AMBARI_AGENT', master_node_group.components)
 
-        slave_node_group = node_groups['SLAVE']
-        self.assertEquals('SLAVE', slave_node_group.name)
+        slave_node_group = node_groups['slave']
+        self.assertEquals('slave', slave_node_group.name)
         self.assertEquals(None, slave_node_group.predicate)
         self.assertEquals('1+', slave_node_group.cardinality)
         self.assertEquals(2, slave_node_group.default_count)

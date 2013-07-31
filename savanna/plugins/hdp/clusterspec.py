@@ -105,7 +105,7 @@ class ClusterSpec():
 
     def _parse_host_component_mappings(self, template_json):
         for group in template_json['host_role_mappings']:
-            node_group = NodeGroup(group['name'])
+            node_group = NodeGroup(group['name'].lower())
             for component in group['components']:
                 node_group.add_component(component['name'])
             for host in group['hosts']:
@@ -213,9 +213,6 @@ class NormalizedClusterConfig():
                 target = 'service:MAPREDUCE'
             else:
                 target = 'general'
-        else:
-            if target != 'general':
-                target = "service:" + target
 
         return target
 
@@ -265,6 +262,9 @@ class NormalizedNodeGroup():
         self.node_configs = None
         #TODO(jpseidel): should not have to specify img/flavor
         self.img = None
-        self.flavor = None
+        # TODO(jmaron) the flavor will be set via an ambari blueprint setting,
+        # but that setting doesn't exist yet.  It will be addressed by a bug
+        # fix shortly
+        self.flavor = 3
         self.count = node_group.default_count
         #TODO(jspeidel): self.requirements

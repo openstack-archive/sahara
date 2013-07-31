@@ -100,8 +100,7 @@ class AmbariPlugin(p.ProvisioningPluginBase):
         return node_processes
 
     def convert(self, cluster_template, config):
-        with open(config, 'r') as f:
-            normalized_config = clusterspec.ClusterSpec(f.read()).normalize()
+        normalized_config = clusterspec.ClusterSpec(config).normalize()
 
         #TODO(jspeidel):  can we get the name (first arg) from somewhere?
 
@@ -458,7 +457,8 @@ class AmbariPlugin(p.ProvisioningPluginBase):
         processor = bp.BlueprintProcessor(json.load(
             open(os.path.join(os.path.dirname(__file__), 'resources',
                               'default-cluster.template'), "r")))
-        processor.process_user_inputs(cluster.cluster_configs)
+        processor.process_user_inputs(self._map_to_user_inputs(
+            '1.3.0', cluster.cluster_configs))
         processor.process_node_groups(cluster.node_groups)
         # NOTE: for the time being we are going to ignore the node group
         # level configurations.  we are not currently
