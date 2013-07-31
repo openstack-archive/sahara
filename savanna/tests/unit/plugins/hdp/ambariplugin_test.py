@@ -51,11 +51,10 @@ class AmbariPluginTest(unittest2.TestCase):
     def test_convert(self):
         plugin = ap.AmbariPlugin()
         cluster = TestCluster()
-        plugin.convert(cluster,
-                       os.path.join(os.path.realpath('../plugins'), 'hdp',
-                                    'resources',
-                                    'default-cluster.template'))
-
+        with open(os.path.join(os.path.realpath('../plugins'), 'hdp',
+                               'resources',
+                               'default-cluster.template'), 'r') as f:
+            plugin.convert(cluster, f.read())
         with open(os.path.join(os.path.realpath('../plugins'), 'hdp',
                                'resources',
                                'default-cluster.template'), 'r') as f:
@@ -65,9 +64,6 @@ class AmbariPluginTest(unittest2.TestCase):
                           cluster.hadoop_version)
         self.assertEquals(len(normalized_config.node_groups),
                           len(cluster.node_groups))
-        self.assertEquals(len(normalized_config.cluster_configs),
-                          len(cluster.cluster_configs))
-        #TODO(jspeidel): drill down into node_groups and cluster_configs
 
     def test_update_infra(self):
         plugin = ap.AmbariPlugin()
@@ -79,14 +75,14 @@ class AmbariPluginTest(unittest2.TestCase):
 
     def test_get_configs(self):
         plugin = ap.AmbariPlugin()
-        configs = plugin.get_configs("1.1.2")
-        self.assertEqual(612, len(configs),
+        configs = plugin.get_configs("1.3.0")
+        self.assertEqual(780, len(configs),
                          "wrong number of configuration properties")
 
 
 class TestCluster:
     def __init__(self):
         self.hadoop_version = None
-        self.cluster_configs = []
+        self.cluster_configs = {}
         self.node_groups = []
         self.default_image_id = '11111'

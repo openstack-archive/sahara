@@ -164,6 +164,33 @@
                 {
                     "applicable_target": "HDFS",
                     "config_type": "string",
+                    "default_value": "/etc/hadoop/dfs.include",
+                    "description": "dfs hosts",
+                    "is_optional": true,
+                    "name": "dfs.hosts",
+                    "scope": "cluster"
+                },
+                {
+                    "applicable_target": "HDFS",
+                    "config_type": "string",
+                    "default_value": "/etc/hadoop/dfs.exclude",
+                    "description": "dfs hosts exclude",
+                    "is_optional": true,
+                    "name": "dfs.hosts.exclude",
+                    "scope": "cluster"
+                },
+                {
+                    "applicable_target": "HDFS",
+                    "config_type": "string",
+                    "default_value": "0",
+                    "description": "socket write timeout",
+                    "is_optional": true,
+                    "name": "dfs.datanode.socket.write.timeout",
+                    "scope": "cluster"
+                },
+                {
+                    "applicable_target": "HDFS",
+                    "config_type": "string",
                     "default_value": "TODO-DFS-NAME-DIR",
                     "description": "Determines where on the local filesystem the DFS name node\n      should store the name table.  If this is a comma-delimited list\n      of directories then the name table is replicated in all of the\n      directories, for redundancy.",
                     "is_optional": true,
@@ -230,7 +257,7 @@
                     "default_value": "50",
                     "description": "Maximal block replication.",
                     "is_optional": true,
-                    "name": "dfs.replication.max",
+                    "name": "dfs.dx",
                     "scope": "cluster"
                 },
                 {
@@ -240,6 +267,15 @@
                     "description": "Default block replication.",
                     "is_optional": true,
                     "name": "dfs.replication",
+                    "scope": "cluster"
+                },
+                {
+                    "applicable_target": "HDFS",
+                    "config_type": "int",
+                    "default_value": "50",
+                    "description": "block replication max.",
+                    "is_optional": true,
+                    "name": "dfs.replication.max",
                     "scope": "cluster"
                 },
                 {
@@ -589,6 +625,474 @@
         {
             "file": "mapred-site.xml",
             "properties": [
+                {
+                    "applicable_target": "MAPREDUCE",
+                    "config_type": "string",
+                    "default_value": "-1",
+                    "description": " ",
+                    "is_optional": true,
+                    "name": "mapred.cluster.reduce.memory.mb",
+                    "scope": "cluster"
+                },
+                {
+                    "applicable_target": "MAPREDUCE",
+                    "config_type": "string",
+                    "default_value": "tt/_HOST@EXAMPLE.COM",
+                    "description": " ",
+                    "is_optional": true,
+                    "name": "mapreduce.tasktracker.kerberos.principal",
+                    "scope": "cluster"
+                },
+                {
+                    "applicable_target": "MAPREDUCE",
+                    "config_type": "string",
+                    "default_value": "org.apache.hadoop.mapred.DefaultTaskController",
+                    "description": " ",
+                    "is_optional": true,
+                    "name": "mapred.task.tracker.task-controller",
+                    "scope": "cluster"
+                },
+                {
+                    "applicable_target": "MAPREDUCE",
+                    "config_type": "string",
+                    "default_value": "50",
+                    "description": " ",
+                    "is_optional": true,
+                    "name": "mapred.job.tracker.handler.count",
+                    "scope": "cluster"
+                },
+                {
+                    "applicable_target": "MAPREDUCE",
+                    "config_type": "string",
+                    "default_value": "/etc/hadoop/mapred.exclude",
+                    "description": " ",
+                    "is_optional": true,
+                    "name": "mapred.hosts.exclude",
+                    "scope": "cluster"
+                },
+                {
+                    "applicable_target": "MAPREDUCE",
+                    "config_type": "string",
+                    "default_value": "4",
+                    "description": " ",
+                    "is_optional": true,
+                    "name": "mapred.tasktracker.map.tasks.maximum",
+                    "scope": "cluster"
+                },
+                {
+                    "applicable_target": "MAPREDUCE",
+                    "config_type": "string",
+                    "default_value": "50000000",
+                    "description": " ",
+                    "is_optional": true,
+                    "name": "mapreduce.jobtracker.split.metainfo.maxsize",
+                    "scope": "cluster"
+                },
+                {
+                    "applicable_target": "MAPREDUCE",
+                    "config_type": "string",
+                    "default_value": "-1",
+                    "description": " ",
+                    "is_optional": true,
+                    "name": "mapred.cluster.map.memory.mb",
+                    "scope": "cluster"
+                },
+                {
+                    "applicable_target": "MAPREDUCE",
+                    "config_type": "string",
+                    "default_value": "-1",
+                    "description": " ",
+                    "is_optional": true,
+                    "name": "mapred.cluster.max.map.memory.mb",
+                    "scope": "cluster"
+                },
+                {
+                    "applicable_target": "MAPREDUCE",
+                    "config_type": "string",
+                    "default_value": "2",
+                    "description": " ",
+                    "is_optional": true,
+                    "name": "mapred.tasktracker.reduce.tasks.maximum",
+                    "scope": "cluster"
+                },
+                {
+                    "applicable_target": "MAPREDUCE",
+                    "config_type": "string",
+                    "default_value": "-server -Xmx768m -Djava.net.preferIPv4Stack=true",
+                    "description": " ",
+                    "is_optional": true,
+                    "name": "mapred.child.java.opts",
+                    "scope": "cluster"
+                },
+                {
+                    "applicable_target": "MAPREDUCE",
+                    "config_type": "string",
+                    "default_value": "50",
+                    "description": " ",
+                    "is_optional": true,
+                    "name": "tasktracker.http.threads",
+                    "scope": "cluster"
+                },
+                {
+                    "applicable_target": "MAPREDUCE",
+                    "config_type": "bool",
+                    "default_value": false,
+                    "description": " ",
+                    "is_optional": true,
+                    "name": "mapred.job.tracker.persist.jobstatus.active",
+                    "scope": "cluster"
+                },
+                {
+                    "applicable_target": "MAPREDUCE",
+                    "config_type": "string",
+                    "default_value": "jt/_HOST@EXAMPLE.COM",
+                    "description": " ",
+                    "is_optional": true,
+                    "name": "mapreduce.jobtracker.kerberos.principal",
+                    "scope": "cluster"
+                },
+                {
+                    "applicable_target": "MAPREDUCE",
+                    "config_type": "string",
+                    "default_value": "/hadoop/mapred",
+                    "description": " ",
+                    "is_optional": true,
+                    "name": "mapred.local.dir",
+                    "scope": "cluster"
+                },
+                {
+                    "applicable_target": "MAPREDUCE",
+                    "config_type": "string",
+                    "default_value": "16",
+                    "description": " ",
+                    "is_optional": true,
+                    "name": "mapred.max.tracker.blacklists",
+                    "scope": "cluster"
+                },
+                {
+                    "applicable_target": "MAPREDUCE",
+                    "config_type": "string",
+                    "default_value": "org.apache.hadoop.mapred.CapacityTaskScheduler",
+                    "description": " ",
+                    "is_optional": true,
+                    "name": "mapred.jobtracker.taskScheduler",
+                    "scope": "cluster"
+                },
+                {
+                    "applicable_target": "MAPREDUCE",
+                    "config_type": "string",
+                    "default_value": "/mapred/history/done",
+                    "description": " ",
+                    "is_optional": true,
+                    "name": "mapred.job.tracker.history.completed.location",
+                    "scope": "cluster"
+                },
+                {
+                    "applicable_target": "MAPREDUCE",
+                    "config_type": "string",
+                    "default_value": "0",
+                    "description": " ",
+                    "is_optional": true,
+                    "name": "mapred.jobtracker.completeuserjobs.maximum",
+                    "scope": "cluster"
+                },
+                {
+                    "applicable_target": "MAPREDUCE",
+                    "config_type": "string",
+                    "default_value": "-1",
+                    "description": " ",
+                    "is_optional": true,
+                    "name": "mapred.jobtracker.maxtasks.per.job",
+                    "scope": "cluster"
+                },
+                {
+                    "applicable_target": "MAPREDUCE",
+                    "config_type": "bool",
+                    "default_value": false,
+                    "description": " ",
+                    "is_optional": true,
+                    "name": "mapred.jobtracker.restart.recover",
+                    "scope": "cluster"
+                },
+                {
+                    "applicable_target": "MAPREDUCE",
+                    "config_type": "string",
+                    "default_value": "%AMBARI_HOST%:50300",
+                    "description": " ",
+                    "is_optional": true,
+                    "name": "mapred.job.tracker",
+                    "scope": "cluster"
+                },
+                {
+                    "applicable_target": "MAPREDUCE",
+                    "config_type": "string",
+                    "default_value": "60000",
+                    "description": " ",
+                    "is_optional": true,
+                    "name": "mapred.healthChecker.script.timeout",
+                    "scope": "cluster"
+                },
+                {
+                    "applicable_target": "MAPREDUCE",
+                    "config_type": "string",
+                    "default_value": "default",
+                    "description": " ",
+                    "is_optional": true,
+                    "name": "mapred.queue.names",
+                    "scope": "cluster"
+                },
+                {
+                    "applicable_target": "MAPREDUCE",
+                    "config_type": "string",
+                    "default_value": "hadoop",
+                    "description": " ",
+                    "is_optional": true,
+                    "name": "mapreduce.tasktracker.group",
+                    "scope": "cluster"
+                },
+                {
+                    "applicable_target": "MAPREDUCE",
+                    "config_type": "string",
+                    "default_value": "none",
+                    "description": " ",
+                    "is_optional": true,
+                    "name": "hadoop.job.history.user.location",
+                    "scope": "cluster"
+                },
+                {
+                    "applicable_target": "MAPREDUCE",
+                    "config_type": "string",
+                    "default_value": "file:////mapred/jobstatus",
+                    "description": " ",
+                    "is_optional": true,
+                    "name": "mapred.healthChecker.script.path",
+                    "scope": "cluster"
+                },
+                {
+                    "applicable_target": "MAPREDUCE",
+                    "config_type": "string",
+                    "default_value": "/etc/hadoop/health_check",
+                    "description": " ",
+                    "is_optional": true,
+                    "name": "mapred.job.tracker.persist.jobstatus.dir",
+                    "scope": "cluster"
+                },
+                {
+                    "applicable_target": "MAPREDUCE",
+                    "config_type": "string",
+                    "default_value": "1",
+                    "description": " ",
+                    "is_optional": true,
+                    "name": "mapred.job.reuse.jvm.num.tasks",
+                    "scope": "cluster"
+                },
+                {
+                    "applicable_target": "MAPREDUCE",
+                    "config_type": "string",
+                    "default_value": "-1",
+                    "description": " ",
+                    "is_optional": true,
+                    "name": "mapred.cluster.max.reduce.memory.mb",
+                    "scope": "cluster"
+                },
+                {
+                    "applicable_target": "MAPREDUCE",
+                    "config_type": "string",
+                    "default_value": "/mapred/system",
+                    "description": " ",
+                    "is_optional": true,
+                    "name": "mapred.system.dir",
+                    "scope": "cluster"
+                },
+                {
+                    "applicable_target": "MAPREDUCE",
+                    "config_type": "string",
+                    "default_value": ".2",
+                    "description": " ",
+                    "is_optional": true,
+                    "name": "io.sort.record.percent",
+                    "scope": "cluster"
+                },
+                {
+                    "applicable_target": "MAPREDUCE",
+                    "config_type": "string",
+                    "default_value": "180",
+                    "description": " ",
+                    "is_optional": true,
+                    "name": "mapred.jobtracker.blacklist.fault-timeout-window",
+                    "scope": "cluster"
+                },
+                {
+                    "applicable_target": "MAPREDUCE",
+                    "config_type": "string",
+                    "default_value": "24",
+                    "description": " ",
+                    "is_optional": true,
+                    "name": "mapred.userlog.retain.hours",
+                    "scope": "cluster"
+                },
+                {
+                    "applicable_target": "MAPREDUCE",
+                    "config_type": "string",
+                    "default_value": "%AMBARI_HOST%:50030",
+                    "description": " ",
+                    "is_optional": true,
+                    "name": "mapred.job.tracker.http.address",
+                    "scope": "cluster"
+                },
+                {
+                    "applicable_target": "MAPREDUCE",
+                    "config_type": "string",
+                    "default_value": "15",
+                    "description": " ",
+                    "is_optional": true,
+                    "name": "mapred.jobtracker.blacklist.fault-bucket-width",
+                    "scope": "cluster"
+                },
+                {
+                    "applicable_target": "MAPREDUCE",
+                    "config_type": "string",
+                    "default_value": "135000",
+                    "description": " ",
+                    "is_optional": true,
+                    "name": "mapred.healthChecker.interval",
+                    "scope": "cluster"
+                },
+                {
+                    "applicable_target": "MAPREDUCE",
+                    "config_type": "string",
+                    "default_value": "250",
+                    "description": " ",
+                    "is_optional": true,
+                    "name": "mapred.tasktracker.tasks.sleeptime-before-sigkill",
+                    "scope": "cluster"
+                },
+                {
+                    "applicable_target": "MAPREDUCE",
+                    "config_type": "string",
+                    "default_value": "/etc/hadoop/mapred.include",
+                    "description": " ",
+                    "is_optional": true,
+                    "name": "mapred.hosts",
+                    "scope": "cluster"
+                },
+                {
+                    "applicable_target": "MAPREDUCE",
+                    "config_type": "string",
+                    "default_value": "1",
+                    "description": " ",
+                    "is_optional": true,
+                    "name": "mapred.job.tracker.persist.jobstatus.hours",
+                    "scope": "cluster"
+                },
+                {
+                    "applicable_target": "MAPREDUCE",
+                    "config_type": "string",
+                    "default_value": "/user",
+                    "description": " ",
+                    "is_optional": true,
+                    "name": "mapreduce.jobtracker.staging.root.dir",
+                    "scope": "cluster"
+                },
+                {
+                    "applicable_target": "MAPREDUCE",
+                    "config_type": "string",
+                    "default_value": "10000",
+                    "description": " ",
+                    "is_optional": true,
+                    "name": "mapred.jobtracker.retirejob.check",
+                    "scope": "cluster"
+                },
+                {
+                    "applicable_target": "MAPREDUCE",
+                    "config_type": "string",
+                    "default_value": "0",
+                    "description": " ",
+                    "is_optional": true,
+                    "name": "mapred.jobtracker.retirejob.interval",
+                    "scope": "cluster"
+                },
+                {
+                    "applicable_target": "MAPREDUCE",
+                    "config_type": "string",
+                    "default_value": "/etc/security/keytabs/jt.service.keytab",
+                    "description": " ",
+                    "is_optional": true,
+                    "name": "mapreduce.jobhistory.keytab.file",
+                    "scope": "cluster"
+                },
+                {
+                    "applicable_target": "MAPREDUCE",
+                    "config_type": "string",
+                    "default_value": "jt/_HOST@EXAMPLE.COM",
+                    "description": " ",
+                    "is_optional": true,
+                    "name": "mapreduce.jobhistory.kerberos.principal",
+                    "scope": "cluster"
+                },
+                {
+                    "applicable_target": "MAPREDUCE",
+                    "config_type": "string",
+                    "default_value": "%AMBARI_HOST%:51111",
+                    "description": "...",
+                    "is_optional": true,
+                    "name": "mapreduce.history.server.http.address",
+                    "scope": "cluster"
+                },
+                {
+                    "applicable_target": "MAPREDUCE",
+                    "config_type": "bool",
+                    "default_value": false,
+                    "description": "...",
+                    "is_optional": true,
+                    "name": "mapreduce.history.server.embedded",
+                    "scope": "cluster"
+                },
+                {
+                    "applicable_target": "MAPREDUCE",
+                    "config_type": "string",
+                    "default_value": "/etc/security/keytabs/tt.service.keytab",
+                    "description": "...",
+                    "is_optional": true,
+                    "name": "mapreduce.tasktracker.keytab.file",
+                    "scope": "cluster"
+                },
+                {
+                    "applicable_target": "MAPREDUCE",
+                    "config_type": "string",
+                    "default_value": "/etc/security/keytabs/jt.service.keytab",
+                    "description": "...",
+                    "is_optional": true,
+                    "name": "mapreduce.jobtracker.keytab.file",
+                    "scope": "cluster"
+                },
+                {
+                    "applicable_target": "MAPREDUCE",
+                    "config_type": "string",
+                    "default_value": "hadoop",
+                    "description": "...",
+                    "is_optional": true,
+                    "name": "mapreduce.cluster.administrators",
+                    "scope": "cluster"
+                },
+                {
+                    "applicable_target": "MAPREDUCE",
+                    "config_type": "string",
+                    "default_value": "hdfs",
+                    "description": "...",
+                    "is_optional": true,
+                    "name": "mapreduce.cluster.administrators",
+                    "scope": "cluster"
+                },
+                {
+                    "applicable_target": "MAPREDUCE",
+                    "config_type": "string",
+                    "default_value": "0.0",
+                    "description": "...",
+                    "is_optional": true,
+                    "name": "mapred.job.reduce.input.buffer.percent",
+                    "scope": "cluster"
+                },
                 {
                     "applicable_target": "MAPREDUCE",
                     "config_type": "string",
