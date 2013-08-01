@@ -69,7 +69,7 @@ class BlueprintProcessor(b.BaseProcessor):
                         (item for item in self.blueprint['host_role_mappings']
                          if item['name'] == host_role_mapping['name']), None)
 
-                    if (existing_mapping is not None):
+                    if existing_mapping is not None:
                         mappings__index = self.blueprint[
                             'host_role_mappings'].index(existing_mapping)
                         self.blueprint['host_role_mappings'][
