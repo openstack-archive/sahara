@@ -43,6 +43,7 @@ class Context(object):
                        self.auth_token,
                        self.headers)
 
+    # TODO(slukjanov):should be removed after migration to conductor
     @property
     def session(self):
         if self._db_session is None:
@@ -70,6 +71,7 @@ def current():
     return ctx()
 
 
+# TODO(slukjanov):should be removed after migration to conductor
 def session(context=None):
     context = context or ctx()
     return context.session
@@ -85,6 +87,7 @@ def set_ctx(new_ctx):
         _CTXS._curr_ctxs[ident] = new_ctx
 
 
+# TODO(slukjanov): should be removed after migration to conductor
 def model_query(model, context=None, project_only=None):
     context = context or ctx()
     query = context.session.query(model)
@@ -95,6 +98,7 @@ def model_query(model, context=None, project_only=None):
     return query
 
 
+# TODO(slukjanov): should be removed after migration to conductor
 def model_save(model, context=None):
     context = context or ctx()
     with context.session.begin():
@@ -102,6 +106,7 @@ def model_save(model, context=None):
     return model
 
 
+# TODO(slukjanov): should be removed after migration to conductor
 def model_update(model, context=None, **kwargs):
     if not hasattr(model, '__table__'):
         # TODO(slikjanov): replace with specific exception
