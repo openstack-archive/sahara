@@ -56,21 +56,18 @@ class AmbariPlugin(p.ProvisioningPluginBase):
         provisioned = self._provision_cluster(cluster.name, cluster_spec,
                                               ambari_host, servers)
         if provisioned:
-            #self._update_server_hosts_files(servers)
             installed = self._install_services(cluster.name, ambari_host)
             if installed:
                 LOG.info("Install of Hadoop stack successful.")
-                # still need ssh to configure ganglia.
-                ganglia_server_ip = self._determine_host_for_server_component(
-                    'GANGLIA_SERVER',
-                    cluster_spec, hosts).internal_ip
-                self.update_ganglia_configurations(ganglia_server_ip, servers)
                 # add service urls
                 self._set_cluster_info(cluster, cluster_spec, hosts)
             else:
-                LOG.warning("Install of Hadoop stack failed.")
+                raise ex.HadoopProvisionError(
+                    'Installation of Hadoop stack failed.')
+
         else:
-            LOG.warning("Provisioning of Hadoop cluster failed.")
+            raise ex.HadoopProvisionError(
+                'Provisioning of Hadoop cluster failed.')
 
     def _get_servers(self, cluster):
         servers = []
@@ -307,14 +304,6 @@ class AmbariPlugin(p.ProvisioningPluginBase):
             'Server component [{0}] not specified in configuration'.format(
                 component))
 
-    def _update_server_hosts_files(self, servers):
-        LOG.info('Updating server hosts files ...')
-
-        for server in servers:
-            # should pass in the savanna context so that it make files mods
-            # on servers
-            self._spawn(server.update_hosts_file, servers)
-
     def _install_services(self, cluster_name, ambari_host):
         LOG.info('Installing required Hadoop services ...')
 
@@ -363,10 +352,6 @@ class AmbariPlugin(p.ProvisioningPluginBase):
 
             context.sleep(5)
         return started
-
-    def update_ganglia_configurations(self, ganglia_server_ip, servers):
-        for server in servers:
-            self._spawn(server._configure_ganglia, ganglia_server_ip)
 
     def _start_services(self, cluster_name, ambari_host):
         LOG.info('Starting Hadoop services ...')

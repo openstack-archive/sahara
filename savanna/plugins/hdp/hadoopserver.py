@@ -162,24 +162,6 @@ class HadoopServer:
             '/usr/libexec/hdp/ganglia/gmondLib.sh',
             'host = ${gmondMasterIP}', 'host = {0}'.format(ganglia_server_ip))
 
-    def update_hosts_file(self, hosts):
-        # read the hosts file
-        data = remote.read_file_from(self._ssh.open_sftp(), '/etc/hosts')
-        output = six.StringIO()
-        for host in hosts:
-            output.write('{0}   {1}\n'.format(host.instance.internal_ip,
-                                              host.instance.fqdn))
-        output.write('\n')
-
-        # add the previous file contents
-        output.write(data)
-
-        # write the file back
-        LOG.debug("updating hosts file with the following:")
-        LOG.debug(output.getvalue())
-        remote.write_file_to(self._ssh.open_sftp(), '/etc/hosts',
-                             output.getvalue())
-
     def _replace_str_in_remote_file(self, filename, origStr, newStr):
         s = ''
 
