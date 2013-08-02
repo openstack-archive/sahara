@@ -13,6 +13,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from savanna.openstack.common import log as logging
+
+LOG = logging.getLogger(__name__)
+
 
 def start_process(remote, process):
     remote.execute_command('sudo su -c "/usr/sbin/hadoop-daemon.sh start %s" '
@@ -29,10 +33,17 @@ def format_namenode(nn_remote):
 
 
 def oozie_share_lib(remote, nn_hostname):
-    remote.execute_command('sudo su -c "/opt/oozie/bin/oozie-setup.sh sharelib'
-                           ' create -fs hdfs://%s:8020"' % nn_hostname)
+    LOG.debug("Sharing Oozie libs to hdfs://%s:8020" % nn_hostname)
+    remote.execute_command('sudo su - -c "/opt/oozie/bin/oozie-setup.sh '
+                           'sharelib create -fs hdfs://%s:8020" hadoop'
+                           % nn_hostname)
+
+    LOG.debug("Creating sqlfile for Oozie")
+    remote.execute_command('sudo su - -c "/opt/oozie/bin/ooziedb.sh '
+                           'create -sqlfile oozie.sql '
+                           '-run Validate DB Connection" hadoop')
 
 
 def start_oozie(remote):
     remote.execute_command(
-        'sudo su hadoop -c "/opt/oozie/bin/oozied.sh start"')
+        'sudo su - -c "/opt/oozie/bin/oozied.sh start" hadoop')

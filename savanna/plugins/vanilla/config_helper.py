@@ -40,7 +40,6 @@ CORE_DEFAULT += [
         'value': 'hadoop'
     }]
 
-
 XML_CONFS = {
     "HDFS": [CORE_DEFAULT, HDFS_DEFAULT],
     "MapReduce": [MAPRED_DEFAULT]
@@ -159,9 +158,9 @@ def generate_xml_configs(configs, storage_path, nn_hostname,
         cfg.update(mr_cfg)
 
     if oozies_hostnames:
-        oozies_hostnames.append('localhost')
         o_cfg = {
-            'hadoop.proxyuser.hadoop.hosts': ",".join(oozies_hostnames),
+            'hadoop.proxyuser.hadoop.hosts': ",".join(
+                ["localhost"] + oozies_hostnames),
             'hadoop.proxyuser.hadoop.groups': 'hadoop'
         }
         cfg.update(o_cfg)
