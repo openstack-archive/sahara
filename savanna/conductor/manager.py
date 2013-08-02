@@ -30,6 +30,9 @@ class ConductorManager(db_base.Base):
     def __init__(self):
         super(ConductorManager, self).__init__()
 
+    ## Cluster ops
+
+    # @resource(Cluster)
     def cluster_get(self, context, cluster):
         """Return the cluster or None if it does not exist."""
         return self.db.cluster_get(context, cluster)
@@ -49,3 +52,71 @@ class ConductorManager(db_base.Base):
     def cluster_destroy(self, context, cluster):
         """Destroy the cluster or raise if it does not exist."""
         return self.db.cluster_destroy(context, cluster)
+
+    ## Node Group ops
+
+    def node_group_add(self, context, cluster, values):
+        """Create a Node Group from the values dictionary."""
+        return self.db.node_group_add(context, cluster, values)
+
+    def node_group_update(self, context, node_group, values):
+        """Set the given properties on node_group and update it."""
+        return self.db.node_group_update(context, node_group, values)
+
+    def node_group_remove(self, context, node_group):
+        """Destroy the node_group or raise if it does not exist."""
+        return self.db.node_group_remove(context, node_group)
+
+    ## Instance ops
+
+    # @resource(Instance)
+    def instance_add(self, context, node_group, values):
+        """Create an Instance from the values dictionary."""
+        return self.db.instance_add(context, node_group, values)
+
+    def instance_update(self, context, instance, values):
+        """Set the given properties on Instance and update it."""
+        return self.db.instance_update(context, instance, values)
+
+    def instance_remove(self, context, instance):
+        """Destroy the Instance or raise if it does not exist."""
+        return self.db.instance_remove(context, instance)
+
+    ## Cluster Template ops
+
+    # @resource(ClusterTemplate)
+    def cluster_template_get(self, context, cluster_template):
+        """Return the cluster_template or None if it does not exist."""
+        return self.db.cluster_template_get(context, cluster_template)
+
+    def cluster_template_get_all(self, context):
+        """Get all cluster_templates."""
+        return self.db.cluster_template_get_all(context)
+
+    def cluster_template_create(self, context, values):
+        """Create a cluster_template from the values dictionary."""
+        return self.db.cluster_template_create(context, values)
+
+    def cluster_template_destroy(self, context, cluster_template):
+        """Destroy the cluster_template or raise if it does not exist."""
+        return self.db.cluster_template_destroy(context, cluster_template)
+
+    ## Node Group Template ops
+
+    # @resource(NodeGroupTemplate)
+    def node_group_template_get(self, context, node_group_template):
+        """Return the Node Group Template or None if it does not exist."""
+        return self.db.node_group_template_get(context, node_group_template)
+
+    def node_group_template_get_all(self, context):
+        """Get all Node Group Templates."""
+        return self.db.node_group_template_get_all(context)
+
+    def node_group_template_create(self, context, values):
+        """Create a Node Group Template from the values dictionary."""
+        return self.db.node_group_template_create(context, values)
+
+    def node_group_template_destroy(self, context, node_group_template):
+        """Destroy the Node Group Template or raise if it does not exist."""
+        return self.db.node_group_template_destroy(context,
+                                                   node_group_template)

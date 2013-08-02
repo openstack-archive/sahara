@@ -75,22 +75,105 @@ def not_equal(*values):
 
 ## Cluster ops
 
-
-def cluster_get(context, cluster_id):
-    return IMPL.cluster_get(context, cluster_id)
+def cluster_get(context, cluster):
+    """Return the cluster or None if it does not exist."""
+    return IMPL.cluster_get(context, cluster)
 
 
 def cluster_get_all(context):
+    """Get all clusters."""
     return IMPL.cluster_get_all(context)
 
 
 def cluster_create(context, values):
+    """Create a cluster from the values dictionary."""
     return IMPL.cluster_create(context, values)
 
 
-def cluster_update(context, cluster_id, values):
-    return IMPL.cluster_update(context, cluster_id, values)
+def cluster_update(context, cluster, values):
+    """Set the given properties on cluster and update it."""
+    return IMPL.cluster_update(context, cluster, values)
 
 
-def cluster_destroy(context, cluster_id):
-    return IMPL.cluster_destroy(context, cluster_id)
+def cluster_destroy(context, cluster):
+    """Destroy the cluster or raise if it does not exist."""
+    return IMPL.cluster_destroy(context, cluster)
+
+
+## Node Group ops
+
+def node_group_add(context, cluster, values):
+    """Create a Node Group from the values dictionary."""
+    return IMPL.node_group_add(context, cluster, values)
+
+
+def node_group_update(context, node_group, values):
+    """Set the given properties on node_group and update it."""
+    return IMPL.node_group_update(context, node_group, values)
+
+
+def node_group_remove(context, node_group):
+    """Destroy the node_group or raise if it does not exist."""
+    return IMPL.node_group_remove(context, node_group)
+
+
+## Instance ops
+
+# @resource(Instance)
+def instance_add(context, node_group, values):
+    """Create an Instance from the values dictionary."""
+    return IMPL.instance_add(context, node_group, values)
+
+
+def instance_update(context, instance, values):
+    """Set the given properties on Instance and update it."""
+    return IMPL.instance_update(context, instance, values)
+
+
+def instance_remove(context, instance):
+    """Destroy the Instance or raise if it does not exist."""
+    return IMPL.instance_remove(context, instance)
+
+
+## Cluster Template ops
+
+def cluster_template_get(context, cluster_template):
+    """Return the cluster_template or None if it does not exist."""
+    return IMPL.cluster_template_get(context, cluster_template)
+
+
+def cluster_template_get_all(context):
+    """Get all cluster_templates."""
+    return IMPL.cluster_template_get_all(context)
+
+
+def cluster_template_create(context, values):
+    """Create a cluster_template from the values dictionary."""
+    return IMPL.cluster_template_create(context, values)
+
+
+def cluster_template_destroy(context, cluster_template):
+    """Destroy the cluster_template or raise if it does not exist."""
+    return IMPL.cluster_template_destroy(context, cluster_template)
+
+
+## Node Group Template ops
+
+def node_group_template_get(context, node_group_template):
+    """Return the Node Group Template or None if it does not exist."""
+    return IMPL.node_group_template_get(context, node_group_template)
+
+
+def node_group_template_get_all(context):
+    """Get all Node Group Templates."""
+    return IMPL.node_group_template_get_all(context)
+
+
+def node_group_template_create(context, values):
+    """Create a Node Group Template from the values dictionary."""
+    return IMPL.node_group_template_create(context, values)
+
+
+def node_group_template_destroy(context, node_group_template):
+    """Destroy the Node Group Template or raise if it does not exist."""
+    return IMPL.node_group_template_destroy(context, node_group_template)

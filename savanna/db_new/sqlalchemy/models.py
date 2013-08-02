@@ -117,6 +117,7 @@ class Instance(mb.SavannaBase):
         sa.UniqueConstraint('instance_id', 'node_group_id'),
     )
 
+    id = _id_column()
     node_group_id = sa.Column(sa.String(36), sa.ForeignKey('node_groups.id'))
     instance_id = sa.Column(sa.String(36), primary_key=True)
     instance_name = sa.Column(sa.String(80), nullable=False)

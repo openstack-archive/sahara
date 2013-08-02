@@ -98,7 +98,6 @@ class InequalityCondition(object):
 
 ## Cluster ops
 
-
 def _cluster_get(context, session, cluster_id):
     query = model_query(m.Cluster, context, session)
     return query.filter_by(id=cluster_id).first()
@@ -144,3 +143,171 @@ def cluster_destroy(context, cluster_id):
             raise RuntimeError("Cluster not found!")
 
         session.delete(cluster)
+
+
+## Node Group ops
+
+def _node_group_get(context, session, node_group_id):
+    query = model_query(m.NodeGroup, context, session)
+    return query.filter_by(id=node_group_id).first()
+
+
+def node_group_add(context, cluster_id, values):
+    session = get_session()
+
+    with session.begin():
+        node_group = m.NodeGroup()
+        node_group.update({"cluster_id": cluster_id})
+        node_group.update(values)
+        node_group.save(session=session)
+
+
+def node_group_update(context, node_group_id, values):
+    session = get_session()
+    with session.begin():
+        node_group = _node_group_get(context, session, node_group_id)
+        node_group.update(values)
+        node_group.save(session=session)
+
+
+def node_group_remove(context, node_group_id):
+    session = get_session()
+    with session.begin():
+        node_group = _node_group_get(context, session, node_group_id)
+
+        if not node_group:
+            # raise not found error
+            raise RuntimeError("Node Group not found!")
+
+        session.delete(node_group)
+
+
+## Instance ops
+
+def _instance_get(context, session, instance_id):
+    query = model_query(m.Instance, context, session)
+    return query.filter_by(id=instance_id).first()
+
+
+def instance_add(context, node_group_id, values):
+    session = get_session()
+
+    with session.begin():
+        instance = m.Instance()
+        instance.update({"node_group_id": node_group_id})
+        instance.update(values)
+        instance.save(session=session)
+
+        node_group = _node_group_get(context, session, node_group_id)
+        node_group.count += 1
+        node_group.save(session=session)
+
+
+def instance_update(context, instance_id, values):
+    session = get_session()
+    with session.begin():
+        instance = _node_group_get(context, session, instance_id)
+        instance.update(values)
+        instance.save(session=session)
+
+
+def instance_remove(context, instance_id):
+    session = get_session()
+    with session.begin():
+        instance = _instance_get(context, session, instance_id)
+        node_group_id = instance.node_group_id
+
+        if not instance:
+            # raise not found error
+            raise RuntimeError("Instance not found!")
+
+        session.delete(instance)
+
+        node_group = _node_group_get(context, session, node_group_id)
+        node_group.count -= 1
+        node_group.save(session=session)
+
+
+## Cluster Template ops
+
+def _cluster_template_get(context, session, cluster_template_id):
+    query = model_query(m.ClusterTemplate, context, session)
+    return query.filter_by(id=cluster_template_id).first()
+
+
+def cluster_template_get(context, cluster_template_id):
+    return _cluster_template_get(context, get_session(), cluster_template_id)
+
+
+def cluster_template_get_all(context):
+    query = model_query(m.ClusterTemplate, context)
+    return query.all()
+
+
+def cluster_template_create(context, values):
+    cluster_template = m.ClusterTemplate()
+    cluster_template.update(values)
+
+    try:
+        cluster_template.save()
+    except db_exc.DBDuplicateEntry as e:
+        # raise exception about duplicated columns (e.columns)
+        raise RuntimeError("DBDuplicateEntry: %s" % e.columns)
+
+    return cluster_template
+
+
+def cluster_template_destroy(context, cluster_template_id):
+    session = get_session()
+    with session.begin():
+        cluster_template = _cluster_template_get(context, session,
+                                                 cluster_template_id)
+
+        if not cluster_template:
+            # raise not found error
+            raise RuntimeError("Cluster Template not found!")
+
+        session.delete(cluster_template)
+
+
+## Node Group Template ops
+
+def _node_group_template_get(context, session, node_group_template_id):
+    query = model_query(m.NodeGroupTemplate, context, session)
+    return query.filter_by(id=node_group_template_id).first()
+
+
+def node_group_template_get(context, node_group_template_id):
+    return _node_group_template_get(context, get_session(),
+                                    node_group_template_id)
+
+
+def node_group_template_get_all(context):
+    query = model_query(m.NodeGroupTemplate, context)
+    return query.all()
+
+
+def node_group_template_create(context, values):
+    node_group_template = m.NodeGroupTemplate()
+    node_group_template.update(values)
+
+    try:
+        node_group_template.save()
+    except db_exc.DBDuplicateEntry as e:
+        # raise exception about duplicated columns (e.columns)
+        raise RuntimeError("DBDuplicateEntry: %s" % e.columns)
+
+    return node_group_template
+
+
+def node_group_template_destroy(context, node_group_template_id):
+    session = get_session()
+    with session.begin():
+        node_group_template = _node_group_template_get(context, session,
+                                                       node_group_template_id)
+
+        if not node_group_template:
+            # raise not found error
+            raise RuntimeError("Node Group Template not found!")
+
+        session.delete(node_group_template)

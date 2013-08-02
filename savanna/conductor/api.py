@@ -80,6 +80,80 @@ class LocalApi(object):
         """Destroy the cluster or raise if it does not exist."""
         return self._manager.cluster_destroy(context, _get_id(cluster))
 
+    ## Node Group ops
+
+    def node_group_add(self, context, cluster, values):
+        """Create a Node Group from the values dictionary."""
+        return self._manager.node_group_add(context, _get_id(cluster),
+                                            values)
+
+    def node_group_update(self, context, node_group, values):
+        """Set the given properties on node_group and update it."""
+        return self._manager.node_group_update(context, _get_id(node_group),
+                                               values)
+
+    def node_group_remove(self, context, node_group):
+        """Destroy the node_group or raise if it does not exist."""
+        return self._manager.node_group_remove(context, _get_id(node_group))
+
+    ## Instance ops
+
+    # @resource(Instance)
+    def instance_add(self, context, node_group, values):
+        """Create an Instance from the values dictionary."""
+        return self._manager.instance_add(context, _get_id(node_group), values)
+
+    def instance_update(self, context, instance, values):
+        """Set the given properties on Instance and update it."""
+        return self._manager.instance_update(context, _get_id(instance),
+                                             values)
+
+    def instance_remove(self, context, instance):
+        """Destroy the Instance or raise if it does not exist."""
+        return self._manager.instance_remove(context, _get_id(instance))
+
+    ## Cluster Template ops
+
+    # @resource(ClusterTemplate)
+    def cluster_template_get(self, context, cluster_template):
+        """Return the cluster_template or None if it does not exist."""
+        return self._manager.cluster_template_get(context,
+                                                  _get_id(cluster_template))
+
+    def cluster_template_get_all(self, context):
+        """Get all cluster_templates."""
+        return self._manager.cluster_template_get_all(context)
+
+    def cluster_template_create(self, context, values):
+        """Create a cluster_template from the values dictionary."""
+        return self._manager.cluster_template_create(context, values)
+
+    def cluster_template_destroy(self, context, cluster_template):
+        """Destroy the cluster_template or raise if it does not exist."""
+        return self._manager.cluster_template_destroy(
+            context, _get_id(cluster_template))
+
+    ## Node Group Template ops
+
+    # @resource(NodeGroupTemplate)
+    def node_group_template_get(self, context, node_group_template):
+        """Return the Node Group Template or None if it does not exist."""
+        return self._manager.node_group_template_get(
+            context, _get_id(node_group_template))
+
+    def node_group_template_get_all(self, context):
+        """Get all Node Group Templates."""
+        return self._manager.node_group_template_get_all(context)
+
+    def node_group_template_create(self, context, values):
+        """Create a Node Group Template from the values dictionary."""
+        return self._manager.node_group_template_create(context, values)
+
+    def node_group_template_destroy(self, context, node_group_template):
+        """Destroy the Node Group Template or raise if it does not exist."""
+        return self._manager.node_group_template_destroy(
+            context, _get_id(node_group_template))
+
 
 class RemoteApi(LocalApi):
     """Conductor API that does updates via RPC to the ConductorManager."""
