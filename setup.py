@@ -43,6 +43,7 @@ setuptools.setup(
     packages=setuptools.find_packages(exclude=['bin']),
     package_data={'savanna': [
         'plugins/vanilla/resources/*.xml',
+        'service/edp/resources/*.xml',
         'swift/resources/*.xml',
         'tests/unit/resources/*.xml',
         'tests/unit/resources/*.txt',

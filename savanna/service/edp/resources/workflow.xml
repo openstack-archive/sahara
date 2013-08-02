@@ -1,0 +1,11 @@
+<workflow-app xmlns="uri:oozie:workflow:0.2" name="job-wf">
+    <start to="job-node"/>
+    <action name="job-node">
+        <ok to="end"/>
+        <error to="fail"/>
+    </action>
+    <kill name="fail">
+        <message>Workflow failed, error message[${wf:errorMessage(wf:lastErrorNode())}]</message>
+    </kill>
+    <end name="end"/>
+</workflow-app>
