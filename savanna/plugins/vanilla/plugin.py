@@ -14,12 +14,12 @@
 # limitations under the License.
 
 from savanna.openstack.common import log as logging
+from savanna.plugins.general import exceptions as ex
+from savanna.plugins.general import utils
 from savanna.plugins import provisioning as p
 from savanna.plugins.vanilla import config_helper as c_helper
-from savanna.plugins.vanilla import exceptions as ex
 from savanna.plugins.vanilla import run_scripts as run
 from savanna.plugins.vanilla import scaling as sc
-from savanna.plugins.vanilla import utils
 from savanna.utils import crypto
 
 

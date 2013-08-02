@@ -23,6 +23,7 @@ from savanna.plugins.hdp import clusterspec
 from savanna.plugins.hdp import configprovider as cfg
 from savanna.plugins.hdp import hadoopserver as h
 from savanna.plugins.hdp import savannautils as s
+from savanna.plugins.hdp import validator as v
 from savanna.plugins import provisioning as p
 
 LOG = logging.getLogger(__name__)
@@ -483,3 +484,7 @@ class AmbariPlugin(p.ProvisioningPluginBase):
         return 'The Hortonworks OpenStack plugin works with project ' \
                'Savanna to automate the deployment of the Hortonworks data' \
                ' platform on OpenStack based public & private clouds'
+
+    def validate(self, cluster):
+        validator = v.Validator()
+        validator.validate(cluster)
