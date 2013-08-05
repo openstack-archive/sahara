@@ -206,3 +206,69 @@ class TemplatesRelation(mb.SavannaBase):
     node_group_template = relationship('NodeGroupTemplate',
                                        backref="templates_relations",
                                        lazy='joined')
+
+
+## EDP objects: DataSource, JobOrigin, Job, Job Execution
+
+class DataSource(mb.SavannaBase):
+    """DataSource - represent a diffident types of data source,
+    e.g. Swift, Cassandra etc.
+    """
+
+    __tablename__ = 'data_sources'
+
+    __table_args__ = (
+        sa.UniqueConstraint('name', 'tenant_id'),
+    )
+
+    id = _id_column()
+    tenant_id = sa.Column(sa.String(36))
+    name = sa.Column(sa.String(80), nullable=False)
+    description = sa.Column(sa.Text())
+    type = sa.Column(sa.String(80), nullable=False)
+    url = sa.Column(sa.String(256), nullable=False)
+    credentials = sa.Column(st.JsonDictType())
+
+
+class Job(mb.SavannaBase):
+    """Job - represent a job object, to start job
+    user should provide a valid data input and output.
+    """
+
+    __tablename__ = 'jobs'
+
+    __table_args__ = (
+        sa.UniqueConstraint('name', 'tenant_id'),
+    )
+
+    id = _id_column()
+    tenant_id = sa.Column(sa.String(36))
+    name = sa.Column(sa.String(80), nullable=False)
+    description = sa.Column(sa.Text())
+    type = sa.Column(sa.String(80), nullable=False)
+    # job_origin_id = sa.Column(sa.String(36),
+    #                           sa.ForeignKey('job_origins.id'))
+    input_type = sa.Column(sa.String(80), nullable=False)
+    output_type = sa.Column(sa.String(80), nullable=False)
+
+
+class JobExecution(mb.SavannaBase):
+    """JobExecution - represent a job execution of specific cluster
+    """
+    __tablename__ = 'job_executions'
+
+    id = _id_column()
+    tenant_id = sa.Column(sa.String(36))
+    job_id = sa.Column(sa.String(36),
+                       sa.ForeignKey('jobs.id'))
+    input_id = sa.Column(sa.String(36),
+                         sa.ForeignKey('data_sources.id'))
+    output_id = sa.Column(sa.String(36),
+                          sa.ForeignKey('data_sources.id'))
+    start_time = sa.Column(sa.Date())
+    end_time = sa.Column(sa.Date())
+    cluster_id = sa.Column(sa.String(36),
+                           sa.ForeignKey('clusters.id'))
+    progress = sa.Column(sa.Float)
+    oozie_job_id = sa.Column(sa.String(100))
+    return_code = sa.Column(sa.String(80))
