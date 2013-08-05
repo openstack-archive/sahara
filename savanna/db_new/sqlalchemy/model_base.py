@@ -28,6 +28,14 @@ class _SavannaBase(oslo_models.ModelBase, oslo_models.TimestampMixin):
             if hasattr(self, '_filter_field') and self._filter_field(col.name):
                 continue
             d[col.name] = getattr(self, col.name)
+
+        self._datetime_to_str(d, 'created_at')
+        self._datetime_to_str(d, 'updated_at')
+
         return d
+
+    def _datetime_to_str(self, dct, attr_name):
+        if dct.get(attr_name) is not None:
+            dct[attr_name] = dct[attr_name].isoformat(' ')
 
 SavannaBase = declarative.declarative_base(cls=_SavannaBase)

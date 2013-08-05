@@ -18,6 +18,7 @@
 from oslo.config import cfg
 
 from savanna.conductor import manager
+from savanna.conductor import resource as r
 from savanna.openstack.common import log as logging
 
 conductor_opts = [
@@ -58,101 +59,133 @@ class LocalApi(object):
 
     ## Cluster ops
 
-    # @resource(Cluster)
+    @r.wrap(r.ClusterResource)
     def cluster_get(self, context, cluster):
         """Return the cluster or None if it does not exist."""
         return self._manager.cluster_get(context, _get_id(cluster))
 
+    @r.wrap(r.ClusterResource)
     def cluster_get_all(self, context):
         """Get all clusters."""
         return self._manager.cluster_get_all(context)
 
+    @r.wrap(r.ClusterResource)
     def cluster_create(self, context, values):
-        """Create a cluster from the values dictionary."""
+        """Create a cluster from the values dictionary.
+        Return the created cluster.
+        """
         return self._manager.cluster_create(context, values)
 
+    @r.wrap(r.ClusterResource)
     def cluster_update(self, context, cluster, values):
-        """Set the given properties on cluster and update it."""
+        """Update the cluster with the given values dictionary.
+        Return the updated cluster.
+        """
         return self._manager.cluster_update(context, _get_id(cluster),
                                             values)
 
     def cluster_destroy(self, context, cluster):
-        """Destroy the cluster or raise if it does not exist."""
-        return self._manager.cluster_destroy(context, _get_id(cluster))
+        """Destroy the cluster or raise if it does not exist.
+        Return None.
+        """
+        self._manager.cluster_destroy(context, _get_id(cluster))
 
     ## Node Group ops
 
     def node_group_add(self, context, cluster, values):
-        """Create a Node Group from the values dictionary."""
+        """Create a node group from the values dictionary.
+        Return ID of the created node group.
+        """
         return self._manager.node_group_add(context, _get_id(cluster),
                                             values)
 
     def node_group_update(self, context, node_group, values):
-        """Set the given properties on node_group and update it."""
+        """Update the node group with the given values dictionary.
+        Return None.
+        """
         return self._manager.node_group_update(context, _get_id(node_group),
                                                values)
 
     def node_group_remove(self, context, node_group):
-        """Destroy the node_group or raise if it does not exist."""
-        return self._manager.node_group_remove(context, _get_id(node_group))
+        """Destroy the node group or raise if it does not exist.
+        Return None.
+        """
+        self._manager.node_group_remove(context, _get_id(node_group))
 
     ## Instance ops
 
-    # @resource(Instance)
     def instance_add(self, context, node_group, values):
-        """Create an Instance from the values dictionary."""
+        """Create an instance from the values dictionary.
+        Return ID of the created instance.
+        """
         return self._manager.instance_add(context, _get_id(node_group), values)
 
     def instance_update(self, context, instance, values):
-        """Set the given properties on Instance and update it."""
+        """Update the instance with the given values dictionary.
+        Return None.
+        """
         return self._manager.instance_update(context, _get_id(instance),
                                              values)
 
     def instance_remove(self, context, instance):
-        """Destroy the Instance or raise if it does not exist."""
-        return self._manager.instance_remove(context, _get_id(instance))
+        """Destroy the instance or raise if it does not exist.
+        Return None.
+        """
+        self._manager.instance_remove(context, _get_id(instance))
 
     ## Cluster Template ops
 
-    # @resource(ClusterTemplate)
+    @r.wrap(r.Resource)
     def cluster_template_get(self, context, cluster_template):
-        """Return the cluster_template or None if it does not exist."""
+        """Return the cluster template or None if it does not exist."""
         return self._manager.cluster_template_get(context,
                                                   _get_id(cluster_template))
 
+    @r.wrap(r.Resource)
     def cluster_template_get_all(self, context):
-        """Get all cluster_templates."""
+        """Get all cluster templates."""
         return self._manager.cluster_template_get_all(context)
 
+    @r.wrap(r.Resource)
     def cluster_template_create(self, context, values):
-        """Create a cluster_template from the values dictionary."""
+        """Create a cluster template from the values dictionary.
+        Return the created cluster template
+        """
         return self._manager.cluster_template_create(context, values)
 
     def cluster_template_destroy(self, context, cluster_template):
-        """Destroy the cluster_template or raise if it does not exist."""
-        return self._manager.cluster_template_destroy(
-            context, _get_id(cluster_template))
+        """Destroy the cluster template or raise if it does not exist.
+        Return None
+        """
+        self._manager.cluster_template_destroy(context,
+                                               _get_id(cluster_template))
 
     ## Node Group Template ops
 
-    # @resource(NodeGroupTemplate)
+    @r.wrap(r.Resource)
     def node_group_template_get(self, context, node_group_template):
-        """Return the Node Group Template or None if it does not exist."""
+        """Return the node group template or None if it does not exist."""
         return self._manager.node_group_template_get(
             context, _get_id(node_group_template))
 
+    @r.wrap(r.Resource)
     def node_group_template_get_all(self, context):
-        """Get all Node Group Templates."""
+        """Get all node group templates."""
         return self._manager.node_group_template_get_all(context)
 
+    @r.wrap(r.Resource)
     def node_group_template_create(self, context, values):
-        """Create a Node Group Template from the values dictionary."""
+        """Create a node group template from the values dictionary.
+        Return the created node group template
+        """
         return self._manager.node_group_template_create(context, values)
 
     def node_group_template_destroy(self, context, node_group_template):
-        """Destroy the Node Group Template or raise if it does not exist."""
-        return self._manager.node_group_template_destroy(
-            context, _get_id(node_group_template))
+        """Destroy the node group template or raise if it does not exist.
+        Return None
+        """
+        self._manager.node_group_template_destroy(context,
+                                                  _get_id(node_group_template))
 
 
 class RemoteApi(LocalApi):

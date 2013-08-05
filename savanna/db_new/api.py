@@ -132,7 +132,7 @@ def cluster_update(context, cluster, values):
 
 def cluster_destroy(context, cluster):
     """Destroy the cluster or raise if it does not exist."""
-    return IMPL.cluster_destroy(context, cluster)
+    IMPL.cluster_destroy(context, cluster)
 
 
 ## Node Group ops
@@ -149,7 +149,7 @@ def node_group_update(context, node_group, values):
 
 def node_group_remove(context, node_group):
     """Destroy the node_group or raise if it does not exist."""
-    return IMPL.node_group_remove(context, node_group)
+    IMPL.node_group_remove(context, node_group)
 
 
 ## Instance ops
@@ -166,7 +166,7 @@ def instance_update(context, instance, values):
 
 def instance_remove(context, instance):
     """Destroy the Instance or raise if it does not exist."""
-    return IMPL.instance_remove(context, instance)
+    IMPL.instance_remove(context, instance)
 
 
 ## Cluster Template ops
@@ -191,7 +191,7 @@ def cluster_template_create(context, values):
 
 def cluster_template_destroy(context, cluster_template):
     """Destroy the cluster_template or raise if it does not exist."""
-    return IMPL.cluster_template_destroy(context, cluster_template)
+    IMPL.cluster_template_destroy(context, cluster_template)
 
 
 ## Node Group Template ops
@@ -216,4 +216,4 @@ def node_group_template_create(context, values):
 
 def node_group_template_destroy(context, node_group_template):
     """Destroy the Node Group Template or raise if it does not exist."""
-    return IMPL.node_group_template_destroy(context, node_group_template)
+    IMPL.node_group_template_destroy(context, node_group_template)

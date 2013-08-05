@@ -51,7 +51,7 @@ class ConductorManager(db_base.Base):
 
     def cluster_destroy(self, context, cluster):
         """Destroy the cluster or raise if it does not exist."""
-        return self.db.cluster_destroy(context, cluster)
+        self.db.cluster_destroy(context, cluster)
 
     ## Node Group ops
 
@@ -65,7 +65,7 @@ class ConductorManager(db_base.Base):
 
     def node_group_remove(self, context, node_group):
         """Destroy the node_group or raise if it does not exist."""
-        return self.db.node_group_remove(context, node_group)
+        self.db.node_group_remove(context, node_group)
 
     ## Instance ops
 
@@ -80,7 +80,7 @@ class ConductorManager(db_base.Base):
 
     def instance_remove(self, context, instance):
         """Destroy the Instance or raise if it does not exist."""
-        return self.db.instance_remove(context, instance)
+        self.db.instance_remove(context, instance)
 
     ## Cluster Template ops
 
@@ -99,7 +99,7 @@ class ConductorManager(db_base.Base):
 
     def cluster_template_destroy(self, context, cluster_template):
         """Destroy the cluster_template or raise if it does not exist."""
-        return self.db.cluster_template_destroy(context, cluster_template)
+        self.db.cluster_template_destroy(context, cluster_template)
 
     ## Node Group Template ops
 
@@ -118,5 +118,4 @@ class ConductorManager(db_base.Base):
 
     def node_group_template_destroy(self, context, node_group_template):
         """Destroy the Node Group Template or raise if it does not exist."""
-        return self.db.node_group_template_destroy(context,
-                                                   node_group_template)
+        self.db.node_group_template_destroy(context, node_group_template)
