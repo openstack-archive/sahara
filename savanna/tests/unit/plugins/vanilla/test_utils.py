@@ -16,7 +16,7 @@
 import unittest2
 
 from savanna.db import models as m
-from savanna.plugins.vanilla import utils as u
+from savanna.plugins.general import utils as u
 
 
 class VanillaUtilsTest(unittest2.TestCase):
