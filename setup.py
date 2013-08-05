@@ -54,7 +54,7 @@ setuptools.setup(
     test_suite='nose.collector',
     entry_points={
         'console_scripts': [
-            'savanna-api = savanna.cmd.savanna_api:main',
+            'savanna-api = savanna.cli.savanna_api:main',
             'savanna-db-manage = savanna.db.migration.cli:main',
         ]
     },
