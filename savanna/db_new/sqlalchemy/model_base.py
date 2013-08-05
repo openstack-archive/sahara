@@ -13,8 +13,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import re
-
 from sqlalchemy.ext import declarative
 
 from savanna.openstack.common.db.sqlalchemy import models as oslo_models
@@ -22,12 +20,6 @@ from savanna.openstack.common.db.sqlalchemy import models as oslo_models
 
 class _SavannaBase(oslo_models.ModelBase, oslo_models.TimestampMixin):
     """Base class for all Savanna SQLAlchemy DB Models."""
-
-    @declarative.declared_attr
-    def __tablename__(cls):
-        # convert CamelCase class name to camel_case
-        s1 = re.sub('(.)([A-Z][a-z]+)', r'\1_\2', cls.__name__)
-        return re.sub('([a-z0-9])([A-Z])', r'\1_\2', s1).lower()
 
     def to_dict(self):
         """sqlalchemy based automatic to_dict method."""

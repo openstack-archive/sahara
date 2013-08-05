@@ -39,6 +39,8 @@ def _id_column():
 class Cluster(mb.SavannaBase):
     """Contains all info about cluster."""
 
+    __tablename__ = 'clusters'
+
     __table_args__ = (
         sa.UniqueConstraint('name', 'tenant_id'),
     )
@@ -60,7 +62,7 @@ class Cluster(mb.SavannaBase):
     node_groups = relationship('NodeGroup', cascade="all,delete",
                                backref='cluster')
     cluster_template_id = sa.Column(sa.String(36),
-                                    sa.ForeignKey('ClusterTemplate.id'))
+                                    sa.ForeignKey('cluster_templates.id'))
     cluster_template = relationship('ClusterTemplate',
                                     backref="clusters")
 
@@ -72,6 +74,8 @@ class Cluster(mb.SavannaBase):
 
 class NodeGroup(mb.SavannaBase):
     """Specifies group of nodes within a cluster."""
+
+    __tablename__ = 'node_groups'
 
     __table_args__ = (
         sa.UniqueConstraint('name', 'cluster_id'),
@@ -90,10 +94,10 @@ class NodeGroup(mb.SavannaBase):
     instances = relationship('Instance', cascade="all,delete",
                              backref='node_group',
                              order_by="Instance.instance_name")
-    cluster_id = sa.Column(sa.String(36), sa.ForeignKey('Cluster.id'))
+    cluster_id = sa.Column(sa.String(36), sa.ForeignKey('clusters.id'))
     node_group_template_id = sa.Column(sa.String(36),
                                        sa.ForeignKey(
-                                           'NodeGroupTemplate.id'))
+                                           'node_group_templates.id'))
     node_group_template = relationship('NodeGroupTemplate',
                                        backref="node_groups")
 
@@ -107,11 +111,13 @@ class NodeGroup(mb.SavannaBase):
 class Instance(mb.SavannaBase):
     """An OpenStack instance created for the cluster."""
 
+    __tablename__ = 'instances'
+
     __table_args__ = (
         sa.UniqueConstraint('instance_id', 'node_group_id'),
     )
 
-    node_group_id = sa.Column(sa.String(36), sa.ForeignKey('NodeGroup.id'))
+    node_group_id = sa.Column(sa.String(36), sa.ForeignKey('node_groups.id'))
     instance_id = sa.Column(sa.String(36), primary_key=True)
     instance_name = sa.Column(sa.String(80), nullable=False)
     internal_ip = sa.Column(sa.String(15))
@@ -123,6 +129,8 @@ class Instance(mb.SavannaBase):
 
 class ClusterTemplate(mb.SavannaBase):
     """Template for Cluster."""
+
+    __tablename__ = 'cluster_templates'
 
     __table_args__ = (
         sa.UniqueConstraint('name', 'tenant_id'),
@@ -150,6 +158,8 @@ class ClusterTemplate(mb.SavannaBase):
 class NodeGroupTemplate(mb.SavannaBase):
     """Template for NodeGroup."""
 
+    __tablename__ = 'node_group_templates'
+
     __table_args__ = (
         sa.UniqueConstraint('name', 'tenant_id'),
     )
@@ -175,6 +185,8 @@ class TemplatesRelation(mb.SavannaBase):
     In fact, it's a template of NodeGroup in Cluster.
     """
 
+    __tablename__ = 'templates_relations'
+
     id = _id_column()
     name = sa.Column(sa.String(80), nullable=False)
     flavor_id = sa.Column(sa.String(36), nullable=False)
@@ -186,9 +198,9 @@ class TemplatesRelation(mb.SavannaBase):
     volume_mount_prefix = sa.Column(sa.String(80))
     count = sa.Column(sa.Integer, nullable=False)
     cluster_template_id = sa.Column(sa.String(36),
-                                    sa.ForeignKey('ClusterTemplate.id'))
+                                    sa.ForeignKey('cluster_templates.id'))
     node_group_template_id = sa.Column(sa.String(36),
                                        sa.ForeignKey(
-                                           'NodeGroupTemplate.id'))
+                                           'node_group_templates.id'))
     node_group_template = relationship('NodeGroupTemplate',
                                        backref="templates_relations")
