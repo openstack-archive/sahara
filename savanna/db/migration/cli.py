@@ -19,9 +19,6 @@ import os
 import sys
 
 
-sys.path.insert(0, os.getcwd())
-
-
 from alembic import command as alembic_cmd
 from alembic import config as alembic_cfg
 from alembic import util as alembic_u
@@ -109,6 +106,8 @@ CONF.register_cli_opt(command_opt)
 
 
 def main():
+    sys.path.insert(0, os.getcwd())
+
     config = alembic_cfg.Config(
         os.path.join(os.path.dirname(__file__), 'alembic.ini')
     )
@@ -119,3 +118,5 @@ def main():
 
     CONF()
     CONF.command.func(config, CONF.command.name)
+
+    sys.path.remove(0)
