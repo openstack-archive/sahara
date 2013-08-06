@@ -54,6 +54,26 @@ def model_query(model, context, session=None, project_only=None):
     return query
 
 
+def setup_db():
+    try:
+        engine = db_session.get_engine(sqlite_fk=True)
+        m.Cluster.metadata.create_all(engine)
+    except sa.exc.OperationalError as e:
+        LOG.error("Database registration exception: %s", e)
+        return False
+    return True
+
+
+def drop_db():
+    try:
+        engine = db_session.get_engine(sqlite_fk=True)
+        m.Cluster.metadata.drop_all(engine)
+    except Exception as e:
+        LOG.error("Database shutdown exception: %s", e)
+        return False
+    return True
+
+
 ## Helpers for building constraints / equality checks
 
 

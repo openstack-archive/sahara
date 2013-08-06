@@ -57,6 +57,7 @@ setuptools.setup(
         'console_scripts': [
             'savanna-api = savanna.cli.savanna_api:main',
             'savanna-db-manage = savanna.db.migration.cli:main',
+            'savanna-db-new-manage = savanna.db_new.migration.cli:main',
         ]
     },
     py_modules=[],

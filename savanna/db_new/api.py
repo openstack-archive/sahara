@@ -40,11 +40,27 @@ from savanna.openstack.common import log as logging
 CONF = cfg.CONF
 
 _BACKEND_MAPPING = {
-    'sqlalchemy': 'savanna.db.sqlalchemy.api',
+    'sqlalchemy': 'savanna.db_new.sqlalchemy.api',
 }
 
 IMPL = db_api.DBAPI(backend_mapping=_BACKEND_MAPPING)
 LOG = logging.getLogger(__name__)
+
+
+def setup_db():
+    """Set up database, create tables, etc.
+
+    Return True on success, False otherwise
+    """
+    return IMPL.setup_db()
+
+
+def drop_db():
+    """Drop database.
+
+    Return True on success, False otherwise
+    """
+    return IMPL.drop_db()
 
 
 ## Helpers for building constraints / equality checks
