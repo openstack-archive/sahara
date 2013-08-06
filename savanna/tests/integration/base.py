@@ -23,15 +23,20 @@ import keystoneclient.v2_0
 import requests
 import unittest2
 
-import savanna.tests.integration.configs.parameters as param
+import savanna.tests.integration.configs.parameters.common_parameters as param
+import savanna.tests.integration.configs.parameters.hdp_parameters as hdp_param
+import savanna.tests.integration.configs.parameters.vanilla_parameters as v_prm
 from savanna.utils import remote
 
 
-def swift_test(fun):
-    if param.ENABLE_SWIFT_TESTS:
-        return fun
+def enable_test(test):
+    def function(fun):
+        if test:
+            return fun
+        else:
+            return unittest2.skip('Test is disabled')(fun)
 
-    return unittest2.skip("Swift tests has been disabled")(fun)
+    return function
 
 
 class ITestCase(unittest2.TestCase):
@@ -135,153 +140,228 @@ class ITestCase(unittest2.TestCase):
         if rv.status_code != 204:
             data = json.loads(rv.content)
             return data
+
         else:
             return rv.status_code
 
     def crud_object(self, body, url):
-        data = self.post_object(url, body, 202)
-        get_url = None
-        object_id = None
-        crud_object = None
         try:
-            if url == self.url_cluster:
-                crud_object = 'cluster'
-                get_url = self.url_cluster_with_slash
-            elif url == self.url_ngt:
-                crud_object = 'node_group_template'
-                get_url = self.url_ngt_with_slash
-            else:
-                crud_object = 'cluster_template'
-                get_url = self.url_cl_tmpl_with_slash
-            data = data[crud_object]
-            object_id = data.get('id')
-            if crud_object == 'cluster':
-                self.await_cluster_active(object_id)
+            data = self.post_object(url, body, 202)
         except Exception as e:
-            self.fail('failure: ' + str(e))
-        finally:
+            self.fail('Failure while object creation: ' + str(e))
+
+        if url == self.url_cluster:
+            crud_object = 'cluster'
+            get_url = self.url_cluster_with_slash
+
+        elif url == self.url_ngt:
+            crud_object = 'node_group_template'
+            get_url = self.url_ngt_with_slash
+
+        else:
+            crud_object = 'cluster_template'
+            get_url = self.url_cl_tmpl_with_slash
+
+        data = data[crud_object]
+        object_id = data.get('id')
+
+        if crud_object == 'cluster':
+            self.await_cluster_active(object_id)
+
+        try:
+            self.get_object(get_url, object_id, 200)
+        except Exception as e:
+            self.del_object(get_url, object_id, 204)
+            self.fail('Failure while object info obtaining: ' + str(e))
+
+        try:
             self.del_object(get_url, object_id, 204)
             if crud_object == 'cluster':
                 time.sleep(5)
-        return object_id
+        except Exception as e:
+            self.fail('Failure while object deletion: ' + str(e))
 
 #----------------------make_different_template_body----------------------------
 
     def make_node_group_template(self, gr_name, desc, n_proc):
         processes = ['tasktracker', 'datanode']
+
         if n_proc == 'JT+NN':
             processes = ['jobtracker', 'namenode']
+
         elif n_proc == 'JT':
             processes = ['jobtracker']
+
         elif n_proc == 'NN':
             processes = ['namenode']
+
         elif n_proc == 'TT':
             processes = ['tasktracker']
+
         elif n_proc == 'DN':
             processes = ['datanode']
+
         elif n_proc == 'NN+TT+DN':
             processes = ['namenode', 'tasktracker', 'datanode']
+
         elif n_proc == 'JT+TT+DN':
             processes = ['jobtracker', 'tasktracker', 'datanode']
+
         group_template = dict(
             name=gr_name,
             description=desc,
             flavor_id=param.FLAVOR_ID,
-            plugin_name=param.PLUGIN_NAME,
-            hadoop_version=param.HADOOP_VERSION,
+            plugin_name=v_prm.PLUGIN_NAME,
+            hadoop_version=v_prm.HADOOP_VERSION,
             node_processes=processes,
             node_configs={
                 'HDFS': {},
                 'MapReduce': {}
             }
         )
+
         return group_template
 
     def make_cluster_template(self, name, ngt_list):
         cluster_template = dict(
             name=name,
-            plugin_name=param.PLUGIN_NAME,
-            hadoop_version=param.HADOOP_VERSION,
+            plugin_name=v_prm.PLUGIN_NAME,
+            hadoop_version=v_prm.HADOOP_VERSION,
             cluster_configs={},
             node_groups=[]
         )
+
         for key, value in ngt_list.items():
             ngt = dict(
                 name='',
                 node_group_template_id='',
                 count=1
             )
+
             ngt['node_group_template_id'] = key
             ngt['count'] = value
             data = self.get_object(self.url_ngt_with_slash, key, 200)
             name = data['node_group_template']['name']
             ngt['name'] = name
             cluster_template['node_groups'].append(ngt)
+
         return cluster_template
 
     def make_cl_body_cluster_template(self, cl_tmpl_id):
         cluster_body = dict(
-            name=param.CLUSTER_NAME_CRUD,
-            plugin_name=param.PLUGIN_NAME,
-            hadoop_version=param.HADOOP_VERSION,
+            name=param.CLUSTER_NAME,
+            plugin_name=v_prm.PLUGIN_NAME,
+            hadoop_version=v_prm.HADOOP_VERSION,
             cluster_template_id=cl_tmpl_id,
-            default_image_id=param.IMAGE_ID,
-            user_keypair_id=param.SSH_KEY
+            default_image_id=v_prm.IMAGE_ID,
+            user_keypair_id=param.USER_KEYPAIR_ID
         )
+
         return cluster_body
 
-    def make_cl_body_node_processes(self, node_processes):
-        cluster_body = dict(
-            name=param.CLUSTER_NAME_CRUD,
-            plugin_name=param.PLUGIN_NAME,
-            hadoop_version=param.HADOOP_VERSION,
-            user_keypair_id=param.SSH_KEY,
-            default_image_id=param.IMAGE_ID,
+    def base_cl_body_node_processes(self, plugin_name, hadoop_version,
+                                    user_keypair_id, image_id):
+        return dict(
+            name=param.CLUSTER_NAME,
+            plugin_name=plugin_name,
+            hadoop_version=hadoop_version,
+            user_keypair_id=user_keypair_id,
+            default_image_id=image_id,
             cluster_configs={},
             node_groups=[]
         )
-        for key, value in node_processes.items():
+
+    def add_node_group_to_cluster_body(self, cluster_body, ng_name, processes,
+                                       node_count):
+        cluster_body['node_groups'].append(dict(
+            name=ng_name,
+            flavor_id=param.FLAVOR_ID,
+            node_processes=processes,
+            count=node_count
+        ))
+
+    def make_hdp_cl_body_node_processes(self, node_processes):
+        cluster_body = self.base_cl_body_node_processes(
+            hdp_param.PLUGIN_NAME,
+            hdp_param.HADOOP_VERSION,
+            param.USER_KEYPAIR_ID,
+            hdp_param.IMAGE_ID
+        )
+
+        for process, node_count in node_processes.items():
+            if process == 'JT+NN':
+                processes = ['JOBTRACKER', 'NAMENODE', 'SECONDARY_NAMENODE',
+                             'GANGLIA_SERVER', 'GANGLIA_MONITOR',
+                             'NAGIOS_SERVER', 'AMBARI_SERVER', 'AMBARI_AGENT']
+            ng_name = 'jt-nn'
+
+            if process == 'TT+DN':
+                processes = ['TASKTRACKER', 'DATANODE', 'GANGLIA_MONITOR',
+                             'HDFS_CLIENT', 'MAPREDUCE_CLIENT',
+                             'AMBARI_AGENT']
+                ng_name = 'tt-dn'
+
+            self.add_node_group_to_cluster_body(cluster_body, ng_name,
+                                                processes, node_count)
+
+        return cluster_body
+
+    def make_vanilla_cl_body_node_processes(self, node_processes):
+        cluster_body = self.base_cl_body_node_processes(
+            v_prm.PLUGIN_NAME,
+            v_prm.HADOOP_VERSION,
+            param.USER_KEYPAIR_ID,
+            v_prm.IMAGE_ID
+        )
+
+        for process, node_count in node_processes.items():
             processes = ['jobtracker', 'namenode']
             ng_name = 'jt-nn'
-            if key == 'TT+DN':
+
+            if process == 'TT+DN':
                 processes = ['tasktracker', 'datanode']
                 ng_name = 'tt-dn'
-            elif key == 'JT':
+
+            elif process == 'JT':
                 processes = ['jobtracker']
                 ng_name = 'jt'
-            elif key == 'NN':
+
+            elif process == 'NN':
                 processes = ['namenode']
                 ng_name = 'nn'
-            elif key == 'TT':
+
+            elif process == 'TT':
                 processes = ['tasktracker']
                 ng_name = 'tt'
-            elif key == 'DN':
+
+            elif process == 'DN':
                 processes = ['datanode']
                 ng_name = 'dn'
-            elif key == 'JT+TT+DN':
+
+            elif process == 'JT+TT+DN':
                 processes = ['jobtracker', 'tasktracker', 'datanode']
                 ng_name = 'jt-tt-dn'
-            elif key == 'NN+TT+DN':
+
+            elif process == 'NN+TT+DN':
                 processes = ['namenode', 'tasktracker', 'datanode']
                 ng_name = 'nn-tt-dn'
-            cluster_body['node_groups'].append(dict(
-                name=ng_name,
-                flavor_id=param.FLAVOR_ID,
-                node_processes=processes,
-                count=value
-            ))
+
+            self.add_node_group_to_cluster_body(cluster_body, ng_name,
+                                                processes, node_count)
+
         return cluster_body
 
     def make_cl_body_node_group_templates(self, ngt_id_list):
         cluster_body = dict(
-            name=param.CLUSTER_NAME_CRUD,
-            plugin_name=param.PLUGIN_NAME,
-            hadoop_version=param.HADOOP_VERSION,
-            user_keypair_id=param.SSH_KEY,
-            default_image_id=param.IMAGE_ID,
+            name=param.CLUSTER_NAME,
+            plugin_name=v_prm.PLUGIN_NAME,
+            hadoop_version=v_prm.HADOOP_VERSION,
+            user_keypair_id=param.USER_KEYPAIR_ID,
+            default_image_id=v_prm.IMAGE_ID,
             cluster_configs={},
             node_groups=[]
         )
+
         for key, value in ngt_id_list.items():
             data = self.get_object(self.url_ngt_with_slash, key, 200)
             name = data['node_group_template']['name']
@@ -290,10 +370,12 @@ class ITestCase(unittest2.TestCase):
                 node_group_template_id=key,
                 count=value
             ))
+
         return cluster_body
 
     def make_cl_node_processes_ngt(self, node_processes, ngt_id_list):
-        cluster_body = self.make_cl_body_node_processes(node_processes)
+        cluster_body = self.make_vanilla_cl_body_node_processes(node_processes)
+
         for key, value in ngt_id_list.items():
             data = self.get_object(self.url_ngt_with_slash, key, 200)
             name = data['node_group_template']['name']
@@ -302,6 +384,7 @@ class ITestCase(unittest2.TestCase):
                 node_group_template_id=key,
                 count=value
             ))
+
         return cluster_body
 
 #-------------------make_node_group_template_and_get_id------------------------
@@ -368,8 +451,9 @@ class ITestCase(unittest2.TestCase):
             print('GET_STATUS: ', get_data['status'])
             if i > param.TIMEOUT * 6:
                 print('\n Data for cluster: ' + str(get_data) + '\n')
+                self.del_object(self.url_cluster_with_slash, object_id, 204)
                 self.fail(
-                    'cluster is not getting status \'Active\', '
+                    'Cluster is not getting status \'Active\', '
                     'passed %d minutes' % param.TIMEOUT)
             get_data = self.get_object(
                 self.url_cluster_with_slash, object_id, 200)
@@ -377,33 +461,37 @@ class ITestCase(unittest2.TestCase):
             time.sleep(10)
             i += 1
 
-    def get_object_id(self, obj, body):
-        data = body[obj]
+    def get_object_id(self, object_type, data):
+        data = data[object_type]
         return data['id']
 
-    def ssh_connection(self, host):
-        return remote.setup_ssh_connection(host, param.NODE_USERNAME,
+    def ssh_connection(self, host, node_username):
+        return remote.setup_ssh_connection(host, node_username,
                                            open(param.PATH_TO_SSH).read())
 
-    def execute_command(self, host, cmd):
-        with contextlib.closing(self.ssh_connection(host)) as ssh:
+    def execute_command(self, host, cmd, node_username):
+        with contextlib.closing(self.ssh_connection(host,
+                                                    node_username)) as ssh:
             return remote.execute_command(ssh, cmd)
 
-    def write_file_to(self, host, remote_file, data):
-        with contextlib.closing(self.ssh_connection(host)) as ssh:
+    def write_file_to(self, host, remote_file, data, node_username):
+        with contextlib.closing(self.ssh_connection(host,
+                                                    node_username)) as ssh:
             return remote.write_file_to(ssh.open_sftp(), remote_file, data)
 
-    def read_file_from(self, host, remote_file):
-        with contextlib.closing(self.ssh_connection(host)) as ssh:
+    def read_file_from(self, host, remote_file, node_username):
+        with contextlib.closing(self.ssh_connection(host,
+                                                    node_username)) as ssh:
             return remote.read_file_from(ssh.open_sftp(), remote_file)
 
-    def transfer_script_to_node(self, host,
+    def transfer_script_to_node(self, host, node_username,
                                 script='hadoop_test/hadoop_test_script.sh'):
         self.write_file_to(str(host),
                            'script.sh',
                            open('%s/integration/%s' % (os.getcwd(),
-                                                       script)).read())
-        self.execute_command(str(host), 'chmod 777 script.sh')
+                                                       script)).read(),
+                           node_username)
+        self.execute_command(str(host), 'chmod 777 script.sh', node_username)
 
     def try_telnet(self, host, port):
         try:
@@ -411,7 +499,7 @@ class ITestCase(unittest2.TestCase):
 
         except Exception as e:
             self.fail('Telnet has failed: ' + str(e) +
-                      '\n    NODE_IP: %s, PORT: %s' % (host, port))
+                      '     NODE_IP: %s, PORT: %s' % (host, port))
 
     def create_cluster_and_get_id(self, cluster_body):
         data = self.post_object(self.url_cluster, cluster_body, 202)
@@ -447,7 +535,7 @@ class ITestCase(unittest2.TestCase):
 
         return instances_ip
 
-    def get_namenode_ip_and_tt_dn_count(self, instances_ip):
+    def get_namenode_ip_and_tt_dn_count(self, instances_ip, plugin_name):
         tasktracker_count = 0
         datanode_count = 0
         node_count = 0
@@ -458,23 +546,40 @@ class ITestCase(unittest2.TestCase):
             'jobtracker': param.JT_PORT,
             'namenode': param.NN_PORT,
             'tasktracker': param.TT_PORT,
-            'datanode': param.DN_PORT
+            'datanode': param.DN_PORT,
+            'secondary_namenode': param.SEC_NN_PORT
         }
+        self.tt = 'tasktracker'
+        self.dn = 'datanode'
+        self.nn = 'namenode'
+
+        if plugin_name == 'hdp':
+            portmap = {
+                'JOBTRACKER': param.JT_PORT,
+                'NAMENODE': param.NN_PORT,
+                'TASKTRACKER': param.TT_PORT,
+                'DATANODE': param.DN_PORT,
+                'SECONDARY_NAMENODE': param.SEC_NN_PORT
+            }
+            self.tt = 'TASKTRACKER'
+            self.dn = 'DATANODE'
+            self.nn = 'NAMENODE'
 
         for host, processes in instances_ip.items():
             self.try_telnet(host, '22')
             node_count += 1
 
             for process in processes:
-                self.try_telnet(host, portmap[process])
+                if process in portmap:
+                    self.try_telnet(host, portmap[process])
 
-            if 'tasktracker' in processes:
+            if self.tt in processes:
                 tasktracker_count += 1
 
-            if 'datanode' in processes:
+            if self.dn in processes:
                 datanode_count += 1
 
-            if 'namenode' in processes:
+            if self.nn in processes:
                 namenode_ip = host
 
         return {
@@ -484,29 +589,37 @@ class ITestCase(unittest2.TestCase):
             'node_count': node_count
         }
 
-    def await_active_workers_for_namenode(self, data):
+    def await_active_workers_for_namenode(self, data, node_username,
+                                          hadoop_user):
         attempts_count = 20
 
         while True:
-            active_tasktrackers_count = int(
-                self.execute_command(data['namenode_ip'],
-                                     'sudo su -c "cd %s && hadoop job \
-                                     -list-active-trackers" hadoop | wc -l'
-                                     % param.HADOOP_DIRECTORY)[1])
+            active_tasktrackers_count = self.execute_command(
+                data['namenode_ip'], 'sudo su -c "hadoop job \
+                            -list-active-trackers" %s' % hadoop_user,
+                node_username)[1]
 
             active_datanodes_count = int(
                 self.execute_command(data['namenode_ip'],
-                                     'sudo su -c "hadoop dfsadmin -report" \
-                                     hadoop | grep "Datanodes available:.*" | \
-                                     awk \'{print $3}\'')[1])
+                                     'sudo su -c "hadoop dfsadmin -report" %s \
+                                     | grep "Datanodes available:.*" | awk \
+                                     \'{print $3}\'' % hadoop_user,
+                                     node_username)[1]
+            )
 
-            if active_tasktrackers_count == \
-                    data['tasktracker_count'] and active_datanodes_count == \
-                    data['datanode_count']:
+            if not active_tasktrackers_count:
+                active_tasktrackers_count = 0
+
+            else:
+                active_tasktrackers_count = \
+                    len(active_tasktrackers_count[:-1].split('\n'))
+
+            if (active_tasktrackers_count == data['tasktracker_count']) and (
+                    active_datanodes_count == data['datanode_count']):
                 break
 
             if attempts_count == 0:
-                self.fail('tasktracker or datanode cannot be started '
+                self.fail('Tasktracker or datanode cannot be started '
                           'within 1 minute.')
 
             time.sleep(3)

@@ -16,8 +16,10 @@
 import telnetlib
 
 from savanna.tests.integration import base
+import savanna.tests.integration.configs.parameters.common_parameters as param
 
 
+@base.enable_test(param.ENABLE_CLUSTER_NODE_PROCESS_CRUD_TESTS)
 class ClusterNodeProcessesCrudTest(base.ITestCase):
 
     def setUp(self):
@@ -30,7 +32,7 @@ class ClusterNodeProcessesCrudTest(base.ITestCase):
         node process.
         """
         node_processes = {'NN': 1}
-        body = self.make_cl_body_node_processes(node_processes)
+        body = self.make_vanilla_cl_body_node_processes(node_processes)
         self.crud_object(body, self.url_cluster)
 
     def test_crud_cluster_nn_dn(self):
@@ -38,5 +40,5 @@ class ClusterNodeProcessesCrudTest(base.ITestCase):
         node processes.
         """
         node_processes = {'NN': 1, 'DN': 2}
-        body = self.make_cl_body_node_processes(node_processes)
+        body = self.make_vanilla_cl_body_node_processes(node_processes)
         self.crud_object(body, self.url_cluster)

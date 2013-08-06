@@ -16,8 +16,10 @@
 import telnetlib
 
 from savanna.tests.integration import base
+import savanna.tests.integration.configs.parameters.common_parameters as param
 
 
+@base.enable_test(param.ENABLE_NGT_CRUD_TESTS)
 class NodeGroupTemplatesCrudTest(base.ITestCase):
 
     def setUp(self):

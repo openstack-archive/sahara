@@ -14,99 +14,140 @@
 # limitations under the License.
 
 import telnetlib
-import time
 
 from savanna.tests.integration import base
-import savanna.tests.integration.configs.parameters as param
+import savanna.tests.integration.configs.parameters.common_parameters as param
+import savanna.tests.integration.configs.parameters.hdp_parameters as hdp_param
+import savanna.tests.integration.configs.parameters.vanilla_parameters as v_prm
 
 
-class TestHadoop(base.ITestCase):
+@base.enable_test(param.ENABLE_HADOOP_TESTS)
+class HadoopTest(base.ITestCase):
 
     def setUp(self):
-        super(TestHadoop, self).setUp()
-        telnetlib.Telnet(self.host, self.port)
-        self.create_node_group_templates()
+        super(HadoopTest, self).setUp()
 
-    def _hadoop_testing(self, cluster_tmpl_body):
-        cl_tmpl_id = None
-        cluster_id = None
+        telnetlib.Telnet(self.host, self.port)
+
+    def _hadoop_testing(self, cluster_body, plugin_name, hadoop_version,
+                        hadoop_user, hadoop_directory, hadoop_log_directory,
+                        node_username):
+        cluster_id = self.create_cluster_and_get_id(cluster_body)
+
         try:
-            cl_tmpl_id = self.get_object_id(
-                'cluster_template', self.post_object(self.url_cl_tmpl,
-                                                     cluster_tmpl_body, 202))
-            cluster_id = self.create_cluster_using_ngt_and_get_id(
-                cl_tmpl_id, param.CLUSTER_NAME_HADOOP)
             ip_instances = self.get_instances_ip_and_node_processes_list(
                 cluster_id)
-            namenode_ip = None
-            node_count = 0
-            try:
-                clstr_info = self.get_namenode_ip_and_tt_dn_count(ip_instances)
-                namenode_ip = clstr_info['namenode_ip']
-                node_count = clstr_info['node_count']
-                self.await_active_workers_for_namenode(clstr_info)
-            except Exception as e:
-                self.fail(str(e))
-            try:
-                for key in ip_instances:
-                    self.transfer_script_to_node(key)
-            except Exception as e:
-                self.fail('failure in transfer script: ' + str(e))
-            try:
-                self.execute_command(
-                    namenode_ip, './script.sh pi -nc %s -hv %s -hd %s'
-                                 % (node_count, param.HADOOP_VERSION,
-                                    param.HADOOP_DIRECTORY))
-            except Exception as e:
-                print(self.read_file_from(namenode_ip,
-                                          '/tmp/outputTestMapReduce/log.txt'))
-                self.fail(
-                    'run pi script has failed: '
-                    + str(e))
-            try:
-                job_name = self.execute_command(
-                    namenode_ip, './script.sh gn -hd %s'
-                                 % param.HADOOP_DIRECTORY)[1]
-                if job_name == 'JobId':
-                    self.fail()
-            except Exception as e:
-                self.fail('fail in get job name: ' + str(e))
 
-            for key, value in ip_instances.items():
-                if 'datanode' in value or 'tasktracker' in value:
+            clstr_info = self.get_namenode_ip_and_tt_dn_count(ip_instances,
+                                                              plugin_name)
+            namenode_ip = clstr_info['namenode_ip']
+            node_count = clstr_info['node_count']
+            self.await_active_workers_for_namenode(clstr_info,
+                                                   node_username, hadoop_user)
+
+        except Exception as e:
+            self.del_object(self.url_cluster_with_slash, cluster_id, 204)
+            self.fail('Failure: ' + str(e))
+
+        try:
+            for node_ip in ip_instances:
+                self.transfer_script_to_node(node_ip, node_username)
+
+        except Exception as e:
+            self.del_object(self.url_cluster_with_slash, cluster_id, 204)
+            self.fail('Failure while script transferring: ' + str(e))
+
+        try:
+            self.execute_command(
+                namenode_ip,
+                './script.sh pi -nc %s -hv %s -hd %s -hu %s -pn %s'
+                % (node_count,
+                   hadoop_version,
+                   hadoop_directory,
+                   hadoop_user,
+                   plugin_name), node_username)
+
+        except Exception as e:
+            print(self.read_file_from(namenode_ip,
+                                      '/tmp/outputTestMapReduce/log.txt',
+                                      node_username))
+            self.del_object(self.url_cluster_with_slash, cluster_id, 204)
+            self.fail('Failure while PI-job launch: ' + str(e))
+
+        try:
+            job_name = self.execute_command(namenode_ip, './script.sh gn',
+                                            node_username)
+
+            if job_name[1] == 'JobId':
+                self.fail('PI-job has not been launched')
+
+            self.assertEqual(job_name[0], 0)
+
+        except Exception as e:
+            self.del_object(self.url_cluster_with_slash, cluster_id, 204)
+            self.fail('Failure while job name obtaining: ' + str(e))
+
+        try:
+            for node_ip, process_list in ip_instances.items():
+                if self.tt in process_list:
                     self.assertEqual(
                         self.execute_command(
-                            key, './script.sh ed -jn %s -hld %s'
-                                 % (job_name[:-1],
-                                    param.HADOOP_LOG_DIRECTORY))[0], 0,
-                        msg='fail in check run job in worker nodes: ')
+                            node_ip, './script.sh ed -jn %s -hld %s'
+                            % (job_name[1][:-1], hadoop_log_directory),
+                            node_username
+                        )[0], 0,
+                        'Host %s: not found log file of PI-job work' % node_ip)
 
-            try:
-                self.assertEqual(
-                    self.execute_command(
-                        namenode_ip, './script.sh mr -hv %s -hd %s'
-                                     % (param.HADOOP_VERSION,
-                                        param.HADOOP_DIRECTORY))[0], 0)
-            except Exception as e:
-                print(self.read_file_from(namenode_ip,
-                                          '/tmp/outputTestMapReduce/log.txt'))
-                self.fail('run hdfs script is failure: ' + str(e))
         except Exception as e:
-            self.fail(str(e))
+            self.del_object(self.url_cluster_with_slash, cluster_id, 204)
+            self.fail('Failure: ' + str(e))
+
+        try:
+            self.assertEqual(
+                self.execute_command(
+                    namenode_ip,
+                    './script.sh mr -hv %s -hd %s -hu %s -pn %s'
+                    % (hadoop_version,
+                       hadoop_directory,
+                       hadoop_user,
+                       plugin_name), node_username
+                )[0], 0)
+
+        except Exception as e:
+            print(self.read_file_from(namenode_ip,
+                                      '/tmp/outputTestMapReduce/log.txt',
+                                      node_username))
+            self.fail('Failure while HDFS check: ' + str(e))
 
         finally:
             self.del_object(self.url_cluster_with_slash, cluster_id, 204)
-            time.sleep(5)
-            self.del_object(self.url_cl_tmpl_with_slash, cl_tmpl_id, 204)
 
-    def test_hadoop_single_master(self):
-        """This test checks hadoop work
+    def test_hadoop_single_master_for_vanilla_plugin(self):
+        """This test checks Hadoop work for "Vanilla" plugin
         """
-        node_list = {self.id_jt_nn: 1, self.id_tt_dn: 1}
+        node_processes = {'JT+NN': 1, 'TT+DN': 2}
 
-        cl_tmpl_body = self.make_cluster_template('cl-tmpl-for-hadoop-test',
-                                                  node_list)
-        self._hadoop_testing(cl_tmpl_body)
+        cluster_body = self.make_vanilla_cl_body_node_processes(node_processes)
 
-    def tearDown(self):
-        self.delete_node_group_templates()
+        self._hadoop_testing(cluster_body,
+                             v_prm.PLUGIN_NAME,
+                             v_prm.HADOOP_VERSION,
+                             v_prm.HADOOP_USER,
+                             v_prm.HADOOP_DIRECTORY,
+                             v_prm.HADOOP_LOG_DIRECTORY,
+                             v_prm.NODE_USERNAME)
+
+    def test_hadoop_single_master_for_hdp_plugin(self):
+        """This test checks Hadoop work for "HDP" plugin
+        """
+        node_processes = {'JT+NN': 1, 'TT+DN': 2}
+
+        cluster_body = self.make_hdp_cl_body_node_processes(node_processes)
+
+        self._hadoop_testing(cluster_body,
+                             hdp_param.PLUGIN_NAME,
+                             hdp_param.HADOOP_VERSION,
+                             hdp_param.HADOOP_USER,
+                             hdp_param.HADOOP_DIRECTORY,
+                             hdp_param.HADOOP_LOG_DIRECTORY,
+                             hdp_param.NODE_USERNAME)
