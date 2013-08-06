@@ -50,11 +50,13 @@ class AmbariPlugin(p.ProvisioningPluginBase):
         ambari_host = self._determine_host_for_server_component(
             'AMBARI_SERVER', cluster_spec, hosts)
         self.cluster_name_to_ambari_host_mapping[cluster.name] = ambari_host
+        rpm = self._get_rpm_uri(cluster_spec)
 
         servers = []
         for host in hosts:
             servers.append(
-                h.HadoopServer(host, cluster_spec.node_groups[host.role]))
+                h.HadoopServer(host, cluster_spec.node_groups[host.role],
+                               ambari_rpm=rpm))
 
         provisioned = self._provision_cluster(cluster.name, cluster_spec,
                                               ambari_host, servers)
@@ -591,3 +593,7 @@ class AmbariPlugin(p.ProvisioningPluginBase):
     def validate(self, cluster):
         validator = v.Validator()
         validator.validate(cluster)
+
+    def _get_rpm_uri(self, cluster_spec):
+        ambari_config = cluster_spec.configurations['ambari']
+        return ambari_config.get('rpm', None)

@@ -13,8 +13,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import os
+import pkg_resources as pkg
 from savanna.plugins.hdp import clusterspec as cs
+from savanna import version
 import unittest2
 
 
@@ -22,12 +23,10 @@ class ClusterSpecTest(unittest2.TestCase):
     service_validators = {}
 
     #TODO(jspeidel): test host manifest
-
     def test_parse_default_with_hosts(self):
-        with open(os.path.join(os.path.realpath('../plugins'), 'hdp',
-                               'resources',
-                               'default-cluster.template'), 'r') as f:
-            cluster_config_file = f.read()
+        cluster_config_file = pkg.resource_string(
+            version.version_info.package,
+            'plugins/hdp/resources/default-cluster.template')
 
         servers = []
         server1 = TestServer('host1', 'master', '11111', 3, '111.11.1111',
@@ -55,10 +54,9 @@ class ClusterSpecTest(unittest2.TestCase):
         return cluster_config
 
     def test_select_correct_server_for_ambari_host(self):
-        with open(os.path.join(os.path.realpath('../plugins'), 'hdp',
-                               'resources',
-                               'default-cluster.template'), 'r') as f:
-            cluster_config_file = f.read()
+        cluster_config_file = pkg.resource_string(
+            version.version_info.package,
+            'plugins/hdp/resources/default-cluster.template')
 
         servers = []
         server1 = TestServer('ambari_machine', 'master', '11111', 3,
@@ -86,10 +84,9 @@ class ClusterSpecTest(unittest2.TestCase):
                       'Ambari host not found')
 
     def test_parse_default(self):
-        with open(os.path.join(os.path.realpath('../plugins'), 'hdp',
-                               'resources',
-                               'default-cluster.template'), 'r') as f:
-            cluster_config_file = f.read()
+        cluster_config_file = pkg.resource_string(
+            version.version_info.package,
+            'plugins/hdp/resources/default-cluster.template')
 
         cluster_config = cs.ClusterSpec(cluster_config_file)
 
@@ -99,11 +96,22 @@ class ClusterSpecTest(unittest2.TestCase):
 
         return cluster_config
 
+    def test_ambari_rpm(self):
+        cluster_config_file = pkg.resource_string(
+            version.version_info.package,
+            'plugins/hdp/resources/default-cluster.template')
+
+        cluster_config = cs.ClusterSpec(cluster_config_file)
+
+        self._assert_configurations(cluster_config.configurations)
+        ambari_config = cluster_config.configurations['ambari']
+        self.assertIsNotNone('no rpm uri found',
+                             ambari_config.get('rpm', None))
+
     def test_normalize(self):
-        with open(os.path.join(os.path.realpath('../plugins'), 'hdp',
-                               'resources',
-                               'default-cluster.template'), 'r') as f:
-            cluster_config_file = f.read()
+        cluster_config_file = pkg.resource_string(
+            version.version_info.package,
+            'plugins/hdp/resources/default-cluster.template')
 
         cluster_config = cs.ClusterSpec(cluster_config_file)
         cluster = cluster_config.normalize()
@@ -282,11 +290,12 @@ class ClusterSpecTest(unittest2.TestCase):
         self.assertEquals(cardinality, component.cardinality)
 
     def _assert_configurations(self, configurations):
-        self.assertEquals(4, len(configurations))
+        self.assertEqual(5, len(configurations))
         self.assertIn('global', configurations)
         self.assertIn('core-site', configurations)
         self.assertIn('mapred-site', configurations)
         self.assertIn('hdfs-site', configurations)
+        self.assertIn('ambari', configurations)
 
     def _assert_host_role_mappings(self, node_groups):
         self.assertEquals(2, len(node_groups))
