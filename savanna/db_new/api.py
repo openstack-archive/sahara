@@ -89,23 +89,42 @@ def not_equal(*values):
     return IMPL.not_equal(*values)
 
 
+def to_dict(func):
+    def decorator(*args, **kwargs):
+        res = func(*args, **kwargs)
+
+        if isinstance(res, list):
+            return [item.to_dict() for item in res]
+
+        if res:
+            return res.to_dict()
+        else:
+            return None
+
+    return decorator
+
+
 ## Cluster ops
 
+@to_dict
 def cluster_get(context, cluster):
     """Return the cluster or None if it does not exist."""
     return IMPL.cluster_get(context, cluster)
 
 
+@to_dict
 def cluster_get_all(context):
     """Get all clusters."""
     return IMPL.cluster_get_all(context)
 
 
+@to_dict
 def cluster_create(context, values):
     """Create a cluster from the values dictionary."""
     return IMPL.cluster_create(context, values)
 
 
+@to_dict
 def cluster_update(context, cluster, values):
     """Set the given properties on cluster and update it."""
     return IMPL.cluster_update(context, cluster, values)
@@ -135,7 +154,6 @@ def node_group_remove(context, node_group):
 
 ## Instance ops
 
-# @resource(Instance)
 def instance_add(context, node_group, values):
     """Create an Instance from the values dictionary."""
     return IMPL.instance_add(context, node_group, values)
@@ -153,16 +171,19 @@ def instance_remove(context, instance):
 
 ## Cluster Template ops
 
+@to_dict
 def cluster_template_get(context, cluster_template):
     """Return the cluster_template or None if it does not exist."""
     return IMPL.cluster_template_get(context, cluster_template)
 
 
+@to_dict
 def cluster_template_get_all(context):
     """Get all cluster_templates."""
     return IMPL.cluster_template_get_all(context)
 
 
+@to_dict
 def cluster_template_create(context, values):
     """Create a cluster_template from the values dictionary."""
     return IMPL.cluster_template_create(context, values)
@@ -175,16 +196,19 @@ def cluster_template_destroy(context, cluster_template):
 
 ## Node Group Template ops
 
+@to_dict
 def node_group_template_get(context, node_group_template):
     """Return the Node Group Template or None if it does not exist."""
     return IMPL.node_group_template_get(context, node_group_template)
 
 
+@to_dict
 def node_group_template_get_all(context):
     """Get all Node Group Templates."""
     return IMPL.node_group_template_get_all(context)
 
 
+@to_dict
 def node_group_template_create(context, values):
     """Create a Node Group Template from the values dictionary."""
     return IMPL.node_group_template_create(context, values)

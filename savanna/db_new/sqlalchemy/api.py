@@ -266,15 +266,24 @@ def cluster_template_get_all(context):
 
 def cluster_template_create(context, values):
     cluster_template = m.ClusterTemplate()
+    node_groups = values.pop("node_groups", [])
     cluster_template.update(values)
 
-    try:
-        cluster_template.save()
-    except db_exc.DBDuplicateEntry as e:
-        # raise exception about duplicated columns (e.columns)
-        raise RuntimeError("DBDuplicateEntry: %s" % e.columns)
+    session = get_session()
+    with session.begin():
+        try:
+            cluster_template.save(session=session)
+            for ng in node_groups:
+                node_group = m.TemplatesRelation()
+                node_group.update({"cluster_template_id": cluster_template.id})
+                node_group.update(ng)
+                node_group.save(session=session)
 
-    return cluster_template
+        except db_exc.DBDuplicateEntry as e:
+            # raise exception about duplicated columns (e.columns)
+            raise RuntimeError("DBDuplicateEntry: %s" % e.columns)
+
+    return cluster_template_get(context, cluster_template.id)
 
 
 def cluster_template_destroy(context, cluster_template_id):

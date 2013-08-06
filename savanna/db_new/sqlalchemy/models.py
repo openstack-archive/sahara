@@ -60,15 +60,15 @@ class Cluster(mb.SavannaBase):
     status_description = sa.Column(sa.String(200))
     info = sa.Column(st.JsonDictType())
     node_groups = relationship('NodeGroup', cascade="all,delete",
-                               backref='cluster')
+                               backref='cluster', lazy='joined')
     cluster_template_id = sa.Column(sa.String(36),
                                     sa.ForeignKey('cluster_templates.id'))
     cluster_template = relationship('ClusterTemplate',
-                                    backref="clusters")
+                                    backref="clusters", lazy='joined')
 
     def to_dict(self):
         d = super(Cluster, self).to_dict()
-        d['node_groups'] = [ng.dict for ng in self.node_groups]
+        d['node_groups'] = [ng.to_dict() for ng in self.node_groups]
         return d
 
 
@@ -93,17 +93,17 @@ class NodeGroup(mb.SavannaBase):
     count = sa.Column(sa.Integer, nullable=False)
     instances = relationship('Instance', cascade="all,delete",
                              backref='node_group',
-                             order_by="Instance.instance_name")
+                             order_by="Instance.instance_name", lazy='joined')
     cluster_id = sa.Column(sa.String(36), sa.ForeignKey('clusters.id'))
     node_group_template_id = sa.Column(sa.String(36),
                                        sa.ForeignKey(
                                            'node_group_templates.id'))
     node_group_template = relationship('NodeGroupTemplate',
-                                       backref="node_groups")
+                                       backref="node_groups", lazy='joined')
 
     def to_dict(self):
         d = super(NodeGroup, self).to_dict()
-        d['instances'] = [i.dict for i in self.instances]
+        d['instances'] = [i.to_dict() for i in self.instances]
 
         return d
 
@@ -147,11 +147,11 @@ class ClusterTemplate(mb.SavannaBase):
     plugin_name = sa.Column(sa.String(80), nullable=False)
     hadoop_version = sa.Column(sa.String(80), nullable=False)
     node_groups = relationship('TemplatesRelation', cascade="all,delete",
-                               backref='cluster_template')
+                               backref='cluster_template', lazy='joined')
 
     def to_dict(self):
         d = super(ClusterTemplate, self).to_dict()
-        d['node_groups'] = [tr.dict for tr in
+        d['node_groups'] = [tr.to_dict() for tr in
                             self.node_groups]
         return d
 
@@ -204,4 +204,5 @@ class TemplatesRelation(mb.SavannaBase):
                                        sa.ForeignKey(
                                            'node_group_templates.id'))
     node_group_template = relationship('NodeGroupTemplate',
-                                       backref="templates_relations")
+                                       backref="templates_relations",
+                                       lazy='joined')

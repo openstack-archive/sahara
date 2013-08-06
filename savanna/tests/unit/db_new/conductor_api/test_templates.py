@@ -1,0 +1,153 @@
+# Copyright (c) 2013 Mirantis Inc.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
+# implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+from savanna import context
+import savanna.tests.unit.db_new.conductor_api.base as test_base
+
+
+SAMPLE_NGT = {
+    "plugin_name": "test_plugin",
+    "flavor_id": "42",
+    "tenant_id": "test_tenant",
+    "hadoop_version": "test_version",
+    "name": "ngt_test",
+    "node_processes": ["p1", "p2"],
+    "node_configs": {
+        "service_1": {
+            "config_1": "value_1"
+        },
+        "service_2": {
+            "config_1": "value_1"
+        }
+    }
+}
+
+
+SAMPLE_CLT = {
+    "plugin_name": "test_plugin",
+    "tenant_id": "test_tenant",
+    "hadoop_version": "test_version",
+    "name": "clt_test",
+    "cluster_configs": {
+        "service_1": {
+            "config_1": "value_1"
+        },
+        "service_2": {
+            "config_1": "value_1"
+        }
+    },
+    "node_groups": [
+        {
+            "name": "ng_1",
+            "flavor_id": "42",
+            "node_processes": ["p1", "p2"],
+            "count": 1
+        },
+        {
+            "name": "ng_2",
+            "flavor_id": "42",
+            "node_processes": ["p3", "p4"],
+            "count": 3
+        }
+
+    ]
+}
+
+
+class NodeGroupTemplates(test_base.ConductorApiTestCase):
+
+    def test_minimal_ngt_create_list_delete(self):
+        ctx = context.ctx()
+        self.api.node_group_template_create(ctx, SAMPLE_NGT)
+
+        lst = self.api.node_group_template_get_all(ctx)
+        self.assertEquals(len(lst), 1)
+
+        ngt_id = lst[0]['id']
+        self.api.node_group_template_destroy(ctx, ngt_id)
+
+        lst = self.api.node_group_template_get_all(ctx)
+        self.assertEquals(len(lst), 0)
+
+    def test_duplicate_ngt_create(self):
+        ctx = context.ctx()
+        self.api.node_group_template_create(ctx, SAMPLE_NGT)
+        with self.assertRaises(RuntimeError):
+            self.api.node_group_template_create(ctx, SAMPLE_NGT)
+
+    def test_ngt_fields(self):
+        ctx = context.ctx()
+        ngt_db_obj_id = self.api.node_group_template_create(ctx,
+                                                            SAMPLE_NGT)['id']
+
+        ngt_db_obj = self.api.node_group_template_get(ctx, ngt_db_obj_id)
+        self.assertIsInstance(ngt_db_obj, dict)
+
+        for key, val in SAMPLE_NGT.items():
+            self.assertEqual(val, ngt_db_obj.get(key),
+                             "Key not found %s" % key)
+
+    def test_ngt_delete(self):
+        ctx = context.ctx()
+        db_obj_ngt = self.api.node_group_template_create(ctx, SAMPLE_NGT)
+        _id = db_obj_ngt['id']
+
+        self.api.node_group_template_destroy(ctx, _id)
+
+        with self.assertRaises(RuntimeError):
+            self.api.node_group_template_destroy(ctx, _id)
+
+
+class ClusterTemplates(test_base.ConductorApiTestCase):
+
+    def test_minimal_clt_create_list_delete(self):
+        ctx = context.ctx()
+        self.api.cluster_template_create(ctx, SAMPLE_CLT)
+
+        lst = self.api.cluster_template_get_all(ctx)
+        self.assertEquals(len(lst), 1)
+
+        clt_id = lst[0]['id']
+        self.api.cluster_template_destroy(ctx, clt_id)
+
+        lst = self.api.cluster_template_get_all(ctx)
+        self.assertEquals(len(lst), 0)
+
+    def test_duplicate_clt_create(self):
+        ctx = context.ctx()
+        self.api.cluster_template_create(ctx, SAMPLE_CLT)
+        with self.assertRaises(RuntimeError):
+            self.api.cluster_template_create(ctx, SAMPLE_CLT)
+
+    def test_clt_fields(self):
+        ctx = context.ctx()
+        clt_db_obj_id = self.api.cluster_template_create(ctx, SAMPLE_CLT)['id']
+
+        clt_db_obj = self.api.cluster_template_get(ctx, clt_db_obj_id)
+        self.assertIsInstance(clt_db_obj, dict)
+
+        for key, val in SAMPLE_CLT.items():
+            self.assertEqual(val, clt_db_obj.get(key),
+                             "Key not found %s" % key)
+
+    def test_clt_delete(self):
+        ctx = context.ctx()
+        db_obj_clt = self.api.cluster_template_create(ctx, SAMPLE_CLT)
+        _id = db_obj_clt['id']
+
+        self.api.cluster_template_destroy(ctx, _id)
+
+        with self.assertRaises(RuntimeError):
+            self.api.cluster_template_destroy(ctx, _id)
