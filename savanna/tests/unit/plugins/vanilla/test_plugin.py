@@ -16,8 +16,8 @@
 import unittest2
 
 from savanna.db import models as m
+from savanna.plugins.general import exceptions as ex
 from savanna.plugins.vanilla import config_helper as c_h
-from savanna.plugins.vanilla import exceptions as ex
 from savanna.plugins.vanilla import plugin as p
 
 
