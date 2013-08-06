@@ -74,13 +74,6 @@ class AmbariPluginTest(unittest2.TestCase):
         for node_group in cluster.node_groups:
             self.assertEqual(cluster.default_image_id, node_group.image)
 
-    def test_get_configs(self):
-        plugin = ap.AmbariPlugin()
-
-        configs = plugin.get_configs("1.3.0")
-        self.assertEqual(786, len(configs),
-                         "wrong number of configuration properties")
-
     def test__set_ambari_credentials__admin_only(self):
         self.requests = []
         plugin = ap.AmbariPlugin()
