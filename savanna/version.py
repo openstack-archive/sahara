@@ -13,6 +13,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from savanna.openstack.common import version as common_version
+from pbr import version
 
-version_info = common_version.VersionInfo('savanna')
+version_info = version.VersionInfo('savanna')

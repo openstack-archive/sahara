@@ -1,4 +1,5 @@
-# Copyright (c) 2013 Mirantis Inc.
+#!/usr/bin/env python
+# Copyright (c) 2013 Hewlett-Packard Development Company, L.P.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,60 +14,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+# THIS FILE IS MANAGED BY THE GLOBAL REQUIREMENTS REPO - DO NOT EDIT
 import setuptools
 
-from savanna.openstack.common import setup as common_setup
-
-requires = common_setup.parse_requirements()
-depend_links = common_setup.parse_dependency_links()
-project = 'savanna'
-
 setuptools.setup(
-    name=project,
-    version=common_setup.get_version(project, '0.3'),
-    description='Savanna project',
-    author='OpenStack',
-    author_email='openstack-dev@lists.openstack.org',
-    url='https://savanna.readthedocs.org',
-    classifiers=[
-        'Environment :: OpenStack',
-        'Intended Audience :: Information Technology',
-        'Intended Audience :: System Administrators',
-        'License :: OSI Approved :: Apache Software License',
-        'Operating System :: POSIX :: Linux',
-        'Programming Language :: Python',
-        'Programming Language :: Python :: 2',
-        'Programming Language :: Python :: 2.7',
-    ],
-    license='Apache Software License',
-    cmdclass=common_setup.get_cmdclass(),
-    packages=setuptools.find_packages(exclude=['bin']),
-    package_data={'savanna': [
-        'plugins/vanilla/resources/*.xml',
-        'plugins/hdp/resources/*.json',
-        'plugins/hdp/resources/*.template',
-        'service/edp/resources/*.xml',
-        'swift/resources/*.xml',
-        'tests/unit/resources/*.xml',
-        'tests/unit/resources/*.txt',
-    ]},
-    install_requires=requires,
-    dependency_links=depend_links,
-    setup_requires=['setuptools-git>=0.4'],
-    include_package_data=True,
-    test_suite='nose.collector',
-    entry_points={
-        'console_scripts': [
-            'savanna-api = savanna.cli.savanna_api:main',
-            'savanna-db-manage = savanna.db.migration.cli:main',
-        ]
-    },
-    py_modules=[],
-    data_files=[
-        ('share/savanna',
-         [
-             'etc/savanna/savanna.conf.sample',
-             'etc/savanna/savanna.conf.sample-full',
-         ]),
-    ],
-)
+    setup_requires=['pbr>=0.5.21,<1.0'],
+    pbr=True)

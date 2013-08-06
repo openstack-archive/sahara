@@ -9,6 +9,14 @@ include savanna/db/migration/alembic_migrations/versions/README
 
 recursive-include savanna/locale *
 
+include plugins/vanilla/resources/*.xml
+include plugins/hdp/resources/*.json
+include plugins/hdp/resources/*.template
+include service/edp/resources/*.xml
+include swift/resources/*.xml
+include tests/unit/resources/*.xml
+include tests/unit/resources/*.txt
+
 exclude .gitignore
 exclude .gitreview
 
