@@ -133,16 +133,26 @@ def cluster_get_all(context):
 
 
 def cluster_create(context, values):
+    values = values.copy()
     cluster = m.Cluster()
+    node_groups = values.pop("node_groups", [])
     cluster.update(values)
 
-    try:
-        cluster.save()
-    except db_exc.DBDuplicateEntry as e:
-        # raise exception about duplicated columns (e.columns)
-        raise RuntimeError("DBDuplicateEntry: %s" % e.columns)
+    session = get_session()
+    with session.begin():
+        try:
+            cluster.save(session=session)
+            for ng in node_groups:
+                node_group = m.NodeGroup()
+                node_group.update({"cluster_id": cluster.id})
+                node_group.update(ng)
+                node_group.save(session=session)
 
-    return cluster
+        except db_exc.DBDuplicateEntry as e:
+            # raise exception about duplicated columns (e.columns)
+            raise RuntimeError("DBDuplicateEntry: %s" % e.columns)
+
+    return cluster_get(context, cluster.id)
 
 
 def cluster_update(context, cluster_id, values):
@@ -153,7 +163,7 @@ def cluster_update(context, cluster_id, values):
         cluster.update(values)
         cluster.save(session=session)
 
-    return cluster
+    return cluster_get(context, cluster_id)
 
 
 def cluster_destroy(context, cluster_id):
@@ -233,7 +243,7 @@ def instance_add(context, node_group_id, values):
 def instance_update(context, instance_id, values):
     session = get_session()
     with session.begin():
-        instance = _node_group_get(context, session, instance_id)
+        instance = _instance_get(context, session, instance_id)
         instance.update(values)
         instance.save(session=session)
 
@@ -242,7 +252,6 @@ def instance_remove(context, instance_id):
     session = get_session()
     with session.begin():
         instance = _instance_get(context, session, instance_id)
-        node_group_id = instance.node_group_id
 
         if not instance:
             # raise not found error
@@ -250,6 +259,7 @@ def instance_remove(context, instance_id):
 
         session.delete(instance)
 
+        node_group_id = instance.node_group_id
         node_group = _node_group_get(context, session, node_group_id)
         node_group.count -= 1
         node_group.save(session=session)
@@ -272,6 +282,7 @@ def cluster_template_get_all(context):
 
 
 def cluster_template_create(context, values):
+    values = values.copy()
     cluster_template = m.ClusterTemplate()
     node_groups = values.pop("node_groups", [])
     cluster_template.update(values)

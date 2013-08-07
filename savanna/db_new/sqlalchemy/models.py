@@ -119,7 +119,7 @@ class Instance(mb.SavannaBase):
 
     id = _id_column()
     node_group_id = sa.Column(sa.String(36), sa.ForeignKey('node_groups.id'))
-    instance_id = sa.Column(sa.String(36), primary_key=True)
+    instance_id = sa.Column(sa.String(36))
     instance_name = sa.Column(sa.String(80), nullable=False)
     internal_ip = sa.Column(sa.String(15))
     management_ip = sa.Column(sa.String(15))

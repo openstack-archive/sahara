@@ -89,8 +89,8 @@ class NodeGroupTemplates(test_base.ConductorApiTestCase):
 
     def test_ngt_fields(self):
         ctx = context.ctx()
-        ngt_db_obj_id = self.api.node_group_template_create(ctx,
-                                                            SAMPLE_NGT)['id']
+        ngt_db_obj_id = self.api.node_group_template_create(
+            ctx, SAMPLE_NGT)['id']
 
         ngt_db_obj = self.api.node_group_template_get(ctx, ngt_db_obj_id)
         self.assertIsInstance(ngt_db_obj, dict)
@@ -139,8 +139,26 @@ class ClusterTemplates(test_base.ConductorApiTestCase):
         self.assertIsInstance(clt_db_obj, dict)
 
         for key, val in SAMPLE_CLT.items():
+            if key == 'node_groups':
+                #this will be checked separately
+                continue
             self.assertEqual(val, clt_db_obj.get(key),
                              "Key not found %s" % key)
+
+        for ng in clt_db_obj["node_groups"]:
+            ng.pop("created_at")
+            ng.pop("updated_at")
+            ng.pop("id")
+            self.assertEqual(ng.pop("cluster_template_id"), clt_db_obj_id)
+            ng.pop("image_id")
+            ng.pop("node_configs")
+            ng.pop("node_group_template_id")
+            ng.pop("volume_mount_prefix")
+            ng.pop("volumes_size")
+            ng.pop("volumes_per_node")
+
+        self.assertListEqual(SAMPLE_CLT["node_groups"],
+                             clt_db_obj["node_groups"])
 
     def test_clt_delete(self):
         ctx = context.ctx()
