@@ -217,3 +217,28 @@ def node_group_template_create(context, values):
 def node_group_template_destroy(context, node_group_template):
     """Destroy the Node Group Template or raise if it does not exist."""
     IMPL.node_group_template_destroy(context, node_group_template)
+
+
+## Data Source ops
+
+@to_dict
+def data_source_get(context, data_source):
+    """Return the Data Source or None if it does not exist."""
+    return IMPL.data_source_get(context, data_source)
+
+
+@to_dict
+def data_source_get_all(context):
+    """Get all Data Sources."""
+    return IMPL.data_source_get_all(context)
+
+
+@to_dict
+def data_source_create(context, values):
+    """Create a Data Source from the values dictionary."""
+    return IMPL.data_source_create(context, values)
+
+
+def data_source_destroy(context, data_source):
+    """Destroy the Data Source or raise if it does not exist."""
+    IMPL.data_source_destroy(context, data_source)

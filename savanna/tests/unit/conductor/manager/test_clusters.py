@@ -57,7 +57,6 @@ class ClusterTest(test_base.ConductorApiTestCase):
 
         lst = self.api.cluster_get_all(ctx)
         self.assertEqual(len(lst), 1)
-
         cl_id = lst[0]["id"]
 
         self.api.cluster_destroy(ctx, cl_id)

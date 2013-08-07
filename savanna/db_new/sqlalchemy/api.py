@@ -358,3 +358,44 @@ def node_group_template_destroy(context, node_group_template_id):
             raise RuntimeError("Node Group Template not found!")
 
         session.delete(node_group_template)
+
+
+## Data Source ops
+
+def _data_source_get(context, session, data_source_id):
+    query = model_query(m.DataSource, context, session)
+    return query.filter_by(id=data_source_id).first()
+
+
+def data_source_get(context, data_source_id):
+    return _data_source_get(context, get_session(), data_source_id)
+
+
+def data_source_get_all(context):
+    query = model_query(m.DataSource, context)
+    return query.all()
+
+
+def data_source_create(context, values):
+    data_source = m.DataSource()
+    data_source.update(values)
+
+    try:
+        data_source.save()
+    except db_exc.DBDuplicateEntry as e:
+        # raise exception about duplicated columns (e.columns)
+        raise RuntimeError("DBDuplicateEntry: %s" % e.columns)
+
+    return data_source
+
+
+def data_source_destroy(context, data_source_id):
+    session = get_session()
+    with session.begin():
+        data_source = _data_source_get(context, session, data_source_id)
+
+        if not data_source:
+            # raise not found error
+            raise RuntimeError("Data Source not found!")
+
+        session.delete(data_source)
