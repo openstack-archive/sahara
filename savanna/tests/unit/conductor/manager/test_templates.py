@@ -14,7 +14,7 @@
 # limitations under the License.
 
 from savanna import context
-import savanna.tests.unit.db_new.conductor_api.base as test_base
+import savanna.tests.unit.conductor.manager.base as test_base
 
 
 SAMPLE_NGT = {
