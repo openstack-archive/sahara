@@ -147,10 +147,13 @@ def cluster_create(context, values):
 
 def cluster_update(context, cluster_id, values):
     session = get_session()
+
     with session.begin():
         cluster = _cluster_get(context, session, cluster_id)
         cluster.update(values)
         cluster.save(session=session)
+
+    return cluster
 
 
 def cluster_destroy(context, cluster_id):
@@ -180,6 +183,8 @@ def node_group_add(context, cluster_id, values):
         node_group.update({"cluster_id": cluster_id})
         node_group.update(values)
         node_group.save(session=session)
+
+    return node_group.id
 
 
 def node_group_update(context, node_group_id, values):
@@ -221,6 +226,8 @@ def instance_add(context, node_group_id, values):
         node_group = _node_group_get(context, session, node_group_id)
         node_group.count += 1
         node_group.save(session=session)
+
+    return instance.id
 
 
 def instance_update(context, instance_id, values):
