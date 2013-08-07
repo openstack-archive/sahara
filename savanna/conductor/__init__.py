@@ -29,6 +29,6 @@ def Api(use_local=True, **kwargs):
         api = conductor_api.LocalApi
     else:
         raise NotImplementedError("Remote conductor isn't implemented yet.")
-        # api = conductor_api.RemoteApi
+        # api = conductor.RemoteApi
 
     return api(**kwargs)

@@ -13,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from savanna import conductor
+from savanna.conductor import manager
 from savanna.db_new import api as db_api
 from savanna.tests.unit import base
 
@@ -22,7 +22,7 @@ class ConductorApiTestCase(base.DbTestCase):
     def setUp(self):
         super(ConductorApiTestCase, self).setUp()
         db_api.setup_db()
-        self.api = conductor.Api(use_local=True)
+        self.api = manager.ConductorManager()
 
     def tearDown(self):
         db_api.drop_db()
