@@ -23,13 +23,20 @@ from savanna.utils import xmlutils as x
 class OozieWorkflowCreator(object):
 
     doc = None
-    tag_name = "empty"
+    tag_name = "no-op"
 
     def __init__(self, name):
         self.doc = x.load_xml_document("service/edp/resources/workflow.xml")
         self.tag_name = name
+        x.add_child(self.doc, 'action', self.tag_name)
 
-    def add_to_prepare_element(self, element, paths):
+    def _add_jobtracker_namenode_elements(self, job_tracker, name_node):
+        x.add_text_element_to_tag(self.doc, self.tag_name,
+                                  'job-tracker', job_tracker)
+        x.add_text_element_to_tag(self.doc, self.tag_name,
+                                  'name-node', name_node)
+
+    def _add_to_prepare_element(self, element, paths):
         if element not in ['delete', 'mkdir']:
             raise ex.NotFoundException(element, message=
                                        '"%s" child cannot be added to '
@@ -39,6 +46,22 @@ class OozieWorkflowCreator(object):
         for path in paths:
             elem = xml.parseString('<%s path="%s"/>' % (element, path))
             prop.appendChild(elem.firstChild)
+
+    def _add_configuration_elements(self, configuration):
+        if configuration:
+            x.add_properties_to_configuration(self.doc, self.tag_name,
+                                              configuration)
+
+    def _add_job_xml_element(self, job_xml):
+        if job_xml:
+            x.add_text_element_to_tag(self.doc, self.tag_name,
+                                      'job-xml', job_xml)
+
+    def _add_files_and_archives(self, files, archives):
+        if files:
+            x.add_tagged_list(self.doc, self.tag_name, 'file', files)
+        if archives:
+            x.add_tagged_list(self.doc, self.tag_name, 'archive', archives)
 
     def get_built_workflow_xml(self):
         return self.doc.toprettyxml(indent="  ")
