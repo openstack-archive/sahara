@@ -30,7 +30,6 @@ class SavannaException(ex.ApiError):
 
 
 class NotFoundException(SavannaException):
-
     message = "Object not found"
     # It could be a various property of object which was not found
     value = None
@@ -43,7 +42,6 @@ class NotFoundException(SavannaException):
 
 
 class NameAlreadyExistsException(SavannaException):
-
     message = "Name already exists"
 
     def __init__(self, message=None):
@@ -53,10 +51,33 @@ class NameAlreadyExistsException(SavannaException):
 
 
 class InvalidException(SavannaException):
-
     message = "Invalid object reference"
 
     def __init__(self, message=None):
         self.code = "INVALID_REFERENCE"
         if message:
             self.message = message
+
+
+class RemoteCommandException(SavannaException):
+    message = "Error during command execution: \"%s\""
+
+    def __init__(self, cmd, ret_code=None, stdout=None,
+                 stderr=None):
+        self.code = "REMOTE_COMMAND_FAILED"
+
+        self.cmd = cmd
+        self.ret_code = ret_code
+        self.stdout = stdout
+        self.stderr = stderr
+
+        self.message = self.message % cmd
+
+        if ret_code:
+            self.message += '\nReturn code: ' + str(ret_code)
+
+        if stderr:
+            self.message += '\nSTDERR:\n' + stderr
+
+        if stdout:
+            self.message += '\nSTDOUT:\n' + stdout
