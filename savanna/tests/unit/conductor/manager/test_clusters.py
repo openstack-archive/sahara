@@ -20,7 +20,7 @@ import savanna.tests.unit.conductor.manager.base as test_base
 SAMPLE_CLUSTER = {
     "plugin_name": "test_plugin",
     "hadoop_version": "test_version",
-    "tenant_id": "test_tenant",
+    "tenant_id": "tenant_1",
     "name": "test_cluster",
     "user_keypair_id": "my_keypair",
     "node_groups": [
@@ -36,7 +36,15 @@ SAMPLE_CLUSTER = {
             "node_processes": ["p3", "p4"],
             "count": 3
         }
-    ]
+    ],
+    "cluster_configs": {
+        "service_1": {
+            "config_2": "value_2"
+        },
+        "service_2": {
+            "config_1": "value_1"
+        }
+    },
 }
 
 

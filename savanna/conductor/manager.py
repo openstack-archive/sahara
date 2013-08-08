@@ -15,8 +15,10 @@
 
 """Handles database requests from other savanna services."""
 
-# from savanna.openstack.common.rpc import common as rpc_common
+import copy
+
 from savanna.db_new import base as db_base
+from savanna.utils import configs
 
 
 class ConductorManager(db_base.Base):
@@ -25,14 +27,45 @@ class ConductorManager(db_base.Base):
     The methods in the base API for savanna-conductor are various proxy
     operations that allows other services to get specific work done without
     locally accessing the database.
+
+    Additionally it performs some template-to-object copying magic.
     """
 
     def __init__(self):
         super(ConductorManager, self).__init__()
 
+    ## Common helpers
+
+    def _populate_node_groups(self, context, cluster):
+        node_groups = cluster.get('node_groups')
+        if not node_groups:
+            return
+
+        for node_group in node_groups:
+            self._populate_node_group(context, node_group)
+
+    def _populate_node_group(self, context, node_group):
+        ng_tmpl_id = node_group.get('node_group_template_id')
+        if not ng_tmpl_id:
+            return
+
+        ng_tmpl = self.node_group_template_get(context, ng_tmpl_id)
+        if not ng_tmpl:
+            return
+
+        new_values = ng_tmpl.copy()
+        new_values.update(node_group)
+        new_values['node_configs'] = configs.merge_configs(
+            ng_tmpl.get('node_configs'),
+            node_group.get('node_configs'))
+
+        node_group.update(new_values)
+        node_group.pop('cluster_template_id', None)
+        node_group.pop('created_at', None)
+        node_group.pop('updated_at', None)
+
     ## Cluster ops
 
-    # @resource(Cluster)
     def cluster_get(self, context, cluster):
         """Return the cluster or None if it does not exist."""
         return self.db.cluster_get(context, cluster)
@@ -43,6 +76,25 @@ class ConductorManager(db_base.Base):
 
     def cluster_create(self, context, values):
         """Create a cluster from the values dictionary."""
+        values = copy.deepcopy(values)
+        values['tenant_id'] = context.tenant_id
+
+        cluster_template_id = values.get('cluster_template_id')
+        if cluster_template_id:
+            c_tmpl = self.cluster_template_get(context, cluster_template_id)
+            if c_tmpl:
+                new_values = c_tmpl.copy()
+                del new_values['created_at']
+                del new_values['updated_at']
+                new_values.update(values)
+                new_values['cluster_configs'] = configs.merge_configs(
+                    c_tmpl.get('cluster_configs'),
+                    values.get('cluster_configs'))
+
+                values = new_values
+
+        self._populate_node_groups(context, values)
+
         return self.db.cluster_create(context, values)
 
     def cluster_update(self, context, cluster, values):
@@ -57,6 +109,7 @@ class ConductorManager(db_base.Base):
 
     def node_group_add(self, context, cluster, values):
         """Create a Node Group from the values dictionary."""
+        self._populate_node_group(context, values)
         return self.db.node_group_add(context, cluster, values)
 
     def node_group_update(self, context, node_group, values):
@@ -69,7 +122,6 @@ class ConductorManager(db_base.Base):
 
     ## Instance ops
 
-    # @resource(Instance)
     def instance_add(self, context, node_group, values):
         """Create an Instance from the values dictionary."""
         return self.db.instance_add(context, node_group, values)
@@ -84,7 +136,6 @@ class ConductorManager(db_base.Base):
 
     ## Cluster Template ops
 
-    # @resource(ClusterTemplate)
     def cluster_template_get(self, context, cluster_template):
         """Return the cluster_template or None if it does not exist."""
         return self.db.cluster_template_get(context, cluster_template)
@@ -95,6 +146,11 @@ class ConductorManager(db_base.Base):
 
     def cluster_template_create(self, context, values):
         """Create a cluster_template from the values dictionary."""
+        values = copy.deepcopy(values)
+        values['tenant_id'] = context.tenant_id
+
+        self._populate_node_groups(context, values)
+
         return self.db.cluster_template_create(context, values)
 
     def cluster_template_destroy(self, context, cluster_template):
@@ -103,7 +159,6 @@ class ConductorManager(db_base.Base):
 
     ## Node Group Template ops
 
-    # @resource(NodeGroupTemplate)
     def node_group_template_get(self, context, node_group_template):
         """Return the Node Group Template or None if it does not exist."""
         return self.db.node_group_template_get(context, node_group_template)
@@ -114,6 +169,9 @@ class ConductorManager(db_base.Base):
 
     def node_group_template_create(self, context, values):
         """Create a Node Group Template from the values dictionary."""
+        values = values.copy()
+        values['tenant_id'] = context.tenant_id
+
         return self.db.node_group_template_create(context, values)
 
     def node_group_template_destroy(self, context, node_group_template):

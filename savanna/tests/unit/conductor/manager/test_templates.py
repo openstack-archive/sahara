@@ -20,7 +20,7 @@ import savanna.tests.unit.conductor.manager.base as test_base
 SAMPLE_NGT = {
     "plugin_name": "test_plugin",
     "flavor_id": "42",
-    "tenant_id": "test_tenant",
+    "tenant_id": "tenant_1",
     "hadoop_version": "test_version",
     "name": "ngt_test",
     "node_processes": ["p1", "p2"],
@@ -37,7 +37,7 @@ SAMPLE_NGT = {
 
 SAMPLE_CLT = {
     "plugin_name": "test_plugin",
-    "tenant_id": "test_tenant",
+    "tenant_id": "tenant_1",
     "hadoop_version": "test_version",
     "name": "clt_test",
     "cluster_configs": {
