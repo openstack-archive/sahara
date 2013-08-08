@@ -23,7 +23,7 @@ project = 'savanna'
 
 setuptools.setup(
     name=project,
-    version=common_setup.get_version(project, '0.2'),
+    version=common_setup.get_version(project, '0.3'),
     description='Savanna project',
     author='OpenStack',
     author_email='openstack-dev@lists.openstack.org',
