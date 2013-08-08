@@ -34,8 +34,10 @@ if os.path.exists(os.path.join(possible_topdir,
     sys.path.insert(0, possible_topdir)
 
 from savanna import config
+from savanna.db_new import api as db_api
 import savanna.main as server
 from savanna.openstack.common import log as logging
+
 
 LOG = logging.getLogger(__name__)
 
@@ -51,6 +53,9 @@ def main():
 
     config.parse_configs(sys.argv[1:], config_files)
     logging.setup("savanna")
+
+    if not db_api.setup_db():
+        raise RuntimeError('Failed to create database!')
 
     app = server.make_app()
 
