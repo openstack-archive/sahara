@@ -74,14 +74,29 @@ class Resource(types.FrozenDict):
     injected into a Resource during wrapping.
     """
 
+    _resource_name = 'resource'
     _children = {}
+    _filter_fields = []
 
     def __init__(self, dct):
+        super(Resource, self).__setattr__('_initial_dict', dct)
         newdct = dict()
         for refname, entity in dct.iteritems():
             newdct[refname] = self._wrap_entity(refname, entity)
 
         super(Resource, self).__init__(newdct)
+
+    def to_dict(self):
+        """Return dictionary representing the Resource for REST API.
+
+        On the way filter out fields which shouldn't be exposed.
+        """
+        return self._to_dict(None)
+
+    def to_wrapped_dict(self):
+        return {self._resource_name: self.to_dict()}
+
+    # Construction
 
     def _wrap_entity(self, refname, entity):
         if isinstance(entity, Resource):
@@ -114,6 +129,30 @@ class Resource(types.FrozenDict):
         else:
             return Resource(dct)
 
+    # Conversion to dict
+
+    def _to_dict(self, backref):
+        dct = dict()
+        for refname, entity in self.iteritems():
+            if refname != backref and refname not in self._filter_fields:
+                childs_backref = None
+                if refname in self._children:
+                    childs_backref = self._children[refname][1]
+                dct[refname] = self._entity_to_dict(entity, childs_backref)
+
+        return dct
+
+    def _entity_to_dict(self, entity, childs_backref):
+        if isinstance(entity, Resource):
+            return entity._to_dict(childs_backref)
+        elif isinstance(entity, list):
+            return self._list_to_dict(entity, childs_backref)
+        elif entity is not None:
+            return entity
+
+    def _list_to_dict(self, lst, childs_backref):
+        return [self._entity_to_dict(entity, childs_backref) for entity in lst]
+
     def __getattr__(self, item):
         return self[item]
 
@@ -121,16 +160,12 @@ class Resource(types.FrozenDict):
         raise types.FrozenClassError(self)
 
 
-class ClusterTemplateResource(Resource, objects.ClusterTemplate):
-    pass
-
-
 class NodeGroupTemplateResource(Resource, objects.NodeGroupTemplate):
-    pass
+    _resource_name = 'node_group_template'
 
 
 class InstanceResource(Resource, objects.Instance):
-    pass
+    _filter_fields = ['node_group_id']
 
 
 class NodeGroupResource(Resource, objects.NodeGroup):
@@ -139,9 +174,23 @@ class NodeGroupResource(Resource, objects.NodeGroup):
         'node_group_template': (NodeGroupTemplateResource, None)
     }
 
+    _filter_fields = ['id', 'cluster_id', 'cluster_template_id']
+
+
+class ClusterTemplateResource(Resource, objects.ClusterTemplate):
+    _resource_name = 'cluster_template_resource'
+
+    _children = {
+        'node_groups': (NodeGroupResource, 'cluster_template')
+    }
+
 
 class ClusterResource(Resource, objects.Cluster):
+    _resource_name = 'cluster'
+
     _children = {
         'node_groups': (NodeGroupResource, 'cluster'),
         'cluster_template': (ClusterTemplateResource, None)
     }
+
+    _filter_fields = ['private_key']

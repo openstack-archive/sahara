@@ -13,6 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import copy
 import unittest2
 
 from savanna.conductor import resource as r
@@ -23,6 +24,9 @@ SAMPLE_DICT = {
     'second': {'a': 1, 'b': 2}
 }
 
+SAMPLE_NESTED_LISTS_DICT = {
+    'a': [[{'b': 123}]]
+}
 
 SAMPLE_CLUSTER_DICT = {
     'name': 'test-cluster',
@@ -72,6 +76,10 @@ class TestResource(unittest2.TestCase):
         with self.assertRaises(types.FrozenClassError):
             res.second.a = 123
 
+    def test_nested_lists(self):
+        res = r.Resource(SAMPLE_NESTED_LISTS_DICT)
+        self.assertEqual(res.a[0][0].b, 123)
+
     def test_cluster_resource(self):
         cluster = r.ClusterResource(SAMPLE_CLUSTER_DICT)
 
@@ -88,3 +96,21 @@ class TestResource(unittest2.TestCase):
         self.assertEqual(
             cluster.node_groups[1].instances[0].node_group.name,
             'worker')
+
+    def test_to_dict(self):
+        cluster = r.ClusterResource(SAMPLE_CLUSTER_DICT)
+        self.assertEqual(cluster.to_dict(), SAMPLE_CLUSTER_DICT)
+
+    def test_to_dict_filtering(self):
+        cluster_dict = copy.deepcopy(SAMPLE_CLUSTER_DICT)
+        cluster_dict['private_key'] = 'abacaba'
+        cluster_dict['node_groups'][0]['id'] = 'some_id'
+
+        cluster = r.ClusterResource(cluster_dict)
+        self.assertEqual(cluster.to_dict(), SAMPLE_CLUSTER_DICT)
+
+    def test_to_wrapped_dict(self):
+        cluster = r.ClusterResource(SAMPLE_CLUSTER_DICT)
+        wrapped_dict = cluster.to_wrapped_dict()
+        self.assertEqual(len(wrapped_dict), 1)
+        self.assertEqual(wrapped_dict['cluster'], SAMPLE_CLUSTER_DICT)

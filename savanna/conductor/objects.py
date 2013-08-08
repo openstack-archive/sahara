@@ -53,7 +53,6 @@ class Cluster(object):
     cluster_template_id
     cluster_template - ClusterTemplate object
     """
-    pass
 
 
 class NodeGroup(object):
@@ -71,10 +70,16 @@ class NodeGroup(object):
     volume_mount_prefix
     count
     instances - list of Instance objects
-    cluster_id - parent Cluster ID
-    cluster - parent Cluster object
     node_group_template_id
     node_group_template - NodeGroupTemplate object
+
+    If node group belongs to cluster:
+    cluster_id - parent Cluster ID
+    cluster - parent Cluster object
+
+    If node group belongs to cluster template:
+    cluster_template_id - parent ClusterTemplate ID
+    cluster_template - parent ClusterTemplate object
     """
 
     @property
@@ -135,10 +140,6 @@ class Instance(object):
 class ClusterTemplate(object):
     """An object representing Cluster Template.
 
-    Beware: unlike Cluster, the Template contains dummy node
-    groups, which do not descend from NodeGroup class defined in
-    current module.
-
     id
     name
     description
@@ -149,11 +150,8 @@ class ClusterTemplate(object):
     tenant_id
     plugin_name
     hadoop_version
-    node_groups - list of node groups, but they are not
-                  NodeGroup objects!
+    node_groups - list of NodeGroup objects
     """
-
-    pass
 
 
 class NodeGroupTemplate(object):
@@ -174,5 +172,3 @@ class NodeGroupTemplate(object):
     volumes_size
     volume_mount_prefix
     """
-
-    pass
