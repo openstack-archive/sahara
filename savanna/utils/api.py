@@ -118,30 +118,6 @@ def _init_resp_type(file_upload):
     flask.request.file_upload = file_upload
 
 
-def _clean_nones(obj):
-    if not isinstance(obj, dict) and not isinstance(obj, list):
-        return obj
-
-    if isinstance(obj, dict):
-        remove = []
-        for key, value in obj.iteritems():
-            if value is None:
-                remove.append(key)
-        for key in remove:
-            obj.pop(key)
-        for value in obj.values():
-            _clean_nones(value)
-    elif isinstance(obj, list):
-        new_list = []
-        for elem in obj:
-            elem = _clean_nones(elem)
-            if elem is not None:
-                new_list.append(elem)
-        return new_list
-
-    return obj
-
-
 def render(res=None, resp_type=None, status=None, **kwargs):
     if not res:
         res = {}
@@ -150,8 +126,6 @@ def render(res=None, resp_type=None, status=None, **kwargs):
     elif kwargs:
         # can't merge kwargs into the non-dict res
         abort_and_log(500, "Non-dict and non-empty kwargs passed to render")
-
-    res = _clean_nones(res)
 
     status_code = getattr(flask.request, 'status_code', None)
     if status:

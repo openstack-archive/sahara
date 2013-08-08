@@ -200,6 +200,7 @@ class JobOriginTest(test_base.ConductorManagerTestCase):
 
     def test_crud_operation_create_list_delete(self):
         ctx = context.ctx()
+
         self.api.job_origin_create(ctx, SAMPLE_JOB_ORIGIN)
 
         lst = self.api.job_origin_get_all(ctx)

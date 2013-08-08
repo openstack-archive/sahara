@@ -162,7 +162,7 @@ def check_cluster_template_unique_name(name):
 
 
 def check_cluster_template_exists(cluster_template_id):
-    if not api.get_cluster_templates(id=cluster_template_id):
+    if not api.get_cluster_template(id=cluster_template_id):
         raise ex.InvalidException("Cluster template with id '%s'"
                                   " doesn't exist" % cluster_template_id)
 
@@ -176,7 +176,7 @@ def check_node_group_template_unique_name(name):
 
 
 def check_node_group_template_exists(ng_tmpl_id):
-    if not api.get_node_group_templates(id=ng_tmpl_id):
+    if not api.get_node_group_template(id=ng_tmpl_id):
         raise ex.InvalidException("NodeGroup template with id '%s'"
                                   " doesn't exist" % ng_tmpl_id)
 

@@ -31,6 +31,19 @@ def find_dict(iterable, **rules):
     return None
 
 
+def find(lst, **kwargs):
+    for obj in lst:
+        match = True
+        for attr, value in kwargs.items():
+            if getattr(obj, attr) != value:
+                match = False
+
+        if match:
+            return obj
+
+    return None
+
+
 def format_cluster_status(cluster):
     msg = "Cluster status has been changed: id=%s, New status=%s"
     if cluster:

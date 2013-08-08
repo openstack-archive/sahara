@@ -17,9 +17,13 @@ import mock
 import novaclient.exceptions as nova_ex
 import unittest2
 
-import savanna.db.models as m
+#import savanna.db.models as m
+from savanna.conductor import resource as r
 from savanna.plugins.vanilla import plugin
 import savanna.service.validation as v
+from savanna.tests.unit.plugins.vanilla import test_utils as tu
+
+m = {}
 
 _types_checks = {
     "string": [1, (), {}],
@@ -131,28 +135,34 @@ def start_patch():
     get_image.side_effect = _get_image
     nova().images.list_registered.return_value = [Image(),
                                                   Image(name='wrong_name')]
-    cluster = m.Cluster('test', 't', 'vanilla', '1.2.2')
-    cluster.id = 1
-    cluster.status = 'Active'
-    cluster.node_groups = [m.NodeGroup('ng', '42', ['namenode'], 1)]
+    ng_dict = tu._make_ng_dict('ng', '42', ['namenode'], 1)
+    cluster = tu._create_cluster('test', 't', 'vanilla', '1.2.2', [ng_dict],
+                                 id=1, status='Active')
     # stub clusters list
     get_clusters.return_value = [cluster]
     get_cluster.return_value = cluster
-    # stub node templates
-    get_ng_templates.return_value = [m.NodeGroupTemplate('test', 't', '42',
-                                                         'vanilla', '1.2.2',
-                                                         ['namenode'])]
 
-    get_cl_templates.return_value = [m.ClusterTemplate('test', 't',
-                                                       'vanilla', '1.2.2')]
+    # stub node templates
+    ngt_dict = {'name': 'test', 'tenant_id': 't', 'flavor_id': '42',
+                'plugin_name': 'vanilla', 'hadoop_version': '1.2.2',
+                #'id': '1234321',
+                'id': '550e8400-e29b-41d4-a716-446655440000',
+                'node_processes': ['namenode']}
+
+    get_ng_templates.return_value = [r.NodeGroupTemplateResource(ngt_dict)]
+
+    ct_dict = {'name': 'test', 'tenant_id': 't',
+               'plugin_name': 'vanilla', 'hadoop_version': '1.2.2'}
+
+    get_cl_templates.return_value = [r.ClusterTemplateResource(ct_dict)]
 
     vanilla = plugin.VanillaProvider()
     vanilla.name = 'vanilla'
     get_plugins.return_value = [vanilla]
 
-    def _get_ng_template(name):
+    def _get_ng_template(id):
         for template in get_ng_templates():
-            if template.name == name:
+            if template.id == id:
                 return template
         return None
 

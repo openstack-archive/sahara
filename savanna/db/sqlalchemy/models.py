@@ -16,8 +16,8 @@
 import sqlalchemy as sa
 from sqlalchemy.orm import relationship
 
-from savanna.db_new.sqlalchemy import model_base as mb
-from savanna.db_new.sqlalchemy import types as st
+from savanna.db.sqlalchemy import model_base as mb
+from savanna.db.sqlalchemy import types as st
 from savanna.openstack.common import uuidutils
 from savanna.utils import crypto
 
@@ -175,7 +175,7 @@ class NodeGroupTemplate(mb.SavannaBase):
     hadoop_version = sa.Column(sa.String(80), nullable=False)
     node_processes = sa.Column(st.JsonListType())
     node_configs = sa.Column(st.JsonDictType())
-    volumes_per_node = sa.Column(sa.Integer)
+    volumes_per_node = sa.Column(sa.Integer, nullable=False)
     volumes_size = sa.Column(sa.Integer)
     volume_mount_prefix = sa.Column(sa.String(80))
 

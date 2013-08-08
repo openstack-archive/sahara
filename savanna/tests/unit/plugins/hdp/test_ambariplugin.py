@@ -12,12 +12,18 @@
 # implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+import mock
 
 import os
+from savanna.conductor import resource as r
 from savanna.plugins.hdp import ambariplugin as ap
 from savanna.plugins.hdp import clusterspec as cs
 from savanna.plugins.hdp import exceptions as ex
 import unittest2
+
+
+def create_cluster_template(ctx, dct):
+    return r.ClusterTemplateResource(dct)
 
 
 class AmbariPluginTest(unittest2.TestCase):
@@ -49,13 +55,14 @@ class AmbariPluginTest(unittest2.TestCase):
         self.assertIn('AMBARI_SERVER', components)
         self.assertIn('AMBARI_AGENT', components)
 
-    def test_convert(self):
+    @mock.patch("savanna.context.ctx")
+    def test_convert(self, ctx_func):
         plugin = ap.AmbariPlugin()
-        cluster = TestCluster()
         with open(os.path.join(os.path.realpath('../plugins'), 'hdp',
                                'resources',
                                'default-cluster.template'), 'r') as f:
-            plugin.convert(cluster, f.read())
+            cluster = plugin.convert(f.read(), 'ambari', '1.3.0',
+                                     create_cluster_template)
         with open(os.path.join(os.path.realpath('../plugins'), 'hdp',
                                'resources',
                                'default-cluster.template'), 'r') as f:

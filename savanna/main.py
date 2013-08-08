@@ -86,24 +86,15 @@ def make_app():
 
     @app.teardown_request
     def teardown_request(_ex=None):
-        # TODO(slukjanov): how it'll work in case of exception?
-        if context.has_ctx():
-            if flask.request.path != '/':
-                try:
-                    session = context.session()
-                    if session.transaction:
-                        session.transaction.commit()
-                except Exception as e:
-                    return api_utils.internal_error(
-                        500, 'Internal Server Error', e)
-
         context.set_ctx(None)
 
     app.register_blueprint(api_v10.rest, url_prefix='/v1.0')
     app.register_blueprint(api_v10.rest, url_prefix='/v1.1')
     app.register_blueprint(api_v11.rest, url_prefix='/v1.1')
 
-    db_api.configure_db()
+    # TODO(slukjanov): it should be removed when db-manage will be finished
+    db_api.setup_db()
+
     scheduler.setup_scheduler(app)
     plugins_base.setup_plugins()
 

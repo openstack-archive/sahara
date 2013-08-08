@@ -13,28 +13,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import savanna.db.models as m
-from savanna.openstack.common import log as logging
 
-LOG = logging.getLogger(__name__)
+def get_host_role(host):
+    if hasattr(host, 'role'):
+        return host.role
+    else:
+        return host.node_group.name
 
 
-def convert(cluster_template, normalized_config):
-    cluster_template.hadoop_version = normalized_config.hadoop_version
-    for ng in normalized_config.node_groups:
-        template_relation = m.TemplatesRelation(ng.name, ng.flavor,
-                                                ng.node_processes,
-                                                ng.count)
-        cluster_template.node_groups.append(template_relation)
-    for entry in normalized_config.cluster_configs:
-        ci = entry.config
-        # get the associated service dictionary
-        service_dict = cluster_template.cluster_configs.get(
-            entry.config.applicable_target, {})
-        service_dict[ci.name] = entry.value
-        cluster_template.cluster_configs[entry.config.applicable_target] = \
-            service_dict
-
-    LOG.debug('Cluster configs: {0}'.format(cluster_template.cluster_configs))
-
-    return cluster_template
+def get_node_processes(host):
+    if hasattr(host, 'node_processes'):
+        return host.node_processes
+    else:
+        return host.node_group.node_processes

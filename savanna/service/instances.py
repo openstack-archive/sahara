@@ -15,8 +15,8 @@
 
 from novaclient import exceptions as nova_exceptions
 
+from savanna import conductor as c
 from savanna import context
-from savanna.db import models as m
 from savanna.openstack.common import excutils
 from savanna.openstack.common import log as logging
 from savanna.service import networks
@@ -24,64 +24,88 @@ from savanna.service import volumes
 from savanna.utils import crypto
 from savanna.utils import general as g
 from savanna.utils.openstack import nova
-from savanna.utils import remote
 
+
+conductor = c.API
 LOG = logging.getLogger(__name__)
 
 
 def create_cluster(cluster):
+    ctx = context.ctx()
     try:
         # create all instances
-        context.model_update(cluster, status='Spawning')
+        conductor.cluster_update(ctx, cluster, {"status": "Spawning"})
         LOG.info(g.format_cluster_status(cluster))
         _create_instances(cluster)
 
         # wait for all instances are up and accessible
-        context.model_update(cluster, status='Waiting')
+        cluster = conductor.cluster_update(ctx, cluster, {"status": "Waiting"})
         LOG.info(g.format_cluster_status(cluster))
-        _await_instances(cluster)
+        cluster = _await_instances(cluster)
 
         # attach volumes
         volumes.attach(cluster)
 
         # prepare all instances
-        context.model_update(cluster, status='Preparing')
+        cluster = conductor.cluster_update(ctx, cluster,
+                                           {"status": "Preparing"})
         LOG.info(g.format_cluster_status(cluster))
+
         _configure_instances(cluster)
     except Exception as ex:
         LOG.warn("Can't start cluster '%s' (reason: %s)", cluster.name, ex)
         with excutils.save_and_reraise_exception():
-            context.model_update(cluster, status='Error',
-                                 status_description=str(ex))
+            cluster = conductor.cluster_update(ctx, cluster,
+                                               {"status": "Error",
+                                                "status_description": str(ex)})
             LOG.info(g.format_cluster_status(cluster))
             _rollback_cluster_creation(cluster, ex)
 
 
-def scale_cluster(cluster, node_group_names_map, plugin):
-    # Now let's work with real node_groups, not names:
-    node_groups_map = {}
-    for ng in cluster.node_groups:
-        if ng.name in node_group_names_map:
-            node_groups_map.update({ng: node_group_names_map[ng.name]})
+def get_instances(cluster, instances_ids):
+    inst_map = {}
+    for node_group in cluster.node_groups:
+        for instance in node_group.instances:
+            inst_map[instance.id] = instance
+
+    return [inst_map[id] for id in instances_ids]
+
+
+def scale_cluster(cluster, node_group_id_map, plugin):
+    ctx = context.ctx()
+
     instances_list = []
     try:
         instances_list = _scale_cluster_instances(
-            cluster, node_groups_map, plugin)
-        _clean_cluster_from_empty_ng(cluster)
-        _await_instances(cluster)
-        volumes.attach_to_instances(instances_list)
+            cluster, node_group_id_map, plugin)
+
+        cluster = conductor.cluster_get(ctx, cluster)
+        cluster = clean_cluster_from_empty_ng(cluster)
+
+        cluster = _await_instances(cluster)
+
+        volumes.attach_to_instances(get_instances(cluster, instances_list))
 
     except Exception as ex:
         LOG.warn("Can't scale cluster '%s' (reason: %s)", cluster.name, ex)
         with excutils.save_and_reraise_exception():
-            _rollback_cluster_scaling(cluster, instances_list, ex)
+            cluster = conductor.cluster_get(ctx, cluster)
+            _rollback_cluster_scaling(cluster,
+                                      get_instances(cluster, instances_list),
+                                      ex)
             instances_list = []
-            _clean_cluster_from_empty_ng(cluster)
+
+            cluster = conductor.cluster_get(ctx, cluster)
+            clean_cluster_from_empty_ng(cluster)
             if cluster.status == 'Decommissioning':
-                context.model_update(cluster, status='Error')
+                cluster = conductor.cluster_update(ctx, cluster,
+                                                   {"status": "Error"})
             else:
-                context.model_update(cluster, status='Active')
+                cluster = conductor.cluster_update(ctx, cluster,
+                                                   {"status": "Active"})
+
             LOG.info(g.format_cluster_status(cluster))
+
     # we should be here with valid cluster: if instances creation
     # was not successful all extra-instances will be removed above
     if instances_list:
@@ -105,57 +129,75 @@ def _generate_anti_affinity_groups(cluster):
 
 
 def _create_instances(cluster):
-    aa_groups = _generate_anti_affinity_groups(cluster)
+    ctx = context.ctx()
+
+    #aa_groups = _generate_anti_affinity_groups(cluster)
+    aa_groups = {}
+
     for node_group in cluster.node_groups:
+        count = node_group.count
+        conductor.node_group_update(ctx, node_group, {'count': 0})
         userdata = _generate_user_data_script(node_group)
-        for idx in xrange(1, node_group.count + 1):
+        for idx in xrange(1, count + 1):
             _run_instance(cluster, node_group, idx, aa_groups, userdata)
 
 
-def _scale_cluster_instances(cluster, node_groups_map, plugin):
+def _scale_cluster_instances(cluster, node_group_id_map, plugin):
+    ctx = context.ctx()
     aa_groups = _generate_anti_affinity_groups(cluster)
     instances_to_delete = []
     node_groups_to_enlarge = []
 
-    for node_group in node_groups_map:
-        count = node_groups_map[node_group]
-        if count < node_group.count:
-            instances_to_delete += node_group.instances[count:node_group.count]
+    for node_group in cluster.node_groups:
+        if node_group.id not in node_group_id_map:
+            continue
+
+        new_count = node_group_id_map[node_group.id]
+        if new_count < node_group.count:
+            instances_to_delete += node_group.instances[new_count:
+                                                        node_group.count]
         else:
             node_groups_to_enlarge.append(node_group)
 
     if instances_to_delete:
-        cluster.status = 'Decommissioning'
+        conductor.cluster_update(ctx, cluster, {"status": "Decommissioning"})
         LOG.info(g.format_cluster_status(cluster))
         plugin.decommission_nodes(cluster, instances_to_delete)
-        cluster.status = 'Deleting Instances'
+        cluster = conductor.cluster_update(ctx, cluster,
+                                           {"status": "Deleting Instances"})
         LOG.info(g.format_cluster_status(cluster))
         for instance in instances_to_delete:
-            node_group = instance.node_group
-            node_group.instances.remove(instance)
             _shutdown_instance(instance)
-            node_group.count -= 1
-            context.model_save(node_group)
+
+    cluster = conductor.cluster_get(ctx, cluster)
 
     instances_to_add = []
     if node_groups_to_enlarge:
-        cluster.status = 'Adding Instances'
+        cluster = conductor.cluster_update(ctx, cluster,
+                                           {"status": "Adding Instances"})
         LOG.info(g.format_cluster_status(cluster))
         for node_group in node_groups_to_enlarge:
-            count = node_groups_map[node_group]
+            count = node_group_id_map[node_group.id]
             userdata = _generate_user_data_script(node_group)
             for idx in xrange(node_group.count + 1, count + 1):
-                instance = _run_instance(cluster, node_group, idx,
-                                         aa_groups, userdata)
-                instances_to_add.append(instance)
-            node_group.count = count
+                instance_id = _run_instance(cluster, node_group, idx,
+                                            aa_groups, userdata)
+                instances_to_add.append(instance_id)
 
     return instances_to_add
 
 
+def _find_by_id(lst, id):
+    for obj in lst:
+        if obj.id == id:
+            return obj
+
+    return None
+
+
 def _run_instance(cluster, node_group, idx, aa_groups, userdata):
     """Create instance using nova client and persist them into DB."""
-    session = context.ctx().session
+    ctx = context.ctx()
     name = '%s-%s-%03d' % (cluster.name, node_group.name, idx)
 
     # aa_groups: node process -> instance ids
@@ -166,18 +208,14 @@ def _run_instance(cluster, node_group, idx, aa_groups, userdata):
     # create instances only at hosts w/ no instances w/ aa-enabled processes
     hints = {'different_host': list(set(aa_ids))} if aa_ids else None
 
-    context.model_save(node_group)
-
     nova_instance = nova.client().servers.create(
         name, node_group.get_image_id(), node_group.flavor_id,
         scheduler_hints=hints, userdata=userdata,
         key_name=cluster.user_keypair_id)
 
-    with session.begin():
-        instance = m.Instance(node_group.id, nova_instance.id, name)
-        node_group.instances.append(instance)
-        session.add(instance)
-
+    instance_id = conductor.instance_add(ctx, node_group,
+                                         {"instance_id": nova_instance.id,
+                                          "instance_name": name})
     # save instance id to aa_groups to support aa feature
     for node_process in node_group.node_processes:
         if node_process in cluster.anti_affinity:
@@ -185,7 +223,7 @@ def _run_instance(cluster, node_group, idx, aa_groups, userdata):
             aa_group_ids.append(nova_instance.id)
             aa_groups[node_process] = aa_group_ids
 
-    return instance
+    return instance_id
 
 
 def _generate_user_data_script(node_group):
@@ -209,18 +247,31 @@ echo "%(private_key)s" > %(user_home)s/.ssh/id_rsa
 
 def _await_instances(cluster):
     """Await all instances are in Active status and available."""
+    ctx = context.ctx()
     all_up = False
+    is_accesible = set()
     while not all_up:
         all_up = True
+
         for node_group in cluster.node_groups:
             for instance in node_group.instances:
                 if not _check_if_up(instance):
                     all_up = False
+
+        cluster = conductor.cluster_get(ctx, cluster)
+
+        for node_group in cluster.node_groups:
+            for instance in node_group.instances:
+                if not _check_if_accessible(instance, is_accesible):
+                    all_up = False
+
         context.sleep(1)
+
+    return cluster
 
 
 def _check_if_up(instance):
-    if hasattr(instance, '_is_up'):
+    if instance.internal_ip and instance.management_ip:
         return True
 
     server = nova.get_instance_info(instance)
@@ -237,20 +288,32 @@ def _check_if_up(instance):
     if not networks.init_instances_ips(instance, server):
         return False
 
+    return True
+
+
+def _check_if_accessible(instance, cache):
+    if instance.id in cache:
+        return True
+
+    if not instance.internal_ip or not instance.management_ip:
+        # instance is not up yet
+        return False
+
     try:
         # check if ssh is accessible and cloud-init
         # script is finished generating id_rsa
-        exit_code, _ = remote.get_remote(instance).execute_command(
+        exit_code, _ = instance.remote.execute_command(
             "ls .ssh/id_rsa", raise_when_error=False)
         # don't log ls command failure
         if exit_code:
             return False
     except Exception as ex:
         LOG.debug("Can't login to node %s (%s), reason %s",
-                  server.name, instance.management_ip, ex)
+                  instance.instance_name, instance.management_ip, ex)
         return False
 
-    instance._is_up = True
+    LOG.debug('Instance %s is accessible' % instance.instance_name)
+    cache.add(instance.id)
     return True
 
 
@@ -264,7 +327,8 @@ def _configure_instances(cluster):
     hosts = _generate_etc_hosts(cluster)
     for node_group in cluster.node_groups:
         for instance in node_group.instances:
-            with remote.get_remote(instance) as r:
+            LOG.debug('Configuring instance %s' % instance.instance_name)
+            with instance.remote as r:
                 r.write_file_to('etc-hosts', hosts)
                 r.execute_command('sudo mv etc-hosts /etc/hosts')
 
@@ -287,17 +351,7 @@ def _rollback_cluster_creation(cluster, ex):
     """Shutdown all instances and update cluster status."""
     LOG.info("Cluster '%s' creation rollback (reason: %s)", cluster.name, ex)
 
-    session = context.ctx().session
-    _shutdown_instances(cluster, True)
-    volumes.detach(cluster)
-    alive_instances = set([srv.id for srv in nova.client().servers.list()])
-
-    for node_group in cluster.node_groups:
-        for instance in node_group.instances:
-            if instance.instance_id in alive_instances:
-                nova.client().servers.delete(instance.instance_id)
-            with session.begin():
-                session.delete(instance)
+    shutdown_cluster(cluster)
 
 
 def _rollback_cluster_scaling(cluster, instances, ex):
@@ -305,44 +359,40 @@ def _rollback_cluster_scaling(cluster, instances, ex):
     LOG.info("Cluster '%s' scaling rollback (reason: %s)", cluster.name, ex)
     try:
         volumes.detach_from_instances(instances)
-    except Exception:
-        raise
     finally:
         for i in instances:
-            ng = i.node_group
             _shutdown_instance(i)
-            ng.count -= 1
 
 
-def _shutdown_instances(cluster, quiet=False):
+def _shutdown_instances(cluster):
     for node_group in cluster.node_groups:
         for instance in node_group.instances:
             _shutdown_instance(instance)
 
 
 def _shutdown_instance(instance):
-    session = context.ctx().session
+    ctx = context.ctx()
     try:
         nova.client().servers.delete(instance.instance_id)
     except nova_exceptions.NotFound:
         #Just ignore non-existing instances
         pass
 
-    with session.begin():
-        session.delete(instance)
+    conductor.instance_remove(ctx, instance)
 
 
 def shutdown_cluster(cluster):
     """Shutdown specified cluster and all related resources."""
-    volumes.detach(cluster)
-    _shutdown_instances(cluster)
+    try:
+        volumes.detach(cluster)
+    finally:
+        _shutdown_instances(cluster)
 
 
-def _clean_cluster_from_empty_ng(cluster):
-    session = context.ctx().session
-    with session.begin():
-        all_ng = cluster.node_groups
-    for ng in all_ng:
+def clean_cluster_from_empty_ng(cluster):
+    ctx = context.ctx()
+    for ng in cluster.node_groups:
         if ng.count == 0:
-            session.delete(ng)
-            cluster.node_groups.remove(ng)
+            conductor.node_group_remove(ctx, ng)
+
+    return conductor.cluster_get(ctx, cluster)

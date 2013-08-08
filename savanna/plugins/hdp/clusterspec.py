@@ -16,6 +16,7 @@
 import os
 from savanna.openstack.common import jsonutils as json
 from savanna.plugins.hdp import configprovider as cfg
+from savanna.plugins.hdp import savannautils as utils
 import savanna.utils.openstack.nova as n_helper
 
 
@@ -23,10 +24,7 @@ class ClusterSpec():
     def _get_servers_from_savanna_cluster(self, cluster):
         servers = []
         for node_group in cluster.node_groups:
-            for server in node_group.instances:
-                setattr(server, 'role', node_group.name)
-                setattr(server, 'node_processes', node_group.node_processes)
-                servers.append(server)
+            servers += node_group.instances
 
         return servers
 
@@ -63,11 +61,12 @@ class ClusterSpec():
     def _get_ambari_host(self, servers):
         # iterate thru servers and find the master server
         host = next((server for server in servers
-                     if server.node_processes is not None and
-                     'AMBARI_SERVER' in server.node_processes), None)
+                     if utils.get_node_processes(server) is not None and
+                     'AMBARI_SERVER' in utils.get_node_processes(server)),
+                    None)
         if host is None:
             host = next((server for server in servers
-                         if server.role == 'MASTER'), None)
+                         if utils.get_host_role(server) == 'MASTER'), None)
         return host
 
     def normalize(self):
@@ -131,7 +130,7 @@ class ClusterSpec():
             instance_info = n_helper.get_instance_info(server)
             hosts.append({'host_id': host_id,
                           'hostname': server.hostname,
-                          'role': server.role,
+                          'role': utils.get_host_role(server),
                           'vm_image': instance_info.image,
                           'vm_flavor': instance_info.flavor,
                           'public_ip': server.management_ip,

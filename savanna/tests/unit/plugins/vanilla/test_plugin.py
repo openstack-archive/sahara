@@ -15,57 +15,53 @@
 
 import unittest2
 
-from savanna.db import models as m
 from savanna.plugins.general import exceptions as ex
 from savanna.plugins.vanilla import config_helper as c_h
 from savanna.plugins.vanilla import plugin as p
+from savanna.tests.unit.plugins.vanilla import test_utils as tu
 
 
 class VanillaPluginTest(unittest2.TestCase):
     def setUp(self):
         self.pl = p.VanillaProvider()
-        self.cl = m.Cluster("cluster1", "tenant1", "vanilla", "1.1.2")
-        self.ng1 = m.NodeGroup("nn", "f1", ["namenode"], 1)
-        self.ng2 = m.NodeGroup("jt", "f1", ["jobtracker"], 1)
-        self.ng3 = m.NodeGroup("tt", "f1", ["tasktracker"], 10)
-        self.ng4 = m.NodeGroup("oozie", "f1", ["oozie"], 1)
-        self.cl.node_groups = [self.ng1, self.ng2, self.ng3, self.ng4]
-        self.cl_configs = self.pl.get_configs("1.1.2")
 
     def test_validate(self):
-        self.pl.validate(self.cl)
-        with self.assertRaises(ex.NotSingleNameNodeException):
-            self.ng1.count = 0
-            self.pl.validate(self.cl)
-        with self.assertRaises(ex.NotSingleNameNodeException):
-            self.ng1.count = 2
-            self.pl.validate(self.cl)
-        self.ng1.count = 1
+        self.ng = []
+        self.ng.append(tu._make_ng_dict("nn", "f1", ["namenode"], 0))
+        self.ng.append(tu._make_ng_dict("jt", "f1", ["jobtracker"], 0))
+        self.ng.append(tu._make_ng_dict("tt", "f1", ["tasktracker"], 0))
+        self.ng.append(tu._make_ng_dict("oozie", "f1", ["oozie"], 0))
 
-        self.pl.validate(self.cl)
-        with self.assertRaises(ex.NotSingleJobTrackerException):
-            self.ng2.count = 2
-            self.pl.validate(self.cl)
+        self._validate_case(1, 1, 10, 1)
 
-        self.ng2.count = 1
-        self.pl.validate(self.cl)
+        with self.assertRaises(ex.NotSingleNameNodeException):
+            self._validate_case(0, 1, 10, 1)
+        with self.assertRaises(ex.NotSingleNameNodeException):
+            self._validate_case(2, 1, 10, 1)
+
         with self.assertRaises(ex.TaskTrackersWithoutJobTracker):
-            self.ng2.count = 0
-            self.pl.validate(self.cl)
+            self._validate_case(1, 0, 10, 1)
+        with self.assertRaises(ex.NotSingleJobTrackerException):
+            self._validate_case(1, 2, 10, 1)
 
-        self.ng2.count = 1
         with self.assertRaises(ex.NotSingleOozieException):
-            self.ng3.count = 0
-            self.ng4.count = 2
-            self.pl.validate(self.cl)
-
-        self.ng4.count = 1
+            self._validate_case(1, 1, 0, 2)
         with self.assertRaises(ex.OozieWithoutJobTracker):
-            self.ng2.count = 0
-            self.pl.validate(self.cl)
+            self._validate_case(1, 0, 0, 1)
+
+    def _validate_case(self, *args):
+        lst = []
+        for i in range(0, len(args)):
+            self.ng[i]['count'] = args[i]
+            lst.append(self.ng[i])
+
+        cl = tu._create_cluster("cluster1", "tenant1", "vanilla", "1.1.2", lst)
+
+        self.pl.validate(cl)
 
     def test_get_configs(self):
-        for cfg in self.cl_configs:
+        cl_configs = self.pl.get_configs("1.1.2")
+        for cfg in cl_configs:
             if cfg.config_type is "bool":
                 self.assertIsInstance(cfg.default_value, bool)
             elif cfg.config_type is "int":

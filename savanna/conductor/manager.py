@@ -17,7 +17,7 @@
 
 import copy
 
-from savanna.db_new import base as db_base
+from savanna.db import base as db_base
 from savanna.utils import configs
 # from savanna.openstack.common.rpc import common as rpc_common
 
@@ -72,15 +72,22 @@ class ConductorManager(db_base.Base):
         for node_group in node_groups:
             self._populate_node_group(context, node_group)
 
+    def _cleanup_node_group(self, node_group):
+        node_group.pop('id', None)
+        node_group.pop('created_at', None)
+        node_group.pop('updated_at', None)
+
     def _populate_node_group(self, context, node_group):
         ng_tmpl_id = node_group.get('node_group_template_id')
         if not ng_tmpl_id:
             node_group.update(_apply_defaults(node_group, NODE_GROUP_DEFAULTS))
+            self._cleanup_node_group(node_group)
             return
 
         ng_tmpl = self.node_group_template_get(context, ng_tmpl_id)
         if not ng_tmpl:
             node_group.update(_apply_defaults(node_group, NODE_GROUP_DEFAULTS))
+            self._cleanup_node_group(node_group)
             return
 
         new_values = _apply_defaults(ng_tmpl, NODE_GROUP_DEFAULTS)
@@ -92,9 +99,7 @@ class ConductorManager(db_base.Base):
         node_group.clear()
         node_group.update(new_values)
 
-        node_group.pop('id', None)
-        node_group.pop('created_at', None)
-        node_group.pop('updated_at', None)
+        self._cleanup_node_group(node_group)
 
     ## Cluster ops
 

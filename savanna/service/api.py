@@ -13,157 +13,191 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from savanna import conductor as c
 from savanna import context
-from savanna.db import models as m
-from savanna.db import storage as s
 from savanna.openstack.common import excutils
 from savanna.openstack.common import log as logging
-from savanna.openstack.common import uuidutils
 from savanna.plugins import base as plugin_base
 from savanna.plugins import provisioning
 from savanna.service import instances as i
 from savanna.utils import general as g
 from savanna.utils.openstack import nova
 
+
+conductor = c.API
 LOG = logging.getLogger(__name__)
 
 
 ## Cluster ops
 
-get_clusters = s.get_clusters
-get_cluster = s.get_cluster
+def get_clusters():
+    return conductor.cluster_get_all(context.ctx())
 
 
-def scale_cluster(cluster_id, data):
-    cluster = get_cluster(id=cluster_id)
+def get_cluster(id):
+    return conductor.cluster_get(context.ctx(), id)
+
+
+def scale_cluster(id, data):
+    ctx = context.ctx()
+
+    cluster = conductor.cluster_get(ctx, id)
     plugin = plugin_base.PLUGINS.get_plugin(cluster.plugin_name)
     existing_node_groups = data.get('resize_node_groups', [])
     additional_node_groups = data.get('add_node_groups', [])
 
     #the next map is the main object we will work with
-    #to_be_enlarged : {node_group_name: desired_amount_of_instances}
+    #to_be_enlarged : {node_group_id: desired_amount_of_instances}
     to_be_enlarged = {}
     for ng in existing_node_groups:
-        to_be_enlarged.update({ng['name']: ng['count']})
+        ng_id = g.find(cluster.node_groups, name=ng['name'])['id']
+        to_be_enlarged.update({ng_id: ng['count']})
 
-    additional = construct_ngs_for_scaling(additional_node_groups)
+    additional = construct_ngs_for_scaling(cluster, additional_node_groups)
 
     try:
-        context.model_update(cluster, status='Validating')
+        cluster = conductor.cluster_update(ctx, cluster,
+                                           {"status": "Validating"})
         LOG.info(g.format_cluster_status(cluster))
         plugin.validate_scaling(cluster, to_be_enlarged, additional)
     except Exception:
         with excutils.save_and_reraise_exception():
-            context.model_update(cluster, status='Active')
+            i.clean_cluster_from_empty_ng(cluster)
+            cluster = conductor.cluster_update(ctx, cluster,
+                                               {"status": "Active"})
             LOG.info(g.format_cluster_status(cluster))
 
     # If we are here validation is successful.
-    # So let's update bd and to_be_enlarged map:
-    for add_n_g in additional:
-        cluster.node_groups.append(add_n_g)
-        to_be_enlarged.update({add_n_g.name: additional[add_n_g]})
-    context.model_save(cluster)
+    # So let's update to_be_enlarged map:
+    to_be_enlarged.update(additional)
 
-    context.spawn("cluster-scaling-%s" % cluster_id,
-                  _provision_nodes, cluster_id, to_be_enlarged)
-    return cluster
+    context.spawn("cluster-scaling-%s" % id,
+                  _provision_nodes, id, to_be_enlarged)
+    return conductor.cluster_get(ctx, id)
 
 
 def create_cluster(values):
-    cluster = s.create_cluster(values)
+    ctx = context.ctx()
+    cluster = conductor.cluster_create(ctx, values)
     plugin = plugin_base.PLUGINS.get_plugin(cluster.plugin_name)
 
     # validating cluster
     try:
-        context.model_update(cluster, status='Validating')
+        cluster = conductor.cluster_update(ctx, cluster,
+                                           {"status": "Validating"})
         LOG.info(g.format_cluster_status(cluster))
         plugin.validate(cluster)
     except Exception as ex:
         with excutils.save_and_reraise_exception():
-            context.model_update(cluster, status='Error',
-                                 status_description=str(ex))
+            cluster = conductor.cluster_update(ctx, cluster,
+                                               {"status": "Error",
+                                                "status_description": str(ex)})
             LOG.info(g.format_cluster_status(cluster))
 
     context.spawn("cluster-creating-%s" % cluster.id,
                   _provision_cluster, cluster.id)
 
-    return cluster
+    return conductor.cluster_get(ctx, cluster.id)
 
 
-#node_group_names_map = {node_group_name:desired_amount_of_instances}
-def _provision_nodes(cluster_id, node_group_names_map):
-    cluster = get_cluster(id=cluster_id)
+def _provision_nodes(id, node_group_id_map):
+    ctx = context.ctx()
+    cluster = conductor.cluster_get(ctx, id)
     plugin = plugin_base.PLUGINS.get_plugin(cluster.plugin_name)
 
-    context.model_update(cluster, status='Scaling')
+    cluster = conductor.cluster_update(ctx, cluster, {"status": "Scaling"})
     LOG.info(g.format_cluster_status(cluster))
-    instances = i.scale_cluster(cluster, node_group_names_map, plugin)
+    instances = i.scale_cluster(cluster, node_group_id_map, plugin)
 
     if instances:
-        context.model_update(cluster, status='Configuring')
+        cluster = conductor.cluster_update(ctx, cluster,
+                                           {"status": "Configuring"})
         LOG.info(g.format_cluster_status(cluster))
-        plugin.scale_cluster(cluster, instances)
+        plugin.scale_cluster(cluster, i.get_instances(cluster, instances))
 
     # cluster is now up and ready
-    context.model_update(cluster, status='Active')
+    cluster = conductor.cluster_update(ctx, cluster, {"status": "Active"})
     LOG.info(g.format_cluster_status(cluster))
 
 
 def _provision_cluster(cluster_id):
-    cluster = get_cluster(id=cluster_id)
+    ctx = context.ctx()
+    cluster = conductor.cluster_get(ctx, cluster_id)
     plugin = plugin_base.PLUGINS.get_plugin(cluster.plugin_name)
 
     # updating cluster infra
-    context.model_update(cluster, status='InfraUpdating')
+    cluster = conductor.cluster_update(ctx, cluster,
+                                       {"status": "InfraUpdating"})
     LOG.info(g.format_cluster_status(cluster))
     plugin.update_infra(cluster)
 
     # creating instances and configuring them
+    cluster = conductor.cluster_get(ctx, cluster_id)
     i.create_cluster(cluster)
 
     # configure cluster
-    context.model_update(cluster, status='Configuring')
+    cluster = conductor.cluster_update(ctx, cluster, {"status": "Configuring"})
     LOG.info(g.format_cluster_status(cluster))
     plugin.configure_cluster(cluster)
 
     # starting prepared and configured cluster
-    context.model_update(cluster, status='Starting')
+    cluster = conductor.cluster_update(ctx, cluster, {"status": "Starting"})
     LOG.info(g.format_cluster_status(cluster))
     plugin.start_cluster(cluster)
 
     # cluster is now up and ready
-    context.model_update(cluster, status='Active')
+    cluster = conductor.cluster_update(ctx, cluster, {"status": "Active"})
     LOG.info(g.format_cluster_status(cluster))
 
-    return cluster
 
+def terminate_cluster(id):
+    ctx = context.ctx()
+    cluster = conductor.cluster_get(ctx, id)
 
-def terminate_cluster(**args):
-    cluster = get_cluster(**args)
-    context.model_update(cluster, status='Deleting')
+    cluster = conductor.cluster_update(ctx, cluster, {"status": "Deleting"})
     LOG.info(g.format_cluster_status(cluster))
 
     plugin = plugin_base.PLUGINS.get_plugin(cluster.plugin_name)
     plugin.on_terminate_cluster(cluster)
 
     i.shutdown_cluster(cluster)
-    s.terminate_cluster(cluster)
+    conductor.cluster_destroy(ctx, cluster)
 
 
 ## ClusterTemplate ops
 
-get_cluster_templates = s.get_cluster_templates
-get_cluster_template = s.get_cluster_template
-create_cluster_template = s.create_cluster_template
-terminate_cluster_template = s.terminate_cluster_template
+def get_cluster_templates():
+    return conductor.cluster_template_get_all(context.ctx())
+
+
+def get_cluster_template(id):
+    return conductor.cluster_template_get(context.ctx(), id)
+
+
+def create_cluster_template(values):
+    return conductor.cluster_template_create(context.ctx(), values)
+
+
+def terminate_cluster_template(id):
+    return conductor.cluster_template_destroy(context.ctx(), id)
 
 
 ## NodeGroupTemplate ops
 
-get_node_group_templates = s.get_node_group_templates
-get_node_group_template = s.get_node_group_template
-create_node_group_template = s.create_node_group_template
-terminate_node_group_template = s.terminate_node_group_template
+def get_node_group_templates():
+    return conductor.node_group_template_get_all(context.ctx())
+
+
+def get_node_group_template(id):
+    return conductor.node_group_template_get(context.ctx(), id)
+
+
+def create_node_group_template(values):
+    return conductor.node_group_template_create(context.ctx(), values)
+
+
+def terminate_node_group_template(id):
+    return conductor.node_group_template_destroy(context.ctx(), id)
 
 
 ## Plugins ops
@@ -192,27 +226,18 @@ def get_plugin(plugin_name, version=None):
 
 def convert_to_cluster_template(plugin_name, version, config_file):
     plugin = plugin_base.PLUGINS.get_plugin(plugin_name)
-    tenant_id = context.current().tenant_id
-    name = uuidutils.generate_uuid()
-    ct = m.ClusterTemplate(name, tenant_id, plugin_name, version)
-    plugin.convert(ct, config_file)
-
-    return s.persist_cluster_template(ct)
+    return plugin.convert(config_file, plugin_name, version,
+                          conductor.cluster_template_create)
 
 
-def construct_ngs_for_scaling(additional_node_groups):
+def construct_ngs_for_scaling(cluster, additional_node_groups):
+    ctx = context.ctx()
     additional = {}
     for ng in additional_node_groups:
-        tmpl_id = ng.get('node_group_template_id')
         count = ng['count']
-        if tmpl_id:
-            tmpl = get_node_group_template(id=tmpl_id)
-            node_group = tmpl.to_object(ng, m.NodeGroup)
-        else:
-            node_group = m.NodeGroup(**ng)
-            #need to set 0 because tmpl.to_object overwrote count
-        node_group.count = 0
-        additional.update({node_group: count})
+        ng['count'] = 0
+        ng_id = conductor.node_group_add(ctx, cluster, ng)
+        additional.update({ng_id: count})
     return additional
 
 ## Image Registry

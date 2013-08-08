@@ -15,42 +15,56 @@
 
 import mock
 
-from savanna import context as ctx
-import savanna.db.models as m
+from savanna import conductor as cond
+from savanna.conductor import resource as r
+from savanna import context
 from savanna.service import instances
 from savanna.tests.unit import base as models_test_base
 import savanna.utils.crypto as c
 
 
+conductor = cond.API
+
+
+def _resource_passthrough(*args, **kwargs):
+    return True
+
+
 class TestClusterRollBack(models_test_base.DbTestCase):
+    def setUp(self):
+        r.Resource._is_passthrough_type = _resource_passthrough
+        super(TestClusterRollBack, self).setUp()
+
     @mock.patch('savanna.utils.openstack.nova.client')
     def test_cluster_creation_with_errors(self, novaclient):
-        node_groups = [m.NodeGroup("test_group", "test_flavor",
-                                   ["data node", "test tracker"], 2)]
-        node_groups[0]._username = "root"
+        node_groups = [_make_ng_dict('test_group', 'test_flavor',
+                                     ['data node', 'task tracker'], 2)]
 
         cluster = _create_cluster_mock(node_groups, [])
 
         nova = _create_nova_mock(novaclient)
         nova.servers.create.side_effect = [_mock_instance(1),
-                                           Exception("test")]
+                                           MockException("test")]
 
         nova.servers.list = mock.MagicMock(return_value=[_mock_instance(1)])
 
-        with self.assertRaises(Exception):
+        with self.assertRaises(MockException):
             instances.create_cluster(cluster)
 
-        session = ctx.ctx().session
-        with session.begin():
-            self.assertEqual(session.query(m.Instance).count(), 0)
+        ctx = context.ctx()
+        cluster_obj = conductor.cluster_get_all(ctx)[0]
+        self.assertEqual(len(cluster_obj.node_groups[0].instances), 0)
 
 
 class NodePlacementTest(models_test_base.DbTestCase):
+    def setUp(self):
+        r.Resource._is_passthrough_type = _resource_passthrough
+        super(NodePlacementTest, self).setUp()
+
     @mock.patch('savanna.utils.openstack.nova.client')
     def test_one_node_groups_and_one_affinity_group(self, novaclient):
-        node_groups = [m.NodeGroup("test_group", "test_flavor",
-                                   ["data node", "test tracker"], 2)]
-        node_groups[0]._username = "root"
+        node_groups = [_make_ng_dict('test_group', 'test_flavor',
+                                     ['data node'], 2)]
         cluster = _create_cluster_mock(node_groups, ["data node"])
         nova = _create_nova_mock(novaclient)
         instances._create_instances(cluster)
@@ -71,15 +85,15 @@ class NodePlacementTest(models_test_base.DbTestCase):
                        key_name='user_keypair')],
             any_order=False)
 
-        session = ctx.ctx().session
-        with session.begin():
-            self.assertEqual(session.query(m.Instance).count(), 2)
+        ctx = context.ctx()
+        cluster_obj = conductor.cluster_get_all(ctx)[0]
+        self.assertEqual(len(cluster_obj.node_groups[0].instances), 2)
 
     @mock.patch('savanna.utils.openstack.nova.client')
     def test_one_node_groups_and_no_affinity_group(self, novaclient):
-        node_groups = [m.NodeGroup("test_group", "test_flavor",
-                                   ["data node", "test tracker"], 2)]
-        node_groups[0]._username = "root"
+        node_groups = [_make_ng_dict('test_group', 'test_flavor',
+                                     ['data node', 'task tracker'], 2)]
+
         cluster = _create_cluster_mock(node_groups, [])
         nova = _create_nova_mock(novaclient)
         instances._create_instances(cluster)
@@ -100,18 +114,17 @@ class NodePlacementTest(models_test_base.DbTestCase):
                        key_name='user_keypair')],
             any_order=False)
 
-        session = ctx.ctx().session
-        with session.begin():
-            self.assertEqual(session.query(m.Instance).count(), 2)
+        ctx = context.ctx()
+        cluster_obj = conductor.cluster_get_all(ctx)[0]
+        self.assertEqual(len(cluster_obj.node_groups[0].instances), 2)
 
     @mock.patch('savanna.utils.openstack.nova.client')
     def test_two_node_groups_and_one_affinity_group(self, novaclient):
-        node_groups = [m.NodeGroup("test_group_1", "test_flavor",
-                                   ["data node", "test tracker"], 2),
-                       m.NodeGroup("test_group_2", "test_flavor",
-                                   ["data node", "test tracker"], 1)]
-        node_groups[0]._username = "root"
-        node_groups[1]._username = "root"
+        node_groups = [_make_ng_dict("test_group_1", "test_flavor",
+                                     ["data node", "test tracker"], 2),
+                       _make_ng_dict("test_group_2", "test_flavor",
+                                     ["data node", "test tracker"], 1)]
+
         cluster = _create_cluster_mock(node_groups, ["data node"])
         nova = _create_nova_mock(novaclient)
         instances._create_instances(cluster)
@@ -138,20 +151,35 @@ class NodePlacementTest(models_test_base.DbTestCase):
                        key_name='user_keypair')],
             any_order=False)
 
-        session = ctx.ctx().session
-        with session.begin():
-            self.assertEqual(session.query(m.Instance).count(), 3)
+        ctx = context.ctx()
+        cluster_obj = conductor.cluster_get_all(ctx)[0]
+        inst_number = len(cluster_obj.node_groups[0].instances)
+        inst_number += len(cluster_obj.node_groups[1].instances)
+        self.assertEqual(inst_number, 3)
+
+
+def _make_ng_dict(name, flavor, processes, count):
+    return {'name': name, 'flavor_id': flavor, 'node_processes': processes,
+            'count': count}
 
 
 def _create_cluster_mock(node_groups, aa):
-    cluster = m.Cluster("test_cluster", "tenant_id", "mock_plugin",
-                        "mock_version", "initial",
-                        user_keypair_id='user_keypair', anti_affinity=aa)
 
-    cluster._user_kp = mock.Mock()
-    cluster._user_kp.public_key = "123"
-    cluster.private_key = c.generate_private_key()
-    cluster.node_groups = node_groups
+    user_kp = mock.Mock()
+    user_kp.public_key = "123"
+    private_key = c.generate_private_key()
+
+    dct = {'name': 'test_cluster',
+           'plugin_name': 'mock_plugin',
+           'hadoop_version': 'mock_version',
+           'default_image_id': 'initial',
+           'user_keypair_id': 'user_keypair',
+           'anti_affinity': aa,
+           '_user_kp': user_kp,
+           'private_key': private_key,
+           'node_groups': node_groups}
+
+    cluster = conductor.cluster_create(context.ctx(), dct)
 
     return cluster
 
@@ -187,3 +215,7 @@ def _create_nova_mock(novalcient):
     images.username = "root"
     nova.images.get = lambda x: images
     return nova
+
+
+class MockException(Exception):
+    pass
