@@ -13,23 +13,25 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""The Conductor can fetch only values represented by JSON. That
-limitation comes from Oslo RPC implementation.
+"""Provides means to wrap dicts coming from DB layer in objects.
 
+The Conductor can fetch only values represented by JSON.
+That limitation comes from Oslo RPC implementation.
 This module provides means to wrap a fetched value, always
 dictionary, into an immutable Resource object. A descendant of
 Resource class might provide back references to parent objects
-and helper methods
+and helper methods.
 """
 
 import six
 
+from savanna.conductor import objects
 from savanna.utils import types
 
 
 def wrap(resource_class):
     """A decorator which wraps dict returned by a given function into
-    a Resource
+    a Resource.
     """
     def decorator(func):
         def handle(*args, **kwargs):
@@ -106,7 +108,8 @@ class Resource(types.FrozenDict):
             dct = dict(dct)
             child_class = self._children[refname][0]
             backref_name = self._children[refname][1]
-            dct[backref_name] = self
+            if backref_name:
+                dct[backref_name] = self
             return child_class(dct)
         else:
             return Resource(dct)
@@ -118,13 +121,27 @@ class Resource(types.FrozenDict):
         raise types.FrozenClassError(self)
 
 
-class InstanceResource(Resource):
+class ClusterTemplateResource(Resource, objects.ClusterTemplate):
     pass
 
 
-class NodeGroupResource(Resource):
-    _children = {'instances': (InstanceResource, 'node_group')}
+class NodeGroupTemplateResource(Resource, objects.NodeGroupTemplate):
+    pass
 
 
-class ClusterResource(Resource):
-    _children = {'node_groups': (NodeGroupResource, 'cluster')}
+class InstanceResource(Resource, objects.Instance):
+    pass
+
+
+class NodeGroupResource(Resource, objects.NodeGroup):
+    _children = {
+        'instances': (InstanceResource, 'node_group'),
+        'node_group_template': (NodeGroupTemplateResource, None)
+    }
+
+
+class ClusterResource(Resource, objects.Cluster):
+    _children = {
+        'node_groups': (NodeGroupResource, 'cluster'),
+        'cluster_template': (ClusterTemplateResource, None)
+    }
