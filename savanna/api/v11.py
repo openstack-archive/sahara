@@ -19,6 +19,7 @@ from savanna.service.edp import api
 from savanna.service import validation as v
 from savanna.service.validations.edp import data_source as v_d_s
 from savanna.service.validations.edp import job as v_j
+from savanna.service.validations.edp import job_origin as v_j_o
 import savanna.utils.api as u
 
 
@@ -80,4 +81,31 @@ def data_source_get(data_source_id):
 @rest.delete('/data-sources/<data_source_id>')
 @v.check_exists(api.get_data_source, id='data_source_id')
 def data_source_delete(data_source_id):
-    return u.render(jobs=api.delete_job(data_source_id))
+    return u.render(jobs=api.delete_data_source(data_source_id))
+
+
+@rest.get('/job-origins')
+def job_origin_list():
+    return u.render(job_origins=[j.dict for j in api.get_job_origins()])
+
+
+@rest.post('/job-origins')
+@v.validate(v_j_o.JOB_ORIGIN_SCHEMA, v_j_o.check_job_origin_create)
+def job_origin_create(data):
+    return u.render(api.create_job_origin(data))
+    # ultimately this, but the object is missing at the moment
+    # and the check_job_origin_create method is stubbed out
+    #return u.render(api.create_job_origin(data).wrapped_dict)
+
+
+@rest.get('/job-origins/<job_origin_id>')
+@v.check_exists(api.get_job_origin, id='job_origin_id')
+def job_origin_get(job_origin_id):
+    return u.render(api.get_job_origin(job_origin_id).wrapped_dict)
+
+
+@rest.delete('/job-origins/<job_origin_id>')
+@v.check_exists(api.get_job_origin, id='job_origin_id')
+def job_origin_delete(job_origin_id):
+    api.delete_job_origin(job_origin_id)
+    return u.render()

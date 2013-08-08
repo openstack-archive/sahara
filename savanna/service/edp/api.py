@@ -48,3 +48,23 @@ def delete_data_sources(data_source_id):
 
 def register_data_source(values):
     pass
+
+
+def get_job_origins():
+    return []
+
+
+def get_job_origin(id):
+    pass
+
+
+def create_job_origin(values):
+    return values
+
+
+def delete_job_origin(job_origin_id):
+    pass
+
+
+def copy_job_origin(values):
+    pass
