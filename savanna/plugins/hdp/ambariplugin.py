@@ -34,6 +34,8 @@ class AmbariPlugin(p.ProvisioningPluginBase):
     def __init__(self):
         self.cluster_name_to_ambari_host_mapping = {}
         self.default_config = self._get_default_cluster_configuration()
+        self.ambari_user = 'admin'
+        self.ambari_password = 'admin'
 
     def create_cluster(self, cluster, cluster_template):
 
@@ -122,7 +124,7 @@ class AmbariPlugin(p.ProvisioningPluginBase):
         #TODO(jspeidel): get stack info from advanced config
         result = requests.post(add_cluster_url,
                                data='{"Clusters": {"version" : "HDP-1.3.0"}}',
-                               auth=('admin', 'admin'))
+                               auth=(self.ambari_user, self.ambari_password))
         if result.status_code != 201:
             LOG.warning(
                 'Create cluster command failed. {0}'.format(result.text))
@@ -133,8 +135,9 @@ class AmbariPlugin(p.ProvisioningPluginBase):
     def _add_configurations_to_cluster(self, cluster_spec, ambari_public_ip,
                                        name):
         configs = cluster_spec.configurations
-        add_configuration_url = 'http://{0}:8080/api/v1/clusters/{1}'.format(
+        config_url = 'http://{0}:8080/api/v1/clusters/{1}'.format(
             ambari_public_ip, name)
+
         body = {}
         clusters = {}
         body['Clusters'] = clusters
@@ -145,8 +148,8 @@ class AmbariPlugin(p.ProvisioningPluginBase):
             #TODO(jspeidel): hard coding for now
             config_body['tag'] = 'v1'
             config_body['properties'] = configs[config_name]
-            result = requests.put(add_configuration_url, data=json.dumps(body),
-                                  auth=('admin', 'admin'))
+            result = requests.put(config_url, data=json.dumps(body), auth=(
+                self.ambari_user, self.ambari_password))
             if result.status_code != 200:
                 LOG.warning(
                     'Set configuration command failed. {0}'.format(
@@ -163,7 +166,7 @@ class AmbariPlugin(p.ProvisioningPluginBase):
                 result = requests.post(
                     add_service_url.format(ambari_public_ip, name,
                                            service.name),
-                    auth=('admin', 'admin'))
+                    auth=(self.ambari_user, self.ambari_password))
                 if result.status_code != 201:
                     LOG.warning(
                         'Create service command failed. {0}'.format(
@@ -181,7 +184,7 @@ class AmbariPlugin(p.ProvisioningPluginBase):
                 for component in service.components:
                     result = requests.post(add_component_url.format(
                         ambari_public_ip, name, service.name, component.name),
-                        auth=('admin', 'admin'))
+                        auth=(self.ambari_user, self.ambari_password))
                     if result.status_code != 201:
                         LOG.warning(
                             'Create component command failed. {0}'.format(
@@ -199,7 +202,7 @@ class AmbariPlugin(p.ProvisioningPluginBase):
             hostname = host.instance.fqdn.lower()
             result = requests.post(
                 add_host_url.format(ambari_public_ip, name, hostname),
-                auth=('admin', 'admin'))
+                auth=(self.ambari_user, self.ambari_password))
             if result.status_code != 201:
                 LOG.warning(
                     'Create host command failed. {0}'.format(result.text))
@@ -213,7 +216,7 @@ class AmbariPlugin(p.ProvisioningPluginBase):
                 if component.find('AMBARI') != 0:
                     result = requests.post(add_host_component_url.format(
                         ambari_public_ip, name, hostname, component),
-                        auth=('admin', 'admin'))
+                        auth=(self.ambari_user, self.ambari_password))
                     if result.status_code != 201:
                         LOG.warning(
                             'Create host_component command failed. {0}'.format(
@@ -236,6 +239,8 @@ class AmbariPlugin(p.ProvisioningPluginBase):
             self._spawn(server.provision_ambari, ambari_private_ip)
 
         self._wait_for_host_registrations(len(servers), ambari_host)
+
+        self._set_ambari_credentials(cluster_spec, ambari_public_ip)
 
         # add cluster
         if not self._add_cluster(ambari_public_ip, name):
@@ -275,7 +280,8 @@ class AmbariPlugin(p.ProvisioningPluginBase):
         while result is None or len(json_result['items']) < num_hosts:
             context.sleep(5)
             try:
-                result = requests.get(url, auth=('admin', 'admin'))
+                result = requests.get(url, auth=(self.ambari_user,
+                                                 self.ambari_password))
                 json_result = json.loads(result.text)
 
                 # TODO(jspeidel): just for debug
@@ -312,7 +318,8 @@ class AmbariPlugin(p.ProvisioningPluginBase):
                           ambari_host.management_ip, cluster_name)
         body = '{"ServiceInfo": {"state" : "INSTALLED"}}'
 
-        result = requests.put(install_url, data=body, auth=('admin', 'admin'))
+        result = requests.put(install_url, data=body, auth=(
+            self.ambari_user, self.ambari_password))
 
         if result.status_code == 202:
             #TODO(jspeidel) don't hard code request id
@@ -337,7 +344,8 @@ class AmbariPlugin(p.ProvisioningPluginBase):
                           ambari_host.management_ip, cluster_name, request_id)
         started = False
         while not started:
-            result = requests.get(request_url, auth=('admin', 'admin'))
+            result = requests.get(request_url, auth=(
+                self.ambari_user, self.ambari_password))
             LOG.debug(
                 'async request ' + request_url + ' response:\n' + result.text)
             json_result = json.loads(result.text)
@@ -362,7 +370,8 @@ class AmbariPlugin(p.ProvisioningPluginBase):
             .format(ambari_host.management_ip, cluster_name)
         body = '{"ServiceInfo": {"state" : "STARTED"}}'
 
-        result = requests.put(start_url, data=body, auth=('admin', 'admin'))
+        result = requests.put(start_url, data=body, auth=(
+            self.ambari_user, self.ambari_password))
         if result.status_code == 202:
             # don't hard code request id
             success = self._wait_for_async_request(
@@ -429,17 +438,92 @@ class AmbariPlugin(p.ProvisioningPluginBase):
         persist_data = '{ "CLUSTER_CURRENT_STATUS":' \
                        '"{\\"clusterState\\":\\"CLUSTER_STARTED_5\\"}" }'
         result = requests.post(persist_state_uri, data=persist_data,
-                               auth=('admin', 'admin'))
+                               auth=(self.ambari_user, self.ambari_password))
 
         if result.status_code != 201 and result.status_code != 202:
             LOG.warning('Finalizing of Ambari cluster state failed. {0}'.
                         format(result.text))
             raise ex.HadoopProvisionError('Unable to finalize Ambari state.')
 
+    def _set_ambari_credentials(self, cluster_spec, ambari_ip):
+        services = cluster_spec.services
+        for service in services:
+            if service.name == 'AMBARI':
+                is_admin_provided = False
+                admin_user = self.ambari_user
+                admin_password = self.ambari_password
+                for u in service.users:
+                    if u.name == 'admin':
+                        self._update_ambari_admin_user(u.password, ambari_ip)
+                        is_admin_provided = True
+                        self.ambari_user = 'admin'
+                        self.ambari_password = u.password
+                    else:
+                        self._add_ambari_user(u, ambari_ip)
+                        if 'admin' in u.groups:
+                            admin_user = u.name
+                            admin_password = u.password
+
+                if not is_admin_provided:
+                    if admin_user is None:
+                        raise ex.HadoopProvisionError("An Ambari user in the "
+                                                      "admin group must be "
+                                                      "configured.")
+                    self.ambari_user = admin_user
+                    self.ambari_password = admin_password
+                    self._delete_ambari_user('admin', ambari_ip)
+                break
+
+    def _update_ambari_admin_user(self, password, ambari_ip):
+        user_url = 'http://{0}:8080/api/v1/users/admin'.format(ambari_ip)
+        update_body = '{{"Users":{{"roles":"admin,user","password":"{0}",'\
+                      '"old_password":"admin"}} }}'.format(password)
+
+        request = self._get_rest_request()
+        result = request.put(user_url, data=update_body, auth=(
+            self.ambari_user, self.ambari_password))
+
+        if result.status_code != 200:
+            raise ex.HadoopProvisionError('Unable to update Ambari admin user'
+                                          ' credentials: {0}'.
+                                          format(result.text))
+
+    def _add_ambari_user(self, user, ambari_ip):
+        user_url = 'http://{0}:8080/api/v1/users/{1}'.\
+                   format(ambari_ip, user.name)
+
+        create_body = '{{"Users":{{"password":"{0}","roles":"{1}"}} }}'.\
+            format(user.password, '%s' % ','.join(map(str, user.groups)))
+
+        request = self._get_rest_request()
+        result = request.post(user_url, data=create_body, auth=(
+            self.ambari_user, self.ambari_password))
+
+        if result.status_code != 201:
+            raise ex.HadoopProvisionError('Unable to create Ambari user: {0}'.
+                                          format(result.text))
+
+    def _delete_ambari_user(self, user_name, ambari_ip):
+        user_url = 'http://{0}:8080/api/v1/users/{1}'.\
+                   format(ambari_ip, user_name)
+
+        request = self._get_rest_request()
+        result = request.delete(user_url, auth=(
+            self.ambari_user, self.ambari_password))
+
+        if result.status_code != 200:
+            raise ex.HadoopProvisionError('Unable to delete Ambari user: {0}'
+                                          ' : {1}'.format(user_name,
+                                          result.text))
+
+    def _get_rest_request(self):
+        return requests
+
     # SAVANNA PLUGIN SPI METHODS:
     def configure_cluster(self, cluster):
         # take the user inputs from the cluster and node groups and convert
         # to a ambari blueprint
+
         processor = bp.BlueprintProcessor(json.load(
             open(os.path.join(os.path.dirname(__file__), 'resources',
                               'default-cluster.template'), "r")))

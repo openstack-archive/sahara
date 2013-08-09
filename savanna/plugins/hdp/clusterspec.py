@@ -82,6 +82,11 @@ class ClusterSpec():
                 component = Component(c['name'], c['type'], c['cardinality'])
                 service.add_component(component)
 
+            if 'users' in s:
+                for u in s['users']:
+                    user = User(u['name'], u['password'], u['groups'])
+                    service.add_user(user)
+
             configs = self._parse_configurations(s)
             for config in configs:
                 service.add_configuration(config)
@@ -148,12 +153,16 @@ class Service():
         self.name = name
         self.configurations = []
         self.components = []
+        self.users = []
 
     def add_component(self, component):
         self.components.append(component)
 
     def add_configuration(self, configuration):
         self.configurations.append(configuration)
+
+    def add_user(self, user):
+        self.users.append(user)
 
 
 class Component():
@@ -173,6 +182,13 @@ class NodeGroup():
 
     def add_component(self, component):
         self.components.append(component)
+
+
+class User():
+    def __init__(self, name, password, groups):
+        self.name = name
+        self.password = password
+        self.groups = groups
 
 
 class NormalizedClusterConfig():
@@ -208,9 +224,9 @@ class NormalizedClusterConfig():
         target = self.config.get_applicable_target(prop)
         if not target:
             if config == 'hdfs-site':
-                target = 'service:HDFS'
+                target = 'HDFS'
             elif config == 'mapred-site':
-                target = 'service:MAPREDUCE'
+                target = 'MAPREDUCE'
             else:
                 target = 'general'
 

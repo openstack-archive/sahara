@@ -16,6 +16,7 @@
 import os
 from savanna.plugins.hdp import ambariplugin as ap
 from savanna.plugins.hdp import clusterspec as cs
+from savanna.plugins.hdp import exceptions as ex
 import unittest2
 
 
@@ -75,9 +76,132 @@ class AmbariPluginTest(unittest2.TestCase):
 
     def test_get_configs(self):
         plugin = ap.AmbariPlugin()
+
         configs = plugin.get_configs("1.3.0")
-        self.assertEqual(780, len(configs),
+        self.assertEqual(786, len(configs),
                          "wrong number of configuration properties")
+
+    def test__set_ambari_credentials__admin_only(self):
+        self.requests = []
+        plugin = ap.AmbariPlugin()
+        plugin._get_rest_request = self._get_test_request
+
+        with open(os.path.join(os.path.realpath('../plugins'), 'hdp',
+                  'resources',
+                  'default-cluster.template'), 'r') as f:
+                        cluster_spec = cs.ClusterSpec(f.read())
+
+        plugin._set_ambari_credentials(cluster_spec, '111.11.1111')
+
+        self.assertEqual(1, len(self.requests))
+        request = self.requests[0]
+        self.assertEqual('put', request.method)
+        self.assertEqual('http://111.11.1111:8080/api/v1/users/admin',
+                         request.url)
+        self.assertEqual('{"Users":{"roles":"admin,user","password":"admin",'
+                         '"old_password":"admin"} }', request.data)
+        self.assertEqual(('admin', 'admin'), request.auth)
+        self.assertEqual('admin', plugin.ambari_user)
+        self.assertEqual('admin', plugin.ambari_password)
+
+    def test__set_ambari_credentials__new_user_no_admin(self):
+        self.requests = []
+        plugin = ap.AmbariPlugin()
+        plugin._get_rest_request = self._get_test_request
+
+        with open(os.path.join(os.path.realpath('../plugins'), 'hdp',
+                  'resources',
+                  'default-cluster.template'), 'r') as f:
+                        cluster_spec = cs.ClusterSpec(f.read())
+
+        for service in cluster_spec.services:
+            if service.name == 'AMBARI':
+                user = service.users[0]
+                user.name = 'test'
+                user.password = 'test_pw'
+
+        plugin._set_ambari_credentials(cluster_spec, '111.11.1111')
+        self.assertEqual(2, len(self.requests))
+
+        request = self.requests[0]
+        self.assertEqual('post', request.method)
+        self.assertEqual('http://111.11.1111:8080/api/v1/users/test',
+                         request.url)
+        self.assertEqual('{"Users":{"password":"test_pw","roles":"admin,user"'
+                         '} }', request.data)
+        self.assertEqual(('admin', 'admin'), request.auth)
+
+        request = self.requests[1]
+        self.assertEqual('delete', request.method)
+        self.assertEqual('http://111.11.1111:8080/api/v1/users/admin',
+                         request.url)
+        self.assertEqual(None, request.data)
+        self.assertEqual(('test', 'test_pw'), request.auth)
+        self.assertEqual('test', plugin.ambari_user)
+        self.assertEqual('test_pw', plugin.ambari_password)
+
+    def test__set_ambari_credentials__new_user_with_admin(self):
+        self.requests = []
+        plugin = ap.AmbariPlugin()
+        plugin._get_rest_request = self._get_test_request
+
+        with open(os.path.join(os.path.realpath('../plugins'), 'hdp',
+                               'resources',
+                               'default-cluster.template'), 'r') as f:
+                                    cluster_spec = cs.ClusterSpec(f.read())
+
+        for service in cluster_spec.services:
+            if service.name == 'AMBARI':
+                new_user = cs.User('test', 'test_pw', ['user'])
+                service.users.append(new_user)
+
+        plugin._set_ambari_credentials(cluster_spec, '111.11.1111')
+        self.assertEqual(2, len(self.requests))
+
+        request = self.requests[0]
+        self.assertEqual('put', request.method)
+        self.assertEqual('http://111.11.1111:8080/api/v1/users/admin',
+                         request.url)
+        self.assertEqual('{"Users":{"roles":"admin,user","password":"admin",'
+                         '"old_password":"admin"} }', request.data)
+        self.assertEqual(('admin', 'admin'), request.auth)
+
+        request = self.requests[1]
+        self.assertEqual('post', request.method)
+        self.assertEqual('http://111.11.1111:8080/api/v1/users/test',
+                         request.url)
+        self.assertEqual('{"Users":{"password":"test_pw","roles":"user"} }',
+                         request.data)
+        self.assertEqual(('admin', 'admin'), request.auth)
+
+        self.assertEqual('admin', plugin.ambari_user)
+        self.assertEqual('admin', plugin.ambari_password)
+
+    def test__set_ambari_credentials__no_admin_user(self):
+        self.requests = []
+        plugin = ap.AmbariPlugin()
+        plugin._get_rest_request = self._get_test_request
+
+        with open(os.path.join(os.path.realpath('../plugins'), 'hdp',
+                  'resources',
+                  'default-cluster.template'), 'r') as f:
+                        cluster_spec = cs.ClusterSpec(f.read())
+
+        for service in cluster_spec.services:
+            if service.name == 'AMBARI':
+                user = service.users[0]
+                user.name = 'test'
+                user.password = 'test_pw'
+                user.groups = ['user']
+
+        self.assertRaises(ex.HadoopProvisionError,
+                          plugin._set_ambari_credentials(cluster_spec,
+                                                         '111.11.1111'))
+
+    def _get_test_request(self):
+        request = TestRequest()
+        self.requests.append(request)
+        return request
 
 
 class TestCluster:
@@ -86,3 +210,35 @@ class TestCluster:
         self.cluster_configs = {}
         self.node_groups = []
         self.default_image_id = '11111'
+
+
+class TestRequest:
+    def put(self, url, data=None, auth=None):
+        self.url = url
+        self.data = data
+        self.auth = auth
+        self.method = 'put'
+
+        return TestResult(200)
+
+    def post(self, url, data=None, auth=None):
+        self.url = url
+        self.data = data
+        self.auth = auth
+        self.method = 'post'
+
+        return TestResult(201)
+
+    def delete(self, url, auth=None):
+        self.url = url
+        self.auth = auth
+        self.data = None
+        self.method = 'delete'
+
+        return TestResult(200)
+
+
+class TestResult:
+    def __init__(self, status):
+        self.status_code = status
+        self.text = ''
