@@ -76,13 +76,14 @@ class LocalApi(object):
         """
         return self._manager.cluster_create(context, values)
 
-    @r.wrap(r.ClusterResource)
     def cluster_update(self, context, cluster, values):
         """Update the cluster with the given values dictionary.
-        Return the updated cluster.
+        Populate provided cluster object with updated values.
+        Return None.
         """
-        return self._manager.cluster_update(context, _get_id(cluster),
-                                            values)
+        new_cluster = self._manager.cluster_update(context, _get_id(cluster),
+                                                   values)
+        cluster.re_init(new_cluster)
 
     def cluster_destroy(self, context, cluster):
         """Destroy the cluster or raise if it does not exist.
@@ -94,17 +95,22 @@ class LocalApi(object):
 
     def node_group_add(self, context, cluster, values):
         """Create a node group from the values dictionary.
+        Populate provided cluster object with new node group.
         Return ID of the created node group.
         """
-        return self._manager.node_group_add(context, _get_id(cluster),
-                                            values)
+        new_cluster = self._manager.node_group_add(context, _get_id(cluster),
+                                                   values)
+        cluster.re_init(new_cluster)
+        return cluster.node_groups[-1].id
 
     def node_group_update(self, context, node_group, values):
         """Update the node group with the given values dictionary.
+        Populate provided node group object with updated values.
         Return None.
         """
-        return self._manager.node_group_update(context, _get_id(node_group),
-                                               values)
+        new_ng = self._manager.node_group_update(context, _get_id(node_group),
+                                                 values)
+        node_group.re_init(new_ng)
 
     def node_group_remove(self, context, node_group):
         """Destroy the node group or raise if it does not exist.
@@ -116,16 +122,22 @@ class LocalApi(object):
 
     def instance_add(self, context, node_group, values):
         """Create an instance from the values dictionary.
+        Populate provided node group object with new instance.
         Return ID of the created instance.
         """
-        return self._manager.instance_add(context, _get_id(node_group), values)
+        new_ng = self._manager.instance_add(context, _get_id(node_group),
+                                            values)
+        node_group.re_init(new_ng)
+        return node_group.instances[-1].id
 
     def instance_update(self, context, instance, values):
         """Update the instance with the given values dictionary.
+        Populate provided instance object with updated values.
         Return None.
         """
-        return self._manager.instance_update(context, _get_id(instance),
-                                             values)
+        new_inst = self._manager.instance_update(context, _get_id(instance),
+                                                 values)
+        instance.re_init(new_inst)
 
     def instance_remove(self, context, instance):
         """Destroy the instance or raise if it does not exist.
