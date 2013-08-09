@@ -120,7 +120,7 @@ class ClusterSpecTest(unittest2.TestCase):
                 contains_dfs_datanode_http_address = True
                 self.assertEquals('string', config.type)
                 self.assertEquals('0.0.0.0:50075', config.default_value)
-                self.assertEquals('service:HDFS', config.applicable_target)
+                self.assertEquals('HDFS', config.applicable_target)
 
             if config.name == 'mapred.jobtracker.taskScheduler':
                 contains_mapred_jobtracker_taskScheduler = True
@@ -128,14 +128,14 @@ class ClusterSpecTest(unittest2.TestCase):
                 self.assertEquals(
                     'org.apache.hadoop.mapred.CapacityTaskScheduler',
                     config.default_value)
-                self.assertEquals('service:MAPREDUCE',
+                self.assertEquals('MAPREDUCE',
                                   config.applicable_target)
 
             if config.name == 'dfs_include':
                 contains_dfs_include = True
                 self.assertEquals('string', config.type)
                 self.assertEquals('dfs.include', config.default_value)
-                self.assertEquals('service:HDFS', config.applicable_target)
+                self.assertEquals('HDFS', config.applicable_target)
 
                 #            print 'Config: name: {0}, type:{1},
                 # default value:{2}, target:{3}, Value:{4}'.format(
@@ -266,6 +266,15 @@ class ClusterSpecTest(unittest2.TestCase):
                                found_components['AMBARI_SERVER'])
         self._assert_component('AMBARI_AGENT', 'SLAVE', "1+",
                                found_components['AMBARI_AGENT'])
+
+        self.assertEqual(1, len(service.users))
+        user = service.users[0]
+        self.assertEqual('admin', user.name)
+        self.assertEqual('admin', user.password)
+        groups = user.groups
+        self.assertEqual(2, len(groups))
+        self.assertIn('admin', groups)
+        self.assertIn('user', groups)
 
     def _assert_component(self, name, comp_type, cardinality, component):
         self.assertEquals(name, component.name)

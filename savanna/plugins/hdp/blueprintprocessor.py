@@ -20,29 +20,14 @@ class BlueprintProcessor(b.BaseProcessor):
 
     def __init__(self, blueprint):
         self.blueprint = blueprint
+        self.ui_handlers = [StandardConfigHandler(), AmbariUserHandler()]
 
     def process_user_inputs(self, user_inputs):
+        context = {}
         for ui in user_inputs:
-            configurations = self.blueprint['configurations']
-            properties_dict = self._find_blueprint_section(configurations,
-                                                           'name',
-                                                           ui.config.file)
-
-            if properties_dict is None:
-                properties_dict = {'name': ui.config.file, 'properties': []}
-                configurations.append(properties_dict)
-
-            # need to look for property with
-            # the same name
-            properties = properties_dict['properties']
-            prop = self._find_blueprint_section(properties, 'name',
-                                                ui.config.name)
-            if prop is not None:
-                # time to change the value
-                prop['value'] = ui.value
-            else:
-                prop = {'name': ui.config.name, 'value': ui.value}
-                properties.append(prop)
+            for handler in self.ui_handlers:
+                if handler.apply_user_input(ui, self.blueprint, context):
+                    break
 
     def process_node_groups(self, node_groups):
         # we're overwriting existing settings
@@ -67,7 +52,7 @@ class BlueprintProcessor(b.BaseProcessor):
                         (item for item in self.blueprint['host_role_mappings']
                          if item['name'] == host_role_mapping['name']), None)
 
-                    if (existing_mapping is not None):
+                    if existing_mapping is not None:
                         mappings__index = self.blueprint[
                             'host_role_mappings'].index(existing_mapping)
                         self.blueprint['host_role_mappings'][
@@ -75,3 +60,52 @@ class BlueprintProcessor(b.BaseProcessor):
                     else:
                         self.blueprint['host_role_mappings'].append(
                             host_role_mapping)
+
+
+class StandardConfigHandler(b.BaseProcessor):
+    def apply_user_input(self, ui, blueprint, ctx):
+
+        if ui.config.tag == 'ambari-stack':
+            return False
+
+        configurations = blueprint['configurations']
+        properties_dict = self._find_blueprint_section(
+            configurations, 'name', ui.config.tag)
+
+        if properties_dict is None:
+            properties_dict = {'name': ui.config.tag, 'properties': []}
+            configurations.append(properties_dict)
+
+        properties = properties_dict['properties']
+        prop = self._find_blueprint_section(properties, 'name',
+                                            ui.config.name)
+        if prop is not None:
+            # time to change the value
+            prop['value'] = ui.value
+        else:
+            prop = {'name': ui.config.name, 'value': ui.value}
+            properties.append(prop)
+
+        return True
+
+
+class AmbariUserHandler(b.BaseProcessor):
+    def apply_user_input(self, ui, blueprint, ctx):
+
+        if ui.config.tag != 'ambari-stack':
+            return False
+
+        services = blueprint['services']
+        services_dict = self._find_blueprint_section(
+            services, 'name', ui.config.applicable_target)
+        users = services_dict['users']
+        #todo only for ambari admin user/password
+        if ui.config.name == 'ambari.admin.user':
+            property = self._find_blueprint_section(users, 'name', 'admin')
+            property['name'] = ui.value
+            ctx['ambari-user'] = ui.value
+        elif ui.config.name == 'ambari.admin.password':
+            user = ctx['ambari-user'] if 'ambari-user' in ctx else 'admin'
+            property = self._find_blueprint_section(users, 'name', user)
+            property['password'] = ui.value
+        return True

@@ -54,7 +54,7 @@ class BlueprintProcessorTest(unittest2.TestCase):
                  "is_optional": "true",
                  "default_value": "/hadoop/hdfs/namenode",
                  "applicable_target": "general",
-                 "file": "global",
+                 "tag": "global",
                  "scope": "cluster"}
              }
         ]
@@ -95,7 +95,7 @@ class BlueprintProcessorTest(unittest2.TestCase):
                  "config_type": "string",
                  "is_optional": "true",
                  "applicable_target": "general",
-                 "file": "global",
+                 "tag": "global",
                  "scope": "cluster"}
              }
         ]
@@ -130,7 +130,7 @@ class BlueprintProcessorTest(unittest2.TestCase):
                  "config_type": "integer",
                  "applicable_target": "general",
                  "is_optional": "true",
-                 "file": "mapred-site",
+                 "tag": "mapred-site",
                  "scope": "node"}
              }
         ]
@@ -150,6 +150,88 @@ class BlueprintProcessorTest(unittest2.TestCase):
         self.assertEqual('mapred.job.tracker.handler.count',
                          configs[1]['properties'][0]['name'],
                          'property not added')
+
+    def test_update_ambari_admin_user(self):
+        processor = bp.BlueprintProcessor(json.load(open(os.path.join(
+            os.path.realpath('./unit/plugins'), 'hdp', 'resources',
+            'sample-ambari-blueprint.json'), 'r')))
+        config_items = [
+            {"value": "new-user",
+             "config": {
+                 "name": "ambari.admin.user",
+                 "description": "Ambari admin user",
+                 "config_type": "string",
+                 "applicable_target": "AMBARI",
+                 "is_optional": "true",
+                 "tag": "ambari-stack",
+                 "scope": "cluster"}}
+        ]
+
+        configs_list = self.json2obj(json.dumps(config_items))
+
+        # process the input configuration
+        processor.process_user_inputs(configs_list)
+        services = self._xpath_get(processor.blueprint, '/services')
+
+        self.assertEqual('new-user', services[2]['users'][0]['name'])
+
+    def test_update_ambari_admin_password(self):
+        processor = bp.BlueprintProcessor(json.load(open(os.path.join(
+            os.path.realpath('./unit/plugins'), 'hdp', 'resources',
+            'sample-ambari-blueprint.json'), 'r')))
+        config_items = [
+            {"value": "new-pwd",
+             "config": {
+                 "name": "ambari.admin.password",
+                 "description": "Ambari admin password",
+                 "config_type": "string",
+                 "applicable_target": "AMBARI",
+                 "is_optional": "true",
+                 "tag": "ambari-stack",
+                 "scope": "cluster"}}
+        ]
+
+        configs_list = self.json2obj(json.dumps(config_items))
+
+        # process the input configuration
+        processor.process_user_inputs(configs_list)
+        services = self._xpath_get(processor.blueprint, '/services')
+
+        self.assertEqual('new-pwd', services[2]['users'][0]['password'])
+
+    def test_update_ambari_admin_user_and_password(self):
+        processor = bp.BlueprintProcessor(json.load(open(os.path.join(
+            os.path.realpath('./unit/plugins'), 'hdp', 'resources',
+            'sample-ambari-blueprint.json'), 'r')))
+        config_items = [
+            {"value": "new-user",
+             "config": {
+                 "name": "ambari.admin.user",
+                 "description": "Ambari admin user",
+                 "config_type": "string",
+                 "applicable_target": "AMBARI",
+                 "is_optional": "true",
+                 "tag": "ambari-stack",
+                 "scope": "cluster"}},
+            {"value": "new-pwd",
+             "config": {
+                 "name": "ambari.admin.password",
+                 "description": "Ambari admin password",
+                 "config_type": "string",
+                 "applicable_target": "AMBARI",
+                 "is_optional": "true",
+                 "tag": "ambari-stack",
+                 "scope": "cluster"}}
+        ]
+
+        configs_list = self.json2obj(json.dumps(config_items))
+
+        # process the input configuration
+        processor.process_user_inputs(configs_list)
+        services = self._xpath_get(processor.blueprint, '/services')
+
+        self.assertEqual('new-user', services[2]['users'][0]['name'])
+        self.assertEqual('new-pwd', services[2]['users'][0]['password'])
 
     def test_insert_host_mappings(self):
         processor = bp.BlueprintProcessor(

@@ -1,7 +1,7 @@
 {
     "configurations": [
         {
-            "file": "core-site.xml",
+            "tag": "core-site.xml",
             "properties": [
                 {
                     "applicable_target": "HDFS",
@@ -159,7 +159,7 @@
             ]
         },
         {
-            "file": "hdfs-site.xml",
+            "tag": "hdfs-site.xml",
             "properties": [
                 {
                     "applicable_target": "HDFS",
@@ -623,7 +623,7 @@
             ]
         },
         {
-            "file": "mapred-site.xml",
+            "tag": "mapred-site.xml",
             "properties": [
                 {
                     "applicable_target": "MAPREDUCE",
@@ -1429,7 +1429,7 @@
             ]
         },
         {
-            "file": "yarn-site.xml",
+            "tag": "yarn-site.xml",
             "properties": [
                 {
                     "applicable_target": "TODO",
@@ -1668,7 +1668,7 @@
             ]
         },
         {
-            "file": "global",
+            "tag": "global",
             "properties": [
                 {
                     "applicable_target": "HDFS",
@@ -2361,6 +2361,29 @@
                     "description": "...",
                     "is_optional": true,
                     "name": "user_group",
+                    "scope": "cluster"
+                }
+            ]
+        },
+        {
+            "tag": "ambari-stack",
+            "properties": [
+                {
+                    "applicable_target": "AMBARI",
+                    "config_type": "string",
+                    "default_value": "admin",
+                    "description": "Ambari admin user name.",
+                    "is_optional": true,
+                    "name": "ambari.admin.user",
+                    "scope": "cluster"
+                },
+                {
+                    "applicable_target": "AMBARI",
+                    "config_type": "string",
+                    "default_value": "admin",
+                    "description": "Ambari admin user password.",
+                    "is_optional": true,
+                    "name": "ambari.admin.password",
                     "scope": "cluster"
                 }
             ]

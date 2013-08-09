@@ -93,6 +93,16 @@
         }
       ],
       "configurations" : [
+      ],
+      "users" : [
+        {
+          "name" : "admin",
+          "password" : "admin",
+          "groups" : [
+            "admin",
+            "user"
+          ]
+        }
       ]
     }
   ],
