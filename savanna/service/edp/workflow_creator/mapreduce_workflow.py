@@ -14,31 +14,26 @@
 # limitations under the License.
 
 from savanna.service.edp.workflow_creator import base_workflow
-from savanna.utils import xmlutils as x
 
 
-class PigWorkflowCreator(base_workflow.OozieWorkflowCreator):
+class MapReduceWorkFlowCreator(base_workflow.OozieWorkflowCreator):
 
     def __init__(self):
-        super(PigWorkflowCreator, self).__init__('pig')
+        super(MapReduceWorkFlowCreator, self).__init__('map-reduce')
 
-    def build_workflow_xml(self, job_tracker, name_node, script, prepare={},
-                           job_xml=None, configuration=None, params={},
-                           arguments={}, files=[], archives=[]):
+    def build_workflow_xml(self, job_tracker, name_node, prepare={},
+                           job_xml=None, configuration=None,
+                           files=[], archives=[]):
 
         self._add_jobtracker_namenode_elements(job_tracker, name_node)
 
         for k, v in prepare.items():
             self._add_to_prepare_element(k, v)
 
+        # TODO(aignatov): Need to add STREAMING and PIPES workflows
+
         self._add_job_xml_element(job_xml)
+
         self._add_configuration_elements(configuration)
-
-        x.add_text_element_to_tag(self.doc, self.tag_name,
-                                  'script', script)
-
-        x.add_equal_separated_dict(self.doc, self.tag_name, 'param', params)
-        x.add_equal_separated_dict(self.doc, self.tag_name, 'argument',
-                                   arguments)
 
         self._add_files_and_archives(files, archives)
