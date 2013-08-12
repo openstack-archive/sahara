@@ -20,6 +20,7 @@ from oslo.config import cfg
 from savanna.conductor import manager
 from savanna.conductor import resource as r
 from savanna.openstack.common import log as logging
+from savanna.utils import general as u
 
 conductor_opts = [
     cfg.BoolOpt('use_local',
@@ -103,7 +104,8 @@ class LocalApi(object):
                                                    values)
         if isinstance(cluster, r.Resource):
             cluster.re_init(new_cluster)
-        return new_cluster['node_groups'][-1]['id']
+        return u.find_dict(new_cluster['node_groups'],
+                           name=values['name'])['id']
 
     def node_group_update(self, context, node_group, values):
         """Update the node group with the given values dictionary.
@@ -132,7 +134,8 @@ class LocalApi(object):
                                             values)
         if isinstance(node_group, r.Resource):
             node_group.re_init(new_ng)
-        return new_ng['instances'][-1]['id']
+        return u.find_dict(new_ng['instances'],
+                           instance_id=values['instance_id'])['id']
 
     def instance_update(self, context, instance, values):
         """Update the instance with the given values dictionary.

@@ -194,7 +194,7 @@ def node_group_add(context, cluster_id, values):
         node_group.update(values)
         node_group.save(session=session)
 
-        return cluster_get(context, cluster_id)
+    return cluster_get(context, cluster_id)
 
 
 def node_group_update(context, node_group_id, values):

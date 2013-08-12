@@ -56,6 +56,7 @@ SAMPLE_NODE_GROUP = {
 
 SAMPLE_INSTANCE = {
     'instance_name': 'test-name',
+    'instance_id': '123456',
     'management_ip': '1.2.3.1'
 }
 
