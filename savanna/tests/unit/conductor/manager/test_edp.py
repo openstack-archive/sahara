@@ -44,13 +44,13 @@ class DataSourceTest(test_base.ConductorManagerTestCase):
         self.api.data_source_create(ctx, SAMPLE_DATA_SOURCE)
 
         lst = self.api.data_source_get_all(ctx)
-        self.assertEquals(len(lst), 1)
+        self.assertEqual(len(lst), 1)
 
         ds_id = lst[0]['id']
         self.api.data_source_destroy(ctx, ds_id)
 
         lst = self.api.data_source_get_all(ctx)
-        self.assertEquals(len(lst), 0)
+        self.assertEqual(len(lst), 0)
 
     def test_duplicate_data_source_create(self):
         ctx = context.ctx()
@@ -87,13 +87,13 @@ class JobTest(test_base.ConductorApiTestCase):
         self.api.job_create(ctx, SAMPLE_JOB)
 
         lst = self.api.job_get_all(ctx)
-        self.assertEquals(len(lst), 1)
+        self.assertEqual(len(lst), 1)
 
         job_id = lst[0]['id']
         self.api.job_destroy(ctx, job_id)
 
         lst = self.api.job_get_all(ctx)
-        self.assertEquals(len(lst), 0)
+        self.assertEqual(len(lst), 0)
 
     def test_duplicate_data_source_create(self):
         ctx = context.ctx()

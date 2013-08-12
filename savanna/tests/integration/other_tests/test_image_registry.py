@@ -94,8 +94,8 @@ class ImageRegistryCrudTest(base.ITestCase):
         self._check_images_list_accessible()
 
         data = self._set_description_username(description, username)
-        self.assertEquals(data['image']['description'], description)
-        self.assertEquals(data['image']['username'], username)
+        self.assertEqual(data['image']['description'], description)
+        self.assertEqual(data['image']['username'], username)
 
         try:
             self._set_and_compare_tags(tag1_name)
@@ -105,11 +105,11 @@ class ImageRegistryCrudTest(base.ITestCase):
             self._get_image_by_tags(tag2_name)
 
             data = self._get_image_description()
-            self.assertEquals(data['image']['status'], 'ACTIVE')
-            self.assertEquals(data['image']['username'], username)
+            self.assertEqual(data['image']['status'], 'ACTIVE')
+            self.assertEqual(data['image']['username'], username)
             self.assertItemsEqual(data['image']['tags'], tag_data)
-            self.assertEquals(data['image']['description'], description)
-            self.assertEquals(data['image']['id'], param.IMAGE_ID)
+            self.assertEqual(data['image']['description'], description)
+            self.assertEqual(data['image']['id'], param.IMAGE_ID)
 
             self._delete_tag_and_check(tag1_name)
             self._delete_tag_and_check(tag2_name)

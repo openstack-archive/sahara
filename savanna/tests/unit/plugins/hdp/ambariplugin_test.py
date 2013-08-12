@@ -61,10 +61,10 @@ class AmbariPluginTest(unittest2.TestCase):
                                'default-cluster.template'), 'r') as f:
             normalized_config = cs.ClusterSpec(f.read()).normalize()
 
-        self.assertEquals(normalized_config.hadoop_version,
-                          cluster.hadoop_version)
-        self.assertEquals(len(normalized_config.node_groups),
-                          len(cluster.node_groups))
+        self.assertEqual(normalized_config.hadoop_version,
+                         cluster.hadoop_version)
+        self.assertEqual(len(normalized_config.node_groups),
+                         len(cluster.node_groups))
 
     def test_update_infra(self):
         plugin = ap.AmbariPlugin()
@@ -72,7 +72,7 @@ class AmbariPluginTest(unittest2.TestCase):
         plugin.update_infra(cluster)
 
         for node_group in cluster.node_groups:
-            self.assertEquals(cluster.default_image_id, node_group.image)
+            self.assertEqual(cluster.default_image_id, node_group.image)
 
     def test_get_configs(self):
         plugin = ap.AmbariPlugin()

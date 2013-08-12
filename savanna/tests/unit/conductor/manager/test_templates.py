@@ -73,13 +73,13 @@ class NodeGroupTemplates(test_base.ConductorManagerTestCase):
         self.api.node_group_template_create(ctx, SAMPLE_NGT)
 
         lst = self.api.node_group_template_get_all(ctx)
-        self.assertEquals(len(lst), 1)
+        self.assertEqual(len(lst), 1)
 
         ngt_id = lst[0]['id']
         self.api.node_group_template_destroy(ctx, ngt_id)
 
         lst = self.api.node_group_template_get_all(ctx)
-        self.assertEquals(len(lst), 0)
+        self.assertEqual(len(lst), 0)
 
     def test_duplicate_ngt_create(self):
         ctx = context.ctx()
@@ -117,13 +117,13 @@ class ClusterTemplates(test_base.ConductorManagerTestCase):
         self.api.cluster_template_create(ctx, SAMPLE_CLT)
 
         lst = self.api.cluster_template_get_all(ctx)
-        self.assertEquals(len(lst), 1)
+        self.assertEqual(len(lst), 1)
 
         clt_id = lst[0]['id']
         self.api.cluster_template_destroy(ctx, clt_id)
 
         lst = self.api.cluster_template_get_all(ctx)
-        self.assertEquals(len(lst), 0)
+        self.assertEqual(len(lst), 0)
 
     def test_duplicate_clt_create(self):
         ctx = context.ctx()

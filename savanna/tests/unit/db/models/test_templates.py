@@ -39,8 +39,8 @@ class TemplatesModelTest(models_test_base.DbTestCase):
         res = session.query(m.NodeGroupTemplate).filter_by().first()
 
         self.assertIsValidModelObject(res)
-        self.assertEquals(['np-1', 'np-2'], res.node_processes)
-        self.assertEquals(SAMPLE_CONFIGS, res.node_configs)
+        self.assertEqual(['np-1', 'np-2'], res.node_processes)
+        self.assertEqual(SAMPLE_CONFIGS, res.node_configs)
 
         res_dict = self.get_clean_dict(res)
 

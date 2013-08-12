@@ -113,25 +113,25 @@ class ITestCase(unittest2.TestCase):
 
     def post_object(self, url, body, code):
         post = self._post(url, json.dumps(body))
-        self.assertEquals(post.status_code, code)
+        self.assertEqual(post.status_code, code)
         data = json.loads(post.content)
         return data
 
     def put_object(self, url, object_id, body, code):
         data = self._put(url + object_id, json.dumps(body))
-        self.assertEquals(data.status_code, code)
+        self.assertEqual(data.status_code, code)
         data = json.loads(data.content)
         return data
 
     def get_object(self, url, obj_id, code, printing=False):
         rv = self._get(url + obj_id, printing)
-        self.assertEquals(rv.status_code, code)
+        self.assertEqual(rv.status_code, code)
         data = json.loads(rv.content)
         return data
 
     def del_object(self, url, obj_id, code):
         rv = self._delete(url + obj_id)
-        self.assertEquals(rv.status_code, code)
+        self.assertEqual(rv.status_code, code)
         if rv.status_code != 204:
             data = json.loads(rv.content)
             return data
