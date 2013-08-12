@@ -15,6 +15,7 @@
 
 from savanna.openstack.common import log as logging
 from savanna.plugins import provisioning as p
+from savanna.plugins.vanilla import oozie_helper as o_h
 from savanna.swift import swift_helper as swift
 from savanna.utils import xmlutils as x
 
@@ -30,19 +31,12 @@ MAPRED_DEFAULT = x.load_hadoop_xml_defaults(
     'plugins/vanilla/resources/mapred-default.xml')
 
 ## Append Oozie configs fore core-site.xml
-CORE_DEFAULT += [
-    {
-        'name': 'hadoop.proxyuser.hadoop.hosts',
-        'value': "localhost"
-    },
-    {
-        'name': 'hadoop.proxyuser.hadoop.groups',
-        'value': 'hadoop'
-    }]
+CORE_DEFAULT += o_h.OOZIE_CORE_DEFAULT
 
 XML_CONFS = {
     "HDFS": [CORE_DEFAULT, HDFS_DEFAULT],
-    "MapReduce": [MAPRED_DEFAULT]
+    "MapReduce": [MAPRED_DEFAULT],
+    "JobFlow": [o_h.OOZIE_DEFAULT]
 }
 
 # TODO(aignatov): Environmental configs could be more complex
@@ -132,7 +126,7 @@ def get_plugin_configs():
 
 
 def generate_xml_configs(configs, storage_path, nn_hostname,
-                         jt_hostname, oozies_hostnames):
+                         jt_hostname, oozie_hostname):
     # inserting common configs depends on provisioned VMs and HDFS placement
     # TODO(aignatov): should be moved to cluster context
     cfg = {
@@ -157,14 +151,15 @@ def generate_xml_configs(configs, storage_path, nn_hostname,
         }
         cfg.update(mr_cfg)
 
-    if oozies_hostnames:
+    if oozie_hostname:
         o_cfg = {
-            'hadoop.proxyuser.hadoop.hosts': ",".join(
-                ["localhost"] + oozies_hostnames),
-            'hadoop.proxyuser.hadoop.groups': 'hadoop'
+            'hadoop.proxyuser.hadoop.hosts': "localhost," + oozie_hostname,
+            'hadoop.proxyuser.hadoop.groups': 'hadoop',
         }
         cfg.update(o_cfg)
         LOG.debug('Applied Oozie configs for core-site.xml')
+        cfg.update(o_h.get_oozie_required_xml_configs())
+        LOG.debug('Applied Oozie configs for oozie-site.xml')
 
     # inserting user-defined configs
     for key, value in extract_xml_confs(configs):
@@ -189,6 +184,11 @@ def generate_xml_configs(configs, storage_path, nn_hostname,
         'mapred-site': x.create_hadoop_xml(cfg, MAPRED_DEFAULT),
         'hdfs-site': x.create_hadoop_xml(cfg, HDFS_DEFAULT)
     }
+
+    if oozie_hostname:
+        xml_configs.update({'oozie-site':
+                            x.create_hadoop_xml(cfg, o_h.OOZIE_DEFAULT)})
+        LOG.debug('Generated oozie-site.xml for oozie % s', oozie_hostname)
 
     return xml_configs
 

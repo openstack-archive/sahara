@@ -71,14 +71,18 @@ class VanillaProvider(p.ProvisioningPluginBase):
         if jt_count not in [0, 1]:
             raise ex.NotSingleJobTrackerException(jt_count)
 
+        oozie_count = sum([ng.count for ng
+                           in utils.get_node_groups(cluster, "oozie")])
+
+        if oozie_count not in [0, 1]:
+            raise ex.NotSingleOozieException(oozie_count)
+
         if jt_count is 0:
             tt_count = sum([ng.count for ng
                             in utils.get_node_groups(cluster, "tasktracker")])
             if tt_count > 0:
                 raise ex.TaskTrackersWithoutJobTracker()
 
-            oozie_count = sum([ng.count for ng
-                               in utils.get_node_groups(cluster, "oozie")])
             if oozie_count > 0:
                 raise ex.OozieWithoutJobTracker()
 
@@ -95,7 +99,7 @@ class VanillaProvider(p.ProvisioningPluginBase):
         datanodes = utils.get_datanodes(cluster)
         jt_instance = utils.get_jobtracker(cluster)
         tasktrackers = utils.get_tasktrackers(cluster)
-        oozies = utils.get_oozies(cluster)
+        oozie = utils.get_oozie(cluster)
 
         with remote.get_remote(nn_instance) as r:
             run.format_namenode(r)
@@ -117,7 +121,7 @@ class VanillaProvider(p.ProvisioningPluginBase):
             LOG.info("MapReduce service at '%s' has been started",
                      jt_instance.hostname)
 
-        for oozie in oozies:
+        if oozie:
             with remote.get_remote(oozie) as r:
                 run.oozie_share_lib(r, nn_instance.hostname)
                 run.start_oozie(r)
@@ -130,7 +134,7 @@ class VanillaProvider(p.ProvisioningPluginBase):
     def _extract_configs_to_extra(self, cluster):
         nn = utils.get_namenode(cluster)
         jt = utils.get_jobtracker(cluster)
-        oozies_hostnames = [o.hostname for o in utils.get_oozies(cluster)]
+        oozie = utils.get_oozie(cluster)
 
         extra = dict()
         for ng in cluster.node_groups:
@@ -140,7 +144,8 @@ class VanillaProvider(p.ProvisioningPluginBase):
                                                      nn.hostname,
                                                      jt.hostname
                                                      if jt else None,
-                                                     oozies_hostnames),
+                                                     oozie.hostname
+                                                     if oozie else None),
                 'setup_script': c_helper.generate_setup_script(
                     ng.storage_paths,
                     c_helper.extract_environment_confs(ng.configuration)
@@ -208,8 +213,12 @@ class VanillaProvider(p.ProvisioningPluginBase):
                 '/tmp/savanna-hadoop-init.sh': ng_extra['setup_script']
             }
             with remote.get_remote(inst) as r:
+                # TODO(aignatov): sudo chown is wrong solution. But it works.
                 r.execute_command(
                     'sudo chown -R $USER:$USER /etc/hadoop'
+                )
+                r.execute_command(
+                    'sudo chown -R $USER:$USER /opt/oozie/conf'
                 )
                 r.write_files_to(files)
                 r.execute_command(
@@ -232,28 +241,34 @@ class VanillaProvider(p.ProvisioningPluginBase):
                                 generate_fqdn_host_names(
                                 utils.get_tasktrackers(cluster)))
 
+        oozie = utils.get_oozie(cluster)
+        if oozie:
+            with remote.get_remote(oozie) as r:
+                r.write_file_to('/opt/oozie/conf/oozie-site.xml',
+                                extra[oozie.node_group.id]
+                                ['xml']['oozie-site'])
+
     def _set_cluster_info(self, cluster):
         nn = utils.get_namenode(cluster)
         jt = utils.get_jobtracker(cluster)
+        oozie = utils.get_oozie(cluster)
 
         info = cluster.info
 
-        if jt and jt.management_ip:
+        if jt:
             info['MapReduce'] = {
                 'Web UI': 'http://%s:50030' % jt.management_ip
             }
-        if nn and nn.management_ip:
+
+        if nn:
             info['HDFS'] = {
                 'Web UI': 'http://%s:50070' % nn.management_ip
             }
 
-        info['JobFlow'] = {}
-        for oozie in utils.get_oozies(cluster):
-            if oozie.management_ip:
-                info['JobFlow'].update({
-                    'Oozie: %s' % oozie.hostname:
-                    'http://%s:11000' % oozie.management_ip
-                })
+        if oozie:
+            info['JobFlow'] = {
+                'Oozie': 'http://%s:11000' % oozie.management_ip
+            }
 
     def _write_hadoop_user_keys(self, private_key, instances):
         public_key = crypto.private_key_to_public_key(private_key)
