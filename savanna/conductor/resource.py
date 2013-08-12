@@ -204,3 +204,7 @@ class DataSource(Resource, objects.DataSource):
 
 class Job(Resource, objects.Job):
     pass
+
+
+class JobExecution(Resource, objects.JobExecution):
+    pass

@@ -13,6 +13,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import copy
+
 from savanna import context
 import savanna.tests.unit.conductor.base as test_base
 
@@ -35,6 +37,17 @@ SAMPLE_JOB = {
     "type": "db",
     "input_type": "swift",
     "output_type": "swift"
+}
+
+
+SAMPLE_JOB_EXECUTION = {
+    "tenant_id": "tenant_id",
+    "progress": "0.1",
+    "return_code": "1",
+    "job_id": "undefined",
+    "input_id": "undefined",
+    "output_id": "undefined",
+    "cluster_id": None
 }
 
 
@@ -133,3 +146,34 @@ class JobTest(test_base.ConductorManagerTestCase):
 
         with self.assertRaises(RuntimeError):
             self.api.job_destroy(ctx, _id)
+
+
+class JobExecutionTest(test_base.ConductorManagerTestCase):
+    def test_crud_operation_create_list_delete_update(self):
+        ctx = context.ctx()
+        job = self.api.job_create(ctx, SAMPLE_JOB)
+        ds_input = self.api.data_source_create(ctx, SAMPLE_DATA_SOURCE)
+        SAMPLE_DATA_OUTPUT = copy.copy(SAMPLE_DATA_SOURCE)
+        SAMPLE_DATA_OUTPUT['name'] = 'output'
+        ds_output = self.api.data_source_create(ctx, SAMPLE_DATA_OUTPUT)
+
+        SAMPLE_JOB_EXECUTION['job_id'] = job['id']
+        SAMPLE_JOB_EXECUTION['input_id'] = ds_input['id']
+        SAMPLE_JOB_EXECUTION['output_id'] = ds_output['id']
+
+        self.api.job_execution_create(ctx, SAMPLE_JOB_EXECUTION)
+
+        lst = self.api.job_execution_get_all(ctx)
+        self.assertEqual(len(lst), 1)
+
+        job_ex_id = lst[0]['id']
+
+        self.assertEqual(lst[0]['progress'], 0.1)
+        self.api.job_execution_update(ctx, job_ex_id, {'progress': '0.2'})
+        updated_job = self.api.job_execution_get(ctx, job_ex_id)
+        self.assertEqual(updated_job['progress'], 0.2)
+
+        self.api.job_execution_destroy(ctx, job_ex_id)
+
+        lst = self.api.job_execution_get_all(ctx)
+        self.assertEqual(len(lst), 0)

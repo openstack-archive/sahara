@@ -440,3 +440,58 @@ def job_destroy(context, job_id):
             raise RuntimeError("Job not found!")
 
         session.delete(job)
+
+
+## JobExecution ops
+
+def _job_execution_get(context, job_execution_id):
+    query = model_query(m.JobExecution, context, get_session())
+    return query.filter_by(id=job_execution_id).first()
+
+
+def job_execution_get(context, job_execution_id):
+    return _job_execution_get(context, job_execution_id)
+
+
+def job_execution_get_all(context):
+    query = model_query(m.JobExecution, context)
+    return query.all()
+
+
+def job_execution_create(context, values):
+    session = get_session()
+
+    with session.begin():
+        job_ex = m.JobExecution()
+        job_ex.update(values)
+        try:
+            job_ex.save()
+        except db_exc.DBDuplicateEntry as e:
+            # raise exception about duplicated columns (e.columns)
+            raise RuntimeError("DBDuplicateEntry: %s" % e.columns)
+
+    return job_ex
+
+
+def job_execution_update(context, job_execution, values):
+    session = get_session()
+
+    with session.begin():
+        job_ex = _job_execution_get(context, job_execution)
+        if not job_ex:
+            # raise not found error
+            raise RuntimeError("JobExecution not found!")
+        job_ex.update(values)
+        job_ex.save()
+
+
+def job_execution_destroy(context, job_execution_id):
+    session = get_session()
+    with session.begin():
+        job_ex = _job_execution_get(context, job_execution_id)
+
+        if not job_ex:
+            # raise not found error
+            raise RuntimeError("JobExecution not found!")
+
+        session.delete(job_ex)
