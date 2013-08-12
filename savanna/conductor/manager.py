@@ -177,3 +177,21 @@ class ConductorManager(db_base.Base):
     def node_group_template_destroy(self, context, node_group_template):
         """Destroy the Node Group Template or raise if it does not exist."""
         self.db.node_group_template_destroy(context, node_group_template)
+
+     ## Data Source ops
+
+    def data_source_get(self, context, data_source):
+        """Return the Data Source or None if it does not exist."""
+        return self.db.data_source_get(context, data_source)
+
+    def data_source_get_all(self, context):
+        """Get all Data Sources."""
+        return self.db.data_source_get_all(context)
+
+    def data_source_create(self, context, values):
+        """Create a Data Source from the values dictionary."""
+        return self.db.data_source_create(context, values)
+
+    def data_source_destroy(self, context, data_source):
+        """Destroy the Data Source or raise if it does not exist."""
+        return self.db.data_source_destroy(context, data_source)

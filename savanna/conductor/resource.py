@@ -194,3 +194,9 @@ class ClusterResource(Resource, objects.Cluster):
     }
 
     _filter_fields = ['private_key']
+
+
+##EDP Resources
+
+class DataSource(Resource, objects.DataSource):
+    pass

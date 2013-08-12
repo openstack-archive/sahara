@@ -172,3 +172,18 @@ class NodeGroupTemplate(object):
     volumes_size
     volume_mount_prefix
     """
+
+
+##EDP Objects
+
+class DataSource(object):
+    """An object representing Data Source.
+
+    id
+    tenant_id
+    name
+    description
+    type
+    url
+    credentials
+    """

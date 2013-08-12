@@ -187,6 +187,27 @@ class LocalApi(object):
         self._manager.node_group_template_destroy(context,
                                                   _get_id(node_group_template))
 
+    ## Data Source ops
+
+    @r.wrap(r.DataSource)
+    def data_source_get(self, context, data_source):
+        """Return the Data Source or None if it does not exist."""
+        return self._manager.data_source_get(context, _get_id(data_source))
+
+    @r.wrap(r.DataSource)
+    def data_source_get_all(self, context):
+        """Get all Data Sources."""
+        return self._manager.data_source_get_all(context)
+
+    @r.wrap(r.DataSource)
+    def data_source_create(self, context, values):
+        """Create a Data Source from the values dictionary."""
+        return self._manager.data_source_create(context, values)
+
+    def data_source_destroy(self, context, data_source):
+        """Destroy the Data Source or raise if it does not exist."""
+        self._manager.data_source_destroy(context, _get_id(data_source))
+
 
 class RemoteApi(LocalApi):
     """Conductor API that does updates via RPC to the ConductorManager."""
