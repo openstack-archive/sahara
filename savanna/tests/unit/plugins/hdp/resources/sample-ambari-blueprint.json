@@ -119,6 +119,33 @@
                     ]
                 }
             ]
+        },
+        {
+            "name" : "AMBARI",
+            "components" : [
+                {
+                    "name" : "AMBARI_SERVER",
+                    "type" : "MASTER",
+                    "cardinality" : "1"
+                },
+                {
+                    "name" : "AMBARI_AGENT",
+                    "type" : "SLAVE",
+                    "cardinality" : "1+"
+                }
+            ],
+            "configurations" : [
+            ],
+            "users" : [
+                {
+                    "name" : "admin",
+                    "password" : "admin",
+                    "groups" : [
+                        "admin",
+                        "user"
+                    ]
+                }
+            ]
         }
     ],
     "host_role_mappings" : [

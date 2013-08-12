@@ -45,27 +45,30 @@ class BlueprintProcessorTest(unittest2.TestCase):
                 os.path.join(os.path.realpath('./unit/plugins'), 'hdp',
                              'resources',
                              'sample-ambari-blueprint.json'), 'r')))
-        config_items = {
-            "dfs_name_dir": {
-                "value": "/some/new/path",
-                "description": "blah blah",
-                "config_type": "string",
-                "is_optional": "true",
-                "default_value": "/hadoop/hdfs/namenode",
-                "applicable_target": "general",
-                "file": "global",
-                "scope": "cluster"
-            }
-        }
-
+        config_items = [
+            {"value": "/some/new/path",
+             "config": {
+                 "name": "dfs_name_dir",
+                 "description": "blah blah",
+                 "config_type": "string",
+                 "is_optional": "true",
+                 "default_value": "/hadoop/hdfs/namenode",
+                 "applicable_target": "general",
+                 "tag": "global",
+                 "scope": "cluster"}
+             }
+        ]
         # verify this config item already exists in the blueprint
         prop_name = self._xpath_get(processor.blueprint,
                                     '/configurations/0/properties/0/name')
         self.assertEqual('dfs_name_dir', prop_name,
                          'dfs_name_dir not found in bluerpint')
 
+        # convert the json structure into a proper object
+        configs_list = self.json2obj(json.dumps(config_items))
+
         # process the input configuration
-        processor.process_user_inputs(config_items)
+        processor.process_user_inputs(configs_list)
         prop_name = self._xpath_get(processor.blueprint,
                                     '/configurations/0/properties/0/name')
         self.assertEqual('dfs_name_dir', prop_name,
@@ -83,18 +86,19 @@ class BlueprintProcessorTest(unittest2.TestCase):
                 os.path.join(os.path.realpath('./unit/plugins'), 'hdp',
                              'resources',
                              'sample-ambari-blueprint.json'), 'r')))
-        config_items = {
-            "namenode_heapsize": {
-                "value": "512m",
-                "description": "heap size",
-                "default_value": "256m",
-                "config_type": "string",
-                "is_optional": "true",
-                "applicable_target": "general",
-                "file": "global",
-                "scope": "cluster"}
-        }
-
+        config_items = [
+            {"value": "512m",
+             "config": {
+                 "name": "namenode_heapsize",
+                 "description": "heap size",
+                 "default_value": "256m",
+                 "config_type": "string",
+                 "is_optional": "true",
+                 "applicable_target": "general",
+                 "tag": "global",
+                 "scope": "cluster"}
+             }
+        ]
         # verify this config section already exists in the blueprint,
         # but doesn't have the given property
         props_for_global = self._xpath_get(processor.blueprint,
@@ -103,8 +107,10 @@ class BlueprintProcessorTest(unittest2.TestCase):
                                                       'namenode_heapsize')
         self.assertIsNone(prop_dict, 'no matching property should be found')
 
+        configs_list = self.json2obj(json.dumps(config_items))
+
         # process the input configuration
-        processor.process_user_inputs(config_items)
+        processor.process_user_inputs(configs_list)
         prop_dict = processor._find_blueprint_section(props_for_global, 'name',
                                                       'namenode_heapsize')
         self.assertIsNotNone(prop_dict, 'no matching property should be found')
@@ -116,26 +122,27 @@ class BlueprintProcessorTest(unittest2.TestCase):
                 os.path.join(os.path.realpath('./unit/plugins'), 'hdp',
                              'resources',
                              'sample-ambari-blueprint.json'), 'r')))
-        config_items = {
-            "mapred.job.tracker.handler.count": {
-                "value": "50",
-                "description": "job tracker handler count",
-                "config_type": "integer",
-                "applicable_target": "general",
-                "is_optional": "true",
-                "file": "mapred-site",
-                "scope": "node"}
-        }
-
+        config_items = [
+            {"value": "50",
+             "config": {
+                 "name": "mapred.job.tracker.handler.count",
+                 "description": "job tracker handler count",
+                 "config_type": "integer",
+                 "applicable_target": "general",
+                 "is_optional": "true",
+                 "tag": "mapred-site",
+                 "scope": "node"}
+             }
+        ]
         # verify the config with this tag does not exist
         configs = self._xpath_get(processor.blueprint, '/configurations')
         self.assertNotEqual('mapred-site', configs[0]['name'],
                             'section should not exist')
 
-        # configs_list = self.json2obj(json.dumps(config_items))
+        configs_list = self.json2obj(json.dumps(config_items))
 
         # process the input configuration
-        processor.process_user_inputs(config_items)
+        processor.process_user_inputs(configs_list)
         configs = self._xpath_get(processor.blueprint, '/configurations')
         self.assertEqual(2, len(configs), 'no config section added')
         self.assertEqual('mapred-site', configs[1]['name'],
@@ -143,6 +150,88 @@ class BlueprintProcessorTest(unittest2.TestCase):
         self.assertEqual('mapred.job.tracker.handler.count',
                          configs[1]['properties'][0]['name'],
                          'property not added')
+
+    def test_update_ambari_admin_user(self):
+        processor = bp.BlueprintProcessor(json.load(open(os.path.join(
+            os.path.realpath('./unit/plugins'), 'hdp', 'resources',
+            'sample-ambari-blueprint.json'), 'r')))
+        config_items = [
+            {"value": "new-user",
+             "config": {
+                 "name": "ambari.admin.user",
+                 "description": "Ambari admin user",
+                 "config_type": "string",
+                 "applicable_target": "AMBARI",
+                 "is_optional": "true",
+                 "tag": "ambari-stack",
+                 "scope": "cluster"}}
+        ]
+
+        configs_list = self.json2obj(json.dumps(config_items))
+
+        # process the input configuration
+        processor.process_user_inputs(configs_list)
+        services = self._xpath_get(processor.blueprint, '/services')
+
+        self.assertEqual('new-user', services[2]['users'][0]['name'])
+
+    def test_update_ambari_admin_password(self):
+        processor = bp.BlueprintProcessor(json.load(open(os.path.join(
+            os.path.realpath('./unit/plugins'), 'hdp', 'resources',
+            'sample-ambari-blueprint.json'), 'r')))
+        config_items = [
+            {"value": "new-pwd",
+             "config": {
+                 "name": "ambari.admin.password",
+                 "description": "Ambari admin password",
+                 "config_type": "string",
+                 "applicable_target": "AMBARI",
+                 "is_optional": "true",
+                 "tag": "ambari-stack",
+                 "scope": "cluster"}}
+        ]
+
+        configs_list = self.json2obj(json.dumps(config_items))
+
+        # process the input configuration
+        processor.process_user_inputs(configs_list)
+        services = self._xpath_get(processor.blueprint, '/services')
+
+        self.assertEqual('new-pwd', services[2]['users'][0]['password'])
+
+    def test_update_ambari_admin_user_and_password(self):
+        processor = bp.BlueprintProcessor(json.load(open(os.path.join(
+            os.path.realpath('./unit/plugins'), 'hdp', 'resources',
+            'sample-ambari-blueprint.json'), 'r')))
+        config_items = [
+            {"value": "new-user",
+             "config": {
+                 "name": "ambari.admin.user",
+                 "description": "Ambari admin user",
+                 "config_type": "string",
+                 "applicable_target": "AMBARI",
+                 "is_optional": "true",
+                 "tag": "ambari-stack",
+                 "scope": "cluster"}},
+            {"value": "new-pwd",
+             "config": {
+                 "name": "ambari.admin.password",
+                 "description": "Ambari admin password",
+                 "config_type": "string",
+                 "applicable_target": "AMBARI",
+                 "is_optional": "true",
+                 "tag": "ambari-stack",
+                 "scope": "cluster"}}
+        ]
+
+        configs_list = self.json2obj(json.dumps(config_items))
+
+        # process the input configuration
+        processor.process_user_inputs(configs_list)
+        services = self._xpath_get(processor.blueprint, '/services')
+
+        self.assertEqual('new-user', services[2]['users'][0]['name'])
+        self.assertEqual('new-pwd', services[2]['users'][0]['password'])
 
     def test_insert_host_mappings(self):
         processor = bp.BlueprintProcessor(
@@ -153,14 +242,14 @@ class BlueprintProcessorTest(unittest2.TestCase):
         node_groups = []
         node_groups.append(m.NodeGroup('MASTER', 'master-flavor',
                                        ["namenode", "jobtracker",
-                                        "secondary_namenode", "ganglia_server",
-                                        "ganglia_monitor", "nagios_server",
-                                        "ambari_server", "ambari_agent"], 1,
+                                       "secondary_namenode", "ganglia_server",
+                                       "ganglia_monitor", "nagios_server",
+                                       "ambari_server", "ambari_agent"], 1,
                                        image_id='master-img'))
         node_groups.append(m.NodeGroup('SLAVE', 'slave-flavor',
                                        ["datanode", "tasktracker",
-                                        "ganglia_monitor", "hdfs_client",
-                                        "mapreduce_client", "ambari_agent"], 2,
+                                       "ganglia_monitor", "hdfs_client",
+                                       "mapreduce_client", "ambari_agent"], 2,
                                        image_id='slave-img'))
 
         processor.process_node_groups(node_groups)
@@ -215,9 +304,9 @@ class BlueprintProcessorTest(unittest2.TestCase):
         node_groups = []
         node_groups.append(m.NodeGroup('OTHER_MASTER_GROUP', 'master-flavor',
                                        ["namenode", "jobtracker",
-                                        "secondary_namenode", "ganglia_server",
-                                        "ganglia_monitor", "nagios_server",
-                                        "ambari_server", "ambari_agent"], 1,
+                                       "secondary_namenode", "ganglia_server",
+                                       "ganglia_monitor", "nagios_server",
+                                       "ambari_server", "ambari_agent"], 1,
                                        image_id='master-img'))
         processor.process_node_groups(node_groups)
         host_mappings = processor.blueprint['host_role_mappings']
@@ -273,9 +362,9 @@ class BlueprintProcessorTest(unittest2.TestCase):
         node_groups = []
         node_groups.append(m.NodeGroup('MASTER', 'master-flavor',
                                        ["namenode", "jobtracker",
-                                        "secondary_namenode", "ganglia_server",
-                                        "ganglia_monitor", "ambari_server",
-                                        "ambari_agent"], 1,
+                                       "secondary_namenode", "ganglia_server",
+                                       "ganglia_monitor", "ambari_server",
+                                       "ambari_agent"], 1,
                                        image_id='master-img'))
         processor.process_node_groups(node_groups)
         host_mappings = processor.blueprint['host_role_mappings']

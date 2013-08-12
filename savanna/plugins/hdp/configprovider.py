@@ -35,8 +35,6 @@ class ConfigurationProvider(bp.BaseProcessor):
     def _get_target(self, apptarget):
         if apptarget == 'TODO':
             apptarget = 'general'
-        if apptarget != 'general':
-            apptarget = 'service:' + apptarget
 
         return apptarget
 
@@ -55,8 +53,8 @@ class ConfigurationProvider(bp.BaseProcessor):
                                       'is_optional'],
                                   description=service_property[
                                       'description'])
-                setattr(config, 'file',
-                        configuration['file'].rsplit(".", 1)[0])
+                setattr(config, 'tag',
+                        configuration['tag'].rsplit(".", 1)[0])
                 self.config_items.append(config)
                 self.config_mapper[service_property['name']] = \
                     self._get_target(
