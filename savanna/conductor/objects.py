@@ -187,3 +187,17 @@ class DataSource(object):
     url
     credentials
     """
+
+
+class Job(object):
+    """An object representing Job
+
+    id
+    tenant_id
+    name
+    description
+    type
+    job_origin_id
+    input_type
+    output_type
+    """

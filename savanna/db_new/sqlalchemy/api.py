@@ -406,3 +406,44 @@ def data_source_destroy(context, data_source_id):
             raise RuntimeError("Data Source not found!")
 
         session.delete(data_source)
+
+
+## Job ops
+
+def _job_get(context, session, job_id):
+    query = model_query(m.Job, context, session)
+    return query.filter_by(id=job_id).first()
+
+
+def job_get(context, job_id):
+    return _job_get(context, get_session(), job_id)
+
+
+def job_get_all(context):
+    query = model_query(m.Job, context)
+    return query.all()
+
+
+def job_create(context, values):
+    job = m.Job()
+    job.update(values)
+
+    try:
+        job.save()
+    except db_exc.DBDuplicateEntry as e:
+        # raise exception about duplicated columns (e.columns)
+        raise RuntimeError("DBDuplicateEntry: %s" % e.columns)
+
+    return job
+
+
+def job_destroy(context, job_id):
+    session = get_session()
+    with session.begin():
+        job = _job_get(context, session, job_id)
+
+        if not job:
+            # raise not found error
+            raise RuntimeError("Job not found!")
+
+        session.delete(job)

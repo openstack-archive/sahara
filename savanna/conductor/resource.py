@@ -222,3 +222,7 @@ class ClusterResource(Resource, objects.Cluster):
 
 class DataSource(Resource, objects.DataSource):
     pass
+
+
+class Job(Resource, objects.Job):
+    pass

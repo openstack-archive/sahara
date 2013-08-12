@@ -195,3 +195,21 @@ class ConductorManager(db_base.Base):
     def data_source_destroy(self, context, data_source):
         """Destroy the Data Source or raise if it does not exist."""
         return self.db.data_source_destroy(context, data_source)
+
+    ##Job ops
+
+    def job_get(self, context, job):
+        """Return the Job or None if it does not exist."""
+        return self.db.job_get(context, job)
+
+    def job_get_all(self, context):
+        """Get all Jobs."""
+        return self.db.job_get_all(context)
+
+    def job_create(self, context, values):
+        """Create a Job from the values dictionary."""
+        return self.db.job_create(context, values)
+
+    def job_destroy(self, context, job):
+        """Destroy the Job or raise if it does not exist."""
+        return self.db.job_destroy(context, job)

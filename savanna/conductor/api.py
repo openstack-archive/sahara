@@ -220,6 +220,27 @@ class LocalApi(object):
         """Destroy the Data Source or raise if it does not exist."""
         self._manager.data_source_destroy(context, _get_id(data_source))
 
+    ## Job ops
+
+    @r.wrap(r.Job)
+    def job_get(self, context, job):
+        """Return the Job or None if it does not exist."""
+        return self._manager.job_get(context, _get_id(job))
+
+    @r.wrap(r.Job)
+    def job_get_all(self, context):
+        """Get all Jobs."""
+        return self._manager.job_get_all(context)
+
+    @r.wrap(r.Job)
+    def job_create(self, context, values):
+        """Create a Job from the values dictionary."""
+        return self._manager.job_create(context, values)
+
+    def job_destroy(self, context, job):
+        """Destroy the Job or raise if it does not exist."""
+        self._manager.job_destroy(context, _get_id(job))
+
 
 class RemoteApi(LocalApi):
     """Conductor API that does updates via RPC to the ConductorManager."""

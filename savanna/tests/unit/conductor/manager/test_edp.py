@@ -28,6 +28,15 @@ SAMPLE_DATA_SOURCE = {
     }
 }
 
+SAMPLE_JOB = {
+    "tenant_id": "test_tenant",
+    "name": "ngt_test",
+    "description": "test_desc",
+    "type": "db",
+    "input_type": "swift",
+    "output_type": "swift"
+}
+
 
 class DataSourceTest(test_base.ConductorApiTestCase):
     def test_crud_operation_create_list_delete(self):
@@ -70,3 +79,45 @@ class DataSourceTest(test_base.ConductorApiTestCase):
 
         with self.assertRaises(RuntimeError):
             self.api.data_source_destroy(ctx, _id)
+
+
+class JobTest(test_base.ConductorApiTestCase):
+    def test_crud_operation_create_list_delete(self):
+        ctx = context.ctx()
+        self.api.job_create(ctx, SAMPLE_JOB)
+
+        lst = self.api.job_get_all(ctx)
+        self.assertEquals(len(lst), 1)
+
+        job_id = lst[0]['id']
+        self.api.job_destroy(ctx, job_id)
+
+        lst = self.api.job_get_all(ctx)
+        self.assertEquals(len(lst), 0)
+
+    def test_duplicate_data_source_create(self):
+        ctx = context.ctx()
+        self.api.job_create(ctx, SAMPLE_JOB)
+        with self.assertRaises(RuntimeError):
+            self.api.job_create(ctx, SAMPLE_JOB)
+
+    def test_job_fields(self):
+        ctx = context.ctx()
+        job_db_obj_id = self.api.job_create(ctx, SAMPLE_JOB)['id']
+
+        job_db_obj = self.api.job_get(ctx, job_db_obj_id)
+        self.assertIsInstance(job_db_obj, dict)
+
+        for key, val in SAMPLE_JOB.items():
+            self.assertEqual(val, job_db_obj.get(key),
+                             "Key not found %s" % key)
+
+    def test_job_delete(self):
+        ctx = context.ctx()
+        job_db_obj = self.api.job_create(ctx, SAMPLE_JOB)
+        _id = job_db_obj['id']
+
+        self.api.job_destroy(ctx, _id)
+
+        with self.assertRaises(RuntimeError):
+            self.api.job_destroy(ctx, _id)
