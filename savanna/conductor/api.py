@@ -83,7 +83,8 @@ class LocalApi(object):
         """
         new_cluster = self._manager.cluster_update(context, _get_id(cluster),
                                                    values)
-        cluster.re_init(new_cluster)
+        if isinstance(cluster, r.Resource):
+            cluster.re_init(new_cluster)
 
     def cluster_destroy(self, context, cluster):
         """Destroy the cluster or raise if it does not exist.
@@ -100,8 +101,9 @@ class LocalApi(object):
         """
         new_cluster = self._manager.node_group_add(context, _get_id(cluster),
                                                    values)
-        cluster.re_init(new_cluster)
-        return cluster.node_groups[-1].id
+        if isinstance(cluster, r.Resource):
+            cluster.re_init(new_cluster)
+        return new_cluster['node_groups'][-1]['id']
 
     def node_group_update(self, context, node_group, values):
         """Update the node group with the given values dictionary.
@@ -110,7 +112,8 @@ class LocalApi(object):
         """
         new_ng = self._manager.node_group_update(context, _get_id(node_group),
                                                  values)
-        node_group.re_init(new_ng)
+        if isinstance(node_group, r.Resource):
+            node_group.re_init(new_ng)
 
     def node_group_remove(self, context, node_group):
         """Destroy the node group or raise if it does not exist.
@@ -127,8 +130,9 @@ class LocalApi(object):
         """
         new_ng = self._manager.instance_add(context, _get_id(node_group),
                                             values)
-        node_group.re_init(new_ng)
-        return node_group.instances[-1].id
+        if isinstance(node_group, r.Resource):
+            node_group.re_init(new_ng)
+        return new_ng['instances'][-1]['id']
 
     def instance_update(self, context, instance, values):
         """Update the instance with the given values dictionary.
@@ -137,7 +141,8 @@ class LocalApi(object):
         """
         new_inst = self._manager.instance_update(context, _get_id(instance),
                                                  values)
-        instance.re_init(new_inst)
+        if isinstance(instance, r.Resource):
+            instance.re_init(new_inst)
 
     def instance_remove(self, context, instance):
         """Destroy the instance or raise if it does not exist.

@@ -16,7 +16,7 @@
 import copy
 
 from savanna import context
-import savanna.tests.unit.conductor.manager.base as test_base
+import savanna.tests.unit.conductor.base as test_base
 from savanna.tests.unit.conductor.manager import test_clusters
 from savanna.tests.unit.conductor.manager import test_templates
 
@@ -27,7 +27,7 @@ CORRECT_CONF = {
 }
 
 
-class ClusterTest(test_base.ConductorApiTestCase):
+class ClusterTest(test_base.ConductorManagerTestCase):
     def test_cluster_create_from_templates(self):
         ctx = context.ctx()
 

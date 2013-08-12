@@ -14,7 +14,7 @@
 # limitations under the License.
 
 from savanna import context
-import savanna.tests.unit.conductor.manager.base as test_base
+import savanna.tests.unit.conductor.base as test_base
 
 
 SAMPLE_NGT = {
@@ -66,7 +66,7 @@ SAMPLE_CLT = {
 }
 
 
-class NodeGroupTemplates(test_base.ConductorApiTestCase):
+class NodeGroupTemplates(test_base.ConductorManagerTestCase):
 
     def test_minimal_ngt_create_list_delete(self):
         ctx = context.ctx()
@@ -110,7 +110,7 @@ class NodeGroupTemplates(test_base.ConductorApiTestCase):
             self.api.node_group_template_destroy(ctx, _id)
 
 
-class ClusterTemplates(test_base.ConductorApiTestCase):
+class ClusterTemplates(test_base.ConductorManagerTestCase):
 
     def test_minimal_clt_create_list_delete(self):
         ctx = context.ctx()

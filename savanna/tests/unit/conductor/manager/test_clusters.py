@@ -14,7 +14,7 @@
 # limitations under the License.
 
 from savanna import context
-import savanna.tests.unit.conductor.manager.base as test_base
+import savanna.tests.unit.conductor.base as test_base
 
 
 SAMPLE_CLUSTER = {
@@ -48,7 +48,7 @@ SAMPLE_CLUSTER = {
 }
 
 
-class ClusterTest(test_base.ConductorApiTestCase):
+class ClusterTest(test_base.ConductorManagerTestCase):
 
     def test_cluster_create_list_delete(self):
         ctx = context.ctx()

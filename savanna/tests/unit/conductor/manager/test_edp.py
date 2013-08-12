@@ -14,7 +14,7 @@
 # limitations under the License.
 
 from savanna import context
-import savanna.tests.unit.conductor.manager.base as test_base
+import savanna.tests.unit.conductor.base as test_base
 
 SAMPLE_DATA_SOURCE = {
     "tenant_id": "test_tenant",
@@ -29,7 +29,7 @@ SAMPLE_DATA_SOURCE = {
 }
 
 
-class DataSourceTest(test_base.ConductorApiTestCase):
+class DataSourceTest(test_base.ConductorManagerTestCase):
     def test_crud_operation_create_list_delete(self):
         ctx = context.ctx()
         self.api.data_source_create(ctx, SAMPLE_DATA_SOURCE)
