@@ -137,11 +137,13 @@ def cluster_destroy(context, cluster):
 
 ## Node Group ops
 
+@to_dict
 def node_group_add(context, cluster, values):
     """Create a Node Group from the values dictionary."""
     return IMPL.node_group_add(context, cluster, values)
 
 
+@to_dict
 def node_group_update(context, node_group, values):
     """Set the given properties on node_group and update it."""
     return IMPL.node_group_update(context, node_group, values)
@@ -154,11 +156,13 @@ def node_group_remove(context, node_group):
 
 ## Instance ops
 
+@to_dict
 def instance_add(context, node_group, values):
     """Create an Instance from the values dictionary."""
     return IMPL.instance_add(context, node_group, values)
 
 
+@to_dict
 def instance_update(context, instance, values):
     """Set the given properties on Instance and update it."""
     return IMPL.instance_update(context, instance, values)

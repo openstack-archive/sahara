@@ -78,25 +78,42 @@ class Resource(types.FrozenDict):
     _children = {}
     _filter_fields = []
 
-    def __init__(self, dct):
-        super(Resource, self).__setattr__('_initial_dict', dct)
-        newdct = dict()
-        for refname, entity in dct.iteritems():
-            newdct[refname] = self._wrap_entity(refname, entity)
+    # internal field, should not be overridden
+    _backref_name = None
 
-        super(Resource, self).__init__(newdct)
+    def __init__(self, dct):
+        self._init(dct)
+
+    def re_init(self, dct):
+        """Re-init resource with a new dictionary.
+
+        Should be used inside conductor only for update operations.
+        Preserve backreference if it exists.
+        """
+        dct = dict(dct)
+        if self._backref_name:
+            dct[self._backref_name] = self[self._backref_name]
+        super(types.FrozenDict, self).clear()
+        self._init(dct)
 
     def to_dict(self):
         """Return dictionary representing the Resource for REST API.
 
         On the way filter out fields which shouldn't be exposed.
         """
-        return self._to_dict(None)
+        return self._to_dict()
 
     def to_wrapped_dict(self):
         return {self._resource_name: self.to_dict()}
 
     # Construction
+
+    def _init(self, dct):
+        newdct = dict()
+        for refname, entity in dct.iteritems():
+            newdct[refname] = self._wrap_entity(refname, entity)
+
+        super(Resource, self).__init__(newdct)
 
     def _wrap_entity(self, refname, entity):
         if isinstance(entity, Resource):
@@ -119,39 +136,44 @@ class Resource(types.FrozenDict):
         return types.FrozenList(newlst)
 
     def _wrap_dict(self, refname, dct):
+        child_class = self._get_child_class(refname)
+        resource = child_class(dct)
+        resource._set_backref(refname, self)
+        return resource
+
+    def _get_child_class(self, refname):
         if refname in self._children:
-            dct = dict(dct)
-            child_class = self._children[refname][0]
-            backref_name = self._children[refname][1]
-            if backref_name:
-                dct[backref_name] = self
-            return child_class(dct)
+            return self._children[refname][0]
         else:
-            return Resource(dct)
+            return Resource
+
+    def _set_backref(self, refname, parent):
+        if refname in parent._children and parent._children[refname][1]:
+            backref_name = parent._children[refname][1]
+            super(Resource, self).__setattr__('_backref_name', backref_name)
+            super(types.FrozenDict, self).__setitem__(backref_name, parent)
 
     # Conversion to dict
 
-    def _to_dict(self, backref):
+    def _to_dict(self):
         dct = dict()
         for refname, entity in self.iteritems():
-            if refname != backref and refname not in self._filter_fields:
-                childs_backref = None
-                if refname in self._children:
-                    childs_backref = self._children[refname][1]
-                dct[refname] = self._entity_to_dict(entity, childs_backref)
+            if (refname != self._backref_name and
+                    refname not in self._filter_fields):
+                dct[refname] = self._entity_to_dict(entity)
 
         return dct
 
-    def _entity_to_dict(self, entity, childs_backref):
+    def _entity_to_dict(self, entity):
         if isinstance(entity, Resource):
-            return entity._to_dict(childs_backref)
+            return entity._to_dict()
         elif isinstance(entity, list):
-            return self._list_to_dict(entity, childs_backref)
+            return self._list_to_dict(entity)
         elif entity is not None:
             return entity
 
-    def _list_to_dict(self, lst, childs_backref):
-        return [self._entity_to_dict(entity, childs_backref) for entity in lst]
+    def _list_to_dict(self, lst):
+        return [self._entity_to_dict(entity) for entity in lst]
 
     def __getattr__(self, item):
         return self[item]
