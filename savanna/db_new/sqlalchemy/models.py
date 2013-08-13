@@ -246,8 +246,8 @@ class Job(mb.SavannaBase):
     name = sa.Column(sa.String(80), nullable=False)
     description = sa.Column(sa.Text())
     type = sa.Column(sa.String(80), nullable=False)
-    # job_origin_id = sa.Column(sa.String(36),
-    #                           sa.ForeignKey('job_origins.id'))
+    job_origin_id = sa.Column(sa.String(36),
+                              sa.ForeignKey('job_origins.id'))
     input_type = sa.Column(sa.String(80), nullable=False)
     output_type = sa.Column(sa.String(80), nullable=False)
 
@@ -272,3 +272,22 @@ class JobExecution(mb.SavannaBase):
     progress = sa.Column(sa.Float)
     oozie_job_id = sa.Column(sa.String(100))
     return_code = sa.Column(sa.String(80))
+
+
+class JobOrigin(mb.SavannaBase):
+    """JobOrigin - description and location of a job binary
+    """
+
+    __tablename__ = 'job_origins'
+
+    __table_args__ = (
+        sa.UniqueConstraint('name', 'tenant_id'),
+    )
+
+    id = _id_column()
+    tenant_id = sa.Column(sa.String(36))
+    name = sa.Column(sa.String(80), nullable=False)
+    description = sa.Column(sa.Text())
+    storage_type = sa.Column(sa.String(16))
+    url = sa.Column(sa.String())
+    credentials = sa.Column(st.JsonDictType())

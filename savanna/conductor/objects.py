@@ -213,3 +213,16 @@ class JobExecution(object):
     map_tasks - list of map_tasks
     reduce_tasks - list of reduce_tasks
     """
+
+
+class JobOrigin(object):
+    """An object representing JobOrigin
+
+    id
+    tenant_id
+    name
+    description
+    storage_type
+    url
+    credentials
+    """

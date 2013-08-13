@@ -39,6 +39,18 @@ SAMPLE_JOB = {
     "output_type": "swift"
 }
 
+SAMPLE_JOB_ORIGIN = {
+    "tenant_id": "test_tenant",
+    "name": "job_origin_test",
+    "description": "test_desc",
+    "storage_type": "swift",
+    "url": "localhost:1080",
+    "credentials": {
+        "user": "test",
+        "password": "123"
+    }
+}
+
 
 SAMPLE_JOB_EXECUTION = {
     "tenant_id": "tenant_id",
@@ -176,4 +188,25 @@ class JobExecutionTest(test_base.ConductorManagerTestCase):
         self.api.job_execution_destroy(ctx, job_ex_id)
 
         lst = self.api.job_execution_get_all(ctx)
+        self.assertEqual(len(lst), 0)
+
+
+class JobOriginTest(test_base.ConductorManagerTestCase):
+    def __init__(self, *args, **kwargs):
+        super(JobOriginTest, self).__init__(
+            checks=[
+                lambda: SAMPLE_JOB_ORIGIN
+            ], *args, **kwargs)
+
+    def test_crud_operation_create_list_delete(self):
+        ctx = context.ctx()
+        self.api.job_origin_create(ctx, SAMPLE_JOB_ORIGIN)
+
+        lst = self.api.job_origin_get_all(ctx)
+        self.assertEqual(len(lst), 1)
+
+        jo = lst[0]['id']
+        self.api.job_origin_destroy(ctx, jo)
+
+        lst = self.api.job_origin_get_all(ctx)
         self.assertEqual(len(lst), 0)
