@@ -194,23 +194,19 @@ def node_group_add(context, cluster_id, values):
         node_group.update(values)
         node_group.save(session=session)
 
-    return cluster_get(context, cluster_id)
+    return node_group.id
 
 
 def node_group_update(context, node_group_id, values):
     session = get_session()
-
     with session.begin():
         node_group = _node_group_get(context, session, node_group_id)
         node_group.update(values)
         node_group.save(session=session)
 
-    return node_group
-
 
 def node_group_remove(context, node_group_id):
     session = get_session()
-
     with session.begin():
         node_group = _node_group_get(context, session, node_group_id)
 
@@ -241,18 +237,15 @@ def instance_add(context, node_group_id, values):
         node_group.count += 1
         node_group.save(session=session)
 
-    return node_group
+    return instance.id
 
 
 def instance_update(context, instance_id, values):
     session = get_session()
-
     with session.begin():
         instance = _instance_get(context, session, instance_id)
         instance.update(values)
         instance.save(session=session)
-
-    return instance
 
 
 def instance_remove(context, instance_id):

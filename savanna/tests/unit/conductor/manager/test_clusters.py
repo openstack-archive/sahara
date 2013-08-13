@@ -128,8 +128,7 @@ class ClusterTest(test_base.ConductorManagerTestCase):
             "count": 5
         }
 
-        cluster = self.api.node_group_add(ctx, _id, node_group)
-        ng_id = cluster["node_groups"][-1]["id"]
+        ng_id = self.api.node_group_add(ctx, _id, node_group)
 
         cluster_db_obj = self.api.cluster_get(ctx, _id)
         found_ng = self._ng_in_cluster(cluster_db_obj, ng_id)
@@ -206,8 +205,7 @@ class ClusterTest(test_base.ConductorManagerTestCase):
 
         ng_id = cluster_db_obj["node_groups"][-1]["id"]
 
-        node_group = self._add_instance(ctx, ng_id)
-        instance_id = node_group["instances"][-1]["id"]
+        instance_id = self._add_instance(ctx, ng_id)
 
         self.api.instance_update(context, instance_id,
                                  {"management_ip": "1.1.1.1"})
@@ -227,8 +225,7 @@ class ClusterTest(test_base.ConductorManagerTestCase):
         ng_id = cluster_db_obj["node_groups"][-1]["id"]
         count = cluster_db_obj["node_groups"][-1]["count"]
 
-        node_group = self._add_instance(ctx, ng_id)
-        instance_id = node_group["instances"][-1]["id"]
+        instance_id = self._add_instance(ctx, ng_id)
 
         cluster_db_obj = self.api.cluster_get(ctx, _id)
         for ng in cluster_db_obj["node_groups"]:

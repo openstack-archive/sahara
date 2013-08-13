@@ -20,7 +20,6 @@ from oslo.config import cfg
 from savanna.conductor import manager
 from savanna.conductor import resource as r
 from savanna.openstack.common import log as logging
-from savanna.utils import general as u
 
 conductor_opts = [
     cfg.BoolOpt('use_local',
@@ -77,15 +76,13 @@ class LocalApi(object):
         """
         return self._manager.cluster_create(context, values)
 
+    @r.wrap(r.ClusterResource)
     def cluster_update(self, context, cluster, values):
         """Update the cluster with the given values dictionary.
-        Populate provided cluster object with updated values.
-        Return None.
+        Return the updated cluster.
         """
-        new_cluster = self._manager.cluster_update(context, _get_id(cluster),
-                                                   values)
-        if isinstance(cluster, r.Resource):
-            cluster.re_init(new_cluster)
+        return self._manager.cluster_update(context, _get_id(cluster),
+                                            values)
 
     def cluster_destroy(self, context, cluster):
         """Destroy the cluster or raise if it does not exist.
@@ -97,25 +94,15 @@ class LocalApi(object):
 
     def node_group_add(self, context, cluster, values):
         """Create a node group from the values dictionary.
-        Populate provided cluster object with new node group.
         Return ID of the created node group.
         """
-        new_cluster = self._manager.node_group_add(context, _get_id(cluster),
-                                                   values)
-        if isinstance(cluster, r.Resource):
-            cluster.re_init(new_cluster)
-        return u.find_dict(new_cluster['node_groups'],
-                           name=values['name'])['id']
+        return self._manager.node_group_add(context, _get_id(cluster), values)
 
     def node_group_update(self, context, node_group, values):
         """Update the node group with the given values dictionary.
-        Populate provided node group object with updated values.
         Return None.
         """
-        new_ng = self._manager.node_group_update(context, _get_id(node_group),
-                                                 values)
-        if isinstance(node_group, r.Resource):
-            node_group.re_init(new_ng)
+        self._manager.node_group_update(context, _get_id(node_group), values)
 
     def node_group_remove(self, context, node_group):
         """Destroy the node group or raise if it does not exist.
@@ -127,25 +114,15 @@ class LocalApi(object):
 
     def instance_add(self, context, node_group, values):
         """Create an instance from the values dictionary.
-        Populate provided node group object with new instance.
         Return ID of the created instance.
         """
-        new_ng = self._manager.instance_add(context, _get_id(node_group),
-                                            values)
-        if isinstance(node_group, r.Resource):
-            node_group.re_init(new_ng)
-        return u.find_dict(new_ng['instances'],
-                           instance_id=values['instance_id'])['id']
+        return self._manager.instance_add(context, _get_id(node_group), values)
 
     def instance_update(self, context, instance, values):
         """Update the instance with the given values dictionary.
-        Populate provided instance object with updated values.
         Return None.
         """
-        new_inst = self._manager.instance_update(context, _get_id(instance),
-                                                 values)
-        if isinstance(instance, r.Resource):
-            instance.re_init(new_inst)
+        self._manager.instance_update(context, _get_id(instance), values)
 
     def instance_remove(self, context, instance):
         """Destroy the instance or raise if it does not exist.

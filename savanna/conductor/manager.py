@@ -114,7 +114,7 @@ class ConductorManager(db_base.Base):
 
     def node_group_update(self, context, node_group, values):
         """Set the given properties on node_group and update it."""
-        return self.db.node_group_update(context, node_group, values)
+        self.db.node_group_update(context, node_group, values)
 
     def node_group_remove(self, context, node_group):
         """Destroy the node_group or raise if it does not exist."""
@@ -128,7 +128,7 @@ class ConductorManager(db_base.Base):
 
     def instance_update(self, context, instance, values):
         """Set the given properties on Instance and update it."""
-        return self.db.instance_update(context, instance, values)
+        self.db.instance_update(context, instance, values)
 
     def instance_remove(self, context, instance):
         """Destroy the Instance or raise if it does not exist."""
