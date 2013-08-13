@@ -13,15 +13,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import os
 import telnetlib
 import time
 
+import os
 from savanna.tests.integration import base
-import savanna.tests.integration.configs.parameters as param
+import savanna.tests.integration.configs.parameters.common_parameters as param
+import savanna.tests.integration.configs.parameters.vanilla_parameters as v_prm
 
 
-@base.swift_test
+@base.enable_test(param.ENABLE_SWIFT_TESTS)
 class SwiftTest(base.ITestCase):
 
     def setUp(self):
@@ -33,13 +34,13 @@ class SwiftTest(base.ITestCase):
         this_dir = os.getcwd()
 
         self.execute_command(data['namenode_ip'], 'sudo mkdir /tmp/swift && \
-        sudo chmod -R 777 /tmp/swift ')
+        sudo chmod -R 777 /tmp/swift', v_prm.NODE_USERNAME)
 
         self.write_file_to(data['namenode_ip'],
                            '/tmp/swift/generate_job_file.py',
                            open(
                                '%s/integration/swift_test/generate_job_file.py'
-                               % this_dir).read())
+                               % this_dir).read(), v_prm.NODE_USERNAME)
 
         self.execute_command(data['namenode_ip'],
                              'python /tmp/swift/generate_job_file.py && \
@@ -64,35 +65,50 @@ class SwiftTest(base.ITestCase):
                                 param.OS_PASSWORD,
                                 param.OS_USERNAME,
                                 param.OS_PASSWORD,
-                                param.NODE_USERNAME))
+                                v_prm.NODE_USERNAME),
+                             v_prm.NODE_USERNAME)
+
+        self.assertEqual(
+            self.execute_command(
+                data['namenode_ip'], 'if [ -f hadoop-job-swift-file.txt ]; \
+                                      then echo 0; else echo 1; fi',
+                v_prm.NODE_USERNAME)[0], 0,
+            'Failure while downloading the file \'hadoop-job-file.txt\' '
+            'from Swift in HDFS'
+        )
 
         self.assertEqual(
             self.execute_command(
                 data['namenode_ip'], 'diff hadoop-job-swift-file.txt \
-                hadoop-job-file.txt')[0], 0,
-            'hadoop-job-swift-file.txt != hadoop-job-file.txt')
+                hadoop-job-file.txt', v_prm.NODE_USERNAME)[0], 0,
+            '\'hadoop-job-swift-file.txt\' != \'hadoop-job-file.txt\''
+        )
 
     def test_swift(self):
         """This test checks swift work
         """
         node_processes = {'JT+NN': 1, 'TT+DN': 2}
 
-        cluster_body = self.make_cl_body_node_processes(node_processes)
-        cluster_body['name'] = param.CLUSTER_NAME_SWIFT
+        cluster_body = self.make_vanilla_cl_body_node_processes(node_processes)
+
+        cluster_id = self.create_cluster_and_get_id(cluster_body)
 
         try:
-            cluster_id = self.create_cluster_and_get_id(cluster_body)
-
             instances_ip = self.get_instances_ip_and_node_processes_list(
                 cluster_id)
 
             time.sleep(10)
 
-            data = self.get_namenode_ip_and_tt_dn_count(instances_ip)
+            data = self.get_namenode_ip_and_tt_dn_count(
+                instances_ip, v_prm.PLUGIN_NAME)
 
-            self.await_active_workers_for_namenode(data)
+            self.await_active_workers_for_namenode(
+                data, v_prm.NODE_USERNAME, v_prm.HADOOP_USER)
 
             self._check_availability_swift_cluster(data)
+
+        except Exception as e:
+            self.fail('Swift test has failed: ' + str(e))
 
         finally:
             self.del_object(self.url_cluster_with_slash, cluster_id, 204)

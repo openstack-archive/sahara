@@ -17,9 +17,11 @@ import telnetlib
 import time
 
 from savanna.tests.integration import base
-import savanna.tests.integration.configs.parameters as param
+import savanna.tests.integration.configs.parameters.common_parameters as param
+import savanna.tests.integration.configs.parameters.vanilla_parameters as v_prm
 
 
+@base.enable_test(param.ENABLE_SCALING_TESTS)
 class ClusterScalingTest(base.ITestCase):
 
     def setUp(self):
@@ -28,8 +30,7 @@ class ClusterScalingTest(base.ITestCase):
         telnetlib.Telnet(self.host, self.port)
 
     def create_cluster_for_scaling(self, node_processes):
-        cluster_body = self.make_cl_body_node_processes(node_processes)
-        cluster_body['name'] = param.CLUSTER_NAME_SCALING
+        cluster_body = self.make_vanilla_cl_body_node_processes(node_processes)
 
         cluster_id = self.create_cluster_and_get_id(cluster_body)
 
@@ -107,14 +108,12 @@ class ClusterScalingTest(base.ITestCase):
 
         time.sleep(10)
 
-        try:
-            worker_map = self.get_namenode_ip_and_tt_dn_count(ip_instances)
-            self.await_active_workers_for_namenode(worker_map)
+        worker_map = self.get_namenode_ip_and_tt_dn_count(
+            ip_instances, v_prm.PLUGIN_NAME)
+        self.await_active_workers_for_namenode(
+            worker_map, v_prm.NODE_USERNAME, v_prm.HADOOP_USER)
 
-            return worker_map
-
-        except Exception as e:
-            self.fail(str(e))
+        return worker_map
 
     def compare_worker_node_count_after_scaling(self,
                                                 worker_map,
@@ -133,6 +132,9 @@ class ClusterScalingTest(base.ITestCase):
             worker_map, worker_type, scaling_worker_node_count)
 
     def test_scaling_addition_to_existing_ng(self):
+        """This test checks cluster scaling via node addition to existing
+        node group of cluster
+        """
         ng_name_for_tt = 'tt'
         tt_count = 1
 
@@ -152,6 +154,11 @@ class ClusterScalingTest(base.ITestCase):
             self.check_cluster_worker_nodes_after_scaling(
                 cluster_id, 'tasktracker_count', tt_count + 1)
 
+        except Exception as e:
+            self.del_object(self.url_cluster_with_slash, cluster_id, 204)
+            self.fail('Failure while \'tasktracker\' node addition: ' + str(e))
+
+        try:
             self.implement_scaling_addition_to_existing_node_group(
                 cluster_id, {
                     'ng_name': ng_name_for_dn,
@@ -160,6 +167,11 @@ class ClusterScalingTest(base.ITestCase):
             self.check_cluster_worker_nodes_after_scaling(
                 cluster_id, 'datanode_count', dn_count + dn_replication_factor)
 
+        except Exception as e:
+            self.del_object(self.url_cluster_with_slash, cluster_id, 204)
+            self.fail('Failure while \'datanode\' node addition: ' + str(e))
+
+        try:
             multi_scaling = True
             self.implement_scaling_addition_to_existing_node_group(
                 cluster_id, {
@@ -177,12 +189,16 @@ class ClusterScalingTest(base.ITestCase):
                 cluster_id, 'datanode_count', dn_replication_factor)
 
         except Exception as e:
-            self.fail(str(e))
+            self.fail('Failure while cluster \'multi-scaling\' (\'datanode\' '
+                      'and \'tasktracker\' node deletion): ' + str(e))
 
         finally:
             self.del_object(self.url_cluster_with_slash, cluster_id, 204)
 
     def test_scaling_new_node_group_addition(self):
+        """This test checks cluster scaling via new node group addition
+        to cluster
+        """
         ng_name_for_tt = 'ng-tt'
         added_tt_count = 2
 
@@ -193,12 +209,35 @@ class ClusterScalingTest(base.ITestCase):
         cluster_id = self.create_cluster_for_scaling(
             {'JT+NN': 1, 'TT+DN': 1})
 
-        self.create_node_group_templates()
+        try:
+            id_tt_ngt = self.get_object_id(
+                'node_group_template', self.post_object(
+                self.url_ngt, self.make_node_group_template(
+                    'worker-tt', 'qa probe', 'TT'), 202)
+            )
+
+        except Exception as e:
+            self.del_object(self.url_cluster_with_slash, cluster_id, 204)
+            self.fail('Failure while \'tasktracker\' node group template '
+                      'creation: ' + str(e))
+
+        try:
+            id_dn_ngt = self.get_object_id(
+                'node_group_template', self.post_object(
+                self.url_ngt, self.make_node_group_template(
+                    'worker-dn', 'qa probe', 'DN'), 202)
+            )
+
+        except Exception as e:
+            self.del_object(self.url_cluster_with_slash, cluster_id, 204)
+            self.del_object(self.url_ngt_with_slash, id_tt_ngt, 204)
+            self.fail('Failure while \'datanode\' node group template '
+                      'creation: ' + str(e))
 
         try:
             self.implement_scaling_new_node_group_addition(
                 cluster_id, {
-                    'ngt_id': self.id_tt,
+                    'ngt_id': id_tt_ngt,
                     'node_count': added_tt_count,
                     'ng_name': ng_name_for_tt,
 
@@ -206,9 +245,17 @@ class ClusterScalingTest(base.ITestCase):
             self.check_cluster_worker_nodes_after_scaling(
                 cluster_id, 'tasktracker_count', added_tt_count + 1)
 
+        except Exception as e:
+            self.del_object(self.url_cluster_with_slash, cluster_id, 204)
+            self.del_object(self.url_ngt_with_slash, id_tt_ngt, 204)
+            self.del_object(self.url_ngt_with_slash, id_dn_ngt, 204)
+            self.fail('Failure while new \'tasktracker\' node group addition '
+                      'to cluster: ' + str(e))
+
+        try:
             self.implement_scaling_new_node_group_addition(
                 cluster_id, {
-                    'ngt_id': self.id_dn,
+                    'ngt_id': id_dn_ngt,
                     'node_count': added_dn_count + dn_replication_factor,
                     'ng_name': ng_name_for_dn,
 
@@ -217,15 +264,23 @@ class ClusterScalingTest(base.ITestCase):
                 cluster_id, 'datanode_count',
                 1 + added_dn_count + dn_replication_factor)
 
+        except Exception as e:
+            self.del_object(self.url_cluster_with_slash, cluster_id, 204)
+            self.del_object(self.url_ngt_with_slash, id_tt_ngt, 204)
+            self.del_object(self.url_ngt_with_slash, id_dn_ngt, 204)
+            self.fail('Failure while new \'datanode\' node group addition '
+                      'to cluster: ' + str(e))
+
+        try:
             multi_scaling = True
             self.implement_scaling_addition_to_existing_node_group(
                 cluster_id, {
-                    'ngt_id': self.id_tt,
+                    'ngt_id': id_tt_ngt,
                     'node_count': 0,
                     'ng_name': ng_name_for_tt,
 
                 }, {
-                    'ngt_id': self.id_dn,
+                    'ngt_id': id_dn_ngt,
                     'node_count': dn_replication_factor,
                     'ng_name': ng_name_for_dn,
 
@@ -236,8 +291,10 @@ class ClusterScalingTest(base.ITestCase):
                 cluster_id, 'datanode_count', 1 + dn_replication_factor)
 
         except Exception as e:
-            self.fail(str(e))
+            self.fail('Failure while cluster \'multi-scaling\' (\'datanode\' '
+                      'and \'tasktracker\' node deletion): ' + str(e))
 
         finally:
             self.del_object(self.url_cluster_with_slash, cluster_id, 204)
-            self.delete_node_group_templates()
+            self.del_object(self.url_ngt_with_slash, id_tt_ngt, 204)
+            self.del_object(self.url_ngt_with_slash, id_dn_ngt, 204)
