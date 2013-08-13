@@ -123,24 +123,24 @@ class ClusterSpecTest(unittest2.TestCase):
             # assert some random configurations across targets
             if config.name == 'dfs.datanode.http.address':
                 contains_dfs_datanode_http_address = True
-                self.assertEquals('string', config.type)
-                self.assertEquals('0.0.0.0:50075', config.default_value)
-                self.assertEquals('HDFS', config.applicable_target)
+                self.assertEqual('string', config.type)
+                self.assertEqual('0.0.0.0:50075', config.default_value)
+                self.assertEqual('HDFS', config.applicable_target)
 
             if config.name == 'mapred.jobtracker.taskScheduler':
                 contains_mapred_jobtracker_taskScheduler = True
-                self.assertEquals('string', config.type)
-                self.assertEquals(
+                self.assertEqual('string', config.type)
+                self.assertEqual(
                     'org.apache.hadoop.mapred.CapacityTaskScheduler',
                     config.default_value)
-                self.assertEquals('MAPREDUCE',
-                                  config.applicable_target)
+                self.assertEqual('MAPREDUCE',
+                                 config.applicable_target)
 
             if config.name == 'dfs_include':
                 contains_dfs_include = True
-                self.assertEquals('string', config.type)
-                self.assertEquals('dfs.include', config.default_value)
-                self.assertEquals('HDFS', config.applicable_target)
+                self.assertEqual('string', config.type)
+                self.assertEqual('dfs.include', config.default_value)
+                self.assertEqual('HDFS', config.applicable_target)
 
                 #            print 'Config: name: {0}, type:{1},
                 # default value:{2}, target:{3}, Value:{4}'.format(
@@ -152,7 +152,7 @@ class ClusterSpecTest(unittest2.TestCase):
         self.assertTrue(contains_mapred_jobtracker_taskScheduler)
         self.assertTrue(contains_dfs_include)
         node_groups = cluster.node_groups
-        self.assertEquals(2, len(node_groups))
+        self.assertEqual(2, len(node_groups))
         contains_master_group = False
         contains_slave_group = False
         for i in range(2):
@@ -160,7 +160,7 @@ class ClusterSpecTest(unittest2.TestCase):
             components = node_group.node_processes
             if node_group.name == "master":
                 contains_master_group = True
-                self.assertEquals(8, len(components))
+                self.assertEqual(8, len(components))
                 self.assertIn('NAMENODE', components)
                 self.assertIn('JOBTRACKER', components)
                 self.assertIn('SECONDARY_NAMENODE', components)
@@ -173,7 +173,7 @@ class ClusterSpecTest(unittest2.TestCase):
                 #TODO(jspeidel): vm_requirements
             elif node_group.name == 'slave':
                 contains_slave_group = True
-                self.assertEquals(6, len(components))
+                self.assertEqual(6, len(components))
                 self.assertIn('DATANODE', components)
                 self.assertIn('TASKTRACKER', components)
                 self.assertIn('GANGLIA_MONITOR', components)
@@ -194,7 +194,7 @@ class ClusterSpecTest(unittest2.TestCase):
             found_services.append(name)
             self.service_validators[name](service)
 
-        self.assertEquals(5, len(found_services))
+        self.assertEqual(5, len(found_services))
         self.assertIn('HDFS', found_services)
         self.assertIn('MAPREDUCE', found_services)
         self.assertIn('GANGLIA', found_services)
@@ -202,7 +202,7 @@ class ClusterSpecTest(unittest2.TestCase):
         self.assertIn('AMBARI', found_services)
 
     def _assert_hdfs(self, service):
-        self.assertEquals('HDFS', service.name)
+        self.assertEqual('HDFS', service.name)
 
         found_components = {}
         for component in service.components:
@@ -220,7 +220,7 @@ class ClusterSpecTest(unittest2.TestCase):
         #TODO(jspeidel) config
 
     def _assert_mr(self, service):
-        self.assertEquals('MAPREDUCE', service.name)
+        self.assertEqual('MAPREDUCE', service.name)
 
         found_components = {}
         for component in service.components:
@@ -236,7 +236,7 @@ class ClusterSpecTest(unittest2.TestCase):
         # TODO(jspeidel) config
 
     def _assert_nagios(self, service):
-        self.assertEquals('NAGIOS', service.name)
+        self.assertEqual('NAGIOS', service.name)
 
         found_components = {}
         for component in service.components:
@@ -247,7 +247,7 @@ class ClusterSpecTest(unittest2.TestCase):
                                found_components['NAGIOS_SERVER'])
 
     def _assert_ganglia(self, service):
-        self.assertEquals('GANGLIA', service.name)
+        self.assertEqual('GANGLIA', service.name)
 
         found_components = {}
         for component in service.components:
@@ -260,7 +260,7 @@ class ClusterSpecTest(unittest2.TestCase):
                                found_components['GANGLIA_MONITOR'])
 
     def _assert_ambari(self, service):
-        self.assertEquals('AMBARI', service.name)
+        self.assertEqual('AMBARI', service.name)
 
         found_components = {}
         for component in service.components:
@@ -282,28 +282,28 @@ class ClusterSpecTest(unittest2.TestCase):
         self.assertIn('user', groups)
 
     def _assert_component(self, name, comp_type, cardinality, component):
-        self.assertEquals(name, component.name)
-        self.assertEquals(comp_type, component.type)
-        self.assertEquals(cardinality, component.cardinality)
+        self.assertEqual(name, component.name)
+        self.assertEqual(comp_type, component.type)
+        self.assertEqual(cardinality, component.cardinality)
 
     def _assert_configurations(self, configurations):
-        self.assertEquals(4, len(configurations))
+        self.assertEqual(4, len(configurations))
         self.assertIn('global', configurations)
         self.assertIn('core-site', configurations)
         self.assertIn('mapred-site', configurations)
         self.assertIn('hdfs-site', configurations)
 
     def _assert_host_role_mappings(self, node_groups):
-        self.assertEquals(2, len(node_groups))
+        self.assertEqual(2, len(node_groups))
         self.assertIn('master', node_groups)
         self.assertIn('slave', node_groups)
 
         master_node_group = node_groups['master']
-        self.assertEquals('master', master_node_group.name)
-        self.assertEquals(None, master_node_group.predicate)
-        self.assertEquals('1', master_node_group.cardinality)
-        self.assertEquals(1, master_node_group.default_count)
-        self.assertEquals(8, len(master_node_group.components))
+        self.assertEqual('master', master_node_group.name)
+        self.assertEqual(None, master_node_group.predicate)
+        self.assertEqual('1', master_node_group.cardinality)
+        self.assertEqual(1, master_node_group.default_count)
+        self.assertEqual(8, len(master_node_group.components))
         self.assertIn('NAMENODE', master_node_group.components)
         self.assertIn('JOBTRACKER', master_node_group.components)
         self.assertIn('SECONDARY_NAMENODE', master_node_group.components)
@@ -314,11 +314,11 @@ class ClusterSpecTest(unittest2.TestCase):
         self.assertIn('AMBARI_AGENT', master_node_group.components)
 
         slave_node_group = node_groups['slave']
-        self.assertEquals('slave', slave_node_group.name)
-        self.assertEquals(None, slave_node_group.predicate)
-        self.assertEquals('1+', slave_node_group.cardinality)
-        self.assertEquals(2, slave_node_group.default_count)
-        self.assertEquals(6, len(slave_node_group.components))
+        self.assertEqual('slave', slave_node_group.name)
+        self.assertEqual(None, slave_node_group.predicate)
+        self.assertEqual('1+', slave_node_group.cardinality)
+        self.assertEqual(2, slave_node_group.default_count)
+        self.assertEqual(6, len(slave_node_group.components))
         self.assertIn('DATANODE', slave_node_group.components)
         self.assertIn('TASKTRACKER', slave_node_group.components)
         self.assertIn('GANGLIA_MONITOR', slave_node_group.components)

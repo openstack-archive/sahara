@@ -14,6 +14,9 @@
 # limitations under the License.
 
 
+import tokenize
+
+
 def _starts_with_any(line, *prefixes):
     for prefix in prefixes:
         if line.startswith(prefix):
@@ -49,5 +52,23 @@ def import_db_only_in_conductor(logical_line, filename):
                   "savanna/conductor/*")
 
 
+def hacking_no_assert_equals(logical_line, tokens):
+    r"""assertEquals() is deprecated, use assertEqual instead.
+
+    Copied from https://review.openstack.org/#/c/35962/
+
+    Okay: self.assertEqual(0, 0)
+    S362: self.assertEquals(0, 0)
+    """
+
+    for token_type, text, start_index, _, _ in tokens:
+
+        if token_type == tokenize.NAME and text == "assertEquals":
+            yield (
+                start_index[1],
+                "H362: assertEquals is deprecated, use assertEqual")
+
+
 def factory(register):
     register(import_db_only_in_conductor)
+    register(hacking_no_assert_equals)

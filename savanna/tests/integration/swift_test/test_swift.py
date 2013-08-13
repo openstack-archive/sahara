@@ -66,7 +66,7 @@ class SwiftTest(base.ITestCase):
                                 param.OS_PASSWORD,
                                 param.NODE_USERNAME))
 
-        self.assertEquals(
+        self.assertEqual(
             self.execute_command(
                 data['namenode_ip'], 'diff hadoop-job-swift-file.txt \
                 hadoop-job-file.txt')[0], 0,

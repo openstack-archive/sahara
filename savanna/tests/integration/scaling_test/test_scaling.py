@@ -120,7 +120,7 @@ class ClusterScalingTest(base.ITestCase):
                                                 worker_map,
                                                 worker_type,
                                                 worker_node_count):
-        self.assertEquals(
+        self.assertEqual(
             worker_map[worker_type], worker_node_count,
             '%s != %s after cluster scaling!' % (worker_type, worker_type))
 

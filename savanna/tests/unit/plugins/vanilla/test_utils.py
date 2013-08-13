@@ -45,7 +45,7 @@ class VanillaUtilsTest(unittest2.TestCase):
         self.assertListEqual(u.get_node_groups(self.c1, ['jt', 'tt']), [])
 
     def test_get_instances(self):
-        self.assertEquals(len(u.get_instances(self.c1)), 5)
+        self.assertEqual(len(u.get_instances(self.c1)), 5)
         self.assertListEqual(u.get_instances(self.c1, 'wrong-process'), [])
         self.assertListEqual(u.get_instances(self.c1, 'nn'),
                              self.ng1.instances)
@@ -53,6 +53,6 @@ class VanillaUtilsTest(unittest2.TestCase):
                              self.ng2.instances + self.ng3.instances)
 
     def test_generate_lines_from_list(self):
-        self.assertEquals(u.generate_host_names(self.ng2.instances),
-                          "worker1\nworker2\nworker3")
-        self.assertEquals(u.generate_host_names([]), "")
+        self.assertEqual(u.generate_host_names(self.ng2.instances),
+                         "worker1\nworker2\nworker3")
+        self.assertEqual(u.generate_host_names([]), "")

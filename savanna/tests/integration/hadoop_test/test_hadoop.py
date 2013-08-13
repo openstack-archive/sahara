@@ -74,7 +74,7 @@ class TestHadoop(base.ITestCase):
 
             for key, value in ip_instances.items():
                 if 'datanode' in value or 'tasktracker' in value:
-                    self.assertEquals(
+                    self.assertEqual(
                         self.execute_command(
                             key, './script.sh ed -jn %s -hld %s'
                                  % (job_name[:-1],
@@ -82,7 +82,7 @@ class TestHadoop(base.ITestCase):
                         msg='fail in check run job in worker nodes: ')
 
             try:
-                self.assertEquals(
+                self.assertEqual(
                     self.execute_command(
                         namenode_ip, './script.sh mr -hv %s -hd %s'
                                      % (param.HADOOP_VERSION,
