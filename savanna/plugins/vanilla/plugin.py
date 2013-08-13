@@ -35,7 +35,8 @@ class VanillaProvider(p.ProvisioningPluginBase):
         self.processes = {
             "HDFS": ["namenode", "datanode", "secondarynamenode"],
             "MapReduce": ["tasktracker", "jobtracker"],
-            "JobFlow": ["oozie"]
+            "JobFlow": ["oozie"],
+            "Hive": ["hiveserver"]
         }
 
     def get_plugin_opts(self):
@@ -80,7 +81,10 @@ class VanillaProvider(p.ProvisioningPluginBase):
         if oozie_count not in [0, 1]:
             raise ex.NotSingleOozieException(oozie_count)
 
+        hive_count = sum([ng.count for ng
+                          in utils.get_node_groups(cluster, "hiveserver")])
         if jt_count == 0:
+
             tt_count = sum([ng.count for ng
                             in utils.get_node_groups(cluster, "tasktracker")])
             if tt_count > 0:
@@ -88,6 +92,12 @@ class VanillaProvider(p.ProvisioningPluginBase):
 
             if oozie_count > 0:
                 raise ex.OozieWithoutJobTracker()
+
+            if hive_count > 0:
+                raise ex.HiveWithoutJobTracker()
+
+        if hive_count not in [0, 1]:
+            raise ex.NotSingleHiveException(hive_count)
 
     def update_infra(self, cluster):
         pass
@@ -104,6 +114,7 @@ class VanillaProvider(p.ProvisioningPluginBase):
         jt_instance = utils.get_jobtracker(cluster)
         tasktrackers = utils.get_tasktrackers(cluster)
         oozie = utils.get_oozie(cluster)
+        hive_server = utils.get_hiveserver(cluster)
 
         with remote.get_remote(nn_instance) as r:
             run.format_namenode(r)
@@ -136,6 +147,10 @@ class VanillaProvider(p.ProvisioningPluginBase):
                 LOG.info("Oozie service at '%s' has been started",
                          nn_instance.hostname)
 
+        if hive_server:
+            with remote.get_remote(nn_instance) as r:
+                run.hive_create_warehouse_dir(r)
+
         LOG.info('Cluster %s has been started successfully' % cluster.name)
         self._set_cluster_info(cluster)
 
@@ -143,6 +158,7 @@ class VanillaProvider(p.ProvisioningPluginBase):
         nn = utils.get_namenode(cluster)
         jt = utils.get_jobtracker(cluster)
         oozie = utils.get_oozie(cluster)
+        hive_server = utils.get_hiveserver(cluster)
 
         extra = dict()
         for ng in cluster.node_groups:
@@ -153,7 +169,8 @@ class VanillaProvider(p.ProvisioningPluginBase):
                                                      jt.hostname
                                                      if jt else None,
                                                      oozie.hostname
-                                                     if oozie else None),
+                                                     if oozie else None,
+                                                     hive_server),
                 'setup_script': c_helper.generate_setup_script(
                     ng.storage_paths,
                     c_helper.extract_environment_confs(ng.configuration),
@@ -161,7 +178,6 @@ class VanillaProvider(p.ProvisioningPluginBase):
                         oozie is not None and oozie.node_group.id == ng.id)
                 )
             }
-
         return extra
 
     def decommission_nodes(self, cluster, instances):
@@ -266,11 +282,19 @@ class VanillaProvider(p.ProvisioningPluginBase):
                 }
                 remote.get_remote(oozie).write_files_to(files)
 
+        hive_server = utils.get_hiveserver(cluster)
+        if hive_server:
+            ng_extra = extra[hive_server.node_group.id]
+            files = {
+                '/opt/hive/conf/hive-site.xml':
+                ng_extra['xml']['hive-site']
+            }
+            remote.get_remote(hive_server).write_files_to(files)
+
     def _set_cluster_info(self, cluster):
         nn = utils.get_namenode(cluster)
         jt = utils.get_jobtracker(cluster)
         oozie = utils.get_oozie(cluster)
-
         info = {}
 
         if jt:

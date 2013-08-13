@@ -32,6 +32,12 @@ def format_namenode(nn_remote):
     nn_remote.execute_command("sudo su -c 'hadoop namenode -format' hadoop")
 
 
+def hive_create_warehouse_dir(nn_remote):
+    LOG.debug("Creating Hive warehouse dir")
+    nn_remote.execute_command("sudo su - -c 'hadoop fs -mkdir "
+                              "/user/hive/warehouse' hadoop")
+
+
 def oozie_share_lib(remote, nn_hostname):
     LOG.debug("Sharing Oozie libs to hdfs://%s:8020" % nn_hostname)
     remote.execute_command('sudo su - -c "/opt/oozie/bin/oozie-setup.sh '

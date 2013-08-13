@@ -75,3 +75,20 @@ class NodeGroupCannotBeScaled(e.SavannaException):
         code = "NODE_GROUP_CANNOT_BE_SCALED"
 
         super(NodeGroupCannotBeScaled, self).__init__(message, code)
+
+
+class HiveWithoutJobTracker(e.SavannaException):
+    def __init__(self):
+        message = "Hive cannot be configured without JobTracker"
+        code = "HIVE_WITHOUT_JOB_TRACKER"
+
+        super(HiveWithoutJobTracker, self).__init__(message, code)
+
+
+class NotSingleHiveException(e.SavannaException):
+    def __init__(self, h_count):
+        message = ("Hadoop cluster should contain 0 or 1 Hive Server"
+                   " instances. Actual Hive count is %s" % h_count)
+        code = "NOT_SINGLE_HIVE"
+
+        super(NotSingleHiveException, self).__init__(message, code)
