@@ -13,9 +13,7 @@ Getting started
 * Create account on `Launchpad <https://launchpad.net/savanna>`_
   (if you don't have one)
 
-  * Join `Savanna-all team <https://launchpad.net/~savanna-all>`_
-  * Join `OpenStack team <https://launchpad.net/~openstack>`_ and subscribe
-    to mailing list
+* Subscribe to `OpenStack general mail-list <http://lists.openstack.org/cgi-bin/mailman/listinfo/openstack>`_
 
 * Subscribe to `OpenStack development mail-list <http://lists.openstack.org/cgi-bin/mailman/listinfo/openstack-dev>`_
 
@@ -31,7 +29,7 @@ Getting started
 
   * Go to ``watched projects``
   * Add ``stackforge/savanna``, ``stackforge/savanna-dashboard``,
-    ``stackforge/savanna-extra``
+    ``stackforge/savanna-extra``, ``stackforge/python-savannaclient``
 
 
 How to stay in touch with the community?
