@@ -182,18 +182,18 @@ class LocalApi(object):
 
     ## Node Group Template ops
 
-    @r.wrap(r.NodeGroupResource)
+    @r.wrap(r.NodeGroupTemplateResource)
     def node_group_template_get(self, context, node_group_template):
         """Return the node group template or None if it does not exist."""
         return self._manager.node_group_template_get(
             context, _get_id(node_group_template))
 
-    @r.wrap(r.NodeGroupResource)
+    @r.wrap(r.NodeGroupTemplateResource)
     def node_group_template_get_all(self, context):
         """Get all node group templates."""
         return self._manager.node_group_template_get_all(context)
 
-    @r.wrap(r.NodeGroupResource)
+    @r.wrap(r.NodeGroupTemplateResource)
     def node_group_template_create(self, context, values):
         """Create a node group template from the values dictionary.
         Return the created node group template

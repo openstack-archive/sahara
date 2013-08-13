@@ -200,7 +200,7 @@ class NodeGroupResource(Resource, objects.NodeGroup):
 
 
 class ClusterTemplateResource(Resource, objects.ClusterTemplate):
-    _resource_name = 'cluster_template_resource'
+    _resource_name = 'cluster_template'
 
     _children = {
         'node_groups': (NodeGroupResource, 'cluster_template')

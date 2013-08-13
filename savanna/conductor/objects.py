@@ -25,6 +25,7 @@ from oslo.config import cfg
 
 from savanna.utils import configs
 from savanna.utils import remote
+from savanna.utils import types
 
 
 CONF = cfg.CONF
@@ -83,16 +84,10 @@ class NodeGroup(object):
     """
 
     @property
+    @types.cached
     def configuration(self):
-        if hasattr(self, '_all_configs'):
-            return self._all_configs
-
-        self._all_configs = configs.merge_configs(
-            self.cluster.cluster_configs,
-            self.node_configs
-        )
-
-        return self._all_configs
+        return configs.merge_configs(self.cluster.cluster_configs,
+                                     self.node_configs)
 
     @property
     def storage_paths(self):
