@@ -84,3 +84,19 @@ class FrozenDict(dict):
 class FrozenClassError(Exception):
     def __init__(self, instance):
         self.message = "Class %s is immutable!" % type(instance).__name__
+
+
+def cached(func):
+    """A decorator for functions for caching their result.
+
+    It does not depend on function variables!
+    """
+    cache = [None]
+
+    def handler(*args, **kwargs):
+        if cache[0] is None:
+            cache[0] = func(*args, **kwargs)
+
+        return cache[0]
+
+    return handler

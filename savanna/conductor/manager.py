@@ -19,6 +19,29 @@ import copy
 
 from savanna.db_new import base as db_base
 from savanna.utils import configs
+# from savanna.openstack.common.rpc import common as rpc_common
+
+
+CLUSTER_DEFAULTS = {
+    "cluster_configs": dict(),
+    "anti_affinity": [],
+    "status": "undefined",
+    "status_description": "",
+    "info": dict(),
+}
+
+
+NODE_GROUP_DEFAULTS = {
+    "node_processes": [],
+    "node_configs": {},
+    "volumes_per_node": 0,
+    "volumes_size": 0,
+    "volume_mount_prefix": "",
+}
+
+INSTANCE_DEFAULTS = {
+    "volumes": []
+}
 
 
 class ConductorManager(db_base.Base):
@@ -53,16 +76,23 @@ class ConductorManager(db_base.Base):
         if not ng_tmpl:
             return
 
-        new_values = ng_tmpl.copy()
+        new_values = self._apply_defaults(ng_tmpl, NODE_GROUP_DEFAULTS)
         new_values.update(node_group)
         new_values['node_configs'] = configs.merge_configs(
             ng_tmpl.get('node_configs'),
             node_group.get('node_configs'))
 
+        node_group.clear()
         node_group.update(new_values)
-        node_group.pop('cluster_template_id', None)
+
+        node_group.pop('id', None)
         node_group.pop('created_at', None)
         node_group.pop('updated_at', None)
+
+    def _apply_defaults(self, values, defaults):
+        new_values = copy.deepcopy(defaults)
+        new_values.update(values)
+        return new_values
 
     ## Cluster ops
 
@@ -76,7 +106,7 @@ class ConductorManager(db_base.Base):
 
     def cluster_create(self, context, values):
         """Create a cluster from the values dictionary."""
-        values = copy.deepcopy(values)
+        values = self._apply_defaults(values, CLUSTER_DEFAULTS)
         values['tenant_id'] = context.tenant_id
 
         cluster_template_id = values.get('cluster_template_id')
@@ -86,6 +116,7 @@ class ConductorManager(db_base.Base):
                 new_values = c_tmpl.copy()
                 del new_values['created_at']
                 del new_values['updated_at']
+                del new_values['id']
                 new_values.update(values)
                 new_values['cluster_configs'] = configs.merge_configs(
                     c_tmpl.get('cluster_configs'),
@@ -94,7 +125,6 @@ class ConductorManager(db_base.Base):
                 values = new_values
 
         self._populate_node_groups(context, values)
-
         return self.db.cluster_create(context, values)
 
     def cluster_update(self, context, cluster, values):
@@ -124,6 +154,7 @@ class ConductorManager(db_base.Base):
 
     def instance_add(self, context, node_group, values):
         """Create an Instance from the values dictionary."""
+        values = self._apply_defaults(values, INSTANCE_DEFAULTS)
         return self.db.instance_add(context, node_group, values)
 
     def instance_update(self, context, instance, values):
@@ -146,7 +177,7 @@ class ConductorManager(db_base.Base):
 
     def cluster_template_create(self, context, values):
         """Create a cluster_template from the values dictionary."""
-        values = copy.deepcopy(values)
+        values = self._apply_defaults(values, CLUSTER_DEFAULTS)
         values['tenant_id'] = context.tenant_id
 
         self._populate_node_groups(context, values)
@@ -169,7 +200,7 @@ class ConductorManager(db_base.Base):
 
     def node_group_template_create(self, context, values):
         """Create a Node Group Template from the values dictionary."""
-        values = values.copy()
+        values = self._apply_defaults(values, NODE_GROUP_DEFAULTS)
         values['tenant_id'] = context.tenant_id
 
         return self.db.node_group_template_create(context, values)

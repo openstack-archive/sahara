@@ -72,7 +72,7 @@ class ClusterTest(test_base.ConductorManagerTestCase):
         ng['node_group_template_id'] = ng_tmpl['id']
         ng['count'] = 5
         ng['name'] = 'ng_3'
-        ng = self.api.node_group_add(ctx, cluster['id'], ng)
+        self.api.node_group_add(ctx, cluster['id'], ng)
 
         # refetch cluster
         cluster = self.api.cluster_get(ctx, cluster['id'])
