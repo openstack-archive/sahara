@@ -13,8 +13,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import mock
+
+from savanna import context
+from savanna import exceptions
 from savanna.service import api
 from savanna.service.validations import clusters as c
+from savanna.tests.unit import base
 from savanna.tests.unit.service.validation import utils as u
 
 
@@ -165,3 +170,186 @@ class TestClusterCreateValidation(u.ValidationTestCase):
 
     def test_cluster_create_v_default_image_required_tags(self):
         self._assert_cluster_default_image_tags_validation()
+
+
+class TestClusterCreateFlavorValidation(base.DbTestCase):
+    """Tests for valid flavor on cluster create.
+
+    The following use cases for flavors during cluster create are validated:
+      * Flavor id defined in a node group template and used in a cluster
+        template.
+      * Flavor id defined in node groups on cluster create.
+      * Both node groups and cluster template defined on cluster create.
+      * Node groups with node group template defined on cluster create.
+    """
+
+    def setUp(self):
+        super(TestClusterCreateFlavorValidation, self).setUp()
+        context.current().tenant_id = '1234'
+        modules = [
+            "savanna.service.validations.base.check_plugin_name_exists",
+            "savanna.service.validations.base.check_plugin_supports_version",
+            "savanna.service.validations.base._get_plugin_configs",
+            "savanna.service.validations.base.check_node_processes",
+            "savanna.utils.openstack.nova.client",
+        ]
+        self.patchers = []
+        for module in modules:
+            patch = mock.patch(module)
+            patch.start()
+            self.patchers.append(patch)
+
+        nova_p = mock.patch("savanna.utils.openstack.nova.client")
+        nova = nova_p.start()
+        self.patchers.append(nova_p)
+        nova().flavors.get.side_effect = u._get_flavor
+
+    def tearDown(self):
+        u.stop_patch(self.patchers)
+        super(TestClusterCreateFlavorValidation, self).tearDown()
+
+    def _create_node_group_template(self, flavor='42'):
+        ng_tmpl = {
+            "plugin_name": "vanilla",
+            "hadoop_version": "1.1.2",
+            "node_processes": ["namenode"],
+            "name": "master",
+            "flavor_id": flavor
+        }
+        return api.create_node_group_template(ng_tmpl).id
+
+    def _create_cluster_template(self, ng_id):
+        cl_tmpl = {
+            "plugin_name": "vanilla",
+            "hadoop_version": "1.1.2",
+            "node_groups": [
+                {"name": "master",
+                 "count": 1,
+                 "node_group_template_id": "%s" % ng_id}
+            ],
+            "name": "test-template"
+        }
+        return api.create_cluster_template(cl_tmpl).id
+
+    def test_cluster_create_v_correct_flavor(self):
+        ng_id = self._create_node_group_template(flavor='42')
+        ctmpl_id = self._create_cluster_template(ng_id)
+
+        data = {
+            "name": "testname",
+            "plugin_name": "vanilla",
+            "hadoop_version": "1.1.2",
+            "cluster_template_id": '%s' % ctmpl_id
+        }
+        c.check_cluster_create(data)
+
+        data1 = {
+            "name": "testwithnodegroups",
+            "plugin_name": "vanilla",
+            "hadoop_version": "1.1.2",
+            "node_groups": [
+                {
+                    "name": "allinone",
+                    "count": 1,
+                    "flavor_id": "42",
+                    "node_processes": [
+                        "namenode",
+                        "jobtracker",
+                        "datanode",
+                        "tasktracker"
+                    ]
+                }
+            ]
+        }
+        c.check_cluster_create(data1)
+
+    def test_cluster_create_v_invalid_flavor(self):
+        ng_id = self._create_node_group_template(flavor='10')
+        ctmpl_id = self._create_cluster_template(ng_id)
+
+        data = {
+            "name": "testname",
+            "plugin_name": "vanilla",
+            "hadoop_version": "1.1.2",
+            "cluster_template_id": '%s' % ctmpl_id
+        }
+        data1 = {
+            "name": "testwithnodegroups",
+            "plugin_name": "vanilla",
+            "hadoop_version": "1.1.2",
+            "node_groups": [
+                {
+                    "name": "allinone",
+                    "count": 1,
+                    "flavor_id": "10",
+                    "node_processes": [
+                        "namenode",
+                        "jobtracker",
+                        "datanode",
+                        "tasktracker"
+                    ]
+                }
+            ]
+        }
+        for values in [data, data1]:
+            with self.assertRaises(exceptions.InvalidException):
+                try:
+                    c.check_cluster_create(values)
+                except exceptions.InvalidException as e:
+                    self.assertEqual("Requested flavor '10' not found",
+                                     e.message)
+                    raise e
+
+    def test_cluster_create_cluster_tmpl_node_group_mixin(self):
+        ng_id = self._create_node_group_template(flavor='10')
+        ctmpl_id = self._create_cluster_template(ng_id)
+
+        data = {
+            "name": "testtmplnodegroups",
+            "plugin_name": "vanilla",
+            "hadoop_version": "1.1.2",
+            "cluster_template_id": '%s' % ctmpl_id,
+            "node_groups": [
+                {
+                    "name": "allinone",
+                    "count": 1,
+                    "flavor_id": "42",
+                    "node_processes": [
+                        "namenode",
+                        "jobtracker",
+                        "datanode",
+                        "tasktracker"
+                    ]
+                }
+            ]
+        }
+        c.check_cluster_create(data)
+
+    def test_cluster_create_node_group_tmpl_mixin(self):
+        ng_id = self._create_node_group_template(flavor='23')
+        data = {
+            "name": "testtmplnodegroups",
+            "plugin_name": "vanilla",
+            "hadoop_version": "1.1.2",
+            "node_groups": [
+                {
+                    "node_group_template_id": '%s' % ng_id,
+                    "name": "allinone",
+                    "count": 1,
+                    "flavor_id": "42",
+                    "node_processes": [
+                        "namenode",
+                        "jobtracker",
+                        "datanode",
+                        "tasktracker"
+                    ]
+                }
+            ]
+        }
+        with self.assertRaises(exceptions.InvalidException):
+            try:
+                c.check_cluster_create(data)
+            except exceptions.InvalidException as e:
+                self.assertEqual("Requested flavor '23' not found",
+                                 e.message)
+                raise e

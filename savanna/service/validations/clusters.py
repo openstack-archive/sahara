@@ -42,7 +42,12 @@ def check_cluster_create(data, **kwargs):
     b.check_plugin_supports_version(data['plugin_name'],
                                     data['hadoop_version'])
     if data.get('cluster_template_id'):
-        b.check_cluster_template_exists(data['cluster_template_id'])
+        ct_id = data['cluster_template_id']
+        b.check_cluster_template_exists(ct_id)
+        if not data.get('node_groups'):
+            b.check_node_groups_in_cluster_templates(data['plugin_name'],
+                                                     data['hadoop_version'],
+                                                     ct_id)
 
     if data.get('user_keypair_id'):
         b.check_keypair_exists(data['user_keypair_id'])

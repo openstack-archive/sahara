@@ -53,12 +53,12 @@ def _get_plugin(name):
 
 
 def _get_keypair(name):
-    if name is not "test_keypair":
+    if name != "test_keypair":
         raise nova_ex.NotFound("")
 
 
 def _get_flavor(flavor_id):
-    if flavor_id is not "42":
+    if flavor_id != "42":
         raise nova_ex.NotFound("")
 
 
