@@ -124,12 +124,17 @@ def model_update(model, context=None, **kwargs):
     return model_save(model, context)
 
 
-def spawn(func, *args, **kwargs):
+def spawn(thread_description, func, *args, **kwargs):
     ctx = current().clone()
 
     def wrapper(ctx, func, *args, **kwargs):
-        set_ctx(ctx)
-        func(*args, **kwargs)
+        try:
+            set_ctx(ctx)
+            func(*args, **kwargs)
+            set_ctx(None)
+        except Exception as e:
+            LOG.exception("Thread '%s' fails with exception: '%s'"
+                          % (thread_description, e))
 
     eventlet.spawn(wrapper, ctx, func, *args, **kwargs)
 

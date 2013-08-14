@@ -117,8 +117,8 @@ class AmbariPlugin(p.ProvisioningPluginBase):
     def convert_props_to_template(self, props):
         raise NotImplementedError('not yet supported')
 
-    def _spawn(self, func, args):
-        context.spawn(func, args)
+    def _spawn(self, description, func, args):
+        context.spawn(description, func, args)
 
     def _add_cluster(self, ambari_public_ip, name):
         add_cluster_url = 'http://{0}:8080/api/v1/clusters/{1}'.format(
@@ -238,7 +238,9 @@ class AmbariPlugin(p.ProvisioningPluginBase):
                 ambari_public_ip))
 
         for server in servers:
-            self._spawn(server.provision_ambari, ambari_private_ip)
+            self._spawn(
+                "hdp-provision-instance-%s" % server.instance.hostname,
+                server.provision_ambari, ambari_private_ip)
 
         self._wait_for_host_registrations(len(servers), ambari_host)
 
