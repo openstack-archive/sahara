@@ -449,6 +449,8 @@ class ITestCase(unittest2.TestCase):
         i = 1
         while get_data['status'] != 'Active':
             print('GET_STATUS: ', get_data['status'])
+            if get_data['status'] == 'Error':
+                self.fail("Cluster status == 'Error'")
             if i > param.TIMEOUT * 6:
                 print('\n Data for cluster: ' + str(get_data) + '\n')
                 self.del_object(self.url_cluster_with_slash, object_id, 204)
