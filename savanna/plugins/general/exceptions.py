@@ -42,6 +42,15 @@ class OozieWithoutJobTracker(e.SavannaException):
         super(OozieWithoutJobTracker, self).__init__(message, code)
 
 
+class NotSingleOozieException(e.SavannaException):
+    def __init__(self, oozie_count):
+        message = ("Cluster may contain only one Oozie server. "
+                   "Requested Oozie's count is %s" % oozie_count)
+        code = "NOT_SINGLE_OOZIE"
+
+        super(NotSingleOozieException, self).__init__(message, code)
+
+
 class TaskTrackersWithoutJobTracker(e.SavannaException):
     def __init__(self):
         message = "TaskTrackers cannot be configures without JobTracker"

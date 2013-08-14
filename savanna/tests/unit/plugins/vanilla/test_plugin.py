@@ -28,10 +28,11 @@ class VanillaPluginTest(unittest2.TestCase):
         self.ng1 = m.NodeGroup("nn", "f1", ["namenode"], 1)
         self.ng2 = m.NodeGroup("jt", "f1", ["jobtracker"], 1)
         self.ng3 = m.NodeGroup("tt", "f1", ["tasktracker"], 10)
+        self.ng4 = m.NodeGroup("oozie", "f1", ["oozie"], 1)
+        self.cl.node_groups = [self.ng1, self.ng2, self.ng3, self.ng4]
         self.cl_configs = self.pl.get_configs("1.1.2")
 
     def test_validate(self):
-        self.cl.node_groups = [self.ng1]
         self.pl.validate(self.cl)
         with self.assertRaises(ex.NotSingleNameNodeException):
             self.ng1.count = 0
@@ -41,16 +42,25 @@ class VanillaPluginTest(unittest2.TestCase):
             self.pl.validate(self.cl)
         self.ng1.count = 1
 
-        self.cl.node_groups.append(self.ng2)
         self.pl.validate(self.cl)
         with self.assertRaises(ex.NotSingleJobTrackerException):
             self.ng2.count = 2
             self.pl.validate(self.cl)
 
-        self.cl.node_groups.append(self.ng3)
         self.ng2.count = 1
         self.pl.validate(self.cl)
         with self.assertRaises(ex.TaskTrackersWithoutJobTracker):
+            self.ng2.count = 0
+            self.pl.validate(self.cl)
+
+        self.ng2.count = 1
+        with self.assertRaises(ex.NotSingleOozieException):
+            self.ng3.count = 0
+            self.ng4.count = 2
+            self.pl.validate(self.cl)
+
+        self.ng4.count = 1
+        with self.assertRaises(ex.OozieWithoutJobTracker):
             self.ng2.count = 0
             self.pl.validate(self.cl)
 

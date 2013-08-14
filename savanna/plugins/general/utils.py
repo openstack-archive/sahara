@@ -25,18 +25,21 @@ def get_instances(cluster, proc_list=list()):
     return reduce(lambda a, b: a + b.instances, nodes, [])
 
 
+def get_instance(cluster, node_process):
+    instances = get_instances(cluster, node_process)
+    return instances[0] if instances else None
+
+
 def get_namenode(cluster):
-    nn = get_instances(cluster, "namenode")
-    return nn[0] if nn else None
+    return get_instance(cluster, "namenode")
 
 
 def get_jobtracker(cluster):
-    jt = get_instances(cluster, "jobtracker")
-    return jt[0] if jt else None
+    return get_instance(cluster, "jobtracker")
 
 
-def get_oozies(cluster):
-    return get_instances(cluster, "oozie")
+def get_oozie(cluster):
+    return get_instance(cluster, "oozie")
 
 
 def get_datanodes(cluster):
