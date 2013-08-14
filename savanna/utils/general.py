@@ -13,7 +13,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
 import six
 
 
@@ -30,3 +29,10 @@ def find_dict(iterable, **rules):
             return item
 
     return None
+
+
+def format_cluster_status(cluster):
+    msg = "Cluster status has been changed: id=%s, New status=%s"
+    if cluster:
+        return msg % (cluster.id, cluster.status)
+    return msg % ("Unknown", "Unknown")
