@@ -236,7 +236,9 @@ class AmbariPlugin(p.ProvisioningPluginBase):
             ambari_info.get_address()))
 
         for server in servers:
-            context.spawn(server.provision_ambari, ambari_info)
+            context.spawn("hdp-provision-instance-%s" %
+                          server.instance.hostname,
+                          server.provision_ambari, ambari_info)
 
         self._wait_for_host_registrations(len(servers), ambari_info)
         self._set_ambari_credentials(cluster_spec, ambari_info)
@@ -680,7 +682,9 @@ class AmbariPlugin(p.ProvisioningPluginBase):
         self._update_ambari_info_credentials(cluster_spec, ambari_info)
 
         for server in servers:
-            context.spawn(server.provision_ambari, ambari_info)
+            context.spawn("hdp-scaling-instance-%s" %
+                          server.instance.hostname,
+                          server.provision_ambari, ambari_info)
 
         self._wait_for_host_registrations(self._get_num_hosts(cluster),
                                           ambari_info)
