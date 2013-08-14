@@ -44,6 +44,16 @@ def oozie_share_lib(remote, nn_hostname):
                            '-run Validate DB Connection" hadoop')
 
 
+def mysql_start(remote, mysql_instance):
+    LOG.debug("Starting mysql at %s" % mysql_instance.hostname)
+    remote.execute_command("/opt/start-mysql.sh")
+
+
+def oozie_create_db(remote):
+    LOG.debug("Creating Oozie DB Schema...")
+    remote.execute_command("mysql -u root < /tmp/create_oozie_db.sql")
+
+
 def start_oozie(remote):
     remote.execute_command(
         'sudo su - -c "/opt/oozie/bin/oozied.sh start" hadoop')

@@ -58,6 +58,12 @@ ENABLE_SWIFT = p.Config('Enable Swift', 'general', 'cluster',
                         config_type="bool", priority=1,
                         default_value=True, is_optional=True)
 
+ENABLE_MYSQL = p.Config('Enable MySQL', 'general', 'cluster',
+                        config_type="bool", priority=1,
+                        default_value=True, is_optional=True)
+
+GENERAL_CONFS = {}
+
 HIDDEN_CONFS = ['fs.default.name', 'dfs.name.dir', 'dfs.data.dir',
                 'mapred.job.tracker', 'mapred.system.dir', 'mapred.local.dir',
                 'hadoop.proxyuser.hadoop.hosts',
@@ -117,6 +123,7 @@ def _initialise_configs():
                                     config_type="int"))
 
     configs.append(ENABLE_SWIFT)
+    configs.append(ENABLE_MYSQL)
 
     return configs
 
@@ -128,8 +135,37 @@ def get_plugin_configs():
     return PLUGIN_CONFIGS
 
 
+def set_general_configs():
+    GENERAL_CONFS.update({
+        ENABLE_SWIFT.name: {
+            'default_value': ENABLE_SWIFT.default_value,
+            'conf': extract_name_values(swift.get_swift_configs())
+        },
+        ENABLE_MYSQL.name: {
+            'default_value': ENABLE_MYSQL.default_value,
+            'conf': o_h.get_oozie_mysql_configs()
+        }
+    })
+
+
+def generate_cfg_from_general(cfg, configs, general_config,
+                              rest_excluded=False):
+    if 'general' in configs:
+        for nm in general_config:
+            if nm not in configs['general'] and not rest_excluded:
+                configs['general'][nm] = general_config[nm]['default_value']
+        for name, value in configs['general'].items():
+            if value:
+                cfg = _set_config(cfg, general_config, name)
+                LOG.info("Applying config: %s" % name)
+    else:
+        cfg = _set_config(cfg, general_config)
+    return cfg
+
+
 def generate_xml_configs(configs, storage_path, nn_hostname,
                          jt_hostname, oozie_hostname):
+    set_general_configs()
     # inserting common configs depends on provisioned VMs and HDFS placement
     # TODO(aignatov): should be moved to cluster context
     cfg = {
@@ -169,18 +205,8 @@ def generate_xml_configs(configs, storage_path, nn_hostname,
         cfg[key] = value
 
     # applying swift configs if user enabled it
-    swift_xml_confs = []
-    #TODO(aignatov): should be changed. General configs not only Swift
-    swift_in_config = False
-    if ('general' in configs and
-            ENABLE_SWIFT.name in configs['general']):
-        swift_in_config = True
-    if ((swift_in_config and configs['general'][ENABLE_SWIFT.name]) or
-            (not swift_in_config and ENABLE_SWIFT.default_value)):
-        swift_xml_confs = swift.get_swift_configs()
-        cfg.update(extract_name_values(swift_xml_confs))
-        LOG.info("Swift integration is enabled")
-
+    swift_xml_confs = swift.get_swift_configs()
+    cfg = generate_cfg_from_general(cfg, configs, GENERAL_CONFS)
     # invoking applied configs to appropriate xml files
     xml_configs = {
         'core-site': x.create_hadoop_xml(cfg, CORE_DEFAULT + swift_xml_confs),
@@ -272,3 +298,20 @@ def determine_cluster_config(cluster, config_name):
     for conf in all_conf:
         if conf.name == config_name:
             return conf.default_value
+
+
+def _set_config(cfg, gen_cfg, name=None):
+    if name in gen_cfg:
+        cfg.update(gen_cfg[name]['conf'])
+    if name is None:
+        for name in gen_cfg:
+            cfg.update(gen_cfg[name]['conf'])
+    return cfg
+
+
+def is_mysql_enable(cluster):
+    for ng in cluster.node_groups:
+        conf = ng.configuration
+        if 'general' in conf and ENABLE_MYSQL.name in conf['general']:
+                return conf['general'][ENABLE_MYSQL.name]
+    return ENABLE_MYSQL.default_value
