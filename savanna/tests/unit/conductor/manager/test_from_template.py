@@ -15,6 +15,7 @@
 
 import copy
 
+from savanna.conductor import manager
 from savanna import context
 import savanna.tests.unit.conductor.base as test_base
 from savanna.tests.unit.conductor.manager import test_clusters
@@ -27,12 +28,24 @@ CORRECT_CONF = {
 }
 
 
-class ClusterTest(test_base.ConductorManagerTestCase):
+class ObjectsFromTemplatesTest(test_base.ConductorManagerTestCase):
+    def __init__(self, *args, **kwargs):
+        super(ObjectsFromTemplatesTest, self).__init__(
+            checks=[
+                lambda: CORRECT_CONF,
+                lambda: test_clusters.SAMPLE_CLUSTER,
+                lambda: test_templates.SAMPLE_CLT,
+                lambda: test_templates.SAMPLE_NGT,
+                lambda: manager.CLUSTER_DEFAULTS,
+                lambda: manager.NODE_GROUP_DEFAULTS,
+                lambda: manager.INSTANCE_DEFAULTS,
+            ], *args, **kwargs)
+
     def test_cluster_create_from_templates(self):
         ctx = context.ctx()
 
         # create node_group_template
-        ng_tmpl = test_templates.SAMPLE_NGT.copy()
+        ng_tmpl = copy.deepcopy(test_templates.SAMPLE_NGT)
         ng_tmpl['volumes_size'] = '10'
         ng_tmpl['node_configs']['service_1']['config_2'] = 'value_2'
         ng_tmpl = self.api.node_group_template_create(ctx, ng_tmpl)
@@ -58,11 +71,10 @@ class ClusterTest(test_base.ConductorManagerTestCase):
         ctx = context.ctx()
 
         # create cluster
-        cluster_val = test_clusters.SAMPLE_CLUSTER.copy()
-        cluster = self.api.cluster_create(ctx, cluster_val)
+        cluster = self.api.cluster_create(ctx, test_clusters.SAMPLE_CLUSTER)
 
         # create node_group_template
-        ng_tmpl = test_templates.SAMPLE_NGT.copy()
+        ng_tmpl = copy.deepcopy(test_templates.SAMPLE_NGT)
         ng_tmpl['volumes_size'] = '10'
         ng_tmpl['node_configs']['service_1']['config_2'] = 'value_2'
         ng_tmpl = self.api.node_group_template_create(ctx, ng_tmpl)

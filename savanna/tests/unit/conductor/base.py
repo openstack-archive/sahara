@@ -13,6 +13,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import copy
+
 from savanna import conductor
 from savanna.conductor import manager
 from savanna.db_new import api as db_api
@@ -20,13 +22,31 @@ from savanna.tests.unit import base
 
 
 class ConductorManagerTestCase(base.DbTestCase):
+
+    def __init__(self, *args, **kwargs):
+        """List of check callables could be specified.
+
+        All return values from callables will be stored in setUp and checked
+        in tearDown.
+        """
+        self._checks = kwargs.pop("checks", [])
+        super(ConductorManagerTestCase, self).__init__(*args, **kwargs)
+
     def setUp(self):
         super(ConductorManagerTestCase, self).setUp()
         db_api.setup_db()
         self.api = manager.ConductorManager()
 
+        self._results = []
+        for check in self._checks:
+            self._results.append(copy.deepcopy(check()))
+
     def tearDown(self):
         db_api.drop_db()
+
+        for idx, check in enumerate(self._checks):
+            self.assertEqual(self._results[idx], check(),
+                             msg="Check '%s' failed" % idx)
 
 
 class ConductorApiTestCase(base.DbTestCase):
