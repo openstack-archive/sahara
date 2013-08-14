@@ -13,46 +13,39 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import savanna.service.validations.edp.base as b
 
-## Cluster creation related checks
-
-data_source_type = {
-    "type": "string",
-    "enum": ["swift"]
-}
-
-job_type = {
-    "type": "string",
-    "enum": [
-        "hive",
-        "pig",
-        "jar",
-        "oozie"
-    ]
-}
-
-job_storage = {
-    "type": "string",
-    "enum": [
-        "swift",
-        "hdfs",
-        "internal"
-    ]
-}
-
-user_pass = {
+JOB_ORIGIN_SCHEMA = {
     "type": "object",
     "properties": {
-        "user": {
+        "name": {
             "type": "string",
+            "minLength": 1,
+            "maxLength": 50
         },
-        "password": {
-            "type": "string",
+        "description": {
+            "type": "string"
+        },
+        "storage_type": b.job_storage,
+        "url": {
+            "type": "string"
+        },
+        # Allow credentials schemas to be
+        # added in the future
+        "credentials": {
+            "oneOf": [
+                b.user_pass
+            ]
         }
     },
     "additionalProperties": False,
     "required": [
-        "user",
-        "password"
+        "name",
+        "storage_type",
+        "url"
     ]
 }
+
+
+def check_job_origin_create(data, **kwargs):
+    return True
