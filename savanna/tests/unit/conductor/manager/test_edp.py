@@ -39,6 +39,12 @@ SAMPLE_JOB = {
 
 
 class DataSourceTest(test_base.ConductorManagerTestCase):
+    def __init__(self, *args, **kwargs):
+        super(DataSourceTest, self).__init__(
+            checks=[
+                lambda: SAMPLE_DATA_SOURCE
+            ], *args, **kwargs)
+
     def test_crud_operation_create_list_delete(self):
         ctx = context.ctx()
         self.api.data_source_create(ctx, SAMPLE_DATA_SOURCE)
@@ -81,7 +87,13 @@ class DataSourceTest(test_base.ConductorManagerTestCase):
             self.api.data_source_destroy(ctx, _id)
 
 
-class JobTest(test_base.ConductorApiTestCase):
+class JobTest(test_base.ConductorManagerTestCase):
+    def __init__(self, *args, **kwargs):
+        super(JobTest, self).__init__(
+            checks=[
+                lambda: SAMPLE_JOB
+            ], *args, **kwargs)
+
     def test_crud_operation_create_list_delete(self):
         ctx = context.ctx()
         self.api.job_create(ctx, SAMPLE_JOB)

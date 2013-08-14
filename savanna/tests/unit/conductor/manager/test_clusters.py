@@ -13,6 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from savanna.conductor import manager
 from savanna import context
 import savanna.tests.unit.conductor.base as test_base
 
@@ -49,6 +50,14 @@ SAMPLE_CLUSTER = {
 
 
 class ClusterTest(test_base.ConductorManagerTestCase):
+    def __init__(self, *args, **kwargs):
+        super(ClusterTest, self).__init__(
+            checks=[
+                lambda: SAMPLE_CLUSTER,
+                lambda: manager.CLUSTER_DEFAULTS,
+                lambda: manager.NODE_GROUP_DEFAULTS,
+                lambda: manager.INSTANCE_DEFAULTS,
+            ], *args, **kwargs)
 
     def test_cluster_create_list_delete(self):
         ctx = context.ctx()

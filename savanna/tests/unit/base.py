@@ -32,6 +32,7 @@ class DbTestCase(unittest2.TestCase):
             context.Context('test_user', tenant_id, 'test_auth_token', {}))
 
     def setUp(self):
+        self.maxDiff = None
         self.set_tenant()
         self.db_fd, self.db_path = tempfile.mkstemp()
         session.set_defaults('sqlite:///' + self.db_path, self.db_path)

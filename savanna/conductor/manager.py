@@ -23,13 +23,12 @@ from savanna.utils import configs
 
 
 CLUSTER_DEFAULTS = {
-    "cluster_configs": dict(),
+    "cluster_configs": {},
     "anti_affinity": [],
     "status": "undefined",
     "status_description": "",
-    "info": dict(),
+    "info": {},
 }
-
 
 NODE_GROUP_DEFAULTS = {
     "node_processes": [],
@@ -42,6 +41,12 @@ NODE_GROUP_DEFAULTS = {
 INSTANCE_DEFAULTS = {
     "volumes": []
 }
+
+
+def _apply_defaults(values, defaults):
+    new_values = copy.deepcopy(defaults)
+    new_values.update(values)
+    return new_values
 
 
 class ConductorManager(db_base.Base):
@@ -70,13 +75,15 @@ class ConductorManager(db_base.Base):
     def _populate_node_group(self, context, node_group):
         ng_tmpl_id = node_group.get('node_group_template_id')
         if not ng_tmpl_id:
+            node_group.update(_apply_defaults(node_group, NODE_GROUP_DEFAULTS))
             return
 
         ng_tmpl = self.node_group_template_get(context, ng_tmpl_id)
         if not ng_tmpl:
+            node_group.update(_apply_defaults(node_group, NODE_GROUP_DEFAULTS))
             return
 
-        new_values = self._apply_defaults(ng_tmpl, NODE_GROUP_DEFAULTS)
+        new_values = _apply_defaults(ng_tmpl, NODE_GROUP_DEFAULTS)
         new_values.update(node_group)
         new_values['node_configs'] = configs.merge_configs(
             ng_tmpl.get('node_configs'),
@@ -88,11 +95,6 @@ class ConductorManager(db_base.Base):
         node_group.pop('id', None)
         node_group.pop('created_at', None)
         node_group.pop('updated_at', None)
-
-    def _apply_defaults(self, values, defaults):
-        new_values = copy.deepcopy(defaults)
-        new_values.update(values)
-        return new_values
 
     ## Cluster ops
 
@@ -106,7 +108,8 @@ class ConductorManager(db_base.Base):
 
     def cluster_create(self, context, values):
         """Create a cluster from the values dictionary."""
-        values = self._apply_defaults(values, CLUSTER_DEFAULTS)
+        values = copy.deepcopy(values)
+        values = _apply_defaults(values, CLUSTER_DEFAULTS)
         values['tenant_id'] = context.tenant_id
 
         cluster_template_id = values.get('cluster_template_id')
@@ -129,6 +132,7 @@ class ConductorManager(db_base.Base):
 
     def cluster_update(self, context, cluster, values):
         """Set the given properties on cluster and update it."""
+        values = copy.deepcopy(values)
         return self.db.cluster_update(context, cluster, values)
 
     def cluster_destroy(self, context, cluster):
@@ -139,11 +143,13 @@ class ConductorManager(db_base.Base):
 
     def node_group_add(self, context, cluster, values):
         """Create a Node Group from the values dictionary."""
+        values = copy.deepcopy(values)
         self._populate_node_group(context, values)
         return self.db.node_group_add(context, cluster, values)
 
     def node_group_update(self, context, node_group, values):
         """Set the given properties on node_group and update it."""
+        values = copy.deepcopy(values)
         self.db.node_group_update(context, node_group, values)
 
     def node_group_remove(self, context, node_group):
@@ -154,11 +160,13 @@ class ConductorManager(db_base.Base):
 
     def instance_add(self, context, node_group, values):
         """Create an Instance from the values dictionary."""
-        values = self._apply_defaults(values, INSTANCE_DEFAULTS)
+        values = copy.deepcopy(values)
+        values = _apply_defaults(values, INSTANCE_DEFAULTS)
         return self.db.instance_add(context, node_group, values)
 
     def instance_update(self, context, instance, values):
         """Set the given properties on Instance and update it."""
+        values = copy.deepcopy(values)
         self.db.instance_update(context, instance, values)
 
     def instance_remove(self, context, instance):
@@ -177,7 +185,8 @@ class ConductorManager(db_base.Base):
 
     def cluster_template_create(self, context, values):
         """Create a cluster_template from the values dictionary."""
-        values = self._apply_defaults(values, CLUSTER_DEFAULTS)
+        values = copy.deepcopy(values)
+        values = _apply_defaults(values, CLUSTER_DEFAULTS)
         values['tenant_id'] = context.tenant_id
 
         self._populate_node_groups(context, values)
@@ -200,7 +209,8 @@ class ConductorManager(db_base.Base):
 
     def node_group_template_create(self, context, values):
         """Create a Node Group Template from the values dictionary."""
-        values = self._apply_defaults(values, NODE_GROUP_DEFAULTS)
+        values = copy.deepcopy(values)
+        values = _apply_defaults(values, NODE_GROUP_DEFAULTS)
         values['tenant_id'] = context.tenant_id
 
         return self.db.node_group_template_create(context, values)
@@ -209,7 +219,7 @@ class ConductorManager(db_base.Base):
         """Destroy the Node Group Template or raise if it does not exist."""
         self.db.node_group_template_destroy(context, node_group_template)
 
-     ## Data Source ops
+    ## Data Source ops
 
     def data_source_get(self, context, data_source):
         """Return the Data Source or None if it does not exist."""
@@ -221,6 +231,7 @@ class ConductorManager(db_base.Base):
 
     def data_source_create(self, context, values):
         """Create a Data Source from the values dictionary."""
+        values = copy.deepcopy(values)
         return self.db.data_source_create(context, values)
 
     def data_source_destroy(self, context, data_source):
@@ -239,6 +250,7 @@ class ConductorManager(db_base.Base):
 
     def job_create(self, context, values):
         """Create a Job from the values dictionary."""
+        values = copy.deepcopy(values)
         return self.db.job_create(context, values)
 
     def job_destroy(self, context, job):
