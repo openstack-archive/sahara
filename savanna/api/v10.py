@@ -13,6 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import savanna.api.base as b
 from savanna.openstack.common import log as logging
 from savanna.service import api
 from savanna.service import validation as v
@@ -85,8 +86,8 @@ def cluster_templates_get(cluster_template_id):
 
 @rest.put('/cluster-templates/<cluster_template_id>')
 @v.check_exists(api.get_cluster_template, 'cluster_template_id')
-def cluster_templates_update(cluster_template_id):
-    return _not_implemented()
+def cluster_templates_update(cluster_template_id, data):
+    return b.not_implemented()
 
 
 @rest.delete('/cluster-templates/<cluster_template_id>')
@@ -121,8 +122,8 @@ def node_group_templates_get(node_group_template_id):
 
 @rest.put('/node-group-templates/<node_group_template_id>')
 @v.check_exists(api.get_node_group_template, 'node_group_template_id')
-def node_group_templates_update(node_group_template_id):
-    return _not_implemented()
+def node_group_templates_update(node_group_template_id, data):
+    return b.not_implemented()
 
 
 @rest.delete('/node-group-templates/<node_group_template_id>')
@@ -200,8 +201,3 @@ def image_tags_add(image_id, data):
 @v.validate(v_images.image_tags_schema)
 def image_tags_delete(image_id, data):
     return u.render(api.remove_image_tags(image_id, **data).wrapped_dict)
-
-
-def _not_implemented():
-    return u.internal_error(
-        501, NotImplementedError("This API operation isn't implemented"))
