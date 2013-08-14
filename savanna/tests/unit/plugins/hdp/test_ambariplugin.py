@@ -15,10 +15,12 @@
 import mock
 
 import os
+import pkg_resources as pkg
 from savanna.conductor import resource as r
 from savanna.plugins.hdp import ambariplugin as ap
 from savanna.plugins.hdp import clusterspec as cs
 from savanna.plugins.hdp import exceptions as ex
+from savanna import version
 import unittest2
 
 
@@ -91,7 +93,9 @@ class AmbariPluginTest(unittest2.TestCase):
                   'default-cluster.template'), 'r') as f:
                         cluster_spec = cs.ClusterSpec(f.read())
 
-        plugin._set_ambari_credentials(cluster_spec, '111.11.1111')
+        ambari_info = ap.AmbariInfo(TestHost('111.11.1111'),
+                                    '8080', 'admin', 'old-pwd')
+        plugin._set_ambari_credentials(cluster_spec, ambari_info)
 
         self.assertEqual(1, len(self.requests))
         request = self.requests[0]
@@ -99,10 +103,10 @@ class AmbariPluginTest(unittest2.TestCase):
         self.assertEqual('http://111.11.1111:8080/api/v1/users/admin',
                          request.url)
         self.assertEqual('{"Users":{"roles":"admin,user","password":"admin",'
-                         '"old_password":"admin"} }', request.data)
-        self.assertEqual(('admin', 'admin'), request.auth)
-        self.assertEqual('admin', plugin.ambari_user)
-        self.assertEqual('admin', plugin.ambari_password)
+                         '"old_password":"old-pwd"} }', request.data)
+        self.assertEqual(('admin', 'old-pwd'), request.auth)
+        self.assertEqual('admin', ambari_info.user)
+        self.assertEqual('admin', ambari_info.password)
 
     def test__set_ambari_credentials__new_user_no_admin(self):
         self.requests = []
@@ -120,7 +124,9 @@ class AmbariPluginTest(unittest2.TestCase):
                 user.name = 'test'
                 user.password = 'test_pw'
 
-        plugin._set_ambari_credentials(cluster_spec, '111.11.1111')
+        ambari_info = ap.AmbariInfo(TestHost('111.11.1111'), '8080',
+                                    'admin', 'old-pwd')
+        plugin._set_ambari_credentials(cluster_spec, ambari_info)
         self.assertEqual(2, len(self.requests))
 
         request = self.requests[0]
@@ -129,7 +135,7 @@ class AmbariPluginTest(unittest2.TestCase):
                          request.url)
         self.assertEqual('{"Users":{"password":"test_pw","roles":"admin,user"'
                          '} }', request.data)
-        self.assertEqual(('admin', 'admin'), request.auth)
+        self.assertEqual(('admin', 'old-pwd'), request.auth)
 
         request = self.requests[1]
         self.assertEqual('delete', request.method)
@@ -137,8 +143,8 @@ class AmbariPluginTest(unittest2.TestCase):
                          request.url)
         self.assertEqual(None, request.data)
         self.assertEqual(('test', 'test_pw'), request.auth)
-        self.assertEqual('test', plugin.ambari_user)
-        self.assertEqual('test_pw', plugin.ambari_password)
+        self.assertEqual('test', ambari_info.user)
+        self.assertEqual('test_pw', ambari_info.password)
 
     def test__set_ambari_credentials__new_user_with_admin(self):
         self.requests = []
@@ -155,7 +161,9 @@ class AmbariPluginTest(unittest2.TestCase):
                 new_user = cs.User('test', 'test_pw', ['user'])
                 service.users.append(new_user)
 
-        plugin._set_ambari_credentials(cluster_spec, '111.11.1111')
+        ambari_info = ap.AmbariInfo(TestHost('111.11.1111'), '8080',
+                                    'admin', 'old-pwd')
+        plugin._set_ambari_credentials(cluster_spec, ambari_info)
         self.assertEqual(2, len(self.requests))
 
         request = self.requests[0]
@@ -163,8 +171,8 @@ class AmbariPluginTest(unittest2.TestCase):
         self.assertEqual('http://111.11.1111:8080/api/v1/users/admin',
                          request.url)
         self.assertEqual('{"Users":{"roles":"admin,user","password":"admin",'
-                         '"old_password":"admin"} }', request.data)
-        self.assertEqual(('admin', 'admin'), request.auth)
+                         '"old_password":"old-pwd"} }', request.data)
+        self.assertEqual(('admin', 'old-pwd'), request.auth)
 
         request = self.requests[1]
         self.assertEqual('post', request.method)
@@ -174,8 +182,8 @@ class AmbariPluginTest(unittest2.TestCase):
                          request.data)
         self.assertEqual(('admin', 'admin'), request.auth)
 
-        self.assertEqual('admin', plugin.ambari_user)
-        self.assertEqual('admin', plugin.ambari_password)
+        self.assertEqual('admin', ambari_info.user)
+        self.assertEqual('admin', ambari_info.password)
 
     def test__set_ambari_credentials__no_admin_user(self):
         self.requests = []
@@ -194,9 +202,33 @@ class AmbariPluginTest(unittest2.TestCase):
                 user.password = 'test_pw'
                 user.groups = ['user']
 
+        ambari_info = ap.AmbariInfo(TestHost('111.11.1111'),
+                                    '8080', 'admin', 'old-pwd')
         self.assertRaises(ex.HadoopProvisionError,
                           plugin._set_ambari_credentials(cluster_spec,
-                                                         '111.11.1111'))
+                                                         ambari_info))
+
+    def test__get_ambari_info(self):
+        cluster_config_file = pkg.resource_string(
+            version.version_info.package,
+            'plugins/hdp/resources/default-cluster.template')
+
+        cluster_config = cs.ClusterSpec(cluster_config_file)
+        plugin = ap.AmbariPlugin()
+
+        #change port
+        cluster_config.configurations['ambari']['server.port'] = '9000'
+        ambari_info = plugin.get_ambari_info(
+            cluster_config, [TestHost('111.11.1111', 'master')])
+
+        self.assertEqual('9000', ambari_info.port)
+
+        #remove port
+        del cluster_config.configurations['ambari']['server.port']
+        ambari_info = plugin.get_ambari_info(
+            cluster_config, [TestHost('111.11.1111', 'master')])
+
+        self.assertEqual('8080', ambari_info.port)
 
     def _get_test_request(self):
         request = TestRequest()
@@ -242,3 +274,9 @@ class TestResult:
     def __init__(self, status):
         self.status_code = status
         self.text = ''
+
+
+class TestHost:
+    def __init__(self, management_ip, role=None):
+        self.management_ip = management_ip
+        self.role = role

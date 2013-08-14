@@ -373,7 +373,7 @@
     {
       "name" : "ambari",
       "properties" : [
-        { "name" : "port", "value" : "8080" },
+        { "name" : "server.port", "value" : "8080" },
         { "name" : "rpm", "value" : "http://s3.amazonaws.com/dev.hortonworks.com/AMBARI.b6-1.x/repos/centos6/AMBARI.b6-1.x-1.el6.noarch.rpm" }
       ]
     }
