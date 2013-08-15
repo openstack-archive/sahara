@@ -243,8 +243,8 @@ def data_source_destroy(context, data_source):
     """Destroy the Data Source or raise if it does not exist."""
     IMPL.data_source_destroy(context, data_source)
 
-## Jobs ops
 
+## Jobs ops
 
 @to_dict
 def job_get(context, job):
@@ -267,3 +267,33 @@ def job_create(context, values):
 def job_destroy(context, job):
     """Destroy the Job or raise if it does not exist."""
     IMPL.job_destroy(context, job)
+
+
+## JobExecutions ops
+
+@to_dict
+def job_execution_get(context, job_execution):
+    """Return the JobExecution or None if it does not exist."""
+    return IMPL.job_execution_get(context, job_execution)
+
+
+@to_dict
+def job_execution_get_all(context):
+    """Get all JobExecutions."""
+    return IMPL.job_execution_get_all(context)
+
+
+@to_dict
+def job_execution_create(context, values):
+    """Create a JobExecution from the values dictionary."""
+    return IMPL.job_execution_create(context, values)
+
+
+def job_execution_update(context, job_execution, values):
+    """Create a JobExecution from the values dictionary."""
+    return IMPL.job_execution_update(context, job_execution, values)
+
+
+def job_execution_destroy(context, job_execution):
+    """Destroy the JobExecution or raise if it does not exist."""
+    IMPL.job_execution_destroy(context, job_execution)

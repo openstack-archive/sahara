@@ -226,6 +226,33 @@ class LocalApi(object):
         """Destroy the Job or raise if it does not exist."""
         self._manager.job_destroy(context, _get_id(job))
 
+    ## JobExecution ops
+
+    @r.wrap(r.JobExecution)
+    def job_execution_get(self, context, job_execution):
+        """Return the JobExecution or None if it does not exist."""
+        return self._manager.job_execution_get(context,
+                                               _get_id(job_execution))
+
+    @r.wrap(r.JobExecution)
+    def job_execution_get_all(self, context):
+        """Get all JobExecutions."""
+        return self._manager.job_execution_get_all(context)
+
+    @r.wrap(r.JobExecution)
+    def job_execution_create(self, context, values):
+        """Create a JobExecution from the values dictionary."""
+        return self._manager.job_execution_create(context, values)
+
+    def job_execution_update(self, context, job_execution, values):
+        """Update the JobExecution or raise if it does not exist."""
+        self._manager.job_execution_update(context, _get_id(job_execution),
+                                           values)
+
+    def job_execution_destroy(self, context, job_execution):
+        """Destroy the JobExecution or raise if it does not exist."""
+        self._manager.job_execution_destroy(context, _get_id(job_execution))
+
 
 class RemoteApi(LocalApi):
     """Conductor API that does updates via RPC to the ConductorManager."""

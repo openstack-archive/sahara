@@ -256,3 +256,25 @@ class ConductorManager(db_base.Base):
     def job_destroy(self, context, job):
         """Destroy the Job or raise if it does not exist."""
         return self.db.job_destroy(context, job)
+
+    ##JobExecution ops
+
+    def job_execution_get(self, context, job_execution):
+        """Return the JobExecution or None if it does not exist."""
+        return self.db.job_execution_get(context, job_execution)
+
+    def job_execution_get_all(self, context):
+        """Get all JobExecutions."""
+        return self.db.job_execution_get_all(context)
+
+    def job_execution_create(self, context, values):
+        """Create a JobExecution from the values dictionary."""
+        return self.db.job_execution_create(context, values)
+
+    def job_execution_update(self, context, job_execution, values):
+        """Updates a JobExecution from the values dictionary."""
+        return self.db.job_execution_update(context, job_execution, values)
+
+    def job_execution_destroy(self, context, job_execution):
+        """Destroy the JobExecution or raise if it does not exist."""
+        return self.db.job_execution_destroy(context, job_execution)
