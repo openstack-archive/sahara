@@ -321,7 +321,7 @@ def job_origin_create(context, values):
 
 def job_origin_update(context, job_origin, values):
     """Update a JobOrigin from the values dictionary."""
-    IMPL.job_origin_update(context, job_origin, values)
+    return IMPL.job_origin_update(context, job_origin, values)
 
 
 def job_origin_destroy(context, job_origin):

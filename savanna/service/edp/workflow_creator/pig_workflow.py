@@ -22,11 +22,9 @@ class PigWorkflowCreator(base_workflow.OozieWorkflowCreator):
     def __init__(self):
         super(PigWorkflowCreator, self).__init__('pig')
 
-    def build_workflow_xml(self, job_tracker, name_node, script, prepare={},
+    def build_workflow_xml(self, script, prepare={},
                            job_xml=None, configuration=None, params={},
                            arguments={}, files=[], archives=[]):
-
-        self._add_jobtracker_namenode_elements(job_tracker, name_node)
 
         for k, v in prepare.items():
             self._add_to_prepare_element(k, v)

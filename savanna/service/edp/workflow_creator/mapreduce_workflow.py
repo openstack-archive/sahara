@@ -21,11 +21,9 @@ class MapReduceWorkFlowCreator(base_workflow.OozieWorkflowCreator):
     def __init__(self):
         super(MapReduceWorkFlowCreator, self).__init__('map-reduce')
 
-    def build_workflow_xml(self, job_tracker, name_node, prepare={},
+    def build_workflow_xml(self, prepare={},
                            job_xml=None, configuration=None,
                            files=[], archives=[]):
-
-        self._add_jobtracker_namenode_elements(job_tracker, name_node)
 
         for k, v in prepare.items():
             self._add_to_prepare_element(k, v)

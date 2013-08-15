@@ -493,7 +493,9 @@ def job_execution_update(context, job_execution, values):
             # raise not found error
             raise RuntimeError("JobExecution not found!")
         job_ex.update(values)
-        job_ex.save()
+        job_ex.save(session=session)
+
+    return _job_execution_get(context, job_execution)
 
 
 def job_execution_destroy(context, job_execution_id):
@@ -547,6 +549,7 @@ def job_origin_update(context, job_origin, values):
             raise RuntimeError("JobOrigin not found!")
         job_origin.update(values)
         job_origin.save()
+    return _job_origin_get(context, session, job_origin)
 
 
 def job_origin_destroy(context, job_origin_id):

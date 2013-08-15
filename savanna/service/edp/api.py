@@ -18,6 +18,8 @@ from savanna import conductor as c
 from savanna import context
 from savanna.openstack.common import log as logging
 
+from savanna.service.edp import job_manager as manager
+
 
 conductor = c.API
 LOG = logging.getLogger(__name__)
@@ -39,8 +41,11 @@ def delete_job(id):
     conductor.job_destroy(context.ctx(), id)
 
 
-def execute_job(job_id, input_id, output_id):
-    pass
+def execute_job(job_id, input_id, output_id, cluster_id):
+    job_ex_dict = {'input_id': input_id, 'output_id': output_id,
+                   'job_id': job_id, 'cluster_id': cluster_id}
+    job_execution = conductor.job_execution_create(context.ctx(), job_ex_dict)
+    return manager.run_job(context.ctx(), job_execution)
 
 
 def get_data_sources():

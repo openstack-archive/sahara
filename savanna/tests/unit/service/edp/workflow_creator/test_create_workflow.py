@@ -24,8 +24,6 @@ class TestPigWorkflowCreator(unittest2.TestCase):
 
     def setUp(self):
         p.patch_minidom_writexml()
-        self.job_tracker = 'job-tracker-host:8021'
-        self.name_node = 'hdfs://name-node-host:8020'
         self.prepare = {'delete': ['delete_dir_1', 'delete_dir_2'],
                         'mkdir': ['mkdir_1']}
         self.job_xml = 'job_xml.xml'
@@ -36,14 +34,13 @@ class TestPigWorkflowCreator(unittest2.TestCase):
 
     def test_create_mapreduce_workflow(self):
         mr_workflow = mrw.MapReduceWorkFlowCreator()
-        mr_workflow.build_workflow_xml(self.job_tracker, self.name_node,
-                                       self.prepare, self.job_xml,
+        mr_workflow.build_workflow_xml(self.prepare, self.job_xml,
                                        self.configuration, self.files,
                                        self.archives)
         res = mr_workflow.get_built_workflow_xml()
         mr_action = """    <map-reduce>
-      <job-tracker>job-tracker-host:8021</job-tracker>
-      <name-node>hdfs://name-node-host:8020</name-node>
+      <job-tracker>${jobTracker}</job-tracker>
+      <name-node>${nameNode}</name-node>
       <prepare>
         <mkdir path="mkdir_1"/>
         <delete path="delete_dir_1"/>
@@ -74,15 +71,14 @@ class TestPigWorkflowCreator(unittest2.TestCase):
         param_dict = {'param1': 'param_value1'}
         arg_dict = {'arg1': 'arg_value1', 'arg2': 'arg_value2'}
 
-        pig_workflow.build_workflow_xml(self.job_tracker, self.name_node,
-                                        pig_script, self.prepare,
+        pig_workflow.build_workflow_xml(pig_script, self.prepare,
                                         self.job_xml, self.configuration,
                                         param_dict, arg_dict,
                                         self.files, self.archives)
         res = pig_workflow.get_built_workflow_xml()
         pig_action = """    <pig>
-      <job-tracker>job-tracker-host:8021</job-tracker>
-      <name-node>hdfs://name-node-host:8020</name-node>
+      <job-tracker>${jobTracker}</job-tracker>
+      <name-node>${nameNode}</name-node>
       <prepare>
         <mkdir path="mkdir_1"/>
         <delete path="delete_dir_1"/>

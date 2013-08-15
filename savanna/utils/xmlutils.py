@@ -95,6 +95,12 @@ def add_child(doc, parent, tag_to_add):
     return actions[0].lastChild
 
 
+def add_element(doc, parent, element):
+    actions = doc.getElementsByTagName(parent)
+    actions[0].appendChild(element)
+    return actions[0].lastChild
+
+
 def get_and_create_if_not_exist(doc, parent, element):
     prop = doc.getElementsByTagName(element)
     if len(prop) != 0:
