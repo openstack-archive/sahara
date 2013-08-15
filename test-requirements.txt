@@ -2,7 +2,7 @@
 pep8==1.4.5
 pyflakes==0.7.2
 flake8==2.0
-hacking>=0.6.0,<0.7
+hacking>=0.7.0,<0.8
 
 coverage>=3.6
 docutils==0.9.1
