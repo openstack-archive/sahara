@@ -13,6 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import savanna.exceptions as ex
 import savanna.service.validations.edp.base as b
 
 DATA_SOURCE_SCHEMA = {
@@ -26,18 +27,11 @@ DATA_SOURCE_SCHEMA = {
         "description": {
             "type": "string"
         },
-        "category": {
-            "type": "string",
-            "enum": [
-                "FileSystem",
-                "NoSQL"
-            ],
-        },
         "type": b.data_source_type,
-        "URL": {
+        "url": {
             "type": "string",
         },
-        "credential": {
+        "credentials": {
             "type": "object"
         }
     },
@@ -45,10 +39,15 @@ DATA_SOURCE_SCHEMA = {
     "required": [
         "name",
         "type",
-        "URL"
+        "url"
     ]
 }
 
 
 def check_data_source_create(data, **kwargs):
-    return True
+    b.check_data_source_unique_name(data['name'])
+
+    if "swift" == data["type"]:
+        if not ("user" in data["credentials"]
+                and "password" in data["credentials"]):
+            raise ex.InvalidCredentials("Invalid credentials for Swift")

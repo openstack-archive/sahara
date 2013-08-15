@@ -42,6 +42,10 @@ INSTANCE_DEFAULTS = {
     "volumes": []
 }
 
+DATA_SOURCE_DEFAULTS = {
+    "credentials": {}
+}
+
 
 def _apply_defaults(values, defaults):
     new_values = copy.deepcopy(defaults)
@@ -237,6 +241,9 @@ class ConductorManager(db_base.Base):
     def data_source_create(self, context, values):
         """Create a Data Source from the values dictionary."""
         values = copy.deepcopy(values)
+        values = _apply_defaults(values, DATA_SOURCE_DEFAULTS)
+        values['tenant_id'] = context.tenant_id
+
         return self.db.data_source_create(context, values)
 
     def data_source_destroy(self, context, data_source):
@@ -256,6 +263,7 @@ class ConductorManager(db_base.Base):
     def job_create(self, context, values):
         """Create a Job from the values dictionary."""
         values = copy.deepcopy(values)
+        values['tenant_id'] = context.tenant_id
         return self.db.job_create(context, values)
 
     def job_destroy(self, context, job):

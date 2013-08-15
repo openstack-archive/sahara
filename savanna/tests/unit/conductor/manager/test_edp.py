@@ -91,6 +91,7 @@ class DataSourceTest(test_base.ConductorManagerTestCase):
 
     def test_data_source_fields(self):
         ctx = context.ctx()
+        ctx.tenant_id = SAMPLE_DATA_SOURCE['tenant_id']
         ds_db_obj_id = self.api.data_source_create(ctx,
                                                    SAMPLE_DATA_SOURCE)['id']
 
@@ -140,6 +141,8 @@ class JobTest(test_base.ConductorManagerTestCase):
 
     def test_job_fields(self):
         ctx = context.ctx()
+        ctx.tenant_id = SAMPLE_JOB['tenant_id']
+
         job_db_obj_id = self.api.job_create(ctx, SAMPLE_JOB)['id']
 
         job_db_obj = self.api.job_get(ctx, job_db_obj_id)
