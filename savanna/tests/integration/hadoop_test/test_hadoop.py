@@ -21,7 +21,6 @@ import savanna.tests.integration.configs.parameters.hdp_parameters as hdp_param
 import savanna.tests.integration.configs.parameters.vanilla_parameters as v_prm
 
 
-@base.enable_test(param.ENABLE_HADOOP_TESTS)
 class HadoopTest(base.ITestCase):
 
     def setUp(self):
@@ -122,6 +121,7 @@ class HadoopTest(base.ITestCase):
         finally:
             self.del_object(self.url_cluster_with_slash, cluster_id, 204)
 
+    @base.enable_test(param.ENABLE_HADOOP_TESTS_FOR_VANILLA_PLUGIN)
     def test_hadoop_single_master_for_vanilla_plugin(self):
         """This test checks Hadoop work for "Vanilla" plugin
         """
@@ -137,6 +137,7 @@ class HadoopTest(base.ITestCase):
                              v_prm.HADOOP_LOG_DIRECTORY,
                              v_prm.NODE_USERNAME)
 
+    @base.enable_test(param.ENABLE_HADOOP_TESTS_FOR_HDP_PLUGIN)
     def test_hadoop_single_master_for_hdp_plugin(self):
         """This test checks Hadoop work for "HDP" plugin
         """

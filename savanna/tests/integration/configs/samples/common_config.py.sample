@@ -30,7 +30,8 @@ ENABLE_CLUSTER_NODE_PROCESS_CRUD_TESTS = True  # enable CRUD tests for clusters 
 ENABLE_CL_TEMPLATE_CRUD_TESTS = True  # enable crud tests for cluster templates
 ENABLE_NGT_CRUD_TESTS = True  # enable crud tests for node group templates
 
-ENABLE_HADOOP_TESTS = True  # enable Hadoop test
+ENABLE_HADOOP_TESTS_FOR_VANILLA_PLUGIN = True  # enable Hadoop test for "Vanilla" plugin
+ENABLE_HADOOP_TESTS_FOR_HDP_PLUGIN = True  # enable Hadoop test for "HDP" plugin
 ENABLE_SWIFT_TESTS = True  # enable Swift test
 ENABLE_SCALING_TESTS = True  # enable cluster scaling test
 ENABLE_CONFIG_TESTS = True  # enable test for configuration files
