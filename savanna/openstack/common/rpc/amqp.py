@@ -300,8 +300,13 @@ def pack_context(msg, context):
     for args at some point.
 
     """
-    context_d = dict([('_context_%s' % key, value)
-                      for (key, value) in context.to_dict().iteritems()])
+    if isinstance(context, dict):
+        context_d = dict([('_context_%s' % key, value)
+                          for (key, value) in context.iteritems()])
+    else:
+        context_d = dict([('_context_%s' % key, value)
+                          for (key, value) in context.to_dict().iteritems()])
+
     msg.update(context_d)
 
 

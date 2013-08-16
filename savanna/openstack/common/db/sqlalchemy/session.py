@@ -279,13 +279,11 @@ database_opts = [
                deprecated_opts=[cfg.DeprecatedOpt('sql_connection',
                                                   group='DEFAULT'),
                                 cfg.DeprecatedOpt('sql_connection',
-                                                  group='DATABASE')],
-               secret=True),
+                                                  group='DATABASE')]),
     cfg.StrOpt('slave_connection',
                default='',
                help='The SQLAlchemy connection string used to connect to the '
-                    'slave database',
-               secret=True),
+                    'slave database'),
     cfg.IntOpt('idle_timeout',
                default=3600,
                deprecated_opts=[cfg.DeprecatedOpt('sql_idle_timeout',
@@ -478,6 +476,11 @@ def _raise_if_duplicate_entry_error(integrity_error, engine_name):
     if engine_name not in ["mysql", "sqlite", "postgresql"]:
         return
 
+    # FIXME(johannes): The usage of the .message attribute has been
+    # deprecated since Python 2.6. However, the exceptions raised by
+    # SQLAlchemy can differ when using unicode() and accessing .message.
+    # An audit across all three supported engines will be necessary to
+    # ensure there are no regressions.
     m = _DUP_KEY_RE_DB[engine_name].match(integrity_error.message)
     if not m:
         return
@@ -510,6 +513,11 @@ def _raise_if_deadlock_error(operational_error, engine_name):
     re = _DEADLOCK_RE_DB.get(engine_name)
     if re is None:
         return
+    # FIXME(johannes): The usage of the .message attribute has been
+    # deprecated since Python 2.6. However, the exceptions raised by
+    # SQLAlchemy can differ when using unicode() and accessing .message.
+    # An audit across all three supported engines will be necessary to
+    # ensure there are no regressions.
     m = re.match(operational_error.message)
     if not m:
         return
