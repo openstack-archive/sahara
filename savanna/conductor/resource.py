@@ -208,3 +208,7 @@ class Job(Resource, objects.Job):
 
 class JobExecution(Resource, objects.JobExecution):
     pass
+
+
+class JobOrigin(Resource, objects.JobOrigin):
+    pass

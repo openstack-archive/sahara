@@ -278,3 +278,25 @@ class ConductorManager(db_base.Base):
     def job_execution_destroy(self, context, job_execution):
         """Destroy the JobExecution or raise if it does not exist."""
         return self.db.job_execution_destroy(context, job_execution)
+
+    ## JobOrigin ops
+
+    def job_origin_get(self, context, job_origin):
+        """Return the JobOrigin or None if it does not exist."""
+        return self.db.job_origin_get(context, job_origin)
+
+    def job_origin_get_all(self, context):
+        """Get all JobOrigins."""
+        return self.db.job_origin_get_all(context)
+
+    def job_origin_create(self, context, values):
+        """Create a JobOrigin from the values dictionary."""
+        return self.db.job_origin_create(context, values)
+
+    def job_origin_update(self, context, job_origin, values):
+        """Updates a JobOrigin from the values dictionary."""
+        self.db.job_origin_update(context, job_origin, values)
+
+    def job_origin_destroy(self, context, job_origin):
+        """Destroy the JobOrigin or raise if it does not exist."""
+        self.db.job_origin_destroy(context, job_origin)

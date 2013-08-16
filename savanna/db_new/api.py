@@ -297,3 +297,33 @@ def job_execution_update(context, job_execution, values):
 def job_execution_destroy(context, job_execution):
     """Destroy the JobExecution or raise if it does not exist."""
     IMPL.job_execution_destroy(context, job_execution)
+
+
+## JobOrigin ops
+
+@to_dict
+def job_origin_get(context, job_origin):
+    """Return the JobOrigin or None if it does not exist."""
+    return IMPL.job_origin_get(context, job_origin)
+
+
+@to_dict
+def job_origin_get_all(context):
+    """Get all JobOrigins."""
+    return IMPL.job_origin_get_all(context)
+
+
+@to_dict
+def job_origin_create(context, values):
+    """Create a JobOrigin from the values dictionary."""
+    return IMPL.job_origin_create(context, values)
+
+
+def job_origin_update(context, job_origin, values):
+    """Update a JobOrigin from the values dictionary."""
+    IMPL.job_origin_update(context, job_origin, values)
+
+
+def job_origin_destroy(context, job_origin):
+    """Destroy the JobOrigin or raise if it does not exist."""
+    IMPL.job_origin_destroy(context, job_origin)

@@ -495,3 +495,56 @@ def job_execution_destroy(context, job_execution_id):
             raise RuntimeError("JobExecution not found!")
 
         session.delete(job_ex)
+
+
+## JobOrigin ops
+
+def _job_origin_get(context, session, job_origin_id):
+    query = model_query(m.JobOrigin, context, session)
+    return query.filter_by(id=job_origin_id).first()
+
+
+def job_origin_get(context, job_origin_id):
+    return _job_origin_get(context, get_session(), job_origin_id)
+
+
+def job_origin_get_all(context):
+    query = model_query(m.JobOrigin, context)
+    return query.all()
+
+
+def job_origin_create(context, values):
+    job_origin = m.JobOrigin()
+    job_origin.update(values)
+
+    try:
+        job_origin.save()
+    except db_exc.DBDuplicateEntry as e:
+        # raise exception about duplicated columns (e.columns)
+        raise RuntimeError("DBDuplicateEntry: %s" % e.columns)
+
+    return job_origin
+
+
+def job_origin_update(context, job_origin, values):
+    session = get_session()
+
+    with session.begin():
+        job_origin = _job_origin_get(context, session, job_origin)
+        if not job_origin:
+            # raise not found error
+            raise RuntimeError("JobOrigin not found!")
+        job_origin.update(values)
+        job_origin.save()
+
+
+def job_origin_destroy(context, job_origin_id):
+    session = get_session()
+    with session.begin():
+        job_origin = _job_origin_get(context, session, job_origin_id)
+
+        if not job_origin:
+            # raise not found error
+            raise RuntimeError("JobOrigin not found!")
+
+        session.delete(job_origin)
