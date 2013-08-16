@@ -22,6 +22,7 @@ from savanna.openstack.common import log as logging
 from savanna.service import networks
 from savanna.service import volumes
 from savanna.utils import crypto
+from savanna.utils import general as g
 from savanna.utils.openstack import nova
 from savanna.utils import remote
 
@@ -32,10 +33,12 @@ def create_cluster(cluster):
     try:
         # create all instances
         context.model_update(cluster, status='Spawning')
+        LOG.info(g.format_cluster_status(cluster))
         _create_instances(cluster)
 
         # wait for all instances are up and accessible
         context.model_update(cluster, status='Waiting')
+        LOG.info(g.format_cluster_status(cluster))
         _await_instances(cluster)
 
         # attach volumes
@@ -43,12 +46,14 @@ def create_cluster(cluster):
 
         # prepare all instances
         context.model_update(cluster, status='Preparing')
+        LOG.info(g.format_cluster_status(cluster))
         _configure_instances(cluster)
     except Exception as ex:
         LOG.warn("Can't start cluster '%s' (reason: %s)", cluster.name, ex)
         with excutils.save_and_reraise_exception():
             context.model_update(cluster, status='Error',
                                  status_description=str(ex))
+            LOG.info(g.format_cluster_status(cluster))
             _rollback_cluster_creation(cluster, ex)
 
 
@@ -76,6 +81,7 @@ def scale_cluster(cluster, node_group_names_map, plugin):
                 context.model_update(cluster, status='Error')
             else:
                 context.model_update(cluster, status='Active')
+            LOG.info(g.format_cluster_status(cluster))
     # we should be here with valid cluster: if instances creation
     # was not successful all extra-instances will be removed above
     if instances_list:
@@ -120,8 +126,10 @@ def _scale_cluster_instances(cluster, node_groups_map, plugin):
 
     if instances_to_delete:
         cluster.status = 'Decommissioning'
+        LOG.info(g.format_cluster_status(cluster))
         plugin.decommission_nodes(cluster, instances_to_delete)
         cluster.status = 'Deleting Instances'
+        LOG.info(g.format_cluster_status(cluster))
         for instance in instances_to_delete:
             node_group = instance.node_group
             node_group.instances.remove(instance)
@@ -132,6 +140,7 @@ def _scale_cluster_instances(cluster, node_groups_map, plugin):
     instances_to_add = []
     if node_groups_to_enlarge:
         cluster.status = 'Adding Instances'
+        LOG.info(g.format_cluster_status(cluster))
         for node_group in node_groups_to_enlarge:
             count = node_groups_map[node_group]
             userdata = _generate_user_data_script(node_group)
