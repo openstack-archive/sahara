@@ -1,5 +1,5 @@
 alembic>=0.4.1
-eventlet>=0.12.0
+eventlet>=0.13.0
 Flask==0.9
 jsonschema>=1.3.0,!=1.4.0
 kombu>=2.4.8
