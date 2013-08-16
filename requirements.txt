@@ -7,7 +7,7 @@ netaddr
 paramiko>=1.8.0
 pbr>=0.5.21,<1.0
 pycrypto>=2.6
-requests>=1.1,<1.2.3
+requests>=1.1
 python-cinderclient>=1.0.4
 python-keystoneclient>=0.3.0
 python-novaclient>=2.12.0
