@@ -62,7 +62,7 @@ class VanillaProvider(p.ProvisioningPluginBase):
     def validate(self, cluster):
         nn_count = sum([ng.count for ng
                         in utils.get_node_groups(cluster, "namenode")])
-        if nn_count is not 1:
+        if nn_count != 1:
             raise ex.NotSingleNameNodeException(nn_count)
 
         jt_count = sum([ng.count for ng
@@ -77,7 +77,7 @@ class VanillaProvider(p.ProvisioningPluginBase):
         if oozie_count not in [0, 1]:
             raise ex.NotSingleOozieException(oozie_count)
 
-        if jt_count is 0:
+        if jt_count == 0:
             tt_count = sum([ng.count for ng
                             in utils.get_node_groups(cluster, "tasktracker")])
             if tt_count > 0:
