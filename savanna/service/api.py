@@ -22,6 +22,7 @@ from savanna.openstack.common import uuidutils
 from savanna.plugins import base as plugin_base
 from savanna.plugins import provisioning
 from savanna.service import instances as i
+from savanna.utils import general as g
 from savanna.utils.openstack import nova
 
 LOG = logging.getLogger(__name__)
@@ -49,10 +50,12 @@ def scale_cluster(cluster_id, data):
 
     try:
         context.model_update(cluster, status='Validating')
+        LOG.info(g.format_cluster_status(cluster))
         plugin.validate_scaling(cluster, to_be_enlarged, additional)
     except Exception:
         with excutils.save_and_reraise_exception():
             context.model_update(cluster, status='Active')
+            LOG.info(g.format_cluster_status(cluster))
 
     # If we are here validation is successful.
     # So let's update bd and to_be_enlarged map:
@@ -72,11 +75,13 @@ def create_cluster(values):
     # validating cluster
     try:
         context.model_update(cluster, status='Validating')
+        LOG.info(g.format_cluster_status(cluster))
         plugin.validate(cluster)
     except Exception as ex:
         with excutils.save_and_reraise_exception():
             context.model_update(cluster, status='Error',
                                  status_description=str(ex))
+            LOG.info(g.format_cluster_status(cluster))
 
     context.spawn(_provision_cluster, cluster.id)
 
@@ -89,14 +94,17 @@ def _provision_nodes(cluster_id, node_group_names_map):
     plugin = plugin_base.PLUGINS.get_plugin(cluster.plugin_name)
 
     context.model_update(cluster, status='Scaling')
+    LOG.info(g.format_cluster_status(cluster))
     instances = i.scale_cluster(cluster, node_group_names_map, plugin)
 
     if instances:
         context.model_update(cluster, status='Configuring')
+        LOG.info(g.format_cluster_status(cluster))
         plugin.scale_cluster(cluster, instances)
 
     # cluster is now up and ready
     context.model_update(cluster, status='Active')
+    LOG.info(g.format_cluster_status(cluster))
 
 
 def _provision_cluster(cluster_id):
@@ -105,6 +113,7 @@ def _provision_cluster(cluster_id):
 
     # updating cluster infra
     context.model_update(cluster, status='InfraUpdating')
+    LOG.info(g.format_cluster_status(cluster))
     plugin.update_infra(cluster)
 
     # creating instances and configuring them
@@ -112,14 +121,17 @@ def _provision_cluster(cluster_id):
 
     # configure cluster
     context.model_update(cluster, status='Configuring')
+    LOG.info(g.format_cluster_status(cluster))
     plugin.configure_cluster(cluster)
 
     # starting prepared and configured cluster
     context.model_update(cluster, status='Starting')
+    LOG.info(g.format_cluster_status(cluster))
     plugin.start_cluster(cluster)
 
     # cluster is now up and ready
     context.model_update(cluster, status='Active')
+    LOG.info(g.format_cluster_status(cluster))
 
     return cluster
 
@@ -127,6 +139,7 @@ def _provision_cluster(cluster_id):
 def terminate_cluster(**args):
     cluster = get_cluster(**args)
     context.model_update(cluster, status='Deleting')
+    LOG.info(g.format_cluster_status(cluster))
 
     plugin = plugin_base.PLUGINS.get_plugin(cluster.plugin_name)
     plugin.on_terminate_cluster(cluster)
