@@ -13,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
+import savanna.api.base as b
 from savanna.openstack.common import log as logging
 from savanna.service.edp import api
 from savanna.service import validation as v
@@ -109,3 +109,9 @@ def job_origin_get(job_origin_id):
 def job_origin_delete(job_origin_id):
     api.delete_job_origin(job_origin_id)
     return u.render()
+
+
+@rest.put('/job-origins/<job_origin_id>')
+@v.check_exists(api.get_job_origin, id='job_origin_id')
+def job_origin_update(job_origin_id, data):
+    return b.not_implemented()
