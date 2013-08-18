@@ -238,7 +238,11 @@ def _check_if_up(instance):
         return False
 
     try:
-        exit_code, _ = remote.get_remote(instance).execute_command("hostname")
+        # check if ssh is accessible and cloud-init
+        # script is finished generating id_rsa
+        exit_code, _ = remote.get_remote(instance).execute_command(
+            "ls .ssh/id_rsa", raise_when_error=False)
+        # don't log ls command failure
         if exit_code:
             return False
     except Exception as ex:
@@ -263,20 +267,6 @@ def _configure_instances(cluster):
             with remote.get_remote(instance) as r:
                 r.write_file_to('etc-hosts', hosts)
                 r.execute_command('sudo mv etc-hosts /etc/hosts')
-
-                # wait generate id_rsa key
-                timeout = 10
-                cur_time = 0
-                while cur_time < timeout:
-                    code, _ = r.execute_command('ls .ssh/id_rsa',
-                                                raise_when_error=False)
-                    if code:
-                        cur_time += 1
-                        context.sleep(1)
-                    else:
-                        break
-                else:
-                    raise RuntimeError("Error getting user private key")
 
                 r.execute_command('sudo chown $USER:$USER .ssh/id_rsa')
                 r.execute_command('chmod 400 .ssh/id_rsa')
