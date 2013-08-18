@@ -64,7 +64,8 @@ def scale_cluster(cluster_id, data):
         to_be_enlarged.update({add_n_g.name: additional[add_n_g]})
     context.model_save(cluster)
 
-    context.spawn(_provision_nodes, cluster_id, to_be_enlarged)
+    context.spawn("cluster-scaling-%s" % cluster_id,
+                  _provision_nodes, cluster_id, to_be_enlarged)
     return cluster
 
 
@@ -83,7 +84,8 @@ def create_cluster(values):
                                  status_description=str(ex))
             LOG.info(g.format_cluster_status(cluster))
 
-    context.spawn(_provision_cluster, cluster.id)
+    context.spawn("cluster-creating-%s" % cluster.id,
+                  _provision_cluster, cluster.id)
 
     return cluster
 
