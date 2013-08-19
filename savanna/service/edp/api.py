@@ -75,5 +75,17 @@ def delete_job_origin(job_origin_id):
     return conductor.job_origin_destroy(context.ctx(), job_origin_id)
 
 
-def copy_job_origin(values):
-    pass
+def create_job_binary(values):
+    return conductor.job_binary_create(context.ctx(), values)
+
+
+def get_job_binaries():
+    return conductor.job_binary_get_all(context.ctx())
+
+
+def get_job_binary(id):
+    return conductor.job_binary_get(context.ctx(), id)
+
+
+def delete_job_binary(id):
+    conductor.job_binary_destroy(context.ctx(), id)

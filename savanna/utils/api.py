@@ -39,6 +39,9 @@ class Rest(flask.Blueprint):
     def put(self, rule, status_code=202):
         return self._mroute('PUT', rule, status_code)
 
+    def put_file(self, rule, status_code=202):
+        return self._mroute('PUT', rule, status_code, file_upload=True)
+
     def delete(self, rule, status_code=204):
         return self._mroute('DELETE', rule, status_code)
 
