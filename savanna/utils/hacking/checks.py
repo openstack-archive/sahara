@@ -69,6 +69,17 @@ def hacking_no_assert_equals(logical_line, tokens):
                 "S362: assertEquals is deprecated, use assertEqual")
 
 
+def hacking_no_author_attr(logical_line, tokens):
+    """__author__ should not be used.
+
+    S363: __author__ = slukjanov
+    """
+    for token_type, text, start_index, _, _ in tokens:
+        if token_type == tokenize.NAME and text == "__author__":
+            yield (start_index[1],
+                   "S363: __author__ should not be used")
+
+
 def factory(register):
     register(import_db_only_in_conductor)
     register(hacking_no_assert_equals)
