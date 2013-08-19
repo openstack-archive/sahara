@@ -327,3 +327,31 @@ def job_origin_update(context, job_origin, values):
 def job_origin_destroy(context, job_origin):
     """Destroy the JobOrigin or raise if it does not exist."""
     IMPL.job_origin_destroy(context, job_origin)
+
+
+@to_dict
+def job_binary_get_all(context):
+    """Get all JobBinarys."""
+    return IMPL.job_binary_get_all(context)
+
+
+@to_dict
+def job_binary_get(context, job_binary):
+    """Return the JobBinary or None if it does not exist."""
+    return IMPL.job_binary_get(context, job_binary)
+
+
+@to_dict
+def job_binary_create(context, values):
+    """Create a JobBinary from the values dictionary."""
+    return IMPL.job_binary_create(context, values)
+
+
+def job_binary_destroy(context, job_binary):
+    """Destroy the JobBinary or raise if it does not exist."""
+    IMPL.job_binary_destroy(context, job_binary)
+
+
+def job_binary_get_raw_data(context, job_binary_id):
+    """Return the binary data field from the specified JobBinary."""
+    return IMPL.job_binary_get_raw_data(context, job_binary_id)

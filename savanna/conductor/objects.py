@@ -224,3 +224,17 @@ class JobOrigin(object):
     url
     credentials
     """
+
+
+class JobBinary(object):
+    """An object representing JobBinary
+
+    Note that the 'data' field is not returned. It uses deferred
+    loading and must be requested explicitly with the
+    job_binary_get_raw_data() conductor method.
+
+    id
+    tenant_id
+    name
+    datasize
+    """

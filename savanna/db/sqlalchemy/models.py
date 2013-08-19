@@ -208,7 +208,7 @@ class TemplatesRelation(mb.SavannaBase):
                                        lazy='joined')
 
 
-## EDP objects: DataSource, JobOrigin, Job, Job Execution
+## EDP objects: DataSource, JobOrigin, Job, Job Execution, JobBinary
 
 class DataSource(mb.SavannaBase):
     """DataSource - represent a diffident types of data source,
@@ -291,3 +291,20 @@ class JobOrigin(mb.SavannaBase):
     storage_type = sa.Column(sa.String(16))
     url = sa.Column(sa.String())
     credentials = sa.Column(st.JsonDictType())
+
+
+class JobBinary(mb.SavannaBase):
+    """JobBinary - raw binary storage for executable jobs
+    """
+
+    __tablename__ = 'job_binaries'
+
+    __table_args__ = (
+        sa.UniqueConstraint('name', 'tenant_id'),
+    )
+
+    id = _id_column()
+    tenant_id = sa.Column(sa.String(36))
+    name = sa.Column(sa.String(80), nullable=False)
+    data = sa.orm.deferred(sa.Column(sa.LargeBinary))
+    datasize = sa.Column(sa.BIGINT)

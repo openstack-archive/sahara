@@ -54,6 +54,17 @@ def model_query(model, context, session=None, project_only=None):
     return query
 
 
+def column_query(context, *columns, **kwargs):
+    session = kwargs.get("session") or get_session()
+
+    query = session.query(*columns)
+
+    if kwargs.get("project_only"):
+        query = query.filter_by(tenant_id=context.tenant_id)
+
+    return query
+
+
 def setup_db():
     try:
         engine = db_session.get_engine(sqlite_fk=True)
@@ -548,3 +559,63 @@ def job_origin_destroy(context, job_origin_id):
             raise RuntimeError("JobOrigin not found!")
 
         session.delete(job_origin)
+
+## JobBinary ops
+
+
+def job_binary_get_all(context):
+    """Returns JobBinary objects that do not contain a data field
+
+    The data column uses deferred loading.
+    """
+    query = model_query(m.JobBinary, context)
+    return query.all()
+
+
+def job_binary_get(context, job_binary_id):
+    """Returns a JobBinary object that does not contain a data field
+
+    The data column uses deferred loadling.
+    """
+    query = model_query(m.JobBinary, context).filter_by(id=job_binary_id)
+    return query.first()
+
+
+def job_binary_get_raw_data(context, job_binary_id):
+    """Returns only the data field for the specified JobBinary."""
+    query = model_query(m.JobBinary, context).options(sa.orm.undefer("data"))
+    res = query.filter_by(id=job_binary_id).first()
+    if res is not None:
+        res = res.data
+    return res
+
+
+def job_binary_create(context, values):
+    """Returns a JobBinary that does not contain a data field
+
+    The data column uses deferred loading.
+    """
+    job_binary = m.JobBinary()
+    job_binary.update(values)
+
+    try:
+        job_binary.save()
+    except db_exc.DBDuplicateEntry as e:
+        # raise exception about duplicated columns (e.columns)
+        raise RuntimeError("DBDuplicateEntry: %s" % e.columns)
+
+    return job_binary_get(context, job_binary.id)
+
+
+def job_binary_destroy(context, job_binary_id):
+    session = get_session()
+    with session.begin():
+
+        job_binary = model_query(m.JobBinary,
+                                 context).filter_by(id=job_binary_id).first()
+
+        if not job_binary:
+            # raise not found error
+            raise RuntimeError("JobBinary not found!")
+
+        session.delete(job_binary)
