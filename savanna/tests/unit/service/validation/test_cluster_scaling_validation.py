@@ -16,12 +16,13 @@
 import mock
 import unittest2
 
-import savanna.db.models as m
+#import savanna.db.models as m
 from savanna import exceptions as ex
 from savanna.plugins.vanilla import plugin
 from savanna.service import api
 import savanna.service.validation as v
 from savanna.service.validations import clusters_scaling as c_s
+from savanna.tests.unit.plugins.vanilla import test_utils as tu
 from savanna.tests.unit.service.validation import utils as u
 
 
@@ -55,17 +56,19 @@ class TestScalingValidation(unittest2.TestCase):
                 raise e
 
     def test_check_cluster_scaling_resize_ng(self):
-        cluster = m.Cluster('test-cluster', 'tenant', 'vanilla', '1.2.2')
-        cluster.status = 'Validating'
-        ng = m.NodeGroup('ng', '42', ['namenode'], 1)
-        cluster.node_groups.append(ng)
+        ng1 = tu._make_ng_dict('ng', '42', ['namenode'], 1)
+        cluster = tu._create_cluster("cluster1", "tenant1", "vanilla", "1.1.2",
+                                     [ng1], status='Validating', id='12321')
+
         self._assert_check_scaling(data={}, cluster=cluster,
                                    expected_message=
                                    "Cluster cannot be scaled "
                                    "not in 'Active' "
                                    "status. Cluster status: "
                                    "Validating")
-        cluster.status = 'Active'
+
+        cluster = tu._create_cluster("cluster1", "tenant1", "vanilla", "1.1.2",
+                                     [ng1], status='Active', id='12321')
         data = {
             'resize_node_groups': [
                 {
@@ -97,10 +100,10 @@ class TestScalingValidation(unittest2.TestCase):
                                    'group names are detected')
 
     def test_check_cluster_scaling_add_ng(self):
-        cluster = m.Cluster('test-cluster', 'tenant', 'vanilla', '1.2.2')
-        ng = m.NodeGroup('ng', '42', ['namenode'], 1)
-        cluster.node_groups.append(ng)
-        cluster.status = 'Active'
+        ng1 = tu._make_ng_dict('ng', '42', ['namenode'], 1)
+        cluster = tu._create_cluster("test-cluster", "tenant", "vanilla",
+                                     "1.2.2", [ng1], status='Active',
+                                     id='12321')
         data = {
             'add_node_groups': [
                 {
@@ -296,10 +299,6 @@ class TestScalingValidation(unittest2.TestCase):
 
     def test_cluster_scaling_v_right_data(self):
         self._create_object_fun = c_s.check_cluster_scaling
-        cluster = m.Cluster('test-cluster', 'tenant', 'vanilla', '1.2.2')
-        ng = m.NodeGroup('ng', '42', ['namenode'], 1)
-        cluster.node_groups.append(ng)
-        cluster.status = 'Active'
 
         data = {
             'resize_node_groups': [

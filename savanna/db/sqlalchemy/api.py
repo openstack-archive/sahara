@@ -19,7 +19,7 @@ import sys
 
 import sqlalchemy as sa
 
-from savanna.db_new.sqlalchemy import models as m
+from savanna.db.sqlalchemy import models as m
 from savanna.openstack.common.db import exception as db_exc
 from savanna.openstack.common.db.sqlalchemy import session as db_session
 from savanna.openstack.common import log as logging

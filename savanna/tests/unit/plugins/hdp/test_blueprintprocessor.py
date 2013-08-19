@@ -16,9 +16,10 @@
 import collections as c
 import json
 import os
-from savanna.db import models as m
-from savanna.plugins.hdp import blueprintprocessor as bp
 import unittest2
+
+from savanna.conductor import resource as r
+from savanna.plugins.hdp import blueprintprocessor as bp
 
 
 class BlueprintProcessorTest(unittest2.TestCase):
@@ -240,17 +241,17 @@ class BlueprintProcessorTest(unittest2.TestCase):
                              'resources',
                              'sample-ambari-blueprint.json'), 'r')))
         node_groups = []
-        node_groups.append(m.NodeGroup('MASTER', 'master-flavor',
-                                       ["namenode", "jobtracker",
-                                       "secondary_namenode", "ganglia_server",
-                                       "ganglia_monitor", "nagios_server",
-                                       "ambari_server", "ambari_agent"], 1,
-                                       image_id='master-img'))
-        node_groups.append(m.NodeGroup('SLAVE', 'slave-flavor',
-                                       ["datanode", "tasktracker",
-                                       "ganglia_monitor", "hdfs_client",
-                                       "mapreduce_client", "ambari_agent"], 2,
-                                       image_id='slave-img'))
+        node_groups.append(_create_ng('MASTER', 'master-flavor',
+                                      ["namenode", "jobtracker",
+                                      "secondary_namenode", "ganglia_server",
+                                      "ganglia_monitor", "nagios_server",
+                                      "ambari_server", "ambari_agent"], 1,
+                                      'master-img'))
+        node_groups.append(_create_ng('SLAVE', 'slave-flavor',
+                                      ["datanode", "tasktracker",
+                                      "ganglia_monitor", "hdfs_client",
+                                      "mapreduce_client", "ambari_agent"], 2,
+                                      'slave-img'))
 
         processor.process_node_groups(node_groups)
         host_mappings = processor.blueprint['host_role_mappings']
@@ -302,12 +303,12 @@ class BlueprintProcessorTest(unittest2.TestCase):
                              'resources',
                              'sample-ambari-blueprint.json'), 'r')))
         node_groups = []
-        node_groups.append(m.NodeGroup('OTHER_MASTER_GROUP', 'master-flavor',
-                                       ["namenode", "jobtracker",
-                                       "secondary_namenode", "ganglia_server",
-                                       "ganglia_monitor", "nagios_server",
-                                       "ambari_server", "ambari_agent"], 1,
-                                       image_id='master-img'))
+        node_groups.append(_create_ng('OTHER_MASTER_GROUP', 'master-flavor',
+                                      ["namenode", "jobtracker",
+                                      "secondary_namenode", "ganglia_server",
+                                      "ganglia_monitor", "nagios_server",
+                                      "ambari_server", "ambari_agent"], 1,
+                                      'master-img'))
         processor.process_node_groups(node_groups)
         host_mappings = processor.blueprint['host_role_mappings']
         self.assertEqual(3, len(host_mappings),
@@ -360,12 +361,11 @@ class BlueprintProcessorTest(unittest2.TestCase):
                              'resources',
                              'sample-ambari-blueprint.json'), 'r')))
         node_groups = []
-        node_groups.append(m.NodeGroup('MASTER', 'master-flavor',
-                                       ["namenode", "jobtracker",
-                                       "secondary_namenode", "ganglia_server",
-                                       "ganglia_monitor", "ambari_server",
-                                       "ambari_agent"], 1,
-                                       image_id='master-img'))
+        node_groups.append(_create_ng('MASTER', 'master-flavor',
+                                      ["namenode", "jobtracker",
+                                      "secondary_namenode", "ganglia_server",
+                                      "ganglia_monitor", "ambari_server",
+                                      "ambari_agent"], 1, 'master-img'))
         processor.process_node_groups(node_groups)
         host_mappings = processor.blueprint['host_role_mappings']
         self.assertEqual(2, len(host_mappings),
@@ -416,10 +416,9 @@ class BlueprintProcessorTest(unittest2.TestCase):
                              'sample-ambari-blueprint.json'), 'r')))
         node_groups = []
         node_groups.append(
-            m.NodeGroup('MASTER', 'master-flavor', [], 1,
-                        image_id='master-img'))
+            _create_ng('MASTER', 'master-flavor', [], 1, 'master-img'))
         node_groups.append(
-            m.NodeGroup('SLAVE', 'slave-flavor', [], 2, image_id='slave-img'))
+            _create_ng('SLAVE', 'slave-flavor', [], 2, 'slave-img'))
 
         processor.process_node_groups(node_groups)
         host_mappings = processor.blueprint['host_role_mappings']
@@ -472,10 +471,9 @@ class BlueprintProcessorTest(unittest2.TestCase):
                              'sample-ambari-blueprint.json'), 'r')))
         node_groups = []
         node_groups.append(
-            m.NodeGroup('MASTER', 'master-flavor', [], 1,
-                        image_id='master-img'))
+            _create_ng('MASTER', 'master-flavor', [], 1, 'master-img'))
         node_groups.append(
-            m.NodeGroup('SLAVE', 'slave-flavor', [], 2, image_id='slave-img'))
+            _create_ng('SLAVE', 'slave-flavor', [], 2, 'slave-img'))
 
         processor.process_node_groups(node_groups)
         host_mappings = processor.blueprint['host_role_mappings']
@@ -525,3 +523,15 @@ class BlueprintProcessorTest(unittest2.TestCase):
 
     def json2obj(self, data):
         return json.loads(data, object_hook=self._json_object_hook)
+
+
+def _create_ng(name, flavor, node_processes, count, image):
+    dct = {
+        'name': name,
+        'flavor_id': flavor,
+        'node_processes': node_processes,
+        'count': count,
+        'image_id': image
+    }
+
+    return r.NodeGroupResource(dct)

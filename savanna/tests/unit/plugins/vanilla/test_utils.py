@@ -15,23 +15,29 @@
 
 import unittest2
 
-from savanna.db import models as m
+from savanna.conductor import resource as r
 from savanna.plugins.general import utils as u
 
 
 class VanillaUtilsTest(unittest2.TestCase):
     def setUp(self):
-        self.c1 = m.Cluster("cluster1", "tenant1", "vanilla", "1.1.2")
-        self.ng1 = m.NodeGroup("master", "f1", ["jt", "nn"], 1)
-        self.ng2 = m.NodeGroup("workers", "f1", ["tt", "dn"], 3)
-        self.ng3 = m.NodeGroup("sn", "f1", ["dn"], 1)
-        self.c1.node_groups = [self.ng1, self.ng2, self.ng3]
+        i1 = _make_inst_dict('i1', 'master')
+        i2 = _make_inst_dict('i2', 'worker1')
+        i3 = _make_inst_dict('i3', 'worker2')
+        i4 = _make_inst_dict('i4', 'worker3')
+        i5 = _make_inst_dict('i5', 'sn')
 
-        self.ng1.instances = [m.Instance("ng1", "i1", "master")]
-        self.ng2.instances = [m.Instance("ng2", "i2", "worker1"),
-                              m.Instance("ng2", "i3", "worker2"),
-                              m.Instance("ng2", "i4", "worker3")]
-        self.ng3.instances = [m.Instance("ng3", "i5", "sn")]
+        ng1 = _make_ng_dict("master", "f1", ["jt", "nn"], 1, [i1])
+        ng2 = _make_ng_dict("workers", "f1", ["tt", "dn"], 3,
+                            [i2, i3, i4])
+        ng3 = _make_ng_dict("sn", "f1", ["dn"], 1, [i5])
+
+        self.c1 = _create_cluster("cluster1", "tenant1", "vanilla", "1.1.2",
+                                  [ng1, ng2, ng3])
+
+        self.ng1 = self.c1.node_groups[0]
+        self.ng2 = self.c1.node_groups[1]
+        self.ng3 = self.c1.node_groups[2]
 
     def test_get_node_groups(self):
         self.assertListEqual(u.get_node_groups(self.c1), self.c1.node_groups)
@@ -49,10 +55,27 @@ class VanillaUtilsTest(unittest2.TestCase):
         self.assertListEqual(u.get_instances(self.c1, 'wrong-process'), [])
         self.assertListEqual(u.get_instances(self.c1, 'nn'),
                              self.ng1.instances)
-        self.assertListEqual(u.get_instances(self.c1, 'dn'),
-                             self.ng2.instances + self.ng3.instances)
+        instances = list(self.ng2.instances)
+        instances += self.ng3.instances
+        self.assertListEqual(u.get_instances(self.c1, 'dn'), instances)
 
     def test_generate_lines_from_list(self):
         self.assertEqual(u.generate_host_names(self.ng2.instances),
                          "worker1\nworker2\nworker3")
         self.assertEqual(u.generate_host_names([]), "")
+
+
+def _create_cluster(name, tenant, plugin, version, node_groups, **kwargs):
+    dct = {'name': name, 'tenant_id': tenant, 'plugin_name': plugin,
+           'hadoop_version': version, 'node_groups': node_groups}
+    dct.update(kwargs)
+    return r.ClusterResource(dct)
+
+
+def _make_ng_dict(name, flavor, processes, count, instances=[]):
+    return {'name': name, 'flavor_id': flavor, 'node_processes': processes,
+            'count': count, 'instances': instances}
+
+
+def _make_inst_dict(inst_id, inst_name):
+    return {'instance_id': inst_id, 'instance_name': inst_name}

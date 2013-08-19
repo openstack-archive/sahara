@@ -36,10 +36,10 @@ class DbTestCase(unittest2.TestCase):
         self.set_tenant()
         self.db_fd, self.db_path = tempfile.mkstemp()
         session.set_defaults('sqlite:///' + self.db_path, self.db_path)
-        db_api.configure_db()
+        db_api.setup_db()
 
     def tearDown(self):
-        db_api.clear_db()
+        db_api.drop_db()
         os.close(self.db_fd)
         os.unlink(self.db_path)
         context.set_ctx(None)

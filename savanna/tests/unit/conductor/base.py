@@ -17,7 +17,7 @@ import copy
 
 from savanna import conductor
 from savanna.conductor import manager
-from savanna.db_new import api as db_api
+from savanna.db import api as db_api
 from savanna.tests.unit import base
 
 

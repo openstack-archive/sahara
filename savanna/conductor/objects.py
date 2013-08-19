@@ -25,11 +25,10 @@ from oslo.config import cfg
 
 from savanna.utils import configs
 from savanna.utils import remote
-from savanna.utils import types
 
 
 CONF = cfg.CONF
-CONF.import_opt('node_domain', 'savanna.service.networks')
+CONF.import_opt('node_domain', 'savanna.config')
 
 
 class Cluster(object):
@@ -84,7 +83,6 @@ class NodeGroup(object):
     """
 
     @property
-    @types.cached
     def configuration(self):
         return configs.merge_configs(self.cluster.cluster_configs,
                                      self.node_configs)

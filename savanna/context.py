@@ -18,7 +18,6 @@ import threading
 import eventlet
 from eventlet import corolocal
 
-from savanna.db import api as db_api
 from savanna.openstack.common import log as logging
 
 
@@ -43,13 +42,6 @@ class Context(object):
                        self.auth_token,
                        self.headers)
 
-    # TODO(slukjanov):should be removed after migration to conductor
-    @property
-    def session(self):
-        if self._db_session is None:
-            self._db_session = db_api.get_session()
-        return self._db_session
-
 
 _CTXS = threading.local()
 _CTXS._curr_ctxs = {}
@@ -71,12 +63,6 @@ def current():
     return ctx()
 
 
-# TODO(slukjanov):should be removed after migration to conductor
-def session(context=None):
-    context = context or ctx()
-    return context.session
-
-
 def set_ctx(new_ctx):
     ident = corolocal.get_ident()
 
@@ -85,43 +71,6 @@ def set_ctx(new_ctx):
 
     if new_ctx:
         _CTXS._curr_ctxs[ident] = new_ctx
-
-
-# TODO(slukjanov): should be removed after migration to conductor
-def model_query(model, context=None, project_only=None):
-    context = context or ctx()
-    query = context.session.query(model)
-
-    if project_only:
-        query = query.filter_by(tenant_id=context.tenant_id)
-
-    return query
-
-
-# TODO(slukjanov): should be removed after migration to conductor
-def model_save(model, context=None):
-    context = context or ctx()
-    with context.session.begin():
-        context.session.add(model)
-    return model
-
-
-# TODO(slukjanov): should be removed after migration to conductor
-def model_update(model, context=None, **kwargs):
-    if not hasattr(model, '__table__'):
-        # TODO(slikjanov): replace with specific exception
-        raise RuntimeError("Specified object isn't model, class: %s"
-                           % model.__class__.__name__)
-    columns = model.__table__.columns
-    for prop in kwargs:
-        if prop not in columns:
-            # TODO(slukjanov): replace with specific exception
-            raise RuntimeError(
-                "Model class '%s' doesn't contains specified property '%s'"
-                % (model.__class__.__name__, prop))
-        setattr(model, prop, kwargs[prop])
-
-    return model_save(model, context)
 
 
 def spawn(thread_description, func, *args, **kwargs):

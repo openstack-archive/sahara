@@ -32,3 +32,5 @@ def Api(use_local=True, **kwargs):
         # api = conductor.RemoteApi
 
     return api(**kwargs)
+
+API = Api()

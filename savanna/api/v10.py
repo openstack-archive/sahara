@@ -34,32 +34,32 @@ rest = u.Rest('v10', __name__)
 
 @rest.get('/clusters')
 def clusters_list():
-    return u.render(clusters=[c.dict for c in api.get_clusters()])
+    return u.render(clusters=[c.to_dict() for c in api.get_clusters()])
 
 
 @rest.post('/clusters')
 @v.validate(v_c.CLUSTER_SCHEMA, v_c.check_cluster_create)
 def clusters_create(data):
-    return u.render(api.create_cluster(data).wrapped_dict)
+    return u.render(api.create_cluster(data).to_wrapped_dict())
 
 
 @rest.put('/clusters/<cluster_id>')
 @v.check_exists(api.get_cluster, 'cluster_id')
 @v.validate(v_c_s.CLUSTER_SCALING_SCHEMA, v_c_s.check_cluster_scaling)
 def clusters_scale(cluster_id, data):
-    return u.render(api.scale_cluster(cluster_id, data).wrapped_dict)
+    return u.render(api.scale_cluster(cluster_id, data).to_wrapped_dict())
 
 
 @rest.get('/clusters/<cluster_id>')
 @v.check_exists(api.get_cluster, 'cluster_id')
 def clusters_get(cluster_id):
-    return u.render(api.get_cluster(id=cluster_id).wrapped_dict)
+    return u.render(api.get_cluster(cluster_id).to_wrapped_dict())
 
 
 @rest.delete('/clusters/<cluster_id>')
 @v.check_exists(api.get_cluster, 'cluster_id')
 def clusters_delete(cluster_id):
-    api.terminate_cluster(id=cluster_id)
+    api.terminate_cluster(cluster_id)
     return u.render()
 
 
@@ -68,20 +68,20 @@ def clusters_delete(cluster_id):
 @rest.get('/cluster-templates')
 def cluster_templates_list():
     return u.render(
-        cluster_templates=[t.dict for t in api.get_cluster_templates()])
+        cluster_templates=[t.to_dict() for t in api.get_cluster_templates()])
 
 
 @rest.post('/cluster-templates')
 @v.validate(v_ct.CLUSTER_TEMPLATE_SCHEMA, v_ct.check_cluster_template_create)
 def cluster_templates_create(data):
-    return u.render(api.create_cluster_template(data).wrapped_dict)
+    return u.render(api.create_cluster_template(data).to_wrapped_dict())
 
 
 @rest.get('/cluster-templates/<cluster_template_id>')
 @v.check_exists(api.get_cluster_template, 'cluster_template_id')
 def cluster_templates_get(cluster_template_id):
     return u.render(
-        api.get_cluster_template(id=cluster_template_id).wrapped_dict)
+        api.get_cluster_template(cluster_template_id).to_wrapped_dict())
 
 
 @rest.put('/cluster-templates/<cluster_template_id>')
@@ -94,7 +94,7 @@ def cluster_templates_update(cluster_template_id, data):
 @v.check_exists(api.get_cluster_template, 'cluster_template_id')
 @v.validate(None, v_ct.check_cluster_template_usage)
 def cluster_templates_delete(cluster_template_id):
-    api.terminate_cluster_template(id=cluster_template_id)
+    api.terminate_cluster_template(cluster_template_id)
     return u.render()
 
 
@@ -103,21 +103,22 @@ def cluster_templates_delete(cluster_template_id):
 @rest.get('/node-group-templates')
 def node_group_templates_list():
     return u.render(
-        node_group_templates=[t.dict for t in api.get_node_group_templates()])
+        node_group_templates=[t.to_dict()
+                              for t in api.get_node_group_templates()])
 
 
 @rest.post('/node-group-templates')
 @v.validate(v_ngt.NODE_GROUP_TEMPLATE_SCHEMA,
             v_ngt.check_node_group_template_create)
 def node_group_templates_create(data):
-    return u.render(api.create_node_group_template(data).wrapped_dict)
+    return u.render(api.create_node_group_template(data).to_wrapped_dict())
 
 
 @rest.get('/node-group-templates/<node_group_template_id>')
 @v.check_exists(api.get_node_group_template, 'node_group_template_id')
 def node_group_templates_get(node_group_template_id):
     return u.render(
-        api.get_node_group_template(id=node_group_template_id).wrapped_dict)
+        api.get_node_group_template(node_group_template_id).to_wrapped_dict())
 
 
 @rest.put('/node-group-templates/<node_group_template_id>')
@@ -130,7 +131,7 @@ def node_group_templates_update(node_group_template_id, data):
 @v.check_exists(api.get_node_group_template, 'node_group_template_id')
 @v.validate(None, v_ngt.check_node_group_template_usage)
 def node_group_templates_delete(node_group_template_id):
-    api.terminate_node_group_template(id=node_group_template_id)
+    api.terminate_node_group_template(node_group_template_id)
     return u.render()
 
 
@@ -157,8 +158,9 @@ def plugins_get_version(plugin_name, version):
 @v.check_exists(api.get_plugin, plugin_name='plugin_name', version='version')
 @v.validate(v_p.CONVERT_TO_TEMPLATE_SCHEMA, v_p.check_convert_to_template)
 def plugins_convert_to_cluster_template(plugin_name, version, data):
-    return u.render(
-        api.convert_to_cluster_template(plugin_name, version, data))
+    return u.render(api.convert_to_cluster_template(plugin_name,
+                                                    version,
+                                                    data).to_wrapped_dict())
 
 
 ## Image Registry ops

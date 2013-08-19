@@ -17,26 +17,13 @@ import netaddr
 
 from oslo.config import cfg
 
+from savanna import conductor as c
+from savanna import context
 from savanna.utils.openstack import nova
 
+
+conductor = c.API
 CONF = cfg.CONF
-
-cluster_node_opts = [
-    cfg.BoolOpt('use_floating_ips',
-                default=True,
-                help='When set to false, Savanna uses only internal IP of VMs.'
-                     ' When set to true, Savanna expects OpenStack to auto-'
-                     'assign floating IPs to cluster nodes. Internal IPs will '
-                     'be used for inter-cluster communication, while floating '
-                     'ones will be used by Savanna to configure nodes. Also '
-                     'floating IPs will be exposed in service URLs.'),
-    cfg.StrOpt('node_domain',
-               default='novalocal',
-               help="The suffix of the node's FQDN. In nova-network that is "
-                    "dhcp_domain config parameter")
-]
-
-CONF.register_opts(cluster_node_opts)
 
 
 # NOTE(slukjanov): https://blueprints.launchpad.net/savanna?searchtext=ip
@@ -47,19 +34,27 @@ def init_instances_ips(instance, server):
     If use_floating_ip flag is set than management ip will be the first
     non-internal ip.
     """
+    ctx = context.ctx()
+
     if instance.internal_ip and instance.management_ip:
         return True
+
+    management_ip = instance.management_ip
+    internal_ip = instance.internal_ip
 
     for network_label in server.networks:
         nova_network = nova.client().networks.find(label=network_label)
         network = netaddr.IPNetwork(nova_network.cidr)
         for ip in server.networks[network_label]:
             if netaddr.IPAddress(ip) in network:
-                instance.internal_ip = instance.internal_ip or ip
+                internal_ip = instance.internal_ip or ip
             else:
-                instance.management_ip = instance.management_ip or ip
+                management_ip = instance.management_ip or ip
 
     if not CONF.use_floating_ips:
-        instance.management_ip = instance.internal_ip
+        management_ip = internal_ip
 
-    return instance.internal_ip and instance.management_ip
+    conductor.instance_update(ctx, instance, {"management_ip": management_ip,
+                                              "internal_ip": internal_ip})
+
+    return internal_ip and management_ip

@@ -15,15 +15,17 @@
 
 import os
 import requests
+
 from savanna import context
 from savanna.openstack.common import jsonutils as json
 from savanna.openstack.common import log as logging
+from savanna.openstack.common import uuidutils
 from savanna.plugins.hdp import blueprintprocessor as bp
 from savanna.plugins.hdp import clusterspec
 from savanna.plugins.hdp import configprovider as cfg
 from savanna.plugins.hdp import exceptions as ex
 from savanna.plugins.hdp import hadoopserver as h
-from savanna.plugins.hdp import savannautils as s
+from savanna.plugins.hdp import savannautils as utils
 from savanna.plugins.hdp import validator as v
 from savanna.plugins import provisioning as p
 
@@ -54,8 +56,9 @@ class AmbariPlugin(p.ProvisioningPluginBase):
 
         servers = []
         for host in hosts:
+            host_role = utils.get_host_role(host)
             servers.append(
-                h.HadoopServer(host, cluster_spec.node_groups[host.role],
+                h.HadoopServer(host, cluster_spec.node_groups[host_role],
                                ambari_rpm=rpm))
 
         provisioned = self._provision_cluster(cluster.name, cluster_spec,
@@ -79,11 +82,7 @@ class AmbariPlugin(p.ProvisioningPluginBase):
         if hasattr(cluster, 'node_groups') and cluster.node_groups is not None:
             # code for a savanna cluster object
             for node_group in cluster.node_groups:
-                for server in node_group.instances:
-                    setattr(server, 'role', node_group.name)
-                    setattr(server, 'node_processes',
-                            node_group.node_processes)
-                    servers.append(server)
+                servers += node_group.instances
         else:
             # cluster is actually a cloud context
             servers = cluster.instances
@@ -101,18 +100,40 @@ class AmbariPlugin(p.ProvisioningPluginBase):
 
         return node_processes
 
-    def convert(self, cluster_template, config):
+    def convert(self, config, plugin_name, version, cluster_template_create):
         normalized_config = clusterspec.ClusterSpec(config).normalize()
 
         #TODO(jspeidel):  can we get the name (first arg) from somewhere?
 
-        cluster_template = s.convert(cluster_template, normalized_config)
+        node_groups = []
+        for ng in normalized_config.node_groups:
+            node_group = {
+                "name": ng.name,
+                "flavor_id": ng.flavor,
+                "node_processes": ng.node_processes,
+                "count": ng.count
+            }
+            node_groups.append(node_group)
 
-        return cluster_template
+        cluster_configs = dict()
+        for entry in normalized_config.cluster_configs:
+            ci = entry.config
+            # get the associated service dictionary
+            target = entry.config.applicable_target
+            service_dict = cluster_configs.get(target, {})
+            service_dict[ci.name] = entry.value
+            cluster_configs[target] = service_dict
+
+        ctx = context.ctx()
+        return cluster_template_create(ctx,
+                                       {"name": uuidutils.generate_uuid(),
+                                        "plugin_name": plugin_name,
+                                        "hadoop_version": version,
+                                        "node_groups": node_groups,
+                                        "cluster_configs": cluster_configs})
 
     def update_infra(self, cluster):
-        for node_group in cluster.node_groups:
-            node_group.image = cluster.default_image_id
+        pass
 
     def convert_props_to_template(self, props):
         raise NotImplementedError('not yet supported')
@@ -307,7 +328,7 @@ class AmbariPlugin(p.ProvisioningPluginBase):
                 found_node_group = node_group.name
 
         for host in servers:
-            if host.role == found_node_group:
+            if utils.get_host_role(host) == found_node_group:
                 return host
 
         raise Exception(

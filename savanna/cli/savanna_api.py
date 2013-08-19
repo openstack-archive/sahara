@@ -34,7 +34,7 @@ if os.path.exists(os.path.join(possible_topdir,
     sys.path.insert(0, possible_topdir)
 
 from savanna import config
-from savanna.db_new import api as db_api
+from savanna.db import api as db_api
 import savanna.main as server
 from savanna.openstack.common import log as logging
 

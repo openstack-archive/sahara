@@ -40,8 +40,8 @@ def import_db_only_in_conductor(logical_line, filename):
                "savanna/conductor",
                "savanna/tests",
                "savanna/db",
-               # TODO(slukjanov): remove this when we'll use new db abstraction
-               "savanna/db_new"):
+               "savanna/main.py",
+               "savanna/cli"):
         return
 
     if _starts_with_any(logical_line,

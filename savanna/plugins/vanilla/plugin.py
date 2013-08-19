@@ -13,6 +13,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from savanna import conductor
+from savanna import context
 from savanna.openstack.common import log as logging
 from savanna.plugins.general import exceptions as ex
 from savanna.plugins.general import utils
@@ -24,6 +26,7 @@ from savanna.utils import crypto
 from savanna.utils import remote
 
 
+conductor = conductor.API
 LOG = logging.getLogger(__name__)
 
 
@@ -253,7 +256,7 @@ class VanillaProvider(p.ProvisioningPluginBase):
         jt = utils.get_jobtracker(cluster)
         oozie = utils.get_oozie(cluster)
 
-        info = cluster.info
+        info = {}
 
         if jt:
             info['MapReduce'] = {
@@ -269,6 +272,9 @@ class VanillaProvider(p.ProvisioningPluginBase):
             info['JobFlow'] = {
                 'Oozie': 'http://%s:11000' % oozie.management_ip
             }
+
+        ctx = context.ctx()
+        conductor.cluster_update(ctx, cluster, {'info': info})
 
     def _write_hadoop_user_keys(self, private_key, instances):
         public_key = crypto.private_key_to_public_key(private_key)
@@ -291,11 +297,19 @@ class VanillaProvider(p.ProvisioningPluginBase):
     def _get_scalable_processes(self):
         return ["datanode", "tasktracker"]
 
+    def _get_by_id(self, lst, id):
+        for obj in lst:
+            if obj.id == id:
+                return obj
+
+        return None
+
     def _validate_additional_ng_scaling(self, cluster, additional):
         jt = utils.get_jobtracker(cluster)
         scalable_processes = self._get_scalable_processes()
 
-        for ng in additional:
+        for ng_id in additional:
+            ng = self._get_by_id(cluster.node_groups, ng_id)
             if not set(ng.node_processes).issubset(scalable_processes):
                 raise ex.NodeGroupCannotBeScaled(
                     ng.name, "Vanilla plugin cannot scale nodegroup"
@@ -308,15 +322,13 @@ class VanillaProvider(p.ProvisioningPluginBase):
                              "in cluster")
 
     def _validate_existing_ng_scaling(self, cluster, existing):
-        ng_names = existing.copy()
         scalable_processes = self._get_scalable_processes()
         dn_to_delete = 0
         for ng in cluster.node_groups:
-            if ng.name in existing:
-                del ng_names[ng.name]
-                if ng.count > existing[ng.name] and "datanode" in \
+            if ng.id in existing:
+                if ng.count > existing[ng.id] and "datanode" in \
                         ng.node_processes:
-                    dn_to_delete += ng.count - existing[ng.name]
+                    dn_to_delete += ng.count - existing[ng.id]
                 if not set(ng.node_processes).issubset(scalable_processes):
                     raise ex.NodeGroupCannotBeScaled(
                         ng.name, "Vanilla plugin cannot scale nodegroup"
@@ -331,6 +343,3 @@ class VanillaProvider(p.ProvisioningPluginBase):
             raise Exception("Vanilla plugin cannot shrink cluster because "
                             "it would be not enough nodes for replicas "
                             "(replication factor is %s )" % rep_factor)
-
-        if len(ng_names) != 0:
-            raise ex.NodeGroupsDoNotExist(ng_names.keys())

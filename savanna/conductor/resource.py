@@ -106,9 +106,7 @@ class Resource(types.FrozenDict):
             return self._wrap_list(refname, entity)
         elif isinstance(entity, dict):
             return self._wrap_dict(refname, entity)
-        elif (entity is None or
-              isinstance(entity,
-                         (six.integer_types, float, six.string_types))):
+        elif self._is_passthrough_type(entity):
             return entity
         else:
             raise TypeError("Unsupported type: %s" % type(entity).__name__)
@@ -128,6 +126,11 @@ class Resource(types.FrozenDict):
             return child_class(dct)
         else:
             return Resource(dct)
+
+    def _is_passthrough_type(self, entity):
+        return (entity is None or
+                isinstance(entity,
+                           (six.integer_types, float, six.string_types)))
 
     # Conversion to dict
 

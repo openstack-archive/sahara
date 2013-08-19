@@ -16,7 +16,8 @@
 import mock
 
 from cinderclient.v1 import volumes as v
-from savanna.db import models as m
+
+from savanna.conductor import resource as r
 from savanna.service import volumes
 from savanna.tests.unit import base as models_test_base
 
@@ -25,7 +26,7 @@ class TestAttachVolume(models_test_base.DbTestCase):
     @mock.patch(
         'savanna.utils.remote.BulkInstanceInteropHelper.execute_command')
     def test_mount_volume(self, p_ex_cmd):
-        instance = m.Instance(None, None, None)
+        instance = r.InstanceResource({'instance_id': '123454321'})
 
         p_ex_cmd.return_value = (0, None)
         self.assertIsNone(volumes._mount_volume(instance, '123', '456'))
@@ -41,25 +42,24 @@ class TestAttachVolume(models_test_base.DbTestCase):
     @mock.patch('cinderclient.v1.volumes.Volume.detach')
     @mock.patch('savanna.utils.openstack.cinder.get_volume')
     def test_detach_volumes(self, p_get_volume, p_detach, p_delete):
-        instance = m.Instance(None, None, None)
-        instance.volumes.append("123")
+        instance = {'instance_id': '123454321',
+                    'volumes': [123]}
+
+        ng = r.NodeGroupResource({'instances': [instance]})
 
         p_get_volume.return_value = v.Volume(None, {'id': '123'})
         p_detach.return_value = None
         p_delete.return_value = None
         self.assertIsNone(
-            volumes.detach_from_instances([instance]))
+            volumes.detach_from_instances([ng.instances[0]]))
 
-        ng = m.NodeGroup(None, None, None, None)
-        ng.instances.append(instance)
-        cluster = m.Cluster(None, None, None, None)
-        cluster.node_groups.append(ng)
+        cluster = r.ClusterResource({'node_groups': [ng]})
         p_delete.side_effect = RuntimeError
         self.assertRaises(RuntimeError, volumes.detach, cluster)
 
     @mock.patch('savanna.utils.remote.InstanceInteropHelper.execute_command')
     def test_get_free_device_path(self, p_ex_cmd):
-        instance = m.Instance(None, None, None)
+        instance = r.InstanceResource({'instance_id': '123454321'})
 
         p_ex_cmd.return_value = (1, None)
         self.assertRaises(RuntimeError, volumes._get_free_device_path,
@@ -92,16 +92,18 @@ class TestAttachVolume(models_test_base.DbTestCase):
         p_create_attach_vol.return_value = None
         p_await.return_value = None
         p_mount.return_value = None
-        ng = m.NodeGroup(None, None, None, None, volumes_per_node=2,
-                         volumes_size=2)
-        instance1 = m.Instance(None, None, '123')
-        instance2 = m.Instance(None, None, '456')
-        instance1.node_group_id = ng.id
-        instance2.node_group_id = ng.id
-        ng.instances.append(instance1)
-        ng.instances.append(instance2)
-        cluster = m.Cluster(None, None, None, None)
-        cluster.node_groups.append(ng)
+
+        instance1 = {'instance_id': '123',
+                     'instance_name': 'inst_1'}
+        instance2 = {'instance_id': '456',
+                     'instance_name': 'inst_2'}
+
+        ng = {'volumes_per_node': 2,
+              'volumes_size': 2,
+              'volume_mount_prefix': '/mnt/vols',
+              'instances': [instance1, instance2]}
+
+        cluster = r.ClusterResource({'node_groups': [ng]})
 
         volumes.attach(cluster)
         self.assertEqual(p_create_attach_vol.call_count, 4)
@@ -114,7 +116,7 @@ class TestAttachVolume(models_test_base.DbTestCase):
         p_mount.reset_mock()
         p_dev_path.reset_mock()
 
-        instances = [instance1, instance2]
+        instances = cluster.node_groups[0].instances
         volumes.attach_to_instances(instances)
 
         self.assertEqual(p_create_attach_vol.call_count, 4)
@@ -127,7 +129,8 @@ class TestAttachVolume(models_test_base.DbTestCase):
     def test_await_attach_volume(self, dev_paths, p_sleep):
         dev_paths.return_value = ['/dev/vda', '/dev/vdb']
         p_sleep.return_value = None
-        instance = m.Instance(None, None, None)
+        instance = r.InstanceResource({'instance_id': '123454321',
+                                       'instance_name': 'instt'})
         self.assertIsNone(volumes._await_attach_volume(instance, '/dev/vdb'))
         self.assertRaises(RuntimeError, volumes._await_attach_volume,
                           instance, '/dev/vdc')
