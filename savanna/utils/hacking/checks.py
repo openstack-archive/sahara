@@ -66,7 +66,7 @@ def hacking_no_assert_equals(logical_line, tokens):
         if token_type == tokenize.NAME and text == "assertEquals":
             yield (
                 start_index[1],
-                "H362: assertEquals is deprecated, use assertEqual")
+                "S362: assertEquals is deprecated, use assertEqual")
 
 
 def factory(register):
