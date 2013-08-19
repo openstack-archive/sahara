@@ -84,10 +84,12 @@ def _create_attach_volume(instance, size, device_path, display_name=None,
 
 
 def _get_device_paths(instance):
-    code, part_info = instance.remote.execute_command(
-        'cat /proc/partitions')
-    if code:
-        raise RuntimeError("Unable get device paths info")
+    try:
+        code, part_info = instance.remote.execute_command(
+            'cat /proc/partitions')
+    except Exception:
+        LOG.error("Unable get device paths info")
+        raise
 
     out = part_info.split('\n')[1:]
     device_paths = []
@@ -112,19 +114,15 @@ def _get_free_device_path(instance):
 
 
 def _mount_volume(instance, device_path, mount_point):
-    codes = []
     with instance.remote as r:
-        code, _ = r.execute_command('sudo mkdir -p %s' % mount_point)
-        codes.append(code)
-        code, _ = r.execute_command('sudo mkfs.ext4 %s' % device_path)
-        codes.append(code)
-        code, _ = r.execute_command('sudo mount %s %s' % (device_path,
-                                                          mount_point))
-        codes.append(code)
-
-    if any(codes):
-        raise RuntimeError("Error mounting volume to instance %s" %
-                           instance.instance_id)
+        try:
+            r.execute_command('sudo mkdir -p %s' % mount_point)
+            r.execute_command('sudo mkfs.ext4 %s' % device_path)
+            r.execute_command('sudo mount %s %s' % (device_path, mount_point))
+        except Exception:
+            LOG.error("Error mounting volume to instance %s" %
+                      instance.instance_id)
+            raise
 
 
 def detach(cluster):
