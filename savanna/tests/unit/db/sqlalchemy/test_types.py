@@ -13,6 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import mock
 import sqlalchemy as sa
 import unittest2
 
@@ -40,3 +41,51 @@ class JsonEncodedTest(unittest2.TestCase):
     def test_process_result_value_none(self):
         t = types.JsonEncoded()
         self.assertIsNone(t.process_result_value(None, None))
+
+
+class MutableDictTest(unittest2.TestCase):
+    def test_creation(self):
+        sample = {"a": 1, "b": 2}
+        d = types.MutableDict(sample)
+        self.assertEqual(sample, d)
+
+    def test_coerce_dict(self):
+        sample = {"a": 1, "b": 2}
+        md = types.MutableDict.coerce("test", sample)
+        self.assertEqual(sample, md)
+        self.assertIsInstance(md, types.MutableDict)
+
+    def test_coerce_mutable_dict(self):
+        sample = {"a": 1, "b": 2}
+        sample_md = types.MutableDict(sample)
+        md = types.MutableDict.coerce("test", sample_md)
+        self.assertEqual(sample, md)
+        self.assertIs(sample_md, md)
+
+    def test_coerce_unsupported(self):
+        with self.assertRaises(ValueError):
+            types.MutableDict.coerce("test", list())
+
+    @mock.patch.object(types.MutableDict, 'changed')
+    def test_changed_on_update(self, m):
+        sample = {"a": 1, "b": 2}
+        d = types.MutableDict(sample)
+        d.update({"b": 3})
+        self.assertEqual({"a": 1, "b": 3}, d)
+        self.assertEqual(1, m.call_count)
+
+    @mock.patch.object(types.MutableDict, 'changed')
+    def test_changed_on_setitem(self, m):
+        sample = {"a": 1, "b": 2}
+        d = types.MutableDict(sample)
+        d["b"] = 3
+        self.assertEqual({"a": 1, "b": 3}, d)
+        self.assertEqual(1, m.call_count)
+
+    @mock.patch.object(types.MutableDict, 'changed')
+    def test_changed_on_delitem(self, m):
+        sample = {"a": 1, "b": 2}
+        d = types.MutableDict(sample)
+        del d["b"]
+        self.assertEqual({"a": 1}, d)
+        self.assertEqual(1, m.call_count)
