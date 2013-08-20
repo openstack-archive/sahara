@@ -25,8 +25,6 @@ class _SavannaBase(oslo_models.ModelBase, oslo_models.TimestampMixin):
         """sqlalchemy based automatic to_dict method."""
         d = {}
         for col in self.__table__.columns:
-            if hasattr(self, '_filter_field') and self._filter_field(col.name):
-                continue
             d[col.name] = getattr(self, col.name)
 
         self._datetime_to_str(d, 'created_at')
