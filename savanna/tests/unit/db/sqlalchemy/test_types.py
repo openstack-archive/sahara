@@ -89,3 +89,51 @@ class MutableDictTest(unittest2.TestCase):
         del d["b"]
         self.assertEqual({"a": 1}, d)
         self.assertEqual(1, m.call_count)
+
+
+class MutableListTest(unittest2.TestCase):
+    def test_creation(self):
+        sample = [1, 2, 3]
+        d = types.MutableList(sample)
+        self.assertEqual(sample, d)
+
+    def test_coerce_list(self):
+        sample = [1, 2, 3]
+        md = types.MutableList.coerce("test", sample)
+        self.assertEqual(sample, md)
+        self.assertIsInstance(md, types.MutableList)
+
+    def test_coerce_mutable_list(self):
+        sample = [1, 2, 3]
+        sample_md = types.MutableList(sample)
+        md = types.MutableList.coerce("test", sample_md)
+        self.assertEqual(sample, md)
+        self.assertIs(sample_md, md)
+
+    def test_coerce_unsupported(self):
+        with self.assertRaises(ValueError):
+            types.MutableList.coerce("test", dict())
+
+    @mock.patch.object(types.MutableList, 'changed')
+    def test_changed_on_append(self, m):
+        sample = [1, 2, 3]
+        lst = types.MutableList(sample)
+        lst.append(4)
+        self.assertEqual([1, 2, 3, 4], lst)
+        self.assertEqual(1, m.call_count)
+
+    @mock.patch.object(types.MutableList, 'changed')
+    def test_changed_on_setitem(self, m):
+        sample = [1, 2, 3]
+        lst = types.MutableList(sample)
+        lst[2] = 4
+        self.assertEqual([1, 2, 4], lst)
+        self.assertEqual(1, m.call_count)
+
+    @mock.patch.object(types.MutableList, 'changed')
+    def test_changed_on_delitem(self, m):
+        sample = [1, 2, 3]
+        lst = types.MutableList(sample)
+        del lst[2]
+        self.assertEqual([1, 2], lst)
+        self.assertEqual(1, m.call_count)
