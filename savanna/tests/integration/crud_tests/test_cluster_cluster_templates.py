@@ -16,8 +16,10 @@
 import telnetlib
 
 from savanna.tests.integration import base
+import savanna.tests.integration.configs.parameters.common_parameters as param
 
 
+@base.enable_test(param.ENABLE_CLUSTER_CL_TEMPLATE_CRUD_TESTS)
 class ClusterFromClusterTemplateCrudTest(base.ITestCase):
 
     def setUp(self):
@@ -27,27 +29,40 @@ class ClusterFromClusterTemplateCrudTest(base.ITestCase):
 
         self.create_node_group_templates()
 
-    def crud_clstr_cltr_tmpl(self, node_list):
-        cl_tmpl_id = ''
+    def crud_cluster_cl_template(self, node_list):
+        cl_template_body = self.make_cluster_template('cl-template', node_list)
+
         try:
-            cl_tmpl_body = self.make_cluster_template('cl-tmpl', node_list)
-            cl_tmpl_id = self.get_object_id(
+            cl_template_id = self.get_object_id(
                 'cluster_template', self.post_object(self.url_cl_tmpl,
-                                                     cl_tmpl_body, 202))
-            clstr_body = self.make_cl_body_cluster_template(cl_tmpl_id)
-            self.crud_object(clstr_body, self.url_cluster)
+                                                     cl_template_body, 202))
         except Exception as e:
-            self.fail('fail: ' + str(e))
+            self.fail('Failure while cluster template creation: ' + str(e))
+
+        cluster_body = self.make_cl_body_cluster_template(cl_template_id)
+
+        try:
+            self.crud_object(cluster_body, self.url_cluster)
+
+        except Exception as e:
+            self.fail('CRUD test has failed: ' + str(e))
+
         finally:
-            self.del_object(self.url_cl_tmpl_with_slash, cl_tmpl_id, 204)
+            self.del_object(self.url_cl_tmpl_with_slash, cl_template_id, 204)
 
     def test_cluster_nnttdn_jt(self):
+        """This test check cluster creation with topology | NN + TT + DN | JT |
+        via cluster template.
+        """
         node_list = {self.id_nn_tt_dn: 1, self.id_jt: 1}
-        self.crud_clstr_cltr_tmpl(node_list)
+        self.crud_cluster_cl_template(node_list)
 
     def test_cluster_jtttdn_nn(self):
+        """This test check cluster creation with topology | JT + TT + DN | NN |
+        via cluster template.
+        """
         node_list = {self.id_jt_tt_dn: 1, self.id_nn: 1}
-        self.crud_clstr_cltr_tmpl(node_list)
+        self.crud_cluster_cl_template(node_list)
 
     def tearDown(self):
         self.delete_node_group_templates()

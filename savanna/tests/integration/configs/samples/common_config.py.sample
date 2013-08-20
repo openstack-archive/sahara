@@ -1,0 +1,39 @@
+OS_USERNAME = 'admin'  # username for nova
+OS_PASSWORD = 'password'  # password for nova
+OS_TENANT_NAME = 'admin'
+OS_AUTH_URL = 'http://192.168.1.1:35357/v2.0/'  # URL for keystone
+
+SAVANNA_HOST = '192.168.1.1'  # IP for Savanna API
+SAVANNA_PORT = '8386'  # port for Savanna API
+
+FLAVOR_ID = '42'
+
+TIMEOUT = 15  # cluster creation timeout (in minutes)
+
+CLUSTER_NAME = 'cluster-name'
+
+USER_KEYPAIR_ID = 'key'  # ssh public key which Savanna transfers to nodes of cluster for access of users to virtual machines via key
+
+PATH_TO_SSH = '/home/user/.ssh/id_rsa'  # path to folder where locate id_rsa key which use for remote command execution
+
+JT_PORT = 50030  # port for process 'jobtracker'
+NN_PORT = 50070  # port for process 'namenode'
+TT_PORT = 50060  # port for process 'tasktracker'
+DN_PORT = 50075  # port for process 'datanode'
+SEC_NN_PORT = 50090  # port for process 'secondary_namenode'
+
+ENABLE_CLUSTER_CL_TEMPLATE_CRUD_TESTS = True  # enable CRUD tests for clusters which should be created via cluster templates
+ENABLE_CLUSTER_NGT_NODE_PROCESS_CRUD_TESTS = True  # enable CRUD tests for clusters which should be created via node group templates and node processes
+ENABLE_CLUSTER_NGT_CRUD_TESTS = True  # enable CRUD tests for clusters which should be created via node group templates
+ENABLE_CLUSTER_NODE_PROCESS_CRUD_TESTS = True  # enable CRUD tests for clusters which should be created via node processes
+
+ENABLE_CL_TEMPLATE_CRUD_TESTS = True  # enable crud tests for cluster templates
+ENABLE_NGT_CRUD_TESTS = True  # enable crud tests for node group templates
+
+ENABLE_HADOOP_TESTS_FOR_VANILLA_PLUGIN = True  # enable Hadoop test for "Vanilla" plugin
+ENABLE_HADOOP_TESTS_FOR_HDP_PLUGIN = True  # enable Hadoop test for "HDP" plugin
+ENABLE_SWIFT_TESTS = True  # enable Swift test
+ENABLE_SCALING_TESTS = True  # enable cluster scaling test
+ENABLE_CONFIG_TESTS = True  # enable test for configuration files
+
+ENABLE_IR_TESTS = True  # enable test for image registry

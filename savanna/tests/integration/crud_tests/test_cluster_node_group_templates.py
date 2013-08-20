@@ -16,8 +16,10 @@
 import telnetlib
 
 from savanna.tests.integration import base
+import savanna.tests.integration.configs.parameters.common_parameters as param
 
 
+@base.enable_test(param.ENABLE_CLUSTER_NGT_CRUD_TESTS)
 class ClusterNodeGroupTemplatesCrudTest(base.ITestCase):
 
     def setUp(self):
@@ -28,8 +30,8 @@ class ClusterNodeGroupTemplatesCrudTest(base.ITestCase):
         self.create_node_group_templates()
 
     def test_crud_cluster_ngt_jtnn_ttdn(self):
-        """This test checks cluster creation with topology | JT+NN | TT+DN |
-        via node group templates.
+        """This test checks cluster creation with
+        topology | JT + NN | TT + DN | via node group templates.
         """
         ngt_id_list = {self.id_jt_nn: 1, self.id_tt_dn: 2}
         body = self.make_cl_body_node_group_templates(ngt_id_list)
