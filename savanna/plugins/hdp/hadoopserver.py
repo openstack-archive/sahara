@@ -15,7 +15,6 @@
 
 import re
 from savanna.openstack.common import log as logging
-from savanna.utils import remote
 
 LOG = logging.getLogger(__name__)
 
@@ -26,7 +25,7 @@ class HadoopServer:
     def __init__(self, instance, node_group):
         self.instance = instance
         self.node_group = node_group
-        self._remote = remote.get_remote(instance)
+        self._remote = self.instance.remote
 
     def provision_ambari(self, ambari_server_ip):
         self.install_rpms()
