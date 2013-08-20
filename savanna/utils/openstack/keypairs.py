@@ -17,6 +17,7 @@ from novaclient import base
 from novaclient.v1_1 import keypairs
 
 
+# TODO(slukjanov): remove this tweak when we'll depend on novaclient>=2.14.0
 class SavannaKeypairManager(keypairs.KeypairManager):
     def get(self, keypair):
         """Get a keypair.
