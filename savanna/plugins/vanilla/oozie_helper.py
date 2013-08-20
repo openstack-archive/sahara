@@ -46,3 +46,12 @@ def get_oozie_required_xml_configs():
 
         'oozie.service.JPAService.create.db.schema': 'false',
     }
+
+
+def append_oozie_setup(setup_script, env_configs):
+    for line in env_configs:
+        if 'CATALINA_OPT' in line:
+            setup_script.append('echo "%s" >> /tmp/oozie-env.sh' % line)
+    setup_script.append(
+        "cat /opt/oozie/conf/oozie-env.sh >> /tmp/oozie-env.sh")
+    setup_script.append("cp /tmp/oozie-env.sh /opt/oozie/conf/oozie-env.sh")
