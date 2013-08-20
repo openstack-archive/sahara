@@ -50,6 +50,13 @@ class NameAlreadyExistsException(SavannaException):
             self.message = message
 
 
+class InvalidCredentials(SavannaException):
+    def __init__(self, message=None):
+        self.code = "INVALID_CREDENTIALS"
+        if message:
+            self.message = message
+
+
 class InvalidException(SavannaException):
     message = "Invalid object reference"
 

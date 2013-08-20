@@ -36,7 +36,7 @@ JOB_SCHEMA = {
                 "StreamingAPI"
             ],
         },
-        "job_source": {
+        "job_origin_id": {
             "type": "string",
             "format": "uuid",
         },
@@ -47,10 +47,10 @@ JOB_SCHEMA = {
     "required": [
         "name",
         "type",
-        "URL"
+        "job_origin_id"
     ]
 }
 
 
 def check_job_create(data, **kwargs):
-    return True
+    b.check_job_unique_name(data['name'])

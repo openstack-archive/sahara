@@ -14,20 +14,29 @@
 # limitations under the License.
 
 
+from savanna import conductor as c
+from savanna import context
+from savanna.openstack.common import log as logging
+
+
+conductor = c.API
+LOG = logging.getLogger(__name__)
+
+
 def get_jobs():
-    return []
+    return conductor.job_get_all(context.ctx())
 
 
-def get_job(job_id):
-    pass
+def get_job(id):
+    return conductor.job_get(context.ctx(), id)
 
 
 def create_job(values):
-    pass
+    return conductor.job_create(context.ctx(), values)
 
 
-def delete_job(job_id):
-    pass
+def delete_job(id):
+    conductor.job_destroy(context.ctx(), id)
 
 
 def execute_job(job_id, input_id, output_id):
@@ -35,19 +44,19 @@ def execute_job(job_id, input_id, output_id):
 
 
 def get_data_sources():
-    return []
+    return conductor.data_source_get_all(context.ctx())
 
 
-def get_data_source(data_source_id):
-    pass
+def get_data_source(id):
+    return conductor.data_source_get(context.ctx(), id)
 
 
-def delete_data_sources(data_source_id):
-    pass
+def delete_data_source(id):
+    conductor.data_source_destroy(context.ctx(), id)
 
 
 def register_data_source(values):
-    pass
+    return conductor.data_source_create(context.ctx(), values)
 
 
 def get_job_origins():

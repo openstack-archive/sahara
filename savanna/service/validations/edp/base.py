@@ -13,6 +13,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import savanna.exceptions as ex
+import savanna.service.edp.api as api
 
 ## Cluster creation related checks
 
@@ -56,3 +58,15 @@ user_pass = {
         "password"
     ]
 }
+
+
+def check_data_source_unique_name(name):
+    if name in [ds.name for ds in api.get_data_sources()]:
+        raise ex.NameAlreadyExistsException("Data source with name '%s' "
+                                            "already exists" % name)
+
+
+def check_job_unique_name(name):
+    if name in [j.name for j in api.get_jobs()]:
+        raise ex.NameAlreadyExistsException("Job with name '%s' "
+                                            "already exists" % name)
