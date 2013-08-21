@@ -18,6 +18,7 @@ import mock
 from cinderclient.v1 import volumes as v
 
 from savanna.conductor import resource as r
+from savanna import exceptions as ex
 from savanna.service import volumes
 from savanna.tests.unit import base as models_test_base
 
@@ -33,10 +34,9 @@ class TestAttachVolume(models_test_base.DbTestCase):
         self.assertEqual(p_ex_cmd.call_count, 3)
         p_ex_cmd.reset_mock()
 
-        p_ex_cmd.return_value = (1, None)
-        self.assertRaises(RuntimeError, volumes._mount_volume,
+        p_ex_cmd.side_effect = ex.RemoteCommandException('cmd')
+        self.assertRaises(ex.RemoteCommandException, volumes._mount_volume,
                           instance, '123', '456')
-        self.assertEqual(p_ex_cmd.call_count, 3)
 
     @mock.patch('cinderclient.v1.volumes.Volume.delete')
     @mock.patch('cinderclient.v1.volumes.Volume.detach')
@@ -61,10 +61,6 @@ class TestAttachVolume(models_test_base.DbTestCase):
     def test_get_free_device_path(self, p_ex_cmd):
         instance = r.InstanceResource({'instance_id': '123454321'})
 
-        p_ex_cmd.return_value = (1, None)
-        self.assertRaises(RuntimeError, volumes._get_free_device_path,
-                          instance)
-
         stdout = """major minor  #blocks  name
 
    8        0  488386584 vda
@@ -81,6 +77,10 @@ class TestAttachVolume(models_test_base.DbTestCase):
         p_ex_cmd.return_value = (0, stdout)
         self.assertRaises(RuntimeError, volumes._get_free_device_path,
                           instance)
+
+        p_ex_cmd.side_effect = ex.RemoteCommandException('cmd')
+        self.assertRaises(ex.RemoteCommandException,
+                          volumes._get_free_device_path, instance)
 
     @mock.patch('savanna.service.volumes._mount_volume')
     @mock.patch('savanna.service.volumes._await_attach_volume')
