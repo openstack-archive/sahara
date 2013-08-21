@@ -24,7 +24,7 @@ LOG = logging.getLogger(__name__)
 
 notification_topic_opt = cfg.ListOpt(
     'notification_topics', default=['notifications', ],
-    help='AMQP topic used for openstack notifications')
+    help='AMQP topic used for OpenStack notifications')
 
 CONF = cfg.CONF
 CONF.register_opt(notification_topic_opt)

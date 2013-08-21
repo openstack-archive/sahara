@@ -238,7 +238,7 @@ class FanoutConsumer(ConsumerBase):
             {"exclusive": True})
 
     def reconnect(self, session):
-        topic = self.get_node_name()
+        topic = self.get_node_name().rpartition('_fanout')[0]
         params = {
             'session': session,
             'topic': topic,
@@ -320,7 +320,7 @@ class DirectPublisher(Publisher):
     def __init__(self, conf, session, msg_id):
         """Init a 'direct' publisher."""
         super(DirectPublisher, self).__init__(session, msg_id,
-                                              {"type": "Direct"})
+                                              {"type": "direct"})
 
 
 class TopicPublisher(Publisher):

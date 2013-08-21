@@ -490,12 +490,8 @@ class Connection(object):
             # future with this?
             ssl_params['cert_reqs'] = ssl.CERT_REQUIRED
 
-        if not ssl_params:
-            # Just have the default behavior
-            return True
-        else:
-            # Return the extended behavior
-            return ssl_params
+        # Return the extended behavior or just have the default behavior
+        return ssl_params or True
 
     def _connect(self, params):
         """Connect to rabbit.  Re-establish any queues that may have

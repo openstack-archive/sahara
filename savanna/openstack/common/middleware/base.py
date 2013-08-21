@@ -28,11 +28,7 @@ class Middleware(object):
     @classmethod
     def factory(cls, global_conf, **local_conf):
         """Factory method for paste.deploy."""
-
-        def filter(app):
-            return cls(app)
-
-        return filter
+        return cls
 
     def __init__(self, application):
         self.application = application

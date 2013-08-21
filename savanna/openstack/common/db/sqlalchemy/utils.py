@@ -18,6 +18,9 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+import re
+
+from migrate.changeset import UniqueConstraint
 import sqlalchemy
 from sqlalchemy import Boolean
 from sqlalchemy import CheckConstraint
@@ -37,12 +40,20 @@ from sqlalchemy.types import NullType
 
 from savanna.openstack.common.gettextutils import _  # noqa
 
-from savanna.openstack.common import exception
 from savanna.openstack.common import log as logging
 from savanna.openstack.common import timeutils
 
 
 LOG = logging.getLogger(__name__)
+
+_DBURL_REGEX = re.compile(r"[^:]+://([^:]+):([^@]+)@.+")
+
+
+def sanitize_db_url(url):
+    match = _DBURL_REGEX.match(url)
+    if match:
+        return '%s****:****%s' % (url[:match.start(1)], url[match.end(2):])
+    return url
 
 
 class InvalidSortKey(Exception):
@@ -174,6 +185,10 @@ def visit_insert_from_select(element, compiler, **kw):
         compiler.process(element.select))
 
 
+class ColumnError(Exception):
+    """Error raised when no column or an invalid column is found."""
+
+
 def _get_not_supported_column(col_name_col_instance, column_name):
     try:
         column = col_name_col_instance[column_name]
@@ -181,14 +196,51 @@ def _get_not_supported_column(col_name_col_instance, column_name):
         msg = _("Please specify column %s in col_name_col_instance "
                 "param. It is required because column has unsupported "
                 "type by sqlite).")
-        raise exception.OpenstackException(message=msg % column_name)
+        raise ColumnError(msg % column_name)
 
     if not isinstance(column, Column):
         msg = _("col_name_col_instance param has wrong type of "
                 "column instance for column %s It should be instance "
                 "of sqlalchemy.Column.")
-        raise exception.OpenstackException(message=msg % column_name)
+        raise ColumnError(msg % column_name)
     return column
+
+
+def drop_unique_constraint(migrate_engine, table_name, uc_name, *columns,
+                           **col_name_col_instance):
+    """Drop unique constraint from table.
+
+    This method drops UC from table and works for mysql, postgresql and sqlite.
+    In mysql and postgresql we are able to use "alter table" construction.
+    Sqlalchemy doesn't support some sqlite column types and replaces their
+    type with NullType in metadata. We process these columns and replace
+    NullType with the correct column type.
+
+    :param migrate_engine: sqlalchemy engine
+    :param table_name:     name of table that contains uniq constraint.
+    :param uc_name:        name of uniq constraint that will be dropped.
+    :param columns:        columns that are in uniq constraint.
+    :param col_name_col_instance:   contains pair column_name=column_instance.
+                            column_instance is instance of Column. These params
+                            are required only for columns that have unsupported
+                            types by sqlite. For example BigInteger.
+    """
+
+    meta = MetaData()
+    meta.bind = migrate_engine
+    t = Table(table_name, meta, autoload=True)
+
+    if migrate_engine.name == "sqlite":
+        override_cols = [
+            _get_not_supported_column(col_name_col_instance, col.name)
+            for col in t.columns
+            if isinstance(col.type, NullType)
+        ]
+        for col in override_cols:
+            t.columns.replace(col)
+
+    uc = UniqueConstraint(*columns, table=t, name=uc_name)
+    uc.drop()
 
 
 def drop_old_duplicate_entries_from_table(migrate_engine, table_name,
@@ -248,8 +300,7 @@ def _get_default_deleted_value(table):
         return 0
     if isinstance(table.c.id.type, String):
         return ""
-    raise exception.OpenstackException(
-        message=_("Unsupported id columns type"))
+    raise ColumnError(_("Unsupported id columns type"))
 
 
 def _restore_indexes_on_deleted_columns(migrate_engine, table_name, indexes):

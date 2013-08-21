@@ -22,6 +22,8 @@
 SQLAlchemy models.
 """
 
+import six
+
 from sqlalchemy import Column, Integer
 from sqlalchemy import DateTime
 from sqlalchemy.orm import object_mapper
@@ -70,12 +72,12 @@ class ModelBase(object):
         return self
 
     def next(self):
-        n = self._i.next()
+        n = six.advance_iterator(self._i)
         return n, getattr(self, n)
 
     def update(self, values):
         """Make the model object behave like a dict."""
-        for k, v in values.iteritems():
+        for k, v in six.iteritems(values):
             setattr(self, k, v)
 
     def iteritems(self):
@@ -84,7 +86,7 @@ class ModelBase(object):
         Includes attributes from joins.
         """
         local = dict(self)
-        joined = dict([(k, v) for k, v in self.__dict__.iteritems()
+        joined = dict([(k, v) for k, v in six.iteritems(self.__dict__)
                       if not k[0] == '_'])
         local.update(joined)
         return local.iteritems()

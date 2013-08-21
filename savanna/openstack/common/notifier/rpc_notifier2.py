@@ -26,7 +26,7 @@ LOG = logging.getLogger(__name__)
 
 notification_topic_opt = cfg.ListOpt(
     'topics', default=['notifications', ],
-    help='AMQP topic(s) used for openstack notifications')
+    help='AMQP topic(s) used for OpenStack notifications')
 
 opt_group = cfg.OptGroup(name='rpc_notifier2',
                          title='Options for rpc_notifier2')
