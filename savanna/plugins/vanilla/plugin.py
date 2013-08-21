@@ -151,7 +151,9 @@ class VanillaProvider(p.ProvisioningPluginBase):
                                                      if oozie else None),
                 'setup_script': c_helper.generate_setup_script(
                     ng.storage_paths,
-                    c_helper.extract_environment_confs(ng.configuration)
+                    c_helper.extract_environment_confs(ng.configuration),
+                    append_oozie=(
+                        oozie is not None and oozie.node_group.id == ng.id)
                 )
             }
 

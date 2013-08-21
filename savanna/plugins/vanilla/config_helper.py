@@ -48,6 +48,9 @@ ENV_CONFS = {
     "HDFS": {
         'Name Node Heap Size': 'HADOOP_NAMENODE_OPTS=\\"-Xmx%sm\\"',
         'Data Node Heap Size': 'HADOOP_DATANODE_OPTS=\\"-Xmx%sm\\"'
+    },
+    "JobFlow": {
+        'Oozie Heap Size': 'CATALINA_OPTS=\\"-Xmx%sm\\"'
     }
 }
 
@@ -227,12 +230,13 @@ def extract_xml_confs(configs):
     return lst
 
 
-def generate_setup_script(storage_paths, env_configs):
+def generate_setup_script(storage_paths, env_configs, append_oozie=False):
     script_lines = ["#!/bin/bash -x"]
     for line in env_configs:
-        script_lines.append('echo "%s" >> /tmp/hadoop-env.sh' % line)
+        if 'HADOOP' in line:
+            script_lines.append('echo "%s" >> /tmp/hadoop-env.sh' % line)
     script_lines.append("cat /etc/hadoop/hadoop-env.sh >> /tmp/hadoop-env.sh")
-    script_lines.append("mv /tmp/hadoop-env.sh /etc/hadoop/hadoop-env.sh")
+    script_lines.append("cp /tmp/hadoop-env.sh /etc/hadoop/hadoop-env.sh")
 
     hadoop_log = storage_paths[0] + "/log/hadoop/\$USER/"
     script_lines.append('sed -i "s,export HADOOP_LOG_DIR=.*,'
@@ -243,6 +247,9 @@ def generate_setup_script(storage_paths, env_configs):
     script_lines.append('sed -i "s,export HADOOP_SECURE_DN_LOG_DIR=.*,'
                         'export HADOOP_SECURE_DN_LOG_DIR=%s," '
                         '/etc/hadoop/hadoop-env.sh' % hadoop_log)
+
+    if append_oozie:
+        o_h.append_oozie_setup(script_lines, env_configs)
 
     for path in storage_paths:
         script_lines.append("chown -R hadoop:hadoop %s" % path)
