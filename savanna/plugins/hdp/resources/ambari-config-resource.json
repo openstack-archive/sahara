@@ -2384,6 +2384,20 @@
             ]
         },
         {
+            "tag": "ambari",
+            "properties": [
+                {
+                    "applicable_target": "AMBARI",
+                    "config_type": "string",
+                    "default_value": "8080",
+                    "description": "Ambari Server API port.",
+                    "is_optional": true,
+                    "name": "server.port",
+                    "scope": "cluster"
+                }
+            ]
+        },
+        {
             "tag": "ambari-stack",
             "properties": [
                 {
