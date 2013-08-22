@@ -5,8 +5,8 @@ marriage. There were two steps to achieve this:
 
 * Hadoop side: https://issues.apache.org/jira/browse/HADOOP-8545
     This patch is not merged yet and is still being developed, so that's why
-    there is an ability to get the latest-version jar file from extra-repository:
-    https://github.com/stackforge/savanna-extra/blob/master/hadoop-swift/hadoop-swift-latest.jar
+    there is an ability to get the latest-version jar file from CDN:
+    http://savanna-files.mirantis.com/hadoop-swift/hadoop-swift-latest.jar
 * Swift side: https://review.openstack.org/#/c/21015
     This patch is merged into Grizzly. If you want to make it work in Folsom
     see the instructions in the section below.
@@ -69,7 +69,7 @@ Hadoop patching
 ---------------
 You may build jar file by yourself choosing the latest patch from
 https://issues.apache.org/jira/browse/HADOOP-8545. Or you may get the latest
-one from repository https://github.com/stackforge/savanna-extra/blob/master/hadoop-swift/hadoop-swift-latest.jar
+one from CDN http://savanna-files.mirantis.com/hadoop-swift/hadoop-swift-latest.jar
 You need to put this file to hadoop libraries (e.g. /usr/lib/share/hadoop/lib)
 into each job-tracker and task-tracker node in cluster. The main step in this
 section is to configure core-site.xml file on each of this node.
