@@ -90,7 +90,7 @@ def data_source_delete(data_source_id):
 
 @rest.get('/job-origins')
 def job_origin_list():
-    return u.render(job_origins=[j.dict for j in api.get_job_origins()])
+    return u.render(job_origins=[j.to_dict() for j in api.get_job_origins()])
 
 
 @rest.post('/job-origins')
@@ -105,7 +105,7 @@ def job_origin_create(data):
 @rest.get('/job-origins/<job_origin_id>')
 @v.check_exists(api.get_job_origin, id='job_origin_id')
 def job_origin_get(job_origin_id):
-    return u.render(api.get_job_origin(job_origin_id).wrapped_dict)
+    return u.render(api.get_job_origin(job_origin_id).to_wrapped_dict())
 
 
 @rest.delete('/job-origins/<job_origin_id>')

@@ -304,6 +304,8 @@ class ConductorManager(db_base.Base):
 
     def job_origin_create(self, context, values):
         """Create a JobOrigin from the values dictionary."""
+        values = copy.deepcopy(values)
+        values['tenant_id'] = context.tenant_id
         return self.db.job_origin_create(context, values)
 
     def job_origin_update(self, context, job_origin, values):
