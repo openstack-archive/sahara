@@ -17,6 +17,8 @@ from savanna.plugins.general import exceptions as ex
 from savanna.plugins.hdp import validator as v
 import unittest2
 
+import mock
+
 
 class ValidatorTest(unittest2.TestCase):
 
@@ -104,6 +106,182 @@ class ValidatorTest(unittest2.TestCase):
         with self.assertRaises(v.AmbariAgentNumberException):
             validator.validate(cluster)
 
+    @mock.patch('savanna.context.ctx')
+    @mock.patch('savanna.conductor.api.LocalApi.node_group_update')
+    def test_scaling_with_no_jobtracker(self, ng, context):
+        ng.side_effect = my_node_group_update
+        context.side_effect = my_get_context
+        cluster = TestCluster()
+        cluster.node_groups.append(TestNodeGroup(["GANGLIA_SERVER",
+                                                  "AMBARI_SERVER",
+                                                  "AMBARI_AGENT",
+                                                  "NAMENODE"], id=1))
+        add_node_group = TestNodeGroup(
+            ["GANGLIA_MONITOR", "AMBARI_AGENT", "TASKTRACKER"], count=0, id=2)
+        cluster.node_groups.append(add_node_group)
+
+        additional = {2: 1}
+        existing = {}
+        validator = v.Validator()
+        with self.assertRaises(ex.TaskTrackersWithoutJobTracker):
+            validator.validate_scaling(cluster, existing, additional)
+
+        self.assertEqual(2, len(cluster.node_groups))
+        self.assertEqual(0, cluster.node_groups[1].count)
+
+    @mock.patch('savanna.context.ctx')
+    @mock.patch('savanna.conductor.api.LocalApi.node_group_update')
+    def test_scaling_with_jobtracker(self, ng, context):
+        ng.side_effect = my_node_group_update
+        context.side_effect = my_get_context
+        cluster = TestCluster()
+        cluster.node_groups.append(TestNodeGroup(["GANGLIA_SERVER",
+                                                  "AMBARI_SERVER",
+                                                  "AMBARI_AGENT",
+                                                  "NAMENODE",
+                                                  "JOBTRACKER"], id=1))
+        add_node_group = TestNodeGroup(
+            ["GANGLIA_MONITOR", "AMBARI_AGENT", "TASKTRACKER"], count=0, id=2)
+        cluster.node_groups.append(add_node_group)
+        additional = {2: 1}
+        existing = {}
+        validator = v.Validator()
+        validator.validate_scaling(cluster, existing, additional)
+        self.assertEqual(2, len(cluster.node_groups))
+        self.assertEqual(0, cluster.node_groups[1].count)
+
+    @mock.patch('savanna.context.ctx')
+    @mock.patch('savanna.conductor.api.LocalApi.node_group_update')
+    def test_scaling_with_additional_ambari_server(self, ng, context):
+        ng.side_effect = my_node_group_update
+        context.side_effect = my_get_context
+        cluster = TestCluster()
+        cluster.node_groups.append(TestNodeGroup(["GANGLIA_SERVER",
+                                                  "AMBARI_SERVER",
+                                                  "AMBARI_AGENT",
+                                                  "NAMENODE",
+                                                  "JOBTRACKER"], id=1))
+        test_node_group = TestNodeGroup(
+            ["GANGLIA_MONITOR", "AMBARI_AGENT", "TASKTRACKER",
+             "AMBARI_SERVER"], count=0, id=2)
+        cluster.node_groups.append(test_node_group)
+        additional = {2: 1}
+        existing = {}
+        validator = v.Validator()
+        with self.assertRaises(v.NotSingleAmbariServerException):
+            validator.validate_scaling(cluster, existing, additional)
+        self.assertEqual(2, len(cluster.node_groups))
+        self.assertEqual(0, cluster.node_groups[1].count)
+
+    @mock.patch('savanna.context.ctx')
+    @mock.patch('savanna.conductor.api.LocalApi.node_group_update')
+    def test_scaling_an_existing_ambari_server_node_group(self, ng, context):
+        ng.side_effect = my_node_group_update
+        context.side_effect = my_get_context
+        cluster = TestCluster()
+        cluster.node_groups.append(TestNodeGroup(["GANGLIA_SERVER",
+                                                  "AMBARI_SERVER",
+                                                  "AMBARI_AGENT",
+                                                  "NAMENODE",
+                                                  "JOBTRACKER"], id=1,
+                                                 count=1))
+        existing = {1: 2}
+        additional = {}
+        validator = v.Validator()
+        with self.assertRaises(v.NotSingleAmbariServerException):
+            validator.validate_scaling(cluster, existing, additional)
+        self.assertEqual(1, len(cluster.node_groups))
+        self.assertEqual(1, cluster.node_groups[0].count)
+
+    @mock.patch('savanna.context.ctx')
+    @mock.patch('savanna.conductor.api.LocalApi.node_group_update')
+    def test_scaling_existing_node_group(self, ng, context):
+        ng.side_effect = my_node_group_update
+        context.side_effect = my_get_context
+        cluster = TestCluster()
+        cluster.node_groups.append(TestNodeGroup(["GANGLIA_MONITOR",
+                                                  "AMBARI_AGENT",
+                                                  "DATANODE",
+                                                  "TASKTRACKER"], id=1))
+        cluster.node_groups.append(TestNodeGroup(["GANGLIA_SERVER",
+                                                  "AMBARI_SERVER",
+                                                  "AMBARI_AGENT",
+                                                  "NAMENODE",
+                                                  "JOBTRACKER"], id=2))
+        additional = {}
+        existing = {1: 2}
+        validator = v.Validator()
+        validator.validate_scaling(cluster, existing, additional)
+        self.assertEqual(2, len(cluster.node_groups))
+        self.assertEqual(1, cluster.node_groups[0].count)
+
+    @mock.patch('savanna.context.ctx')
+    @mock.patch('savanna.conductor.api.LocalApi.node_group_update')
+    def test_scaling_existing_mult_node_group(self, ng, context):
+        ng.side_effect = my_node_group_update
+        context.side_effect = my_get_context
+        cluster = TestCluster()
+        cluster.node_groups.append(TestNodeGroup(["GANGLIA_MONITOR",
+                                                  "AMBARI_AGENT",
+                                                  "DATANODE",
+                                                  "TASKTRACKER"],
+                                                 name="TEST1", id=1))
+        cluster.node_groups.append(TestNodeGroup(["GANGLIA_SERVER",
+                                                  "AMBARI_SERVER",
+                                                  "AMBARI_AGENT",
+                                                  "NAMENODE",
+                                                  "JOBTRACKER"], count=1,
+                                                 name="TEST2", id=2))
+        test_node_group = TestNodeGroup(
+            ["GANGLIA_MONITOR", "AMBARI_AGENT", "DATANODE", "TASKTRACKER"],
+            count=0, name="TEST3", id=3)
+        cluster.node_groups.append(test_node_group)
+        additional = {3: 1}
+        existing = {1: 2}
+        validator = v.Validator()
+        validator.validate_scaling(cluster, existing, additional)
+        self.assertEqual(3, len(cluster.node_groups))
+        self.assertEqual(1, cluster.node_groups[0].count)
+
+    @mock.patch('savanna.context.ctx')
+    @mock.patch('savanna.conductor.api.LocalApi.node_group_update')
+    def test_scaling_down_existing_mult_node_group(self, ng, context):
+        ng.side_effect = my_node_group_update
+        context.side_effect = my_get_context
+        cluster = TestCluster()
+        cluster.node_groups.append(TestNodeGroup(["GANGLIA_MONITOR",
+                                                  "AMBARI_AGENT",
+                                                  "DATANODE",
+                                                  "TASKTRACKER"],
+                                                 name="TEST1", id=1))
+        cluster.node_groups.append(TestNodeGroup(["GANGLIA_SERVER",
+                                                  "AMBARI_SERVER",
+                                                  "AMBARI_AGENT",
+                                                  "NAMENODE",
+                                                  "JOBTRACKER"], count=1,
+                                                 name="TEST2", id=2))
+        test_node_group = TestNodeGroup(
+            ["GANGLIA_MONITOR", "AMBARI_AGENT", "DATANODE", "TASKTRACKER"],
+            count=0, name="TEST3", id=3)
+        cluster.node_groups.append(test_node_group)
+        additional = {3: 1}
+        existing = {2: 0}
+        validator = v.Validator()
+        with self.assertRaises(v.NotSingleAmbariServerException):
+            validator.validate_scaling(cluster, existing, additional)
+        self.assertEqual(3, len(cluster.node_groups))
+        self.assertEqual(1, cluster.node_groups[0].count)
+        self.assertEqual(1, cluster.node_groups[1].count)
+
+
+def my_node_group_update(*args, **kwargs):
+    node_group = args[1]
+    node_group.count = args[2]['count']
+
+
+def my_get_context(*args, **kwargs):
+    return None
+
 
 class TestCluster(object):
 
@@ -113,7 +291,8 @@ class TestCluster(object):
 
 class TestNodeGroup:
 
-    def __init__(self, processes, count=1):
+    def __init__(self, processes, name=None, count=1, id=0):
         self.node_processes = processes
         self.count = count or 1
         self.name = 'TEST'
+        self.id = id
