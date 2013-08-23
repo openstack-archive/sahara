@@ -104,6 +104,146 @@ class ValidatorTest(unittest2.TestCase):
         with self.assertRaises(v.AmbariAgentNumberException):
             validator.validate(cluster)
 
+    def test_scaling_with_no_jobtracker(self):
+        cluster = TestCluster()
+        cluster.node_groups.append(TestNodeGroup(["GANGLIA_SERVER",
+                                                  "AMBARI_SERVER",
+                                                  "AMBARI_AGENT",
+                                                  "NAMENODE"], name='TEST1'))
+        add_node_group = TestNodeGroup(
+            ["GANGLIA_MONITOR", "AMBARI_AGENT", "TASKTRACKER"], count=0,
+            name='TEST2')
+
+        additional = {add_node_group: 1}
+        existing = {}
+        validator = v.Validator()
+        with self.assertRaises(ex.TaskTrackersWithoutJobTracker):
+            validator.validate_scaling(cluster, existing, additional)
+
+        self.assertEqual(1, len(cluster.node_groups))
+        self.assertEqual(0, add_node_group.count)
+
+    def test_scaling_with_jobtracker(self):
+        cluster = TestCluster()
+        cluster.node_groups.append(TestNodeGroup(["GANGLIA_SERVER",
+                                                  "AMBARI_SERVER",
+                                                  "AMBARI_AGENT",
+                                                  "NAMENODE",
+                                                  "JOBTRACKER"], name='TEST1'))
+        add_node_group = TestNodeGroup(
+            ["GANGLIA_MONITOR", "AMBARI_AGENT", "TASKTRACKER"], count=0,
+            name='TEST2')
+
+        additional = {add_node_group: 1}
+        existing = {}
+        validator = v.Validator()
+        validator.validate_scaling(cluster, existing, additional)
+        self.assertEqual(1, len(cluster.node_groups))
+        self.assertEqual(0, add_node_group.count)
+
+    def test_scaling_with_additional_ambari_server(self):
+        cluster = TestCluster()
+        cluster.node_groups.append(TestNodeGroup(["GANGLIA_SERVER",
+                                                  "AMBARI_SERVER",
+                                                  "AMBARI_AGENT",
+                                                  "NAMENODE",
+                                                  "JOBTRACKER"], name='TEST1'))
+        test_node_group = TestNodeGroup(
+            ["GANGLIA_MONITOR", "AMBARI_AGENT", "TASKTRACKER",
+             "AMBARI_SERVER"], count=0, name='TEST2')
+        additional = {test_node_group: 1}
+        existing = {}
+        validator = v.Validator()
+        with self.assertRaises(v.NotSingleAmbariServerException):
+            validator.validate_scaling(cluster, existing, additional)
+        self.assertEqual(1, len(cluster.node_groups))
+        self.assertEqual(0, test_node_group.count)
+
+    def test_scaling_an_existing_ambari_server_node_group(self):
+        cluster = TestCluster()
+        cluster.node_groups.append(TestNodeGroup(["GANGLIA_SERVER",
+                                                  "AMBARI_SERVER",
+                                                  "AMBARI_AGENT",
+                                                  "NAMENODE",
+                                                  "JOBTRACKER"], name='TEST1',
+                                                 count=1))
+        existing = {'TEST1': 2}
+        additional = {}
+        validator = v.Validator()
+        with self.assertRaises(v.NotSingleAmbariServerException):
+            validator.validate_scaling(cluster, existing, additional)
+        self.assertEqual(1, len(cluster.node_groups))
+
+    def test_scaling_existing_node_group(self):
+        cluster = TestCluster()
+        cluster.node_groups.append(TestNodeGroup(["GANGLIA_MONITOR",
+                                                  "AMBARI_AGENT",
+                                                  "DATANODE",
+                                                  "TASKTRACKER"],
+                                                 name='TEST1'))
+        cluster.node_groups.append(TestNodeGroup(["GANGLIA_SERVER",
+                                                  "AMBARI_SERVER",
+                                                  "AMBARI_AGENT",
+                                                  "NAMENODE",
+                                                  "JOBTRACKER"],
+                                                 name='TEST2'))
+        additional = {}
+        existing = {'TEST1': 2}
+        validator = v.Validator()
+        validator.validate_scaling(cluster, existing, additional)
+        self.assertEqual(2, len(cluster.node_groups))
+        self.assertEqual(1, cluster.node_groups[0].count)
+
+    def test_scaling_existing_mult_node_group(self):
+        cluster = TestCluster()
+        cluster.node_groups.append(TestNodeGroup(["GANGLIA_MONITOR",
+                                                  "AMBARI_AGENT",
+                                                  "DATANODE",
+                                                  "TASKTRACKER"],
+                                                 name="TEST1"))
+        cluster.node_groups.append(TestNodeGroup(["GANGLIA_SERVER",
+                                                  "AMBARI_SERVER",
+                                                  "AMBARI_AGENT",
+                                                  "NAMENODE",
+                                                  "JOBTRACKER"], count=1,
+                                                 name="TEST2"))
+        test_node_group = TestNodeGroup(
+            ["GANGLIA_MONITOR", "AMBARI_AGENT", "DATANODE", "TASKTRACKER"],
+            count=0, name="TEST3", id=3)
+        additional = {test_node_group: 1}
+        existing = {'TEST1': 2}
+        validator = v.Validator()
+        validator.validate_scaling(cluster, existing, additional)
+        self.assertEqual(2, len(cluster.node_groups))
+        self.assertEqual(1, cluster.node_groups[0].count)
+        self.assertEqual(0, test_node_group.count)
+
+    def test_scaling_down_existing_mult_node_group(self):
+        cluster = TestCluster()
+        cluster.node_groups.append(TestNodeGroup(["GANGLIA_MONITOR",
+                                                  "AMBARI_AGENT",
+                                                  "DATANODE",
+                                                  "TASKTRACKER"],
+                                                 name="TEST1", id=1))
+        cluster.node_groups.append(TestNodeGroup(["GANGLIA_SERVER",
+                                                  "AMBARI_SERVER",
+                                                  "AMBARI_AGENT",
+                                                  "NAMENODE",
+                                                  "JOBTRACKER"], count=1,
+                                                 name="TEST2", id=2))
+        test_node_group = TestNodeGroup(
+            ["GANGLIA_MONITOR", "AMBARI_AGENT", "DATANODE", "TASKTRACKER"],
+            count=0, name="TEST3", id=3)
+        additional = {test_node_group: 1}
+        existing = {'TEST2': 0}
+        validator = v.Validator()
+        with self.assertRaises(v.NotSingleAmbariServerException):
+            validator.validate_scaling(cluster, existing, additional)
+        self.assertEqual(2, len(cluster.node_groups))
+        self.assertEqual(1, cluster.node_groups[0].count)
+        self.assertEqual(1, cluster.node_groups[1].count)
+        self.assertEqual(0, test_node_group.count)
+
 
 class TestCluster(object):
 
@@ -113,7 +253,8 @@ class TestCluster(object):
 
 class TestNodeGroup:
 
-    def __init__(self, processes, count=1):
+    def __init__(self, processes, name=None, count=1, id=0):
         self.node_processes = processes
         self.count = count or 1
-        self.name = 'TEST'
+        self.name = name or 'TEST'
+        self.id = id

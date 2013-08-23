@@ -20,16 +20,45 @@ from savanna.plugins.general import utils
 
 
 class Validator(object):
-
     def validate(self, cluster):
         funcs = inspect.getmembers(Validator, predicate=inspect.ismethod)
         for func in funcs:
             if func[0].startswith("check_"):
                 getattr(self, func[0])(cluster)
 
+    def _get_named_node_group(self, cluster, ng_name):
+        return next((ng for ng in cluster.node_groups
+                     if ng.name == ng_name), None)
+
+    def validate_scaling(self, cluster, existing, additional):
+        orig_existing_count = {}
+        try:
+            for ng_name in existing:
+                node_group = self._get_named_node_group(cluster, ng_name)
+                if node_group:
+                    orig_existing_count[ng_name] = node_group.count
+                    node_group.count = int(existing[ng_name])
+                else:
+                    raise RuntimeError('Node group not found: {0}'.format(
+                        ng_name
+                    ))
+            for node_group in additional:
+                node_group.count = additional[node_group]
+                cluster.node_groups.append(node_group)
+
+            self.validate(cluster)
+
+        finally:
+            for node_group in additional:
+                node_group.count = 0
+                cluster.node_groups.remove(node_group)
+            for ng_name in orig_existing_count:
+                node_group = self._get_named_node_group(cluster, ng_name)
+                node_group.count = orig_existing_count[ng_name]
+
     def check_for_namenode(self, cluster):
         count = sum([ng.count for ng
-                    in utils.get_node_groups(cluster, "NAMENODE")])
+                     in utils.get_node_groups(cluster, "NAMENODE")])
         if count != 1:
             raise ex.NotSingleNameNodeException(count)
 

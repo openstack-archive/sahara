@@ -38,3 +38,17 @@ def convert(cluster_template, normalized_config):
     LOG.debug('Cluster configs: {0}'.format(cluster_template.cluster_configs))
 
     return cluster_template
+
+
+def get_host_role(host):
+    if hasattr(host, 'role'):
+        return host.role
+    else:
+        return host.node_group.name
+
+
+def get_node_processes(host):
+    if hasattr(host, 'node_processes'):
+        return host.node_processes
+    else:
+        return host.node_group.node_processes
