@@ -275,8 +275,33 @@ class LocalApi(object):
         self._manager.job_origin_update(context, _get_id(job_origin), values)
 
     def job_origin_destroy(self, context, job_origin):
-        """Destroy the Job or raise if it does not exist."""
+        """Destroy the JobOrigin or raise if it does not exist."""
         self._manager.job_origin_destroy(context, _get_id(job_origin))
+
+    ## JobBinary ops
+
+    @r.wrap(r.JobBinary)
+    def job_binary_get_all(self, context):
+        """Get all JobBinarys."""
+        return self._manager.job_binary_get_all(context)
+
+    @r.wrap(r.JobBinary)
+    def job_binary_get(self, context, job_binary):
+        """Return the JobBinary or None if it does not exist."""
+        return self._manager.job_binary_get(context, _get_id(job_binary))
+
+    @r.wrap(r.JobBinary)
+    def job_binary_create(self, context, values):
+        """Create a JobBinary from the values dictionary."""
+        return self._manager.job_binary_create(context, values)
+
+    def job_binary_destroy(self, context, job_binary):
+        """Destroy the JobBinary or raise if it does not exist."""
+        self._manager.job_binary_destroy(context, _get_id(job_binary))
+
+    def job_binary_get_raw_data(self, context, job_binary_id):
+        """Return the binary data field from the specified JobBinary."""
+        return self._manager.job_binary_get_raw_data(context, job_binary_id)
 
 
 class RemoteApi(LocalApi):

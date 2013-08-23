@@ -215,3 +215,7 @@ class JobExecution(Resource, objects.JobExecution):
 
 class JobOrigin(Resource, objects.JobOrigin):
     pass
+
+
+class JobBinary(Resource, objects.JobBinary):
+    pass

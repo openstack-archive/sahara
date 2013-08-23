@@ -13,9 +13,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from sqlalchemy.ext import declarative
-
 from savanna.openstack.common.db.sqlalchemy import models as oslo_models
+from sqlalchemy.ext import declarative
+from sqlalchemy import inspect
 
 
 class _SavannaBase(oslo_models.ModelBase, oslo_models.TimestampMixin):
@@ -24,16 +24,24 @@ class _SavannaBase(oslo_models.ModelBase, oslo_models.TimestampMixin):
     def to_dict(self):
         """sqlalchemy based automatic to_dict method."""
         d = {}
-        for col in self.__table__.columns:
-            d[col.name] = getattr(self, col.name)
 
-        self._datetime_to_str(d, 'created_at')
-        self._datetime_to_str(d, 'updated_at')
+        # if a column is unloaded at this point, it is
+        # probably deferred.  We do not want to access it
+        # here and thereby cause it to load...
+        unloaded = inspect(self).unloaded
+
+        for col in self.__table__.columns:
+            if col.name not in unloaded:
+                d[col.name] = getattr(self, col.name)
+
+        datetime_to_str(d, 'created_at')
+        datetime_to_str(d, 'updated_at')
 
         return d
 
-    def _datetime_to_str(self, dct, attr_name):
-        if dct.get(attr_name) is not None:
-            dct[attr_name] = dct[attr_name].isoformat(' ')
+
+def datetime_to_str(dct, attr_name):
+    if dct.get(attr_name) is not None:
+        dct[attr_name] = dct[attr_name].isoformat(' ')
 
 SavannaBase = declarative.declarative_base(cls=_SavannaBase)

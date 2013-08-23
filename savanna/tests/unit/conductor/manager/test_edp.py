@@ -51,7 +51,6 @@ SAMPLE_JOB_ORIGIN = {
     }
 }
 
-
 SAMPLE_JOB_EXECUTION = {
     "tenant_id": "tenant_id",
     "progress": "0.1",
@@ -60,6 +59,14 @@ SAMPLE_JOB_EXECUTION = {
     "input_id": "undefined",
     "output_id": "undefined",
     "cluster_id": None
+}
+
+BINARY_DATA = "vU}\x97\x1c\xdf\xa686\x08\xf2\tf\x0b\xb1}"
+
+SAMPLE_JOB_BINARY = {
+    "tenant_id": "test_tenant",
+    "name": "job_origin_test",
+    "data": BINARY_DATA
 }
 
 
@@ -214,3 +221,62 @@ class JobOriginTest(test_base.ConductorManagerTestCase):
 
         lst = self.api.job_origin_get_all(ctx)
         self.assertEqual(len(lst), 0)
+
+
+class JobBinaryTest(test_base.ConductorManagerTestCase):
+    def __init__(self, *args, **kwargs):
+        super(JobBinaryTest, self).__init__(
+            checks=[
+                lambda: SAMPLE_JOB_BINARY
+            ], *args, **kwargs)
+
+    def test_crud_operation_create_list_delete(self):
+        ctx = context.ctx()
+
+        self.api.job_binary_create(ctx, SAMPLE_JOB_BINARY)
+
+        lst = self.api.job_binary_get_all(ctx)
+        self.assertEqual(len(lst), 1)
+
+        self.api.job_binary_destroy(ctx, lst[0]['id'])
+
+        lst = self.api.job_binary_get_all(ctx)
+        self.assertEqual(len(lst), 0)
+
+    def test_duplicate_job_binary_create(self):
+        ctx = context.ctx()
+        self.api.job_binary_create(ctx, SAMPLE_JOB_BINARY)
+        with self.assertRaises(RuntimeError):
+            self.api.job_binary_create(ctx, SAMPLE_JOB_BINARY)
+
+    def test_job_binary_get_raw(self):
+        ctx = context.ctx()
+
+        id = self.api.job_binary_create(ctx,
+                                        SAMPLE_JOB_BINARY)['id']
+        data = self.api.job_binary_get_raw_data(ctx, id)
+        self.assertEqual(data, SAMPLE_JOB_BINARY["data"])
+
+        self.api.job_binary_destroy(ctx, id)
+
+        data = self.api.job_binary_get_raw_data(ctx, id)
+        self.assertEqual(data, None)
+
+    def test_job_binary_fields(self):
+        ctx = context.ctx()
+        ctx.tenant_id = SAMPLE_JOB_BINARY['tenant_id']
+        id = self.api.job_binary_create(ctx,
+                                        SAMPLE_JOB_BINARY)['id']
+
+        job_binary = self.api.job_binary_get(ctx, id)
+        self.assertIsInstance(job_binary, dict)
+        with self.assertRaises(KeyError):
+            job_binary["data"]
+
+        job_binary["data"] = self.api.job_binary_get_raw_data(ctx, id)
+        for key, val in SAMPLE_JOB_BINARY.items():
+            if key == "datasize":
+                self.assertEqual(len(BINARY_DATA), job_binary["datasize"])
+            else:
+                self.assertEqual(val, job_binary.get(key),
+                                 "Key not found %s" % key)
