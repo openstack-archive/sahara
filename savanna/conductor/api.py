@@ -235,6 +235,12 @@ class LocalApi(object):
                                                _get_id(job_execution))
 
     @r.wrap(r.JobExecution)
+    def job_execution_get_by_cluster(self, context, cluster):
+        """Return the all JobExecutions for specific cluster."""
+        return self._manager.job_execution_get_by_cluster(context,
+                                                          _get_id(cluster))
+
+    @r.wrap(r.JobExecution)
     def job_execution_get_all(self, context):
         """Get all JobExecutions."""
         return self._manager.job_execution_get_all(context)
@@ -244,6 +250,7 @@ class LocalApi(object):
         """Create a JobExecution from the values dictionary."""
         return self._manager.job_execution_create(context, values)
 
+    @r.wrap(r.JobExecution)
     def job_execution_update(self, context, job_execution, values):
         """Update the JobExecution or raise if it does not exist."""
         return self._manager.job_execution_update(context,

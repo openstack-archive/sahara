@@ -19,6 +19,7 @@ from savanna.openstack.common import excutils
 from savanna.openstack.common import log as logging
 from savanna.plugins import base as plugin_base
 from savanna.plugins import provisioning
+from savanna.service.edp import job_manager as jm
 from savanna.service import instances as i
 from savanna.utils import general as g
 from savanna.utils.openstack import nova
@@ -148,6 +149,10 @@ def _provision_cluster(cluster_id):
     # cluster is now up and ready
     cluster = conductor.cluster_update(ctx, cluster, {"status": "Active"})
     LOG.info(g.format_cluster_status(cluster))
+
+    # schedule execution pending job for cluster
+    for je in conductor.job_execution_get_by_cluster(ctx, cluster.id):
+        jm.run_job(ctx, je)
 
 
 def terminate_cluster(id):

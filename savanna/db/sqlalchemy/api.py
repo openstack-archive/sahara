@@ -464,6 +464,11 @@ def job_execution_get(context, job_execution_id):
     return _job_execution_get(context, job_execution_id)
 
 
+def job_execution_get_by_cluster(context, cluster_id):
+    query = model_query(m.JobExecution, context, get_session())
+    return query.filter_by(cluster_id=cluster_id).all()
+
+
 def job_execution_get_all(context):
     query = model_query(m.JobExecution, context)
     return query.all()

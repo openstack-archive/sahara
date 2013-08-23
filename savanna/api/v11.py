@@ -65,8 +65,43 @@ def job_delete(job_id):
 @v.check_exists(api.get_data_source, id='output_id')
 @v.check_exists(c_api.get_cluster, 'cluster_id')
 def job_execute(job_id, input_id, output_id, cluster_id, data):
-    return u.render(job_execution=api.execute_job(job_id, input_id, output_id,
-                                                  cluster_id).to_dict())
+    job_execution = api.execute_job(job_id, input_id, output_id,
+                                    cluster_id, data)
+    return u.render(job_execution.to_wrapped_dict())
+
+
+@rest.get('/job-executions')
+def job_executions_list():
+    job_executions = [je.to_dict() for je in api.job_execution_list()]
+    return u.render(job_executions=job_executions)
+
+
+@rest.get('/job-executions/<job_execution_id>')
+@v.check_exists(api.get_job_execution, id='job_execution_id')
+def job_executions(job_execution_id):
+    job_execution = api.get_job_execution(job_execution_id)
+    return u.render(job_execution.to_wrapped_dict())
+
+
+@rest.get('/job-executions/<job_execution_id>/refresh-status')
+@v.check_exists(api.get_job_execution, id='job_execution_id')
+def job_executions_status(job_execution_id):
+    job_execution = api.get_job_execution_status(job_execution_id)
+    return u.render(job_execution.to_wrapped_dict())
+
+
+@rest.get('/job-executions/<job_execution_id>/cancel')
+@v.check_exists(api.get_job_execution, id='job_execution_id')
+def job_executions_cancel(job_execution_id):
+    job_execution = api.cancel_job_execution(job_execution_id)
+    return u.render(job_execution.to_wrapped_dict())
+
+
+@rest.delete('/job-executions/<job_execution_id>')
+@v.check_exists(api.get_job_execution, id='job_execution_id')
+def job_executions_delete(job_execution_id):
+    api.delete_job_execution(job_execution_id)
+    return u.render()
 
 
 @rest.get('/data-sources')

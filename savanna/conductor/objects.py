@@ -200,16 +200,17 @@ class JobExecution(object):
     """An object representing JobExecution
 
     id
+    tenant_id
     job_id
     input_id
     output_id
     start_time
     end_time
+    cluster_id
+    info
     progress
-    logs
+    oozie_job_id
     return_code
-    map_tasks - list of map_tasks
-    reduce_tasks - list of reduce_tasks
     """
 
 

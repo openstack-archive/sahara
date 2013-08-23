@@ -265,10 +265,11 @@ class JobExecution(mb.SavannaBase):
                          sa.ForeignKey('data_sources.id'))
     output_id = sa.Column(sa.String(36),
                           sa.ForeignKey('data_sources.id'))
-    start_time = sa.Column(sa.Date())
-    end_time = sa.Column(sa.Date())
+    start_time = sa.Column(sa.DateTime())
+    end_time = sa.Column(sa.DateTime())
     cluster_id = sa.Column(sa.String(36),
                            sa.ForeignKey('clusters.id'))
+    info = sa.Column(st.JsonDictType())
     progress = sa.Column(sa.Float)
     oozie_job_id = sa.Column(sa.String(100))
     return_code = sa.Column(sa.String(80))

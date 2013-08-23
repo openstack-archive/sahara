@@ -276,6 +276,10 @@ class ConductorManager(db_base.Base):
         """Return the JobExecution or None if it does not exist."""
         return self.db.job_execution_get(context, job_execution)
 
+    def job_execution_get_by_cluster(self, context, cluster):
+        """Return the all JobExecutions for specific cluster."""
+        return self.db.job_execution_get_by_cluster(context, cluster)
+
     def job_execution_get_all(self, context):
         """Get all JobExecutions."""
         return self.db.job_execution_get_all(context)

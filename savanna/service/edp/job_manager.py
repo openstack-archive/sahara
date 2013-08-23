@@ -44,10 +44,42 @@ main_res_names = {'Pig': 'script.pig',
                   'Jar': 'main.jar'}
 
 
+def get_job_status(job_execution_id):
+    ctx = context.ctx()
+    job_execution = conductor.job_execution_get(ctx, job_execution_id)
+    cluster = conductor.cluster_get(ctx, job_execution.cluster_id)
+
+    if cluster.status != 'Active':
+        return job_execution.status
+
+    client = o.OozieClient(cluster['info']['JobFlow']['Oozie'] + "/oozie/")
+    job_info = client.get_job_status(job_execution.oozie_job_id)
+    job_execution = conductor.job_execution_update(ctx, job_execution,
+                                                   {"info": job_info})
+    return job_execution
+
+
+def cancel_job(job_execution_id):
+    ctx = context.ctx()
+    job_execution = conductor.job_execution_get(ctx, job_execution_id)
+    cluster = conductor.cluster_get(ctx, job_execution.cluster_id)
+
+    client = o.OozieClient(cluster['info']['JobFlow']['Oozie'] + "/oozie/")
+    client.kill_job(job_execution.oozie_job_id)
+
+    job_info = client.get_job_status(job_execution.oozie_job_id)
+    update = {"info": job_info,
+              "end_time": datetime.datetime.now()}
+    job_execution = conductor.job_execution_update(ctx, job_execution,
+                                                   update)
+
+    return job_execution
+
+
 def run_job(ctx, job_execution):
     cluster = conductor.cluster_get(ctx, job_execution.cluster_id)
     if cluster.status != 'Active':
-        return job_execution.status
+        return job_execution
 
     job = conductor.job_get(ctx, job_execution.job_id)
     job_origin = conductor.job_origin_get(context.ctx(), job.job_origin_id)
