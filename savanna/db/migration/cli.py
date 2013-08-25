@@ -13,7 +13,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import gettext
+
 from oslo.config import cfg
+
+gettext.install('savanna', unicode=1)
 
 from savanna.db import api as db_api
 

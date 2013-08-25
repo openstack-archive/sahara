@@ -15,6 +15,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import gettext
 import os
 import sys
 
@@ -32,6 +33,8 @@ if os.path.exists(os.path.join(possible_topdir,
                                'savanna',
                                '__init__.py')):
     sys.path.insert(0, possible_topdir)
+
+gettext.install('savanna', unicode=1)
 
 from savanna import config
 from savanna.db import api as db_api
