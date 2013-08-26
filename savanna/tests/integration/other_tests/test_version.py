@@ -25,8 +25,8 @@ class RestApiVersionsTest(base.ITestCase):
         telnetlib.Telnet(self.host, self.port)
 
     def test_version(self):
-        """This test checks Savanna start
+        """This test checks Savanna version
         """
         version_data = self.get_object(self.url_version, '', 200)
         get_version_data = {'versions': [{'status': 'CURRENT', 'id': 'v1.0'}]}
-        self.assertEquals(version_data, get_version_data)
+        self.assertEqual(version_data, get_version_data)
