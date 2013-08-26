@@ -91,7 +91,12 @@ def check_node_group_basic_fields(plugin_name, hadoop_version, ng,
                                   plugin_configs=None):
 
     if ng.get('node_group_template_id'):
-        check_node_group_template_exists(ng['node_group_template_id'])
+        ng_tmpl_id = ng['node_group_template_id']
+        check_node_group_template_exists(ng_tmpl_id)
+        ng_tmpl = api.get_node_group_template(ng_tmpl_id).to_wrapped_dict()
+        check_node_group_basic_fields(plugin_name, hadoop_version,
+                                      ng_tmpl['node_group_template'],
+                                      plugin_configs)
 
     if ng.get('node_configs'):
         check_node_group_configs(plugin_name, hadoop_version,
@@ -167,7 +172,15 @@ def check_cluster_template_exists(cluster_template_id):
                                   " doesn't exist" % cluster_template_id)
 
 
+def check_node_groups_in_cluster_templates(plugin_name, hadoop_version,
+                                           cluster_template_id):
+    c_t = api.get_cluster_template(id=cluster_template_id)
+    n_groups = c_t.to_wrapped_dict()['cluster_template']['node_groups']
+    for node_group in n_groups:
+        check_node_group_basic_fields(plugin_name, hadoop_version, node_group)
+
 ## NodeGroup templates related checks
+
 
 def check_node_group_template_unique_name(name):
     if name in [t.name for t in api.get_node_group_templates()]:
