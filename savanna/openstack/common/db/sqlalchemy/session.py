@@ -241,6 +241,7 @@ Efficient use of soft deletes:
         # This will produce count(bar_refs) db requests.
 """
 
+import functools
 import os.path
 import re
 import time
@@ -525,6 +526,7 @@ def _raise_if_deadlock_error(operational_error, engine_name):
 
 
 def _wrap_db_error(f):
+    @functools.wraps(f)
     def _wrap(*args, **kwargs):
         try:
             return f(*args, **kwargs)
@@ -549,7 +551,6 @@ def _wrap_db_error(f):
         except Exception as e:
             LOG.exception(_('DB exception wrapped.'))
             raise exception.DBError(e)
-    _wrap.func_name = f.func_name
     return _wrap
 
 

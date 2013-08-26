@@ -370,7 +370,7 @@ def _change_deleted_column_type_to_boolean_sqlite(migrate_engine, table_name,
 
     constraints = [constraint.copy() for constraint in table.constraints]
 
-    meta = MetaData(bind=migrate_engine)
+    meta = table.metadata
     new_table = Table(table_name + "__tmp__", meta,
                       *(columns + constraints))
     new_table.create()
