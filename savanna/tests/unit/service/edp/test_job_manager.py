@@ -140,6 +140,31 @@ class TestJobManager(models_test_base.DbTestCase):
         </property>
       </configuration>""", res)
 
+    def test_build_workflow_for_job_hive(self):
+
+        input_data = _create_data_source('swift://ex.savanna/i')
+        output_data = _create_data_source('swift://ex.savanna/o')
+        data = {'job_xml': '[hive-site.xml]'}
+
+        res = job_manager.build_workflow_for_job('Hive', input_data,
+                                                 output_data, data)
+
+        self.assertIn("""
+      <job-xml>[hive-site.xml]</job-xml>
+      <configuration>
+        <property>
+          <name>fs.swift.service.savanna.password</name>
+          <value>admin1</value>
+        </property>
+        <property>
+          <name>fs.swift.service.savanna.username</name>
+          <value>admin</value>
+        </property>
+      </configuration>
+      <script>script.q</script>
+      <param>INPUT=swift://ex.savanna/i</param>
+      <param>OUTPUT=swift://ex.savanna/o</param>""", res)
+
 
 def _create_all_stack(type):
     b = _create_job_binary('1')
