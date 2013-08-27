@@ -10,6 +10,10 @@ mock>=1.0
 nose
 openstack.nose_plugin>=0.7
 pylint==0.25.2
+python-swiftclient>=1.6.0
 sphinx>=1.1.2
 sphinxcontrib-httpdomain
 unittest2
+
+-f http://tarballs.openstack.org/python-savannaclient/python-savannaclient-master.tar.gz#egg=pythonsavannaclient-0.1
+pythonsavannaclient>=0.1
