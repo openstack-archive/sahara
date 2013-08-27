@@ -28,6 +28,31 @@ CONF = cfg.CONF
 
 # NOTE(slukjanov): https://blueprints.launchpad.net/savanna?searchtext=ip
 def init_instances_ips(instance, server):
+    if instance.internal_ip and instance.management_ip:
+        return True
+
+    if CONF.use_neutron:
+        return init_neutron_ips(instance, server)
+    else:
+        return init_nova_network_ips(instance, server)
+
+
+def init_neutron_ips(instance, server):
+    ctx = context.ctx()
+
+    net_id = instance.node_group.cluster.neutron_management_network
+    net_name = nova.client().networks.get(net_id).label
+
+    internal_ip = server.networks.get(net_name, [None])[0]
+    management_ip = internal_ip
+
+    conductor.instance_update(ctx, instance, {"management_ip": management_ip,
+                                              "internal_ip": internal_ip})
+
+    return internal_ip
+
+
+def init_nova_network_ips(instance, server):
     """Extracts internal and management ips.
 
     As internal ip will be used the first ip from the nova networks CIDRs.
@@ -35,9 +60,6 @@ def init_instances_ips(instance, server):
     non-internal ip.
     """
     ctx = context.ctx()
-
-    if instance.internal_ip and instance.management_ip:
-        return True
 
     management_ip = instance.management_ip
     internal_ip = instance.internal_ip

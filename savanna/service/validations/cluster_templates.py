@@ -88,6 +88,10 @@ CLUSTER_TEMPLATE_SCHEMA = {
         "description": {
             "type": "string",
         },
+        "neutron_management_network": {
+            "type": "string",
+            "format": "uuid"
+        },
     },
     "additionalProperties": False,
     "required": [
