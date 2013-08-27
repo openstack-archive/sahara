@@ -7,6 +7,8 @@ include savanna/db/migration/alembic.ini
 include savanna/db/migration/alembic_migrations/script.py.mako
 include savanna/db/migration/alembic_migrations/versions/README
 
+recursive-include savanna/locale *
+
 exclude .gitignore
 exclude .gitreview
 
