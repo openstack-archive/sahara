@@ -282,6 +282,7 @@ class ConductorManager(db_base.Base):
 
     def job_execution_create(self, context, values):
         """Create a JobExecution from the values dictionary."""
+        values['tenant_id'] = context.tenant_id
         return self.db.job_execution_create(context, values)
 
     def job_execution_update(self, context, job_execution, values):
@@ -310,7 +311,7 @@ class ConductorManager(db_base.Base):
 
     def job_origin_update(self, context, job_origin, values):
         """Updates a JobOrigin from the values dictionary."""
-        self.db.job_origin_update(context, job_origin, values)
+        return self.db.job_origin_update(context, job_origin, values)
 
     def job_origin_destroy(self, context, job_origin):
         """Destroy the JobOrigin or raise if it does not exist."""

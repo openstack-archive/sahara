@@ -28,13 +28,18 @@ class OozieWorkflowCreator(object):
     def __init__(self, name):
         self.doc = x.load_xml_document("service/edp/resources/workflow.xml")
         self.tag_name = name
+
         x.add_child(self.doc, 'action', self.tag_name)
 
-    def _add_jobtracker_namenode_elements(self, job_tracker, name_node):
+        ok_elem = xml.parseString('<%s to="%s"/>' % ("ok", "end"))
+        x.add_element(self.doc, 'action', ok_elem.firstChild)
+        error_elem = xml.parseString('<%s to="%s"/>' % ("error", "fail"))
+        x.add_element(self.doc, 'action', error_elem.firstChild)
+
         x.add_text_element_to_tag(self.doc, self.tag_name,
-                                  'job-tracker', job_tracker)
+                                  'job-tracker', "${jobTracker}")
         x.add_text_element_to_tag(self.doc, self.tag_name,
-                                  'name-node', name_node)
+                                  'name-node', "${nameNode}")
 
     def _add_to_prepare_element(self, element, paths):
         if element not in ['delete', 'mkdir']:

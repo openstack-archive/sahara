@@ -246,8 +246,9 @@ class LocalApi(object):
 
     def job_execution_update(self, context, job_execution, values):
         """Update the JobExecution or raise if it does not exist."""
-        self._manager.job_execution_update(context, _get_id(job_execution),
-                                           values)
+        return self._manager.job_execution_update(context,
+                                                  _get_id(job_execution),
+                                                  values)
 
     def job_execution_destroy(self, context, job_execution):
         """Destroy the JobExecution or raise if it does not exist."""
@@ -272,7 +273,8 @@ class LocalApi(object):
 
     def job_origin_update(self, context, job_origin, values):
         """Update the JobOrigin or raise if it does not exist."""
-        self._manager.job_origin_update(context, _get_id(job_origin), values)
+        return self._manager.job_origin_update(context, _get_id(job_origin),
+                                               values)
 
     def job_origin_destroy(self, context, job_origin):
         """Destroy the JobOrigin or raise if it does not exist."""

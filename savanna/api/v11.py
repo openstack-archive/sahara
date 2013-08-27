@@ -14,6 +14,7 @@
 # limitations under the License.
 
 from savanna.openstack.common import log as logging
+from savanna.service import api as c_api
 from savanna.service.edp import api
 from savanna.service import validation as v
 from savanna.service.validations.edp import data_source as v_d_s
@@ -54,12 +55,18 @@ def job_delete(job_id):
     return u.render()
 
 
-@rest.post('/jobs/<job_id>/execute/<input_id>/<output_id>')
+#TODO(nprivalova): path will be updated and data will contain
+# params for the job. For this purpose we
+# need strong validation. Will be done in next commit
+@rest.post('/jobs/<job_id>/execute/from/<input_id>/to/<output_id>/on/'
+           '<cluster_id>')
 @v.check_exists(api.get_job, id='job_id')
 @v.check_exists(api.get_data_source, id='input_id')
 @v.check_exists(api.get_data_source, id='output_id')
-def job_execute(job_id, input_id, output_id):
-    return u.render(jobs=api.execute_job(job_id, input_id, output_id))
+@v.check_exists(c_api.get_cluster, 'cluster_id')
+def job_execute(job_id, input_id, output_id, cluster_id, data):
+    return u.render(job_execution=api.execute_job(job_id, input_id, output_id,
+                                                  cluster_id).to_dict())
 
 
 @rest.get('/data-sources')
