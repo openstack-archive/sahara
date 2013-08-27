@@ -33,13 +33,13 @@ class HadoopServer:
         self._remote = self.instance.remote
         self.ambari_rpm = ambari_rpm or AMBARI_RPM
 
-    def provision_ambari(self, ambari_server_ip):
+    def provision_ambari(self, ambari_info):
         self.install_rpms()
         if 'AMBARI_SERVER' in self.node_group.components:
-            self._setup_and_start_ambari_server()
+            self._setup_and_start_ambari_server(ambari_info.port)
 
         if 'AMBARI_AGENT' in self.node_group.components:
-            self._setup_and_start_ambari_agent(ambari_server_ip)
+            self._setup_and_start_ambari_agent(ambari_info.host.internal_ip)
 
     def install_rpms(self):
         LOG.info(
@@ -50,20 +50,34 @@ class HadoopServer:
         self._remote.execute_command(rpm_cmd)
         self._remote.execute_command('yum -y install epel-release')
 
-    def _setup_and_start_ambari_server(self):
+    def _setup_and_start_ambari_server(self, port):
         LOG.info(
             '{0}: Installing ambari-server ...'.format(self.instance.hostname))
         self._remote.execute_command('yum -y install ambari-server')
 
         LOG.info('Running Ambari Server setup ...')
-        self._execute_on_vm_interactive('ambari-server setup',
-                                        DefaultPromptMatcher(
-                                            "Ambari Server 'setup' finished "
-                                            "successfully",
-                                            LOG))
+        self._execute_on_vm_interactive(
+            'ambari-server setup', DefaultPromptMatcher(
+                "Ambari Server 'setup' finished successfully", LOG))
+
+        self._configure_ambari_server_api_port(port)
 
         LOG.info('Starting Ambari ...')
         self._remote.execute_command('ambari-server start')
+
+    def _configure_ambari_server_api_port(self, port):
+        # do nothing if port is not specified or is default
+        if port is None or port == 8080:
+            return
+
+        ambari_config_file = '/etc/ambari-server/conf/ambari.properties'
+        LOG.debug('Configuring Ambari Server API port: {0}'.format(port))
+        # read the current contents
+        data = self._remote.read_file_from(ambari_config_file)
+        data = '{0}\nclient.api.port={1}\n'.format(data, port)
+
+        # write the file back
+        self._remote.write_file_to(ambari_config_file, data)
 
     def _setup_and_start_ambari_agent(self, ambari_server_ip):
         LOG.info(
