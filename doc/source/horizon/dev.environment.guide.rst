@@ -31,8 +31,7 @@ Here is an example for grizzly:
 
 .. sourcecode:: console
 
-    $ git clone https://github.com/openstack/horizon
-    $ git checkout -b stable/grizzly origin/stable/grizzly
+    $ git clone https://github.com/openstack/horizon -b stable/grizzly
 ..
 
     Then install virtual environment:
@@ -83,7 +82,7 @@ If you are using Neutron instead of Nova Network:
 
 .. sourcecode:: console
 
-    $ .venv/bin/python $SAVANNA_DASHBOARD_HOME/setup.py install
+    $ .venv/bin/pip install $SAVANNA_DASHBOARD_HOME
 
 8. Create a symlink to savanna-dashboard source
 
