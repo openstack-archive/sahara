@@ -27,9 +27,9 @@ from savanna.middleware import auth_valid
 from savanna.openstack.common import log
 from savanna.openstack.common.middleware import debug
 from savanna.plugins import base as plugins_base
+from savanna.service import periodic
 from savanna.utils import api as api_utils
 from savanna.utils import patches
-from savanna.utils import scheduler
 
 LOG = log.getLogger(__name__)
 
@@ -95,8 +95,8 @@ def make_app():
     # TODO(slukjanov): it should be removed when db-manage will be finished
     db_api.setup_db()
 
-    scheduler.setup_scheduler(app)
     plugins_base.setup_plugins()
+    periodic.setup(app)
 
     def make_json_error(ex):
         status_code = (ex.code
