@@ -276,6 +276,24 @@ def instance_remove(context, instance_id):
         node_group.save(session=session)
 
 
+## Volumes ops
+
+def append_volume(context, instance_id, volume_id):
+    session = get_session()
+    with session.begin():
+        instance = _instance_get(context, session, instance_id)
+        instance.volumes.append(volume_id)
+        instance.save(session=session)
+
+
+def remove_volume(context, instance_id, volume_id):
+    session = get_session()
+    with session.begin():
+        instance = _instance_get(context, session, instance_id)
+        instance.volumes.remove(volume_id)
+        instance.save(session=session)
+
+
 ## Cluster Template ops
 
 def _cluster_template_get(context, session, cluster_template_id):

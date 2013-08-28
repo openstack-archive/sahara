@@ -16,23 +16,26 @@
 import re
 import six
 
+from savanna import conductor as c
 from savanna import context
 from savanna.openstack.common import log as logging
 from savanna.utils.openstack import cinder
 from savanna.utils.openstack import nova
 
+
+conductor = c.API
 LOG = logging.getLogger(__name__)
 
 
 def attach(cluster):
     for node_group in cluster.node_groups:
-        for instance in node_group.instances:
-            _attach_volumes_to_node(node_group, instance)
+        attach_to_instances(node_group.instances)
 
 
 def attach_to_instances(instances):
+    ctx = context.ctx()
     for instance in instances:
-        _attach_volumes_to_node(instance.node_group, instance)
+        _attach_volumes_to_node(ctx, instance.node_group, instance)
 
 
 def _await_attach_volume(instance, device_path):
@@ -48,14 +51,14 @@ def _await_attach_volume(instance, device_path):
                        instance.instance_name)
 
 
-def _attach_volumes_to_node(node_group, instance, volume_type=None):
+def _attach_volumes_to_node(ctx, node_group, instance, volume_type=None):
     count = node_group.volumes_per_node
     size = node_group.volumes_size
     for idx in range(1, count + 1):
         device_path = _get_free_device_path(instance)
         display_name = "volume_" + instance.instance_name + "_" + str(idx)
 
-        _create_attach_volume(instance, size, device_path, display_name,
+        _create_attach_volume(ctx, instance, size, device_path, display_name,
                               volume_type)
         _await_attach_volume(instance, device_path)
         LOG.debug("Attach volume to instance %s, type %s" %
@@ -65,12 +68,12 @@ def _attach_volumes_to_node(node_group, instance, volume_type=None):
         LOG.debug("Mount volume to instance %s" % instance.instance_id)
 
 
-def _create_attach_volume(instance, size, device_path, display_name=None,
+def _create_attach_volume(ctx, instance, size, device_path, display_name=None,
                           volume_type=None):
     volume = cinder.client().volumes.create(size=size,
                                             display_name=display_name,
                                             volume_type=volume_type)
-    instance.volumes.append(volume.id)
+    conductor.append_volume(ctx, instance, volume.id)
 
     while volume.status != 'available':
         volume = cinder.get_volume(volume.id)
@@ -127,8 +130,7 @@ def _mount_volume(instance, device_path, mount_point):
 
 def detach(cluster):
     for node_group in cluster.node_groups:
-        for instance in node_group.instances:
-            _detach_volume_from_instance(instance)
+        detach_from_instances(node_group.instances)
 
 
 def detach_from_instances(instances):

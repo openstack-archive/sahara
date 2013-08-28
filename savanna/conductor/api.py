@@ -130,6 +130,16 @@ class LocalApi(object):
         """
         self._manager.instance_remove(context, _get_id(instance))
 
+    ## Volumes ops
+
+    def append_volume(self, context, instance, volume_id):
+        """Append volume_id to instance."""
+        self._manager.append_volume(context, _get_id(instance), volume_id)
+
+    def remove_volume(self, context, instance, volume_id):
+        """Remove volume_id in instance."""
+        self._manager.remove_volume(context, _get_id(instance), volume_id)
+
     ## Cluster Template ops
 
     @r.wrap(r.ClusterTemplateResource)
