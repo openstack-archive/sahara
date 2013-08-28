@@ -16,7 +16,9 @@
 import os
 import requests
 
+from savanna import conductor
 from savanna import context
+from savanna import exceptions as exc
 from savanna.openstack.common import jsonutils as json
 from savanna.openstack.common import log as logging
 from savanna.openstack.common import uuidutils
@@ -29,6 +31,7 @@ from savanna.plugins.hdp import savannautils as utils
 from savanna.plugins.hdp import validator as v
 from savanna.plugins import provisioning as p
 
+conductor = conductor.API
 LOG = logging.getLogger(__name__)
 
 
@@ -350,7 +353,8 @@ class AmbariPlugin(p.ProvisioningPluginBase):
         if result.status_code == 202:
             #TODO(jspeidel) don't hard code request id
             success = self._wait_for_async_request(
-                1, cluster_name, ambari_info)
+                self._get_async_request_uri(ambari_info, cluster_name, 1),
+                auth=(ambari_info.user, ambari_info.password))
             if success:
                 LOG.info("Install of Hadoop stack successful.")
                 self._finalize_ambari_state(ambari_info)
@@ -358,20 +362,22 @@ class AmbariPlugin(p.ProvisioningPluginBase):
                 LOG.critical('Install command failed.')
                 raise RuntimeError('Hadoop service install failed')
         else:
-            LOG.critical(
+            LOG.error(
                 'Install command failed. {0}'.format(result.text))
             raise RuntimeError('Hadoop service install failed')
 
         return success
 
-    def _wait_for_async_request(self, request_id, cluster_name, ambari_info):
-        request_url = 'http://{0}/api/v1/clusters/{1}/requests/{' \
-                      '2}/tasks?fields=Tasks/status'.format(
-                          ambari_info.get_address(), cluster_name, request_id)
+    def _get_async_request_uri(self, ambari_info, cluster_name, request_id):
+        return 'http://{0}/api/v1/clusters/{1}/requests/{' \
+               '2}/tasks?fields=Tasks/status'.format(
+               ambari_info.get_address(), cluster_name,
+               request_id)
+
+    def _wait_for_async_request(self, request_url, auth):
         started = False
         while not started:
-            result = requests.get(request_url, auth=(
-                ambari_info.user, ambari_info.password))
+            result = requests.get(request_url, auth=auth)
             LOG.debug(
                 'async request ' + request_url + ' response:\n' + result.text)
             json_result = json.loads(result.text)
@@ -396,12 +402,13 @@ class AmbariPlugin(p.ProvisioningPluginBase):
                         ambari_info.get_address(), cluster_name)
         body = '{"ServiceInfo": {"state" : "STARTED"}}'
 
-        result = requests.put(start_url, data=body, auth=(
-            ambari_info.user, ambari_info.password))
+        auth = (ambari_info.user, ambari_info.password)
+        result = requests.put(start_url, data=body, auth=auth)
         if result.status_code == 202:
             # don't hard code request id
             success = self._wait_for_async_request(
-                2, cluster_name, ambari_info)
+                self._get_async_request_uri(ambari_info, cluster_name, 2),
+                auth=auth)
             if success:
                 LOG.info(
                     "Successfully started Hadoop cluster '{0}'.".format(
@@ -416,13 +423,98 @@ class AmbariPlugin(p.ProvisioningPluginBase):
                 format(result.status_code, result.text))
             raise RuntimeError('Hadoop cluster start failed.')
 
+    def _install_components(self, ambari_info, auth, cluster_name, servers):
+        LOG.info('Starting Hadoop components while scaling up')
+        LOG.info('Cluster name {0}, Ambari server ip {1}'
+                 .format(cluster_name, ambari_info.get_address()))
+        # query for the host components on the given hosts that are in the
+        # INIT state
+        body = '{"HostRoles": {"state" : "INSTALLED"}}'
+        install_uri = 'http://{0}/api/v1/clusters/{' \
+                      '1}/host_components?HostRoles/state=INIT&' \
+                      'HostRoles/host_name.in({2})'.format(
+                      ambari_info.get_address(),
+                      cluster_name,
+                      self._get_host_list(servers))
+        self._exec_ambari_command(auth, body, install_uri)
+
+    def _start_components(self, ambari_info, auth, cluster_name, servers):
+        # query for all the host components on one of the hosts in the
+        # INSTALLED state, then get a list of the client services in the list
+        installed_uri = 'http://{0}/api/v1/clusters/{' \
+                        '1}/host_components?HostRoles/state=INSTALLED&' \
+                        'HostRoles/host_name.in({2})' \
+            .format(ambari_info.get_address(), cluster_name,
+                    self._get_host_list(servers))
+        result = requests.get(installed_uri, auth=auth)
+        if result.status_code == 200:
+            LOG.debug(
+                'GET response: {0}'.format(result.text))
+            json_result = json.loads(result.text)
+            items = json_result['items']
+            # select non-CLIENT items
+            inclusion_list = list(set([x['HostRoles']['component_name']
+                                       for x in items if "CLIENT" not in
+                                       x['HostRoles']['component_name']]))
+
+            # query and start all non-client components on the given set of
+            # hosts
+            body = '{"HostRoles": {"state" : "STARTED"}}'
+            start_uri = 'http://{0}/api/v1/clusters/{' \
+                        '1}/host_components?HostRoles/state=INSTALLED&' \
+                        'HostRoles/host_name.in({2})' \
+                        '&HostRoles/component_name.in({3})'.format(
+                        ambari_info.get_address(), cluster_name,
+                        self._get_host_list(servers),
+                        ",".join(inclusion_list))
+            self._exec_ambari_command(auth, body, start_uri)
+        else:
+            raise RuntimeError('Unable to determine installed service '
+                               'components in scaled instances.  status'
+                               ' code returned = {0}'.format(result.status))
+
+    def _install_and_start_components(self, cluster_name, servers,
+                                      ambari_info):
+        auth = (ambari_info.user, ambari_info.password)
+
+        self._install_components(ambari_info, auth, cluster_name, servers)
+
+        self._start_components(ambari_info, auth, cluster_name, servers)
+
+    def _exec_ambari_command(self, auth, body, cmd_uri):
+
+        LOG.debug('PUT URI: {0}'.format(cmd_uri))
+        result = requests.put(cmd_uri, data=body,
+                              auth=auth)
+        if result.status_code == 202:
+        # don't hard code request id
+            LOG.debug(
+                'PUT response: {0}'.format(result.text))
+            json_result = json.loads(result.text)
+            href = json_result['href'] + '/tasks?fields=Tasks/status'
+            success = self._wait_for_async_request(href, auth)
+            if success:
+                LOG.info(
+                    "Successfully changed state of Hadoop components ")
+            else:
+                LOG.critical('Failed to change state of Hadoop '
+                             'components')
+                raise RuntimeError('Failed to change state of Hadoop '
+                                   'components')
+
+        else:
+            LOG.error(
+                'Command failed. Status: {0}, response: {1}'.
+                format(result.status_code, result.text))
+            raise RuntimeError('Hadoop/Ambari command failed.')
+
     def _get_default_cluster_configuration(self):
         with open(os.path.join(os.path.dirname(__file__), 'resources',
                                'default-cluster.template'), 'r') as f:
             return clusterspec.ClusterSpec(f.read())
 
     def _set_cluster_info(self, cluster, cluster_spec, hosts, ambari_info):
-        info = cluster.info
+        info = {}
 
         try:
             jobtracker_ip = self._determine_host_for_server_component(
@@ -447,6 +539,9 @@ class AmbariPlugin(p.ProvisioningPluginBase):
         info['Ambari Console'] = {
             'Web UI': 'http://%s' % ambari_info.get_address()
         }
+
+        ctx = context.ctx()
+        conductor.cluster_update(ctx, cluster, {'info': info})
 
     def _finalize_ambari_state(self, ambari_info):
         LOG.info('Finalizing Ambari cluster state.')
@@ -543,16 +638,19 @@ class AmbariPlugin(p.ProvisioningPluginBase):
         return requests
 
     # SAVANNA PLUGIN SPI METHODS:
-    def configure_cluster(self, cluster):
-        # take the user inputs from the cluster and node groups and convert
-        # to a ambari blueprint
-
+    def _get_blueprint_processor(self, cluster):
         processor = bp.BlueprintProcessor(json.load(
             open(os.path.join(os.path.dirname(__file__), 'resources',
                               'default-cluster.template'), "r")))
         processor.process_user_inputs(self._map_to_user_inputs(
             '1.3.0', cluster.cluster_configs))
         processor.process_node_groups(cluster.node_groups)
+        return processor
+
+    def configure_cluster(self, cluster):
+        # take the user inputs from the cluster and node groups and convert
+        # to a ambari blueprint
+        processor = self._get_blueprint_processor(cluster)
         # NOTE: for the time being we are going to ignore the node group
         # level configurations.  we are not currently
         # defining node level configuration items (i.e. scope='cluster' in
@@ -597,6 +695,56 @@ class AmbariPlugin(p.ProvisioningPluginBase):
     def validate(self, cluster):
         validator = v.Validator()
         validator.validate(cluster)
+
+    def scale_cluster(self, cluster, instances):
+        processor = self._get_blueprint_processor(cluster)
+        cluster_spec = clusterspec.ClusterSpec(
+            json.dumps(processor.blueprint), cluster=cluster)
+        rpm = self._get_rpm_uri(cluster_spec)
+
+        servers = []
+        for instance in instances:
+            host_role = utils.get_host_role(instance)
+            servers.append(h.HadoopServer(instance,
+                                          cluster_spec.node_groups
+                                          [host_role],
+                                          ambari_rpm=rpm))
+
+        ambari_info = self.get_ambari_info(cluster_spec,
+                                           self._get_servers(cluster))
+
+        for server in servers:
+            self._spawn('Ambari provisioning thread',
+                        server.provision_ambari, ambari_info)
+
+        self._wait_for_host_registrations(self._get_num_hosts(cluster),
+                                          ambari_info)
+
+        #  now add the hosts and the component
+        self._add_hosts_and_components(cluster_spec, servers,
+                                       ambari_info, cluster.name)
+
+        self._install_and_start_components(cluster.name, servers, ambari_info)
+
+    def decommission_nodes(self, cluster, instances):
+        raise exc.InvalidException('The HDP plugin does not yet support the '
+                                   'decommissioning of nodes')
+
+    def validate_scaling(self, cluster, existing, additional):
+        # see if additional servers are slated for "MASTER" group
+        validator = v.Validator()
+        validator.validate_scaling(cluster, existing, additional)
+
+    def _get_num_hosts(self, cluster):
+        count = 0
+        for node_group in cluster.node_groups:
+            count += node_group.count
+
+        return count
+
+    def _get_host_list(self, servers):
+        host_list = [server.instance.fqdn.lower() for server in servers]
+        return ",".join(host_list)
 
     def _get_rpm_uri(self, cluster_spec):
         ambari_config = cluster_spec.configurations['ambari']

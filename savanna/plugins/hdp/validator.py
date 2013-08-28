@@ -14,22 +14,69 @@
 # limitations under the License.
 
 import inspect
+from savanna import conductor
+from savanna import context
 import savanna.exceptions as e
 from savanna.plugins.general import exceptions as ex
 from savanna.plugins.general import utils
 
+conductor = conductor.API
+
 
 class Validator(object):
-
     def validate(self, cluster):
         funcs = inspect.getmembers(Validator, predicate=inspect.ismethod)
         for func in funcs:
             if func[0].startswith("check_"):
                 getattr(self, func[0])(cluster)
 
+    def _get_named_node_group(self, cluster, ng_name):
+        return next((ng for ng in cluster.node_groups
+                     if ng.name == ng_name), None)
+
+    def validate_scaling(self, cluster, existing, additional):
+        orig_existing_count = {}
+        ctx = context.ctx()
+        try:
+            for ng_id in existing:
+                node_group = self._get_by_id(cluster.node_groups, ng_id)
+                if node_group:
+                    orig_existing_count[ng_id] = node_group.count
+                    conductor.node_group_update(ctx, node_group,
+                                                {'count':
+                                                int(existing[ng_id])})
+                else:
+                    raise RuntimeError('Node group not found: {0}'.format(
+                        ng_id
+                    ))
+            for ng_id in additional:
+                node_group = self._get_by_id(cluster.node_groups, ng_id)
+                if node_group:
+                    conductor.node_group_update(ctx, node_group,
+                                                {'count':
+                                                int(additional[ng_id])})
+                else:
+                    raise RuntimeError('Node group not found: {0}'.format(
+                        ng_id
+                    ))
+
+            self.validate(cluster)
+
+        finally:
+            for ng_id in additional:
+                for ng_id in additional:
+                    node_group = self._get_by_id(cluster.node_groups, ng_id)
+                    conductor.node_group_update(ctx, node_group,
+                                                {'count': 0})
+            for ng_id in orig_existing_count:
+                node_group = self._get_by_id(cluster.node_groups, ng_id)
+                conductor.node_group_update(ctx, node_group,
+                                            {'count':
+                                             orig_existing_count[ng_id]})
+
     def check_for_namenode(self, cluster):
         count = sum([ng.count for ng
-                    in utils.get_node_groups(cluster, "NAMENODE")])
+                     in utils.get_node_groups(cluster, "NAMENODE")])
         if count != 1:
             raise ex.NotSingleNameNodeException(count)
 
@@ -55,6 +102,19 @@ class Validator(object):
         for ng in cluster.node_groups:
             if "AMBARI_AGENT" not in ng.node_processes:
                 raise AmbariAgentNumberException(ng.name)
+
+    def _get_node_groups(self, node_groups, proc_list=list()):
+        proc_list = [proc_list] if type(proc_list) in [str, unicode] \
+            else proc_list
+        return [ng for ng in node_groups
+                if set(proc_list).issubset(ng.node_processes)]
+
+    def _get_by_id(self, lst, id):
+        for obj in lst:
+            if obj.id == id:
+                return obj
+
+        return None
 
 
 class NoNameNodeException(e.SavannaException):
