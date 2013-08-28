@@ -109,7 +109,7 @@ class InstanceInteropHelper(object):
         username = nova.get_node_group_image_username(self.instance.node_group)
         return setup_ssh_connection(
             self.instance.management_ip, username,
-            self.instance.node_group.cluster.private_key)
+            self.instance.node_group.cluster.management_private_key)
 
     def execute_command(self, cmd, get_stderr=False, raise_when_error=True):
         with contextlib.closing(self.ssh_connection()) as ssh:
