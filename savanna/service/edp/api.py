@@ -94,3 +94,7 @@ def get_job_binary(id):
 
 def delete_job_binary(id):
     conductor.job_binary_destroy(context.ctx(), id)
+
+
+def get_job_binary_data(id):
+    return conductor.job_binary_get_raw_data(context.ctx(), id)

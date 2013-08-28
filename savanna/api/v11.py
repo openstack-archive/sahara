@@ -19,6 +19,7 @@ from savanna.service.edp import api
 from savanna.service import validation as v
 from savanna.service.validations.edp import data_source as v_d_s
 from savanna.service.validations.edp import job as v_j
+from savanna.service.validations.edp import job_binary as v_j_b
 from savanna.service.validations.edp import job_origin as v_j_o
 import savanna.utils.api as u
 
@@ -100,7 +101,7 @@ def job_origin_list():
 
 
 @rest.post('/job-origins')
-@v.validate(v_j_o.JOB_ORIGIN_SCHEMA, v_j_o.check_job_origin_create)
+@v.validate(v_j_o.JOB_ORIGIN_SCHEMA)
 def job_origin_create(data):
     return u.render(api.create_job_origin(data).to_wrapped_dict())
 
@@ -119,6 +120,7 @@ def job_origin_delete(job_origin_id):
 
 
 @rest.put_file('/job-binaries/<name>')
+@v.validate(None, v_j_b.check_data_type_length)
 def job_binary_create(**values):
     return u.render(api.create_job_binary(values).to_wrapped_dict())
 
@@ -139,3 +141,9 @@ def job_binary_get(job_binary_id):
 def job_binary_delete(job_binary_id):
     api.delete_job_binary(job_binary_id)
     return u.render()
+
+
+@rest.get('/job-binaries/<job_binary_id>/data')
+@v.check_exists(api.get_job_binary, id='job_binary_id')
+def job_binary_data(job_binary_id):
+    return api.get_job_binary_data(job_binary_id)
