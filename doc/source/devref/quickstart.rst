@@ -336,7 +336,7 @@ Send POST request to Savanna API to create and start the cluster:
      < cluster_create.json
 
 
-Once cluster started, you'll similar output:
+Once cluster started, you'll get similar output:
 
 .. sourcecode:: json
 
