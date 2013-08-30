@@ -78,8 +78,29 @@ class ConfigTypeMeta(type):
         return True
 
 
+class SimpleConfigTypeMeta(type):
+    def __instancecheck__(cls, instance):
+        # configs should be dict
+        if not isinstance(instance, dict):
+            return False
+
+        # check dict content
+        for conf_name, conf_value in six.iteritems(instance):
+            # keys should be strings, values should be int, string or bool
+            if not isinstance(conf_name, six.string_types):
+                return False
+            if not isinstance(conf_value,
+                              (six.string_types, six.integer_types)):
+                return False
+        return True
+
+
 class ConfigsType(dict):
     __metaclass__ = ConfigTypeMeta
+
+
+class SimpleConfigsType(dict):
+    __metaclass__ = SimpleConfigTypeMeta
 
 
 class FlavorTypeMeta(type):
@@ -104,4 +125,5 @@ class ApiValidator(jsonschema.Draft4Validator):
             schema, format_checker=format_checker, types={
                 "configs": ConfigsType,
                 "flavor": FlavorType,
+                "simple_config": SimpleConfigsType,
             })

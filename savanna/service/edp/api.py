@@ -41,10 +41,10 @@ def delete_job(id):
     conductor.job_destroy(context.ctx(), id)
 
 
-def execute_job(job_id, input_id, output_id, cluster_id, data):
+def execute_job(job_id, input_id, output_id, cluster_id, configs):
     job_ex_dict = {'input_id': input_id, 'output_id': output_id,
                    'job_id': job_id, 'cluster_id': cluster_id,
-                   'info': {'status': 'Pending'}}
+                   'info': {'status': 'Pending'}, 'job_configs': configs}
     job_execution = conductor.job_execution_create(context.ctx(), job_ex_dict)
     return manager.run_job(context.ctx(), job_execution)
 
