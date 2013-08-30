@@ -61,6 +61,12 @@ and set right value for variables:
    OPENSTACK_HOST = "ip of your controller"
    SAVANNA_URL = "url for savanna (e.g. "http://localhost:8386/v1.0")"
 
+If you are using Neutron instead of Nova Network:
+
+.. sourcecode:: python
+
+   SAVANNA_USE_NEUTRON = True
+
 5. Clone savanna-dashboard sources from ``https://github.com/stackforge/savanna-dashboard.git``
 
 .. sourcecode:: console

@@ -61,6 +61,13 @@ approach see :doc:`/horizon/dev.environment.guide`
     SAVANNA_URL = 'http://localhost:8386/v1.0'
 ..
 
+If you are using Neutron instead of Nova Network:
+
+.. sourcecode:: python
+
+   SAVANNA_USE_NEUTRON = True
+..
+
    Note: ``local_settings.py`` file is located in ``/usr/share/openstack-dashboard/openstack_dashboard/local/`` by default.
 
 4) Now all installations are done and apache web server can be restarted for the changes to take effect:

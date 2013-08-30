@@ -64,6 +64,8 @@ On Fedora-based distributions (e.g., Fedora/RHEL/CentOS/Scientific Linux):
 5. Look through the savanna.conf and change parameters which default values do not suite you.
 Set ``os_auth_host`` to the address of your VM with DevStack.
 
+If you are using Neutron instead of Nova Network add ``use_neutron = True`` to config.
+
 .. note::
 
     Config file can be specified for ``savanna-api`` command using ``--config-file`` flag.
