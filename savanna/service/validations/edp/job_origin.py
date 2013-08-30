@@ -45,7 +45,3 @@ JOB_ORIGIN_SCHEMA = {
         "url"
     ]
 }
-
-
-def check_job_origin_create(data, **kwargs):
-    return True
