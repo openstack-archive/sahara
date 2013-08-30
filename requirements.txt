@@ -1,15 +1,19 @@
 alembic>=0.4.1
 eventlet>=0.13.0
-Flask==0.9
+Flask>=0.10,<1.0
 jsonschema>=1.3.0,!=1.4.0
 kombu>=2.4.8
 netaddr
 paramiko>=1.8.0
 pbr>=0.5.21,<1.0
-# NOTE(slukjanov): <1.2.3 added to support old clients with the same constraint
+# NOTE(slukjanov): <1.2.3 added to support old versions of python clients that
+#                  contains the following requests lib dependency: >=1.1,<1.2.3
+#                  There are no problems w/ keysstoneclient, but:
+#                  python-cinderclient should be > 1.0.5
+#                  python-novaclient should be >=2.14.1
 requests>=1.1,<1.2.3
-python-cinderclient>=1.0.4
-python-keystoneclient>=0.3.0
+python-cinderclient>=1.0.5
+python-keystoneclient>=0.3.2
 python-novaclient>=2.12.0
 six
 SQLAlchemy>=0.7.8,<=0.8.99
