@@ -55,3 +55,14 @@ def append_oozie_setup(setup_script, env_configs):
     setup_script.append(
         "cat /opt/oozie/conf/oozie-env.sh >> /tmp/oozie-env.sh")
     setup_script.append("cp /tmp/oozie-env.sh /opt/oozie/conf/oozie-env.sh")
+
+
+def get_oozie_mysql_configs():
+    return {
+        'oozie.service.JPAService.jdbc.driver':
+        'com.mysql.jdbc.Driver',
+        'oozie.service.JPAService.jdbc.url':
+        'jdbc:mysql://localhost:3306/oozie',
+        'oozie.service.JPAService.jdbc.username': 'oozie',
+        'oozie.service.JPAService.jdbc.password': 'oozie'
+    }

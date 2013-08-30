@@ -23,6 +23,7 @@ from savanna.plugins.vanilla import config_helper as c_helper
 from savanna.plugins.vanilla import run_scripts as run
 from savanna.plugins.vanilla import scaling as sc
 from savanna.utils import crypto
+from savanna.utils import files as f
 from savanna.utils import remote
 
 
@@ -124,8 +125,12 @@ class VanillaProvider(p.ProvisioningPluginBase):
             LOG.info("MapReduce service at '%s' has been started",
                      jt_instance.hostname)
 
+        #TODO(nmakhotkin) Add start MySQL on hive_server if oozie != hive
         if oozie:
             with remote.get_remote(oozie) as r:
+                if c_helper.is_mysql_enable(cluster):
+                    run.mysql_start(r, oozie)
+                    run.oozie_create_db(r)
                 run.oozie_share_lib(r, nn_instance.hostname)
                 run.start_oozie(r)
                 LOG.info("Oozie service at '%s' has been started",
@@ -252,6 +257,13 @@ class VanillaProvider(p.ProvisioningPluginBase):
                 r.write_file_to('/opt/oozie/conf/oozie-site.xml',
                                 extra[oozie.node_group.id]
                                 ['xml']['oozie-site'])
+            if c_helper.is_mysql_enable(cluster):
+                sql_script = f.get_file_text(
+                    'plugins/vanilla/resources/create_oozie_db.sql')
+                files = {
+                    '/tmp/create_oozie_db.sql': sql_script
+                }
+                remote.get_remote(oozie).write_files_to(files)
 
     def _set_cluster_info(self, cluster):
         nn = utils.get_namenode(cluster)

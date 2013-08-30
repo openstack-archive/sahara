@@ -114,3 +114,42 @@ class VanillaPluginTest(unittest2.TestCase):
                               ('dfs.replication', 3),
                               ('mapred.reduce.tasks', 2),
                               ('io.sort.factor', 10)])
+
+    def test_general_configs(self):
+        gen_config = {
+            c_h.ENABLE_SWIFT.name: {
+                'default_value': c_h.ENABLE_SWIFT.default_value,
+                'conf': {
+                    'fs.swift.enabled': True
+                }
+            },
+            c_h.ENABLE_MYSQL.name: {
+                'default_value': c_h.ENABLE_MYSQL.default_value,
+                'conf': {
+                    'oozie.service.JPAService.jdbc.username': 'oozie'
+                }
+            }
+        }
+        all_configured = {
+            'fs.swift.enabled': True,
+            'oozie.service.JPAService.jdbc.username': 'oozie'
+        }
+        configs = {
+            'general': {
+                'Enable Swift': True
+            }
+        }
+        cfg = c_h.generate_cfg_from_general({}, configs, gen_config)
+        self.assertDictEqual(cfg, all_configured)
+        configs['general'].update({'Enable MySQL': False})
+        cfg = c_h.generate_cfg_from_general({}, configs, gen_config)
+        self.assertDictEqual(cfg, {'fs.swift.enabled': True})
+        configs['general'].update({
+            'Enable Swift': False,
+            'Enable MySQL': False
+        })
+        cfg = c_h.generate_cfg_from_general({}, configs, gen_config)
+        self.assertDictEqual(cfg, {})
+        configs = {}
+        cfg = c_h.generate_cfg_from_general({}, configs, gen_config)
+        self.assertDictEqual(cfg, all_configured)
