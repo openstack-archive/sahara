@@ -19,7 +19,7 @@ import copy
 
 from savanna.db import base as db_base
 from savanna.utils import configs
-# from savanna.openstack.common.rpc import common as rpc_common
+from savanna.utils import crypto
 
 
 CLUSTER_DEFAULTS = {
@@ -120,6 +120,10 @@ class ConductorManager(db_base.Base):
         values = copy.deepcopy(values)
         values = _apply_defaults(values, CLUSTER_DEFAULTS)
         values['tenant_id'] = context.tenant_id
+
+        private_key, public_key = crypto.generate_key_pair()
+        values['management_private_key'] = private_key
+        values['management_public_key'] = public_key
 
         cluster_template_id = values.get('cluster_template_id')
         if cluster_template_id:

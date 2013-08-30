@@ -6,7 +6,6 @@ kombu>=2.4.8
 netaddr
 paramiko>=1.8.0
 pbr>=0.5.21,<1.0
-pycrypto>=2.6
 # NOTE(slukjanov): <1.2.3 added to support old clients with the same constraint
 requests>=1.1,<1.2.3
 python-cinderclient>=1.0.4

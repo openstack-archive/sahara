@@ -55,6 +55,9 @@ SAMPLE_CLUSTER_DICT = {
 
 
 class TestResource(unittest2.TestCase):
+    def setUp(self):
+        self.maxDiff = None
+
     def test_resource_creation(self):
         res = r.Resource(SAMPLE_DICT)
 
@@ -103,7 +106,7 @@ class TestResource(unittest2.TestCase):
 
     def test_to_dict_filtering(self):
         cluster_dict = copy.deepcopy(SAMPLE_CLUSTER_DICT)
-        cluster_dict['private_key'] = 'abacaba'
+        cluster_dict['management_private_key'] = 'abacaba'
         cluster_dict['node_groups'][0]['id'] = 'some_id'
 
         cluster = r.ClusterResource(cluster_dict)

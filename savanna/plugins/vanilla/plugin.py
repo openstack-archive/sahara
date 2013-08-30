@@ -22,7 +22,6 @@ from savanna.plugins import provisioning as p
 from savanna.plugins.vanilla import config_helper as c_helper
 from savanna.plugins.vanilla import run_scripts as run
 from savanna.plugins.vanilla import scaling as sc
-from savanna.utils import crypto
 from savanna.utils import files as f
 from savanna.utils import remote
 
@@ -95,8 +94,9 @@ class VanillaProvider(p.ProvisioningPluginBase):
 
     def configure_cluster(self, cluster):
         self._push_configs_to_nodes(cluster)
-        self._write_hadoop_user_keys(cluster.private_key,
-                                     utils.get_instances(cluster))
+        self._write_hadoop_user_keys(utils.get_instances(cluster),
+                                     cluster.management_private_key,
+                                     cluster.management_public_key)
 
     def start_cluster(self, cluster):
         nn_instance = utils.get_namenode(cluster)
@@ -192,8 +192,9 @@ class VanillaProvider(p.ProvisioningPluginBase):
 
     def scale_cluster(self, cluster, instances):
         self._push_configs_to_nodes(cluster, instances=instances)
-        self._write_hadoop_user_keys(cluster.private_key,
-                                     instances)
+        self._write_hadoop_user_keys(instances,
+                                     cluster.management_private_key,
+                                     cluster.management_public_key)
         run.refresh_nodes(remote.get_remote(
             utils.get_namenode(cluster)), "dfsadmin")
         jt = utils.get_jobtracker(cluster)
@@ -290,9 +291,7 @@ class VanillaProvider(p.ProvisioningPluginBase):
         ctx = context.ctx()
         conductor.cluster_update(ctx, cluster, {'info': info})
 
-    def _write_hadoop_user_keys(self, private_key, instances):
-        public_key = crypto.private_key_to_public_key(private_key)
-
+    def _write_hadoop_user_keys(self, instances, private_key, public_key):
         files = {
             'id_rsa': private_key,
             'authorized_keys': public_key

@@ -167,7 +167,7 @@ def _create_cluster_mock(node_groups, aa):
 
     user_kp = mock.Mock()
     user_kp.public_key = "123"
-    private_key = c.generate_private_key()
+    private_key = c.generate_key_pair()[0]
 
     dct = {'name': 'test_cluster',
            'plugin_name': 'mock_plugin',
@@ -199,10 +199,9 @@ def _generate_user_data_script(cluster):
 echo "%(public_key)s" >> %(user_home)s/.ssh/authorized_keys
 echo "%(private_key)s" > %(user_home)s/.ssh/id_rsa
 """
-    key = c.private_key_to_public_key(cluster.private_key)
     return script_template % {
-        "public_key": key,
-        "private_key": cluster.private_key,
+        "public_key": cluster.management_public_key,
+        "private_key": cluster.management_private_key,
         "user_home": "/root/"
     }
 

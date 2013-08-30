@@ -19,7 +19,6 @@ from sqlalchemy.orm import relationship
 from savanna.db.sqlalchemy import model_base as mb
 from savanna.db.sqlalchemy import types as st
 from savanna.openstack.common import uuidutils
-from savanna.utils import crypto
 
 
 ## Helpers
@@ -55,7 +54,8 @@ class Cluster(mb.SavannaBase):
     default_image_id = sa.Column(sa.String(36))
     neutron_management_network = sa.Column(sa.String(36))
     anti_affinity = sa.Column(st.JsonListType())
-    private_key = sa.Column(sa.Text, default=crypto.generate_private_key())
+    management_private_key = sa.Column(sa.Text, nullable=False)
+    management_public_key = sa.Column(sa.Text, nullable=False)
     user_keypair_id = sa.Column(sa.String(80))
     status = sa.Column(sa.String(80))
     status_description = sa.Column(sa.String(200))

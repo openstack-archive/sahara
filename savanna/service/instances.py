@@ -22,7 +22,6 @@ from savanna.openstack.common import excutils
 from savanna.openstack.common import log as logging
 from savanna.service import networks
 from savanna.service import volumes
-from savanna.utils import crypto
 from savanna.utils import general as g
 from savanna.utils.openstack import nova
 
@@ -251,8 +250,8 @@ echo "%(private_key)s" > %(user_home)s/.ssh/id_rsa
             node_group)
 
     return script_template % {
-        "public_key": crypto.private_key_to_public_key(cluster.private_key),
-        "private_key": cluster.private_key,
+        "public_key": cluster.management_public_key,
+        "private_key": cluster.management_private_key,
         "user_home": user_home
     }
 
