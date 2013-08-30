@@ -65,9 +65,11 @@ class LocalApi(object):
         return self._manager.cluster_get(context, _get_id(cluster))
 
     @r.wrap(r.ClusterResource)
-    def cluster_get_all(self, context):
-        """Get all clusters."""
-        return self._manager.cluster_get_all(context)
+    def cluster_get_all(self, context, **kwargs):
+        """Get all clusters filtered by **kwargs  e.g.
+            cluster_get_all(plugin_name='vanilla', hadoop_version='1.1')
+        """
+        return self._manager.cluster_get_all(context, **kwargs)
 
     @r.wrap(r.ClusterResource)
     def cluster_create(self, context, values):
@@ -245,15 +247,17 @@ class LocalApi(object):
                                                _get_id(job_execution))
 
     @r.wrap(r.JobExecution)
-    def job_execution_get_by_cluster(self, context, cluster):
-        """Return the all JobExecutions for specific cluster."""
-        return self._manager.job_execution_get_by_cluster(context,
-                                                          _get_id(cluster))
+    def job_execution_get_all(self, context, **kwargs):
+        """Get all JobExecutions filtered by **kwargs  e.g.
+            job_execution_get_all(cluster_id=12, input_id=123)
+        """
+        return self._manager.job_execution_get_all(context, **kwargs)
 
-    @r.wrap(r.JobExecution)
-    def job_execution_get_all(self, context):
-        """Get all JobExecutions."""
-        return self._manager.job_execution_get_all(context)
+    def job_execution_count(self, context, **kwargs):
+        """Count number of JobExecutions filtered by **kwargs  e.g.
+            job_execution_count(cluster_id=12, input_id=123)
+        """
+        return self._manager.job_execution_count(context, **kwargs)
 
     @r.wrap(r.JobExecution)
     def job_execution_create(self, context, values):

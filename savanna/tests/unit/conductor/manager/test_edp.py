@@ -221,6 +221,9 @@ class JobExecutionTest(test_base.ConductorManagerTestCase):
         lst = self.api.job_execution_get_all(ctx)
         self.assertEqual(len(lst), 1)
 
+        count = self.api.job_execution_count(ctx)
+        self.assertEqual(count, 1)
+
         job_ex_id = lst[0]['id']
 
         self.assertEqual(lst[0]['progress'], 0.1)
