@@ -53,6 +53,7 @@ class Cluster(mb.SavannaBase):
     hadoop_version = sa.Column(sa.String(80), nullable=False)
     cluster_configs = sa.Column(st.JsonDictType())
     default_image_id = sa.Column(sa.String(36))
+    neutron_management_network = sa.Column(sa.String(36))
     anti_affinity = sa.Column(st.JsonListType())
     private_key = sa.Column(sa.Text, default=crypto.generate_private_key())
     user_keypair_id = sa.Column(sa.String(80))
@@ -144,6 +145,7 @@ class ClusterTemplate(mb.SavannaBase):
     default_image_id = sa.Column(sa.String(36))
     anti_affinity = sa.Column(st.JsonListType())
     tenant_id = sa.Column(sa.String(36))
+    neutron_management_network = sa.Column(sa.String(36))
     plugin_name = sa.Column(sa.String(80), nullable=False)
     hadoop_version = sa.Column(sa.String(80), nullable=False)
     node_groups = relationship('TemplatesRelation', cascade="all,delete",

@@ -33,11 +33,15 @@ cluster_node_opts = [
                      'assign floating IPs to cluster nodes. Internal IPs will '
                      'be used for inter-cluster communication, while floating '
                      'ones will be used by Savanna to configure nodes. Also '
-                     'floating IPs will be exposed in service URLs.'),
+                     'floating IPs will be exposed in service URLs. This '
+                     'option is ignored when "use_neutron" is set to True'),
     cfg.StrOpt('node_domain',
                default='novalocal',
                help="The suffix of the node's FQDN. In nova-network that is "
-                    "dhcp_domain config parameter")
+                    "dhcp_domain config parameter"),
+    cfg.BoolOpt('use_neutron',
+                default=False,
+                help="Use Neutron or Nova Network")
 ]
 
 

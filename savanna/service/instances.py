@@ -14,6 +14,7 @@
 # limitations under the License.
 
 from novaclient import exceptions as nova_exceptions
+from oslo.config import cfg
 
 from savanna import conductor as c
 from savanna import context
@@ -27,6 +28,7 @@ from savanna.utils.openstack import nova
 
 
 conductor = c.API
+CONF = cfg.CONF
 LOG = logging.getLogger(__name__)
 
 
@@ -208,10 +210,20 @@ def _run_instance(cluster, node_group, idx, aa_groups, userdata):
     # create instances only at hosts w/ no instances w/ aa-enabled processes
     hints = {'different_host': list(set(aa_ids))} if aa_ids else None
 
-    nova_instance = nova.client().servers.create(
-        name, node_group.get_image_id(), node_group.flavor_id,
-        scheduler_hints=hints, userdata=userdata,
-        key_name=cluster.user_keypair_id)
+    if CONF.use_neutron:
+        net_id = cluster.neutron_management_network
+        nics = [{"net-id": net_id, "v4-fixed-ip": ""}]
+
+        nova_instance = nova.client().servers.create(
+            name, node_group.get_image_id(), node_group.flavor_id,
+            scheduler_hints=hints, userdata=userdata,
+            key_name=cluster.user_keypair_id,
+            nics=nics)
+    else:
+        nova_instance = nova.client().servers.create(
+            name, node_group.get_image_id(), node_group.flavor_id,
+            scheduler_hints=hints, userdata=userdata,
+            key_name=cluster.user_keypair_id)
 
     instance_id = conductor.instance_add(ctx, node_group,
                                          {"instance_id": nova_instance.id,
