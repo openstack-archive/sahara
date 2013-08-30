@@ -30,13 +30,17 @@ HDFS_DEFAULT = x.load_hadoop_xml_defaults(
 MAPRED_DEFAULT = x.load_hadoop_xml_defaults(
     'plugins/vanilla/resources/mapred-default.xml')
 
+HIVE_DEFAULT = x.load_hadoop_xml_defaults(
+    'plugins/vanilla/resources/hive-default.xml')
+
 ## Append Oozie configs fore core-site.xml
 CORE_DEFAULT += o_h.OOZIE_CORE_DEFAULT
 
 XML_CONFS = {
     "HDFS": [CORE_DEFAULT, HDFS_DEFAULT],
     "MapReduce": [MAPRED_DEFAULT],
-    "JobFlow": [o_h.OOZIE_DEFAULT]
+    "JobFlow": [o_h.OOZIE_DEFAULT],
+    "Hive": [HIVE_DEFAULT]
 }
 
 # TODO(aignatov): Environmental configs could be more complex
@@ -164,7 +168,7 @@ def generate_cfg_from_general(cfg, configs, general_config,
 
 
 def generate_xml_configs(configs, storage_path, nn_hostname,
-                         jt_hostname, oozie_hostname):
+                         jt_hostname, oozie_hostname, hive_hostname):
     set_general_configs()
     # inserting common configs depends on provisioned VMs and HDFS placement
     # TODO(aignatov): should be moved to cluster context
@@ -200,6 +204,15 @@ def generate_xml_configs(configs, storage_path, nn_hostname,
         cfg.update(o_h.get_oozie_required_xml_configs())
         LOG.debug('Applied Oozie configs for oozie-site.xml')
 
+    if hive_hostname:
+        h_cfg = {
+            'hive.warehouse.subdir.inherit.perms': True,
+            'javax.jdo.option.ConnectionURL':
+            'jdbc:derby:;databaseName=/opt/hive/metastore_db;create=true'
+        }
+        cfg.update(h_cfg)
+        LOG.debug('Applied Hive config for hive metastore server')
+
     # inserting user-defined configs
     for key, value in extract_xml_confs(configs):
         cfg[key] = value
@@ -213,6 +226,11 @@ def generate_xml_configs(configs, storage_path, nn_hostname,
         'mapred-site': x.create_hadoop_xml(cfg, MAPRED_DEFAULT),
         'hdfs-site': x.create_hadoop_xml(cfg, HDFS_DEFAULT)
     }
+
+    if hive_hostname:
+        xml_configs.update({'hive-site':
+                            x.create_hadoop_xml(cfg, HIVE_DEFAULT)})
+        LOG.debug('Generated hive-site.xml for hive % s', hive_hostname)
 
     if oozie_hostname:
         xml_configs.update({'oozie-site':

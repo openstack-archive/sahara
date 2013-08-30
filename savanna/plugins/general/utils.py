@@ -42,6 +42,10 @@ def get_oozie(cluster):
     return get_instance(cluster, "oozie")
 
 
+def get_hiveserver(cluster):
+    return get_instance(cluster, "hiveserver")
+
+
 def get_datanodes(cluster):
     return get_instances(cluster, 'datanode')
 
