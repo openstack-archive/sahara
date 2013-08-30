@@ -169,6 +169,18 @@ def instance_remove(context, instance):
     IMPL.instance_remove(context, instance)
 
 
+## Volumes ops
+
+def append_volume(context, instance, volume_id):
+    """Append volume_id to instance."""
+    IMPL.append_volume(context, instance, volume_id)
+
+
+def remove_volume(context, instance, volume_id):
+    """Remove volume_id in instance."""
+    IMPL.remove_volume(context, instance, volume_id)
+
+
 ## Cluster Template ops
 
 @to_dict

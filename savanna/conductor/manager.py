@@ -182,6 +182,16 @@ class ConductorManager(db_base.Base):
         """Destroy the Instance or raise if it does not exist."""
         self.db.instance_remove(context, instance)
 
+    ## Volumes ops
+
+    def append_volume(self, context, instance, volume_id):
+        """Append volume_id to instance."""
+        self.db.append_volume(context, instance, volume_id)
+
+    def remove_volume(self, context, instance, volume_id):
+        """Remove volume_id in instance."""
+        self.db.remove_volume(context, instance, volume_id)
+
     ## Cluster Template ops
 
     def cluster_template_get(self, context, cluster_template):
