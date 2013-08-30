@@ -375,6 +375,12 @@ def _rollback_cluster_scaling(cluster, instances, ex):
             _shutdown_instance(i)
 
 
+def _clean_job_executions(cluster):
+    ctx = context.ctx()
+    for je in conductor.job_execution_get_by_cluster(ctx, cluster.id):
+        conductor.job_execution_update(ctx, je, {"cluster_id": None})
+
+
 def _shutdown_instances(cluster):
     for node_group in cluster.node_groups:
         for instance in node_group.instances:
@@ -398,6 +404,7 @@ def shutdown_cluster(cluster):
         volumes.detach(cluster)
     finally:
         _shutdown_instances(cluster)
+        _clean_job_executions(cluster)
 
 
 def clean_cluster_from_empty_ng(cluster):

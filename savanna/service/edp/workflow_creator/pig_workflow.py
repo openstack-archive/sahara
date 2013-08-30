@@ -22,7 +22,7 @@ class PigWorkflowCreator(base_workflow.OozieWorkflowCreator):
     def __init__(self):
         super(PigWorkflowCreator, self).__init__('pig')
 
-    def build_workflow_xml(self, script, prepare={},
+    def build_workflow_xml(self, script_name, prepare={},
                            job_xml=None, configuration=None, params={},
                            arguments={}, files=[], archives=[]):
 
@@ -33,7 +33,7 @@ class PigWorkflowCreator(base_workflow.OozieWorkflowCreator):
         self._add_configuration_elements(configuration)
 
         x.add_text_element_to_tag(self.doc, self.tag_name,
-                                  'script', script)
+                                  'script', script_name)
 
         x.add_equal_separated_dict(self.doc, self.tag_name, 'param', params)
         x.add_equal_separated_dict(self.doc, self.tag_name, 'argument',

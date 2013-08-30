@@ -290,6 +290,12 @@ def job_execution_get(context, job_execution):
 
 
 @to_dict
+def job_execution_get_by_cluster(context, cluster_id):
+    """Return the all JobExecutions for specific cluster."""
+    return IMPL.job_execution_get_by_cluster(context, cluster_id)
+
+
+@to_dict
 def job_execution_get_all(context):
     """Get all JobExecutions."""
     return IMPL.job_execution_get_all(context)
@@ -301,6 +307,7 @@ def job_execution_create(context, values):
     return IMPL.job_execution_create(context, values)
 
 
+@to_dict
 def job_execution_update(context, job_execution, values):
     """Create a JobExecution from the values dictionary."""
     return IMPL.job_execution_update(context, job_execution, values)

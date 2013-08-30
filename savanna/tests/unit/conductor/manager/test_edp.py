@@ -14,6 +14,7 @@
 # limitations under the License.
 
 import copy
+import datetime
 
 from savanna import context
 import savanna.tests.unit.conductor.base as test_base
@@ -58,6 +59,7 @@ SAMPLE_JOB_EXECUTION = {
     "job_id": "undefined",
     "input_id": "undefined",
     "output_id": "undefined",
+    "start_time": datetime.datetime.now(),
     "cluster_id": None
 }
 
@@ -194,6 +196,8 @@ class JobExecutionTest(test_base.ConductorManagerTestCase):
         self.api.job_execution_update(ctx, job_ex_id, {'progress': '0.2'})
         updated_job = self.api.job_execution_get(ctx, job_ex_id)
         self.assertEqual(updated_job['progress'], 0.2)
+        self.assertEqual(updated_job['start_time'],
+                         SAMPLE_JOB_EXECUTION['start_time'])
 
         self.api.job_execution_destroy(ctx, job_ex_id)
 

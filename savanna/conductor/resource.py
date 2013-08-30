@@ -23,6 +23,7 @@ Resource class might provide back references to parent objects
 and helper methods.
 """
 
+import datetime
 import six
 
 from savanna.conductor import objects
@@ -33,6 +34,7 @@ def wrap(resource_class):
     """A decorator which wraps dict returned by a given function into
     a Resource.
     """
+
     def decorator(func):
         def handle(*args, **kwargs):
             ret = func(*args, **kwargs)
@@ -44,6 +46,7 @@ def wrap(resource_class):
                 return None
 
         return handle
+
     return decorator
 
 
@@ -130,7 +133,8 @@ class Resource(types.FrozenDict):
     def _is_passthrough_type(self, entity):
         return (entity is None or
                 isinstance(entity,
-                           (six.integer_types, float, six.string_types)))
+                           (six.integer_types, float,
+                            datetime.datetime, six.string_types)))
 
     # Conversion to dict
 

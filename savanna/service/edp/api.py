@@ -41,11 +41,32 @@ def delete_job(id):
     conductor.job_destroy(context.ctx(), id)
 
 
-def execute_job(job_id, input_id, output_id, cluster_id):
+def execute_job(job_id, input_id, output_id, cluster_id, data):
     job_ex_dict = {'input_id': input_id, 'output_id': output_id,
-                   'job_id': job_id, 'cluster_id': cluster_id}
+                   'job_id': job_id, 'cluster_id': cluster_id,
+                   'info': {'status': 'Pending'}}
     job_execution = conductor.job_execution_create(context.ctx(), job_ex_dict)
     return manager.run_job(context.ctx(), job_execution)
+
+
+def get_job_execution_status(id):
+    return manager.get_job_status(id)
+
+
+def job_execution_list():
+    return conductor.job_execution_get_all(context.ctx())
+
+
+def get_job_execution(id):
+    return conductor.job_execution_get(context.ctx(), id)
+
+
+def cancel_job_execution(id):
+    return manager.cancel_job(id)
+
+
+def delete_job_execution(id):
+    conductor.job_execution_destroy(context.ctx(), id)
 
 
 def get_data_sources():
