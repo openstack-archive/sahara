@@ -15,6 +15,10 @@
 
 import json
 
+from oslo.config import cfg
+
+CONF = cfg.CONF
+
 
 def url_for(service_catalog, service_type, admin=False, endpoint_type=None):
     if not endpoint_type:
@@ -25,7 +29,12 @@ def url_for(service_catalog, service_type, admin=False, endpoint_type=None):
     service = _get_service_from_catalog(service_catalog, service_type)
 
     if service:
-        return _get_case_insensitive(service['endpoints'][0], endpoint_type)
+        if service_type == 'identity':
+            endpoint = _get_identity_endpoint(service)
+        else:
+            endpoint = service['endpoints'][0]
+        return _get_case_insensitive(endpoint,
+                                     endpoint_type)
     else:
         raise Exception('Service "%s" not found' % service_type)
 
@@ -47,3 +56,16 @@ def _get_case_insensitive(dictionary, key):
 
     #this will raise an exception as usual if key was not found
     return dictionary[key]
+
+
+def _get_identity_endpoint(service):
+    api_substr = 'v2.0'
+    if CONF.use_identity_api_v3:
+        api_substr = 'v3'
+
+    for endpoint in service['endpoints']:
+        if api_substr in endpoint:
+            return endpoint
+
+    raise Exception('Api %s endpoint not found in service %s'
+                    % (api_substr, service['type']))

@@ -38,6 +38,7 @@ class Cluster(object):
     name
     description
     tenant_id
+    trust_id
     is_transient
     plugin_name
     hadoop_version

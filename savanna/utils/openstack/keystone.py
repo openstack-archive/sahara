@@ -13,21 +13,57 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from oslo.config import cfg
+
 from keystoneclient.v2_0 import client as keystone_client
+from keystoneclient.v3 import client as keystone_client_v3
 
 from savanna import context
 from savanna.utils.openstack import base
 
 
+CONF = cfg.CONF
+
+opts = [
+    cfg.BoolOpt('use_identity_api_v3',
+                default=False,
+                help='Enables Savanna to use Keystone API v3. '
+                     'If that flag is disabled, '
+                     'per-job clusters will not be terminated automatically.')
+]
+CONF.register_opts(opts)
+
+
 def client():
     ctx = context.current()
-    identity_url = base.url_for(ctx.service_catalog, 'identity')
+    auth_url = base.url_for(ctx.service_catalog, 'identity')
 
-    keystone = keystone_client.Client(username=ctx.username,
-                                      user_id=ctx.user_id,
-                                      token=ctx.token,
-                                      tenant_name=ctx.tenant_name,
-                                      tenant_id=ctx.tenant_id,
-                                      auth_url=identity_url)
+    if CONF.use_identity_api_v3:
+        keystone = keystone_client_v3.Client(username=ctx.username,
+                                             token=ctx.token,
+                                             tenant_id=ctx.tenant_id,
+                                             auth_url=auth_url)
+        keystone.management_url = auth_url
+    else:
+        keystone = keystone_client.Client(username=ctx.username,
+                                          token=ctx.token,
+                                          tenant_id=ctx.tenant_id,
+                                          auth_url=auth_url)
 
+    return keystone
+
+
+def client_for_trusts(username, password, trust_id):
+    if not CONF.use_identity_api_v3:
+        raise Exception('Trusts aren\'t implemented in keystone api'
+                        ' less than v3')
+
+    ctx = context.current()
+    auth_url = base.url_for(ctx.service_catalog, 'identity')
+    keystone = keystone_client_v3.Client(username=username,
+                                         password=password,
+                                         tenant_id=ctx.tenant_id,
+                                         auth_url=auth_url,
+                                         trust_id=trust_id)
+    keystone.management_url = auth_url
     return keystone

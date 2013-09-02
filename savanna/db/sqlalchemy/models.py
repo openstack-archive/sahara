@@ -48,6 +48,7 @@ class Cluster(mb.SavannaBase):
     name = sa.Column(sa.String(80), nullable=False)
     description = sa.Column(sa.Text)
     tenant_id = sa.Column(sa.String(36))
+    trust_id = sa.Column(sa.String(36))
     is_transient = sa.Column(sa.Boolean, default=False)
     plugin_name = sa.Column(sa.String(80), nullable=False)
     hadoop_version = sa.Column(sa.String(80), nullable=False)

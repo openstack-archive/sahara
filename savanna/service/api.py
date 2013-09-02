@@ -24,6 +24,7 @@ from savanna.plugins import base as plugin_base
 from savanna.plugins import provisioning
 from savanna.service.edp import job_manager as jm
 from savanna.service import instances as i
+from savanna.service import trusts
 from savanna.utils import general as g
 from savanna.utils.openstack import nova
 
@@ -102,6 +103,8 @@ def create_cluster(values):
 
     context.spawn("cluster-creating-%s" % cluster.id,
                   _provision_cluster, cluster.id)
+    if CONF.use_identity_api_v3 and cluster.is_transient:
+        trusts.create_trust(cluster)
 
     return conductor.cluster_get(ctx, cluster.id)
 
@@ -169,8 +172,9 @@ def terminate_cluster(id):
 
     plugin = plugin_base.PLUGINS.get_plugin(cluster.plugin_name)
     plugin.on_terminate_cluster(cluster)
-
     i.shutdown_cluster(cluster)
+    if CONF.use_identity_api_v3:
+        trusts.delete_trust(cluster)
     conductor.cluster_destroy(ctx, cluster)
 
 

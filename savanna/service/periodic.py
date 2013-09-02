@@ -22,7 +22,9 @@ from savanna import context
 from savanna.openstack.common import log
 from savanna.openstack.common import periodic_task
 from savanna.openstack.common import threadgroup
+from savanna.service import api
 from savanna.service.edp import job_manager
+from savanna.service import trusts
 
 
 LOG = log.getLogger(__name__)
@@ -61,6 +63,9 @@ class SavannaPeriodicTasks(periodic_task.PeriodicTasks):
     def terminate_unneeded_clusters(self, ctx):
         LOG.debug('Terminating unneeded clusters')
         ctx = context.get_admin_context()
+        if CONF.use_identity_api_v3:
+            LOG.debug('Terminating unneeded clusters')
+        context.set_ctx(ctx)
         for cluster in conductor.cluster_get_all(ctx, status='Active'):
             if not cluster.is_transient:
                 continue
@@ -71,10 +76,17 @@ class SavannaPeriodicTasks(periodic_task.PeriodicTasks):
 
             if jc > 0:
                 continue
-
-            #TODO(akuznetsov) setup trust token and shutdown cluster
-            LOG.debug('Terminated cluster %s with id %s' %
-                      (cluster.name, cluster.id))
+            if CONF.use_identity_api_v3:
+                trusts.use_os_admin_auth_token(cluster)
+                api.terminate_cluster(cluster.id)
+                LOG.debug('Terminated cluster %s with id %s' %
+                          (cluster.name, cluster.id))
+            else:
+                if cluster.status != 'AwaitingTermination':
+                    conductor.cluster_update(
+                        ctx,
+                        cluster,
+                        {'status': 'AwaitingTermination'})
         context.set_ctx(None)
 
 

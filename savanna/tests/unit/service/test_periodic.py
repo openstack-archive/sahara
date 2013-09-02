@@ -16,11 +16,15 @@
 import datetime
 import mock
 
+from oslo.config import cfg
+
 from savanna import context
 import savanna.service.periodic as p
 import savanna.tests.unit.conductor.base as test_base
 from savanna.tests.unit.conductor.manager import test_clusters as tc
 from savanna.tests.unit.conductor.manager import test_edp as te
+
+CONF = cfg.CONF
 
 
 class TestPeriodicBack(test_base.ConductorManagerTestCase):
@@ -43,7 +47,9 @@ class TestPeriodicBack(test_base.ConductorManagerTestCase):
                                          mock.call(u'3')])
 
     @mock.patch('savanna.service.edp.job_manager.get_job_status')
-    def test_cluster_terminate(self, get_job_status):
+    @mock.patch('savanna.service.api.terminate_cluster')
+    def test_cluster_terminate(self, terminate_cluster, get_job_status):
+        CONF.use_identity_api_v3 = True
         ctx = context.ctx()
         job = self.api.job_create(ctx, te.SAMPLE_JOB)
         ds = self.api.data_source_create(ctx, te.SAMPLE_DATA_SOURCE)
@@ -68,9 +74,9 @@ class TestPeriodicBack(test_base.ConductorManagerTestCase):
                                     "cluster_id": "2"},
                                    job, ds, ds)
         p.SavannaPeriodicTasks().terminate_unneeded_clusters(None)
-
-        #TODO(akuznetsov) check call of cluster termination,
-        # it will be added with trust patch
+        self.assertEqual(1, len(terminate_cluster.call_args_list))
+        terminated_cluster_id = terminate_cluster.call_args_list[0][0][0]
+        self.assertEqual('1', terminated_cluster_id)
 
     def _create_job_execution(self, values, job, input, output):
         values.update({"job_id": job['id'],
