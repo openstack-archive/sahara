@@ -59,22 +59,22 @@ class ITestCase(unittest2.TestCase):
 
         self.url_version = '/'
 
-        self.url_ngt = '/v1.0/%s/node-group-templates' % self.tenant
-        self.url_ngt_with_slash = '/v1.0/%s/node-group-templates/'\
+        self.url_ngt = '/v1.1/%s/node-group-templates' % self.tenant
+        self.url_ngt_with_slash = '/v1.1/%s/node-group-templates/'\
                                   % self.tenant
 
-        self.url_cluster = '/v1.0/%s/clusters' % self.tenant
-        self.url_cluster_with_slash = '/v1.0/%s/clusters/' % self.tenant
+        self.url_cluster = '/v1.1/%s/clusters' % self.tenant
+        self.url_cluster_with_slash = '/v1.1/%s/clusters/' % self.tenant
 
-        self.url_cl_tmpl = '/v1.0/%s/cluster-templates' % self.tenant
-        self.url_cl_tmpl_with_slash = '/v1.0/%s/cluster-templates/'\
+        self.url_cl_tmpl = '/v1.1/%s/cluster-templates' % self.tenant
+        self.url_cl_tmpl_with_slash = '/v1.1/%s/cluster-templates/'\
                                       % self.tenant
 
-        self.url_plugins = '/v1.0/%s/plugins' % self.tenant
-        self.url_plugins_with_slash = '/v1.0/%s/plugins/' % self.tenant
+        self.url_plugins = '/v1.1/%s/plugins' % self.tenant
+        self.url_plugins_with_slash = '/v1.1/%s/plugins/' % self.tenant
 
-        self.url_images = '/v1.0/%s/images' % self.tenant
-        self.url_images_with_slash = '/v1.0/%s/images/' % self.tenant
+        self.url_images = '/v1.1/%s/images' % self.tenant
+        self.url_images_with_slash = '/v1.1/%s/images/' % self.tenant
 
 #----------------------methods_for_CRUD_operations-----------------------------
 
