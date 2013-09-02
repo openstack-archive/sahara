@@ -63,3 +63,14 @@ def oozie_create_db(remote):
 def start_oozie(remote):
     remote.execute_command(
         'sudo su - -c "/opt/oozie/bin/oozied.sh start" hadoop')
+
+
+def hive_create_db(remote):
+    LOG.debug("Creating Hive metastore db...")
+    remote.execute_command("mysql -u root < /tmp/create_hive_db.sql")
+
+
+def hive_metastore_start(remote):
+    LOG.debug("Starting Hive Metastore Server...")
+    remote.execute_command("sudo su - -c 'nohup /opt/hive/bin/hive"
+                           " --service metastore > /dev/null &' hadoop")

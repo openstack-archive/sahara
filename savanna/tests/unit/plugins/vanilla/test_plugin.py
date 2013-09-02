@@ -17,6 +17,7 @@ import unittest2
 
 from savanna.plugins.general import exceptions as ex
 from savanna.plugins.vanilla import config_helper as c_h
+from savanna.plugins.vanilla import mysql_helper as m_h
 from savanna.plugins.vanilla import plugin as p
 from savanna.tests.unit.plugins.vanilla import test_utils as tu
 
@@ -153,3 +154,11 @@ class VanillaPluginTest(unittest2.TestCase):
         configs = {}
         cfg = c_h.generate_cfg_from_general({}, configs, gen_config)
         self.assertDictEqual(cfg, all_configured)
+
+    def test_get_mysql_configs(self):
+        cfg = m_h.get_required_mysql_configs(None)
+        self.assertDictEqual(cfg, m_h.get_oozie_mysql_configs())
+        cfg = m_h.get_required_mysql_configs("metastore_host")
+        cfg_to_compare = m_h.get_oozie_mysql_configs()
+        cfg_to_compare.update(m_h.get_hive_mysql_configs("metastore_host"))
+        self.assertDictEqual(cfg, cfg_to_compare)

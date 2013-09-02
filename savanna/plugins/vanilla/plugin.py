@@ -136,7 +136,6 @@ class VanillaProvider(p.ProvisioningPluginBase):
             LOG.info("MapReduce service at '%s' has been started",
                      jt_instance.hostname)
 
-        #TODO(nmakhotkin) Add start MySQL on hive_server if oozie != hive
         if oozie:
             with remote.get_remote(oozie) as r:
                 if c_helper.is_mysql_enable(cluster):
@@ -150,6 +149,14 @@ class VanillaProvider(p.ProvisioningPluginBase):
         if hive_server:
             with remote.get_remote(nn_instance) as r:
                 run.hive_create_warehouse_dir(r)
+            if c_helper.is_mysql_enable(cluster):
+                with remote.get_remote(hive_server) as h:
+                    if not oozie or hive_server.hostname != oozie.hostname:
+                        run.mysql_start(h, hive_server)
+                    run.hive_create_db(h)
+                    run.hive_metastore_start(h)
+                LOG.info("Hive Metastore server at %s has been started",
+                         hive_server.hostname)
 
         LOG.info('Cluster %s has been started successfully' % cluster.name)
         self._set_cluster_info(cluster)
@@ -158,7 +165,7 @@ class VanillaProvider(p.ProvisioningPluginBase):
         nn = utils.get_namenode(cluster)
         jt = utils.get_jobtracker(cluster)
         oozie = utils.get_oozie(cluster)
-        hive_server = utils.get_hiveserver(cluster)
+        hive = utils.get_hiveserver(cluster)
 
         extra = dict()
         for ng in cluster.node_groups:
@@ -170,7 +177,8 @@ class VanillaProvider(p.ProvisioningPluginBase):
                                                      if jt else None,
                                                      oozie.hostname
                                                      if oozie else None,
-                                                     hive_server),
+                                                     hive.hostname
+                                                     if hive else None),
                 'setup_script': c_helper.generate_setup_script(
                     ng.storage_paths,
                     c_helper.extract_environment_confs(ng.configuration),
@@ -289,6 +297,11 @@ class VanillaProvider(p.ProvisioningPluginBase):
                 '/opt/hive/conf/hive-site.xml':
                 ng_extra['xml']['hive-site']
             }
+            if c_helper.is_mysql_enable(cluster):
+                sql_script = f.get_file_text(
+                    'plugins/vanilla/resources/create_hive_db.sql'
+                )
+                files.update({'/tmp/create_hive_db.sql': sql_script})
             remote.get_remote(hive_server).write_files_to(files)
 
     def _set_cluster_info(self, cluster):
