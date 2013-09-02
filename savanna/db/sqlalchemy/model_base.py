@@ -15,7 +15,7 @@
 
 from savanna.openstack.common.db.sqlalchemy import models as oslo_models
 from sqlalchemy.ext import declarative
-from sqlalchemy import inspect
+from sqlalchemy.orm import attributes
 
 
 class _SavannaBase(oslo_models.ModelBase, oslo_models.TimestampMixin):
@@ -26,9 +26,9 @@ class _SavannaBase(oslo_models.ModelBase, oslo_models.TimestampMixin):
         d = {}
 
         # if a column is unloaded at this point, it is
-        # probably deferred.  We do not want to access it
+        # probably deferred. We do not want to access it
         # here and thereby cause it to load...
-        unloaded = inspect(self).unloaded
+        unloaded = attributes.instance_state(self).unloaded
 
         for col in self.__table__.columns:
             if col.name not in unloaded:
