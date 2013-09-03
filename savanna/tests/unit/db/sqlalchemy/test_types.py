@@ -23,7 +23,6 @@ from savanna.db.sqlalchemy import types
 class JsonEncodedTest(unittest2.TestCase):
     def test_impl(self):
         impl = types.JsonEncoded.impl
-        self.assertTrue(impl.hashable)
         self.assertEqual(sa.Text, impl)
 
     def test_process_bind_param(self):
