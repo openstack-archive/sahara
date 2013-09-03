@@ -23,16 +23,14 @@ from savanna.utils.openstack import keypairs
 
 
 def client():
-    headers = context.current().headers
-    username = headers['X-User-Name']
-    token = headers['X-Auth-Token']
-    tenant = headers['X-Tenant-Id']
-    compute_url = base.url_for(headers, 'compute')
+    ctx = context.current()
+    compute_url = base.url_for(ctx.service_catalog, 'compute')
 
-    nova = nova_client.Client(username, token, tenant,
+    nova = nova_client.Client(ctx.username,
+                              ctx.token, ctx.tenant_id,
                               auth_url=compute_url)
 
-    nova.client.auth_token = token
+    nova.client.auth_token = ctx.token
     nova.client.management_url = compute_url
     nova.images = images.SavannaImageManager(nova)
     if not hasattr(nova.keypairs, 'get'):

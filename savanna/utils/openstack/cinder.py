@@ -20,15 +20,14 @@ from savanna.utils.openstack import base
 
 
 def client():
-    headers = context.current().headers
-    username = headers['X-User-Name']
-    token = headers['X-Auth-Token']
-    tenant = headers['X-Tenant-Id']
-    volume_url = base.url_for(headers, 'volume')
+    ctx = context.current()
+    volume_url = base.url_for(ctx.service_catalog, 'volume')
 
-    cinder = cinder_client.Client(username, token, tenant, volume_url)
+    cinder = cinder_client.Client(ctx.username,
+                                  ctx.token,
+                                  ctx.tenant_id, volume_url)
 
-    cinder.client.auth_token = token
+    cinder.client.auth_token = ctx.token
     cinder.client.management_url = volume_url
 
     return cinder

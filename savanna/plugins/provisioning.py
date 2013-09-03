@@ -13,20 +13,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import functools
-
 from savanna.plugins import base as plugins_base
-from savanna.utils.openstack import nova
 from savanna.utils import resources
-
-
-class ProvisioningPluginContext(object):
-    def __init__(self, headers):
-        self.headers = headers
-        self.nova = self._autoheaders(nova.client)
-
-    def _autoheaders(self, func):
-        return functools.partial(func, headers=self.headers)
 
 
 class ProvisioningPluginBase(plugins_base.PluginInterface):

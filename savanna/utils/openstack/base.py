@@ -16,14 +16,13 @@
 import json
 
 
-def url_for(headers, service_type, admin=False, endpoint_type=None):
+def url_for(service_catalog, service_type, admin=False, endpoint_type=None):
     if not endpoint_type:
         endpoint_type = 'publicURL'
     if admin:
         endpoint_type = 'adminURL'
 
-    catalog = headers['X-Service-Catalog']
-    service = _get_service_from_catalog(catalog, service_type)
+    service = _get_service_from_catalog(service_catalog, service_type)
 
     if service:
         return _get_case_insensitive(service['endpoints'][0], endpoint_type)

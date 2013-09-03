@@ -35,7 +35,7 @@ def _retrieve_auth_url():
 
 def _retrieve_tenant():
     try:
-        return context.current().headers['X-Tenant-Name']
+        return context.current().tenant_name
     except RuntimeError:
         LOG.error("Cannot retrieve tenant for swift integration. "
                   "Stop cluster creation")

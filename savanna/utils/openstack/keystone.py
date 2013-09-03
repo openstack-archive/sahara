@@ -20,13 +20,14 @@ from savanna.utils.openstack import base
 
 
 def client():
-    headers = context.current().headers
-    username = headers['X-User-Name']
-    token = headers['X-Auth-Token']
-    tenant = headers['X-Tenant-Id']
-    identity_url = base.url_for(headers, 'identity')
+    ctx = context.current()
+    identity_url = base.url_for(ctx.service_catalog, 'identity')
 
-    keystone = keystone_client.Client(username=username, token=token,
-                                      tenant_id=tenant, auth_url=identity_url)
+    keystone = keystone_client.Client(username=ctx.username,
+                                      user_id=ctx.user_id,
+                                      token=ctx.token,
+                                      tenant_name=ctx.tenant_name,
+                                      tenant_id=ctx.tenant_id,
+                                      auth_url=identity_url)
 
     return keystone
