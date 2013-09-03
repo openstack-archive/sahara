@@ -35,8 +35,9 @@ SERVICE_SPECIFIC = ["auth.url", "tenant",
 class SwiftIntegrationTestCase(unittest2.TestCase):
     def setUp(self):
         context.set_ctx(
-            context.Context('test_user', 'test_tenant', 'test_auth_token',
-                            {'X-Tenant-Name': "test_tenant"}))
+            context.Context(username='test_user',
+                            tenant_name='test_tenant',
+                            token='test_auth_token'))
 
     @mock.patch('savanna.swift.swift_helper._retrieve_auth_url')
     def test_get_swift_configs(self, authUrlConfig):

@@ -26,21 +26,32 @@ LOG = logging.getLogger(__name__)
 
 # TODO(slukjanov): it'll be better to use common_context.RequestContext as base
 class Context(object):
-    def __init__(self, user_id, tenant_id, auth_token, headers, **kwargs):
+    def __init__(self,
+                 user_id=None,
+                 tenant_id=None,
+                 token=None,
+                 service_catalog=None,
+                 username=None,
+                 tenant_name=None,
+                 **kwargs):
         if kwargs:
             LOG.warn('Arguments dropped when creating context: %s', kwargs)
-
         self.user_id = user_id
+        self.username = username
         self.tenant_id = tenant_id
-        self.auth_token = auth_token
-        self.headers = headers
+        self.tenant_name = tenant_name
+        self.token = token
+        self.service_catalog = service_catalog
         self._db_session = None
 
     def clone(self):
-        return Context(self.user_id,
-                       self.tenant_id,
-                       self.auth_token,
-                       self.headers)
+        return Context(
+            self.user_id,
+            self.tenant_id,
+            self.token,
+            self.service_catalog,
+            self.username,
+            self.tenant_name)
 
 
 _CTXS = threading.local()
