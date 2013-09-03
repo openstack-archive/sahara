@@ -15,6 +15,7 @@
 
 import unittest2
 
+from savanna.service.edp.workflow_creator import hive_workflow as hw
 from savanna.service.edp.workflow_creator import mapreduce_workflow as mrw
 from savanna.service.edp.workflow_creator import pig_workflow as pw
 from savanna.utils import patches as p
@@ -105,3 +106,40 @@ class TestPigWorkflowCreator(unittest2.TestCase):
     </pig>"""
 
         self.assertIn(pig_action, res)
+
+    def test_create_hive_workflow(self):
+        hive_workflow = hw.HiveWorkflowCreator()
+        hive_script = "script.q"
+        params = {"key": "value", "key2": "value2"}
+        hive_workflow.build_workflow_xml(hive_script, self.job_xml,
+                                         self.prepare, self.configuration,
+                                         params, self.files, self.archives)
+        res = hive_workflow.get_built_workflow_xml()
+        hive_action = """  <hive>
+      <job-tracker>${jobTracker}</job-tracker>
+      <name-node>${nameNode}</name-node>
+      <prepare>
+        <mkdir path="mkdir_1"/>
+        <delete path="delete_dir_1"/>
+        <delete path="delete_dir_2"/>
+      </prepare>
+      <job-xml>job_xml.xml</job-xml>
+      <configuration>
+        <property>
+          <name>conf_param_1</name>
+          <value>conf_value_1</value>
+        </property>
+        <property>
+          <name>conf_param_2</name>
+          <value>conf_value_3</value>
+        </property>
+      </configuration>
+      <script>script.q</script>
+      <param>key2=value2</param>
+      <param>key=value</param>
+      <file>file1</file>
+      <file>file2</file>
+      <archive>arch1</archive>
+    </hive>"""
+
+        self.assertIn(hive_action, res)

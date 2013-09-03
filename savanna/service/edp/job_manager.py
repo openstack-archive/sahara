@@ -23,6 +23,7 @@ from savanna.openstack.common import uuidutils
 from savanna.plugins.general import utils as u
 from savanna.service.edp import hdfs_helper as h
 from savanna.service.edp import oozie as o
+from savanna.service.edp.workflow_creator import hive_workflow as hive_flow
 from savanna.service.edp.workflow_creator import mapreduce_workflow as mr_flow
 from savanna.service.edp.workflow_creator import pig_workflow as pig_flow
 from savanna.utils import remote
@@ -41,7 +42,8 @@ CONF.register_opts(opts)
 conductor = c.API
 
 main_res_names = {'Pig': 'script.pig',
-                  'Jar': 'main.jar'}
+                  'Jar': 'main.jar',
+                  'Hive': 'script.q'}
 
 
 def get_job_status(job_execution_id):
@@ -91,6 +93,9 @@ def run_job(ctx, job_execution):
     wf_dir = create_workflow_dir(u.get_jobtracker(cluster), job)
     upload_job_file(u.get_jobtracker(cluster), wf_dir, job_origin, job)
 
+    if job.type == 'Hive':
+        upload_hive_site(cluster, wf_dir)
+
     wf_xml = build_workflow_for_job(job.type, input_source,
                                     output_source)
     path_to_workflow = upload_workflow_file(u.get_jobtracker(cluster),
@@ -136,6 +141,12 @@ def upload_workflow_file(where, job_dir, wf_xml):
     return "%s/workflow.xml" % job_dir
 
 
+def upload_hive_site(cluster, wf_dir):
+    h_s = u.get_hiveserver(cluster)
+    h.copy_from_local(remote.get_remote(h_s),
+                      '/etc/hadoop/hive-site.xml', wf_dir)
+
+
 def create_workflow_dir(where, job):
     constructed_dir = '/user/hadoop/'
     constructed_dir = _add_postfix(constructed_dir)
@@ -159,6 +170,14 @@ def build_workflow_for_job(job_type, input_data, output_data, data=None):
                                    configuration=configs,
                                    params={'INPUT': input_data.url,
                                            'OUTPUT': output_data.url})
+    if job_type == 'Hive':
+        creator = hive_flow.HiveWorkflowCreator()
+        creator.build_workflow_xml(main_res_names['Hive'],
+                                   job_xml=data['job_xml'],
+                                   configuration=configs,
+                                   params={'INPUT': input_data.url,
+                                           'OUTPUT': output_data.url})
+
     if job_type == 'Jar':
         creator = mr_flow.MapReduceWorkFlowCreator()
         if data and data.get('configs'):
@@ -190,5 +209,5 @@ def _append_slash_if_needed(path):
 def validate(input_data, output_data, job):
     if input_data.type != 'swift' or output_data.type != 'swift':
         raise RuntimeError
-    if job.type not in ['Pig', 'Jar']:
+    if job.type not in ['Pig', 'Jar', 'Hive']:
         raise RuntimeError
