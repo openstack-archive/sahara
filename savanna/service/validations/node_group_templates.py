@@ -64,6 +64,9 @@ NODE_GROUP_TEMPLATE_SCHEMA = {
         "description": {
             "type": "string",
         },
+        "floating_ip_pool": {
+            "type": "string",
+        },
     },
     "additionalProperties": False,
     "required": [

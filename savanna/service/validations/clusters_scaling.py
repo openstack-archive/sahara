@@ -85,3 +85,5 @@ def check_cluster_scaling(data, cluster_id, **kwargs):
 
     if data.get("add_node_groups"):
         b.check_add_node_groups(cluster, data['add_node_groups'])
+
+        b.check_network_config(data['add_node_groups'])

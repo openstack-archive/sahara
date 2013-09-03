@@ -11,12 +11,13 @@
 #port=8386
 
 
-# When set to false, Savanna uses only internal IP of VMs.
-# When set to true, Savanna expects OpenStack to auto-assign
-# floating IPs to cluster nodes. Internal IPs will be used for
-# inter-cluster communication, while floating ones will be
-# used by Savanna to configure nodes. Also floating IPs will
-# be exposed in service URLs. (boolean value)
+# If set to True, savanna will use floating IPs to
+# communicate with instances. To make sure that all
+# instances have floating assigned in Nova Network
+# set "auto_assign_floating_ip=True" in nova.conf.
+# If Neutron is used for networking, make sure that
+# all Node Groups have "floating_ip_pool" parameter
+# defined.
 #use_floating_ips=true
 
 # The suffix of the node's FQDN. In nova-network that is

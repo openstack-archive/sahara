@@ -102,6 +102,7 @@ class NodeGroup(mb.SavannaBase):
                                            'node_group_templates.id'))
     node_group_template = relationship('NodeGroupTemplate',
                                        backref="node_groups", lazy='joined')
+    floating_ip_pool = sa.Column(sa.String(36))
 
     def to_dict(self):
         d = super(NodeGroup, self).to_dict()
@@ -181,6 +182,7 @@ class NodeGroupTemplate(mb.SavannaBase):
     volumes_per_node = sa.Column(sa.Integer, nullable=False)
     volumes_size = sa.Column(sa.Integer)
     volume_mount_prefix = sa.Column(sa.String(80))
+    floating_ip_pool = sa.Column(sa.String(36))
 
 
 class TemplatesRelation(mb.SavannaBase):
@@ -209,6 +211,7 @@ class TemplatesRelation(mb.SavannaBase):
     node_group_template = relationship('NodeGroupTemplate',
                                        backref="templates_relations",
                                        lazy='joined')
+    floating_ip_pool = sa.Column(sa.String(36))
 
 
 ## EDP objects: DataSource, JobOrigin, Job, Job Execution, JobBinary

@@ -27,16 +27,16 @@ cli_opts = [
                      'headers and bodies')
 ]
 
-cluster_node_opts = [
+networking_opts = [
     cfg.BoolOpt('use_floating_ips',
                 default=True,
-                help='When set to false, Savanna uses only internal IP of VMs.'
-                     ' When set to true, Savanna expects OpenStack to auto-'
-                     'assign floating IPs to cluster nodes. Internal IPs will '
-                     'be used for inter-cluster communication, while floating '
-                     'ones will be used by Savanna to configure nodes. Also '
-                     'floating IPs will be exposed in service URLs. This '
-                     'option is ignored when "use_neutron" is set to True'),
+                help='If set to True, Savanna will use floating IPs to '
+                     'communicate with instances. To make sure that all '
+                     'instances have floating IPs assigned in Nova Network '
+                     'set "auto_assign_floating_ip=True" in nova.conf.'
+                     'If Neutron is used for networking, make sure that'
+                     'all Node Groups have "floating_ip_pool" parameter'
+                     'defined.'),
     cfg.StrOpt('node_domain',
                default='novalocal',
                help="The suffix of the node's FQDN. In nova-network that is "
@@ -49,7 +49,7 @@ cluster_node_opts = [
 
 CONF = cfg.CONF
 CONF.register_cli_opts(cli_opts)
-CONF.register_opts(cluster_node_opts)
+CONF.register_opts(networking_opts)
 
 ARGV = []
 

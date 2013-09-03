@@ -142,3 +142,10 @@ class DeletionFailed(SavannaException):
     def __init__(self, message=None):
         if message:
             self.message = message
+
+
+class MissingFloatingNetworkException(SavannaException):
+    def __init__(self, ng_name):
+        self.message = ("Node Group %s is missing 'floating_ip_pool' "
+                        "field" % ng_name)
+        self.code = "MISSING_FLOATING_NETWORK"

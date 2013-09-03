@@ -13,9 +13,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import netaddr
-
 from oslo.config import cfg
+import six
 
 from savanna import conductor as c
 from savanna import context
@@ -26,57 +25,45 @@ conductor = c.API
 CONF = cfg.CONF
 
 
-# NOTE(slukjanov): https://blueprints.launchpad.net/savanna?searchtext=ip
-def init_instances_ips(instance, server):
-    if instance.internal_ip and instance.management_ip:
-        return True
-
-    if CONF.use_neutron:
-        return init_neutron_ips(instance, server)
-    else:
-        return init_nova_network_ips(instance, server)
-
-
-def init_neutron_ips(instance, server):
-    ctx = context.ctx()
-
-    net_id = instance.node_group.cluster.neutron_management_network
-    net_name = nova.client().networks.get(net_id).label
-
-    internal_ip = server.networks.get(net_name, [None])[0]
-    management_ip = internal_ip
-
-    conductor.instance_update(ctx, instance, {"management_ip": management_ip,
-                                              "internal_ip": internal_ip})
-
-    return internal_ip
-
-
-def init_nova_network_ips(instance, server):
+def init_instances_ips(instance):
     """Extracts internal and management ips.
 
     As internal ip will be used the first ip from the nova networks CIDRs.
     If use_floating_ip flag is set than management ip will be the first
     non-internal ip.
     """
-    ctx = context.ctx()
 
-    management_ip = instance.management_ip
-    internal_ip = instance.internal_ip
+    server = nova.get_instance_info(instance)
 
-    for network_label in server.networks:
-        nova_network = nova.client().networks.find(label=network_label)
-        network = netaddr.IPNetwork(nova_network.cidr)
-        for ip in server.networks[network_label]:
-            if netaddr.IPAddress(ip) in network:
-                internal_ip = instance.internal_ip or ip
+    management_ip = None
+    internal_ip = None
+
+    for network_label, addresses in six.iteritems(server.addresses):
+        for address in addresses:
+            if address['OS-EXT-IPS:type'] == 'fixed':
+                internal_ip = internal_ip or address['addr']
             else:
-                management_ip = instance.management_ip or ip
+                management_ip = management_ip or address['addr']
 
     if not CONF.use_floating_ips:
         management_ip = internal_ip
 
-    conductor.instance_update(ctx, instance, {"management_ip": management_ip,
-                                              "internal_ip": internal_ip})
+    conductor.instance_update(context.ctx(), instance,
+                              {"management_ip": management_ip,
+                               "internal_ip": internal_ip})
 
     return internal_ip and management_ip
+
+
+def assign_floating_ip(instance_id, pool):
+    ip = nova.client().floating_ips.create(pool)
+    nova.client().servers.get(instance_id).add_floating_ip(ip)
+
+
+def delete_floating_ip(instance_id):
+    fl_ips = nova.client().floating_ips.findall(instance_id=instance_id)
+    for fl_ip in fl_ips:
+        if CONF.use_neutron:
+            nova.client().floating_ips.delete(fl_ip.id)
+        else:
+            nova.client().floating_ips.delete(fl_ip.ip)

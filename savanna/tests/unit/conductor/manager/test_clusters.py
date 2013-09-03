@@ -108,6 +108,7 @@ class ClusterTest(test_base.ConductorManagerTestCase):
             ng.pop("volume_mount_prefix")
             ng.pop("volumes_size")
             ng.pop("volumes_per_node")
+            ng.pop("floating_ip_pool")
 
         self.assertListEqual(SAMPLE_CLUSTER["node_groups"],
                              cl_db_obj["node_groups"])

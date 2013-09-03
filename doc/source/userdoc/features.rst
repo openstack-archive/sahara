@@ -51,6 +51,41 @@ User can set how many volumes will be attached to each node in a Node Group and 
 
 All volumes are attached during Cluster creation/scaling operations.
 
+Neutron and Nova Network support
+--------------------------------
+OpenStack Cluster may use Nova Network or Neutron as a networking service. Savanna supports both, but when deployed,
+a special configuration for networking should be set explicitly. By default Savanna will behave as if Nova Network is used.
+If OpenStack Cluster uses Neutron, then ``use_neutron`` option should be set to ``True`` in Savanna configuration file.
+
+.. sourcecode:: config
+
+    use_neutron=True
+
+Savanna Dashboard should also be configured properly to support Neutron. ``SAVANNA_USE_NEUTRON`` should be set to ``True`` in
+OpenStack Dashboard ``local_settings.py`` configuration file.
+
+.. sourcecode:: python
+
+    SAVANNA_USE_NEUTRON=True
+
+
+Floating IP Management
+----------------------
+
+Savanna needs to access instances through ssh during a Cluster setup. To establish a connection Savanna may
+use both: fixed and floating IP of an Instance. By default ``use_floating_ips`` parameter is set to ``True``, so
+Savanna will use Floating IP of an Instance to connect. In this case, user has two options for how to make all instances
+get a floating IP:
+
+* Nova Network may be configured to assign floating IPs automatically by setting ``auto_assign_floating_ip`` to ``True`` in ``nova.conf``
+* User may specify a floating IP pool for each Node Group directly.
+
+Note: When using floating IPs for management (``use_floating_ip=True``) **every** instance in the Cluster should have a floating IP,
+otherwise Savanna will not be able to work with it.
+
+If ``use_floating_ips`` parameter is set to ``False`` Savanna will use Instances' fixed IPs for management. In this case
+the node where Savanna is running should have access to Instances' fixed IP network. When OpenStack uses Neutron for
+networking, user will be able to choose fixed IP network for all instances in a Cluster.
 
 Anti-affinity
 -------------

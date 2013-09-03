@@ -158,9 +158,48 @@ class NodePlacementTest(models_test_base.DbTestCase):
         self.assertEqual(inst_number, 3)
 
 
-def _make_ng_dict(name, flavor, processes, count):
-    return {'name': name, 'flavor_id': flavor, 'node_processes': processes,
-            'count': count}
+class IpManagementTest(models_test_base.DbTestCase):
+    def setUp(self):
+        r.Resource._is_passthrough_type = _resource_passthrough
+        super(IpManagementTest, self).setUp()
+
+    @mock.patch('savanna.utils.openstack.nova.client')
+    @mock.patch('oslo.config.cfg')
+    def test_ip_assignment_use_no_floating(self, cfg, novaclient):
+
+        cfg.CONF.use_floating_ips = False
+        nova = _create_nova_mock(novaclient)
+
+        node_groups = [_make_ng_dict("test_group_1", "test_flavor",
+                                     ["data node", "test tracker"], 2, 'pool'),
+                       _make_ng_dict("test_group_2", "test_flavor",
+                                     ["name node", "test tracker"], 1)]
+
+        ctx = context.ctx()
+        cluster = _create_cluster_mock(node_groups, ["data node"])
+        instances._create_instances(cluster)
+
+        cluster = conductor.cluster_get(ctx, cluster)
+        instances_list = instances.get_instances(cluster)
+
+        instances._assign_floating_ips(instances_list)
+
+        nova.floating_ips.create.assert_has_calls(
+            [mock.call("pool"),
+             mock.call("pool")],
+            any_order=False
+        )
+
+        self.assertEqual(nova.floating_ips.create.call_count, 2,
+                         "Not expected floating IPs number found.")
+
+
+def _make_ng_dict(name, flavor, processes, count, floating_ip_pool=None):
+    ng_dict = {'name': name, 'flavor_id': flavor, 'node_processes': processes,
+               'count': count}
+    if floating_ip_pool:
+        ng_dict.update({"floating_ip_pool": floating_ip_pool})
+    return ng_dict
 
 
 def _create_cluster_mock(node_groups, aa):
@@ -185,13 +224,34 @@ def _create_cluster_mock(node_groups, aa):
 
 
 def _mock_instance(id):
-    instance1 = mock.Mock()
-    instance1.id = id
-    return instance1
+    server = mock.Mock()
+    server.id = id
+    server.instance_id = id
+    server.status = 'ACTIVE'
+    server.networks = ["n1", "n2"]
+    server.addresses = {'n1': [{'OS-EXT-IPS:type': 'fixed',
+                                'addr': "{0}.{0}.{0}.{0}" .format(id)}],
+                        'n2': [{'OS-EXT-IPS:type': 'floating',
+                                'addr': "{0}.{0}.{0}.{0}" .format(id)}]}
+
+    server.add_floating_ip.side_effect = [True, True, True]
+    return server
+
+
+def _mock_ip(id):
+    ip = mock.Mock()
+    ip.id = id
+    ip.ip = "{0}.{0}.{0}.{0}" .format(id)
+
+    return ip
 
 
 def _mock_instances(count):
     return [_mock_instance(str(i)) for i in range(1, count + 1)]
+
+
+def _mock_ips(count):
+    return [_mock_ip(str(i)) for i in range(1, count + 1)]
 
 
 def _generate_user_data_script(cluster):
@@ -209,7 +269,9 @@ echo "%(private_key)s" > %(user_home)s/.ssh/id_rsa
 def _create_nova_mock(novalcient):
     nova = mock.Mock()
     novalcient.return_value = nova
-    nova.servers.create.side_effect = _mock_instances(3)
+    nova.servers.create.side_effect = _mock_instances(4)
+    nova.servers.get.return_value = _mock_instance(1)
+    nova.floating_ips.create.side_effect = _mock_ips(4)
     images = mock.Mock()
     images.username = "root"
     nova.images.get = lambda x: images

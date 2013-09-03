@@ -13,6 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from oslo.config import cfg
 import urllib
 
 from savanna import conductor as c
@@ -28,6 +29,7 @@ from savanna.utils.openstack import nova
 
 
 conductor = c.API
+CONF = cfg.CONF
 LOG = logging.getLogger(__name__)
 
 
@@ -89,12 +91,13 @@ def create_cluster(values):
         cluster = conductor.cluster_update(ctx, cluster,
                                            {"status": "Validating"})
         LOG.info(g.format_cluster_status(cluster))
+
         plugin.validate(cluster)
-    except Exception as ex:
+    except Exception as e:
         with excutils.save_and_reraise_exception():
             cluster = conductor.cluster_update(ctx, cluster,
                                                {"status": "Error",
-                                                "status_description": str(ex)})
+                                                "status_description": str(e)})
             LOG.info(g.format_cluster_status(cluster))
 
     context.spawn("cluster-creating-%s" % cluster.id,

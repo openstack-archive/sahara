@@ -13,13 +13,21 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from oslo.config import cfg
+
 import novaclient.exceptions as nova_ex
+from savanna import conductor as cond
+from savanna import context
 
 import savanna.exceptions as ex
 import savanna.plugins.base as plugin_base
 import savanna.service.api as api
 import savanna.utils.openstack.keystone as keystone
 import savanna.utils.openstack.nova as nova
+
+
+CONF = cfg.CONF
+conductor = cond.API
 
 
 def _get_plugin_configs(plugin_name, hadoop_version, scope=None):
@@ -182,6 +190,7 @@ def check_node_groups_in_cluster_templates(plugin_name, hadoop_version,
                                            cluster_template_id):
     c_t = api.get_cluster_template(id=cluster_template_id)
     n_groups = c_t.to_wrapped_dict()['cluster_template']['node_groups']
+    check_network_config(n_groups)
     for node_group in n_groups:
         check_node_group_basic_fields(plugin_name, hadoop_version, node_group)
 
@@ -198,6 +207,28 @@ def check_node_group_template_exists(ng_tmpl_id):
     if not api.get_node_group_template(id=ng_tmpl_id):
         raise ex.InvalidException("NodeGroup template with id '%s'"
                                   " doesn't exist" % ng_tmpl_id)
+
+
+def check_network_config(node_groups):
+    if CONF.use_floating_ips and CONF.use_neutron:
+        for ng in node_groups:
+            if not _get_floating_ip_pool(ng):
+                raise ex.MissingFloatingNetworkException(ng.get('name'))
+
+
+def _get_floating_ip_pool(node_group):
+    if node_group.get('floating_ip_pool'):
+        return node_group['floating_ip_pool']
+
+    if node_group.get('node_group_template_id'):
+        ctx = context.ctx()
+        ngt = conductor.node_group_template_get(
+            ctx,
+            node_group['node_group_template_id'])
+        if ngt.get('floating_ip_pool'):
+            return ngt['floating_ip_pool']
+
+    return None
 
 
 ## Cluster scaling
