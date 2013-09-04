@@ -20,6 +20,7 @@ from oslo.config import cfg
 from savanna import conductor as c
 from savanna import context
 from savanna.openstack.common import uuidutils
+from savanna.plugins import base as plugin_base
 from savanna.plugins.general import utils as u
 from savanna.service.edp import hdfs_helper as h
 from savanna.service.edp import oozie as o
@@ -143,8 +144,9 @@ def upload_workflow_file(where, job_dir, wf_xml):
 
 def upload_hive_site(cluster, wf_dir):
     h_s = u.get_hiveserver(cluster)
+    plugin = plugin_base.PLUGINS.get_plugin(cluster.plugin_name)
     h.copy_from_local(remote.get_remote(h_s),
-                      '/etc/hadoop/hive-site.xml', wf_dir)
+                      plugin.get_hive_config_path(), wf_dir)
 
 
 def create_workflow_dir(where, job):
