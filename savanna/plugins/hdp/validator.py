@@ -64,10 +64,9 @@ class Validator(object):
 
         finally:
             for ng_id in additional:
-                for ng_id in additional:
-                    node_group = self._get_by_id(cluster.node_groups, ng_id)
-                    conductor.node_group_update(ctx, node_group,
-                                                {'count': 0})
+                node_group = self._get_by_id(cluster.node_groups, ng_id)
+                conductor.node_group_update(ctx, node_group,
+                                            {'count': 0})
             for ng_id in orig_existing_count:
                 node_group = self._get_by_id(cluster.node_groups, ng_id)
                 conductor.node_group_update(ctx, node_group,
