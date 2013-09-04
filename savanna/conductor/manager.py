@@ -344,21 +344,42 @@ class ConductorManager(db_base.Base):
     ## JobBinary ops
 
     def job_binary_get_all(self, context):
-        """Get all JobBinarys
-
-        The JobBinarys returned do not contain a data field.
-        """
+        """Get all JobBinaries."""
         return self.db.job_binary_get_all(context)
 
     def job_binary_get(self, context, job_binary_id):
-        """Return the JobBinary or None if it does not exist
-
-        The JobBinary returned does not contain a data field.
-        """
+        """Return the JobBinary or None if it does not exist."""
         return self.db.job_binary_get(context, job_binary_id)
 
     def job_binary_create(self, context, values):
         """Create a JobBinary from the values dictionary."""
+
+        values = copy.deepcopy(values)
+        values['tenant_id'] = context.tenant_id
+        return self.db.job_binary_create(context, values)
+
+    def job_binary_destroy(self, context, job_binary):
+        """Destroy the JobBinary or raise if it does not exist."""
+        self.db.job_binary_destroy(context, job_binary)
+
+    ## JobBinaryInternal ops
+
+    def job_binary_internal_get_all(self, context):
+        """Get all JobBinaryInternals
+
+        The JobBinaryInternals returned do not contain a data field.
+        """
+        return self.db.job_binary_internal_get_all(context)
+
+    def job_binary_internal_get(self, context, job_binary_internal_id):
+        """Return the JobBinaryInternal or None if it does not exist
+
+        The JobBinaryInternal returned does not contain a data field.
+        """
+        return self.db.job_binary_internal_get(context, job_binary_internal_id)
+
+    def job_binary_internal_create(self, context, values):
+        """Create a JobBinaryInternal from the values dictionary."""
 
         # Since values["data"] is (should be) encoded as a string
         # here the deepcopy of values only incs a reference count on data.
@@ -366,12 +387,15 @@ class ConductorManager(db_base.Base):
         values = copy.deepcopy(values)
         values['tenant_id'] = context.tenant_id
         values['datasize'] = len(values["data"])
-        return self.db.job_binary_create(context, values)
+        return self.db.job_binary_internal_create(context, values)
 
-    def job_binary_destroy(self, context, job_binary):
-        """Destroy the JobBinary or raise if it does not exist."""
-        self.db.job_binary_destroy(context, job_binary)
+    def job_binary_internal_destroy(self, context, job_binary_internal):
+        """Destroy the JobBinaryInternal or raise if it does not exist."""
+        self.db.job_binary_internal_destroy(context, job_binary_internal)
 
-    def job_binary_get_raw_data(self, context, job_binary_id):
-        """Return the binary data field from the specified JobBinary."""
-        return self.db.job_binary_get_raw_data(context, job_binary_id)
+    def job_binary_internal_get_raw_data(self,
+                                         context, job_binary_internal_id):
+        """Return the binary data field from a JobBinaryInternal."""
+        return self.db.job_binary_internal_get_raw_data(
+            context,
+            job_binary_internal_id)

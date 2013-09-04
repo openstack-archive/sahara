@@ -19,6 +19,7 @@ from savanna.service import validation as v
 from savanna.service.validations.edp import data_source as v_d_s
 from savanna.service.validations.edp import job as v_j
 from savanna.service.validations.edp import job_binary as v_j_b
+from savanna.service.validations.edp import job_binary_internal as v_j_b_i
 from savanna.service.validations.edp import job_executor as v_j_e
 from savanna.service.validations.edp import job_origin as v_j_o
 import savanna.utils.api as u
@@ -134,7 +135,7 @@ def job_origin_list():
 
 
 @rest.post('/job-origins')
-@v.validate(v_j_o.JOB_ORIGIN_SCHEMA)
+@v.validate(v_j_o.JOB_ORIGIN_SCHEMA, v_j_o.check_mains_libs)
 def job_origin_create(data):
     return u.render(api.create_job_origin(data).to_wrapped_dict())
 
@@ -152,10 +153,10 @@ def job_origin_delete(job_origin_id):
     return u.render()
 
 
-@rest.put_file('/job-binaries/<name>')
-@v.validate(None, v_j_b.check_data_type_length)
-def job_binary_create(**values):
-    return u.render(api.create_job_binary(values).to_wrapped_dict())
+@rest.post('/job-binaries')
+@v.validate(v_j_b.JOB_BINARY_SCHEMA, v_j_b.check_job_binary)
+def job_binary_create(data):
+    return u.render(api.create_job_binary(data).to_wrapped_dict())
 
 
 @rest.get('/job-binaries')
@@ -176,7 +177,33 @@ def job_binary_delete(job_binary_id):
     return u.render()
 
 
-@rest.get('/job-binaries/<job_binary_id>/data')
-@v.check_exists(api.get_job_binary, id='job_binary_id')
-def job_binary_data(job_binary_id):
-    return api.get_job_binary_data(job_binary_id)
+@rest.put_file('/job-binary-internals/<name>')
+@v.validate(None, v_j_b_i.check_data_type_length)
+def job_binary_internal_create(**values):
+    return u.render(api.create_job_binary_internal(values).to_wrapped_dict())
+
+
+@rest.get('/job-binary-internals')
+def job_binary_internal_list():
+    return u.render(binaries=[j.to_dict() for j in
+                              api.get_job_binary_internals()])
+
+
+@rest.get('/job-binary-internals/<job_binary_internal_id>')
+@v.check_exists(api.get_job_binary_internal, 'job_binary_internal_id')
+def job_binary_internal_get(job_binary_internal_id):
+    return u.render(api.get_job_binary_internal(job_binary_internal_id
+                                                ).to_wrapped_dict())
+
+
+@rest.delete('/job-binary-internals/<job_binary_internal_id>')
+@v.check_exists(api.get_job_binary_internal, 'job_binary_internal_id')
+def job_binary_internal_delete(job_binary_internal_id):
+    api.delete_job_binary_internal(job_binary_internal_id)
+    return u.render()
+
+
+@rest.get('/job-binary-internals/<job_binary_internal_id>/data')
+@v.check_exists(api.get_job_binary_internal, 'job_binary_internal_id')
+def job_binary_internal_data(job_binary_internal_id):
+    return api.get_job_binary_internal_data(job_binary_internal_id)

@@ -76,3 +76,9 @@ def check_job_unique_name(name):
     if name in [j.name for j in api.get_jobs()]:
         raise ex.NameAlreadyExistsException("Job with name '%s' "
                                             "already exists" % name)
+
+
+def check_job_binary_internal_exists(jbi_id):
+    if not api.get_job_binary_internal(jbi_id):
+        raise ex.InvalidException("JobBinaryInternal with id '%s'"
+                                  " doesn't exist" % jbi_id)

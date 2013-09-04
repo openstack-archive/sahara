@@ -29,6 +29,17 @@ def validate_name_format(entry):
     return res is not None
 
 
+@jsonschema.FormatChecker.cls_checks('valid_job_location')
+def validate_job_location_format(entry):
+    if entry.startswith('savanna-db://'):
+        return uuidutils.is_uuid_like(entry[len("savanna-db://"):])
+    if (entry.startswith('swift-internal://') or
+            entry.startswith('swift-external://')):
+        #TODO(nprivalova):add hostname validation
+        return True
+    return False
+
+
 @jsonschema.FormatChecker.cls_checks('valid_tag')
 def validate_valid_tag_format(entry):
     res = re.match(r"^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-_]"

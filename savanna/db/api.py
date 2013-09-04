@@ -371,6 +371,30 @@ def job_binary_destroy(context, job_binary):
     IMPL.job_binary_destroy(context, job_binary)
 
 
-def job_binary_get_raw_data(context, job_binary_id):
-    """Return the binary data field from the specified JobBinary."""
-    return IMPL.job_binary_get_raw_data(context, job_binary_id)
+@to_dict
+def job_binary_internal_get_all(context):
+    """Get all JobBinaryInternals."""
+    return IMPL.job_binary_internal_get_all(context)
+
+
+@to_dict
+def job_binary_internal_get(context, job_binary_internal):
+    """Return the JobBinaryInternal or None if it does not exist."""
+    return IMPL.job_binary_internal_get(context, job_binary_internal)
+
+
+@to_dict
+def job_binary_internal_create(context, values):
+    """Create a JobBinaryInternal from the values dictionary."""
+    return IMPL.job_binary_internal_create(context, values)
+
+
+def job_binary_internal_destroy(context, job_binary_internal):
+    """Destroy the JobBinaryInternal or raise if it does not exist."""
+    IMPL.job_binary_internal_destroy(context, job_binary_internal)
+
+
+def job_binary_internal_get_raw_data(context, job_binary_internal_id):
+    """Return the binary data field from the specified JobBinaryInternal."""
+    return IMPL.job_binary_internal_get_raw_data(context,
+                                                 job_binary_internal_id)

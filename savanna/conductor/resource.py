@@ -223,3 +223,7 @@ class JobOrigin(Resource, objects.JobOrigin):
 
 class JobBinary(Resource, objects.JobBinary):
     pass
+
+
+class JobBinaryInternal(Resource, objects.JobBinaryInternal):
+    pass

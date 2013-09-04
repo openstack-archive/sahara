@@ -318,9 +318,37 @@ class LocalApi(object):
         """Destroy the JobBinary or raise if it does not exist."""
         self._manager.job_binary_destroy(context, _get_id(job_binary))
 
-    def job_binary_get_raw_data(self, context, job_binary_id):
-        """Return the binary data field from the specified JobBinary."""
-        return self._manager.job_binary_get_raw_data(context, job_binary_id)
+    ## JobBinaryInternal ops
+
+    @r.wrap(r.JobBinaryInternal)
+    def job_binary_internal_get_all(self, context):
+        """Get all JobBinaryInternals."""
+        return self._manager.job_binary_internal_get_all(context)
+
+    @r.wrap(r.JobBinaryInternal)
+    def job_binary_internal_get(self, context, job_binary_internal):
+        """Return the JobBinaryInternal or None if it does not exist."""
+        return self._manager.job_binary_internal_get(
+            context,
+            _get_id(job_binary_internal))
+
+    @r.wrap(r.JobBinaryInternal)
+    def job_binary_internal_create(self, context, values):
+        """Create a JobBinaryInternal from the values dictionary."""
+        return self._manager.job_binary_internal_create(context, values)
+
+    def job_binary_internal_destroy(self, context, job_binary_internal_id):
+        """Destroy the JobBinaryInternal or raise if it does not exist."""
+        self._manager.job_binary_internal_destroy(
+            context,
+            _get_id(job_binary_internal_id))
+
+    def job_binary_internal_get_raw_data(self, context,
+                                         job_binary_internal_id):
+        """Return the binary data field from a JobBinaryInternal."""
+        return self._manager.job_binary_internal_get_raw_data(
+            context,
+            job_binary_internal_id)
 
 
 class RemoteApi(LocalApi):

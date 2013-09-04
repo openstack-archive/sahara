@@ -58,12 +58,7 @@ SAMPLE_JOB_ORIGIN = {
     "tenant_id": "test_tenant",
     "name": "job_origin_test",
     "description": "test_desc",
-    "storage_type": "swift",
-    "url": "localhost:1080",
-    "credentials": {
-        "user": "test",
-        "password": "123"
-    }
+    "mains": []
 }
 
 SAMPLE_JOB_EXECUTION = {
@@ -93,10 +88,18 @@ SAMPLE_CONF_JOB_EXECUTION = {
 
 BINARY_DATA = "vU}\x97\x1c\xdf\xa686\x08\xf2\tf\x0b\xb1}"
 
-SAMPLE_JOB_BINARY = {
+SAMPLE_JOB_BINARY_INTERNAL = {
     "tenant_id": "test_tenant",
     "name": "job_origin_test",
     "data": BINARY_DATA
+}
+
+
+SAMPLE_JOB_BINARY = {
+    "tenant_id": "test_tenant",
+    "name": "job_binary_test",
+    "description": "test_dec",
+    "url": "savanna-db://test_binary",
 }
 
 
@@ -288,6 +291,84 @@ class JobOriginTest(test_base.ConductorManagerTestCase):
         with self.assertRaises(ex.NotFoundException):
             self.api.job_origin_destroy(ctx, jo)
 
+    def test_job_origin_fields(self):
+        ctx = context.ctx()
+        ctx.tenant_id = SAMPLE_JOB_ORIGIN['tenant_id']
+        job_origin_id = self.api.job_origin_create(ctx,
+                                                   SAMPLE_JOB_ORIGIN)['id']
+
+        job_origin = self.api.job_origin_get(ctx, job_origin_id)
+        self.assertIsInstance(job_origin, dict)
+
+        for key, val in SAMPLE_JOB_ORIGIN.items():
+            self.assertEqual(val, job_origin.get(key),
+                             "Key not found %s" % key)
+
+
+class JobBinaryInternalTest(test_base.ConductorManagerTestCase):
+    def __init__(self, *args, **kwargs):
+        super(JobBinaryInternalTest, self).__init__(
+            checks=[
+                lambda: SAMPLE_JOB_BINARY_INTERNAL
+            ], *args, **kwargs)
+
+    def test_crud_operation_create_list_delete(self):
+        ctx = context.ctx()
+
+        self.api.job_binary_internal_create(ctx, SAMPLE_JOB_BINARY_INTERNAL)
+
+        lst = self.api.job_binary_internal_get_all(ctx)
+        self.assertEqual(len(lst), 1)
+
+        job_bin_int_id = lst[0]['id']
+        self.api.job_binary_internal_destroy(ctx, job_bin_int_id)
+
+        lst = self.api.job_binary_internal_get_all(ctx)
+        self.assertEqual(len(lst), 0)
+
+        with self.assertRaises(ex.NotFoundException):
+            self.api.job_binary_internal_destroy(ctx, job_bin_int_id)
+
+    def test_duplicate_job_binary_internal_create(self):
+        ctx = context.ctx()
+        self.api.job_binary_internal_create(ctx, SAMPLE_JOB_BINARY_INTERNAL)
+        with self.assertRaises(RuntimeError):
+            self.api.job_binary_internal_create(ctx,
+                                                SAMPLE_JOB_BINARY_INTERNAL)
+
+    def test_job_binary_internal_get_raw(self):
+        ctx = context.ctx()
+
+        id = self.api.job_binary_internal_create(ctx,
+                                                 SAMPLE_JOB_BINARY_INTERNAL
+                                                 )['id']
+        data = self.api.job_binary_internal_get_raw_data(ctx, id)
+        self.assertEqual(data, SAMPLE_JOB_BINARY_INTERNAL["data"])
+
+        self.api.job_binary_internal_destroy(ctx, id)
+
+        data = self.api.job_binary_internal_get_raw_data(ctx, id)
+        self.assertEqual(data, None)
+
+    def test_job_binary_internal_fields(self):
+        ctx = context.ctx()
+        ctx.tenant_id = SAMPLE_JOB_BINARY_INTERNAL['tenant_id']
+        id = self.api.job_binary_internal_create(
+            ctx, SAMPLE_JOB_BINARY_INTERNAL)['id']
+
+        internal = self.api.job_binary_internal_get(ctx, id)
+        self.assertIsInstance(internal, dict)
+        with self.assertRaises(KeyError):
+            internal["data"]
+
+        internal["data"] = self.api.job_binary_internal_get_raw_data(ctx, id)
+        for key, val in SAMPLE_JOB_BINARY_INTERNAL.items():
+            if key == "datasize":
+                self.assertEqual(len(BINARY_DATA), internal["datasize"])
+            else:
+                self.assertEqual(val, internal.get(key),
+                                 "Key not found %s" % key)
+
 
 class JobBinaryTest(test_base.ConductorManagerTestCase):
     def __init__(self, *args, **kwargs):
@@ -313,40 +394,48 @@ class JobBinaryTest(test_base.ConductorManagerTestCase):
         with self.assertRaises(ex.NotFoundException):
             self.api.job_binary_destroy(ctx, job_binary_id)
 
+    def test_job_binary_fields(self):
+        ctx = context.ctx()
+        ctx.tenant_id = SAMPLE_JOB_BINARY['tenant_id']
+        job_binary_id = self.api.job_binary_create(ctx,
+                                                   SAMPLE_JOB_BINARY)['id']
+
+        job_binary = self.api.job_binary_get(ctx, job_binary_id)
+        self.assertIsInstance(job_binary, dict)
+
+        for key, val in SAMPLE_JOB_BINARY.items():
+            self.assertEqual(val, job_binary.get(key),
+                             "Key not found %s" % key)
+
+    def _test_job_binary_referenced(self, reference):
+        ctx = context.ctx()
+        job_binary_id = self.api.job_binary_create(ctx,
+                                                   SAMPLE_JOB_BINARY)['id']
+
+        job_origin_values = copy.copy(SAMPLE_JOB_ORIGIN)
+        job_origin_values[reference] = [job_binary_id]
+        job_origin_id = self.api.job_origin_create(ctx,
+                                                   job_origin_values)['id']
+
+        # Delete while referenced, fails
+        with self.assertRaises(RuntimeError):
+            self.api.job_binary_destroy(ctx, job_binary_id)
+
+        # Delete while not referenced
+        self.api.job_origin_destroy(ctx, job_origin_id)
+        self.api.job_binary_destroy(ctx, job_binary_id)
+        lst = self.api.job_binary_get_all(ctx)
+        self.assertEqual(len(lst), 0)
+
+    def test_job_binary_referenced_mains(self):
+        self._test_job_binary_referenced("mains")
+
+    def test_job_binary_referenced_libs(self):
+        self._test_job_binary_referenced("libs")
+
     def test_duplicate_job_binary_create(self):
         ctx = context.ctx()
         self.api.job_binary_create(ctx, SAMPLE_JOB_BINARY)
         with self.assertRaises(RuntimeError):
-            self.api.job_binary_create(ctx, SAMPLE_JOB_BINARY)
-
-    def test_job_binary_get_raw(self):
-        ctx = context.ctx()
-
-        id = self.api.job_binary_create(ctx,
-                                        SAMPLE_JOB_BINARY)['id']
-        data = self.api.job_binary_get_raw_data(ctx, id)
-        self.assertEqual(data, SAMPLE_JOB_BINARY["data"])
-
-        self.api.job_binary_destroy(ctx, id)
-
-        data = self.api.job_binary_get_raw_data(ctx, id)
-        self.assertEqual(data, None)
-
-    def test_job_binary_fields(self):
-        ctx = context.ctx()
-        ctx.tenant_id = SAMPLE_JOB_BINARY['tenant_id']
-        id = self.api.job_binary_create(ctx,
-                                        SAMPLE_JOB_BINARY)['id']
-
-        job_binary = self.api.job_binary_get(ctx, id)
-        self.assertIsInstance(job_binary, dict)
-        with self.assertRaises(KeyError):
-            job_binary["data"]
-
-        job_binary["data"] = self.api.job_binary_get_raw_data(ctx, id)
-        for key, val in SAMPLE_JOB_BINARY.items():
-            if key == "datasize":
-                self.assertEqual(len(BINARY_DATA), job_binary["datasize"])
-            else:
-                self.assertEqual(val, job_binary.get(key),
-                                 "Key not found %s" % key)
+            self.api.job_binary_create(ctx,
+                                       SAMPLE_JOB_BINARY)

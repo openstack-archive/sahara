@@ -14,16 +14,43 @@
 # limitations under the License.
 
 import savanna.exceptions as e
+import savanna.service.validations.edp.base as b
+
+JOB_BINARY_SCHEMA = {
+    "type": "object",
+    "properties": {
+        "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 50
+        },
+        "description": {
+            "type": "string"
+        },
+        "url": {
+            "type": "string",
+            "format": "valid_job_location"
+        },
+        # extra is simple_config for now because we may need not only
+        # user-password it the case of external storage
+        "extra": {
+            "type": "simple_config",
+        }
+    },
+    "additionalProperties": False,
+    "required": [
+        "name",
+        "url"
+    ]
+}
 
 
-class BadJobBinaryException(e.SavannaException):
-    message = "Job binary data must be a string of length greater than zero"
-
-    def __init__(self):
-        self.code = "BAD_JOB_BINARY"
-        super(BadJobBinaryException, self).__init__(self.message, self.code)
-
-
-def check_data_type_length(data, **kwargs):
-    if not (type(data) is str and len(data) > 0):
-        raise BadJobBinaryException()
+def check_job_binary(data, **kwargs):
+    job_binary_location_type = data["url"]
+    extra = data.get("extra", {})
+    if job_binary_location_type.startswith("swift-internal"):
+        if not extra.get("user") or not extra.get("password"):
+            raise e.BadJobBinaryException()
+    if job_binary_location_type.startswith("savanna-db"):
+        internal_uid = job_binary_location_type[len("savanna-db://"):]
+        b.check_job_binary_internal_exists(internal_uid)

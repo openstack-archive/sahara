@@ -55,17 +55,6 @@ def model_query(model, context, session=None, project_only=None):
     return query
 
 
-def column_query(context, *columns, **kwargs):
-    session = kwargs.get("session") or get_session()
-
-    query = session.query(*columns)
-
-    if kwargs.get("project_only"):
-        query = query.filter_by(tenant_id=context.tenant_id)
-
-    return query
-
-
 def setup_db():
     try:
         engine = db_session.get_engine(sqlite_fk=True)
@@ -554,14 +543,37 @@ def job_origin_get_all(context):
 
 
 def job_origin_create(context, values):
-    job_origin = m.JobOrigin()
-    job_origin.update(values)
+    mains = values.pop("mains", [])
+    libs = values.pop("libs", [])
 
-    try:
-        job_origin.save()
-    except db_exc.DBDuplicateEntry as e:
-        # raise exception about duplicated columns (e.columns)
-        raise RuntimeError("DBDuplicateEntry: %s" % e.columns)
+    session = get_session()
+    with session.begin():
+        job_origin = m.JobOrigin()
+        job_origin.update(values)
+        # libs and mains are 'lazy' objects. The initialization below
+        # is needed here because it provides libs and mains to be initialized
+        # within a session even if the lists are empty
+        job_origin.mains = []
+        job_origin.libs = []
+        try:
+            for main in mains:
+                query = model_query(m.JobBinary,
+                                    context, session).filter_by(id=main)
+                job_binary = query.first()
+                if job_binary is not None:
+                    job_origin.mains.append(job_binary)
+
+            for lib in libs:
+                query = model_query(m.JobBinary,
+                                    context, session).filter_by(id=lib)
+                job_binary = query.first()
+                if job_binary is not None:
+                    job_origin.libs.append(job_binary)
+
+            job_origin.save(session=session)
+        except db_exc.DBDuplicateEntry as e:
+            # raise exception about duplicated columns (e.columns)
+            raise RuntimeError("DBDuplicateEntry: %s" % e.columns)
 
     return job_origin
 
@@ -611,15 +623,6 @@ def job_binary_get(context, job_binary_id):
     return query.first()
 
 
-def job_binary_get_raw_data(context, job_binary_id):
-    """Returns only the data field for the specified JobBinary."""
-    query = model_query(m.JobBinary, context).options(sa.orm.undefer("data"))
-    res = query.filter_by(id=job_binary_id).first()
-    if res is not None:
-        res = res.data
-    return res
-
-
 def job_binary_create(context, values):
     """Returns a JobBinary that does not contain a data field
 
@@ -637,15 +640,91 @@ def job_binary_create(context, values):
     return job_binary_get(context, job_binary.id)
 
 
+def _check_job_binary_referenced(session, id):
+
+    args = {"JobBinary_id": id}
+    return model_query(m.mains_association,
+                       None, session).filter_by(**args).first() is not None or\
+        model_query(m.libs_association,
+                    None, session).filter_by(**args).first() is not None
+
+
 def job_binary_destroy(context, job_binary_id):
     session = get_session()
     with session.begin():
 
         job_binary = model_query(m.JobBinary,
-                                 context).filter_by(id=job_binary_id).first()
+                                 context,
+                                 session).filter_by(id=job_binary_id).first()
 
         if not job_binary:
             raise ex.NotFoundException(job_binary_id,
                                        "JobBinary id '%s' not found!")
 
+        if _check_job_binary_referenced(session, job_binary.id):
+            raise RuntimeError("JobBinary is referenced and cannot be deleted")
+
         session.delete(job_binary)
+
+## JobBinaryInternal ops
+
+
+def job_binary_internal_get_all(context):
+    """Returns JobBinaryInternal objects that do not contain a data field
+
+    The data column uses deferred loading.
+    """
+    query = model_query(m.JobBinaryInternal, context)
+    return query.all()
+
+
+def job_binary_internal_get(context, job_binary_internal_id):
+    """Returns a JobBinaryInternal object that does not contain a data field
+
+    The data column uses deferred loadling.
+    """
+    query = model_query(m.JobBinaryInternal, context).filter_by(
+        id=job_binary_internal_id)
+    return query.first()
+
+
+def job_binary_internal_get_raw_data(context, job_binary_internal_id):
+    """Returns only the data field for the specified JobBinaryInternal."""
+    query = model_query(m.JobBinaryInternal, context).options(
+        sa.orm.undefer("data"))
+    res = query.filter_by(id=job_binary_internal_id).first()
+    if res is not None:
+        res = res.data
+    return res
+
+
+def job_binary_internal_create(context, values):
+    """Returns a JobBinaryInternal that does not contain a data field
+
+    The data column uses deferred loading.
+    """
+    job_binary_int = m.JobBinaryInternal()
+    job_binary_int.update(values)
+
+    try:
+        job_binary_int.save()
+    except db_exc.DBDuplicateEntry as e:
+        # raise exception about duplicated columns (e.columns)
+        raise RuntimeError("DBDuplicateEntry: %s" % e.columns)
+
+    return job_binary_internal_get(context, job_binary_int.id)
+
+
+def job_binary_internal_destroy(context, job_binary_internal_id):
+    session = get_session()
+    with session.begin():
+
+        b_intrnl = model_query(m.JobBinaryInternal,
+                               context
+                               ).filter_by(id=job_binary_internal_id).first()
+
+        if not b_intrnl:
+            raise ex.NotFoundException(job_binary_internal_id,
+                                       "JobBinaryInternal id '%s' not found!")
+
+        session.delete(b_intrnl)

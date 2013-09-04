@@ -88,3 +88,38 @@ class RemoteCommandException(SavannaException):
 
         if stdout:
             self.message += '\nSTDOUT:\n' + stdout
+
+
+class InvalidDataException(SavannaException):
+    """General exception to use for invalid data
+
+    A more useful message should be passed to __init__ which
+    tells the user more about why the data is invalid.
+    """
+    message = "Data is invalid"
+    code = "INVALID_DATA"
+
+    def __init__(self, message=None):
+        if message:
+            self.message = message
+
+        super(InvalidDataException, self).__init__(self.message, self.code)
+
+
+class BadJobBinaryInternalException(SavannaException):
+    message = "Job binary internal data must be a string of length " \
+              "greater than zero"
+
+    def __init__(self):
+        self.code = "BAD_JOB_BINARY"
+        super(BadJobBinaryInternalException, self
+              ).__init__(self.message, self.code)
+
+
+class BadJobBinaryException(SavannaException):
+    message = "To work with JobBinary located in internal swift add 'user'" \
+              " and 'password' to extra"
+
+    def __init__(self):
+        self.code = "BAD_JOB_BINARY"
+        super(BadJobBinaryException, self).__init__(self.message, self.code)

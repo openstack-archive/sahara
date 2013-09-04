@@ -13,7 +13,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import savanna.service.validations.edp.base as b
+import savanna.exceptions as e
+from savanna.service.edp import api
 
 JOB_ORIGIN_SCHEMA = {
     "type": "object",
@@ -26,22 +27,50 @@ JOB_ORIGIN_SCHEMA = {
         "description": {
             "type": "string"
         },
-        "storage_type": b.job_storage,
-        "url": {
-            "type": "string"
+        "mains": {
+            "type": "array",
+            "minItems": 1,
+            "uniqueItems": True,
+            "items": {
+                "type": "string",
+                "minLength": 1,
+            }
         },
-        # Allow credentials schemas to be
-        # added in the future
-        "credentials": {
-            "oneOf": [
-                b.user_pass
-            ]
-        }
+        "libs": {
+            "type": "array",
+            "uniqueItems": True,
+            "items": {
+                "type": "string",
+                "minLength": 1,
+            }
+        },
     },
     "additionalProperties": False,
     "required": [
         "name",
-        "storage_type",
-        "url"
     ]
 }
+
+
+def _check_binaries(values):
+    for job_binary in values:
+        if not api.get_job_binary(job_binary):
+            raise e.NotFoundException(job_binary,
+                                      "Job binary '%s' does not exist")
+
+
+def check_mains_libs(data, **kwargs):
+    mains = data.get("mains", [])
+    libs = data.get("libs", [])
+
+    # As a basic check, mains or libs has to be non-empty
+    if not (mains or libs):
+        raise e.InvalidDataException("'mains' or 'libs' must be non-empty")
+
+    # Check for overlap
+    if set(mains).intersection(set(libs)):
+        raise e.InvalidDataException("'mains' and 'libs' overlap")
+
+    # Make sure that all referenced binaries exist
+    _check_binaries(mains)
+    _check_binaries(libs)

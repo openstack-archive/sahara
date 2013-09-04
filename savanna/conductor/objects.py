@@ -222,14 +222,26 @@ class JobOrigin(object):
     tenant_id
     name
     description
-    storage_type
-    url
-    credentials
+    mains
+    libs
     """
 
 
 class JobBinary(object):
     """An object representing JobBinary
+
+    id
+    tenant_id
+    name
+    description
+    url -  URLs may be the following: savanna-db://URL, internal-swift://,
+           external-swift://
+    extra - extra may contain not only user-password but e.g. auth-token
+    """
+
+
+class JobBinaryInternal(object):
+    """An object representing JobBinaryInternal
 
     Note that the 'data' field is not returned. It uses deferred
     loading and must be requested explicitly with the

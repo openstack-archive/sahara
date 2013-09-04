@@ -279,6 +279,28 @@ class JobExecution(mb.SavannaBase):
     job_configs = sa.Column(st.JsonDictType())
 
 
+mains_association = sa.Table("mains_association",
+                             mb.SavannaBase.metadata,
+                             sa.Column("JobOrigin_id",
+                                       sa.String(36),
+                                       sa.ForeignKey("job_origins.id")),
+                             sa.Column("JobBinary_id",
+                                       sa.String(36),
+                                       sa.ForeignKey("job_binaries.id"))
+                             )
+
+
+libs_association = sa.Table("libs_association",
+                            mb.SavannaBase.metadata,
+                            sa.Column("JobOrigin_id",
+                                      sa.String(36),
+                                      sa.ForeignKey("job_origins.id")),
+                            sa.Column("JobBinary_id",
+                                      sa.String(36),
+                                      sa.ForeignKey("job_binaries.id"))
+                            )
+
+
 class JobOrigin(mb.SavannaBase):
     """JobOrigin - description and location of a job binary
     """
@@ -293,9 +315,35 @@ class JobOrigin(mb.SavannaBase):
     tenant_id = sa.Column(sa.String(36))
     name = sa.Column(sa.String(80), nullable=False)
     description = sa.Column(sa.Text())
-    storage_type = sa.Column(sa.String(16))
-    url = sa.Column(sa.String())
-    credentials = sa.Column(st.JsonDictType())
+
+    mains = relationship("JobBinary",
+                         secondary=mains_association, lazy="joined")
+
+    libs = relationship("JobBinary",
+                        secondary=libs_association, lazy="joined")
+
+    def to_dict(self):
+        d = super(JobOrigin, self).to_dict()
+        d['mains'] = [jb.to_dict() for jb in self.mains]
+        d['libs'] = [jb.to_dict() for jb in self.libs]
+        return d
+
+
+class JobBinaryInternal(mb.SavannaBase):
+    """JobBinaryInternal - raw binary storage for executable jobs
+    """
+    __tablename__ = 'job_binary_internal'
+
+    __table_args__ = (
+        sa.UniqueConstraint('name', 'tenant_id'),
+    )
+
+    id = _id_column()
+    tenant_id = sa.Column(sa.String(36))
+    name = sa.Column(sa.String(80), nullable=False)
+
+    data = sa.orm.deferred(sa.Column(sa.LargeBinary))
+    datasize = sa.Column(sa.BIGINT)
 
 
 class JobBinary(mb.SavannaBase):
@@ -311,5 +359,6 @@ class JobBinary(mb.SavannaBase):
     id = _id_column()
     tenant_id = sa.Column(sa.String(36))
     name = sa.Column(sa.String(80), nullable=False)
-    data = sa.orm.deferred(sa.Column(sa.LargeBinary))
-    datasize = sa.Column(sa.BIGINT)
+    description = sa.Column(sa.Text())
+    url = sa.Column(sa.String(), nullable=False)
+    extra = sa.Column(st.JsonDictType())

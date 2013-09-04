@@ -27,6 +27,9 @@ from savanna.service.edp import oozie as o
 from savanna.service.edp.workflow_creator import hive_workflow as hive_flow
 from savanna.service.edp.workflow_creator import mapreduce_workflow as mr_flow
 from savanna.service.edp.workflow_creator import pig_workflow as pig_flow
+
+from savanna.service.edp.binary_retrievers import dispatch
+
 from savanna.utils import remote
 from savanna.utils import xmlutils as x
 
@@ -41,10 +44,6 @@ CONF = cfg.CONF
 CONF.register_opts(opts)
 
 conductor = c.API
-
-main_res_names = {'Pig': 'script.pig',
-                  'Jar': 'main.jar',
-                  'Hive': 'script.q'}
 
 
 def get_job_status(job_execution_id):
@@ -92,13 +91,13 @@ def run_job(ctx, job_execution):
     validate(input_source, output_source, job)
 
     wf_dir = create_workflow_dir(u.get_jobtracker(cluster), job)
-    upload_job_file(u.get_jobtracker(cluster), wf_dir, job_origin, job)
+    upload_job_files(u.get_jobtracker(cluster), wf_dir, job_origin)
 
     if job.type == 'Hive':
         upload_hive_site(cluster, wf_dir)
 
-    wf_xml = build_workflow_for_job(job.type, job_execution, input_source,
-                                    output_source)
+    wf_xml = build_workflow_for_job(job.type, job_execution, job_origin,
+                                    input_source, output_source)
     path_to_workflow = upload_workflow_file(u.get_jobtracker(cluster),
                                             wf_dir, wf_xml)
 
@@ -124,15 +123,22 @@ def run_job(ctx, job_execution):
     return job_execution
 
 
-def upload_job_file(where, job_dir, job_origin, job):
-    main_binary = conductor.job_binary_get_raw_data(context.ctx(),
-                                                    job_origin.url)
-    if job.type == 'Jar':
-        job_dir += '/lib'
-    with remote.get_remote(where) as r:
-        h.put_file_to_hdfs(r, main_binary, main_res_names[job.type], job_dir)
+def upload_job_files(where, job_dir, job_origin):
 
-    return "%s/%s" % (job_dir, main_res_names[job.type])
+    mains = job_origin.mains or []
+    libs = job_origin.libs or []
+    uploaded_paths = []
+
+    with remote.get_remote(where) as r:
+        for main in mains:
+            raw_data = dispatch.get_raw_binary(main)
+            h.put_file_to_hdfs(r, raw_data, main.name, job_dir)
+            uploaded_paths.append(job_dir + '/' + main.name)
+        for lib in libs:
+            raw_data = dispatch.get_raw_binary(lib)
+            h.put_file_to_hdfs(r, raw_data, lib.name, job_dir + "/lib")
+            uploaded_paths.append(job_dir + '/lib/' + lib.name)
+    return uploaded_paths
 
 
 def upload_workflow_file(where, job_dir, wf_xml):
@@ -159,8 +165,9 @@ def create_workflow_dir(where, job):
     return constructed_dir
 
 
-def build_workflow_for_job(job_type, job_execution, input_data, output_data):
-
+def build_workflow_for_job(job_type, job_execution, job_origin,
+                           input_data, output_data):
+    ctx = context.ctx()
     configs = {'fs.swift.service.savanna.username':
                input_data.credentials['user'],
                'fs.swift.service.savanna.password':
@@ -172,13 +179,17 @@ def build_workflow_for_job(job_type, job_execution, input_data, output_data):
 
     if job_type == 'Pig':
         creator = pig_flow.PigWorkflowCreator()
-        creator.build_workflow_xml(main_res_names['Pig'],
+        # In case of Pig there should be one element in mains
+        script = conductor.job_binary_get(ctx, job_origin.mains[0])
+        creator.build_workflow_xml(script["name"],
                                    configuration=configs,
                                    params={'INPUT': input_data.url,
                                            'OUTPUT': output_data.url})
     if job_type == 'Hive':
         creator = hive_flow.HiveWorkflowCreator()
-        creator.build_workflow_xml(main_res_names['Hive'],
+        # In case of Hive there should be one element in mains
+        script = conductor.job_binary_get(ctx, job_origin.mains[0])
+        creator.build_workflow_xml(script["name"],
                                    job_xml="hive-site.xml",
                                    configuration=configs,
                                    params={'INPUT': input_data.url,
