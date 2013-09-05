@@ -46,7 +46,7 @@ a cluster.
 
 Since Hadoop parameters vary depending on distribution and Hadoop version,
 templates are always plugin and Hadoop version specific. A template could not
-be used with plugun/Hadoop version different than ones it was created for.
+be used with plugin/Hadoop version different than ones it was created for.
 
 You may find the list of available plugins on that page: :doc:`plugins`
 
