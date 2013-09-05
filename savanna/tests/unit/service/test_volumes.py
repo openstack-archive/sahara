@@ -38,10 +38,11 @@ class TestAttachVolume(models_test_base.DbTestCase):
         self.assertRaises(ex.RemoteCommandException, volumes._mount_volume,
                           instance, '123', '456')
 
+    @mock.patch('savanna.conductor.manager.ConductorManager.cluster_get')
     @mock.patch('cinderclient.v1.volumes.Volume.delete')
     @mock.patch('cinderclient.v1.volumes.Volume.detach')
     @mock.patch('savanna.utils.openstack.cinder.get_volume')
-    def test_detach_volumes(self, p_get_volume, p_detach, p_delete):
+    def test_detach_volumes(self, p_get_volume, p_detach, p_delete, p_cond):
         instance = {'instance_id': '123454321',
                     'volumes': [123]}
 
@@ -53,7 +54,8 @@ class TestAttachVolume(models_test_base.DbTestCase):
         self.assertIsNone(
             volumes.detach_from_instances([ng.instances[0]]))
 
-        cluster = r.ClusterResource({'node_groups': [ng]})
+        cluster = r.ClusterResource({'id': '123', 'node_groups': [ng]})
+        p_cond.return_value = cluster
         p_delete.side_effect = RuntimeError
         self.assertRaises(RuntimeError, volumes.detach, cluster)
 
