@@ -14,12 +14,12 @@
 # limitations under the License.
 
 from savanna.openstack.common import log as logging
-from savanna.service import api as c_api
 from savanna.service.edp import api
 from savanna.service import validation as v
 from savanna.service.validations.edp import data_source as v_d_s
 from savanna.service.validations.edp import job as v_j
 from savanna.service.validations.edp import job_binary as v_j_b
+from savanna.service.validations.edp import job_executor as v_j_e
 from savanna.service.validations.edp import job_origin as v_j_o
 import savanna.utils.api as u
 
@@ -56,19 +56,17 @@ def job_delete(job_id):
     return u.render()
 
 
-#TODO(nprivalova): path will be updated and data will contain
-# params for the job. For this purpose we
-# need strong validation. Will be done in next commit
-@rest.post('/jobs/<job_id>/execute/from/<input_id>/to/<output_id>/on/'
-           '<cluster_id>')
+@rest.post('/jobs/<job_id>/execute')
 @v.check_exists(api.get_job, id='job_id')
-@v.check_exists(api.get_data_source, id='input_id')
-@v.check_exists(api.get_data_source, id='output_id')
-@v.check_exists(c_api.get_cluster, 'cluster_id')
-def job_execute(job_id, input_id, output_id, cluster_id, data):
-    job_execution = api.execute_job(job_id, input_id, output_id,
-                                    cluster_id, data)
-    return u.render(job_execution.to_wrapped_dict())
+@v.validate(v_j_e.JOB_EXEC_SCHEMA, v_j_e.check_job_executor)
+def job_execute(job_id, data):
+    input = data['input_id']
+    output = data['output_id']
+    cluster = data['cluster_id']
+    configs = data.get('job_configs', {})
+    return u.render(job_execution=api.execute_job(job_id, input,
+                                                  output, cluster,
+                                                  configs).to_dict())
 
 
 @rest.get('/job-executions')

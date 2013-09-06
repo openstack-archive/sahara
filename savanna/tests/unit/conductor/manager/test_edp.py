@@ -40,6 +40,19 @@ SAMPLE_JOB = {
     "output_type": "swift"
 }
 
+SAMPLE_CONFIGURED_JOB = {
+    "tenant_id": "test_tenant",
+    "name": "ngt_test",
+    "description": "test_desc",
+    "type": "db",
+    "input_type": "swift",
+    "output_type": "swift",
+    "job_configs": {
+        "conf1": "value_j",
+        "conf2": "value_j"
+    }
+}
+
 SAMPLE_JOB_ORIGIN = {
     "tenant_id": "test_tenant",
     "name": "job_origin_test",
@@ -61,6 +74,20 @@ SAMPLE_JOB_EXECUTION = {
     "output_id": "undefined",
     "start_time": datetime.datetime.now(),
     "cluster_id": None
+}
+
+SAMPLE_CONF_JOB_EXECUTION = {
+    "tenant_id": "tenant_id",
+    "progress": "0.1",
+    "return_code": "1",
+    "job_id": "undefined",
+    "input_id": "undefined",
+    "output_id": "undefined",
+    "cluster_id": None,
+    "job_configs": {
+        "conf2": "value_je",
+        "conf3": "value_je"
+    }
 }
 
 BINARY_DATA = "vU}\x97\x1c\xdf\xa686\x08\xf2\tf\x0b\xb1}"
@@ -203,6 +230,31 @@ class JobExecutionTest(test_base.ConductorManagerTestCase):
 
         lst = self.api.job_execution_get_all(ctx)
         self.assertEqual(len(lst), 0)
+
+    def test_crud_operation_on_configured_jobs(self):
+        ctx = context.ctx()
+        job = self.api.job_create(ctx, SAMPLE_CONFIGURED_JOB)
+        ds_input = self.api.data_source_create(ctx, SAMPLE_DATA_SOURCE)
+        SAMPLE_DATA_OUTPUT = copy.copy(SAMPLE_DATA_SOURCE)
+        SAMPLE_DATA_OUTPUT['name'] = 'output'
+        ds_output = self.api.data_source_create(ctx, SAMPLE_DATA_OUTPUT)
+
+        SAMPLE_CONF_JOB_EXECUTION['job_id'] = job['id']
+        SAMPLE_CONF_JOB_EXECUTION['input_id'] = ds_input['id']
+        SAMPLE_CONF_JOB_EXECUTION['output_id'] = ds_output['id']
+
+        self.api.job_execution_create(ctx, SAMPLE_CONF_JOB_EXECUTION)
+
+        lst = self.api.job_execution_get_all(ctx)
+        self.assertEqual(len(lst), 1)
+
+        job_ex = lst[0]
+        configs = {
+            'conf1': 'value_j',
+            'conf2': 'value_je',
+            'conf3': 'value_je'
+        }
+        self.assertEqual(configs, job_ex['job_configs'])
 
 
 class JobOriginTest(test_base.ConductorManagerTestCase):

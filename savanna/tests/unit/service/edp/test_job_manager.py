@@ -90,10 +90,13 @@ class TestJobManager(models_test_base.DbTestCase):
 
     def test_build_workflow_for_job_pig(self):
 
+        job = _create_all_stack('Pig')[0]
+        job_exec = _create_job_exec(job.id)
+
         input_data = _create_data_source('swift://ex.savanna/i')
         output_data = _create_data_source('swift://ex.savanna/o')
 
-        res = job_manager.build_workflow_for_job('Pig', input_data,
+        res = job_manager.build_workflow_for_job('Pig', job_exec, input_data,
                                                  output_data)
 
         self.assertIn("""
@@ -114,12 +117,14 @@ class TestJobManager(models_test_base.DbTestCase):
 
     def test_build_workflow_for_job_jar(self):
 
+        job = _create_all_stack('Jar')[0]
+        job_exec = _create_job_exec(job.id)
+
         input_data = _create_data_source('swift://ex.savanna/i')
         output_data = _create_data_source('swift://ex.savanna/o')
 
-        res = job_manager.build_workflow_for_job('Jar', input_data,
+        res = job_manager.build_workflow_for_job('Jar', job_exec, input_data,
                                                  output_data)
-
         self.assertIn("""
       <configuration>
         <property>
@@ -142,15 +147,17 @@ class TestJobManager(models_test_base.DbTestCase):
 
     def test_build_workflow_for_job_hive(self):
 
+        job = _create_all_stack('Hive')[0]
+        job_exec = _create_job_exec(job.id)
+
         input_data = _create_data_source('swift://ex.savanna/i')
         output_data = _create_data_source('swift://ex.savanna/o')
-        data = {'job_xml': '[hive-site.xml]'}
 
-        res = job_manager.build_workflow_for_job('Hive', input_data,
-                                                 output_data, data)
+        res = job_manager.build_workflow_for_job('Hive', job_exec, input_data,
+                                                 output_data)
 
         self.assertIn("""
-      <job-xml>[hive-site.xml]</job-xml>
+      <job-xml>hive-site.xml</job-xml>
       <configuration>
         <property>
           <name>fs.swift.service.savanna.password</name>
@@ -165,12 +172,31 @@ class TestJobManager(models_test_base.DbTestCase):
       <param>INPUT=swift://ex.savanna/i</param>
       <param>OUTPUT=swift://ex.savanna/o</param>""", res)
 
+    def test_build_workflow_for_job_jar_with_conf(self):
+        job = _create_all_stack('Jar')[0]
 
-def _create_all_stack(type):
+        input_data = _create_data_source('swift://ex.savanna/i')
+        output_data = _create_data_source('swift://ex.savanna/o')
+
+        job_exec = _create_job_exec(job.id, configs={'c': 'f'})
+        res = job_manager.build_workflow_for_job('Jar', job_exec, input_data,
+                                                 output_data)
+        self.assertIn("""
+        <property>
+          <name>c</name>
+          <value>f</value>
+        </property>
+        <property>
+          <name>mapred.input.dir</name>
+          <value>swift://ex.savanna/i</value>
+        </property>""", res)
+
+
+def _create_all_stack(type, configs=None):
     b = _create_job_binary('1')
     o = _create_job_origin('2', b.id)
     j = _create_job('3', o.id, type)
-
+    j.configs = configs
     return j, o
 
 
@@ -202,3 +228,10 @@ def _create_data_source(url):
     data_source.credentials = {'user': 'admin',
                                'password': 'admin1'}
     return data_source
+
+
+def _create_job_exec(job_id, configs=None):
+    j_exec = mock.Mock()
+    j_exec.job_id = job_id
+    j_exec.job_configs = configs
+    return j_exec

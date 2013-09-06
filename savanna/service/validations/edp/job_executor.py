@@ -13,47 +13,38 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import savanna.service.validations.base as main_base
 import savanna.service.validations.edp.base as b
 
-JOB_SCHEMA = {
+JOB_EXEC_SCHEMA = {
     "type": "object",
     "properties": {
-        "name": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 50
-        },
-        "description": {
-            "type": "string"
-        },
-        "type": {
-            "type": "string",
-            "enum": [
-                "Pig",
-                "Hive",
-                "Oozie",
-                "Jar",
-                "StreamingAPI"
-            ],
-        },
-        "job_origin_id": {
+        "input_id": {
             "type": "string",
             "format": "uuid",
         },
-        "input_type": b.data_source_type,
-        "output_type": b.data_source_type,
+        "output_id": {
+            "type": "string",
+            "format": "uuid",
+        },
+        "cluster_id": {
+            "type": "string",
+            "format": "uuid",
+        },
         "job_configs": {
             "type": "simple_config",
         }
     },
     "additionalProperties": False,
     "required": [
-        "name",
-        "type",
-        "job_origin_id"
+        "input_id",
+        "output_id",
+        "cluster_id",
     ]
 }
 
 
-def check_job_create(data, **kwargs):
-    b.check_job_unique_name(data['name'])
+def check_job_executor(data, **kwargs):
+    b.check_data_source_exists(data['input_id'])
+    b.check_data_source_exists(data['output_id'])
+    main_base.check_cluster_exists(data['cluster_id'])

@@ -96,7 +96,7 @@ def run_job(ctx, job_execution):
     if job.type == 'Hive':
         upload_hive_site(cluster, wf_dir)
 
-    wf_xml = build_workflow_for_job(job.type, input_source,
+    wf_xml = build_workflow_for_job(job.type, job_execution, input_source,
                                     output_source)
     path_to_workflow = upload_workflow_file(u.get_jobtracker(cluster),
                                             wf_dir, wf_xml)
@@ -157,12 +157,16 @@ def create_workflow_dir(where, job):
     return constructed_dir
 
 
-def build_workflow_for_job(job_type, input_data, output_data, data=None):
+def build_workflow_for_job(job_type, job_execution, input_data, output_data):
 
     configs = {'fs.swift.service.savanna.username':
                input_data.credentials['user'],
                'fs.swift.service.savanna.password':
                input_data.credentials['password']}
+
+    j_e_conf = job_execution.job_configs
+    if j_e_conf:
+        configs.update(j_e_conf)
 
     if job_type == 'Pig':
         creator = pig_flow.PigWorkflowCreator()
@@ -173,16 +177,13 @@ def build_workflow_for_job(job_type, input_data, output_data, data=None):
     if job_type == 'Hive':
         creator = hive_flow.HiveWorkflowCreator()
         creator.build_workflow_xml(main_res_names['Hive'],
-                                   job_xml=data['job_xml'],
+                                   job_xml="hive-site.xml",
                                    configuration=configs,
                                    params={'INPUT': input_data.url,
                                            'OUTPUT': output_data.url})
 
     if job_type == 'Jar':
         creator = mr_flow.MapReduceWorkFlowCreator()
-        if data and data.get('configs'):
-            for k, v in data['configs'].items():
-                configs[k] = v
         configs['mapred.input.dir'] = input_data.url
         configs['mapred.output.dir'] = output_data.url
         creator.build_workflow_xml(configuration=configs)

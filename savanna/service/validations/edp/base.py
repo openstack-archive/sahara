@@ -66,6 +66,12 @@ def check_data_source_unique_name(name):
                                             "already exists" % name)
 
 
+def check_data_source_exists(data_source_id):
+    if not api.get_data_source(data_source_id):
+        raise ex.InvalidException("DataSource with id '%s'"
+                                  " doesn't exist" % data_source_id)
+
+
 def check_job_unique_name(name):
     if name in [j.name for j in api.get_jobs()]:
         raise ex.NameAlreadyExistsException("Job with name '%s' "

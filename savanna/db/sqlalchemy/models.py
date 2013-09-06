@@ -252,6 +252,7 @@ class Job(mb.SavannaBase):
                               sa.ForeignKey('job_origins.id'))
     input_type = sa.Column(sa.String(80), nullable=False)
     output_type = sa.Column(sa.String(80), nullable=False)
+    job_configs = sa.Column(st.JsonDictType())
 
 
 class JobExecution(mb.SavannaBase):
@@ -275,6 +276,7 @@ class JobExecution(mb.SavannaBase):
     progress = sa.Column(sa.Float)
     oozie_job_id = sa.Column(sa.String(100))
     return_code = sa.Column(sa.String(80))
+    job_configs = sa.Column(st.JsonDictType())
 
 
 class JobOrigin(mb.SavannaBase):

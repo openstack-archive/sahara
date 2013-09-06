@@ -151,6 +151,12 @@ def check_cluster_unique_name(name):
                                             " exists" % name)
 
 
+def check_cluster_exists(id):
+    if not api.get_cluster(id):
+        raise ex.InvalidException("Cluster with id '%s'"
+                                  " doesn't exist" % id)
+
+
 def check_keypair_exists(keypair):
     try:
         nova.client().keypairs.get(keypair)

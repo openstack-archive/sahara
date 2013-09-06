@@ -300,7 +300,13 @@ class ConductorManager(db_base.Base):
 
     def job_execution_create(self, context, values):
         """Create a JobExecution from the values dictionary."""
+        values = copy.deepcopy(values)
         values['tenant_id'] = context.tenant_id
+        job = self.job_get(context, values['job_id'])
+        configs = job['job_configs']
+        if configs:
+            configs.update(values.get('job_configs', {}))
+            values['job_configs'] = configs
         return self.db.job_execution_create(context, values)
 
     def job_execution_update(self, context, job_execution, values):
