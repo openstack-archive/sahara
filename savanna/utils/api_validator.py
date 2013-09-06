@@ -44,7 +44,7 @@ def validate_uuid_format(entry):
 
 @jsonschema.FormatChecker.cls_checks('posix_path')
 def validate_posix_path(entry):
-    res = re.match("^(/([A-Z]|[a-z]|[0-9]|\-|_)+)*$", entry)
+    res = re.match("^(/([A-Z]|[a-z]|[0-9]|\-|_)+)+$", entry)
     return res is not None
 
 

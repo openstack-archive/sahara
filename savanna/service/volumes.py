@@ -129,6 +129,8 @@ def _mount_volume(instance, device_path, mount_point):
 
 
 def detach(cluster):
+    ctx = context.ctx()
+    cluster = conductor.cluster_get(ctx, cluster)
     for node_group in cluster.node_groups:
         detach_from_instances(node_group.instances)
 

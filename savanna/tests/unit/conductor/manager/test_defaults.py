@@ -66,7 +66,7 @@ class DefaultsTest(test_base.ConductorManagerTestCase):
                                node_configs={},
                                volumes_per_node=0,
                                volumes_size=0,
-                               volume_mount_prefix="")
+                               volume_mount_prefix="/volumes/disk")
 
     def test_instance_defaults(self):
         ctx = context.ctx()
