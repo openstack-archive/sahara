@@ -15,6 +15,7 @@
 
 from savanna.openstack.common import log as logging
 from savanna.plugins import provisioning as p
+from savanna.plugins.vanilla import mysql_helper as m_h
 from savanna.plugins.vanilla import oozie_helper as o_h
 from savanna.swift import swift_helper as swift
 from savanna.utils import xmlutils as x
@@ -139,7 +140,7 @@ def get_plugin_configs():
     return PLUGIN_CONFIGS
 
 
-def set_general_configs():
+def set_general_configs(hive_hostname):
     GENERAL_CONFS.update({
         ENABLE_SWIFT.name: {
             'default_value': ENABLE_SWIFT.default_value,
@@ -147,7 +148,7 @@ def set_general_configs():
         },
         ENABLE_MYSQL.name: {
             'default_value': ENABLE_MYSQL.default_value,
-            'conf': o_h.get_oozie_mysql_configs()
+            'conf': m_h.get_required_mysql_configs(hive_hostname)
         }
     })
 
@@ -169,7 +170,7 @@ def generate_cfg_from_general(cfg, configs, general_config,
 
 def generate_xml_configs(configs, storage_path, nn_hostname,
                          jt_hostname, oozie_hostname, hive_hostname):
-    set_general_configs()
+    set_general_configs(hive_hostname)
     # inserting common configs depends on provisioned VMs and HDFS placement
     # TODO(aignatov): should be moved to cluster context
     cfg = {
