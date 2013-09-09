@@ -230,6 +230,21 @@ class AmbariPluginTest(unittest2.TestCase):
 
         self.assertEqual('8080', ambari_info.port)
 
+    def test_update_ambari_info_credentials(self):
+        plugin = ap.AmbariPlugin()
+
+        cluster_config_file = pkg.resource_string(
+            version.version_info.package,
+            'plugins/hdp/resources/default-cluster.template')
+        cluster_spec = cs.ClusterSpec(cluster_config_file)
+
+        ambari_info = ap.AmbariInfo(TestHost('111.11.1111'),
+                                    '8080', 'admin', 'old-pwd')
+        plugin._update_ambari_info_credentials(cluster_spec, ambari_info)
+
+        self.assertEqual('admin', ambari_info.user)
+        self.assertEqual('admin', ambari_info.password)
+
     def _get_test_request(self):
         request = TestRequest()
         self.requests.append(request)

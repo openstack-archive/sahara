@@ -590,6 +590,20 @@ class AmbariPlugin(p.ProvisioningPluginBase):
                     self._delete_ambari_user('admin', ambari_info)
                 break
 
+    def _update_ambari_info_credentials(self, cluster_spec, ambari_info):
+        services = cluster_spec.services
+        ambari_service = next((service for service in services if
+                               service.name == 'AMBARI'), None)
+        if ambari_service is not None:
+            admin_user = next((user for user in ambari_service.users
+                              if 'admin' in user.groups), None)
+            if admin_user is not None:
+                ambari_info.user = admin_user.name
+                ambari_info.password = admin_user.password
+
+        LOG.info('Using "{0}" as admin user for scaling of cluster'
+                 .format(ambari_info.user))
+
     def _update_ambari_admin_user(self, password, ambari_info):
         old_pwd = ambari_info.password
         user_url = 'http://{0}/api/v1/users/admin'.format(
@@ -712,6 +726,7 @@ class AmbariPlugin(p.ProvisioningPluginBase):
 
         ambari_info = self.get_ambari_info(cluster_spec,
                                            self._get_servers(cluster))
+        self._update_ambari_info_credentials(cluster_spec, ambari_info)
 
         for server in servers:
             self._spawn('Ambari provisioning thread',
