@@ -89,6 +89,18 @@ class ClusterSpecTest(unittest2.TestCase):
         self.assertIn('ambari_machine', cluster_config.str,
                       'Ambari host not found')
 
+    def test_ambari_rpm_path(self):
+        cluster_config_file = pkg.resource_string(
+            version.version_info.package,
+            'plugins/hdp/resources/default-cluster.template')
+        cluster_spec = cs.ClusterSpec(cluster_config_file)
+
+        ambari_config = cluster_spec.configurations['ambari']
+        rpm = ambari_config.get('rpm', None)
+        self.assertEqual('http://s3.amazonaws.com/'
+                         'public-repo-1.hortonworks.com/ambari/centos6/'
+                         '1.x/updates/1.2.5.17/ambari.repo', rpm)
+
     def test_parse_default(self):
         cluster_config_file = pkg.resource_string(
             version.version_info.package,

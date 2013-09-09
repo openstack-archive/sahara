@@ -17,10 +17,8 @@ import re
 from savanna.openstack.common import log as logging
 from savanna.utils import remote
 
-AMBARI_RPM = 'http://s3.amazonaws.com/' \
-             'dev.hortonworks.com/AMBARI.b6-1.x/' \
-             'repos/centos6/AMBARI.b6-1.x-1.el6.' \
-             'noarch.rpm'
+AMBARI_RPM = 'http://s3.amazonaws.com/public-repo-1.hortonworks.com/' \
+             'ambari/centos6/1.x/updates/1.2.5.17/ambari.repo'
 
 LOG = logging.getLogger(__name__)
 
@@ -52,7 +50,8 @@ class HadoopServer:
             "{0}: Installing rpm's ...".format(self.instance.hostname))
 
         #TODO(jspeidel): based on image type, use correct command
-        rpm_cmd = 'rpm -Uvh ' + self.ambari_rpm
+        rpm_cmd = 'wget -nv %s -O  /etc/yum.repos.d/ambari.repo' % \
+                  self.ambari_rpm
         self._execute_on_vm(rpm_cmd)
         self._execute_on_vm('yum -y install epel-release')
 
@@ -64,7 +63,7 @@ class HadoopServer:
         LOG.info('Running Ambari Server setup ...')
         self._execute_on_vm_interactive(
             'ambari-server setup', DefaultPromptMatcher(
-                "Ambari Server 'setup' finished successfully", LOG))
+                "Ambari Server 'setup' completed successfully", LOG))
 
         self._configure_ambari_server_api_port(port)
 
