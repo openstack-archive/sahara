@@ -47,13 +47,13 @@ class AmbariPlugin(p.ProvisioningPluginBase):
         hosts = self._get_servers(cluster)
         ambari_info = self.get_ambari_info(cluster_spec, hosts)
         self.cluster_ambari_mapping[cluster.name] = ambari_info
-        rpm = self._get_rpm_uri(cluster_spec)
+        ambari_uri = self._get_ambari_uri(cluster_spec)
 
         servers = []
         for host in hosts:
             servers.append(
                 h.HadoopServer(host, cluster_spec.node_groups[host.role],
-                               ambari_rpm=rpm))
+                               ambari_uri=ambari_uri))
 
         provisioned = self._provision_cluster(
             cluster.name, cluster_spec, ambari_info, servers)
@@ -668,7 +668,7 @@ class AmbariPlugin(p.ProvisioningPluginBase):
         processor = self._get_blueprint_processor(cluster)
         cluster_spec = clusterspec.ClusterSpec(
             json.dumps(processor.blueprint), cluster=cluster)
-        rpm = self._get_rpm_uri(cluster_spec)
+        ambari_uri = self._get_ambari_uri(cluster_spec)
         hosts = self._get_servers(cluster)
 
         servers = []
@@ -677,7 +677,7 @@ class AmbariPlugin(p.ProvisioningPluginBase):
             servers.append(h.HadoopServer(instance,
                                           cluster_spec.node_groups
                                           [host_role],
-                                          ambari_rpm=rpm))
+                                          ambari_uri=ambari_uri))
 
         ambari_info = self.get_ambari_info(cluster_spec, hosts)
 
@@ -713,9 +713,9 @@ class AmbariPlugin(p.ProvisioningPluginBase):
         host_list = [server.instance.fqdn.lower() for server in servers]
         return ",".join(host_list)
 
-    def _get_rpm_uri(self, cluster_spec):
+    def _get_ambari_uri(self, cluster_spec):
         ambari_config = cluster_spec.configurations['ambari']
-        return ambari_config.get('rpm', None)
+        return ambari_config.get('repo.uri', None)
 
     def get_ambari_info(self, cluster_spec, hosts):
         ambari_host = self._determine_host_for_server_component(
