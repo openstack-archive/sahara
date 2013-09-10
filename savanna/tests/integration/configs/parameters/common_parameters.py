@@ -23,14 +23,14 @@ def _get_conf(key, default):
     return getattr(_CONF, key) if _CONF and hasattr(_CONF, key) else default
 
 OS_USERNAME = _get_conf('OS_USERNAME', 'admin')
-OS_PASSWORD = _get_conf('OS_PASSWORD', 'password')
+OS_PASSWORD = _get_conf('OS_PASSWORD', 'admin')
 OS_TENANT_NAME = _get_conf('OS_TENANT_NAME', 'admin')
-OS_AUTH_URL = _get_conf('OS_AUTH_URL', 'http://192.168.1.1:35357/v2.0/')
+OS_AUTH_URL = _get_conf('OS_AUTH_URL', 'http://127.0.0.1:35357/v2.0/')
 
-SAVANNA_HOST = _get_conf('SAVANNA_HOST', '192.168.1.1')
+SAVANNA_HOST = _get_conf('SAVANNA_HOST', '127.0.0.1')
 SAVANNA_PORT = _get_conf('SAVANNA_PORT', '8386')
 
-FLAVOR_ID = _get_conf('FLAVOR_ID', '42')
+FLAVOR_ID = _get_conf('FLAVOR_ID', '2')
 
 TIMEOUT = _get_conf('TIMEOUT', 45)
 

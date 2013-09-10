@@ -3,7 +3,7 @@ OS_PASSWORD = 'password'  # password for nova
 OS_TENANT_NAME = 'admin'
 OS_AUTH_URL = 'http://192.168.1.1:35357/v2.0/'  # URL for keystone
 
-SAVANNA_HOST = '192.168.1.1'  # IP for Savanna API
+SAVANNA_HOST = '127.0.0.1'  # IP for Savanna API
 SAVANNA_PORT = '8386'  # port for Savanna API
 
 FLAVOR_ID = '42'
@@ -12,9 +12,9 @@ TIMEOUT = 15  # cluster creation timeout (in minutes)
 
 CLUSTER_NAME = 'cluster-name'
 
-USER_KEYPAIR_ID = 'key'  # ssh public key which Savanna transfers to nodes of cluster for access of users to virtual machines via key
+USER_KEYPAIR_ID = 'jsmit'  # ssh public key which Savanna transfers to nodes of cluster for access of users to virtual machines via key
 
-PATH_TO_SSH = '/home/user/.ssh/id_rsa'  # path to folder where locate id_rsa key which use for remote command execution
+PATH_TO_SSH = '/home/ubuntu/.ssh/id_rsa'  # path to folder where locate id_rsa key which use for remote command execution
 
 JT_PORT = 50030  # port for process 'jobtracker'
 NN_PORT = 50070  # port for process 'namenode'

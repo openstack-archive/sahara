@@ -2,7 +2,7 @@ PLUGIN_NAME = 'vanilla'
 
 IMAGE_ID = '42abc'  # ID for instance image
 
-NODE_USERNAME = 'username'  # username for master node
+NODE_USERNAME = 'ubuntu'  # username for master node
 
 HADOOP_VERSION = '1.1.2'
 HADOOP_USER = 'hadoop'

@@ -20,17 +20,17 @@ import savanna.tests.integration.configs.parameters.common_parameters as param
 import savanna.tests.integration.configs.parameters.vanilla_parameters as v_prm
 
 
-NAMENODE_CONFIG = {'Name Node Heap Size': 1234}
-DATANODE_CONFIG = {'Data Node Heap Size': 1456}
+NAMENODE_CONFIG = {'Name Node Heap Size': 510}
+JOBTRACKER_CONFIG = {'Job Tracker Heap Size': 512}
 
-JOBTRACKER_CONFIG = {'Job Tracker Heap Size': 1345}
-TASKTRACKER_CONFIG = {'Task Tracker Heap Size': 1567}
+DATANODE_CONFIG = {'Data Node Heap Size': 511}
+TASKTRACKER_CONFIG = {'Task Tracker Heap Size': 513}
 
 GENERAL_CONFIG = {'Enable Swift': True}
 
 CLUSTER_HDFS_CONFIG = {'dfs.replication': 2}
 CLUSTER_MAPREDUCE_CONFIG = {'mapred.map.tasks.speculative.execution': False,
-                            'mapred.child.java.opts': '-Xmx100m'}
+                            'mapred.child.java.opts': '-Xmx500m'}
 
 
 def _add_config(body, config_type, service, config):

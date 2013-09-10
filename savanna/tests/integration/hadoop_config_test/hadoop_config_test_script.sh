@@ -23,10 +23,10 @@ case $1 in
                 FUNC="dfs_replication"
         ;;
         mapred.map.tasks.speculative.execution)
-                FUNK="mapred_map_tasks_speculative_execution"
+                FUNC="mapred_map_tasks_speculative_execution"
         ;;
         mapred.child.java.opts)
-                FUNK="mapred_child_java_opts"
+                FUNC="mapred_child_java_opts"
         ;;
 esac
 
@@ -119,7 +119,7 @@ dfs_replication() {
 }
 
 mapred_map_tasks_speculative_execution() {
-    s=`cat /etc/hadoop/mapred-site.xml | grep -A 1 '.*mapred.map.tasks.speculative.execution.*' | tail -n 1 | grep -o "[a-z]\{4,5\}" | grep -v "value"`
+    s=`cat /etc/hadoop/mapred-site.xml | grep -A 1 '.*mapred.map.tasks.speculative.execution.*' | tail -n 1 | grep -o "[a-z,A-Z]\{4,5\}" | grep -v "value"`
     compare_and_exit "$s"
 }
 
