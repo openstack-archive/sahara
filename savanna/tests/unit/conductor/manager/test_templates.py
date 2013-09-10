@@ -15,6 +15,7 @@
 
 from savanna.conductor import manager
 from savanna import context
+from savanna import exceptions as ex
 import savanna.tests.unit.conductor.base as test_base
 
 
@@ -115,7 +116,7 @@ class NodeGroupTemplates(test_base.ConductorManagerTestCase):
 
         self.api.node_group_template_destroy(ctx, _id)
 
-        with self.assertRaises(RuntimeError):
+        with self.assertRaises(ex.NotFoundException):
             self.api.node_group_template_destroy(ctx, _id)
 
 
@@ -142,6 +143,9 @@ class ClusterTemplates(test_base.ConductorManagerTestCase):
 
         lst = self.api.cluster_template_get_all(ctx)
         self.assertEqual(len(lst), 0)
+
+        with self.assertRaises(ex.NotFoundException):
+            self.api.cluster_template_destroy(ctx, clt_id)
 
     def test_duplicate_clt_create(self):
         ctx = context.ctx()
@@ -185,5 +189,5 @@ class ClusterTemplates(test_base.ConductorManagerTestCase):
 
         self.api.cluster_template_destroy(ctx, _id)
 
-        with self.assertRaises(RuntimeError):
+        with self.assertRaises(ex.NotFoundException):
             self.api.cluster_template_destroy(ctx, _id)

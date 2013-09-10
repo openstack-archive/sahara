@@ -20,6 +20,7 @@ import sys
 import sqlalchemy as sa
 
 from savanna.db.sqlalchemy import models as m
+from savanna import exceptions as ex
 from savanna.openstack.common.db import exception as db_exc
 from savanna.openstack.common.db.sqlalchemy import session as db_session
 from savanna.openstack.common import log as logging
@@ -171,6 +172,9 @@ def cluster_update(context, cluster_id, values):
 
     with session.begin():
         cluster = _cluster_get(context, session, cluster_id)
+        if cluster is None:
+            raise ex.NotFoundException(cluster_id,
+                                       "Cluster id '%s' not found!")
         cluster.update(values)
         cluster.save(session=session)
 
@@ -183,8 +187,8 @@ def cluster_destroy(context, cluster_id):
         cluster = _cluster_get(context, session, cluster_id)
 
         if not cluster:
-            # raise not found error
-            raise RuntimeError("Cluster not found!")
+            raise ex.NotFoundException(cluster_id,
+                                       "Cluster id '%s' not found!")
 
         session.delete(cluster)
 
@@ -222,8 +226,8 @@ def node_group_remove(context, node_group_id):
         node_group = _node_group_get(context, session, node_group_id)
 
         if not node_group:
-            # raise not found error
-            raise RuntimeError("Node Group not found!")
+            raise ex.NotFoundException(node_group_id,
+                                       "Node Group id '%s' not found!")
 
         session.delete(node_group)
 
@@ -265,8 +269,8 @@ def instance_remove(context, instance_id):
         instance = _instance_get(context, session, instance_id)
 
         if not instance:
-            # raise not found error
-            raise RuntimeError("Instance not found!")
+            raise ex.NotFoundException(instance_id,
+                                       "Instance id '%s' not found!")
 
         session.delete(instance)
 
@@ -340,8 +344,8 @@ def cluster_template_destroy(context, cluster_template_id):
                                                  cluster_template_id)
 
         if not cluster_template:
-            # raise not found error
-            raise RuntimeError("Cluster Template not found!")
+            raise ex.NotFoundException(cluster_template_id,
+                                       "Cluster Template id '%s' not found!")
 
         session.delete(cluster_template)
 
@@ -383,8 +387,9 @@ def node_group_template_destroy(context, node_group_template_id):
                                                        node_group_template_id)
 
         if not node_group_template:
-            # raise not found error
-            raise RuntimeError("Node Group Template not found!")
+            raise ex.NotFoundException(
+                node_group_template_id,
+                "Node Group Template id '%s' not found!")
 
         session.delete(node_group_template)
 
@@ -424,8 +429,8 @@ def data_source_destroy(context, data_source_id):
         data_source = _data_source_get(context, session, data_source_id)
 
         if not data_source:
-            # raise not found error
-            raise RuntimeError("Data Source not found!")
+            raise ex.NotFoundException(data_source_id,
+                                       "Data Source id '%s' not found!")
 
         session.delete(data_source)
 
@@ -465,8 +470,7 @@ def job_destroy(context, job_id):
         job = _job_get(context, session, job_id)
 
         if not job:
-            # raise not found error
-            raise RuntimeError("Job not found!")
+            raise ex.NotFoundException(job_id, "Job id '%s' not found!")
 
         session.delete(job)
 
@@ -513,8 +517,8 @@ def job_execution_update(context, job_execution, values):
     with session.begin():
         job_ex = _job_execution_get(context, job_execution)
         if not job_ex:
-            # raise not found error
-            raise RuntimeError("JobExecution not found!")
+            raise ex.NotFoundException(job_execution,
+                                       "JobExecution id '%s' not found!")
         job_ex.update(values)
         job_ex.save(session=session)
 
@@ -527,8 +531,8 @@ def job_execution_destroy(context, job_execution_id):
         job_ex = _job_execution_get(context, job_execution_id)
 
         if not job_ex:
-            # raise not found error
-            raise RuntimeError("JobExecution not found!")
+            raise ex.NotFoundException(job_execution_id,
+                                       "JobExecution id '%s' not found!")
 
         session.delete(job_ex)
 
@@ -568,8 +572,8 @@ def job_origin_update(context, job_origin, values):
     with session.begin():
         job_origin = _job_origin_get(context, session, job_origin)
         if not job_origin:
-            # raise not found error
-            raise RuntimeError("JobOrigin not found!")
+            raise ex.NotFoundException(job_origin,
+                                       "JobOrigin id '%s' not found!")
         job_origin.update(values)
         job_origin.save()
     return _job_origin_get(context, session, job_origin)
@@ -581,8 +585,8 @@ def job_origin_destroy(context, job_origin_id):
         job_origin = _job_origin_get(context, session, job_origin_id)
 
         if not job_origin:
-            # raise not found error
-            raise RuntimeError("JobOrigin not found!")
+            raise ex.NotFoundException(job_origin_id,
+                                       "JobOrigin id '%s' not found!")
 
         session.delete(job_origin)
 
@@ -641,7 +645,7 @@ def job_binary_destroy(context, job_binary_id):
                                  context).filter_by(id=job_binary_id).first()
 
         if not job_binary:
-            # raise not found error
-            raise RuntimeError("JobBinary not found!")
+            raise ex.NotFoundException(job_binary_id,
+                                       "JobBinary id '%s' not found!")
 
         session.delete(job_binary)

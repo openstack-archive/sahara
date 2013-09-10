@@ -17,6 +17,7 @@ import copy
 import datetime
 
 from savanna import context
+from savanna import exceptions as ex
 import savanna.tests.unit.conductor.base as test_base
 
 SAMPLE_DATA_SOURCE = {
@@ -145,7 +146,7 @@ class DataSourceTest(test_base.ConductorManagerTestCase):
 
         self.api.data_source_destroy(ctx, _id)
 
-        with self.assertRaises(RuntimeError):
+        with self.assertRaises(ex.NotFoundException):
             self.api.data_source_destroy(ctx, _id)
 
 
@@ -195,7 +196,7 @@ class JobTest(test_base.ConductorManagerTestCase):
 
         self.api.job_destroy(ctx, _id)
 
-        with self.assertRaises(RuntimeError):
+        with self.assertRaises(ex.NotFoundException):
             self.api.job_destroy(ctx, _id)
 
 
@@ -227,6 +228,12 @@ class JobExecutionTest(test_base.ConductorManagerTestCase):
                          SAMPLE_JOB_EXECUTION['start_time'])
 
         self.api.job_execution_destroy(ctx, job_ex_id)
+
+        with self.assertRaises(ex.NotFoundException):
+            self.api.job_execution_update(ctx, job_ex_id, {'progress': '0.2'})
+
+        with self.assertRaises(ex.NotFoundException):
+            self.api.job_execution_destroy(ctx, job_ex_id)
 
         lst = self.api.job_execution_get_all(ctx)
         self.assertEqual(len(lst), 0)
@@ -278,6 +285,9 @@ class JobOriginTest(test_base.ConductorManagerTestCase):
         lst = self.api.job_origin_get_all(ctx)
         self.assertEqual(len(lst), 0)
 
+        with self.assertRaises(ex.NotFoundException):
+            self.api.job_origin_destroy(ctx, jo)
+
 
 class JobBinaryTest(test_base.ConductorManagerTestCase):
     def __init__(self, *args, **kwargs):
@@ -294,10 +304,14 @@ class JobBinaryTest(test_base.ConductorManagerTestCase):
         lst = self.api.job_binary_get_all(ctx)
         self.assertEqual(len(lst), 1)
 
-        self.api.job_binary_destroy(ctx, lst[0]['id'])
+        job_binary_id = lst[0]['id']
+        self.api.job_binary_destroy(ctx, job_binary_id)
 
         lst = self.api.job_binary_get_all(ctx)
         self.assertEqual(len(lst), 0)
+
+        with self.assertRaises(ex.NotFoundException):
+            self.api.job_binary_destroy(ctx, job_binary_id)
 
     def test_duplicate_job_binary_create(self):
         ctx = context.ctx()
