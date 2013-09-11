@@ -24,10 +24,19 @@ from savanna.tests.unit import base as models_test_base
 
 
 class TestAttachVolume(models_test_base.DbTestCase):
+    @mock.patch('savanna.utils.remote.BulkInstanceInteropHelper.close')
+    @mock.patch('savanna.utils.remote.InstanceInteropHelper._get_conn_params')
+    @mock.patch('savanna.utils.procutils.start_subprocess')
+    @mock.patch('savanna.utils.procutils.run_in_subprocess')
+    @mock.patch('savanna.utils.openstack.nova.get_node_group_image_username')
     @mock.patch(
         'savanna.utils.remote.BulkInstanceInteropHelper.execute_command')
-    def test_mount_volume(self, p_ex_cmd):
-        instance = r.InstanceResource({'instance_id': '123454321'})
+    def test_mount_volume(self, p_ex_cmd, p_get_username,
+                          run_in_sub, start_sub, get_conn_params, p_close):
+        p_get_username.return_value = 'root'
+
+        instance = r.InstanceResource({'instance_id': '123454321',
+                                       'node_group': {}})
 
         p_ex_cmd.return_value = (0, None)
         self.assertIsNone(volumes._mount_volume(instance, '123', '456'))
@@ -59,9 +68,13 @@ class TestAttachVolume(models_test_base.DbTestCase):
         p_delete.side_effect = RuntimeError
         self.assertRaises(RuntimeError, volumes.detach, cluster)
 
+    @mock.patch('savanna.utils.openstack.nova.get_node_group_image_username')
     @mock.patch('savanna.utils.remote.InstanceInteropHelper.execute_command')
-    def test_get_free_device_path(self, p_ex_cmd):
-        instance = r.InstanceResource({'instance_id': '123454321'})
+    def test_get_free_device_path(self, p_ex_cmd, p_get_username):
+        p_get_username.return_value = 'root'
+
+        instance = r.InstanceResource({'instance_id': '123454321',
+                                       'node_group': {}})
 
         stdout = """major minor  #blocks  name
 

@@ -26,3 +26,15 @@ def get_node_processes(host):
         return host.node_processes
     else:
         return host.node_group.node_processes
+
+
+def inject_remote(param_name):
+    def handle(func):
+        def call(self, *args, **kwargs):
+            with self.instance.remote as r:
+                newkwargs = kwargs.copy()
+                newkwargs[param_name] = r
+                return func(self, *args, **newkwargs)
+
+        return call
+    return handle

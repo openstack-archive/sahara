@@ -15,7 +15,7 @@
 
 import re
 from savanna.openstack.common import log as logging
-from savanna.utils import remote
+from savanna.plugins.hdp import savannautils
 
 AMBARI_RPM = 'http://s3.amazonaws.com/public-repo-1.hortonworks.com/' \
              'ambari/centos6/1.x/updates/1.2.5.17/ambari.repo'
@@ -29,13 +29,7 @@ class HadoopServer:
     def __init__(self, instance, node_group, ambari_rpm=None):
         self.instance = instance
         self.node_group = node_group
-        self._ssh = self._connect_to_vm()
         self.ambari_rpm = ambari_rpm or AMBARI_RPM
-
-    def _connect_to_vm(self):
-        LOG.info(
-            'Connecting to VM: {0}'.format(self.instance.management_ip))
-        return remote.get_remote(self.instance).ssh_connection()
 
     def provision_ambari(self, ambari_info):
         self.install_rpms()
@@ -45,32 +39,37 @@ class HadoopServer:
         if 'AMBARI_AGENT' in self.node_group.components:
             self._setup_and_start_ambari_agent(ambari_info.host.internal_ip)
 
-    def install_rpms(self):
+    @savannautils.inject_remote('r')
+    def install_rpms(self, r):
         LOG.info(
             "{0}: Installing rpm's ...".format(self.instance.hostname))
 
         #TODO(jspeidel): based on image type, use correct command
         rpm_cmd = 'wget -nv %s -O  /etc/yum.repos.d/ambari.repo' % \
                   self.ambari_rpm
-        self._execute_on_vm(rpm_cmd)
-        self._execute_on_vm('yum -y install epel-release')
+        r.execute_command(rpm_cmd)
+        r.execute_command('yum -y install epel-release')
 
-    def _setup_and_start_ambari_server(self, port):
+    @savannautils.inject_remote('r')
+    def _setup_and_start_ambari_server(self, port, r):
         LOG.info(
             '{0}: Installing ambari-server ...'.format(self.instance.hostname))
-        self._execute_on_vm('yum -y install ambari-server')
+        r.execute_command('yum -y install ambari-server')
 
         LOG.info('Running Ambari Server setup ...')
-        self._execute_on_vm_interactive(
+        r.execute_on_vm_interactive(
             'ambari-server setup', DefaultPromptMatcher(
-                "Ambari Server 'setup' completed successfully", LOG))
+                "Ambari Server 'setup' completed successfully"))
 
         self._configure_ambari_server_api_port(port)
 
         LOG.info('Starting Ambari ...')
-        self._execute_on_vm('ambari-server start')
+        # NOTE(dmitryme): Reading stdout from 'ambari-server start'
+        # hangs ssh. Redirecting output to /dev/null fixes that
+        r.execute_command('ambari-server start > /dev/null 2>&1')
 
-    def _configure_ambari_server_api_port(self, port):
+    @savannautils.inject_remote('r')
+    def _configure_ambari_server_api_port(self, port, r):
         # do nothing if port is not specified or is default
         if port is None or port == 8080:
             return
@@ -78,29 +77,31 @@ class HadoopServer:
         ambari_config_file = '/etc/ambari-server/conf/ambari.properties'
         LOG.debug('Configuring Ambari Server API port: {0}'.format(port))
         # read the current contents
-        data = remote.read_file_from(self._ssh.open_sftp(), ambari_config_file)
+        data = r.read_file_from(ambari_config_file)
         data = '{0}\nclient.api.port={1}\n'.format(data, port)
 
         # write the file back
-        remote.write_file_to(self._ssh.open_sftp(), ambari_config_file, data)
+        r.write_file_to(ambari_config_file, data)
 
-    def _setup_and_start_ambari_agent(self, ambari_server_ip):
+    @savannautils.inject_remote('r')
+    def _setup_and_start_ambari_agent(self, ambari_server_ip, r):
         LOG.info(
             '{0}: Installing Ambari Agent ...'.format(self.instance.hostname))
 
-        self._execute_on_vm('yum -y install ambari-agent')
+        r.execute_command('yum -y install ambari-agent')
         LOG.debug(
             '{0}: setting master-ip: {1} in ambari-agent.ini'.format(
                 self.instance.hostname, ambari_server_ip))
-        self._replace_str_in_remote_file(
+        r.replace_remote_string(
             '/etc/ambari-agent/conf/ambari-agent.ini', 'localhost',
             ambari_server_ip)
 
         LOG.info(
             '{0}: Starting Ambari Agent ...'.format(self.instance.hostname))
-        self._execute_on_vm('ambari-agent start')
+        r.execute_command('ambari-agent start')
 
-    def _configure_ganglia(self, ganglia_server_ip):
+    @savannautils.inject_remote('r')
+    def _configure_ganglia(self, ganglia_server_ip, r):
         #TODO(John): the set of files to update is now dependent on which
         # components are deployed on a host
         #TODO(jspeidel): so we these calls should be based on configuration
@@ -112,42 +113,42 @@ class HadoopServer:
         #TODO(jspeidel): set MASTER_SLAVE for master where only one node is
         # deployed
         if self._is_ganglia_slave() or self._is_ganglia_master():
-            self._replace_str_in_remote_file(
+            r.replace_remote_string(
                 '/etc/ganglia/hdp/HDPSlaves/conf.d/gmond.slave.conf',
                 'host = {0}'.format(self.instance.hostname),
                 'host = {0}'.format(ganglia_server_ip))
-            self._replace_str_in_remote_file(
+            r.replace_remote_string(
                 '/etc/ganglia/hdp/HDPJobTracker/conf.d/gmond.slave.conf',
                 'host = {0}'.format(self.instance.hostname),
                 'host = {0}'.format(ganglia_server_ip))
-            self._replace_str_in_remote_file(
+            r.replace_remote_string(
                 '/etc/ganglia/hdp/HDPNameNode/conf.d/gmond.slave.conf',
                 'host = {0}'.format(self.instance.hostname),
                 'host = {0}'.format(ganglia_server_ip))
-            self._replace_str_in_remote_file(
+            r.replace_remote_string(
                 '/etc/ganglia/hdp/HDPHBaseMaster/conf.d/gmond.slave.conf',
                 'host = {0}'.format(self.instance.hostname),
                 'host = {0}'.format(ganglia_server_ip))
 
         #master config
         if self._is_ganglia_master():
-            self._replace_str_in_remote_file(
+            r.replace_remote_string(
                 '/etc/ganglia/hdp/HDPSlaves/conf.d/gmond.master.conf',
                 'bind = {0}'.format(self.instance.hostname), '')
-            self._replace_str_in_remote_file(
+            r.replace_remote_string(
                 '/etc/ganglia/hdp/HDPJobTracker/conf.d/gmond.master.conf',
                 'bind = {0}'.format(self.instance.hostname), '')
-            self._replace_str_in_remote_file(
+            r.replace_remote_string(
                 '/etc/ganglia/hdp/HDPNameNode/conf.d/gmond.master.conf',
                 'bind = {0}'.format(self.instance.hostname), '')
             #TODO(jspeidel): appears only to be necessary if hbase is installed
-        #            self._replace_str_in_remote_file(self._ssh,
+        #            r.replace_remote_string(
         # '/etc/ganglia/hdp/HDPHBaseMaster/conf.d/gmond.master.conf',
         #                                             'bind = {0}'.format(
         # self.instance.fqdn), '')
 
         # gangliaClusters.conf
-        self._replace_str_in_remote_file(
+        r.replace_remote_string(
             '/usr/libexec/hdp/ganglia/gangliaClusters.conf',
             self.instance.fqdn, ganglia_server_ip)
 
@@ -155,7 +156,7 @@ class HadoopServer:
         # configs that are used after restart
         # gangliaClusters.conf template
         #TODO(jspeidel): modify file where prop "ganglia_server_host" is set
-        self._replace_str_in_remote_file(
+        r.replace_remote_string(
             '/var/lib/ambari-agent/puppet/modules/hdp-ganglia/templates'
             '/gangliaClusters.conf.erb',
             '<%=scope.function_hdp_host("ganglia_server_host")%>',
@@ -163,59 +164,23 @@ class HadoopServer:
 
         # gmondLib.sh This script generates the master and slave configs
         #TODO(jspeidel): combine into one call.  Pass map of old/new values
-        self._replace_str_in_remote_file(
+        r.replace_remote_string(
             '/var/lib/ambari-agent/puppet/modules/hdp-ganglia/files/gmondLib'
             '.sh',
             'bind = ${gmondMasterIP}', '')
-        self._replace_str_in_remote_file(
+        r.replace_remote_string(
             '/var/lib/ambari-agent/puppet/modules/hdp-ganglia/files/gmondLib'
             '.sh',
             'host = ${gmondMasterIP}', 'host = {0}'.format(ganglia_server_ip))
-        self._replace_str_in_remote_file(
+        r.replace_remote_string(
             '/usr/libexec/hdp/ganglia/gmondLib.sh',
             'bind = ${gmondMasterIP}', '')
-        self._replace_str_in_remote_file(
+        r.replace_remote_string(
             '/usr/libexec/hdp/ganglia/gmondLib.sh',
             'host = ${gmondMasterIP}', 'host = {0}'.format(ganglia_server_ip))
-
-    def _replace_str_in_remote_file(self, filename, origStr, newStr):
-
-        remote.replace_remote_string(self._ssh, filename, origStr,
-                                     newStr)
 
     def _log(self, buf):
         LOG.debug(buf)
-
-    def _execute_on_vm_interactive(self, cmd, matcher):
-        LOG.debug(
-            "{0}: Executing interactive remote command '{1}'".format(
-                self.instance.hostname, cmd))
-
-        buf = ''
-        all_output = ''
-        channel = self._ssh.invoke_shell()
-        try:
-            channel.send(cmd + '\n')
-            while not matcher.is_eof(buf):
-                buf += channel.recv(4096)
-                response = matcher.get_response(buf)
-                if response is not None:
-                    channel.send(response + '\n')
-                    all_output += buf
-                    buf = ''
-        finally:
-            channel.close()
-            self._log(all_output)
-            self._log(buf)
-
-    def _execute_on_vm(self, cmd):
-        LOG.debug("{0}: Executing remote command '{1}'".format(
-            self.instance.hostname, cmd))
-        LOG.debug(
-            'Executing using instance: id = {0}, hostname = {1}'.format(
-                self.instance.instance_id,
-                self.instance.hostname))
-        remote.execute_command(self._ssh, cmd)
 
     def _is_component_available(self, component):
         return component in self.node_group.components
@@ -230,23 +195,17 @@ class HadoopServer:
 class DefaultPromptMatcher():
     prompt_pattern = re.compile('(.*\()(.)(\)\?\s*$)', re.DOTALL)
 
-    def __init__(self, terminal_token, logger):
+    def __init__(self, terminal_token):
         self.eof_token = terminal_token
-        self.logger = logger
 
     def get_response(self, s):
         match = self.prompt_pattern.match(s)
         if match:
             response = match.group(2)
-            LOG.debug(
-                "Returning response '{0}' for prompt '{1}'".format(
-                    response, s.rstrip().rsplit('\n', 1)[-1]))
             return response
         else:
             return None
 
     def is_eof(self, s):
         eof = self.eof_token in s
-        if eof:
-            LOG.debug('Returning eof = True')
         return eof

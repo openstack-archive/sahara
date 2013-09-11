@@ -20,13 +20,15 @@ import telnetlib
 import time
 
 import keystoneclient.v2_0
+import paramiko
 import requests
 import unittest2
 
+from savanna import exceptions as savanna_ex
 import savanna.tests.integration.configs.parameters.common_parameters as param
 import savanna.tests.integration.configs.parameters.hdp_parameters as hdp_param
 import savanna.tests.integration.configs.parameters.vanilla_parameters as v_prm
-from savanna.utils import remote
+from savanna.utils import crypto
 
 
 def enable_test(test):
@@ -468,24 +470,72 @@ class ITestCase(unittest2.TestCase):
         data = data[object_type]
         return data['id']
 
-    def ssh_connection(self, host, node_username):
-        return remote.setup_ssh_connection(host, node_username,
-                                           open(param.PATH_TO_SSH).read())
+    def _read_paramimko_stream(self, recv_func):
+        result = ''
+        buf = recv_func(1024)
+        while buf != '':
+            result += buf
+            buf = recv_func(1024)
+
+        return result
+
+    def _execute_command(self, ssh, cmd, get_stderr=False,
+                         raise_when_error=True):
+        chan = ssh.get_transport().open_session()
+        chan.exec_command(cmd)
+
+        # todo(dmitryme): that could hang if stderr buffer overflows
+        stdout = self._read_paramimko_stream(chan.recv)
+        stderr = self._read_paramimko_stream(chan.recv_stderr)
+
+        ret_code = chan.recv_exit_status()
+
+        if ret_code and raise_when_error:
+            raise savanna_ex.RemoteCommandException(cmd=cmd, ret_code=ret_code,
+                                                    stdout=stdout,
+                                                    stderr=stderr)
+
+        if get_stderr:
+            return ret_code, stdout, stderr
+        else:
+            return ret_code, stdout
+
+    def _write_file_to(self, ssh, remote_file, data):
+        fl = ssh.open_sftp().file(remote_file, 'w')
+        fl.write(data)
+        fl.close()
+
+    def _read_file_from(self, ssh, remote_file):
+        fl = ssh.open_sftp().file(remote_file, 'r')
+        data = fl.read()
+        fl.close()
+        return data
+
+    # -+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+
+    def ssh_connection(self, host, username):
+        private_key = open(param.PATH_TO_SSH).read()
+        if type(private_key) in [str, unicode]:
+            private_key = crypto.to_paramiko_private_key(private_key)
+        ssh = paramiko.SSHClient()
+        ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+        ssh.connect(host, username=username, pkey=private_key)
+        return ssh
 
     def execute_command(self, host, cmd, node_username):
         with contextlib.closing(self.ssh_connection(host,
                                                     node_username)) as ssh:
-            return remote.execute_command(ssh, cmd)
+            return self._execute_command(ssh, cmd)
 
     def write_file_to(self, host, remote_file, data, node_username):
         with contextlib.closing(self.ssh_connection(host,
                                                     node_username)) as ssh:
-            return remote.write_file_to(ssh.open_sftp(), remote_file, data)
+            return self._write_file_to(ssh, remote_file, data)
 
     def read_file_from(self, host, remote_file, node_username):
         with contextlib.closing(self.ssh_connection(host,
                                                     node_username)) as ssh:
-            return remote.read_file_from(ssh.open_sftp(), remote_file)
+            return self._read_file_from(ssh, remote_file)
 
     def transfer_script_to_node(self, host, node_username,
                                 script='hadoop_test/hadoop_test_script.sh'):
