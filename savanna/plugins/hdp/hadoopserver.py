@@ -17,10 +17,8 @@ import re
 from savanna.openstack.common import log as logging
 from savanna.utils import remote
 
-AMBARI_RPM = 'http://s3.amazonaws.com/' \
-             'dev.hortonworks.com/AMBARI.b6-1.x/' \
-             'repos/centos6/AMBARI.b6-1.x-1.el6.' \
-             'noarch.rpm'
+AMBARI_URI = 'http://s3.amazonaws.com/public-repo-1.hortonworks.com/' \
+             'ambari/centos6/1.x/updates/1.2.5.17/ambari.repo'
 
 LOG = logging.getLogger(__name__)
 
@@ -28,11 +26,11 @@ LOG = logging.getLogger(__name__)
 class HadoopServer:
     _master_ip = None
 
-    def __init__(self, instance, node_group, ambari_rpm=None):
+    def __init__(self, instance, node_group, ambari_uri=None):
         self.instance = instance
         self.node_group = node_group
         self._ssh = self._connect_to_vm()
-        self.ambari_rpm = ambari_rpm or AMBARI_RPM
+        self.ambari_uri = ambari_uri or AMBARI_URI
 
     def _connect_to_vm(self):
         LOG.info(
@@ -40,20 +38,20 @@ class HadoopServer:
         return self.instance.remote.ssh_connection()
 
     def provision_ambari(self, ambari_info):
-        self.install_rpms()
+        self.install_packages()
         if 'AMBARI_SERVER' in self.node_group.components:
             self._setup_and_start_ambari_server(ambari_info.port)
 
         if 'AMBARI_AGENT' in self.node_group.components:
             self._setup_and_start_ambari_agent(ambari_info.host.internal_ip)
 
-    def install_rpms(self):
+    def install_packages(self):
         LOG.info(
-            "{0}: Installing rpm's ...".format(self.instance.hostname))
+            "{0}: Installing packages ...".format(self.instance.hostname))
 
+        self._execute_on_vm('curl -s -o /etc/yum.repos.d/ambari.repo %s' %
+                            self.ambari_uri)
         #TODO(jspeidel): based on image type, use correct command
-        rpm_cmd = 'rpm -Uvh ' + self.ambari_rpm
-        self._execute_on_vm(rpm_cmd)
         self._execute_on_vm('yum -y install epel-release')
 
     def _setup_and_start_ambari_server(self, port):
@@ -64,7 +62,7 @@ class HadoopServer:
         LOG.info('Running Ambari Server setup ...')
         self._execute_on_vm_interactive(
             'ambari-server setup', DefaultPromptMatcher(
-                "Ambari Server 'setup' finished successfully", LOG))
+                "Ambari Server 'setup' completed successfully", LOG))
 
         self._configure_ambari_server_api_port(port)
 
