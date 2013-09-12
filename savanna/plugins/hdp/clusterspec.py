@@ -15,10 +15,47 @@
 
 import os
 from savanna.openstack.common import jsonutils as json
+from savanna.openstack.common import log as logging
 from savanna.plugins.hdp import configprovider as cfg
+from savanna.plugins.hdp import savannautils as utils
+
+LOG = logging.getLogger(__name__)
 
 
 class ClusterSpec():
+    def __init__(self, cluster_template, cluster=None):
+        self.services = []
+        self.configurations = {}
+        self.node_groups = {}
+        self.servers = None
+        self.str = cluster_template
+
+        if cluster:
+            self.servers = self._get_servers_from_savanna_cluster(cluster)
+            host_manifest = self._generate_host_manifest()
+            cluster_template = self._replace_config_tokens(cluster_template)
+
+            self.str = self._add_manifest_to_config(
+                cluster_template, host_manifest)
+
+        template_json = json.loads(self.str)
+        self._parse_services(template_json)
+        self._parse_configurations(template_json)
+        self._parse_host_component_mappings(template_json)
+
+    def determine_host_for_server_component(self, component):
+        host = None
+        for server in self.servers:
+            node_processes = utils.get_node_processes(server)
+            if node_processes is not None and component in node_processes:
+                host = server
+                break
+
+        return host
+
+    def normalize(self):
+        return NormalizedClusterConfig(self)
+
     def _get_servers_from_savanna_cluster(self, cluster):
         servers = []
         for node_group in cluster.node_groups:
@@ -28,49 +65,6 @@ class ClusterSpec():
                 servers.append(server)
 
         return servers
-
-    def __init__(self, cluster_template, cluster=None):
-        self.services = []
-        self.configurations = {}
-        self.node_groups = {}
-        self.str = cluster_template
-
-        servers = []
-        if cluster is not None:
-            if hasattr(cluster, 'node_groups'):
-                servers = self._get_servers_from_savanna_cluster(cluster)
-            else:
-                servers = cluster.instances
-
-            host_manifest = self._generate_host_manifest(servers)
-            #TODO(jspeidel): don't hard code ambari server
-            ambari_server = self._get_ambari_host(servers)
-            if ambari_server is not None:
-                cluster_template = cluster_template.replace('%AMBARI_HOST%',
-                                                            ambari_server.fqdn)
-            else:
-                raise RuntimeError('No Ambari server host found')
-
-            self.str = self._add_manifest_to_config(cluster_template,
-                                                    host_manifest)
-
-        template_json = json.loads(self.str)
-        self._parse_services(template_json)
-        self._parse_configurations(template_json)
-        self._parse_host_component_mappings(template_json)
-
-    def _get_ambari_host(self, servers):
-        # iterate thru servers and find the master server
-        host = next((server for server in servers
-                     if server.node_processes is not None and
-                     'AMBARI_SERVER' in server.node_processes), None)
-        if host is None:
-            host = next((server for server in servers
-                         if server.role == 'MASTER'), None)
-        return host
-
-    def normalize(self):
-        return NormalizedClusterConfig(self)
 
     def _parse_services(self, template_json):
         for s in template_json['services']:
@@ -121,12 +115,42 @@ class ClusterSpec():
                     node_group.default_count = host['default_count']
             self.node_groups[node_group.name] = node_group
 
-    def _generate_host_manifest(self, servers):
+    def _replace_config_tokens(self, cluster_template):
+        ambari_server = self.determine_host_for_server_component(
+            'AMBARI_SERVER')
+        nn_server = self.determine_host_for_server_component(
+            'NAMENODE')
+        snn_server = self.determine_host_for_server_component(
+            'SECONDARY_NAMENODE')
+        jt_server = self.determine_host_for_server_component(
+            'JOBTRACKER')
+
+        LOG.info('Replacing the following configuration tokens:')
+
+        LOG.info('%AMBARI_HOST% : {0}'.format(ambari_server.fqdn))
+        cluster_template = cluster_template.replace(
+            '%AMBARI_HOST%', ambari_server.fqdn)
+        if nn_server:
+            LOG.info('%NN_HOST% : {0}'.format(nn_server.fqdn))
+            cluster_template = cluster_template.replace(
+                '%NN_HOST%', nn_server.fqdn)
+        if snn_server:
+            LOG.info('%SNN_HOST% : {0}'.format(snn_server.fqdn))
+            cluster_template = cluster_template.replace(
+                '%SNN_HOST%', snn_server.fqdn)
+        if jt_server:
+            LOG.info('%JT_HOST% : {0}'.format(jt_server.fqdn))
+            cluster_template = cluster_template.replace(
+                '%JT_HOST%', jt_server.fqdn)
+
+        return cluster_template
+
+    def _generate_host_manifest(self):
         host_manifest = {}
         hosts = []
         host_id = 1
 
-        for server in servers:
+        for server in self.servers:
             hosts.append({'host_id': host_id,
                           'hostname': server.hostname,
                           'role': server.role,

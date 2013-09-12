@@ -13,8 +13,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import os
-
 import pkg_resources as pkg
 from savanna.plugins.hdp import ambariplugin as ap
 from savanna.plugins.hdp import clusterspec as cs
@@ -54,38 +52,30 @@ class AmbariPluginTest(unittest2.TestCase):
 
     def test_convert(self):
         plugin = ap.AmbariPlugin()
-        cluster = TestCluster()
-        with open(os.path.join(os.path.realpath('../plugins'), 'hdp',
-                               'resources',
-                               'default-cluster.template'), 'r') as f:
-            plugin.convert(cluster, f.read())
-        with open(os.path.join(os.path.realpath('../plugins'), 'hdp',
-                               'resources',
-                               'default-cluster.template'), 'r') as f:
-            normalized_config = cs.ClusterSpec(f.read()).normalize()
+        cluster = TestCluster([])
+
+        cluster_config_file = pkg.resource_string(
+            version.version_info.package,
+            'plugins/hdp/resources/default-cluster.template')
+
+        plugin.convert(cluster, cluster_config_file)
+        normalized_config = cs.ClusterSpec(cluster_config_file).normalize()
 
         self.assertEquals(normalized_config.hadoop_version,
                           cluster.hadoop_version)
         self.assertEquals(len(normalized_config.node_groups),
                           len(cluster.node_groups))
 
-    def test_update_infra(self):
-        plugin = ap.AmbariPlugin()
-        cluster = TestCluster()
-        plugin.update_infra(cluster)
-
-        for node_group in cluster.node_groups:
-            self.assertEquals(cluster.default_image_id, node_group.image)
-
     def test__set_ambari_credentials__admin_only(self):
         self.requests = []
         plugin = ap.AmbariPlugin()
         plugin._get_rest_request = self._get_test_request
 
-        with open(os.path.join(os.path.realpath('../plugins'), 'hdp',
-                  'resources',
-                  'default-cluster.template'), 'r') as f:
-                        cluster_spec = cs.ClusterSpec(f.read())
+        cluster_config_file = pkg.resource_string(
+            version.version_info.package,
+            'plugins/hdp/resources/default-cluster.template')
+
+        cluster_spec = cs.ClusterSpec(cluster_config_file)
 
         ambari_info = ap.AmbariInfo(TestHost('111.11.1111'),
                                     '8080', 'admin', 'old-pwd')
@@ -107,10 +97,11 @@ class AmbariPluginTest(unittest2.TestCase):
         plugin = ap.AmbariPlugin()
         plugin._get_rest_request = self._get_test_request
 
-        with open(os.path.join(os.path.realpath('../plugins'), 'hdp',
-                  'resources',
-                  'default-cluster.template'), 'r') as f:
-                        cluster_spec = cs.ClusterSpec(f.read())
+        cluster_config_file = pkg.resource_string(
+            version.version_info.package,
+            'plugins/hdp/resources/default-cluster.template')
+
+        cluster_spec = cs.ClusterSpec(cluster_config_file)
 
         for service in cluster_spec.services:
             if service.name == 'AMBARI':
@@ -145,10 +136,11 @@ class AmbariPluginTest(unittest2.TestCase):
         plugin = ap.AmbariPlugin()
         plugin._get_rest_request = self._get_test_request
 
-        with open(os.path.join(os.path.realpath('../plugins'), 'hdp',
-                               'resources',
-                               'default-cluster.template'), 'r') as f:
-                                    cluster_spec = cs.ClusterSpec(f.read())
+        cluster_config_file = pkg.resource_string(
+            version.version_info.package,
+            'plugins/hdp/resources/default-cluster.template')
+
+        cluster_spec = cs.ClusterSpec(cluster_config_file)
 
         for service in cluster_spec.services:
             if service.name == 'AMBARI':
@@ -184,10 +176,11 @@ class AmbariPluginTest(unittest2.TestCase):
         plugin = ap.AmbariPlugin()
         plugin._get_rest_request = self._get_test_request
 
-        with open(os.path.join(os.path.realpath('../plugins'), 'hdp',
-                  'resources',
-                  'default-cluster.template'), 'r') as f:
-                        cluster_spec = cs.ClusterSpec(f.read())
+        cluster_config_file = pkg.resource_string(
+            version.version_info.package,
+            'plugins/hdp/resources/default-cluster.template')
+
+        cluster_spec = cs.ClusterSpec(cluster_config_file)
 
         for service in cluster_spec.services:
             if service.name == 'AMBARI':
@@ -207,20 +200,24 @@ class AmbariPluginTest(unittest2.TestCase):
             version.version_info.package,
             'plugins/hdp/resources/default-cluster.template')
 
-        cluster_config = cs.ClusterSpec(cluster_config_file)
+        test_host = TestServer(
+            'host1', 'test-master', '111.11.1111',
+            '222.11.1111', 'img1', '3', node_processes=['AMBARI_SERVER'])
+
+        node_group = TestNodeGroup([test_host], 'test-master')
+        cluster = TestCluster([node_group])
+        cluster_config = cs.ClusterSpec(cluster_config_file, cluster=cluster)
         plugin = ap.AmbariPlugin()
 
         #change port
         cluster_config.configurations['ambari']['server.port'] = '9000'
-        ambari_info = plugin.get_ambari_info(
-            cluster_config, [TestHost('111.11.1111', 'master')])
+        ambari_info = plugin.get_ambari_info(cluster_config)
 
         self.assertEqual('9000', ambari_info.port)
 
         #remove port
         del cluster_config.configurations['ambari']['server.port']
-        ambari_info = plugin.get_ambari_info(
-            cluster_config, [TestHost('111.11.1111', 'master')])
+        ambari_info = plugin.get_ambari_info(cluster_config)
 
         self.assertEqual('8080', ambari_info.port)
 
@@ -246,11 +243,21 @@ class AmbariPluginTest(unittest2.TestCase):
 
 
 class TestCluster:
-    def __init__(self):
+    def __init__(self, node_groups):
         self.hadoop_version = None
         self.cluster_configs = {}
-        self.node_groups = []
+        self.node_groups = node_groups
         self.default_image_id = '11111'
+
+
+class TestNodeGroup:
+    def __init__(self, instances, name):
+        self.instances = instances
+        self.name = name
+        self.node_processes = []
+
+        for np in instances[0].node_processes:
+            self.node_processes.append(np)
 
 
 class TestRequest:
@@ -285,7 +292,27 @@ class TestResult:
         self.text = ''
 
 
+class TestServer:
+    def __init__(self, hostname, role, public_ip, private_ip, image, flavor,
+                 node_processes=None):
+        self.hostname = hostname
+        self.fqdn = hostname
+        self.role = role
+        self.management_ip = public_ip
+        self.public_ip = public_ip
+        self.internal_ip = private_ip
+        self.node_processes = node_processes
+        self.nova_info = TestNovaInfo(image, flavor)
+
+
 class TestHost:
     def __init__(self, management_ip, role=None):
         self.management_ip = management_ip
         self.role = role
+        self.node_processes = []
+
+
+class TestNovaInfo:
+    def __init__(self, image, flavor):
+        self.image = image
+        self.flavor = flavor

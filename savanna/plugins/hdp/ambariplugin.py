@@ -45,7 +45,7 @@ class AmbariPlugin(p.ProvisioningPluginBase):
             cluster_template, cluster=cluster)
 
         hosts = self._get_servers(cluster)
-        ambari_info = self.get_ambari_info(cluster_spec, hosts)
+        ambari_info = self.get_ambari_info(cluster_spec)
         self.cluster_ambari_mapping[cluster.name] = ambari_info
         ambari_uri = self._get_ambari_uri(cluster_spec)
 
@@ -63,8 +63,7 @@ class AmbariPlugin(p.ProvisioningPluginBase):
             if installed:
                 LOG.info("Install of Hadoop stack successful.")
                 # add service urls
-                self._set_cluster_info(
-                    cluster, cluster_spec, hosts, ambari_info)
+                self._set_cluster_info(cluster, cluster_spec, ambari_info)
             else:
                 raise ex.HadoopProvisionError(
                     'Installation of Hadoop stack failed.')
@@ -292,23 +291,6 @@ class AmbariPlugin(p.ProvisioningPluginBase):
                 #TODO(jspeidel): max wait time
                 LOG.info('Waiting to connect to ambari server ...')
 
-    def _determine_host_for_server_component(
-            self, component, cluster_spec, servers):
-
-        found_node_group = None
-        node_groups = cluster_spec.node_groups
-        for node_group in node_groups.values():
-            if component in node_group.components:
-                found_node_group = node_group.name
-
-        for host in servers:
-            if host.role == found_node_group:
-                return host
-
-        raise Exception(
-            'Server component [{0}] not specified in configuration'.format(
-                component))
-
     def _install_services(self, cluster_name, ambari_info):
         LOG.info('Installing required Hadoop services ...')
 
@@ -484,12 +466,12 @@ class AmbariPlugin(p.ProvisioningPluginBase):
                                'default-cluster.template'), 'r') as f:
             return clusterspec.ClusterSpec(f.read())
 
-    def _set_cluster_info(self, cluster, cluster_spec, hosts, ambari_info):
+    def _set_cluster_info(self, cluster, cluster_spec, ambari_info):
         info = cluster.info
 
         try:
-            jobtracker_ip = self._determine_host_for_server_component(
-                'JOBTRACKER', cluster_spec, hosts).management_ip
+            jobtracker_ip = cluster_spec.determine_host_for_server_component(
+                'JOBTRACKER').management_ip
         except Exception:
             pass
         else:
@@ -498,8 +480,8 @@ class AmbariPlugin(p.ProvisioningPluginBase):
             }
 
         try:
-            namenode_ip = self._determine_host_for_server_component(
-                'NAMENODE', cluster_spec, hosts).management_ip
+            namenode_ip = cluster_spec.determine_host_for_server_component(
+                'NAMENODE').management_ip
         except Exception:
             pass
         else:
@@ -683,7 +665,6 @@ class AmbariPlugin(p.ProvisioningPluginBase):
         cluster_spec = clusterspec.ClusterSpec(
             json.dumps(processor.blueprint), cluster=cluster)
         ambari_uri = self._get_ambari_uri(cluster_spec)
-        hosts = self._get_servers(cluster)
 
         servers = []
         for instance in instances:
@@ -693,7 +674,7 @@ class AmbariPlugin(p.ProvisioningPluginBase):
                                           [host_role],
                                           ambari_uri=ambari_uri))
 
-        ambari_info = self.get_ambari_info(cluster_spec, hosts)
+        ambari_info = self.get_ambari_info(cluster_spec)
         self._update_ambari_info_credentials(cluster_spec, ambari_info)
 
         for server in servers:
@@ -732,9 +713,9 @@ class AmbariPlugin(p.ProvisioningPluginBase):
         ambari_config = cluster_spec.configurations['ambari']
         return ambari_config.get('repo.uri', None)
 
-    def get_ambari_info(self, cluster_spec, hosts):
-        ambari_host = self._determine_host_for_server_component(
-            'AMBARI_SERVER', cluster_spec, hosts)
+    def get_ambari_info(self, cluster_spec):
+        ambari_host = cluster_spec.determine_host_for_server_component(
+            'AMBARI_SERVER')
 
         port = cluster_spec.configurations['ambari'].get(
             'server.port', '8080')

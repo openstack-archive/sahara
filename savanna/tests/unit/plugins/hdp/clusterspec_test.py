@@ -28,22 +28,21 @@ class ClusterSpecTest(unittest2.TestCase):
             version.version_info.package,
             'plugins/hdp/resources/default-cluster.template')
 
-        servers = []
-        server1 = TestServer('host1', 'master', '11111', 3, '111.11.1111',
+        server1 = TestServer('host1', 'test-master', '11111', 3, '111.11.1111',
                              '222.11.1111',
-                             node_processes=["namenode", "jobtracker",
-                                             "secondary_namenode",
-                                             "ganglia_server",
-                                             "ganglia_monitor",
-                                             "nagios_server", "AMBARI_SERVER",
-                                             "ambari_agent"])
-        server2 = TestServer('host2', 'slave', '11111', 3, '222.22.2222',
-                             '333.22.2222')
-        servers.append(server1)
-        servers.append(server2)
+                             node_processes=["NAMENODE", "JOBTRACKER",
+                                             "SECONDARY_NAMENODE",
+                                             "GANGLIA_SERVER",
+                                             "GANGLIA_MONITOR",
+                                             "NAGIOS_SERVER", "AMBARI_SERVER",
+                                             "AMBARI_AGENT"])
+        server2 = TestServer('host2', 'test-slave', '11111', 3, '222.22.2222',
+                             '333.22.2222',
+                             node_processes=['DATANODE', 'AMBARI_AGENT'])
 
-        cluster = TestCluster()
-        cluster.instances = servers
+        node_group1 = TestNodeGroup([server1])
+        node_group2 = TestNodeGroup([server2])
+        cluster = TestCluster([node_group1, node_group2])
 
         cluster_config = cs.ClusterSpec(cluster_config_file, cluster)
 
@@ -58,30 +57,98 @@ class ClusterSpecTest(unittest2.TestCase):
             version.version_info.package,
             'plugins/hdp/resources/default-cluster.template')
 
-        servers = []
         server1 = TestServer('ambari_machine', 'master', '11111', 3,
                              '111.11.1111', '222.11.1111',
-                             node_processes=["namenode", "jobtracker",
-                                             "secondary_namenode",
-                                             "ganglia_server",
-                                             "ganglia_monitor",
-                                             "nagios_server", "AMBARI_SERVER",
-                                             "ambari_agent"])
+                             node_processes=["NAMENODE", "JOBTRACKER",
+                                             "SECONDARY_NAMENODE",
+                                             "GANGLIA_SERVER",
+                                             "GANGLIA_MONITOR",
+                                             "NAGIOS_SERVER", "AMBARI_SERVER",
+                                             "AMBARI_AGENT"])
         server2 = TestServer('host2', 'slave', '11111', 3, '222.22.2222',
                              '333.22.2222',
-                             node_processes=["datanode", "tasktracker",
-                                             "ganglia_monitor", "hdfs_client",
-                                             "mapreduce_client",
-                                             "ambari_agent"])
-        servers.append(server1)
-        servers.append(server2)
+                             node_processes=["DATANODE", "TASKTRACKER",
+                                             "GANGLIA_MONITOR", "HDFS_CLIENT",
+                                             "MAPREDUCE_CLIENT",
+                                             "AMBARI_AGENT"])
 
-        cluster = TestCluster
-        cluster.instances = servers
+        node_group1 = TestNodeGroup([server1])
+        node_group2 = TestNodeGroup([server2])
+        cluster = TestCluster([node_group1, node_group2])
 
         cluster_config = cs.ClusterSpec(cluster_config_file, cluster)
         self.assertIn('ambari_machine', cluster_config.str,
                       'Ambari host not found')
+
+    def test_config_token_replacement(self):
+        cluster_config_file = pkg.resource_string(
+            version.version_info.package,
+            'plugins/hdp/resources/default-cluster.template')
+
+        master_host = TestServer(
+            'master.novalocal', 'master', '11111', 3,
+            '111.11.1111', '222.11.1111',
+            node_processes=["GANGLIA_SERVER",
+                            "GANGLIA_MONITOR",
+                            "NAGIOIS_SERVER",
+                            "AMBARI_SERVER",
+                            "AMBARI_AGENT"])
+
+        jt_host = TestServer(
+            'jt_host.novalocal', 'jt', '11111', 3,
+            '111.11.2222', '222.11.2222',
+            node_processes=["JOBTRACKER",
+                            "GANGLIA_MONITOR",
+                            "AMBARI_AGENT"])
+
+        nn_host = TestServer(
+            'nn_host.novalocal', 'nn', '11111', 3,
+            '111.11.3333', '222.11.3333',
+            node_processes=["NAMENODE",
+                            "GANGLIA_MONITOR",
+                            "AMBARI_AGENT"])
+
+        snn_host = TestServer(
+            'snn_host.novalocal', 'jt', '11111', 3,
+            '111.11.4444', '222.11.4444',
+            node_processes=["SECONDARY_NAMENODE",
+                            "GANGLIA_MONITOR",
+                            "AMBARI_AGENT"])
+
+        slave_host = TestServer(
+            'slave1.novalocal', 'slave', '11111', 3,
+            '222.22.5555', '333.22.5555',
+            node_processes=["DATANODE", "TASKTRACKER",
+                            "GANGLIA_MONITOR", "HDFS_CLIENT",
+                            "MAPREDUCE_CLIENT",
+                            "AMBARI_AGENT"])
+
+        master_ng = TestNodeGroup([master_host])
+        jt_ng = TestNodeGroup([jt_host])
+        nn_ng = TestNodeGroup([nn_host])
+        snn_ng = TestNodeGroup([snn_host])
+        slave_ng = TestNodeGroup([slave_host])
+
+        cluster = TestCluster([master_ng, jt_ng, nn_ng, snn_ng, slave_ng])
+        cluster_config = cs.ClusterSpec(cluster_config_file, cluster)
+
+        config = cluster_config.str
+        self.assertIn('"fs.default.name", "value" : '
+                      '"hdfs://nn_host.novalocal:8020"', config)
+        self.assertIn('"mapred.job.tracker", "value" : '
+                      '"jt_host.novalocal:50300"', config)
+        self.assertIn('"mapred.job.tracker", "value" : '
+                      '"jt_host.novalocal:50300"', config)
+        self.assertIn('"mapred.job.tracker.http.address", "value" : '
+                      '"jt_host.novalocal:50030"', config)
+        self.assertIn('"mapreduce.history.server.http.address", "value" : '
+                      '"jt_host.novalocal:51111"', config)
+        self.assertIn('"dfs.http.address", "value" : '
+                      '"nn_host.novalocal:50070"', config)
+        self.assertIn('"dfs.secondary.http.address", "value" : '
+                      '"snn_host.novalocal:50090"', config)
+        self.assertIn('"dfs.https.address", "value" : '
+                      '"nn_host.novalocal:50470"', config)
 
     def test_ambari_rpm_path(self):
         cluster_config_file = pkg.resource_string(
@@ -356,19 +423,41 @@ class TestServer():
         self.hostname = hostname
         self.fqdn = hostname
         self.role = role
-        self.nova_info = TestNova
-        self.nova_info.image = img
-        self.nova_info.flavor = flavor
+
+        self.instance_info = InstanceInfo(
+            hostname, img, flavor, public_ip, private_ip)
         self.management_ip = public_ip
         self.public_ip = public_ip
         self.internal_ip = private_ip
         self.node_processes = node_processes
+        self.nova_info = TestNovaInfo(img, flavor)
 
 
-class TestNova():
-    image = None
-    flavor = None
+class InstanceInfo():
+    def __init__(self, hostname, image, flavor, management_ip, internal_ip):
+        self.hostname = hostname
+        self.image = image
+        self.flavor = flavor
+        self.management_ip = management_ip
+        self.internal_ip = internal_ip
 
 
 class TestCluster():
-    instances = []
+    def __init__(self, node_groups):
+        self.node_groups = node_groups
+
+
+class TestNodeGroup():
+    def __init__(self, instances):
+        self.instances = instances
+        self.name = instances[0].role
+        self.node_processes = []
+
+        for np in instances[0].node_processes:
+            self.node_processes.append(np)
+
+
+class TestNovaInfo:
+    def __init__(self, image, flavor):
+        self.image = image
+        self.flavor = flavor
