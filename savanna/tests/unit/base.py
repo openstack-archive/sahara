@@ -49,7 +49,7 @@ class DbTestCase(unittest2.TestCase):
         self.assertTrue(uuidutils.is_uuid_like(res.id))
 
         # check created/updated
-        delta = datetime.timedelta(seconds=2)
+        delta = datetime.timedelta(seconds=15)
         now = timeutils.utcnow()
 
         self.assertAlmostEqual(res.created, now, delta=delta)
