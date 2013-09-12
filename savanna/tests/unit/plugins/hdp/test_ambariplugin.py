@@ -75,14 +75,6 @@ class AmbariPluginTest(unittest2.TestCase):
         self.assertEqual(len(normalized_config.node_groups),
                          len(cluster.node_groups))
 
-    def test_update_infra(self):
-        plugin = ap.AmbariPlugin()
-        cluster = TestCluster()
-        plugin.update_infra(cluster)
-
-        for node_group in cluster.node_groups:
-            self.assertEqual(cluster.default_image_id, node_group.image)
-
     def test__set_ambari_credentials__admin_only(self):
         self.requests = []
         plugin = ap.AmbariPlugin()
@@ -208,25 +200,32 @@ class AmbariPluginTest(unittest2.TestCase):
                           plugin._set_ambari_credentials(cluster_spec,
                                                          ambari_info))
 
-    def test__get_ambari_info(self):
+    @mock.patch("savanna.utils.openstack.nova.get_instance_info")
+    def test__get_ambari_info(self, patched):
+        patched.side_effect = test_get_instance_info
+
         cluster_config_file = pkg.resource_string(
             version.version_info.package,
             'plugins/hdp/resources/default-cluster.template')
 
-        cluster_config = cs.ClusterSpec(cluster_config_file)
+        test_host = TestServer(
+            'host1', 'test-master', '111.11.1111',
+            '222.11.1111', node_processes=["AMBARI_SERVER"])
+
+        node_group = TestNodeGroup([test_host])
+        cluster = TestCluster([node_group])
+        cluster_config = cs.ClusterSpec(cluster_config_file, cluster=cluster)
         plugin = ap.AmbariPlugin()
 
         #change port
         cluster_config.configurations['ambari']['server.port'] = '9000'
-        ambari_info = plugin.get_ambari_info(
-            cluster_config, [TestHost('111.11.1111', 'master')])
 
+        ambari_info = plugin.get_ambari_info(cluster_config)
         self.assertEqual('9000', ambari_info.port)
 
         #remove port
         del cluster_config.configurations['ambari']['server.port']
-        ambari_info = plugin.get_ambari_info(
-            cluster_config, [TestHost('111.11.1111', 'master')])
+        ambari_info = plugin.get_ambari_info(cluster_config)
 
         self.assertEqual('8080', ambari_info.port)
 
@@ -251,12 +250,27 @@ class AmbariPluginTest(unittest2.TestCase):
         return request
 
 
+def test_get_instance_info(*args, **kwargs):
+    return TestNova("test_img", "test_flavor")
+
+
+class TestNova():
+    def __init__(self, image, flavor):
+        self.image = image
+        self.flavor = flavor
+
+
 class TestCluster:
-    def __init__(self):
+    def __init__(self, node_groups):
         self.hadoop_version = None
         self.cluster_configs = {}
-        self.node_groups = []
+        self.node_groups = node_groups
         self.default_image_id = '11111'
+
+
+class TestNodeGroup:
+    def __init__(self, instances):
+        self.instances = instances
 
 
 class TestRequest:
@@ -289,6 +303,18 @@ class TestResult:
     def __init__(self, status):
         self.status_code = status
         self.text = ''
+
+
+class TestServer:
+    def __init__(self, hostname, role, public_ip, private_ip,
+                 node_processes=None):
+        self.hostname = hostname
+        self.fqdn = hostname
+        self.role = role
+        self.management_ip = public_ip
+        self.public_ip = public_ip
+        self.internal_ip = private_ip
+        self.node_processes = node_processes
 
 
 class TestHost:
