@@ -271,7 +271,7 @@ class JobOriginTest(test_base.ConductorManagerTestCase):
                 lambda: SAMPLE_JOB_ORIGIN
             ], *args, **kwargs)
 
-    def test_crud_operation_create_list_delete(self):
+    def test_crud_operation_create_list_delete_update(self):
         ctx = context.ctx()
 
         self.api.job_origin_create(ctx, SAMPLE_JOB_ORIGIN)
@@ -279,14 +279,19 @@ class JobOriginTest(test_base.ConductorManagerTestCase):
         lst = self.api.job_origin_get_all(ctx)
         self.assertEqual(len(lst), 1)
 
-        jo = lst[0]['id']
-        self.api.job_origin_destroy(ctx, jo)
+        jo_id = lst[0]['id']
+
+        update_jo = self.api.job_origin_update(ctx, jo_id,
+                                               {'description': 'update'})
+        self.assertEqual(update_jo['description'], 'update')
+
+        self.api.job_origin_destroy(ctx, jo_id)
 
         lst = self.api.job_origin_get_all(ctx)
         self.assertEqual(len(lst), 0)
 
         with self.assertRaises(ex.NotFoundException):
-            self.api.job_origin_destroy(ctx, jo)
+            self.api.job_origin_destroy(ctx, jo_id)
 
 
 class JobBinaryTest(test_base.ConductorManagerTestCase):
