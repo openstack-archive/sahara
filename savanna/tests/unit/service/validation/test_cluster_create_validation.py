@@ -67,7 +67,7 @@ class TestClusterCreateValidation(u.ValidationTestCase):
         data = {
             'name': "testname",
             'plugin_name': "vanilla",
-            'hadoop_version': "1.1.2"
+            'hadoop_version': "1.2.1"
         }
         self._assert_types(data)
 
@@ -75,7 +75,7 @@ class TestClusterCreateValidation(u.ValidationTestCase):
         data = {
             'name': "testname",
             'plugin_name': "vanilla",
-            'hadoop_version': "1.1.2"
+            'hadoop_version': "1.2.1"
         }
         self._assert_object_name_validation(data, 'hostname')
 
@@ -83,7 +83,7 @@ class TestClusterCreateValidation(u.ValidationTestCase):
         data = {
             'name': 'test',
             'plugin_name': 'vanilla',
-            'hadoop_version': '1.1.2'
+            'hadoop_version': '1.2.1'
         }
         self._assert_create_object_validation(
             data=data,
@@ -96,7 +96,7 @@ class TestClusterCreateValidation(u.ValidationTestCase):
             data={
                 'name': "testname",
                 'plugin_name': "vanilla",
-                'hadoop_version': "1.1.2",
+                'hadoop_version': "1.2.1",
                 'user_keypair_id': 'wrong_keypair'
             },
             bad_req_i=(1, 'INVALID_REFERENCE',
@@ -108,7 +108,7 @@ class TestClusterCreateValidation(u.ValidationTestCase):
             data={
                 'name': "test-name",
                 'plugin_name': "vanilla",
-                'hadoop_version': "1.1.2",
+                'hadoop_version': "1.2.1",
                 'user_keypair_id': '1'
             },
             bad_req_i=(1, 'VALIDATION_ERROR',
@@ -118,7 +118,7 @@ class TestClusterCreateValidation(u.ValidationTestCase):
             data={
                 'name': "test-name",
                 'plugin_name': "vanilla",
-                'hadoop_version': "1.1.2",
+                'hadoop_version': "1.2.1",
                 'user_keypair_id': '!'},
             bad_req_i=(1, 'VALIDATION_ERROR',
                        "'!' is not a 'valid_name'")
@@ -129,7 +129,7 @@ class TestClusterCreateValidation(u.ValidationTestCase):
             data={
                 'name': "test-name",
                 'plugin_name': "vanilla",
-                'hadoop_version': "1.1.2",
+                'hadoop_version': "1.2.1",
                 'default_image_id': '550e8400-e29b-41d4-a616-446655440000'
             },
             bad_req_i=(1, 'INVALID_REFERENCE',
@@ -142,7 +142,7 @@ class TestClusterCreateValidation(u.ValidationTestCase):
             data={
                 'name': "test-name",
                 'plugin_name': "wrong_plugin",
-                'hadoop_version': "1.1.2",
+                'hadoop_version': "1.2.1",
             },
             bad_req_i=(1, 'INVALID_REFERENCE',
                        "Savanna doesn't contain plugin "
@@ -157,7 +157,7 @@ class TestClusterCreateValidation(u.ValidationTestCase):
             data={
                 'name': "testname",
                 'plugin_name': "vanilla",
-                'hadoop_version': "1.1.2",
+                'hadoop_version': "1.2.1",
                 'user_keypair_id': 'test_keypair',
                 'cluster_configs': {
                     'HDFS': {
@@ -211,7 +211,7 @@ class TestClusterCreateFlavorValidation(base.DbTestCase):
     def _create_node_group_template(self, flavor='42'):
         ng_tmpl = {
             "plugin_name": "vanilla",
-            "hadoop_version": "1.1.2",
+            "hadoop_version": "1.2.1",
             "node_processes": ["namenode"],
             "name": "master",
             "flavor_id": flavor
@@ -221,7 +221,7 @@ class TestClusterCreateFlavorValidation(base.DbTestCase):
     def _create_cluster_template(self, ng_id):
         cl_tmpl = {
             "plugin_name": "vanilla",
-            "hadoop_version": "1.1.2",
+            "hadoop_version": "1.2.1",
             "node_groups": [
                 {"name": "master",
                  "count": 1,
@@ -238,7 +238,7 @@ class TestClusterCreateFlavorValidation(base.DbTestCase):
         data = {
             "name": "testname",
             "plugin_name": "vanilla",
-            "hadoop_version": "1.1.2",
+            "hadoop_version": "1.2.1",
             "cluster_template_id": '%s' % ctmpl_id
         }
         c.check_cluster_create(data)
@@ -246,7 +246,7 @@ class TestClusterCreateFlavorValidation(base.DbTestCase):
         data1 = {
             "name": "testwithnodegroups",
             "plugin_name": "vanilla",
-            "hadoop_version": "1.1.2",
+            "hadoop_version": "1.2.1",
             "node_groups": [
                 {
                     "name": "allinone",
@@ -270,13 +270,13 @@ class TestClusterCreateFlavorValidation(base.DbTestCase):
         data = {
             "name": "testname",
             "plugin_name": "vanilla",
-            "hadoop_version": "1.1.2",
+            "hadoop_version": "1.2.1",
             "cluster_template_id": '%s' % ctmpl_id
         }
         data1 = {
             "name": "testwithnodegroups",
             "plugin_name": "vanilla",
-            "hadoop_version": "1.1.2",
+            "hadoop_version": "1.2.1",
             "node_groups": [
                 {
                     "name": "allinone",
@@ -307,7 +307,7 @@ class TestClusterCreateFlavorValidation(base.DbTestCase):
         data = {
             "name": "testtmplnodegroups",
             "plugin_name": "vanilla",
-            "hadoop_version": "1.1.2",
+            "hadoop_version": "1.2.1",
             "cluster_template_id": '%s' % ctmpl_id,
             "node_groups": [
                 {
@@ -330,7 +330,7 @@ class TestClusterCreateFlavorValidation(base.DbTestCase):
         data = {
             "name": "testtmplnodegroups",
             "plugin_name": "vanilla",
-            "hadoop_version": "1.1.2",
+            "hadoop_version": "1.2.1",
             "node_groups": [
                 {
                     "node_group_template_id": '%s' % ng_id,

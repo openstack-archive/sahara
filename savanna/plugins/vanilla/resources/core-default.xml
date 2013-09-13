@@ -45,6 +45,15 @@
 </property>
 
 <property>
+  <name>hadoop.security.instrumentation.requires.admin</name>
+  <value>false</value>
+  <description>
+    Indicates if administrator ACLs are required to access
+    instrumentation servlets (JMX, METRICS, CONF, STACKS).
+  </description>
+</property>
+
+<property>
   <name>hadoop.security.authentication</name>
   <value>simple</value>
   <description>Possible values are simple (no authentication), and kerberos
@@ -457,7 +466,8 @@
   </description>
 </property>
 
-<!-- Rack Configuration -->
+
+<!-- Topology Configuration -->
 
 <property>
   <name>topology.node.switch.mapping.impl</name>
@@ -466,6 +476,13 @@
     invokes a script specified in topology.script.file.name to resolve
     node names. If the value for topology.script.file.name is not set, the
     default value of DEFAULT_RACK is returned for all node names.
+  </description>
+</property>
+
+ <property>
+  <name>net.topology.impl</name>
+  <value>org.apache.hadoop.net.NetworkTopology</value>
+  <description> The default implementation of NetworkTopology which is classic three layer one.
   </description>
 </property>
 
@@ -574,6 +591,41 @@
     behavior of hadoop workers to only check for a version match (eg
     "1.0.2") but ignore the other build fields (revision, user, and
     source checksum).
+  </description>
+</property>
+
+<property>
+  <name>hadoop.skip.worker.version.check</name>
+  <value>false</value>
+  <description>
+    By default datanodes refuse to connect to namenodes if their build
+    revision (svn revision) do not match, and tasktrackers refuse to
+    connect to jobtrackers if their build version (version, revision,
+    user, and source checksum) do not match. This option changes the
+    behavior of hadoop workers to skip doing a version check at all.
+    This option supersedes the 'hadoop.relaxed.worker.version.check'
+    option.
+  </description>
+</property>
+
+<property>
+  <name>hadoop.jetty.logs.serve.aliases</name>
+  <value>true</value>
+  <description>
+    Enable/Disable aliases serving from jetty
+  </description>
+</property>
+
+<property>
+  <name>ipc.client.fallback-to-simple-auth-allowed</name>
+  <value>false</value>
+  <description>
+    When a client is configured to attempt a secure connection, but attempts to
+    connect to an insecure server, that server may instruct the client to
+    switch to SASL SIMPLE (unsecure) authentication. This setting controls
+    whether or not the client will accept this instruction from the server.
+    When false (the default), the client will not allow the fallback to SIMPLE
+    authentication, and will abort the connection.
   </description>
 </property>
 

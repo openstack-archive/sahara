@@ -9,14 +9,14 @@ This directory contains default XML configuration files:
 * oozie-default.xml,
 * hive-default.xml
 
-These files are applied for Savanna's plugin of Apache Hadoop version 1.1.2,
+These files are applied for Savanna's plugin of Apache Hadoop version 1.2.1,
 Oozie 3.3.2, Hive version 0.11.0.
 
 
 Files were taken from here:
-https://github.com/apache/hadoop-common/blob/release-1.1.2/src/hdfs/hdfs-default.xml
-https://github.com/apache/hadoop-common/blob/release-1.1.2/src/mapred/mapred-default.xml
-https://github.com/apache/hadoop-common/blob/release-1.1.2/src/core/core-default.xml
+https://github.com/apache/hadoop-common/blob/release-1.2.1/src/hdfs/hdfs-default.xml
+https://github.com/apache/hadoop-common/blob/release-1.2.1/src/mapred/mapred-default.xml
+https://github.com/apache/hadoop-common/blob/release-1.2.1/src/core/core-default.xml
 https://github.com/apache/oozie/blob/release-3.3.2/core/src/main/resources/oozie-default.xml
 https://github.com/apache/hive/blob/release-0.11.0/conf/hive-default.xml.template
 

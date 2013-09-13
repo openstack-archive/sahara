@@ -28,7 +28,7 @@ IMAGE_ID = _get_conf('IMAGE_ID', 'b244500e-583a-434f-a40f-6ba87fd55e09')
 
 NODE_USERNAME = _get_conf('NODE_USERNAME', 'ubuntu')
 
-HADOOP_VERSION = _get_conf('HADOOP_VERSION', '1.1.2')
+HADOOP_VERSION = _get_conf('HADOOP_VERSION', '1.2.1')
 HADOOP_USER = _get_conf('HADOOP_USER', 'hadoop')
 HADOOP_DIRECTORY = _get_conf('HADOOP_DIRECTORY', '/usr/share/hadoop')
 HADOOP_LOG_DIRECTORY = _get_conf('HADOOP_LOG_DIRECTORY',

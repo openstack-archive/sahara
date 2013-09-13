@@ -32,7 +32,7 @@ class VanillaUtilsTest(unittest2.TestCase):
                             [i2, i3, i4])
         ng3 = _make_ng_dict("sn", "f1", ["dn"], 1, [i5])
 
-        self.c1 = _create_cluster("cluster1", "tenant1", "vanilla", "1.1.2",
+        self.c1 = _create_cluster("cluster1", "tenant1", "vanilla", "1.2.1",
                                   [ng1, ng2, ng3])
 
         self.ng1 = self.c1.node_groups[0]
