@@ -104,6 +104,7 @@ class TestJobManager(models_test_base.DbTestCase):
         self.assertIn("""
       <param>INPUT=swift://ex.savanna/i</param>
       <param>OUTPUT=swift://ex.savanna/o</param>""", res)
+
         self.assertIn("""
       <configuration>
         <property>
@@ -115,6 +116,7 @@ class TestJobManager(models_test_base.DbTestCase):
           <value>admin</value>
         </property>
       </configuration>""", res)
+
         self.assertIn("<script>script.pig</script>", res)
 
     def test_build_workflow_for_job_jar(self):
@@ -127,25 +129,30 @@ class TestJobManager(models_test_base.DbTestCase):
 
         res = job_manager.build_workflow_for_job('Jar', job_exec, origin,
                                                  input_data, output_data)
+
         self.assertIn("""
-      <configuration>
         <property>
           <name>mapred.output.dir</name>
           <value>swift://ex.savanna/o</value>
-        </property>
+        </property>""", res)
+
+        self.assertIn("""
         <property>
           <name>mapred.input.dir</name>
           <value>swift://ex.savanna/i</value>
-        </property>
+        </property>""", res)
+
+        self.assertIn("""
         <property>
           <name>fs.swift.service.savanna.password</name>
           <value>admin1</value>
-        </property>
+        </property>""", res)
+
+        self.assertIn("""
         <property>
           <name>fs.swift.service.savanna.username</name>
           <value>admin</value>
-        </property>
-      </configuration>""", res)
+        </property>""", res)
 
     @mock.patch('savanna.conductor.API.job_binary_get')
     def test_build_workflow_for_job_hive(self, job_binary):
@@ -182,17 +189,26 @@ class TestJobManager(models_test_base.DbTestCase):
         input_data = _create_data_source('swift://ex.savanna/i')
         output_data = _create_data_source('swift://ex.savanna/o')
 
-        job_exec = _create_job_exec(job.id, configs={'c': 'f'})
+        job_exec = _create_job_exec(job.id, configs={"configs": {'c': 'f'}})
+
         res = job_manager.build_workflow_for_job('Jar', job_exec, origin,
                                                  input_data, output_data)
         self.assertIn("""
         <property>
           <name>c</name>
           <value>f</value>
-        </property>
+        </property>""", res)
+
+        self.assertIn("""
         <property>
           <name>mapred.input.dir</name>
           <value>swift://ex.savanna/i</value>
+        </property>""", res)
+
+        self.assertIn("""
+        <property>
+          <name>mapred.output.dir</name>
+          <value>swift://ex.savanna/o</value>
         </property>""", res)
 
 

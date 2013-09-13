@@ -206,24 +206,24 @@ class ClusterResource(Resource, objects.Cluster):
 ##EDP Resources
 
 class DataSource(Resource, objects.DataSource):
-    pass
+    _resource_name = "data_source"
 
 
 class Job(Resource, objects.Job):
-    pass
+    _resource_name = "job"
 
 
 class JobExecution(Resource, objects.JobExecution):
-    pass
+    _resource_name = "job_execution"
 
 
 class JobOrigin(Resource, objects.JobOrigin):
-    pass
+    _resource_name = "job_origin"
 
 
 class JobBinary(Resource, objects.JobBinary):
-    pass
+    _resource_name = "job_binary"
 
 
 class JobBinaryInternal(Resource, objects.JobBinaryInternal):
-    pass
+    _resource_name = "job_binary_internal"

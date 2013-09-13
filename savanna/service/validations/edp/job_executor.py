@@ -31,9 +31,7 @@ JOB_EXEC_SCHEMA = {
             "type": "string",
             "format": "uuid",
         },
-        "job_configs": {
-            "type": "simple_config",
-        }
+        "job_configs": b.job_configs,
     },
     "additionalProperties": False,
     "required": [
