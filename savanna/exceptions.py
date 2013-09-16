@@ -125,3 +125,23 @@ class BadJobBinaryException(SavannaException):
     def __init__(self):
         self.code = "BAD_JOB_BINARY"
         super(BadJobBinaryException, self).__init__(self.message, self.code)
+
+
+class DBDuplicateEntry(SavannaException):
+    message = "Database object already exists"
+    code = "DB_DUPLICATE_ENTRY"
+
+    def __init__(self, message=None):
+        if message:
+            self.message = message
+        super(DBDuplicateEntry, self).__init__(self.message, self.code)
+
+
+class DeletionFailed(SavannaException):
+    message = "Object was not deleted"
+    code = "DELETION_FAILED"
+
+    def __init__(self, message=None):
+        if message:
+            self.message = message
+        super(DeletionFailed, self).__init__(self.message, self.code)

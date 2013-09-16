@@ -126,7 +126,7 @@ class DataSourceTest(test_base.ConductorManagerTestCase):
     def test_duplicate_data_source_create(self):
         ctx = context.ctx()
         self.api.data_source_create(ctx, SAMPLE_DATA_SOURCE)
-        with self.assertRaises(RuntimeError):
+        with self.assertRaises(ex.DBDuplicateEntry):
             self.api.data_source_create(ctx, SAMPLE_DATA_SOURCE)
 
     def test_data_source_fields(self):
@@ -173,10 +173,10 @@ class JobTest(test_base.ConductorManagerTestCase):
         lst = self.api.job_get_all(ctx)
         self.assertEqual(len(lst), 0)
 
-    def test_duplicate_data_source_create(self):
+    def test_duplicate_job_create(self):
         ctx = context.ctx()
         self.api.job_create(ctx, SAMPLE_JOB)
-        with self.assertRaises(RuntimeError):
+        with self.assertRaises(ex.DBDuplicateEntry):
             self.api.job_create(ctx, SAMPLE_JOB)
 
     def test_job_fields(self):
@@ -340,7 +340,7 @@ class JobBinaryInternalTest(test_base.ConductorManagerTestCase):
     def test_duplicate_job_binary_internal_create(self):
         ctx = context.ctx()
         self.api.job_binary_internal_create(ctx, SAMPLE_JOB_BINARY_INTERNAL)
-        with self.assertRaises(RuntimeError):
+        with self.assertRaises(ex.DBDuplicateEntry):
             self.api.job_binary_internal_create(ctx,
                                                 SAMPLE_JOB_BINARY_INTERNAL)
 
@@ -426,7 +426,7 @@ class JobBinaryTest(test_base.ConductorManagerTestCase):
                                                    job_origin_values)['id']
 
         # Delete while referenced, fails
-        with self.assertRaises(RuntimeError):
+        with self.assertRaises(ex.DeletionFailed):
             self.api.job_binary_destroy(ctx, job_binary_id)
 
         # Delete while not referenced
@@ -444,6 +444,6 @@ class JobBinaryTest(test_base.ConductorManagerTestCase):
     def test_duplicate_job_binary_create(self):
         ctx = context.ctx()
         self.api.job_binary_create(ctx, SAMPLE_JOB_BINARY)
-        with self.assertRaises(RuntimeError):
+        with self.assertRaises(ex.DBDuplicateEntry):
             self.api.job_binary_create(ctx,
                                        SAMPLE_JOB_BINARY)

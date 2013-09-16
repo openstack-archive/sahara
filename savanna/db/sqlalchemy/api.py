@@ -154,15 +154,19 @@ def cluster_create(context, values):
     with session.begin():
         try:
             cluster.save(session=session)
+        except db_exc.DBDuplicateEntry as e:
+            raise ex.DBDuplicateEntry("Duplicate entry for Cluster: %s"
+                                      % e.columns)
+
+        try:
             for ng in node_groups:
                 node_group = m.NodeGroup()
                 node_group.update({"cluster_id": cluster.id})
                 node_group.update(ng)
                 node_group.save(session=session)
-
         except db_exc.DBDuplicateEntry as e:
-            # raise exception about duplicated columns (e.columns)
-            raise RuntimeError("DBDuplicateEntry: %s" % e.columns)
+            raise ex.DBDuplicateEntry("Duplicate entry for NodeGroup: %s"
+                                      % e.columns)
 
     return cluster_get(context, cluster.id)
 
@@ -317,6 +321,11 @@ def cluster_template_create(context, values):
     with session.begin():
         try:
             cluster_template.save(session=session)
+        except db_exc.DBDuplicateEntry as e:
+            raise ex.DBDuplicateEntry("Duplicate entry for ClusterTemplate: %s"
+                                      % e.columns)
+
+        try:
             for ng in node_groups:
                 node_group = m.TemplatesRelation()
                 node_group.update({"cluster_template_id": cluster_template.id})
@@ -324,8 +333,8 @@ def cluster_template_create(context, values):
                 node_group.save(session=session)
 
         except db_exc.DBDuplicateEntry as e:
-            # raise exception about duplicated columns (e.columns)
-            raise RuntimeError("DBDuplicateEntry: %s" % e.columns)
+            raise ex.DBDuplicateEntry("Duplicate entry for TemplatesRelation:"
+                                      "%s" % e.columns)
 
     return cluster_template_get(context, cluster_template.id)
 
@@ -367,8 +376,8 @@ def node_group_template_create(context, values):
     try:
         node_group_template.save()
     except db_exc.DBDuplicateEntry as e:
-        # raise exception about duplicated columns (e.columns)
-        raise RuntimeError("DBDuplicateEntry: %s" % e.columns)
+        raise ex.DBDuplicateEntry("Duplicate entry for NodeGroupTemplate: %s"
+                                  % e.columns)
 
     return node_group_template
 
@@ -410,8 +419,8 @@ def data_source_create(context, values):
     try:
         data_source.save()
     except db_exc.DBDuplicateEntry as e:
-        # raise exception about duplicated columns (e.columns)
-        raise RuntimeError("DBDuplicateEntry: %s" % e.columns)
+        raise ex.DBDuplicateEntry("Duplicate entry for DataSource: %s"
+                                  % e.columns)
 
     return data_source
 
@@ -451,8 +460,7 @@ def job_create(context, values):
     try:
         job.save()
     except db_exc.DBDuplicateEntry as e:
-        # raise exception about duplicated columns (e.columns)
-        raise RuntimeError("DBDuplicateEntry: %s" % e.columns)
+        raise ex.DBDuplicateEntry("Duplicate entry for Job: %s" % e.columns)
 
     return job
 
@@ -498,8 +506,8 @@ def job_execution_create(context, values):
         try:
             job_ex.save()
         except db_exc.DBDuplicateEntry as e:
-            # raise exception about duplicated columns (e.columns)
-            raise RuntimeError("DBDuplicateEntry: %s" % e.columns)
+            raise ex.DBDuplicateEntry("Duplicate entry for JobExecution: %s"
+                                      % e.columns)
 
     return job_ex
 
@@ -575,8 +583,8 @@ def job_origin_create(context, values):
 
             job_origin.save(session=session)
         except db_exc.DBDuplicateEntry as e:
-            # raise exception about duplicated columns (e.columns)
-            raise RuntimeError("DBDuplicateEntry: %s" % e.columns)
+            raise ex.DBDuplicateEntry("Duplicate entry for JobOrigin: %s"
+                                      % e.columns)
 
     return job_origin
 
@@ -637,8 +645,8 @@ def job_binary_create(context, values):
     try:
         job_binary.save()
     except db_exc.DBDuplicateEntry as e:
-        # raise exception about duplicated columns (e.columns)
-        raise RuntimeError("DBDuplicateEntry: %s" % e.columns)
+        raise ex.DBDuplicateEntry("Duplicate entry for JobBinary: %s"
+                                  % e.columns)
 
     return job_binary
 
@@ -665,7 +673,8 @@ def job_binary_destroy(context, job_binary_id):
                                        "JobBinary id '%s' not found!")
 
         if _check_job_binary_referenced(session, job_binary.id):
-            raise RuntimeError("JobBinary is referenced and cannot be deleted")
+            raise ex.DeletionFailed("JobBinary is referenced"
+                                    "and cannot be deleted")
 
         session.delete(job_binary)
 
@@ -712,8 +721,8 @@ def job_binary_internal_create(context, values):
     try:
         job_binary_int.save()
     except db_exc.DBDuplicateEntry as e:
-        # raise exception about duplicated columns (e.columns)
-        raise RuntimeError("DBDuplicateEntry: %s" % e.columns)
+        raise ex.DBDuplicateEntry("Duplicate entry for JobBinaryInternal: %s"
+                                  % e.columns)
 
     return job_binary_internal_get(context, job_binary_int.id)
 
