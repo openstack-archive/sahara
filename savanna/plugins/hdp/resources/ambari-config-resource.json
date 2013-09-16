@@ -1735,15 +1735,6 @@
                 },
                 {
                     "applicable_target": "general",
-                    "config_type": "string",
-                    "default_value": "http://s3.amazonaws.com/dev.hortonworks.com/AMBARI.b6-1.x/repos/centos6/AMBARI.b6-1.x-1.el6.noarch.rpm",
-                    "description": "...",
-                    "is_optional": true,
-                    "name": "rpm",
-                    "scope": "cluster"
-                },
-                {
-                    "applicable_target": "general",
                     "config_type": "int",
                     "default_value": 8080,
                     "description": "...",
