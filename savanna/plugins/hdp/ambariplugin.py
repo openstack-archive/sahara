@@ -117,13 +117,21 @@ class AmbariPlugin(p.ProvisioningPluginBase):
             node_groups.append(node_group)
 
         cluster_configs = dict()
+        config_resource = self.get_configs(version)
         for entry in normalized_config.cluster_configs:
-            ci = entry.config
-            # get the associated service dictionary
-            target = entry.config.applicable_target
-            service_dict = cluster_configs.get(target, {})
-            service_dict[ci.name] = entry.value
-            cluster_configs[target] = service_dict
+            user_input = next((ui for ui in config_resource
+                               if entry.config.name == ui.name), None)
+            if user_input is not None:
+                ci = entry.config
+                # get the associated service dictionary
+                target = entry.config.applicable_target
+                service_dict = cluster_configs.get(target, {})
+                service_dict[ci.name] = entry.value
+                cluster_configs[target] = service_dict
+            else:
+                LOG.debug('Template based input "{0}" is being filtered out as'
+                          ' it is not considered a user input'
+                          .format(entry.config.name))
 
         ctx = context.ctx()
         return cluster_template_create(ctx,
