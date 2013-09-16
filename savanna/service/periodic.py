@@ -17,9 +17,13 @@ import random
 
 from oslo.config import cfg
 
+from savanna import conductor as c
+from savanna import context
 from savanna.openstack.common import log
 from savanna.openstack.common import periodic_task
 from savanna.openstack.common import threadgroup
+from savanna.service.edp import job_manager
+
 
 LOG = log.getLogger(__name__)
 
@@ -41,15 +45,37 @@ periodic_opts = [
 CONF = cfg.CONF
 CONF.register_opts(periodic_opts)
 
+conductor = c.API
+
 
 class SavannaPeriodicTasks(periodic_task.PeriodicTasks):
     @periodic_task.periodic_task(spacing=45, run_immediately=True)
     def update_job_statuses(self, ctx):
         LOG.debug('Updating job statuses')
+        ctx = context.Context()
+        context.set_ctx(ctx)
+        job_manager.update_job_statuses()
+        context.set_ctx(None)
 
     @periodic_task.periodic_task(spacing=90)
     def terminate_unneeded_clusters(self, ctx):
         LOG.debug('Terminating unneeded clusters')
+        ctx = context.Context()
+        for cluster in conductor.cluster_get_all(ctx, status='Active'):
+            if not cluster.is_transient:
+                continue
+
+            jc = conductor.job_execution_count(ctx,
+                                               end_time=None,
+                                               cluster_id=cluster.id)
+
+            if jc > 0:
+                continue
+
+            #TODO(akuznetsov) setup trust token and shutdown cluster
+            LOG.debug('Terminated cluster %s with id %s' %
+                      (cluster.name, cluster.id))
+        context.set_ctx(None)
 
 
 def setup(app):

@@ -13,6 +13,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import datetime
+
 from novaclient import exceptions as nova_exceptions
 from oslo.config import cfg
 
@@ -377,8 +379,10 @@ def _rollback_cluster_scaling(cluster, instances, ex):
 
 def _clean_job_executions(cluster):
     ctx = context.ctx()
-    for je in conductor.job_execution_get_by_cluster(ctx, cluster.id):
-        conductor.job_execution_update(ctx, je, {"cluster_id": None})
+    for je in conductor.job_execution_get_all(ctx, cluster_id=cluster.id):
+        update = {"cluster_id": None,
+                  "end_time": datetime.datetime.now()}
+        conductor.job_execution_update(ctx, je, update)
 
 
 def _shutdown_instances(cluster):

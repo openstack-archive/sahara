@@ -19,6 +19,7 @@ from oslo.config import cfg
 
 from savanna import conductor as c
 from savanna import context
+from savanna.openstack.common import log
 from savanna.openstack.common import uuidutils
 from savanna.plugins import base as plugin_base
 from savanna.plugins.general import utils as u
@@ -33,6 +34,8 @@ from savanna.service.edp.binary_retrievers import dispatch
 from savanna.utils import remote
 from savanna.utils import xmlutils as x
 
+LOG = log.getLogger(__name__)
+
 opts = [
     cfg.StrOpt('job_workflow_postfix',
                default='',
@@ -45,20 +48,36 @@ CONF.register_opts(opts)
 
 conductor = c.API
 
+terminated_job_states = ['DONEWITHERROR', 'FAILED', 'KILLED', 'SUCCEEDED']
+
 
 def get_job_status(job_execution_id):
     ctx = context.ctx()
     job_execution = conductor.job_execution_get(ctx, job_execution_id)
     cluster = conductor.cluster_get(ctx, job_execution.cluster_id)
 
-    if cluster.status != 'Active':
-        return job_execution.status
+    if cluster is None or cluster.status != 'Active':
+        return job_execution
 
     client = o.OozieClient(cluster['info']['JobFlow']['Oozie'] + "/oozie/")
     job_info = client.get_job_status(job_execution.oozie_job_id)
+    update = {"info": job_info}
+    if job_info['status'] in terminated_job_states:
+        update['end_time'] = datetime.datetime.now()
+
     job_execution = conductor.job_execution_update(ctx, job_execution,
                                                    {"info": job_info})
     return job_execution
+
+
+def update_job_statuses():
+    ctx = context.ctx()
+    for je in conductor.job_execution_get_all(ctx, end_time=None):
+        try:
+            get_job_status(je.id)
+        except Exception as e:
+            LOG.exception("Error during update job execution %s: %s" %
+                          (je.id, e))
 
 
 def cancel_job(job_execution_id):

@@ -55,6 +55,17 @@ def model_query(model, context, session=None, project_only=None):
     return query
 
 
+def count_query(model, context, session=None, project_only=None):
+    """Count query helper.
+
+    :param model: base model to query
+    :param context: context to query under
+    :param project_only: if present and context is user-type, then restrict
+            query to match the context's project_id.
+    """
+    return model_query(sa.func.count(model.id), context, session, project_only)
+
+
 def setup_db():
     try:
         engine = db_session.get_engine(sqlite_fk=True)
@@ -128,9 +139,9 @@ def cluster_get(context, cluster_id):
     return _cluster_get(context, get_session(), cluster_id)
 
 
-def cluster_get_all(context):
+def cluster_get_all(context, **kwargs):
     query = model_query(m.Cluster, context)
-    return query.all()
+    return query.filter_by(**kwargs).all()
 
 
 def cluster_create(context, values):
@@ -475,14 +486,14 @@ def job_execution_get(context, job_execution_id):
     return _job_execution_get(context, job_execution_id)
 
 
-def job_execution_get_by_cluster(context, cluster_id):
-    query = model_query(m.JobExecution, context, get_session())
-    return query.filter_by(cluster_id=cluster_id).all()
-
-
-def job_execution_get_all(context):
+def job_execution_get_all(context, **kwargs):
     query = model_query(m.JobExecution, context)
-    return query.all()
+    return query.filter_by(**kwargs).all()
+
+
+def job_execution_count(context, **kwargs):
+    query = count_query(m.JobExecution, context)
+    return query.filter_by(**kwargs).first()[0]
 
 
 def job_execution_create(context, values):

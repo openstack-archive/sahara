@@ -111,9 +111,11 @@ class ConductorManager(db_base.Base):
         """Return the cluster or None if it does not exist."""
         return self.db.cluster_get(context, cluster)
 
-    def cluster_get_all(self, context):
-        """Get all clusters."""
-        return self.db.cluster_get_all(context)
+    def cluster_get_all(self, context, **kwargs):
+        """Get all clusters filtered by **kwargs  e.g.
+            cluster_get_all(plugin_name='vanilla', hadoop_version='1.1')
+            """
+        return self.db.cluster_get_all(context, **kwargs)
 
     def cluster_create(self, context, values):
         """Create a cluster from the values dictionary."""
@@ -290,13 +292,17 @@ class ConductorManager(db_base.Base):
         """Return the JobExecution or None if it does not exist."""
         return self.db.job_execution_get(context, job_execution)
 
-    def job_execution_get_by_cluster(self, context, cluster):
-        """Return the all JobExecutions for specific cluster."""
-        return self.db.job_execution_get_by_cluster(context, cluster)
+    def job_execution_get_all(self, context, **kwargs):
+        """Get all JobExecutions filtered by **kwargs  e.g.
+            job_execution_get_all(cluster_id=12, input_id=123)
+        """
+        return self.db.job_execution_get_all(context, **kwargs)
 
-    def job_execution_get_all(self, context):
-        """Get all JobExecutions."""
-        return self.db.job_execution_get_all(context)
+    def job_execution_count(self, context, **kwargs):
+        """Count number of JobExecutions filtered by **kwargs  e.g.
+            job_execution_count(cluster_id=12, input_id=123)
+        """
+        return self.db.job_execution_count(context, **kwargs)
 
     def job_execution_create(self, context, values):
         """Create a JobExecution from the values dictionary."""
