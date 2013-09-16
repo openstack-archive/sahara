@@ -104,7 +104,9 @@ class AmbariPlugin(p.ProvisioningPluginBase):
 
         #TODO(jspeidel):  can we get the name (first arg) from somewhere?
 
-        cluster_template = s.convert(cluster_template, normalized_config)
+        cluster_template = s.convert(cluster_template, normalized_config,
+                                     self.get_configs(
+                                         cluster_template.hadoop_version))
 
         return cluster_template
 

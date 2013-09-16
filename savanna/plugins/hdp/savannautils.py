@@ -19,7 +19,7 @@ from savanna.openstack.common import log as logging
 LOG = logging.getLogger(__name__)
 
 
-def convert(cluster_template, normalized_config):
+def convert(cluster_template, normalized_config, config_resource):
     cluster_template.hadoop_version = normalized_config.hadoop_version
     for ng in normalized_config.node_groups:
         template_relation = m.TemplatesRelation(ng.name, ng.flavor,
@@ -27,13 +27,21 @@ def convert(cluster_template, normalized_config):
                                                 ng.count)
         cluster_template.node_groups.append(template_relation)
     for entry in normalized_config.cluster_configs:
-        ci = entry.config
-        # get the associated service dictionary
-        service_dict = cluster_template.cluster_configs.get(
-            entry.config.applicable_target, {})
-        service_dict[ci.name] = entry.value
-        cluster_template.cluster_configs[entry.config.applicable_target] = \
-            service_dict
+        user_input = next((ui for ui in config_resource
+                           if entry.config.name == ui.name), None)
+        if user_input is not None:
+            ci = entry.config
+            # get the associated service dictionary
+            service_dict = cluster_template.cluster_configs.get(
+                entry.config.applicable_target, {})
+            service_dict[ci.name] = entry.value
+            cluster_template.cluster_configs[
+                entry.config.applicable_target] = \
+                service_dict
+        else:
+            LOG.debug('Template based input {0} is being filtered out as it '
+                      'is not considered a user input'
+                      .format(entry.config.name))
 
     LOG.debug('Cluster configs: {0}'.format(cluster_template.cluster_configs))
 
