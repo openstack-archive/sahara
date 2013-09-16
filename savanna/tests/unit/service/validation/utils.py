@@ -122,7 +122,7 @@ def start_patch():
         @property
         def tags(self):
             if self.name == 'test':
-                return ['vanilla', '1.1.2']
+                return ['vanilla', '1.2.1']
             else:
                 return ['wrong_tag']
 
@@ -282,7 +282,7 @@ class ValidationTestCase(unittest2.TestCase):
         data = {
             'name': 'test-cluster',
             'plugin_name': 'vanilla',
-            'hadoop_version': '1.1.2',
+            'hadoop_version': '1.2.1',
             'cluster_configs': {
                 'HDFS': {
                     u'hadoop.tmp.dir': '/temp/'
@@ -317,14 +317,14 @@ class ValidationTestCase(unittest2.TestCase):
         data = {
             'name': 'test-cluster',
             'plugin_name': 'vanilla',
-            'hadoop_version': '1.1.2',
+            'hadoop_version': '1.2.1',
             'default_image_id': '550e8400-e29b-41d4-a716-446655440000'
         }
         self._assert_create_object_validation(data=data)
         data = {
             'name': 'test-cluster',
             'plugin_name': 'vanilla',
-            'hadoop_version': '1.1.2',
+            'hadoop_version': '1.2.1',
             'default_image_id': '813fe450-40d2-4acc-ade5-ea753a1bd5bc'
         }
         self._assert_create_object_validation(
@@ -333,4 +333,4 @@ class ValidationTestCase(unittest2.TestCase):
                        "Tags of requested image "
                        "'813fe450-40d2-4acc-ade5-ea753a1bd5bc' "
                        "don't contain required tags "
-                       "['vanilla', '1.1.2']"))
+                       "['vanilla', '1.2.1']"))

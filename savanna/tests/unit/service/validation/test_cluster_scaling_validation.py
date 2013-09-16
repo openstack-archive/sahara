@@ -57,7 +57,7 @@ class TestScalingValidation(unittest2.TestCase):
 
     def test_check_cluster_scaling_resize_ng(self):
         ng1 = tu._make_ng_dict('ng', '42', ['namenode'], 1)
-        cluster = tu._create_cluster("cluster1", "tenant1", "vanilla", "1.1.2",
+        cluster = tu._create_cluster("cluster1", "tenant1", "vanilla", "1.2.1",
                                      [ng1], status='Validating', id='12321')
 
         self._assert_check_scaling(data={}, cluster=cluster,
@@ -67,7 +67,7 @@ class TestScalingValidation(unittest2.TestCase):
                                    "status. Cluster status: "
                                    "Validating")
 
-        cluster = tu._create_cluster("cluster1", "tenant1", "vanilla", "1.1.2",
+        cluster = tu._create_cluster("cluster1", "tenant1", "vanilla", "1.2.1",
                                      [ng1], status='Active', id='12321')
         data = {
             'resize_node_groups': [

@@ -51,11 +51,11 @@ class VanillaProvider(p.ProvisioningPluginBase):
     def get_description(self):
         return (
             "This plugin provides an ability to launch vanilla Apache Hadoop "
-            "1.1.2 cluster without any management consoles. Also it can "
+            "1.2.1 cluster without any management consoles. Also it can "
             "deploy Oozie 3.3.2")
 
     def get_versions(self):
-        return ['1.1.2']
+        return ['1.2.1']
 
     def get_configs(self, hadoop_version):
         return c_helper.get_plugin_configs()

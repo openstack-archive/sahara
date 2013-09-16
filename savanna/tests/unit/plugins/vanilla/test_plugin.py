@@ -56,12 +56,12 @@ class VanillaPluginTest(unittest2.TestCase):
             self.ng[i]['count'] = args[i]
             lst.append(self.ng[i])
 
-        cl = tu._create_cluster("cluster1", "tenant1", "vanilla", "1.1.2", lst)
+        cl = tu._create_cluster("cluster1", "tenant1", "vanilla", "1.2.1", lst)
 
         self.pl.validate(cl)
 
     def test_get_configs(self):
-        cl_configs = self.pl.get_configs("1.1.2")
+        cl_configs = self.pl.get_configs("1.2.1")
         for cfg in cl_configs:
             if cfg.config_type is "bool":
                 self.assertIsInstance(cfg.default_value, bool)

@@ -32,7 +32,7 @@ class TestClusterTemplateCreateValidation(u.ValidationTestCase):
             data={
                 'name': "test-name",
                 'plugin_name': "vanilla",
-                'hadoop_version': "1.1.2",
+                'hadoop_version': "1.2.1",
                 'node_groups': [
                     {'name': 'a'}
                 ]
@@ -45,7 +45,7 @@ class TestClusterTemplateCreateValidation(u.ValidationTestCase):
             data={
                 'name': "test-name",
                 'plugin_name': "vanilla",
-                'hadoop_version': "1.1.2",
+                'hadoop_version': "1.2.1",
                 'node_groups': [
                     {'name': 'a',
                      'flavor_id': '42'}
@@ -60,7 +60,7 @@ class TestClusterTemplateCreateValidation(u.ValidationTestCase):
             data={
                 'name': "test-name",
                 'plugin_name': "vanilla",
-                'hadoop_version': "1.1.2",
+                'hadoop_version': "1.2.1",
                 'node_groups': [
                     {'name': 'a',
                      'flavor_id': '42',
@@ -77,7 +77,7 @@ class TestClusterTemplateCreateValidation(u.ValidationTestCase):
             data={
                 'name': "test-name",
                 'plugin_name': "vanilla",
-                'hadoop_version': "1.1.2",
+                'hadoop_version': "1.2.1",
                 'node_groups': [
                     {
                         'name': 'a',
@@ -102,7 +102,7 @@ class TestClusterTemplateCreateValidation(u.ValidationTestCase):
             data={
                 'name': "test-name",
                 'plugin_name': "vanilla",
-                'hadoop_version': "1.1.2",
+                'hadoop_version': "1.2.1",
                 'node_groups': [
                     {
                         "node_group_template_id": "",
@@ -119,7 +119,7 @@ class TestClusterTemplateCreateValidation(u.ValidationTestCase):
             data={
                 'name': "test-name",
                 'plugin_name': "vanilla",
-                'hadoop_version': "1.1.2",
+                'hadoop_version': "1.2.1",
                 'node_groups': [
                     {
                         "node_group_template_id": "test",
@@ -141,7 +141,7 @@ class TestClusterTemplateCreateValidation(u.ValidationTestCase):
             data={
                 'name': "test-name",
                 'plugin_name': "vanilla",
-                'hadoop_version': "1.1.2",
+                'hadoop_version': "1.2.1",
                 'node_groups': [
                     {
                         "node_group_template_id": "550e8400-e29b-41d4-a716-"
@@ -158,7 +158,7 @@ class TestClusterTemplateCreateValidation(u.ValidationTestCase):
         data = {
             'name': "testname",
             'plugin_name': "vanilla",
-            'hadoop_version': "1.1.2"
+            'hadoop_version': "1.2.1"
         }
         self._assert_object_name_validation(data, 'valid_name')
 
@@ -166,7 +166,7 @@ class TestClusterTemplateCreateValidation(u.ValidationTestCase):
         data = {
             'name': "testname",
             'plugin_name': "vanilla",
-            'hadoop_version': "1.1.2"
+            'hadoop_version': "1.2.1"
         }
         self._assert_types(data)
 
@@ -197,7 +197,7 @@ class TestClusterTemplateCreateValidation(u.ValidationTestCase):
             data={
                 'name': 'testname',
                 'plugin_name': 'vanilla',
-                'hadoop_version': '1.1.2'
+                'hadoop_version': '1.2.1'
             })
 
     def test_cluster_template_create_v_plugin_name_exists(self):
@@ -205,7 +205,7 @@ class TestClusterTemplateCreateValidation(u.ValidationTestCase):
             data={
                 'name': "test-name",
                 'plugin_name': "wrong_plugin",
-                'hadoop_version': "1.1.2",
+                'hadoop_version': "1.2.1",
             },
             bad_req_i=(1, 'INVALID_REFERENCE',
                        "Savanna doesn't contain plugin "
@@ -216,7 +216,7 @@ class TestClusterTemplateCreateValidation(u.ValidationTestCase):
         data = {
             'name': 'test',
             'plugin_name': 'vanilla',
-            'hadoop_version': '1.1.2'
+            'hadoop_version': '1.2.1'
         }
         self._assert_create_object_validation(
             data=data,

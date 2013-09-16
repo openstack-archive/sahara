@@ -4,7 +4,7 @@ IMAGE_ID = '42abc'  # ID for instance image
 
 NODE_USERNAME = 'username'  # username for master node
 
-HADOOP_VERSION = '1.1.2'
+HADOOP_VERSION = '1.2.1'
 HADOOP_USER = 'hadoop'
 HADOOP_DIRECTORY = '/usr/share/hadoop'
 HADOOP_LOG_DIRECTORY = '/mnt/log/hadoop/hadoop/userlogs'
