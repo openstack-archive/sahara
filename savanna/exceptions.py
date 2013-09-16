@@ -89,6 +89,8 @@ class RemoteCommandException(SavannaException):
         if stdout:
             self.message += '\nSTDOUT:\n' + stdout
 
+        self.message = self.message.decode('ascii', 'ignore')
+
 
 class InvalidDataException(SavannaException):
     """General exception to use for invalid data
