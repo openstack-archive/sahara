@@ -176,9 +176,8 @@ def cluster_update(context, cluster_id, values):
             raise ex.NotFoundException(cluster_id,
                                        "Cluster id '%s' not found!")
         cluster.update(values)
-        cluster.save(session=session)
 
-    return cluster_get(context, cluster_id)
+    return cluster
 
 
 def cluster_destroy(context, cluster_id):
@@ -207,7 +206,7 @@ def node_group_add(context, cluster_id, values):
         node_group = m.NodeGroup()
         node_group.update({"cluster_id": cluster_id})
         node_group.update(values)
-        node_group.save(session=session)
+        session.add(node_group)
 
     return node_group.id
 
@@ -217,7 +216,6 @@ def node_group_update(context, node_group_id, values):
     with session.begin():
         node_group = _node_group_get(context, session, node_group_id)
         node_group.update(values)
-        node_group.save(session=session)
 
 
 def node_group_remove(context, node_group_id):
@@ -246,11 +244,10 @@ def instance_add(context, node_group_id, values):
         instance = m.Instance()
         instance.update({"node_group_id": node_group_id})
         instance.update(values)
-        instance.save(session=session)
+        session.add(instance)
 
         node_group = _node_group_get(context, session, node_group_id)
         node_group.count += 1
-        node_group.save(session=session)
 
     return instance.id
 
@@ -260,7 +257,6 @@ def instance_update(context, instance_id, values):
     with session.begin():
         instance = _instance_get(context, session, instance_id)
         instance.update(values)
-        instance.save(session=session)
 
 
 def instance_remove(context, instance_id):
@@ -277,7 +273,6 @@ def instance_remove(context, instance_id):
         node_group_id = instance.node_group_id
         node_group = _node_group_get(context, session, node_group_id)
         node_group.count -= 1
-        node_group.save(session=session)
 
 
 ## Volumes ops
@@ -287,7 +282,6 @@ def append_volume(context, instance_id, volume_id):
     with session.begin():
         instance = _instance_get(context, session, instance_id)
         instance.volumes.append(volume_id)
-        instance.save(session=session)
 
 
 def remove_volume(context, instance_id, volume_id):
@@ -295,7 +289,6 @@ def remove_volume(context, instance_id, volume_id):
     with session.begin():
         instance = _instance_get(context, session, instance_id)
         instance.volumes.remove(volume_id)
-        instance.save(session=session)
 
 
 ## Cluster Template ops
@@ -477,13 +470,13 @@ def job_destroy(context, job_id):
 
 ## JobExecution ops
 
-def _job_execution_get(context, job_execution_id):
-    query = model_query(m.JobExecution, context, get_session())
+def _job_execution_get(context, session, job_execution_id):
+    query = model_query(m.JobExecution, context, session)
     return query.filter_by(id=job_execution_id).first()
 
 
 def job_execution_get(context, job_execution_id):
-    return _job_execution_get(context, job_execution_id)
+    return _job_execution_get(context, get_session(), job_execution_id)
 
 
 def job_execution_get_all(context, **kwargs):
@@ -511,24 +504,23 @@ def job_execution_create(context, values):
     return job_ex
 
 
-def job_execution_update(context, job_execution, values):
+def job_execution_update(context, job_execution_id, values):
     session = get_session()
 
     with session.begin():
-        job_ex = _job_execution_get(context, job_execution)
+        job_ex = _job_execution_get(context, session, job_execution_id)
         if not job_ex:
-            raise ex.NotFoundException(job_execution,
+            raise ex.NotFoundException(job_execution_id,
                                        "JobExecution id '%s' not found!")
         job_ex.update(values)
-        job_ex.save(session=session)
 
-    return _job_execution_get(context, job_execution)
+    return job_ex
 
 
 def job_execution_destroy(context, job_execution_id):
     session = get_session()
     with session.begin():
-        job_ex = _job_execution_get(context, job_execution_id)
+        job_ex = _job_execution_get(context, session, job_execution_id)
 
         if not job_ex:
             raise ex.NotFoundException(job_execution_id,
@@ -589,17 +581,17 @@ def job_origin_create(context, values):
     return job_origin
 
 
-def job_origin_update(context, job_origin, values):
+def job_origin_update(context, job_origin_id, values):
     session = get_session()
 
     with session.begin():
-        job_origin = _job_origin_get(context, session, job_origin)
+        job_origin = _job_origin_get(context, session, job_origin_id)
         if not job_origin:
-            raise ex.NotFoundException(job_origin,
+            raise ex.NotFoundException(job_origin_id,
                                        "JobOrigin id '%s' not found!")
         job_origin.update(values)
-        job_origin.save()
-    return _job_origin_get(context, session, job_origin)
+
+    return job_origin
 
 
 def job_origin_destroy(context, job_origin_id):
@@ -648,7 +640,7 @@ def job_binary_create(context, values):
         # raise exception about duplicated columns (e.columns)
         raise RuntimeError("DBDuplicateEntry: %s" % e.columns)
 
-    return job_binary_get(context, job_binary.id)
+    return job_binary
 
 
 def _check_job_binary_referenced(session, id):
