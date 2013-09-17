@@ -21,6 +21,8 @@ class HiveWorkflowCreator(base_workflow.OozieWorkflowCreator):
 
     def __init__(self):
         super(HiveWorkflowCreator, self).__init__('hive')
+        hive_elem = self.doc.getElementsByTagName('hive')[0]
+        hive_elem.setAttribute('xmlns', 'uri:oozie:hive-action:0.2')
 
     def build_workflow_xml(self, script, job_xml, prepare={},
                            configuration=None, params={},

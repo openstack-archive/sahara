@@ -140,7 +140,7 @@ def get_plugin_configs():
     return PLUGIN_CONFIGS
 
 
-def set_general_configs(hive_hostname):
+def set_general_configs(hive_hostname, passwd_mysql):
     GENERAL_CONFS.update({
         ENABLE_SWIFT.name: {
             'default_value': ENABLE_SWIFT.default_value,
@@ -148,7 +148,7 @@ def set_general_configs(hive_hostname):
         },
         ENABLE_MYSQL.name: {
             'default_value': ENABLE_MYSQL.default_value,
-            'conf': m_h.get_required_mysql_configs(hive_hostname)
+            'conf': m_h.get_required_mysql_configs(hive_hostname, passwd_mysql)
         }
     })
 
@@ -168,9 +168,9 @@ def generate_cfg_from_general(cfg, configs, general_config,
     return cfg
 
 
-def generate_xml_configs(configs, storage_path, nn_hostname,
-                         jt_hostname, oozie_hostname, hive_hostname):
-    set_general_configs(hive_hostname)
+def generate_xml_configs(configs, storage_path, nn_hostname, jt_hostname,
+                         oozie_hostname, hive_hostname, passwd_hive_mysql):
+    set_general_configs(hive_hostname, passwd_hive_mysql)
     # inserting common configs depends on provisioned VMs and HDFS placement
     # TODO(aignatov): should be moved to cluster context
     cfg = {

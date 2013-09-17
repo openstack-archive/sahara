@@ -16,6 +16,7 @@
 from savanna import conductor
 from savanna import context
 from savanna.openstack.common import log as logging
+from savanna.openstack.common import uuidutils
 from savanna.plugins.general import exceptions as ex
 from savanna.plugins.general import utils
 from savanna.plugins import provisioning as p
@@ -164,7 +165,7 @@ class VanillaProvider(p.ProvisioningPluginBase):
         LOG.info('Cluster %s has been started successfully' % cluster.name)
         self._set_cluster_info(cluster)
 
-    def _extract_configs_to_extra(self, cluster):
+    def _extract_configs_to_extra(self, cluster, passwd_hive_mysql):
         nn = utils.get_namenode(cluster)
         jt = utils.get_jobtracker(cluster)
         oozie = utils.get_oozie(cluster)
@@ -181,7 +182,8 @@ class VanillaProvider(p.ProvisioningPluginBase):
                                                      oozie.hostname
                                                      if oozie else None,
                                                      hive.hostname
-                                                     if hive else None),
+                                                     if hive else None,
+                                                     passwd_hive_mysql),
                 'setup_script': c_helper.generate_setup_script(
                     ng.storage_paths,
                     c_helper.extract_environment_confs(ng.configuration),
@@ -237,7 +239,9 @@ class VanillaProvider(p.ProvisioningPluginBase):
                     run.start_process(r, "tasktracker")
 
     def _push_configs_to_nodes(self, cluster, instances=None):
-        extra = self._extract_configs_to_extra(cluster)
+        passwd_mysql = uuidutils.generate_uuid() \
+            if utils.get_hiveserver(cluster) else None
+        extra = self._extract_configs_to_extra(cluster, passwd_mysql)
 
         if instances is None:
             instances = utils.get_instances(cluster)
@@ -304,6 +308,8 @@ class VanillaProvider(p.ProvisioningPluginBase):
                 sql_script = f.get_file_text(
                     'plugins/vanilla/resources/create_hive_db.sql'
                 )
+                sql_script = sql_script.replace('pass',
+                                                passwd_mysql)
                 files.update({'/tmp/create_hive_db.sql': sql_script})
             remote.get_remote(hive_server).write_files_to(files)
 
