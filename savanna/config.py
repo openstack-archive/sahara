@@ -15,6 +15,8 @@
 
 from oslo.config import cfg
 
+from savanna.version import version_info as savanna_version
+
 cli_opts = [
     cfg.StrOpt('host', default='',
                help='Hostname of IP address that will be used to listen on'),
@@ -57,7 +59,8 @@ def parse_configs(argv=None, conf_files=None):
         global ARGV
         ARGV = argv
     try:
-        CONF(ARGV, project='savanna', default_config_files=conf_files)
+        CONF(ARGV, project='savanna', version=savanna_version.version_string(),
+             default_config_files=conf_files)
     except cfg.RequiredOptError as roe:
         # TODO(slukjanov): replace RuntimeError with Savanna-specific exception
         raise RuntimeError("Option '%s' is required for config group "
