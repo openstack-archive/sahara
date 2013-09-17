@@ -21,7 +21,6 @@ from savanna import context
 from savanna import exceptions as exc
 from savanna.openstack.common import jsonutils as json
 from savanna.openstack.common import log as logging
-from savanna.openstack.common import uuidutils
 from savanna.plugins.hdp import blueprintprocessor as bp
 from savanna.plugins.hdp import clusterspec
 from savanna.plugins.hdp import configprovider as cfg
@@ -100,7 +99,8 @@ class AmbariPlugin(p.ProvisioningPluginBase):
 
         return node_processes
 
-    def convert(self, config, plugin_name, version, cluster_template_create):
+    def convert(self, config, plugin_name, version, template_name,
+                cluster_template_create):
         normalized_config = clusterspec.ClusterSpec(config).normalize()
 
         #TODO(jspeidel):  can we get the name (first arg) from somewhere?
@@ -134,7 +134,7 @@ class AmbariPlugin(p.ProvisioningPluginBase):
 
         ctx = context.ctx()
         return cluster_template_create(ctx,
-                                       {"name": uuidutils.generate_uuid(),
+                                       {"name": template_name,
                                         "plugin_name": plugin_name,
                                         "hadoop_version": version,
                                         "node_groups": node_groups,

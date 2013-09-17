@@ -64,6 +64,7 @@ class AmbariPluginTest(unittest2.TestCase):
                                'resources',
                                'default-cluster.template'), 'r') as f:
             cluster = plugin.convert(f.read(), 'ambari', '1.3.0',
+                                     'test-plugin',
                                      create_cluster_template)
         with open(os.path.join(os.path.realpath('../plugins'), 'hdp',
                                'resources',

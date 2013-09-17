@@ -154,12 +154,13 @@ def plugins_get_version(plugin_name, version):
     return u.render(api.get_plugin(plugin_name, version).wrapped_dict)
 
 
-@rest.post_file('/plugins/<plugin_name>/<version>/convert-config')
+@rest.post_file('/plugins/<plugin_name>/<version>/convert-config/<name>')
 @v.check_exists(api.get_plugin, plugin_name='plugin_name', version='version')
 @v.validate(v_p.CONVERT_TO_TEMPLATE_SCHEMA, v_p.check_convert_to_template)
-def plugins_convert_to_cluster_template(plugin_name, version, data):
+def plugins_convert_to_cluster_template(plugin_name, version, name, data):
     return u.render(api.convert_to_cluster_template(plugin_name,
                                                     version,
+                                                    name,
                                                     data).to_wrapped_dict())
 
 
