@@ -94,7 +94,7 @@ class NodeGroupTemplates(test_base.ConductorManagerTestCase):
     def test_duplicate_ngt_create(self):
         ctx = context.ctx()
         self.api.node_group_template_create(ctx, SAMPLE_NGT)
-        with self.assertRaises(RuntimeError):
+        with self.assertRaises(ex.DBDuplicateEntry):
             self.api.node_group_template_create(ctx, SAMPLE_NGT)
 
     def test_ngt_fields(self):
@@ -150,7 +150,7 @@ class ClusterTemplates(test_base.ConductorManagerTestCase):
     def test_duplicate_clt_create(self):
         ctx = context.ctx()
         self.api.cluster_template_create(ctx, SAMPLE_CLT)
-        with self.assertRaises(RuntimeError):
+        with self.assertRaises(ex.DBDuplicateEntry):
             self.api.cluster_template_create(ctx, SAMPLE_CLT)
 
     def test_clt_fields(self):

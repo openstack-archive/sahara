@@ -81,7 +81,7 @@ class ClusterTest(test_base.ConductorManagerTestCase):
         ctx = context.ctx()
         self.api.cluster_create(ctx, SAMPLE_CLUSTER)
 
-        with self.assertRaises(RuntimeError):
+        with self.assertRaises(ex.DBDuplicateEntry):
             self.api.cluster_create(ctx, SAMPLE_CLUSTER)
 
     def test_cluster_fields(self):
