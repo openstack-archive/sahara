@@ -24,12 +24,14 @@
 
 # List of plugins to be loaded. Savanna preserves the order of
 # the list when returning it. (list value)
-plugins=vanilla
+plugins=vanilla,hdp
 
 
 [plugin:vanilla]
 plugin_class=savanna.plugins.vanilla.plugin:VanillaProvider
 
+[plugin:hdp]
+plugin_class=savanna.plugins.hdp.ambariplugin:AmbariPlugin
 
 [database]
 
