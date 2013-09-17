@@ -13,12 +13,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import urllib
+
 from savanna import context
 from savanna.db import models as m
 from savanna.db import storage as s
 from savanna.openstack.common import excutils
 from savanna.openstack.common import log as logging
-from savanna.openstack.common import uuidutils
 from savanna.plugins import base as plugin_base
 from savanna.plugins import provisioning
 from savanna.service import instances as i
@@ -188,10 +189,10 @@ def get_plugin(plugin_name, version=None):
         return res
 
 
-def convert_to_cluster_template(plugin_name, version, config_file):
+def convert_to_cluster_template(plugin_name, version, name, config_file):
     plugin = plugin_base.PLUGINS.get_plugin(plugin_name)
     tenant_id = context.current().tenant_id
-    name = uuidutils.generate_uuid()
+    name = urllib.unquote(name)
     ct = m.ClusterTemplate(name, tenant_id, plugin_name, version)
     plugin.convert(ct, config_file)
 
