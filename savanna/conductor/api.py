@@ -301,6 +301,21 @@ class LocalApi(object):
         """Destroy the JobOrigin or raise if it does not exist."""
         self._manager.job_origin_destroy(context, _get_id(job_origin))
 
+    def job_origin_main_name(self, context, job_origin):
+        """Return the name of the first main JobBinary or None
+
+        At present the 'mains' element is expected to contain a single element.
+        In the future if 'mains' contains more than one element we will need
+        a scheme or convention for retrieving a name from the list of binaries.
+
+        :param job_origin: This is expected to be a JobOrigin object
+        """
+        if job_origin.mains:
+            binary = self.job_binary_get(context, job_origin.mains[0])
+            if binary is not None:
+                return binary["name"]
+        return None
+
     ## JobBinary ops
 
     @r.wrap(r.JobBinary)
