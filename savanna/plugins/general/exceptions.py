@@ -77,6 +77,13 @@ class NodeGroupCannotBeScaled(e.SavannaException):
         super(NodeGroupCannotBeScaled, self).__init__(message, code)
 
 
+class ClusterCannotBeScaled(e.SavannaException):
+    def __init__(self, cluster_name, reason):
+        self.message = ("Cluster %s cannot be scaled : "
+                        "%s" % (cluster_name, reason))
+        self.code = "CLUSTER_CANNOT_BE_SCALED"
+
+
 class HiveWithoutJobTracker(e.SavannaException):
     def __init__(self):
         message = "Hive cannot be configured without JobTracker"

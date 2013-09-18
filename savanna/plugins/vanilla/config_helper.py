@@ -310,9 +310,11 @@ def extract_hadoop_path(lst, hadoop_dir):
     return ",".join([p + hadoop_dir for p in lst])
 
 
-def determine_cluster_config(cluster, config_name):
-    if config_name in cluster.cluster_configs:
-        cluster.cluster_configs.get(config_name)
+def determine_cluster_config(cluster, service, config_name):
+    if service in cluster.cluster_configs:
+        service_configs = cluster.cluster_configs.get(service)
+        if config_name in service_configs:
+            return service_configs.get(config_name)
     all_conf = get_plugin_configs()
     for conf in all_conf:
         if conf.name == config_name:

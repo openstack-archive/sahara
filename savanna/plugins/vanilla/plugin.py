@@ -389,10 +389,11 @@ class VanillaProvider(p.ProvisioningPluginBase):
                                  ' '.join(ng.node_processes))
 
         dn_amount = len(utils.get_datanodes(cluster))
-        rep_factor = c_helper.determine_cluster_config(cluster,
+        rep_factor = c_helper.determine_cluster_config(cluster, 'HDFS',
                                                        "dfs.replication")
 
         if dn_to_delete > 0 and dn_amount - dn_to_delete < rep_factor:
-            raise Exception("Vanilla plugin cannot shrink cluster because "
-                            "it would be not enough nodes for replicas "
-                            "(replication factor is %s )" % rep_factor)
+            raise ex.ClusterCannotBeScaled(
+                cluster.name, "Vanilla plugin cannot shrink cluster because "
+                              "it would be not enough nodes for replicas "
+                              "(replication factor is %s)" % rep_factor)
