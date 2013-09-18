@@ -35,7 +35,7 @@ def main():
 
                 result['output'] = func(*args, **kwargs)
             except BaseException as e:
-                result['exception'] = e
+                result['exception'] = e.__class__.__name__ + ': ' + str(e)
                 result['traceback'] = traceback.format_exc()
 
             pickle.dump(result, sys.stdout)
