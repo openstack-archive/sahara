@@ -20,6 +20,9 @@ from savanna.plugins.hdp import savannautils
 AMBARI_RPM = 'http://s3.amazonaws.com/public-repo-1.hortonworks.com/' \
              'ambari/centos6/1.x/updates/1.2.5.17/ambari.repo'
 
+HADOOP_SWIFT_RPM = 'https://s3.amazonaws.com/public-repo-1.hortonworks.com/' \
+                   'savanna/swift/hadoop-swift-1.0-1.x86_64.rpm'
+
 LOG = logging.getLogger(__name__)
 
 
@@ -49,6 +52,15 @@ class HadoopServer:
                   self.ambari_rpm
         r.execute_command(rpm_cmd)
         r.execute_command('yum -y install epel-release')
+
+    @savannautils.inject_remote('r')
+    def install_swift_integration(self, r):
+        LOG.info(
+            "{0}: Installing swift integration ..."
+            .format(self.instance.hostname))
+
+        rpm_cmd = 'rpm -Uvh ' + HADOOP_SWIFT_RPM
+        r.execute_command(rpm_cmd)
 
     @savannautils.inject_remote('r')
     def _setup_and_start_ambari_server(self, port, r):

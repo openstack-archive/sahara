@@ -65,6 +65,8 @@ class AmbariPlugin(p.ProvisioningPluginBase):
         if provisioned:
             installed = self._install_services(cluster.name, ambari_info)
             if installed:
+                # install the swift integration on the servers
+                self._install_swift_integration(servers)
                 LOG.info("Install of Hadoop stack successful.")
                 # add service urls
                 self._set_cluster_info(cluster, cluster_spec, ambari_info)
@@ -98,6 +100,10 @@ class AmbariPlugin(p.ProvisioningPluginBase):
             node_processes[service.name] = components
 
         return node_processes
+
+    def _install_swift_integration(self, servers):
+        for server in servers:
+            server.install_swift_integration()
 
     def convert(self, config, plugin_name, version, template_name,
                 cluster_template_create):
@@ -468,6 +474,8 @@ class AmbariPlugin(p.ProvisioningPluginBase):
         auth = (ambari_info.user, ambari_info.password)
 
         self._install_components(ambari_info, auth, cluster_name, servers)
+
+        self._install_swift_integration(servers)
 
         self._start_components(ambari_info, auth, cluster_name, servers)
 

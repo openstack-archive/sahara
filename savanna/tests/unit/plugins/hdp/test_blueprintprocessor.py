@@ -15,6 +15,7 @@
 
 import collections as c
 import json
+import mock
 import os
 import unittest2
 
@@ -40,7 +41,9 @@ class BlueprintProcessorTest(unittest2.TestCase):
 
         return elem
 
-    def test_existing_config_item_in_top_level_within_blueprint(self):
+    @mock.patch('savanna.swift.swift_helper.get_swift_configs')
+    def test_existing_config_item_in_top_level_within_blueprint(self, helper):
+        helper.side_effect = my_get_configs
         processor = bp.BlueprintProcessor(
             json.load(open(
                 os.path.join(os.path.realpath('./unit/plugins'), 'hdp',
@@ -80,8 +83,10 @@ class BlueprintProcessorTest(unittest2.TestCase):
         self.assertEqual('/some/new/path', prop_value,
                          'prop value is wrong post config processing')
 
+    @mock.patch('savanna.swift.swift_helper.get_swift_configs')
     def test_insert_new_config_item_into_existing_top_level_configuration(
-            self):
+            self, helper):
+        helper.side_effect = my_get_configs
         processor = bp.BlueprintProcessor(
             json.load(open(
                 os.path.join(os.path.realpath('./unit/plugins'), 'hdp',
@@ -116,8 +121,10 @@ class BlueprintProcessorTest(unittest2.TestCase):
                                                       'namenode_heapsize')
         self.assertIsNotNone(prop_dict, 'no matching property should be found')
 
+    @mock.patch('savanna.swift.swift_helper.get_swift_configs')
     def test_insert_new_config_item_into_newly_created_top_level_configuration(
-            self):
+            self, helper):
+        helper.side_effect = my_get_configs
         processor = bp.BlueprintProcessor(
             json.load(open(
                 os.path.join(os.path.realpath('./unit/plugins'), 'hdp',
@@ -145,14 +152,16 @@ class BlueprintProcessorTest(unittest2.TestCase):
         # process the input configuration
         processor.process_user_inputs(configs_list)
         configs = self._xpath_get(processor.blueprint, '/configurations')
-        self.assertEqual(2, len(configs), 'no config section added')
+        self.assertEqual(3, len(configs), 'no config section added')
         self.assertEqual('mapred-site', configs[1]['name'],
                          'section should exist')
         self.assertEqual('mapred.job.tracker.handler.count',
                          configs[1]['properties'][0]['name'],
                          'property not added')
 
-    def test_update_ambari_admin_user(self):
+    @mock.patch('savanna.swift.swift_helper.get_swift_configs')
+    def test_update_ambari_admin_user(self, helper):
+        helper.side_effect = my_get_configs
         processor = bp.BlueprintProcessor(json.load(open(os.path.join(
             os.path.realpath('./unit/plugins'), 'hdp', 'resources',
             'sample-ambari-blueprint.json'), 'r')))
@@ -176,7 +185,9 @@ class BlueprintProcessorTest(unittest2.TestCase):
 
         self.assertEqual('new-user', services[2]['users'][0]['name'])
 
-    def test_update_ambari_admin_password(self):
+    @mock.patch('savanna.swift.swift_helper.get_swift_configs')
+    def test_update_ambari_admin_password(self, helper):
+        helper.side_effect = my_get_configs
         processor = bp.BlueprintProcessor(json.load(open(os.path.join(
             os.path.realpath('./unit/plugins'), 'hdp', 'resources',
             'sample-ambari-blueprint.json'), 'r')))
@@ -200,7 +211,9 @@ class BlueprintProcessorTest(unittest2.TestCase):
 
         self.assertEqual('new-pwd', services[2]['users'][0]['password'])
 
-    def test_update_ambari_admin_user_and_password(self):
+    @mock.patch('savanna.swift.swift_helper.get_swift_configs')
+    def test_update_ambari_admin_user_and_password(self, helper):
+        helper.side_effect = my_get_configs
         processor = bp.BlueprintProcessor(json.load(open(os.path.join(
             os.path.realpath('./unit/plugins'), 'hdp', 'resources',
             'sample-ambari-blueprint.json'), 'r')))
@@ -518,6 +531,39 @@ class BlueprintProcessorTest(unittest2.TestCase):
         self.assertDictEqual(expected_slave_dict, host_mappings[1],
                              'second mapping does not match')
 
+    @mock.patch('savanna.swift.swift_helper.get_swift_configs')
+    def test_swift_props_added(self, helper):
+        helper.side_effect = my_get_configs
+        processor = bp.BlueprintProcessor(json.load(open(os.path.join(
+            os.path.realpath('./unit/plugins'), 'hdp', 'resources',
+            'sample-ambari-blueprint.json'), 'r')))
+
+        config_items = [
+            {"value": "512m",
+             "config": {
+                 "name": "namenode_heapsize",
+                 "description": "heap size",
+                 "default_value": "256m",
+                 "config_type": "string",
+                 "is_optional": "true",
+                 "applicable_target": "general",
+                 "tag": "global",
+                 "scope": "cluster"}
+             }
+        ]
+        configs_list = self.json2obj(json.dumps(config_items))
+        processor.process_user_inputs(configs_list)
+
+        configurations = self._xpath_get(processor.blueprint,
+                                         '/configurations')
+        core_site_section = processor._find_blueprint_section(configurations,
+                                                              'name',
+                                                              'core-site')
+        self.assertIsNotNone(core_site_section)
+
+        props = core_site_section['properties']
+        self.assertEqual(3, len(props))
+
     def _json_object_hook(self, d):
         return c.namedtuple('X', d.keys())(*d.values())
 
@@ -535,3 +581,11 @@ def _create_ng(name, flavor, node_processes, count, image):
     }
 
     return r.NodeGroupResource(dct)
+
+
+def my_get_configs(*args, **kwargs):
+    return [{"name": "fs.swift.service.savanna.auth.url",
+             "value": "someURI"},
+            {"name": "fs.swift.service.savanna.tenant",
+             "value": "admin"},
+            {"name": "fs.swift.service.savanna.http.port", "value": 8080}]

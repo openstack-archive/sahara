@@ -14,6 +14,8 @@
 # limitations under the License.
 
 from savanna.plugins.hdp import baseprocessor as b
+from savanna.plugins import provisioning as p
+from savanna.swift import swift_helper as h
 
 
 class BlueprintProcessor(b.BaseProcessor):
@@ -24,6 +26,7 @@ class BlueprintProcessor(b.BaseProcessor):
 
     def process_user_inputs(self, user_inputs):
         context = {}
+        self._append_swift_inputs(user_inputs)
         for ui in user_inputs:
             for handler in self.ui_handlers:
                 if handler.apply_user_input(ui, self.blueprint, context):
@@ -60,6 +63,15 @@ class BlueprintProcessor(b.BaseProcessor):
                     else:
                         self.blueprint['host_role_mappings'].append(
                             host_role_mapping)
+
+    def _append_swift_inputs(self, user_inputs):
+        swift_props = h.get_swift_configs()
+        for prop in swift_props:
+            config = p.Config(prop['name'], 'general', 'cluster')
+            setattr(config, 'tag', 'core-site')
+            ui = p.UserInput(config, prop['value'])
+
+            user_inputs.append(ui)
 
 
 class StandardConfigHandler(b.BaseProcessor):
