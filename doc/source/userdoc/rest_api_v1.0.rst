@@ -851,6 +851,7 @@ This operation does not require a request body.
                 ],
                 "flavor_id": "42",
                 "volumes_per_node": 0,
+                "floating_ip_pool": "public",
                 "node_configs": {
                     "HDFS": {},
                     "MapReduce": {}
@@ -889,6 +890,7 @@ This operation returns created Node Group Template.
                 "jobtracker"
             ],
             "name": "master",
+            "floating_ip_pool", "public",
             "flavor_id": "42"
         }
 
@@ -913,6 +915,7 @@ This operation returns created Node Group Template.
                 ],
                 "flavor_id": "42",
                 "volumes_per_node": 0,
+                "floating_ip_pool", "public",
                 "node_configs": {},
                 "hadoop_version": "1.1.2",
                 "id": "ddefda09-9ab9-4555-bf48-e996243af6f2"
@@ -1238,6 +1241,7 @@ This operation returns created Cluster Template.
                 }
             ],
             "name": "cl-template",
+            "neutron_management_network": "e017fdde-a2f7-41ed-b342-2d63083e7772",
             "cluster_configs": {}
         }
 
@@ -1291,6 +1295,7 @@ This operation returns created Cluster Template.
                         "node_group_template_id": "ea34d320-09d7-4dc1-acbf-75b57cec81c9"
                     }
                 ],
+                "neutron_management_network": "e017fdde-a2f7-41ed-b342-2d63083e7772",
                 "cluster_configs": {},
                 "hadoop_version": "1.1.2",
                 "id": "e2ad1d5d-5fff-45e8-8c3c-34697c7cd5ac"

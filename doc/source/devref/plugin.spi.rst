@@ -229,6 +229,9 @@ Group of instances.
 +----------------------+--------+--------------------------------------------------------+
 | volumes_mount_prefix | string | Prefix added to mount path of each volume.             |
 +----------------------+--------+--------------------------------------------------------+
+| floatig_ip_pool      | string | Floating IP Pool name. All instances in the Node Group |
+|                      |        | will have Floating IPs assigned from this pool.        |
++----------------------+--------+--------------------------------------------------------+
 | count                | int    | Number of instances in this Node Group.                |
 +----------------------+--------+--------------------------------------------------------+
 | username             | string | Username used by Savanna to establish remote           |
@@ -247,34 +250,37 @@ Contains all relevant info about cluster.
 This object is is provided to the plugin for both cluster creation and scaling.
 The “Cluster Lifecycle” section below further specifies which fields are filled at which moment.
 
-+----------------------+--------+-----------------------------------------------------------+
-| Property             | Type   | Description                                               |
-+======================+========+===========================================================+
-| name                 | string | Cluster name.                                             |
-+----------------------+--------+-----------------------------------------------------------+
-| tenant_id            | string | OpenStack Tenant id where this Cluster is available.      |
-+----------------------+--------+-----------------------------------------------------------+
-| plugin_name          | string | Plugin name.                                              |
-+----------------------+--------+-----------------------------------------------------------+
-| hadoop_version       | string | Hadoop version running on instances.                      |
-+----------------------+--------+-----------------------------------------------------------+
-| default_image_id     | string | OpenStack image used to boot instances.                   |
-+----------------------+--------+-----------------------------------------------------------+
-| node_groups          | list   | List of Node Groups.                                      |
-+----------------------+--------+-----------------------------------------------------------+
-| cluster_configs      | dict   | Dictionary of Cluster scoped configurations.              |
-+----------------------+--------+-----------------------------------------------------------+
-| cluster_template_id  | string | Cluster Template used for Node Groups and Configurations. |
-+----------------------+--------+-----------------------------------------------------------+
-| user_keypair_id      | string | OpenStack keypair added to instances to make them         |
-|                      |        | accessible for user.                                      |
-+----------------------+--------+-----------------------------------------------------------+
-| anti_affinity        | list   | List of processes that will be run on different hosts.    |
-+----------------------+--------+-----------------------------------------------------------+
-| description          | string | Cluster Description.                                      |
-+----------------------+--------+-----------------------------------------------------------+
-| info                 | dict   | Dictionary for additional information.                    |
-+----------------------+--------+-----------------------------------------------------------+
++----------------------------+--------+-----------------------------------------------------------+
+| Property                   | Type   | Description                                               |
++============================+========+===========================================================+
+| name                       | string | Cluster name.                                             |
++----------------------------+--------+-----------------------------------------------------------+
+| tenant_id                  | string | OpenStack Tenant id where this Cluster is available.      |
++----------------------------+--------+-----------------------------------------------------------+
+| plugin_name                | string | Plugin name.                                              |
++----------------------------+--------+-----------------------------------------------------------+
+| hadoop_version             | string | Hadoop version running on instances.                      |
++----------------------------+--------+-----------------------------------------------------------+
+| default_image_id           | string | OpenStack image used to boot instances.                   |
++----------------------------+--------+-----------------------------------------------------------+
+| node_groups                | list   | List of Node Groups.                                      |
++----------------------------+--------+-----------------------------------------------------------+
+| cluster_configs            | dict   | Dictionary of Cluster scoped configurations.              |
++----------------------------+--------+-----------------------------------------------------------+
+| cluster_template_id        | string | Cluster Template used for Node Groups and Configurations. |
++----------------------------+--------+-----------------------------------------------------------+
+| user_keypair_id            | string | OpenStack keypair added to instances to make them         |
+|                            |        | accessible for user.                                      |
++----------------------------+--------+-----------------------------------------------------------+
+| neutron_management_network | string | Neutron network ID. Instances will get fixed IPs in this  |
+|                            |        | network if 'use_neutron' config is set to True.           |
++----------------------------+--------+-----------------------------------------------------------+
+| anti_affinity              | list   | List of processes that will be run on different hosts.    |
++----------------------------+--------+-----------------------------------------------------------+
+| description                | string | Cluster Description.                                      |
++----------------------------+--------+-----------------------------------------------------------+
+| info                       | dict   | Dictionary for additional information.                    |
++----------------------------+--------+-----------------------------------------------------------+
 
 
 Validation Error
