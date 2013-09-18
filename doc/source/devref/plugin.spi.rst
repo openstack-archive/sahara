@@ -87,10 +87,21 @@ Start already configured cluster. This method is guaranteed to be called only on
 
 *Returns*: None
 
-scale_cluster()
-~~~~~~~~~~~~~~~
+scale_cluster(cluster, instances)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-To be done
+Scale an existing Cluster with additional instances. Instances argument is a list
+of ready-to-configure instances. Plugin should do all configuration operations in this
+method and start all services on those instances.
+
+*Returns*: None
+
+decommission_nodes(cluster, instances)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Scale cluster down by removing a list of instances. Plugin should stop services on a provided list
+of instances. Plugin also may want to update some configurations on other instances, so this
+method is the right place to do that.
 
 *Returns*: None
 
