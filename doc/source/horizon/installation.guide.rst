@@ -15,7 +15,7 @@ approach see :doc:`/horizon/dev.environment.guide`
 1. Prerequisites
 ----------------
 
-1) OpenStack environment (Folsom or Grizzly version) installed.
+1) OpenStack environment (Folsom, Grizzly or Havana version) installed.
 
 2) Savanna installed, configured and running, see :doc:`/userdoc/installation.guide`.
 
@@ -23,6 +23,15 @@ approach see :doc:`/horizon/dev.environment.guide`
 ---------------------------------
 
 1) Go to the machine where Dashboard resides and install Savanna UI:
+
+   For RDO:
+
+.. sourcecode:: console
+
+    $ sudo yum install python-django-savanna
+..
+
+   Otherwise:
 
 .. sourcecode:: console
 
@@ -40,7 +49,7 @@ approach see :doc:`/horizon/dev.environment.guide`
 .. sourcecode:: python
 
     HORIZON_CONFIG = {
-        'dashboards': ('nova', 'syspanel', 'settings', 'savanna'),
+        'dashboards': ('nova', 'syspanel', 'settings', ..., 'savanna'),
 ..
 
    and also add savannadashboard to
@@ -68,13 +77,25 @@ If you are using Neutron instead of Nova Network:
    SAVANNA_USE_NEUTRON = True
 ..
 
-   Note: ``local_settings.py`` file is located in ``/usr/share/openstack-dashboard/openstack_dashboard/local/`` by default.
+   Note: For RDO, the ``local_settings.py`` file is located in
+   ``/etc/openstack-dashboard/``, otherwise it is in
+   ``/usr/share/openstack-dashboard/openstack_dashboard/local/``.
 
 4) Now all installations are done and apache web server can be restarted for the changes to take effect:
+
+   For Ubuntu:
 
 .. sourcecode:: console
 
     $ sudo service apache2 restart
 ..
+
+   For Centos:
+
+.. sourcecode:: console
+
+    $ sudo service httpd reload
+..
+
 
    You can check that service has been started successfully. Go to Horizon URL and if installation is correct you'll be able to see the Savanna tab.
