@@ -16,7 +16,7 @@
 import savanna.openstack.common.exception as ex
 
 
-class SavannaException(ex.ApiError):
+class SavannaException(ex.Error):
     """Base Exception for the project
 
     To correctly use this class, inherit from it and define
@@ -27,6 +27,10 @@ class SavannaException(ex.ApiError):
 
     def __str__(self):
         return self.message
+
+    def __init__(self):
+        super(SavannaException, self).__init__(
+            '%s: %s' % (self.code, self.message))
 
 
 class NotFoundException(SavannaException):
@@ -105,8 +109,6 @@ class InvalidDataException(SavannaException):
         if message:
             self.message = message
 
-        super(InvalidDataException, self).__init__(self.message, self.code)
-
 
 class BadJobBinaryInternalException(SavannaException):
     message = "Job binary internal data must be a string of length " \
@@ -114,8 +116,6 @@ class BadJobBinaryInternalException(SavannaException):
 
     def __init__(self):
         self.code = "BAD_JOB_BINARY"
-        super(BadJobBinaryInternalException, self
-              ).__init__(self.message, self.code)
 
 
 class BadJobBinaryException(SavannaException):
@@ -124,7 +124,6 @@ class BadJobBinaryException(SavannaException):
 
     def __init__(self):
         self.code = "BAD_JOB_BINARY"
-        super(BadJobBinaryException, self).__init__(self.message, self.code)
 
 
 class DBDuplicateEntry(SavannaException):
@@ -134,7 +133,6 @@ class DBDuplicateEntry(SavannaException):
     def __init__(self, message=None):
         if message:
             self.message = message
-        super(DBDuplicateEntry, self).__init__(self.message, self.code)
 
 
 class DeletionFailed(SavannaException):
@@ -144,4 +142,3 @@ class DeletionFailed(SavannaException):
     def __init__(self, message=None):
         if message:
             self.message = message
-        super(DeletionFailed, self).__init__(self.message, self.code)
