@@ -42,9 +42,7 @@ JOB_SCHEMA = {
         },
         "input_type": b.data_source_type,
         "output_type": b.data_source_type,
-        "job_configs": {
-            "type": "simple_config",
-        }
+        "job_configs": b.job_configs,
     },
     "additionalProperties": False,
     "required": [

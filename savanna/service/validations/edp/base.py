@@ -42,6 +42,22 @@ job_storage = {
     ]
 }
 
+job_configs = {
+    "type": "object",
+    "properties": {
+        "configs": {
+            "type": "simple_config",
+        },
+        "params": {
+            "type": "simple_config",
+        },
+        "args": {
+            "type": "simple_config",
+        }
+    },
+    "additionalProperties": False,
+}
+
 user_pass = {
     "type": "object",
     "properties": {
