@@ -118,25 +118,19 @@ class Validator(object):
 
 class NoNameNodeException(e.SavannaException):
     def __init__(self):
-        message = ("Hadoop cluster should contain at least one namenode")
-        code = "NO_NAMENODE"
-
-        super(NoNameNodeException, self).__init__(message, code)
+        self.message = ("Hadoop cluster should contain at least one namenode")
+        self.code = "NO_NAMENODE"
 
 
 class NotSingleAmbariServerException(e.SavannaException):
     def __init__(self, count):
-        message = ("Hadoop cluster should contain 1 Ambari Server "
-                   "instance. Actual Ambari server count is %s" % count)
-        code = "NOT_SINGLE_AMBARI_SERVER"
-
-        super(NotSingleAmbariServerException, self).__init__(message, code)
+        self.message = ("Hadoop cluster should contain 1 Ambari Server "
+                        "instance. Actual Ambari server count is %s" % count)
+        self.code = "NOT_SINGLE_AMBARI_SERVER"
 
 
 class AmbariAgentNumberException(e.SavannaException):
     def __init__(self, count):
-        message = ("Hadoop cluster should have an ambari agent per "
-                   "node group. Node group %s has no Ambari Agent" % count)
-        code = "WRONG_NUMBER_AMBARI_AGENTS"
-
-        super(AmbariAgentNumberException, self).__init__(message, code)
+        self.message = ("Hadoop cluster should have an ambari agent per node "
+                        "group. Node group %s has no Ambari Agent" % count)
+        self.code = "WRONG_NUMBER_AMBARI_AGENTS"
