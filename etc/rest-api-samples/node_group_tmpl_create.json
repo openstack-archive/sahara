@@ -3,7 +3,7 @@
     "description": "Test template for master node",
     "flavor_id": "m1.xlarge",
     "plugin_name": "vanilla",
-    "hadoop_version": "1.1.1",
+    "hadoop_version": "1.2.1",
     "node_processes": ["tasktracker", "namenode"],
     "node_configs": {
         "hdfs": {
