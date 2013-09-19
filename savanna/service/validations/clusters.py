@@ -15,6 +15,8 @@
 
 import copy
 
+import savanna.exceptions as ex
+import savanna.service.api as api
 import savanna.service.validations.base as b
 import savanna.service.validations.cluster_templates as cl_tmpl
 
@@ -56,14 +58,32 @@ def check_cluster_create(data, **kwargs):
     if data.get('user_keypair_id'):
         b.check_keypair_exists(data['user_keypair_id'])
 
-    if data.get('default_image_id'):
-        b.check_image_registered(data['default_image_id'])
+    default_image_id = _get_cluster_field(data, 'default_image_id')
+    if default_image_id:
+        b.check_image_registered(default_image_id)
         b.check_required_image_tags(data['plugin_name'],
                                     data['hadoop_version'],
-                                    data['default_image_id'])
+                                    default_image_id)
+    else:
+        raise ex.NotFoundException('default_image_id',
+                                   "'%s' field is not found")
 
     b.check_all_configurations(data)
 
     if data.get('anti_affinity'):
         b.check_node_processes(data['plugin_name'], data['hadoop_version'],
                                data['anti_affinity'])
+
+
+def _get_cluster_field(cluster, field):
+    if cluster.get(field):
+        return cluster[field]
+
+    if cluster.get('cluster_template_id'):
+        cluster_template = api.get_cluster_template(
+            id=cluster['cluster_template_id'])
+
+        if cluster_template.get(field):
+            return cluster_template[field]
+
+    return None

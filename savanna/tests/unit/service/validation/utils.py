@@ -62,20 +62,22 @@ def _get_flavor(flavor_id):
         raise nova_ex.NotFound("")
 
 
-def start_patch():
+def start_patch(patch_templates=True):
     get_clusters_p = mock.patch("savanna.service.api.get_clusters")
     get_cluster_p = mock.patch("savanna.service.api.get_cluster")
-    get_ng_templates_p = \
-        mock.patch("savanna.service.api.get_node_group_templates")
-    get_ng_template_p = \
-        mock.patch("savanna.service.api.get_node_group_template")
+    if patch_templates:
+        get_ng_templates_p = \
+            mock.patch("savanna.service.api.get_node_group_templates")
+        get_ng_template_p = \
+            mock.patch("savanna.service.api.get_node_group_template")
     get_plugins_p = mock.patch("savanna.service.api.get_plugins")
     get_plugin_p = \
         mock.patch("savanna.plugins.base.PluginManager.get_plugin")
-    get_cl_templates_p = \
-        mock.patch("savanna.service.api.get_cluster_templates")
-    get_cl_template_p = \
-        mock.patch("savanna.service.api.get_cluster_template")
+    if patch_templates:
+        get_cl_templates_p = \
+            mock.patch("savanna.service.api.get_cluster_templates")
+        get_cl_template_p = \
+            mock.patch("savanna.service.api.get_cluster_template")
     nova_p = mock.patch("savanna.utils.openstack.nova.client")
     keystone_p = mock.patch("savanna.utils.openstack.keystone.client")
     get_image_p = mock.patch("savanna.service.api.get_image")
@@ -83,17 +85,20 @@ def start_patch():
     get_image = get_image_p.start()
     get_clusters = get_clusters_p.start()
     get_cluster = get_cluster_p.start()
-    get_ng_templates = get_ng_templates_p.start()
-    get_ng_template = get_ng_template_p.start()
+    if patch_templates:
+        get_ng_templates = get_ng_templates_p.start()
+        get_ng_template = get_ng_template_p.start()
     get_plugins = get_plugins_p.start()
     get_plugin = get_plugin_p.start()
-    get_cl_templates = get_cl_templates_p.start()
-    get_cl_template_p.start()
+    if patch_templates:
+        get_cl_templates = get_cl_templates_p.start()
+        get_cl_template_p.start()
 
     nova = nova_p.start()
     keystone = keystone_p.start()
 
-    get_cl_templates.return_value = []
+    if patch_templates:
+        get_cl_templates.return_value = []
 
     nova().flavors.get.side_effect = _get_flavor
     nova().keypairs.get.side_effect = _get_keypair
@@ -143,18 +148,19 @@ def start_patch():
     get_cluster.return_value = cluster
 
     # stub node templates
-    ngt_dict = {'name': 'test', 'tenant_id': 't', 'flavor_id': '42',
-                'plugin_name': 'vanilla', 'hadoop_version': '1.2.2',
-                #'id': '1234321',
-                'id': '550e8400-e29b-41d4-a716-446655440000',
-                'node_processes': ['namenode']}
+    if patch_templates:
+        ngt_dict = {'name': 'test', 'tenant_id': 't', 'flavor_id': '42',
+                    'plugin_name': 'vanilla', 'hadoop_version': '1.2.2',
+                    #'id': '1234321',
+                    'id': '550e8400-e29b-41d4-a716-446655440000',
+                    'node_processes': ['namenode']}
 
-    get_ng_templates.return_value = [r.NodeGroupTemplateResource(ngt_dict)]
+        get_ng_templates.return_value = [r.NodeGroupTemplateResource(ngt_dict)]
 
-    ct_dict = {'name': 'test', 'tenant_id': 't',
-               'plugin_name': 'vanilla', 'hadoop_version': '1.2.2'}
+        ct_dict = {'name': 'test', 'tenant_id': 't',
+                   'plugin_name': 'vanilla', 'hadoop_version': '1.2.2'}
 
-    get_cl_templates.return_value = [r.ClusterTemplateResource(ct_dict)]
+        get_cl_templates.return_value = [r.ClusterTemplateResource(ct_dict)]
 
     vanilla = plugin.VanillaProvider()
     vanilla.name = 'vanilla'
@@ -172,12 +178,14 @@ def start_patch():
         return None
 
     get_plugin.side_effect = _get_plugin
-    get_ng_template.side_effect = _get_ng_template
+    if patch_templates:
+        get_ng_template.side_effect = _get_ng_template
     # request data to validate
-    patchers = (get_clusters_p, get_ng_templates_p, get_ng_template_p,
-                get_plugins_p, get_plugin_p,
-                get_cl_template_p, get_cl_templates_p, nova_p, keystone_p,
-                get_image_p)
+    patchers = [get_clusters_p, get_plugins_p, get_plugin_p,
+                nova_p, keystone_p, get_image_p]
+    if patch_templates:
+        patchers.extend([get_ng_template_p, get_ng_templates_p,
+                         get_cl_template_p, get_cl_templates_p])
     return patchers
 
 
@@ -278,7 +286,7 @@ class ValidationTestCase(unittest2.TestCase):
                                    % (value_str, prop["type"]))
                     )
 
-    def _assert_cluster_configs_validation(self):
+    def _assert_cluster_configs_validation(self, require_image_id=False):
         data = {
             'name': 'test-cluster',
             'plugin_name': 'vanilla',
@@ -287,10 +295,19 @@ class ValidationTestCase(unittest2.TestCase):
                 'HDFS': {
                     u'hadoop.tmp.dir': '/temp/'
                 }
-            }
+            },
+            'default_image_id': '550e8400-e29b-41d4-a716-446655440000'
         }
+        if require_image_id:
+            data_without_image = data.copy()
+            data_without_image.pop('default_image_id')
+            self._assert_create_object_validation(
+                data=data_without_image,
+                bad_req_i=(1, 'NOT_FOUND',
+                           "'default_image_id' field is not found")
+            )
         self._assert_create_object_validation(
-            data=_update_data(data, {
+            data=_update_data(data.copy(), {
                 'cluster_configs': {
                     'wrong_target': {
                         u'hadoop.tmp.dir': '/temp/'
@@ -301,7 +318,7 @@ class ValidationTestCase(unittest2.TestCase):
                        "target 'wrong_target'")
         )
         self._assert_create_object_validation(
-            data=_update_data(data, {
+            data=_update_data(data.copy(), {
                 'cluster_configs': {
                     'HDFS': {
                         u's': '/temp/'

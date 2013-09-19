@@ -150,7 +150,7 @@ class TestClusterCreateValidation(u.ValidationTestCase):
         )
 
     def test_cluster_create_v_cluster_configs(self):
-        self._assert_cluster_configs_validation()
+        self._assert_cluster_configs_validation(True)
 
     def test_cluster_create_v_right_data(self):
         self._assert_create_object_validation(
@@ -203,6 +203,7 @@ class TestClusterCreateFlavorValidation(base.DbTestCase):
         nova = nova_p.start()
         self.patchers.append(nova_p)
         nova().flavors.get.side_effect = u._get_flavor
+        api.plugin_base.setup_plugins()
 
     def tearDown(self):
         u.stop_patch(self.patchers)
@@ -239,9 +240,12 @@ class TestClusterCreateFlavorValidation(base.DbTestCase):
             "name": "testname",
             "plugin_name": "vanilla",
             "hadoop_version": "1.2.1",
-            "cluster_template_id": '%s' % ctmpl_id
+            "cluster_template_id": '%s' % ctmpl_id,
+            'default_image_id': '550e8400-e29b-41d4-a716-446655440000'
         }
+        patchers = u.start_patch(False)
         c.check_cluster_create(data)
+        u.stop_patch(patchers)
 
         data1 = {
             "name": "testwithnodegroups",
@@ -259,9 +263,12 @@ class TestClusterCreateFlavorValidation(base.DbTestCase):
                         "tasktracker"
                     ]
                 }
-            ]
+            ],
+            'default_image_id': '550e8400-e29b-41d4-a716-446655440000'
         }
+        patchers = u.start_patch(False)
         c.check_cluster_create(data1)
+        u.stop_patch(patchers)
 
     def test_cluster_create_v_invalid_flavor(self):
         ng_id = self._create_node_group_template(flavor='10')
@@ -271,7 +278,8 @@ class TestClusterCreateFlavorValidation(base.DbTestCase):
             "name": "testname",
             "plugin_name": "vanilla",
             "hadoop_version": "1.2.1",
-            "cluster_template_id": '%s' % ctmpl_id
+            "cluster_template_id": '%s' % ctmpl_id,
+            'default_image_id': '550e8400-e29b-41d4-a716-446655440000'
         }
         data1 = {
             "name": "testwithnodegroups",
@@ -289,12 +297,15 @@ class TestClusterCreateFlavorValidation(base.DbTestCase):
                         "tasktracker"
                     ]
                 }
-            ]
+            ],
+            'default_image_id': '550e8400-e29b-41d4-a716-446655440000'
         }
         for values in [data, data1]:
             with self.assertRaises(exceptions.InvalidException):
                 try:
+                    patchers = u.start_patch(False)
                     c.check_cluster_create(values)
+                    u.stop_patch(patchers)
                 except exceptions.InvalidException as e:
                     self.assertEqual("Requested flavor '10' not found",
                                      e.message)
@@ -309,6 +320,7 @@ class TestClusterCreateFlavorValidation(base.DbTestCase):
             "plugin_name": "vanilla",
             "hadoop_version": "1.2.1",
             "cluster_template_id": '%s' % ctmpl_id,
+            'default_image_id': '550e8400-e29b-41d4-a716-446655440000',
             "node_groups": [
                 {
                     "name": "allinone",
@@ -323,7 +335,9 @@ class TestClusterCreateFlavorValidation(base.DbTestCase):
                 }
             ]
         }
+        patchers = u.start_patch(False)
         c.check_cluster_create(data)
+        u.stop_patch(patchers)
 
     def test_cluster_create_node_group_tmpl_mixin(self):
         ng_id = self._create_node_group_template(flavor='23')
@@ -343,12 +357,15 @@ class TestClusterCreateFlavorValidation(base.DbTestCase):
                         "datanode",
                         "tasktracker"
                     ]
-                }
-            ]
+                },
+            ],
+            'default_image_id': '550e8400-e29b-41d4-a716-446655440000'
         }
         with self.assertRaises(exceptions.InvalidException):
             try:
+                patchers = u.start_patch(False)
                 c.check_cluster_create(data)
+                u.stop_patch(patchers)
             except exceptions.InvalidException as e:
                 self.assertEqual("Requested flavor '23' not found",
                                  e.message)
