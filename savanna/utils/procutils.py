@@ -48,7 +48,7 @@ def run_in_subprocess(proc, func, args=(), kwargs={}):
         result = pickle.load(proc.stdout)
 
         if 'exception' in result:
-            raise result['exception']
+            raise SubprocessException(result['exception'])
 
         return result['output']
     finally:
@@ -83,3 +83,8 @@ def kill_subprocess(proc):
     except OSError:
         # could be caused by process already dead, so ignoring
         pass
+
+
+class SubprocessException(Exception):
+    def __init__(self, e):
+        super(SubprocessException, self).__init__(e)
