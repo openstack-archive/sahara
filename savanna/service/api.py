@@ -13,6 +13,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import urllib
+
 from savanna import conductor as c
 from savanna import context
 from savanna.openstack.common import excutils
@@ -229,9 +231,11 @@ def get_plugin(plugin_name, version=None):
         return res
 
 
-def convert_to_cluster_template(plugin_name, version, config_file):
+def convert_to_cluster_template(plugin_name, version, template_name,
+                                config_file):
     plugin = plugin_base.PLUGINS.get_plugin(plugin_name)
     return plugin.convert(config_file, plugin_name, version,
+                          urllib.unquote(template_name),
                           conductor.cluster_template_create)
 
 

@@ -67,7 +67,8 @@ class ProvisioningPluginBase(plugins_base.PluginInterface):
         pass
 
     @plugins_base.optional
-    def convert(self, config, plugin_name, version, cluster_template_create):
+    def convert(self, config, plugin_name, version, template_name,
+                cluster_template_create):
         pass
 
     @plugins_base.required_with_default
