@@ -18,6 +18,7 @@ import mock
 from savanna import conductor as cond
 from savanna.conductor import resource as r
 from savanna.service.edp import job_manager
+from savanna.service.edp.workflow_creator import workflow_factory
 from savanna.tests.unit import base as models_test_base
 from savanna.utils import patches as p
 
@@ -98,8 +99,10 @@ class TestJobManager(models_test_base.DbTestCase):
         input_data = _create_data_source('swift://ex.savanna/i')
         output_data = _create_data_source('swift://ex.savanna/o')
 
-        res = job_manager.build_workflow_for_job('Pig', job_exec, origin,
-                                                 input_data, output_data)
+        creator = workflow_factory.get_creator('Pig', origin)
+
+        res = creator.get_workflow_xml(job_exec.job_configs,
+                                       input_data, output_data)
 
         self.assertIn("""
       <param>INPUT=swift://ex.savanna/i</param>
@@ -127,8 +130,10 @@ class TestJobManager(models_test_base.DbTestCase):
         input_data = _create_data_source('swift://ex.savanna/i')
         output_data = _create_data_source('swift://ex.savanna/o')
 
-        res = job_manager.build_workflow_for_job('Jar', job_exec, origin,
-                                                 input_data, output_data)
+        creator = workflow_factory.get_creator('Jar', origin)
+
+        res = creator.get_workflow_xml(job_exec.job_configs,
+                                       input_data, output_data)
 
         self.assertIn("""
         <property>
@@ -164,8 +169,10 @@ class TestJobManager(models_test_base.DbTestCase):
         input_data = _create_data_source('swift://ex.savanna/i')
         output_data = _create_data_source('swift://ex.savanna/o')
 
-        res = job_manager.build_workflow_for_job('Hive', job_exec, origin,
-                                                 input_data, output_data)
+        creator = workflow_factory.get_creator('Hive', origin)
+
+        res = creator.get_workflow_xml(job_exec.job_configs,
+                                       input_data, output_data)
 
         self.assertIn("""
       <job-xml>hive-site.xml</job-xml>
@@ -191,8 +198,11 @@ class TestJobManager(models_test_base.DbTestCase):
 
         job_exec = _create_job_exec(job.id, configs={"configs": {'c': 'f'}})
 
-        res = job_manager.build_workflow_for_job('Jar', job_exec, origin,
-                                                 input_data, output_data)
+        creator = workflow_factory.get_creator('Jar', origin)
+
+        res = creator.get_workflow_xml(job_exec.job_configs,
+                                       input_data, output_data)
+
         self.assertIn("""
         <property>
           <name>c</name>
@@ -257,6 +267,8 @@ def _create_job_binary(id, type):
 def _create_data_source(url):
     data_source = mock.Mock()
     data_source.url = url
+    if url.startswith("swift"):
+        data_source.type = "swift"
     data_source.credentials = {'user': 'admin',
                                'password': 'admin1'}
     return data_source

@@ -17,20 +17,16 @@
 import datetime
 
 from oslo.config import cfg
-import six
 
 from savanna import conductor as c
 from savanna import context
 from savanna.openstack.common import log
 from savanna.openstack.common import uuidutils
-from savanna.plugins import base as plugin_base
 from savanna.plugins.general import utils as u
 from savanna.service.edp.binary_retrievers import dispatch
 from savanna.service.edp import hdfs_helper as h
 from savanna.service.edp import oozie as o
-from savanna.service.edp.workflow_creator import hive_workflow as hive_flow
-from savanna.service.edp.workflow_creator import mapreduce_workflow as mr_flow
-from savanna.service.edp.workflow_creator import pig_workflow as pig_flow
+from savanna.service.edp.workflow_creator import workflow_factory
 
 from savanna.utils import remote
 from savanna.utils import xmlutils as x
@@ -113,11 +109,15 @@ def run_job(ctx, job_execution):
     wf_dir = create_workflow_dir(u.get_jobtracker(cluster), job)
     upload_job_files(u.get_jobtracker(cluster), wf_dir, job_origin)
 
-    if job.type == 'Hive':
-        upload_hive_site(cluster, wf_dir)
+    creator = workflow_factory.get_creator(job.type, job_origin)
 
-    wf_xml = build_workflow_for_job(job.type, job_execution, job_origin,
-                                    input_source, output_source)
+    # Do other job type specific setup here, for example
+    # uploading hive configuration
+    creator.configure_workflow_if_needed(cluster, wf_dir)
+
+    wf_xml = creator.get_workflow_xml(job_execution.job_configs,
+                                      input_source, output_source)
+
     path_to_workflow = upload_workflow_file(u.get_jobtracker(cluster),
                                             wf_dir, wf_xml)
 
@@ -168,13 +168,6 @@ def upload_workflow_file(where, job_dir, wf_xml):
     return "%s/workflow.xml" % job_dir
 
 
-def upload_hive_site(cluster, wf_dir):
-    h_s = u.get_hiveserver(cluster)
-    plugin = plugin_base.PLUGINS.get_plugin(cluster.plugin_name)
-    h.copy_from_local(remote.get_remote(h_s),
-                      plugin.get_hive_config_path(), wf_dir)
-
-
 def create_workflow_dir(where, job):
     constructed_dir = '/user/hadoop/'
     constructed_dir = _add_postfix(constructed_dir)
@@ -183,76 +176,6 @@ def create_workflow_dir(where, job):
         h.create_dir(r, constructed_dir)
 
     return constructed_dir
-
-
-def _configs_update(configs, j_e_conf):
-    for key, value in six.iteritems(configs):
-        new_vals = j_e_conf.get(key, {})
-        value.update(new_vals)
-    return configs
-
-
-def _set_configs_for_pig_hive(input_data, output_data, j_e_conf):
-    configs = {'configs': {'fs.swift.service.savanna.username':
-                           input_data.credentials['user'],
-                           'fs.swift.service.savanna.password':
-                           input_data.credentials['password']},
-               'args': {},
-               'params': {'INPUT': input_data.url,
-                          'OUTPUT': output_data.url}
-               }
-
-    if j_e_conf:
-        configs = _configs_update(configs, j_e_conf)
-    return configs
-
-
-def _set_configs_for_jar(input_data, output_data, j_e_conf):
-    configs = {'configs': {'fs.swift.service.savanna.username':
-                           input_data.credentials['user'],
-                           'fs.swift.service.savanna.password':
-                           input_data.credentials['password'],
-                           'mapred.input.dir': input_data.url,
-                           'mapred.output.dir': output_data.url}
-               }
-
-    if j_e_conf:
-        configs = _configs_update(configs, j_e_conf)
-    return configs
-
-
-def build_workflow_for_job(job_type, job_execution, job_origin,
-                           input_data, output_data):
-
-    ctx = context.ctx()
-
-    j_e_conf = job_execution.job_configs
-
-    if job_type == 'Pig':
-        creator = pig_flow.PigWorkflowCreator()
-        # In case of Pig there should be one element in mains
-        script = conductor.job_binary_get(ctx, job_origin.mains[0])
-        configs = _set_configs_for_pig_hive(input_data, output_data, j_e_conf)
-        creator.build_workflow_xml(script["name"],
-                                   configuration=configs['configs'],
-                                   arguments=configs['args'],
-                                   params=configs['params'])
-    if job_type == 'Hive':
-        creator = hive_flow.HiveWorkflowCreator()
-        # In case of Hive there should be one element in mains
-        script = conductor.job_binary_get(ctx, job_origin.mains[0])
-        configs = _set_configs_for_pig_hive(input_data, output_data, j_e_conf)
-        creator.build_workflow_xml(script["name"],
-                                   job_xml="hive-site.xml",
-                                   configuration=configs['configs'],
-                                   params=configs['params'])
-
-    if job_type == 'Jar':
-        creator = mr_flow.MapReduceWorkFlowCreator()
-        configs = _set_configs_for_jar(input_data, output_data, j_e_conf)
-        creator.build_workflow_xml(configuration=configs['configs'])
-
-    return creator.get_built_workflow_xml()
 
 
 def _add_postfix(constructed_dir):
