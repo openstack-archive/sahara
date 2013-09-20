@@ -17,7 +17,7 @@ approach see :doc:`/horizon/dev.environment.guide`
 
 1) OpenStack environment (Folsom or Grizzly version) installed.
 
-2) Savanna installed, configured and running.
+2) Savanna installed, configured and running, see :doc:`/userdoc/installation.guide`.
 
 2. Savanna Dashboard Installation
 ---------------------------------
