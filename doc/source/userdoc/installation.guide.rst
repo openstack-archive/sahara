@@ -1,17 +1,38 @@
 Savanna Installation Guide
 ==========================
 
-We recommend installing Savanna into virtual environment. That guaranties that if you already
-have some python packages installed with OS package manager, Savanna installation will not
-mess with them. Still, installing Savanna into system makes sense if that system is dedicated to
-Savanna.
+We recommend you install in a way that will can keep your system in a
+consistent state. Two ways we recommend for installing Savanna are
+installing into a virtual environment or using `RDO Havana+
+<http://openstack.redhat.com/>`_.
 
-Further steps describe Savanna installation into virtual environment. All steps except
-#1 do not require superuser privileges.
+To install with RDO
+-------------------
 
-One of the :doc:`Savanna features <features>`, Anti-Affinity, requires a Nova adjustment.
-See :doc:`anti_affinity` for details. But that is purely optional.
+1. Start by following the `Quickstart
+   <http://openstack.redhat.com/Quickstart>`_ to install and setup
+   OpenStack.
 
+2. Install the savanna-api service with,
+
+.. sourcecode:: console
+
+     $ yum install openstack-savanna
+..
+
+3. Configure the savanna-api service to your liking. The configuration
+   file is located in ``/etc/savanna/savanna.conf``.
+
+4. Start the savanna-api service with,
+
+.. sourcecode:: console
+
+     $ service openstack-savanna-api start
+..
+
+
+To install into a virtual environment
+-------------------------------------
 
 1. First you need to install `python-setuptools`, `python-virtualenv` and python headers using your
    OS package manager. The python headers package name depends on OS. For Ubuntu it is `python-dev`,
@@ -82,8 +103,13 @@ See :doc:`anti_affinity` for details. But that is purely optional.
     $ savanna-venv/bin/python savanna-venv/bin/savanna-api --config-file savanna-venv/etc/savanna.conf
 ..
 
+
 Note:
 -----
+One of the :doc:`Savanna features <features>`, Anti-Affinity, requires a Nova adjustment.
+See :doc:`anti_affinity` for details. But that is purely optional.
+
+
 Make sure that your operating system is not blocking Savanna port (default: 8386).
 You may need to configure iptables in CentOS and some other operating systems.
 
