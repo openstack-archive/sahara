@@ -45,7 +45,7 @@ class HadoopServer:
             "{0}: Installing rpm's ...".format(self.instance.hostname))
 
         #TODO(jspeidel): based on image type, use correct command
-        rpm_cmd = 'wget -nv %s -O  /etc/yum.repos.d/ambari.repo' % \
+        rpm_cmd = 'curl -s -o /etc/yum.repos.d/ambari.repo %s' % \
                   self.ambari_rpm
         r.execute_command(rpm_cmd)
         r.execute_command('yum -y install epel-release')
