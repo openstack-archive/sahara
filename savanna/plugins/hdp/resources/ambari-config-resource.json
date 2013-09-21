@@ -155,6 +155,105 @@
                     "is_optional": true,
                     "name": "hadoop.security.auth_to_local",
                     "scope": "cluster"
+                },
+                {
+                    "applicable_target": "general",
+                    "config_type": "string",
+                    "default_value": "org.apache.hadoop.fs.swift.snative.SwiftNativeFileSystem",
+                    "description": "Swift FileSystem implementation",
+                    "is_optional": true,
+                    "name": "fs.swift.impl",
+                    "scope": "cluster"
+                },
+                {
+                    "applicable_target": "general",
+                    "config_type": "int",
+                    "default_value": "15000",
+                    "description": "timeout for all connections",
+                    "is_optional": true,
+                    "name": "fs.swift.connect.timeout",
+                    "scope": "cluster"
+                },
+                {
+                    "applicable_target": "general",
+                    "config_type": "int",
+                    "default_value": "60000",
+                    "description": "how long the connection waits for responses from servers",
+                    "is_optional": true,
+                    "name": "fs.swift.socket.timeout",
+                    "scope": "cluster"
+                },
+                {
+                    "applicable_target": "general",
+                    "config_type": "int",
+                    "default_value": "3",
+                    "description": "connection retry count for all connections",
+                    "is_optional": true,
+                    "name": "fs.swift.connect.retry.count",
+                    "scope": "cluster"
+                },
+                {
+                    "applicable_target": "general",
+                    "config_type": "int",
+                    "default_value": "0",
+                    "description": "delay in millis between bulk (delete, rename, copy operations)",
+                    "is_optional": true,
+                    "name": "fs.swift.connect.throttle.delay",
+                    "scope": "cluster"
+                },
+                {
+                    "applicable_target": "general",
+                    "config_type": "int",
+                    "default_value": "32768",
+                    "description": "blocksize for filesystem (kb)",
+                    "is_optional": true,
+                    "name": "fs.swift.blocksize",
+                    "scope": "cluster"
+                },
+                {
+                    "applicable_target": "general",
+                    "config_type": "int",
+                    "default_value": "4718592",
+                    "description": "the partition size for uploads (kb)",
+                    "is_optional": true,
+                    "name": "fs.swift.partsize",
+                    "scope": "cluster"
+                },
+                {
+                    "applicable_target": "general",
+                    "config_type": "int",
+                    "default_value": "64",
+                    "description": "request size for reads in KB",
+                    "is_optional": true,
+                    "name": "fs.swift.requestsize",
+                    "scope": "cluster"
+                },
+                {
+                    "applicable_target": "general",
+                    "config_type": "bool",
+                    "default_value": true,
+                    "description": "savanna provider public attribute",
+                    "is_optional": true,
+                    "name": "fs.swift.service.savanna.public",
+                    "scope": "cluster"
+                },
+                {
+                    "applicable_target": "general",
+                    "config_type": "int",
+                    "default_value": "8080",
+                    "description": " ",
+                    "is_optional": true,
+                    "name": "fs.swift.service.savanna.http.port",
+                    "scope": "cluster"
+                },
+                {
+                    "applicable_target": "general",
+                    "config_type": "int",
+                    "default_value": "443",
+                    "description": " ",
+                    "is_optional": true,
+                    "name": "fs.swift.service.savanna.https.port",
+                    "scope": "cluster"
                 }
             ]
         },

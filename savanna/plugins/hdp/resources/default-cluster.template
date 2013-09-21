@@ -242,7 +242,20 @@
         { "name" : "fs.checkpoint.dir", "value" : "/hadoop/hdfs/namesecondary" },
         { "name" : "fs.checkpoint.period", "value" : "21600" },
         { "name" : "fs.checkpoint.size", "value" : "0.5" },
-        { "name" : "fs.checkpoint.edits.dir", "value" : "/hadoop/hdfs/namesecondary" }
+        { "name" : "fs.checkpoint.edits.dir", "value" : "/hadoop/hdfs/namesecondary" },
+        { "name" : "fs.swift.impl", "value" : "org.apache.hadoop.fs.swift.snative.SwiftNativeFileSystem" },
+        { "name" : "fs.swift.connect.timeout", "value" : "15000" },
+        { "name" : "fs.swift.socket.timeout", "value" : "60000" },
+        { "name" : "fs.swift.connect.retry.count", "value" : "3" },
+        { "name" : "fs.swift.connect.throttle.delay", "value" : "0" },
+        { "name" : "fs.swift.blocksize", "value" : "32768" },
+        { "name" : "fs.swift.partsize", "value" : "4718592" },
+        { "name" : "fs.swift.requestsize", "value" : "64" },
+        { "name" : "fs.swift.service.savanna.public", "value" : "true" },
+        { "name" : "fs.swift.service.savanna.http.port", "value" : "8080" },
+        { "name" : "fs.swift.service.savanna.https.port", "value" : "443" },
+        { "name" : "fs.swift.service.savanna.auth.url", "value" : "None" },
+        { "name" : "fs.swift.service.savanna.tenant", "value" : "None"}
       ]
     },
     {
