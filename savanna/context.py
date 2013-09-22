@@ -37,12 +37,11 @@ class Context(object):
         if kwargs:
             LOG.warn('Arguments dropped when creating context: %s', kwargs)
         self.user_id = user_id
-        self.username = username
         self.tenant_id = tenant_id
-        self.tenant_name = tenant_name
         self.token = token
         self.service_catalog = service_catalog
-        self._db_session = None
+        self.username = username
+        self.tenant_name = tenant_name
 
     def clone(self):
         return Context(
@@ -52,6 +51,16 @@ class Context(object):
             self.service_catalog,
             self.username,
             self.tenant_name)
+
+    def to_dict(self):
+        return {
+            'user_id': self.user_id,
+            'tenant_id': self.tenant_id,
+            'token': self.token,
+            'service_catalog': self.service_catalog,
+            'username': self.username,
+            'tenant_name': self.tenant_name,
+        }
 
 
 _CTXS = threading.local()
