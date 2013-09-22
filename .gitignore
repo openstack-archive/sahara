@@ -42,3 +42,4 @@ tools/pylint_exceptions
 savanna/tests/cover
 savanna/tests/coverage.xml
 htmlcov
+savanna/openstack/common/db/savanna.sqlite
