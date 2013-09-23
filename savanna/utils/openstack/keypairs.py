@@ -17,8 +17,21 @@ from novaclient import base
 from novaclient.v1_1 import keypairs
 
 
+# TODO(slukjanov): remove this tweak when fix for 1223934 will be released
+class SavannaKeypair(keypairs.Keypair):
+    def _add_details(self, info):
+        dico = 'keypair' in info and \
+            info['keypair'] or info
+        for (k, v) in dico.items():
+            if k == 'id':
+                continue
+            setattr(self, k, v)
+
+
 # TODO(slukjanov): remove this tweak when we'll depend on novaclient>=2.14.0
 class SavannaKeypairManager(keypairs.KeypairManager):
+    resource_class = SavannaKeypair
+
     def get(self, keypair):
         """Get a keypair.
 
