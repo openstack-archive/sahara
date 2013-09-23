@@ -131,7 +131,7 @@ This operation does not require a request body.
                 {
                     "description": "This plugin provides an ability to launch vanilla Apache Hadoop cluster without any management consoles.",
                     "versions": [
-                        "1.1.2"
+                        "1.2.1"
                     ],
                     "name": "vanilla",
                     "title": "Vanilla Apache Hadoop"
@@ -174,7 +174,7 @@ This operation does not require a request body.
                 "description": "This plugin provides an ability to launch vanilla Apache Hadoop cluster without any management consoles.",
                 "name": "vanilla",
                 "versions": [
-                    "1.1.2"
+                    "1.2.1"
                 ]
             }
         }
@@ -197,7 +197,7 @@ This operation does not require a request body.
 
     .. sourcecode:: http
 
-        GET http://savanna/v1.0/775181/plugins/vanilla/1.1.2
+        GET http://savanna/v1.0/775181/plugins/vanilla/1.2.1
 
     **response**
 
@@ -223,11 +223,11 @@ This operation does not require a request body.
                 },
                 "description": "This plugin provides an ability to launch vanilla Apache Hadoop cluster without any management consoles.",
                 "versions": [
-                    "1.1.2"
+                    "1.2.1"
                 ],
                 "required_image_tags": [
                     "vanilla",
-                    "1.1.2"
+                    "1.2.1"
                 ],
                 "configs": [
                     {
@@ -404,14 +404,14 @@ This operation does not require a request body.
                     "name": "fedoraSwift_hadoop_savanna_v02",
                     "tags": [
                         "vanilla",
-                        "1.1.2"
+                        "1.2.1"
                     ],
                     "minDisk": 0,
                     "progress": 100,
                     "minRam": 0,
                     "metadata": {
                         "_savanna_tag_vanilla": "True",
-                        "_savanna_tag_1.1.2": "True",
+                        "_savanna_tag_1.2.1": "True",
                         "_savanna_username": "ec2-user"
                     },
                     "id": "daa50c37-b11b-4f3d-a586-e5dcd0a4110f"
@@ -456,14 +456,14 @@ This operation does not require a request body.
                     "name": "fedoraSwift_hadoop_savanna_v02",
                     "tags": [
                         "vanilla",
-                        "1.1.2"
+                        "1.2.1"
                     ],
                     "minDisk": 0,
                     "progress": 100,
                     "minRam": 0,
                     "metadata": {
                         "_savanna_tag_vanilla": "True",
-                        "_savanna_tag_1.1.2": "True",
+                        "_savanna_tag_1.2.1": "True",
                         "_savanna_username": "ec2-user"
                     },
                     "id": "daa50c37-b11b-4f3d-a586-e5dcd0a4110f"
@@ -509,14 +509,14 @@ This operation does not require a request body.
                 "name": "fedoraSwift_hadoop_savanna_v02",
                 "tags": [
                     "vanilla",
-                    "1.1.2"
+                    "1.2.1"
                 ],
                 "minDisk": 0,
                 "progress": 100,
                 "minRam": 0,
                 "metadata": {
                     "_savanna_tag_vanilla": "True",
-                    "_savanna_tag_1.1.2": "True",
+                    "_savanna_tag_1.2.1": "True",
                     "_savanna_username": "ec2-user"
                 },
                 "id": "daa50c37-b11b-4f3d-a586-e5dcd0a4110f"
@@ -783,7 +783,7 @@ This operation does not require a request body.
                         "HDFS": {},
                         "MapReduce": {}
                     },
-                    "hadoop_version": "1.1.2",
+                    "hadoop_version": "1.2.1",
                     "id": "ea34d320-09d7-4dc1-acbf-75b57cec81c9",
                     "description": ""
                 },
@@ -802,7 +802,7 @@ This operation does not require a request body.
                         "HDFS": {},
                         "MapReduce": {}
                     },
-                    "hadoop_version": "1.1.2",
+                    "hadoop_version": "1.2.1",
                     "id": "6bbaba84-d936-4e76-9381-987d3568cf4c",
                     "description": ""
                 }
@@ -855,7 +855,7 @@ This operation does not require a request body.
                     "HDFS": {},
                     "MapReduce": {}
                 },
-                "hadoop_version": "1.1.2",
+                "hadoop_version": "1.2.1",
                 "id": "ea34d320-09d7-4dc1-acbf-75b57cec81c9",
                 "description": ""
             }
@@ -883,7 +883,7 @@ This operation returns created Node Group Template.
 
         {
             "plugin_name": "vanilla",
-            "hadoop_version": "1.1.2",
+            "hadoop_version": "1.2.1",
             "node_processes": [
                 "namenode",
                 "jobtracker"
@@ -914,7 +914,7 @@ This operation returns created Node Group Template.
                 "flavor_id": "42",
                 "volumes_per_node": 0,
                 "node_configs": {},
-                "hadoop_version": "1.1.2",
+                "hadoop_version": "1.2.1",
                 "id": "ddefda09-9ab9-4555-bf48-e996243af6f2"
             }
         }
@@ -930,7 +930,7 @@ This operation returns created Node Group Template.
 
         {
             "plugin_name": "vanilla",
-            "hadoop_version": "1.1.2",
+            "hadoop_version": "1.2.1",
             "node_processes": [
                 "datanode",
                 "tasktracker"
@@ -976,7 +976,7 @@ This operation returns created Node Group Template.
                         "task_tracker_heap_size": 1024
                     }
                 },
-                "hadoop_version": "1.1.2",
+                "hadoop_version": "1.2.1",
                 "id": "060afabe-f4b3-487e-8d48-65c5bb5eb79e"
             }
         }
@@ -1113,7 +1113,7 @@ This operation does not require a request body.
                             "node_group_template_id": "6bbaba84-d936-4e76-9381-987d3568cf4c"
                         }
                     ],
-                    "hadoop_version": "1.1.2",
+                    "hadoop_version": "1.2.1",
                     "id": "c365b7dd-9b11-492d-a119-7ae023c19b51",
                     "description": ""
                 }
@@ -1196,7 +1196,7 @@ This operation does not require a request body.
                         "node_group_template_id": "6bbaba84-d936-4e76-9381-987d3568cf4c"
                     }
                 ],
-                "hadoop_version": "1.1.2",
+                "hadoop_version": "1.2.1",
                 "id": "c365b7dd-9b11-492d-a119-7ae023c19b51",
                 "description": ""
             }
@@ -1224,7 +1224,7 @@ This operation returns created Cluster Template.
 
         {
             "plugin_name": "vanilla",
-            "hadoop_version": "1.1.2",
+            "hadoop_version": "1.2.1",
             "node_groups": [
                 {
                     "name": "worker",
@@ -1292,7 +1292,7 @@ This operation returns created Cluster Template.
                     }
                 ],
                 "cluster_configs": {},
-                "hadoop_version": "1.1.2",
+                "hadoop_version": "1.2.1",
                 "id": "e2ad1d5d-5fff-45e8-8c3c-34697c7cd5ac"
             }
         }
@@ -1308,7 +1308,7 @@ This operation returns created Cluster Template.
 
         {
             "plugin_name": "vanilla",
-            "hadoop_version": "1.1.2",
+            "hadoop_version": "1.2.1",
             "node_groups": [
                 {
                     "name": "master",
@@ -1385,7 +1385,7 @@ This operation returns created Cluster Template.
                         ]
                     }
                 ],
-                "hadoop_version": "1.1.2",
+                "hadoop_version": "1.2.1",
                 "id": "9d72bc1a-8d38-493e-99f3-ebca4ec99ad8"
             }
         }
@@ -1556,7 +1556,7 @@ This operation does not require a request body.
                             "node_group_template_id": "6bbaba84-d936-4e76-9381-987d3568cf4c"
                         }
                     ],
-                    "hadoop_version": "1.1.2",
+                    "hadoop_version": "1.2.1",
                     "id": "1bb1cced-765e-4a2b-a5b6-ac6bbb0bb798"
                 }
             ]
@@ -1670,7 +1670,7 @@ This operation does not require a request body.
                         "node_group_template_id": "6bbaba84-d936-4e76-9381-987d3568cf4c"
                     }
                 ],
-                "hadoop_version": "1.1.2",
+                "hadoop_version": "1.2.1",
                 "id": "1bb1cced-765e-4a2b-a5b6-ac6bbb0bb798"
             }
         }
@@ -1697,7 +1697,7 @@ This operation returns created Cluster.
 
         {
             "plugin_name": "vanilla",
-            "hadoop_version": "1.1.2",
+            "hadoop_version": "1.2.1",
             "cluster_template_id": "1bb1cced-765e-4a2b-a5b6-ac6bbb0bb798",
             "default_image_id": "db12c199-d0b5-47d3-8a97-e95eeaeae615",
             "user_keypair_id": "doc-keypair",
@@ -1790,7 +1790,7 @@ This operation returns created Cluster.
                     "MapReduce": {},
                     "general": {}
                 },
-                "hadoop_version": "1.1.2",
+                "hadoop_version": "1.2.1",
                 "id": "1bb1cced-765e-4a2b-a5b6-ac6bbb0bb798"
             }
         }
@@ -1806,7 +1806,7 @@ This operation returns created Cluster.
 
         {
             "plugin_name": "vanilla",
-            "hadoop_version": "1.1.2",
+            "hadoop_version": "1.2.1",
             "default_image_id": "db12c199-d0b5-47d3-8a97-e95eeaeae615",
             "user_keypair_id": "doc-keypair",
             "node_groups": [
@@ -1923,7 +1923,7 @@ This operation returns created Cluster.
                         "node_group_template_id": "6bbaba84-d936-4e76-9381-987d3568cf4c"
                     }
                 ],
-                "hadoop_version": "1.1.2",
+                "hadoop_version": "1.2.1",
                 "id": "1bb1cced-765e-4a2b-a5b6-ac6bbb0bb798"
             }
         }
@@ -2092,7 +2092,7 @@ This operation returns updated Cluster.
                         "node_group_template_id": "24ed6654-7160-4705-85f3-9e28310842af"
                     }
                 ],
-                "hadoop_version": "1.1.2",
+                "hadoop_version": "1.2.1",
                 "id": "e8918684-0941-4637-8238-6fc03a9ba043",
                 "name": "doc-cluster"
             }

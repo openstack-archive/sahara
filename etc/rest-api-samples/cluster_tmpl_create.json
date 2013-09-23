@@ -2,7 +2,7 @@
     "name": "demo-cluster-template",
     "description": "Demo Cluster template",
     "plugin_name": "vanilla",
-    "hadoop_version": "1.1.1",
+    "hadoop_version": "1.2.1",
     "cluster_configs": {
         "general": {
             "some_general_conf": "qwerty"

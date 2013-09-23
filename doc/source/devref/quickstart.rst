@@ -68,9 +68,9 @@ images yourself:
 .. sourcecode:: console
 
     $ ssh user@hostname
-    $ wget http://savanna-files.mirantis.com/savanna-0.2-vanilla-1.1.2-ubuntu-12.10.qcow2
-    $ glance image-create --name=savanna-0.2-vanilla-hadoop-ubuntu.qcow2 \
-      --disk-format=qcow2 --container-format=bare < ./savanna-0.2-vanilla-1.1.2-ubuntu-12.10.qcow2
+    $ wget http://savanna-files.mirantis.com/savanna-0.3-vanilla-1.2.1-ubuntu-13.04.qcow2
+    $ glance image-create --name=savanna-0.3-vanilla-1.2.1-ubuntu-13.04 \
+      --disk-format=qcow2 --container-format=bare < ./savanna-0.3-vanilla-1.2.1-ubuntu-13.04.qcow2
 
 
 * OR with Fedora 18
@@ -78,9 +78,9 @@ images yourself:
 .. sourcecode:: console
 
     $ ssh user@hostname
-    $ wget http://savanna-files.mirantis.com/savanna-0.2-vanilla-1.1.2-fedora-18.qcow2
-    $ glance image-create --name=savanna-0.2-vanilla-hadoop-ubuntu.qcow2 \
-      --disk-format=qcow2 --container-format=bare < ./savanna-0.2-vanilla-1.1.2-fedora-18.qcow2
+    $ wget http://savanna-files.mirantis.com/savanna-0.3-vanilla-1.2.1-fedora-19.qcow2
+    $ glance image-create --name=savanna-0.3-vanilla-1.2.1-fedora-19 \
+      --disk-format=qcow2 --container-format=bare < ./savanna-0.3-vanilla-1.2.1-fedora-19.qcow2
 
 
 * OR build image using :doc:`../userdoc/diskimagebuilder`.
@@ -90,11 +90,11 @@ Save image id. You can get image id from command ``glance image-list``:
 
 .. sourcecode:: console
 
-    $ glance image-list --name vanilla_02_ubuntu.qcow2
+    $ glance image-list --name savanna-0.3-vanilla-1.2.1-ubuntu-13.04
     +--------------------------------------+-----------------------------------------+
     | ID                                   | Name                                    |
     +--------------------------------------+-----------------------------------------+
-    | 3f9fc974-b484-4756-82a4-bff9e116919b | savanna-0.2-vanilla-hadoop-ubuntu.qcow2 |
+    | 3f9fc974-b484-4756-82a4-bff9e116919b | savanna-0.3-vanilla-1.2.1-ubuntu-13.04  |
     +--------------------------------------+-----------------------------------------+
 
     $ export IMAGE_ID="3f9fc974-b484-4756-82a4-bff9e116919b"
@@ -128,7 +128,7 @@ Save image id. You can get image id from command ``glance image-list``:
 .. sourcecode:: console
 
     $ http $SAVANNA_URL/images/$IMAGE_ID/tag X-Auth-Token:$AUTH_TOKEN \
-     tags:='["vanilla", "1.1.2", "ubuntu"]'
+     tags:='["vanilla", "1.2.1", "ubuntu"]'
 
 * Make sure that image is registered correctly:
 
@@ -149,20 +149,20 @@ Save image id. You can get image id from command ``glance image-list``:
                 "id": "3f9fc974-b484-4756-82a4-bff9e116919b",
                 "metadata": {
                     "_savanna_description": "None",
-                    "_savanna_tag_1.1.2": "True",
+                    "_savanna_tag_1.2.1": "True",
                     "_savanna_tag_ubuntu": "True",
                     "_savanna_tag_vanilla": "True",
                     "_savanna_username": "ubuntu"
                 },
                 "minDisk": 0,
                 "minRam": 0,
-                "name": "savanna-0.2-vanilla-hadoop-ubuntu.qcow2",
+                "name": "savanna-0.3-vanilla-1.2.1-ubuntu-13.04",
                 "progress": 100,
                 "status": "ACTIVE",
                 "tags": [
                     "vanilla",
                     "ubuntu",
-                    "1.1.2"
+                    "1.2.1"
                 ],
                 "updated": "2013-07-07T16:25:19Z",
                 "username": "ubuntu"
@@ -183,7 +183,7 @@ following content:
         "name": "test-master-tmpl",
         "flavor_id": "2",
         "plugin_name": "vanilla",
-        "hadoop_version": "1.1.2",
+        "hadoop_version": "1.2.1",
         "node_processes": ["jobtracker", "namenode"]
     }
 
@@ -196,7 +196,7 @@ following content:
         "name": "test-worker-tmpl",
         "flavor_id": "2",
         "plugin_name": "vanilla",
-        "hadoop_version": "1.1.2",
+        "hadoop_version": "1.2.1",
         "node_processes": ["tasktracker", "datanode"]
     }
 
@@ -227,7 +227,7 @@ Output should look like:
             {
                 "created": "2013-07-07T18:53:55",
                 "flavor_id": "2",
-                "hadoop_version": "1.1.2",
+                "hadoop_version": "1.2.1",
                 "id": "b38227dc-64fe-42bf-8792-d1456b453ef3",
                 "name": "demo-master",
                 "node_configs": {},
@@ -244,7 +244,7 @@ Output should look like:
             {
                 "created": "2013-07-07T18:54:00",
                 "flavor_id": "2",
-                "hadoop_version": "1.1.2",
+                "hadoop_version": "1.2.1",
                 "id": "634827b9-6a18-4837-ae15-5371d6ecf02c",
                 "name": "demo-worker",
                 "node_configs": {},
@@ -279,7 +279,7 @@ following content:
     {
         "name": "demo-cluster-template",
         "plugin_name": "vanilla",
-        "hadoop_version": "1.1.2",
+        "hadoop_version": "1.2.1",
         "node_groups": [
             {
                 "name": "master",
@@ -314,7 +314,7 @@ following content:
     {
         "name": "cluster-1",
         "plugin_name": "vanilla",
-        "hadoop_version": "1.1.2",
+        "hadoop_version": "1.2.1",
         "cluster_template_id" : "ce897df2-1610-4caa-bdb8-408ef90561cf",
         "user_keypair_id": "stack",
         "default_image_id": "3f9fc974-b484-4756-82a4-bff9e116919b"
@@ -348,7 +348,7 @@ Once cluster started, you'll get similar output:
                 "cluster_template_id": "ce897df2-1610-4caa-bdb8-408ef90561cf",
                 "created": "2013-07-07T19:01:51",
                 "default_image_id": "3f9fc974-b484-4756-82a4-bff9e116919b",
-                "hadoop_version": "1.1.2",
+                "hadoop_version": "1.2.1",
                 "id": "c5e755a2-b3f9-417b-948b-e99ed7fbf1e3",
                 "info": {
                     "HDFS": {
@@ -454,6 +454,6 @@ To check that your Hadoop installation works correctly:
 .. sourcecode:: console
 
     $ cd /usr/share/hadoop
-    $ hadoop jar hadoop-examples.jar pi 10 100
+    $ hadoop jar hadoop-examples-1.2.1.jar pi 10 100
 
 Congratulations! Now you have Hadoop cluster ready on the OpenStack cloud!

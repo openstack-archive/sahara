@@ -1,7 +1,7 @@
 {
     "name": "sl-cluster-42",
     "plugin_name": "vanilla",
-    "hadoop_version": "1.1.1",
+    "hadoop_version": "1.2.1",
     "user_keypair_id": "slukjanov",
     "default_image_id": "51752c61-f73a-456c-98fb-192c0a448554",
     "cluster_configs": {
