@@ -15,6 +15,7 @@
 
 from oslo.config import cfg
 
+from savanna.openstack.common import log
 from savanna.version import version_info as savanna_version
 
 cli_opts = [
@@ -45,6 +46,20 @@ cluster_node_opts = [
                 default=False,
                 help="Use Neutron or Nova Network")
 ]
+
+
+cfg.set_defaults(log.log_opts, default_log_levels=[
+    'amqplib=WARN',
+    'qpid.messaging=INFO',
+    'stevedore=INFO',
+    'eventlet.wsgi.server=WARN',
+    'sqlalchemy=WARN',
+    'boto=WARN',
+    'suds=INFO',
+    'keystone=INFO',
+    'paramiko=WARN',
+    'requests=WARN',
+])
 
 
 CONF = cfg.CONF
