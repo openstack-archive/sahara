@@ -80,9 +80,15 @@ class TestAttachVolume(models_test_base.DbTestCase):
 
    8        0  488386584 vda
    8        1     102400 vda1"""
-
         p_ex_cmd.return_value = (0, stdout)
         self.assertEqual(volumes._get_free_device_path(instance), '/dev/vdb')
+
+        stdout = """major minor  #blocks  name
+
+   8        0  488386584 xvda
+   8        1     102400 xvda1"""
+        p_ex_cmd.return_value = (0, stdout)
+        self.assertEqual(volumes._get_free_device_path(instance), '/dev/xvdb')
 
         stdout = "major minor  #blocks  name\n"
         for idx in range(0, 26):

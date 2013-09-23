@@ -108,8 +108,14 @@ def _get_device_paths(instance):
 
 def _get_free_device_path(instance):
     device_paths = _get_device_paths(instance)
+
+    device_prefix = '/dev/vd'
+    for dp in device_paths:
+        if re.search('^/dev/xvd.*', dp):
+            device_prefix = '/dev/xvd'
+
     for idx in range(0, 26):
-        device_path = '/dev/vd' + chr(ord('a') + idx)
+        device_path = device_prefix + chr(ord('a') + idx)
         if device_path not in device_paths:
             return device_path
 
