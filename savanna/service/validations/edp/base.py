@@ -21,7 +21,7 @@ import savanna.service.edp.api as api
 
 data_source_type = {
     "type": "string",
-    "enum": ["swift"]
+    "enum": ["swift", "hdfs"]
 }
 
 

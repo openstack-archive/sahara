@@ -80,3 +80,14 @@ def clean_cluster_from_empty_ng(cluster):
     for ng in cluster.node_groups:
         if ng.count == 0:
             conductor.node_group_remove(ctx, ng)
+
+
+def generate_etc_hosts(cluster):
+    hosts = "127.0.0.1 localhost\n"
+    for node_group in cluster.node_groups:
+        for instance in node_group.instances:
+            hosts += "%s %s %s\n" % (instance.internal_ip,
+                                     instance.fqdn(),
+                                     instance.hostname())
+
+    return hosts

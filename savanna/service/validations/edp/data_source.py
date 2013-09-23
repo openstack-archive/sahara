@@ -13,6 +13,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import urlparse
+
 import savanna.exceptions as ex
 import savanna.service.validations.edp.base as b
 
@@ -50,6 +52,24 @@ def check_data_source_create(data, **kwargs):
     b.check_data_source_unique_name(data['name'])
 
     if "swift" == data["type"]:
-        if not ("user" in data["credentials"]
-                and "password" in data["credentials"]):
-            raise ex.InvalidCredentials("Invalid credentials for Swift")
+        _check_swift_data_source_create(data)
+
+    if "hdfs" == data["type"]:
+        _check_hdfs_data_source_create(data)
+
+
+def _check_swift_data_source_create(data):
+    if not ("user" in data["credentials"]
+            and "password" in data["credentials"]):
+        raise ex.InvalidCredentials("Invalid credentials for Swift")
+
+
+def _check_hdfs_data_source_create(data):
+    if len(data['url']) == 0:
+        raise ex.InvalidException("HDFS url must not be empty")
+    url = urlparse.urlparse(data['url'])
+    if url.scheme != "hdfs":
+        raise ex.InvalidException("URL scheme must be 'hdfs'")
+    if not url.hostname:
+        raise ex.InvalidException("HDFS url is incorrect, "
+                                  "cannot determine a hostname")
