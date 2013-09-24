@@ -74,6 +74,9 @@ def check_cluster_create(data, **kwargs):
         b.check_node_processes(data['plugin_name'], data['hadoop_version'],
                                data['anti_affinity'])
 
+    if data.get('node_groups'):
+        b.check_network_config(data['node_groups'])
+
 
 def _get_cluster_field(cluster, field):
     if cluster.get(field):

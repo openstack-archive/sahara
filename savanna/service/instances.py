@@ -17,6 +17,7 @@ import datetime
 
 from novaclient import exceptions as nova_exceptions
 from oslo.config import cfg
+import six
 
 from savanna import conductor as c
 from savanna import context
@@ -41,10 +42,19 @@ def create_cluster(cluster):
         LOG.info(g.format_cluster_status(cluster))
         _create_instances(cluster)
 
-        # wait for all instances are up and accessible
+        # wait for all instances are up and networks ready
         cluster = conductor.cluster_update(ctx, cluster, {"status": "Waiting"})
         LOG.info(g.format_cluster_status(cluster))
-        cluster = _await_instances(cluster)
+
+        instances = get_instances(cluster)
+
+        _await_active(instances)
+
+        _assign_floating_ips(instances)
+
+        _await_networks(instances)
+
+        cluster = conductor.cluster_get(ctx, cluster)
 
         # attach volumes
         volumes.attach(cluster)
@@ -65,38 +75,49 @@ def create_cluster(cluster):
             _rollback_cluster_creation(cluster, ex)
 
 
-def get_instances(cluster, instances_ids):
+def get_instances(cluster, instances_ids=None):
     inst_map = {}
     for node_group in cluster.node_groups:
         for instance in node_group.instances:
             inst_map[instance.id] = instance
 
-    return [inst_map[id] for id in instances_ids]
+    if instances_ids is not None:
+        return [inst_map[id] for id in instances_ids]
+    else:
+        return [v for v in six.itervalues(inst_map)]
 
 
 def scale_cluster(cluster, node_group_id_map, plugin):
     ctx = context.ctx()
 
-    instances_list = []
+    instance_ids = []
     try:
-        instances_list = _scale_cluster_instances(
+        instance_ids = _scale_cluster_instances(
             cluster, node_group_id_map, plugin)
 
         cluster = conductor.cluster_get(ctx, cluster)
         cluster = clean_cluster_from_empty_ng(cluster)
 
-        cluster = _await_instances(cluster)
+        instances = get_instances(cluster, instance_ids)
 
-        volumes.attach_to_instances(get_instances(cluster, instances_list))
+        _await_active(instances)
+
+        _assign_floating_ips(instances)
+
+        _await_networks(instances)
+
+        cluster = conductor.cluster_get(context, cluster)
+
+        volumes.attach_to_instances(get_instances(cluster, instance_ids))
 
     except Exception as ex:
         LOG.warn("Can't scale cluster '%s' (reason: %s)", cluster.name, ex)
         with excutils.save_and_reraise_exception():
             cluster = conductor.cluster_get(ctx, cluster)
             _rollback_cluster_scaling(cluster,
-                                      get_instances(cluster, instances_list),
+                                      get_instances(cluster, instance_ids),
                                       ex)
-            instances_list = []
+            instance_ids = []
 
             cluster = conductor.cluster_get(ctx, cluster)
             clean_cluster_from_empty_ng(cluster)
@@ -111,9 +132,9 @@ def scale_cluster(cluster, node_group_id_map, plugin):
 
     # we should be here with valid cluster: if instances creation
     # was not successful all extra-instances will be removed above
-    if instances_list:
+    if instance_ids:
         _configure_instances(cluster)
-    return instances_list
+    return instance_ids
 
 
 def _generate_anti_affinity_groups(cluster):
@@ -136,7 +157,6 @@ def _create_instances(cluster):
 
     #aa_groups = _generate_anti_affinity_groups(cluster)
     aa_groups = {}
-
     for node_group in cluster.node_groups:
         count = node_group.count
         conductor.node_group_update(ctx, node_group, {'count': 0})
@@ -258,66 +278,90 @@ echo "%(private_key)s" > %(user_home)s/.ssh/id_rsa
     }
 
 
-def _await_instances(cluster):
-    """Await all instances are in Active status and available."""
+def _assign_floating_ips(instances):
+    for instance in instances:
+        node_group = instance.node_group
+        if node_group.floating_ip_pool:
+            networks.assign_floating_ip(instance.instance_id,
+                                        node_group.floating_ip_pool)
+
+
+def _check_cluster_exists(cluster):
     ctx = context.ctx()
-    all_up = False
-    is_accesible = set()
-    while not all_up:
-        all_up = True
+    # check if cluster still exists (it might have been removed)
+    cluster = conductor.cluster_get(ctx, cluster)
+    return cluster is not None
 
-        for node_group in cluster.node_groups:
-            for instance in node_group.instances:
-                if not _check_if_up(instance):
-                    all_up = False
 
-        cluster = conductor.cluster_get(ctx, cluster)
+def _await_networks(instances):
+    if not instances:
+        return
 
-        for node_group in cluster.node_groups:
-            for instance in node_group.instances:
-                if not _check_if_accessible(instance, is_accesible):
-                    all_up = False
+    ips_assigned = set()
+    while len(ips_assigned) != len(instances):
+        if not _check_cluster_exists(instances[0].node_group.cluster):
+            return
+        for instance in instances:
+            if instance.id not in ips_assigned:
+                if networks.init_instances_ips(instance):
+                    ips_assigned.add(instance.id)
 
         context.sleep(1)
 
-    return cluster
+    ctx = context.ctx()
+    cluster = conductor.cluster_get(ctx, instances[0].node_group.cluster)
+    instances = get_instances(cluster, ips_assigned)
+
+    accessible_instances = set()
+    while len(accessible_instances) != len(instances):
+        if not _check_cluster_exists(instances[0].node_group.cluster):
+            return
+        for instance in instances:
+            if instance.id not in accessible_instances:
+                if _check_if_accessible(instance):
+                    accessible_instances.add(instance.id)
+
+        context.sleep(1)
 
 
-def _check_if_up(instance):
-    if instance.internal_ip and instance.management_ip:
-        return True
+def _await_active(instances):
+    """Await all instances are in Active status and available."""
+    if not instances:
+        return
+
+    active_ids = set()
+    while len(active_ids) != len(instances):
+        if not _check_cluster_exists(instances[0].node_group.cluster):
+            return
+        for instance in instances:
+            if instance.id not in active_ids:
+                if _check_if_active(instance):
+                    active_ids.add(instance.id)
+
+        context.sleep(1)
+
+
+def _check_if_active(instance):
 
     server = nova.get_instance_info(instance)
     if server.status == 'ERROR':
         # TODO(slukjanov): replace with specific error
         raise RuntimeError("node %s has error status" % server.name)
 
-    if server.status != 'ACTIVE':
-        return False
-
-    if len(server.networks) == 0:
-        return False
-
-    if not networks.init_instances_ips(instance, server):
-        return False
-
-    return True
+    return server.status == 'ACTIVE'
 
 
-def _check_if_accessible(instance, cache):
-    if instance.id in cache:
-        return True
+def _check_if_accessible(instance):
 
-    if not instance.internal_ip or not instance.management_ip:
-        # instance is not up yet
+    if not instance.management_ip:
         return False
 
     try:
         # check if ssh is accessible and cloud-init
         # script is finished generating id_rsa
-        exit_code, _ = instance.remote.execute_command(
+        exit_code, stdout = instance.remote.execute_command(
             "ls .ssh/id_rsa", raise_when_error=False)
-        # don't log ls command failure
+
         if exit_code:
             return False
     except Exception as ex:
@@ -326,7 +370,6 @@ def _check_if_accessible(instance, cache):
         return False
 
     LOG.debug('Instance %s is accessible' % instance.instance_name)
-    cache.add(instance.id)
     return True
 
 
@@ -394,6 +437,8 @@ def _shutdown_instances(cluster):
 def _shutdown_instance(instance):
     ctx = context.ctx()
     try:
+        if instance.node_group.floating_ip_pool:
+            networks.delete_floating_ip(instance.instance_id)
         nova.client().servers.delete(instance.instance_id)
     except nova_exceptions.NotFound:
         #Just ignore non-existing instances

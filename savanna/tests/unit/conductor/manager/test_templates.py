@@ -26,6 +26,7 @@ SAMPLE_NGT = {
     "hadoop_version": "test_version",
     "name": "ngt_test",
     "node_processes": ["p1", "p2"],
+    "floating_ip_pool": None,
     "node_configs": {
         "service_1": {
             "config_1": "value_1"
@@ -54,13 +55,15 @@ SAMPLE_CLT = {
             "name": "ng_1",
             "flavor_id": "42",
             "node_processes": ["p1", "p2"],
-            "count": 1
+            "count": 1,
+            "floating_ip_pool": None
         },
         {
             "name": "ng_2",
             "flavor_id": "42",
             "node_processes": ["p3", "p4"],
-            "count": 3
+            "count": 3,
+            "floating_ip_pool": None,
         }
 
     ]
