@@ -56,7 +56,7 @@ def get_job_status(job_execution_id):
     if cluster is None or cluster.status != 'Active':
         return job_execution
 
-    client = o.OozieClient(cluster['info']['JobFlow']['Oozie'] + "/oozie/")
+    client = o.OozieClient(cluster['info']['JobFlow']['Oozie'] + "/oozie")
     job_info = client.get_job_status(job_execution.oozie_job_id)
     update = {"info": job_info}
     if job_info['status'] in terminated_job_states:
