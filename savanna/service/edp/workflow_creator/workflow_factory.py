@@ -59,13 +59,13 @@ class BaseFactory(object):
 
 
 class PigFactory(BaseFactory):
-    def __init__(self, job_origin):
+    def __init__(self, job):
         super(PigFactory, self).__init__()
 
-        self.name = self.get_script_name(job_origin)
+        self.name = self.get_script_name(job)
 
-    def get_script_name(self, job_origin):
-        return conductor.job_origin_main_name(context.ctx(), job_origin)
+    def get_script_name(self, job):
+        return conductor.job_main_name(context.ctx(), job)
 
     def get_workflow_xml(self, execution_configs, input_data, output_data):
         configs = {'configs': self.get_configs(input_data, output_data),
@@ -81,14 +81,14 @@ class PigFactory(BaseFactory):
 
 
 class HiveFactory(BaseFactory):
-    def __init__(self, job_origin):
+    def __init__(self, job):
         super(HiveFactory, self).__init__()
 
-        self.name = self.get_script_name(job_origin)
+        self.name = self.get_script_name(job)
         self.job_xml = "hive-site.xml"
 
-    def get_script_name(self, job_origin):
-        return conductor.job_origin_main_name(context.ctx(), job_origin)
+    def get_script_name(self, job):
+        return conductor.job_main_name(context.ctx(), job)
 
     def get_workflow_xml(self, execution_configs, input_data, output_data):
         configs = {'configs': self.get_configs(input_data, output_data),
@@ -125,16 +125,16 @@ class MapReduceFactory(BaseFactory):
         return creator.get_built_workflow_xml()
 
 
-def get_creator(job_type, job_origin):
+def get_creator(job):
 
     def make_PigFactory():
-        return PigFactory(job_origin)
+        return PigFactory(job)
 
     def make_HiveFactory():
-        return HiveFactory(job_origin)
+        return HiveFactory(job)
 
     type_map = {"Pig": make_PigFactory,
                 "Hive": make_HiveFactory,
                 "Jar": MapReduceFactory}
 
-    return type_map[job_type]()
+    return type_map[job.type]()

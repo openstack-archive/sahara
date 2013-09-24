@@ -258,31 +258,6 @@ def data_source_destroy(context, data_source):
     IMPL.data_source_destroy(context, data_source)
 
 
-## Jobs ops
-
-@to_dict
-def job_get(context, job):
-    """Return the Job or None if it does not exist."""
-    return IMPL.job_get(context, job)
-
-
-@to_dict
-def job_get_all(context):
-    """Get all Jobs."""
-    return IMPL.job_get_all(context)
-
-
-@to_dict
-def job_create(context, values):
-    """Create a Job from the values dictionary."""
-    return IMPL.job_create(context, values)
-
-
-def job_destroy(context, job):
-    """Destroy the Job or raise if it does not exist."""
-    IMPL.job_destroy(context, job)
-
-
 ## JobExecutions ops
 
 @to_dict
@@ -323,34 +298,34 @@ def job_execution_destroy(context, job_execution):
     IMPL.job_execution_destroy(context, job_execution)
 
 
-## JobOrigin ops
+## Job ops
 
 @to_dict
-def job_origin_get(context, job_origin):
-    """Return the JobOrigin or None if it does not exist."""
-    return IMPL.job_origin_get(context, job_origin)
-
-
-@to_dict
-def job_origin_get_all(context):
-    """Get all JobOrigins."""
-    return IMPL.job_origin_get_all(context)
+def job_get(context, job):
+    """Return the Job or None if it does not exist."""
+    return IMPL.job_get(context, job)
 
 
 @to_dict
-def job_origin_create(context, values):
-    """Create a JobOrigin from the values dictionary."""
-    return IMPL.job_origin_create(context, values)
+def job_get_all(context):
+    """Get all Jobs."""
+    return IMPL.job_get_all(context)
 
 
-def job_origin_update(context, job_origin, values):
-    """Update a JobOrigin from the values dictionary."""
-    return IMPL.job_origin_update(context, job_origin, values)
+@to_dict
+def job_create(context, values):
+    """Create a Job from the values dictionary."""
+    return IMPL.job_create(context, values)
 
 
-def job_origin_destroy(context, job_origin):
-    """Destroy the JobOrigin or raise if it does not exist."""
-    IMPL.job_origin_destroy(context, job_origin)
+def job_update(context, job, values):
+    """Update a Job from the values dictionary."""
+    return IMPL.job_update(context, job, values)
+
+
+def job_destroy(context, job):
+    """Destroy the Job or raise if it does not exist."""
+    IMPL.job_destroy(context, job)
 
 
 @to_dict

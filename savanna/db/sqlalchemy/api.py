@@ -437,45 +437,6 @@ def data_source_destroy(context, data_source_id):
         session.delete(data_source)
 
 
-## Job ops
-
-def _job_get(context, session, job_id):
-    query = model_query(m.Job, context, session)
-    return query.filter_by(id=job_id).first()
-
-
-def job_get(context, job_id):
-    return _job_get(context, get_session(), job_id)
-
-
-def job_get_all(context):
-    query = model_query(m.Job, context)
-    return query.all()
-
-
-def job_create(context, values):
-    job = m.Job()
-    job.update(values)
-
-    try:
-        job.save()
-    except db_exc.DBDuplicateEntry as e:
-        raise ex.DBDuplicateEntry("Duplicate entry for Job: %s" % e.columns)
-
-    return job
-
-
-def job_destroy(context, job_id):
-    session = get_session()
-    with session.begin():
-        job = _job_get(context, session, job_id)
-
-        if not job:
-            raise ex.NotFoundException(job_id, "Job id '%s' not found!")
-
-        session.delete(job)
-
-
 ## JobExecution ops
 
 def _job_execution_get(context, session, job_execution_id):
@@ -537,81 +498,81 @@ def job_execution_destroy(context, job_execution_id):
         session.delete(job_ex)
 
 
-## JobOrigin ops
+## Job ops
 
-def _job_origin_get(context, session, job_origin_id):
-    query = model_query(m.JobOrigin, context, session)
-    return query.filter_by(id=job_origin_id).first()
-
-
-def job_origin_get(context, job_origin_id):
-    return _job_origin_get(context, get_session(), job_origin_id)
+def _job_get(context, session, job_id):
+    query = model_query(m.Job, context, session)
+    return query.filter_by(id=job_id).first()
 
 
-def job_origin_get_all(context):
-    query = model_query(m.JobOrigin, context)
+def job_get(context, job_id):
+    return _job_get(context, get_session(), job_id)
+
+
+def job_get_all(context):
+    query = model_query(m.Job, context)
     return query.all()
 
 
-def job_origin_create(context, values):
+def job_create(context, values):
     mains = values.pop("mains", [])
     libs = values.pop("libs", [])
 
     session = get_session()
     with session.begin():
-        job_origin = m.JobOrigin()
-        job_origin.update(values)
+        job = m.Job()
+        job.update(values)
         # libs and mains are 'lazy' objects. The initialization below
         # is needed here because it provides libs and mains to be initialized
         # within a session even if the lists are empty
-        job_origin.mains = []
-        job_origin.libs = []
+        job.mains = []
+        job.libs = []
         try:
             for main in mains:
                 query = model_query(m.JobBinary,
                                     context, session).filter_by(id=main)
                 job_binary = query.first()
                 if job_binary is not None:
-                    job_origin.mains.append(job_binary)
+                    job.mains.append(job_binary)
 
             for lib in libs:
                 query = model_query(m.JobBinary,
                                     context, session).filter_by(id=lib)
                 job_binary = query.first()
                 if job_binary is not None:
-                    job_origin.libs.append(job_binary)
+                    job.libs.append(job_binary)
 
-            job_origin.save(session=session)
+            job.save(session=session)
         except db_exc.DBDuplicateEntry as e:
-            raise ex.DBDuplicateEntry("Duplicate entry for JobOrigin: %s"
+            raise ex.DBDuplicateEntry("Duplicate entry for Job: %s"
                                       % e.columns)
 
-    return job_origin
+    return job
 
 
-def job_origin_update(context, job_origin_id, values):
+def job_update(context, job_id, values):
     session = get_session()
 
     with session.begin():
-        job_origin = _job_origin_get(context, session, job_origin_id)
-        if not job_origin:
-            raise ex.NotFoundException(job_origin_id,
-                                       "JobOrigin id '%s' not found!")
-        job_origin.update(values)
+        job = _job_get(context, session, job_id)
+        if not job:
+            raise ex.NotFoundException(job_id,
+                                       "Job id '%s' not found!")
+        job.update(values)
 
-    return job_origin
+    return job
 
 
-def job_origin_destroy(context, job_origin_id):
+def job_destroy(context, job_id):
     session = get_session()
     with session.begin():
-        job_origin = _job_origin_get(context, session, job_origin_id)
+        job = _job_get(context, session, job_id)
 
-        if not job_origin:
-            raise ex.NotFoundException(job_origin_id,
-                                       "JobOrigin id '%s' not found!")
+        if not job:
+            raise ex.NotFoundException(job_id,
+                                       "Job id '%s' not found!")
 
-        session.delete(job_origin)
+        session.delete(job)
 
 ## JobBinary ops
 

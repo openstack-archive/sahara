@@ -187,20 +187,6 @@ class DataSource(object):
     """
 
 
-class Job(object):
-    """An object representing Job
-
-    id
-    tenant_id
-    name
-    description
-    type
-    job_origin_id
-    input_type
-    output_type
-    """
-
-
 class JobExecution(object):
     """An object representing JobExecution
 
@@ -219,13 +205,14 @@ class JobExecution(object):
     """
 
 
-class JobOrigin(object):
-    """An object representing JobOrigin
+class Job(object):
+    """An object representing Job
 
     id
     tenant_id
     name
     description
+    type
     mains
     libs
     """

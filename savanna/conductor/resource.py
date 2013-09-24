@@ -209,16 +209,12 @@ class DataSource(Resource, objects.DataSource):
     _resource_name = "data_source"
 
 
-class Job(Resource, objects.Job):
-    _resource_name = "job"
-
-
 class JobExecution(Resource, objects.JobExecution):
     _resource_name = "job_execution"
 
 
-class JobOrigin(Resource, objects.JobOrigin):
-    _resource_name = "job_origin"
+class Job(Resource, objects.Job):
+    _resource_name = "job"
 
 
 class JobBinary(Resource, objects.JobBinary):

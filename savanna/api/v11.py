@@ -21,7 +21,6 @@ from savanna.service.validations.edp import job as v_j
 from savanna.service.validations.edp import job_binary as v_j_b
 from savanna.service.validations.edp import job_binary_internal as v_j_b_i
 from savanna.service.validations.edp import job_executor as v_j_e
-from savanna.service.validations.edp import job_origin as v_j_o
 import savanna.utils.api as u
 
 
@@ -31,31 +30,6 @@ rest = u.Rest('v11', __name__)
 
 
 ## EDP ops
-
-@rest.get('/jobs')
-def jobs_list():
-    return u.render(
-        jobs=[j.to_dict() for j in api.get_jobs()])
-
-
-@rest.post('/jobs')
-@v.validate(v_j.JOB_SCHEMA, v_j.check_job_create)
-def job_create(data):
-    return u.render(api.create_job(data).to_wrapped_dict())
-
-
-@rest.get('/jobs/<job_id>')
-@v.check_exists(api.get_job, id='job_id')
-def job_get(job_id):
-    return u.render(api.get_job(job_id).to_wrapped_dict())
-
-
-@rest.delete('/jobs/<job_id>')
-@v.check_exists(api.get_job, id='job_id')
-def job_delete(job_id):
-    api.delete_job(job_id)
-    return u.render()
-
 
 @rest.post('/jobs/<job_id>/execute')
 @v.check_exists(api.get_job, id='job_id')
@@ -129,27 +103,27 @@ def data_source_delete(data_source_id):
     return u.render()
 
 
-@rest.get('/job-origins')
-def job_origin_list():
-    return u.render(job_origins=[j.to_dict() for j in api.get_job_origins()])
+@rest.get('/jobs')
+def job_list():
+    return u.render(jobs=[j.to_dict() for j in api.get_jobs()])
 
 
-@rest.post('/job-origins')
-@v.validate(v_j_o.JOB_ORIGIN_SCHEMA, v_j_o.check_mains_libs)
-def job_origin_create(data):
-    return u.render(api.create_job_origin(data).to_wrapped_dict())
+@rest.post('/jobs')
+@v.validate(v_j.JOB_SCHEMA, v_j.check_mains_libs)
+def job_create(data):
+    return u.render(api.create_job(data).to_wrapped_dict())
 
 
-@rest.get('/job-origins/<job_origin_id>')
-@v.check_exists(api.get_job_origin, id='job_origin_id')
-def job_origin_get(job_origin_id):
-    return u.render(api.get_job_origin(job_origin_id).to_wrapped_dict())
+@rest.get('/jobs/<job_id>')
+@v.check_exists(api.get_job, id='job_id')
+def job_get(job_id):
+    return u.render(api.get_job(job_id).to_wrapped_dict())
 
 
-@rest.delete('/job-origins/<job_origin_id>')
-@v.check_exists(api.get_job_origin, id='job_origin_id')
-def job_origin_delete(job_origin_id):
-    api.delete_job_origin(job_origin_id)
+@rest.delete('/jobs/<job_id>')
+@v.check_exists(api.get_job, id='job_id')
+def job_delete(job_id):
+    api.delete_job(job_id)
     return u.render()
 
 
