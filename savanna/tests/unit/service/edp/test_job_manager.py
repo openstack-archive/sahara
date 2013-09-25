@@ -45,7 +45,7 @@ class TestJobManager(models_test_base.DbTestCase):
         helper.return_value = 'ok'
 
         job, _ = _create_all_stack('Pig')
-        res = job_manager.create_workflow_dir(mock.Mock(), job)
+        res = job_manager.create_workflow_dir(mock.Mock(), job, 'hadoop')
         self.assertIn('/user/hadoop/special_name/', res)
 
         remote.reset_mock()
@@ -65,12 +65,12 @@ class TestJobManager(models_test_base.DbTestCase):
 
         job, _ = _create_all_stack('Pig')
         res = job_manager.upload_job_files(mock.Mock(), 'job_prefix',
-                                           job)
+                                           job, 'hadoop')
         self.assertEqual(['job_prefix/script.pig'], res)
 
         job, _ = _create_all_stack('Jar')
         res = job_manager.upload_job_files(mock.Mock(), 'job_prefix',
-                                           job)
+                                           job, 'hadoop')
         self.assertEqual(['job_prefix/lib/main.jar'], res)
 
         remote.reset_mock()

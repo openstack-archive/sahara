@@ -104,8 +104,9 @@ class HiveFactory(BaseFactory):
     def configure_workflow_if_needed(self, cluster, wf_dir):
         h_s = u.get_hiveserver(cluster)
         plugin = plugin_base.PLUGINS.get_plugin(cluster.plugin_name)
+        hdfs_user = plugin.get_hdfs_user()
         h.copy_from_local(remote.get_remote(h_s),
-                          plugin.get_hive_config_path(), wf_dir)
+                          plugin.get_hive_config_path(), wf_dir, hdfs_user)
 
 
 class MapReduceFactory(BaseFactory):

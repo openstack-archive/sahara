@@ -22,6 +22,7 @@ from savanna import conductor as c
 from savanna import context
 from savanna.openstack.common import log
 from savanna.openstack.common import uuidutils
+from savanna.plugins import base as plugin_base
 from savanna.plugins.general import utils as u
 from savanna.service.edp.binary_retrievers import dispatch
 from savanna.service.edp import hdfs_helper as h
@@ -105,8 +106,10 @@ def run_job(ctx, job_execution):
     #TODO(nprivalova): should be removed after all features implemented
     validate(input_source, output_source, job)
 
-    wf_dir = create_workflow_dir(u.get_jobtracker(cluster), job)
-    upload_job_files(u.get_jobtracker(cluster), wf_dir, job)
+    plugin = plugin_base.PLUGINS.get_plugin(cluster.plugin_name)
+    hdfs_user = plugin.get_hdfs_user()
+    wf_dir = create_workflow_dir(u.get_jobtracker(cluster), job, hdfs_user)
+    upload_job_files(u.get_jobtracker(cluster), wf_dir, job, hdfs_user)
 
     creator = workflow_factory.get_creator(job)
 
@@ -118,7 +121,7 @@ def run_job(ctx, job_execution):
                                       input_source, output_source)
 
     path_to_workflow = upload_workflow_file(u.get_jobtracker(cluster),
-                                            wf_dir, wf_xml)
+                                            wf_dir, wf_xml, hdfs_user)
 
     jt_path = '%s:8021' % u.get_jobtracker(cluster).hostname
     nn_path = 'hdfs://%s:8020' % u.get_namenode(cluster).hostname
@@ -135,14 +138,14 @@ def run_job(ctx, job_execution):
     client.run_job(oozie_job_id)
     job_execution = conductor.job_execution_update(ctx, job_execution,
                                                    {'oozie_job_id':
-                                                   oozie_job_id,
+                                                    oozie_job_id,
                                                     'start_time':
                                                     datetime.datetime.now()})
 
     return job_execution
 
 
-def upload_job_files(where, job_dir, job):
+def upload_job_files(where, job_dir, job, hdfs_user):
 
     mains = job.mains or []
     libs = job.libs or []
@@ -151,28 +154,29 @@ def upload_job_files(where, job_dir, job):
     with remote.get_remote(where) as r:
         for main in mains:
             raw_data = dispatch.get_raw_binary(main)
-            h.put_file_to_hdfs(r, raw_data, main.name, job_dir)
+            h.put_file_to_hdfs(r, raw_data, main.name, job_dir, hdfs_user)
             uploaded_paths.append(job_dir + '/' + main.name)
         for lib in libs:
             raw_data = dispatch.get_raw_binary(lib)
-            h.put_file_to_hdfs(r, raw_data, lib.name, job_dir + "/lib")
+            h.put_file_to_hdfs(r, raw_data, lib.name, job_dir + "/lib",
+                               hdfs_user)
             uploaded_paths.append(job_dir + '/lib/' + lib.name)
     return uploaded_paths
 
 
-def upload_workflow_file(where, job_dir, wf_xml):
+def upload_workflow_file(where, job_dir, wf_xml, hdfs_user):
     with remote.get_remote(where) as r:
-        h.put_file_to_hdfs(r, wf_xml, "workflow.xml", job_dir)
+        h.put_file_to_hdfs(r, wf_xml, "workflow.xml", job_dir, hdfs_user)
 
     return "%s/workflow.xml" % job_dir
 
 
-def create_workflow_dir(where, job):
+def create_workflow_dir(where, job, hdfs_user):
     constructed_dir = '/user/hadoop/'
     constructed_dir = _add_postfix(constructed_dir)
     constructed_dir += '%s/%s' % (job.name, uuidutils.generate_uuid())
     with remote.get_remote(where) as r:
-        h.create_dir(r, constructed_dir)
+        h.create_dir(r, constructed_dir, hdfs_user)
 
     return constructed_dir
 
