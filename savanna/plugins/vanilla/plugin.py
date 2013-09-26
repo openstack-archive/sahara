@@ -110,10 +110,9 @@ class VanillaProvider(p.ProvisioningPluginBase):
         pass
 
     def configure_cluster(self, cluster):
-        self._push_configs_to_nodes(cluster)
-        self._write_hadoop_user_keys(utils.get_instances(cluster),
-                                     cluster.management_private_key,
-                                     cluster.management_public_key)
+        instances = utils.get_instances(cluster)
+
+        self._setup_instances(cluster, instances)
 
     def start_cluster(self, cluster):
         nn_instance = utils.get_namenode(cluster)
@@ -223,10 +222,8 @@ class VanillaProvider(p.ProvisioningPluginBase):
         self._validate_additional_ng_scaling(cluster, additional)
 
     def scale_cluster(self, cluster, instances):
-        self._push_configs_to_nodes(cluster, instances=instances)
-        self._write_hadoop_user_keys(instances,
-                                     cluster.management_private_key,
-                                     cluster.management_public_key)
+        self._setup_instances(cluster, instances)
+
         run.refresh_nodes(remote.get_remote(
             utils.get_namenode(cluster)), "dfsadmin")
         jt = utils.get_jobtracker(cluster)
@@ -241,38 +238,55 @@ class VanillaProvider(p.ProvisioningPluginBase):
                 if "tasktracker" in i.node_group.node_processes:
                     run.start_process(r, "tasktracker")
 
-    def _push_configs_to_nodes(self, cluster, instances=None):
+    def _setup_instances(self, cluster, instances):
         passwd_mysql = uuidutils.generate_uuid() \
             if utils.get_hiveserver(cluster) else None
         extra = self._extract_configs_to_extra(cluster, passwd_mysql)
+        self._push_configs_to_nodes(cluster, extra, instances)
+        self._configure_master_nodes(cluster, extra, passwd_mysql)
 
-        if instances is None:
-            instances = utils.get_instances(cluster)
+    def _push_configs_to_nodes(self, cluster, extra, instances):
+        with context.ThreadGroup() as tg:
+            for instance in instances:
+                tg.spawn('vanilla-configure-%s' % instance.instance_name,
+                         self._push_configs_to_node, cluster, extra, instance)
 
-        for inst in instances:
-            ng_extra = extra[inst.node_group.id]
-            files = {
-                '/etc/hadoop/core-site.xml': ng_extra['xml']['core-site'],
-                '/etc/hadoop/mapred-site.xml': ng_extra['xml']['mapred-site'],
-                '/etc/hadoop/hdfs-site.xml': ng_extra['xml']['hdfs-site'],
-                '/tmp/savanna-hadoop-init.sh': ng_extra['setup_script']
-            }
-            with remote.get_remote(inst) as r:
-                # TODO(aignatov): sudo chown is wrong solution. But it works.
-                r.execute_command(
-                    'sudo chown -R $USER:$USER /etc/hadoop'
-                )
-                r.execute_command(
-                    'sudo chown -R $USER:$USER /opt/oozie/conf'
-                )
-                r.write_files_to(files)
-                r.execute_command(
-                    'sudo chmod 0500 /tmp/savanna-hadoop-init.sh'
-                )
-                r.execute_command(
-                    'sudo /tmp/savanna-hadoop-init.sh '
-                    '>> /tmp/savanna-hadoop-init.log 2>&1')
+    def _push_configs_to_node(self, cluster, extra, instance):
+        ng_extra = extra[instance.node_group.id]
 
+        files = {
+            '/etc/hadoop/core-site.xml': ng_extra['xml']['core-site'],
+            '/etc/hadoop/mapred-site.xml': ng_extra['xml']['mapred-site'],
+            '/etc/hadoop/hdfs-site.xml': ng_extra['xml']['hdfs-site'],
+            '/tmp/savanna-hadoop-init.sh': ng_extra['setup_script'],
+            'id_rsa': cluster.management_private_key,
+            'authorized_keys': cluster.management_public_key
+        }
+
+        key_cmd = 'sudo mkdir -p /home/hadoop/.ssh/; ' \
+                  'sudo mv id_rsa authorized_keys /home/hadoop/.ssh ; ' \
+                  'sudo chown -R hadoop:hadoop /home/hadoop/.ssh; ' \
+                  'sudo chmod 600 /home/hadoop/.ssh/{id_rsa,authorized_keys}'
+
+        with remote.get_remote(instance) as r:
+            # TODO(aignatov): sudo chown is wrong solution. But it works.
+            r.execute_command(
+                'sudo chown -R $USER:$USER /etc/hadoop'
+            )
+            r.execute_command(
+                'sudo chown -R $USER:$USER /opt/oozie/conf'
+            )
+            r.write_files_to(files)
+            r.execute_command(
+                'sudo chmod 0500 /tmp/savanna-hadoop-init.sh'
+            )
+            r.execute_command(
+                'sudo /tmp/savanna-hadoop-init.sh '
+                '>> /tmp/savanna-hadoop-init.log 2>&1')
+
+            r.execute_command(key_cmd)
+
+    def _configure_master_nodes(self, cluster, extra, passwd_mysql):
         nn = utils.get_namenode(cluster)
         jt = utils.get_jobtracker(cluster)
 
@@ -339,22 +353,6 @@ class VanillaProvider(p.ProvisioningPluginBase):
 
         ctx = context.ctx()
         conductor.cluster_update(ctx, cluster, {'info': info})
-
-    def _write_hadoop_user_keys(self, instances, private_key, public_key):
-        files = {
-            'id_rsa': private_key,
-            'authorized_keys': public_key
-        }
-
-        mv_cmd = 'sudo mkdir -p /home/hadoop/.ssh/; ' \
-                 'sudo mv id_rsa authorized_keys /home/hadoop/.ssh ; ' \
-                 'sudo chown -R hadoop:hadoop /home/hadoop/.ssh; ' \
-                 'sudo chmod 600 /home/hadoop/.ssh/{id_rsa,authorized_keys}'
-
-        for instance in instances:
-            with remote.get_remote(instance) as r:
-                r.write_files_to(files)
-                r.execute_command(mv_cmd)
 
     def _get_scalable_processes(self):
         return ["datanode", "tasktracker"]

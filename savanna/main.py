@@ -30,6 +30,7 @@ from savanna.plugins import base as plugins_base
 from savanna.service import periodic
 from savanna.utils import api as api_utils
 from savanna.utils import patches
+from savanna.utils import remote
 
 LOG = log.getLogger(__name__)
 
@@ -97,6 +98,7 @@ def make_app():
 
     plugins_base.setup_plugins()
     periodic.setup(app)
+    remote.setup_remote()
 
     def make_json_error(ex):
         status_code = (ex.code

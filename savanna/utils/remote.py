@@ -34,9 +34,12 @@ implementations which are run in a separate process.
 import logging
 import time
 
+from eventlet import semaphore
 from eventlet import timeout as e_timeout
+from oslo.config import cfg
 import paramiko
 
+from savanna import context
 from savanna import exceptions as ex
 from savanna.openstack.common import excutils
 from savanna.utils import crypto
@@ -46,6 +49,20 @@ from savanna.utils import procutils
 
 LOG = logging.getLogger(__name__)
 
+
+remote_opts = [
+    cfg.IntOpt('global_remote_threshold', default=100,
+               help='Maximum number of remote operations that will '
+                    'be running at the same time. Note that each '
+                    'remote operation requires its own process to'
+                    'run.'),
+    cfg.IntOpt('cluster_remote_threshold', default=70,
+               help='The same as global_remote_threshold, but for '
+                    'a single cluster.'),
+]
+
+CONF = cfg.CONF
+CONF.register_opts(remote_opts)
 
 _ssh = None
 
@@ -152,6 +169,25 @@ def _execute_on_vm_interactive(cmd, matcher):
         channel.close()
 
 
+_global_remote_semaphore = None
+
+
+def setup_remote():
+    global _global_remote_semaphore
+    _global_remote_semaphore = semaphore.Semaphore(
+        CONF.global_remote_threshold)
+
+
+def _acquire_remote_semaphore():
+    context.current().remote_semaphore.acquire()
+    _global_remote_semaphore.acquire()
+
+
+def _release_remote_semaphore():
+    _global_remote_semaphore.release()
+    context.current().remote_semaphore.release()
+
+
 class InstanceInteropHelper(object):
     def __init__(self, instance):
         self.instance = instance
@@ -159,11 +195,19 @@ class InstanceInteropHelper(object):
             self.instance.node_group)
 
     def __enter__(self):
-        self.bulk = BulkInstanceInteropHelper(self.instance, self.username)
-        return self.bulk
+        _acquire_remote_semaphore()
+        try:
+            self.bulk = BulkInstanceInteropHelper(self.instance, self.username)
+            return self.bulk
+        except Exception:
+            with excutils.save_and_reraise_exception():
+                _release_remote_semaphore()
 
     def __exit__(self, *exc_info):
-        self.bulk.close()
+        try:
+            self.bulk.close()
+        finally:
+            _release_remote_semaphore()
 
     def _get_conn_params(self):
         return (self.instance.management_ip, self.username,
@@ -182,7 +226,7 @@ class InstanceInteropHelper(object):
         finally:
             procutils.shutdown_subprocess(proc, _cleanup)
 
-    def _run_t(self, func, timeout, *args, **kwargs):
+    def _run_with_log(self, func, timeout, *args, **kwargs):
         start_time = time.time()
         try:
             with e_timeout.Timeout(timeout):
@@ -191,6 +235,13 @@ class InstanceInteropHelper(object):
             self._log_command('%s took %.1f seconds to complete' % (
                 func.__name__, time.time() - start_time))
 
+    def _run_s(self, func, timeout, *args, **kwargs):
+        _acquire_remote_semaphore()
+        try:
+            return self._run_with_log(func, timeout, *args, **kwargs)
+        finally:
+            _release_remote_semaphore()
+
     def execute_command(self, cmd, get_stderr=False, raise_when_error=True,
                         timeout=300):
         """Execute specified command remotely using existing ssh connection.
@@ -198,7 +249,7 @@ class InstanceInteropHelper(object):
         Return exit code, stdout data and stderr data of the executed command.
         """
         self._log_command('Executing "%s"' % cmd)
-        return self._run_t(_execute_command, timeout, cmd, get_stderr,
+        return self._run_s(_execute_command, timeout, cmd, get_stderr,
                            raise_when_error)
 
     def write_file_to(self, remote_file, data, timeout=120):
@@ -206,25 +257,25 @@ class InstanceInteropHelper(object):
         data to it.
         """
         self._log_command('Writing file "%s"' % remote_file)
-        self._run_t(_write_file_to, timeout, remote_file, data)
+        self._run_s(_write_file_to, timeout, remote_file, data)
 
     def write_files_to(self, files, timeout=120):
         """Copy file->data dictionary in a single ssh connection.
         """
         self._log_command('Writing files "%s"' % files.keys())
-        self._run_t(_write_files_to, timeout, files)
+        self._run_s(_write_files_to, timeout, files)
 
     def read_file_from(self, remote_file, timeout=120):
         """Read remote file from the specified host and return given data."""
         self._log_command('Reading file "%s"' % remote_file)
-        return self._run_t(_read_file_from, timeout, remote_file)
+        return self._run_s(_read_file_from, timeout, remote_file)
 
     def replace_remote_string(self, remote_file, old_str, new_str,
                               timeout=120):
         """Replaces strings in remote file using sed command."""
         self._log_command('In file "%s" replacing string "%s" '
                           'with "%s"' % (remote_file, old_str, new_str))
-        self._run_t(_replace_remote_string, timeout, remote_file, old_str,
+        self._run_s(_replace_remote_string, timeout, remote_file, old_str,
                     new_str)
 
     def execute_on_vm_interactive(self, cmd, matcher, timeout=1800):
@@ -242,7 +293,7 @@ class InstanceInteropHelper(object):
              otherwise.
         """
         self._log_command('Executing interactively "%s"' % cmd)
-        self._run_t(_execute_on_vm_interactive, timeout, cmd, matcher)
+        self._run_s(_execute_on_vm_interactive, timeout, cmd, matcher)
 
     def _log_command(self, str):
         LOG.debug('[%s] %s' % (self.instance.instance_name, str))
@@ -269,3 +320,6 @@ class BulkInstanceInteropHelper(InstanceInteropHelper):
 
     def _run(self, func, *args, **kwargs):
         return procutils.run_in_subprocess(self.proc, func, args, kwargs)
+
+    def _run_s(self, func, timeout, *args, **kwargs):
+        return self._run_with_log(func, timeout, *args, **kwargs)

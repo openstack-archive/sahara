@@ -17,10 +17,14 @@ import threading
 
 import eventlet
 from eventlet import corolocal
+from eventlet import semaphore
+from oslo.config import cfg
 
 from savanna.openstack.common import log as logging
+from savanna.openstack.common import threadgroup
 
 
+CONF = cfg.CONF
 LOG = logging.getLogger(__name__)
 
 
@@ -34,6 +38,7 @@ class Context(object):
                  username=None,
                  tenant_name=None,
                  is_admin=None,
+                 remote_semaphore=None,
                  **kwargs):
         if kwargs:
             LOG.warn('Arguments dropped when creating context: %s', kwargs)
@@ -44,6 +49,8 @@ class Context(object):
         self.username = username
         self.tenant_name = tenant_name
         self.is_admin = is_admin
+        self.remote_semaphore = remote_semaphore or semaphore.Semaphore(
+            CONF.cluster_remote_threshold)
 
     def clone(self):
         return Context(
@@ -53,7 +60,8 @@ class Context(object):
             self.service_catalog,
             self.username,
             self.tenant_name,
-            self.is_admin)
+            self.is_admin,
+            self.remote_semaphore)
 
     def to_dict(self):
         return {
@@ -101,19 +109,39 @@ def set_ctx(new_ctx):
         _CTXS._curr_ctxs[ident] = new_ctx
 
 
+def _wrapper(ctx, thread_description, func, *args, **kwargs):
+    try:
+        set_ctx(ctx)
+        func(*args, **kwargs)
+    except Exception as e:
+        LOG.exception("Thread '%s' fails with exception: '%s'"
+                      % (thread_description, e))
+    finally:
+        set_ctx(None)
+
+
 def spawn(thread_description, func, *args, **kwargs):
-    ctx = current().clone()
+    eventlet.spawn(_wrapper, current().clone(), thread_description,
+                   func, *args, **kwargs)
 
-    def wrapper(ctx, func, *args, **kwargs):
-        try:
-            set_ctx(ctx)
-            func(*args, **kwargs)
-            set_ctx(None)
-        except Exception as e:
-            LOG.exception("Thread '%s' fails with exception: '%s'"
-                          % (thread_description, e))
 
-    eventlet.spawn(wrapper, ctx, func, *args, **kwargs)
+class ThreadGroup(object):
+    def __init__(self, thread_pool_size=1000):
+        self.tg = threadgroup.ThreadGroup(thread_pool_size)
+
+    def spawn(self, thread_description, func, *args, **kwargs):
+        self.tg.add_thread(_wrapper, current().clone(), thread_description,
+                           func, *args, **kwargs)
+
+    def wait(self):
+        self.tg.wait()
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, *ex):
+        if not any(ex):
+            self.tg.wait()
 
 
 def sleep(seconds=0):

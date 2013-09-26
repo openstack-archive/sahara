@@ -380,16 +380,24 @@ def _configure_instances(cluster):
     * setup passwordless login
     * etc.
     """
-    hosts = _generate_etc_hosts(cluster)
-    for node_group in cluster.node_groups:
-        for instance in node_group.instances:
-            LOG.debug('Configuring instance %s' % instance.instance_name)
-            with instance.remote as r:
-                r.write_file_to('etc-hosts', hosts)
-                r.execute_command('sudo mv etc-hosts /etc/hosts')
+    hosts_file = _generate_etc_hosts(cluster)
 
-                r.execute_command('sudo chown $USER:$USER .ssh/id_rsa')
-                r.execute_command('chmod 400 .ssh/id_rsa')
+    with context.ThreadGroup() as tg:
+        for node_group in cluster.node_groups:
+            for instance in node_group.instances:
+                tg.spawn("configure-instance-%s" % instance.instance_name,
+                         _configure_instance, instance, hosts_file)
+
+
+def _configure_instance(instance, hosts_file):
+    LOG.debug('Configuring instance %s' % instance.instance_name)
+
+    with instance.remote as r:
+        r.write_file_to('etc-hosts', hosts_file)
+        r.execute_command('sudo mv etc-hosts /etc/hosts')
+
+        r.execute_command('sudo chown $USER:$USER .ssh/id_rsa')
+        r.execute_command('chmod 400 .ssh/id_rsa')
 
 
 def _generate_etc_hosts(cluster):

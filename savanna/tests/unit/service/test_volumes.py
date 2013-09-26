@@ -28,11 +28,14 @@ class TestAttachVolume(models_test_base.DbTestCase):
     @mock.patch('savanna.utils.remote.InstanceInteropHelper._get_conn_params')
     @mock.patch('savanna.utils.procutils.start_subprocess')
     @mock.patch('savanna.utils.procutils.run_in_subprocess')
+    @mock.patch('savanna.utils.remote._acquire_remote_semaphore')
+    @mock.patch('savanna.utils.remote._release_remote_semaphore')
     @mock.patch('savanna.utils.openstack.nova.get_node_group_image_username')
     @mock.patch(
         'savanna.utils.remote.BulkInstanceInteropHelper.execute_command')
     def test_mount_volume(self, p_ex_cmd, p_get_username,
-                          run_in_sub, start_sub, get_conn_params, p_close):
+                          _acq, _rel, run_in_sub, start_sub, get_conn_params,
+                          p_close):
         p_get_username.return_value = 'root'
 
         instance = r.InstanceResource({'instance_id': '123454321',
