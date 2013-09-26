@@ -25,22 +25,6 @@ conductor = c.API
 LOG = logging.getLogger(__name__)
 
 
-def get_jobs():
-    return conductor.job_get_all(context.ctx())
-
-
-def get_job(id):
-    return conductor.job_get(context.ctx(), id)
-
-
-def create_job(values):
-    return conductor.job_create(context.ctx(), values)
-
-
-def delete_job(id):
-    conductor.job_destroy(context.ctx(), id)
-
-
 def execute_job(job_id, input_id, output_id, cluster_id, configs):
     job_ex_dict = {'input_id': input_id, 'output_id': output_id,
                    'job_id': job_id, 'cluster_id': cluster_id,
@@ -85,20 +69,20 @@ def register_data_source(values):
     return conductor.data_source_create(context.ctx(), values)
 
 
-def get_job_origins():
-    return conductor.job_origin_get_all(context.ctx())
+def get_jobs():
+    return conductor.job_get_all(context.ctx())
 
 
-def get_job_origin(id):
-    return conductor.job_origin_get(context.ctx(), id)
+def get_job(id):
+    return conductor.job_get(context.ctx(), id)
 
 
-def create_job_origin(values):
-    return conductor.job_origin_create(context.ctx(), values)
+def create_job(values):
+    return conductor.job_create(context.ctx(), values)
 
 
-def delete_job_origin(job_origin_id):
-    return conductor.job_origin_destroy(context.ctx(), job_origin_id)
+def delete_job(job_id):
+    return conductor.job_destroy(context.ctx(), job_id)
 
 
 def create_job_binary(values):

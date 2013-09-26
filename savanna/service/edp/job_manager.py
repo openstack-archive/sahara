@@ -99,17 +99,16 @@ def run_job(ctx, job_execution):
     if cluster.status != 'Active':
         return job_execution
 
-    job = conductor.job_get(ctx, job_execution.job_id)
-    job_origin = conductor.job_origin_get(context.ctx(), job.job_origin_id)
+    job = conductor.job_get(context.ctx(), job_execution.job_id)
     input_source = conductor.data_source_get(ctx,  job_execution.input_id)
     output_source = conductor.data_source_get(ctx,  job_execution.output_id)
     #TODO(nprivalova): should be removed after all features implemented
     validate(input_source, output_source, job)
 
     wf_dir = create_workflow_dir(u.get_jobtracker(cluster), job)
-    upload_job_files(u.get_jobtracker(cluster), wf_dir, job_origin)
+    upload_job_files(u.get_jobtracker(cluster), wf_dir, job)
 
-    creator = workflow_factory.get_creator(job.type, job_origin)
+    creator = workflow_factory.get_creator(job)
 
     # Do other job type specific setup here, for example
     # uploading hive configuration
@@ -143,10 +142,10 @@ def run_job(ctx, job_execution):
     return job_execution
 
 
-def upload_job_files(where, job_dir, job_origin):
+def upload_job_files(where, job_dir, job):
 
-    mains = job_origin.mains or []
-    libs = job_origin.libs or []
+    mains = job.mains or []
+    libs = job.libs or []
     uploaded_paths = []
 
     with remote.get_remote(where) as r:

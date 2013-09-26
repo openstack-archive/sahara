@@ -34,30 +34,9 @@ SAMPLE_DATA_SOURCE = {
 
 SAMPLE_JOB = {
     "tenant_id": "test_tenant",
-    "name": "ngt_test",
+    "name": "job_test",
     "description": "test_desc",
-    "type": "db",
-    "input_type": "swift",
-    "output_type": "swift"
-}
-
-SAMPLE_CONFIGURED_JOB = {
-    "tenant_id": "test_tenant",
-    "name": "ngt_test",
-    "description": "test_desc",
-    "type": "db",
-    "input_type": "swift",
-    "output_type": "swift",
-    "job_configs": {
-        "conf1": "value_j",
-        "conf2": "value_j"
-    }
-}
-
-SAMPLE_JOB_ORIGIN = {
-    "tenant_id": "test_tenant",
-    "name": "job_origin_test",
-    "description": "test_desc",
+    "type": "Pig",
     "mains": []
 }
 
@@ -90,7 +69,7 @@ BINARY_DATA = "vU}\x97\x1c\xdf\xa686\x08\xf2\tf\x0b\xb1}"
 
 SAMPLE_JOB_BINARY_INTERNAL = {
     "tenant_id": "test_tenant",
-    "name": "job_origin_test",
+    "name": "job_test",
     "data": BINARY_DATA
 }
 
@@ -153,56 +132,6 @@ class DataSourceTest(test_base.ConductorManagerTestCase):
             self.api.data_source_destroy(ctx, _id)
 
 
-class JobTest(test_base.ConductorManagerTestCase):
-    def __init__(self, *args, **kwargs):
-        super(JobTest, self).__init__(
-            checks=[
-                lambda: SAMPLE_JOB
-            ], *args, **kwargs)
-
-    def test_crud_operation_create_list_delete(self):
-        ctx = context.ctx()
-        self.api.job_create(ctx, SAMPLE_JOB)
-
-        lst = self.api.job_get_all(ctx)
-        self.assertEqual(len(lst), 1)
-
-        job_id = lst[0]['id']
-        self.api.job_destroy(ctx, job_id)
-
-        lst = self.api.job_get_all(ctx)
-        self.assertEqual(len(lst), 0)
-
-    def test_duplicate_job_create(self):
-        ctx = context.ctx()
-        self.api.job_create(ctx, SAMPLE_JOB)
-        with self.assertRaises(ex.DBDuplicateEntry):
-            self.api.job_create(ctx, SAMPLE_JOB)
-
-    def test_job_fields(self):
-        ctx = context.ctx()
-        ctx.tenant_id = SAMPLE_JOB['tenant_id']
-
-        job_db_obj_id = self.api.job_create(ctx, SAMPLE_JOB)['id']
-
-        job_db_obj = self.api.job_get(ctx, job_db_obj_id)
-        self.assertIsInstance(job_db_obj, dict)
-
-        for key, val in SAMPLE_JOB.items():
-            self.assertEqual(val, job_db_obj.get(key),
-                             "Key not found %s" % key)
-
-    def test_job_delete(self):
-        ctx = context.ctx()
-        job_db_obj = self.api.job_create(ctx, SAMPLE_JOB)
-        _id = job_db_obj['id']
-
-        self.api.job_destroy(ctx, _id)
-
-        with self.assertRaises(ex.NotFoundException):
-            self.api.job_destroy(ctx, _id)
-
-
 class JobExecutionTest(test_base.ConductorManagerTestCase):
     def test_crud_operation_create_list_delete_update(self):
         ctx = context.ctx()
@@ -246,7 +175,7 @@ class JobExecutionTest(test_base.ConductorManagerTestCase):
 
     def test_crud_operation_on_configured_jobs(self):
         ctx = context.ctx()
-        job = self.api.job_create(ctx, SAMPLE_CONFIGURED_JOB)
+        job = self.api.job_create(ctx, SAMPLE_JOB)
         ds_input = self.api.data_source_create(ctx, SAMPLE_DATA_SOURCE)
         SAMPLE_DATA_OUTPUT = copy.copy(SAMPLE_DATA_SOURCE)
         SAMPLE_DATA_OUTPUT['name'] = 'output'
@@ -263,53 +192,51 @@ class JobExecutionTest(test_base.ConductorManagerTestCase):
 
         job_ex = lst[0]
         configs = {
-            'conf1': 'value_j',
             'conf2': 'value_je',
             'conf3': 'value_je'
         }
         self.assertEqual(configs, job_ex['job_configs'])
 
 
-class JobOriginTest(test_base.ConductorManagerTestCase):
+class JobTest(test_base.ConductorManagerTestCase):
     def __init__(self, *args, **kwargs):
-        super(JobOriginTest, self).__init__(
+        super(JobTest, self).__init__(
             checks=[
-                lambda: SAMPLE_JOB_ORIGIN
+                lambda: SAMPLE_JOB
             ], *args, **kwargs)
 
     def test_crud_operation_create_list_delete_update(self):
         ctx = context.ctx()
 
-        self.api.job_origin_create(ctx, SAMPLE_JOB_ORIGIN)
+        self.api.job_create(ctx, SAMPLE_JOB)
 
-        lst = self.api.job_origin_get_all(ctx)
+        lst = self.api.job_get_all(ctx)
         self.assertEqual(len(lst), 1)
 
         jo_id = lst[0]['id']
 
-        update_jo = self.api.job_origin_update(ctx, jo_id,
-                                               {'description': 'update'})
+        update_jo = self.api.job_update(ctx, jo_id,
+                                        {'description': 'update'})
         self.assertEqual(update_jo['description'], 'update')
 
-        self.api.job_origin_destroy(ctx, jo_id)
+        self.api.job_destroy(ctx, jo_id)
 
-        lst = self.api.job_origin_get_all(ctx)
+        lst = self.api.job_get_all(ctx)
         self.assertEqual(len(lst), 0)
 
         with self.assertRaises(ex.NotFoundException):
-            self.api.job_origin_destroy(ctx, jo_id)
+            self.api.job_destroy(ctx, jo_id)
 
-    def test_job_origin_fields(self):
+    def test_job_fields(self):
         ctx = context.ctx()
-        ctx.tenant_id = SAMPLE_JOB_ORIGIN['tenant_id']
-        job_origin_id = self.api.job_origin_create(ctx,
-                                                   SAMPLE_JOB_ORIGIN)['id']
+        ctx.tenant_id = SAMPLE_JOB['tenant_id']
+        job_id = self.api.job_create(ctx, SAMPLE_JOB)['id']
 
-        job_origin = self.api.job_origin_get(ctx, job_origin_id)
-        self.assertIsInstance(job_origin, dict)
+        job = self.api.job_get(ctx, job_id)
+        self.assertIsInstance(job, dict)
 
-        for key, val in SAMPLE_JOB_ORIGIN.items():
-            self.assertEqual(val, job_origin.get(key),
+        for key, val in SAMPLE_JOB.items():
+            self.assertEqual(val, job.get(key),
                              "Key not found %s" % key)
 
 
@@ -420,17 +347,16 @@ class JobBinaryTest(test_base.ConductorManagerTestCase):
         job_binary_id = self.api.job_binary_create(ctx,
                                                    SAMPLE_JOB_BINARY)['id']
 
-        job_origin_values = copy.copy(SAMPLE_JOB_ORIGIN)
-        job_origin_values[reference] = [job_binary_id]
-        job_origin_id = self.api.job_origin_create(ctx,
-                                                   job_origin_values)['id']
+        job_values = copy.copy(SAMPLE_JOB)
+        job_values[reference] = [job_binary_id]
+        job_id = self.api.job_create(ctx, job_values)['id']
 
         # Delete while referenced, fails
         with self.assertRaises(ex.DeletionFailed):
             self.api.job_binary_destroy(ctx, job_binary_id)
 
         # Delete while not referenced
-        self.api.job_origin_destroy(ctx, job_origin_id)
+        self.api.job_destroy(ctx, job_id)
         self.api.job_binary_destroy(ctx, job_binary_id)
         lst = self.api.job_binary_get_all(ctx)
         self.assertEqual(len(lst), 0)

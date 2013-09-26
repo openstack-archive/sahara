@@ -44,7 +44,7 @@ class TestJobManager(models_test_base.DbTestCase):
         remote.return_value = remote_class
         helper.return_value = 'ok'
 
-        job = _create_all_stack('Pig')[0]
+        job, _ = _create_all_stack('Pig')
         res = job_manager.create_workflow_dir(mock.Mock(), job)
         self.assertIn('/user/hadoop/special_name/', res)
 
@@ -63,14 +63,14 @@ class TestJobManager(models_test_base.DbTestCase):
         helper.return_value = 'ok'
         conductor_raw_data.return_value = 'ok'
 
-        job, job_origin = _create_all_stack('Pig')
+        job, _ = _create_all_stack('Pig')
         res = job_manager.upload_job_files(mock.Mock(), 'job_prefix',
-                                           job_origin)
+                                           job)
         self.assertEqual(['job_prefix/script.pig'], res)
 
-        job, job_origin = _create_all_stack('Jar')
+        job, _ = _create_all_stack('Jar')
         res = job_manager.upload_job_files(mock.Mock(), 'job_prefix',
-                                           job_origin)
+                                           job)
         self.assertEqual(['job_prefix/lib/main.jar'], res)
 
         remote.reset_mock()
@@ -92,14 +92,13 @@ class TestJobManager(models_test_base.DbTestCase):
     @mock.patch('savanna.conductor.API.job_binary_get')
     def test_build_workflow_for_job_pig(self, job_binary):
 
-        job, origin = _create_all_stack('Pig')
-        job_exec = _create_job_exec(job.id)
+        job, job_exec = _create_all_stack('Pig')
         job_binary.return_value = {"name": "script.pig"}
 
         input_data = _create_data_source('swift://ex.savanna/i')
         output_data = _create_data_source('swift://ex.savanna/o')
 
-        creator = workflow_factory.get_creator('Pig', origin)
+        creator = workflow_factory.get_creator(job)
 
         res = creator.get_workflow_xml(job_exec.job_configs,
                                        input_data, output_data)
@@ -124,13 +123,12 @@ class TestJobManager(models_test_base.DbTestCase):
 
     def test_build_workflow_for_job_jar(self):
 
-        job, origin = _create_all_stack('Jar')
-        job_exec = _create_job_exec(job.id)
+        job, job_exec = _create_all_stack('Jar')
 
         input_data = _create_data_source('swift://ex.savanna/i')
         output_data = _create_data_source('swift://ex.savanna/o')
 
-        creator = workflow_factory.get_creator('Jar', origin)
+        creator = workflow_factory.get_creator(job)
 
         res = creator.get_workflow_xml(job_exec.job_configs,
                                        input_data, output_data)
@@ -162,14 +160,13 @@ class TestJobManager(models_test_base.DbTestCase):
     @mock.patch('savanna.conductor.API.job_binary_get')
     def test_build_workflow_for_job_hive(self, job_binary):
 
-        job, origin = _create_all_stack('Hive')
-        job_exec = _create_job_exec(job.id)
+        job, job_exec = _create_all_stack('Hive')
         job_binary.return_value = {"name": "script.q"}
 
         input_data = _create_data_source('swift://ex.savanna/i')
         output_data = _create_data_source('swift://ex.savanna/o')
 
-        creator = workflow_factory.get_creator('Hive', origin)
+        creator = workflow_factory.get_creator(job)
 
         res = creator.get_workflow_xml(job_exec.job_configs,
                                        input_data, output_data)
@@ -191,14 +188,14 @@ class TestJobManager(models_test_base.DbTestCase):
       <param>OUTPUT=swift://ex.savanna/o</param>""", res)
 
     def test_build_workflow_for_job_jar_with_conf(self):
-        job, origin = _create_all_stack('Jar')
+        job, _ = _create_all_stack('Jar')
 
         input_data = _create_data_source('swift://ex.savanna/i')
         output_data = _create_data_source('swift://ex.savanna/o')
 
         job_exec = _create_job_exec(job.id, configs={"configs": {'c': 'f'}})
 
-        creator = workflow_factory.get_creator('Jar', origin)
+        creator = workflow_factory.get_creator(job)
 
         res = creator.get_workflow_xml(job_exec.job_configs,
                                        input_data, output_data)
@@ -222,33 +219,25 @@ class TestJobManager(models_test_base.DbTestCase):
         </property>""", res)
 
 
-def _create_all_stack(type, configs=None):
+def _create_all_stack(type):
     b = _create_job_binary('1', type)
-    o = _create_job_origin('2', b, type)
-    j = _create_job('3', o.id, type)
-    j.configs = configs
-    return j, o
+    j = _create_job('2', b, type)
+    e = _create_job_exec(j.id)
+    return j, e
 
 
-def _create_job(id, origin_id, type):
+def _create_job(id, job_binary, type):
     job = mock.Mock()
     job.id = id
-    job.job_origin_id = origin_id
     job.type = type
     job.name = 'special_name'
-    return job
-
-
-def _create_job_origin(id, job_binary, type):
-    origin = mock.Mock()
-    origin.id = id
     if type == 'Pig' or type == 'Hive':
-        origin.mains = [job_binary]
-        origin.libs = None
+        job.mains = [job_binary]
+        job.libs = None
     if type == 'Jar':
-        origin.libs = [job_binary]
-        origin.mains = None
-    return origin
+        job.libs = [job_binary]
+        job.mains = None
+    return job
 
 
 def _create_job_binary(id, type):

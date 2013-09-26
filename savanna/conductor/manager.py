@@ -267,26 +267,6 @@ class ConductorManager(db_base.Base):
         """Destroy the Data Source or raise if it does not exist."""
         return self.db.data_source_destroy(context, data_source)
 
-    ##Job ops
-
-    def job_get(self, context, job):
-        """Return the Job or None if it does not exist."""
-        return self.db.job_get(context, job)
-
-    def job_get_all(self, context):
-        """Get all Jobs."""
-        return self.db.job_get_all(context)
-
-    def job_create(self, context, values):
-        """Create a Job from the values dictionary."""
-        values = copy.deepcopy(values)
-        values['tenant_id'] = context.tenant_id
-        return self.db.job_create(context, values)
-
-    def job_destroy(self, context, job):
-        """Destroy the Job or raise if it does not exist."""
-        return self.db.job_destroy(context, job)
-
     ##JobExecution ops
 
     def job_execution_get(self, context, job_execution):
@@ -309,11 +289,6 @@ class ConductorManager(db_base.Base):
         """Create a JobExecution from the values dictionary."""
         values = copy.deepcopy(values)
         values['tenant_id'] = context.tenant_id
-        job = self.job_get(context, values['job_id'])
-        configs = job['job_configs']
-        if configs:
-            configs.update(values.get('job_configs', {}))
-            values['job_configs'] = configs
         return self.db.job_execution_create(context, values)
 
     def job_execution_update(self, context, job_execution, values):
@@ -324,29 +299,29 @@ class ConductorManager(db_base.Base):
         """Destroy the JobExecution or raise if it does not exist."""
         return self.db.job_execution_destroy(context, job_execution)
 
-    ## JobOrigin ops
+    ## Job ops
 
-    def job_origin_get(self, context, job_origin):
-        """Return the JobOrigin or None if it does not exist."""
-        return self.db.job_origin_get(context, job_origin)
+    def job_get(self, context, job):
+        """Return the Job or None if it does not exist."""
+        return self.db.job_get(context, job)
 
-    def job_origin_get_all(self, context):
-        """Get all JobOrigins."""
-        return self.db.job_origin_get_all(context)
+    def job_get_all(self, context):
+        """Get all Jobs."""
+        return self.db.job_get_all(context)
 
-    def job_origin_create(self, context, values):
-        """Create a JobOrigin from the values dictionary."""
+    def job_create(self, context, values):
+        """Create a Job from the values dictionary."""
         values = copy.deepcopy(values)
         values['tenant_id'] = context.tenant_id
-        return self.db.job_origin_create(context, values)
+        return self.db.job_create(context, values)
 
-    def job_origin_update(self, context, job_origin, values):
-        """Updates a JobOrigin from the values dictionary."""
-        return self.db.job_origin_update(context, job_origin, values)
+    def job_update(self, context, job, values):
+        """Updates a Job from the values dictionary."""
+        return self.db.job_update(context, job, values)
 
-    def job_origin_destroy(self, context, job_origin):
-        """Destroy the JobOrigin or raise if it does not exist."""
-        self.db.job_origin_destroy(context, job_origin)
+    def job_destroy(self, context, job):
+        """Destroy the Job or raise if it does not exist."""
+        self.db.job_destroy(context, job)
 
     ## JobBinary ops
 

@@ -217,27 +217,6 @@ class LocalApi(object):
         """Destroy the Data Source or raise if it does not exist."""
         self._manager.data_source_destroy(context, _get_id(data_source))
 
-    ## Job ops
-
-    @r.wrap(r.Job)
-    def job_get(self, context, job):
-        """Return the Job or None if it does not exist."""
-        return self._manager.job_get(context, _get_id(job))
-
-    @r.wrap(r.Job)
-    def job_get_all(self, context):
-        """Get all Jobs."""
-        return self._manager.job_get_all(context)
-
-    @r.wrap(r.Job)
-    def job_create(self, context, values):
-        """Create a Job from the values dictionary."""
-        return self._manager.job_create(context, values)
-
-    def job_destroy(self, context, job):
-        """Destroy the Job or raise if it does not exist."""
-        self._manager.job_destroy(context, _get_id(job))
-
     ## JobExecution ops
 
     @r.wrap(r.JobExecution)
@@ -275,43 +254,43 @@ class LocalApi(object):
         """Destroy the JobExecution or raise if it does not exist."""
         self._manager.job_execution_destroy(context, _get_id(job_execution))
 
-    ## JobOrigin ops
+    ## Job ops
 
-    @r.wrap(r.JobOrigin)
-    def job_origin_get(self, context, job_origin):
-        """Return the JobOrigin or None if it does not exist."""
-        return self._manager.job_origin_get(context, _get_id(job_origin))
+    @r.wrap(r.Job)
+    def job_get(self, context, job):
+        """Return the Job or None if it does not exist."""
+        return self._manager.job_get(context, _get_id(job))
 
-    @r.wrap(r.JobOrigin)
-    def job_origin_get_all(self, context):
-        """Get all JobOrigins."""
-        return self._manager.job_origin_get_all(context)
+    @r.wrap(r.Job)
+    def job_get_all(self, context):
+        """Get all Jobs."""
+        return self._manager.job_get_all(context)
 
-    @r.wrap(r.JobOrigin)
-    def job_origin_create(self, context, values):
-        """Create a JobOrigin from the values dictionary."""
-        return self._manager.job_origin_create(context, values)
+    @r.wrap(r.Job)
+    def job_create(self, context, values):
+        """Create a Job from the values dictionary."""
+        return self._manager.job_create(context, values)
 
-    def job_origin_update(self, context, job_origin, values):
-        """Update the JobOrigin or raise if it does not exist."""
-        return self._manager.job_origin_update(context, _get_id(job_origin),
-                                               values)
+    def job_update(self, context, job, values):
+        """Update the Job or raise if it does not exist."""
+        return self._manager.job_update(context, _get_id(job),
+                                        values)
 
-    def job_origin_destroy(self, context, job_origin):
-        """Destroy the JobOrigin or raise if it does not exist."""
-        self._manager.job_origin_destroy(context, _get_id(job_origin))
+    def job_destroy(self, context, job):
+        """Destroy the Job or raise if it does not exist."""
+        self._manager.job_destroy(context, _get_id(job))
 
-    def job_origin_main_name(self, context, job_origin):
+    def job_main_name(self, context, job):
         """Return the name of the first main JobBinary or None
 
         At present the 'mains' element is expected to contain a single element.
         In the future if 'mains' contains more than one element we will need
         a scheme or convention for retrieving a name from the list of binaries.
 
-        :param job_origin: This is expected to be a JobOrigin object
+        :param job: This is expected to be a Job object
         """
-        if job_origin.mains:
-            binary = self.job_binary_get(context, job_origin.mains[0])
+        if job.mains:
+            binary = self.job_binary_get(context, job.mains[0])
             if binary is not None:
                 return binary["name"]
         return None

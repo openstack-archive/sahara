@@ -214,7 +214,7 @@ class TemplatesRelation(mb.SavannaBase):
     floating_ip_pool = sa.Column(sa.String(36))
 
 
-## EDP objects: DataSource, JobOrigin, Job, Job Execution, JobBinary
+## EDP objects: DataSource, Job, Job Execution, JobBinary
 
 class DataSource(mb.SavannaBase):
     """DataSource - represent a diffident types of data source,
@@ -234,29 +234,6 @@ class DataSource(mb.SavannaBase):
     type = sa.Column(sa.String(80), nullable=False)
     url = sa.Column(sa.String(256), nullable=False)
     credentials = sa.Column(st.JsonDictType())
-
-
-class Job(mb.SavannaBase):
-    """Job - represent a job object, to start job
-    user should provide a valid data input and output.
-    """
-
-    __tablename__ = 'jobs'
-
-    __table_args__ = (
-        sa.UniqueConstraint('name', 'tenant_id'),
-    )
-
-    id = _id_column()
-    tenant_id = sa.Column(sa.String(36))
-    name = sa.Column(sa.String(80), nullable=False)
-    description = sa.Column(sa.Text())
-    type = sa.Column(sa.String(80), nullable=False)
-    job_origin_id = sa.Column(sa.String(36),
-                              sa.ForeignKey('job_origins.id'))
-    input_type = sa.Column(sa.String(80), nullable=False)
-    output_type = sa.Column(sa.String(80), nullable=False)
-    job_configs = sa.Column(st.JsonDictType())
 
 
 class JobExecution(mb.SavannaBase):
@@ -285,9 +262,9 @@ class JobExecution(mb.SavannaBase):
 
 mains_association = sa.Table("mains_association",
                              mb.SavannaBase.metadata,
-                             sa.Column("JobOrigin_id",
+                             sa.Column("Job_id",
                                        sa.String(36),
-                                       sa.ForeignKey("job_origins.id")),
+                                       sa.ForeignKey("jobs.id")),
                              sa.Column("JobBinary_id",
                                        sa.String(36),
                                        sa.ForeignKey("job_binaries.id"))
@@ -296,20 +273,20 @@ mains_association = sa.Table("mains_association",
 
 libs_association = sa.Table("libs_association",
                             mb.SavannaBase.metadata,
-                            sa.Column("JobOrigin_id",
+                            sa.Column("Job_id",
                                       sa.String(36),
-                                      sa.ForeignKey("job_origins.id")),
+                                      sa.ForeignKey("jobs.id")),
                             sa.Column("JobBinary_id",
                                       sa.String(36),
                                       sa.ForeignKey("job_binaries.id"))
                             )
 
 
-class JobOrigin(mb.SavannaBase):
-    """JobOrigin - description and location of a job binary
+class Job(mb.SavannaBase):
+    """Job - description and location of a job binary
     """
 
-    __tablename__ = 'job_origins'
+    __tablename__ = 'jobs'
 
     __table_args__ = (
         sa.UniqueConstraint('name', 'tenant_id'),
@@ -319,6 +296,7 @@ class JobOrigin(mb.SavannaBase):
     tenant_id = sa.Column(sa.String(36))
     name = sa.Column(sa.String(80), nullable=False)
     description = sa.Column(sa.Text())
+    type = sa.Column(sa.String(80), nullable=False)
 
     mains = relationship("JobBinary",
                          secondary=mains_association, lazy="joined")
@@ -327,7 +305,7 @@ class JobOrigin(mb.SavannaBase):
                         secondary=libs_association, lazy="joined")
 
     def to_dict(self):
-        d = super(JobOrigin, self).to_dict()
+        d = super(Job, self).to_dict()
         d['mains'] = [jb.to_dict() for jb in self.mains]
         d['libs'] = [jb.to_dict() for jb in self.libs]
         return d
