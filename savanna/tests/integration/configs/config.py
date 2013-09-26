@@ -171,7 +171,7 @@ HDP_CONFIG_OPTS = [
                     'via SSH'),
 
     cfg.StrOpt('HADOOP_VERSION',
-               default='1.3.0', help='Version of Hadoop'),
+               default='1.3.2', help='Version of Hadoop'),
     cfg.StrOpt('HADOOP_USER',
                default='hdfs',
                help='Username which is used for access to Hadoop services'),

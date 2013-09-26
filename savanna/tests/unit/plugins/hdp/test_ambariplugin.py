@@ -14,7 +14,6 @@
 # limitations under the License.
 import mock
 
-import os
 import pkg_resources as pkg
 from savanna.conductor import resource as r
 from savanna.plugins.hdp import ambariplugin as ap
@@ -22,6 +21,9 @@ from savanna.plugins.hdp import clusterspec as cs
 from savanna.plugins.hdp import exceptions as ex
 from savanna import version
 import unittest2
+
+GET_REST_REQ = "savanna.plugins.hdp.versions.1_3_2.versionhandler." \
+               "AmbariClient._get_rest_request"
 
 
 def create_cluster_template(ctx, dct):
@@ -32,7 +34,7 @@ class AmbariPluginTest(unittest2.TestCase):
     def test_get_node_processes(self):
         plugin = ap.AmbariPlugin()
         #TODO(jspeidel): provide meaningful input
-        service_components = plugin.get_node_processes(1)
+        service_components = plugin.get_node_processes('1.3.2')
 
         self.assertEqual(5, len(service_components))
         components = service_components['HDFS']
@@ -60,35 +62,32 @@ class AmbariPluginTest(unittest2.TestCase):
     @mock.patch("savanna.context.ctx")
     def test_convert(self, ctx_func):
         plugin = ap.AmbariPlugin()
-        with open(os.path.join(os.path.realpath('../plugins'), 'hdp',
-                               'resources',
-                               'default-cluster.template'), 'r') as f:
-            cluster = plugin.convert(f.read(), 'ambari', '1.3.0',
-                                     'test-plugin',
-                                     create_cluster_template)
-        with open(os.path.join(os.path.realpath('../plugins'), 'hdp',
-                               'resources',
-                               'default-cluster.template'), 'r') as f:
-            normalized_config = cs.ClusterSpec(f.read()).normalize()
+        cluster_config_file = pkg.resource_string(
+            version.version_info.package,
+            'plugins/hdp/versions/1_3_2/resources/default-cluster.template')
+        cluster = plugin.convert(cluster_config_file, 'ambari', '1.3.2',
+                                 'test-plugin', create_cluster_template)
+        normalized_config = cs.ClusterSpec(cluster_config_file).normalize()
 
         self.assertEqual(normalized_config.hadoop_version,
                          cluster.hadoop_version)
         self.assertEqual(len(normalized_config.node_groups),
                          len(cluster.node_groups))
 
-    def test__set_ambari_credentials__admin_only(self):
+    @mock.patch(GET_REST_REQ)
+    def test__set_ambari_credentials__admin_only(self, client):
+        client.side_effect = self._get_test_request
         self.requests = []
         plugin = ap.AmbariPlugin()
-        plugin._get_rest_request = self._get_test_request
 
-        with open(os.path.join(os.path.realpath('../plugins'), 'hdp',
-                  'resources',
-                  'default-cluster.template'), 'r') as f:
-                        cluster_spec = cs.ClusterSpec(f.read())
+        cluster_config_file = pkg.resource_string(
+            version.version_info.package,
+            'plugins/hdp/versions/1_3_2/resources/default-cluster.template')
+        cluster_spec = cs.ClusterSpec(cluster_config_file)
 
         ambari_info = ap.AmbariInfo(TestHost('111.11.1111'),
                                     '8080', 'admin', 'old-pwd')
-        plugin._set_ambari_credentials(cluster_spec, ambari_info)
+        plugin._set_ambari_credentials(cluster_spec, ambari_info, '1.3.2')
 
         self.assertEqual(1, len(self.requests))
         request = self.requests[0]
@@ -101,15 +100,16 @@ class AmbariPluginTest(unittest2.TestCase):
         self.assertEqual('admin', ambari_info.user)
         self.assertEqual('admin', ambari_info.password)
 
-    def test__set_ambari_credentials__new_user_no_admin(self):
+    @mock.patch(GET_REST_REQ)
+    def test__set_ambari_credentials__new_user_no_admin(self, client):
         self.requests = []
         plugin = ap.AmbariPlugin()
-        plugin._get_rest_request = self._get_test_request
+        client.side_effect = self._get_test_request
 
-        with open(os.path.join(os.path.realpath('../plugins'), 'hdp',
-                  'resources',
-                  'default-cluster.template'), 'r') as f:
-                        cluster_spec = cs.ClusterSpec(f.read())
+        cluster_config_file = pkg.resource_string(
+            version.version_info.package,
+            'plugins/hdp/versions/1_3_2/resources/default-cluster.template')
+        cluster_spec = cs.ClusterSpec(cluster_config_file)
 
         for service in cluster_spec.services:
             if service.name == 'AMBARI':
@@ -119,7 +119,7 @@ class AmbariPluginTest(unittest2.TestCase):
 
         ambari_info = ap.AmbariInfo(TestHost('111.11.1111'), '8080',
                                     'admin', 'old-pwd')
-        plugin._set_ambari_credentials(cluster_spec, ambari_info)
+        plugin._set_ambari_credentials(cluster_spec, ambari_info, '1.3.2')
         self.assertEqual(2, len(self.requests))
 
         request = self.requests[0]
@@ -139,15 +139,16 @@ class AmbariPluginTest(unittest2.TestCase):
         self.assertEqual('test', ambari_info.user)
         self.assertEqual('test_pw', ambari_info.password)
 
-    def test__set_ambari_credentials__new_user_with_admin(self):
+    @mock.patch(GET_REST_REQ)
+    def test__set_ambari_credentials__new_user_with_admin(self, client):
         self.requests = []
         plugin = ap.AmbariPlugin()
-        plugin._get_rest_request = self._get_test_request
+        client.side_effect = self._get_test_request
 
-        with open(os.path.join(os.path.realpath('../plugins'), 'hdp',
-                               'resources',
-                               'default-cluster.template'), 'r') as f:
-                                    cluster_spec = cs.ClusterSpec(f.read())
+        cluster_config_file = pkg.resource_string(
+            version.version_info.package,
+            'plugins/hdp/versions/1_3_2/resources/default-cluster.template')
+        cluster_spec = cs.ClusterSpec(cluster_config_file)
 
         for service in cluster_spec.services:
             if service.name == 'AMBARI':
@@ -156,7 +157,7 @@ class AmbariPluginTest(unittest2.TestCase):
 
         ambari_info = ap.AmbariInfo(TestHost('111.11.1111'), '8080',
                                     'admin', 'old-pwd')
-        plugin._set_ambari_credentials(cluster_spec, ambari_info)
+        plugin._set_ambari_credentials(cluster_spec, ambari_info, '1.3.2')
         self.assertEqual(2, len(self.requests))
 
         request = self.requests[0]
@@ -178,15 +179,16 @@ class AmbariPluginTest(unittest2.TestCase):
         self.assertEqual('admin', ambari_info.user)
         self.assertEqual('admin', ambari_info.password)
 
-    def test__set_ambari_credentials__no_admin_user(self):
+    @mock.patch(GET_REST_REQ)
+    def test__set_ambari_credentials__no_admin_user(self, client):
         self.requests = []
         plugin = ap.AmbariPlugin()
-        plugin._get_rest_request = self._get_test_request
+        client.side_effect = self._get_test_request
 
-        with open(os.path.join(os.path.realpath('../plugins'), 'hdp',
-                  'resources',
-                  'default-cluster.template'), 'r') as f:
-                        cluster_spec = cs.ClusterSpec(f.read())
+        cluster_config_file = pkg.resource_string(
+            version.version_info.package,
+            'plugins/hdp/versions/1_3_2/resources/default-cluster.template')
+        cluster_spec = cs.ClusterSpec(cluster_config_file)
 
         for service in cluster_spec.services:
             if service.name == 'AMBARI':
@@ -199,7 +201,7 @@ class AmbariPluginTest(unittest2.TestCase):
                                     '8080', 'admin', 'old-pwd')
         self.assertRaises(ex.HadoopProvisionError,
                           plugin._set_ambari_credentials(cluster_spec,
-                                                         ambari_info))
+                                                         ambari_info, '1.3.2'))
 
     @mock.patch("savanna.utils.openstack.nova.get_instance_info")
     def test__get_ambari_info(self, patched):
@@ -207,7 +209,7 @@ class AmbariPluginTest(unittest2.TestCase):
 
         cluster_config_file = pkg.resource_string(
             version.version_info.package,
-            'plugins/hdp/resources/default-cluster.template')
+            'plugins/hdp/versions/1_3_2/resources/default-cluster.template')
 
         test_host = TestServer(
             'host1', 'test-master', '111.11.1111',
@@ -235,7 +237,7 @@ class AmbariPluginTest(unittest2.TestCase):
 
         cluster_config_file = pkg.resource_string(
             version.version_info.package,
-            'plugins/hdp/resources/default-cluster.template')
+            'plugins/hdp/versions/1_3_2/resources/default-cluster.template')
         cluster_spec = cs.ClusterSpec(cluster_config_file)
 
         ambari_info = ap.AmbariInfo(TestHost('111.11.1111'),

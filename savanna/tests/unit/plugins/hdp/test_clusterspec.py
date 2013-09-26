@@ -30,7 +30,7 @@ class ClusterSpecTest(unittest2.TestCase):
         patched.side_effect = _test_get_instance_info
         cluster_config_file = pkg.resource_string(
             version.version_info.package,
-            'plugins/hdp/resources/default-cluster.template')
+            'plugins/hdp/versions/1_3_2/resources/default-cluster.template')
 
         server1 = TestServer('host1', 'test-master', '11111', 3, '111.11.1111',
                              '222.11.1111',
@@ -60,7 +60,7 @@ class ClusterSpecTest(unittest2.TestCase):
         patched.side_effect = _test_get_instance_info
         cluster_config_file = pkg.resource_string(
             version.version_info.package,
-            'plugins/hdp/resources/default-cluster.template')
+            'plugins/hdp/versions/1_3_2/resources/default-cluster.template')
 
         server1 = TestServer('ambari_machine', 'master', '11111', 3,
                              '111.11.1111', '222.11.1111',
@@ -90,7 +90,7 @@ class ClusterSpecTest(unittest2.TestCase):
         patched.side_effect = _test_get_instance_info
         cluster_config_file = pkg.resource_string(
             version.version_info.package,
-            'plugins/hdp/resources/default-cluster.template')
+            'plugins/hdp/versions/1_3_2/resources/default-cluster.template')
 
         master_host = TestServer(
             'master.novalocal', 'master', '11111', 3,
@@ -160,7 +160,7 @@ class ClusterSpecTest(unittest2.TestCase):
     def test_ambari_rpm_path(self):
         cluster_config_file = pkg.resource_string(
             version.version_info.package,
-            'plugins/hdp/resources/default-cluster.template')
+            'plugins/hdp/versions/1_3_2/resources/default-cluster.template')
         cluster_spec = cs.ClusterSpec(cluster_config_file)
 
         ambari_config = cluster_spec.configurations['ambari']
@@ -172,7 +172,7 @@ class ClusterSpecTest(unittest2.TestCase):
     def test_parse_default(self):
         cluster_config_file = pkg.resource_string(
             version.version_info.package,
-            'plugins/hdp/resources/default-cluster.template')
+            'plugins/hdp/versions/1_3_2/resources/default-cluster.template')
 
         cluster_config = cs.ClusterSpec(cluster_config_file)
 
@@ -185,7 +185,7 @@ class ClusterSpecTest(unittest2.TestCase):
     def test_ambari_rpm(self):
         cluster_config_file = pkg.resource_string(
             version.version_info.package,
-            'plugins/hdp/resources/default-cluster.template')
+            'plugins/hdp/versions/1_3_2/resources/default-cluster.template')
 
         cluster_config = cs.ClusterSpec(cluster_config_file)
 
@@ -197,7 +197,7 @@ class ClusterSpecTest(unittest2.TestCase):
     def test_normalize(self):
         cluster_config_file = pkg.resource_string(
             version.version_info.package,
-            'plugins/hdp/resources/default-cluster.template')
+            'plugins/hdp/versions/1_3_2/resources/default-cluster.template')
 
         cluster_config = cs.ClusterSpec(cluster_config_file)
         cluster = cluster_config.normalize()

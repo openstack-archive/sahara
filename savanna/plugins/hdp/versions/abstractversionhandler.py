@@ -1,0 +1,57 @@
+# Copyright (c) 2013 Hortonworks, Inc.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
+# implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+import abc
+
+
+class AbstractVersionHandler():
+
+    __metaclass__ = abc.ABCMeta
+
+    @abc.abstractmethod
+    def get_config_items(self):
+        return
+
+    @abc.abstractmethod
+    def get_applicable_target(self, name):
+        return
+
+    @abc.abstractmethod
+    def process_cluster(self, user_inputs, node_groups):
+        return
+
+    @abc.abstractmethod
+    def get_cluster_spec(self, cluster_template, cluster):
+        return
+
+    @abc.abstractmethod
+    def get_ambari_client(self):
+        return
+
+    @abc.abstractmethod
+    def get_default_cluster_configuration(self):
+        return
+
+    @abc.abstractmethod
+    def get_node_processes(self):
+        return
+
+    @abc.abstractmethod
+    def install_swift_integration(self, servers):
+        return
+
+    @abc.abstractmethod
+    def get_version(self):
+        return
