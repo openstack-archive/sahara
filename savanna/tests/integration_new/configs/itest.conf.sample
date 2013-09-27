@@ -1,0 +1,32 @@
+[COMMON]
+
+# Username for OpenStack
+OS_USERNAME = 'admin'
+# Password for OpenStack
+OS_PASSWORD = 'admin'
+# Tenant name for OpenStack
+OS_TENANT_NAME = 'admin'
+# URL for OpenStack
+OS_AUTH_URL = 'http://127.0.0.1:35357/v2.0/'
+
+# Host for Savanna API
+SAVANNA_HOST = '127.0.0.1'
+
+# OpenStack key pair id your SSH public key which Savanna transfers
+# to cluster nodes for access of users to virtual machines via SSH,
+# using this key'
+USER_KEYPAIR_ID = 'jsmit'
+
+# Path to folder where is located id_rsa key which is used for
+# remote command execution
+PATH_TO_SSH_KEY = '/home/user/.ssh/id_rsa'
+
+[VANILLA]
+
+# ID for image which is used for cluster creation
+IMAGE_ID = '123456-qwerty'
+
+[HDP]
+
+# ID for image which is used for cluster creation
+IMAGE_ID = '123456-qwerty'
