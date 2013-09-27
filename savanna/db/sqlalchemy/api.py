@@ -17,6 +17,7 @@
 
 import sys
 
+from oslo.config import cfg
 import sqlalchemy as sa
 
 from savanna.db.sqlalchemy import models as m
@@ -30,6 +31,8 @@ LOG = logging.getLogger(__name__)
 
 get_engine = db_session.get_engine
 get_session = db_session.get_session
+
+CONF = cfg.CONF
 
 
 def get_backend():
@@ -685,9 +688,17 @@ def job_binary_internal_get(context, job_binary_internal_id):
 def job_binary_internal_get_raw_data(context, job_binary_internal_id):
     """Returns only the data field for the specified JobBinaryInternal."""
     query = model_query(m.JobBinaryInternal, context)
-    query = query.options(sa.orm.undefer("data"))
     res = query.filter_by(id=job_binary_internal_id).first()
+
     if res is not None:
+        datasize_KB = res.datasize / 1024.0
+        if datasize_KB > CONF.job_binary_max_KB:
+            raise ex.DataTooBigException(round(datasize_KB, 1),
+                                         CONF.job_binary_max_KB,
+                                         "Size of internal binary (%sKB) is "
+                                         "greater than the maximum (%sKB)")
+
+        # This assignment is sufficient to load the deferred column
         res = res.data
     return res
 
@@ -697,6 +708,14 @@ def job_binary_internal_create(context, values):
 
     The data column uses deferred loading.
     """
+    values["datasize"] = len(values["data"])
+    datasize_KB = values["datasize"] / 1024.0
+    if datasize_KB > CONF.job_binary_max_KB:
+        raise ex.DataTooBigException(round(datasize_KB, 1),
+                                     CONF.job_binary_max_KB,
+                                     "Size of internal binary (%sKB) is "
+                                     "greater than the maximum (%sKB)")
+
     job_binary_int = m.JobBinaryInternal()
     job_binary_int.update(values)
 

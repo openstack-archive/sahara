@@ -19,6 +19,7 @@ import jsonschema
 import six
 
 from savanna.openstack.common import uuidutils
+from savanna.swift import utils as su
 
 
 @jsonschema.FormatChecker.cls_checks('valid_name')
@@ -33,8 +34,8 @@ def validate_name_format(entry):
 def validate_job_location_format(entry):
     if entry.startswith('savanna-db://'):
         return uuidutils.is_uuid_like(entry[len("savanna-db://"):])
-    if (entry.startswith('swift-internal://') or
-            entry.startswith('swift-external://')):
+    if entry.startswith(su.SWIFT_INTERNAL_PREFIX):
+        #TODO(tmckay):allow su.SWIFT_EXTERNAL_PREFIX in a future version
         #TODO(nprivalova):add hostname validation
         return True
     return False

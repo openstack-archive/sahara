@@ -18,6 +18,7 @@ from savanna import conductor as c
 from savanna import context
 from savanna.openstack.common import log as logging
 
+from savanna.service.edp.binary_retrievers import dispatch
 from savanna.service.edp import job_manager as manager
 from savanna.service.edp.workflow_creator import workflow_factory as w_f
 
@@ -124,3 +125,8 @@ def delete_job_binary_internal(id):
 
 def get_job_binary_internal_data(id):
     return conductor.job_binary_internal_get_raw_data(context.ctx(), id)
+
+
+def get_job_binary_data(id):
+    job_binary = conductor.job_binary_get(context.ctx(), id)
+    return dispatch.get_raw_binary(job_binary)
