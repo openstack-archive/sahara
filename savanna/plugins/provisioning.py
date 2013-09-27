@@ -30,6 +30,10 @@ class ProvisioningPluginBase(plugins_base.PluginInterface):
     def get_hive_config_path(self):
         pass
 
+    @plugins_base.optional
+    def get_hdfs_user(self):
+        pass
+
     @plugins_base.required
     def get_node_processes(self, hadoop_version):
         pass

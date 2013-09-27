@@ -63,6 +63,9 @@ class VanillaProvider(p.ProvisioningPluginBase):
     def get_hive_config_path(self):
         return "/opt/hive/conf/hive-site.xml"
 
+    def get_hdfs_user(self):
+        return 'hadoop'
+
     def get_node_processes(self, hadoop_version):
         return self.processes
 

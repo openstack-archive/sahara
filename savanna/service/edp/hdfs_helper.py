@@ -14,20 +14,22 @@
 # limitations under the License.
 
 
-def put_file_to_hdfs(r, file, file_name, path):
+def put_file_to_hdfs(r, file, file_name, path, hdfs_user):
     r.write_file_to('/tmp/%s' % file_name, file)
-    move_from_local(r, '/tmp/%s' % file_name, path + '/' + file_name)
+    move_from_local(r, '/tmp/%s' % file_name, path + '/' + file_name,
+                    hdfs_user)
 
 
-def copy_from_local(r, source, target):
+def copy_from_local(r, source, target, hdfs_user):
     r.execute_command('sudo su - -c "hadoop dfs -copyFromLocal '
-                      '%s %s" hadoop' % (source, target))
+                      '%s %s" %s' % (source, target, hdfs_user))
 
 
-def move_from_local(r, source, target):
+def move_from_local(r, source, target, hdfs_user):
     r.execute_command('sudo su - -c "hadoop dfs -moveFromLocal '
-                      '%s %s" hadoop' % (source, target))
+                      '%s %s" %s' % (source, target, hdfs_user))
 
 
-def create_dir(r, dir_name):
-    r.execute_command('sudo su - -c "hadoop dfs -mkdir %s" hadoop' % dir_name)
+def create_dir(r, dir_name, hdfs_user):
+    r.execute_command(
+        'sudo su - -c "hadoop dfs -mkdir %s" %s' % (dir_name, hdfs_user))
