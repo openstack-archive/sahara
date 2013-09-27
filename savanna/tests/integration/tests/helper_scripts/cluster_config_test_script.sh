@@ -79,28 +79,28 @@ check_heap_size() {
 
 check_nn_heap_size() {
 
-    echo -e "*******************NAME NODE HEAP SIZE******************\n" >> $log
+    echo -e "*********************** NAME NODE HEAP SIZE **********************\n" >> $log
 
     check_heap_size "namenode"
 }
 
 check_jt_heap_size() {
 
-    echo -e "******************JOB TRACKER HEAP SIZE*****************\n" >> $log
+    echo -e "********************** JOB TRACKER HEAP SIZE *********************\n" >> $log
 
     check_heap_size "jobtracker"
 }
 
 check_dn_heap_size() {
 
-    echo -e "*******************DATA NODE HEAP SIZE******************\n" >> $log
+    echo -e "*********************** DATA NODE HEAP SIZE **********************\n" >> $log
 
     check_heap_size "datanode"
 }
 
 check_tt_heap_size() {
 
-    echo -e "*****************TASK TRACKER HEAP SIZE*****************\n" >> $log
+    echo -e "********************* TASK TRACKER HEAP SIZE *********************\n" >> $log
 
     check_heap_size "tasktracker"
 }
@@ -114,7 +114,7 @@ HADOOP_USER=""
 
 check_swift_availability() {
 
-    echo -e "**************************SWIFT*************************\n" >> $log
+    echo -e "****************************** SWIFT *****************************\n" >> $log
 
     check_submitted_parameter config_value
 
@@ -147,7 +147,7 @@ check_swift_availability() {
 
 check_dfs_replication() {
 
-    echo -e "*********************DFS.REPLICATION********************\n" >> $log
+    echo -e "************************* DFS.REPLICATION ************************\n" >> $log
 
     value=`cat /etc/hadoop/hdfs-site.xml | grep -A 1 '.*dfs.replication.*' | tail -n 1 | grep -o "[0-9]\{1,10\}"`
 
@@ -156,7 +156,7 @@ check_dfs_replication() {
 
 check_mapred_map_tasks_speculative_execution() {
 
-    echo -e "*********MAPRED.MAP.TASKS.SPECULATIVE.EXECUTION*********\n" >> $log
+    echo -e "************* MAPRED.MAP.TASKS.SPECULATIVE.EXECUTION *************\n" >> $log
 
     value=`cat /etc/hadoop/mapred-site.xml | grep -A 1 '.*mapred.map.tasks.speculative.execution.*' | tail -n 1 | grep -o "[a-z,A-Z]\{4,5\}" | grep -v "value"`
 
@@ -165,7 +165,7 @@ check_mapred_map_tasks_speculative_execution() {
 
 check_mapred_child_java_opts() {
 
-    echo -e "*****************MAPRED.CHILD.JAVA.OPTS*****************\n" >> $log
+    echo -e "********************* MAPRED.CHILD.JAVA.OPTS *********************\n" >> $log
 
     value=`cat /etc/hadoop/mapred-site.xml | grep -A 1 '.*mapred.child.java.opts.*' | tail -n 1 | grep -o "\-Xmx[0-9]\{1,10\}m"`
 

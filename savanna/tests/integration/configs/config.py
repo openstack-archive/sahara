@@ -62,7 +62,7 @@ COMMON_CONFIG_OPTS = [
                default='v1.1',
                help='Api version for Savanna'),
 
-    cfg.IntOpt('FLAVOR_ID',
+    cfg.StrOpt('FLAVOR_ID',
                default=2,
                help='OpenStack flavor ID for image'),
 
@@ -225,18 +225,20 @@ class ITConfig:
 
         config_files = []
 
-        if not os.path.exists('%s/integration_new/configs/'
-                              '%s' % (os.getcwd(), config)):
+        if not os.path.exists(
+                '%s/integration/configs/%s' % (os.getcwd(), config)):
 
-            message = '*************************************\n' \
-                      'Config file "%s" not found  *\n' \
-                      '*************************************' % config
+            message = '\n**************************************************' \
+                      '\nINFO: Configuration file "%s" not found  *\n' \
+                      '**************************************************' \
+                      % config
             print(RuntimeError(message), file=sys.stderr)
 
         else:
 
             config = os.path.join(
-                '%s/integration_new/configs/%s' % (os.getcwd(), config))
+                '%s/integration/configs/%s' % (os.getcwd(), config)
+            )
             config_files.append(config)
 
         register_config(cfg.CONF, COMMON_CONFIG_GROUP, COMMON_CONFIG_OPTS)

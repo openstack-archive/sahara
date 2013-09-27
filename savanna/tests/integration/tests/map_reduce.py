@@ -15,7 +15,7 @@
 
 
 from savanna.openstack.common import excutils
-from savanna.tests.integration_new.tests import base
+from savanna.tests.integration.tests import base
 
 
 class MapReduceTest(base.ITestCase):
@@ -38,8 +38,8 @@ class MapReduceTest(base.ITestCase):
                     'Failure while name obtaining completed \'PI\' job: ' +
                     str(e)
                 )
-                print(
-                    self.read_file_from('/tmp/MapReduceTestOutput/log.txt')
+                self.capture_error_log_from_cluster_node(
+                    '/tmp/MapReduceTestOutput/log.txt'
                 )
 
         return job_name[1][:-1]
@@ -55,8 +55,8 @@ class MapReduceTest(base.ITestCase):
             with excutils.save_and_reraise_exception():
 
                 print('Failure while \'Wordcount\' job launch: ' + str(e))
-                print(
-                    self.read_file_from('/tmp/MapReduceTestOutput/log.txt')
+                self.capture_error_log_from_cluster_node(
+                    '/tmp/MapReduceTestOutput/log.txt'
                 )
 
     @base.skip_test('SKIP_MAP_REDUCE_TEST',
@@ -132,8 +132,8 @@ class MapReduceTest(base.ITestCase):
                 )
                 self.close_ssh_connection()
                 self.open_ssh_connection(namenode_ip, plugin.NODE_USERNAME)
-                print(
-                    self.read_file_from('/tmp/MapReduceTestOutput/log.txt')
+                self.capture_error_log_from_cluster_node(
+                    '/tmp/MapReduceTestOutput/log.txt'
                 )
 
         self.open_ssh_connection(namenode_ip, plugin.NODE_USERNAME)
