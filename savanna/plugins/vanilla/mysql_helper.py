@@ -14,12 +14,13 @@
 # limitations under the License.
 
 
-def get_hive_mysql_configs(metastore_host):
+def get_hive_mysql_configs(metastore_host, passwd):
     return {
-        'javax.jdo.option.ConnectionURL': 'jdbc:mysql://localhost/metastore',
+        'javax.jdo.option.ConnectionURL': 'jdbc:mysql://%s/metastore' %
+        metastore_host,
         'javax.jdo.option.ConnectionDriverName': 'com.mysql.jdbc.Driver',
         'javax.jdo.option.ConnectionUserName': 'hive',
-        'javax.jdo.option.ConnectionPassword': 'hive',
+        'javax.jdo.option.ConnectionPassword': passwd,
         'datanucleus.autoCreateSchema': 'false',
         'datanucleus.fixedDatastore': 'true',
         'hive.metastore.uris': 'thrift://%s:9083' % metastore_host,
@@ -37,8 +38,8 @@ def get_oozie_mysql_configs():
     }
 
 
-def get_required_mysql_configs(hive_hostname):
+def get_required_mysql_configs(hive_hostname, passwd_mysql):
     configs = get_oozie_mysql_configs()
     if hive_hostname:
-        configs.update(get_hive_mysql_configs(hive_hostname))
+        configs.update(get_hive_mysql_configs(hive_hostname, passwd_mysql))
     return configs

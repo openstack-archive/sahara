@@ -115,7 +115,7 @@ class TestPigWorkflowCreator(unittest2.TestCase):
                                          self.prepare, self.configuration,
                                          params, self.files, self.archives)
         res = hive_workflow.get_built_workflow_xml()
-        hive_action = """  <hive>
+        hive_action = """  <hive xmlns="uri:oozie:hive-action:0.2">
       <job-tracker>${jobTracker}</job-tracker>
       <name-node>${nameNode}</name-node>
       <prepare>

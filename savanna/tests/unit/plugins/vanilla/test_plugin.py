@@ -156,9 +156,10 @@ class VanillaPluginTest(unittest2.TestCase):
         self.assertDictEqual(cfg, all_configured)
 
     def test_get_mysql_configs(self):
-        cfg = m_h.get_required_mysql_configs(None)
+        cfg = m_h.get_required_mysql_configs(None, None)
         self.assertDictEqual(cfg, m_h.get_oozie_mysql_configs())
-        cfg = m_h.get_required_mysql_configs("metastore_host")
+        cfg = m_h.get_required_mysql_configs("metastore_host", "passwd")
         cfg_to_compare = m_h.get_oozie_mysql_configs()
-        cfg_to_compare.update(m_h.get_hive_mysql_configs("metastore_host"))
+        cfg_to_compare.update(m_h.get_hive_mysql_configs(
+            "metastore_host", "passwd"))
         self.assertDictEqual(cfg, cfg_to_compare)
