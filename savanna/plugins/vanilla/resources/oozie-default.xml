@@ -8,9 +8,9 @@
   to you under the Apache License, Version 2.0 (the
   "License"); you may not use this file except in compliance
   with the License.  You may obtain a copy of the License at
-  
+
        http://www.apache.org/licenses/LICENSE-2.0
-  
+
   Unless required by applicable law or agreed to in writing, software
   distributed under the License is distributed on an "AS IS" BASIS,
   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -23,6 +23,18 @@
     <!-- This file is in the Oozie configuration directory only for reference. -->
     <!-- It is not loaded by Oozie, Oozie uses its own privatecopy.            -->
     <!-- ************************** VERY IMPORTANT  ************************** -->
+
+    <property>
+        <name>oozie.action.ship.launcher.jar</name>
+        <value>true</value>
+        <description>
+            If true, Oozie will create and ship a "launcher jar" that contains classes necessary for the launcher job.  If false,
+            Oozie will not do this, and it is assumed that the necessary classes are in their respective sharelib jars or the
+            "oozie" sharelib instead.  When false, the sharelib is required for ALL actions; when true, the sharelib is only
+            required for actions that need additional jars (e.g. Pig).  The main advantage of setting this to false is that
+            launching jobs should be slightly faster.
+        </description>
+    </property>
 
     <property>
         <name>oozie.action.mapreduce.uber.jar.enable</name>
@@ -90,7 +102,9 @@
             org.apache.oozie.service.UUIDService,
             org.apache.oozie.service.ELService,
             org.apache.oozie.service.AuthorizationService,
+            org.apache.oozie.service.UserGroupInformationService,
             org.apache.oozie.service.HadoopAccessorService,
+            org.apache.oozie.service.URIHandlerService,
             org.apache.oozie.service.MemoryLocksService,
             org.apache.oozie.service.DagXLogInfoService,
             org.apache.oozie.service.SchemaService,
@@ -129,6 +143,62 @@
         </description>
     </property>
 
+ <!-- HCatAccessorService -->
+   <property>
+        <name>oozie.service.HCatAccessorService.jmsconnections</name>
+        <value>
+        default=java.naming.factory.initial#org.apache.activemq.jndi.ActiveMQInitialContextFactory;java.naming.provider.url#tcp://localhost:61616;connectionFactoryNames#ConnectionFactory
+        </value>
+        <description>
+        Specify the map  of endpoints to JMS configuration properties. In general, endpoint
+        identifies the HCatalog server URL. "default" is used if no endpoint is mentioned
+        in the query. If some JMS property is not defined, the system will use the property
+        defined jndi.properties. jndi.properties files is retrieved from the application classpath.
+        Mapping rules can also be provided for mapping Hcatalog servers to corresponding JMS providers.
+        hcat://${1}.${2}.server.com:8020=java.naming.factory.initial#Dummy.Factory;java.naming.provider.url#tcp://broker.${2}:61616
+        </description>
+   </property>
+
+    <!-- TopicService -->
+
+   <property>
+        <name>oozie.service.JMSTopicService.topic.name</name>
+        <value>
+        default=${username}
+        </value>
+        <description>
+        Topic options are ${username} or ${jobId} or a fixed string which can be specified as default or for a
+        particular job type.
+        For e.g To have a fixed string topic for workflows, coordinators and bundles,
+        specify in the following comma-separated format: {jobtype1}={some_string1}, {jobtype2}={some_string2}
+        where job type can be WORKFLOW, COORDINATOR or BUNDLE.
+        e.g. Following defines topic for workflow job, workflow action, coordinator job, coordinator action,
+        bundle job and bundle action
+        WORKFLOW=workflow,
+        COORDINATOR=coordinator,
+        BUNDLE=bundle
+        For jobs with no defined topic, default topic will be ${username}
+        </description>
+    </property>
+
+    <!-- JMS Producer connection -->
+    <property>
+        <name>oozie.jms.producer.connection.properties</name>
+        <value>java.naming.factory.initial#org.apache.activemq.jndi.ActiveMQInitialContextFactory;java.naming.provider.url#tcp://localhost:61616;connectionFactoryNames#ConnectionFactory</value>
+    </property>
+
+ <!-- JMSAccessorService -->
+    <property>
+        <name>oozie.service.JMSAccessorService.connectioncontext.impl</name>
+        <value>
+        org.apache.oozie.jms.DefaultConnectionContext
+        </value>
+        <description>
+        Specifies the Connection Context implementation
+        </description>
+    </property>
+
+
     <!-- ConfigurationService -->
 
     <property>
@@ -146,7 +216,7 @@
 
     <property>
         <name>oozie.service.SchedulerService.threads</name>
-        <value>5</value>
+        <value>10</value>
         <description>
             The number of threads to be used by the SchedulerService to run deamon tasks.
             If maxed out, scheduled daemon tasks will be queued up and delayed until threads become available.
@@ -240,6 +310,15 @@
         <description>
             This value determines the number of callable which will be batched together
             to be executed by a single thread.
+        </description>
+    </property>
+
+    <property>
+        <name>oozie.service.RecoveryService.push.dependency.interval</name>
+        <value>200</value>
+        <description>
+            This value determines the delay for push missing dependency command queueing
+            in Recovery Service
         </description>
     </property>
 
@@ -377,7 +456,15 @@
         </description>
 	</property>
 
-	<property>
+    <property>
+        <name>oozie.service.coord.push.check.requeue.interval
+        </name>
+        <value>600000</value>
+        <description>Command re-queue interval for push dependencies (in millisecond).
+        </description>
+    </property>
+
+    <property>
 		<name>oozie.service.coord.default.concurrency
 		</name>
 		<value>1</value>
@@ -492,7 +579,8 @@
             fs:isDir=org.apache.oozie.action.hadoop.FsELFunctions#fs_isDir,
             fs:dirSize=org.apache.oozie.action.hadoop.FsELFunctions#fs_dirSize,
             fs:fileSize=org.apache.oozie.action.hadoop.FsELFunctions#fs_fileSize,
-            fs:blockSize=org.apache.oozie.action.hadoop.FsELFunctions#fs_blockSize
+            fs:blockSize=org.apache.oozie.action.hadoop.FsELFunctions#fs_blockSize,
+            hcat:exists=org.apache.oozie.coord.HCatELFunctions#hcat_exists
         </value>
         <description>
             EL functions declarations, separated by commas, format is [PREFIX:]NAME=CLASS#METHOD.
@@ -682,6 +770,7 @@
             coord:daysInMonth=org.apache.oozie.coord.CoordELFunctions#ph1_coord_daysInMonth_echo,
             coord:tzOffset=org.apache.oozie.coord.CoordELFunctions#ph1_coord_tzOffset_echo,
             coord:current=org.apache.oozie.coord.CoordELFunctions#ph1_coord_current_echo,
+            coord:currentRange=org.apache.oozie.coord.CoordELFunctions#ph1_coord_currentRange_echo,
             coord:offset=org.apache.oozie.coord.CoordELFunctions#ph1_coord_offset_echo,
             coord:latest=org.apache.oozie.coord.CoordELFunctions#ph1_coord_latest_echo,
             coord:latestRange=org.apache.oozie.coord.CoordELFunctions#ph1_coord_latestRange_echo,
@@ -740,7 +829,16 @@
             coord:actionId=org.apache.oozie.coord.CoordELFunctions#ph1_coord_actionId_echo,
             coord:name=org.apache.oozie.coord.CoordELFunctions#ph1_coord_name_echo,
             coord:conf=org.apache.oozie.coord.CoordELFunctions#coord_conf,
-            coord:user=org.apache.oozie.coord.CoordELFunctions#coord_user
+            coord:user=org.apache.oozie.coord.CoordELFunctions#coord_user,
+            coord:databaseIn=org.apache.oozie.coord.HCatELFunctions#ph1_coord_databaseIn_echo,
+            coord:databaseOut=org.apache.oozie.coord.HCatELFunctions#ph1_coord_databaseOut_echo,
+            coord:tableIn=org.apache.oozie.coord.HCatELFunctions#ph1_coord_tableIn_echo,
+            coord:tableOut=org.apache.oozie.coord.HCatELFunctions#ph1_coord_tableOut_echo,
+            coord:dataInPartitionFilter=org.apache.oozie.coord.HCatELFunctions#ph1_coord_dataInPartitionFilter_echo,
+            coord:dataInPartitionMin=org.apache.oozie.coord.HCatELFunctions#ph1_coord_dataInPartitionMin_echo,
+            coord:dataInPartitionMax=org.apache.oozie.coord.HCatELFunctions#ph1_coord_dataInPartitionMax_echo,
+            coord:dataOutPartitions=org.apache.oozie.coord.HCatELFunctions#ph1_coord_dataOutPartitions_echo,
+            coord:dataOutPartitionValue=org.apache.oozie.coord.HCatELFunctions#ph1_coord_dataOutPartitionValue_echo
         </value>
         <description>
             EL functions declarations, separated by commas, format is [PREFIX:]NAME=CLASS#METHOD.
@@ -830,6 +928,7 @@
             coord:daysInMonth=org.apache.oozie.coord.CoordELFunctions#ph2_coord_daysInMonth,
             coord:tzOffset=org.apache.oozie.coord.CoordELFunctions#ph2_coord_tzOffset,
             coord:current=org.apache.oozie.coord.CoordELFunctions#ph2_coord_current,
+            coord:currentRange=org.apache.oozie.coord.CoordELFunctions#ph2_coord_currentRange,
             coord:offset=org.apache.oozie.coord.CoordELFunctions#ph2_coord_offset,
             coord:latest=org.apache.oozie.coord.CoordELFunctions#ph2_coord_latest_echo,
             coord:latestRange=org.apache.oozie.coord.CoordELFunctions#ph2_coord_latestRange_echo,
@@ -885,6 +984,7 @@
             coord:daysInMonth=org.apache.oozie.coord.CoordELFunctions#ph2_coord_daysInMonth,
             coord:tzOffset=org.apache.oozie.coord.CoordELFunctions#ph2_coord_tzOffset,
             coord:current=org.apache.oozie.coord.CoordELFunctions#ph2_coord_current_echo,
+            coord:currentRange=org.apache.oozie.coord.CoordELFunctions#ph2_coord_currentRange_echo,
             coord:offset=org.apache.oozie.coord.CoordELFunctions#ph2_coord_offset_echo,
             coord:latest=org.apache.oozie.coord.CoordELFunctions#ph2_coord_latest_echo,
             coord:latestRange=org.apache.oozie.coord.CoordELFunctions#ph2_coord_latestRange_echo,
@@ -993,7 +1093,16 @@
             coord:actionId=org.apache.oozie.coord.CoordELFunctions#ph3_coord_actionId,
             coord:name=org.apache.oozie.coord.CoordELFunctions#ph3_coord_name,
             coord:conf=org.apache.oozie.coord.CoordELFunctions#coord_conf,
-            coord:user=org.apache.oozie.coord.CoordELFunctions#coord_user
+            coord:user=org.apache.oozie.coord.CoordELFunctions#coord_user,
+            coord:databaseIn=org.apache.oozie.coord.HCatELFunctions#ph3_coord_databaseIn,
+            coord:databaseOut=org.apache.oozie.coord.HCatELFunctions#ph3_coord_databaseOut,
+            coord:tableIn=org.apache.oozie.coord.HCatELFunctions#ph3_coord_tableIn,
+            coord:tableOut=org.apache.oozie.coord.HCatELFunctions#ph3_coord_tableOut,
+            coord:dataInPartitionFilter=org.apache.oozie.coord.HCatELFunctions#ph3_coord_dataInPartitionFilter,
+            coord:dataInPartitionMin=org.apache.oozie.coord.HCatELFunctions#ph3_coord_dataInPartitionMin,
+            coord:dataInPartitionMax=org.apache.oozie.coord.HCatELFunctions#ph3_coord_dataInPartitionMax,
+            coord:dataOutPartitions=org.apache.oozie.coord.HCatELFunctions#ph3_coord_dataOutPartitions,
+            coord:dataOutPartitionValue=org.apache.oozie.coord.HCatELFunctions#ph3_coord_dataOutPartitionValue
         </value>
         <description>
             EL functions declarations, separated by commas, format is [PREFIX:]NAME=CLASS#METHOD.
@@ -1158,7 +1267,7 @@
 
     <property>
         <name>oozie.service.SchemaService.wf.ext.schemas</name>
-        <value>oozie-sla-0.1.xsd</value>
+        <value>oozie-sla-0.1.xsd,oozie-sla-0.2.xsd</value>
         <description>
             Schemas for additional actions types.
 
@@ -1169,7 +1278,7 @@
     
     <property>
         <name>oozie.service.SchemaService.coord.ext.schemas</name>
-        <value>oozie-sla-0.1.xsd</value>
+        <value>oozie-sla-0.1.xsd,oozie-sla-0.2.xsd</value>
         <description>
             Schemas for additional actions types.
 
@@ -1298,7 +1407,7 @@
         <name>oozie.service.StatusTransitService.backward.support.for.coord.status</name>
         <value>false</value>
         <description>
-            true, if coordinator job submits using 'uri:oozie:coordinator:0.1' namespace and wants to keep Oozie 2.x status transit.
+            true, if coordinator job submits using 'uri:oozie:coordinator:0.1' and wants to keep Oozie 2.x status transit.
             if set true,
             1. SUCCEEDED state in coordinator job means materialization done.
             2. No DONEWITHERROR state in coordinator job
@@ -1325,6 +1434,19 @@
         <value>60</value>
         <description>
             The frequency in seconds at which the PauseTransitService will run.
+        </description>
+    </property>
+
+    <!-- JavaActionExecutor -->
+    <!-- This is common to the subclasses of action executors for Java (e.g. map-reduce, pig, hive, java, etc) -->
+
+    <property>
+        <name>oozie.action.launcher.mapreduce.job.ubertask.enable</name>
+        <value>false</value>
+        <description>
+            Enables Uber Mode for the launcher job in YARN/Hadoop 2 (no effect in Hadoop 1).
+            Setting oozie.launcher.mapreduce.job.ubertask.enable in a an action's configuration section overrides this for that
+            action.
         </description>
     </property>
     
@@ -1680,8 +1802,15 @@
 		</description>
 	</property>
 
+        <property>
+                <name>oozie.service.URIHandlerService.uri.handlers</name>
+                <value>org.apache.oozie.dependency.FSURIHandler</value>
+                <description>
+                        Enlist the different uri handlers supported for data availability checks.
+                </description>
+        </property>
     <!-- Oozie HTTP Notifications -->
-    
+
     <property>
         <name>oozie.notification.url.connection.timeout</name>
         <value>10000</value>
@@ -1694,6 +1823,7 @@
         </description>
     </property>
 
+
     <!-- Enable Distributed Cache workaround for Hadoop 2.0.2-alpha (MAPREDUCE-4820) -->
     <property>
         <name>oozie.hadoop-2.0.2-alpha.workaround.for.distributed.cache</name>
@@ -1705,6 +1835,94 @@
             This flag removes the distributed cache files for the action as they'll be
             included from the local JARs of the JobClient (MRApps) submitting the action
             job from the launcher.
+        </description>
+    </property>
+
+    <property>
+        <name>oozie.service.EventHandlerService.filter.app.types</name>
+        <value>workflow_job, coordinator_action</value>
+        <description>
+            The app-types among workflow/coordinator/bundle job/action for which
+            for which events system is enabled.
+        </description>
+    </property>
+
+    <property>
+        <name>oozie.service.EventHandlerService.event.queue</name>
+        <value>org.apache.oozie.event.MemoryEventQueue</value>
+        <description>
+            The implementation for EventQueue in use by the EventHandlerService.
+        </description>
+    </property>
+
+    <property>
+        <name>oozie.service.EventHandlerService.event.listeners</name>
+        <value>org.apache.oozie.jms.JMSJobEventListener</value>
+    </property>
+
+    <property>
+        <name>oozie.service.EventHandlerService.queue.size</name>
+        <value>10000</value>
+        <description>
+            Maximum number of events to be contained in the event queue.
+        </description>
+    </property>
+
+    <property>
+        <name>oozie.service.EventHandlerService.worker.interval</name>
+        <value>30</value>
+        <description>
+            The default interval (seconds) at which the worker threads will be scheduled to run
+            and process events.
+        </description>
+    </property>
+
+    <property>
+        <name>oozie.service.EventHandlerService.batch.size</name>
+        <value>10</value>
+        <description>
+            The batch size for batched draining per thread from the event queue.
+        </description>
+    </property>
+
+    <property>
+        <name>oozie.service.EventHandlerService.worker.threads</name>
+        <value>3</value>
+        <description>
+            Number of worker threads to be scheduled to run and process events.
+        </description>
+    </property>
+
+    <property>
+        <name>oozie.sla.service.SLAService.capacity</name>
+        <value>5000</value>
+        <description>
+             Maximum number of sla records to be contained in the memory structure.
+        </description>
+    </property>
+
+    <property>
+        <name>oozie.sla.service.SLAService.alert.events</name>
+        <value>END_MISS</value>
+        <description>
+             Default types of SLA events for being alerted of.
+        </description>
+    </property>
+
+    <property>
+        <name>oozie.sla.service.SLAService.calculator.impl</name>
+        <value>org.apache.oozie.sla.SLACalculatorMemory</value>
+        <description>
+             The implementation for SLACalculator in use by the SLAService.
+        </description>
+    </property>
+
+    <property>
+        <name>oozie.sla.service.SLAService.job.event.latency</name>
+        <value>90000</value>
+        <description>
+             Time in milliseconds to account of latency of getting the job status event
+             to compare against and decide sla miss/met
         </description>
     </property>
 
