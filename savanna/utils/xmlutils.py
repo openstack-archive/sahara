@@ -29,8 +29,8 @@ def load_hadoop_xml_defaults(file_name):
     for elements in prop:
         configs.append({
             "name": _get_text_from_node(elements, 'name'),
-            "value": _get_text_from_node(elements, 'value'),
-            "description": _adjust_description(
+            "value": _adjust_field(_get_text_from_node(elements, 'value')),
+            "description": _adjust_field(
                 _get_text_from_node(elements, 'description'))
         })
     return configs
@@ -73,7 +73,7 @@ def _get_text_from_node(element, name):
         element and element[0].hasChildNodes()) else ''
 
 
-def _adjust_description(text):
+def _adjust_field(text):
     return re.sub(r"\n *|\t", "", str(text))
 
 
