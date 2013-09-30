@@ -19,10 +19,15 @@ from savanna import context
 from savanna.openstack.common import log as logging
 
 from savanna.service.edp import job_manager as manager
+from savanna.service.edp.workflow_creator import workflow_factory as w_f
 
 
 conductor = c.API
 LOG = logging.getLogger(__name__)
+
+
+def get_job_config_hints(job_type):
+    return w_f.get_possible_job_config(job_type)
 
 
 def execute_job(job_id, input_id, output_id, cluster_id, configs):

@@ -44,6 +44,12 @@ def job_execute(job_id, data):
                                                   configs).to_dict())
 
 
+@rest.get('/jobs/config-hints/<job_type>')
+@v.check_exists(api.get_job_config_hints, job_type='job_type')
+def job_config_hints_get(job_type):
+    return u.render(api.get_job_config_hints(job_type))
+
+
 @rest.get('/job-executions')
 def job_executions_list():
     job_executions = [je.to_dict() for je in api.job_execution_list()]

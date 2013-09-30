@@ -1,0 +1,64 @@
+<?xml version="1.0"?>
+<?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
+<!--
+  Running MapReduce application using Oozie:
+  See https://cwiki.apache.org/confluence/display/OOZIE/Map+Reduce+Cookbook
+-->
+<configuration>
+    <property>
+        <name>mapred.reducer.new-api</name>
+        <value>true</value>
+    </property>
+    <property>
+        <name>mapred.mapper.new-api</name>
+        <value>true</value>
+    </property>
+    <property>
+        <name>mapred.input.dir</name>
+        <value></value>
+    </property>
+    <property>
+        <name>mapred.output.dir</name>
+        <value></value>
+    </property>
+    <property>
+        <name>mapred.mapoutput.key.class</name>
+        <value></value>
+    </property>
+    <property>
+        <name>mapred.mapoutput.value.class</name>
+        <value></value>
+    </property>
+    <property>
+        <name>mapred.output.key.class</name>
+        <value></value>
+    </property>
+    <property>
+        <name>mapred.output.value.class</name>
+        <value></value>
+    </property>
+    <property>
+        <name>mapreduce.map.class</name>
+        <value></value>
+    </property>
+    <property>
+        <name>mapreduce.reduce.class</name>
+        <value></value>
+    </property>
+    <property>
+        <name>mapred.mapper.class</name>
+        <value></value>
+    </property>
+    <property>
+        <name>mapred.reducer.class</name>
+        <value></value>
+    </property>
+    <property>
+        <name>mapred.jar</name>
+        <value></value>
+    </property>
+    <property>
+        <name>mapred.job.name</name>
+        <value></value>
+    </property>
+</configuration>

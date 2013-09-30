@@ -24,6 +24,7 @@ from savanna.service.edp.workflow_creator import hive_workflow
 from savanna.service.edp.workflow_creator import mapreduce_workflow
 from savanna.service.edp.workflow_creator import pig_workflow
 from savanna.utils import remote
+from savanna.utils import xmlutils
 
 conductor = c.API
 
@@ -134,8 +135,39 @@ def get_creator(job):
     def make_HiveFactory():
         return HiveFactory(job)
 
-    type_map = {"Pig": make_PigFactory,
-                "Hive": make_HiveFactory,
-                "Jar": MapReduceFactory}
+    factories = [
+        MapReduceFactory,
+        make_HiveFactory,
+        make_PigFactory
+    ]
+    type_map = dict(zip(get_possible_job_types(), factories))
 
     return type_map[job.type]()
+
+
+def get_possible_job_config(job_type):
+    if job_type not in get_possible_job_types():
+        return None
+    if job_type in ['Jar', 'Pig']:
+        #TODO(nmakhotkin) Savanna should return config based on specific plugin
+        cfg = xmlutils.load_hadoop_xml_defaults(
+            'plugins/vanilla/resources/mapred-default.xml')
+        if job_type == 'Jar':
+            cfg += xmlutils.load_hadoop_xml_defaults(
+                'service/edp/resources/mapred-job-config.xml')
+    elif job_type == 'Hive':
+        #TODO(nmakhotkin) Savanna should return config based on specific plugin
+        cfg = xmlutils.load_hadoop_xml_defaults(
+            'plugins/vanilla/resources/hive-default.xml')
+    config = {'configs': cfg, "args": {}}
+    if job_type != 'Jar':
+        config.update({'params': {}})
+    return {'job_config': config}
+
+
+def get_possible_job_types():
+    return [
+        'Jar',
+        'Hive',
+        'Pig',
+    ]
