@@ -36,11 +36,11 @@ class XMLUtilsTestCase(unittest2.TestCase):
                 'tests/unit/resources/test-default.xml'))
 
     def test_adjust_description(self):
-        self.assertEqual(x._adjust_description("\n"), "")
-        self.assertEqual(x._adjust_description("\n  "), "")
-        self.assertEqual(x._adjust_description(u"abc\n  def\n  "), "abcdef")
-        self.assertEqual(x._adjust_description("abc d\n e f\n"), "abc de f")
-        self.assertEqual(x._adjust_description("a\tb\t\nc"), "abc")
+        self.assertEqual(x._adjust_field("\n"), "")
+        self.assertEqual(x._adjust_field("\n  "), "")
+        self.assertEqual(x._adjust_field(u"abc\n  def\n  "), "abcdef")
+        self.assertEqual(x._adjust_field("abc d\n e f\n"), "abc de f")
+        self.assertEqual(x._adjust_field("a\tb\t\nc"), "abc")
 
     def test_create_hadoop_xml(self):
         conf = x.load_hadoop_xml_defaults(
