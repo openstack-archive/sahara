@@ -33,6 +33,7 @@ class Context(object):
                  service_catalog=None,
                  username=None,
                  tenant_name=None,
+                 is_admin=None,
                  **kwargs):
         if kwargs:
             LOG.warn('Arguments dropped when creating context: %s', kwargs)
@@ -42,6 +43,7 @@ class Context(object):
         self.service_catalog = service_catalog
         self.username = username
         self.tenant_name = tenant_name
+        self.is_admin = is_admin
 
     def clone(self):
         return Context(
@@ -50,7 +52,8 @@ class Context(object):
             self.token,
             self.service_catalog,
             self.username,
-            self.tenant_name)
+            self.tenant_name,
+            self.is_admin)
 
     def to_dict(self):
         return {
@@ -60,7 +63,12 @@ class Context(object):
             'service_catalog': self.service_catalog,
             'username': self.username,
             'tenant_name': self.tenant_name,
+            'is_admin': self.is_admin
         }
+
+
+def get_admin_context():
+    return Context(is_admin=True)
 
 
 _CTXS = threading.local()
