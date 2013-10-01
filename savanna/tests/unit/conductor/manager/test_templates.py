@@ -174,6 +174,7 @@ class ClusterTemplates(test_base.ConductorManagerTestCase):
             ng.pop("created_at")
             ng.pop("updated_at")
             ng.pop("id")
+            ng.pop("tenant_id")
             self.assertEqual(ng.pop("cluster_template_id"), clt_db_obj_id)
             ng.pop("image_id")
             ng.pop("node_configs")

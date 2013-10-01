@@ -85,6 +85,7 @@ class NodeGroup(mb.SavannaBase):
 
     id = _id_column()
     name = sa.Column(sa.String(80), nullable=False)
+    tenant_id = sa.Column(sa.String(36))
     flavor_id = sa.Column(sa.String(36), nullable=False)
     image_id = sa.Column(sa.String(36))
     node_processes = sa.Column(st.JsonListType())
@@ -121,6 +122,7 @@ class Instance(mb.SavannaBase):
     )
 
     id = _id_column()
+    tenant_id = sa.Column(sa.String(36))
     node_group_id = sa.Column(sa.String(36), sa.ForeignKey('node_groups.id'))
     instance_id = sa.Column(sa.String(36))
     instance_name = sa.Column(sa.String(80), nullable=False)
@@ -194,6 +196,7 @@ class TemplatesRelation(mb.SavannaBase):
     __tablename__ = 'templates_relations'
 
     id = _id_column()
+    tenant_id = sa.Column(sa.String(36))
     name = sa.Column(sa.String(80), nullable=False)
     flavor_id = sa.Column(sa.String(36), nullable=False)
     image_id = sa.Column(sa.String(36))

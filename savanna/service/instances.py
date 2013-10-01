@@ -106,7 +106,7 @@ def scale_cluster(cluster, node_group_id_map, plugin):
 
         _await_networks(instances)
 
-        cluster = conductor.cluster_get(context, cluster)
+        cluster = conductor.cluster_get(ctx, cluster)
 
         volumes.attach_to_instances(get_instances(cluster, instance_ids))
 

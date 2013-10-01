@@ -172,7 +172,7 @@ class NodeGroupTemplateResource(Resource, objects.NodeGroupTemplate):
 
 
 class InstanceResource(Resource, objects.Instance):
-    _filter_fields = ['node_group_id']
+    _filter_fields = ['tenant_id', 'node_group_id']
 
 
 class NodeGroupResource(Resource, objects.NodeGroup):
@@ -181,7 +181,7 @@ class NodeGroupResource(Resource, objects.NodeGroup):
         'node_group_template': (NodeGroupTemplateResource, None)
     }
 
-    _filter_fields = ['id', 'cluster_id', 'cluster_template_id']
+    _filter_fields = ['id', 'tenant_id', 'cluster_id', 'cluster_template_id']
 
 
 class ClusterTemplateResource(Resource, objects.ClusterTemplate):

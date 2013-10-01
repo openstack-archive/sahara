@@ -109,6 +109,7 @@ class ClusterTest(test_base.ConductorManagerTestCase):
             ng.pop("volumes_size")
             ng.pop("volumes_per_node")
             ng.pop("floating_ip_pool")
+            ng.pop("tenant_id")
 
         self.assertListEqual(SAMPLE_CLUSTER["node_groups"],
                              cl_db_obj["node_groups"])
@@ -212,6 +213,7 @@ class ClusterTest(test_base.ConductorManagerTestCase):
             if ng["id"] != ng_id:
                 continue
 
+            ng.pop('tenant_id')
             self.assertEqual(count + 1, ng["count"])
             self.assertEqual("additional_vm",
                              ng["instances"][0]["instance_name"])
@@ -225,7 +227,7 @@ class ClusterTest(test_base.ConductorManagerTestCase):
 
         instance_id = self._add_instance(ctx, ng_id)
 
-        self.api.instance_update(context, instance_id,
+        self.api.instance_update(ctx, instance_id,
                                  {"management_ip": "1.1.1.1"})
 
         cluster_db_obj = self.api.cluster_get(ctx, _id)
