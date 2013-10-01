@@ -52,7 +52,7 @@ class SavannaPeriodicTasks(periodic_task.PeriodicTasks):
     @periodic_task.periodic_task(spacing=45, run_immediately=True)
     def update_job_statuses(self, ctx):
         LOG.debug('Updating job statuses')
-        ctx = context.Context()
+        ctx = context.get_admin_context()
         context.set_ctx(ctx)
         job_manager.update_job_statuses()
         context.set_ctx(None)
@@ -60,7 +60,7 @@ class SavannaPeriodicTasks(periodic_task.PeriodicTasks):
     @periodic_task.periodic_task(spacing=90)
     def terminate_unneeded_clusters(self, ctx):
         LOG.debug('Terminating unneeded clusters')
-        ctx = context.Context()
+        ctx = context.get_admin_context()
         for cluster in conductor.cluster_get_all(ctx, status='Active'):
             if not cluster.is_transient:
                 continue
