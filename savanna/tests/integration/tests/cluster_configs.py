@@ -18,7 +18,8 @@ from swiftclient import client as swift_client
 
 
 from savanna.openstack.common import excutils
-from savanna.tests.integration_new.tests import base
+from savanna.tests.integration.configs import config as cfg
+from savanna.tests.integration.tests import base
 
 
 #TODO(ylobankov): add secondary nn config when bug #1217245 will be fixed
@@ -28,7 +29,9 @@ JT_CONFIG = {'Job Tracker Heap Size': 514}
 DN_CONFIG = {'Data Node Heap Size': 513}
 TT_CONFIG = {'Task Tracker Heap Size': 515}
 
-CLUSTER_GENERAL_CONFIG = {'Enable Swift': True}
+CLUSTER_GENERAL_CONFIG = {
+    'Enable Swift': not cfg.ITConfig().VANILLA.SKIP_SWIFT_TEST
+}
 CLUSTER_HDFS_CONFIG = {'dfs.replication': 2}
 CLUSTER_MR_CONFIG = {'mapred.map.tasks.speculative.execution': False,
                      'mapred.child.java.opts': '-Xmx500m'}
@@ -89,8 +92,8 @@ class ClusterConfigTest(base.ITestCase):
                     'Failure while config comparison on cluster node: '
                     + str(e)
                 )
-                print(
-                    self.read_file_from('/tmp/config-test-log.txt')
+                self.capture_error_log_from_cluster_node(
+                    '/tmp/config-test-log.txt'
                 )
 
     def __check_configs_for_node_groups(self, node_groups):
@@ -121,7 +124,7 @@ class ClusterConfigTest(base.ITestCase):
 
                 self.__compare_configs_on_cluster_node(config, value)
 
-            if 'namenode' in processes:
+            if 'namenode' in processes and not self.VANILLA.SKIP_SWIFT_TEST:
 
                 swift = swift_client.Connection(
                     authurl=self.COMMON.OS_AUTH_URL,

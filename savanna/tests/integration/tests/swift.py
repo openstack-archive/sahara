@@ -18,7 +18,7 @@ from swiftclient import client as swift_client
 
 
 from savanna.openstack.common import excutils
-from savanna.tests.integration_new.tests import base
+from savanna.tests.integration.tests import base
 
 
 class SwiftTest(base.ITestCase):

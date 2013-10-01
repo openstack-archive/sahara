@@ -24,7 +24,7 @@ import unittest2
 
 
 from savanna.openstack.common import excutils
-from savanna.tests.integration_new.configs.config import ITConfig as cfg
+from savanna.tests.integration.configs import config as cfg
 from savanna.utils import remote
 
 
@@ -36,9 +36,13 @@ def skip_test(config_name, message=''):
 
             if getattr(self, config_name):
 
-                print('======================================================')
-                print(message)
-                print('======================================================')
+                print(
+                    '\n======================================================='
+                )
+                print('INFO: ' + message)
+                print(
+                    '=======================================================\n'
+                )
 
             else:
 
@@ -53,9 +57,9 @@ class ITestCase(unittest2.TestCase):
 
     def setUp(self):
 
-        self.COMMON = cfg().COMMON
-        self.VANILLA = cfg().VANILLA
-        self.HDP = cfg().HDP
+        self.COMMON = cfg.ITConfig().COMMON
+        self.VANILLA = cfg.ITConfig().VANILLA
+        self.HDP = cfg.ITConfig().HDP
 
         telnetlib.Telnet(self.COMMON.SAVANNA_HOST,
                          self.COMMON.SAVANNA_PORT)
@@ -143,7 +147,6 @@ class ITestCase(unittest2.TestCase):
 
             with excutils.save_and_reraise_exception():
 
-                self.savanna.clusters.delete(self.cluster_id)
                 print(
                     'Failure during check of node process deployment '
                     'on cluster node: ' + str(e)
@@ -157,7 +160,6 @@ class ITestCase(unittest2.TestCase):
 
             with excutils.save_and_reraise_exception():
 
-                self.savanna.clusters.delete(self.cluster_id)
                 print(
                     'Failure while active worker waiting for namenode: '
                     + str(e)
@@ -401,7 +403,7 @@ class ITestCase(unittest2.TestCase):
 
     def transfer_helper_script_to_node(self, script_name, parameter_list):
 
-        script = open('integration_new/tests/helper_scripts/%s'
+        script = open('integration/tests/helper_scripts/%s'
                       % script_name).read()
 
         if parameter_list:
@@ -471,11 +473,27 @@ class ITestCase(unittest2.TestCase):
     def print_error_log(self, message, exception=None):
 
         print(
-            '********************************************************** ERROR '
-            'LOG ***********************************************************\n'
+            '\n\n!*!*!*!*!*!*!*!*!*!*!*!*!*!*!*!*!*!*!*!*!*!*!*!*!*!*!*!*!* '
+            'ERROR LOG *!*!*!*!*!*!*!*!*!*!*!*!*!*!*!*!*!*!*!*!*!*!*!*!*!*!*!*'
+            '!*!\n'
         )
         print(message + str(exception))
         print(
-            '*****************************************************************'
-            '*****************************************************************'
+            '\n!*!*!*!*!*!*!*!*!*!*!*!*!*!*!*!*!*!*!*!*!*!*!*!*!*!*!* END OF '
+            'ERROR LOG *!*!*!*!*!*!*!*!*!*!*!*!*!*!*!*!*!*!*!*!*!*!*!*!*!*!*'
+            '!*!\n\n'
+        )
+
+    def capture_error_log_from_cluster_node(self, log_file):
+
+        print(
+            '\n\n!*!*!*!*!*!*!*!*!*!*!*!*!*!*!*!*!*!*!*!*!*!* CAPTURED ERROR '
+            'LOG FROM CLUSTER NODE *!*!*!*!*!*!*!*!*!*!*!*!*!*!*!*!*!*!*!*!*!*'
+            '!*!\n'
+        )
+        print(self.read_file_from(log_file))
+        print(
+            '\n!*!*!*!*!*!*!*!*!*!*!*!*!*!*!*!*!*!*!*!* END OF CAPTURED ERROR '
+            'LOG FROM CLUSTER NODE *!*!*!*!*!*!*!*!*!*!*!*!*!*!*!*!*!*!*!*'
+            '!*!\n\n'
         )

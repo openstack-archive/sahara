@@ -74,8 +74,13 @@ run_pi_job() {
 
     create_log_directory
 
-    echo -e "<********************************DPKG*****************************> \n`dpkg --get-selections | grep hadoop` \n\n\n" >> $log
-    echo -e "<******************************NETSTAT****************************> \n`sudo netstat -plten | grep java` \n\n\n" >> $log
+    echo -e "******************************** DPKG ****************************\n" >> $log
+
+    echo -e "`dpkg --get-selections | grep hadoop` \n\n\n" >> $log
+
+    echo -e "****************************** NETSTAT ***************************\n" >> $log
+
+    echo -e "`sudo netstat -plten | grep java` \n\n\n" >> $log
 
     hadoop_version=-$HADOOP_VERSION
     if [ "$PLUGIN_NAME" = "hdp" ]
@@ -83,14 +88,17 @@ run_pi_job() {
         hadoop_version=""
     fi
 
-    echo -e "<************************START OF \"PI\" JOB**********************> \n" >> $log
+    echo -e "************************ START OF \"PI\" JOB *********************\n" >> $log
 
     echo -e "`sudo su -c \"cd $HADOOP_DIRECTORY && hadoop jar hadoop-examples$hadoop_version.jar pi $[$NODE_COUNT*10] $[$NODE_COUNT*1000]\" $HADOOP_USER` \n" >> $log
 
-    echo -e "<************************END OF \"PI\" JOB************************> \n\n\n" >> $log
+    echo -e "************************ END OF \"PI\" JOB ***********************" >> $log
 }
 
 get_pi_job_name() {
+
+    #This sleep needs here for obtaining correct job name. Not always job name may immediately appear in job list.
+    sleep 60
 
     job_name=`hadoop job -list all | tail -n1 | awk '{print $1}'`
 
