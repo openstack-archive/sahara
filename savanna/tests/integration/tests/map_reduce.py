@@ -35,7 +35,7 @@ class MapReduceTest(base.ITestCase):
             with excutils.save_and_reraise_exception():
 
                 print(
-                    'Failure while name obtaining completed \'PI\' job: ' +
+                    '\nFailure while name obtaining completed \'PI\' job: ' +
                     str(e)
                 )
                 self.capture_error_log_from_cluster_node(
@@ -54,7 +54,7 @@ class MapReduceTest(base.ITestCase):
 
             with excutils.save_and_reraise_exception():
 
-                print('Failure while \'Wordcount\' job launch: ' + str(e))
+                print('\nFailure while \'Wordcount\' job launch: ' + str(e))
                 self.capture_error_log_from_cluster_node(
                     '/tmp/MapReduceTestOutput/log.txt'
                 )
@@ -87,7 +87,8 @@ class MapReduceTest(base.ITestCase):
             self.transfer_helper_script_to_nodes(
                 node_ip_and_process_list, plugin.NODE_USERNAME,
                 'map_reduce_test_script.sh',
-                parameter_list=extra_script_parameters)
+                parameter_list=extra_script_parameters
+            )
 
         except Exception as e:
 
@@ -127,7 +128,7 @@ class MapReduceTest(base.ITestCase):
             with excutils.save_and_reraise_exception():
 
                 print(
-                    'Log file of completed \'PI\' job on \'tasktracker\' '
+                    '\nLog file of completed \'PI\' job on \'tasktracker\' '
                     'cluster node not found: ' + str(e)
                 )
                 self.close_ssh_connection()

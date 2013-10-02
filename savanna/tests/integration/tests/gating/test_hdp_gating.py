@@ -28,12 +28,12 @@ from savanna.tests.integration.tests import swift
 class HDPGatingTest(map_reduce.MapReduceTest, swift.SwiftTest,
                     scaling.ScalingTest):
 
-    SKIP_MAP_REDUCE_TEST = cfg.ITConfig().HDP.SKIP_MAP_REDUCE_TEST
-    SKIP_SWIFT_TEST = cfg.ITConfig().HDP.SKIP_SWIFT_TEST
-    SKIP_SCALING_TEST = cfg.ITConfig().HDP.SKIP_SCALING_TEST
+    SKIP_MAP_REDUCE_TEST = cfg.ITConfig().hdp_config.SKIP_MAP_REDUCE_TEST
+    SKIP_SWIFT_TEST = cfg.ITConfig().hdp_config.SKIP_SWIFT_TEST
+    SKIP_SCALING_TEST = cfg.ITConfig().hdp_config.SKIP_SCALING_TEST
 
     @attrib.attr(tags='hdp')
-    @unittest2.skipIf(cfg.ITConfig().HDP.SKIP_ALL_TESTS_FOR_PLUGIN,
+    @unittest2.skipIf(cfg.ITConfig().hdp_config.SKIP_ALL_TESTS_FOR_PLUGIN,
                       'All tests for HDP plugin were skipped')
     def test_hdp_plugin_gating(self):
 
@@ -47,7 +47,7 @@ class HDPGatingTest(map_reduce.MapReduceTest, swift.SwiftTest,
 
             node_group_template_jt_nn_id = self.create_node_group_template(
                 'jt-nn',
-                self.HDP,
+                self.hdp_config,
                 description='test node group template',
                 volumes_per_node=0,
                 volume_size=0,
@@ -73,7 +73,7 @@ class HDPGatingTest(map_reduce.MapReduceTest, swift.SwiftTest,
 
             node_group_template_tt_dn_id = self.create_node_group_template(
                 'tt-dn',
-                self.HDP,
+                self.hdp_config,
                 description='test node group template',
                 volumes_per_node=0,
                 volume_size=0,
@@ -102,7 +102,7 @@ class HDPGatingTest(map_reduce.MapReduceTest, swift.SwiftTest,
 
             cluster_template_id = self.create_cluster_template(
                 'test-cluster-template',
-                self.HDP,
+                self.hdp_config,
                 description='test cluster template',
                 cluster_configs={},
                 node_groups=[
@@ -134,7 +134,7 @@ class HDPGatingTest(map_reduce.MapReduceTest, swift.SwiftTest,
         try:
 
             cluster_info = self.create_cluster_and_get_info(
-                self.HDP,
+                self.hdp_config,
                 cluster_template_id,
                 description='test cluster',
                 cluster_configs={},
@@ -222,7 +222,7 @@ class HDPGatingTest(map_reduce.MapReduceTest, swift.SwiftTest,
                 message = 'Failure while cluster scaling: '
                 self.print_error_log(message, e)
 
-        if not self.HDP.SKIP_SCALING_TEST:
+        if not self.hdp_config.SKIP_SCALING_TEST:
 
 #-----------------------MAP REDUCE TESTING AFTER SCALING-----------------------
 

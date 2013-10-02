@@ -61,7 +61,7 @@ HADOOP_DIRECTORY = '/usr/share/hadoop'
 # Directory where is located log info about completed jobs
 HADOOP_LOG_DIRECTORY = '/mnt/log/hadoop/hadoop/userlogs'
 
-HADOOP_PROCESSES_WITH_PORTS = jobtracker: 50030, namenode: 50070, tasktracker: 50060, datanode: 50075, secondarynamenode: 50090
+HADOOP_PROCESSES_WITH_PORTS = jobtracker: 50030, namenode: 50070, tasktracker: 50060, datanode: 50075, secondarynamenode: 50090, oozie: 11000
 
 PROCESS_NAMES = nn: namenode, tt: tasktracker, dn: datanode
 

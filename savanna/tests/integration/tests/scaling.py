@@ -24,22 +24,23 @@ class ScalingTest(base.ITestCase):
 
         cluster_info['node_info']['node_count'] += count
 
-        data = self.savanna.node_group_templates.get(ngt_id).node_processes
+        node_processes = self.savanna.node_group_templates.get(
+            ngt_id).node_processes
 
-        if cluster_info['plugin'].PROCESS_NAMES['tt'] in data:
+        if cluster_info['plugin'].PROCESS_NAMES['tt'] in node_processes:
 
             cluster_info['node_info']['tasktracker_count'] += count
 
-        if cluster_info['plugin'].PROCESS_NAMES['dn'] in data:
+        if cluster_info['plugin'].PROCESS_NAMES['dn'] in node_processes:
 
             cluster_info['node_info']['datanode_count'] += count
 
     def __change_node_info_while_ng_resizing(self, name, count, cluster_info):
 
-        data = self.savanna.clusters.get(
+        node_groups = self.savanna.clusters.get(
             cluster_info['cluster_id']).node_groups
 
-        for node_group in data:
+        for node_group in node_groups:
 
             if node_group['name'] == name:
 
@@ -58,7 +59,8 @@ class ScalingTest(base.ITestCase):
 
             cluster_info['node_info']['datanode_count'] += -old_count + count
 
-    def __add_new_field_to_scale_body_while_ng_resizing(self, scale_body, name,
+    @staticmethod
+    def __add_new_field_to_scale_body_while_ng_resizing(scale_body, name,
                                                         count):
 
         scale_body['resize_node_groups'].append(
@@ -68,7 +70,8 @@ class ScalingTest(base.ITestCase):
             }
         )
 
-    def __add_new_field_to_scale_body_while_ng_adding(self, scale_body, ngt_id,
+    @staticmethod
+    def __add_new_field_to_scale_body_while_ng_adding(scale_body, ngt_id,
                                                       count, name):
 
         scale_body['add_node_groups'].append(
@@ -106,8 +109,7 @@ class ScalingTest(base.ITestCase):
                 node_group_id = change['info'][2]
 
                 self.__add_new_field_to_scale_body_while_ng_adding(
-                    scale_body, node_group_id, node_group_size,
-                    node_group_name
+                    scale_body, node_group_id, node_group_size, node_group_name
                 )
                 self.__change_node_info_while_ng_adding(
                     node_group_id, node_group_size, cluster_info
@@ -133,7 +135,7 @@ class ScalingTest(base.ITestCase):
             with excutils.save_and_reraise_exception():
 
                 print(
-                    'Failure during check of node process deployment '
+                    '\nFailure during check of node process deployment '
                     'on cluster node: ' + str(e)
                 )
 
@@ -149,15 +151,16 @@ class ScalingTest(base.ITestCase):
 
         try:
 
-            self.await_active_workers_for_namenode(new_node_info,
-                                                   cluster_info['plugin'])
+            self.await_active_workers_for_namenode(
+                new_node_info, cluster_info['plugin']
+            )
 
         except Exception as e:
 
             with excutils.save_and_reraise_exception():
 
                 print(
-                    'Failure while active worker waiting for namenode: '
+                    '\nFailure while active worker waiting for namenode: '
                     + str(e)
                 )
 

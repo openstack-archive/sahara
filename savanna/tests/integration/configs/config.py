@@ -28,7 +28,7 @@ def singleton(cls):
 
     instances = {}
 
-    def getinstance():
+    def get_instance():
 
         if cls not in instances:
 
@@ -36,7 +36,7 @@ def singleton(cls):
 
         return instances[cls]
 
-    return getinstance
+    return get_instance
 
 
 COMMON_CONFIG_GROUP = cfg.OptGroup(name='COMMON')
@@ -92,11 +92,13 @@ COMMON_CONFIG_OPTS = [
 
     cfg.StrOpt('PATH_TO_SSH_KEY',
                default='/home/ubuntu/.ssh/id_rsa',
-               help='Path to folder where is located id_rsa key which is used '
-                    'for remote command execution; if you specified wrong '
-                    'path to key then you will have the error "Private key '
-                    'file is encrypted"; please, make sure you specified '
-                    'right path to key')
+               help='Path to id_rsa key which is used with tests for remote '
+                    'command execution. For right work of tests you should '
+                    'export your public key id_rsa.pub to Open Stack and '
+                    'specify its key pair id in configuration file of tests. '
+                    'If you specified wrong path to key then you will have '
+                    'the error "Private key file is encrypted". Please, make '
+                    'sure you specified right path to key')
 ]
 
 
@@ -134,7 +136,8 @@ VANILLA_CONFIG_OPTS = [
                          'namenode': 50070,
                          'tasktracker': 50060,
                          'datanode': 50075,
-                         'secondarynamenode': 50090},
+                         'secondarynamenode': 50090,
+                         'oozie': 11000},
                 help='Hadoop process map with ports for Vanilla plugin'),
 
     cfg.DictOpt('PROCESS_NAMES',
@@ -248,6 +251,6 @@ class ITConfig:
         cfg.CONF([], project='integration_tests',
                  default_config_files=config_files)
 
-        self.COMMON = cfg.CONF.COMMON
-        self.VANILLA = cfg.CONF.VANILLA
-        self.HDP = cfg.CONF.HDP
+        self.common_config = cfg.CONF.COMMON
+        self.vanilla_config = cfg.CONF.VANILLA
+        self.hdp_config = cfg.CONF.HDP
