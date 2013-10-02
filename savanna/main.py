@@ -24,8 +24,8 @@ from savanna.api import v11 as api_v11
 from savanna import context
 from savanna.db import api as db_api
 from savanna.middleware import auth_valid
+from savanna.middleware import log_exchange
 from savanna.openstack.common import log
-from savanna.openstack.common.middleware import debug
 from savanna.plugins import base as plugins_base
 from savanna.service import periodic
 from savanna.utils import api as api_utils
@@ -117,7 +117,8 @@ def make_app():
                   ' flag --log-exchange')
 
     if CONF.log_exchange:
-        app.wsgi_app = debug.Debug.factory(app.config)(app.wsgi_app)
+        cfg = app.config
+        app.wsgi_app = log_exchange.LogExchange.factory(cfg)(app.wsgi_app)
 
     app.wsgi_app = auth_valid.filter_factory(app.config)(app.wsgi_app)
 
