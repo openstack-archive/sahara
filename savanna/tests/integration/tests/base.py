@@ -57,22 +57,23 @@ class ITestCase(unittest2.TestCase):
 
     def setUp(self):
 
-        self.COMMON = cfg.ITConfig().COMMON
-        self.VANILLA = cfg.ITConfig().VANILLA
-        self.HDP = cfg.ITConfig().HDP
+        self.common_config = cfg.ITConfig().common_config
+        self.vanilla_config = cfg.ITConfig().vanilla_config
+        self.hdp_config = cfg.ITConfig().hdp_config
 
-        telnetlib.Telnet(self.COMMON.SAVANNA_HOST,
-                         self.COMMON.SAVANNA_PORT)
+        telnetlib.Telnet(
+            self.common_config.SAVANNA_HOST, self.common_config.SAVANNA_PORT
+        )
 
         self.savanna = savanna_client.Client(
-            username=self.COMMON.OS_USERNAME,
-            api_key=self.COMMON.OS_PASSWORD,
-            project_name=self.COMMON.OS_TENANT_NAME,
-            auth_url=self.COMMON.OS_AUTH_URL,
+            username=self.common_config.OS_USERNAME,
+            api_key=self.common_config.OS_PASSWORD,
+            project_name=self.common_config.OS_TENANT_NAME,
+            auth_url=self.common_config.OS_AUTH_URL,
             savanna_url='http://%s:%s/%s' % (
-                self.COMMON.SAVANNA_HOST,
-                self.COMMON.SAVANNA_PORT,
-                self.COMMON.SAVANNA_API_VERSION))
+                self.common_config.SAVANNA_HOST,
+                self.common_config.SAVANNA_PORT,
+                self.common_config.SAVANNA_API_VERSION))
 
 #-------------------------Methods for object creation--------------------------
 
@@ -87,7 +88,7 @@ class ITestCase(unittest2.TestCase):
 
         data = self.savanna.node_group_templates.create(
             name, plugin.PLUGIN_NAME, hadoop_version,
-            self.COMMON.FLAVOR_ID, description, volumes_per_node,
+            self.common_config.FLAVOR_ID, description, volumes_per_node,
             volume_size, node_processes, node_configs)
 
         node_group_template_id = data.id
@@ -126,10 +127,10 @@ class ITestCase(unittest2.TestCase):
         self.cluster_id = None
 
         data = self.savanna.clusters.create(
-            self.COMMON.CLUSTER_NAME, plugin.PLUGIN_NAME, hadoop_version,
-            cluster_template_id, image_id, description, cluster_configs,
-            node_groups, self.COMMON.USER_KEYPAIR_ID, anti_affinity
-        )
+            self.common_config.CLUSTER_NAME, plugin.PLUGIN_NAME,
+            hadoop_version, cluster_template_id, image_id, description,
+            cluster_configs, node_groups, self.common_config.USER_KEYPAIR_ID,
+            anti_affinity)
 
         self.cluster_id = data.id
 
@@ -148,7 +149,7 @@ class ITestCase(unittest2.TestCase):
             with excutils.save_and_reraise_exception():
 
                 print(
-                    'Failure during check of node process deployment '
+                    '\nFailure during check of node process deployment '
                     'on cluster node: ' + str(e)
                 )
 
@@ -161,7 +162,7 @@ class ITestCase(unittest2.TestCase):
             with excutils.save_and_reraise_exception():
 
                 print(
-                    'Failure while active worker waiting for namenode: '
+                    '\nFailure while active worker waiting for namenode: '
                     + str(e)
                 )
 
@@ -176,7 +177,7 @@ class ITestCase(unittest2.TestCase):
         #       'cluster_id': 'bee5c6a1-411a-4e88-95fc-d1fbdff2bb9d',
         #       'node_ip_list': {
         #               '172.18.168.153': ['tasktracker', 'datanode'],
-        #               '172.18.168.208': ['secondarynamenode'],
+        #               '172.18.168.208': ['secondarynamenode', 'oozie'],
         #               '172.18.168.93': ['tasktracker'],
         #               '172.18.168.101': ['tasktracker', 'datanode'],
         #               '172.18.168.242': ['namenode', 'jobtracker'],
@@ -198,7 +199,7 @@ class ITestCase(unittest2.TestCase):
 
         data = self.savanna.clusters.get(cluster_id)
 
-        timeout = self.COMMON.CLUSTER_CREATION_TIMEOUT * 60
+        timeout = self.common_config.CLUSTER_CREATION_TIMEOUT * 60
         while str(data.status) != 'Active':
 
             print('CLUSTER STATUS: ' + str(data.status))
@@ -215,7 +216,8 @@ class ITestCase(unittest2.TestCase):
 
                 self.fail(
                     'Cluster did not return to \'Active\' state '
-                    'within %d minutes.' % self.COMMON.CLUSTER_CREATION_TIMEOUT
+                    'within %d minutes.'
+                    % self.common_config.CLUSTER_CREATION_TIMEOUT
                 )
 
             data = self.savanna.clusters.get(cluster_id)
@@ -262,9 +264,9 @@ class ITestCase(unittest2.TestCase):
             with excutils.save_and_reraise_exception():
 
                 print(
-                    'Telnet has failed: ' + str(e) +
+                    '\nTelnet has failed: ' + str(e) +
                     '  NODE IP: %s, PORT: %s. Passed %s minute(s).'
-                    % (host, port, self.COMMON.TELNET_TIMEOUT)
+                    % (host, port, self.common_config.TELNET_TIMEOUT)
                 )
 
     def get_node_info(self, node_ip_list_with_node_processes, plugin):
@@ -282,7 +284,7 @@ class ITestCase(unittest2.TestCase):
 
                 if process in plugin.HADOOP_PROCESSES_WITH_PORTS:
 
-                    for i in range(self.COMMON.TELNET_TIMEOUT * 60):
+                    for i in range(self.common_config.TELNET_TIMEOUT * 60):
 
                         try:
 
@@ -331,10 +333,11 @@ class ITestCase(unittest2.TestCase):
 
     def await_active_workers_for_namenode(self, node_info, plugin):
 
-        self.open_ssh_connection(node_info['namenode_ip'],
-                                 plugin.NODE_USERNAME)
+        self.open_ssh_connection(
+            node_info['namenode_ip'], plugin.NODE_USERNAME
+        )
 
-        for i in range(self.COMMON.HDFS_INITIALIZATION_TIMEOUT * 6):
+        for i in range(self.common_config.HDFS_INITIALIZATION_TIMEOUT * 6):
 
             time.sleep(10)
 
@@ -356,8 +359,7 @@ class ITestCase(unittest2.TestCase):
             else:
 
                 active_tasktracker_count = len(
-                    active_tasktracker_count[:-1].split('\n')
-                )
+                    active_tasktracker_count[:-1].split('\n'))
 
             if (
                     active_tasktracker_count == node_info['tasktracker_count']
@@ -372,7 +374,7 @@ class ITestCase(unittest2.TestCase):
             self.fail(
                 'Tasktracker or datanode cannot be started within '
                 '%s minute(s) for namenode.'
-                % self.COMMON.HDFS_INITIALIZATION_TIMEOUT
+                % self.common_config.HDFS_INITIALIZATION_TIMEOUT
             )
 
         self.close_ssh_connection()
@@ -382,26 +384,31 @@ class ITestCase(unittest2.TestCase):
     def open_ssh_connection(self, host, node_username):
 
         remote._connect(
-            host, node_username, open(self.COMMON.PATH_TO_SSH_KEY).read()
+            host, node_username, open(
+                self.common_config.PATH_TO_SSH_KEY).read()
         )
 
-    def execute_command(self, cmd):
+    @staticmethod
+    def execute_command(cmd):
 
         return remote._execute_command(cmd, get_stderr=True)
 
-    def write_file_to(self, remote_file, data):
+    @staticmethod
+    def write_file_to(remote_file, data):
 
         remote._write_file_to(remote_file, data)
 
-    def read_file_from(self, remote_file):
+    @staticmethod
+    def read_file_from(remote_file):
 
         return remote._read_file_from(remote_file)
 
-    def close_ssh_connection(self):
+    @staticmethod
+    def close_ssh_connection():
 
         remote._cleanup()
 
-    def transfer_helper_script_to_node(self, script_name, parameter_list):
+    def transfer_helper_script_to_node(self, script_name, parameter_list=None):
 
         script = open('integration/tests/helper_scripts/%s'
                       % script_name).read()
@@ -422,7 +429,7 @@ class ITestCase(unittest2.TestCase):
             with excutils.save_and_reraise_exception():
 
                 print(
-                    'Failure while helper script transferring '
+                    '\nFailure while helper script transferring '
                     'to cluster node: ' + str(e)
                 )
 
@@ -461,7 +468,8 @@ class ITestCase(unittest2.TestCase):
                     node_group_template_id
                 )
 
-    def delete_swift_container(self, swift, container):
+    @staticmethod
+    def delete_swift_container(swift, container):
 
         objects = [obj['name'] for obj in swift.get_container(container)[1]]
         for obj in objects:
@@ -470,7 +478,8 @@ class ITestCase(unittest2.TestCase):
 
         swift.delete_container(container)
 
-    def print_error_log(self, message, exception=None):
+    @staticmethod
+    def print_error_log(message, exception=None):
 
         print(
             '\n\n!*!*!*!*!*!*!*!*!*!*!*!*!*!*!*!*!*!*!*!*!*!*!*!*!*!*!*!*!* '

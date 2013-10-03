@@ -6,6 +6,8 @@ OS_PASSWORD=""
 
 HADOOP_USER=""
 
+SWIFT_CONTAINER_ID=""
+
 compare_files() {
 
     a=`md5sum $1 | awk {'print \$1'}`
@@ -51,10 +53,10 @@ check_swift_availability() {
     sudo su -c "hadoop dfs -copyFromLocal /tmp/test-file /swift-test/" $HADOOP_USER
     check_return_code_after_command_execution -clean_hdfs `echo "$?"`
 
-    sudo su -c "hadoop distcp -D fs.swift.service.savanna.username=$OS_USERNAME -D fs.swift.service.savanna.tenant=$OS_TENANT_NAME -D fs.swift.service.savanna.password=$OS_PASSWORD /swift-test/test-file swift://Swift-test.savanna/" $HADOOP_USER
+    sudo su -c "hadoop distcp -D fs.swift.service.savanna.username=$OS_USERNAME -D fs.swift.service.savanna.tenant=$OS_TENANT_NAME -D fs.swift.service.savanna.password=$OS_PASSWORD /swift-test/test-file swift://Swift-test-$SWIFT_CONTAINER_ID.savanna/" $HADOOP_USER
     check_return_code_after_command_execution -clean_hdfs `echo "$?"`
 
-    sudo su -c "hadoop distcp -D fs.swift.service.savanna.username=$OS_USERNAME -D fs.swift.service.savanna.tenant=$OS_TENANT_NAME -D fs.swift.service.savanna.password=$OS_PASSWORD swift://Swift-test.savanna/test-file /swift-test/swift-test-file" $HADOOP_USER
+    sudo su -c "hadoop distcp -D fs.swift.service.savanna.username=$OS_USERNAME -D fs.swift.service.savanna.tenant=$OS_TENANT_NAME -D fs.swift.service.savanna.password=$OS_PASSWORD swift://Swift-test-$SWIFT_CONTAINER_ID.savanna/test-file /swift-test/swift-test-file" $HADOOP_USER
     check_return_code_after_command_execution -clean_hdfs `echo "$?"`
 
     sudo su -c "hadoop dfs -copyToLocal /swift-test/swift-test-file /tmp/swift-test-file" $HADOOP_USER

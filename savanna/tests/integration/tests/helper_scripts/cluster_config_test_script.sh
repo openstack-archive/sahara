@@ -112,6 +112,8 @@ OS_PASSWORD=""
 
 HADOOP_USER=""
 
+SWIFT_CONTAINER_ID=""
+
 check_swift_availability() {
 
     echo -e "****************************** SWIFT *****************************\n" >> $log
@@ -132,7 +134,7 @@ check_swift_availability() {
         sudo su -c "hadoop dfs -rmr /swift-config-test" $HADOOP_USER && exit 1
     fi
 
-    sudo su -c "hadoop distcp -D fs.swift.service.savanna.username=$OS_USERNAME -D fs.swift.service.savanna.tenant=$OS_TENANT_NAME -D fs.swift.service.savanna.password=$OS_PASSWORD /swift-config-test/swift-config-test-file.txt swift://Swift-config-test.savanna/" $HADOOP_USER
+    sudo su -c "hadoop distcp -D fs.swift.service.savanna.username=$OS_USERNAME -D fs.swift.service.savanna.tenant=$OS_TENANT_NAME -D fs.swift.service.savanna.password=$OS_PASSWORD /swift-config-test/swift-config-test-file.txt swift://Swift-config-test-$SWIFT_CONTAINER_ID.savanna/" $HADOOP_USER
     if [ `echo "$?"` -ne 0 ]
     then
         swift_availability="False"

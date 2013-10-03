@@ -14,11 +14,18 @@
 # limitations under the License.
 
 
+import uuid
+
+
 from swiftclient import client as swift_client
 
 
 from savanna.openstack.common import excutils
 from savanna.tests.integration.tests import base
+
+
+# Make Swift container id for Swift testing
+SWIFT_CONTAINER_ID = uuid.uuid4()
 
 
 class SwiftTest(base.ITestCase):
@@ -31,10 +38,11 @@ class SwiftTest(base.ITestCase):
         plugin = cluster_info['plugin']
 
         extra_script_parameters = {
-            'OS_TENANT_NAME': self.COMMON.OS_TENANT_NAME,
-            'OS_USERNAME': self.COMMON.OS_USERNAME,
-            'OS_PASSWORD': self.COMMON.OS_PASSWORD,
+            'OS_TENANT_NAME': self.common_config.OS_TENANT_NAME,
+            'OS_USERNAME': self.common_config.OS_USERNAME,
+            'OS_PASSWORD': self.common_config.OS_PASSWORD,
             'HADOOP_USER': plugin.HADOOP_USER,
+            'SWIFT_CONTAINER_ID': str(SWIFT_CONTAINER_ID)
         }
 
         namenode_ip = cluster_info['node_info']['namenode_ip']
@@ -43,8 +51,9 @@ class SwiftTest(base.ITestCase):
 
         try:
 
-            self.transfer_helper_script_to_node('swift_test_script.sh',
-                                                extra_script_parameters)
+            self.transfer_helper_script_to_node(
+                'swift_test_script.sh', parameter_list=extra_script_parameters
+            )
 
         except Exception as e:
 
@@ -53,13 +62,13 @@ class SwiftTest(base.ITestCase):
                 print(str(e))
 
         swift = swift_client.Connection(
-            authurl=self.COMMON.OS_AUTH_URL,
-            user=self.COMMON.OS_USERNAME,
-            key=self.COMMON.OS_PASSWORD,
-            tenant_name=self.COMMON.OS_TENANT_NAME,
+            authurl=self.common_config.OS_AUTH_URL,
+            user=self.common_config.OS_USERNAME,
+            key=self.common_config.OS_PASSWORD,
+            tenant_name=self.common_config.OS_TENANT_NAME,
             auth_version='2')  # TODO(ylobankov): delete hard code
 
-        swift.put_container('Swift-test')
+        swift.put_container('Swift-test-%s' % str(SWIFT_CONTAINER_ID))
 
         try:
 
@@ -73,6 +82,8 @@ class SwiftTest(base.ITestCase):
 
         finally:
 
-            self.delete_swift_container(swift, 'Swift-test')
+            self.delete_swift_container(
+                swift, 'Swift-test-%s' % str(SWIFT_CONTAINER_ID)
+            )
 
         self.close_ssh_connection()

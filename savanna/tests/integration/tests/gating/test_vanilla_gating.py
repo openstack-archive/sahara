@@ -30,13 +30,14 @@ class VanillaGatingTest(cluster_configs.ClusterConfigTest,
                         map_reduce.MapReduceTest, swift.SwiftTest,
                         scaling.ScalingTest):
 
-    SKIP_CLUSTER_CONFIG_TEST = cfg.ITConfig().VANILLA.SKIP_CLUSTER_CONFIG_TEST
-    SKIP_MAP_REDUCE_TEST = cfg.ITConfig().VANILLA.SKIP_MAP_REDUCE_TEST
-    SKIP_SWIFT_TEST = cfg.ITConfig().VANILLA.SKIP_SWIFT_TEST
-    SKIP_SCALING_TEST = cfg.ITConfig().VANILLA.SKIP_SCALING_TEST
+    SKIP_CLUSTER_CONFIG_TEST = \
+        cfg.ITConfig().vanilla_config.SKIP_CLUSTER_CONFIG_TEST
+    SKIP_MAP_REDUCE_TEST = cfg.ITConfig().vanilla_config.SKIP_MAP_REDUCE_TEST
+    SKIP_SWIFT_TEST = cfg.ITConfig().vanilla_config.SKIP_SWIFT_TEST
+    SKIP_SCALING_TEST = cfg.ITConfig().vanilla_config.SKIP_SCALING_TEST
 
     @attrib.attr(tags='vanilla')
-    @unittest2.skipIf(cfg.ITConfig().VANILLA.SKIP_ALL_TESTS_FOR_PLUGIN,
+    @unittest2.skipIf(cfg.ITConfig().vanilla_config.SKIP_ALL_TESTS_FOR_PLUGIN,
                       'All tests for Vanilla plugin were skipped')
     def test_vanilla_plugin_gating(self):
 
@@ -50,7 +51,7 @@ class VanillaGatingTest(cluster_configs.ClusterConfigTest,
 
             node_group_template_tt_dn_id = self.create_node_group_template(
                 'tt-dn',
-                self.VANILLA,
+                self.vanilla_config,
                 description='test node group template',
                 volumes_per_node=0,
                 volume_size=0,
@@ -76,7 +77,7 @@ class VanillaGatingTest(cluster_configs.ClusterConfigTest,
 
             node_group_template_tt_id = self.create_node_group_template(
                 'tt',
-                self.VANILLA,
+                self.vanilla_config,
                 description='test node group template',
                 volumes_per_node=0,
                 volume_size=0,
@@ -104,7 +105,7 @@ class VanillaGatingTest(cluster_configs.ClusterConfigTest,
 
             node_group_template_dn_id = self.create_node_group_template(
                 'dn',
-                self.VANILLA,
+                self.vanilla_config,
                 description='test node group template',
                 volumes_per_node=0,
                 volume_size=0,
@@ -132,7 +133,7 @@ class VanillaGatingTest(cluster_configs.ClusterConfigTest,
 
             cluster_template_id = self.create_cluster_template(
                 'test-cluster-template',
-                self.VANILLA,
+                self.vanilla_config,
                 description='test cluster template',
                 cluster_configs={
                     'HDFS': cluster_configs.CLUSTER_HDFS_CONFIG,
@@ -142,7 +143,7 @@ class VanillaGatingTest(cluster_configs.ClusterConfigTest,
                 node_groups=[
                     dict(
                         name='master-node-jt-nn',
-                        flavor_id=self.COMMON.FLAVOR_ID,
+                        flavor_id=self.common_config.FLAVOR_ID,
                         node_processes=['namenode', 'jobtracker'],
                         node_configs={
                             'HDFS': cluster_configs.NN_CONFIG,
@@ -151,8 +152,8 @@ class VanillaGatingTest(cluster_configs.ClusterConfigTest,
                         count=1),
                     dict(
                         name='master-node-sec-nn',
-                        flavor_id=self.COMMON.FLAVOR_ID,
-                        node_processes=['secondarynamenode'],
+                        flavor_id=self.common_config.FLAVOR_ID,
+                        node_processes=['secondarynamenode', 'oozie'],
                         node_configs={},
                         count=1),
                     dict(
@@ -187,7 +188,7 @@ class VanillaGatingTest(cluster_configs.ClusterConfigTest,
         try:
 
             cluster_info = self.create_cluster_and_get_info(
-                self.VANILLA,
+                self.vanilla_config,
                 cluster_template_id,
                 description='test cluster',
                 cluster_configs={},
@@ -305,7 +306,7 @@ class VanillaGatingTest(cluster_configs.ClusterConfigTest,
                 message = 'Failure while cluster scaling: '
                 self.print_error_log(message, e)
 
-        if not self.VANILLA.SKIP_SCALING_TEST:
+        if not self.vanilla_config.SKIP_SCALING_TEST:
 
 #---------------------CLUSTER CONFIG TESTING AFTER SCALING---------------------
 

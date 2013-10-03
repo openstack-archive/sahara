@@ -14,6 +14,9 @@
 # limitations under the License.
 
 
+import uuid
+
+
 from swiftclient import client as swift_client
 
 
@@ -30,11 +33,13 @@ DN_CONFIG = {'Data Node Heap Size': 513}
 TT_CONFIG = {'Task Tracker Heap Size': 515}
 
 CLUSTER_GENERAL_CONFIG = {
-    'Enable Swift': not cfg.ITConfig().VANILLA.SKIP_SWIFT_TEST
+    'Enable Swift': not cfg.ITConfig().vanilla_config.SKIP_SWIFT_TEST
 }
 CLUSTER_HDFS_CONFIG = {'dfs.replication': 2}
 CLUSTER_MR_CONFIG = {'mapred.map.tasks.speculative.execution': False,
                      'mapred.child.java.opts': '-Xmx500m'}
+
+#TODO(ylobankov): add check for Oozie configs in future
 
 CONFIG_MAP = {
     'namenode': {
@@ -55,14 +60,19 @@ CONFIG_MAP = {
     }
 }
 
+# Make Swift container id for Swift config testing
+SWIFT_CONTAINER_ID = uuid.uuid4()
+
 
 class ClusterConfigTest(base.ITestCase):
 
-    def __get_node_configs(self, node_group, process):
+    @staticmethod
+    def __get_node_configs(node_group, process):
 
         return node_group['node_configs'][CONFIG_MAP[process]['service']]
 
-    def __get_config_from_config_map(self, process):
+    @staticmethod
+    def __get_config_from_config_map(process):
 
         return CONFIG_MAP[process]['config']
 
@@ -89,7 +99,7 @@ class ClusterConfigTest(base.ITestCase):
             with excutils.save_and_reraise_exception():
 
                 print(
-                    'Failure while config comparison on cluster node: '
+                    '\nFailure while config comparison on cluster node: '
                     + str(e)
                 )
                 self.capture_error_log_from_cluster_node(
@@ -114,7 +124,9 @@ class ClusterConfigTest(base.ITestCase):
 
         for node_ip, processes in node_ip_list_with_node_processes.items():
 
-            self.open_ssh_connection(node_ip, self.VANILLA.NODE_USERNAME)
+            self.open_ssh_connection(
+                node_ip, self.vanilla_config.NODE_USERNAME
+            )
 
             for config, value in CLUSTER_MR_CONFIG.items():
 
@@ -124,16 +136,19 @@ class ClusterConfigTest(base.ITestCase):
 
                 self.__compare_configs_on_cluster_node(config, value)
 
-            if 'namenode' in processes and not self.VANILLA.SKIP_SWIFT_TEST:
+            if ('namenode' in processes) and (
+                    not self.vanilla_config.SKIP_SWIFT_TEST):
 
                 swift = swift_client.Connection(
-                    authurl=self.COMMON.OS_AUTH_URL,
-                    user=self.COMMON.OS_USERNAME,
-                    key=self.COMMON.OS_PASSWORD,
-                    tenant_name=self.COMMON.OS_TENANT_NAME,
+                    authurl=self.common_config.OS_AUTH_URL,
+                    user=self.common_config.OS_USERNAME,
+                    key=self.common_config.OS_PASSWORD,
+                    tenant_name=self.common_config.OS_TENANT_NAME,
                     auth_version='2')  # TODO(ylobankov): delete hard code
 
-                swift.put_container('Swift-config-test')
+                swift.put_container(
+                    'Swift-config-test-%s' % str(SWIFT_CONTAINER_ID)
+                )
 
                 try:
 
@@ -143,7 +158,9 @@ class ClusterConfigTest(base.ITestCase):
 
                 finally:
 
-                    self.delete_swift_container(swift, 'Swift-config-test')
+                    self.delete_swift_container(
+                        swift, 'Swift-config-test-%s' % str(SWIFT_CONTAINER_ID)
+                    )
 
 #TODO(ylobankov): add check for secondary nn when bug #1217245 will be fixed
             for process in processes:
@@ -182,17 +199,20 @@ class ClusterConfigTest(base.ITestCase):
             self.get_cluster_node_ip_list_with_node_processes(cluster_id)
 
         extra_script_parameters = {
-            'OS_TENANT_NAME': self.COMMON.OS_TENANT_NAME,
-            'OS_USERNAME': self.COMMON.OS_USERNAME,
-            'OS_PASSWORD': self.COMMON.OS_PASSWORD,
-            'HADOOP_USER': self.VANILLA.HADOOP_USER
+            'OS_TENANT_NAME': self.common_config.OS_TENANT_NAME,
+            'OS_USERNAME': self.common_config.OS_USERNAME,
+            'OS_PASSWORD': self.common_config.OS_PASSWORD,
+            'HADOOP_USER': self.vanilla_config.HADOOP_USER,
+            'SWIFT_CONTAINER_ID': str(SWIFT_CONTAINER_ID)
         }
 
         try:
 
             self.transfer_helper_script_to_nodes(
-                node_ip_list_with_node_processes, self.VANILLA.NODE_USERNAME,
-                'cluster_config_test_script.sh', extra_script_parameters
+                node_ip_list_with_node_processes,
+                self.vanilla_config.NODE_USERNAME,
+                'cluster_config_test_script.sh',
+                parameter_list=extra_script_parameters
             )
 
         except Exception as e:
