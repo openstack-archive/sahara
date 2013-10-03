@@ -75,6 +75,7 @@ class ConductorManager(db_base.Base):
             return
 
         for node_group in node_groups:
+            node_group["tenant_id"] = context.tenant_id
             self._populate_node_group(context, node_group)
 
     def _cleanup_node_group(self, node_group):
@@ -161,6 +162,7 @@ class ConductorManager(db_base.Base):
         """Create a Node Group from the values dictionary."""
         values = copy.deepcopy(values)
         self._populate_node_group(context, values)
+        values['tenant_id'] = context.tenant_id
         return self.db.node_group_add(context, cluster, values)
 
     def node_group_update(self, context, node_group, values):
@@ -178,6 +180,7 @@ class ConductorManager(db_base.Base):
         """Create an Instance from the values dictionary."""
         values = copy.deepcopy(values)
         values = _apply_defaults(values, INSTANCE_DEFAULTS)
+        values['tenant_id'] = context.tenant_id
         return self.db.instance_add(context, node_group, values)
 
     def instance_update(self, context, instance, values):
