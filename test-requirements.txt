@@ -9,6 +9,7 @@ docutils==0.9.1
 mock>=1.0
 nose
 openstack.nose_plugin>=0.7
+oslo.sphinx
 pylint==0.25.2
 python-swiftclient>=1.6.0
 sphinx>=1.1.2
