@@ -17,5 +17,5 @@ sphinx>=1.1.2
 sphinxcontrib-httpdomain
 unittest2
 
--f http://tarballs.openstack.org/python-savannaclient/python-savannaclient-0.3a3.tar.gz#egg=python-savannaclient-0.3a3
-python-savannaclient>=0.3a3
+-f http://tarballs.openstack.org/python-savannaclient/python-savannaclient-0.3.rc2.tar.gz#egg=python-savannaclient-0.3-rc2
+python-savannaclient>=0.3-rc2
