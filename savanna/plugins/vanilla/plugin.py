@@ -13,6 +13,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from oslo.config import cfg
+
 from savanna import conductor
 from savanna import context
 from savanna.openstack.common import log as logging
@@ -23,12 +25,14 @@ from savanna.plugins import provisioning as p
 from savanna.plugins.vanilla import config_helper as c_helper
 from savanna.plugins.vanilla import run_scripts as run
 from savanna.plugins.vanilla import scaling as sc
+from savanna.topology import topology_helper as th
 from savanna.utils import files as f
 from savanna.utils import remote
 
 
 conductor = conductor.API
 LOG = logging.getLogger(__name__)
+CONF = cfg.CONF
 
 
 class VanillaProvider(p.ProvisioningPluginBase):
@@ -193,6 +197,13 @@ class VanillaProvider(p.ProvisioningPluginBase):
                         oozie is not None and oozie.node_group.id == ng.id)
                 )
             }
+
+        if c_helper.is_data_locality_enabled(cluster):
+            topology_data = th.generate_topology_map(
+                cluster, CONF.enable_hypervisor_awareness)
+            extra['topology_data'] = "\n".join(
+                [k + " " + v for k, v in topology_data.items()]) + "\n"
+
         return extra
 
     def decommission_nodes(self, cluster, instances):
@@ -245,13 +256,25 @@ class VanillaProvider(p.ProvisioningPluginBase):
         self._push_configs_to_nodes(cluster, extra, instances)
         self._configure_master_nodes(cluster, extra, passwd_mysql)
 
-    def _push_configs_to_nodes(self, cluster, extra, instances):
+    def _push_configs_to_nodes(self, cluster, extra, new_instances):
+        all_instances = utils.get_instances(cluster)
         with context.ThreadGroup() as tg:
-            for instance in instances:
-                tg.spawn('vanilla-configure-%s' % instance.instance_name,
-                         self._push_configs_to_node, cluster, extra, instance)
+            for instance in all_instances:
+                if instance in new_instances:
+                    tg.spawn('vanilla-configure-%s' % instance.instance_name,
+                             self._push_configs_to_new_node, cluster,
+                             extra, instance)
+                else:
+                    tg.spawn('vanilla-reconfigure-%s' % instance.instance_name,
+                             self._push_configs_to_existing_node, cluster,
+                             extra, instance)
 
-    def _push_configs_to_node(self, cluster, extra, instance):
+    def _push_configs_to_existing_node(self, cluster, extra, instance):
+        if c_helper.is_data_locality_enabled(cluster):
+            with remote.get_remote(instance) as r:
+                self._write_topology_data(r, extra)
+
+    def _push_configs_to_new_node(self, cluster, extra, instance):
         ng_extra = extra[instance.node_group.id]
 
         files = {
@@ -285,6 +308,19 @@ class VanillaProvider(p.ProvisioningPluginBase):
                 '>> /tmp/savanna-hadoop-init.log 2>&1')
 
             r.execute_command(key_cmd)
+
+            if c_helper.is_data_locality_enabled(cluster):
+                r.write_file_to(
+                    '/etc/hadoop/topology.sh',
+                    f.get_file_text(
+                        'plugins/vanilla/resources/topology.sh'))
+                r.execute_command(
+                    'sudo chmod +x /etc/hadoop/topology.sh'
+                )
+            self._write_topology_data(r, extra)
+
+    def _write_topology_data(self, r, extra):
+        r.write_file_to('/etc/hadoop/topology.data', extra['topology_data'])
 
     def _configure_master_nodes(self, cluster, extra, passwd_mysql):
         nn = utils.get_namenode(cluster)

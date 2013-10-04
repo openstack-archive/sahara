@@ -13,15 +13,19 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from oslo.config import cfg
+
 from savanna.openstack.common import log as logging
 from savanna.plugins import provisioning as p
 from savanna.plugins.vanilla import mysql_helper as m_h
 from savanna.plugins.vanilla import oozie_helper as o_h
 from savanna.swift import swift_helper as swift
+from savanna.topology import topology_helper as topology
 from savanna.utils import xmlutils as x
 
 
 LOG = logging.getLogger(__name__)
+CONF = cfg.CONF
 
 CORE_DEFAULT = x.load_hadoop_xml_defaults(
     'plugins/vanilla/resources/core-default.xml')
@@ -63,6 +67,10 @@ ENV_CONFS = {
 ENABLE_SWIFT = p.Config('Enable Swift', 'general', 'cluster',
                         config_type="bool", priority=1,
                         default_value=True, is_optional=True)
+
+ENABLE_DATA_LOCALITY = p.Config('Enable Data Locality', 'general', 'cluster',
+                                config_type="bool", priority=1,
+                                default_value=True, is_optional=True)
 
 ENABLE_MYSQL = p.Config('Enable MySQL', 'general', 'cluster',
                         config_type="bool", priority=1,
@@ -129,6 +137,8 @@ def _initialise_configs():
 
     configs.append(ENABLE_SWIFT)
     configs.append(ENABLE_MYSQL)
+    if CONF.enable_data_locality:
+        configs.append(ENABLE_DATA_LOCALITY)
 
     return configs
 
@@ -141,7 +151,7 @@ def get_plugin_configs():
 
 
 def get_general_configs(hive_hostname, passwd_hive_mysql):
-    return {
+    config = {
         ENABLE_SWIFT.name: {
             'default_value': ENABLE_SWIFT.default_value,
             'conf': extract_name_values(swift.get_swift_configs())
@@ -152,6 +162,14 @@ def get_general_configs(hive_hostname, passwd_hive_mysql):
                 hive_hostname, passwd_hive_mysql)
         }
     }
+    if CONF.enable_data_locality:
+        config.update({
+            ENABLE_DATA_LOCALITY.name: {
+                'default_value': ENABLE_DATA_LOCALITY.default_value,
+                'conf': extract_name_values(topology.vm_awareness_all_config())
+            }
+        })
+    return config
 
 
 def generate_cfg_from_general(cfg, configs, general_config,
@@ -222,10 +240,21 @@ def generate_xml_configs(configs, storage_path, nn_hostname, jt_hostname,
     # applying swift configs if user enabled it
     swift_xml_confs = swift.get_swift_configs()
     cfg = generate_cfg_from_general(cfg, configs, general_cfg)
+
     # invoking applied configs to appropriate xml files
+    core_all = CORE_DEFAULT + swift_xml_confs
+    mapred_all = MAPRED_DEFAULT
+
+    if CONF.enable_data_locality:
+        cfg.update(topology.TOPOLOGY_CONFIG)
+
+        # applying vm awareness configs
+        core_all += topology.vm_awareness_core_config()
+        mapred_all += topology.vm_awareness_mapred_config()
+
     xml_configs = {
-        'core-site': x.create_hadoop_xml(cfg, CORE_DEFAULT + swift_xml_confs),
-        'mapred-site': x.create_hadoop_xml(cfg, MAPRED_DEFAULT),
+        'core-site': x.create_hadoop_xml(cfg, core_all),
+        'mapred-site': x.create_hadoop_xml(cfg, mapred_all),
         'hdfs-site': x.create_hadoop_xml(cfg, HDFS_DEFAULT)
     }
 
@@ -331,9 +360,19 @@ def _set_config(cfg, gen_cfg, name=None):
     return cfg
 
 
-def is_mysql_enable(cluster):
+def _is_general_option_enabled(cluster, option):
     for ng in cluster.node_groups:
         conf = ng.configuration
-        if 'general' in conf and ENABLE_MYSQL.name in conf['general']:
-                return conf['general'][ENABLE_MYSQL.name]
-    return ENABLE_MYSQL.default_value
+        if 'general' in conf and option.name in conf['general']:
+                return conf['general'][option.name]
+    return option.default_value
+
+
+def is_mysql_enable(cluster):
+    return _is_general_option_enabled(cluster, ENABLE_MYSQL)
+
+
+def is_data_locality_enabled(cluster):
+    if not CONF.enable_data_locality:
+        return False
+    return _is_general_option_enabled(cluster, ENABLE_DATA_LOCALITY)

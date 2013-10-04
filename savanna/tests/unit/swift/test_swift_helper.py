@@ -46,8 +46,6 @@ class SwiftIntegrationTestCase(unittest2.TestCase):
 
         result = h.get_swift_configs()
         self.assertEqual(7, len(result))
-        self.assertIn({'name': "fs.swift.service.savanna.location-aware",
-                       'value': 'true', 'description': ''}, result)
         self.assertIn({'name': "fs.swift.service.savanna.tenant",
                        'value': 'test_tenant', 'description': ''}, result)
         self.assertIn({'name': "fs.swift.service.savanna.http.port",
