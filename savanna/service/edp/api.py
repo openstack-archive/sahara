@@ -35,7 +35,10 @@ def execute_job(job_id, input_id, output_id, cluster_id, configs):
                    'job_id': job_id, 'cluster_id': cluster_id,
                    'info': {'status': 'Pending'}, 'job_configs': configs}
     job_execution = conductor.job_execution_create(context.ctx(), job_ex_dict)
-    return manager.run_job(context.ctx(), job_execution)
+
+    context.spawn("Starting Job Execution %s" % job_execution.id,
+                  manager.run_job, job_execution)
+    return job_execution
 
 
 def get_job_execution_status(id):
