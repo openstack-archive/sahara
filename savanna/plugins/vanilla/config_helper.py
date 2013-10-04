@@ -307,6 +307,7 @@ def extract_xml_confs(configs):
 
 def generate_setup_script(storage_paths, env_configs, append_oozie=False):
     script_lines = ["#!/bin/bash -x"]
+    script_lines.append("echo -n > /tmp/hadoop-env.sh")
     for line in env_configs:
         if 'HADOOP' in line:
             script_lines.append('echo "%s" >> /tmp/hadoop-env.sh' % line)

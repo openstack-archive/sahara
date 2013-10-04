@@ -53,6 +53,7 @@ def get_oozie_required_xml_configs():
 
 
 def append_oozie_setup(setup_script, env_configs):
+    setup_script.append('echo -n > /tmp/oozie-env.sh')
     for line in env_configs:
         if 'CATALINA_OPT' in line:
             setup_script.append('echo "%s" >> /tmp/oozie-env.sh' % line)
