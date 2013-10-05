@@ -16,7 +16,7 @@
 from oslo.config import cfg
 
 from savanna.openstack.common import log
-from savanna.version import version_info as savanna_version
+from savanna import version
 
 cli_opts = [
     cfg.StrOpt('host', default='',
@@ -74,7 +74,8 @@ def parse_configs(argv=None, conf_files=None):
         global ARGV
         ARGV = argv
     try:
-        CONF(ARGV, project='savanna', version=savanna_version.version_string(),
+        version_string = version.version_info.version_string()
+        CONF(ARGV, project='savanna', version=version_string,
              default_config_files=conf_files)
     except cfg.RequiredOptError as roe:
         # TODO(slukjanov): replace RuntimeError with Savanna-specific exception
