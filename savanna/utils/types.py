@@ -84,3 +84,11 @@ class FrozenDict(dict):
 class FrozenClassError(Exception):
     def __init__(self, instance):
         self.message = "Class %s is immutable!" % type(instance).__name__
+
+
+def is_int(s):
+    try:
+        int(s)
+        return True
+    except Exception:
+        return False
