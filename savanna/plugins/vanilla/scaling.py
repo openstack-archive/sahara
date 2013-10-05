@@ -42,7 +42,7 @@ def decommission_dn(nn, inst_to_be_deleted, survived_inst):
         run.refresh_nodes(remote.get_remote(nn), "dfsadmin")
         context.sleep(3)
 
-        att_amount = 10
+        att_amount = 100
         while att_amount:
             cmd = r.execute_command(
                 "sudo su -c 'hadoop dfsadmin -report' hadoop")
