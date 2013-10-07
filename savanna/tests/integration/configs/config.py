@@ -78,6 +78,11 @@ COMMON_CONFIG_OPTS = [
                help='Timeout for HDFS initialization (in minutes); '
                     'minimal value is 1'),
 
+    cfg.IntOpt('JOB_CREATION_TIMEOUT',
+               default=5,
+               help='Timeout for job creation (in minutes); '
+                    'minimal value is 1'),
+
     cfg.StrOpt('CLUSTER_NAME',
                default='test-cluster', help='Name for cluster'),
 
@@ -150,7 +155,8 @@ VANILLA_CONFIG_OPTS = [
     cfg.BoolOpt('SKIP_CLUSTER_CONFIG_TEST', default=False),
     cfg.BoolOpt('SKIP_MAP_REDUCE_TEST', default=False),
     cfg.BoolOpt('SKIP_SWIFT_TEST', default=False),
-    cfg.BoolOpt('SKIP_SCALING_TEST', default=False)
+    cfg.BoolOpt('SKIP_SCALING_TEST', default=False),
+    cfg.BoolOpt('SKIP_EDP_TEST', default=False),
 
 ]
 

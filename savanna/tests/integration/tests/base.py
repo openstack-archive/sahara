@@ -18,9 +18,10 @@ import socket
 import telnetlib
 import time
 
-import unittest2
-
 import savannaclient.api.client as savanna_client
+from swiftclient import client as swift_client
+
+import unittest2
 
 from savanna.openstack.common import excutils
 from savanna.tests.integration.configs import config as cfg
@@ -384,6 +385,14 @@ class ITestCase(unittest2.TestCase):
 
 #---------------------------------Remote---------------------------------------
 
+    def connect_to_swift(self):
+        return swift_client.Connection(
+            authurl=self.common_config.OS_AUTH_URL,
+            user=self.common_config.OS_USERNAME,
+            key=self.common_config.OS_PASSWORD,
+            tenant_name=self.common_config.OS_TENANT_NAME,
+            auth_version='2')  # TODO(ylobankov): delete hard code
+
     def open_ssh_connection(self, host, node_username):
 
         remote._connect(
@@ -413,8 +422,7 @@ class ITestCase(unittest2.TestCase):
 
     def transfer_helper_script_to_node(self, script_name, parameter_list=None):
 
-        script = open('integration/tests/helper_scripts/%s'
-                      % script_name).read()
+        script = open('integration/tests/resources/%s' % script_name).read()
 
         if parameter_list:
 

@@ -19,6 +19,7 @@ import unittest2
 from savanna.openstack.common import excutils
 from savanna.tests.integration.configs import config as cfg
 from savanna.tests.integration.tests import cluster_configs
+from savanna.tests.integration.tests import edp
 from savanna.tests.integration.tests import map_reduce
 from savanna.tests.integration.tests import scaling
 from savanna.tests.integration.tests import swift
@@ -26,13 +27,14 @@ from savanna.tests.integration.tests import swift
 
 class VanillaGatingTest(cluster_configs.ClusterConfigTest,
                         map_reduce.MapReduceTest, swift.SwiftTest,
-                        scaling.ScalingTest):
+                        scaling.ScalingTest, edp.EDPTest):
 
     SKIP_CLUSTER_CONFIG_TEST = \
         cfg.ITConfig().vanilla_config.SKIP_CLUSTER_CONFIG_TEST
     SKIP_MAP_REDUCE_TEST = cfg.ITConfig().vanilla_config.SKIP_MAP_REDUCE_TEST
     SKIP_SWIFT_TEST = cfg.ITConfig().vanilla_config.SKIP_SWIFT_TEST
     SKIP_SCALING_TEST = cfg.ITConfig().vanilla_config.SKIP_SCALING_TEST
+    SKIP_EDP_TEST = cfg.ITConfig().vanilla_config.SKIP_EDP_TEST
 
     @attrib.attr(tags='vanilla')
     @unittest2.skipIf(cfg.ITConfig().vanilla_config.SKIP_ALL_TESTS_FOR_PLUGIN,
@@ -221,6 +223,41 @@ class VanillaGatingTest(cluster_configs.ClusterConfigTest,
                 )
 
                 message = 'Failure while cluster config testing: '
+                self.print_error_log(message, e)
+
+#----------------------------------EDP TESTING---------------------------------
+
+        job_data = open('integration/tests/resources/edp-job.pig').read()
+
+        lib_data = open('integration/tests/resources/edp-lib.jar').read()
+
+        job_jar_data = open('integration/tests/resources/edp-job.jar').read()
+
+        configs = {
+            "configs": {
+            "mapred.mapper.class": "org.apache.oozie.example.SampleMapper",
+            "mapred.reducer.class": "org.apache.oozie.example.SampleReducer"
+            }
+        }
+
+        try:
+
+            self._edp_testing('Pig', [{'pig': job_data}], [{'jar': lib_data}])
+
+        #TODO(vrovachev): remove mains after when bug #1237434 will be fixed
+            self._edp_testing('Jar', [{'pig': job_data}],
+                              [{'jar': job_jar_data}], configs)
+
+        except Exception as e:
+
+            with excutils.save_and_reraise_exception():
+
+                self.delete_objects(
+                    cluster_info['cluster_id'], cluster_template_id,
+                    node_group_template_id_list
+                )
+
+                message = 'Failure while EDP testing: '
                 self.print_error_log(message, e)
 
 #------------------------------MAP REDUCE TESTING------------------------------

@@ -29,6 +29,9 @@ TELNET_TIMEOUT = 5
 # Timeout for HDFS initialization (in minutes); minimal value is 1
 HDFS_INITIALIZATION_TIMEOUT = 5
 
+# Timeout for job creation (in minutes); minimal value is 1
+JOB_CREATION_TIMEOUT = 2
+
 # Name for cluster
 CLUSTER_NAME = 'test-cluster'
 
@@ -70,6 +73,7 @@ SKIP_CLUSTER_CONFIG_TEST = False
 SKIP_MAP_REDUCE_TEST = False
 SKIP_SWIFT_TEST = False
 SKIP_SCALING_TEST = False
+SKIP_EDP_TEST = False
 
 [HDP]
 
