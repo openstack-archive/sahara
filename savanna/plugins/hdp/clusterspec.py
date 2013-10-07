@@ -13,23 +13,23 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import os
 from savanna.openstack.common import jsonutils as json
 from savanna.openstack.common import log as logging
-from savanna.plugins.hdp import configprovider as cfg
 from savanna.plugins.hdp import savannautils as utils
+from savanna.plugins.hdp.versions import versionhandlerfactory as vhf
 import savanna.utils.openstack.nova as n_helper
 
 LOG = logging.getLogger(__name__)
 
 
 class ClusterSpec():
-    def __init__(self, cluster_template, cluster=None):
+    def __init__(self, cluster_template, cluster=None, version='1.3.2'):
         self.services = []
         self.configurations = {}
         self.node_groups = {}
         self.servers = None
         self.str = cluster_template
+        self.version = version
 
         if cluster:
             self.servers = self._get_servers_from_savanna_cluster(cluster)
@@ -215,12 +215,11 @@ class User():
 class NormalizedClusterConfig():
     def __init__(self, cluster_spec):
         #TODO(jspeidel): get from stack config
-        self.hadoop_version = '1.3.0'
+        self.hadoop_version = cluster_spec.version
         self.cluster_configs = []
         self.node_groups = []
-        self.config = cfg.ConfigurationProvider(
-            json.load(open(os.path.join(os.path.dirname(__file__), 'resources',
-                                        'ambari-config-resource.json'), "r")))
+        self.handler = vhf.VersionHandlerFactory.get_instance().\
+            get_version_handler(self.hadoop_version)
 
         self._parse_configurations(cluster_spec.configurations)
         self._parse_node_groups(cluster_spec.node_groups)
@@ -242,7 +241,7 @@ class NormalizedClusterConfig():
     def _get_property_target(self, config, prop):
         # Once config resource is complete we won't need to fall through
         # based on config type
-        target = self.config.get_applicable_target(prop)
+        target = self.handler.get_applicable_target(prop)
         if not target:
             if config == 'hdfs-site':
                 target = 'HDFS'
