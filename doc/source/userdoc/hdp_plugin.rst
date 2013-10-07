@@ -27,7 +27,7 @@ The HDP Plugin performs the following four primary functions during cluster crea
 
 Images
 ======
-The Savanna HDP plugin can make use of either minimal (operating system only) images or pre-populated HDP images. The base requirement for both is that that the image is cloud-init enabled and contains a supported operating system (see http://docs.hortonworks.com/HDPDocuments/HDP1/HDP-1.2.4/bk_hdp1-system-admin-guide/content/sysadminguides_ha_chap2_3.html).
+The Savanna HDP plugin can make use of either minimal (operating system only) images or pre-populated HDP images. The base requirement for both is that the image is cloud-init enabled and contains a supported operating system (see http://docs.hortonworks.com/HDPDocuments/HDP1/HDP-1.2.4/bk_hdp1-system-admin-guide/content/sysadminguides_ha_chap2_3.html).
  
 The advantage of a pre-populated image is that provisioning time is accelerated, as packages do not need to be downloaded and installed which make up the majority of the time spent in the provisioning cycle.
  

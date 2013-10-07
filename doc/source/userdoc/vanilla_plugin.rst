@@ -31,4 +31,4 @@ Currently there are the following limitations in cluster topology for Vanilla pl
 * Cluster should contain only one namenode and only one jobtracker
 
 * Cluster cannot be created if it contains worker processes without containing corresponding master processes. E.g. it cannot
-  contain tasktracker is there is no jobtracker
+  contain tasktracker if there is no jobtracker
