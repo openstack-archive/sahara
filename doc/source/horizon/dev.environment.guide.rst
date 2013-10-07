@@ -66,11 +66,11 @@ If you are using Neutron instead of Nova Network:
 
    SAVANNA_USE_NEUTRON = True
 
-5. Clone savanna-dashboard sources from ``https://github.com/stackforge/savanna-dashboard.git``
+5. Clone savanna-dashboard sources from ``https://github.com/openstack/savanna-dashboard.git``
 
 .. sourcecode:: console
 
-    $ git clone https://github.com/stackforge/savanna-dashboard.git
+    $ git clone https://github.com/openstack/savanna-dashboard.git
 
 6. Export SAVANNA_DASHBOARD_HOME environment variable with path to savanna-dashboard folder. E.g.:
 

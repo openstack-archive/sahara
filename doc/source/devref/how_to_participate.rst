@@ -4,7 +4,7 @@ How to Participate
 Getting started
 ---------------
 
-* Create account on `Github <https://github.com/stackforge/savanna>`_
+* Create account on `Github <https://github.com/openstack/savanna>`_
   (if you don't have one)
 
   * Make sure that your local git is properly configured by executing
@@ -28,8 +28,9 @@ Getting started
 * Subscribe to code-reviews. Go to your settings on http://review.openstack.org
 
   * Go to ``watched projects``
-  * Add ``stackforge/savanna``, ``stackforge/savanna-dashboard``,
-    ``stackforge/savanna-extra``, ``stackforge/python-savannaclient``
+  * Add ``openstack/savanna``, ``openstack/savanna-dashboard``,
+    ``openstack/savanna-extra``, ``openstack/python-savannaclient``,
+    ``openstack/savanna-image-elements``
 
 
 How to stay in touch with the community?
@@ -48,7 +49,7 @@ How to stay in touch with the community?
 How to send your first patch on review?
 ---------------------------------------
 
-* Checkout Savanna code from `Github <https://github.com/stackforge/savanna>`_
+* Checkout Savanna code from `Github <https://github.com/openstack/savanna>`_
 
 * Carefully read https://wiki.openstack.org/wiki/Gerrit_Workflow
 
