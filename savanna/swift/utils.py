@@ -1,4 +1,4 @@
-# Copyright (c) 2013 Mirantis Inc.
+# Copyright (c) 2013 Red Hat, Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,18 +13,20 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from savanna import context
-from savanna.service.edp.binary_retrievers import internal_swift as i_swift
-from savanna.service.edp.binary_retrievers import savanna_db as db
-from savanna.swift import utils as su
+from oslo.config import cfg
+
+CONF = cfg.CONF
+
+SWIFT_INTERNAL_PREFIX = "swift-internal://"
+
+#TODO(tmckay): support swift-external in a future version
+# SWIFT_EXTERNAL_PREFIX = "swift-external://"
 
 
-def get_raw_binary(job_binary):
-    url = job_binary.url
-    if url.startswith("savanna-db://"):
-        res = db.get_raw_data(context.ctx(), job_binary)
-
-    if url.startswith(su.SWIFT_INTERNAL_PREFIX):
-        res = i_swift.get_raw_data(context.ctx(), job_binary)
-
-    return res
+def retrieve_auth_url(append_tokens=True):
+    url = "{0}://{1}:{2}/v2.0/{3}".format(
+        CONF.os_auth_protocol,
+        CONF.os_auth_host,
+        CONF.os_auth_port,
+        "tokens/" if append_tokens else "")
+    return url

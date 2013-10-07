@@ -15,6 +15,7 @@
 
 import savanna.exceptions as e
 import savanna.service.validations.edp.base as b
+from savanna.swift import utils as su
 
 JOB_BINARY_SCHEMA = {
     "type": "object",
@@ -48,7 +49,7 @@ JOB_BINARY_SCHEMA = {
 def check_job_binary(data, **kwargs):
     job_binary_location_type = data["url"]
     extra = data.get("extra", {})
-    if job_binary_location_type.startswith("swift-internal"):
+    if job_binary_location_type.startswith(su.SWIFT_INTERNAL_PREFIX):
         if not extra.get("user") or not extra.get("password"):
             raise e.BadJobBinaryException()
     if job_binary_location_type.startswith("savanna-db"):

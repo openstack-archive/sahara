@@ -371,7 +371,6 @@ class ConductorManager(db_base.Base):
         # This is nice, since data could be big...
         values = copy.deepcopy(values)
         values['tenant_id'] = context.tenant_id
-        values['datasize'] = len(values["data"])
         return self.db.job_binary_internal_create(context, values)
 
     def job_binary_internal_destroy(self, context, job_binary_internal):

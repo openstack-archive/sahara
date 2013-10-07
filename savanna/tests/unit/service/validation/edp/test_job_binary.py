@@ -15,6 +15,7 @@
 
 from savanna.service import api
 from savanna.service.validations.edp import job_binary as b
+from savanna.swift import utils as su
 from savanna.tests.unit.service.validation import utils as u
 
 
@@ -40,7 +41,7 @@ class TestJobBinaryValidation(u.ValidationTestCase):
         self._assert_create_object_validation(
             data={
                 "name": "j_o_w",
-                "url": "swift-internal://o.savanna/k"
+                "url": su.SWIFT_INTERNAL_PREFIX+"o.savanna/k"
             },
             bad_req_i=(1, "BAD_JOB_BINARY",
                        "To work with JobBinary located in internal "

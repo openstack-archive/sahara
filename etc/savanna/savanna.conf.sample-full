@@ -27,6 +27,10 @@
 # Use Neutron or Nova Network (boolean value)
 #use_neutron=false
 
+# The maximum length of job binary data in Kilobytes that
+# may be stored or retrieved in a single operation
+#job_binary_max_KB=5120
+
 #
 # Options defined in savanna.main
 #

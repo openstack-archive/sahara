@@ -122,7 +122,9 @@ class BadJobBinaryException(SavannaException):
     message = "To work with JobBinary located in internal swift add 'user'" \
               " and 'password' to extra"
 
-    def __init__(self):
+    def __init__(self, message=None):
+        if message:
+            self.message = message
         self.code = "BAD_JOB_BINARY"
 
 
@@ -149,3 +151,25 @@ class MissingFloatingNetworkException(SavannaException):
         self.message = ("Node Group %s is missing 'floating_ip_pool' "
                         "field" % ng_name)
         self.code = "MISSING_FLOATING_NETWORK"
+
+
+class SwiftClientException(SavannaException):
+    '''General wrapper object for swift client exceptions
+
+    This exception is intended for wrapping the message from a
+    swiftclient.ClientException in a SavannaException. The ClientException
+    should be caught and an instance of SwiftClientException raised instead.
+    '''
+    def __init__(self, message):
+        self.message = message
+        self.code = "SWIFT_CLIENT_EXCEPTION"
+
+
+class DataTooBigException(SavannaException):
+    message = "Size of data (%s) is greater than maximum (%s)"
+
+    def __init__(self, size, maximum, message=None):
+        if message:
+            self.message = message
+        self.message = self.message % (size, maximum)
+        self.code = "DATA_TOO_BIG"

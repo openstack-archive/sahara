@@ -28,6 +28,13 @@ cli_opts = [
                      'headers and bodies')
 ]
 
+edp_opts = [
+    cfg.IntOpt('job_binary_max_KB',
+               default=5120,
+               help='Maximum length of job binary data in Kilobytes that '
+                    'may be stored or retrieved in a single operation')
+]
+
 networking_opts = [
     cfg.BoolOpt('use_floating_ips',
                 default=True,
@@ -65,6 +72,7 @@ cfg.set_defaults(log.log_opts, default_log_levels=[
 CONF = cfg.CONF
 CONF.register_cli_opts(cli_opts)
 CONF.register_opts(networking_opts)
+CONF.register_opts(edp_opts)
 
 ARGV = []
 

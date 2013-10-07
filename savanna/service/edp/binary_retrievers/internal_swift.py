@@ -13,6 +13,75 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from oslo.config import cfg
+import swiftclient
+
+import savanna.exceptions as ex
+from savanna.swift import utils as su
+
+
+CONF = cfg.CONF
+
+
+def _get_conn(user, password):
+    return swiftclient.Connection(su.retrieve_auth_url(append_tokens=False),
+                                  user,
+                                  password,
+                                  tenant_name=CONF.os_admin_tenant_name,
+                                  auth_version="2.0")
+
 
 def get_raw_data(context, job_binary):
-    pass
+
+    user = job_binary.extra["user"]
+    password = job_binary.extra["password"]
+
+    conn = _get_conn(user, password)
+
+    if not job_binary.url.startswith(su.SWIFT_INTERNAL_PREFIX):
+        # This should have been guaranteed already,
+        # but we'll check just in case.
+        raise ex.BadJobBinaryException("Url for binary in internal swift "
+                                       "must start with %s"
+                                       % su.SWIFT_INTERNAL_PREFIX)
+
+    names = job_binary.url[len(su.SWIFT_INTERNAL_PREFIX):].split("/", 1)
+    if len(names) == 1:
+        # We are getting a whole container, return as a dictionary.
+        container = names[0]
+
+        # First check the size...
+        try:
+            headers = conn.head_container(container)
+            total_KB = int(headers.get('x-container-bytes-used', 0)) / 1024.0
+            if total_KB > CONF.job_binary_max_KB:
+                raise ex.DataTooBigException(round(total_KB, 1),
+                                             CONF.job_binary_max_KB,
+                                             "Size of swift container (%sKB) "
+                                             "is greater than maximum (%sKB)")
+
+            body = {}
+            headers, objects = conn.get_container(names[0])
+            for item in objects:
+                headers, obj = conn.get_object(names[0], item["name"])
+                body[item["name"]] = obj
+        except swiftclient.ClientException as e:
+            raise ex.SwiftClientException(e.message)
+
+    else:
+        container, obj = names
+        try:
+            # First check the size
+            headers = conn.head_object(container, obj)
+            total_KB = int(headers.get('content-length', 0)) / 1024.0
+            if total_KB > CONF.job_binary_max_KB:
+                raise ex.DataTooBigException(round(total_KB, 1),
+                                             CONF.job_binary_max_KB,
+                                             "Size of swift object (%sKB) "
+                                             "is greater than maximum (%sKB)")
+
+            headers, body = conn.get_object(container, obj)
+        except swiftclient.ClientException as e:
+            raise ex.SwiftClientException(e.message)
+
+    return body

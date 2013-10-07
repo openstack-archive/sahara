@@ -187,3 +187,12 @@ def job_binary_internal_delete(job_binary_internal_id):
 @v.check_exists(api.get_job_binary_internal, 'job_binary_internal_id')
 def job_binary_internal_data(job_binary_internal_id):
     return api.get_job_binary_internal_data(job_binary_internal_id)
+
+
+@rest.get('/job-binaries/<job_binary_id>/data')
+@v.check_exists(api.get_job_binary, 'job_binary_id')
+def job_binary_data(job_binary_id):
+    data = api.get_job_binary_data(job_binary_id)
+    if type(data) == dict:
+        data = u.render(data)
+    return data
