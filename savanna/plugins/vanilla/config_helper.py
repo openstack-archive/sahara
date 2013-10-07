@@ -67,7 +67,6 @@ ENABLE_MYSQL = p.Config('Enable MySQL', 'general', 'cluster',
                         config_type="bool", priority=1,
                         default_value=True, is_optional=True)
 
-GENERAL_CONFS = {}
 
 HIDDEN_CONFS = ['fs.default.name', 'dfs.name.dir', 'dfs.data.dir',
                 'mapred.job.tracker', 'mapred.system.dir', 'mapred.local.dir',
@@ -140,17 +139,18 @@ def get_plugin_configs():
     return PLUGIN_CONFIGS
 
 
-def set_general_configs(hive_hostname, passwd_mysql):
-    GENERAL_CONFS.update({
+def get_general_configs(hive_hostname, passwd_hive_mysql):
+    return {
         ENABLE_SWIFT.name: {
             'default_value': ENABLE_SWIFT.default_value,
             'conf': extract_name_values(swift.get_swift_configs())
         },
         ENABLE_MYSQL.name: {
             'default_value': ENABLE_MYSQL.default_value,
-            'conf': m_h.get_required_mysql_configs(hive_hostname, passwd_mysql)
+            'conf': m_h.get_required_mysql_configs(
+                hive_hostname, passwd_hive_mysql)
         }
-    })
+    }
 
 
 def generate_cfg_from_general(cfg, configs, general_config,
@@ -170,7 +170,7 @@ def generate_cfg_from_general(cfg, configs, general_config,
 
 def generate_xml_configs(configs, storage_path, nn_hostname, jt_hostname,
                          oozie_hostname, hive_hostname, passwd_hive_mysql):
-    set_general_configs(hive_hostname, passwd_hive_mysql)
+    general_cfg = get_general_configs(hive_hostname, passwd_hive_mysql)
     # inserting common configs depends on provisioned VMs and HDFS placement
     # TODO(aignatov): should be moved to cluster context
     cfg = {
@@ -220,7 +220,7 @@ def generate_xml_configs(configs, storage_path, nn_hostname, jt_hostname,
 
     # applying swift configs if user enabled it
     swift_xml_confs = swift.get_swift_configs()
-    cfg = generate_cfg_from_general(cfg, configs, GENERAL_CONFS)
+    cfg = generate_cfg_from_general(cfg, configs, general_cfg)
     # invoking applied configs to appropriate xml files
     xml_configs = {
         'core-site': x.create_hadoop_xml(cfg, CORE_DEFAULT + swift_xml_confs),
