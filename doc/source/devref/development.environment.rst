@@ -46,7 +46,7 @@ On Fedora-based distributions (e.g., Fedora/RHEL/CentOS/Scientific Linux):
 
 .. sourcecode:: console
 
-    $ git clone git://github.com/stackforge/savanna.git
+    $ git clone git://github.com/openstack/savanna.git
     $ cd savanna
 
 3. Prepare virtual environment:

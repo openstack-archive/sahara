@@ -9,7 +9,7 @@ simplify task of building such images we use
 code that alters how the image is built, or runs within the chroot to prepare
 the image.
 
-Elements for building vanilla images are stored in `Savanna extra repository <https://github.com/stackforge/savanna-image-elements>`_
+Elements for building vanilla images are stored in `Savanna extra repository <https://github.com/openstack/savanna-image-elements>`_
 
 
 .. note::
@@ -22,7 +22,7 @@ Elements for building vanilla images are stored in `Savanna extra repository <ht
 In this document you will find instruction on how to build Ubuntu and Fedora
 images with Apache Hadoop.
 
-1. Clone repository "https://github.com/stackforge/savanna-image-elements" locally.
+1. Clone repository "https://github.com/openstack/savanna-image-elements" locally.
 
 2. You just can run script diskimage-create.sh in any directory (for example, in home directory). This script will create two cloud images - Fedora and Ubuntu.
 
@@ -34,7 +34,7 @@ images with Apache Hadoop.
         * kpartx
         * qemu
 
-   Then it will clone the repositories "https://github.com/openstack/diskimage-builder" and "https://github.com/stackforge/savanna-image-elements" and export nessesary parameters.
+   Then it will clone the repositories "https://github.com/openstack/diskimage-builder" and "https://github.com/openstack/savanna-image-elements" and export nessesary parameters.
         * ``DIB_HADOOP_VERSION`` - version of Hadoop to install
         * ``JAVA_DOWNLOAD_URL`` - download link for JDK (tarball or bin)
         * ``OOZIE_DOWNLOAD_URL`` - download link for OOZIE (we have built
