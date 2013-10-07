@@ -19,6 +19,8 @@ import sys
 
 import os
 
+on_rtd = os.environ.get('READTHEDOCS', None) == 'True'
+
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
@@ -35,7 +37,10 @@ sys.path.append(os.path.abspath('../bin'))
 # Add any Sphinx extension module names here, as strings. They can be extensions
 # coming with Sphinx (named 'sphinx.ext.*') or your custom ones.
 extensions = ['sphinx.ext.autodoc', 'sphinx.ext.doctest', 'sphinx.ext.todo', 'sphinx.ext.coverage',
-              'sphinx.ext.pngmath', 'sphinx.ext.viewcode', 'sphinxcontrib.httpdomain', 'oslo.sphinx']
+              'sphinx.ext.pngmath', 'sphinx.ext.viewcode', 'sphinxcontrib.httpdomain']
+
+if not on_rtd:
+    extensions.append('oslo.sphinx')
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -51,7 +56,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'Savanna'
-copyright = u'2013, Mirantis Inc.'
+copyright = u'2013, Mirantis Inc'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -102,8 +107,10 @@ pygments_style = 'sphinx'
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
-#html_theme_path = ['.']
-#html_theme = '_theme'
+
+if on_rtd:
+    html_theme_path = ['.']
+    html_theme = '_theme_rtd'
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
