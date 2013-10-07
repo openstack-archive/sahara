@@ -38,7 +38,7 @@ images with Apache Hadoop.
         * ``DIB_HADOOP_VERSION`` - version of Hadoop to install
         * ``JAVA_DOWNLOAD_URL`` - download link for JDK (tarball or bin)
         * ``OOZIE_DOWNLOAD_URL`` - download link for OOZIE (we have built
-     Oozie libs here: http://savanna-files.mirantis.com/oozie.tar.gz)
+     Oozie libs here: http://savanna-files.mirantis.com/oozie-4.0.0.tar.gz)
         * ``HIVE_VERSION`` - version of Hive to install (currently supports only 0.11.0)
         * ``ubuntu_image_name``
         * ``fedora_image_name``

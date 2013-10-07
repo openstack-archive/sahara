@@ -63,7 +63,7 @@ authentication token (X-Auth-Token):
 You can download pre-built images with vanilla Apache Hadoop or build this
 images yourself:
 
-* Download and install pre-built image with Ubuntu 12.10
+* Download and install pre-built image with Ubuntu 13.04
 
 .. sourcecode:: console
 
@@ -73,7 +73,7 @@ images yourself:
       --disk-format=qcow2 --container-format=bare < ./savanna-0.3-vanilla-1.2.1-ubuntu-13.04.qcow2
 
 
-* OR with Fedora 18
+* OR with Fedora 19
 
 .. sourcecode:: console
 
