@@ -95,12 +95,14 @@ def cancel_job(job_execution_id):
     return job_execution
 
 
-def run_job(ctx, job_execution):
+def run_job(job_execution):
+    ctx = context.ctx()
+
     cluster = conductor.cluster_get(ctx, job_execution.cluster_id)
     if cluster.status != 'Active':
         return job_execution
 
-    job = conductor.job_get(context.ctx(), job_execution.job_id)
+    job = conductor.job_get(ctx, job_execution.job_id)
     input_source = conductor.data_source_get(ctx,  job_execution.input_id)
     output_source = conductor.data_source_get(ctx,  job_execution.output_id)
     #TODO(nprivalova): should be removed after all features implemented
