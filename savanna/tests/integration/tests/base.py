@@ -13,18 +13,24 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+
+import logging
 import socket
 import telnetlib
 import time
 
-import unittest2
 
 import savannaclient.api.client as savanna_client
+import unittest2
 
 
 from savanna.openstack.common import excutils
 from savanna.tests.integration.configs import config as cfg
 from savanna.utils import remote
+
+
+logger = logging.getLogger('swiftclient')
+logger.setLevel(logging.WARNING)
 
 
 def skip_test(config_name, message=''):
