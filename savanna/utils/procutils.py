@@ -35,7 +35,8 @@ def start_subprocess():
     return subprocess.Popen((sys.executable, _get_sub_executable()),
                             close_fds=True,
                             stdin=subprocess.PIPE,
-                            stdout=subprocess.PIPE)
+                            stdout=subprocess.PIPE,
+                            stderr=subprocess.PIPE)
 
 
 def run_in_subprocess(proc, func, args=(), kwargs={}):
@@ -60,6 +61,9 @@ def run_in_subprocess(proc, func, args=(), kwargs={}):
 
 def _finish(cleanup_func):
     cleanup_func()
+    sys.stdin.close()
+    sys.stdout.close()
+    sys.stderr.close()
     sys.exit(0)
 
 
@@ -78,6 +82,10 @@ def shutdown_subprocess(proc, cleanup_func):
 
 
 def kill_subprocess(proc):
+    proc.stdin.close()
+    proc.stdout.close()
+    proc.stderr.close()
+
     try:
         proc.kill()
     except OSError:
