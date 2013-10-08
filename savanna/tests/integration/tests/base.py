@@ -13,16 +13,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
 import logging
 import socket
 import telnetlib
 import time
 
-
-import savannaclient.api.client as savanna_client
 import unittest2
 
+import savannaclient.api.client as savanna_client
 
 from savanna.openstack.common import excutils
 from savanna.tests.integration.configs import config as cfg
