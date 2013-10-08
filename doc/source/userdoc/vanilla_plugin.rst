@@ -17,6 +17,19 @@ For more information about patching required by "Swift Integration" feature see 
 Vanilla plugin requires an image to be tagged in Savanna Image Registry with
 two tags: 'vanilla' and '<hadoop version>' (e.g. '1.2.1').
 
+Also you should specify username of default cloud-user used in the Image:
+
++--------------+------------+
+| OS           | username   |
++==============+============+
+| Ubuntu 13.04 | ubuntu     |
++--------------+------------+
+| Fedora 19    | fedora     |
++--------------+------------+
+| CentOS 6.4   | cloud-user |
++--------------+------------+
+
+
 Limitations
 -----------
 
