@@ -23,9 +23,11 @@ User guide
    userdoc/overview
    userdoc/features
    userdoc/plugins
+   userdoc/edp
    userdoc/registering_image
    userdoc/hadoop-swift
    userdoc/rest_api_v1.0
+   userdoc/rest_api_v1.1_EDP
    userdoc/diskimagebuilder
 
 
@@ -50,7 +52,7 @@ Developer Guide
 
     devref/plugins
     devref/plugin.spi
-
+    devref/edp.spi
 
 **Other Resources**
 
