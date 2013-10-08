@@ -15,8 +15,10 @@
 
 import json
 import logging
+
 import pkg_resources as pkg
 import requests
+
 from savanna import context
 from savanna.plugins.hdp import blueprintprocessor as bp
 from savanna.plugins.hdp import clusterspec as cs
@@ -24,6 +26,7 @@ from savanna.plugins.hdp import configprovider as cfg
 from savanna.plugins.hdp import exceptions as ex
 from savanna.plugins.hdp.versions import abstractversionhandler as avm
 from savanna import version
+
 
 LOG = logging.getLogger(__name__)
 

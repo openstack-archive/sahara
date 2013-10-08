@@ -16,6 +16,7 @@
 import savanna.service.validations.base as main_base
 import savanna.service.validations.edp.base as b
 
+
 JOB_EXEC_SCHEMA = {
     "type": "object",
     "properties": {

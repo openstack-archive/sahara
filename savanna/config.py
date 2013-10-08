@@ -18,6 +18,7 @@ from oslo.config import cfg
 from savanna.openstack.common import log
 from savanna import version
 
+
 cli_opts = [
     cfg.StrOpt('host', default='',
                help='Hostname of IP address that will be used to listen on'),

@@ -26,6 +26,7 @@ from savanna.service.edp.workflow_creator import pig_workflow
 from savanna.utils import remote
 from savanna.utils import xmlutils
 
+
 conductor = c.API
 
 swift_username = 'fs.swift.service.savanna.username'

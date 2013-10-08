@@ -13,12 +13,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import mock
 import pkg_resources as pkg
-from savanna.plugins.hdp import clusterspec as cs
-from savanna import version
 import unittest2
 
-import mock
+from savanna.plugins.hdp import clusterspec as cs
+from savanna import version
 
 
 class ClusterSpecTest(unittest2.TestCase):

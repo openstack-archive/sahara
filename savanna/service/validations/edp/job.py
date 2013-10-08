@@ -16,6 +16,7 @@
 import savanna.exceptions as e
 from savanna.service.edp import api
 
+
 JOB_SCHEMA = {
     "type": "object",
     "properties": {

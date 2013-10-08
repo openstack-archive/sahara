@@ -17,6 +17,7 @@ from savanna import exceptions as ex
 from savanna.service import api
 import savanna.service.validations.base as b
 
+
 NODE_GROUP_TEMPLATE_SCHEMA = {
     "type": "object",
     "properties": {

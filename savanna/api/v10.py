@@ -25,6 +25,7 @@ from savanna.service.validations import node_group_templates as v_ngt
 from savanna.service.validations import plugins as v_p
 import savanna.utils.api as u
 
+
 LOG = logging.getLogger(__name__)
 
 rest = u.Rest('v10', __name__)

@@ -14,8 +14,10 @@
 # limitations under the License.
 
 import re
+
 from savanna.openstack.common import log as logging
 from savanna.plugins.hdp import savannautils
+
 
 AMBARI_RPM = 'http://s3.amazonaws.com/public-repo-1.hortonworks.com/' \
              'ambari/centos6/1.x/updates/1.2.5.17/ambari.repo'

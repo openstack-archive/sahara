@@ -21,6 +21,7 @@ from savanna.conductor import manager
 from savanna.conductor import resource as r
 from savanna.openstack.common import log as logging
 
+
 conductor_opts = [
     cfg.BoolOpt('use_local',
                 default=True,

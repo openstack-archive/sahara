@@ -13,11 +13,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from savanna.plugins.general import exceptions as ex
-from savanna.plugins.hdp import validator as v
+import mock
 import unittest2
 
-import mock
+from savanna.plugins.general import exceptions as ex
+from savanna.plugins.hdp import validator as v
 
 
 class ValidatorTest(unittest2.TestCase):

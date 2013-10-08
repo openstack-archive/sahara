@@ -20,6 +20,7 @@ from savanna.plugins.vanilla import oozie_helper as o_h
 from savanna.swift import swift_helper as swift
 from savanna.utils import xmlutils as x
 
+
 LOG = logging.getLogger(__name__)
 
 CORE_DEFAULT = x.load_hadoop_xml_defaults(

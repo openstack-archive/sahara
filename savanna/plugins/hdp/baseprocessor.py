@@ -14,6 +14,7 @@
 # limitations under the License.
 
 import collections
+
 from savanna.openstack.common import jsonutils as json
 
 

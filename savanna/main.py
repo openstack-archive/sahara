@@ -32,6 +32,7 @@ from savanna.utils import api as api_utils
 from savanna.utils import patches
 from savanna.utils import remote
 
+
 LOG = log.getLogger(__name__)
 
 eventlet.monkey_patch(

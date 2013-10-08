@@ -20,6 +20,7 @@ from savanna import context
 from savanna import exceptions as ex
 import savanna.tests.unit.conductor.base as test_base
 
+
 SAMPLE_DATA_SOURCE = {
     "tenant_id": "test_tenant",
     "name": "ngt_test",

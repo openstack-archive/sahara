@@ -19,6 +19,7 @@ from oslo.config import cfg
 
 from savanna.openstack.common import importutils
 
+
 db_driver_opt = cfg.StrOpt('db_driver',
                            default='savanna.db',
                            help='Driver to use for database access')

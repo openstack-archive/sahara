@@ -19,6 +19,7 @@ import unittest2
 from savanna import context
 import savanna.swift.swift_helper as h
 
+
 GENERAL_PREFIX = "fs.swift."
 SERVICE_PREFIX = "service.savanna."
 

@@ -14,10 +14,12 @@
 # limitations under the License.
 
 import copy
+
 import unittest2
 
 from savanna.conductor import resource as r
 from savanna.utils import types
+
 
 SAMPLE_DICT = {
     'first': [1, 2],

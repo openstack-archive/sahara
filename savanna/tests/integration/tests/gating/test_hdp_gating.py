@@ -13,10 +13,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
 import nose.plugins.attrib as attrib
 import unittest2
-
 
 from savanna.openstack.common import excutils
 from savanna.tests.integration.configs import config as cfg

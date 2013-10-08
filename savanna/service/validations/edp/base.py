@@ -13,10 +13,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+"""Cluster creation related checks"""
+
 import savanna.exceptions as ex
 import savanna.service.edp.api as api
 
-## Cluster creation related checks
 
 data_source_type = {
     "type": "string",

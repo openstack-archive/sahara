@@ -13,7 +13,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
 import datetime
 
 from oslo.config import cfg
@@ -28,9 +27,9 @@ from savanna.service.edp.binary_retrievers import dispatch
 from savanna.service.edp import hdfs_helper as h
 from savanna.service.edp import oozie as o
 from savanna.service.edp.workflow_creator import workflow_factory
-
 from savanna.utils import remote
 from savanna.utils import xmlutils as x
+
 
 LOG = log.getLogger(__name__)
 

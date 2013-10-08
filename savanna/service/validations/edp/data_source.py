@@ -16,6 +16,7 @@
 import savanna.exceptions as ex
 import savanna.service.validations.edp.base as b
 
+
 DATA_SOURCE_SCHEMA = {
     "type": "object",
     "properties": {

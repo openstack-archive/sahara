@@ -25,6 +25,7 @@ from savanna.plugins.hdp import validator as v
 from savanna.plugins.hdp.versions import versionhandlerfactory as vhf
 from savanna.plugins import provisioning as p
 
+
 conductor = conductor.API
 LOG = logging.getLogger(__name__)
 

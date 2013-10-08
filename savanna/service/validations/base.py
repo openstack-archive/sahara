@@ -18,7 +18,6 @@ from oslo.config import cfg
 import novaclient.exceptions as nova_ex
 from savanna import conductor as cond
 from savanna import context
-
 import savanna.exceptions as ex
 import savanna.plugins.base as plugin_base
 import savanna.service.api as api

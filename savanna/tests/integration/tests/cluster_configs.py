@@ -13,12 +13,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
 import uuid
 
-
 from swiftclient import client as swift_client
-
 
 from savanna.openstack.common import excutils
 from savanna.tests.integration.configs import config as cfg

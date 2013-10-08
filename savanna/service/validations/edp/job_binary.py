@@ -17,6 +17,7 @@ import savanna.exceptions as e
 import savanna.service.validations.edp.base as b
 from savanna.swift import utils as su
 
+
 JOB_BINARY_SCHEMA = {
     "type": "object",
     "properties": {

@@ -13,9 +13,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import unittest2
+
 from savanna.plugins.hdp.versions.versionhandlerfactory import \
     VersionHandlerFactory
-import unittest2
 
 
 class VersionManagerFactoryTest(unittest2.TestCase):

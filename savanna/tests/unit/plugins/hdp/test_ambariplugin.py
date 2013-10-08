@@ -12,15 +12,17 @@
 # implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-import mock
 
+import mock
 import pkg_resources as pkg
+import unittest2
+
 from savanna.conductor import resource as r
 from savanna.plugins.hdp import ambariplugin as ap
 from savanna.plugins.hdp import clusterspec as cs
 from savanna.plugins.hdp import exceptions as ex
 from savanna import version
-import unittest2
+
 
 GET_REST_REQ = "savanna.plugins.hdp.versions.1_3_2.versionhandler." \
                "AmbariClient._get_rest_request"

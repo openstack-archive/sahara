@@ -18,6 +18,7 @@ import webob.exc as ex
 from savanna.openstack.common import log as logging
 import savanna.openstack.commons as commons
 
+
 LOG = logging.getLogger(__name__)
 
 

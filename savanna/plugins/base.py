@@ -23,6 +23,7 @@ from savanna.openstack.common import importutils
 from savanna.openstack.common import log as logging
 from savanna.utils import resources
 
+
 LOG = logging.getLogger(__name__)
 
 opts = [

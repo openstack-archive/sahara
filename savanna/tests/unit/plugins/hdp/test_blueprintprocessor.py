@@ -15,8 +15,9 @@
 
 import collections as c
 import json
-import mock
 import os
+
+import mock
 import unittest2
 
 from savanna.conductor import resource as r

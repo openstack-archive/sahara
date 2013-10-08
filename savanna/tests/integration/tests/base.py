@@ -13,14 +13,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
 import socket
 import telnetlib
 import time
 
+import unittest2
 
 import savannaclient.api.client as savanna_client
-import unittest2
 
 
 from savanna.openstack.common import excutils

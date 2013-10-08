@@ -17,10 +17,10 @@ import gettext
 
 from oslo.config import cfg
 
-gettext.install('savanna', unicode=1)
-
 from savanna.db import api as db_api
 
+
+gettext.install('savanna', unicode=1)
 
 CONF = cfg.CONF
 

@@ -13,8 +13,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from oslo.config import cfg
 import urllib
+
+from oslo.config import cfg
 
 from savanna import conductor as c
 from savanna import context

@@ -20,8 +20,8 @@ from savanna import conductor as c
 from savanna import context
 from savanna.utils.openstack import keystone
 
-conductor = c.API
 
+conductor = c.API
 CONF = cfg.CONF
 
 

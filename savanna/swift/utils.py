@@ -15,6 +15,7 @@
 
 from oslo.config import cfg
 
+
 CONF = cfg.CONF
 
 SWIFT_INTERNAL_PREFIX = "swift-internal://"

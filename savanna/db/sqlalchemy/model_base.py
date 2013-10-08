@@ -13,9 +13,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from savanna.openstack.common.db.sqlalchemy import models as oslo_models
 from sqlalchemy.ext import declarative
 from sqlalchemy.orm import attributes
+
+from savanna.openstack.common.db.sqlalchemy import models as oslo_models
 
 
 class _SavannaBase(oslo_models.ModelBase, oslo_models.TimestampMixin):

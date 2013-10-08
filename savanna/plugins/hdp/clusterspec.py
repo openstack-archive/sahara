@@ -19,6 +19,7 @@ from savanna.plugins.hdp import savannautils as utils
 from savanna.plugins.hdp.versions import versionhandlerfactory as vhf
 import savanna.utils.openstack.nova as n_helper
 
+
 LOG = logging.getLogger(__name__)
 
 

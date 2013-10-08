@@ -13,8 +13,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import unittest2
 import xml.dom.minidom as xml
+
+import unittest2
 
 from savanna.utils import patches as p
 from savanna.utils import xmlutils as x
