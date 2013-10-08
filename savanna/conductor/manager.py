@@ -24,8 +24,8 @@ from savanna.utils import crypto
 
 CLUSTER_DEFAULTS = {
     "cluster_configs": {},
-    "anti_affinity": [],
     "status": "undefined",
+    "anti_affinity": [],
     "status_description": "",
     "info": {},
 }
@@ -74,9 +74,16 @@ class ConductorManager(db_base.Base):
         if not node_groups:
             return
 
+        populated_node_groups = []
         for node_group in node_groups:
-            node_group["tenant_id"] = context.tenant_id
-            self._populate_node_group(context, node_group)
+            populated_node_group = self._populate_node_group(context,
+                                                             node_group)
+            self._cleanup_node_group(populated_node_group)
+            populated_node_group["tenant_id"] = context.tenant_id
+            populated_node_groups.append(
+                populated_node_group)
+
+        return populated_node_groups
 
     def _cleanup_node_group(self, node_group):
         node_group.pop('id', None)
@@ -84,28 +91,24 @@ class ConductorManager(db_base.Base):
         node_group.pop('updated_at', None)
 
     def _populate_node_group(self, context, node_group):
+        node_group_merged = copy.deepcopy(NODE_GROUP_DEFAULTS)
+
         ng_tmpl_id = node_group.get('node_group_template_id')
-        if not ng_tmpl_id:
-            node_group.update(_apply_defaults(node_group, NODE_GROUP_DEFAULTS))
-            self._cleanup_node_group(node_group)
-            return
+        ng_tmpl = None
+        if ng_tmpl_id:
+            ng_tmpl = self.node_group_template_get(context, ng_tmpl_id)
 
-        ng_tmpl = self.node_group_template_get(context, ng_tmpl_id)
-        if not ng_tmpl:
-            node_group.update(_apply_defaults(node_group, NODE_GROUP_DEFAULTS))
-            self._cleanup_node_group(node_group)
-            return
+            self._cleanup_node_group(ng_tmpl)
+            node_group_merged.update(ng_tmpl)
 
-        new_values = _apply_defaults(ng_tmpl, NODE_GROUP_DEFAULTS)
-        new_values.update(node_group)
-        new_values['node_configs'] = configs.merge_configs(
-            ng_tmpl.get('node_configs'),
-            node_group.get('node_configs'))
+        node_group_merged.update(node_group)
 
-        node_group.clear()
-        node_group.update(new_values)
+        if ng_tmpl:
+            node_group_merged['node_configs'] = configs.merge_configs(
+                ng_tmpl.get('node_configs'),
+                node_group.get('node_configs'))
 
-        self._cleanup_node_group(node_group)
+        return node_group_merged
 
     ## Cluster ops
 
@@ -121,31 +124,40 @@ class ConductorManager(db_base.Base):
 
     def cluster_create(self, context, values):
         """Create a cluster from the values dictionary."""
-        values = copy.deepcopy(values)
-        values = _apply_defaults(values, CLUSTER_DEFAULTS)
-        values['tenant_id'] = context.tenant_id
+
+        #loading defaults
+        merged_values = copy.deepcopy(CLUSTER_DEFAULTS)
+        merged_values['tenant_id'] = context.tenant_id
 
         private_key, public_key = crypto.generate_key_pair()
-        values['management_private_key'] = private_key
-        values['management_public_key'] = public_key
+        merged_values['management_private_key'] = private_key
+        merged_values['management_public_key'] = public_key
 
         cluster_template_id = values.get('cluster_template_id')
+        c_tmpl = None
+
         if cluster_template_id:
             c_tmpl = self.cluster_template_get(context, cluster_template_id)
-            if c_tmpl:
-                new_values = c_tmpl.copy()
-                del new_values['created_at']
-                del new_values['updated_at']
-                del new_values['id']
-                new_values.update(values)
-                new_values['cluster_configs'] = configs.merge_configs(
-                    c_tmpl.get('cluster_configs'),
-                    values.get('cluster_configs'))
 
-                values = new_values
+            del c_tmpl['created_at']
+            del c_tmpl['updated_at']
+            del c_tmpl['id']
 
-        self._populate_node_groups(context, values)
-        return self.db.cluster_create(context, values)
+            #updating with cluster_template values
+            merged_values.update(c_tmpl)
+
+        #updating with values provided in request
+        merged_values.update(values)
+
+        if c_tmpl:
+            merged_values['cluster_configs'] = configs.merge_configs(
+                c_tmpl.get('cluster_configs'),
+                values.get('cluster_configs'))
+
+        merged_values['node_groups'] = \
+            self._populate_node_groups(context, merged_values)
+
+        return self.db.cluster_create(context, merged_values)
 
     def cluster_update(self, context, cluster, values):
         """Set the given properties on cluster and update it."""
@@ -161,7 +173,7 @@ class ConductorManager(db_base.Base):
     def node_group_add(self, context, cluster, values):
         """Create a Node Group from the values dictionary."""
         values = copy.deepcopy(values)
-        self._populate_node_group(context, values)
+        values = self._populate_node_group(context, values)
         values['tenant_id'] = context.tenant_id
         return self.db.node_group_add(context, cluster, values)
 
@@ -218,7 +230,7 @@ class ConductorManager(db_base.Base):
         values = _apply_defaults(values, CLUSTER_DEFAULTS)
         values['tenant_id'] = context.tenant_id
 
-        self._populate_node_groups(context, values)
+        values['node_groups'] = self._populate_node_groups(context, values)
 
         return self.db.cluster_template_create(context, values)
 

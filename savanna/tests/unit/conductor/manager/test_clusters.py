@@ -111,8 +111,8 @@ class ClusterTest(test_base.ConductorManagerTestCase):
             ng.pop("floating_ip_pool")
             ng.pop("tenant_id")
 
-        self.assertListEqual(SAMPLE_CLUSTER["node_groups"],
-                             cl_db_obj["node_groups"])
+        self.assertEqual(SAMPLE_CLUSTER["node_groups"],
+                         cl_db_obj["node_groups"])
 
     def test_cluster_update_status(self):
         ctx = context.ctx()
