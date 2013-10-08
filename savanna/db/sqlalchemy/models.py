@@ -346,5 +346,5 @@ class JobBinary(mb.SavannaBase):
     tenant_id = sa.Column(sa.String(36))
     name = sa.Column(sa.String(80), nullable=False)
     description = sa.Column(sa.Text())
-    url = sa.Column(sa.String(), nullable=False)
+    url = sa.Column(sa.String(256), nullable=False)
     extra = sa.Column(st.JsonDictType())
