@@ -21,6 +21,7 @@ from savanna.plugins.vanilla import mysql_helper as m_h
 from savanna.plugins.vanilla import oozie_helper as o_h
 from savanna.swift import swift_helper as swift
 from savanna.topology import topology_helper as topology
+from savanna.utils import types as types
 from savanna.utils import xmlutils as x
 
 
@@ -120,7 +121,7 @@ def _initialise_configs():
                     if cfg.default_value in ["true", "false"]:
                         cfg.config_type = "bool"
                         cfg.default_value = (cfg.default_value == 'true')
-                    if str(cfg.default_value).isdigit():
+                    elif types.is_int(cfg.default_value):
                         cfg.config_type = "int"
                         cfg.default_value = int(cfg.default_value)
                     if config['name'] in CLUSTER_WIDE_CONFS:
