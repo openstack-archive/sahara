@@ -173,7 +173,8 @@ class PeriodicTasks(object):
             if spacing is not None:
                 idle_for = min(idle_for, spacing)
 
-            LOG.debug(_("Running periodic task %(full_task_name)s"), locals())
+            LOG.debug(_("Running periodic task %(full_task_name)s"),
+                      {"full_task_name": full_task_name})
             self._periodic_last_run[task_name] = timeutils.utcnow()
 
             try:
@@ -182,7 +183,7 @@ class PeriodicTasks(object):
                 if raise_on_error:
                     raise
                 LOG.exception(_("Error during %(full_task_name)s: %(e)s"),
-                              locals())
+                              {"full_task_name": full_task_name, "e": e})
             time.sleep(0)
 
         return idle_for
