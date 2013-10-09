@@ -123,7 +123,13 @@ def _provision_nodes(id, node_group_id_map):
         cluster = conductor.cluster_update(ctx, cluster,
                                            {"status": "Configuring"})
         LOG.info(g.format_cluster_status(cluster))
-        plugin.scale_cluster(cluster, i.get_instances(cluster, instances))
+        try:
+            plugin.scale_cluster(cluster, i.get_instances(cluster, instances))
+        except Exception as ex:
+            LOG.error("Can't scale cluster '%s' (reason: %s)",
+                      cluster.name, ex)
+            conductor.cluster_update(ctx, cluster, {"status": "Error"})
+            return
 
     # cluster is now up and ready
     cluster = conductor.cluster_update(ctx, cluster, {"status": "Active"})
@@ -148,12 +154,24 @@ def _provision_cluster(cluster_id):
     # configure cluster
     cluster = conductor.cluster_update(ctx, cluster, {"status": "Configuring"})
     LOG.info(g.format_cluster_status(cluster))
-    plugin.configure_cluster(cluster)
+    try:
+        plugin.configure_cluster(cluster)
+    except Exception as ex:
+        LOG.error("Can't configure cluster '%s' (reason: %s)",
+                  cluster.name, ex)
+        conductor.cluster_update(ctx, cluster, {"status": "Error"})
+        return
 
     # starting prepared and configured cluster
     cluster = conductor.cluster_update(ctx, cluster, {"status": "Starting"})
     LOG.info(g.format_cluster_status(cluster))
-    plugin.start_cluster(cluster)
+    try:
+        plugin.start_cluster(cluster)
+    except Exception as ex:
+        LOG.error("Can't start services for cluster '%s' (reason: %s)",
+                  cluster.name, ex)
+        conductor.cluster_update(ctx, cluster, {"status": "Error"})
+        return
 
     # cluster is now up and ready
     cluster = conductor.cluster_update(ctx, cluster, {"status": "Active"})
