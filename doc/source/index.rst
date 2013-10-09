@@ -53,6 +53,8 @@ Developer Guide
     devref/plugins
     devref/plugin.spi
     devref/edp.spi
+    userdoc/statuses
+
 
 **Other Resources**
 
