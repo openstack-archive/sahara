@@ -15,6 +15,7 @@ requests>=1.1,<1.2.3
 python-cinderclient>=1.0.5
 python-keystoneclient>=0.3.2
 python-novaclient>=2.15.0
+python-swiftclient>=1.5
 six
 SQLAlchemy>=0.7.8,<=0.7.99
 WebOb>=1.2.3,<1.3

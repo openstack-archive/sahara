@@ -12,7 +12,6 @@ nose
 openstack.nose_plugin>=0.7
 oslo.sphinx
 pylint==0.25.2
-python-swiftclient>=1.5
 sphinx>=1.1.2
 sphinxcontrib-httpdomain
 unittest2
