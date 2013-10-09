@@ -30,19 +30,18 @@
         <name>fs.swift.service.savanna.public</name>
         <value>true</value>
     </property>
+    <property>
+        <name>fs.swift.service.savanna.auth.endpoint.prefix</name>
+        <value>/endpoints/AUTH_</value>
+    </property>
 
 
     <!--Not mandatory savanna-provider-specific configs (fs.swift.service.savanna prefix)-->
-    <!--Location awareness is switched on by default -->
     <property>
         <name>fs.swift.service.savanna.region</name>
     </property>
     <property>
         <name>fs.swift.service.savanna.apikey</name>
-    </property>
-    <property>
-        <name>fs.swift.service.savanna.location-aware</name>
-        <value>true</value>
     </property>
 
 

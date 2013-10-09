@@ -33,6 +33,7 @@ nosetests.xml
 pylint-report.txt
 etc/local.cfg
 etc/savanna/*.conf
+etc/savanna/*.topology
 etc/savanna.conf
 ChangeLog
 savanna/tests/integration/configs/config.py

@@ -1,0 +1,17 @@
+<configuration>
+    <property>
+        <name>mapred.jobtracker.nodegroup.aware</name>
+        <value>true</value>
+        <description>Identify if jobtracker is aware of nodegroup layer.</description>
+    </property>
+    <property>
+        <name>mapred.task.cache.levels</name>
+        <value>3</value>
+        <description>This is the max level of the task cache. For example, if the level is 2, the tasks cached are at the host level and at the rack level.</description>
+    </property>
+    <property>
+        <name>mapred.jobtracker.jobSchedulable</name>
+        <value>org.apache.hadoop.mapred.JobSchedulableWithNodeGroup</value>
+        <description>The class responsible for an entity in FairScheduler that can launch tasks.</description>
+    </property>
+</configuration>
