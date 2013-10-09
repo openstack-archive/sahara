@@ -20,6 +20,7 @@ User guide
 
    userdoc/installation.guide
    horizon/installation.guide
+   horizon/dashboard.user.guide
    userdoc/overview
    userdoc/features
    userdoc/plugins
