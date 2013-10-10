@@ -15,8 +15,6 @@
 
 import uuid
 
-from swiftclient import client as swift_client
-
 from savanna.openstack.common import excutils
 from savanna.tests.integration.tests import base
 
@@ -58,12 +56,7 @@ class SwiftTest(base.ITestCase):
 
                 print(str(e))
 
-        swift = swift_client.Connection(
-            authurl=self.common_config.OS_AUTH_URL,
-            user=self.common_config.OS_USERNAME,
-            key=self.common_config.OS_PASSWORD,
-            tenant_name=self.common_config.OS_TENANT_NAME,
-            auth_version='2')  # TODO(ylobankov): delete hard code
+        swift = self.connect_to_swift()
 
         swift.put_container('Swift-test-%s' % str(SWIFT_CONTAINER_ID))
 
