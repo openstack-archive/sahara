@@ -57,7 +57,7 @@ OpenStack Cluster may use Nova Network or Neutron as a networking service. Savan
 a special configuration for networking should be set explicitly. By default Savanna will behave as if Nova Network is used.
 If OpenStack Cluster uses Neutron, then ``use_neutron`` option should be set to ``True`` in Savanna configuration file.
 
-.. sourcecode:: config
+.. sourcecode:: cfg
 
     use_neutron=True
 
@@ -99,3 +99,58 @@ That feature requires certain adjustments on Nova side to work.
 See :doc:`anti_affinity` for details.
 
 This feature is supported by all plugins out of the box.
+
+Data-locality
+-------------
+This feature is supported only by :doc:`vanilla_plugin`.
+
+It is extremely important for data processing to do locally (on the same rack,
+openstack compute node or even VM) as much work as
+possible. Hadoop supports data-locality feature and can schedule jobs to
+tasktracker nodes that are local for input stream. In this case tasktracker
+could communicate directly with local data node.
+
+Savanna supports topology configuration for HDFS and Swift data sources.
+
+To enable data-locality set ``enable_data_locality`` parameter to ``True`` in
+Savanna configuration file
+
+.. sourcecode:: cfg
+
+    enable_data_locality=True
+
+In this case two files with topology must be provided to Savanna.
+Options ``compute_topology_file`` and ``swift_topology_file`` parameters
+control location of files with compute and swift nodes topology descriptions
+correspondingly.
+
+``compute_topology_file`` should contain mapping between compute nodes and
+racks in the following format:
+
+.. sourcecode:: cfg
+
+    compute1 /rack1
+    compute1 /rack2
+    compute1 /rack2
+
+Note that compute node name must be exactly the same as configured in
+openstack (``host`` column in admin list for instances).
+
+``swift_topology_file`` should contain mapping between swift nodes and
+racks in the following format:
+
+.. sourcecode:: cfg
+
+    node1 /rack1
+    node2 /rack2
+    node3 /rack2
+
+Note that swift node must be exactly the same as configures in object.builder
+swift ring. Also make sure that VMs with tasktracker service has direct access
+to swift nodes.
+
+Hadoop versions after 1.2.0 support four-layer topology
+(https://issues.apache.org/jira/browse/HADOOP-8468). To enable this feature
+set ``enable_hypervisor_awareness`` option to ``True`` in Savanna configuration
+file. In this case Savanna will add compute node ID as a second level of
+topology for Virtual Machines.
