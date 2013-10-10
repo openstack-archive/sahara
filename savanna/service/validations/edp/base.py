@@ -24,24 +24,6 @@ data_source_type = {
     "enum": ["swift"]
 }
 
-job_type = {
-    "type": "string",
-    "enum": [
-        "hive",
-        "pig",
-        "jar",
-        "oozie"
-    ]
-}
-
-job_storage = {
-    "type": "string",
-    "enum": [
-        "swift",
-        "hdfs",
-        "internal"
-    ]
-}
 
 job_configs = {
     "type": "object",
@@ -57,23 +39,6 @@ job_configs = {
         }
     },
     "additionalProperties": False,
-}
-
-user_pass = {
-    "type": "object",
-    "properties": {
-        "user": {
-            "type": "string",
-        },
-        "password": {
-            "type": "string",
-        }
-    },
-    "additionalProperties": False,
-    "required": [
-        "user",
-        "password"
-    ]
 }
 
 
