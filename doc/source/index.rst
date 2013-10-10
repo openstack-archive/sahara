@@ -26,6 +26,7 @@ User guide
    userdoc/edp
    userdoc/registering_image
    userdoc/hadoop-swift
+   userdoc/python_client
    userdoc/rest_api_v1.0
    userdoc/rest_api_v1.1_EDP
    userdoc/diskimagebuilder
