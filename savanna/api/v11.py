@@ -158,7 +158,7 @@ def job_binary_delete(job_binary_id):
 
 
 @rest.put_file('/job-binary-internals/<name>')
-@v.validate(None, v_j_b_i.check_data_type_length)
+@v.validate(None, v_j_b_i.check_job_binary_internal)
 def job_binary_internal_create(**values):
     return u.render(api.create_job_binary_internal(values).to_wrapped_dict())
 

@@ -14,8 +14,14 @@
 # limitations under the License.
 
 import savanna.exceptions as e
+from savanna.utils import api_validator as a
 
 
-def check_data_type_length(data, **kwargs):
+def check_job_binary_internal(data, **kwargs):
     if not (type(data) is str and len(data) > 0):
         raise e.BadJobBinaryInternalException()
+    if "name" in kwargs:
+        name = kwargs["name"]
+        if not a.validate_name_format(name):
+            raise e.BadJobBinaryInternalException("%s is not a valid name"
+                                                  % name)
