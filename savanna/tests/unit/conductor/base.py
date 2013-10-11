@@ -45,7 +45,8 @@ class ConductorManagerTestCase(base.DbTestCase):
         db_api.drop_db()
 
         for idx, check in enumerate(self._checks):
-            self.assertEqual(self._results[idx], check(),
+            check_val = check()
+            self.assertEqual(self._results[idx], check_val,
                              msg="Check '%s' failed" % idx)
 
 

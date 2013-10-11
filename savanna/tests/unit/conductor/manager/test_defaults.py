@@ -53,7 +53,6 @@ class DefaultsTest(test_base.ConductorManagerTestCase):
         cluster = self._create_sample_cluster()
 
         self._assert_props(cluster,
-                           anti_affinity=[],
                            status="undefined",
                            status_description="",
                            info={})

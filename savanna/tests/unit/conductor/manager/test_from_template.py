@@ -46,7 +46,7 @@ class ObjectsFromTemplatesTest(test_base.ConductorManagerTestCase):
 
         # create node_group_template
         ng_tmpl = copy.deepcopy(test_templates.SAMPLE_NGT)
-        ng_tmpl['volumes_size'] = '10'
+        ng_tmpl['volumes_size'] = 10
         ng_tmpl['node_configs']['service_1']['config_2'] = 'value_2'
         ng_tmpl = self.api.node_group_template_create(ctx, ng_tmpl)
 
@@ -71,16 +71,17 @@ class ObjectsFromTemplatesTest(test_base.ConductorManagerTestCase):
         ctx = context.ctx()
 
         # create cluster
-        cluster = self.api.cluster_create(ctx, test_clusters.SAMPLE_CLUSTER)
+        sample_copy = copy.deepcopy(test_clusters.SAMPLE_CLUSTER)
+        cluster = self.api.cluster_create(ctx, sample_copy)
 
         # create node_group_template
         ng_tmpl = copy.deepcopy(test_templates.SAMPLE_NGT)
-        ng_tmpl['volumes_size'] = '10'
+        ng_tmpl['volumes_size'] = 10
         ng_tmpl['node_configs']['service_1']['config_2'] = 'value_2'
         ng_tmpl = self.api.node_group_template_create(ctx, ng_tmpl)
 
         # add node group to cluster
-        ng = test_clusters.SAMPLE_CLUSTER['node_groups'][0].copy()
+        ng = copy.deepcopy(test_clusters.SAMPLE_CLUSTER['node_groups'][0])
         ng['node_group_template_id'] = ng_tmpl['id']
         ng['count'] = 5
         ng['name'] = 'ng_3'
