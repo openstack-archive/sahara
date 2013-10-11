@@ -36,7 +36,7 @@ CONF.register_opts(opts)
 
 def client():
     ctx = context.current()
-    auth_url = base.url_for(ctx.service_catalog, 'identity')
+    auth_url = base.retrieve_auth_url()
 
     if CONF.use_identity_api_v3:
         keystone = keystone_client_v3.Client(username=ctx.username,
@@ -59,7 +59,7 @@ def client_for_trusts(username, password, trust_id):
                         ' less than v3')
 
     ctx = context.current()
-    auth_url = base.url_for(ctx.service_catalog, 'identity')
+    auth_url = base.retrieve_auth_url()
     keystone = keystone_client_v3.Client(username=username,
                                          password=password,
                                          tenant_id=ctx.tenant_id,

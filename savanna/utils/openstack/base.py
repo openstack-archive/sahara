@@ -29,10 +29,7 @@ def url_for(service_catalog, service_type, admin=False, endpoint_type=None):
     service = _get_service_from_catalog(service_catalog, service_type)
 
     if service:
-        if service_type == 'identity':
-            endpoint = _get_identity_endpoint(service)
-        else:
-            endpoint = service['endpoints'][0]
+        endpoint = service['endpoints'][0]
         return _get_case_insensitive(endpoint,
                                      endpoint_type)
     else:
@@ -58,14 +55,10 @@ def _get_case_insensitive(dictionary, key):
     return dictionary[key]
 
 
-def _get_identity_endpoint(service):
-    api_substr = 'v2.0'
-    if CONF.use_identity_api_v3:
-        api_substr = 'v3'
+def retrieve_auth_url():
+    protocol = CONF.os_auth_protocol
+    host = CONF.os_auth_host
+    port = CONF.os_auth_port
 
-    for endpoint in service['endpoints']:
-        if api_substr in endpoint:
-            return endpoint
-
-    raise Exception('Api %s endpoint not found in service %s'
-                    % (api_substr, service['type']))
+    return "%s://%s:%s/%s/" % (protocol, host, port,
+                               'v3' if CONF.use_identity_api_v3 else 'v2.0')
