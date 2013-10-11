@@ -452,16 +452,20 @@ def data_source_create(context, values):
 
 def data_source_destroy(context, data_source_id):
     session = get_session()
-    with session.begin():
-        data_source = _data_source_get(context, session, data_source_id)
-        if not data_source:
-            raise ex.NotFoundException(data_source_id,
-                                       "Data Source id '%s' not found!")
-
-        session.delete(data_source)
-
+    try:
+        with session.begin():
+            data_source = _data_source_get(context, session, data_source_id)
+            if not data_source:
+                raise ex.NotFoundException(data_source_id,
+                                           "Data Source id '%s' not found!")
+            session.delete(data_source)
+    except db_exc.DBError as e:
+        msg = "foreign key constraint" in e.message and\
+              " on foreign key constraint" or ""
+        raise ex.DeletionFailed("Data Source deletion failed%s" % msg)
 
 ## JobExecution ops
+
 
 def _job_execution_get(context, session, job_execution_id):
     query = model_query(m.JobExecution, context, session)
@@ -585,13 +589,17 @@ def job_update(context, job_id, values):
 
 def job_destroy(context, job_id):
     session = get_session()
-    with session.begin():
-        job = _job_get(context, session, job_id)
-        if not job:
-            raise ex.NotFoundException(job_id,
-                                       "Job id '%s' not found!")
-
-        session.delete(job)
+    try:
+        with session.begin():
+            job = _job_get(context, session, job_id)
+            if not job:
+                raise ex.NotFoundException(job_id,
+                                           "Job id '%s' not found!")
+            session.delete(job)
+    except db_exc.DBError as e:
+        msg = "foreign key constraint" in e.message and\
+              " on foreign key constraint" or ""
+        raise ex.DeletionFailed("Job deletion failed%s" % msg)
 
 
 ## JobBinary ops
