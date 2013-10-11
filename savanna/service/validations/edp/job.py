@@ -38,7 +38,6 @@ JOB_SCHEMA = {
         },
         "mains": {
             "type": "array",
-            "minItems": 1,
             "uniqueItems": True,
             "items": {
                 "type": "string",
@@ -76,6 +75,11 @@ def check_mains_libs(data, **kwargs):
     # As a basic check, mains or libs has to be non-empty
     if not (mains or libs):
         raise e.InvalidDataException("'mains' or 'libs' must be non-empty")
+
+    # Pig or Hive flow has to contain script in mains
+    if data.get("type") in ['Pig', 'Hive'] and not mains:
+        raise e.InvalidDataException("%s flow requires main script" %
+                                     data.get("type"))
 
     # Check for overlap
     if set(mains).intersection(set(libs)):
