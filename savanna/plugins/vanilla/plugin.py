@@ -119,32 +119,26 @@ class VanillaProvider(p.ProvisioningPluginBase):
         self._setup_instances(cluster, instances)
 
     def start_cluster(self, cluster):
+        instances = utils.get_instances(cluster)
         nn_instance = utils.get_namenode(cluster)
-        datanodes = utils.get_datanodes(cluster)
         jt_instance = utils.get_jobtracker(cluster)
-        tasktrackers = utils.get_tasktrackers(cluster)
         oozie = utils.get_oozie(cluster)
         hive_server = utils.get_hiveserver(cluster)
 
         with remote.get_remote(nn_instance) as r:
             run.format_namenode(r)
-            run.start_process(r, "namenode")
+            run.start_processes(r, "namenode")
 
-        snns = utils.get_secondarynamenodes(cluster)
-        if snns:
-            for snn in snns:
-                run.start_process(remote.get_remote(snn), "secondarynamenode")
-        for dn in datanodes:
-            run.start_process(remote.get_remote(dn), "datanode")
-        LOG.info("HDFS service at '%s' has been started",
-                 nn_instance.hostname)
+        for snn in utils.get_secondarynamenodes(cluster):
+            run.start_processes(remote.get_remote(snn), "secondarynamenode")
 
         if jt_instance:
-            run.start_process(remote.get_remote(jt_instance), "jobtracker")
-            for tt in tasktrackers:
-                run.start_process(remote.get_remote(tt), "tasktracker")
-            LOG.info("MapReduce service at '%s' has been started",
-                     jt_instance.hostname)
+            run.start_processes(remote.get_remote(jt_instance), "jobtracker")
+
+        self._start_tt_dn_processes(instances)
+
+        LOG.info("Hadoop services in cluster %s have been started" %
+                 cluster.name)
 
         if oozie:
             with remote.get_remote(oozie) as r:
@@ -171,25 +165,27 @@ class VanillaProvider(p.ProvisioningPluginBase):
         LOG.info('Cluster %s has been started successfully' % cluster.name)
         self._set_cluster_info(cluster)
 
-    def _extract_configs_to_extra(self, cluster, passwd_hive_mysql):
+    def _extract_configs_to_extra(self, cluster):
         nn = utils.get_namenode(cluster)
         jt = utils.get_jobtracker(cluster)
         oozie = utils.get_oozie(cluster)
         hive = utils.get_hiveserver(cluster)
 
         extra = dict()
+
+        if hive:
+            extra['hive_mysql_passwd'] = uuidutils.generate_uuid()
+
         for ng in cluster.node_groups:
             extra[ng.id] = {
-                'xml': c_helper.generate_xml_configs(ng.configuration,
-                                                     ng.storage_paths,
-                                                     nn.hostname,
-                                                     jt.hostname
-                                                     if jt else None,
-                                                     oozie.hostname
-                                                     if oozie else None,
-                                                     hive.hostname
-                                                     if hive else None,
-                                                     passwd_hive_mysql),
+                'xml': c_helper.generate_xml_configs(
+                    ng.configuration,
+                    ng.storage_paths,
+                    nn.hostname,
+                    jt.hostname if jt else None,
+                    oozie.hostname if oozie else None,
+                    hive.hostname if hive else None,
+                    extra['hive_mysql_passwd'] if hive else None),
                 'setup_script': c_helper.generate_setup_script(
                     ng.storage_paths,
                     c_helper.extract_environment_confs(ng.configuration),
@@ -241,20 +237,27 @@ class VanillaProvider(p.ProvisioningPluginBase):
         if jt:
             run.refresh_nodes(remote.get_remote(jt), "mradmin")
 
-        for i in instances:
-            with remote.get_remote(i) as r:
-                if "datanode" in i.node_group.node_processes:
-                    run.start_process(r, "datanode")
+        self._start_tt_dn_processes(instances)
 
-                if "tasktracker" in i.node_group.node_processes:
-                    run.start_process(r, "tasktracker")
+    def _start_tt_dn_processes(self, instances):
+        tt_dn_names = ["datanode", "tasktracker"]
+
+        with context.ThreadGroup() as tg:
+            for i in instances:
+                processes = set(i.node_group.node_processes)
+                tt_dn_procs = processes.intersection(tt_dn_names)
+
+                if tt_dn_procs:
+                    tg.spawn('vanilla-start-tt-dn-%s' % i.instance_name,
+                             self._start_tt_dn, i, list(tt_dn_procs))
+
+    def _start_tt_dn(self, instance, tt_dn_procs):
+        with instance.remote as r:
+            run.start_processes(r, *tt_dn_procs)
 
     def _setup_instances(self, cluster, instances):
-        passwd_mysql = uuidutils.generate_uuid() \
-            if utils.get_hiveserver(cluster) else None
-        extra = self._extract_configs_to_extra(cluster, passwd_mysql)
+        extra = self._extract_configs_to_extra(cluster)
         self._push_configs_to_nodes(cluster, extra, instances)
-        self._configure_master_nodes(cluster, extra, passwd_mysql)
 
     def _push_configs_to_nodes(self, cluster, extra, new_instances):
         all_instances = utils.get_instances(cluster)
@@ -268,11 +271,6 @@ class VanillaProvider(p.ProvisioningPluginBase):
                     tg.spawn('vanilla-reconfigure-%s' % instance.instance_name,
                              self._push_configs_to_existing_node, cluster,
                              extra, instance)
-
-    def _push_configs_to_existing_node(self, cluster, extra, instance):
-        if c_helper.is_data_locality_enabled(cluster):
-            with remote.get_remote(instance) as r:
-                self._write_topology_data(r, extra)
 
     def _push_configs_to_new_node(self, cluster, extra, instance):
         ng_extra = extra[instance.node_group.id]
@@ -317,54 +315,82 @@ class VanillaProvider(p.ProvisioningPluginBase):
                 r.execute_command(
                     'sudo chmod +x /etc/hadoop/topology.sh'
                 )
-            self._write_topology_data(r, extra)
 
-    def _write_topology_data(self, r, extra):
-        r.write_file_to('/etc/hadoop/topology.data', extra['topology_data'])
+            self._write_topology_data(r, cluster, extra)
+            self._push_master_configs(r, cluster, extra, instance)
 
-    def _configure_master_nodes(self, cluster, extra, passwd_mysql):
-        nn = utils.get_namenode(cluster)
-        jt = utils.get_jobtracker(cluster)
+    def _push_configs_to_existing_node(self, cluster, extra, instance):
+        node_processes = instance.node_group.node_processes
+        need_update = (c_helper.is_data_locality_enabled(cluster) or
+                       'namenode' in node_processes or
+                       'jobtracker' in node_processes or
+                       'oozie' in node_processes or
+                       'hiveserver' in node_processes)
 
-        with remote.get_remote(nn) as r:
-            r.write_file_to('/etc/hadoop/dn.incl', utils.
-                            generate_fqdn_host_names(
-                            utils.get_datanodes(cluster)))
-        if jt:
-            with remote.get_remote(jt) as r:
-                r.write_file_to('/etc/hadoop/tt.incl', utils.
-                                generate_fqdn_host_names(
-                                utils.get_tasktrackers(cluster)))
+        if not need_update:
+            return
 
-        oozie = utils.get_oozie(cluster)
-        if oozie:
-            with remote.get_remote(oozie) as r:
-                r.write_file_to('/opt/oozie/conf/oozie-site.xml',
-                                extra[oozie.node_group.id]
-                                ['xml']['oozie-site'])
-            if c_helper.is_mysql_enable(cluster):
-                sql_script = f.get_file_text(
-                    'plugins/vanilla/resources/create_oozie_db.sql')
-                files = {
-                    '/tmp/create_oozie_db.sql': sql_script
-                }
-                remote.get_remote(oozie).write_files_to(files)
+        with remote.get_remote(instance) as r:
+            self._write_topology_data(r, cluster, extra)
+            self._push_master_configs(r, cluster, extra, instance)
 
-        hive_server = utils.get_hiveserver(cluster)
-        if hive_server:
-            ng_extra = extra[hive_server.node_group.id]
+    def _write_topology_data(self, r, cluster, extra):
+        if c_helper.is_data_locality_enabled(cluster):
+            topology_data = extra['topology_data']
+            r.write_file_to('/etc/hadoop/topology.data', topology_data)
+
+    def _push_master_configs(self, r, cluster, extra, instance):
+        ng_extra = extra[instance.node_group.id]
+        node_processes = instance.node_group.node_processes
+
+        if 'namenode' in node_processes:
+            self._push_namenode_configs(cluster, r)
+
+        if 'jobtracker' in node_processes:
+            self._push_jobtracker_configs(cluster, r)
+
+        if 'oozie' in node_processes:
+            self._push_oozie_configs(cluster, ng_extra, r)
+
+        if 'hiveserver' in node_processes:
+            self._push_hive_configs(cluster, ng_extra,
+                                    extra['hive_mysql_passwd'], r)
+
+    def _push_namenode_configs(self, cluster, r):
+        r.write_file_to('/etc/hadoop/dn.incl', utils.
+                        generate_fqdn_host_names(
+                        utils.get_datanodes(cluster)))
+
+    def _push_jobtracker_configs(self, cluster, r):
+        r.write_file_to('/etc/hadoop/tt.incl', utils.
+                        generate_fqdn_host_names(
+                        utils.get_tasktrackers(cluster)))
+
+    def _push_oozie_configs(self, cluster, ng_extra, r):
+        r.write_file_to('/opt/oozie/conf/oozie-site.xml',
+                        ng_extra['xml']['oozie-site'])
+
+        if c_helper.is_mysql_enable(cluster):
+            sql_script = f.get_file_text(
+                'plugins/vanilla/resources/create_oozie_db.sql')
             files = {
-                '/opt/hive/conf/hive-site.xml':
-                ng_extra['xml']['hive-site']
+                '/tmp/create_oozie_db.sql': sql_script
             }
-            if c_helper.is_mysql_enable(cluster):
-                sql_script = f.get_file_text(
-                    'plugins/vanilla/resources/create_hive_db.sql'
-                )
-                sql_script = sql_script.replace('pass',
-                                                passwd_mysql)
-                files.update({'/tmp/create_hive_db.sql': sql_script})
-            remote.get_remote(hive_server).write_files_to(files)
+            r.write_files_to(files)
+
+    def _push_hive_configs(self, cluster, ng_extra, hive_mysql_passwd, r):
+        files = {
+            '/opt/hive/conf/hive-site.xml':
+            ng_extra['xml']['hive-site']
+        }
+        if c_helper.is_mysql_enable(cluster):
+            sql_script = f.get_file_text(
+                'plugins/vanilla/resources/create_hive_db.sql'
+            )
+            sql_script = sql_script.replace('pass',
+                                            hive_mysql_passwd)
+            files.update({'/tmp/create_hive_db.sql': sql_script})
+        r.write_files_to(files)
 
     def _set_cluster_info(self, cluster):
         nn = utils.get_namenode(cluster)

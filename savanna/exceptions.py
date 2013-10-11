@@ -173,3 +173,10 @@ class DataTooBigException(SavannaException):
             self.message = message
         self.message = self.message % (size, maximum)
         self.code = "DATA_TOO_BIG"
+
+
+class ThreadException(SavannaException):
+    def __init__(self, thread_description, e):
+        self.message = "An error occurred in thread '%s': %s" % (
+            thread_description, str(e))
+        self.code = "THREAD_EXCEPTION"

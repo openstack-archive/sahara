@@ -17,11 +17,12 @@ import threading
 
 import eventlet
 from eventlet import corolocal
+from eventlet import greenpool
 from eventlet import semaphore
 from oslo.config import cfg
 
+from savanna import exceptions
 from savanna.openstack.common import log as logging
-from savanna.openstack.common import threadgroup
 
 
 CONF = cfg.CONF
@@ -109,39 +110,84 @@ def set_ctx(new_ctx):
         _CTXS._curr_ctxs[ident] = new_ctx
 
 
-def _wrapper(ctx, thread_description, func, *args, **kwargs):
+def _wrapper(ctx, thread_description, thread_group, func, *args, **kwargs):
     try:
         set_ctx(ctx)
         func(*args, **kwargs)
     except Exception as e:
         LOG.exception("Thread '%s' fails with exception: '%s'"
                       % (thread_description, e))
+        if thread_group and not thread_group.exc:
+            thread_group.exc = e
+            thread_group.failed_thread = thread_description
     finally:
+        if thread_group:
+            thread_group._on_thread_exit()
+
         set_ctx(None)
 
 
 def spawn(thread_description, func, *args, **kwargs):
     eventlet.spawn(_wrapper, current().clone(), thread_description,
-                   func, *args, **kwargs)
+                   None, func, *args, **kwargs)
 
 
 class ThreadGroup(object):
+    """It is advised to use TreadGroup as a context manager instead
+    of instantiating and calling _wait() manually. The __exit__()
+    guaranties to exit only after all child threads are done, even if
+    spawning code have thrown an exception
+    """
+
     def __init__(self, thread_pool_size=1000):
-        self.tg = threadgroup.ThreadGroup(thread_pool_size)
+        self.tg = greenpool.GreenPool(size=thread_pool_size)
+        self.exc = None
+        self.failed_thread = None
+        self.threads = 0
+        self.cv = threading.Condition()
 
     def spawn(self, thread_description, func, *args, **kwargs):
-        self.tg.add_thread(_wrapper, current().clone(), thread_description,
-                           func, *args, **kwargs)
+        self.tg.spawn(_wrapper, current().clone(), thread_description,
+                      self, func, *args, **kwargs)
 
-    def wait(self):
-        self.tg.wait()
+        with self.cv:
+            self.threads += 1
+
+    def _on_thread_exit(self):
+        with self.cv:
+            self.threads -= 1
+            if self.threads == 0:
+                self.cv.notifyAll()
+
+    # NOTE(dmitryme): A little rationale on why we reimplemented wait():
+    # * Eventlet's GreenPool.wait() can hung
+    # * Oslo's ThreadGroup.wait() can exit before all threads are done
+    #
+    def _wait(self):
+        """It is preferred to use the class as a context manager and do not
+        use _wait() directly, see class docstring for an explanation.
+        """
+        with self.cv:
+            while self.threads > 0:
+                self.cv.wait()
+
+        if self.exc:
+            raise exceptions.ThreadException(self.failed_thread, self.exc)
 
     def __enter__(self):
         return self
 
     def __exit__(self, *ex):
         if not any(ex):
-            self.tg.wait()
+            self._wait()
+        else:
+            # If spawning code thrown an exception, it had higher priority
+            # for us than the one thrown inside child thread (if any)
+            try:
+                self._wait()
+            except Exception:
+                # that will make __exit__ throw original exception
+                pass
 
 
 def sleep(seconds=0):
