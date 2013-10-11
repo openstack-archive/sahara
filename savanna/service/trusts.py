@@ -32,12 +32,13 @@ def create_trust(cluster):
         CONF.os_admin_username,
         CONF.os_admin_password,
         None).user_id
-
+    ctx = context.current()
     trust = client.trusts.create(trustor_user=client.user_id,
                                  trustee_user=trustee_id,
                                  impersonation=True,
+                                 role_names=ctx.roles,
                                  project=client.tenant_id)
-    conductor.cluster_update(context.current(),
+    conductor.cluster_update(ctx,
                              cluster,
                              {'trust_id': trust.id})
 
