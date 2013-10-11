@@ -279,12 +279,20 @@ class ValidationTestCase(unittest2.TestCase):
                     if isinstance(value, str):
                         value_str = "'%s'" % value_str
                     data.update({p_name: value})
-                    self._assert_create_object_validation(
-                        data=data,
-                        bad_req_i=(1, 'VALIDATION_ERROR',
-                                   u"%s is not of type '%s'"
-                                   % (value_str, prop["type"]))
-                    )
+                    if "enum" in prop:
+                        self._assert_create_object_validation(
+                            data=data,
+                            bad_req_i=(1, 'VALIDATION_ERROR',
+                                       u"%s is not one of %s"
+                                       % (value_str, prop["enum"]))
+                        )
+                    else:
+                        self._assert_create_object_validation(
+                            data=data,
+                            bad_req_i=(1, 'VALIDATION_ERROR',
+                                       u"%s is not of type '%s'"
+                                       % (value_str, prop["type"]))
+                        )
 
     def _assert_cluster_configs_validation(self, require_image_id=False):
         data = {
