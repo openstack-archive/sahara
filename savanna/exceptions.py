@@ -114,7 +114,9 @@ class BadJobBinaryInternalException(SavannaException):
     message = "Job binary internal data must be a string of length " \
               "greater than zero"
 
-    def __init__(self):
+    def __init__(self, message=None):
+        if message:
+            self.message = message
         self.code = "BAD_JOB_BINARY"
 
 

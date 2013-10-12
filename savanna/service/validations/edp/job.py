@@ -23,7 +23,8 @@ JOB_SCHEMA = {
         "name": {
             "type": "string",
             "minLength": 1,
-            "maxLength": 50
+            "maxLength": 50,
+            "format": "valid_name"
         },
         "description": {
             "type": "string"
