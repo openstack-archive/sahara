@@ -126,9 +126,10 @@ def _provision_nodes(id, node_group_id_map):
         try:
             plugin.scale_cluster(cluster, i.get_instances(cluster, instances))
         except Exception as ex:
-            LOG.error("Can't scale cluster '%s' (reason: %s)",
-                      cluster.name, ex)
+            LOG.exception("Can't scale cluster '%s' (reason: %s)",
+                          cluster.name, ex)
             conductor.cluster_update(ctx, cluster, {"status": "Error"})
+            LOG.info(g.format_cluster_status(cluster))
             return
 
     # cluster is now up and ready
@@ -157,9 +158,10 @@ def _provision_cluster(cluster_id):
     try:
         plugin.configure_cluster(cluster)
     except Exception as ex:
-        LOG.error("Can't configure cluster '%s' (reason: %s)",
-                  cluster.name, ex)
+        LOG.exception("Can't configure cluster '%s' (reason: %s)",
+                      cluster.name, ex)
         conductor.cluster_update(ctx, cluster, {"status": "Error"})
+        LOG.info(g.format_cluster_status(cluster))
         return
 
     # starting prepared and configured cluster
@@ -168,9 +170,10 @@ def _provision_cluster(cluster_id):
     try:
         plugin.start_cluster(cluster)
     except Exception as ex:
-        LOG.error("Can't start services for cluster '%s' (reason: %s)",
-                  cluster.name, ex)
+        LOG.exception("Can't start services for cluster '%s' (reason: %s)",
+                      cluster.name, ex)
         conductor.cluster_update(ctx, cluster, {"status": "Error"})
+        LOG.info(g.format_cluster_status(cluster))
         return
 
     # cluster is now up and ready

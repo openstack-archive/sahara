@@ -32,8 +32,8 @@ def _retrieve_tenant():
     try:
         return context.current().tenant_name
     except RuntimeError:
-        LOG.error("Cannot retrieve tenant for swift integration. "
-                  "Stop cluster creation")
+        LOG.exception("Cannot retrieve tenant for swift integration. "
+                      "Stopping cluster creation")
         #todo(slukjanov?) raise special error here
         raise RuntimeError("Cannot retrieve tenant for swift integration")
 

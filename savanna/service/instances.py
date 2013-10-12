@@ -48,11 +48,11 @@ def create_cluster(cluster):
 
         instances = get_instances(cluster)
 
-        _await_active(instances)
+        _await_active(cluster, instances)
 
         _assign_floating_ips(instances)
 
-        _await_networks(instances)
+        _await_networks(cluster, instances)
 
         cluster = conductor.cluster_get(ctx, cluster)
 
@@ -100,11 +100,11 @@ def scale_cluster(cluster, node_group_id_map, plugin):
 
         instances = get_instances(cluster, instance_ids)
 
-        _await_active(instances)
+        _await_active(cluster, instances)
 
         _assign_floating_ips(instances)
 
-        _await_networks(instances)
+        _await_networks(cluster, instances)
 
         cluster = conductor.cluster_get(ctx, cluster)
 
@@ -155,8 +155,8 @@ def _generate_anti_affinity_groups(cluster):
 def _create_instances(cluster):
     ctx = context.ctx()
 
-    #aa_groups = _generate_anti_affinity_groups(cluster)
     aa_groups = {}
+
     for node_group in cluster.node_groups:
         count = node_group.count
         conductor.node_group_update(ctx, node_group, {'count': 0})
@@ -293,7 +293,7 @@ def _check_cluster_exists(cluster):
     return cluster is not None
 
 
-def _await_networks(instances):
+def _await_networks(cluster, instances):
     if not instances:
         return
 
@@ -307,6 +307,8 @@ def _await_networks(instances):
                     ips_assigned.add(instance.id)
 
         context.sleep(1)
+
+    LOG.info("Cluster '%s': all instances have IPs assigned" % cluster.id)
 
     ctx = context.ctx()
     cluster = conductor.cluster_get(ctx, instances[0].node_group.cluster)
@@ -323,8 +325,10 @@ def _await_networks(instances):
 
         context.sleep(1)
 
+    LOG.info("Cluster '%s': all instances are accessible" % cluster.id)
 
-def _await_active(instances):
+
+def _await_active(cluster, instances):
     """Await all instances are in Active status and available."""
     if not instances:
         return
@@ -339,6 +343,8 @@ def _await_active(instances):
                     active_ids.add(instance.id)
 
         context.sleep(1)
+
+    LOG.info("Cluster '%s': all instances are active" % cluster.id)
 
 
 def _check_if_active(instance):
