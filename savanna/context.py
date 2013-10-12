@@ -38,6 +38,7 @@ class Context(object):
                  service_catalog=None,
                  username=None,
                  tenant_name=None,
+                 roles=None,
                  is_admin=None,
                  remote_semaphore=None,
                  **kwargs):
@@ -52,6 +53,7 @@ class Context(object):
         self.is_admin = is_admin
         self.remote_semaphore = remote_semaphore or semaphore.Semaphore(
             CONF.cluster_remote_threshold)
+        self.roles = roles
 
     def clone(self):
         return Context(
@@ -61,6 +63,7 @@ class Context(object):
             self.service_catalog,
             self.username,
             self.tenant_name,
+            self.roles,
             self.is_admin,
             self.remote_semaphore)
 
@@ -72,7 +75,8 @@ class Context(object):
             'service_catalog': self.service_catalog,
             'username': self.username,
             'tenant_name': self.tenant_name,
-            'is_admin': self.is_admin
+            'is_admin': self.is_admin,
+            'roles': self.roles,
         }
 
 

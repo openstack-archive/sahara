@@ -29,9 +29,14 @@ def url_for(service_catalog, service_type, admin=False, endpoint_type=None):
     service = _get_service_from_catalog(service_catalog, service_type)
 
     if service:
-        endpoint = service['endpoints'][0]
-        return _get_case_insensitive(endpoint,
-                                     endpoint_type)
+        endpoints = service['endpoints']
+        try:
+            return _get_endpoint_url(endpoints, endpoint_type)
+        except Exception:
+            raise RuntimeError("For service %s not found "
+                               "endpoint with type %s"
+                               % (service_type, endpoint_type))
+
     else:
         raise Exception('Service "%s" not found' % service_type)
 
@@ -44,6 +49,15 @@ def _get_service_from_catalog(catalog, service_type):
                 return service
 
     return None
+
+
+def _get_endpoint_url(endpoints, endpoint_type):
+    if 'interface' in endpoints[0]:
+        endpoint_type = endpoint_type[0:-3]
+        for endpoint in endpoints:
+            if endpoint['interface'] == endpoint_type:
+                return endpoint['url']
+    return _get_case_insensitive(endpoints[0], endpoint_type)
 
 
 def _get_case_insensitive(dictionary, key):
