@@ -198,6 +198,27 @@ class JobExecutionTest(test_base.ConductorManagerTestCase):
         }
         self.assertEqual(configs, job_ex['job_configs'])
 
+    def test_deletion_constraints_on_data_and_jobs(self):
+        ctx = context.ctx()
+        job = self.api.job_create(ctx, SAMPLE_JOB)
+        ds_input = self.api.data_source_create(ctx, SAMPLE_DATA_SOURCE)
+        SAMPLE_DATA_OUTPUT = copy.copy(SAMPLE_DATA_SOURCE)
+        SAMPLE_DATA_OUTPUT['name'] = 'output'
+        ds_output = self.api.data_source_create(ctx, SAMPLE_DATA_OUTPUT)
+
+        SAMPLE_CONF_JOB_EXECUTION['job_id'] = job['id']
+        SAMPLE_CONF_JOB_EXECUTION['input_id'] = ds_input['id']
+        SAMPLE_CONF_JOB_EXECUTION['output_id'] = ds_output['id']
+
+        self.api.job_execution_create(ctx, SAMPLE_CONF_JOB_EXECUTION)
+
+        with self.assertRaises(ex.DeletionFailed):
+            self.api.data_source_destroy(ctx, ds_input['id'])
+        with self.assertRaises(ex.DeletionFailed):
+            self.api.data_source_destroy(ctx, ds_output['id'])
+        with self.assertRaises(ex.DeletionFailed):
+            self.api.job_destroy(ctx, job['id'])
+
 
 class JobTest(test_base.ConductorManagerTestCase):
     def __init__(self, *args, **kwargs):
