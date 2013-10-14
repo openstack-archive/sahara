@@ -39,39 +39,13 @@ class HDPGatingTest(map_reduce.MapReduceTest, swift.SwiftTest,
 
 #-------------------------------CLUSTER CREATION-------------------------------
 
-#---------------------"jt-nn" node group template creation---------------------
-
-        try:
-
-            node_group_template_jt_nn_id = self.create_node_group_template(
-                'jt-nn',
-                self.hdp_config,
-                description='test node group template',
-                volumes_per_node=0,
-                volume_size=0,
-                node_processes=['JOBTRACKER', 'NAMENODE', 'SECONDARY_NAMENODE',
-                                'GANGLIA_SERVER', 'GANGLIA_MONITOR',
-                                'NAGIOS_SERVER', 'AMBARI_SERVER',
-                                'AMBARI_AGENT'],
-                node_configs={}
-            )
-            node_group_template_id_list.append(node_group_template_jt_nn_id)
-
-        except Exception as e:
-
-            with excutils.save_and_reraise_exception():
-
-                message = 'Failure while \'jt-nn\' node group ' \
-                          'template creation: '
-                self.print_error_log(message, e)
-
 #-----------------------"tt-dn" node group template creation-------------------
 
         try:
 
             node_group_template_tt_dn_id = self.create_node_group_template(
-                'tt-dn',
-                self.hdp_config,
+                name='tt-dn',
+                plugin_config=self.hdp_config,
                 description='test node group template',
                 volumes_per_node=0,
                 volume_size=0,
@@ -86,10 +60,6 @@ class HDPGatingTest(map_reduce.MapReduceTest, swift.SwiftTest,
 
             with excutils.save_and_reraise_exception():
 
-                self.delete_objects(
-                    node_group_template_id_list=node_group_template_id_list
-                )
-
                 message = 'Failure while \'tt-dn\' node group ' \
                           'template creation: '
                 self.print_error_log(message, e)
@@ -99,21 +69,26 @@ class HDPGatingTest(map_reduce.MapReduceTest, swift.SwiftTest,
         try:
 
             cluster_template_id = self.create_cluster_template(
-                'test-cluster-template',
-                self.hdp_config,
+                name='test-cluster-template',
+                plugin_config=self.hdp_config,
                 description='test cluster template',
                 cluster_configs={},
                 node_groups=[
                     dict(
                         name='master-node-jt-nn',
-                        node_group_template_id=node_group_template_jt_nn_id,
+                        flavor_id=self.common_config.FLAVOR_ID,
+                        node_processes=[
+                            'JOBTRACKER', 'NAMENODE', 'SECONDARY_NAMENODE',
+                            'GANGLIA_SERVER', 'GANGLIA_MONITOR',
+                            'NAGIOS_SERVER', 'AMBARI_SERVER', 'AMBARI_AGENT'
+                        ],
+                        node_configs={},
                         count=1),
                     dict(
                         name='worker-node-tt-dn',
                         node_group_template_id=node_group_template_tt_dn_id,
                         count=3)
-                ],
-                anti_affinity=[]
+                ]
             )
 
         except Exception as e:
@@ -132,12 +107,10 @@ class HDPGatingTest(map_reduce.MapReduceTest, swift.SwiftTest,
         try:
 
             cluster_info = self.create_cluster_and_get_info(
-                self.hdp_config,
-                cluster_template_id,
+                plugin_config=self.hdp_config,
+                cluster_template_id=cluster_template_id,
                 description='test cluster',
-                cluster_configs={},
-                node_groups=None,
-                anti_affinity=[]
+                cluster_configs={}
             )
 
         except Exception as e:

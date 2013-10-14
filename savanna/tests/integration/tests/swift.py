@@ -19,10 +19,6 @@ from savanna.openstack.common import excutils
 from savanna.tests.integration.tests import base
 
 
-# Make Swift container id for Swift testing
-SWIFT_CONTAINER_ID = uuid.uuid4()
-
-
 class SwiftTest(base.ITestCase):
 
     @base.skip_test(
@@ -30,19 +26,22 @@ class SwiftTest(base.ITestCase):
         message='Test for check of Swift availability was skipped.')
     def _check_swift_availability(self, cluster_info):
 
-        plugin = cluster_info['plugin']
+        plugin_config = cluster_info['plugin_config']
+
+        # Make Swift container id for container uniqueness during Swift testing
+        swift_container_id = uuid.uuid4()
 
         extra_script_parameters = {
             'OS_TENANT_NAME': self.common_config.OS_TENANT_NAME,
             'OS_USERNAME': self.common_config.OS_USERNAME,
             'OS_PASSWORD': self.common_config.OS_PASSWORD,
-            'HADOOP_USER': plugin.HADOOP_USER,
-            'SWIFT_CONTAINER_ID': str(SWIFT_CONTAINER_ID)
+            'HADOOP_USER': plugin_config.HADOOP_USER,
+            'SWIFT_CONTAINER_ID': str(swift_container_id)
         }
 
         namenode_ip = cluster_info['node_info']['namenode_ip']
 
-        self.open_ssh_connection(namenode_ip, plugin.NODE_USERNAME)
+        self.open_ssh_connection(namenode_ip, plugin_config.NODE_USERNAME)
 
         try:
 
@@ -58,7 +57,7 @@ class SwiftTest(base.ITestCase):
 
         swift = self.connect_to_swift()
 
-        swift.put_container('Swift-test-%s' % str(SWIFT_CONTAINER_ID))
+        swift.put_container('Swift-test-%s' % str(swift_container_id))
 
         try:
 
@@ -73,7 +72,7 @@ class SwiftTest(base.ITestCase):
         finally:
 
             self.delete_swift_container(
-                swift, 'Swift-test-%s' % str(SWIFT_CONTAINER_ID)
+                swift, 'Swift-test-%s' % str(swift_container_id)
             )
 
         self.close_ssh_connection()

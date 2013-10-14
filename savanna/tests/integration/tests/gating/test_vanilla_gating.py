@@ -50,8 +50,8 @@ class VanillaGatingTest(cluster_configs.ClusterConfigTest,
         try:
 
             node_group_template_tt_dn_id = self.create_node_group_template(
-                'tt-dn',
-                self.vanilla_config,
+                name='tt-dn',
+                plugin_config=self.vanilla_config,
                 description='test node group template',
                 volumes_per_node=0,
                 volume_size=0,
@@ -76,8 +76,8 @@ class VanillaGatingTest(cluster_configs.ClusterConfigTest,
         try:
 
             node_group_template_tt_id = self.create_node_group_template(
-                'tt',
-                self.vanilla_config,
+                name='tt',
+                plugin_config=self.vanilla_config,
                 description='test node group template',
                 volumes_per_node=0,
                 volume_size=0,
@@ -104,8 +104,8 @@ class VanillaGatingTest(cluster_configs.ClusterConfigTest,
         try:
 
             node_group_template_dn_id = self.create_node_group_template(
-                'dn',
-                self.vanilla_config,
+                name='dn',
+                plugin_config=self.vanilla_config,
                 description='test node group template',
                 volumes_per_node=0,
                 volume_size=0,
@@ -132,8 +132,8 @@ class VanillaGatingTest(cluster_configs.ClusterConfigTest,
         try:
 
             cluster_template_id = self.create_cluster_template(
-                'test-cluster-template',
-                self.vanilla_config,
+                name='test-cluster-template',
+                plugin_config=self.vanilla_config,
                 description='test cluster template',
                 cluster_configs={
                     'HDFS': cluster_configs.CLUSTER_HDFS_CONFIG,
@@ -168,8 +168,7 @@ class VanillaGatingTest(cluster_configs.ClusterConfigTest,
                         name='worker-node-tt',
                         node_group_template_id=node_group_template_tt_id,
                         count=1)
-                ],
-                anti_affinity=[]
+                ]
             )
 
         except Exception as e:
@@ -188,12 +187,10 @@ class VanillaGatingTest(cluster_configs.ClusterConfigTest,
         try:
 
             cluster_info = self.create_cluster_and_get_info(
-                self.vanilla_config,
-                cluster_template_id,
+                plugin_config=self.vanilla_config,
+                cluster_template_id=cluster_template_id,
                 description='test cluster',
-                cluster_configs={},
-                node_groups=None,
-                anti_affinity=[]
+                cluster_configs={}
             )
 
         except Exception as e:

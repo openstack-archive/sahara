@@ -69,18 +69,18 @@ COMMON_CONFIG_OPTS = [
                     'minimal value is 1'),
 
     cfg.IntOpt('TELNET_TIMEOUT',
-               default=3,
+               default=5,
                help='Timeout for node process deployment on cluster '
                     'nodes (in minutes); minimal value is 1'),
 
     cfg.IntOpt('HDFS_INITIALIZATION_TIMEOUT',
-               default=3,
+               default=5,
                help='Timeout for HDFS initialization (in minutes); '
                     'minimal value is 1'),
 
-    cfg.IntOpt('JOB_CREATION_TIMEOUT',
+    cfg.IntOpt('JOB_LAUNCH_TIMEOUT',
                default=5,
-               help='Timeout for job creation (in minutes); '
+               help='Timeout for job launch (in minutes); '
                     'minimal value is 1'),
 
     cfg.StrOpt('CLUSTER_NAME',
@@ -172,7 +172,7 @@ HDP_CONFIG_OPTS = [
                help='ID for image which is used for cluster creation'),
 
     cfg.StrOpt('NODE_USERNAME',
-               default='cloud-user',
+               default='root',
                help='Username which is used for connecting to cluster nodes '
                     'via SSH'),
 

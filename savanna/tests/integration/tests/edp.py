@@ -42,7 +42,7 @@ class EDPTest(base.ITestCase):
 
     def __await_job_execution(self, job):
 
-        timeout = self.common_config.JOB_CREATION_TIMEOUT * 60
+        timeout = self.common_config.JOB_LAUNCH_TIMEOUT * 60
         status = self.savanna.job_executions.get(job.id).info['status']
 
         while status != 'SUCCEEDED':
@@ -55,7 +55,7 @@ class EDPTest(base.ITestCase):
             if timeout <= 0:
                 self.fail(
                     'Job did not return to \'SUCCEEDED\' status within '
-                    '%d minute(s).' % self.common_config.JOB_CREATION_TIMEOUT)
+                    '%d minute(s).' % self.common_config.JOB_LAUNCH_TIMEOUT)
 
             status = self.savanna.job_executions.get(job.id).info['status']
             time.sleep(10)
