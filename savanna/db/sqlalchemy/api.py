@@ -74,7 +74,7 @@ def setup_db():
         engine = db_session.get_engine(sqlite_fk=True)
         m.Cluster.metadata.create_all(engine)
     except sa.exc.OperationalError as e:
-        LOG.error("Database registration exception: %s", e)
+        LOG.exception("Database registration exception: %s", e)
         return False
     return True
 
@@ -84,7 +84,7 @@ def drop_db():
         engine = db_session.get_engine(sqlite_fk=True)
         m.Cluster.metadata.drop_all(engine)
     except Exception as e:
-        LOG.error("Database shutdown exception: %s", e)
+        LOG.exception("Database shutdown exception: %s", e)
         return False
     return True
 
