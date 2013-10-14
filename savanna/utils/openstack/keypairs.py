@@ -13,7 +13,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from novaclient import base
 from novaclient.v1_1 import keypairs
 
 
@@ -28,14 +27,5 @@ class SavannaKeypair(keypairs.Keypair):
             setattr(self, k, v)
 
 
-# TODO(slukjanov): remove this tweak when we'll depend on novaclient>=2.14.0
 class SavannaKeypairManager(keypairs.KeypairManager):
     resource_class = SavannaKeypair
-
-    def get(self, keypair):
-        """Get a keypair.
-
-        :param image: The ID of the keypair to get.
-        :rtype: :class:`Keypair`
-        """
-        return self._get("/os-keypairs/%s" % base.getid(keypair), "keypair")
