@@ -58,7 +58,7 @@ and set right value for variables:
 .. sourcecode:: python
 
    OPENSTACK_HOST = "ip of your controller"
-   SAVANNA_URL = "url for savanna (e.g. "http://localhost:8386/v1.0")"
+   SAVANNA_URL = "url for savanna (e.g. "http://localhost:8386/v1.1")"
 
 If you are using Neutron instead of Nova Network:
 

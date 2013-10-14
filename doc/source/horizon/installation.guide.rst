@@ -67,7 +67,7 @@ approach see :doc:`/horizon/dev.environment.guide`
 
 .. sourcecode:: python
 
-    SAVANNA_URL = 'http://localhost:8386/v1.0'
+    SAVANNA_URL = 'http://localhost:8386/v1.1'
 ..
 
 If you are using Neutron instead of Nova Network:
