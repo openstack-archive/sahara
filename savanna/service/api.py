@@ -179,7 +179,7 @@ def _provision_cluster(cluster_id):
 
     # schedule execution pending job for cluster
     for je in conductor.job_execution_get_all(ctx, cluster_id=cluster.id):
-        jm.run_job(ctx, je)
+        jm.run_job(je)
 
 
 def terminate_cluster(id):
