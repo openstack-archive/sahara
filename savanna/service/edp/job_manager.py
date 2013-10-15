@@ -63,7 +63,7 @@ def get_job_status(job_execution_id):
         update['end_time'] = datetime.datetime.now()
 
     job_execution = conductor.job_execution_update(ctx, job_execution,
-                                                   {"info": job_info})
+                                                   update)
     return job_execution
 
 
