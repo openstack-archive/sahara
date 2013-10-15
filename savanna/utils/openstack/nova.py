@@ -33,8 +33,10 @@ def client():
     nova.client.auth_token = ctx.token
     nova.client.management_url = compute_url
     nova.images = images.SavannaImageManager(nova)
-    if not hasattr(nova.keypairs, 'get'):
-        nova.keypairs = keypairs.SavannaKeypairManager(nova)
+    # unconditionally patch 'get' until
+    #   https://bugs.launchpad.net/python-novaclient/+bug/1223934
+    # is fixed for our use case and all we support
+    nova.keypairs = keypairs.SavannaKeypairManager(nova)
 
     return nova
 
