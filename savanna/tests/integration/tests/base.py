@@ -120,7 +120,7 @@ class ITestCase(unittest2.TestCase):
                                     description, cluster_configs,
                                     node_groups=None, anti_affinity=None,
                                     net_id=None, hadoop_version=None,
-                                    image_id=None):
+                                    image_id=None, is_transient=False):
 
         if not hadoop_version:
 
@@ -134,9 +134,9 @@ class ITestCase(unittest2.TestCase):
 
         data = self.savanna.clusters.create(
             self.common_config.CLUSTER_NAME, plugin_config.PLUGIN_NAME,
-            hadoop_version, cluster_template_id, image_id, description,
-            cluster_configs, node_groups, self.common_config.USER_KEYPAIR_ID,
-            anti_affinity, net_id)
+            hadoop_version, cluster_template_id, image_id, is_transient,
+            description, cluster_configs, node_groups,
+            self.common_config.USER_KEYPAIR_ID, anti_affinity, net_id)
 
         self.cluster_id = data.id
 
