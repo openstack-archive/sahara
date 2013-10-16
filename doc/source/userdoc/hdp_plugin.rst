@@ -11,13 +11,13 @@ The Hortonworks Data Platform (HDP) Savanna plugin provides a way to provision H
 The HDP plugin uses Ambari Blueprints aka templates for cluster provisioning.
 
 Apache Ambari Blueprints (aka Cluster templates)
-================================================
+------------------------------------------------
 Apache Ambari Blueprints is a portable document definition, which provides a complete definition for an Apache Hadoop cluster, including cluster topology, components, services and their configurations. Ambari Blueprints can be consumed by the HDP plugin to instantiate a Hadoop cluster on OpenStack. The benefits of this approach is that it allows for Hadoop clusters to be configured and deployed using an Ambari native format that can be used with as well as outside of OpenStack allowing for clusters to be re-instantiated in a variety of environments.
  
 For more information about Apache Ambari Blueprints, refer to: https://issues.apache.org/jira/browse/AMBARI-1783. Note that Apache Ambari Blueprints are not yet finalized.
 
 Operation
-=========
+---------
 The HDP Plugin performs the following four primary functions during cluster creation:
 
 1. Software deployment - the plugin orchestrates the deployment of the required software to the target VMs
@@ -26,7 +26,7 @@ The HDP Plugin performs the following four primary functions during cluster crea
 4. Services Start - the plugin invokes the appropriate APIs to indicate to the Ambari Server that the cluster services should be started
 
 Images
-======
+------
 The Savanna HDP plugin can make use of either minimal (operating system only) images or pre-populated HDP images. The base requirement for both is that the image is cloud-init enabled and contains a supported operating system (see http://docs.hortonworks.com/HDPDocuments/HDP1/HDP-1.2.4/bk_hdp1-system-admin-guide/content/sysadminguides_ha_chap2_3.html).
  
 The advantage of a pre-populated image is that provisioning time is accelerated, as packages do not need to be downloaded and installed which make up the majority of the time spent in the provisioning cycle.
@@ -61,11 +61,17 @@ There are two VM images provided for use with the HDP Plugin:
 
 1. `centos-6_64-hdp-1.3.qcow2 <http://public-repo-1.hortonworks.com/savanna/images/centos-6_4-64-hdp-1.3.qcow2>`_: This image contains most of the requisite packages necessary for HDP deployment. The packages contained herein correspond to the HDP 1.3 release. The operating system is a minimal CentOS 6.4 cloud-init enabled install. This image can only be used to provision HDP 1.3 hadoop clusters.
 2. `centos-6-64-hdp-vanilla.qcow2 <http://public-repo-1.hortonworks.com/savanna/images/centos-6_4-64-vanilla.qcow2>`_: This image provides only a minimal install of CentOS 6.4  and is cloud-init enabled. This image can be used to provision any versions of HDP supported by Savanna.
+
+HDP plugin requires an image to be tagged in Savanna Image Registry with
+two tags: 'hdp' and '<hdp version>' (e.g. '1.3.2').
+
+Also in the Image Registry you will need to specify username for an image.
+It should be 'root' for both images.
  
 Please refer to the reference VM image provided for specific details.
 
 Limitations
-===========
+-----------
 The HDP plugin currently has the following limitations:
 
 * Currently, the HDP plugin provides support for HDP 1.3. Once HDP2 is released, support for this version will be provided.
@@ -81,7 +87,7 @@ The HDP plugin currently has the following limitations:
 Note: Other services may be added using Ambari after initial cluster creation.
 
 Cluster Validation
-==================
+------------------
 Prior to Hadoop cluster creation, the HDP plugin will perform the following validation checks to ensure a successful Hadoop deployment:
 
 * Ensure the existence of a NAMENODE process in the cluster
@@ -90,5 +96,5 @@ Prior to Hadoop cluster creation, the HDP plugin will perform the following vali
 * Ensure that each defined node group had an associated Ambari Agent configured
 
 The HDP Plugin and Savanna Support
-==================================
+----------------------------------
 A Hortonworks supported version of HDP OpenStack plugin will become available at a future date. For more information, please contact Hortonworks. 

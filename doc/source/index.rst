@@ -15,21 +15,56 @@ Overview
 
 User guide
 ----------
+
+**Installation**
+
 .. toctree::
    :maxdepth: 1
 
    userdoc/installation.guide
    horizon/installation.guide
-   horizon/dashboard.user.guide
+
+**How To**
+
+.. toctree::
+   :maxdepth: 1
+
    userdoc/overview
+   horizon/dashboard.user.guide
    userdoc/features
-   userdoc/plugins
-   userdoc/edp
    userdoc/registering_image
-   userdoc/hadoop-swift
+
+**Plugins**
+
+.. toctree::
+   :maxdepth: 1
+
+   userdoc/plugins
+   userdoc/vanilla_plugin
+   userdoc/hdp_plugin
+
+**Elastic Data Processing**
+
+.. toctree::
+   :maxdepth: 1
+
+   userdoc/edp
+
+**APIs**
+
+.. toctree::
+   :maxdepth: 1
+
    userdoc/python_client
    userdoc/rest_api_v1.0
    userdoc/rest_api_v1.1_EDP
+
+**Miscellaneous**
+
+.. toctree::
+   :maxdepth: 1
+
+   userdoc/hadoop-swift
    userdoc/diskimagebuilder
 
 
@@ -66,4 +101,3 @@ Developer Guide
    devref/launchpad
    devref/gerrit
    devref/jenkins
-
