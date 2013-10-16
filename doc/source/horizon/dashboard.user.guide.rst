@@ -1,5 +1,3 @@
-.. _dashboard.user.guide:
-
 Savanna UI User Guide
 =====================
 
@@ -94,8 +92,6 @@ Scaling a Cluster
   - Your new Node Group will appear below and you can adjust the number of instances via the text box or the +/- buttons.
 
 4) To confirm the scaling settings and trigger the spawning/deletion of instances, click on "Scale".
-
-.. _dashboard.user.guide#Elastic Data Processing (EDP):
 
 Elastic Data Processing (EDP)
 -----------------------------
