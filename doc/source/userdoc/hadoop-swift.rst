@@ -1,4 +1,4 @@
-Swift integration
+Swift Integration
 =================
 Hadoop and Swift integration is the essential continuation of Hadoop&OpenStack
 marriage. There were two steps to achieve this:

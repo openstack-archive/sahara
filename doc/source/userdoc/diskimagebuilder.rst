@@ -1,5 +1,5 @@
-Disk Image Builder
-==================
+Building Images for Vanilla Plugin
+==================================
 
 As of now vanilla plugin works with images with pre-installed Apache Hadoop. To
 simplify task of building such images we use

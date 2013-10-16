@@ -1,5 +1,5 @@
-Overview
-========
+Rationale
+=========
 
 Introduction
 ------------
