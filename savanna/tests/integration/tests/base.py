@@ -18,10 +18,10 @@ import socket
 import telnetlib
 import time
 
+import unittest2
+
 import savannaclient.api.client as savanna_client
 from swiftclient import client as swift_client
-
-import unittest2
 
 from savanna.openstack.common import excutils
 from savanna.tests.integration.configs import config as cfg
@@ -81,60 +81,62 @@ class ITestCase(unittest2.TestCase):
 
 #-------------------------Methods for object creation--------------------------
 
-    def create_node_group_template(self, name, plugin, description,
+    def create_node_group_template(self, name, plugin_config, description,
                                    volumes_per_node, volume_size,
                                    node_processes, node_configs,
-                                   hadoop_version=None):
+                                   floating_ip_pool=None, hadoop_version=None):
 
         if not hadoop_version:
 
-            hadoop_version = plugin.HADOOP_VERSION
+            hadoop_version = plugin_config.HADOOP_VERSION
 
         data = self.savanna.node_group_templates.create(
-            name, plugin.PLUGIN_NAME, hadoop_version,
+            name, plugin_config.PLUGIN_NAME, hadoop_version,
             self.common_config.FLAVOR_ID, description, volumes_per_node,
-            volume_size, node_processes, node_configs)
+            volume_size, node_processes, node_configs, floating_ip_pool)
 
         node_group_template_id = data.id
 
         return node_group_template_id
 
-    def create_cluster_template(self, name, plugin, description,
-                                cluster_configs, node_groups, anti_affinity,
+    def create_cluster_template(self, name, plugin_config, description,
+                                cluster_configs, node_groups,
+                                anti_affinity=None, net_id=None,
                                 hadoop_version=None):
 
         if not hadoop_version:
 
-            hadoop_version = plugin.HADOOP_VERSION
+            hadoop_version = plugin_config.HADOOP_VERSION
 
         data = self.savanna.cluster_templates.create(
-            name, plugin.PLUGIN_NAME, hadoop_version, description,
-            cluster_configs, node_groups, anti_affinity)
+            name, plugin_config.PLUGIN_NAME, hadoop_version, description,
+            cluster_configs, node_groups, anti_affinity, net_id)
 
         cluster_template_id = data.id
 
         return cluster_template_id
 
-    def create_cluster_and_get_info(self, plugin, cluster_template_id,
-                                    description, cluster_configs, node_groups,
-                                    anti_affinity, hadoop_version=None,
+    def create_cluster_and_get_info(self, plugin_config, cluster_template_id,
+                                    description, cluster_configs,
+                                    node_groups=None, anti_affinity=None,
+                                    net_id=None, hadoop_version=None,
                                     image_id=None):
 
         if not hadoop_version:
 
-            hadoop_version = plugin.HADOOP_VERSION
+            hadoop_version = plugin_config.HADOOP_VERSION
 
         if not image_id:
 
-            image_id = plugin.IMAGE_ID
+            image_id = plugin_config.IMAGE_ID
 
         self.cluster_id = None
 
         data = self.savanna.clusters.create(
-            self.common_config.CLUSTER_NAME, plugin.PLUGIN_NAME,
+            self.common_config.CLUSTER_NAME, plugin_config.PLUGIN_NAME,
             hadoop_version, cluster_template_id, image_id, description,
             cluster_configs, node_groups, self.common_config.USER_KEYPAIR_ID,
-            anti_affinity)
+            anti_affinity, net_id)
 
         self.cluster_id = data.id
 
@@ -146,7 +148,7 @@ class ITestCase(unittest2.TestCase):
         try:
 
             node_info = self.get_node_info(node_ip_list_with_node_processes,
-                                           plugin)
+                                           plugin_config)
 
         except Exception as e:
 
@@ -159,7 +161,7 @@ class ITestCase(unittest2.TestCase):
 
         try:
 
-            self.await_active_workers_for_namenode(node_info, plugin)
+            self.await_active_workers_for_namenode(node_info, plugin_config)
 
         except Exception as e:
 
@@ -187,14 +189,14 @@ class ITestCase(unittest2.TestCase):
         #               '172.18.168.242': ['namenode', 'jobtracker'],
         #               '172.18.168.167': ['datanode']
         #       },
-        #       'plugin_name': 'vanilla'
+        #       'plugin_config': <oslo.config.cfg.GroupAttr object at 0x215d9d>
         # }
 
         return {
             'cluster_id': self.cluster_id,
             'node_ip_list': node_ip_list_with_node_processes,
             'node_info': node_info,
-            'plugin': plugin
+            'plugin_config': plugin_config
         }
 
 #---------Helper methods for cluster info obtaining and its processing---------
@@ -273,7 +275,7 @@ class ITestCase(unittest2.TestCase):
                     % (host, port, self.common_config.TELNET_TIMEOUT)
                 )
 
-    def get_node_info(self, node_ip_list_with_node_processes, plugin):
+    def get_node_info(self, node_ip_list_with_node_processes, plugin_config):
 
         tasktracker_count = 0
         datanode_count = 0
@@ -286,7 +288,7 @@ class ITestCase(unittest2.TestCase):
 
             for process in processes:
 
-                if process in plugin.HADOOP_PROCESSES_WITH_PORTS:
+                if process in plugin_config.HADOOP_PROCESSES_WITH_PORTS:
 
                     for i in range(self.common_config.TELNET_TIMEOUT * 60):
 
@@ -295,7 +297,8 @@ class ITestCase(unittest2.TestCase):
                             time.sleep(1)
                             telnetlib.Telnet(
                                 node_ip,
-                                plugin.HADOOP_PROCESSES_WITH_PORTS[process]
+                                plugin_config.HADOOP_PROCESSES_WITH_PORTS[
+                                    process]
                             )
 
                             break
@@ -306,25 +309,26 @@ class ITestCase(unittest2.TestCase):
                                 'Connection attempt. NODE PROCESS: %s, '
                                 'PORT: %s.'
                                 % (process,
-                                   plugin.HADOOP_PROCESSES_WITH_PORTS[process])
+                                   plugin_config.HADOOP_PROCESSES_WITH_PORTS[
+                                       process])
                             )
 
                     else:
 
                         self.try_telnet(
                             node_ip,
-                            plugin.HADOOP_PROCESSES_WITH_PORTS[process]
+                            plugin_config.HADOOP_PROCESSES_WITH_PORTS[process]
                         )
 
-            if plugin.PROCESS_NAMES['tt'] in processes:
+            if plugin_config.PROCESS_NAMES['tt'] in processes:
 
                 tasktracker_count += 1
 
-            if plugin.PROCESS_NAMES['dn'] in processes:
+            if plugin_config.PROCESS_NAMES['dn'] in processes:
 
                 datanode_count += 1
 
-            if plugin.PROCESS_NAMES['nn'] in processes:
+            if plugin_config.PROCESS_NAMES['nn'] in processes:
 
                 namenode_ip = node_ip
 
@@ -335,10 +339,10 @@ class ITestCase(unittest2.TestCase):
             'node_count': node_count
         }
 
-    def await_active_workers_for_namenode(self, node_info, plugin):
+    def await_active_workers_for_namenode(self, node_info, plugin_config):
 
         self.open_ssh_connection(
-            node_info['namenode_ip'], plugin.NODE_USERNAME
+            node_info['namenode_ip'], plugin_config.NODE_USERNAME
         )
 
         for i in range(self.common_config.HDFS_INITIALIZATION_TIMEOUT * 6):
@@ -347,13 +351,13 @@ class ITestCase(unittest2.TestCase):
 
             active_tasktracker_count = self.execute_command(
                 'sudo su -c "hadoop job -list-active-trackers" %s'
-                % plugin.HADOOP_USER)[1]
+                % plugin_config.HADOOP_USER)[1]
 
             active_datanode_count = int(
                 self.execute_command(
                     'sudo su -c "hadoop dfsadmin -report" %s \
                     | grep "Datanodes available:.*" | awk \'{print $3}\''
-                    % plugin.HADOOP_USER)[1]
+                    % plugin_config.HADOOP_USER)[1]
             )
 
             if not active_tasktracker_count:

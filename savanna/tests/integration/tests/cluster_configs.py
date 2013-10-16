@@ -36,7 +36,9 @@ CLUSTER_HDFS_CONFIG = {'dfs.replication': 2}
 CLUSTER_MR_CONFIG = {'mapred.map.tasks.speculative.execution': False,
                      'mapred.child.java.opts': '-Xmx500m'}
 
+
 #TODO(ylobankov): add check for Oozie configs in future
+
 
 CONFIG_MAP = {
     'namenode': {
@@ -56,9 +58,6 @@ CONFIG_MAP = {
         'config': TT_CONFIG
     }
 }
-
-# Make Swift container id for Swift config testing
-SWIFT_CONTAINER_ID = uuid.uuid4()
 
 
 class ClusterConfigTest(base.ITestCase):
@@ -144,7 +143,7 @@ class ClusterConfigTest(base.ITestCase):
                     auth_version='2')  # TODO(ylobankov): delete hard code
 
                 swift.put_container(
-                    'Swift-config-test-%s' % str(SWIFT_CONTAINER_ID)
+                    'Swift-config-test-%s' % str(self.swift_container_id)
                 )
 
                 try:
@@ -156,7 +155,8 @@ class ClusterConfigTest(base.ITestCase):
                 finally:
 
                     self.delete_swift_container(
-                        swift, 'Swift-config-test-%s' % str(SWIFT_CONTAINER_ID)
+                        swift, 'Swift-config-test-%s'
+                               % str(self.swift_container_id)
                     )
 
 #TODO(ylobankov): add check for secondary nn when bug #1217245 will be fixed
@@ -195,12 +195,16 @@ class ClusterConfigTest(base.ITestCase):
         node_ip_list_with_node_processes = \
             self.get_cluster_node_ip_list_with_node_processes(cluster_id)
 
+        # Make Swift container id for container uniqueness
+        # during Swift config testing
+        self.swift_container_id = uuid.uuid4()
+
         extra_script_parameters = {
             'OS_TENANT_NAME': self.common_config.OS_TENANT_NAME,
             'OS_USERNAME': self.common_config.OS_USERNAME,
             'OS_PASSWORD': self.common_config.OS_PASSWORD,
             'HADOOP_USER': self.vanilla_config.HADOOP_USER,
-            'SWIFT_CONTAINER_ID': str(SWIFT_CONTAINER_ID)
+            'SWIFT_CONTAINER_ID': str(self.swift_container_id)
         }
 
         try:

@@ -30,7 +30,7 @@ TELNET_TIMEOUT = 5
 HDFS_INITIALIZATION_TIMEOUT = 5
 
 # Timeout for job creation (in minutes); minimal value is 1
-JOB_CREATION_TIMEOUT = 2
+JOB_LAUNCH_TIMEOUT = 5
 
 # Name for cluster
 CLUSTER_NAME = 'test-cluster'
@@ -70,10 +70,10 @@ PROCESS_NAMES = nn: namenode, tt: tasktracker, dn: datanode
 
 SKIP_ALL_TESTS_FOR_PLUGIN = False
 SKIP_CLUSTER_CONFIG_TEST = False
+SKIP_EDP_TEST = False
 SKIP_MAP_REDUCE_TEST = False
 SKIP_SWIFT_TEST = False
 SKIP_SCALING_TEST = False
-SKIP_EDP_TEST = False
 
 [HDP]
 
@@ -84,10 +84,10 @@ PLUGIN_NAME = 'hdp'
 IMAGE_ID = '123456-qwerty'
 
 # Username which is used for connecting to cluster nodes via SSH
-NODE_USERNAME = 'cloud-user'
+NODE_USERNAME = 'root'
 
 # Version of Hadoop
-HADOOP_VERSION = '1.3.0'
+HADOOP_VERSION = '1.3.2'
 # Username which is used for access to Hadoop services
 HADOOP_USER = 'hdfs'
 # Directory where are located Hadoop jar files

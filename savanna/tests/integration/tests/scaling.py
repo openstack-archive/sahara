@@ -26,11 +26,11 @@ class ScalingTest(base.ITestCase):
         node_processes = self.savanna.node_group_templates.get(
             ngt_id).node_processes
 
-        if cluster_info['plugin'].PROCESS_NAMES['tt'] in node_processes:
+        if cluster_info['plugin_config'].PROCESS_NAMES['tt'] in node_processes:
 
             cluster_info['node_info']['tasktracker_count'] += count
 
-        if cluster_info['plugin'].PROCESS_NAMES['dn'] in node_processes:
+        if cluster_info['plugin_config'].PROCESS_NAMES['dn'] in node_processes:
 
             cluster_info['node_info']['datanode_count'] += count
 
@@ -48,13 +48,13 @@ class ScalingTest(base.ITestCase):
 
         cluster_info['node_info']['node_count'] += -old_count + count
 
-        if cluster_info['plugin'].PROCESS_NAMES['tt'] in processes:
+        if cluster_info['plugin_config'].PROCESS_NAMES['tt'] in processes:
 
             cluster_info['node_info']['tasktracker_count'] += (
                 -old_count + count
             )
 
-        if cluster_info['plugin'].PROCESS_NAMES['dn'] in processes:
+        if cluster_info['plugin_config'].PROCESS_NAMES['dn'] in processes:
 
             cluster_info['node_info']['datanode_count'] += -old_count + count
 
@@ -127,7 +127,7 @@ class ScalingTest(base.ITestCase):
         try:
 
             new_node_info = self.get_node_info(new_node_ip_list,
-                                               cluster_info['plugin'])
+                                               cluster_info['plugin_config'])
 
         except Exception as e:
 
@@ -151,7 +151,7 @@ class ScalingTest(base.ITestCase):
         try:
 
             self.await_active_workers_for_namenode(
-                new_node_info, cluster_info['plugin']
+                new_node_info, cluster_info['plugin_config']
             )
 
         except Exception as e:
@@ -167,5 +167,5 @@ class ScalingTest(base.ITestCase):
             'cluster_id': cluster_info['cluster_id'],
             'node_ip_list': new_node_ip_list,
             'node_info': new_node_info,
-            'plugin': cluster_info['plugin']
+            'plugin_config': cluster_info['plugin_config']
         }
