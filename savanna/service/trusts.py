@@ -52,7 +52,7 @@ def use_os_admin_auth_token(cluster):
             CONF.os_admin_username,
             CONF.os_admin_password,
             cluster.trust_id)
-        ctx.auth_token = client.auth_token
+        ctx.token = client.auth_token
         ctx.service_catalog = json.dumps(
             client.service_catalog.catalog['catalog'])
 
