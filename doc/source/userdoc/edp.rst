@@ -102,3 +102,40 @@ The general workflow for defining and executing a MapReduce job in Savanna is es
       +-------------------------+-----------------------------------------+
 
 The workflow is simpler when using existing objects.  For example, to construct a new job which uses existing binaries and input data a user may only need to perform steps 3, 5, and 6 above.  Of course, to repeat the same job multiple times a user would need only step 6.
+
+
+EDP Technical Considerations
+============================
+
+There are a several things in EDP which require attention in order
+to work properly. They are listed on this page.
+
+Transient Clusters
+------------------
+
+EDP allows running jobs on transient clusters. That way the cluster is created
+specifically for the job and is shut down automatically once the job is
+finished.
+
+Two config parameters control the behaviour of periodic clusters:
+
+ * periodic_enable - if set to 'False', Savanna will do nothing to a transient
+   cluster once the job it was created for is completed. If it is set to
+   'True', then the behaviour depends on the value of the next parameter.
+ * use_identity_api_v3 - set it to 'False' if your OpenStack installation
+   does not provide Keystone API v3. In that case Savanna will not terminate
+   unneeded clusters. Instead it will set their state to 'AwaitingTermination'
+   meaning that they could be manually deleted by a user. If the parameter is
+   set to 'True', Savanna will itself terminate the cluster. The limitation is
+   caused by lack of 'trusts' feature in Keystone API older than v3.
+
+If both parameters are set to 'True', Savanna works with transient clusters in
+the following manner:
+
+ 1. When a user requests for a job to be executed on a transient cluster,
+    Savanna creates such a cluster.
+ 2. Savanna drops the user's credentials once the cluster is created but
+    prior to that it creates a trust allowing it to operate with the
+    cluster instances in the future without user credentials.
+ 3. Once a cluster is not needed, Savanna terminates its instances using the
+    stored trust. Savanna drops the trust after that.
