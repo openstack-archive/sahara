@@ -4,20 +4,27 @@
 # Options defined in savanna.config
 #
 
-# set host (string value)
+# Hostname or IP address that will be used to listen on
+# (string value)
 #host=
 
-# set port (integer value)
+# Port that will be used to listen on (integer value)
 #port=8386
 
+# Log request/response exchange details: environ, headers and
+# bodies (boolean value)
+#log_exchange=false
 
-# If set to True, savanna will use floating IPs to
-# communicate with instances. To make sure that all
-# instances have floating assigned in Nova Network
-# set "auto_assign_floating_ip=True" in nova.conf.
-# If Neutron is used for networking, make sure that
-# all Node Groups have "floating_ip_pool" parameter
-# defined.
+# Maximum length of job binary data in kilobytes that may be
+# stored or retrieved in a single operation (integer value)
+#job_binary_max_KB=5120
+
+# If set to True, Savanna will use floating IPs to communicate
+# with instances. To make sure that all instances have
+# floating IPs assigned in Nova Network set
+# "auto_assign_floating_ip=True" in nova.conf.If Neutron is
+# used for networking, make sure thatall Node Groups have
+# "floating_ip_pool" parameterdefined. (boolean value)
 #use_floating_ips=true
 
 # The suffix of the node's FQDN. In nova-network that is
@@ -27,9 +34,6 @@
 # Use Neutron or Nova Network (boolean value)
 #use_neutron=false
 
-# The maximum length of job binary data in Kilobytes that
-# may be stored or retrieved in a single operation
-#job_binary_max_KB=5120
 
 #
 # Options defined in savanna.main
@@ -59,6 +63,14 @@
 
 
 #
+# Options defined in savanna.db.base
+#
+
+# Driver to use for database access (string value)
+#db_driver=savanna.db
+
+
+#
 # Options defined in savanna.openstack.common.db.sqlalchemy.session
 #
 
@@ -67,18 +79,6 @@
 
 # If true, use synchronous mode for sqlite (boolean value)
 #sqlite_synchronous=true
-
-
-#
-# Options defined in savanna.openstack.common.lockutils
-#
-
-# Whether to disable inter-process locks (boolean value)
-#disable_process_locking=false
-
-# Directory to use for lock files. Default to a temp directory
-# (string value)
-#lock_path=<None>
 
 
 #
@@ -113,21 +113,13 @@
 #logging_exception_prefix=%(asctime)s.%(msecs)03d %(process)d TRACE %(name)s %(instance)s
 
 # list of logger=LEVEL pairs (list value)
-#default_log_levels=amqplib=WARN,sqlalchemy=WARN,boto=WARN,suds=INFO,keystone=INFO,eventlet.wsgi.server=WARN
+#default_log_levels=amqplib=WARN,qpid.messaging=INFO,stevedore=INFO,eventlet.wsgi.server=WARN,sqlalchemy=WARN,boto=WARN,suds=INFO,keystone=INFO,paramiko=WARN,requests=WARN
 
 # publish error events (boolean value)
 #publish_errors=false
 
 # make deprecations fatal (boolean value)
 #fatal_deprecations=false
-
-# If an instance is passed with the log message, format it
-# like this (string value)
-#instance_format="[instance: %(uuid)s] "
-
-# If an instance UUID is passed with the log message, format
-# it like this (string value)
-#instance_uuid_format="[instance: %(uuid)s] "
 
 # If this option is specified, the logging configuration file
 # specified is used and overrides any other logging options
@@ -136,9 +128,9 @@
 # (string value)
 #log_config=<None>
 
-# A logging.Formatter log message format string which may use
-# any of the available logging.LogRecord attributes. This
-# option is deprecated.  Please use
+# DEPRECATED. A logging.Formatter log message format string
+# which may use any of the available logging.LogRecord
+# attributes. This option is deprecated.  Please use
 # logging_context_format_string and
 # logging_default_format_string instead. (string value)
 #log_format=<None>
@@ -163,23 +155,6 @@
 
 
 #
-# Options defined in savanna.openstack.common.notifier.api
-#
-
-# Driver or drivers to handle sending notifications (multi
-# valued)
-#notification_driver=
-
-# Default notification level for outgoing notifications
-# (string value)
-#default_notification_level=INFO
-
-# Default publisher_id for outgoing notifications (string
-# value)
-#default_publisher_id=$host
-
-
-#
 # Options defined in savanna.plugins.base
 #
 
@@ -189,64 +164,96 @@
 
 
 #
-# Options defined in savanna.service.networks
+# Options defined in savanna.service.edp.job_manager
 #
 
-# When set to false, Savanna uses only internal IP of VMs.
-# When set to true, Savanna expects OpenStack to auto-assign
-# floating IPs to cluster nodes. Internal IPs will be used for
-# inter-cluster communication, while floating ones will be
-# used by Savanna to configure nodes. Also floating IPs will
-# be exposed in service URLs. This option is ignored when
-# "use_neutron" is set to True (boolean value)
-#use_floating_ips=true
-
-# The suffix of the node's FQDN. In nova-network that is
-# dhcp_domain config parameter (string value)
-#node_domain=novalocal
+# Postfix for storing jobs in hdfs. Will be added to
+# /user/hadoop/ (string value)
+#job_workflow_postfix=
 
 
 #
-# Options defined in savanna.topology
+# Options defined in savanna.service.periodic
+#
+
+# enable periodic tasks (boolean value)
+#periodic_enable=true
+
+# range of seconds to randomly delay when starting the
+# periodic task scheduler to reduce stampeding. (Disable by
+# setting to 0) (integer value)
+#periodic_fuzzy_delay=60
+
+# Max interval size between periodic tasks execution inseconds
+# (integer value)
+#periodic_interval_max=60
+
+
+#
+# Options defined in savanna.topology.topology_helper
 #
 
 # Enables data locality for hadoop cluster.
-# Also enables data locality for swift used by hadoop.
+# Also enables data locality for Swift used by hadoop.
 # If enabled, 'compute_topology' and 'swift_topology'
-# configuration parameters should point to openstack and swift
-# topology correspondingly.
-#enable_data_locality=False
+# configuration parameters should point to OpenStack and Swift
+# topology correspondingly. (boolean value)
+#enable_data_locality=false
 
 # Enables four-level topology for data locality.
 # Works only if corresponding plugin supports such mode.
-#enable_hypervisor_awareness=True
+# (boolean value)
+#enable_hypervisor_awareness=true
 
-# File with nova compute topology.
-# It should contains mapping between nova computes and racks.
-# File format:
-# compute1 /rack1
-# compute2 /rack2
-# compute3 /rack2
+# File with nova compute topology.                 It should
+# contain mapping between nova computes and racks.
+# File format:                 compute1 /rack1
+# compute2 /rack2                 compute3 /rack2 (string
+# value)
 #compute_topology_file=etc/savanna/compute.topology
 
-# File with swift topology.
-# It should contains mapping between swift nodes and racks.
-# File format:
-# node1 /rack1
-# node2 /rack2
-# node3 /rack2
+# File with Swift topology.                 It should contain
+# mapping between Swift nodes and racks.                 File
+# format:                 node1 /rack1                 node2
+# /rack2                 node3 /rack2 (string value)
 #swift_topology_file=etc/savanna/swift.topology
 
 
+#
+# Options defined in savanna.utils.openstack.keystone
+#
+
+# Enables Savanna to use Keystone API v3. If that flag is
+# disabled, per-job clusters will not be terminated
+# automatically. (boolean value)
+#use_identity_api_v3=false
+
+
+#
+# Options defined in savanna.utils.remote
+#
+
+# Maximum number of remote operations that will be running at
+# the same time. Note that each remote operation requires its
+# own process torun. (integer value)
+#global_remote_threshold=100
+
+# The same as global_remote_threshold, but for a single
+# cluster. (integer value)
+#cluster_remote_threshold=70
+
+
+[conductor]
+
+#
+# Options defined in savanna.conductor.api
+#
+
+# Perform savanna-conductor operations locally (boolean value)
+#use_local=true
+
+
 [database]
-
-#
-# Options defined in savanna.db.migration.cli
-#
-
-# URL to database (string value)
-#connection=
-
 
 #
 # Options defined in savanna.openstack.common.db.api
@@ -309,4 +316,4 @@
 #pool_timeout=<None>
 
 
-# Total option count: 53
+# Total option count: 59

@@ -37,9 +37,9 @@ opts = [
     cfg.BoolOpt('enable_data_locality',
                 default=False,
                 help="""Enables data locality for hadoop cluster.
-                 Also enables data locality for swift used by hadoop.
+                 Also enables data locality for Swift used by hadoop.
                  If enabled, 'compute_topology' and 'swift_topology'
-                 configuration parameters should point to openstack and swift
+                 configuration parameters should point to OpenStack and Swift
                  topology correspondingly."""),
     cfg.BoolOpt('enable_hypervisor_awareness',
                 default=True,
@@ -48,15 +48,15 @@ opts = [
     cfg.StrOpt('compute_topology_file',
                default='etc/savanna/compute.topology',
                help="""File with nova compute topology.
-                It should contains mapping between nova computes and racks.
+                It should contain mapping between nova computes and racks.
                 File format:
                 compute1 /rack1
                 compute2 /rack2
                 compute3 /rack2"""),
     cfg.StrOpt('swift_topology_file',
                default='etc/savanna/swift.topology',
-               help="""File with swift topology.
-                It should contains mapping between swift nodes and racks.
+               help="""File with Swift topology.
+                It should contain mapping between Swift nodes and racks.
                 File format:
                 node1 /rack1
                 node2 /rack2
@@ -77,7 +77,7 @@ def _read_swift_topology():
     except IOError:
         raise ex.NotFoundException(
             CONF.swift_topology_file,
-            "Unable to find file %s with swift topology")
+            "Unable to find file %s with Swift topology")
     return topology
 
 

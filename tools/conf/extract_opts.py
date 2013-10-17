@@ -23,6 +23,7 @@
 """Extracts OpenStack config option info from module(s)."""
 
 import imp
+import optparse
 import os
 import re
 import socket
@@ -60,7 +61,7 @@ BASEDIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../"))
 WORDWRAP_WIDTH = 60
 
 
-def main(srcfiles):
+def main(srcfiles, whitelist_file, blacklist_file):
     mods_by_pkg = dict()
     for filepath in srcfiles:
         pkg_name = filepath.split(os.sep)[1]
@@ -92,11 +93,62 @@ def main(srcfiles):
             for group, opts in _list_opts(mod_obj):
                 opts_by_group.setdefault(group, []).append((mod_str, opts))
 
+    opts_by_group = _filter_opts(opts_by_group, whitelist_file, blacklist_file)
+
     print_group_opts('DEFAULT', opts_by_group.pop('DEFAULT', []))
+
     for group, opts in opts_by_group.items():
         print_group_opts(group, opts)
 
     print "# Total option count: %d" % OPTION_COUNT
+
+
+def _readlst(filename):
+    if not filename:
+        return None
+
+    result = []
+
+    with open(filename) as fl:
+        for line in fl.readlines():
+            if line.strip() and not line.startswith('#'):
+                result.append(line.strip())
+
+    return result
+
+
+def _filter_opts(opts_by_group, whitelist_file, blacklist_file):
+    whitelist = _readlst(whitelist_file)
+    blacklist = _readlst(blacklist_file)
+
+    if (not whitelist) and (not blacklist):
+        return opts_by_group
+
+    filtered = {}
+
+    for group, opts_by_module in opts_by_group.items():
+        new_opts_by_module = []
+
+        for mod, opts in opts_by_module:
+            new_opts = []
+
+            for opt in opts:
+                opt_name = '%s.%s' % (str(group), opt.dest)
+
+                if whitelist:
+                    if opt_name in whitelist:
+                        new_opts.append(opt)
+                elif blacklist:
+                    if not opt_name in blacklist:
+                        new_opts.append(opt)
+
+            if new_opts:
+                new_opts_by_module.append((mod, new_opts))
+
+        if new_opts_by_module:
+            filtered[group] = new_opts_by_module
+
+    return filtered
 
 
 def _import_module(mod_str):
@@ -153,7 +205,7 @@ def _guess_groups(opt, mod_obj):
         sys.stderr.write("Unable to guess what group " + opt.dest +
                          " in " + mod_obj.__name__ +
                          " is in out of " + ','.join(groups) + "\n")
-        sys.exit(1)
+        return None
 
     sys.stderr.write("Guessing that " + opt.dest +
                      " in " + mod_obj.__name__ +
@@ -178,7 +230,9 @@ def _list_opts(obj):
 
     ret = {}
     for opt in opts:
-        ret.setdefault(_guess_groups(opt, obj), []).append(opt)
+        groups = _guess_groups(opt, obj)
+        if groups:
+            ret.setdefault(_guess_groups(opt, obj), []).append(opt)
     return ret.items()
 
 
@@ -267,7 +321,15 @@ def _print_opt(opt):
 
 
 if __name__ == '__main__':
-    if len(sys.argv) < 2:
-        print "usage: python %s [srcfile]...\n" % sys.argv[0]
-        sys.exit(0)
-    main(sys.argv[1:])
+    usage = "Usage: %prog [options] [srcfile1] [srcfile2] [srcfile3] ..."
+    parser = optparse.OptionParser(usage=usage)
+    parser.add_option("-w", "--whitelist-file", dest="whitelist_file",
+                      help="Use file FILE as a whitelist", metavar="FILE",
+                      default=None)
+    parser.add_option("-b", "--blacklist-file", dest="blacklist_file",
+                      help="Use file FILE as a blacklist", metavar="FILE",
+                      default=None)
+
+    (options, args) = parser.parse_args()
+
+    main(args, options.whitelist_file, options.blacklist_file)

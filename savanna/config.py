@@ -21,7 +21,7 @@ from savanna import version
 
 cli_opts = [
     cfg.StrOpt('host', default='',
-               help='Hostname of IP address that will be used to listen on'),
+               help='Hostname or IP address that will be used to listen on'),
     cfg.IntOpt('port', default=8386,
                help='Port that will be used to listen on'),
     cfg.BoolOpt('log-exchange', default=False,
@@ -32,7 +32,7 @@ cli_opts = [
 edp_opts = [
     cfg.IntOpt('job_binary_max_KB',
                default=5120,
-               help='Maximum length of job binary data in Kilobytes that '
+               help='Maximum length of job binary data in kilobytes that '
                     'may be stored or retrieved in a single operation')
 ]
 

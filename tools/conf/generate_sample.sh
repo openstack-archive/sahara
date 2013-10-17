@@ -24,7 +24,13 @@ FILES=$(find savanna -type f -name "*.py" ! -path "savanna/tests/*" -exec \
 BINS=$(echo bin/savanna-*)
 
 PYTHONPATH=./:${PYTHONPATH} \
-    tools/with_venv python $(dirname "$0")/extract_opts.py ${FILES} ${BINS} > \
+    tools/with_venv python $(dirname "$0")/extract_opts.py \
+    --whitelist-file tools/conf/whitelist.txt ${FILES} ${BINS} > \
+    etc/savanna/savanna.conf.sample.raw
+
+PYTHONPATH=./:${PYTHONPATH} \
+    tools/with_venv python $(dirname "$0")/extract_opts.py \
+    --blacklist-file tools/conf/blacklist.txt ${FILES} ${BINS} > \
     etc/savanna/savanna.conf.sample-full
 
 # Remove compiled files created by imp.import_source()
