@@ -31,10 +31,10 @@ class VanillaGatingTest(cluster_configs.ClusterConfigTest,
 
     SKIP_CLUSTER_CONFIG_TEST = \
         cfg.ITConfig().vanilla_config.SKIP_CLUSTER_CONFIG_TEST
+    SKIP_EDP_TEST = cfg.ITConfig().vanilla_config.SKIP_EDP_TEST
     SKIP_MAP_REDUCE_TEST = cfg.ITConfig().vanilla_config.SKIP_MAP_REDUCE_TEST
     SKIP_SWIFT_TEST = cfg.ITConfig().vanilla_config.SKIP_SWIFT_TEST
     SKIP_SCALING_TEST = cfg.ITConfig().vanilla_config.SKIP_SCALING_TEST
-    SKIP_EDP_TEST = cfg.ITConfig().vanilla_config.SKIP_EDP_TEST
 
     @attrib.attr(tags='vanilla')
     @unittest2.skipIf(cfg.ITConfig().vanilla_config.SKIP_ALL_TESTS_FOR_PLUGIN,
@@ -138,7 +138,7 @@ class VanillaGatingTest(cluster_configs.ClusterConfigTest,
                 cluster_configs={
                     'HDFS': cluster_configs.CLUSTER_HDFS_CONFIG,
                     'MapReduce': cluster_configs.CLUSTER_MR_CONFIG,
-                    'general': cluster_configs.CLUSTER_GENERAL_CONFIG
+                    'general': {'Enable Swift': True}
                 },
                 node_groups=[
                     dict(

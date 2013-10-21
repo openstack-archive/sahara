@@ -19,10 +19,6 @@ case $1 in
         FUNC="check_tt_heap_size"
     ;;
 
-    EnableSwift)
-        FUNC="check_swift_availability"
-    ;;
-
     dfs.replication)
         FUNC="check_dfs_replication"
     ;;
@@ -103,48 +99,6 @@ check_tt_heap_size() {
     echo -e "********************* TASK TRACKER HEAP SIZE *********************\n" >> $log
 
     check_heap_size "tasktracker"
-}
-
-OS_URL=""
-OS_TENANT_NAME=""
-OS_USERNAME=""
-OS_PASSWORD=""
-
-HADOOP_USER=""
-
-SWIFT_CONTAINER_ID=""
-
-check_swift_availability() {
-
-    echo -e "****************************** SWIFT *****************************\n" >> $log
-
-    check_submitted_parameter config_value
-
-    echo "Swift config test -- Enable Swift" > /tmp/swift-config-test-file.txt
-
-    sudo su -c "hadoop dfs -mkdir /swift-config-test/" $HADOOP_USER
-    if [ `echo "$?"` -ne 0 ]
-    then
-        exit 1
-    fi
-
-    sudo su -c "hadoop dfs -copyFromLocal /tmp/swift-config-test-file.txt /swift-config-test/" $HADOOP_USER
-    if [ `echo "$?"` -ne 0 ]
-    then
-        sudo su -c "hadoop dfs -rmr /swift-config-test" $HADOOP_USER && exit 1
-    fi
-
-    sudo su -c "hadoop distcp -D fs.swift.service.savanna.username=$OS_USERNAME -D fs.swift.service.savanna.tenant=$OS_TENANT_NAME -D fs.swift.service.savanna.password=$OS_PASSWORD /swift-config-test/swift-config-test-file.txt swift://Swift-config-test-$SWIFT_CONTAINER_ID.savanna/" $HADOOP_USER
-    if [ `echo "$?"` -ne 0 ]
-    then
-        swift_availability="False"
-    else
-        swift_availability="True"
-    fi
-
-    sudo su -c "hadoop dfs -rmr /swift-config-test" $HADOOP_USER
-
-    compare_config_values $swift_availability
 }
 
 check_dfs_replication() {
