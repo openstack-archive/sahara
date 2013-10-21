@@ -22,8 +22,7 @@ user input.
 There are two types of validations, that are done:
  * Check that a request contains all necessary fields and request does not violate
 any constraints like unique naming and etc.
- * Plugin check (optional). The provisioning Plugin may also perform any specific
-checks like Cluster topology validation.
+ * Plugin check (optional). The provisioning Plugin may also perform any specific checks like Cluster topology validation.
 
 If any of validations fails, the Cluster will still be kept in database with ``Error``
 status.

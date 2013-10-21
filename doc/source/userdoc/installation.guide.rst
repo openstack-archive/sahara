@@ -107,7 +107,7 @@ To install into a virtual environment
 Note:
 -----
 One of the :doc:`Savanna features <features>`, Anti-Affinity, requires a Nova adjustment.
-See :doc:`anti_affinity` for details. But that is purely optional.
+See :ref:`Enabling Anti-Affinity <enable-anti-affinity>` for details. But that is purely optional.
 
 
 Make sure that your operating system is not blocking Savanna port (default: 8386).

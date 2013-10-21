@@ -8,9 +8,12 @@ cluster topology, nodes hardware details and a few more.
 Overview
 --------
 
-* :doc:`overview`
-* :doc:`architecture`
-* `Roadmap <https://wiki.openstack.org/wiki/Savanna/Roadmap>`_
+.. toctree::
+    :maxdepth: 1
+
+    overview
+    architecture
+    Roadmap <https://wiki.openstack.org/wiki/Savanna/Roadmap>
 
 
 User guide

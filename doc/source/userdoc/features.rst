@@ -95,8 +95,19 @@ is not reliable because all replicas may turn up on one physical machine.
 Anti-affinity feature provides an ability to explicitly tell Savanna to run specified processes on different compute nodes. This
 is especially useful for Hadoop datanode process to make HDFS replicas reliable.
 
-That feature requires certain adjustments on Nova side to work.
-See :doc:`anti_affinity` for details.
+.. _`enable-anti-affinity`:
+
+The Anti-Affinity feature requires certain scheduler filters to be enabled on Nova.
+Edit your ``/etc/nova/nova.conf`` in the following way:
+
+.. sourcecode:: cfg
+
+    [DEFAULT]
+
+    ...
+
+    scheduler_driver=nova.scheduler.filter_scheduler.FilterScheduler
+    scheduler_default_filters=DifferentHostFilter,SameHostFilter
 
 This feature is supported by all plugins out of the box.
 
