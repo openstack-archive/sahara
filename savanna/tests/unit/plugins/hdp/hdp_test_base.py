@@ -29,6 +29,7 @@ class TestServer:
         self.public_ip = public_ip
         self.internal_ip = private_ip
         self.node_group = None
+        self.remote = None
 
 
 def get_instance_info(*args, **kwargs):

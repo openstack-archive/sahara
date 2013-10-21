@@ -55,11 +55,13 @@ Neutron and Nova Network support
 --------------------------------
 OpenStack Cluster may use Nova Network or Neutron as a networking service. Savanna supports both, but when deployed,
 a special configuration for networking should be set explicitly. By default Savanna will behave as if Nova Network is used.
-If OpenStack Cluster uses Neutron, then ``use_neutron`` option should be set to ``True`` in Savanna configuration file.
+If OpenStack Cluster uses Neutron, then ``use_neutron`` option should be set to ``True`` in Savanna configuration file.  In
+addition, if the OpenStack Cluster supports network namespaces, set the ``use_namespaces`` option to ``True``
 
 .. sourcecode:: cfg
 
     use_neutron=True
+    use_namespaces=True
 
 Savanna Dashboard should also be configured properly to support Neutron. ``SAVANNA_USE_NEUTRON`` should be set to ``True`` in
 OpenStack Dashboard ``local_settings.py`` configuration file.

@@ -31,24 +31,27 @@ and eventlet together. The private high-level module methods are
 implementations which are run in a separate process.
 """
 
-import logging
-import time
 
 from eventlet import semaphore
 from eventlet import timeout as e_timeout
+import logging
 from oslo.config import cfg
 import paramiko
+import requests
 
 from savanna import context
 from savanna import exceptions as ex
 from savanna.openstack.common import excutils
 from savanna.utils import crypto
+from savanna.utils.openstack import base
+from savanna.utils.openstack import neutron
 from savanna.utils.openstack import nova
 from savanna.utils import procutils
 
+import time
+
 
 LOG = logging.getLogger(__name__)
-
 
 remote_opts = [
     cfg.IntOpt('global_remote_threshold', default=100,
@@ -65,16 +68,32 @@ CONF = cfg.CONF
 CONF.register_opts(remote_opts)
 
 _ssh = None
+_sessions = {}
 
 
-def _connect(host, username, private_key):
+def _get_proxy(neutron_info):
+    client = neutron.Client(neutron_info['network'], neutron_info['uri'],
+                            neutron_info['token'], neutron_info['tenant'])
+    qrouter = client.get_router()
+    proxy = paramiko.ProxyCommand('ip netns exec qrouter-{0} nc {1} 22'
+                                  .format(qrouter, neutron_info['host']))
+
+    return proxy
+
+
+def _connect(host, username, private_key, neutron_info=None):
     global _ssh
 
+    LOG.debug('Creating SSH connection')
+    proxy = None
     if type(private_key) in [str, unicode]:
         private_key = crypto.to_paramiko_private_key(private_key)
     _ssh = paramiko.SSHClient()
     _ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-    _ssh.connect(host, username=username, pkey=private_key)
+    if neutron_info:
+        LOG.debug('creating proxy using info: {0}'.format(neutron_info))
+        proxy = _get_proxy(neutron_info)
+    _ssh.connect(host, username=username, pkey=private_key, sock=proxy)
 
 
 def _cleanup():
@@ -112,6 +131,38 @@ def _execute_command(cmd, get_stderr=False, raise_when_error=True):
         return ret_code, stdout, stderr
     else:
         return ret_code, stdout
+
+
+def _get_http_client(host, port, neutron_info):
+    global _sessions
+
+    _http_session = _sessions.get((host, port), None)
+    LOG.debug('cached HTTP session for {0}:{1} is {2}'.format(host, port,
+                                                              _http_session))
+    if not _http_session:
+        if neutron_info:
+            neutron_client = neutron.Client(neutron_info['network'],
+                                            neutron_info['uri'],
+                                            neutron_info['token'],
+                                            neutron_info['tenant'])
+            # can return a new session here because it actually uses
+            # the same adapter (and same connection pools) for a given
+            # host and port tuple
+            _http_session = neutron_client.get_http_session(host, port=port)
+            LOG.debug('created neutron based HTTP session for {0}:{1}'
+                      .format(host, port))
+        else:
+            # need to cache the session for the non-neutron or neutron
+            # floating ip cases so that a new session with a new HTTPAdapter
+            # and associated pools is not recreated for each HTTP invocation
+            _http_session = requests.Session()
+            LOG.debug('created standard HTTP session for {0}:{1}'
+                      .format(host, port))
+        LOG.debug('caching session {0} for {1}:{2}'
+                  .format(_http_session, host, port))
+        _sessions[(host, port)] = _http_session
+
+    return _http_session
 
 
 def _write_file(sftp, remote_file, data):
@@ -157,7 +208,9 @@ def _execute_on_vm_interactive(cmd, matcher):
     buf = ''
 
     channel = _ssh.invoke_shell()
+    LOG.debug('channel is {0}'.format(channel))
     try:
+        LOG.debug('sending cmd {0}'.format(cmd))
         channel.send(cmd + '\n')
         while not matcher.is_eof(buf):
             buf += channel.recv(4096)
@@ -166,6 +219,7 @@ def _execute_on_vm_interactive(cmd, matcher):
                 channel.send(response + '\n')
                 buf = ''
     finally:
+        LOG.debug('closing channel')
         channel.close()
 
 
@@ -209,9 +263,25 @@ class InstanceInteropHelper(object):
         finally:
             _release_remote_semaphore()
 
+    def _get_neutron_info(self):
+        neutron_info = HashableDict()
+        neutron_info['network'] = \
+            self.instance.node_group.cluster.neutron_management_network
+        ctx = context.current()
+        neutron_info['uri'] = base.url_for(ctx.service_catalog, 'network')
+        neutron_info['token'] = ctx.token
+        neutron_info['tenant'] = ctx.tenant_name
+        neutron_info['host'] = self.instance.management_ip
+
+        LOG.debug('Returning neutron info: {0}'.format(neutron_info))
+        return neutron_info
+
     def _get_conn_params(self):
+        info = None
+        if CONF.use_namespaces and not CONF.use_floating_ips:
+            info = self._get_neutron_info()
         return (self.instance.management_ip, self.username,
-                self.instance.node_group.cluster.management_private_key)
+                self.instance.node_group.cluster.management_private_key, info)
 
     def _run(self, func, *args, **kwargs):
         proc = procutils.start_subprocess()
@@ -241,6 +311,21 @@ class InstanceInteropHelper(object):
             return self._run_with_log(func, timeout, *args, **kwargs)
         finally:
             _release_remote_semaphore()
+
+    def get_http_client(self, port):
+        self._log_command('Retrieving http session for {0}:{1}'
+            .format(self.instance.management_ip, port))
+        info = None
+        if CONF.use_namespaces and not CONF.use_floating_ips:
+            info = self._get_neutron_info()
+        return _get_http_client(self.instance.management_ip, port, info)
+
+    def close_http_sessions(self):
+        global _sessions
+
+        LOG.debug('closing host related http sessions')
+        for session in _sessions.values():
+            session.close()
 
     def execute_command(self, cmd, get_stderr=False, raise_when_error=True,
                         timeout=300):
@@ -323,3 +408,8 @@ class BulkInstanceInteropHelper(InstanceInteropHelper):
 
     def _run_s(self, func, timeout, *args, **kwargs):
         return self._run_with_log(func, timeout, *args, **kwargs)
+
+
+class HashableDict(dict):
+    def __hash__(self):
+        return hash((frozenset(self), frozenset(self.itervalues())))

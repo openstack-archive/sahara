@@ -26,7 +26,7 @@ from savanna import version
 
 
 GET_REST_REQ = "savanna.plugins.hdp.versions.1_3_2.versionhandler." \
-               "AmbariClient._get_rest_request"
+               "AmbariClient._get_http_session"
 
 
 def create_cluster_template(ctx, dct):
@@ -270,7 +270,7 @@ class AmbariPluginTest(unittest2.TestCase):
         self.assertEqual('admin', ambari_info.user)
         self.assertEqual('admin', ambari_info.password)
 
-    def _get_test_request(self):
+    def _get_test_request(self, host, port):
         request = base.TestRequest()
         self.requests.append(request)
         return request

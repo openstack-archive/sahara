@@ -30,7 +30,6 @@ class ClusterSpec():
         self.services = []
         self.configurations = {}
         self.node_groups = {}
-        self.servers = None
         self.version = version
         self.user_input_handlers = {}
 
@@ -44,7 +43,6 @@ class ClusterSpec():
         if scaled_groups is None:
             scaled_groups = {}
         self._determine_deployed_services(cluster)
-        self.servers = self._get_servers_from_savanna_cluster(cluster)
         self._process_node_groups(cluster=cluster)
 
         for ng_id in scaled_groups:
@@ -114,13 +112,6 @@ class ClusterSpec():
 
         return components
 
-    def _get_servers_from_savanna_cluster(self, cluster):
-        servers = []
-        for node_group in cluster.node_groups:
-            servers += node_group.instances
-
-        return servers
-
     def _parse_services(self, template_json):
         for s in template_json['services']:
             name = s['name']
@@ -184,7 +175,8 @@ class ClusterSpec():
                 for instance in ng.instances:
                     node_group.instances.add(Instance(instance.fqdn,
                                                       instance.management_ip,
-                                                      instance.internal_ip))
+                                                      instance.internal_ip,
+                                                      instance.remote))
                 self.node_groups[node_group.name] = node_group
 
     def _determine_deployed_services(self, cluster):
@@ -251,10 +243,11 @@ class User():
 
 
 class Instance():
-    def __init__(self, fqdn, management_ip, internal_ip):
+    def __init__(self, fqdn, management_ip, internal_ip, remote):
         self.fqdn = fqdn
         self.management_ip = management_ip
         self.internal_ip = internal_ip
+        self.remote = remote
 
     def __hash__(self):
         return hash(self.fqdn)

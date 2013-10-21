@@ -15,31 +15,34 @@
 
 import json
 import logging
-
 import pkg_resources as pkg
 import requests
+
+from oslo.config import cfg
 
 from savanna import context
 from savanna.plugins.general import exceptions as ex
 from savanna.plugins.hdp import clusterspec as cs
-from savanna.plugins.hdp import configprovider as cfg
+from savanna.plugins.hdp import configprovider as cfgprov
 from savanna.plugins.hdp.versions import abstractversionhandler as avm
 from savanna import version
 
 
 LOG = logging.getLogger(__name__)
+CONF = cfg.CONF
 
 
 class VersionHandler(avm.AbstractVersionHandler):
     config_provider = None
     version = None
+    client = None
 
     def _set_version(self, version):
         self.version = version
 
     def _get_config_provider(self):
         if self.config_provider is None:
-            self.config_provider = cfg.ConfigurationProvider(
+            self.config_provider = cfgprov.ConfigurationProvider(
                 json.load(pkg.resource_stream(version.version_info.package,
                           'plugins/hdp/versions/1_3_2/resources/'
                           'ambari-config-resource.json')))
@@ -50,7 +53,10 @@ class VersionHandler(avm.AbstractVersionHandler):
         return self.version
 
     def get_ambari_client(self):
-        return AmbariClient(self)
+        if not self.client:
+            self.client = AmbariClient(self)
+
+        return self.client
 
     def get_config_items(self):
         return self._get_config_provider().get_config_items()
@@ -93,15 +99,38 @@ class VersionHandler(avm.AbstractVersionHandler):
 
 
 class AmbariClient():
+
     def __init__(self, handler):
+        #  add an argument for neutron discovery
         self.handler = handler
+
+    def _get_http_session(self, host, port):
+        return host.remote.get_http_client(port)
+
+    def _post(self, url, ambari_info, data=None):
+        session = self._get_http_session(ambari_info.host, ambari_info.port)
+        return session.post(url, data=data,
+                            auth=(ambari_info.user, ambari_info.password))
+
+    def _delete(self, url, ambari_info):
+        session = self._get_http_session(ambari_info.host, ambari_info.port)
+        return session.delete(url,
+                              auth=(ambari_info.user, ambari_info.password))
+
+    def _put(self, url, ambari_info, data=None):
+        session = self._get_http_session(ambari_info.host, ambari_info.port)
+        auth = (ambari_info.user, ambari_info.password)
+        return session.put(url, data=data, auth=auth)
+
+    def _get(self, url, ambari_info):
+        session = self._get_http_session(ambari_info.host, ambari_info.port)
+        return session.get(url, auth=(ambari_info.user, ambari_info.password))
 
     def _add_cluster(self, ambari_info, name):
         add_cluster_url = 'http://{0}/api/v1/clusters/{1}'.format(
             ambari_info.get_address(), name)
-        result = requests.post(add_cluster_url,
-                               data='{"Clusters": {"version" : "HDP-1.3.2"}}',
-                               auth=(ambari_info.user, ambari_info.password))
+        result = self._post(add_cluster_url, ambari_info,
+                            data='{"Clusters": {"version" : "HDP-1.3.2"}}')
 
         if result.status_code != 201:
             LOG.error('Create cluster command failed. %s' % result.text)
@@ -115,8 +144,7 @@ class AmbariClient():
                               'Clusters/desired_configs'.format(
                                   ambari_info.get_address(), name)
 
-        result = requests.get(existing_config_url, auth=(
-            ambari_info.user, ambari_info.password))
+        result = self._get(existing_config_url, ambari_info)
 
         json_result = json.loads(result.text)
         existing_configs = json_result['Clusters']['desired_configs']
@@ -151,8 +179,7 @@ class AmbariClient():
             config_body['tag'] = 'v%s' % version
             config_body['properties'] = \
                 cluster_spec.configurations[config_name]
-            result = requests.put(config_url, data=json.dumps(body), auth=(
-                ambari_info.user, ambari_info.password))
+            result = self._put(config_url, ambari_info, data=json.dumps(body))
             if result.status_code != 200:
                 LOG.error(
                     'Set configuration command failed. {0}'.format(
@@ -166,9 +193,9 @@ class AmbariClient():
         add_service_url = 'http://{0}/api/v1/clusters/{1}/services/{2}'
         for service in services:
             if service.deployed and service.name != 'AMBARI':
-                result = requests.post(add_service_url.format(
+                result = self._post(add_service_url.format(
                     ambari_info.get_address(), name, service.name),
-                    auth=(ambari_info.user, ambari_info.password))
+                    ambari_info)
                 if result.status_code not in [201, 409]:
                     LOG.error(
                         'Create service command failed. {0}'.format(
@@ -182,10 +209,10 @@ class AmbariClient():
         for service in cluster_spec.services:
             if service.deployed and service.name != 'AMBARI':
                 for component in service.components:
-                    result = requests.post(add_component_url.format(
+                    result = self._post(add_component_url.format(
                         ambari_info.get_address(), name, service.name,
                         component.name),
-                        auth=(ambari_info.user, ambari_info.password))
+                        ambari_info)
                     if result.status_code not in [201, 409]:
                         LOG.error(
                             'Create component command failed. {0}'.format(
@@ -202,9 +229,9 @@ class AmbariClient():
                                  '/hosts/{2}/host_components/{3}'
         for host in servers:
             hostname = host.instance.fqdn.lower()
-            result = requests.post(
+            result = self._post(
                 add_host_url.format(ambari_info.get_address(), name, hostname),
-                auth=(ambari_info.user, ambari_info.password))
+                ambari_info)
             if result.status_code != 201:
                 LOG.error(
                     'Create host command failed. {0}'.format(result.text))
@@ -217,9 +244,9 @@ class AmbariClient():
             for component in node_group.components:
                 # don't add any AMBARI components
                 if component.find('AMBARI') != 0:
-                    result = requests.post(add_host_component_url.format(
+                    result = self._post(add_host_component_url.format(
                         ambari_info.get_address(), name, hostname, component),
-                        auth=(ambari_info.user, ambari_info.password))
+                        ambari_info)
                     if result.status_code != 201:
                         LOG.error(
                             'Create host_component command failed. %s' %
@@ -237,15 +264,14 @@ class AmbariClient():
         body = '{"RequestInfo" : { "context" : "Install all services" },'\
                '"Body" : {"ServiceInfo": {"state" : "INSTALLED"}}}'
 
-        result = requests.put(install_url, data=body, auth=(
-            ambari_info.user, ambari_info.password))
+        result = self._put(install_url, ambari_info, data=body)
 
         if result.status_code == 202:
             json_result = json.loads(result.text)
             request_id = json_result['Requests']['id']
             success = self._wait_for_async_request(self._get_async_request_uri(
                 ambari_info, cluster_name, request_id),
-                auth=(ambari_info.user, ambari_info.password))
+                ambari_info)
             if success:
                 LOG.info("Install of Hadoop stack successful.")
                 self._finalize_ambari_state(ambari_info)
@@ -265,10 +291,10 @@ class AmbariClient():
                ambari_info.get_address(), cluster_name,
                request_id)
 
-    def _wait_for_async_request(self, request_url, auth):
+    def _wait_for_async_request(self, request_url, ambari_info):
         started = False
         while not started:
-            result = requests.get(request_url, auth=auth)
+            result = self._get(request_url, ambari_info)
             LOG.debug(
                 'async request ' + request_url + ' response:\n' + result.text)
             json_result = json.loads(result.text)
@@ -293,8 +319,7 @@ class AmbariClient():
         # resource doesn't comply with Ambari API standards
         persist_data = '{ "CLUSTER_CURRENT_STATUS":' \
                        '"{\\"clusterState\\":\\"CLUSTER_STARTED_5\\"}" }'
-        result = requests.post(persist_state_uri, data=persist_data,
-                               auth=(ambari_info.user, ambari_info.password))
+        result = self._post(persist_state_uri, ambari_info, data=persist_data)
 
         if result.status_code != 201 and result.status_code != 202:
             LOG.warning('Finalizing of Ambari cluster state failed. {0}'.
@@ -311,17 +336,15 @@ class AmbariClient():
         body = '{"RequestInfo" : { "context" : "Start all services" },'\
                '"Body" : {"ServiceInfo": {"state" : "STARTED"}}}'
 
-        auth = (ambari_info.user, ambari_info.password)
         self._fire_service_start_notifications(
             cluster_name, cluster_spec, ambari_info)
-        result = requests.put(start_url, data=body, auth=auth)
+        result = self._put(start_url, ambari_info, data=body)
         if result.status_code == 202:
             json_result = json.loads(result.text)
             request_id = json_result['Requests']['id']
             success = self._wait_for_async_request(
                 self._get_async_request_uri(ambari_info, cluster_name,
-                                            request_id),
-                auth=auth)
+                                            request_id), ambari_info)
             if success:
                 LOG.info(
                     "Successfully started Hadoop cluster '{0}'.".format(
@@ -338,20 +361,16 @@ class AmbariClient():
             raise ex.HadoopProvisionError(
                 'Start of Hadoop services failed.')
 
-    def _get_rest_request(self):
-        return requests
-
-    def _exec_ambari_command(self, auth, body, cmd_uri):
+    def _exec_ambari_command(self, ambari_info, body, cmd_uri):
 
         LOG.debug('PUT URI: {0}'.format(cmd_uri))
-        result = requests.put(cmd_uri, data=body,
-                              auth=auth)
+        result = self._put(cmd_uri, ambari_info, data=body)
         if result.status_code == 202:
             LOG.debug(
                 'PUT response: {0}'.format(result.text))
             json_result = json.loads(result.text)
             href = json_result['href'] + '/tasks?fields=Tasks/status'
-            success = self._wait_for_async_request(href, auth)
+            success = self._wait_for_async_request(href, ambari_info)
             if success:
                 LOG.info(
                     "Successfully changed state of Hadoop components ")
@@ -393,7 +412,7 @@ class AmbariClient():
                       'HostRoles/host_name.in({2})'.format(
                       ambari_info.get_address(), cluster_name,
                       self._get_host_list(servers))
-        self._exec_ambari_command(auth, body, install_uri)
+        self._exec_ambari_command(ambari_info, body, install_uri)
 
     def _start_components(self, ambari_info, auth, cluster_name, servers,
                           cluster_spec):
@@ -404,7 +423,7 @@ class AmbariClient():
                         'HostRoles/host_name.in({2})'.format(
                             ambari_info.get_address(), cluster_name,
                             self._get_host_list(servers))
-        result = requests.get(installed_uri, auth=auth)
+        result = self._get(installed_uri, ambari_info)
         if result.status_code == 200:
             LOG.debug(
                 'GET response: {0}'.format(result.text))
@@ -425,10 +444,10 @@ class AmbariClient():
                         '1}/host_components?HostRoles/state=INSTALLED&'\
                         'HostRoles/host_name.in({2})'\
                         '&HostRoles/component_name.in({3})'.format(
-                            ambari_info.get_address(), cluster_name,
-                            self._get_host_list(servers),
-                            ",".join(inclusion_list))
-            self._exec_ambari_command(auth, body, start_uri)
+                        ambari_info.get_address(), cluster_name,
+                        self._get_host_list(servers),
+                        ",".join(inclusion_list))
+            self._exec_ambari_command(ambari_info, body, start_uri)
         else:
             raise ex.HadoopProvisionError(
                 'Unable to determine installed service '
@@ -447,8 +466,7 @@ class AmbariClient():
         while result is None or len(json_result['items']) < num_hosts:
             context.sleep(5)
             try:
-                result = requests.get(url, auth=(ambari_info.user,
-                                                 ambari_info.password))
+                result = self._get(url, ambari_info)
                 json_result = json.loads(result.text)
 
                 LOG.info('Registered Hosts: {0} of {1}'.format(
@@ -467,9 +485,7 @@ class AmbariClient():
         update_body = '{{"Users":{{"roles":"admin,user","password":"{0}",' \
                       '"old_password":"{1}"}} }}'.format(password, old_pwd)
 
-        request = self._get_rest_request()
-        result = request.put(user_url, data=update_body, auth=(
-            ambari_info.user, ambari_info.password))
+        result = self._put(user_url, ambari_info, data=update_body)
 
         if result.status_code != 200:
             raise ex.HadoopProvisionError('Unable to update Ambari admin user'
@@ -483,9 +499,7 @@ class AmbariClient():
         create_body = '{{"Users":{{"password":"{0}","roles":"{1}"}} }}'. \
             format(user.password, '%s' % ','.join(map(str, user.groups)))
 
-        request = self._get_rest_request()
-        result = request.post(user_url, data=create_body, auth=(
-            ambari_info.user, ambari_info.password))
+        result = self._post(user_url, ambari_info, data=create_body)
 
         if result.status_code != 201:
             raise ex.HadoopProvisionError(
@@ -495,9 +509,7 @@ class AmbariClient():
         user_url = 'http://{0}/api/v1/users/{1}'.format(
             ambari_info.get_address(), user_name)
 
-        request = self._get_rest_request()
-        result = request.delete(user_url, auth=(
-            ambari_info.user, ambari_info.password))
+        result = self._delete(user_url, ambari_info)
 
         if result.status_code != 200:
             raise ex.HadoopProvisionError(
@@ -531,13 +543,15 @@ class AmbariClient():
         self._install_services(name, ambari_info)
         self.handler.install_swift_integration(servers)
 
+    def cleanup(self, ambari_info):
+        ambari_info.host.remote.close_http_sessions()
+
     def _get_services_in_state(self, cluster_name, ambari_info, state):
         services_url = 'http://{0}/api/v1/clusters/{1}/services?' \
                        'ServiceInfo/state.in({2})'.format(
                            ambari_info.get_address(), cluster_name, state)
 
-        result = requests.get(services_url, auth=(
-            ambari_info.user, ambari_info.password))
+        result = self._get(services_url, ambari_info)
 
         json_result = json.loads(result.text)
         services = []

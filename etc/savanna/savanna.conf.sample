@@ -29,6 +29,9 @@
 # Use Neutron or Nova Network (boolean value)
 #use_neutron=false
 
+# Use network namespaces for communication (only valid to use in conjunction
+# with use_neutron=True)
+#use_namespaces=false
 
 
 # Maximum length of job binary data in kilobytes that may be
