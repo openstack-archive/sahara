@@ -12,18 +12,15 @@
 # implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
-from savanna.plugins.hdp import baseprocessor as bp
+from savanna.exceptions import InvalidDataException
 from savanna.plugins import provisioning as p
 
 
-class ConfigurationProvider(bp.BaseProcessor):
-    config = None
-    config_mapper = {}
-    config_items = []
-
+class ConfigurationProvider:
     def __init__(self, config):
         self.config = config
+        self.config_mapper = {}
+        self.config_items = []
         self._initialize(config)
 
     def get_config_items(self):
@@ -53,9 +50,19 @@ class ConfigurationProvider(bp.BaseProcessor):
                                       'is_optional'],
                                   description=service_property[
                                       'description'])
-                setattr(config, 'tag',
-                        configuration['tag'].rsplit(".", 1)[0])
+
+                setattr(config, 'tag', configuration['tag'].rsplit(".", 1)[0])
                 self.config_items.append(config)
+                #TODO(jspeidel): an assumption is made that property names
+                # are unique across configuration sections which is dangerous
+                property_name = service_property['name']
+                # if property already exists, throw an exception
+                if property_name in self.config_mapper:
+                    # internal error
+                    # ambari-config-resource contains duplicates
+                    raise InvalidDataException(
+                        'Internal Error. Duplicate property '
+                        'name detected: %s' % property_name)
                 self.config_mapper[service_property['name']] = \
                     self._get_target(
                         service_property['applicable_target'])

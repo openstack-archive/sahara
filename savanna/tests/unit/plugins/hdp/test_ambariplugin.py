@@ -18,9 +18,10 @@ import pkg_resources as pkg
 import unittest2
 
 from savanna.conductor import resource as r
+from savanna.plugins.general import exceptions as ex
 from savanna.plugins.hdp import ambariplugin as ap
 from savanna.plugins.hdp import clusterspec as cs
-from savanna.plugins.hdp import exceptions as ex
+import savanna.tests.unit.plugins.hdp.hdp_test_base as base
 from savanna import version
 
 
@@ -35,10 +36,9 @@ def create_cluster_template(ctx, dct):
 class AmbariPluginTest(unittest2.TestCase):
     def test_get_node_processes(self):
         plugin = ap.AmbariPlugin()
-        #TODO(jspeidel): provide meaningful input
         service_components = plugin.get_node_processes('1.3.2')
 
-        self.assertEqual(5, len(service_components))
+        self.assertEqual(10, len(service_components))
         components = service_components['HDFS']
         self.assertIn('NAMENODE', components)
         self.assertIn('DATANODE', components)
@@ -52,14 +52,31 @@ class AmbariPluginTest(unittest2.TestCase):
 
         components = service_components['GANGLIA']
         self.assertIn('GANGLIA_SERVER', components)
-        self.assertIn('GANGLIA_MONITOR', components)
 
         components = service_components['NAGIOS']
         self.assertIn('NAGIOS_SERVER', components)
 
         components = service_components['AMBARI']
         self.assertIn('AMBARI_SERVER', components)
-        self.assertIn('AMBARI_AGENT', components)
+
+        components = service_components['HCATALOG']
+        self.assertIn('HCAT', components)
+
+        components = service_components['ZOOKEEPER']
+        self.assertIn('ZOOKEEPER_SERVER', components)
+        self.assertIn('ZOOKEEPER_CLIENT', components)
+
+        components = service_components['HIVE']
+        self.assertIn('HIVE_SERVER', components)
+        self.assertIn('HIVE_METASTORE', components)
+        self.assertIn('HIVE_CLIENT', components)
+        self.assertIn('MYSQL_SERVER', components)
+
+        components = service_components['PIG']
+        self.assertIn('PIG', components)
+
+        components = service_components['WEBHCAT']
+        self.assertIn('WEBHCAT_SERVER', components)
 
     @mock.patch("savanna.context.ctx")
     def test_convert(self, ctx_func):
@@ -205,21 +222,25 @@ class AmbariPluginTest(unittest2.TestCase):
                           plugin._set_ambari_credentials(cluster_spec,
                                                          ambari_info, '1.3.2'))
 
-    @mock.patch("savanna.utils.openstack.nova.get_instance_info")
+    @mock.patch("savanna.utils.openstack.nova.get_instance_info",
+                base.get_instance_info)
+    @mock.patch('savanna.plugins.hdp.services.HdfsService.'
+                '_get_swift_properties', return_value=[])
     def test__get_ambari_info(self, patched):
-        patched.side_effect = test_get_instance_info
-
         cluster_config_file = pkg.resource_string(
             version.version_info.package,
             'plugins/hdp/versions/1_3_2/resources/default-cluster.template')
 
-        test_host = TestServer(
-            'host1', 'test-master', '111.11.1111',
-            '222.11.1111', node_processes=["AMBARI_SERVER"])
+        test_host = base.TestServer(
+            'host1', 'test-master', '11111', 3, '111.11.1111',
+            '222.11.1111')
 
-        node_group = TestNodeGroup([test_host])
-        cluster = TestCluster([node_group])
-        cluster_config = cs.ClusterSpec(cluster_config_file, cluster=cluster)
+        node_group = base.TestNodeGroup(
+            'ng1', [test_host], ["AMBARI_SERVER", "NAMENODE",
+                                 "JOBTRACKER", "TASKTRACKER"])
+        cluster = base.TestCluster([node_group])
+        cluster_config = cs.ClusterSpec(cluster_config_file)
+        cluster_config.create_operational_config(cluster, [])
         plugin = ap.AmbariPlugin()
 
         #change port
@@ -250,76 +271,9 @@ class AmbariPluginTest(unittest2.TestCase):
         self.assertEqual('admin', ambari_info.password)
 
     def _get_test_request(self):
-        request = TestRequest()
+        request = base.TestRequest()
         self.requests.append(request)
         return request
-
-
-def test_get_instance_info(*args, **kwargs):
-    return TestNova("test_img", "test_flavor")
-
-
-class TestNova():
-    def __init__(self, image, flavor):
-        self.image = image
-        self.flavor = flavor
-
-
-class TestCluster:
-    def __init__(self, node_groups):
-        self.hadoop_version = None
-        self.cluster_configs = {}
-        self.node_groups = node_groups
-        self.default_image_id = '11111'
-
-
-class TestNodeGroup:
-    def __init__(self, instances):
-        self.instances = instances
-
-
-class TestRequest:
-    def put(self, url, data=None, auth=None):
-        self.url = url
-        self.data = data
-        self.auth = auth
-        self.method = 'put'
-
-        return TestResult(200)
-
-    def post(self, url, data=None, auth=None):
-        self.url = url
-        self.data = data
-        self.auth = auth
-        self.method = 'post'
-
-        return TestResult(201)
-
-    def delete(self, url, auth=None):
-        self.url = url
-        self.auth = auth
-        self.data = None
-        self.method = 'delete'
-
-        return TestResult(200)
-
-
-class TestResult:
-    def __init__(self, status):
-        self.status_code = status
-        self.text = ''
-
-
-class TestServer:
-    def __init__(self, hostname, role, public_ip, private_ip,
-                 node_processes=None):
-        self.hostname = hostname
-        self.fqdn = hostname
-        self.role = role
-        self.management_ip = public_ip
-        self.public_ip = public_ip
-        self.internal_ip = private_ip
-        self.node_processes = node_processes
 
 
 class TestHost:
