@@ -15,48 +15,104 @@
 
 from savanna.openstack.common import jsonutils as json
 from savanna.openstack.common import log as logging
-from savanna.plugins.hdp import savannautils as utils
+from savanna.plugins.general import exceptions as ex
 from savanna.plugins.hdp.versions import versionhandlerfactory as vhf
-import savanna.utils.openstack.nova as n_helper
+
+import services
 
 
 LOG = logging.getLogger(__name__)
 
 
 class ClusterSpec():
-    def __init__(self, cluster_template, cluster=None, version='1.3.2'):
+    def __init__(self, config, version='1.3.2'):
+        self._config_template = config
         self.services = []
         self.configurations = {}
         self.node_groups = {}
         self.servers = None
-        self.str = cluster_template
         self.version = version
+        self.user_input_handlers = {}
 
-        if cluster:
-            self.servers = self._get_servers_from_savanna_cluster(cluster)
-            host_manifest = self._generate_host_manifest()
-            cluster_template = self._replace_config_tokens(cluster_template)
+        cluster_template = json.loads(config)
+        self._parse_services(cluster_template)
+        self._parse_configurations(cluster_template)
+        self._process_node_groups(template_json=cluster_template)
 
-            self.str = self._add_manifest_to_config(
-                cluster_template, host_manifest)
+    def create_operational_config(self, cluster, user_inputs,
+                                  scaled_groups=None):
+        if scaled_groups is None:
+            scaled_groups = {}
+        self._determine_deployed_services(cluster)
+        self.servers = self._get_servers_from_savanna_cluster(cluster)
+        self._process_node_groups(cluster=cluster)
 
-        template_json = json.loads(self.str)
-        self._parse_services(template_json)
-        self._parse_configurations(template_json)
-        self._parse_host_component_mappings(template_json)
+        for ng_id in scaled_groups:
+            existing = next(group for group in self.node_groups.values()
+                            if group.id == ng_id)
+            existing.count = scaled_groups[ng_id]
 
-    def determine_host_for_server_component(self, component):
-        host = None
-        for server in self.servers:
-            node_processes = utils.get_node_processes(server)
-            if node_processes is not None and component in node_processes:
-                host = server
-                break
+        self.validate_node_groups(cluster)
+        self._finalize_ng_components()
+        self._parse_configurations(json.loads(self._config_template))
+        self._process_user_inputs(user_inputs)
+        self._replace_config_tokens()
 
-        return host
+    def scale(self, updated_groups):
+        for ng_id in updated_groups:
+            existing = next(group for group in self.node_groups.values()
+                            if group.id == ng_id)
+            existing.count = updated_groups[ng_id]
+
+    def validate_node_groups(self, cluster):
+        for service in self.services:
+            if service.deployed:
+                service.validate(self, cluster)
+            elif service.is_mandatory():
+                raise ex.RequiredServiceMissingException(service.name)
+
+    def get_deployed_configurations(self):
+        configs = set()
+        for service in self.services:
+            if service.deployed:
+                configs |= service.configurations
+
+        return configs
+
+    def determine_component_hosts(self, component):
+        hosts = set()
+        for ng in self.node_groups.values():
+            if component in ng.components:
+                hosts |= ng.instances
+
+        return hosts
 
     def normalize(self):
         return NormalizedClusterConfig(self)
+
+    def get_deployed_node_group_count(self, name):
+        count = 0
+        for ng in self.get_node_groups_containing_component(name):
+            count += ng.count
+
+        return count
+
+    def get_node_groups_containing_component(self, component):
+        found_node_groups = []
+        for ng in self.node_groups.values():
+            if component in ng.components:
+                found_node_groups.append(ng)
+
+        return found_node_groups
+
+    def get_components_for_type(self, type):
+        components = set()
+        for service in self.services:
+            for component in service.components:
+                if component.type == type:
+                    components.add(component.name)
+
+        return components
 
     def _get_servers_from_savanna_cluster(self, cluster):
         servers = []
@@ -67,7 +123,8 @@ class ClusterSpec():
 
     def _parse_services(self, template_json):
         for s in template_json['services']:
-            service = Service(s['name'])
+            name = s['name']
+            service = services.create_service(name)
 
             self.services.append(service)
             for c in s['components']:
@@ -100,91 +157,69 @@ class ClusterSpec():
 
         return config_names
 
-    def _parse_host_component_mappings(self, template_json):
-        for group in template_json['host_role_mappings']:
-            node_group = NodeGroup(group['name'].lower())
-            for component in group['components']:
-                node_group.add_component(component['name'])
-            for host in group['hosts']:
-                if 'predicate' in host:
-                    node_group.predicate = host['predicate']
-                if 'cardinality' in host:
-                    node_group.cardinality = host['cardinality']
-                if 'default_count' in host:
-                    node_group.default_count = host['default_count']
-            self.node_groups[node_group.name] = node_group
+    def _process_node_groups(self, template_json=None, cluster=None):
+    # get node_groups from config
+        if template_json and not cluster:
+            for group in template_json['host_role_mappings']:
+                node_group = NodeGroup(group['name'].lower())
+                for component in group['components']:
+                    node_group.add_component(component['name'])
+                for host in group['hosts']:
+                    if 'predicate' in host:
+                        node_group.predicate = host['predicate']
+                    if 'cardinality' in host:
+                        node_group.cardinality = host['cardinality']
+                    if 'default_count' in host:
+                        node_group.count = host['default_count']
+                self.node_groups[node_group.name] = node_group
 
-    def _replace_config_tokens(self, cluster_template):
-        ambari_server = self.determine_host_for_server_component(
-            'AMBARI_SERVER')
-        nn_server = self.determine_host_for_server_component(
-            'NAMENODE')
-        snn_server = self.determine_host_for_server_component(
-            'SECONDARY_NAMENODE')
-        jt_server = self.determine_host_for_server_component(
-            'JOBTRACKER')
+        if cluster:
+            self.node_groups = {}
+            node_groups = cluster.node_groups
+            for ng in node_groups:
+                node_group = NodeGroup(ng.name.lower())
+                node_group.count = ng.count
+                node_group.id = ng.id
+                node_group.components = ng.node_processes[:]
+                for instance in ng.instances:
+                    node_group.instances.add(Instance(instance.fqdn,
+                                                      instance.management_ip,
+                                                      instance.internal_ip))
+                self.node_groups[node_group.name] = node_group
 
-        LOG.info('Replacing the following configuration tokens:')
+    def _determine_deployed_services(self, cluster):
+        for ng in cluster.node_groups:
+            for service in self.services:
+                if service.deployed:
+                    continue
+                for sc in service.components:
+                    if sc.name in ng.node_processes:
+                        service.deployed = True
+                        service.register_user_input_handlers(
+                            self.user_input_handlers)
+                        break
 
-        LOG.info('%AMBARI_HOST% : {0}'.format(ambari_server.fqdn))
-        cluster_template = cluster_template.replace(
-            '%AMBARI_HOST%', ambari_server.fqdn)
-        if nn_server:
-            LOG.info('%NN_HOST% : {0}'.format(nn_server.fqdn))
-            cluster_template = cluster_template.replace(
-                '%NN_HOST%', nn_server.fqdn)
-        if snn_server:
-            LOG.info('%SNN_HOST% : {0}'.format(snn_server.fqdn))
-            cluster_template = cluster_template.replace(
-                '%SNN_HOST%', snn_server.fqdn)
-        if jt_server:
-            LOG.info('%JT_HOST% : {0}'.format(jt_server.fqdn))
-            cluster_template = cluster_template.replace(
-                '%JT_HOST%', jt_server.fqdn)
+    def _process_user_inputs(self, user_inputs):
+        for ui in user_inputs:
+            user_input_handler = self.user_input_handlers.get(
+                '{0}/{1}'.format(ui.config.tag, ui.config.name),
+                self._default_user_input_handler)
 
-        return cluster_template
+            user_input_handler(ui, self.configurations)
 
-    def _generate_host_manifest(self):
-        host_manifest = {}
-        hosts = []
-        host_id = 1
+    def _replace_config_tokens(self):
+        for service in self.services:
+            if service.deployed:
+                service.finalize_configuration(self)
 
-        for server in self.servers:
-            instance_info = n_helper.get_instance_info(server)
-            hosts.append({'host_id': host_id,
-                          'hostname': server.hostname,
-                          'role': utils.get_host_role(server),
-                          'vm_image': instance_info.image,
-                          'vm_flavor': instance_info.flavor,
-                          'public_ip': server.management_ip,
-                          'private_ip': server.internal_ip})
-            host_id += 1
+    def _finalize_ng_components(self):
+        for service in self.services:
+            if service.deployed:
+                service.finalize_ng_components(self)
 
-        host_manifest['hosts'] = hosts
-        return json.dumps(host_manifest).strip('{}')
-
-    def _add_manifest_to_config(self, cluster_template, host_manifest):
-        # add the host manifest to the enf of the cluster template
-
-        return '{0},\n{1}\n}}'.format(cluster_template.rstrip('}'),
-                                      host_manifest)
-
-
-class Service():
-    def __init__(self, name):
-        self.name = name
-        self.configurations = []
-        self.components = []
-        self.users = []
-
-    def add_component(self, component):
-        self.components.append(component)
-
-    def add_configuration(self, configuration):
-        self.configurations.append(configuration)
-
-    def add_user(self, user):
-        self.users.append(user)
+    def _default_user_input_handler(self, user_input, configurations):
+        config_map = configurations[user_input.config.tag]
+        config_map[user_input.config.name] = user_input.value
 
 
 class Component():
@@ -196,11 +231,13 @@ class Component():
 
 class NodeGroup():
     def __init__(self, name):
+        self.id = None
         self.name = name
         self.components = []
         self.predicate = None
         self.cardinality = None
-        self.default_count = None
+        self.count = None
+        self.instances = set()
 
     def add_component(self, component):
         self.components.append(component)
@@ -213,9 +250,21 @@ class User():
         self.groups = groups
 
 
+class Instance():
+    def __init__(self, fqdn, management_ip, internal_ip):
+        self.fqdn = fqdn
+        self.management_ip = management_ip
+        self.internal_ip = internal_ip
+
+    def __hash__(self):
+        return hash(self.fqdn)
+
+    def __eq__(self, other):
+        return self.fqdn == other.fqdn
+
+
 class NormalizedClusterConfig():
     def __init__(self, cluster_spec):
-        #TODO(jspeidel): get from stack config
         self.hadoop_version = cluster_spec.version
         self.cluster_configs = []
         self.node_groups = []
@@ -228,30 +277,21 @@ class NormalizedClusterConfig():
     def _parse_configurations(self, configurations):
         for config_name, properties in configurations.items():
             for prop, value in properties.items():
-                target = self._get_property_target(config_name, prop)
-                prop_type = self._get_property_type(prop, value)
-                #todo: should we supply a scope?
-                self.cluster_configs.append(
-                    NormalizedConfigEntry(NormalizedConfig(
-                        prop, prop_type, value, target, 'cluster'), value))
+                target = self._get_property_target(prop)
+                if target:
+                    prop_type = self._get_property_type(prop, value)
+                    #todo: should we supply a scope?
+                    self.cluster_configs.append(
+                        NormalizedConfigEntry(NormalizedConfig(
+                            prop, prop_type, value, target, 'cluster'),
+                            value))
 
     def _parse_node_groups(self, node_groups):
         for node_group in node_groups.values():
             self.node_groups.append(NormalizedNodeGroup(node_group))
 
-    def _get_property_target(self, config, prop):
-        # Once config resource is complete we won't need to fall through
-        # based on config type
-        target = self.handler.get_applicable_target(prop)
-        if not target:
-            if config == 'hdfs-site':
-                target = 'HDFS'
-            elif config == 'mapred-site':
-                target = 'MAPREDUCE'
-            else:
-                target = 'general'
-
-        return target
+    def _get_property_target(self, prop):
+        return self.handler.get_applicable_target(prop)
 
     def _get_property_type(self, prop, value):
         #TODO(jspeidel): seems that all numeric prop values in default config
@@ -303,5 +343,5 @@ class NormalizedNodeGroup():
         # but that setting doesn't exist yet.  It will be addressed by a bug
         # fix shortly
         self.flavor = 3
-        self.count = node_group.default_count
-        #TODO(jspeidel): self.requirements
+        self.count = node_group.count
+        self.id = node_group.id

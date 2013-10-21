@@ -23,7 +23,7 @@
           "type" : "CLIENT",
           "cardinality" : "1+"
         }
-      ] ,
+      ],
       "configurations" : [
       ]
     },
@@ -42,6 +42,86 @@
         },
         {
           "name" : "MAPREDUCE_CLIENT",
+          "type" : "CLIENT",
+          "cardinality" : "1+"
+        }
+      ],
+      "configurations" : [
+      ]
+    },
+    {
+      "name" : "PIG",
+      "components" : [
+        {
+          "name" : "PIG",
+          "type" : "CLIENT",
+          "cardinality" : "1+"
+        }
+      ],
+      "configurations" : [
+      ]
+    },
+    {
+      "name" : "HIVE",
+      "components" : [
+        {
+          "name" : "HIVE_SERVER",
+          "type" : "MASTER",
+          "cardinality" : "1"
+        },
+        {
+          "name" : "HIVE_METASTORE",
+          "type" : "MASTER",
+          "cardinality" : "1"
+        },
+        {
+          "name" : "HIVE_CLIENT",
+          "type" : "CLIENT",
+          "cardinality" : "1+"
+        },
+        {
+          "name" : "MYSQL_SERVER",
+          "type" : "MASTER",
+          "cardinality" : "1"
+        }
+      ],
+      "configurations" : [
+      ]
+    },
+    {
+      "name" : "HCATALOG",
+      "components" : [
+        {
+          "name" : "HCAT",
+          "type" : "CLIENT",
+          "cardinality" : "1+"
+        }
+      ],
+      "configurations" : [
+      ]
+    },
+    {
+      "name" : "WEBHCAT",
+      "components" : [
+        {
+          "name" : "WEBHCAT_SERVER",
+          "type" : "MASTER",
+          "cardinality" : "1"
+        }
+      ],
+      "configurations" : [
+      ]
+    },
+    {
+      "name" : "ZOOKEEPER",
+      "components" : [
+        {
+          "name" : "ZOOKEEPER_SERVER",
+          "type" : "MASTER",
+          "cardinality" : "1"
+        },
+        {
+          "name" : "ZOOKEEPER_CLIENT",
           "type" : "CLIENT",
           "cardinality" : "1+"
         }
@@ -114,10 +194,8 @@
         { "name" : "JOBTRACKER" },
         { "name" : "SECONDARY_NAMENODE" },
         { "name" : "GANGLIA_SERVER" },
-        { "name" : "GANGLIA_MONITOR" },
         { "name" : "NAGIOS_SERVER" },
-        { "name" : "AMBARI_SERVER" },
-        { "name" : "AMBARI_AGENT" }
+        { "name" : "AMBARI_SERVER" }
       ],
       "hosts" : [
         {
@@ -131,10 +209,8 @@
       "components" : [
         { "name" : "DATANODE" },
         { "name" : "TASKTRACKER" },
-        { "name" : "GANGLIA_MONITOR" },
         { "name" : "HDFS_CLIENT" },
-        { "name" : "MAPREDUCE_CLIENT" },
-        { "name" : "AMBARI_AGENT" }
+        { "name" : "MAPREDUCE_CLIENT" }
       ],
       "hosts" : [
         {
@@ -148,6 +224,7 @@
     {
       "name" : "global",
       "properties" : [
+        { "name" : "java64_home", "value" : "/usr/jdk64/jdk1.6.0_31" },
         { "name" : "dfs_name_dir", "value" : "/hadoop/hdfs/namenode" },
         { "name" : "fs_checkpoint_dir", "value" : "/hadoop/hdfs/namesecondary" },
         { "name" : "dfs_data_dir", "value" : "/hadoop/hdfs/data" },
@@ -224,7 +301,33 @@
         { "name" : "webhcat_user", "value" : "hcat" },
         { "name" : "oozie_user", "value" : "oozie" },
         { "name" : "zk_user", "value" : "zookeeper" },
-        { "name" : "user_group", "value" : "hadoop" }
+        { "name" : "hive_ambari_database", "value" : "MySQL" },
+        { "name" : "hive_database", "value" : "New MySQL Database" },
+        { "name" : "hive_hostname", "value" : "%HIVE_HOST%" },
+        { "name" : "hive_database_name", "value" : "hive" },
+        { "name" : "hive_metastore_user_name", "value" : "hive" },
+        { "name" : "hive_metastore_user_passwd", "value" : "hive" },
+        { "name" : "hive_jdbc_connection_url", "value" : "jdbc:mysql://%HIVE_MYSQL_HOST%/hive?createDatabaseIfNotExist=true" },
+        { "name" : "hive_metastore_port", "value" : "9083" },
+        { "name" : "hive_lib", "value" : "/usr/lib/hive/lib/" },
+        { "name" : "hive_conf_dir", "value" : "/etc/hive/conf" },
+        { "name" : "hive_dbroot", "value" : "/usr/lib/hive/lib" },
+        { "name" : "hive_log_dir", "value" : "/var/log/hive" },
+        { "name" : "hive_pid_dir", "value" : "/var/run/hive" },
+        { "name" : "mysql_connector_url", "value" : "${download_url}/mysql-connector-java-5.1.18.zip" },
+        { "name" : "hive_aux_jars_path", "value" : "/usr/lib/hcatalog/share/hcatalog/hcatalog-core.jar" },
+        { "name" : "hcat_log_dir", "value" : "/var/log/webhcat" },
+        { "name" : "hcat_pid_dir", "value" : "/var/run/webhcat" },
+        { "name" : "zk_data_dir", "value" : "/hadoop/zookeeper" },
+        { "name" : "tickTime", "value" : "2000" },
+        { "name" : "initLimit", "value" : "10" },
+        { "name" : "syncLimit", "value" : "5" },
+        { "name" : "clientPort", "value" : "2181" },
+        { "name" : "zk_log_dir", "value" : "/var/log/zookeeper" },
+        { "name" : "zk_pid_dir", "value" : "/var/run/zookeeper" },
+        { "name" : "zk_pid_file", "value" : "/var/run/zookeeper/zookeeper_server.pid" },
+        { "name" : "hive_database_type", "value" : "mysql" },
+        { "name" : "hive_jdbc_driver", "value" : "com.mysql.jdbc.Driver" }
       ]
     },
     {
@@ -255,7 +358,11 @@
         { "name" : "fs.swift.service.savanna.http.port", "value" : "8080" },
         { "name" : "fs.swift.service.savanna.https.port", "value" : "443" },
         { "name" : "fs.swift.service.savanna.auth.url", "value" : "None" },
-        { "name" : "fs.swift.service.savanna.tenant", "value" : "None"}
+        { "name" : "fs.swift.service.savanna.tenant", "value" : "None"},
+        { "name" : "hadoop.proxyuser.hive.groups", "value" : "users" },
+        { "name" : "hadoop.proxyuser.hive.hosts", "value" : "%HIVE_HOST%" },
+        { "name" : "hadoop.proxyuser.hcat.groups", "value" : "users" },
+        { "name" : "hadoop.proxyuser.hcat.hosts", "value" : "%WEBHCAT_HOST%" }
       ]
     },
     {
@@ -381,6 +488,63 @@
         { "name" : "dfs.datanode.keytab.file", "value" : "/etc/security/keytabs/dn.service.keytab" },
         { "name" : "dfs.https.address", "value" : "%NN_HOST%:50470" },
         { "name" : "dfs.datanode.data.dir.perm", "value" : "750" }
+      ]
+    },
+    {
+      "name" : "hive-site",
+      "properties" : [
+        { "name" : "javax.jdo.option.ConnectionURL", "value" : "jdbc:mysql://%HIVE_HOST%/hive?createDatabaseIfNotExist=true" },
+        { "name" : "hive.metastore.uris", "value" : "thrift://%HIVE_METASTORE_HOST%:9083" },
+        { "name" : "javax.jdo.option.ConnectionDriverName", "value" : "com.mysql.jdbc.Driver" },
+        { "name" : "javax.jdo.option.ConnectionUserName", "value" : "hive" },
+        { "name" : "javax.jdo.option.ConnectionPassword", "value" : "hive" },
+        { "name" : "fs.file.impl.disable.cache", "value" : "true" },
+        { "name" : "hive.optimize.bucketmapjoin.sortedmerge", "value" : "true" },
+        { "name" : "hive.auto.convert.join.noconditionaltask", "value" : "true" },
+        { "name" : "hadoop.clientside.fs.operations", "value" : "true" },
+        { "name" : "hive.mapred.reduce.tasks.speculative.execution", "value" : "false" },
+        { "name" : "fs.hdfs.impl.disable.cache", "value" : "true" },
+        { "name" : "hive.metastore.warehouse.dir", "value" : "/apps/hive/warehouse" },
+        { "name" : "hive.semantic.analyzer.factory.impl", "value" : "org.apache.hivealog.cli.HCatSemanticAnalyzerFactory" },
+        { "name" : "hive.server2.enable.doAs", "value" : "true" },
+        { "name" : "hive.metastore.local", "value" : "false" },
+        { "name" : "hive.auto.convert.join", "value" : "true" },
+        { "name" : "hive.auto.convert.sortmerge.join", "value" : "true" },
+        { "name" : "hive.auto.convert.sortmerge.join.noconditionaltask", "value" : "true" },
+        { "name" : "hive.optimize.reducededuplication.min.reducer", "value" : "1" },
+        { "name" : "hive.optimize.bucketmapjoin", "value" : "true" },
+        { "name" : "hive.auto.convert.join.noconditionaltask.size", "value" : "1000000000" },
+        { "name" : "hive.security.authorization.enabled", "value" : "true" },
+        { "name" : "hive.enforce.sorting", "value" : "true" },
+        { "name" : "hive.metastore.client.socket.timeout", "value" : "60" },
+        { "name" : "hive.mapjoin.bucket.cache.size", "value" : "10000" },
+        { "name" : "hive.enforce.bucketing", "value" : "true" },
+        { "name" : "hive.security.authorization.manager", "value" : "org.apache.hcatalog.security.HdfsAuthorizationProvider" },
+        { "name" : "hive.map.aggr", "value" : "true" },
+        { "name" : "hive.metastore.execute.setugi", "value" : "true" },
+        { "name" : "hive.optimize.mapjoin.mapreduce", "value" : "true" },
+        { "name" : "hive.metastore.cache.pinobjtypes", "value" : "Table,Database,Type,FieldSchema,Order" }
+      ]
+    },
+    {
+      "name" : "webhcat-site",
+      "properties" : [
+        { "name" : "templeton.streaming.jar", "value" : "hdfs:///apps/webhcat/hadoop-streaming.jar" },
+        { "name" : "templeton.pig.path", "value" : "pig.tar.gz/pig/bin/pig" },
+        { "name" : "templeton.port", "value" : "50111" },
+        { "name" : "templeton.jar", "value" : "/usr/lib/hcatalog/share/webhcat/svr/webhcat.jar" },
+        { "name" : "templeton.hive.archive", "value" : "hdfs:///apps/webhcat/hive.tar.gz" },
+        { "name" : "templeton.libjars", "value" : "/usr/lib/zookeeper/zookeeper.jar" },
+        { "name" : "templeton.hadoop", "value" : "/usr/bin/hadoop" },
+        { "name" : "templeton.hcat", "value" : "/usr/bin/hcat" },
+        { "name" : "templeton.pig.archive", "value" : "hdfs:///apps/webhcat/pig.tar.gz" },
+        { "name" : "templeton.hive.path", "value" : "hive.tar.gz/hive/bin/hive" },
+        { "name" : "templeton.exec.timeout", "value" : "60000" },
+        { "name" : "templeton.override.enabled", "value" : "false" },
+        { "name" : "templeton.storage.class", "value" : "org.apache.hcatalog.templeton.tool.ZooKeeperStorage" },
+        { "name" : "templeton.hadoop.conf.dir", "value" : "/etc/hadoop/conf" },
+        { "name" : "templeton.hive.properties", "value" : "hive.metastore.local=false,hive.metastore.uris=thrift://%HIVE_METASTORE_HOST%:9083,hive.metastore.sasl.enabled=yes,hive.metastore.execute.setugi=true,hive.metastore.warehouse.dir=/apps/hive/warehouse" },
+        { "name" : "templeton.zookeeper.hosts", "value" : "%ZOOKEEPER_HOST%:2181" }
       ]
     },
     {

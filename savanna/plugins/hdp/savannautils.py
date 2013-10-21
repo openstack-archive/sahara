@@ -21,13 +21,6 @@ def get_host_role(host):
         return host.node_group.name
 
 
-def get_node_processes(host):
-    if hasattr(host, 'node_processes'):
-        return host.node_processes
-    else:
-        return host.node_group.node_processes
-
-
 def inject_remote(param_name):
     def handle(func):
         def call(self, *args, **kwargs):

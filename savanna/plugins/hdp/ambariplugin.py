@@ -16,12 +16,10 @@
 from savanna import conductor
 from savanna import context
 from savanna import exceptions as exc
-from savanna.openstack.common import jsonutils as json
 from savanna.openstack.common import log as logging
-from savanna.plugins.hdp import exceptions as ex
+from savanna.plugins.general import exceptions as ex
 from savanna.plugins.hdp import hadoopserver as h
 from savanna.plugins.hdp import savannautils as utils
-from savanna.plugins.hdp import validator as v
 from savanna.plugins.hdp.versions import versionhandlerfactory as vhf
 from savanna.plugins import provisioning as p
 
@@ -35,16 +33,13 @@ class AmbariPlugin(p.ProvisioningPluginBase):
         self.cluster_ambari_mapping = {}
         self.version_factory = vhf.VersionHandlerFactory.get_instance()
 
-    def create_cluster(self, cluster, cluster_template):
-
-        if cluster_template is None:
-            raise ValueError('must supply cluster template')
-
+    def create_cluster(self, cluster):
         version = cluster.hadoop_version
         handler = self.version_factory.get_version_handler(version)
 
-        cluster_spec = handler.get_cluster_spec(cluster_template, cluster)
-
+        cluster_spec = handler.get_cluster_spec(
+            cluster, self._map_to_user_inputs(
+                version, cluster.cluster_configs))
         hosts = self._get_servers(cluster)
         ambari_info = self.get_ambari_info(cluster_spec)
         self.cluster_ambari_mapping[cluster.name] = ambari_info
@@ -57,17 +52,13 @@ class AmbariPlugin(p.ProvisioningPluginBase):
                 h.HadoopServer(host, cluster_spec.node_groups[host_role],
                                ambari_rpm=rpm))
 
-        provisioned = self._provision_cluster(
+        self._provision_cluster(
             cluster.name, cluster_spec, ambari_info, servers,
             cluster.hadoop_version)
 
-        if provisioned:
-            LOG.info("Install of Hadoop stack successful.")
-            # add service urls
-            self._set_cluster_info(cluster, cluster_spec, ambari_info)
-        else:
-            raise ex.HadoopProvisionError(
-                'Installation of Hadoop stack failed.')
+        LOG.info("Install of Hadoop stack successful.")
+        # add service urls
+        self._set_cluster_info(cluster, cluster_spec)
 
     def _get_servers(self, cluster):
         servers = []
@@ -89,7 +80,8 @@ class AmbariPlugin(p.ProvisioningPluginBase):
         for service in default_config.services:
             components = []
             for component in service.components:
-                components.append(component.name)
+                if service.is_user_template_component(component):
+                    components.append(component.name)
             node_processes[service.name] = components
 
         return node_processes
@@ -97,9 +89,8 @@ class AmbariPlugin(p.ProvisioningPluginBase):
     def convert(self, config, plugin_name, version, template_name,
                 cluster_template_create):
         handler = self.version_factory.get_version_handler(version)
-        normalized_config = handler.get_cluster_spec(config, None).normalize()
-
-        #TODO(jspeidel):  can we get the name (first arg) from somewhere?
+        normalized_config = handler.get_cluster_spec(
+            None, None, cluster_template=config).normalize()
 
         node_groups = []
         for ng in normalized_config.node_groups:
@@ -145,8 +136,8 @@ class AmbariPlugin(p.ProvisioningPluginBase):
     def _spawn(self, description, func, *args, **kwargs):
         context.spawn(description, func, *args, **kwargs)
 
-    def _provision_cluster(self, name, cluster_spec, ambari_info, servers,
-                           version):
+    def _provision_cluster(self, name, cluster_spec, ambari_info,
+                           servers, version):
         #TODO(jspeidel): encapsulate in another class
 
         LOG.info('Provisioning Cluster via Ambari Server: {0} ...'.format(
@@ -161,44 +152,19 @@ class AmbariPlugin(p.ProvisioningPluginBase):
         ambari_client = handler.get_ambari_client()
 
         ambari_client.wait_for_host_registrations(len(servers), ambari_info)
-
         self._set_ambari_credentials(cluster_spec, ambari_info, version)
 
-        if not ambari_client.provision_cluster(cluster_spec, servers,
-                                               ambari_info, name):
-            return False
+        ambari_client.provision_cluster(
+            cluster_spec, servers, ambari_info, name)
 
-        return True
-
-    def _set_cluster_info(self, cluster, cluster_spec, ambari_info):
+    #TODO(jspeidel): invoke during scale cluster.  Will need to handle dups
+    def _set_cluster_info(self, cluster, cluster_spec):
         info = {}
+        for service in cluster_spec.services:
+            if service.deployed:
+                service.register_service_urls(cluster_spec, info)
 
-        try:
-            jobtracker_ip = cluster_spec.determine_host_for_server_component(
-                'JOBTRACKER').management_ip
-        except Exception:
-            pass
-        else:
-            info['MapReduce'] = {
-                'Web UI': 'http://%s:50030' % jobtracker_ip
-            }
-
-        try:
-            namenode_ip = cluster_spec.determine_host_for_server_component(
-                'NAMENODE').management_ip
-        except Exception:
-            pass
-        else:
-            info['HDFS'] = {
-                'Web UI': 'http://%s:50070' % namenode_ip
-            }
-
-        info['Ambari Console'] = {
-            'Web UI': 'http://%s' % ambari_info.get_address()
-        }
-
-        ctx = context.ctx()
-        conductor.cluster_update(ctx, cluster, {'info': info})
+        conductor.cluster_update(context.ctx(), cluster, {'info': info})
 
     def _set_ambari_credentials(self, cluster_spec, ambari_info, version):
         services = cluster_spec.services
@@ -247,42 +213,30 @@ class AmbariPlugin(p.ProvisioningPluginBase):
                  .format(ambari_info.user))
 
     # SAVANNA PLUGIN SPI METHODS:
-    def _get_blueprint_processor(self, cluster):
-        version = cluster.hadoop_version
-        handler = self.version_factory.get_version_handler(version)
-        user_inputs = self._map_to_user_inputs(version,
-                                               cluster.cluster_configs)
-        processor = handler.process_cluster(user_inputs, cluster.node_groups)
-        return processor
-
-    def configure_cluster(self, cluster):
-        # take the user inputs from the cluster and node groups and convert
-        # to a ambari blueprint
-        processor = self._get_blueprint_processor(cluster)
-        # NOTE: for the time being we are going to ignore the node group
-        # level configurations.  we are not currently
-        # defining node level configuration items (i.e. scope='cluster' in
-        # all cases for returned configs)
-
-        self.create_cluster(cluster, json.dumps(processor.blueprint))
-
     def get_versions(self):
         return self.version_factory.get_versions()
+
+    def configure_cluster(self, cluster):
+        self.create_cluster(cluster)
 
     def get_configs(self, hadoop_version):
         handler = self.version_factory.get_version_handler(hadoop_version)
         return handler.get_config_items()
 
     # cluster name argument supports the non-savanna cluster creation mode
-    def start_cluster(self, cluster, cluster_name=None):
-        if cluster_name is None:
-            cluster_name = cluster.name
-
+    def start_cluster(self, cluster):
         client = self.version_factory.get_version_handler(
             cluster.hadoop_version).get_ambari_client()
 
-        client.start_services(
-            cluster_name, self.cluster_ambari_mapping[cluster_name])
+        handler = self.version_factory.get_version_handler(
+            cluster.hadoop_version)
+
+        cluster_spec = handler.get_cluster_spec(
+            cluster, self._map_to_user_inputs(
+                cluster.hadoop_version, cluster.cluster_configs))
+
+        client.start_services(cluster.name, cluster_spec,
+                              self.cluster_ambari_mapping[cluster.name])
 
     def get_title(self):
         return 'Hortonworks Data Platform'
@@ -296,16 +250,20 @@ class AmbariPlugin(p.ProvisioningPluginBase):
                ' platform on OpenStack based public & private clouds'
 
     def validate(self, cluster):
-        validator = v.Validator()
-        validator.validate(cluster)
+        # creating operational config results in validation
+        handler = self.version_factory.get_version_handler(
+            cluster.hadoop_version)
+
+        handler.get_cluster_spec(cluster, self._map_to_user_inputs(
+            cluster.hadoop_version, cluster.cluster_configs))
 
     def scale_cluster(self, cluster, instances):
         handler = self.version_factory.get_version_handler(
             cluster.hadoop_version)
         ambari_client = handler.get_ambari_client()
-        processor = self._get_blueprint_processor(cluster)
         cluster_spec = handler.get_cluster_spec(
-            json.dumps(processor.blueprint), cluster)
+            cluster, self._map_to_user_inputs(
+                cluster.hadoop_version, cluster.cluster_configs))
         rpm = self._get_rpm_uri(cluster_spec)
 
         servers = []
@@ -331,9 +289,12 @@ class AmbariPlugin(p.ProvisioningPluginBase):
                                    'decommissioning of nodes')
 
     def validate_scaling(self, cluster, existing, additional):
-        # see if additional servers are slated for "MASTER" group
-        validator = v.Validator()
-        validator.validate_scaling(cluster, existing, additional)
+        handler = self.version_factory.get_version_handler(
+            cluster.hadoop_version)
+
+        # results in validation
+        handler.get_cluster_spec(
+            cluster, [], dict(existing.items() + additional.items()))
 
     def _get_num_hosts(self, cluster):
         count = 0
@@ -351,8 +312,8 @@ class AmbariPlugin(p.ProvisioningPluginBase):
         return ambari_config.get('rpm', None)
 
     def get_ambari_info(self, cluster_spec):
-        ambari_host = cluster_spec.determine_host_for_server_component(
-            'AMBARI_SERVER')
+        ambari_host = cluster_spec.determine_component_hosts(
+            'AMBARI_SERVER').pop()
 
         port = cluster_spec.configurations['ambari'].get(
             'server.port', '8080')
