@@ -93,14 +93,16 @@ COMMON_CONFIG_OPTS = [
                     'to virtual machines via SSH, using this key'),
 
     cfg.StrOpt('PATH_TO_SSH_KEY',
-               default='/home/ubuntu/.ssh/id_rsa',
+               default=None,
                help='Path to id_rsa key which is used with tests for remote '
                     'command execution. For right work of tests you should '
                     'export your public key id_rsa.pub to Open Stack and '
                     'specify its key pair id in configuration file of tests. '
                     'If you specified wrong path to key then you will have '
                     'the error "Private key file is encrypted". Please, make '
-                    'sure you specified right path to key')
+                    'sure you specified right path to key. If this parameter '
+                    'is not specified, keypair (private and public SSH keys) '
+                    'will be generated, using nova_client')
 ]
 
 
