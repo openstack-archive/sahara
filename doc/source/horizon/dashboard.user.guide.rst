@@ -52,6 +52,7 @@ Create a Cluster Template
 4) Under the "Details" tab, you must give your template a name.
 
 5) Under the "Node Groups" tab, you should add one or more nodes that can be based on one or more templates.
+
   - To do this, start by choosing a Node Group Template from the dropdown and click the "+" button.
   - You can adjust the number of nodes to be spawned for this node group via the text box or the "-" and "+" buttons.
   - Repeat these steps if you need nodes from additional node group templates.
@@ -78,6 +79,7 @@ Launching a Cluster
 7) Optionally choose a keypair that can be used to authenticate to your cluster instances.
 
 8) Click on the "Create" button to start your cluster.
+
   - Your cluster's status will display on the Clusters table.
   - It will likely take several minutes to reach the "Active" state.
 
@@ -88,6 +90,7 @@ Scaling a Cluster
 2) You can adjust the numbers of instances for existing Node Group Templates.
 
 3) You can also add a new Node Group Template and choose a number of instances to launch.
+
   - This can be done by selecting your desired Node Group Template from the dropdown and clicking the "+" button.
   - Your new Node Group will appear below and you can adjust the number of instances via the text box or the +/- buttons.
 
@@ -122,8 +125,9 @@ Job Binaries are where you define/upload the source code (mains and libraries) f
 2) Give your Job Binary a name (this can be different than the actual filename).
 
 3) Choose the type of storage for your Job Binary.
+
   - For "Swift Internal", you will need to enter the URL of your binary (<container>.savanna/<path>) as well as the username and password.
-  - For "Savanna internal database", you can choose from a pre-existing "job binary internal", "*Create a script" or "*Upload a new file".
+  - For "Savanna internal database", you can choose from a pre-existing "job binary internal", "Create a script" or "Upload a new file".
 
 4) Enter an optional description.
 
@@ -160,6 +164,7 @@ Job Executions are what you get by "Launching" a job.  You can monitor the statu
 3) Choose the Input and Output Data Sources (Data Sources defined above).
 
 4) If additional configuration is required, click on the "Configure" tab.
+
   - Additional configuration properties can be defined by clicking on the "Add" button.
   - An example configuration entry might be mapred.mapper.class for the Name and org.apache.oozie.example.SampleMapper for the Value.
 
