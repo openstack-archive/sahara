@@ -8,7 +8,6 @@ Here you can find prepared images:
 
 * http://savanna-files.mirantis.com/savanna-0.3-vanilla-1.2.1-ubuntu-13.04.qcow2
 * http://savanna-files.mirantis.com/savanna-0.3-vanilla-1.2.1-fedora-19.qcow2
-* http://savanna-files.mirantis.com/savanna-0.3-vanilla-1.2.1-centos-6.4.qcow2
 
 Besides, you may build images by yourself using :doc:`diskimagebuilder`.
 Keep in mind that if you want to use "Swift Integration" feature ( :doc:`features`),
