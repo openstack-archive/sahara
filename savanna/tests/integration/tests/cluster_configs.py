@@ -13,12 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import uuid
-
-from swiftclient import client as swift_client
-
 from savanna.openstack.common import excutils
-from savanna.tests.integration.configs import config as cfg
 from savanna.tests.integration.tests import base
 
 
@@ -29,9 +24,6 @@ JT_CONFIG = {'Job Tracker Heap Size': 514}
 DN_CONFIG = {'Data Node Heap Size': 513}
 TT_CONFIG = {'Task Tracker Heap Size': 515}
 
-CLUSTER_GENERAL_CONFIG = {
-    'Enable Swift': not cfg.ITConfig().vanilla_config.SKIP_SWIFT_TEST
-}
 CLUSTER_HDFS_CONFIG = {'dfs.replication': 2}
 CLUSTER_MR_CONFIG = {'mapred.map.tasks.speculative.execution': False,
                      'mapred.child.java.opts': '-Xmx500m'}
@@ -132,33 +124,6 @@ class ClusterConfigTest(base.ITestCase):
 
                 self.__compare_configs_on_cluster_node(config, value)
 
-            if ('namenode' in processes) and (
-                    not self.vanilla_config.SKIP_SWIFT_TEST):
-
-                swift = swift_client.Connection(
-                    authurl=self.common_config.OS_AUTH_URL,
-                    user=self.common_config.OS_USERNAME,
-                    key=self.common_config.OS_PASSWORD,
-                    tenant_name=self.common_config.OS_TENANT_NAME,
-                    auth_version='2')  # TODO(ylobankov): delete hard code
-
-                swift.put_container(
-                    'Swift-config-test-%s' % str(self.swift_container_id)
-                )
-
-                try:
-
-                    for config, value in CLUSTER_GENERAL_CONFIG.items():
-
-                        self.__compare_configs_on_cluster_node(config, value)
-
-                finally:
-
-                    self.delete_swift_container(
-                        swift, 'Swift-config-test-%s'
-                               % str(self.swift_container_id)
-                    )
-
 #TODO(ylobankov): add check for secondary nn when bug #1217245 will be fixed
             for process in processes:
 
@@ -179,7 +144,7 @@ class ClusterConfigTest(base.ITestCase):
         data = self.savanna.clusters.get(cluster_id)
 
         self.__compare_configs(
-            data.cluster_configs['general'], CLUSTER_GENERAL_CONFIG
+            data.cluster_configs['general'], {'Enable Swift': True}
         )
         self.__compare_configs(
             data.cluster_configs['HDFS'], CLUSTER_HDFS_CONFIG
@@ -195,25 +160,12 @@ class ClusterConfigTest(base.ITestCase):
         node_ip_list_with_node_processes = \
             self.get_cluster_node_ip_list_with_node_processes(cluster_id)
 
-        # Make Swift container id for container uniqueness
-        # during Swift config testing
-        self.swift_container_id = uuid.uuid4()
-
-        extra_script_parameters = {
-            'OS_TENANT_NAME': self.common_config.OS_TENANT_NAME,
-            'OS_USERNAME': self.common_config.OS_USERNAME,
-            'OS_PASSWORD': self.common_config.OS_PASSWORD,
-            'HADOOP_USER': self.vanilla_config.HADOOP_USER,
-            'SWIFT_CONTAINER_ID': str(self.swift_container_id)
-        }
-
         try:
 
             self.transfer_helper_script_to_nodes(
                 node_ip_list_with_node_processes,
                 self.vanilla_config.NODE_USERNAME,
-                'cluster_config_test_script.sh',
-                parameter_list=extra_script_parameters
+                'cluster_config_test_script.sh'
             )
 
         except Exception as e:
