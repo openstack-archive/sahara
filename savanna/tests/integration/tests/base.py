@@ -20,6 +20,7 @@ import time
 
 import unittest2
 
+from novaclient.v1_1 import client as nova_client
 import savannaclient.api.client as savanna_client
 from swiftclient import client as swift_client
 
@@ -78,6 +79,20 @@ class ITestCase(unittest2.TestCase):
                 self.common_config.SAVANNA_HOST,
                 self.common_config.SAVANNA_PORT,
                 self.common_config.SAVANNA_API_VERSION))
+
+        self.nova = nova_client.Client(self.common_config.OS_USERNAME,
+                                       self.common_config.OS_PASSWORD,
+                                       self.common_config.OS_TENANT_NAME,
+                                       self.common_config.OS_AUTH_URL,
+                                       service_type='compute')
+
+        if not self.common_config.PATH_TO_SSH_KEY:
+
+            self.private_key = self.nova.keypairs.create(
+                self.common_config.USER_KEYPAIR_ID).private_key
+
+        else:
+            self.private_key = open(self.common_config.PATH_TO_SSH_KEY).read()
 
 #-------------------------Methods for object creation--------------------------
 
@@ -399,10 +414,7 @@ class ITestCase(unittest2.TestCase):
 
     def open_ssh_connection(self, host, node_username):
 
-        remote._connect(
-            host, node_username, open(
-                self.common_config.PATH_TO_SSH_KEY).read()
-        )
+        remote._connect(host, node_username, self.private_key)
 
     @staticmethod
     def execute_command(cmd):
@@ -521,3 +533,9 @@ class ITestCase(unittest2.TestCase):
             'LOG FROM CLUSTER NODE *!*!*!*!*!*!*!*!*!*!*!*!*!*!*!*!*!*!*!*'
             '!*!\n\n'
         )
+
+    def tearDown(self):
+
+        if not self.common_config.PATH_TO_SSH_KEY:
+
+            self.nova.keypairs.delete(self.common_config.USER_KEYPAIR_ID)
