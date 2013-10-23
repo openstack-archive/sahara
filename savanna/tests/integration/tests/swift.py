@@ -28,15 +28,15 @@ class SwiftTest(base.ITestCase):
 
         plugin_config = cluster_info['plugin_config']
 
-        # Make Swift container id for container uniqueness during Swift testing
-        swift_container_id = uuid.uuid4()
+        # Make unique name of Swift container during Swift testing
+        swift_container_name = 'Swift-test-' + str(uuid.uuid4())
 
         extra_script_parameters = {
             'OS_TENANT_NAME': self.common_config.OS_TENANT_NAME,
             'OS_USERNAME': self.common_config.OS_USERNAME,
             'OS_PASSWORD': self.common_config.OS_PASSWORD,
             'HADOOP_USER': plugin_config.HADOOP_USER,
-            'SWIFT_CONTAINER_ID': str(swift_container_id)
+            'SWIFT_CONTAINER_NAME': swift_container_name
         }
 
         namenode_ip = cluster_info['node_info']['namenode_ip']
@@ -57,7 +57,7 @@ class SwiftTest(base.ITestCase):
 
         swift = self.connect_to_swift()
 
-        swift.put_container('Swift-test-%s' % str(swift_container_id))
+        swift.put_container(swift_container_name)
 
         try:
 
@@ -71,8 +71,6 @@ class SwiftTest(base.ITestCase):
 
         finally:
 
-            self.delete_swift_container(
-                swift, 'Swift-test-%s' % str(swift_container_id)
-            )
+            self.delete_swift_container(swift, swift_container_name)
 
         self.close_ssh_connection()
