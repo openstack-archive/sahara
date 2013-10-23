@@ -21,7 +21,7 @@ case $1 in
     ;;
 
     check_directory)
-    FUNC="check_job_directory_existence"
+        FUNC="check_job_directory_existence"
     ;;
 
     run_wordcount_job)
@@ -134,7 +134,7 @@ run_wordcount_job() {
 
     create_log_directory
 
-    `dmesg > $dir/input`
+    dmesg > $dir/input
 
     sudo su -c "hadoop dfs -ls /" $HADOOP_USER
     check_return_code_after_command_execution -exit `echo "$?"`
@@ -159,7 +159,6 @@ run_wordcount_job() {
 
     sudo su -c "hadoop dfs -rmr /map-reduce-test" $HADOOP_USER
     check_return_code_after_command_execution -exit `echo "$?"`
-
 }
 
 $FUNC

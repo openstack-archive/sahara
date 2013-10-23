@@ -154,7 +154,9 @@ class VanillaGatingTest(cluster_configs.ClusterConfigTest,
                         name='master-node-sec-nn',
                         flavor_id=self.common_config.FLAVOR_ID,
                         node_processes=['secondarynamenode', 'oozie'],
-                        node_configs={},
+                        node_configs={
+                            'JobFlow': cluster_configs.OOZIE_CONFIG
+                        },
                         count=1),
                     dict(
                         name='worker-node-tt-dn',
