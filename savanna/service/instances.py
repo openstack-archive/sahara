@@ -314,16 +314,10 @@ def _await_networks(cluster, instances):
     cluster = conductor.cluster_get(ctx, instances[0].node_group.cluster)
     instances = get_instances(cluster, ips_assigned)
 
-    accessible_instances = set()
-    while len(accessible_instances) != len(instances):
-        if not _check_cluster_exists(instances[0].node_group.cluster):
-            return
+    with context.ThreadGroup() as tg:
         for instance in instances:
-            if instance.id not in accessible_instances:
-                if _check_if_accessible(instance):
-                    accessible_instances.add(instance.id)
-
-        context.sleep(1)
+            tg.spawn("wait-for-ssh-%s" % instance.instance_name,
+                     _wait_until_accessible, instance)
 
     LOG.info("Cluster '%s': all instances are accessible" % cluster.id)
 
@@ -357,26 +351,25 @@ def _check_if_active(instance):
     return server.status == 'ACTIVE'
 
 
-def _check_if_accessible(instance):
+def _wait_until_accessible(instance):
+    while True:
+        try:
+            # check if ssh is accessible and cloud-init
+            # script is finished generating id_rsa
+            exit_code, stdout = instance.remote.execute_command(
+                "ls .ssh/id_rsa", raise_when_error=False)
 
-    if not instance.management_ip:
-        return False
+            if exit_code == 0:
+                LOG.debug('Instance %s is accessible' % instance.instance_name)
+                return
+        except Exception as ex:
+            LOG.debug("Can't login to node %s (%s), reason %s",
+                      instance.instance_name, instance.management_ip, ex)
 
-    try:
-        # check if ssh is accessible and cloud-init
-        # script is finished generating id_rsa
-        exit_code, stdout = instance.remote.execute_command(
-            "ls .ssh/id_rsa", raise_when_error=False)
+        context.sleep(5)
 
-        if exit_code:
-            return False
-    except Exception as ex:
-        LOG.debug("Can't login to node %s (%s), reason %s",
-                  instance.instance_name, instance.management_ip, ex)
-        return False
-
-    LOG.debug('Instance %s is accessible' % instance.instance_name)
-    return True
+        if not _check_cluster_exists(instance.node_group.cluster):
+            return
 
 
 def _configure_instances(cluster):
