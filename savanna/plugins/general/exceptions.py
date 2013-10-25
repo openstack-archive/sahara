@@ -81,3 +81,45 @@ class NotSingleHiveException(e.SavannaException):
         self.message = ("Hadoop cluster should contain 0 or 1 Hive Server"
                         " instances. Actual Hive count is %s" % h_count)
         self.code = "NOT_SINGLE_HIVE"
+
+
+class RequiredServiceMissingException(e.SavannaException):
+    """A validation exception indicating that a required service
+       has not been deployed
+    """
+
+    def __init__(self, service_name):
+        self.message = 'Cluster is missing a required service: %s'\
+                       % service_name
+        self.code = 'MISSING_SERVICE'
+
+        super(RequiredServiceMissingException, self).__init__()
+
+
+class InvalidComponentCountException(e.SavannaException):
+    """A validation exception indicating that an invalid number of
+       components are being deployed in a cluster
+    """
+
+    def __init__(self, component, expected_count, count):
+        self.message = ("Hadoop cluster should contain {0} {1} components."
+                        " Actual {1} count is {2}".format(
+                        expected_count, component, count))
+        self.code = "INVALID_COMPONENT_COUNT"
+
+        super(InvalidComponentCountException, self).__init__()
+
+
+class HadoopProvisionError(e.SavannaException):
+    """Exception indicating that cluster provisioning failed.
+
+    A message indicating the reason for failure must be provided.
+    """
+
+    base_message = "Failed to Provision Hadoop Cluster: %s"
+
+    def __init__(self, message):
+        self.code = "HADOOP_PROVISION_FAILED"
+        self.message = self.base_message % message
+
+        super(HadoopProvisionError, self).__init__()

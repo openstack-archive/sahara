@@ -29,11 +29,8 @@ class AbstractVersionHandler():
         return
 
     @abc.abstractmethod
-    def process_cluster(self, user_inputs, node_groups):
-        return
-
-    @abc.abstractmethod
-    def get_cluster_spec(self, cluster_template, cluster):
+    def get_cluster_spec(self, cluster, user_inputs, scaled_groups=None,
+                         cluster_template=None):
         return
 
     @abc.abstractmethod

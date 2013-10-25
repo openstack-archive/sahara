@@ -49,9 +49,8 @@ class HDPGatingTest(map_reduce.MapReduceTest, swift.SwiftTest,
                 description='test node group template',
                 volumes_per_node=0,
                 volume_size=0,
-                node_processes=['TASKTRACKER', 'DATANODE', 'GANGLIA_MONITOR',
-                                'HDFS_CLIENT', 'MAPREDUCE_CLIENT',
-                                'AMBARI_AGENT'],
+                node_processes=['TASKTRACKER', 'DATANODE', 'HDFS_CLIENT',
+                                'MAPREDUCE_CLIENT'],
                 node_configs={}
             )
             node_group_template_id_list.append(node_group_template_tt_dn_id)
@@ -79,9 +78,8 @@ class HDPGatingTest(map_reduce.MapReduceTest, swift.SwiftTest,
                         flavor_id=self.common_config.FLAVOR_ID,
                         node_processes=[
                             'JOBTRACKER', 'NAMENODE', 'SECONDARY_NAMENODE',
-                            'GANGLIA_SERVER', 'GANGLIA_MONITOR',
-                            'NAGIOS_SERVER', 'AMBARI_SERVER', 'AMBARI_AGENT'
-                        ],
+                            'GANGLIA_SERVER', 'NAGIOS_SERVER',
+                            'AMBARI_SERVER'],
                         node_configs={},
                         count=1),
                     dict(

@@ -25,7 +25,7 @@
                     "applicable_target": "HDFS",
                     "config_type": "string",
                     "default_value": "org.apache.hadoop.io.compress.GzipCodec,org.apache.hadoop.io.compress.DefaultCodec",
-                    "description": "A list of the compression codec classes that can be used\n                 for compression/decompression.",
+                    "description": "A list of the compression codec classes that can be used for compression/decompression.",
                     "is_optional": true,
                     "name": "io.compression.codecs",
                     "scope": "cluster"
@@ -533,15 +533,6 @@
                 {
                     "applicable_target": "HDFS",
                     "config_type": "int",
-                    "default_value": "100",
-                    "description": "Added to grow Queue size so that more client connections are allowed",
-                    "is_optional": true,
-                    "name": "dfs.namenode.handler.count",
-                    "scope": "cluster"
-                },
-                {
-                    "applicable_target": "HDFS",
-                    "config_type": "int",
                     "default_value": "5242880",
                     "description": "...",
                     "is_optional": true,
@@ -916,15 +907,6 @@
                 {
                     "applicable_target": "MAPREDUCE",
                     "config_type": "string",
-                    "default_value": "%AMBARI_HOST%:50300",
-                    "description": " ",
-                    "is_optional": true,
-                    "name": "mapred.job.tracker",
-                    "scope": "cluster"
-                },
-                {
-                    "applicable_target": "MAPREDUCE",
-                    "config_type": "string",
                     "default_value": "60000",
                     "description": " ",
                     "is_optional": true,
@@ -1033,15 +1015,6 @@
                 {
                     "applicable_target": "MAPREDUCE",
                     "config_type": "string",
-                    "default_value": "%AMBARI_HOST%:50030",
-                    "description": " ",
-                    "is_optional": true,
-                    "name": "mapred.job.tracker.http.address",
-                    "scope": "cluster"
-                },
-                {
-                    "applicable_target": "MAPREDUCE",
-                    "config_type": "string",
                     "default_value": "15",
                     "description": " ",
                     "is_optional": true,
@@ -1131,15 +1104,6 @@
                 },
                 {
                     "applicable_target": "MAPREDUCE",
-                    "config_type": "string",
-                    "default_value": "%AMBARI_HOST%:51111",
-                    "description": "...",
-                    "is_optional": true,
-                    "name": "mapreduce.history.server.http.address",
-                    "scope": "cluster"
-                },
-                {
-                    "applicable_target": "MAPREDUCE",
                     "config_type": "bool",
                     "default_value": false,
                     "description": "...",
@@ -1169,15 +1133,6 @@
                     "applicable_target": "MAPREDUCE",
                     "config_type": "string",
                     "default_value": "hadoop",
-                    "description": "...",
-                    "is_optional": true,
-                    "name": "mapreduce.cluster.administrators",
-                    "scope": "cluster"
-                },
-                {
-                    "applicable_target": "MAPREDUCE",
-                    "config_type": "string",
-                    "default_value": "hdfs",
                     "description": "...",
                     "is_optional": true,
                     "name": "mapreduce.cluster.administrators",
@@ -1762,6 +1717,440 @@
                     "description": "...",
                     "is_optional": true,
                     "name": "yarn.nodemanager.delete.debug-delay-sec",
+                    "scope": "cluster"
+                }
+            ]
+        },
+        {
+            "tag": "hive-site.xml",
+            "properties": [
+                {
+                    "applicable_target": "HIVE",
+                    "config_type": "string",
+                    "default_value": "jdbc:mysql://%HIVE_ADDRESS%.novalocal/hive?createDatabaseIfNotExist=true",
+                    "description": "...",
+                    "is_optional": true,
+                    "name": "javax.jdo.option.ConnectionURL",
+                    "scope": "cluster"
+                },
+                {
+                    "applicable_target": "HIVE",
+                    "config_type": "string",
+                    "default_value": "thrift:///%HIVE_ADDRESS%",
+                    "description": "...",
+                    "is_optional": true,
+                    "name": "hive.metastore.uris",
+                    "scope": "cluster"
+                },
+                {
+                    "applicable_target": "HIVE",
+                    "config_type": "string",
+                    "default_value": "com.mysql.jdbc.Driver",
+                    "description": "...",
+                    "is_optional": true,
+                    "name": "javax.jdo.option.ConnectionDriverName",
+                    "scope": "cluster"
+                },
+                {
+                    "applicable_target": "HIVE",
+                    "config_type": "string",
+                    "default_value": "",
+                    "description": "...",
+                    "is_optional": false,
+                    "name": "javax.jdo.option.ConnectionUserName",
+                    "scope": "cluster"
+                },
+                {
+                    "applicable_target": "HIVE",
+                    "config_type": "string",
+                    "default_value": "",
+                    "description": "...",
+                    "is_optional": false,
+                    "name": "javax.jdo.option.ConnectionPassword",
+                    "scope": "cluster"
+                },
+                {
+                    "applicable_target": "HIVE",
+                    "config_type": "string",
+                    "default_value": "true",
+                    "description": "...",
+                    "is_optional": true,
+                    "name": "fs.file.impl.disable.cache",
+                    "scope": "cluster"
+                },
+                {
+                    "applicable_target": "HIVE",
+                    "config_type": "string",
+                    "default_value": "true",
+                    "description": "...",
+                    "is_optional": true,
+                    "name": "hive.optimize.bucketmapjoin.sortedmerge",
+                    "scope": "cluster"
+                },
+                {
+                    "applicable_target": "HIVE",
+                    "config_type": "string",
+                    "default_value": "true",
+                    "description": "...",
+                    "is_optional": true,
+                    "name": "hive.auto.convert.join.noconditionaltask",
+                    "scope": "cluster"
+                },
+                {
+                    "applicable_target": "HIVE",
+                    "config_type": "string",
+                    "default_value": "true",
+                    "description": "...",
+                    "is_optional": true,
+                    "name": "hadoop.clientside.fs.operations",
+                    "scope": "cluster"
+                },
+                {
+                    "applicable_target": "HIVE",
+                    "config_type": "string",
+                    "default_value": "false",
+                    "description": "...",
+                    "is_optional": true,
+                    "name": "hive.mapred.reduce.tasks.speculative.execution",
+                    "scope": "cluster"
+                },
+                {
+                    "applicable_target": "HIVE",
+                    "config_type": "string",
+                    "default_value": "true",
+                    "description": "...",
+                    "is_optional": true,
+                    "name": "fs.hdfs.impl.disable.cache",
+                    "scope": "cluster"
+                },
+                {
+                    "applicable_target": "HIVE",
+                    "config_type": "string",
+                    "default_value": "/apps/hive/warehouse",
+                    "description": "...",
+                    "is_optional": true,
+                    "name": "hive.metastore.warehouse.dir",
+                    "scope": "cluster"
+                },
+                {
+                    "applicable_target": "HIVE",
+                    "config_type": "string",
+                    "default_value": "org.apache.hivealog.cli.HCatSemanticAnalyzerFactory",
+                    "description": "...",
+                    "is_optional": true,
+                    "name": "hive.semantic.analyzer.factory.impl",
+                    "scope": "cluster"
+                },
+                {
+                    "applicable_target": "HIVE",
+                    "config_type": "string",
+                    "default_value": "true",
+                    "description": "...",
+                    "is_optional": true,
+                    "name": "hive.server2.enable.doAs",
+                    "scope": "cluster"
+                },
+                {
+                    "applicable_target": "HIVE",
+                    "config_type": "string",
+                    "default_value": "false",
+                    "description": "...",
+                    "is_optional": true,
+                    "name": "hive.metastore.local",
+                    "scope": "cluster"
+                },
+                {
+                    "applicable_target": "HIVE",
+                    "config_type": "string",
+                    "default_value": "true",
+                    "description": "...",
+                    "is_optional": true,
+                    "name": "hive.auto.convert.join",
+                    "scope": "cluster"
+                },
+                {
+                    "applicable_target": "HIVE",
+                    "config_type": "string",
+                    "default_value": "true",
+                    "description": "...",
+                    "is_optional": true,
+                    "name": "hive.auto.convert.sortmerge.join",
+                    "scope": "cluster"
+                },
+                {
+                    "applicable_target": "HIVE",
+                    "config_type": "string",
+                    "default_value": "true",
+                    "description": "...",
+                    "is_optional": true,
+                    "name": "hive.auto.convert.sortmerge.join.noconditionaltask",
+                    "scope": "cluster"
+                },
+                {
+                    "applicable_target": "HIVE",
+                    "config_type": "string",
+                    "default_value": "1",
+                    "description": "...",
+                    "is_optional": true,
+                    "name": "hive.optimize.reducededuplication.min.reducer",
+                    "scope": "cluster"
+                },
+                {
+                    "applicable_target": "HIVE",
+                    "config_type": "string",
+                    "default_value": "true",
+                    "description": "...",
+                    "is_optional": true,
+                    "name": "hive.optimize.bucketmapjoin",
+                    "scope": "cluster"
+                },
+                {
+                    "applicable_target": "HIVE",
+                    "config_type": "string",
+                    "default_value": "1000000000",
+                    "description": "...",
+                    "is_optional": true,
+                    "name": "hive.auto.convert.join.noconditionaltask.size",
+                    "scope": "cluster"
+                },
+                {
+                    "applicable_target": "HIVE",
+                    "config_type": "string",
+                    "default_value": "true",
+                    "description": "...",
+                    "is_optional": true,
+                    "name": "hive.security.authorization.enabled",
+                    "scope": "cluster"
+                },
+                {
+                    "applicable_target": "HIVE",
+                    "config_type": "string",
+                    "default_value": "true",
+                    "description": "...",
+                    "is_optional": true,
+                    "name": "hive.enforce.sorting",
+                    "scope": "cluster"
+                },
+                {
+                    "applicable_target": "HIVE",
+                    "config_type": "string",
+                    "default_value": "60",
+                    "description": "...",
+                    "is_optional": true,
+                    "name": "hive.metastore.client.socket.timeout",
+                    "scope": "cluster"
+                },
+                {
+                    "applicable_target": "HIVE",
+                    "config_type": "string",
+                    "default_value": "10000",
+                    "description": "...",
+                    "is_optional": true,
+                    "name": "hive.mapjoin.bucket.cache.size",
+                    "scope": "cluster"
+                },
+                {
+                    "applicable_target": "HIVE",
+                    "config_type": "string",
+                    "default_value": "true",
+                    "description": "...",
+                    "is_optional": true,
+                    "name": "hive.enforce.bucketing",
+                    "scope": "cluster"
+                },
+                {
+                    "applicable_target": "HIVE",
+                    "config_type": "string",
+                    "default_value": "org.apache.hcatalog.security.HdfsAuthorizationProvider",
+                    "description": "...",
+                    "is_optional": true,
+                    "name": "hive.security.authorization.manager",
+                    "scope": "cluster"
+                },
+                {
+                    "applicable_target": "HIVE",
+                    "config_type": "string",
+                    "default_value": "true",
+                    "description": "...",
+                    "is_optional": true,
+                    "name": "hive.map.aggr",
+                    "scope": "cluster"
+                },
+                {
+                    "applicable_target": "HIVE",
+                    "config_type": "string",
+                    "default_value": "true",
+                    "description": "...",
+                    "is_optional": true,
+                    "name": "hive.metastore.execute.setugi",
+                    "scope": "cluster"
+                },
+                {
+                    "applicable_target": "HIVE",
+                    "config_type": "string",
+                    "default_value": "true",
+                    "description": "...",
+                    "is_optional": true,
+                    "name": "hive.optimize.mapjoin.mapreduce",
+                    "scope": "cluster"
+                },
+                {
+                    "applicable_target": "HIVE",
+                    "config_type": "string",
+                    "default_value": "Table,Database,Type,FieldSchema,Order",
+                    "description": "...",
+                    "is_optional": true,
+                    "name": "hive.metastore.cache.pinobjtypes",
+                    "scope": "cluster"
+                }
+
+            ]
+        },
+        {
+            "tag": "webhcat-site.xml",
+            "properties": [
+                {
+                    "applicable_target": "WEBHCAT",
+                    "config_type": "string",
+                    "default_value": "hdfs:///apps/webhcat/hadoop-streaming.jar",
+                    "description": "...",
+                    "is_optional": true,
+                    "name": "templeton.streaming.jar",
+                    "scope": "cluster"
+                },
+                {
+                    "applicable_target": "WEBHCAT",
+                    "config_type": "string",
+                    "default_value": "pig.tar.gz/pig/bin/pig",
+                    "description": "...",
+                    "is_optional": true,
+                    "name": "templeton.pig.path",
+                    "scope": "cluster"
+                },
+                {
+                    "applicable_target": "WEBHCAT",
+                    "config_type": "string",
+                    "default_value": "50111",
+                    "description": "...",
+                    "is_optional": true,
+                    "name": "templeton.port",
+                    "scope": "cluster"
+                },
+                {
+                    "applicable_target": "WEBHCAT",
+                    "config_type": "string",
+                    "default_value": "/usr/lib/hcatalog/share/webhcat/svr/webhcat.jar",
+                    "description": "...",
+                    "is_optional": true,
+                    "name": "templeton.jar",
+                    "scope": "cluster"
+                },
+                {
+                    "applicable_target": "WEBHCAT",
+                    "config_type": "string",
+                    "default_value": "hdfs:///apps/webhcat/hive.tar.gz",
+                    "description": "...",
+                    "is_optional": true,
+                    "name": "templeton.hive.archive",
+                    "scope": "cluster"
+                },
+                {
+                    "applicable_target": "WEBHCAT",
+                    "config_type": "string",
+                    "default_value": "/usr/lib/zookeeper/zookeeper.jar",
+                    "description": "...",
+                    "is_optional": true,
+                    "name": "templeton.libjars",
+                    "scope": "cluster"
+                },
+                {
+                    "applicable_target": "WEBHCAT",
+                    "config_type": "string",
+                    "default_value": "/usr/bin/hadoop",
+                    "description": "...",
+                    "is_optional": true,
+                    "name": "templeton.hadoop",
+                    "scope": "cluster"
+                },
+                {
+                    "applicable_target": "WEBHCAT",
+                    "config_type": "string",
+                    "default_value": "/usr/bin/hcat",
+                    "description": "...",
+                    "is_optional": true,
+                    "name": "templeton.hcat",
+                    "scope": "cluster"
+                },
+                {
+                    "applicable_target": "WEBHCAT",
+                    "config_type": "string",
+                    "default_value": "hdfs:///apps/webhcat/pig.tar.gz",
+                    "description": "...",
+                    "is_optional": true,
+                    "name": "templeton.pig.archive",
+                    "scope": "cluster"
+                },
+                {
+                    "applicable_target": "WEBHCAT",
+                    "config_type": "string",
+                    "default_value": "hive.tar.gz/hive/bin/hive",
+                    "description": "...",
+                    "is_optional": true,
+                    "name": "templeton.hive.path",
+                    "scope": "cluster"
+                },
+                {
+                    "applicable_target": "WEBHCAT",
+                    "config_type": "string",
+                    "default_value": "60000",
+                    "description": "...",
+                    "is_optional": true,
+                    "name": "templeton.exec.timeout",
+                    "scope": "cluster"
+                },
+                {
+                    "applicable_target": "WEBHCAT",
+                    "config_type": "string",
+                    "default_value": "false",
+                    "description": "...",
+                    "is_optional": true,
+                    "name": "templeton.override.enabled",
+                    "scope": "cluster"
+                },
+                {
+                    "applicable_target": "WEBHCAT",
+                    "config_type": "string",
+                    "default_value": "org.apache.hcatalog.templeton.tool.ZooKeeperStorage",
+                    "description": "...",
+                    "is_optional": true,
+                    "name": "templeton.storage.class",
+                    "scope": "cluster"
+                },
+                {
+                    "applicable_target": "WEBHCAT",
+                    "config_type": "string",
+                    "default_value": "/etc/hadoop/conf",
+                    "description": "...",
+                    "is_optional": true,
+                    "name": "templeton.hadoop.conf.dir",
+                    "scope": "cluster"
+                },
+                {
+                    "applicable_target": "WEBHCAT",
+                    "config_type": "string",
+                    "default_value": "hive.metastore.local=false,hive.metastore.uris=thrift://%HIVE_ADDRESS%,hive.metastore.sasl.enabled=yes,hive.metastore.execute.setugi=true",
+                    "description": "...",
+                    "is_optional": true,
+                    "name": "templeton.hive.properties",
+                    "scope": "cluster"
+                },
+                {
+                    "applicable_target": "WEBHCAT",
+                    "config_type": "string",
+                    "default_value": "%HIVE_HOST%:2181",
+                    "description": "...",
+                    "is_optional": true,
+                    "name": "templeton.zookeeper.hosts",
                     "scope": "cluster"
                 }
             ]
@@ -2469,6 +2858,42 @@
                     "description": "...",
                     "is_optional": true,
                     "name": "user_group",
+                    "scope": "cluster"
+                },
+                {
+                    "applicable_target": "ZOOKEEPER",
+                    "config_type": "string",
+                    "default_value": "2000",
+                    "description": "...",
+                    "is_optional": true,
+                    "name": "tickTime",
+                    "scope": "cluster"
+                },
+                {
+                    "applicable_target": "ZOOKEEPER",
+                    "config_type": "string",
+                    "default_value": "10",
+                    "description": "...",
+                    "is_optional": true,
+                    "name": "initLimit",
+                    "scope": "cluster"
+                },
+                {
+                    "applicable_target": "ZOOKEEPER",
+                    "config_type": "string",
+                    "default_value": "5",
+                    "description": "...",
+                    "is_optional": true,
+                    "name": "syncLimit",
+                    "scope": "cluster"
+                },
+                {
+                    "applicable_target": "ZOOKEEPER",
+                    "config_type": "string",
+                    "default_value": "2181",
+                    "description": "...",
+                    "is_optional": true,
+                    "name": "clientPort",
                     "scope": "cluster"
                 }
             ]

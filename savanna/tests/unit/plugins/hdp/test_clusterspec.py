@@ -17,147 +17,306 @@ import mock
 import pkg_resources as pkg
 import unittest2
 
+from savanna.plugins.general import exceptions as ex
 from savanna.plugins.hdp import clusterspec as cs
+from savanna.plugins.provisioning import UserInput as ui
+import savanna.tests.unit.plugins.hdp.hdp_test_base as base
 from savanna import version
 
 
+@mock.patch("savanna.utils.openstack.nova.get_instance_info",
+            base.get_instance_info)
+@mock.patch('savanna.plugins.hdp.services.HdfsService._get_swift_properties',
+            return_value=[])
 class ClusterSpecTest(unittest2.TestCase):
     service_validators = {}
 
     #TODO(jspeidel): test host manifest
-    @mock.patch("savanna.utils.openstack.nova.get_instance_info")
-    def test_parse_default_with_hosts(self, patched):
-        patched.side_effect = _test_get_instance_info
+    def test_parse_default_with_cluster(self, patched):
         cluster_config_file = pkg.resource_string(
             version.version_info.package,
             'plugins/hdp/versions/1_3_2/resources/default-cluster.template')
 
-        server1 = TestServer('host1', 'test-master', '11111', 3, '111.11.1111',
-                             '222.11.1111',
-                             node_processes=["NAMENODE", "JOBTRACKER",
-                                             "SECONDARY_NAMENODE",
-                                             "GANGLIA_SERVER",
-                                             "GANGLIA_MONITOR",
-                                             "NAGIOS_SERVER", "AMBARI_SERVER",
-                                             "AMBARI_AGENT"])
-        server2 = TestServer('host2', 'test-slave', '11111', 3, '222.22.2222',
-                             '333.22.2222')
+        server1 = base.TestServer('host1', 'test-master', '11111', 3,
+                                  '111.11.1111', '222.11.1111')
+        server2 = base.TestServer('host2', 'test-slave', '11111', 3,
+                                  '222.22.2222', '333.22.2222')
 
-        node_group1 = TestNodeGroup([server1])
-        node_group2 = TestNodeGroup([server2])
-        cluster = TestCluster([node_group1, node_group2])
+        node_group1 = TestNodeGroup(
+            'master', [server1], ["NAMENODE", "JOBTRACKER",
+                                  "SECONDARY_NAMENODE", "GANGLIA_SERVER",
+                                  "GANGLIA_MONITOR", "NAGIOS_SERVER",
+                                  "AMBARI_SERVER", "AMBARI_AGENT"])
+        node_group2 = TestNodeGroup('slave', [server2], ['TASKTRACKER'])
+        cluster = base.TestCluster([node_group1, node_group2])
 
-        cluster_config = cs.ClusterSpec(cluster_config_file, cluster)
+        cluster_config = cs.ClusterSpec(cluster_config_file)
+        cluster_config.create_operational_config(cluster, [])
 
         self._assert_services(cluster_config.services)
         self._assert_configurations(cluster_config.configurations)
-        self._assert_host_role_mappings(cluster_config.node_groups)
+
+        node_groups = cluster_config.node_groups
+        self.assertEqual(2, len(node_groups))
+        self.assertIn('master', node_groups)
+        self.assertIn('slave', node_groups)
+
+        master_node_group = node_groups['master']
+        self.assertEqual('master', master_node_group.name)
+        self.assertEqual(8, len(master_node_group.components))
+        self.assertIn('NAMENODE', master_node_group.components)
+        self.assertIn('JOBTRACKER', master_node_group.components)
+        self.assertIn('SECONDARY_NAMENODE', master_node_group.components)
+        self.assertIn('GANGLIA_SERVER', master_node_group.components)
+        self.assertIn('GANGLIA_MONITOR', master_node_group.components)
+        self.assertIn('NAGIOS_SERVER', master_node_group.components)
+        self.assertIn('AMBARI_SERVER', master_node_group.components)
+        self.assertIn('AMBARI_AGENT', master_node_group.components)
+
+        slave_node_group = node_groups['slave']
+        self.assertEqual('slave', slave_node_group.name)
+        self.assertIn('TASKTRACKER', slave_node_group.components)
 
         return cluster_config
 
-    @mock.patch("savanna.utils.openstack.nova.get_instance_info")
-    def test_select_correct_server_for_ambari_host(self, patched):
-        patched.side_effect = _test_get_instance_info
+    def test_determine_component_hosts(self, patched):
         cluster_config_file = pkg.resource_string(
             version.version_info.package,
             'plugins/hdp/versions/1_3_2/resources/default-cluster.template')
 
-        server1 = TestServer('ambari_machine', 'master', '11111', 3,
-                             '111.11.1111', '222.11.1111',
-                             node_processes=["namenode", "jobtracker",
-                                             "secondary_namenode",
-                                             "ganglia_server",
-                                             "ganglia_monitor",
-                                             "nagios_server", "AMBARI_SERVER",
-                                             "ambari_agent"])
-        server2 = TestServer('host2', 'slave', '11111', 3, '222.22.2222',
-                             '333.22.2222',
-                             node_processes=["datanode", "tasktracker",
-                                             "ganglia_monitor", "hdfs_client",
-                                             "mapreduce_client",
-                                             "ambari_agent"])
+        server1 = base.TestServer('ambari_machine', 'master', '11111', 3,
+                                  '111.11.1111', '222.11.1111')
+        server2 = base.TestServer('host2', 'slave', '11111', 3, '222.22.2222',
+                                  '333.22.2222')
+        server3 = base.TestServer('host3', 'slave', '11111', 3, '222.22.2223',
+                                  '333.22.2223')
 
-        node_group1 = TestNodeGroup([server1])
-        node_group2 = TestNodeGroup([server2])
-        cluster = TestCluster([node_group1, node_group2])
+        node_group1 = TestNodeGroup(
+            'master', [server1], ["NAMENODE", "JOBTRACKER",
+                                  "SECONDARY_NAMENODE", "GANGLIA_SERVER",
+                                  "NAGIOS_SERVER", "AMBARI_SERVER"])
 
-        cluster_config = cs.ClusterSpec(cluster_config_file, cluster)
-        self.assertIn('ambari_machine', cluster_config.str,
-                      'Ambari host not found')
+        node_group2 = TestNodeGroup(
+            'slave', [server2], ["DATANODE", "TASKTRACKER",
+                                 "HDFS_CLIENT", "MAPREDUCE_CLIENT"])
 
-    @mock.patch("savanna.utils.openstack.nova.get_instance_info")
-    def test_config_token_replacement(self, patched):
-        patched.side_effect = _test_get_instance_info
+        node_group3 = TestNodeGroup(
+            'slave2', [server3], ["DATANODE", "TASKTRACKER",
+                                  "HDFS_CLIENT", "MAPREDUCE_CLIENT"])
+
+        cluster = base.TestCluster([node_group1, node_group2, node_group3])
+
+        cluster_config = cs.ClusterSpec(cluster_config_file)
+        cluster_config.create_operational_config(cluster, [])
+
+        hosts = cluster_config.determine_component_hosts('AMBARI_SERVER')
+        self.assertEqual(1, len(hosts))
+        self.assertEqual('ambari_machine', hosts.pop().fqdn)
+
+        hosts = cluster_config.determine_component_hosts('DATANODE')
+        self.assertEqual(2, len(hosts))
+        datanodes = set([server2.fqdn, server3.fqdn])
+        host_fqdn = set([hosts.pop().fqdn, hosts.pop().fqdn])
+        # test intersection is both servers
+        self.assertEqual(datanodes, host_fqdn & datanodes)
+
+    def test_finalize_configuration(self, patched):
+        patched.return_value = [{'name': 'swift.prop1',
+                                'value': 'swift_prop_value'},
+                                {'name': 'swift.prop2',
+                                'value': 'swift_prop_value2'}]
         cluster_config_file = pkg.resource_string(
             version.version_info.package,
             'plugins/hdp/versions/1_3_2/resources/default-cluster.template')
 
-        master_host = TestServer(
+        master_host = base.TestServer(
             'master.novalocal', 'master', '11111', 3,
-            '111.11.1111', '222.11.1111',
-            node_processes=["GANGLIA_SERVER",
-                            "GANGLIA_MONITOR",
-                            "NAGIOIS_SERVER",
-                            "AMBARI_SERVER",
-                            "AMBARI_AGENT"])
+            '111.11.1111', '222.11.1111')
 
-        jt_host = TestServer(
+        jt_host = base.TestServer(
             'jt_host.novalocal', 'jt', '11111', 3,
-            '111.11.2222', '222.11.2222',
-            node_processes=["JOBTRACKER",
-                            "GANGLIA_MONITOR",
-                            "AMBARI_AGENT"])
+            '111.11.2222', '222.11.2222')
 
-        nn_host = TestServer(
+        nn_host = base.TestServer(
             'nn_host.novalocal', 'nn', '11111', 3,
-            '111.11.3333', '222.11.3333',
-            node_processes=["NAMENODE",
-                            "GANGLIA_MONITOR",
-                            "AMBARI_AGENT"])
+            '111.11.3333', '222.11.3333')
 
-        snn_host = TestServer(
+        snn_host = base.TestServer(
             'snn_host.novalocal', 'jt', '11111', 3,
-            '111.11.4444', '222.11.4444',
-            node_processes=["SECONDARY_NAMENODE",
-                            "GANGLIA_MONITOR",
-                            "AMBARI_AGENT"])
+            '111.11.4444', '222.11.4444')
 
-        slave_host = TestServer(
+        hive_host = base.TestServer(
+            'hive_host.novalocal', 'hive', '11111', 3,
+            '111.11.5555', '222.11.5555')
+
+        hive_ms_host = base.TestServer(
+            'hive_ms_host.novalocal', 'hive_ms', '11111', 3,
+            '111.11.6666', '222.11.6666')
+
+        hive_mysql_host = base.TestServer(
+            'hive_mysql_host.novalocal', 'hive_mysql', '11111', 3,
+            '111.11.7777', '222.11.7777')
+
+        hcat_host = base.TestServer(
+            'hcat_host.novalocal', 'hcat', '11111', 3,
+            '111.11.8888', '222.11.8888')
+
+        zk_host = base.TestServer(
+            'zk_host.novalocal', 'zk', '11111', 3,
+            '111.11.9999', '222.11.9999')
+
+        slave_host = base.TestServer(
             'slave1.novalocal', 'slave', '11111', 3,
-            '222.22.5555', '333.22.5555',
-            node_processes=["DATANODE", "TASKTRACKER",
-                            "GANGLIA_MONITOR", "HDFS_CLIENT",
-                            "MAPREDUCE_CLIENT",
-                            "AMBARI_AGENT"])
+            '222.22.6666', '333.22.6666')
 
-        master_ng = TestNodeGroup([master_host])
-        jt_ng = TestNodeGroup([jt_host])
-        nn_ng = TestNodeGroup([nn_host])
-        snn_ng = TestNodeGroup([snn_host])
-        slave_ng = TestNodeGroup([slave_host])
+        master_ng = TestNodeGroup(
+            'master', [master_host], ["GANGLIA_SERVER",
+                                      "GANGLIA_MONITOR",
+                                      "NAGIOIS_SERVER",
+                                      "AMBARI_SERVER",
+                                      "AMBARI_AGENT"])
 
-        cluster = TestCluster([master_ng, jt_ng, nn_ng, snn_ng, slave_ng])
-        cluster_config = cs.ClusterSpec(cluster_config_file, cluster)
+        jt_ng = TestNodeGroup(
+            'jt', [jt_host], ["JOBTRACKER", "GANGLIA_MONITOR",
+                              "AMBARI_AGENT"])
 
-        config = cluster_config.str
-        self.assertIn('"fs.default.name", "value" : '
-                      '"hdfs://nn_host.novalocal:8020"', config)
-        self.assertIn('"mapred.job.tracker", "value" : '
-                      '"jt_host.novalocal:50300"', config)
-        self.assertIn('"mapred.job.tracker", "value" : '
-                      '"jt_host.novalocal:50300"', config)
-        self.assertIn('"mapred.job.tracker.http.address", "value" : '
-                      '"jt_host.novalocal:50030"', config)
-        self.assertIn('"mapreduce.history.server.http.address", "value" : '
-                      '"jt_host.novalocal:51111"', config)
-        self.assertIn('"dfs.http.address", "value" : '
-                      '"nn_host.novalocal:50070"', config)
-        self.assertIn('"dfs.secondary.http.address", "value" : '
-                      '"snn_host.novalocal:50090"', config)
-        self.assertIn('"dfs.https.address", "value" : '
-                      '"nn_host.novalocal:50470"', config)
+        nn_ng = TestNodeGroup(
+            'nn', [nn_host], ["NAMENODE", "GANGLIA_MONITOR",
+                              "AMBARI_AGENT"])
 
-    def test_ambari_rpm_path(self):
+        snn_ng = TestNodeGroup(
+            'snn', [snn_host], ["SECONDARY_NAMENODE", "GANGLIA_MONITOR",
+                                "AMBARI_AGENT"])
+
+        hive_ng = TestNodeGroup(
+            'hive', [hive_host], ["HIVE_SERVER", "GANGLIA_MONITOR",
+                                  "AMBARI_AGENT"])
+
+        hive_ms_ng = TestNodeGroup(
+            'meta', [hive_ms_host], ["HIVE_METASTORE", "GANGLIA_MONITOR",
+                                     "AMBARI_AGENT"])
+
+        hive_mysql_ng = TestNodeGroup(
+            'mysql', [hive_mysql_host], ["MYSQL_SERVER", "GANGLIA_MONITOR",
+                                         "AMBARI_AGENT"])
+
+        hcat_ng = TestNodeGroup(
+            'hcat', [hcat_host], ["WEBHCAT_SERVER", "GANGLIA_MONITOR",
+                                  "AMBARI_AGENT"])
+
+        zk_ng = TestNodeGroup(
+            'zk', [zk_host], ["ZOOKEEPER_SERVER", "GANGLIA_MONITOR",
+                              "AMBARI_AGENT"])
+
+        slave_ng = TestNodeGroup(
+            'slave', [slave_host], ["DATANODE", "TASKTRACKER",
+                                    "GANGLIA_MONITOR", "HDFS_CLIENT",
+                                    "MAPREDUCE_CLIENT", "AMBARI_AGENT"])
+
+        cluster = base.TestCluster([master_ng, jt_ng, nn_ng, snn_ng, hive_ng,
+                                    hive_ms_ng, hive_mysql_ng,
+                                    hcat_ng, zk_ng, slave_ng])
+        cluster_config = cs.ClusterSpec(cluster_config_file)
+        cluster_config.create_operational_config(cluster, [])
+        config = cluster_config.configurations
+
+        self.assertEqual(config['core-site']['fs.default.name'],
+                         'hdfs://nn_host.novalocal:8020')
+
+        self.assertEqual(config['mapred-site']['mapred.job.tracker'],
+                         'jt_host.novalocal:50300')
+        self.assertEqual(config['mapred-site']
+                         ['mapred.job.tracker.http.address'],
+                         'jt_host.novalocal:50030')
+        self.assertEqual(config['mapred-site']
+                         ['mapreduce.history.server.http.address'],
+                         'jt_host.novalocal:51111')
+        self.assertEqual(config['hdfs-site']['dfs.http.address'],
+                         'nn_host.novalocal:50070')
+        self.assertEqual(config['hdfs-site']['dfs.secondary.http.address'],
+                         'snn_host.novalocal:50090')
+        self.assertEqual(config['hdfs-site']['dfs.https.address'],
+                         'nn_host.novalocal:50470')
+        self.assertEqual(config['global']['hive_hostname'],
+                         'hive_host.novalocal')
+        self.assertEqual(config['core-site']['hadoop.proxyuser.hive.hosts'],
+                         'hive_host.novalocal')
+        self.assertEqual(config['hive-site']
+                         ['javax.jdo.option.ConnectionURL'],
+                         'jdbc:mysql://hive_host.novalocal/hive?'
+                         'createDatabaseIfNotExist=true')
+        self.assertEqual(config['hive-site']['hive.metastore.uris'],
+                         'thrift://hive_ms_host.novalocal:9083')
+        self.assertTrue(
+            'hive.metastore.uris=thrift://hive_ms_host.novalocal:9083' in
+            config['webhcat-site']['templeton.hive.properties'])
+        self.assertEqual(config['global']['hive_jdbc_connection_url'],
+                         'jdbc:mysql://hive_mysql_host.novalocal/hive?'
+                         'createDatabaseIfNotExist=true')
+        self.assertEqual(config['core-site']['hadoop.proxyuser.hcat.hosts'],
+                         'hcat_host.novalocal')
+        self.assertEqual(config['webhcat-site']['templeton.zookeeper.hosts'],
+                         'zk_host.novalocal:2181')
+
+        # test swift properties
+        self.assertEqual('swift_prop_value',
+                         config['core-site']['swift.prop1'])
+        self.assertEqual('swift_prop_value2',
+                         config['core-site']['swift.prop2'])
+
+    def test__determine_deployed_services(self, nova_mock):
+        cluster_config_file = pkg.resource_string(
+            version.version_info.package,
+            'plugins/hdp/versions/1_3_2/resources/default-cluster.template')
+
+        master_host = base.TestServer(
+            'master.novalocal', 'master', '11111', 3,
+            '111.11.1111', '222.11.1111')
+
+        jt_host = base.TestServer(
+            'jt_host.novalocal', 'jt', '11111', 3,
+            '111.11.2222', '222.11.2222')
+
+        nn_host = base.TestServer(
+            'nn_host.novalocal', 'nn', '11111', 3,
+            '111.11.3333', '222.11.3333')
+
+        snn_host = base.TestServer(
+            'snn_host.novalocal', 'jt', '11111', 3,
+            '111.11.4444', '222.11.4444')
+
+        slave_host = base.TestServer(
+            'slave1.novalocal', 'slave', '11111', 3,
+            '222.22.6666', '333.22.6666')
+
+        master_ng = TestNodeGroup(
+            'master', [master_host], ['GANGLIA_SERVER',
+            'GANGLIA_MONITOR', 'NAGIOS_SERVER',
+            'AMBARI_SERVER', 'AMBARI_AGENT'])
+        jt_ng = TestNodeGroup('jt', [jt_host], ["JOBTRACKER",
+                              "GANGLIA_MONITOR", "AMBARI_AGENT"])
+        nn_ng = TestNodeGroup('nn', [nn_host], ["NAMENODE",
+                              "GANGLIA_MONITOR", "AMBARI_AGENT"])
+        snn_ng = TestNodeGroup('snn', [snn_host], ["SECONDARY_NAMENODE",
+                               "GANGLIA_MONITOR", "AMBARI_AGENT"])
+        slave_ng = TestNodeGroup(
+            'slave', [slave_host], ["DATANODE", "TASKTRACKER",
+            "GANGLIA_MONITOR", "HDFS_CLIENT", "MAPREDUCE_CLIENT",
+            "AMBARI_AGENT"])
+
+        cluster = base.TestCluster([master_ng, jt_ng, nn_ng,
+                                   snn_ng, slave_ng])
+        cluster_config = cs.ClusterSpec(cluster_config_file)
+        cluster_config.create_operational_config(cluster, [])
+        services = cluster_config.services
+        for service in services:
+            if service.name in ['HDFS', 'MAPREDUCE', 'GANGLIA',
+                                'AMBARI', 'NAGIOS']:
+                self.assertTrue(service.deployed)
+            else:
+                self.assertFalse(service.deployed)
+
+    def test_ambari_rpm_path(self, patched):
         cluster_config_file = pkg.resource_string(
             version.version_info.package,
             'plugins/hdp/versions/1_3_2/resources/default-cluster.template')
@@ -169,7 +328,7 @@ class ClusterSpecTest(unittest2.TestCase):
                          'public-repo-1.hortonworks.com/ambari/centos6/'
                          '1.x/updates/1.2.5.17/ambari.repo', rpm)
 
-    def test_parse_default(self):
+    def test_parse_default(self, patched):
         cluster_config_file = pkg.resource_string(
             version.version_info.package,
             'plugins/hdp/versions/1_3_2/resources/default-cluster.template')
@@ -178,11 +337,34 @@ class ClusterSpecTest(unittest2.TestCase):
 
         self._assert_services(cluster_config.services)
         self._assert_configurations(cluster_config.configurations)
-        self._assert_host_role_mappings(cluster_config.node_groups)
+
+        node_groups = cluster_config.node_groups
+        self.assertEqual(2, len(node_groups))
+        master_node_group = node_groups['master']
+        self.assertEqual('master', master_node_group.name)
+        self.assertEqual(None, master_node_group.predicate)
+        self.assertEqual('1', master_node_group.cardinality)
+        self.assertEqual(6, len(master_node_group.components))
+        self.assertIn('NAMENODE', master_node_group.components)
+        self.assertIn('JOBTRACKER', master_node_group.components)
+        self.assertIn('SECONDARY_NAMENODE', master_node_group.components)
+        self.assertIn('GANGLIA_SERVER', master_node_group.components)
+        self.assertIn('NAGIOS_SERVER', master_node_group.components)
+        self.assertIn('AMBARI_SERVER', master_node_group.components)
+
+        slave_node_group = node_groups['slave']
+        self.assertEqual('slave', slave_node_group.name)
+        self.assertEqual(None, slave_node_group.predicate)
+        self.assertEqual('1+', slave_node_group.cardinality)
+        self.assertEqual(4, len(slave_node_group.components))
+        self.assertIn('DATANODE', slave_node_group.components)
+        self.assertIn('TASKTRACKER', slave_node_group.components)
+        self.assertIn('HDFS_CLIENT', slave_node_group.components)
+        self.assertIn('MAPREDUCE_CLIENT', slave_node_group.components)
 
         return cluster_config
 
-    def test_ambari_rpm(self):
+    def test_ambari_rpm(self, patched):
         cluster_config_file = pkg.resource_string(
             version.version_info.package,
             'plugins/hdp/versions/1_3_2/resources/default-cluster.template')
@@ -194,7 +376,7 @@ class ClusterSpecTest(unittest2.TestCase):
         self.assertIsNotNone('no rpm uri found',
                              ambari_config.get('rpm', None))
 
-    def test_normalize(self):
+    def test_normalize(self, patched):
         cluster_config_file = pkg.resource_string(
             version.version_info.package,
             'plugins/hdp/versions/1_3_2/resources/default-cluster.template')
@@ -249,32 +431,678 @@ class ClusterSpecTest(unittest2.TestCase):
             components = node_group.node_processes
             if node_group.name == "master":
                 contains_master_group = True
-                self.assertEqual(8, len(components))
+                self.assertEqual(6, len(components))
                 self.assertIn('NAMENODE', components)
                 self.assertIn('JOBTRACKER', components)
                 self.assertIn('SECONDARY_NAMENODE', components)
                 self.assertIn('GANGLIA_SERVER', components)
-                self.assertIn('GANGLIA_MONITOR', components)
                 self.assertIn('NAGIOS_SERVER', components)
                 self.assertIn('AMBARI_SERVER', components)
-                self.assertIn('AMBARI_AGENT', components)
                 #TODO(jspeidel): node configs
                 #TODO(jspeidel): vm_requirements
             elif node_group.name == 'slave':
                 contains_slave_group = True
-                self.assertEqual(6, len(components))
+                self.assertEqual(4, len(components))
                 self.assertIn('DATANODE', components)
                 self.assertIn('TASKTRACKER', components)
-                self.assertIn('GANGLIA_MONITOR', components)
                 self.assertIn('HDFS_CLIENT', components)
                 self.assertIn('MAPREDUCE_CLIENT', components)
-                self.assertIn('AMBARI_AGENT', components)
                 #TODO(jspeidel): node configs
                 #TODO(jspeidel): vm requirements
             else:
                 self.fail('Unexpected node group: {0}'.format(node_group.name))
         self.assertTrue(contains_master_group)
         self.assertTrue(contains_slave_group)
+
+    def test_existing_config_item_in_top_level_within_blueprint(self, patched):
+        cluster_config_file = pkg.resource_string(
+            version.version_info.package,
+            'plugins/hdp/versions/1_3_2/resources/default-cluster.template')
+
+        user_input_config = TestUserInputConfig(
+            'global', 'general', 'dfs_name_dir')
+        user_input = ui(user_input_config, '/some/new/path')
+
+        server1 = base.TestServer('host1', 'test-master', '11111', 3,
+                                  '111.11.1111', '222.11.1111')
+        server2 = base.TestServer('host2', 'test-slave', '11111', 3,
+                                  '222.22.2222', '333.22.2222')
+
+        node_group1 = TestNodeGroup(
+            'master', [server1], ["NAMENODE", "JOBTRACKER",
+                                  "SECONDARY_NAMENODE", "GANGLIA_SERVER",
+                                  "GANGLIA_MONITOR", "NAGIOS_SERVER",
+                                  "AMBARI_SERVER", "AMBARI_AGENT"])
+        node_group2 = TestNodeGroup(
+            'slave', [server2], ["TASKTRACKER", "DATANODE",
+                                 "AMBARI_AGENT", "GANGLIA_MONITOR"])
+
+        cluster = base.TestCluster([node_group1, node_group2])
+        cluster_config = cs.ClusterSpec(cluster_config_file)
+        cluster_config.create_operational_config(cluster, [user_input])
+        self.assertEqual('/some/new/path', cluster_config.configurations
+                         ['global']['dfs_name_dir'])
+
+    def test_new_config_item_in_top_level_within_blueprint(self, patched):
+        cluster_config_file = pkg.resource_string(
+            version.version_info.package,
+            'plugins/hdp/versions/1_3_2/resources/default-cluster.template')
+
+        user_input_config = TestUserInputConfig(
+            'global', 'general', 'new_property')
+        user_input = ui(user_input_config, 'foo')
+
+        server1 = base.TestServer('host1', 'test-master', '11111', 3,
+                                  '111.11.1111', '222.11.1111')
+        server2 = base.TestServer('host2', 'test-slave', '11111', 3,
+                                  '222.22.2222', '333.22.2222')
+
+        node_group1 = TestNodeGroup(
+            'master', [server1], ["NAMENODE", "JOBTRACKER",
+            "SECONDARY_NAMENODE", "GANGLIA_SERVER", "GANGLIA_MONITOR",
+            "NAGIOS_SERVER", "AMBARI_SERVER", "AMBARI_AGENT"])
+        node_group2 = TestNodeGroup(
+            'slave', [server2], ["TASKTRACKER", "DATANODE", "AMBARI_AGENT",
+            "GANGLIA_MONITOR"])
+
+        cluster = base.TestCluster([node_group1, node_group2])
+        cluster_config = cs.ClusterSpec(cluster_config_file)
+        cluster_config.create_operational_config(cluster, [user_input])
+        self.assertEqual(
+            'foo', cluster_config.configurations['global']['new_property'])
+
+    def test_update_ambari_admin_user(self, patched):
+        cluster_config_file = pkg.resource_string(
+            version.version_info.package,
+            'plugins/hdp/versions/1_3_2/resources/default-cluster.template')
+
+        user_input_config = TestUserInputConfig('ambari-stack', 'AMBARI',
+                                                'ambari.admin.user')
+        user_input = ui(user_input_config, 'new-user')
+
+        server1 = base.TestServer('host1', 'test-master', '11111', 3,
+                                  '111.11.1111', '222.11.1111')
+        server2 = base.TestServer('host2', 'test-slave', '11111', 3,
+                                  '222.22.2222', '333.22.2222')
+
+        node_group1 = TestNodeGroup(
+            'master', [server1], ["NAMENODE", "JOBTRACKER",
+            "SECONDARY_NAMENODE", "GANGLIA_SERVER", "GANGLIA_MONITOR",
+            "NAGIOS_SERVER", "AMBARI_SERVER", "AMBARI_AGENT"])
+        node_group2 = TestNodeGroup(
+            'slave', [server2], ["TASKTRACKER", "DATANODE",
+            "AMBARI_AGENT", "GANGLIA_MONITOR"])
+
+        cluster = base.TestCluster([node_group1, node_group2])
+        cluster_config = cs.ClusterSpec(cluster_config_file)
+        cluster_config.create_operational_config(cluster, [user_input])
+        ambari_service = next(service for service in cluster_config.services
+                              if service.name == 'AMBARI')
+        users = ambari_service.users
+        self.assertEqual(1, len(users))
+        self.assertEqual('new-user', users[0].name)
+
+    def test_update_ambari_admin_password(self, patched):
+        cluster_config_file = pkg.resource_string(
+            version.version_info.package,
+            'plugins/hdp/versions/1_3_2/resources/default-cluster.template')
+
+        user_input_config = TestUserInputConfig('ambari-stack', 'AMBARI',
+                                                'ambari.admin.password')
+        user_input = ui(user_input_config, 'new-pwd')
+
+        server1 = base.TestServer('host1', 'test-master', '11111', 3,
+                                  '111.11.1111', '222.11.1111')
+        server2 = base.TestServer('host2', 'test-slave', '11111', 3,
+                                  '222.22.2222', '333.22.2222')
+
+        node_group1 = TestNodeGroup(
+            'master', [server1], ["NAMENODE", "JOBTRACKER",
+            "SECONDARY_NAMENODE", "GANGLIA_SERVER", "GANGLIA_MONITOR",
+            "NAGIOS_SERVER", "AMBARI_SERVER", "AMBARI_AGENT"])
+        node_group2 = TestNodeGroup(
+            'slave', [server2], ["TASKTRACKER", "DATANODE",
+            "AMBARI_AGENT", "GANGLIA_MONITOR"])
+
+        cluster = base.TestCluster([node_group1, node_group2])
+        cluster_config = cs.ClusterSpec(cluster_config_file)
+        cluster_config.create_operational_config(cluster, [user_input])
+        ambari_service = next(service for service in cluster_config.services
+                              if service.name == 'AMBARI')
+        users = ambari_service.users
+        self.assertEqual(1, len(users))
+        self.assertEqual('new-pwd', users[0].password)
+
+    def test_update_ambari_admin_user_and_password(self, patched):
+        cluster_config_file = pkg.resource_string(
+            version.version_info.package,
+            'plugins/hdp/versions/1_3_2/resources/default-cluster.template')
+
+        user_user_input_config = TestUserInputConfig('ambari-stack', 'AMBARI',
+                                                     'ambari.admin.user')
+        pwd_user_input_config = TestUserInputConfig('ambari-stack', 'AMBARI',
+                                                    'ambari.admin.password')
+        user_user_input = ui(user_user_input_config, 'new-admin_user')
+        pwd_user_input = ui(pwd_user_input_config, 'new-admin_pwd')
+
+        server1 = base.TestServer('host1', 'test-master', '11111', 3,
+                                  '111.11.1111', '222.11.1111')
+        server2 = base.TestServer('host2', 'test-slave', '11111', 3,
+                                  '222.22.2222', '333.22.2222')
+
+        node_group1 = TestNodeGroup(
+            'one', [server1], ["NAMENODE", "JOBTRACKER",
+                               "SECONDARY_NAMENODE", "GANGLIA_SERVER",
+                               "GANGLIA_MONITOR", "NAGIOS_SERVER",
+                               "AMBARI_SERVER", "AMBARI_AGENT"])
+        node_group2 = TestNodeGroup(
+            'two', [server2], ["TASKTRACKER", "DATANODE",
+                               "AMBARI_AGENT", "GANGLIA_MONITOR"])
+
+        cluster = base.TestCluster([node_group1, node_group2])
+        cluster_config = cs.ClusterSpec(cluster_config_file)
+        cluster_config.create_operational_config(
+            cluster, [user_user_input, pwd_user_input])
+        ambari_service = next(service for service in cluster_config.services
+                              if service.name == 'AMBARI')
+        users = ambari_service.users
+        self.assertEqual(1, len(users))
+        self.assertEqual('new-admin_user', users[0].name)
+        self.assertEqual('new-admin_pwd', users[0].password)
+
+    def test_validate_missing_hdfs(self, patched):
+        server = base.TestServer('host1', 'slave', '11111', 3,
+                                 '111.11.1111', '222.22.2222')
+        server2 = base.TestServer('host2', 'master', '11112', 3,
+                                  '111.11.1112', '222.22.2223')
+
+        node_group = TestNodeGroup(
+            'slave', [server], ["TASKTRACKER", "MAPREDUCE_CLIENT"])
+
+        node_group2 = TestNodeGroup(
+            'master', [server2], ["JOBTRACKER"])
+
+        cluster = base.TestCluster([node_group, node_group2])
+        cluster_config = base.create_clusterspec()
+        # should fail due to missing hdfs service
+        try:
+            cluster_config.create_operational_config(cluster, [])
+            self.fail('Validation should have thrown an exception')
+        except ex.RequiredServiceMissingException:
+            # expected
+            pass
+
+    def test_validate_missing_mr(self, patched):
+        server = base.TestServer('host1', 'slave', '11111', 3,
+                                 '111.11.1111', '222.22.2222')
+        server2 = base.TestServer('host2', 'master', '11112', 3,
+                                  '111.11.1112', '222.22.2223')
+
+        node_group = TestNodeGroup(
+            'slave', [server], ["NAMENODE"])
+
+        node_group2 = TestNodeGroup(
+            'master', [server2], ["DATANODE"])
+
+        cluster = base.TestCluster([node_group, node_group2])
+        cluster_config = base.create_clusterspec()
+        # should fail due to missing mr service
+        try:
+            cluster_config.create_operational_config(cluster, [])
+            self.fail('Validation should have thrown an exception')
+        except ex.RequiredServiceMissingException:
+            # expected
+            pass
+
+    def test_validate_missing_ambari(self, patched):
+        server = base.TestServer('host1', 'slave', '11111', 3,
+                                 '111.11.1111', '222.22.2222')
+        server2 = base.TestServer('host2', 'master', '11112', 3,
+                                  '111.11.1112', '222.22.2223')
+
+        node_group = TestNodeGroup(
+            'slave', [server], ["NAMENODE", "JOBTRACKER"])
+
+        node_group2 = TestNodeGroup(
+            'master', [server2], ["DATANODE", "TASKTRACKER"])
+
+        cluster = base.TestCluster([node_group, node_group2])
+        cluster_config = base.create_clusterspec()
+        # should fail due to missing ambari service
+        try:
+            cluster_config.create_operational_config(cluster, [])
+            self.fail('Validation should have thrown an exception')
+        except ex.RequiredServiceMissingException:
+            # expected
+            pass
+
+    #TODO(jspeidel): move validate_* to test_services when validate
+    #is called independently of cluspterspec
+    def test_validate_hdfs(self, patched):
+        server = base.TestServer('host1', 'slave', '11111', 3,
+                                 '111.11.1111', '222.22.2222')
+        server2 = base.TestServer('host2', 'master', '11112', 3,
+                                  '111.11.1112', '222.22.2223')
+
+        node_group = TestNodeGroup(
+            'slave', [server], ["DATANODE", "TASKTRACKER",
+                                "HDFS_CLIENT", "MAPREDUCE_CLIENT"], 1)
+
+        node_group2 = TestNodeGroup(
+            'master', [server2], ["JOBTRACKER", "AMBARI_SERVER"])
+
+        cluster = base.TestCluster([node_group, node_group2])
+        cluster_config = base.create_clusterspec()
+        # should fail due to missing NN
+        try:
+            cluster_config.create_operational_config(cluster, [])
+            self.fail('Validation should have thrown an exception')
+        except ex.InvalidComponentCountException:
+            # expected
+            pass
+
+        node_group2 = TestNodeGroup(
+            'master', [server2], ["NAMENODE", "JOBTRACKER",
+                                  "AMBARI_SERVER"])
+        cluster = base.TestCluster([node_group, node_group2])
+        cluster_config = base.create_clusterspec()
+        # should validate successfully now
+        cluster_config.create_operational_config(cluster, [])
+
+        # should cause validation exception due to 2 NN
+        node_group3 = TestNodeGroup(
+            'master2', [server2], ["NAMENODE"])
+        cluster = base.TestCluster([node_group, node_group2, node_group3])
+        cluster_config = base.create_clusterspec()
+        try:
+            cluster_config.create_operational_config(cluster, [])
+            self.fail('Validation should have thrown an exception')
+        except ex.InvalidComponentCountException:
+            # expected
+            pass
+
+    def test_validate_mr(self, patched):
+        server = base.TestServer('host1', 'slave', '11111', 3,
+                                 '111.11.1111', '222.22.2222')
+        server2 = base.TestServer('host2', 'master', '11112', 3,
+                                  '111.11.1112', '222.22.2223')
+
+        node_group = TestNodeGroup(
+            'slave', [server], ["DATANODE", "TASKTRACKER",
+                                "HDFS_CLIENT", "MAPREDUCE_CLIENT"])
+        node_group2 = TestNodeGroup(
+            'master', [server2], ["NAMENODE", "AMBARI_SERVER"])
+
+        cluster = base.TestCluster([node_group, node_group2])
+        cluster_config = base.create_clusterspec()
+        # should fail due to missing JT
+        try:
+            cluster_config.create_operational_config(cluster, [])
+            self.fail('Validation should have thrown an exception')
+        except ex.InvalidComponentCountException:
+            # expected
+            pass
+        node_group2 = TestNodeGroup(
+            'master', [server2], ["NAMENODE", "JOBTRACKER",
+                                  "AMBARI_SERVER"])
+        cluster = base.TestCluster([node_group, node_group2])
+        cluster_config = base.create_clusterspec()
+        # should validate successfully now
+        cluster_config.create_operational_config(cluster, [])
+
+        # should cause validation exception due to 2 JT
+        node_group3 = TestNodeGroup(
+            'master', [server2], ["JOBTRACKER"])
+        cluster = base.TestCluster([node_group, node_group2, node_group3])
+        cluster_config = base.create_clusterspec()
+        try:
+            cluster_config.create_operational_config(cluster, [])
+            self.fail('Validation should have thrown an exception')
+        except ex.InvalidComponentCountException:
+            # expected
+            pass
+
+        # should cause validation exception due to 2 NN
+        node_group3 = TestNodeGroup(
+            'master', [server2], ["NAMENODE"])
+        cluster = base.TestCluster([node_group, node_group2, node_group3])
+        cluster_config = base.create_clusterspec()
+        try:
+            cluster_config.create_operational_config(cluster, [])
+            self.fail('Validation should have thrown an exception')
+        except ex.InvalidComponentCountException:
+            # expected
+            pass
+
+        #should fail due to no TT
+        node_group = TestNodeGroup(
+            'slave', [server], ["DATANODE", "HDFS_CLIENT",
+                                "MAPREDUCE_CLIENT"])
+        cluster = base.TestCluster([node_group, node_group2])
+        cluster_config = base.create_clusterspec()
+        # should fail due to missing JT
+        try:
+            cluster_config.create_operational_config(cluster, [])
+            self.fail('Validation should have thrown an exception')
+        except ex.InvalidComponentCountException:
+            # expected
+            pass
+
+    def test_validate_hive(self, patched):
+        server = base.TestServer('host1', 'slave', '11111', 3,
+                                 '111.11.1111', '222.22.2222')
+        server2 = base.TestServer('host2', 'master', '11112', 3,
+                                  '111.11.1112', '222.22.2223')
+
+        node_group = TestNodeGroup(
+            'slave', [server], ["DATANODE", "TASKTRACKER",
+                                "HIVE_CLIENT"])
+        node_group2 = TestNodeGroup(
+            'master', [server2], ["NAMENODE", "JOBTRACKER",
+                                  "AMBARI_SERVER"])
+
+        cluster = base.TestCluster([node_group, node_group2])
+        cluster_config = base.create_clusterspec()
+        # should fail due to missing hive_server
+        try:
+            cluster_config.create_operational_config(cluster, [])
+            self.fail('Validation should have thrown an exception')
+        except ex.InvalidComponentCountException:
+            # expected
+            pass
+        node_group2 = TestNodeGroup(
+            'master', [server2], ["NAMENODE", "JOBTRACKER",
+                                  "HIVE_SERVER", "AMBARI_SERVER"])
+        cluster = base.TestCluster([node_group, node_group2])
+        cluster_config = base.create_clusterspec()
+        # should validate successfully now
+        cluster_config.create_operational_config(cluster, [])
+
+        # should cause validation exception due to 2 HIVE_SERVER
+        node_group3 = TestNodeGroup(
+            'master', [server2], ["HIVE_SERVER"])
+        cluster = base.TestCluster([node_group, node_group2, node_group3])
+        cluster_config = base.create_clusterspec()
+        try:
+            cluster_config.create_operational_config(cluster, [])
+            self.fail('Validation should have thrown an exception')
+        except ex.InvalidComponentCountException:
+            # expected
+            pass
+
+    def test_validate_zk(self, patched):
+        server = base.TestServer('host1', 'slave', '11111', 3,
+                                 '111.11.1111', '222.22.2222')
+        server2 = base.TestServer('host2', 'master', '11112', 3,
+                                  '111.11.1112', '222.22.2223')
+
+        node_group = TestNodeGroup(
+            'slave', [server], ["DATANODE", "TASKTRACKER",
+                                "ZOOKEEPER_CLIENT"])
+        node_group2 = TestNodeGroup(
+            'master', [server2], ["NAMENODE", "JOBTRACKER",
+                                  "AMBARI_SERVER"])
+
+        cluster = base.TestCluster([node_group, node_group2])
+        cluster_config = base.create_clusterspec()
+        # should fail due to missing ZOOKEEPER_SERVER
+        try:
+            cluster_config.create_operational_config(cluster, [])
+            self.fail('Validation should have thrown an exception')
+        except ex.InvalidComponentCountException:
+            # expected
+            pass
+        node_group2 = TestNodeGroup(
+            'master', [server2], ["NAMENODE", "JOBTRACKER",
+                                  "ZOOKEEPER_SERVER", "AMBARI_SERVER"])
+        cluster = base.TestCluster([node_group, node_group2])
+        cluster_config = base.create_clusterspec()
+        # should validate successfully now
+        cluster_config.create_operational_config(cluster, [])
+
+        # should cause validation exception due to 2 ZOOKEEPER_SERVER
+        node_group3 = TestNodeGroup(
+            'master', [server2], ["ZOOKEEPER_SERVER"])
+        cluster = base.TestCluster([node_group, node_group2, node_group3])
+        cluster_config = base.create_clusterspec()
+        try:
+            cluster_config.create_operational_config(cluster, [])
+            self.fail('Validation should have thrown an exception')
+        except ex.InvalidComponentCountException:
+            # expected
+            pass
+
+    def test_validate_ganglia(self, patched):
+        server = base.TestServer('host1', 'slave', '11111', 3,
+                                 '111.11.1111', '222.22.2222')
+        server2 = base.TestServer('host2', 'master', '11112', 3,
+                                  '111.11.1112', '222.22.2223')
+
+        node_group = TestNodeGroup(
+            'slave', [server], ["DATANODE", "TASKTRACKER",
+                                "GANGLIA_MONITOR"])
+        node_group2 = TestNodeGroup(
+            'master', [server2], ["NAMENODE", "JOBTRACKER",
+                                  "AMBARI_SERVER"])
+
+        cluster = base.TestCluster([node_group, node_group2])
+        cluster_config = base.create_clusterspec()
+        # should fail due to missing GANGLIA_SERVER
+        try:
+            cluster_config.create_operational_config(cluster, [])
+            self.fail('Validation should have thrown an exception')
+        except ex.InvalidComponentCountException:
+            # expected
+            pass
+        node_group2 = TestNodeGroup(
+            'master', [server2], ["NAMENODE", "JOBTRACKER",
+                                  "GANGLIA_SERVER", "AMBARI_SERVER"])
+        cluster = base.TestCluster([node_group, node_group2])
+        cluster_config = base.create_clusterspec()
+        # should validate successfully now
+        cluster_config.create_operational_config(cluster, [])
+
+        # should cause validation exception due to 2 GANGLIA_SERVER
+        node_group3 = TestNodeGroup(
+            'master2', [server2], ["GANGLIA_SERVER"])
+        cluster = base.TestCluster([node_group, node_group2, node_group3])
+        cluster_config = base.create_clusterspec()
+        try:
+            cluster_config.create_operational_config(cluster, [])
+            self.fail('Validation should have thrown an exception')
+        except ex.InvalidComponentCountException:
+            # expected
+            pass
+
+    def test_validate_ambari(self, patched):
+        server = base.TestServer('host1', 'slave', '11111', 3,
+                                 '111.11.1111', '222.22.2222')
+        server2 = base.TestServer('host2', 'master', '11112', 3,
+                                  '111.11.1112', '222.22.2223')
+
+        node_group = TestNodeGroup(
+            'slave', [server], ["DATANODE", "TASKTRACKER",
+                                "AMBARI_AGENT"])
+        node_group2 = TestNodeGroup(
+            'master', [server2], ["NAMENODE", "JOBTRACKER"])
+
+        cluster = base.TestCluster([node_group, node_group2])
+        cluster_config = base.create_clusterspec()
+        # should fail due to missing AMBARI_SERVER
+        try:
+            cluster_config.create_operational_config(cluster, [])
+            self.fail('Validation should have thrown an exception')
+        except ex.InvalidComponentCountException:
+            # expected
+            pass
+        node_group2 = TestNodeGroup(
+            'master', [server2], ["NAMENODE", "JOBTRACKER",
+                                  "AMBARI_SERVER"])
+        cluster = base.TestCluster([node_group, node_group2])
+        cluster_config = base.create_clusterspec()
+        # should validate successfully now
+        cluster_config.create_operational_config(cluster, [])
+
+        # should cause validation exception due to 2 AMBARI_SERVER
+        node_group2 = TestNodeGroup(
+            'master', [server2], ["NAMENODE", "JOBTRACKER",
+                                  "AMBARI_SERVER"])
+        node_group3 = TestNodeGroup(
+            'master', [server2], ["AMBARI_SERVER"])
+        cluster = base.TestCluster([node_group, node_group2, node_group3])
+        cluster_config = base.create_clusterspec()
+        try:
+            cluster_config.create_operational_config(cluster, [])
+            self.fail('Validation should have thrown an exception')
+        except ex.InvalidComponentCountException:
+            # expected
+            pass
+
+    def test_validate_scaling_existing_ng(self, patched):
+        server = base.TestServer('host1', 'slave', '11111', 3,
+                                 '111.11.1111', '222.22.2222')
+        server2 = base.TestServer('host2', 'master', '11112', 3,
+                                  '111.11.1112', '222.22.2223')
+
+        node_group = TestNodeGroup(
+            'slave', [server], ["DATANODE", "TASKTRACKER"])
+        node_group2 = TestNodeGroup(
+            'master', [server2], ["NAMENODE", "JOBTRACKER",
+                                  "AMBARI_SERVER"])
+
+        cluster = base.TestCluster([node_group, node_group2])
+        cluster_config = base.create_clusterspec()
+        # sanity check that original config validates
+        cluster_config.create_operational_config(cluster, [])
+
+        cluster_config = base.create_clusterspec()
+        scaled_groups = {'master': 2}
+        # should fail due to 2 JT
+        try:
+            cluster_config.create_operational_config(
+                cluster, [], scaled_groups)
+            self.fail('Validation should have thrown an exception')
+        except ex.InvalidComponentCountException:
+            # expected
+            pass
+
+    def test_scale(self, patched):
+
+        server = base.TestServer('host1', 'slave', '11111', 3,
+                                 '111.11.1111', '222.22.2222')
+        server2 = base.TestServer('host2', 'master', '11112', 3,
+                                  '111.11.1112', '222.22.2223')
+
+        node_group = TestNodeGroup(
+            'slave', [server], ["DATANODE", "TASKTRACKER",
+                                "AMBARI_AGENT"])
+        node_group2 = TestNodeGroup(
+            'master', [server2], ["NAMENODE", "JOBTRACKER", "AMBARI_SERVER"])
+
+        cluster = base.TestCluster([node_group, node_group2])
+
+        cluster_config = base.create_clusterspec()
+        # sanity check that original config validates
+        cluster_config.create_operational_config(cluster, [])
+
+        slave_ng = cluster_config.node_groups['slave']
+        self.assertEqual(1, slave_ng.count)
+
+        cluster_config.scale({'slave': 2})
+
+        self.assertEqual(2, slave_ng.count)
+
+    def test_get_deployed_configurations(self, patched):
+
+        server = base.TestServer('host1', 'slave', '11111', 3,
+                                 '111.11.1111', '222.22.2222')
+        server2 = base.TestServer('host2', 'master', '11112', 3,
+                                  '111.11.1112', '222.22.2223')
+
+        node_group = TestNodeGroup(
+            'slave', [server], ["DATANODE", "TASKTRACKER"])
+        node_group2 = TestNodeGroup(
+            'master', [server2], ["NAMENODE", "JOBTRACKER", "AMBARI_SERVER"])
+
+        cluster = base.TestCluster([node_group, node_group2])
+
+        cluster_config = base.create_clusterspec()
+        # sanity check that original config validates
+        cluster_config.create_operational_config(cluster, [])
+        configs = cluster_config.get_deployed_configurations()
+        expected_configs = set(['mapred-site', 'ambari', 'hdfs-site',
+                                'global', 'core-site'])
+        self.assertEqual(expected_configs, expected_configs & configs)
+
+    def test_get_deployed_node_group_count(self, patched):
+
+        server = base.TestServer('host1', 'slave', '11111', 3,
+                                 '111.11.1111', '222.22.2222')
+        server2 = base.TestServer('host2', 'master', '11112', 3,
+                                  '111.11.1112', '222.22.2223')
+
+        slave_group = TestNodeGroup(
+            'slave', [server], ["DATANODE", "TASKTRACKER"])
+        slave2_group = TestNodeGroup(
+            'slave2', [server], ["DATANODE", "TASKTRACKER"])
+        master_group = TestNodeGroup(
+            'master', [server2], ["NAMENODE", "JOBTRACKER", "AMBARI_SERVER"])
+
+        cluster = base.TestCluster([master_group, slave_group, slave2_group])
+        cluster_config = base.create_clusterspec()
+        cluster_config.create_operational_config(cluster, [])
+
+        self.assertEqual(2, cluster_config.get_deployed_node_group_count(
+            'DATANODE'))
+        self.assertEqual(1, cluster_config.get_deployed_node_group_count(
+            'AMBARI_SERVER'))
+
+    def test_get_node_groups_containing_component(self, patched):
+        server = base.TestServer('host1', 'slave', '11111', 3,
+                                 '111.11.1111', '222.22.2222')
+        server2 = base.TestServer('host2', 'master', '11112', 3,
+                                  '111.11.1112', '222.22.2223')
+
+        slave_group = TestNodeGroup(
+            'slave', [server], ["DATANODE", "TASKTRACKER"])
+        slave2_group = TestNodeGroup(
+            'slave2', [server], ["DATANODE", "TASKTRACKER"])
+        master_group = TestNodeGroup(
+            'master', [server2], ["NAMENODE", "JOBTRACKER", "AMBARI_SERVER"])
+
+        cluster = base.TestCluster([master_group, slave_group, slave2_group])
+        cluster_config = base.create_clusterspec()
+        cluster_config.create_operational_config(cluster, [])
+
+        datanode_ngs = cluster_config.get_node_groups_containing_component(
+            'DATANODE')
+        self.assertEqual(2, len(datanode_ngs))
+        ng_names = set([datanode_ngs[0].name, datanode_ngs[1].name])
+        self.assertIn('slave', ng_names)
+        self.assertIn('slave2', ng_names)
+
+    def test_get_components_for_type(self, patched):
+
+        cluster_config = base.create_clusterspec()
+        clients = cluster_config.get_components_for_type('CLIENT')
+        slaves = cluster_config.get_components_for_type('SLAVE')
+        masters = cluster_config.get_components_for_type('MASTER')
+
+        expected_clients = set(['HCAT', 'ZOOKEEPER_CLIENT',
+                                'MAPREDUCE_CLIENT', 'HIVE_CLIENT',
+                                'HDFS_CLIENT', 'PIG'])
+        self.assertEqual(expected_clients, expected_clients & set(clients))
+
+        expected_slaves = set(['AMBARI_AGENT', 'TASKTRACKER', 'DATANODE',
+                               'GANGLIA_MONITOR'])
+        self.assertEqual(expected_slaves, expected_slaves & set(slaves))
+
+        expected_masters = set(['SECONDARY_NAMENODE', 'HIVE_METASTORE',
+                                'AMBARI_SERVER', 'JOBTRACKER',
+                                'WEBHCAT_SERVER', 'NAGIOS_SERVER',
+                                'MYSQL_SERVER', 'ZOOKEEPER_SERVER',
+                                'NAMENODE', 'HIVE_SERVER', 'GANGLIA_SERVER'])
+        self.assertEqual(expected_masters, expected_masters & set(masters))
 
     def _assert_services(self, services):
         found_services = []
@@ -283,12 +1111,17 @@ class ClusterSpecTest(unittest2.TestCase):
             found_services.append(name)
             self.service_validators[name](service)
 
-        self.assertEqual(5, len(found_services))
+        self.assertEqual(10, len(found_services))
         self.assertIn('HDFS', found_services)
         self.assertIn('MAPREDUCE', found_services)
         self.assertIn('GANGLIA', found_services)
         self.assertIn('NAGIOS', found_services)
         self.assertIn('AMBARI', found_services)
+        self.assertIn('PIG', found_services)
+        self.assertIn('HIVE', found_services)
+        self.assertIn('HCATALOG', found_services)
+        self.assertIn('ZOOKEEPER', found_services)
+        self.assertIn('WEBHCAT', found_services)
 
     def _assert_hdfs(self, service):
         self.assertEqual('HDFS', service.name)
@@ -370,51 +1203,35 @@ class ClusterSpecTest(unittest2.TestCase):
         self.assertIn('admin', groups)
         self.assertIn('user', groups)
 
+    def _assert_pig(self, service):
+        pass
+
+    def _assert_hive(self, service):
+        pass
+
+    def _assert_hcatalog(self, service):
+        pass
+
+    def _assert_zookeeper(self, service):
+        pass
+
+    def _assert_webhcat(self, service):
+        pass
+
     def _assert_component(self, name, comp_type, cardinality, component):
         self.assertEqual(name, component.name)
         self.assertEqual(comp_type, component.type)
         self.assertEqual(cardinality, component.cardinality)
 
     def _assert_configurations(self, configurations):
-        self.assertEqual(5, len(configurations))
+        self.assertEqual(7, len(configurations))
         self.assertIn('global', configurations)
         self.assertIn('core-site', configurations)
         self.assertIn('mapred-site', configurations)
         self.assertIn('hdfs-site', configurations)
         self.assertIn('ambari', configurations)
-
-    def _assert_host_role_mappings(self, node_groups):
-        self.assertEqual(2, len(node_groups))
-        self.assertIn('master', node_groups)
-        self.assertIn('slave', node_groups)
-
-        master_node_group = node_groups['master']
-        self.assertEqual('master', master_node_group.name)
-        self.assertEqual(None, master_node_group.predicate)
-        self.assertEqual('1', master_node_group.cardinality)
-        self.assertEqual(1, master_node_group.default_count)
-        self.assertEqual(8, len(master_node_group.components))
-        self.assertIn('NAMENODE', master_node_group.components)
-        self.assertIn('JOBTRACKER', master_node_group.components)
-        self.assertIn('SECONDARY_NAMENODE', master_node_group.components)
-        self.assertIn('GANGLIA_SERVER', master_node_group.components)
-        self.assertIn('GANGLIA_MONITOR', master_node_group.components)
-        self.assertIn('NAGIOS_SERVER', master_node_group.components)
-        self.assertIn('AMBARI_SERVER', master_node_group.components)
-        self.assertIn('AMBARI_AGENT', master_node_group.components)
-
-        slave_node_group = node_groups['slave']
-        self.assertEqual('slave', slave_node_group.name)
-        self.assertEqual(None, slave_node_group.predicate)
-        self.assertEqual('1+', slave_node_group.cardinality)
-        self.assertEqual(2, slave_node_group.default_count)
-        self.assertEqual(6, len(slave_node_group.components))
-        self.assertIn('DATANODE', slave_node_group.components)
-        self.assertIn('TASKTRACKER', slave_node_group.components)
-        self.assertIn('GANGLIA_MONITOR', slave_node_group.components)
-        self.assertIn('HDFS_CLIENT', slave_node_group.components)
-        self.assertIn('MAPREDUCE_CLIENT', slave_node_group.components)
-        self.assertIn('AMBARI_AGENT', slave_node_group.components)
+        self.assertIn('webhcat-site', configurations)
+        self.assertIn('hive-site', configurations)
 
     def setUp(self):
         self.service_validators['HDFS'] = self._assert_hdfs
@@ -422,40 +1239,26 @@ class ClusterSpecTest(unittest2.TestCase):
         self.service_validators['GANGLIA'] = self._assert_ganglia
         self.service_validators['NAGIOS'] = self._assert_nagios
         self.service_validators['AMBARI'] = self._assert_ambari
+        self.service_validators['PIG'] = self._assert_pig
+        self.service_validators['HIVE'] = self._assert_hive
+        self.service_validators['HCATALOG'] = self._assert_hcatalog
+        self.service_validators['ZOOKEEPER'] = self._assert_zookeeper
+        self.service_validators['WEBHCAT'] = self._assert_webhcat
 
 
-class TestServer():
-    def __init__(self, hostname, role, img, flavor, public_ip, private_ip,
-                 node_processes=None):
-        self.hostname = hostname
-        self.fqdn = hostname
-        self.role = role
-        self.instance_info = InstanceInfo(
-            hostname, img, flavor, public_ip, private_ip)
-        self.management_ip = public_ip
-        self.public_ip = public_ip
-        self.internal_ip = private_ip
-        self.node_processes = node_processes
-
-
-def _test_get_instance_info(*args, **kwargs):
-    return args[0].instance_info
-
-
-class InstanceInfo():
-    def __init__(self, hostname, image, flavor, management_ip, internal_ip):
-        self.hostname = hostname
-        self.image = image
-        self.flavor = flavor
-        self.management_ip = management_ip
-        self.internal_ip = internal_ip
-
-
-class TestCluster():
-    def __init__(self, node_groups):
-        self.node_groups = node_groups
-
-
-class TestNodeGroup():
-    def __init__(self, instances):
+class TestNodeGroup:
+    def __init__(self, name, instances, node_processes, count=1):
+        self.name = name
         self.instances = instances
+        for i in instances:
+            i.node_group = self
+        self.node_processes = node_processes
+        self.count = count
+        self.id = name
+
+
+class TestUserInputConfig:
+    def __init__(self, tag, target, name):
+        self.tag = tag
+        self.applicable_target = target
+        self.name = name
