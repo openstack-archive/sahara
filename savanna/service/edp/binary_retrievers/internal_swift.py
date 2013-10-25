@@ -18,13 +18,14 @@ import swiftclient
 
 import savanna.exceptions as ex
 from savanna.swift import utils as su
+from savanna.utils.openstack import base
 
 
 CONF = cfg.CONF
 
 
 def _get_conn(user, password):
-    return swiftclient.Connection(su.retrieve_auth_url(append_tokens=False),
+    return swiftclient.Connection(base.retrieve_auth_url(),
                                   user,
                                   password,
                                   tenant_name=CONF.os_admin_tenant_name,
