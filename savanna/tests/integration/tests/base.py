@@ -17,6 +17,7 @@ import logging
 import socket
 import telnetlib
 import time
+import uuid
 
 import unittest2
 
@@ -86,6 +87,18 @@ class ITestCase(unittest2.TestCase):
                                        self.common_config.OS_AUTH_URL,
                                        service_type='compute')
 
+        if not self.common_config.FLAVOR_ID:
+
+            self.flavor_id = self.nova.flavors.create(
+                name='i-test-flavor-%s' % str(uuid.uuid4())[:30],
+                ram=1024,
+                vcpus=1,
+                disk=10,
+                ephemeral=10).id
+
+        else:
+            self.flavor_id = self.common_config.FLAVOR_ID
+
         if not self.common_config.PATH_TO_SSH_KEY:
 
             self.private_key = self.nova.keypairs.create(
@@ -106,9 +119,9 @@ class ITestCase(unittest2.TestCase):
             hadoop_version = plugin_config.HADOOP_VERSION
 
         data = self.savanna.node_group_templates.create(
-            name, plugin_config.PLUGIN_NAME, hadoop_version,
-            self.common_config.FLAVOR_ID, description, volumes_per_node,
-            volume_size, node_processes, node_configs, floating_ip_pool)
+            name, plugin_config.PLUGIN_NAME, hadoop_version, self.flavor_id,
+            description, volumes_per_node, volume_size, node_processes,
+            node_configs, floating_ip_pool)
 
         node_group_template_id = data.id
 
@@ -540,3 +553,7 @@ class ITestCase(unittest2.TestCase):
         if not self.common_config.PATH_TO_SSH_KEY:
 
             self.nova.keypairs.delete(self.common_config.USER_KEYPAIR_ID)
+
+        if not self.common_config.FLAVOR_ID:
+
+            self.nova.flavors.delete(self.flavor_id)
