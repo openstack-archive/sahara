@@ -24,12 +24,12 @@ JT_CONFIG = {'Job Tracker Heap Size': 514}
 DN_CONFIG = {'Data Node Heap Size': 513}
 TT_CONFIG = {'Task Tracker Heap Size': 515}
 
+OOZIE_CONFIG = {'Oozie Heap Size': 520,
+                'oozie.notification.url.connection.timeout': 10001}
+
 CLUSTER_HDFS_CONFIG = {'dfs.replication': 2}
 CLUSTER_MR_CONFIG = {'mapred.map.tasks.speculative.execution': False,
                      'mapred.child.java.opts': '-Xmx500m'}
-
-
-#TODO(ylobankov): add check for Oozie configs in future
 
 
 CONFIG_MAP = {
@@ -48,6 +48,10 @@ CONFIG_MAP = {
     'tasktracker': {
         'service': 'MapReduce',
         'config': TT_CONFIG
+    },
+    'oozie': {
+        'service': 'JobFlow',
+        'config': OOZIE_CONFIG
     }
 }
 

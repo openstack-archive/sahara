@@ -410,7 +410,8 @@ class ITestCase(unittest2.TestCase):
             user=self.common_config.OS_USERNAME,
             key=self.common_config.OS_PASSWORD,
             tenant_name=self.common_config.OS_TENANT_NAME,
-            auth_version='2')  # TODO(ylobankov): delete hard code
+            auth_version=self.common_config.SWIFT_AUTH_VERSION
+        )
 
     def open_ssh_connection(self, host, node_username):
 
