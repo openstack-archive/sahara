@@ -173,6 +173,21 @@ def get_general_configs(hive_hostname, passwd_hive_mysql):
     return config
 
 
+def get_config_value(service, name, cluster=None):
+    if cluster:
+        for ng in cluster.node_groups:
+            if (ng.configuration.get(service) and
+                    ng.configuration[service].get(name)):
+                return ng.configuration[service][name]
+
+    for c in PLUGIN_CONFIGS:
+        if c.applicable_target == service and c.name == name:
+            return c.default_value
+
+    raise RuntimeError("Unable get parameter '%s' from service %s",
+                       name, service)
+
+
 def generate_cfg_from_general(cfg, configs, general_config,
                               rest_excluded=False):
     if 'general' in configs:

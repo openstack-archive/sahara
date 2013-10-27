@@ -357,14 +357,14 @@ class VanillaProvider(p.ProvisioningPluginBase):
                                     extra['hive_mysql_passwd'], r)
 
     def _push_namenode_configs(self, cluster, r):
-        r.write_file_to('/etc/hadoop/dn.incl', utils.
-                        generate_fqdn_host_names(
-                        utils.get_datanodes(cluster)))
+        r.write_file_to('/etc/hadoop/dn.incl',
+                        utils.generate_fqdn_host_names(
+                            utils.get_datanodes(cluster)))
 
     def _push_jobtracker_configs(self, cluster, r):
-        r.write_file_to('/etc/hadoop/tt.incl', utils.
-                        generate_fqdn_host_names(
-                        utils.get_tasktrackers(cluster)))
+        r.write_file_to('/etc/hadoop/tt.incl',
+                        utils.generate_fqdn_host_names(
+                            utils.get_tasktrackers(cluster)))
 
     def _push_oozie_configs(self, cluster, ng_extra, r):
         r.write_file_to('/opt/oozie/conf/oozie-site.xml',
@@ -399,13 +399,19 @@ class VanillaProvider(p.ProvisioningPluginBase):
         info = {}
 
         if jt:
+            address = c_helper.get_config_value(
+                'MapReduce', 'mapred.job.tracker.http.address', cluster)
+            port = address[address.rfind(':') + 1:]
             info['MapReduce'] = {
-                'Web UI': 'http://%s:50030' % jt.management_ip
+                'Web UI': 'http://%s:%s' % (jt.management_ip, port)
             }
 
         if nn:
+            address = c_helper.get_config_value(
+                'HDFS', 'dfs.http.address', cluster)
+            port = address[address.rfind(':') + 1:]
             info['HDFS'] = {
-                'Web UI': 'http://%s:50070' % nn.management_ip
+                'Web UI': 'http://%s:%s' % (nn.management_ip, port)
             }
 
         if oozie:
