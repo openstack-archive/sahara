@@ -2156,6 +2156,200 @@
             ]
         },
         {
+            "tag": "oozie-site.xml",
+            "properties": [
+                {
+                    "applicable_target": "OOZIE",
+                    "config_type": "string",
+                    "default_value": "oozie",
+                    "description": "...",
+                    "is_optional": true,
+                    "name": "oozie.service.JPAService.jdbc.username",
+                    "scope": "cluster"
+                },
+                {
+                    "applicable_target": "OOZIE",
+                    "config_type": "string",
+                    "default_value": "oozie",
+                    "description": "...",
+                    "is_optional": true,
+                    "name": "oozie.service.JPAService.jdbc.password",
+                    "scope": "cluster"
+                },
+                {
+                    "applicable_target": "OOZIE",
+                    "config_type": "string",
+                    "default_value": "DEFAULT",
+                    "description": "...",
+                    "is_optional": true,
+                    "name": "oozie.authentication.kerberos.name.rules",
+                    "scope": "cluster"
+                },
+                {
+                    "applicable_target": "OOZIE",
+                    "config_type": "string",
+                    "default_value": "simple",
+                    "description": "...",
+                    "is_optional": true,
+                    "name": "oozie.authentication.type",
+                    "scope": "cluster"
+                },
+                {
+                    "applicable_target": "OOZIE",
+                    "config_type": "string",
+                    "default_value": "org.apache.oozie.action.email.EmailActionExecutor,\norg.apache.oozie.action.hadoop.HiveActionExecutor,\norg.apache.oozie.action.hadoop.ShellActionExecutor,\norg.apache.oozie.action.hadoop.SqoopActionExecutor,\norg.apache.oozie.action.hadoop.DistcpActionExecutor",
+                    "description": "...",
+                    "is_optional": true,
+                    "name": "oozie.service.ActionService.executor.ext.classes",
+                    "scope": "cluster"
+                },
+                {
+                    "applicable_target": "OOZIE",
+                    "config_type": "string",
+                    "default_value": "true",
+                    "description": "...",
+                    "is_optional": true,
+                    "name": "oozie.service.AuthorizationService.authorization.enabled",
+                    "scope": "cluster"
+                },
+                {
+                    "applicable_target": "OOZIE",
+                    "config_type": "string",
+                    "default_value": "3",
+                    "description": "...",
+                    "is_optional": true,
+                    "name": "oozie.service.CallableQueueService.callable.concurrency",
+                    "scope": "cluster"
+                },
+                {
+                    "applicable_target": "OOZIE",
+                    "config_type": "string",
+                    "default_value": "1000",
+                    "description": "...",
+                    "is_optional": true,
+                    "name": "oozie.service.CallableQueueService.queue.size",
+                    "scope": "cluster"
+                },
+                {
+                    "applicable_target": "OOZIE",
+                    "config_type": "string",
+                    "default_value": "10",
+                    "description": "...",
+                    "is_optional": true,
+                    "name": "oozie.service.CallableQueueService.threads",
+                    "scope": "cluster"
+                },
+                {
+                    "applicable_target": "OOZIE",
+                    "config_type": "string",
+                    "default_value": "*=/etc/hadoop/conf",
+                    "description": "...",
+                    "is_optional": true,
+                    "name": "oozie.service.HadoopAccessorService.hadoop.configurations",
+                    "scope": "cluster"
+                },
+                {
+                    "applicable_target": "OOZIE",
+                    "config_type": "string",
+                    "default_value": "",
+                    "description": "...",
+                    "is_optional": true,
+                    "name": "oozie.service.HadoopAccessorService.jobTracker.whitelist",
+                    "scope": "cluster"
+                },
+                {
+                    "applicable_target": "OOZIE",
+                    "config_type": "string",
+                    "default_value": "",
+                    "description": "...",
+                    "is_optional": true,
+                    "name": "oozie.service.HadoopAccessorService.nameNode.whitelist",
+                    "scope": "cluster"
+                },
+                {
+                    "applicable_target": "OOZIE",
+                    "config_type": "string",
+                    "default_value": "10",
+                    "description": "...",
+                    "is_optional": true,
+                    "name": "oozie.service.JPAService.pool.max.active.conn",
+                    "scope": "cluster"
+                },
+                {
+                    "applicable_target": "OOZIE",
+                    "config_type": "string",
+                    "default_value": "30",
+                    "description": "...",
+                    "is_optional": true,
+                    "name": "oozie.service.PurgeService.older.than",
+                    "scope": "cluster"
+                },
+                {
+                    "applicable_target": "OOZIE",
+                    "config_type": "string",
+                    "default_value": "3600",
+                    "description": "...",
+                    "is_optional": true,
+                    "name": "oozie.service.PurgeService.purge.interval",
+                    "scope": "cluster"
+                },
+                {
+                    "applicable_target": "OOZIE",
+                    "config_type": "string",
+                    "default_value": "shell-action-0.1.xsd,email-action-0.1.xsd,hive-action-0.2.xsd,sqoop-action-0.2.xsd,ssh-action-0.1.xsd,distcp-action-0.1.xsd",
+                    "description": "...",
+                    "is_optional": true,
+                    "name": "oozie.service.SchemaService.wf.ext.schemas",
+                    "scope": "cluster"
+                },
+                {
+                    "applicable_target": "OOZIE",
+                    "config_type": "string",
+                    "default_value": "/user/${user.name}/share/lib",
+                    "description": "...",
+                    "is_optional": true,
+                    "name": "oozie.service.WorkflowAppService.system.libpath",
+                    "scope": "cluster"
+                },
+                {
+                    "applicable_target": "OOZIE",
+                    "config_type": "string",
+                    "default_value": "120",
+                    "description": "...",
+                    "is_optional": true,
+                    "name": "oozie.service.coord.normal.default.timeout",
+                    "scope": "cluster"
+                },
+                {
+                    "applicable_target": "OOZIE",
+                    "config_type": "string",
+                    "default_value": "oozie-${user.name}",
+                    "description": "...",
+                    "is_optional": true,
+                    "name": "oozie.system.id",
+                    "scope": "cluster"
+                },
+                {
+                    "applicable_target": "OOZIE",
+                    "config_type": "string",
+                    "default_value": "NORMAL",
+                    "description": "...",
+                    "is_optional": true,
+                    "name": "oozie.systemmode",
+                    "scope": "cluster"
+                },
+                {
+                    "applicable_target": "OOZIE",
+                    "config_type": "string",
+                    "default_value": "false",
+                    "description": "...",
+                    "is_optional": true,
+                    "name": "use.system.libpath.for.mapreduce.and.pig.jobs",
+                    "scope": "cluster"
+                }
+            ]
+        },
+        {
             "tag": "global",
             "properties": [
                 {
@@ -2836,15 +3030,6 @@
                 {
                     "applicable_target": "TODO",
                     "config_type": "string",
-                    "default_value": "oozie",
-                    "description": "...",
-                    "is_optional": true,
-                    "name": "oozie_user",
-                    "scope": "cluster"
-                },
-                {
-                    "applicable_target": "TODO",
-                    "config_type": "string",
                     "default_value": "zookeeper",
                     "description": "...",
                     "is_optional": true,
@@ -2894,6 +3079,42 @@
                     "description": "...",
                     "is_optional": true,
                     "name": "clientPort",
+                    "scope": "cluster"
+                },
+                {
+                    "applicable_target": "OOZIE",
+                    "config_type": "string",
+                    "default_value": "oozie",
+                    "description": "...",
+                    "is_optional": true,
+                    "name": "oozie_user",
+                    "scope": "cluster"
+                },
+                {
+                    "applicable_target": "OOZIE",
+                    "config_type": "string",
+                    "default_value": "/hadoop/oozie/data",
+                    "description": "...",
+                    "is_optional": true,
+                    "name": "oozie_data_dir",
+                    "scope": "cluster"
+                },
+                {
+                    "applicable_target": "OOZIE",
+                    "config_type": "string",
+                    "default_value": "/var/log/oozie",
+                    "description": "...",
+                    "is_optional": true,
+                    "name": "oozie_log_dir",
+                    "scope": "cluster"
+                },
+                {
+                    "applicable_target": "OOZIE",
+                    "config_type": "string",
+                    "default_value": "/var/run/oozie",
+                    "description": "...",
+                    "is_optional": true,
+                    "name": "oozie_pid_dir",
                     "scope": "cluster"
                 }
             ]

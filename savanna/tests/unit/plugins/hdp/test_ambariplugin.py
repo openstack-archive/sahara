@@ -38,7 +38,7 @@ class AmbariPluginTest(unittest2.TestCase):
         plugin = ap.AmbariPlugin()
         service_components = plugin.get_node_processes('1.3.2')
 
-        self.assertEqual(10, len(service_components))
+        self.assertEqual(11, len(service_components))
         components = service_components['HDFS']
         self.assertIn('NAMENODE', components)
         self.assertIn('DATANODE', components)
@@ -77,6 +77,10 @@ class AmbariPluginTest(unittest2.TestCase):
 
         components = service_components['WEBHCAT']
         self.assertIn('WEBHCAT_SERVER', components)
+
+        components = service_components['OOZIE']
+        self.assertIn('OOZIE_SERVER', components)
+        self.assertIn('OOZIE_CLIENT', components)
 
     @mock.patch("savanna.context.ctx")
     def test_convert(self, ctx_func):

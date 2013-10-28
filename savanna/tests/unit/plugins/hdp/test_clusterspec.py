@@ -165,6 +165,10 @@ class ClusterSpecTest(unittest2.TestCase):
             'zk_host.novalocal', 'zk', '11111', 3,
             '111.11.9999', '222.11.9999')
 
+        oozie_host = base.TestServer(
+            'oozie_host.novalocal', 'oozie', '11111', 3,
+            '111.11.9999', '222.11.9999')
+
         slave_host = base.TestServer(
             'slave1.novalocal', 'slave', '11111', 3,
             '222.22.6666', '333.22.6666')
@@ -208,14 +212,18 @@ class ClusterSpecTest(unittest2.TestCase):
             'zk', [zk_host], ["ZOOKEEPER_SERVER", "GANGLIA_MONITOR",
                               "AMBARI_AGENT"])
 
+        oozie_ng = TestNodeGroup(
+            'oozie', [oozie_host], ["OOZIE_SERVER", "GANGLIA_MONITOR",
+                                    "AMBARI_AGENT"])
         slave_ng = TestNodeGroup(
             'slave', [slave_host], ["DATANODE", "TASKTRACKER",
                                     "GANGLIA_MONITOR", "HDFS_CLIENT",
-                                    "MAPREDUCE_CLIENT", "AMBARI_AGENT"])
+                                    "MAPREDUCE_CLIENT", "OOZIE_CLIENT",
+                                    "AMBARI_AGENT"])
 
         cluster = base.TestCluster([master_ng, jt_ng, nn_ng, snn_ng, hive_ng,
                                     hive_ms_ng, hive_mysql_ng,
-                                    hcat_ng, zk_ng, slave_ng])
+                                    hcat_ng, zk_ng, oozie_ng, slave_ng])
         cluster_config = cs.ClusterSpec(cluster_config_file)
         cluster_config.create_operational_config(cluster, [])
         config = cluster_config.configurations
@@ -257,6 +265,13 @@ class ClusterSpecTest(unittest2.TestCase):
                          'hcat_host.novalocal')
         self.assertEqual(config['webhcat-site']['templeton.zookeeper.hosts'],
                          'zk_host.novalocal:2181')
+
+        self.assertEqual(config['oozie-site']['oozie.base.url'],
+                         'http://oozie_host.novalocal:11000/oozie')
+        self.assertEqual(config['global']['oozie_hostname'],
+                         'oozie_host.novalocal')
+        self.assertEqual(config['core-site']['hadoop.proxyuser.oozie.hosts'],
+                         'oozie_host.novalocal')
 
         # test swift properties
         self.assertEqual('swift_prop_value',
@@ -872,6 +887,48 @@ class ClusterSpecTest(unittest2.TestCase):
             # expected
             pass
 
+    def test_validate_oozie(self, patched):
+        server = base.TestServer('host1', 'slave', '11111', 3,
+                                 '111.11.1111', '222.22.2222')
+        server2 = base.TestServer('host2', 'master', '11112', 3,
+                                  '111.11.1112', '222.22.2223')
+
+        node_group = TestNodeGroup(
+            'slave', [server], ["DATANODE", "TASKTRACKER",
+                                "OOZIE_CLIENT"])
+        node_group2 = TestNodeGroup(
+            'master', [server2], ["NAMENODE", "JOBTRACKER",
+                                  "AMBARI_SERVER"])
+
+        cluster = base.TestCluster([node_group, node_group2])
+        cluster_config = base.create_clusterspec()
+        # should fail due to missing OOZIE_SERVER
+        try:
+            cluster_config.create_operational_config(cluster, [])
+            self.fail('Validation should have thrown an exception')
+        except ex.InvalidComponentCountException:
+            # expected
+            pass
+        node_group2 = TestNodeGroup(
+            'master', [server2], ["NAMENODE", "JOBTRACKER",
+                                  "OOZIE_SERVER", "AMBARI_SERVER"])
+        cluster = base.TestCluster([node_group, node_group2])
+        cluster_config = base.create_clusterspec()
+        # should validate successfully now
+        cluster_config.create_operational_config(cluster, [])
+
+        # should cause validation exception due to 2 OOZIE_SERVER
+        node_group3 = TestNodeGroup(
+            'master', [server2], ["OOZIE_SERVER"])
+        cluster = base.TestCluster([node_group, node_group2, node_group3])
+        cluster_config = base.create_clusterspec()
+        try:
+            cluster_config.create_operational_config(cluster, [])
+            self.fail('Validation should have thrown an exception')
+        except ex.InvalidComponentCountException:
+            # expected
+            pass
+
     def test_validate_ganglia(self, patched):
         server = base.TestServer('host1', 'slave', '11111', 3,
                                  '111.11.1111', '222.22.2222')
@@ -1111,7 +1168,7 @@ class ClusterSpecTest(unittest2.TestCase):
             found_services.append(name)
             self.service_validators[name](service)
 
-        self.assertEqual(10, len(found_services))
+        self.assertEqual(11, len(found_services))
         self.assertIn('HDFS', found_services)
         self.assertIn('MAPREDUCE', found_services)
         self.assertIn('GANGLIA', found_services)
@@ -1122,6 +1179,7 @@ class ClusterSpecTest(unittest2.TestCase):
         self.assertIn('HCATALOG', found_services)
         self.assertIn('ZOOKEEPER', found_services)
         self.assertIn('WEBHCAT', found_services)
+        self.assertIn('OOZIE', found_services)
 
     def _assert_hdfs(self, service):
         self.assertEqual('HDFS', service.name)
@@ -1204,19 +1262,59 @@ class ClusterSpecTest(unittest2.TestCase):
         self.assertIn('user', groups)
 
     def _assert_pig(self, service):
-        pass
+        self.assertEqual('PIG', service.name)
+        self.assertEqual(1, len(service.components))
+        self.assertEqual('PIG', service.components[0].name)
 
     def _assert_hive(self, service):
-        pass
+        self.assertEqual('HIVE', service.name)
+        found_components = {}
+        for component in service.components:
+            found_components[component.name] = component
+
+        self.assertEqual(4, len(found_components))
+        self._assert_component('HIVE_SERVER', 'MASTER', "1",
+                               found_components['HIVE_SERVER'])
+        self._assert_component('HIVE_METASTORE', 'MASTER', "1",
+                               found_components['HIVE_METASTORE'])
+        self._assert_component('MYSQL_SERVER', 'MASTER', "1",
+                               found_components['MYSQL_SERVER'])
+        self._assert_component('HIVE_CLIENT', 'CLIENT', "1+",
+                               found_components['HIVE_CLIENT'])
 
     def _assert_hcatalog(self, service):
-        pass
+        self.assertEqual('HCATALOG', service.name)
+        self.assertEqual(1, len(service.components))
+        self.assertEqual('HCAT', service.components[0].name)
 
     def _assert_zookeeper(self, service):
-        pass
+        self.assertEqual('ZOOKEEPER', service.name)
+        found_components = {}
+        for component in service.components:
+            found_components[component.name] = component
+
+        self.assertEqual(2, len(found_components))
+        self._assert_component('ZOOKEEPER_SERVER', 'MASTER', "1",
+                               found_components['ZOOKEEPER_SERVER'])
+        self._assert_component('ZOOKEEPER_CLIENT', 'CLIENT', "1+",
+                               found_components['ZOOKEEPER_CLIENT'])
 
     def _assert_webhcat(self, service):
-        pass
+        self.assertEqual('WEBHCAT', service.name)
+        self.assertEqual(1, len(service.components))
+        self.assertEqual('WEBHCAT_SERVER', service.components[0].name)
+
+    def _assert_oozie(self, service):
+        self.assertEqual('OOZIE', service.name)
+        found_components = {}
+        for component in service.components:
+            found_components[component.name] = component
+
+        self.assertEqual(2, len(found_components))
+        self._assert_component('OOZIE_SERVER', 'MASTER', "1",
+                               found_components['OOZIE_SERVER'])
+        self._assert_component('OOZIE_CLIENT', 'CLIENT', "1+",
+                               found_components['OOZIE_CLIENT'])
 
     def _assert_component(self, name, comp_type, cardinality, component):
         self.assertEqual(name, component.name)
@@ -1224,7 +1322,7 @@ class ClusterSpecTest(unittest2.TestCase):
         self.assertEqual(cardinality, component.cardinality)
 
     def _assert_configurations(self, configurations):
-        self.assertEqual(7, len(configurations))
+        self.assertEqual(8, len(configurations))
         self.assertIn('global', configurations)
         self.assertIn('core-site', configurations)
         self.assertIn('mapred-site', configurations)
@@ -1232,6 +1330,7 @@ class ClusterSpecTest(unittest2.TestCase):
         self.assertIn('ambari', configurations)
         self.assertIn('webhcat-site', configurations)
         self.assertIn('hive-site', configurations)
+        self.assertIn('oozie-site', configurations)
 
     def setUp(self):
         self.service_validators['HDFS'] = self._assert_hdfs
@@ -1244,6 +1343,7 @@ class ClusterSpecTest(unittest2.TestCase):
         self.service_validators['HCATALOG'] = self._assert_hcatalog
         self.service_validators['ZOOKEEPER'] = self._assert_zookeeper
         self.service_validators['WEBHCAT'] = self._assert_webhcat
+        self.service_validators['OOZIE'] = self._assert_oozie
 
 
 class TestNodeGroup:

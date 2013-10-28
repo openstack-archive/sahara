@@ -130,6 +130,23 @@
       ]
     },
     {
+      "name" : "OOZIE",
+      "components" : [
+        {
+          "name" : "OOZIE_SERVER",
+          "type" : "MASTER",
+          "cardinality" : "1"
+        },
+        {
+          "name" : "OOZIE_CLIENT",
+          "type" : "CLIENT",
+          "cardinality" : "1+"
+        }
+      ],
+      "configurations" : [
+      ]
+    },
+    {
       "name" : "GANGLIA",
       "components" : [
         {
@@ -327,7 +344,19 @@
         { "name" : "zk_pid_dir", "value" : "/var/run/zookeeper" },
         { "name" : "zk_pid_file", "value" : "/var/run/zookeeper/zookeeper_server.pid" },
         { "name" : "hive_database_type", "value" : "mysql" },
-        { "name" : "hive_jdbc_driver", "value" : "com.mysql.jdbc.Driver" }
+        { "name" : "hive_jdbc_driver", "value" : "com.mysql.jdbc.Driver" },
+        { "name" : "oozie_derby_database", "value" : "Derby" },
+        { "name" : "oozie_database", "value" : "New Derby Database" },
+        { "name" : "oozie_hostname", "value" : "%OOZIE_HOST%" },
+        { "name" : "oozie_database_name", "value" : "oozie" },
+        { "name" : "oozie_metastore_user_name", "value" : "oozie" },
+        { "name" : "oozie_metastore_user_passwd", "value" : "oozie" },
+        { "name" : "oozie_jdbc_connection_url", "value" : "jdbc:derby:${oozie.data.dir}/${oozie.db.schema.name}-db;create=true" },
+        { "name" : "oozie_data_dir", "value" : "/hadoop/oozie/data" },
+        { "name" : "oozie_log_dir", "value" : "/var/log/oozie" },
+        { "name" : "oozie_pid_dir", "value" : "/var/run/oozie" },
+        { "name" : "oozie_database_type", "value" : "derby" },
+        { "name" : "oozie_jdbc_driver", "value" : "org.apache.derby.jdbc.EmbeddedDriver" }
       ]
     },
     {
@@ -362,7 +391,9 @@
         { "name" : "hadoop.proxyuser.hive.groups", "value" : "users" },
         { "name" : "hadoop.proxyuser.hive.hosts", "value" : "%HIVE_HOST%" },
         { "name" : "hadoop.proxyuser.hcat.groups", "value" : "users" },
-        { "name" : "hadoop.proxyuser.hcat.hosts", "value" : "%WEBHCAT_HOST%" }
+        { "name" : "hadoop.proxyuser.hcat.hosts", "value" : "%WEBHCAT_HOST%" },
+        { "name" : "hadoop.proxyuser.oozie.groups", "value" : "users" },
+        { "name" : "hadoop.proxyuser.oozie.hosts", "value" : "%OOZIE_HOST%" }
       ]
     },
     {
@@ -545,6 +576,37 @@
         { "name" : "templeton.hadoop.conf.dir", "value" : "/etc/hadoop/conf" },
         { "name" : "templeton.hive.properties", "value" : "hive.metastore.local=false,hive.metastore.uris=thrift://%HIVE_METASTORE_HOST%:9083,hive.metastore.sasl.enabled=yes,hive.metastore.execute.setugi=true,hive.metastore.warehouse.dir=/apps/hive/warehouse" },
         { "name" : "templeton.zookeeper.hosts", "value" : "%ZOOKEEPER_HOST%:2181" }
+      ]
+    },
+    {
+      "name" : "oozie-site",
+      "properties" : [
+        { "name" : "oozie.authentication.kerberos.name.rules" , "value" : "DEFAULT" },
+        { "name" : "oozie.authentication.type" , "value" : "simple" },
+        { "name" : "oozie.service.ActionService.executor.ext.classes" , "value" : "org.apache.oozie.action.email.EmailActionExecutor,\norg.apache.oozie.action.hadoop.HiveActionExecutor,\norg.apache.oozie.action.hadoop.ShellActionExecutor,\norg.apache.oozie.action.hadoop.SqoopActionExecutor,\norg.apache.oozie.action.hadoop.DistcpActionExecutor" },
+        { "name" : "oozie.service.AuthorizationService.authorization.enabled" , "value" : "true" },
+        { "name" : "oozie.service.CallableQueueService.callable.concurrency" , "value" : "3" },
+        { "name" : "oozie.service.CallableQueueService.queue.size" , "value" : "1000" },
+        { "name" : "oozie.service.CallableQueueService.threads" , "value" : "10" },
+        { "name" : "oozie.service.HadoopAccessorService.hadoop.configurations" , "value" : "*=/etc/hadoop/conf" },
+        { "name" : "oozie.service.HadoopAccessorService.jobTracker.whitelist" , "value" : " " },
+        { "name" : "oozie.service.HadoopAccessorService.nameNode.whitelist" , "value" : " " },
+        { "name" : "oozie.service.JPAService.pool.max.active.conn" , "value" : "10" },
+        { "name" : "oozie.service.PurgeService.older.than" , "value" : "30" },
+        { "name" : "oozie.service.PurgeService.purge.interval" , "value" : "3600" },
+        { "name" : "oozie.service.SchemaService.wf.ext.schemas" , "value" : "shell-action-0.1.xsd,email-action-0.1.xsd,hive-action-0.2.xsd,sqoop-action-0.2.xsd,ssh-action-0.1.xsd,distcp-action-0.1.xsd" },
+        { "name" : "oozie.service.WorkflowAppService.system.libpath" , "value" : "/user/${user.name}/share/lib" },
+        { "name" : "oozie.service.coord.normal.default.timeout" , "value" : "120" },
+        { "name" : "oozie.system.id" , "value" : "oozie-${user.name}" },
+        { "name" : "oozie.systemmode" , "value" : "NORMAL" },
+        { "name" : "use.system.libpath.for.mapreduce.and.pig.jobs" , "value" : "false" },
+        { "name" : "oozie.base.url" , "value" : "http://%OOZIE_HOST%:11000/oozie" },
+        { "name" : "oozie.service.JPAService.create.db.schema" , "value" : "false" },
+        { "name" : "oozie.db.schema.name" , "value" : "oozie" },
+        { "name" : "oozie.service.JPAService.jdbc.driver" , "value" : "org.apache.derby.jdbc.EmbeddedDriver" },
+        { "name" : "oozie.service.JPAService.jdbc.username" , "value" : "oozie" },
+        { "name" : "oozie.service.JPAService.jdbc.password" , "value" : "oozie" },
+        { "name" : "oozie.service.JPAService.jdbc.url" , "value" : "jdbc:derby:${oozie.data.dir}/${oozie.db.schema.name}-db;create=true" }
       ]
     },
     {
