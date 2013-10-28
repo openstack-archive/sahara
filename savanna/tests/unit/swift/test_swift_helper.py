@@ -40,9 +40,9 @@ class SwiftIntegrationTestCase(unittest2.TestCase):
                             tenant_name='test_tenant',
                             token='test_auth_token'))
 
-    @mock.patch('savanna.swift.utils.retrieve_auth_url')
+    @mock.patch('savanna.utils.openstack.base.retrieve_auth_url')
     def test_get_swift_configs(self, authUrlConfig):
-        authUrlConfig.return_value = "http://localhost:8080/v2.0/tokens"
+        authUrlConfig.return_value = "http://localhost:8080/v2.0/"
 
         result = h.get_swift_configs()
         self.assertEqual(7, len(result))

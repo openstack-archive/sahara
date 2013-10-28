@@ -22,12 +22,3 @@ SWIFT_INTERNAL_PREFIX = "swift-internal://"
 
 #TODO(tmckay): support swift-external in a future version
 # SWIFT_EXTERNAL_PREFIX = "swift-external://"
-
-
-def retrieve_auth_url(append_tokens=True):
-    url = "{0}://{1}:{2}/v2.0/{3}".format(
-        CONF.os_auth_protocol,
-        CONF.os_auth_host,
-        CONF.os_auth_port,
-        "tokens/" if append_tokens else "")
-    return url
