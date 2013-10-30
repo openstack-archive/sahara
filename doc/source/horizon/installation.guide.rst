@@ -77,6 +77,14 @@ If you are using Neutron instead of Nova Network:
    SAVANNA_USE_NEUTRON = True
 ..
 
+If you are not using nova-network with auto_assign_floating_ip=True, also set:
+
+.. sourcecode:: python
+
+   AUTO_ASSIGNMENT_ENABLED = False
+..
+
+
    Note: For RDO, the ``local_settings.py`` file is located in
    ``/etc/openstack-dashboard/``, otherwise it is in
    ``/usr/share/openstack-dashboard/openstack_dashboard/local/``.

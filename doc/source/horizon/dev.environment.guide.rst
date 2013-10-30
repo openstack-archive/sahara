@@ -66,6 +66,13 @@ If you are using Neutron instead of Nova Network:
 
    SAVANNA_USE_NEUTRON = True
 
+If you are not using nova-network with auto_assign_floating_ip=True, also set:
+
+.. sourcecode:: python
+
+   AUTO_ASSIGNMENT_ENABLED = False
+..
+
 5. Clone savanna-dashboard sources from ``https://github.com/openstack/savanna-dashboard.git``
 
 .. sourcecode:: console
