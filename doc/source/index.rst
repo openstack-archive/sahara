@@ -67,6 +67,7 @@ User guide
 .. toctree::
    :maxdepth: 1
 
+   userdoc/guest-requirements
    userdoc/hadoop-swift
    userdoc/diskimagebuilder
 
