@@ -67,6 +67,7 @@ cfg.set_defaults(log.log_opts, default_log_levels=[
     'keystone=INFO',
     'paramiko=WARN',
     'requests=WARN',
+    'iso8601=WARN',
 ])
 
 
