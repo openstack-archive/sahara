@@ -83,6 +83,7 @@ Developer Guide
     horizon/dev.environment.guide
     devref/quickstart
     devref/how_to_participate
+    devrev/how_to_build_oozie
 
 
 **Background Concepts for Savanna**
