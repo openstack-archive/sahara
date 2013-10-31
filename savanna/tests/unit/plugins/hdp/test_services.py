@@ -61,6 +61,14 @@ class ServicesTest(unittest2.TestCase):
                          expected_configs & service.configurations)
         self.assertFalse(service.is_mandatory())
 
+    def test_create_oozie_service(self):
+        service = s.create_service('OOZIE')
+        self.assertEqual('OOZIE', service.name)
+        expected_configs = set(['global', 'core-site', 'oozie-site'])
+        self.assertEqual(expected_configs,
+                         expected_configs & service.configurations)
+        self.assertFalse(service.is_mandatory())
+
     def test_create_ganglia_service(self):
         service = s.create_service('GANGLIA')
         self.assertEqual('GANGLIA', service.name)

@@ -202,8 +202,17 @@ class HiveService(Service):
                 {'global': ['hive_jdbc_connection_url']})
 
     def register_user_input_handlers(self, ui_handlers):
-        property_name = 'hive-site/javax.jdo.option.ConnectionPassword'
-        ui_handlers[property_name] = self._handle_user_property_metastore_pwd
+        ui_handlers['hive-site/javax.jdo.option.ConnectionUserName'] =\
+            self._handle_user_property_metastore_user
+        ui_handlers['hive-site/javax.jdo.option.ConnectionPassword'] = \
+            self._handle_user_property_metastore_pwd
+
+    def _handle_user_property_metastore_user(self, user_input, configurations):
+        hive_site_config_map = configurations['hive-site']
+        hive_site_config_map['javax.jdo.option.ConnectionUserName'] = \
+            user_input.value
+        global_config_map = configurations['global']
+        global_config_map['hive_metastore_user_name'] = user_input.value
 
     def _handle_user_property_metastore_pwd(self, user_input, configurations):
         hive_site_config_map = configurations['hive-site']
@@ -347,6 +356,82 @@ class ZookeeperService(Service):
         if count != 1:
             raise ex.InvalidComponentCountException(
                 'ZOOKEEPER_SERVER', 1, count)
+
+
+class OozieService(Service):
+    def __init__(self):
+        super(OozieService, self).__init__(OozieService.get_service_id())
+        self.configurations.add('oozie-site')
+
+    @classmethod
+    def get_service_id(cls):
+        return 'OOZIE'
+
+    def validate(self, cluster_spec, cluster):
+        count = cluster_spec.get_deployed_node_group_count('OOZIE_SERVER')
+        if count != 1:
+            raise ex.InvalidComponentCountException(
+                'OOZIE_SERVER', 1, count)
+        count = cluster_spec.get_deployed_node_group_count('OOZIE_CLIENT')
+        if not count:
+            raise ex.InvalidComponentCountException(
+                'OOZIE_CLIENT', '1+', count)
+
+    def finalize_configuration(self, cluster_spec):
+        oozie_servers = cluster_spec.determine_component_hosts('OOZIE_SERVER')
+        if oozie_servers:
+            self._replace_config_token(
+                cluster_spec, '%OOZIE_HOST%', oozie_servers.pop().fqdn,
+                {'global': ['oozie_hostname'],
+                    'core-site': ['hadoop.proxyuser.oozie.hosts'],
+                    'oozie-site': ['oozie.base.url']})
+
+    def finalize_ng_components(self, cluster_spec):
+        oozie_ng = cluster_spec.get_node_groups_containing_component(
+            'OOZIE_SERVER')[0]
+        components = oozie_ng.components
+        if 'HDFS_CLIENT' not in components:
+            components.append('HDFS_CLIENT')
+        if 'MAPREDUCE_CLIENT' not in components:
+            components.append('MAPREDUCE_CLIENT')
+        # ensure that mr and hdfs clients are colocated with oozie client
+        client_ngs = cluster_spec.get_node_groups_containing_component(
+            'OOZIE_CLIENT')
+        for ng in client_ngs:
+            components = ng.components
+            if 'HDFS_CLIENT' not in components:
+                components.append('HDFS_CLIENT')
+        if 'MAPREDUCE_CLIENT' not in components:
+            components.append('MAPREDUCE_CLIENT')
+
+    def register_service_urls(self, cluster_spec, url_info):
+        oozie_ip = cluster_spec.determine_component_hosts(
+            'OOZIE_SERVER').pop().management_ip
+        #TODO(jspeidel): Don't hard code port
+        url_info['OOZIE'] = {
+            'Web UI': 'http://%s:11000/oozie' % oozie_ip
+        }
+        return url_info
+
+    def register_user_input_handlers(self, ui_handlers):
+        ui_handlers['oozie-site/oozie.service.JPAService.jdbc.username'] = \
+            self._handle_user_property_db_user
+        ui_handlers['oozie.service.JPAService.jdbc.password'] = \
+            self._handle_user_property_db_pwd
+
+    def _handle_user_property_db_user(self, user_input, configurations):
+        oozie_site_config_map = configurations['oozie-site']
+        oozie_site_config_map['oozie.service.JPAService.jdbc.username'] = \
+            user_input.value
+        global_config_map = configurations['global']
+        global_config_map['oozie_metastore_user_name'] = user_input.value
+
+    def _handle_user_property_db_pwd(self, user_input, configurations):
+        oozie_site_config_map = configurations['oozie-site']
+        oozie_site_config_map['oozie.service.JPAService.jdbc.password'] = \
+            user_input.value
+        global_config_map = configurations['global']
+        global_config_map['oozie_metastore_user_passwd'] = user_input.value
 
 
 class GangliaService(Service):
