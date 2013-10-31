@@ -103,6 +103,30 @@ The general workflow for defining and executing a MapReduce job in Savanna is es
 
 The workflow is simpler when using existing objects.  For example, to construct a new job which uses existing binaries and input data a user may only need to perform steps 3, 5, and 6 above.  Of course, to repeat the same job multiple times a user would need only step 6.
 
+EDP Requirements
+================
+
+The OpenStack installation and the cluster launched from Savanna must meet the following minimum requirements in order for EDP to function:
+
+OpenStack Services
+------------------
+
+The OpenStack installation must be running the Swift service.  Swift is currently the only supported storage type for input and output data sources.  It is also the preferred storage for job binaries.
+
+When a job is executed, binaries are first uploaded to a job tracker and then moved from the job tracker's local filesystem to HDFS. Therefore, there must be an instance of HDFS available to the nodes in the Savanna cluster.
+
+Cluster Processes
+-----------------
+
+At a minimum the Savanna cluster must run a single instance of these processes to support EDP:
+
+* jobtracker
+* namenode
+* oozie
+* tasktracker
+* datanode
+
+Note, a typical cluster may have more than a single instance of the tasktracker and datanode processes.
 
 EDP Technical Considerations
 ============================
