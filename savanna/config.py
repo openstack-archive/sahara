@@ -52,7 +52,12 @@ networking_opts = [
                     "dhcp_domain config parameter"),
     cfg.BoolOpt('use_neutron',
                 default=False,
-                help="Use Neutron or Nova Network")
+                help="Use Neutron Networking (False indicates the use of Nova "
+                     "networking)"),
+    cfg.BoolOpt('use_namespaces',
+                default=False,
+                help="Use network namespaces for communication (only valid to "
+                     "use in conjunction with use_neutron=True)")
 ]
 
 
@@ -91,3 +96,14 @@ def parse_configs(argv=None, conf_files=None):
         # TODO(slukjanov): replace RuntimeError with Savanna-specific exception
         raise RuntimeError("Option '%s' is required for config group "
                            "'%s'" % (roe.opt_name, roe.group.name))
+    validate_configs()
+
+
+def validate_network_configs():
+    if CONF.use_namespaces and not CONF.use_neutron:
+        raise RuntimeError('use_namespaces can not be set to "True" when '
+                           'use_neutron is set to "False"')
+
+
+def validate_configs():
+    validate_network_configs()

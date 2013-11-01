@@ -238,6 +238,8 @@ class AmbariPlugin(p.ProvisioningPluginBase):
         client.start_services(cluster.name, cluster_spec,
                               self.cluster_ambari_mapping[cluster.name])
 
+        client.cleanup(self.cluster_ambari_mapping[cluster.name])
+
     def get_title(self):
         return 'Hortonworks Data Platform'
 
@@ -283,6 +285,8 @@ class AmbariPlugin(p.ProvisioningPluginBase):
 
         ambari_client.scale_cluster(cluster.name, cluster_spec, servers,
                                     self._get_num_hosts(cluster), ambari_info)
+
+        ambari_client.cleanup(ambari_info)
 
     def decommission_nodes(self, cluster, instances):
         raise exc.InvalidException('The HDP plugin does not yet support the '
