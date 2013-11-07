@@ -24,6 +24,10 @@ from savanna.swift import utils as su
 
 @jsonschema.FormatChecker.cls_checks('valid_name')
 def validate_name_format(entry):
+    if not isinstance(entry, six.string_types):
+        #shoud fail type validation
+        return True
+
     res = re.match(r"^(([a-zA-Z]|[a-zA-Z][a-zA-Z0-9\-_]"
                    r"*[a-zA-Z0-9])\.)*([A-Za-z]|[A-Za-z]"
                    r"[A-Za-z0-9\-_]*[A-Za-z0-9])$", entry)
@@ -43,6 +47,10 @@ def validate_job_location_format(entry):
 
 @jsonschema.FormatChecker.cls_checks('valid_tag')
 def validate_valid_tag_format(entry):
+    if not isinstance(entry, six.string_types):
+        #shoud fail type validation
+        return True
+
     res = re.match(r"^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-_]"
                    r"*[a-zA-Z0-9])\.)*([A-Za-z0-9]|[A-Za-z0-9]"
                    r"[A-Za-z0-9\-_]*[A-Za-z0-9])$", entry)
