@@ -95,6 +95,9 @@ To install into a virtual environment
 
     $ mkdir savanna-venv/etc
     $ cp savanna-venv/share/savanna/savanna.conf.sample savanna-venv/etc/savanna.conf
+..
+
+    check each option in savanna-venv/etc/savanna.conf, and make necessary changes
 
 5. To start Savanna call:
 
