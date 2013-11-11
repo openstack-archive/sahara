@@ -43,7 +43,7 @@ Create Node Group Templates
 Create a Cluster Template
 -------------------------
 
-1) Navigate to the "Savanna" tab in the dashboard, then click on the "Node Group Templates" panel.
+1) Navigate to the "Savanna" tab in the dashboard, then click on the "Cluster Templates" panel.
 
 2) From that page, click on the "Create Template" button at the top right.
 
