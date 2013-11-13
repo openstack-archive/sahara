@@ -146,7 +146,8 @@ class HdfsService(Service):
 
         #TODO(jspeidel): Don't hard code port
         url_info['HDFS'] = {
-            'Web UI': 'http://%s:50070' % namenode_ip
+            'Web UI': 'http://%s:50070' % namenode_ip,
+            'NameNode': 'hdfs://%s:8020' % namenode_ip
         }
         return url_info
 
@@ -207,7 +208,8 @@ class MapReduceService(Service):
 
         #TODO(jspeidel): Don't hard code port
         url_info['MapReduce'] = {
-            'Web UI': 'http://%s:50030' % jobtracker_ip
+            'Web UI': 'http://%s:50030' % jobtracker_ip,
+            'JobTracker': '%s:50300' % jobtracker_ip
         }
         return url_info
 
@@ -457,8 +459,8 @@ class OozieService(Service):
         oozie_ip = cluster_spec.determine_component_hosts(
             'OOZIE_SERVER').pop().management_ip
         #TODO(jspeidel): Don't hard code port
-        url_info['OOZIE'] = {
-            'Web UI': 'http://%s:11000/oozie' % oozie_ip
+        url_info['JobFlow'] = {
+            'Oozie': 'http://%s:11000' % oozie_ip
         }
         return url_info
 

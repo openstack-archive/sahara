@@ -17,7 +17,7 @@
 def get_node_groups(cluster, proc_list=list()):
     proc_list = [proc_list] if type(proc_list) in [str, unicode] else proc_list
     return [ng for ng in cluster.node_groups
-            if set(proc_list).issubset(ng.node_processes)]
+            if set(proc_list).issubset([n.lower() for n in ng.node_processes])]
 
 
 def get_instances(cluster, proc_list=list()):

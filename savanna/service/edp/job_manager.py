@@ -124,13 +124,13 @@ def run_job(job_execution):
     path_to_workflow = upload_workflow_file(u.get_jobtracker(cluster),
                                             wf_dir, wf_xml, hdfs_user)
 
-    jt_path = '%s:8021' % u.get_jobtracker(cluster).hostname
-    nn_path = 'hdfs://%s:8020' % u.get_namenode(cluster).hostname
+    jt_path = cluster['info']['MapReduce']['JobTracker']
+    nn_path = cluster['info']['HDFS']['NameNode']
 
     client = o.OozieClient(cluster['info']['JobFlow']['Oozie'] + "/oozie/")
     job_parameters = {"jobTracker": jt_path,
                       "nameNode": nn_path,
-                      "user.name": "hadoop",
+                      "user.name": hdfs_user,
                       "oozie.wf.application.path":
                       "%s%s" % (nn_path, path_to_workflow),
                       "oozie.use.system.libpath": "true"}
@@ -173,7 +173,7 @@ def upload_workflow_file(where, job_dir, wf_xml, hdfs_user):
 
 
 def create_workflow_dir(where, job, hdfs_user):
-    constructed_dir = '/user/hadoop/'
+    constructed_dir = '/user/%s/' % hdfs_user
     constructed_dir = _add_postfix(constructed_dir)
     constructed_dir += '%s/%s' % (job.name, uuidutils.generate_uuid())
     with remote.get_remote(where) as r:
