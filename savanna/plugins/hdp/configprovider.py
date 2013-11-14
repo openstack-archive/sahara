@@ -12,7 +12,8 @@
 # implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from savanna.exceptions import InvalidDataException
+
+from savanna import exceptions
 from savanna.plugins import provisioning as p
 
 
@@ -60,7 +61,7 @@ class ConfigurationProvider:
                 if property_name in self.config_mapper:
                     # internal error
                     # ambari-config-resource contains duplicates
-                    raise InvalidDataException(
+                    raise exceptions.InvalidDataException(
                         'Internal Error. Duplicate property '
                         'name detected: %s' % property_name)
                 self.config_mapper[service_property['name']] = \

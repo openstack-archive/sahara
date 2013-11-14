@@ -14,12 +14,12 @@
 # limitations under the License.
 
 import os
+import shlex
+
+from eventlet.green import subprocess as e_subprocess
+from neutronclient.neutron import client as neutron_cli
 import requests
 from requests import adapters
-from shlex import split as shlsplit
-from eventlet.green.subprocess import Popen, PIPE
-
-from neutronclient.neutron import client as neutron_cli
 
 from savanna.openstack.common import log as logging
 
@@ -39,7 +39,6 @@ class Client():
         self.network = network
 
     def get_router(self):
-
         matching_router = Client.routers.get(self.network, None)
         if matching_router:
             LOG.debug('Returning cached qrouter')
@@ -101,7 +100,7 @@ class NeutronHttpAdapter(adapters.HTTPAdapter):
         command = 'ip netns exec qrouter-{0} nc {1} {2}'.format(qrouter,
                                                                 host, port)
         LOG.debug('Neutron adapter created with cmd {0}'.format(command))
-        self.cmd = shlsplit(command)
+        self.cmd = shlex.split(command)
         self.port = port
         self.host = host
 
@@ -140,7 +139,10 @@ class NeutronHttpAdapter(adapters.HTTPAdapter):
 class NetcatSocket:
 
     def _create_process(self):
-        self.process = Popen(self.cmd, stdin=PIPE, stdout=PIPE, stderr=PIPE)
+        self.process = e_subprocess.Popen(self.cmd,
+                                          stdin=e_subprocess.PIPE,
+                                          stdout=e_subprocess.PIPE,
+                                          stderr=e_subprocess.PIPE)
 
     def __init__(self, cmd):
         self.cmd = cmd
@@ -149,7 +151,7 @@ class NetcatSocket:
     def send(self, content):
         try:
             self.process.stdin.write(content)
-        except IOError, e:
+        except IOError as e:
             raise RuntimeError(' '.join(self.cmd), e.strerror)
         return len(content)
 
@@ -166,7 +168,7 @@ class NetcatSocket:
     def recv(self, size):
         try:
             return os.read(self.process.stdout.fileno(), size)
-        except IOError, e:
+        except IOError as e:
             raise RuntimeError(' '.join(self.cmd), e.strerror)
 
     def _terminate(self):

@@ -13,13 +13,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from functools import wraps
+import functools
 import inspect
 import logging
 from logging import handlers
 import os
 import sys
-from time import time
+import time
 
 from oslo.config import cfg
 
@@ -43,11 +43,11 @@ LOG.logger.addHandler(fh)
 
 
 def timed(f):
-    @wraps(f)
+    @functools.wraps(f)
     def wrapper(*args, **kwds):
 
         indent_level = len(inspect.stack()) - 1
-        start = time()
+        start = time.time()
         try:
             result = f(*args, **kwds)
         except Exception:
@@ -55,7 +55,7 @@ def timed(f):
                      .format(f.__name__, sys.exc_info()[0]))
             raise
         finally:
-            elapsed = time() - start
+            elapsed = time.time() - start
             LOG.info('-'*indent_level + '{0}({1}), {2} seconds'.format(
                      f.__name__, args[0].__class__.__name__, elapsed))
         return result

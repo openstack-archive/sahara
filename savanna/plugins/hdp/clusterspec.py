@@ -16,9 +16,8 @@
 from savanna.openstack.common import jsonutils as json
 from savanna.openstack.common import log as logging
 from savanna.plugins.general import exceptions as ex
+from savanna.plugins.hdp import services
 from savanna.plugins.hdp.versions import versionhandlerfactory as vhf
-
-import services
 
 
 LOG = logging.getLogger(__name__)
