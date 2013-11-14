@@ -1,0 +1,9 @@
+{
+    "url": "swift-internal://container/jar-example.jar",
+    "name": "jar-example.jar",
+    "description": "This is job binary",
+    "extra": {
+      "password": "swordfish",
+      "user": "admin"
+    }
+}
