@@ -18,7 +18,7 @@ import logging
 from oslo.config import cfg
 
 from savanna import context
-from savanna.utils.openstack import base
+from savanna.swift import utils as su
 from savanna.utils import xmlutils as x
 
 
@@ -42,7 +42,7 @@ def get_swift_configs():
     configs = x.load_hadoop_xml_defaults('swift/resources/conf-template.xml')
     for conf in configs:
         if conf['name'] == HADOOP_SWIFT_AUTH_URL:
-            conf['value'] = base.retrieve_auth_url() + "tokens/"
+            conf['value'] = su.retrieve_auth_url() + "tokens/"
         if conf['name'] == HADOOP_SWIFT_TENANT:
             conf['value'] = _retrieve_tenant()
 

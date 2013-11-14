@@ -13,7 +13,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import re
+
 from oslo.config import cfg
+
+from savanna import context
+from savanna.utils.openstack import base
 
 
 CONF = cfg.CONF
@@ -22,3 +27,21 @@ SWIFT_INTERNAL_PREFIX = "swift-internal://"
 
 #TODO(tmckay): support swift-external in a future version
 # SWIFT_EXTERNAL_PREFIX = "swift-external://"
+
+
+def _get_service_address(service_type):
+    ctx = context.current()
+    identity_url = base.url_for(ctx.service_catalog, service_type)
+    address_regexp = r"^\w+://(.+?)/"
+    identity_host = re.search(address_regexp, identity_url).group(1)
+    return identity_host
+
+
+def retrieve_auth_url():
+    """This function return auth url v2 api. Hadoop swift library doesn't
+    support keystone v3 api.
+    """
+    protocol = CONF.os_auth_protocol
+    host = _get_service_address('identity')
+
+    return "%s://%s/v2.0/" % (protocol, host)
