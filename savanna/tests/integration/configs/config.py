@@ -201,7 +201,7 @@ HDP_CONFIG_OPTS = [
                default='/usr/lib/hadoop',
                help='Directory where are located Hadoop jar files.'),
     cfg.StrOpt('HADOOP_LOG_DIRECTORY',
-               default='/hadoop/mapred/userlogs',
+               default='/mnt/hadoop/mapred/userlogs',
                help='Directory where is located log info about '
                     'completed jobs.'),
 
