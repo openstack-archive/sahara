@@ -290,8 +290,8 @@
                 {
                     "applicable_target": "HDFS",
                     "config_type": "string",
-                    "default_value": "TODO-DFS-NAME-DIR",
-                    "description": "Determines where on the local filesystem the DFS name node\n      should store the name table.  If this is a comma-delimited list\n      of directories then the name table is replicated in all of the\n      directories, for redundancy.",
+                    "default_value": "/mnt/hadoop/hdfs/namenode",
+                    "description": "Determines where on the local filesystem the DFS name node\n      should store the name table.  If this is a comma-delimited list\n      of directories then the name table is replicated in all of the\n      directories, for redundancy.   Note that this value will be changed by the runtime if cinder volumes are specified for then node group configured with the NAMENODE node process",
                     "is_optional": true,
                     "name": "dfs.name.dir",
                     "scope": "cluster"
@@ -335,8 +335,8 @@
                 {
                     "applicable_target": "HDFS",
                     "config_type": "string",
-                    "default_value": "TODO-DFS-DATA-DIR",
-                    "description": "Determines where on the local filesystem an DFS data node\n  should store its blocks.  If this is a comma-delimited\n  list of directories, then data will be stored in all named\n  directories, typically on different devices.\n  Directories that do not exist are ignored.",
+                    "default_value": "/mnt/hadoop/hdfs/data",
+                    "description": "Determines where on the local filesystem an DFS data node\n  should store its blocks.  If this is a comma-delimited\n  list of directories, then data will be stored in all named\n  directories, typically on different devices.\n  Directories that do not exist are ignored.  Note that this value will be changed by the runtime if cinder volumes are specified for node groups configured with the DATANODE node process",
                     "is_optional": true,
                     "name": "dfs.data.dir",
                     "scope": "cluster"
@@ -844,8 +844,8 @@
                 {
                     "applicable_target": "MAPREDUCE",
                     "config_type": "string",
-                    "default_value": "/hadoop/mapred",
-                    "description": " ",
+                    "default_value": "/mnt/hadoop/mapred",
+                    "description": "The local directory where MapReduce stores intermediate data files. May be a comma-separated list of directories on different devices in order to spread disk i/o. Directories that do not exist are ignored. Note that this value will be changed by the runtime if cinder volumes are specified for node groups configured with the TASKTRACKER node process",
                     "is_optional": true,
                     "name": "mapred.local.dir",
                     "scope": "cluster"

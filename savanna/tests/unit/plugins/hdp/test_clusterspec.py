@@ -47,7 +47,8 @@ class ClusterSpecTest(unittest2.TestCase):
                                   "SECONDARY_NAMENODE", "GANGLIA_SERVER",
                                   "GANGLIA_MONITOR", "NAGIOS_SERVER",
                                   "AMBARI_SERVER", "AMBARI_AGENT"])
-        node_group2 = TestNodeGroup('slave', [server2], ['TASKTRACKER'])
+        node_group2 = TestNodeGroup('slave', [server2], ['TASKTRACKER',
+                                                         'DATANODE'])
         cluster = base.TestCluster([node_group1, node_group2])
 
         cluster_config = cs.ClusterSpec(cluster_config_file)
@@ -221,15 +222,21 @@ class ClusterSpecTest(unittest2.TestCase):
                                     "MAPREDUCE_CLIENT", "OOZIE_CLIENT",
                                     "AMBARI_AGENT"])
 
+        user_input_config = TestUserInputConfig(
+            'core-site', 'cluster', 'fs.default.name')
+        user_input = ui(user_input_config, 'hdfs://nn_dif_host.novalocal:8020')
+
         cluster = base.TestCluster([master_ng, jt_ng, nn_ng, snn_ng, hive_ng,
                                     hive_ms_ng, hive_mysql_ng,
                                     hcat_ng, zk_ng, oozie_ng, slave_ng])
         cluster_config = cs.ClusterSpec(cluster_config_file)
-        cluster_config.create_operational_config(cluster, [])
+        cluster_config.create_operational_config(cluster, [user_input])
         config = cluster_config.configurations
 
+        # for this value, validating that user inputs override configured
+        # values, whether they are processed by runtime or not
         self.assertEqual(config['core-site']['fs.default.name'],
-                         'hdfs://nn_host.novalocal:8020')
+                         'hdfs://nn_dif_host.novalocal:8020')
 
         self.assertEqual(config['mapred-site']['mapred.job.tracker'],
                          'jt_host.novalocal:50300')
@@ -475,7 +482,7 @@ class ClusterSpecTest(unittest2.TestCase):
             'plugins/hdp/versions/1_3_2/resources/default-cluster.template')
 
         user_input_config = TestUserInputConfig(
-            'global', 'general', 'dfs_name_dir')
+            'global', 'general', 'fs_checkpoint_dir')
         user_input = ui(user_input_config, '/some/new/path')
 
         server1 = base.TestServer('host1', 'test-master', '11111', 3,
@@ -496,7 +503,7 @@ class ClusterSpecTest(unittest2.TestCase):
         cluster_config = cs.ClusterSpec(cluster_config_file)
         cluster_config.create_operational_config(cluster, [user_input])
         self.assertEqual('/some/new/path', cluster_config.configurations
-                         ['global']['dfs_name_dir'])
+                         ['global']['fs_checkpoint_dir'])
 
     def test_new_config_item_in_top_level_within_blueprint(self, patched):
         cluster_config_file = pkg.resource_string(
@@ -1355,6 +1362,7 @@ class TestNodeGroup:
         self.node_processes = node_processes
         self.count = count
         self.id = name
+        self.storage_paths = ['']
 
 
 class TestUserInputConfig:

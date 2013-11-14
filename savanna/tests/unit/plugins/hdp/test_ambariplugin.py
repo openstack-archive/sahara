@@ -240,7 +240,7 @@ class AmbariPluginTest(unittest2.TestCase):
             '222.11.1111')
 
         node_group = base.TestNodeGroup(
-            'ng1', [test_host], ["AMBARI_SERVER", "NAMENODE",
+            'ng1', [test_host], ["AMBARI_SERVER", "NAMENODE", "DATANODE",
                                  "JOBTRACKER", "TASKTRACKER"])
         cluster = base.TestCluster([node_group])
         cluster_config = cs.ClusterSpec(cluster_config_file)

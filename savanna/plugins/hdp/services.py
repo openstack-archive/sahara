@@ -69,6 +69,21 @@ class Service(object):
             for prop in props:
                 config[prop] = config[prop].replace(token, value)
 
+    def _get_common_paths(self, node_groups):
+        if len(node_groups) == 1:
+            paths = node_groups[0].storage_paths
+        else:
+            sets = [set(ng.storage_paths) for ng in node_groups]
+            paths = list(set.intersection(*sets))
+
+        if len(paths) > 1 and '/mnt' in paths:
+            paths.remove('/mnt')
+
+        return paths
+
+    def _generate_storage_path(self, storage_paths, path):
+        return ",".join([p + path for p in storage_paths])
+
 
 class HdfsService(Service):
     def __init__(self):
@@ -104,6 +119,26 @@ class HdfsService(Service):
         core_site_config = cluster_spec.configurations['core-site']
         for prop in self._get_swift_properties():
             core_site_config[prop['name']] = prop['value']
+
+        # process storage paths to accommodate ephemeral or cinder storage
+        nn_ng = cluster_spec.get_node_groups_containing_component(
+            'NAMENODE')[0]
+        dn_node_groups = cluster_spec.get_node_groups_containing_component(
+            'DATANODE')
+        common_paths = []
+        if dn_node_groups:
+            common_paths = self._get_common_paths(dn_node_groups)
+        hdfs_site_config = cluster_spec.configurations['hdfs-site']
+        global_config = cluster_spec.configurations['global']
+        hdfs_site_config['dfs.name.dir'] = self._generate_storage_path(
+            nn_ng.storage_paths, '/hadoop/hdfs/namenode')
+        global_config['dfs_name_dir'] = self._generate_storage_path(
+            nn_ng.storage_paths, '/hadoop/hdfs/namenode')
+        if common_paths:
+            hdfs_site_config['dfs.data.dir'] = self._generate_storage_path(
+                common_paths, '/hadoop/hdfs/data')
+            global_config['dfs_data_dir'] = self._generate_storage_path(
+                common_paths, '/hadoop/hdfs/data')
 
     def register_service_urls(self, cluster_spec, url_info):
         namenode_ip = cluster_spec.determine_component_hosts(
@@ -151,6 +186,20 @@ class MapReduceService(Service):
 
             self._replace_config_token(
                 cluster_spec, '%JT_HOST%', jt_hosts.pop().fqdn, props)
+
+        # process storage paths to accommodate ephemeral or cinder storage
+        # NOTE:  mapred.system.dir is an HDFS namespace path (not a filesystem
+        # path) so the default path should suffice
+        tt_node_groups = cluster_spec.get_node_groups_containing_component(
+            'TASKTRACKER')
+        if tt_node_groups:
+            mapred_site_config = cluster_spec.configurations['mapred-site']
+            global_config = cluster_spec.configurations['global']
+            common_paths = self._get_common_paths(tt_node_groups)
+            mapred_site_config['mapred.local.dir'] = \
+                self._generate_storage_path(common_paths, '/hadoop/mapred')
+            global_config['mapred_local_dir'] = self._generate_storage_path(
+                common_paths, '/hadoop/mapred')
 
     def register_service_urls(self, cluster_spec, url_info):
         jobtracker_ip = cluster_spec.determine_component_hosts(

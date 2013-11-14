@@ -65,11 +65,13 @@ class TestNodeGroup:
     def __init__(self, name, instances, node_processes, count=1):
         self.name = name
         self.instances = instances
-        for i in instances:
-            i.node_group = self
+        if instances:
+            for i in instances:
+                i.node_group = self
         self.node_processes = node_processes
         self.count = count
         self.id = name
+        self.storage_paths = []
 
 
 class TestUserInputConfig:
