@@ -75,7 +75,7 @@ class HDPGatingTest(map_reduce.MapReduceTest, swift.SwiftTest,
                 node_groups=[
                     dict(
                         name='master-node-jt-nn',
-                        flavor_id=self.common_config.FLAVOR_ID,
+                        flavor_id=self.flavor_id,
                         node_processes=[
                             'JOBTRACKER', 'NAMENODE', 'SECONDARY_NAMENODE',
                             'GANGLIA_SERVER', 'NAGIOS_SERVER',

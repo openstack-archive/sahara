@@ -143,7 +143,7 @@ class VanillaGatingTest(cluster_configs.ClusterConfigTest,
                 node_groups=[
                     dict(
                         name='master-node-jt-nn',
-                        flavor_id=self.common_config.FLAVOR_ID,
+                        flavor_id=self.flavor_id,
                         node_processes=['namenode', 'jobtracker'],
                         node_configs={
                             'HDFS': cluster_configs.NN_CONFIG,
@@ -152,7 +152,7 @@ class VanillaGatingTest(cluster_configs.ClusterConfigTest,
                         count=1),
                     dict(
                         name='master-node-sec-nn',
-                        flavor_id=self.common_config.FLAVOR_ID,
+                        flavor_id=self.flavor_id,
                         node_processes=['secondarynamenode', 'oozie'],
                         node_configs={
                             'JobFlow': cluster_configs.OOZIE_CONFIG

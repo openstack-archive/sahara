@@ -67,7 +67,7 @@ COMMON_CONFIG_OPTS = [
                help='Api version for Savanna.'),
 
     cfg.StrOpt('FLAVOR_ID',
-               default=2,
+               default=None,
                help='OpenStack flavor ID for image.'),
 
     cfg.IntOpt('CLUSTER_CREATION_TIMEOUT',
