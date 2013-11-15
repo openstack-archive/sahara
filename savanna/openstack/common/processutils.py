@@ -168,14 +168,13 @@ def execute(*cmd, **kwargs):
                 result = obj.communicate()
             obj.stdin.close()  # pylint: disable=E1101
             _returncode = obj.returncode  # pylint: disable=E1101
-            if _returncode:
-                LOG.log(loglevel, _('Result was %s') % _returncode)
-                if not ignore_exit_code and _returncode not in check_exit_code:
-                    (stdout, stderr) = result
-                    raise ProcessExecutionError(exit_code=_returncode,
-                                                stdout=stdout,
-                                                stderr=stderr,
-                                                cmd=' '.join(cmd))
+            LOG.log(loglevel, _('Result was %s') % _returncode)
+            if not ignore_exit_code and _returncode not in check_exit_code:
+                (stdout, stderr) = result
+                raise ProcessExecutionError(exit_code=_returncode,
+                                            stdout=stdout,
+                                            stderr=stderr,
+                                            cmd=' '.join(cmd))
             return result
         except ProcessExecutionError:
             if not attempts:
