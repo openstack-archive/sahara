@@ -17,6 +17,7 @@ import logging
 import socket
 import telnetlib
 import time
+import uuid
 
 import unittest2
 
@@ -88,11 +89,61 @@ class ITestCase(unittest2.TestCase):
 
         if not self.common_config.PATH_TO_SSH_KEY:
 
+            self.common_config.USER_KEYPAIR_ID += str(uuid.uuid4())[:8]
+
             self.private_key = self.nova.keypairs.create(
                 self.common_config.USER_KEYPAIR_ID).private_key
 
         else:
             self.private_key = open(self.common_config.PATH_TO_SSH_KEY).read()
+
+        images = self.nova.images.list()
+
+        self.vanilla_config.IMAGE_ID = None
+        self.hdp_config.IMAGE_ID = None
+
+        for image in images:
+
+            if image.metadata.get('_savanna_username') and \
+                    image.metadata.get('_savanna_tag_ci'):
+
+                if not self.vanilla_config.SKIP_ALL_TESTS_FOR_PLUGIN:
+
+                    if image.metadata.get('_savanna_tag_vanilla'):
+
+                        self.vanilla_config.IMAGE_ID = image.id
+                        self.vanilla_config.NODE_USERNAME = \
+                            image.metadata['_savanna_username']
+
+                if not self.hdp_config.SKIP_ALL_TESTS_FOR_PLUGIN:
+
+                    if image.metadata.get('_savanna_tag_hdp'):
+
+                        self.hdp_config.IMAGE_ID = image.id
+                        self.hdp_config.NODE_USERNAME = \
+                            image.metadata['_savanna_username']
+
+        if not self.hdp_config.SKIP_ALL_TESTS_FOR_PLUGIN and \
+                not self.hdp_config.IMAGE_ID:
+            self.fail("""
+            ***********************************************
+            Integration tests for HDP plugin is Enabled
+            but Image for this plugin not found.
+            Please check that the image is registered
+            and all necessary tags are added.
+            ***********************************************
+            """)
+
+        if not self.vanilla_config.SKIP_ALL_TESTS_FOR_PLUGIN and \
+                not self.vanilla_config.IMAGE_ID:
+            self.fail("""
+            ***********************************************
+            Integration tests for Vanilla plugin is Enabled
+            but Image for this plugin not found.
+            Please check that the image is registered
+            and all necessary tags are added.
+            ***********************************************
+            """)
 
 #-------------------------Methods for object creation--------------------------
 

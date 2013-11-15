@@ -121,15 +121,6 @@ VANILLA_CONFIG_OPTS = [
                default='vanilla',
                help='Name of plugin.'),
 
-    cfg.StrOpt('IMAGE_ID',
-               default='e9691262-e286-46f7-aea5-9f40461b5eea',
-               help='ID for image which is used for cluster creation.'),
-
-    cfg.StrOpt('NODE_USERNAME',
-               default='ubuntu',
-               help='Username which is used for connecting to cluster nodes '
-                    'via SSH.'),
-
     cfg.StrOpt('HADOOP_VERSION',
                default='1.2.1',
                help='Version of Hadoop.'),
@@ -181,15 +172,6 @@ HDP_CONFIG_OPTS = [
     cfg.StrOpt('PLUGIN_NAME',
                default='hdp',
                help='Name of plugin.'),
-
-    cfg.StrOpt('IMAGE_ID',
-               default='cd63f719-006e-4541-a523-1fed7b91fa8c',
-               help='ID for image which is used for cluster creation.'),
-
-    cfg.StrOpt('NODE_USERNAME',
-               default='root',
-               help='Username which is used for connecting to cluster nodes '
-                    'via SSH.'),
 
     cfg.StrOpt('HADOOP_VERSION',
                default='1.3.2',
