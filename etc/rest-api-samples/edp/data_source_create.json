@@ -1,0 +1,10 @@
+{
+    "description": "This is input",
+    "url": "swift://container.savanna/text",
+    "credentials": {
+        "password": "swordfish",
+        "user": "admin"
+    },
+    "type": "swift",
+    "name": "text"
+}
