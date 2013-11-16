@@ -152,7 +152,7 @@ class ConsumerBase(object):
         self.connect(session)
 
     def connect(self, session):
-        """Declare the reciever on connect."""
+        """Declare the receiver on connect."""
         self._declare_receiver(session)
 
     def reconnect(self, session):
@@ -395,7 +395,7 @@ class DirectPublisher(Publisher):
 class TopicPublisher(Publisher):
     """Publisher class for 'topic'."""
     def __init__(self, conf, session, topic):
-        """init a 'topic' publisher.
+        """Init a 'topic' publisher.
         """
         exchange_name = rpc_amqp.get_control_exchange(conf)
 
@@ -412,7 +412,7 @@ class TopicPublisher(Publisher):
 class FanoutPublisher(Publisher):
     """Publisher class for 'fanout'."""
     def __init__(self, conf, session, topic):
-        """init a 'fanout' publisher.
+        """Init a 'fanout' publisher.
         """
 
         if conf.qpid_topology_version == 1:
@@ -431,7 +431,7 @@ class FanoutPublisher(Publisher):
 class NotifyPublisher(Publisher):
     """Publisher class for notifications."""
     def __init__(self, conf, session, topic):
-        """init a 'topic' publisher.
+        """Init a 'topic' publisher.
         """
         exchange_name = rpc_amqp.get_control_exchange(conf)
         node_opts = {"durable": True}

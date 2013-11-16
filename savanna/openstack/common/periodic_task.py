@@ -17,6 +17,7 @@ import datetime
 import time
 
 from oslo.config import cfg
+import six
 
 from savanna.openstack.common.gettextutils import _  # noqa
 from savanna.openstack.common import log as logging
@@ -150,8 +151,8 @@ class _PeriodicTasksMeta(type):
                 cls._periodic_last_run[name] = task._periodic_last_run
 
 
+@six.add_metaclass(_PeriodicTasksMeta)
 class PeriodicTasks(object):
-    __metaclass__ = _PeriodicTasksMeta
 
     def run_periodic_tasks(self, context, raise_on_error=False):
         """Tasks to be run at a periodic interval."""

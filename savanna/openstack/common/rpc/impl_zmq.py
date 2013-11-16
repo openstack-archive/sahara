@@ -192,7 +192,7 @@ class ZmqSocket(object):
             # it would be much worse if some of the code calling this
             # were to fail. For now, lets log, and later evaluate
             # if we can safely raise here.
-            LOG.error("ZeroMQ socket could not be closed.")
+            LOG.error(_("ZeroMQ socket could not be closed."))
         self.sock = None
 
     def recv(self, **kwargs):

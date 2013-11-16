@@ -21,7 +21,6 @@ For more information about rpc API version numbers, see:
     rpc/dispatcher.py
 """
 
-
 from savanna.openstack.common import rpc
 from savanna.openstack.common.rpc import common as rpc_common
 from savanna.openstack.common.rpc import serializer as rpc_serializer
@@ -36,7 +35,7 @@ class RpcProxy(object):
     rpc API.
     """
 
-    # The default namespace, which can be overriden in a subclass.
+    # The default namespace, which can be overridden in a subclass.
     RPC_API_NAMESPACE = None
 
     def __init__(self, topic, default_version, version_cap=None,
