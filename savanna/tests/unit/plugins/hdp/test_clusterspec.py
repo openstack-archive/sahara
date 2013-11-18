@@ -19,7 +19,7 @@ import unittest2
 
 from savanna.plugins.general import exceptions as ex
 from savanna.plugins.hdp import clusterspec as cs
-from savanna.plugins.provisioning import UserInput as ui
+from savanna.plugins import provisioning
 import savanna.tests.unit.plugins.hdp.hdp_test_base as base
 from savanna import version
 
@@ -224,7 +224,8 @@ class ClusterSpecTest(unittest2.TestCase):
 
         user_input_config = TestUserInputConfig(
             'core-site', 'cluster', 'fs.default.name')
-        user_input = ui(user_input_config, 'hdfs://nn_dif_host.novalocal:8020')
+        user_input = provisioning.UserInput(
+            user_input_config, 'hdfs://nn_dif_host.novalocal:8020')
 
         cluster = base.TestCluster([master_ng, jt_ng, nn_ng, snn_ng, hive_ng,
                                     hive_ms_ng, hive_mysql_ng,
@@ -483,7 +484,8 @@ class ClusterSpecTest(unittest2.TestCase):
 
         user_input_config = TestUserInputConfig(
             'global', 'general', 'fs_checkpoint_dir')
-        user_input = ui(user_input_config, '/some/new/path')
+        user_input = provisioning.UserInput(user_input_config,
+                                            '/some/new/path')
 
         server1 = base.TestServer('host1', 'test-master', '11111', 3,
                                   '111.11.1111', '222.11.1111')
@@ -512,7 +514,7 @@ class ClusterSpecTest(unittest2.TestCase):
 
         user_input_config = TestUserInputConfig(
             'global', 'general', 'new_property')
-        user_input = ui(user_input_config, 'foo')
+        user_input = provisioning.UserInput(user_input_config, 'foo')
 
         server1 = base.TestServer('host1', 'test-master', '11111', 3,
                                   '111.11.1111', '222.11.1111')
@@ -540,7 +542,7 @@ class ClusterSpecTest(unittest2.TestCase):
 
         user_input_config = TestUserInputConfig('ambari-stack', 'AMBARI',
                                                 'ambari.admin.user')
-        user_input = ui(user_input_config, 'new-user')
+        user_input = provisioning.UserInput(user_input_config, 'new-user')
 
         server1 = base.TestServer('host1', 'test-master', '11111', 3,
                                   '111.11.1111', '222.11.1111')
@@ -571,7 +573,7 @@ class ClusterSpecTest(unittest2.TestCase):
 
         user_input_config = TestUserInputConfig('ambari-stack', 'AMBARI',
                                                 'ambari.admin.password')
-        user_input = ui(user_input_config, 'new-pwd')
+        user_input = provisioning.UserInput(user_input_config, 'new-pwd')
 
         server1 = base.TestServer('host1', 'test-master', '11111', 3,
                                   '111.11.1111', '222.11.1111')
@@ -604,8 +606,10 @@ class ClusterSpecTest(unittest2.TestCase):
                                                      'ambari.admin.user')
         pwd_user_input_config = TestUserInputConfig('ambari-stack', 'AMBARI',
                                                     'ambari.admin.password')
-        user_user_input = ui(user_user_input_config, 'new-admin_user')
-        pwd_user_input = ui(pwd_user_input_config, 'new-admin_pwd')
+        user_user_input = provisioning.UserInput(user_user_input_config,
+                                                 'new-admin_user')
+        pwd_user_input = provisioning.UserInput(pwd_user_input_config,
+                                                'new-admin_pwd')
 
         server1 = base.TestServer('host1', 'test-master', '11111', 3,
                                   '111.11.1111', '222.11.1111')

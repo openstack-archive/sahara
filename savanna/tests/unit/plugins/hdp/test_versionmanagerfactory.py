@@ -15,21 +15,20 @@
 
 import unittest2
 
-from savanna.plugins.hdp.versions.versionhandlerfactory import \
-    VersionHandlerFactory
+from savanna.plugins.hdp.versions import versionhandlerfactory
 
 
 class VersionManagerFactoryTest(unittest2.TestCase):
 
     def test_get_versions(self):
-        factory = VersionHandlerFactory.get_instance()
+        factory = versionhandlerfactory.VersionHandlerFactory.get_instance()
         versions = factory.get_versions()
 
         self.assertEqual(1, len(versions))
         self.assertIn('1.3.2', versions)
 
     def test_get_version_handlers(self):
-        factory = VersionHandlerFactory.get_instance()
+        factory = versionhandlerfactory.VersionHandlerFactory.get_instance()
         versions = factory.get_versions()
         for version in versions:
             handler = factory.get_version_handler(version)

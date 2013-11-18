@@ -13,9 +13,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import savanna.plugins.hdp.services as s
-from savanna.tests.unit.plugins.hdp.hdp_test_base import TestNodeGroup
 import unittest2
+
+import savanna.plugins.hdp.services as s
+from savanna.tests.unit.plugins.hdp import hdp_test_base
 
 
 class ServicesTest(unittest2.TestCase):
@@ -88,15 +89,15 @@ class ServicesTest(unittest2.TestCase):
 
     def test_get_storage_paths(self):
         service = s.create_service('AMBARI')
-        ng1 = TestNodeGroup(None, None, None)
+        ng1 = hdp_test_base.TestNodeGroup(None, None, None)
         ng1.storage_paths = ['/mnt', '/volume/disk1']
-        ng2 = TestNodeGroup(None, None, None)
+        ng2 = hdp_test_base.TestNodeGroup(None, None, None)
         ng2.storage_paths = ['/mnt']
 
         paths = service._get_common_paths([ng1, ng2])
         self.assertEqual(['/mnt'], paths)
 
-        ng3 = TestNodeGroup(None, None, None)
+        ng3 = hdp_test_base.TestNodeGroup(None, None, None)
         ng1.storage_paths = ['/mnt', '/volume/disk1', '/volume/disk2']
         ng2.storage_paths = ['/mnt']
         ng3.storage_paths = ['/mnt', '/volume/disk1']
