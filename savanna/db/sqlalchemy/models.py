@@ -13,6 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import six
 import sqlalchemy as sa
 from sqlalchemy.orm import relationship
 
@@ -24,7 +25,7 @@ from savanna.openstack.common import uuidutils
 ## Helpers
 
 def _generate_unicode_uuid():
-    return unicode(uuidutils.generate_uuid())
+    return six.text_type(uuidutils.generate_uuid())
 
 
 def _id_column():
