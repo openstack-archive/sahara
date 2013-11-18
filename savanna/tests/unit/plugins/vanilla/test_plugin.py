@@ -13,6 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import mock
 import unittest2
 
 from savanna.plugins.general import exceptions as ex
@@ -163,3 +164,68 @@ class VanillaPluginTest(unittest2.TestCase):
         cfg_to_compare.update(m_h.get_hive_mysql_configs(
             "metastore_host", "passwd"))
         self.assertDictEqual(cfg, cfg_to_compare)
+
+    @mock.patch('savanna.conductor.api.LocalApi.cluster_get')
+    def test_get_config_value(self, cond_get_cluster):
+        class FakeNG(object):
+            def __init__(self, name, flavor, processes, count, instances=None,
+                         configuration=None, cluster_id=None):
+                self.name = name
+                self.flavor = flavor
+                self.node_processes = processes
+                self.count = count
+                self.instances = instances or []
+                self.configuration = configuration
+                self.storage_paths = ['/mnt']
+                self.cluster_id = cluster_id
+
+        class FakeCluster(object):
+            def __init__(self, name, tenant, plugin, version, node_groups):
+                self.name = name
+                self.tenant = tenant
+                self.plugin = plugin
+                self.version = version
+                self.node_groups = node_groups
+
+        class FakeInst(object):
+            def __init__(self, inst_name, inst_id):
+                self.instance_name = inst_name
+                self.hostname = inst_name
+                self.instance_id = inst_id
+
+        ms_inst = FakeInst('inst1', 'id1')
+        wk_inst = FakeInst('inst2', 'id2')
+
+        conf1 = {
+            "MapReduce": {},
+            "HDFS": {}
+        }
+
+        conf2 = {
+            "MapReduce": {},
+            "HDFS": {
+                "spam": "eggs"
+            }
+        }
+
+        ng1 = FakeNG('master', 'fl1', ['namenode', 'jobtracker'], 1,
+                     [ms_inst], conf1, 'id1')
+        ng2 = FakeNG('worker', 'fl1', ['datanode', 'tasktracker'], 1,
+                     [wk_inst], conf2, 'id1')
+        cluster = FakeCluster('cl1', 'ten1', 'vanilla', '1.2.1', [ng1, ng2])
+
+        cond_get_cluster.return_value = cluster
+
+        self.assertEqual(
+            c_h.get_config_value('HDFS', 'fs.default.name', cluster),
+            'hdfs://inst1:8020')
+        self.assertEqual(
+            c_h.get_config_value('HDFS', 'dfs.data.dir', node_group=ng1),
+            '/mnt/lib/hadoop/hdfs/datanode')
+        self.assertEqual(
+            c_h.get_config_value('HDFS', 'spam', node_group=ng2), 'eggs')
+        self.assertEqual(
+            c_h.get_config_value('HDFS', 'dfs.safemode.extension'), 30000)
+        self.assertRaises(RuntimeError,
+                          c_h.get_config_value,
+                          'MapReduce', 'spam', cluster, ng1)

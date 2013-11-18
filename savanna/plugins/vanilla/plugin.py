@@ -166,8 +166,6 @@ class VanillaProvider(p.ProvisioningPluginBase):
         self._set_cluster_info(cluster)
 
     def _extract_configs_to_extra(self, cluster):
-        nn = utils.get_namenode(cluster)
-        jt = utils.get_jobtracker(cluster)
         oozie = utils.get_oozie(cluster)
         hive = utils.get_hiveserver(cluster)
 
@@ -179,18 +177,12 @@ class VanillaProvider(p.ProvisioningPluginBase):
         for ng in cluster.node_groups:
             extra[ng.id] = {
                 'xml': c_helper.generate_xml_configs(
-                    ng.configuration,
-                    ng.storage_paths,
-                    nn.hostname,
-                    jt.hostname if jt else None,
-                    oozie.hostname if oozie else None,
-                    hive.hostname if hive else None,
-                    extra['hive_mysql_passwd'] if hive else None),
+                    cluster, ng, extra['hive_mysql_passwd'] if hive else None),
                 'setup_script': c_helper.generate_setup_script(
                     ng.storage_paths,
                     c_helper.extract_environment_confs(ng.configuration),
                     append_oozie=(
-                        oozie is not None and oozie.node_group.id == ng.id)
+                        oozie and oozie.node_group.id == ng.id)
                 )
             }
 
