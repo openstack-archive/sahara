@@ -52,23 +52,6 @@ def import_db_only_in_conductor(logical_line, filename):
                   "savanna/conductor/*")
 
 
-def hacking_no_assert_equals(logical_line, tokens):
-    r"""assertEquals() is deprecated, use assertEqual instead.
-
-    Copied from https://review.openstack.org/#/c/35962/
-
-    Okay: self.assertEqual(0, 0)
-    S362: self.assertEquals(0, 0)
-    """
-
-    for token_type, text, start_index, _, _ in tokens:
-
-        if token_type == tokenize.NAME and text == "assertEquals":
-            yield (
-                start_index[1],
-                "S362: assertEquals is deprecated, use assertEqual")
-
-
 def hacking_no_author_attr(logical_line, tokens):
     """__author__ should not be used.
 
@@ -82,4 +65,3 @@ def hacking_no_author_attr(logical_line, tokens):
 
 def factory(register):
     register(import_db_only_in_conductor)
-    register(hacking_no_assert_equals)
