@@ -405,6 +405,8 @@ class VanillaProvider(p.ProvisioningPluginBase):
             info['MapReduce'] = {
                 'Web UI': 'http://%s:%s' % (jt.management_ip, port)
             }
+            #TODO(aignatov) change from hardcode value
+            info['MapReduce']['JobTracker'] = '%s:8021' % jt.hostname
 
         if nn:
             address = c_helper.get_config_value(
@@ -413,6 +415,8 @@ class VanillaProvider(p.ProvisioningPluginBase):
             info['HDFS'] = {
                 'Web UI': 'http://%s:%s' % (nn.management_ip, port)
             }
+            #TODO(aignatov) change from hardcode value
+            info['HDFS']['NameNode'] = 'hdfs://%s:8020' % nn.hostname
 
         if oozie:
             info['JobFlow'] = {

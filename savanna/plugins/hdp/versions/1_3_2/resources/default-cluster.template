@@ -392,7 +392,7 @@
         { "name" : "hadoop.proxyuser.hive.hosts", "value" : "%HIVE_HOST%" },
         { "name" : "hadoop.proxyuser.hcat.groups", "value" : "users" },
         { "name" : "hadoop.proxyuser.hcat.hosts", "value" : "%WEBHCAT_HOST%" },
-        { "name" : "hadoop.proxyuser.oozie.groups", "value" : "users" },
+        { "name" : "hadoop.proxyuser.oozie.groups", "value" : "hadoop" },
         { "name" : "hadoop.proxyuser.oozie.hosts", "value" : "%OOZIE_HOST%" }
       ]
     },
@@ -584,7 +584,7 @@
         { "name" : "oozie.authentication.kerberos.name.rules" , "value" : "DEFAULT" },
         { "name" : "oozie.authentication.type" , "value" : "simple" },
         { "name" : "oozie.service.ActionService.executor.ext.classes" , "value" : "org.apache.oozie.action.email.EmailActionExecutor,\norg.apache.oozie.action.hadoop.HiveActionExecutor,\norg.apache.oozie.action.hadoop.ShellActionExecutor,\norg.apache.oozie.action.hadoop.SqoopActionExecutor,\norg.apache.oozie.action.hadoop.DistcpActionExecutor" },
-        { "name" : "oozie.service.AuthorizationService.authorization.enabled" , "value" : "true" },
+        { "name" : "oozie.service.AuthorizationService.authorization.enabled" , "value" : "false" },
         { "name" : "oozie.service.CallableQueueService.callable.concurrency" , "value" : "3" },
         { "name" : "oozie.service.CallableQueueService.queue.size" , "value" : "1000" },
         { "name" : "oozie.service.CallableQueueService.threads" , "value" : "10" },

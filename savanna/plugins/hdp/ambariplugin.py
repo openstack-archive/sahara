@@ -86,6 +86,9 @@ class AmbariPlugin(p.ProvisioningPluginBase):
 
         return node_processes
 
+    def get_hdfs_user(self):
+        return 'hdfs'
+
     def convert(self, config, plugin_name, version, template_name,
                 cluster_template_create):
         handler = self.version_factory.get_version_handler(version)
