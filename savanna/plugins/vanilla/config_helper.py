@@ -61,7 +61,7 @@ ENV_CONFS = {
         'Data Node Heap Size': 'HADOOP_DATANODE_OPTS=\\"-Xmx%sm\\"'
     },
     "JobFlow": {
-        'Oozie Heap Size': 'CATALINA_OPTS=\\"-Xmx%sm\\"'
+        'Oozie Heap Size': 'CATALINA_OPTS -Xmx%sm'
     }
 }
 

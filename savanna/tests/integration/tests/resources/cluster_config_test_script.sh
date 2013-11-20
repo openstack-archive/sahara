@@ -113,9 +113,7 @@ check_oozie_heap_size() {
 
     echo -e "************************* OOZIE HEAP SIZE ************************\n" >> $log
 
-    # TODO(ylobankov): uncomment when bug #1243638 will be fixed
-    #check_heap_size "oozie"
-    echo -e "If during cluster creation we will specify heap size for oozie process then it will not be applied on cluster. Oozie process will have default heap size.\n" >> $log
+    check_heap_size "oozie"
 }
 
 check_oozie_notification_url_connection_timeout() {

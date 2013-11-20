@@ -90,7 +90,7 @@ class VanillaPluginTest(unittest2.TestCase):
         self.assertListEqual(c_h.extract_environment_confs(env_configs),
                              ['HADOOP_NAMENODE_OPTS=\\"-Xmx3000m\\"',
                               'HADOOP_DATANODE_OPTS=\\"-Xmx4000m\\"',
-                              'CATALINA_OPTS=\\"-Xmx4000m\\"',
+                              'CATALINA_OPTS -Xmx4000m',
                               'HADOOP_JOBTRACKER_OPTS=\\"-Xmx1000m\\"',
                               'HADOOP_TASKTRACKER_OPTS=\\"-Xmx2000m\\"'])
 
