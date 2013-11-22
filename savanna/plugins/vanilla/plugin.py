@@ -13,12 +13,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import uuid
+
 from oslo.config import cfg
+import six
 
 from savanna import conductor
 from savanna import context
 from savanna.openstack.common import log as logging
-from savanna.openstack.common import uuidutils
 from savanna.plugins.general import exceptions as ex
 from savanna.plugins.general import utils
 from savanna.plugins import provisioning as p
@@ -174,7 +176,7 @@ class VanillaProvider(p.ProvisioningPluginBase):
         extra = dict()
 
         if hive:
-            extra['hive_mysql_passwd'] = uuidutils.generate_uuid()
+            extra['hive_mysql_passwd'] = six.text_type(uuid.uuid4())
 
         for ng in cluster.node_groups:
             extra[ng.id] = {

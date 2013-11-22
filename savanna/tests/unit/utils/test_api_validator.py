@@ -13,10 +13,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import uuid
+
 import jsonschema
+import six
 import unittest2
 
-from savanna.openstack.common import uuidutils
 from savanna.utils import api_validator
 
 
@@ -149,10 +151,10 @@ class ApiValidatorTest(unittest2.TestCase):
             "format": "uuid",
         }
 
-        uuid = uuidutils.generate_uuid()
+        id = six.text_type(uuid.uuid4())
 
-        self._validate_success(schema, uuid)
-        self._validate_failure(schema, uuid.replace("-", ""))
+        self._validate_success(schema, id)
+        self._validate_failure(schema, id.replace("-", ""))
 
     def test_validate_hostname(self):
         schema = {
@@ -235,7 +237,7 @@ class ApiValidatorTest(unittest2.TestCase):
         self._validate_success(schema, 1)
         self._validate_success(schema, "0")
         self._validate_success(schema, "1")
-        self._validate_success(schema, uuidutils.generate_uuid())
+        self._validate_success(schema, six.text_type(uuid.uuid4()))
         self._validate_failure(schema, True)
         self._validate_failure(schema, 0.1)
         self._validate_failure(schema, "0.1")
