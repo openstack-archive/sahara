@@ -242,7 +242,7 @@ Group of instances.
 +----------------------+--------+--------------------------------------------------------+
 | volumes_mount_prefix | string | Prefix added to mount path of each volume.             |
 +----------------------+--------+--------------------------------------------------------+
-| floatig_ip_pool      | string | Floating IP Pool name. All instances in the Node Group |
+| floating_ip_pool     | string | Floating IP Pool name. All instances in the Node Group |
 |                      |        | will have Floating IPs assigned from this pool.        |
 +----------------------+--------+--------------------------------------------------------+
 | count                | int    | Number of instances in this Node Group.                |
