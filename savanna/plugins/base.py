@@ -14,13 +14,11 @@
 # limitations under the License.
 
 import abc
-import inspect
 
 from oslo.config import cfg
 import six
+from stevedore import enabled
 
-from savanna import config
-from savanna.openstack.common import importutils
 from savanna.openstack.common import log as logging
 from savanna.utils import resources
 
@@ -29,7 +27,7 @@ LOG = logging.getLogger(__name__)
 
 opts = [
     cfg.ListOpt('plugins',
-                default=[],
+                default=['vanilla', 'hdp'],
                 help='List of plugins to be loaded. Savanna preserves the '
                      'order of the list when returning it.'),
 ]
@@ -86,61 +84,31 @@ class PluginInterface(resources.BaseResource):
 class PluginManager(object):
     def __init__(self):
         self.plugins = {}
-        self._load_all_plugins()
+        self._load_cluster_plugins()
 
-    def _load_all_plugins(self):
-        LOG.debug("List of requested plugins: %s" % CONF.plugins)
+    def _load_cluster_plugins(self):
+        config_plugins = CONF.plugins
+        extension_manager = enabled.EnabledExtensionManager(
+            check_func=lambda ext: ext.name in config_plugins,
+            namespace='savanna.cluster.plugins',
+            invoke_on_load=True
+        )
 
-        if len(CONF.plugins) > len(set(CONF.plugins)):
-            raise RuntimeError("plugins config contains non-unique entries")
+        for ext in extension_manager.extensions:
+            if ext.name in self.plugins:
+                # TODO(slukjanov): replace with specific exception
+                raise RuntimeError("Plugin with name '%s' already exists.")
+            ext.obj.name = ext.name
+            self.plugins[ext.name] = ext.obj
+            LOG.info("Plugin '%s' loaded (%s)"
+                     % (ext.name, ext.entry_point_target))
 
-        # register required 'plugin_factory' property for each plugin
-        for plugin in CONF.plugins:
-            opts = [
-                cfg.StrOpt('plugin_class', required=True),
-            ]
-            CONF.register_opts(opts, group='plugin:%s' % plugin)
-
-        config.parse_configs()
-
-        # register plugin-specific configs
-        for plugin_name in CONF.plugins:
-            self.plugins[plugin_name] = self._get_plugin_instance(plugin_name)
-
-        titles = []
-        for plugin_name in CONF.plugins:
-            plugin = self.plugins[plugin_name]
-
-            title = plugin.get_title()
-            if title in titles:
-                # replace with specific error
-                raise RuntimeError(
-                    "Title of plugin '%s' isn't unique" % plugin_name)
-            titles.append(title)
-
-            LOG.info("Plugin '%s' defined and loaded" % plugin_name)
-
-    def _get_plugin_instance(self, plugin_name):
-        plugin_path = CONF['plugin:%s' % plugin_name].plugin_class
-        module_path, klass = [s.strip() for s in plugin_path.split(':')]
-        if not module_path or not klass:
-            # TODO(slukjanov): replace with specific error
-            raise RuntimeError("Incorrect plugin_class: '%s'" %
-                               plugin_path)
-        module = importutils.try_import(module_path)
-        if not hasattr(module, klass):
-            # TODO(slukjanov): replace with specific error
-            raise RuntimeError("Class not found: '%s'" % plugin_path)
-
-        plugin_class = getattr(module, klass)
-        if not inspect.isclass(plugin_class):
-            # TODO(slukjanov): replace with specific error
-            raise RuntimeError("'%s' isn't a class" % plugin_path)
-
-        plugin = plugin_class()
-        plugin.name = plugin_name
-
-        return plugin
+        if len(self.plugins) < len(config_plugins):
+            loaded_plugins = set(six.iterkeys(self.plugins))
+            requested_plugins = set(config_plugins)
+            # TODO(slukjanov): replace with specific exception
+            raise RuntimeError("Plugins couldn't be loaded: %s"
+                               % ", ".join(requested_plugins - loaded_plugins))
 
     def get_plugins(self, base):
         return [
