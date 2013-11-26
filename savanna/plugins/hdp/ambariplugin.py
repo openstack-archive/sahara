@@ -246,9 +246,6 @@ class AmbariPlugin(p.ProvisioningPluginBase):
     def get_title(self):
         return 'Hortonworks Data Platform'
 
-    def setup(self, conf):
-        super(AmbariPlugin, self).setup(conf)
-
     def get_description(self):
         return 'The Hortonworks OpenStack plugin works with project ' \
                'Savanna to automate the deployment of the Hortonworks data' \

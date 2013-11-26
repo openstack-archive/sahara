@@ -44,12 +44,6 @@ class VanillaProvider(p.ProvisioningPluginBase):
             "Hive": ["hiveserver"]
         }
 
-    def get_plugin_opts(self):
-        return []
-
-    def setup(self, conf):
-        self.conf = conf
-
     def get_title(self):
         return "Vanilla Apache Hadoop"
 
