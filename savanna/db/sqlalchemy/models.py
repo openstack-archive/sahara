@@ -13,19 +13,20 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import uuid
+
 import six
 import sqlalchemy as sa
 from sqlalchemy.orm import relationship
 
 from savanna.db.sqlalchemy import model_base as mb
 from savanna.db.sqlalchemy import types as st
-from savanna.openstack.common import uuidutils
 
 
 ## Helpers
 
 def _generate_unicode_uuid():
-    return six.text_type(uuidutils.generate_uuid())
+    return six.text_type(uuid.uuid4())
 
 
 def _id_column():

@@ -14,13 +14,14 @@
 # limitations under the License.
 
 import datetime
+import uuid
 
 from oslo.config import cfg
+import six
 
 from savanna import conductor as c
 from savanna import context
 from savanna.openstack.common import log
-from savanna.openstack.common import uuidutils
 from savanna.plugins import base as plugin_base
 from savanna.plugins.general import utils as u
 from savanna.service.edp.binary_retrievers import dispatch
@@ -175,7 +176,7 @@ def upload_workflow_file(where, job_dir, wf_xml, hdfs_user):
 def create_workflow_dir(where, job, hdfs_user):
     constructed_dir = '/user/%s/' % hdfs_user
     constructed_dir = _add_postfix(constructed_dir)
-    constructed_dir += '%s/%s' % (job.name, uuidutils.generate_uuid())
+    constructed_dir += '%s/%s' % (job.name, six.text_type(uuid.uuid4()))
     with remote.get_remote(where) as r:
         h.create_dir(r, constructed_dir, hdfs_user)
 
