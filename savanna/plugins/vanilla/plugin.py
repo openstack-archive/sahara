@@ -286,9 +286,9 @@ class VanillaProvider(p.ProvisioningPluginBase):
             'authorized_keys': cluster.management_public_key
         }
 
-        key_cmd = 'sudo mkdir -p /home/hadoop/.ssh/; ' \
-                  'sudo mv id_rsa authorized_keys /home/hadoop/.ssh ; ' \
-                  'sudo chown -R hadoop:hadoop /home/hadoop/.ssh; ' \
+        key_cmd = 'sudo mkdir -p /home/hadoop/.ssh/ && ' \
+                  'sudo mv id_rsa authorized_keys /home/hadoop/.ssh && ' \
+                  'sudo chown -R hadoop:hadoop /home/hadoop/.ssh && ' \
                   'sudo chmod 600 /home/hadoop/.ssh/{id_rsa,authorized_keys}'
 
         with remote.get_remote(instance) as r:
