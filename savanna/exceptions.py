@@ -55,6 +55,8 @@ class NameAlreadyExistsException(SavannaException):
 
 
 class InvalidCredentials(SavannaException):
+    message = "Invalid credentials"
+
     def __init__(self, message=None):
         self.code = "INVALID_CREDENTIALS"
         if message:
