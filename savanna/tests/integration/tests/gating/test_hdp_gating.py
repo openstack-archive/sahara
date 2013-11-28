@@ -35,6 +35,14 @@ class HDPGatingTest(map_reduce.MapReduceTest, swift.SwiftTest,
                       'All tests for HDP plugin were skipped')
     def test_hdp_plugin_gating(self):
 
+        floating_ip_pool = None
+        internal_neutron_net_id = None
+
+        if self.common_config.NEUTRON_ENABLED:
+
+            floating_ip_pool = self.get_floating_ip_pool()
+            internal_neutron_net_id = self.get_internal_neutron_network_id()
+
         node_group_template_id_list = []
 
 #-------------------------------CLUSTER CREATION-------------------------------
@@ -51,7 +59,8 @@ class HDPGatingTest(map_reduce.MapReduceTest, swift.SwiftTest,
                 volume_size=0,
                 node_processes=['TASKTRACKER', 'DATANODE', 'HDFS_CLIENT',
                                 'MAPREDUCE_CLIENT'],
-                node_configs={}
+                node_configs={},
+                floating_ip_pool=floating_ip_pool
             )
             node_group_template_id_list.append(node_group_template_tt_dn_id)
 
@@ -81,12 +90,14 @@ class HDPGatingTest(map_reduce.MapReduceTest, swift.SwiftTest,
                             'GANGLIA_SERVER', 'NAGIOS_SERVER',
                             'AMBARI_SERVER'],
                         node_configs={},
+                        floating_ip_pool=floating_ip_pool,
                         count=1),
                     dict(
                         name='worker-node-tt-dn',
                         node_group_template_id=node_group_template_tt_dn_id,
                         count=3)
-                ]
+                ],
+                net_id=internal_neutron_net_id
             )
 
         except Exception as e:

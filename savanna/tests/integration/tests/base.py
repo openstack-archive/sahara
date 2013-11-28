@@ -21,6 +21,7 @@ import uuid
 
 import unittest2
 
+from neutronclient.v2_0 import client as neutron_client
 from novaclient.v1_1 import client as nova_client
 import savannaclient.api.client as savanna_client
 from swiftclient import client as swift_client
@@ -81,11 +82,17 @@ class ITestCase(unittest2.TestCase):
                 self.common_config.SAVANNA_PORT,
                 self.common_config.SAVANNA_API_VERSION))
 
-        self.nova = nova_client.Client(self.common_config.OS_USERNAME,
-                                       self.common_config.OS_PASSWORD,
-                                       self.common_config.OS_TENANT_NAME,
-                                       self.common_config.OS_AUTH_URL,
-                                       service_type='compute')
+        self.nova = nova_client.Client(
+            username=self.common_config.OS_USERNAME,
+            api_key=self.common_config.OS_PASSWORD,
+            project_id=self.common_config.OS_TENANT_NAME,
+            auth_url=self.common_config.OS_AUTH_URL)
+
+        self.neutron = neutron_client.Client(
+            username=self.common_config.OS_USERNAME,
+            password=self.common_config.OS_PASSWORD,
+            tenant_name=self.common_config.OS_TENANT_NAME,
+            auth_url=self.common_config.OS_AUTH_URL)
 
         if not self.common_config.FLAVOR_ID:
 
@@ -97,6 +104,7 @@ class ITestCase(unittest2.TestCase):
                 ephemeral=10).id
 
         else:
+
             self.flavor_id = self.common_config.FLAVOR_ID
 
         if not self.common_config.PATH_TO_SSH_KEY:
@@ -107,6 +115,7 @@ class ITestCase(unittest2.TestCase):
                 self.common_config.USER_KEYPAIR_ID).private_key
 
         else:
+
             self.private_key = open(self.common_config.PATH_TO_SSH_KEY).read()
 
         images = self.nova.images.list()
@@ -185,6 +194,14 @@ class ITestCase(unittest2.TestCase):
         if not hadoop_version:
 
             hadoop_version = plugin_config.HADOOP_VERSION
+
+        for node_group in node_groups:
+
+            for key, value in node_group.items():
+
+                if value is None:
+
+                    del node_group[key]
 
         data = self.savanna.cluster_templates.create(
             name, plugin_config.PLUGIN_NAME, hadoop_version, description,
@@ -506,7 +523,7 @@ class ITestCase(unittest2.TestCase):
 
         if parameter_list:
 
-            for parameter, value in parameter_list.iteritems():
+            for parameter, value in parameter_list.items():
 
                 script = script.replace(
                     '%s=""' % parameter, '%s=%s' % (parameter, value))
@@ -538,6 +555,77 @@ class ITestCase(unittest2.TestCase):
             self.close_ssh_connection()
 
 #--------------------------------Helper methods--------------------------------
+
+    def get_floating_ip_pool(self):
+
+        floating_ip_pool_list = self.nova.floating_ip_pools.list()
+
+        # If self.common_config.FLOATING_IP_POOL is None then return
+        # the first pool of list
+        if not self.common_config.FLOATING_IP_POOL:
+
+            return floating_ip_pool_list[0].name
+
+        # If self.common_config.FLOATING_IP_POOL is not None then find
+        # corresponding pool and return it. If pool not found then handle error
+        else:
+
+            pool_name = self.common_config.FLOATING_IP_POOL
+            if pool_name in [pool.name for pool in floating_ip_pool_list]:
+
+                return pool_name
+
+            self.fail(
+                '\n\n*********************************************************'
+                '*********************************************\n\n'
+                'Floating IP pool "%s" not found in pool list. '
+                'Please, make sure you specified right floating IP pool.'
+                '\n\n*********************************************************'
+                '*********************************************\n\n'
+                % self.common_config.FLOATING_IP_POOL
+            )
+
+    def get_internal_neutron_network_id(self):
+
+        # If self.common_config.INTERNAL_NEUTRON_NETWORK is None then return
+        # ID of the first network of list
+        if not self.common_config.INTERNAL_NEUTRON_NETWORK:
+
+            return self.neutron.list_networks()['networks'][0]['id']
+
+        # If self.common_config.INTERNAL_NEUTRON_NETWORK is not None then find
+        # corresponding network and return its ID. If network not found then
+        # handle error
+        else:
+
+            try:
+
+                internal_neutron_net = self.neutron.list_networks(
+                    name=self.common_config.INTERNAL_NEUTRON_NETWORK)
+                internal_neutron_net_id = internal_neutron_net[
+                    'networks'][0]['id']
+
+                return internal_neutron_net_id
+
+            except IndexError:
+
+                with excutils.save_and_reraise_exception():
+
+                    print(
+                        '\n***************************************************'
+                        '*****************************************************'
+                        '**********'
+                    )
+                    print(
+                        '\nInternal Neutron network "%s" not found in network '
+                        'list. Please, make sure you specified right network '
+                        'name.' % self.common_config.INTERNAL_NEUTRON_NETWORK
+                    )
+                    print(
+                        '\n***************************************************'
+                        '*****************************************************'
+                        '**********'
+                    )
 
     def delete_objects(self, cluster_id=None,
                        cluster_template_id=None,

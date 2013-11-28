@@ -110,7 +110,21 @@ COMMON_CONFIG_OPTS = [
                     'the error "Private key file is encrypted". Please, make '
                     'sure you specified right path to key. If this parameter '
                     'is not specified, keypair (private and public SSH keys) '
-                    'will be generated, using nova_client.')
+                    'will be generated, using nova_client.'),
+
+    cfg.StrOpt('FLOATING_IP_POOL',
+               default=None,
+               help='Pool for floating IPs.'),
+
+    cfg.BoolOpt('NEUTRON_ENABLED',
+                default=False,
+                help='If Savanna is using Nova management network '
+                     'then you should leave default value of this flag. '
+                     'If Savanna is using Neutron management network '
+                     'then you should set this flag to True.'),
+    cfg.StrOpt('INTERNAL_NEUTRON_NETWORK',
+               default=None,
+               help='Name for internal Neutron network.')
 ]
 
 

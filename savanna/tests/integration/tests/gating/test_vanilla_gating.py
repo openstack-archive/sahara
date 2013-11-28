@@ -41,6 +41,14 @@ class VanillaGatingTest(cluster_configs.ClusterConfigTest,
                       'All tests for Vanilla plugin were skipped')
     def test_vanilla_plugin_gating(self):
 
+        floating_ip_pool = None
+        internal_neutron_net_id = None
+
+        if self.common_config.NEUTRON_ENABLED:
+
+            floating_ip_pool = self.get_floating_ip_pool()
+            internal_neutron_net_id = self.get_internal_neutron_network_id()
+
         node_group_template_id_list = []
 
 #-------------------------------CLUSTER CREATION-------------------------------
@@ -59,7 +67,8 @@ class VanillaGatingTest(cluster_configs.ClusterConfigTest,
                 node_configs={
                     'HDFS': cluster_configs.DN_CONFIG,
                     'MapReduce': cluster_configs.TT_CONFIG
-                }
+                },
+                floating_ip_pool=floating_ip_pool
             )
             node_group_template_id_list.append(node_group_template_tt_dn_id)
 
@@ -84,7 +93,8 @@ class VanillaGatingTest(cluster_configs.ClusterConfigTest,
                 node_processes=['tasktracker'],
                 node_configs={
                     'MapReduce': cluster_configs.TT_CONFIG
-                }
+                },
+                floating_ip_pool=floating_ip_pool
             )
             node_group_template_id_list.append(node_group_template_tt_id)
 
@@ -112,7 +122,8 @@ class VanillaGatingTest(cluster_configs.ClusterConfigTest,
                 node_processes=['datanode'],
                 node_configs={
                     'HDFS': cluster_configs.DN_CONFIG
-                }
+                },
+                floating_ip_pool=floating_ip_pool
             )
             node_group_template_id_list.append(node_group_template_dn_id)
 
@@ -149,6 +160,7 @@ class VanillaGatingTest(cluster_configs.ClusterConfigTest,
                             'HDFS': cluster_configs.NN_CONFIG,
                             'MapReduce': cluster_configs.JT_CONFIG
                         },
+                        floating_ip_pool=floating_ip_pool,
                         count=1),
                     dict(
                         name='master-node-sec-nn',
@@ -157,6 +169,7 @@ class VanillaGatingTest(cluster_configs.ClusterConfigTest,
                         node_configs={
                             'JobFlow': cluster_configs.OOZIE_CONFIG
                         },
+                        floating_ip_pool=floating_ip_pool,
                         count=1),
                     dict(
                         name='worker-node-tt-dn',
@@ -170,7 +183,8 @@ class VanillaGatingTest(cluster_configs.ClusterConfigTest,
                         name='worker-node-tt',
                         node_group_template_id=node_group_template_tt_id,
                         count=1)
-                ]
+                ],
+                net_id=internal_neutron_net_id
             )
 
         except Exception as e:
