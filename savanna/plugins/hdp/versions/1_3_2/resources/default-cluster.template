@@ -147,6 +147,18 @@
       ]
     },
     {
+      "name" : "SQOOP",
+      "components" : [
+        {
+          "name" : "SQOOP",
+          "type" : "CLIENT",
+          "cardinality" : "1+"
+        }
+      ],
+      "configurations" : [
+      ]
+    },
+    {
       "name" : "GANGLIA",
       "components" : [
         {

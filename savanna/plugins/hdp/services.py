@@ -557,3 +557,20 @@ class AmbariService(Service):
         admin_user = next(user for user in self.users
                           if user.name == self.admin_user_name)
         admin_user.password = user_input.value
+
+
+class SqoopService(Service):
+    def __init__(self):
+        super(SqoopService, self).__init__(SqoopService.get_service_id())
+
+    @classmethod
+    def get_service_id(cls):
+        return 'SQOOP'
+
+    def finalize_ng_components(self, cluster_spec):
+        sqoop_ngs = cluster_spec.get_node_groups_containing_component('SQOOP')
+        for ng in sqoop_ngs:
+            if 'HDFS_CLIENT' not in ng.components:
+                ng.components.append('HDFS_CLIENT')
+            if 'MAPREDUCE_CLIENT' not in ng.components:
+                ng.components.append('MAPREDUCE_CLIENT')

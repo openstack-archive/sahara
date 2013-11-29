@@ -13,6 +13,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import mock
+
 import unittest2
 
 import savanna.plugins.hdp.services as s
@@ -86,6 +88,41 @@ class ServicesTest(unittest2.TestCase):
         self.assertEqual(expected_configs,
                          expected_configs & service.configurations)
         self.assertTrue(service.is_mandatory())
+
+    @mock.patch("savanna.utils.openstack.nova.get_instance_info",
+                hdp_test_base.get_instance_info)
+    @mock.patch(
+        'savanna.plugins.hdp.services.HdfsService._get_swift_properties',
+        return_value=[])
+    def test_create_sqoop_service(self, patched):
+        service = s.create_service('SQOOP')
+        self.assertEqual('SQOOP', service.name)
+        expected_configs = set(['global', 'core-site'])
+        self.assertEqual(expected_configs,
+                         expected_configs & service.configurations)
+        self.assertFalse(service.is_mandatory())
+
+        # ensure that hdfs and mr clients are added implicitly
+        master_host = hdp_test_base.TestServer(
+            'master.novalocal', 'master', '11111', 3,
+            '111.11.1111', '222.11.1111')
+        master_ng = hdp_test_base.TestNodeGroup(
+            'master', [master_host], ["NAMENODE", "JOBTRACKER",
+            "SECONDARY_NAMENODE", "TASKTRACKER", "DATANODE", "AMBARI_SERVER"])
+        sqoop_host = hdp_test_base.TestServer(
+            'sqoop.novalocal', 'sqoop', '11111', 3,
+            '111.11.1111', '222.11.1111')
+        sqoop_ng = hdp_test_base.TestNodeGroup(
+            'sqoop', [sqoop_host], ["SQOOP"])
+        cluster = hdp_test_base.TestCluster([master_ng, sqoop_ng])
+
+        cluster_spec = hdp_test_base.create_clusterspec()
+        cluster_spec.create_operational_config(cluster, [])
+
+        components = cluster_spec.get_node_groups_containing_component(
+            'SQOOP')[0].components
+        self.assertIn('HDFS_CLIENT', components)
+        self.assertIn('MAPREDUCE_CLIENT', components)
 
     def test_get_storage_paths(self):
         service = s.create_service('AMBARI')

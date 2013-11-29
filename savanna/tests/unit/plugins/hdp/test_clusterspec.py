@@ -1179,7 +1179,7 @@ class ClusterSpecTest(unittest2.TestCase):
             found_services.append(name)
             self.service_validators[name](service)
 
-        self.assertEqual(11, len(found_services))
+        self.assertEqual(12, len(found_services))
         self.assertIn('HDFS', found_services)
         self.assertIn('MAPREDUCE', found_services)
         self.assertIn('GANGLIA', found_services)
@@ -1191,6 +1191,7 @@ class ClusterSpecTest(unittest2.TestCase):
         self.assertIn('ZOOKEEPER', found_services)
         self.assertIn('WEBHCAT', found_services)
         self.assertIn('OOZIE', found_services)
+        self.assertIn('SQOOP', found_services)
 
     def _assert_hdfs(self, service):
         self.assertEqual('HDFS', service.name)
@@ -1327,6 +1328,11 @@ class ClusterSpecTest(unittest2.TestCase):
         self._assert_component('OOZIE_CLIENT', 'CLIENT', "1+",
                                found_components['OOZIE_CLIENT'])
 
+    def _assert_sqoop(self, service):
+        self.assertEqual('SQOOP', service.name)
+        self.assertEqual(1, len(service.components))
+        self.assertEqual('SQOOP', service.components[0].name)
+
     def _assert_component(self, name, comp_type, cardinality, component):
         self.assertEqual(name, component.name)
         self.assertEqual(comp_type, component.type)
@@ -1355,6 +1361,7 @@ class ClusterSpecTest(unittest2.TestCase):
         self.service_validators['ZOOKEEPER'] = self._assert_zookeeper
         self.service_validators['WEBHCAT'] = self._assert_webhcat
         self.service_validators['OOZIE'] = self._assert_oozie
+        self.service_validators['SQOOP'] = self._assert_sqoop
 
 
 class TestNodeGroup:
