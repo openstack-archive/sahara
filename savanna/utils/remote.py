@@ -46,7 +46,6 @@ from savanna.openstack.common import excutils
 from savanna.utils import crypto
 from savanna.utils.openstack import base
 from savanna.utils.openstack import neutron
-from savanna.utils.openstack import nova
 from savanna.utils import procutils
 
 import time
@@ -68,8 +67,12 @@ remote_opts = [
 CONF = cfg.CONF
 CONF.register_opts(remote_opts)
 
+
 _ssh = None
 _sessions = {}
+
+
+INFRA = None
 
 
 def _get_proxy(neutron_info):
@@ -227,10 +230,14 @@ def _execute_on_vm_interactive(cmd, matcher):
 _global_remote_semaphore = None
 
 
-def setup_remote():
+def setup_remote(engine):
     global _global_remote_semaphore
+    global INFRA
+
     _global_remote_semaphore = semaphore.Semaphore(
         CONF.global_remote_threshold)
+
+    INFRA = engine
 
 
 def _acquire_remote_semaphore():
@@ -246,7 +253,7 @@ def _release_remote_semaphore():
 class InstanceInteropHelper(object):
     def __init__(self, instance):
         self.instance = instance
-        self.username = nova.get_node_group_image_username(
+        self.username = INFRA.get_node_group_image_username(
             self.instance.node_group)
 
     def __enter__(self):

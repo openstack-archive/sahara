@@ -49,7 +49,7 @@ class TestClusterRollBack(models_test_base.DbTestCase):
         nova.servers.list = mock.MagicMock(return_value=[_mock_instance(1)])
 
         with self.assertRaises(MockException):
-            instances.create_cluster(cluster)
+            instances._create_cluster(cluster)
 
         ctx = context.ctx()
         cluster_obj = conductor.cluster_get_all(ctx)[0]
@@ -180,7 +180,7 @@ class IpManagementTest(models_test_base.DbTestCase):
         instances._create_instances(cluster)
 
         cluster = conductor.cluster_get(ctx, cluster)
-        instances_list = instances.get_instances(cluster)
+        instances_list = instances._get_instances(cluster)
 
         instances._assign_floating_ips(instances_list)
 

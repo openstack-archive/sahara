@@ -31,12 +31,14 @@
 # dhcp_domain config parameter (string value)
 #node_domain=novalocal
 
-# Use Neutron or Nova Network (boolean value)
+# Use Neutron Networking (False indicates the use of Nova
+# networking) (boolean value)
 #use_neutron=false
 
-# Use network namespaces for communication (only valid to use in conjunction
-# with use_neutron=True)
+# Use network namespaces for communication (only valid to use
+# in conjunction with use_neutron=True) (boolean value)
 #use_namespaces=false
+
 
 #
 # Options defined in savanna.main
@@ -116,7 +118,7 @@
 #logging_exception_prefix=%(asctime)s.%(msecs)03d %(process)d TRACE %(name)s %(instance)s
 
 # list of logger=LEVEL pairs (list value)
-#default_log_levels=amqplib=WARN,qpid.messaging=INFO,stevedore=INFO,eventlet.wsgi.server=WARN,sqlalchemy=WARN,boto=WARN,suds=INFO,keystone=INFO,paramiko=WARN,requests=WARN
+#default_log_levels=amqplib=WARN,qpid.messaging=INFO,stevedore=INFO,eventlet.wsgi.server=WARN,sqlalchemy=WARN,boto=WARN,suds=INFO,keystone=INFO,paramiko=WARN,requests=WARN,iso8601=WARN
 
 # publish error events (boolean value)
 #publish_errors=false
@@ -124,12 +126,12 @@
 # make deprecations fatal (boolean value)
 #fatal_deprecations=false
 
-# If this option is specified, the logging configuration file
-# specified is used and overrides any other logging options
-# specified. Please see the Python logging module
-# documentation for details on logging configuration files.
-# (string value)
-#log_config=<None>
+# The name of logging configuration file. It does not disable
+# existing loggers, but just appends specified logging
+# configuration to any other existing logging options. Please
+# see the Python logging module documentation for details on
+# logging configuration files. (string value)
+#log_config_append=<None>
 
 # DEPRECATED. A logging.Formatter log message format string
 # which may use any of the available logging.LogRecord
@@ -164,6 +166,15 @@
 # List of plugins to be loaded. Savanna preserves the order of
 # the list when returning it. (list value)
 #plugins=vanilla,hdp
+
+
+#
+# Options defined in savanna.service.api
+#
+
+# An engine which will be used to provisioninfrastructure for
+# Hadoop cluster. (string value)
+#infrastructure_engine=savanna
 
 
 #
@@ -319,4 +330,4 @@
 #pool_timeout=<None>
 
 
-# Total option count: 59
+# Total option count: 61

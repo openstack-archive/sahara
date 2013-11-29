@@ -34,7 +34,27 @@ CONF = cfg.CONF
 LOG = logging.getLogger(__name__)
 
 
-def create_cluster(cluster):
+class SavannaInfrastructureEngine(object):
+    def create_cluster(self, cluster):
+        _create_cluster(cluster)
+
+    def scale_cluster(self, cluster, node_group_id_map):
+        return _scale_cluster(cluster, node_group_id_map)
+
+    def shutdown_cluster(self, cluster):
+        _shutdown_cluster(cluster)
+
+    def get_instances(self, cluster, instances_ids=None):
+        return _get_instances(cluster, instances_ids)
+
+    def clean_cluster_from_empty_ng(self, cluster):
+        _clean_cluster_from_empty_ng(cluster)
+
+    def get_node_group_image_username(self, node_group):
+        return _get_node_group_image_username(node_group)
+
+
+def _create_cluster(cluster):
     ctx = context.ctx()
     try:
         # create all instances
@@ -46,7 +66,7 @@ def create_cluster(cluster):
         cluster = conductor.cluster_update(ctx, cluster, {"status": "Waiting"})
         LOG.info(g.format_cluster_status(cluster))
 
-        instances = get_instances(cluster)
+        instances = _get_instances(cluster)
 
         _await_active(cluster, instances)
 
@@ -75,7 +95,7 @@ def create_cluster(cluster):
             _rollback_cluster_creation(cluster, ex)
 
 
-def get_instances(cluster, instances_ids=None):
+def _get_instances(cluster, instances_ids=None):
     inst_map = {}
     for node_group in cluster.node_groups:
         for instance in node_group.instances:
@@ -87,7 +107,7 @@ def get_instances(cluster, instances_ids=None):
         return [v for v in six.itervalues(inst_map)]
 
 
-def scale_cluster(cluster, node_group_id_map):
+def _scale_cluster(cluster, node_group_id_map):
     ctx = context.ctx()
 
     instance_ids = []
@@ -95,9 +115,10 @@ def scale_cluster(cluster, node_group_id_map):
         instance_ids = _scale_cluster_instances(cluster, node_group_id_map)
 
         cluster = conductor.cluster_get(ctx, cluster)
-        cluster = clean_cluster_from_empty_ng(cluster)
+        _clean_cluster_from_empty_ng(cluster)
 
-        instances = get_instances(cluster, instance_ids)
+        cluster = conductor.cluster_get(ctx, cluster)
+        instances = _get_instances(cluster, instance_ids)
 
         _await_active(cluster, instances)
 
@@ -107,19 +128,19 @@ def scale_cluster(cluster, node_group_id_map):
 
         cluster = conductor.cluster_get(ctx, cluster)
 
-        volumes.attach_to_instances(get_instances(cluster, instance_ids))
+        volumes.attach_to_instances(_get_instances(cluster, instance_ids))
 
     except Exception as ex:
         LOG.warn("Can't scale cluster '%s' (reason: %s)", cluster.name, ex)
         with excutils.save_and_reraise_exception():
             cluster = conductor.cluster_get(ctx, cluster)
             _rollback_cluster_scaling(cluster,
-                                      get_instances(cluster, instance_ids),
+                                      _get_instances(cluster, instance_ids),
                                       ex)
             instance_ids = []
 
             cluster = conductor.cluster_get(ctx, cluster)
-            clean_cluster_from_empty_ng(cluster)
+            _clean_cluster_from_empty_ng(cluster)
             if cluster.status == 'Decommissioning':
                 cluster = conductor.cluster_update(ctx, cluster,
                                                    {"status": "Error"})
@@ -259,12 +280,14 @@ def _generate_user_data_script(node_group):
 echo "%(public_key)s" >> %(user_home)s/.ssh/authorized_keys
 echo "%(private_key)s" > %(user_home)s/.ssh/id_rsa
 """
-    cluster = node_group.cluster
-    if nova.get_node_group_image_username(node_group) == "root":
+
+    username = _get_node_group_image_username(node_group)
+    if username == "root":
         user_home = "/root/"
     else:
-        user_home = "/home/%s/" % nova.get_node_group_image_username(
-            node_group)
+        user_home = "/home/%s/" % username
+
+    cluster = node_group.cluster
 
     return script_template % {
         "public_key": cluster.management_public_key,
@@ -307,7 +330,7 @@ def _await_networks(cluster, instances):
 
     ctx = context.ctx()
     cluster = conductor.cluster_get(ctx, instances[0].node_group.cluster)
-    instances = get_instances(cluster, ips_assigned)
+    instances = _get_instances(cluster, ips_assigned)
 
     with context.ThreadGroup() as tg:
         for instance in instances:
@@ -409,7 +432,7 @@ def _rollback_cluster_creation(cluster, ex):
     """Shutdown all instances and update cluster status."""
     LOG.info("Cluster '%s' creation rollback (reason: %s)", cluster.name, ex)
 
-    shutdown_cluster(cluster)
+    _shutdown_cluster(cluster)
 
 
 def _rollback_cluster_scaling(cluster, instances, ex):
@@ -449,7 +472,7 @@ def _shutdown_instance(instance):
     conductor.instance_remove(ctx, instance)
 
 
-def shutdown_cluster(cluster):
+def _shutdown_cluster(cluster):
     """Shutdown specified cluster and all related resources."""
     try:
         volumes.detach(cluster)
@@ -458,10 +481,13 @@ def shutdown_cluster(cluster):
         _clean_job_executions(cluster)
 
 
-def clean_cluster_from_empty_ng(cluster):
+def _clean_cluster_from_empty_ng(cluster):
     ctx = context.ctx()
     for ng in cluster.node_groups:
         if ng.count == 0:
             conductor.node_group_remove(ctx, ng)
 
-    return conductor.cluster_get(ctx, cluster)
+
+def _get_node_group_image_username(node_group):
+    image_id = node_group.get_image_id()
+    return nova.client().images.get(image_id).username

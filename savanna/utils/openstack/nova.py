@@ -67,8 +67,3 @@ def get_user_keypair(cluster):
 
 def get_instance_info(instance):
     return client().servers.get(instance.instance_id)
-
-
-def get_node_group_image_username(node_group):
-    image_id = node_group.get_image_id()
-    return client().images.get(image_id).username

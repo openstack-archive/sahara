@@ -24,7 +24,6 @@ from savanna.openstack.common import log as logging
 from savanna.plugins import base as plugin_base
 from savanna.plugins import provisioning
 from savanna.service.edp import job_manager as jm
-from savanna.service import instances as i
 from savanna.service import trusts
 from savanna.utils import general as g
 from savanna.utils.openstack import nova
@@ -33,6 +32,15 @@ from savanna.utils.openstack import nova
 conductor = c.API
 CONF = cfg.CONF
 LOG = logging.getLogger(__name__)
+
+
+INFRA = None
+
+
+def setup_service_api(engine):
+    global INFRA
+
+    INFRA = engine
 
 
 ## Cluster ops
@@ -69,7 +77,7 @@ def scale_cluster(id, data):
         plugin.validate_scaling(cluster, to_be_enlarged, additional)
     except Exception:
         with excutils.save_and_reraise_exception():
-            i.clean_cluster_from_empty_ng(cluster)
+            INFRA.clean_cluster_from_empty_ng(cluster)
             cluster = conductor.cluster_update(ctx, cluster,
                                                {"status": "Active"})
             LOG.info(g.format_cluster_status(cluster))
@@ -141,7 +149,7 @@ def _provision_scaled_cluster(id, node_group_id_map):
                                        {"status": "Scaling"})
     LOG.info(g.format_cluster_status(cluster))
 
-    instances = i.scale_cluster(cluster, node_group_id_map)
+    instances = INFRA.scale_cluster(cluster, node_group_id_map)
 
     # Setting up new nodes with the plugin
 
@@ -150,7 +158,8 @@ def _provision_scaled_cluster(id, node_group_id_map):
                                            {"status": "Configuring"})
         LOG.info(g.format_cluster_status(cluster))
         try:
-            plugin.scale_cluster(cluster, i.get_instances(cluster, instances))
+            instances = INFRA.get_instances(cluster, instances)
+            plugin.scale_cluster(cluster, instances)
         except Exception as ex:
             LOG.exception("Can't scale cluster '%s' (reason: %s)",
                           cluster.name, ex)
@@ -176,7 +185,7 @@ def _provision_cluster(cluster_id):
 
     # creating instances and configuring them
     cluster = conductor.cluster_get(ctx, cluster_id)
-    i.create_cluster(cluster)
+    INFRA.create_cluster(cluster)
 
     # configure cluster
     cluster = conductor.cluster_update(ctx, cluster, {"status": "Configuring"})
@@ -220,7 +229,7 @@ def terminate_cluster(id):
 
     plugin = plugin_base.PLUGINS.get_plugin(cluster.plugin_name)
     plugin.on_terminate_cluster(cluster)
-    i.shutdown_cluster(cluster)
+    INFRA.shutdown_cluster(cluster)
     if CONF.use_identity_api_v3:
         trusts.delete_trust(cluster)
     conductor.cluster_destroy(ctx, cluster)

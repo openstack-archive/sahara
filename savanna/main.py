@@ -18,6 +18,7 @@ import flask
 from keystoneclient.middleware import auth_token
 from oslo.config import cfg
 import six
+import stevedore
 from werkzeug import exceptions as werkzeug_exceptions
 
 from savanna.api import v10 as api_v10
@@ -28,6 +29,7 @@ from savanna.middleware import auth_valid
 from savanna.middleware import log_exchange
 from savanna.openstack.common import log
 from savanna.plugins import base as plugins_base
+from savanna.service import api as service_api
 from savanna.service import periodic
 from savanna.utils import api as api_utils
 from savanna.utils import patches
@@ -64,7 +66,11 @@ opts = [
                help='Password of the admin user'),
     cfg.StrOpt('os_admin_tenant_name',
                default='admin',
-               help='Name of tenant where the user is admin')
+               help='Name of tenant where the user is admin'),
+    cfg.StrOpt('infrastructure_engine',
+               default='savanna',
+               help='An engine which will be used to provision '
+                    'infrastructure for Hadoop cluster.')
 ]
 
 CONF = cfg.CONF
@@ -100,7 +106,10 @@ def make_app():
 
     plugins_base.setup_plugins()
     periodic.setup(app)
-    remote.setup_remote()
+
+    engine = _get_infrastructure_engine()
+    remote.setup_remote(engine)
+    service_api.setup_service_api(engine)
 
     def make_json_error(ex):
         status_code = (ex.code
@@ -137,3 +146,20 @@ def make_app():
     )(app.wsgi_app)
 
     return app
+
+
+def _get_infrastructure_engine():
+    """That should import and return one of
+    savanna.service.instances*.py modules
+    """
+
+    LOG.info("Loading '%s' infrastructure engine" %
+             CONF.infrastructure_engine)
+
+    extension_manager = stevedore.DriverManager(
+        namespace='savanna.infrastructure.engine',
+        name=CONF.infrastructure_engine,
+        invoke_on_load=True
+    )
+
+    return extension_manager.driver

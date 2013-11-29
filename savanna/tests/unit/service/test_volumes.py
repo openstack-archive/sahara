@@ -24,29 +24,17 @@ from savanna.tests.unit import base as models_test_base
 
 
 class TestAttachVolume(models_test_base.DbTestCase):
-    @mock.patch('savanna.utils.remote.BulkInstanceInteropHelper.close')
-    @mock.patch('savanna.utils.remote.InstanceInteropHelper._get_conn_params')
-    @mock.patch('savanna.utils.procutils.start_subprocess')
-    @mock.patch('savanna.utils.procutils.run_in_subprocess')
-    @mock.patch('savanna.utils.remote._acquire_remote_semaphore')
-    @mock.patch('savanna.utils.remote._release_remote_semaphore')
-    @mock.patch('savanna.utils.openstack.nova.get_node_group_image_username')
-    @mock.patch(
-        'savanna.utils.remote.BulkInstanceInteropHelper.execute_command')
-    def test_mount_volume(self, p_ex_cmd, p_get_username,
-                          _acq, _rel, run_in_sub, start_sub, get_conn_params,
-                          p_close):
+    @mock.patch('savanna.service.instances._get_node_group_image_username')
+    def test_mount_volume(self, p_get_username):
         p_get_username.return_value = 'root'
 
-        instance = r.InstanceResource({'instance_id': '123454321',
-                                       'node_group': {}})
+        instance = self._get_instance()
+        execute_com = instance.remote.execute_command
 
-        p_ex_cmd.return_value = (0, None)
         self.assertIsNone(volumes._mount_volume(instance, '123', '456'))
-        self.assertEqual(p_ex_cmd.call_count, 3)
-        p_ex_cmd.reset_mock()
+        self.assertEqual(execute_com.call_count, 3)
 
-        p_ex_cmd.side_effect = ex.RemoteCommandException('cmd')
+        execute_com.side_effect = ex.RemoteCommandException('cmd')
         self.assertRaises(ex.RemoteCommandException, volumes._mount_volume,
                           instance, '123', '456')
 
@@ -71,26 +59,28 @@ class TestAttachVolume(models_test_base.DbTestCase):
         p_delete.side_effect = RuntimeError
         self.assertRaises(RuntimeError, volumes.detach, cluster)
 
-    @mock.patch('savanna.utils.openstack.nova.get_node_group_image_username')
+    @mock.patch('savanna.service.instances._get_node_group_image_username')
     @mock.patch('savanna.utils.remote.InstanceInteropHelper.execute_command')
     def test_get_free_device_path(self, p_ex_cmd, p_get_username):
         p_get_username.return_value = 'root'
 
-        instance = r.InstanceResource({'instance_id': '123454321',
-                                       'node_group': {}})
+        instance = self._get_instance()
+        execute_com = instance.remote.execute_command
 
         stdout = """major minor  #blocks  name
 
    8        0  488386584 vda
    8        1     102400 vda1"""
-        p_ex_cmd.return_value = (0, stdout)
+
+        execute_com.return_value = (0, stdout)
         self.assertEqual(volumes._get_free_device_path(instance), '/dev/vdb')
 
         stdout = """major minor  #blocks  name
 
    8        0  488386584 xvda
    8        1     102400 xvda1"""
-        p_ex_cmd.return_value = (0, stdout)
+
+        execute_com.return_value = (0, stdout)
         self.assertEqual(volumes._get_free_device_path(instance), '/dev/xvdb')
 
         stdout = "major minor  #blocks  name\n"
@@ -98,13 +88,13 @@ class TestAttachVolume(models_test_base.DbTestCase):
             line = "   8        0  488386584 vd" + chr(ord('a') + idx) + '\n'
             stdout += line
 
-        p_ex_cmd.return_value = (0, stdout)
-        self.assertRaises(RuntimeError, volumes._get_free_device_path,
-                          instance)
+        execute_com.return_value = (0, stdout)
+        with self.assertRaises(RuntimeError):
+            volumes._get_free_device_path(instance)
 
-        p_ex_cmd.side_effect = ex.RemoteCommandException('cmd')
-        self.assertRaises(ex.RemoteCommandException,
-                          volumes._get_free_device_path, instance)
+        execute_com.side_effect = ex.RemoteCommandException('')
+        with self.assertRaises(ex.RemoteCommandException):
+            volumes._get_free_device_path(instance)
 
     @mock.patch('savanna.service.volumes._mount_volume')
     @mock.patch('savanna.service.volumes._await_attach_volume')
@@ -158,3 +148,9 @@ class TestAttachVolume(models_test_base.DbTestCase):
         self.assertIsNone(volumes._await_attach_volume(instance, '/dev/vdb'))
         self.assertRaises(RuntimeError, volumes._await_attach_volume,
                           instance, '/dev/vdc')
+
+    def _get_instance(self):
+        inst_remote = mock.MagicMock()
+        inst_remote.execute_command.return_value = 0
+        inst_remote.__enter__.return_value = inst_remote
+        return mock.MagicMock(remote=inst_remote)
