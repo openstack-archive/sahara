@@ -29,6 +29,8 @@ OOZIE_CORE_DEFAULT = [
         'value': 'hadoop'
     }]
 
+OOZIE_HEAPSIZE_DEFAULT = "CATALINA_OPTS -Xmx1024m"
+
 
 def get_oozie_required_xml_configs():
     """Following configs differ from default configs in oozie-default.xml."""
@@ -53,10 +55,8 @@ def get_oozie_required_xml_configs():
 
 
 def append_oozie_setup(setup_script, env_configs):
-    setup_script.append('echo -n > /tmp/oozie-env.sh')
     for line in env_configs:
         if 'CATALINA_OPT' in line:
-            setup_script.append('echo "%s" >> /tmp/oozie-env.sh' % line)
-    setup_script.append(
-        "cat /opt/oozie/conf/oozie-env.sh >> /tmp/oozie-env.sh")
-    setup_script.append("cp /tmp/oozie-env.sh /opt/oozie/conf/oozie-env.sh")
+            setup_script.append('sed -i "s,%s,%s," '
+                                '/opt/oozie/conf/oozie-env.sh'
+                                % (OOZIE_HEAPSIZE_DEFAULT, line))
