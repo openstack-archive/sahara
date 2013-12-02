@@ -107,8 +107,6 @@ class PluginManager(object):
         for plugin_name in CONF.plugins:
             self.plugins[plugin_name] = self._get_plugin_instance(plugin_name)
 
-        config.parse_configs()
-
         titles = []
         for plugin_name in CONF.plugins:
             plugin = self.plugins[plugin_name]
@@ -141,9 +139,6 @@ class PluginManager(object):
 
         plugin = plugin_class()
         plugin.name = plugin_name
-
-        CONF.register_opts(plugin.get_plugin_opts(),
-                           group='plugin:%s' % plugin_name)
 
         return plugin
 
