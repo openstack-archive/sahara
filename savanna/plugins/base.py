@@ -57,28 +57,6 @@ class PluginInterface(resources.BaseResource):
 
     name = 'plugin_interface'
 
-    @required_with_default
-    def get_plugin_opts(self):
-        """Plugin can expose some options that should be specified in conf file
-
-        For example:
-
-            def get_plugin_opts(self):
-            return [
-                cfg.StrOpt('mandatory-conf', required=True),
-                cfg.StrOpt('optional_conf', default="42"),
-            ]
-        """
-        return []
-
-    @required_with_default
-    def setup(self, conf):
-        """Plugin initialization
-
-        :param conf: plugin-specific configurations
-        """
-        pass
-
     @required
     def get_title(self):
         """Plugin title
@@ -134,7 +112,6 @@ class PluginManager(object):
         titles = []
         for plugin_name in CONF.plugins:
             plugin = self.plugins[plugin_name]
-            plugin.setup(CONF['plugin:%s' % plugin_name])
 
             title = plugin.get_title()
             if title in titles:
