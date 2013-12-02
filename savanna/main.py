@@ -17,6 +17,7 @@ import eventlet
 import flask
 from keystoneclient.middleware import auth_token
 from oslo.config import cfg
+import six
 from werkzeug import exceptions as werkzeug_exceptions
 
 from savanna.api import v10 as api_v10
@@ -112,7 +113,7 @@ def make_app():
                                  'error_message': description},
                                 status=status_code)
 
-    for code in werkzeug_exceptions.default_exceptions.iterkeys():
+    for code in six.iterkeys(werkzeug_exceptions.default_exceptions):
         app.error_handler_spec[None][code] = make_json_error
 
     if CONF.debug and not CONF.log_exchange:

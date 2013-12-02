@@ -38,6 +38,7 @@ import logging
 from oslo.config import cfg
 import paramiko
 import requests
+import six
 
 from savanna import context
 from savanna import exceptions as ex
@@ -412,4 +413,4 @@ class BulkInstanceInteropHelper(InstanceInteropHelper):
 
 class HashableDict(dict):
     def __hash__(self):
-        return hash((frozenset(self), frozenset(self.itervalues())))
+        return hash((frozenset(self), frozenset(six.itervalues(self))))
