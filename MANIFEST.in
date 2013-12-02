@@ -16,6 +16,7 @@ include savanna/plugins/hdp/versions/1_3_2/resources/*.template
 include savanna/plugins/hdp/versions/1_3_2/resources/*.json
 include savanna/plugins/hdp/versions/2_0/resources/*.template
 include savanna/plugins/hdp/versions/2_0/resources/*.json
+include savanna/resources/*.heat
 include savanna/service/edp/resources/*.xml
 include savanna/swift/resources/*.xml
 include savanna/tests/unit/resources/*.xml

@@ -60,8 +60,7 @@ class TestAttachVolume(models_test_base.DbTestCase):
         self.assertRaises(RuntimeError, volumes.detach, cluster)
 
     @mock.patch('savanna.service.instances._get_node_group_image_username')
-    @mock.patch('savanna.utils.remote.InstanceInteropHelper.execute_command')
-    def test_get_free_device_path(self, p_ex_cmd, p_get_username):
+    def test_get_free_device_path(self, p_get_username):
         p_get_username.return_value = 'root'
 
         instance = self._get_instance()
