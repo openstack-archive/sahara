@@ -13,10 +13,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import savanna.openstack.common.exception as ex
 
-
-class SavannaException(ex.Error):
+class SavannaException(Exception):
     """Base Exception for the project
 
     To correctly use this class, inherit from it and define
