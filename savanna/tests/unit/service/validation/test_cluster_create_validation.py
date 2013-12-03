@@ -202,7 +202,7 @@ class TestClusterCreateFlavorValidation(base.DbTestCase):
         nova_p = mock.patch("savanna.utils.openstack.nova.client")
         nova = nova_p.start()
         self.patchers.append(nova_p)
-        nova().flavors.get.side_effect = u._get_flavor
+        nova().flavors.list.side_effect = u._get_flavors_list
         api.plugin_base.setup_plugins()
 
     def tearDown(self):

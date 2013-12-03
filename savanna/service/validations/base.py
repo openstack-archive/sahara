@@ -122,9 +122,8 @@ def check_node_group_basic_fields(plugin_name, hadoop_version, ng,
 
 
 def check_flavor_exists(flavor_id):
-    try:
-        nova.client().flavors.get(flavor_id)
-    except nova_ex.NotFound:
+    flavor_list = nova.client().flavors.list()
+    if flavor_id not in [flavor.id for flavor in flavor_list]:
         raise ex.InvalidException("Requested flavor '%s' not found"
                                   % flavor_id)
 
