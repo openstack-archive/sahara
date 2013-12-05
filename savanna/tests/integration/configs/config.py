@@ -135,6 +135,30 @@ VANILLA_CONFIG_OPTS = [
                default='vanilla',
                help='Name of plugin.'),
 
+    cfg.StrOpt('IMAGE_ID',
+               default=None,
+               help='ID for image which is used for cluster creation. Also '
+                    'you can specify image name or tag of image instead of '
+                    'image ID. If you do not specify image related parameters '
+                    'then image for cluster creation will be chosen by '
+                    'tag "savanna_i_tests".'),
+
+    cfg.StrOpt('IMAGE_NAME',
+               default=None,
+               help='Name for image which is used for cluster creation. Also '
+                    'you can specify image ID or tag of image instead of '
+                    'image name. If you do not specify image related '
+                    'parameters then image for cluster creation will be '
+                    'chosen by tag "savanna_i_tests".'),
+
+    cfg.StrOpt('IMAGE_TAG',
+               default=None,
+               help='Tag for image which is used for cluster creation. Also '
+                    'you can specify image ID or image name instead of tag of '
+                    'image. If you do not specify image related parameters '
+                    'then image for cluster creation will be chosen by '
+                    'tag "savanna_i_tests".'),
+
     cfg.StrOpt('HADOOP_VERSION',
                default='1.2.1',
                help='Version of Hadoop.'),
@@ -150,12 +174,14 @@ VANILLA_CONFIG_OPTS = [
                     'completed jobs.'),
 
     cfg.DictOpt('HADOOP_PROCESSES_WITH_PORTS',
-                default={'jobtracker': 50030,
-                         'namenode': 50070,
-                         'tasktracker': 50060,
-                         'datanode': 50075,
-                         'secondarynamenode': 50090,
-                         'oozie': 11000},
+                default={
+                    'jobtracker': 50030,
+                    'namenode': 50070,
+                    'tasktracker': 50060,
+                    'datanode': 50075,
+                    'secondarynamenode': 50090,
+                    'oozie': 11000
+                },
                 help='Hadoop process map with ports for Vanilla plugin.'),
 
     cfg.DictOpt('PROCESS_NAMES',
@@ -186,6 +212,30 @@ HDP_CONFIG_OPTS = [
     cfg.StrOpt('PLUGIN_NAME',
                default='hdp',
                help='Name of plugin.'),
+
+    cfg.StrOpt('IMAGE_ID',
+               default=None,
+               help='ID for image which is used for cluster creation. Also '
+                    'you can specify image name or tag of image instead of '
+                    'image ID. If you do not specify image related parameters '
+                    'then image for cluster creation will be chosen by '
+                    'tag "savanna_i_tests".'),
+
+    cfg.StrOpt('IMAGE_NAME',
+               default=None,
+               help='Name for image which is used for cluster creation. Also '
+                    'you can specify image ID or tag of image instead of '
+                    'image name. If you do not specify image related '
+                    'parameters then image for cluster creation will be '
+                    'chosen by tag "savanna_i_tests".'),
+
+    cfg.StrOpt('IMAGE_TAG',
+               default=None,
+               help='Tag for image which is used for cluster creation. Also '
+                    'you can specify image ID or image name instead of tag of '
+                    'image. If you do not specify image related parameters '
+                    'then image for cluster creation will be chosen by '
+                    'tag "savanna_i_tests".'),
 
     cfg.StrOpt('HADOOP_VERSION',
                default='1.3.2',

@@ -118,53 +118,15 @@ class ITestCase(unittest2.TestCase):
 
             self.private_key = open(self.common_config.PATH_TO_SSH_KEY).read()
 
-        images = self.nova.images.list()
+        if not self.vanilla_config.SKIP_ALL_TESTS_FOR_PLUGIN:
 
-        self.vanilla_config.IMAGE_ID = None
-        self.hdp_config.IMAGE_ID = None
+            self.vanilla_config.IMAGE_ID, self.vanilla_config.NODE_USERNAME = \
+                self.get_image_id_and_node_username(self.vanilla_config)
 
-        for image in images:
+        if not self.hdp_config.SKIP_ALL_TESTS_FOR_PLUGIN:
 
-            if image.metadata.get('_savanna_username') and \
-                    image.metadata.get('_savanna_tag_ci'):
-
-                if not self.vanilla_config.SKIP_ALL_TESTS_FOR_PLUGIN:
-
-                    if image.metadata.get('_savanna_tag_vanilla'):
-
-                        self.vanilla_config.IMAGE_ID = image.id
-                        self.vanilla_config.NODE_USERNAME = \
-                            image.metadata['_savanna_username']
-
-                if not self.hdp_config.SKIP_ALL_TESTS_FOR_PLUGIN:
-
-                    if image.metadata.get('_savanna_tag_hdp'):
-
-                        self.hdp_config.IMAGE_ID = image.id
-                        self.hdp_config.NODE_USERNAME = \
-                            image.metadata['_savanna_username']
-
-        if not self.hdp_config.SKIP_ALL_TESTS_FOR_PLUGIN and \
-                not self.hdp_config.IMAGE_ID:
-            self.fail("""
-            ***********************************************
-            Integration tests for HDP plugin is Enabled
-            but Image for this plugin not found.
-            Please check that the image is registered
-            and all necessary tags are added.
-            ***********************************************
-            """)
-
-        if not self.vanilla_config.SKIP_ALL_TESTS_FOR_PLUGIN and \
-                not self.vanilla_config.IMAGE_ID:
-            self.fail("""
-            ***********************************************
-            Integration tests for Vanilla plugin is Enabled
-            but Image for this plugin not found.
-            Please check that the image is registered
-            and all necessary tags are added.
-            ***********************************************
-            """)
+            self.hdp_config.IMAGE_ID, self.hdp_config.NODE_USERNAME = \
+                self.get_image_id_and_node_username(self.hdp_config)
 
 #-------------------------Methods for object creation--------------------------
 
@@ -556,6 +518,100 @@ class ITestCase(unittest2.TestCase):
 
 #--------------------------------Helper methods--------------------------------
 
+    def get_image_id_and_node_username(self, plugin_config):
+
+        images = self.nova.images.list()
+
+        # If plugin_config.IMAGE_ID is not None then find corresponding image
+        # and return its ID and username. If image not found then handle error
+        if plugin_config.IMAGE_ID:
+
+            for image in images:
+
+                if image.id == plugin_config.IMAGE_ID:
+
+                    return image.id, image.metadata['_savanna_username']
+
+            self.fail(
+                '\n\n*********************************************************'
+                '*********************************************************\n\n'
+                'Image with ID "%s" not found in image list.\n'
+                'Please, make sure you specified right image ID.'
+                '\n\n*********************************************************'
+                '*********************************************************\n\n'
+                % plugin_config.IMAGE_ID
+            )
+
+        # If plugin_config.IMAGE_NAME is not None then find corresponding image
+        # and return its ID and username. If image not found then handle error
+        if plugin_config.IMAGE_NAME:
+
+            for image in images:
+
+                if image.name == plugin_config.IMAGE_NAME:
+
+                    return image.id, image.metadata['_savanna_username']
+
+            self.fail(
+                '\n\n*********************************************************'
+                '*********************************************************\n\n'
+                'Image with name "%s" not found in image list.\n'
+                'Please, make sure you specified right image name.'
+                '\n\n*********************************************************'
+                '*********************************************************\n\n'
+                % plugin_config.IMAGE_NAME
+            )
+
+        # If plugin_config.IMAGE_TAG is not None then find corresponding image
+        # and return its ID and username. If image not found then handle error
+        if plugin_config.IMAGE_TAG:
+
+            for image in images:
+
+                if (image.metadata.get('_savanna_tag_%s'
+                    % plugin_config.IMAGE_TAG)) and (
+                        image.metadata.get('_savanna_tag_'
+                                           '%s' % plugin_config.PLUGIN_NAME)):
+
+                    return image.id, image.metadata['_savanna_username']
+
+            self.fail(
+                '\n\n*********************************************************'
+                '*********************************************************\n\n'
+                'Image with tag "%s" not found in image list.\n'
+                'Please, make sure tag "%s" was added to image.'
+                '\n\n*********************************************************'
+                '*********************************************************\n\n'
+                % (plugin_config.IMAGE_TAG, plugin_config.IMAGE_TAG)
+            )
+
+        # If plugin_config.IMAGE_TAG is None then image is chosen
+        # by tag "savanna_i_tests". If image has tag "savanna_i_tests"
+        # (at the same time image ID, image name and image tag were not
+        # specified in configuration file of integration tests) then return
+        # its ID and username. Found image will be chosen as image for tests.
+        # If image with tag "savanna_i_tests" not found then handle error
+        for image in images:
+
+            if (image.metadata.get('_savanna_tag_savanna_i_tests')) and (
+                    image.metadata.get('_savanna_tag_'
+                                       '%s' % plugin_config.PLUGIN_NAME)):
+
+                return image.id, image.metadata['_savanna_username']
+
+        self.fail(
+            '\n\n*********************************************************'
+            '*********************************************************\n\n'
+            'None of parameters of image (ID, name, tag) was not specified\n'
+            'in configuration file of integration tests. That is why\n'
+            'there was attempt to choose image by tag "savanna_i_tests"\n'
+            'but image with such tag not found.\n'
+            'Please, specify one of parameters of image (ID, name or tag) in\n'
+            'configuration file of integration tests.'
+            '\n\n*********************************************************'
+            '*********************************************************\n\n'
+        )
+
     def get_floating_ip_pool(self):
 
         floating_ip_pool_list = self.nova.floating_ip_pools.list()
@@ -577,11 +633,11 @@ class ITestCase(unittest2.TestCase):
 
             self.fail(
                 '\n\n*********************************************************'
-                '*********************************************\n\n'
-                'Floating IP pool "%s" not found in pool list. '
+                '*********************************************************\n\n'
+                'Floating IP pool "%s" not found in pool list.\n'
                 'Please, make sure you specified right floating IP pool.'
                 '\n\n*********************************************************'
-                '*********************************************\n\n'
+                '*********************************************************\n\n'
                 % self.common_config.FLOATING_IP_POOL
             )
 
@@ -613,18 +669,16 @@ class ITestCase(unittest2.TestCase):
 
                     print(
                         '\n***************************************************'
-                        '*****************************************************'
-                        '**********'
+                        '***************************************************\n'
                     )
                     print(
-                        '\nInternal Neutron network "%s" not found in network '
-                        'list. Please, make sure you specified right network '
+                        'Internal Neutron network "%s" not found in network '
+                        'list.\nPlease, make sure you specified right network '
                         'name.' % self.common_config.INTERNAL_NEUTRON_NETWORK
                     )
                     print(
                         '\n***************************************************'
-                        '*****************************************************'
-                        '**********'
+                        '***************************************************\n'
                     )
 
     def delete_objects(self, cluster_id=None,
