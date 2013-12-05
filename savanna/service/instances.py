@@ -87,13 +87,12 @@ def get_instances(cluster, instances_ids=None):
         return [v for v in six.itervalues(inst_map)]
 
 
-def scale_cluster(cluster, node_group_id_map, plugin):
+def scale_cluster(cluster, node_group_id_map):
     ctx = context.ctx()
 
     instance_ids = []
     try:
-        instance_ids = _scale_cluster_instances(
-            cluster, node_group_id_map, plugin)
+        instance_ids = _scale_cluster_instances(cluster, node_group_id_map)
 
         cluster = conductor.cluster_get(ctx, cluster)
         cluster = clean_cluster_from_empty_ng(cluster)
@@ -165,30 +164,26 @@ def _create_instances(cluster):
             _run_instance(cluster, node_group, idx, aa_groups, userdata)
 
 
-def _scale_cluster_instances(cluster, node_group_id_map, plugin):
+def _scale_cluster_instances(cluster, node_group_id_map):
     ctx = context.ctx()
     aa_groups = _generate_anti_affinity_groups(cluster)
     instances_to_delete = []
     node_groups_to_enlarge = []
 
     for node_group in cluster.node_groups:
-        if node_group.id not in node_group_id_map:
-            continue
-
         new_count = node_group_id_map[node_group.id]
+
         if new_count < node_group.count:
             instances_to_delete += node_group.instances[new_count:
                                                         node_group.count]
-        else:
+        elif new_count > node_group.count:
             node_groups_to_enlarge.append(node_group)
 
     if instances_to_delete:
-        conductor.cluster_update(ctx, cluster, {"status": "Decommissioning"})
-        LOG.info(g.format_cluster_status(cluster))
-        plugin.decommission_nodes(cluster, instances_to_delete)
         cluster = conductor.cluster_update(ctx, cluster,
                                            {"status": "Deleting Instances"})
         LOG.info(g.format_cluster_status(cluster))
+
         for instance in instances_to_delete:
             _shutdown_instance(instance)
 

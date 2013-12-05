@@ -78,8 +78,12 @@ def scale_cluster(id, data):
     # So let's update to_be_enlarged map:
     to_be_enlarged.update(additional)
 
+    for node_group in cluster.node_groups:
+        if node_group.id not in to_be_enlarged:
+            to_be_enlarged[node_group.id] = node_group.count
+
     context.spawn("cluster-scaling-%s" % id,
-                  _provision_nodes, id, to_be_enlarged)
+                  _provision_scaled_cluster, id, to_be_enlarged)
     return conductor.cluster_get(ctx, id)
 
 
@@ -110,14 +114,36 @@ def create_cluster(values):
     return conductor.cluster_get(ctx, cluster.id)
 
 
-def _provision_nodes(id, node_group_id_map):
+def _provision_scaled_cluster(id, node_group_id_map):
     ctx = context.ctx()
     cluster = conductor.cluster_get(ctx, id)
     plugin = plugin_base.PLUGINS.get_plugin(cluster.plugin_name)
 
-    cluster = conductor.cluster_update(ctx, cluster, {"status": "Scaling"})
+    # Decommissioning surplus nodes with the plugin
+
+    cluster = conductor.cluster_update(ctx, cluster,
+                                       {"status": "Decommissioning"})
     LOG.info(g.format_cluster_status(cluster))
-    instances = i.scale_cluster(cluster, node_group_id_map, plugin)
+
+    instances_to_delete = []
+
+    for node_group in cluster.node_groups:
+        new_count = node_group_id_map[node_group.id]
+        if new_count < node_group.count:
+            instances_to_delete += node_group.instances[new_count:
+                                                        node_group.count]
+
+    if instances_to_delete:
+        plugin.decommission_nodes(cluster, instances_to_delete)
+
+    # Scaling infrastructure
+    cluster = conductor.cluster_update(ctx, cluster,
+                                       {"status": "Scaling"})
+    LOG.info(g.format_cluster_status(cluster))
+
+    instances = i.scale_cluster(cluster, node_group_id_map)
+
+    # Setting up new nodes with the plugin
 
     if instances:
         cluster = conductor.cluster_update(ctx, cluster,
@@ -128,11 +154,11 @@ def _provision_nodes(id, node_group_id_map):
         except Exception as ex:
             LOG.exception("Can't scale cluster '%s' (reason: %s)",
                           cluster.name, ex)
-            conductor.cluster_update(ctx, cluster, {"status": "Error"})
+            cluster = conductor.cluster_update(ctx, cluster,
+                                               {"status": "Error"})
             LOG.info(g.format_cluster_status(cluster))
             return
 
-    # cluster is now up and ready
     cluster = conductor.cluster_update(ctx, cluster, {"status": "Active"})
     LOG.info(g.format_cluster_status(cluster))
 
