@@ -15,10 +15,11 @@
 
 import abc
 
+import six
 
+
+@six.add_metaclass(abc.ABCMeta)
 class AbstractVersionHandler():
-
-    __metaclass__ = abc.ABCMeta
 
     @abc.abstractmethod
     def get_config_items(self):

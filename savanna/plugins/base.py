@@ -17,6 +17,7 @@ import abc
 import inspect
 
 from oslo.config import cfg
+import six
 
 from savanna import config
 from savanna.openstack.common import importutils
@@ -50,9 +51,8 @@ def optional(fun):
     return fun
 
 
+@six.add_metaclass(abc.ABCMeta)
 class PluginInterface(resources.BaseResource):
-    __metaclass__ = abc.ABCMeta
-
     __resource_name__ = 'plugin'
 
     name = 'plugin_interface'

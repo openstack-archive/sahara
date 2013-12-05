@@ -115,12 +115,14 @@ class SimpleConfigTypeMeta(type):
         return True
 
 
+@six.add_metaclass(ConfigTypeMeta)
 class ConfigsType(dict):
-    __metaclass__ = ConfigTypeMeta
+    pass
 
 
+@six.add_metaclass(SimpleConfigTypeMeta)
 class SimpleConfigsType(dict):
-    __metaclass__ = SimpleConfigTypeMeta
+    pass
 
 
 class FlavorTypeMeta(type):
@@ -134,8 +136,9 @@ class FlavorTypeMeta(type):
                 and type(instance) != bool)
 
 
+@six.add_metaclass(FlavorTypeMeta)
 class FlavorType(object):
-    __metaclass__ = FlavorTypeMeta
+    pass
 
 
 class ApiValidator(jsonschema.Draft4Validator):
