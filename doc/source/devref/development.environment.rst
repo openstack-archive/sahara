@@ -1,22 +1,27 @@
 Setting Up a Development Environment
 ====================================
 
-This page describes how to point a local running Savanna instance to a Devstack deployed in a VM.
+This page describes how to point a local running Savanna instance to remote OpenStack.
 You should be able to debug and test your changes without having to deploy.
 
-Setup VM with DevStack
-----------------------
+Setup Local Environment with Savanna inside DevStack
+----------------------------------------------------
+
+The easiest way to have local Savanna environment with DevStack is to include
+Savanna component in DevStack.
 
 .. toctree::
     :maxdepth: 1
 
     devstack
 
+After you install DevStack with Savanna included you can rejoin screen with
+``rejoin-stack.sh`` command and switch to ``savanna`` tab. Here you can manage
+savanna service as other OpenStack services. Savanna source code is located at
+``$DEST/savanna`` which is usually ``/opt/stack/savanna``.
 
-Setup Local Environment
------------------------
-
-Now we are going to setup development environment for Savanna on your OS.
+Setup Local Environment with external OpenStack
+-----------------------------------------------
 
 1. Install prerequisites
 
@@ -61,11 +66,12 @@ On Fedora-based distributions (e.g., Fedora/RHEL/CentOS/Scientific Linux):
 
     $ cp ./etc/savanna/savanna.conf.sample ./etc/savanna/savanna.conf
 
-5. Look through the savanna.conf and change parameters which default values do not suite you.
-Set ``os_auth_host`` to the address of your VM with DevStack.
+5. Look through the savanna.conf and change parameters which default values do
+not suite you. Set ``os_auth_host`` to the address of OpenStack keystone.
 
-If you are using Neutron instead of Nova Network add ``use_neutron = True`` to config.  If the
-linux kernel you're utilizing support network namespaces then also specify ``use_namespaces = True``.
+If you are using Neutron instead of Nova Network add ``use_neutron = True`` to
+config.  If the linux kernel you're utilizing support network namespaces then
+also specify ``use_namespaces = True``.
 
 .. note::
 

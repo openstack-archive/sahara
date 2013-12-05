@@ -74,7 +74,6 @@ Now we are going to install DevStack in VM we just created. So, connect to VM wi
     SWIFT_REPLICAS=1
     SWIFT_DATA_DIR=$DEST/data
 
-
     # Force checkout prerequsites
     # FORCE_PREREQ=1
 
@@ -98,15 +97,22 @@ Now we are going to install DevStack in VM we just created. So, connect to VM wi
     # access to install prerequisites and fetch repositories.
     # OFFLINE=True
 
-3. Start DevStack:
+3. If you would like to have Savanna included into devstack add the following lines to ``localrc``:
+
+.. sourcecode:: bash
+
+    # Enable Savanna
+    ENABLED_SERVICES+=,savanna
+
+4. Start DevStack:
 
 .. sourcecode:: console
 
     $ ./stack.sh
 
-4. Once previous step is finished Devstack will print Horizon URL. Navigate to this URL and login with login "admin" and password from localrc.
+5. Once previous step is finished Devstack will print Horizon URL. Navigate to this URL and login with login "admin" and password from localrc.
 
-5. Now we need to modify security rules. It will allow to connect to VMs directly from your host. Navigate to project's "Admin" security tab and edit default Security Group rules:
+6. Now we need to modify security rules. It will allow to connect to VMs directly from your host. Navigate to project's "Admin" security tab and edit default Security Group rules:
 
    +-------------+-----------+---------+--------------+-----------+
    | IP Protocol | From Port | To Port | Source Group | CIDR      |
@@ -117,4 +123,4 @@ Now we are going to install DevStack in VM we just created. So, connect to VM wi
    +-------------+-----------+---------+--------------+-----------+
 
 
-6. Congratulations! You have OpenStack running in your VM and ready to launch VMs inside that VM :)
+7. Congratulations! You have OpenStack running in your VM and ready to launch VMs inside that VM :)
