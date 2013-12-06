@@ -12,4 +12,4 @@ sphinx>=1.1.2
 sphinxcontrib-httpdomain
 unittest2
 
-python-savannaclient>=0.3
+python-savannaclient>=0.4.0
