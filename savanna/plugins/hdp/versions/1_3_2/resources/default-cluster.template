@@ -253,7 +253,7 @@
     {
       "name" : "global",
       "properties" : [
-        { "name" : "java64_home", "value" : "/usr/jdk64/jdk1.6.0_31" },
+        { "name" : "java64_home", "value" : "/opt/jdk1.6.0_31" },
         { "name" : "dfs_name_dir", "value" : "/hadoop/hdfs/namenode" },
         { "name" : "fs_checkpoint_dir", "value" : "/hadoop/hdfs/namesecondary" },
         { "name" : "dfs_data_dir", "value" : "/hadoop/hdfs/data" },

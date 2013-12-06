@@ -36,10 +36,12 @@ class HadoopServer:
         self.node_group = node_group
         self.ambari_rpm = ambari_rpm or AMBARI_RPM
 
-    def provision_ambari(self, ambari_info):
+    def provision_ambari(self, ambari_info, cluster_spec):
         self.install_rpms()
+        global_config = cluster_spec.configurations['global']
+        jdk_path = global_config.get('java64_home')
         if 'AMBARI_SERVER' in self.node_group.components:
-            self._setup_and_start_ambari_server(ambari_info.port)
+            self._setup_and_start_ambari_server(ambari_info.port, jdk_path)
 
         # all nodes must run Ambari agent
         self._setup_and_start_ambari_agent(ambari_info.host.internal_ip)
@@ -50,7 +52,7 @@ class HadoopServer:
             "{0}: Installing rpm's ...".format(self.instance.hostname))
 
         #TODO(jspeidel): based on image type, use correct command
-        rpm_cmd = 'curl -s -o /etc/yum.repos.d/ambari.repo %s' % \
+        rpm_cmd = 'curl -f -s -o /etc/yum.repos.d/ambari.repo %s' % \
                   self.ambari_rpm
         r.execute_command(rpm_cmd)
         r.execute_command('yum -y install epel-release')
@@ -65,14 +67,16 @@ class HadoopServer:
         r.execute_command(rpm_cmd)
 
     @savannautils.inject_remote('r')
-    def _setup_and_start_ambari_server(self, port, r):
+    def _setup_and_start_ambari_server(self, port, jdk_path, r):
         LOG.info(
             '{0}: Installing ambari-server ...'.format(self.instance.hostname))
         r.execute_command('yum -y install ambari-server')
 
         LOG.info('Running Ambari Server setup ...')
         # do silent setup since we only use default responses now
-        r.execute_command('ambari-server setup -s > /dev/null 2>&1')
+        r.execute_command('ambari-server setup -s {jdk_arg} > /dev/null 2>&1'
+                          .format(jdk_arg='-j ' + jdk_path if jdk_path
+                                  else ''))
 
         self._configure_ambari_server_api_port(port)
 

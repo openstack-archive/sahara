@@ -149,7 +149,7 @@ class AmbariPlugin(p.ProvisioningPluginBase):
         for server in servers:
             self._spawn(
                 "hdp-provision-instance-%s" % server.instance.hostname,
-                server.provision_ambari, ambari_info)
+                server.provision_ambari, ambari_info, cluster_spec)
 
         handler = self.version_factory.get_version_handler(version)
         ambari_client = handler.get_ambari_client()
@@ -281,7 +281,7 @@ class AmbariPlugin(p.ProvisioningPluginBase):
 
         for server in servers:
             self._spawn('Ambari provisioning thread',
-                        server.provision_ambari, ambari_info)
+                        server.provision_ambari, ambari_info, cluster_spec)
 
         ambari_client.scale_cluster(cluster.name, cluster_spec, servers,
                                     self._get_num_hosts(cluster), ambari_info)
