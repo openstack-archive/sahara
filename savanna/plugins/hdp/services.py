@@ -13,9 +13,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
 from oslo.config import cfg
+import re
+import six
 
+from savanna import exceptions as e
 from savanna.plugins.general import exceptions as ex
 from savanna.plugins.general import utils
 from savanna.swift import swift_helper as h
@@ -77,10 +79,18 @@ class Service(object):
         return False
 
     def _replace_config_token(self, cluster_spec, token, value, props):
-        for config_name, props in props.iteritems():
+        for config_name, props in six.iteritems(props):
             config = cluster_spec.configurations[config_name]
             for prop in props:
                 config[prop] = config[prop].replace(token, value)
+
+    def _update_config_values(self, configurations, value, props):
+        for absolute_prop_name in props:
+            tokens = absolute_prop_name.split('/')
+            config_name = tokens[0]
+            prop_name = tokens[1]
+            config = configurations[config_name]
+            config[prop_name] = value
 
     def _get_common_paths(self, node_groups):
         if len(node_groups) == 1:
@@ -428,6 +438,142 @@ class WebHCatService(Service):
                               '/apps/webhcat" -s /bin/sh hdfs')
             r.execute_command('su -c "hadoop fs -chmod -R 755 /apps/webhcat" '
                               '-s /bin/sh hdfs')
+
+
+class HBaseService(Service):
+    property_map = {
+        'hbase-site/hbase.tmp.dir': [
+            'hbase-site/hbase.tmp.dir', 'global/hbase_tmp_dir'],
+        'hbase-site/hbase.regionserver.global.memstore.upperLimit': [
+            'hbase-site/hbase.regionserver.global.memstore.upperLimit',
+            'global/regionserver_memstore_upperlimit'],
+        'hbase-site/hbase.hstore.blockingStoreFiles': [
+            'hbase-site/hbase.hstore.blockingStoreFiles',
+            'global/hstore_blockingstorefiles'],
+        'hbase-site/hbase.hstore.compactionThreshold': [
+            'hbase-site/hbase.hstore.compactionThreshold',
+            'global/hstore_compactionthreshold'],
+        'hbase-site/hfile.block.cache.size': [
+            'hbase-site/hfile.block.cache.size',
+            'global/hfile_blockcache_size'],
+        'hbase-site/hbase.hregion.max.filesize': [
+            'hbase-site/hbase.hregion.max.filesize',
+            'global/hstorefile_maxsize'],
+        'hbase-site/hbase.regionserver.handler.count': [
+            'hbase-site/hbase.regionserver.handler.count',
+            'global/regionserver_handlers'],
+        'hbase-site/hbase.hregion.majorcompaction': [
+            'hbase-site/hbase.hregion.majorcompaction',
+            'global/hregion_majorcompaction'],
+        'hbase-site/hbase.regionserver.global.memstore.lowerLimit': [
+            'hbase-site/hbase.regionserver.global.memstore.lowerLimit',
+            'global/regionserver_memstore_lowerlimit'],
+        'hbase-site/hbase.hregion.memstore.block.multiplier': [
+            'hbase-site/hbase.hregion.memstore.block.multiplier',
+            'global/hregion_blockmultiplier'],
+        'hbase-site/hbase.hregion.memstore.mslab.enabled': [
+            'hbase-site/hbase.hregion.memstore.mslab.enabled',
+            'global/regionserver_memstore_lab'],
+        'hbase-site/hbase.hregion.memstore.flush.size': [
+            'hbase-site/hbase.hregion.memstore.flush.size',
+            'global/hregion_memstoreflushsize'],
+        'hbase-site/hbase.client.scanner.caching': [
+            'hbase-site/hbase.client.scanner.caching',
+            'global/client_scannercaching'],
+        'hbase-site/zookeeper.session.timeout': [
+            'hbase-site/zookeeper.session.timeout',
+            'global/zookeeper_sessiontimeout'],
+        'hbase-site/hbase.client.keyvalue.maxsize': [
+            'hbase-site/hbase.client.keyvalue.maxsize',
+            'global/hfile_max_keyvalue_size'],
+        'hdfs-site/dfs.support.append': [
+            'hdfs-site/dfs.support.append',
+            'hbase-site/dfs.support.append',
+            'global/hdfs_support_append'],
+        'hbase-site/dfs.client.read.shortcircuit': [
+            'hbase-site/dfs.client.read.shortcircuit',
+            'global/hdfs_enable_shortcircuit_read']
+    }
+
+    def __init__(self):
+        super(HBaseService, self).__init__(
+            HBaseService.get_service_id())
+        self.configurations.add('hbase-site')
+
+    @classmethod
+    def get_service_id(cls):
+        return 'HBASE'
+
+    def validate(self, cluster_spec, cluster):
+        # check for a single HBASE_SERVER
+        count = cluster_spec.get_deployed_node_group_count('HBASE_MASTER')
+        if count != 1:
+            raise ex.InvalidComponentCountException('HBASE_MASTER', 1, count)
+
+    def register_service_urls(self, cluster_spec, url_info):
+        master_ip = cluster_spec.determine_component_hosts(
+            'HBASE_MASTER').pop().management_ip
+
+        hbase_config = cluster_spec.configurations['hbase-site']
+        info_port = hbase_config['hbase.master.info.port']
+
+        url_info['HBase'] = {
+            'Web UI': 'http://%s:%s/master-status' % (master_ip, info_port),
+            'Logs': 'http://%s:%s/logs' % (master_ip, info_port),
+            'Zookeeper Info': 'http://%s:%s/zk.jsp' % (master_ip, info_port),
+            'JMX': 'http://%s:%s/jmx' % (master_ip, info_port),
+            'Debug Dump': 'http://%s:%s/dump' % (master_ip, info_port),
+            'Thread Stacks': 'http://%s:%s/stacks' % (master_ip, info_port)
+        }
+        return url_info
+
+    def register_user_input_handlers(self, ui_handlers):
+        for prop_name in self.property_map:
+            ui_handlers[prop_name] = \
+                self._handle_config_property_update
+
+        ui_handlers['hbase-site/hbase.rootdir'] = \
+            self._handle_user_property_root_dir
+
+    def _handle_config_property_update(self, user_input, configurations):
+        self._update_config_values(configurations, user_input.value,
+                                   self.property_map[user_input.config.name])
+
+    def _handle_user_property_root_dir(self, user_input, configurations):
+        configurations['hbase-site']['hbase.rootdir'] = user_input.value
+
+        match = re.search('(^hdfs://)(.*?)(/.*)', user_input.value)
+        if match:
+            configurations['global']['hbase_hdfs_root_dir'] = match.group(3)
+        else:
+            raise e.InvalidDataException(
+                "Invalid value for property 'hbase-site/hbase.rootdir' : %s" %
+                user_input.value)
+
+    def finalize_configuration(self, cluster_spec):
+        nn_servers = cluster_spec.determine_component_hosts('NAMENODE')
+        if nn_servers:
+            self._replace_config_token(
+                cluster_spec, '%NN_HOST%', nn_servers.pop().fqdn(),
+                {'hbase-site': ['hbase.rootdir']})
+
+        zk_servers = cluster_spec.determine_component_hosts('ZOOKEEPER_SERVER')
+        if zk_servers:
+            self._replace_config_token(
+                cluster_spec, '%ZOOKEEPER_HOST%', zk_servers.pop().fqdn(),
+                {'hbase-site': ['hbase.zookeeper.quorum']})
+
+    def finalize_ng_components(self, cluster_spec):
+        hbase_ng = cluster_spec.get_node_groups_containing_component(
+            'HBASE_MASTER')[0]
+        components = hbase_ng.components
+        if 'HDFS_CLIENT' not in components:
+            components.append('HDFS_CLIENT')
+        if not cluster_spec.get_deployed_node_group_count('ZOOKEEPER_SERVER'):
+            zk_service = next(service for service in cluster_spec.services
+                              if service.name == 'ZOOKEEPER')
+            zk_service.deployed = True
+            components.append('ZOOKEEPER_SERVER')
 
 
 class ZookeeperService(Service):

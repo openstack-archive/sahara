@@ -113,6 +113,28 @@
       ]
     },
     {
+      "name" : "HBASE",
+      "components" : [
+        {
+          "name" : "HBASE_MASTER",
+          "type" : "MASTER",
+          "cardinality" : "1"
+        },
+        {
+          "name" : "HBASE_REGIONSERVER",
+          "type" : "SLAVE",
+          "cardinality" : "1+"
+        },
+        {
+          "name" : "HBASE_CLIENT",
+          "type" : "CLIENT",
+          "cardinality" : "1+"
+        }
+      ],
+      "configurations" : [
+      ]
+    },
+    {
       "name" : "ZOOKEEPER",
       "components" : [
         {
@@ -368,7 +390,29 @@
         { "name" : "oozie_log_dir", "value" : "/var/log/oozie" },
         { "name" : "oozie_pid_dir", "value" : "/var/run/oozie" },
         { "name" : "oozie_database_type", "value" : "derby" },
-        { "name" : "oozie_jdbc_driver", "value" : "org.apache.derby.jdbc.EmbeddedDriver" }
+        { "name" : "oozie_jdbc_driver", "value" : "org.apache.derby.jdbc.EmbeddedDriver" },
+        { "name" : "hbase_master_heapsize", "value" : "1024m" },
+        { "name" : "hbase_regionserver_heapsize", "value" : "1024m" },
+        { "name" : "regionserver_handlers", "value" : "60" },
+        { "name" : "hregion_majorcompaction", "value" : "86400000" },
+        { "name" : "hregion_blockmultiplier", "value" : "2" },
+        { "name" : "hregion_memstoreflushsize", "value" : "134217728" },
+        { "name" : "hstore_compactionthreshold", "value" : "3" },
+        { "name" : "hfile_blockcache_size", "value" : "0.40" },
+        { "name" : "hstorefile_maxsize", "value" : "10737418240" },
+        { "name" : "client_scannercaching", "value" : "100" },
+        { "name" : "zookeeper_sessiontimeout", "value" : "60000" },
+        { "name" : "hfile_max_keyvalue_size", "value" : "10485760" },
+        { "name" : "hbase_log_dir", "value" : "/var/log/hbase" },
+        { "name" : "hbase_pid_dir", "value" : "/var/run/hbase" },
+        { "name" : "hbase_hdfs_root_dir", "value" : "/apps/hbase/data" },
+        { "name" : "hbase_tmp_dir", "value" : "/var/log/hbase" },
+        { "name" : "hdfs_enable_shortcircuit_read", "value" : "true" },
+        { "name" : "hdfs_support_append", "value" : "true" },
+        { "name" : "hstore_blockingstorefiles", "value" : "7" },
+        { "name" : "regionserver_memstore_lab", "value" : "true" },
+        { "name" : "regionserver_memstore_lowerlimit", "value" : "0.38" },
+        { "name" : "regionserver_memstore_upperlimit", "value" : "0.4" }
       ]
     },
     {
@@ -588,6 +632,39 @@
         { "name" : "templeton.hadoop.conf.dir", "value" : "/etc/hadoop/conf" },
         { "name" : "templeton.hive.properties", "value" : "hive.metastore.local=false,hive.metastore.uris=thrift://%HIVE_METASTORE_HOST%:9083,hive.metastore.sasl.enabled=yes,hive.metastore.execute.setugi=true,hive.metastore.warehouse.dir=/apps/hive/warehouse" },
         { "name" : "templeton.zookeeper.hosts", "value" : "%ZOOKEEPER_HOST%:2181" }
+      ]
+    },
+    {
+      "name" : "hbase-site",
+      "properties" : [
+        { "name" : "hbase.rpc.engine", "value" : "org.apache.hadoop.hbase.ipc.WritableRpcEngine" },
+        { "name" : "hbase.security.authentication", "value" : "simple" },
+        { "name" : "hbase.security.authorization", "value" : "false" },
+        { "name" : "hbase.superuser", "value" : "hbase" },
+        { "name" : "hbase.zookeeper.useMulti", "value" : "true" },
+        { "name" : "zookeeper.znode.parent", "value" : "/hbase-unsecure" },
+        { "name" : "hbase.rootdir", "value" : "hdfs://%NN_HOST%:8020/apps/hbase/data" },
+        { "name" : "hbase.tmp.dir", "value" : "/var/log/hbase" },
+        { "name" : "hbase.regionserver.global.memstore.upperLimit", "value" : "0.4" },
+        { "name" : "hbase.hstore.blockingStoreFiles", "value" : "7" },
+        { "name" : "hbase.hstore.compactionThreshold", "value" : "3" },
+        { "name" : "hfile.block.cache.size", "value" : "0.40" },
+        { "name" : "hbase.hregion.max.filesize", "value" : "10737418240" },
+        { "name" : "hbase.regionserver.handler.count", "value" : "60" },
+        { "name" : "hbase.hregion.majorcompaction", "value" : "86400000" },
+        { "name" : "hbase.regionserver.global.memstore.lowerLimit", "value" : "0.38" },
+        { "name" : "hbase.hregion.memstore.block.multiplier", "value" : "2" },
+        { "name" : "hbase.hregion.memstore.mslab.enabled", "value" : "true" },
+        { "name" : "hbase.hregion.memstore.flush.size", "value" : "134217728" },
+        { "name" : "hbase.client.scanner.caching", "value" : "100" },
+        { "name" : "hbase.cluster.distributed", "value" : "true" },
+        { "name" : "hbase.zookeeper.property.clientPort", "value" : "2181" },
+        { "name" : "zookeeper.session.timeout", "value" : "60000" },
+        { "name" : "hbase.client.keyvalue.maxsize", "value" : "10485760" },
+        { "name" : "dfs.support.append", "value" : "true" },
+        { "name" : "dfs.client.read.shortcircuit", "value" : "true" },
+        { "name" : "hbase.zookeeper.quorum", "value" : "%ZOOKEEPER_HOST%" },
+        { "name" : "hbase.master.info.port", "value" : "60010" }
       ]
     },
     {

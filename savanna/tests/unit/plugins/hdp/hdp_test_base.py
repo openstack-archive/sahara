@@ -117,3 +117,9 @@ class TestResult:
     def __init__(self, status):
         self.status_code = status
         self.text = ''
+
+
+class TestUserInput:
+    def __init__(self, config, value):
+        self.config = config
+        self.value = value
