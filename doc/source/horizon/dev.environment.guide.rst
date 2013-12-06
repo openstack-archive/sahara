@@ -1,6 +1,25 @@
 Savanna UI Dev Environment Setup
 ============================================
 
+Install as a part of DevStack
+-----------------------------
+
+The easiest way to have local Savanna UI environment with DevStack is to
+include Savanna component in DevStack.
+
+.. toctree::
+    :maxdepth: 1
+
+    ../devref/devstack
+
+After Savanna installation as a part of DevStack Horizon will contain Savanna
+tab. Savanna dashboard source code will be located at
+``$DEST/savanna_dashboard`` which is usually ``/opt/stack/savanna_dashboard``.
+
+
+Isolated Dashboard for Savanna
+------------------------------
+
 These installation steps suite for two purposes:
  * to setup dev environment
  * to setup isolated Dashboard for Savanna
