@@ -1,5 +1,3 @@
-# vim: tabstop=4 shiftwidth=4 softtabstop=4
-
 # Copyright 2010 United States Government as represented by the
 # Administrator of the National Aeronautics and Space Administration.
 # Copyright 2011 Justin Santa Barbara
@@ -220,7 +218,7 @@ class ProcessLauncher(object):
         signal.signal(signal.SIGINT, signal.SIG_IGN)
 
     def _child_wait_for_exit_or_signal(self, launcher):
-        status = None
+        status = 0
         signo = 0
 
         # NOTE(johannes): All exceptions are caught to ensure this

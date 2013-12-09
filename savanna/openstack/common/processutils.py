@@ -1,5 +1,3 @@
-# vim: tabstop=4 shiftwidth=4 softtabstop=4
-
 # Copyright 2011 OpenStack Foundation.
 # All Rights Reserved.
 #
@@ -82,7 +80,7 @@ def execute(*cmd, **kwargs):
     :param cmd:             Passed to subprocess.Popen.
     :type cmd:              string
     :param process_input:   Send to opened process.
-    :type proces_input:     string
+    :type process_input:    string
     :param check_exit_code: Single bool, int, or list of allowed exit
                             codes.  Defaults to [0].  Raise
                             :class:`ProcessExecutionError` unless
