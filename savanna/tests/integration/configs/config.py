@@ -68,7 +68,7 @@ COMMON_CONFIG_OPTS = [
 
     cfg.StrOpt('FLAVOR_ID',
                default=None,
-               help='OpenStack flavor ID for image.'),
+               help='OpenStack flavor ID for virtual machines.'),
 
     cfg.IntOpt('CLUSTER_CREATION_TIMEOUT',
                default=30,
@@ -95,36 +95,51 @@ COMMON_CONFIG_OPTS = [
                help='Name for cluster.'),
 
     cfg.StrOpt('USER_KEYPAIR_ID',
-               default='jenkins',
-               help='OpenStack key pair id your SSH public key which '
-                    'Savanna transfers to cluster nodes for access of users '
-                    'to virtual machines via SSH, using this key.'),
+               default='savanna-i-test-key-pair',
+               help='OpenStack key pair ID of your SSH public key. Savanna '
+                    'transfers this key to cluster nodes for access of users '
+                    'to virtual machines of cluster via SSH. You can export '
+                    'your id_rsa.pub public key to OpenStack and specify its '
+                    'key pair ID in configuration file of tests. If you '
+                    'already have key pair in OpenStack then you just should '
+                    'specify its key pair ID in configuration file of tests. '
+                    'If you have no key pair in OpenStack or you do not want '
+                    'to export (create) key pair then you just should specify '
+                    'any key pair ID which you like (for example, '
+                    '"king-kong") but you have necessarily to leave default '
+                    'value of PATH_TO_SSH_KEY flag. In this case key pair '
+                    'will be created automatically. Also to key pair ID will '
+                    'be added little ID (8 characters (letters and/or digits))'
+                    ' for its uniqueness. In the end of tests key pair will '
+                    'be deleted.'),
 
     cfg.StrOpt('PATH_TO_SSH_KEY',
                default=None,
                help='Path to id_rsa key which is used with tests for remote '
-                    'command execution. For right work of tests you should '
-                    'export your public key id_rsa.pub to Open Stack and '
-                    'specify its key pair id in configuration file of tests. '
-                    'If you specified wrong path to key then you will have '
-                    'the error "Private key file is encrypted". Please, make '
-                    'sure you specified right path to key. If this parameter '
-                    'is not specified, keypair (private and public SSH keys) '
-                    'will be generated, using nova_client.'),
+                    'command execution. If you specified wrong path to key '
+                    'then you will have the error "Private key file is '
+                    'encrypted". Please, make sure you specified right path '
+                    'to key. If this parameter is not specified, key pair '
+                    '(private and public SSH keys) will be generated '
+                    'automatically, using nova client.'),
 
     cfg.StrOpt('FLOATING_IP_POOL',
                default=None,
-               help='Pool for floating IPs.'),
+               help='Pool for floating IPs. If you leave default value of '
+                    'this flag then as floating IP pool will be chosen '
+                    'the first pool of OpenStack pool list.'),
 
     cfg.BoolOpt('NEUTRON_ENABLED',
                 default=False,
-                help='If Savanna is using Nova management network '
-                     'then you should leave default value of this flag. '
-                     'If Savanna is using Neutron management network '
-                     'then you should set this flag to True.'),
+                help='If Savanna uses Nova management network then you should '
+                     'leave default value of this flag. If Savanna uses '
+                     'Neutron management network then you should set this '
+                     'flag to True.'),
     cfg.StrOpt('INTERNAL_NEUTRON_NETWORK',
                default=None,
-               help='Name for internal Neutron network.')
+               help='Name for internal Neutron network. If you leave default '
+                    'value of this flag then as internal Neutron network will '
+                    'be chosen the first network of OpenStack network list.')
 ]
 
 
@@ -169,14 +184,13 @@ VANILLA_CONFIG_OPTS = [
 
     cfg.BoolOpt('SKIP_ALL_TESTS_FOR_PLUGIN',
                 default=False,
-                help='If this variable is True then tests for Vanilla plugin '
+                help='If this flag is True then all tests for Vanilla plugin '
                      'will be skipped.'),
     cfg.BoolOpt('SKIP_CLUSTER_CONFIG_TEST', default=False),
+    cfg.BoolOpt('SKIP_EDP_TEST', default=False),
     cfg.BoolOpt('SKIP_MAP_REDUCE_TEST', default=False),
     cfg.BoolOpt('SKIP_SWIFT_TEST', default=False),
-    cfg.BoolOpt('SKIP_SCALING_TEST', default=False),
-    cfg.BoolOpt('SKIP_EDP_TEST', default=False),
-
+    cfg.BoolOpt('SKIP_SCALING_TEST', default=False)
 ]
 
 
@@ -223,7 +237,7 @@ HDP_CONFIG_OPTS = [
 
     cfg.BoolOpt('SKIP_ALL_TESTS_FOR_PLUGIN',
                 default=True,
-                help='If this variable is True then tests for HDP plugin '
+                help='If this flag is True then all tests for HDP plugin '
                      'will be skipped.'),
     cfg.BoolOpt('SKIP_MAP_REDUCE_TEST', default=False),
     cfg.BoolOpt('SKIP_SWIFT_TEST', default=False),

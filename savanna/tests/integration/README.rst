@@ -40,7 +40,7 @@ the cluster creation. Desired configuration values are checked with GET-request
 as well as directly in configuration files on the cluster.
 
 3. Test for a check of Elastic Data Processing (EDP). This test launches
-pig-job with jar-library.
+pig-job with jar-library and jar-job.
 
 4. Test for a check of Hadoop (Map Reduce and HDFS). This test launches Map
 Reduce jobs "PI estimator" and "Word count". Input file for job "Word count" is

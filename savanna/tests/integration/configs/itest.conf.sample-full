@@ -9,6 +9,9 @@ OS_TENANT_NAME = 'admin'
 # URL for OpenStack
 OS_AUTH_URL = 'http://127.0.0.1:35357/v2.0/'
 
+#OpenStack auth version for Swift
+SWIFT_AUTH_VERSION = 2
+
 # Host for Savanna API
 SAVANNA_HOST = '127.0.0.1'
 # Port for Savanna API
@@ -16,7 +19,7 @@ SAVANNA_PORT = '8386'
 # Api version for Savanna
 SAVANNA_API_VERSION = 'v1.1'
 
-# Flavor ID for image
+# OpenStack flavor ID for virtual machines
 FLAVOR_ID = '2'
 
 # Cluster creation timeout (in minutes); minimal value is 1
@@ -35,14 +38,39 @@ JOB_LAUNCH_TIMEOUT = 5
 # Name for cluster
 CLUSTER_NAME = 'test-cluster'
 
-# OpenStack key pair id your SSH public key which Savanna transfers
-# to cluster nodes for access of users to virtual machines via SSH,
-# using this key'
+# OpenStack key pair ID of your SSH public key. Savanna transfers this key to
+# cluster nodes for access of users to virtual machines of cluster via SSH.
+# You can export your id_rsa.pub public key to OpenStack and specify its key
+# pair ID in configuration file of tests. If you already have key pair in
+# OpenStack then you just should specify its key pair ID in configuration file
+# of tests. If you have no key pair in OpenStack or you do not want to export
+# (create) key pair then you just should specify any key pair ID which you like
+# (for example, "king-kong") but you have necessarily to leave default value of
+# PATH_TO_SSH_KEY flag. In this case key pair will be created automatically.
+# Also to key pair ID will be added little ID (8 characters (letters and/or
+# digits)) for its uniqueness. In the end of tests key pair will be deleted
 USER_KEYPAIR_ID = 'jsmit'
 
-# Path to folder where is located id_rsa key which is used for
-# remote command execution
+# Path to id_rsa key which is used with tests for remote command execution.
+# If you specified wrong path to key then you will have the error "Private key
+# file is encrypted". Please, make sure you specified right path to key. If
+# this parameter is not specified, key pair (private and public SSH keys) will
+# be generated automatically, using nova client
 PATH_TO_SSH_KEY = '/home/ubuntu/.ssh/id_rsa'
+
+# Pool for floating IPs. If you leave default value of this flag then as
+# floating IP poll will be chosen the first pool of OpenStack pool list
+FLOATING_IP_POOL = 'public'
+
+# If Savanna uses Nova management network then you should leave default value
+# of this flag. If Savanna uses Neutron management network then you should set
+# this flag to True
+NEUTRON_ENABLED = False
+
+# Name for internal Neutron network. If you leave default value of this flag
+# then as internal Neutron network will be chosen the first network of
+# OpenStack network list
+INTERNAL_NEUTRON_NETWORK = 'private'
 
 [VANILLA]
 
