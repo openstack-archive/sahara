@@ -70,7 +70,7 @@
                     "applicable_target": "HDFS",
                     "config_type": "string",
                     "default_value": "${fs.checkpoint.dir}",
-                    "description": "Determines where on the local filesystem the DFS secondary\n        name node should store the temporary edits to merge.\n        If this is a comma-delimited list of directoires then teh edits is\n        replicated in all of the directoires for redundancy.\n        Default value is same as fs.checkpoint.dir",
+                    "description": "Determines where on the local filesystem the DFS secondary\n        name node should store the temporary edits to merge.\n        If this is a comma-delimited list of directoires then the edits is\n        replicated in all of the directoires for redundancy.\n        Default value is same as fs.checkpoint.dir",
                     "is_optional": true,
                     "name": "fs.checkpoint.edits.dir",
                     "scope": "cluster"
@@ -687,7 +687,7 @@
                     "applicable_target": "HDFS",
                     "config_type": "int",
                     "default_value": "0",
-                    "description": "The access time for HDFS file is precise upto this value.\n                 The default value is 1 hour. Setting a value of 0 disables\n                 access times for HDFS.",
+                    "description": "The access time for HDFS file is precise up to this value.\n                 The default value is 1 hour. Setting a value of 0 disables\n                 access times for HDFS.",
                     "is_optional": true,
                     "name": "dfs.access.time.precision",
                     "scope": "cluster"

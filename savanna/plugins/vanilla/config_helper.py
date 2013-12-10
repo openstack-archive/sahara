@@ -331,7 +331,7 @@ def extract_environment_confs(configs):
                     if param_name == cfg_name and param_value is not None:
                         lst.append(cfg_format_str % param_value)
         else:
-            LOG.warn("Plugin recieved wrong applicable target '%s' in "
+            LOG.warn("Plugin received wrong applicable target '%s' in "
                      "environmental configs" % service)
     return lst
 
@@ -349,7 +349,7 @@ def extract_xml_confs(configs):
                     if param_name in names and param_value is not None:
                         lst.append((param_name, param_value))
         else:
-            LOG.warn("Plugin recieved wrong applicable target '%s' for "
+            LOG.warn("Plugin received wrong applicable target '%s' for "
                      "xml configs" % service)
     return lst
 
