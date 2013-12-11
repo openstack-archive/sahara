@@ -200,6 +200,11 @@ class VanillaGatingTest(cluster_configs.ClusterConfigTest,
 
 #-------------------------------Cluster creation-------------------------------
 
+        self.vanilla_config.IMAGE_ID, self.vanilla_config.NODE_USERNAME = \
+            self.get_image_id_and_savanna_cluster_node_username(
+                self.vanilla_config
+            )
+
         try:
 
             cluster_info = self.create_cluster_and_get_info(

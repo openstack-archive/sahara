@@ -19,7 +19,11 @@ SAVANNA_PORT = '8386'
 # Api version for Savanna
 SAVANNA_API_VERSION = 'v1.1'
 
-# OpenStack flavor ID for virtual machines
+# OpenStack flavor ID for virtual machines. If you leave default value of this
+# flag then flavor ID will be created automatically, using nova client. Created
+# flavor will have the following parameters: name=i-test-flavor-<id>, ram=1024,
+# vcpus=1, disk=10, ephemeral=10. <id> is ID of 8 characters (letters and/or
+# digits) which is added to name of flavor for its uniqueness
 FLAVOR_ID = '2'
 
 # Cluster creation timeout (in minutes); minimal value is 1
@@ -77,6 +81,24 @@ INTERNAL_NEUTRON_NETWORK = 'private'
 # Name of plugin
 PLUGIN_NAME = 'vanilla'
 
+# ID for image which is used for cluster creation. Also you can specify image
+# name or tag of image instead of image ID. If you do not specify image related
+# parameters then image for cluster creation will be chosen by tag
+# "savanna_i_tests"
+IMAGE_ID = 'qwerty-1q2w3e4r5t-0i9u8y7t'
+
+# Name for image which is used for cluster creation. Also you can specify image
+# ID or tag of image instead of image name. If you do not specify image related
+# parameters then image for cluster creation will be chosen by tag
+# "savanna_i_tests"
+IMAGE_NAME = 'savanna-vanilla-image'
+
+# Tag for image which is used for cluster creation. Also you can specify image
+# ID or image name instead of tag of image. If you do not specify image related
+# parameters then image for cluster creation will be chosen by tag
+# "savanna_i_tests
+IMAGE_TAG = 'savanna-vanilla-tag'
+
 # Version of Hadoop
 HADOOP_VERSION = '1.2.1'
 # Username which is used for access to Hadoop services
@@ -101,6 +123,24 @@ SKIP_SCALING_TEST = False
 
 # Name of plugin
 PLUGIN_NAME = 'hdp'
+
+# ID for image which is used for cluster creation. Also you can specify image
+# name or tag of image instead of image ID. If you do not specify image related
+# parameters then image for cluster creation will be chosen by tag
+# "savanna_i_tests"
+IMAGE_ID = 'qwerty-1q2w3e4r5t-0i9u8y7t'
+
+# Name for image which is used for cluster creation. Also you can specify image
+# ID or tag of image instead of image name. If you do not specify image related
+# parameters then image for cluster creation will be chosen by tag
+# "savanna_i_tests"
+IMAGE_NAME = 'savanna-hdp-image'
+
+# Tag for image which is used for cluster creation. Also you can specify image
+# ID or image name instead of tag of image. If you do not specify image related
+# parameters then image for cluster creation will be chosen by tag
+# "savanna_i_tests
+IMAGE_TAG = 'savanna-hdp-tag'
 
 # Version of Hadoop
 HADOOP_VERSION = '1.3.2'

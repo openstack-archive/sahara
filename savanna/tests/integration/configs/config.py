@@ -68,7 +68,14 @@ COMMON_CONFIG_OPTS = [
 
     cfg.StrOpt('FLAVOR_ID',
                default=None,
-               help='OpenStack flavor ID for virtual machines.'),
+               help='OpenStack flavor ID for virtual machines. If you leave '
+                    'default value of this flag then flavor ID will be '
+                    'created automatically, using nova client. Created flavor '
+                    'will have the following parameters: '
+                    'name=i-test-flavor-<id>, ram=1024, vcpus=1, disk=10, '
+                    'ephemeral=10. <id> is ID of 8 characters '
+                    '(letters and/or digits) which is added to name of flavor '
+                    'for its uniqueness.'),
 
     cfg.IntOpt('CLUSTER_CREATION_TIMEOUT',
                default=30,
