@@ -1,6 +1,7 @@
 hacking>=0.8.0,<0.9
 
 coverage>=3.6
+discover
 docutils==0.9.1
 fixtures>=0.3.14
 mock>=1.0
@@ -10,6 +11,7 @@ oslo.sphinx
 pylint==0.25.2
 sphinx>=1.1.2,<1.2
 sphinxcontrib-httpdomain
+testrepository>=0.0.17
 unittest2
 
 python-savannaclient>=0.4.0
