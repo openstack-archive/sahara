@@ -310,8 +310,9 @@ class ITConfig:
 
         config_files = []
 
+        config_path = '%s/savanna/tests/integration/configs/%s'
         if not os.path.exists(
-                '%s/integration/configs/%s' % (os.getcwd(), config)):
+                config_path % (os.getcwd(), config)):
 
             message = '\n**************************************************' \
                       '\nINFO: Configuration file "%s" not found  *\n' \
@@ -322,7 +323,7 @@ class ITConfig:
         else:
 
             config = os.path.join(
-                '%s/integration/configs/%s' % (os.getcwd(), config)
+                config_path % (os.getcwd(), config)
             )
             config_files.append(config)
 

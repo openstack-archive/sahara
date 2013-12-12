@@ -13,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import nose.plugins.attrib as attrib
+from testtools import testcase
 import unittest2
 
 from savanna.openstack.common import excutils
@@ -30,9 +30,9 @@ class HDPGatingTest(map_reduce.MapReduceTest, swift.SwiftTest,
     SKIP_SWIFT_TEST = cfg.ITConfig().hdp_config.SKIP_SWIFT_TEST
     SKIP_SCALING_TEST = cfg.ITConfig().hdp_config.SKIP_SCALING_TEST
 
-    @attrib.attr(tags='hdp')
     @unittest2.skipIf(cfg.ITConfig().hdp_config.SKIP_ALL_TESTS_FOR_PLUGIN,
                       'All tests for HDP plugin were skipped')
+    @testcase.attr("hdp")
     def test_hdp_plugin_gating(self):
 
         floating_ip_pool = None
