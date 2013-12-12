@@ -42,5 +42,7 @@ tools/lintstack.head.py
 tools/pylint_exceptions
 savanna/tests/cover
 savanna/tests/coverage.xml
+cover
 htmlcov
 savanna/openstack/common/db/savanna.sqlite
+.testrepository
