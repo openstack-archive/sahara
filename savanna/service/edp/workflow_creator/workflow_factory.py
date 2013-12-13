@@ -139,7 +139,9 @@ def get_creator(job):
     factories = [
         MapReduceFactory,
         make_HiveFactory,
-        make_PigFactory
+        make_PigFactory,
+        # Keep 'Jar' as a synonym for 'MapReduce'
+        MapReduceFactory,
     ]
     type_map = dict(zip(get_possible_job_types(), factories))
 
@@ -149,11 +151,11 @@ def get_creator(job):
 def get_possible_job_config(job_type):
     if job_type not in get_possible_job_types():
         return None
-    if job_type in ['Jar', 'Pig']:
+    if job_type in ['MapReduce', 'Pig', 'Jar']:
         #TODO(nmakhotkin) Savanna should return config based on specific plugin
         cfg = xmlutils.load_hadoop_xml_defaults(
             'plugins/vanilla/resources/mapred-default.xml')
-        if job_type == 'Jar':
+        if job_type in ['MapReduce', 'Jar']:
             cfg += xmlutils.load_hadoop_xml_defaults(
                 'service/edp/resources/mapred-job-config.xml')
     elif job_type == 'Hive':
@@ -161,14 +163,15 @@ def get_possible_job_config(job_type):
         cfg = xmlutils.load_hadoop_xml_defaults(
             'plugins/vanilla/resources/hive-default.xml')
     config = {'configs': cfg, "args": {}}
-    if job_type != 'Jar':
+    if job_type not in ['MapReduce', 'Jar']:
         config.update({'params': {}})
     return {'job_config': config}
 
 
 def get_possible_job_types():
     return [
-        'Jar',
+        'MapReduce',
         'Hive',
         'Pig',
+        'Jar',
     ]

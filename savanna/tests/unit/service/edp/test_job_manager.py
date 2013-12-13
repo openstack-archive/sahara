@@ -68,6 +68,11 @@ class TestJobManager(models_test_base.DbTestCase):
                                            job, 'hadoop')
         self.assertEqual(['job_prefix/script.pig'], res)
 
+        job, _ = _create_all_stack('MapReduce')
+        res = job_manager.upload_job_files(mock.Mock(), 'job_prefix',
+                                           job, 'hadoop')
+        self.assertEqual(['job_prefix/lib/main.jar'], res)
+
         job, _ = _create_all_stack('Jar')
         res = job_manager.upload_job_files(mock.Mock(), 'job_prefix',
                                            job, 'hadoop')
@@ -121,9 +126,8 @@ class TestJobManager(models_test_base.DbTestCase):
 
         self.assertIn("<script>script.pig</script>", res)
 
-    def test_build_workflow_for_job_jar(self):
-
-        job, job_exec = _create_all_stack('Jar')
+    def _build_workflow_common(self, job_type):
+        job, job_exec = _create_all_stack(job_type)
 
         input_data = _create_data_source('swift://ex.savanna/i')
         output_data = _create_data_source('swift://ex.savanna/o')
@@ -156,6 +160,19 @@ class TestJobManager(models_test_base.DbTestCase):
           <name>fs.swift.service.savanna.username</name>
           <value>admin</value>
         </property>""", res)
+
+    def test_jar_creator_is_mapreduce(self):
+        # Ensure that we get the MapReduce workflow factory for 'Jar' jobs
+        job, _ = _create_all_stack('Jar')
+
+        creator = workflow_factory.get_creator(job)
+        self.assertEqual(type(creator), workflow_factory.MapReduceFactory)
+
+    def test_build_workflow_for_job_mapreduce(self):
+        self._build_workflow_common('MapReduce')
+
+    def test_build_workflow_for_job_jar(self):
+        self._build_workflow_common('Jar')
 
     @mock.patch('savanna.conductor.API.job_binary_get')
     def test_build_workflow_for_job_hive(self, job_binary):
@@ -187,8 +204,8 @@ class TestJobManager(models_test_base.DbTestCase):
       <param>INPUT=swift://ex.savanna/i</param>
       <param>OUTPUT=swift://ex.savanna/o</param>""", res)
 
-    def test_build_workflow_for_job_jar_with_conf(self):
-        job, _ = _create_all_stack('Jar')
+    def _build_workflow_with_conf_common(self, job_type):
+        job, _ = _create_all_stack(job_type)
 
         input_data = _create_data_source('swift://ex.savanna/i')
         output_data = _create_data_source('swift://ex.savanna/o')
@@ -218,6 +235,12 @@ class TestJobManager(models_test_base.DbTestCase):
           <value>swift://ex.savanna/o</value>
         </property>""", res)
 
+    def test_build_workflow_for_job_mapreduce_with_conf(self):
+        self._build_workflow_with_conf_common('MapReduce')
+
+    def test_build_workflow_for_job_jar_with_conf(self):
+        self._build_workflow_with_conf_common('Jar')
+
 
 def _create_all_stack(type):
     b = _create_job_binary('1', type)
@@ -234,7 +257,7 @@ def _create_job(id, job_binary, type):
     if type == 'Pig' or type == 'Hive':
         job.mains = [job_binary]
         job.libs = None
-    if type == 'Jar':
+    if type in ['MapReduce', 'Jar']:
         job.libs = [job_binary]
         job.mains = None
     return job
@@ -246,7 +269,7 @@ def _create_job_binary(id, type):
     binary.url = "savanna-db://42"
     if type == "Pig":
         binary.name = "script.pig"
-    if type == "Jar":
+    if type in ['MapReduce', 'Jar']:
         binary.name = "main.jar"
     if type == "Hive":
         binary.name = "script.q"

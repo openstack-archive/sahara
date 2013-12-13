@@ -24,13 +24,14 @@ class TestJobValidation(u.ValidationTestCase):
         self.scheme = j.JOB_SCHEMA
 
     def test_empty_mains_and_libs(self):
-        self._assert_create_object_validation(
-            data={
-                "name": "jar.jar",
-                "type": "Jar"
-            },
-            bad_req_i=(1, "INVALID_DATA",
-                       "'mains' or 'libs' must be non-empty"))
+        for job_type in ['MapReduce', 'Jar']:
+            self._assert_create_object_validation(
+                data={
+                    "name": "jar.jar",
+                    "type": job_type
+                },
+                bad_req_i=(1, "INVALID_DATA",
+                           "'mains' or 'libs' must be non-empty"))
 
     def test_empty_pig_mains(self):
         data = {
@@ -50,11 +51,12 @@ class TestJobValidation(u.ValidationTestCase):
                                   "Hive flow requires main script"))
 
     def test_overlap_libs(self):
-        self._assert_create_object_validation(
-            data={
-                "name": "jar.jar",
-                "type": "Jar",
-                "libs": ["lib1", "lib2"],
-                "mains": ["lib1"]
-            },
-            bad_req_i=(1, "INVALID_DATA", "'mains' and 'libs' overlap"))
+        for job_type in ['MapReduce', 'Jar']:
+            self._assert_create_object_validation(
+                data={
+                    "name": "jar.jar",
+                    "type": job_type,
+                    "libs": ["lib1", "lib2"],
+                    "mains": ["lib1"]
+                },
+                bad_req_i=(1, "INVALID_DATA", "'mains' and 'libs' overlap"))

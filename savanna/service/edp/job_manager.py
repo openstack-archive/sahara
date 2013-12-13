@@ -103,6 +103,7 @@ def run_job(job_execution):
         return job_execution
 
     job = conductor.job_get(ctx, job_execution.job_id)
+
     input_source = conductor.data_source_get(ctx,  job_execution.input_id)
     output_source = conductor.data_source_get(ctx,  job_execution.output_id)
     #TODO(nprivalova): should be removed after all features implemented
@@ -202,5 +203,5 @@ def _append_slash_if_needed(path):
 def validate(input_data, output_data, job):
     if input_data.type != 'swift' or output_data.type != 'swift':
         raise RuntimeError
-    if job.type not in ['Pig', 'Jar', 'Hive']:
+    if job.type not in ['Pig', 'MapReduce', 'Hive', 'Jar']:
         raise RuntimeError
