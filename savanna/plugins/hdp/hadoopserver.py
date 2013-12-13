@@ -17,6 +17,7 @@ import re
 
 from savanna.openstack.common import log as logging
 from savanna.plugins.hdp import savannautils
+from savanna.utils import files as f
 
 
 AMBARI_RPM = 'http://s3.amazonaws.com/public-repo-1.hortonworks.com/' \
@@ -65,6 +66,17 @@ class HadoopServer:
 
         rpm_cmd = 'rpm -Uvh ' + HADOOP_SWIFT_RPM
         r.execute_command(rpm_cmd)
+
+    @savannautils.inject_remote('r')
+    def configure_topology(self, topology_str, r):
+        r.write_file_to(
+            '/etc/hadoop/conf/topology.sh',
+            f.get_file_text(
+                'plugins/hdp/versions/1_3_2/resources/topology.sh'))
+        r.execute_command(
+            'sudo chmod +x /etc/hadoop/conf/topology.sh'
+        )
+        r.write_file_to('/etc/hadoop/conf/topology.data', topology_str)
 
     @savannautils.inject_remote('r')
     def _setup_and_start_ambari_server(self, port, jdk_path, r):

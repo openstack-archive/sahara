@@ -13,8 +13,19 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from oslo.config import cfg
+
 from savanna.plugins.general import exceptions as ex
 from savanna.swift import swift_helper as h
+from savanna.topology import topology_helper as th
+
+CONF = cfg.CONF
+TOPOLOGY_CONFIG = {
+    "topology.node.switch.mapping.impl":
+    "org.apache.hadoop.net.ScriptBasedMapping",
+    "topology.script.file.name":
+    "/etc/hadoop/conf/topology.sh"
+}
 
 
 def create_service(name):
@@ -120,7 +131,14 @@ class HdfsService(Service):
         for prop in self._get_swift_properties():
             core_site_config[prop['name']] = prop['value']
 
-        # process storage paths to accommodate ephemeral or cinder storage
+        # add topology properties to configuration, if enabled
+        if CONF.enable_data_locality:
+            for prop in th.vm_awareness_core_config():
+                core_site_config[prop['name']] = prop['value']
+
+            core_site_config.update(TOPOLOGY_CONFIG)
+
+            # process storage paths to accommodate ephemeral or cinder storage
         nn_ng = cluster_spec.get_node_groups_containing_component(
             'NAMENODE')[0]
         dn_node_groups = cluster_spec.get_node_groups_containing_component(
@@ -188,13 +206,18 @@ class MapReduceService(Service):
             self._replace_config_token(
                 cluster_spec, '%JT_HOST%', jt_hosts.pop().fqdn(), props)
 
+        # data locality/rack awareness prop processing
+        mapred_site_config = cluster_spec.configurations['mapred-site']
+        if CONF.enable_data_locality:
+            for prop in th.vm_awareness_mapred_config():
+                mapred_site_config[prop['name']] = prop['value']
+
         # process storage paths to accommodate ephemeral or cinder storage
         # NOTE:  mapred.system.dir is an HDFS namespace path (not a filesystem
         # path) so the default path should suffice
         tt_node_groups = cluster_spec.get_node_groups_containing_component(
             'TASKTRACKER')
         if tt_node_groups:
-            mapred_site_config = cluster_spec.configurations['mapred-site']
             global_config = cluster_spec.configurations['global']
             common_paths = self._get_common_paths(tt_node_groups)
             mapred_site_config['mapred.local.dir'] = \

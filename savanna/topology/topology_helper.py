@@ -131,6 +131,14 @@ def generate_topology_map(cluster, is_node_awareness):
 def vm_awareness_core_config():
     c = x.load_hadoop_xml_defaults('topology/resources/core-template.xml')
     result = [cfg for cfg in c if cfg['value']]
+
+    if not CONF.enable_hypervisor_awareness:
+        # not leveraging 4-layer approach so override template value
+        param = next((prop for prop in result
+                      if prop['name'] == 'net.topology.impl'), None)
+        if param:
+            param['value'] = 'org.apache.hadoop.net.NetworkTopology'
+
     LOG.info("Vm awareness will add following configs in core-site "
              "params: %s", result)
     return result
