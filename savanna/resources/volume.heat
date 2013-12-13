@@ -1,0 +1,14 @@
+        "%(volume_name)s" : {
+            "Type" : "OS::Cinder::Volume",
+            "Properties" : {
+                "size" : "%(volumes_size)s"
+            }
+        },
+        "%(volume_attach_name)s" : {
+            "Type" : "OS::Cinder::VolumeAttachment",
+            "Properties" : {
+                "instance_uuid" : { "Ref" : "%(instance_name)s" },
+                "volume_id" : { "Ref" : "%(volume_name)s" },
+                "mountpoint" : null
+            }
+        }

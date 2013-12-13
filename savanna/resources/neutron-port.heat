@@ -1,0 +1,6 @@
+        "%(port_name)s" : {
+            "Type" : "OS::Neutron::Port",
+            "Properties" : {
+               "network_id" : "%(fixed_net_id)s"
+            }
+        }
