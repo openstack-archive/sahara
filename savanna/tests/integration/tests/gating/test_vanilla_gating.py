@@ -13,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import nose.plugins.attrib as attrib
+from testtools import testcase
 import unittest2
 
 from savanna.openstack.common import excutils
@@ -36,9 +36,9 @@ class VanillaGatingTest(cluster_configs.ClusterConfigTest,
     SKIP_SWIFT_TEST = cfg.ITConfig().vanilla_config.SKIP_SWIFT_TEST
     SKIP_SCALING_TEST = cfg.ITConfig().vanilla_config.SKIP_SCALING_TEST
 
-    @attrib.attr(tags='vanilla')
     @unittest2.skipIf(cfg.ITConfig().vanilla_config.SKIP_ALL_TESTS_FOR_PLUGIN,
                       'All tests for Vanilla plugin were skipped')
+    @testcase.attr("hdp")
     def test_vanilla_plugin_gating(self):
 
         floating_ip_pool = None
@@ -239,12 +239,10 @@ class VanillaGatingTest(cluster_configs.ClusterConfigTest,
                 self.print_error_log(message, e)
 
 #----------------------------------EDP TESTING---------------------------------
-
-        job_data = open('integration/tests/resources/edp-job.pig').read()
-
-        lib_data = open('integration/tests/resources/edp-lib.jar').read()
-
-        job_jar_data = open('integration/tests/resources/edp-job.jar').read()
+        path = 'savanna/tests/integration/tests/resources/'
+        job_data = open(path + 'edp-job.pig').read()
+        lib_data = open(path + 'edp-lib.jar').read()
+        job_jar_data = open(path + 'edp-job.jar').read()
 
         configs = {
             "configs": {

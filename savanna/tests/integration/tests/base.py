@@ -481,7 +481,8 @@ class ITestCase(unittest2.TestCase):
 
     def transfer_helper_script_to_node(self, script_name, parameter_list=None):
 
-        script = open('integration/tests/resources/%s' % script_name).read()
+        script = open('savanna/tests/integration/tests/resources/%s'
+                      % script_name).read()
 
         if parameter_list:
 

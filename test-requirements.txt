@@ -5,12 +5,11 @@ discover
 docutils==0.9.1
 fixtures>=0.3.14
 mock>=1.0
-nose
-openstack.nose_plugin>=0.7
 oslo.sphinx
 pylint==0.25.2
 sphinx>=1.1.2,<1.2
 sphinxcontrib-httpdomain
+testtools>=0.9.32
 testrepository>=0.0.17
 unittest2
 
