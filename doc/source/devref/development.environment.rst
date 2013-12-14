@@ -37,14 +37,14 @@ On Ubuntu:
 
 .. sourcecode:: console
 
-    $ sudo apt-get install git-core python-dev python-virtualenv
+    $ sudo apt-get install git-core python-dev python-virtualenv gcc
     $ sudo pip install tox
 
 On Fedora-based distributions (e.g., Fedora/RHEL/CentOS/Scientific Linux):
 
 .. sourcecode:: console
 
-    $ sudo yum install git-core python-devel python-virtualenv
+    $ sudo yum install git-core python-devel python-virtualenv gcc
     $ sudo pip install tox
 
 2. Grab the code from GitHub:
