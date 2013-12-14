@@ -71,9 +71,9 @@ class Service(object):
 
     def _get_common_paths(self, node_groups):
         if len(node_groups) == 1:
-            paths = node_groups[0].storage_paths
+            paths = node_groups[0].storage_paths()
         else:
-            sets = [set(ng.storage_paths) for ng in node_groups]
+            sets = [set(ng.storage_paths()) for ng in node_groups]
             paths = list(set.intersection(*sets))
 
         if len(paths) > 1 and '/mnt' in paths:
@@ -106,14 +106,14 @@ class HdfsService(Service):
             props = {'core-site': ['fs.default.name'],
                      'hdfs-site': ['dfs.http.address', 'dfs.https.address']}
             self._replace_config_token(
-                cluster_spec, '%NN_HOST%', nn_hosts.pop().fqdn, props)
+                cluster_spec, '%NN_HOST%', nn_hosts.pop().fqdn(), props)
 
         snn_hosts = cluster_spec.determine_component_hosts(
             'SECONDARY_NAMENODE')
         if snn_hosts:
             props = {'hdfs-site': ['dfs.secondary.http.address']}
             self._replace_config_token(
-                cluster_spec, '%SNN_HOST%', snn_hosts.pop().fqdn, props)
+                cluster_spec, '%SNN_HOST%', snn_hosts.pop().fqdn(), props)
 
         # add swift properties to configuration
         core_site_config = cluster_spec.configurations['core-site']
@@ -131,9 +131,9 @@ class HdfsService(Service):
         hdfs_site_config = cluster_spec.configurations['hdfs-site']
         global_config = cluster_spec.configurations['global']
         hdfs_site_config['dfs.name.dir'] = self._generate_storage_path(
-            nn_ng.storage_paths, '/hadoop/hdfs/namenode')
+            nn_ng.storage_paths(), '/hadoop/hdfs/namenode')
         global_config['dfs_name_dir'] = self._generate_storage_path(
-            nn_ng.storage_paths, '/hadoop/hdfs/namenode')
+            nn_ng.storage_paths(), '/hadoop/hdfs/namenode')
         if common_paths:
             hdfs_site_config['dfs.data.dir'] = self._generate_storage_path(
                 common_paths, '/hadoop/hdfs/data')
@@ -186,7 +186,7 @@ class MapReduceService(Service):
                                      'mapreduce.history.server.http.address']}
 
             self._replace_config_token(
-                cluster_spec, '%JT_HOST%', jt_hosts.pop().fqdn, props)
+                cluster_spec, '%JT_HOST%', jt_hosts.pop().fqdn(), props)
 
         # process storage paths to accommodate ephemeral or cinder storage
         # NOTE:  mapred.system.dir is an HDFS namespace path (not a filesystem
@@ -238,18 +238,18 @@ class HiveService(Service):
                      'core-site': ['hadoop.proxyuser.hive.hosts'],
                      'hive-site': ['javax.jdo.option.ConnectionURL']}
             self._replace_config_token(
-                cluster_spec, '%HIVE_HOST%', hive_servers.pop().fqdn, props)
+                cluster_spec, '%HIVE_HOST%', hive_servers.pop().fqdn(), props)
 
         hive_ms = cluster_spec.determine_component_hosts('HIVE_METASTORE')
         if hive_ms:
             self._replace_config_token(
-                cluster_spec, '%HIVE_METASTORE_HOST%', hive_ms.pop().fqdn,
+                cluster_spec, '%HIVE_METASTORE_HOST%', hive_ms.pop().fqdn(),
                 {'hive-site': ['hive.metastore.uris']})
 
         hive_mysql = cluster_spec.determine_component_hosts('MYSQL_SERVER')
         if hive_mysql:
             self._replace_config_token(
-                cluster_spec, '%HIVE_MYSQL_HOST%', hive_mysql.pop().fqdn,
+                cluster_spec, '%HIVE_MYSQL_HOST%', hive_mysql.pop().fqdn(),
                 {'global': ['hive_jdbc_connection_url']})
 
     def register_user_input_handlers(self, ui_handlers):
@@ -294,7 +294,7 @@ class HiveService(Service):
             return
 
         # get any instance
-        with cluster_spec.servers[0].remote as r:
+        with cluster_spec.servers[0].remote() as r:
             r.execute_command('su -c "hadoop fs -mkdir /user/hive" '
                               '-s /bin/sh hdfs')
             r.execute_command('su -c "hadoop fs -chown -R '
@@ -332,7 +332,7 @@ class WebHCatService(Service):
             'WEBHCAT_SERVER')
         if webhcat_servers:
             self._replace_config_token(
-                cluster_spec, '%WEBHCAT_HOST%', webhcat_servers.pop().fqdn,
+                cluster_spec, '%WEBHCAT_HOST%', webhcat_servers.pop().fqdn(),
                 {'core-site': ['hadoop.proxyuser.hcat.hosts']})
 
         hive_ms_servers = cluster_spec.determine_component_hosts(
@@ -340,13 +340,13 @@ class WebHCatService(Service):
         if hive_ms_servers:
             self._replace_config_token(
                 cluster_spec, '%HIVE_METASTORE_HOST%',
-                hive_ms_servers.pop().fqdn,
+                hive_ms_servers.pop().fqdn(),
                 {'webhcat-site': ['templeton.hive.properties']})
 
         zk_servers = cluster_spec.determine_component_hosts('ZOOKEEPER_SERVER')
         if zk_servers:
             self._replace_config_token(
-                cluster_spec, '%ZOOKEEPER_HOST%', zk_servers.pop().fqdn,
+                cluster_spec, '%ZOOKEEPER_HOST%', zk_servers.pop().fqdn(),
                 {'webhcat-site': ['templeton.zookeeper.hosts']})
 
     def finalize_ng_components(self, cluster_spec):
@@ -377,7 +377,7 @@ class WebHCatService(Service):
             return
 
         # get any instance
-        with cluster_spec.servers[0].remote as r:
+        with cluster_spec.servers[0].remote() as r:
             r.execute_command('su -c "hadoop fs -mkdir /user/hcat" '
                               '-s /bin/sh hdfs')
             r.execute_command('su -c "hadoop fs -chown -R hcat:hdfs '
@@ -432,7 +432,7 @@ class OozieService(Service):
         oozie_servers = cluster_spec.determine_component_hosts('OOZIE_SERVER')
         if oozie_servers:
             self._replace_config_token(
-                cluster_spec, '%OOZIE_HOST%', oozie_servers.pop().fqdn,
+                cluster_spec, '%OOZIE_HOST%', oozie_servers.pop().fqdn(),
                 {'global': ['oozie_hostname'],
                     'core-site': ['hadoop.proxyuser.oozie.hosts'],
                     'oozie-site': ['oozie.base.url']})

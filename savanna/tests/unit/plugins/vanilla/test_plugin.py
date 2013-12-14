@@ -175,9 +175,14 @@ class VanillaPluginTest(unittest2.TestCase):
                 self.node_processes = processes
                 self.count = count
                 self.instances = instances or []
-                self.configuration = configuration
-                self.storage_paths = ['/mnt']
+                self.ng_configuration = configuration
                 self.cluster_id = cluster_id
+
+            def configuration(self):
+                return self.ng_configuration
+
+            def storage_paths(self):
+                return ['/mnt']
 
         class FakeCluster(object):
             def __init__(self, name, tenant, plugin, version, node_groups):
@@ -190,8 +195,10 @@ class VanillaPluginTest(unittest2.TestCase):
         class FakeInst(object):
             def __init__(self, inst_name, inst_id):
                 self.instance_name = inst_name
-                self.hostname = inst_name
                 self.instance_id = inst_id
+
+            def hostname(self):
+                return self.instance_name
 
         ms_inst = FakeInst('inst1', 'id1')
         wk_inst = FakeInst('inst2', 'id2')

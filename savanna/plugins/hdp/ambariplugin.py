@@ -148,7 +148,7 @@ class AmbariPlugin(p.ProvisioningPluginBase):
 
         for server in servers:
             self._spawn(
-                "hdp-provision-instance-%s" % server.instance.hostname,
+                "hdp-provision-instance-%s" % server.instance.hostname(),
                 server.provision_ambari, ambari_info, cluster_spec)
 
         handler = self.version_factory.get_version_handler(version)
@@ -308,7 +308,7 @@ class AmbariPlugin(p.ProvisioningPluginBase):
         return count
 
     def _get_host_list(self, servers):
-        host_list = [server.instance.fqdn.lower() for server in servers]
+        host_list = [server.instance.fqdn().lower() for server in servers]
         return ",".join(host_list)
 
     def _get_rpm_uri(self, cluster_spec):

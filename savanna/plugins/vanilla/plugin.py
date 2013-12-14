@@ -141,22 +141,22 @@ class VanillaProvider(p.ProvisioningPluginBase):
                 if c_helper.is_mysql_enable(cluster):
                     run.mysql_start(r, oozie)
                     run.oozie_create_db(r)
-                run.oozie_share_lib(r, nn_instance.hostname)
+                run.oozie_share_lib(r, nn_instance.hostname())
                 run.start_oozie(r)
                 LOG.info("Oozie service at '%s' has been started",
-                         nn_instance.hostname)
+                         nn_instance.hostname())
 
         if hive_server:
             with remote.get_remote(nn_instance) as r:
                 run.hive_create_warehouse_dir(r)
             if c_helper.is_mysql_enable(cluster):
                 with remote.get_remote(hive_server) as h:
-                    if not oozie or hive_server.hostname != oozie.hostname:
+                    if not oozie or hive_server.hostname() != oozie.hostname():
                         run.mysql_start(h, hive_server)
                     run.hive_create_db(h)
                     run.hive_metastore_start(h)
                 LOG.info("Hive Metastore server at %s has been started",
-                         hive_server.hostname)
+                         hive_server.hostname())
 
         LOG.info('Cluster %s has been started successfully' % cluster.name)
         self._set_cluster_info(cluster)
@@ -175,8 +175,8 @@ class VanillaProvider(p.ProvisioningPluginBase):
                 'xml': c_helper.generate_xml_configs(
                     cluster, ng, extra['hive_mysql_passwd'] if hive else None),
                 'setup_script': c_helper.generate_setup_script(
-                    ng.storage_paths,
-                    c_helper.extract_environment_confs(ng.configuration),
+                    ng.storage_paths(),
+                    c_helper.extract_environment_confs(ng.configuration()),
                     append_oozie=(
                         oozie and oozie.node_group.id == ng.id)
                 )
@@ -240,7 +240,7 @@ class VanillaProvider(p.ProvisioningPluginBase):
                              self._start_tt_dn, i, list(tt_dn_procs))
 
     def _start_tt_dn(self, instance, tt_dn_procs):
-        with instance.remote as r:
+        with instance.remote() as r:
             run.start_processes(r, *tt_dn_procs)
 
     def _setup_instances(self, cluster, instances):
@@ -394,7 +394,7 @@ class VanillaProvider(p.ProvisioningPluginBase):
                 'Web UI': 'http://%s:%s' % (jt.management_ip, port)
             }
             #TODO(aignatov) change from hardcode value
-            info['MapReduce']['JobTracker'] = '%s:8021' % jt.hostname
+            info['MapReduce']['JobTracker'] = '%s:8021' % jt.hostname()
 
         if nn:
             address = c_helper.get_config_value(
@@ -404,7 +404,7 @@ class VanillaProvider(p.ProvisioningPluginBase):
                 'Web UI': 'http://%s:%s' % (nn.management_ip, port)
             }
             #TODO(aignatov) change from hardcode value
-            info['HDFS']['NameNode'] = 'hdfs://%s:8020' % nn.hostname
+            info['HDFS']['NameNode'] = 'hdfs://%s:8020' % nn.hostname()
 
         if oozie:
             info['JobFlow'] = {

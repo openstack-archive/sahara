@@ -33,13 +33,13 @@ def _mount_volumes_to_node(node_group, instance, volume_type=None):
     for idx in range(0, count):
         LOG.debug("Mounting volume %s to instance %s, type %s" %
                   (device_paths[idx], instance.instance_name, volume_type))
-        mount_point = node_group.storage_paths[idx]
+        mount_point = node_group.storage_paths()[idx]
         _mount_volume(instance, device_paths[idx], mount_point)
         LOG.debug("Mounted volume to instance %s" % instance.instance_id)
 
 
 def _get_device_paths(instance, count):
-    code, part_info = instance.remote.execute_command('cat /proc/partitions')
+    code, part_info = instance.remote().execute_command('cat /proc/partitions')
 
     devices = []
 
@@ -64,7 +64,7 @@ def _get_device_paths(instance, count):
 
 
 def _mount_volume(instance, device_path, mount_point):
-    with instance.remote as r:
+    with instance.remote() as r:
         try:
             r.execute_command('sudo mkdir -p %s' % mount_point)
             r.execute_command('sudo mkfs.ext4 %s' % device_path)

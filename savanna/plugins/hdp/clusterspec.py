@@ -171,12 +171,12 @@ class ClusterSpec():
                 node_group.count = ng.count
                 node_group.id = ng.id
                 node_group.components = ng.node_processes[:]
-                node_group.storage_paths = ng.storage_paths
+                node_group.ng_storage_paths = ng.storage_paths()
                 for instance in ng.instances:
-                    node_group.instances.add(Instance(instance.fqdn,
+                    node_group.instances.add(Instance(instance.fqdn(),
                                                       instance.management_ip,
                                                       instance.internal_ip,
-                                                      instance.remote))
+                                                      instance.remote()))
                 self.node_groups[node_group.name] = node_group
 
     def _determine_deployed_services(self, cluster):
@@ -230,10 +230,13 @@ class NodeGroup():
         self.cardinality = None
         self.count = None
         self.instances = set()
-        self.storage_paths = []
+        self.ng_storage_paths = []
 
     def add_component(self, component):
         self.components.append(component)
+
+    def storage_paths(self):
+        return self.ng_storage_paths
 
 
 class User():
@@ -245,16 +248,22 @@ class User():
 
 class Instance():
     def __init__(self, fqdn, management_ip, internal_ip, remote):
-        self.fqdn = fqdn
+        self.inst_fqdn = fqdn
         self.management_ip = management_ip
         self.internal_ip = internal_ip
-        self.remote = remote
+        self.inst_remote = remote
+
+    def fqdn(self):
+        return self.inst_fqdn
+
+    def remote(self):
+        return self.inst_remote
 
     def __hash__(self):
-        return hash(self.fqdn)
+        return hash(self.fqdn())
 
     def __eq__(self, other):
-        return self.fqdn == other.fqdn
+        return self.fqdn() == other.fqdn()
 
 
 class NormalizedClusterConfig():

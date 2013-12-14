@@ -105,7 +105,7 @@ class AmbariClient():
         self.handler = handler
 
     def _get_http_session(self, host, port):
-        return host.remote.get_http_client(port)
+        return host.remote().get_http_client(port)
 
     def _post(self, url, ambari_info, data=None):
         session = self._get_http_session(ambari_info.host, ambari_info.port)
@@ -228,7 +228,7 @@ class AmbariClient():
         add_host_component_url = 'http://{0}/api/v1/clusters/{1}' \
                                  '/hosts/{2}/host_components/{3}'
         for host in servers:
-            hostname = host.instance.fqdn.lower()
+            hostname = host.instance.fqdn().lower()
             result = self._post(
                 add_host_url.format(ambari_info.get_address(), name, hostname),
                 ambari_info)
@@ -387,7 +387,7 @@ class AmbariClient():
             raise RuntimeError('Hadoop/Ambari command failed.')
 
     def _get_host_list(self, servers):
-        host_list = [server.instance.fqdn.lower() for server in servers]
+        host_list = [server.instance.fqdn().lower() for server in servers]
         return ",".join(host_list)
 
     def _install_and_start_components(self, cluster_name, servers,
@@ -544,7 +544,7 @@ class AmbariClient():
         self.handler.install_swift_integration(servers)
 
     def cleanup(self, ambari_info):
-        ambari_info.host.remote.close_http_sessions()
+        ambari_info.host.remote().close_http_sessions()
 
     def _get_services_in_state(self, cluster_name, ambari_info, state):
         services_url = 'http://{0}/api/v1/clusters/{1}/services?' \

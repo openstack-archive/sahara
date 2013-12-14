@@ -296,7 +296,7 @@ def _wait_until_accessible(instance):
         try:
             # check if ssh is accessible and cloud-init
             # script is finished generating id_rsa
-            exit_code, stdout = instance.remote.execute_command(
+            exit_code, stdout = instance.remote().execute_command(
                 "ls .ssh/id_rsa", raise_when_error=False)
 
             if exit_code == 0:
@@ -331,9 +331,9 @@ def _configure_instances(cluster):
 def _configure_instance(instance, hosts_file):
     LOG.debug('Configuring instance %s' % instance.instance_name)
 
-    with instance.remote as r:
+    with instance.remote() as r:
         r.write_file_to('etc-hosts', hosts_file)
-        r.execute_command('sudo hostname %s' % instance.fqdn)
+        r.execute_command('sudo hostname %s' % instance.fqdn())
         r.execute_command('sudo mv etc-hosts /etc/hosts')
 
         r.execute_command('sudo usermod -s /bin/bash $USER')
@@ -347,8 +347,8 @@ def _generate_etc_hosts(cluster):
     for node_group in cluster.node_groups:
         for instance in node_group.instances:
             hosts += "%s %s %s\n" % (instance.internal_ip,
-                                     instance.fqdn,
-                                     instance.hostname)
+                                     instance.fqdn(),
+                                     instance.hostname())
 
     return hosts
 

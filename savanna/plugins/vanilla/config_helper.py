@@ -186,9 +186,9 @@ def get_config_value(service, name, cluster=None, node_group=None):
             return savanna_configs[name]
 
         for ng in cluster.node_groups:
-            if (ng.configuration.get(service) and
-                    ng.configuration[service].get(name)):
-                return ng.configuration[service][name]
+            if (ng.configuration().get(service) and
+                    ng.configuration()[service].get(name)):
+                return ng.configuration()[service][name]
 
     for c in PLUGIN_CONFIGS:
         if c.applicable_target == service and c.name == name:
@@ -214,7 +214,7 @@ def generate_cfg_from_general(cfg, configs, general_config,
 
 
 def _get_hostname(service):
-    return service.hostname if service else None
+    return service.hostname() if service else None
 
 
 def generate_savanna_configs(cluster, node_group=None):
@@ -223,7 +223,7 @@ def generate_savanna_configs(cluster, node_group=None):
     oozie_hostname = _get_hostname(utils.get_oozie(cluster))
     hive_hostname = _get_hostname(utils.get_hiveserver(cluster))
 
-    storage_path = node_group.storage_paths if node_group else None
+    storage_path = node_group.storage_paths() if node_group else None
 
     # inserting common configs depends on provisioned VMs and HDFS placement
     # TODO(aignatov): should be moved to cluster context
@@ -276,7 +276,7 @@ def generate_xml_configs(cluster, node_group, hive_mysql_passwd):
     oozie_hostname = _get_hostname(utils.get_oozie(cluster))
     hive_hostname = _get_hostname(utils.get_hiveserver(cluster))
 
-    ng_configs = node_group.configuration
+    ng_configs = node_group.configuration()
 
     general_cfg = get_general_configs(hive_hostname, hive_mysql_passwd)
 
@@ -413,7 +413,7 @@ def _set_config(cfg, gen_cfg, name=None):
 
 def _is_general_option_enabled(cluster, option):
     for ng in cluster.node_groups:
-        conf = ng.configuration
+        conf = ng.configuration()
         if 'general' in conf and option.name in conf['general']:
                 return conf['general'][option.name]
     return option.default_value

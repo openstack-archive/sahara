@@ -49,7 +49,7 @@ class HadoopServer:
     @savannautils.inject_remote('r')
     def install_rpms(self, r):
         LOG.info(
-            "{0}: Installing rpm's ...".format(self.instance.hostname))
+            "{0}: Installing rpm's ...".format(self.instance.hostname()))
 
         #TODO(jspeidel): based on image type, use correct command
         rpm_cmd = 'curl -f -s -o /etc/yum.repos.d/ambari.repo %s' % \
@@ -61,15 +61,15 @@ class HadoopServer:
     def install_swift_integration(self, r):
         LOG.info(
             "{0}: Installing swift integration ..."
-            .format(self.instance.hostname))
+            .format(self.instance.hostname()))
 
         rpm_cmd = 'rpm -Uvh ' + HADOOP_SWIFT_RPM
         r.execute_command(rpm_cmd)
 
     @savannautils.inject_remote('r')
     def _setup_and_start_ambari_server(self, port, jdk_path, r):
-        LOG.info(
-            '{0}: Installing ambari-server ...'.format(self.instance.hostname))
+        LOG.info('{0}: Installing ambari-server ...'.format(
+            self.instance.hostname()))
         r.execute_command('yum -y install ambari-server')
 
         LOG.info('Running Ambari Server setup ...')
@@ -102,19 +102,19 @@ class HadoopServer:
 
     @savannautils.inject_remote('r')
     def _setup_and_start_ambari_agent(self, ambari_server_ip, r):
-        LOG.info(
-            '{0}: Installing Ambari Agent ...'.format(self.instance.hostname))
+        LOG.info('{0}: Installing Ambari Agent ...'.format(
+            self.instance.hostname()))
 
         r.execute_command('yum -y install ambari-agent')
         LOG.debug(
             '{0}: setting master-ip: {1} in ambari-agent.ini'.format(
-                self.instance.hostname, ambari_server_ip))
+                self.instance.hostname(), ambari_server_ip))
         r.replace_remote_string(
             '/etc/ambari-agent/conf/ambari-agent.ini', 'localhost',
             ambari_server_ip)
 
         LOG.info(
-            '{0}: Starting Ambari Agent ...'.format(self.instance.hostname))
+            '{0}: Starting Ambari Agent ...'.format(self.instance.hostname()))
         r.execute_command('ambari-agent start')
 
     def _log(self, buf):

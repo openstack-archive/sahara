@@ -112,12 +112,12 @@ class ClusterSpecTest(unittest2.TestCase):
 
         hosts = cluster_config.determine_component_hosts('AMBARI_SERVER')
         self.assertEqual(1, len(hosts))
-        self.assertEqual('ambari_machine', hosts.pop().fqdn)
+        self.assertEqual('ambari_machine', hosts.pop().fqdn())
 
         hosts = cluster_config.determine_component_hosts('DATANODE')
         self.assertEqual(2, len(hosts))
-        datanodes = set([server2.fqdn, server3.fqdn])
-        host_fqdn = set([hosts.pop().fqdn, hosts.pop().fqdn])
+        datanodes = set([server2.fqdn(), server3.fqdn()])
+        host_fqdn = set([hosts.pop().fqdn(), hosts.pop().fqdn()])
         # test intersection is both servers
         self.assertEqual(datanodes, host_fqdn & datanodes)
 
@@ -1373,7 +1373,9 @@ class TestNodeGroup:
         self.node_processes = node_processes
         self.count = count
         self.id = name
-        self.storage_paths = ['']
+
+    def storage_paths(self):
+        return ['']
 
 
 class TestUserInputConfig:

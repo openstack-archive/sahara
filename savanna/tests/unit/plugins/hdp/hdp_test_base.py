@@ -20,8 +20,7 @@ from savanna import version
 
 class TestServer:
     def __init__(self, hostname, role, img, flavor, public_ip, private_ip):
-        self.hostname = hostname
-        self.fqdn = hostname
+        self.inst_fqdn = hostname
         self.role = role
         self.instance_info = InstanceInfo(
             hostname, img, flavor, public_ip, private_ip)
@@ -29,7 +28,12 @@ class TestServer:
         self.public_ip = public_ip
         self.internal_ip = private_ip
         self.node_group = None
-        self.remote = None
+
+    def fqdn(self):
+        return self.inst_fqdn
+
+    def remote(self):
+        return None
 
 
 def get_instance_info(*args, **kwargs):
@@ -46,7 +50,6 @@ def create_clusterspec():
 
 class InstanceInfo:
     def __init__(self, hostname, image, flavor, management_ip, internal_ip):
-        self.hostname = hostname
         self.image = image
         self.flavor = flavor
         self.management_ip = management_ip
@@ -71,7 +74,10 @@ class TestNodeGroup:
         self.node_processes = node_processes
         self.count = count
         self.id = name
-        self.storage_paths = []
+        self.ng_storage_paths = []
+
+    def storage_paths(self):
+        return self.ng_storage_paths
 
 
 class TestUserInputConfig:

@@ -63,7 +63,7 @@ def _attach_volumes_to_node(ctx, node_group, instance, volume_type=None):
         _await_attach_volume(instance, device_path)
         LOG.debug("Attach volume to instance %s, type %s" %
                   (instance.instance_id, volume_type))
-        mount_point = node_group.storage_paths[idx - 1]
+        mount_point = node_group.storage_paths()[idx - 1]
         _mount_volume(instance, device_path, mount_point)
         LOG.debug("Mount volume to instance %s" % instance.instance_id)
 
@@ -88,7 +88,7 @@ def _create_attach_volume(ctx, instance, size, device_path, display_name=None,
 
 def _get_device_paths(instance):
     try:
-        code, part_info = instance.remote.execute_command(
+        code, part_info = instance.remote().execute_command(
             'cat /proc/partitions')
     except Exception:
         LOG.error("Unable get device paths info")
@@ -123,7 +123,7 @@ def _get_free_device_path(instance):
 
 
 def _mount_volume(instance, device_path, mount_point):
-    with instance.remote as r:
+    with instance.remote() as r:
         try:
             r.execute_command('sudo mkdir -p %s' % mount_point)
             r.execute_command('sudo mkfs.ext4 %s' % device_path)

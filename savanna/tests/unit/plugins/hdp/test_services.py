@@ -127,24 +127,24 @@ class ServicesTest(unittest2.TestCase):
     def test_get_storage_paths(self):
         service = s.create_service('AMBARI')
         ng1 = hdp_test_base.TestNodeGroup(None, None, None)
-        ng1.storage_paths = ['/mnt', '/volume/disk1']
+        ng1.ng_storage_paths = ['/mnt', '/volume/disk1']
         ng2 = hdp_test_base.TestNodeGroup(None, None, None)
-        ng2.storage_paths = ['/mnt']
+        ng2.ng_storage_paths = ['/mnt']
 
         paths = service._get_common_paths([ng1, ng2])
         self.assertEqual(['/mnt'], paths)
 
         ng3 = hdp_test_base.TestNodeGroup(None, None, None)
-        ng1.storage_paths = ['/mnt', '/volume/disk1', '/volume/disk2']
-        ng2.storage_paths = ['/mnt']
-        ng3.storage_paths = ['/mnt', '/volume/disk1']
+        ng1.ng_storage_paths = ['/mnt', '/volume/disk1', '/volume/disk2']
+        ng2.ng_storage_paths = ['/mnt']
+        ng3.ng_storage_paths = ['/mnt', '/volume/disk1']
 
         paths = service._get_common_paths([ng1, ng2, ng3])
         self.assertEqual(['/mnt'], paths)
 
-        ng1.storage_paths = ['/mnt', '/volume/disk1', '/volume/disk2']
-        ng2.storage_paths = ['/mnt', '/volume/disk1']
-        ng3.storage_paths = ['/mnt', '/volume/disk1']
+        ng1.ng_storage_paths = ['/mnt', '/volume/disk1', '/volume/disk2']
+        ng2.ng_storage_paths = ['/mnt', '/volume/disk1']
+        ng3.ng_storage_paths = ['/mnt', '/volume/disk1']
 
         paths = service._get_common_paths([ng1, ng2, ng3])
         self.assertEqual(['/volume/disk1'], paths)

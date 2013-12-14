@@ -24,7 +24,7 @@ def get_host_role(host):
 def inject_remote(param_name):
     def handle(func):
         def call(self, *args, **kwargs):
-            with self.instance.remote as r:
+            with self.instance.remote() as r:
                 newkwargs = kwargs.copy()
                 newkwargs[param_name] = r
                 return func(self, *args, **newkwargs)

@@ -27,7 +27,7 @@ class TestAttachVolume(models_test_base.DbTestCase):
         p_get_username.return_value = 'root'
 
         instance = self._get_instance()
-        execute_com = instance.remote.execute_command
+        execute_com = instance.remote().execute_command
 
         self.assertIsNone(volumes._mount_volume(instance, '123', '456'))
         self.assertEqual(execute_com.call_count, 3)
@@ -39,7 +39,7 @@ class TestAttachVolume(models_test_base.DbTestCase):
     def test_get_device_paths(self):
 
         instance = self._get_instance()
-        execute_com = instance.remote.execute_command
+        execute_com = instance.remote().execute_command
 
         partitions = """major minor  #blocks  name
 
@@ -84,4 +84,8 @@ class TestAttachVolume(models_test_base.DbTestCase):
         inst_remote = mock.MagicMock()
         inst_remote.execute_command.return_value = 0
         inst_remote.__enter__.return_value = inst_remote
-        return mock.MagicMock(remote=inst_remote)
+
+        inst = mock.MagicMock()
+        inst.remote.return_value = inst_remote
+
+        return inst

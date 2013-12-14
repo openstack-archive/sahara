@@ -53,7 +53,7 @@ def oozie_share_lib(remote, nn_hostname):
 
 
 def mysql_start(remote, mysql_instance):
-    LOG.debug("Starting mysql at %s" % mysql_instance.hostname)
+    LOG.debug("Starting mysql at %s" % mysql_instance.hostname())
     remote.execute_command("/opt/start-mysql.sh")
 
 
