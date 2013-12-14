@@ -242,7 +242,6 @@ def _populate_cluster(ctx, cluster, stack):
 def _generate_user_data_script(node_group):
     script_template = """#!/bin/bash
 echo "%(public_key)s" >> %(user_home)s/.ssh/authorized_keys
-echo "%(private_key)s" > %(user_home)s/.ssh/id_rsa
 """
     cluster = node_group.cluster
 
@@ -250,7 +249,6 @@ echo "%(private_key)s" > %(user_home)s/.ssh/id_rsa
 
     return script_template % {
         "public_key": cluster.management_public_key,
-        "private_key": cluster.management_private_key,
         "user_home": user_home
     }
 
@@ -295,9 +293,9 @@ def _wait_until_accessible(instance):
     while True:
         try:
             # check if ssh is accessible and cloud-init
-            # script is finished generating id_rsa
+            # script is finished generating authorized_keys
             exit_code, stdout = instance.remote().execute_command(
-                "ls .ssh/id_rsa", raise_when_error=False)
+                "ls .ssh/authorized_keys", raise_when_error=False)
 
             if exit_code == 0:
                 LOG.debug('Instance %s is accessible' % instance.instance_name)
@@ -337,9 +335,6 @@ def _configure_instance(instance, hosts_file):
         r.execute_command('sudo mv etc-hosts /etc/hosts')
 
         r.execute_command('sudo usermod -s /bin/bash $USER')
-
-        r.execute_command('sudo chown $USER:$USER .ssh/id_rsa')
-        r.execute_command('chmod 400 .ssh/id_rsa')
 
 
 def _generate_etc_hosts(cluster):
