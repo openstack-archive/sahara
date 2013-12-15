@@ -22,6 +22,7 @@ from oslo.config import cfg
 from savanna import context
 from savanna.openstack.common import log as logging
 from savanna.utils import files as f
+from savanna.utils.openstack import base
 
 
 CONF = cfg.CONF
@@ -30,9 +31,8 @@ LOG = logging.getLogger(__name__)
 
 def client():
     ctx = context.current()
-    #TODO(aignatov): make it as configurable option
-    return heat_client.Client('1', 'http://localhost:8004/v1/%s' %
-                              ctx.tenant_id, token=ctx.token)
+    heat_url = base.url_for(ctx.service_catalog, 'orchestration')
+    return heat_client.Client('1', heat_url, token=ctx.token)
 
 
 def _get_inst_name(cluster_name, ng_name, index):
