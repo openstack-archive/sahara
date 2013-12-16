@@ -54,7 +54,7 @@ class TestAttachVolume(models_test_base.DbTestCase):
             volumes._get_device_paths(instance, 5)
 
         paths = volumes._get_device_paths(instance, 3)
-        self.assertSequenceEqual(paths, ['/dev/vdc', '/dev/vda', '/dev/vdb'])
+        self.assertSequenceEqual(paths, ['/dev/vdb', '/dev/vdc', '/dev/vdd'])
 
     @mock.patch('savanna.service.volumes_heat._get_device_paths')
     @mock.patch('savanna.service.volumes_heat._mount_volume')
