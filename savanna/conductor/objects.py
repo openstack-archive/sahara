@@ -52,6 +52,7 @@ class Cluster(object):
     status
     status_description
     info
+    extra
     node_groups - list of NodeGroup objects
     cluster_template_id
     cluster_template - ClusterTemplate object
