@@ -46,3 +46,4 @@ cover
 htmlcov
 savanna/openstack/common/db/savanna.sqlite
 .testrepository
+AUTHORS
