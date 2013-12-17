@@ -60,7 +60,7 @@ def _get_device_paths(instance, count):
 
     # we pick devices from the end of the list assuming they were
     # attached the last
-    return devices[-count:]
+    return sorted(devices)[-count:]
 
 
 def _mount_volume(instance, device_path, mount_point):
