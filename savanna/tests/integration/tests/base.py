@@ -180,9 +180,9 @@ class ITestCase(unittest2.TestCase):
         self.cluster_id = None
 
         data = self.savanna.clusters.create(
-            self.common_config.CLUSTER_NAME, plugin_config.PLUGIN_NAME,
-            hadoop_version, cluster_template_id, image_id, is_transient,
-            description, cluster_configs, node_groups,
+            self.common_config.CLUSTER_NAME + '-' + plugin_config.PLUGIN_NAME,
+            plugin_config.PLUGIN_NAME, hadoop_version, cluster_template_id,
+            image_id, is_transient, description, cluster_configs, node_groups,
             self.common_config.USER_KEYPAIR_ID, anti_affinity, net_id)
 
         self.cluster_id = data.id

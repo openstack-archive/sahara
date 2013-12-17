@@ -52,9 +52,9 @@ class HDPGatingTest(map_reduce.MapReduceTest, swift.SwiftTest,
         try:
 
             node_group_template_tt_dn_id = self.create_node_group_template(
-                name='tt-dn',
+                name='test-node-group-template-hdp-tt-dn',
                 plugin_config=self.hdp_config,
-                description='test node group template',
+                description='test node group template for HDP plugin',
                 volumes_per_node=0,
                 volume_size=0,
                 node_processes=['TASKTRACKER', 'DATANODE', 'HDFS_CLIENT',
@@ -77,9 +77,9 @@ class HDPGatingTest(map_reduce.MapReduceTest, swift.SwiftTest,
         try:
 
             cluster_template_id = self.create_cluster_template(
-                name='test-cluster-template',
+                name='test-cluster-template-hdp',
                 plugin_config=self.hdp_config,
-                description='test cluster template',
+                description='test cluster template for HDP plugin',
                 cluster_configs={},
                 node_groups=[
                     dict(

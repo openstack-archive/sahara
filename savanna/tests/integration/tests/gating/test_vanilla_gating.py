@@ -58,9 +58,9 @@ class VanillaGatingTest(cluster_configs.ClusterConfigTest,
         try:
 
             node_group_template_tt_dn_id = self.create_node_group_template(
-                name='tt-dn',
+                name='test-node-group-template-vanilla-tt-dn',
                 plugin_config=self.vanilla_config,
-                description='test node group template',
+                description='test node group template for Vanilla plugin',
                 volumes_per_node=0,
                 volume_size=0,
                 node_processes=['tasktracker', 'datanode'],
@@ -85,9 +85,9 @@ class VanillaGatingTest(cluster_configs.ClusterConfigTest,
         try:
 
             node_group_template_tt_id = self.create_node_group_template(
-                name='tt',
+                name='test-node-group-template-vanilla-tt',
                 plugin_config=self.vanilla_config,
-                description='test node group template',
+                description='test node group template for Vanilla plugin',
                 volumes_per_node=0,
                 volume_size=0,
                 node_processes=['tasktracker'],
@@ -114,9 +114,9 @@ class VanillaGatingTest(cluster_configs.ClusterConfigTest,
         try:
 
             node_group_template_dn_id = self.create_node_group_template(
-                name='dn',
+                name='test-node-group-template-vanilla-dn',
                 plugin_config=self.vanilla_config,
-                description='test node group template',
+                description='test node group template for Vanilla plugin',
                 volumes_per_node=0,
                 volume_size=0,
                 node_processes=['datanode'],
@@ -143,9 +143,9 @@ class VanillaGatingTest(cluster_configs.ClusterConfigTest,
         try:
 
             cluster_template_id = self.create_cluster_template(
-                name='test-cluster-template',
+                name='test-cluster-template-vanilla',
                 plugin_config=self.vanilla_config,
-                description='test cluster template',
+                description='test cluster template for Vanilla plugin',
                 cluster_configs={
                     'HDFS': cluster_configs.CLUSTER_HDFS_CONFIG,
                     'MapReduce': cluster_configs.CLUSTER_MR_CONFIG,
