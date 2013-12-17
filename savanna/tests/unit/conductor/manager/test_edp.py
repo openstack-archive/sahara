@@ -261,6 +261,18 @@ class JobTest(test_base.ConductorManagerTestCase):
             self.assertEqual(val, job.get(key),
                              "Key not found %s" % key)
 
+    def test_jar_created_as_mapreduce(self):
+        sample_job = copy.copy(SAMPLE_JOB)
+        sample_job["type"] = "Jar"
+
+        ctx = context.ctx()
+        ctx.tenant_id = SAMPLE_JOB['tenant_id']
+        job_id = self.api.job_create(ctx, sample_job)['id']
+
+        job = self.api.job_get(ctx, job_id)
+        self.assertIsInstance(job, dict)
+        self.assertEqual(job["type"], "MapReduce")
+
 
 class JobBinaryInternalTest(test_base.ConductorManagerTestCase):
     def __init__(self, *args, **kwargs):

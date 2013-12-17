@@ -34,6 +34,9 @@ JOB_SCHEMA = {
             "enum": [
                 "Pig",
                 "Hive",
+                "MapReduce",
+                # Leave this here for validation of create_job,
+                # but it will be changed to MapReduce on creation
                 "Jar",
             ],
         },

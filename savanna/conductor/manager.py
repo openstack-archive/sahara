@@ -328,6 +328,8 @@ class ConductorManager(db_base.Base):
         """Create a Job from the values dictionary."""
         values = copy.deepcopy(values)
         values['tenant_id'] = context.tenant_id
+        if values['type'] == 'Jar':
+            values['type'] = 'MapReduce'
         return self.db.job_create(context, values)
 
     def job_update(self, context, job, values):

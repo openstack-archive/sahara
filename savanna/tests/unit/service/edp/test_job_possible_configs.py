@@ -21,14 +21,16 @@ from savanna.service.edp.workflow_creator import workflow_factory as w_f
 class TestJobPossibleConfigs(unittest2.TestCase):
 
     def test_possible_configs(self):
-        res = w_f.get_possible_job_config("Jar")
-        sample_config_property = {
-            'name': 'mapred.map.tasks',
-            'value': '2',
-            'description': 'The default number of map tasks per job.'
-                           'Ignored when mapred.job.tracker is "local".  '
-        }
-        self.assertIn(sample_config_property, res['job_config']["configs"])
+        for job_type in ['MapReduce', 'Jar']:
+            res = w_f.get_possible_job_config(job_type)
+            sample_config_property = {
+                'name': 'mapred.map.tasks',
+                'value': '2',
+                'description': 'The default number of map tasks per job.'
+                               'Ignored when mapred.job.tracker is "local".  '
+            }
+            self.assertIn(sample_config_property, res['job_config']["configs"])
+
         res = w_f.get_possible_job_config("Hive")
         sample_config_property = {
             "description": "The serde used by FetchTask to serialize the "

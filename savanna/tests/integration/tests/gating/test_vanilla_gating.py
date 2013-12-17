@@ -261,7 +261,7 @@ class VanillaGatingTest(cluster_configs.ClusterConfigTest,
             self._edp_testing('Pig', [{'pig': job_data}], [{'jar': lib_data}])
 
         #TODO(vrovachev): remove mains after when bug #1237434 will be fixed
-            self._edp_testing('Jar', [{'pig': job_data}],
+            self._edp_testing('MapReduce', [{'pig': job_data}],
                               [{'jar': job_jar_data}], configs)
 
         except Exception as e:
