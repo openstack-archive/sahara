@@ -113,6 +113,11 @@ class HDPGatingTest(map_reduce.MapReduceTest, swift.SwiftTest,
 
 #-------------------------------Cluster creation-------------------------------
 
+        self.hdp_config.IMAGE_ID, self.hdp_config.NODE_USERNAME = \
+            self.get_image_id_and_savanna_cluster_node_username(
+                self.hdp_config
+            )
+
         try:
 
             cluster_info = self.create_cluster_and_get_info(
