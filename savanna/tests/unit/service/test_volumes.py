@@ -24,7 +24,8 @@ from savanna.tests.unit import base as models_test_base
 
 
 class TestAttachVolume(models_test_base.DbTestCase):
-    @mock.patch('savanna.service.instances._get_node_group_image_username')
+    @mock.patch(
+        'savanna.service.engine.Engine.get_node_group_image_username')
     def test_mount_volume(self, p_get_username):
         p_get_username.return_value = 'root'
 
