@@ -42,9 +42,17 @@ def hive_create_warehouse_dir(nn_remote):
 
 def oozie_share_lib(remote, nn_hostname):
     LOG.debug("Sharing Oozie libs to hdfs://%s:8020" % nn_hostname)
-    remote.execute_command('sudo su - -c "/opt/oozie/bin/oozie-setup.sh '
-                           'sharelib create -fs hdfs://%s:8020" hadoop'
-                           % nn_hostname)
+    #remote.execute_command('sudo su - -c "/opt/oozie/bin/oozie-setup.sh '
+    #                       'sharelib create -fs hdfs://%s:8020" hadoop'
+    #                       % nn_hostname)
+
+    #TODO(alazarev) return 'oozie-setup.sh sharelib create' back
+    #when #1262023 is resolved
+    remote.execute_command(
+        'sudo su - -c "mkdir /tmp/oozielib && '
+        'tar zxf /opt/oozie/oozie-sharelib-4.0.0.tar.gz -C /tmp/oozielib && '
+        'hadoop fs -put /tmp/oozielib/share share && '
+        'rm -rf /tmp/oozielib" hadoop')
 
     LOG.debug("Creating sqlfile for Oozie")
     remote.execute_command('sudo su - -c "/opt/oozie/bin/ooziedb.sh '
