@@ -13,6 +13,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from oslo.config import cfg
+
 from savanna import conductor
 from savanna import context
 from savanna import exceptions as exc
@@ -22,10 +24,12 @@ from savanna.plugins.hdp import hadoopserver as h
 from savanna.plugins.hdp import savannautils as utils
 from savanna.plugins.hdp.versions import versionhandlerfactory as vhf
 from savanna.plugins import provisioning as p
+from savanna.topology import topology_helper as th
 
 
 conductor = conductor.API
 LOG = logging.getLogger(__name__)
+CONF = cfg.CONF
 
 
 class AmbariPlugin(p.ProvisioningPluginBase):
@@ -55,6 +59,10 @@ class AmbariPlugin(p.ProvisioningPluginBase):
         self._provision_cluster(
             cluster.name, cluster_spec, ambari_info, servers,
             cluster.hadoop_version)
+
+        # add the topology data file and script if rack awareness is
+        # enabled
+        self._configure_topology_for_cluster(cluster, servers)
 
         LOG.info("Install of Hadoop stack successful.")
         # add service urls
@@ -283,8 +291,13 @@ class AmbariPlugin(p.ProvisioningPluginBase):
             self._spawn('Ambari provisioning thread',
                         server.provision_ambari, ambari_info, cluster_spec)
 
-        ambari_client.scale_cluster(cluster.name, cluster_spec, servers,
-                                    self._get_num_hosts(cluster), ambari_info)
+        ambari_client.configure_scaled_cluster_instances(
+            cluster.name, cluster_spec, self._get_num_hosts(cluster),
+            ambari_info)
+        self._configure_topology_for_cluster(cluster, servers)
+        ambari_client.start_scaled_cluster_instances(cluster.name,
+                                                     cluster_spec, servers,
+                                                     ambari_info)
 
         ambari_client.cleanup(ambari_info)
 
@@ -323,6 +336,15 @@ class AmbariPlugin(p.ProvisioningPluginBase):
             'server.port', '8080')
 
         return AmbariInfo(ambari_host, port, 'admin', 'admin')
+
+    def _configure_topology_for_cluster(self, cluster, servers):
+        if CONF.enable_data_locality:
+            topology_data = th.generate_topology_map(
+                cluster, CONF.enable_hypervisor_awareness)
+            topology_str = "\n".join(
+                [k + " " + v for k, v in topology_data.items()]) + "\n"
+            for server in servers:
+                server.configure_topology(topology_str)
 
 
 class AmbariInfo():

@@ -516,8 +516,8 @@ class AmbariClient():
                 'Unable to delete Ambari user: {0}'
                 ' : {1}'.format(user_name, result.text))
 
-    def scale_cluster(self, name, cluster_spec, servers,
-                      num_hosts, ambari_info):
+    def configure_scaled_cluster_instances(self, name, cluster_spec,
+                                           num_hosts, ambari_info):
         self.wait_for_host_registrations(num_hosts, ambari_info)
         self._add_configurations_to_cluster(
             cluster_spec, ambari_info, name)
@@ -526,6 +526,9 @@ class AmbariClient():
         self._add_components_to_services(
             cluster_spec, ambari_info, name)
         self._install_services(name, ambari_info)
+
+    def start_scaled_cluster_instances(self, name, cluster_spec, servers,
+                                       ambari_info):
         self.start_services(name, cluster_spec, ambari_info)
         self._add_hosts_and_components(
             cluster_spec, servers, ambari_info, name)
