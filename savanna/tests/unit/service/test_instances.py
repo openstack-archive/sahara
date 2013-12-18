@@ -257,11 +257,9 @@ def _mock_ips(count):
 def _generate_user_data_script(cluster):
     script_template = """#!/bin/bash
 echo "%(public_key)s" >> %(user_home)s/.ssh/authorized_keys
-echo "%(private_key)s" > %(user_home)s/.ssh/id_rsa
 """
     return script_template % {
         "public_key": cluster.management_public_key,
-        "private_key": cluster.management_private_key,
         "user_home": "/root/"
     }
 
