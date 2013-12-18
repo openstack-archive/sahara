@@ -145,8 +145,7 @@ def _provision_scaled_cluster(id, node_group_id_map):
         plugin.decommission_nodes(cluster, instances_to_delete)
 
     # Scaling infrastructure
-    cluster = conductor.cluster_update(ctx, cluster,
-                                       {"status": "Scaling"})
+    cluster = conductor.cluster_update(ctx, cluster, {"status": "Scaling"})
     LOG.info(g.format_cluster_status(cluster))
 
     instances = INFRA.scale_cluster(cluster, node_group_id_map)
@@ -195,7 +194,7 @@ def _provision_cluster(cluster_id):
     except Exception as ex:
         LOG.exception("Can't configure cluster '%s' (reason: %s)",
                       cluster.name, ex)
-        conductor.cluster_update(ctx, cluster, {"status": "Error"})
+        cluster = conductor.cluster_update(ctx, cluster, {"status": "Error"})
         LOG.info(g.format_cluster_status(cluster))
         return
 
@@ -207,7 +206,7 @@ def _provision_cluster(cluster_id):
     except Exception as ex:
         LOG.exception("Can't start services for cluster '%s' (reason: %s)",
                       cluster.name, ex)
-        conductor.cluster_update(ctx, cluster, {"status": "Error"})
+        cluster = conductor.cluster_update(ctx, cluster, {"status": "Error"})
         LOG.info(g.format_cluster_status(cluster))
         return
 

@@ -58,7 +58,8 @@ def _create_cluster(cluster):
     ctx = context.ctx()
     try:
         # create all instances
-        conductor.cluster_update(ctx, cluster, {"status": "Spawning"})
+        cluster = conductor.cluster_update(ctx, cluster,
+                                           {"status": "Spawning"})
         LOG.info(g.format_cluster_status(cluster))
         _create_instances(cluster)
 
