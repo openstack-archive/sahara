@@ -200,7 +200,7 @@ class ClusterResource(Resource, objects.Cluster):
         'cluster_template': (ClusterTemplateResource, None)
     }
 
-    _filter_fields = ['management_private_key']
+    _filter_fields = ['management_private_key', 'extra']
 
 
 ##EDP Resources

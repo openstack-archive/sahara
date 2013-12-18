@@ -262,14 +262,15 @@ class VanillaProvider(p.ProvisioningPluginBase):
 
     def _push_configs_to_new_node(self, cluster, extra, instance):
         ng_extra = extra[instance.node_group.id]
+        private_key, public_key = c_helper.get_hadoop_ssh_keys(cluster)
 
         files = {
             '/etc/hadoop/core-site.xml': ng_extra['xml']['core-site'],
             '/etc/hadoop/mapred-site.xml': ng_extra['xml']['mapred-site'],
             '/etc/hadoop/hdfs-site.xml': ng_extra['xml']['hdfs-site'],
             '/tmp/savanna-hadoop-init.sh': ng_extra['setup_script'],
-            'id_rsa': cluster.management_private_key,
-            'authorized_keys': cluster.management_public_key
+            'id_rsa': private_key,
+            'authorized_keys': public_key
         }
 
         key_cmd = 'sudo mkdir -p /home/hadoop/.ssh/ && ' \

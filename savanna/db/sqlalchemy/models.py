@@ -64,6 +64,7 @@ class Cluster(mb.SavannaBase):
     status = sa.Column(sa.String(80))
     status_description = sa.Column(sa.String(200))
     info = sa.Column(st.JsonDictType())
+    extra = sa.Column(st.JsonDictType())
     node_groups = relationship('NodeGroup', cascade="all,delete",
                                backref='cluster', lazy='joined')
     cluster_template_id = sa.Column(sa.String(36),

@@ -16,6 +16,7 @@
 from oslo.config import cfg
 
 from savanna import conductor as c
+from savanna import context
 from savanna.openstack.common import log as logging
 from savanna.plugins.general import utils
 from savanna.plugins import provisioning as p
@@ -23,6 +24,7 @@ from savanna.plugins.vanilla import mysql_helper as m_h
 from savanna.plugins.vanilla import oozie_helper as o_h
 from savanna.swift import swift_helper as swift
 from savanna.topology import topology_helper as topology
+from savanna.utils import crypto
 from savanna.utils import types as types
 from savanna.utils import xmlutils as x
 
@@ -215,6 +217,19 @@ def generate_cfg_from_general(cfg, configs, general_config,
 
 def _get_hostname(service):
     return service.hostname() if service else None
+
+
+def get_hadoop_ssh_keys(cluster):
+    extra = cluster.extra or {}
+    private_key = extra.get('hadoop_private_ssh_key')
+    public_key = extra.get('hadoop_public_ssh_key')
+    if not private_key or not public_key:
+        private_key, public_key = crypto.generate_key_pair()
+        extra['hadoop_private_ssh_key'] = private_key
+        extra['hadoop_public_ssh_key'] = public_key
+        conductor.cluster_update(context.ctx(), cluster, {'extra': extra})
+
+    return private_key, public_key
 
 
 def generate_savanna_configs(cluster, node_group=None):
