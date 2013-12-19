@@ -63,7 +63,4 @@ def assign_floating_ip(instance_id, pool):
 def delete_floating_ip(instance_id):
     fl_ips = nova.client().floating_ips.findall(instance_id=instance_id)
     for fl_ip in fl_ips:
-        if CONF.use_neutron:
-            nova.client().floating_ips.delete(fl_ip.id)
-        else:
-            nova.client().floating_ips.delete(fl_ip.ip)
+        nova.client().floating_ips.delete(fl_ip.id)

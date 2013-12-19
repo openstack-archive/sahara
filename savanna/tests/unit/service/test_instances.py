@@ -22,6 +22,7 @@ from savanna.service import instances
 from savanna.tests.unit import base as models_test_base
 import savanna.utils.crypto as c
 
+from novaclient import exceptions as nova_exceptions
 
 conductor = cond.API
 
@@ -194,6 +195,35 @@ class IpManagementTest(models_test_base.DbTestCase):
                          "Not expected floating IPs number found.")
 
 
+class ShutdownClusterTest(models_test_base.DbTestCase):
+    def setUp(self):
+        r.Resource._is_passthrough_type = _resource_passthrough
+        super(ShutdownClusterTest, self).setUp()
+
+    @mock.patch('savanna.utils.openstack.nova.client')
+    def test_delete_floating_ips(self, novaclient):
+
+        nova = _create_nova_mock(novaclient)
+
+        node_groups = [_make_ng_dict("test_group_1", "test_flavor",
+                                     ["data node", "test tracker"], 2, 'pool')]
+
+        ctx = context.ctx()
+        cluster = _create_cluster_mock(node_groups, ["datanode"])
+        instances._create_instances(cluster)
+
+        cluster = conductor.cluster_get(ctx, cluster)
+        instances_list = instances._get_instances(cluster)
+
+        instances._assign_floating_ips(instances_list)
+
+        instances._shutdown_instances(cluster)
+        self.assertEqual(nova.floating_ips.delete.call_count, 2,
+                         "Not expected floating IPs number found in delete")
+        self.assertEqual(nova.servers.delete.call_count, 2,
+                         "Not expected")
+
+
 def _make_ng_dict(name, flavor, processes, count, floating_ip_pool=None):
     ng_dict = {'name': name, 'flavor_id': flavor, 'node_processes': processes,
                'count': count}
@@ -272,10 +302,22 @@ def _create_nova_mock(novalcient):
     nova.servers.create.side_effect = _mock_instances(4)
     nova.servers.get.return_value = _mock_instance(1)
     nova.floating_ips.create.side_effect = _mock_ips(4)
+    nova.floating_ips.findall.return_value = _mock_ips(1)
+    nova.floating_ips.delete.side_effect = _mock_deletes(2)
     images = mock.Mock()
     images.username = "root"
     nova.images.get = lambda x: images
     return nova
+
+
+def _mock_deletes(count):
+    return [_mock_delete(i) for i in range(1, count + 1)]
+
+
+def _mock_delete(id):
+    if id == 1:
+        return None
+    return nova_exceptions.NotFound(code=404)
 
 
 class MockException(Exception):
