@@ -24,7 +24,7 @@ from savanna import context
 from savanna.openstack.common import excutils
 from savanna.openstack.common import log as logging
 from savanna.service import networks
-from savanna.service import volumes_heat as volumes
+from savanna.service import volumes
 from savanna.utils import general as g
 from savanna.utils.openstack import heat
 

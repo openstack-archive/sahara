@@ -59,49 +59,13 @@ class TestAttachVolume(models_test_base.DbTestCase):
         p_delete.side_effect = RuntimeError
         self.assertRaises(RuntimeError, volumes.detach, cluster)
 
-    @mock.patch('savanna.service.instances._get_node_group_image_username')
-    def test_get_free_device_path(self, p_get_username):
-        p_get_username.return_value = 'root'
-
-        instance = self._get_instance()
-        execute_com = instance.remote().execute_command
-
-        stdout = """major minor  #blocks  name
-
-   8        0  488386584 vda
-   8        1     102400 vda1"""
-
-        execute_com.return_value = (0, stdout)
-        self.assertEqual(volumes._get_free_device_path(instance), '/dev/vdb')
-
-        stdout = """major minor  #blocks  name
-
-   8        0  488386584 xvda
-   8        1     102400 xvda1"""
-
-        execute_com.return_value = (0, stdout)
-        self.assertEqual(volumes._get_free_device_path(instance), '/dev/xvdb')
-
-        stdout = "major minor  #blocks  name\n"
-        for idx in range(0, 26):
-            line = "   8        0  488386584 vd" + chr(ord('a') + idx) + '\n'
-            stdout += line
-
-        execute_com.return_value = (0, stdout)
-        with self.assertRaises(RuntimeError):
-            volumes._get_free_device_path(instance)
-
-        execute_com.side_effect = ex.RemoteCommandException('')
-        with self.assertRaises(ex.RemoteCommandException):
-            volumes._get_free_device_path(instance)
-
     @mock.patch('savanna.service.volumes._mount_volume')
-    @mock.patch('savanna.service.volumes._await_attach_volume')
+    @mock.patch('savanna.service.volumes._await_attach_volumes')
     @mock.patch('savanna.service.volumes._create_attach_volume')
-    @mock.patch('savanna.service.volumes._get_free_device_path')
+    @mock.patch('savanna.service.volumes._get_unmounted_devices')
     def test_attach(self, p_dev_path, p_create_attach_vol,
                     p_await, p_mount):
-        p_dev_path.return_value = '123'
+        p_dev_path.return_value = ['123', '456']
         p_create_attach_vol.return_value = None
         p_await.return_value = None
         p_mount.return_value = None
@@ -120,33 +84,41 @@ class TestAttachVolume(models_test_base.DbTestCase):
 
         volumes.attach(cluster)
         self.assertEqual(p_create_attach_vol.call_count, 4)
-        self.assertEqual(p_await.call_count, 4)
+        self.assertEqual(p_await.call_count, 2)
         self.assertEqual(p_mount.call_count, 4)
-        self.assertEqual(p_dev_path.call_count, 4)
-
-        p_create_attach_vol.reset_mock()
-        p_await.reset_mock()
-        p_mount.reset_mock()
-        p_dev_path.reset_mock()
-
-        instances = cluster.node_groups[0].instances
-        volumes.attach_to_instances(instances)
-
-        self.assertEqual(p_create_attach_vol.call_count, 4)
-        self.assertEqual(p_await.call_count, 4)
-        self.assertEqual(p_mount.call_count, 4)
-        self.assertEqual(p_dev_path.call_count, 4)
+        self.assertEqual(p_dev_path.call_count, 2)
 
     @mock.patch('savanna.context.sleep')
-    @mock.patch('savanna.service.volumes._get_device_paths')
+    @mock.patch('savanna.service.volumes._get_unmounted_devices')
     def test_await_attach_volume(self, dev_paths, p_sleep):
         dev_paths.return_value = ['/dev/vda', '/dev/vdb']
         p_sleep.return_value = None
         instance = r.InstanceResource({'instance_id': '123454321',
                                        'instance_name': 'instt'})
-        self.assertIsNone(volumes._await_attach_volume(instance, '/dev/vdb'))
-        self.assertRaises(RuntimeError, volumes._await_attach_volume,
-                          instance, '/dev/vdc')
+        self.assertIsNone(volumes._await_attach_volumes(instance, 2))
+        self.assertRaises(RuntimeError, volumes._await_attach_volumes,
+                          instance, 3)
+
+    def test_get_unmounted_devices(self):
+        partitions = """major minor  #blocks  name
+
+   7        0   41943040 vdd
+   7        1  102400000 vdc
+   7        1  222222222 vdc1
+   8        0  976762584 vda
+   8        0  111111111 vda1
+   8        1  842576896 vdb"""
+
+        mount = """
+/dev/vda1 qwe rty
+/dev/vdb asd fgh"""
+
+        instance = self._get_instance()
+        ex_cmd = instance.remote().execute_command
+        ex_cmd.side_effect = [(0, partitions), (0, mount)]
+
+        self.assertEqual(
+            volumes._get_unmounted_devices(instance), ['/dev/vdd'])
 
     def _get_instance(self):
         inst_remote = mock.MagicMock()
