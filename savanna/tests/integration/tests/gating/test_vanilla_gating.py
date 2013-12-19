@@ -25,9 +25,9 @@ from savanna.tests.integration.tests import scaling
 from savanna.tests.integration.tests import swift
 
 
-class VanillaGatingTest(cluster_configs.ClusterConfigTest,
+class VanillaGatingTest(cluster_configs.ClusterConfigTest, edp.EDPTest,
                         map_reduce.MapReduceTest, swift.SwiftTest,
-                        scaling.ScalingTest, edp.EDPTest):
+                        scaling.ScalingTest):
 
     SKIP_CLUSTER_CONFIG_TEST = \
         cfg.ITConfig().vanilla_config.SKIP_CLUSTER_CONFIG_TEST
@@ -38,16 +38,19 @@ class VanillaGatingTest(cluster_configs.ClusterConfigTest,
 
     @unittest2.skipIf(cfg.ITConfig().vanilla_config.SKIP_ALL_TESTS_FOR_PLUGIN,
                       'All tests for Vanilla plugin were skipped')
-    @testcase.attr("hdp")
+    @testcase.attr('vanilla')
     def test_vanilla_plugin_gating(self):
 
-        floating_ip_pool = None
-        internal_neutron_net_id = None
+        # Default value of self.common_config.FLOATING_IP_POOL is None
+        floating_ip_pool = self.common_config.FLOATING_IP_POOL
+        internal_neutron_net = None
 
+        # If Neutron enabled then get ID of floating IP pool and ID of internal
+        # Neutron network
         if self.common_config.NEUTRON_ENABLED:
 
-            floating_ip_pool = self.get_floating_ip_pool()
-            internal_neutron_net_id = self.get_internal_neutron_network_id()
+            floating_ip_pool = self.get_floating_ip_pool_id_for_neutron_net()
+            internal_neutron_net = self.get_internal_neutron_net_id()
 
         node_group_template_id_list = []
 
@@ -184,7 +187,7 @@ class VanillaGatingTest(cluster_configs.ClusterConfigTest,
                         node_group_template_id=node_group_template_tt_id,
                         count=1)
                 ],
-                net_id=internal_neutron_net_id
+                net_id=internal_neutron_net
             )
 
         except Exception as e:
@@ -244,6 +247,7 @@ class VanillaGatingTest(cluster_configs.ClusterConfigTest,
                 self.print_error_log(message, e)
 
 #----------------------------------EDP TESTING---------------------------------
+
         path = 'savanna/tests/integration/tests/resources/'
         job_data = open(path + 'edp-job.pig').read()
         lib_data = open(path + 'edp-lib.jar').read()

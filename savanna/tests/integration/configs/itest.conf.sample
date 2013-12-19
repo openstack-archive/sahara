@@ -1,13 +1,23 @@
 [COMMON]
 
-# Username for OpenStack
 OS_USERNAME = 'admin'
-# Password for OpenStack
 OS_PASSWORD = 'admin'
-# Tenant name for OpenStack
 OS_TENANT_NAME = 'admin'
-# URL for OpenStack
-OS_AUTH_URL = 'http://127.0.0.1:35357/v2.0/'
-
-# Host for Savanna API
+OS_AUTH_URL = 'http://127.0.0.1:5000/v2.0'
 SAVANNA_HOST = '127.0.0.1'
+FLAVOR_ID = 2
+USER_KEYPAIR_ID = 'savanna-key-pair'
+PATH_TO_SSH_KEY = '/home/ubuntu/.ssh/id_rsa'
+FLOATING_IP_POOL = 'net04_ext'
+NEUTRON_ENABLED = True
+INTERNAL_NEUTRON_NETWORK = 'net04'
+
+[VANILLA]
+
+IMAGE_NAME = 'savanna-vanilla-image'
+SKIP_CLUSTER_CONFIG_TEST = True
+
+[HDP]
+
+IMAGE_ID = 'f7de0ea9-eb4d-4b63-8ed0-abcf11cfaff8'
+SKIP_ALL_TESTS_FOR_PLUGIN = False

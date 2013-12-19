@@ -49,7 +49,7 @@ COMMON_CONFIG_OPTS = [
                default='admin',
                help='Tenant name for OpenStack.'),
     cfg.StrOpt('OS_AUTH_URL',
-               default='http://127.0.0.1:35357/v2.0/',
+               default='http://127.0.0.1:5000/v2.0',
                help='URL for OpenStack.'),
 
     cfg.StrOpt('SWIFT_AUTH_VERSION',
@@ -69,7 +69,7 @@ COMMON_CONFIG_OPTS = [
     cfg.StrOpt('FLAVOR_ID',
                default=None,
                help='OpenStack flavor ID for virtual machines. If you leave '
-                    'default value of this flag then flavor ID will be '
+                    'default value of this parameter then flavor ID will be '
                     'created automatically, using nova client. Created flavor '
                     'will have the following parameters: '
                     'name=i-test-flavor-<id>, ram=1024, vcpus=1, disk=10, '
@@ -114,16 +114,15 @@ COMMON_CONFIG_OPTS = [
                     'to export (create) key pair then you just should specify '
                     'any key pair ID which you like (for example, '
                     '"king-kong") but you have necessarily to leave default '
-                    'value of PATH_TO_SSH_KEY flag. In this case key pair '
-                    'will be created automatically. Also to key pair ID will '
+                    'value of PATH_TO_SSH_KEY parameter. In this case key pair'
+                    ' will be created automatically. Also to key pair ID will '
                     'be added little ID (8 characters (letters and/or digits))'
                     ' for its uniqueness. In the end of tests key pair will '
                     'be deleted.'),
-
     cfg.StrOpt('PATH_TO_SSH_KEY',
                default=None,
                help='Path to id_rsa key which is used with tests for remote '
-                    'command execution. If you specified wrong path to key '
+                    'command execution. If you specify wrong path to key '
                     'then you will have the error "Private key file is '
                     'encrypted". Please, make sure you specified right path '
                     'to key. If this parameter is not specified, key pair '
@@ -132,21 +131,26 @@ COMMON_CONFIG_OPTS = [
 
     cfg.StrOpt('FLOATING_IP_POOL',
                default=None,
-               help='Pool for floating IPs. If you leave default value of '
-                    'this flag then as floating IP pool will be chosen '
-                    'the first pool of OpenStack pool list.'),
+               help='Pool name for floating IPs. If Savanna uses Nova '
+                    'management network and auto assignment of IPs was '
+                    'enabled then you should leave default value of this '
+                    'parameter. If auto assignment was not enabled then you '
+                    'should specify value (floating IP pool name) of this '
+                    'parameter. If Savanna uses Neutron management network '
+                    'then you should always specify value (floating IP pool '
+                    'name) of this parameter.'),
 
     cfg.BoolOpt('NEUTRON_ENABLED',
                 default=False,
                 help='If Savanna uses Nova management network then you should '
                      'leave default value of this flag. If Savanna uses '
                      'Neutron management network then you should set this '
-                     'flag to True.'),
+                     'flag to True and specify values of the following '
+                     'parameters: FLOATING_IP_POOL and '
+                     'INTERNAL_NEUTRON_NETWORK.'),
     cfg.StrOpt('INTERNAL_NEUTRON_NETWORK',
-               default=None,
-               help='Name for internal Neutron network. If you leave default '
-                    'value of this flag then as internal Neutron network will '
-                    'be chosen the first network of OpenStack network list.')
+               default='private',
+               help='Name for internal Neutron network. ')
 ]
 
 
