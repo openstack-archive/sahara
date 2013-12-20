@@ -121,6 +121,13 @@ When user terminates cluster, Savanna simply shuts down all the cluster VMs. Thi
 
 *Returns*: None
 
+get_oozie_server(cluster)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Returns the instance object for the host running the Oozie server (this service may be referenced by a vendor-dependent identifier)
+
+*Returns*: The Oozie server instance object
+
 Object Model
 ============
 

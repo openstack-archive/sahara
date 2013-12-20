@@ -66,6 +66,10 @@ class ProvisioningPluginBase(plugins_base.PluginInterface):
     def scale_cluster(self, cluster, instances):
         pass
 
+    @plugins_base.optional
+    def get_oozie_server(self, cluster):
+        pass
+
     @plugins_base.required_with_default
     def decommission_nodes(self, cluster, instances):
         pass

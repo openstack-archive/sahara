@@ -15,39 +15,52 @@
 
 import json
 import re
-import requests
+from six.moves.urllib import parse as urlparse
 import urllib
 
 import savanna.exceptions as ex
 
 
 class OozieClient(object):
-    def __init__(self, url):
+    def __init__(self, url, oozie_server):
         self.job_url = url + "/v1/job/%s"
         self.jobs_url = url + "/v1/jobs"
+        self.oozie_server = oozie_server
+        self.port = urlparse.urlparse(url).port
 
-    def add_job(self, job_config):
-        resp = requests.post(self.jobs_url, job_config, headers={
+    def _get_http_session(self, info=None):
+        return self.oozie_server.remote().get_http_client(self.port, info=info)
+
+    def add_job(self, job_config, job_execution):
+        session = self._get_http_session(job_execution.extra.get('neutron'))
+        resp = session.post(self.jobs_url, data=job_config, headers={
             "Content-Type": "application/xml;charset=UTF-8"
         })
         _check_status_code(resp, 201)
         return get_json(resp)['id']
 
-    def run_job(self, job_id):
-        resp = requests.put(self.job_url % job_id + "?action=start")
+    def run_job(self, job_execution, job_id):
+        session = self._get_http_session(job_execution.extra.get('neutron'))
+        resp = session.put(self.job_url % job_id + "?action=start")
         _check_status_code(resp, 200)
 
-    def kill_job(self, job_id):
-        resp = requests.put(self.job_url % job_id + "?action=kill")
+    def kill_job(self, job_execution):
+        session = self._get_http_session(job_execution.extra.get('neutron'))
+        resp = session.put(self.job_url % job_execution.oozie_job_id +
+                           "?action=kill")
         _check_status_code(resp, 200)
 
-    def get_job_status(self, job_id):
-        resp = requests.get(self.job_url % job_id + "?show=info")
+    def get_job_status(self, job_execution):
+        session = self._get_http_session(job_execution.extra.get('neutron'))
+        resp = session.get(self.job_url % job_execution.oozie_job_id +
+                           "?show=info")
         _check_status_code(resp, 200)
         return get_json(resp)
 
-    def get_job_logs(self, job_id):
-        resp = requests.get(self.job_url % job_id + "?show=log")
+    def get_job_logs(self, job_execution):
+        session = self._get_http_session(job_execution.extra.get('neutron'))
+        resp = session.get(self.job_url % job_execution.oozie_job_id +
+                           "?show=log")
         _check_status_code(resp, 200)
         return resp.text
 
@@ -57,7 +70,8 @@ class OozieClient(object):
             f = ";".join([k + "=" + v for k, v in filter.items()])
             url += "&filter=" + urllib.quote(f)
 
-        resp = requests.get(url)
+        session = self._get_http_session()
+        resp = session.get(url)
         _check_status_code(resp, 200)
         return get_json(resp)
 

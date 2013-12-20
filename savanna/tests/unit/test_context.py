@@ -117,6 +117,19 @@ class ContextTest(unittest2.TestCase):
         self.assertIsNotNone(tg.exc)
         self.assertEqual(tg.failed_thread, 'test thread')
 
+    def test_is_auth_capable_for_admin_ctx(self):
+        ctx = context.ctx()
+        self.assertFalse(ctx.is_auth_capable())
+
+    def test_is_auth_capable_for_user_ctx(self):
+        existing_ctx = context.ctx()
+        try:
+            ctx = context.Context('test_user', 'tenant_1', 'test_auth_token',
+                                  {"network": "aURL"}, remote_semaphore='123')
+            self.assertTrue(ctx.is_auth_capable())
+        finally:
+            context.set_ctx(existing_ctx)
+
 
 class TestException(Exception):
     pass

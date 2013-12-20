@@ -45,6 +45,7 @@ from savanna import context
 from savanna import exceptions as ex
 from savanna.openstack.common import excutils
 from savanna.utils import crypto
+from savanna.utils import hashabledict as h
 from savanna.utils.openstack import base
 from savanna.utils.openstack import neutron
 from savanna.utils import procutils
@@ -307,8 +308,8 @@ class InstanceInteropHelper(object):
         finally:
             _release_remote_semaphore()
 
-    def _get_neutron_info(self):
-        neutron_info = HashableDict()
+    def get_neutron_info(self):
+        neutron_info = h.HashableDict()
         neutron_info['network'] = \
             self.instance.node_group.cluster.neutron_management_network
         ctx = context.current()
@@ -323,7 +324,7 @@ class InstanceInteropHelper(object):
     def _get_conn_params(self):
         info = None
         if CONF.use_namespaces and not CONF.use_floating_ips:
-            info = self._get_neutron_info()
+            info = self.get_neutron_info()
         return (self.instance.management_ip,
                 self.instance.node_group.image_username,
                 self.instance.node_group.cluster.management_private_key, info)
@@ -357,12 +358,13 @@ class InstanceInteropHelper(object):
         finally:
             _release_remote_semaphore()
 
-    def get_http_client(self, port):
+    def get_http_client(self, port, info=None):
         self._log_command('Retrieving http session for {0}:{1}'
             .format(self.instance.management_ip, port))
-        info = None
         if CONF.use_namespaces and not CONF.use_floating_ips:
-            info = self._get_neutron_info()
+            # need neutron info
+            if not info:
+                info = self.get_neutron_info()
         return _get_http_client(self.instance.management_ip, port, info)
 
     def close_http_sessions(self):
@@ -452,8 +454,3 @@ class BulkInstanceInteropHelper(InstanceInteropHelper):
 
     def _run_s(self, func, timeout, *args, **kwargs):
         return self._run_with_log(func, timeout, *args, **kwargs)
-
-
-class HashableDict(dict):
-    def __hash__(self):
-        return hash((frozenset(self), frozenset(six.itervalues(self))))

@@ -291,7 +291,7 @@ class ClusterSpecTest(unittest2.TestCase):
         self.assertEqual(config['global']['oozie_hostname'],
                          'oozie_host.novalocal')
         self.assertEqual(config['core-site']['hadoop.proxyuser.oozie.hosts'],
-                         'oozie_host.novalocal')
+                         'oozie_host.novalocal,222.11.9999,111.11.9999')
 
         # test swift properties
         self.assertEqual('swift_prop_value',

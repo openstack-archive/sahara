@@ -268,7 +268,7 @@ class JobExecution(mb.SavannaBase):
     job_configs = sa.Column(st.JsonDictType())
     main_class = sa.Column(sa.Text())
     java_opts = sa.Column(sa.Text())
-
+    extra = sa.Column(st.JsonDictType())
 
 mains_association = sa.Table("mains_association",
                              mb.SavannaBase.metadata,
