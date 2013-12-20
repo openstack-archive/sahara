@@ -118,7 +118,7 @@ def _wrapper(ctx, thread_description, thread_group, func, *args, **kwargs):
     try:
         set_ctx(ctx)
         func(*args, **kwargs)
-    except Exception as e:
+    except BaseException as e:
         LOG.exception("Thread '%s' fails with exception: '%s'"
                       % (thread_description, e))
         if thread_group and not thread_group.exc:

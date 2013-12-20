@@ -13,6 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import mock
 import random
 import unittest2
 
@@ -94,6 +95,27 @@ class ContextTest(unittest2.TestCase):
             with context.ThreadGroup() as tg:
                 tg.spawn('raiser1', self._raise_test_exc, 'exc1')
                 raise RuntimeError()
+
+    def test_wrapper_does_not_set_exception(self):
+        func = mock.MagicMock()
+
+        tg = mock.MagicMock(exc=None, failed_thread=None)
+
+        context._wrapper(None, 'test thread', tg, func)
+
+        self.assertIsNone(tg.exc)
+        self.assertIsNone(tg.failed_thread)
+
+    def test_wrapper_catches_base_exception(self):
+        func = mock.MagicMock()
+        func.side_effect = BaseException()
+
+        tg = mock.MagicMock(exc=None, failed_thread=None)
+
+        context._wrapper(None, 'test thread', tg, func)
+
+        self.assertIsNotNone(tg.exc)
+        self.assertEqual(tg.failed_thread, 'test thread')
 
 
 class TestException(Exception):
