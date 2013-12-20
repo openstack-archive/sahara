@@ -88,7 +88,7 @@ class HadoopServer:
         # do silent setup since we only use default responses now
         r.execute_command('ambari-server setup -s {jdk_arg} > /dev/null 2>&1'
                           .format(jdk_arg='-j ' + jdk_path if jdk_path
-                                  else ''))
+                                  else ''), timeout=1800)
 
         self._configure_ambari_server_api_port(port)
 
