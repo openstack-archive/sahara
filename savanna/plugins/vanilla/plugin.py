@@ -29,6 +29,7 @@ from savanna.plugins.vanilla import run_scripts as run
 from savanna.plugins.vanilla import scaling as sc
 from savanna.topology import topology_helper as th
 from savanna.utils import files as f
+from savanna.utils import general as g
 from savanna.utils import remote
 
 
@@ -133,6 +134,8 @@ class VanillaProvider(p.ProvisioningPluginBase):
 
         self._start_tt_dn_processes(instances)
 
+        self._await_datanodes(cluster)
+
         LOG.info("Hadoop services in cluster %s have been started" %
                  cluster.name)
 
@@ -160,6 +163,28 @@ class VanillaProvider(p.ProvisioningPluginBase):
 
         LOG.info('Cluster %s has been started successfully' % cluster.name)
         self._set_cluster_info(cluster)
+
+    def _await_datanodes(self, cluster):
+        datanodes_count = len(utils.get_datanodes(cluster))
+        if datanodes_count < 1:
+            return
+
+        LOG.info("Waiting %s datanodes to start up" % datanodes_count)
+        with remote.get_remote(utils.get_namenode(cluster)) as r:
+            while True:
+                if run.check_datanodes_count(r, datanodes_count):
+                    LOG.info(
+                        'Datanodes on cluster %s has been started' %
+                        cluster.name)
+                    return
+
+                context.sleep(1)
+
+                if not g.check_cluster_exists(cluster):
+                    LOG.info(
+                        'Stop waiting datanodes on cluster %s since it has '
+                        'been deleted' % cluster.name)
+                    return
 
     def _extract_configs_to_extra(self, cluster):
         oozie = utils.get_oozie(cluster)

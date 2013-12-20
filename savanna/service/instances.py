@@ -304,20 +304,13 @@ def _assign_floating_ips(instances):
                                         node_group.floating_ip_pool)
 
 
-def _check_cluster_exists(cluster):
-    ctx = context.ctx()
-    # check if cluster still exists (it might have been removed)
-    cluster = conductor.cluster_get(ctx, cluster)
-    return cluster is not None
-
-
 def _await_networks(cluster, instances):
     if not instances:
         return
 
     ips_assigned = set()
     while len(ips_assigned) != len(instances):
-        if not _check_cluster_exists(instances[0].node_group.cluster):
+        if not g.check_cluster_exists(instances[0].node_group.cluster):
             return
         for instance in instances:
             if instance.id not in ips_assigned:
@@ -347,7 +340,7 @@ def _await_active(cluster, instances):
 
     active_ids = set()
     while len(active_ids) != len(instances):
-        if not _check_cluster_exists(instances[0].node_group.cluster):
+        if not g.check_cluster_exists(instances[0].node_group.cluster):
             return
         for instance in instances:
             if instance.id not in active_ids:
@@ -386,7 +379,7 @@ def _wait_until_accessible(instance):
 
         context.sleep(5)
 
-        if not _check_cluster_exists(instance.node_group.cluster):
+        if not g.check_cluster_exists(instance.node_group.cluster):
             return
 
 

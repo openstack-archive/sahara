@@ -52,6 +52,20 @@ def oozie_share_lib(remote, nn_hostname):
                            '-run Validate DB Connection" hadoop')
 
 
+def check_datanodes_count(remote, count):
+    if count < 1:
+        return True
+
+    LOG.debug("Checking datanode count")
+    exit_code, stdout = remote.execute_command(
+        'sudo su -c "hadoop dfsadmin -report | '
+        'grep \'Datanodes available:\' | '
+        'awk \'{print \\$3}\'" hadoop')
+    LOG.debug("Datanode count='%s'" % stdout.rstrip())
+
+    return exit_code == 0 and int(stdout) == count
+
+
 def mysql_start(remote, mysql_instance):
     LOG.debug("Starting mysql at %s" % mysql_instance.hostname())
     remote.execute_command("/opt/start-mysql.sh")
