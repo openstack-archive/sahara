@@ -115,12 +115,7 @@ class VanillaProvider(p.ProvisioningPluginBase):
         self._setup_instances(cluster, instances)
 
     def start_cluster(self, cluster):
-        instances = utils.get_instances(cluster)
         nn_instance = utils.get_namenode(cluster)
-        jt_instance = utils.get_jobtracker(cluster)
-        oozie = utils.get_oozie(cluster)
-        hive_server = utils.get_hiveserver(cluster)
-
         with remote.get_remote(nn_instance) as r:
             run.format_namenode(r)
             run.start_processes(r, "namenode")
@@ -128,14 +123,16 @@ class VanillaProvider(p.ProvisioningPluginBase):
         for snn in utils.get_secondarynamenodes(cluster):
             run.start_processes(remote.get_remote(snn), "secondarynamenode")
 
+        jt_instance = utils.get_jobtracker(cluster)
         if jt_instance:
             run.start_processes(remote.get_remote(jt_instance), "jobtracker")
 
-        self._start_tt_dn_processes(instances)
+        self._start_tt_dn_processes(utils.get_instances(cluster))
 
         LOG.info("Hadoop services in cluster %s have been started" %
                  cluster.name)
 
+        oozie = utils.get_oozie(cluster)
         if oozie:
             with remote.get_remote(oozie) as r:
                 if c_helper.is_mysql_enable(cluster):
@@ -146,6 +143,7 @@ class VanillaProvider(p.ProvisioningPluginBase):
                 LOG.info("Oozie service at '%s' has been started",
                          nn_instance.hostname())
 
+        hive_server = utils.get_hiveserver(cluster)
         if hive_server:
             with remote.get_remote(nn_instance) as r:
                 run.hive_create_warehouse_dir(r)
