@@ -182,3 +182,10 @@ class ThreadException(SavannaException):
         self.message = "An error occurred in thread '%s': %s" % (
             thread_description, str(e))
         self.code = "THREAD_EXCEPTION"
+
+
+class NotImplementedException(SavannaException):
+    code = "NOT_IMPLEMENTED"
+
+    def __init__(self, feature):
+        self.message = "Feature '%s' is not implemented" % feature

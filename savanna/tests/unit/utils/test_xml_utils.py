@@ -36,6 +36,24 @@ class XMLUtilsTestCase(unittest2.TestCase):
             x.load_hadoop_xml_defaults(
                 'tests/unit/resources/test-default.xml'))
 
+    def test_load_xml_defaults_with_type_and_locale(self):
+        expected = [
+            {'name': u'name1', 'value': u'value1', 'type': u'String',
+             'description': 'descr1'},
+            {'name': u'name2', 'value': u'value2', 'type': u'',
+             'description': 'descr2'},
+            {'name': u'name3', 'value': '', 'type': u'String',
+             'description': 'descr3'},
+            {'name': u'name4', 'value': '', 'type': u'String',
+             'description': 'descr4'},
+            {'name': u'name5', 'value': u'value5', 'type': u'String',
+             'description': ''}]
+        actual = x.load_hadoop_xml_defaults_with_type_and_locale(
+            'tests/unit/resources/test-default-with-type-and-locale.xml')
+        self.assertListEqual(
+            expected,
+            actual)
+
     def test_adjust_description(self):
         self.assertEqual(x._adjust_field("\n"), "")
         self.assertEqual(x._adjust_field("\n  "), "")

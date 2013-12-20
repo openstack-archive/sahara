@@ -1,0 +1,43 @@
+<?xml version="1.0"?>
+<configuration>
+    <!--Common hadoop property-->
+    <property>
+      <name>name1</name>
+      <value>value1</value>
+      <valuetype>String</valuetype>
+      <description>
+        <en>descr1</en>
+      </description>
+    </property>
+    <!--Common hadoop property without 'valuetype' tag-->
+    <property>
+      <name>name2</name>
+      <value>value2</value>
+      <description>
+        <en>descr2</en>
+      </description>
+    </property>
+    <!--Common hadoop property 3 without text in 'value' tag-->
+    <property>
+      <name>name3</name>
+      <value></value>
+      <valuetype>String</valuetype>
+      <description>
+          <en>descr3</en>
+      </description>
+    </property>
+    <!--Common hadoop property 4 without 'value' tag-->
+    <property>
+        <name>name4</name>
+        <valuetype>String</valuetype>
+        <description>
+            <en>descr4</en>
+        </description>
+    </property>
+    <!--Common hadoop property 5 without description-->
+    <property>
+        <name>name5</name>
+        <value>value5</value>
+        <valuetype>String</valuetype>
+    </property>
+</configuration>
