@@ -19,7 +19,7 @@ from savanna.conductor import resource as r
 from savanna.plugins.general import utils as u
 
 
-class VanillaUtilsTest(unittest2.TestCase):
+class GeneralUtilsTest(unittest2.TestCase):
     def setUp(self):
         i1 = _make_inst_dict('i1', 'master')
         i2 = _make_inst_dict('i2', 'worker1')
@@ -32,7 +32,7 @@ class VanillaUtilsTest(unittest2.TestCase):
                             [i2, i3, i4])
         ng3 = _make_ng_dict("sn", "f1", ["dn"], 1, [i5])
 
-        self.c1 = _create_cluster("cluster1", "tenant1", "vanilla", "1.2.1",
+        self.c1 = _create_cluster("cluster1", "tenant1", "general", "1.2.1",
                                   [ng1, ng2, ng3])
 
         self.ng1 = self.c1.node_groups[0]
