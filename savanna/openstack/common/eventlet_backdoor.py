@@ -29,7 +29,7 @@ import eventlet.backdoor
 import greenlet
 from oslo.config import cfg
 
-from savanna.openstack.common.gettextutils import _  # noqa
+from savanna.openstack.common.gettextutils import _
 from savanna.openstack.common import log as logging
 
 help_for_backdoor_port = (
