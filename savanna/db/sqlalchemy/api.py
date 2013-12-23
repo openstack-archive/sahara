@@ -341,7 +341,7 @@ def cluster_template_get_all(context):
 def cluster_template_create(context, values):
     values = values.copy()
     cluster_template = m.ClusterTemplate()
-    node_groups = values.pop("node_groups", [])
+    node_groups = values.pop("node_groups") or []
     cluster_template.update(values)
 
     session = get_session()
