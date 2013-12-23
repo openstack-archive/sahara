@@ -52,6 +52,10 @@ terminated_job_states = ['DONEWITHERROR', 'FAILED', 'KILLED', 'SUCCEEDED']
 def get_job_status(job_execution_id):
     ctx = context.ctx()
     job_execution = conductor.job_execution_get(ctx, job_execution_id)
+    if job_execution.oozie_job_id is None:
+        # We don't have an Oozie id yet for this job, that's okay
+        return job_execution
+
     cluster = conductor.cluster_get(ctx, job_execution.cluster_id)
 
     if cluster is None or cluster.status != 'Active':
