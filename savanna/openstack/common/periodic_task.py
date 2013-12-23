@@ -17,7 +17,7 @@ import time
 from oslo.config import cfg
 import six
 
-from savanna.openstack.common.gettextutils import _  # noqa
+from savanna.openstack.common.gettextutils import _
 from savanna.openstack.common import log as logging
 from savanna.openstack.common import timeutils
 
