@@ -29,7 +29,7 @@ class BaseTestCase(testtools.TestCase):
         super(BaseTestCase, self).setUp()
         self._set_timeout()
         self._fake_output()
-        self.useFixture(fixtures.FakeLogger('savanna.openstack.common'))
+        self.useFixture(fixtures.FakeLogger())
         self.useFixture(fixtures.NestedTempfile())
         self.useFixture(fixtures.TempHomeDir())
 
