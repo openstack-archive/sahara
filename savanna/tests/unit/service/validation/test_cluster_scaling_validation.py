@@ -22,7 +22,7 @@ from savanna.plugins.vanilla import plugin
 from savanna.service import api
 import savanna.service.validation as v
 from savanna.service.validations import clusters_scaling as c_s
-from savanna.tests.unit.plugins.vanilla import test_utils as tu
+from savanna.tests.unit.plugins.general import test_utils as tu
 from savanna.tests.unit.service.validation import utils as u
 
 

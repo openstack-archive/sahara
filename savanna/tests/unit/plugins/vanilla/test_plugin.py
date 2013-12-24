@@ -20,7 +20,7 @@ from savanna.plugins.general import exceptions as ex
 from savanna.plugins.vanilla import config_helper as c_h
 from savanna.plugins.vanilla import mysql_helper as m_h
 from savanna.plugins.vanilla import plugin as p
-from savanna.tests.unit.plugins.vanilla import test_utils as tu
+from savanna.tests.unit.plugins.general import test_utils as tu
 
 
 class VanillaPluginTest(unittest2.TestCase):

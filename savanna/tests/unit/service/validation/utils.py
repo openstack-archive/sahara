@@ -21,7 +21,7 @@ import unittest2
 from savanna.conductor import resource as r
 from savanna.plugins.vanilla import plugin
 import savanna.service.validation as v
-from savanna.tests.unit.plugins.vanilla import test_utils as tu
+from savanna.tests.unit.plugins.general import test_utils as tu
 
 m = {}
 
