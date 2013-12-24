@@ -632,63 +632,49 @@ class ITestCase(unittest2.TestCase):
             'configuration file of integration tests.\n'
         )
 
-    def get_floating_ip_pool(self):
+    def get_floating_ip_pool_id_for_neutron_net(self):
 
-        floating_ip_pool_list = self.nova.floating_ip_pools.list()
+        # Find corresponding floating IP pool by its name and get its ID.
+        # If pool not found then handle error
+        try:
 
-        # If self.common_config.FLOATING_IP_POOL is None then return
-        # the first pool of list
-        if not self.common_config.FLOATING_IP_POOL:
+            floating_ip_pool = self.neutron.list_networks(
+                name=self.common_config.FLOATING_IP_POOL)
+            floating_ip_pool_id = floating_ip_pool['networks'][0]['id']
 
-            return floating_ip_pool_list[0].name
+            return floating_ip_pool_id
 
-        # If self.common_config.FLOATING_IP_POOL is not None then find
-        # corresponding pool and return it. If pool not found then handle error
-        else:
+        except IndexError:
 
-            pool_name = self.common_config.FLOATING_IP_POOL
-            if pool_name in [pool.name for pool in floating_ip_pool_list]:
+            with excutils.save_and_reraise_exception():
 
-                return pool_name
+                raise Exception(
+                    '\nFloating IP pool \'%s\' not found in pool list. '
+                    'Please, make sure you specified right floating IP pool.'
+                    % self.common_config.FLOATING_IP_POOL
+                )
 
-            self.fail(
-                '\n\nFloating IP pool "%s" not found in pool list. Please, '
-                'make sure you specified right floating IP pool.\n'
-                % self.common_config.FLOATING_IP_POOL
-            )
+    def get_internal_neutron_net_id(self):
 
-    def get_internal_neutron_network_id(self):
+        # Find corresponding internal Neutron network by its name and get
+        # its ID. If network not found then handle error
+        try:
 
-        # If self.common_config.INTERNAL_NEUTRON_NETWORK is None then return
-        # ID of the first network of list
-        if not self.common_config.INTERNAL_NEUTRON_NETWORK:
+            internal_neutron_net = self.neutron.list_networks(
+                name=self.common_config.INTERNAL_NEUTRON_NETWORK)
+            internal_neutron_net_id = internal_neutron_net['networks'][0]['id']
 
-            return self.neutron.list_networks()['networks'][0]['id']
+            return internal_neutron_net_id
 
-        # If self.common_config.INTERNAL_NEUTRON_NETWORK is not None then find
-        # corresponding network and return its ID. If network not found then
-        # handle error
-        else:
+        except IndexError:
 
-            try:
+            with excutils.save_and_reraise_exception():
 
-                internal_neutron_net = self.neutron.list_networks(
-                    name=self.common_config.INTERNAL_NEUTRON_NETWORK)
-                internal_neutron_net_id = internal_neutron_net[
-                    'networks'][0]['id']
-
-                return internal_neutron_net_id
-
-            except IndexError:
-
-                with excutils.save_and_reraise_exception():
-
-                    print(
-                        '\nInternal Neutron network "%s" not found in '
-                        'network list. Please, make sure you specified right '
-                        'network name.'
-                        % self.common_config.INTERNAL_NEUTRON_NETWORK
-                    )
+                raise Exception(
+                    '\nInternal Neutron network \'%s\' not found in network '
+                    'list. Please, make sure you specified right network name.'
+                    % self.common_config.INTERNAL_NEUTRON_NETWORK
+                )
 
     def delete_objects(self, cluster_id=None,
                        cluster_template_id=None,

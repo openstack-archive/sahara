@@ -32,16 +32,19 @@ class HDPGatingTest(map_reduce.MapReduceTest, swift.SwiftTest,
 
     @unittest2.skipIf(cfg.ITConfig().hdp_config.SKIP_ALL_TESTS_FOR_PLUGIN,
                       'All tests for HDP plugin were skipped')
-    @testcase.attr("hdp")
+    @testcase.attr('hdp')
     def test_hdp_plugin_gating(self):
 
-        floating_ip_pool = None
-        internal_neutron_net_id = None
+        # Default value of self.common_config.FLOATING_IP_POOL is None
+        floating_ip_pool = self.common_config.FLOATING_IP_POOL
+        internal_neutron_net = None
 
+        # If Neutron enabled then get ID of floating IP pool and ID of internal
+        # Neutron network
         if self.common_config.NEUTRON_ENABLED:
 
-            floating_ip_pool = self.get_floating_ip_pool()
-            internal_neutron_net_id = self.get_internal_neutron_network_id()
+            floating_ip_pool = self.get_floating_ip_pool_id_for_neutron_net()
+            internal_neutron_net = self.get_internal_neutron_net_id()
 
         node_group_template_id_list = []
 
@@ -97,7 +100,7 @@ class HDPGatingTest(map_reduce.MapReduceTest, swift.SwiftTest,
                         node_group_template_id=node_group_template_tt_dn_id,
                         count=3)
                 ],
-                net_id=internal_neutron_net_id
+                net_id=internal_neutron_net
             )
 
         except Exception as e:
