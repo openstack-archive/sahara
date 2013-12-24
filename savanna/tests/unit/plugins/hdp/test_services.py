@@ -33,6 +33,28 @@ class ServicesTest(unittest2.TestCase):
                          expected_configs & service.configurations)
         self.assertTrue(service.is_mandatory())
 
+    def test_hdfs_service_register_urls(self):
+        service = s.create_service('HDFS')
+        cluster_spec = mock.Mock()
+        cluster_spec.configurations = {
+            'core-site': {
+                'fs.default.name': 'hdfs://not_expected.com:9020'
+            },
+            'hdfs-site': {
+                'dfs.http.address': 'http://not_expected.com:10070'
+            }
+        }
+        instance_mock = mock.Mock()
+        instance_mock.management_ip = '127.0.0.1'
+        cluster_spec.determine_component_hosts = mock.Mock(
+            return_value=[instance_mock])
+        url_info = {}
+        url_info = service.register_service_urls(cluster_spec, url_info)
+        self.assertEqual(url_info['HDFS']['Web UI'],
+                         'http://127.0.0.1:10070')
+        self.assertEqual(url_info['HDFS']['NameNode'],
+                         'hdfs://127.0.0.1:9020')
+
     def test_create_mr_service(self):
         service = s.create_service('MAPREDUCE')
         self.assertEqual('MAPREDUCE', service.name)
@@ -40,6 +62,27 @@ class ServicesTest(unittest2.TestCase):
         self.assertEqual(expected_configs,
                          expected_configs & service.configurations)
         self.assertTrue(service.is_mandatory())
+
+    def test_mr_service_register_urls(self):
+        service = s.create_service('MAPREDUCE')
+        cluster_spec = mock.Mock()
+        cluster_spec.configurations = {
+            'mapred-site': {
+                'mapred.job.tracker': 'hdfs://not_expected.com:10300',
+                'mapred.job.tracker.http.address':
+                'http://not_expected.com:10030'
+            }
+        }
+        instance_mock = mock.Mock()
+        instance_mock.management_ip = '127.0.0.1'
+        cluster_spec.determine_component_hosts = mock.Mock(
+            return_value=[instance_mock])
+        url_info = {}
+        url_info = service.register_service_urls(cluster_spec, url_info)
+        self.assertEqual(url_info['MapReduce']['Web UI'],
+                         'http://127.0.0.1:10030')
+        self.assertEqual(url_info['MapReduce']['JobTracker'],
+                         '127.0.0.1:10300')
 
     def test_create_hive_service(self):
         service = s.create_service('HIVE')
@@ -72,6 +115,23 @@ class ServicesTest(unittest2.TestCase):
         self.assertEqual(expected_configs,
                          expected_configs & service.configurations)
         self.assertFalse(service.is_mandatory())
+
+    def test_oozie_service_register_urls(self):
+        service = s.create_service('OOZIE')
+        cluster_spec = mock.Mock()
+        cluster_spec.configurations = {
+            'oozie-site': {
+                'oozie.base.url': 'hdfs://not_expected.com:21000'
+            }
+        }
+        instance_mock = mock.Mock()
+        instance_mock.management_ip = '127.0.0.1'
+        cluster_spec.determine_component_hosts = mock.Mock(
+            return_value=[instance_mock])
+        url_info = {}
+        url_info = service.register_service_urls(cluster_spec, url_info)
+        self.assertEqual(url_info['JobFlow']['Oozie'],
+                         'http://127.0.0.1:21000')
 
     def test_create_ganglia_service(self):
         service = s.create_service('GANGLIA')
