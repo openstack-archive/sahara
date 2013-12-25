@@ -26,7 +26,7 @@ import signal
 from eventlet.green import subprocess
 from eventlet import greenthread
 
-from savanna.openstack.common.gettextutils import _  # noqa
+from savanna.openstack.common.gettextutils import _
 from savanna.openstack.common import log as logging
 
 
