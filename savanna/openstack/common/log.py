@@ -41,7 +41,7 @@ from oslo.config import cfg
 import six
 from six import moves
 
-from savanna.openstack.common.gettextutils import _  # noqa
+from savanna.openstack.common.gettextutils import _
 from savanna.openstack.common import importutils
 from savanna.openstack.common import jsonutils
 from savanna.openstack.common import local
@@ -149,7 +149,6 @@ log_opts = [
                     'amqp=WARN',
                     'amqplib=WARN',
                     'boto=WARN',
-                    'keystone=INFO',
                     'qpid=WARN',
                     'sqlalchemy=WARN',
                     'suds=INFO',
@@ -236,10 +235,11 @@ def mask_password(message, secret="***"):
     """Replace password with 'secret' in message.
 
     :param message: The string which includes security information.
-    :param secret: value with which to replace passwords, defaults to "***".
+    :param secret: value with which to replace passwords.
     :returns: The unicode value of message with the password fields masked.
 
     For example:
+
     >>> mask_password("'adminPass' : 'aaaaa'")
     "'adminPass' : '***'"
     >>> mask_password("'admin_pass' : 'aaaaa'")
