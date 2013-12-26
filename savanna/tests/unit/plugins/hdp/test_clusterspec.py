@@ -544,97 +544,110 @@ class ClusterSpecTest(unittest2.TestCase):
             'foo', cluster_config.configurations['global']['new_property'])
 
     def test_topology_configuration_no_hypervisor(self, patched):
-        s.CONF = TestCONF(True, False)
-        th.CONF = TestCONF(True, False)
-        cluster_config_file = pkg.resource_string(
-            version.version_info.package,
-            'plugins/hdp/versions/1_3_2/resources/default-cluster.template')
+        s_conf = s.CONF
+        th_conf = th.CONF
+        try:
+            s.CONF = TestCONF(True, False)
+            th.CONF = TestCONF(True, False)
+            cluster_config_file = pkg.resource_string(
+                version.version_info.package,
+                'plugins/hdp/versions/1_3_2/resources/'
+                'default-cluster.template')
 
-        server1 = base.TestServer('host1', 'test-master', '11111', 3,
-                                  '111.11.1111', '222.11.1111')
-        server2 = base.TestServer('host2', 'test-slave', '11111', 3,
-                                  '222.22.2222', '333.22.2222')
+            server1 = base.TestServer('host1', 'test-master', '11111', 3,
+                                      '111.11.1111', '222.11.1111')
+            server2 = base.TestServer('host2', 'test-slave', '11111', 3,
+                                      '222.22.2222', '333.22.2222')
 
-        node_group1 = TestNodeGroup(
-            'master', [server1], ["NAMENODE", "JOBTRACKER",
-                                  "SECONDARY_NAMENODE", "GANGLIA_SERVER",
-                                  "GANGLIA_MONITOR", "NAGIOS_SERVER",
-                                  "AMBARI_SERVER", "AMBARI_AGENT"])
-        node_group2 = TestNodeGroup(
-            'slave', [server2], ["TASKTRACKER", "DATANODE", "AMBARI_AGENT",
-                                 "GANGLIA_MONITOR"])
+            node_group1 = TestNodeGroup(
+                'master', [server1], ["NAMENODE", "JOBTRACKER",
+                                      "SECONDARY_NAMENODE", "GANGLIA_SERVER",
+                                      "GANGLIA_MONITOR", "NAGIOS_SERVER",
+                                      "AMBARI_SERVER", "AMBARI_AGENT"])
+            node_group2 = TestNodeGroup(
+                'slave', [server2], ["TASKTRACKER", "DATANODE", "AMBARI_AGENT",
+                                     "GANGLIA_MONITOR"])
 
-        cluster = base.TestCluster([node_group1, node_group2])
-        cluster_config = cs.ClusterSpec(cluster_config_file)
-        cluster_config.create_operational_config(cluster, [])
-        # core-site
-        self.assertEqual(
-            'org.apache.hadoop.net.NetworkTopology',
-            cluster_config.configurations['core-site']['net.topology.impl'])
-        self.assertEqual(
-            'true',
-            cluster_config.configurations['core-site']
-            ['net.topology.nodegroup.aware'])
-        self.assertEqual(
-            'org.apache.hadoop.hdfs.server.namenode.'
-            'BlockPlacementPolicyWithNodeGroup',
-            cluster_config.configurations['core-site']
-            ['dfs.block.replicator.classname'])
-        self.assertEqual(
-            'true',
-            cluster_config.configurations['core-site']
-            ['fs.swift.service.savanna.location-aware'])
-        self.assertEqual(
-            'org.apache.hadoop.net.ScriptBasedMapping',
-            cluster_config.configurations['core-site']
-            ['topology.node.switch.mapping.impl'])
-        self.assertEqual(
-            '/etc/hadoop/conf/topology.sh',
-            cluster_config.configurations['core-site']
-            ['topology.script.file.name'])
+            cluster = base.TestCluster([node_group1, node_group2])
+            cluster_config = cs.ClusterSpec(cluster_config_file)
+            cluster_config.create_operational_config(cluster, [])
+            # core-site
+            self.assertEqual(
+                'org.apache.hadoop.net.NetworkTopology',
+                cluster_config.configurations['core-site']
+                ['net.topology.impl'])
+            self.assertEqual(
+                'true',
+                cluster_config.configurations['core-site']
+                ['net.topology.nodegroup.aware'])
+            self.assertEqual(
+                'org.apache.hadoop.hdfs.server.namenode.'
+                'BlockPlacementPolicyWithNodeGroup',
+                cluster_config.configurations['core-site']
+                ['dfs.block.replicator.classname'])
+            self.assertEqual(
+                'true',
+                cluster_config.configurations['core-site']
+                ['fs.swift.service.savanna.location-aware'])
+            self.assertEqual(
+                'org.apache.hadoop.net.ScriptBasedMapping',
+                cluster_config.configurations['core-site']
+                ['topology.node.switch.mapping.impl'])
+            self.assertEqual(
+                '/etc/hadoop/conf/topology.sh',
+                cluster_config.configurations['core-site']
+                ['topology.script.file.name'])
 
-        # mapred-site
-        self.assertEqual(
-            'true',
-            cluster_config.configurations['mapred-site']
-            ['mapred.jobtracker.nodegroup.aware'])
-        self.assertEqual(
-            '3',
-            cluster_config.configurations['mapred-site']
-            ['mapred.task.cache.levels'])
-        self.assertEqual(
-            'org.apache.hadoop.mapred.JobSchedulableWithNodeGroup',
-            cluster_config.configurations['mapred-site']
-            ['mapred.jobtracker.jobSchedulable'])
+            # mapred-site
+            self.assertEqual(
+                'true',
+                cluster_config.configurations['mapred-site']
+                ['mapred.jobtracker.nodegroup.aware'])
+            self.assertEqual(
+                '3',
+                cluster_config.configurations['mapred-site']
+                ['mapred.task.cache.levels'])
+            self.assertEqual(
+                'org.apache.hadoop.mapred.JobSchedulableWithNodeGroup',
+                cluster_config.configurations['mapred-site']
+                ['mapred.jobtracker.jobSchedulable'])
+        finally:
+            s.CONF = s_conf
+            th.CONF = th_conf
 
     def test_topology_configuration_with_hypervisor(self, patched):
-        s.CONF = TestCONF(True, True)
-        cluster_config_file = pkg.resource_string(
-            version.version_info.package,
-            'plugins/hdp/versions/1_3_2/resources/default-cluster.template')
+        s_conf = s.CONF
+        try:
+            s.CONF = TestCONF(True, True)
+            cluster_config_file = pkg.resource_string(
+                version.version_info.package,
+                'plugins/hdp/versions/1_3_2/resources/'
+                'default-cluster.template')
 
-        server1 = base.TestServer('host1', 'test-master', '11111', 3,
-                                  '111.11.1111', '222.11.1111')
-        server2 = base.TestServer('host2', 'test-slave', '11111', 3,
-                                  '222.22.2222', '333.22.2222')
+            server1 = base.TestServer('host1', 'test-master', '11111', 3,
+                                      '111.11.1111', '222.11.1111')
+            server2 = base.TestServer('host2', 'test-slave', '11111', 3,
+                                      '222.22.2222', '333.22.2222')
 
-        node_group1 = TestNodeGroup(
-            'master', [server1], ["NAMENODE", "JOBTRACKER",
-                                  "SECONDARY_NAMENODE", "GANGLIA_SERVER",
-                                  "GANGLIA_MONITOR", "NAGIOS_SERVER",
-                                  "AMBARI_SERVER", "AMBARI_AGENT"])
-        node_group2 = TestNodeGroup(
-            'slave', [server2], ["TASKTRACKER", "DATANODE", "AMBARI_AGENT",
-                                 "GANGLIA_MONITOR"])
+            node_group1 = TestNodeGroup(
+                'master', [server1], ["NAMENODE", "JOBTRACKER",
+                                      "SECONDARY_NAMENODE", "GANGLIA_SERVER",
+                                      "GANGLIA_MONITOR", "NAGIOS_SERVER",
+                                      "AMBARI_SERVER", "AMBARI_AGENT"])
+            node_group2 = TestNodeGroup(
+                'slave', [server2], ["TASKTRACKER", "DATANODE", "AMBARI_AGENT",
+                                     "GANGLIA_MONITOR"])
 
-        cluster = base.TestCluster([node_group1, node_group2])
-        cluster_config = cs.ClusterSpec(cluster_config_file)
-        cluster_config.create_operational_config(cluster, [])
-        # core-site
-        self.assertEqual(
-            'org.apache.hadoop.net.NetworkTopologyWithNodeGroup',
-            cluster_config.configurations['core-site']
-            ['net.topology.impl'])
+            cluster = base.TestCluster([node_group1, node_group2])
+            cluster_config = cs.ClusterSpec(cluster_config_file)
+            cluster_config.create_operational_config(cluster, [])
+            # core-site
+            self.assertEqual(
+                'org.apache.hadoop.net.NetworkTopologyWithNodeGroup',
+                cluster_config.configurations['core-site']
+                ['net.topology.impl'])
+        finally:
+            s.CONF = s_conf
 
     def test_update_ambari_admin_user(self, patched):
         cluster_config_file = pkg.resource_string(
