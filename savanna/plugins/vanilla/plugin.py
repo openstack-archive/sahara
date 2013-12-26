@@ -480,8 +480,8 @@ class VanillaProvider(p.ProvisioningPluginBase):
                                  ' '.join(ng.node_processes))
 
         dn_amount = len(utils.get_datanodes(cluster))
-        rep_factor = c_helper.determine_cluster_config(cluster, 'HDFS',
-                                                       "dfs.replication")
+        rep_factor = c_helper.get_config_value('HDFS', 'dfs.replication',
+                                               cluster)
 
         if dn_to_delete > 0 and dn_amount - dn_to_delete < rep_factor:
             raise ex.ClusterCannotBeScaled(
