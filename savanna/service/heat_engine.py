@@ -113,7 +113,7 @@ class HeatEngine(e.Engine):
         new_ids = []
 
         for node_group in cluster.node_groups:
-            nova_ids = stack.get_node_group_instances(node_group.name)
+            nova_ids = stack.get_node_group_instances(node_group)
             for name, nova_id in nova_ids:
                 if nova_id not in old_ids:
                     instance_id = conductor.instance_add(
@@ -175,9 +175,7 @@ class _CreateLauncher(HeatEngine):
                                            {"status": self.STAGES[0]})
         LOG.info(g.format_cluster_status(cluster))
 
-        tmpl = heat.ClusterTemplate(cluster.name,
-                                    cluster.neutron_management_network,
-                                    cluster.user_keypair_id)
+        tmpl = heat.ClusterTemplate(cluster)
 
         self._configure_template(ctx, tmpl, cluster, target_count)
         stack = tmpl.instantiate(update_existing=self.UPDATE_STACK)
@@ -208,12 +206,7 @@ class _CreateLauncher(HeatEngine):
         for node_group in cluster.node_groups:
             userdata = self._generate_user_data_script(node_group)
             count = target_count[node_group.id]
-            tmpl.add_node_group(node_group.name, count,
-                                node_group.flavor_id,
-                                node_group.get_image_id(),
-                                userdata, node_group.floating_ip_pool,
-                                node_group.volumes_per_node,
-                                node_group.volumes_size,)
+            tmpl.add_node_group_extra(node_group.id, count, userdata)
 
             # if number of instances decreases, we need to drop
             # the excessive ones

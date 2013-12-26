@@ -87,9 +87,11 @@ def _create_cluster(name, tenant, plugin, version, node_groups, **kwargs):
     return r.ClusterResource(dct)
 
 
-def _make_ng_dict(name, flavor, processes, count, instances=[]):
-    return {'name': name, 'flavor_id': flavor, 'node_processes': processes,
-            'count': count, 'instances': instances}
+def _make_ng_dict(name, flavor, processes, count, instances=[], **kwargs):
+    dct = {'name': name, 'flavor_id': flavor, 'node_processes': processes,
+           'count': count, 'instances': instances}
+    dct.update(kwargs)
+    return dct
 
 
 def _make_inst_dict(inst_id, inst_name):
