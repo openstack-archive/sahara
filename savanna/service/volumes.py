@@ -150,19 +150,7 @@ def _mount_volume(instance, device_path, mount_point):
             raise
 
 
-def detach(cluster):
-    ctx = context.ctx()
-    cluster = conductor.cluster_get(ctx, cluster)
-    for node_group in cluster.node_groups:
-        detach_from_instances(node_group.instances)
-
-
-def detach_from_instances(instances):
-    for instance in instances:
-        _detach_volume_from_instance(instance)
-
-
-def _detach_volume_from_instance(instance):
+def detach_from_instance(instance):
     for volume_id in instance.volumes:
         volume = cinder.get_volume(volume_id)
         try:

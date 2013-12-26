@@ -427,11 +427,8 @@ def _rollback_cluster_creation(cluster, ex):
 def _rollback_cluster_scaling(cluster, instances, ex):
     """Attempt to rollback cluster scaling."""
     LOG.info("Cluster '%s' scaling rollback (reason: %s)", cluster.name, ex)
-    try:
-        volumes.detach_from_instances(instances)
-    finally:
-        for i in instances:
-            _shutdown_instance(i)
+    for i in instances:
+        _shutdown_instance(i)
 
 
 def _clean_job_executions(cluster):
@@ -462,6 +459,7 @@ def _shutdown_instance(instance):
 
     try:
         nova.client().servers.delete(instance.instance_id)
+        volumes.detach_from_instance(instance)
     except nova_exceptions.NotFound:
         LOG.warn("Attempted to delete non-existent instance %s",
                  instance.instance_id)
@@ -471,11 +469,8 @@ def _shutdown_instance(instance):
 
 def _shutdown_cluster(cluster):
     """Shutdown specified cluster and all related resources."""
-    try:
-        volumes.detach(cluster)
-    finally:
-        _shutdown_instances(cluster)
-        _clean_job_executions(cluster)
+    _shutdown_instances(cluster)
+    _clean_job_executions(cluster)
 
 
 def _clean_cluster_from_empty_ng(cluster):
