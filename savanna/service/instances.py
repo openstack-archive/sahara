@@ -450,13 +450,21 @@ def _shutdown_instances(cluster):
 
 def _shutdown_instance(instance):
     ctx = context.ctx()
-    try:
-        if instance.node_group.floating_ip_pool:
+
+    if instance.node_group.floating_ip_pool:
+        try:
             networks.delete_floating_ip(instance.instance_id)
+        except nova_exceptions.NotFound:
+            LOG.warn("Attempted to delete non-existent floating IP in "
+                     "pool %s from instance %s",
+                     instance.node_group.floating_ip_pool,
+                     instance.instance_id)
+
+    try:
         nova.client().servers.delete(instance.instance_id)
     except nova_exceptions.NotFound:
-        #Just ignore non-existing instances
-        pass
+        LOG.warn("Attempted to delete non-existent instance %s",
+                 instance.instance_id)
 
     conductor.instance_remove(ctx, instance)
 
