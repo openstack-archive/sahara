@@ -212,7 +212,7 @@ class TestClient(base.DbTestCase):
         client.services.hdfs.add_nodes('DataNode', ['n1', 'n2'])
         client.services.mapred.add_nodes('NameNode', ['n1', 'n2'])
 
-        self.assertEqual(get.call_count, 126)
+        self.assertEqual(get.call_count, 606)
         self.assertEqual(post.call_count, 8)
 
     @mock.patch('requests.delete')

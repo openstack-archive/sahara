@@ -33,7 +33,8 @@ class IDHProvider(p.ProvisioningPluginBase):
             "Manager": ["manager"],
             "HDFS": ["namenode", "datanode", "secondarynamenode"],
             "MapReduce": ["jobtracker", "tasktracker"],
-            "Hadoop": []   # for hadoop parameters in UI
+            "Hadoop": [],
+            "JobFlow": ["oozie"]
         }
 
     def get_description(self):
@@ -42,6 +43,9 @@ class IDHProvider(p.ProvisioningPluginBase):
             'Savanna to automate the deployment of the Intel Distribution ' \
             'of Apache Hadoop on OpenStack based ' \
             'public & private clouds'
+
+    def get_hdfs_user(self):
+        return 'hadoop'
 
     def get_node_processes(self, hadoop_version):
         return self.processes
@@ -157,11 +161,15 @@ class IDHProvider(p.ProvisioningPluginBase):
             info['MapReduce'] = {
                 'Web UI': 'http://%s:50030' % jt.management_ip
             }
+            #TODO(alazarev) make port configurable (bug #1262895)
+            info['MapReduce']['JobTracker'] = '%s:54311' % jt.hostname()
         if nn:
             #TODO(alazarev) make port configurable (bug #1262895)
             info['HDFS'] = {
                 'Web UI': 'http://%s:50070' % nn.management_ip
             }
+            #TODO(alazarev) make port configurable (bug #1262895)
+            info['HDFS']['NameNode'] = 'hdfs://%s:8020' % nn.hostname()
 
         if oozie:
             #TODO(alazarev) make port configurable (bug #1262895)

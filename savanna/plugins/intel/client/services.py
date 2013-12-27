@@ -33,7 +33,8 @@ class BaseService(c.IntelContext):
 
         self.rest.post(url)
 
-        timeout = 120
+        #TODO(alazarev) make timeout configurable (bug #1262897)
+        timeout = 600
         cur_time = 0
         while cur_time < timeout:
             context.sleep(2)

@@ -34,8 +34,8 @@ class BaseParams(c.IntelContext):
                 }
             ]
         }
-        url = ('/cluster/%s/configuration/%s'
-               % (self.cluster_name, self.service))
+
+        url = '/cluster/%s/configuration' % self.cluster_name
         return self.rest.post(url, data)
 
     def update(self, item, value, desc='', nodes=None):
@@ -60,8 +60,7 @@ class BaseParams(c.IntelContext):
                 }, nodes)
             }
 
-        url = ('/cluster/%s/configuration/%s'
-               % (self.cluster_name, self.service))
+        url = '/cluster/%s/configuration' % self.cluster_name
         return self.rest.put(url, data)
 
     def get(self, hosts, item):
@@ -74,3 +73,4 @@ class Params(c.IntelContext):
         self.hadoop = BaseParams(self, 'hadoop')
         self.hdfs = BaseParams(self, 'hdfs')
         self.mapred = BaseParams(self, 'mapred')
+        self.oozie = BaseParams(self, 'oozie')

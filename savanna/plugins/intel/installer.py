@@ -199,6 +199,7 @@ def _configure_services(client, cluster):
 
     if oozie_host:
         services += ['oozie']
+        services += ['pig']
 
     if hive_host:
         services += ['hive']
@@ -254,6 +255,9 @@ def _add_user_params(client, cluster):
     for p in six.iteritems(cluster.cluster_configs["MapReduce"]):
         client.params.mapred.update(p[0], p[1])
 
+    for p in six.iteritems(cluster.cluster_configs["JobFlow"]):
+        client.params.oozie.update(p[0], p[1])
+
 
 def install_cluster(cluster):
     mng_instance = u.get_instance(cluster, 'manager')
@@ -292,6 +296,40 @@ def install_cluster(cluster):
     client.services.hdfs.format()
 
 
+def _setup_oozie(cluster):
+    with (u.get_oozie(cluster)).remote() as r:
+        LOG.info("Oozie: add hadoop libraries to java.library.path")
+        r.execute_command(
+            "sudo ln -s /usr/lib/hadoop/lib/native/Linux-amd64-64/libhadoop.so"
+            " /usr/lib64/ && "
+            "sudo ln -s /usr/lib/hadoop/lib/native/Linux-amd64-64/libsnappy.so"
+            " /usr/lib64/")
+
+        config = cluster.cluster_configs.get('general')
+
+        ext22 = config.get(c_helper.OOZIE_EXT22_URL.name) \
+            if config and config.get(c_helper.OOZIE_EXT22_URL.name) \
+            else c_helper.OOZIE_EXT22_URL.default_value
+        if ext22:
+            LOG.info("Oozie: downloading and installing ext 2.2 from '%s'"
+                     % ext22)
+            r.execute_command(
+                "curl -L -o ext-2.2.zip %s && "
+                "sudo unzip ext-2.2.zip -d /var/lib/oozie && "
+                "rm ext-2.2.zip" % ext22)
+
+        LOG.info("Oozie: installing oozie share lib")
+        r.execute_command(
+            "mkdir /tmp/oozielib && "
+            "tar xzf /usr/lib/oozie/oozie-sharelib.tar.gz -C /tmp/oozielib && "
+            "rm /tmp/oozielib/share/lib/pig/pig-0.11.1-Intel.jar &&"
+            "cp /usr/lib/pig/pig-0.11.1-Intel.jar "
+            "/tmp/oozielib/share/lib/pig/pig-0.11.1-Intel.jar && "
+            "sudo su - -c '"
+            "hadoop fs -put /tmp/oozielib/share /user/oozie/share' hadoop && "
+            "rm -rf /tmp/oozielib")
+
+
 def start_cluster(cluster):
     client = c.IntelClient(
         u.get_instance(cluster, 'manager').management_ip, cluster.name)
@@ -304,6 +342,9 @@ def start_cluster(cluster):
         client.services.hive.start()
 
     if u.get_oozie(cluster):
+        LOG.info("Setup oozie")
+        _setup_oozie(cluster)
+
         client.services.oozie.start()
 
 
