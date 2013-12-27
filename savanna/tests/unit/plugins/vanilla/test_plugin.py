@@ -178,6 +178,42 @@ class VanillaPluginTest(models_test_base.DbTestCase):
 
     @mock.patch('savanna.conductor.api.LocalApi.cluster_get')
     def test_get_config_value(self, cond_get_cluster):
+        cluster = self._get_fake_cluster()
+        cond_get_cluster.return_value = cluster
+
+        self.assertEqual(
+            c_h.get_config_value('HDFS', 'fs.default.name', cluster),
+            'hdfs://inst1:8020')
+        self.assertEqual(
+            c_h.get_config_value('HDFS', 'spam', cluster), 'eggs')
+        self.assertEqual(
+            c_h.get_config_value('HDFS', 'dfs.safemode.extension'), 30000)
+        self.assertRaises(RuntimeError,
+                          c_h.get_config_value,
+                          'MapReduce', 'spam', cluster)
+
+    @mock.patch('savanna.plugins.vanilla.plugin.context')
+    @mock.patch('savanna.conductor.api.LocalApi.cluster_update')
+    def test_set_cluster_info(self, cond_cluster_update, context_mock):
+        cluster = self._get_fake_cluster()
+        self.pl._set_cluster_info(cluster)
+        expected_info = {
+            'HDFS': {
+                'NameNode': 'hdfs://inst1:8020',
+                'Web UI': 'http://127.0.0.1:50070'
+            },
+            'MapReduce': {
+                'Web UI': 'http://127.0.0.1:50030',
+                'JobTracker': 'inst1:8021'
+            },
+            'JobFlow': {
+                'Oozie': 'http://127.0.0.1:11000'
+            }
+        }
+        cond_cluster_update.assert_called_with(context_mock.ctx(), cluster,
+                                               {'info': expected_info})
+
+    def _get_fake_cluster(self):
         class FakeNG(object):
             def __init__(self, name, flavor, processes, count, instances=None,
                          configuration=None, cluster_id=None):
@@ -204,41 +240,30 @@ class VanillaPluginTest(models_test_base.DbTestCase):
                 self.node_groups = node_groups
 
         class FakeInst(object):
-            def __init__(self, inst_name, inst_id):
+            def __init__(self, inst_name, inst_id, management_ip):
                 self.instance_name = inst_name
                 self.instance_id = inst_id
+                self.management_ip = management_ip
 
             def hostname(self):
                 return self.instance_name
 
-        ms_inst = FakeInst('inst1', 'id1')
-        wk_inst = FakeInst('inst2', 'id2')
+        ms_inst = FakeInst('inst1', 'id1', '127.0.0.1')
+        wk_inst = FakeInst('inst2', 'id2', '127.0.0.1')
 
         conf = {
             "MapReduce": {},
             "HDFS": {
                 "spam": "eggs"
-            }
+            },
+            "JobFlow": {},
         }
 
-        ng1 = FakeNG('master', 'fl1', ['namenode', 'jobtracker'], 1,
+        ng1 = FakeNG('master', 'fl1', ['namenode', 'jobtracker', 'oozie'], 1,
                      [ms_inst], conf, 'id1')
         ng2 = FakeNG('worker', 'fl1', ['datanode', 'tasktracker'], 1,
                      [wk_inst], conf, 'id1')
-        cluster = FakeCluster('cl1', 'ten1', 'vanilla', '1.2.1', [ng1, ng2])
-
-        cond_get_cluster.return_value = cluster
-
-        self.assertEqual(
-            c_h.get_config_value('HDFS', 'fs.default.name', cluster),
-            'hdfs://inst1:8020')
-        self.assertEqual(
-            c_h.get_config_value('HDFS', 'spam', cluster), 'eggs')
-        self.assertEqual(
-            c_h.get_config_value('HDFS', 'dfs.safemode.extension'), 30000)
-        self.assertRaises(RuntimeError,
-                          c_h.get_config_value,
-                          'MapReduce', 'spam', cluster)
+        return FakeCluster('cl1', 'ten1', 'vanilla', '1.2.1', [ng1, ng2])
 
     def test_get_hadoop_ssh_keys(self):
         cluster_dict = {

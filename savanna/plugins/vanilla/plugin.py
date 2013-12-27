@@ -411,26 +411,29 @@ class VanillaProvider(p.ProvisioningPluginBase):
         info = {}
 
         if jt:
-            address = c_helper.get_config_value(
+            ui_port = c_helper.get_port_from_config(
                 'MapReduce', 'mapred.job.tracker.http.address', cluster)
-            port = address[address.rfind(':') + 1:]
+            jt_port = c_helper.get_port_from_config(
+                'MapReduce', 'mapred.job.tracker', cluster)
+
             info['MapReduce'] = {
-                'Web UI': 'http://%s:%s' % (jt.management_ip, port)
+                'Web UI': 'http://%s:%s' % (jt.management_ip, ui_port),
+                'JobTracker': '%s:%s' % (jt.hostname(), jt_port)
             }
-            #TODO(aignatov) change from hardcode value
-            info['MapReduce']['JobTracker'] = '%s:8021' % jt.hostname()
 
         if nn:
-            address = c_helper.get_config_value(
-                'HDFS', 'dfs.http.address', cluster)
-            port = address[address.rfind(':') + 1:]
+            ui_port = c_helper.get_port_from_config('HDFS', 'dfs.http.address',
+                                                    cluster)
+            nn_port = c_helper.get_port_from_config('HDFS', 'fs.default.name',
+                                                    cluster)
+
             info['HDFS'] = {
-                'Web UI': 'http://%s:%s' % (nn.management_ip, port)
+                'Web UI': 'http://%s:%s' % (nn.management_ip, ui_port),
+                'NameNode': 'hdfs://%s:%s' % (nn.hostname(), nn_port)
             }
-            #TODO(aignatov) change from hardcode value
-            info['HDFS']['NameNode'] = 'hdfs://%s:8020' % nn.hostname()
 
         if oozie:
+            #TODO(yrunts) change from hardcode value
             info['JobFlow'] = {
                 'Oozie': 'http://%s:11000' % oozie.management_ip
             }

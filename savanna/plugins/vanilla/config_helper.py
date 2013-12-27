@@ -428,3 +428,8 @@ def is_data_locality_enabled(cluster):
     if not CONF.enable_data_locality:
         return False
     return _is_general_option_enabled(cluster, ENABLE_DATA_LOCALITY)
+
+
+def get_port_from_config(service, name, cluster=None):
+    address = get_config_value(service, name, cluster)
+    return utils.get_port_from_address(address)
