@@ -30,17 +30,17 @@ def attach(cluster):
     for node_group in cluster.node_groups:
         attach_to_instances(node_group.instances)
 
-    for node_group in cluster.node_groups:
-        for instance in node_group.instances:
-            _await_attach_volumes(instance, node_group.volumes_per_node)
-
-        mount_to_instances(node_group.instances)
-
 
 def attach_to_instances(instances):
     ctx = context.ctx()
     for instance in instances:
         _attach_volumes_to_node(ctx, instance.node_group, instance)
+
+    for instance in instances:
+        _await_attach_volumes(instance,
+                              instance.node_group.volumes_per_node)
+
+    mount_to_instances(instances)
 
 
 def _await_attach_volumes(instance, count_volumes):
