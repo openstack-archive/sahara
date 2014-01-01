@@ -128,4 +128,4 @@ def check_cluster_template_usage(cluster_template_id, **kwargs):
 
     if cluster_template_id in use_cluster_template_ids:
         raise ex.InvalidException(
-            "Cluster template %s is use" % cluster_template_id)
+            "Cluster template %s in use" % cluster_template_id)
