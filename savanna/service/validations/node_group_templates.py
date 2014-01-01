@@ -103,4 +103,4 @@ def check_node_group_template_usage(node_group_template_id, **kwargs):
 
     if node_group_template_id in node_group_template_ids:
         raise ex.InvalidException(
-            "Node group template %s is use" % node_group_template_id)
+            "Node group template %s in use" % node_group_template_id)
