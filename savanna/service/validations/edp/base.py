@@ -42,6 +42,23 @@ job_configs = {
 }
 
 
+java_job_configs = {
+    "type": "object",
+    "properties": {
+        "configs": {
+            "type": "simple_config",
+        },
+        "args": {
+            "type": "array",
+            "items": {
+                "type": "string",
+            }
+        }
+    },
+    "additionalProperties": False,
+}
+
+
 def check_data_source_unique_name(name):
     if name in [ds.name for ds in api.get_data_sources()]:
         raise ex.NameAlreadyExistsException("Data source with name '%s' "

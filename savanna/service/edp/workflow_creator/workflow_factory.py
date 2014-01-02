@@ -21,6 +21,7 @@ from savanna.plugins import base as plugin_base
 from savanna.plugins.general import utils as u
 from savanna.service.edp import hdfs_helper as h
 from savanna.service.edp.workflow_creator import hive_workflow
+from savanna.service.edp.workflow_creator import java_workflow
 from savanna.service.edp.workflow_creator import mapreduce_workflow
 from savanna.service.edp.workflow_creator import pig_workflow
 from savanna.utils import remote
@@ -69,11 +70,11 @@ class PigFactory(BaseFactory):
     def get_script_name(self, job):
         return conductor.job_main_name(context.ctx(), job)
 
-    def get_workflow_xml(self, execution_configs, input_data, output_data):
+    def get_workflow_xml(self, execution, input_data, output_data):
         configs = {'configs': self.get_configs(input_data, output_data),
                    'params': self.get_params(input_data, output_data),
                    'args': self.get_args()}
-        self.update_configs(configs, execution_configs)
+        self.update_configs(configs, execution.job_configs)
         creator = pig_workflow.PigWorkflowCreator()
         creator.build_workflow_xml(self.name,
                                    configuration=configs['configs'],
@@ -92,10 +93,10 @@ class HiveFactory(BaseFactory):
     def get_script_name(self, job):
         return conductor.job_main_name(context.ctx(), job)
 
-    def get_workflow_xml(self, execution_configs, input_data, output_data):
+    def get_workflow_xml(self, execution, input_data, output_data):
         configs = {'configs': self.get_configs(input_data, output_data),
                    'params': self.get_params(input_data, output_data)}
-        self.update_configs(configs, execution_configs)
+        self.update_configs(configs, execution.job_configs)
         creator = hive_workflow.HiveWorkflowCreator()
         creator.build_workflow_xml(self.name,
                                    self.job_xml,
@@ -120,11 +121,37 @@ class MapReduceFactory(BaseFactory):
         configs['mapred.output.dir'] = output_data.url
         return configs
 
-    def get_workflow_xml(self, execution_configs, input_data, output_data):
+    def get_workflow_xml(self, execution, input_data, output_data):
         configs = {'configs': self.get_configs(input_data, output_data)}
-        self.update_configs(configs, execution_configs)
+        self.update_configs(configs, execution.job_configs)
         creator = mapreduce_workflow.MapReduceWorkFlowCreator()
         creator.build_workflow_xml(configuration=configs['configs'])
+        return creator.get_built_workflow_xml()
+
+
+class JavaFactory(BaseFactory):
+
+    def get_workflow_xml(self, execution, *args, **kwargs):
+        # input and output will be handled as args, so we don't really
+        # know whether or not to include the swift configs.  Hmmm.
+        configs = {'configs': {}}
+        self.update_configs(configs, execution.job_configs)
+
+        # Update is not supported for list types, and besides
+        # since args are listed (not named) update doesn't make
+        # sense, just replacement of any default args
+        configs['args'] = execution.job_configs.get('args', [])
+
+        if hasattr(execution, 'java_opts'):
+            java_opts = execution.java_opts
+        else:
+            java_opts = ""
+
+        creator = java_workflow.JavaWorkflowCreator()
+        creator.build_workflow_xml(execution.main_class,
+                                   configuration=configs['configs'],
+                                   java_opts=java_opts,
+                                   arguments=configs['args'])
         return creator.get_built_workflow_xml()
 
 
@@ -140,6 +167,7 @@ def get_creator(job):
         MapReduceFactory,
         make_HiveFactory,
         make_PigFactory,
+        JavaFactory,
         # Keep 'Jar' as a synonym for 'MapReduce'
         MapReduceFactory,
     ]
@@ -151,6 +179,10 @@ def get_creator(job):
 def get_possible_job_config(job_type):
     if job_type not in get_possible_job_types():
         return None
+
+    if job_type == "Java":
+        return {'job_config': {'configs': [], 'args': []}}
+
     if job_type in ['MapReduce', 'Pig', 'Jar']:
         #TODO(nmakhotkin) Savanna should return config based on specific plugin
         cfg = xmlutils.load_hadoop_xml_defaults(
@@ -163,7 +195,7 @@ def get_possible_job_config(job_type):
         cfg = xmlutils.load_hadoop_xml_defaults(
             'plugins/vanilla/resources/hive-default.xml')
     config = {'configs': cfg, "args": {}}
-    if job_type not in ['MapReduce', 'Jar']:
+    if job_type not in ['MapReduce', 'Jar', 'Java']:
         config.update({'params': {}})
     return {'job_config': config}
 
@@ -173,5 +205,6 @@ def get_possible_job_types():
         'MapReduce',
         'Hive',
         'Pig',
+        'Java',
         'Jar',
     ]

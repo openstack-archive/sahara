@@ -107,9 +107,12 @@ def run_job(job_execution):
         return job_execution
 
     job = conductor.job_get(ctx, job_execution.job_id)
-
-    input_source = conductor.data_source_get(ctx,  job_execution.input_id)
-    output_source = conductor.data_source_get(ctx,  job_execution.output_id)
+    if job.type != 'Java':
+        input_source = conductor.data_source_get(ctx,  job_execution.input_id)
+        output_source = conductor.data_source_get(ctx, job_execution.output_id)
+    else:
+        input_source = None
+        output_source = None
     #TODO(nprivalova): should be removed after all features implemented
     validate(input_source, output_source, job)
 
@@ -124,8 +127,9 @@ def run_job(job_execution):
     # uploading hive configuration
     creator.configure_workflow_if_needed(cluster, wf_dir)
 
-    wf_xml = creator.get_workflow_xml(job_execution.job_configs,
-                                      input_source, output_source)
+    wf_xml = creator.get_workflow_xml(job_execution,
+                                      input_source,
+                                      output_source)
 
     path_to_workflow = upload_workflow_file(u.get_jobtracker(cluster),
                                             wf_dir, wf_xml, hdfs_user)
@@ -205,7 +209,8 @@ def _append_slash_if_needed(path):
 #TODO(nprivalova): this validation should be removed after implementing
 #  all features
 def validate(input_data, output_data, job):
-    if input_data.type != 'swift' or output_data.type != 'swift':
+    if (input_data and input_data.type != 'swift') or\
+       (output_data and output_data.type != 'swift'):
         raise RuntimeError
-    if job.type not in ['Pig', 'MapReduce', 'Hive', 'Jar']:
+    if job.type not in ['Pig', 'MapReduce', 'Hive', 'Java', 'Jar']:
         raise RuntimeError

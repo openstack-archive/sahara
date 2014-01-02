@@ -29,10 +29,28 @@ def get_job_config_hints(job_type):
     return w_f.get_possible_job_config(job_type)
 
 
-def execute_job(job_id, input_id, output_id, cluster_id, configs):
-    job_ex_dict = {'input_id': input_id, 'output_id': output_id,
+def execute_job(job_id, data):
+
+    # Elements common to all job types
+    cluster_id = data['cluster_id']
+    configs = data.get('job_configs', {})
+
+    # Not in Java job types but present for all others
+    input_id = data.get('input_id', None)
+    output_id = data.get('output_id', None)
+
+    # Present for Java job types
+    main_class = data.get('main_class', '')
+    java_opts = data.get('java_opts', '')
+
+    # Since we will use a unified class in the database, we pass
+    # a superset for all job types
+    job_ex_dict = {'main_class': main_class,
+                   'java_opts': java_opts,
+                   'input_id': input_id, 'output_id': output_id,
                    'job_id': job_id, 'cluster_id': cluster_id,
                    'info': {'status': 'Pending'}, 'job_configs': configs}
+
     job_execution = conductor.job_execution_create(context.ctx(), job_ex_dict)
 
     context.spawn("Starting Job Execution %s" % job_execution.id,

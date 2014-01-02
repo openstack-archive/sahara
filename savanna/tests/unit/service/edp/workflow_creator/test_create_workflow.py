@@ -16,6 +16,7 @@
 import unittest2
 
 from savanna.service.edp.workflow_creator import hive_workflow as hw
+from savanna.service.edp.workflow_creator import java_workflow as jw
 from savanna.service.edp.workflow_creator import mapreduce_workflow as mrw
 from savanna.service.edp.workflow_creator import pig_workflow as pw
 from savanna.utils import patches as p
@@ -143,3 +144,46 @@ class TestPigWorkflowCreator(unittest2.TestCase):
     </hive>"""
 
         self.assertIn(hive_action, res)
+
+    def test_create_java_workflow(self):
+        java_workflow = jw.JavaWorkflowCreator()
+        main_class = 'org.apache.hadoop.examples.SomeClass'
+        args = ['/user/hadoop/input',
+                '/user/hadoop/output']
+        java_opts = '-Dparam1=val1 -Dparam2=val2'
+
+        java_workflow.build_workflow_xml(main_class,
+                                         self.prepare,
+                                         self.job_xml, self.configuration,
+                                         java_opts, args,
+                                         self.files, self.archives)
+        res = java_workflow.get_built_workflow_xml()
+        java_action = """
+      <job-tracker>${jobTracker}</job-tracker>
+      <name-node>${nameNode}</name-node>
+      <prepare>
+        <mkdir path="mkdir_1"/>
+        <delete path="delete_dir_1"/>
+        <delete path="delete_dir_2"/>
+      </prepare>
+      <job-xml>job_xml.xml</job-xml>
+      <configuration>
+        <property>
+          <name>conf_param_1</name>
+          <value>conf_value_1</value>
+        </property>
+        <property>
+          <name>conf_param_2</name>
+          <value>conf_value_3</value>
+        </property>
+      </configuration>
+      <main-class>org.apache.hadoop.examples.SomeClass</main-class>
+      <java-opts>-Dparam1=val1 -Dparam2=val2</java-opts>
+      <arg>/user/hadoop/input</arg>
+      <arg>/user/hadoop/output</arg>
+      <file>file1</file>
+      <file>file2</file>
+      <archive>arch1</archive>
+    </java>"""
+
+        self.assertIn(java_action, res)

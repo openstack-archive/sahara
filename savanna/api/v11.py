@@ -35,13 +35,7 @@ rest = u.Rest('v11', __name__)
 @v.check_exists(api.get_job, id='job_id')
 @v.validate(v_j_e.JOB_EXEC_SCHEMA, v_j_e.check_job_executor)
 def job_execute(job_id, data):
-    input = data['input_id']
-    output = data['output_id']
-    cluster = data['cluster_id']
-    configs = data.get('job_configs', {})
-    return u.render(job_execution=api.execute_job(job_id, input,
-                                                  output, cluster,
-                                                  configs).to_dict())
+    return u.render(job_execution=api.execute_job(job_id, data).to_dict())
 
 
 @rest.get('/jobs/config-hints/<job_type>')

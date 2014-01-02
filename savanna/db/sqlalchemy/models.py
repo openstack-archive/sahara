@@ -265,6 +265,8 @@ class JobExecution(mb.SavannaBase):
     oozie_job_id = sa.Column(sa.String(100))
     return_code = sa.Column(sa.String(80))
     job_configs = sa.Column(st.JsonDictType())
+    main_class = sa.Column(sa.String)
+    java_opts = sa.Column(sa.String)
 
 
 mains_association = sa.Table("mains_association",
