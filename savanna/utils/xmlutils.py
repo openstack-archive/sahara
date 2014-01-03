@@ -62,9 +62,15 @@ def create_hadoop_xml(configs, config_filter=None):
 
 ## basic utils
 
-def load_xml_document(file_name):
-    return xml.parse(pkg.resource_filename(
-        version.version_info.package, file_name))
+def load_xml_document(file_name, strip=False):
+    fname = pkg.resource_filename(
+        version.version_info.package, file_name)
+    if strip:
+        with open(fname, "r") as f:
+            doc = "".join(line.strip() for line in f)
+            return xml.parseString(doc)
+    else:
+        return xml.parse(fname)
 
 
 def _get_text_from_node(element, name):

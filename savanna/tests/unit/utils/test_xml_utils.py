@@ -165,3 +165,22 @@ class XMLUtilsTestCase(unittest2.TestCase):
         test = doc.createElement('test')
         doc.appendChild(test)
         return doc
+
+    def _get_xml_text(self, strip):
+        doc = x.load_xml_document("service/edp/resources/workflow.xml", strip)
+        x.add_child(doc, 'action', 'java')
+        x.add_text_element_to_tag(doc, 'java', 'sometag', 'somevalue')
+        return doc.toprettyxml(indent="  ").split("\n")
+
+    def test_load_xml_document_strip(self):
+        # Get the lines from the xml docs
+        stripped = set(self._get_xml_text(True))
+        unstripped = set(self._get_xml_text(False))
+
+        # Prove they're different
+        diff = stripped.symmetric_difference(unstripped)
+        self.assertTrue(len(diff) > 0)
+
+        # Prove the differences are only blank lines
+        non_blank_diffs = [l for l in diff if not l.isspace()]
+        self.assertEqual(len(non_blank_diffs), 0)
