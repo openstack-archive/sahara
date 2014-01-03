@@ -1,0 +1,87 @@
+{
+    "AWSTemplateFormatVersion" : "2010-09-09",
+    "Description" : "Hadoop Cluster by Savanna",
+
+    "Resources" : {
+        "cluster-worker-1-port" : {
+            "Type" : "OS::Neutron::Port",
+            "Properties" : {
+               "network_id" : "private_net"
+            }
+        },
+        "cluster-worker-1-floating" : {
+            "Type" : "OS::Neutron::FloatingIP" ,
+            "Properties" : {
+                "floating_network_id" : "floating",
+                "port_id" : { "Ref" :  "cluster-worker-1-port" }
+            }
+        },
+        "cluster-worker-1" : {
+            "Type" : "OS::Nova::Server",
+            "Properties" : {
+                "flavor" : "42",
+                "image" : "1",
+                "networks" : [{ "port" : { "Ref" : "cluster-worker-1-port" }}],
+                "key_name" : "user_key",
+                "user_data": {
+                    "Fn::Join" : ["\n", ["line2", "line3"]]
+                }
+            }
+        },
+        "cluster-worker-1-volume-0" : {
+            "Type" : "OS::Cinder::Volume",
+            "Properties" : {
+                "size" : "10"
+            }
+        },
+        "cluster-worker-1-volume-attachment-0" : {
+            "Type" : "OS::Cinder::VolumeAttachment",
+            "Properties" : {
+                "instance_uuid" : { "Ref" : "cluster-worker-1" },
+                "volume_id" : { "Ref" : "cluster-worker-1-volume-0" },
+                "mountpoint" : null
+            }
+        },
+        "cluster-worker-1-volume-1" : {
+            "Type" : "OS::Cinder::Volume",
+            "Properties" : {
+                "size" : "10"
+            }
+        },
+        "cluster-worker-1-volume-attachment-1" : {
+            "Type" : "OS::Cinder::VolumeAttachment",
+            "Properties" : {
+                "instance_uuid" : { "Ref" : "cluster-worker-1" },
+                "volume_id" : { "Ref" : "cluster-worker-1-volume-1" },
+                "mountpoint" : null
+            }
+        },
+        "cluster-master-1-port" : {
+            "Type" : "OS::Neutron::Port",
+            "Properties" : {
+               "network_id" : "private_net"
+            }
+        },
+        "cluster-master-1-floating" : {
+            "Type" : "OS::Neutron::FloatingIP" ,
+            "Properties" : {
+                "floating_network_id" : "floating",
+                "port_id" : { "Ref" :  "cluster-master-1-port" }
+            }
+        },
+        "cluster-master-1" : {
+            "Type" : "OS::Nova::Server",
+            "Properties" : {
+                "flavor" : "42",
+                "image" : "1",
+                "networks" : [{ "port" : { "Ref" : "cluster-master-1-port" }}],
+                "key_name" : "user_key",
+                "user_data": {
+                    "Fn::Join" : ["\n", ["line1", "line2"]]
+                }
+            }
+        }
+    },
+
+    "Outputs" : {}
+}
