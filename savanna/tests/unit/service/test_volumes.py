@@ -43,21 +43,20 @@ class TestAttachVolume(models_test_base.DbTestCase):
     @mock.patch('cinderclient.v1.volumes.Volume.detach')
     @mock.patch('savanna.utils.openstack.cinder.get_volume')
     def test_detach_volumes(self, p_get_volume, p_detach, p_delete, p_cond):
-        instance = {'instance_id': '123454321',
-                    'volumes': [123]}
+        class Instance:
+            def __init__(self):
+                self.instance_id = '123454321'
+                self.volumes = [123]
 
-        ng = r.NodeGroupResource({'instances': [instance]})
-
+        instance = Instance()
         p_get_volume.return_value = v.Volume(None, {'id': '123'})
         p_detach.return_value = None
         p_delete.return_value = None
         self.assertIsNone(
-            volumes.detach_from_instances([ng.instances[0]]))
+            volumes.detach_from_instance(instance))
 
-        cluster = r.ClusterResource({'id': '123', 'node_groups': [ng]})
-        p_cond.return_value = cluster
         p_delete.side_effect = RuntimeError
-        self.assertRaises(RuntimeError, volumes.detach, cluster)
+        self.assertRaises(RuntimeError, volumes.detach_from_instance, instance)
 
     @mock.patch('savanna.service.volumes._mount_volume')
     @mock.patch('savanna.service.volumes._await_attach_volumes')
