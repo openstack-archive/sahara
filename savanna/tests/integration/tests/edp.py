@@ -61,8 +61,8 @@ class EDPTest(base.ITestCase):
             time.sleep(10)
             timeout -= 10
 
-    def __crete_job_biraries(self, job_data_list, job_binary_internal_list,
-                             job_binary_list):
+    def __create_job_binaries(self, job_data_list, job_binary_internal_list,
+                              job_binary_list):
 
         for job_data in job_data_list:
 
@@ -151,11 +151,11 @@ class EDPTest(base.ITestCase):
                 'swift://%s.savanna/output' % container_name)
 
             if job_data_list:
-                self.__crete_job_biraries(
+                self.__create_job_binaries(
                     job_data_list, job_binary_internal_list, job_binary_list)
 
             if lib_data_list:
-                self.__crete_job_biraries(
+                self.__create_job_binaries(
                     lib_data_list, job_binary_internal_list, lib_binary_list)
 
             job_id = self.__create_job(
