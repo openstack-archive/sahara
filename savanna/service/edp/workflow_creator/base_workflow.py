@@ -26,7 +26,8 @@ class OozieWorkflowCreator(object):
     tag_name = "no-op"
 
     def __init__(self, name):
-        self.doc = x.load_xml_document("service/edp/resources/workflow.xml")
+        self.doc = x.load_xml_document("service/edp/resources/workflow.xml",
+                                       strip=True)
         self.tag_name = name
 
         x.add_child(self.doc, 'action', self.tag_name)
