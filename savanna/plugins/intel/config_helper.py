@@ -139,3 +139,9 @@ PLUGIN_CONFIGS = _initialise_configs()
 
 def get_plugin_configs():
     return PLUGIN_CONFIGS
+
+
+def get_config_value(cluster_configs, key):
+    if not cluster_configs or cluster_configs.get(key.name) is None:
+        return key.default_value
+    return cluster_configs.get(key.name)
