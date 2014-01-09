@@ -206,10 +206,16 @@ class ServiceWrapper(object):
 
 
 class ProcessLauncher(object):
-    def __init__(self):
+    def __init__(self, wait_interval=0.01):
+        """Constructor.
+
+        :param wait_interval: The interval to sleep for between checks
+                              of child process exit.
+        """
         self.children = {}
         self.sigcaught = None
         self.running = True
+        self.wait_interval = wait_interval
         rfd, self.writepipe = os.pipe()
         self.readpipe = eventlet.greenio.GreenPipe(rfd, 'r')
         self.handle_signal()
@@ -367,7 +373,7 @@ class ProcessLauncher(object):
                 # Yield to other threads if no children have exited
                 # Sleep for a short time to avoid excessive CPU usage
                 # (see bug #1095346)
-                eventlet.greenthread.sleep(.01)
+                eventlet.greenthread.sleep(self.wait_interval)
                 continue
             while self.running and len(wrap.children) < wrap.workers:
                 self._start_child(wrap)

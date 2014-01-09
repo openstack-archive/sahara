@@ -64,7 +64,7 @@ def _dont_use_this():
 
 
 def _find_objects(t):
-    return filter(lambda o: isinstance(o, t), gc.get_objects())
+    return [o for o in gc.get_objects() if isinstance(o, t)]
 
 
 def _print_greenthreads():
