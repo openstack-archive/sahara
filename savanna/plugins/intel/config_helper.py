@@ -55,13 +55,21 @@ IDH_REPO_URL = p.Config('IDH repository URL', 'general', 'cluster',
 OOZIE_EXT22_URL = p.Config(
     'Ext 2.2 URL', 'general', 'cluster',
     description='Ext 2.2 library is required for Oozie Web Console. '
-                'File will be downloaded from VM with oozie.',
+                'The file will be downloaded from VM with oozie.',
     priority=1, is_optional=True,
     default_value='http://extjs.com/deploy/ext-2.2.zip')
 
 ENABLE_SWIFT = p.Config('Enable Swift', 'general', 'cluster',
                         config_type="bool", priority=1,
                         default_value=True, is_optional=True)
+
+HADOOP_SWIFTFS_JAR_URL = p.Config(
+    'Hadoop SwiftFS jar URL', 'general', 'cluster',
+    description='Library that adds swift support to hadoop. '
+                'The file will be downloaded from VM with oozie.',
+    priority=1, is_optional=True,
+    default_value='http://savanna-files.mirantis.com/'
+                  'hadoop-swift/hadoop-swift-latest.jar')
 
 HIDDEN_CONFS = ['fs.default.name', 'dfs.name.dir', 'dfs.data.dir',
                 'mapred.job.tracker', 'mapred.system.dir', 'mapred.local.dir']
