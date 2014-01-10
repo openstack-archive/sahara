@@ -9,6 +9,7 @@ include savanna/db/migration/alembic_migrations/versions/README
 
 recursive-include savanna/locale *
 
+include savanna/plugins/intel/resources/*.xml
 include savanna/plugins/vanilla/resources/*.xml
 include savanna/plugins/vanilla/resources/*.sh
 include savanna/plugins/vanilla/resources/*.sql
