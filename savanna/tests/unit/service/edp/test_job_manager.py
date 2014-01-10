@@ -25,6 +25,9 @@ from savanna.utils import patches as p
 
 conductor = cond.API
 
+_java_main_class = "org.apache.hadoop.examples.WordCount"
+_java_opts = "-Dparam1=val1 -Dparam2=val2"
+
 
 def _resource_passthrough(*args, **kwargs):
     return True
@@ -105,7 +108,7 @@ class TestJobManager(models_test_base.DbTestCase):
 
         creator = workflow_factory.get_creator(job)
 
-        res = creator.get_workflow_xml(job_exec.job_configs,
+        res = creator.get_workflow_xml(job_exec,
                                        input_data, output_data)
 
         self.assertIn("""
@@ -134,7 +137,7 @@ class TestJobManager(models_test_base.DbTestCase):
 
         creator = workflow_factory.get_creator(job)
 
-        res = creator.get_workflow_xml(job_exec.job_configs,
+        res = creator.get_workflow_xml(job_exec,
                                        input_data, output_data)
 
         self.assertIn("""
@@ -161,18 +164,44 @@ class TestJobManager(models_test_base.DbTestCase):
           <value>admin</value>
         </property>""", res)
 
-    def test_jar_creator_is_mapreduce(self):
-        # Ensure that we get the MapReduce workflow factory for 'Jar' jobs
-        job, _ = _create_all_stack('Jar')
-
-        creator = workflow_factory.get_creator(job)
-        self.assertEqual(type(creator), workflow_factory.MapReduceFactory)
-
     def test_build_workflow_for_job_mapreduce(self):
         self._build_workflow_common('MapReduce')
 
     def test_build_workflow_for_job_jar(self):
         self._build_workflow_common('Jar')
+
+    def test_build_workflow_for_job_java(self):
+        # If args include swift paths, user and password values
+        # will have to be supplied via configs instead of being
+        # lifted from input or output data sources
+        configs = {workflow_factory.swift_username: 'admin',
+                   workflow_factory.swift_password: 'admin1'}
+
+        configs = {
+            'configs': configs,
+            'args': ['input_path',
+                     'output_path']
+        }
+
+        job, job_exec = _create_all_stack('Java', configs)
+        creator = workflow_factory.get_creator(job)
+        res = creator.get_workflow_xml(job_exec)
+
+        self.assertIn("""
+      <configuration>
+        <property>
+          <name>fs.swift.service.savanna.password</name>
+          <value>admin1</value>
+        </property>
+        <property>
+          <name>fs.swift.service.savanna.username</name>
+          <value>admin</value>
+        </property>
+      </configuration>
+      <main-class>%s</main-class>
+      <java-opts>%s</java-opts>
+      <arg>input_path</arg>
+      <arg>output_path</arg>""" % (_java_main_class, _java_opts), res)
 
     @mock.patch('savanna.conductor.API.job_binary_get')
     def test_build_workflow_for_job_hive(self, job_binary):
@@ -185,7 +214,7 @@ class TestJobManager(models_test_base.DbTestCase):
 
         creator = workflow_factory.get_creator(job)
 
-        res = creator.get_workflow_xml(job_exec.job_configs,
+        res = creator.get_workflow_xml(job_exec,
                                        input_data, output_data)
 
         self.assertIn("""
@@ -210,11 +239,12 @@ class TestJobManager(models_test_base.DbTestCase):
         input_data = _create_data_source('swift://ex.savanna/i')
         output_data = _create_data_source('swift://ex.savanna/o')
 
-        job_exec = _create_job_exec(job.id, configs={"configs": {'c': 'f'}})
+        job_exec = _create_job_exec(job.id,
+                                    job_type, configs={"configs": {'c': 'f'}})
 
         creator = workflow_factory.get_creator(job)
 
-        res = creator.get_workflow_xml(job_exec.job_configs,
+        res = creator.get_workflow_xml(job_exec,
                                        input_data, output_data)
 
         self.assertIn("""
@@ -241,11 +271,18 @@ class TestJobManager(models_test_base.DbTestCase):
     def test_build_workflow_for_job_jar_with_conf(self):
         self._build_workflow_with_conf_common('Jar')
 
+    def test_jar_creator_is_mapreduce(self):
+        # Ensure that we get the MapReduce workflow factory for 'Jar' jobs
+        job, _ = _create_all_stack('Jar')
 
-def _create_all_stack(type):
+        creator = workflow_factory.get_creator(job)
+        self.assertEqual(type(creator), workflow_factory.MapReduceFactory)
+
+
+def _create_all_stack(type, configs=None):
     b = _create_job_binary('1', type)
     j = _create_job('2', b, type)
-    e = _create_job_exec(j.id)
+    e = _create_job_exec(j.id, type, configs)
     return j, e
 
 
@@ -257,7 +294,7 @@ def _create_job(id, job_binary, type):
     if type == 'Pig' or type == 'Hive':
         job.mains = [job_binary]
         job.libs = None
-    if type in ['MapReduce', 'Jar']:
+    if type in ['MapReduce', 'Jar', 'Java']:
         job.libs = [job_binary]
         job.mains = None
     return job
@@ -269,7 +306,7 @@ def _create_job_binary(id, type):
     binary.url = "savanna-db://42"
     if type == "Pig":
         binary.name = "script.pig"
-    if type in ['MapReduce', 'Jar']:
+    if type in ['MapReduce', 'Jar', 'Java']:
         binary.name = "main.jar"
     if type == "Hive":
         binary.name = "script.q"
@@ -286,8 +323,11 @@ def _create_data_source(url):
     return data_source
 
 
-def _create_job_exec(job_id, configs=None):
+def _create_job_exec(job_id, type, configs=None):
     j_exec = mock.Mock()
     j_exec.job_id = job_id
     j_exec.job_configs = configs
+    if type == "Java":
+        j_exec.main_class = _java_main_class
+        j_exec.java_opts = _java_opts
     return j_exec

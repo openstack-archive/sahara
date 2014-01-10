@@ -35,6 +35,7 @@ JOB_SCHEMA = {
                 "Pig",
                 "Hive",
                 "MapReduce",
+                "Java",
                 # Leave this here for validation of create_job,
                 # but it will be changed to MapReduce on creation
                 "Jar",

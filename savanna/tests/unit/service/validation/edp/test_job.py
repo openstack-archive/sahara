@@ -24,7 +24,7 @@ class TestJobValidation(u.ValidationTestCase):
         self.scheme = j.JOB_SCHEMA
 
     def test_empty_mains_and_libs(self):
-        for job_type in ['MapReduce', 'Jar']:
+        for job_type in ['MapReduce', 'Java', 'Jar']:
             self._assert_create_object_validation(
                 data={
                     "name": "jar.jar",
@@ -51,7 +51,7 @@ class TestJobValidation(u.ValidationTestCase):
                                   "Hive flow requires main script"))
 
     def test_overlap_libs(self):
-        for job_type in ['MapReduce', 'Jar']:
+        for job_type in ['MapReduce', 'Java', 'Jar']:
             self._assert_create_object_validation(
                 data={
                     "name": "jar.jar",
