@@ -14,18 +14,29 @@
 # limitations under the License.
 
 import mock
-import unittest2
 
+from savanna import conductor as cond
+from savanna.conductor import resource as r
+from savanna import context
 from savanna.plugins.general import exceptions as ex
 from savanna.plugins.vanilla import config_helper as c_h
 from savanna.plugins.vanilla import mysql_helper as m_h
 from savanna.plugins.vanilla import plugin as p
+from savanna.tests.unit import base as models_test_base
 from savanna.tests.unit.plugins.general import test_utils as tu
 
+conductor = cond.API
 
-class VanillaPluginTest(unittest2.TestCase):
+
+def _resource_passthrough(*args, **kwargs):
+    return True
+
+
+class VanillaPluginTest(models_test_base.DbTestCase):
     def setUp(self):
         self.pl = p.VanillaProvider()
+        r.Resource._is_passthrough_type = _resource_passthrough
+        super(VanillaPluginTest, self).setUp()
 
     def test_validate(self):
         self.ng = []
@@ -228,3 +239,29 @@ class VanillaPluginTest(unittest2.TestCase):
         self.assertRaises(RuntimeError,
                           c_h.get_config_value,
                           'MapReduce', 'spam', cluster)
+
+    def test_get_hadoop_ssh_keys(self):
+        cluster_dict = {
+            'name': 'cluster1',
+            'plugin_name': 'mock_plugin',
+            'hadoop_version': 'mock_version',
+            'default_image_id': 'initial',
+            'node_groups': [tu._make_ng_dict("ng1", "f1", ["s1"], 1)]}
+
+        cluster1 = conductor.cluster_create(context.ctx(), cluster_dict)
+        (private_key1, public_key1) = c_h.get_hadoop_ssh_keys(cluster1)
+
+        #should store keys for old cluster
+        cluster1 = conductor.cluster_get(context.ctx(), cluster1)
+        (private_key2, public_key2) = c_h.get_hadoop_ssh_keys(cluster1)
+
+        self.assertEqual(public_key1, public_key2)
+        self.assertEqual(private_key1, private_key2)
+
+        #should generate new keys for new cluster
+        cluster_dict.update({'name': 'cluster2'})
+        cluster2 = conductor.cluster_create(context.ctx(), cluster_dict)
+        (private_key3, public_key3) = c_h.get_hadoop_ssh_keys(cluster2)
+
+        self.assertNotEqual(public_key1, public_key3)
+        self.assertNotEqual(private_key1, private_key3)
