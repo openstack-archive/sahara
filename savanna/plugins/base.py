@@ -27,7 +27,7 @@ LOG = logging.getLogger(__name__)
 
 opts = [
     cfg.ListOpt('plugins',
-                default=['vanilla', 'hdp'],
+                default=['vanilla', 'hdp', 'idh'],
                 help='List of plugins to be loaded. Savanna preserves the '
                      'order of the list when returning it.'),
 ]
