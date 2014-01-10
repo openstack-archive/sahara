@@ -203,12 +203,7 @@ class VanillaPluginTest(unittest2.TestCase):
         ms_inst = FakeInst('inst1', 'id1')
         wk_inst = FakeInst('inst2', 'id2')
 
-        conf1 = {
-            "MapReduce": {},
-            "HDFS": {}
-        }
-
-        conf2 = {
+        conf = {
             "MapReduce": {},
             "HDFS": {
                 "spam": "eggs"
@@ -216,9 +211,9 @@ class VanillaPluginTest(unittest2.TestCase):
         }
 
         ng1 = FakeNG('master', 'fl1', ['namenode', 'jobtracker'], 1,
-                     [ms_inst], conf1, 'id1')
+                     [ms_inst], conf, 'id1')
         ng2 = FakeNG('worker', 'fl1', ['datanode', 'tasktracker'], 1,
-                     [wk_inst], conf2, 'id1')
+                     [wk_inst], conf, 'id1')
         cluster = FakeCluster('cl1', 'ten1', 'vanilla', '1.2.1', [ng1, ng2])
 
         cond_get_cluster.return_value = cluster
@@ -227,12 +222,9 @@ class VanillaPluginTest(unittest2.TestCase):
             c_h.get_config_value('HDFS', 'fs.default.name', cluster),
             'hdfs://inst1:8020')
         self.assertEqual(
-            c_h.get_config_value('HDFS', 'dfs.data.dir', node_group=ng1),
-            '/mnt/lib/hadoop/hdfs/datanode')
-        self.assertEqual(
-            c_h.get_config_value('HDFS', 'spam', node_group=ng2), 'eggs')
+            c_h.get_config_value('HDFS', 'spam', cluster), 'eggs')
         self.assertEqual(
             c_h.get_config_value('HDFS', 'dfs.safemode.extension'), 30000)
         self.assertRaises(RuntimeError,
                           c_h.get_config_value,
-                          'MapReduce', 'spam', cluster, ng1)
+                          'MapReduce', 'spam', cluster)

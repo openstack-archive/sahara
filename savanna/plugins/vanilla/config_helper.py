@@ -178,12 +178,9 @@ def get_general_configs(hive_hostname, passwd_hive_mysql):
     return config
 
 
-def get_config_value(service, name, cluster=None, node_group=None):
-    if node_group and not cluster:
-        cluster = conductor.cluster_get(node_group.cluster_id)
-
+def get_config_value(service, name, cluster=None):
     if cluster:
-        savanna_configs = generate_savanna_configs(cluster, node_group)
+        savanna_configs = generate_savanna_configs(cluster)
         if savanna_configs.get(name):
             return savanna_configs[name]
 
