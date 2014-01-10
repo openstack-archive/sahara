@@ -57,39 +57,30 @@ CONFIG_MAP = {
 
 
 class ClusterConfigTest(base.ITestCase):
-
     @staticmethod
     def __get_node_configs(node_group, process):
-
         return node_group['node_configs'][CONFIG_MAP[process]['service']]
 
     @staticmethod
     def __get_config_from_config_map(process):
-
         return CONFIG_MAP[process]['config']
 
-    def __compare_configs(self, obtained_config, config):
-
+    def __compare_configs(self, expected_config, actual_config):
         self.assertEqual(
-            obtained_config, config,
-            'Failure while config comparison: configs are not equal. \n'
-            'Config obtained with \'get\'-request: %s. \n'
-            'Config while cluster creation: %s.'
-            % (str(obtained_config), str(config))
+            expected_config, actual_config,
+            'Failure while config comparison.\n'
+            'Expected config: %s.\n'
+            'Actual config: %s.'
+            % (str(expected_config), str(actual_config))
         )
 
     def __compare_configs_on_cluster_node(self, config, value):
-
         config = config.replace(' ', '')
-
         try:
-
             self.execute_command('./script.sh %s -value %s' % (config, value))
 
         except Exception as e:
-
             with excutils.save_and_reraise_exception():
-
                 print(
                     '\nFailure while config comparison on cluster node: '
                     + str(e)
@@ -99,85 +90,58 @@ class ClusterConfigTest(base.ITestCase):
                 )
 
     def __check_configs_for_node_groups(self, node_groups):
-
         for node_group in node_groups:
-
             for process in node_group['node_processes']:
-
                 if process in CONFIG_MAP:
-
                     self.__compare_configs(
-                        self.__get_node_configs(node_group, process),
-                        self.__get_config_from_config_map(process)
+                        self.__get_config_from_config_map(process),
+                        self.__get_node_configs(node_group, process)
                     )
 
     def __check_config_application_on_cluster_nodes(
             self, node_ip_list_with_node_processes):
-
         for node_ip, processes in node_ip_list_with_node_processes.items():
-
-            self.open_ssh_connection(
-                node_ip, self.vanilla_config.NODE_USERNAME
-            )
-
+            self.open_ssh_connection(node_ip, self.vanilla_config.SSH_USERNAME)
             for config, value in CLUSTER_MR_CONFIG.items():
-
                 self.__compare_configs_on_cluster_node(config, value)
-
             for config, value in CLUSTER_HDFS_CONFIG.items():
-
                 self.__compare_configs_on_cluster_node(config, value)
-
 #TODO(ylobankov): add check for secondary nn when bug #1217245 will be fixed
             for process in processes:
-
                 if process in CONFIG_MAP:
-
                     for config, value in self.__get_config_from_config_map(
                             process).items():
-
                         self.__compare_configs_on_cluster_node(config, value)
-
             self.close_ssh_connection()
 
     @base.skip_test('SKIP_CLUSTER_CONFIG_TEST',
                     message='Test for cluster configs was skipped.')
     def _cluster_config_testing(self, cluster_info):
-
         cluster_id = cluster_info['cluster_id']
         data = self.savanna.clusters.get(cluster_id)
-
         self.__compare_configs(
-            data.cluster_configs['general'], {'Enable Swift': True}
+            {'Enable Swift': True}, data.cluster_configs['general']
         )
         self.__compare_configs(
-            data.cluster_configs['HDFS'], CLUSTER_HDFS_CONFIG
+            CLUSTER_HDFS_CONFIG, data.cluster_configs['HDFS']
         )
         self.__compare_configs(
-            data.cluster_configs['MapReduce'], CLUSTER_MR_CONFIG
+            CLUSTER_MR_CONFIG, data.cluster_configs['MapReduce']
         )
-
         node_groups = data.node_groups
-
         self.__check_configs_for_node_groups(node_groups)
-
-        node_ip_list_with_node_processes = \
-            self.get_cluster_node_ip_list_with_node_processes(cluster_id)
-
+        node_ip_list_with_node_processes = (
+            self.get_cluster_node_ip_list_with_node_processes(cluster_id))
         try:
-
             self.transfer_helper_script_to_nodes(
                 node_ip_list_with_node_processes,
-                self.vanilla_config.NODE_USERNAME,
+                self.vanilla_config.SSH_USERNAME,
                 'cluster_config_test_script.sh'
             )
 
         except Exception as e:
-
             with excutils.save_and_reraise_exception():
-
                 print(str(e))
-
         self.__check_config_application_on_cluster_nodes(
             node_ip_list_with_node_processes
         )

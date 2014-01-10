@@ -28,7 +28,6 @@ from savanna.tests.integration.tests import swift
 class VanillaGatingTest(cluster_configs.ClusterConfigTest, edp.EDPTest,
                         map_reduce.MapReduceTest, swift.SwiftTest,
                         scaling.ScalingTest):
-
     SKIP_CLUSTER_CONFIG_TEST = \
         cfg.ITConfig().vanilla_config.SKIP_CLUSTER_CONFIG_TEST
     SKIP_EDP_TEST = cfg.ITConfig().vanilla_config.SKIP_EDP_TEST
@@ -40,15 +39,15 @@ class VanillaGatingTest(cluster_configs.ClusterConfigTest, edp.EDPTest,
                       'All tests for Vanilla plugin were skipped')
     @testcase.attr('vanilla')
     def test_vanilla_plugin_gating(self):
+        self.vanilla_config.IMAGE_ID, self.vanilla_config.SSH_USERNAME = (
+            self.get_image_id_and_ssh_username(self.vanilla_config))
 
         # Default value of self.common_config.FLOATING_IP_POOL is None
         floating_ip_pool = self.common_config.FLOATING_IP_POOL
         internal_neutron_net = None
-
         # If Neutron enabled then get ID of floating IP pool and ID of internal
         # Neutron network
         if self.common_config.NEUTRON_ENABLED:
-
             floating_ip_pool = self.get_floating_ip_pool_id_for_neutron_net()
             internal_neutron_net = self.get_internal_neutron_net_id()
 
@@ -59,7 +58,6 @@ class VanillaGatingTest(cluster_configs.ClusterConfigTest, edp.EDPTest,
 #---------------------"tt-dn" node group template creation---------------------
 
         try:
-
             node_group_template_tt_dn_id = self.create_node_group_template(
                 name='test-node-group-template-vanilla-tt-dn',
                 plugin_config=self.vanilla_config,
@@ -76,9 +74,7 @@ class VanillaGatingTest(cluster_configs.ClusterConfigTest, edp.EDPTest,
             node_group_template_id_list.append(node_group_template_tt_dn_id)
 
         except Exception as e:
-
             with excutils.save_and_reraise_exception():
-
                 message = 'Failure while \'tt-dn\' node group ' \
                           'template creation: '
                 self.print_error_log(message, e)
@@ -86,7 +82,6 @@ class VanillaGatingTest(cluster_configs.ClusterConfigTest, edp.EDPTest,
 #-----------------------"tt" node group template creation----------------------
 
         try:
-
             node_group_template_tt_id = self.create_node_group_template(
                 name='test-node-group-template-vanilla-tt',
                 plugin_config=self.vanilla_config,
@@ -102,20 +97,16 @@ class VanillaGatingTest(cluster_configs.ClusterConfigTest, edp.EDPTest,
             node_group_template_id_list.append(node_group_template_tt_id)
 
         except Exception as e:
-
             with excutils.save_and_reraise_exception():
-
                 self.delete_objects(
                     node_group_template_id_list=node_group_template_id_list
                 )
-
                 message = 'Failure while \'tt\' node group template creation: '
                 self.print_error_log(message, e)
 
 #----------------------"dn" node group template creation-----------------------
 
         try:
-
             node_group_template_dn_id = self.create_node_group_template(
                 name='test-node-group-template-vanilla-dn',
                 plugin_config=self.vanilla_config,
@@ -131,20 +122,16 @@ class VanillaGatingTest(cluster_configs.ClusterConfigTest, edp.EDPTest,
             node_group_template_id_list.append(node_group_template_dn_id)
 
         except Exception as e:
-
             with excutils.save_and_reraise_exception():
-
                 self.delete_objects(
                     node_group_template_id_list=node_group_template_id_list
                 )
-
                 message = 'Failure while \'dn\' node group template creation: '
                 self.print_error_log(message, e)
 
 #---------------------------Cluster template creation--------------------------
 
         try:
-
             cluster_template_id = self.create_cluster_template(
                 name='test-cluster-template-vanilla',
                 plugin_config=self.vanilla_config,
@@ -191,25 +178,16 @@ class VanillaGatingTest(cluster_configs.ClusterConfigTest, edp.EDPTest,
             )
 
         except Exception as e:
-
             with excutils.save_and_reraise_exception():
-
                 self.delete_objects(
                     node_group_template_id_list=node_group_template_id_list
                 )
-
                 message = 'Failure while cluster template creation: '
                 self.print_error_log(message, e)
 
 #-------------------------------Cluster creation-------------------------------
 
-        self.vanilla_config.IMAGE_ID, self.vanilla_config.NODE_USERNAME = \
-            self.get_image_id_and_savanna_cluster_node_username(
-                self.vanilla_config
-            )
-
         try:
-
             cluster_info = self.create_cluster_and_get_info(
                 plugin_config=self.vanilla_config,
                 cluster_template_id=cluster_template_id,
@@ -218,14 +196,11 @@ class VanillaGatingTest(cluster_configs.ClusterConfigTest, edp.EDPTest,
             )
 
         except Exception as e:
-
             with excutils.save_and_reraise_exception():
-
                 self.delete_objects(
                     self.cluster_id, cluster_template_id,
                     node_group_template_id_list
                 )
-
                 message = 'Failure while cluster creation: '
                 self.print_error_log(message, e)
 
@@ -235,14 +210,11 @@ class VanillaGatingTest(cluster_configs.ClusterConfigTest, edp.EDPTest,
             self._cluster_config_testing(cluster_info)
 
         except Exception as e:
-
             with excutils.save_and_reraise_exception():
-
                 self.delete_objects(
                     cluster_info['cluster_id'], cluster_template_id,
                     node_group_template_id_list
                 )
-
                 message = 'Failure while cluster config testing: '
                 self.print_error_log(message, e)
 
@@ -252,67 +224,52 @@ class VanillaGatingTest(cluster_configs.ClusterConfigTest, edp.EDPTest,
         job_data = open(path + 'edp-job.pig').read()
         lib_data = open(path + 'edp-lib.jar').read()
         job_jar_data = open(path + 'edp-job.jar').read()
-
         configs = {
             "configs": {
             "mapred.mapper.class": "org.apache.oozie.example.SampleMapper",
             "mapred.reducer.class": "org.apache.oozie.example.SampleReducer"
             }
         }
-
         try:
-
             self._edp_testing('Pig', [{'pig': job_data}], [{'jar': lib_data}])
-
-        #TODO(vrovachev): remove mains after when bug #1237434 will be fixed
-            self._edp_testing('MapReduce', [{'pig': job_data}],
-                              [{'jar': job_jar_data}], configs)
+            self._edp_testing(
+                'MapReduce', [], [{'jar': job_jar_data}], configs
+            )
 
         except Exception as e:
-
             with excutils.save_and_reraise_exception():
-
                 self.delete_objects(
                     cluster_info['cluster_id'], cluster_template_id,
                     node_group_template_id_list
                 )
-
                 message = 'Failure while EDP testing: '
                 self.print_error_log(message, e)
 
 #------------------------------MAP REDUCE TESTING------------------------------
 
         try:
-
             self._map_reduce_testing(cluster_info)
 
         except Exception as e:
-
             with excutils.save_and_reraise_exception():
-
                 self.delete_objects(
                     cluster_info['cluster_id'], cluster_template_id,
                     node_group_template_id_list
                 )
-
                 message = 'Failure while Map Reduce testing: '
                 self.print_error_log(message, e)
 
 #---------------------------CHECK SWIFT AVAILABILITY---------------------------
 
         try:
-
             self._check_swift_availability(cluster_info)
 
         except Exception as e:
-
             with excutils.save_and_reraise_exception():
-
                 self.delete_objects(
                     cluster_info['cluster_id'], cluster_template_id,
                     node_group_template_id_list
                 )
-
                 message = 'Failure during check of Swift availability: '
                 self.print_error_log(message, e)
 
@@ -344,20 +301,15 @@ class VanillaGatingTest(cluster_configs.ClusterConfigTest, edp.EDPTest,
                 ]
             }
         ]
-
         try:
-
             new_cluster_info = self._cluster_scaling(cluster_info, change_list)
 
         except Exception as e:
-
             with excutils.save_and_reraise_exception():
-
                 self.delete_objects(
                     cluster_info['cluster_id'], cluster_template_id,
                     node_group_template_id_list
                 )
-
                 message = 'Failure while cluster scaling: '
                 self.print_error_log(message, e)
 
@@ -366,18 +318,14 @@ class VanillaGatingTest(cluster_configs.ClusterConfigTest, edp.EDPTest,
 #---------------------CLUSTER CONFIG TESTING AFTER SCALING---------------------
 
             try:
-
                 self._cluster_config_testing(new_cluster_info)
 
             except Exception as e:
-
                 with excutils.save_and_reraise_exception():
-
                     self.delete_objects(
                         new_cluster_info['cluster_id'], cluster_template_id,
                         node_group_template_id_list
                     )
-
                     message = 'Failure while cluster config testing after ' \
                               'cluster scaling: '
                     self.print_error_log(message, e)
@@ -385,18 +333,14 @@ class VanillaGatingTest(cluster_configs.ClusterConfigTest, edp.EDPTest,
 #-----------------------MAP REDUCE TESTING AFTER SCALING-----------------------
 
             try:
-
                 self._map_reduce_testing(new_cluster_info)
 
             except Exception as e:
-
                 with excutils.save_and_reraise_exception():
-
                     self.delete_objects(
                         new_cluster_info['cluster_id'], cluster_template_id,
                         node_group_template_id_list
                     )
-
                     message = 'Failure while Map Reduce testing after ' \
                               'cluster scaling: '
                     self.print_error_log(message, e)
@@ -404,18 +348,14 @@ class VanillaGatingTest(cluster_configs.ClusterConfigTest, edp.EDPTest,
 #--------------------CHECK SWIFT AVAILABILITY AFTER SCALING--------------------
 
             try:
-
                 self._check_swift_availability(new_cluster_info)
 
             except Exception as e:
-
                 with excutils.save_and_reraise_exception():
-
                     self.delete_objects(
                         new_cluster_info['cluster_id'], cluster_template_id,
                         node_group_template_id_list
                     )
-
                     message = 'Failure during check of Swift availability ' \
                               'after cluster scaling: '
                     self.print_error_log(message, e)

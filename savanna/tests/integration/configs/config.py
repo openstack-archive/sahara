@@ -22,15 +22,11 @@ from oslo.config import cfg
 
 
 def singleton(cls):
-
     instances = {}
 
     def get_instance():
-
         if cls not in instances:
-
             instances[cls] = cls()
-
         return instances[cls]
 
     return get_instance
@@ -38,7 +34,6 @@ def singleton(cls):
 
 COMMON_CONFIG_GROUP = cfg.OptGroup(name='COMMON')
 COMMON_CONFIG_OPTS = [
-
     cfg.StrOpt('OS_USERNAME',
                default='admin',
                help='Username for OpenStack.'),
@@ -51,11 +46,9 @@ COMMON_CONFIG_OPTS = [
     cfg.StrOpt('OS_AUTH_URL',
                default='http://127.0.0.1:5000/v2.0',
                help='URL for OpenStack.'),
-
     cfg.StrOpt('SWIFT_AUTH_VERSION',
                default=2,
                help='OpenStack auth version for Swift.'),
-
     cfg.StrOpt('SAVANNA_HOST',
                default='127.0.0.1',
                help='Host for Savanna.'),
@@ -65,7 +58,6 @@ COMMON_CONFIG_OPTS = [
     cfg.StrOpt('SAVANNA_API_VERSION',
                default='v1.1',
                help='Api version for Savanna.'),
-
     cfg.StrOpt('FLAVOR_ID',
                default=None,
                help='OpenStack flavor ID for virtual machines. If you leave '
@@ -76,31 +68,25 @@ COMMON_CONFIG_OPTS = [
                     'ephemeral=10. <id> is ID of 8 characters '
                     '(letters and/or digits) which is added to name of flavor '
                     'for its uniqueness.'),
-
     cfg.IntOpt('CLUSTER_CREATION_TIMEOUT',
                default=30,
                help='Cluster creation timeout (in minutes); '
                     'minimal value is 1.'),
-
     cfg.IntOpt('TELNET_TIMEOUT',
                default=5,
                help='Timeout for node process deployment on cluster '
                     'nodes (in minutes); minimal value is 1.'),
-
     cfg.IntOpt('HDFS_INITIALIZATION_TIMEOUT',
                default=5,
                help='Timeout for HDFS initialization (in minutes); '
                     'minimal value is 1.'),
-
     cfg.IntOpt('JOB_LAUNCH_TIMEOUT',
                default=5,
                help='Timeout for job launch (in minutes); '
                     'minimal value is 1.'),
-
     cfg.StrOpt('CLUSTER_NAME',
                default='test-cluster',
                help='Name for cluster.'),
-
     cfg.StrOpt('USER_KEYPAIR_ID',
                default='savanna-i-test-key-pair',
                help='OpenStack key pair ID of your SSH public key. Savanna '
@@ -128,7 +114,6 @@ COMMON_CONFIG_OPTS = [
                     'to key. If this parameter is not specified, key pair '
                     '(private and public SSH keys) will be generated '
                     'automatically, using nova client.'),
-
     cfg.StrOpt('FLOATING_IP_POOL',
                default=None,
                help='Pool name for floating IPs. If Savanna uses Nova '
@@ -139,7 +124,6 @@ COMMON_CONFIG_OPTS = [
                     'parameter. If Savanna uses Neutron management network '
                     'then you should always specify value (floating IP pool '
                     'name) of this parameter.'),
-
     cfg.BoolOpt('NEUTRON_ENABLED',
                 default=False,
                 help='If Savanna uses Nova management network then you should '
@@ -156,11 +140,9 @@ COMMON_CONFIG_OPTS = [
 
 VANILLA_CONFIG_GROUP = cfg.OptGroup(name='VANILLA')
 VANILLA_CONFIG_OPTS = [
-
     cfg.StrOpt('PLUGIN_NAME',
                default='vanilla',
                help='Name of plugin.'),
-
     cfg.StrOpt('IMAGE_ID',
                default=None,
                help='ID for image which is used for cluster creation. Also '
@@ -168,7 +150,6 @@ VANILLA_CONFIG_OPTS = [
                     'image ID. If you do not specify image related parameters '
                     'then image for cluster creation will be chosen by '
                     'tag "savanna_i_tests".'),
-
     cfg.StrOpt('IMAGE_NAME',
                default=None,
                help='Name for image which is used for cluster creation. Also '
@@ -176,7 +157,6 @@ VANILLA_CONFIG_OPTS = [
                     'image name. If you do not specify image related '
                     'parameters then image for cluster creation will be '
                     'chosen by tag "savanna_i_tests".'),
-
     cfg.StrOpt('IMAGE_TAG',
                default=None,
                help='Tag for image which is used for cluster creation. Also '
@@ -184,7 +164,9 @@ VANILLA_CONFIG_OPTS = [
                     'image. If you do not specify image related parameters '
                     'then image for cluster creation will be chosen by '
                     'tag "savanna_i_tests".'),
-
+    cfg.StrOpt('SSH_USERNAME',
+               default=None,
+               help='Username to get cluster node with SSH.'),
     cfg.StrOpt('HADOOP_VERSION',
                default='1.2.1',
                help='Version of Hadoop.'),
@@ -198,7 +180,6 @@ VANILLA_CONFIG_OPTS = [
                default='/mnt/log/hadoop/hadoop/userlogs',
                help='Directory where is located log info about '
                     'completed jobs.'),
-
     cfg.DictOpt('HADOOP_PROCESSES_WITH_PORTS',
                 default={
                     'jobtracker': 50030,
@@ -209,7 +190,6 @@ VANILLA_CONFIG_OPTS = [
                     'oozie': 11000
                 },
                 help='Hadoop process map with ports for Vanilla plugin.'),
-
     cfg.DictOpt('PROCESS_NAMES',
                 default={
                     'nn': 'namenode',
@@ -218,7 +198,6 @@ VANILLA_CONFIG_OPTS = [
                 },
                 help='Names for namenode, tasktracker and datanode '
                      'processes.'),
-
     cfg.BoolOpt('SKIP_ALL_TESTS_FOR_PLUGIN',
                 default=False,
                 help='If this flag is True then all tests for Vanilla plugin '
@@ -233,11 +212,9 @@ VANILLA_CONFIG_OPTS = [
 
 HDP_CONFIG_GROUP = cfg.OptGroup(name='HDP')
 HDP_CONFIG_OPTS = [
-
     cfg.StrOpt('PLUGIN_NAME',
                default='hdp',
                help='Name of plugin.'),
-
     cfg.StrOpt('IMAGE_ID',
                default=None,
                help='ID for image which is used for cluster creation. Also '
@@ -245,7 +222,6 @@ HDP_CONFIG_OPTS = [
                     'image ID. If you do not specify image related parameters '
                     'then image for cluster creation will be chosen by '
                     'tag "savanna_i_tests".'),
-
     cfg.StrOpt('IMAGE_NAME',
                default=None,
                help='Name for image which is used for cluster creation. Also '
@@ -253,7 +229,6 @@ HDP_CONFIG_OPTS = [
                     'image name. If you do not specify image related '
                     'parameters then image for cluster creation will be '
                     'chosen by tag "savanna_i_tests".'),
-
     cfg.StrOpt('IMAGE_TAG',
                default=None,
                help='Tag for image which is used for cluster creation. Also '
@@ -261,7 +236,9 @@ HDP_CONFIG_OPTS = [
                     'image. If you do not specify image related parameters '
                     'then image for cluster creation will be chosen by '
                     'tag "savanna_i_tests".'),
-
+    cfg.StrOpt('SSH_USERNAME',
+               default=None,
+               help='Username to get cluster node with SSH.'),
     cfg.StrOpt('HADOOP_VERSION',
                default='1.3.2',
                help='Version of Hadoop.'),
@@ -275,7 +252,6 @@ HDP_CONFIG_OPTS = [
                default='/mnt/hadoop/mapred/userlogs',
                help='Directory where is located log info about '
                     'completed jobs.'),
-
     cfg.DictOpt('HADOOP_PROCESSES_WITH_PORTS',
                 default={
                     'JOBTRACKER': 50030,
@@ -286,7 +262,6 @@ HDP_CONFIG_OPTS = [
                 },
                 help='Hadoop process map with ports for HDP plugin.'
                 ),
-
     cfg.DictOpt('PROCESS_NAMES',
                 default={
                     'nn': 'NAMENODE',
@@ -295,7 +270,6 @@ HDP_CONFIG_OPTS = [
                 },
                 help='Names for namenode, tasktracker and datanode '
                      'processes.'),
-
     cfg.BoolOpt('SKIP_ALL_TESTS_FOR_PLUGIN',
                 default=True,
                 help='If this flag is True then all tests for HDP plugin '
@@ -307,24 +281,17 @@ HDP_CONFIG_OPTS = [
 
 
 def register_config(config, config_group, config_opts):
-
     config.register_group(config_group)
     config.register_opts(config_opts, config_group)
 
 
 @singleton
 class ITConfig:
-
     def __init__(self):
-
         config = 'itest.conf'
-
         config_files = []
-
         config_path = '%s/savanna/tests/integration/configs/%s'
-        if not os.path.exists(
-                config_path % (os.getcwd(), config)):
-
+        if not os.path.exists(config_path % (os.getcwd(), config)):
             message = '\n**************************************************' \
                       '\nINFO: Configuration file "%s" not found  *\n' \
                       '**************************************************' \
@@ -332,7 +299,6 @@ class ITConfig:
             print(RuntimeError(message), file=sys.stderr)
 
         else:
-
             config = os.path.join(
                 config_path % (os.getcwd(), config)
             )
@@ -341,10 +307,10 @@ class ITConfig:
         register_config(cfg.CONF, COMMON_CONFIG_GROUP, COMMON_CONFIG_OPTS)
         register_config(cfg.CONF, VANILLA_CONFIG_GROUP, VANILLA_CONFIG_OPTS)
         register_config(cfg.CONF, HDP_CONFIG_GROUP, HDP_CONFIG_OPTS)
-
-        cfg.CONF([], project='integration_tests',
-                 default_config_files=config_files)
-
+        cfg.CONF(
+            [], project='Savanna_integration_tests',
+            default_config_files=config_files
+        )
         self.common_config = cfg.CONF.COMMON
         self.vanilla_config = cfg.CONF.VANILLA
         self.hdp_config = cfg.CONF.HDP
