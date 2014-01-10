@@ -18,15 +18,16 @@ import savanna.exceptions as e
 
 class NotSingleNameNodeException(e.SavannaException):
     def __init__(self, nn_count):
-        self.message = ("Hadoop cluster should contain only 1 NameNode "
+        self.message = ("Hadoop cluster must contain exactly 1 NameNode "
                         "instance. Actual NN count is %s" % nn_count)
         self.code = "NOT_SINGLE_NAME_NODE"
 
 
 class NotSingleJobTrackerException(e.SavannaException):
     def __init__(self, jt_count):
-        self.message = ("Hadoop cluster should contain 0 or 1 JobTracker "
-                        "instances. Actual JT count is %s" % jt_count)
+        self.message = ("Hadoop cluster must not contain more than 1 "
+                        "JobTracker instance. Actual JT count is %s"
+                        % jt_count)
         self.code = "NOT_SINGLE_JOB_TRACKER"
 
 
