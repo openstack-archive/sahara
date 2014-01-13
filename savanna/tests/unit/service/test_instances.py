@@ -18,9 +18,10 @@ import mock
 from savanna import conductor as cond
 from savanna.conductor import resource as r
 from savanna import context
-from savanna.service import instances
+from savanna.service import direct_engine as e
 from savanna.tests.unit import base as models_test_base
 import savanna.utils.crypto as c
+from savanna.utils import general as g
 
 from novaclient import exceptions as nova_exceptions
 
@@ -33,6 +34,7 @@ def _resource_passthrough(*args, **kwargs):
 
 class TestClusterRollBack(models_test_base.DbTestCase):
     def setUp(self):
+        self.engine = e.DirectEngine()
         r.Resource._is_passthrough_type = _resource_passthrough
         super(TestClusterRollBack, self).setUp()
 
@@ -50,7 +52,7 @@ class TestClusterRollBack(models_test_base.DbTestCase):
         nova.servers.list = mock.MagicMock(return_value=[_mock_instance(1)])
 
         with self.assertRaises(MockException):
-            instances._create_cluster(cluster)
+            self.engine.create_cluster(cluster)
 
         ctx = context.ctx()
         cluster_obj = conductor.cluster_get_all(ctx)[0]
@@ -59,6 +61,7 @@ class TestClusterRollBack(models_test_base.DbTestCase):
 
 class NodePlacementTest(models_test_base.DbTestCase):
     def setUp(self):
+        self.engine = e.DirectEngine()
         r.Resource._is_passthrough_type = _resource_passthrough
         super(NodePlacementTest, self).setUp()
 
@@ -68,7 +71,7 @@ class NodePlacementTest(models_test_base.DbTestCase):
                                      ['data node'], 2)]
         cluster = _create_cluster_mock(node_groups, ["data node"])
         nova = _create_nova_mock(novaclient)
-        instances._create_instances(cluster)
+        self.engine._create_instances(cluster)
         userdata = _generate_user_data_script(cluster)
 
         nova.servers.create.assert_has_calls(
@@ -97,7 +100,7 @@ class NodePlacementTest(models_test_base.DbTestCase):
 
         cluster = _create_cluster_mock(node_groups, [])
         nova = _create_nova_mock(novaclient)
-        instances._create_instances(cluster)
+        self.engine._create_instances(cluster)
         userdata = _generate_user_data_script(cluster)
 
         nova.servers.create.assert_has_calls(
@@ -128,7 +131,7 @@ class NodePlacementTest(models_test_base.DbTestCase):
 
         cluster = _create_cluster_mock(node_groups, ["data node"])
         nova = _create_nova_mock(novaclient)
-        instances._create_instances(cluster)
+        self.engine._create_instances(cluster)
         userdata = _generate_user_data_script(cluster)
 
         nova.servers.create.assert_has_calls(
@@ -161,6 +164,7 @@ class NodePlacementTest(models_test_base.DbTestCase):
 
 class IpManagementTest(models_test_base.DbTestCase):
     def setUp(self):
+        self.engine = e.DirectEngine()
         r.Resource._is_passthrough_type = _resource_passthrough
         super(IpManagementTest, self).setUp()
 
@@ -178,12 +182,12 @@ class IpManagementTest(models_test_base.DbTestCase):
 
         ctx = context.ctx()
         cluster = _create_cluster_mock(node_groups, ["data node"])
-        instances._create_instances(cluster)
+        self.engine._create_instances(cluster)
 
         cluster = conductor.cluster_get(ctx, cluster)
-        instances_list = instances._get_instances(cluster)
+        instances_list = g.get_instances(cluster)
 
-        instances._assign_floating_ips(instances_list)
+        self.engine._assign_floating_ips(instances_list)
 
         nova.floating_ips.create.assert_has_calls(
             [mock.call("pool"),
@@ -197,6 +201,7 @@ class IpManagementTest(models_test_base.DbTestCase):
 
 class ShutdownClusterTest(models_test_base.DbTestCase):
     def setUp(self):
+        self.engine = e.DirectEngine()
         r.Resource._is_passthrough_type = _resource_passthrough
         super(ShutdownClusterTest, self).setUp()
 
@@ -210,14 +215,14 @@ class ShutdownClusterTest(models_test_base.DbTestCase):
 
         ctx = context.ctx()
         cluster = _create_cluster_mock(node_groups, ["datanode"])
-        instances._create_instances(cluster)
+        self.engine._create_instances(cluster)
 
         cluster = conductor.cluster_get(ctx, cluster)
-        instances_list = instances._get_instances(cluster)
+        instances_list = g.get_instances(cluster)
 
-        instances._assign_floating_ips(instances_list)
+        self.engine._assign_floating_ips(instances_list)
 
-        instances._shutdown_instances(cluster)
+        self.engine._shutdown_instances(cluster)
         self.assertEqual(nova.floating_ips.delete.call_count, 2,
                          "Not expected floating IPs number found in delete")
         self.assertEqual(nova.servers.delete.call_count, 2,

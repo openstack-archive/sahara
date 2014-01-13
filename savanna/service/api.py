@@ -157,7 +157,7 @@ def _provision_scaled_cluster(id, node_group_id_map):
                                            {"status": "Configuring"})
         LOG.info(g.format_cluster_status(cluster))
         try:
-            instances = INFRA.get_instances(cluster, instances)
+            instances = g.get_instances(cluster, instances)
             plugin.scale_cluster(cluster, instances)
         except Exception as ex:
             LOG.exception("Can't scale cluster '%s' (reason: %s)",
