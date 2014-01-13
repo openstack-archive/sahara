@@ -13,6 +13,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from six.moves.urllib import parse as urlparse
+
+from savanna.openstack.common import network_utils
+
 
 def get_node_groups(cluster, proc_list=list()):
     proc_list = [proc_list] if type(proc_list) in [str, unicode] else proc_list
@@ -64,3 +68,14 @@ def generate_host_names(nodes):
 
 def generate_fqdn_host_names(nodes):
     return "\n".join([n.fqdn() for n in nodes])
+
+
+def get_port_from_address(address):
+    parse_result = urlparse.urlparse(address)
+    # urlparse do not parse values like 0.0.0.0:8000,
+    # network_utils do not parse values like http://localhost:8000,
+    # so combine approach is using
+    if parse_result.port:
+        return parse_result.port
+    else:
+        return network_utils.parse_host_port(address)[1]
