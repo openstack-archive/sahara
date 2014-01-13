@@ -66,6 +66,10 @@
 # Name of tenant where the user is admin (string value)
 #os_admin_tenant_name=admin
 
+# An engine which will be used to provision infrastructure for
+# Hadoop cluster. (string value)
+#infrastructure_engine=savanna
+
 
 #
 # Options defined in savanna.db.base
@@ -103,7 +107,7 @@
 
 # format string to use for log messages with context (string
 # value)
-#logging_context_format_string=%(asctime)s.%(msecs)03d %(process)d %(levelname)s %(name)s [%(request_id)s %(user)s %(tenant)s] %(instance)s%(message)s
+#logging_context_format_string=%(asctime)s.%(msecs)03d %(process)d %(levelname)s %(name)s [%(request_id)s %(user_identity)s] %(instance)s%(message)s
 
 # format string to use for log messages without context
 # (string value)
@@ -166,15 +170,6 @@
 # List of plugins to be loaded. Savanna preserves the order of
 # the list when returning it. (list value)
 #plugins=vanilla,hdp
-
-
-#
-# Options defined in savanna.service.api
-#
-
-# An engine which will be used to provisioninfrastructure for
-# Hadoop cluster. (string value)
-#infrastructure_engine=savanna
 
 
 #
@@ -276,10 +271,6 @@
 # The backend to use for db (string value)
 #backend=sqlalchemy
 
-# Enable the experimental use of thread pooling for all DB API
-# calls (boolean value)
-#use_tpool=false
-
 
 #
 # Options defined in savanna.openstack.common.db.sqlalchemy.session
@@ -330,4 +321,4 @@
 #pool_timeout=<None>
 
 
-# Total option count: 61
+# Total option count: 60
