@@ -53,8 +53,8 @@ authentication token (X-Auth-Token):
 
 .. sourcecode:: console
 
-    $ export AUTH_TOKEN="dd92e3cdb4e1462690cd444d6b01b746"
-    $ export TENANT_ID="62bd2046841e4e94a87b4a22aa886c13"
+    $ export OS_AUTH_TOKEN="dd92e3cdb4e1462690cd444d6b01b746"
+    $ export OS_TENANT_ID="62bd2046841e4e94a87b4a22aa886c13"
 
 
 3. Upload image to Glance
