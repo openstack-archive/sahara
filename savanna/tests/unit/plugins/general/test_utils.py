@@ -65,6 +65,21 @@ class GeneralUtilsTest(unittest2.TestCase):
         self.assertEqual(u.generate_host_names([]), "")
 
 
+class GetPortUtilsTest(unittest2.TestCase):
+    def setUp(self):
+        self.test_values = [
+            ('127.0.0.1:11000', 11000),
+            ('http://somehost.com:8080/resource', 8080),
+            ('http://192.168.1.101:10000', 10000),
+            ('mydomain', None),
+            ('domain:5000', 5000)
+        ]
+
+    def test_get_port_from_address(self):
+        for address, port in self.test_values:
+            self.assertEqual(u.get_port_from_address(address), port)
+
+
 def _create_cluster(name, tenant, plugin, version, node_groups, **kwargs):
     dct = {'name': name, 'tenant_id': tenant, 'plugin_name': plugin,
            'hadoop_version': version, 'node_groups': node_groups}
