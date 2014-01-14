@@ -23,15 +23,16 @@ from savanna.utils.openstack import heat as h
 
 class TestHeat(unittest2.TestCase):
     def test_gets(self):
-        inst_name = "cluster-worker-1"
+        inst_name = "cluster-worker-001"
         self.assertEqual(h._get_inst_name("cluster", "worker", 0), inst_name)
-        self.assertEqual(h._get_port_name(inst_name), "cluster-worker-1-port")
+        self.assertEqual(h._get_port_name(inst_name),
+                         "cluster-worker-001-port")
         self.assertEqual(h._get_floating_name(inst_name),
-                         "cluster-worker-1-floating")
+                         "cluster-worker-001-floating")
         self.assertEqual(h._get_volume_name(inst_name, 1),
-                         "cluster-worker-1-volume-1")
+                         "cluster-worker-001-volume-1")
         self.assertEqual(h._get_volume_attach_name(inst_name, 1),
-                         "cluster-worker-1-volume-attachment-1")
+                         "cluster-worker-001-volume-attachment-1")
 
     def test_prepare_user_data(self):
         userdata = "line1\nline2"
