@@ -69,6 +69,15 @@ def scale_cluster(id, data):
         to_be_enlarged.update({ng_id: ng['count']})
 
     additional = construct_ngs_for_scaling(cluster, additional_node_groups)
+    cluster = conductor.cluster_get(ctx, cluster)
+
+    # update nodegroup image usernames
+    for nodegroup in cluster.node_groups:
+        if additional.get(nodegroup.id):
+            image_username = INFRA.get_node_group_image_username(nodegroup)
+            conductor.node_group_update(
+                ctx, nodegroup, {"image_username": image_username})
+    cluster = conductor.cluster_get(ctx, cluster)
 
     try:
         cluster = conductor.cluster_update(ctx, cluster,
@@ -99,6 +108,13 @@ def create_cluster(values):
     ctx = context.ctx()
     cluster = conductor.cluster_create(ctx, values)
     plugin = plugin_base.PLUGINS.get_plugin(cluster.plugin_name)
+
+    # update nodegroup image usernames
+    for nodegroup in cluster.node_groups:
+        conductor.node_group_update(
+            ctx, nodegroup,
+            {"image_username": INFRA.get_node_group_image_username(nodegroup)})
+    cluster = conductor.cluster_get(ctx, cluster)
 
     # validating cluster
     try:

@@ -253,13 +253,11 @@ def _release_remote_semaphore():
 class InstanceInteropHelper(object):
     def __init__(self, instance):
         self.instance = instance
-        self.username = INFRA.get_node_group_image_username(
-            self.instance.node_group)
 
     def __enter__(self):
         _acquire_remote_semaphore()
         try:
-            self.bulk = BulkInstanceInteropHelper(self.instance, self.username)
+            self.bulk = BulkInstanceInteropHelper(self.instance)
             return self.bulk
         except Exception:
             with excutils.save_and_reraise_exception():
@@ -288,7 +286,8 @@ class InstanceInteropHelper(object):
         info = None
         if CONF.use_namespaces and not CONF.use_floating_ips:
             info = self._get_neutron_info()
-        return (self.instance.management_ip, self.username,
+        return (self.instance.management_ip,
+                self.instance.node_group.image_username,
                 self.instance.node_group.cluster.management_private_key, info)
 
     def _run(self, func, *args, **kwargs):
@@ -397,9 +396,8 @@ def get_remote(instance):
 
 
 class BulkInstanceInteropHelper(InstanceInteropHelper):
-    def __init__(self, instance, username):
-        self.instance = instance
-        self.username = username
+    def __init__(self, instance):
+        super(BulkInstanceInteropHelper, self).__init__(instance)
         self.proc = procutils.start_subprocess()
         try:
             procutils.run_in_subprocess(self.proc, _connect,

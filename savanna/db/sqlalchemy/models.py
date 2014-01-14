@@ -92,6 +92,7 @@ class NodeGroup(mb.SavannaBase):
     tenant_id = sa.Column(sa.String(36))
     flavor_id = sa.Column(sa.String(36), nullable=False)
     image_id = sa.Column(sa.String(36))
+    image_username = sa.Column(sa.String(36))
     node_processes = sa.Column(st.JsonListType())
     node_configs = sa.Column(st.JsonDictType())
     volumes_per_node = sa.Column(sa.Integer)

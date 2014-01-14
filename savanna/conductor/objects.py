@@ -66,6 +66,7 @@ class NodeGroup(object):
     name
     flavor_id
     image_id
+    image_username
     node_processes - list of node processes
     node_configs - configs dict converted to object,
                    see the docs for details
