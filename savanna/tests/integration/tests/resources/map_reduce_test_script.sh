@@ -74,23 +74,19 @@ run_pi_job() {
 
     create_log_directory
 
-    echo -e "******************************** DPKG ****************************\n" >> $log
-
-    echo -e "`dpkg --get-selections | grep hadoop` \n\n\n" >> $log
-
     echo -e "****************************** NETSTAT ***************************\n" >> $log
 
     echo -e "`sudo netstat -plten | grep java` \n\n\n" >> $log
 
-    hadoop_version=-$HADOOP_VERSION
-    if [ "$PLUGIN_NAME" = "hdp" ]
+    hadoop_version=""
+    if [ "$PLUGIN_NAME" = "vanilla" ]
     then
-        hadoop_version=""
+        hadoop_version=-$HADOOP_VERSION
     fi
 
     echo -e "************************ START OF \"PI\" JOB *********************\n" >> $log
 
-    echo -e "`sudo su -c \"cd $HADOOP_DIRECTORY && hadoop jar hadoop-examples$hadoop_version.jar pi $[$NODE_COUNT*10] $[$NODE_COUNT*1000]\" $HADOOP_USER` \n" >> $log
+    echo -e "`sudo -u $HADOOP_USER bash -c \"cd $HADOOP_DIRECTORY && hadoop jar hadoop-examples$hadoop_version.jar pi $[$NODE_COUNT*10] $[$NODE_COUNT*1000]\"` \n" >> $log
 
     echo -e "************************ END OF \"PI\" JOB ***********************" >> $log
 }
@@ -125,7 +121,7 @@ check_return_code_after_command_execution() {
     then
         if [ "$2" -ne 0 ]
         then
-            sudo su -c "hadoop dfs -rmr /map-reduce-test" $HADOOP_USER && exit 1
+            sudo -u $HADOOP_USER bash -c "hadoop dfs -rmr /map-reduce-test" && exit 1
         fi
     fi
 }
@@ -136,28 +132,28 @@ run_wordcount_job() {
 
     dmesg > $dir/input
 
-    sudo su -c "hadoop dfs -ls /" $HADOOP_USER
+    sudo -u $HADOOP_USER bash -c "hadoop dfs -ls /"
     check_return_code_after_command_execution -exit `echo "$?"`
 
-    sudo su -c "hadoop dfs -mkdir /map-reduce-test" $HADOOP_USER
+    sudo -u $HADOOP_USER bash -c "hadoop dfs -mkdir /map-reduce-test"
     check_return_code_after_command_execution -exit `echo "$?"`
 
-    sudo su -c "hadoop dfs -copyFromLocal $dir/input /map-reduce-test/mydata" $HADOOP_USER
+    sudo -u $HADOOP_USER bash -c "hadoop dfs -copyFromLocal $dir/input /map-reduce-test/mydata"
     check_return_code_after_command_execution -clean_hdfs `echo "$?"`
 
-    hadoop_version=-$HADOOP_VERSION
-    if [ "$PLUGIN_NAME" = "hdp" ]
+    hadoop_version=""
+    if [ "$PLUGIN_NAME" = "vanilla" ]
     then
-        hadoop_version=""
+        hadoop_version=-$HADOOP_VERSION
     fi
 
-    sudo su -c "cd $HADOOP_DIRECTORY && hadoop jar hadoop-examples$hadoop_version.jar wordcount /map-reduce-test/mydata /map-reduce-test/output" $HADOOP_USER
+    sudo -u $HADOOP_USER bash -c "cd $HADOOP_DIRECTORY && hadoop jar hadoop-examples$hadoop_version.jar wordcount /map-reduce-test/mydata /map-reduce-test/output"
     check_return_code_after_command_execution -clean_hdfs `echo "$?"`
 
-    sudo su -c "hadoop dfs -copyToLocal /map-reduce-test/output/ $dir/output/" $HADOOP_USER
+    sudo -u $HADOOP_USER bash -c "hadoop dfs -copyToLocal /map-reduce-test/output/ $dir/output/"
     check_return_code_after_command_execution -exit `echo "$?"`
 
-    sudo su -c "hadoop dfs -rmr /map-reduce-test" $HADOOP_USER
+    sudo -u $HADOOP_USER bash -c "hadoop dfs -rmr /map-reduce-test"
     check_return_code_after_command_execution -exit `echo "$?"`
 }
 

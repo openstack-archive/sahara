@@ -57,6 +57,7 @@ class ITestCase(unittest2.TestCase):
         self.common_config = cfg.ITConfig().common_config
         self.vanilla_config = cfg.ITConfig().vanilla_config
         self.hdp_config = cfg.ITConfig().hdp_config
+        self.idh_config = cfg.ITConfig().idh_config
 
         telnetlib.Telnet(
             self.common_config.SAVANNA_HOST, self.common_config.SAVANNA_PORT
@@ -294,11 +295,11 @@ class ITestCase(unittest2.TestCase):
         for i in range(self.common_config.HDFS_INITIALIZATION_TIMEOUT * 6):
             time.sleep(10)
             active_tasktracker_count = self.execute_command(
-                'sudo su -c "hadoop job -list-active-trackers" %s'
+                'sudo -u %s bash -c "hadoop job -list-active-trackers"'
                 % plugin_config.HADOOP_USER)[1]
             active_datanode_count = int(
                 self.execute_command(
-                    'sudo su -c "hadoop dfsadmin -report" %s \
+                    'sudo -u %s bash -c "hadoop dfsadmin -report" \
                     | grep "Datanodes available:.*" | awk \'{print $3}\''
                     % plugin_config.HADOOP_USER)[1]
             )
