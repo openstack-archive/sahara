@@ -13,9 +13,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+
 from oslo.config import cfg
 
 from savanna.plugins.general import exceptions as ex
+from savanna.plugins.general import utils
 from savanna.swift import swift_helper as h
 from savanna.topology import topology_helper as th
 
@@ -95,6 +97,10 @@ class Service(object):
     def _generate_storage_path(self, storage_paths, path):
         return ",".join([p + path for p in storage_paths])
 
+    def _get_port_from_cluster_spec(self, cluster_spec, service, prop_name):
+        address = cluster_spec.configurations[service][prop_name]
+        return utils.get_port_from_address(address)
+
 
 class HdfsService(Service):
     def __init__(self):
@@ -162,10 +168,14 @@ class HdfsService(Service):
         namenode_ip = cluster_spec.determine_component_hosts(
             'NAMENODE').pop().management_ip
 
-        #TODO(jspeidel): Don't hard code port
+        ui_port = self._get_port_from_cluster_spec(cluster_spec, 'hdfs-site',
+                                                   'dfs.http.address')
+        nn_port = self._get_port_from_cluster_spec(cluster_spec, 'core-site',
+                                                   'fs.default.name')
+
         url_info['HDFS'] = {
-            'Web UI': 'http://%s:50070' % namenode_ip,
-            'NameNode': 'hdfs://%s:8020' % namenode_ip
+            'Web UI': 'http://%s:%s' % (namenode_ip, ui_port),
+            'NameNode': 'hdfs://%s:%s' % (namenode_ip, nn_port)
         }
         return url_info
 
@@ -229,10 +239,14 @@ class MapReduceService(Service):
         jobtracker_ip = cluster_spec.determine_component_hosts(
             'JOBTRACKER').pop().management_ip
 
-        #TODO(jspeidel): Don't hard code port
+        ui_port = self._get_port_from_cluster_spec(
+            cluster_spec, 'mapred-site', 'mapred.job.tracker.http.address')
+        jt_port = self._get_port_from_cluster_spec(
+            cluster_spec, 'mapred-site', 'mapred.job.tracker')
+
         url_info['MapReduce'] = {
-            'Web UI': 'http://%s:50030' % jobtracker_ip,
-            'JobTracker': '%s:50300' % jobtracker_ip
+            'Web UI': 'http://%s:%s' % (jobtracker_ip, ui_port),
+            'JobTracker': '%s:%s' % (jobtracker_ip, jt_port)
         }
         return url_info
 
@@ -481,9 +495,10 @@ class OozieService(Service):
     def register_service_urls(self, cluster_spec, url_info):
         oozie_ip = cluster_spec.determine_component_hosts(
             'OOZIE_SERVER').pop().management_ip
-        #TODO(jspeidel): Don't hard code port
+        port = self._get_port_from_cluster_spec(cluster_spec, 'oozie-site',
+                                                'oozie.base.url')
         url_info['JobFlow'] = {
-            'Oozie': 'http://%s:11000' % oozie_ip
+            'Oozie': 'http://%s:%s' % (oozie_ip, port)
         }
         return url_info
 
