@@ -26,10 +26,15 @@ HDFS_DEFAULT = x.load_hadoop_xml_defaults_with_type_and_locale(
 MAPRED_DEFAULT = x.load_hadoop_xml_defaults_with_type_and_locale(
     'plugins/intel/resources/mapred-default.xml')
 
+OOZIE_DEFAULT = x.load_hadoop_xml_defaults(
+    'plugins/intel/resources/oozie-default.xml')
+
+
 XML_CONFS = {
     "Hadoop": [CORE_DEFAULT],
     "HDFS": [HDFS_DEFAULT],
-    "MapReduce": [MAPRED_DEFAULT]
+    "MapReduce": [MAPRED_DEFAULT],
+    "JobFlow": [OOZIE_DEFAULT]
 }
 
 IDH_TARBALL_URL = p.Config('IDH tarball URL', 'general', 'cluster', priority=1,
@@ -46,6 +51,13 @@ IDH_REPO_URL = p.Config('IDH repository URL', 'general', 'cluster',
                         priority=1, is_optional=True,
                         default_value='http://repo1.intelhadoop.com:3424'
                                       '/evaluation/en/RHEL/2.5.1/rpm')
+
+OOZIE_EXT22_URL = p.Config(
+    'Ext 2.2 URL', 'general', 'cluster',
+    description='Ext 2.2 library is required for Oozie Web Console. '
+                'File will be downloaded from VM with oozie.',
+    priority=1, is_optional=True,
+    default_value='http://extjs.com/deploy/ext-2.2.zip')
 
 ENABLE_SWIFT = p.Config('Enable Swift', 'general', 'cluster',
                         config_type="bool", priority=1,
@@ -117,6 +129,7 @@ def _initialise_configs():
     configs.append(IDH_TARBALL_URL)
     configs.append(IDH_REPO_URL)
     configs.append(OS_REPO_URL)
+    configs.append(OOZIE_EXT22_URL)
     configs.append(ENABLE_SWIFT)
     return configs
 
