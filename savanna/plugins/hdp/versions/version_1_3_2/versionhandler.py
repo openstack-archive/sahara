@@ -25,8 +25,8 @@ from savanna.plugins.general import exceptions as ex
 from savanna.plugins.hdp import clusterspec as cs
 from savanna.plugins.hdp import configprovider as cfgprov
 from savanna.plugins.hdp.versions import abstractversionhandler as avm
+from savanna.plugins.hdp.versions.version_1_3_2 import services
 from savanna import version
-
 
 LOG = logging.getLogger(__name__)
 CONF = cfg.CONF
@@ -44,7 +44,7 @@ class VersionHandler(avm.AbstractVersionHandler):
         if self.config_provider is None:
             self.config_provider = cfgprov.ConfigurationProvider(
                 json.load(pkg.resource_stream(version.version_info.package,
-                          'plugins/hdp/versions/1_3_2/resources/'
+                          'plugins/hdp/versions/version_1_3_2/resources/'
                           'ambari-config-resource.json')))
 
         return self.config_provider
@@ -81,7 +81,8 @@ class VersionHandler(avm.AbstractVersionHandler):
     def _get_default_cluster_template(self):
         return pkg.resource_string(
             version.version_info.package,
-            'plugins/hdp/versions/1_3_2/resources/default-cluster.template')
+            'plugins/hdp/versions/version_1_3_2/resources/'
+            'default-cluster.template')
 
     def get_node_processes(self):
         node_processes = {}
@@ -97,6 +98,9 @@ class VersionHandler(avm.AbstractVersionHandler):
         for server in servers:
             server.install_swift_integration()
 
+    def get_services_processor(self):
+        return services
+
 
 class AmbariClient():
 
@@ -107,30 +111,38 @@ class AmbariClient():
     def _get_http_session(self, host, port):
         return host.remote().get_http_client(port)
 
+    def _get_standard_headers(self):
+        return {"X-Requested-By": "savanna"}
+
     def _post(self, url, ambari_info, data=None):
         session = self._get_http_session(ambari_info.host, ambari_info.port)
         return session.post(url, data=data,
-                            auth=(ambari_info.user, ambari_info.password))
+                            auth=(ambari_info.user, ambari_info.password),
+                            headers=self._get_standard_headers())
 
     def _delete(self, url, ambari_info):
         session = self._get_http_session(ambari_info.host, ambari_info.port)
         return session.delete(url,
-                              auth=(ambari_info.user, ambari_info.password))
+                              auth=(ambari_info.user, ambari_info.password),
+                              headers=self._get_standard_headers())
 
     def _put(self, url, ambari_info, data=None):
         session = self._get_http_session(ambari_info.host, ambari_info.port)
         auth = (ambari_info.user, ambari_info.password)
-        return session.put(url, data=data, auth=auth)
+        return session.put(url, data=data, auth=auth,
+                           headers=self._get_standard_headers())
 
     def _get(self, url, ambari_info):
         session = self._get_http_session(ambari_info.host, ambari_info.port)
-        return session.get(url, auth=(ambari_info.user, ambari_info.password))
+        return session.get(url, auth=(ambari_info.user, ambari_info.password),
+                           headers=self._get_standard_headers())
 
     def _add_cluster(self, ambari_info, name):
         add_cluster_url = 'http://{0}/api/v1/clusters/{1}'.format(
             ambari_info.get_address(), name)
         result = self._post(add_cluster_url, ambari_info,
-                            data='{"Clusters": {"version" : "HDP-1.3.2"}}')
+                            data='{"Clusters": {"version" : "HDP-' +
+                            self.handler.get_version() + '"}}')
 
         if result.status_code != 201:
             LOG.error('Create cluster command failed. %s' % result.text)
@@ -482,7 +494,7 @@ class AmbariClient():
         old_pwd = ambari_info.password
         user_url = 'http://{0}/api/v1/users/admin'.format(
             ambari_info.get_address())
-        update_body = '{{"Users":{{"roles":"admin,user","password":"{0}",' \
+        update_body = '{{"Users":{{"roles":"admin","password":"{0}",' \
                       '"old_password":"{1}"}} }}'.format(password, old_pwd)
 
         result = self._put(user_url, ambari_info, data=update_body)

@@ -21,7 +21,7 @@ from savanna.utils import files as f
 
 
 AMBARI_RPM = 'http://s3.amazonaws.com/public-repo-1.hortonworks.com/' \
-             'ambari/centos6/1.x/updates/1.2.5.17/ambari.repo'
+             'ambari/centos6/1.x/updates/1.4.3.38/ambari.repo'
 
 HADOOP_SWIFT_RPM = 'https://s3.amazonaws.com/public-repo-1.hortonworks.com/' \
                    'savanna/swift/hadoop-swift-1.0-1.x86_64.rpm'
@@ -72,7 +72,7 @@ class HadoopServer:
         r.write_file_to(
             '/etc/hadoop/conf/topology.sh',
             f.get_file_text(
-                'plugins/hdp/versions/1_3_2/resources/topology.sh'))
+                'plugins/hdp/versions/version_1_3_2/resources/topology.sh'))
         r.execute_command(
             'sudo chmod +x /etc/hadoop/conf/topology.sh'
         )
@@ -85,6 +85,9 @@ class HadoopServer:
         r.execute_command('yum -y install ambari-server')
 
         LOG.info('Running Ambari Server setup ...')
+        # remove postgres data directory as a precaution since its existance
+        # has prevented successful postgres installation
+        r.execute_command('rm -rf /var/lib/pgsql/data')
         # do silent setup since we only use default responses now
         r.execute_command('ambari-server setup -s {jdk_arg} > /dev/null 2>&1'
                           .format(jdk_arg='-j ' + jdk_path if jdk_path

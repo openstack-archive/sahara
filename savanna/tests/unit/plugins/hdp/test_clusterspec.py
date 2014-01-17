@@ -19,7 +19,7 @@ import unittest2
 
 from savanna.plugins.general import exceptions as ex
 from savanna.plugins.hdp import clusterspec as cs
-from savanna.plugins.hdp import services as s
+from savanna.plugins.hdp.versions.version_1_3_2 import services as s
 from savanna.plugins import provisioning
 import savanna.tests.unit.plugins.hdp.hdp_test_base as base
 from savanna.topology import topology_helper as th
@@ -34,7 +34,8 @@ class TestCONF(object):
 
 @mock.patch("savanna.utils.openstack.nova.get_instance_info",
             base.get_instance_info)
-@mock.patch('savanna.plugins.hdp.services.HdfsService._get_swift_properties',
+@mock.patch('savanna.plugins.hdp.versions.version_1_3_2.services.HdfsService.'
+            '_get_swift_properties',
             return_value=[])
 class ClusterSpecTest(unittest2.TestCase):
     service_validators = {}
@@ -43,7 +44,8 @@ class ClusterSpecTest(unittest2.TestCase):
     def test_parse_default_with_cluster(self, patched):
         cluster_config_file = pkg.resource_string(
             version.version_info.package,
-            'plugins/hdp/versions/1_3_2/resources/default-cluster.template')
+            'plugins/hdp/versions/version_1_3_2/resources/'
+            'default-cluster.template')
 
         server1 = base.TestServer('host1', 'test-master', '11111', 3,
                                   '111.11.1111', '222.11.1111')
@@ -91,7 +93,8 @@ class ClusterSpecTest(unittest2.TestCase):
     def test_determine_component_hosts(self, patched):
         cluster_config_file = pkg.resource_string(
             version.version_info.package,
-            'plugins/hdp/versions/1_3_2/resources/default-cluster.template')
+            'plugins/hdp/versions/version_1_3_2/resources/'
+            'default-cluster.template')
 
         server1 = base.TestServer('ambari_machine', 'master', '11111', 3,
                                   '111.11.1111', '222.11.1111')
@@ -136,7 +139,8 @@ class ClusterSpecTest(unittest2.TestCase):
                                 'value': 'swift_prop_value2'}]
         cluster_config_file = pkg.resource_string(
             version.version_info.package,
-            'plugins/hdp/versions/1_3_2/resources/default-cluster.template')
+            'plugins/hdp/versions/version_1_3_2/resources/'
+            'default-cluster.template')
 
         master_host = base.TestServer(
             'master.novalocal', 'master', '11111', 3,
@@ -298,7 +302,8 @@ class ClusterSpecTest(unittest2.TestCase):
     def test__determine_deployed_services(self, nova_mock):
         cluster_config_file = pkg.resource_string(
             version.version_info.package,
-            'plugins/hdp/versions/1_3_2/resources/default-cluster.template')
+            'plugins/hdp/versions/version_1_3_2/resources/'
+            'default-cluster.template')
 
         master_host = base.TestServer(
             'master.novalocal', 'master', '11111', 3,
@@ -350,19 +355,21 @@ class ClusterSpecTest(unittest2.TestCase):
     def test_ambari_rpm_path(self, patched):
         cluster_config_file = pkg.resource_string(
             version.version_info.package,
-            'plugins/hdp/versions/1_3_2/resources/default-cluster.template')
+            'plugins/hdp/versions/version_1_3_2/resources/'
+            'default-cluster.template')
         cluster_spec = cs.ClusterSpec(cluster_config_file)
 
         ambari_config = cluster_spec.configurations['ambari']
         rpm = ambari_config.get('rpm', None)
         self.assertEqual('http://s3.amazonaws.com/'
                          'public-repo-1.hortonworks.com/ambari/centos6/'
-                         '1.x/updates/1.2.5.17/ambari.repo', rpm)
+                         '1.x/updates/1.4.3.38/ambari.repo', rpm)
 
     def test_parse_default(self, patched):
         cluster_config_file = pkg.resource_string(
             version.version_info.package,
-            'plugins/hdp/versions/1_3_2/resources/default-cluster.template')
+            'plugins/hdp/versions/version_1_3_2/resources/'
+            'default-cluster.template')
 
         cluster_config = cs.ClusterSpec(cluster_config_file)
 
@@ -398,7 +405,8 @@ class ClusterSpecTest(unittest2.TestCase):
     def test_ambari_rpm(self, patched):
         cluster_config_file = pkg.resource_string(
             version.version_info.package,
-            'plugins/hdp/versions/1_3_2/resources/default-cluster.template')
+            'plugins/hdp/versions/version_1_3_2/resources/'
+            'default-cluster.template')
 
         cluster_config = cs.ClusterSpec(cluster_config_file)
 
@@ -410,7 +418,8 @@ class ClusterSpecTest(unittest2.TestCase):
     def test_normalize(self, patched):
         cluster_config_file = pkg.resource_string(
             version.version_info.package,
-            'plugins/hdp/versions/1_3_2/resources/default-cluster.template')
+            'plugins/hdp/versions/version_1_3_2/resources/'
+            'default-cluster.template')
 
         cluster_config = cs.ClusterSpec(cluster_config_file)
         cluster = cluster_config.normalize()
@@ -488,7 +497,8 @@ class ClusterSpecTest(unittest2.TestCase):
     def test_existing_config_item_in_top_level_within_blueprint(self, patched):
         cluster_config_file = pkg.resource_string(
             version.version_info.package,
-            'plugins/hdp/versions/1_3_2/resources/default-cluster.template')
+            'plugins/hdp/versions/version_1_3_2/resources/'
+            'default-cluster.template')
 
         user_input_config = TestUserInputConfig(
             'global', 'general', 'fs_checkpoint_dir')
@@ -518,7 +528,8 @@ class ClusterSpecTest(unittest2.TestCase):
     def test_new_config_item_in_top_level_within_blueprint(self, patched):
         cluster_config_file = pkg.resource_string(
             version.version_info.package,
-            'plugins/hdp/versions/1_3_2/resources/default-cluster.template')
+            'plugins/hdp/versions/version_1_3_2/resources/'
+            'default-cluster.template')
 
         user_input_config = TestUserInputConfig(
             'global', 'general', 'new_property')
@@ -551,7 +562,7 @@ class ClusterSpecTest(unittest2.TestCase):
             th.CONF = TestCONF(True, False)
             cluster_config_file = pkg.resource_string(
                 version.version_info.package,
-                'plugins/hdp/versions/1_3_2/resources/'
+                'plugins/hdp/versions/version_1_3_2/resources/'
                 'default-cluster.template')
 
             server1 = base.TestServer('host1', 'test-master', '11111', 3,
@@ -621,7 +632,7 @@ class ClusterSpecTest(unittest2.TestCase):
             s.CONF = TestCONF(True, True)
             cluster_config_file = pkg.resource_string(
                 version.version_info.package,
-                'plugins/hdp/versions/1_3_2/resources/'
+                'plugins/hdp/versions/version_1_3_2/resources/'
                 'default-cluster.template')
 
             server1 = base.TestServer('host1', 'test-master', '11111', 3,
@@ -652,7 +663,8 @@ class ClusterSpecTest(unittest2.TestCase):
     def test_update_ambari_admin_user(self, patched):
         cluster_config_file = pkg.resource_string(
             version.version_info.package,
-            'plugins/hdp/versions/1_3_2/resources/default-cluster.template')
+            'plugins/hdp/versions/version_1_3_2/resources/'
+            'default-cluster.template')
 
         user_input_config = TestUserInputConfig('ambari-stack', 'AMBARI',
                                                 'ambari.admin.user')
@@ -683,7 +695,8 @@ class ClusterSpecTest(unittest2.TestCase):
     def test_update_ambari_admin_password(self, patched):
         cluster_config_file = pkg.resource_string(
             version.version_info.package,
-            'plugins/hdp/versions/1_3_2/resources/default-cluster.template')
+            'plugins/hdp/versions/version_1_3_2/resources/'
+            'default-cluster.template')
 
         user_input_config = TestUserInputConfig('ambari-stack', 'AMBARI',
                                                 'ambari.admin.password')
@@ -714,7 +727,8 @@ class ClusterSpecTest(unittest2.TestCase):
     def test_update_ambari_admin_user_and_password(self, patched):
         cluster_config_file = pkg.resource_string(
             version.version_info.package,
-            'plugins/hdp/versions/1_3_2/resources/default-cluster.template')
+            'plugins/hdp/versions/version_1_3_2/resources/'
+            'default-cluster.template')
 
         user_user_input_config = TestUserInputConfig('ambari-stack', 'AMBARI',
                                                      'ambari.admin.user')
@@ -1384,9 +1398,8 @@ class ClusterSpecTest(unittest2.TestCase):
         self.assertEqual('admin', user.name)
         self.assertEqual('admin', user.password)
         groups = user.groups
-        self.assertEqual(2, len(groups))
+        self.assertEqual(1, len(groups))
         self.assertIn('admin', groups)
-        self.assertIn('user', groups)
 
     def _assert_pig(self, service):
         self.assertEqual('PIG', service.name)

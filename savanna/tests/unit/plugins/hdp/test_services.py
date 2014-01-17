@@ -19,7 +19,7 @@ import unittest2
 
 from savanna import exceptions as e
 from savanna.plugins.general import exceptions as ex
-import savanna.plugins.hdp.services as s
+from savanna.plugins.hdp.versions import versionhandlerfactory as vhf
 from savanna.tests.unit.plugins.hdp import hdp_test_base
 
 
@@ -27,7 +27,14 @@ class ServicesTest(unittest2.TestCase):
     #TODO(jspeidel): test remaining service functionality which isn't
     # tested by coarser grained unit tests.
 
+    def get_services_processor(self):
+        handler = (vhf.VersionHandlerFactory.get_instance().
+                   get_version_handler('1.3.2'))
+        s = handler.get_services_processor()
+        return s
+
     def test_create_hdfs_service(self):
+        s = self.get_services_processor()
         service = s.create_service('HDFS')
         self.assertEqual('HDFS', service.name)
         expected_configs = set(['global', 'core-site', 'hdfs-site'])
@@ -36,6 +43,7 @@ class ServicesTest(unittest2.TestCase):
         self.assertTrue(service.is_mandatory())
 
     def test_hdfs_service_register_urls(self):
+        s = self.get_services_processor()
         service = s.create_service('HDFS')
         cluster_spec = mock.Mock()
         cluster_spec.configurations = {
@@ -58,6 +66,7 @@ class ServicesTest(unittest2.TestCase):
                          'hdfs://127.0.0.1:9020')
 
     def test_create_mr_service(self):
+        s = self.get_services_processor()
         service = s.create_service('MAPREDUCE')
         self.assertEqual('MAPREDUCE', service.name)
         expected_configs = set(['global', 'core-site', 'mapred-site'])
@@ -66,6 +75,7 @@ class ServicesTest(unittest2.TestCase):
         self.assertTrue(service.is_mandatory())
 
     def test_mr_service_register_urls(self):
+        s = self.get_services_processor()
         service = s.create_service('MAPREDUCE')
         cluster_spec = mock.Mock()
         cluster_spec.configurations = {
@@ -87,6 +97,7 @@ class ServicesTest(unittest2.TestCase):
                          '127.0.0.1:10300')
 
     def test_create_hive_service(self):
+        s = self.get_services_processor()
         service = s.create_service('HIVE')
         self.assertEqual('HIVE', service.name)
         expected_configs = set(['global', 'core-site', 'hive-site'])
@@ -95,6 +106,7 @@ class ServicesTest(unittest2.TestCase):
         self.assertFalse(service.is_mandatory())
 
     def test_create_webhcat_service(self):
+        s = self.get_services_processor()
         service = s.create_service('WEBHCAT')
         self.assertEqual('WEBHCAT', service.name)
         expected_configs = set(['global', 'core-site', 'webhcat-site'])
@@ -103,6 +115,7 @@ class ServicesTest(unittest2.TestCase):
         self.assertFalse(service.is_mandatory())
 
     def test_create_zk_service(self):
+        s = self.get_services_processor()
         service = s.create_service('ZOOKEEPER')
         self.assertEqual('ZOOKEEPER', service.name)
         expected_configs = set(['global', 'core-site'])
@@ -111,6 +124,7 @@ class ServicesTest(unittest2.TestCase):
         self.assertFalse(service.is_mandatory())
 
     def test_create_oozie_service(self):
+        s = self.get_services_processor()
         service = s.create_service('OOZIE')
         self.assertEqual('OOZIE', service.name)
         expected_configs = set(['global', 'core-site', 'oozie-site'])
@@ -119,6 +133,7 @@ class ServicesTest(unittest2.TestCase):
         self.assertFalse(service.is_mandatory())
 
     def test_oozie_service_register_urls(self):
+        s = self.get_services_processor()
         service = s.create_service('OOZIE')
         cluster_spec = mock.Mock()
         cluster_spec.configurations = {
@@ -136,6 +151,7 @@ class ServicesTest(unittest2.TestCase):
                          'http://127.0.0.1:21000')
 
     def test_create_ganglia_service(self):
+        s = self.get_services_processor()
         service = s.create_service('GANGLIA')
         self.assertEqual('GANGLIA', service.name)
         expected_configs = set(['global', 'core-site'])
@@ -144,6 +160,7 @@ class ServicesTest(unittest2.TestCase):
         self.assertFalse(service.is_mandatory())
 
     def test_create_ambari_service(self):
+        s = self.get_services_processor()
         service = s.create_service('AMBARI')
         self.assertEqual('AMBARI', service.name)
         expected_configs = set(['global', 'core-site'])
@@ -154,9 +171,11 @@ class ServicesTest(unittest2.TestCase):
     @mock.patch("savanna.utils.openstack.nova.get_instance_info",
                 hdp_test_base.get_instance_info)
     @mock.patch(
-        'savanna.plugins.hdp.services.HdfsService._get_swift_properties',
+        'savanna.plugins.hdp.versions.version_1_3_2.services.HdfsService.'
+        '_get_swift_properties',
         return_value=[])
     def test_create_sqoop_service(self, patched):
+        s = self.get_services_processor()
         service = s.create_service('SQOOP')
         self.assertEqual('SQOOP', service.name)
         expected_configs = set(['global', 'core-site'])
@@ -189,9 +208,11 @@ class ServicesTest(unittest2.TestCase):
     @mock.patch("savanna.utils.openstack.nova.get_instance_info",
                 hdp_test_base.get_instance_info)
     @mock.patch(
-        'savanna.plugins.hdp.services.HdfsService._get_swift_properties',
+        'savanna.plugins.hdp.versions.version_1_3_2.services.HdfsService.'
+        '_get_swift_properties',
         return_value=[])
     def test_create_hbase_service(self, patched):
+        s = self.get_services_processor()
         service = s.create_service('HBASE')
         self.assertEqual('HBASE', service.name)
         expected_configs = set(['global', 'core-site', 'hbase-site'])
@@ -211,13 +232,15 @@ class ServicesTest(unittest2.TestCase):
     @mock.patch("savanna.utils.openstack.nova.get_instance_info",
                 hdp_test_base.get_instance_info)
     @mock.patch(
-        'savanna.plugins.hdp.services.HdfsService._get_swift_properties',
+        'savanna.plugins.hdp.versions.version_1_3_2.services.HdfsService.'
+        '_get_swift_properties',
         return_value=[])
     def test_hbase_properties(self, patched):
         cluster = self._create_hbase_cluster()
 
         cluster_spec = hdp_test_base.create_clusterspec()
         cluster_spec.create_operational_config(cluster, [])
+        s = self.get_services_processor()
         service = s.create_service('HBASE')
 
         ui_handlers = {}
@@ -447,7 +470,8 @@ class ServicesTest(unittest2.TestCase):
     @mock.patch("savanna.utils.openstack.nova.get_instance_info",
                 hdp_test_base.get_instance_info)
     @mock.patch(
-        'savanna.plugins.hdp.services.HdfsService._get_swift_properties',
+        'savanna.plugins.hdp.versions.version_1_3_2.services.HdfsService.'
+        '_get_swift_properties',
         return_value=[])
     def test_hbase_validation(self, patched):
         master_host = hdp_test_base.TestServer(
@@ -512,7 +536,8 @@ class ServicesTest(unittest2.TestCase):
     @mock.patch("savanna.utils.openstack.nova.get_instance_info",
                 hdp_test_base.get_instance_info)
     @mock.patch(
-        'savanna.plugins.hdp.services.HdfsService._get_swift_properties',
+        'savanna.plugins.hdp.versions.version_1_3_2.services.HdfsService.'
+        '_get_swift_properties',
         return_value=[])
     def test_hbase_service_urls(self, patched):
         master_host = hdp_test_base.TestServer(
@@ -532,6 +557,7 @@ class ServicesTest(unittest2.TestCase):
         cluster = hdp_test_base.TestCluster([master_ng, hbase_ng])
         cluster_spec = hdp_test_base.create_clusterspec()
         cluster_spec.create_operational_config(cluster, [])
+        s = self.get_services_processor()
         service = s.create_service('HBASE')
 
         url_info = {}
@@ -554,7 +580,8 @@ class ServicesTest(unittest2.TestCase):
     @mock.patch("savanna.utils.openstack.nova.get_instance_info",
                 hdp_test_base.get_instance_info)
     @mock.patch(
-        'savanna.plugins.hdp.services.HdfsService._get_swift_properties',
+        'savanna.plugins.hdp.versions.version_1_3_2.services.HdfsService.'
+        '_get_swift_properties',
         return_value=[])
     def test_hbase_replace_tokens(self, patched):
         master_host = hdp_test_base.TestServer(
@@ -574,6 +601,7 @@ class ServicesTest(unittest2.TestCase):
         cluster = hdp_test_base.TestCluster([master_ng, hbase_ng])
         cluster_spec = hdp_test_base.create_clusterspec()
         cluster_spec.create_operational_config(cluster, [])
+        s = self.get_services_processor()
         service = s.create_service('HBASE')
         service.finalize_configuration(cluster_spec)
 
@@ -585,6 +613,7 @@ class ServicesTest(unittest2.TestCase):
                          'hbase.zookeeper.quorum'])
 
     def test_get_storage_paths(self):
+        s = self.get_services_processor()
         service = s.create_service('AMBARI')
         ng1 = hdp_test_base.TestNodeGroup(None, None, None)
         ng1.ng_storage_paths = ['/mnt', '/volume/disk1']

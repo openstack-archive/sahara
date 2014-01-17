@@ -43,7 +43,8 @@ def get_instance_info(*args, **kwargs):
 def create_clusterspec():
     cluster_config_file = pkg.resource_string(
         version.version_info.package,
-        'plugins/hdp/versions/1_3_2/resources/default-cluster.template')
+        'plugins/hdp/versions/version_1_3_2/resources/'
+        'default-cluster.template')
 
     return cs.ClusterSpec(cluster_config_file)
 
@@ -88,26 +89,29 @@ class TestUserInputConfig:
 
 
 class TestRequest:
-    def put(self, url, data=None, auth=None):
+    def put(self, url, data=None, auth=None, headers=None):
         self.url = url
         self.data = data
         self.auth = auth
+        self.headers = headers
         self.method = 'put'
 
         return TestResult(200)
 
-    def post(self, url, data=None, auth=None):
+    def post(self, url, data=None, auth=None, headers=None):
         self.url = url
         self.data = data
         self.auth = auth
+        self.headers = headers
         self.method = 'post'
 
         return TestResult(201)
 
-    def delete(self, url, auth=None):
+    def delete(self, url, auth=None, headers=None):
         self.url = url
         self.auth = auth
         self.data = None
+        self.headers = headers
         self.method = 'delete'
 
         return TestResult(200)
