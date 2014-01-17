@@ -54,22 +54,18 @@ def install_manager(cluster):
     LOG.info("Starting Install Manager Process")
     mng_instance = u.get_instance(cluster, 'manager')
 
-    idh_tarball_path = \
-        cluster.cluster_configs['general'].get('IDH tarball URL')
-    if not idh_tarball_path:
-        idh_tarball_path = c_helper.IDH_TARBALL_URL.default_value
+    idh_tarball_path = c_helper.get_config_value(
+        cluster.cluster_configs.get('general'), c_helper.IDH_TARBALL_URL)
 
     idh_tarball_filename = idh_tarball_path.rsplit('/', 1)[-1]
     idh_dir = idh_tarball_filename[:idh_tarball_filename.find('.tar.gz')]
     LOG.info("IDH tgz will be retrieved from: \'%s\'", idh_tarball_path)
 
-    idh_repo = cluster.cluster_configs['general'].get('IDH repository URL')
-    if not idh_repo:
-        idh_repo = c_helper.IDH_REPO_URL.default_value
+    idh_repo = c_helper.get_config_value(
+        cluster.cluster_configs.get('general'), c_helper.IDH_REPO_URL)
 
-    os_repo = cluster.cluster_configs['general'].get('OS repository URL')
-    if not os_repo:
-        os_repo = c_helper.OS_REPO_URL.default_value
+    os_repo = c_helper.get_config_value(
+        cluster.cluster_configs.get('general'), c_helper.OS_REPO_URL)
 
     idh_install_cmd = 'sudo ./%s/install.sh --mode=silent 2>&1' % idh_dir
 
@@ -165,11 +161,8 @@ def configure_os_from_instances(cluster, instances):
                 'sudo chown -R hadoop:hadoop /home/hadoop/.ssh && '
                 'sudo chmod 600 /home/hadoop/.ssh/{id_rsa,authorized_keys}')
 
-            swift_enable = \
-                cluster.cluster_configs['general'].get('Enable Swift')
-            if not swift_enable:
-                swift_enable = c_helper.ENABLE_SWIFT.default_value
-
+            swift_enable = c_helper.get_config_value(
+                cluster.cluster_configs.get('general'), c_helper.ENABLE_SWIFT)
             if swift_enable:
                 swift_lib_path = '/usr/lib/hadoop/lib/hadoop-swift-latest.jar'
                 cmd = ('sudo curl \'%s\' -o %s --create-dirs'
@@ -238,24 +231,25 @@ def _configure_storage(client, cluster):
 
 
 def _configure_swift(client, cluster):
-    swift_enable = cluster.cluster_configs['general'].get('Enable Swift')
-    if swift_enable is None or swift_enable:
+    swift_enable = c_helper.get_config_value(
+        cluster.cluster_configs.get('general'), c_helper.ENABLE_SWIFT)
+    if swift_enable:
         swift_configs = swift.get_swift_configs()
         for conf in swift_configs:
             client.params.hadoop.add(conf['name'], conf['value'])
 
 
 def _add_user_params(client, cluster):
-    for p in six.iteritems(cluster.cluster_configs["Hadoop"]):
+    for p in six.iteritems(cluster.cluster_configs.get("Hadoop", {})):
         client.params.hadoop.update(p[0], p[1])
 
-    for p in six.iteritems(cluster.cluster_configs["HDFS"]):
+    for p in six.iteritems(cluster.cluster_configs.get("HDFS", {})):
         client.params.hdfs.update(p[0], p[1])
 
-    for p in six.iteritems(cluster.cluster_configs["MapReduce"]):
+    for p in six.iteritems(cluster.cluster_configs.get("MapReduce", {})):
         client.params.mapred.update(p[0], p[1])
 
-    for p in six.iteritems(cluster.cluster_configs["JobFlow"]):
+    for p in six.iteritems(cluster.cluster_configs.get("JobFlow", {})):
         client.params.oozie.update(p[0], p[1])
 
 
@@ -305,11 +299,8 @@ def _setup_oozie(cluster):
             "sudo ln -s /usr/lib/hadoop/lib/native/Linux-amd64-64/libsnappy.so"
             " /usr/lib64/")
 
-        config = cluster.cluster_configs.get('general')
-
-        ext22 = config.get(c_helper.OOZIE_EXT22_URL.name) \
-            if config and config.get(c_helper.OOZIE_EXT22_URL.name) \
-            else c_helper.OOZIE_EXT22_URL.default_value
+        ext22 = c_helper.get_config_value(
+            cluster.cluster_configs.get('general'), c_helper.OOZIE_EXT22_URL)
         if ext22:
             LOG.info("Oozie: downloading and installing ext 2.2 from '%s'"
                      % ext22)
