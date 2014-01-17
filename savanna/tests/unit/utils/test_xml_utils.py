@@ -82,6 +82,14 @@ class XMLUtilsTestCase(unittest2.TestCase):
 
     def test_add_property_to_configuration(self):
         doc = self.create_default_doc()
+        x.add_properties_to_configuration(doc, 'test', {'': 'empty1',
+                                                        None: 'empty2'})
+        self.assertEqual(doc.toprettyxml(indent="  "),
+                         """<?xml version="1.0" ?>
+<test>
+  <configuration/>
+</test>
+""")
 
         test_conf = {'name1': 'value1', 'name2': 'value2'}
         x.add_properties_to_configuration(doc, 'test', test_conf)
@@ -168,6 +176,14 @@ class XMLUtilsTestCase(unittest2.TestCase):
 
     def test_add_equal_separated_dict(self):
         doc = self.create_default_doc()
+
+        x.add_equal_separated_dict(doc, 'test', 'dict_item',
+                                   {'': 'empty1', None: 'empty2'})
+        self.assertEqual(doc.toprettyxml(indent="  "),
+                         """<?xml version="1.0" ?>
+<test/>
+""")
+
         x.add_equal_separated_dict(doc, 'test', 'dict_item',
                                    {'a': 'b', 'c': 'd'})
         self.assertEqual(doc.toprettyxml(indent="  "),
