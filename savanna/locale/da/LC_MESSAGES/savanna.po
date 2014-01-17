@@ -1,18 +1,18 @@
-# Translations template for savanna.
+# Danish translations for savanna.
 # Copyright (C) 2014 ORGANIZATION
 # This file is distributed under the same license as the savanna project.
-# FIRST AUTHOR <EMAIL@ADDRESS>, 2014.
 #
-#, fuzzy
+# Translators:
 msgid ""
 msgstr ""
-"Project-Id-Version: savanna "
-"jenkins.savanna.propose.translation.update.136\n"
+"Project-Id-Version:  Savanna\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2014-01-17 07:05+0000\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
+"PO-Revision-Date: 2014-01-17 06:20+0000\n"
+"Last-Translator: openstackjenkins <jenkins@openstack.org>\n"
+"Language-Team: Danish "
+"(http://www.transifex.com/projects/p/openstack/language/da/)\n"
+"Plural-Forms: nplurals=2; plural=(n != 1)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -105,12 +105,12 @@ msgstr ""
 #: savanna/openstack/common/log.py:453
 #, python-format
 msgid "syslog facility must be one of: %s"
-msgstr ""
+msgstr "syslog faciliteten skal være en af: %s"
 
 #: savanna/openstack/common/log.py:623
 #, python-format
 msgid "Fatal call to deprecated config: %(msg)s"
-msgstr ""
+msgstr "Fatalt kald til forældet konfig: %(msg)s"
 
 #: savanna/openstack/common/loopingcall.py:82
 #, python-format
@@ -169,12 +169,12 @@ msgstr ""
 #: savanna/openstack/common/processutils.py:241
 #, python-format
 msgid "Result was %s"
-msgstr ""
+msgstr "Resultatet var %s"
 
 #: savanna/openstack/common/processutils.py:181
 #, python-format
 msgid "%r failed. Retrying."
-msgstr ""
+msgstr "%r mislykkedes. Prøver igen."
 
 #: savanna/openstack/common/processutils.py:220
 #, python-format
@@ -210,7 +210,7 @@ msgstr ""
 
 #: savanna/openstack/common/service.py:275
 msgid "Unhandled exception"
-msgstr ""
+msgstr "Ubehandlet undtagelse"
 
 #: savanna/openstack/common/service.py:308
 msgid "Forking too fast, sleeping"
@@ -301,7 +301,7 @@ msgstr ""
 
 #: savanna/openstack/common/db/exception.py:42
 msgid "Invalid Parameter: Unicode is not supported by the current database."
-msgstr ""
+msgstr "Ugyldig parameter: Unicode er ikke understøttet af den aktuelle database."
 
 #: savanna/openstack/common/db/sqlalchemy/migration.py:191
 msgid "version should be an integer"

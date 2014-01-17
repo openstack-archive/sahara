@@ -1,18 +1,18 @@
-# Translations template for savanna.
+# Czech translations for savanna.
 # Copyright (C) 2014 ORGANIZATION
 # This file is distributed under the same license as the savanna project.
-# FIRST AUTHOR <EMAIL@ADDRESS>, 2014.
 #
-#, fuzzy
+# Translators:
 msgid ""
 msgstr ""
-"Project-Id-Version: savanna "
-"jenkins.savanna.propose.translation.update.136\n"
+"Project-Id-Version:  Savanna\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2014-01-17 07:05+0000\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
+"PO-Revision-Date: 2014-01-17 06:20+0000\n"
+"Last-Translator: openstackjenkins <jenkins@openstack.org>\n"
+"Language-Team: Czech "
+"(http://www.transifex.com/projects/p/openstack/language/cs/)\n"
+"Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -40,7 +40,7 @@ msgstr ""
 #: savanna/openstack/common/fileutils.py:63
 #, python-format
 msgid "Reloading cached file %s"
-msgstr ""
+msgstr "Znovu načítání souboru mezipaměti %s"
 
 #: savanna/openstack/common/gettextutils.py:252
 msgid "Message objects do not support addition."
@@ -105,7 +105,7 @@ msgstr ""
 #: savanna/openstack/common/log.py:453
 #, python-format
 msgid "syslog facility must be one of: %s"
-msgstr ""
+msgstr "zařízení záznamu systému musí být jedno z: %s"
 
 #: savanna/openstack/common/log.py:623
 #, python-format
@@ -148,46 +148,46 @@ msgstr ""
 #: savanna/openstack/common/periodic_task.py:175
 #, python-format
 msgid "Running periodic task %(full_task_name)s"
-msgstr ""
+msgstr "Spuštění pravidelné úlohy %(full_task_name)s"
 
 #: savanna/openstack/common/periodic_task.py:184
 #, python-format
 msgid "Error during %(full_task_name)s: %(e)s"
-msgstr ""
+msgstr "Chyba při %(full_task_name)s: %(e)s"
 
 #: savanna/openstack/common/processutils.py:130
 #, python-format
 msgid "Got unknown keyword args to utils.execute: %r"
-msgstr ""
+msgstr "Získány neznámé argumenty klíčového slova pro utils.execute: %r"
 
 #: savanna/openstack/common/processutils.py:145
 #, python-format
 msgid "Running cmd (subprocess): %s"
-msgstr ""
+msgstr "Spouštění příkazu (podproces): %s"
 
 #: savanna/openstack/common/processutils.py:169
 #: savanna/openstack/common/processutils.py:241
 #, python-format
 msgid "Result was %s"
-msgstr ""
+msgstr "Výsledek byl %s"
 
 #: savanna/openstack/common/processutils.py:181
 #, python-format
 msgid "%r failed. Retrying."
-msgstr ""
+msgstr "%r selhalo. Opakování."
 
 #: savanna/openstack/common/processutils.py:220
 #, python-format
 msgid "Running cmd (SSH): %s"
-msgstr ""
+msgstr "Spouštění příkazu (SSH): %s"
 
 #: savanna/openstack/common/processutils.py:222
 msgid "Environment not supported over SSH"
-msgstr ""
+msgstr "Prostředí není podporováno přes SSH"
 
 #: savanna/openstack/common/processutils.py:226
 msgid "process_input not supported over SSH"
-msgstr ""
+msgstr "process_input není podporován přes SSH"
 
 #: savanna/openstack/common/service.py:166
 #: savanna/openstack/common/service.py:384
@@ -279,11 +279,11 @@ msgstr ""
 
 #: savanna/openstack/common/wsgi.py:187
 msgid "cannot understand JSON"
-msgstr ""
+msgstr "JSON nelze porozumět"
 
 #: savanna/openstack/common/wsgi.py:211
 msgid "cannot understand XML"
-msgstr ""
+msgstr "XML nelze porozumět"
 
 #: savanna/openstack/common/crypto/utils.py:29
 msgid "An unknown error occurred in crypto utils."
@@ -301,11 +301,11 @@ msgstr ""
 
 #: savanna/openstack/common/db/exception.py:42
 msgid "Invalid Parameter: Unicode is not supported by the current database."
-msgstr ""
+msgstr "Neplatný parametr: Unicode není současnou databází podporován."
 
 #: savanna/openstack/common/db/sqlalchemy/migration.py:191
 msgid "version should be an integer"
-msgstr ""
+msgstr "verze by měla být celé číslo"
 
 #: savanna/openstack/common/db/sqlalchemy/migration.py:221
 msgid ""
@@ -315,7 +315,7 @@ msgstr ""
 
 #: savanna/openstack/common/db/sqlalchemy/session.py:596
 msgid "DB exception wrapped."
-msgstr ""
+msgstr "Výjimka DB zabalena."
 
 #: savanna/openstack/common/db/sqlalchemy/session.py:665
 #, python-format
@@ -332,7 +332,7 @@ msgstr ""
 #: savanna/openstack/common/db/sqlalchemy/session.py:767
 #, python-format
 msgid "SQL connection failed. %s attempts left."
-msgstr ""
+msgstr "Připojení SQL selhalo. Zbývá %s pokusů."
 
 #: savanna/openstack/common/db/sqlalchemy/test_migrations.py:103
 #, python-format

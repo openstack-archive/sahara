@@ -1,18 +1,20 @@
-# Translations template for savanna.
+# Chinese (Simplified, China) translations for savanna.
 # Copyright (C) 2014 ORGANIZATION
 # This file is distributed under the same license as the savanna project.
-# FIRST AUTHOR <EMAIL@ADDRESS>, 2014.
 #
-#, fuzzy
+# Translators:
+# Tom Fifield <tom@openstack.org>, 2013
+# Yu Zhang <zhyu@cn.ibm.com>, 2013
 msgid ""
 msgstr ""
-"Project-Id-Version: savanna "
-"jenkins.savanna.propose.translation.update.136\n"
+"Project-Id-Version:  Savanna\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2014-01-17 07:05+0000\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
+"PO-Revision-Date: 2014-01-17 06:20+0000\n"
+"Last-Translator: openstackjenkins <jenkins@openstack.org>\n"
+"Language-Team: Chinese (China) "
+"(http://www.transifex.com/projects/p/openstack/language/zh_CN/)\n"
+"Plural-Forms: nplurals=1; plural=0\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -25,22 +27,22 @@ msgstr ""
 
 #: savanna/openstack/common/exception.py:103
 msgid "Uncaught exception"
-msgstr ""
+msgstr "未捕获到异常"
 
 #: savanna/openstack/common/excutils.py:62
 #, python-format
 msgid "Original exception being dropped: %s"
-msgstr ""
+msgstr "正在删除原始异常：%s"
 
 #: savanna/openstack/common/excutils.py:91
 #, python-format
 msgid "Unexpected exception occurred %d time(s)... retrying."
-msgstr ""
+msgstr "意外的异常已发生 %d 次...正在重试。"
 
 #: savanna/openstack/common/fileutils.py:63
 #, python-format
 msgid "Reloading cached file %s"
-msgstr ""
+msgstr "正在重新装入所缓存文件 %s"
 
 #: savanna/openstack/common/gettextutils.py:252
 msgid "Message objects do not support addition."
@@ -55,235 +57,235 @@ msgstr ""
 #: savanna/openstack/common/lockutils.py:103
 #, python-format
 msgid "Could not release the acquired lock `%s`"
-msgstr ""
+msgstr "未能释放所获取锁定“%s”"
 
 #: savanna/openstack/common/lockutils.py:168
 #, python-format
 msgid "Got semaphore \"%(lock)s\""
-msgstr ""
+msgstr "获取信标 \"%(lock)s\""
 
 #: savanna/openstack/common/lockutils.py:177
 #, python-format
 msgid "Attempting to grab file lock \"%(lock)s\""
-msgstr ""
+msgstr "正在尝试抓取文件锁 \"%(lock)s\""
 
 #: savanna/openstack/common/lockutils.py:187
 #, python-format
 msgid "Created lock path: %s"
-msgstr ""
+msgstr "已创建具锁定路径: %s"
 
 #: savanna/openstack/common/lockutils.py:205
 #, python-format
 msgid "Got file lock \"%(lock)s\" at %(path)s"
-msgstr ""
+msgstr "已在 %(path)s 处取得文件锁 \"%(lock)s\" "
 
 #: savanna/openstack/common/lockutils.py:209
 #, python-format
 msgid "Released file lock \"%(lock)s\" at %(path)s"
-msgstr ""
+msgstr "已在 %(path)s 处释放文件锁 \"%(lock)s\""
 
 #: savanna/openstack/common/lockutils.py:247
 #, python-format
 msgid "Got semaphore / lock \"%(function)s\""
-msgstr ""
+msgstr "已获取信号量 / 锁 \"%(function)s\""
 
 #: savanna/openstack/common/lockutils.py:251
 #, python-format
 msgid "Semaphore / lock released \"%(function)s\""
-msgstr ""
+msgstr "已释放信号量 / 锁 \"%(function)s\""
 
 #: savanna/openstack/common/log.py:301
 #, python-format
 msgid "Deprecated: %s"
-msgstr ""
+msgstr "建议不要使用：%s"
 
 #: savanna/openstack/common/log.py:402
 #, python-format
 msgid "Error loading logging config %(log_config)s: %(err_msg)s"
-msgstr ""
+msgstr "加载登陆配置出错 %(log_config)s:%(err_msg)s"
 
 #: savanna/openstack/common/log.py:453
 #, python-format
 msgid "syslog facility must be one of: %s"
-msgstr ""
+msgstr "系统日志工具必须是下列其中一项：%s"
 
 #: savanna/openstack/common/log.py:623
 #, python-format
 msgid "Fatal call to deprecated config: %(msg)s"
-msgstr ""
+msgstr "对建议不要使用的配置进行了后果极严重的调用：%(msg)s"
 
 #: savanna/openstack/common/loopingcall.py:82
 #, python-format
 msgid "task run outlasted interval by %s sec"
-msgstr ""
+msgstr "任务的运行时间超过时间间隔（超过 %s 秒）"
 
 #: savanna/openstack/common/loopingcall.py:89
 msgid "in fixed duration looping call"
-msgstr ""
+msgstr "在固定时段内循环调用"
 
 #: savanna/openstack/common/loopingcall.py:129
 #, python-format
 msgid "Dynamic looping call sleeping for %.02f seconds"
-msgstr ""
+msgstr "动态循环调用%.02f 秒休眠"
 
 #: savanna/openstack/common/loopingcall.py:136
 msgid "in dynamic looping call"
-msgstr ""
+msgstr "在动态循环调用中"
 
 #: savanna/openstack/common/periodic_task.py:41
 #, python-format
 msgid "Unexpected argument for periodic task creation: %(arg)s."
-msgstr ""
+msgstr "对于周期性任务创建，以下是意外自变量：%(arg)s。"
 
 #: savanna/openstack/common/periodic_task.py:132
 #, python-format
 msgid "Skipping periodic task %(task)s because its interval is negative"
-msgstr ""
+msgstr "正在跳过周期性任务 %(task)s，因为其时间间隔为负"
 
 #: savanna/openstack/common/periodic_task.py:137
 #, python-format
 msgid "Skipping periodic task %(task)s because it is disabled"
-msgstr ""
+msgstr "正在跳过周期性任务 %(task)s，因为它已禁用"
 
 #: savanna/openstack/common/periodic_task.py:175
 #, python-format
 msgid "Running periodic task %(full_task_name)s"
-msgstr ""
+msgstr "正在运行周期性任务 %(full_task_name)s"
 
 #: savanna/openstack/common/periodic_task.py:184
 #, python-format
 msgid "Error during %(full_task_name)s: %(e)s"
-msgstr ""
+msgstr "在 %(full_task_name)s 期间发生的错误：%(e)s"
 
 #: savanna/openstack/common/processutils.py:130
 #, python-format
 msgid "Got unknown keyword args to utils.execute: %r"
-msgstr ""
+msgstr "发现未知的 utils.execute 关键字参数：%r"
 
 #: savanna/openstack/common/processutils.py:145
 #, python-format
 msgid "Running cmd (subprocess): %s"
-msgstr ""
+msgstr "正在运行cmd (subprocess)：%s"
 
 #: savanna/openstack/common/processutils.py:169
 #: savanna/openstack/common/processutils.py:241
 #, python-format
 msgid "Result was %s"
-msgstr ""
+msgstr "运行结果为 %s"
 
 #: savanna/openstack/common/processutils.py:181
 #, python-format
 msgid "%r failed. Retrying."
-msgstr ""
+msgstr "%r 失败，重试。"
 
 #: savanna/openstack/common/processutils.py:220
 #, python-format
 msgid "Running cmd (SSH): %s"
-msgstr ""
+msgstr "运行cmd (SSH)：%s"
 
 #: savanna/openstack/common/processutils.py:222
 msgid "Environment not supported over SSH"
-msgstr ""
+msgstr "SSH上不支持环境变量"
 
 #: savanna/openstack/common/processutils.py:226
 msgid "process_input not supported over SSH"
-msgstr ""
+msgstr "SSH上不支持的进程输入参数。"
 
 #: savanna/openstack/common/service.py:166
 #: savanna/openstack/common/service.py:384
 msgid "Full set of CONF:"
-msgstr ""
+msgstr "存在以下完整的一组配置："
 
 #: savanna/openstack/common/service.py:175
 #: savanna/openstack/common/service.py:269
 #, python-format
 msgid "Caught %s, exiting"
-msgstr ""
+msgstr "捕获到 %s，正在退出"
 
 #: savanna/openstack/common/service.py:187
 msgid "Exception during rpc cleanup."
-msgstr ""
+msgstr "在RPC清除期间发生异常。"
 
 #: savanna/openstack/common/service.py:238
 msgid "Parent process has died unexpectedly, exiting"
-msgstr ""
+msgstr "父进程已意外终止，正在退出"
 
 #: savanna/openstack/common/service.py:275
 msgid "Unhandled exception"
-msgstr ""
+msgstr "存在未处理的异常"
 
 #: savanna/openstack/common/service.py:308
 msgid "Forking too fast, sleeping"
-msgstr ""
+msgstr "派生速度太快，正在休眠"
 
 #: savanna/openstack/common/service.py:327
 #, python-format
 msgid "Started child %d"
-msgstr ""
+msgstr "已启动子代 %d"
 
 #: savanna/openstack/common/service.py:337
 #, python-format
 msgid "Starting %d workers"
-msgstr ""
+msgstr "正在启动 %d 工作程序"
 
 #: savanna/openstack/common/service.py:354
 #, python-format
 msgid "Child %(pid)d killed by signal %(sig)d"
-msgstr ""
+msgstr "信号 %(sig)d 已终止子代 %(pid)d"
 
 #: savanna/openstack/common/service.py:358
 #, python-format
 msgid "Child %(pid)s exited with status %(code)d"
-msgstr ""
+msgstr "子代 %(pid)s 已退出，状态为 %(code)d"
 
 #: savanna/openstack/common/service.py:362
 #, python-format
 msgid "pid %d not in child list"
-msgstr ""
+msgstr "pid %d 没有在子代列表中"
 
 #: savanna/openstack/common/service.py:392
 #, python-format
 msgid "Caught %s, stopping children"
-msgstr ""
+msgstr "捕获到 %s，正在停止子代"
 
 #: savanna/openstack/common/service.py:410
 #, python-format
 msgid "Waiting on %d children to exit"
-msgstr ""
+msgstr "正在等待 %d 个子代退出"
 
 #: savanna/openstack/common/sslutils.py:52
 #, python-format
 msgid "Unable to find cert_file : %s"
-msgstr ""
+msgstr "找不到 cert_file：%s"
 
 #: savanna/openstack/common/sslutils.py:55
 #, python-format
 msgid "Unable to find ca_file : %s"
-msgstr ""
+msgstr "找不到 ca_file：%s"
 
 #: savanna/openstack/common/sslutils.py:58
 #, python-format
 msgid "Unable to find key_file : %s"
-msgstr ""
+msgstr "找不到 key_file：%s"
 
 #: savanna/openstack/common/sslutils.py:61
 msgid ""
 "When running server in SSL mode, you must specify both a cert_file and "
 "key_file option value in your configuration file"
-msgstr ""
+msgstr "以 SSL 方式运行服务器时，必须在配置文件中同时指定 cert_file 和 key_file 选项值"
 
 #: savanna/openstack/common/sslutils.py:100
 #, python-format
 msgid "Invalid SSL version : %s"
-msgstr ""
+msgstr "SSL版本无效: %s"
 
 #: savanna/openstack/common/wsgi.py:187
 msgid "cannot understand JSON"
-msgstr ""
+msgstr "无法理解JSON"
 
 #: savanna/openstack/common/wsgi.py:211
 msgid "cannot understand XML"
-msgstr ""
+msgstr "无法理解 XML"
 
 #: savanna/openstack/common/crypto/utils.py:29
 msgid "An unknown error occurred in crypto utils."
@@ -301,11 +303,11 @@ msgstr ""
 
 #: savanna/openstack/common/db/exception.py:42
 msgid "Invalid Parameter: Unicode is not supported by the current database."
-msgstr ""
+msgstr "参数无效：当前数据库不支持 Unicode。"
 
 #: savanna/openstack/common/db/sqlalchemy/migration.py:191
 msgid "version should be an integer"
-msgstr ""
+msgstr "版本应该为整数"
 
 #: savanna/openstack/common/db/sqlalchemy/migration.py:221
 msgid ""
@@ -315,7 +317,7 @@ msgstr ""
 
 #: savanna/openstack/common/db/sqlalchemy/session.py:596
 msgid "DB exception wrapped."
-msgstr ""
+msgstr "数据库异常被包裹。"
 
 #: savanna/openstack/common/db/sqlalchemy/session.py:665
 #, python-format
@@ -332,7 +334,7 @@ msgstr ""
 #: savanna/openstack/common/db/sqlalchemy/session.py:767
 #, python-format
 msgid "SQL connection failed. %s attempts left."
-msgstr ""
+msgstr "SQL 连接失败。还可进行 %s 次尝试。"
 
 #: savanna/openstack/common/db/sqlalchemy/test_migrations.py:103
 #, python-format
@@ -346,36 +348,36 @@ msgstr ""
 
 #: savanna/openstack/common/db/sqlalchemy/utils.py:58
 msgid "Sort key supplied was not valid."
-msgstr ""
+msgstr "提供的排序键无效。"
 
 #: savanna/openstack/common/db/sqlalchemy/utils.py:97
 msgid "Id not in sort_keys; is sort_keys unique?"
-msgstr ""
+msgstr "标识未在 sort_keys 中，sort_keys 唯一吗？"
 
 #: savanna/openstack/common/db/sqlalchemy/utils.py:119
 msgid "Unknown sort direction, must be 'desc' or 'asc'"
-msgstr ""
+msgstr "排序方向未知，必须为“降序”或“升序”"
 
 #: savanna/openstack/common/db/sqlalchemy/utils.py:194
 #, python-format
 msgid ""
 "Please specify column %s in col_name_col_instance param. It is required "
 "because column has unsupported type by sqlite)."
-msgstr ""
+msgstr "请在 col_name_col_instance 参数中指定列 %s。要求执行此操作的原因是列中包含不受 sqlite 支持的类型）。"
 
 #: savanna/openstack/common/db/sqlalchemy/utils.py:200
 #, python-format
 msgid ""
 "col_name_col_instance param has wrong type of column instance for column "
 "%s It should be instance of sqlalchemy.Column."
-msgstr ""
+msgstr "对于列 %s，col_name_col_instance 参数具有不正确类型的列实例。它应该是 sqlalchemy.Column 的实例。"
 
 #: savanna/openstack/common/db/sqlalchemy/utils.py:280
 #, python-format
 msgid "Deleting duplicated row with id: %(id)s from table: %(table)s"
-msgstr ""
+msgstr "正在从表 %(table)s 中删除具有id %(id)s 的重复行"
 
 #: savanna/openstack/common/db/sqlalchemy/utils.py:301
 msgid "Unsupported id columns type"
-msgstr ""
+msgstr "不支持的id列类型"
 

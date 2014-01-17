@@ -1,18 +1,18 @@
-# Translations template for savanna.
+# Portuguese translations for savanna.
 # Copyright (C) 2014 ORGANIZATION
 # This file is distributed under the same license as the savanna project.
-# FIRST AUTHOR <EMAIL@ADDRESS>, 2014.
 #
-#, fuzzy
+# Translators:
 msgid ""
 msgstr ""
-"Project-Id-Version: savanna "
-"jenkins.savanna.propose.translation.update.136\n"
+"Project-Id-Version:  Savanna\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2014-01-17 07:05+0000\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
+"PO-Revision-Date: 2014-01-17 06:04+0000\n"
+"Last-Translator: openstackjenkins <jenkins@openstack.org>\n"
+"Language-Team: Portuguese "
+"(http://www.transifex.com/projects/p/openstack/language/pt/)\n"
+"Plural-Forms: nplurals=2; plural=(n != 1)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -40,7 +40,7 @@ msgstr ""
 #: savanna/openstack/common/fileutils.py:63
 #, python-format
 msgid "Reloading cached file %s"
-msgstr ""
+msgstr "A recarregar o ficheiro em cache %s"
 
 #: savanna/openstack/common/gettextutils.py:252
 msgid "Message objects do not support addition."
@@ -95,7 +95,7 @@ msgstr ""
 #: savanna/openstack/common/log.py:301
 #, python-format
 msgid "Deprecated: %s"
-msgstr ""
+msgstr "Pedido: %s"
 
 #: savanna/openstack/common/log.py:402
 #, python-format
@@ -105,12 +105,12 @@ msgstr ""
 #: savanna/openstack/common/log.py:453
 #, python-format
 msgid "syslog facility must be one of: %s"
-msgstr ""
+msgstr "A função registo do sistema deve ser uma de %s"
 
 #: savanna/openstack/common/log.py:623
 #, python-format
 msgid "Fatal call to deprecated config: %(msg)s"
-msgstr ""
+msgstr "Chamada fatal para a config. pedida: %(msg)s"
 
 #: savanna/openstack/common/loopingcall.py:82
 #, python-format
@@ -119,7 +119,7 @@ msgstr ""
 
 #: savanna/openstack/common/loopingcall.py:89
 msgid "in fixed duration looping call"
-msgstr ""
+msgstr "na chamada de repetição da duração fixada"
 
 #: savanna/openstack/common/loopingcall.py:129
 #, python-format
@@ -128,7 +128,7 @@ msgstr ""
 
 #: savanna/openstack/common/loopingcall.py:136
 msgid "in dynamic looping call"
-msgstr ""
+msgstr "na chamada de repetição dinâmica"
 
 #: savanna/openstack/common/periodic_task.py:41
 #, python-format
@@ -254,28 +254,31 @@ msgstr ""
 #: savanna/openstack/common/sslutils.py:52
 #, python-format
 msgid "Unable to find cert_file : %s"
-msgstr ""
+msgstr "Não é possível encontrar cert_file : %s"
 
 #: savanna/openstack/common/sslutils.py:55
 #, python-format
 msgid "Unable to find ca_file : %s"
-msgstr ""
+msgstr "Não é possível encontrar ca_file : %s"
 
 #: savanna/openstack/common/sslutils.py:58
 #, python-format
 msgid "Unable to find key_file : %s"
-msgstr ""
+msgstr "Não é possível encontrar key_file : %s"
 
 #: savanna/openstack/common/sslutils.py:61
 msgid ""
 "When running server in SSL mode, you must specify both a cert_file and "
 "key_file option value in your configuration file"
 msgstr ""
+"Quando executar o servidor no modo SSL, deverá especificar o valor da "
+"opção de ambos os ficheiros cert_file e key_file no seu ficheiro de "
+"configuração"
 
 #: savanna/openstack/common/sslutils.py:100
 #, python-format
 msgid "Invalid SSL version : %s"
-msgstr ""
+msgstr "Versão SSL inválida: %s"
 
 #: savanna/openstack/common/wsgi.py:187
 msgid "cannot understand JSON"
@@ -301,7 +304,7 @@ msgstr ""
 
 #: savanna/openstack/common/db/exception.py:42
 msgid "Invalid Parameter: Unicode is not supported by the current database."
-msgstr ""
+msgstr "Parâmetro Inválido: o Unicode não é suportado pela base de dados atual."
 
 #: savanna/openstack/common/db/sqlalchemy/migration.py:191
 msgid "version should be an integer"
@@ -332,7 +335,7 @@ msgstr ""
 #: savanna/openstack/common/db/sqlalchemy/session.py:767
 #, python-format
 msgid "SQL connection failed. %s attempts left."
-msgstr ""
+msgstr "A ligação SQL falhou. Tentativas restantes: %s ."
 
 #: savanna/openstack/common/db/sqlalchemy/test_migrations.py:103
 #, python-format
@@ -377,5 +380,5 @@ msgstr ""
 
 #: savanna/openstack/common/db/sqlalchemy/utils.py:301
 msgid "Unsupported id columns type"
-msgstr ""
+msgstr "Id. do tipo de colunas não suportada"
 

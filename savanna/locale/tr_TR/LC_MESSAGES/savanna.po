@@ -1,18 +1,18 @@
-# Translations template for savanna.
+# Turkish (Turkey) translations for savanna.
 # Copyright (C) 2014 ORGANIZATION
 # This file is distributed under the same license as the savanna project.
-# FIRST AUTHOR <EMAIL@ADDRESS>, 2014.
 #
-#, fuzzy
+# Translators:
 msgid ""
 msgstr ""
-"Project-Id-Version: savanna "
-"jenkins.savanna.propose.translation.update.136\n"
+"Project-Id-Version:  Savanna\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2014-01-17 07:05+0000\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
+"PO-Revision-Date: 2014-01-17 06:20+0000\n"
+"Last-Translator: openstackjenkins <jenkins@openstack.org>\n"
+"Language-Team: Turkish (Turkey) "
+"(http://www.transifex.com/projects/p/openstack/language/tr_TR/)\n"
+"Plural-Forms: nplurals=1; plural=0\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -25,7 +25,7 @@ msgstr ""
 
 #: savanna/openstack/common/exception.py:103
 msgid "Uncaught exception"
-msgstr ""
+msgstr "Yakalanmamış istisna"
 
 #: savanna/openstack/common/excutils.py:62
 #, python-format
@@ -105,7 +105,7 @@ msgstr ""
 #: savanna/openstack/common/log.py:453
 #, python-format
 msgid "syslog facility must be one of: %s"
-msgstr ""
+msgstr "syslog servisi bunlardan biri olmak zorundadır: %s"
 
 #: savanna/openstack/common/log.py:623
 #, python-format
@@ -148,46 +148,46 @@ msgstr ""
 #: savanna/openstack/common/periodic_task.py:175
 #, python-format
 msgid "Running periodic task %(full_task_name)s"
-msgstr ""
+msgstr "%(full_task_name)s periyodik görevi çalışıyor"
 
 #: savanna/openstack/common/periodic_task.py:184
 #, python-format
 msgid "Error during %(full_task_name)s: %(e)s"
-msgstr ""
+msgstr "%(full_task_name)s sırasında hata: %(e)s"
 
 #: savanna/openstack/common/processutils.py:130
 #, python-format
 msgid "Got unknown keyword args to utils.execute: %r"
-msgstr ""
+msgstr "utils.execute için bilinmeyen anahtar kelime argümanları: %r"
 
 #: savanna/openstack/common/processutils.py:145
 #, python-format
 msgid "Running cmd (subprocess): %s"
-msgstr ""
+msgstr "Çalışan komut(alt süreç): %s"
 
 #: savanna/openstack/common/processutils.py:169
 #: savanna/openstack/common/processutils.py:241
 #, python-format
 msgid "Result was %s"
-msgstr ""
+msgstr "Sonuç %s"
 
 #: savanna/openstack/common/processutils.py:181
 #, python-format
 msgid "%r failed. Retrying."
-msgstr ""
+msgstr "%r hatalı. Yeniden deneniyor."
 
 #: savanna/openstack/common/processutils.py:220
 #, python-format
 msgid "Running cmd (SSH): %s"
-msgstr ""
+msgstr "Çalışan komut(SSH): %s"
 
 #: savanna/openstack/common/processutils.py:222
 msgid "Environment not supported over SSH"
-msgstr ""
+msgstr "SSH üzerinde ortam desteklenmemektedir."
 
 #: savanna/openstack/common/processutils.py:226
 msgid "process_input not supported over SSH"
-msgstr ""
+msgstr "SSH üzerinde process_input desteklenmemektedir."
 
 #: savanna/openstack/common/service.py:166
 #: savanna/openstack/common/service.py:384
@@ -198,7 +198,7 @@ msgstr ""
 #: savanna/openstack/common/service.py:269
 #, python-format
 msgid "Caught %s, exiting"
-msgstr ""
+msgstr "%s yakalandı, çıkılıyor"
 
 #: savanna/openstack/common/service.py:187
 msgid "Exception during rpc cleanup."
@@ -210,7 +210,7 @@ msgstr ""
 
 #: savanna/openstack/common/service.py:275
 msgid "Unhandled exception"
-msgstr ""
+msgstr "Yakalanmamış istisna"
 
 #: savanna/openstack/common/service.py:308
 msgid "Forking too fast, sleeping"
@@ -254,17 +254,17 @@ msgstr ""
 #: savanna/openstack/common/sslutils.py:52
 #, python-format
 msgid "Unable to find cert_file : %s"
-msgstr ""
+msgstr "cert_file bulunamadı: %s"
 
 #: savanna/openstack/common/sslutils.py:55
 #, python-format
 msgid "Unable to find ca_file : %s"
-msgstr ""
+msgstr "ca_file bulunamadı: %s"
 
 #: savanna/openstack/common/sslutils.py:58
 #, python-format
 msgid "Unable to find key_file : %s"
-msgstr ""
+msgstr "key_file bulunamadı: %s"
 
 #: savanna/openstack/common/sslutils.py:61
 msgid ""
@@ -275,11 +275,11 @@ msgstr ""
 #: savanna/openstack/common/sslutils.py:100
 #, python-format
 msgid "Invalid SSL version : %s"
-msgstr ""
+msgstr "Geçersiz SSL sürümü: %s"
 
 #: savanna/openstack/common/wsgi.py:187
 msgid "cannot understand JSON"
-msgstr ""
+msgstr "JSON dosyası anlaşılamadı"
 
 #: savanna/openstack/common/wsgi.py:211
 msgid "cannot understand XML"
@@ -305,7 +305,7 @@ msgstr ""
 
 #: savanna/openstack/common/db/sqlalchemy/migration.py:191
 msgid "version should be an integer"
-msgstr ""
+msgstr "Sürüm tam sayı olmak zorunda"
 
 #: savanna/openstack/common/db/sqlalchemy/migration.py:221
 msgid ""
@@ -315,7 +315,7 @@ msgstr ""
 
 #: savanna/openstack/common/db/sqlalchemy/session.py:596
 msgid "DB exception wrapped."
-msgstr ""
+msgstr "Veritabanı istisnası yakalandı."
 
 #: savanna/openstack/common/db/sqlalchemy/session.py:665
 #, python-format
