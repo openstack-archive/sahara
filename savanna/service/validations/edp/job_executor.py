@@ -58,7 +58,7 @@ JAVA_EXEC_SCHEMA = {
             "type": "string",
             "format": "uuid",
         },
-        "job_configs": b.java_job_configs,
+        "job_configs": b.job_configs,
     },
     "additionalProperties": False,
     "required": [
