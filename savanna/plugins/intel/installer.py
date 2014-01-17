@@ -137,7 +137,7 @@ def configure_os_from_instances(cluster, instances):
             # configure hostname, RedHat/Centos specific
             remote.replace_remote_string('/etc/sysconfig/network',
                                          'HOSTNAME=.*',
-                                         'HOSTNAME=%s' % instance.hostname())
+                                         'HOSTNAME=%s' % instance.fqdn())
             # disable selinux and iptables, because Intel distribution requires
             # this to be off
             remote.execute_command('sudo /usr/sbin/setenforce 0')
@@ -171,16 +171,16 @@ def configure_os_from_instances(cluster, instances):
 
 
 def _configure_services(client, cluster):
-    nn_host = u.get_namenode(cluster).hostname()
+    nn_host = u.get_namenode(cluster).fqdn()
     snn = u.get_secondarynamenodes(cluster)
-    snn_host = snn[0].hostname() if snn else None
-    jt_host = u.get_jobtracker(cluster).hostname()
-    dn_hosts = [dn.hostname() for dn in u.get_datanodes(cluster)]
-    tt_hosts = [tt.hostname() for tt in u.get_tasktrackers(cluster)]
+    snn_host = snn[0].fqdn() if snn else None
+    jt_host = u.get_jobtracker(cluster).fqdn()
+    dn_hosts = [dn.fqdn() for dn in u.get_datanodes(cluster)]
+    tt_hosts = [tt.fqdn() for tt in u.get_tasktrackers(cluster)]
 
-    oozie_host = u.get_oozie(cluster).hostname() if u.get_oozie(
+    oozie_host = u.get_oozie(cluster).fqdn() if u.get_oozie(
         cluster) else None
-    hive_host = u.get_hiveserver(cluster).hostname() if u.get_hiveserver(
+    hive_host = u.get_hiveserver(cluster).fqdn() if u.get_hiveserver(
         cluster) else None
 
     services = []
@@ -220,7 +220,7 @@ def _configure_services(client, cluster):
 def _configure_storage(client, cluster):
     datanode_ng = u.get_node_groups(cluster, 'datanode')[0]
     storage_paths = datanode_ng.storage_paths()
-    dn_hosts = [i.hostname() for i in u.get_datanodes(cluster)]
+    dn_hosts = [i.fqdn() for i in u.get_datanodes(cluster)]
 
     name_dir_param = ",".join(
         [st_path + '/dfs/name' for st_path in storage_paths])
@@ -257,7 +257,7 @@ def install_cluster(cluster):
     mng_instance = u.get_instance(cluster, 'manager')
     mng_ip = mng_instance.management_ip
 
-    all_hosts = list(set([i.hostname() for i in u.get_instances(cluster)]))
+    all_hosts = list(set([i.fqdn() for i in u.get_instances(cluster)]))
 
     client = c.IntelClient(mng_ip, cluster.name)
 
@@ -340,9 +340,9 @@ def start_cluster(cluster):
 
 
 def scale_cluster(cluster, instances):
-    scale_ins_hosts = [i.hostname() for i in instances]
-    dn_hosts = [dn.hostname() for dn in u.get_datanodes(cluster)]
-    tt_hosts = [tt.hostname() for tt in u.get_tasktrackers(cluster)]
+    scale_ins_hosts = [i.fqdn() for i in instances]
+    dn_hosts = [dn.fqdn() for dn in u.get_datanodes(cluster)]
+    tt_hosts = [tt.fqdn() for tt in u.get_tasktrackers(cluster)]
     to_scale_dn = []
     to_scale_tt = []
     for i in scale_ins_hosts:
@@ -375,9 +375,9 @@ def scale_cluster(cluster, instances):
 
 
 def decommission_nodes(cluster, instances):
-    dec_hosts = [i.hostname() for i in instances]
-    dn_hosts = [dn.hostname() for dn in u.get_datanodes(cluster)]
-    tt_hosts = [dn.hostname() for dn in u.get_tasktrackers(cluster)]
+    dec_hosts = [i.fqdn() for i in instances]
+    dn_hosts = [dn.fqdn() for dn in u.get_datanodes(cluster)]
+    tt_hosts = [dn.fqdn() for dn in u.get_tasktrackers(cluster)]
 
     mng_ip = u.get_instances(cluster, 'manager')[0].management_ip
     client = c.IntelClient(mng_ip, cluster.name)
@@ -413,7 +413,7 @@ def decommission_nodes(cluster, instances):
     for instance in instances:
         while cur_time < timeout:
             stopped = True
-            if instance.hostname() in dn_hosts:
+            if instance.fqdn() in dn_hosts:
                 code, out = instance.remote().execute_command(
                     'sudo /sbin/service hadoop-datanode status',
                     raise_when_error=False)
@@ -423,7 +423,7 @@ def decommission_nodes(cluster, instances):
                     instance.remote().execute_command(
                         'sudo rm -f '
                         '/var/run/hadoop/hadoop-hadoop-datanode.pid')
-            if instance.hostname() in tt_hosts:
+            if instance.fqdn() in tt_hosts:
                 code, out = instance.remote().execute_command(
                     'sudo /sbin/service hadoop-tasktracker status',
                     raise_when_error=False)
