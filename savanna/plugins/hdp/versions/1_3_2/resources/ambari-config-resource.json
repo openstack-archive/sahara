@@ -2350,6 +2350,236 @@
             ]
         },
         {
+            "tag": "hbase-site.xml",
+            "properties": [
+                {
+                    "applicable_target": "HBASE",
+                    "config_type": "string",
+                    "default_value": "org.apache.hadoop.hbase.ipc.WritableRpcEngine",
+                    "description": "...",
+                    "is_optional": true,
+                    "name": "hbase.rpc.engine",
+                    "scope": "cluster"
+                },
+                {
+                    "applicable_target": "HBASE",
+                    "config_type": "string",
+                    "default_value": "simple",
+                    "description": "...",
+                    "is_optional": true,
+                    "name": "hbase.security.authentication",
+                    "scope": "cluster"
+                },
+                {
+                    "applicable_target": "HBASE",
+                    "config_type": "string",
+                    "default_value": "false",
+                    "description": "...",
+                    "is_optional": true,
+                    "name": "hbase.security.authorization",
+                    "scope": "cluster"
+                },
+                {
+                    "applicable_target": "HBASE",
+                    "config_type": "string",
+                    "default_value": "hbase",
+                    "description": "...",
+                    "is_optional": true,
+                    "name": "hbase.superuser",
+                    "scope": "cluster"
+                },
+                {
+                    "applicable_target": "HBASE",
+                    "config_type": "string",
+                    "default_value": "true",
+                    "description": "...",
+                    "is_optional": true,
+                    "name": "hbase.zookeeper.useMulti",
+                    "scope": "cluster"
+                },
+                {
+                    "applicable_target": "HBASE",
+                    "config_type": "string",
+                    "default_value": "/hbase-unsecure",
+                    "description": "...",
+                    "is_optional": true,
+                    "name": "zookeeper.znode.parent",
+                    "scope": "cluster"
+                },
+                {
+                    "applicable_target": "HBASE",
+                    "config_type": "string",
+                    "default_value": "hdfs://%NN_HOST%:8020/apps/hbase/data",
+                    "description": "...",
+                    "is_optional": true,
+                    "name": "hbase.rootdir",
+                    "scope": "cluster"
+                },
+                {
+                    "applicable_target": "HBASE",
+                    "config_type": "string",
+                    "default_value": "/var/log/hbase",
+                    "description": "...",
+                    "is_optional": true,
+                    "name": "hbase.tmp.dir",
+                    "scope": "cluster"
+                },
+                {
+                    "applicable_target": "HBASE",
+                    "config_type": "string",
+                    "default_value": "0.4",
+                    "description": "...",
+                    "is_optional": true,
+                    "name": "hbase.regionserver.global.memstore.upperLimit",
+                    "scope": "cluster"
+                },
+                {
+                    "applicable_target": "HBASE",
+                    "config_type": "string",
+                    "default_value": "7",
+                    "description": "...",
+                    "is_optional": true,
+                    "name": "hbase.hstore.blockingStoreFiles",
+                    "scope": "cluster"
+                },
+                {
+                    "applicable_target": "HBASE",
+                    "config_type": "string",
+                    "default_value": "3",
+                    "description": "...",
+                    "is_optional": true,
+                    "name": "hbase.hstore.compactionThreshold",
+                    "scope": "cluster"
+                },
+                {
+                    "applicable_target": "HBASE",
+                    "config_type": "string",
+                    "default_value": "0.40",
+                    "description": "...",
+                    "is_optional": true,
+                    "name": "hfile.block.cache.size",
+                    "scope": "cluster"
+                },
+                {
+                    "applicable_target": "HBASE",
+                    "config_type": "string",
+                    "default_value": "10737418240",
+                    "description": "...",
+                    "is_optional": true,
+                    "name": "hbase.hregion.max.filesize",
+                    "scope": "cluster"
+                },
+                {
+                    "applicable_target": "HBASE",
+                    "config_type": "string",
+                    "default_value": "60",
+                    "description": "...",
+                    "is_optional": true,
+                    "name": "hbase.regionserver.handler.count",
+                    "scope": "cluster"
+                },
+                {
+                    "applicable_target": "HBASE",
+                    "config_type": "string",
+                    "default_value": "86400000",
+                    "description": "...",
+                    "is_optional": true,
+                    "name": "hbase.hregion.majorcompaction",
+                    "scope": "cluster"
+                },
+                {
+                    "applicable_target": "HBASE",
+                    "config_type": "string",
+                    "default_value": "0.38",
+                    "description": "...",
+                    "is_optional": true,
+                    "name": "hbase.regionserver.global.memstore.lowerLimit",
+                    "scope": "cluster"
+                },
+                {
+                    "applicable_target": "HBASE",
+                    "config_type": "string",
+                    "default_value": "2",
+                    "description": "...",
+                    "is_optional": true,
+                    "name": "hbase.hregion.memstore.block.multiplier",
+                    "scope": "cluster"
+                },
+                {
+                    "applicable_target": "HBASE",
+                    "config_type": "string",
+                    "default_value": "true",
+                    "description": "...",
+                    "is_optional": true,
+                    "name": "hbase.hregion.memstore.mslab.enabled",
+                    "scope": "cluster"
+                },
+                {
+                    "applicable_target": "HBASE",
+                    "config_type": "string",
+                    "default_value": "134217728",
+                    "description": "...",
+                    "is_optional": true,
+                    "name": "hbase.hregion.memstore.flush.size",
+                    "scope": "cluster"
+                },
+                {
+                    "applicable_target": "HBASE",
+                    "config_type": "string",
+                    "default_value": "100",
+                    "description": "...",
+                    "is_optional": true,
+                    "name": "hbase.client.scanner.caching",
+                    "scope": "cluster"
+                },
+                {
+                    "applicable_target": "HBASE",
+                    "config_type": "string",
+                    "default_value": "true",
+                    "description": "...",
+                    "is_optional": true,
+                    "name": "hbase.cluster.distributed",
+                    "scope": "cluster"
+                },
+                {
+                    "applicable_target": "HBASE",
+                    "config_type": "string",
+                    "default_value": "2181",
+                    "description": "...",
+                    "is_optional": true,
+                    "name": "hbase.zookeeper.property.clientPort",
+                    "scope": "cluster"
+                },
+                {
+                    "applicable_target": "HBASE",
+                    "config_type": "string",
+                    "default_value": "60000",
+                    "description": "...",
+                    "is_optional": true,
+                    "name": "zookeeper.session.timeout",
+                    "scope": "cluster"
+                },
+                {
+                    "applicable_target": "HBASE",
+                    "config_type": "string",
+                    "default_value": "10485760",
+                    "description": "...",
+                    "is_optional": true,
+                    "name": "hbase.client.keyvalue.maxsize",
+                    "scope": "cluster"
+                },
+                {
+                    "applicable_target": "HBASE",
+                    "config_type": "string",
+                    "default_value": "true",
+                    "description": "...",
+                    "is_optional": true,
+                    "name": "dfs.client.read.shortcircuit",
+                    "scope": "cluster"
+                }
+            ]
+        },
+        {
             "tag": "global",
             "properties": [
                 {
@@ -3115,6 +3345,42 @@
                     "description": "...",
                     "is_optional": true,
                     "name": "oozie_pid_dir",
+                    "scope": "cluster"
+                },
+                {
+                    "applicable_target": "HBASE",
+                    "config_type": "string",
+                    "default_value": "/var/run/hbase",
+                    "description": "...",
+                    "is_optional": true,
+                    "name": "hbase_pid_dir",
+                    "scope": "cluster"
+                },
+                {
+                    "applicable_target": "HBASE",
+                    "config_type": "string",
+                    "default_value": "/var/log/hbase",
+                    "description": "...",
+                    "is_optional": true,
+                    "name": "hbase_log_dir",
+                    "scope": "cluster"
+                },
+                {
+                    "applicable_target": "HBASE",
+                    "config_type": "string",
+                    "default_value": "1024m",
+                    "description": "...",
+                    "is_optional": true,
+                    "name": "hbase_master_heapsize",
+                    "scope": "cluster"
+                },
+                {
+                    "applicable_target": "HBASE",
+                    "config_type": "string",
+                    "default_value": "1024m",
+                    "description": "...",
+                    "is_optional": true,
+                    "name": "hbase_regionserver_heapsize",
                     "scope": "cluster"
                 }
             ]

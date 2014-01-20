@@ -1293,7 +1293,7 @@ class ClusterSpecTest(unittest2.TestCase):
             found_services.append(name)
             self.service_validators[name](service)
 
-        self.assertEqual(12, len(found_services))
+        self.assertEqual(13, len(found_services))
         self.assertIn('HDFS', found_services)
         self.assertIn('MAPREDUCE', found_services)
         self.assertIn('GANGLIA', found_services)
@@ -1306,6 +1306,7 @@ class ClusterSpecTest(unittest2.TestCase):
         self.assertIn('WEBHCAT', found_services)
         self.assertIn('OOZIE', found_services)
         self.assertIn('SQOOP', found_services)
+        self.assertIn('HBASE', found_services)
 
     def _assert_hdfs(self, service):
         self.assertEqual('HDFS', service.name)
@@ -1447,13 +1448,27 @@ class ClusterSpecTest(unittest2.TestCase):
         self.assertEqual(1, len(service.components))
         self.assertEqual('SQOOP', service.components[0].name)
 
+    def _assert_hbase(self, service):
+        self.assertEqual('HBASE', service.name)
+        found_components = {}
+        for component in service.components:
+            found_components[component.name] = component
+
+        self.assertEqual(3, len(found_components))
+        self._assert_component('HBASE_MASTER', 'MASTER', "1",
+                               found_components['HBASE_MASTER'])
+        self._assert_component('HBASE_REGIONSERVER', 'SLAVE', "1+",
+                               found_components['HBASE_REGIONSERVER'])
+        self._assert_component('HBASE_CLIENT', 'CLIENT', "1+",
+                               found_components['HBASE_CLIENT'])
+
     def _assert_component(self, name, comp_type, cardinality, component):
         self.assertEqual(name, component.name)
         self.assertEqual(comp_type, component.type)
         self.assertEqual(cardinality, component.cardinality)
 
     def _assert_configurations(self, configurations):
-        self.assertEqual(8, len(configurations))
+        self.assertEqual(9, len(configurations))
         self.assertIn('global', configurations)
         self.assertIn('core-site', configurations)
         self.assertIn('mapred-site', configurations)
@@ -1462,6 +1477,7 @@ class ClusterSpecTest(unittest2.TestCase):
         self.assertIn('webhcat-site', configurations)
         self.assertIn('hive-site', configurations)
         self.assertIn('oozie-site', configurations)
+        self.assertIn('hbase-site', configurations)
 
     def setUp(self):
         self.service_validators['HDFS'] = self._assert_hdfs
@@ -1476,6 +1492,7 @@ class ClusterSpecTest(unittest2.TestCase):
         self.service_validators['WEBHCAT'] = self._assert_webhcat
         self.service_validators['OOZIE'] = self._assert_oozie
         self.service_validators['SQOOP'] = self._assert_sqoop
+        self.service_validators['HBASE'] = self._assert_hbase
 
 
 class TestNodeGroup:

@@ -17,6 +17,8 @@ import mock
 
 import unittest2
 
+from savanna import exceptions as e
+from savanna.plugins.general import exceptions as ex
 import savanna.plugins.hdp.services as s
 from savanna.tests.unit.plugins.hdp import hdp_test_base
 
@@ -184,6 +186,404 @@ class ServicesTest(unittest2.TestCase):
         self.assertIn('HDFS_CLIENT', components)
         self.assertIn('MAPREDUCE_CLIENT', components)
 
+    @mock.patch("savanna.utils.openstack.nova.get_instance_info",
+                hdp_test_base.get_instance_info)
+    @mock.patch(
+        'savanna.plugins.hdp.services.HdfsService._get_swift_properties',
+        return_value=[])
+    def test_create_hbase_service(self, patched):
+        service = s.create_service('HBASE')
+        self.assertEqual('HBASE', service.name)
+        expected_configs = set(['global', 'core-site', 'hbase-site'])
+        self.assertEqual(expected_configs,
+                         expected_configs & service.configurations)
+        self.assertFalse(service.is_mandatory())
+
+        cluster = self._create_hbase_cluster()
+
+        cluster_spec = hdp_test_base.create_clusterspec()
+        cluster_spec.create_operational_config(cluster, [])
+
+        components = cluster_spec.get_node_groups_containing_component(
+            'HBASE_MASTER')[0].components
+        self.assertIn('HDFS_CLIENT', components)
+
+    @mock.patch("savanna.utils.openstack.nova.get_instance_info",
+                hdp_test_base.get_instance_info)
+    @mock.patch(
+        'savanna.plugins.hdp.services.HdfsService._get_swift_properties',
+        return_value=[])
+    def test_hbase_properties(self, patched):
+        cluster = self._create_hbase_cluster()
+
+        cluster_spec = hdp_test_base.create_clusterspec()
+        cluster_spec.create_operational_config(cluster, [])
+        service = s.create_service('HBASE')
+
+        ui_handlers = {}
+        service.register_user_input_handlers(ui_handlers)
+        ui_handlers['hbase-site/hbase.rootdir'](
+            hdp_test_base.TestUserInput(
+                hdp_test_base.TestUserInputConfig(
+                    '', '', 'hbase-site/hbase.rootdir'),
+                "hdfs://%NN_HOST%:99/some/other/dir"),
+            cluster_spec.configurations)
+        self.assertEqual(
+            "hdfs://%NN_HOST%:99/some/other/dir",
+            cluster_spec.configurations['hbase-site']['hbase.rootdir'])
+        self.assertEqual(
+            "/some/other/dir",
+            cluster_spec.configurations['global']['hbase_hdfs_root_dir'])
+
+        self.assertRaises(
+            e.InvalidDataException,
+            ui_handlers['hbase-site/hbase.rootdir'],
+            hdp_test_base.TestUserInput(
+                hdp_test_base.TestUserInputConfig(
+                    '', '', 'hbase-site/hbase.rootdir'),
+                "badprotocol://%NN_HOST%:99/some/other/dir"),
+            cluster_spec.configurations)
+
+        ui_handlers['hbase-site/hbase.tmp.dir'](
+            hdp_test_base.TestUserInput(
+                hdp_test_base.TestUserInputConfig(
+                    '', '', 'hbase-site/hbase.tmp.dir'),
+                "/some/dir"),
+            cluster_spec.configurations)
+        self.assertEqual(
+            "/some/dir",
+            cluster_spec.configurations['hbase-site']['hbase.tmp.dir'])
+        self.assertEqual(
+            "/some/dir",
+            cluster_spec.configurations['global']['hbase_tmp_dir'])
+        ui_handlers[
+            'hbase-site/hbase.regionserver.global.memstore.upperLimit'](
+                hdp_test_base.TestUserInput(
+                    hdp_test_base.TestUserInputConfig(
+                        '', '', 'hbase-site/hbase.regionserver.global.'
+                            'memstore.upperLimit'),
+                    "111"),
+                cluster_spec.configurations)
+        self.assertEqual(
+            "111",
+            cluster_spec.configurations['hbase-site'][
+            'hbase.regionserver.global.memstore.upperLimit'])
+        self.assertEqual(
+            "111",
+            cluster_spec.configurations['global'][
+            'regionserver_memstore_upperlimit'])
+        ui_handlers[
+            'hbase-site/hbase.hstore.blockingStoreFiles'](
+                hdp_test_base.TestUserInput(
+                    hdp_test_base.TestUserInputConfig(
+                        '', '', 'hbase-site/hbase.hstore.blockingStoreFiles'),
+                    "112"),
+                cluster_spec.configurations)
+        self.assertEqual("112", cluster_spec.configurations['hbase-site'][
+                         'hbase.hstore.blockingStoreFiles'])
+        self.assertEqual("112", cluster_spec.configurations['global'][
+                         'hstore_blockingstorefiles'])
+        ui_handlers[
+            'hbase-site/hbase.hstore.compactionThreshold'](
+                hdp_test_base.TestUserInput(
+                    hdp_test_base.TestUserInputConfig(
+                        '', '', 'hbase-site/hbase.hstore.compactionThreshold'),
+                    "113"),
+                cluster_spec.configurations)
+        self.assertEqual("113", cluster_spec.configurations['hbase-site'][
+                         'hbase.hstore.compactionThreshold'])
+        self.assertEqual("113", cluster_spec.configurations['global'][
+                         'hstore_compactionthreshold'])
+        ui_handlers[
+            'hbase-site/hfile.block.cache.size'](
+                hdp_test_base.TestUserInput(
+                    hdp_test_base.TestUserInputConfig(
+                        '', '', 'hbase-site/hfile.block.cache.size'),
+                    "114"),
+                cluster_spec.configurations)
+        self.assertEqual("114", cluster_spec.configurations['hbase-site'][
+                         'hfile.block.cache.size'])
+        self.assertEqual("114", cluster_spec.configurations['global'][
+                         'hfile_blockcache_size'])
+        ui_handlers[
+            'hbase-site/hbase.hregion.max.filesize'](
+                hdp_test_base.TestUserInput(
+                    hdp_test_base.TestUserInputConfig(
+                        '', '', 'hbase-site/hbase.hregion.max.filesize'),
+                    "115"),
+                cluster_spec.configurations)
+        self.assertEqual("115", cluster_spec.configurations['hbase-site'][
+                         'hbase.hregion.max.filesize'])
+        self.assertEqual("115", cluster_spec.configurations['global'][
+                         'hstorefile_maxsize'])
+        ui_handlers[
+            'hbase-site/hbase.regionserver.handler.count'](
+                hdp_test_base.TestUserInput(
+                    hdp_test_base.TestUserInputConfig(
+                        '', '', 'hbase-site/hbase.regionserver.handler.count'),
+                    "116"),
+                cluster_spec.configurations)
+        self.assertEqual("116", cluster_spec.configurations['hbase-site'][
+                         'hbase.regionserver.handler.count'])
+        self.assertEqual("116", cluster_spec.configurations['global'][
+                         'regionserver_handlers'])
+        ui_handlers[
+            'hbase-site/hbase.hregion.majorcompaction'](
+                hdp_test_base.TestUserInput(
+                    hdp_test_base.TestUserInputConfig(
+                        '', '', 'hbase-site/hbase.hregion.majorcompaction'),
+                    "117"),
+                cluster_spec.configurations)
+        self.assertEqual("117", cluster_spec.configurations['hbase-site'][
+                         'hbase.hregion.majorcompaction'])
+        self.assertEqual("117", cluster_spec.configurations['global'][
+                         'hregion_majorcompaction'])
+        ui_handlers[
+            'hbase-site/hbase.regionserver.global.memstore.lowerLimit'](
+                hdp_test_base.TestUserInput(
+                    hdp_test_base.TestUserInputConfig(
+                        '', '', 'hbase-site/hbase.regionserver.global.'
+                            'memstore.lowerLimit'),
+                    "118"),
+                cluster_spec.configurations)
+        self.assertEqual("118", cluster_spec.configurations['hbase-site'][
+                         'hbase.regionserver.global.memstore.lowerLimit'])
+        self.assertEqual("118", cluster_spec.configurations['global'][
+                         'regionserver_memstore_lowerlimit'])
+        ui_handlers[
+            'hbase-site/hbase.hregion.memstore.block.multiplier'](
+                hdp_test_base.TestUserInput(
+                    hdp_test_base.TestUserInputConfig(
+                        '', '', 'hbase-site/hbase.hregion.memstore.block.'
+                            'multiplier'),
+                    "119"),
+                cluster_spec.configurations)
+        self.assertEqual("119", cluster_spec.configurations['hbase-site'][
+                         'hbase.hregion.memstore.block.multiplier'])
+        self.assertEqual("119", cluster_spec.configurations['global'][
+                         'hregion_blockmultiplier'])
+        ui_handlers[
+            'hbase-site/hbase.hregion.memstore.mslab.enabled'](
+                hdp_test_base.TestUserInput(
+                    hdp_test_base.TestUserInputConfig(
+                        '', '', 'hbase-site/hbase.hregion.memstore.mslab.'
+                            'enabled'),
+                    "false"),
+                cluster_spec.configurations)
+        self.assertEqual("false", cluster_spec.configurations['hbase-site'][
+                         'hbase.hregion.memstore.mslab.enabled'])
+        self.assertEqual("false", cluster_spec.configurations['global'][
+                         'regionserver_memstore_lab'])
+        ui_handlers[
+            'hbase-site/hbase.hregion.memstore.flush.size'](
+                hdp_test_base.TestUserInput(
+                    hdp_test_base.TestUserInputConfig(
+                        '', '', 'hbase-site/hbase.hregion.memstore.flush.'
+                            'size'),
+                    "120"),
+                cluster_spec.configurations)
+        self.assertEqual("120", cluster_spec.configurations['hbase-site'][
+                         'hbase.hregion.memstore.flush.size'])
+        self.assertEqual("120", cluster_spec.configurations['global'][
+                         'hregion_memstoreflushsize'])
+        ui_handlers[
+            'hbase-site/hbase.client.scanner.caching'](
+                hdp_test_base.TestUserInput(
+                    hdp_test_base.TestUserInputConfig(
+                        '', '', 'hbase-site/hbase.client.scanner.caching'),
+                    "121"),
+                cluster_spec.configurations)
+        self.assertEqual("121", cluster_spec.configurations['hbase-site'][
+                         'hbase.client.scanner.caching'])
+        self.assertEqual("121", cluster_spec.configurations['global'][
+                         'client_scannercaching'])
+        ui_handlers[
+            'hbase-site/zookeeper.session.timeout'](
+                hdp_test_base.TestUserInput(
+                    hdp_test_base.TestUserInputConfig(
+                        '', '', 'hbase-site/zookeeper.session.timeout'),
+                    "122"),
+                cluster_spec.configurations)
+        self.assertEqual("122", cluster_spec.configurations['hbase-site'][
+                         'zookeeper.session.timeout'])
+        self.assertEqual("122", cluster_spec.configurations['global'][
+                         'zookeeper_sessiontimeout'])
+        ui_handlers[
+            'hbase-site/hbase.client.keyvalue.maxsize'](
+                hdp_test_base.TestUserInput(
+                    hdp_test_base.TestUserInputConfig(
+                        '', '', 'hbase-site/hbase.client.keyvalue.maxsize'),
+                    "123"),
+                cluster_spec.configurations)
+        self.assertEqual("123", cluster_spec.configurations['hbase-site'][
+                         'hbase.client.keyvalue.maxsize'])
+        self.assertEqual("123", cluster_spec.configurations['global'][
+                         'hfile_max_keyvalue_size'])
+        ui_handlers[
+            'hdfs-site/dfs.support.append'](
+                hdp_test_base.TestUserInput(
+                    hdp_test_base.TestUserInputConfig(
+                        '', '', 'hdfs-site/dfs.support.append'),
+                    "false"),
+                cluster_spec.configurations)
+        self.assertEqual("false", cluster_spec.configurations['hbase-site'][
+                         'dfs.support.append'])
+        self.assertEqual("false", cluster_spec.configurations['hdfs-site'][
+                         'dfs.support.append'])
+        self.assertEqual("false", cluster_spec.configurations['global'][
+                         'hdfs_support_append'])
+        ui_handlers[
+            'hbase-site/dfs.client.read.shortcircuit'](
+                hdp_test_base.TestUserInput(
+                    hdp_test_base.TestUserInputConfig(
+                        '', '', 'hbase-site/dfs.client.read.shortcircuit'),
+                    "false"),
+                cluster_spec.configurations)
+        self.assertEqual("false", cluster_spec.configurations['hbase-site'][
+                         'dfs.client.read.shortcircuit'])
+        self.assertEqual("false", cluster_spec.configurations['global'][
+                         'hdfs_enable_shortcircuit_read'])
+
+    @mock.patch("savanna.utils.openstack.nova.get_instance_info",
+                hdp_test_base.get_instance_info)
+    @mock.patch(
+        'savanna.plugins.hdp.services.HdfsService._get_swift_properties',
+        return_value=[])
+    def test_hbase_validation(self, patched):
+        master_host = hdp_test_base.TestServer(
+            'master.novalocal', 'master', '11111', 3,
+            '111.11.1111', '222.11.1111')
+        master_ng = hdp_test_base.TestNodeGroup(
+            'master', [master_host], ["NAMENODE", "JOBTRACKER",
+                                      "SECONDARY_NAMENODE",
+                                      "TASKTRACKER", "DATANODE",
+                                      "AMBARI_SERVER"])
+        hbase_host = hdp_test_base.TestServer(
+            'hbase.novalocal', 'hbase', '11111', 3,
+            '111.11.1111', '222.11.1111')
+
+        hbase_ng = hdp_test_base.TestNodeGroup(
+            'hbase', [hbase_host], ["HBASE_MASTER"])
+
+        hbase_client_host = hdp_test_base.TestServer(
+            'hbase-client.novalocal', 'hbase-client', '11111', 3,
+            '111.11.1111', '222.11.1111')
+
+        hbase_client_ng = hdp_test_base.TestNodeGroup(
+            'hbase-client', [hbase_client_host], ["HBASE_CLIENT"])
+
+        hbase_slave_host = hdp_test_base.TestServer(
+            'hbase-rs.novalocal', 'hbase-rs', '11111', 3,
+            '111.11.1111', '222.11.1111')
+
+        hbase_slave_ng = hdp_test_base.TestNodeGroup(
+            'hbase-rs', [hbase_slave_host], ["HBASE_REGIONSERVER"])
+
+        cluster = hdp_test_base.TestCluster([master_ng, hbase_client_ng])
+        cluster_spec = hdp_test_base.create_clusterspec()
+
+        # validation should fail due to lack of hbase master
+        self.assertRaises(
+            ex.InvalidComponentCountException,
+            cluster_spec.create_operational_config, cluster, [])
+
+        cluster = hdp_test_base.TestCluster(
+            [master_ng, hbase_client_ng, hbase_slave_ng])
+        cluster_spec = hdp_test_base.create_clusterspec()
+
+        # validation should fail due to lack of hbase master
+
+        self.assertRaises(
+            ex.InvalidComponentCountException,
+            cluster_spec.create_operational_config, cluster, [])
+
+        cluster = hdp_test_base.TestCluster(
+            [master_ng, hbase_client_ng, hbase_ng, hbase_ng])
+        cluster_spec = hdp_test_base.create_clusterspec()
+
+        # validation should succeed with hbase master included
+        cluster_spec.create_operational_config(cluster, [])
+
+        # validation should fail with multiple hbase master components
+        self.assertRaises(
+            ex.InvalidComponentCountException,
+            cluster_spec.create_operational_config, cluster, [])
+
+    @mock.patch("savanna.utils.openstack.nova.get_instance_info",
+                hdp_test_base.get_instance_info)
+    @mock.patch(
+        'savanna.plugins.hdp.services.HdfsService._get_swift_properties',
+        return_value=[])
+    def test_hbase_service_urls(self, patched):
+        master_host = hdp_test_base.TestServer(
+            'master.novalocal', 'master', '11111', 3,
+            '111.11.1111', '222.11.1111')
+        master_ng = hdp_test_base.TestNodeGroup(
+            'master', [master_host], ["NAMENODE", "JOBTRACKER",
+                                      "SECONDARY_NAMENODE",
+                                      "TASKTRACKER", "DATANODE",
+                                      "AMBARI_SERVER"])
+        hbase_host = hdp_test_base.TestServer(
+            'hbase.novalocal', 'hbase', '11111', 3,
+            '222.22.2222', '222.11.1111')
+        hbase_ng = hdp_test_base.TestNodeGroup(
+            'hbase', [hbase_host], ["HBASE_MASTER"])
+
+        cluster = hdp_test_base.TestCluster([master_ng, hbase_ng])
+        cluster_spec = hdp_test_base.create_clusterspec()
+        cluster_spec.create_operational_config(cluster, [])
+        service = s.create_service('HBASE')
+
+        url_info = {}
+        service.register_service_urls(cluster_spec, url_info)
+        self.assertEqual(1, len(url_info))
+        self.assertEqual(6, len(url_info['HBase']))
+        self.assertEqual('http://222.22.2222:60010/master-status',
+                         url_info['HBase']['Web UI'])
+        self.assertEqual('http://222.22.2222:60010/logs',
+                         url_info['HBase']['Logs'])
+        self.assertEqual('http://222.22.2222:60010/zk.jsp',
+                         url_info['HBase']['Zookeeper Info'])
+        self.assertEqual('http://222.22.2222:60010/jmx',
+                         url_info['HBase']['JMX'])
+        self.assertEqual('http://222.22.2222:60010/dump',
+                         url_info['HBase']['Debug Dump'])
+        self.assertEqual('http://222.22.2222:60010/stacks',
+                         url_info['HBase']['Thread Stacks'])
+
+    @mock.patch("savanna.utils.openstack.nova.get_instance_info",
+                hdp_test_base.get_instance_info)
+    @mock.patch(
+        'savanna.plugins.hdp.services.HdfsService._get_swift_properties',
+        return_value=[])
+    def test_hbase_replace_tokens(self, patched):
+        master_host = hdp_test_base.TestServer(
+            'master.novalocal', 'master', '11111', 3,
+            '111.11.1111', '222.11.1111')
+        master_ng = hdp_test_base.TestNodeGroup(
+            'master', [master_host], ["NAMENODE", "JOBTRACKER",
+                                      "SECONDARY_NAMENODE",
+                                      "TASKTRACKER", "DATANODE",
+                                      "AMBARI_SERVER"])
+        hbase_host = hdp_test_base.TestServer(
+            'hbase.novalocal', 'hbase', '11111', 3,
+            '222.22.2222', '222.11.1111')
+        hbase_ng = hdp_test_base.TestNodeGroup(
+            'hbase', [hbase_host], ["HBASE_MASTER"])
+
+        cluster = hdp_test_base.TestCluster([master_ng, hbase_ng])
+        cluster_spec = hdp_test_base.create_clusterspec()
+        cluster_spec.create_operational_config(cluster, [])
+        service = s.create_service('HBASE')
+        service.finalize_configuration(cluster_spec)
+
+        self.assertEqual("hdfs://master.novalocal:8020/apps/hbase/data",
+                         cluster_spec.configurations['hbase-site'][
+                         'hbase.rootdir'])
+        self.assertEqual("hbase.novalocal",
+                         cluster_spec.configurations['hbase-site'][
+                         'hbase.zookeeper.quorum'])
+
     def test_get_storage_paths(self):
         service = s.create_service('AMBARI')
         ng1 = hdp_test_base.TestNodeGroup(None, None, None)
@@ -208,3 +608,18 @@ class ServicesTest(unittest2.TestCase):
 
         paths = service._get_common_paths([ng1, ng2, ng3])
         self.assertEqual(['/volume/disk1'], paths)
+
+    def _create_hbase_cluster(self):
+        master_host = hdp_test_base.TestServer(
+            'master.novalocal', 'master', '11111', 3,
+            '111.11.1111', '222.11.1111')
+        master_ng = hdp_test_base.TestNodeGroup(
+            'master', [master_host], ["NAMENODE", "JOBTRACKER",
+                                      "SECONDARY_NAMENODE", "TASKTRACKER",
+                                      "DATANODE", "AMBARI_SERVER"])
+        hbase_host = hdp_test_base.TestServer(
+            'hbase.novalocal', 'hbase', '11111', 3,
+            '111.11.1111', '222.11.1111')
+        hbase_ng = hdp_test_base.TestNodeGroup(
+            'hbase', [hbase_host], ["HBASE_MASTER"])
+        return hdp_test_base.TestCluster([master_ng, hbase_ng])
