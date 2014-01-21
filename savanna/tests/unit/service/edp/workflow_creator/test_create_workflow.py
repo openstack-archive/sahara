@@ -71,11 +71,11 @@ class TestPigWorkflowCreator(unittest2.TestCase):
 
         pig_script = 'script.pig'
         param_dict = {'param1': 'param_value1'}
-        arg_dict = {'arg1': 'arg_value1', 'arg2': 'arg_value2'}
+        args = ['arg_value1', 'arg_value2']
 
         pig_workflow.build_workflow_xml(pig_script, self.prepare,
                                         self.job_xml, self.configuration,
-                                        param_dict, arg_dict,
+                                        param_dict, args,
                                         self.files, self.archives)
         res = pig_workflow.get_built_workflow_xml()
         pig_action = """    <pig>
@@ -99,8 +99,8 @@ class TestPigWorkflowCreator(unittest2.TestCase):
       </configuration>
       <script>script.pig</script>
       <param>param1=param_value1</param>
-      <argument>arg1=arg_value1</argument>
-      <argument>arg2=arg_value2</argument>
+      <argument>arg_value1</argument>
+      <argument>arg_value2</argument>
       <file>file1</file>
       <file>file2</file>
       <archive>arch1</archive>

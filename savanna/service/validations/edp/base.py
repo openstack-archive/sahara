@@ -24,7 +24,6 @@ data_source_type = {
     "enum": ["swift"]
 }
 
-
 job_configs = {
     "type": "object",
     "properties": {
@@ -34,25 +33,14 @@ job_configs = {
         "params": {
             "type": "simple_config",
         },
+        # TODO(tmckay): args should be only an array when bug #1269968
+        # is fixed on the UI side (tracked in bug #1270882)
         "args": {
-            "type": "simple_config",
-        }
-    },
-    "additionalProperties": False,
-}
-
-
-java_job_configs = {
-    "type": "object",
-    "properties": {
-        "configs": {
-            "type": "simple_config",
-        },
-        "args": {
-            "type": "array",
-            "items": {
-                "type": "string",
-            }
+            "oneOf": [
+                {"type": "array",
+                 "items": {"type": "string"}},
+                {"type": "simple_config"}
+            ]
         }
     },
     "additionalProperties": False,

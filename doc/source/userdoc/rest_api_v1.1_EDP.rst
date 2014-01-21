@@ -1069,7 +1069,7 @@ This REST call is used just for hints and doesn't force the user to apply any of
                         "description": ""
                     }
                 ],
-                "args": {}
+                "args": []
             }
         }
 
@@ -1102,10 +1102,7 @@ This operation returns the created Job Execution object.
                     "mapred.map.tasks": "1",
                     "mapred.reduce.tasks": "1"
                 },
-                "args": {
-                    "arg1": "val1",
-                    "arg2": "val2"
-                },
+                "args": ["arg1", "arg2"],
                 "params": {
                     "param2": "value2",
                     "param1": "value1"
@@ -1138,10 +1135,7 @@ This operation returns the created Job Execution object.
                         "mapred.map.tasks": "1",
                         "mapred.reduce.tasks": "1"
                     },
-                    "args": {
-                        "arg1": "val1",
-                        "arg2": "val2"
-                    },
+                    "args": ["arg1", "arg2"],
                     "params": {
                         "param2": "value2",
                         "param1": "value1"

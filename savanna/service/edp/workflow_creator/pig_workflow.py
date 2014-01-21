@@ -24,7 +24,7 @@ class PigWorkflowCreator(base_workflow.OozieWorkflowCreator):
 
     def build_workflow_xml(self, script_name, prepare={},
                            job_xml=None, configuration=None, params={},
-                           arguments={}, files=[], archives=[]):
+                           arguments=[], files=[], archives=[]):
 
         for k, v in prepare.items():
             self._add_to_prepare_element(k, v)
@@ -36,7 +36,8 @@ class PigWorkflowCreator(base_workflow.OozieWorkflowCreator):
                                   'script', script_name)
 
         x.add_equal_separated_dict(self.doc, self.tag_name, 'param', params)
-        x.add_equal_separated_dict(self.doc, self.tag_name, 'argument',
-                                   arguments)
+
+        for arg in arguments:
+            x.add_text_element_to_tag(self.doc, self.tag_name, 'argument', arg)
 
         self._add_files_and_archives(files, archives)

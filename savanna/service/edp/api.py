@@ -35,6 +35,12 @@ def execute_job(job_id, data):
     cluster_id = data['cluster_id']
     configs = data.get('job_configs', {})
 
+    # Squash args if it is a dict.
+    # TODO(tmckay): remove this after bug #1269968 is fixed on the UI side
+    # (tracked in bug #1270882)
+    if "args" in configs and type(configs["args"]) is dict:
+        configs["args"] = []
+
     # Not in Java job types but present for all others
     input_id = data.get('input_id', None)
     output_id = data.get('output_id', None)
