@@ -6,8 +6,9 @@ Vanilla plugin is a reference plugin implementation which allows to operate with
 For cluster provisioning prepared images should be used. They already have Apache Hadoop 1.2.1 installed.
 Here you can find prepared images:
 
-* http://savanna-files.mirantis.com/savanna-0.3-vanilla-1.2.1-ubuntu-13.04.qcow2
-* http://savanna-files.mirantis.com/savanna-0.3-vanilla-1.2.1-fedora-19.qcow2
+* http://savanna-files.mirantis.com/savanna-icehouse-vanilla-1.2.1-ubuntu-13.10.qcow2
+* http://savanna-files.mirantis.com/savanna-icehouse-vanilla-1.2.1-fedora-19.qcow2
+* http://savanna-files.mirantis.com/savanna-icehouse-vanilla-1.2.1-centos-6.4.qcow2
 
 Besides, you may build images by yourself using :doc:`diskimagebuilder`.
 Keep in mind that if you want to use "Swift Integration" feature ( :doc:`features`),
@@ -38,10 +39,10 @@ the cluster topology requested by user is verified for consistency.
 
 Currently there are the following limitations in cluster topology for Vanilla plugin:
 
-* If namenode and jobtracker are on one the same machine, all cluster workers must run both datanode and tasktracker
-  We are planning to remove the restriction according https://blueprints.launchpad.net/savanna/+spec/get-rid-of-slaves-file
-
-* Cluster should contain only one namenode and only one jobtracker
+* Cluster should contain
+    * exactly one namenode
+    * at most one jobtracker
+    * at most one oozie
 
 * Cluster cannot be created if it contains worker processes without containing corresponding master processes. E.g. it cannot
   contain tasktracker if there is no jobtracker
