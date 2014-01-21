@@ -150,11 +150,16 @@ class ClusterTemplate(object):
         for node_process in ng.node_processes:
             aa_names += aa_groups.get(node_process) or []
 
+        # Check if cluster contains user key-pair and include it to template.
+        key_name = ''
+        if self.cluster.user_keypair_id:
+            key_name = '"key_name" : "%s",' % self.cluster.user_keypair_id
+
         fields = {'instance_name': inst_name,
                   'flavor_id': ng.flavor_id,
                   'image_id': ng.get_image_id(),
                   'network_interfaces': nets,
-                  'key_name': self.cluster.user_keypair_id,
+                  'key_name': key_name,
                   'userdata': _prepare_userdata(
                       self.node_groups_extra[ng.id]['userdata']),
                   'scheduler_hints': _get_anti_affinity_scheduler_hints(

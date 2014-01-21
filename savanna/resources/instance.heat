@@ -5,7 +5,7 @@
                 "flavor" : "%(flavor_id)s",
                 "image" : "%(image_id)s",
                 %(network_interfaces)s
-                "key_name" : "%(key_name)s",
+                %(key_name)s
                 %(scheduler_hints)s
                 "user_data": {
                     "Fn::Join" : ["\n", [%(userdata)s]]
