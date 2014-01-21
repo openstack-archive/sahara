@@ -167,3 +167,48 @@ Hadoop versions after 1.2.0 support four-layer topology
 set ``enable_hypervisor_awareness`` option to ``True`` in Savanna configuration
 file. In this case Savanna will add compute node ID as a second level of
 topology for Virtual Machines.
+
+Heat Integration
+----------------
+
+Savanna may use `OpenStack Orchestration engine <https://wiki.openstack.org/wiki/Heat>`_ (aka Heat) to provision nodes for Hadoop cluster.
+To make Savanna work with Heat the following steps are required:
+
+* Your OpenStack installation must have 'orchestration' service up and running
+* Savanna must contain the following configuration parameter in *savanna.conf*:
+
+.. sourcecode:: cfg
+
+    # An engine which will be used to provision infrastructure for Hadoop cluster. (string value)
+    infrastructure_engine=heat
+
+
+The following features are supported in the new Heat engine:
+
++-----------------------------------------+-------------------------+-----------------------------------------+
+| Feature                                 | Heat engine             | Known issues                            |
++=========================================+=========================+=========================================+
+| Vanilla plugin provisioning             | Implemented             |                                         |
++-----------------------------------------+-------------------------+-----------------------------------------+
+| HDP plugin provisioning                 | TBD                     | https://launchpad.net/bugs/1267817      |
++-----------------------------------------+-------------------------+-----------------------------------------+
+| IDH plugin provisioning                 | TBD                     |                                         |
++-----------------------------------------+-------------------------+-----------------------------------------+
+| Cluster scaling                         | Implemented             |                                         |
++-----------------------------------------+-------------------------+-----------------------------------------+
+| Cluster rollback                        | Implemented             | https://launchpad.net/bugs/1261725      |
++-----------------------------------------+-------------------------+-----------------------------------------+
+| Volumes attachments                     | Implemented             |                                         |
++-----------------------------------------+-------------------------+-----------------------------------------+
+| Hadoop and Swift integration            | Not affected            |                                         |
++-----------------------------------------+-------------------------+-----------------------------------------+
+| Anti-affinity                           | Implemented             | https://launchpad.net/bugs/1268610      |
++-----------------------------------------+-------------------------+-----------------------------------------+
+| Floating IP Management                  | Implemented             |                                         |
++-----------------------------------------+-------------------------+-----------------------------------------+
+| Neutron support                         | Implemented             |                                         |
++-----------------------------------------+-------------------------+-----------------------------------------+
+| Nova Network support                    | TBD                     | https://launchpad.net/bugs/1259176      |
++-----------------------------------------+-------------------------+-----------------------------------------+
+| Elastic Data Processing                 | Not affected            |                                         |
++-----------------------------------------+-------------------------+-----------------------------------------+
