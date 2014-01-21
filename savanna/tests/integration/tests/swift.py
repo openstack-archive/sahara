@@ -20,17 +20,13 @@ from savanna.tests.integration.tests import base
 
 
 class SwiftTest(base.ITestCase):
-
     @base.skip_test(
         'SKIP_SWIFT_TEST',
         message='Test for check of Swift availability was skipped.')
     def _check_swift_availability(self, cluster_info):
-
         plugin_config = cluster_info['plugin_config']
-
         # Make unique name of Swift container during Swift testing
-        swift_container_name = 'Swift-test-' + str(uuid.uuid4())
-
+        swift_container_name = 'Swift-test-' + str(uuid.uuid4())[:8]
         extra_script_parameters = {
             'OS_TENANT_NAME': self.common_config.OS_TENANT_NAME,
             'OS_USERNAME': self.common_config.OS_USERNAME,
@@ -38,39 +34,25 @@ class SwiftTest(base.ITestCase):
             'HADOOP_USER': plugin_config.HADOOP_USER,
             'SWIFT_CONTAINER_NAME': swift_container_name
         }
-
         namenode_ip = cluster_info['node_info']['namenode_ip']
-
-        self.open_ssh_connection(namenode_ip, plugin_config.NODE_USERNAME)
-
+        self.open_ssh_connection(namenode_ip, plugin_config.SSH_USERNAME)
         try:
-
             self.transfer_helper_script_to_node(
                 'swift_test_script.sh', parameter_list=extra_script_parameters
             )
 
         except Exception as e:
-
             with excutils.save_and_reraise_exception():
-
                 print(str(e))
-
         swift = self.connect_to_swift()
-
         swift.put_container(swift_container_name)
-
         try:
-
             self.execute_command('./script.sh')
 
         except Exception as e:
-
             with excutils.save_and_reraise_exception():
-
                 print(str(e))
 
         finally:
-
             self.delete_swift_container(swift, swift_container_name)
-
         self.close_ssh_connection()
