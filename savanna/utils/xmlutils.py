@@ -113,7 +113,8 @@ def add_property_to_configuration(doc, name, value):
 def add_properties_to_configuration(doc, parent_for_conf, configs):
     get_and_create_if_not_exist(doc, parent_for_conf, 'configuration')
     for n, v in configs.items():
-        add_property_to_configuration(doc, n, v)
+        if n:
+            add_property_to_configuration(doc, n, v)
 
 
 def add_child(doc, parent, tag_to_add):
@@ -147,8 +148,9 @@ def add_text_element_to_element(doc, parent, element, value):
 
 def add_equal_separated_dict(doc, parent_tag, each_elem_tag, value):
     for k, v in value.items():
-        add_text_element_to_tag(doc, parent_tag, each_elem_tag,
-                                "%s=%s" % (k, v))
+        if k:
+            add_text_element_to_tag(doc, parent_tag, each_elem_tag,
+                                    "%s=%s" % (k, v))
 
 
 def add_tagged_list(doc, parent_tag, each_elem_tag, values):
