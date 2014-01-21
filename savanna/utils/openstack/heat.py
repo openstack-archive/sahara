@@ -55,6 +55,16 @@ def _get_volume_attach_name(inst_name, volume_idx):
     return '%s-volume-attachment-%i' % (inst_name, volume_idx)
 
 
+def _get_anti_affinity_scheduler_hints(instances_names):
+    if not instances_names:
+        return ''
+
+    aa_list = []
+    for instances_name in set(instances_names):
+        aa_list.append({"Ref": instances_name})
+    return '"scheduler_hints" : %s,' % json.dumps({"different_host": aa_list})
+
+
 def _load_template(template_name, fields):
     template_file = f.get_file_text('resources/%s' % template_name)
     return template_file.rstrip() % fields
@@ -70,36 +80,24 @@ def _prepare_userdata(userdata):
 
 
 class ClusterTemplate(object):
-    def __init__(self, cluster_name, fixed_net_id, user_keypair_id):
-        self.cluster_name = cluster_name
-        self.fixed_net_id = fixed_net_id
-        self.user_keypair_id = user_keypair_id
-        self.node_groups = {}
+    def __init__(self, cluster):
+        self.cluster = cluster
+        self.node_groups_extra = {}
 
-    def add_node_group(self, node_group_name, node_count, flavor_id, image_id,
-                       userdata, floating_net_id, volumes_per_node,
-                       volumes_size):
-
-        self.node_groups[node_group_name] = {
+    def add_node_group_extra(self, node_group_id, node_count, userdata):
+        self.node_groups_extra[node_group_id] = {
             'node_count': node_count,
-            'flavor_id': flavor_id,
-            'image_id': image_id,
-            'userdata': userdata,
-            'floating_net_id': floating_net_id,
-            'volumes_per_node': volumes_per_node,
-            'volumes_size': volumes_size}
+            'userdata': userdata
+        }
 
     # Consider using a single Jinja template for all this
     def instantiate(self, update_existing):
-        # TODO(dmitryme): support anti-affinity
-
         main_tmpl = _load_template('main.heat',
                                    {'resources': self._serialize_resources()})
-
         heat = client()
 
         kwargs = {
-            'stack_name': self.cluster_name,
+            'stack_name': self.cluster.name,
             'timeout_mins': 180,
             'disable_rollback': False,
             'parameters': {},
@@ -109,28 +107,29 @@ class ClusterTemplate(object):
             heat.stacks.create(**kwargs)
         else:
             for stack in heat.stacks.list():
-                if stack.stack_name == self.cluster_name:
+                if stack.stack_name == self.cluster.name:
                     stack.update(**kwargs)
                     break
 
         for stack in heat.stacks.list():
-            if stack.stack_name == self.cluster_name:
+            if stack.stack_name == self.cluster.name:
                 return ClusterStack(self, stack)
 
         raise RuntimeError('Failed to find just created stack %s' %
-                           self.cluster_name)
+                           self.cluster.name)
 
     def _serialize_resources(self):
         resources = []
+        aa_groups = {}
 
-        for name, props in self.node_groups.iteritems():
-            for idx in range(0, props['node_count']):
-                resources.extend(self._serialize_instance(name, props, idx))
+        for ng in self.cluster.node_groups:
+            for idx in range(0, self.node_groups_extra[ng.id]['node_count']):
+                resources.extend(self._serialize_instance(ng, idx, aa_groups))
 
         return ',\n'.join(resources)
 
-    def _serialize_instance(self, ng_name, ng_props, idx):
-        inst_name = _get_inst_name(self.cluster_name, ng_name, idx)
+    def _serialize_instance(self, ng, idx, aa_groups):
+        inst_name = _get_inst_name(self.cluster.name, ng.name, idx)
 
         # TODO(dmitryme): support floating IPs for nova-network without
         # auto-assignment
@@ -138,27 +137,39 @@ class ClusterTemplate(object):
         nets = ''
         if CONF.use_neutron:
             port_name = _get_port_name(inst_name)
-            yield self._serialize_port(port_name, self.fixed_net_id)
+            yield self._serialize_port(port_name,
+                                       self.cluster.neutron_management_network)
 
-            #nets = '"NetworkInterfaces" : [ { "Ref" : "%s" } ],' % port_name
             nets = '"networks" : [{ "port" : { "Ref" : "%s" }}],' % port_name
 
-            if ng_props['floating_net_id']:
+            if ng.floating_ip_pool:
                 yield self._serialize_floating(inst_name, port_name,
-                                               ng_props['floating_net_id'])
+                                               ng.floating_ip_pool)
+
+        aa_names = []
+        for node_process in ng.node_processes:
+            aa_names += aa_groups.get(node_process) or []
 
         fields = {'instance_name': inst_name,
-                  'flavor_id': ng_props['flavor_id'],
-                  'image_id': ng_props['image_id'],
+                  'flavor_id': ng.flavor_id,
+                  'image_id': ng.get_image_id(),
                   'network_interfaces': nets,
-                  'key_name': self.user_keypair_id,
-                  'userdata': _prepare_userdata(ng_props['userdata'])}
+                  'key_name': self.cluster.user_keypair_id,
+                  'userdata': _prepare_userdata(
+                      self.node_groups_extra[ng.id]['userdata']),
+                  'scheduler_hints': _get_anti_affinity_scheduler_hints(
+                      aa_names)}
+
+        for node_process in ng.node_processes:
+            if node_process in self.cluster.anti_affinity:
+                aa_group_names = aa_groups.get(node_process, [])
+                aa_group_names.append(inst_name)
+                aa_groups[node_process] = aa_group_names
 
         yield _load_template('instance.heat', fields)
 
-        for idx in range(0, ng_props['volumes_per_node']):
-            yield self._serialize_volume(inst_name, idx,
-                                         ng_props['volumes_size'])
+        for idx in range(0, ng.volumes_per_node):
+            yield self._serialize_volume(inst_name, idx, ng.volumes_size)
 
     def _serialize_port(self, port_name, fixed_net_id):
         fields = {'port_name': port_name,
@@ -194,14 +205,14 @@ class ClusterStack(object):
             time.sleep(1)
             self.heat_stack.get()
 
-    def get_node_group_instances(self, node_group_name):
+    def get_node_group_instances(self, node_group):
         insts = []
 
-        count = self.tmpl.node_groups[node_group_name]['node_count']
+        count = self.tmpl.node_groups_extra[node_group.id]['node_count']
 
         heat = client()
         for i in range(0, count):
-            name = _get_inst_name(self.tmpl.cluster_name, node_group_name, i)
+            name = _get_inst_name(self.tmpl.cluster.name, node_group.name, i)
             res = heat.resources.get(self.heat_stack.id, name)
             insts.append((name, res.physical_resource_id))
 

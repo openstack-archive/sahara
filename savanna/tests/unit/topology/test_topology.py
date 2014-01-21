@@ -107,7 +107,7 @@ class TopologyTestCase(unittest2.TestCase):
         ng2.name = "2"
         ng2.instances = [i3]
 
-        cluster = o.Cluster
+        cluster = o.Cluster()
         cluster.node_groups = [ng1, ng2]
 
         top = th.generate_topology_map(cluster, False)
