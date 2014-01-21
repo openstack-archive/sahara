@@ -46,9 +46,6 @@ idh_repo_password=
 idh_repo_proxy=
 firewall_selinux_setting=1"""
 
-SWIFT_LIB_URL = \
-    'http://savanna-files.mirantis.com/hadoop-swift/hadoop-swift-latest.jar'
-
 
 def install_manager(cluster):
     LOG.info("Starting Install Manager Process")
@@ -164,9 +161,12 @@ def configure_os_from_instances(cluster, instances):
             swift_enable = c_helper.get_config_value(
                 cluster.cluster_configs.get('general'), c_helper.ENABLE_SWIFT)
             if swift_enable:
+                hadoop_swiftfs_jar_url = c_helper.get_config_value(
+                    cluster.cluster_configs.get('general'),
+                    c_helper.HADOOP_SWIFTFS_JAR_URL)
                 swift_lib_path = '/usr/lib/hadoop/lib/hadoop-swift-latest.jar'
                 cmd = ('sudo curl \'%s\' -o %s --create-dirs'
-                       % (SWIFT_LIB_URL, swift_lib_path))
+                       % (hadoop_swiftfs_jar_url, swift_lib_path))
                 remote.execute_command(cmd)
 
 
