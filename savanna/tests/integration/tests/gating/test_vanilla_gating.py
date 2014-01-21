@@ -221,9 +221,14 @@ class VanillaGatingTest(cluster_configs.ClusterConfigTest, edp.EDPTest,
 #----------------------------------EDP TESTING---------------------------------
 
         path = 'savanna/tests/integration/tests/resources/'
-        job_data = open(path + 'edp-job.pig').read()
-        lib_data = open(path + 'edp-lib.jar').read()
-        job_jar_data = open(path + 'edp-job.jar').read()
+        pig_job_data = open(path + 'edp-job.pig').read()
+        pig_lib_data = open(path + 'edp-lib.jar').read()
+        mapreduce_jar_data = open(path + 'edp-mapreduce.jar').read()
+
+        # This is a modified version of WordCount that takes swift configs
+        java_lib_data = open(path + 'edp-java.jar').read()
+        java_exec_data = {'main_class': 'org.apache.hadoop.examples.WordCount'}
+
         configs = {
             "configs": {
             "mapred.mapper.class": "org.apache.oozie.example.SampleMapper",
@@ -231,10 +236,15 @@ class VanillaGatingTest(cluster_configs.ClusterConfigTest, edp.EDPTest,
             }
         }
         try:
-            self._edp_testing('Pig', [{'pig': job_data}], [{'jar': lib_data}])
+            self._edp_testing('Pig', [{'pig': pig_job_data}],
+                              [{'jar': pig_lib_data}])
             self._edp_testing(
-                'MapReduce', [], [{'jar': job_jar_data}], configs
+                'MapReduce', [], [{'jar': mapreduce_jar_data}], configs
             )
+            self._edp_testing('Java', [],
+                              lib_data_list=[{'jar': java_lib_data}],
+                              pass_input_output_args=True,
+                              job_exec_data=java_exec_data)
 
         except Exception as e:
             with excutils.save_and_reraise_exception():
