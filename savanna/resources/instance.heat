@@ -1,6 +1,7 @@
         "%(instance_name)s" : {
             "Type" : "OS::Nova::Server",
             "Properties" : {
+                "name" : "%(instance_name)s",
                 "flavor" : "%(flavor_id)s",
                 "image" : "%(image_id)s",
                 %(network_interfaces)s
