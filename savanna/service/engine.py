@@ -97,16 +97,6 @@ class Engine:
             if not g.check_cluster_exists(instance.node_group.cluster):
                 return
 
-    def _generate_etc_hosts(self, cluster):
-        hosts = "127.0.0.1 localhost\n"
-        for node_group in cluster.node_groups:
-            for instance in node_group.instances:
-                hosts += "%s %s %s\n" % (instance.internal_ip,
-                                         instance.fqdn(),
-                                         instance.hostname())
-
-        return hosts
-
     def _configure_instances(self, cluster):
         """Configure active instances.
 
@@ -114,7 +104,7 @@ class Engine:
         * setup passwordless login
         * etc.
         """
-        hosts_file = self._generate_etc_hosts(cluster)
+        hosts_file = g.generate_etc_hosts(cluster)
 
         with context.ThreadGroup() as tg:
             for node_group in cluster.node_groups:

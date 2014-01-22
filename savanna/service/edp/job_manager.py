@@ -116,6 +116,10 @@ def run_job(job_execution):
     #TODO(nprivalova): should be removed after all features implemented
     validate(input_source, output_source, job)
 
+    for data_source in [input_source, output_source]:
+        if data_source and data_source.type == 'hdfs':
+            h.configure_cluster_for_hdfs(cluster, data_source)
+
     plugin = plugin_base.PLUGINS.get_plugin(cluster.plugin_name)
     hdfs_user = plugin.get_hdfs_user()
     wf_dir = create_workflow_dir(u.get_jobtracker(cluster), job, hdfs_user)
@@ -209,8 +213,5 @@ def _append_slash_if_needed(path):
 #TODO(nprivalova): this validation should be removed after implementing
 #  all features
 def validate(input_data, output_data, job):
-    if (input_data and input_data.type != 'swift') or\
-       (output_data and output_data.type != 'swift'):
-        raise RuntimeError
     if job.type not in ['Pig', 'MapReduce', 'Hive', 'Java', 'Jar']:
         raise RuntimeError

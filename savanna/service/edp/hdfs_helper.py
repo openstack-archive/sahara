@@ -13,6 +13,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from six.moves.urllib import parse as urlparse
+
+from savanna import conductor as c
+from savanna import context
+from savanna.plugins.general import utils as u
+from savanna.utils import general as g
+
+conductor = c.API
+
 
 def put_file_to_hdfs(r, file, file_name, path, hdfs_user):
     r.write_file_to('/tmp/%s' % file_name, file)
@@ -33,3 +42,34 @@ def move_from_local(r, source, target, hdfs_user):
 def create_dir(r, dir_name, hdfs_user):
     r.execute_command(
         'sudo su - -c "hadoop dfs -mkdir %s" %s' % (dir_name, hdfs_user))
+
+
+def _get_cluster_hosts_information(host, cluster):
+    for c in conductor.cluster_get_all(context.ctx()):
+        if c.id == cluster.id:
+            continue
+
+        for i in u.get_instances(c):
+            if i.instance_name == host:
+                return g.generate_etc_hosts(c)
+
+    return None
+
+
+def configure_cluster_for_hdfs(cluster, data_source):
+    host = urlparse.urlparse(data_source.url).hostname
+
+    etc_hosts_information = _get_cluster_hosts_information(host, cluster)
+    if etc_hosts_information is None:
+        # Ip address hasn't been resolved, the last chance is for VM itself
+        return
+
+    create_etc_host = 'sudo "cat /tmp/etc-hosts-update '
+    create_etc_host += '/etc/hosts > /tmp/etc-hosts"'
+    copy_etc_host = 'sudo "cat /tmp/etc-hosts > /etc/hosts"'
+
+    for inst in u.get_instances(cluster):
+        with inst.remote as r:
+            r.write_file_to('/tmp/etc-hosts-update', etc_hosts_information)
+            r.execute_command(create_etc_host)
+            r.execute_command(copy_etc_host)
