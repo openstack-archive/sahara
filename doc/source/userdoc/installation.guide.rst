@@ -99,7 +99,14 @@ To install into a virtual environment
 
     check each option in savanna-venv/etc/savanna.conf, and make necessary changes
 
-5. To start Savanna call:
+5. Create database schema:
+
+.. sourcecode:: console
+
+    $ savanna-venv/bin/python savanna-venv/bin/savanna-db-manage --config-file savanna-venv/etc/savanna.conf upgrade head
+..
+
+6. To start Savanna call:
 
 .. sourcecode:: console
 

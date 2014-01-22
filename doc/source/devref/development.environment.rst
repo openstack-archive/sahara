@@ -30,21 +30,21 @@ On OS X Systems:
 .. sourcecode:: console
 
     # we actually need pip, which is part of python package
-    $ brew install python
+    $ brew install python mysql postgresql
     $ pip install virtualenv tox
 
 On Ubuntu:
 
 .. sourcecode:: console
 
-    $ sudo apt-get install git-core python-dev python-virtualenv gcc
+    $ sudo apt-get install git-core python-dev python-virtualenv gcc libpq-dev libmysqlclient-dev
     $ sudo pip install tox
 
 On Fedora-based distributions (e.g., Fedora/RHEL/CentOS/Scientific Linux):
 
 .. sourcecode:: console
 
-    $ sudo yum install git-core python-devel python-virtualenv gcc
+    $ sudo yum install git-core python-devel python-virtualenv gcc python-pip mariadb-devel postgresql-devel
     $ sudo pip install tox
 
 2. Grab the code from GitHub:
@@ -77,7 +77,13 @@ also specify ``use_namespaces = True``.
 
     Config file can be specified for ``savanna-api`` command using ``--config-file`` flag.
 
-6. To start Savanna call:
+6. Create database schema:
+
+.. sourcecode:: console
+
+    $ tox -evenv -- savanna-db-manage --config-file etc/savanna/savanna.conf upgrade head
+
+7. To start Savanna call:
 
 .. sourcecode:: console
 
