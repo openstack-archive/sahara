@@ -50,8 +50,10 @@ class HeatEngine(e.Engine):
 
             launcher.launch_instances(ctx, cluster, target_count)
         except Exception as ex:
-            LOG.warn("Can't start cluster '%s' (reason: %s)", cluster.name, ex)
             with excutils.save_and_reraise_exception():
+                self._log_operation_exception(
+                    "Can't start cluster '%s' (reason: %s)", cluster, ex)
+
                 cluster = conductor.cluster_update(
                     ctx, cluster, {"status": "Error",
                                    "status_description": str(ex)})
@@ -80,8 +82,10 @@ class HeatEngine(e.Engine):
         try:
             launcher.launch_instances(ctx, cluster, target_count)
         except Exception as ex:
-            LOG.warn("Can't scale cluster '%s' (reason: %s)", cluster.name, ex)
             with excutils.save_and_reraise_exception():
+                self._log_operation_exception(
+                    "Can't scale cluster '%s' (reason: %s)", cluster, ex)
+
                 cluster = conductor.cluster_get(ctx, cluster)
 
                 try:
