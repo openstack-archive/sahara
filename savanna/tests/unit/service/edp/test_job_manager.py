@@ -129,6 +129,70 @@ class TestJobManager(models_test_base.DbTestCase):
 
         self.assertIn("<script>script.pig</script>", res)
 
+    @mock.patch('savanna.conductor.API.job_binary_get')
+    def test_build_workflow_swift_configs(self, job_binary):
+
+        # Test that swift configs come from either input or output data sources
+        job, job_exec = _create_all_stack('Pig')
+        job_binary.return_value = {"name": "script.pig"}
+
+        input_data = _create_data_source('swift://ex.savanna/i')
+        output_data = _create_data_source('hdfs://user/hadoop/out')
+
+        creator = workflow_factory.get_creator(job)
+        res = creator.get_workflow_xml(job_exec,
+                                       input_data, output_data)
+
+        self.assertIn("""
+      <configuration>
+        <property>
+          <name>fs.swift.service.savanna.password</name>
+          <value>admin1</value>
+        </property>
+        <property>
+          <name>fs.swift.service.savanna.username</name>
+          <value>admin</value>
+        </property>
+      </configuration>""", res)
+
+        input_data = _create_data_source('hdfs://user/hadoop/in')
+        output_data = _create_data_source('swift://ex.savanna/o')
+
+        creator = workflow_factory.get_creator(job)
+
+        res = creator.get_workflow_xml(job_exec,
+                                       input_data, output_data)
+
+        self.assertIn("""
+      <configuration>
+        <property>
+          <name>fs.swift.service.savanna.password</name>
+          <value>admin1</value>
+        </property>
+        <property>
+          <name>fs.swift.service.savanna.username</name>
+          <value>admin</value>
+        </property>
+      </configuration>""", res)
+
+        job, job_exec = _create_all_stack('Pig', configs={'configs':
+                                                          {'dummy': 'value'}})
+        input_data = _create_data_source('hdfs://user/hadoop/in')
+        output_data = _create_data_source('hdfs://user/hadoop/out')
+
+        creator = workflow_factory.get_creator(job)
+
+        res = creator.get_workflow_xml(job_exec,
+                                       input_data, output_data)
+
+        self.assertIn("""
+      <configuration>
+        <property>
+          <name>dummy</name>
+          <value>value</value>
+        </property>
+      </configuration>""", res)
+
     def _build_workflow_common(self, job_type):
         job, job_exec = _create_all_stack(job_type)
 
@@ -318,8 +382,10 @@ def _create_data_source(url):
     data_source.url = url
     if url.startswith("swift"):
         data_source.type = "swift"
-    data_source.credentials = {'user': 'admin',
-                               'password': 'admin1'}
+        data_source.credentials = {'user': 'admin',
+                                   'password': 'admin1'}
+    elif url.startswith("hdfs"):
+        data_source.type = "hdfs"
     return data_source
 
 

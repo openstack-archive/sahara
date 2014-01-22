@@ -40,11 +40,13 @@ class BaseFactory(object):
 
     def get_configs(self, input_data, output_data):
         configs = {}
-        if input_data.type == "swift" and hasattr(input_data, "credentials"):
-            if "user" in input_data.credentials:
-                configs[swift_username] = input_data.credentials['user']
-            if "password" in input_data.credentials:
-                configs[swift_password] = input_data.credentials['password']
+        for src in (input_data, output_data):
+            if src.type == "swift" and hasattr(src, "credentials"):
+                if "user" in src.credentials:
+                    configs[swift_username] = src.credentials['user']
+                if "password" in src.credentials:
+                    configs[swift_password] = src.credentials['password']
+                break
         return configs
 
     def get_params(self, input_data, output_data):
