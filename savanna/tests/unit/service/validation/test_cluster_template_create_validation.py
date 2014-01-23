@@ -160,7 +160,7 @@ class TestClusterTemplateCreateValidation(u.ValidationTestCase):
             'plugin_name': "vanilla",
             'hadoop_version': "1.2.1"
         }
-        self._assert_object_name_validation(data, 'valid_name')
+        self._assert_valid_name_hostname_validation(data)
 
     def test_cluster_template_create_v_types(self):
         data = {

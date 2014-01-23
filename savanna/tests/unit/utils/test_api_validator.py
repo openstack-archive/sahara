@@ -156,6 +156,69 @@ class ApiValidatorTest(unittest2.TestCase):
         self._validate_success(schema, id)
         self._validate_failure(schema, id.replace("-", ""))
 
+    def test_validate_valid_name(self):
+        schema = {
+            "type": "string",
+            "format": "valid_name",
+        }
+
+        self._validate_success(schema, "abcd")
+        self._validate_success(schema, "abcd123")
+        self._validate_success(schema, "abcd-123")
+        self._validate_success(schema, "abcd_123")
+        self._validate_failure(schema, "_123")
+        self._validate_success(schema, "a" * 64)
+        self._validate_failure(schema, "")
+        self._validate_success(schema, "hadoop-examples-1.2.1.jar")
+        self._validate_success(schema, "hadoop-examples-1.2.1")
+        self._validate_success(schema, "hadoop-examples-1.2.1.")
+        self._validate_failure(schema, "1")
+        self._validate_failure(schema, "1a")
+        self._validate_success(schema, "a1")
+        self._validate_success(schema, "A1")
+        self._validate_success(schema, "A1B")
+        self._validate_success(schema, "a.b")
+        self._validate_success(schema, "a..b")
+        self._validate_success(schema, "a._.b")
+        self._validate_success(schema, "a_")
+        self._validate_success(schema, "a-b-001")
+
+        self._validate_failure(schema, None)
+        self._validate_failure(schema, 1)
+        self._validate_failure(schema, ["1"])
+
+    def test_validate_valid_name_hostname(self):
+        schema = {
+            "type": "string",
+            "format": "valid_name_hostname",
+        }
+
+        self._validate_success(schema, "abcd")
+        self._validate_success(schema, "abcd123")
+        self._validate_success(schema, "abcd-123")
+        self._validate_success(schema, "abcd_123")
+        self._validate_failure(schema, "_123")
+        self._validate_success(schema, "a" * 64)
+        self._validate_failure(schema, "")
+        self._validate_failure(schema, "hadoop-examples-1.2.1.jar")
+        self._validate_failure(schema, "hadoop-examples-1.2.1")
+        self._validate_failure(schema, "hadoop-examples-1.2.1.")
+        self._validate_failure(schema, "1")
+        self._validate_failure(schema, "1a")
+        self._validate_success(schema, "a1")
+        self._validate_success(schema, "A1")
+        self._validate_success(schema, "A1B")
+        self._validate_success(schema, "aB")
+        self._validate_success(schema, "a.b")
+        self._validate_failure(schema, "a..b")
+        self._validate_failure(schema, "a._.b")
+        self._validate_failure(schema, "a_")
+        self._validate_success(schema, "a-b-001")
+
+        self._validate_failure(schema, None)
+        self._validate_failure(schema, 1)
+        self._validate_failure(schema, ["1"])
+
     def test_validate_hostname(self):
         schema = {
             "type": "string",

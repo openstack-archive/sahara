@@ -231,7 +231,7 @@ class ValidationTestCase(unittest2.TestCase):
         self._assert_calls(bad_req, bad_req_i)
         stop_patch(patchers)
 
-    def _assert_object_name_validation(self, data, name_type):
+    def _assert_valid_name_hostname_validation(self, data):
 
         data.update({'name': None})
         self._assert_create_object_validation(
@@ -255,22 +255,8 @@ class ValidationTestCase(unittest2.TestCase):
         self._assert_create_object_validation(
             data=data,
             bad_req_i=(1, "VALIDATION_ERROR",
-                       u"'a-!' is not a '%s'" % name_type)
+                       u"'a-!' is not a 'valid_name_hostname'")
         )
-        data.update({'name': 'aa_'})
-        self._assert_create_object_validation(
-            data=data,
-            bad_req_i=(1, "VALIDATION_ERROR",
-                       u"'aa_' is not a '%s'" % name_type)
-        )
-        # For cluster templates validating
-        if name_type == 'valid_name':
-            data.update({'name': '1-a'})
-            self._assert_create_object_validation(
-                data=data,
-                bad_req_i=(1, "VALIDATION_ERROR",
-                           u"'1-a' is not a '%s'" % name_type)
-            )
 
     def _assert_types(self, default_data):
         for p_name in self.scheme['properties']:

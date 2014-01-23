@@ -57,7 +57,7 @@ CLUSTER_TEMPLATE_SCHEMA = {
             "type": "string",
             "minLength": 1,
             "maxLength": 50,
-            "format": "valid_name",
+            "format": "valid_name_hostname",
         },
         "plugin_name": {
             "type": "string",

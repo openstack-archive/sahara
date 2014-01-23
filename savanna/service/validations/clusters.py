@@ -23,7 +23,6 @@ import savanna.service.validations.cluster_templates as cl_tmpl
 
 def _build_cluster_schema():
     cluster_schema = copy.deepcopy(cl_tmpl.CLUSTER_TEMPLATE_SCHEMA)
-    cluster_schema['properties']['name']['format'] = "hostname"
     cluster_schema['properties'].update({
         "is_transient": {
             "type": "boolean"
