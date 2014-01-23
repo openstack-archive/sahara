@@ -24,7 +24,6 @@ from werkzeug import exceptions as werkzeug_exceptions
 from savanna.api import v10 as api_v10
 from savanna.api import v11 as api_v11
 from savanna import context
-from savanna.db import api as db_api
 from savanna.middleware import auth_valid
 from savanna.middleware import log_exchange
 from savanna.openstack.common import log
@@ -100,9 +99,6 @@ def make_app():
     app.register_blueprint(api_v10.rest, url_prefix='/v1.0')
     app.register_blueprint(api_v10.rest, url_prefix='/v1.1')
     app.register_blueprint(api_v11.rest, url_prefix='/v1.1')
-
-    # TODO(slukjanov): it should be removed when db-manage will be finished
-    db_api.setup_db()
 
     plugins_base.setup_plugins()
     periodic.setup(app)
