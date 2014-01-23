@@ -28,9 +28,9 @@ def validate_name_hostname_format(entry):
         #shoud fail type validation
         return True
 
-    res = re.match(r"^(([a-zA-Z]|[a-zA-Z][a-zA-Z0-9\-_]"
+    res = re.match(r"^(([a-zA-Z]|[a-zA-Z][a-zA-Z0-9\-]"
                    r"*[a-zA-Z0-9])\.)*([A-Za-z]|[A-Za-z]"
-                   r"[A-Za-z0-9\-_]*[A-Za-z0-9])$", entry)
+                   r"[A-Za-z0-9\-]*[A-Za-z0-9])$", entry)
     return res is not None
 
 

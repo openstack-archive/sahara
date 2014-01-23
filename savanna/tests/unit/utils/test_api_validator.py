@@ -196,7 +196,7 @@ class ApiValidatorTest(unittest2.TestCase):
         self._validate_success(schema, "abcd")
         self._validate_success(schema, "abcd123")
         self._validate_success(schema, "abcd-123")
-        self._validate_success(schema, "abcd_123")
+        self._validate_failure(schema, "abcd_123")
         self._validate_failure(schema, "_123")
         self._validate_success(schema, "a" * 64)
         self._validate_failure(schema, "")
