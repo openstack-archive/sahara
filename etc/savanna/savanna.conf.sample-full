@@ -70,6 +70,10 @@
 # Hadoop cluster. (string value)
 #infrastructure_engine=savanna
 
+# A method for Savanna to execute commands on VMs. (string
+# value)
+#remote=ssh
+
 
 #
 # Options defined in savanna.db.base
@@ -239,7 +243,7 @@
 
 
 #
-# Options defined in savanna.utils.remote
+# Options defined in savanna.utils.ssh_remote
 #
 
 # Maximum number of remote operations that will be running at
@@ -263,6 +267,14 @@
 
 
 [database]
+
+#
+# Options defined in savanna.db.migration.cli
+#
+
+# URL to database (string value)
+#connection=
+
 
 #
 # Options defined in savanna.openstack.common.db.api
@@ -321,4 +333,4 @@
 #pool_timeout=<None>
 
 
-# Total option count: 60
+# Total option count: 62

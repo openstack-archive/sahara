@@ -28,7 +28,7 @@ from swiftclient import client as swift_client
 
 from savanna.openstack.common import excutils
 from savanna.tests.integration.configs import config as cfg
-from savanna.utils import remote
+from savanna.utils import ssh_remote
 
 
 logger = logging.getLogger('swiftclient')
@@ -336,23 +336,23 @@ class ITestCase(unittest2.TestCase):
         )
 
     def open_ssh_connection(self, host, ssh_username):
-        remote._connect(host, ssh_username, self.private_key)
+        ssh_remote._connect(host, ssh_username, self.private_key)
 
     @staticmethod
     def execute_command(cmd):
-        return remote._execute_command(cmd, get_stderr=True)
+        return ssh_remote._execute_command(cmd, get_stderr=True)
 
     @staticmethod
     def write_file_to(remote_file, data):
-        remote._write_file_to(remote_file, data)
+        ssh_remote._write_file_to(remote_file, data)
 
     @staticmethod
     def read_file_from(remote_file):
-        return remote._read_file_from(remote_file)
+        return ssh_remote._read_file_from(remote_file)
 
     @staticmethod
     def close_ssh_connection():
-        remote._cleanup()
+        ssh_remote._cleanup()
 
     def transfer_helper_script_to_node(self, script_name, parameter_list=None):
         script = open('savanna/tests/integration/tests/resources/%s'
