@@ -72,6 +72,9 @@ def _read_swift_topology():
     try:
         with open(CONF.swift_topology_file) as f:
             for line in f:
+                line = line.strip()
+                if not line:
+                    continue
                 (host, path) = line.split()
                 topology[host] = path
     except IOError:
@@ -88,6 +91,9 @@ def _read_compute_topology():
     try:
         with open(CONF.compute_topology_file) as f:
             for line in f:
+                line = line.strip()
+                if not line:
+                    continue
                 (host, path) = line.split()
                 #calulating host id based on tenant id and host
                 #using the same algorithm as in nova

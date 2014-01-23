@@ -13,7 +13,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import tempfile
+
 import mock
+from oslo.config import cfg
 import unittest2
 
 from savanna.conductor import objects as o
@@ -137,3 +140,53 @@ class TopologyTestCase(unittest2.TestCase):
             "0.0.1.3": "/r2/o2",
             "s1": "/r1"
         })
+
+    def _read_swift_topology(self, content):
+        temp_file = tempfile.NamedTemporaryFile()
+        try:
+            temp_file.write(content)
+            temp_file.flush()
+            cfg.CONF.set_override("swift_topology_file", temp_file.name)
+
+            return th._read_swift_topology()
+        finally:
+            cfg.CONF.clear_override("swift_topology_file")
+            temp_file.close()
+
+    def test_read_swift_topology(self):
+        topology = self._read_swift_topology("")
+        self.assertEqual(topology, {})
+
+        topology = self._read_swift_topology(
+            "192.168.1.1 /rack1\n192.168.1.2 /rack2")
+        self.assertEqual(
+            topology, {"192.168.1.1": "/rack1", "192.168.1.2": "/rack2"})
+
+        topology = self._read_swift_topology(
+            "192.168.1.1 /rack1\n192.168.1.2 /rack2\n\n")
+        self.assertEqual(
+            topology, {"192.168.1.1": "/rack1", "192.168.1.2": "/rack2"})
+
+    def _read_compute_topology(self, content):
+        temp_file = tempfile.NamedTemporaryFile()
+        try:
+            temp_file.write(content)
+            temp_file.flush()
+            cfg.CONF.set_override("compute_topology_file", temp_file.name)
+
+            return th._read_compute_topology()
+        finally:
+            cfg.CONF.clear_override("compute_topology_file")
+            temp_file.close()
+
+    def test_read_compute_topology(self):
+        topology = self._read_swift_topology("")
+        self.assertEqual(topology, {})
+
+        topology = self._read_swift_topology(
+            "192.168.1.1 /rack1\n192.168.1.2 /rack2")
+        self.assertEqual(len(topology), 2)
+
+        topology = self._read_swift_topology(
+            "192.168.1.1 /rack1\n192.168.1.2 /rack2\n\n")
+        self.assertEqual(len(topology), 2)
