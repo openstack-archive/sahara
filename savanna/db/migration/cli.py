@@ -23,7 +23,8 @@ from oslo.config import cfg
 
 
 _db_opts = [
-    cfg.StrOpt('connection', default='', help='URL to database'),
+    cfg.StrOpt('connection', default='', deprecated_name='sql_connection',
+               help='URL to database')
 ]
 
 CONF = cfg.ConfigOpts()
