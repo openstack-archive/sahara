@@ -93,6 +93,17 @@ This operation does not require a request body.
                     "type": "swift",
                     "id": "577e8bd8-b105-46f0-ace7-baee61e0adda",
                     "name": "output"
+                },
+                {
+                    "description": "This is hdfs input",
+                    "url": "hdfs://test-master-node:8020/user/hadoop/input",
+                    "tenant_id": "11587919cc534bcbb1027a161c82cf58",
+                    "created_at": "2014-01-23 12:37:24.720387",
+                    "updated_at": null,
+                    "credentials": {},
+                    "type": "hdfs",
+                    "id": "63e3d1e6-52d0-4d27-ab8a-f8e236ded200",
+                    "name": "hdfs_input"
                 }
             ]
         }
@@ -198,6 +209,48 @@ This operation returns the created Data Source.
                 "name": "text"
             }
         }
+
+**Example**:
+
+    This example creates an hdfs data source.
+
+    **request**
+
+    .. sourcecode:: http
+
+        POST http://savanna:8386/v1.1/e262c255a7de4a0ab0434bafd75660cd/data-sources
+
+    .. sourcecode:: json
+
+        {
+            "description": "This is hdfs input",
+            "url": "hdfs://test-master-node:8020/user/hadoop/input",
+            "type": "hdfs",
+            "name": "hdfs_input"
+        }
+
+    **response**
+
+    .. sourcecode:: http
+
+        HTTP/1.1 202 ACCEPTED
+        Content-Type: application/json
+
+    .. sourcecode:: json
+
+        {
+            "data_source": {
+                "description": "This is hdfs input",
+                "url": "hdfs://test-master-node:8020/user/hadoop/input",
+                "tenant_id": "e262c255a7de4a0ab0434bafd75660cd",
+                "created_at": "2014-01-23 12:37:24.720387",
+                "credentials": {},
+                "type": "hdfs",
+                "id": "63e3d1e6-52d0-4d27-ab8a-f8e236ded200",
+                "name": "hdfs_input"
+            }
+        }
+
 
 2.4 Delete Data Source
 ----------------------
