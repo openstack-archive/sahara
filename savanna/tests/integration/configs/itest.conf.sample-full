@@ -95,6 +95,13 @@
 # Name for internal Neutron network (string value)
 #INTERNAL_NEUTRON_NETWORK = 'private'
 
+# If this flag is True, do not delete the cluster after test.
+# This is a debugging aid for instances when errors are logged
+# on the cluster nodes but the cause of the failure is not
+# evident from the integration test logs, ie an Oozie exception.
+# It is intended for use on local hosts, not savanna-ci.
+#RETAIN_CLUSTER_AFTER_TEST = False
+
 [VANILLA]
 
 # Name of plugin (string value)

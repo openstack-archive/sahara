@@ -134,7 +134,13 @@ COMMON_CONFIG_OPTS = [
                      'INTERNAL_NEUTRON_NETWORK.'),
     cfg.StrOpt('INTERNAL_NEUTRON_NETWORK',
                default='private',
-               help='Name for internal Neutron network. ')
+               help='Name for internal Neutron network. '),
+    cfg.BoolOpt('RETAIN_CLUSTER_AFTER_TEST',
+                default=False,
+                help='If this flag is True, the cluster and related '
+                     'objects will not be deleted after the test. '
+                     'This is intended as a debugging aid when '
+                     'running integration tests on local hosts.')
 ]
 
 
