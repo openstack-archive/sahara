@@ -14,6 +14,7 @@
 # limitations under the License.
 
 import mock
+from requests import sessions
 
 from savanna import exceptions as ex
 from savanna.plugins.intel.client import client as c
@@ -34,11 +35,20 @@ SESSION_GET_DATA = {"items": [
 
 
 class TestClient(base.SavannaTestCase):
+    def _get_instance(self):
+        inst_remote = mock.MagicMock()
+        inst_remote.get_http_client.return_value = sessions.Session()
+        inst_remote.__enter__.return_value = inst_remote
 
-    @mock.patch('requests.post')
-    @mock.patch('requests.get')
+        inst = mock.MagicMock()
+        inst.remote.return_value = inst_remote
+
+        return inst
+
+    @mock.patch('requests.sessions.Session.post')
+    @mock.patch('requests.sessions.Session.get')
     def test_cluster_op(self, get, post):
-        client = c.IntelClient('qwe', 'rty')
+        client = c.IntelClient(self._get_instance(), 'rty')
 
         data = {'lelik': 'bolik'}
 
@@ -55,11 +65,11 @@ class TestClient(base.SavannaTestCase):
         self.assertEqual(post.call_count, 2)
         self.assertEqual(get.call_count, 2)
 
-    @mock.patch('requests.delete')
-    @mock.patch('requests.post')
-    @mock.patch('requests.get')
+    @mock.patch('requests.sessions.Session.delete')
+    @mock.patch('requests.sessions.Session.post')
+    @mock.patch('requests.sessions.Session.get')
     def test_nodes_op(self, get, post, delete):
-        client = c.IntelClient('qwe', 'rty')
+        client = c.IntelClient(self._get_instance(), 'rty')
 
         # add
         post.return_value = r.make_resp(data={
@@ -111,10 +121,10 @@ class TestClient(base.SavannaTestCase):
         self.assertEqual(post.call_count, 4)
         self.assertEqual(get.call_count, 3)
 
-    @mock.patch('requests.put')
-    @mock.patch('requests.post')
+    @mock.patch('requests.sessions.Session.put')
+    @mock.patch('requests.sessions.Session.post')
     def test_params_op(self, post, put):
-        client = c.IntelClient('qwe', 'rty')
+        client = c.IntelClient(self._get_instance(), 'rty')
         post.return_value = r.make_resp()
         put.return_value = r.make_resp()
 
@@ -143,10 +153,10 @@ class TestClient(base.SavannaTestCase):
         self.assertEqual(put.call_count, 6)
 
     @mock.patch('savanna.context.sleep', lambda x: None)
-    @mock.patch('requests.post')
-    @mock.patch('requests.get')
+    @mock.patch('requests.sessions.Session.post')
+    @mock.patch('requests.sessions.Session.get')
     def test_base_services_op(self, get, post):
-        client = c.IntelClient('qwe', 'rty')
+        client = c.IntelClient(self._get_instance(), 'rty')
 
         # start
         post.return_value = r.make_resp()
@@ -215,11 +225,11 @@ class TestClient(base.SavannaTestCase):
         self.assertEqual(get.call_count, 606)
         self.assertEqual(post.call_count, 8)
 
-    @mock.patch('requests.delete')
-    @mock.patch('requests.post')
-    @mock.patch('requests.get')
+    @mock.patch('requests.sessions.Session.delete')
+    @mock.patch('requests.sessions.Session.post')
+    @mock.patch('requests.sessions.Session.get')
     def test_services_op(self, get, post, delete):
-        client = c.IntelClient('qwe', 'rty')
+        client = c.IntelClient(self._get_instance(), 'rty')
 
         # add
         post.return_value = r.make_resp()
@@ -233,10 +243,10 @@ class TestClient(base.SavannaTestCase):
         delete.return_value = r.make_resp()
         client.services.delete_service('hdfs')
 
-    @mock.patch('requests.post')
-    @mock.patch('requests.get')
+    @mock.patch('requests.sessions.Session.post')
+    @mock.patch('requests.sessions.Session.get')
     def test_hdfs_services_op(self, get, post):
-        client = c.IntelClient('qwe', 'rty')
+        client = c.IntelClient(self._get_instance(), 'rty')
 
         # format
         get.return_value = r.make_resp(SESSION_GET_DATA)
@@ -266,10 +276,10 @@ class TestClient(base.SavannaTestCase):
         self.assertEqual(post.call_count, 2)
 
     @mock.patch('savanna.context.sleep', lambda x: None)
-    @mock.patch('requests.post')
-    @mock.patch('requests.get')
+    @mock.patch('requests.sessions.Session.post')
+    @mock.patch('requests.sessions.Session.get')
     def test_session_op(self, get, post):
-        client = c.IntelClient('qwe', 'rty')
+        client = c.IntelClient(self._get_instance(), 'rty')
 
         data1 = {
             "items": [
@@ -300,9 +310,9 @@ class TestClient(base.SavannaTestCase):
         self.assertEqual(get.call_count, 2)
         self.assertEqual(post.call_count, 1)
 
-    @mock.patch('requests.get')
+    @mock.patch('requests.sessions.Session.get')
     def test_rest_client(self, get):
-        client = c.IntelClient('qwe', 'rty')
+        client = c.IntelClient(self._get_instance(), 'rty')
         get.return_value = r.make_resp(ok=False, status_code=500, data={
             "message": "message"
         })

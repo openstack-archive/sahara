@@ -21,9 +21,9 @@ from savanna.plugins.intel.client import services
 
 
 class IntelClient():
-    def __init__(self, manager_ip, cluster_name):
+    def __init__(self, manager, cluster_name):
         #TODO(alazarev) make credentials configurable (bug #1262881)
-        self.rest = r.RESTClient(manager_ip, 'admin', 'admin')
+        self.rest = r.RESTClient(manager, 'admin', 'admin')
         self.cluster_name = cluster_name
         self._ctx = self
 

@@ -62,15 +62,15 @@ class Client():
 
         return matching_router['id']
 
-    def get_http_session(self, host, port=None):
+    def get_http_session(self, host, port=None, *args, **kwargs):
         session = requests.Session()
-        adapters = self._get_adapters(host, port=port)
+        adapters = self._get_adapters(host, port=port, *args, **kwargs)
         for adapter in adapters:
             session.mount('http://{0}:{1}'.format(host, adapter.port), adapter)
 
         return session
 
-    def _get_adapters(self, host, port=None):
+    def _get_adapters(self, host, port=None, *args, **kwargs):
         LOG.debug('Retrieving neutron adapters for {0}:{1}'.format(host, port))
         adapters = []
         if not port:
@@ -79,7 +79,7 @@ class Client():
                         if adapter.host == host]
         else:
             # need to retrieve or create specific adapter
-            adapter = self.adapters.get((host, port), None)
+            adapter = self.adapters.get((host, port), None, *args, **kwargs)
             if not adapter:
                 LOG.debug('Creating neutron adapter for {0}:{1}'
                           .format(host, port))
@@ -96,8 +96,8 @@ class NeutronHttpAdapter(adapters.HTTPAdapter):
     port = None
     host = None
 
-    def __init__(self, qrouter, host, port):
-        super(NeutronHttpAdapter, self).__init__()
+    def __init__(self, qrouter, host, port, *args, **kwargs):
+        super(NeutronHttpAdapter, self).__init__(*args, **kwargs)
         command = 'ip netns exec qrouter-{0} nc {1} {2}'.format(qrouter,
                                                                 host, port)
         LOG.debug('Neutron adapter created with cmd {0}'.format(command))

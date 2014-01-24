@@ -148,7 +148,7 @@ def _execute_command(cmd, run_as_root=False, get_stderr=False,
         return ret_code, stdout
 
 
-def _get_http_client(host, port, neutron_info):
+def _get_http_client(host, port, neutron_info, *args, **kwargs):
     global _sessions
 
     _http_session = _sessions.get((host, port), None)
@@ -163,7 +163,8 @@ def _get_http_client(host, port, neutron_info):
             # can return a new session here because it actually uses
             # the same adapter (and same connection pools) for a given
             # host and port tuple
-            _http_session = neutron_client.get_http_session(host, port=port)
+            _http_session = neutron_client.get_http_session(
+                host, port=port, *args, **kwargs)
             LOG.debug('created neutron based HTTP session for {0}:{1}'
                       .format(host, port))
         else:
@@ -173,6 +174,12 @@ def _get_http_client(host, port, neutron_info):
             _http_session = requests.Session()
             LOG.debug('created standard HTTP session for {0}:{1}'
                       .format(host, port))
+
+            adapter = requests.adapters.HTTPAdapter(*args, **kwargs)
+            for prefix in ['http://', 'https://']:
+                _http_session.mount(prefix + '%s:%s' % (host, port),
+                                    adapter)
+
         LOG.debug('caching session {0} for {1}:{2}'
                   .format(_http_session, host, port))
         _sessions[(host, port)] = _http_session
@@ -357,14 +364,15 @@ class InstanceInteropHelper(object):
         finally:
             _release_remote_semaphore()
 
-    def get_http_client(self, port, info=None):
+    def get_http_client(self, port, info=None, *args, **kwargs):
         self._log_command('Retrieving http session for {0}:{1}'
             .format(self.instance.management_ip, port))
         if CONF.use_namespaces and not CONF.use_floating_ips:
             # need neutron info
             if not info:
                 info = self.get_neutron_info()
-        return _get_http_client(self.instance.management_ip, port, info)
+        return _get_http_client(self.instance.management_ip, port, info,
+                                *args, **kwargs)
 
     def close_http_sessions(self):
         global _sessions
