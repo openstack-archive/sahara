@@ -137,11 +137,15 @@
 # Username which is used for access to Hadoop services (string value)
 #HADOOP_USER = 'hadoop'
 
-# Directory where are located Hadoop jar files (string value)
+# Directory where Hadoop jar files are located (string value)
 #HADOOP_DIRECTORY = '/usr/share/hadoop'
 
-# Directory where is located log info about completed jobs (string value)
+# Directory where logs of completed jobs are located (string value)
 #HADOOP_LOG_DIRECTORY = '/mnt/log/hadoop/hadoop/userlogs'
+
+# Directory where logs of completed jobs on volume mounted to node are located
+# (string value)
+#HADOOP_LOG_DIRECTORY_ON_VOLUME = '/volumes/disk1/log/hadoop/hadoop/userlogs'
 
 # (dictionary value)
 #HADOOP_PROCESSES_WITH_PORTS = jobtracker: 50030, namenode: 50070, tasktracker: 50060, datanode: 50075, secondarynamenode: 50090, oozie: 11000
@@ -152,6 +156,7 @@
 
 
 #SKIP_ALL_TESTS_FOR_PLUGIN = False
+#SKIP_CINDER_TEST = False
 #SKIP_CLUSTER_CONFIG_TEST = False
 #SKIP_EDP_TEST = False
 #SKIP_MAP_REDUCE_TEST = False
@@ -193,11 +198,16 @@
 # Username which is used for access to Hadoop services (string value)
 #HADOOP_USER = 'hdfs'
 
-# Directory where are located Hadoop jar files (string value)
+# Directory where Hadoop jar files are located (string value)
 #HADOOP_DIRECTORY = '/usr/lib/hadoop'
 
-# Directory where is located log info about completed jobs (string value)
-#HADOOP_LOG_DIRECTORY = '/hadoop/mapred/userlogs'
+# Directory where logs of completed jobs are located (string value)
+#HADOOP_LOG_DIRECTORY = '/mnt/hadoop/mapred/userlogs'
+
+# Directory where logs of completed jobs on volume mounted to node are located
+# (string value)
+#HADOOP_LOG_DIRECTORY_ON_VOLUME = '/volumes/disk1/hadoop/mapred/userlogs'
+
 
 # (dictionary value)
 #HADOOP_PROCESSES_WITH_PORTS = JOBTRACKER: 50030, NAMENODE: 50070, TASKTRACKER: 50060, DATANODE: 50075, SECONDARY_NAMENODE: 50090
@@ -208,6 +218,7 @@
 
 
 #SKIP_ALL_TESTS_FOR_PLUGIN = False
+#SKIP_CINDER_TEST = False
 #SKIP_MAP_REDUCE_TEST = False
 #SKIP_SWIFT_TEST = False
 #SKIP_SCALING_TEST = False

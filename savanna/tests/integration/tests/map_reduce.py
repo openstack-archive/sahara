@@ -47,30 +47,51 @@ class MapReduceTest(base.ITestCase):
                     '/tmp/MapReduceTestOutput/log.txt'
                 )
 
-    @base.skip_test('SKIP_MAP_REDUCE_TEST',
-                    message='Test for Map Reduce was skipped.')
-    def map_reduce_testing(self, cluster_info):
+    def _transfer_helper_script_to_nodes(self, cluster_info):
+        data = self.savanna.clusters.get(cluster_info['cluster_id'])
+        node_groups = data.node_groups
+        for node_group in node_groups:
+            if node_group['volumes_per_node'] != 0:
+                self._add_params_to_script_and_transfer_to_node(
+                    cluster_info, node_group, node_with_volumes=True)
+            else:
+                self._add_params_to_script_and_transfer_to_node(
+                    cluster_info, node_group)
+
+    def _add_params_to_script_and_transfer_to_node(self, cluster_info,
+                                                   node_group,
+                                                   node_with_volumes=False):
         plugin_config = cluster_info['plugin_config']
-        node_count = cluster_info['node_info']['node_count']
+        hadoop_log_directory = plugin_config.HADOOP_LOG_DIRECTORY
+        if node_with_volumes:
+            hadoop_log_directory = (
+                plugin_config.HADOOP_LOG_DIRECTORY_ON_VOLUME)
         extra_script_parameters = {
             'HADOOP_VERSION': plugin_config.HADOOP_VERSION,
             'HADOOP_DIRECTORY': plugin_config.HADOOP_DIRECTORY,
-            'HADOOP_LOG_DIRECTORY': plugin_config.HADOOP_LOG_DIRECTORY,
+            'HADOOP_LOG_DIRECTORY': hadoop_log_directory,
             'HADOOP_USER': plugin_config.HADOOP_USER,
-            'NODE_COUNT': node_count,
+            'NODE_COUNT': cluster_info['node_info']['node_count'],
             'PLUGIN_NAME': plugin_config.PLUGIN_NAME
         }
-        node_ip_and_process_list = cluster_info['node_ip_list']
-        try:
-            self.transfer_helper_script_to_nodes(
-                node_ip_and_process_list, plugin_config.SSH_USERNAME,
-                'map_reduce_test_script.sh',
-                parameter_list=extra_script_parameters
-            )
+        for instance in node_group['instances']:
+            try:
+                self.open_ssh_connection(
+                    instance['management_ip'], plugin_config.SSH_USERNAME)
+                self.transfer_helper_script_to_node(
+                    'map_reduce_test_script.sh', extra_script_parameters
+                )
+                self.close_ssh_connection()
 
-        except Exception as e:
-            with excutils.save_and_reraise_exception():
-                print(str(e))
+            except Exception as e:
+                with excutils.save_and_reraise_exception():
+                    print(str(e))
+
+    @base.skip_test('SKIP_MAP_REDUCE_TEST',
+                    message='Test for Map Reduce was skipped.')
+    def map_reduce_testing(self, cluster_info):
+        self._transfer_helper_script_to_nodes(cluster_info)
+        plugin_config = cluster_info['plugin_config']
         namenode_ip = cluster_info['node_info']['namenode_ip']
         self.open_ssh_connection(namenode_ip, plugin_config.SSH_USERNAME)
         self._run_pi_job()
@@ -79,6 +100,7 @@ class MapReduceTest(base.ITestCase):
         # Check that cluster used each "tasktracker" node while work of PI-job.
         # Count of map-tasks and reduce-tasks in helper script guarantees that
         # cluster will use each from such nodes while work of PI-job.
+        node_ip_and_process_list = cluster_info['node_ip_list']
         try:
             for node_ip, process_list in node_ip_and_process_list.items():
                 if plugin_config.PROCESS_NAMES['tt'] in process_list:

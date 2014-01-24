@@ -181,11 +181,14 @@ VANILLA_CONFIG_OPTS = [
                help='Username which is used for access to Hadoop services.'),
     cfg.StrOpt('HADOOP_DIRECTORY',
                default='/usr/share/hadoop',
-               help='Directory where are located Hadoop jar files.'),
+               help='Directory where Hadoop jar files are located.'),
     cfg.StrOpt('HADOOP_LOG_DIRECTORY',
                default='/mnt/log/hadoop/hadoop/userlogs',
-               help='Directory where is located log info about '
-                    'completed jobs.'),
+               help='Directory where logs of completed jobs are located.'),
+    cfg.StrOpt('HADOOP_LOG_DIRECTORY_ON_VOLUME',
+               default='/volumes/disk1/log/hadoop/hadoop/userlogs',
+               help='Directory where logs of completed jobs on volume mounted '
+                    'to node are located.'),
     cfg.DictOpt('HADOOP_PROCESSES_WITH_PORTS',
                 default={
                     'jobtracker': 50030,
@@ -208,6 +211,7 @@ VANILLA_CONFIG_OPTS = [
                 default=False,
                 help='If this flag is True then all tests for Vanilla plugin '
                      'will be skipped.'),
+    cfg.BoolOpt('SKIP_CINDER_TEST', default=False),
     cfg.BoolOpt('SKIP_CLUSTER_CONFIG_TEST', default=False),
     cfg.BoolOpt('SKIP_EDP_TEST', default=False),
     cfg.BoolOpt('SKIP_MAP_REDUCE_TEST', default=False),
@@ -253,11 +257,14 @@ HDP_CONFIG_OPTS = [
                help='Username which is used for access to Hadoop services.'),
     cfg.StrOpt('HADOOP_DIRECTORY',
                default='/usr/lib/hadoop',
-               help='Directory where are located Hadoop jar files.'),
+               help='Directory where Hadoop jar files are located.'),
     cfg.StrOpt('HADOOP_LOG_DIRECTORY',
                default='/mnt/hadoop/mapred/userlogs',
-               help='Directory where is located log info about '
-                    'completed jobs.'),
+               help='Directory where logs of completed jobs are located.'),
+    cfg.StrOpt('HADOOP_LOG_DIRECTORY_ON_VOLUME',
+               default='/volumes/disk1/hadoop/mapred/userlogs',
+               help='Directory where logs of completed jobs on volume mounted '
+                    'to node are located.'),
     cfg.DictOpt('HADOOP_PROCESSES_WITH_PORTS',
                 default={
                     'JOBTRACKER': 50030,
@@ -280,6 +287,7 @@ HDP_CONFIG_OPTS = [
                 default=True,
                 help='If this flag is True then all tests for HDP plugin '
                      'will be skipped.'),
+    cfg.BoolOpt('SKIP_CINDER_TEST', default=False),
     cfg.BoolOpt('SKIP_MAP_REDUCE_TEST', default=False),
     cfg.BoolOpt('SKIP_SWIFT_TEST', default=False),
     cfg.BoolOpt('SKIP_SCALING_TEST', default=False)

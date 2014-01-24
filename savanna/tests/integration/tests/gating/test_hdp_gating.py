@@ -18,13 +18,15 @@ import unittest2
 
 from savanna.openstack.common import excutils
 from savanna.tests.integration.configs import config as cfg
+from savanna.tests.integration.tests import cinder
 from savanna.tests.integration.tests import map_reduce
 from savanna.tests.integration.tests import scaling
 from savanna.tests.integration.tests import swift
 
 
-class HDPGatingTest(map_reduce.MapReduceTest, swift.SwiftTest,
-                    scaling.ScalingTest):
+class HDPGatingTest(cinder.CinderVolumeTest, map_reduce.MapReduceTest,
+                    swift.SwiftTest, scaling.ScalingTest):
+    SKIP_CINDER_TEST = cfg.ITConfig().hdp_config.SKIP_CINDER_TEST
     SKIP_MAP_REDUCE_TEST = cfg.ITConfig().hdp_config.SKIP_MAP_REDUCE_TEST
     SKIP_SWIFT_TEST = cfg.ITConfig().hdp_config.SKIP_SWIFT_TEST
     SKIP_SCALING_TEST = cfg.ITConfig().hdp_config.SKIP_SCALING_TEST
@@ -45,6 +47,13 @@ class HDPGatingTest(map_reduce.MapReduceTest, swift.SwiftTest,
             floating_ip_pool = self.get_floating_ip_pool_id_for_neutron_net()
             internal_neutron_net = self.get_internal_neutron_net_id()
 
+        if not self.hdp_config.SKIP_CINDER_TEST:
+            volumes_per_node = 2
+            volume_size = 2
+        else:
+            volumes_per_node = 0
+            volume_size = 0
+
         node_group_template_id_list = []
 
 #-------------------------------CLUSTER CREATION-------------------------------
@@ -56,8 +65,8 @@ class HDPGatingTest(map_reduce.MapReduceTest, swift.SwiftTest,
                 name='test-node-group-template-hdp-tt-dn',
                 plugin_config=self.hdp_config,
                 description='test node group template for HDP plugin',
-                volumes_per_node=0,
-                volume_size=0,
+                volumes_per_node=volumes_per_node,
+                volume_size=volume_size,
                 node_processes=['TASKTRACKER', 'DATANODE', 'HDFS_CLIENT',
                                 'MAPREDUCE_CLIENT'],
                 node_configs={},
@@ -125,6 +134,20 @@ class HDPGatingTest(map_reduce.MapReduceTest, swift.SwiftTest,
                 message = 'Failure while cluster creation: '
                 self.print_error_log(message, e)
 
+#---------------------------------CINDER TESTING-------------------------------
+
+        try:
+            self.cinder_volume_testing(cluster_info)
+
+        except Exception as e:
+            with excutils.save_and_reraise_exception():
+                self.delete_objects(
+                    cluster_info['cluster_id'], cluster_template_id,
+                    node_group_template_id_list
+                )
+                message = 'Failure while Cinder testing: '
+                self.print_error_log(message, e)
+
 #------------------------------MAP REDUCE TESTING------------------------------
 
         try:
@@ -181,6 +204,21 @@ class HDPGatingTest(map_reduce.MapReduceTest, swift.SwiftTest,
                 self.print_error_log(message, e)
 
         if not self.hdp_config.SKIP_SCALING_TEST:
+
+#--------------------------CINDER TESTING AFTER SCALING------------------------
+
+            try:
+                self.cinder_volume_testing(new_cluster_info)
+
+            except Exception as e:
+                with excutils.save_and_reraise_exception():
+                    self.delete_objects(
+                        new_cluster_info['cluster_id'], cluster_template_id,
+                        node_group_template_id_list
+                    )
+                    message = 'Failure while Cinder testing after cluster ' \
+                              'scaling: '
+                    self.print_error_log(message, e)
 
 #-----------------------MAP REDUCE TESTING AFTER SCALING-----------------------
 
