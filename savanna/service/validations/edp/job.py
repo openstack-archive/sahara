@@ -57,6 +57,9 @@ JOB_SCHEMA = {
                 "minLength": 1,
             }
         },
+        "streaming": {
+            "type": "boolean"
+        }
     },
     "additionalProperties": False,
     "required": [
@@ -76,9 +79,13 @@ def _check_binaries(values):
 def check_mains_libs(data, **kwargs):
     mains = data.get("mains", [])
     libs = data.get("libs", [])
+    job_type = data.get("type")
+
+    streaming = job_type in ['MapReduce',
+                             'Jar'] and data.get("streaming", False)
 
     # Pig or Hive flow has to contain script in mains, may also use libs
-    if data.get("type") in ['Pig', 'Hive']:
+    if job_type in ['Pig', 'Hive']:
         if not mains:
             raise e.InvalidDataException("%s flow requires main script" %
                                          data.get("type"))
@@ -87,7 +94,7 @@ def check_mains_libs(data, **kwargs):
             raise e.InvalidDataException("'mains' and 'libs' overlap")
 
     else:
-        if not libs:
+        if not streaming and not libs:
             raise e.InvalidDataException("%s flow requires libs" %
                                          data.get("type"))
         if mains:

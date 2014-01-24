@@ -33,6 +33,23 @@ class TestJobValidation(u.ValidationTestCase):
                 bad_req_i=(1, "INVALID_DATA",
                            "%s flow requires libs" % job_type))
 
+        self._assert_create_object_validation(
+            data={
+                "name": "jar.jar",
+                "type": 'Java',
+                "streaming": True
+            },
+            bad_req_i=(1, "INVALID_DATA",
+                       "Java flow requires libs"))
+
+        for job_type in ['MapReduce', 'Jar']:
+            self._assert_create_object_validation(
+                data={
+                    "name": "jar.jar",
+                    "type": job_type,
+                    "streaming": True
+                })
+
     def test_mains_unused(self):
         for job_type in ['MapReduce', 'Java', 'Jar']:
             self._assert_create_object_validation(
