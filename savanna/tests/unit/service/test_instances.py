@@ -299,9 +299,9 @@ echo "%(public_key)s" >> %(user_home)s/.ssh/authorized_keys
     }
 
 
-def _create_nova_mock(novalcient):
+def _create_nova_mock(novaclient):
     nova = mock.Mock()
-    novalcient.return_value = nova
+    novaclient.return_value = nova
     nova.servers.create.side_effect = _mock_instances(4)
     nova.servers.get.return_value = _mock_instance(1)
     nova.floating_ips.create.side_effect = _mock_ips(4)
