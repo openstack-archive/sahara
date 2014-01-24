@@ -70,8 +70,10 @@ class DirectEngine(e.Engine):
 
             self._configure_instances(cluster)
         except Exception as ex:
-            LOG.warn("Can't start cluster '%s' (reason: %s)", cluster.name, ex)
             with excutils.save_and_reraise_exception():
+                self._log_operation_exception(
+                    "Can't start cluster '%s' (reason: %s)", cluster, ex)
+
                 cluster = conductor.cluster_update(
                     ctx, cluster, {"status": "Error",
                                    "status_description": str(ex)})
@@ -104,8 +106,10 @@ class DirectEngine(e.Engine):
                 g.get_instances(cluster, instance_ids))
 
         except Exception as ex:
-            LOG.warn("Can't scale cluster '%s' (reason: %s)", cluster.name, ex)
             with excutils.save_and_reraise_exception():
+                self._log_operation_exception(
+                    "Can't scale cluster '%s' (reason: %s)", cluster, ex)
+
                 cluster = conductor.cluster_get(ctx, cluster)
                 self._rollback_cluster_scaling(
                     cluster, g.get_instances(cluster, instance_ids), ex)

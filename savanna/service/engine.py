@@ -146,3 +146,11 @@ echo "%(public_key)s" >> %(user_home)s/.ssh/authorized_keys
             update = {"cluster_id": None,
                       "end_time": datetime.datetime.now()}
             conductor.job_execution_update(ctx, je, update)
+
+    def _log_operation_exception(self, message, cluster, ex):
+        # we want to log the initial exception even if cluster was deleted
+        cluster_name = cluster.name if cluster is not None else '_unknown_'
+        LOG.warn(message, cluster_name, ex)
+        if cluster is None:
+            LOG.warn("Presumably the operation failed because the cluster was"
+                     "deleted by a user during the process.")
