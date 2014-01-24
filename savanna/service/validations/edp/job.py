@@ -77,18 +77,22 @@ def check_mains_libs(data, **kwargs):
     mains = data.get("mains", [])
     libs = data.get("libs", [])
 
-    # As a basic check, mains or libs has to be non-empty
-    if not (mains or libs):
-        raise e.InvalidDataException("'mains' or 'libs' must be non-empty")
+    # Pig or Hive flow has to contain script in mains, may also use libs
+    if data.get("type") in ['Pig', 'Hive']:
+        if not mains:
+            raise e.InvalidDataException("%s flow requires main script" %
+                                         data.get("type"))
+        # Check for overlap
+        if set(mains).intersection(set(libs)):
+            raise e.InvalidDataException("'mains' and 'libs' overlap")
 
-    # Pig or Hive flow has to contain script in mains
-    if data.get("type") in ['Pig', 'Hive'] and not mains:
-        raise e.InvalidDataException("%s flow requires main script" %
-                                     data.get("type"))
-
-    # Check for overlap
-    if set(mains).intersection(set(libs)):
-        raise e.InvalidDataException("'mains' and 'libs' overlap")
+    else:
+        if not libs:
+            raise e.InvalidDataException("%s flow requires libs" %
+                                         data.get("type"))
+        if mains:
+            raise e.InvalidDataException("%s flow does not use mains" %
+                                         data.get("type"))
 
     # Make sure that all referenced binaries exist
     _check_binaries(mains)
