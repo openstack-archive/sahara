@@ -77,7 +77,7 @@ class TestNGTemplateCreateValidation(u.ValidationTestCase):
             'hadoop_version': '1.2.1',
             'node_processes': ['namenode']
         }
-        self._assert_object_name_validation(data, "valid_name")
+        self._assert_valid_name_hostname_validation(data)
 
     def test_ng_template_create_v_node_processes(self):
         self._assert_create_object_validation(

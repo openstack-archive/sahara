@@ -25,7 +25,7 @@ NODE_GROUP_TEMPLATE_SCHEMA = {
             "type": "string",
             "minLength": 1,
             "maxLength": 50,
-            "format": "valid_name",
+            "format": "valid_name_hostname",
         },
         "flavor_id": {
             'type': 'flavor',
