@@ -200,10 +200,13 @@ class DirectEngine(e.Engine):
 
         return None
 
+    def _get_inst_name(self, cluster_name, ng_name, index):
+        return ('%s-%s-%03d' % (cluster_name, ng_name, index)).lower()
+
     def _run_instance(self, cluster, node_group, idx, aa_groups):
         """Create instance using nova client and persist them into DB."""
         ctx = context.ctx()
-        name = '%s-%s-%03d' % (cluster.name, node_group.name, idx)
+        name = self._get_inst_name(cluster.name, node_group.name, idx)
 
         userdata = self._generate_user_data_script(node_group, name)
 

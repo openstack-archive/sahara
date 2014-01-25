@@ -36,7 +36,7 @@ def client():
 
 
 def _get_inst_name(cluster_name, ng_name, index):
-    return '%s-%s-%03d' % (cluster_name, ng_name, (index + 1))
+    return ('%s-%s-%03d' % (cluster_name, ng_name, (index + 1))).lower()
 
 
 def _get_port_name(inst_name):
