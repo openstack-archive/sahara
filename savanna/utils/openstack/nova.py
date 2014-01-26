@@ -24,11 +24,13 @@ from savanna.utils.openstack import keypairs
 
 def client():
     ctx = context.current()
+    auth_url = base.retrieve_auth_url()
     compute_url = base.url_for(ctx.service_catalog, 'compute')
 
-    nova = nova_client.Client(ctx.username,
-                              ctx.token, ctx.tenant_id,
-                              auth_url=compute_url)
+    nova = nova_client.Client(username=ctx.username,
+                              api_key=None,
+                              project_id=ctx.tenant_id,
+                              auth_url=auth_url)
 
     nova.client.auth_token = ctx.token
     nova.client.management_url = compute_url
