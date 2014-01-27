@@ -90,17 +90,19 @@ class TestClusterTemplate(unittest2.TestCase):
         heat_template.add_node_group_extra(ng1['id'], 1, 'line1\nline2')
         heat_template.add_node_group_extra(ng2['id'], 1, 'line2\nline3')
 
-        h.CONF.use_neutron = True
+        h.CONF.set_override("use_neutron", True)
+        try:
+            main_template = h._load_template(
+                'main.heat', {'resources':
+                              heat_template._serialize_resources()})
 
-        main_template = h._load_template(
-            'main.heat', {'resources':
-                          heat_template._serialize_resources()})
-
-        self.assertEqual(
-            json.loads(main_template),
-            json.loads(f.get_file_text(
-                "tests/unit/resources/"
-                "test_serialize_resources_use_neutron.heat")))
+            self.assertEqual(
+                json.loads(main_template),
+                json.loads(f.get_file_text(
+                    "tests/unit/resources/"
+                    "test_serialize_resources_use_neutron.heat")))
+        finally:
+            h.CONF.clear_override("use_neutron")
 
     def test_load_template_with_anti_affinity_single_ng(self):
         """This test checks Heat cluster template with Neutron enabled

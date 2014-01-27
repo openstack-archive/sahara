@@ -171,32 +171,32 @@ class IpManagementTest(models_test_base.DbTestCase):
     @mock.patch('savanna.utils.openstack.nova.client')
     @mock.patch('oslo.config.cfg')
     def test_ip_assignment_use_no_floating(self, cfg, novaclient):
+        cfg.CONF.set_override("use_floating_ips", False)
+        try:
+            nova = _create_nova_mock(novaclient)
 
-        cfg.CONF.use_floating_ips = False
-        nova = _create_nova_mock(novaclient)
+            node_groups = [_make_ng_dict("test_group_1", "test_flavor",
+                                         ["data node", "test tracker"], 2,
+                                         'pool'),
+                           _make_ng_dict("test_group_2", "test_flavor",
+                                         ["name node", "test tracker"], 1)]
 
-        node_groups = [_make_ng_dict("test_group_1", "test_flavor",
-                                     ["data node", "test tracker"], 2, 'pool'),
-                       _make_ng_dict("test_group_2", "test_flavor",
-                                     ["name node", "test tracker"], 1)]
+            ctx = context.ctx()
+            cluster = _create_cluster_mock(node_groups, ["data node"])
+            self.engine._create_instances(cluster)
 
-        ctx = context.ctx()
-        cluster = _create_cluster_mock(node_groups, ["data node"])
-        self.engine._create_instances(cluster)
+            cluster = conductor.cluster_get(ctx, cluster)
+            instances_list = g.get_instances(cluster)
 
-        cluster = conductor.cluster_get(ctx, cluster)
-        instances_list = g.get_instances(cluster)
+            self.engine._assign_floating_ips(instances_list)
 
-        self.engine._assign_floating_ips(instances_list)
+            nova.floating_ips.create.assert_has_calls(
+                [mock.call("pool"), mock.call("pool")])
 
-        nova.floating_ips.create.assert_has_calls(
-            [mock.call("pool"),
-             mock.call("pool")],
-            any_order=False
-        )
-
-        self.assertEqual(nova.floating_ips.create.call_count, 2,
-                         "Not expected floating IPs number found.")
+            self.assertEqual(nova.floating_ips.create.call_count, 2,
+                             "Not expected floating IPs number found.")
+        finally:
+            cfg.CONF.clear_override("use_floating_ips")
 
 
 class ShutdownClusterTest(models_test_base.DbTestCase):
