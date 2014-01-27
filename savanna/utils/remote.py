@@ -39,6 +39,7 @@ from oslo.config import cfg
 import paramiko
 import requests
 import six
+import uuid
 
 from savanna import context
 from savanna import exceptions as ex
@@ -115,11 +116,21 @@ def _read_paramimko_stream(recv_func):
     return result
 
 
-def _execute_command(cmd, get_stderr=False, raise_when_error=True):
+def _escape_quotes(command):
+    command = command.replace('\\', '\\\\')
+    command = command.replace('"', '\\"')
+    return command
+
+
+def _execute_command(cmd, run_as_root=False, get_stderr=False,
+                     raise_when_error=True):
     global _ssh
 
     chan = _ssh.get_transport().open_session()
-    chan.exec_command(cmd)
+    if run_as_root:
+        chan.exec_command('sudo bash -c "%s"' % _escape_quotes(cmd))
+    else:
+        chan.exec_command(cmd)
 
     # todo(dmitryme): that could hang if stderr buffer overflows
     stdout = _read_paramimko_stream(chan.recv)
@@ -169,34 +180,61 @@ def _get_http_client(host, port, neutron_info):
     return _http_session
 
 
-def _write_file(sftp, remote_file, data):
+def _write_fl(sftp, remote_file, data):
     fl = sftp.file(remote_file, 'w')
     fl.write(data)
     fl.close()
 
 
-def _write_file_to(remote_file, data):
+def _write_file(sftp, remote_file, data, run_as_root):
+    if run_as_root:
+        temp_file = 'temp-file-%s' % six.text_type(uuid.uuid4())
+        _write_fl(sftp, temp_file, data)
+        _execute_command(
+            'mv %s %s' % (temp_file, remote_file), run_as_root=True)
+    else:
+        _write_fl(sftp, remote_file, data)
+
+
+def _write_file_to(remote_file, data, run_as_root=False):
     global _ssh
 
-    _write_file(_ssh.open_sftp(), remote_file, data)
+    _write_file(_ssh.open_sftp(), remote_file, data, run_as_root)
 
 
-def _write_files_to(files):
+def _write_files_to(files, run_as_root=False):
     global _ssh
 
     sftp = _ssh.open_sftp()
 
     for fl, data in files.iteritems():
-        _write_file(sftp, fl, data)
+        _write_file(sftp, fl, data, run_as_root)
 
 
-def _read_file_from(remote_file):
-    global _ssh
-
-    fl = _ssh.open_sftp().file(remote_file, 'r')
+def _read_file(sftp, remote_file):
+    fl = sftp.file(remote_file, 'r')
     data = fl.read()
     fl.close()
     return data
+
+
+def _read_file_from(remote_file, run_as_root=False):
+    global _ssh
+
+    fl = remote_file
+    if run_as_root:
+        fl = 'temp-file-%s' % (six.text_type(uuid.uuid4()))
+        _execute_command('cp %s %s' % (remote_file, fl), run_as_root=True)
+
+    try:
+        return _read_file(_ssh.open_sftp(), fl)
+    except IOError:
+        LOG.error('Can\'t read file "%s"' % remote_file)
+        raise
+    finally:
+        if run_as_root:
+            _execute_command(
+                'rm %s' % fl, run_as_root=True, raise_when_error=False)
 
 
 def _replace_remote_string(remote_file, old_str, new_str):
@@ -334,33 +372,33 @@ class InstanceInteropHelper(object):
         for session in _sessions.values():
             session.close()
 
-    def execute_command(self, cmd, get_stderr=False, raise_when_error=True,
-                        timeout=300):
+    def execute_command(self, cmd, run_as_root=False, get_stderr=False,
+                        raise_when_error=True, timeout=300):
         """Execute specified command remotely using existing ssh connection.
 
         Return exit code, stdout data and stderr data of the executed command.
         """
         self._log_command('Executing "%s"' % cmd)
-        return self._run_s(_execute_command, timeout, cmd, get_stderr,
-                           raise_when_error)
+        return self._run_s(_execute_command, timeout, cmd, run_as_root,
+                           get_stderr, raise_when_error)
 
-    def write_file_to(self, remote_file, data, timeout=120):
+    def write_file_to(self, remote_file, data, run_as_root=False, timeout=120):
         """Create remote file using existing ssh connection and write the given
         data to it.
         """
         self._log_command('Writing file "%s"' % remote_file)
-        self._run_s(_write_file_to, timeout, remote_file, data)
+        self._run_s(_write_file_to, timeout, remote_file, data, run_as_root)
 
-    def write_files_to(self, files, timeout=120):
+    def write_files_to(self, files, run_as_root=False, timeout=120):
         """Copy file->data dictionary in a single ssh connection.
         """
         self._log_command('Writing files "%s"' % files.keys())
-        self._run_s(_write_files_to, timeout, files)
+        self._run_s(_write_files_to, timeout, files, run_as_root)
 
-    def read_file_from(self, remote_file, timeout=120):
+    def read_file_from(self, remote_file, run_as_root=False, timeout=120):
         """Read remote file from the specified host and return given data."""
         self._log_command('Reading file "%s"' % remote_file)
-        return self._run_s(_read_file_from, timeout, remote_file)
+        return self._run_s(_read_file_from, timeout, remote_file, run_as_root)
 
     def replace_remote_string(self, remote_file, old_str, new_str,
                               timeout=120):
