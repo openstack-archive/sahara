@@ -25,7 +25,7 @@ import savanna.tests.unit.plugins.hdp.hdp_test_base as base
 from savanna import version
 
 
-GET_REST_REQ = "savanna.plugins.hdp.versions.1_3_2.versionhandler." \
+GET_REST_REQ = "savanna.plugins.hdp.versions.version_1_3_2.versionhandler." \
                "AmbariClient._get_http_session"
 
 
@@ -94,7 +94,8 @@ class AmbariPluginTest(unittest2.TestCase):
         plugin = ap.AmbariPlugin()
         cluster_config_file = pkg.resource_string(
             version.version_info.package,
-            'plugins/hdp/versions/1_3_2/resources/default-cluster.template')
+            'plugins/hdp/versions/version_1_3_2/resources/'
+            'default-cluster.template')
         cluster = plugin.convert(cluster_config_file, 'ambari', '1.3.2',
                                  'test-plugin', create_cluster_template)
         normalized_config = cs.ClusterSpec(cluster_config_file).normalize()
@@ -112,7 +113,8 @@ class AmbariPluginTest(unittest2.TestCase):
 
         cluster_config_file = pkg.resource_string(
             version.version_info.package,
-            'plugins/hdp/versions/1_3_2/resources/default-cluster.template')
+            'plugins/hdp/versions/version_1_3_2/resources/'
+            'default-cluster.template')
         cluster_spec = cs.ClusterSpec(cluster_config_file)
 
         ambari_info = ap.AmbariInfo(TestHost('111.11.1111'),
@@ -124,7 +126,7 @@ class AmbariPluginTest(unittest2.TestCase):
         self.assertEqual('put', request.method)
         self.assertEqual('http://111.11.1111:8080/api/v1/users/admin',
                          request.url)
-        self.assertEqual('{"Users":{"roles":"admin,user","password":"admin",'
+        self.assertEqual('{"Users":{"roles":"admin","password":"admin",'
                          '"old_password":"old-pwd"} }', request.data)
         self.assertEqual(('admin', 'old-pwd'), request.auth)
         self.assertEqual('admin', ambari_info.user)
@@ -138,7 +140,8 @@ class AmbariPluginTest(unittest2.TestCase):
 
         cluster_config_file = pkg.resource_string(
             version.version_info.package,
-            'plugins/hdp/versions/1_3_2/resources/default-cluster.template')
+            'plugins/hdp/versions/version_1_3_2/resources/'
+            'default-cluster.template')
         cluster_spec = cs.ClusterSpec(cluster_config_file)
 
         for service in cluster_spec.services:
@@ -156,7 +159,7 @@ class AmbariPluginTest(unittest2.TestCase):
         self.assertEqual('post', request.method)
         self.assertEqual('http://111.11.1111:8080/api/v1/users/test',
                          request.url)
-        self.assertEqual('{"Users":{"password":"test_pw","roles":"admin,user"'
+        self.assertEqual('{"Users":{"password":"test_pw","roles":"admin"'
                          '} }', request.data)
         self.assertEqual(('admin', 'old-pwd'), request.auth)
 
@@ -177,7 +180,8 @@ class AmbariPluginTest(unittest2.TestCase):
 
         cluster_config_file = pkg.resource_string(
             version.version_info.package,
-            'plugins/hdp/versions/1_3_2/resources/default-cluster.template')
+            'plugins/hdp/versions/version_1_3_2/resources/'
+            'default-cluster.template')
         cluster_spec = cs.ClusterSpec(cluster_config_file)
 
         for service in cluster_spec.services:
@@ -194,7 +198,7 @@ class AmbariPluginTest(unittest2.TestCase):
         self.assertEqual('put', request.method)
         self.assertEqual('http://111.11.1111:8080/api/v1/users/admin',
                          request.url)
-        self.assertEqual('{"Users":{"roles":"admin,user","password":"admin",'
+        self.assertEqual('{"Users":{"roles":"admin","password":"admin",'
                          '"old_password":"old-pwd"} }', request.data)
         self.assertEqual(('admin', 'old-pwd'), request.auth)
 
@@ -217,7 +221,8 @@ class AmbariPluginTest(unittest2.TestCase):
 
         cluster_config_file = pkg.resource_string(
             version.version_info.package,
-            'plugins/hdp/versions/1_3_2/resources/default-cluster.template')
+            'plugins/hdp/versions/version_1_3_2/resources/'
+            'default-cluster.template')
         cluster_spec = cs.ClusterSpec(cluster_config_file)
 
         for service in cluster_spec.services:
@@ -235,12 +240,13 @@ class AmbariPluginTest(unittest2.TestCase):
 
     @mock.patch("savanna.utils.openstack.nova.get_instance_info",
                 base.get_instance_info)
-    @mock.patch('savanna.plugins.hdp.services.HdfsService.'
-                '_get_swift_properties', return_value=[])
+    @mock.patch('savanna.plugins.hdp.versions.version_1_3_2.services.'
+                'HdfsService._get_swift_properties', return_value=[])
     def test__get_ambari_info(self, patched):
         cluster_config_file = pkg.resource_string(
             version.version_info.package,
-            'plugins/hdp/versions/1_3_2/resources/default-cluster.template')
+            'plugins/hdp/versions/version_1_3_2/resources/'
+            'default-cluster.template')
 
         test_host = base.TestServer(
             'host1', 'test-master', '11111', 3, '111.11.1111',
@@ -271,7 +277,8 @@ class AmbariPluginTest(unittest2.TestCase):
 
         cluster_config_file = pkg.resource_string(
             version.version_info.package,
-            'plugins/hdp/versions/1_3_2/resources/default-cluster.template')
+            'plugins/hdp/versions/version_1_3_2/resources/'
+            'default-cluster.template')
         cluster_spec = cs.ClusterSpec(cluster_config_file)
 
         ambari_info = ap.AmbariInfo(TestHost('111.11.1111'),

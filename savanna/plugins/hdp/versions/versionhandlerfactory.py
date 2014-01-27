@@ -25,13 +25,13 @@ class VersionHandlerFactory():
     def get_instance():
         if not VersionHandlerFactory.initialized:
             src_dir = os.path.join(os.path.dirname(__file__), '')
-            VersionHandlerFactory.versions = [name.replace('_', '.')
+            VersionHandlerFactory.versions = [name[8:].replace('_', '.')
                                               for name in os.listdir(src_dir)
                                               if os.path.isdir(
                                               os.path.join(src_dir, name))]
             VersionHandlerFactory.modules = {}
             for version in VersionHandlerFactory.versions:
-                module_name = 'savanna.plugins.hdp.versions.{0}.'\
+                module_name = 'savanna.plugins.hdp.versions.version_{0}.'\
                               'versionhandler'.format(
                               version.replace('.', '_'))
                 module_class = getattr(

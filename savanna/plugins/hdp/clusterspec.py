@@ -16,7 +16,6 @@
 from savanna.openstack.common import jsonutils as json
 from savanna.openstack.common import log as logging
 from savanna.plugins.general import exceptions as ex
-from savanna.plugins.hdp import services
 from savanna.plugins.hdp.versions import versionhandlerfactory as vhf
 
 
@@ -112,9 +111,12 @@ class ClusterSpec():
         return components
 
     def _parse_services(self, template_json):
+        handler = (vhf.VersionHandlerFactory.get_instance().
+                   get_version_handler(self.version))
+        sp = handler.get_services_processor()
         for s in template_json['services']:
             name = s['name']
-            service = services.create_service(name)
+            service = sp.create_service(name)
 
             self.services.append(service)
             for c in s['components']:

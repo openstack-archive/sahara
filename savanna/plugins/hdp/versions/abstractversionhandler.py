@@ -53,3 +53,7 @@ class AbstractVersionHandler():
     @abc.abstractmethod
     def get_version(self):
         return
+
+    @abc.abstractmethod
+    def get_services_processor(self):
+        return
