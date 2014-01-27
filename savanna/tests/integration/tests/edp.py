@@ -90,10 +90,23 @@ class EDPTest(base.ITestCase):
         if output_id:
             self.savanna.data_sources.delete(output_id)
 
+    def _add_swift_configs(self, configs):
+        swift_user = "fs.swift.service.savanna.username"
+        swift_passw = "fs.swift.service.savanna.password"
+
+        if "configs" not in configs:
+            configs["configs"] = {}
+
+        if swift_user not in configs["configs"]:
+            configs["configs"][swift_user] = self.common_config.OS_USERNAME
+        if swift_passw not in configs["configs"]:
+            configs["configs"][swift_passw] = self.common_config.OS_PASSWORD
+
     @base.skip_test('SKIP_EDP_TEST',
                     'Test for EDP was skipped.')
     def _edp_testing(self, job_type, job_data_list, lib_data_list=None,
-                     configs=None):
+                     configs=None, pass_input_output_args=False,
+                     job_exec_data={}):
         try:
             swift = self.connect_to_swift()
             container_name = 'Edp-test-%s' % str(uuid.uuid4())[:8]
@@ -117,12 +130,20 @@ class EDPTest(base.ITestCase):
             job_binary_list = []
             lib_binary_list = []
             job_binary_internal_list = []
-            input_id = self.__create_data_source(
-                'input-%s' % str(uuid.uuid4())[:8], 'swift',
-                'swift://%s.savanna/input' % container_name)
-            output_id = self.__create_data_source(
-                'output-%s' % str(uuid.uuid4())[:8], 'swift',
-                'swift://%s.savanna/output' % container_name)
+
+            swift_input_url = 'swift://%s.savanna/input' % container_name
+            swift_output_url = 'swift://%s.savanna/output' % container_name
+
+            # Java jobs don't use data sources.  Input/output paths must
+            # be passed as args with corresponding username/password configs
+            if job_type != "Java":
+                input_id = self.__create_data_source(
+                    'input-%s' % str(uuid.uuid4())[:8], 'swift',
+                    swift_input_url)
+                output_id = self.__create_data_source(
+                    'output-%s' % str(uuid.uuid4())[:8], 'swift',
+                    swift_output_url)
+
             if job_data_list:
                 self.__create_job_binaries(
                     job_data_list, job_binary_internal_list, job_binary_list
@@ -136,8 +157,23 @@ class EDPTest(base.ITestCase):
                 job_binary_list, lib_binary_list)
             if not configs:
                 configs = {}
+
+            # Append the input/output paths with the swift configs
+            # if the caller has requested it...
+            if job_type == "Java" and pass_input_output_args:
+                self._add_swift_configs(configs)
+                if "args" in configs:
+                    configs["args"].extend([swift_input_url,
+                                            swift_output_url])
+                else:
+                    configs["args"] = [swift_input_url,
+                                       swift_output_url]
+
             job_execution = self.savanna.job_executions.create(
-                job_id, self.cluster_id, input_id, output_id, configs=configs)
+                job_id, self.cluster_id, input_id, output_id,
+                configs=configs,
+                job_exec_data=job_exec_data)
+
             if job_execution:
                 self.__await_job_execution(job_execution)
 
