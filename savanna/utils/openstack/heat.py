@@ -14,12 +14,12 @@
 # limitations under the License.
 
 import json
-import time
 
 from heatclient import client as heat_client
 from oslo.config import cfg
 
 from savanna import context
+from savanna import exceptions as ex
 from savanna.openstack.common import log as logging
 from savanna.utils import files as f
 from savanna.utils.openstack import base
@@ -99,7 +99,7 @@ class ClusterTemplate(object):
         kwargs = {
             'stack_name': self.cluster.name,
             'timeout_mins': 180,
-            'disable_rollback': False,
+            'disable_rollback': True,
             'parameters': {},
             'template': json.loads(main_tmpl)}
 
@@ -205,10 +205,14 @@ class ClusterStack(object):
         self.heat_stack = heat_stack
 
     def wait_till_active(self):
-        while self.heat_stack.stack_status not in \
-                ('CREATE_COMPLETE', 'UPDATE_COMPLETE'):
-            time.sleep(1)
+        while self.heat_stack.stack_status in ('CREATE_IN_PROGRESS',
+                                               'UPDATE_IN_PROGRESS'):
+            context.sleep(1)
             self.heat_stack.get()
+
+        if self.heat_stack.stack_status not in ('CREATE_COMPLETE',
+                                                'UPDATE_COMPLETE'):
+            raise ex.HeatStackException(self.heat_stack.stack_status)
 
     def get_node_group_instances(self, node_group):
         insts = []
