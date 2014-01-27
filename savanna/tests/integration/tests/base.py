@@ -521,15 +521,16 @@ class ITestCase(unittest2.TestCase):
     def delete_objects(self, cluster_id=None,
                        cluster_template_id=None,
                        node_group_template_id_list=None):
-        if cluster_id:
-            self.savanna.clusters.delete(cluster_id)
-        if cluster_template_id:
-            self.savanna.cluster_templates.delete(cluster_template_id)
-        if node_group_template_id_list:
-            for node_group_template_id in node_group_template_id_list:
-                self.savanna.node_group_templates.delete(
-                    node_group_template_id
-                )
+        if not self.common_config.RETAIN_CLUSTER_AFTER_TEST:
+            if cluster_id:
+                self.savanna.clusters.delete(cluster_id)
+            if cluster_template_id:
+                self.savanna.cluster_templates.delete(cluster_template_id)
+            if node_group_template_id_list:
+                for node_group_template_id in node_group_template_id_list:
+                    self.savanna.node_group_templates.delete(
+                        node_group_template_id
+                    )
 
     @staticmethod
     def delete_swift_container(swift, container):
