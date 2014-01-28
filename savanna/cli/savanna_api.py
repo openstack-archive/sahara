@@ -64,4 +64,4 @@ def main():
     app = server.make_app()
 
     wsgi.server(eventlet.listen((cfg.CONF.host, cfg.CONF.port), backlog=500),
-                app)
+                app, log=logging.WritableLogger(LOG), debug=False)
