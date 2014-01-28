@@ -614,11 +614,16 @@ class OozieService(Service):
     def finalize_configuration(self, cluster_spec):
         oozie_servers = cluster_spec.determine_component_hosts('OOZIE_SERVER')
         if oozie_servers:
+            oozie_server = oozie_servers.pop()
+            name_list = [oozie_server.fqdn(), oozie_server.internal_ip,
+                         oozie_server.management_ip]
             self._replace_config_token(
-                cluster_spec, '%OOZIE_HOST%', oozie_servers.pop().fqdn(),
+                cluster_spec, '%OOZIE_HOST%', oozie_server.fqdn(),
                 {'global': ['oozie_hostname'],
-                    'core-site': ['hadoop.proxyuser.oozie.hosts'],
                     'oozie-site': ['oozie.base.url']})
+            self._replace_config_token(
+                cluster_spec, '%OOZIE_HOST%', ",".join(name_list),
+                {'core-site': ['hadoop.proxyuser.oozie.hosts']})
 
     def finalize_ng_components(self, cluster_spec):
         oozie_ng = cluster_spec.get_node_groups_containing_component(

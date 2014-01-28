@@ -13,9 +13,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from oslo.config import cfg
+
 from savanna import conductor as c
 from savanna import context
 from savanna.openstack.common import log as logging
+from savanna.plugins import base as plugin_base
 from savanna.service.edp.binary_retrievers import dispatch
 from savanna.service.edp import job_manager as manager
 from savanna.service.edp.workflow_creator import workflow_factory as w_f
@@ -23,6 +26,7 @@ from savanna.service.edp.workflow_creator import workflow_factory as w_f
 
 conductor = c.API
 LOG = logging.getLogger(__name__)
+CONF = cfg.CONF
 
 
 def get_job_config_hints(job_type):
@@ -41,6 +45,17 @@ def execute_job(job_id, data):
     if "args" in configs and type(configs["args"]) is dict:
         configs["args"] = []
 
+    ctx = context.current()
+    cluster = conductor.cluster_get(ctx, cluster_id)
+    plugin = plugin_base.PLUGINS.get_plugin(cluster.plugin_name)
+    instance = plugin.get_oozie_server(cluster)
+
+    extra = {}
+    info = None
+    if CONF.use_namespaces and not CONF.use_floating_ips:
+        info = instance.remote().get_neutron_info()
+        extra['neutron'] = info
+
     # Not in Java job types but present for all others
     input_id = data.get('input_id', None)
     output_id = data.get('output_id', None)
@@ -55,8 +70,8 @@ def execute_job(job_id, data):
                    'java_opts': java_opts,
                    'input_id': input_id, 'output_id': output_id,
                    'job_id': job_id, 'cluster_id': cluster_id,
-                   'info': {'status': 'Pending'}, 'job_configs': configs}
-
+                   'info': {'status': 'Pending'}, 'job_configs': configs,
+                   'extra': extra}
     job_execution = conductor.job_execution_create(context.ctx(), job_ex_dict)
 
     context.spawn("Starting Job Execution %s" % job_execution.id,

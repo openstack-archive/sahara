@@ -79,6 +79,10 @@ class Context(object):
             'roles': self.roles,
         }
 
+    def is_auth_capable(self):
+        return self.service_catalog and self.token and self.tenant_id and \
+            self.user_id
+
 
 def get_admin_context():
     return Context(is_admin=True)

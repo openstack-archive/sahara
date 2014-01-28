@@ -179,3 +179,6 @@ class IDHProvider(p.ProvisioningPluginBase):
 
         ctx = context.ctx()
         conductor.cluster_update(ctx, cluster, {'info': info})
+
+    def get_oozie_server(self, cluster):
+        return u.get_instance(cluster, "oozie")

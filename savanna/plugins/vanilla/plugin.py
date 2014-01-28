@@ -56,6 +56,9 @@ class VanillaProvider(p.ProvisioningPluginBase):
             "1.2.1 cluster without any management consoles. Also it can "
             "deploy Oozie 4.0.0 and Hive 0.11.0")
 
+    def get_oozie_server(self, cluster):
+        return utils.get_instance(cluster, "oozie")
+
     def get_versions(self):
         return ['1.2.1']
 

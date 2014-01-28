@@ -288,6 +288,25 @@ class AmbariPluginTest(unittest2.TestCase):
         self.assertEqual('admin', ambari_info.user)
         self.assertEqual('admin', ambari_info.password)
 
+    def test_get_oozie_server(self):
+        test_host = base.TestServer(
+            'host1', 'test-master', '11111', 3, '111.11.1111',
+            '222.11.1111')
+
+        node_group = base.TestNodeGroup(
+            'ng1', [test_host], ["AMBARI_SERVER", "NAMENODE", "DATANODE",
+                                 "JOBTRACKER", "TASKTRACKER", "OOZIE_SERVER"])
+        cluster = base.TestCluster([node_group])
+        plugin = ap.AmbariPlugin()
+
+        self.assertIsNotNone(plugin.get_oozie_server(cluster))
+
+        node_group = base.TestNodeGroup(
+            'ng1', [test_host], ["AMBARI_SERVER", "NAMENODE", "DATANODE",
+                                 "JOBTRACKER", "TASKTRACKER", "NOT_OOZIE"])
+        cluster = base.TestCluster([node_group])
+        self.assertIsNone(plugin.get_oozie_server(cluster))
+
     def _get_test_request(self, host, port):
         request = base.TestRequest()
         self.requests.append(request)

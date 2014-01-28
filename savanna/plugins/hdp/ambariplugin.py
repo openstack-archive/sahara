@@ -20,6 +20,7 @@ from savanna import context
 from savanna import exceptions as exc
 from savanna.openstack.common import log as logging
 from savanna.plugins.general import exceptions as ex
+from savanna.plugins.general import utils as u
 from savanna.plugins.hdp import hadoopserver as h
 from savanna.plugins.hdp import savannautils as utils
 from savanna.plugins.hdp.versions import versionhandlerfactory as vhf
@@ -137,6 +138,9 @@ class AmbariPlugin(p.ProvisioningPluginBase):
                                         "hadoop_version": version,
                                         "node_groups": node_groups,
                                         "cluster_configs": cluster_configs})
+
+    def get_oozie_server(self, cluster):
+        return u.get_instance(cluster, "oozie_server")
 
     def update_infra(self, cluster):
         pass
