@@ -50,23 +50,11 @@ from savanna.utils import hashabledict as h
 from savanna.utils.openstack import base
 from savanna.utils.openstack import neutron
 from savanna.utils import procutils
+from savanna.utils import remote
 
 
 LOG = logging.getLogger(__name__)
-
-remote_opts = [
-    cfg.IntOpt('global_remote_threshold', default=100,
-               help='Maximum number of remote operations that will '
-                    'be running at the same time. Note that each '
-                    'remote operation requires its own process to'
-                    'run.'),
-    cfg.IntOpt('cluster_remote_threshold', default=70,
-               help='The same as global_remote_threshold, but for '
-                    'a single cluster.'),
-]
-
 CONF = cfg.CONF
-CONF.register_opts(remote_opts)
 
 
 _ssh = None
@@ -74,6 +62,9 @@ _sessions = {}
 
 
 INFRA = None
+
+
+_global_remote_semaphore = None
 
 
 def _get_proxy(neutron_info):
@@ -265,19 +256,6 @@ def _execute_on_vm_interactive(cmd, matcher):
         channel.close()
 
 
-_global_remote_semaphore = None
-
-
-def setup_remote(engine):
-    global _global_remote_semaphore
-    global INFRA
-
-    _global_remote_semaphore = semaphore.Semaphore(
-        CONF.global_remote_threshold)
-
-    INFRA = engine
-
-
 def _acquire_remote_semaphore():
     context.current().remote_semaphore.acquire()
     _global_remote_semaphore.acquire()
@@ -288,7 +266,7 @@ def _release_remote_semaphore():
     context.current().remote_semaphore.release()
 
 
-class InstanceInteropHelper(object):
+class InstanceInteropHelper(remote.Remote):
     def __init__(self, instance):
         self.instance = instance
 
@@ -375,35 +353,24 @@ class InstanceInteropHelper(object):
 
     def execute_command(self, cmd, run_as_root=False, get_stderr=False,
                         raise_when_error=True, timeout=300):
-        """Execute specified command remotely using existing ssh connection.
-
-        Return exit code, stdout data and stderr data of the executed command.
-        """
         self._log_command('Executing "%s"' % cmd)
         return self._run_s(_execute_command, timeout, cmd, run_as_root,
                            get_stderr, raise_when_error)
 
     def write_file_to(self, remote_file, data, run_as_root=False, timeout=120):
-        """Create remote file using existing ssh connection and write the given
-        data to it.
-        """
         self._log_command('Writing file "%s"' % remote_file)
         self._run_s(_write_file_to, timeout, remote_file, data, run_as_root)
 
     def write_files_to(self, files, run_as_root=False, timeout=120):
-        """Copy file->data dictionary in a single ssh connection.
-        """
         self._log_command('Writing files "%s"' % files.keys())
         self._run_s(_write_files_to, timeout, files, run_as_root)
 
     def read_file_from(self, remote_file, run_as_root=False, timeout=120):
-        """Read remote file from the specified host and return given data."""
         self._log_command('Reading file "%s"' % remote_file)
         return self._run_s(_read_file_from, timeout, remote_file, run_as_root)
 
     def replace_remote_string(self, remote_file, old_str, new_str,
                               timeout=120):
-        """Replaces strings in remote file using sed command."""
         self._log_command('In file "%s" replacing string "%s" '
                           'with "%s"' % (remote_file, old_str, new_str))
         self._run_s(_replace_remote_string, timeout, remote_file, old_str,
@@ -423,15 +390,12 @@ class InstanceInteropHelper(object):
              the command is finished. False should be returned
              otherwise.
         """
+
         self._log_command('Executing interactively "%s"' % cmd)
         self._run_s(_execute_on_vm_interactive, timeout, cmd, matcher)
 
     def _log_command(self, str):
         LOG.debug('[%s] %s' % (self.instance.instance_name, str))
-
-
-def get_remote(instance):
-    return InstanceInteropHelper(instance)
 
 
 class BulkInstanceInteropHelper(InstanceInteropHelper):
@@ -453,3 +417,21 @@ class BulkInstanceInteropHelper(InstanceInteropHelper):
 
     def _run_s(self, func, timeout, *args, **kwargs):
         return self._run_with_log(func, timeout, *args, **kwargs)
+
+
+class SshRemoteDriver(remote.RemoteDriver):
+    def setup_remote(self, engine):
+        global _global_remote_semaphore
+        global INFRA
+
+        _global_remote_semaphore = semaphore.Semaphore(
+            CONF.global_remote_threshold)
+
+        INFRA = engine
+
+    def get_remote(self, instance):
+        return InstanceInteropHelper(instance)
+
+    def get_userdata_template(self):
+        # SSH does not need any instance customization
+        return ""

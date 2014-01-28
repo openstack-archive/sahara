@@ -24,6 +24,7 @@ from savanna import context
 from savanna.openstack.common import log as logging
 from savanna.service import networks
 from savanna.utils import general as g
+from savanna.utils import remote
 
 
 LOG = logging.getLogger(__name__)
@@ -126,6 +127,9 @@ class Engine:
         script_template = """#!/bin/bash
 echo "%(public_key)s" >> %(user_home)s/.ssh/authorized_keys
 """
+
+        script_template += remote.get_userdata_template()
+
         username = self.get_node_group_image_username(node_group)
 
         if username == "root":

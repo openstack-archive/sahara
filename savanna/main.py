@@ -173,6 +173,7 @@ def _get_remote_driver():
     extension_manager = stevedore.DriverManager(
         namespace='savanna.remote',
         name=CONF.remote,
+        invoke_on_load=True
     )
 
     return extension_manager.driver

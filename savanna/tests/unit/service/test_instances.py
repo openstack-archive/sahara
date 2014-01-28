@@ -15,6 +15,8 @@
 
 import mock
 
+from novaclient import exceptions as nova_exceptions
+
 from savanna import conductor as cond
 from savanna import context
 from savanna.service import direct_engine as e
@@ -22,29 +24,48 @@ from savanna.tests.unit import base
 import savanna.utils.crypto as c
 from savanna.utils import general as g
 
-from novaclient import exceptions as nova_exceptions
-
 
 conductor = cond.API
 
 
-class TestClusterRollBack(base.SavannaWithDbTestCase):
+class AbstractInstanceTest(base.SavannaWithDbTestCase):
     def setUp(self):
-        super(TestClusterRollBack, self).setUp()
+        super(AbstractInstanceTest, self).setUp()
+
         self.engine = e.DirectEngine()
 
-    @mock.patch('savanna.utils.openstack.nova.client')
-    def test_cluster_creation_with_errors(self, novaclient):
+        self.is_passthrough_patcher = mock.patch(
+            'savanna.conductor.resource.Resource._is_passthrough_type')
+        self.is_passthrough_patcher.start().return_value = True
+
+        self.novaclient_patcher = mock.patch(
+            'savanna.utils.openstack.nova.client')
+        self.nova = _create_nova_mock(self.novaclient_patcher.start())
+
+        self.get_userdata_patcher = mock.patch(
+            'savanna.utils.remote.get_userdata_template')
+        self.get_userdata_patcher.start().return_value = ''
+
+    def tearDown(self):
+        self.get_userdata_patcher.stop()
+        self.novaclient_patcher.stop()
+        self.is_passthrough_patcher.stop()
+
+        super(AbstractInstanceTest, self).tearDown()
+
+
+class TestClusterRollBack(AbstractInstanceTest):
+
+    def test_cluster_creation_with_errors(self):
         node_groups = [_make_ng_dict('test_group', 'test_flavor',
                                      ['data node', 'task tracker'], 2)]
 
         cluster = _create_cluster_mock(node_groups, [])
 
-        nova = _create_nova_mock(novaclient)
-        nova.servers.create.side_effect = [_mock_instance(1),
-                                           MockException("test")]
+        self.nova.servers.create.side_effect = [_mock_instance(1),
+                                                MockException("test")]
 
-        nova.servers.list = mock.MagicMock(return_value=[_mock_instance(1)])
+        self.nova.servers.list.return_value = [_mock_instance(1)]
 
         with self.assertRaises(MockException):
             self.engine.create_cluster(cluster)
@@ -54,21 +75,16 @@ class TestClusterRollBack(base.SavannaWithDbTestCase):
         self.assertEqual(len(cluster_obj.node_groups[0].instances), 0)
 
 
-class NodePlacementTest(base.SavannaWithDbTestCase):
-    def setUp(self):
-        super(NodePlacementTest, self).setUp()
-        self.engine = e.DirectEngine()
+class NodePlacementTest(AbstractInstanceTest):
 
-    @mock.patch('savanna.utils.openstack.nova.client')
-    def test_one_node_groups_and_one_affinity_group(self, novaclient):
+    def test_one_node_groups_and_one_affinity_group(self):
         node_groups = [_make_ng_dict('test_group', 'test_flavor',
                                      ['data node'], 2)]
         cluster = _create_cluster_mock(node_groups, ["data node"])
-        nova = _create_nova_mock(novaclient)
         self.engine._create_instances(cluster)
         userdata = _generate_user_data_script(cluster)
 
-        nova.servers.create.assert_has_calls(
+        self.nova.servers.create.assert_has_calls(
             [mock.call("test_cluster-test_group-001",
                        "initial",
                        "test_flavor",
@@ -87,17 +103,15 @@ class NodePlacementTest(base.SavannaWithDbTestCase):
         cluster_obj = conductor.cluster_get_all(ctx)[0]
         self.assertEqual(len(cluster_obj.node_groups[0].instances), 2)
 
-    @mock.patch('savanna.utils.openstack.nova.client')
-    def test_one_node_groups_and_no_affinity_group(self, novaclient):
+    def test_one_node_groups_and_no_affinity_group(self):
         node_groups = [_make_ng_dict('test_group', 'test_flavor',
                                      ['data node', 'task tracker'], 2)]
 
         cluster = _create_cluster_mock(node_groups, [])
-        nova = _create_nova_mock(novaclient)
         self.engine._create_instances(cluster)
         userdata = _generate_user_data_script(cluster)
 
-        nova.servers.create.assert_has_calls(
+        self.nova.servers.create.assert_has_calls(
             [mock.call("test_cluster-test_group-001",
                        "initial",
                        "test_flavor",
@@ -116,19 +130,17 @@ class NodePlacementTest(base.SavannaWithDbTestCase):
         cluster_obj = conductor.cluster_get_all(ctx)[0]
         self.assertEqual(len(cluster_obj.node_groups[0].instances), 2)
 
-    @mock.patch('savanna.utils.openstack.nova.client')
-    def test_two_node_groups_and_one_affinity_group(self, novaclient):
+    def test_two_node_groups_and_one_affinity_group(self):
         node_groups = [_make_ng_dict("test_group_1", "test_flavor",
                                      ["data node", "test tracker"], 2),
                        _make_ng_dict("test_group_2", "test_flavor",
                                      ["data node", "test tracker"], 1)]
 
         cluster = _create_cluster_mock(node_groups, ["data node"])
-        nova = _create_nova_mock(novaclient)
         self.engine._create_instances(cluster)
         userdata = _generate_user_data_script(cluster)
 
-        nova.servers.create.assert_has_calls(
+        self.nova.servers.create.assert_has_calls(
             [mock.call("test_cluster-test_group_1-001",
                        "initial",
                        "test_flavor",
@@ -156,15 +168,13 @@ class NodePlacementTest(base.SavannaWithDbTestCase):
         self.assertEqual(inst_number, 3)
 
 
-class IpManagementTest(base.SavannaWithDbTestCase):
+class IpManagementTest(AbstractInstanceTest):
     def setUp(self):
         super(IpManagementTest, self).setUp()
         self.engine = e.DirectEngine()
 
-    @mock.patch('savanna.utils.openstack.nova.client')
-    def test_ip_assignment_use_no_floating(self, novaclient):
+    def test_ip_assignment_use_no_floating(self):
         self.override_config("use_floating_ips", False)
-        nova = _create_nova_mock(novaclient)
 
         node_groups = [_make_ng_dict("test_group_1", "test_flavor",
                                      ["data node", "test tracker"], 2,
@@ -181,23 +191,15 @@ class IpManagementTest(base.SavannaWithDbTestCase):
 
         self.engine._assign_floating_ips(instances_list)
 
-        nova.floating_ips.create.assert_has_calls(
+        self.nova.floating_ips.create.assert_has_calls(
             [mock.call("pool"), mock.call("pool")])
 
-        self.assertEqual(nova.floating_ips.create.call_count, 2,
+        self.assertEqual(self.nova.floating_ips.create.call_count, 2,
                          "Not expected floating IPs number found.")
 
 
-class ShutdownClusterTest(base.SavannaWithDbTestCase):
-    def setUp(self):
-        super(ShutdownClusterTest, self).setUp()
-        self.engine = e.DirectEngine()
-
-    @mock.patch('savanna.utils.openstack.nova.client')
-    def test_delete_floating_ips(self, novaclient):
-
-        nova = _create_nova_mock(novaclient)
-
+class ShutdownClusterTest(AbstractInstanceTest):
+    def test_delete_floating_ips(self):
         node_groups = [_make_ng_dict("test_group_1", "test_flavor",
                                      ["data node", "test tracker"], 2, 'pool')]
 
@@ -211,9 +213,9 @@ class ShutdownClusterTest(base.SavannaWithDbTestCase):
         self.engine._assign_floating_ips(instances_list)
 
         self.engine._shutdown_instances(cluster)
-        self.assertEqual(nova.floating_ips.delete.call_count, 2,
+        self.assertEqual(self.nova.floating_ips.delete.call_count, 2,
                          "Not expected floating IPs number found in delete")
-        self.assertEqual(nova.servers.delete.call_count, 2,
+        self.assertEqual(self.nova.servers.delete.call_count, 2,
                          "Not expected")
 
 
