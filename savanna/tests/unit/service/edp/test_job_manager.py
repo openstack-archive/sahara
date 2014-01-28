@@ -13,6 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import copy
 import mock
 
 from savanna import conductor as cond
@@ -341,6 +342,38 @@ class TestJobManager(models_test_base.DbTestCase):
 
         creator = workflow_factory.get_creator(job)
         self.assertEqual(type(creator), workflow_factory.MapReduceFactory)
+
+    def test_update_job_dict(self):
+        w = workflow_factory.BaseFactory()
+
+        job_dict = {'configs': {'default1': 'value1',
+                                'default2': 'value2'},
+                    'params': {'param1': 'value1',
+                               'param2': 'value2'},
+                    'args': ['replace this', 'and this']}
+
+        edp_configs = {'edp.streaming.mapper': '/usr/bin/cat',
+                       'edp.streaming.reducer': '/usr/bin/wc'}
+        configs = {'default2': 'changed'}
+        configs.update(edp_configs)
+
+        params = {'param1': 'changed'}
+
+        exec_job_dict = {'configs': configs,
+                         'params': params,
+                         'args': ['replaced']}
+
+        orig_exec_job_dict = copy.deepcopy(exec_job_dict)
+        w.update_job_dict(job_dict, exec_job_dict)
+        self.assertEqual(job_dict,
+                         {'edp_configs': edp_configs,
+                          'configs':  {'default1': 'value1',
+                                       'default2': 'changed'},
+                          'params': {'param1': 'changed',
+                                     'param2': 'value2'},
+                          'args': ['replaced']})
+
+        self.assertEqual(orig_exec_job_dict, exec_job_dict)
 
 
 def _create_all_stack(type, configs=None):
