@@ -37,6 +37,7 @@ On Ubuntu:
 
 .. sourcecode:: console
 
+    $ sudo apt-get update
     $ sudo apt-get install git-core python-dev python-virtualenv gcc libpq-dev libmysqlclient-dev
     $ sudo pip install tox
 
