@@ -73,8 +73,27 @@ JOB_EXEC_SCHEMA = {
 }
 
 
+def _streaming_present(data):
+    try:
+        streaming = set(('edp.streaming.mapper',
+                         'edp.streaming.reducer'))
+        configs = set(data['job_configs']['configs'])
+        return streaming.intersection(configs) == streaming
+    except Exception:
+        return False
+
+
 def check_job_executor(data, job_id):
     job = api.get_job(job_id)
+
+    # Since we allow the creation of MapReduce jobs without libs,
+    # ensure here that streaming values are set if the job has
+    # no libs
+    if job.type == 'MapReduce':
+        if not job.libs and not _streaming_present(data):
+            raise ex.InvalidDataException("MapReduce job without libs "
+                                          "must specify streaming mapper "
+                                          "and reducer")
 
     # Make sure we have the right schema for the job type
     # We can identify the Java action schema by looking for 'main_class'
