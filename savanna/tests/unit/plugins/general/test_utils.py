@@ -15,25 +15,25 @@
 
 import unittest2
 
-from savanna.conductor import resource as r
 from savanna.plugins.general import utils as u
+from savanna.tests.unit import testutils as tu
 
 
 class GeneralUtilsTest(unittest2.TestCase):
     def setUp(self):
-        i1 = _make_inst_dict('i1', 'master')
-        i2 = _make_inst_dict('i2', 'worker1')
-        i3 = _make_inst_dict('i3', 'worker2')
-        i4 = _make_inst_dict('i4', 'worker3')
-        i5 = _make_inst_dict('i5', 'sn')
+        i1 = tu.make_inst_dict('i1', 'master')
+        i2 = tu.make_inst_dict('i2', 'worker1')
+        i3 = tu.make_inst_dict('i3', 'worker2')
+        i4 = tu.make_inst_dict('i4', 'worker3')
+        i5 = tu.make_inst_dict('i5', 'sn')
 
-        ng1 = _make_ng_dict("master", "f1", ["jt", "nn"], 1, [i1])
-        ng2 = _make_ng_dict("workers", "f1", ["tt", "dn"], 3,
-                            [i2, i3, i4])
-        ng3 = _make_ng_dict("sn", "f1", ["dn"], 1, [i5])
+        ng1 = tu.make_ng_dict("master", "f1", ["jt", "nn"], 1, [i1])
+        ng2 = tu.make_ng_dict("workers", "f1", ["tt", "dn"], 3,
+                              [i2, i3, i4])
+        ng3 = tu.make_ng_dict("sn", "f1", ["dn"], 1, [i5])
 
-        self.c1 = _create_cluster("cluster1", "tenant1", "general", "1.2.1",
-                                  [ng1, ng2, ng3])
+        self.c1 = tu.create_cluster("cluster1", "tenant1", "general", "1.2.1",
+                                    [ng1, ng2, ng3])
 
         self.ng1 = self.c1.node_groups[0]
         self.ng2 = self.c1.node_groups[1]
@@ -78,21 +78,3 @@ class GetPortUtilsTest(unittest2.TestCase):
     def test_get_port_from_address(self):
         for address, port in self.test_values:
             self.assertEqual(u.get_port_from_address(address), port)
-
-
-def _create_cluster(name, tenant, plugin, version, node_groups, **kwargs):
-    dct = {'name': name, 'tenant_id': tenant, 'plugin_name': plugin,
-           'hadoop_version': version, 'node_groups': node_groups}
-    dct.update(kwargs)
-    return r.ClusterResource(dct)
-
-
-def _make_ng_dict(name, flavor, processes, count, instances=[], **kwargs):
-    dct = {'name': name, 'flavor_id': flavor, 'node_processes': processes,
-           'count': count, 'instances': instances}
-    dct.update(kwargs)
-    return dct
-
-
-def _make_inst_dict(inst_id, inst_name):
-    return {'instance_id': inst_id, 'instance_name': inst_name}
