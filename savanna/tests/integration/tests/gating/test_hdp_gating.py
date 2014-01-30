@@ -128,7 +128,7 @@ class HDPGatingTest(map_reduce.MapReduceTest, swift.SwiftTest,
 #------------------------------MAP REDUCE TESTING------------------------------
 
         try:
-            self._map_reduce_testing(cluster_info)
+            self.map_reduce_testing(cluster_info)
 
         except Exception as e:
             with excutils.save_and_reraise_exception():
@@ -142,7 +142,7 @@ class HDPGatingTest(map_reduce.MapReduceTest, swift.SwiftTest,
 #---------------------------CHECK SWIFT AVAILABILITY---------------------------
 
         try:
-            self._check_swift_availability(cluster_info)
+            self.check_swift_availability(cluster_info)
 
         except Exception as e:
             with excutils.save_and_reraise_exception():
@@ -169,7 +169,7 @@ class HDPGatingTest(map_reduce.MapReduceTest, swift.SwiftTest,
             }
         ]
         try:
-            new_cluster_info = self._cluster_scaling(cluster_info, change_list)
+            new_cluster_info = self.cluster_scaling(cluster_info, change_list)
 
         except Exception as e:
             with excutils.save_and_reraise_exception():
@@ -185,7 +185,7 @@ class HDPGatingTest(map_reduce.MapReduceTest, swift.SwiftTest,
 #-----------------------MAP REDUCE TESTING AFTER SCALING-----------------------
 
             try:
-                self._map_reduce_testing(new_cluster_info)
+                self.map_reduce_testing(new_cluster_info)
 
             except Exception as e:
                 with excutils.save_and_reraise_exception():
@@ -200,7 +200,7 @@ class HDPGatingTest(map_reduce.MapReduceTest, swift.SwiftTest,
 #--------------------CHECK SWIFT AVAILABILITY AFTER SCALING--------------------
 
             try:
-                self._check_swift_availability(new_cluster_info)
+                self.check_swift_availability(new_cluster_info)
 
             except Exception as e:
                 with excutils.save_and_reraise_exception():
