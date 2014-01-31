@@ -16,6 +16,6 @@ python-swiftclient>=1.5
 python-neutronclient>=2.3.3,<3
 python-heatclient>=0.2.3
 six>=1.4.1
-stevedore>=0.12
+stevedore>=0.14
 SQLAlchemy>=0.7.8,<=0.8.99
 WebOb>=1.2.3,<1.3
