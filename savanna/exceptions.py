@@ -189,3 +189,9 @@ class NotImplementedException(SavannaException):
 
     def __init__(self, feature):
         self.message = "Feature '%s' is not implemented" % feature
+
+
+class HeatStackException(SavannaException):
+    def __init__(self, heat_stack_status):
+        self.code = "HEAT_STACK_EXCEPTION"
+        self.message = "Heat stack failed with status %s" % heat_stack_status

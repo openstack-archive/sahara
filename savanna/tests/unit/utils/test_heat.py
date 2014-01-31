@@ -14,8 +14,10 @@
 # limitations under the License.
 
 import json
+import mock
 import unittest2
 
+from savanna import exceptions as ex
 from savanna.tests.unit.plugins.general import test_utils as tu
 from savanna.utils import files as f
 from savanna.utils.openstack import heat as h
@@ -137,3 +139,31 @@ class TestClusterTemplate(unittest2.TestCase):
             json.loads(f.get_file_text(
                 "tests/unit/resources/"
                 "test_serialize_resources_aa.heat")))
+
+
+class TestClusterStack(unittest2.TestCase):
+    @mock.patch("savanna.context.sleep", return_value=None)
+    def test_wait_till_active(self, _):
+        cl_stack = h.ClusterStack(None, FakeHeatStack('CREATE_IN_PROGRESS',
+                                                      'CREATE_COMPLETE'))
+        cl_stack.wait_till_active()
+        cl_stack.heat_stack = FakeHeatStack('UPDATE_IN_PROGRESS',
+                                            'UPDATE_COMPLETE')
+        cl_stack.wait_till_active()
+        cl_stack.heat_stack = FakeHeatStack('CREATE_IN_PROGRESS',
+                                            'CREATE_FAILED')
+        with self.assertRaises(ex.HeatStackException) as context:
+            cl_stack.wait_till_active()
+        self.assertEqual("HEAT_STACK_EXCEPTION", context.exception.code)
+        self.assertEqual("Heat stack failed with status CREATE_FAILED",
+                         context.exception.message)
+
+
+class FakeHeatStack():
+
+    def __init__(self, stack_status, new_status):
+        self.stack_status = stack_status
+        self.new_status = new_status
+
+    def get(self):
+        self.stack_status = self.new_status
