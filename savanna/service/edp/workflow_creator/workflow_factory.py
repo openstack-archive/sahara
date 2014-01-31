@@ -160,11 +160,17 @@ class MapReduceFactory(BaseFactory):
         configs['mapred.output.dir'] = output_data.url
         return configs
 
+    def _get_streaming(self, job_dict):
+        prefix = 'edp.streaming.'
+        return dict((k[len(prefix):], v) for (k, v) in six.iteritems(
+            job_dict['edp_configs']) if k.startswith(prefix))
+
     def get_workflow_xml(self, execution, input_data, output_data):
         job_dict = {'configs': self.get_configs(input_data, output_data)}
         self.update_job_dict(job_dict, execution.job_configs)
         creator = mapreduce_workflow.MapReduceWorkFlowCreator()
-        creator.build_workflow_xml(configuration=job_dict['configs'])
+        creator.build_workflow_xml(configuration=job_dict['configs'],
+                                   streaming=self._get_streaming(job_dict))
         return creator.get_built_workflow_xml()
 
 
