@@ -356,7 +356,7 @@ def scale_cluster(cluster, instances):
     client = c.IntelClient(u.get_instance(cluster, 'manager'), cluster.name)
     rack = '/Default'
     client.nodes.add(scale_ins_hosts, rack, 'hadoop',
-                     cluster.extra['manager_authzkeyfile_path'])
+                     '/home/hadoop/.ssh/id_rsa')
     client.cluster.install_software(scale_ins_hosts)
 
     if to_scale_tt:
@@ -401,7 +401,7 @@ def decommission_nodes(cluster, instances):
                 cur_time += 5
             else:
                 LOG.warn("Failed to decomission node '%s' of cluster '%s' "
-                         "in %s minutes" % (host, cluster.name, timeout/60))
+                         "in %s minutes" % (host, cluster.name, timeout / 60))
 
     client.nodes.stop(dec_hosts)
 
@@ -435,7 +435,7 @@ def decommission_nodes(cluster, instances):
                 cur_time += 5
         else:
             LOG.warn("Failed to stop services on node '%s' of cluster '%s' "
-                     "in %s minutes" % (instance, cluster.name, timeout/60))
+                     "in %s minutes" % (instance, cluster.name, timeout / 60))
 
     for node in dec_hosts:
         LOG.info("Deleting node '%s' on cluster '%s'" % (node, cluster.name))
