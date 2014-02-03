@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version:  Savanna\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2014-01-21 06:17+0000\n"
+"POT-Creation-Date: 2014-02-03 06:09+0000\n"
 "PO-Revision-Date: 2014-01-17 06:20+0000\n"
 "Last-Translator: openstackjenkins <jenkins@openstack.org>\n"
 "Language-Team: Korean (Korea) "
@@ -45,11 +45,11 @@ msgstr "예기치 않은 예외 %d 번 발생하였습니다... 다시 시도중
 msgid "Reloading cached file %s"
 msgstr "캐시된 파일 %s 다시 로드 중"
 
-#: savanna/openstack/common/gettextutils.py:252
+#: savanna/openstack/common/gettextutils.py:263
 msgid "Message objects do not support addition."
 msgstr ""
 
-#: savanna/openstack/common/gettextutils.py:261
+#: savanna/openstack/common/gettextutils.py:272
 msgid ""
 "Message objects do not support str() because they may contain non-ascii "
 "characters. Please use unicode() or translate() instead."
@@ -95,22 +95,22 @@ msgstr ""
 msgid "Semaphore / lock released \"%(function)s\""
 msgstr ""
 
-#: savanna/openstack/common/log.py:301
+#: savanna/openstack/common/log.py:313
 #, python-format
 msgid "Deprecated: %s"
 msgstr "더 이상 사용되지 않음: %s"
 
-#: savanna/openstack/common/log.py:402
+#: savanna/openstack/common/log.py:416
 #, python-format
 msgid "Error loading logging config %(log_config)s: %(err_msg)s"
 msgstr "%(log_config)s 설정 기록을 불러오는 중 오류가 발생했습니다: %(err_msg)s"
 
-#: savanna/openstack/common/log.py:453
+#: savanna/openstack/common/log.py:467
 #, python-format
 msgid "syslog facility must be one of: %s"
 msgstr "syslog 기능이 다음 중 하나여야 함: %s"
 
-#: savanna/openstack/common/log.py:623
+#: savanna/openstack/common/log.py:654
 #, python-format
 msgid "Fatal call to deprecated config: %(msg)s"
 msgstr "더 이상 사용되지 않는 구성에 대한 심각한 호출: %(msg)s"
@@ -158,37 +158,55 @@ msgstr "주기적 태스크 %(full_task_name)s 실행 중"
 msgid "Error during %(full_task_name)s: %(e)s"
 msgstr "%(full_task_name)s 중 오류: %(e)s"
 
-#: savanna/openstack/common/processutils.py:130
+#: savanna/openstack/common/processutils.py:58
+msgid "Unexpected error while running command."
+msgstr ""
+
+#: savanna/openstack/common/processutils.py:61
+#, python-format
+msgid ""
+"%(description)s\n"
+"Command: %(cmd)s\n"
+"Exit code: %(exit_code)s\n"
+"Stdout: %(stdout)r\n"
+"Stderr: %(stderr)r"
+msgstr ""
+
+#: savanna/openstack/common/processutils.py:139
 #, python-format
 msgid "Got unknown keyword args to utils.execute: %r"
 msgstr "utils.execute에 대해 알 수 없는 키워드 인수를 가져옴: %r"
 
 #: savanna/openstack/common/processutils.py:145
+msgid "Command requested root, but did not specify a root helper."
+msgstr ""
+
+#: savanna/openstack/common/processutils.py:154
 #, python-format
 msgid "Running cmd (subprocess): %s"
 msgstr "cmd(하위 프로세스) 실행 중: %s"
 
-#: savanna/openstack/common/processutils.py:169
-#: savanna/openstack/common/processutils.py:241
+#: savanna/openstack/common/processutils.py:187
+#: savanna/openstack/common/processutils.py:259
 #, python-format
 msgid "Result was %s"
 msgstr "결과는 %s입니다."
 
-#: savanna/openstack/common/processutils.py:181
+#: savanna/openstack/common/processutils.py:199
 #, python-format
 msgid "%r failed. Retrying."
 msgstr "%r 실패. 재시도 중입니다. "
 
-#: savanna/openstack/common/processutils.py:220
+#: savanna/openstack/common/processutils.py:238
 #, python-format
 msgid "Running cmd (SSH): %s"
 msgstr "cmd(SSH) 실행 중: %s"
 
-#: savanna/openstack/common/processutils.py:222
+#: savanna/openstack/common/processutils.py:240
 msgid "Environment not supported over SSH"
 msgstr "환경이 SSH를 통해 지원되지 않음"
 
-#: savanna/openstack/common/processutils.py:226
+#: savanna/openstack/common/processutils.py:244
 msgid "process_input not supported over SSH"
 msgstr "process_input이 SSH를 통해 지원되지 않음"
 
@@ -310,7 +328,14 @@ msgstr "올바르지 않은 매개변수: Unicode는 현재 데이터베이스�
 msgid "version should be an integer"
 msgstr "버전은 정수여야 함"
 
-#: savanna/openstack/common/db/sqlalchemy/migration.py:221
+#: savanna/openstack/common/db/sqlalchemy/migration.py:214
+#, python-format
+msgid ""
+"Tables \"%s\" have non utf8 collation, please make sure all tables are "
+"CHARSET=utf8"
+msgstr ""
+
+#: savanna/openstack/common/db/sqlalchemy/migration.py:238
 msgid ""
 "The database is not under version control, but has tables. Please stamp "
 "the current version of the schema manually."
@@ -337,12 +362,12 @@ msgstr ""
 msgid "SQL connection failed. %s attempts left."
 msgstr "SQL 연결에 실패했습니다. %s번의 시도가 남았습니다. "
 
-#: savanna/openstack/common/db/sqlalchemy/test_migrations.py:103
+#: savanna/openstack/common/db/sqlalchemy/test_migrations.py:63
 #, python-format
 msgid "Got lock \"%s\""
 msgstr ""
 
-#: savanna/openstack/common/db/sqlalchemy/test_migrations.py:106
+#: savanna/openstack/common/db/sqlalchemy/test_migrations.py:66
 #, python-format
 msgid "Lock released \"%s\""
 msgstr ""

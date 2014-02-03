@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version:  Savanna\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2014-01-21 06:17+0000\n"
+"POT-Creation-Date: 2014-02-03 06:09+0000\n"
 "PO-Revision-Date: 2014-01-17 06:20+0000\n"
 "Last-Translator: openstackjenkins <jenkins@openstack.org>\n"
 "Language-Team: Chinese (China) "
@@ -44,11 +44,11 @@ msgstr "意外的异常已发生 %d 次...正在重试。"
 msgid "Reloading cached file %s"
 msgstr "正在重新装入所缓存文件 %s"
 
-#: savanna/openstack/common/gettextutils.py:252
+#: savanna/openstack/common/gettextutils.py:263
 msgid "Message objects do not support addition."
 msgstr ""
 
-#: savanna/openstack/common/gettextutils.py:261
+#: savanna/openstack/common/gettextutils.py:272
 msgid ""
 "Message objects do not support str() because they may contain non-ascii "
 "characters. Please use unicode() or translate() instead."
@@ -94,22 +94,22 @@ msgstr "已获取信号量 / 锁 \"%(function)s\""
 msgid "Semaphore / lock released \"%(function)s\""
 msgstr "已释放信号量 / 锁 \"%(function)s\""
 
-#: savanna/openstack/common/log.py:301
+#: savanna/openstack/common/log.py:313
 #, python-format
 msgid "Deprecated: %s"
 msgstr "建议不要使用：%s"
 
-#: savanna/openstack/common/log.py:402
+#: savanna/openstack/common/log.py:416
 #, python-format
 msgid "Error loading logging config %(log_config)s: %(err_msg)s"
 msgstr "加载登陆配置出错 %(log_config)s:%(err_msg)s"
 
-#: savanna/openstack/common/log.py:453
+#: savanna/openstack/common/log.py:467
 #, python-format
 msgid "syslog facility must be one of: %s"
 msgstr "系统日志工具必须是下列其中一项：%s"
 
-#: savanna/openstack/common/log.py:623
+#: savanna/openstack/common/log.py:654
 #, python-format
 msgid "Fatal call to deprecated config: %(msg)s"
 msgstr "对建议不要使用的配置进行了后果极严重的调用：%(msg)s"
@@ -157,37 +157,55 @@ msgstr "正在运行周期性任务 %(full_task_name)s"
 msgid "Error during %(full_task_name)s: %(e)s"
 msgstr "在 %(full_task_name)s 期间发生的错误：%(e)s"
 
-#: savanna/openstack/common/processutils.py:130
+#: savanna/openstack/common/processutils.py:58
+msgid "Unexpected error while running command."
+msgstr ""
+
+#: savanna/openstack/common/processutils.py:61
+#, python-format
+msgid ""
+"%(description)s\n"
+"Command: %(cmd)s\n"
+"Exit code: %(exit_code)s\n"
+"Stdout: %(stdout)r\n"
+"Stderr: %(stderr)r"
+msgstr ""
+
+#: savanna/openstack/common/processutils.py:139
 #, python-format
 msgid "Got unknown keyword args to utils.execute: %r"
 msgstr "发现未知的 utils.execute 关键字参数：%r"
 
 #: savanna/openstack/common/processutils.py:145
+msgid "Command requested root, but did not specify a root helper."
+msgstr ""
+
+#: savanna/openstack/common/processutils.py:154
 #, python-format
 msgid "Running cmd (subprocess): %s"
 msgstr "正在运行cmd (subprocess)：%s"
 
-#: savanna/openstack/common/processutils.py:169
-#: savanna/openstack/common/processutils.py:241
+#: savanna/openstack/common/processutils.py:187
+#: savanna/openstack/common/processutils.py:259
 #, python-format
 msgid "Result was %s"
 msgstr "运行结果为 %s"
 
-#: savanna/openstack/common/processutils.py:181
+#: savanna/openstack/common/processutils.py:199
 #, python-format
 msgid "%r failed. Retrying."
 msgstr "%r 失败，重试。"
 
-#: savanna/openstack/common/processutils.py:220
+#: savanna/openstack/common/processutils.py:238
 #, python-format
 msgid "Running cmd (SSH): %s"
 msgstr "运行cmd (SSH)：%s"
 
-#: savanna/openstack/common/processutils.py:222
+#: savanna/openstack/common/processutils.py:240
 msgid "Environment not supported over SSH"
 msgstr "SSH上不支持环境变量"
 
-#: savanna/openstack/common/processutils.py:226
+#: savanna/openstack/common/processutils.py:244
 msgid "process_input not supported over SSH"
 msgstr "SSH上不支持的进程输入参数。"
 
@@ -309,7 +327,14 @@ msgstr "参数无效：当前数据库不支持 Unicode。"
 msgid "version should be an integer"
 msgstr "版本应该为整数"
 
-#: savanna/openstack/common/db/sqlalchemy/migration.py:221
+#: savanna/openstack/common/db/sqlalchemy/migration.py:214
+#, python-format
+msgid ""
+"Tables \"%s\" have non utf8 collation, please make sure all tables are "
+"CHARSET=utf8"
+msgstr ""
+
+#: savanna/openstack/common/db/sqlalchemy/migration.py:238
 msgid ""
 "The database is not under version control, but has tables. Please stamp "
 "the current version of the schema manually."
@@ -336,12 +361,12 @@ msgstr ""
 msgid "SQL connection failed. %s attempts left."
 msgstr "SQL 连接失败。还可进行 %s 次尝试。"
 
-#: savanna/openstack/common/db/sqlalchemy/test_migrations.py:103
+#: savanna/openstack/common/db/sqlalchemy/test_migrations.py:63
 #, python-format
 msgid "Got lock \"%s\""
 msgstr ""
 
-#: savanna/openstack/common/db/sqlalchemy/test_migrations.py:106
+#: savanna/openstack/common/db/sqlalchemy/test_migrations.py:66
 #, python-format
 msgid "Lock released \"%s\""
 msgstr ""
