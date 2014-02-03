@@ -154,10 +154,8 @@ class DirectEngine(e.Engine):
         for node_group in cluster.node_groups:
             count = node_group.count
             conductor.node_group_update(ctx, node_group, {'count': 0})
-            userdata = self._generate_user_data_script(node_group)
             for idx in xrange(1, count + 1):
-                self._run_instance(
-                    cluster, node_group, idx, aa_groups, userdata)
+                self._run_instance(cluster, node_group, idx, aa_groups)
 
     def _scale_cluster_instances(self, cluster, node_group_id_map):
         ctx = context.ctx()
@@ -191,10 +189,9 @@ class DirectEngine(e.Engine):
             LOG.info(g.format_cluster_status(cluster))
             for node_group in node_groups_to_enlarge:
                 count = node_group_id_map[node_group.id]
-                userdata = self._generate_user_data_script(node_group)
                 for idx in xrange(node_group.count + 1, count + 1):
                     instance_id = self._run_instance(cluster, node_group, idx,
-                                                     aa_groups, userdata)
+                                                     aa_groups)
                     instances_to_add.append(instance_id)
 
         return instances_to_add
@@ -206,10 +203,12 @@ class DirectEngine(e.Engine):
 
         return None
 
-    def _run_instance(self, cluster, node_group, idx, aa_groups, userdata):
+    def _run_instance(self, cluster, node_group, idx, aa_groups):
         """Create instance using nova client and persist them into DB."""
         ctx = context.ctx()
         name = '%s-%s-%03d' % (cluster.name, node_group.name, idx)
+
+        userdata = self._generate_user_data_script(node_group, name)
 
         # aa_groups: node process -> instance ids
         aa_ids = []

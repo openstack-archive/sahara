@@ -300,6 +300,11 @@
 # Options defined in savanna.utils.remote
 #
 
+# A server to which guest agent running on a VM should connect
+# to. The parameter is needed only if agent remote is enabled.
+# (string value)
+#rpc_server_host=<None>
+
 # Maximum number of remote operations that will be running at
 # the same time. Note that each remote operation requires its
 # own process to run. (integer value)

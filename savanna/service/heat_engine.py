@@ -208,9 +208,9 @@ class _CreateLauncher(HeatEngine):
 
     def _configure_template(self, ctx, tmpl, cluster, target_count):
         for node_group in cluster.node_groups:
-            userdata = self._generate_user_data_script(node_group)
             count = target_count[node_group.id]
-            tmpl.add_node_group_extra(node_group.id, count, userdata)
+            tmpl.add_node_group_extra(node_group.id, count,
+                                      self._generate_user_data_script)
 
             # if number of instances decreases, we need to drop
             # the excessive ones

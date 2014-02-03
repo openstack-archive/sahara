@@ -492,6 +492,13 @@ class AmbariClient():
             except requests.ConnectionError:
                 #TODO(jspeidel): max wait time
                 LOG.info('Waiting to connect to ambari server ...')
+            except RuntimeError as er:
+                # NOTE(dmitryme): Agent remote wraps exceptions into
+                # RuntimeException
+                if 'ConnectionError' in str(er):
+                    LOG.info('Waiting to connect to ambari server ...')
+                else:
+                    raise
 
     def update_ambari_admin_user(self, password, ambari_info):
         old_pwd = ambari_info.password

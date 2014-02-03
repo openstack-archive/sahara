@@ -258,7 +258,7 @@ class ShutdownClusterTest(AbstractInstanceTest):
 
 def _make_ng_dict(name, flavor, processes, count, floating_ip_pool=None):
     ng_dict = {'name': name, 'flavor_id': flavor, 'node_processes': processes,
-               'count': count}
+               'count': count, 'image_username': 'root'}
     if floating_ip_pool:
         ng_dict.update({"floating_ip_pool": floating_ip_pool})
     return ng_dict
@@ -318,7 +318,7 @@ def _mock_ips(count):
 
 def _generate_user_data_script(cluster):
     script_template = """#!/bin/bash
-echo "%(public_key)s" >> %(user_home)s/.ssh/authorized_keys
+echo "%(public_key)s" >> %(user_home)s/.ssh/authorized_keys\n
 """
     return script_template % {
         "public_key": cluster.management_public_key,

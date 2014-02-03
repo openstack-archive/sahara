@@ -32,8 +32,18 @@ ssh_opts = [
                     'a single cluster.'),
 ]
 
+# These options are for Agent remote only
+agent_opts = [
+    cfg.StrOpt('rpc_server_host',
+               help='A server to which guest agent running on a VM '
+                    'should connect to. The parameter is needed only if '
+                    'agent remote is enabled.'),
+]
+
+
 CONF = cfg.CONF
 CONF.register_opts(ssh_opts)
+CONF.register_opts(agent_opts)
 
 
 DRIVER = None

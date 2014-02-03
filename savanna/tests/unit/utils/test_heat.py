@@ -91,8 +91,10 @@ class TestClusterTemplate(base.SavannaWithDbTestCase):
                                     default_image_id='1', anti_affinity=[],
                                     image_id=None)
         heat_template = h.ClusterTemplate(cluster)
-        heat_template.add_node_group_extra(ng1['id'], 1, 'line1\nline2')
-        heat_template.add_node_group_extra(ng2['id'], 1, 'line2\nline3')
+        heat_template.add_node_group_extra(ng1['id'], 1,
+                                           get_ud_generator('line1\nline2'))
+        heat_template.add_node_group_extra(ng2['id'], 1,
+                                           get_ud_generator('line2\nline3'))
 
         self.override_config("use_neutron", True)
         main_template = h._load_template(
@@ -124,8 +126,10 @@ class TestClusterTemplate(base.SavannaWithDbTestCase):
                                     default_image_id='1',
                                     anti_affinity=['datanode'], image_id=None)
         aa_heat_template = h.ClusterTemplate(cluster)
-        aa_heat_template.add_node_group_extra(ng1['id'], 1, 'line1\nline2')
-        aa_heat_template.add_node_group_extra(ng2['id'], 2, 'line2\nline3')
+        aa_heat_template.add_node_group_extra(ng1['id'], 1,
+                                              get_ud_generator('line1\nline2'))
+        aa_heat_template.add_node_group_extra(ng2['id'], 2,
+                                              get_ud_generator('line2\nline3'))
 
         self.override_config("use_neutron", True)
         main_template = h._load_template(
@@ -165,3 +169,9 @@ class FakeHeatStack():
 
     def get(self):
         self.stack_status = self.new_status
+
+
+def get_ud_generator(s):
+    def generator(*args, **kwargs):
+        return s
+    return generator
