@@ -15,13 +15,11 @@
 
 import copy
 
-from savanna import conductor
 from savanna.conductor import manager
-from savanna.db import api as db_api
 from savanna.tests.unit import base
 
 
-class ConductorManagerTestCase(base.DbTestCase):
+class ConductorManagerTestCase(base.SavannaWithDbTestCase):
 
     def __init__(self, *args, **kwargs):
         """List of check callables could be specified.
@@ -34,7 +32,6 @@ class ConductorManagerTestCase(base.DbTestCase):
 
     def setUp(self):
         super(ConductorManagerTestCase, self).setUp()
-        db_api.setup_db()
         self.api = manager.ConductorManager()
 
         self._results = []
@@ -42,19 +39,7 @@ class ConductorManagerTestCase(base.DbTestCase):
             self._results.append(copy.deepcopy(check()))
 
     def tearDown(self):
-        db_api.drop_db()
-
         for idx, check in enumerate(self._checks):
             check_val = check()
             self.assertEqual(self._results[idx], check_val,
                              msg="Check '%s' failed" % idx)
-
-
-class ConductorApiTestCase(base.DbTestCase):
-    def setUp(self):
-        super(ConductorApiTestCase, self).setUp()
-        db_api.setup_db()
-        self.api = conductor.Api(use_local=True)
-
-    def tearDown(self):
-        db_api.drop_db()

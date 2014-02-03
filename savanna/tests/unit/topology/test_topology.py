@@ -16,15 +16,14 @@
 import tempfile
 
 import mock
-from oslo.config import cfg
-import unittest2
 
 from savanna.conductor import objects as o
 from savanna import context
+from savanna.tests.unit import base
 import savanna.topology.topology_helper as th
 
 
-class TopologyTestCase(unittest2.TestCase):
+class TopologyTestCase(base.SavannaTestCase):
     def setUp(self):
         context.set_ctx(context.Context(None, None, None, None))
 
@@ -146,11 +145,9 @@ class TopologyTestCase(unittest2.TestCase):
         try:
             temp_file.write(content)
             temp_file.flush()
-            cfg.CONF.set_override("swift_topology_file", temp_file.name)
-
+            self.override_config("swift_topology_file", temp_file.name)
             return th._read_swift_topology()
         finally:
-            cfg.CONF.clear_override("swift_topology_file")
             temp_file.close()
 
     def test_read_swift_topology(self):
@@ -172,11 +169,9 @@ class TopologyTestCase(unittest2.TestCase):
         try:
             temp_file.write(content)
             temp_file.flush()
-            cfg.CONF.set_override("compute_topology_file", temp_file.name)
-
+            self.override_config("compute_topology_file", temp_file.name)
             return th._read_compute_topology()
         finally:
-            cfg.CONF.clear_override("compute_topology_file")
             temp_file.close()
 
     def test_read_compute_topology(self):

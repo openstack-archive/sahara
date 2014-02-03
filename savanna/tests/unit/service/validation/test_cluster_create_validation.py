@@ -15,7 +15,6 @@
 
 import mock
 
-from savanna import context
 from savanna import exceptions
 from savanna.service import api
 from savanna.service.validations import clusters as c
@@ -172,7 +171,7 @@ class TestClusterCreateValidation(u.ValidationTestCase):
         self._assert_cluster_default_image_tags_validation()
 
 
-class TestClusterCreateFlavorValidation(base.DbTestCase):
+class TestClusterCreateFlavorValidation(base.SavannaWithDbTestCase):
     """Tests for valid flavor on cluster create.
 
     The following use cases for flavors during cluster create are validated:
@@ -185,7 +184,6 @@ class TestClusterCreateFlavorValidation(base.DbTestCase):
 
     def setUp(self):
         super(TestClusterCreateFlavorValidation, self).setUp()
-        context.current().tenant_id = '1234'
         modules = [
             "savanna.service.validations.base.check_plugin_name_exists",
             "savanna.service.validations.base.check_plugin_supports_version",

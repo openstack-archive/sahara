@@ -13,7 +13,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import datetime
 import os
 import tempfile
 
@@ -21,48 +20,45 @@ import unittest2
 
 from savanna import context
 from savanna.db import api as db_api
+from savanna import main
 from savanna.openstack.common.db.sqlalchemy import session
-from savanna.openstack.common import timeutils
-from savanna.openstack.common import uuidutils
 
 
-class DbTestCase(unittest2.TestCase):
-
-    def set_tenant(self, tenant_id="tenant_1"):
-        context.set_ctx(
-            context.Context('test_user', tenant_id, 'test_auth_token', {}))
+class SavannaTestCase(unittest2.TestCase):
 
     def setUp(self):
+        super(SavannaTestCase, self).setUp()
+
         self.maxDiff = None
-        self.set_tenant()
+        self.setup_context()
+
+    def setup_context(self, username="test_user", tenant_id="tenant_1",
+                      token="test_auth_token", tenant_name='test_tenant',
+                      **kwargs):
+        self.addCleanup(context.set_ctx,
+                        context.ctx() if context.has_ctx() else None)
+        context.set_ctx(context.Context(
+            username=username, tenant_id=tenant_id,
+            token=token, service_catalog={},
+            tenant_name=tenant_name, **kwargs))
+
+    def override_config(self, name, override, group=None):
+        main.CONF.set_override(name, override, group)
+        self.addCleanup(main.CONF.clear_override, name, group)
+
+
+class SavannaWithDbTestCase(SavannaTestCase):
+    def setUp(self):
+        super(SavannaWithDbTestCase, self).setUp()
+        self.setup_db()
+
+    def setup_db(self):
         self.db_fd, self.db_path = tempfile.mkstemp()
         session.set_defaults('sqlite:///' + self.db_path, self.db_path)
         db_api.setup_db()
+        self.addCleanup(self._drop_db)
 
-    def tearDown(self):
+    def _drop_db(self):
         db_api.drop_db()
         os.close(self.db_fd)
         os.unlink(self.db_path)
-        context.set_ctx(None)
-
-    def assertIsValidModelObject(self, res):
-        self.assertIsNotNone(res)
-        self.assertIsNotNone(res.dict)
-        self.assertTrue(uuidutils.is_uuid_like(res.id))
-
-        # check created/updated
-        delta = datetime.timedelta(seconds=15)
-        now = timeutils.utcnow()
-
-        self.assertAlmostEqual(res.created, now, delta=delta)
-        self.assertAlmostEqual(res.updated, now, delta=delta)
-
-    def get_clean_dict(self, res):
-        res_dict = res.dict
-        del res_dict['created']
-        del res_dict['updated']
-        del res_dict['id']
-        if 'tenant_id' in res_dict:
-            del res_dict['tenant_id']
-
-        return res_dict

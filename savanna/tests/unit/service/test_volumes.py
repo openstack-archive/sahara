@@ -20,10 +20,11 @@ from cinderclient.v1 import volumes as v
 from savanna.conductor import resource as r
 from savanna import exceptions as ex
 from savanna.service import volumes
-from savanna.tests.unit import base as models_test_base
+from savanna.tests.unit import base
 
 
-class TestAttachVolume(models_test_base.DbTestCase):
+class TestAttachVolume(base.SavannaWithDbTestCase):
+
     @mock.patch(
         'savanna.service.engine.Engine.get_node_group_image_username')
     def test_mount_volume(self, p_get_username):

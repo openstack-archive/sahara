@@ -21,7 +21,8 @@ from savanna.tests.unit import base
 from savanna.tests.unit.plugins.intel import test_utils as tu
 
 
-class TestIDHPlugin(base.DbTestCase):
+class TestIDHPlugin(base.SavannaWithDbTestCase):
+
     def test_get_configs(self):
         plugin = p.IDHProvider()
         configs = plugin.get_configs('2.5.0')

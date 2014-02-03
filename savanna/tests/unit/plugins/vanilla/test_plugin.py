@@ -16,27 +16,21 @@
 import mock
 
 from savanna import conductor as cond
-from savanna.conductor import resource as r
 from savanna import context
 from savanna.plugins.general import exceptions as ex
 from savanna.plugins.vanilla import config_helper as c_h
 from savanna.plugins.vanilla import mysql_helper as m_h
 from savanna.plugins.vanilla import plugin as p
-from savanna.tests.unit import base as models_test_base
+from savanna.tests.unit import base
 from savanna.tests.unit import testutils as tu
 
 conductor = cond.API
 
 
-def _resource_passthrough(*args, **kwargs):
-    return True
-
-
-class VanillaPluginTest(models_test_base.DbTestCase):
+class VanillaPluginTest(base.SavannaWithDbTestCase):
     def setUp(self):
-        self.pl = p.VanillaProvider()
-        r.Resource._is_passthrough_type = _resource_passthrough
         super(VanillaPluginTest, self).setUp()
+        self.pl = p.VanillaProvider()
 
     def test_validate(self):
         self.ng = []
