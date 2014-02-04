@@ -53,6 +53,17 @@ class OozieWorkflowCreator(object):
             elem = xml.parseString('<%s path="%s"/>' % (element, path))
             prop.appendChild(elem.firstChild)
 
+    def _add_to_streaming_element(self, element, path):
+        if element not in ['mapper', 'reducer']:
+            raise ex.NotFoundException(element, message=
+                                       '"%s" child cannot be added to '
+                                       'streaming element')
+
+        x.get_and_create_if_not_exist(self.doc, self.tag_name,
+                                      'streaming')
+
+        x.add_text_element_to_tag(self.doc, 'streaming', element, path)
+
     def _add_configuration_elements(self, configuration):
         if configuration:
             x.add_properties_to_configuration(self.doc, self.tag_name,

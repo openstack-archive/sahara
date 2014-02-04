@@ -15,6 +15,7 @@
 
 import unittest2
 
+import savanna.exceptions as ex
 from savanna.service.edp.workflow_creator import hive_workflow as hw
 from savanna.service.edp.workflow_creator import java_workflow as jw
 from savanna.service.edp.workflow_creator import mapreduce_workflow as mrw
@@ -33,6 +34,35 @@ class TestPigWorkflowCreator(unittest2.TestCase):
                               'conf_param_2': 'conf_value_3'}
         self.files = ['file1', 'file2']
         self.archives = ['arch1']
+        self.streaming = {'mapper': '/usr/bin/cat',
+                          'reducer': '/usr/bin/wc'}
+
+    def test_create_mapreduce_streaming(self):
+        mr_action = """
+      <streaming>
+        <mapper>/usr/bin/cat</mapper>
+        <reducer>/usr/bin/wc</reducer>
+      </streaming>"""
+
+        mr_workflow = mrw.MapReduceWorkFlowCreator()
+        mr_workflow.build_workflow_xml(self.prepare, self.job_xml,
+                                       self.configuration, self.files,
+                                       self.archives, self.streaming)
+        res = mr_workflow.get_built_workflow_xml()
+        self.assertIn(mr_action, res)
+
+        mr_workflow = mrw.MapReduceWorkFlowCreator()
+        mr_workflow.build_workflow_xml(self.prepare, self.job_xml,
+                                       self.configuration, self.files,
+                                       self.archives)
+        res = mr_workflow.get_built_workflow_xml()
+        self.assertNotIn(mr_action, res)
+
+        mr_workflow = mrw.MapReduceWorkFlowCreator()
+        with self.assertRaises(ex.NotFoundException):
+            mr_workflow.build_workflow_xml(self.prepare, self.job_xml,
+                                           self.configuration, self.files,
+                                           self.archives, {'bogus': 'element'})
 
     def test_create_mapreduce_workflow(self):
         mr_workflow = mrw.MapReduceWorkFlowCreator()
