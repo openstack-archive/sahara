@@ -79,8 +79,8 @@ def check_job_executor(data, job_id):
     # Make sure we have the right schema for the job type
     # We can identify the Java action schema by looking for 'main_class'
     if ('main_class' in data) ^ (job.type == 'Java'):
-        raise ex.InvalidException("Schema is not valid for job type %s"
-                                  % job.type)
+        raise ex.InvalidDataException("Schema is not valid for job type %s"
+                                      % job.type)
 
     if 'input_id' in data:
         b.check_data_source_exists(data['input_id'])
