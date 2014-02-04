@@ -18,10 +18,10 @@ from savanna.tests.integration.tests import base
 
 
 class MapReduceTest(base.ITestCase):
-    def __run_pi_job(self):
+    def _run_pi_job(self):
         self.execute_command('./script.sh run_pi_job')
 
-    def __get_name_of_completed_pi_job(self):
+    def _get_name_of_completed_pi_job(self):
         try:
             job_name = self.execute_command('./script.sh get_pi_job_name')
 
@@ -36,7 +36,7 @@ class MapReduceTest(base.ITestCase):
                 )
         return job_name[1][:-1]
 
-    def __run_wordcount_job(self):
+    def _run_wordcount_job(self):
         try:
             self.execute_command('./script.sh run_wordcount_job')
 
@@ -49,7 +49,7 @@ class MapReduceTest(base.ITestCase):
 
     @base.skip_test('SKIP_MAP_REDUCE_TEST',
                     message='Test for Map Reduce was skipped.')
-    def _map_reduce_testing(self, cluster_info):
+    def map_reduce_testing(self, cluster_info):
         plugin_config = cluster_info['plugin_config']
         node_count = cluster_info['node_info']['node_count']
         extra_script_parameters = {
@@ -73,8 +73,8 @@ class MapReduceTest(base.ITestCase):
                 print(str(e))
         namenode_ip = cluster_info['node_info']['namenode_ip']
         self.open_ssh_connection(namenode_ip, plugin_config.SSH_USERNAME)
-        self.__run_pi_job()
-        job_name = self.__get_name_of_completed_pi_job()
+        self._run_pi_job()
+        job_name = self._get_name_of_completed_pi_job()
         self.close_ssh_connection()
         # Check that cluster used each "tasktracker" node while work of PI-job.
         # Count of map-tasks and reduce-tasks in helper script guarantees that
@@ -104,5 +104,5 @@ class MapReduceTest(base.ITestCase):
                     '/tmp/MapReduceTestOutput/log.txt'
                 )
         self.open_ssh_connection(namenode_ip, plugin_config.SSH_USERNAME)
-        self.__run_wordcount_job()
+        self._run_wordcount_job()
         self.close_ssh_connection()

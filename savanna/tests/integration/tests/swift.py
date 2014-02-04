@@ -23,7 +23,7 @@ class SwiftTest(base.ITestCase):
     @base.skip_test(
         'SKIP_SWIFT_TEST',
         message='Test for check of Swift availability was skipped.')
-    def _check_swift_availability(self, cluster_info):
+    def check_swift_availability(self, cluster_info):
         plugin_config = cluster_info['plugin_config']
         # Make unique name of Swift container during Swift testing
         swift_container_name = 'Swift-test-' + str(uuid.uuid4())[:8]

@@ -18,7 +18,7 @@ from savanna.tests.integration.tests import base
 
 
 class ScalingTest(base.ITestCase):
-    def __change_node_info_while_ng_adding(self, ngt_id, count, cluster_info):
+    def _change_node_info_while_ng_adding(self, ngt_id, count, cluster_info):
         cluster_info['node_info']['node_count'] += count
         node_processes = self.savanna.node_group_templates.get(
             ngt_id).node_processes
@@ -27,7 +27,7 @@ class ScalingTest(base.ITestCase):
         if cluster_info['plugin_config'].PROCESS_NAMES['dn'] in node_processes:
             cluster_info['node_info']['datanode_count'] += count
 
-    def __change_node_info_while_ng_resizing(self, name, count, cluster_info):
+    def _change_node_info_while_ng_resizing(self, name, count, cluster_info):
         node_groups = self.savanna.clusters.get(
             cluster_info['cluster_id']).node_groups
         for node_group in node_groups:
@@ -43,7 +43,7 @@ class ScalingTest(base.ITestCase):
             cluster_info['node_info']['datanode_count'] += -old_count + count
 
     @staticmethod
-    def __add_new_field_to_scale_body_while_ng_resizing(
+    def _add_new_field_to_scale_body_while_ng_resizing(
             scale_body, name, count):
         scale_body['resize_node_groups'].append(
             {
@@ -53,7 +53,7 @@ class ScalingTest(base.ITestCase):
         )
 
     @staticmethod
-    def __add_new_field_to_scale_body_while_ng_adding(
+    def _add_new_field_to_scale_body_while_ng_adding(
             scale_body, ngt_id, count, name):
         scale_body['add_node_groups'].append(
             {
@@ -65,26 +65,26 @@ class ScalingTest(base.ITestCase):
 
     @base.skip_test('SKIP_SCALING_TEST',
                     'Test for cluster scaling was skipped.')
-    def _cluster_scaling(self, cluster_info, change_list):
+    def cluster_scaling(self, cluster_info, change_list):
         scale_body = {'add_node_groups': [], 'resize_node_groups': []}
         for change in change_list:
             if change['operation'] == 'resize':
                 node_group_name = change['info'][0]
                 node_group_size = change['info'][1]
-                self.__add_new_field_to_scale_body_while_ng_resizing(
+                self._add_new_field_to_scale_body_while_ng_resizing(
                     scale_body, node_group_name, node_group_size
                 )
-                self.__change_node_info_while_ng_resizing(
+                self._change_node_info_while_ng_resizing(
                     node_group_name, node_group_size, cluster_info
                 )
             if change['operation'] == 'add':
                 node_group_name = change['info'][0]
                 node_group_size = change['info'][1]
                 node_group_id = change['info'][2]
-                self.__add_new_field_to_scale_body_while_ng_adding(
+                self._add_new_field_to_scale_body_while_ng_adding(
                     scale_body, node_group_id, node_group_size, node_group_name
                 )
-                self.__change_node_info_while_ng_adding(
+                self._change_node_info_while_ng_adding(
                     node_group_id, node_group_size, cluster_info
                 )
         self.savanna.clusters.scale(cluster_info['cluster_id'], scale_body)

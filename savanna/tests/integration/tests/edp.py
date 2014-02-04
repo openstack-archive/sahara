@@ -24,23 +24,23 @@ from savanna.tests.integration.tests import base
 
 class EDPTest(base.ITestCase):
 
-    def __create_data_source(self, name, data_type, url, description=''):
+    def _create_data_source(self, name, data_type, url, description=''):
         return self.savanna.data_sources.create(
             name, description, data_type, url, self.common_config.OS_USERNAME,
             self.common_config.OS_PASSWORD).id
 
-    def __create_job_binary_internals(self, name, data):
+    def _create_job_binary_internals(self, name, data):
         return self.savanna.job_binary_internals.create(name, data).id
 
-    def __create_job_binary(self, name, url):
+    def _create_job_binary(self, name, url):
         return self.savanna.job_binaries.create(name, url,
                                                 description='', extra={}).id
 
-    def __create_job(self, name, job_type, mains, libs):
+    def _create_job(self, name, job_type, mains, libs):
         return self.savanna.jobs.create(name, job_type, mains, libs,
                                         description='').id
 
-    def __await_job_execution(self, job):
+    def _await_job_execution(self, job):
         timeout = self.common_config.JOB_LAUNCH_TIMEOUT * 60
         status = self.savanna.job_executions.get(job.id).info['status']
         while status != 'SUCCEEDED':
@@ -55,8 +55,8 @@ class EDPTest(base.ITestCase):
             time.sleep(10)
             timeout -= 10
 
-    def __create_job_binaries(self, job_data_list, job_binary_internal_list,
-                              job_binary_list):
+    def _create_job_binaries(self, job_data_list, job_binary_internal_list,
+                             job_binary_list):
         for job_data in job_data_list:
             name = 'binary_job-%s' % str(uuid.uuid4())[:8]
             if isinstance(job_data, dict):
@@ -68,13 +68,13 @@ class EDPTest(base.ITestCase):
             else:
                 data = job_data
             job_binary_internal_list.append(
-                self.__create_job_binary_internals(name, data))
+                self._create_job_binary_internals(name, data))
             job_binary_list.append(
-                self.__create_job_binary(
+                self._create_job_binary(
                     name, 'savanna-db://%s' % job_binary_internal_list[-1]))
 
-    def __delete_job(self, execution_job, job_id, job_binary_list,
-                     job_binary_internal_list, input_id, output_id):
+    def _delete_job(self, execution_job, job_id, job_binary_list,
+                    job_binary_internal_list, input_id, output_id):
         if execution_job:
             self.savanna.job_executions.delete(execution_job.id)
         if job_id:
@@ -104,9 +104,9 @@ class EDPTest(base.ITestCase):
 
     @base.skip_test('SKIP_EDP_TEST',
                     'Test for EDP was skipped.')
-    def _edp_testing(self, job_type, job_data_list, lib_data_list=None,
-                     configs=None, pass_input_output_args=False,
-                     job_exec_data={}):
+    def edp_testing(self, job_type, job_data_list, lib_data_list=None,
+                    configs=None, pass_input_output_args=False,
+                    job_exec_data={}):
         try:
             swift = self.connect_to_swift()
             container_name = 'Edp-test-%s' % str(uuid.uuid4())[:8]
@@ -137,22 +137,22 @@ class EDPTest(base.ITestCase):
             # Java jobs don't use data sources.  Input/output paths must
             # be passed as args with corresponding username/password configs
             if job_type != "Java":
-                input_id = self.__create_data_source(
+                input_id = self._create_data_source(
                     'input-%s' % str(uuid.uuid4())[:8], 'swift',
                     swift_input_url)
-                output_id = self.__create_data_source(
+                output_id = self._create_data_source(
                     'output-%s' % str(uuid.uuid4())[:8], 'swift',
                     swift_output_url)
 
             if job_data_list:
-                self.__create_job_binaries(
+                self._create_job_binaries(
                     job_data_list, job_binary_internal_list, job_binary_list
                 )
             if lib_data_list:
-                self.__create_job_binaries(
+                self._create_job_binaries(
                     lib_data_list, job_binary_internal_list, lib_binary_list
                 )
-            job_id = self.__create_job(
+            job_id = self._create_job(
                 'Edp-test-job-%s' % str(uuid.uuid4())[:8], job_type,
                 job_binary_list, lib_binary_list)
             if not configs:
@@ -175,7 +175,7 @@ class EDPTest(base.ITestCase):
                 job_exec_data=job_exec_data)
 
             if job_execution:
-                self.__await_job_execution(job_execution)
+                self._await_job_execution(job_execution)
 
         except Exception as e:
             with excutils.save_and_reraise_exception():
@@ -183,7 +183,7 @@ class EDPTest(base.ITestCase):
 
         finally:
             self.delete_swift_container(swift, container_name)
-            self.__delete_job(
+            self._delete_job(
                 job_execution, job_id, job_binary_list+lib_binary_list,
                 job_binary_internal_list, input_id, output_id
             )
