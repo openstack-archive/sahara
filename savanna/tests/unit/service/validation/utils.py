@@ -17,11 +17,10 @@ import mock
 import novaclient.exceptions as nova_ex
 import unittest2
 
-#import savanna.db.models as m
 from savanna.conductor import resource as r
 from savanna.plugins.vanilla import plugin
 import savanna.service.validation as v
-from savanna.tests.unit.plugins.general import test_utils as tu
+from savanna.tests.unit import testutils as tu
 
 m = {}
 
@@ -144,9 +143,9 @@ def start_patch(patch_templates=True):
     get_image.side_effect = _get_image
     nova().images.list_registered.return_value = [Image(),
                                                   Image(name='wrong_name')]
-    ng_dict = tu._make_ng_dict('ng', '42', ['namenode'], 1)
-    cluster = tu._create_cluster('test', 't', 'vanilla', '1.2.2', [ng_dict],
-                                 id=1, status='Active')
+    ng_dict = tu.make_ng_dict('ng', '42', ['namenode'], 1)
+    cluster = tu.create_cluster('test', 't', 'vanilla', '1.2.2', [ng_dict],
+                                id=1, status='Active')
     # stub clusters list
     get_clusters.return_value = [cluster]
     get_cluster.return_value = cluster

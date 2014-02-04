@@ -18,7 +18,7 @@ import mock
 import unittest2
 
 from savanna import exceptions as ex
-from savanna.tests.unit.plugins.general import test_utils as tu
+from savanna.tests.unit import testutils as tu
 from savanna.utils import files as f
 from savanna.utils.openstack import heat as h
 
@@ -76,18 +76,18 @@ class TestClusterTemplate(unittest2.TestCase):
            'worker' with 2 attached volumes 10GB size each
         """
 
-        ng1 = tu._make_ng_dict('master', 42, ['namenode'], 1,
-                               floating_ip_pool='floating', image_id=None,
-                               volumes_per_node=0, volumes_size=0, id=1)
-        ng2 = tu._make_ng_dict('worker', 42, ['datanode'], 1,
-                               floating_ip_pool='floating', image_id=None,
-                               volumes_per_node=2, volumes_size=10, id=2)
-        cluster = tu._create_cluster("cluster", "tenant1", "general",
-                                     "1.2.1", [ng1, ng2],
-                                     user_keypair_id='user_key',
-                                     neutron_management_network='private_net',
-                                     default_image_id='1', anti_affinity=[],
-                                     image_id=None)
+        ng1 = tu.make_ng_dict('master', 42, ['namenode'], 1,
+                              floating_ip_pool='floating', image_id=None,
+                              volumes_per_node=0, volumes_size=0, id=1)
+        ng2 = tu.make_ng_dict('worker', 42, ['datanode'], 1,
+                              floating_ip_pool='floating', image_id=None,
+                              volumes_per_node=2, volumes_size=10, id=2)
+        cluster = tu.create_cluster("cluster", "tenant1", "general",
+                                    "1.2.1", [ng1, ng2],
+                                    user_keypair_id='user_key',
+                                    neutron_management_network='private_net',
+                                    default_image_id='1', anti_affinity=[],
+                                    image_id=None)
         heat_template = h.ClusterTemplate(cluster)
         heat_template.add_node_group_extra(ng1['id'], 1, 'line1\nline2')
         heat_template.add_node_group_extra(ng2['id'], 1, 'line2\nline3')
@@ -112,18 +112,18 @@ class TestClusterTemplate(unittest2.TestCase):
            in single node group.
         """
 
-        ng1 = tu._make_ng_dict('master', 42, ['namenode'], 1,
-                               floating_ip_pool='floating', image_id=None,
-                               volumes_per_node=0, volumes_size=0, id=1)
-        ng2 = tu._make_ng_dict('worker', 42, ['datanode'], 2,
-                               floating_ip_pool='floating', image_id=None,
-                               volumes_per_node=0, volumes_size=0, id=2)
-        cluster = tu._create_cluster("cluster", "tenant1", "general",
-                                     "1.2.1", [ng1, ng2],
-                                     user_keypair_id='user_key',
-                                     neutron_management_network='private_net',
-                                     default_image_id='1',
-                                     anti_affinity=['datanode'], image_id=None)
+        ng1 = tu.make_ng_dict('master', 42, ['namenode'], 1,
+                              floating_ip_pool='floating', image_id=None,
+                              volumes_per_node=0, volumes_size=0, id=1)
+        ng2 = tu.make_ng_dict('worker', 42, ['datanode'], 2,
+                              floating_ip_pool='floating', image_id=None,
+                              volumes_per_node=0, volumes_size=0, id=2)
+        cluster = tu.create_cluster("cluster", "tenant1", "general",
+                                    "1.2.1", [ng1, ng2],
+                                    user_keypair_id='user_key',
+                                    neutron_management_network='private_net',
+                                    default_image_id='1',
+                                    anti_affinity=['datanode'], image_id=None)
         aa_heat_template = h.ClusterTemplate(cluster)
         aa_heat_template.add_node_group_extra(ng1['id'], 1, 'line1\nline2')
         aa_heat_template.add_node_group_extra(ng2['id'], 2, 'line2\nline3')

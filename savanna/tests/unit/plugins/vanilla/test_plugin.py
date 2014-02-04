@@ -23,7 +23,7 @@ from savanna.plugins.vanilla import config_helper as c_h
 from savanna.plugins.vanilla import mysql_helper as m_h
 from savanna.plugins.vanilla import plugin as p
 from savanna.tests.unit import base as models_test_base
-from savanna.tests.unit.plugins.general import test_utils as tu
+from savanna.tests.unit import testutils as tu
 
 conductor = cond.API
 
@@ -40,10 +40,10 @@ class VanillaPluginTest(models_test_base.DbTestCase):
 
     def test_validate(self):
         self.ng = []
-        self.ng.append(tu._make_ng_dict("nn", "f1", ["namenode"], 0))
-        self.ng.append(tu._make_ng_dict("jt", "f1", ["jobtracker"], 0))
-        self.ng.append(tu._make_ng_dict("tt", "f1", ["tasktracker"], 0))
-        self.ng.append(tu._make_ng_dict("oozie", "f1", ["oozie"], 0))
+        self.ng.append(tu.make_ng_dict("nn", "f1", ["namenode"], 0))
+        self.ng.append(tu.make_ng_dict("jt", "f1", ["jobtracker"], 0))
+        self.ng.append(tu.make_ng_dict("tt", "f1", ["tasktracker"], 0))
+        self.ng.append(tu.make_ng_dict("oozie", "f1", ["oozie"], 0))
 
         self._validate_case(1, 1, 10, 1)
 
@@ -68,7 +68,7 @@ class VanillaPluginTest(models_test_base.DbTestCase):
             self.ng[i]['count'] = args[i]
             lst.append(self.ng[i])
 
-        cl = tu._create_cluster("cluster1", "tenant1", "vanilla", "1.2.1", lst)
+        cl = tu.create_cluster("cluster1", "tenant1", "vanilla", "1.2.1", lst)
 
         self.pl.validate(cl)
 
@@ -271,7 +271,7 @@ class VanillaPluginTest(models_test_base.DbTestCase):
             'plugin_name': 'mock_plugin',
             'hadoop_version': 'mock_version',
             'default_image_id': 'initial',
-            'node_groups': [tu._make_ng_dict("ng1", "f1", ["s1"], 1)]}
+            'node_groups': [tu.make_ng_dict("ng1", "f1", ["s1"], 1)]}
 
         cluster1 = conductor.cluster_create(context.ctx(), cluster_dict)
         (private_key1, public_key1) = c_h.get_hadoop_ssh_keys(cluster1)
