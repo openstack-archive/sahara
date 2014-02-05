@@ -10,7 +10,7 @@ Prerequisites
 
  * Maven
  * JDK 1.6 (1.7 is not allowed there)
- * Downloaded Oozie distribution from `Apache mirror <http://apache-mirror.rbc.ru/pub/apache/oozie/4.0.0`_
+ * Downloaded Oozie distribution from `Apache mirror <http://apache-mirror.rbc.ru/pub/apache/oozie/4.0.0>`_
  * Downloaded `ext-2.2.zip <http://extjs.com/deploy/ext-2.2.zip>`_ (it is needed for enable Oozie web console)
  * All Hadoop jar files (either on hadoop cluster or simply from any repository)
 
