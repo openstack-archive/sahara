@@ -268,6 +268,14 @@ HDP_CONFIG_OPTS = [
                default='/volumes/disk1/hadoop/mapred/userlogs',
                help='Directory where logs of completed jobs on volume mounted '
                     'to node are located.'),
+    cfg.IntOpt('SCALE_EXISTING_NG_COUNT',
+               default=1,
+               help='The number of hosts to add while scaling '
+                    'an existing node group.'),
+    cfg.IntOpt('SCALE_NEW_NG_COUNT',
+               default=1,
+               help='The number of hosts to add while scaling '
+                    'a new node group.'),
     cfg.DictOpt('HADOOP_PROCESSES_WITH_PORTS',
                 default={
                     'JOBTRACKER': 50030,

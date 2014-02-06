@@ -211,6 +211,11 @@
 # (string value)
 #HADOOP_LOG_DIRECTORY_ON_VOLUME = '/volumes/disk1/hadoop/mapred/userlogs'
 
+#The number of hosts to add while scaling an existing node group
+#SCALE_EXISTING_NG_COUNT = 1
+
+#The number of hosts to add while scaling a new node group
+#SCALE_NEW_NG_COUNT = 1
 
 # (dictionary value)
 #HADOOP_PROCESSES_WITH_PORTS = JOBTRACKER: 50030, NAMENODE: 50070, TASKTRACKER: 50060, DATANODE: 50075, SECONDARY_NAMENODE: 50090
