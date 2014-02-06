@@ -271,7 +271,8 @@ HDP_CONFIG_OPTS = [
                     'NAMENODE': 50070,
                     'TASKTRACKER': 50060,
                     'DATANODE': 50075,
-                    'SECONDARY_NAMENODE': 50090
+                    'SECONDARY_NAMENODE': 50090,
+                    'OOZIE_SERVER': 11000
                 },
                 help='Hadoop process map with ports for HDP plugin.'
                 ),
@@ -288,6 +289,7 @@ HDP_CONFIG_OPTS = [
                 help='If this flag is True then all tests for HDP plugin '
                      'will be skipped.'),
     cfg.BoolOpt('SKIP_CINDER_TEST', default=False),
+    cfg.BoolOpt('SKIP_EDP_TEST', default=False),
     cfg.BoolOpt('SKIP_MAP_REDUCE_TEST', default=False),
     cfg.BoolOpt('SKIP_SWIFT_TEST', default=False),
     cfg.BoolOpt('SKIP_SCALING_TEST', default=False)

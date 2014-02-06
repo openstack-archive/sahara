@@ -19,14 +19,17 @@ import unittest2
 from savanna.openstack.common import excutils
 from savanna.tests.integration.configs import config as cfg
 from savanna.tests.integration.tests import cinder
+from savanna.tests.integration.tests import edp
 from savanna.tests.integration.tests import map_reduce
 from savanna.tests.integration.tests import scaling
 from savanna.tests.integration.tests import swift
 
 
-class HDPGatingTest(cinder.CinderVolumeTest, map_reduce.MapReduceTest,
-                    swift.SwiftTest, scaling.ScalingTest):
+class HDPGatingTest(cinder.CinderVolumeTest, edp.EDPTest,
+                    map_reduce.MapReduceTest, swift.SwiftTest,
+                    scaling.ScalingTest):
     SKIP_CINDER_TEST = cfg.ITConfig().hdp_config.SKIP_CINDER_TEST
+    SKIP_EDP_TEST = cfg.ITConfig().hdp_config.SKIP_EDP_TEST
     SKIP_MAP_REDUCE_TEST = cfg.ITConfig().hdp_config.SKIP_MAP_REDUCE_TEST
     SKIP_SWIFT_TEST = cfg.ITConfig().hdp_config.SKIP_SWIFT_TEST
     SKIP_SCALING_TEST = cfg.ITConfig().hdp_config.SKIP_SCALING_TEST
@@ -68,7 +71,7 @@ class HDPGatingTest(cinder.CinderVolumeTest, map_reduce.MapReduceTest,
                 volumes_per_node=volumes_per_node,
                 volume_size=volume_size,
                 node_processes=['TASKTRACKER', 'DATANODE', 'HDFS_CLIENT',
-                                'MAPREDUCE_CLIENT'],
+                                'MAPREDUCE_CLIENT', 'OOZIE_CLIENT', 'PIG'],
                 node_configs={},
                 floating_ip_pool=floating_ip_pool
             )
@@ -95,7 +98,7 @@ class HDPGatingTest(cinder.CinderVolumeTest, map_reduce.MapReduceTest,
                         node_processes=[
                             'JOBTRACKER', 'NAMENODE', 'SECONDARY_NAMENODE',
                             'GANGLIA_SERVER', 'NAGIOS_SERVER',
-                            'AMBARI_SERVER'],
+                            'AMBARI_SERVER', 'OOZIE_SERVER'],
                         node_configs={},
                         floating_ip_pool=floating_ip_pool,
                         count=1),
@@ -146,6 +149,57 @@ class HDPGatingTest(cinder.CinderVolumeTest, map_reduce.MapReduceTest,
                     node_group_template_id_list
                 )
                 message = 'Failure while Cinder testing: '
+                self.print_error_log(message, e)
+
+#----------------------------------EDP TESTING---------------------------------
+
+        path = 'savanna/tests/integration/tests/resources/'
+        pig_job_data = open(path + 'edp-job.pig').read()
+        pig_lib_data = open(path + 'edp-lib.jar').read()
+        mapreduce_jar_data = open(path + 'edp-mapreduce.jar').read()
+
+        # This is a modified version of WordCount that takes swift configs
+        java_lib_data = open(path + 'edp-java.jar').read()
+        java_configs = {
+            "configs": {
+            "edp.java.main_class": "org.apache.hadoop.examples.WordCount"
+            }
+        }
+
+        mapreduce_configs = {
+            "configs": {
+            "mapred.mapper.class": "org.apache.oozie.example.SampleMapper",
+            "mapred.reducer.class": "org.apache.oozie.example.SampleReducer"
+            }
+        }
+        mapreduce_streaming_configs = {
+            "configs": {
+            "edp.streaming.mapper": "/bin/cat",
+            "edp.streaming.reducer": "/usr/bin/wc"
+            }
+        }
+        try:
+            self.edp_testing('Pig', [{'pig': pig_job_data}],
+                             [{'jar': pig_lib_data}])
+            self.edp_testing(
+                'MapReduce', [], [{'jar': mapreduce_jar_data}],
+                mapreduce_configs
+            )
+            self.edp_testing(
+                'MapReduce.Streaming', [], [], mapreduce_streaming_configs
+            )
+            self.edp_testing('Java', [],
+                             lib_data_list=[{'jar': java_lib_data}],
+                             configs=java_configs,
+                             pass_input_output_args=True)
+
+        except Exception as e:
+            with excutils.save_and_reraise_exception():
+                self.delete_objects(
+                    cluster_info['cluster_id'], cluster_template_id,
+                    node_group_template_id_list
+                )
+                message = 'Failure while EDP testing: '
                 self.print_error_log(message, e)
 
 #------------------------------MAP REDUCE TESTING------------------------------
