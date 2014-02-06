@@ -1135,9 +1135,9 @@ Normal Response Code: 202 (ACCEPTED)
 
 Errors: none
 
-This operation returns the created Job Execution object.
+This operation returns the created Job Execution object. Note that different job types support different combinations of ``configs``, ``args``, and ``params``.  The :doc:`edp` document discusses these differences.
 
-**Example Cluster creation from template**:
+**Example execution of a Pig job**:
     **request**
 
     .. sourcecode:: http
@@ -1163,7 +1163,7 @@ This operation returns the created Job Execution object.
             }
         }
 
-     **response**
+    **response**
 
     .. sourcecode:: http
 
@@ -1197,6 +1197,66 @@ This operation returns the created Job Execution object.
                 "id": "fb2ba667-1162-4f6d-ba77-662c04dfac35"
             }
         }
+
+**Example execution of a Java job**:
+
+    The main class is specified with ``edp.java.main_class``.  The input/output paths are passed in ``args`` because Java jobs do not use data sources. Finally, the swift configs must be specified because the input/output paths are swift paths.
+
+    **request**
+
+    .. sourcecode:: http
+
+        POST http://savanna:8386/v1.1/11587919cc534bcbb1027a161c82cf58/jobs/65afed9c-dad7-4658-9554-b7b4e1ca908f/execute
+
+    .. sourcecode:: json
+
+        {
+            "cluster_id": "776e441b-5816-4d47-9e07-7ded58f9a5f6",
+            "job_configs": {
+                "configs": {
+                    "fs.swift.service.savanna.username": "myname",
+                    "fs.swift.service.savanna.password": "mypassword",
+                    "edp.java.main_class": "org.apache.hadoop.examples.WordCount"
+                },
+                "args": ["swift://integration.savanna/demo/make_job.sh", "swift://integration.savanna/friday"]
+            }
+        }
+
+    **response**
+
+    .. sourcecode:: http
+
+        HTTP/1.1 202 ACCEPTED
+        Content-Type: application/json
+
+    .. sourcecode:: json
+
+        {
+            "job_execution": {
+                "output_id": null,
+                "info": {
+                    "status": "Pending"
+                },
+                "job_id": "8236b1b4-e1b8-46ef-9174-355cd4234b62",
+                "tenant_id": "a4e4599e87e04bf1996862ae295f6f53",
+                "created_at": "2014-02-05 23:31:57.752897",
+                "input_id": null,
+                "cluster_id": "466a2b6d-df00-4310-b985-c106f5231ec0",
+                "job_configs": {
+                    "configs": {
+                        "edp.java.main_class": "org.apache.hadoop.examples.WordCount",
+                        "fs.swift.service.savanna.password": "myname",
+                        "fs.swift.service.savanna.username": "mypassword"
+                    },
+                    "args": [
+                        "swift://integration.savanna/demo/make_job.sh",
+                        "swift://integration.savanna/friday"
+                    ]
+                },
+                "id": "724709bf-2268-46ed-8daf-47898b4630b4"
+            }
+        }
+
 
 6. Job Executions
 =================
