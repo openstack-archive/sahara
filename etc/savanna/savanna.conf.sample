@@ -11,7 +11,7 @@
 
 # Address and credentials that will be used to check auth tokens
 #os_auth_host=127.0.0.1
-#os_auth_port=35357
+#os_auth_port=5000
 #os_admin_username=admin
 #os_admin_password=nova
 #os_admin_tenant_name=admin

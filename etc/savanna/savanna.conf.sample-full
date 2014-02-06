@@ -53,7 +53,7 @@
 #os_auth_host=127.0.0.1
 
 # Port of OpenStack Identity service (string value)
-#os_auth_port=35357
+#os_auth_port=5000
 
 # This OpenStack user is used to verify provided tokens. The
 # user must have admin role in <os_admin_tenant_name> tenant
