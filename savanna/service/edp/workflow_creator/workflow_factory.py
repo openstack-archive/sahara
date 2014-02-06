@@ -38,6 +38,52 @@ class BaseFactory(object):
     def configure_workflow_if_needed(self, *args, **kwargs):
         pass
 
+    def _separate_edp_configs(self, job_dict):
+        configs = {}
+        edp_configs = {}
+        if 'configs' in job_dict:
+            for k, v in six.iteritems(job_dict['configs']):
+                if k.startswith('edp.'):
+                    edp_configs[k] = v
+                else:
+                    configs[k] = v
+        return configs, edp_configs
+
+    def _prune_edp_configs(self, job_dict):
+        if job_dict is None:
+            return {}, {}
+
+        # Rather than copy.copy, we make this by hand
+        # to avoid FrozenClassError when we update 'configs'
+        pruned_job_dict = {}
+        for k, v in six.iteritems(job_dict):
+            pruned_job_dict[k] = v
+
+        # Separate out "edp." configs into its own dictionary
+        configs, edp_configs = self._separate_edp_configs(job_dict)
+
+        # Prune the new job_dict so it does not hold "edp." configs
+        pruned_job_dict['configs'] = configs
+
+        return pruned_job_dict, edp_configs
+
+    def _update_dict(self, dest, src):
+        if src is not None:
+            for key, value in six.iteritems(dest):
+                if hasattr(value, "update"):
+                    new_vals = src.get(key, {})
+                    value.update(new_vals)
+
+    def update_job_dict(self, job_dict, exec_dict):
+        pruned_exec_dict, edp_configs = self._prune_edp_configs(exec_dict)
+        self._update_dict(job_dict, pruned_exec_dict)
+
+        # Add the separated "edp." configs to the job_dict
+        job_dict['edp_configs'] = edp_configs
+
+        # Args are listed, not named. Simply replace them.
+        job_dict['args'] = pruned_exec_dict.get('args', [])
+
     def get_configs(self, input_data, output_data):
         configs = {}
         for src in (input_data, output_data):
@@ -53,13 +99,6 @@ class BaseFactory(object):
         return {'INPUT': input_data.url,
                 'OUTPUT': output_data.url}
 
-    def update_configs(self, configs, execution_configs):
-        if execution_configs is not None:
-            for key, value in six.iteritems(configs):
-                if hasattr(value, "update"):
-                    new_vals = execution_configs.get(key, {})
-                    value.update(new_vals)
-
 
 class PigFactory(BaseFactory):
     def __init__(self, job):
@@ -71,22 +110,15 @@ class PigFactory(BaseFactory):
         return conductor.job_main_name(context.ctx(), job)
 
     def get_workflow_xml(self, execution, input_data, output_data):
-        configs = {'configs': self.get_configs(input_data, output_data),
-                   'params': self.get_params(input_data, output_data),
-                   'args': []}
-        self.update_configs(configs, execution.job_configs)
-
-        # Update is not supported for list types, and besides
-        # since args are listed (not named) update doesn't make
-        # sense, just replacement of any default args
-        if execution.job_configs:
-            configs['args'] = execution.job_configs.get('args', [])
-
+        job_dict = {'configs': self.get_configs(input_data, output_data),
+                    'params': self.get_params(input_data, output_data),
+                    'args': []}
+        self.update_job_dict(job_dict, execution.job_configs)
         creator = pig_workflow.PigWorkflowCreator()
         creator.build_workflow_xml(self.name,
-                                   configuration=configs['configs'],
-                                   params=configs['params'],
-                                   arguments=configs['args'])
+                                   configuration=job_dict['configs'],
+                                   params=job_dict['params'],
+                                   arguments=job_dict['args'])
         return creator.get_built_workflow_xml()
 
 
@@ -101,14 +133,14 @@ class HiveFactory(BaseFactory):
         return conductor.job_main_name(context.ctx(), job)
 
     def get_workflow_xml(self, execution, input_data, output_data):
-        configs = {'configs': self.get_configs(input_data, output_data),
-                   'params': self.get_params(input_data, output_data)}
-        self.update_configs(configs, execution.job_configs)
+        job_dict = {'configs': self.get_configs(input_data, output_data),
+                    'params': self.get_params(input_data, output_data)}
+        self.update_job_dict(job_dict, execution.job_configs)
         creator = hive_workflow.HiveWorkflowCreator()
         creator.build_workflow_xml(self.name,
                                    self.job_xml,
-                                   configuration=configs['configs'],
-                                   params=configs['params'])
+                                   configuration=job_dict['configs'],
+                                   params=job_dict['params'])
         return creator.get_built_workflow_xml()
 
     def configure_workflow_if_needed(self, cluster, wf_dir):
@@ -129,28 +161,19 @@ class MapReduceFactory(BaseFactory):
         return configs
 
     def get_workflow_xml(self, execution, input_data, output_data):
-        configs = {'configs': self.get_configs(input_data, output_data)}
-        self.update_configs(configs, execution.job_configs)
+        job_dict = {'configs': self.get_configs(input_data, output_data)}
+        self.update_job_dict(job_dict, execution.job_configs)
         creator = mapreduce_workflow.MapReduceWorkFlowCreator()
-        creator.build_workflow_xml(configuration=configs['configs'])
+        creator.build_workflow_xml(configuration=job_dict['configs'])
         return creator.get_built_workflow_xml()
 
 
 class JavaFactory(BaseFactory):
 
     def get_workflow_xml(self, execution, *args, **kwargs):
-        # input and output will be handled as args, so we don't really
-        # know whether or not to include the swift configs.  Hmmm.
-        configs = {'configs': {},
-                   'args': []}
-        self.update_configs(configs, execution.job_configs)
-
-        # Update is not supported for list types, and besides
-        # since args are listed (not named) update doesn't make
-        # sense, just replacement of any default args
-        if execution.job_configs:
-            configs['args'] = execution.job_configs.get('args', [])
-
+        job_dict = {'configs': {},
+                    'args': []}
+        self.update_job_dict(job_dict, execution.job_configs)
         if hasattr(execution, 'java_opts'):
             java_opts = execution.java_opts
         else:
@@ -158,9 +181,9 @@ class JavaFactory(BaseFactory):
 
         creator = java_workflow.JavaWorkflowCreator()
         creator.build_workflow_xml(execution.main_class,
-                                   configuration=configs['configs'],
+                                   configuration=job_dict['configs'],
                                    java_opts=java_opts,
-                                   arguments=configs['args'])
+                                   arguments=job_dict['args'])
         return creator.get_built_workflow_xml()
 
 
