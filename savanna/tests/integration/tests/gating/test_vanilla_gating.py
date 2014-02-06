@@ -229,17 +229,31 @@ class VanillaGatingTest(cluster_configs.ClusterConfigTest, edp.EDPTest,
         java_lib_data = open(path + 'edp-java.jar').read()
         java_exec_data = {'main_class': 'org.apache.hadoop.examples.WordCount'}
 
-        configs = {
+        mapreduce_configs = {
             "configs": {
             "mapred.mapper.class": "org.apache.oozie.example.SampleMapper",
             "mapred.reducer.class": "org.apache.oozie.example.SampleReducer"
+            }
+        }
+        mapreduce_streaming_configs = {
+            "configs": {
+            "edp.streaming.mapper": "/bin/cat",
+            "edp.streaming.reducer": "/usr/bin/wc"
             }
         }
         try:
             self.edp_testing('Pig', [{'pig': pig_job_data}],
                              [{'jar': pig_lib_data}])
             self.edp_testing(
-                'MapReduce', [], [{'jar': mapreduce_jar_data}], configs
+                'MapReduce', [], [{'jar': mapreduce_jar_data}],
+                mapreduce_configs
+            )
+            #TODO(tmckay): lib data should not be required here, but it will
+            #suppress a validation warning until checks on streaming jobs
+            #are fully worked out
+            self.edp_testing(
+                'MapReduce', [], [{'jar': mapreduce_jar_data}],
+                mapreduce_streaming_configs
             )
             self.edp_testing('Java', [],
                              lib_data_list=[{'jar': java_lib_data}],
