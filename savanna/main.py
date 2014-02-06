@@ -53,7 +53,7 @@ opts = [
                help='IP or hostname of machine on which OpenStack Identity '
                     'service is located'),
     cfg.StrOpt('os_auth_port',
-               default='35357',
+               default='5000',
                help='Port of OpenStack Identity service'),
     cfg.StrOpt('os_admin_username',
                default='admin',
