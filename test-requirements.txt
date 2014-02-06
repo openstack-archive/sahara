@@ -14,7 +14,7 @@ sphinxcontrib-httpdomain
 sqlalchemy-migrate>=0.8.2
 testrepository>=0.0.17
 testscenarios>=0.4
-testtools>=0.9.32
+testtools>=0.9.34
 unittest2
 
 python-savannaclient>=0.4.1
