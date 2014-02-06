@@ -176,17 +176,18 @@ class MapReduceFactory(BaseFactory):
 
 class JavaFactory(BaseFactory):
 
+    def _get_java_configs(self, job_dict):
+        main_class = job_dict['edp_configs']['edp.java.main_class']
+        java_opts = job_dict['edp_configs'].get('edp.java.java_opts', None)
+        return main_class, java_opts
+
     def get_workflow_xml(self, execution, *args, **kwargs):
         job_dict = {'configs': {},
                     'args': []}
         self.update_job_dict(job_dict, execution.job_configs)
-        if hasattr(execution, 'java_opts'):
-            java_opts = execution.java_opts
-        else:
-            java_opts = ""
-
+        main_class, java_opts = self._get_java_configs(job_dict)
         creator = java_workflow.JavaWorkflowCreator()
-        creator.build_workflow_xml(execution.main_class,
+        creator.build_workflow_xml(main_class,
                                    configuration=job_dict['configs'],
                                    java_opts=java_opts,
                                    arguments=job_dict['args'])

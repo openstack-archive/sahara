@@ -19,7 +19,7 @@ import savanna.service.validations.base as main_base
 import savanna.service.validations.edp.base as b
 
 
-MR_EXEC_SCHEMA = {
+JOB_EXEC_SCHEMA = {
     "type": "object",
     "properties": {
         "input_id": {
@@ -38,39 +38,14 @@ MR_EXEC_SCHEMA = {
     },
     "additionalProperties": False,
     "required": [
-        "input_id",
-        "output_id",
         "cluster_id"
     ]
 }
 
 
-JAVA_EXEC_SCHEMA = {
-    "type": "object",
-    "properties": {
-        "main_class": {
-            "type": "string",
-        },
-        "java_opts": {
-            "type": "string",
-        },
-        "cluster_id": {
-            "type": "string",
-            "format": "uuid",
-        },
-        "job_configs": b.job_configs,
-    },
-    "additionalProperties": False,
-    "required": [
-        "cluster_id",
-        "main_class",
-    ]
-}
-
-
-JOB_EXEC_SCHEMA = {
-    "oneOf": [MR_EXEC_SCHEMA, JAVA_EXEC_SCHEMA]
-}
+def _is_main_class_present(data):
+    return data and 'edp.java.main_class' in data.get('job_configs',
+                                                      {}).get('configs', {})
 
 
 def _streaming_present(data):
@@ -86,23 +61,26 @@ def _streaming_present(data):
 def check_job_executor(data, job_id):
     job = api.get_job(job_id)
 
-    # Since we allow the creation of MapReduce jobs without libs,
-    # ensure here that streaming values are set if the job has
-    # no libs
-    if job.type == 'MapReduce':
-        if not job.libs and not _streaming_present(data):
-            raise ex.InvalidDataException("MapReduce job without libs "
-                                          "must specify streaming mapper "
-                                          "and reducer")
+    # All types except Java require input and output objects
+    if job.type == 'Java':
+        if not _is_main_class_present(data):
+            raise ex.InvalidDataException('Java job must '
+                                          'specify edp.java.main_class')
+    else:
+        if not ('input_id' in data and 'output_id' in data):
+            raise ex.InvalidDataException("%s job requires 'input_id' "
+                                          "and 'output_id'" % job.type)
 
-    # Make sure we have the right schema for the job type
-    # We can identify the Java action schema by looking for 'main_class'
-    if ('main_class' in data) ^ (job.type == 'Java'):
-        raise ex.InvalidDataException("Schema is not valid for job type %s"
-                                      % job.type)
-
-    if 'input_id' in data:
         b.check_data_source_exists(data['input_id'])
         b.check_data_source_exists(data['output_id'])
+
+        # Since we allow the creation of MapReduce jobs without libs,
+        # ensure here that streaming values are set if the job has
+        # no libs
+        if job.type == 'MapReduce':
+            if not job.libs and not _streaming_present(data):
+                raise ex.InvalidDataException("MapReduce job without libs "
+                                              "must specify streaming mapper "
+                                              "and reducer")
 
     main_base.check_cluster_exists(data['cluster_id'])

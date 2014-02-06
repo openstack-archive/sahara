@@ -227,7 +227,11 @@ class VanillaGatingTest(cluster_configs.ClusterConfigTest, edp.EDPTest,
 
         # This is a modified version of WordCount that takes swift configs
         java_lib_data = open(path + 'edp-java.jar').read()
-        java_exec_data = {'main_class': 'org.apache.hadoop.examples.WordCount'}
+        java_configs = {
+            "configs": {
+            "edp.java.main_class": "org.apache.hadoop.examples.WordCount"
+            }
+        }
 
         mapreduce_configs = {
             "configs": {
@@ -257,8 +261,8 @@ class VanillaGatingTest(cluster_configs.ClusterConfigTest, edp.EDPTest,
             )
             self.edp_testing('Java', [],
                              lib_data_list=[{'jar': java_lib_data}],
-                             pass_input_output_args=True,
-                             job_exec_data=java_exec_data)
+                             configs=java_configs,
+                             pass_input_output_args=True)
 
         except Exception as e:
             with excutils.save_and_reraise_exception():
