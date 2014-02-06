@@ -194,8 +194,15 @@ class TestJobManager(models_test_base.DbTestCase):
         </property>
       </configuration>""", res)
 
-    def _build_workflow_common(self, job_type):
-        job, job_exec = _create_all_stack(job_type)
+    def _build_workflow_common(self, job_type, streaming=False):
+        if streaming:
+            configs = {'edp.streaming.mapper': '/usr/bin/cat',
+                       'edp.streaming.reducer': '/usr/bin/wc'}
+            configs = {'configs': configs}
+        else:
+            configs = {}
+
+        job, job_exec = _create_all_stack(job_type, configs)
 
         input_data = _create_data_source('swift://ex.savanna/i')
         output_data = _create_data_source('swift://ex.savanna/o')
@@ -204,6 +211,13 @@ class TestJobManager(models_test_base.DbTestCase):
 
         res = creator.get_workflow_xml(job_exec,
                                        input_data, output_data)
+
+        if streaming:
+            self.assertIn("""
+      <streaming>
+        <mapper>/usr/bin/cat</mapper>
+        <reducer>/usr/bin/wc</reducer>
+      </streaming>""", res)
 
         self.assertIn("""
         <property>
@@ -231,6 +245,7 @@ class TestJobManager(models_test_base.DbTestCase):
 
     def test_build_workflow_for_job_mapreduce(self):
         self._build_workflow_common('MapReduce')
+        self._build_workflow_common('MapReduce', streaming=True)
 
     def test_build_workflow_for_job_jar(self):
         self._build_workflow_common('Jar')
