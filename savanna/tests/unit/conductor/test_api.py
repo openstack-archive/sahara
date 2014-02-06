@@ -13,8 +13,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from savanna import conductor
 from savanna import context
-from savanna.tests.unit.conductor import base
+from savanna.tests.unit import base
 
 
 SAMPLE_CLUSTER = {
@@ -61,7 +62,11 @@ SAMPLE_INSTANCE = {
 }
 
 
-class TestConductorClusterApi(base.ConductorApiTestCase):
+class TestConductorClusterApi(base.SavannaWithDbTestCase):
+    def setUp(self):
+        super(TestConductorClusterApi, self).setUp()
+        self.api = conductor.API
+
     def _make_sample(self):
         ctx = context.ctx()
         cluster = self.api.cluster_create(ctx, SAMPLE_CLUSTER)

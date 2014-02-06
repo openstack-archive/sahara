@@ -17,10 +17,9 @@ import copy
 import mock
 
 from savanna import conductor as cond
-from savanna.conductor import resource as r
 from savanna.service.edp import job_manager
 from savanna.service.edp.workflow_creator import workflow_factory
-from savanna.tests.unit import base as models_test_base
+from savanna.tests.unit import base
 from savanna.utils import patches as p
 
 
@@ -30,15 +29,10 @@ _java_main_class = "org.apache.hadoop.examples.WordCount"
 _java_opts = "-Dparam1=val1 -Dparam2=val2"
 
 
-def _resource_passthrough(*args, **kwargs):
-    return True
-
-
-class TestJobManager(models_test_base.DbTestCase):
+class TestJobManager(base.SavannaWithDbTestCase):
     def setUp(self):
-        r.Resource._is_passthrough_type = _resource_passthrough
-        p.patch_minidom_writexml()
         super(TestJobManager, self).setUp()
+        p.patch_minidom_writexml()
 
     @mock.patch('savanna.utils.remote.get_remote')
     @mock.patch('savanna.service.edp.hdfs_helper.create_dir')
@@ -86,17 +80,14 @@ class TestJobManager(models_test_base.DbTestCase):
         remote_class.reset_mock()
         helper.reset_mock()
 
-    @mock.patch('oslo.config.cfg.CONF.job_workflow_postfix')
-    def test_add_postfix(self, conf):
-        conf.__str__.return_value = 'caba'
+    def test_add_postfix(self):
+        self.override_config("job_workflow_postfix", 'caba')
         res = job_manager._add_postfix('aba')
         self.assertEqual("aba/caba/", res)
 
-        conf.__str__.return_value = ''
+        self.override_config("job_workflow_postfix", '')
         res = job_manager._add_postfix('aba')
         self.assertEqual("aba/", res)
-
-        conf.reset_mock()
 
     @mock.patch('savanna.conductor.API.job_binary_get')
     def test_build_workflow_for_job_pig(self, job_binary):

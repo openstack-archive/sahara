@@ -16,10 +16,9 @@
 import mock
 
 from savanna import conductor as cond
-from savanna.conductor import resource as r
 from savanna import context
 from savanna.service import direct_engine as e
-from savanna.tests.unit import base as models_test_base
+from savanna.tests.unit import base
 import savanna.utils.crypto as c
 from savanna.utils import general as g
 
@@ -28,15 +27,10 @@ from novaclient import exceptions as nova_exceptions
 conductor = cond.API
 
 
-def _resource_passthrough(*args, **kwargs):
-    return True
-
-
-class TestClusterRollBack(models_test_base.DbTestCase):
+class TestClusterRollBack(base.SavannaWithDbTestCase):
     def setUp(self):
-        self.engine = e.DirectEngine()
-        r.Resource._is_passthrough_type = _resource_passthrough
         super(TestClusterRollBack, self).setUp()
+        self.engine = e.DirectEngine()
 
     @mock.patch('savanna.utils.openstack.nova.client')
     def test_cluster_creation_with_errors(self, novaclient):
@@ -59,11 +53,10 @@ class TestClusterRollBack(models_test_base.DbTestCase):
         self.assertEqual(len(cluster_obj.node_groups[0].instances), 0)
 
 
-class NodePlacementTest(models_test_base.DbTestCase):
+class NodePlacementTest(base.SavannaWithDbTestCase):
     def setUp(self):
-        self.engine = e.DirectEngine()
-        r.Resource._is_passthrough_type = _resource_passthrough
         super(NodePlacementTest, self).setUp()
+        self.engine = e.DirectEngine()
 
     @mock.patch('savanna.utils.openstack.nova.client')
     def test_one_node_groups_and_one_affinity_group(self, novaclient):
@@ -162,48 +155,42 @@ class NodePlacementTest(models_test_base.DbTestCase):
         self.assertEqual(inst_number, 3)
 
 
-class IpManagementTest(models_test_base.DbTestCase):
+class IpManagementTest(base.SavannaWithDbTestCase):
     def setUp(self):
-        self.engine = e.DirectEngine()
-        r.Resource._is_passthrough_type = _resource_passthrough
         super(IpManagementTest, self).setUp()
+        self.engine = e.DirectEngine()
 
     @mock.patch('savanna.utils.openstack.nova.client')
-    @mock.patch('oslo.config.cfg')
-    def test_ip_assignment_use_no_floating(self, cfg, novaclient):
-        cfg.CONF.set_override("use_floating_ips", False)
-        try:
-            nova = _create_nova_mock(novaclient)
+    def test_ip_assignment_use_no_floating(self, novaclient):
+        self.override_config("use_floating_ips", False)
+        nova = _create_nova_mock(novaclient)
 
-            node_groups = [_make_ng_dict("test_group_1", "test_flavor",
-                                         ["data node", "test tracker"], 2,
-                                         'pool'),
-                           _make_ng_dict("test_group_2", "test_flavor",
-                                         ["name node", "test tracker"], 1)]
+        node_groups = [_make_ng_dict("test_group_1", "test_flavor",
+                                     ["data node", "test tracker"], 2,
+                                     'pool'),
+                       _make_ng_dict("test_group_2", "test_flavor",
+                                     ["name node", "test tracker"], 1)]
 
-            ctx = context.ctx()
-            cluster = _create_cluster_mock(node_groups, ["data node"])
-            self.engine._create_instances(cluster)
+        ctx = context.ctx()
+        cluster = _create_cluster_mock(node_groups, ["data node"])
+        self.engine._create_instances(cluster)
 
-            cluster = conductor.cluster_get(ctx, cluster)
-            instances_list = g.get_instances(cluster)
+        cluster = conductor.cluster_get(ctx, cluster)
+        instances_list = g.get_instances(cluster)
 
-            self.engine._assign_floating_ips(instances_list)
+        self.engine._assign_floating_ips(instances_list)
 
-            nova.floating_ips.create.assert_has_calls(
-                [mock.call("pool"), mock.call("pool")])
+        nova.floating_ips.create.assert_has_calls(
+            [mock.call("pool"), mock.call("pool")])
 
-            self.assertEqual(nova.floating_ips.create.call_count, 2,
-                             "Not expected floating IPs number found.")
-        finally:
-            cfg.CONF.clear_override("use_floating_ips")
+        self.assertEqual(nova.floating_ips.create.call_count, 2,
+                         "Not expected floating IPs number found.")
 
 
-class ShutdownClusterTest(models_test_base.DbTestCase):
+class ShutdownClusterTest(base.SavannaWithDbTestCase):
     def setUp(self):
-        self.engine = e.DirectEngine()
-        r.Resource._is_passthrough_type = _resource_passthrough
         super(ShutdownClusterTest, self).setUp()
+        self.engine = e.DirectEngine()
 
     @mock.patch('savanna.utils.openstack.nova.client')
     def test_delete_floating_ips(self, novaclient):

@@ -16,16 +16,20 @@
 import datetime
 import mock
 
-from oslo.config import cfg
-
+from savanna.conductor import manager
 from savanna import context
 import savanna.service.periodic as p
-import savanna.tests.unit.conductor.base as test_base
+import savanna.tests.unit.base as base
 from savanna.tests.unit.conductor.manager import test_clusters as tc
 from savanna.tests.unit.conductor.manager import test_edp as te
 
 
-class TestPeriodicBack(test_base.ConductorManagerTestCase):
+class TestPeriodicBack(base.SavannaWithDbTestCase):
+
+    def setUp(self):
+        super(TestPeriodicBack, self).setUp()
+        self.api = manager.ConductorManager()
+
     @mock.patch('savanna.service.edp.job_manager.get_job_status')
     def test_job_status_update(self, get_job_status):
         ctx = context.ctx()
@@ -48,36 +52,33 @@ class TestPeriodicBack(test_base.ConductorManagerTestCase):
     @mock.patch('savanna.service.edp.job_manager.get_job_status')
     @mock.patch('savanna.service.api.terminate_cluster')
     def test_cluster_terminate(self, terminate_cluster, get_job_status):
-        cfg.CONF.set_override("use_identity_api_v3", True)
-        try:
-            ctx = context.ctx()
-            job = self.api.job_create(ctx, te.SAMPLE_JOB)
-            ds = self.api.data_source_create(ctx, te.SAMPLE_DATA_SOURCE)
-            c = tc.SAMPLE_CLUSTER.copy()
-            c["status"] = "Active"
-            c["id"] = "1"
-            c["name"] = "1"
-            self.api.cluster_create(ctx, c)
-            c["id"] = "2"
-            c["name"] = "2"
-            self.api.cluster_create(ctx, c)
-            self._create_job_execution({"end_time": datetime.datetime.now(),
-                                        "id": 1,
-                                        "cluster_id": "1"},
-                                       job, ds, ds)
-            self._create_job_execution({"end_time": None,
-                                        "id": 2,
-                                        "cluster_id": "2"},
-                                       job, ds, ds)
-            self._create_job_execution({"end_time": None,
-                                        "id": 3,
-                                        "cluster_id": "2"},
-                                       job, ds, ds)
-            p.SavannaPeriodicTasks().terminate_unneeded_clusters(None)
-            self.assertEqual(terminate_cluster.call_count, 1)
-            terminate_cluster.assert_has_calls([mock.call(u'1')])
-        finally:
-            cfg.CONF.clear_override("use_identity_api_v3")
+        self.override_config("use_identity_api_v3", True)
+        ctx = context.ctx()
+        job = self.api.job_create(ctx, te.SAMPLE_JOB)
+        ds = self.api.data_source_create(ctx, te.SAMPLE_DATA_SOURCE)
+        c = tc.SAMPLE_CLUSTER.copy()
+        c["status"] = "Active"
+        c["id"] = "1"
+        c["name"] = "1"
+        self.api.cluster_create(ctx, c)
+        c["id"] = "2"
+        c["name"] = "2"
+        self.api.cluster_create(ctx, c)
+        self._create_job_execution({"end_time": datetime.datetime.now(),
+                                    "id": 1,
+                                    "cluster_id": "1"},
+                                   job, ds, ds)
+        self._create_job_execution({"end_time": None,
+                                    "id": 2,
+                                    "cluster_id": "2"},
+                                   job, ds, ds)
+        self._create_job_execution({"end_time": None,
+                                    "id": 3,
+                                    "cluster_id": "2"},
+                                   job, ds, ds)
+        p.SavannaPeriodicTasks().terminate_unneeded_clusters(None)
+        self.assertEqual(terminate_cluster.call_count, 1)
+        terminate_cluster.assert_has_calls([mock.call(u'1')])
 
     def _create_job_execution(self, values, job, input, output):
         values.update({"job_id": job['id'],

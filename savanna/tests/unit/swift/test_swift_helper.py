@@ -14,11 +14,9 @@
 # limitations under the License.
 
 import mock
-import unittest2
 
-from savanna import context
-from savanna import main
-import savanna.swift.swift_helper as h
+from savanna.swift import swift_helper as h
+from savanna.tests.unit import base
 
 
 GENERAL_PREFIX = "fs.swift."
@@ -34,27 +32,18 @@ SERVICE_SPECIFIC = ["auth.url", "tenant",
                     "region", "apikey"]
 
 
-class SwiftIntegrationTestCase(unittest2.TestCase):
-    def setUp(self):
-        context.set_ctx(
-            context.Context(username='test_user',
-                            tenant_name='test_tenant',
-                            token='test_auth_token'))
+class SwiftIntegrationTestCase(base.SavannaTestCase):
 
     @mock.patch('savanna.utils.openstack.base.url_for')
     def test_get_swift_configs(self, authUrlConfig):
-        main.CONF.set_override("os_auth_protocol", 'http')
-        main.CONF.set_override("os_auth_port", '8080')
+        self.setup_context(tenant_name='test_tenant')
+        self.override_config("os_auth_protocol", 'http')
+        self.override_config("os_auth_port", '8080')
+        authUrlConfig.return_value = "http://localhost:8080/v2.0/"
 
-        try:
-            authUrlConfig.return_value = "http://localhost:8080/v2.0/"
-
-            result = h.get_swift_configs()
-            self.assertEqual(7, len(result))
-            self.assertIn({'name': "fs.swift.service.savanna.tenant",
-                           'value': 'test_tenant', 'description': ''}, result)
-            self.assertIn({'name': "fs.swift.service.savanna.http.port",
-                           'value': '8080', 'description': ''}, result)
-        finally:
-            main.CONF.clear_override("os_auth_protocol")
-            main.CONF.clear_override("os_auth_port")
+        result = h.get_swift_configs()
+        self.assertEqual(7, len(result))
+        self.assertIn({'name': "fs.swift.service.savanna.tenant",
+                       'value': 'test_tenant', 'description': ''}, result)
+        self.assertIn({'name': "fs.swift.service.savanna.http.port",
+                       'value': '8080', 'description': ''}, result)

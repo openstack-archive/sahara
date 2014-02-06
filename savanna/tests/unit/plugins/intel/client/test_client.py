@@ -33,7 +33,7 @@ SESSION_GET_DATA = {"items": [
 ]}
 
 
-class TestClient(base.DbTestCase):
+class TestClient(base.SavannaTestCase):
 
     @mock.patch('requests.post')
     @mock.patch('requests.get')
