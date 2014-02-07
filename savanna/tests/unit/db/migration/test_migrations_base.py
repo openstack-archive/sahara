@@ -475,10 +475,10 @@ class BaseWalkMigrationTestCase(BaseMigrationTestCase):
         return alembic_history
 
     def _up_and_down_versions(self, engine):
-        """Since alembic version has a random algoritm of generation
+        """Since alembic version has a random algorithm of generation
         (SA-migrate has an ordered autoincrement naming) we should store
         a tuple of versions (version for upgrade and version for downgrade)
-        for successfull testing of migrations in up>down>up mode.
+        for successful testing of migrations in up>down>up mode.
         """
         versions = self._get_alembic_versions(engine)
         return zip(versions, ['-1'] + versions)
