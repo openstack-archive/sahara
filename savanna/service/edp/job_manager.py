@@ -88,6 +88,11 @@ def _get_oozie_server(cluster):
     return plugin.get_oozie_server(cluster)
 
 
+def _get_resource_manager_path(cluster):
+    plugin = plugin_base.PLUGINS.get_plugin(cluster.plugin_name)
+    return plugin.get_resource_manager_uri(cluster)
+
+
 def cancel_job(job_execution_id):
     ctx = context.ctx()
     job_execution = conductor.job_execution_get(ctx, job_execution_id)
@@ -145,12 +150,12 @@ def run_job(job_execution):
     path_to_workflow = upload_workflow_file(u.get_jobtracker(cluster),
                                             wf_dir, wf_xml, hdfs_user)
 
-    jt_path = cluster['info']['MapReduce']['JobTracker']
+    rm_path = _get_resource_manager_path(cluster)
     nn_path = cluster['info']['HDFS']['NameNode']
 
     client = o.OozieClient(cluster['info']['JobFlow']['Oozie'] + "/oozie/",
                            _get_oozie_server(cluster))
-    job_parameters = {"jobTracker": jt_path,
+    job_parameters = {"jobTracker": rm_path,
                       "nameNode": nn_path,
                       "user.name": hdfs_user,
                       "oozie.wf.application.path":
@@ -182,6 +187,8 @@ def upload_job_files(where, job_dir, job, hdfs_user):
             uploaded_paths.append(job_dir + '/' + main.name)
         for lib in libs:
             raw_data = dispatch.get_raw_binary(lib)
+            # HDFS 2.2.0 fails to put file if the lib dir does not exist
+            h.create_dir(r, job_dir + "/lib", hdfs_user)
             h.put_file_to_hdfs(r, raw_data, lib.name, job_dir + "/lib",
                                hdfs_user)
             uploaded_paths.append(job_dir + '/lib/' + lib.name)

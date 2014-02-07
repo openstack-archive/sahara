@@ -134,7 +134,12 @@ class HadoopServer:
 
         LOG.info(
             '{0}: Starting Ambari Agent ...'.format(self.instance.hostname()))
-        r.execute_command('ambari-agent start', run_as_root=True)
+        # If the HDP 2 ambari agent is pre-installed on an image, the agent
+        # will start up during instance launch and therefore the agent
+        # registration will fail.  It is therefore more appropriate to call
+        # restart since it will either start (if stopped) or restart (if
+        # running)
+        r.execute_command('ambari-agent restart', run_as_root=True)
 
     def _log(self, buf):
         LOG.debug(buf)

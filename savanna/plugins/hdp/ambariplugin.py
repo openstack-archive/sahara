@@ -83,8 +83,8 @@ class AmbariPlugin(p.ProvisioningPluginBase):
 
     def get_node_processes(self, hadoop_version):
         node_processes = {}
-        version_handler = \
-            self.version_factory.get_version_handler(hadoop_version)
+        version_handler = (
+            self.version_factory.get_version_handler(hadoop_version))
         default_config = version_handler.get_default_cluster_configuration()
         for service in default_config.services:
             components = []
@@ -142,6 +142,11 @@ class AmbariPlugin(p.ProvisioningPluginBase):
     def get_oozie_server(self, cluster):
         return u.get_instance(cluster, "oozie_server")
 
+    def get_resource_manager_uri(self, cluster):
+        version_handler = (
+            self.version_factory.get_version_handler(cluster.hadoop_version))
+        return version_handler.get_resource_manager_uri(cluster)
+
     def update_infra(self, cluster):
         pass
 
@@ -183,8 +188,8 @@ class AmbariPlugin(p.ProvisioningPluginBase):
 
     def _set_ambari_credentials(self, cluster_spec, ambari_info, version):
         services = cluster_spec.services
-        ambari_client = self.version_factory.get_version_handler(version).\
-            get_ambari_client()
+        ambari_client = (self.version_factory.get_version_handler(version).
+                         get_ambari_client())
         for service in services:
             if service.name == 'AMBARI':
                 is_admin_provided = False
@@ -259,9 +264,9 @@ class AmbariPlugin(p.ProvisioningPluginBase):
         return 'Hortonworks Data Platform'
 
     def get_description(self):
-        return 'The Hortonworks OpenStack plugin works with project ' \
-               'Savanna to automate the deployment of the Hortonworks data' \
-               ' platform on OpenStack based public & private clouds'
+        return ('The Hortonworks OpenStack plugin works with project '
+                'Savanna to automate the deployment of the Hortonworks data'
+                ' platform on OpenStack based public & private clouds')
 
     def validate(self, cluster):
         # creating operational config results in validation
