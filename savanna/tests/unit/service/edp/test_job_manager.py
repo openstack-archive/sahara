@@ -433,6 +433,6 @@ def _create_job_exec(job_id, type, configs=None):
     j_exec.job_id = job_id
     j_exec.job_configs = configs
     if type == "Java":
-        j_exec.main_class = _java_main_class
-        j_exec.java_opts = _java_opts
+        j_exec.job_configs['configs']['edp.java.main_class'] = _java_main_class
+        j_exec.job_configs['configs']['edp.java.java_opts'] = _java_opts
     return j_exec

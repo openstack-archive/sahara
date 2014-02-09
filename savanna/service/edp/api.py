@@ -60,15 +60,9 @@ def execute_job(job_id, data):
     input_id = data.get('input_id', None)
     output_id = data.get('output_id', None)
 
-    # Present for Java job types
-    main_class = data.get('main_class', '')
-    java_opts = data.get('java_opts', '')
-
     # Since we will use a unified class in the database, we pass
     # a superset for all job types
-    job_ex_dict = {'main_class': main_class,
-                   'java_opts': java_opts,
-                   'input_id': input_id, 'output_id': output_id,
+    job_ex_dict = {'input_id': input_id, 'output_id': output_id,
                    'job_id': job_id, 'cluster_id': cluster_id,
                    'info': {'status': 'Pending'}, 'job_configs': configs,
                    'extra': extra}
