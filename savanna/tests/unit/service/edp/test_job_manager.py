@@ -36,8 +36,8 @@ class TestJobManager(base.SavannaWithDbTestCase):
 
     @mock.patch('savanna.utils.remote.get_remote')
     @mock.patch('savanna.service.edp.hdfs_helper.create_dir')
-    @mock.patch('savanna.utils.remote.InstanceInteropHelper')
-    def test_create_job_dir(self, remote_class, helper, remote):
+    def test_create_job_dir(self, helper, remote):
+        remote_class = mock.MagicMock()
         remote_class.__exit__.return_value = 'closed'
         remote.return_value = remote_class
         helper.return_value = 'ok'
@@ -52,10 +52,9 @@ class TestJobManager(base.SavannaWithDbTestCase):
 
     @mock.patch('savanna.utils.remote.get_remote')
     @mock.patch('savanna.service.edp.hdfs_helper.put_file_to_hdfs')
-    @mock.patch('savanna.utils.remote.InstanceInteropHelper')
     @mock.patch('savanna.conductor.API.job_binary_internal_get_raw_data')
-    def test_upload_job_files(self, conductor_raw_data, remote_class,
-                              helper, remote):
+    def test_upload_job_files(self, conductor_raw_data, helper, remote):
+        remote_class = mock.MagicMock()
         remote_class.__exit__.return_value = 'closed'
         remote.return_value = remote_class
         helper.return_value = 'ok'

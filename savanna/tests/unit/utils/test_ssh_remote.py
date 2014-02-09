@@ -15,10 +15,10 @@
 
 import unittest2
 
-from savanna.utils import remote
+from savanna.utils import ssh_remote
 
 
 class TestEscapeQuotes(unittest2.TestCase):
     def test_escape_quotes(self):
-        s = remote._escape_quotes('echo "\\"Hello, world!\\""')
+        s = ssh_remote._escape_quotes('echo "\\"Hello, world!\\""')
         self.assertEqual(s, r'echo \"\\\"Hello, world!\\\"\"')
