@@ -174,7 +174,8 @@ def _configure_services(client, cluster):
     nn_host = u.get_namenode(cluster).fqdn()
     snn = u.get_secondarynamenodes(cluster)
     snn_host = snn[0].fqdn() if snn else None
-    jt_host = u.get_jobtracker(cluster).fqdn()
+    jt_host = u.get_jobtracker(cluster).fqdn() if u.get_jobtracker(
+        cluster) else None
     dn_hosts = [dn.fqdn() for dn in u.get_datanodes(cluster)]
     tt_hosts = [tt.fqdn() for tt in u.get_tasktrackers(cluster)]
 
@@ -213,8 +214,9 @@ def _configure_services(client, cluster):
     if hive_host:
         client.services.hive.add_nodes('HiveServer', [hive_host])
 
-    client.services.mapred.add_nodes('JobTracker', [jt_host])
-    client.services.mapred.add_nodes('TaskTracker', tt_hosts)
+    if jt_host:
+        client.services.mapred.add_nodes('JobTracker', [jt_host])
+        client.services.mapred.add_nodes('TaskTracker', tt_hosts)
 
 
 def _configure_storage(client, cluster):
