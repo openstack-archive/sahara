@@ -123,7 +123,11 @@ Jobs can be configured at launch. The job type determines the kinds of values th
       | ``Java``       | Yes          | No         | Yes       |
       +----------------+--------------+------------+-----------+
 
-* :dfn:`Configuration values` are key/value pairs. They set options for Oozie or Hadoop and can also be read in Java programs.
+* :dfn:`Configuration values` are key/value pairs. They set options for EDP, Oozie or Hadoop.
+
+  + The EDP configuration values have names beginning with *edp.* and are consumed by Savanna
+  + The Oozie and Hadoop configuration values may be read by running jobs
+
 * :dfn:`Parameters` are key/value pairs. They supply values for the Hive and Pig parameter substitution mechanisms.
 * :dfn:`Arguments` are strings passed to the pig shell or to a Java ``main()`` method.
 
@@ -179,25 +183,25 @@ If the job type is MapReduce, the mapper and reducer classes *must* be specified
 Additional Details for Java jobs
 ++++++++++++++++++++++++++++++++
 
-A Java job will execute the ``main(String[] args)`` method of the specified ``main_class``.  There are two methods of passing
-values to the ``main()`` method:
+Java jobs use two configuration values that do not apply to other job types:
+
+* ``edp.java.main_class`` (required) Specifies the class containing ``main(String[] args)``
+
+* ``edp.java.java_opts`` (optional) Specifies configuration values for the JVM
+
+A Java job will execute the ``main(String[] args)`` method of the specified main class.  There are two methods of passing
+values to the ``main`` method:
 
 * Passing values as arguments
 
-  Arguments set during job launch will be passed to ``main()`` in the ``String[] args`` array.
+  Arguments set during job launch will be passed in the ``String[] args`` array.
 
 * Setting configuration values
 
-  Any configuration values that are set can be read in ``main()`` from a special file created by Oozie.
+  Any configuration values that are set can be read from a special file created by Oozie.
 
-Data Source objects are not used with Java job types. Instead, any input or output paths must be passed to ``main()``
-using one of the above two methods. Furthermore, if Swift data sources are used the configuration values listed in `Generation of Swift Properties for Data Sources`_  must be passed to ``main()`` and set with one of the above methods.
-
-Java jobs have two additional special values that do not appear in other job types:
-
-* ``main_class`` (required) Specifies the class containing ``main()``
-
-* ``java_opts`` (optional) Specifies configuration values for the JVM
+Data Source objects are not used with Java job types. Instead, any input or output paths must be passed to the ``main`` method
+using one of the above two methods. Furthermore, if Swift data sources are used the configuration values listed in `Generation of Swift Properties for Data Sources`_  must be passed with one of the above two methods and set in the configuration by ``main``.
 
 The ``edp-wordcount`` example bundled with Savanna shows how to use configuration values, arguments, and Swift data paths in a Java job type.
 
