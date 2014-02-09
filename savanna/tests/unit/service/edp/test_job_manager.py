@@ -14,6 +14,7 @@
 # limitations under the License.
 
 import copy
+
 import mock
 
 from savanna import conductor as cond

@@ -17,6 +17,7 @@ from savanna import context
 from savanna.openstack.common import log as logging
 from savanna.plugins.intel import exceptions as iex
 
+
 LOG = logging.getLogger(__name__)
 
 

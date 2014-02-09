@@ -13,10 +13,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from oslo.config import cfg
-
 from keystoneclient.v2_0 import client as keystone_client
 from keystoneclient.v3 import client as keystone_client_v3
+from oslo.config import cfg
 
 from savanna import context
 from savanna.utils.openstack import base

@@ -14,6 +14,7 @@
 # limitations under the License.
 
 import datetime
+
 import mock
 
 from savanna.conductor import manager

@@ -15,10 +15,10 @@
 #
 # Based on Neutron's migration/cli.py
 
-
 from __future__ import with_statement
-from alembic import context
 from logging import config as c
+
+from alembic import context
 from sqlalchemy import create_engine
 from sqlalchemy import pool
 

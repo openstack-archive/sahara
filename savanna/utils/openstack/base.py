@@ -17,6 +17,7 @@ import json
 
 from oslo.config import cfg
 
+
 CONF = cfg.CONF
 
 

@@ -14,8 +14,9 @@
 # limitations under the License.
 
 import mock
-from savanna.utils.openstack import neutron as neutron_client
 import unittest2
+
+from savanna.utils.openstack import neutron as neutron_client
 
 
 class NeutronTest(unittest2.TestCase):

@@ -17,6 +17,7 @@ import unittest2
 
 from savanna.utils import edp
 
+
 MAPRED_STREAMING = "MapReduce" + edp.JOB_TYPE_SEP + "Streaming"
 
 

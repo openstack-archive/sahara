@@ -14,6 +14,7 @@
 # limitations under the License.
 
 import json
+
 from oslo.config import cfg
 
 from savanna import conductor as c

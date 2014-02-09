@@ -13,8 +13,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from savanna.service.edp.workflow_creator import base_workflow
 import six
+
+from savanna.service.edp.workflow_creator import base_workflow
 
 
 class MapReduceWorkFlowCreator(base_workflow.OozieWorkflowCreator):

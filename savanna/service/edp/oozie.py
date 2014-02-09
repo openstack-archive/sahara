@@ -15,8 +15,9 @@
 
 import json
 import re
-from six.moves.urllib import parse as urlparse
 import urllib
+
+from six.moves.urllib import parse as urlparse
 
 import savanna.exceptions as ex
 

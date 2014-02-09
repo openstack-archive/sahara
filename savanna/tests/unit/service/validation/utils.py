@@ -22,6 +22,7 @@ from savanna.plugins.vanilla import plugin
 import savanna.service.validation as v
 from savanna.tests.unit import testutils as tu
 
+
 m = {}
 
 _types_checks = {

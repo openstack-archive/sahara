@@ -14,7 +14,6 @@
 # limitations under the License.
 
 import mock
-
 import unittest2
 
 from savanna import exceptions as e

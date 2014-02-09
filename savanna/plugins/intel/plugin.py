@@ -23,6 +23,7 @@ from savanna.plugins.intel import exceptions as i_ex
 from savanna.plugins.intel import installer as ins
 from savanna.plugins import provisioning as p
 
+
 conductor = conductor.API
 LOG = logging.getLogger(__name__)
 

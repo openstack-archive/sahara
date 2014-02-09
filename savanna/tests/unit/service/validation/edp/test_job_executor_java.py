@@ -13,12 +13,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import uuid
+
 import mock
+import six
 
 from savanna.service.validations.edp import job_executor as je
 from savanna.tests.unit.service.validation import utils as u
-import six
-import uuid
 
 
 def wrap_it(data):

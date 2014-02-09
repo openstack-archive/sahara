@@ -25,7 +25,6 @@
 import ConfigParser
 import io
 import os
-import unittest2
 import urlparse
 
 from alembic import command
@@ -34,12 +33,14 @@ from alembic import migration
 from oslo.config import cfg
 import sqlalchemy
 import sqlalchemy.exc
+import unittest2
 
 import savanna.db.migration
 from savanna.openstack.common.db.sqlalchemy import session
 from savanna.openstack.common import lockutils
 from savanna.openstack.common import log as logging
 from savanna.openstack.common import processutils
+
 
 LOG = logging.getLogger(__name__)
 CONF = cfg.CONF

@@ -13,11 +13,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import mock
 import random
-import unittest2
 
 import eventlet
+import mock
+import unittest2
 
 from savanna import context
 from savanna import exceptions

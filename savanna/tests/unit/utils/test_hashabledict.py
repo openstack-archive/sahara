@@ -14,6 +14,7 @@
 # limitations under the License.
 
 import collections
+
 import unittest2
 
 from savanna.utils import hashabledict as h

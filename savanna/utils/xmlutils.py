@@ -13,9 +13,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import pkg_resources as pkg
 import re
 import xml.dom.minidom as xml
+
+import pkg_resources as pkg
 
 from savanna import version
 

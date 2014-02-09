@@ -31,15 +31,16 @@ and eventlet together. The private high-level module methods are
 implementations which are run in a separate process.
 """
 
+import logging
+import time
+import uuid
 
 from eventlet import semaphore
 from eventlet import timeout as e_timeout
-import logging
 from oslo.config import cfg
 import paramiko
 import requests
 import six
-import uuid
 
 from savanna import context
 from savanna import exceptions as ex
@@ -49,8 +50,6 @@ from savanna.utils import hashabledict as h
 from savanna.utils.openstack import base
 from savanna.utils.openstack import neutron
 from savanna.utils import procutils
-
-import time
 
 
 LOG = logging.getLogger(__name__)

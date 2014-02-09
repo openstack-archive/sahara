@@ -23,6 +23,7 @@ from requests import adapters
 
 from savanna.openstack.common import log as logging
 
+
 LOG = logging.getLogger(__name__)
 
 

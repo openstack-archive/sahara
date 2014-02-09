@@ -19,12 +19,11 @@ import telnetlib
 import time
 import uuid
 
-import unittest2
-
 from neutronclient.v2_0 import client as neutron_client
 from novaclient.v1_1 import client as nova_client
 import savannaclient.api.client as savanna_client
 from swiftclient import client as swift_client
+import unittest2
 
 from savanna.openstack.common import excutils
 from savanna.tests.integration.configs import config as cfg

@@ -17,5 +17,4 @@
 DB abstraction for Savanna
 """
 
-
 from savanna.db.api import *  # noqa

@@ -13,9 +13,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import novaclient.exceptions as nova_ex
 from oslo.config import cfg
 
-import novaclient.exceptions as nova_ex
 from savanna import conductor as cond
 from savanna import context
 import savanna.exceptions as ex

@@ -13,8 +13,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from oslo.config import cfg
 import re
+
+from oslo.config import cfg
 import six
 
 from savanna import exceptions as e
@@ -22,6 +23,7 @@ from savanna.plugins.general import exceptions as ex
 from savanna.plugins.general import utils
 from savanna.swift import swift_helper as h
 from savanna.topology import topology_helper as th
+
 
 CONF = cfg.CONF
 TOPOLOGY_CONFIG = {

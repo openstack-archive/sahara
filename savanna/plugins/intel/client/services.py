@@ -19,6 +19,7 @@ from savanna.plugins.intel.client import context as c
 from savanna.plugins.intel.client import session
 from savanna.plugins.intel import exceptions as iex
 
+
 LOG = logging.getLogger(__name__)
 
 

@@ -23,6 +23,7 @@ from savanna import exceptions as ex
 from savanna.openstack.common import log as logging
 from savanna.openstack.common import wsgi
 
+
 LOG = logging.getLogger(__name__)
 
 

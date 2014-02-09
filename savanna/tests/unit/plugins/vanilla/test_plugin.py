@@ -24,6 +24,7 @@ from savanna.plugins.vanilla import plugin as p
 from savanna.tests.unit import base
 from savanna.tests.unit import testutils as tu
 
+
 conductor = cond.API
 
 

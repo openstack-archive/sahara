@@ -15,10 +15,10 @@
 
 import json
 import logging
-import pkg_resources as pkg
-import requests
 
 from oslo.config import cfg
+import pkg_resources as pkg
+import requests
 
 from savanna import context
 from savanna.plugins.general import exceptions as ex
@@ -27,6 +27,7 @@ from savanna.plugins.hdp import configprovider as cfgprov
 from savanna.plugins.hdp.versions import abstractversionhandler as avm
 from savanna.plugins.hdp.versions.version_1_3_2 import services
 from savanna import version
+
 
 LOG = logging.getLogger(__name__)
 CONF = cfg.CONF

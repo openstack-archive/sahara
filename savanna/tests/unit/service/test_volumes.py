@@ -13,9 +13,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import mock
-
 from cinderclient.v1 import volumes as v
+import mock
 
 from savanna.conductor import resource as r
 from savanna import exceptions as ex

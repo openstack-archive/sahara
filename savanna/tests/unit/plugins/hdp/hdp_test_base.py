@@ -14,6 +14,7 @@
 # limitations under the License.
 
 import pkg_resources as pkg
+
 from savanna.plugins.hdp import clusterspec as cs
 from savanna import version
 

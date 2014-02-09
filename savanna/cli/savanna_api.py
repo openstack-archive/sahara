@@ -21,7 +21,6 @@ import sys
 
 import eventlet
 from eventlet import wsgi
-
 from oslo.config import cfg
 
 
@@ -36,6 +35,7 @@ if os.path.exists(os.path.join(possible_topdir,
     sys.path.insert(0, possible_topdir)
 
 gettext.install('savanna', unicode=1)
+
 
 from savanna import config
 from savanna.db import api as db_api
