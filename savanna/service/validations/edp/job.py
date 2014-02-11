@@ -36,10 +36,7 @@ JOB_SCHEMA = {
                 "Hive",
                 "MapReduce",
                 "MapReduce.Streaming",
-                "Java",
-                # Leave this here for validation of create_job,
-                # but it will be changed to MapReduce on creation
-                "Jar",
+                "Java"
             ],
         },
         "mains": {

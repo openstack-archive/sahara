@@ -224,5 +224,5 @@ def _append_slash_if_needed(path):
 #  all features
 def validate(input_data, output_data, job):
     if not edp.compare_job_type(job.type, 'Pig', 'MapReduce',
-                                'Hive', 'Java', 'Jar'):
+                                'Hive', 'Java'):
         raise RuntimeError

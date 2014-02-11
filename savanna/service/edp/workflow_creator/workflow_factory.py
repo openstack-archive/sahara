@@ -208,9 +208,7 @@ def get_creator(job):
         MapReduceFactory,
         make_HiveFactory,
         make_PigFactory,
-        JavaFactory,
-        # Keep 'Jar' as a synonym for 'MapReduce'
-        MapReduceFactory,
+        JavaFactory
     ]
     type_map = dict(zip(get_possible_job_types(), factories))
 
@@ -224,11 +222,11 @@ def get_possible_job_config(job_type):
     if edp.compare_job_type(job_type, 'Java'):
         return {'job_config': {'configs': [], 'args': []}}
 
-    if edp.compare_job_type(job_type, 'MapReduce', 'Pig', 'Jar'):
+    if edp.compare_job_type(job_type, 'MapReduce', 'Pig'):
         #TODO(nmakhotkin) Savanna should return config based on specific plugin
         cfg = xmlutils.load_hadoop_xml_defaults(
             'plugins/vanilla/resources/mapred-default.xml')
-        if edp.compare_job_type(job_type, 'MapReduce', 'Jar'):
+        if edp.compare_job_type(job_type, 'MapReduce'):
             cfg += xmlutils.load_hadoop_xml_defaults(
                 'service/edp/resources/mapred-job-config.xml')
     elif edp.compare_job_type(job_type, 'Hive'):
@@ -239,7 +237,7 @@ def get_possible_job_config(job_type):
     # TODO(tmckay): args should be a list when bug #269968
     # is fixed on the UI side
     config = {'configs': cfg, "args": {}}
-    if not edp.compare_job_type('MapReduce', 'Jar', 'Java'):
+    if not edp.compare_job_type('MapReduce', 'Java'):
         config.update({'params': {}})
     return {'job_config': config}
 
@@ -250,6 +248,5 @@ def get_possible_job_types():
         'MapReduce.Streaming',
         'Hive',
         'Pig',
-        'Java',
-        'Jar',
+        'Java'
     ]

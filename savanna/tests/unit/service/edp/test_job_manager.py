@@ -72,11 +72,6 @@ class TestJobManager(base.SavannaWithDbTestCase):
                                            job, 'hadoop')
         self.assertEqual(['job_prefix/lib/main.jar'], res)
 
-        job, _ = _create_all_stack('Jar')
-        res = job_manager.upload_job_files(mock.Mock(), 'job_prefix',
-                                           job, 'hadoop')
-        self.assertEqual(['job_prefix/lib/main.jar'], res)
-
         remote.reset_mock()
         remote_class.reset_mock()
         helper.reset_mock()
@@ -239,9 +234,6 @@ class TestJobManager(base.SavannaWithDbTestCase):
         self._build_workflow_common('MapReduce')
         self._build_workflow_common('MapReduce', streaming=True)
 
-    def test_build_workflow_for_job_jar(self):
-        self._build_workflow_common('Jar')
-
     def test_build_workflow_for_job_java(self):
         # If args include swift paths, user and password values
         # will have to be supplied via configs instead of being
@@ -340,16 +332,6 @@ class TestJobManager(base.SavannaWithDbTestCase):
     def test_build_workflow_for_job_mapreduce_with_conf(self):
         self._build_workflow_with_conf_common('MapReduce')
 
-    def test_build_workflow_for_job_jar_with_conf(self):
-        self._build_workflow_with_conf_common('Jar')
-
-    def test_jar_creator_is_mapreduce(self):
-        # Ensure that we get the MapReduce workflow factory for 'Jar' jobs
-        job, _ = _create_all_stack('Jar')
-
-        creator = workflow_factory.get_creator(job)
-        self.assertEqual(type(creator), workflow_factory.MapReduceFactory)
-
     def test_update_job_dict(self):
         w = workflow_factory.BaseFactory()
 
@@ -410,7 +392,7 @@ def _create_job_binary(id, type):
     binary.url = "savanna-db://42"
     if edp.compare_job_type(type, 'Pig'):
         binary.name = "script.pig"
-    elif edp.compare_job_type(type, 'MapReduce', 'Jar', 'Java'):
+    elif edp.compare_job_type(type, 'MapReduce', 'Java'):
         binary.name = "main.jar"
     else:
         binary.name = "script.q"
