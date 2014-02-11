@@ -21,6 +21,7 @@ from savanna import conductor as cond
 from savanna.service.edp import job_manager
 from savanna.service.edp.workflow_creator import workflow_factory
 from savanna.tests.unit import base
+from savanna.utils import edp
 from savanna.utils import patches as p
 
 
@@ -394,10 +395,10 @@ def _create_job(id, job_binary, type):
     job.id = id
     job.type = type
     job.name = 'special_name'
-    if type == 'Pig' or type == 'Hive':
+    if edp.compare_job_type(type, 'Pig', 'Hive'):
         job.mains = [job_binary]
         job.libs = None
-    if type in ['MapReduce', 'Jar', 'Java']:
+    else:
         job.libs = [job_binary]
         job.mains = None
     return job
@@ -407,11 +408,11 @@ def _create_job_binary(id, type):
     binary = mock.Mock()
     binary.id = id
     binary.url = "savanna-db://42"
-    if type == "Pig":
+    if edp.compare_job_type(type, 'Pig'):
         binary.name = "script.pig"
-    if type in ['MapReduce', 'Jar', 'Java']:
+    elif edp.compare_job_type(type, 'MapReduce', 'Jar', 'Java'):
         binary.name = "main.jar"
-    if type == "Hive":
+    else:
         binary.name = "script.q"
     return binary
 
@@ -432,7 +433,7 @@ def _create_job_exec(job_id, type, configs=None):
     j_exec = mock.Mock()
     j_exec.job_id = job_id
     j_exec.job_configs = configs
-    if type == "Java":
+    if edp.compare_job_type(type, "Java"):
         j_exec.job_configs['configs']['edp.java.main_class'] = _java_main_class
         j_exec.job_configs['configs']['edp.java.java_opts'] = _java_opts
     return j_exec

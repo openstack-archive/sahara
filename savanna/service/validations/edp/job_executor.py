@@ -17,7 +17,7 @@ import savanna.exceptions as ex
 from savanna.service.edp import api
 import savanna.service.validations.base as main_base
 import savanna.service.validations.edp.base as b
-
+from savanna.utils import edp
 
 JOB_EXEC_SCHEMA = {
     "type": "object",
@@ -60,9 +60,10 @@ def _streaming_present(data):
 
 def check_job_executor(data, job_id):
     job = api.get_job(job_id)
+    job_type, subtype = edp.split_job_type(job.type)
 
     # All types except Java require input and output objects
-    if job.type == 'Java':
+    if job_type == 'Java':
         if not _is_main_class_present(data):
             raise ex.InvalidDataException('Java job must '
                                           'specify edp.java.main_class')
@@ -74,13 +75,10 @@ def check_job_executor(data, job_id):
         b.check_data_source_exists(data['input_id'])
         b.check_data_source_exists(data['output_id'])
 
-        # Since we allow the creation of MapReduce jobs without libs,
-        # ensure here that streaming values are set if the job has
-        # no libs
-        if job.type == 'MapReduce':
-            if not job.libs and not _streaming_present(data):
-                raise ex.InvalidDataException("MapReduce job without libs "
-                                              "must specify streaming mapper "
-                                              "and reducer")
+        if job_type == 'MapReduce' and (
+                subtype == 'Streaming' and not _streaming_present(data)):
+            raise ex.InvalidDataException("%s job "
+                                          "must specify streaming mapper "
+                                          "and reducer" % job.type)
 
     main_base.check_cluster_exists(data['cluster_id'])

@@ -252,12 +252,8 @@ class VanillaGatingTest(cluster_configs.ClusterConfigTest, edp.EDPTest,
                 'MapReduce', [], [{'jar': mapreduce_jar_data}],
                 mapreduce_configs
             )
-            #TODO(tmckay): lib data should not be required here, but it will
-            #suppress a validation warning until checks on streaming jobs
-            #are fully worked out
             self.edp_testing(
-                'MapReduce', [], [{'jar': mapreduce_jar_data}],
-                mapreduce_streaming_configs
+                'MapReduce.Streaming', [], [], mapreduce_streaming_configs
             )
             self.edp_testing('Java', [],
                              lib_data_list=[{'jar': java_lib_data}],
