@@ -33,14 +33,11 @@ job_configs = {
         "params": {
             "type": "simple_config",
         },
-        # TODO(tmckay): args should be only an array when bug #1269968
-        # is fixed on the UI side (tracked in bug #1270882)
         "args": {
-            "oneOf": [
-                {"type": "array",
-                 "items": {"type": "string"}},
-                {"type": "simple_config"}
-            ]
+            "type": "array",
+            "items": {
+                "type": "string"
+            }
         }
     },
     "additionalProperties": False,
