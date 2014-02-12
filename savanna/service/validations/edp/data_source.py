@@ -59,8 +59,9 @@ def check_data_source_create(data, **kwargs):
 
 
 def _check_swift_data_source_create(data):
-    if not ("user" in data["credentials"]
-            and "password" in data["credentials"]):
+    if "credentials" not in data or (
+        not ("user" in data["credentials"] and
+             "password" in data["credentials"])):
         raise ex.InvalidCredentials("Invalid credentials for Swift")
 
 
