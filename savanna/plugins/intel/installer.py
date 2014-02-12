@@ -330,7 +330,9 @@ def start_cluster(cluster):
     LOG.debug("Starting hadoop services")
     client.services.hdfs.start()
 
-    client.services.mapred.start()
+    if u.get_jobtracker(cluster):
+        client.services.mapred.start()
+
     if u.get_hiveserver(cluster):
         client.services.hive.start()
 
