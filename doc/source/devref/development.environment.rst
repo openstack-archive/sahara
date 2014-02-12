@@ -65,7 +65,7 @@ On Fedora-based distributions (e.g., Fedora/RHEL/CentOS/Scientific Linux):
 
 .. sourcecode:: console
 
-    $ cp ./etc/savanna/savanna.conf.sample ./etc/savanna/savanna.conf
+    $ cp ./etc/savanna/savanna.conf.sample-basic ./etc/savanna/savanna.conf
 
 5. Look through the savanna.conf and change parameters which default values do
 not suite you. Set ``os_auth_host`` to the address of OpenStack keystone.

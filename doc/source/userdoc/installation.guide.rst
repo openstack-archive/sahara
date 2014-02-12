@@ -104,13 +104,13 @@ To install into a virtual environment
    We recommend browsing `<http://tarballs.openstack.org/savanna/>`_ and selecting the latest stable release.
 
 4. After installation you should create configuration file. Sample config file location
-   depends on your OS. For Ubuntu it is ``/usr/local/share/savanna/savanna.conf.sample``,
-   for Red Hat - ``/usr/share/savanna/savanna.conf.sample``. Below is an example for Ubuntu:
+   depends on your OS. For Ubuntu it is ``/usr/local/share/savanna/savanna.conf.sample-basic``,
+   for Red Hat - ``/usr/share/savanna/savanna.conf.sample-basic``. Below is an example for Ubuntu:
 
 .. sourcecode:: console
 
     $ mkdir savanna-venv/etc
-    $ cp savanna-venv/share/savanna/savanna.conf.sample savanna-venv/etc/savanna.conf
+    $ cp savanna-venv/share/savanna/savanna.conf.sample-basic savanna-venv/etc/savanna.conf
 ..
 
     check each option in savanna-venv/etc/savanna.conf, and make necessary changes
