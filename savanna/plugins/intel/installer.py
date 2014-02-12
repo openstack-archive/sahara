@@ -165,9 +165,11 @@ def configure_os_from_instances(cluster, instances):
                 hadoop_swiftfs_jar_url = c_helper.get_config_value(
                     cluster.cluster_configs.get('general'),
                     c_helper.HADOOP_SWIFTFS_JAR_URL)
-                swift_lib_path = '/usr/lib/hadoop/lib/hadoop-swift-latest.jar'
-                cmd = ('sudo curl \'%s\' -o %s --create-dirs'
-                       % (hadoop_swiftfs_jar_url, swift_lib_path))
+                swift_lib_dir = '/usr/lib/hadoop/lib'
+                swift_lib_path = swift_lib_dir + '/hadoop-swift-latest.jar'
+                cmd = ('sudo mkdir -p %s && sudo curl \'%s\' -o %s'
+                       % (swift_lib_dir, hadoop_swiftfs_jar_url,
+                          swift_lib_path))
                 remote.execute_command(cmd)
 
 
