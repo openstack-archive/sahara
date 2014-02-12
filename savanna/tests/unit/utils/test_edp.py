@@ -33,12 +33,12 @@ class SplitJobTypeTest(unittest2.TestCase):
 
     def test_compare_job_type(self):
         self.assertTrue(edp.compare_job_type("Java",
-                                             "Java", "MapReduce"))
-        self.assertFalse(edp.compare_job_type(MAPRED_STREAMING,
-                                              "Java", "MapReduce"))
-        self.assertTrue(edp.compare_job_type(MAPRED_STREAMING,
                                              "Java", "MapReduce",
-                                             strict=False))
+                                             strict=True))
+        self.assertFalse(edp.compare_job_type(MAPRED_STREAMING,
+                                              "Java", "MapReduce",
+                                              strict=True))
+        self.assertTrue(edp.compare_job_type(MAPRED_STREAMING,
+                                             "Java", "MapReduce"))
         self.assertFalse(edp.compare_job_type("MapReduce",
-                                              "Java", MAPRED_STREAMING,
-                                              strict=False))
+                                              "Java", MAPRED_STREAMING))

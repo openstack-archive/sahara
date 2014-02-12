@@ -28,6 +28,7 @@ from savanna.service.edp.binary_retrievers import dispatch
 from savanna.service.edp import hdfs_helper as h
 from savanna.service.edp import oozie as o
 from savanna.service.edp.workflow_creator import workflow_factory
+from savanna.utils import edp
 from savanna.utils import remote
 from savanna.utils import xmlutils as x
 
@@ -114,7 +115,7 @@ def run_job(job_execution):
         return job_execution
 
     job = conductor.job_get(ctx, job_execution.job_id)
-    if job.type != 'Java':
+    if not edp.compare_job_type(job.type, 'Java'):
         input_source = conductor.data_source_get(ctx,  job_execution.input_id)
         output_source = conductor.data_source_get(ctx, job_execution.output_id)
     else:
@@ -222,5 +223,6 @@ def _append_slash_if_needed(path):
 #TODO(nprivalova): this validation should be removed after implementing
 #  all features
 def validate(input_data, output_data, job):
-    if job.type not in ['Pig', 'MapReduce', 'Hive', 'Java', 'Jar']:
+    if not edp.compare_job_type(job.type, 'Pig', 'MapReduce',
+                                'Hive', 'Java', 'Jar'):
         raise RuntimeError

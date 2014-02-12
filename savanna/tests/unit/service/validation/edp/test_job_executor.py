@@ -27,7 +27,7 @@ def wrap_it(data):
 
 
 class FakeJob(object):
-    type = "MapReduce"
+    type = "MapReduce.Streaming"
     libs = []
 
 
@@ -56,7 +56,7 @@ class TestJobExecValidation(u.ValidationTestCase):
                                 "args": []}
             },
             bad_req_i=(1, "INVALID_DATA",
-                          "MapReduce job without libs "
+                          "MapReduce.Streaming job "
                           "must specify streaming mapper "
                           "and reducer"))
 

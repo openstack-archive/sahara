@@ -15,7 +15,7 @@
 
 import savanna.exceptions as e
 from savanna.service.edp import api
-
+from savanna.utils import edp
 
 JOB_SCHEMA = {
     "type": "object",
@@ -35,6 +35,7 @@ JOB_SCHEMA = {
                 "Pig",
                 "Hive",
                 "MapReduce",
+                "MapReduce.Streaming",
                 "Java",
                 # Leave this here for validation of create_job,
                 # but it will be changed to MapReduce on creation
@@ -79,10 +80,8 @@ def _check_binaries(values):
 def check_mains_libs(data, **kwargs):
     mains = data.get("mains", [])
     libs = data.get("libs", [])
-    job_type = data.get("type")
-
-    streaming = job_type in ['MapReduce',
-                             'Jar'] and data.get("streaming", False)
+    job_type, subtype = edp.split_job_type(data.get("type"))
+    streaming = job_type == "MapReduce" and subtype == "Streaming"
 
     # Pig or Hive flow has to contain script in mains, may also use libs
     if job_type in ['Pig', 'Hive']:

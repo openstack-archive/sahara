@@ -24,6 +24,7 @@ from savanna.service.edp.workflow_creator import hive_workflow
 from savanna.service.edp.workflow_creator import java_workflow
 from savanna.service.edp.workflow_creator import mapreduce_workflow
 from savanna.service.edp.workflow_creator import pig_workflow
+from savanna.utils import edp
 from savanna.utils import remote
 from savanna.utils import xmlutils
 
@@ -204,6 +205,7 @@ def get_creator(job):
 
     factories = [
         MapReduceFactory,
+        MapReduceFactory,
         make_HiveFactory,
         make_PigFactory,
         JavaFactory,
@@ -216,20 +218,20 @@ def get_creator(job):
 
 
 def get_possible_job_config(job_type):
-    if job_type not in get_possible_job_types():
+    if not edp.compare_job_type(job_type, *get_possible_job_types()):
         return None
 
-    if job_type == "Java":
+    if edp.compare_job_type(job_type, 'Java'):
         return {'job_config': {'configs': [], 'args': []}}
 
-    if job_type in ['MapReduce', 'Pig', 'Jar']:
+    if edp.compare_job_type(job_type, 'MapReduce', 'Pig', 'Jar'):
         #TODO(nmakhotkin) Savanna should return config based on specific plugin
         cfg = xmlutils.load_hadoop_xml_defaults(
             'plugins/vanilla/resources/mapred-default.xml')
-        if job_type in ['MapReduce', 'Jar']:
+        if edp.compare_job_type(job_type, 'MapReduce', 'Jar'):
             cfg += xmlutils.load_hadoop_xml_defaults(
                 'service/edp/resources/mapred-job-config.xml')
-    elif job_type == 'Hive':
+    elif edp.compare_job_type(job_type, 'Hive'):
         #TODO(nmakhotkin) Savanna should return config based on specific plugin
         cfg = xmlutils.load_hadoop_xml_defaults(
             'plugins/vanilla/resources/hive-default.xml')
@@ -237,7 +239,7 @@ def get_possible_job_config(job_type):
     # TODO(tmckay): args should be a list when bug #269968
     # is fixed on the UI side
     config = {'configs': cfg, "args": {}}
-    if job_type not in ['MapReduce', 'Jar', 'Java']:
+    if not edp.compare_job_type('MapReduce', 'Jar', 'Java'):
         config.update({'params': {}})
     return {'job_config': config}
 
@@ -245,6 +247,7 @@ def get_possible_job_config(job_type):
 def get_possible_job_types():
     return [
         'MapReduce',
+        'MapReduce.Streaming',
         'Hive',
         'Pig',
         'Java',

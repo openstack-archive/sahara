@@ -33,12 +33,12 @@ def compare_job_type(job_type, *args, **kwargs):
 
     :param job_type: The job type being compared
     :param *args: A list of types to compare against
-    :param strict: Passed as a keyword arg. Default is True
+    :param strict: Passed as a keyword arg. Default is False.
                    If strict is False, job_type will be compared
-                   with and without its subtype indicator
+                   with and without its subtype indicator.
     :returns: True if job_type is present in the list, False otherwise
     '''
-    strict = kwargs.get('strict', True)
+    strict = kwargs.get('strict', False)
     res = job_type in args
     if res or strict or JOB_TYPE_SEP not in job_type:
         return res

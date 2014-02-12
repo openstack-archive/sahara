@@ -20,6 +20,7 @@ import uuid
 
 from savanna.openstack.common import excutils
 from savanna.tests.integration.tests import base
+from savanna.utils import edp
 
 
 class EDPTest(base.ITestCase):
@@ -136,7 +137,7 @@ class EDPTest(base.ITestCase):
 
             # Java jobs don't use data sources.  Input/output paths must
             # be passed as args with corresponding username/password configs
-            if job_type != "Java":
+            if not edp.compare_job_type(job_type, "Java"):
                 input_id = self._create_data_source(
                     'input-%s' % str(uuid.uuid4())[:8], 'swift',
                     swift_input_url)
@@ -160,7 +161,8 @@ class EDPTest(base.ITestCase):
 
             # Append the input/output paths with the swift configs
             # if the caller has requested it...
-            if job_type == "Java" and pass_input_output_args:
+            if edp.compare_job_type(job_type,
+                                    "Java") and pass_input_output_args:
                 self._add_swift_configs(configs)
                 if "args" in configs:
                     configs["args"].extend([swift_input_url,
