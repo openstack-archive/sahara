@@ -24,7 +24,7 @@ class TestJobValidation(u.ValidationTestCase):
         self.scheme = j.JOB_SCHEMA
 
     def test_empty_libs(self):
-        for job_type in ['MapReduce', 'Java', 'Jar']:
+        for job_type in ['MapReduce', 'Java']:
             self._assert_create_object_validation(
                 data={
                     "name": "jar.jar",
@@ -40,7 +40,7 @@ class TestJobValidation(u.ValidationTestCase):
             })
 
     def test_mains_unused(self):
-        for job_type in ['MapReduce', 'Java', 'Jar']:
+        for job_type in ['MapReduce', 'Java']:
             self._assert_create_object_validation(
                 data={
                     "name": "jar.jar",
@@ -78,3 +78,14 @@ class TestJobValidation(u.ValidationTestCase):
                     "mains": ["lib1"]
                 },
                 bad_req_i=(1, "INVALID_DATA", "'mains' and 'libs' overlap"))
+
+    def test_jar_rejected(self):
+        self._assert_create_object_validation(
+            data={
+                "name": "jar.jar",
+                "type": "Jar",
+            },
+            bad_req_i=(1, "VALIDATION_ERROR",
+                       "'Jar' is not one of "
+                       "['Pig', 'Hive', 'MapReduce', "
+                       "'MapReduce.Streaming', 'Java']"))
