@@ -48,8 +48,10 @@ def validate_name_format(entry):
 def validate_job_location_format(entry):
     if entry.startswith('savanna-db://'):
         return uuidutils.is_uuid_like(entry[len("savanna-db://"):])
-    if entry.startswith(su.SWIFT_INTERNAL_PREFIX):
-        #TODO(tmckay):allow su.SWIFT_EXTERNAL_PREFIX in a future version
+
+    # TODO(mattf): remove support for OLD_SWIFT_INTERNAL_PREFIX
+    if entry.startswith(su.SWIFT_INTERNAL_PREFIX) or (
+            entry.startswith(su.OLD_SWIFT_INTERNAL_PREFIX)):
         #TODO(nprivalova):add hostname validation
         return True
     return False

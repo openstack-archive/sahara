@@ -39,14 +39,16 @@ def get_raw_data(context, job_binary):
 
     conn = _get_conn(user, password)
 
-    if not job_binary.url.startswith(su.SWIFT_INTERNAL_PREFIX):
+    # TODO(mattf): remove support for OLD_SWIFT_INTERNAL_PREFIX
+    if not (job_binary.url.startswith(su.SWIFT_INTERNAL_PREFIX) or
+            job_binary.url.startswith(su.OLD_SWIFT_INTERNAL_PREFIX)):
         # This should have been guaranteed already,
         # but we'll check just in case.
         raise ex.BadJobBinaryException("Url for binary in internal swift "
                                        "must start with %s"
                                        % su.SWIFT_INTERNAL_PREFIX)
 
-    names = job_binary.url[len(su.SWIFT_INTERNAL_PREFIX):].split("/", 1)
+    names = job_binary.url[job_binary.url.index("://")+3:].split("/", 1)
     if len(names) == 1:
         # We are getting a whole container, return as a dictionary.
         container = names[0]

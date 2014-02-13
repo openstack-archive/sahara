@@ -24,7 +24,9 @@ def get_raw_binary(job_binary):
     if url.startswith("savanna-db://"):
         res = db.get_raw_data(context.ctx(), job_binary)
 
-    if url.startswith(su.SWIFT_INTERNAL_PREFIX):
+    # TODO(mattf): remove support for OLD_SWIFT_INTERNAL_PREFIX
+    if url.startswith(su.SWIFT_INTERNAL_PREFIX) or (
+            url.startswith(su.OLD_SWIFT_INTERNAL_PREFIX)):
         res = i_swift.get_raw_data(context.ctx(), job_binary)
 
     return res

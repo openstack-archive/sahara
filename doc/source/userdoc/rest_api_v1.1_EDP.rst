@@ -578,7 +578,7 @@ This operation does not require a request body.
                         "password": "swordfish",
                         "user": "admin"
                     },
-                    "url": "swift-internal://container/jar-example.jar",
+                    "url": "swift://container/jar-example.jar",
                     "tenant_id": "11587919cc534bcbb1027a161c82cf58",
                     "created_at": "2013-10-15 14:25:04.970513",
                     "updated_at": null,
@@ -624,7 +624,7 @@ This operation does not require a request body.
                     "password": "swordfish",
                     "user": "admin"
                 },
-                "url": "swift-internal://container/jar-example.jar",
+                "url": "swift://container/jar-example.jar",
                 "tenant_id": "11587919cc534bcbb1027a161c82cf58",
                 "created_at": "2013-10-15 14:25:04.970513",
                 "updated_at": null,
@@ -654,7 +654,7 @@ This operation shows information about the created Job Binary.
     .. sourcecode:: json
 
         {
-            "url": "swift-internal://container/jar-example.jar",
+            "url": "swift://container/jar-example.jar",
             "name": "jar-example.jar",
             "description": "This is job binary",
             "extra": {
@@ -679,7 +679,7 @@ This operation shows information about the created Job Binary.
                     "password": "swordfish",
                     "user": "admin"
                 },
-                "url": "swift-internal://container/jar-example.jar",
+                "url": "swift://container/jar-example.jar",
                 "tenant_id": "11587919cc534bcbb1027a161c82cf58",
                 "created_at": "2013-10-15 14:49:20.106452",
                 "id": "07f86352-ee8a-4b08-b737-d705ded5ff9c",
@@ -853,7 +853,7 @@ This operation does not require a request body.
                                 "password": "swordfish",
                                 "user": "admin"
                             },
-                            "url": "swift-internal://container/jar-example.jar",
+                            "url": "swift://container/jar-example.jar",
                             "tenant_id": "11587919cc534bcbb1027a161c82cf58",
                             "created_at": "2013-10-15 16:03:37.979630",
                             "updated_at": null,
@@ -911,7 +911,7 @@ This operation does not require a request body.
                             "password": "swordfish",
                             "user": "admin"
                         },
-                        "url": "swift-internal://container/jar-example.jar",
+                        "url": "swift://container/jar-example.jar",
                         "tenant_id": "11587919cc534bcbb1027a161c82cf58",
                         "created_at": "2013-10-15 16:03:37.979630",
                         "updated_at": null,

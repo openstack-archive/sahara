@@ -47,6 +47,17 @@ class TestJobBinaryValidation(u.ValidationTestCase):
                        "To work with JobBinary located in internal "
                        "swift add 'user' and 'password' to extra"))
 
+    # TODO(mattf): remove support for OLD_SWIFT_INTERNAL_PREFIX
+    def test_job_binary_create_swift_with_old_prefix(self):
+        self._assert_create_object_validation(
+            data={
+                "name": "j_o_w",
+                "url": su.OLD_SWIFT_INTERNAL_PREFIX+"o.savanna/k"
+            },
+            bad_req_i=(1, "BAD_JOB_BINARY",
+                       "To work with JobBinary located in internal "
+                       "swift add 'user' and 'password' to extra"))
+
     def test_job_binary_create_internal(self):
         self._assert_create_object_validation(
             data={

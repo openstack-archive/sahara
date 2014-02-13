@@ -23,10 +23,9 @@ from savanna.utils.openstack import base
 
 CONF = cfg.CONF
 
-SWIFT_INTERNAL_PREFIX = "swift-internal://"
-
-#TODO(tmckay): support swift-external in a future version
-# SWIFT_EXTERNAL_PREFIX = "swift-external://"
+SWIFT_INTERNAL_PREFIX = "swift://"
+# TODO(mattf): remove support for OLD_SWIFT_INTERNAL_PREFIX
+OLD_SWIFT_INTERNAL_PREFIX = "swift-internal://"
 
 
 def _get_service_address(service_type):
