@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-# vim: tabstop=4 shiftwidth=4 softtabstop=4
 
 # Copyright 2012 SINA Corporation
 # All Rights Reserved.
