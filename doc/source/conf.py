@@ -40,7 +40,7 @@ extensions = ['sphinx.ext.autodoc', 'sphinx.ext.doctest', 'sphinx.ext.todo', 'sp
               'sphinx.ext.pngmath', 'sphinx.ext.viewcode', 'sphinxcontrib.httpdomain']
 
 if not on_rtd:
-    extensions.append('oslo.sphinx')
+    extensions.append('oslosphinx')
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
