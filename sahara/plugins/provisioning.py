@@ -63,7 +63,15 @@ class ProvisioningPluginBase(plugins_base.PluginInterface):
         pass
 
     @plugins_base.optional
+    def get_name_node_uri(self, cluster):
+        pass
+
+    @plugins_base.optional
     def get_oozie_server(self, cluster):
+        pass
+
+    @plugins_base.optional
+    def get_oozie_server_uri(self, cluster):
         pass
 
     @plugins_base.optional

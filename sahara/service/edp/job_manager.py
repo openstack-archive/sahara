@@ -61,8 +61,7 @@ def get_job_status(job_execution_id):
     if cluster is None or cluster.status != 'Active':
         return job_execution
 
-    client = o.OozieClient(cluster['info']['JobFlow']['Oozie'] + "/oozie",
-                           _get_oozie_server(cluster))
+    client = _create_oozie_client(cluster)
     job_info = client.get_job_status(job_execution)
     update = {"info": job_info}
     if job_info['status'] in terminated_job_states:
@@ -89,14 +88,15 @@ def _get_hdfs_user(cluster):
     return hdfs_user
 
 
+def _create_oozie_client(cluster):
+    plugin = plugin_base.PLUGINS.get_plugin(cluster.plugin_name)
+    return o.OozieClient(plugin.get_oozie_server_uri(cluster),
+                         plugin.get_oozie_server(cluster))
+
+
 def _get_oozie_server(cluster):
     plugin = plugin_base.PLUGINS.get_plugin(cluster.plugin_name)
     return plugin.get_oozie_server(cluster)
-
-
-def _get_resource_manager_path(cluster):
-    plugin = plugin_base.PLUGINS.get_plugin(cluster.plugin_name)
-    return plugin.get_resource_manager_uri(cluster)
 
 
 def cancel_job(job_execution_id):
@@ -104,8 +104,7 @@ def cancel_job(job_execution_id):
     job_execution = conductor.job_execution_get(ctx, job_execution_id)
     cluster = conductor.cluster_get(ctx, job_execution.cluster_id)
 
-    client = o.OozieClient(cluster['info']['JobFlow']['Oozie'] + "/oozie/",
-                           _get_oozie_server(cluster))
+    client = _create_oozie_client(cluster)
     client.kill_job(job_execution)
 
     job_info = client.get_job_status(job_execution)
@@ -151,11 +150,11 @@ def run_job(job_execution):
     path_to_workflow = upload_workflow_file(oozie_server,
                                             wf_dir, wf_xml, hdfs_user)
 
-    rm_path = _get_resource_manager_path(cluster)
-    nn_path = cluster['info']['HDFS']['NameNode']
+    plugin = plugin_base.PLUGINS.get_plugin(cluster.plugin_name)
+    rm_path = plugin.get_resource_manager_uri(cluster)
+    nn_path = plugin.get_name_node_uri(cluster)
 
-    client = o.OozieClient(cluster['info']['JobFlow']['Oozie'] + "/oozie/",
-                           _get_oozie_server(cluster))
+    client = _create_oozie_client(cluster)
     job_parameters = {"jobTracker": rm_path,
                       "nameNode": nn_path,
                       "user.name": hdfs_user,
