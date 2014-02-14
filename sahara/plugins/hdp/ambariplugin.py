@@ -140,10 +140,10 @@ class AmbariPlugin(p.ProvisioningPluginBase):
                                         "cluster_configs": cluster_configs})
 
     def get_oozie_server(self, cluster):
-        return u.get_instance(cluster, "oozie_server")
+        return u.get_instance(cluster, "OOZIE_SERVER")
 
     def validate_edp(self, cluster):
-        oo_count = u.get_instances_count(cluster, 'oozie_server')
+        oo_count = u.get_instances_count(cluster, 'OOZIE_SERVER')
         if oo_count != 1:
             raise ex.InvalidComponentCountException('oozie', '1', oo_count)
 

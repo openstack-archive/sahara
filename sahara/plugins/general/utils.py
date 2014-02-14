@@ -22,7 +22,7 @@ from sahara.plugins.general import exceptions as ex
 def get_node_groups(cluster, node_process=None):
     return [ng for ng in cluster.node_groups
             if (node_process is None or
-                node_process in [n.lower() for n in ng.node_processes])]
+                node_process in ng.node_processes)]
 
 
 def get_instances_count(cluster, node_process=None):
