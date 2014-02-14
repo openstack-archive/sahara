@@ -79,17 +79,19 @@ class IDHProvider(p.ProvisioningPluginBase):
         nn_count = sum([ng.count for ng
                         in u.get_node_groups(cluster, 'namenode')])
         if nn_count != 1:
-            raise ex.NotSingleNameNodeException(nn_count)
+            raise ex.InvalidComponentCountException('namenode', 1, nn_count)
 
         jt_count = sum([ng.count for ng
                         in u.get_node_groups(cluster, 'jobtracker')])
         if jt_count > 1:
-            raise ex.NotSingleJobTrackerException(jt_count)
+            raise ex.InvalidComponentCountException('jobtracker', '0 or 1',
+                                                    jt_count)
 
         tt_count = sum([ng.count for ng
                         in u.get_node_groups(cluster, 'tasktracker')])
         if jt_count == 0 and tt_count > 0:
-            raise ex.TaskTrackersWithoutJobTracker()
+            raise ex.RequiredServiceMissingException(
+                'jobtracker', required_by='tasktracker')
 
         mng_count = sum([ng.count for ng
                          in u.get_node_groups(cluster, 'manager')])

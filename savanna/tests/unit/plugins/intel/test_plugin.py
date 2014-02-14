@@ -45,18 +45,20 @@ class TestIDHPlugin(base.SavannaWithDbTestCase):
         self.assertRaises(i_ex.NotSingleManagerException, plugin.validate, cl)
 
         cl = tu.create_cluster('cl1', 't1', 'intel', '2.5.0', [ng_mng])
-        self.assertRaises(g_ex.NotSingleNameNodeException, plugin.validate, cl)
+        self.assertRaises(g_ex.InvalidComponentCountException,
+                          plugin.validate, cl)
 
         cl = tu.create_cluster('cl1', 't1', 'intel', '2.5.0',
                                [ng_mng] + [ng_nn] * 2)
-        self.assertRaises(g_ex.NotSingleNameNodeException, plugin.validate, cl)
+        self.assertRaises(g_ex.InvalidComponentCountException,
+                          plugin.validate, cl)
 
         cl = tu.create_cluster('cl1', 't1', 'intel', '2.5.0',
                                [ng_mng] + [ng_nn] + [ng_tt])
-        self.assertRaises(g_ex.TaskTrackersWithoutJobTracker,
+        self.assertRaises(g_ex.RequiredServiceMissingException,
                           plugin.validate, cl)
 
         cl = tu.create_cluster('cl1', 't1', 'intel', '2.5.0',
                                [ng_mng] + [ng_nn] + [ng_jt] * 2 + [ng_tt])
-        self.assertRaises(g_ex.NotSingleJobTrackerException,
+        self.assertRaises(g_ex.InvalidComponentCountException,
                           plugin.validate, cl)

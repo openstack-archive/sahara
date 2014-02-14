@@ -42,19 +42,19 @@ class VanillaPluginTest(base.SavannaWithDbTestCase):
 
         self._validate_case(1, 1, 10, 1)
 
-        with self.assertRaises(ex.NotSingleNameNodeException):
+        with self.assertRaises(ex.InvalidComponentCountException):
             self._validate_case(0, 1, 10, 1)
-        with self.assertRaises(ex.NotSingleNameNodeException):
+        with self.assertRaises(ex.InvalidComponentCountException):
             self._validate_case(2, 1, 10, 1)
 
-        with self.assertRaises(ex.TaskTrackersWithoutJobTracker):
+        with self.assertRaises(ex.RequiredServiceMissingException):
             self._validate_case(1, 0, 10, 1)
-        with self.assertRaises(ex.NotSingleJobTrackerException):
+        with self.assertRaises(ex.InvalidComponentCountException):
             self._validate_case(1, 2, 10, 1)
 
-        with self.assertRaises(ex.NotSingleOozieException):
+        with self.assertRaises(ex.InvalidComponentCountException):
             self._validate_case(1, 1, 0, 2)
-        with self.assertRaises(ex.OozieWithoutJobTracker):
+        with self.assertRaises(ex.RequiredServiceMissingException):
             self._validate_case(1, 0, 0, 1)
 
     def _validate_case(self, *args):

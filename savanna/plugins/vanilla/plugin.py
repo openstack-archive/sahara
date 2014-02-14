@@ -81,19 +81,21 @@ class VanillaProvider(p.ProvisioningPluginBase):
         nn_count = sum([ng.count for ng
                         in utils.get_node_groups(cluster, "namenode")])
         if nn_count != 1:
-            raise ex.NotSingleNameNodeException(nn_count)
+            raise ex.InvalidComponentCountException("namenode", 1, nn_count)
 
         jt_count = sum([ng.count for ng
                         in utils.get_node_groups(cluster, "jobtracker")])
 
         if jt_count not in [0, 1]:
-            raise ex.NotSingleJobTrackerException(jt_count)
+            raise ex.InvalidComponentCountException(
+                "jobtracker", '0 or 1', jt_count)
 
         oozie_count = sum([ng.count for ng
                            in utils.get_node_groups(cluster, "oozie")])
 
         if oozie_count not in [0, 1]:
-            raise ex.NotSingleOozieException(oozie_count)
+            raise ex.InvalidComponentCountException("oozie", '0 or 1',
+                                                    oozie_count)
 
         hive_count = sum([ng.count for ng
                           in utils.get_node_groups(cluster, "hiveserver")])
@@ -101,17 +103,20 @@ class VanillaProvider(p.ProvisioningPluginBase):
 
             tt_count = sum([ng.count for ng
                             in utils.get_node_groups(cluster, "tasktracker")])
+
             if tt_count > 0:
-                raise ex.TaskTrackersWithoutJobTracker()
-
+                raise ex.RequiredServiceMissingException(
+                    "jobtracker", required_by="tasktracker")
             if oozie_count > 0:
-                raise ex.OozieWithoutJobTracker()
-
+                raise ex.RequiredServiceMissingException(
+                    "jobtracker", required_by="oozie")
             if hive_count > 0:
-                raise ex.HiveWithoutJobTracker()
+                raise ex.RequiredServiceMissingException(
+                    "jobtracker", required_by="hive")
 
         if hive_count not in [0, 1]:
-            raise ex.NotSingleHiveException(hive_count)
+            raise ex.InvalidComponentCountException("hive", '0 or 1',
+                                                    hive_count)
 
     def update_infra(self, cluster):
         pass
