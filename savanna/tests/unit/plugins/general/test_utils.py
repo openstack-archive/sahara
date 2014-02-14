@@ -41,14 +41,9 @@ class GeneralUtilsTest(unittest2.TestCase):
 
     def test_get_node_groups(self):
         self.assertListEqual(u.get_node_groups(self.c1), self.c1.node_groups)
-        self.assertListEqual(u.get_node_groups(self.c1, ["wrong-process"]), [])
-        self.assertListEqual(u.get_node_groups(self.c1, ['dn', 'tt']),
-                             [self.ng2])
+        self.assertListEqual(u.get_node_groups(self.c1, "wrong-process"), [])
         self.assertListEqual(u.get_node_groups(self.c1, 'dn'),
                              [self.ng2, self.ng3])
-        self.assertListEqual(u.get_node_groups(self.c1, ['dn']),
-                             [self.ng2, self.ng3])
-        self.assertListEqual(u.get_node_groups(self.c1, ['jt', 'tt']), [])
 
     def test_get_instances(self):
         self.assertEqual(len(u.get_instances(self.c1)), 5)
