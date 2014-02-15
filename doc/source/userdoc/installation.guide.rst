@@ -2,9 +2,25 @@ Savanna Installation Guide
 ==========================
 
 We recommend you install in a way that will can keep your system in a
-consistent state. Two ways we recommend for installing Savanna are
-installing into a virtual environment or using `RDO Havana+
-<http://openstack.redhat.com/>`_.
+consistent state. Ways we recommend to install Savanna are:
+
+* Install via `Fuel <http://fuel.mirantis.com/>`_
+
+* Install via `RDO Havana+ <http://openstack.redhat.com/>`_
+
+* Install into virtual environment
+
+
+
+To install with Fuel
+--------------------
+
+1. Start by following `Quickstart <http://software.mirantis.com/quick-start/>`_
+   to install and setup OpenStack
+
+2. Enable Savanna service during installation
+
+
 
 To install with RDO
 -------------------
