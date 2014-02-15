@@ -25,12 +25,12 @@
 import ConfigParser
 import io
 import os
-import urlparse
 
 from alembic import command
 from alembic import config as alembic_config
 from alembic import migration
 from oslo.config import cfg
+import six.moves.urllib.parse as urlparse
 import sqlalchemy
 import sqlalchemy.exc
 import unittest2

@@ -13,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import urlparse
+import six.moves.urllib.parse as urlparse
 
 import savanna.exceptions as ex
 import savanna.service.validations.edp.base as b
