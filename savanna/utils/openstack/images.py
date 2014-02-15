@@ -62,7 +62,8 @@ class SavannaImage(images.Image):
 
     def to_dict(self):
         result = self._info.copy()
-        del result['links']
+        if 'links' in result:
+            del result['links']
         return result
 
 
