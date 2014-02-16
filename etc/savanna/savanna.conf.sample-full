@@ -248,7 +248,7 @@
 
 # Maximum number of remote operations that will be running at
 # the same time. Note that each remote operation requires its
-# own process torun. (integer value)
+# own process to run. (integer value)
 #global_remote_threshold=100
 
 # The same as global_remote_threshold, but for a single
