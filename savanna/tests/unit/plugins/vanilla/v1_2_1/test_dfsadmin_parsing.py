@@ -16,7 +16,7 @@
 import pkg_resources as pkg
 import unittest2
 
-from savanna.plugins.vanilla import scaling as sc
+from savanna.plugins.vanilla.v1_2_1 import scaling as sc
 from savanna import version
 
 

@@ -101,7 +101,7 @@ class TestScalingValidation(unittest2.TestCase):
     def test_check_cluster_scaling_add_ng(self):
         ng1 = tu.make_ng_dict('ng', '42', ['namenode'], 1)
         cluster = tu.create_cluster("test-cluster", "tenant", "vanilla",
-                                    "1.2.2", [ng1], status='Active',
+                                    "1.2.1", [ng1], status='Active',
                                     id='12321')
         data = {
             'add_node_groups': [

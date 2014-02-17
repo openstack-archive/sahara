@@ -17,7 +17,7 @@ import os
 
 from savanna import context
 from savanna.plugins.general import utils
-from savanna.plugins.vanilla import run_scripts as run
+from savanna.plugins.vanilla.v1_2_1 import run_scripts as run
 from savanna.utils import remote
 
 

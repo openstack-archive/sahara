@@ -17,7 +17,7 @@ from savanna.utils import xmlutils as x
 
 
 OOZIE_DEFAULT = x.load_hadoop_xml_defaults(
-    'plugins/vanilla/resources/oozie-default.xml')
+    'plugins/vanilla/v1_2_1/resources/oozie-default.xml')
 
 OOZIE_CORE_DEFAULT = [
     {

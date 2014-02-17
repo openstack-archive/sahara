@@ -145,7 +145,7 @@ def start_patch(patch_templates=True):
     nova().images.list_registered.return_value = [Image(),
                                                   Image(name='wrong_name')]
     ng_dict = tu.make_ng_dict('ng', '42', ['namenode'], 1)
-    cluster = tu.create_cluster('test', 't', 'vanilla', '1.2.2', [ng_dict],
+    cluster = tu.create_cluster('test', 't', 'vanilla', '1.2.1', [ng_dict],
                                 id=1, status='Active')
     # stub clusters list
     get_clusters.return_value = [cluster]
@@ -154,7 +154,7 @@ def start_patch(patch_templates=True):
     # stub node templates
     if patch_templates:
         ngt_dict = {'name': 'test', 'tenant_id': 't', 'flavor_id': '42',
-                    'plugin_name': 'vanilla', 'hadoop_version': '1.2.2',
+                    'plugin_name': 'vanilla', 'hadoop_version': '1.2.1',
                     #'id': '1234321',
                     'id': '550e8400-e29b-41d4-a716-446655440000',
                     'node_processes': ['namenode']}
@@ -162,7 +162,7 @@ def start_patch(patch_templates=True):
         get_ng_templates.return_value = [r.NodeGroupTemplateResource(ngt_dict)]
 
         ct_dict = {'name': 'test', 'tenant_id': 't',
-                   'plugin_name': 'vanilla', 'hadoop_version': '1.2.2'}
+                   'plugin_name': 'vanilla', 'hadoop_version': '1.2.1'}
 
         get_cl_templates.return_value = [r.ClusterTemplateResource(ct_dict)]
 

@@ -18,9 +18,10 @@ import mock
 from savanna import conductor as cond
 from savanna import context
 from savanna.plugins.general import exceptions as ex
-from savanna.plugins.vanilla import config_helper as c_h
-from savanna.plugins.vanilla import mysql_helper as m_h
 from savanna.plugins.vanilla import plugin as p
+from savanna.plugins.vanilla.v1_2_1 import config_helper as c_h
+from savanna.plugins.vanilla.v1_2_1 import mysql_helper as m_h
+from savanna.plugins.vanilla.v1_2_1 import versionhandler as v_h
 from savanna.tests.unit import base
 from savanna.tests.unit import testutils as tu
 
@@ -187,11 +188,11 @@ class VanillaPluginTest(base.SavannaWithDbTestCase):
                           c_h.get_config_value,
                           'MapReduce', 'spam', cluster)
 
-    @mock.patch('savanna.plugins.vanilla.plugin.context')
+    @mock.patch('savanna.plugins.vanilla.v1_2_1.versionhandler.context')
     @mock.patch('savanna.conductor.api.LocalApi.cluster_update')
     def test_set_cluster_info(self, cond_cluster_update, context_mock):
         cluster = self._get_fake_cluster()
-        self.pl._set_cluster_info(cluster)
+        v_h.VersionHandler()._set_cluster_info(cluster)
         expected_info = {
             'HDFS': {
                 'NameNode': 'hdfs://inst1:8020',
