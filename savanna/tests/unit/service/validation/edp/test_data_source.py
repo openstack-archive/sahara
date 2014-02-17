@@ -42,6 +42,21 @@ class TestDataSourceValidation(u.ValidationTestCase):
 
     @mock.patch("savanna.service.validations."
                 "edp.base.check_data_source_unique_name")
+    def test_swift_creation_missing_credentials(self,
+                                                check_data_source_unique_name):
+        check_data_source_unique_name.return_value = True
+
+        data = {
+            "name": "test_data_data_source",
+            "url": "swift://1234",
+            "type": "swift",
+            "description": "long description"
+        }
+        with self.assertRaises(ex.InvalidCredentials):
+            ds.check_data_source_create(data)
+
+    @mock.patch("savanna.service.validations."
+                "edp.base.check_data_source_unique_name")
     def test_hdfs_creation_wrong_schema(self, check_data_source_unique_name):
         check_data_source_unique_name.return_value = True
 
