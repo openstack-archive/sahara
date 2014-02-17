@@ -15,7 +15,6 @@
 
 import json
 import re
-import urllib
 
 from six.moves.urllib import parse as urlparse
 
@@ -69,7 +68,7 @@ class OozieClient(object):
         url = self.jobs_url + "?offset=%s&len=%s" % (offset, size)
         if len(filter) > 0:
             f = ";".join([k + "=" + v for k, v in filter.items()])
-            url += "&filter=" + urllib.quote(f)
+            url += "&filter=" + urlparse.quote(f)
 
         session = self._get_http_session()
         resp = session.get(url)

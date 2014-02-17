@@ -13,9 +13,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import urllib
-
 from oslo.config import cfg
+from six.moves.urllib import parse as urlparse
 
 from savanna import conductor as c
 from savanna import context
@@ -314,7 +313,7 @@ def convert_to_cluster_template(plugin_name, version, template_name,
                                 config_file):
     plugin = plugin_base.PLUGINS.get_plugin(plugin_name)
     return plugin.convert(config_file, plugin_name, version,
-                          urllib.unquote(template_name),
+                          urlparse.unquote(template_name),
                           conductor.cluster_template_create)
 
 
