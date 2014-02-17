@@ -260,11 +260,10 @@ def _add_user_params(client, cluster):
 
 def install_cluster(cluster):
     mng_instance = u.get_instance(cluster, 'manager')
-    mng_ip = mng_instance.management_ip
 
     all_hosts = list(set([i.fqdn() for i in u.get_instances(cluster)]))
 
-    client = c.IntelClient(mng_ip, cluster.name)
+    client = c.IntelClient(mng_instance, cluster.name)
 
     LOG.info("Create cluster")
     client.cluster.create()
@@ -327,8 +326,7 @@ def _setup_oozie(cluster):
 
 
 def start_cluster(cluster):
-    client = c.IntelClient(
-        u.get_instance(cluster, 'manager').management_ip, cluster.name)
+    client = c.IntelClient(u.get_instance(cluster, 'manager'), cluster.name)
 
     LOG.debug("Starting hadoop services")
     client.services.hdfs.start()
@@ -359,8 +357,7 @@ def scale_cluster(cluster, instances):
         if i in tt_hosts:
             to_scale_tt.append(i)
 
-    mng_ip = u.get_instance(cluster, 'manager').management_ip
-    client = c.IntelClient(mng_ip, cluster.name)
+    client = c.IntelClient(u.get_instance(cluster, 'manager'), cluster.name)
     rack = '/Default'
     client.nodes.add(scale_ins_hosts, rack, 'hadoop',
                      cluster.extra['manager_authzkeyfile_path'])
@@ -386,8 +383,7 @@ def decommission_nodes(cluster, instances):
     dn_hosts = [dn.fqdn() for dn in u.get_datanodes(cluster)]
     tt_hosts = [dn.fqdn() for dn in u.get_tasktrackers(cluster)]
 
-    mng_ip = u.get_instances(cluster, 'manager')[0].management_ip
-    client = c.IntelClient(mng_ip, cluster.name)
+    client = c.IntelClient(u.get_instance(cluster, 'manager'), cluster.name)
 
     dec_dn_hosts = []
     for dec_host in dec_hosts:

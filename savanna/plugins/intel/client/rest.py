@@ -15,7 +15,6 @@
 
 import json
 
-import requests
 from requests import auth
 
 from savanna.openstack.common import log as logging
@@ -25,55 +24,60 @@ from savanna.plugins.intel import exceptions as iex
 LOG = logging.getLogger(__name__)
 
 
+def _check_response(fct):
+    def wrapper(*args, **kwargs):
+        resp = fct(*args, **kwargs)
+        if not resp.ok:
+            raise iex.IntelPluginException(
+                "Request to manager returned with code '%s', reason '%s' and "
+                "response '%s'" % (resp.status_code, resp.reason, resp.text))
+        else:
+            return json.loads(resp.text)
+
+    return wrapper
+
+
 class RESTClient():
-    def __init__(self, manager_ip, auth_username, auth_password):
+    def __init__(self, manager, auth_username, auth_password):
         #TODO(alazarev) make port configurable (bug #1262895)
-        self.base_url = ('https://%s:9443/restapi/intelcloud/api/v1'
-                         % manager_ip)
+        port = '9443'
+        self.session = manager.remote().get_http_client(port, max_retries=10)
+        self.base_url = ('https://%s:%s/restapi/intelcloud/api/v1'
+                         % (manager.management_ip, port))
         LOG.debug("Connecting to manager with URL of %s", self.base_url)
 
         self.auth = auth.HTTPBasicAuth(auth_username, auth_password)
 
+    @_check_response
     def get(self, url):
         url = self.base_url + url
         LOG.debug("Sending GET to URL of %s", url)
-        r = requests.get(url, verify=False, auth=self.auth)
-        return self._check_response(r)
+        return self.session.get(url, verify=False, auth=self.auth)
 
+    @_check_response
     def post(self, url, data=None, files=None):
         url = self.base_url + url
         LOG.debug("Sending POST to URL '%s' (%s files): %s", url,
                   len(files) if files else 0,
                   data if data else 'no data')
-        r = requests.post(url, data=json.dumps(data) if data else None,
-                          verify=False, auth=self.auth, files=files)
-        return self._check_response(r)
+        return self.session.post(url, data=json.dumps(data) if data else None,
+                                 verify=False, auth=self.auth, files=files)
 
+    @_check_response
     def delete(self, url):
         url = self.base_url + url
         LOG.debug("Sending DELETE to URL of %s", url)
-        r = requests.delete(url, verify=False, auth=self.auth)
-        return self._check_response(r)
+        return self.session.delete(url, verify=False, auth=self.auth)
 
+    @_check_response
     def put(self, url, data=None):
         url = self.base_url + url
         if data:
             LOG.debug("Sending PUT to URL of %s: %s", url, data)
-            r = requests.put(url, data=json.dumps(data), verify=False,
-                             auth=self.auth)
+            r = self.session.put(url, data=json.dumps(data), verify=False,
+                                 auth=self.auth)
         else:
             LOG.debug("Sending PUT to URL of %s with no data", url)
-            r = requests.put(url, verify=False, auth=self.auth)
+            r = self.session.put(url, verify=False, auth=self.auth)
 
-        return self._check_response(r)
-
-    def _check_response(self, resp):
-        LOG.debug("Response with HTTP code %s, and content of %s",
-                  resp.status_code, resp.text)
-        if not resp.ok:
-            raise iex.IntelPluginException(
-                "Request to manager returned with code '%s', reason '%s' "
-                "and message '%s'" % (resp.status_code, resp.reason,
-                                      json.loads(resp.text)['message']))
-        else:
-            return json.loads(resp.text)
+        return r
