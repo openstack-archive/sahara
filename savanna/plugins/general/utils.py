@@ -38,8 +38,13 @@ def get_namenode(cluster):
     return get_instance(cluster, "namenode")
 
 
+#TODO(jmaron): name change?
 def get_jobtracker(cluster):
-    return get_instance(cluster, "jobtracker")
+    instance = get_instance(cluster, "jobtracker")
+    if not instance:
+        instance = get_instance(cluster, "resourcemanager")
+
+    return instance
 
 
 def get_oozie(cluster):

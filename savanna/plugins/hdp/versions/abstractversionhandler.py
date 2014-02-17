@@ -57,3 +57,7 @@ class AbstractVersionHandler():
     @abc.abstractmethod
     def get_services_processor(self):
         return
+
+    @abc.abstractmethod
+    def get_resource_manager_uri(self, cluster):
+        return

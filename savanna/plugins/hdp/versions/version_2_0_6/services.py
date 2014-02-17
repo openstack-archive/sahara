@@ -1,4 +1,4 @@
-# Copyright (c) 2013 Hortonworks, Inc.
+# Copyright (c) 2014 Hortonworks, Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,9 +14,9 @@
 # limitations under the License.
 
 import re
+import six
 
 from oslo.config import cfg
-import six
 
 from savanna import exceptions as e
 from savanna.plugins.general import exceptions as ex
@@ -24,12 +24,11 @@ from savanna.plugins.general import utils
 from savanna.swift import swift_helper as h
 from savanna.topology import topology_helper as th
 
-
 CONF = cfg.CONF
 TOPOLOGY_CONFIG = {
-    "topology.node.switch.mapping.impl":
+    "net.topology.node.switch.mapping.impl":
     "org.apache.hadoop.net.ScriptBasedMapping",
-    "topology.script.file.name":
+    "net.topology.script.file.name":
     "/etc/hadoop/conf/topology.sh"
 }
 
@@ -132,15 +131,16 @@ class HdfsService(Service):
     def finalize_configuration(self, cluster_spec):
         nn_hosts = cluster_spec.determine_component_hosts('NAMENODE')
         if nn_hosts:
-            props = {'core-site': ['fs.default.name'],
-                     'hdfs-site': ['dfs.http.address', 'dfs.https.address']}
+            props = {'core-site': ['fs.defaultFS'],
+                     'hdfs-site': ['dfs.namenode.http-address',
+                                   'dfs.namenode.https-address']}
             self._replace_config_token(
                 cluster_spec, '%NN_HOST%', nn_hosts.pop().fqdn(), props)
 
         snn_hosts = cluster_spec.determine_component_hosts(
             'SECONDARY_NAMENODE')
         if snn_hosts:
-            props = {'hdfs-site': ['dfs.secondary.http.address']}
+            props = {'hdfs-site': ['dfs.namenode.secondary.http-address']}
             self._replace_config_token(
                 cluster_spec, '%SNN_HOST%', snn_hosts.pop().fqdn(), props)
 
@@ -165,31 +165,38 @@ class HdfsService(Service):
         if dn_node_groups:
             common_paths = self._get_common_paths(dn_node_groups)
         hdfs_site_config = cluster_spec.configurations['hdfs-site']
-        global_config = cluster_spec.configurations['global']
-        hdfs_site_config['dfs.name.dir'] = self._generate_storage_path(
-            nn_ng.storage_paths(), '/hadoop/hdfs/namenode')
-        global_config['dfs_name_dir'] = self._generate_storage_path(
-            nn_ng.storage_paths(), '/hadoop/hdfs/namenode')
+        hdfs_site_config['dfs.namenode.name.dir'] = (
+            self._generate_storage_path(
+                nn_ng.storage_paths(), '/hadoop/hdfs/namenode'))
         if common_paths:
-            hdfs_site_config['dfs.data.dir'] = self._generate_storage_path(
-                common_paths, '/hadoop/hdfs/data')
-            global_config['dfs_data_dir'] = self._generate_storage_path(
-                common_paths, '/hadoop/hdfs/data')
+            hdfs_site_config['dfs.datanode.data.dir'] = (
+                self._generate_storage_path(
+                    common_paths, '/hadoop/hdfs/data'))
 
     def register_service_urls(self, cluster_spec, url_info):
         namenode_ip = cluster_spec.determine_component_hosts(
             'NAMENODE').pop().management_ip
 
         ui_port = self._get_port_from_cluster_spec(cluster_spec, 'hdfs-site',
-                                                   'dfs.http.address')
+                                                   'dfs.namenode.http-address')
         nn_port = self._get_port_from_cluster_spec(cluster_spec, 'core-site',
-                                                   'fs.default.name')
+                                                   'fs.defaultFS')
 
         url_info['HDFS'] = {
             'Web UI': 'http://%s:%s' % (namenode_ip, ui_port),
             'NameNode': 'hdfs://%s:%s' % (namenode_ip, nn_port)
         }
         return url_info
+
+    def finalize_ng_components(self, cluster_spec):
+        hdfs_ng = cluster_spec.get_node_groups_containing_component(
+            'NAMENODE')[0]
+        components = hdfs_ng.components
+        if not cluster_spec.get_deployed_node_group_count('ZOOKEEPER_SERVER'):
+            zk_service = next(service for service in cluster_spec.services
+                              if service.name == 'ZOOKEEPER')
+            zk_service.deployed = True
+            components.append('ZOOKEEPER_SERVER')
 
     def is_mandatory(self):
         return True
@@ -198,35 +205,98 @@ class HdfsService(Service):
         return h.get_swift_configs()
 
 
-class MapReduceService(Service):
+class MapReduce2Service(Service):
     def __init__(self):
-        super(MapReduceService, self).__init__(
-            MapReduceService.get_service_id())
+        super(MapReduce2Service, self).__init__(
+            MapReduce2Service.get_service_id())
         self.configurations.add('mapred-site')
 
     @classmethod
     def get_service_id(cls):
-        return 'MAPREDUCE'
+        return 'MAPREDUCE2'
 
     def validate(self, cluster_spec, cluster):
-        count = cluster_spec.get_deployed_node_group_count('JOBTRACKER')
+        count = cluster_spec.get_deployed_node_group_count('HISTORYSERVER')
         if count != 1:
-            raise ex.InvalidComponentCountException('JOBTRACKER', 1, count)
-
-        count = cluster_spec.get_deployed_node_group_count('TASKTRACKER')
-        if not count:
-            raise ex.InvalidComponentCountException(
-                'TASKTRACKER', '> 0', count)
+            raise ex.InvalidComponentCountException('HISTORYSERVER', 1, count)
 
     def finalize_configuration(self, cluster_spec):
-        jt_hosts = cluster_spec.determine_component_hosts('JOBTRACKER')
-        if jt_hosts:
-            props = {'mapred-site': ['mapred.job.tracker',
-                                     'mapred.job.tracker.http.address',
-                                     'mapreduce.history.server.http.address']}
+        hs_hosts = cluster_spec.determine_component_hosts('HISTORYSERVER')
+        if hs_hosts:
+            props = {'mapred-site': ['mapreduce.jobhistory.webapp.address',
+                                     'mapreduce.jobhistory.address']}
 
             self._replace_config_token(
-                cluster_spec, '%JT_HOST%', jt_hosts.pop().fqdn(), props)
+                cluster_spec, '%HS_HOST%', hs_hosts.pop().fqdn(), props)
+
+        # data locality/rack awareness prop processing
+        mapred_site_config = cluster_spec.configurations['mapred-site']
+        if CONF.enable_data_locality:
+            for prop in th.vm_awareness_mapred_config():
+                mapred_site_config[prop['name']] = prop['value']
+
+    def register_service_urls(self, cluster_spec, url_info):
+        historyserver_ip = cluster_spec.determine_component_hosts(
+            'HISTORYSERVER').pop().management_ip
+
+        ui_port = self._get_port_from_cluster_spec(
+            cluster_spec, 'mapred-site', 'mapreduce.jobhistory.webapp.address')
+        hs_port = self._get_port_from_cluster_spec(
+            cluster_spec, 'mapred-site', 'mapreduce.jobhistory.address')
+
+        url_info['MapReduce2'] = {
+            'Web UI': 'http://%s:%s' % (historyserver_ip, ui_port),
+            'History Server': '%s:%s' % (historyserver_ip, hs_port)
+        }
+        return url_info
+
+    def finalize_ng_components(self, cluster_spec):
+        mr2_ng = cluster_spec.get_node_groups_containing_component(
+            'HISTORYSERVER')[0]
+        components = mr2_ng.components
+        if 'HDFS_CLIENT' not in components:
+            components.append('HDFS_CLIENT')
+
+    def is_mandatory(self):
+        return True
+
+
+class YarnService(Service):
+    def __init__(self):
+        super(YarnService, self).__init__(
+            YarnService.get_service_id())
+        self.configurations.add('yarn-site')
+        self.configurations.add('capacity-scheduler')
+
+    @classmethod
+    def get_service_id(cls):
+        return 'YARN'
+
+    def validate(self, cluster_spec, cluster):
+        count = cluster_spec.get_deployed_node_group_count('RESOURCEMANAGER')
+        if count != 1:
+            raise ex.InvalidComponentCountException('RESOURCEMANAGER', 1,
+                                                    count)
+
+        count = cluster_spec.get_deployed_node_group_count('NODEMANAGER')
+        if not count:
+            raise ex.InvalidComponentCountException(
+                'NODEMANAGER', '> 0', count)
+
+    def finalize_configuration(self, cluster_spec):
+        rm_hosts = cluster_spec.determine_component_hosts('RESOURCEMANAGER')
+        if rm_hosts:
+            props = {'yarn-site': ['yarn.resourcemanager.'
+                                   'resource-tracker.address',
+                                   'yarn.resourcemanager.hostname',
+                                   'yarn.resourcemanager.address',
+                                   'yarn.resourcemanager.scheduler.address',
+                                   'yarn.resourcemanager.webapp.address',
+                                   'yarn.log.server.url',
+                                   'yarn.resourcemanager.admin.address']}
+
+            self._replace_config_token(
+                cluster_spec, '%RM_HOST%', rm_hosts.pop().fqdn(), props)
 
         # data locality/rack awareness prop processing
         mapred_site_config = cluster_spec.configurations['mapred-site']
@@ -235,30 +305,26 @@ class MapReduceService(Service):
                 mapred_site_config[prop['name']] = prop['value']
 
         # process storage paths to accommodate ephemeral or cinder storage
-        # NOTE:  mapred.system.dir is an HDFS namespace path (not a filesystem
-        # path) so the default path should suffice
-        tt_node_groups = cluster_spec.get_node_groups_containing_component(
-            'TASKTRACKER')
-        if tt_node_groups:
-            global_config = cluster_spec.configurations['global']
-            common_paths = self._get_common_paths(tt_node_groups)
-            mapred_site_config['mapred.local.dir'] = (
-                self._generate_storage_path(common_paths, '/hadoop/mapred'))
-            global_config['mapred_local_dir'] = self._generate_storage_path(
-                common_paths, '/hadoop/mapred')
+        nm_node_groups = cluster_spec.get_node_groups_containing_component(
+            'NODEMANAGER')
+        if nm_node_groups:
+            common_paths = self._get_common_paths(nm_node_groups)
+            mapred_site_config['yarn.nodemanager.local-dirs'] = (
+                self._generate_storage_path(common_paths,
+                                            '/hadoop/yarn/local'))
 
     def register_service_urls(self, cluster_spec, url_info):
-        jobtracker_ip = cluster_spec.determine_component_hosts(
-            'JOBTRACKER').pop().management_ip
+        resourcemgr_ip = cluster_spec.determine_component_hosts(
+            'RESOURCEMANAGER').pop().management_ip
 
         ui_port = self._get_port_from_cluster_spec(
-            cluster_spec, 'mapred-site', 'mapred.job.tracker.http.address')
-        jt_port = self._get_port_from_cluster_spec(
-            cluster_spec, 'mapred-site', 'mapred.job.tracker')
+            cluster_spec, 'yarn-site', 'yarn.resourcemanager.webapp.address')
+        rm_port = self._get_port_from_cluster_spec(
+            cluster_spec, 'yarn-site', 'yarn.resourcemanager.address')
 
-        url_info['MapReduce'] = {
-            'Web UI': 'http://%s:%s' % (jobtracker_ip, ui_port),
-            'JobTracker': '%s:%s' % (jobtracker_ip, jt_port)
+        url_info['Yarn'] = {
+            'Web UI': 'http://%s:%s' % (resourcemgr_ip, ui_port),
+            'ResourceManager': '%s:%s' % (resourcemgr_ip, rm_port)
         }
         return url_info
 
@@ -284,8 +350,7 @@ class HiveService(Service):
         hive_servers = cluster_spec.determine_component_hosts('HIVE_SERVER')
         if hive_servers:
             props = {'global': ['hive_hostname'],
-                     'core-site': ['hadoop.proxyuser.hive.hosts'],
-                     'hive-site': ['javax.jdo.option.ConnectionURL']}
+                     'core-site': ['hadoop.proxyuser.hive.hosts']}
             self._replace_config_token(
                 cluster_spec, '%HIVE_HOST%', hive_servers.pop().fqdn(), props)
 
@@ -299,32 +364,30 @@ class HiveService(Service):
         if hive_mysql:
             self._replace_config_token(
                 cluster_spec, '%HIVE_MYSQL_HOST%', hive_mysql.pop().fqdn(),
-                {'global': ['hive_jdbc_connection_url']})
+                {'hive-site': ['javax.jdo.option.ConnectionURL']})
 
     def register_user_input_handlers(self, ui_handlers):
-        ui_handlers['hive-site/javax.jdo.option.ConnectionUserName'] =\
-            self._handle_user_property_metastore_user
-        ui_handlers['hive-site/javax.jdo.option.ConnectionPassword'] = \
-            self._handle_user_property_metastore_pwd
+        ui_handlers['hive-site/javax.jdo.option.ConnectionUserName'] = (
+            self._handle_user_property_metastore_user)
+        ui_handlers['hive-site/javax.jdo.option.ConnectionPassword'] = (
+            self._handle_user_property_metastore_pwd)
 
     def _handle_user_property_metastore_user(self, user_input, configurations):
         hive_site_config_map = configurations['hive-site']
-        hive_site_config_map['javax.jdo.option.ConnectionUserName'] = \
-            user_input.value
-        global_config_map = configurations['global']
-        global_config_map['hive_metastore_user_name'] = user_input.value
+        hive_site_config_map['javax.jdo.option.ConnectionUserName'] = (
+            user_input.value)
 
     def _handle_user_property_metastore_pwd(self, user_input, configurations):
         hive_site_config_map = configurations['hive-site']
-        hive_site_config_map['javax.jdo.option.ConnectionPassword'] = \
-            user_input.value
-        global_config_map = configurations['global']
-        global_config_map['hive_metastore_user_passwd'] = user_input.value
+        hive_site_config_map['javax.jdo.option.ConnectionPassword'] = (
+            user_input.value)
 
     def finalize_ng_components(self, cluster_spec):
         hive_ng = cluster_spec.get_node_groups_containing_component(
             'HIVE_SERVER')[0]
         components = hive_ng.components
+        if 'MAPREDUCE2_CLIENT' not in components:
+            components.append('MAPREDUCE2_CLIENT')
         if not cluster_spec.get_deployed_node_group_count('HIVE_METASTORE'):
             components.append('HIVE_METASTORE')
         if not cluster_spec.get_deployed_node_group_count('MYSQL_SERVER'):
@@ -404,8 +467,11 @@ class WebHCatService(Service):
         components = webhcat_ng.components
         if 'HDFS_CLIENT' not in components:
             components.append('HDFS_CLIENT')
-        if 'MAPREDUCE_CLIENT' not in components:
-            components.append('MAPREDUCE_CLIENT')
+        if 'MAPREDUCE2_CLIENT' not in components:
+            components.append('MAPREDUCE2_CLIENT')
+        # per AMBARI-3483
+        if 'YARN_CLIENT' not in components:
+            components.append('YARN_CLIENT')
         if 'ZOOKEEPER_CLIENT' not in components:
             # if zk server isn't in cluster, add to ng
             if not cluster_spec.get_deployed_node_group_count(
@@ -477,8 +543,7 @@ class HBaseService(Service):
             'hbase-site/hbase.hregion.memstore.mslab.enabled',
             'global/regionserver_memstore_lab'],
         'hbase-site/hbase.hregion.memstore.flush.size': [
-            'hbase-site/hbase.hregion.memstore.flush.size',
-            'global/hregion_memstoreflushsize'],
+            'hbase-site/hbase.hregion.memstore.flush.size'],
         'hbase-site/hbase.client.scanner.caching': [
             'hbase-site/hbase.client.scanner.caching',
             'global/client_scannercaching'],
@@ -501,6 +566,7 @@ class HBaseService(Service):
         super(HBaseService, self).__init__(
             HBaseService.get_service_id())
         self.configurations.add('hbase-site')
+        #self.configurations.add('hbase-policy')
 
     @classmethod
     def get_service_id(cls):
@@ -531,11 +597,11 @@ class HBaseService(Service):
 
     def register_user_input_handlers(self, ui_handlers):
         for prop_name in self.property_map:
-            ui_handlers[prop_name] = \
-                self._handle_config_property_update
+            ui_handlers[prop_name] = (
+                self._handle_config_property_update)
 
-        ui_handlers['hbase-site/hbase.rootdir'] = \
-            self._handle_user_property_root_dir
+        ui_handlers['hbase-site/hbase.rootdir'] = (
+            self._handle_user_property_root_dir)
 
     def _handle_config_property_update(self, user_input, configurations):
         self._update_config_values(configurations, user_input.value,
@@ -567,10 +633,22 @@ class HBaseService(Service):
 
     def finalize_ng_components(self, cluster_spec):
         hbase_ng = cluster_spec.get_node_groups_containing_component(
-            'HBASE_MASTER')[0]
-        components = hbase_ng.components
+            'HBASE_MASTER')
+        components = hbase_ng[0].components
         if 'HDFS_CLIENT' not in components:
             components.append('HDFS_CLIENT')
+
+        if not cluster_spec.get_deployed_node_group_count(
+                'HBASE_REGIONSERVER'):
+            components.append('HBASE_REGIONSERVER')
+        else:
+            hbase_ng = cluster_spec.get_node_groups_containing_component(
+                'HBASE_REGIONSERVER')
+        for ng in hbase_ng:
+            components = ng.components
+            if 'HDFS_CLIENT' not in components:
+                components.append('HDFS_CLIENT')
+
         if not cluster_spec.get_deployed_node_group_count('ZOOKEEPER_SERVER'):
             zk_service = next(service for service in cluster_spec.services
                               if service.name == 'ZOOKEEPER')
@@ -592,6 +670,9 @@ class ZookeeperService(Service):
         if count != 1:
             raise ex.InvalidComponentCountException(
                 'ZOOKEEPER_SERVER', 1, count)
+
+    def is_mandatory(self):
+        return True
 
 
 class OozieService(Service):
@@ -622,7 +703,7 @@ class OozieService(Service):
             self._replace_config_token(
                 cluster_spec, '%OOZIE_HOST%', oozie_server.fqdn(),
                 {'global': ['oozie_hostname'],
-                    'oozie-site': ['oozie.base.url']})
+                 'oozie-site': ['oozie.base.url']})
             self._replace_config_token(
                 cluster_spec, '%OOZIE_HOST%', ",".join(name_list),
                 {'core-site': ['hadoop.proxyuser.oozie.hosts']})
@@ -633,8 +714,11 @@ class OozieService(Service):
         components = oozie_ng.components
         if 'HDFS_CLIENT' not in components:
             components.append('HDFS_CLIENT')
-        if 'MAPREDUCE_CLIENT' not in components:
-            components.append('MAPREDUCE_CLIENT')
+        if 'MAPREDUCE2_CLIENT' not in components:
+            components.append('MAPREDUCE2_CLIENT')
+        # per AMBARI-3483
+        if 'YARN_CLIENT' not in components:
+            components.append('YARN_CLIENT')
         # ensure that mr and hdfs clients are colocated with oozie client
         client_ngs = cluster_spec.get_node_groups_containing_component(
             'OOZIE_CLIENT')
@@ -642,8 +726,8 @@ class OozieService(Service):
             components = ng.components
             if 'HDFS_CLIENT' not in components:
                 components.append('HDFS_CLIENT')
-        if 'MAPREDUCE_CLIENT' not in components:
-            components.append('MAPREDUCE_CLIENT')
+            if 'MAPREDUCE2_CLIENT' not in components:
+                components.append('MAPREDUCE2_CLIENT')
 
     def register_service_urls(self, cluster_spec, url_info):
         oozie_ip = cluster_spec.determine_component_hosts(
@@ -656,24 +740,20 @@ class OozieService(Service):
         return url_info
 
     def register_user_input_handlers(self, ui_handlers):
-        ui_handlers['oozie-site/oozie.service.JPAService.jdbc.username'] = \
-            self._handle_user_property_db_user
-        ui_handlers['oozie.service.JPAService.jdbc.password'] = \
-            self._handle_user_property_db_pwd
+        ui_handlers['oozie-site/oozie.service.JPAService.jdbc.username'] = (
+            self._handle_user_property_db_user)
+        ui_handlers['oozie.service.JPAService.jdbc.password'] = (
+            self._handle_user_property_db_pwd)
 
     def _handle_user_property_db_user(self, user_input, configurations):
         oozie_site_config_map = configurations['oozie-site']
-        oozie_site_config_map['oozie.service.JPAService.jdbc.username'] = \
-            user_input.value
-        global_config_map = configurations['global']
-        global_config_map['oozie_metastore_user_name'] = user_input.value
+        oozie_site_config_map['oozie.service.JPAService.jdbc.username'] = (
+            user_input.value)
 
     def _handle_user_property_db_pwd(self, user_input, configurations):
         oozie_site_config_map = configurations['oozie-site']
-        oozie_site_config_map['oozie.service.JPAService.jdbc.password'] = \
-            user_input.value
-        global_config_map = configurations['global']
-        global_config_map['oozie_metastore_user_passwd'] = user_input.value
+        oozie_site_config_map['oozie.service.JPAService.jdbc.password'] = (
+            user_input.value)
 
 
 class GangliaService(Service):
@@ -730,10 +810,10 @@ class AmbariService(Service):
         return component.name != 'AMBARI_AGENT'
 
     def register_user_input_handlers(self, ui_handlers):
-        ui_handlers['ambari-stack/ambari.admin.user'] =\
-            self._handle_user_property_admin_user
-        ui_handlers['ambari-stack/ambari.admin.password'] =\
-            self._handle_user_property_admin_password
+        ui_handlers['ambari-stack/ambari.admin.user'] = (
+            self._handle_user_property_admin_user)
+        ui_handlers['ambari-stack/ambari.admin.password'] = (
+            self._handle_user_property_admin_password)
 
     def is_mandatory(self):
         return True
@@ -763,5 +843,38 @@ class SqoopService(Service):
         for ng in sqoop_ngs:
             if 'HDFS_CLIENT' not in ng.components:
                 ng.components.append('HDFS_CLIENT')
-            if 'MAPREDUCE_CLIENT' not in ng.components:
-                ng.components.append('MAPREDUCE_CLIENT')
+            if 'MAPREDUCE2_CLIENT' not in ng.components:
+                ng.components.append('MAPREDUCE2_CLIENT')
+
+
+class NagiosService(Service):
+    def __init__(self):
+        super(NagiosService, self).__init__(NagiosService.get_service_id())
+
+    @classmethod
+    def get_service_id(cls):
+        return 'NAGIOS'
+
+    def finalize_ng_components(self, cluster_spec):
+        # per AMBARI-2946
+        nagios_ngs = (
+            cluster_spec.get_node_groups_containing_component('NAGIOS_SERVER'))
+        for ng in nagios_ngs:
+            if 'YARN_CLIENT' not in ng.components:
+                ng.components.append('YARN_CLIENT')
+            if 'MAPREDUCE2_CLIENT' not in ng.components:
+                ng.components.append('MAPREDUCE2_CLIENT')
+            if cluster_spec.get_deployed_node_group_count('OOZIE_SERVER'):
+                if 'OOZIE_CLIENT' not in ng.components:
+                    ng.components.append('OOZIE_CLIENT')
+            if cluster_spec.get_deployed_node_group_count('HIVE_SERVER'):
+                if 'HIVE_CLIENT' not in ng.components:
+                    ng.components.append('HIVE_CLIENT')
+                if 'HCAT' not in ng.components:
+                    if not cluster_spec.get_deployed_node_group_count(
+                            'HCATALOG'):
+                        hcat_service = next(service for service in
+                                            cluster_spec.services if
+                                            service.name == 'HCATALOG')
+                        hcat_service.deployed = True
+                    ng.components.append('HCAT')

@@ -128,6 +128,13 @@ Returns the instance object for the host running the Oozie server (this service 
 
 *Returns*: The Oozie server instance object
 
+get_resource_manager_uri(cluster)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Returns the URI for access to the mapred resource manager (e.g Hadoop 1.x - jobtracker, Hadoop 2.x - yarn resource manager)
+
+*Returns*: The resource manager URI
+
 Object Model
 ============
 

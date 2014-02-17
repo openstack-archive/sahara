@@ -183,3 +183,6 @@ class IDHProvider(p.ProvisioningPluginBase):
 
     def get_oozie_server(self, cluster):
         return u.get_instance(cluster, "oozie")
+
+    def get_resource_manager_uri(self, cluster):
+        return cluster['info']['MapReduce']['JobTracker']

@@ -13,6 +13,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import os
+
 from six.moves.urllib import parse as urlparse
 
 from savanna import conductor as c
@@ -36,13 +38,36 @@ def copy_from_local(r, source, target, hdfs_user):
 
 
 def move_from_local(r, source, target, hdfs_user):
-    r.execute_command('sudo su - -c "hadoop dfs -moveFromLocal '
+    # using copyFromLocal followed by rm to address permission issues that
+    # arise when image user is not the same as hdfs user (permissions-wise).
+    # The moveFromLocal implementation actually is a copy and delete
+    # combination, so functionally the implementation is equivalent
+    r.execute_command('sudo su - -c "hadoop dfs -copyFromLocal '
                       '%s %s" %s' % (source, target, hdfs_user))
+    r.execute_command('sudo rm -f %s' % source)
+
+
+def _dir_missing(path, hdfs_user, r):
+    ret_code, stdout = r.execute_command(
+        'sudo su - -c "hadoop dfs -test -e %s" %s' % (path, hdfs_user),
+        raise_when_error=False)
+
+    return ret_code == 1
 
 
 def create_dir(r, dir_name, hdfs_user):
-    r.execute_command(
-        'sudo su - -c "hadoop dfs -mkdir %s" %s' % (dir_name, hdfs_user))
+    # there were significant differences between the 'mkdir' and 'mkdir -p'
+    # behaviors in Hadoop 1.2.0 vs. 2.2.0 forcing the creation of a
+    # manual implementation of 'mkdir -p'
+    comp_paths = dir_name.split(os.sep)
+    path = os.sep
+    for comp in comp_paths:
+        if len(comp) > 0:
+            path += comp + os.sep
+        if _dir_missing(path, hdfs_user, r):
+            r.execute_command(
+                'sudo su - -c "hadoop dfs -mkdir %s" %s' %
+                (path, hdfs_user))
 
 
 def _get_cluster_hosts_information(host, cluster):
