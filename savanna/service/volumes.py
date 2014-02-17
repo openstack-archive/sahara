@@ -27,18 +27,17 @@ LOG = logging.getLogger(__name__)
 
 
 def attach(cluster):
-    for node_group in cluster.node_groups:
-        attach_to_instances(node_group.instances)
+    with context.ThreadGroup() as tg:
+        for node_group in cluster.node_groups:
+            tg.spawn('attach-volumes-for-ng-%s' % node_group.name,
+                     attach_to_instances, node_group.instances)
 
 
 def attach_to_instances(instances):
-    ctx = context.ctx()
-    for instance in instances:
-        _attach_volumes_to_node(ctx, instance.node_group, instance)
-
-    for instance in instances:
-        _await_attach_volumes(instance,
-                              instance.node_group.volumes_per_node)
+    with context.ThreadGroup() as tg:
+        for instance in instances:
+            tg.spawn('attach-volumes-for-instance-%s' % instance.instance_name,
+                     _attach_volumes_to_node, instance.node_group, instance)
 
     mount_to_instances(instances)
 
@@ -57,7 +56,8 @@ def _await_attach_volumes(instance, count_volumes):
                        instance.instance_name)
 
 
-def _attach_volumes_to_node(ctx, node_group, instance, volume_type=None):
+def _attach_volumes_to_node(node_group, instance, volume_type=None):
+    ctx = context.ctx()
     count = node_group.volumes_per_node
     size = node_group.volumes_size
     for idx in range(1, count + 1):
@@ -65,6 +65,8 @@ def _attach_volumes_to_node(ctx, node_group, instance, volume_type=None):
         _create_attach_volume(ctx, instance, size, display_name, volume_type)
         LOG.debug("Attach volume to instance %s, type %s" %
                   (instance.instance_id, volume_type))
+
+    _await_attach_volumes(instance, node_group.volumes_per_node)
 
 
 def _create_attach_volume(ctx, instance, size, display_name=None,
@@ -121,8 +123,10 @@ def _get_unmounted_devices(instance):
 
 
 def mount_to_instances(instances):
-    for instance in instances:
-        _mount_volumes_to_node(instance)
+    with context.ThreadGroup() as tg:
+        for instance in instances:
+            tg.spawn('mount-volumes-to-node-%s' % instance.instance_name,
+                     _mount_volumes_to_node, instance)
 
 
 def _mount_volumes_to_node(instance, volume_type=None):
