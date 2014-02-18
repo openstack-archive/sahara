@@ -21,13 +21,9 @@ from alembic import util as alembic_u
 from oslo.config import cfg
 
 
-_db_opts = [
-    cfg.StrOpt('connection', default='', deprecated_name='sql_connection',
-               help='URL to database')
-]
-
-CONF = cfg.ConfigOpts()
-CONF.register_opts(_db_opts, 'database')
+CONF = cfg.CONF
+CONF.import_opt("connection", "savanna.openstack.common.db.sqlalchemy.session",
+                group="database")
 
 
 def do_alembic_command(config, cmd, *args, **kwargs):
