@@ -58,7 +58,6 @@ User guide
 .. toctree::
    :maxdepth: 2
 
-   userdoc/python_client
    restapi/index
 
 **Miscellaneous**
