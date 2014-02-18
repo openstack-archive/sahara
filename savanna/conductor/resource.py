@@ -221,6 +221,7 @@ class Job(Resource, objects.Job):
 
 class JobBinary(Resource, objects.JobBinary):
     _resource_name = "job_binary"
+    _filter_fields = ['extra']
 
 
 class JobBinaryInternal(Resource, objects.JobBinaryInternal):
