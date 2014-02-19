@@ -59,7 +59,10 @@ On Fedora-based distributions (e.g., Fedora/RHEL/CentOS/Scientific Linux):
     $ cp ./etc/sahara/sahara.conf.sample-basic ./etc/sahara/sahara.conf
 
 5. Look through the sahara.conf and change parameters which default values do
-not suite you. Set ``os_auth_host`` to the address of OpenStack keystone.
+not suite you. Set ``[keystone_authtoken]/auth_uri`` and
+``[keystone_authtoken]/identity_uri`` to complete public Identity API endpoint
+(like ``http://127.0.0.1:5000/v2.0/``) and to unversioned complete admin
+Identity API endpoint (like ``https://localhost:35357/``) correspondingly.
 
 If you are using Neutron instead of Nova Network add ``use_neutron = True`` to
 config.  If the linux kernel you're utilizing support network namespaces then

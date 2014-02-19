@@ -16,12 +16,12 @@
 import os
 
 import flask
-from keystoneclient.middleware import auth_token
 from oslo.config import cfg
 import six
 import stevedore
 from werkzeug import exceptions as werkzeug_exceptions
 
+from sahara.api import acl
 from sahara.api import v10 as api_v10
 from sahara.api import v11 as api_v11
 from sahara import config
@@ -42,27 +42,6 @@ LOG = log.getLogger(__name__)
 
 
 opts = [
-    cfg.StrOpt('os_auth_protocol',
-               default='http',
-               help='Protocol used to access OpenStack Identity service.'),
-    cfg.StrOpt('os_auth_host',
-               default='127.0.0.1',
-               help='IP or hostname of machine on which OpenStack Identity '
-                    'service is located.'),
-    cfg.StrOpt('os_auth_port',
-               default='5000',
-               help='Port of OpenStack Identity service.'),
-    cfg.StrOpt('os_admin_username',
-               default='admin',
-               help='This OpenStack user is used to verify provided tokens. '
-                    'The user must have admin role in <os_admin_tenant_name> '
-                    'tenant.'),
-    cfg.StrOpt('os_admin_password',
-               default='nova',
-               help='Password of the admin user.'),
-    cfg.StrOpt('os_admin_tenant_name',
-               default='admin',
-               help='Name of tenant where the user is admin.'),
     cfg.StrOpt('os_region_name',
                help='Region name used to get services endpoints.'),
     cfg.StrOpt('infrastructure_engine',
@@ -156,20 +135,10 @@ def make_app():
                   ' flag --log-exchange')
 
     if CONF.log_exchange:
-        cfg = app.config
-        app.wsgi_app = log_exchange.LogExchange.factory(cfg)(app.wsgi_app)
+        app.wsgi_app = log_exchange.LogExchange.factory(CONF)(app.wsgi_app)
 
-    app.wsgi_app = auth_valid.filter_factory(app.config)(app.wsgi_app)
-
-    app.wsgi_app = auth_token.filter_factory(
-        app.config,
-        auth_host=CONF.os_auth_host,
-        auth_port=CONF.os_auth_port,
-        auth_protocol=CONF.os_auth_protocol,
-        admin_user=CONF.os_admin_username,
-        admin_password=CONF.os_admin_password,
-        admin_tenant_name=CONF.os_admin_tenant_name
-    )(app.wsgi_app)
+    app.wsgi_app = auth_valid.wrap(app.wsgi_app)
+    app.wsgi_app = acl.wrap(app.wsgi_app, CONF)
 
     return app
 

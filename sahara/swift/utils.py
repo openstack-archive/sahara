@@ -13,12 +13,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import re
-
 from oslo.config import cfg
+from six.moves.urllib import parse as urlparse
 
 from sahara import context
-from sahara.utils.openstack import base
 
 
 CONF = cfg.CONF
@@ -30,19 +28,10 @@ SWIFT_URL_SUFFIX_START = '.'
 SWIFT_URL_SUFFIX = SWIFT_URL_SUFFIX_START + 'sahara'
 
 
-def _get_service_address(service_type):
-    ctx = context.current()
-    identity_url = base.url_for(ctx.service_catalog, service_type)
-    address_regexp = r"^\w+://(.+?)/"
-    identity_host = re.search(address_regexp, identity_url).group(1)
-    return identity_host
-
-
 def retrieve_auth_url():
-    """This function return auth url v2 api. Hadoop swift library doesn't
+    """This function return auth url v2.0 api. Hadoop Swift library doesn't
     support keystone v3 api.
     """
-    protocol = CONF.os_auth_protocol
-    host = _get_service_address('identity')
+    info = urlparse.urlparse(context.current().auth_uri)
 
-    return "%s://%s/v2.0/" % (protocol, host)
+    return "%s://%s:%s/%s/" % (info.scheme, info.hostname, info.port, 'v2.0')
