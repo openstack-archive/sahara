@@ -69,3 +69,10 @@ def get_user_keypair(cluster):
 
 def get_instance_info(instance):
     return client().servers.get(instance.instance_id)
+
+
+def get_network(**kwargs):
+    try:
+        return client().networks.find(**kwargs)
+    except nova_ex.NotFound:
+        return None
