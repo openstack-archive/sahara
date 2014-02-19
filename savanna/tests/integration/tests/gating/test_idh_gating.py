@@ -62,6 +62,8 @@ class IDHGatingTest(cluster_configs.ClusterConfigTest, edp.EDPTest,
         self.cluster_id = None
         self.cluster_template_id = None
         self.ng_template_ids = []
+        self.idh_config.IMAGE_ID, self.idh_config.SSH_USERNAME = (
+            self.get_image_id_and_ssh_username(self.idh_config))
 
     @errormessage("Failure while 'tt-dn' node group template creation: ")
     def _create_tt_dn_ng_template(self):
