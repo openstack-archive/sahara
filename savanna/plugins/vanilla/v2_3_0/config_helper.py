@@ -13,6 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from savanna import exceptions as ex
 from savanna.openstack.common import log as logging
 from savanna.plugins import provisioning as p
 from savanna.utils import types as types
@@ -49,6 +50,10 @@ ENV_CONFS = {
         'DataNode Heap Size': 1024
     }
 }
+
+ENABLE_SWIFT = p.Config('Enable Swift', 'general', 'cluster',
+                        config_type="bool", priority=1,
+                        default_value=True, is_optional=False)
 
 HIDDEN_CONFS = [
     'dfs.namenode.data.dir', 'dfs.namenode.name.dir', 'fs.defaultFS',
@@ -120,10 +125,25 @@ def _init_env_configs():
     return configs
 
 
+def _init_general_configs():
+    return [ENABLE_SWIFT]
+
+
 # Initialise plugin Hadoop configurations
 PLUGIN_XML_CONFIGS = _init_xml_configs()
 PLUGIN_ENV_CONFIGS = _init_env_configs()
-PLUGIN_CONFIGS = PLUGIN_XML_CONFIGS + PLUGIN_ENV_CONFIGS
+PLUGIN_GENERAL_CONFIGS = _init_general_configs()
+
+
+def _init_all_configs():
+    configs = []
+    configs.extend(PLUGIN_XML_CONFIGS)
+    configs.extend(PLUGIN_ENV_CONFIGS)
+    configs.extend(PLUGIN_GENERAL_CONFIGS)
+    return configs
+
+
+PLUGIN_CONFIGS = _init_all_configs()
 
 
 def get_plugin_configs():
@@ -136,3 +156,18 @@ def get_xml_configs():
 
 def get_env_configs():
     return ENV_CONFS
+
+
+def get_config_value(service, name, cluster=None):
+    if cluster:
+        for ng in cluster.node_groups:
+            cl_param = ng.configuration().get(service, {}).get(name)
+            if cl_param is not None:
+                return cl_param
+
+    for c in get_plugin_configs():
+        if c.applicable_target == service and c.name == name:
+            return c.default_value
+
+    raise ex.SavannaException("Unable get parameter '%s' from service %s",
+                              name, service)
