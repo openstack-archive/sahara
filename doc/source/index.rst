@@ -56,11 +56,10 @@ User guide
 **APIs**
 
 .. toctree::
-   :maxdepth: 1
+   :maxdepth: 2
 
    userdoc/python_client
-   userdoc/rest_api_v1.0
-   userdoc/rest_api_v1.1_EDP
+   restapi/index
 
 **Miscellaneous**
 
