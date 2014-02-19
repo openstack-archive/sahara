@@ -68,8 +68,10 @@ _global_remote_semaphore = None
 
 
 def _get_proxy(neutron_info):
-    client = neutron.Client(neutron_info['network'], neutron_info['uri'],
-                            neutron_info['token'], neutron_info['tenant'])
+    client = neutron.NeutronClientRemoteWrapper(neutron_info['network'],
+                                                neutron_info['uri'],
+                                                neutron_info['token'],
+                                                neutron_info['tenant'])
     qrouter = client.get_router()
     proxy = paramiko.ProxyCommand('ip netns exec qrouter-{0} nc {1} 22'
                                   .format(qrouter, neutron_info['host']))
@@ -147,10 +149,9 @@ def _get_http_client(host, port, neutron_info, *args, **kwargs):
                                                               _http_session))
     if not _http_session:
         if neutron_info:
-            neutron_client = neutron.Client(neutron_info['network'],
-                                            neutron_info['uri'],
-                                            neutron_info['token'],
-                                            neutron_info['tenant'])
+            neutron_client = neutron.NeutronClientRemoteWrapper(
+                neutron_info['network'], neutron_info['uri'],
+                neutron_info['token'], neutron_info['tenant'])
             # can return a new session here because it actually uses
             # the same adapter (and same connection pools) for a given
             # host and port tuple

@@ -21,13 +21,27 @@ from neutronclient.neutron import client as neutron_cli
 import requests
 from requests import adapters
 
+from savanna import context
 from savanna.openstack.common import log as logging
+from savanna.utils.openstack import base
 
 
 LOG = logging.getLogger(__name__)
 
 
-class Client():
+def client():
+    ctx = context.ctx()
+    args = {
+        'username': ctx.username,
+        'tenant_name': ctx.tenant_name,
+        'tenant_id': ctx.tenant_id,
+        'token': ctx.token,
+        'endpoint_url': base.url_for(ctx.service_catalog, 'network')
+    }
+    return neutron_cli.Client('2.0', **args)
+
+
+class NeutronClientRemoteWrapper():
     neutron = None
     adapters = {}
     routers = {}
@@ -40,7 +54,8 @@ class Client():
         self.network = network
 
     def get_router(self):
-        matching_router = Client.routers.get(self.network, None)
+        matching_router = NeutronClientRemoteWrapper.routers.get(self.network,
+                                                                 None)
         if matching_router:
             LOG.debug('Returning cached qrouter')
             return matching_router['id']
@@ -53,7 +68,8 @@ class Client():
                          if port['network_id'] == self.network), None)
             if port:
                 matching_router = router
-                Client.routers[self.network] = matching_router
+                NeutronClientRemoteWrapper.routers[
+                    self.network] = matching_router
                 break
 
         if not matching_router:
