@@ -107,5 +107,5 @@ def main():
     # attach the Savanna conf to the Alembic conf
     config.savanna_config = CONF
 
-    CONF()
+    CONF(project='savanna')
     CONF.command.func(config, CONF.command.name)
