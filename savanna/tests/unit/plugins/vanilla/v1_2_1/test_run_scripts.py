@@ -16,7 +16,7 @@
 import mock
 import unittest2
 
-from savanna.plugins.vanilla import run_scripts
+from savanna.plugins.vanilla.v1_2_1 import run_scripts
 
 
 class RunScriptsTest(unittest2.TestCase):

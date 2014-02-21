@@ -20,8 +20,8 @@ from savanna import context
 from savanna.openstack.common import log as logging
 from savanna.plugins.general import utils
 from savanna.plugins import provisioning as p
-from savanna.plugins.vanilla import mysql_helper as m_h
-from savanna.plugins.vanilla import oozie_helper as o_h
+from savanna.plugins.vanilla.v1_2_1 import mysql_helper as m_h
+from savanna.plugins.vanilla.v1_2_1 import oozie_helper as o_h
 from savanna.swift import swift_helper as swift
 from savanna.topology import topology_helper as topology
 from savanna.utils import crypto
@@ -34,16 +34,16 @@ LOG = logging.getLogger(__name__)
 CONF = cfg.CONF
 
 CORE_DEFAULT = x.load_hadoop_xml_defaults(
-    'plugins/vanilla/resources/core-default.xml')
+    'plugins/vanilla/v1_2_1/resources/core-default.xml')
 
 HDFS_DEFAULT = x.load_hadoop_xml_defaults(
-    'plugins/vanilla/resources/hdfs-default.xml')
+    'plugins/vanilla/v1_2_1/resources/hdfs-default.xml')
 
 MAPRED_DEFAULT = x.load_hadoop_xml_defaults(
-    'plugins/vanilla/resources/mapred-default.xml')
+    'plugins/vanilla/v1_2_1/resources/mapred-default.xml')
 
 HIVE_DEFAULT = x.load_hadoop_xml_defaults(
-    'plugins/vanilla/resources/hive-default.xml')
+    'plugins/vanilla/v1_2_1/resources/hive-default.xml')
 
 ## Append Oozie configs fore core-site.xml
 CORE_DEFAULT += o_h.OOZIE_CORE_DEFAULT
