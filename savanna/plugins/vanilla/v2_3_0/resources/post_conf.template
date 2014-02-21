@@ -21,3 +21,11 @@ sed -i "s,export HADOOP_SECURE_DN_LOG_DIR=.*,export HADOOP_SECURE_DN_LOG_DIR={ha
 
 # change yarn log dir
 sed -i "s,YARN_LOG_DIR=.*,YARN_LOG_DIR={yarn_log_dir}," {hadoop_conf_dir}/yarn-env.sh
+
+# prepare scaling files
+sc_all_files=('dn-include' 'nm-include' 'dn-exclude' 'nm-exclude')
+for file in "${{sc_all_files[@]}}"
+do
+    touch {hadoop_conf_dir}/$file
+    chown {hadoop_group}:{hadoop_user} {hadoop_conf_dir}/$file
+done

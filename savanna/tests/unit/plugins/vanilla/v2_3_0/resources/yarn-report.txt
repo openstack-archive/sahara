@@ -1,0 +1,6 @@
+Total Nodes:4
+         Node-Id         Node-State Node-Http-Address   Number-of-Running-Containers
+cluster-worker-001.novalocal:54746          RUNNING cluster-worker-001.novalocal:8042                              0
+cluster-worker-002.novalocal:53509          RUNNING cluster-worker-002.novalocal:8042                              0
+cluster-worker-003.novalocal:60418          RUNNING cluster-worker-003.novalocal:8042                              0
+cluster-worker-004.novalocal:33876   DECOMMISSIONED cluster-worker-004.novalocal:8042                              0

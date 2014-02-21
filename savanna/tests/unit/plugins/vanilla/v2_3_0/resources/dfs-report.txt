@@ -1,0 +1,62 @@
+Configured Capacity: 60249329664 (56.11 GB)
+Present Capacity: 50438139904 (46.97 GB)
+DFS Remaining: 50438041600 (46.97 GB)
+DFS Used: 98304 (96 KB)
+DFS Used%: 0.00%
+Under replicated blocks: 0
+Blocks with corrupt replicas: 0
+Missing blocks: 0
+
+-------------------------------------------------
+Datanodes available: 4 (4 total, 0 dead)
+
+Live datanodes:
+Name: 10.50.0.22:50010 (cluster-worker-001.novalocal)
+Hostname: cluster-worker-001.novalocal
+Decommission Status : Normal
+Configured Capacity: 20083101696 (18.70 GB)
+DFS Used: 24576 (24 KB)
+Non DFS Used: 3270406144 (3.05 GB)
+DFS Remaining: 16812670976 (15.66 GB)
+DFS Used%: 0.00%
+DFS Remaining%: 83.72%
+Last contact: Mon Feb 24 13:41:13 UTC 2014
+
+
+Name: 10.50.0.36:50010 (cluster-worker-003.novalocal)
+Hostname: cluster-worker-003.novalocal
+Decommission Status : Normal
+Configured Capacity: 20083101696 (18.70 GB)
+DFS Used: 24576 (24 KB)
+Non DFS Used: 3270393856 (3.05 GB)
+DFS Remaining: 16812683264 (15.66 GB)
+DFS Used%: 0.00%
+DFS Remaining%: 83.72%
+Last contact: Mon Feb 24 13:41:11 UTC 2014
+
+
+Name: 10.50.0.25:50010 (cluster-worker-002.novalocal)
+Hostname: cluster-worker-002.novalocal
+Decommission Status : Normal
+Configured Capacity: 20083101696 (18.70 GB)
+DFS Used: 24576 (24 KB)
+Non DFS Used: 3270389760 (3.05 GB)
+DFS Remaining: 16812687360 (15.66 GB)
+DFS Used%: 0.00%
+DFS Remaining%: 83.72%
+Last contact: Mon Feb 24 13:41:12 UTC 2014
+
+
+Name: 10.50.0.60:50010 (cluster-worker-004.novalocal)
+Hostname: cluster-worker-004.novalocal
+Decommission Status : Decommissioned
+Configured Capacity: 20083101696 (18.70 GB)
+DFS Used: 24576 (24 KB)
+Non DFS Used: 3270316032 (3.05 GB)
+DFS Remaining: 16812761088 (15.66 GB)
+DFS Used%: 0.00%
+DFS Remaining%: 83.72%
+Last contact: Mon Feb 24 13:33:33 UTC 2014
+
+
+
