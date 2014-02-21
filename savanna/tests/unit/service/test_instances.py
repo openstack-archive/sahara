@@ -140,20 +140,57 @@ class NodePlacementTest(AbstractInstanceTest):
         self.engine._create_instances(cluster)
         userdata = _generate_user_data_script(cluster)
 
+        def _find_created_at(idx):
+            """Find the #N instance creation call.
+
+            To determine which instance was created first, we should check
+            scheduler hints For example we should find call with scheduler
+            hint different_hosts = [1, 2] and it's the third call of instance
+            create.
+            """
+            different_hosts = []
+            for instance_id in xrange(1, idx):
+                different_hosts.append(str(instance_id))
+            scheduler_hints = ({'different_host': different_hosts}
+                               if different_hosts else None)
+
+            for call in self.nova.servers.create.mock_calls:
+                if call[2]['scheduler_hints'] == scheduler_hints:
+                    return call[1][0]
+
+            self.fail("Couldn't find call with scheduler_hints='%s'"
+                      % scheduler_hints)
+
+        # find instance names in instance create calls
+        instance_names = []
+        for idx in xrange(1, 4):
+            instance_name = _find_created_at(idx)
+            if instance_name in instance_names:
+                self.fail("Create instance was called twice with the same "
+                          "instance name='%s'" % instance_name)
+            instance_names.append(instance_name)
+
+        self.assertEqual(3, len(instance_names))
+        self.assertItemsEqual([
+            'test_cluster-test_group_1-001',
+            'test_cluster-test_group_1-002',
+            'test_cluster-test_group_2-001',
+        ], instance_names)
+
         self.nova.servers.create.assert_has_calls(
-            [mock.call("test_cluster-test_group_1-001",
+            [mock.call(instance_names[0],
                        "initial",
                        "test_flavor",
                        scheduler_hints=None,
                        userdata=userdata,
                        key_name='user_keypair'),
-             mock.call("test_cluster-test_group_1-002",
+             mock.call(instance_names[1],
                        "initial",
                        "test_flavor",
                        scheduler_hints={'different_host': ["1"]},
                        userdata=userdata,
                        key_name='user_keypair'),
-             mock.call("test_cluster-test_group_2-001",
+             mock.call(instance_names[2],
                        "initial",
                        "test_flavor",
                        scheduler_hints={'different_host': ["1", "2"]},
