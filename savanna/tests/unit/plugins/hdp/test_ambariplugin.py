@@ -167,7 +167,7 @@ class AmbariPluginTest(unittest2.TestCase):
         self.assertEqual('delete', request.method)
         self.assertEqual('http://111.11.1111:8080/api/v1/users/admin',
                          request.url)
-        self.assertEqual(None, request.data)
+        self.assertIsNone(request.data)
         self.assertEqual(('test', 'test_pw'), request.auth)
         self.assertEqual('test', ambari_info.user)
         self.assertEqual('test_pw', ambari_info.password)
