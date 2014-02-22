@@ -209,6 +209,7 @@ class ClusterResource(Resource, objects.Cluster):
 
 class DataSource(Resource, objects.DataSource):
     _resource_name = "data_source"
+    _filter_fields = ['credentials']
 
 
 class JobExecution(Resource, objects.JobExecution):
