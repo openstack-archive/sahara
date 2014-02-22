@@ -107,8 +107,8 @@ class ITestCase(unittest2.TestCase):
 #-------------------------Methods for object creation--------------------------
 
     def create_node_group_template(self, name, plugin_config, description,
-                                   volumes_per_node, volume_size,
                                    node_processes, node_configs,
+                                   volumes_per_node=0, volume_size=0,
                                    floating_ip_pool=None):
         data = self.savanna.node_group_templates.create(
             name, plugin_config.PLUGIN_NAME, plugin_config.HADOOP_VERSION,

@@ -18,6 +18,7 @@ import unittest2
 
 from savanna.openstack.common import excutils
 from savanna.tests.integration.configs import config as cfg
+from savanna.tests.integration.tests import cinder
 from savanna.tests.integration.tests import cluster_configs
 from savanna.tests.integration.tests import edp
 from savanna.tests.integration.tests import map_reduce
@@ -25,11 +26,14 @@ from savanna.tests.integration.tests import scaling
 from savanna.tests.integration.tests import swift
 
 
-class VanillaGatingTest(cluster_configs.ClusterConfigTest, edp.EDPTest,
+class VanillaGatingTest(cinder.CinderVolumeTest,
+                        cluster_configs.ClusterConfigTest, edp.EDPTest,
                         map_reduce.MapReduceTest, swift.SwiftTest,
                         scaling.ScalingTest):
-    SKIP_CLUSTER_CONFIG_TEST = \
-        cfg.ITConfig().vanilla_config.SKIP_CLUSTER_CONFIG_TEST
+
+    SKIP_CINDER_TEST = cfg.ITConfig().vanilla_config.SKIP_CINDER_TEST
+    SKIP_CLUSTER_CONFIG_TEST = (
+        cfg.ITConfig().vanilla_config.SKIP_CLUSTER_CONFIG_TEST)
     SKIP_EDP_TEST = cfg.ITConfig().vanilla_config.SKIP_EDP_TEST
     SKIP_MAP_REDUCE_TEST = cfg.ITConfig().vanilla_config.SKIP_MAP_REDUCE_TEST
     SKIP_SWIFT_TEST = cfg.ITConfig().vanilla_config.SKIP_SWIFT_TEST
@@ -51,6 +55,13 @@ class VanillaGatingTest(cluster_configs.ClusterConfigTest, edp.EDPTest,
             floating_ip_pool = self.get_floating_ip_pool_id_for_neutron_net()
             internal_neutron_net = self.get_internal_neutron_net_id()
 
+        if not self.vanilla_config.SKIP_CINDER_TEST:
+            volumes_per_node = 2
+            volume_size = 2
+        else:
+            volumes_per_node = 0
+            volume_size = 0
+
         node_group_template_id_list = []
 
 #-------------------------------CLUSTER CREATION-------------------------------
@@ -62,8 +73,6 @@ class VanillaGatingTest(cluster_configs.ClusterConfigTest, edp.EDPTest,
                 name='test-node-group-template-vanilla-tt-dn',
                 plugin_config=self.vanilla_config,
                 description='test node group template for Vanilla plugin',
-                volumes_per_node=0,
-                volume_size=0,
                 node_processes=['tasktracker', 'datanode'],
                 node_configs={
                     'HDFS': cluster_configs.DN_CONFIG,
@@ -86,8 +95,8 @@ class VanillaGatingTest(cluster_configs.ClusterConfigTest, edp.EDPTest,
                 name='test-node-group-template-vanilla-tt',
                 plugin_config=self.vanilla_config,
                 description='test node group template for Vanilla plugin',
-                volumes_per_node=0,
-                volume_size=0,
+                volumes_per_node=volumes_per_node,
+                volume_size=volume_size,
                 node_processes=['tasktracker'],
                 node_configs={
                     'MapReduce': cluster_configs.TT_CONFIG
@@ -111,8 +120,8 @@ class VanillaGatingTest(cluster_configs.ClusterConfigTest, edp.EDPTest,
                 name='test-node-group-template-vanilla-dn',
                 plugin_config=self.vanilla_config,
                 description='test node group template for Vanilla plugin',
-                volumes_per_node=0,
-                volume_size=0,
+                volumes_per_node=volumes_per_node,
+                volume_size=volume_size,
                 node_processes=['datanode'],
                 node_configs={
                     'HDFS': cluster_configs.DN_CONFIG
@@ -153,7 +162,7 @@ class VanillaGatingTest(cluster_configs.ClusterConfigTest, edp.EDPTest,
                         floating_ip_pool=floating_ip_pool,
                         count=1),
                     dict(
-                        name='master-node-sec-nn',
+                        name='master-node-sec-nn-oz',
                         flavor_id=self.flavor_id,
                         node_processes=['secondarynamenode', 'oozie'],
                         node_configs={
@@ -202,6 +211,20 @@ class VanillaGatingTest(cluster_configs.ClusterConfigTest, edp.EDPTest,
                     node_group_template_id_list
                 )
                 message = 'Failure while cluster creation: '
+                self.print_error_log(message, e)
+
+#---------------------------------CINDER TESTING-------------------------------
+
+        try:
+            self.cinder_volume_testing(cluster_info)
+
+        except Exception as e:
+            with excutils.save_and_reraise_exception():
+                self.delete_objects(
+                    cluster_info['cluster_id'], cluster_template_id,
+                    node_group_template_id_list
+                )
+                message = 'Failure while Cinder testing: '
                 self.print_error_log(message, e)
 
 #----------------------------CLUSTER CONFIG TESTING----------------------------
@@ -338,6 +361,21 @@ class VanillaGatingTest(cluster_configs.ClusterConfigTest, edp.EDPTest,
                 self.print_error_log(message, e)
 
         if not self.vanilla_config.SKIP_SCALING_TEST:
+
+#--------------------------CINDER TESTING AFTER SCALING------------------------
+
+            try:
+                self.cinder_volume_testing(new_cluster_info)
+
+            except Exception as e:
+                with excutils.save_and_reraise_exception():
+                    self.delete_objects(
+                        new_cluster_info['cluster_id'], cluster_template_id,
+                        node_group_template_id_list
+                    )
+                    message = 'Failure while Cinder testing after cluster ' \
+                              'scaling: '
+                    self.print_error_log(message, e)
 
 #---------------------CLUSTER CONFIG TESTING AFTER SCALING---------------------
 
