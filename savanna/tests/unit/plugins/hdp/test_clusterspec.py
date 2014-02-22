@@ -380,7 +380,7 @@ class ClusterSpecTest(unittest2.TestCase):
         self.assertEqual(2, len(node_groups))
         master_node_group = node_groups['master']
         self.assertEqual('master', master_node_group.name)
-        self.assertEqual(None, master_node_group.predicate)
+        self.assertIsNone(master_node_group.predicate)
         self.assertEqual('1', master_node_group.cardinality)
         self.assertEqual(6, len(master_node_group.components))
         self.assertIn('NAMENODE', master_node_group.components)
@@ -392,7 +392,7 @@ class ClusterSpecTest(unittest2.TestCase):
 
         slave_node_group = node_groups['slave']
         self.assertEqual('slave', slave_node_group.name)
-        self.assertEqual(None, slave_node_group.predicate)
+        self.assertIsNone(slave_node_group.predicate)
         self.assertEqual('1+', slave_node_group.cardinality)
         self.assertEqual(4, len(slave_node_group.components))
         self.assertIn('DATANODE', slave_node_group.components)

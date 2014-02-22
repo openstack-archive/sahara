@@ -305,7 +305,7 @@ class JobBinaryInternalTest(test_base.ConductorManagerTestCase):
         self.api.job_binary_internal_destroy(ctx, id)
 
         data = self.api.job_binary_internal_get_raw_data(ctx, id)
-        self.assertEqual(data, None)
+        self.assertIsNone(data)
 
     def test_job_binary_internal_fields(self):
         ctx = context.ctx()
