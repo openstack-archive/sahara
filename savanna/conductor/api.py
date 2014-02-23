@@ -25,7 +25,7 @@ from savanna.openstack.common import log as logging
 conductor_opts = [
     cfg.BoolOpt('use_local',
                 default=True,
-                help='Perform savanna-conductor operations locally'),
+                help='Perform savanna-conductor operations locally.'),
 ]
 
 conductor_group = cfg.OptGroup(name='conductor',
