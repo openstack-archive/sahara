@@ -19,7 +19,6 @@ from savanna.openstack.common import log as logging
 from savanna.plugins.general import exceptions as ex
 from savanna.plugins.general import utils as u
 from savanna.plugins.intel import config_helper as c_helper
-from savanna.plugins.intel import exceptions as i_ex
 from savanna.plugins.intel import installer as ins
 from savanna.plugins import provisioning as p
 
@@ -96,7 +95,7 @@ class IDHProvider(p.ProvisioningPluginBase):
         mng_count = sum([ng.count for ng
                          in u.get_node_groups(cluster, 'manager')])
         if mng_count != 1:
-            raise i_ex.NotSingleManagerException(mng_count)
+            raise ex.InvalidComponentCountException('manager', 1, mng_count)
 
     def scale_cluster(self, cluster, instances):
         ins.configure_os_from_instances(cluster, instances)

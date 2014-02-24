@@ -16,15 +16,6 @@
 import savanna.exceptions as e
 
 
-class NotSingleManagerException(e.SavannaException):
-    message = "Intel hadoop cluster should contain only 1 Intel " \
-              "Manager instance. Actual manager count is %s"
-
-    def __init__(self, mng_count):
-        self.message = self.message % mng_count
-        self.code = "NOT_SINGLE_MANAGER"
-
-
 class IntelPluginException(e.SavannaException):
     def __init__(self, message):
         self.message = message
