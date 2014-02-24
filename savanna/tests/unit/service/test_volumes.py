@@ -78,6 +78,7 @@ class TestAttachVolume(base.SavannaWithDbTestCase):
         ng = {'volumes_per_node': 2,
               'volumes_size': 2,
               'volume_mount_prefix': '/mnt/vols',
+              'name': 'master',
               'instances': [instance1, instance2]}
 
         cluster = r.ClusterResource({'node_groups': [ng]})
