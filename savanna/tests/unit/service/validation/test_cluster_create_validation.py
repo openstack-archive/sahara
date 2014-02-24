@@ -148,6 +148,20 @@ class TestClusterCreateValidation(u.ValidationTestCase):
                        "with name 'wrong_plugin'")
         )
 
+    def test_cluster_create_v_wrong_network(self):
+        self._assert_create_object_validation(
+            data={
+                'name': "test-name",
+                'plugin_name': "vanilla",
+                'hadoop_version': "1.2.1",
+                'default_image_id': '550e8400-e29b-41d4-a716-446655440000',
+                'neutron_management_network': '53a36917-ab9f-4589-'
+                                              '94ce-b6df85a68332'
+            },
+            bad_req_i=(1, 'INVALID_REFERENCE', "Network 53a36917-ab9f-4589-"
+                                               "94ce-b6df85a68332 not found")
+        )
+
     def test_cluster_create_v_cluster_configs(self):
         self._assert_cluster_configs_validation(True)
 
@@ -163,7 +177,9 @@ class TestClusterCreateValidation(u.ValidationTestCase):
                         u'hadoop.tmp.dir': '/temp/'
                     }
                 },
-                'default_image_id': '550e8400-e29b-41d4-a716-446655440000'
+                'default_image_id': '550e8400-e29b-41d4-a716-446655440000',
+                'neutron_management_network': 'd9a3bebc-f788-4b81-'
+                                              '9a93-aa048022c1ca'
             }
         )
 

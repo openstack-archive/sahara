@@ -120,12 +120,21 @@ def check_node_group_basic_fields(plugin_name, hadoop_version, ng,
     if ng.get('volumes_per_node'):
         check_cinder_exists()
 
+    if ng.get('floating_ip_pool'):
+        check_floatingip_pool_exists(ng['name'], ng['floating_ip_pool'])
+
 
 def check_flavor_exists(flavor_id):
     flavor_list = nova.client().flavors.list()
     if flavor_id not in [flavor.id for flavor in flavor_list]:
         raise ex.InvalidException("Requested flavor '%s' not found"
                                   % flavor_id)
+
+
+def check_floatingip_pool_exists(ng_name, pool_id):
+    if not nova.get_network(id=pool_id):
+        raise ex.InvalidException("Floating IP pool %s for node group "
+                                  "'%s' not found" % (pool_id, ng_name))
 
 
 def check_node_processes(plugin_name, version, node_processes):
@@ -168,6 +177,11 @@ def check_keypair_exists(keypair):
         nova.client().keypairs.get(keypair)
     except nova_ex.NotFound:
         raise ex.InvalidException("Requested keypair '%s' not found" % keypair)
+
+
+def check_network_exists(net_id):
+    if not nova.get_network(id=net_id):
+        raise ex.InvalidException("Network %s not found" % net_id)
 
 
 ## Cluster templates related checks

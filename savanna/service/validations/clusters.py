@@ -76,6 +76,10 @@ def check_cluster_create(data, **kwargs):
     if data.get('node_groups'):
         b.check_network_config(data['node_groups'])
 
+    neutron_net_id = _get_cluster_field(data, 'neutron_management_network')
+    if neutron_net_id:
+        b.check_network_exists(neutron_net_id)
+
 
 def _get_cluster_field(cluster, field):
     if cluster.get(field):

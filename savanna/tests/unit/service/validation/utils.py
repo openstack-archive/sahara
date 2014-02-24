@@ -57,6 +57,13 @@ def _get_keypair(name):
         raise nova_ex.NotFound("")
 
 
+def _get_network(**kwargs):
+    if 'id' in kwargs and (
+            kwargs['id'] != "d9a3bebc-f788-4b81-9a93-aa048022c1ca"):
+        raise nova_ex.NotFound("")
+    return 'OK'
+
+
 class FakeFlavor(object):
     def __init__(self, id):
         self.id = id
@@ -106,6 +113,7 @@ def start_patch(patch_templates=True):
 
     nova().flavors.list.side_effect = _get_flavors_list
     nova().keypairs.get.side_effect = _get_keypair
+    nova().networks.find.side_effect = _get_network
 
     class Service:
         @property

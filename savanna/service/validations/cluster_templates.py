@@ -120,6 +120,9 @@ def check_cluster_template_create(data, **kwargs):
         b.check_node_processes(data['plugin_name'], data['hadoop_version'],
                                data['anti_affinity'])
 
+    if data.get('neutron_management_network'):
+        b.check_network_exists(data['neutron_management_network'])
+
 
 def check_cluster_template_usage(cluster_template_id, **kwargs):
     clusters = api.get_clusters()

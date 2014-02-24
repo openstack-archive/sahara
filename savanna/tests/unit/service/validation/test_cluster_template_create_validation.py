@@ -224,5 +224,19 @@ class TestClusterTemplateCreateValidation(u.ValidationTestCase):
                        "Cluster template with name 'test' already exists")
         )
 
+    def test_cluster_template_wrong_neutron_mngmt_net(self):
+        data = {
+            'name': 'test-template',
+            'plugin_name': 'vanilla',
+            'hadoop_version': '1.2.1',
+            'neutron_management_network': '53a36917-ab9f-4589'
+                                          '-94ce-b6df85a68332'
+        }
+        self._assert_create_object_validation(
+            data=data,
+            bad_req_i=(1, 'INVALID_REFERENCE', "Network 53a36917-ab9f-4589-"
+                                               "94ce-b6df85a68332 not found")
+        )
+
     def test_cluster_create_v_default_image_required_tags(self):
             self._assert_cluster_default_image_tags_validation()

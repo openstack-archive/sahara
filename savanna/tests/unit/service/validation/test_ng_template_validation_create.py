@@ -125,8 +125,8 @@ class TestNGTemplateCreateValidation(u.ValidationTestCase):
                 'image_id': '550e8400-e29b-41d4-a716-446655440000',
                 'volumes_per_node': 2,
                 'volumes_size': 10,
-                'description': 'test node template'
-
+                'description': 'test node template',
+                'floating_ip_pool': 'd9a3bebc-f788-4b81-9a93-aa048022c1ca'
             }
         )
 
@@ -276,4 +276,18 @@ class TestNGTemplateCreateValidation(u.ValidationTestCase):
         self._assert_create_object_validation(
             data=data,
             bad_req_i=(1, 'VALIDATION_ERROR', "'qwerty' is not a 'posix_path'")
+        )
+
+    def test_wrong_floating_ip_pool(self):
+        self._assert_create_object_validation(
+            data={
+                'name': 'a',
+                'flavor_id': '42',
+                'plugin_name': 'vanilla',
+                'hadoop_version': '1.2.1',
+                'node_processes': ['datanode', 'tasktracker'],
+                'floating_ip_pool': 'network_bad'
+            },
+            bad_req_i=(1, 'INVALID_REFERENCE', "Floating IP pool network_bad "
+                                               "for node group 'a' not found")
         )
