@@ -47,25 +47,25 @@ patches.patch_minidom_writexml()
 opts = [
     cfg.StrOpt('os_auth_protocol',
                default='http',
-               help='Protocol used to access OpenStack Identity service'),
+               help='Protocol used to access OpenStack Identity service.'),
     cfg.StrOpt('os_auth_host',
                default='127.0.0.1',
                help='IP or hostname of machine on which OpenStack Identity '
-                    'service is located'),
+                    'service is located.'),
     cfg.StrOpt('os_auth_port',
                default='5000',
-               help='Port of OpenStack Identity service'),
+               help='Port of OpenStack Identity service.'),
     cfg.StrOpt('os_admin_username',
                default='admin',
                help='This OpenStack user is used to verify provided tokens. '
                     'The user must have admin role in <os_admin_tenant_name> '
-                    'tenant'),
+                    'tenant.'),
     cfg.StrOpt('os_admin_password',
                default='nova',
-               help='Password of the admin user'),
+               help='Password of the admin user.'),
     cfg.StrOpt('os_admin_tenant_name',
                default='admin',
-               help='Name of tenant where the user is admin'),
+               help='Name of tenant where the user is admin.'),
     cfg.StrOpt('infrastructure_engine',
                default='savanna',
                help='An engine which will be used to provision '

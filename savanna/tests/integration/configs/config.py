@@ -57,13 +57,13 @@ COMMON_CONFIG_OPTS = [
                help='Port for Savanna.'),
     cfg.StrOpt('SAVANNA_API_VERSION',
                default='v1.1',
-               help='Api version for Savanna.'),
+               help='API version for Savanna.'),
     cfg.StrOpt('FLAVOR_ID',
                default=None,
                help='OpenStack flavor ID for virtual machines. If you leave '
-                    'default value of this parameter then flavor ID will be '
-                    'created automatically, using nova client. Created flavor '
-                    'will have the following parameters: '
+                    'the default value of this parameter, then flavor ID will '
+                    'be created automatically, using nova client. The created '
+                    'flavor will have the following parameters: '
                     'name=i-test-flavor-<id>, ram=1024, vcpus=1, disk=10, '
                     'ephemeral=10. <id> is ID of 8 characters '
                     '(letters and/or digits) which is added to name of flavor '
@@ -90,21 +90,21 @@ COMMON_CONFIG_OPTS = [
     cfg.StrOpt('USER_KEYPAIR_ID',
                default='savanna-i-test-key-pair',
                help='OpenStack key pair ID of your SSH public key. Savanna '
-                    'transfers this key to cluster nodes for access of users '
+                    'transfers this key to cluster nodes for access by users '
                     'to virtual machines of cluster via SSH. You can export '
                     'your id_rsa.pub public key to OpenStack and specify its '
                     'key pair ID in configuration file of tests. If you '
-                    'already have key pair in OpenStack then you just should '
-                    'specify its key pair ID in configuration file of tests. '
-                    'If you have no key pair in OpenStack or you do not want '
-                    'to export (create) key pair then you just should specify '
-                    'any key pair ID which you like (for example, '
-                    '"king-kong") but you have necessarily to leave default '
-                    'value of PATH_TO_SSH_KEY parameter. In this case key pair'
-                    ' will be created automatically. Also to key pair ID will '
-                    'be added little ID (8 characters (letters and/or digits))'
-                    ' for its uniqueness. In the end of tests key pair will '
-                    'be deleted.'),
+                    'already have a key pair in OpenStack, then you just '
+                    'should specify its key pair ID in configuration file of '
+                    'tests. If you have no key pair in OpenStack or you do '
+                    'not want to export (create) key pair then you just '
+                    'should specify any key pair ID which you like (for '
+                    'example, "king-kong") but you have necessarily to leave '
+                    'default value of PATH_TO_SSH_KEY parameter. In this case '
+                    'the key pair will be created automatically. Also to key '
+                    'pair ID will be added little ID (8 characters (letters '
+                    'and/or digits)) for its uniqueness. In the end of tests '
+                    'key pair will be deleted.'),
     cfg.StrOpt('PATH_TO_SSH_KEY',
                default=None,
                help='Path to id_rsa key which is used with tests for remote '
@@ -119,22 +119,22 @@ COMMON_CONFIG_OPTS = [
                help='Pool name for floating IPs. If Savanna uses Nova '
                     'management network and auto assignment of IPs was '
                     'enabled then you should leave default value of this '
-                    'parameter. If auto assignment was not enabled then you '
+                    'parameter. If auto assignment was not enabled, then you '
                     'should specify value (floating IP pool name) of this '
-                    'parameter. If Savanna uses Neutron management network '
+                    'parameter. If Savanna uses Neutron management network, '
                     'then you should always specify value (floating IP pool '
                     'name) of this parameter.'),
     cfg.BoolOpt('NEUTRON_ENABLED',
                 default=False,
-                help='If Savanna uses Nova management network then you should '
-                     'leave default value of this flag. If Savanna uses '
-                     'Neutron management network then you should set this '
-                     'flag to True and specify values of the following '
+                help='If Savanna uses Nova management network, then you '
+                     'should leave default value of this flag. If Savanna '
+                     'uses Neutron management network, then you should set '
+                     'this flag to True and specify values of the following '
                      'parameters: FLOATING_IP_POOL and '
                      'INTERNAL_NEUTRON_NETWORK.'),
     cfg.StrOpt('INTERNAL_NEUTRON_NETWORK',
                default='private',
-               help='Name for internal Neutron network. '),
+               help='Name for internal Neutron network.'),
     cfg.BoolOpt('RETAIN_CLUSTER_AFTER_TEST',
                 default=False,
                 help='If this flag is True, the cluster and related '
@@ -161,13 +161,13 @@ VANILLA_CONFIG_OPTS = [
                help='Name for image which is used for cluster creation. Also '
                     'you can specify image ID or tag of image instead of '
                     'image name. If you do not specify image related '
-                    'parameters then image for cluster creation will be '
+                    'parameters, then the image for cluster creation will be '
                     'chosen by tag "savanna_i_tests".'),
     cfg.StrOpt('IMAGE_TAG',
                default=None,
                help='Tag for image which is used for cluster creation. Also '
                     'you can specify image ID or image name instead of tag of '
-                    'image. If you do not specify image related parameters '
+                    'image. If you do not specify image related parameters, '
                     'then image for cluster creation will be chosen by '
                     'tag "savanna_i_tests".'),
     cfg.StrOpt('SSH_USERNAME',
@@ -209,7 +209,7 @@ VANILLA_CONFIG_OPTS = [
                      'processes.'),
     cfg.BoolOpt('SKIP_ALL_TESTS_FOR_PLUGIN',
                 default=False,
-                help='If this flag is True then all tests for Vanilla plugin '
+                help='If this flag is True, then all tests for Vanilla plugin '
                      'will be skipped.'),
     cfg.BoolOpt('SKIP_CINDER_TEST', default=False),
     cfg.BoolOpt('SKIP_CLUSTER_CONFIG_TEST', default=False),
@@ -229,21 +229,21 @@ HDP_CONFIG_OPTS = [
                default=None,
                help='ID for image which is used for cluster creation. Also '
                     'you can specify image name or tag of image instead of '
-                    'image ID. If you do not specify image related parameters '
-                    'then image for cluster creation will be chosen by '
-                    'tag "savanna_i_tests".'),
+                    'image ID. If you do not specify image related '
+                    'parameters, then image for cluster creation will be '
+                    'chosen by tag "savanna_i_tests".'),
     cfg.StrOpt('IMAGE_NAME',
                default=None,
                help='Name for image which is used for cluster creation. Also '
                     'you can specify image ID or tag of image instead of '
                     'image name. If you do not specify image related '
-                    'parameters then image for cluster creation will be '
+                    'parameters, then image for cluster creation will be '
                     'chosen by tag "savanna_i_tests".'),
     cfg.StrOpt('IMAGE_TAG',
                default=None,
                help='Tag for image which is used for cluster creation. Also '
                     'you can specify image ID or image name instead of tag of '
-                    'image. If you do not specify image related parameters '
+                    'image. If you do not specify image related parameters, '
                     'then image for cluster creation will be chosen by '
                     'tag "savanna_i_tests".'),
     cfg.StrOpt('SSH_USERNAME',
@@ -285,7 +285,7 @@ HDP_CONFIG_OPTS = [
                      'processes.'),
     cfg.BoolOpt('SKIP_ALL_TESTS_FOR_PLUGIN',
                 default=True,
-                help='If this flag is True then all tests for HDP plugin '
+                help='If this flag is True, then all tests for HDP plugin '
                      'will be skipped.'),
     cfg.BoolOpt('SKIP_CINDER_TEST', default=False),
     cfg.BoolOpt('SKIP_MAP_REDUCE_TEST', default=False),
@@ -306,21 +306,21 @@ IDH_CONFIG_OPTS = [
                default=None,
                help='ID for image which is used for cluster creation. Also '
                     'you can specify image name or tag of image instead of '
-                    'image ID. If you do not specify image related parameters '
-                    'then image for cluster creation will be chosen by '
-                    'tag "savanna_i_tests".'),
+                    'image ID. If you do not specify image related '
+                    'parameters, then image for cluster creation will be '
+                    'chosen by tag "savanna_i_tests".'),
     cfg.StrOpt('IMAGE_NAME',
                default=None,
                help='Name for image which is used for cluster creation. Also '
                     'you can specify image ID or tag of image instead of '
                     'image name. If you do not specify image related '
-                    'parameters then image for cluster creation will be '
+                    'parameters, then image for cluster creation will be '
                     'chosen by tag "savanna_i_tests".'),
     cfg.StrOpt('IMAGE_TAG',
                default=None,
                help='Tag for image which is used for cluster creation. Also '
                     'you can specify image ID or image name instead of tag of '
-                    'image. If you do not specify image related parameters '
+                    'image. If you do not specify image related parameters, '
                     'then image for cluster creation will be chosen by '
                     'tag "savanna_i_tests".'),
     cfg.StrOpt('SSH_USERNAME',
@@ -379,7 +379,7 @@ IDH_CONFIG_OPTS = [
 
     cfg.BoolOpt('SKIP_ALL_TESTS_FOR_PLUGIN',
                 default=False,
-                help='If this flag is True then all tests for IDH plugin '
+                help='If this flag is True, then all tests for IDH plugin '
                      'will be skipped.'),
     cfg.BoolOpt('SKIP_MAP_REDUCE_TEST', default=False),
     cfg.BoolOpt('SKIP_SWIFT_TEST', default=True),

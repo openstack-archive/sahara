@@ -39,7 +39,7 @@ opts = [
     cfg.StrOpt('job_workflow_postfix',
                default='',
                help='Postfix for storing jobs in hdfs. Will be '
-                    'added to /user/hadoop/')
+                    'added to /user/hadoop/.')
 ]
 
 CONF = cfg.CONF

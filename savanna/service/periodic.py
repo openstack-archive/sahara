@@ -32,15 +32,15 @@ LOG = log.getLogger(__name__)
 periodic_opts = [
     cfg.BoolOpt('periodic_enable',
                 default=True,
-                help='enable periodic tasks'),
+                help='Enable periodic tasks.'),
     cfg.IntOpt('periodic_fuzzy_delay',
                default=60,
-               help='range of seconds to randomly delay when starting the'
+               help='Range in seconds to randomly delay when starting the'
                     ' periodic task scheduler to reduce stampeding.'
-                    ' (Disable by setting to 0)'),
+                    ' (Disable by setting to 0).'),
     cfg.IntOpt('periodic_interval_max',
                default=60,
-               help='Max interval size between periodic tasks execution in'
+               help='Max interval size between periodic tasks execution in '
                     'seconds'),
 ]
 

@@ -4,15 +4,15 @@
 # Options defined in savanna.config
 #
 
-# Hostname or IP address that will be used to listen on
+# Hostname or IP address that will be used to listen on.
 # (string value)
 #host=
 
-# Port that will be used to listen on (integer value)
+# Port that will be used to listen on. (integer value)
 #port=8386
 
 # Log request/response exchange details: environ, headers and
-# bodies (boolean value)
+# bodies. (boolean value)
 #log_exchange=false
 
 # Maximum length of job binary data in kilobytes that may be
@@ -22,21 +22,21 @@
 # If set to True, Savanna will use floating IPs to communicate
 # with instances. To make sure that all instances have
 # floating IPs assigned in Nova Network set
-# "auto_assign_floating_ip=True" in nova.conf.If Neutron is
-# used for networking, make sure thatall Node Groups have
-# "floating_ip_pool" parameterdefined. (boolean value)
+# "auto_assign_floating_ip=True" in nova.conf. If Neutron is
+# used for networking, make sure that all Node Groups have
+# "floating_ip_pool" parameter defined. (boolean value)
 #use_floating_ips=true
 
-# The suffix of the node's FQDN. In nova-network that is
-# dhcp_domain config parameter (string value)
+# The suffix of the node's FQDN. In nova-network that is the
+# dhcp_domain config parameter. (string value)
 #node_domain=novalocal
 
 # Use Neutron Networking (False indicates the use of Nova
-# networking) (boolean value)
+# networking). (boolean value)
 #use_neutron=false
 
 # Use network namespaces for communication (only valid to use
-# in conjunction with use_neutron=True) (boolean value)
+# in conjunction with use_neutron=True). (boolean value)
 #use_namespaces=false
 
 
@@ -44,26 +44,26 @@
 # Options defined in savanna.main
 #
 
-# Protocol used to access OpenStack Identity service (string
+# Protocol used to access OpenStack Identity service. (string
 # value)
 #os_auth_protocol=http
 
 # IP or hostname of machine on which OpenStack Identity
-# service is located (string value)
+# service is located. (string value)
 #os_auth_host=127.0.0.1
 
-# Port of OpenStack Identity service (string value)
+# Port of OpenStack Identity service. (string value)
 #os_auth_port=5000
 
 # This OpenStack user is used to verify provided tokens. The
-# user must have admin role in <os_admin_tenant_name> tenant
+# user must have admin role in <os_admin_tenant_name> tenant.
 # (string value)
 #os_admin_username=admin
 
-# Password of the admin user (string value)
+# Password of the admin user. (string value)
 #os_admin_password=nova
 
-# Name of tenant where the user is admin (string value)
+# Name of tenant where the user is admin. (string value)
 #os_admin_tenant_name=admin
 
 # An engine which will be used to provision infrastructure for
@@ -79,7 +79,7 @@
 # Options defined in savanna.db.base
 #
 
-# Driver to use for database access (string value)
+# Driver to use for database access. (string value)
 #db_driver=savanna.db
 
 
@@ -235,7 +235,7 @@
 #
 
 # Postfix for storing jobs in hdfs. Will be added to
-# /user/hadoop/ (string value)
+# /user/hadoop/. (string value)
 #job_workflow_postfix=
 
 
@@ -243,16 +243,16 @@
 # Options defined in savanna.service.periodic
 #
 
-# enable periodic tasks (boolean value)
+# Enable periodic tasks. (boolean value)
 #periodic_enable=true
 
-# range of seconds to randomly delay when starting the
+# Range in seconds to randomly delay when starting the
 # periodic task scheduler to reduce stampeding. (Disable by
-# setting to 0) (integer value)
+# setting to 0). (integer value)
 #periodic_fuzzy_delay=60
 
-# Max interval size between periodic tasks execution inseconds
-# (integer value)
+# Max interval size between periodic tasks execution in
+# seconds (integer value)
 #periodic_interval_max=60
 
 
@@ -316,7 +316,8 @@
 # Options defined in savanna.conductor.api
 #
 
-# Perform savanna-conductor operations locally (boolean value)
+# Perform savanna-conductor operations locally. (boolean
+# value)
 #use_local=true
 
 

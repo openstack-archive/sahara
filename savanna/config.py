@@ -21,12 +21,12 @@ from savanna import version
 
 cli_opts = [
     cfg.StrOpt('host', default='',
-               help='Hostname or IP address that will be used to listen on'),
+               help='Hostname or IP address that will be used to listen on.'),
     cfg.IntOpt('port', default=8386,
-               help='Port that will be used to listen on'),
+               help='Port that will be used to listen on.'),
     cfg.BoolOpt('log-exchange', default=False,
                 help='Log request/response exchange details: environ, '
-                     'headers and bodies')
+                     'headers and bodies.')
 ]
 
 edp_opts = [
@@ -42,22 +42,22 @@ networking_opts = [
                 help='If set to True, Savanna will use floating IPs to '
                      'communicate with instances. To make sure that all '
                      'instances have floating IPs assigned in Nova Network '
-                     'set "auto_assign_floating_ip=True" in nova.conf.'
-                     'If Neutron is used for networking, make sure that'
-                     'all Node Groups have "floating_ip_pool" parameter'
+                     'set "auto_assign_floating_ip=True" in nova.conf. '
+                     'If Neutron is used for networking, make sure that '
+                     'all Node Groups have "floating_ip_pool" parameter '
                      'defined.'),
     cfg.StrOpt('node_domain',
                default='novalocal',
                help="The suffix of the node's FQDN. In nova-network that is "
-                    "dhcp_domain config parameter"),
+                    "the dhcp_domain config parameter."),
     cfg.BoolOpt('use_neutron',
                 default=False,
                 help="Use Neutron Networking (False indicates the use of Nova "
-                     "networking)"),
+                     "networking)."),
     cfg.BoolOpt('use_namespaces',
                 default=False,
                 help="Use network namespaces for communication (only valid to "
-                     "use in conjunction with use_neutron=True)")
+                     "use in conjunction with use_neutron=True).")
 ]
 
 
