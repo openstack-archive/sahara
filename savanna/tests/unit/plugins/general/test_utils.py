@@ -15,6 +15,7 @@
 
 import unittest2
 
+from savanna.plugins.general import exceptions as ex
 from savanna.plugins.general import utils as u
 from savanna.tests.unit import testutils as tu
 
@@ -58,6 +59,13 @@ class GeneralUtilsTest(unittest2.TestCase):
         instances = list(self.ng2.instances)
         instances += self.ng3.instances
         self.assertListEqual(u.get_instances(self.c1, 'dn'), instances)
+
+    def test_get_instance(self):
+        self.assertIsNone(u.get_instance(self.c1, 'wrong-process'))
+        self.assertEqual(u.get_instance(self.c1, 'nn'),
+                         self.ng1.instances[0])
+        with self.assertRaises(ex.InvalidComponentCountException):
+            u.get_instance(self.c1, 'dn')
 
     def test_generate_lines_from_list(self):
         self.assertEqual(u.generate_host_names(self.ng2.instances),
