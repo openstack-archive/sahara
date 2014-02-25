@@ -16,6 +16,7 @@
 from six.moves.urllib import parse as urlparse
 
 from savanna.openstack.common import network_utils
+from savanna.plugins.general import exceptions as ex
 
 
 def get_node_groups(cluster, proc_list=list()):
@@ -31,6 +32,9 @@ def get_instances(cluster, proc_list=list()):
 
 def get_instance(cluster, node_process):
     instances = get_instances(cluster, node_process)
+    if len(instances) > 1:
+        raise ex.InvalidComponentCountException(
+            node_process, '0 or 1', len(instances))
     return instances[0] if instances else None
 
 
