@@ -134,14 +134,14 @@ class ITestCase(unittest2.TestCase):
         cluster_template_id = data.id
         return cluster_template_id
 
-    def create_cluster_and_get_info(self, plugin_config, cluster_template_id,
-                                    description, cluster_configs,
-                                    node_groups=None, anti_affinity=None,
-                                    net_id=None, is_transient=False):
+    def create_cluster_and_get_info(self, name, plugin_config,
+                                    cluster_template_id, description,
+                                    cluster_configs, node_groups=None,
+                                    anti_affinity=None, net_id=None,
+                                    is_transient=False):
         self.cluster_id = None
         data = self.sahara.clusters.create(
-            self.common_config.CLUSTER_NAME + '-' + plugin_config.PLUGIN_NAME,
-            plugin_config.PLUGIN_NAME, plugin_config.HADOOP_VERSION,
+            name, plugin_config.PLUGIN_NAME, plugin_config.HADOOP_VERSION,
             cluster_template_id, plugin_config.IMAGE_ID, is_transient,
             description, cluster_configs, node_groups,
             self.common_config.USER_KEYPAIR_ID, anti_affinity, net_id)
