@@ -23,7 +23,6 @@ from savanna import conductor as c
 from savanna import context
 from savanna.openstack.common import log
 from savanna.plugins import base as plugin_base
-from savanna.plugins.general import utils as u
 from savanna.service.edp.binary_retrievers import dispatch
 from savanna.service.edp import hdfs_helper as h
 from savanna.service.edp import oozie as o
@@ -84,6 +83,12 @@ def update_job_statuses():
                           (je.id, e))
 
 
+def _get_hdfs_user(cluster):
+    plugin = plugin_base.PLUGINS.get_plugin(cluster.plugin_name)
+    hdfs_user = plugin.get_hdfs_user()
+    return hdfs_user
+
+
 def _get_oozie_server(cluster):
     plugin = plugin_base.PLUGINS.get_plugin(cluster.plugin_name)
     return plugin.get_oozie_server(cluster)
@@ -133,10 +138,10 @@ def run_job(job_execution):
         if data_source and data_source.type == 'hdfs':
             h.configure_cluster_for_hdfs(cluster, data_source)
 
-    plugin = plugin_base.PLUGINS.get_plugin(cluster.plugin_name)
-    hdfs_user = plugin.get_hdfs_user()
-    wf_dir = create_workflow_dir(u.get_jobtracker(cluster), job, hdfs_user)
-    upload_job_files(u.get_jobtracker(cluster), wf_dir, job, hdfs_user)
+    hdfs_user = _get_hdfs_user(cluster)
+    oozie_server = _get_oozie_server(cluster)
+    wf_dir = create_workflow_dir(oozie_server, job, hdfs_user)
+    upload_job_files(oozie_server, wf_dir, job, hdfs_user)
 
     creator = workflow_factory.get_creator(job)
 
@@ -148,7 +153,7 @@ def run_job(job_execution):
                                       input_source,
                                       output_source)
 
-    path_to_workflow = upload_workflow_file(u.get_jobtracker(cluster),
+    path_to_workflow = upload_workflow_file(oozie_server,
                                             wf_dir, wf_xml, hdfs_user)
 
     rm_path = _get_resource_manager_path(cluster)
