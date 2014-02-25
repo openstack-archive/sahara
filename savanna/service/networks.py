@@ -18,8 +18,11 @@ import six
 
 from savanna import conductor as c
 from savanna import context
+from savanna.openstack.common import log as logging
+from savanna.utils.openstack import neutron
 from savanna.utils.openstack import nova
 
+LOG = logging.getLogger(__name__)
 
 conductor = c.API
 CONF = cfg.CONF
@@ -47,6 +50,21 @@ def init_instances_ips(instance):
 
     if not CONF.use_floating_ips:
         management_ip = internal_ip
+
+    if not management_ip and CONF.use_neutron:
+        neutron_client = neutron.client()
+        target_port = None
+        for port in neutron_client.list_ports()["ports"]:
+            if port["device_id"] == server.id:
+                target_port = port
+                break
+
+        for fl_ip in neutron_client.list_floatingips()['floatingips']:
+            if fl_ip['port_id'] == target_port['id']:
+                management_ip = fl_ip['floating_ip_address']
+                LOG.debug('Found floating IP %s for %s' % (management_ip,
+                                                           server.name))
+                break
 
     conductor.instance_update(context.ctx(), instance,
                               {"management_ip": management_ip,
