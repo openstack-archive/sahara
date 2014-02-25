@@ -9,6 +9,9 @@
 # Tenant name for OpenStack (string value)
 #OS_TENANT_NAME = 'admin'
 
+# Tenant ID for OpenStack (string value)
+#OS_TENANT_ID = <None>
+
 # URL for OpenStack (string value)
 #OS_AUTH_URL = 'http://127.0.0.1:5000/v2.0'
 
@@ -24,7 +27,7 @@
 #SAVANNA_PORT = '8386'
 
 # Api version for Savanna (string value)
-#SAVANNA_API_VERSION = 'v1.1'
+#SAVANNA_API_VERSION = '1.1'
 
 
 # OpenStack flavor ID for virtual machines. If you leave default value of this

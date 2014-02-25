@@ -106,8 +106,7 @@ class EDPTest(base.ITestCase):
     @base.skip_test('SKIP_EDP_TEST',
                     'Test for EDP was skipped.')
     def edp_testing(self, job_type, job_data_list, lib_data_list=None,
-                    configs=None, pass_input_output_args=False,
-                    job_exec_data={}):
+                    configs=None, pass_input_output_args=False):
         try:
             swift = self.connect_to_swift()
             container_name = 'Edp-test-%s' % str(uuid.uuid4())[:8]
@@ -173,8 +172,7 @@ class EDPTest(base.ITestCase):
 
             job_execution = self.savanna.job_executions.create(
                 job_id, self.cluster_id, input_id, output_id,
-                configs=configs,
-                job_exec_data=job_exec_data)
+                configs=configs)
 
             if job_execution:
                 self._await_job_execution(job_execution)

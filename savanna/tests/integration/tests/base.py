@@ -21,7 +21,7 @@ import uuid
 
 from neutronclient.v2_0 import client as neutron_client
 from novaclient.v1_1 import client as nova_client
-import savannaclient.api.client as savanna_client
+import savannaclient.client as savanna_client
 from swiftclient import client as swift_client
 import unittest2
 
@@ -64,14 +64,17 @@ class ITestCase(unittest2.TestCase):
         )
 
         self.savanna = savanna_client.Client(
+            self.common_config.SAVANNA_API_VERSION,
             username=self.common_config.OS_USERNAME,
             api_key=self.common_config.OS_PASSWORD,
             project_name=self.common_config.OS_TENANT_NAME,
             auth_url=self.common_config.OS_AUTH_URL,
-            savanna_url='http://%s:%s/%s' % (
+            savanna_url='http://%s:%s/v%s/%s' % (
                 self.common_config.SAVANNA_HOST,
                 self.common_config.SAVANNA_PORT,
-                self.common_config.SAVANNA_API_VERSION))
+                self.common_config.SAVANNA_API_VERSION,
+                self.common_config.OS_TENANT_ID
+            ))
 
         self.nova = nova_client.Client(
             username=self.common_config.OS_USERNAME,
