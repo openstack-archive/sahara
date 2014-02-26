@@ -18,16 +18,16 @@ from savanna.utils import xmlutils as x
 
 
 CORE_DEFAULT = x.load_hadoop_xml_defaults_with_type_and_locale(
-    'plugins/intel/resources/hadoop-default.xml')
+    'plugins/intel/v2_5_1/resources/hadoop-default.xml')
 
 HDFS_DEFAULT = x.load_hadoop_xml_defaults_with_type_and_locale(
-    'plugins/intel/resources/hdfs-default.xml')
+    'plugins/intel/v2_5_1/resources/hdfs-default.xml')
 
 MAPRED_DEFAULT = x.load_hadoop_xml_defaults_with_type_and_locale(
-    'plugins/intel/resources/mapred-default.xml')
+    'plugins/intel/v2_5_1/resources/mapred-default.xml')
 
 OOZIE_DEFAULT = x.load_hadoop_xml_defaults(
-    'plugins/intel/resources/oozie-default.xml')
+    'plugins/intel/v2_5_1/resources/oozie-default.xml')
 
 
 XML_CONFS = {

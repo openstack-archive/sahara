@@ -14,8 +14,8 @@
 # limitations under the License.
 
 from savanna.plugins.general import exceptions as g_ex
-from savanna.plugins.intel import config_helper as c_helper
 from savanna.plugins.intel import plugin as p
+from savanna.plugins.intel.v2_5_1 import config_helper as c_helper
 from savanna.tests.unit import base
 from savanna.tests.unit.plugins.intel import test_utils as tu
 
@@ -24,7 +24,7 @@ class TestIDHPlugin(base.SavannaWithDbTestCase):
 
     def test_get_configs(self):
         plugin = p.IDHProvider()
-        configs = plugin.get_configs('2.5.0')
+        configs = plugin.get_configs('2.5.1')
 
         self.assertIn(c_helper.IDH_REPO_URL, configs)
         self.assertIn(c_helper.IDH_TARBALL_URL, configs)
@@ -39,26 +39,26 @@ class TestIDHPlugin(base.SavannaWithDbTestCase):
         ng_dn = tu.make_ng_dict('dn', 'f1', ['datanode'], 2)
         ng_tt = tu.make_ng_dict('tt', 'f1', ['tasktracker'], 2)
 
-        cl = tu.create_cluster('cl1', 't1', 'intel', '2.5.0',
+        cl = tu.create_cluster('cl1', 't1', 'intel', '2.5.1',
                                [ng_nn] + [ng_dn])
         self.assertRaises(g_ex.InvalidComponentCountException,
                           plugin.validate, cl)
 
-        cl = tu.create_cluster('cl1', 't1', 'intel', '2.5.0', [ng_mng])
+        cl = tu.create_cluster('cl1', 't1', 'intel', '2.5.1', [ng_mng])
         self.assertRaises(g_ex.InvalidComponentCountException,
                           plugin.validate, cl)
 
-        cl = tu.create_cluster('cl1', 't1', 'intel', '2.5.0',
+        cl = tu.create_cluster('cl1', 't1', 'intel', '2.5.1',
                                [ng_mng] + [ng_nn] * 2)
         self.assertRaises(g_ex.InvalidComponentCountException,
                           plugin.validate, cl)
 
-        cl = tu.create_cluster('cl1', 't1', 'intel', '2.5.0',
+        cl = tu.create_cluster('cl1', 't1', 'intel', '2.5.1',
                                [ng_mng] + [ng_nn] + [ng_tt])
         self.assertRaises(g_ex.RequiredServiceMissingException,
                           plugin.validate, cl)
 
-        cl = tu.create_cluster('cl1', 't1', 'intel', '2.5.0',
+        cl = tu.create_cluster('cl1', 't1', 'intel', '2.5.1',
                                [ng_mng] + [ng_nn] + [ng_jt] * 2 + [ng_tt])
         self.assertRaises(g_ex.InvalidComponentCountException,
                           plugin.validate, cl)

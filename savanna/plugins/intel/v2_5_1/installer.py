@@ -21,9 +21,9 @@ from savanna import conductor
 from savanna import context
 from savanna.openstack.common import log as logging
 from savanna.plugins.general import utils as u
-from savanna.plugins.intel.client import client as c
-from savanna.plugins.intel import config_helper as c_helper
 from savanna.plugins.intel import exceptions as iex
+from savanna.plugins.intel.v2_5_1.client import client as c
+from savanna.plugins.intel.v2_5_1 import config_helper as c_helper
 from savanna.swift import swift_helper as swift
 from savanna.utils import crypto
 

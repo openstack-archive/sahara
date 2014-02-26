@@ -14,7 +14,7 @@
 # limitations under the License.
 
 from savanna import exceptions
-from savanna.plugins.intel.client import context as c
+from savanna.plugins.intel.v2_5_1.client import context as c
 
 
 class BaseParams(c.IntelContext):
