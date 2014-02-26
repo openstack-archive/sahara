@@ -15,7 +15,6 @@
 
 from savanna.plugins.general import exceptions as g_ex
 from savanna.plugins.intel import config_helper as c_helper
-from savanna.plugins.intel import exceptions as i_ex
 from savanna.plugins.intel import plugin as p
 from savanna.tests.unit import base
 from savanna.tests.unit.plugins.intel import test_utils as tu
@@ -42,7 +41,8 @@ class TestIDHPlugin(base.SavannaWithDbTestCase):
 
         cl = tu.create_cluster('cl1', 't1', 'intel', '2.5.0',
                                [ng_nn] + [ng_dn])
-        self.assertRaises(i_ex.NotSingleManagerException, plugin.validate, cl)
+        self.assertRaises(g_ex.InvalidComponentCountException,
+                          plugin.validate, cl)
 
         cl = tu.create_cluster('cl1', 't1', 'intel', '2.5.0', [ng_mng])
         self.assertRaises(g_ex.InvalidComponentCountException,
