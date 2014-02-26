@@ -19,6 +19,7 @@ import mock
 
 from savanna.conductor import manager
 from savanna import context
+from savanna.openstack.common import timeutils
 import savanna.service.periodic as p
 import savanna.tests.unit.base as base
 from savanna.tests.unit.conductor.manager import test_clusters as tc
@@ -61,6 +62,7 @@ class TestPeriodicBack(base.SavannaWithDbTestCase):
         c["status"] = "Active"
         c["id"] = "1"
         c["name"] = "1"
+        c['updated_at'] = timeutils.utcnow()
         self.api.cluster_create(ctx, c)
         c["id"] = "2"
         c["name"] = "2"
