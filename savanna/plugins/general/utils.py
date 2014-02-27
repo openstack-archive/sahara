@@ -19,14 +19,14 @@ from savanna.openstack.common import network_utils
 from savanna.plugins.general import exceptions as ex
 
 
-def get_node_groups(cluster, proc_list=list()):
-    proc_list = [proc_list] if type(proc_list) in [str, unicode] else proc_list
+def get_node_groups(cluster, node_process=None):
     return [ng for ng in cluster.node_groups
-            if set(proc_list).issubset([n.lower() for n in ng.node_processes])]
+            if (node_process is None or
+                node_process in [n.lower() for n in ng.node_processes])]
 
 
-def get_instances(cluster, proc_list=list()):
-    nodes = get_node_groups(cluster, proc_list)
+def get_instances(cluster, node_process=None):
+    nodes = get_node_groups(cluster, node_process)
     return reduce(lambda a, b: a + b.instances, nodes, [])
 
 
