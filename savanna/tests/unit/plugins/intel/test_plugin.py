@@ -17,7 +17,7 @@ from savanna.plugins.general import exceptions as g_ex
 from savanna.plugins.intel import config_helper as c_helper
 from savanna.plugins.intel import plugin as p
 from savanna.tests.unit import base
-from savanna.tests.unit.plugins.intel import test_utils as tu
+from savanna.tests.unit import testutils as tu
 
 
 class TestIDHPlugin(base.SavannaWithDbTestCase):
