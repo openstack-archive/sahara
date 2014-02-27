@@ -38,12 +38,12 @@ def _check_response(fct):
 
 
 class RESTClient():
-    def __init__(self, manager, auth_username, auth_password):
+    def __init__(self, manager, auth_username, auth_password, version):
         #TODO(alazarev) make port configurable (bug #1262895)
         port = '9443'
         self.session = manager.remote().get_http_client(port, max_retries=10)
-        self.base_url = ('https://%s:%s/restapi/intelcloud/api/v1'
-                         % (manager.management_ip, port))
+        self.base_url = ('https://%s:%s/restapi/intelcloud/api/%s'
+                         % (manager.management_ip, port, version))
         LOG.debug("Connecting to manager with URL of %s", self.base_url)
 
         self.auth = auth.HTTPBasicAuth(auth_username, auth_password)

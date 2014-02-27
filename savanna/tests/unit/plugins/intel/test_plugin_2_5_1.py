@@ -20,7 +20,7 @@ from savanna.tests.unit import base
 from savanna.tests.unit import testutils as tu
 
 
-class TestIDHPlugin(base.SavannaWithDbTestCase):
+class TestIDHPlugin251(base.SavannaWithDbTestCase):
 
     def test_get_configs(self):
         plugin = p.IDHProvider()

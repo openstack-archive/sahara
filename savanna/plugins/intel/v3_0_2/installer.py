@@ -22,8 +22,8 @@ from savanna import context
 from savanna.openstack.common import log as logging
 from savanna.plugins.general import utils as u
 from savanna.plugins.intel import exceptions as iex
-from savanna.plugins.intel.v2_5_1 import client as c
-from savanna.plugins.intel.v2_5_1 import config_helper as c_helper
+from savanna.plugins.intel.v3_0_2 import client as c
+from savanna.plugins.intel.v3_0_2 import config_helper as c_helper
 from savanna.swift import swift_helper as swift
 from savanna.utils import crypto
 
@@ -177,10 +177,12 @@ def _configure_services(client, cluster):
     nn_host = u.get_namenode(cluster).fqdn()
     snn = u.get_secondarynamenodes(cluster)
     snn_host = snn[0].fqdn() if snn else None
-    jt_host = u.get_jobtracker(cluster).fqdn() if u.get_jobtracker(
+    rm_host = u.get_resourcemanager(cluster).fqdn() if u.get_resourcemanager(
+        cluster) else None
+    hs_host = u.get_historyserver(cluster).fqdn() if u.get_historyserver(
         cluster) else None
     dn_hosts = [dn.fqdn() for dn in u.get_datanodes(cluster)]
-    tt_hosts = [tt.fqdn() for tt in u.get_tasktrackers(cluster)]
+    nm_hosts = [tt.fqdn() for tt in u.get_nodemanagers(cluster)]
 
     oozie_host = u.get_oozie(cluster).fqdn() if u.get_oozie(
         cluster) else None
@@ -191,8 +193,8 @@ def _configure_services(client, cluster):
     if u.get_namenode(cluster):
         services += ['hdfs']
 
-    if u.get_jobtracker(cluster):
-        services += ['mapred']
+    if u.get_resourcemanager(cluster):
+        services += ['yarn']
 
     if oozie_host:
         services += ['oozie']
@@ -217,9 +219,12 @@ def _configure_services(client, cluster):
     if hive_host:
         client.services.hive.add_nodes('HiveServer', [hive_host])
 
-    if jt_host:
-        client.services.mapred.add_nodes('JobTracker', [jt_host])
-        client.services.mapred.add_nodes('TaskTracker', tt_hosts)
+    if rm_host:
+        client.services.yarn.add_nodes('ResourceManager', [rm_host])
+        client.services.yarn.add_nodes('NodeManager', nm_hosts)
+
+    if hs_host:
+        client.services.yarn.add_nodes('HistoryServer', nm_hosts)
 
 
 def _configure_storage(client, cluster):
@@ -231,8 +236,9 @@ def _configure_storage(client, cluster):
         [st_path + '/dfs/name' for st_path in storage_paths])
     data_dir_param = ",".join(
         [st_path + '/dfs/data' for st_path in storage_paths])
-    client.params.hdfs.update('dfs.name.dir', name_dir_param)
-    client.params.hdfs.update('dfs.data.dir', data_dir_param, nodes=dn_hosts)
+    client.params.hdfs.update('dfs.namenode.name.dir', name_dir_param)
+    client.params.hdfs.update('dfs.datanode.data.dir', data_dir_param,
+                              nodes=dn_hosts)
 
 
 def _configure_swift(client, cluster):
@@ -251,8 +257,8 @@ def _add_user_params(client, cluster):
     for p in six.iteritems(cluster.cluster_configs.get("HDFS", {})):
         client.params.hdfs.update(p[0], p[1])
 
-    for p in six.iteritems(cluster.cluster_configs.get("MapReduce", {})):
-        client.params.mapred.update(p[0], p[1])
+    for p in six.iteritems(cluster.cluster_configs.get("YARN", {})):
+        client.params.yarn.update(p[0], p[1])
 
     for p in six.iteritems(cluster.cluster_configs.get("JobFlow", {})):
         client.params.oozie.update(p[0], p[1])
@@ -310,7 +316,10 @@ def _setup_oozie(cluster):
                      % ext22)
             r.execute_command(
                 "curl -L -o ext-2.2.zip %s && "
-                "sudo unzip ext-2.2.zip -d /var/lib/oozie && "
+                "sudo unzip ext-2.2.zip -d "
+                "/var/lib/oozie/oozie-server/webapps/oozie && "
+                "sudo chown oozie:oozie "
+                "/var/lib/oozie/oozie-server/webapps/oozie -R && "
                 "rm ext-2.2.zip" % ext22)
 
         LOG.info("Oozie: installing oozie share lib")
@@ -321,6 +330,7 @@ def _setup_oozie(cluster):
             "cp /usr/lib/pig/pig-0.11.1-Intel.jar "
             "/tmp/oozielib/share/lib/pig/pig-0.11.1-Intel.jar && "
             "sudo su - -c '"
+            "hadoop fs -mkdir /user/oozie && "
             "hadoop fs -put /tmp/oozielib/share /user/oozie/share' hadoop && "
             "rm -rf /tmp/oozielib")
 
@@ -331,8 +341,8 @@ def start_cluster(cluster):
     LOG.debug("Starting hadoop services")
     client.services.hdfs.start()
 
-    if u.get_jobtracker(cluster):
-        client.services.mapred.start()
+    if u.get_resourcemanager(cluster):
+        client.services.yarn.start()
 
     if u.get_hiveserver(cluster):
         client.services.hive.start()
@@ -347,15 +357,15 @@ def start_cluster(cluster):
 def scale_cluster(cluster, instances):
     scale_ins_hosts = [i.fqdn() for i in instances]
     dn_hosts = [dn.fqdn() for dn in u.get_datanodes(cluster)]
-    tt_hosts = [tt.fqdn() for tt in u.get_tasktrackers(cluster)]
+    nm_hosts = [nm.fqdn() for nm in u.get_nodemanagers(cluster)]
     to_scale_dn = []
-    to_scale_tt = []
+    to_scale_nm = []
     for i in scale_ins_hosts:
         if i in dn_hosts:
             to_scale_dn.append(i)
 
-        if i in tt_hosts:
-            to_scale_tt.append(i)
+        if i in nm_hosts:
+            to_scale_nm.append(i)
 
     client = c.IntelClient(u.get_instance(cluster, 'manager'), cluster.name)
     rack = '/Default'
@@ -363,8 +373,8 @@ def scale_cluster(cluster, instances):
                      '/home/hadoop/.ssh/id_rsa')
     client.cluster.install_software(scale_ins_hosts)
 
-    if to_scale_tt:
-        client.services.mapred.add_nodes('TaskTracker', to_scale_tt)
+    if to_scale_nm:
+        client.services.yarn.add_nodes('NodeManager', to_scale_nm)
 
     if to_scale_dn:
         client.services.hdfs.add_nodes('DataNode', to_scale_dn)
@@ -374,14 +384,14 @@ def scale_cluster(cluster, instances):
     if to_scale_dn:
         client.services.hdfs.start()
 
-    if to_scale_tt:
-        client.services.mapred.start()
+    if to_scale_nm:
+        client.services.yarn.start()
 
 
 def decommission_nodes(cluster, instances):
     dec_hosts = [i.fqdn() for i in instances]
     dn_hosts = [dn.fqdn() for dn in u.get_datanodes(cluster)]
-    tt_hosts = [dn.fqdn() for dn in u.get_tasktrackers(cluster)]
+    nm_hosts = [nm.fqdn() for nm in u.get_nodemanagers(cluster)]
 
     client = c.IntelClient(u.get_instance(cluster, 'manager'), cluster.name)
 
@@ -426,11 +436,11 @@ def decommission_nodes(cluster, instances):
                     instance.remote().execute_command(
                         'sudo rm -f '
                         '/var/run/hadoop/hadoop-hadoop-datanode.pid')
-            if instance.fqdn() in tt_hosts:
+            if instance.fqdn() in nm_hosts:
                 code, out = instance.remote().execute_command(
-                    'sudo /sbin/service hadoop-tasktracker status',
+                    'sudo /sbin/service hadoop-nodemanager status',
                     raise_when_error=False)
-                if out.strip() != 'tasktracker is stopped':
+                if out.strip() != 'nodemanager is stopped':
                     stopped = False
             if stopped:
                 break
