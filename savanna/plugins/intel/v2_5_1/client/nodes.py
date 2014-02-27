@@ -13,9 +13,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from savanna.plugins.intel.client import context as c
-from savanna.plugins.intel.client import session
 from savanna.plugins.intel import exceptions as iex
+from savanna.plugins.intel.v2_5_1.client import context as c
+from savanna.plugins.intel.v2_5_1.client import session
 
 
 class Nodes(c.IntelContext):

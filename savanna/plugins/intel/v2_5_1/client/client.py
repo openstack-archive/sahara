@@ -13,11 +13,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from savanna.plugins.intel.client import cluster
-from savanna.plugins.intel.client import nodes
-from savanna.plugins.intel.client import params
-from savanna.plugins.intel.client import rest as r
-from savanna.plugins.intel.client import services
+from savanna.plugins.intel.v2_5_1.client import cluster
+from savanna.plugins.intel.v2_5_1.client import nodes
+from savanna.plugins.intel.v2_5_1.client import params
+from savanna.plugins.intel.v2_5_1.client import rest as r
+from savanna.plugins.intel.v2_5_1.client import services
 
 
 class IntelClient():
