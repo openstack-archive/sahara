@@ -85,7 +85,7 @@ def scale_cluster(id, data):
         plugin.validate_scaling(cluster, to_be_enlarged, additional)
     except Exception:
         with excutils.save_and_reraise_exception():
-            INFRA.clean_cluster_from_empty_ng(cluster)
+            g.clean_cluster_from_empty_ng(cluster)
             cluster = conductor.cluster_update(ctx, cluster,
                                                {"status": "Active"})
             LOG.info(g.format_cluster_status(cluster))
