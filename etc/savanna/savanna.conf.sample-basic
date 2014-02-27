@@ -109,7 +109,7 @@
 
 # List of plugins to be loaded. Savanna preserves the order of
 # the list when returning it. (list value)
-#plugins=vanilla,hdp
+#plugins=vanilla,hdp,idh
 
 [database]
 #connection=sqlite:////savanna/openstack/common/db/$sqlite_db
