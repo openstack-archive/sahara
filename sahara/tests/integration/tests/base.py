@@ -70,6 +70,7 @@ class ITestCase(unittest2.TestCase):
     def setUp(self):
         self.common_config = cfg.ITConfig().common_config
         self.vanilla_config = cfg.ITConfig().vanilla_config
+        self.vanilla_two_config = cfg.ITConfig().vanilla_two_config
         self.hdp_config = cfg.ITConfig().hdp_config
         self.idh_config = cfg.ITConfig().idh_config
 
