@@ -232,16 +232,20 @@ class HDPGatingTest(cinder.CinderVolumeTest, edp.EDPTest,
 
 #--------------------------------CLUSTER SCALING-------------------------------
 
+        datanode_count_after_resizing = (
+            cluster_info['node_info']['datanode_count']
+            + self.hdp_config.SCALE_EXISTING_NG_COUNT)
         change_list = [
             {
                 'operation': 'resize',
-                'info': ['worker-node-tt-dn', 4]
+                'info': ['worker-node-tt-dn', datanode_count_after_resizing]
             },
             {
                 'operation': 'add',
                 'info': [
-                    'new-worker-node-tt-dn', 1, '%s'
-                                                % node_group_template_tt_dn_id
+                    'new-worker-node-tt-dn',
+                    self.hdp_config.SCALE_NEW_NG_COUNT,
+                    '%s' % node_group_template_tt_dn_id
                 ]
             }
         ]
