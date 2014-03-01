@@ -49,9 +49,6 @@ class VanillaProvider(p.ProvisioningPluginBase):
     def get_configs(self, hadoop_version):
         return self._get_version_handler(hadoop_version).get_plugin_configs()
 
-    def get_hive_config_path(self):
-        return '/opt/hive/conf/hive-site.xml'
-
     def configure_cluster(self, cluster):
         return self._get_version_handler(
             cluster.hadoop_version).configure_cluster(cluster)

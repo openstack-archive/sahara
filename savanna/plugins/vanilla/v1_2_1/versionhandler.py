@@ -28,6 +28,7 @@ from savanna.plugins.vanilla.v1_2_1 import config_helper as c_helper
 from savanna.plugins.vanilla.v1_2_1 import run_scripts as run
 from savanna.plugins.vanilla.v1_2_1 import scaling as sc
 from savanna.topology import topology_helper as th
+from savanna.utils import edp
 from savanna.utils import files as f
 from savanna.utils import general as g
 from savanna.utils import remote
@@ -136,16 +137,18 @@ class VersionHandler(avm.AbstractVersionHandler):
 
         hive_server = utils.get_hiveserver(cluster)
         if hive_server:
-            with remote.get_remote(nn_instance) as r:
+            with remote.get_remote(hive_server) as r:
                 run.hive_create_warehouse_dir(r)
-            if c_helper.is_mysql_enable(cluster):
-                with remote.get_remote(hive_server) as h:
+                run.hive_copy_shared_conf(
+                    r, edp.get_hive_shared_conf_path('hadoop'))
+
+                if c_helper.is_mysql_enable(cluster):
                     if not oozie or hive_server.hostname() != oozie.hostname():
-                        run.mysql_start(h, hive_server)
-                    run.hive_create_db(h)
-                    run.hive_metastore_start(h)
-                LOG.info("Hive Metastore server at %s has been started",
-                         hive_server.hostname())
+                        run.mysql_start(r, hive_server)
+                    run.hive_create_db(r)
+                    run.hive_metastore_start(r)
+                    LOG.info("Hive Metastore server at %s has been started",
+                             hive_server.hostname())
 
         LOG.info('Cluster %s has been started successfully' % cluster.name)
         self._set_cluster_info(cluster)

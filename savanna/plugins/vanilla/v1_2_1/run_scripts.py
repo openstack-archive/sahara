@@ -30,14 +30,21 @@ def refresh_nodes(remote, service):
                            % service)
 
 
-def format_namenode(nn_remote):
-    nn_remote.execute_command("sudo su -c 'hadoop namenode -format' hadoop")
+def format_namenode(remote):
+    remote.execute_command("sudo su -c 'hadoop namenode -format' hadoop")
 
 
-def hive_create_warehouse_dir(nn_remote):
+def hive_create_warehouse_dir(remote):
     LOG.debug("Creating Hive warehouse dir")
-    nn_remote.execute_command("sudo su - -c 'hadoop fs -mkdir "
-                              "/user/hive/warehouse' hadoop")
+    remote.execute_command("sudo su - -c 'hadoop fs -mkdir "
+                           "/user/hive/warehouse' hadoop")
+
+
+def hive_copy_shared_conf(remote, dest):
+    LOG.debug("Copying shared Hive conf")
+    remote.execute_command(
+        "sudo su - -c 'hadoop fs -put /opt/hive/conf/hive-site.xml "
+        "%s' hadoop" % dest)
 
 
 def oozie_share_lib(remote, nn_hostname):

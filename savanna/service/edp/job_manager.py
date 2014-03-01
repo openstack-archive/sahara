@@ -145,13 +145,8 @@ def run_job(job_execution):
 
     creator = workflow_factory.get_creator(job)
 
-    # Do other job type specific setup here, for example
-    # uploading hive configuration
-    creator.configure_workflow_if_needed(cluster, wf_dir)
-
-    wf_xml = creator.get_workflow_xml(job_execution,
-                                      input_source,
-                                      output_source)
+    wf_xml = creator.get_workflow_xml(cluster, job_execution,
+                                      input_source, output_source)
 
     path_to_workflow = upload_workflow_file(oozie_server,
                                             wf_dir, wf_xml, hdfs_user)
