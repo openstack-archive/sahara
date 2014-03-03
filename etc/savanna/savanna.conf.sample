@@ -293,7 +293,7 @@
 # Enables Savanna to use Keystone API v3. If that flag is
 # disabled, per-job clusters will not be terminated
 # automatically. (boolean value)
-#use_identity_api_v3=false
+#use_identity_api_v3=true
 
 
 #
