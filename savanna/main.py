@@ -67,7 +67,7 @@ opts = [
                default='admin',
                help='Name of tenant where the user is admin.'),
     cfg.StrOpt('infrastructure_engine',
-               default='savanna',
+               default='direct',
                help='An engine which will be used to provision '
                     'infrastructure for Hadoop cluster.'),
     cfg.StrOpt('remote',
