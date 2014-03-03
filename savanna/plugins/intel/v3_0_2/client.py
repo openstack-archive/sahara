@@ -13,21 +13,21 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from savanna.plugins.intel.v2_5_1.client import cluster
-from savanna.plugins.intel.v2_5_1.client import nodes
-from savanna.plugins.intel.v2_5_1.client import params
-from savanna.plugins.intel.v2_5_1.client import rest as r
-from savanna.plugins.intel.v2_5_1.client import services
+from savanna.plugins.intel.client import cluster
+from savanna.plugins.intel.client import nodes
+from savanna.plugins.intel.client import params
+from savanna.plugins.intel.client import rest as r
+from savanna.plugins.intel.client import services
 
 
 class IntelClient():
     def __init__(self, manager, cluster_name):
         #TODO(alazarev) make credentials configurable (bug #1262881)
-        self.rest = r.RESTClient(manager, 'admin', 'admin')
+        self.rest = r.RESTClient(manager, 'admin', 'admin', 'v2')
         self.cluster_name = cluster_name
         self._ctx = self
 
         self.cluster = cluster.Cluster(self)
         self.nodes = nodes.Nodes(self)
-        self.params = params.Params(self)
-        self.services = services.Services(self)
+        self.params = params.Params(self, True)
+        self.services = services.Services(self, True)

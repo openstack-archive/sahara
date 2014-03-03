@@ -15,9 +15,9 @@
 
 from savanna import context
 from savanna.openstack.common import log as logging
+from savanna.plugins.intel.client import context as c
+from savanna.plugins.intel.client import session
 from savanna.plugins.intel import exceptions as iex
-from savanna.plugins.intel.v2_5_1.client import context as c
-from savanna.plugins.intel.v2_5_1.client import session
 
 
 LOG = logging.getLogger(__name__)
@@ -113,10 +113,13 @@ class HDFSService(BaseService):
 
 
 class Services(c.IntelContext):
-    def __init__(self, ctx):
+    def __init__(self, ctx, is_yarn_supported):
         super(Services, self).__init__(ctx)
         self.hdfs = HDFSService(self, 'hdfs')
-        self.mapred = BaseService(self, 'mapred')
+        if is_yarn_supported:
+            self.yarn = BaseService(self, 'yarn')
+        else:
+            self.mapred = BaseService(self, 'mapred')
         self.hive = BaseService(self, 'hive')
         self.oozie = BaseService(self, 'oozie')
 

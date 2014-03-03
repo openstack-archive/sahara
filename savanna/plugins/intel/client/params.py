@@ -14,7 +14,7 @@
 # limitations under the License.
 
 from savanna import exceptions
-from savanna.plugins.intel.v2_5_1.client import context as c
+from savanna.plugins.intel.client import context as c
 
 
 class BaseParams(c.IntelContext):
@@ -68,9 +68,12 @@ class BaseParams(c.IntelContext):
 
 
 class Params(c.IntelContext):
-    def __init__(self, ctx):
+    def __init__(self, ctx, is_yarn_supported):
         super(Params, self).__init__(ctx)
         self.hadoop = BaseParams(self, 'hadoop')
         self.hdfs = BaseParams(self, 'hdfs')
-        self.mapred = BaseParams(self, 'mapred')
+        if is_yarn_supported:
+            self.yarn = BaseParams(self, 'yarn')
+        else:
+            self.mapred = BaseParams(self, 'mapred')
         self.oozie = BaseParams(self, 'oozie')

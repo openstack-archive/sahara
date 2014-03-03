@@ -79,6 +79,10 @@ def get_secondarynamenodes(cluster):
     return get_instances(cluster, 'secondarynamenode')
 
 
+def get_historyserver(cluster):
+    return get_instance(cluster, 'historyserver')
+
+
 def generate_host_names(nodes):
     return "\n".join([n.hostname() for n in nodes])
 

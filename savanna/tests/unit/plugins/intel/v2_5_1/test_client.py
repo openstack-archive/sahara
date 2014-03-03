@@ -18,9 +18,9 @@ from requests import sessions
 
 from savanna import exceptions as ex
 from savanna.plugins.intel import exceptions as iex
-from savanna.plugins.intel.v2_5_1.client import client as c
+from savanna.plugins.intel.v2_5_1 import client as c
 from savanna.tests.unit import base
-from savanna.tests.unit.plugins.intel.v2_5_1.client import response as r
+from savanna.tests.unit.plugins.intel.v2_5_1 import response as r
 
 
 SESSION_POST_DATA = {'sessionID': '123'}
