@@ -46,9 +46,17 @@ def get_namenode(cluster):
 def get_jobtracker(cluster):
     instance = get_instance(cluster, "jobtracker")
     if not instance:
-        instance = get_instance(cluster, "resourcemanager")
+        instance = get_resourcemanager(cluster)
 
     return instance
+
+
+def get_resourcemanager(cluster):
+    return get_instance(cluster, 'resourcemanager')
+
+
+def get_nodemanagers(cluster):
+    return get_instances(cluster, 'nodemanager')
 
 
 def get_oozie(cluster):
