@@ -90,17 +90,25 @@ def check_node_group_template_create(data, **kwargs):
 
 
 def check_node_group_template_usage(node_group_template_id, **kwargs):
-    node_groups = []
+    cluster_users = []
+    template_users = []
 
     for cluster in api.get_clusters():
-        node_groups += cluster.node_groups
+        if (node_group_template_id in
+            [node_group.node_group_template_id
+             for node_group in cluster.node_groups]):
+            cluster_users += [cluster.name]
 
     for cluster_template in api.get_cluster_templates():
-        node_groups += cluster_template.node_groups
+        if (node_group_template_id in
+            [node_group.node_group_template_id
+             for node_group in cluster_template.node_groups]):
+            template_users += [cluster_template.name]
 
-    node_group_template_ids = set([node_group.node_group_template_id
-                                   for node_group in node_groups])
-
-    if node_group_template_id in node_group_template_ids:
+    if cluster_users or template_users:
         raise ex.InvalidException(
-            "Node group template %s in use" % node_group_template_id)
+            "Node group template %s is in use by "
+            "cluster templates: %s; and clusters: %s" %
+            (node_group_template_id,
+             template_users and ', '.join(template_users) or 'N/A',
+             cluster_users and ', '.join(cluster_users) or 'N/A'))
