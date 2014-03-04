@@ -18,6 +18,7 @@ import six
 from savanna.openstack.common import log as logging
 from savanna.plugins.general import utils
 from savanna.plugins.vanilla.v2_3_0 import config_helper as c_helper
+from savanna.swift import swift_helper as swift
 from savanna.utils import files as f
 from savanna.utils import xmlutils as x
 
@@ -72,6 +73,14 @@ def _get_hadoop_configs(node_group):
             'mapreduce.framework.name': 'yarn'
         },
     }
+
+    if c_helper.get_config_value(c_helper.ENABLE_SWIFT.applicable_target,
+                                 c_helper.ENABLE_SWIFT.name, cluster):
+        swift_configs = {}
+        for config in swift.get_swift_configs():
+            swift_configs[config['name']] = config['value']
+
+        confs['HDFS'].update(swift_configs)
 
     return confs, c_helper.get_env_configs()
 
@@ -150,6 +159,9 @@ def _push_xml_configs(node_group, configs):
     }
     xml_confs = {}
     for service, confs in six.iteritems(xmls):
+        if service not in service_to_conf_map.keys():
+            continue
+
         xml_confs[service_to_conf_map[service]] = confs
 
     for instance in node_group.instances:
