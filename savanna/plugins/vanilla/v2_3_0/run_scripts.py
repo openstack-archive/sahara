@@ -13,6 +13,19 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from savanna.plugins.general import utils as u
+
+
+def start_instance(instance):
+    processes = instance.node_group.node_processes
+    for process in processes:
+        if process in ['namenode', 'datanode']:
+            start_hadoop_process(instance, process)
+        elif process in ['resourcemanager', 'nodemanager']:
+            start_yarn_process(instance, process)
+        else:
+            raise RuntimeError("Process is not supported")
+
 
 def start_hadoop_process(instance, process):
     instance.remote().execute_command(
@@ -27,3 +40,15 @@ def start_yarn_process(instance, process):
 def format_namenode(instance):
     instance.remote().execute_command(
         'sudo su - -c "hdfs namenode -format" hadoop')
+
+
+def refresh_hadoop_nodes(cluster):
+    nn = u.get_namenode(cluster)
+    nn.remote().execute_command(
+        'sudo su - -c "hdfs dfsadmin -refreshNodes" hadoop')
+
+
+def refresh_yarn_nodes(cluster):
+    rm = u.get_resourcemanager(cluster)
+    rm.remote().execute_command(
+        'sudo su - -c "yarn rmadmin -refreshNodes" hadoop')

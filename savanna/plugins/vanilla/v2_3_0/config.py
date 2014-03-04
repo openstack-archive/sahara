@@ -31,15 +31,24 @@ HADOOP_GROUP = 'hadoop'
 
 def configure_cluster(cluster):
     LOG.debug("Configuring cluster \"%s\"", cluster.name)
+    instances = []
     for node_group in cluster.node_groups:
-        _provisioning_configs(node_group)
-        _post_configuration(node_group)
+        for instance in node_group.instances:
+            instances.append(instance)
+
+    configure_instances(instances)
 
 
-def _provisioning_configs(node_group):
-    xmls, env = _generate_configs(node_group)
-    _push_xml_configs(node_group, xmls)
-    _push_env_configs(node_group, env)
+def configure_instances(instances):
+    for instance in instances:
+        _provisioning_configs(instance)
+        _post_configuration(instance)
+
+
+def _provisioning_configs(instance):
+    xmls, env = _generate_configs(instance.node_group)
+    _push_xml_configs(instance, xmls)
+    _push_env_configs(instance, env)
 
 
 def _generate_configs(node_group):
@@ -63,11 +72,17 @@ def _get_hadoop_configs(node_group):
         },
         'HDFS': {
             'dfs.namenode.name.dir': ','.join(dirs['hadoop_name_dirs']),
-            'dfs.namenode.data.dir': ','.join(dirs['hadoop_data_dirs'])
+            'dfs.namenode.data.dir': ','.join(dirs['hadoop_data_dirs']),
+            'dfs.hosts': '%s/dn-include' % HADOOP_CONF_DIR,
+            'dfs.hosts.exclude': '%s/dn-exclude' % HADOOP_CONF_DIR
         },
         'YARN': {
             'yarn.nodemanager.aux-services': 'mapreduce_shuffle',
-            'yarn.resourcemanager.hostname': '%s' % res_hostname
+            'yarn.resourcemanager.hostname': '%s' % res_hostname,
+            'yarn.resourcemanager.nodes.include-path': '%s/nm-include' % (
+                HADOOP_CONF_DIR),
+            'yarn.resourcemanager.nodes.exclude-path': '%s/nm-exclude' % (
+                HADOOP_CONF_DIR)
         },
         'MapReduce': {
             'mapreduce.framework.name': 'yarn'
@@ -123,33 +138,32 @@ def _generate_xml(configs):
     return xml_confs
 
 
-def _push_env_configs(node_group, configs):
+def _push_env_configs(instance, configs):
     nn_heap = configs['HDFS']['NameNode Heap Size']
     dn_heap = configs['HDFS']['DataNode Heap Size']
     rm_heap = configs['YARN']['ResourceManager Heap Size']
     nm_heap = configs['YARN']['NodeManager Heap Size']
 
-    for instance in node_group.instances:
-        with instance.remote() as r:
-            r.replace_remote_string(
-                '%s/hadoop-env.sh' % HADOOP_CONF_DIR,
-                'export HADOOP_NAMENODE_OPTS=.*',
-                'export HADOOP_NAMENODE_OPTS="-Xmx%dm"' % nn_heap)
-            r.replace_remote_string(
-                '%s/hadoop-env.sh' % HADOOP_CONF_DIR,
-                'export HADOOP_DATANODE_OPTS=.*',
-                'export HADOOP_DATANODE_OPTS="-Xmx%dm"' % dn_heap)
-            r.replace_remote_string(
-                '%s/yarn-env.sh' % HADOOP_CONF_DIR,
-                '\\#export YARN_RESOURCEMANAGER_HEAPSIZE=.*',
-                'export YARN_RESOURCEMANAGER_HEAPSIZE=%d' % rm_heap)
-            r.replace_remote_string(
-                '%s/yarn-env.sh' % HADOOP_CONF_DIR,
-                '\\#export YARN_NODEMANAGER_HEAPSIZE=.*',
-                'export YARN_NODEMANAGER_HEAPSIZE=%d' % nm_heap)
+    with instance.remote() as r:
+        r.replace_remote_string(
+            '%s/hadoop-env.sh' % HADOOP_CONF_DIR,
+            'export HADOOP_NAMENODE_OPTS=.*',
+            'export HADOOP_NAMENODE_OPTS="-Xmx%dm"' % nn_heap)
+        r.replace_remote_string(
+            '%s/hadoop-env.sh' % HADOOP_CONF_DIR,
+            'export HADOOP_DATANODE_OPTS=.*',
+            'export HADOOP_DATANODE_OPTS="-Xmx%dm"' % dn_heap)
+        r.replace_remote_string(
+            '%s/yarn-env.sh' % HADOOP_CONF_DIR,
+            '\\#export YARN_RESOURCEMANAGER_HEAPSIZE=.*',
+            'export YARN_RESOURCEMANAGER_HEAPSIZE=%d' % rm_heap)
+        r.replace_remote_string(
+            '%s/yarn-env.sh' % HADOOP_CONF_DIR,
+            '\\#export YARN_NODEMANAGER_HEAPSIZE=.*',
+            'export YARN_NODEMANAGER_HEAPSIZE=%d' % nm_heap)
 
 
-def _push_xml_configs(node_group, configs):
+def _push_xml_configs(instance, configs):
     xmls = _generate_xml(configs)
     service_to_conf_map = {
         'Hadoop': '%s/core-site.xml' % HADOOP_CONF_DIR,
@@ -164,8 +178,7 @@ def _push_xml_configs(node_group, configs):
 
         xml_confs[service_to_conf_map[service]] = confs
 
-    for instance in node_group.instances:
-        _push_configs_to_instance(instance, xml_confs)
+    _push_configs_to_instance(instance, xml_confs)
 
 
 def _push_configs_to_instance(instance, configs):
@@ -175,7 +188,8 @@ def _push_configs_to_instance(instance, configs):
             r.write_file_to(fl, data, run_as_root=True)
 
 
-def _post_configuration(node_group):
+def _post_configuration(instance):
+    node_group = instance.node_group
     dirs = _get_hadoop_dirs(node_group)
     args = {
         'hadoop_user': HADOOP_USER,
@@ -191,11 +205,10 @@ def _post_configuration(node_group):
         'plugins/vanilla/v2_3_0/resources/post_conf.template')
     post_conf_script = post_conf_script.format(**args)
 
-    for instance in node_group.instances:
-        with instance.remote() as r:
-            r.write_file_to('/tmp/post_conf.sh', post_conf_script)
-            r.execute_command('chmod +x /tmp/post_conf.sh')
-            r.execute_command('sudo /tmp/post_conf.sh')
+    with instance.remote() as r:
+        r.write_file_to('/tmp/post_conf.sh', post_conf_script)
+        r.execute_command('chmod +x /tmp/post_conf.sh')
+        r.execute_command('sudo /tmp/post_conf.sh')
 
 
 def _get_hadoop_dirs(node_group):

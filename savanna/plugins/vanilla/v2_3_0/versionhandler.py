@@ -23,6 +23,7 @@ from savanna.plugins.vanilla import abstractversionhandler as avm
 from savanna.plugins.vanilla.v2_3_0 import config as c
 from savanna.plugins.vanilla.v2_3_0 import config_helper as c_helper
 from savanna.plugins.vanilla.v2_3_0 import run_scripts as run
+from savanna.plugins.vanilla.v2_3_0 import scaling as sc
 
 conductor = conductor.API
 LOG = logging.getLogger(__name__)
@@ -67,13 +68,13 @@ class VersionHandler(avm.AbstractVersionHandler):
         self._set_cluster_info(cluster)
 
     def decommission_nodes(self, cluster, instances):
-        pass
+        sc.decommission_nodes(cluster, instances)
 
     def validate_scaling(self, cluster, existing, additional):
         pass
 
     def scale_cluster(self, cluster, instances):
-        pass
+        sc.scale_cluster(cluster, instances)
 
     def _set_cluster_info(self, cluster):
         nn = utils.get_namenode(cluster)
