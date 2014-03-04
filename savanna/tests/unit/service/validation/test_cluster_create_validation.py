@@ -16,6 +16,7 @@
 import mock
 
 from savanna import exceptions
+from savanna import main
 from savanna.service import api
 from savanna.service.validations import clusters as c
 from savanna.tests.unit import base
@@ -88,6 +89,21 @@ class TestClusterCreateValidation(u.ValidationTestCase):
             data=data,
             bad_req_i=(1, 'NAME_ALREADY_EXISTS',
                        "Cluster with name 'test' already exists")
+        )
+
+    def test_cluster_create_with_heat_stack_exists(self):
+        main.CONF.set_override('infrastructure_engine', 'heat')
+        self.addCleanup(main.CONF.clear_override, 'infrastructure_engine')
+        data = {
+            'name': 'test-heat',
+            'plugin_name': 'vanilla',
+            'hadoop_version': '1.2.1'
+        }
+        self._assert_create_object_validation(
+            data=data,
+            bad_req_i=(1, 'NAME_ALREADY_EXISTS',
+                       "Cluster name 'test-heat' is already "
+                       "used as Heat stack name")
         )
 
     def test_cluster_create_v_keypair_exists(self):

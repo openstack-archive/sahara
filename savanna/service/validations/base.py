@@ -21,6 +21,7 @@ from savanna import context
 import savanna.exceptions as ex
 import savanna.plugins.base as plugin_base
 import savanna.service.api as api
+import savanna.utils.openstack.heat as heat
 import savanna.utils.openstack.keystone as keystone
 import savanna.utils.openstack.nova as nova
 
@@ -164,6 +165,16 @@ def check_cluster_unique_name(name):
     if name in [cluster.name for cluster in api.get_clusters()]:
         raise ex.NameAlreadyExistsException("Cluster with name '%s' already"
                                             " exists" % name)
+    check_heat_stack_name(name)
+
+
+def check_heat_stack_name(cluster_name):
+    if CONF.infrastructure_engine == 'heat':
+        for stack in heat.client().stacks.list():
+            if stack.stack_name == cluster_name:
+                raise ex.NameAlreadyExistsException(
+                    "Cluster name '%s' is already used as Heat stack name"
+                    % cluster_name)
 
 
 def check_cluster_exists(id):
