@@ -22,6 +22,7 @@ from savanna import context
 from savanna.openstack.common import log
 from savanna.openstack.common import periodic_task
 from savanna.openstack.common import threadgroup
+from savanna.openstack.common import timeutils
 from savanna.service import api
 from savanna.service.edp import job_manager
 from savanna.service import trusts
@@ -42,6 +43,11 @@ periodic_opts = [
                default=60,
                help='Max interval size between periodic tasks execution in '
                     'seconds'),
+    cfg.IntOpt('min_transient_cluster_active_time',
+               default=0,
+               help='Minimal "lifetime" in seconds for a transient cluster. '
+                    'Cluster is guarantied to be "alive" within this time '
+                    'period.'),
 ]
 
 CONF = cfg.CONF
@@ -76,6 +82,14 @@ class SavannaPeriodicTasks(periodic_task.PeriodicTasks):
 
             if jc > 0:
                 continue
+
+            cluster_updated_at = timeutils.normalize_time(
+                timeutils.parse_isotime(cluster.updated_at))
+            current_time = timeutils.utcnow()
+            spacing = timeutils.delta_seconds(cluster_updated_at, current_time)
+            if spacing < CONF.min_transient_cluster_active_time:
+                continue
+
             if CONF.use_identity_api_v3:
                 trusts.use_os_admin_auth_token(cluster)
                 api.terminate_cluster(cluster.id)
