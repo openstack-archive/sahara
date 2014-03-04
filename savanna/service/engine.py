@@ -16,6 +16,7 @@
 
 import abc
 import datetime
+import string
 
 import six
 
@@ -123,26 +124,26 @@ class Engine:
 
             r.execute_command('sudo usermod -s /bin/bash $USER')
 
-    def _generate_user_data_script(self, node_group):
-        script_template = """#!/bin/bash
-echo "%(public_key)s" >> %(user_home)s/.ssh/authorized_keys
+    def _generate_user_data_script(self, node_group, instance_name):
+        script = """#!/bin/bash
+echo "${public_key}" >> ${user_home}/.ssh/authorized_keys\n
 """
 
-        script_template += remote.get_userdata_template()
+        script += remote.get_userdata_template()
 
-        username = self.get_node_group_image_username(node_group)
+        username = node_group.image_username
 
         if username == "root":
             user_home = "/root/"
         else:
             user_home = "/home/%s/" % username
 
-        cluster = node_group.cluster
+        script_template = string.Template(script)
 
-        return script_template % {
-            "public_key": cluster.management_public_key,
-            "user_home": user_home
-        }
+        return script_template.safe_substitute(
+            public_key=node_group.cluster.management_public_key,
+            user_home=user_home,
+            instance_name=instance_name)
 
     def _clean_job_executions(self, cluster):
         ctx = context.ctx()

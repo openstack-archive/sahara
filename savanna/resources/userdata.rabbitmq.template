@@ -1,0 +1,10 @@
+# Assume that the agent is pre-intalled on the image
+
+cat > /etc/guestagent.conf <<EOF
+[DEFAULT]
+rabbit_host=${rpc_server_host}
+server_id=${instance_name}
+debug=true
+EOF
+
+su -lc "nohup savanna-agent --config-file /etc/guestagent.conf > ~/savanna-agent.log 2>&1 &" ${user_name}

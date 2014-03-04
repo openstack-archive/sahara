@@ -84,10 +84,11 @@ class ClusterTemplate(object):
         self.cluster = cluster
         self.node_groups_extra = {}
 
-    def add_node_group_extra(self, node_group_id, node_count, userdata):
+    def add_node_group_extra(self, node_group_id, node_count,
+                             gen_userdata_func):
         self.node_groups_extra[node_group_id] = {
             'node_count': node_count,
-            'userdata': userdata
+            'gen_userdata_func': gen_userdata_func
         }
 
     # Consider using a single Jinja template for all this
@@ -155,13 +156,15 @@ class ClusterTemplate(object):
         if self.cluster.user_keypair_id:
             key_name = '"key_name" : "%s",' % self.cluster.user_keypair_id
 
+        gen_userdata_func = self.node_groups_extra[ng.id]['gen_userdata_func']
+        userdata = gen_userdata_func(ng, inst_name)
+
         fields = {'instance_name': inst_name,
                   'flavor_id': ng.flavor_id,
                   'image_id': ng.get_image_id(),
                   'network_interfaces': nets,
                   'key_name': key_name,
-                  'userdata': _prepare_userdata(
-                      self.node_groups_extra[ng.id]['userdata']),
+                  'userdata': _prepare_userdata(userdata),
                   'scheduler_hints': _get_anti_affinity_scheduler_hints(
                       aa_names)}
 
