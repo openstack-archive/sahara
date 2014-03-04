@@ -45,3 +45,7 @@ def compare_job_type(job_type, *args, **kwargs):
 
     jtype, jsubtype = split_job_type(job_type)
     return jtype in args
+
+
+def get_hive_shared_conf_path(hdfs_user):
+    return "/user/%s/conf/hive-site.xml" % hdfs_user

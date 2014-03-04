@@ -18,14 +18,11 @@ import six
 from savanna import conductor as c
 from savanna import context
 from savanna.plugins import base as plugin_base
-from savanna.plugins.general import utils as u
-from savanna.service.edp import hdfs_helper as h
 from savanna.service.edp.workflow_creator import hive_workflow
 from savanna.service.edp.workflow_creator import java_workflow
 from savanna.service.edp.workflow_creator import mapreduce_workflow
 from savanna.service.edp.workflow_creator import pig_workflow
 from savanna.utils import edp
-from savanna.utils import remote
 from savanna.utils import xmlutils
 
 
@@ -36,9 +33,6 @@ swift_password = 'fs.swift.service.savanna.password'
 
 
 class BaseFactory(object):
-    def configure_workflow_if_needed(self, *args, **kwargs):
-        pass
-
     def _separate_edp_configs(self, job_dict):
         configs = {}
         edp_configs = {}
@@ -110,7 +104,7 @@ class PigFactory(BaseFactory):
     def get_script_name(self, job):
         return conductor.job_main_name(context.ctx(), job)
 
-    def get_workflow_xml(self, execution, input_data, output_data):
+    def get_workflow_xml(self, cluster, execution, input_data, output_data):
         job_dict = {'configs': self.get_configs(input_data, output_data),
                     'params': self.get_params(input_data, output_data),
                     'args': []}
@@ -128,28 +122,23 @@ class HiveFactory(BaseFactory):
         super(HiveFactory, self).__init__()
 
         self.name = self.get_script_name(job)
-        self.job_xml = "hive-site.xml"
 
     def get_script_name(self, job):
         return conductor.job_main_name(context.ctx(), job)
 
-    def get_workflow_xml(self, execution, input_data, output_data):
+    def get_workflow_xml(self, cluster, execution, input_data, output_data):
         job_dict = {'configs': self.get_configs(input_data, output_data),
                     'params': self.get_params(input_data, output_data)}
         self.update_job_dict(job_dict, execution.job_configs)
+
+        plugin = plugin_base.PLUGINS.get_plugin(cluster.plugin_name)
+        hdfs_user = plugin.get_hdfs_user()
         creator = hive_workflow.HiveWorkflowCreator()
         creator.build_workflow_xml(self.name,
-                                   self.job_xml,
+                                   edp.get_hive_shared_conf_path(hdfs_user),
                                    configuration=job_dict['configs'],
                                    params=job_dict['params'])
         return creator.get_built_workflow_xml()
-
-    def configure_workflow_if_needed(self, cluster, wf_dir):
-        h_s = u.get_hiveserver(cluster)
-        plugin = plugin_base.PLUGINS.get_plugin(cluster.plugin_name)
-        hdfs_user = plugin.get_hdfs_user()
-        h.copy_from_local(remote.get_remote(h_s),
-                          plugin.get_hive_config_path(), wf_dir, hdfs_user)
 
 
 class MapReduceFactory(BaseFactory):
@@ -166,7 +155,7 @@ class MapReduceFactory(BaseFactory):
         return dict((k[len(prefix):], v) for (k, v) in six.iteritems(
             job_dict['edp_configs']) if k.startswith(prefix))
 
-    def get_workflow_xml(self, execution, input_data, output_data):
+    def get_workflow_xml(self, cluster, execution, input_data, output_data):
         job_dict = {'configs': self.get_configs(input_data, output_data)}
         self.update_job_dict(job_dict, execution.job_configs)
         creator = mapreduce_workflow.MapReduceWorkFlowCreator()
@@ -182,7 +171,7 @@ class JavaFactory(BaseFactory):
         java_opts = job_dict['edp_configs'].get('edp.java.java_opts', None)
         return main_class, java_opts
 
-    def get_workflow_xml(self, execution, *args, **kwargs):
+    def get_workflow_xml(self, cluster, execution, *args, **kwargs):
         job_dict = {'configs': {},
                     'args': []}
         self.update_job_dict(job_dict, execution.job_configs)

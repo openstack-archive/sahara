@@ -18,6 +18,7 @@ import copy
 import mock
 
 from savanna import conductor as cond
+from savanna.plugins import base as pb
 from savanna.service.edp import job_manager
 from savanna.service.edp.workflow_creator import workflow_factory
 from savanna.tests.unit import base
@@ -35,6 +36,7 @@ class TestJobManager(base.SavannaWithDbTestCase):
     def setUp(self):
         super(TestJobManager, self).setUp()
         p.patch_minidom_writexml()
+        pb.setup_plugins()
 
     @mock.patch('savanna.utils.remote.get_remote')
     @mock.patch('savanna.service.edp.hdfs_helper.create_dir')
@@ -99,7 +101,7 @@ class TestJobManager(base.SavannaWithDbTestCase):
 
         creator = workflow_factory.get_creator(job)
 
-        res = creator.get_workflow_xml(job_exec,
+        res = creator.get_workflow_xml(_create_cluster(), job_exec,
                                        input_data, output_data)
 
         self.assertIn("""
@@ -131,7 +133,7 @@ class TestJobManager(base.SavannaWithDbTestCase):
         output_data = _create_data_source('hdfs://user/hadoop/out')
 
         creator = workflow_factory.get_creator(job)
-        res = creator.get_workflow_xml(job_exec,
+        res = creator.get_workflow_xml(_create_cluster(), job_exec,
                                        input_data, output_data)
 
         self.assertIn("""
@@ -151,7 +153,7 @@ class TestJobManager(base.SavannaWithDbTestCase):
 
         creator = workflow_factory.get_creator(job)
 
-        res = creator.get_workflow_xml(job_exec,
+        res = creator.get_workflow_xml(_create_cluster(), job_exec,
                                        input_data, output_data)
 
         self.assertIn("""
@@ -173,7 +175,7 @@ class TestJobManager(base.SavannaWithDbTestCase):
 
         creator = workflow_factory.get_creator(job)
 
-        res = creator.get_workflow_xml(job_exec,
+        res = creator.get_workflow_xml(_create_cluster(), job_exec,
                                        input_data, output_data)
 
         self.assertIn("""
@@ -199,7 +201,7 @@ class TestJobManager(base.SavannaWithDbTestCase):
 
         creator = workflow_factory.get_creator(job)
 
-        res = creator.get_workflow_xml(job_exec,
+        res = creator.get_workflow_xml(_create_cluster(), job_exec,
                                        input_data, output_data)
 
         if streaming:
@@ -252,7 +254,7 @@ class TestJobManager(base.SavannaWithDbTestCase):
 
         job, job_exec = _create_all_stack('Java', configs)
         creator = workflow_factory.get_creator(job)
-        res = creator.get_workflow_xml(job_exec)
+        res = creator.get_workflow_xml(_create_cluster(), job_exec)
 
         self.assertIn("""
       <configuration>
@@ -281,11 +283,11 @@ class TestJobManager(base.SavannaWithDbTestCase):
 
         creator = workflow_factory.get_creator(job)
 
-        res = creator.get_workflow_xml(job_exec,
+        res = creator.get_workflow_xml(_create_cluster(), job_exec,
                                        input_data, output_data)
 
         self.assertIn("""
-      <job-xml>hive-site.xml</job-xml>
+      <job-xml>/user/hadoop/conf/hive-site.xml</job-xml>
       <configuration>
         <property>
           <name>fs.swift.service.savanna.password</name>
@@ -311,7 +313,7 @@ class TestJobManager(base.SavannaWithDbTestCase):
 
         creator = workflow_factory.get_creator(job)
 
-        res = creator.get_workflow_xml(job_exec,
+        res = creator.get_workflow_xml(_create_cluster(), job_exec,
                                        input_data, output_data)
 
         self.assertIn("""
@@ -400,6 +402,12 @@ def _create_job_binary(id, type):
     else:
         binary.name = "script.q"
     return binary
+
+
+def _create_cluster():
+    cluster = mock.Mock()
+    cluster.plugin_name = 'vanilla'
+    return cluster
 
 
 def _create_data_source(url):

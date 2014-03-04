@@ -27,10 +27,6 @@ class ProvisioningPluginBase(plugins_base.PluginInterface):
         pass
 
     @plugins_base.optional
-    def get_hive_config_path(self):
-        pass
-
-    @plugins_base.optional
     def get_hdfs_user(self):
         pass
 
