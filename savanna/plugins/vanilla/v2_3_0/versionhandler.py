@@ -24,6 +24,7 @@ from savanna.plugins.vanilla.v2_3_0 import config as c
 from savanna.plugins.vanilla.v2_3_0 import config_helper as c_helper
 from savanna.plugins.vanilla.v2_3_0 import run_scripts as run
 from savanna.plugins.vanilla.v2_3_0 import scaling as sc
+from savanna.plugins.vanilla.v2_3_0 import validation as vl
 
 conductor = conductor.API
 LOG = logging.getLogger(__name__)
@@ -43,7 +44,7 @@ class VersionHandler(avm.AbstractVersionHandler):
         }
 
     def validate(self, cluster):
-        pass
+        vl.validate_cluster_creating(cluster)
 
     def update_infra(self, cluster):
         pass
@@ -71,7 +72,8 @@ class VersionHandler(avm.AbstractVersionHandler):
         sc.decommission_nodes(cluster, instances)
 
     def validate_scaling(self, cluster, existing, additional):
-        pass
+        vl.validate_additional_ng_scaling(cluster, additional)
+        vl.validate_existing_ng_scaling(cluster, existing)
 
     def scale_cluster(self, cluster, instances):
         sc.scale_cluster(cluster, instances)

@@ -50,6 +50,14 @@ def find(lst, **kwargs):
     return None
 
 
+def get_by_id(lst, id):
+    for obj in lst:
+        if obj.id == id:
+            return obj
+
+    return None
+
+
 def format_cluster_status(cluster):
     msg = "Cluster status has been changed: id=%s, New status=%s"
     if cluster:
