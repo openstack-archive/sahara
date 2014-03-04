@@ -16,7 +16,9 @@
 import os
 
 from savanna import context
+from savanna.openstack.common import timeutils
 from savanna.plugins.general import utils
+from savanna.plugins.vanilla.v1_2_1 import config_helper
 from savanna.plugins.vanilla.v1_2_1 import run_scripts as run
 from savanna.utils import remote
 
@@ -42,8 +44,12 @@ def decommission_dn(nn, inst_to_be_deleted, survived_inst):
         run.refresh_nodes(remote.get_remote(nn), "dfsadmin")
         context.sleep(3)
 
-        att_amount = 100
-        while att_amount:
+        timeout = config_helper.get_decommissioning_timeout(
+            nn.node_group.cluster)
+        s_time = timeutils.utcnow()
+        all_found = False
+
+        while timeutils.delta_seconds(s_time, timeutils.utcnow()) < timeout:
             cmd = r.execute_command(
                 "sudo su -c 'hadoop dfsadmin -report' hadoop")
             all_found = True
@@ -63,10 +69,10 @@ def decommission_dn(nn, inst_to_be_deleted, survived_inst):
                                   })
                 break
             context.sleep(3)
-            att_amount -= 1
 
-        if not att_amount:
-            raise Exception("Cannot finish decommission")
+        if not all_found:
+            raise Exception("Cannot finish decommission in %s seconds" %
+                            timeout)
 
 
 def parse_dfs_report(cmd_output):
