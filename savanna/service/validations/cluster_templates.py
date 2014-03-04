@@ -125,10 +125,13 @@ def check_cluster_template_create(data, **kwargs):
 
 
 def check_cluster_template_usage(cluster_template_id, **kwargs):
-    clusters = api.get_clusters()
-    use_cluster_template_ids = [cluster.cluster_template_id
-                                for cluster in clusters]
+    users = []
 
-    if cluster_template_id in use_cluster_template_ids:
+    for cluster in api.get_clusters():
+        if cluster_template_id == cluster.cluster_template_id:
+            users.append(cluster.name)
+
+    if users:
         raise ex.InvalidException(
-            "Cluster template %s in use" % cluster_template_id)
+            "Cluster template %s in use by %s" %
+            (cluster_template_id, ', '.join(users)))
