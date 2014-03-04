@@ -64,6 +64,15 @@ def _get_network(**kwargs):
     return 'OK'
 
 
+def _get_heat_stack_list():
+    return [FakeStack('test-heat')]
+
+
+class FakeStack(object):
+    def __init__(self, name):
+        self.stack_name = name
+
+
 class FakeFlavor(object):
     def __init__(self, id):
         self.id = id
@@ -91,6 +100,7 @@ def start_patch(patch_templates=True):
             mock.patch("savanna.service.api.get_cluster_template")
     nova_p = mock.patch("savanna.utils.openstack.nova.client")
     keystone_p = mock.patch("savanna.utils.openstack.keystone.client")
+    heat_p = mock.patch("savanna.utils.openstack.heat.client")
     get_image_p = mock.patch("savanna.service.api.get_image")
 
     get_image = get_image_p.start()
@@ -114,6 +124,9 @@ def start_patch(patch_templates=True):
     nova().flavors.list.side_effect = _get_flavors_list
     nova().keypairs.get.side_effect = _get_keypair
     nova().networks.find.side_effect = _get_network
+
+    heat = heat_p.start()
+    heat().stacks.list.side_effect = _get_heat_stack_list
 
     class Service:
         @property
@@ -194,7 +207,7 @@ def start_patch(patch_templates=True):
         get_ng_template.side_effect = _get_ng_template
     # request data to validate
     patchers = [get_clusters_p, get_plugins_p, get_plugin_p,
-                nova_p, keystone_p, get_image_p]
+                nova_p, keystone_p, get_image_p, heat_p]
     if patch_templates:
         patchers.extend([get_ng_template_p, get_ng_templates_p,
                          get_cl_template_p, get_cl_templates_p])
