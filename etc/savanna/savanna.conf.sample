@@ -68,7 +68,7 @@
 
 # An engine which will be used to provision infrastructure for
 # Hadoop cluster. (string value)
-#infrastructure_engine=savanna
+#infrastructure_engine=direct
 
 # A method for Savanna to execute commands on VMs. (string
 # value)
