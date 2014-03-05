@@ -24,7 +24,7 @@ import traceback
 
 import six
 
-from savanna.openstack.common.gettextutils import _
+from savanna.openstack.common.gettextutils import _LE
 
 
 class save_and_reraise_exception(object):
@@ -59,7 +59,7 @@ class save_and_reraise_exception(object):
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         if exc_type is not None:
-            logging.error(_('Original exception being dropped: %s'),
+            logging.error(_LE('Original exception being dropped: %s'),
                           traceback.format_exception(self.type_,
                                                      self.value,
                                                      self.tb))
@@ -88,8 +88,8 @@ def forever_retry_uncaught_exceptions(infunc):
                 if (cur_time - last_log_time > 60 or
                         this_exc_message != last_exc_message):
                     logging.exception(
-                        _('Unexpected exception occurred %d time(s)... '
-                          'retrying.') % exc_count)
+                        _LE('Unexpected exception occurred %d time(s)... '
+                            'retrying.') % exc_count)
                     last_log_time = cur_time
                     last_exc_message = this_exc_message
                     exc_count = 0
