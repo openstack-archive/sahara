@@ -17,7 +17,7 @@ Interfaces
 
 The EDP features can be used from the Savanna web UI which is described in the :doc:`../horizon/dashboard.user.guide`.
 
-The EDP features also can be used directly by a client through the :doc:`rest_api_v1.1_EDP`.
+The EDP features also can be used directly by a client through the :doc:`../restapi/rest_api_v1.1_EDP`.
 
 EDP Concepts
 ------------
