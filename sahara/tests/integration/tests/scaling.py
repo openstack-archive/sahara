@@ -110,17 +110,6 @@ class ScalingTest(base.ITestCase):
             'Actual node info after cluster scaling: %s.'
             % (expected_node_info, new_node_info)
         )
-        try:
-            self.await_active_workers_for_namenode(
-                new_node_info, cluster_info['plugin_config']
-            )
-
-        except Exception as e:
-            with excutils.save_and_reraise_exception():
-                print(
-                    '\nFailure while active worker waiting for namenode: '
-                    + str(e)
-                )
         return {
             'cluster_id': cluster_info['cluster_id'],
             'node_ip_list': new_node_ip_list,

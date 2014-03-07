@@ -38,7 +38,7 @@ check_return_code_after_command_execution() {
     then
         if [ "$2" -ne 0 ]
         then
-            sudo -u $HADOOP_USER bash -c "hadoop dfs -rmr /swift-test" && exit 1
+            sudo -u $HADOOP_USER bash -lc "hadoop dfs -rmr /swift-test" && exit 1
         fi
     fi
 }
@@ -47,22 +47,22 @@ check_swift_availability() {
 
     dd if=/dev/urandom of=/tmp/test-file bs=1048576 count=1
 
-    sudo -u $HADOOP_USER bash -c "hadoop dfs -mkdir /swift-test/"
+    sudo -u $HADOOP_USER bash -lc "hadoop dfs -mkdir /swift-test"
     check_return_code_after_command_execution -exit `echo "$?"`
 
-    sudo -u $HADOOP_USER bash -c "hadoop dfs -copyFromLocal /tmp/test-file /swift-test/"
+    sudo -u $HADOOP_USER bash -lc "hadoop dfs -copyFromLocal /tmp/test-file /swift-test/"
     check_return_code_after_command_execution -clean_hdfs `echo "$?"`
 
-    sudo -u $HADOOP_USER bash -c "hadoop distcp -D fs.swift.service.sahara.username=$OS_USERNAME -D fs.swift.service.sahara.tenant=$OS_TENANT_NAME -D fs.swift.service.sahara.password=$OS_PASSWORD /swift-test/test-file swift://$SWIFT_CONTAINER_NAME.sahara/"
+    sudo -u $HADOOP_USER bash -lc "hadoop distcp -D fs.swift.service.sahara.username=$OS_USERNAME -D fs.swift.service.sahara.tenant=$OS_TENANT_NAME -D fs.swift.service.sahara.password=$OS_PASSWORD /swift-test/test-file swift://$SWIFT_CONTAINER_NAME.sahara/"
     check_return_code_after_command_execution -clean_hdfs `echo "$?"`
 
-    sudo -u $HADOOP_USER bash -c "hadoop distcp -D fs.swift.service.sahara.username=$OS_USERNAME -D fs.swift.service.sahara.tenant=$OS_TENANT_NAME -D fs.swift.service.sahara.password=$OS_PASSWORD swift://$SWIFT_CONTAINER_NAME.sahara/test-file /swift-test/swift-test-file"
+    sudo -u $HADOOP_USER bash -lc "hadoop distcp -D fs.swift.service.sahara.username=$OS_USERNAME -D fs.swift.service.sahara.tenant=$OS_TENANT_NAME -D fs.swift.service.sahara.password=$OS_PASSWORD swift://$SWIFT_CONTAINER_NAME.sahara/test-file /swift-test/swift-test-file"
     check_return_code_after_command_execution -clean_hdfs `echo "$?"`
 
-    sudo -u $HADOOP_USER bash -c "hadoop dfs -copyToLocal /swift-test/swift-test-file /tmp/swift-test-file"
+    sudo -u $HADOOP_USER bash -lc "hadoop dfs -copyToLocal /swift-test/swift-test-file /tmp/swift-test-file"
     check_return_code_after_command_execution -clean_hdfs `echo "$?"`
 
-    sudo -u $HADOOP_USER bash -c "hadoop dfs -rmr /swift-test"
+    sudo -u $HADOOP_USER bash -lc "hadoop dfs -rmr /swift-test"
 
     compare_files /tmp/test-file /tmp/swift-test-file
 

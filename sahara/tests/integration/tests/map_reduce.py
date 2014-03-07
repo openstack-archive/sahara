@@ -69,6 +69,7 @@ class MapReduceTest(base.ITestCase):
         extra_script_parameters = {
             'HADOOP_VERSION': plugin_config.HADOOP_VERSION,
             'HADOOP_DIRECTORY': plugin_config.HADOOP_DIRECTORY,
+            'HADOOP_EXAMPLES_JAR_PATH': plugin_config.HADOOP_EXAMPLES_JAR_PATH,
             'HADOOP_LOG_DIRECTORY': hadoop_log_directory,
             'HADOOP_USER': plugin_config.HADOOP_USER,
             'NODE_COUNT': cluster_info['node_info']['node_count'],
@@ -101,30 +102,36 @@ class MapReduceTest(base.ITestCase):
         # Count of map-tasks and reduce-tasks in helper script guarantees that
         # cluster will use each from such nodes while work of PI-job.
         node_ip_and_process_list = cluster_info['node_ip_list']
-        try:
-            for node_ip, process_list in node_ip_and_process_list.items():
-                if plugin_config.PROCESS_NAMES['tt'] in process_list:
-                    self.open_ssh_connection(
-                        node_ip, plugin_config.SSH_USERNAME
-                    )
+
+        have_logs = False
+        for node_ip, process_list in node_ip_and_process_list.items():
+            if plugin_config.PROCESS_NAMES['tt'] in process_list:
+                self.open_ssh_connection(
+                    node_ip, plugin_config.SSH_USERNAME
+                )
+                try:
                     self.execute_command(
-                        './script.sh check_directory -job_name %s' % job_name
-                    )
+                        './script.sh check_directory -job_name %s' % job_name)
+                    have_logs = True
+                except Exception:
+                    pass
+                finally:
                     self.close_ssh_connection()
 
-        except Exception as e:
-            with excutils.save_and_reraise_exception():
-                print(
-                    '\nLog file of completed \'PI\' job on \'tasktracker\' '
-                    'cluster node not found: ' + str(e)
-                )
-                self.close_ssh_connection()
-                self.open_ssh_connection(
-                    namenode_ip, plugin_config.SSH_USERNAME
-                )
+        if not have_logs:
+            self.open_ssh_connection(
+                namenode_ip, plugin_config.SSH_USERNAME
+            )
+            try:
                 self.capture_error_log_from_cluster_node(
                     '/tmp/MapReduceTestOutput/log.txt'
                 )
+            finally:
+                self.close_ssh_connection()
+
+            self.fail("Log file of completed 'PI' job on 'tasktracker' or "
+                      "'nodemanager' cluster node not found.")
+
         self.open_ssh_connection(namenode_ip, plugin_config.SSH_USERNAME)
         self._run_wordcount_job()
         self.close_ssh_connection()
