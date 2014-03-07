@@ -69,8 +69,6 @@ class SavannaPeriodicTasks(periodic_task.PeriodicTasks):
     def terminate_unneeded_clusters(self, ctx):
         LOG.debug('Terminating unneeded clusters')
         ctx = context.get_admin_context()
-        if CONF.use_identity_api_v3:
-            LOG.debug('Terminating unneeded clusters')
         context.set_ctx(ctx)
         for cluster in conductor.cluster_get_all(ctx, status='Active'):
             if not cluster.is_transient:
