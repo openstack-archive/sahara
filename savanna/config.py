@@ -88,6 +88,12 @@ def parse_configs(argv=None, conf_files=None):
     if argv is not None:
         global ARGV
         ARGV = argv
+
+    # TODO(slukjanov): remove this code (temp to migrate to the new name)
+    if conf_files is None:
+        conf_files = []
+    conf_files += cfg.find_config_files(project="sahara")
+
     try:
         version_string = version.version_info.version_string()
         CONF(ARGV, project='savanna', version=version_string,
