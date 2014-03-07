@@ -13,6 +13,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from oslo.config import cfg
+
 from sahara import context
 from sahara.openstack.common import log as logging
 from sahara.plugins.intel.client import context as c
@@ -105,7 +107,9 @@ class HDFSService(BaseService):
     def get_datanode_status(self, datanode):
         stats = self.get_datanodes_status()
         for stat in stats:
-            if stat['hostname'] == datanode:
+            hostname = stat['hostname']
+            fqdn = hostname + '.' + cfg.CONF.node_domain
+            if hostname == datanode or fqdn == datanode:
                 return stat['status'].strip()
 
         raise iex.IntelPluginException(

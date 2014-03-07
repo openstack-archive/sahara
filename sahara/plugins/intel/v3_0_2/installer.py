@@ -426,22 +426,15 @@ def decommission_nodes(cluster, instances):
     for instance in instances:
         while cur_time < timeout:
             stopped = True
+
             if instance.fqdn() in dn_hosts:
-                code, out = instance.remote().execute_command(
-                    'sudo /sbin/service hadoop-datanode status',
-                    raise_when_error=False)
-                if out.strip() != 'datanode is stopped':
-                    stopped = False
-                if out.strip() == 'datanode dead but pid file exists':
-                    instance.remote().execute_command(
-                        'sudo rm -f '
-                        '/var/run/hadoop/hadoop-hadoop-datanode.pid')
+                stopped = stopped and _is_hadoop_service_stopped(
+                    instance, 'hadoop-hdfs-datanode')
+
             if instance.fqdn() in nm_hosts:
-                code, out = instance.remote().execute_command(
-                    'sudo /sbin/service hadoop-nodemanager status',
-                    raise_when_error=False)
-                if out.strip() != 'nodemanager is stopped':
-                    stopped = False
+                stopped = stopped and _is_hadoop_service_stopped(
+                    instance, 'hadoop-yarn-nodemanager')
+
             if stopped:
                 break
             else:
@@ -454,3 +447,11 @@ def decommission_nodes(cluster, instances):
     for node in dec_hosts:
         LOG.info("Deleting node '%s' on cluster '%s'" % (node, cluster.name))
         client.nodes.delete(node)
+
+
+def _is_hadoop_service_stopped(instance, service):
+    code, out = instance.remote().execute_command(
+        'sudo /sbin/service %s status' % service,
+        raise_when_error=False)
+    return ('is not running' in out or
+            'is dead and pid file exists' in out)
