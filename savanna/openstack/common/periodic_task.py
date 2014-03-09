@@ -11,15 +11,13 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-import datetime
 import time
 
 from oslo.config import cfg
 import six
 
-from savanna.openstack.common.gettextutils import _
+from savanna.openstack.common.gettextutils import _, _LE, _LI
 from savanna.openstack.common import log as logging
-from savanna.openstack.common import timeutils
 
 
 periodic_opts = [
@@ -78,7 +76,7 @@ def periodic_task(*args, **kwargs):
         if f._periodic_immediate:
             f._periodic_last_run = None
         else:
-            f._periodic_last_run = timeutils.utcnow()
+            f._periodic_last_run = time.time()
         return f
 
     # NOTE(sirp): The `if` is necessary to allow the decorator to be used with
@@ -114,11 +112,6 @@ class _PeriodicTasksMeta(type):
             cls._periodic_tasks = []
 
         try:
-            cls._periodic_last_run = cls._periodic_last_run.copy()
-        except AttributeError:
-            cls._periodic_last_run = {}
-
-        try:
             cls._periodic_spacing = cls._periodic_spacing.copy()
         except AttributeError:
             cls._periodic_spacing = {}
@@ -129,13 +122,13 @@ class _PeriodicTasksMeta(type):
                 name = task.__name__
 
                 if task._periodic_spacing < 0:
-                    LOG.info(_('Skipping periodic task %(task)s because '
-                               'its interval is negative'),
+                    LOG.info(_LI('Skipping periodic task %(task)s because '
+                                 'its interval is negative'),
                              {'task': name})
                     continue
                 if not task._periodic_enabled:
-                    LOG.info(_('Skipping periodic task %(task)s because '
-                               'it is disabled'),
+                    LOG.info(_LI('Skipping periodic task %(task)s because '
+                                 'it is disabled'),
                              {'task': name})
                     continue
 
@@ -146,11 +139,15 @@ class _PeriodicTasksMeta(type):
 
                 cls._periodic_tasks.append((name, task))
                 cls._periodic_spacing[name] = task._periodic_spacing
-                cls._periodic_last_run[name] = task._periodic_last_run
 
 
 @six.add_metaclass(_PeriodicTasksMeta)
 class PeriodicTasks(object):
+    def __init__(self):
+        super(PeriodicTasks, self).__init__()
+        self._periodic_last_run = {}
+        for name, task in self._periodic_tasks:
+            self._periodic_last_run[name] = task._periodic_last_run
 
     def run_periodic_tasks(self, context, raise_on_error=False):
         """Tasks to be run at a periodic interval."""
@@ -158,30 +155,28 @@ class PeriodicTasks(object):
         for task_name, task in self._periodic_tasks:
             full_task_name = '.'.join([self.__class__.__name__, task_name])
 
-            now = timeutils.utcnow()
             spacing = self._periodic_spacing[task_name]
             last_run = self._periodic_last_run[task_name]
 
             # If a periodic task is _nearly_ due, then we'll run it early
-            if spacing is not None and last_run is not None:
-                due = last_run + datetime.timedelta(seconds=spacing)
-                if not timeutils.is_soon(due, 0.2):
-                    idle_for = min(idle_for, timeutils.delta_seconds(now, due))
-                    continue
-
             if spacing is not None:
                 idle_for = min(idle_for, spacing)
+                if last_run is not None:
+                    delta = last_run + spacing - time.time()
+                    if delta > 0.2:
+                        idle_for = min(idle_for, delta)
+                        continue
 
-            LOG.debug(_("Running periodic task %(full_task_name)s"),
+            LOG.debug("Running periodic task %(full_task_name)s",
                       {"full_task_name": full_task_name})
-            self._periodic_last_run[task_name] = timeutils.utcnow()
+            self._periodic_last_run[task_name] = time.time()
 
             try:
                 task(self, context)
             except Exception as e:
                 if raise_on_error:
                     raise
-                LOG.exception(_("Error during %(full_task_name)s: %(e)s"),
+                LOG.exception(_LE("Error during %(full_task_name)s: %(e)s"),
                               {"full_task_name": full_task_name, "e": e})
             time.sleep(0)
 
