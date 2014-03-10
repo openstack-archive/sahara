@@ -19,7 +19,6 @@ from novaclient.v1_1 import client as nova_client
 from savanna import context
 import savanna.utils.openstack.base as base
 from savanna.utils.openstack import images
-from savanna.utils.openstack import keypairs
 
 
 def client():
@@ -35,10 +34,6 @@ def client():
     nova.client.auth_token = ctx.token
     nova.client.management_url = compute_url
     nova.images = images.SavannaImageManager(nova)
-    # unconditionally patch 'get' until
-    #   https://bugs.launchpad.net/python-novaclient/+bug/1223934
-    # is fixed for our use case and all we support
-    nova.keypairs = keypairs.SavannaKeypairManager(nova)
 
     return nova
 
