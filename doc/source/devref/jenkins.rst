@@ -1,7 +1,7 @@
 Continuous Integration with Jenkins
 ===================================
 
-Each change made to Savanna core code is tested with unit and integration tests and style checks flake8.
+Each change made to Sahara core code is tested with unit and integration tests and style checks flake8.
 
 Unit tests and style checks are performed on public `OpenStack Jenkins <https://jenkins.openstack.org/>`_ managed by `Zuul <http://status.openstack.org/zuul/>`_.
 Unit tests are checked using both python 2.6 and python 2.7.

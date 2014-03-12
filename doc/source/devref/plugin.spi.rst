@@ -75,7 +75,7 @@ For instance, plugin can ask for additional VMs for the management tool.
 configure_cluster(cluster)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Configures cluster on provisioned by savanna VMs.
+Configures cluster on provisioned by Sahara VMs.
 In this function plugin should perform all actions like adjusting OS, installing required packages (including Hadoop, if needed), configuring Hadoop, etc.
 
 *Returns*: None
@@ -109,7 +109,7 @@ convert(config, plugin_name, version, template_name, cluster_template_create)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Provides plugin with ability to create cluster based on plugin-specific config.
-Savanna expects plugin to fill in all the required fields.
+Sahara expects plugin to fill in all the required fields.
 The last argument is the function that plugin should call to save the Cluster
 Template.
 See “Cluster Lifecycle for Config File Mode” section below for clarification.
@@ -117,7 +117,7 @@ See “Cluster Lifecycle for Config File Mode” section below for clarification
 on_terminate_cluster(cluster)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-When user terminates cluster, Savanna simply shuts down all the cluster VMs. This method is guaranteed to be invoked before that, allowing plugin to do some clean-up.
+When user terminates cluster, Sahara simply shuts down all the cluster VMs. This method is guaranteed to be invoked before that, allowing plugin to do some clean-up.
 
 *Returns*: None
 
@@ -220,7 +220,7 @@ An instance created for cluster.
 +---------------+---------+---------------------------------------------------------+
 | nova_info     | object  | Nova Instance object.                                   |
 +---------------+---------+---------------------------------------------------------+
-| username      | string  | Username, that Savanna uses for establishing remote     |
+| username      | string  | Username, that Sahara uses for establishing remote      |
 |               |         | connections to instance.                                |
 +---------------+---------+---------------------------------------------------------+
 | hostname      | string  | Same as instance_name.                                  |
@@ -261,7 +261,7 @@ Group of instances.
 +----------------------+--------+--------------------------------------------------------+
 | count                | int    | Number of instances in this Node Group.                |
 +----------------------+--------+--------------------------------------------------------+
-| username             | string | Username used by Savanna to establish remote           |
+| username             | string | Username used by Sahara to establish remote            |
 |                      |        | connections to instances.                              |
 +----------------------+--------+--------------------------------------------------------+
 | configuration        | dict   | Merged dictionary of node configurations and cluster   |

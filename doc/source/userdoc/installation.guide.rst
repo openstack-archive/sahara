@@ -1,8 +1,8 @@
-Savanna Installation Guide
+Sahara Installation Guide
 ==========================
 
 We recommend you install in a way that will can keep your system in a
-consistent state. Ways we recommend to install Savanna are:
+consistent state. Ways we recommend to install Sahara are:
 
 * Install via `Fuel <http://fuel.mirantis.com/>`_
 
@@ -18,7 +18,7 @@ To install with Fuel
 1. Start by following `Quickstart <http://software.mirantis.com/quick-start/>`_
    to install and setup OpenStack
 
-2. Enable Savanna service during installation
+2. Enable Sahara service during installation
 
 
 
@@ -29,21 +29,21 @@ To install with RDO
    <http://openstack.redhat.com/Quickstart>`_ to install and setup
    OpenStack.
 
-2. Install the savanna-api service with,
+2. Install the sahara-api service with,
 
 .. sourcecode:: console
 
-     $ yum install openstack-savanna
+     $ yum install openstack-sahara
 ..
 
-3. Configure the savanna-api service to your liking. The configuration
-   file is located in ``/etc/savanna/savanna.conf``.
+3. Configure the sahara-api service to your liking. The configuration
+   file is located in ``/etc/sahara/sahara.conf``.
 
-4. Start the savanna-api service with,
+4. Start the sahara-api service with,
 
 .. sourcecode:: console
 
-     $ service openstack-savanna-api start
+     $ service openstack-sahara-api start
 ..
 
 
@@ -74,77 +74,77 @@ To install into a virtual environment
     $ sudo easy_install pip
     $ sudo pip install virtualenv
 
-2. Setup virtual environment for Savanna:
+2. Setup virtual environment for sahara:
 
 .. sourcecode:: console
 
-    $ virtualenv savanna-venv
+    $ virtualenv sahara-venv
 ..
 
-   This will install python virtual environment into ``savanna-venv`` directory
+   This will install python virtual environment into ``sahara-venv`` directory
    in your current working directory. This command does not require super
    user privileges and could be executed in any directory current user has
    write permission.
 
-3. You can install the latest Savanna release version from pypi:
+3. You can install the latest sahara release version from pypi:
 
 .. sourcecode:: console
 
-    $ savanna-venv/bin/pip install savanna
+    $ sahara-venv/bin/pip install sahara
 ..
 
-   Or you can get Savanna archive from `<http://tarballs.openstack.org/savanna/>`_ and install it using pip:
+   Or you can get Sahara archive from `<http://tarballs.openstack.org/sahara/>`_ and install it using pip:
 
 .. sourcecode:: console
 
-    $ savanna-venv/bin/pip install 'http://tarballs.openstack.org/savanna/savanna-master.tar.gz'
+    $ sahara-venv/bin/pip install 'http://tarballs.openstack.org/sahara/sahara-master.tar.gz'
 ..
 
-   Note that savanna-master.tar.gz contains the latest changes and might not be stable at the moment.
-   We recommend browsing `<http://tarballs.openstack.org/savanna/>`_ and selecting the latest stable release.
+   Note that sahara-master.tar.gz contains the latest changes and might not be stable at the moment.
+   We recommend browsing `<http://tarballs.openstack.org/sahara/>`_ and selecting the latest stable release.
 
 4. After installation you should create configuration file. Sample config file location
-   depends on your OS. For Ubuntu it is ``/usr/local/share/savanna/savanna.conf.sample-basic``,
-   for Red Hat - ``/usr/share/savanna/savanna.conf.sample-basic``. Below is an example for Ubuntu:
+   depends on your OS. For Ubuntu it is ``/usr/local/share/sahara/sahara.conf.sample-basic``,
+   for Red Hat - ``/usr/share/sahara/sahara.conf.sample-basic``. Below is an example for Ubuntu:
 
 .. sourcecode:: console
 
-    $ mkdir savanna-venv/etc
-    $ cp savanna-venv/share/savanna/savanna.conf.sample-basic savanna-venv/etc/savanna.conf
+    $ mkdir sahara-venv/etc
+    $ cp sahara-venv/share/sahara/sahara.conf.sample-basic sahara-venv/etc/sahara.conf
 ..
 
-    check each option in savanna-venv/etc/savanna.conf, and make necessary changes
+    check each option in sahara-venv/etc/sahara.conf, and make necessary changes
 
 5. Create database schema:
 
 .. sourcecode:: console
 
-    $ savanna-venv/bin/python savanna-venv/bin/savanna-db-manage --config-file savanna-venv/etc/savanna.conf upgrade head
+    $ sahara-venv/bin/python sahara-venv/bin/sahara-db-manage --config-file sahara-venv/etc/sahara.conf upgrade head
 ..
 
-6. To start Savanna call:
+6. To start Sahara call:
 
 .. sourcecode:: console
 
-    $ savanna-venv/bin/python savanna-venv/bin/savanna-api --config-file savanna-venv/etc/savanna.conf
+    $ sahara-venv/bin/python sahara-venv/bin/sahara-api --config-file sahara-venv/etc/sahara.conf
 ..
 
 
 Note:
 -----
-One of the :doc:`Savanna features <features>`, Anti-Affinity, requires a Nova adjustment.
+One of the :doc:`Sahara features <features>`, Anti-Affinity, requires a Nova adjustment.
 See :ref:`Enabling Anti-Affinity <enable-anti-affinity>` for details. But that is purely optional.
 
 
-Make sure that your operating system is not blocking Savanna port (default: 8386).
+Make sure that your operating system is not blocking Sahara port (default: 8386).
 You may need to configure iptables in CentOS and some other operating systems.
 
    To get the list of all possible options run:
 
 .. sourcecode:: console
 
-    $ savanna-venv/bin/python savanna-venv/bin/savanna-api --help
+    $ sahara-venv/bin/python sahara-venv/bin/sahara-api --help
 
 
-Further consider reading :doc:`overview` for general Savanna concepts and
+Further consider reading :doc:`overview` for general Sahara concepts and
 :doc:`plugins` for specific plugin features/requirements

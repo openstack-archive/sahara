@@ -1,11 +1,11 @@
 Code Reviews with Gerrit
 ========================
 
-Savanna uses the `Gerrit`_ tool to review proposed code changes. The review site
+Sahara uses the `Gerrit`_ tool to review proposed code changes. The review site
 is http://review.openstack.org.
 
 Gerrit is a complete replacement for Github pull requests. `All Github pull
-requests to the Savanna repository will be ignored`.
+requests to the Sahara repository will be ignored`.
 
 See `Gerrit Workflow Quick Reference`_ for information about how to get
 started using Gerrit. See `Gerrit, Jenkins and Github`_ for more detailed

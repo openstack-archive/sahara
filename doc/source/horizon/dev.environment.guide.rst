@@ -1,28 +1,28 @@
-Savanna UI Dev Environment Setup
-============================================
+Sahara UI Dev Environment Setup
+===============================
 
 Install as a part of DevStack
 -----------------------------
 
-The easiest way to have local Savanna UI environment with DevStack is to
-include Savanna component in DevStack.
+The easiest way to have local Sahara UI environment with DevStack is to
+include Sahara component in DevStack.
 
 .. toctree::
     :maxdepth: 1
 
     ../devref/devstack
 
-After Savanna installation as a part of DevStack Horizon will contain Savanna
-tab. Savanna dashboard source code will be located at
-``$DEST/savanna_dashboard`` which is usually ``/opt/stack/savanna_dashboard``.
+After Sahara installation as a part of DevStack Horizon will contain Sahara
+tab. Sahara dashboard source code will be located at
+``$DEST/sahara_dashboard`` which is usually ``/opt/stack/sahara_dashboard``.
 
 
-Isolated Dashboard for Savanna
-------------------------------
+Isolated Dashboard for Sahara
+-----------------------------
 
 These installation steps suite for two purposes:
  * to setup dev environment
- * to setup isolated Dashboard for Savanna
+ * to setup isolated Dashboard for Sahara
 
 Note that the host where you're going to perform installation has to be
 able to connected to all OpenStack endpoints. You can list all available
@@ -77,7 +77,7 @@ and set right value for variables:
 .. sourcecode:: python
 
    OPENSTACK_HOST = "ip of your controller"
-   SAVANNA_URL = "url for savanna (e.g. "http://localhost:8386/v1.1")"
+   SAVANNA_URL = "url for sahara (e.g. "http://localhost:8386/v1.1")"
 
 If you are using Neutron instead of Nova Network:
 
@@ -92,43 +92,43 @@ If you are not using nova-network with auto_assign_floating_ip=True, also set:
    AUTO_ASSIGNMENT_ENABLED = False
 ..
 
-5. Clone savanna-dashboard sources from ``https://github.com/openstack/savanna-dashboard.git``
+5. Clone sahara-dashboard sources from ``https://github.com/openstack/sahara-dashboard.git``
 
 .. sourcecode:: console
 
-    $ git clone https://github.com/openstack/savanna-dashboard.git
+    $ git clone https://github.com/openstack/sahara-dashboard.git
 
-6. Export SAVANNA_DASHBOARD_HOME environment variable with path to savanna-dashboard folder. E.g.:
+6. Export SAVANNA_DASHBOARD_HOME environment variable with path to sahara-dashboard folder. E.g.:
 
 .. sourcecode:: console
 
-    $ export SAVANNA_DASHBOARD_HOME=$(pwd)/savanna-dashboard
+    $ export SAVANNA_DASHBOARD_HOME=$(pwd)/sahara-dashboard
 
-7. Install savanna-dashboard module to horizon's venv. Go to horizon folder and execute:
+7. Install sahara-dashboard module to horizon's venv. Go to horizon folder and execute:
 
 .. sourcecode:: console
 
     $ .venv/bin/pip install $SAVANNA_DASHBOARD_HOME
 
-8. Create a symlink to savanna-dashboard source
+8. Create a symlink to sahara-dashboard source
 
 .. sourcecode:: console
 
-   $ ln -s $SAVANNA_DASHBOARD_HOME/savannadashboard .venv/lib/python2.7/site-packages/savannadashboard
+   $ ln -s $SAVANNA_DASHBOARD_HOME/saharadashboard .venv/lib/python2.7/site-packages/saharadashboard
 
-9. In ``openstack_dashboard/settings.py`` add savanna to
+9. In ``openstack_dashboard/settings.py`` add sahara to
 
 .. sourcecode:: python
 
     HORIZON_CONFIG = {
-        'dashboards': ('nova', 'syspanel', 'settings', 'savanna'),
+        'dashboards': ('nova', 'syspanel', 'settings', 'sahara'),
 
-and add savannadashboard to
+and add saharadashboard to
 
 .. sourcecode:: python
 
     INSTALLED_APPS = (
-        'savannadashboard',
+        'saharadashboard',
         ....
 
 10. Start horizon

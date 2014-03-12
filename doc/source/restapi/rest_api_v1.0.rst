@@ -1,31 +1,31 @@
-Savanna REST API v1.0
+Sahara REST API v1.0
 *********************
 
 .. note::
 
-    REST API v1.0 corresponds to Savanna v0.2.X
+    REST API v1.0 corresponds to Sahara v0.2.X
 
 1 General API information
 =========================
 
-This section contains base info about the Savanna REST API design.
+This section contains base info about the Sahara REST API design.
 
 1.1 Authentication and Authorization
 ------------------------------------
 
-The Savanna API uses the Keystone Identity Service as the default authentication service.
-When Keystone is enabled, users who submit requests to the Savanna service must provide an authentication token
+The Sahara API uses the Keystone Identity Service as the default authentication service.
+When Keystone is enabled, users who submit requests to the Sahara service must provide an authentication token
 in X-Auth-Token request header. User could obtain the token by authenticating to the Keystone endpoint.
 For more information about Keystone, see the OpenStack Identity Developer Guide.
 
 Also with each request user must specify OpenStack tenant in url path like that: '/v1.0/{tenant_id}/clusters'.
-Savanna will perform the requested operation in that tenant using provided credentials. Therefore, user will be able
+Sahara will perform the requested operation in that tenant using provided credentials. Therefore, user will be able
 to create and manage clusters only within tenants he have access to.
 
 1.2 Request / Response Types
 ----------------------------
 
-The Savanna API supports the JSON data serialization format.
+The Sahara API supports the JSON data serialization format.
 This means that for requests that contain a body, the Content-Type header must be set to the MIME type value
 "application/json". Also, clients should accept JSON serialized responses by specifying the Accept header
 with the MIME type value "application/json" or adding ".json" extension to the resource name.
@@ -48,8 +48,8 @@ or
 1.3 Faults
 ----------
 
-The Savanna API returns an error response if a failure occurs while processing a request.
-Savanna uses only standard HTTP error codes. 4xx errors indicate problems in the particular
+The Sahara API returns an error response if a failure occurs while processing a request.
+Sahara uses only standard HTTP error codes. 4xx errors indicate problems in the particular
 request being sent from the client and 5xx errors indicate server-side problems.
 
 The response body will contain richer information about the cause of the error.
@@ -84,7 +84,7 @@ Plugin object provides information about what Hadoop distribution/version it can
 +-----------------+-------------------------------------------------------------------+-----------------------------------------------------+
 | Verb            | URI                                                               | Description                                         |
 +=================+===================================================================+=====================================================+
-| GET             | /v1.0/{tenant_id}/plugins                                         | Lists all plugins registered in Savanna.            |
+| GET             | /v1.0/{tenant_id}/plugins                                         | Lists all plugins registered in Sahara.             |
 +-----------------+-------------------------------------------------------------------+-----------------------------------------------------+
 | GET             | /v1.0/{tenant_id}/plugins/{plugin_name}                           | Shows short information about specified plugin.     |
 +-----------------+-------------------------------------------------------------------+-----------------------------------------------------+
@@ -115,7 +115,7 @@ This operation does not require a request body.
 
     .. sourcecode:: http
 
-        GET http://savanna/v1.0/775181/plugins
+        GET http://sahara/v1.0/775181/plugins
 
     **response**
 
@@ -157,7 +157,7 @@ This operation does not require a request body.
 
     .. sourcecode:: http
 
-        GET http://savanna/v1.0/775181/plugins/vanilla
+        GET http://sahara/v1.0/775181/plugins/vanilla
 
     **response**
 
@@ -197,7 +197,7 @@ This operation does not require a request body.
 
     .. sourcecode:: http
 
-        GET http://savanna/v1.0/775181/plugins/vanilla/1.2.1
+        GET http://sahara/v1.0/775181/plugins/vanilla/1.2.1
 
     **response**
 
@@ -274,7 +274,7 @@ The request body should contain configuration file.
 
     .. sourcecode:: http
 
-        POST http://savanna/v1.0/775181/plugins/some-plugin/1.1/convert-config
+        POST http://sahara/v1.0/775181/plugins/some-plugin/1.1/convert-config
 
     **response**
 
@@ -341,7 +341,7 @@ The request body should contain configuration file.
 **Description**
 
 Image Registry is a tool for managing images. Each plugin provides a list of required tags an image should have.
-Savanna also requires username to login into instance's OS for remote operations execution.
+Sahara also requires username to login into instance's OS for remote operations execution.
 
 Image Registry provides an ability to add/remove tags to images and define OS username.
 
@@ -385,7 +385,7 @@ This operation does not require a request body.
 
     .. sourcecode:: http
 
-        GET http://savanna/v1.0/775181/images
+        GET http://sahara/v1.0/775181/images
 
     **response**
 
@@ -401,7 +401,7 @@ This operation does not require a request body.
                 {
                     "status": "ACTIVE",
                     "username": "ec2-user",
-                    "name": "fedoraSwift_hadoop_savanna_v02",
+                    "name": "fedoraSwift_hadoop_sahara_v02",
                     "tags": [
                         "vanilla",
                         "1.2.1"
@@ -437,7 +437,7 @@ This operation does not require a request body.
 
     .. sourcecode:: http
 
-        GET http://savanna/v1.0/775181/images?tags=vanilla
+        GET http://sahara/v1.0/775181/images?tags=vanilla
 
     **response**
 
@@ -453,7 +453,7 @@ This operation does not require a request body.
                 {
                     "status": "ACTIVE",
                     "username": "ec2-user",
-                    "name": "fedoraSwift_hadoop_savanna_v02",
+                    "name": "fedoraSwift_hadoop_sahara_v02",
                     "tags": [
                         "vanilla",
                         "1.2.1"
@@ -491,7 +491,7 @@ This operation does not require a request body.
 
     .. sourcecode:: http
 
-        GET http://savanna/v1.0/775181/images/daa50c37-b11b-4f3d-a586-e5dcd0a4110f
+        GET http://sahara/v1.0/775181/images/daa50c37-b11b-4f3d-a586-e5dcd0a4110f
 
     **response**
 
@@ -506,7 +506,7 @@ This operation does not require a request body.
             "image": {
                 "status": "ACTIVE",
                 "username": "ec2-user",
-                "name": "fedoraSwift_hadoop_savanna_v02",
+                "name": "fedoraSwift_hadoop_sahara_v02",
                 "tags": [
                     "vanilla",
                     "1.2.1"
@@ -540,7 +540,7 @@ This operation returns registered image.
 
     .. sourcecode:: http
 
-        POST http://savanna/v1.0/775181/images/daa50c37-b11b-4f3d-a586-e5dcd0a4110f
+        POST http://sahara/v1.0/775181/images/daa50c37-b11b-4f3d-a586-e5dcd0a4110f
 
     .. sourcecode:: json
 
@@ -562,7 +562,7 @@ This operation returns registered image.
             "image": {
                 "status": "ACTIVE",
                 "username": "ec2-user",
-                "name": "fedoraSwift_hadoop_savanna_v02",
+                "name": "fedoraSwift_hadoop_sahara_v02",
                 "tags": [],
                 "minDisk": 0,
                 "progress": 100,
@@ -595,7 +595,7 @@ This operation does not require a request body.
 
     .. sourcecode:: http
 
-        DELETE http://savanna/v1.0/775181/images/daa50c37-b11b-4f3d-a586-e5dcd0a4110f
+        DELETE http://sahara/v1.0/775181/images/daa50c37-b11b-4f3d-a586-e5dcd0a4110f
 
     **response**
 
@@ -622,7 +622,7 @@ Add Tags to Image.
 
     .. sourcecode:: http
 
-        POST http://savanna/v1.0/775181/images/daa50c37-b11b-4f3d-a586-e5dcd0a4110f/tag
+        POST http://sahara/v1.0/775181/images/daa50c37-b11b-4f3d-a586-e5dcd0a4110f/tag
 
     .. sourcecode:: json
 
@@ -643,7 +643,7 @@ Add Tags to Image.
             "image": {
                 "status": "ACTIVE",
                 "username": "ec2-user",
-                "name": "fedoraSwift_hadoop_savanna_v02",
+                "name": "fedoraSwift_hadoop_sahara_v02",
                 "tags": ["tag1", "some_other_tag"],
                 "minDisk": 0,
                 "progress": 100,
@@ -676,7 +676,7 @@ Removes Tags form Image.
 
     .. sourcecode:: http
 
-        POST http://savanna/v1.0/775181/images/daa50c37-b11b-4f3d-a586-e5dcd0a4110f/untag
+        POST http://sahara/v1.0/775181/images/daa50c37-b11b-4f3d-a586-e5dcd0a4110f/untag
 
     .. sourcecode:: json
 
@@ -697,7 +697,7 @@ Removes Tags form Image.
             "image": {
                 "status": "ACTIVE",
                 "username": "ec2-user",
-                "name": "fedoraSwift_hadoop_savanna_v02",
+                "name": "fedoraSwift_hadoop_sahara_v02",
                 "tags": ["tag1"],
                 "minDisk": 0,
                 "progress": 100,
@@ -755,7 +755,7 @@ This operation does not require a request body.
 
     .. sourcecode:: http
 
-        GET http://savanna/v1.0/775181/node-group-templates
+        GET http://sahara/v1.0/775181/node-group-templates
 
     **response**
 
@@ -828,7 +828,7 @@ This operation does not require a request body.
 
     .. sourcecode:: http
 
-        GET http://savanna/v1.0/775181/node-group-templates/ea34d320-09d7-4dc1-acbf-75b57cec81c9
+        GET http://sahara/v1.0/775181/node-group-templates/ea34d320-09d7-4dc1-acbf-75b57cec81c9
 
     **response**
 
@@ -878,7 +878,7 @@ This operation returns created Node Group Template.
 
     .. sourcecode:: http
 
-        POST http://savanna/v1.0/775181/node-group-templates
+        POST http://sahara/v1.0/775181/node-group-templates
 
     .. sourcecode:: json
 
@@ -927,7 +927,7 @@ This operation returns created Node Group Template.
 
     .. sourcecode:: http
 
-        POST http://savanna/v1.0/775181/node-group-templates
+        POST http://sahara/v1.0/775181/node-group-templates
 
     .. sourcecode:: json
 
@@ -1005,7 +1005,7 @@ This operation does not require a request body.
 
     .. sourcecode:: http
 
-        DELETE http://savanna/v1.0/775181/node-group-templates/060afabe-f4b3-487e-8d48-65c5bb5eb79e
+        DELETE http://sahara/v1.0/775181/node-group-templates/060afabe-f4b3-487e-8d48-65c5bb5eb79e
 
     **response**
 
@@ -1058,7 +1058,7 @@ This operation does not require a request body.
 
     .. sourcecode:: http
 
-        GET http://savanna/v1.0/775181/cluster-templates
+        GET http://sahara/v1.0/775181/cluster-templates
 
     **response**
 
@@ -1142,7 +1142,7 @@ This operation does not require a request body.
 
     .. sourcecode:: http
 
-        GET http://savanna/v1.0/775181/cluster-templates/c365b7dd-9b11-492d-a119-7ae023c19b51
+        GET http://sahara/v1.0/775181/cluster-templates/c365b7dd-9b11-492d-a119-7ae023c19b51
 
     **response**
 
@@ -1221,7 +1221,7 @@ This operation returns created Cluster Template.
 
     .. sourcecode:: http
 
-        POST http://savanna/v1.0/775181/cluster-templates
+        POST http://sahara/v1.0/775181/cluster-templates
 
     .. sourcecode:: json
 
@@ -1307,7 +1307,7 @@ This operation returns created Cluster Template.
 
     .. sourcecode:: http
 
-        POST http://savanna/v1.0/775181/node-group-templates
+        POST http://sahara/v1.0/775181/node-group-templates
 
     .. sourcecode:: json
 
@@ -1416,7 +1416,7 @@ This operation does not require a request body.
 
     .. sourcecode:: http
 
-        DELETE http://savanna/v1.0/775181/cluster-templates/9d72bc1a-8d38-493e-99f3-ebca4ec99ad8
+        DELETE http://sahara/v1.0/775181/cluster-templates/9d72bc1a-8d38-493e-99f3-ebca4ec99ad8
 
     **response**
 
@@ -1471,7 +1471,7 @@ This operation does not require a request body.
 
     .. sourcecode:: http
 
-        GET http://savanna/v1.0/775181/clusters
+        GET http://sahara/v1.0/775181/clusters
 
     **response**
 
@@ -1586,7 +1586,7 @@ This operation does not require a request body.
 
     .. sourcecode:: http
 
-        GET http://savanna/v1.0/775181/clusters/c365b7dd-9b11-492d-a119-7ae023c19b51
+        GET http://sahara/v1.0/775181/clusters/c365b7dd-9b11-492d-a119-7ae023c19b51
 
     **response**
 
@@ -1696,7 +1696,7 @@ This operation returns created Cluster.
 
     .. sourcecode:: http
 
-        POST http://savanna/v1.0/775181/clusters
+        POST http://sahara/v1.0/775181/clusters
 
     .. sourcecode:: json
 
@@ -1805,7 +1805,7 @@ This operation returns created Cluster.
 
     .. sourcecode:: http
 
-        POST http://savanna/v1.0/775181/clusters
+        POST http://sahara/v1.0/775181/clusters
 
     .. sourcecode:: json
 
@@ -1951,7 +1951,7 @@ This operation returns updated Cluster.
 
     .. sourcecode:: http
 
-        PUT http://savanna/v1.0/775181/clusters/9d7g51a-8123-424e-sdsr3-eb222ec989b1
+        PUT http://sahara/v1.0/775181/clusters/9d7g51a-8123-424e-sdsr3-eb222ec989b1
 
     .. sourcecode:: json
 
@@ -2123,7 +2123,7 @@ This operation does not require a request body.
 
     .. sourcecode:: http
 
-        DELETE http://savanna/v1.0/775181/clusters/9d7g51a-8123-424e-sdsr3-eb222ec989b1
+        DELETE http://sahara/v1.0/775181/clusters/9d7g51a-8123-424e-sdsr3-eb222ec989b1
 
     **response**
 

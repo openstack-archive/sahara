@@ -4,11 +4,11 @@ Quickstart guide
 This guide will help you to setup vanilla Hadoop cluster using
 :doc:`../userdoc/rest_api_v1.0`.
 
-1. Install Savanna
-------------------
+1. Install Sahara
+-----------------
 
 * If you want to hack the code follow :doc:`development.environment`.
-* If you just want to install and use Savanna follow :doc:`../userdoc/installation.guide`.
+* If you just want to install and use Sahara follow :doc:`../userdoc/installation.guide`.
 
 
 2. Keystone endpoints setup
@@ -17,7 +17,7 @@ This guide will help you to setup vanilla Hadoop cluster using
 To use CLI tools, such as OpenStack's python clients, we should specify
 environment variables with addresses and credentials. Let's mind that we have
 keystone at ``127.0.0.1:5000`` with tenant ``admin``, credentials ``admin:nova``
-and Savanna API at ``127.0.0.1:8386``. Here is a list of commands to set env:
+and Sahara API at ``127.0.0.1:8386``. Here is a list of commands to set env:
 
 .. sourcecode:: console
 
@@ -68,8 +68,8 @@ images yourself:
 .. sourcecode:: console
 
     $ ssh user@hostname
-    $ wget http://savanna-files.mirantis.com/savanna-0.3-vanilla-1.2.1-ubuntu-13.04.qcow2
-    $ glance image-create --name=savanna-0.3-vanilla-1.2.1-ubuntu-13.04 \
+    $ wget http://sahara-files.mirantis.com/savanna-0.3-vanilla-1.2.1-ubuntu-13.04.qcow2
+    $ glance image-create --name=sahara-0.3-vanilla-1.2.1-ubuntu-13.04 \
       --disk-format=qcow2 --container-format=bare < ./savanna-0.3-vanilla-1.2.1-ubuntu-13.04.qcow2
 
 
@@ -78,8 +78,8 @@ images yourself:
 .. sourcecode:: console
 
     $ ssh user@hostname
-    $ wget http://savanna-files.mirantis.com/savanna-0.3-vanilla-1.2.1-fedora-19.qcow2
-    $ glance image-create --name=savanna-0.3-vanilla-1.2.1-fedora-19 \
+    $ wget http://sahara-files.mirantis.com/savanna-0.3-vanilla-1.2.1-fedora-19.qcow2
+    $ glance image-create --name=sahara-0.3-vanilla-1.2.1-fedora-19 \
       --disk-format=qcow2 --container-format=bare < ./savanna-0.3-vanilla-1.2.1-fedora-19.qcow2
 
 
@@ -90,11 +90,11 @@ Save image id. You can get image id from command ``glance image-list``:
 
 .. sourcecode:: console
 
-    $ glance image-list --name savanna-0.3-vanilla-1.2.1-ubuntu-13.04
+    $ glance image-list --name sahara-0.3-vanilla-1.2.1-ubuntu-13.04
     +--------------------------------------+-----------------------------------------+
     | ID                                   | Name                                    |
     +--------------------------------------+-----------------------------------------+
-    | 3f9fc974-b484-4756-82a4-bff9e116919b | savanna-0.3-vanilla-1.2.1-ubuntu-13.04  |
+    | 3f9fc974-b484-4756-82a4-bff9e116919b | sahara-0.3-vanilla-1.2.1-ubuntu-13.04   |
     +--------------------------------------+-----------------------------------------+
 
     $ export IMAGE_ID="3f9fc974-b484-4756-82a4-bff9e116919b"
@@ -103,7 +103,7 @@ Save image id. You can get image id from command ``glance image-list``:
 4. Register image in Image Registry
 -----------------------------------
 
-* Now we will actually start to interact with Savanna.
+* Now we will actually start to interact with Sahara.
 
 .. sourcecode:: console
 
@@ -115,7 +115,7 @@ Save image id. You can get image id from command ``glance image-list``:
 
     $ sudo pip install httpie
 
-* Send POST request to Savanna API to register image with username ``ubuntu``.
+* Send POST request to Sahara API to register image with username ``ubuntu``.
 
 .. sourcecode:: console
 
@@ -156,7 +156,7 @@ Save image id. You can get image id from command ``glance image-list``:
                 },
                 "minDisk": 0,
                 "minRam": 0,
-                "name": "savanna-0.3-vanilla-1.2.1-ubuntu-13.04",
+                "name": "sahara-0.3-vanilla-1.2.1-ubuntu-13.04",
                 "progress": 100,
                 "status": "ACTIVE",
                 "tags": [
@@ -200,7 +200,7 @@ following content:
         "node_processes": ["tasktracker", "datanode"]
     }
 
-Send POST requests to Savanna API to upload NodeGroup templates:
+Send POST requests to Sahara API to upload NodeGroup templates:
 
 .. sourcecode:: console
 
@@ -212,7 +212,7 @@ Send POST requests to Savanna API to upload NodeGroup templates:
 
 
 You can list available NodeGroup templates by sending the following request to
-Savanna API:
+Sahara API:
 
 .. sourcecode:: console
 
@@ -294,7 +294,7 @@ following content:
         ]
     }
 
-Send POST request to Savanna API to upload Cluster template:
+Send POST request to Sahara API to upload Cluster template:
 
 .. sourcecode:: console
 
@@ -328,7 +328,7 @@ your own keypair in in Horizon UI, or using the command line client:
     nova keypair-add stack --pub-key $PATH_TO_PUBLIC_KEY
 
 
-Send POST request to Savanna API to create and start the cluster:
+Send POST request to Sahara API to create and start the cluster:
 
 .. sourcecode:: console
 

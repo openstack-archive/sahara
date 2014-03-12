@@ -4,7 +4,7 @@ Development Guidelines
 Coding Guidelines
 -----------------
 
-For all the code in Savanna we have a rule - it should pass `PEP 8`_.
+For all the code in Sahara we have a rule - it should pass `PEP 8`_.
 
 To check your code against PEP 8 run:
 
@@ -14,22 +14,22 @@ To check your code against PEP 8 run:
 
 .. note::
   For more details on coding guidelines see file ``HACKING.rst`` in the root
-  of Savanna repo.
+  of Sahara repo.
 
 
 Testing Guidelines
 ------------------
 
-Savanna has a suite of tests that are run on all submitted code,
+Sahara has a suite of tests that are run on all submitted code,
 and it is recommended that developers execute the tests themselves to
 catch regressions early.  Developers are also expected to keep the
 test suite up-to-date with any submitted code changes.
 
-Unit tests are located at ``savanna/tests``.
+Unit tests are located at ``sahara/tests``.
 
-Savanna's suite of unit tests can be executed in an isolated environment
+Sahara's suite of unit tests can be executed in an isolated environment
 with `Tox`_. To execute the unit tests run the following from the root of
-Savanna repo:
+Sahara repo:
 
 .. sourcecode:: console
 
@@ -39,9 +39,9 @@ Savanna repo:
 Documentation Guidelines
 ------------------------
 
-All Savanna docs are written using Sphinx / RST and located in the main repo
+All Sahara docs are written using Sphinx / RST and located in the main repo
 in ``doc`` directory. You can add/edit pages here to update
-https://savanna.readthedocs.org/en/latest/ site.
+http://docs.openstack.org/developer/sahara site.
 
 The documentation in docstrings should follow the `PEP 257`_ conventions
 (as mentioned in the `PEP 8`_ guidelines).
@@ -74,7 +74,7 @@ To make docs generation process faster you can use:
 
     $ SPHINX_DEBUG=1 tox -e docs
 
-or to avoid savanna reinstallation to virtual env each time you want to rebuild
+or to avoid sahara reinstallation to virtual env each time you want to rebuild
 docs you can use the following command (it could be executed only after
 running ``tox -e docs`` first time):
 
@@ -86,7 +86,7 @@ running ``tox -e docs`` first time):
 
 .. note::
   For more details on documentation guidelines see file HACKING.rst in the root
-  of Savanna repo.
+  of Sahara repo.
 
 
 .. _PEP 8: http://www.python.org/dev/peps/pep-0008/

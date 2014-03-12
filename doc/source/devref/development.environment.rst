@@ -1,24 +1,24 @@
 Setting Up a Development Environment
 ====================================
 
-This page describes how to point a local running Savanna instance to remote OpenStack.
+This page describes how to point a local running Sahara instance to remote OpenStack.
 You should be able to debug and test your changes without having to deploy.
 
-Setup Local Environment with Savanna inside DevStack
-----------------------------------------------------
+Setup Local Environment with Sahara inside DevStack
+---------------------------------------------------
 
-The easiest way to have local Savanna environment with DevStack is to include
-Savanna component in DevStack.
+The easiest way to have local Sahara environment with DevStack is to include
+Sahara component in DevStack.
 
 .. toctree::
     :maxdepth: 1
 
     devstack
 
-After you install DevStack with Savanna included you can rejoin screen with
-``rejoin-stack.sh`` command and switch to ``savanna`` tab. Here you can manage
-savanna service as other OpenStack services. Savanna source code is located at
-``$DEST/savanna`` which is usually ``/opt/stack/savanna``.
+After you install DevStack with Sahara included you can rejoin screen with
+``rejoin-stack.sh`` command and switch to ``sahara`` tab. Here you can manage
+sahara service as other OpenStack services. Sahara source code is located at
+``$DEST/sahara`` which is usually ``/opt/stack/sahara``.
 
 Setup Local Environment with external OpenStack
 -----------------------------------------------
@@ -52,8 +52,8 @@ On Fedora-based distributions (e.g., Fedora/RHEL/CentOS/Scientific Linux):
 
 .. sourcecode:: console
 
-    $ git clone git://github.com/openstack/savanna.git
-    $ cd savanna
+    $ git clone git://github.com/openstack/sahara.git
+    $ cd sahara
 
 3. Prepare virtual environment:
 
@@ -65,9 +65,9 @@ On Fedora-based distributions (e.g., Fedora/RHEL/CentOS/Scientific Linux):
 
 .. sourcecode:: console
 
-    $ cp ./etc/savanna/savanna.conf.sample-basic ./etc/savanna/savanna.conf
+    $ cp ./etc/sahara/sahara.conf.sample-basic ./etc/sahara/sahara.conf
 
-5. Look through the savanna.conf and change parameters which default values do
+5. Look through the sahara.conf and change parameters which default values do
 not suite you. Set ``os_auth_host`` to the address of OpenStack keystone.
 
 If you are using Neutron instead of Nova Network add ``use_neutron = True`` to
@@ -76,23 +76,23 @@ also specify ``use_namespaces = True``.
 
 .. note::
 
-    Config file can be specified for ``savanna-api`` command using ``--config-file`` flag.
+    Config file can be specified for ``sahara-api`` command using ``--config-file`` flag.
 
 6. Create database schema:
 
 .. sourcecode:: console
 
-    $ tox -evenv -- savanna-db-manage --config-file etc/savanna/savanna.conf upgrade head
+    $ tox -evenv -- sahara-db-manage --config-file etc/sahara/sahara.conf upgrade head
 
-7. To start Savanna call:
+7. To start Sahara call:
 
 .. sourcecode:: console
 
-    $ tox -evenv -- savanna-api --config-file etc/savanna/savanna.conf -d
+    $ tox -evenv -- sahara-api --config-file etc/sahara/sahara.conf -d
 
 
-Setup local OpenStack dashboard with Savanna plugin
----------------------------------------------------
+Setup local OpenStack dashboard with Sahara plugin
+--------------------------------------------------
 
 .. toctree::
     :maxdepth: 1

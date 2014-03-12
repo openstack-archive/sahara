@@ -4,13 +4,13 @@ How to Participate
 Getting started
 ---------------
 
-* Create account on `Github <https://github.com/openstack/savanna>`_
+* Create account on `Github <https://github.com/openstack/sahara>`_
   (if you don't have one)
 
   * Make sure that your local git is properly configured by executing
     ``git config --list``. If not, configure ``user.name``, ``user.email``
 
-* Create account on `Launchpad <https://launchpad.net/savanna>`_
+* Create account on `Launchpad <https://launchpad.net/sahara>`_
   (if you don't have one)
 
 * Subscribe to `OpenStack general mail-list <http://lists.openstack.org/cgi-bin/mailman/listinfo/openstack>`_
@@ -28,9 +28,9 @@ Getting started
 * Subscribe to code-reviews. Go to your settings on http://review.openstack.org
 
   * Go to ``watched projects``
-  * Add ``openstack/savanna``, ``openstack/savanna-dashboard``,
-    ``openstack/savanna-extra``, ``openstack/python-savannaclient``,
-    ``openstack/savanna-image-elements``
+  * Add ``openstack/sahara``, ``openstack/sahara-dashboard``,
+    ``openstack/sahara-extra``, ``openstack/python-saharaclient``,
+    ``openstack/sahara-image-elements``
 
 
 How to stay in touch with the community?
@@ -38,9 +38,9 @@ How to stay in touch with the community?
 
 * If you have something to discuss use
   `OpenStack development mail-list <http://lists.openstack.org/cgi-bin/mailman/listinfo/openstack-dev>`_.
-  Prefix mail subject with ``[Savanna]``
+  Prefix mail subject with ``[Sahara]``
 
-* Join ``#savanna`` IRC channel on `freenode <http://freenode.net/>`_
+* Join ``#sahara`` IRC channel on `freenode <http://freenode.net/>`_
 
 * Join public weekly meetings on *Thursdays at 18:00 UTC* on
   ``#openstack-meeting-alt`` IRC channel
@@ -49,7 +49,7 @@ How to stay in touch with the community?
 How to send your first patch on review?
 ---------------------------------------
 
-* Checkout Savanna code from `Github <https://github.com/openstack/savanna>`_
+* Checkout Sahara code from `Github <https://github.com/openstack/sahara>`_
 
 * Carefully read https://wiki.openstack.org/wiki/Gerrit_Workflow
 
