@@ -1,5 +1,5 @@
 [gerrit]
 host=review.openstack.org
 port=29418
-project=openstack/savanna.git
+project=openstack/sahara.git
 defaultbranch=stable/0.3
