@@ -644,7 +644,7 @@ class ClusterSpecTestForHDP2(unittest2.TestCase):
             self.assertEqual(
                 'true',
                 cluster_config.configurations['core-site']
-                ['fs.swift.service.savanna.location-aware'])
+                ['fs.swift.service.sahara.location-aware'])
             self.assertEqual(
                 'org.apache.hadoop.net.ScriptBasedMapping',
                 cluster_config.configurations['core-site']

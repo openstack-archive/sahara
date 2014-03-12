@@ -1,6 +1,6 @@
 {
     "description": "This is input",
-    "url": "swift://container.savanna/text",
+    "url": "swift://container.sahara/text",
     "credentials": {
         "password": "swordfish",
         "user": "admin"

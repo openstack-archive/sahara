@@ -234,7 +234,7 @@
                     "default_value": true,
                     "description": "savanna provider public attribute",
                     "is_optional": true,
-                    "name": "fs.swift.service.savanna.public",
+                    "name": "fs.swift.service.sahara.public",
                     "scope": "cluster"
                 },
                 {
@@ -243,7 +243,7 @@
                     "default_value": "8080",
                     "description": " ",
                     "is_optional": true,
-                    "name": "fs.swift.service.savanna.http.port",
+                    "name": "fs.swift.service.sahara.http.port",
                     "scope": "cluster"
                 },
                 {
@@ -252,7 +252,7 @@
                     "default_value": "443",
                     "description": " ",
                     "is_optional": true,
-                    "name": "fs.swift.service.savanna.https.port",
+                    "name": "fs.swift.service.sahara.https.port",
                     "scope": "cluster"
                 }
             ]

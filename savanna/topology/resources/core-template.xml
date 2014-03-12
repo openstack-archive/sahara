@@ -17,7 +17,7 @@
 
     <!--Location awareness for swift -->
     <property>
-        <name>fs.swift.service.savanna.location-aware</name>
+        <name>fs.swift.service.sahara.location-aware</name>
         <value>true</value>
     </property>
 

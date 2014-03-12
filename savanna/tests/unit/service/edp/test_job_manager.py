@@ -96,8 +96,8 @@ class TestJobManager(base.SavannaWithDbTestCase):
         job, job_exec = _create_all_stack('Pig')
         job_binary.return_value = {"name": "script.pig"}
 
-        input_data = _create_data_source('swift://ex.savanna/i')
-        output_data = _create_data_source('swift://ex.savanna/o')
+        input_data = _create_data_source('swift://ex.sahara/i')
+        output_data = _create_data_source('swift://ex.sahara/o')
 
         creator = workflow_factory.get_creator(job)
 
@@ -105,17 +105,17 @@ class TestJobManager(base.SavannaWithDbTestCase):
                                        input_data, output_data)
 
         self.assertIn("""
-      <param>INPUT=swift://ex.savanna/i</param>
-      <param>OUTPUT=swift://ex.savanna/o</param>""", res)
+      <param>INPUT=swift://ex.sahara/i</param>
+      <param>OUTPUT=swift://ex.sahara/o</param>""", res)
 
         self.assertIn("""
       <configuration>
         <property>
-          <name>fs.swift.service.savanna.password</name>
+          <name>fs.swift.service.sahara.password</name>
           <value>admin1</value>
         </property>
         <property>
-          <name>fs.swift.service.savanna.username</name>
+          <name>fs.swift.service.sahara.username</name>
           <value>admin</value>
         </property>
       </configuration>""", res)
@@ -129,7 +129,7 @@ class TestJobManager(base.SavannaWithDbTestCase):
         job, job_exec = _create_all_stack('Pig')
         job_binary.return_value = {"name": "script.pig"}
 
-        input_data = _create_data_source('swift://ex.savanna/i')
+        input_data = _create_data_source('swift://ex.sahara/i')
         output_data = _create_data_source('hdfs://user/hadoop/out')
 
         creator = workflow_factory.get_creator(job)
@@ -139,17 +139,17 @@ class TestJobManager(base.SavannaWithDbTestCase):
         self.assertIn("""
       <configuration>
         <property>
-          <name>fs.swift.service.savanna.password</name>
+          <name>fs.swift.service.sahara.password</name>
           <value>admin1</value>
         </property>
         <property>
-          <name>fs.swift.service.savanna.username</name>
+          <name>fs.swift.service.sahara.username</name>
           <value>admin</value>
         </property>
       </configuration>""", res)
 
         input_data = _create_data_source('hdfs://user/hadoop/in')
-        output_data = _create_data_source('swift://ex.savanna/o')
+        output_data = _create_data_source('swift://ex.sahara/o')
 
         creator = workflow_factory.get_creator(job)
 
@@ -159,11 +159,11 @@ class TestJobManager(base.SavannaWithDbTestCase):
         self.assertIn("""
       <configuration>
         <property>
-          <name>fs.swift.service.savanna.password</name>
+          <name>fs.swift.service.sahara.password</name>
           <value>admin1</value>
         </property>
         <property>
-          <name>fs.swift.service.savanna.username</name>
+          <name>fs.swift.service.sahara.username</name>
           <value>admin</value>
         </property>
       </configuration>""", res)
@@ -196,8 +196,8 @@ class TestJobManager(base.SavannaWithDbTestCase):
 
         job, job_exec = _create_all_stack(job_type, configs)
 
-        input_data = _create_data_source('swift://ex.savanna/i')
-        output_data = _create_data_source('swift://ex.savanna/o')
+        input_data = _create_data_source('swift://ex.sahara/i')
+        output_data = _create_data_source('swift://ex.sahara/o')
 
         creator = workflow_factory.get_creator(job)
 
@@ -214,24 +214,24 @@ class TestJobManager(base.SavannaWithDbTestCase):
         self.assertIn("""
         <property>
           <name>mapred.output.dir</name>
-          <value>swift://ex.savanna/o</value>
+          <value>swift://ex.sahara/o</value>
         </property>""", res)
 
         self.assertIn("""
         <property>
           <name>mapred.input.dir</name>
-          <value>swift://ex.savanna/i</value>
+          <value>swift://ex.sahara/i</value>
         </property>""", res)
 
         self.assertIn("""
         <property>
-          <name>fs.swift.service.savanna.password</name>
+          <name>fs.swift.service.sahara.password</name>
           <value>admin1</value>
         </property>""", res)
 
         self.assertIn("""
         <property>
-          <name>fs.swift.service.savanna.username</name>
+          <name>fs.swift.service.sahara.username</name>
           <value>admin</value>
         </property>""", res)
 
@@ -259,11 +259,11 @@ class TestJobManager(base.SavannaWithDbTestCase):
         self.assertIn("""
       <configuration>
         <property>
-          <name>fs.swift.service.savanna.password</name>
+          <name>fs.swift.service.sahara.password</name>
           <value>admin1</value>
         </property>
         <property>
-          <name>fs.swift.service.savanna.username</name>
+          <name>fs.swift.service.sahara.username</name>
           <value>admin</value>
         </property>
       </configuration>
@@ -278,8 +278,8 @@ class TestJobManager(base.SavannaWithDbTestCase):
         job, job_exec = _create_all_stack('Hive')
         job_binary.return_value = {"name": "script.q"}
 
-        input_data = _create_data_source('swift://ex.savanna/i')
-        output_data = _create_data_source('swift://ex.savanna/o')
+        input_data = _create_data_source('swift://ex.sahara/i')
+        output_data = _create_data_source('swift://ex.sahara/o')
 
         creator = workflow_factory.get_creator(job)
 
@@ -290,23 +290,23 @@ class TestJobManager(base.SavannaWithDbTestCase):
       <job-xml>/user/hadoop/conf/hive-site.xml</job-xml>
       <configuration>
         <property>
-          <name>fs.swift.service.savanna.password</name>
+          <name>fs.swift.service.sahara.password</name>
           <value>admin1</value>
         </property>
         <property>
-          <name>fs.swift.service.savanna.username</name>
+          <name>fs.swift.service.sahara.username</name>
           <value>admin</value>
         </property>
       </configuration>
       <script>script.q</script>
-      <param>INPUT=swift://ex.savanna/i</param>
-      <param>OUTPUT=swift://ex.savanna/o</param>""", res)
+      <param>INPUT=swift://ex.sahara/i</param>
+      <param>OUTPUT=swift://ex.sahara/o</param>""", res)
 
     def _build_workflow_with_conf_common(self, job_type):
         job, _ = _create_all_stack(job_type)
 
-        input_data = _create_data_source('swift://ex.savanna/i')
-        output_data = _create_data_source('swift://ex.savanna/o')
+        input_data = _create_data_source('swift://ex.sahara/i')
+        output_data = _create_data_source('swift://ex.sahara/o')
 
         job_exec = _create_job_exec(job.id,
                                     job_type, configs={"configs": {'c': 'f'}})
@@ -325,13 +325,13 @@ class TestJobManager(base.SavannaWithDbTestCase):
         self.assertIn("""
         <property>
           <name>mapred.input.dir</name>
-          <value>swift://ex.savanna/i</value>
+          <value>swift://ex.sahara/i</value>
         </property>""", res)
 
         self.assertIn("""
         <property>
           <name>mapred.output.dir</name>
-          <value>swift://ex.savanna/o</value>
+          <value>swift://ex.sahara/o</value>
         </property>""", res)
 
     def test_build_workflow_for_job_mapreduce_with_conf(self):

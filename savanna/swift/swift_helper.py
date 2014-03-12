@@ -24,8 +24,8 @@ from savanna.utils import xmlutils as x
 
 LOG = logging.getLogger(__name__)
 CONF = cfg.CONF
-HADOOP_SWIFT_AUTH_URL = 'fs.swift.service.savanna.auth.url'
-HADOOP_SWIFT_TENANT = 'fs.swift.service.savanna.tenant'
+HADOOP_SWIFT_AUTH_URL = 'fs.swift.service.sahara.auth.url'
+HADOOP_SWIFT_TENANT = 'fs.swift.service.sahara.tenant'
 
 
 def _retrieve_tenant():

@@ -41,7 +41,7 @@ class TestJobBinaryValidation(u.ValidationTestCase):
         self._assert_create_object_validation(
             data={
                 "name": "j_o_w",
-                "url": su.SWIFT_INTERNAL_PREFIX+"o.savanna/k"
+                "url": su.SWIFT_INTERNAL_PREFIX+"o.sahara/k"
             },
             bad_req_i=(1, "BAD_JOB_BINARY",
                        "To work with JobBinary located in internal "
@@ -52,7 +52,7 @@ class TestJobBinaryValidation(u.ValidationTestCase):
         self._assert_create_object_validation(
             data={
                 "name": "j_o_w",
-                "url": su.OLD_SWIFT_INTERNAL_PREFIX+"o.savanna/k"
+                "url": su.OLD_SWIFT_INTERNAL_PREFIX+"o.sahara/k"
             },
             bad_req_i=(1, "BAD_JOB_BINARY",
                        "To work with JobBinary located in internal "

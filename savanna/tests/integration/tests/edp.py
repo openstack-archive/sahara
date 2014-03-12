@@ -92,8 +92,8 @@ class EDPTest(base.ITestCase):
             self.savanna.data_sources.delete(output_id)
 
     def _add_swift_configs(self, configs):
-        swift_user = "fs.swift.service.savanna.username"
-        swift_passw = "fs.swift.service.savanna.password"
+        swift_user = "fs.swift.service.sahara.username"
+        swift_passw = "fs.swift.service.sahara.password"
 
         if "configs" not in configs:
             configs["configs"] = {}
@@ -131,8 +131,8 @@ class EDPTest(base.ITestCase):
             lib_binary_list = []
             job_binary_internal_list = []
 
-            swift_input_url = 'swift://%s.savanna/input' % container_name
-            swift_output_url = 'swift://%s.savanna/output' % container_name
+            swift_input_url = 'swift://%s.sahara/input' % container_name
+            swift_output_url = 'swift://%s.sahara/output' % container_name
 
             # Java jobs don't use data sources.  Input/output paths must
             # be passed as args with corresponding username/password configs
