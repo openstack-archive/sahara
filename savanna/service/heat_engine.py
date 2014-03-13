@@ -141,7 +141,7 @@ class HeatEngine(e.Engine):
         We shut down nodes created during scaling, but we don't try to
         to get back decommissioned nodes. I.e. during the rollback
         we only shut down nodes and not launch them. That approach should
-        maximize the change of rollback success.
+        maximize the chance of rollback success.
         """
 
         LOG.info("Cluster '%s' scaling rollback", cluster.name)
