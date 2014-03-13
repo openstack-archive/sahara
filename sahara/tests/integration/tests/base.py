@@ -75,7 +75,7 @@ class ITestCase(testtools.TestCase, testtools.testcase.WithAttributes,
         self.vanilla_config = cfg.ITConfig().vanilla_config
         self.vanilla_two_config = cfg.ITConfig().vanilla_two_config
         self.hdp_config = cfg.ITConfig().hdp_config
-        self.idh_config = cfg.ITConfig().idh_config
+        self.idh2_config = cfg.ITConfig().idh2_config
 
         telnetlib.Telnet(
             self.common_config.SAHARA_HOST, self.common_config.SAHARA_PORT

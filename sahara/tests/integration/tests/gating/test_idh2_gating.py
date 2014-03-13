@@ -25,19 +25,18 @@ from sahara.tests.integration.tests import scaling
 from sahara.tests.integration.tests import swift
 
 
-class IDHGatingTest(cluster_configs.ClusterConfigTest, edp.EDPTest,
-                    map_reduce.MapReduceTest, swift.SwiftTest,
-                    scaling.ScalingTest):
+class IDH2GatingTest(cluster_configs.ClusterConfigTest, edp.EDPTest,
+                     map_reduce.MapReduceTest, swift.SwiftTest,
+                     scaling.ScalingTest):
 
-    idh_config = cfg.ITConfig().idh_config
-    SKIP_MAP_REDUCE_TEST = idh_config.SKIP_MAP_REDUCE_TEST
-    SKIP_SWIFT_TEST = idh_config.SKIP_SWIFT_TEST
-    SKIP_SCALING_TEST = idh_config.SKIP_SCALING_TEST
+    idh2_config = cfg.ITConfig().idh2_config
+    SKIP_MAP_REDUCE_TEST = idh2_config.SKIP_MAP_REDUCE_TEST
+    SKIP_SWIFT_TEST = idh2_config.SKIP_SWIFT_TEST
+    SKIP_SCALING_TEST = idh2_config.SKIP_SCALING_TEST
 
     def setUp(self):
-        super(IDHGatingTest, self).setUp()
+        super(IDH2GatingTest, self).setUp()
 
-        self.idh_config = cfg.ITConfig().idh_config
         self.floating_ip_pool = self.common_config.FLOATING_IP_POOL
         self.internal_neutron_net = None
         if self.common_config.NEUTRON_ENABLED:
@@ -48,14 +47,14 @@ class IDHGatingTest(cluster_configs.ClusterConfigTest, edp.EDPTest,
         self.cluster_id = None
         self.cluster_template_id = None
         self.ng_template_ids = []
-        self.idh_config.IMAGE_ID, self.idh_config.SSH_USERNAME = (
-            self.get_image_id_and_ssh_username(self.idh_config))
+        self.idh2_config.IMAGE_ID, self.idh2_config.SSH_USERNAME = (
+            self.get_image_id_and_ssh_username(self.idh2_config))
 
     @b.errormsg("Failure while 'tt-dn' node group template creation: ")
     def _create_tt_dn_ng_template(self):
         template = {
             'name': 'test-node-group-template-idh-tt-dn',
-            'plugin_config': self.idh_config,
+            'plugin_config': self.idh2_config,
             'description': 'test node group template for Intel plugin',
             'volumes_per_node': 0,
             'volume_size': 0,
@@ -70,7 +69,7 @@ class IDHGatingTest(cluster_configs.ClusterConfigTest, edp.EDPTest,
     def _create_tt_ng_template(self):
         template = {
             'name': 'test-node-group-template-idh-tt',
-            'plugin_config': self.idh_config,
+            'plugin_config': self.idh2_config,
             'description': 'test node group template for Intel plugin',
             'volumes_per_node': 0,
             'volume_size': 0,
@@ -85,7 +84,7 @@ class IDHGatingTest(cluster_configs.ClusterConfigTest, edp.EDPTest,
     def _create_dn_ng_template(self):
         template = {
             'name': 'test-node-group-template-idh-dn',
-            'plugin_config': self.idh_config,
+            'plugin_config': self.idh2_config,
             'description': 'test node group template for Intel plugin',
             'volumes_per_node': 0,
             'volume_size': 0,
@@ -100,14 +99,14 @@ class IDHGatingTest(cluster_configs.ClusterConfigTest, edp.EDPTest,
     def _create_cluster_template(self):
         template = {
             'name': 'test-cluster-template-idh',
-            'plugin_config': self.idh_config,
+            'plugin_config': self.idh2_config,
             'description': 'test cluster template for Intel plugin',
             'cluster_configs': {
                 'general': {
                     'Enable Swift': True,
-                    'IDH tarball URL': self.idh_config.IDH_TARBALL_URL,
-                    'IDH repository URL': self.idh_config.IDH_REPO_URL,
-                    'OS repository URL': self.idh_config.OS_REPO_URL
+                    'IDH tarball URL': self.idh2_config.IDH_TARBALL_URL,
+                    'IDH repository URL': self.idh2_config.IDH_REPO_URL,
+                    'OS repository URL': self.idh2_config.OS_REPO_URL
                 },
                 'HDFS': {
                     'dfs.replication': 1
@@ -116,7 +115,7 @@ class IDHGatingTest(cluster_configs.ClusterConfigTest, edp.EDPTest,
             'node_groups': [
                 {
                     'name': 'manager-node',
-                    'flavor_id': self.idh_config.MANAGER_FLAVOR_ID,
+                    'flavor_id': self.idh2_config.MANAGER_FLAVOR_ID,
                     'node_processes': ['manager'],
                     'floating_ip_pool': self.floating_ip_pool,
                     'count': 1
@@ -151,18 +150,18 @@ class IDHGatingTest(cluster_configs.ClusterConfigTest, edp.EDPTest,
     @b.errormsg("Failure while cluster creation: ")
     def _create_cluster(self):
         cluster_name = (self.common_config.CLUSTER_NAME + '-' +
-                        self.idh_config.PLUGIN_NAME)
+                        self.idh2_config.PLUGIN_NAME)
         cluster = {
             'name': cluster_name,
-            'plugin_config': self.idh_config,
+            'plugin_config': self.idh2_config,
             'cluster_template_id': self.cluster_template_id,
             'description': 'test cluster',
             'cluster_configs': {}
         }
         self.create_cluster(**cluster)
-        self.cluster_info = self.get_cluster_info(self.idh_config)
+        self.cluster_info = self.get_cluster_info(self.idh2_config)
         self.await_active_workers_for_namenode(self.cluster_info['node_info'],
-                                               self.idh_config)
+                                               self.idh2_config)
 
     @b.errormsg("Failure while Map Reduce testing: ")
     def _check_mapreduce(self):
@@ -204,22 +203,22 @@ class IDHGatingTest(cluster_configs.ClusterConfigTest, edp.EDPTest,
         self.cluster_info = self.cluster_scaling(self.cluster_info,
                                                  change_list)
         self.await_active_workers_for_namenode(self.cluster_info['node_info'],
-                                               self.idh_config)
+                                               self.idh2_config)
 
     @b.errormsg("Failure while Map Reduce testing after cluster scaling: ")
     def _check_mapreduce_after_scaling(self):
-        if not self.idh_config.SKIP_SCALING_TEST:
+        if not self.idh2_config.SKIP_SCALING_TEST:
                 self.map_reduce_testing(self.cluster_info)
 
     @b.errormsg(
         "Failure during check of Swift availability after cluster scaling: ")
     def _check_swift_after_scaling(self):
-        if not self.idh_config.SKIP_SCALING_TEST:
+        if not self.idh2_config.SKIP_SCALING_TEST:
             self.check_swift_availability(self.cluster_info)
 
-    @unittest2.skipIf(cfg.ITConfig().idh_config.SKIP_ALL_TESTS_FOR_PLUGIN,
+    @unittest2.skipIf(cfg.ITConfig().idh2_config.SKIP_ALL_TESTS_FOR_PLUGIN,
                       "All tests for Intel plugin were skipped")
-    @testcase.attr('idh')
+    @testcase.attr('idh2')
     def test_idh_plugin_gating(self):
         self._create_tt_dn_ng_template()
         self._create_tt_ng_template()
@@ -236,4 +235,4 @@ class IDHGatingTest(cluster_configs.ClusterConfigTest, edp.EDPTest,
     def tearDown(self):
         self.delete_objects(self.cluster_id, self.cluster_template_id,
                             self.ng_template_ids)
-        super(IDHGatingTest, self).tearDown()
+        super(IDH2GatingTest, self).tearDown()

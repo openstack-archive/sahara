@@ -396,8 +396,8 @@ HDP_CONFIG_OPTS = [
     cfg.BoolOpt('SKIP_SCALING_TEST', default=False)
 ]
 
-IDH_CONFIG_GROUP = cfg.OptGroup(name='IDH')
-IDH_CONFIG_OPTS = [
+IDH2_CONFIG_GROUP = cfg.OptGroup(name='IDH2')
+IDH2_CONFIG_OPTS = [
     cfg.StrOpt('PLUGIN_NAME',
                default='idh',
                help='Name of plugin.'),
@@ -520,7 +520,7 @@ class ITConfig:
         register_config(cfg.CONF, COMMON_CONFIG_GROUP, COMMON_CONFIG_OPTS)
         register_config(cfg.CONF, VANILLA_CONFIG_GROUP, VANILLA_CONFIG_OPTS)
         register_config(cfg.CONF, HDP_CONFIG_GROUP, HDP_CONFIG_OPTS)
-        register_config(cfg.CONF, IDH_CONFIG_GROUP, IDH_CONFIG_OPTS)
+        register_config(cfg.CONF, IDH2_CONFIG_GROUP, IDH2_CONFIG_OPTS)
         register_config(
             cfg.CONF, VANILLA_TWO_CONFIG_GROUP, VANILLA_TWO_CONFIG_OPTS)
 
@@ -533,4 +533,4 @@ class ITConfig:
         self.vanilla_config = cfg.CONF.VANILLA
         self.vanilla_two_config = cfg.CONF.VANILLA_TWO
         self.hdp_config = cfg.CONF.HDP
-        self.idh_config = cfg.CONF.IDH
+        self.idh2_config = cfg.CONF.IDH2
