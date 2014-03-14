@@ -2,7 +2,7 @@ Quickstart guide
 ================
 
 This guide will help you to setup vanilla Hadoop cluster using
-:doc:`../userdoc/rest_api_v1.0`.
+:doc:`../restapi/rest_api_v1.0`.
 
 1. Install Savanna
 ------------------

@@ -9,7 +9,7 @@ Savanna REST API v1.1 (EDP)
 ======================
 
 REST API v1.1 enhances the :doc:`rest_api_v1.0` and includes all requests from v1.0.
-REST API V1.1 is :doc:`edp` REST API. It covers the majority of new functions related to creating job binaries and job objects on running Hadoop clusters.
+REST API V1.1 is :doc:`../userdoc/edp` REST API. It covers the majority of new functions related to creating job binaries and job objects on running Hadoop clusters.
 
 2. Data Sources
 ===============
@@ -1135,7 +1135,7 @@ Normal Response Code: 202 (ACCEPTED)
 
 Errors: none
 
-This operation returns the created Job Execution object. Note that different job types support different combinations of ``configs``, ``args``, and ``params``.  The :doc:`edp` document discusses these differences.
+This operation returns the created Job Execution object. Note that different job types support different combinations of ``configs``, ``args``, and ``params``.  The :doc:`../userdoc/edp` document discusses these differences.
 
 **Example execution of a Pig job**:
     **request**
