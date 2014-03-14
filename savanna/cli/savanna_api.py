@@ -34,7 +34,7 @@ if os.path.exists(os.path.join(possible_topdir,
                                '__init__.py')):
     sys.path.insert(0, possible_topdir)
 
-gettext.install('savanna', unicode=1)
+gettext.install('sahara', unicode=1)
 
 
 from savanna import config
