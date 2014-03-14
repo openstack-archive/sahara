@@ -38,7 +38,7 @@ class VersionHandler(avm.AbstractVersionHandler):
     def get_node_processes(self):
         return {
             "Hadoop": [],
-            "MapReduce": [],
+            "MapReduce": ["historyserver"],
             "HDFS": ["namenode", "datanode"],
             "YARN": ["resourcemanager", "nodemanager"]
         }
@@ -66,6 +66,10 @@ class VersionHandler(avm.AbstractVersionHandler):
         for nm in utils.get_nodemanagers(cluster):
             run.start_yarn_process(nm, 'nodemanager')
 
+        hs = utils.get_historyserver(cluster)
+        if hs:
+            run.start_historyserver(hs)
+
         self._set_cluster_info(cluster)
 
     def decommission_nodes(self, cluster, instances):
@@ -81,6 +85,7 @@ class VersionHandler(avm.AbstractVersionHandler):
     def _set_cluster_info(self, cluster):
         nn = utils.get_namenode(cluster)
         rm = utils.get_resourcemanager(cluster)
+        hs = utils.get_historyserver(cluster)
 
         info = {}
 
@@ -92,6 +97,11 @@ class VersionHandler(avm.AbstractVersionHandler):
         if nn:
             info['HDFS'] = {
                 'Web UI': 'http://%s:%s' % (nn.management_ip, '50070'),
+            }
+
+        if hs:
+            info['MapReduce JobHistory Server'] = {
+                'Web UI': 'http://%s:%s' % (hs.management_ip, '19888')
             }
 
         ctx = context.ctx()

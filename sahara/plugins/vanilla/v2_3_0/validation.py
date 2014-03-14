@@ -29,6 +29,11 @@ def validate_cluster_creating(cluster):
         raise ex.InvalidComponentCountException('resourcemanager', '0 or 1',
                                                 rm_count)
 
+    hs_count = _get_inst_count(cluster, 'historyserver')
+    if hs_count not in [0, 1]:
+        raise ex.InvalidComponentCountException('historyserver', '0 or 1',
+                                                hs_count)
+
     if rm_count == 0:
         nm_count = _get_inst_count(cluster, 'nodemanager')
         if nm_count > 0:

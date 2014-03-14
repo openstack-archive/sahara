@@ -143,6 +143,7 @@ def _push_env_configs(instance, configs):
     dn_heap = configs['HDFS']['DataNode Heap Size']
     rm_heap = configs['YARN']['ResourceManager Heap Size']
     nm_heap = configs['YARN']['NodeManager Heap Size']
+    hs_heap = configs['MapReduce']['JobHistoryServer Heap Size']
 
     with instance.remote() as r:
         r.replace_remote_string(
@@ -161,6 +162,10 @@ def _push_env_configs(instance, configs):
             '%s/yarn-env.sh' % HADOOP_CONF_DIR,
             '\\#export YARN_NODEMANAGER_HEAPSIZE=.*',
             'export YARN_NODEMANAGER_HEAPSIZE=%d' % nm_heap)
+        r.replace_remote_string(
+            '%s/mapred-env.sh' % HADOOP_CONF_DIR,
+            'export HADOOP_JOB_HISTORYSERVER_HEAPSIZE=.*',
+            'export HADOOP_JOB_HISTORYSERVER_HEAPSIZE=%d' % hs_heap)
 
 
 def _push_xml_configs(instance, configs):
