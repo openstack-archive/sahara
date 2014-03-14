@@ -224,7 +224,7 @@ def _configure_services(client, cluster):
         client.services.yarn.add_nodes('NodeManager', nm_hosts)
 
     if hs_host:
-        client.services.yarn.add_nodes('HistoryServer', nm_hosts)
+        client.services.yarn.add_nodes('HistoryServer', [hs_host])
 
 
 def _configure_storage(client, cluster):
