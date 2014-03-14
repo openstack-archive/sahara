@@ -212,14 +212,14 @@ def get_possible_job_config(job_type):
         return {'job_config': {'configs': [], 'args': []}}
 
     if edp.compare_job_type(job_type, 'MapReduce', 'Pig'):
-        #TODO(nmakhotkin) Savanna should return config based on specific plugin
+        #TODO(nmakhotkin) Here we should return config based on specific plugin
         cfg = xmlutils.load_hadoop_xml_defaults(
             'plugins/vanilla/v1_2_1/resources/mapred-default.xml')
         if edp.compare_job_type(job_type, 'MapReduce'):
             cfg += xmlutils.load_hadoop_xml_defaults(
                 'service/edp/resources/mapred-job-config.xml')
     elif edp.compare_job_type(job_type, 'Hive'):
-        #TODO(nmakhotkin) Savanna should return config based on specific plugin
+        #TODO(nmakhotkin) Here we should return config based on specific plugin
         cfg = xmlutils.load_hadoop_xml_defaults(
             'plugins/vanilla/v1_2_1/resources/hive-default.xml')
 

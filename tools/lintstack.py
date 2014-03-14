@@ -30,7 +30,7 @@ from six.moves import cStringIO as StringIO
 # Note(maoy): E1103 is error code related to partial type inference
 ignore_codes = ["E1103"]
 # Note(maoy): the error message is the pattern of E0202. It should be ignored
-# for savanna.tests modules
+# for sahara.tests modules
 ignore_messages = ["An attribute affected in savanna.tests"]
 # We ignore all errors in openstack.common because it should be checked 
 # elsewhere.

@@ -160,7 +160,7 @@ class Config(resources.BaseResource):
 
 
 class UserInput(object):
-    """Value provided by the Savanna user for a specific config entry."""
+    """Value provided by the user for a specific config entry."""
 
     def __init__(self, config, value):
         self.config = config

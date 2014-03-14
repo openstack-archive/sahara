@@ -24,7 +24,7 @@ from eventlet import wsgi
 from oslo.config import cfg
 
 
-# If ../savanna/__init__.py exists, add ../ to Python search path, so that
+# If ../sahara/__init__.py exists, add ../ to Python search path, so that
 # it will override what happens to be installed in /usr/(local/)lib/python...
 possible_topdir = os.path.normpath(os.path.join(os.path.abspath(sys.argv[0]),
                                                 os.pardir,

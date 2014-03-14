@@ -449,11 +449,11 @@ class ITestCase(unittest2.TestCase):
             )
         # If plugin_config.IMAGE_ID, plugin_config.IMAGE_NAME and
         # plugin_config.IMAGE_TAG are None then image is chosen
-        # by tag "savanna_i_tests". If image has tag "savanna_i_tests"
+        # by tag "sahara_i_tests". If image has tag "sahara_i_tests"
         # (at the same time image ID, image name and image tag were not
         # specified in configuration file of integration tests) then return
         # its ID and username. Found image will be chosen as image for tests.
-        # If image with tag "savanna_i_tests" not found then handle error
+        # If image with tag "sahara_i_tests" not found then handle error
         for image in images:
             if (image.metadata.get('_savanna_tag_savanna_i_tests')) and (
                     image.metadata.get('_savanna_tag_'

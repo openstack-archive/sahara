@@ -72,7 +72,7 @@ class AmbariPlugin(p.ProvisioningPluginBase):
     def _get_servers(self, cluster):
         servers = []
         if hasattr(cluster, 'node_groups') and cluster.node_groups is not None:
-            # code for a savanna cluster object
+            # code for a cluster object
             for node_group in cluster.node_groups:
                 servers += node_group.instances
         else:
@@ -232,7 +232,7 @@ class AmbariPlugin(p.ProvisioningPluginBase):
         LOG.info('Using "{0}" as admin user for scaling of cluster'
                  .format(ambari_info.user))
 
-    # SAVANNA PLUGIN SPI METHODS:
+    # PLUGIN SPI METHODS:
     def get_versions(self):
         return self.version_factory.get_versions()
 
@@ -243,7 +243,7 @@ class AmbariPlugin(p.ProvisioningPluginBase):
         handler = self.version_factory.get_version_handler(hadoop_version)
         return handler.get_config_items()
 
-    # cluster name argument supports the non-savanna cluster creation mode
+    # cluster name argument supports the non-sahara cluster creation mode
     def start_cluster(self, cluster):
         client = self.version_factory.get_version_handler(
             cluster.hadoop_version).get_ambari_client()

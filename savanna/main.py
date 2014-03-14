@@ -83,7 +83,7 @@ CONF.register_opts(opts)
 def make_app():
     """App builder (wsgi)
 
-    Entry point for Savanna REST API server
+    Entry point for Sahara REST API server
     """
     app = flask.Flask('savanna.api')
 
@@ -152,7 +152,7 @@ def make_app():
 
 def _get_infrastructure_engine():
     """That should import and return one of
-    savanna.service.instances*.py modules
+    sahara.service.instances*.py modules
     """
 
     LOG.info("Loading '%s' infrastructure engine" %

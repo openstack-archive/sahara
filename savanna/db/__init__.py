@@ -14,7 +14,7 @@
 # limitations under the License.
 
 """
-DB abstraction for Savanna
+DB abstraction for Sahara
 """
 
 from savanna.db.api import *  # noqa

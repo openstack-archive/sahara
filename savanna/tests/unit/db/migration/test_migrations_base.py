@@ -182,10 +182,10 @@ class BaseMigrationTestCase(unittest2.TestCase):
         self.DEFAULT_CONFIG_FILE = os.path.join(
             os.path.dirname(__file__),
             'test_migrations.conf')
-        # Test machines can set the SAVANNA_TEST_MIGRATIONS_CONF variable
+        # Test machines can set the SAHARA_TEST_MIGRATIONS_CONF variable
         # to override the location of the config file for migration testing
         self.CONFIG_FILE_PATH = os.environ.get(
-            'SAVANNA_TEST_MIGRATIONS_CONF',
+            'SAHARA_TEST_MIGRATIONS_CONF',
             self.DEFAULT_CONFIG_FILE)
 
         self.ALEMBIC_CONFIG = alembic_config.Config(

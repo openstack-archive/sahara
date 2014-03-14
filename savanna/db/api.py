@@ -15,8 +15,8 @@
 
 """Defines interface for DB access.
 
-Functions in this module are imported into the savanna.db namespace. Call these
-functions from savanna.db namespace, not the savanna.db.api namespace.
+Functions in this module are imported into the sahara.db namespace. Call these
+functions from sahara.db namespace, not the sahara.db.api namespace.
 
 All functions in this module return objects that implement a dictionary-like
 interface.
@@ -27,7 +27,7 @@ interface.
               `sqlalchemy` is the only supported backend right now.
 
 :sql_connection:  string specifying the sqlalchemy connection to use, like:
-                  `sqlite:///var/lib/savanna/savanna.sqlite`.
+                  `sqlite:///var/lib/sahara/sahara.sqlite`.
 
 """
 

@@ -20,7 +20,7 @@ from savanna.openstack.common.db.sqlalchemy import models as oslo_models
 
 
 class _SaharaBase(oslo_models.ModelBase, oslo_models.TimestampMixin):
-    """Base class for all Savanna SQLAlchemy DB Models."""
+    """Base class for all SQLAlchemy DB Models."""
 
     def to_dict(self):
         """sqlalchemy based automatic to_dict method."""
