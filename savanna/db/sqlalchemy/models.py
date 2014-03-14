@@ -37,7 +37,7 @@ def _id_column():
 
 ## Main objects: Cluster, NodeGroup, Instance
 
-class Cluster(mb.SavannaBase):
+class Cluster(mb.SaharaBase):
     """Contains all info about cluster."""
 
     __tablename__ = 'clusters'
@@ -78,7 +78,7 @@ class Cluster(mb.SavannaBase):
         return d
 
 
-class NodeGroup(mb.SavannaBase):
+class NodeGroup(mb.SaharaBase):
     """Specifies group of nodes within a cluster."""
 
     __tablename__ = 'node_groups'
@@ -117,7 +117,7 @@ class NodeGroup(mb.SavannaBase):
         return d
 
 
-class Instance(mb.SavannaBase):
+class Instance(mb.SaharaBase):
     """An OpenStack instance created for the cluster."""
 
     __tablename__ = 'instances'
@@ -138,7 +138,7 @@ class Instance(mb.SavannaBase):
 
 ## Template objects: ClusterTemplate, NodeGroupTemplate, TemplatesRelation
 
-class ClusterTemplate(mb.SavannaBase):
+class ClusterTemplate(mb.SaharaBase):
     """Template for Cluster."""
 
     __tablename__ = 'cluster_templates'
@@ -167,7 +167,7 @@ class ClusterTemplate(mb.SavannaBase):
         return d
 
 
-class NodeGroupTemplate(mb.SavannaBase):
+class NodeGroupTemplate(mb.SaharaBase):
     """Template for NodeGroup."""
 
     __tablename__ = 'node_group_templates'
@@ -192,7 +192,7 @@ class NodeGroupTemplate(mb.SavannaBase):
     floating_ip_pool = sa.Column(sa.String(36))
 
 
-class TemplatesRelation(mb.SavannaBase):
+class TemplatesRelation(mb.SaharaBase):
     """NodeGroupTemplate - ClusterTemplate relationship.
 
     In fact, it's a template of NodeGroup in Cluster.
@@ -224,7 +224,7 @@ class TemplatesRelation(mb.SavannaBase):
 
 ## EDP objects: DataSource, Job, Job Execution, JobBinary
 
-class DataSource(mb.SavannaBase):
+class DataSource(mb.SaharaBase):
     """DataSource - represent a diffident types of data source,
     e.g. Swift, Cassandra etc.
     """
@@ -244,7 +244,7 @@ class DataSource(mb.SavannaBase):
     credentials = sa.Column(st.JsonDictType())
 
 
-class JobExecution(mb.SavannaBase):
+class JobExecution(mb.SaharaBase):
     """JobExecution - represent a job execution of specific cluster
     """
     __tablename__ = 'job_executions'
@@ -269,7 +269,7 @@ class JobExecution(mb.SavannaBase):
     extra = sa.Column(st.JsonDictType())
 
 mains_association = sa.Table("mains_association",
-                             mb.SavannaBase.metadata,
+                             mb.SaharaBase.metadata,
                              sa.Column("Job_id",
                                        sa.String(36),
                                        sa.ForeignKey("jobs.id")),
@@ -280,7 +280,7 @@ mains_association = sa.Table("mains_association",
 
 
 libs_association = sa.Table("libs_association",
-                            mb.SavannaBase.metadata,
+                            mb.SaharaBase.metadata,
                             sa.Column("Job_id",
                                       sa.String(36),
                                       sa.ForeignKey("jobs.id")),
@@ -290,7 +290,7 @@ libs_association = sa.Table("libs_association",
                             )
 
 
-class Job(mb.SavannaBase):
+class Job(mb.SaharaBase):
     """Job - description and location of a job binary
     """
 
@@ -319,7 +319,7 @@ class Job(mb.SavannaBase):
         return d
 
 
-class JobBinaryInternal(mb.SavannaBase):
+class JobBinaryInternal(mb.SaharaBase):
     """JobBinaryInternal - raw binary storage for executable jobs
     """
     __tablename__ = 'job_binary_internal'
@@ -336,7 +336,7 @@ class JobBinaryInternal(mb.SavannaBase):
     datasize = sa.Column(sa.BIGINT)
 
 
-class JobBinary(mb.SavannaBase):
+class JobBinary(mb.SaharaBase):
     """JobBinary - raw binary storage for executable jobs
     """
 

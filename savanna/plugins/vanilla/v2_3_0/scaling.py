@@ -112,8 +112,8 @@ def _check_decommission(cluster, instances, check_func, timeout):
         else:
             context.sleep(5)
     else:
-        ex.SavannaException("Cannot finish decommission in %d seconds" %
-                            timeout)
+        ex.SaharaException("Cannot finish decommission in %d seconds" %
+                           timeout)
 
 
 def _check_nodemanagers_decommission(cluster, instances):

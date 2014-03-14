@@ -32,7 +32,7 @@ SERVICE_SPECIFIC = ["auth.url", "tenant",
                     "region", "apikey"]
 
 
-class SwiftIntegrationTestCase(base.SavannaTestCase):
+class SwiftIntegrationTestCase(base.SaharaTestCase):
 
     @mock.patch('savanna.utils.openstack.base.url_for')
     def test_get_swift_configs(self, authUrlConfig):

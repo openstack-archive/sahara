@@ -16,21 +16,21 @@
 import savanna.exceptions as e
 
 
-class NodeGroupCannotBeScaled(e.SavannaException):
+class NodeGroupCannotBeScaled(e.SaharaException):
     def __init__(self, ng_name, reason):
         self.message = ("Chosen node group %s cannot be scaled : "
                         "%s" % (ng_name, reason))
         self.code = "NODE_GROUP_CANNOT_BE_SCALED"
 
 
-class ClusterCannotBeScaled(e.SavannaException):
+class ClusterCannotBeScaled(e.SaharaException):
     def __init__(self, cluster_name, reason):
         self.message = ("Cluster %s cannot be scaled : "
                         "%s" % (cluster_name, reason))
         self.code = "CLUSTER_CANNOT_BE_SCALED"
 
 
-class RequiredServiceMissingException(e.SavannaException):
+class RequiredServiceMissingException(e.SaharaException):
     """A validation exception indicating that a required service
        has not been deployed
     """
@@ -47,7 +47,7 @@ class RequiredServiceMissingException(e.SavannaException):
         super(RequiredServiceMissingException, self).__init__()
 
 
-class InvalidComponentCountException(e.SavannaException):
+class InvalidComponentCountException(e.SaharaException):
     """A validation exception indicating that an invalid number of
        components are being deployed in a cluster
     """
@@ -61,7 +61,7 @@ class InvalidComponentCountException(e.SavannaException):
         super(InvalidComponentCountException, self).__init__()
 
 
-class HadoopProvisionError(e.SavannaException):
+class HadoopProvisionError(e.SaharaException):
     """Exception indicating that cluster provisioning failed.
 
     A message indicating the reason for failure must be provided.

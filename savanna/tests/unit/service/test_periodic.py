@@ -26,7 +26,7 @@ from savanna.tests.unit.conductor.manager import test_clusters as tc
 from savanna.tests.unit.conductor.manager import test_edp as te
 
 
-class TestPeriodicBack(base.SavannaWithDbTestCase):
+class TestPeriodicBack(base.SaharaWithDbTestCase):
 
     def setUp(self):
         super(TestPeriodicBack, self).setUp()
@@ -46,7 +46,7 @@ class TestPeriodicBack(base.SavannaWithDbTestCase):
         self._create_job_execution({"end_time": None,
                                     "id": 3},
                                    job, ds, ds)
-        p.SavannaPeriodicTasks().update_job_statuses(None)
+        p.SaharaPeriodicTasks().update_job_statuses(None)
         self.assertEqual(get_job_status.call_count, 2)
         get_job_status.assert_has_calls([mock.call(u'2'),
                                          mock.call(u'3')])
@@ -79,7 +79,7 @@ class TestPeriodicBack(base.SavannaWithDbTestCase):
                                     "id": 3,
                                     "cluster_id": "2"},
                                    job, ds, ds)
-        p.SavannaPeriodicTasks().terminate_unneeded_clusters(None)
+        p.SaharaPeriodicTasks().terminate_unneeded_clusters(None)
         self.assertEqual(terminate_cluster.call_count, 1)
         terminate_cluster.assert_has_calls([mock.call(u'1')])
 

@@ -120,7 +120,7 @@ def get_pgsql_connection_info(conn_pieces):
 
 
 class CommonTestsMixIn(object):
-    """These tests are shared between TestSavannaMigrations and
+    """These tests are shared between TestSaharaMigrations and
     TestBaremetalMigrations.
 
     BaseMigrationTestCase is effectively an abstract class, meant to be derived

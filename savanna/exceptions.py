@@ -14,7 +14,7 @@
 # limitations under the License.
 
 
-class SavannaException(Exception):
+class SaharaException(Exception):
     """Base Exception for the project
 
     To correctly use this class, inherit from it and define
@@ -27,11 +27,11 @@ class SavannaException(Exception):
         return self.message
 
     def __init__(self):
-        super(SavannaException, self).__init__(
+        super(SaharaException, self).__init__(
             '%s: %s' % (self.code, self.message))
 
 
-class NotFoundException(SavannaException):
+class NotFoundException(SaharaException):
     message = "Object not found"
     # It could be a various property of object which was not found
     value = None
@@ -43,7 +43,7 @@ class NotFoundException(SavannaException):
             self.message = message % value
 
 
-class NameAlreadyExistsException(SavannaException):
+class NameAlreadyExistsException(SaharaException):
     message = "Name already exists"
 
     def __init__(self, message=None):
@@ -52,7 +52,7 @@ class NameAlreadyExistsException(SavannaException):
             self.message = message
 
 
-class InvalidCredentials(SavannaException):
+class InvalidCredentials(SaharaException):
     message = "Invalid credentials"
 
     def __init__(self, message=None):
@@ -61,7 +61,7 @@ class InvalidCredentials(SavannaException):
             self.message = message
 
 
-class InvalidException(SavannaException):
+class InvalidException(SaharaException):
     message = "Invalid object reference"
 
     def __init__(self, message=None):
@@ -70,7 +70,7 @@ class InvalidException(SavannaException):
             self.message = message
 
 
-class RemoteCommandException(SavannaException):
+class RemoteCommandException(SaharaException):
     message = "Error during command execution: \"%s\""
 
     def __init__(self, cmd, ret_code=None, stdout=None,
@@ -96,7 +96,7 @@ class RemoteCommandException(SavannaException):
         self.message = self.message.decode('ascii', 'ignore')
 
 
-class InvalidDataException(SavannaException):
+class InvalidDataException(SaharaException):
     """General exception to use for invalid data
 
     A more useful message should be passed to __init__ which
@@ -110,7 +110,7 @@ class InvalidDataException(SavannaException):
             self.message = message
 
 
-class BadJobBinaryInternalException(SavannaException):
+class BadJobBinaryInternalException(SaharaException):
     message = "Job binary internal data must be a string of length " \
               "greater than zero"
 
@@ -120,7 +120,7 @@ class BadJobBinaryInternalException(SavannaException):
         self.code = "BAD_JOB_BINARY"
 
 
-class BadJobBinaryException(SavannaException):
+class BadJobBinaryException(SaharaException):
     message = "To work with JobBinary located in internal swift add 'user'" \
               " and 'password' to extra"
 
@@ -130,7 +130,7 @@ class BadJobBinaryException(SavannaException):
         self.code = "BAD_JOB_BINARY"
 
 
-class DBDuplicateEntry(SavannaException):
+class DBDuplicateEntry(SaharaException):
     message = "Database object already exists"
     code = "DB_DUPLICATE_ENTRY"
 
@@ -139,7 +139,7 @@ class DBDuplicateEntry(SavannaException):
             self.message = message
 
 
-class DeletionFailed(SavannaException):
+class DeletionFailed(SaharaException):
     message = "Object was not deleted"
     code = "DELETION_FAILED"
 
@@ -148,18 +148,18 @@ class DeletionFailed(SavannaException):
             self.message = message
 
 
-class MissingFloatingNetworkException(SavannaException):
+class MissingFloatingNetworkException(SaharaException):
     def __init__(self, ng_name):
         self.message = ("Node Group %s is missing 'floating_ip_pool' "
                         "field" % ng_name)
         self.code = "MISSING_FLOATING_NETWORK"
 
 
-class SwiftClientException(SavannaException):
+class SwiftClientException(SaharaException):
     '''General wrapper object for swift client exceptions
 
     This exception is intended for wrapping the message from a
-    swiftclient.ClientException in a SavannaException. The ClientException
+    swiftclient.ClientException in a SaharaException. The ClientException
     should be caught and an instance of SwiftClientException raised instead.
     '''
     def __init__(self, message):
@@ -167,7 +167,7 @@ class SwiftClientException(SavannaException):
         self.code = "SWIFT_CLIENT_EXCEPTION"
 
 
-class DataTooBigException(SavannaException):
+class DataTooBigException(SaharaException):
     message = "Size of data (%s) is greater than maximum (%s)"
 
     def __init__(self, size, maximum, message=None):
@@ -177,21 +177,21 @@ class DataTooBigException(SavannaException):
         self.code = "DATA_TOO_BIG"
 
 
-class ThreadException(SavannaException):
+class ThreadException(SaharaException):
     def __init__(self, thread_description, e):
         self.message = "An error occurred in thread '%s': %s" % (
             thread_description, str(e))
         self.code = "THREAD_EXCEPTION"
 
 
-class NotImplementedException(SavannaException):
+class NotImplementedException(SaharaException):
     code = "NOT_IMPLEMENTED"
 
     def __init__(self, feature):
         self.message = "Feature '%s' is not implemented" % feature
 
 
-class HeatStackException(SavannaException):
+class HeatStackException(SaharaException):
     def __init__(self, heat_stack_status):
         self.code = "HEAT_STACK_EXCEPTION"
         self.message = "Heat stack failed with status %s" % heat_stack_status

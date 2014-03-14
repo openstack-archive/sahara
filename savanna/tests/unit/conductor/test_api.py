@@ -62,7 +62,7 @@ SAMPLE_INSTANCE = {
 }
 
 
-class TestConductorClusterApi(base.SavannaWithDbTestCase):
+class TestConductorClusterApi(base.SaharaWithDbTestCase):
     def setUp(self):
         super(TestConductorClusterApi, self).setUp()
         self.api = conductor.API

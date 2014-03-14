@@ -85,7 +85,7 @@ class Rest(flask.Blueprint):
 
                 try:
                     return func(**kwargs)
-                except ex.SavannaException as e:
+                except ex.SaharaException as e:
                     return bad_request(e)
                 except Exception as e:
                     return internal_error(500, 'Internal Server Error', e)

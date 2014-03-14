@@ -23,7 +23,7 @@ from savanna.tests.unit import base
 import savanna.topology.topology_helper as th
 
 
-class TopologyTestCase(base.SavannaTestCase):
+class TopologyTestCase(base.SaharaTestCase):
     def setUp(self):
         context.set_ctx(context.Context(None, None, None, None))
 

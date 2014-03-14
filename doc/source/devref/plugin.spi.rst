@@ -47,7 +47,7 @@ Lists tags, that should be added to OpenStack Image via Image Registry. Tags are
 validate(cluster)
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Validates a given cluster object. Raises *SavannaException* with meaningful message.
+Validates a given cluster object. Raises *SaharaException* with meaningful message.
 
 *Returns*: None
 

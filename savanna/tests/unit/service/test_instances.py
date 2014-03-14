@@ -28,7 +28,7 @@ from savanna.utils import general as g
 conductor = cond.API
 
 
-class AbstractInstanceTest(base.SavannaWithDbTestCase):
+class AbstractInstanceTest(base.SaharaWithDbTestCase):
     def setUp(self):
         super(AbstractInstanceTest, self).setUp()
 

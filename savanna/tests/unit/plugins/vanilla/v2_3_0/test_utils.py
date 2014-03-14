@@ -20,7 +20,7 @@ from savanna.tests.unit import base
 from savanna.utils import files
 
 
-class UtilsTestCase(base.SavannaTestCase):
+class UtilsTestCase(base.SaharaTestCase):
     @mock.patch('savanna.plugins.general.utils.get_namenode')
     def test_datanodes_status(self, nn):
         report = files.get_file_text(

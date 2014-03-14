@@ -16,7 +16,7 @@
 import savanna.exceptions as e
 
 
-class IntelPluginException(e.SavannaException):
+class IntelPluginException(e.SaharaException):
     def __init__(self, message):
         self.message = message
         self.code = "INTEL_PLUGIN_EXCEPTION"
