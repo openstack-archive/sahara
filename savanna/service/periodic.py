@@ -56,7 +56,7 @@ CONF.register_opts(periodic_opts)
 conductor = c.API
 
 
-class SavannaPeriodicTasks(periodic_task.PeriodicTasks):
+class SaharaPeriodicTasks(periodic_task.PeriodicTasks):
     @periodic_task.periodic_task(spacing=45, run_immediately=True)
     def update_job_statuses(self, ctx):
         LOG.debug('Updating job statuses')
@@ -112,7 +112,7 @@ def setup(app):
             initial_delay = None
 
         app.tg = threadgroup.ThreadGroup()
-        pt = SavannaPeriodicTasks()
+        pt = SaharaPeriodicTasks()
         app.tg.add_dynamic_timer(
             pt.run_periodic_tasks,
             initial_delay=initial_delay,

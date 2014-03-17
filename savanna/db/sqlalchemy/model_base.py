@@ -19,7 +19,7 @@ from sqlalchemy.orm import attributes
 from savanna.openstack.common.db.sqlalchemy import models as oslo_models
 
 
-class _SavannaBase(oslo_models.ModelBase, oslo_models.TimestampMixin):
+class _SaharaBase(oslo_models.ModelBase, oslo_models.TimestampMixin):
     """Base class for all Savanna SQLAlchemy DB Models."""
 
     def to_dict(self):
@@ -45,4 +45,4 @@ def datetime_to_str(dct, attr_name):
     if dct.get(attr_name) is not None:
         dct[attr_name] = dct[attr_name].isoformat(' ')
 
-SavannaBase = declarative.declarative_base(cls=_SavannaBase)
+SaharaBase = declarative.declarative_base(cls=_SaharaBase)

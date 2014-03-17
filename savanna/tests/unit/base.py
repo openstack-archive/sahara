@@ -24,10 +24,10 @@ from savanna import main
 from savanna.openstack.common.db.sqlalchemy import session
 
 
-class SavannaTestCase(unittest2.TestCase):
+class SaharaTestCase(unittest2.TestCase):
 
     def setUp(self):
-        super(SavannaTestCase, self).setUp()
+        super(SaharaTestCase, self).setUp()
 
         self.maxDiff = None
         self.setup_context()
@@ -47,9 +47,9 @@ class SavannaTestCase(unittest2.TestCase):
         self.addCleanup(main.CONF.clear_override, name, group)
 
 
-class SavannaWithDbTestCase(SavannaTestCase):
+class SaharaWithDbTestCase(SaharaTestCase):
     def setUp(self):
-        super(SavannaWithDbTestCase, self).setUp()
+        super(SaharaWithDbTestCase, self).setUp()
         self.setup_db()
 
     def setup_db(self):

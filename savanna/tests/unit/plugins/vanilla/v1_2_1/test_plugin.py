@@ -29,7 +29,7 @@ from savanna.tests.unit import testutils as tu
 conductor = cond.API
 
 
-class VanillaPluginTest(base.SavannaWithDbTestCase):
+class VanillaPluginTest(base.SaharaWithDbTestCase):
     def setUp(self):
         super(VanillaPluginTest, self).setUp()
         self.pl = p.VanillaProvider()

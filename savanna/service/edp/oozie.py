@@ -98,7 +98,7 @@ def get_json(response):
         return json.loads(response.content)
 
 
-class OozieException(ex.SavannaException):
+class OozieException(ex.SaharaException):
     def __init__(self, message):
         self.message = message
         self.code = "OOZIE_EXCEPTION"

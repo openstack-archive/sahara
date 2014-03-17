@@ -33,12 +33,12 @@ def _ensure_tags(tags):
     return [tags] if type(tags) in [str, unicode] else tags
 
 
-class SavannaImage(images.Image):
+class SaharaImage(images.Image):
     def __init__(self, manager, info, loaded=False):
         info['description'] = info.get('metadata', {}).get(PROP_DESCR)
         info['username'] = info.get('metadata', {}).get(PROP_USERNAME)
         info['tags'] = [tag for tag in _iter_tags(info.get('metadata', {}))]
-        super(SavannaImage, self).__init__(manager, info, loaded)
+        super(SaharaImage, self).__init__(manager, info, loaded)
 
     def tag(self, tags):
         self.manager.tag(self, tags)
@@ -67,13 +67,13 @@ class SavannaImage(images.Image):
         return result
 
 
-class SavannaImageManager(images.ImageManager):
-    """Manage :class:`SavannaImage` resources.
+class SaharaImageManager(images.ImageManager):
+    """Manage :class:`SaharaImage` resources.
 
     This is an extended version of nova client's ImageManager with support of
     additional description and image tags stored in images' meta.
     """
-    resource_class = SavannaImage
+    resource_class = SaharaImage
 
     def set_description(self, image, username, description=None):
         """Sets human-readable information for image.
@@ -88,7 +88,7 @@ class SavannaImageManager(images.ImageManager):
         })
 
     def unset_description(self, image):
-        """Unsets all Savanna-related information.
+        """Unsets all Sahara-related information.
 
         It removes username, description and tags from the specified image.
         """

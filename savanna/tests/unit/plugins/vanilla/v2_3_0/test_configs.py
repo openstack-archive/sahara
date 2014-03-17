@@ -17,7 +17,7 @@ from savanna.plugins.vanilla.v2_3_0 import config as c
 from savanna.tests.unit import base
 
 
-class VanillaTwoConfigTestCase(base.SavannaTestCase):
+class VanillaTwoConfigTestCase(base.SaharaTestCase):
     def test_get_hadoop_dirs(self):
         ng = FakeNG(storage_paths=['/vol1', '/vol2'])
         dirs = c._get_hadoop_dirs(ng)

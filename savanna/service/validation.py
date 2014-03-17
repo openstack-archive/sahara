@@ -38,7 +38,7 @@ def validate(schema, *validators):
             except jsonschema.ValidationError as e:
                 e.code = "VALIDATION_ERROR"
                 return u.bad_request(e)
-            except ex.SavannaException as e:
+            except ex.SaharaException as e:
                 return u.bad_request(e)
             except os_ex.MalformedRequestBody as e:
                 e.code = "MALFORMED_REQUEST_BODY"

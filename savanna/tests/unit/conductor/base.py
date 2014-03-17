@@ -19,7 +19,7 @@ from savanna.conductor import manager
 from savanna.tests.unit import base
 
 
-class ConductorManagerTestCase(base.SavannaWithDbTestCase):
+class ConductorManagerTestCase(base.SaharaWithDbTestCase):
 
     def __init__(self, *args, **kwargs):
         """List of check callables could be specified.

@@ -19,7 +19,7 @@ from savanna.tests.unit import base
 from savanna.tests.unit import testutils as tu
 
 
-class ValidationTest(base.SavannaTestCase):
+class ValidationTest(base.SaharaTestCase):
     def setUp(self):
         super(ValidationTest, self).setUp()
         self.pl = p.VanillaProvider()

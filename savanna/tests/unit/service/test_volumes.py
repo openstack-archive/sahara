@@ -22,7 +22,7 @@ from savanna.service import volumes
 from savanna.tests.unit import base
 
 
-class TestAttachVolume(base.SavannaWithDbTestCase):
+class TestAttachVolume(base.SaharaWithDbTestCase):
 
     @mock.patch(
         'savanna.service.engine.Engine.get_node_group_image_username')

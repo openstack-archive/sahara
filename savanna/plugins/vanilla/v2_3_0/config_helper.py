@@ -169,5 +169,5 @@ def get_config_value(service, name, cluster=None):
         if c.applicable_target == service and c.name == name:
             return c.default_value
 
-    raise ex.SavannaException("Unable get parameter '%s' from service %s",
-                              name, service)
+    raise ex.SaharaException("Unable get parameter '%s' from service %s",
+                             name, service)

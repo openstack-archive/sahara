@@ -203,7 +203,7 @@ class TestClusterCreateValidation(u.ValidationTestCase):
         self._assert_cluster_default_image_tags_validation()
 
 
-class TestClusterCreateFlavorValidation(base.SavannaWithDbTestCase):
+class TestClusterCreateFlavorValidation(base.SaharaWithDbTestCase):
     """Tests for valid flavor on cluster create.
 
     The following use cases for flavors during cluster create are validated:
