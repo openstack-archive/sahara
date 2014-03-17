@@ -15,7 +15,7 @@ Keep in mind that if you want to use "Swift Integration" feature ( :doc:`feature
 Hadoop must be patched with implementation of Swift File System.
 For more information about patching required by "Swift Integration" feature see :doc:`hadoop-swift`.
 
-Vanilla plugin requires an image to be tagged in Savanna Image Registry with
+Vanilla plugin requires an image to be tagged in Sahara Image Registry with
 two tags: 'vanilla' and '<hadoop version>' (e.g. '1.2.1').
 
 Also you should specify username of default cloud-user used in the Image:

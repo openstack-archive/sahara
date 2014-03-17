@@ -1,9 +1,9 @@
-Savanna REST API v1.1 (EDP)
-***************************
+Sahara REST API v1.1 (EDP)
+**************************
 
 .. note::
 
-    REST API v1.1 corresponds to Savanna v0.3.X
+    REST API v1.1 corresponds to Sahara v0.3.X
 
 1. General information
 ======================
@@ -17,7 +17,7 @@ REST API V1.1 is :doc:`../userdoc/edp` REST API. It covers the majority of new f
 **Description**
 
 A Data Source object provides the location of input or output for MapReduce jobs and may reference different types of storage.
-Savanna doesn't perform any validation checks for data source locations.
+Sahara doesn't perform any validation checks for data source locations.
 
 **Data Source ops**
 
@@ -53,7 +53,7 @@ This operation does not require a request body.
 
     .. sourcecode:: http
 
-        GET http://savanna:8386/v1.1/11587919cc534bcbb1027a161c82cf58/data-sources
+        GET http://sahara:8386/v1.1/11587919cc534bcbb1027a161c82cf58/data-sources
 
     **response**
 
@@ -126,7 +126,7 @@ This operation does not require a request body.
 
     .. sourcecode:: http
 
-        GET http://savanna:8386/v1.1/11587919cc534bcbb1027a161c82cf58/data-sources/151d0c0c-464f-4724-96a6-4732d0ca62e1
+        GET http://sahara:8386/v1.1/11587919cc534bcbb1027a161c82cf58/data-sources/151d0c0c-464f-4724-96a6-4732d0ca62e1
 
     **response**
 
@@ -170,7 +170,7 @@ This operation returns the created Data Source.
 
     .. sourcecode:: http
 
-        POST http://savanna:8386/v1.1/11587919cc534bcbb1027a161c82cf58/data-sources
+        POST http://sahara:8386/v1.1/11587919cc534bcbb1027a161c82cf58/data-sources
 
     .. sourcecode:: json
 
@@ -218,7 +218,7 @@ This operation returns the created Data Source.
 
     .. sourcecode:: http
 
-        POST http://savanna:8386/v1.1/e262c255a7de4a0ab0434bafd75660cd/data-sources
+        POST http://sahara:8386/v1.1/e262c255a7de4a0ab0434bafd75660cd/data-sources
 
     .. sourcecode:: json
 
@@ -272,7 +272,7 @@ This operation does not require a request body.
 
     .. sourcecode:: http
 
-        DELETE http://savanna:8386/v1.1/11587919cc534bcbb1027a161c82cf58/data-sources/af7dc864-6331-4c30-80f5-63d74b667eaf
+        DELETE http://sahara:8386/v1.1/11587919cc534bcbb1027a161c82cf58/data-sources/af7dc864-6331-4c30-80f5-63d74b667eaf
 
     **response**
 
@@ -286,7 +286,7 @@ This operation does not require a request body.
 
 **Description**
 
-Job Binary Internals are objects for storing job binaries in the Savanna internal database.
+Job Binary Internals are objects for storing job binaries in the Sahara internal database.
 A Job Binary Internal contains raw data of executable Jar files, Pig or Hive scripts.
 
 **Job Binary Internal ops**
@@ -325,7 +325,7 @@ This operation does not require a request body.
 
     .. sourcecode:: http
 
-        GET http://savanna:8386/v1.1/11587919cc534bcbb1027a161c82cf58/job-binary-internals
+        GET http://sahara:8386/v1.1/11587919cc534bcbb1027a161c82cf58/job-binary-internals
 
     **response**
 
@@ -375,7 +375,7 @@ This operation does not require a request body.
 
     .. sourcecode:: http
 
-        GET http://savanna:8386/v1.1/11587919cc534bcbb1027a161c82cf58/job-binary-internals/d2498cbf-4589-484a-a814-81436c18beb3
+        GET http://sahara:8386/v1.1/11587919cc534bcbb1027a161c82cf58/job-binary-internals/d2498cbf-4589-484a-a814-81436c18beb3
 
     **response**
 
@@ -415,7 +415,7 @@ The request body should contain raw data (file) or script text.
 
     .. sourcecode:: http
 
-        PUT http://savanna:8386/v1.1/11587919cc534bcbb1027a161c82cf58/job-binary-internals/script.pig
+        PUT http://sahara:8386/v1.1/11587919cc534bcbb1027a161c82cf58/job-binary-internals/script.pig
 
     **response**
 
@@ -446,7 +446,7 @@ Normal Response Code: 204 (NO CONTENT)
 
 Errors: none
 
-Removes Job Binary Internal object from Savanna's db
+Removes Job Binary Internal object from Sahara's db
 
 This operation returns nothing.
 
@@ -457,7 +457,7 @@ This operation does not require a request body.
 
     .. sourcecode:: http
 
-        DELETE http://savanna:8386/v1.1/11587919cc534bcbb1027a161c82cf58/job-binary-internals/4833dc4b-8682-4d5b-8a9f-2036b47a0996
+        DELETE http://sahara:8386/v1.1/11587919cc534bcbb1027a161c82cf58/job-binary-internals/4833dc4b-8682-4d5b-8a9f-2036b47a0996
 
     **response**
 
@@ -486,7 +486,7 @@ This operation does not require a request body.
 
     .. sourcecode:: http
 
-        GET http://savanna:8386/v1.1/11587919cc534bcbb1027a161c82cf58/job-binary-internals/4248975-3c82-4206-a58d-6e7fb3a563fd/data
+        GET http://sahara:8386/v1.1/11587919cc534bcbb1027a161c82cf58/job-binary-internals/4248975-3c82-4206-a58d-6e7fb3a563fd/data
 
     **response**
 
@@ -501,7 +501,7 @@ This operation does not require a request body.
 
 **Description**
 
-Job Binaries objects are designed to create links to certain binaries stored either in Savanna internal db or in Swift.
+Job Binaries objects are designed to create links to certain binaries stored either in Sahara internal db or in Swift.
 
 **Job Binaries ops**
 
@@ -539,7 +539,7 @@ This operation does not require a request body.
 
     .. sourcecode:: http
 
-        GET http://savanna:8386/v1.1/11587919cc534bcbb1027a161c82cf58/job-binaries
+        GET http://sahara:8386/v1.1/11587919cc534bcbb1027a161c82cf58/job-binaries
 
     **response**
 
@@ -555,7 +555,7 @@ This operation does not require a request body.
                 {
                     "description": "",
                     "extra": {},
-                    "url": "savanna-db://d2498cbf-4589-484a-a814-81436c18beb3",
+                    "url": "sahara-db://d2498cbf-4589-484a-a814-81436c18beb3",
                     "tenant_id": "11587919cc534bcbb1027a161c82cf58",
                     "created_at": "2013-10-15 12:36:59.375060",
                     "updated_at": null,
@@ -565,7 +565,7 @@ This operation does not require a request body.
                 {
                     "description": "",
                     "extra": {},
-                    "url": "savanna-db://22f1d87a-23c8-483e-a0dd-cb4a16dde5f9",
+                    "url": "sahara-db://22f1d87a-23c8-483e-a0dd-cb4a16dde5f9",
                     "tenant_id": "11587919cc534bcbb1027a161c82cf58",
                     "created_at": "2013-10-15 12:43:52.265899",
                     "updated_at": null,
@@ -606,7 +606,7 @@ This operation does not require a request body.
 
     .. sourcecode:: http
 
-        GET http://savanna:8386/v1.1/11587919cc534bcbb1027a161c82cf58/job-binaries/a716a9cd-9add-4b12-b1b6-cdb71aaef350
+        GET http://sahara:8386/v1.1/11587919cc534bcbb1027a161c82cf58/job-binaries/a716a9cd-9add-4b12-b1b6-cdb71aaef350
 
     **response**
 
@@ -649,7 +649,7 @@ This operation shows information about the created Job Binary.
 
     .. sourcecode:: http
 
-        POST http://savanna:8386/v1.1/11587919cc534bcbb1027a161c82cf58/job-binaries
+        POST http://sahara:8386/v1.1/11587919cc534bcbb1027a161c82cf58/job-binaries
 
     .. sourcecode:: json
 
@@ -707,7 +707,7 @@ This operation does not require a request body.
 
     .. sourcecode:: http
 
-        DELETE http://savanna:8386/v1.1/11587919cc534bcbb1027a161c82cf58/job-binaries/07f86352-ee8a-4b08-b737-d705ded5ff9c
+        DELETE http://sahara:8386/v1.1/11587919cc534bcbb1027a161c82cf58/job-binaries/07f86352-ee8a-4b08-b737-d705ded5ff9c
 
     **response**
 
@@ -736,7 +736,7 @@ This operation does not require a request body.
 
     .. sourcecode:: http
 
-        GET http://savanna:8386/v1.1/11587919cc534bcbb1027a161c82cf58/job-binaries/84248975-3c82-4206-a58d-6e7fb3a563fd/data
+        GET http://sahara:8386/v1.1/11587919cc534bcbb1027a161c82cf58/job-binaries/84248975-3c82-4206-a58d-6e7fb3a563fd/data
 
     **response**
 
@@ -794,7 +794,7 @@ This operation does not require a request body.
 
     .. sourcecode:: http
 
-        GET http://savanna:8386/v1.1/11587919cc534bcbb1027a161c82cf58/jobs
+        GET http://sahara:8386/v1.1/11587919cc534bcbb1027a161c82cf58/jobs
 
     **response**
 
@@ -815,7 +815,7 @@ This operation does not require a request body.
                         {
                             "description": "",
                             "extra": {},
-                            "url": "savanna-db://d2498cbf-4589-484a-a814-81436c18beb3",
+                            "url": "sahara-db://d2498cbf-4589-484a-a814-81436c18beb3",
                             "tenant_id": "11587919cc534bcbb1027a161c82cf58",
                             "created_at": "2013-10-15 12:36:59.375060",
                             "updated_at": null,
@@ -828,7 +828,7 @@ This operation does not require a request body.
                         {
                             "description": "",
                             "extra": {},
-                            "url": "savanna-db://22f1d87a-23c8-483e-a0dd-cb4a16dde5f9",
+                            "url": "sahara-db://22f1d87a-23c8-483e-a0dd-cb4a16dde5f9",
                             "tenant_id": "11587919cc534bcbb1027a161c82cf58",
                             "created_at": "2013-10-15 12:43:52.265899",
                             "updated_at": null,
@@ -886,7 +886,7 @@ This operation does not require a request body.
 
     .. sourcecode:: http
 
-        GET http://savanna:8386/v1.1/11587919cc534bcbb1027a161c82cf58/jobs/7600373c-d262-45c6-845f-77f339f3e503
+        GET http://sahara:8386/v1.1/11587919cc534bcbb1027a161c82cf58/jobs/7600373c-d262-45c6-845f-77f339f3e503
 
     **response**
 
@@ -941,7 +941,7 @@ This operation shows information about the created Job object.
 
     .. sourcecode:: http
 
-        POST http://savanna:8386/v1.1/11587919cc534bcbb1027a161c82cf58/jobs
+        POST http://sahara:8386/v1.1/11587919cc534bcbb1027a161c82cf58/jobs
 
     .. sourcecode:: json
 
@@ -971,7 +971,7 @@ This operation shows information about the created Job object.
                     {
                         "description": "",
                         "extra": {},
-                        "url": "savanna-db://d2498cbf-4589-484a-a814-81436c18beb3",
+                        "url": "sahara-db://d2498cbf-4589-484a-a814-81436c18beb3",
                         "tenant_id": "11587919cc534bcbb1027a161c82cf58",
                         "created_at": "2013-10-15 12:36:59.375060",
                         "updated_at": null,
@@ -983,7 +983,7 @@ This operation shows information about the created Job object.
                     {
                         "description": "",
                         "extra": {},
-                        "url": "savanna-db://22f1d87a-23c8-483e-a0dd-cb4a16dde5f9",
+                        "url": "sahara-db://22f1d87a-23c8-483e-a0dd-cb4a16dde5f9",
                         "tenant_id": "11587919cc534bcbb1027a161c82cf58",
                         "created_at": "2013-10-15 12:43:52.265899",
                         "updated_at": null,
@@ -1017,7 +1017,7 @@ This operation does not require a request body.
 
     .. sourcecode:: http
 
-        DELETE http://savanna:8386/v1.1/11587919cc534bcbb1027a161c82cf58/jobs/07f86352-ee8a-4b08-b737-d705ded5ff9c
+        DELETE http://sahara:8386/v1.1/11587919cc534bcbb1027a161c82cf58/jobs/07f86352-ee8a-4b08-b737-d705ded5ff9c
 
     **response**
 
@@ -1047,7 +1047,7 @@ This REST call is used just for hints and doesn't force the user to apply any of
 
     .. sourcecode:: http
 
-        GET http://savanna/v1.1/11587919cc534bcbb1027a161c82cf58/jobs/config-hints/Jar
+        GET http://sahara/v1.1/11587919cc534bcbb1027a161c82cf58/jobs/config-hints/Jar
 
     **response**
 
@@ -1142,7 +1142,7 @@ This operation returns the created Job Execution object. Note that different job
 
     .. sourcecode:: http
 
-        POST http://savanna:8386/v1.1/11587919cc534bcbb1027a161c82cf58/jobs/65afed9c-dad7-4658-9554-b7b4e1ca908f/execute
+        POST http://sahara:8386/v1.1/11587919cc534bcbb1027a161c82cf58/jobs/65afed9c-dad7-4658-9554-b7b4e1ca908f/execute
 
     .. sourcecode:: json
 
@@ -1206,7 +1206,7 @@ This operation returns the created Job Execution object. Note that different job
 
     .. sourcecode:: http
 
-        POST http://savanna:8386/v1.1/11587919cc534bcbb1027a161c82cf58/jobs/65afed9c-dad7-4658-9554-b7b4e1ca908f/execute
+        POST http://sahara:8386/v1.1/11587919cc534bcbb1027a161c82cf58/jobs/65afed9c-dad7-4658-9554-b7b4e1ca908f/execute
 
     .. sourcecode:: json
 
@@ -1303,7 +1303,7 @@ This operation does not require a request body.
 
     .. sourcecode:: http
 
-        GET http://savanna/v1.1/11587919cc534bcbb1027a161c82cf58/job-executions
+        GET http://sahara/v1.1/11587919cc534bcbb1027a161c82cf58/job-executions
 
     **response**
 
@@ -1437,7 +1437,7 @@ This operation does not require a request body.
 
     .. sourcecode:: http
 
-        GET http://savanna/v1.1/11587919cc534bcbb1027a161c82cf58/job-executions/e63bdc21-0126-4fd2-90c6-5163d16f31df
+        GET http://sahara/v1.1/11587919cc534bcbb1027a161c82cf58/job-executions/e63bdc21-0126-4fd2-90c6-5163d16f31df
 
     **response**
 
@@ -1467,7 +1467,7 @@ This operation does not require a request body.
 
     .. sourcecode:: http
 
-        GET http://savanna/v1.1/11587919cc534bcbb1027a161c82cf58/job-executions/4a911624-1e25-4650-bd1d-382d19695708/refresh-status
+        GET http://sahara/v1.1/11587919cc534bcbb1027a161c82cf58/job-executions/4a911624-1e25-4650-bd1d-382d19695708/refresh-status
 
     **response**
 
@@ -1497,7 +1497,7 @@ This operation does not require a request body.
 
     .. sourcecode:: http
 
-        GET http://savanna/v1.1/11587919cc534bcbb1027a161c82cf58/job-executions/4a911624-1e25-4650-bd1d-382d19695708/refresh-status
+        GET http://sahara/v1.1/11587919cc534bcbb1027a161c82cf58/job-executions/4a911624-1e25-4650-bd1d-382d19695708/refresh-status
 
     **response**
 
@@ -1529,7 +1529,7 @@ This operation does not require a request body.
 
     .. sourcecode:: http
 
-        DELETE http://savanna/v1.1/job-executions/<job-execution-id>/d7g51a-8123-424e-sdsr3-eb222ec989b1
+        DELETE http://sahara/v1.1/job-executions/<job-execution-id>/d7g51a-8123-424e-sdsr3-eb222ec989b1
 
     **response**
 
@@ -1543,7 +1543,7 @@ This operation does not require a request body.
 Job Execution object
 ====================
 
-The following json response represents Job Execution object returned from Savanna
+The following json response represents Job Execution object returned from Sahara
 
 .. sourcecode:: json
 

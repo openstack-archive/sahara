@@ -1,7 +1,7 @@
 Architecture
 ============
 
-.. image:: images/savanna-architecture.png
+.. image:: images/sahara-architecture.png
     :width: 800 px
     :scale: 99 %
     :align: left

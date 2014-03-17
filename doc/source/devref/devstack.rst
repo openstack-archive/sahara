@@ -86,7 +86,7 @@ Now we are going to install DevStack in VM we just created. So, connect to VM wi
     # But only use the top end of the network by using a /27 and starting at the 224 octet.
     FLOATING_RANGE=192.168.55.224/27
 
-    # Enable auto assignment of floating IPs. By default Savanna expects this setting to be enabled
+    # Enable auto assignment of floating IPs. By default Sahara expects this setting to be enabled
     EXTRA_OPTS=(auto_assign_floating_ip=True)
 
     # Enable logging
@@ -97,12 +97,12 @@ Now we are going to install DevStack in VM we just created. So, connect to VM wi
     # access to install prerequisites and fetch repositories.
     # OFFLINE=True
 
-3. If you would like to have Savanna included into devstack add the following lines to ``localrc``:
+3. If you would like to have Sahara included into devstack add the following lines to ``localrc``:
 
 .. sourcecode:: bash
 
-    # Enable Savanna
-    ENABLED_SERVICES+=,savanna
+    # Enable Sahara
+    ENABLED_SERVICES+=,sahara
 
 4. Start DevStack:
 

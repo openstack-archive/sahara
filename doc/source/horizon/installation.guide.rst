@@ -1,10 +1,10 @@
-Savanna UI Installation Guide
-=============================
+Sahara UI Installation Guide
+============================
 
-Savanna UI is a plugin for OpenStack Dashboard. There are two ways to install
+Sahara UI is a plugin for OpenStack Dashboard. There are two ways to install
 it. One is to plug it into existing Dashboard installation and another is
-to setup another Dashboard and plug Savanna UI there. The first approach
-advantage is that you will have Savanna UI in the very same Dashboard with
+to setup another Dashboard and plug Sahara UI there. The first approach
+advantage is that you will have Sahara UI in the very same Dashboard with
 which you work with OpenStack. The disadvantage is that you have to tweak
 your Dashboard configuration in order to enable the plugin. The second
 approach does not have this disadvantage.
@@ -17,12 +17,12 @@ approach see :doc:`/horizon/dev.environment.guide`
 
 1) OpenStack environment (Folsom, Grizzly or Havana version) installed.
 
-2) Savanna installed, configured and running, see :doc:`/userdoc/installation.guide`.
+2) Sahara installed, configured and running, see :doc:`/userdoc/installation.guide`.
 
-2. Savanna Dashboard Installation
+2. Sahara Dashboard Installation
 ---------------------------------
 
-1) Go to the machine where Dashboard resides and install Savanna UI:
+1) Go to the machine where Dashboard resides and install Sahara UI:
 
    For RDO:
 
@@ -35,29 +35,29 @@ approach see :doc:`/horizon/dev.environment.guide`
 
 .. sourcecode:: console
 
-    $ sudo pip install savanna-dashboard
+    $ sudo pip install sahara-dashboard
 ..
 
-   This will install latest stable release of Savanna UI. If you want to install master branch of Savanna UI:
+   This will install latest stable release of Sahara UI. If you want to install master branch of Sahara UI:
 
 .. sourcecode:: console
 
-    $ sudo pip install 'http://tarballs.openstack.org/savanna-dashboard/savanna-dashboard-master.tar.gz'
+    $ sudo pip install 'http://tarballs.openstack.org/sahara-dashboard/sahara-dashboard-master.tar.gz'
 
-2) Configure OpenStack Dashboard. In ``settings.py`` add savanna to
+2) Configure OpenStack Dashboard. In ``settings.py`` add sahara to
 
 .. sourcecode:: python
 
     HORIZON_CONFIG = {
-        'dashboards': ('nova', 'syspanel', 'settings', ..., 'savanna'),
+        'dashboards': ('nova', 'syspanel', 'settings', ..., 'sahara'),
 ..
 
-   and also add savannadashboard to
+   and also add saharadashboard to
 
 .. sourcecode:: python
 
     INSTALLED_APPS = (
-        'savannadashboard',
+        'saharadashboard',
         ....
 ..
 
@@ -106,4 +106,4 @@ If you are not using nova-network with auto_assign_floating_ip=True, also set:
 ..
 
 
-   You can check that service has been started successfully. Go to Horizon URL and if installation is correct you'll be able to see the Savanna tab.
+   You can check that service has been started successfully. Go to Horizon URL and if installation is correct you'll be able to see the Sahara tab.

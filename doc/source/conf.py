@@ -55,8 +55,8 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = u'Savanna'
-copyright = u'2013, OpenStack Foundation'
+project = u'Sahara'
+copyright = u'2014, OpenStack Foundation'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -122,7 +122,7 @@ if on_rtd:
 
 # The name for this set of Sphinx documents.  If None, it defaults to
 # "<project> v<release> documentation".
-html_title = 'Savanna'
+html_title = 'Sahara'
 
 # A shorter title for the navigation bar.  Default is the same as html_title.
 #html_short_title = None
@@ -189,7 +189,7 @@ html_sidebars = {
 #html_file_suffix = None
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = 'SavannaDoc'
+htmlhelp_basename = 'SaharaDoc'
 
 
 # -- Options for LaTeX output --------------------------------------------------
@@ -238,7 +238,7 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    ('index', 'savanna', u'Savanna',
+    ('index', 'sahara', u'Sahara',
      [u'OpenStack Foundation'], 1)
 ]
 
@@ -252,8 +252,8 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-    ('index', 'Savanna', u'Savanna',
-     u'OpenStack Foundation', 'Savanna', 'Savanna',
+    ('index', 'Sahara', u'Sahara',
+     u'OpenStack Foundation', 'Sahara', 'Sahara',
      'Miscellaneous'),
 ]
 

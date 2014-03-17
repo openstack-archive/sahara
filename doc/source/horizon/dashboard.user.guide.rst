@@ -1,15 +1,15 @@
-Savanna UI User Guide
-=====================
+Sahara UI User Guide
+====================
 
-This guide assumes that you already have savanna-api and the Savanna Dashboard configured and running.
+This guide assumes that you already have sahara-api and the Sahara Dashboard configured and running.
 If you require assistance with that, please see the installation guides.
 
-Launching a cluster via the Savanna Dashboard
----------------------------------------------
+Launching a cluster via the Sahara Dashboard
+--------------------------------------------
 Registering an Image
 --------------------
 
-1) Navigate to the "Savanna" tab in the dashboard, then click on the "Image Registry" panel.
+1) Navigate to the "Sahara" tab in the dashboard, then click on the "Image Registry" panel.
 
 2) From that page, click on the "Register Image" button at the top right.
 
@@ -24,7 +24,7 @@ Registering an Image
 Create Node Group Templates
 ---------------------------
 
-1) Navigate to the "Savanna" tab in the dashboard, then click on the "Node Group Templates" panel.
+1) Navigate to the "Sahara" tab in the dashboard, then click on the "Node Group Templates" panel.
 
 2) From that page, click on the "Create Template" button at the top right.
 
@@ -43,7 +43,7 @@ Create Node Group Templates
 Create a Cluster Template
 -------------------------
 
-1) Navigate to the "Savanna" tab in the dashboard, then click on the "Cluster Templates" panel.
+1) Navigate to the "Sahara" tab in the dashboard, then click on the "Cluster Templates" panel.
 
 2) From that page, click on the "Create Template" button at the top right.
 
@@ -64,7 +64,7 @@ Create a Cluster Template
 Launching a Cluster
 -------------------
 
-1) Navigate to the "Savanna" tab in the dashboard, then click on the "Clusters" panel.
+1) Navigate to the "Sahara" tab in the dashboard, then click on the "Clusters" panel.
 
 2) Click on the "Launch Cluster" button at the top right.
 
@@ -85,7 +85,7 @@ Launching a Cluster
 
 Scaling a Cluster
 -----------------
-1) From the Savanna/Clusters page, click on the "Scale Cluster" button of the row that contains the cluster that you want to scale.
+1) From the Sahara/Clusters page, click on the "Scale Cluster" button of the row that contains the cluster that you want to scale.
 
 2) You can adjust the numbers of instances for existing Node Group Templates.
 
@@ -102,11 +102,11 @@ Data Sources
 ------------
 Data Sources are where the input and output from your jobs are housed.
 
-1) From the Savanna/Data Sources page, click on the "Create Data Source" button at the top right.
+1) From the Sahara/Data Sources page, click on the "Create Data Source" button at the top right.
 
 2) Give your Data Source a name.
 
-3) Enter the URL to the Data Source.  For a Swift object, the url will look like <container>.savanna/<path>.  The "swift://" is automatically added for you.
+3) Enter the URL to the Data Source.  For a Swift object, the url will look like <container>.sahara/<path>.  The "swift://" is automatically added for you.
 
 4) Enter the username and password for the Data Source.
 
@@ -120,14 +120,14 @@ Job Binaries
 ------------
 Job Binaries are where you define/upload the source code (mains and libraries) for your job.
 
-1) From the Savanna/Job Binaries page, click on the "Create Job Binary" button at the top right.
+1) From the Sahara/Job Binaries page, click on the "Create Job Binary" button at the top right.
 
 2) Give your Job Binary a name (this can be different than the actual filename).
 
 3) Choose the type of storage for your Job Binary.
 
-  - For "Swift Internal", you will need to enter the URL of your binary (<container>.savanna/<path>) as well as the username and password.
-  - For "Savanna internal database", you can choose from a pre-existing "job binary internal", "Create a script" or "Upload a new file".
+  - For "Swift Internal", you will need to enter the URL of your binary (<container>.sahara/<path>) as well as the username and password.
+  - For "Sahara internal database", you can choose from a pre-existing "job binary internal", "Create a script" or "Upload a new file".
 
 4) Enter an optional description.
 
@@ -139,7 +139,7 @@ Jobs
 ----
 Jobs are where you define the type of job you'd like to run as well as which "Job Binaries" are required.
 
-1) From the Savanna/Jobs page, click on the "Create Job" button at the top right.
+1) From the Sahara/Jobs page, click on the "Create Job" button at the top right.
 
 2) Give your Job a name.
 
@@ -157,7 +157,7 @@ Job Executions
 --------------
 Job Executions are what you get by "Launching" a job.  You can monitor the status of your job to see when it has completed its run.
 
-1) From the Savanna/Jobs page, find the row that contains the job you want to launch and click on the "Launch Job" button at the right side of that row.
+1) From the Sahara/Jobs page, find the row that contains the job you want to launch and click on the "Launch Job" button at the right side of that row.
 
 2) Choose the cluster (already running--see `Launching a Cluster`_ above) on which you would like the job to run.
 
@@ -168,9 +168,9 @@ Job Executions are what you get by "Launching" a job.  You can monitor the statu
   - Additional configuration properties can be defined by clicking on the "Add" button.
   - An example configuration entry might be mapred.mapper.class for the Name and org.apache.oozie.example.SampleMapper for the Value.
 
-5) Click on "Launch".  To monitor the status of your job, you can navigate to the Savanna/Job Executions panel.
+5) Click on "Launch".  To monitor the status of your job, you can navigate to the Sahara/Job Executions panel.
 
 Additional Notes
 ----------------
-1) Throughout the Savanna UI, you will find that if you try to delete an object that you will not be able to delete it if another object depends on it.
+1) Throughout the Sahara UI, you will find that if you try to delete an object that you will not be able to delete it if another object depends on it.
 An example of this would be trying to delete a Job that has an existing Job Execution.  In order to be able to delete that job, you would first need to delete any Job Executions that relate to that job.

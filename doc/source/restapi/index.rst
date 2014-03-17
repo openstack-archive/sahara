@@ -1,4 +1,4 @@
-Savanna REST API docs
+Sahara REST API docs
 *********************
 
 .. toctree::

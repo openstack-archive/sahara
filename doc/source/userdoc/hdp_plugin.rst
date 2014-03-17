@@ -1,7 +1,7 @@
 
 Hortonworks Data Plaform Plugin
 ===============================
-The Hortonworks Data Platform (HDP) Savanna plugin provides a way to provision HDP clusters on OpenStack using templates in a single click and in an easily repeatable fashion. As seen from the architecture diagram below, the Savanna controller serves as the glue between Hadoop and OpenStack. The HDP plugin mediates between the Savanna controller and Apache Ambari in order to deploy and configure Hadoop on OpenStack. Core to the HDP Plugin is Apache Ambari that is used as the orchestrator for deploying the HDP stack on OpenStack.
+The Hortonworks Data Platform (HDP) Sahara plugin provides a way to provision HDP clusters on OpenStack using templates in a single click and in an easily repeatable fashion. As seen from the architecture diagram below, the Sahara controller serves as the glue between Hadoop and OpenStack. The HDP plugin mediates between the Sahara controller and Apache Ambari in order to deploy and configure Hadoop on OpenStack. Core to the HDP Plugin is Apache Ambari that is used as the orchestrator for deploying the HDP stack on OpenStack.
 
 .. image:: ../images/hdp-plugin-architecture.png
     :width: 800 px
@@ -27,7 +27,7 @@ The HDP Plugin performs the following four primary functions during cluster crea
 
 Images
 ------
-The Savanna HDP plugin can make use of either minimal (operating system only) images or pre-populated HDP images. The base requirement for both is that the image is cloud-init enabled and contains a supported operating system (see http://docs.hortonworks.com/HDPDocuments/HDP1/HDP-1.2.4/bk_hdp1-system-admin-guide/content/sysadminguides_ha_chap2_3.html).
+The Sahara HDP plugin can make use of either minimal (operating system only) images or pre-populated HDP images. The base requirement for both is that the image is cloud-init enabled and contains a supported operating system (see http://docs.hortonworks.com/HDPDocuments/HDP1/HDP-1.2.4/bk_hdp1-system-admin-guide/content/sysadminguides_ha_chap2_3.html).
  
 The advantage of a pre-populated image is that provisioning time is accelerated, as packages do not need to be downloaded and installed which make up the majority of the time spent in the provisioning cycle.
  
@@ -60,9 +60,9 @@ Any packages that are not installed in a pre-populated image will automatically 
 There are two VM images provided for use with the HDP Plugin:
 
 1. `centos-6_64-hdp-1.3.qcow2 <http://public-repo-1.hortonworks.com/savanna/images/centos-6_4-64-hdp-1.3.qcow2>`_: This image contains most of the requisite packages necessary for HDP deployment. The packages contained herein correspond to the HDP 1.3 release. The operating system is a minimal CentOS 6.4 cloud-init enabled install. This image can only be used to provision HDP 1.3 hadoop clusters.
-2. `centos-6-64-hdp-vanilla.qcow2 <http://public-repo-1.hortonworks.com/savanna/images/centos-6_4-64-vanilla.qcow2>`_: This image provides only a minimal install of CentOS 6.4  and is cloud-init enabled. This image can be used to provision any versions of HDP supported by Savanna.
+2. `centos-6-64-hdp-vanilla.qcow2 <http://public-repo-1.hortonworks.com/savanna/images/centos-6_4-64-vanilla.qcow2>`_: This image provides only a minimal install of CentOS 6.4  and is cloud-init enabled. This image can be used to provision any versions of HDP supported by Sahara.
 
-HDP plugin requires an image to be tagged in Savanna Image Registry with
+HDP plugin requires an image to be tagged in Sahara Image Registry with
 two tags: 'hdp' and '<hdp version>' (e.g. '1.3.2').
 
 Also in the Image Registry you will need to specify username for an image.
@@ -76,8 +76,8 @@ The HDP plugin currently has the following limitations:
 
 * Currently, the HDP plugin provides support for HDP 1.3. Once HDP2 is released, support for this version will be provided.
 * Swift integration is not yet implemented.
-* It is not possible to decrement the number of node-groups or hosts per node group in a Savanna generated cluster.
-* Only the following services are available to be deployed via Savanna:
+* It is not possible to decrement the number of node-groups or hosts per node group in a Sahara generated cluster.
+* Only the following services are available to be deployed via Sahara:
       * Ambari
       * Nagios
       * Ganglia
@@ -95,6 +95,6 @@ Prior to Hadoop cluster creation, the HDP plugin will perform the following vali
 * Ensure the deployment of one Ambari Server instance to the cluster
 * Ensure that each defined node group had an associated Ambari Agent configured
 
-The HDP Plugin and Savanna Support
+The HDP Plugin and Sahara Support
 ----------------------------------
 A Hortonworks supported version of HDP OpenStack plugin will become available at a future date. For more information, please contact Hortonworks. 

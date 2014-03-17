@@ -1,11 +1,11 @@
-Savanna Cluster Statuses Overview
-=================================
+Sahara Cluster Statuses Overview
+================================
 
-All Savanna Cluster operations are performed in multiple steps. A Cluster object
-has a ``Status`` attribute which changes when Savanna finishes one step of
+All Sahara Cluster operations are performed in multiple steps. A Cluster object
+has a ``Status`` attribute which changes when Sahara finishes one step of
 operations and starts another one.
 
-Savanna supports three types of Cluster operations:
+Sahara supports three types of Cluster operations:
  * Create a new Cluster
  * Scale/Shrink an existing Cluster
  * Delete an existing Cluster
@@ -16,7 +16,7 @@ Creating a new Cluster
 1. Validating
 ~~~~~~~~~~~~~
 
-Before performing any operations with OpenStack environment, Savanna validates
+Before performing any operations with OpenStack environment, Sahara validates
 user input.
 
 There are two types of validations, that are done:
@@ -35,38 +35,38 @@ This status means that the Provisioning plugin performs some infrastructural upd
 3. Spawning
 ~~~~~~~~~~~
 
-Savanna sends requests to OpenStack for all resources to be created:
+Sahara sends requests to OpenStack for all resources to be created:
  * VMs
  * Volumes
- * Floating IPs (if Savanna is configured to use Floating IPs)
+ * Floating IPs (if Sahara is configured to use Floating IPs)
 
 It takes some time for OpenStack to schedule all required VMs and Volumes,
-so Savanna wait until all of them are in ``Active`` state.
+so Sahara wait until all of them are in ``Active`` state.
 
 4. Waiting
 ~~~~~~~~~~
 
-Savanna waits while VMs' operating systems boot up and all internal infrastructure
+Sahara waits while VMs' operating systems boot up and all internal infrastructure
 components like networks and volumes are attached and ready to use.
 
 5. Preparing
 ~~~~~~~~~~~~
 
-Savanna preparers a Cluster for starting. This step includes generating ``/etc/hosts``
-file, so that all instances could access each other by a hostname. Also Savanna
+Sahara preparers a Cluster for starting. This step includes generating ``/etc/hosts``
+file, so that all instances could access each other by a hostname. Also Sahara
 updates ``authorized_keys`` file on each VM, so that communications could be done
 without passwords.
 
 6. Configuring
 ~~~~~~~~~~~~~~
 
-Savanna pushes service configurations to VMs. Both XML based configurations and
+Sahara pushes service configurations to VMs. Both XML based configurations and
 environmental variables are set on this step.
 
 7. Starting
 ~~~~~~~~~~~
 
-Savanna is starting Hadoop services on Cluster's VMs.
+Sahara is starting Hadoop services on Cluster's VMs.
 
 8. Active
 ~~~~~~~~~
@@ -80,19 +80,19 @@ Scaling/Shrinking an existing Cluster
 1. Validating
 ~~~~~~~~~~~~~
 
-Savanna checks the scale/shrink request for validity. The Plugin method called
+Sahara checks the scale/shrink request for validity. The Plugin method called
 for performing Plugin specific checks is different from creation validation method.
 
 2. Scaling
 ~~~~~~~~~~
 
-Savanna performs database operations updating all affected existing Node Groups
+Sahara performs database operations updating all affected existing Node Groups
 and creating new ones.
 
 3. Adding Instances
 ~~~~~~~~~~~~~~~~~~~
 
-State similar to ``Spawning`` while Custer creation. Savanna adds required amount
+State similar to ``Spawning`` while Custer creation. Sahara adds required amount
 of VMs to existing Node Groups and creates new Node Groups.
 
 4. Configuring
@@ -105,14 +105,14 @@ with a new ``/etc/hosts`` file.
 5. Decommissioning
 ~~~~~~~~~~~~~~~~~~
 
-Savanna stops Hadoop services on VMs that will be deleted from a Cluster.
+Sahara stops Hadoop services on VMs that will be deleted from a Cluster.
 Decommissioning Data Node may take some time because Hadoop rearranges data replicas
 around the Cluster, so that no data will be lost after tht VM is deleted.
 
 6. Deleting Instances
 ~~~~~~~~~~~~~~~~~~~~~
 
-Savanna sends requests to OpenStack to release unneeded resources:
+Sahara sends requests to OpenStack to release unneeded resources:
  * VMs
  * Volumes
  * Floating IPs (if they are used)
@@ -137,9 +137,9 @@ Error State
 If Cluster creation fails, the Cluster will get into ``Error`` state.
 This state means the Cluster may not be able to perform any operations normally.
 This cluster will stay in database until it is manually deleted. The reason of
-failure may be found in Savanna logs.
+failure may be found in Sahara logs.
 
 
-If an error occurs during ``Adding Instances`` operation, Savanna will first
+If an error occurs during ``Adding Instances`` operation, Sahara will first
 try to rollback this operation. If rollback is impossible or fails itself, then
 the Cluster will also get into ``Error`` state.

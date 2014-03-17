@@ -4,10 +4,10 @@ Elastic Data Processing (EDP)
 Overview
 --------
 
-Savanna's Elastic Data Processing facility or :dfn:`EDP` allows the execution of Hadoop jobs on clusters created from Savanna. EDP supports:
+Sahara's Elastic Data Processing facility or :dfn:`EDP` allows the execution of Hadoop jobs on clusters created from Sahara. EDP supports:
 
 * Hive, Pig, MapReduce, and Java job types
-* storage of job binaries in Swift or Savanna's own database
+* storage of job binaries in Swift or Sahara's own database
 * access to input and output data sources in Swift or HDFS
 * configuration of jobs at submission time
 * execution of jobs on existing clusters or transient clusters
@@ -15,14 +15,14 @@ Savanna's Elastic Data Processing facility or :dfn:`EDP` allows the execution of
 Interfaces
 ----------
 
-The EDP features can be used from the Savanna web UI which is described in the :doc:`../horizon/dashboard.user.guide`.
+The EDP features can be used from the Sahara web UI which is described in the :doc:`../horizon/dashboard.user.guide`.
 
 The EDP features also can be used directly by a client through the :doc:`../restapi/rest_api_v1.1_EDP`.
 
 EDP Concepts
 ------------
 
-Savanna EDP uses a collection of simple objects to define and execute Hadoop jobs. These objects are stored in the Savanna database when they
+Sahara EDP uses a collection of simple objects to define and execute Hadoop jobs. These objects are stored in the Sahara database when they
 are created, allowing them to be reused.  This modular approach with database persistence allows code and data to be reused across multiple jobs.
 
 The essential components of a job are:
@@ -37,13 +37,13 @@ These components are supplied through the objects described below.
 Job Binaries
 ++++++++++++
 
-A :dfn:`Job Binary` object stores a URL to a single Pig script, Hive script, or Jar file and any credentials needed to retrieve the file.  The file itself may be stored in the Savanna internal database or in Swift.
+A :dfn:`Job Binary` object stores a URL to a single Pig script, Hive script, or Jar file and any credentials needed to retrieve the file.  The file itself may be stored in the Sahara internal database or in Swift.
 
-Files in the Savanna database are stored as raw bytes in a :dfn:`Job Binary Internal` object.  This object's sole purpose is to store a file for later retrieval.  No extra credentials need to be supplied for files stored internally.
+Files in the Sahara database are stored as raw bytes in a :dfn:`Job Binary Internal` object.  This object's sole purpose is to store a file for later retrieval.  No extra credentials need to be supplied for files stored internally.
 
-Savanna requires credentials (username and password) to access files stored in Swift. The Swift service must be running in the same OpenStack installation referenced by Savanna.
+Sahara requires credentials (username and password) to access files stored in Swift. The Swift service must be running in the same OpenStack installation referenced by Sahara.
 
-There is a configurable limit on the size of a single job binary that may be retrieved by Savanna.  This limit is 5MB and may be set with the *job_binary_max_KB* setting in the :file:`savanna.conf` configuration file.
+There is a configurable limit on the size of a single job binary that may be retrieved by Sahara.  This limit is 5MB and may be set with the *job_binary_max_KB* setting in the :file:`sahara.conf` configuration file.
 
 Jobs
 ++++
@@ -68,26 +68,26 @@ Data Sources
 
 A :dfn:`Data Source` object stores a URL which designates the location of input or output data and any credentials needed to access the location.
 
-Savanna supports data sources in Swift. The Swift service must be running in the same OpenStack installation referenced by Savanna.
+Sahara supports data sources in Swift. The Swift service must be running in the same OpenStack installation referenced by Sahara.
 
-Savanna also supports data sources in HDFS. Any HDFS instance running on a Savanna cluster in the same OpenStack installation is accessible without manual configuration. Other instances of HDFS may be used as well provided that the URL is resolvable from the node executing the job.
+Sahara also supports data sources in HDFS. Any HDFS instance running on a Sahara cluster in the same OpenStack installation is accessible without manual configuration. Other instances of HDFS may be used as well provided that the URL is resolvable from the node executing the job.
 
 Job Execution
 +++++++++++++
 
-Job objects must be *launched* or *executed* in order for them to run on the cluster. During job launch, a user specifies execution details including data sources, configuration values, and program arguments. The relevant details will vary by job type. The launch will create a :dfn:`Job Execution` object in Savanna which is used to monitor and manage the job.
+Job objects must be *launched* or *executed* in order for them to run on the cluster. During job launch, a user specifies execution details including data sources, configuration values, and program arguments. The relevant details will vary by job type. The launch will create a :dfn:`Job Execution` object in Sahara which is used to monitor and manage the job.
 
-To execute the job, Savanna generates a workflow and submits it to the Oozie server running on the cluster. Familiarity with Oozie is not necessary for using Savanna but it may be beneficial to the user.  A link to the Oozie web console can be found in the Savanna web UI in the cluster details.
+To execute the job, Sahara generates a workflow and submits it to the Oozie server running on the cluster. Familiarity with Oozie is not necessary for using Sahara but it may be beneficial to the user.  A link to the Oozie web console can be found in the Sahara web UI in the cluster details.
 
 .. _edp_workflow:
 
 General Workflow
 ----------------
 
-The general workflow for defining and executing a job in Savanna is essentially the same whether using the web UI or the REST API.
+The general workflow for defining and executing a job in Sahara is essentially the same whether using the web UI or the REST API.
 
-1. Launch a cluster from Savanna if there is not one already available
-2. Create all of the Job Binaries needed to run the job, stored in the Savanna database or in Swift
+1. Launch a cluster from Sahara if there is not one already available
+2. Create all of the Job Binaries needed to run the job, stored in the Sahara database or in Swift
 
    + When using the REST API and internal storage of job binaries, there is an extra step here to first create the Job Binary Internal objects
    + Once the Job Binary Internal objects are created, Job Binary objects may be created which refer to them by URL
@@ -125,7 +125,7 @@ Jobs can be configured at launch. The job type determines the kinds of values th
 
 * :dfn:`Configuration values` are key/value pairs. They set options for EDP, Oozie or Hadoop.
 
-  + The EDP configuration values have names beginning with *edp.* and are consumed by Savanna
+  + The EDP configuration values have names beginning with *edp.* and are consumed by Sahara
   + The Oozie and Hadoop configuration values may be read by running jobs
 
 * :dfn:`Parameters` are key/value pairs. They supply values for the Hive and Pig parameter substitution mechanisms.
@@ -133,32 +133,32 @@ Jobs can be configured at launch. The job type determines the kinds of values th
 
 These values can be set on the :guilabel:`Configure` tab during job launch through the web UI or through the *job_configs* parameter when using the  */jobs/<job_id>/execute* REST method.
 
-In some cases Savanna generates configuration values or parameters automatically. Values set explicitly by the user during launch will override those generated by Savanna.
+In some cases Sahara generates configuration values or parameters automatically. Values set explicitly by the user during launch will override those generated by Sahara.
 
 Generation of Swift Properties for Data Sources
 +++++++++++++++++++++++++++++++++++++++++++++++
 
-If a job is run with data sources in Swift, Savanna will automatically generate Swift username and password configuration values based on the credentials in the data sources.  If the input and output data sources are both in Swift, it is expected that they specify the same credentials.
+If a job is run with data sources in Swift, Sahara will automatically generate Swift username and password configuration values based on the credentials in the data sources.  If the input and output data sources are both in Swift, it is expected that they specify the same credentials.
 
 The Swift credentials can be set explicitly with the following configuration values:
 
       +------------------------------------+
       | Name                               |
       +====================================+
-      | fs.swift.service.savanna.username  |
+      | fs.swift.service.sahara.username   |
       +------------------------------------+
-      | fs.swift.service.savanna.password  |
+      | fs.swift.service.sahara.password   |
       +------------------------------------+
 
 Additional Details for Hive jobs
 ++++++++++++++++++++++++++++++++
 
-Savanna will automatically generate values for the ``INPUT`` and ``OUTPUT`` parameters required by Hive based on the specified data sources.
+Sahara will automatically generate values for the ``INPUT`` and ``OUTPUT`` parameters required by Hive based on the specified data sources.
 
 Additional Details for Pig jobs
 +++++++++++++++++++++++++++++++
 
-Savanna will automatically generate values for the ``INPUT`` and ``OUTPUT`` parameters required by Pig based on the specified data sources.
+Sahara will automatically generate values for the ``INPUT`` and ``OUTPUT`` parameters required by Pig based on the specified data sources.
 
 For Pig jobs, ``arguments`` should be thought of as command line arguments separated by spaces and passed to the ``pig`` shell.
 
@@ -203,49 +203,49 @@ values to the ``main`` method:
 Data Source objects are not used with Java job types. Instead, any input or output paths must be passed to the ``main`` method
 using one of the above two methods. Furthermore, if Swift data sources are used the configuration values listed in `Generation of Swift Properties for Data Sources`_  must be passed with one of the above two methods and set in the configuration by ``main``.
 
-The ``edp-wordcount`` example bundled with Savanna shows how to use configuration values, arguments, and Swift data paths in a Java job type.
+The ``edp-wordcount`` example bundled with Sahara shows how to use configuration values, arguments, and Swift data paths in a Java job type.
 
 
-Special Savanna URLs
+Special Sahara URLs
 --------------------
 
-Savanna uses custom URLs to refer to objects stored in Swift or the Savanna internal database.  These URLs are not meant to be used
-outside of Savanna.
+Sahara uses custom URLs to refer to objects stored in Swift or the Sahara internal database.  These URLs are not meant to be used
+outside of Sahara.
 
-Savanna Swift URLs have the form:
+Sahara Swift URLs have the form:
 
-  ``swift://container.savanna/object``
+  ``swift://container.sahara/object``
 
-Savanna internal database URLs have the form:
+Sahara internal database URLs have the form:
 
-  ``savanna-db://savanna-generated-uuid``
+  ``sahara-db://sahara-generated-uuid``
 
 
 EDP Requirements
 ================
 
-The OpenStack installation and the cluster launched from Savanna must meet the following minimum requirements in order for EDP to function:
+The OpenStack installation and the cluster launched from Sahara must meet the following minimum requirements in order for EDP to function:
 
 OpenStack Services
 ------------------
 
-When a job is executed, binaries are first uploaded to a job tracker and then moved from the job tracker's local filesystem to HDFS. Therefore, there must be an instance of HDFS available to the nodes in the Savanna cluster.
+When a job is executed, binaries are first uploaded to a job tracker and then moved from the job tracker's local filesystem to HDFS. Therefore, there must be an instance of HDFS available to the nodes in the Sahara cluster.
 
 If the Swift service *is not* running in the OpenStack installation
 
-  + Job binaries may only be stored in the Savanna internal database
+  + Job binaries may only be stored in the Sahara internal database
   + Data sources require a long-running HDFS
 
 If the Swift service *is* running in the OpenStack installation
 
-  + Job binaries may be stored in Swift or the Savanna internal database
+  + Job binaries may be stored in Swift or the Sahara internal database
   + Data sources may be in Swift or a long-running HDFS
 
 
 Cluster Processes
 -----------------
 
-At a minimum the Savanna cluster must run a single instance of these processes to support EDP:
+At a minimum the Sahara cluster must run a single instance of these processes to support EDP:
 
 * jobtracker
 * namenode
@@ -270,23 +270,23 @@ finished.
 
 Two config parameters control the behaviour of periodic clusters:
 
- * periodic_enable - if set to 'False', Savanna will do nothing to a transient
+ * periodic_enable - if set to 'False', Sahara will do nothing to a transient
    cluster once the job it was created for is completed. If it is set to
    'True', then the behaviour depends on the value of the next parameter.
  * use_identity_api_v3 - set it to 'False' if your OpenStack installation
-   does not provide Keystone API v3. In that case Savanna will not terminate
+   does not provide Keystone API v3. In that case Sahara will not terminate
    unneeded clusters. Instead it will set their state to 'AwaitingTermination'
    meaning that they could be manually deleted by a user. If the parameter is
-   set to 'True', Savanna will itself terminate the cluster. The limitation is
+   set to 'True', Sahara will itself terminate the cluster. The limitation is
    caused by lack of 'trusts' feature in Keystone API older than v3.
 
-If both parameters are set to 'True', Savanna works with transient clusters in
+If both parameters are set to 'True', Sahara works with transient clusters in
 the following manner:
 
  1. When a user requests for a job to be executed on a transient cluster,
-    Savanna creates such a cluster.
- 2. Savanna drops the user's credentials once the cluster is created but
+    Sahara creates such a cluster.
+ 2. Sahara drops the user's credentials once the cluster is created but
     prior to that it creates a trust allowing it to operate with the
     cluster instances in the future without user credentials.
- 3. Once a cluster is not needed, Savanna terminates its instances using the
-    stored trust. Savanna drops the trust after that.
+ 3. Once a cluster is not needed, Sahara terminates its instances using the
+    stored trust. Sahara drops the trust after that.

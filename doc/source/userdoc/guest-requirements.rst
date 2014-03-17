@@ -1,7 +1,7 @@
 Requirements for Guests
 =======================
 
-Savanna manages guests of various platforms (for example Ubuntu, Fedora, RHEL, and CentOS) with various versions of the Hadoop ecosystem projects installed.  There are common requirements for all guests, and additional requirements based on the plugin that is used for cluster deployment.
+Sahara manages guests of various platforms (for example Ubuntu, Fedora, RHEL, and CentOS) with various versions of the Hadoop ecosystem projects installed.  There are common requirements for all guests, and additional requirements based on the plugin that is used for cluster deployment.
 
 Common Requirements
 -------------------
@@ -22,7 +22,7 @@ If the Vanilla Plugin is used for cluster deployment the guest is required to ha
 * Apache Hadoop installed
 * 'hadoop' user created
 
-See :doc:`hadoop-swift` for information on using Swift with your Savanna cluster (for EDP support Swift integration is currently required).
+See :doc:`hadoop-swift` for information on using Swift with your Sahara cluster (for EDP support Swift integration is currently required).
 
 To support EDP, the following components must also be installed on the guest:
 
