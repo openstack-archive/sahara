@@ -24,8 +24,8 @@ Initializing:
   Example::
 
     session.set_defaults(
-        sql_connection="sqlite:///var/lib/savanna/sqlite.db",
-        sqlite_db="/var/lib/savanna/sqlite.db")
+        sql_connection="sqlite:///var/lib/sahara/sqlite.db",
+        sqlite_db="/var/lib/sahara/sqlite.db")
 
 Recommended ways to use sessions within this framework:
 
@@ -837,7 +837,7 @@ def _patch_mysqldb_with_stacktrace_comments():
             # db/api is just a wrapper around db/sqlalchemy/api
             if filename.endswith('db/api.py'):
                 continue
-            # only trace inside savanna
+            # only trace inside sahara
             index = filename.rfind('savanna')
             if index == -1:
                 continue

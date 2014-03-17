@@ -104,7 +104,7 @@ def main():
     )
     config.set_main_option('script_location',
                            'savanna.db.migration:alembic_migrations')
-    # attach the Savanna conf to the Alembic conf
+    # attach the Sahara conf to the Alembic conf
     config.savanna_config = CONF
 
     CONF(project='savanna')

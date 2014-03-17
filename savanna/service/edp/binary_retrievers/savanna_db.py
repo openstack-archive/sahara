@@ -20,7 +20,7 @@ conductor = c.API
 
 
 def get_raw_data(context, job_binary):
-    # url example: 'savanna-db://JobBinaryInternal-UUID
+    # url example: 'internal-db://JobBinaryInternal-UUID
     binary_internal_id = job_binary.url[len("savanna-db://"):]
     return conductor.job_binary_internal_get_raw_data(context,
                                                       binary_internal_id)

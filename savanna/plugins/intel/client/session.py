@@ -27,7 +27,7 @@ def get(ctx, session_id):
 
 
 def wait(ctx, session_id):
-    #TODO(lazarev) add check on savanna cluster state (exit on delete)
+    #TODO(alazarev) add check on Hadoop cluster state (exit on delete)
     #TODO(alazarev) make configurable (bug #1262897)
     timeout = 4*60*60  # 4 hours
     cur_time = 0

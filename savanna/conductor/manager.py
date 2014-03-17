@@ -13,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""Handles database requests from other savanna services."""
+"""Handles database requests from other Sahara services."""
 
 import copy
 
@@ -57,7 +57,7 @@ def _apply_defaults(values, defaults):
 class ConductorManager(db_base.Base):
     """This class aimed to conduct things.
 
-    The methods in the base API for savanna-conductor are various proxy
+    The methods in the base API for sahara-conductor are various proxy
     operations that allows other services to get specific work done without
     locally accessing the database.
 
