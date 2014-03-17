@@ -67,7 +67,7 @@ SAMPLE_JOB_BINARY_DICT = {
     "name": "bob",
     "tenant_id": "6b859fb8d1f44e8eafdfb91f21309b5f",
     "updated_at": "null",
-    "url": "swift-internal://bob.savanna/job"
+    "url": "swift-internal://bob.sahara/job"
 }
 
 
@@ -75,7 +75,7 @@ SAMPLE_DATA_SOURCE = {
     'name': 'input',
     'description': 'some input',
     'type': 'swift',
-    'url': 'swift://tmckay.savanna',
+    'url': 'swift://tmckay.sahara',
     'credentials': {
         'username': 'me',
         'password': 'password'

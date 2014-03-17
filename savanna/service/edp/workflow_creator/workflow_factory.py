@@ -28,8 +28,8 @@ from savanna.utils import xmlutils
 
 conductor = c.API
 
-swift_username = 'fs.swift.service.savanna.username'
-swift_password = 'fs.swift.service.savanna.password'
+swift_username = 'fs.swift.service.sahara.username'
+swift_password = 'fs.swift.service.sahara.password'
 
 
 class BaseFactory(object):

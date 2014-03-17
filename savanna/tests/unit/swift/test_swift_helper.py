@@ -20,7 +20,7 @@ from savanna.tests.unit import base
 
 
 GENERAL_PREFIX = "fs.swift."
-SERVICE_PREFIX = "service.savanna."
+SERVICE_PREFIX = "service.sahara."
 
 GENERAL = ["impl", "connect.timeout", "socket.timeout",
            "connect.retry.count", "connect.throttle.delay",
@@ -43,7 +43,7 @@ class SwiftIntegrationTestCase(base.SavannaTestCase):
 
         result = h.get_swift_configs()
         self.assertEqual(7, len(result))
-        self.assertIn({'name': "fs.swift.service.savanna.tenant",
+        self.assertIn({'name': "fs.swift.service.sahara.tenant",
                        'value': 'test_tenant', 'description': ''}, result)
-        self.assertIn({'name': "fs.swift.service.savanna.http.port",
+        self.assertIn({'name': "fs.swift.service.sahara.http.port",
                        'value': '8080', 'description': ''}, result)
