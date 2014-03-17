@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-PROJECT_NAME=${PROJECT_NAME:-savanna}
+PROJECT_NAME=${PROJECT_NAME:-sahara}
 CFGFILE_NAME=${PROJECT_NAME}.conf.sample
 
 if [ -e etc/${PROJECT_NAME}/${CFGFILE_NAME} ]; then

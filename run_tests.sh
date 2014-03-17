@@ -81,7 +81,7 @@ function run_tests {
   set +e
   TESTRTESTS="$TESTRTESTS $testrargs"
   echo "Running \`${wrapper} $TESTRTESTS\`"
-  export DISCOVER_DIRECTORY=savanna/tests/unit
+  export DISCOVER_DIRECTORY=sahara/tests/unit
   ${wrapper} $TESTRTESTS
   RESULT=$?
   set -e
