@@ -18,7 +18,7 @@ from sahara.tests.integration.tests import base
 
 class CinderVolumeTest(base.ITestCase):
     def _get_node_list_with_volumes(self, cluster_info):
-        data = self.savanna.clusters.get(cluster_info['cluster_id'])
+        data = self.sahara.clusters.get(cluster_info['cluster_id'])
         node_groups = data.node_groups
         node_list_with_volumes = []
         for node_group in node_groups:

@@ -63,7 +63,7 @@ class ITestCase(unittest2.TestCase):
             self.common_config.SAVANNA_HOST, self.common_config.SAVANNA_PORT
         )
 
-        self.savanna = savanna_client.Client(
+        self.sahara = savanna_client.Client(
             self.common_config.SAVANNA_API_VERSION,
             username=self.common_config.OS_USERNAME,
             api_key=self.common_config.OS_PASSWORD,
@@ -113,7 +113,7 @@ class ITestCase(unittest2.TestCase):
                                    node_processes, node_configs,
                                    volumes_per_node=0, volume_size=0,
                                    floating_ip_pool=None):
-        data = self.savanna.node_group_templates.create(
+        data = self.sahara.node_group_templates.create(
             name, plugin_config.PLUGIN_NAME, plugin_config.HADOOP_VERSION,
             self.flavor_id, description, volumes_per_node, volume_size,
             node_processes, node_configs, floating_ip_pool)
@@ -127,7 +127,7 @@ class ITestCase(unittest2.TestCase):
             for key, value in node_group.items():
                 if value is None:
                     del node_group[key]
-        data = self.savanna.cluster_templates.create(
+        data = self.sahara.cluster_templates.create(
             name, plugin_config.PLUGIN_NAME, plugin_config.HADOOP_VERSION,
             description, cluster_configs, node_groups, anti_affinity, net_id)
         cluster_template_id = data.id
@@ -138,7 +138,7 @@ class ITestCase(unittest2.TestCase):
                                     node_groups=None, anti_affinity=None,
                                     net_id=None, is_transient=False):
         self.cluster_id = None
-        data = self.savanna.clusters.create(
+        data = self.sahara.clusters.create(
             self.common_config.CLUSTER_NAME + '-' + plugin_config.PLUGIN_NAME,
             plugin_config.PLUGIN_NAME, plugin_config.HADOOP_VERSION,
             cluster_template_id, plugin_config.IMAGE_ID, is_transient,
@@ -196,7 +196,7 @@ class ITestCase(unittest2.TestCase):
 #---------Helper methods for cluster info obtaining and its processing---------
 
     def poll_cluster_state(self, cluster_id):
-        data = self.savanna.clusters.get(cluster_id)
+        data = self.sahara.clusters.get(cluster_id)
         timeout = self.common_config.CLUSTER_CREATION_TIMEOUT * 60
         while str(data.status) != 'Active':
             if str(data.status) == 'Error':
@@ -207,13 +207,13 @@ class ITestCase(unittest2.TestCase):
                     'within %d minutes.'
                     % self.common_config.CLUSTER_CREATION_TIMEOUT
                 )
-            data = self.savanna.clusters.get(cluster_id)
+            data = self.sahara.clusters.get(cluster_id)
             time.sleep(10)
             timeout -= 10
         return str(data.status)
 
     def get_cluster_node_ip_list_with_node_processes(self, cluster_id):
-        data = self.savanna.clusters.get(cluster_id)
+        data = self.sahara.clusters.get(cluster_id)
         node_groups = data.node_groups
         node_ip_list_with_node_processes = {}
         for node_group in node_groups:
@@ -526,12 +526,12 @@ class ITestCase(unittest2.TestCase):
                        node_group_template_id_list=None):
         if not self.common_config.RETAIN_CLUSTER_AFTER_TEST:
             if cluster_id:
-                self.savanna.clusters.delete(cluster_id)
+                self.sahara.clusters.delete(cluster_id)
             if cluster_template_id:
-                self.savanna.cluster_templates.delete(cluster_template_id)
+                self.sahara.cluster_templates.delete(cluster_template_id)
             if node_group_template_id_list:
                 for node_group_template_id in node_group_template_id_list:
-                    self.savanna.node_group_templates.delete(
+                    self.sahara.node_group_templates.delete(
                         node_group_template_id
                     )
 

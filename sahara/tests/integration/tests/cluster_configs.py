@@ -118,7 +118,7 @@ class ClusterConfigTest(base.ITestCase):
                     message='Test for cluster configs was skipped.')
     def cluster_config_testing(self, cluster_info):
         cluster_id = cluster_info['cluster_id']
-        data = self.savanna.clusters.get(cluster_id)
+        data = self.sahara.clusters.get(cluster_id)
         self._compare_configs(
             {'Enable Swift': True}, data.cluster_configs['general']
         )

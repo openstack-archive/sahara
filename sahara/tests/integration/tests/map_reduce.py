@@ -48,7 +48,7 @@ class MapReduceTest(base.ITestCase):
                 )
 
     def _transfer_helper_script_to_nodes(self, cluster_info):
-        data = self.savanna.clusters.get(cluster_info['cluster_id'])
+        data = self.sahara.clusters.get(cluster_info['cluster_id'])
         node_groups = data.node_groups
         for node_group in node_groups:
             if node_group['volumes_per_node'] != 0:
