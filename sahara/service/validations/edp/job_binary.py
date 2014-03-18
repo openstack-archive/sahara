@@ -56,6 +56,6 @@ def check_job_binary(data, **kwargs):
             job_binary_location_type.startswith(su.OLD_SWIFT_INTERNAL_PREFIX)):
         if not extra.get("user") or not extra.get("password"):
             raise e.BadJobBinaryException()
-    if job_binary_location_type.startswith("savanna-db"):
-        internal_uid = job_binary_location_type[len("savanna-db://"):]
+    if job_binary_location_type.startswith("internal-db"):
+        internal_uid = job_binary_location_type[len("internal-db://"):]
         b.check_job_binary_internal_exists(internal_uid)

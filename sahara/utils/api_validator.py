@@ -46,8 +46,8 @@ def validate_name_format(entry):
 
 @jsonschema.FormatChecker.cls_checks('valid_job_location')
 def validate_job_location_format(entry):
-    if entry.startswith('savanna-db://'):
-        return uuidutils.is_uuid_like(entry[len("savanna-db://"):])
+    if entry.startswith('internal-db://'):
+        return uuidutils.is_uuid_like(entry[len("internal-db://"):])
 
     # TODO(mattf): remove support for OLD_SWIFT_INTERNAL_PREFIX
     if entry.startswith(su.SWIFT_INTERNAL_PREFIX) or (

@@ -394,7 +394,7 @@ def _create_job(id, job_binary, type):
 def _create_job_binary(id, type):
     binary = mock.Mock()
     binary.id = id
-    binary.url = "savanna-db://42"
+    binary.url = "internal-db://42"
     if edp.compare_job_type(type, 'Pig'):
         binary.name = "script.pig"
     elif edp.compare_job_type(type, 'MapReduce', 'Java'):

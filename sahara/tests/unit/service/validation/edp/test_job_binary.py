@@ -28,7 +28,7 @@ class TestJobBinaryValidation(u.ValidationTestCase):
     def test_creation(self):
         data = {
             "name": "main.jar",
-            "url": "savanna-db://3e4651a5-1f08-4880-94c4-596372b37c64",
+            "url": "internal-db://3e4651a5-1f08-4880-94c4-596372b37c64",
             "extra": {
             "user": "user",
             "password": "password"
@@ -62,8 +62,8 @@ class TestJobBinaryValidation(u.ValidationTestCase):
         self._assert_create_object_validation(
             data={
                 "name": "main.jar",
-                "url": "savanna-db://abacaba",
+                "url": "internal-db://abacaba",
             },
             bad_req_i=(1, "VALIDATION_ERROR",
-                       "'savanna-db://abacaba' is not a "
+                       "'internal-db://abacaba' is not a "
                        "'valid_job_location'"))

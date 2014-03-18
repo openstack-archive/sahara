@@ -223,8 +223,7 @@ class JobBinary(object):
     tenant_id
     name
     description
-    url -  URLs may be the following: internal-db://URL, internal-swift://,
-           external-swift://
+    url -  URLs may be the following: internal-db://URL, swift://
     extra - extra may contain not only user-password but e.g. auth-token
     """
 

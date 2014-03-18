@@ -79,7 +79,7 @@ SAMPLE_JOB_BINARY = {
     "tenant_id": "test_tenant",
     "name": "job_binary_test",
     "description": "test_dec",
-    "url": "savanna-db://test_binary",
+    "url": "internal-db://test_binary",
 }
 
 

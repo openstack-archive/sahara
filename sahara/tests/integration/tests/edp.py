@@ -72,7 +72,7 @@ class EDPTest(base.ITestCase):
                 self._create_job_binary_internals(name, data))
             job_binary_list.append(
                 self._create_job_binary(
-                    name, 'savanna-db://%s' % job_binary_internal_list[-1]))
+                    name, 'internal-db://%s' % job_binary_internal_list[-1]))
 
     def _delete_job(self, execution_job, job_id, job_binary_list,
                     job_binary_internal_list, input_id, output_id):

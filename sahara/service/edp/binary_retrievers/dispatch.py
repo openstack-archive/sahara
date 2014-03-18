@@ -21,7 +21,7 @@ from sahara.swift import utils as su
 
 def get_raw_binary(job_binary):
     url = job_binary.url
-    if url.startswith("savanna-db://"):
+    if url.startswith("internal-db://"):
         res = db.get_raw_data(context.ctx(), job_binary)
 
     # TODO(mattf): remove support for OLD_SWIFT_INTERNAL_PREFIX
