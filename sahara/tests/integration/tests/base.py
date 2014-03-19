@@ -60,19 +60,19 @@ class ITestCase(unittest2.TestCase):
         self.idh_config = cfg.ITConfig().idh_config
 
         telnetlib.Telnet(
-            self.common_config.SAVANNA_HOST, self.common_config.SAVANNA_PORT
+            self.common_config.SAHARA_HOST, self.common_config.SAHARA_PORT
         )
 
         self.sahara = savanna_client.Client(
-            self.common_config.SAVANNA_API_VERSION,
+            self.common_config.SAHARA_API_VERSION,
             username=self.common_config.OS_USERNAME,
             api_key=self.common_config.OS_PASSWORD,
             project_name=self.common_config.OS_TENANT_NAME,
             auth_url=self.common_config.OS_AUTH_URL,
             savanna_url='http://%s:%s/v%s/%s' % (
-                self.common_config.SAVANNA_HOST,
-                self.common_config.SAVANNA_PORT,
-                self.common_config.SAVANNA_API_VERSION,
+                self.common_config.SAHARA_HOST,
+                self.common_config.SAHARA_PORT,
+                self.common_config.SAHARA_API_VERSION,
                 self.common_config.OS_TENANT_ID
             ))
 

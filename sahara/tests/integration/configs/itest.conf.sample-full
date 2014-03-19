@@ -20,14 +20,14 @@
 #SWIFT_AUTH_VERSION = 2
 
 
-# Host for Savanna API (string value)
-#SAVANNA_HOST = '127.0.0.1'
+# Host for Sahara API (string value)
+#SAHARA_HOST = '127.0.0.1'
 
-# Port for Savanna API (integer value)
-#SAVANNA_PORT = '8386'
+# Port for Sahara API (integer value)
+#SAHARA_PORT = '8386'
 
-# Api version for Savanna (string value)
-#SAVANNA_API_VERSION = '1.1'
+# Api version for Sahara (string value)
+#SAHARA_API_VERSION = '1.1'
 
 
 # OpenStack flavor ID for virtual machines. If you leave default value of this
@@ -58,7 +58,7 @@
 #CLUSTER_NAME = 'test-cluster'
 
 
-# OpenStack key pair ID of your SSH public key. Savanna transfers this key to
+# OpenStack key pair ID of your SSH public key. Sahara transfers this key to
 # cluster nodes for access of users to virtual machines of cluster via SSH.
 # You can export your id_rsa.pub public key to OpenStack and specify its key
 # pair ID in configuration file of tests. If you already have key pair in
@@ -70,7 +70,7 @@
 # automatically. Also to key pair ID will be added little ID (8 characters
 # (letters and/or digits)) for its uniqueness. In the end of tests key pair
 # will be deleted (string value)
-#USER_KEYPAIR_ID = 'savanna-i-test-key-pair'
+#USER_KEYPAIR_ID = 'sahara-i-test-key-pair'
 
 # Path to id_rsa key which is used with tests for remote command execution.
 # If you specify wrong path to key then you will have the error "Private key
@@ -80,17 +80,17 @@
 #PATH_TO_SSH_KEY = <None>
 
 
-# Pool name for floating IPs. If Savanna uses Nova management network and auto
+# Pool name for floating IPs. If Sahara uses Nova management network and auto
 # assignment of IPs was enabled then you should leave default value of this
 # parameter. If auto assignment was not enabled then you should specify value
-# (floating IP pool name) of this parameter. If Savanna uses Neutron management
+# (floating IP pool name) of this parameter. If Sahara uses Neutron management
 # network then you should always specify value (floating IP pool name) of this
 # parameter (string value)
 #FLOATING_IP_POOL = <None>
 
 
-# If Savanna uses Nova management network then you should leave default value
-# of this flag. If Savanna uses Neutron management network then you should set
+# If Sahara uses Nova management network then you should leave default value
+# of this flag. If Sahara uses Neutron management network then you should set
 # this flag to True and specify values of the following parameters:
 # FLOATING_IP_POOL and INTERNAL_NEUTRON_NETWORK (boolean value)
 #NEUTRON_ENABLED = False
@@ -102,7 +102,7 @@
 # This is a debugging aid for instances when errors are logged
 # on the cluster nodes but the cause of the failure is not
 # evident from the integration test logs, ie an Oozie exception.
-# It is intended for use on local hosts, not savanna-ci.
+# It is intended for use on local hosts, not the official ci host.
 #RETAIN_CLUSTER_AFTER_TEST = False
 
 [VANILLA]

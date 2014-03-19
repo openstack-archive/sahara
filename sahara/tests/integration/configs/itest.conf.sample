@@ -4,9 +4,9 @@ OS_USERNAME = 'admin'
 OS_PASSWORD = 'admin'
 OS_TENANT_NAME = 'admin'
 OS_AUTH_URL = 'http://127.0.0.1:5000/v2.0'
-SAVANNA_HOST = '127.0.0.1'
+SAHARA_HOST = '127.0.0.1'
 FLAVOR_ID = 2
-USER_KEYPAIR_ID = 'savanna-key-pair'
+USER_KEYPAIR_ID = 'sahara-key-pair'
 PATH_TO_SSH_KEY = '/home/ubuntu/.ssh/id_rsa'
 FLOATING_IP_POOL = 'net04_ext'
 NEUTRON_ENABLED = True
@@ -14,7 +14,7 @@ INTERNAL_NEUTRON_NETWORK = 'net04'
 
 [VANILLA]
 
-IMAGE_NAME = 'savanna-vanilla-image'
+IMAGE_NAME = 'sahara-vanilla-image'
 SKIP_CLUSTER_CONFIG_TEST = True
 
 [HDP]

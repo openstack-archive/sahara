@@ -45,7 +45,7 @@ def _get_plugin_configs(plugin_name, hadoop_version, scope=None):
 
 def check_plugin_name_exists(name):
     if name not in [p.name for p in api.get_plugins()]:
-        raise ex.InvalidException("Savanna doesn't contain plugin with name "
+        raise ex.InvalidException("Sahara doesn't contain plugin with name "
                                   "'%s'" % name)
 
 

@@ -45,7 +45,7 @@ from sahara.openstack.common import processutils
 LOG = logging.getLogger(__name__)
 CONF = cfg.CONF
 
-synchronized = lockutils.synchronized_with_prefix('savanna-')
+synchronized = lockutils.synchronized_with_prefix('sahara-')
 
 
 def _get_connect_string(backend, user, passwd, database):
@@ -78,14 +78,14 @@ def _is_backend_avail(backend, user, passwd, database):
 
 
 def _have_mysql(user, passwd, database):
-    present = os.environ.get('SAVANNA_MYSQL_PRESENT')
+    present = os.environ.get('SAHARA_MYSQL_PRESENT')
     if present is None:
         return _is_backend_avail('mysql', user, passwd, database)
     return present.lower() in ('', 'true')
 
 
 def _have_postgresql(user, passwd, database):
-    present = os.environ.get('SAVANNA_TEST_POSTGRESQL_PRESENT')
+    present = os.environ.get('SAHARA_TEST_POSTGRESQL_PRESENT')
     if present is None:
         return _is_backend_avail('postgres', user, passwd, database)
     return present.lower() in ('', 'true')
@@ -193,7 +193,7 @@ class BaseMigrationTestCase(unittest2.TestCase):
                          'alembic.ini')
         )
 
-        self.ALEMBIC_CONFIG.savanna_config = CONF
+        self.ALEMBIC_CONFIG.sahara_config = CONF
 
         self.snake_walk = False
         self.downgrade = False

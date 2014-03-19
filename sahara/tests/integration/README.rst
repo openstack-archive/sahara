@@ -1,4 +1,4 @@
-Integration tests for Savanna project
+Integration tests for Sahara project
 =====================================
 
 How to run
@@ -25,7 +25,7 @@ For example: `tox -e integration -- vanilla` or `tox -e integration vanilla hdp`
 Contents
 --------
 
-These integration tests check capacity for work of two plugins for Savanna:
+These integration tests check capacity for work of two plugins for Sahara:
 Vanilla and HDP.
 
 Vanilla plugin has the following checks:

@@ -160,7 +160,7 @@ class TestClusterCreateValidation(u.ValidationTestCase):
                 'hadoop_version': "1.2.1",
             },
             bad_req_i=(1, 'INVALID_REFERENCE',
-                       "Savanna doesn't contain plugin "
+                       "Sahara doesn't contain plugin "
                        "with name 'wrong_plugin'")
         )
 

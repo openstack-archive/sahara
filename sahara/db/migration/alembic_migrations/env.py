@@ -31,7 +31,7 @@ importutils.import_module('sahara.db.sqlalchemy.models')
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
 config = context.config
-savanna_config = config.savanna_config
+sahara_config = config.sahara_config
 
 # Interpret the config file for Python logging.
 # This line sets up loggers basically.
@@ -61,7 +61,7 @@ def run_migrations_offline():
     script output.
 
     """
-    context.configure(url=savanna_config.database.connection)
+    context.configure(url=sahara_config.database.connection)
 
     with context.begin_transaction():
         context.run_migrations()
@@ -75,7 +75,7 @@ def run_migrations_online():
 
     """
     engine = create_engine(
-        savanna_config.database.connection,
+        sahara_config.database.connection,
         poolclass=pool.NullPool)
 
     connection = engine.connect()
