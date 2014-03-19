@@ -16,7 +16,7 @@
 import re
 
 from sahara.openstack.common import log as logging
-from sahara.plugins.hdp import savannautils
+from sahara.plugins.hdp import saharautils
 from sahara.utils import files as f
 
 
@@ -47,7 +47,7 @@ class HadoopServer:
         # all nodes must run Ambari agent
         self._setup_and_start_ambari_agent(ambari_info.host.internal_ip)
 
-    @savannautils.inject_remote('r')
+    @saharautils.inject_remote('r')
     def install_rpms(self, r):
         LOG.info(
             "{0}: Installing rpm's ...".format(self.instance.hostname()))
@@ -58,7 +58,7 @@ class HadoopServer:
         r.execute_command(rpm_cmd, run_as_root=True)
         r.execute_command('yum -y install epel-release', run_as_root=True)
 
-    @savannautils.inject_remote('r')
+    @saharautils.inject_remote('r')
     def install_swift_integration(self, r):
         LOG.info(
             "{0}: Installing swift integration ..."
@@ -67,7 +67,7 @@ class HadoopServer:
         rpm_cmd = 'rpm -Uvh ' + HADOOP_SWIFT_RPM
         r.execute_command(rpm_cmd, run_as_root=True)
 
-    @savannautils.inject_remote('r')
+    @saharautils.inject_remote('r')
     def configure_topology(self, topology_str, r):
         r.write_file_to(
             '/etc/hadoop/conf/topology.sh',
@@ -78,7 +78,7 @@ class HadoopServer:
         )
         r.write_file_to('/etc/hadoop/conf/topology.data', topology_str)
 
-    @savannautils.inject_remote('r')
+    @saharautils.inject_remote('r')
     def _setup_and_start_ambari_server(self, port, jdk_path, r):
         LOG.info('{0}: Installing ambari-server ...'.format(
             self.instance.hostname()))
@@ -104,7 +104,7 @@ class HadoopServer:
             'ambari-server start > /dev/null 2>&1', run_as_root=True
         )
 
-    @savannautils.inject_remote('r')
+    @saharautils.inject_remote('r')
     def _configure_ambari_server_api_port(self, port, r):
         # do nothing if port is not specified or is default
         if port is None or port == 8080:
@@ -119,7 +119,7 @@ class HadoopServer:
         # write the file back
         r.write_file_to(ambari_config_file, data, run_as_root=True)
 
-    @savannautils.inject_remote('r')
+    @saharautils.inject_remote('r')
     def _setup_and_start_ambari_agent(self, ambari_server_ip, r):
         LOG.info('{0}: Installing Ambari Agent ...'.format(
             self.instance.hostname()))

@@ -32,9 +32,6 @@ doc/build
 nosetests.xml
 pylint-report.txt
 etc/local.cfg
-etc/savanna/*.conf
-etc/savanna/*.topology
-etc/savanna.conf
 etc/sahara/*.conf
 etc/sahara/*.topology
 etc/sahara.conf
