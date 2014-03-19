@@ -90,7 +90,7 @@ class PluginManager(object):
         config_plugins = CONF.plugins
         extension_manager = enabled.EnabledExtensionManager(
             check_func=lambda ext: ext.name in config_plugins,
-            namespace='savanna.cluster.plugins',
+            namespace='sahara.cluster.plugins',
             invoke_on_load=True
         )
 

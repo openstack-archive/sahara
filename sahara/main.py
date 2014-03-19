@@ -159,7 +159,7 @@ def _get_infrastructure_engine():
              CONF.infrastructure_engine)
 
     extension_manager = stevedore.DriverManager(
-        namespace='savanna.infrastructure.engine',
+        namespace='sahara.infrastructure.engine',
         name=CONF.infrastructure_engine,
         invoke_on_load=True
     )
@@ -171,7 +171,7 @@ def _get_remote_driver():
     LOG.info("Loading '%s' remote" % CONF.remote)
 
     extension_manager = stevedore.DriverManager(
-        namespace='savanna.remote',
+        namespace='sahara.remote',
         name=CONF.remote,
         invoke_on_load=True
     )
