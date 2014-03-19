@@ -15,6 +15,7 @@
 
 import xml.dom.minidom as xml
 
+import six
 import unittest2
 
 from sahara.utils import patches
@@ -32,7 +33,7 @@ class MinidomPatchesTest(unittest2.TestCase):
         doc.insertBefore(pi, doc.firstChild)
         configuration = doc.createElement("root")
         doc.appendChild(configuration)
-        for idx in xrange(0, 5):
+        for idx in six.moves.xrange(0, 5):
             elem = doc.createElement("element")
             configuration.appendChild(elem)
             name = doc.createElement("name")

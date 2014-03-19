@@ -15,6 +15,7 @@
 
 from novaclient import exceptions as nova_exceptions
 from oslo.config import cfg
+import six
 
 from sahara import conductor as c
 from sahara import context
@@ -154,7 +155,7 @@ class DirectEngine(e.Engine):
         for node_group in cluster.node_groups:
             count = node_group.count
             conductor.node_group_update(ctx, node_group, {'count': 0})
-            for idx in xrange(1, count + 1):
+            for idx in six.moves.xrange(1, count + 1):
                 self._run_instance(cluster, node_group, idx, aa_groups)
 
     def _scale_cluster_instances(self, cluster, node_group_id_map):
@@ -189,7 +190,7 @@ class DirectEngine(e.Engine):
             LOG.info(g.format_cluster_status(cluster))
             for node_group in node_groups_to_enlarge:
                 count = node_group_id_map[node_group.id]
-                for idx in xrange(node_group.count + 1, count + 1):
+                for idx in six.moves.xrange(node_group.count + 1, count + 1):
                     instance_id = self._run_instance(cluster, node_group, idx,
                                                      aa_groups)
                     instances_to_add.append(instance_id)

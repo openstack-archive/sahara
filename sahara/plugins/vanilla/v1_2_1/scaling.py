@@ -15,6 +15,8 @@
 
 import os
 
+import six
+
 from sahara import context
 from sahara.openstack.common import timeutils
 from sahara.plugins.general import utils
@@ -87,7 +89,7 @@ def parse_dfs_report(cmd_output):
 
     res = []
     datanode_info = {}
-    for i in xrange(0, len(array)):
+    for i in six.moves.xrange(0, len(array)):
         if array[i]:
             idx = str.find(array[i], ':')
             name = array[i][0:idx]
