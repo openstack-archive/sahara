@@ -282,13 +282,13 @@
 # File format:                 compute1 /rack1
 # compute2 /rack2                 compute3 /rack2 (string
 # value)
-#compute_topology_file=etc/savanna/compute.topology
+#compute_topology_file=etc/sahara/compute.topology
 
 # File with Swift topology.                 It should contain
 # mapping between Swift nodes and racks.                 File
 # format:                 node1 /rack1                 node2
 # /rack2                 node3 /rack2 (string value)
-#swift_topology_file=etc/savanna/swift.topology
+#swift_topology_file=etc/sahara/swift.topology
 
 
 #

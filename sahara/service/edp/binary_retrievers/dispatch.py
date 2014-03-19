@@ -15,7 +15,7 @@
 
 from sahara import context
 from sahara.service.edp.binary_retrievers import internal_swift as i_swift
-from sahara.service.edp.binary_retrievers import savanna_db as db
+from sahara.service.edp.binary_retrievers import sahara_db as db
 from sahara.swift import utils as su
 
 

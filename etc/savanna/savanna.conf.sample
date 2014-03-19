@@ -1,7 +1,7 @@
 [DEFAULT]
 
 #
-# Options defined in savanna.config
+# Options defined in sahara.config
 #
 
 # Hostname or IP address that will be used to listen on.
@@ -41,7 +41,7 @@
 
 
 #
-# Options defined in savanna.main
+# Options defined in sahara.main
 #
 
 # Protocol used to access OpenStack Identity service. (string
@@ -76,15 +76,15 @@
 
 
 #
-# Options defined in savanna.db.base
+# Options defined in sahara.db.base
 #
 
 # Driver to use for database access. (string value)
-#db_driver=savanna.db
+#db_driver=sahara.db
 
 
 #
-# Options defined in savanna.openstack.common.db.sqlalchemy.session
+# Options defined in sahara.openstack.common.db.sqlalchemy.session
 #
 
 # The file name to use with SQLite (string value)
@@ -95,7 +95,7 @@
 
 
 #
-# Options defined in savanna.openstack.common.eventlet_backdoor
+# Options defined in sahara.openstack.common.eventlet_backdoor
 #
 
 # Enable eventlet backdoor.  Acceptable values are 0, <port>,
@@ -110,7 +110,7 @@
 
 
 #
-# Options defined in savanna.openstack.common.lockutils
+# Options defined in sahara.openstack.common.lockutils
 #
 
 # Whether to disable inter-process locks (boolean value)
@@ -121,7 +121,7 @@
 
 
 #
-# Options defined in savanna.openstack.common.log
+# Options defined in sahara.openstack.common.log
 #
 
 # Print debugging output (set logging level to DEBUG instead
@@ -213,7 +213,7 @@
 
 
 #
-# Options defined in savanna.openstack.common.periodic_task
+# Options defined in sahara.openstack.common.periodic_task
 #
 
 # Some periodic tasks can be run in a separate process. Should
@@ -222,7 +222,7 @@
 
 
 #
-# Options defined in savanna.plugins.base
+# Options defined in sahara.plugins.base
 #
 
 # List of plugins to be loaded. Savanna preserves the order of
@@ -231,7 +231,7 @@
 
 
 #
-# Options defined in savanna.service.edp.job_manager
+# Options defined in sahara.service.edp.job_manager
 #
 
 # Postfix for storing jobs in hdfs. Will be added to
@@ -240,7 +240,7 @@
 
 
 #
-# Options defined in savanna.service.periodic
+# Options defined in sahara.service.periodic
 #
 
 # Enable periodic tasks. (boolean value)
@@ -262,7 +262,7 @@
 
 
 #
-# Options defined in savanna.topology.topology_helper
+# Options defined in sahara.topology.topology_helper
 #
 
 # Enables data locality for hadoop cluster.
@@ -282,17 +282,17 @@
 # File format:                 compute1 /rack1
 # compute2 /rack2                 compute3 /rack2 (string
 # value)
-#compute_topology_file=etc/savanna/compute.topology
+#compute_topology_file=etc/sahara/compute.topology
 
 # File with Swift topology.                 It should contain
 # mapping between Swift nodes and racks.                 File
 # format:                 node1 /rack1                 node2
 # /rack2                 node3 /rack2 (string value)
-#swift_topology_file=etc/savanna/swift.topology
+#swift_topology_file=etc/sahara/swift.topology
 
 
 #
-# Options defined in savanna.utils.openstack.keystone
+# Options defined in sahara.utils.openstack.keystone
 #
 
 # Enables Savanna to use Keystone API v3. If that flag is
@@ -302,7 +302,7 @@
 
 
 #
-# Options defined in savanna.utils.remote
+# Options defined in sahara.utils.remote
 #
 
 # A server to which guest agent running on a VM should connect
@@ -323,7 +323,7 @@
 [conductor]
 
 #
-# Options defined in savanna.conductor.api
+# Options defined in sahara.conductor.api
 #
 
 # Perform savanna-conductor operations locally. (boolean
@@ -334,7 +334,7 @@
 [database]
 
 #
-# Options defined in savanna.openstack.common.db.api
+# Options defined in sahara.openstack.common.db.api
 #
 
 # The backend to use for db (string value)
@@ -343,7 +343,7 @@
 
 
 #
-# Options defined in savanna.openstack.common.db.sqlalchemy.session
+# Options defined in sahara.openstack.common.db.sqlalchemy.session
 #
 
 # The SQLAlchemy connection string used to connect to the
@@ -351,7 +351,7 @@
 # Deprecated group/name - [DEFAULT]/sql_connection
 # Deprecated group/name - [DATABASE]/sql_connection
 # Deprecated group/name - [sql]/connection
-#connection=sqlite:////savanna/openstack/common/db/$sqlite_db
+#connection=sqlite:////sahara/openstack/common/db/$sqlite_db
 
 # The SQLAlchemy connection string used to connect to the
 # slave database (string value)
@@ -413,7 +413,7 @@
 [ssl]
 
 #
-# Options defined in savanna.openstack.common.sslutils
+# Options defined in sahara.openstack.common.sslutils
 #
 
 # CA certificate file to use to verify connecting clients

@@ -28,7 +28,7 @@ LOG = logging.getLogger(__name__)
 
 
 def _get_sub_executable():
-    return '%s/_savanna-subprocess' % os.path.dirname(sys.argv[0])
+    return '%s/_sahara-subprocess' % os.path.dirname(sys.argv[0])
 
 
 def start_subprocess():

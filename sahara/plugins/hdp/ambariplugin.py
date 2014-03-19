@@ -22,7 +22,7 @@ from sahara.openstack.common import log as logging
 from sahara.plugins.general import exceptions as ex
 from sahara.plugins.general import utils as u
 from sahara.plugins.hdp import hadoopserver as h
-from sahara.plugins.hdp import savannautils as utils
+from sahara.plugins.hdp import saharautils as utils
 from sahara.plugins.hdp.versions import versionhandlerfactory as vhf
 from sahara.plugins import provisioning as p
 from sahara.topology import topology_helper as th

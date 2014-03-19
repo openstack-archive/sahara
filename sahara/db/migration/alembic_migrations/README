@@ -15,71 +15,71 @@ under the License.
 -->
 
 The migrations in the alembic/versions contain the changes needed to migrate
-from older Savanna releases to newer versions. A migration occurs by executing
+from older Sahara releases to newer versions. A migration occurs by executing
 a script that details the changes needed to upgrade/downgrade the database. The
 migration scripts are ordered so that multiple scripts can run sequentially to
-update the database. The scripts are executed by Savanna's migration wrapper
-which uses the Alembic library to manage the migration. Savanna supports
+update the database. The scripts are executed by Sahara's migration wrapper
+which uses the Alembic library to manage the migration. Sahara supports
 migration from Icehouse or later.
 
 
 If you are a deployer or developer and want to migrate from Icehouse to later
 release you must first add version tracking to the database:
 ```
-$ savanna-db-manage --config-file /path/to/savaanna.conf stamp icehouse
+$ sahara-db-manage --config-file /path/to/sahara.conf stamp icehouse
 ```
 
 You can upgrade to the latest database version via:
 ```
-$ savanna-db-manage --config-file /path/to/savanna.conf upgrade head
+$ sahara-db-manage --config-file /path/to/sahara.conf upgrade head
 ```
 
 To check the current database version:
 ```
-$ savanna-db-manage --config-file /path/to/savanna.conf current
+$ sahara-db-manage --config-file /path/to/sahara.conf current
 ```
 
 To create a script to run the migration offline:
 ```
-$ savanna-db-manage --config-file /path/to/savanna.conf upgrade head --sql
+$ sahara-db-manage --config-file /path/to/sahara.conf upgrade head --sql
 ```
 
 To run the offline migration between specific migration versions:
 ```
-$ savanna-db-manage --config-file /path/to/savanna.conf upgrade \
+$ sahara-db-manage --config-file /path/to/sahara.conf upgrade \
     <start version>:<end version> --sql
 ```
 
 Upgrade the database incrementally:
 ```
-$ savanna-db-manage --config-file /path/to/savanna.conf upgrade --delta \
+$ sahara-db-manage --config-file /path/to/sahara.conf upgrade --delta \
     <# of revs>
 ```
 
 Downgrade the database by a certain number of revisions:
 ```
-$ savanna-db-manage --config-file /path/to/savanna.conf downgrade --delta \
+$ sahara-db-manage --config-file /path/to/sahara.conf downgrade --delta \
     <# of revs>
 ```
 
 Create new revision:
 ```
-$ savanna-db-manage --config-file /path/to/savanna.conf revision \
+$ sahara-db-manage --config-file /path/to/sahara.conf revision \
     -m "description of revision" --autogenerate
 ```
 
 Create a blank file:
 ```
-$ savanna-db-manage --config-file /path/to/savanna.conf revision \
+$ sahara-db-manage --config-file /path/to/sahara.conf revision \
     -m "description of revision"
 ```
 
 To verify that the timeline does branch, you can run this command:
 ```
-    $ savanna-db-manage --config-file /path/to/savanna.conf check_migration
+    $ sahara-db-manage --config-file /path/to/sahara.conf check_migration
 ```
 
 If the migration path does branch, you can find the branch point via:
 ```
-    $ savanna-db-manage --config-file /path/to/savanna.conf history
+    $ sahara-db-manage --config-file /path/to/sahara.conf history
 ```

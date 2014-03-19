@@ -46,7 +46,7 @@ opts = [
                 help="""Enables four-level topology for data locality.
                 Works only if corresponding plugin supports such mode."""),
     cfg.StrOpt('compute_topology_file',
-               default='etc/savanna/compute.topology',
+               default='etc/sahara/compute.topology',
                help="""File with nova compute topology.
                 It should contain mapping between nova computes and racks.
                 File format:
@@ -54,7 +54,7 @@ opts = [
                 compute2 /rack2
                 compute3 /rack2"""),
     cfg.StrOpt('swift_topology_file',
-               default='etc/savanna/swift.topology',
+               default='etc/sahara/swift.topology',
                help="""File with Swift topology.
                 It should contain mapping between Swift nodes and racks.
                 File format:
