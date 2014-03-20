@@ -4,7 +4,7 @@ set -eu
 
 function usage {
   echo "Usage: $0 [OPTION]..."
-  echo "Run savanna test suite"
+  echo "Run sahara test suite"
   echo ""
   echo "  -V, --virtual-env        Always use virtualenv.  Install automatically if not present"
   echo "  -N, --no-virtual-env     Don't use virtualenv.  Run tests in local environment"
@@ -75,7 +75,7 @@ function run_tests {
     if [ "x$testrargs" = "x" ]; then
       testrargs="^(?!.*test_coverage_ext).*$"
     fi
-    export PYTHON="${wrapper} coverage run --source savanna --parallel-mode"
+    export PYTHON="${wrapper} coverage run --source sahara --parallel-mode"
   fi
   # Just run the test suites in current environment
   set +e
@@ -157,5 +157,5 @@ fi
 if [ $coverage -eq 1 ]; then
     echo "Generating coverage report in covhtml/"
     ${wrapper} coverage combine
-    ${wrapper} coverage html --include='savanna/*' --omit='savanna/openstack/common/*' -d covhtml -i
+    ${wrapper} coverage html --include='sahara/*' --omit='sahara/openstack/common/*' -d covhtml -i
 fi
