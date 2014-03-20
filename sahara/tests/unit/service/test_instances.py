@@ -16,6 +16,7 @@
 import mock
 
 from novaclient import exceptions as nova_exceptions
+import six
 
 from sahara import conductor as cond
 from sahara import context
@@ -149,7 +150,7 @@ class NodePlacementTest(AbstractInstanceTest):
             create.
             """
             different_hosts = []
-            for instance_id in xrange(1, idx):
+            for instance_id in six.moves.xrange(1, idx):
                 different_hosts.append(str(instance_id))
             scheduler_hints = ({'different_host': different_hosts}
                                if different_hosts else None)
@@ -163,7 +164,7 @@ class NodePlacementTest(AbstractInstanceTest):
 
         # find instance names in instance create calls
         instance_names = []
-        for idx in xrange(1, 4):
+        for idx in six.moves.xrange(1, 4):
             instance_name = _find_created_at(idx)
             if instance_name in instance_names:
                 self.fail("Create instance was called twice with the same "
