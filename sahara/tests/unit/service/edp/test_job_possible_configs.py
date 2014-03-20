@@ -16,12 +16,13 @@
 import unittest2
 
 from sahara.service.edp.workflow_creator import workflow_factory as w_f
+from sahara.utils import edp
 
 
 class TestJobPossibleConfigs(unittest2.TestCase):
 
     def test_possible_configs(self):
-        res = w_f.get_possible_job_config("MapReduce")
+        res = w_f.get_possible_job_config(edp.JOB_TYPE_MAPREDUCE)
         sample_config_property = {
             'name': 'mapred.map.tasks',
             'value': '2',
@@ -30,7 +31,7 @@ class TestJobPossibleConfigs(unittest2.TestCase):
         }
         self.assertIn(sample_config_property, res['job_config']["configs"])
 
-        res = w_f.get_possible_job_config("Hive")
+        res = w_f.get_possible_job_config(edp.JOB_TYPE_HIVE)
         sample_config_property = {
             "description": "The serde used by FetchTask to serialize the "
                            "fetch output.",

@@ -13,7 +13,26 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+# job type separator character
 JOB_TYPE_SEP = '.'
+# job sub types available
+JOB_SUBTYPE_STREAMING = 'Streaming'
+JOB_SUBTYPE_NONE = ''
+# job types available
+JOB_TYPE_HIVE = 'Hive'
+JOB_TYPE_JAVA = 'Java'
+JOB_TYPE_MAPREDUCE = 'MapReduce'
+JOB_TYPE_MAPREDUCE_STREAMING = (JOB_TYPE_MAPREDUCE + JOB_TYPE_SEP +
+                                JOB_SUBTYPE_STREAMING)
+JOB_TYPE_PIG = 'Pig'
+# job type groupings available
+JOB_TYPES_ALL = [
+    JOB_TYPE_HIVE,
+    JOB_TYPE_JAVA,
+    JOB_TYPE_MAPREDUCE,
+    JOB_TYPE_MAPREDUCE_STREAMING,
+    JOB_TYPE_PIG
+]
 
 
 def split_job_type(job_type):

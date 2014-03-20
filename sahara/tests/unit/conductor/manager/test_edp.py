@@ -19,6 +19,7 @@ import datetime
 from sahara import context
 from sahara import exceptions as ex
 import sahara.tests.unit.conductor.base as test_base
+from sahara.utils import edp
 
 
 SAMPLE_DATA_SOURCE = {
@@ -37,7 +38,7 @@ SAMPLE_JOB = {
     "tenant_id": "test_tenant",
     "name": "job_test",
     "description": "test_desc",
-    "type": "Pig",
+    "type": edp.JOB_TYPE_PIG,
     "mains": []
 }
 

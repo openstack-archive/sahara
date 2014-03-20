@@ -192,33 +192,33 @@ def get_creator(job):
     def make_HiveFactory():
         return HiveFactory(job)
 
-    factories = [
-        MapReduceFactory,
-        MapReduceFactory,
-        make_HiveFactory,
-        make_PigFactory,
-        JavaFactory
-    ]
-    type_map = dict(zip(get_possible_job_types(), factories))
+    type_map = {
+        edp.JOB_TYPE_HIVE: make_HiveFactory,
+        edp.JOB_TYPE_JAVA: JavaFactory,
+        edp.JOB_TYPE_MAPREDUCE: MapReduceFactory,
+        edp.JOB_TYPE_MAPREDUCE_STREAMING: MapReduceFactory,
+        edp.JOB_TYPE_PIG: make_PigFactory
+    }
 
     return type_map[job.type]()
 
 
 def get_possible_job_config(job_type):
-    if not edp.compare_job_type(job_type, *get_possible_job_types()):
+    if not edp.compare_job_type(job_type, *edp.JOB_TYPES_ALL):
         return None
 
-    if edp.compare_job_type(job_type, 'Java'):
+    if edp.compare_job_type(job_type, edp.JOB_TYPE_JAVA):
         return {'job_config': {'configs': [], 'args': []}}
 
-    if edp.compare_job_type(job_type, 'MapReduce', 'Pig'):
+    if edp.compare_job_type(job_type,
+                            edp.JOB_TYPE_MAPREDUCE, edp.JOB_TYPE_PIG):
         #TODO(nmakhotkin) Here we should return config based on specific plugin
         cfg = xmlutils.load_hadoop_xml_defaults(
             'plugins/vanilla/v1_2_1/resources/mapred-default.xml')
-        if edp.compare_job_type(job_type, 'MapReduce'):
+        if edp.compare_job_type(job_type, edp.JOB_TYPE_MAPREDUCE):
             cfg += xmlutils.load_hadoop_xml_defaults(
                 'service/edp/resources/mapred-job-config.xml')
-    elif edp.compare_job_type(job_type, 'Hive'):
+    elif edp.compare_job_type(job_type, edp.JOB_TYPE_HIVE):
         #TODO(nmakhotkin) Here we should return config based on specific plugin
         cfg = xmlutils.load_hadoop_xml_defaults(
             'plugins/vanilla/v1_2_1/resources/hive-default.xml')
@@ -226,16 +226,6 @@ def get_possible_job_config(job_type):
     # TODO(tmckay): args should be a list when bug #269968
     # is fixed on the UI side
     config = {'configs': cfg, "args": {}}
-    if not edp.compare_job_type('MapReduce', 'Java'):
+    if not edp.compare_job_type(edp.JOB_TYPE_MAPREDUCE, edp.JOB_TYPE_JAVA):
         config.update({'params': {}})
     return {'job_config': config}
-
-
-def get_possible_job_types():
-    return [
-        'MapReduce',
-        'MapReduce.Streaming',
-        'Hive',
-        'Pig',
-        'Java'
-    ]

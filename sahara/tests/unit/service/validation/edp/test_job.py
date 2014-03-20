@@ -15,6 +15,7 @@
 
 from sahara.service.validations.edp import job as j
 from sahara.tests.unit.service.validation import utils as u
+from sahara.utils import edp
 
 
 class TestJobValidation(u.ValidationTestCase):
@@ -24,7 +25,7 @@ class TestJobValidation(u.ValidationTestCase):
         self.scheme = j.JOB_SCHEMA
 
     def test_empty_libs(self):
-        for job_type in ['MapReduce', 'Java']:
+        for job_type in [edp.JOB_TYPE_MAPREDUCE, edp.JOB_TYPE_JAVA]:
             self._assert_create_object_validation(
                 data={
                     "name": "jar.jar",
@@ -36,11 +37,11 @@ class TestJobValidation(u.ValidationTestCase):
         self._assert_create_object_validation(
             data={
                 "name": "jar.jar",
-                "type": "MapReduce.Streaming",
+                "type": edp.JOB_TYPE_MAPREDUCE_STREAMING,
             })
 
     def test_mains_unused(self):
-        for job_type in ['MapReduce', 'Java']:
+        for job_type in [edp.JOB_TYPE_MAPREDUCE, edp.JOB_TYPE_JAVA]:
             self._assert_create_object_validation(
                 data={
                     "name": "jar.jar",
@@ -54,7 +55,7 @@ class TestJobValidation(u.ValidationTestCase):
     def test_empty_pig_mains(self):
         data = {
             "name": "pig.pig",
-            "type": "Pig",
+            "type": edp.JOB_TYPE_PIG,
             "libs": ['lib-uuid']
         }
 
@@ -62,14 +63,14 @@ class TestJobValidation(u.ValidationTestCase):
             data=data, bad_req_i=(1, "INVALID_DATA",
                                   "Pig flow requires main script"))
 
-        data.update({"type": "Hive"})
+        data.update({"type": edp.JOB_TYPE_HIVE})
 
         self._assert_create_object_validation(
             data=data, bad_req_i=(1, "INVALID_DATA",
                                   "Hive flow requires main script"))
 
     def test_overlap_libs(self):
-        for job_type in ['Hive', 'Pig']:
+        for job_type in [edp.JOB_TYPE_HIVE, edp.JOB_TYPE_PIG]:
             self._assert_create_object_validation(
                 data={
                     "name": "jar.jar",
@@ -86,6 +87,4 @@ class TestJobValidation(u.ValidationTestCase):
                 "type": "Jar",
             },
             bad_req_i=(1, "VALIDATION_ERROR",
-                       "'Jar' is not one of "
-                       "['Pig', 'Hive', 'MapReduce', "
-                       "'MapReduce.Streaming', 'Java']"))
+                       "'Jar' is not one of " + str(edp.JOB_TYPES_ALL)))

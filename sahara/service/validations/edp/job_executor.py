@@ -66,7 +66,7 @@ def check_job_executor(data, job_id):
     main_base.check_cluster_contains_oozie(data['cluster_id'])
 
     # All types except Java require input and output objects
-    if job_type == 'Java':
+    if job_type == edp.JOB_TYPE_JAVA:
         if not _is_main_class_present(data):
             raise ex.InvalidDataException('Java job must '
                                           'specify edp.java.main_class')
@@ -80,8 +80,9 @@ def check_job_executor(data, job_id):
 
         b.check_data_sources_are_different(data['input_id'], data['output_id'])
 
-        if job_type == 'MapReduce' and (
-                subtype == 'Streaming' and not _streaming_present(data)):
+        if job_type == edp.JOB_TYPE_MAPREDUCE and (
+                subtype == edp.JOB_SUBTYPE_STREAMING
+                and not _streaming_present(data)):
             raise ex.InvalidDataException("%s job "
                                           "must specify streaming mapper "
                                           "and reducer" % job.type)

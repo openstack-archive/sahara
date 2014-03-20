@@ -22,6 +22,7 @@ from sahara.tests.integration.tests import edp
 from sahara.tests.integration.tests import map_reduce
 from sahara.tests.integration.tests import scaling
 from sahara.tests.integration.tests import swift
+from sahara.utils import edp as utils_edp
 
 
 class HDPGatingTest(cinder.CinderVolumeTest, edp.EDPTest,
@@ -182,16 +183,13 @@ class HDPGatingTest(cinder.CinderVolumeTest, edp.EDPTest,
             }
         }
         try:
-            self.edp_testing('Pig', [{'pig': pig_job_data}],
+            self.edp_testing(utils_edp.JOB_TYPE_PIG, [{'pig': pig_job_data}],
                              [{'jar': pig_lib_data}])
-            self.edp_testing(
-                'MapReduce', [], [{'jar': mapreduce_jar_data}],
-                mapreduce_configs
-            )
-            self.edp_testing(
-                'MapReduce.Streaming', [], [], mapreduce_streaming_configs
-            )
-            self.edp_testing('Java', [],
+            self.edp_testing(utils_edp.JOB_TYPE_MAPREDUCE, [],
+                             [{'jar': mapreduce_jar_data}], mapreduce_configs)
+            self.edp_testing(utils_edp.JOB_TYPE_MAPREDUCE_STREAMING, [], [],
+                             mapreduce_streaming_configs)
+            self.edp_testing(utils_edp.JOB_TYPE_JAVA, [],
                              lib_data_list=[{'jar': java_lib_data}],
                              configs=java_configs,
                              pass_input_output_args=True)

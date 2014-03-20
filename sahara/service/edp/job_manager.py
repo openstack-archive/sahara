@@ -125,7 +125,7 @@ def run_job(job_execution):
         return job_execution
 
     job = conductor.job_get(ctx, job_execution.job_id)
-    if not edp.compare_job_type(job.type, 'Java'):
+    if not edp.compare_job_type(job.type, edp.JOB_TYPE_JAVA):
         input_source = conductor.data_source_get(ctx,  job_execution.input_id)
         output_source = conductor.data_source_get(ctx, job_execution.output_id)
     else:
@@ -230,6 +230,7 @@ def _append_slash_if_needed(path):
 #TODO(nprivalova): this validation should be removed after implementing
 #  all features
 def validate(input_data, output_data, job):
-    if not edp.compare_job_type(job.type, 'Pig', 'MapReduce',
-                                'Hive', 'Java'):
+    if not edp.compare_job_type(job.type, edp.JOB_TYPE_PIG,
+                                edp.JOB_TYPE_MAPREDUCE, edp.JOB_TYPE_HIVE,
+                                edp.JOB_TYPE_JAVA):
         raise RuntimeError

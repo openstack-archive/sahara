@@ -31,13 +31,7 @@ JOB_SCHEMA = {
         },
         "type": {
             "type": "string",
-            "enum": [
-                "Pig",
-                "Hive",
-                "MapReduce",
-                "MapReduce.Streaming",
-                "Java"
-            ],
+            "enum": edp.JOB_TYPES_ALL,
         },
         "mains": {
             "type": "array",
@@ -78,10 +72,11 @@ def check_mains_libs(data, **kwargs):
     mains = data.get("mains", [])
     libs = data.get("libs", [])
     job_type, subtype = edp.split_job_type(data.get("type"))
-    streaming = job_type == "MapReduce" and subtype == "Streaming"
+    streaming = (job_type == edp.JOB_TYPE_MAPREDUCE and
+                 subtype == edp.JOB_SUBTYPE_STREAMING)
 
     # Pig or Hive flow has to contain script in mains, may also use libs
-    if job_type in ['Pig', 'Hive']:
+    if job_type in [edp.JOB_TYPE_PIG, edp.JOB_TYPE_HIVE]:
         if not mains:
             raise e.InvalidDataException("%s flow requires main script" %
                                          data.get("type"))
