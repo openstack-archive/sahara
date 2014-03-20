@@ -17,4 +17,4 @@ testscenarios>=0.4
 testtools>=0.9.34
 unittest2
 
-python-savannaclient>=0.5.0
+python-saharaclient>=0.6.0
