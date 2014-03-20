@@ -16,9 +16,9 @@
 from novaclient.v1_1 import images
 
 
-PROP_DESCR = '_savanna_description'
-PROP_USERNAME = '_savanna_username'
-PROP_TAG = '_savanna_tag_'
+PROP_DESCR = '_sahara_description'
+PROP_USERNAME = '_sahara_username'
+PROP_TAG = '_sahara_tag_'
 
 
 def _iter_tags(meta):

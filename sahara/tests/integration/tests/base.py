@@ -27,6 +27,7 @@ import unittest2
 
 from sahara.openstack.common import excutils
 from sahara.tests.integration.configs import config as cfg
+import sahara.utils.openstack.images as imgs
 from sahara.utils import ssh_remote
 
 
@@ -395,7 +396,7 @@ class ITestCase(unittest2.TestCase):
         def try_get_image_id_and_ssh_username(parameter, value):
             try:
                 if not plugin_config.SSH_USERNAME:
-                    return image.id, image.metadata['_savanna_username']
+                    return image.id, image.metadata[imgs.PROP_USERNAME]
 
                 else:
                     return image.id, plugin_config.SSH_USERNAME
@@ -434,10 +435,10 @@ class ITestCase(unittest2.TestCase):
         # and return its ID and username. If image not found then handle error
         if plugin_config.IMAGE_TAG:
             for image in images:
-                if (image.metadata.get('_savanna_tag_%s'
+                if (image.metadata.get(imgs.PROP_TAG + '%s'
                     % plugin_config.IMAGE_TAG)) and (
-                        image.metadata.get('_savanna_tag_'
-                                           '%s' % plugin_config.PLUGIN_NAME)):
+                        image.metadata.get(imgs.PROP_TAG + (
+                                           '%s' % plugin_config.PLUGIN_NAME))):
                     return try_get_image_id_and_ssh_username(
                         'tag', plugin_config.IMAGE_TAG
                     )
@@ -455,12 +456,12 @@ class ITestCase(unittest2.TestCase):
         # its ID and username. Found image will be chosen as image for tests.
         # If image with tag "sahara_i_tests" not found then handle error
         for image in images:
-            if (image.metadata.get('_savanna_tag_savanna_i_tests')) and (
-                    image.metadata.get('_savanna_tag_'
-                                       '%s' % plugin_config.PLUGIN_NAME)):
+            if (image.metadata.get(imgs.PROP_TAG + 'sahara_i_tests')) and (
+                    image.metadata.get(imgs.PROP_TAG + (
+                                       '%s' % plugin_config.PLUGIN_NAME))):
                 try:
                     if not plugin_config.SSH_USERNAME:
-                        return image.id, image.metadata['_savanna_username']
+                        return image.id, image.metadata[imgs.PROP_USERNAME]
 
                     else:
                         return image.id, plugin_config.SSH_USERNAME
@@ -472,7 +473,7 @@ class ITestCase(unittest2.TestCase):
                                 ' was specified in configuration file of '
                                 'integration tests. That is why there was '
                                 'attempt to choose image by tag '
-                                '"savanna_i_tests" and image with such tag '
+                                '"sahara_i_tests" and image with such tag '
                                 'was found in image list but it was possibly '
                                 'not registered for Savanna. Please, make '
                                 'sure image was correctly registered.'
@@ -480,7 +481,7 @@ class ITestCase(unittest2.TestCase):
         self.fail(
             '\n\nNone of parameters of image (ID, name, tag) was specified in '
             'configuration file of integration tests. That is why there was '
-            'attempt to choose image by tag "savanna_i_tests" but image with '
+            'attempt to choose image by tag "sahara_i_tests" but image with '
             'such tag not found in list of registered images for Savanna. '
             'Please, make sure image was correctly registered. Please, '
             'specify one of parameters of image (ID, name or tag) in '

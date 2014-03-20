@@ -114,19 +114,19 @@
 # ID for image which is used for cluster creation. Also you can specify image
 # name or tag of image instead of image ID. If you do not specify image related
 # parameters then image for cluster creation will be chosen by tag
-# "savanna_i_tests" (string value)
+# "sahara_i_tests" (string value)
 #IMAGE_ID = <None>
 
 # Name for image which is used for cluster creation. Also you can specify image
 # ID or tag of image instead of image name. If you do not specify image related
 # parameters then image for cluster creation will be chosen by tag
-# "savanna_i_tests" (string value)
+# "sahara_i_tests" (string value)
 #IMAGE_NAME = <None>
 
 # Tag for image which is used for cluster creation. Also you can specify image
 # ID or image name instead of tag of image. If you do not specify image related
 # parameters then image for cluster creation will be chosen by tag
-# "savanna_i_tests (string value)
+# "sahara_i_tests (string value)
 #IMAGE_TAG = <None>
 
 
@@ -175,19 +175,19 @@
 # ID for image which is used for cluster creation. Also you can specify image
 # name or tag of image instead of image ID. If you do not specify image related
 # parameters then image for cluster creation will be chosen by tag
-# "savanna_i_tests" (string value)
+# "sahara_i_tests" (string value)
 #IMAGE_ID = <None>
 
 # Name for image which is used for cluster creation. Also you can specify image
 # ID or tag of image instead of image name. If you do not specify image related
 # parameters then image for cluster creation will be chosen by tag
-# "savanna_i_tests" (string value)
+# "sahara_i_tests" (string value)
 #IMAGE_NAME = <None>
 
 # Tag for image which is used for cluster creation. Also you can specify image
 # ID or image name instead of tag of image. If you do not specify image related
 # parameters then image for cluster creation will be chosen by tag
-# "savanna_i_tests (string value)
+# "sahara_i_tests" (string value)
 #IMAGE_TAG = <None>
 
 

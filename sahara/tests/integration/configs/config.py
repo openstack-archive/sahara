@@ -158,21 +158,21 @@ VANILLA_CONFIG_OPTS = [
                     'you can specify image name or tag of image instead of '
                     'image ID. If you do not specify image related parameters '
                     'then image for cluster creation will be chosen by '
-                    'tag "savanna_i_tests".'),
+                    'tag "sahara_i_tests".'),
     cfg.StrOpt('IMAGE_NAME',
                default=None,
                help='Name for image which is used for cluster creation. Also '
                     'you can specify image ID or tag of image instead of '
                     'image name. If you do not specify image related '
                     'parameters, then the image for cluster creation will be '
-                    'chosen by tag "savanna_i_tests".'),
+                    'chosen by tag "sahara_i_tests".'),
     cfg.StrOpt('IMAGE_TAG',
                default=None,
                help='Tag for image which is used for cluster creation. Also '
                     'you can specify image ID or image name instead of tag of '
                     'image. If you do not specify image related parameters, '
                     'then image for cluster creation will be chosen by '
-                    'tag "savanna_i_tests".'),
+                    'tag "sahara_i_tests".'),
     cfg.StrOpt('SSH_USERNAME',
                default=None,
                help='Username to get cluster node with SSH.'),
@@ -234,21 +234,21 @@ HDP_CONFIG_OPTS = [
                     'you can specify image name or tag of image instead of '
                     'image ID. If you do not specify image related '
                     'parameters, then image for cluster creation will be '
-                    'chosen by tag "savanna_i_tests".'),
+                    'chosen by tag "sahara_i_tests".'),
     cfg.StrOpt('IMAGE_NAME',
                default=None,
                help='Name for image which is used for cluster creation. Also '
                     'you can specify image ID or tag of image instead of '
                     'image name. If you do not specify image related '
                     'parameters, then image for cluster creation will be '
-                    'chosen by tag "savanna_i_tests".'),
+                    'chosen by tag "sahara_i_tests".'),
     cfg.StrOpt('IMAGE_TAG',
                default=None,
                help='Tag for image which is used for cluster creation. Also '
                     'you can specify image ID or image name instead of tag of '
                     'image. If you do not specify image related parameters, '
                     'then image for cluster creation will be chosen by '
-                    'tag "savanna_i_tests".'),
+                    'tag "sahara_i_tests".'),
     cfg.StrOpt('SSH_USERNAME',
                default=None,
                help='Username to get cluster node with SSH.'),
@@ -321,21 +321,21 @@ IDH_CONFIG_OPTS = [
                     'you can specify image name or tag of image instead of '
                     'image ID. If you do not specify image related '
                     'parameters, then image for cluster creation will be '
-                    'chosen by tag "savanna_i_tests".'),
+                    'chosen by tag "sahara_i_tests".'),
     cfg.StrOpt('IMAGE_NAME',
                default=None,
                help='Name for image which is used for cluster creation. Also '
                     'you can specify image ID or tag of image instead of '
                     'image name. If you do not specify image related '
                     'parameters, then image for cluster creation will be '
-                    'chosen by tag "savanna_i_tests".'),
+                    'chosen by tag "sahara_i_tests".'),
     cfg.StrOpt('IMAGE_TAG',
                default=None,
                help='Tag for image which is used for cluster creation. Also '
                     'you can specify image ID or image name instead of tag of '
                     'image. If you do not specify image related parameters, '
                     'then image for cluster creation will be chosen by '
-                    'tag "savanna_i_tests".'),
+                    'tag "sahara_i_tests".'),
     cfg.StrOpt('SSH_USERNAME',
                default=None,
                help='Username to get cluster node with SSH.'),
