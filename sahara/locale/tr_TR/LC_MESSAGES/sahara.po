@@ -1,17 +1,18 @@
-# Translations template for sahara.
+# Turkish (Turkey) translations for sahara.
 # Copyright (C) 2014 ORGANIZATION
 # This file is distributed under the same license as the sahara project.
-# FIRST AUTHOR <EMAIL@ADDRESS>, 2014.
 #
-#, fuzzy
+# Translators:
 msgid ""
 msgstr ""
-"Project-Id-Version: sahara jenkins.sahara.propose.translation.update.8\n"
+"Project-Id-Version:  Sahara\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2014-03-20 06:06+0000\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
+"PO-Revision-Date: 2014-03-19 22:46+0000\n"
+"Last-Translator: openstackjenkins <jenkins@openstack.org>\n"
+"Language-Team: Turkish (Turkey) "
+"(http://www.transifex.com/projects/p/openstack/language/tr_TR/)\n"
+"Plural-Forms: nplurals=1; plural=0\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -19,7 +20,7 @@ msgstr ""
 
 #: sahara/openstack/common/exception.py:103
 msgid "Uncaught exception"
-msgstr ""
+msgstr "Yakalanmamış istisna"
 
 #: sahara/openstack/common/fileutils.py:63
 #, python-format
@@ -89,7 +90,7 @@ msgstr ""
 #: sahara/openstack/common/log.py:488
 #, python-format
 msgid "syslog facility must be one of: %s"
-msgstr ""
+msgstr "syslog servisi bunlardan biri olmak zorundadır: %s"
 
 #: sahara/openstack/common/log.py:709
 #, python-format
@@ -118,7 +119,7 @@ msgstr ""
 #: sahara/openstack/common/processutils.py:139
 #, python-format
 msgid "Got unknown keyword args to utils.execute: %r"
-msgstr ""
+msgstr "utils.execute için bilinmeyen anahtar kelime argümanları: %r"
 
 #: sahara/openstack/common/processutils.py:145
 msgid "Command requested root, but did not specify a root helper."
@@ -126,26 +127,26 @@ msgstr ""
 
 #: sahara/openstack/common/processutils.py:241
 msgid "Environment not supported over SSH"
-msgstr ""
+msgstr "SSH üzerinde ortam desteklenmemektedir."
 
 #: sahara/openstack/common/processutils.py:245
 msgid "process_input not supported over SSH"
-msgstr ""
+msgstr "SSH üzerinde process_input desteklenmemektedir."
 
 #: sahara/openstack/common/sslutils.py:52
 #, python-format
 msgid "Unable to find cert_file : %s"
-msgstr ""
+msgstr "cert_file bulunamadı: %s"
 
 #: sahara/openstack/common/sslutils.py:55
 #, python-format
 msgid "Unable to find ca_file : %s"
-msgstr ""
+msgstr "ca_file bulunamadı: %s"
 
 #: sahara/openstack/common/sslutils.py:58
 #, python-format
 msgid "Unable to find key_file : %s"
-msgstr ""
+msgstr "key_file bulunamadı: %s"
 
 #: sahara/openstack/common/sslutils.py:61
 msgid ""
@@ -156,11 +157,11 @@ msgstr ""
 #: sahara/openstack/common/sslutils.py:100
 #, python-format
 msgid "Invalid SSL version : %s"
-msgstr ""
+msgstr "Geçersiz SSL sürümü: %s"
 
 #: sahara/openstack/common/wsgi.py:187
 msgid "cannot understand JSON"
-msgstr ""
+msgstr "JSON dosyası anlaşılamadı"
 
 #: sahara/openstack/common/wsgi.py:211
 msgid "cannot understand XML"
@@ -186,7 +187,7 @@ msgstr ""
 
 #: sahara/openstack/common/db/sqlalchemy/migration.py:191
 msgid "version should be an integer"
-msgstr ""
+msgstr "Sürüm tam sayı olmak zorunda"
 
 #: sahara/openstack/common/db/sqlalchemy/migration.py:214
 #, python-format
@@ -203,7 +204,7 @@ msgstr ""
 
 #: sahara/openstack/common/db/sqlalchemy/session.py:596
 msgid "DB exception wrapped."
-msgstr ""
+msgstr "Veritabanı istisnası yakalandı."
 
 #: sahara/openstack/common/db/sqlalchemy/session.py:665
 #, python-format

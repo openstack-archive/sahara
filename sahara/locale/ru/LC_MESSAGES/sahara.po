@@ -1,17 +1,19 @@
-# Translations template for sahara.
+# Russian translations for sahara.
 # Copyright (C) 2014 ORGANIZATION
 # This file is distributed under the same license as the sahara project.
-# FIRST AUTHOR <EMAIL@ADDRESS>, 2014.
 #
-#, fuzzy
+# Translators:
 msgid ""
 msgstr ""
-"Project-Id-Version: sahara jenkins.sahara.propose.translation.update.8\n"
+"Project-Id-Version:  Sahara\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2014-03-20 06:06+0000\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
+"PO-Revision-Date: 2014-03-19 22:46+0000\n"
+"Last-Translator: openstackjenkins <jenkins@openstack.org>\n"
+"Language-Team: Russian "
+"(http://www.transifex.com/projects/p/openstack/language/ru/)\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
+"n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -118,7 +120,7 @@ msgstr ""
 #: sahara/openstack/common/processutils.py:139
 #, python-format
 msgid "Got unknown keyword args to utils.execute: %r"
-msgstr ""
+msgstr "Приняты неизвестные аргументы ключевого слова для utils.execute: %r"
 
 #: sahara/openstack/common/processutils.py:145
 msgid "Command requested root, but did not specify a root helper."
@@ -126,11 +128,11 @@ msgstr ""
 
 #: sahara/openstack/common/processutils.py:241
 msgid "Environment not supported over SSH"
-msgstr ""
+msgstr "Среда не поддерживается с использованием SSH"
 
 #: sahara/openstack/common/processutils.py:245
 msgid "process_input not supported over SSH"
-msgstr ""
+msgstr "process_input не поддерживается с использованием SSH"
 
 #: sahara/openstack/common/sslutils.py:52
 #, python-format
@@ -182,7 +184,7 @@ msgstr ""
 
 #: sahara/openstack/common/db/exception.py:42
 msgid "Invalid Parameter: Unicode is not supported by the current database."
-msgstr ""
+msgstr "Недопустимый параметр: Unicode не поддерживается используемой базой данных"
 
 #: sahara/openstack/common/db/sqlalchemy/migration.py:191
 msgid "version should be an integer"
@@ -203,7 +205,7 @@ msgstr ""
 
 #: sahara/openstack/common/db/sqlalchemy/session.py:596
 msgid "DB exception wrapped."
-msgstr ""
+msgstr "Исключение БД скрыто."
 
 #: sahara/openstack/common/db/sqlalchemy/session.py:665
 #, python-format
