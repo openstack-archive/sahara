@@ -68,7 +68,7 @@ This operation does not require a request body.
             "data_sources": [
                 {
                     "description": "This is input",
-                    "url": "swift://container.savanna/text",
+                    "url": "swift://container.sahara/text",
                     "tenant_id": "11587919cc534bcbb1027a161c82cf58",
                     "created_at": "2013-10-09 12:37:19.295701",
                     "updated_at": null,
@@ -82,7 +82,7 @@ This operation does not require a request body.
                 },
                 {
                     "description": "This is output",
-                    "url": "swift://container.savanna/result",
+                    "url": "swift://container.sahara/result",
                     "tenant_id": "11587919cc534bcbb1027a161c82cf58",
                     "created_at": "2013-10-09 12:37:58.155911",
                     "updated_at": null,
@@ -140,7 +140,7 @@ This operation does not require a request body.
         {
             "data_source": {
                 "description": "",
-                "url": "swift://container.savanna/text",
+                "url": "swift://container.sahara/text",
                 "tenant_id": "11587919cc534bcbb1027a161c82cf58",
                 "created_at": "2013-10-09 12:37:19.295701",
                 "updated_at": null,
@@ -176,7 +176,7 @@ This operation returns the created Data Source.
 
         {
             "description": "This is input",
-            "url": "swift://container.savanna/text",
+            "url": "swift://container.sahara/text",
             "credentials": {
                 "password": "swordfish",
                 "user": "admin"
@@ -197,7 +197,7 @@ This operation returns the created Data Source.
         {
             "data_source": {
                 "description": "This is input",
-                "url": "swift://container.savanna/text",
+                "url": "swift://container.sahara/text",
                 "tenant_id": "11587919cc534bcbb1027a161c82cf58",
                 "created_at": "2013-10-15 11:15:25.971886",
                 "credentials": {
@@ -555,7 +555,7 @@ This operation does not require a request body.
                 {
                     "description": "",
                     "extra": {},
-                    "url": "sahara-db://d2498cbf-4589-484a-a814-81436c18beb3",
+                    "url": "internal-db://d2498cbf-4589-484a-a814-81436c18beb3",
                     "tenant_id": "11587919cc534bcbb1027a161c82cf58",
                     "created_at": "2013-10-15 12:36:59.375060",
                     "updated_at": null,
@@ -565,7 +565,7 @@ This operation does not require a request body.
                 {
                     "description": "",
                     "extra": {},
-                    "url": "sahara-db://22f1d87a-23c8-483e-a0dd-cb4a16dde5f9",
+                    "url": "internal-db://22f1d87a-23c8-483e-a0dd-cb4a16dde5f9",
                     "tenant_id": "11587919cc534bcbb1027a161c82cf58",
                     "created_at": "2013-10-15 12:43:52.265899",
                     "updated_at": null,
@@ -815,7 +815,7 @@ This operation does not require a request body.
                         {
                             "description": "",
                             "extra": {},
-                            "url": "sahara-db://d2498cbf-4589-484a-a814-81436c18beb3",
+                            "url": "internal-db://d2498cbf-4589-484a-a814-81436c18beb3",
                             "tenant_id": "11587919cc534bcbb1027a161c82cf58",
                             "created_at": "2013-10-15 12:36:59.375060",
                             "updated_at": null,
@@ -828,7 +828,7 @@ This operation does not require a request body.
                         {
                             "description": "",
                             "extra": {},
-                            "url": "sahara-db://22f1d87a-23c8-483e-a0dd-cb4a16dde5f9",
+                            "url": "internal-db://22f1d87a-23c8-483e-a0dd-cb4a16dde5f9",
                             "tenant_id": "11587919cc534bcbb1027a161c82cf58",
                             "created_at": "2013-10-15 12:43:52.265899",
                             "updated_at": null,
@@ -971,7 +971,7 @@ This operation shows information about the created Job object.
                     {
                         "description": "",
                         "extra": {},
-                        "url": "sahara-db://d2498cbf-4589-484a-a814-81436c18beb3",
+                        "url": "internal-db://d2498cbf-4589-484a-a814-81436c18beb3",
                         "tenant_id": "11587919cc534bcbb1027a161c82cf58",
                         "created_at": "2013-10-15 12:36:59.375060",
                         "updated_at": null,
@@ -983,7 +983,7 @@ This operation shows information about the created Job object.
                     {
                         "description": "",
                         "extra": {},
-                        "url": "sahara-db://22f1d87a-23c8-483e-a0dd-cb4a16dde5f9",
+                        "url": "internal-db://22f1d87a-23c8-483e-a0dd-cb4a16dde5f9",
                         "tenant_id": "11587919cc534bcbb1027a161c82cf58",
                         "created_at": "2013-10-15 12:43:52.265899",
                         "updated_at": null,
@@ -1214,11 +1214,11 @@ This operation returns the created Job Execution object. Note that different job
             "cluster_id": "776e441b-5816-4d47-9e07-7ded58f9a5f6",
             "job_configs": {
                 "configs": {
-                    "fs.swift.service.savanna.username": "myname",
-                    "fs.swift.service.savanna.password": "mypassword",
+                    "fs.swift.service.sahara.username": "myname",
+                    "fs.swift.service.sahara.password": "mypassword",
                     "edp.java.main_class": "org.apache.hadoop.examples.WordCount"
                 },
-                "args": ["swift://integration.savanna/demo/make_job.sh", "swift://integration.savanna/friday"]
+                "args": ["swift://integration.sahara/demo/make_job.sh", "swift://integration.sahara/friday"]
             }
         }
 
@@ -1245,12 +1245,12 @@ This operation returns the created Job Execution object. Note that different job
                 "job_configs": {
                     "configs": {
                         "edp.java.main_class": "org.apache.hadoop.examples.WordCount",
-                        "fs.swift.service.savanna.password": "myname",
-                        "fs.swift.service.savanna.username": "mypassword"
+                        "fs.swift.service.sahara.password": "myname",
+                        "fs.swift.service.sahara.username": "mypassword"
                     },
                     "args": [
-                        "swift://integration.savanna/demo/make_job.sh",
-                        "swift://integration.savanna/friday"
+                        "swift://integration.sahara/demo/make_job.sh",
+                        "swift://integration.sahara/friday"
                     ]
                 },
                 "id": "724709bf-2268-46ed-8daf-47898b4630b4"
@@ -1361,7 +1361,7 @@ This operation does not require a request body.
                                 "consoleUrl": "http://edp-master-001:50030/jobdetails.jsp?jobid=job_201310171352_0001",
                                 "toString": "Action name[job-node] status[RUNNING]",
                                 "externalStatus": "RUNNING",
-                                "conf": "<pig xmlns=\"uri:oozie:workflow:0.2\">\r\n  <job-tracker>edp-master-001:8021</job-tracker>\r\n  <name-node>hdfs://edp-master-001:8020</name-node>\r\n  <configuration>\r\n    <property>\r\n      <name>fs.swift.service.savanna.password</name>\r\n      <value>swordfish</value>\r\n    </property>\r\n    <property>\r\n      <name>fs.swift.service.savanna.username</name>\r\n      <value>admin</value>\r\n    </property>\r\n  </configuration>\r\n  <script>example.pig</script>\r\n  <param>INPUT=swift://container.savanna/text</param>\r\n  <param>OUTPUT=swift://container.savanna/output</param>\r\n</pig>",
+                                "conf": "<pig xmlns=\"uri:oozie:workflow:0.2\">\r\n  <job-tracker>edp-master-001:8021</job-tracker>\r\n  <name-node>hdfs://edp-master-001:8020</name-node>\r\n  <configuration>\r\n    <property>\r\n      <name>fs.swift.service.sahara.password</name>\r\n      <value>swordfish</value>\r\n    </property>\r\n    <property>\r\n      <name>fs.swift.service.sahara.username</name>\r\n      <value>admin</value>\r\n    </property>\r\n  </configuration>\r\n  <script>example.pig</script>\r\n  <param>INPUT=swift://container.sahara/text</param>\r\n  <param>OUTPUT=swift://container.sahara/output</param>\r\n</pig>",
                                 "type": "pig",
                                 "trackerUri": "edp-master-001:8021",
                                 "externalChildIDs": null,
@@ -1592,7 +1592,7 @@ The following json response represents Job Execution object returned from Sahara
                     "consoleUrl": "http://edp-master-001:50030/jobdetails.jsp?jobid=job_201310171352_0001",
                     "toString": "Action name[job-node] status[RUNNING]",
                     "externalStatus": "RUNNING",
-                    "conf": "<pig xmlns=\"uri:oozie:workflow:0.2\">\r\n  <job-tracker>edp-master-001:8021</job-tracker>\r\n  <name-node>hdfs://edp-master-001:8020</name-node>\r\n  <configuration>\r\n    <property>\r\n      <name>fs.swift.service.savanna.password</name>\r\n      <value>swordfish</value>\r\n    </property>\r\n    <property>\r\n      <name>fs.swift.service.savanna.username</name>\r\n      <value>admin</value>\r\n    </property>\r\n  </configuration>\r\n  <script>example.pig</script>\r\n  <param>INPUT=swift://container.savanna/text</param>\r\n  <param>OUTPUT=swift://container.savanna/output</param>\r\n</pig>",
+                    "conf": "<pig xmlns=\"uri:oozie:workflow:0.2\">\r\n  <job-tracker>edp-master-001:8021</job-tracker>\r\n  <name-node>hdfs://edp-master-001:8020</name-node>\r\n  <configuration>\r\n    <property>\r\n      <name>fs.swift.service.sahara.password</name>\r\n      <value>swordfish</value>\r\n    </property>\r\n    <property>\r\n      <name>fs.swift.service.sahara.username</name>\r\n      <value>admin</value>\r\n    </property>\r\n  </configuration>\r\n  <script>example.pig</script>\r\n  <param>INPUT=swift://container.sahara/text</param>\r\n  <param>OUTPUT=swift://container.sahara/output</param>\r\n</pig>",
                     "type": "pig",
                     "trackerUri": "edp-master-001:8021",
                     "externalChildIDs": null,

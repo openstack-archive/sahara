@@ -6,9 +6,9 @@ Vanilla plugin is a reference plugin implementation which allows to operate with
 For cluster provisioning prepared images should be used. They already have Apache Hadoop 1.2.1 installed.
 Here you can find prepared images:
 
-* http://savanna-files.mirantis.com/savanna-icehouse-vanilla-1.2.1-ubuntu-13.10.qcow2
-* http://savanna-files.mirantis.com/savanna-icehouse-vanilla-1.2.1-fedora-19.qcow2
-* http://savanna-files.mirantis.com/savanna-icehouse-vanilla-1.2.1-centos-6.4.qcow2
+* http://sahara-files.mirantis.com/savanna-icehouse-vanilla-1.2.1-ubuntu-13.10.qcow2
+* http://sahara-files.mirantis.com/savanna-icehouse-vanilla-1.2.1-fedora-19.qcow2
+* http://sahara-files.mirantis.com/savanna-icehouse-vanilla-1.2.1-centos-6.4.qcow2
 
 Besides, you may build images by yourself using :doc:`diskimagebuilder`.
 Keep in mind that if you want to use "Swift Integration" feature ( :doc:`features`),
