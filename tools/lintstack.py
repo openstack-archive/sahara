@@ -31,10 +31,10 @@ from six.moves import cStringIO as StringIO
 ignore_codes = ["E1103"]
 # Note(maoy): the error message is the pattern of E0202. It should be ignored
 # for sahara.tests modules
-ignore_messages = ["An attribute affected in savanna.tests"]
+ignore_messages = ["An attribute affected in sahara.tests"]
 # We ignore all errors in openstack.common because it should be checked 
 # elsewhere.
-ignore_modules = ["savanna/openstack/common/"]
+ignore_modules = ["sahara/openstack/common/"]
 
 KNOWN_PYLINT_EXCEPTIONS_FILE = "tools/pylint_exceptions"
 
@@ -129,7 +129,7 @@ class ErrorKeys(object):
 def run_pylint():
     buff = StringIO()
     reporter = text.ParseableTextReporter(output=buff)
-    args = ["--include-ids=y", "-E", "savanna"]
+    args = ["--include-ids=y", "-E", "sahara"]
     lint.Run(args, reporter=reporter, exit=False)
     val = buff.getvalue()
     buff.close()

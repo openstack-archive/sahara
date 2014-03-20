@@ -24,7 +24,7 @@ possible_topdir = os.path.normpath(os.path.join(os.path.abspath(sys.argv[0]),
                                                 os.pardir,
                                                 os.pardir))
 if os.path.exists(os.path.join(possible_topdir,
-                               'savanna',
+                               'sahara',
                                '__init__.py')):
     sys.path.insert(0, possible_topdir)
 
@@ -38,17 +38,17 @@ cli_opts = [
 ]
 
 CONF = cfg.CONF
-CONF.import_opt('os_admin_username', 'savanna.main')
-CONF.import_opt('os_admin_password', 'savanna.main')
-CONF.import_opt('os_admin_tenant_name', 'savanna.main')
+CONF.import_opt('os_admin_username', 'sahara.main')
+CONF.import_opt('os_admin_password', 'sahara.main')
+CONF.import_opt('os_admin_tenant_name', 'sahara.main')
 CONF.register_cli_opts(cli_opts)
 
 
 def main():
     dev_conf = os.path.join(possible_topdir,
                             'etc',
-                            'savanna',
-                            'savanna.conf')
+                            'sahara',
+                            'sahara.conf')
     config_files = None
     if os.path.exists(dev_conf):
         config_files = [dev_conf]
