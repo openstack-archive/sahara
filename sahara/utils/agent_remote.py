@@ -131,7 +131,7 @@ class _InstanceInteropHelper(remote.Remote):
 
     def __init__(self, transport, instance):
         self.instance_name = instance.instance_name
-        target = messaging.Target(topic='savanna-topic', version='1.0',
+        target = messaging.Target(topic='sahara-topic', version='1.0',
                                   server=instance.instance_name)
         self._client = messaging.RPCClient(transport, target)
 

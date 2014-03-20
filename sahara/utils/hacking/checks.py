@@ -48,7 +48,7 @@ def import_db_only_in_conductor(logical_line, filename):
                         "from sahara import db",
                         "from sahara.db",
                         "import sahara.db"):
-        yield (0, "S361: savanna.db import only allowed in "
+        yield (0, "S361: sahara.db import only allowed in "
                   "sahara/conductor/*")
 
 

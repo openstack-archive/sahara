@@ -19,7 +19,7 @@
 # stored or retrieved in a single operation (integer value)
 #job_binary_max_KB=5120
 
-# If set to True, Savanna will use floating IPs to communicate
+# If set to True, Sahara will use floating IPs to communicate
 # with instances. To make sure that all instances have
 # floating IPs assigned in Nova Network set
 # "auto_assign_floating_ip=True" in nova.conf. If Neutron is
@@ -70,7 +70,7 @@
 # Hadoop cluster. (string value)
 #infrastructure_engine=direct
 
-# A method for Savanna to execute commands on VMs. (string
+# A method for Sahara to execute commands on VMs. (string
 # value)
 #remote=ssh
 
@@ -225,7 +225,7 @@
 # Options defined in sahara.plugins.base
 #
 
-# List of plugins to be loaded. Savanna preserves the order of
+# List of plugins to be loaded. Sahara preserves the order of
 # the list when returning it. (list value)
 #plugins=vanilla,hdp,idh
 
@@ -295,7 +295,7 @@
 # Options defined in sahara.utils.openstack.keystone
 #
 
-# Enables Savanna to use Keystone API v3. If that flag is
+# Enables Sahara to use Keystone API v3. If that flag is
 # disabled, per-job clusters will not be terminated
 # automatically. (boolean value)
 #use_identity_api_v3=true
@@ -326,8 +326,7 @@
 # Options defined in sahara.conductor.api
 #
 
-# Perform savanna-conductor operations locally. (boolean
-# value)
+# Perform sahara-conductor operations locally. (boolean value)
 #use_local=true
 
 

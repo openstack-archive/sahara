@@ -34,7 +34,7 @@ if os.path.exists(os.path.join(possible_topdir,
                                '__init__.py')):
     sys.path.insert(0, possible_topdir)
 
-gettext.install('savanna', unicode=1)
+gettext.install('sahara', unicode=1)
 
 
 from sahara import config
@@ -49,14 +49,14 @@ LOG = logging.getLogger(__name__)
 def main():
     dev_conf = os.path.join(possible_topdir,
                             'etc',
-                            'savanna',
-                            'savanna.conf')
+                            'sahara',
+                            'sahara.conf')
     config_files = None
     if os.path.exists(dev_conf):
         config_files = [dev_conf]
 
     config.parse_configs(sys.argv[1:], config_files)
-    logging.setup("savanna")
+    logging.setup("sahara")
 
     if not db_api.setup_db():
         raise RuntimeError('Failed to create database!')

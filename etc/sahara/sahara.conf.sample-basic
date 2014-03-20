@@ -18,7 +18,7 @@
 
 
 
-# If set to True, Savanna will use floating IPs to communicate
+# If set to True, Sahara will use floating IPs to communicate
 # with instances. To make sure that all instances have
 # floating IPs assigned in Nova Network set
 # "auto_assign_floating_ip=True" in nova.conf.If Neutron is
@@ -42,7 +42,7 @@
 # /user/hadoop/ (string value)
 #job_workflow_postfix=
 
-# Enables Savanna to use Keystone API v3. If that flag is
+# Enables Sahara to use Keystone API v3. If that flag is
 # disabled, per-job clusters will not be terminated
 # automatically. (boolean value)
 #use_identity_api_v3=false
@@ -107,10 +107,10 @@
 # syslog facility to receive log lines (string value)
 #syslog_log_facility=LOG_USER
 
-# List of plugins to be loaded. Savanna preserves the order of
+# List of plugins to be loaded. Sahara preserves the order of
 # the list when returning it. (list value)
 #plugins=vanilla,hdp,idh
 
 [database]
-#connection=sqlite:////savanna/openstack/common/db/$sqlite_db
+#connection=sqlite:////sahara/openstack/common/db/$sqlite_db
 

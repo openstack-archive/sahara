@@ -7,4 +7,4 @@ server_id=${instance_name}
 debug=true
 EOF
 
-su -lc "nohup savanna-agent --config-file /etc/guestagent.conf > ~/savanna-agent.log 2>&1 &" ${user_name}
+su -lc "nohup sahara-agent --config-file /etc/guestagent.conf > ~/sahara-agent.log 2>&1 &" ${user_name}

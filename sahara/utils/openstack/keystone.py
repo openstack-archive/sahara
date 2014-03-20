@@ -26,7 +26,7 @@ CONF = cfg.CONF
 opts = [
     cfg.BoolOpt('use_identity_api_v3',
                 default=True,
-                help='Enables Savanna to use Keystone API v3. '
+                help='Enables Sahara to use Keystone API v3. '
                      'If that flag is disabled, '
                      'per-job clusters will not be terminated automatically.')
 ]
