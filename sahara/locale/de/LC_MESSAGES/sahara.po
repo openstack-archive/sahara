@@ -1,17 +1,18 @@
-# Translations template for sahara.
+# German translations for sahara.
 # Copyright (C) 2014 ORGANIZATION
 # This file is distributed under the same license as the sahara project.
-# FIRST AUTHOR <EMAIL@ADDRESS>, 2014.
 #
-#, fuzzy
+# Translators:
 msgid ""
 msgstr ""
-"Project-Id-Version: sahara jenkins.sahara.propose.translation.update.8\n"
+"Project-Id-Version:  Sahara\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2014-03-20 06:06+0000\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
+"PO-Revision-Date: 2014-03-19 22:46+0000\n"
+"Last-Translator: openstackjenkins <jenkins@openstack.org>\n"
+"Language-Team: German "
+"(http://www.transifex.com/projects/p/openstack/language/de/)\n"
+"Plural-Forms: nplurals=2; plural=(n != 1)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -19,12 +20,12 @@ msgstr ""
 
 #: sahara/openstack/common/exception.py:103
 msgid "Uncaught exception"
-msgstr ""
+msgstr "Nicht abgefangene Ausnahme"
 
 #: sahara/openstack/common/fileutils.py:63
 #, python-format
 msgid "Reloading cached file %s"
-msgstr ""
+msgstr "Im Cache gespeicherte Datei %s wird neu geladen"
 
 #: sahara/openstack/common/gettextutils.py:297
 msgid "Message objects do not support addition."
@@ -39,7 +40,7 @@ msgstr ""
 #: sahara/openstack/common/lockutils.py:103
 #, python-format
 msgid "Could not release the acquired lock `%s`"
-msgstr ""
+msgstr "Angeforderte Sperre '%s' konnte nicht freigegeben werden"
 
 #: sahara/openstack/common/lockutils.py:168
 #, python-format
@@ -79,22 +80,22 @@ msgstr ""
 #: sahara/openstack/common/log.py:326
 #, python-format
 msgid "Deprecated: %s"
-msgstr ""
+msgstr "Veraltet: %s"
 
 #: sahara/openstack/common/log.py:437
 #, python-format
 msgid "Error loading logging config %(log_config)s: %(err_msg)s"
-msgstr ""
+msgstr "Fehler beim laden der Logging Konfiguration %(log_config)s: %(err_msg)s"
 
 #: sahara/openstack/common/log.py:488
 #, python-format
 msgid "syslog facility must be one of: %s"
-msgstr ""
+msgstr "syslog-Funktion muss einer der folgenden Werte sein: %s"
 
 #: sahara/openstack/common/log.py:709
 #, python-format
 msgid "Fatal call to deprecated config: %(msg)s"
-msgstr ""
+msgstr "Schwerwiegender Aufruf an veraltete Konfiguration: %(msg)s"
 
 #: sahara/openstack/common/periodic_task.py:39
 #, python-format
@@ -118,7 +119,7 @@ msgstr ""
 #: sahara/openstack/common/processutils.py:139
 #, python-format
 msgid "Got unknown keyword args to utils.execute: %r"
-msgstr ""
+msgstr "Unbekannte Schlüsselwortargumente für utils.execute erhalten: %r"
 
 #: sahara/openstack/common/processutils.py:145
 msgid "Command requested root, but did not specify a root helper."
@@ -126,32 +127,35 @@ msgstr ""
 
 #: sahara/openstack/common/processutils.py:241
 msgid "Environment not supported over SSH"
-msgstr ""
+msgstr "Umgebung über Secure Shell nicht unterstützt"
 
 #: sahara/openstack/common/processutils.py:245
 msgid "process_input not supported over SSH"
-msgstr ""
+msgstr "'process_input' über Secure Shell nicht unterstützt"
 
 #: sahara/openstack/common/sslutils.py:52
 #, python-format
 msgid "Unable to find cert_file : %s"
-msgstr ""
+msgstr "'cert_file' konnte nicht gefunden werden: %s"
 
 #: sahara/openstack/common/sslutils.py:55
 #, python-format
 msgid "Unable to find ca_file : %s"
-msgstr ""
+msgstr "'ca_file' konnte nicht gefunden werden: %s"
 
 #: sahara/openstack/common/sslutils.py:58
 #, python-format
 msgid "Unable to find key_file : %s"
-msgstr ""
+msgstr "'key_file' konnte nicht gefunden werden: %s"
 
 #: sahara/openstack/common/sslutils.py:61
 msgid ""
 "When running server in SSL mode, you must specify both a cert_file and "
 "key_file option value in your configuration file"
 msgstr ""
+"Wenn der Server im SSL-Modus läuft, müssen Sie sowohl für die "
+"'cert_file'- als auch für die 'key_file'-Option in Ihrer "
+"Konfigurationsdatei einen Wert angeben"
 
 #: sahara/openstack/common/sslutils.py:100
 #, python-format
@@ -160,11 +164,11 @@ msgstr ""
 
 #: sahara/openstack/common/wsgi.py:187
 msgid "cannot understand JSON"
-msgstr ""
+msgstr "kann JSON nicht verstehen"
 
 #: sahara/openstack/common/wsgi.py:211
 msgid "cannot understand XML"
-msgstr ""
+msgstr "Kann XML nicht verstehen"
 
 #: sahara/openstack/common/crypto/utils.py:29
 msgid "An unknown error occurred in crypto utils."
@@ -183,10 +187,12 @@ msgstr ""
 #: sahara/openstack/common/db/exception.py:42
 msgid "Invalid Parameter: Unicode is not supported by the current database."
 msgstr ""
+"Ungültiger Parameter: Unicode wird von der aktuellen Datenbank nicht "
+"unterstützt."
 
 #: sahara/openstack/common/db/sqlalchemy/migration.py:191
 msgid "version should be an integer"
-msgstr ""
+msgstr "Version sollte eine Ganzzahl sein"
 
 #: sahara/openstack/common/db/sqlalchemy/migration.py:214
 #, python-format
@@ -203,7 +209,7 @@ msgstr ""
 
 #: sahara/openstack/common/db/sqlalchemy/session.py:596
 msgid "DB exception wrapped."
-msgstr ""
+msgstr "Datenbankausnahme eingeschlossen."
 
 #: sahara/openstack/common/db/sqlalchemy/session.py:665
 #, python-format
@@ -220,7 +226,7 @@ msgstr ""
 #: sahara/openstack/common/db/sqlalchemy/session.py:767
 #, python-format
 msgid "SQL connection failed. %s attempts left."
-msgstr ""
+msgstr "SQL-Verbindung fehlgeschlagen. Noch %s weitere Versuche."
 
 #: sahara/openstack/common/db/sqlalchemy/test_migrations.py:63
 #, python-format
@@ -230,19 +236,19 @@ msgstr ""
 #: sahara/openstack/common/db/sqlalchemy/test_migrations.py:66
 #, python-format
 msgid "Lock released \"%s\""
-msgstr ""
+msgstr "Sperrung aufgehoben \"%s\""
 
 #: sahara/openstack/common/db/sqlalchemy/utils.py:58
 msgid "Sort key supplied was not valid."
-msgstr ""
+msgstr "Der angegebene Sortierschlüssel war nicht gültig. "
 
 #: sahara/openstack/common/db/sqlalchemy/utils.py:97
 msgid "Id not in sort_keys; is sort_keys unique?"
-msgstr ""
+msgstr "ID nicht in 'sort_keys' enthalten; ist 'sort_keys' eindeutig?"
 
 #: sahara/openstack/common/db/sqlalchemy/utils.py:119
 msgid "Unknown sort direction, must be 'desc' or 'asc'"
-msgstr ""
+msgstr "Unbekannte Sortierrichtung; muss 'desc' oder 'asc' sein"
 
 #: sahara/openstack/common/db/sqlalchemy/utils.py:194
 #, python-format
