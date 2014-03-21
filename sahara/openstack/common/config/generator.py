@@ -34,7 +34,7 @@ import stevedore.named
 from sahara.openstack.common import gettextutils
 from sahara.openstack.common import importutils
 
-gettextutils.install('savanna')
+gettextutils.install('sahara')
 
 STROPT = "StrOpt"
 BOOLOPT = "BoolOpt"
@@ -230,7 +230,7 @@ def _sanitize_default(name, value):
     elif value == _get_my_ip():
         return '10.0.0.1'
     elif value in (socket.gethostname(), socket.getfqdn()) and 'host' in name:
-        return 'savanna'
+        return 'sahara'
     elif value.strip() != value:
         return '"%s"' % value
     return value

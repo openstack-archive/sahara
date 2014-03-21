@@ -290,7 +290,7 @@ from sahara.openstack.common import timeutils
 
 sqlite_db_opts = [
     cfg.StrOpt('sqlite_db',
-               default='savanna.sqlite',
+               default='sahara.sqlite',
                help='The file name to use with SQLite'),
     cfg.BoolOpt('sqlite_synchronous',
                 default=True,
@@ -838,7 +838,7 @@ def _patch_mysqldb_with_stacktrace_comments():
             if filename.endswith('db/api.py'):
                 continue
             # only trace inside sahara
-            index = filename.rfind('savanna')
+            index = filename.rfind('sahara')
             if index == -1:
                 continue
             stack += "File:%s:%s Method:%s() Line:%s | " \

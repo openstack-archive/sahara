@@ -33,15 +33,15 @@ import re
 from babel import localedata
 import six
 
-_localedir = os.environ.get('savanna'.upper() + '_LOCALEDIR')
-_t = gettext.translation('savanna', localedir=_localedir, fallback=True)
+_localedir = os.environ.get('sahara'.upper() + '_LOCALEDIR')
+_t = gettext.translation('sahara', localedir=_localedir, fallback=True)
 
 # We use separate translation catalogs for each log level, so set up a
 # mapping between the log level name and the translator. The domain
 # for the log level is project_name + "-log-" + log_level so messages
 # for each level end up in their own catalog.
 _t_log_levels = dict(
-    (level, gettext.translation('savanna' + '-log-' + level,
+    (level, gettext.translation('sahara' + '-log-' + level,
                                 localedir=_localedir,
                                 fallback=True))
     for level in ['info', 'warning', 'error', 'critical']
@@ -65,7 +65,7 @@ def enable_lazy():
 
 def _(msg):
     if USE_LAZY:
-        return Message(msg, domain='savanna')
+        return Message(msg, domain='sahara')
     else:
         if six.PY3:
             return _t.gettext(msg)
@@ -76,7 +76,7 @@ def _log_translation(msg, level):
     """Build a single translation of a log message
     """
     if USE_LAZY:
-        return Message(msg, domain='savanna' + '-log-' + level)
+        return Message(msg, domain='sahara' + '-log-' + level)
     else:
         translator = _t_log_levels[level]
         if six.PY3:
@@ -153,7 +153,7 @@ class Message(six.text_type):
     """
 
     def __new__(cls, msgid, msgtext=None, params=None,
-                domain='savanna', *args):
+                domain='sahara', *args):
         """Create a new Message object.
 
         In order for translation to work gettext requires a message ID, this

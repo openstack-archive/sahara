@@ -537,7 +537,7 @@ def _setup_logging_from_conf(project, version):
 
     if CONF.publish_errors:
         handler = importutils.import_object(
-            "savanna.openstack.common.log_handler.PublishErrorsHandler",
+            "sahara.openstack.common.log_handler.PublishErrorsHandler",
             logging.ERROR)
         log_root.addHandler(handler)
 

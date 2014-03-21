@@ -59,7 +59,7 @@ def import_module(import_str):
 
 
 def import_versioned_module(version, submodule=None):
-    module = 'savanna.v%s' % version
+    module = 'sahara.v%s' % version
     if submodule:
         module = '.'.join((module, submodule))
     return import_module(module)
