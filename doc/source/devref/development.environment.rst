@@ -38,7 +38,7 @@ On Ubuntu:
 .. sourcecode:: console
 
     $ sudo apt-get update
-    $ sudo apt-get install git-core python-dev python-virtualenv gcc libpq-dev libmysqlclient-dev
+    $ sudo apt-get install git-core python-dev python-virtualenv gcc libpq-dev libmysqlclient-dev python-pip
     $ sudo pip install tox
 
 On Fedora-based distributions (e.g., Fedora/RHEL/CentOS/Scientific Linux):
