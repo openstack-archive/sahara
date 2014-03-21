@@ -95,11 +95,11 @@ then
     source "$RC_FILE"
 fi
 
-for mod in ${SAVANNA_CONFIG_GENERATOR_EXTRA_MODULES}; do
+for mod in ${SAHARA_CONFIG_GENERATOR_EXTRA_MODULES}; do
     MODULES="$MODULES -m $mod"
 done
 
-for lib in ${SAVANNA_CONFIG_GENERATOR_EXTRA_LIBRARIES}; do
+for lib in ${SAHARA_CONFIG_GENERATOR_EXTRA_LIBRARIES}; do
     LIBRARIES="$LIBRARIES -l $lib"
 done
 

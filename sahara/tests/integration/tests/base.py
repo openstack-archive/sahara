@@ -389,7 +389,7 @@ class ITestCase(unittest2.TestCase):
         def print_error_log(parameter, value):
             print(
                 '\nImage with %s "%s" was found in image list but it was '
-                'possibly not registered for Savanna. Please, make sure image '
+                'possibly not registered for Sahara. Please, make sure image '
                 'was correctly registered.' % (parameter, value)
             )
 
@@ -444,7 +444,7 @@ class ITestCase(unittest2.TestCase):
                     )
             self.fail(
                 '\n\nImage with tag "%s" not found in list of registered '
-                'images for Savanna. Please, make sure tag "%s" was added to '
+                'images for Sahara. Please, make sure tag "%s" was added to '
                 'image and image was correctly registered.\n'
                 % (plugin_config.IMAGE_TAG, plugin_config.IMAGE_TAG)
             )
@@ -475,14 +475,14 @@ class ITestCase(unittest2.TestCase):
                                 'attempt to choose image by tag '
                                 '"sahara_i_tests" and image with such tag '
                                 'was found in image list but it was possibly '
-                                'not registered for Savanna. Please, make '
+                                'not registered for Sahara. Please, make '
                                 'sure image was correctly registered.'
                             )
         self.fail(
             '\n\nNone of parameters of image (ID, name, tag) was specified in '
             'configuration file of integration tests. That is why there was '
             'attempt to choose image by tag "sahara_i_tests" but image with '
-            'such tag not found in list of registered images for Savanna. '
+            'such tag not found in list of registered images for Sahara. '
             'Please, make sure image was correctly registered. Please, '
             'specify one of parameters of image (ID, name or tag) in '
             'configuration file of integration tests.\n'
