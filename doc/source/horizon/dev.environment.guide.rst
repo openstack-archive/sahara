@@ -77,13 +77,13 @@ and set right value for variables:
 .. sourcecode:: python
 
    OPENSTACK_HOST = "ip of your controller"
-   SAVANNA_URL = "url for sahara (e.g. "http://localhost:8386/v1.1")"
+   SAHARA_URL = "url for sahara (e.g. "http://localhost:8386/v1.1")"
 
 If you are using Neutron instead of Nova Network:
 
 .. sourcecode:: python
 
-   SAVANNA_USE_NEUTRON = True
+   SAHARA_USE_NEUTRON = True
 
 If you are not using nova-network with auto_assign_floating_ip=True, also set:
 
@@ -98,23 +98,23 @@ If you are not using nova-network with auto_assign_floating_ip=True, also set:
 
     $ git clone https://github.com/openstack/sahara-dashboard.git
 
-6. Export SAVANNA_DASHBOARD_HOME environment variable with path to sahara-dashboard folder. E.g.:
+6. Export SAHARA_DASHBOARD_HOME environment variable with path to sahara-dashboard folder. E.g.:
 
 .. sourcecode:: console
 
-    $ export SAVANNA_DASHBOARD_HOME=$(pwd)/sahara-dashboard
+    $ export SAHARA_DASHBOARD_HOME=$(pwd)/sahara-dashboard
 
 7. Install sahara-dashboard module to horizon's venv. Go to horizon folder and execute:
 
 .. sourcecode:: console
 
-    $ .venv/bin/pip install $SAVANNA_DASHBOARD_HOME
+    $ .venv/bin/pip install $SAHARA_DASHBOARD_HOME
 
 8. Create a symlink to sahara-dashboard source
 
 .. sourcecode:: console
 
-   $ ln -s $SAVANNA_DASHBOARD_HOME/saharadashboard .venv/lib/python2.7/site-packages/saharadashboard
+   $ ln -s $SAHARA_DASHBOARD_HOME/saharadashboard .venv/lib/python2.7/site-packages/saharadashboard
 
 9. In ``openstack_dashboard/settings.py`` add sahara to
 
@@ -152,7 +152,7 @@ It is not recommended to use horizon in this mode for production.
 
 11. Applying changes
 
-If you have changed any ``*.py`` files in ``$SAVANNA_DASHBOARD_HOME`` directory,
+If you have changed any ``*.py`` files in ``$SAHARA_DASHBOARD_HOME`` directory,
 horizon will notice that and reload automatically.
 However changes made to non-python files may not be noticed,
 so you have to restart horizon again manually, as described in step 10.

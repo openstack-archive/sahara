@@ -107,7 +107,7 @@ Save image id. You can get image id from command ``glance image-list``:
 
 .. sourcecode:: console
 
-    $ export SAVANNA_URL="http://localhost:8386/v1.0/$TENANT_ID"
+    $ export SAHARA_URL="http://localhost:8386/v1.0/$TENANT_ID"
 
 * Install ``httpie`` REST client
 
@@ -119,7 +119,7 @@ Save image id. You can get image id from command ``glance image-list``:
 
 .. sourcecode:: console
 
-    $ http POST $SAVANNA_URL/images/$IMAGE_ID X-Auth-Token:$AUTH_TOKEN \
+    $ http POST $SAHARA_URL/images/$IMAGE_ID X-Auth-Token:$AUTH_TOKEN \
      username=ubuntu
 
 
@@ -127,14 +127,14 @@ Save image id. You can get image id from command ``glance image-list``:
 
 .. sourcecode:: console
 
-    $ http $SAVANNA_URL/images/$IMAGE_ID/tag X-Auth-Token:$AUTH_TOKEN \
+    $ http $SAHARA_URL/images/$IMAGE_ID/tag X-Auth-Token:$AUTH_TOKEN \
      tags:='["vanilla", "1.2.1", "ubuntu"]'
 
 * Make sure that image is registered correctly:
 
 .. sourcecode:: console
 
-    $ http $SAVANNA_URL/images X-Auth-Token:$AUTH_TOKEN
+    $ http $SAHARA_URL/images X-Auth-Token:$AUTH_TOKEN
 
 * Output should look like:
 
@@ -204,10 +204,10 @@ Send POST requests to Sahara API to upload NodeGroup templates:
 
 .. sourcecode:: console
 
-    $ http $SAVANNA_URL/node-group-templates X-Auth-Token:$AUTH_TOKEN \
+    $ http $SAHARA_URL/node-group-templates X-Auth-Token:$AUTH_TOKEN \
      < ng_master_template_create.json
 
-    $ http $SAVANNA_URL/node-group-templates X-Auth-Token:$AUTH_TOKEN \
+    $ http $SAHARA_URL/node-group-templates X-Auth-Token:$AUTH_TOKEN \
      < ng_worker_template_create.json
 
 
@@ -216,7 +216,7 @@ Sahara API:
 
 .. sourcecode:: console
 
-    $ http $SAVANNA_URL/node-group-templates X-Auth-Token:$AUTH_TOKEN
+    $ http $SAHARA_URL/node-group-templates X-Auth-Token:$AUTH_TOKEN
 
 Output should look like:
 
@@ -298,7 +298,7 @@ Send POST request to Sahara API to upload Cluster template:
 
 .. sourcecode:: console
 
-    $ http $SAVANNA_URL/cluster-templates X-Auth-Token:$AUTH_TOKEN \
+    $ http $SAHARA_URL/cluster-templates X-Auth-Token:$AUTH_TOKEN \
      < cluster_template_create.json
 
 Save template id. For example ``ce897df2-1610-4caa-bdb8-408ef90561cf``.
@@ -332,7 +332,7 @@ Send POST request to Sahara API to create and start the cluster:
 
 .. sourcecode:: console
 
-    $ http $SAVANNA_URL/clusters X-Auth-Token:$AUTH_TOKEN \
+    $ http $SAHARA_URL/clusters X-Auth-Token:$AUTH_TOKEN \
      < cluster_create.json
 
 

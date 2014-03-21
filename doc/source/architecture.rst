@@ -7,7 +7,7 @@ Architecture
     :align: left
 
 
-The Savanna architecture consists of several components:
+The Sahara architecture consists of several components:
 
 * Cluster Configuration Manager  - all the business logic resides here
 
@@ -20,8 +20,8 @@ The Savanna architecture consists of several components:
 * Deployment Engine - pluggable mechanism responsible for deploying Hadoop on provisioned VMs;
   existing management solutions like Apache Ambari and Cloudera Management Console could be utilized for that matter
 
-* REST API - exposes Savanna functionality via REST
+* REST API - exposes Sahara functionality via REST
 
-* Python Savanna Client - similar to other OpenStack components Savanna has its own python client
+* Python Sahara Client - similar to other OpenStack components Sahara has its own python client
 
-* Savanna pages - GUI for the Savanna is located on Horizon
+* Sahara pages - GUI for the Sahara is located on Horizon

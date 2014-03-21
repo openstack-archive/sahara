@@ -63,18 +63,18 @@ approach see :doc:`/horizon/dev.environment.guide`
 
    Note: ``settings.py`` file is located in ``/usr/share/openstack-dashboard/openstack_dashboard/`` by default.
 
-3) Also you have to specify **SAVANNA_URL** in local_settings.py. For example:
+3) Also you have to specify **SAHARA_URL** in local_settings.py. For example:
 
 .. sourcecode:: python
 
-    SAVANNA_URL = 'http://localhost:8386/v1.1'
+    SAHARA_URL = 'http://localhost:8386/v1.1'
 ..
 
 If you are using Neutron instead of Nova Network:
 
 .. sourcecode:: python
 
-   SAVANNA_USE_NEUTRON = True
+   SAHARA_USE_NEUTRON = True
 ..
 
 If you are not using nova-network with auto_assign_floating_ip=True, also set:
