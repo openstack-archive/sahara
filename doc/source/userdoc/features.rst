@@ -23,9 +23,9 @@ E.g. :
 
 .. sourcecode:: console
 
-    $ hadoop distcp -D fs.swift.service.savanna.username=admin \
-     -D fs.swift.service.savanna.password=swordfish \
-     swift://integration.savanna/temp swift://integration.savanna/temp1
+    $ hadoop distcp -D fs.swift.service.sahara.username=admin \
+     -D fs.swift.service.sahara.password=swordfish \
+     swift://integration.sahara/temp swift://integration.sahara/temp1
 
 How to compose a swift URL? The template is: ``swift://${container}.${provider}/${object}``.
 We don't need to point out the account because it will be automatically
@@ -34,10 +34,10 @@ determined from tenant name from configs. Actually, account=tenant.
 ${provider} was designed to provide an opportunity to work
 with several Swift installations. E.g. it is possible to read data from one Swift installation and write it to another one.
 But as for now, Sahara automatically generates configs only for one Swift installation
-with name "savanna".
+with name "sahara".
 
 Currently user can only enable/disable Swift for a Hadoop cluster. But there is a blueprint about making Swift access
-more configurable: https://blueprints.launchpad.net/savanna/+spec/swift-configuration-through-rest-and-ui
+more configurable: https://blueprints.launchpad.net/sahara/+spec/swift-configuration-through-rest-and-ui
 
 Currently this feature is supported only by :doc:`vanilla_plugin`.
 

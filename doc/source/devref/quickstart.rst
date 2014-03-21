@@ -148,11 +148,11 @@ Save image id. You can get image id from command ``glance image-list``:
                 "description": "None",
                 "id": "3f9fc974-b484-4756-82a4-bff9e116919b",
                 "metadata": {
-                    "_savanna_description": "None",
-                    "_savanna_tag_1.2.1": "True",
-                    "_savanna_tag_ubuntu": "True",
-                    "_savanna_tag_vanilla": "True",
-                    "_savanna_username": "ubuntu"
+                    "_sahara_description": "None",
+                    "_sahara_tag_1.2.1": "True",
+                    "_sahara_tag_ubuntu": "True",
+                    "_sahara_tag_vanilla": "True",
+                    "_sahara_username": "ubuntu"
                 },
                 "minDisk": 0,
                 "minRam": 0,

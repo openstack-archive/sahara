@@ -218,7 +218,7 @@ Sahara Swift URLs have the form:
 
 Sahara internal database URLs have the form:
 
-  ``sahara-db://sahara-generated-uuid``
+  ``internal-db://sahara-generated-uuid``
 
 
 EDP Requirements

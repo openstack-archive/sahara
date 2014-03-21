@@ -126,12 +126,12 @@ Example
 -------
 By this point Swift and Hadoop is ready for use. All configs in hadoop is ok.
 
-In example below provider's name is ``savanna``. So let's copy one object
+In example below provider's name is ``sahara``. So let's copy one object
 to another in one swift container and account. E.g. /dev/integration/temp
 to /dev/integration/temp1. Will use distcp for this purpose:
 http://hadoop.apache.org/docs/r0.19.0/distcp.html
 
-How to write swift path? In our case it will look as follows: ``swift://integration.savanna/temp``.
+How to write swift path? In our case it will look as follows: ``swift://integration.sahara/temp``.
 So the template is: ``swift://${container}.${provider}/${object}``.
 We don't need to point out the account because it will be automatically
 determined from tenant name from configs. Actually, account=tenant.
@@ -140,9 +140,9 @@ Let's run the job:
 
 .. sourcecode:: console
 
-    $ hadoop distcp -D fs.swift.service.savanna.username=admin \
-     -D fs.swift.service.savanna.password=swordfish \
-     swift://integration.savanna/temp swift://integration.savanna/temp1
+    $ hadoop distcp -D fs.swift.service.sahara.username=admin \
+     -D fs.swift.service.sahara.password=swordfish \
+     swift://integration.sahara/temp swift://integration.sahara/temp1
 
 After that just check if temp1 is created.
 

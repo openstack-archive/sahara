@@ -410,9 +410,9 @@ This operation does not require a request body.
                     "progress": 100,
                     "minRam": 0,
                     "metadata": {
-                        "_savanna_tag_vanilla": "True",
-                        "_savanna_tag_1.2.1": "True",
-                        "_savanna_username": "ec2-user"
+                        "_sahara_tag_vanilla": "True",
+                        "_sahara_tag_1.2.1": "True",
+                        "_sahara_username": "ec2-user"
                     },
                     "id": "daa50c37-b11b-4f3d-a586-e5dcd0a4110f"
                 }
@@ -462,9 +462,9 @@ This operation does not require a request body.
                     "progress": 100,
                     "minRam": 0,
                     "metadata": {
-                        "_savanna_tag_vanilla": "True",
-                        "_savanna_tag_1.2.1": "True",
-                        "_savanna_username": "ec2-user"
+                        "_sahara_tag_vanilla": "True",
+                        "_sahara_tag_1.2.1": "True",
+                        "_sahara_username": "ec2-user"
                     },
                     "id": "daa50c37-b11b-4f3d-a586-e5dcd0a4110f"
                 }
@@ -515,9 +515,9 @@ This operation does not require a request body.
                 "progress": 100,
                 "minRam": 0,
                 "metadata": {
-                    "_savanna_tag_vanilla": "True",
-                    "_savanna_tag_1.2.1": "True",
-                    "_savanna_username": "ec2-user"
+                    "_sahara_tag_vanilla": "True",
+                    "_sahara_tag_1.2.1": "True",
+                    "_sahara_username": "ec2-user"
                 },
                 "id": "daa50c37-b11b-4f3d-a586-e5dcd0a4110f"
             }
@@ -568,8 +568,8 @@ This operation returns registered image.
                 "progress": 100,
                 "minRam": 0,
                 "metadata": {
-                    "_savanna_username": "ec2-user",
-                    "_savanna_description": "Fedora image"
+                    "_sahara_username": "ec2-user",
+                    "_sahara_description": "Fedora image"
                 },
                 "id": "daa50c37-b11b-4f3d-a586-e5dcd0a4110f"
             }
@@ -649,10 +649,10 @@ Add Tags to Image.
                 "progress": 100,
                 "minRam": 0,
                 "metadata": {
-                    "_savanna_username": "ec2-user",
-                    "_savanna_description": "Fedora image",
-                    "_savanna_tag_tag1": "True",
-                    "_savanna_tag_some_other_tag": "True"
+                    "_sahara_username": "ec2-user",
+                    "_sahara_description": "Fedora image",
+                    "_sahara_tag_tag1": "True",
+                    "_sahara_tag_some_other_tag": "True"
                 },
                 "id": "daa50c37-b11b-4f3d-a586-e5dcd0a4110f"
             }
@@ -703,9 +703,9 @@ Removes Tags form Image.
                 "progress": 100,
                 "minRam": 0,
                 "metadata": {
-                    "_savanna_username": "ec2-user",
-                    "_savanna_description": "Fedora image",
-                    "_savanna_tag_tag1": "True"
+                    "_sahara_username": "ec2-user",
+                    "_sahara_description": "Fedora image",
+                    "_sahara_tag_tag1": "True"
                 },
                 "id": "daa50c37-b11b-4f3d-a586-e5dcd0a4110f"
             }
