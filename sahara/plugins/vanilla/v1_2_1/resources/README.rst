@@ -1,4 +1,4 @@
-Apache Hadoop Configurations for Savanna
+Apache Hadoop Configurations for Sahara
 ========================================
 
 This directory contains default XML configuration files:
@@ -9,7 +9,7 @@ This directory contains default XML configuration files:
 * oozie-default.xml,
 * hive-default.xml
 
-These files are applied for Savanna's plugin of Apache Hadoop version 1.2.1,
+These files are applied for Sahara's plugin of Apache Hadoop version 1.2.1,
 Oozie 4.0.0, Hive version 0.11.0.
 
 
@@ -21,6 +21,6 @@ https://github.com/apache/oozie/blob/release-4.0.0/core/src/main/resources/oozie
 https://github.com/apache/hive/blob/release-0.11.0/conf/hive-default.xml.template
 
 XML configs are used to expose default Hadoop configurations to the users through
-the Savanna's REST API. It allows users to override some config values which will
+the Sahara's REST API. It allows users to override some config values which will
 be pushed to the provisioned VMs running Hadoop services as part of appropriate
 xml config.

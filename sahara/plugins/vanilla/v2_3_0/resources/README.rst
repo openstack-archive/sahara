@@ -1,4 +1,4 @@
-Apache Hadoop Configurations for Savanna
+Apache Hadoop Configurations for Sahara
 ========================================
 
 This directory contains default XML configuration files:
@@ -8,7 +8,7 @@ This directory contains default XML configuration files:
 * mapred-default.xml,
 * yarn-default.xml
 
-These files are applied for Savanna's plugin of Apache Hadoop version 2.3.0
+These files are applied for Sahara's plugin of Apache Hadoop version 2.3.0
 
 
 Files were taken from here:
@@ -18,6 +18,6 @@ https://github.com/apache/hadoop-common/blob/release-2.3.0/hadoop-yarn-project/h
 https://github.com/apache/hadoop-common/blob/release-2.3.0/hadoop-mapreduce-project/hadoop-mapreduce-client/hadoop-mapreduce-client-core/src/main/resources/mapred-default.xml
 
 XML configs are used to expose default Hadoop configurations to the users through
-Savanna's REST API. It allows users to override some config values which will
+Sahara's REST API. It allows users to override some config values which will
 be pushed to the provisioned VMs running Hadoop services as part of appropriate
 xml config.

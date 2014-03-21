@@ -72,7 +72,7 @@ opts = [
                     'infrastructure for Hadoop cluster.'),
     cfg.StrOpt('remote',
                default='ssh',
-               help='A method for Savanna to execute commands '
+               help='A method for Sahara to execute commands '
                     'on VMs.')
 ]
 

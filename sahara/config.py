@@ -39,7 +39,7 @@ edp_opts = [
 networking_opts = [
     cfg.BoolOpt('use_floating_ips',
                 default=True,
-                help='If set to True, Savanna will use floating IPs to '
+                help='If set to True, Sahara will use floating IPs to '
                      'communicate with instances. To make sure that all '
                      'instances have floating IPs assigned in Nova Network '
                      'set "auto_assign_floating_ip=True" in nova.conf. '
@@ -96,7 +96,7 @@ def parse_configs(argv=None, conf_files=None):
 
     try:
         version_string = version.version_info.version_string()
-        CONF(ARGV, project='savanna', version=version_string,
+        CONF(ARGV, project='sahara', version=version_string,
              default_config_files=conf_files)
     except cfg.RequiredOptError as roe:
         # TODO(slukjanov): replace RuntimeError with concrete exception

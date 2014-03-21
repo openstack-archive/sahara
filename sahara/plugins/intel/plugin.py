@@ -25,7 +25,7 @@ class IDHProvider(p.ProvisioningPluginBase):
     def get_description(self):
         return \
             'The IDH OpenStack plugin works with project ' \
-            'Savanna to automate the deployment of the Intel Distribution ' \
+            'Sahara to automate the deployment of the Intel Distribution ' \
             'of Apache Hadoop on OpenStack based ' \
             'public & private clouds'
 
