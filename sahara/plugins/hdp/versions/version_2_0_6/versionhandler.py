@@ -115,7 +115,7 @@ class AmbariClient():
         return host.remote().get_http_client(port)
 
     def _get_standard_headers(self):
-        return {"X-Requested-By": "savanna"}
+        return {"X-Requested-By": "sahara"}
 
     def _post(self, url, ambari_info, data=None):
         session = self._get_http_session(ambari_info.host, ambari_info.port)

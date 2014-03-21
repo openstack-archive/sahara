@@ -191,9 +191,9 @@ def get_general_configs(hive_hostname, passwd_hive_mysql):
 
 def get_config_value(service, name, cluster=None):
     if cluster:
-        savanna_configs = generate_savanna_configs(cluster)
-        if savanna_configs.get(name):
-            return savanna_configs[name]
+        sahara_configs = generate_sahara_configs(cluster)
+        if sahara_configs.get(name):
+            return sahara_configs[name]
 
         for ng in cluster.node_groups:
             if (ng.configuration().get(service) and
@@ -240,7 +240,7 @@ def get_hadoop_ssh_keys(cluster):
     return private_key, public_key
 
 
-def generate_savanna_configs(cluster, node_group=None):
+def generate_sahara_configs(cluster, node_group=None):
     nn_hostname = _get_hostname(utils.get_namenode(cluster))
     jt_hostname = _get_hostname(utils.get_jobtracker(cluster))
     oozie_hostname = _get_hostname(utils.get_oozie(cluster))
@@ -303,7 +303,7 @@ def generate_xml_configs(cluster, node_group, hive_mysql_passwd):
 
     general_cfg = get_general_configs(hive_hostname, hive_mysql_passwd)
 
-    all_cfg = generate_savanna_configs(cluster, node_group)
+    all_cfg = generate_sahara_configs(cluster, node_group)
 
     # inserting user-defined configs
     for key, value in extract_xml_confs(ng_configs):

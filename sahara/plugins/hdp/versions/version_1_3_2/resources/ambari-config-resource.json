@@ -232,7 +232,7 @@
                     "applicable_target": "general",
                     "config_type": "bool",
                     "default_value": true,
-                    "description": "savanna provider public attribute",
+                    "description": "sahara provider public attribute",
                     "is_optional": true,
                     "name": "fs.swift.service.sahara.public",
                     "scope": "cluster"

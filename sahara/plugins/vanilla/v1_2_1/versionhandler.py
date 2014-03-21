@@ -282,7 +282,7 @@ class VersionHandler(avm.AbstractVersionHandler):
             '/etc/hadoop/core-site.xml': ng_extra['xml']['core-site'],
             '/etc/hadoop/mapred-site.xml': ng_extra['xml']['mapred-site'],
             '/etc/hadoop/hdfs-site.xml': ng_extra['xml']['hdfs-site'],
-            '/tmp/savanna-hadoop-init.sh': ng_extra['setup_script'],
+            '/tmp/sahara-hadoop-init.sh': ng_extra['setup_script'],
             'id_rsa': private_key,
             'authorized_keys': public_key
         }
@@ -302,11 +302,11 @@ class VersionHandler(avm.AbstractVersionHandler):
             )
             r.write_files_to(files)
             r.execute_command(
-                'sudo chmod 0500 /tmp/savanna-hadoop-init.sh'
+                'sudo chmod 0500 /tmp/sahara-hadoop-init.sh'
             )
             r.execute_command(
-                'sudo /tmp/savanna-hadoop-init.sh '
-                '>> /tmp/savanna-hadoop-init.log 2>&1')
+                'sudo /tmp/sahara-hadoop-init.sh '
+                '>> /tmp/sahara-hadoop-init.log 2>&1')
 
             r.execute_command(key_cmd)
 
