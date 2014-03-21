@@ -45,6 +45,7 @@ User guide
    userdoc/plugins
    userdoc/vanilla_plugin
    userdoc/hdp_plugin
+   userdoc/idh_plugin
 
 **Elastic Data Processing**
 
