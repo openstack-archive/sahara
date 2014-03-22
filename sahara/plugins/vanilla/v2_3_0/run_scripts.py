@@ -37,6 +37,11 @@ def start_yarn_process(instance, process):
         'sudo su - -c  "yarn-daemon.sh start %s" hadoop' % process)
 
 
+def start_historyserver(instance):
+    instance.remote().execute_command(
+        'sudo su - -c "mr-jobhistory-daemon.sh start historyserver" hadoop')
+
+
 def format_namenode(instance):
     instance.remote().execute_command(
         'sudo su - -c "hdfs namenode -format" hadoop')

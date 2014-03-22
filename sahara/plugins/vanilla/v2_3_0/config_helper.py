@@ -48,6 +48,9 @@ ENV_CONFS = {
     "HDFS": {
         'NameNode Heap Size': 1024,
         'DataNode Heap Size': 1024
+    },
+    "MapReduce": {
+        'JobHistoryServer Heap Size': 1024
     }
 }
 
@@ -58,6 +61,10 @@ ENABLE_SWIFT = p.Config('Enable Swift', 'general', 'cluster',
 HIDDEN_CONFS = [
     'dfs.namenode.data.dir', 'dfs.namenode.name.dir', 'fs.defaultFS',
     'hadoop.proxyuser.hadoop.groups', 'hadoop.proxyuser.hadoop.hosts',
+    'mapreduce.jobhistory.address',
+    'mapreduce.jobhistory.done.dir',
+    'mapreduce.jobhistory.intermediate-done-dir',
+    'mapreduce.jobhistory.webapp.address',
     'yarn.resourcemanager.address',
     'yarn.resourcemanager.resource-tracker.address',
     'yarn.resourcemanager.scheduler.address',
