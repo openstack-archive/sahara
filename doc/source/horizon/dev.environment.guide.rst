@@ -37,7 +37,7 @@ endpoints using the following command:
 .. sourcecode:: console
 
     $ sudo apt-get update
-    $ sudo apt-get install git-core python-dev gcc python-setuptools python-virtualenv node-less libssl-dev
+    $ sudo apt-get install git-core python-dev gcc python-setuptools python-virtualenv node-less libssl-dev libffi-dev
 
 On Ubuntu 12.10 and higher you have to install the following lib as well:
 
