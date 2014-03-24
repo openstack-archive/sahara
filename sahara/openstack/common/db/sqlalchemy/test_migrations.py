@@ -57,7 +57,7 @@ def _set_db_lock(lock_path=None, lock_prefix=None):
         @functools.wraps(f)
         def wrapper(*args, **kwargs):
             try:
-                path = lock_path or os.environ.get("SAVANNA_LOCK_PATH")
+                path = lock_path or os.environ.get("SAHARA_LOCK_PATH")
                 lock = lockfile.FileLock(os.path.join(path, lock_prefix))
                 with lock:
                     LOG.debug(_('Got lock "%s"') % f.__name__)
