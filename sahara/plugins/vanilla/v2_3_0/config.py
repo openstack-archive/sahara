@@ -18,6 +18,7 @@ import six
 from sahara.openstack.common import log as logging
 from sahara.plugins.general import utils
 from sahara.plugins.vanilla.v2_3_0 import config_helper as c_helper
+from sahara.plugins.vanilla.v2_3_0 import oozie_helper as o_helper
 from sahara.swift import swift_helper as swift
 from sahara.utils import files as f
 from sahara.utils import xmlutils as x
@@ -25,6 +26,7 @@ from sahara.utils import xmlutils as x
 LOG = logging.getLogger(__name__)
 
 HADOOP_CONF_DIR = '/opt/hadoop/etc/hadoop'
+OOZIE_CONF_DIR = '/opt/oozie/conf'
 HADOOP_USER = 'hadoop'
 HADOOP_GROUP = 'hadoop'
 
@@ -68,7 +70,7 @@ def _get_hadoop_configs(node_group):
     dirs = _get_hadoop_dirs(node_group)
     confs = {
         'Hadoop': {
-            'fs.defaultFS': 'hdfs://%s:9000' % nn_hostname,
+            'fs.defaultFS': 'hdfs://%s:9000' % nn_hostname
         },
         'HDFS': {
             'dfs.namenode.name.dir': ','.join(dirs['hadoop_name_dirs']),
@@ -88,6 +90,20 @@ def _get_hadoop_configs(node_group):
             'mapreduce.framework.name': 'yarn'
         },
     }
+
+    oozie = utils.get_oozie(cluster)
+    if oozie:
+        hadoop_cfg = {
+            'hadoop.proxyuser.hadoop.hosts': '*',
+            'hadoop.proxyuser.hadoop.groups': 'hadoop'
+        }
+        confs['Hadoop'].update(hadoop_cfg)
+
+        oozie_cfg = o_helper.get_oozie_required_xml_configs(HADOOP_CONF_DIR)
+        if c_helper.is_mysql_enabled(cluster):
+            oozie_cfg.update(o_helper.get_oozie_mysql_configs())
+
+        confs['JobFlow'] = oozie_cfg
 
     if c_helper.get_config_value(c_helper.ENABLE_SWIFT.applicable_target,
                                  c_helper.ENABLE_SWIFT.name, cluster):
@@ -175,6 +191,7 @@ def _push_xml_configs(instance, configs):
         'HDFS': '%s/hdfs-site.xml' % HADOOP_CONF_DIR,
         'YARN': '%s/yarn-site.xml' % HADOOP_CONF_DIR,
         'MapReduce': '%s/mapred-site.xml' % HADOOP_CONF_DIR,
+        'JobFlow': '%s/oozie-site.xml' % OOZIE_CONF_DIR
     }
     xml_confs = {}
     for service, confs in six.iteritems(xmls):
@@ -200,6 +217,7 @@ def _post_configuration(instance):
         'hadoop_user': HADOOP_USER,
         'hadoop_group': HADOOP_GROUP,
         'hadoop_conf_dir': HADOOP_CONF_DIR,
+        'oozie_conf_dir': OOZIE_CONF_DIR,
         'hadoop_name_dirs': " ".join(dirs['hadoop_name_dirs']),
         'hadoop_data_dirs': " ".join(dirs['hadoop_data_dirs']),
         'hadoop_log_dir': dirs['hadoop_log_dir'],

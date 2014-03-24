@@ -33,11 +33,15 @@ MAPRED_DEFAULT = x.load_hadoop_xml_defaults(
 YARN_DEFAULT = x.load_hadoop_xml_defaults(
     'plugins/vanilla/v2_3_0/resources/yarn-default.xml')
 
+OOZIE_DEFAULT = x.load_hadoop_xml_defaults(
+    'plugins/vanilla/v2_3_0/resources/oozie-default.xml')
+
 XML_CONFS = {
     "Hadoop": [CORE_DEFAULT],
     "HDFS": [HDFS_DEFAULT],
     "YARN": [YARN_DEFAULT],
-    "MapReduce": [MAPRED_DEFAULT]
+    "MapReduce": [MAPRED_DEFAULT],
+    "JobFlow": [OOZIE_DEFAULT]
 }
 
 ENV_CONFS = {
@@ -51,12 +55,19 @@ ENV_CONFS = {
     },
     "MapReduce": {
         'JobHistoryServer Heap Size': 1024
+    },
+    "JobFlow": {
+        'Oozie Heap Size': 1024
     }
 }
 
 ENABLE_SWIFT = p.Config('Enable Swift', 'general', 'cluster',
                         config_type="bool", priority=1,
                         default_value=True, is_optional=False)
+
+ENABLE_MYSQL = p.Config('Enable MySQL', 'general', 'cluster',
+                        config_type="bool", priority=1,
+                        default_value=True, is_optional=True)
 
 HIDDEN_CONFS = [
     'dfs.namenode.data.dir', 'dfs.namenode.name.dir', 'fs.defaultFS',
@@ -133,7 +144,7 @@ def _init_env_configs():
 
 
 def _init_general_configs():
-    return [ENABLE_SWIFT]
+    return [ENABLE_SWIFT, ENABLE_MYSQL]
 
 
 # Initialise plugin Hadoop configurations
@@ -178,3 +189,8 @@ def get_config_value(service, name, cluster=None):
 
     raise ex.SaharaException("Unable get parameter '%s' from service %s",
                              name, service)
+
+
+def is_mysql_enabled(cluster):
+    return get_config_value(
+        ENABLE_MYSQL.applicable_target, ENABLE_MYSQL.name, cluster)

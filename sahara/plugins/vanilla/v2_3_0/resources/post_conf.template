@@ -7,6 +7,8 @@ do
     chown -R {hadoop_group}:{hadoop_user} {hadoop_conf_dir}/$conf
 done
 
+chown -R {hadoop_group}:{hadoop_user} {oozie_conf_dir}/oozie-site.xml
+
 # create dirs for hdfs and mapreduce service
 dirs=({hadoop_name_dirs} {hadoop_data_dirs} {hadoop_log_dir} {hadoop_secure_dn_log_dir} {yarn_log_dir})
 for dir in "${{dirs[@]}}"

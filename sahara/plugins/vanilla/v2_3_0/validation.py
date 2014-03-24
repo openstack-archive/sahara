@@ -34,11 +34,29 @@ def validate_cluster_creating(cluster):
         raise ex.InvalidComponentCountException('historyserver', '0 or 1',
                                                 hs_count)
 
+    nm_count = _get_inst_count(cluster, 'nodemanager')
     if rm_count == 0:
-        nm_count = _get_inst_count(cluster, 'nodemanager')
         if nm_count > 0:
             raise ex.RequiredServiceMissingException('resourcemanager',
                                                      required_by='nodemanager')
+
+    oo_count = _get_inst_count(cluster, 'oozie')
+    dn_count = _get_inst_count(cluster, 'datanode')
+    if oo_count not in [0, 1]:
+        raise ex.InvalidComponentCountException('oozie', '0 or 1', oo_count)
+
+    if oo_count == 1:
+        if dn_count < 1:
+            raise ex.RequiredServiceMissingException('datanode',
+                                                     required_by='oozie')
+
+        if nm_count < 1:
+            raise ex.RequiredServiceMissingException('nodemanager',
+                                                     required_by='oozie')
+
+        if hs_count != 1:
+            raise ex.RequiredServiceMissingException('historyserver',
+                                                     required_by='oozie')
 
 
 def validate_additional_ng_scaling(cluster, additional):
