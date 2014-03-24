@@ -180,7 +180,7 @@ class NetcatSocket:
             return self.process.stdout
         if mode.startswith('w'):
             return self.process.stdin
-        raise RuntimeError("Unknown mode", mode)
+        raise RuntimeError("Unknown mode %s" % mode)
 
     def recv(self, size):
         try:
