@@ -28,13 +28,14 @@ from sahara.tests.integration.tests import swift
 class HDPGatingTest(cinder.CinderVolumeTest, edp.EDPTest,
                     map_reduce.MapReduceTest, swift.SwiftTest,
                     scaling.ScalingTest):
-    SKIP_CINDER_TEST = cfg.ITConfig().hdp_config.SKIP_CINDER_TEST
-    SKIP_EDP_TEST = cfg.ITConfig().hdp_config.SKIP_EDP_TEST
-    SKIP_MAP_REDUCE_TEST = cfg.ITConfig().hdp_config.SKIP_MAP_REDUCE_TEST
-    SKIP_SWIFT_TEST = cfg.ITConfig().hdp_config.SKIP_SWIFT_TEST
-    SKIP_SCALING_TEST = cfg.ITConfig().hdp_config.SKIP_SCALING_TEST
+    config = cfg.ITConfig().hdp_config
+    SKIP_CINDER_TEST = config.SKIP_CINDER_TEST
+    SKIP_EDP_TEST = config.SKIP_EDP_TEST
+    SKIP_MAP_REDUCE_TEST = config.SKIP_MAP_REDUCE_TEST
+    SKIP_SWIFT_TEST = config.SKIP_SWIFT_TEST
+    SKIP_SCALING_TEST = config.SKIP_SCALING_TEST
 
-    @unittest2.skipIf(cfg.ITConfig().hdp_config.SKIP_ALL_TESTS_FOR_PLUGIN,
+    @unittest2.skipIf(config.SKIP_ALL_TESTS_FOR_PLUGIN,
                       'All tests for HDP plugin were skipped')
     @testcase.attr('hdp')
     def test_hdp_plugin_gating(self):
@@ -120,8 +121,11 @@ class HDPGatingTest(cinder.CinderVolumeTest, edp.EDPTest,
 
 #-------------------------------Cluster creation-------------------------------
 
+        cluster_name = (self.common_config.CLUSTER_NAME + '-' +
+                        self.hdp_config.PLUGIN_NAME)
         try:
             cluster_info = self.create_cluster_and_get_info(
+                name=cluster_name,
                 plugin_config=self.hdp_config,
                 cluster_template_id=cluster_template_id,
                 description='test cluster',

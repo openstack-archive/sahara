@@ -24,22 +24,24 @@ from sahara.tests.integration.tests import edp
 from sahara.tests.integration.tests import map_reduce
 from sahara.tests.integration.tests import scaling
 from sahara.tests.integration.tests import swift
+from sahara.tests.integration.tests import vanilla_transient_cluster
 
 
 class VanillaGatingTest(cinder.CinderVolumeTest,
                         cluster_configs.ClusterConfigTest, edp.EDPTest,
                         map_reduce.MapReduceTest, swift.SwiftTest,
-                        scaling.ScalingTest):
+                        scaling.ScalingTest,
+                        vanilla_transient_cluster.TransientClusterTest):
+    config = cfg.ITConfig().vanilla_config
+    SKIP_CINDER_TEST = config.SKIP_CINDER_TEST
+    SKIP_CLUSTER_CONFIG_TEST = config.SKIP_CLUSTER_CONFIG_TEST
+    SKIP_EDP_TEST = config.SKIP_EDP_TEST
+    SKIP_MAP_REDUCE_TEST = config.SKIP_MAP_REDUCE_TEST
+    SKIP_SWIFT_TEST = config.SKIP_SWIFT_TEST
+    SKIP_SCALING_TEST = config.SKIP_SCALING_TEST
+    SKIP_TRANSIENT_CLUSTER_TEST = config.SKIP_TRANSIENT_CLUSTER_TEST
 
-    SKIP_CINDER_TEST = cfg.ITConfig().vanilla_config.SKIP_CINDER_TEST
-    SKIP_CLUSTER_CONFIG_TEST = (
-        cfg.ITConfig().vanilla_config.SKIP_CLUSTER_CONFIG_TEST)
-    SKIP_EDP_TEST = cfg.ITConfig().vanilla_config.SKIP_EDP_TEST
-    SKIP_MAP_REDUCE_TEST = cfg.ITConfig().vanilla_config.SKIP_MAP_REDUCE_TEST
-    SKIP_SWIFT_TEST = cfg.ITConfig().vanilla_config.SKIP_SWIFT_TEST
-    SKIP_SCALING_TEST = cfg.ITConfig().vanilla_config.SKIP_SCALING_TEST
-
-    @unittest2.skipIf(cfg.ITConfig().vanilla_config.SKIP_ALL_TESTS_FOR_PLUGIN,
+    @unittest2.skipIf(config.SKIP_ALL_TESTS_FOR_PLUGIN,
                       'All tests for Vanilla plugin were skipped')
     @testcase.attr('vanilla')
     def test_vanilla_plugin_gating(self):
@@ -55,18 +57,24 @@ class VanillaGatingTest(cinder.CinderVolumeTest,
             floating_ip_pool = self.get_floating_ip_pool_id_for_neutron_net()
             internal_neutron_net = self.get_internal_neutron_net_id()
 
-        if not self.vanilla_config.SKIP_CINDER_TEST:
-            volumes_per_node = 2
-            volume_size = 2
-        else:
-            volumes_per_node = 0
-            volume_size = 0
+#----------------------------TRANSIENT CLUSTER TESTING-------------------------
 
-        node_group_template_id_list = []
+        try:
+            self.transient_cluster_testing(
+                self.vanilla_config, floating_ip_pool, internal_neutron_net)
+        except Exception as e:
+            with excutils.save_and_reraise_exception():
+                message = 'Failure while transient cluster testing: '
+                self.print_error_log(message, e)
+
+        if self.vanilla_config.ONLY_TRANSIENT_CLUSTER_TEST:
+            return
 
 #-------------------------------CLUSTER CREATION-------------------------------
 
 #---------------------"tt-dn" node group template creation---------------------
+
+        node_group_template_id_list = []
 
         try:
             node_group_template_tt_dn_id = self.create_node_group_template(
@@ -89,6 +97,13 @@ class VanillaGatingTest(cinder.CinderVolumeTest,
                 self.print_error_log(message, e)
 
 #-----------------------"tt" node group template creation----------------------
+
+        if not self.vanilla_config.SKIP_CINDER_TEST:
+            volumes_per_node = 2
+            volume_size = 2
+        else:
+            volumes_per_node = 0
+            volume_size = 0
 
         try:
             node_group_template_tt_id = self.create_node_group_template(
@@ -197,7 +212,10 @@ class VanillaGatingTest(cinder.CinderVolumeTest,
 #-------------------------------Cluster creation-------------------------------
 
         try:
+            cluster_name = (self.common_config.CLUSTER_NAME + '-' +
+                            self.vanilla_config.PLUGIN_NAME)
             cluster_info = self.create_cluster_and_get_info(
+                name=cluster_name,
                 plugin_config=self.vanilla_config,
                 cluster_template_id=cluster_template_id,
                 description='test cluster',

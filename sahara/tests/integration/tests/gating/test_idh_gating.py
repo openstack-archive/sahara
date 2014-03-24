@@ -164,7 +164,10 @@ class IDHGatingTest(cluster_configs.ClusterConfigTest, edp.EDPTest,
 
     @errormessage("Failure while cluster creation: ")
     def _create_cluster(self):
+        cluster_name = (self.common_config.CLUSTER_NAME + '-' +
+                        self.idh_config.PLUGIN_NAME)
         cluster = {
+            'name': cluster_name,
             'plugin_config': self.idh_config,
             'cluster_template_id': self.cluster_template_id,
             'description': 'test cluster',

@@ -53,6 +53,10 @@
 # Timeout for job creation (in minutes); minimal value is 1 (integer value)
 #JOB_LAUNCH_TIMEOUT = 5
 
+# Timeout for a poll of state of transient cluster (in minutes);
+# minimal value is 1 (integer value)
+#TRANSIENT_CLUSTER_TIMEOUT = 3
+
 
 # Name for cluster (string value)
 #CLUSTER_NAME = 'test-cluster'
@@ -165,6 +169,8 @@
 #SKIP_MAP_REDUCE_TEST = False
 #SKIP_SWIFT_TEST = False
 #SKIP_SCALING_TEST = False
+#SKIP_TRANSIENT_CLUSTER_TEST = False
+#ONLY_TRANSIENT_CLUSTER_TEST = False
 
 [HDP]
 

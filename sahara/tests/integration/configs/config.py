@@ -87,6 +87,10 @@ COMMON_CONFIG_OPTS = [
                default=5,
                help='Timeout for job launch (in minutes); '
                     'minimal value is 1.'),
+    cfg.IntOpt('TRANSIENT_CLUSTER_TIMEOUT',
+               default=3,
+               help='Timeout for a poll of state of transient cluster '
+                    '(in minutes); minimal value is 1.'),
     cfg.StrOpt('CLUSTER_NAME',
                default='test-cluster',
                help='Name for cluster.'),
@@ -219,7 +223,9 @@ VANILLA_CONFIG_OPTS = [
     cfg.BoolOpt('SKIP_EDP_TEST', default=False),
     cfg.BoolOpt('SKIP_MAP_REDUCE_TEST', default=False),
     cfg.BoolOpt('SKIP_SWIFT_TEST', default=False),
-    cfg.BoolOpt('SKIP_SCALING_TEST', default=False)
+    cfg.BoolOpt('SKIP_SCALING_TEST', default=False),
+    cfg.BoolOpt('SKIP_TRANSIENT_CLUSTER_TEST', default=False),
+    cfg.BoolOpt('ONLY_TRANSIENT_CLUSTER_TEST', default=False)
 ]
 
 
@@ -412,10 +418,10 @@ class ITConfig:
         config_files = []
         config_path = '%s/sahara/tests/integration/configs/%s'
         if not os.path.exists(config_path % (os.getcwd(), config)):
-            message = '\n**************************************************' \
-                      '\nINFO: Configuration file "%s" not found  *\n' \
-                      '**************************************************' \
-                      % config
+            message = ('\n**************************************************'
+                       '\nINFO: Configuration file "%s" not found  *\n'
+                       '**************************************************'
+                       % config)
             print(RuntimeError(message), file=sys.stderr)
 
         else:
