@@ -51,20 +51,31 @@ def init_instances_ips(instance):
     if not CONF.use_floating_ips:
         management_ip = internal_ip
 
-    if not management_ip and CONF.use_neutron:
+    # NOTE(aignatov): Once bug #1262529 is fixed this 'if' block should be
+    # reviewed and reformatted again, probably removed completely.
+    if CONF.use_neutron and not (management_ip and internal_ip):
+        LOG.debug("Instance %s doesn't contain yet Floating IP or Internal IP."
+                  " Floating IP=%s, Internal IP=%s. Trying to get via Neutron."
+                  % (server.name, management_ip, internal_ip))
         neutron_client = neutron.client()
-        target_port = None
-        for port in neutron_client.list_ports()["ports"]:
-            if port["device_id"] == server.id:
-                target_port = port
-                break
-
-        for fl_ip in neutron_client.list_floatingips()['floatingips']:
-            if fl_ip['port_id'] == target_port['id']:
-                management_ip = fl_ip['floating_ip_address']
-                LOG.debug('Found floating IP %s for %s' % (management_ip,
-                                                           server.name))
-                break
+        ports = neutron_client.list_ports(device_id=server.id)["ports"]
+        if ports:
+            target_port_id = ports[0]['id']
+            fl_ips = neutron_client.list_floatingips(
+                port_id=target_port_id)['floatingips']
+            if fl_ips:
+                fl_ip = fl_ips[0]
+                if not internal_ip:
+                    internal_ip = fl_ip['fixed_ip_address']
+                    LOG.debug('Found fixed IP %s for %s' % (internal_ip,
+                                                            server.name))
+                # Zeroing management_ip if Sahara in private network
+                if not CONF.use_floating_ips:
+                    management_ip = internal_ip
+                elif not management_ip:
+                    management_ip = fl_ip['floating_ip_address']
+                    LOG.debug('Found floating IP %s for %s' % (management_ip,
+                                                               server.name))
 
     conductor.instance_update(context.ctx(), instance,
                               {"management_ip": management_ip,
