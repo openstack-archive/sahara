@@ -39,9 +39,7 @@ def import_db_only_in_conductor(logical_line, filename):
     if _any_in(filename,
                "sahara/conductor",
                "sahara/tests",
-               "sahara/db",
-               "sahara/main.py",
-               "sahara/cli"):
+               "sahara/db"):
         return
 
     if _starts_with_any(logical_line,

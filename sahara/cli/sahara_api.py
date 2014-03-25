@@ -38,7 +38,6 @@ gettext.install('sahara', unicode=1)
 
 
 from sahara import config
-from sahara.db import api as db_api
 import sahara.main as server
 from sahara.openstack.common import log as logging
 
@@ -57,9 +56,6 @@ def main():
 
     config.parse_configs(sys.argv[1:], config_files)
     logging.setup("sahara")
-
-    if not db_api.setup_db():
-        raise RuntimeError('Failed to create database!')
 
     app = server.make_app()
 
