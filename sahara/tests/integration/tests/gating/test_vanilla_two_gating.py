@@ -20,20 +20,24 @@ from sahara.tests.integration.configs import config as cfg
 from sahara.tests.integration.tests import base as b
 from sahara.tests.integration.tests import cinder
 from sahara.tests.integration.tests import cluster_configs
+from sahara.tests.integration.tests import edp
 from sahara.tests.integration.tests import map_reduce
 from sahara.tests.integration.tests import scaling
 from sahara.tests.integration.tests import swift
+from sahara.utils import files as f
 
 
 class VanillaTwoGatingTest(cluster_configs.ClusterConfigTest,
                            map_reduce.MapReduceTest, swift.SwiftTest,
-                           scaling.ScalingTest, cinder.CinderVolumeTest):
+                           scaling.ScalingTest, cinder.CinderVolumeTest,
+                           edp.EDPTest):
 
     vanilla_two_config = cfg.ITConfig().vanilla_two_config
     SKIP_MAP_REDUCE_TEST = vanilla_two_config.SKIP_MAP_REDUCE_TEST
     SKIP_SWIFT_TEST = vanilla_two_config.SKIP_SWIFT_TEST
     SKIP_SCALING_TEST = vanilla_two_config.SKIP_SCALING_TEST
     SKIP_CINDER_TEST = vanilla_two_config.SKIP_CINDER_TEST
+    SKIP_EDP_TEST = vanilla_two_config.SKIP_EDP_TEST
 
     def setUp(self):
         super(VanillaTwoGatingTest, self).setUp()
@@ -121,6 +125,13 @@ class VanillaTwoGatingTest(cluster_configs.ClusterConfigTest,
                     'count': 1
                 },
                 {
+                    'name': 'master-node-oo-hs',
+                    'flavor_id': self.flavor_id,
+                    'node_processes': ['oozie', 'historyserver'],
+                    'floating_ip_pool': self.floating_ip_pool,
+                    'count': 1
+                },
+                {
                     'name': 'worker-node-nm-dn',
                     'node_group_template_id': self.ng_tmpl_nm_dn_id,
                     'count': 2
@@ -167,6 +178,54 @@ class VanillaTwoGatingTest(cluster_configs.ClusterConfigTest,
     @b.errormsg("Failure during check of Swift availability: ")
     def _check_swift(self):
         self.check_swift_availability(self.cluster_info)
+
+    @b.errormsg("Failure while EDP testing: ")
+    def _check_edp(self):
+        self._edp_test()
+
+    def _edp_test(self):
+        path = 'tests/integration/tests/resources/'
+
+        # check pig
+        pig_job = f.get_file_text(path + 'edp-job.pig')
+        pig_lib = f.get_file_text(path + 'edp-lib.jar')
+        self.edp_testing('Pig', [{'pig': pig_job}], [{'jar': pig_lib}])
+
+        # check mapreduce
+        mapreduce_jar = f.get_file_text(path + 'edp-mapreduce.jar')
+        mapreduce_configs = {
+            'configs': {
+                'mapred.mapper.class': 'org.apache.oozie.example.SampleMapper',
+                'mapred.reducer.class':
+                'org.apache.oozie.example.SampleReducer'
+            }
+        }
+        self.edp_testing('MapReduce', [], [{'jar': mapreduce_jar}],
+                         mapreduce_configs)
+
+        # check mapreduce streaming
+        mapreduce_streaming_configs = {
+            'configs': {
+                'edp.streaming.mapper': '/bin/cat',
+                'edp.streaming.reducer': '/usr/bin/wc'
+            }
+        }
+
+        self.edp_testing('MapReduce.Streaming', [], [],
+                         mapreduce_streaming_configs)
+
+        # check java
+        java_jar = f.get_file_text(
+            path + 'hadoop-mapreduce-examples-2.3.0.jar')
+        java_configs = {
+            'configs': {
+                'edp.java.main_class':
+                'org.apache.hadoop.examples.QuasiMonteCarlo'
+            },
+            'args': ['10', '10']
+        }
+        self.edp_testing('Java', [], lib_data_list=[{'jar': java_jar}],
+                         configs=java_configs)
 
     @b.errormsg("Failure while cluster scaling: ")
     def _check_scaling(self):
@@ -215,6 +274,10 @@ class VanillaTwoGatingTest(cluster_configs.ClusterConfigTest,
     def _check_swift_after_scaling(self):
         self.check_swift_availability(self.cluster_info)
 
+    @b.errormsg("Failure while EDP testing after cluster scaling: ")
+    def _check_edp_after_scaling(self):
+        self._edp_test()
+
     @unittest2.skipIf(
         cfg.ITConfig().vanilla_two_config.SKIP_ALL_TESTS_FOR_PLUGIN,
         "All tests for Vanilla plugin were skipped")
@@ -229,12 +292,14 @@ class VanillaTwoGatingTest(cluster_configs.ClusterConfigTest,
         self._check_cinder()
         self._check_mapreduce()
         self._check_swift()
+        self._check_edp()
 
         if not self.vanilla_two_config.SKIP_SCALING_TEST:
             self._check_scaling()
             self._check_cinder_after_scaling()
             self._check_mapreduce_after_scaling()
             self._check_swift_after_scaling()
+            self._check_edp_after_scaling()
 
     def tearDown(self):
         self.delete_objects(self.cluster_id, self.cluster_template_id,
