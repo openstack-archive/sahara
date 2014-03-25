@@ -75,6 +75,8 @@ def check_job_executor(data, job_id):
         b.check_data_source_exists(data['input_id'])
         b.check_data_source_exists(data['output_id'])
 
+        b.check_data_sources_are_different(data['input_id'], data['output_id'])
+
         if job_type == 'MapReduce' and (
                 subtype == 'Streaming' and not _streaming_present(data)):
             raise ex.InvalidDataException("%s job "
