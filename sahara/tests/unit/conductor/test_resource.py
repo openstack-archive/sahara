@@ -94,6 +94,30 @@ SAMPLE_DATA_SOURCE = {
     }
 }
 
+SAMPLE_JOB_EXECUTION = {
+    "cluster_id": "7ed1c016-a8a3-4209-9931-6e80f58eea80",
+    "created_at": "2014-02-14 17:46:56.631209",
+    "extra": {},
+    "id": "1b0b1874-a261-4d1f-971a-a2cebadeba6c",
+    "info": {
+        "status": "Pending"
+    },
+    "input_id": "b5ddde55-594e-428f-9040-028be81eb3c2",
+    "job_configs": {
+        "args": [
+            "bob",
+            "bill"
+        ],
+        "configs": {
+            "fs.swift.service.savanna.password": "openstack",
+            "fs.swift.service.savanna.username": "admin"
+        }
+    },
+    "job_id": "d0f3e397-7bef-42f9-a4db-e5a96059246e",
+    "output_id": "f4993830-aa97-4b0b-914a-ab6430f742b6",
+    "tenant_id": "6b859fb8d1f44e8eafdfb91f21309b5f"
+}
+
 
 class TestResource(unittest2.TestCase):
     def setUp(self):
@@ -176,3 +200,9 @@ class TestResource(unittest2.TestCase):
         self.assertIn('libs', wrapped_dict["job"])
         self.assertNotIn('extra', wrapped_dict["job"]['mains'])
         self.assertNotIn('extra', wrapped_dict["job"]['libs'])
+
+    def test_job_execution_filter_credentials(self):
+        job_exec = r.JobExecution(SAMPLE_JOB_EXECUTION)
+        wrapped_dict = job_exec.to_wrapped_dict()
+        self.assertNotIn('extra', wrapped_dict)
+        self.assertNotIn('job_configs', wrapped_dict)
