@@ -1,6 +1,7 @@
         "%(volume_name)s" : {
             "Type" : "OS::Cinder::Volume",
             "Properties" : {
+                "name" : "%(volume_name)s",
                 "size" : "%(volumes_size)s"
             }
         },
