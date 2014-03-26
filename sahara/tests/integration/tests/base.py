@@ -35,6 +35,19 @@ logger = logging.getLogger('swiftclient')
 logger.setLevel(logging.WARNING)
 
 
+def errormsg(message):
+    def decorator(fct):
+        def wrapper(*args, **kwargs):
+            try:
+                fct(*args, **kwargs)
+            except Exception as e:
+                with excutils.save_and_reraise_exception():
+                    ITestCase.print_error_log(message, e)
+
+        return wrapper
+    return decorator
+
+
 def skip_test(config_name, message=''):
     def handle(func):
         def call(self, *args, **kwargs):
@@ -134,12 +147,12 @@ class ITestCase(unittest2.TestCase):
         cluster_template_id = data.id
         return cluster_template_id
 
-    def create_cluster_and_get_info(self, name, plugin_config,
-                                    cluster_template_id, description,
-                                    cluster_configs, node_groups=None,
-                                    anti_affinity=None, net_id=None,
-                                    is_transient=False):
+    def create_cluster(self, name, plugin_config, cluster_template_id,
+                       description, cluster_configs,
+                       node_groups=None, anti_affinity=None,
+                       net_id=None, is_transient=False):
         self.cluster_id = None
+
         data = self.sahara.clusters.create(
             name, plugin_config.PLUGIN_NAME, plugin_config.HADOOP_VERSION,
             cluster_template_id, plugin_config.IMAGE_ID, is_transient,
@@ -147,6 +160,8 @@ class ITestCase(unittest2.TestCase):
             self.common_config.USER_KEYPAIR_ID, anti_affinity, net_id)
         self.cluster_id = data.id
         self.poll_cluster_state(self.cluster_id)
+
+    def get_cluster_info(self, plugin_config):
         node_ip_list_with_node_processes = (
             self.get_cluster_node_ip_list_with_node_processes(self.cluster_id))
         try:
@@ -159,15 +174,7 @@ class ITestCase(unittest2.TestCase):
                     '\nFailure during check of node process deployment '
                     'on cluster node: ' + str(e)
                 )
-        try:
-            self.await_active_workers_for_namenode(node_info, plugin_config)
 
-        except Exception as e:
-            with excutils.save_and_reraise_exception():
-                print(
-                    '\nFailure while active worker waiting for namenode: '
-                    + str(e)
-                )
         # For example: method "create_cluster_and_get_info" return
         # {
         #       'node_info': {
@@ -299,11 +306,11 @@ class ITestCase(unittest2.TestCase):
         for i in range(self.common_config.HDFS_INITIALIZATION_TIMEOUT * 6):
             time.sleep(10)
             active_tasktracker_count = self.execute_command(
-                'sudo -u %s bash -c "hadoop job -list-active-trackers"'
+                'sudo -u %s bash -lc "hadoop job -list-active-trackers"'
                 % plugin_config.HADOOP_USER)[1]
             active_datanode_count = int(
                 self.execute_command(
-                    'sudo -u %s bash -c "hadoop dfsadmin -report" \
+                    'sudo -u %s bash -lc "hadoop dfsadmin -report" \
                     | grep "Datanodes available:.*" | awk \'{print $3}\''
                     % plugin_config.HADOOP_USER)[1]
             )

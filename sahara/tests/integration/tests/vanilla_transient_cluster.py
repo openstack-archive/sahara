@@ -48,7 +48,7 @@ class TransientClusterTest(base.ITestCase):
             try:
                 cluster_name = (self.common_config.CLUSTER_NAME + '-transient-'
                                 + plugin_config.PLUGIN_NAME)
-                cluster_info = self.create_cluster_and_get_info(
+                self.create_cluster(
                     name=cluster_name,
                     plugin_config=plugin_config,
                     cluster_template_id=cluster_template_id,
@@ -59,6 +59,8 @@ class TransientClusterTest(base.ITestCase):
             except Exception:
                 self.delete_objects(cluster_id=self.cluster_id)
                 raise
+
+            cluster_info = self.get_cluster_info(plugin_config)
 
             # set timeout in seconds
             timeout = self.common_config.TRANSIENT_CLUSTER_TIMEOUT * 60

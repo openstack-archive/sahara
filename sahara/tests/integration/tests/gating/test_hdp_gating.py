@@ -124,13 +124,17 @@ class HDPGatingTest(cinder.CinderVolumeTest, edp.EDPTest,
         cluster_name = (self.common_config.CLUSTER_NAME + '-' +
                         self.hdp_config.PLUGIN_NAME)
         try:
-            cluster_info = self.create_cluster_and_get_info(
+            self.create_cluster(
                 name=cluster_name,
                 plugin_config=self.hdp_config,
                 cluster_template_id=cluster_template_id,
                 description='test cluster',
                 cluster_configs={}
             )
+
+            cluster_info = self.get_cluster_info(self.hdp_config)
+            self.await_active_workers_for_namenode(cluster_info['node_info'],
+                                                   self.hdp_config)
 
         except Exception as e:
             with excutils.save_and_reraise_exception():
@@ -255,7 +259,8 @@ class HDPGatingTest(cinder.CinderVolumeTest, edp.EDPTest,
         ]
         try:
             new_cluster_info = self.cluster_scaling(cluster_info, change_list)
-
+            self.await_active_workers_for_namenode(
+                new_cluster_info['node_info'], self.hdp_config)
         except Exception as e:
             with excutils.save_and_reraise_exception():
                 self.delete_objects(

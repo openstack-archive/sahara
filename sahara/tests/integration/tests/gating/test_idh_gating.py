@@ -16,27 +16,13 @@
 from testtools import testcase
 import unittest2
 
-from sahara.openstack.common import excutils
 from sahara.tests.integration.configs import config as cfg
-from sahara.tests.integration.tests import base
+from sahara.tests.integration.tests import base as b
 from sahara.tests.integration.tests import cluster_configs
 from sahara.tests.integration.tests import edp
 from sahara.tests.integration.tests import map_reduce
 from sahara.tests.integration.tests import scaling
 from sahara.tests.integration.tests import swift
-
-
-def errormessage(message):
-    def decorator(fct):
-        def wrapper(*args, **kwargs):
-            try:
-                fct(*args, **kwargs)
-            except Exception as e:
-                with excutils.save_and_reraise_exception():
-                    base.ITestCase.print_error_log(message, e)
-
-        return wrapper
-    return decorator
 
 
 class IDHGatingTest(cluster_configs.ClusterConfigTest, edp.EDPTest,
@@ -65,7 +51,7 @@ class IDHGatingTest(cluster_configs.ClusterConfigTest, edp.EDPTest,
         self.idh_config.IMAGE_ID, self.idh_config.SSH_USERNAME = (
             self.get_image_id_and_ssh_username(self.idh_config))
 
-    @errormessage("Failure while 'tt-dn' node group template creation: ")
+    @b.errormsg("Failure while 'tt-dn' node group template creation: ")
     def _create_tt_dn_ng_template(self):
         template = {
             'name': 'test-node-group-template-idh-tt-dn',
@@ -80,7 +66,7 @@ class IDHGatingTest(cluster_configs.ClusterConfigTest, edp.EDPTest,
         self.ng_tmpl_tt_dn_id = self.create_node_group_template(**template)
         self.ng_template_ids.append(self.ng_tmpl_tt_dn_id)
 
-    @errormessage("Failure while 'tt' node group template creation: ")
+    @b.errormsg("Failure while 'tt' node group template creation: ")
     def _create_tt_ng_template(self):
         template = {
             'name': 'test-node-group-template-idh-tt',
@@ -95,7 +81,7 @@ class IDHGatingTest(cluster_configs.ClusterConfigTest, edp.EDPTest,
         self.ng_tmpl_tt_id = self.create_node_group_template(**template)
         self.ng_template_ids.append(self.ng_tmpl_tt_id)
 
-    @errormessage("Failure while 'dn' node group template creation: ")
+    @b.errormsg("Failure while 'dn' node group template creation: ")
     def _create_dn_ng_template(self):
         template = {
             'name': 'test-node-group-template-idh-dn',
@@ -110,7 +96,7 @@ class IDHGatingTest(cluster_configs.ClusterConfigTest, edp.EDPTest,
         self.ng_tmpl_dn_id = self.create_node_group_template(**template)
         self.ng_template_ids.append(self.ng_tmpl_dn_id)
 
-    @errormessage("Failure while cluster template creation: ")
+    @b.errormsg("Failure while cluster template creation: ")
     def _create_cluster_template(self):
         template = {
             'name': 'test-cluster-template-idh',
@@ -162,7 +148,7 @@ class IDHGatingTest(cluster_configs.ClusterConfigTest, edp.EDPTest,
         }
         self.cluster_template_id = self.create_cluster_template(**template)
 
-    @errormessage("Failure while cluster creation: ")
+    @b.errormsg("Failure while cluster creation: ")
     def _create_cluster(self):
         cluster_name = (self.common_config.CLUSTER_NAME + '-' +
                         self.idh_config.PLUGIN_NAME)
@@ -173,17 +159,20 @@ class IDHGatingTest(cluster_configs.ClusterConfigTest, edp.EDPTest,
             'description': 'test cluster',
             'cluster_configs': {}
         }
-        self.cluster_info = self.create_cluster_and_get_info(**cluster)
+        self.create_cluster(**cluster)
+        self.cluster_info = self.get_cluster_info(self.idh_config)
+        self.await_active_workers_for_namenode(self.cluster_info['node_info'],
+                                               self.idh_config)
 
-    @errormessage("Failure while Map Reduce testing: ")
+    @b.errormsg("Failure while Map Reduce testing: ")
     def _check_mapreduce(self):
         self.map_reduce_testing(self.cluster_info)
 
-    @errormessage("Failure during check of Swift availability: ")
+    @b.errormsg("Failure during check of Swift availability: ")
     def _check_swift(self):
         self.check_swift_availability(self.cluster_info)
 
-    @errormessage("Failure while cluster scaling: ")
+    @b.errormsg("Failure while cluster scaling: ")
     def _check_scaling(self):
         change_list = [
             {
@@ -214,13 +203,15 @@ class IDHGatingTest(cluster_configs.ClusterConfigTest, edp.EDPTest,
 
         self.cluster_info = self.cluster_scaling(self.cluster_info,
                                                  change_list)
+        self.await_active_workers_for_namenode(self.cluster_info['node_info'],
+                                               self.idh_config)
 
-    @errormessage("Failure while Map Reduce testing after cluster scaling: ")
+    @b.errormsg("Failure while Map Reduce testing after cluster scaling: ")
     def _check_mapreduce_after_scaling(self):
         if not self.idh_config.SKIP_SCALING_TEST:
                 self.map_reduce_testing(self.cluster_info)
 
-    @errormessage(
+    @b.errormsg(
         "Failure during check of Swift availability after cluster scaling: ")
     def _check_swift_after_scaling(self):
         if not self.idh_config.SKIP_SCALING_TEST:

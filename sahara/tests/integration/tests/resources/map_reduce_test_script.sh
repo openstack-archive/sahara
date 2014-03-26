@@ -4,6 +4,7 @@ dir=/tmp/MapReduceTestOutput
 log=$dir/log.txt
 
 HADOOP_VERSION=""
+HADOOP_EXAMPLES_JAR_PATH=""
 HADOOP_DIRECTORY=""
 HADOOP_LOG_DIRECTORY=""
 HADOOP_USER=""
@@ -53,7 +54,8 @@ check_job_directory_existence() {
 
     check_submitted_parameter job_name
 
-    if ! [ -d $HADOOP_LOG_DIRECTORY/$JOB_NAME ]
+    app_name=${JOB_NAME/"job"/"application"}
+    if ! [ -d $HADOOP_LOG_DIRECTORY/$JOB_NAME -o -d $HADOOP_LOG_DIRECTORY/$app_name ]
     then
         echo "Log file of \"PI\" job not found"
         exit 1
@@ -86,7 +88,7 @@ run_pi_job() {
 
     echo -e "************************ START OF \"PI\" JOB *********************\n" >> $log
 
-    echo -e "`sudo -u $HADOOP_USER bash -c \"cd $HADOOP_DIRECTORY && hadoop jar hadoop-examples$hadoop_version.jar pi $[$NODE_COUNT*10] $[$NODE_COUNT*1000]\"` \n" >> $log
+    sudo -u $HADOOP_USER bash -lc "hadoop jar $HADOOP_EXAMPLES_JAR_PATH pi $[$NODE_COUNT*10] $[$NODE_COUNT*1000]" >> $log
 
     echo -e "************************ END OF \"PI\" JOB ***********************" >> $log
 }
@@ -96,7 +98,7 @@ get_pi_job_name() {
     #This sleep needs here for obtaining correct job name. Not always job name may immediately appear in job list.
     sleep 60
 
-    job_name=`hadoop job -list all | tail -n1 | awk '{print $1}'`
+    job_name=`sudo -u $HADOOP_USER bash -lc "hadoop job -list all | grep '^[[:space:]]*job_' | sort | tail -n1" | awk '{print $1}'`
 
     if [ $job_name = "JobId" ]
     then
@@ -121,7 +123,7 @@ check_return_code_after_command_execution() {
     then
         if [ "$2" -ne 0 ]
         then
-            sudo -u $HADOOP_USER bash -c "hadoop dfs -rmr /map-reduce-test" && exit 1
+            sudo -u $HADOOP_USER bash -lc "hadoop dfs -rmr /map-reduce-test" && exit 1
         fi
     fi
 }
@@ -132,13 +134,13 @@ run_wordcount_job() {
 
     dmesg > $dir/input
 
-    sudo -u $HADOOP_USER bash -c "hadoop dfs -ls /"
+    sudo -u $HADOOP_USER bash -lc "hadoop dfs -ls /"
     check_return_code_after_command_execution -exit `echo "$?"`
 
-    sudo -u $HADOOP_USER bash -c "hadoop dfs -mkdir /map-reduce-test"
+    sudo -u $HADOOP_USER bash -lc "hadoop dfs -mkdir /map-reduce-test"
     check_return_code_after_command_execution -exit `echo "$?"`
 
-    sudo -u $HADOOP_USER bash -c "hadoop dfs -copyFromLocal $dir/input /map-reduce-test/mydata"
+    sudo -u $HADOOP_USER bash -lc "hadoop dfs -copyFromLocal $dir/input /map-reduce-test/mydata"
     check_return_code_after_command_execution -clean_hdfs `echo "$?"`
 
     hadoop_version=""
@@ -147,13 +149,13 @@ run_wordcount_job() {
         hadoop_version=-$HADOOP_VERSION
     fi
 
-    sudo -u $HADOOP_USER bash -c "cd $HADOOP_DIRECTORY && hadoop jar hadoop-examples$hadoop_version.jar wordcount /map-reduce-test/mydata /map-reduce-test/output"
+    sudo -u $HADOOP_USER bash -lc "hadoop jar $HADOOP_EXAMPLES_JAR_PATH wordcount /map-reduce-test/mydata /map-reduce-test/output"
     check_return_code_after_command_execution -clean_hdfs `echo "$?"`
 
-    sudo -u $HADOOP_USER bash -c "hadoop dfs -copyToLocal /map-reduce-test/output/ $dir/output/"
+    sudo -u $HADOOP_USER bash -lc "hadoop dfs -copyToLocal /map-reduce-test/output $dir/output"
     check_return_code_after_command_execution -exit `echo "$?"`
 
-    sudo -u $HADOOP_USER bash -c "hadoop dfs -rmr /map-reduce-test"
+    sudo -u $HADOOP_USER bash -lc "hadoop dfs -rmr /map-reduce-test"
     check_return_code_after_command_execution -exit `echo "$?"`
 }
 
