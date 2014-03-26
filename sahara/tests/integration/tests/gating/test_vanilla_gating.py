@@ -43,7 +43,7 @@ class VanillaGatingTest(cinder.CinderVolumeTest,
 
     @unittest2.skipIf(config.SKIP_ALL_TESTS_FOR_PLUGIN,
                       'All tests for Vanilla plugin were skipped')
-    @testcase.attr('vanilla', 'transient')
+    @testcase.attr('vanilla1', 'transient')
     def test_vanilla_plugin_gating(self):
         self.vanilla_config.IMAGE_ID, self.vanilla_config.SSH_USERNAME = (
             self.get_image_id_and_ssh_username(self.vanilla_config))
