@@ -97,7 +97,8 @@ class PluginManager(object):
         for ext in extension_manager.extensions:
             if ext.name in self.plugins:
                 # TODO(slukjanov): replace with specific exception
-                raise RuntimeError("Plugin with name '%s' already exists.")
+                raise RuntimeError("Plugin with name '%s' already exists." %
+                                   ext.name)
             ext.obj.name = ext.name
             self.plugins[ext.name] = ext.obj
             LOG.info("Plugin '%s' loaded (%s)"

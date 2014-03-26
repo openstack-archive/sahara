@@ -72,7 +72,7 @@ def install_manager(cluster):
         try:
             r.execute_command('curl -O %s 2>&1' % idh_tarball_path)
         except Exception as e:
-            raise RuntimeError("Unable to download IDH manager from %s",
+            raise RuntimeError("Unable to download IDH manager from %s" %
                                idh_tarball_path, e)
 
         # unpack archive
