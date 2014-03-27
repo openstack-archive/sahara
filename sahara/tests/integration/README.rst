@@ -22,6 +22,8 @@ the corresponding tox env: `tox -e integration -- <plugin_name>` or
 
 For example: `tox -e integration -- vanilla` or `tox -e integration vanilla hdp`
 
+**NOTE**: Both `OS_TENANT_ID` and `OS_TENANT_NAME` must be specified in config file.
+
 Contents
 --------
 
