@@ -1,5 +1,5 @@
-Sahara project
-===============
+OpenStack Data Processing ("Sahara") project
+============================================
 
 Sahara at wiki.openstack.org: https://wiki.openstack.org/wiki/Sahara
 
