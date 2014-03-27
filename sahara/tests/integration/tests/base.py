@@ -23,6 +23,7 @@ from neutronclient.v2_0 import client as neutron_client
 from novaclient.v1_1 import client as nova_client
 import saharaclient.client as sahara_client
 from swiftclient import client as swift_client
+import testtools
 import unittest2
 
 from sahara.openstack.common import excutils
@@ -66,8 +67,10 @@ def skip_test(config_name, message=''):
     return handle
 
 
-class ITestCase(unittest2.TestCase):
+class ITestCase(testtools.TestCase, testtools.testcase.WithAttributes,
+                unittest2.TestCase):
     def setUp(self):
+        super(ITestCase, self).setUp()
         self.common_config = cfg.ITConfig().common_config
         self.vanilla_config = cfg.ITConfig().vanilla_config
         self.vanilla_two_config = cfg.ITConfig().vanilla_two_config
@@ -583,3 +586,5 @@ class ITestCase(unittest2.TestCase):
             self.nova.keypairs.delete(self.common_config.USER_KEYPAIR_ID)
         if not self.common_config.FLAVOR_ID:
             self.nova.flavors.delete(self.flavor_id)
+
+        super(ITestCase, self).tearDown()
