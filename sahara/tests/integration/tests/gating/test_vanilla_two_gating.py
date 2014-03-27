@@ -142,8 +142,8 @@ class VanillaTwoGatingTest(cluster_configs.ClusterConfigTest,
 
     @b.errormsg("Failure while cluster creation: ")
     def _create_cluster(self):
-        cluster_name = '%s-%s' % (self.common_config.CLUSTER_NAME,
-                                  self.vanilla_two_config.PLUGIN_NAME)
+        cluster_name = '%s-%s-v2' % (self.common_config.CLUSTER_NAME,
+                                     self.vanilla_two_config.PLUGIN_NAME)
         cluster = {
             'name': cluster_name,
             'plugin_config': self.vanilla_two_config,

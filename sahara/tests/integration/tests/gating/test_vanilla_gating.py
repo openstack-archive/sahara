@@ -212,8 +212,8 @@ class VanillaGatingTest(cinder.CinderVolumeTest,
 #-------------------------------Cluster creation-------------------------------
 
         try:
-            cluster_name = (self.common_config.CLUSTER_NAME + '-' +
-                            self.vanilla_config.PLUGIN_NAME)
+            cluster_name = "%s-%s-v1" % (self.common_config.CLUSTER_NAME,
+                                         self.vanilla_config.PLUGIN_NAME)
             self.create_cluster(
                 name=cluster_name,
                 plugin_config=self.vanilla_config,
