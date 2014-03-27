@@ -232,6 +232,84 @@ VANILLA_CONFIG_OPTS = [
 ]
 
 
+VANILLA_TWO_CONFIG_GROUP = cfg.OptGroup(name='VANILLA_TWO')
+VANILLA_TWO_CONFIG_OPTS = [
+    cfg.StrOpt('PLUGIN_NAME',
+               default='vanilla',
+               help='Name of plugin.'),
+    cfg.StrOpt('IMAGE_ID',
+               default=None,
+               help='ID for image which is used for cluster creation. Also '
+                    'you can specify image name or tag of image instead of '
+                    'image ID. If you do not specify image related parameters '
+                    'then image for cluster creation will be chosen by '
+                    'tag "savanna_i_tests".'),
+    cfg.StrOpt('IMAGE_NAME',
+               default=None,
+               help='Name for image which is used for cluster creation. Also '
+                    'you can specify image ID or tag of image instead of '
+                    'image name. If you do not specify image related '
+                    'parameters, then the image for cluster creation will be '
+                    'chosen by tag "savanna_i_tests".'),
+    cfg.StrOpt('IMAGE_TAG',
+               default=None,
+               help='Tag for image which is used for cluster creation. Also '
+                    'you can specify image ID or image name instead of tag of '
+                    'image. If you do not specify image related parameters, '
+                    'then image for cluster creation will be chosen by '
+                    'tag "savanna_i_tests".'),
+    cfg.StrOpt('SSH_USERNAME',
+               default=None,
+               help='Username to get cluster node with SSH.'),
+    cfg.StrOpt('HADOOP_VERSION',
+               default='2.3.0',
+               help='Version of Hadoop.'),
+    cfg.StrOpt('HADOOP_USER',
+               default='hadoop',
+               help='Username which is used for access to Hadoop services.'),
+    cfg.StrOpt('HADOOP_DIRECTORY',
+               default='/opt/hadoop',
+               help='Directory where Hadoop jar files are located.'),
+    cfg.StrOpt('HADOOP_EXAMPLES_JAR_PATH',
+               default='/opt/hadoop/share/hadoop/mapreduce/'
+                       'hadoop-mapreduce-examples-2.3.0.jar',
+               help='Path to hadoop examples jar file.'),
+    cfg.StrOpt('HADOOP_LOG_DIRECTORY',
+               default='/mnt/yarn/logs/userlogs',
+               help='Directory where logs of completed jobs are located.'),
+    cfg.StrOpt('HADOOP_LOG_DIRECTORY_ON_VOLUME',
+               default='/volumes/disk1/yarn/logs/userlogs',
+               help='Directory where logs of completed jobs on volume mounted '
+                    'to node are located.'),
+    cfg.DictOpt('HADOOP_PROCESSES_WITH_PORTS',
+                default={
+                    'resourcemanager': 8088,
+                    'namenode': 50070,
+                    'nodemanager': 8042,
+                    'datanode': 50075
+                },
+                help='Hadoop process map with ports for Vanilla plugin.'),
+    cfg.DictOpt('PROCESS_NAMES',
+                default={
+                    'nn': 'namenode',
+                    'tt': 'nodemanager',
+                    'dn': 'datanode'
+                },
+                help='Names for namenode, nodemanager and datanode '
+                     'processes.'),
+    cfg.BoolOpt('SKIP_ALL_TESTS_FOR_PLUGIN',
+                default=False,
+                help='If this flag is True, then all tests for Vanilla plugin '
+                     'will be skipped.'),
+    cfg.BoolOpt('SKIP_CINDER_TEST', default=False),
+    cfg.BoolOpt('SKIP_CLUSTER_CONFIG_TEST', default=False),
+    cfg.BoolOpt('SKIP_EDP_TEST', default=False),
+    cfg.BoolOpt('SKIP_MAP_REDUCE_TEST', default=False),
+    cfg.BoolOpt('SKIP_SWIFT_TEST', default=False),
+    cfg.BoolOpt('SKIP_SCALING_TEST', default=False)
+]
+
+
 HDP_CONFIG_GROUP = cfg.OptGroup(name='HDP')
 HDP_CONFIG_OPTS = [
     cfg.StrOpt('PLUGIN_NAME',
@@ -443,6 +521,8 @@ class ITConfig:
         register_config(cfg.CONF, VANILLA_CONFIG_GROUP, VANILLA_CONFIG_OPTS)
         register_config(cfg.CONF, HDP_CONFIG_GROUP, HDP_CONFIG_OPTS)
         register_config(cfg.CONF, IDH_CONFIG_GROUP, IDH_CONFIG_OPTS)
+        register_config(
+            cfg.CONF, VANILLA_TWO_CONFIG_GROUP, VANILLA_TWO_CONFIG_OPTS)
 
         cfg.CONF(
             [], project='Sahara_integration_tests',
@@ -451,5 +531,6 @@ class ITConfig:
 
         self.common_config = cfg.CONF.COMMON
         self.vanilla_config = cfg.CONF.VANILLA
+        self.vanilla_two_config = cfg.CONF.VANILLA_TWO
         self.hdp_config = cfg.CONF.HDP
         self.idh_config = cfg.CONF.IDH
