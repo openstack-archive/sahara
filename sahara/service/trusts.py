@@ -29,11 +29,10 @@ CONF = cfg.CONF
 def create_trust(cluster):
     client = keystone.client()
 
-    trustee_id = keystone.client_for_trusts(
-        CONF.os_admin_username,
-        CONF.os_admin_password,
-        None).user_id
     ctx = context.current()
+
+    trustee_id = keystone.client_for_admin(ctx.tenant_id).user_id
+
     trust = client.trusts.create(trustor_user=client.user_id,
                                  trustee_user=trustee_id,
                                  impersonation=True,
@@ -49,10 +48,7 @@ def use_os_admin_auth_token(cluster):
         ctx = context.current()
         ctx.username = CONF.os_admin_username
         ctx.tenant_id = cluster.tenant_id
-        client = keystone.client_for_trusts(
-            CONF.os_admin_username,
-            CONF.os_admin_password,
-            cluster.trust_id)
+        client = keystone.client_for_trusts(cluster.trust_id)
         ctx.token = client.auth_token
         ctx.service_catalog = json.dumps(
             client.service_catalog.catalog['catalog'])
@@ -60,8 +56,5 @@ def use_os_admin_auth_token(cluster):
 
 def delete_trust(cluster):
     if cluster.trust_id:
-        keystone_client = keystone.client_for_trusts(
-            CONF.os_admin_username,
-            CONF.os_admin_password,
-            cluster.trust_id)
+        keystone_client = keystone.client_for_trusts(cluster.trust_id)
         keystone_client.trusts.delete(cluster.trust_id)
