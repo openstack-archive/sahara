@@ -3,10 +3,11 @@ Apache Hadoop Configurations for Sahara
 
 This directory contains default XML configuration files:
 
-* core-default.xml,
-* hdfs-default.xml,
-* mapred-default.xml,
+* core-default.xml
+* hdfs-default.xml
+* mapred-default.xml
 * yarn-default.xml
+* oozie-default.xml
 
 These files are applied for Sahara's plugin of Apache Hadoop version 2.3.0
 
@@ -16,6 +17,7 @@ https://github.com/apache/hadoop-common/blob/release-2.3.0/hadoop-common-project
 https://github.com/apache/hadoop-common/blob/release-2.3.0/hadoop-hdfs-project/hadoop-hdfs/src/main/resources/hdfs-default.xml
 https://github.com/apache/hadoop-common/blob/release-2.3.0/hadoop-yarn-project/hadoop-yarn/hadoop-yarn-common/src/main/resources/yarn-default.xml
 https://github.com/apache/hadoop-common/blob/release-2.3.0/hadoop-mapreduce-project/hadoop-mapreduce-client/hadoop-mapreduce-client-core/src/main/resources/mapred-default.xml
+https://github.com/apache/oozie/blob/release-4.0.0/core/src/main/resources/oozie-default.xml
 
 XML configs are used to expose default Hadoop configurations to the users through
 Sahara's REST API. It allows users to override some config values which will

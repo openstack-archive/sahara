@@ -40,7 +40,8 @@ class VersionHandler(avm.AbstractVersionHandler):
             "Hadoop": [],
             "MapReduce": ["historyserver"],
             "HDFS": ["namenode", "datanode"],
-            "YARN": ["resourcemanager", "nodemanager"]
+            "YARN": ["resourcemanager", "nodemanager"],
+            "JobFlow": ["oozie"]
         }
 
     def validate(self, cluster):
@@ -63,12 +64,18 @@ class VersionHandler(avm.AbstractVersionHandler):
         for dn in utils.get_datanodes(cluster):
             run.start_hadoop_process(dn, 'datanode')
 
+        run.await_datanodes(cluster)
+
         for nm in utils.get_nodemanagers(cluster):
             run.start_yarn_process(nm, 'nodemanager')
 
         hs = utils.get_historyserver(cluster)
         if hs:
             run.start_historyserver(hs)
+
+        oo = utils.get_oozie(cluster)
+        if oo:
+            run.start_oozie_process(oo)
 
         self._set_cluster_info(cluster)
 
@@ -86,17 +93,25 @@ class VersionHandler(avm.AbstractVersionHandler):
         nn = utils.get_namenode(cluster)
         rm = utils.get_resourcemanager(cluster)
         hs = utils.get_historyserver(cluster)
+        oo = utils.get_oozie(cluster)
 
         info = {}
 
         if rm:
             info['YARN'] = {
                 'Web UI': 'http://%s:%s' % (rm.management_ip, '8088'),
+                'ResourceManager': 'http://%s:%s' % (rm.management_ip, '8032')
             }
 
         if nn:
             info['HDFS'] = {
                 'Web UI': 'http://%s:%s' % (nn.management_ip, '50070'),
+                'NameNode': 'hdfs://%s:%s' % (nn.hostname(), '9000')
+            }
+
+        if oo:
+            info['JobFlow'] = {
+                'Oozie': 'http://%s:%s' % (oo.management_ip, '11000')
             }
 
         if hs:
@@ -108,7 +123,7 @@ class VersionHandler(avm.AbstractVersionHandler):
         conductor.cluster_update(ctx, cluster, {'info': info})
 
     def get_oozie_server(self, cluster):
-        pass
+        return utils.get_oozie(cluster)
 
     def get_resource_manager_uri(self, cluster):
-        pass
+        return cluster['info']['YARN']['ResourceManager']
