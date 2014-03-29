@@ -55,7 +55,6 @@ SAMPLE_CLUSTER_DICT = {
     ]
 }
 
-
 SAMPLE_JOB_BINARY_DICT = {
     "created_at": "2014-02-14 16:26:08.895897",
     "description": "a job",
@@ -70,6 +69,19 @@ SAMPLE_JOB_BINARY_DICT = {
     "url": "swift-internal://bob.sahara/job"
 }
 
+SAMPLE_JOB_BINARY_DICT2 = copy.copy(SAMPLE_JOB_BINARY_DICT)
+SAMPLE_JOB_BINARY_DICT2["name"] = "bill"
+SAMPLE_JOB_BINARY_DICT2["id"] = "c0caf119-1111-2222-a46e-0f28ebd23b5c"
+SAMPLE_JOB_BINARY_DICT2["url"] = "swift-internal://bill.sahara/job"
+
+SAMPLE_JOB_DICT = {
+    "tenant_id": "test_tenant",
+    "name": "job_test",
+    "description": "test_desc",
+    "type": "Pig",
+    "mains": [SAMPLE_JOB_BINARY_DICT],
+    "libs": [SAMPLE_JOB_BINARY_DICT2]
+}
 
 SAMPLE_DATA_SOURCE = {
     'name': 'input',
@@ -156,3 +168,11 @@ class TestResource(unittest2.TestCase):
         data_source = r.DataSource(SAMPLE_DATA_SOURCE)
         wrapped_dict = data_source.to_wrapped_dict()
         self.assertNotIn('credentials', wrapped_dict)
+
+    def test_job_filter_job_binary(self):
+        job = r.Job(SAMPLE_JOB_DICT)
+        wrapped_dict = job.to_wrapped_dict()
+        self.assertIn('mains', wrapped_dict["job"])
+        self.assertIn('libs', wrapped_dict["job"])
+        self.assertNotIn('extra', wrapped_dict["job"]['mains'])
+        self.assertNotIn('extra', wrapped_dict["job"]['libs'])

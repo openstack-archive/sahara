@@ -216,10 +216,6 @@ class JobExecution(Resource, objects.JobExecution):
     _resource_name = "job_execution"
 
 
-class Job(Resource, objects.Job):
-    _resource_name = "job"
-
-
 class JobBinary(Resource, objects.JobBinary):
     _resource_name = "job_binary"
     _filter_fields = ['extra']
@@ -227,3 +223,11 @@ class JobBinary(Resource, objects.JobBinary):
 
 class JobBinaryInternal(Resource, objects.JobBinaryInternal):
     _resource_name = "job_binary_internal"
+
+
+class Job(Resource, objects.Job):
+    _resource_name = "job"
+    _children = {
+        'mains': (JobBinary, None),
+        'libs': (JobBinary, None)
+    }
