@@ -95,7 +95,7 @@ def _get_hadoop_configs(node_group):
         for config in swift.get_swift_configs():
             swift_configs[config['name']] = config['value']
 
-        confs['HDFS'].update(swift_configs)
+        confs['Hadoop'].update(swift_configs)
 
     return confs, c_helper.get_env_configs()
 
