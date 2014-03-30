@@ -70,15 +70,29 @@ ENABLE_MYSQL = p.Config('Enable MySQL', 'general', 'cluster',
                         default_value=True, is_optional=True)
 
 HIDDEN_CONFS = [
-    'dfs.namenode.data.dir', 'dfs.namenode.name.dir', 'fs.defaultFS',
-    'hadoop.proxyuser.hadoop.groups', 'hadoop.proxyuser.hadoop.hosts',
+    'dfs.hosts',
+    'dfs.hosts.exclude',
+    'dfs.namenode.data.dir',
+    'dfs.namenode.name.dir',
+    'fs.default.name',
+    'fs.defaultFS',
+    'fs.swift.impl',
+    'hadoop.proxyuser.hadoop.groups',
+    'hadoop.proxyuser.hadoop.hosts',
+    'mapreduce.framework.name',
     'mapreduce.jobhistory.address',
     'mapreduce.jobhistory.done.dir',
     'mapreduce.jobhistory.intermediate-done-dir',
     'mapreduce.jobhistory.webapp.address',
+    'yarn.nodemanager.aux-services',
     'yarn.resourcemanager.address',
+    'yarn.resourcemanager.admin.address',
+    'yarn.resourcemanager.hostname',
+    'yarn.resourcemanager.nodes.exclude-path',
+    'yarn.resourcemanager.nodes.include-path',
     'yarn.resourcemanager.resource-tracker.address',
     'yarn.resourcemanager.scheduler.address',
+    'yarn.resourcemanager.webapp.address'
 ]
 
 CLUSTER_WIDE_CONFS = [
@@ -93,13 +107,25 @@ CLUSTER_WIDE_CONFS = [
 ]
 
 PRIORITY_1_CONFS = [
-    'dfs.datanode.du.reserved', 'dfs.datanode.failed.volumes.tolerated',
-    'dfs.datanode.handler.count', 'dfs.datanode.max.transfer.threads',
-    'dfs.namenode.handler.count', 'mapred.child.java.opts',
-    'mapred.jobtracker.maxtasks.per.job', 'mapreduce.jobtracker.handler.count',
-    'mapreduce.map.java.opts', 'mapreduce.reduce.java.opts',
-    'mapreduce.task.io.sort.mb', 'mapreduce.tasktracker.map.tasks.maximum',
-    'mapreduce.tasktracker.reduce.tasks.maximum'
+    'dfs.datanode.du.reserved',
+    'dfs.datanode.failed.volumes.tolerated',
+    'dfs.datanode.handler.count',
+    'dfs.datanode.max.transfer.threads',
+    'dfs.namenode.handler.count',
+    'mapred.child.java.opts',
+    'mapred.jobtracker.maxtasks.per.job',
+    'mapreduce.jobtracker.handler.count',
+    'mapreduce.map.java.opts',
+    'mapreduce.reduce.java.opts',
+    'mapreduce.task.io.sort.mb',
+    'mapreduce.tasktracker.map.tasks.maximum',
+    'mapreduce.tasktracker.reduce.tasks.maximum',
+    'yarn.nodemanager.resource.cpu-vcores',
+    'yarn.nodemanager.resource.memory-mb',
+    'yarn.scheduler.maximum-allocation-mb',
+    'yarn.scheduler.maximum-allocation-vcores',
+    'yarn.scheduler.minimum-allocation-mb',
+    'yarn.scheduler.minimum-allocation-vcores'
 ]
 
 # for now we have not so many cluster-wide configs
