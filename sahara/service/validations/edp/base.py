@@ -66,3 +66,13 @@ def check_job_binary_internal_exists(jbi_id):
     if not api.get_job_binary_internal(jbi_id):
         raise ex.InvalidException("JobBinaryInternal with id '%s'"
                                   " doesn't exist" % jbi_id)
+
+
+def check_data_sources_are_different(data_source_1_id, data_source_2_id):
+    ds1 = api.get_data_source(data_source_1_id)
+    ds2 = api.get_data_source(data_source_2_id)
+
+    if ds1.type == ds2.type and ds1.url == ds2.url:
+        raise ex.InvalidDataException('Provided input and output '
+                                      'DataSources reference the same '
+                                      'location: %s' % ds1.url)

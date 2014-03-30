@@ -37,6 +37,8 @@ class TestJobExecValidation(u.ValidationTestCase):
         self._create_object_fun = wrap_it
         self.scheme = je.JOB_EXEC_SCHEMA
 
+    @mock.patch('sahara.service.validations.edp.base.'
+                'check_data_sources_are_different', lambda x, y: None)
     @mock.patch('sahara.service.validations.base.check_cluster_exists')
     @mock.patch('sahara.service.validations'
                 '.edp.base.check_data_source_exists')
@@ -72,3 +74,52 @@ class TestJobExecValidation(u.ValidationTestCase):
                     "params": {},
                     "args": []}
             })
+
+    @mock.patch('sahara.service.validations.base.check_cluster_exists',
+                lambda x: None)
+    @mock.patch('sahara.service.edp.api.get_data_source')
+    @mock.patch('sahara.service.edp.api.get_job')
+    def test_data_sources_differ(self, get_job, get_data_source):
+        get_job.return_value = FakeJob()
+
+        ds1_id = six.text_type(uuid.uuid4())
+        ds2_id = six.text_type(uuid.uuid4())
+
+        data_sources = {
+            ds1_id: mock.Mock(type="swift", url="http://swift/test"),
+            ds2_id: mock.Mock(type="swift", url="http://swift/test2"),
+        }
+
+        get_data_source.side_effect = lambda x: data_sources[x]
+
+        self._assert_create_object_validation(
+            data={
+                "cluster_id": six.text_type(uuid.uuid4()),
+                "input_id": ds1_id,
+                "output_id": ds2_id,
+                "job_configs": {
+                    "configs": {
+                        "edp.streaming.mapper": "/bin/cat",
+                        "edp.streaming.reducer": "/usr/bin/wc"},
+                    "params": {},
+                    "args": []}
+            })
+
+        data_sources[ds2_id].url = "http://swift/test"
+
+        err_msg = ("Provided input and output DataSources reference the "
+                   "same location: %s" % data_sources[ds2_id].url)
+
+        self._assert_create_object_validation(
+            data={
+                "cluster_id": six.text_type(uuid.uuid4()),
+                "input_id": ds1_id,
+                "output_id": ds2_id,
+                "job_configs": {
+                    "configs": {
+                        "edp.streaming.mapper": "/bin/cat",
+                        "edp.streaming.reducer": "/usr/bin/wc"},
+                    "params": {},
+                    "args": []}
+            },
+            bad_req_i=(1, "INVALID_DATA", err_msg))
