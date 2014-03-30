@@ -214,6 +214,7 @@ class DataSource(Resource, objects.DataSource):
 
 class JobExecution(Resource, objects.JobExecution):
     _resource_name = "job_execution"
+    _filter_fields = ['extra', 'job_configs']
 
 
 class JobBinary(Resource, objects.JobBinary):
