@@ -1,27 +1,31 @@
 Setting Up a Development Environment
 ====================================
 
-This page describes how to point a local running Sahara instance to remote OpenStack.
-You should be able to debug and test your changes without having to deploy.
+This page describes how to setup a Sahara development environment by either
+installing it as a part of DevStack or pointing a local running instance at an
+external OpenStack. You should be able to debug and test your changes without 
+having to deploy Sahara.
 
-Setup Local Environment with Sahara inside DevStack
----------------------------------------------------
+Setup a Local Environment with Sahara inside DevStack
+-----------------------------------------------------
 
-The easiest way to have local Sahara environment with DevStack is to include
-Sahara component in DevStack.
+The easiest way to have a local Sahara environment with DevStack is to include
+the Sahara component in DevStack. This can be accomplished by modifying your
+DevStack ``local.conf`` or ``localrc`` file to enable ``sahara``. See the
+`DevStack documentation <http://devstack.org>`_ for more information on
+installing and configuring DevStack.
 
-.. toctree::
-    :maxdepth: 1
-
-    devstack
+If you are developing Sahara from an OSX environment you will need to run
+DevStack on a virtual machine. See
+`Setup VM for DevStack on OSX <devstack.html>`_ for more information.
 
 After you install DevStack with Sahara included you can rejoin screen with
 ``rejoin-stack.sh`` command and switch to ``sahara`` tab. Here you can manage
-sahara service as other OpenStack services. Sahara source code is located at
-``$DEST/sahara`` which is usually ``/opt/stack/sahara``.
+the Sahara service as other OpenStack services. Sahara source code is located
+at ``$DEST/sahara`` which is usually ``/opt/stack/sahara``.
 
-Setup Local Environment with external OpenStack
------------------------------------------------
+Setup a Local Environment with an external OpenStack
+----------------------------------------------------
 
 1. Install prerequisites
 

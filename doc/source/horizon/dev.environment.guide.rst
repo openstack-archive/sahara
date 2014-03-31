@@ -1,32 +1,38 @@
 Sahara UI Dev Environment Setup
 ===============================
 
+This page describes how to setup the Sahara dashboard UI component by either
+installing it as part of DevStack or installing it in an isolated environment
+and running from the command line.
+
 Install as a part of DevStack
 -----------------------------
 
-The easiest way to have local Sahara UI environment with DevStack is to
-include Sahara component in DevStack.
+The easiest way to have a local Sahara UI environment with DevStack is to
+include the Sahara-Dashboard component in DevStack. This can be accomplished
+by modifying your DevStack ``local.conf`` file to enable ``sahara-dashboard``.
+See the `DevStack documentation <http://devstack.org>`_ for more information
+on installing and configuring DevStack.
 
-.. toctree::
-    :maxdepth: 1
+If you are developing Sahara from an OSX environment you will need to run
+DevStack on a virtual machine. See
+`Setup VM for DevStack on OSX <../devref/devstack.html>`_ for more
+information.
 
-    ../devref/devstack
-
-After Sahara installation as a part of DevStack Horizon will contain Sahara
-tab. Sahara dashboard source code will be located at
-``$DEST/sahara_dashboard`` which is usually ``/opt/stack/sahara_dashboard``.
-
+After Sahara-Dashboard installation as a part of DevStack, Horizon will contain
+a Sahara tab. Sahara-Dashboard source code will be located at
+``$DEST/sahara-dashboard`` which is usually ``/opt/stack/sahara-dashboard``.
 
 Isolated Dashboard for Sahara
 -----------------------------
 
-These installation steps suite for two purposes:
- * to setup dev environment
- * to setup isolated Dashboard for Sahara
+These installation steps serve two purposes:
+ 1. Setup a dev environment
+ 2. Setup an isolated Dashboard for Sahara
 
-Note that the host where you're going to perform installation has to be
-able to connected to all OpenStack endpoints. You can list all available
-endpoints using the following command:
+**Note** The host where you are going to perform installation has to be able
+to connect to all OpenStack endpoints. You can list all available endpoints
+using the following command:
 
 .. sourcecode:: console
 
@@ -34,125 +40,140 @@ endpoints using the following command:
 
 1. Install prerequisites
 
-.. sourcecode:: console
+  .. sourcecode:: console
 
-    $ sudo apt-get update
-    $ sudo apt-get install git-core python-dev gcc python-setuptools python-virtualenv node-less libssl-dev libffi-dev
+      $ sudo apt-get update
+      $ sudo apt-get install git-core python-dev gcc python-setuptools python-virtualenv node-less libssl-dev libffi-dev
+  ..
 
-On Ubuntu 12.10 and higher you have to install the following lib as well:
+  On Ubuntu 12.10 and higher you have to install the following lib as well:
 
-.. sourcecode:: console
+  .. sourcecode:: console
 
-    $ sudo apt-get install nodejs-legacy
+      $ sudo apt-get install nodejs-legacy
+  ..
 
-2. Checkout Horizon from git and switch to your version of OpenStack (stable/grizzly or stable/folsom).
-Here is an example for grizzly:
+2. Checkout Horizon from git and switch to your version of OpenStack
 
-.. sourcecode:: console
+  Here is an example for the Icehouse release:
 
-    $ git clone https://github.com/openstack/horizon -b stable/grizzly
-..
+  .. sourcecode:: console
 
-    Then install virtual environment:
+      $ git clone https://github.com/openstack/horizon -b stable/icehouse
+  ..
 
-.. sourcecode:: console
+  Then install the virtual environment:
 
-    $ python tools/install_venv.py
+  .. sourcecode:: console
 
-3. Create ``local_settings.py`` file:
+      $ python tools/install_venv.py
+  ..
 
-.. sourcecode:: console
+3. Create a ``local_settings.py`` file
 
-    $ cp openstack_dashboard/local/local_settings.py.example openstack_dashboard/local/local_settings.py
+  .. sourcecode:: console
 
-4. Open file ``openstack_dashboard/local/local_settings.py`` and uncomment strings:
+      $ cp openstack_dashboard/local/local_settings.py.example openstack_dashboard/local/local_settings.py
+  ..
 
-.. sourcecode:: python
+4. Modify ``openstack_dashboard/local/local_settings.py``
 
-   from horizon.utils import secret_key
-   SECRET_KEY = secret_key.generate_or_read_....
+  Set the proper values for host and url variables:
 
-and set right value for variables:
+  .. sourcecode:: python
 
-.. sourcecode:: python
+     OPENSTACK_HOST = "ip of your controller"
+     SAHARA_URL = "url for sahara (e.g. "http://localhost:8386/v1.1")"
+  ..
 
-   OPENSTACK_HOST = "ip of your controller"
-   SAHARA_URL = "url for sahara (e.g. "http://localhost:8386/v1.1")"
+  If you are using Neutron instead of Nova Network:
 
-If you are using Neutron instead of Nova Network:
+  .. sourcecode:: python
 
-.. sourcecode:: python
+     SAHARA_USE_NEUTRON = True
+  ..
 
-   SAHARA_USE_NEUTRON = True
+  If you are not using nova-network with auto_assign_floating_ip=True, also set:
 
-If you are not using nova-network with auto_assign_floating_ip=True, also set:
+  .. sourcecode:: python
 
-.. sourcecode:: python
-
-   AUTO_ASSIGNMENT_ENABLED = False
-..
+     AUTO_ASSIGNMENT_ENABLED = False
+  ..
 
 5. Clone sahara-dashboard sources from ``https://github.com/openstack/sahara-dashboard.git``
 
-.. sourcecode:: console
+  .. sourcecode:: console
 
-    $ git clone https://github.com/openstack/sahara-dashboard.git
+      $ git clone https://github.com/openstack/sahara-dashboard.git
+  ..
 
-6. Export SAHARA_DASHBOARD_HOME environment variable with path to sahara-dashboard folder. E.g.:
+6. Export SAHARA_DASHBOARD_HOME environment variable with a path to
+   sahara-dashboard folder
 
-.. sourcecode:: console
+  .. sourcecode:: console
 
-    $ export SAHARA_DASHBOARD_HOME=$(pwd)/sahara-dashboard
+      $ export SAHARA_DASHBOARD_HOME=$(pwd)/sahara-dashboard
+  ..
 
-7. Install sahara-dashboard module to horizon's venv. Go to horizon folder and execute:
+7. Install sahara-dashboard module to Horizon's venv
 
-.. sourcecode:: console
+  Go to the horizon folder from step 2 and execute
 
-    $ .venv/bin/pip install $SAHARA_DASHBOARD_HOME
+  .. sourcecode:: console
+
+      $ .venv/bin/pip install $SAHARA_DASHBOARD_HOME
+  ..
 
 8. Create a symlink to sahara-dashboard source
 
-.. sourcecode:: console
+  .. sourcecode:: console
 
-   $ ln -s $SAHARA_DASHBOARD_HOME/saharadashboard .venv/lib/python2.7/site-packages/saharadashboard
+     $ ln -s $SAHARA_DASHBOARD_HOME/saharadashboard .venv/lib/python2.7/site-packages/saharadashboard
+  ..
 
-9. In ``openstack_dashboard/settings.py`` add sahara to
+9. Modify ``openstack_dashboard/settings.py``
 
-.. sourcecode:: python
+  Add sahara to to the Horizon config:
 
-    HORIZON_CONFIG = {
-        'dashboards': ('nova', 'syspanel', 'settings', 'sahara'),
+  .. sourcecode:: python
 
-and add saharadashboard to
+      HORIZON_CONFIG = {
+          'dashboards': ('nova', 'syspanel', 'settings', 'sahara'),
+  ..
 
-.. sourcecode:: python
+  and add saharadashboard to the installed apps:
 
-    INSTALLED_APPS = (
-        'saharadashboard',
-        ....
+  .. sourcecode:: python
 
-10. Start horizon
+      INSTALLED_APPS = (
+          'saharadashboard',
+          ....
+  ..
 
-.. sourcecode:: console
+10. Start Horizon
 
-    $ tools/with_venv.sh python manage.py runserver 0.0.0.0:8080
+  .. sourcecode:: console
 
-This will start horizon in debug mode. That means the logs will be written to console,
-and if any exceptions happen, you will see the stack-trace rendered as a web-page.
+      $ tools/with_venv.sh python manage.py runserver 0.0.0.0:8080
+  ..
 
-The debug could be disabled by changing ``DEBUG=True`` to ``False`` in
-``local_settings.py``. In that case Horizon should be started slightly
-differently, otherwise it will not serve static files:
+  This will start Horizon in debug mode. That means the logs will be written to console
+  and if any exceptions happen, you will see the stack-trace rendered as a web-page.
 
-.. sourcecode:: console
+  Debug mode can be disabled by changing ``DEBUG=True`` to ``False`` in
+  ``local_settings.py``. In that case Horizon should be started slightly
+  differently, otherwise it will not serve static files:
 
-    $ tools/with_venv.sh  python manage.py runserver --insecure 0.0.0.0:8080
+  .. sourcecode:: console
 
-It is not recommended to use horizon in this mode for production.
+      $ tools/with_venv.sh  python manage.py runserver --insecure 0.0.0.0:8080
+  ..
+
+  **Note** It is not recommended to use Horizon in this mode for production.
 
 11. Applying changes
 
-If you have changed any ``*.py`` files in ``$SAHARA_DASHBOARD_HOME`` directory,
-horizon will notice that and reload automatically.
-However changes made to non-python files may not be noticed,
-so you have to restart horizon again manually, as described in step 10.
+  If you have changed any ``*.py`` files in ``$SAHARA_DASHBOARD_HOME`` directory,
+  Horizon will notice that and reload automatically. However changes made to
+  non-python files may not be noticed, so you have to restart Horizon again
+  manually, as described in step 10.
