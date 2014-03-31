@@ -468,14 +468,13 @@ IDH2_CONFIG_OPTS = [
 
     cfg.StrOpt(
         'IDH_TARBALL_URL',
-        default='http://repo1.intelhadoop.com:3424/setup/'
+        default='http://repo2.intelhadoop.com/setup/'
                 'setup-intelhadoop-2.5.1-en-evaluation.RHEL.tar.gz'
     ),
 
     cfg.StrOpt(
         'IDH_REPO_URL',
-        default='http://repo1.intelhadoop.com:3424/evaluation/'
-                'en/RHEL/2.5.1/rpm'
+        default='http://repo2.intelhadoop.com/evaluation/en/RHEL/2.5.1/rpm'
     ),
 
     cfg.StrOpt(
