@@ -72,10 +72,6 @@ This operation does not require a request body.
                     "tenant_id": "11587919cc534bcbb1027a161c82cf58",
                     "created_at": "2013-10-09 12:37:19.295701",
                     "updated_at": null,
-                    "credentials": {
-                        "password": "swordfish",
-                        "user": "admin"
-                    },
                     "type": "swift",
                     "id": "151d0c0c-464f-4724-96a6-4732d0ca62e1",
                     "name": "input"
@@ -86,10 +82,6 @@ This operation does not require a request body.
                     "tenant_id": "11587919cc534bcbb1027a161c82cf58",
                     "created_at": "2013-10-09 12:37:58.155911",
                     "updated_at": null,
-                    "credentials": {
-                        "password": "swordfish",
-                        "user": "admin"
-                    },
                     "type": "swift",
                     "id": "577e8bd8-b105-46f0-ace7-baee61e0adda",
                     "name": "output"
@@ -100,7 +92,6 @@ This operation does not require a request body.
                     "tenant_id": "11587919cc534bcbb1027a161c82cf58",
                     "created_at": "2014-01-23 12:37:24.720387",
                     "updated_at": null,
-                    "credentials": {},
                     "type": "hdfs",
                     "id": "63e3d1e6-52d0-4d27-ab8a-f8e236ded200",
                     "name": "hdfs_input"
@@ -144,10 +135,6 @@ This operation does not require a request body.
                 "tenant_id": "11587919cc534bcbb1027a161c82cf58",
                 "created_at": "2013-10-09 12:37:19.295701",
                 "updated_at": null,
-                "credentials": {
-                    "password": "swordfish",
-                    "user": "admin"
-                },
                 "type": "swift",
                 "id": "151d0c0c-464f-4724-96a6-4732d0ca62e1",
                 "name": "input"
@@ -200,10 +187,6 @@ This operation returns the created Data Source.
                 "url": "swift://container.sahara/text",
                 "tenant_id": "11587919cc534bcbb1027a161c82cf58",
                 "created_at": "2013-10-15 11:15:25.971886",
-                "credentials": {
-                    "password": "swordfish",
-                    "user": "admin"
-                },
                 "type": "swift",
                 "id": "af7dc864-6331-4c30-80f5-63d74b667eaf",
                 "name": "text"
@@ -244,7 +227,6 @@ This operation returns the created Data Source.
                 "url": "hdfs://test-master-node:8020/user/hadoop/input",
                 "tenant_id": "e262c255a7de4a0ab0434bafd75660cd",
                 "created_at": "2014-01-23 12:37:24.720387",
-                "credentials": {},
                 "type": "hdfs",
                 "id": "63e3d1e6-52d0-4d27-ab8a-f8e236ded200",
                 "name": "hdfs_input"
@@ -501,7 +483,7 @@ This operation does not require a request body.
 
 **Description**
 
-Job Binaries objects are designed to create links to certain binaries stored either in Sahara internal db or in Swift.
+Job Binaries objects are designed to create links to certain binaries stored either in the Sahara internal database or in Swift.
 
 **Job Binaries ops**
 
@@ -554,7 +536,6 @@ This operation does not require a request body.
             "binaries": [
                 {
                     "description": "",
-                    "extra": {},
                     "url": "internal-db://d2498cbf-4589-484a-a814-81436c18beb3",
                     "tenant_id": "11587919cc534bcbb1027a161c82cf58",
                     "created_at": "2013-10-15 12:36:59.375060",
@@ -564,7 +545,6 @@ This operation does not require a request body.
                 },
                 {
                     "description": "",
-                    "extra": {},
                     "url": "internal-db://22f1d87a-23c8-483e-a0dd-cb4a16dde5f9",
                     "tenant_id": "11587919cc534bcbb1027a161c82cf58",
                     "created_at": "2013-10-15 12:43:52.265899",
@@ -574,10 +554,6 @@ This operation does not require a request body.
                 },
                 {
                     "description": "",
-                    "extra": {
-                        "password": "swordfish",
-                        "user": "admin"
-                    },
                     "url": "swift://container/jar-example.jar",
                     "tenant_id": "11587919cc534bcbb1027a161c82cf58",
                     "created_at": "2013-10-15 14:25:04.970513",
@@ -620,10 +596,6 @@ This operation does not require a request body.
         {
             "job_binary": {
                 "description": "",
-                "extra": {
-                    "password": "swordfish",
-                    "user": "admin"
-                },
                 "url": "swift://container/jar-example.jar",
                 "tenant_id": "11587919cc534bcbb1027a161c82cf58",
                 "created_at": "2013-10-15 14:25:04.970513",
@@ -675,10 +647,6 @@ This operation shows information about the created Job Binary.
         {
             "job_binary": {
                 "description": "This is job binary",
-                "extra": {
-                    "password": "swordfish",
-                    "user": "admin"
-                },
                 "url": "swift://container/jar-example.jar",
                 "tenant_id": "11587919cc534bcbb1027a161c82cf58",
                 "created_at": "2013-10-15 14:49:20.106452",
@@ -814,7 +782,6 @@ This operation does not require a request body.
                     "mains": [
                         {
                             "description": "",
-                            "extra": {},
                             "url": "internal-db://d2498cbf-4589-484a-a814-81436c18beb3",
                             "tenant_id": "11587919cc534bcbb1027a161c82cf58",
                             "created_at": "2013-10-15 12:36:59.375060",
@@ -827,7 +794,6 @@ This operation does not require a request body.
                     "libs": [
                         {
                             "description": "",
-                            "extra": {},
                             "url": "internal-db://22f1d87a-23c8-483e-a0dd-cb4a16dde5f9",
                             "tenant_id": "11587919cc534bcbb1027a161c82cf58",
                             "created_at": "2013-10-15 12:43:52.265899",
@@ -849,10 +815,6 @@ This operation does not require a request body.
                     "libs": [
                         {
                             "description": "This is job binary",
-                            "extra": {
-                                "password": "swordfish",
-                                "user": "admin"
-                            },
                             "url": "swift://container/jar-example.jar",
                             "tenant_id": "11587919cc534bcbb1027a161c82cf58",
                             "created_at": "2013-10-15 16:03:37.979630",
@@ -907,10 +869,6 @@ This operation does not require a request body.
                 "libs": [
                     {
                         "description": "This is job binary",
-                        "extra": {
-                            "password": "swordfish",
-                            "user": "admin"
-                        },
                         "url": "swift://container/jar-example.jar",
                         "tenant_id": "11587919cc534bcbb1027a161c82cf58",
                         "created_at": "2013-10-15 16:03:37.979630",
@@ -970,7 +928,6 @@ This operation shows information about the created Job object.
                 "mains": [
                     {
                         "description": "",
-                        "extra": {},
                         "url": "internal-db://d2498cbf-4589-484a-a814-81436c18beb3",
                         "tenant_id": "11587919cc534bcbb1027a161c82cf58",
                         "created_at": "2013-10-15 12:36:59.375060",
@@ -982,7 +939,6 @@ This operation shows information about the created Job object.
                 "libs": [
                     {
                         "description": "",
-                        "extra": {},
                         "url": "internal-db://22f1d87a-23c8-483e-a0dd-cb4a16dde5f9",
                         "tenant_id": "11587919cc534bcbb1027a161c82cf58",
                         "created_at": "2013-10-15 12:43:52.265899",
@@ -1047,7 +1003,7 @@ This REST call is used just for hints and doesn't force the user to apply any of
 
     .. sourcecode:: http
 
-        GET http://sahara/v1.1/11587919cc534bcbb1027a161c82cf58/jobs/config-hints/Jar
+        GET http://sahara/v1.1/11587919cc534bcbb1027a161c82cf58/jobs/config-hints/MapReduce
 
     **response**
 
@@ -1263,9 +1219,9 @@ This operation returns the created Job Execution object. Note that different job
 
 **Description**
 
-Job Execution object represents a Hadoop Job executing on specified cluster.
-Job Execution polls status of running Job from Oozie service and reports it to user.
-Also user has the ability to cancel the running job.
+A Job Execution object represents a Hadoop Job executing on specified cluster.
+A Job Execution polls the status of a running Job and reports it to the user.
+Also a user has the ability to cancel a running job.
 
 **Job Executions ops**
 
@@ -1458,7 +1414,7 @@ Normal Response Code: 200 (OK)
 
 Errors: none
 
-This operation refreshes status of specified Job Execution and shows its information.
+This operation refreshes the status of the specified Job Execution and shows its information.
 
 This operation does not require a request body.
 
@@ -1518,7 +1474,7 @@ Normal Response Code: 204 (NO CONTENT)
 
 Errors: none
 
-Remove existing Job Execution.
+Remove an existing Job Execution.
 
 This operation returns nothing.
 
@@ -1543,7 +1499,7 @@ This operation does not require a request body.
 Job Execution object
 ====================
 
-The following json response represents Job Execution object returned from Sahara
+The following json response represents a Job Execution object returned from Sahara
 
 .. sourcecode:: json
 
