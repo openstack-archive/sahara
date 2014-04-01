@@ -15,12 +15,11 @@ This section contains base info about the Sahara REST API design.
 
 The Sahara API uses the Keystone Identity Service as the default authentication service.
 When Keystone is enabled, users who submit requests to the Sahara service must provide an authentication token
-in X-Auth-Token request header. User could obtain the token by authenticating to the Keystone endpoint.
+in the X-Auth-Token request header. A user can obtain the token by authenticating to the Keystone endpoint.
 For more information about Keystone, see the OpenStack Identity Developer Guide.
 
-Also with each request user must specify OpenStack tenant in url path like that: '/v1.0/{tenant_id}/clusters'.
-Sahara will perform the requested operation in that tenant using provided credentials. Therefore, user will be able
-to create and manage clusters only within tenants he have access to.
+Also with each request a user must specify the OpenStack tenant in the url path, for example: '/v1.0/{tenant_id}/clusters'.
+Sahara will perform the requested operation in the specified tenant using the provided credentials. Therefore, clusters may be created and managed only within tenants to which the user has access.
 
 1.2 Request / Response Types
 ----------------------------
@@ -28,8 +27,8 @@ to create and manage clusters only within tenants he have access to.
 The Sahara API supports the JSON data serialization format.
 This means that for requests that contain a body, the Content-Type header must be set to the MIME type value
 "application/json". Also, clients should accept JSON serialized responses by specifying the Accept header
-with the MIME type value "application/json" or adding ".json" extension to the resource name.
-The default response format is "application/json" if the client omits to specify an Accept header
+with the MIME type value "application/json" or adding the ".json" extension to the resource name.
+The default response format is "application/json" if the client does not specify an Accept header
 or append the ".json" extension in the URL path.
 
 Example:
@@ -68,16 +67,16 @@ An error response follows the format illustrated by the following example:
     }
 
 
-The 'error_code' attribute equals to HTTP response code. The 'error_name' attribute
-indicates generic error type without any concrete ids or names, etc.
-And the last attribute is 'error_message' that contains human readable error description.
+The 'error_code' attribute is an HTTP response code. The 'error_name' attribute
+indicates the generic error type without any concrete ids or names, etc.
+The last attribute, 'error_message', contains a human readable error description.
 
 2 Plugins
 =========
 
 **Description**
 
-Plugin object provides information about what Hadoop distribution/version it can install, and what configurations can be set for the cluster.
+A Plugin object provides information about what Hadoop distribution/version it can install, and what configurations can be set for the cluster.
 
 **Plugins ops**
 
@@ -340,10 +339,10 @@ The request body should contain configuration file.
 
 **Description**
 
-Image Registry is a tool for managing images. Each plugin provides a list of required tags an image should have.
-Sahara also requires username to login into instance's OS for remote operations execution.
+The Image Registry is a tool for managing images. Each plugin provides a list of required tags an image should have.
+Sahara also requires a username to login into an instance's OS for remote operations execution.
 
-Image Registry provides an ability to add/remove tags to images and define OS username.
+The Image Registry provides an ability to add/remove tags to images and define the OS username.
 
 **Image Registry ops**
 
@@ -482,7 +481,7 @@ Normal Response Code: 200 (OK)
 
 Errors: none
 
-This operation show information about requested Image.
+This operation shows information about the requested Image.
 
 This operation does not require a request body.
 
@@ -533,7 +532,7 @@ Normal Response Code: 202 (ACCEPTED)
 
 Errors: none
 
-This operation returns registered image.
+This operation returns the registered image.
 
 **Example**:
     **request**
@@ -584,7 +583,7 @@ Normal Response Code: 204 (NO CONTENT)
 
 Errors: none
 
-Remove Image from Image Registry
+Remove an Image from the Image Registry
 
 This operation returns nothing.
 
@@ -613,7 +612,7 @@ Normal Response Code: 202 (ACCEPTED)
 
 Errors: none
 
-This operation returns updated image.
+This operation returns the updated image.
 
 Add Tags to Image.
 
@@ -667,9 +666,9 @@ Normal Response Code: 202 (ACCEPTED)
 
 Errors: none
 
-This operation returns updated image.
+This operation returns the updated image.
 
-Removes Tags form Image.
+Removes Tags from Image.
 
 **Example**:
     **request**
@@ -716,8 +715,8 @@ Removes Tags form Image.
 
 **Description**
 
-Node Group Template is a template for configuring a group of nodes.
-A Node Group Template contains a list of processes, that will be launched on each node.
+A Node Group Template is a template for configuring a group of nodes.
+A Node Group Template contains a list of processes that will be launched on each node.
 Also node scoped configurations can be defined in a Node Group Template.
 
 **Node Group Templates ops**
@@ -1019,7 +1018,7 @@ This operation does not require a request body.
 
 **Description**
 
-Cluster Template is a template for configuring a Hadoop cluster.
+A Cluster Template is a template for configuring a Hadoop cluster.
 A Cluster Template contains a list of node groups with number of instances in each.
 Also cluster scoped configurations can be defined in a Cluster Template.
 
@@ -1405,7 +1404,7 @@ Normal Response Code: 204 (NO CONTENT)
 
 Errors: none
 
-Remove Node Group Template
+Remove Cluster Template
 
 This operation returns nothing.
 
@@ -1430,10 +1429,10 @@ This operation does not require a request body.
 
 **Description**
 
-Cluster object represents a Hadoop cluster.
-A Cluster like a Cluster Template contains a list of node groups with number of instances in each.
+A Cluster object represents a Hadoop cluster.
+A Cluster like a Cluster Template contains a list of node groups with the number of instances in each.
 Also cluster scoped configurations can be defined in a Cluster Object.
-User should provide an OpenStack keypair to get access to cluster nodes via SSH.
+Users should provide an OpenStack keypair to get access to cluster nodes via SSH.
 
 **Cluster ops**
 
