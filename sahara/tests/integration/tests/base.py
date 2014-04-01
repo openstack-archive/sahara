@@ -310,20 +310,16 @@ class ITestCase(testtools.TestCase, testtools.testcase.WithAttributes,
         for i in range(self.common_config.HDFS_INITIALIZATION_TIMEOUT * 6):
             time.sleep(10)
             active_tasktracker_count = self.execute_command(
-                'sudo -u %s bash -lc "hadoop job -list-active-trackers"'
+                'sudo -u %s bash -lc "hadoop job -list-active-trackers" '
+                '| grep "^tracker_" | wc -l'
                 % plugin_config.HADOOP_USER)[1]
+            active_tasktracker_count = int(active_tasktracker_count)
             active_datanode_count = int(
                 self.execute_command(
                     'sudo -u %s bash -lc "hadoop dfsadmin -report" \
                     | grep "Datanodes available:.*" | awk \'{print $3}\''
-                    % plugin_config.HADOOP_USER)[1]
-            )
-            if not active_tasktracker_count:
-                active_tasktracker_count = 0
+                    % plugin_config.HADOOP_USER)[1])
 
-            else:
-                active_tasktracker_count = len(
-                    active_tasktracker_count[:-1].split('\n'))
             if (
                     active_tasktracker_count == node_info['tasktracker_count']
             ) and (
