@@ -71,8 +71,7 @@ class HDPGatingTest(cinder.CinderVolumeTest, edp.EDPTest,
                 description='test node group template for HDP plugin',
                 volumes_per_node=volumes_per_node,
                 volume_size=volume_size,
-                node_processes=['TASKTRACKER', 'DATANODE', 'HDFS_CLIENT',
-                                'MAPREDUCE_CLIENT', 'OOZIE_CLIENT', 'PIG'],
+                node_processes=self.hdp_config.WORKER_NODE_PROCESSES,
                 node_configs={},
                 floating_ip_pool=floating_ip_pool
             )
@@ -96,10 +95,7 @@ class HDPGatingTest(cinder.CinderVolumeTest, edp.EDPTest,
                     dict(
                         name='master-node-jt-nn',
                         flavor_id=self.flavor_id,
-                        node_processes=[
-                            'JOBTRACKER', 'NAMENODE', 'SECONDARY_NAMENODE',
-                            'GANGLIA_SERVER', 'NAGIOS_SERVER',
-                            'AMBARI_SERVER', 'OOZIE_SERVER'],
+                        node_processes=self.hdp_config.MASTER_NODE_PROCESSES,
                         node_configs={},
                         floating_ip_pool=floating_ip_pool,
                         count=1),
