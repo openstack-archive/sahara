@@ -38,7 +38,7 @@ XML_CONFS = {
 }
 
 IDH_TARBALL_URL = p.Config('IDH tarball URL', 'general', 'cluster', priority=1,
-                           default_value='http://repo1.intelhadoop.com:3424/'
+                           default_value='http://repo2.intelhadoop.com/'
                                          'setup/setup-intelhadoop-'
                                          '3.0.2-en-evaluation.RHEL.tar.gz')
 
@@ -49,7 +49,7 @@ OS_REPO_URL = p.Config('OS repository URL', 'general', 'cluster', priority=1,
 
 IDH_REPO_URL = p.Config('IDH repository URL', 'general', 'cluster',
                         priority=1, is_optional=True,
-                        default_value='http://repo1.intelhadoop.com:3424'
+                        default_value='http://repo2.intelhadoop.com'
                                       '/evaluation/en/RHEL/3.0.2/rpm')
 
 OOZIE_EXT22_URL = p.Config(
