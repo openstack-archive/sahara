@@ -106,7 +106,10 @@ Data Sources are where the input and output from your jobs are housed.
 
 2) Give your Data Source a name.
 
-3) Enter the URL to the Data Source.  For a Swift object, the url will look like <container>.sahara/<path>.  The "swift://" is automatically added for you.
+3) Enter the URL to the Data Source.
+
+  - For a Swift object, the url will look like <container>.sahara/<path> (ie: mycontainer.sahara/inputfile).  The "swift://" is automatically added for you.
+  - For an HDFS object, the url will look like <host>/<path> (ie: myhost/user/hadoop/inputfile).  The "hdfs://" is automatically added for you.
 
 4) Enter the username and password for the Data Source.
 
@@ -126,8 +129,8 @@ Job Binaries are where you define/upload the source code (mains and libraries) f
 
 3) Choose the type of storage for your Job Binary.
 
-  - For "Swift Internal", you will need to enter the URL of your binary (<container>.sahara/<path>) as well as the username and password.
-  - For "Sahara internal database", you can choose from a pre-existing "job binary internal", "Create a script" or "Upload a new file".
+  - For "Swift", you will need to enter the URL of your binary (<container>.sahara/<path>) as well as the username and password.
+  - For "Internal database", you can choose from "Create a script" or "Upload a new file".
 
 4) Enter an optional description.
 
@@ -143,9 +146,9 @@ Jobs are where you define the type of job you'd like to run as well as which "Jo
 
 2) Give your Job a name.
 
-3) Choose the type of job you'd like to run (Pig, Hive, Jar)
+3) Choose the type of job you'd like to run (Pig, Hive, MapReduce, Streaming MapReduce, Java Action)
 
-4) Choose the main binary from the dropdown.
+4) Choose the main binary from the dropdown (not applicable for MapReduce or Java Action).
 
 5) Enter an optional description for your Job.
 
@@ -169,6 +172,11 @@ Job Executions are what you get by "Launching" a job.  You can monitor the statu
   - An example configuration entry might be mapred.mapper.class for the Name and org.apache.oozie.example.SampleMapper for the Value.
 
 5) Click on "Launch".  To monitor the status of your job, you can navigate to the Sahara/Job Executions panel.
+
+6) You can relaunch a Job Execution from the Job Executions page by using the "Relaunch on New Cluster" or "Relaunch on Existing Cluster" links.
+
+  - Relaunch on New Cluster will take you through the forms to start a new cluster before letting you specify input/output Data Sources and job configuration.
+  - Relaunch on Existing Cluster will prompt you for input/output Data Sources as well as allow you to change job configuration before launching the job.
 
 Additional Notes
 ----------------
