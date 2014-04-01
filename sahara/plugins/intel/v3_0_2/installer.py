@@ -379,6 +379,16 @@ def scale_cluster(cluster, instances):
     if to_scale_dn:
         client.services.hdfs.add_nodes('DataNode', to_scale_dn)
 
+    # IDH 3.0.2 reset cluster parameters (bug #1300603)
+    # Restoring them back
+    LOG.info("Provisioning configs")
+    # cinder and ephemeral drive support
+    _configure_storage(client, cluster)
+    # swift support
+    _configure_swift(client, cluster)
+    # user configs
+    _add_user_params(client, cluster)
+
     client.nodes.config()
 
     if to_scale_dn:
