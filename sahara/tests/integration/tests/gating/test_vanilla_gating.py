@@ -14,7 +14,6 @@
 # limitations under the License.
 
 from testtools import testcase
-import unittest2
 
 from sahara.openstack.common import excutils
 from sahara.tests.integration.configs import config as cfg
@@ -41,8 +40,8 @@ class VanillaGatingTest(cinder.CinderVolumeTest,
     SKIP_SCALING_TEST = config.SKIP_SCALING_TEST
     SKIP_TRANSIENT_CLUSTER_TEST = config.SKIP_TRANSIENT_CLUSTER_TEST
 
-    @unittest2.skipIf(config.SKIP_ALL_TESTS_FOR_PLUGIN,
-                      'All tests for Vanilla plugin were skipped')
+    @testcase.skipIf(config.SKIP_ALL_TESTS_FOR_PLUGIN,
+                     'All tests for Vanilla plugin were skipped')
     @testcase.attr('vanilla1', 'transient')
     def test_vanilla_plugin_gating(self):
         self.vanilla_config.IMAGE_ID, self.vanilla_config.SSH_USERNAME = (

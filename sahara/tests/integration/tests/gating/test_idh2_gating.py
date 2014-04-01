@@ -14,7 +14,6 @@
 # limitations under the License.
 
 from testtools import testcase
-import unittest2
 
 from sahara.tests.integration.configs import config as cfg
 from sahara.tests.integration.tests import base as b
@@ -36,7 +35,11 @@ class IDH2GatingTest(cluster_configs.ClusterConfigTest, edp.EDPTest,
 
     def setUp(self):
         super(IDH2GatingTest, self).setUp()
+        self.cluster_id = None
+        self.cluster_template_id = None
+        self.ng_template_ids = []
 
+    def _prepare_test(self):
         self.floating_ip_pool = self.common_config.FLOATING_IP_POOL
         self.internal_neutron_net = None
         if self.common_config.NEUTRON_ENABLED:
@@ -44,9 +47,6 @@ class IDH2GatingTest(cluster_configs.ClusterConfigTest, edp.EDPTest,
             self.floating_ip_pool = \
                 self.get_floating_ip_pool_id_for_neutron_net()
 
-        self.cluster_id = None
-        self.cluster_template_id = None
-        self.ng_template_ids = []
         self.idh2_config.IMAGE_ID, self.idh2_config.SSH_USERNAME = (
             self.get_image_id_and_ssh_username(self.idh2_config))
 
@@ -216,10 +216,12 @@ class IDH2GatingTest(cluster_configs.ClusterConfigTest, edp.EDPTest,
         if not self.idh2_config.SKIP_SCALING_TEST:
             self.check_swift_availability(self.cluster_info)
 
-    @unittest2.skipIf(cfg.ITConfig().idh2_config.SKIP_ALL_TESTS_FOR_PLUGIN,
-                      "All tests for Intel plugin were skipped")
+    @testcase.skipIf(cfg.ITConfig().idh2_config.SKIP_ALL_TESTS_FOR_PLUGIN,
+                     "All tests for Intel plugin were skipped")
     @testcase.attr('idh2')
     def test_idh_plugin_gating(self):
+        self._prepare_test()
+
         self._create_tt_dn_ng_template()
         self._create_tt_ng_template()
         self._create_dn_ng_template()
