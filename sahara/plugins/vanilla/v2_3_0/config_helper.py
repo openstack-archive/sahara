@@ -13,11 +13,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from oslo.config import cfg
+
 from sahara import exceptions as ex
 from sahara.openstack.common import log as logging
 from sahara.plugins import provisioning as p
 from sahara.utils import types as types
 from sahara.utils import xmlutils as x
+
+CONF = cfg.CONF
+CONF.import_opt("enable_data_locality", "sahara.topology.topology_helper")
 
 LOG = logging.getLogger(__name__)
 
@@ -68,6 +73,10 @@ ENABLE_SWIFT = p.Config('Enable Swift', 'general', 'cluster',
 ENABLE_MYSQL = p.Config('Enable MySQL', 'general', 'cluster',
                         config_type="bool", priority=1,
                         default_value=True, is_optional=True)
+
+ENABLE_DATA_LOCALITY = p.Config('Enable Data Locality', 'general', 'cluster',
+                                config_type="bool", priority=1,
+                                default_value=True, is_optional=True)
 
 HIDDEN_CONFS = [
     'dfs.hosts',
@@ -170,7 +179,10 @@ def _init_env_configs():
 
 
 def _init_general_configs():
-    return [ENABLE_SWIFT, ENABLE_MYSQL]
+    configs = [ENABLE_SWIFT, ENABLE_MYSQL]
+    if CONF.enable_data_locality:
+        configs.append(ENABLE_DATA_LOCALITY)
+    return configs
 
 
 # Initialise plugin Hadoop configurations
@@ -220,3 +232,10 @@ def get_config_value(service, name, cluster=None):
 def is_mysql_enabled(cluster):
     return get_config_value(
         ENABLE_MYSQL.applicable_target, ENABLE_MYSQL.name, cluster)
+
+
+def is_data_locality_enabled(cluster):
+    if not CONF.enable_data_locality:
+        return False
+    return get_config_value(ENABLE_DATA_LOCALITY.applicable_target,
+                            ENABLE_DATA_LOCALITY.name, cluster)

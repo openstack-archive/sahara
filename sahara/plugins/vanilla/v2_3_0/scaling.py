@@ -29,6 +29,7 @@ def scale_cluster(cluster, instances):
     _update_include_files(cluster)
     run.refresh_hadoop_nodes(cluster)
     run.refresh_yarn_nodes(cluster)
+    config.configure_topology_data(cluster)
     for instance in instances:
         run.start_instance(instance)
 
@@ -72,6 +73,8 @@ def decommission_nodes(cluster, instances):
 
     _update_include_files(cluster)
     _clear_exclude_files(cluster)
+
+    config.configure_topology_data(cluster)
 
 
 def _update_exclude_files(cluster, instances):
