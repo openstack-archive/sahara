@@ -28,6 +28,7 @@ import datetime
 import six
 
 from sahara.conductor import objects
+from sahara.swift import swift_helper
 from sahara.utils import types
 
 
@@ -81,6 +82,7 @@ class Resource(types.FrozenDict):
     _resource_name = 'resource'
     _children = {}
     _filter_fields = []
+    _sanitize_fields = {}
 
     def __init__(self, dct):
         super(Resource, self).__setattr__('_initial_dict', dct)
@@ -147,7 +149,9 @@ class Resource(types.FrozenDict):
                 if refname in self._children:
                     childs_backref = self._children[refname][1]
                 dct[refname] = self._entity_to_dict(entity, childs_backref)
-
+                sanitize = self._sanitize_fields.get(refname)
+                if sanitize is not None:
+                    dct[refname] = sanitize(self, dct[refname])
         return dct
 
     def _entity_to_dict(self, entity, childs_backref):
@@ -213,8 +217,27 @@ class DataSource(Resource, objects.DataSource):
 
 
 class JobExecution(Resource, objects.JobExecution):
+
+    def sanitize_job_configs(self, job_configs):
+        if 'configs' in job_configs:
+            configs = job_configs['configs']
+            if swift_helper.HADOOP_SWIFT_USERNAME in configs:
+                configs[swift_helper.HADOOP_SWIFT_USERNAME] = ""
+            if swift_helper.HADOOP_SWIFT_PASSWORD in configs:
+                configs[swift_helper.HADOOP_SWIFT_PASSWORD] = ""
+        return job_configs
+
+    def sanitize_info(self, info):
+        if 'actions' in info:
+            for d in info['actions']:
+                if 'conf' in d:
+                    del d['conf']
+        return info
+
     _resource_name = "job_execution"
-    _filter_fields = ['extra', 'job_configs']
+    _filter_fields = ['extra']
+    _sanitize_fields = {'job_configs': sanitize_job_configs,
+                        'info': sanitize_info}
 
 
 class JobBinary(Resource, objects.JobBinary):
