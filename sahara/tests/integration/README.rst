@@ -22,9 +22,6 @@ In this case all tests will be launched except disabled tests.
 Tests can be disabled in the ``/sahara/tests/integration/configs/config.py``
 file or in the ``/sahara/tests/integration/configs/itest.conf``.
 
-**NOTE:** Both ``OS_TENANT_ID`` and ``OS_TENANT_NAME`` must be specified in the
-config file.
-
 If you want to run integration tests for one plugin, you should use the
 corresponding tox env:
 

@@ -9,9 +9,6 @@
 # Tenant name for OpenStack (string value)
 #OS_TENANT_NAME = 'admin'
 
-# Tenant ID for OpenStack (string value)
-#OS_TENANT_ID = <None>
-
 # URL for OpenStack (string value)
 #OS_AUTH_URL = 'http://127.0.0.1:5000/v2.0'
 
