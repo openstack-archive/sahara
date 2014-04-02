@@ -24,6 +24,20 @@ in the upstream project and then merged back in to Sahara.  This includes whites
 changes, comments, and typos. Any change requests containing upstream file modifications
 are almost certain to receive lots of negative reviews.  Be warned.
 
+Examples of upstream files are default xml configuration files used to configure Hadoop, or
+code imported from the OpenStack Oslo project. The xml files will usually be found in
+``resource`` directories with an accompanying ``README`` file that identifies where the
+files came from.  For example:
+
+.. sourcecode:: console
+
+  $ pwd
+  /home/me/sahara/sahara/plugins/vanilla/v2_3_0/resources
+
+  $ ls
+  core-default.xml     hdfs-default.xml    oozie-default.xml   README.rst
+  create_oozie_db.sql  mapred-default.xml  post_conf.template  yarn-default.xml
+..
 
 Testing Guidelines
 ------------------
