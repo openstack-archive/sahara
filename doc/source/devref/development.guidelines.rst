@@ -16,6 +16,14 @@ To check your code against PEP 8 run:
   For more details on coding guidelines see file ``HACKING.rst`` in the root
   of Sahara repo.
 
+Modification of Upstream Files
+------------------------------
+
+We never modify upstream files in Sahara. Any changes in upstream files should be made
+in the upstream project and then merged back in to Sahara.  This includes whitespace
+changes, comments, and typos. Any change requests containing upstream file modifications
+are almost certain to receive lots of negative reviews.  Be warned.
+
 
 Testing Guidelines
 ------------------
