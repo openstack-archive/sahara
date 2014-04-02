@@ -26,6 +26,8 @@ LOG = logging.getLogger(__name__)
 CONF = cfg.CONF
 HADOOP_SWIFT_AUTH_URL = 'fs.swift.service.sahara.auth.url'
 HADOOP_SWIFT_TENANT = 'fs.swift.service.sahara.tenant'
+HADOOP_SWIFT_USERNAME = 'fs.swift.service.sahara.username'
+HADOOP_SWIFT_PASSWORD = 'fs.swift.service.sahara.password'
 
 
 def _retrieve_tenant():
