@@ -1,8 +1,8 @@
 Sahara Installation Guide
-==========================
+=========================
 
-We recommend you install in a way that will can keep your system in a
-consistent state. Ways we recommend to install Sahara are:
+We recommend to install Sahara in a way that will keep your system in a
+consistent state. We suggest the following options:
 
 * Install via `Fuel <http://fuel.mirantis.com/>`_
 
@@ -15,10 +15,11 @@ consistent state. Ways we recommend to install Sahara are:
 To install with Fuel
 --------------------
 
-1. Start by following `Quickstart <http://software.mirantis.com/quick-start/>`_
-   to install and setup OpenStack
+1. Start by following the `Quickstart
+   <http://software.mirantis.com/quick-start/>`_ to install and setup
+   OpenStack.
 
-2. Enable Sahara service during installation
+2. Enable Sahara service during installation.
 
 
 
@@ -29,30 +30,39 @@ To install with RDO
    <http://openstack.redhat.com/Quickstart>`_ to install and setup
    OpenStack.
 
-2. Install the sahara-api service with,
+2. Install the sahara-api service:
 
 .. sourcecode:: console
 
-     $ yum install openstack-sahara
+    $ yum install openstack-sahara
 ..
 
 3. Configure the sahara-api service to your liking. The configuration
-   file is located in ``/etc/sahara/sahara.conf``.
+   file is located in ``/etc/sahara/sahara.conf``. For details see
+   :doc:`Sahara Configuration Guide <configuration.guide>`
 
-4. Start the sahara-api service with,
+4. Create database schema:
 
 .. sourcecode:: console
 
-     $ service openstack-sahara-api start
+    $ sahara-db-manage --config-file /etc/sahara/sahara.conf upgrade head
 ..
+
+5. Start the sahara-api service:
+
+.. sourcecode:: console
+
+    $ service openstack-sahara-api start
+..
+
 
 
 To install into a virtual environment
 -------------------------------------
 
-1. First you need to install `python-setuptools`, `python-virtualenv` and python headers using your
-   OS package manager. The python headers package name depends on OS. For Ubuntu it is `python-dev`,
-   for Red Hat - `python-devel`. So for Ubuntu run:
+1. First you need to install a number of packages with your
+   OS package manager. The list of packages depends on the OS you use.
+   For Ubuntu run:
 
 .. sourcecode:: console
 
@@ -74,7 +84,7 @@ To install into a virtual environment
     $ sudo easy_install pip
     $ sudo pip install virtualenv
 
-2. Setup virtual environment for sahara:
+2. Setup virtual environment for Sahara:
 
 .. sourcecode:: console
 
@@ -86,7 +96,7 @@ To install into a virtual environment
    user privileges and could be executed in any directory current user has
    write permission.
 
-3. You can install the latest sahara release version from pypi:
+3. You can install the latest Sahara release from pypi:
 
 .. sourcecode:: console
 
@@ -103,9 +113,8 @@ To install into a virtual environment
    Note that sahara-master.tar.gz contains the latest changes and might not be stable at the moment.
    We recommend browsing `<http://tarballs.openstack.org/sahara/>`_ and selecting the latest stable release.
 
-4. After installation you should create configuration file. Sample config file location
-   depends on your OS. For Ubuntu it is ``/usr/local/share/sahara/sahara.conf.sample-basic``,
-   for Red Hat - ``/usr/share/sahara/sahara.conf.sample-basic``. Below is an example for Ubuntu:
+4. After installation you should create configuration file from a sample
+   config located in ``sahara-venv/share/sahara/sahara.conf.sample-basic``:
 
 .. sourcecode:: console
 
@@ -113,38 +122,41 @@ To install into a virtual environment
     $ cp sahara-venv/share/sahara/sahara.conf.sample-basic sahara-venv/etc/sahara.conf
 ..
 
-    check each option in sahara-venv/etc/sahara.conf, and make necessary changes
+    Make the necessary changes in ``sahara-venv/etc/sahara.conf``.
+    For details see :doc:`Sahara Configuration Guide <configuration.guide>`
 
 5. Create database schema:
 
 .. sourcecode:: console
 
-    $ sahara-venv/bin/python sahara-venv/bin/sahara-db-manage --config-file sahara-venv/etc/sahara.conf upgrade head
+    $ sahara-venv/bin/sahara-db-manage --config-file sahara-venv/etc/sahara.conf upgrade head
 ..
 
 6. To start Sahara call:
 
 .. sourcecode:: console
 
-    $ sahara-venv/bin/python sahara-venv/bin/sahara-api --config-file sahara-venv/etc/sahara.conf
+    $ sahara-venv/bin/sahara-api --config-file sahara-venv/etc/sahara.conf
 ..
 
 
-Note:
------
-One of the :doc:`Sahara features <features>`, Anti-Affinity, requires a Nova adjustment.
+Notes:
+------
+One of the :doc:`Sahara Features <features>`, Anti-Affinity, requires a Nova adjustment.
 See :ref:`Enabling Anti-Affinity <enable-anti-affinity>` for details. But that is purely optional.
 
 
 Make sure that your operating system is not blocking Sahara port (default: 8386).
 You may need to configure iptables in CentOS and some other operating systems.
 
-   To get the list of all possible options run:
+
+To get the list of all possible options run:
 
 .. sourcecode:: console
 
     $ sahara-venv/bin/python sahara-venv/bin/sahara-api --help
+..
 
 
 Further consider reading :doc:`overview` for general Sahara concepts and
-:doc:`plugins` for specific plugin features/requirements
+:doc:`plugins` for specific plugin features/requirements.

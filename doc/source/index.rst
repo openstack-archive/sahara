@@ -25,6 +25,7 @@ User guide
    :maxdepth: 1
 
    userdoc/installation.guide
+   userdoc/configuration.guide
    horizon/installation.guide
 
 **How To**
