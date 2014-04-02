@@ -24,6 +24,8 @@ Limitations
 -----------
 The IDH plugin currently has the following limitations:
 
+* IDH plugin uses requests python library 1.2.1 or later version. It is
+  necessary for connection retries to IDH manager.
 * IDH plugin downloads the Intel Manager package from a URL provided in the
   cluster configuration. A local HTTP mirror should be used in cases where the
   VMs do not have access to the Internet or have port limitations.
