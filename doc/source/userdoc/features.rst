@@ -9,15 +9,15 @@ User may change number of instances in existing Node Groups or add new Node Grou
 
 If cluster fails to scale properly, all changes will be rolled back.
 
-Currently only Vanilla plugin supports this feature. Visit :doc:`vanilla_plugin` for info about cluster topology limitations.
-
 Swift Integration
 -----------------
 
-If you want to work with Swift, e.g. to run jobs on data located in Swift or put jobs` result into it, you need to use patched Hadoop and Swift.
-For more info about this patching and configuring see :doc:`hadoop-swift`. There is a number of possible configs for Swift which can be set, but
-currently Sahara automatically set information about swift filesystem implementation, location awareness, URL and tenant name for authorization.
-The only required information that is still needed to be set are username and password to access Swift. So you need to explicitly specify these parameters while launching the job.
+In order to leverage Swift within Hadoop, including using Swift data sources from within EDP, Hadoop requires the application of a patch.
+For additional information about this patch and configuration, please refer to :doc:`hadoop-swift`. Sahara automatically sets information
+about the Swift filesystem implementation, location awareness, URL and tenant name for authorization.
+
+The only required information that is still needed to be set is username and password to access Swift. These parameters need to be
+explicitly set prior to launching the job.
 
 E.g. :
 
@@ -39,12 +39,8 @@ with name "sahara".
 Currently user can only enable/disable Swift for a Hadoop cluster. But there is a blueprint about making Swift access
 more configurable: https://blueprints.launchpad.net/sahara/+spec/swift-configuration-through-rest-and-ui
 
-Currently this feature is supported only by :doc:`vanilla_plugin`.
-
 Cinder support
 --------------
-This feature is supported only by :doc:`vanilla_plugin`.
-
 Cinder is a block storage service that can be used as an alternative for an ephemeral drive. Using Cinder volumes increases reliability of data which is important for HDFS service.
 
 User can set how many volumes will be attached to each node in a Node Group and the size of each volume.
@@ -115,8 +111,6 @@ This feature is supported by all plugins out of the box.
 
 Data-locality
 -------------
-This feature is supported only by :doc:`vanilla_plugin`.
-
 It is extremely important for data processing to do locally (on the same rack,
 openstack compute node or even VM) as much work as
 possible. Hadoop supports data-locality feature and can schedule jobs to
@@ -212,3 +206,25 @@ The following features are supported in the new Heat engine:
 +-----------------------------------------+-------------------------+-----------------------------------------+
 | Elastic Data Processing                 | Not affected            |                                         |
 +-----------------------------------------+-------------------------+-----------------------------------------+
+
+Plugin Capabilities
+-------------------
+The below tables provides a plugin capability matrix:
+
++--------------------------+---------+--------------+-----+
+|                          | Plugin                       |
+|                          +---------+--------------+-----+
+| Feature                  | Vanilla | HDP          | IDH |
++==========================+=========+==============+=====+
+| Nova and Neutron network | x       | x            | x   |
++--------------------------+---------+--------------+-----+
+| Cluster Scaling          | x       | Scale Up     | x   |
++--------------------------+---------+--------------+-----+
+| Swift Integration        | x       | x            | x   |
++--------------------------+---------+--------------+-----+
+| Cinder Support           | x       | x            | x   |
++--------------------------+---------+--------------+-----+
+| Data Locality            | x       | x            | N/A |
++--------------------------+---------+--------------+-----+
+| EDP                      | x       | x            | x   |
++--------------------------+---------+--------------+-----+
