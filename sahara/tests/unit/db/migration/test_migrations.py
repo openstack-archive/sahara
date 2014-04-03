@@ -322,3 +322,23 @@ class TestMigrations(base.BaseWalkMigrationTestCase, base.CommonTestsMixIn):
         ]
         self.assertColumnsExists(engine, 'instances', instances_columns)
         self.assertColumnCount(engine, 'instances', instances_columns)
+
+    def _check_002(self, engine, data):
+        # currently, 002 is just a placeholder
+        self._check_001(engine, data)
+
+    def _check_003(self, engine, data):
+        # currently, 003 is just a placeholder
+        self._check_001(engine, data)
+
+    def _check_004(self, engine, data):
+        # currently, 004 is just a placeholder
+        self._check_001(engine, data)
+
+    def _check_005(self, engine, data):
+        # currently, 005 is just a placeholder
+        self._check_001(engine, data)
+
+    def _check_006(self, engine, data):
+        # currently, 006 is just a placeholder
+        self._check_001(engine, data)
