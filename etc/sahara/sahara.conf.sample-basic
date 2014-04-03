@@ -42,11 +42,6 @@
 # /user/hadoop/ (string value)
 #job_workflow_postfix=
 
-# Enables Sahara to use Keystone API v3. If that flag is
-# disabled, per-job clusters will not be terminated
-# automatically. (boolean value)
-#use_identity_api_v3=false
-
 # enable periodic tasks (boolean value)
 #periodic_enable=true
 
