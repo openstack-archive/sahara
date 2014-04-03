@@ -301,8 +301,7 @@ class TestMigrations(base.BaseWalkMigrationTestCase, base.CommonTestsMixIn):
             'oozie_job_id',
             'return_code',
             'job_configs',
-            'main_class',
-            'java_opts'
+            'extra'
         ]
         self.assertColumnsExists(
             engine, 'job_executions', job_executions_columns)
@@ -323,6 +322,3 @@ class TestMigrations(base.BaseWalkMigrationTestCase, base.CommonTestsMixIn):
         ]
         self.assertColumnsExists(engine, 'instances', instances_columns)
         self.assertColumnCount(engine, 'instances', instances_columns)
-
-    def _check_002(self, engine, date):
-        self.assertColumnExists(engine, 'job_executions', 'extra')
