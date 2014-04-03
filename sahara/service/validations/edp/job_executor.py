@@ -62,6 +62,9 @@ def check_job_executor(data, job_id):
     job = api.get_job(job_id)
     job_type, subtype = edp.split_job_type(job.type)
 
+    # Check if cluster contains Oozie service to run job
+    main_base.check_cluster_contains_oozie(data['cluster_id'])
+
     # All types except Java require input and output objects
     if job_type == 'Java':
         if not _is_main_class_present(data):
