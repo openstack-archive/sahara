@@ -1,16 +1,19 @@
 Building Images for Vanilla Plugin
 ==================================
 
-As of now vanilla plugin works with images with pre-installed Apache Hadoop. To
-simplify task of building such images we use
+In this document you will find instruction on how to build Ubuntu, Fedora, and
+CentOS images with Apache Hadoop versions 1.x.x and 2.x.x.
+
+As of now the vanilla plugin works with images with pre-installed versions of
+Apache Hadoop. To simplify the task of building such images we use
 `Disk Image Builder <https://github.com/openstack/diskimage-builder>`_.
 
-`Disk Image Builder` is built of elements. An element is a particular set of
-code that alters how the image is built, or runs within the chroot to prepare
-the image.
+`Disk Image Builder` builds disk images using elements. An element is a
+particular set of code that alters how the image is built, or runs within the
+chroot to prepare the image.
 
-Elements for building vanilla images are stored in `Sahara extra repository <https://github.com/openstack/sahara-image-elements>`_
-
+Elements for building vanilla images are stored in
+`Sahara extra repository <https://github.com/openstack/sahara-image-elements>`_
 
 .. note::
 
@@ -19,12 +22,16 @@ Elements for building vanilla images are stored in `Sahara extra repository <htt
    * `For Fedora <http://pkgs.fedoraproject.org/cgit/cloud-init.git/>`_
    * `For Ubuntu <http://packages.ubuntu.com/precise/cloud-init>`_
 
-In this document you will find instruction on how to build Ubuntu and Fedora
-images with Apache Hadoop.
+To create vanilla images follow these steps:
 
 1. Clone repository "https://github.com/openstack/sahara-image-elements" locally.
 
-2. You just can run script diskimage-create.sh in any directory (for example, in home directory). This script will create two cloud images - Fedora and Ubuntu.
+2. Run the diskimage-create.sh script.
+
+   You can run the script diskimage-create.sh in any directory (for example, in
+   your home directory). By default this script will attempt to create 6 cloud
+   images, 2 each of Ubuntu, Fedora, and CentOS with versions 1 and 2 of Apache
+   Hadoop. This script must be run with root privileges.
 
    .. sourcecode:: console
 
@@ -48,4 +55,11 @@ images with Apache Hadoop.
 
    NOTE: If you don't want to use default values, you should edit this script and set your values of parameters.
 
-   Then it will create two cloud image with ``hadoop``, ``hive``, ``oozie``, ``mysql``, ``swift_hadoop`` elements that install all necessary packages and configure them. You will find these images in current directory.
+   Then it will create a series of cloud images with ``hadoop``, ``hive``,
+   ``oozie``, ``mysql``, and ``swift_hadoop`` elements that install all the
+   necessary packages and configure them. You will find these images in
+   current directory.
+
+For finer control of diskimage-create.sh see the `official documentation
+<https://github.com/openstack/sahara-image-elements/blob/master/diskimage-create/README.rst>`_
+or run ``$ diskimage-create.sh -h``.
