@@ -247,11 +247,22 @@ Cluster Processes
 
 At a minimum the Sahara cluster must run a single instance of these processes to support EDP:
 
-* jobtracker
-* namenode
-* oozie
-* tasktracker
-* datanode
+* For Hadoop version 1:
+
+  + jobtracker
+  + namenode
+  + oozie
+  + tasktracker
+  + datanode
+
+* For Hadoop version 2:
+
+  + namenode
+  + datanode
+  + resourcemanager
+  + nodemanager
+  + historyserver
+  + oozie
 
 Note, a typical cluster may have more than a single instance of the tasktracker and datanode processes.
 
