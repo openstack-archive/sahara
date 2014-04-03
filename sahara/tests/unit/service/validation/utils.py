@@ -206,7 +206,7 @@ def start_patch(patch_templates=True):
     if patch_templates:
         get_ng_template.side_effect = _get_ng_template
     # request data to validate
-    patchers = [get_clusters_p, get_plugins_p, get_plugin_p,
+    patchers = [get_clusters_p, get_cluster_p, get_plugins_p, get_plugin_p,
                 nova_p, keystone_p, get_image_p, heat_p]
     if patch_templates:
         patchers.extend([get_ng_template_p, get_ng_templates_p,
