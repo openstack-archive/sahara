@@ -331,8 +331,7 @@ class JobBinaryInternal(mb.SaharaBase):
     id = _id_column()
     tenant_id = sa.Column(sa.String(36))
     name = sa.Column(sa.String(80), nullable=False)
-
-    data = sa.orm.deferred(sa.Column(sa.LargeBinary))
+    data = sa.orm.deferred(sa.Column(st.LargeBinary()))
     datasize = sa.Column(sa.BIGINT)
 
 

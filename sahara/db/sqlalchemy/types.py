@@ -14,8 +14,10 @@
 # limitations under the License.
 
 import sqlalchemy as sa
+from sqlalchemy.dialects import mysql
 from sqlalchemy.ext import mutable
 
+from sahara.db import base
 from sahara.openstack.common import jsonutils
 
 
@@ -108,3 +110,9 @@ def JsonDictType():
 def JsonListType():
     """Returns an SQLAlchemy Column Type suitable to store a Json array."""
     return MutableList.as_mutable(JsonEncoded)
+
+
+def LargeBinary():
+    if base.is_mysql_avail():
+        return mysql.LONGBLOB
+    return sa.LargeBinary
