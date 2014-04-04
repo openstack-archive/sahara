@@ -37,6 +37,8 @@ postgres=# create database openstack_citest with owner openstack_citest;
 
 """
 
+import os
+
 from oslo.config import cfg
 
 from sahara.openstack.common.db.sqlalchemy import utils as db_utils
@@ -322,6 +324,17 @@ class TestMigrations(base.BaseWalkMigrationTestCase, base.CommonTestsMixIn):
         ]
         self.assertColumnsExists(engine, 'instances', instances_columns)
         self.assertColumnCount(engine, 'instances', instances_columns)
+
+        self._data_001(engine, data)
+
+    def _data_001(self, engine, data):
+        datasize = 512 * 1024  # 512kB
+        data = os.urandom(datasize)
+        t = db_utils.get_table(engine, 'job_binary_internal')
+        engine.execute(t.insert(), data=data, id='123', name='name')
+        new_data = engine.execute(t.select()).fetchone().data
+        self.assertEqual(data, new_data)
+        engine.execute(t.delete())
 
     def _check_002(self, engine, data):
         # currently, 002 is just a placeholder

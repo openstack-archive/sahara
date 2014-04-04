@@ -111,7 +111,7 @@ def upgrade():
                     sa.Column('tenant_id', sa.String(length=36),
                               nullable=True),
                     sa.Column('name', sa.String(length=80), nullable=False),
-                    sa.Column('data', sa.LargeBinary(), nullable=True),
+                    sa.Column('data', st.LargeBinary(), nullable=True),
                     sa.Column('datasize', sa.BIGINT(), nullable=True),
                     sa.PrimaryKeyConstraint('id'),
                     sa.UniqueConstraint('name', 'tenant_id'),
