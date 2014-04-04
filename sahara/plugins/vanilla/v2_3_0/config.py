@@ -16,7 +16,7 @@
 import six
 
 from sahara.openstack.common import log as logging
-from sahara.plugins.general import utils
+from sahara.plugins.vanilla import utils as vu
 from sahara.plugins.vanilla.v2_3_0 import config_helper as c_helper
 from sahara.plugins.vanilla.v2_3_0 import oozie_helper as o_helper
 from sahara.swift import swift_helper as swift
@@ -67,8 +67,8 @@ def _generate_configs(node_group):
 
 def _get_hadoop_configs(node_group):
     cluster = node_group.cluster
-    nn_hostname = utils.get_namenode(cluster).hostname()
-    res_hostname = utils.get_resourcemanager(cluster).hostname()
+    nn_hostname = vu.get_namenode(cluster).hostname()
+    res_hostname = vu.get_resourcemanager(cluster).hostname()
     dirs = _get_hadoop_dirs(node_group)
     confs = {
         'Hadoop': {
@@ -93,7 +93,7 @@ def _get_hadoop_configs(node_group):
         },
     }
 
-    oozie = utils.get_oozie(cluster)
+    oozie = vu.get_oozie(cluster)
     if oozie:
         hadoop_cfg = {
             'hadoop.proxyuser.hadoop.hosts': '*',

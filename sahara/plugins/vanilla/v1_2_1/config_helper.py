@@ -20,6 +20,7 @@ from sahara import context
 from sahara.openstack.common import log as logging
 from sahara.plugins.general import utils
 from sahara.plugins import provisioning as p
+from sahara.plugins.vanilla import utils as vu
 from sahara.plugins.vanilla.v1_2_1 import mysql_helper as m_h
 from sahara.plugins.vanilla.v1_2_1 import oozie_helper as o_h
 from sahara.swift import swift_helper as swift
@@ -241,10 +242,10 @@ def get_hadoop_ssh_keys(cluster):
 
 
 def generate_sahara_configs(cluster, node_group=None):
-    nn_hostname = _get_hostname(utils.get_namenode(cluster))
-    jt_hostname = _get_hostname(utils.get_jobtracker(cluster))
-    oozie_hostname = _get_hostname(utils.get_oozie(cluster))
-    hive_hostname = _get_hostname(utils.get_hiveserver(cluster))
+    nn_hostname = _get_hostname(vu.get_namenode(cluster))
+    jt_hostname = _get_hostname(vu.get_jobtracker(cluster))
+    oozie_hostname = _get_hostname(vu.get_oozie(cluster))
+    hive_hostname = _get_hostname(vu.get_hiveserver(cluster))
 
     storage_path = node_group.storage_paths() if node_group else None
 
@@ -296,8 +297,8 @@ def generate_sahara_configs(cluster, node_group=None):
 
 
 def generate_xml_configs(cluster, node_group, hive_mysql_passwd):
-    oozie_hostname = _get_hostname(utils.get_oozie(cluster))
-    hive_hostname = _get_hostname(utils.get_hiveserver(cluster))
+    oozie_hostname = _get_hostname(vu.get_oozie(cluster))
+    hive_hostname = _get_hostname(vu.get_hiveserver(cluster))
 
     ng_configs = node_group.configuration()
 

@@ -38,51 +38,6 @@ def get_instance(cluster, node_process):
     return instances[0] if instances else None
 
 
-def get_namenode(cluster):
-    return get_instance(cluster, "namenode")
-
-
-#TODO(jmaron): name change?
-def get_jobtracker(cluster):
-    instance = get_instance(cluster, "jobtracker")
-    if not instance:
-        instance = get_resourcemanager(cluster)
-
-    return instance
-
-
-def get_resourcemanager(cluster):
-    return get_instance(cluster, 'resourcemanager')
-
-
-def get_nodemanagers(cluster):
-    return get_instances(cluster, 'nodemanager')
-
-
-def get_oozie(cluster):
-    return get_instance(cluster, "oozie")
-
-
-def get_hiveserver(cluster):
-    return get_instance(cluster, "hiveserver")
-
-
-def get_datanodes(cluster):
-    return get_instances(cluster, 'datanode')
-
-
-def get_tasktrackers(cluster):
-    return get_instances(cluster, 'tasktracker')
-
-
-def get_secondarynamenodes(cluster):
-    return get_instances(cluster, 'secondarynamenode')
-
-
-def get_historyserver(cluster):
-    return get_instance(cluster, 'historyserver')
-
-
 def generate_host_names(nodes):
     return "\n".join([n.hostname() for n in nodes])
 

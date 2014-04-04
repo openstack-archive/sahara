@@ -18,8 +18,8 @@ from oslo.config import cfg
 from sahara import conductor
 from sahara import context
 from sahara.openstack.common import log as logging
-from sahara.plugins.general import utils
 from sahara.plugins.vanilla import abstractversionhandler as avm
+from sahara.plugins.vanilla import utils as vu
 from sahara.plugins.vanilla.v2_3_0 import config as c
 from sahara.plugins.vanilla.v2_3_0 import config_helper as c_helper
 from sahara.plugins.vanilla.v2_3_0 import run_scripts as run
@@ -54,29 +54,29 @@ class VersionHandler(avm.AbstractVersionHandler):
         c.configure_cluster(cluster)
 
     def start_cluster(self, cluster):
-        nn = utils.get_namenode(cluster)
+        nn = vu.get_namenode(cluster)
         run.format_namenode(nn)
         run.start_hadoop_process(nn, 'namenode')
 
-        for snn in utils.get_secondarynamenodes(cluster):
+        for snn in vu.get_secondarynamenodes(cluster):
             run.start_hadoop_process(snn, 'secondarynamenode')
 
-        rm = utils.get_resourcemanager(cluster)
+        rm = vu.get_resourcemanager(cluster)
         run.start_yarn_process(rm, 'resourcemanager')
 
-        for dn in utils.get_datanodes(cluster):
+        for dn in vu.get_datanodes(cluster):
             run.start_hadoop_process(dn, 'datanode')
 
         run.await_datanodes(cluster)
 
-        for nm in utils.get_nodemanagers(cluster):
+        for nm in vu.get_nodemanagers(cluster):
             run.start_yarn_process(nm, 'nodemanager')
 
-        hs = utils.get_historyserver(cluster)
+        hs = vu.get_historyserver(cluster)
         if hs:
             run.start_historyserver(hs)
 
-        oo = utils.get_oozie(cluster)
+        oo = vu.get_oozie(cluster)
         if oo:
             run.start_oozie_process(oo)
 
@@ -93,10 +93,10 @@ class VersionHandler(avm.AbstractVersionHandler):
         sc.scale_cluster(cluster, instances)
 
     def _set_cluster_info(self, cluster):
-        nn = utils.get_namenode(cluster)
-        rm = utils.get_resourcemanager(cluster)
-        hs = utils.get_historyserver(cluster)
-        oo = utils.get_oozie(cluster)
+        nn = vu.get_namenode(cluster)
+        rm = vu.get_resourcemanager(cluster)
+        hs = vu.get_historyserver(cluster)
+        oo = vu.get_oozie(cluster)
 
         info = {}
 
@@ -126,7 +126,7 @@ class VersionHandler(avm.AbstractVersionHandler):
         conductor.cluster_update(ctx, cluster, {'info': info})
 
     def get_oozie_server(self, cluster):
-        return utils.get_oozie(cluster)
+        return vu.get_oozie(cluster)
 
     def get_resource_manager_uri(self, cluster):
         return cluster['info']['YARN']['ResourceManager']

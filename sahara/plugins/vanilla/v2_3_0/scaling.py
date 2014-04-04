@@ -17,6 +17,7 @@ from sahara import context
 from sahara.openstack.common import timeutils
 from sahara.plugins.general import exceptions as ex
 from sahara.plugins.general import utils as u
+from sahara.plugins.vanilla import utils as vu
 from sahara.plugins.vanilla.v2_3_0 import config
 from sahara.plugins.vanilla.v2_3_0 import run_scripts as run
 from sahara.plugins.vanilla.v2_3_0 import utils as pu
@@ -46,8 +47,8 @@ def _get_instances_with_service(instances, service):
 def _update_include_files(cluster):
     instances = u.get_instances(cluster)
 
-    datanodes = u.get_datanodes(cluster)
-    nodemanagers = u.get_nodemanagers(cluster)
+    datanodes = vu.get_datanodes(cluster)
+    nodemanagers = vu.get_nodemanagers(cluster)
     dn_hosts = u.generate_fqdn_host_names(datanodes)
     nm_hosts = u.generate_fqdn_host_names(nodemanagers)
     for instance in instances:

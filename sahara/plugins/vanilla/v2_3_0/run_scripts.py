@@ -15,7 +15,7 @@
 
 from sahara import context
 from sahara.openstack.common import log as logging
-from sahara.plugins.general import utils as u
+from sahara.plugins.vanilla import utils as vu
 from sahara.plugins.vanilla.v2_3_0 import config_helper as c_helper
 from sahara.utils import files
 from sahara.utils import general as g
@@ -68,13 +68,13 @@ def format_namenode(instance):
 
 
 def refresh_hadoop_nodes(cluster):
-    nn = u.get_namenode(cluster)
+    nn = vu.get_namenode(cluster)
     nn.remote().execute_command(
         'sudo su - -c "hdfs dfsadmin -refreshNodes" hadoop')
 
 
 def refresh_yarn_nodes(cluster):
-    rm = u.get_resourcemanager(cluster)
+    rm = vu.get_resourcemanager(cluster)
     rm.remote().execute_command(
         'sudo su - -c "yarn rmadmin -refreshNodes" hadoop')
 
@@ -119,12 +119,12 @@ def _start_oozie(remote):
 
 
 def await_datanodes(cluster):
-    datanodes_count = len(u.get_datanodes(cluster))
+    datanodes_count = len(vu.get_datanodes(cluster))
     if datanodes_count < 1:
         return
 
     LOG.info("Waiting %s datanodes to start up" % datanodes_count)
-    with u.get_namenode(cluster).remote() as r:
+    with vu.get_namenode(cluster).remote() as r:
         while True:
             if _check_datanodes_count(r, datanodes_count):
                 LOG.info(

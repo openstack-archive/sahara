@@ -15,7 +15,7 @@
 
 import re
 
-from sahara.plugins.general import utils as u
+from sahara.plugins.vanilla import utils as u
 
 
 def get_datanodes_status(cluster):

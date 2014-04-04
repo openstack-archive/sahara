@@ -21,7 +21,7 @@ from sahara.utils import files
 
 
 class UtilsTestCase(base.SaharaTestCase):
-    @mock.patch('sahara.plugins.general.utils.get_namenode')
+    @mock.patch('sahara.plugins.vanilla.utils.get_namenode')
     def test_datanodes_status(self, nn):
         report = files.get_file_text(
             'tests/unit/plugins/vanilla/v2_3_0/resources/dfs-report.txt')
@@ -38,7 +38,7 @@ class UtilsTestCase(base.SaharaTestCase):
 
         self.assertDictEqual(statuses, expected)
 
-    @mock.patch('sahara.plugins.general.utils.get_resourcemanager')
+    @mock.patch('sahara.plugins.vanilla.utils.get_resourcemanager')
     def test_nodemanagers_status(self, rm):
         report = files.get_file_text(
             'tests/unit/plugins/vanilla/v2_3_0/resources/yarn-report.txt')

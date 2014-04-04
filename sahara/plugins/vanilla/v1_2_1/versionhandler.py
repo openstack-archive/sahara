@@ -24,6 +24,7 @@ from sahara.openstack.common import log as logging
 from sahara.plugins.general import exceptions as ex
 from sahara.plugins.general import utils
 from sahara.plugins.vanilla import abstractversionhandler as avm
+from sahara.plugins.vanilla import utils as vu
 from sahara.plugins.vanilla.v1_2_1 import config_helper as c_helper
 from sahara.plugins.vanilla.v1_2_1 import run_scripts as run
 from sahara.plugins.vanilla.v1_2_1 import scaling as sc
@@ -55,7 +56,7 @@ class VersionHandler(avm.AbstractVersionHandler):
         return cluster['info']['MapReduce']['JobTracker']
 
     def get_oozie_server(self, cluster):
-        return utils.get_oozie(cluster)
+        return vu.get_oozie(cluster)
 
     def validate(self, cluster):
         nn_count = sum([ng.count for ng
@@ -105,15 +106,15 @@ class VersionHandler(avm.AbstractVersionHandler):
         self._setup_instances(cluster, instances)
 
     def start_cluster(self, cluster):
-        nn_instance = utils.get_namenode(cluster)
+        nn_instance = vu.get_namenode(cluster)
         with remote.get_remote(nn_instance) as r:
             run.format_namenode(r)
             run.start_processes(r, "namenode")
 
-        for snn in utils.get_secondarynamenodes(cluster):
+        for snn in vu.get_secondarynamenodes(cluster):
             run.start_processes(remote.get_remote(snn), "secondarynamenode")
 
-        jt_instance = utils.get_jobtracker(cluster)
+        jt_instance = vu.get_jobtracker(cluster)
         if jt_instance:
             run.start_processes(remote.get_remote(jt_instance), "jobtracker")
 
@@ -124,7 +125,7 @@ class VersionHandler(avm.AbstractVersionHandler):
         LOG.info("Hadoop services in cluster %s have been started" %
                  cluster.name)
 
-        oozie = utils.get_oozie(cluster)
+        oozie = vu.get_oozie(cluster)
         if oozie:
             with remote.get_remote(oozie) as r:
                 if c_helper.is_mysql_enable(cluster):
@@ -135,7 +136,7 @@ class VersionHandler(avm.AbstractVersionHandler):
                 LOG.info("Oozie service at '%s' has been started",
                          nn_instance.hostname())
 
-        hive_server = utils.get_hiveserver(cluster)
+        hive_server = vu.get_hiveserver(cluster)
         if hive_server:
             with remote.get_remote(hive_server) as r:
                 run.hive_create_warehouse_dir(r)
@@ -154,12 +155,12 @@ class VersionHandler(avm.AbstractVersionHandler):
         self._set_cluster_info(cluster)
 
     def _await_datanodes(self, cluster):
-        datanodes_count = len(utils.get_datanodes(cluster))
+        datanodes_count = len(vu.get_datanodes(cluster))
         if datanodes_count < 1:
             return
 
         LOG.info("Waiting %s datanodes to start up" % datanodes_count)
-        with remote.get_remote(utils.get_namenode(cluster)) as r:
+        with remote.get_remote(vu.get_namenode(cluster)) as r:
             while True:
                 if run.check_datanodes_count(r, datanodes_count):
                     LOG.info(
@@ -176,8 +177,8 @@ class VersionHandler(avm.AbstractVersionHandler):
                     return
 
     def _extract_configs_to_extra(self, cluster):
-        oozie = utils.get_oozie(cluster)
-        hive = utils.get_hiveserver(cluster)
+        oozie = vu.get_oozie(cluster)
+        hive = vu.get_hiveserver(cluster)
 
         extra = dict()
 
@@ -205,8 +206,8 @@ class VersionHandler(avm.AbstractVersionHandler):
         return extra
 
     def decommission_nodes(self, cluster, instances):
-        tts = utils.get_tasktrackers(cluster)
-        dns = utils.get_datanodes(cluster)
+        tts = vu.get_tasktrackers(cluster)
+        dns = vu.get_datanodes(cluster)
         decommission_dns = False
         decommission_tts = False
 
@@ -218,8 +219,8 @@ class VersionHandler(avm.AbstractVersionHandler):
                 tts.remove(i)
                 decommission_tts = True
 
-        nn = utils.get_namenode(cluster)
-        jt = utils.get_jobtracker(cluster)
+        nn = vu.get_namenode(cluster)
+        jt = vu.get_jobtracker(cluster)
 
         if decommission_tts:
             sc.decommission_tt(jt, instances, tts)
@@ -234,8 +235,8 @@ class VersionHandler(avm.AbstractVersionHandler):
         self._setup_instances(cluster, instances)
 
         run.refresh_nodes(remote.get_remote(
-            utils.get_namenode(cluster)), "dfsadmin")
-        jt = utils.get_jobtracker(cluster)
+            vu.get_namenode(cluster)), "dfsadmin")
+        jt = vu.get_jobtracker(cluster)
         if jt:
             run.refresh_nodes(remote.get_remote(jt), "mradmin")
 
@@ -362,12 +363,12 @@ class VersionHandler(avm.AbstractVersionHandler):
     def _push_namenode_configs(self, cluster, r):
         r.write_file_to('/etc/hadoop/dn.incl',
                         utils.generate_fqdn_host_names(
-                            utils.get_datanodes(cluster)))
+                            vu.get_datanodes(cluster)))
 
     def _push_jobtracker_configs(self, cluster, r):
         r.write_file_to('/etc/hadoop/tt.incl',
                         utils.generate_fqdn_host_names(
-                            utils.get_tasktrackers(cluster)))
+                            vu.get_tasktrackers(cluster)))
 
     def _push_oozie_configs(self, cluster, ng_extra, r):
         r.write_file_to('/opt/oozie/conf/oozie-site.xml',
@@ -396,9 +397,9 @@ class VersionHandler(avm.AbstractVersionHandler):
         r.write_files_to(files)
 
     def _set_cluster_info(self, cluster):
-        nn = utils.get_namenode(cluster)
-        jt = utils.get_jobtracker(cluster)
-        oozie = utils.get_oozie(cluster)
+        nn = vu.get_namenode(cluster)
+        jt = vu.get_jobtracker(cluster)
+        oozie = vu.get_oozie(cluster)
         info = {}
 
         if jt:
@@ -443,7 +444,7 @@ class VersionHandler(avm.AbstractVersionHandler):
         return None
 
     def _validate_additional_ng_scaling(self, cluster, additional):
-        jt = utils.get_jobtracker(cluster)
+        jt = vu.get_jobtracker(cluster)
         scalable_processes = self._get_scalable_processes()
 
         for ng_id in additional:
@@ -473,7 +474,7 @@ class VersionHandler(avm.AbstractVersionHandler):
                                  " with processes: " +
                                  ' '.join(ng.node_processes))
 
-        dn_amount = len(utils.get_datanodes(cluster))
+        dn_amount = len(vu.get_datanodes(cluster))
         rep_factor = c_helper.get_config_value('HDFS', 'dfs.replication',
                                                cluster)
 
