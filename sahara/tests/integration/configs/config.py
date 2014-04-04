@@ -339,6 +339,17 @@ HDP_CONFIG_OPTS = [
     cfg.StrOpt('SSH_USERNAME',
                default=None,
                help='Username to get cluster node with SSH.'),
+    cfg.ListOpt('MASTER_NODE_PROCESSES',
+                default=['JOBTRACKER', 'NAMENODE', 'SECONDARY_NAMENODE',
+                         'GANGLIA_SERVER', 'NAGIOS_SERVER',
+                         'AMBARI_SERVER', 'OOZIE_SERVER'],
+                help='A list of processes that will be launched '
+                     'on master node'),
+    cfg.ListOpt('WORKER_NODE_PROCESSES',
+                default=['TASKTRACKER', 'DATANODE', 'HDFS_CLIENT',
+                         'MAPREDUCE_CLIENT', 'OOZIE_CLIENT', 'PIG'],
+                help='A list of processes that will be launched '
+                     'on worker nodes'),
     cfg.StrOpt('HADOOP_VERSION',
                default='1.3.2',
                help='Version of Hadoop.'),
