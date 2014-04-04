@@ -14,7 +14,6 @@
 # limitations under the License.
 
 from testtools import testcase
-import unittest2
 
 from sahara.tests.integration.configs import config as cfg
 from sahara.tests.integration.tests import base as b
@@ -41,7 +40,11 @@ class VanillaTwoGatingTest(cluster_configs.ClusterConfigTest,
 
     def setUp(self):
         super(VanillaTwoGatingTest, self).setUp()
+        self.cluster_id = None
+        self.cluster_template_id = None
+        self.ng_template_ids = []
 
+    def _prepare_test(self):
         self.vanilla_two_config = cfg.ITConfig().vanilla_two_config
         self.floating_ip_pool = self.common_config.FLOATING_IP_POOL
         self.internal_neutron_net = None
@@ -50,9 +53,6 @@ class VanillaTwoGatingTest(cluster_configs.ClusterConfigTest,
             self.floating_ip_pool = \
                 self.get_floating_ip_pool_id_for_neutron_net()
 
-        self.cluster_id = None
-        self.cluster_template_id = None
-        self.ng_template_ids = []
         self.vanilla_two_config.IMAGE_ID, self.vanilla_two_config.SSH_USERNAME\
             = (self.get_image_id_and_ssh_username(self.vanilla_two_config))
 
@@ -278,11 +278,12 @@ class VanillaTwoGatingTest(cluster_configs.ClusterConfigTest,
     def _check_edp_after_scaling(self):
         self._edp_test()
 
-    @unittest2.skipIf(
+    @testcase.skipIf(
         cfg.ITConfig().vanilla_two_config.SKIP_ALL_TESTS_FOR_PLUGIN,
         "All tests for Vanilla plugin were skipped")
     @testcase.attr('vanilla2')
     def test_vanilla_two_plugin_gating(self):
+        self._prepare_test()
         self._create_nm_dn_ng_template()
         self._create_nm_ng_template()
         self._create_dn_ng_template()

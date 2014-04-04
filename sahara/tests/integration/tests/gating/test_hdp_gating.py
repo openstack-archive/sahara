@@ -14,7 +14,6 @@
 # limitations under the License.
 
 from testtools import testcase
-import unittest2
 
 from sahara.openstack.common import excutils
 from sahara.tests.integration.configs import config as cfg
@@ -35,8 +34,8 @@ class HDPGatingTest(cinder.CinderVolumeTest, edp.EDPTest,
     SKIP_SWIFT_TEST = config.SKIP_SWIFT_TEST
     SKIP_SCALING_TEST = config.SKIP_SCALING_TEST
 
-    @unittest2.skipIf(config.SKIP_ALL_TESTS_FOR_PLUGIN,
-                      'All tests for HDP plugin were skipped')
+    @testcase.skipIf(config.SKIP_ALL_TESTS_FOR_PLUGIN,
+                     'All tests for HDP plugin were skipped')
     @testcase.attr('hdp')
     def test_hdp_plugin_gating(self):
         self.hdp_config.IMAGE_ID, self.hdp_config.SSH_USERNAME = (
