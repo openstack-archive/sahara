@@ -213,8 +213,8 @@ def get_config_value(service, name, cluster=None):
         if c.applicable_target == service and c.name == name:
             return c.default_value
 
-    raise ex.SaharaException("Unable get parameter '%s' from service %s",
-                             name, service)
+    raise ex.NotFoundException(
+        name, "Unable to get parameter '%s' from service %s" % (name, service))
 
 
 def is_mysql_enabled(cluster):
