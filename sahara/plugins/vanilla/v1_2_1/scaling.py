@@ -19,6 +19,7 @@ import six
 
 from sahara import context
 from sahara.openstack.common import timeutils
+from sahara.plugins.general import exceptions as ex
 from sahara.plugins.general import utils
 from sahara.plugins.vanilla.v1_2_1 import config_helper
 from sahara.plugins.vanilla.v1_2_1 import run_scripts as run
@@ -73,8 +74,9 @@ def decommission_dn(nn, inst_to_be_deleted, survived_inst):
             context.sleep(3)
 
         if not all_found:
-            raise Exception("Cannot finish decommission in %s seconds" %
-                            timeout)
+            ex.DecommissionError(
+                "Cannot finish decommission of cluster %s in %d seconds" %
+                (nn.node_group.cluster, timeout))
 
 
 def parse_dfs_report(cmd_output):
