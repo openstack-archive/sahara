@@ -20,6 +20,7 @@ from sahara.plugins.general import utils
 from sahara.plugins.vanilla.v2_3_0 import config_helper as c_helper
 from sahara.plugins.vanilla.v2_3_0 import oozie_helper as o_helper
 from sahara.swift import swift_helper as swift
+from sahara.topology import topology_helper as th
 from sahara.utils import files as f
 from sahara.utils import xmlutils as x
 
@@ -39,6 +40,7 @@ def configure_cluster(cluster):
             instances.append(instance)
 
     configure_instances(instances)
+    configure_topology_data(cluster)
 
 
 def configure_instances(instances):
@@ -112,6 +114,11 @@ def _get_hadoop_configs(node_group):
             swift_configs[config['name']] = config['value']
 
         confs['Hadoop'].update(swift_configs)
+
+    if c_helper.is_data_locality_enabled(cluster):
+        confs['Hadoop'].update(th.TOPOLOGY_CONFIG)
+        confs['Hadoop'].update({"topology.script.file.name":
+                                HADOOP_CONF_DIR + "/topology.sh"})
 
     return confs, c_helper.get_env_configs()
 
@@ -233,6 +240,13 @@ def _post_configuration(instance):
         r.execute_command('chmod +x /tmp/post_conf.sh')
         r.execute_command('sudo /tmp/post_conf.sh')
 
+        if c_helper.is_data_locality_enabled(instance.node_group.cluster):
+            t_script = HADOOP_CONF_DIR + '/topology.sh'
+            r.write_file_to(t_script, f.get_file_text(
+                            'plugins/vanilla/v2_3_0/resources/topology.sh'),
+                            run_as_root=True)
+            r.execute_command('chmod +x ' + t_script, run_as_root=True)
+
 
 def _get_hadoop_dirs(node_group):
     dirs = {}
@@ -268,3 +282,16 @@ def _merge_configs(a, b):
     update(a)
     update(b)
     return res
+
+
+def configure_topology_data(cluster):
+    if c_helper.is_data_locality_enabled(cluster):
+        LOG.info("Node group awareness is not implemented in YARN yet "
+                 "so enable_hypervisor_awareness set to False explicitly")
+        tpl_map = th.generate_topology_map(cluster, is_node_awareness=False)
+        topology_data = "\n".join(
+            [k + " " + v for k, v in tpl_map.items()]) + "\n"
+        for ng in cluster.node_groups:
+            for i in ng.instances:
+                i.remote().write_file_to(HADOOP_CONF_DIR + "/topology.data",
+                                         topology_data, run_as_root=True)
