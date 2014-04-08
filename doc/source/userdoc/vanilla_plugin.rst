@@ -3,16 +3,21 @@ Vanilla Plugin
 
 Vanilla plugin is a reference plugin implementation which allows to operate with cluster with Apache Hadoop.
 
-For cluster provisioning prepared images should be used. They already have Apache Hadoop 1.2.1 installed.
-Here you can find prepared images:
+For cluster provisioning prepared images should be used. They already have
+Apache Hadoop 1.2.1 and Apache Hadoop 2.3.0 installed. Here you can find
+prepared images:
 
-* http://sahara-files.mirantis.com/savanna-icehouse-vanilla-1.2.1-ubuntu-13.10.qcow2
-* http://sahara-files.mirantis.com/savanna-icehouse-vanilla-1.2.1-fedora-19.qcow2
-* http://sahara-files.mirantis.com/savanna-icehouse-vanilla-1.2.1-centos-6.4.qcow2
+* http://sahara-files.mirantis.com/sahara-icehouse-vanilla-1.2.1-ubuntu-13.10.qcow2
+* http://sahara-files.mirantis.com/sahara-icehouse-vanilla-1.2.1-fedora-20.qcow2
+* http://sahara-files.mirantis.com/sahara-icehouse-vanilla-1.2.1-centos-6.5.qcow2
+
+* http://sahara-files.mirantis.com/sahara-icehouse-vanilla-2.3.0-ubuntu-13.10.qcow2
+* http://sahara-files.mirantis.com/sahara-icehouse-vanilla-2.3.0-fedora-20.qcow2
+* http://sahara-files.mirantis.com/sahara-icehouse-vanilla-2.3.0-centos-6.5.qcow2
 
 Besides, you may build images by yourself using :doc:`diskimagebuilder`.
 Keep in mind that if you want to use "Swift Integration" feature ( :doc:`features`),
-Hadoop must be patched with implementation of Swift File System.
+Hadoop 1.2.1 must be patched with implementation of Swift File System.
 For more information about patching required by "Swift Integration" feature see :doc:`hadoop-swift`.
 
 Vanilla plugin requires an image to be tagged in Sahara Image Registry with
@@ -23,11 +28,11 @@ Also you should specify username of default cloud-user used in the Image:
 +--------------+------------+
 | OS           | username   |
 +==============+============+
-| Ubuntu 13.04 | ubuntu     |
+| Ubuntu 13.10 | ubuntu     |
 +--------------+------------+
-| Fedora 19    | fedora     |
+| Fedora 20    | fedora     |
 +--------------+------------+
-| CentOS 6.4   | cloud-user |
+| CentOS 6.5   | cloud-user |
 +--------------+------------+
 
 
