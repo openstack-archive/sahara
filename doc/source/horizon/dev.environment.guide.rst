@@ -86,14 +86,15 @@ using the following command:
      SAHARA_URL = "url for sahara (e.g. "http://localhost:8386/v1.1")"
   ..
 
-  If you are using Neutron instead of Nova Network:
+  If you are using Neutron instead of Nova-Network:
 
   .. sourcecode:: python
 
      SAHARA_USE_NEUTRON = True
   ..
 
-  If you are not using nova-network with auto_assign_floating_ip=True, also set:
+  If you are using Nova-Network with ``auto_assign_floating_ip=False`` add
+  the following parameter:
 
   .. sourcecode:: python
 
@@ -115,23 +116,14 @@ using the following command:
       $ export SAHARA_DASHBOARD_HOME=$(pwd)/sahara-dashboard
   ..
 
-7. Install sahara-dashboard module to Horizon's venv
-
-  Go to the horizon folder from step 2 and execute
-
-  .. sourcecode:: console
-
-      $ .venv/bin/pip install $SAHARA_DASHBOARD_HOME
-  ..
-
-8. Create a symlink to sahara-dashboard source
+7. Create a symlink to sahara-dashboard source
 
   .. sourcecode:: console
 
      $ ln -s $SAHARA_DASHBOARD_HOME/saharadashboard .venv/lib/python2.7/site-packages/saharadashboard
   ..
 
-9. Modify ``openstack_dashboard/settings.py``
+8. Modify ``openstack_dashboard/settings.py``
 
   Add sahara to to the Horizon config:
 
@@ -150,7 +142,7 @@ using the following command:
           ....
   ..
 
-10. Start Horizon
+9. Start Horizon
 
   .. sourcecode:: console
 
@@ -171,7 +163,7 @@ using the following command:
 
   **Note** It is not recommended to use Horizon in this mode for production.
 
-11. Applying changes
+10. Applying changes
 
   If you have changed any ``*.py`` files in ``$SAHARA_DASHBOARD_HOME`` directory,
   Horizon will notice that and reload automatically. However changes made to
