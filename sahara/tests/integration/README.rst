@@ -22,11 +22,8 @@ In this case all tests will be launched except disabled tests.
 Tests can be disabled in the ``/sahara/tests/integration/configs/config.py``
 file or in the ``/sahara/tests/integration/configs/itest.conf``.
 
-.. note::
-
-    Both ``OS_TENANT_ID`` and ``OS_TENANT_NAME`` must be specified in the
-    config file.
-..
+**NOTE:** Both ``OS_TENANT_ID`` and ``OS_TENANT_NAME`` must be specified in the
+config file.
 
 If you want to run integration tests for one plugin, you should use the
 corresponding tox env:
@@ -66,11 +63,13 @@ this case you should use the following tox env:
 
 Here are a few more examples.
 
-* ``tox -e integration -- transient`` will run test for transient cluster. In
+``tox -e integration -- transient`` will run test for transient cluster. In
 this case cluster will be created via the Vanilla plugin with the Hadoop
 version 1.2.1. More info about transient cluster see in section ``Contents``.
-* ``tox -e integration -- hdp`` will run tests for the HDP plugin.
-* ``tox -e integration -- transient vanilla2 idh2`` will run test for transient
+
+``tox -e integration -- hdp`` will run tests for the HDP plugin.
+
+``tox -e integration -- transient vanilla2 idh2`` will run test for transient
 cluster, tests for the Vanilla plugin with the Hadoop version 1.2.1 and tests
 for the IDH plugin with the Intel Hadoop version 2.5.1.
 
