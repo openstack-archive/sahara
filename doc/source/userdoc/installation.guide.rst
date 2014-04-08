@@ -125,14 +125,28 @@ To install into a virtual environment
     Make the necessary changes in ``sahara-venv/etc/sahara.conf``.
     For details see :doc:`Sahara Configuration Guide <configuration.guide>`
 
-5. Create database schema:
+5. If you use Sahara with MySQL database, then for storing big Job Binaries
+   in Sahara Internal Database you must configure size of max allowed packet.
+   Edit ``my.cnf`` and change parameter:
+
+.. sourcecode:: ini
+
+   ...
+   [mysqld]
+   ...
+   max_allowed_packet          = 256M
+..
+
+    and restart mysql server.
+
+6. Create database schema:
 
 .. sourcecode:: console
 
     $ sahara-venv/bin/sahara-db-manage --config-file sahara-venv/etc/sahara.conf upgrade head
 ..
 
-6. To start Sahara call:
+7. To start Sahara call:
 
 .. sourcecode:: console
 
