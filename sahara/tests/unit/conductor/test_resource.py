@@ -18,6 +18,7 @@ import copy
 import unittest2
 
 from sahara.conductor import resource as r
+from sahara.swift import swift_helper
 from sahara.utils import types
 
 
@@ -100,6 +101,8 @@ SAMPLE_JOB_EXECUTION = {
     "extra": {},
     "id": "1b0b1874-a261-4d1f-971a-a2cebadeba6c",
     "info": {
+        "actions": [{"conf": "some stuff"},
+                    {"conf": "more stuff"}],
         "status": "Pending"
     },
     "input_id": "b5ddde55-594e-428f-9040-028be81eb3c2",
@@ -109,8 +112,9 @@ SAMPLE_JOB_EXECUTION = {
             "bill"
         ],
         "configs": {
-            "fs.swift.service.savanna.password": "openstack",
-            "fs.swift.service.savanna.username": "admin"
+            swift_helper.HADOOP_SWIFT_PASSWORD: "openstack",
+            swift_helper.HADOOP_SWIFT_USERNAME: "admin",
+            "myfavoriteconfig": 1
         }
     },
     "job_id": "d0f3e397-7bef-42f9-a4db-e5a96059246e",
@@ -203,6 +207,22 @@ class TestResource(unittest2.TestCase):
 
     def test_job_execution_filter_credentials(self):
         job_exec = r.JobExecution(SAMPLE_JOB_EXECUTION)
-        wrapped_dict = job_exec.to_wrapped_dict()
+        self.assertIn('extra', job_exec)
+        self.assertIn(swift_helper.HADOOP_SWIFT_PASSWORD,
+                      job_exec['job_configs']['configs'])
+        self.assertIn(swift_helper.HADOOP_SWIFT_USERNAME,
+                      job_exec['job_configs']['configs'])
+        for a in job_exec['info']['actions']:
+            self.assertIn('conf', a)
+
+        wrapped_dict = job_exec.to_wrapped_dict()['job_execution']
         self.assertNotIn('extra', wrapped_dict)
-        self.assertNotIn('job_configs', wrapped_dict)
+
+        configs = wrapped_dict['job_configs']['configs']
+        self.assertEqual("",
+                         configs[swift_helper.HADOOP_SWIFT_PASSWORD])
+        self.assertEqual("",
+                         configs[swift_helper.HADOOP_SWIFT_USERNAME])
+
+        for a in wrapped_dict['info']['actions']:
+            self.assertNotIn('conf', a)
