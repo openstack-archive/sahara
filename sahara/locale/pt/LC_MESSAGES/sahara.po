@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version:  Sahara\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2014-03-24 06:04+0000\n"
-"PO-Revision-Date: 2014-03-19 22:46+0000\n"
+"POT-Creation-Date: 2014-04-09 06:06+0000\n"
+"PO-Revision-Date: 2014-04-05 12:30+0000\n"
 "Last-Translator: openstackjenkins <jenkins@openstack.org>\n"
 "Language-Team: Portuguese "
 "(http://www.transifex.com/projects/p/openstack/language/pt/)\n"
@@ -190,7 +190,7 @@ msgstr "Parâmetro Inválido: o Unicode não é suportado pela base de dados atu
 
 #: sahara/openstack/common/db/sqlalchemy/migration.py:191
 msgid "version should be an integer"
-msgstr ""
+msgstr "a versão deverá ser um íntegro"
 
 #: sahara/openstack/common/db/sqlalchemy/migration.py:214
 #, python-format

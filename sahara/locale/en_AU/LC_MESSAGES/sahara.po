@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version:  Sahara\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2014-03-24 06:04+0000\n"
-"PO-Revision-Date: 2014-03-19 22:46+0000\n"
+"POT-Creation-Date: 2014-04-09 06:06+0000\n"
+"PO-Revision-Date: 2014-04-01 15:40+0000\n"
 "Last-Translator: openstackjenkins <jenkins@openstack.org>\n"
 "Language-Team: English (Australia) "
 "(http://www.transifex.com/projects/p/openstack/language/en_AU/)\n"
@@ -30,13 +30,15 @@ msgstr "Reloading cached file %s"
 
 #: sahara/openstack/common/gettextutils.py:297
 msgid "Message objects do not support addition."
-msgstr ""
+msgstr "Message objects do not support addition."
 
 #: sahara/openstack/common/gettextutils.py:306
 msgid ""
 "Message objects do not support str() because they may contain non-ascii "
 "characters. Please use unicode() or translate() instead."
 msgstr ""
+"Message objects do not support str() because they may contain non-ascii "
+"characters. Please use unicode() or translate() instead."
 
 #: sahara/openstack/common/lockutils.py:103
 #, python-format
@@ -101,7 +103,7 @@ msgstr "Fatal call to deprecated config: %(msg)s"
 #: sahara/openstack/common/periodic_task.py:39
 #, python-format
 msgid "Unexpected argument for periodic task creation: %(arg)s."
-msgstr ""
+msgstr "Unexpected argument for periodic task creation: %(arg)s."
 
 #: sahara/openstack/common/processutils.py:58
 msgid "Unexpected error while running command."
@@ -198,12 +200,16 @@ msgid ""
 "Tables \"%s\" have non utf8 collation, please make sure all tables are "
 "CHARSET=utf8"
 msgstr ""
+"Tables \"%s\" have non utf8 collation, please make sure all tables are "
+"CHARSET=utf8"
 
 #: sahara/openstack/common/db/sqlalchemy/migration.py:238
 msgid ""
 "The database is not under version control, but has tables. Please stamp "
 "the current version of the schema manually."
 msgstr ""
+"The database is not under version control, but has tables. Please stamp "
+"the current version of the schema manually."
 
 #: sahara/openstack/common/db/sqlalchemy/session.py:596
 msgid "DB exception wrapped."

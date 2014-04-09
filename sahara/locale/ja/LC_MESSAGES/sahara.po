@@ -9,8 +9,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version:  Sahara\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2014-03-24 06:04+0000\n"
-"PO-Revision-Date: 2014-03-19 22:46+0000\n"
+"POT-Creation-Date: 2014-04-09 06:06+0000\n"
+"PO-Revision-Date: 2014-03-24 15:53+0000\n"
 "Last-Translator: openstackjenkins <jenkins@openstack.org>\n"
 "Language-Team: Japanese "
 "(http://www.transifex.com/projects/p/openstack/language/ja/)\n"
@@ -87,7 +87,7 @@ msgstr "非推奨: %s"
 #: sahara/openstack/common/log.py:437
 #, python-format
 msgid "Error loading logging config %(log_config)s: %(err_msg)s"
-msgstr ""
+msgstr "ログ設定 %(log_config)s の読み込みエラー: %(err_msg)s"
 
 #: sahara/openstack/common/log.py:488
 #, python-format

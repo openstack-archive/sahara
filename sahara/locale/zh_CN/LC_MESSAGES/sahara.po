@@ -4,14 +4,15 @@
 #
 # Translators:
 # Tom Fifield <tom@openstack.org>, 2013
+# Yu Zhang, 2014
 # Yu Zhang <zhyu@cn.ibm.com>, 2013
 msgid ""
 msgstr ""
 "Project-Id-Version:  Sahara\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2014-03-24 06:04+0000\n"
-"PO-Revision-Date: 2014-03-19 22:46+0000\n"
-"Last-Translator: openstackjenkins <jenkins@openstack.org>\n"
+"POT-Creation-Date: 2014-04-09 06:06+0000\n"
+"PO-Revision-Date: 2014-03-23 18:30+0000\n"
+"Last-Translator: Yu Zhang\n"
 "Language-Team: Chinese (China) "
 "(http://www.transifex.com/projects/p/openstack/language/zh_CN/)\n"
 "Plural-Forms: nplurals=1; plural=0\n"
@@ -31,13 +32,13 @@ msgstr "正在重新装入所缓存文件 %s"
 
 #: sahara/openstack/common/gettextutils.py:297
 msgid "Message objects do not support addition."
-msgstr ""
+msgstr "消息对象不支持附加。"
 
 #: sahara/openstack/common/gettextutils.py:306
 msgid ""
 "Message objects do not support str() because they may contain non-ascii "
 "characters. Please use unicode() or translate() instead."
-msgstr ""
+msgstr "消息对象不支持str()，因为其中可能包含非ASCII字符。请使用unicode()或translate()代替。"
 
 #: sahara/openstack/common/lockutils.py:103
 #, python-format
@@ -106,7 +107,7 @@ msgstr "对于周期性任务创建，以下是意外自变量：%(arg)s。"
 
 #: sahara/openstack/common/processutils.py:58
 msgid "Unexpected error while running command."
-msgstr ""
+msgstr "在运行命令时发生预期外错误。"
 
 #: sahara/openstack/common/processutils.py:61
 #, python-format
@@ -117,6 +118,11 @@ msgid ""
 "Stdout: %(stdout)r\n"
 "Stderr: %(stderr)r"
 msgstr ""
+"%(description)s\n"
+"命令： %(cmd)s\n"
+"退出码： %(exit_code)s\n"
+"Stdout: %(stdout)r\n"
+"Stderr: %(stderr)r"
 
 #: sahara/openstack/common/processutils.py:139
 #, python-format
@@ -125,7 +131,7 @@ msgstr "发现未知的 utils.execute 关键字参数：%r"
 
 #: sahara/openstack/common/processutils.py:145
 msgid "Command requested root, but did not specify a root helper."
-msgstr ""
+msgstr "命令要求root，但没有指定root助手。"
 
 #: sahara/openstack/common/processutils.py:241
 msgid "Environment not supported over SSH"
@@ -171,17 +177,17 @@ msgstr "无法理解 XML"
 
 #: sahara/openstack/common/crypto/utils.py:29
 msgid "An unknown error occurred in crypto utils."
-msgstr ""
+msgstr "在加密工具中出现未知错误。"
 
 #: sahara/openstack/common/crypto/utils.py:36
 #, python-format
 msgid "Block size of %(given)d is too big, max = %(maximum)d"
-msgstr ""
+msgstr "块尺寸 %(given)d 过大， 最大值 = %(maximum)d"
 
 #: sahara/openstack/common/crypto/utils.py:45
 #, python-format
 msgid "Length of %(given)d is too long, max = %(maximum)d"
-msgstr ""
+msgstr "长度 %(given)d 过长， 最大值 = %(maximum)d"
 
 #: sahara/openstack/common/db/exception.py:42
 msgid "Invalid Parameter: Unicode is not supported by the current database."
@@ -196,13 +202,13 @@ msgstr "版本应该为整数"
 msgid ""
 "Tables \"%s\" have non utf8 collation, please make sure all tables are "
 "CHARSET=utf8"
-msgstr ""
+msgstr "表 \"%s\" 包含非utf8核对， 请确保所有表是 CHARSET=utf8"
 
 #: sahara/openstack/common/db/sqlalchemy/migration.py:238
 msgid ""
 "The database is not under version control, but has tables. Please stamp "
 "the current version of the schema manually."
-msgstr ""
+msgstr "数据库不受版本控制，但是包含表格。请手动标记schema的当前版本。"
 
 #: sahara/openstack/common/db/sqlalchemy/session.py:596
 msgid "DB exception wrapped."
@@ -211,14 +217,14 @@ msgstr "数据库异常被包裹。"
 #: sahara/openstack/common/db/sqlalchemy/session.py:665
 #, python-format
 msgid "Database server has gone away: %s"
-msgstr ""
+msgstr "数据库服务器已不存在： %s"
 
 #: sahara/openstack/common/db/sqlalchemy/session.py:743
 msgid ""
 "This application has not enabled MySQL traditional mode, which means "
 "silent data corruption may occur. Please encourage the application "
 "developers to enable this mode."
-msgstr ""
+msgstr "这一应用尚未打开MySQL传统模式，这意味着可能发生沉默数据损坏。请鼓励应用开发者打开这一模式。"
 
 #: sahara/openstack/common/db/sqlalchemy/session.py:767
 #, python-format
@@ -228,12 +234,12 @@ msgstr "SQL 连接失败。还可进行 %s 次尝试。"
 #: sahara/openstack/common/db/sqlalchemy/test_migrations.py:63
 #, python-format
 msgid "Got lock \"%s\""
-msgstr ""
+msgstr "已获取锁 \"%s\""
 
 #: sahara/openstack/common/db/sqlalchemy/test_migrations.py:66
 #, python-format
 msgid "Lock released \"%s\""
-msgstr ""
+msgstr "已释放锁 \"%s\""
 
 #: sahara/openstack/common/db/sqlalchemy/utils.py:58
 msgid "Sort key supplied was not valid."
