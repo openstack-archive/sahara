@@ -9,20 +9,7 @@ having to deploy Sahara.
 Setup a Local Environment with Sahara inside DevStack
 -----------------------------------------------------
 
-The easiest way to have a local Sahara environment with DevStack is to include
-the Sahara component in DevStack. This can be accomplished by modifying your
-DevStack ``local.conf`` or ``localrc`` file to enable ``sahara``. See the
-`DevStack documentation <http://devstack.org>`_ for more information on
-installing and configuring DevStack.
-
-If you are developing Sahara from an OSX environment you will need to run
-DevStack on a virtual machine. See
-`Setup VM for DevStack on OSX <devstack.html>`_ for more information.
-
-After you install DevStack with Sahara included you can rejoin screen with
-``rejoin-stack.sh`` command and switch to ``sahara`` tab. Here you can manage
-the Sahara service as other OpenStack services. Sahara source code is located
-at ``$DEST/sahara`` which is usually ``/opt/stack/sahara``.
+See `the main article <devstack.html>`_.
 
 Setup a Local Environment with an external OpenStack
 ----------------------------------------------------

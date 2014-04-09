@@ -1,54 +1,51 @@
-Setup VM for DevStack on OSX
-============================
+Setup DevStack
+==============
 
-In order to run Devstsack in a local VM, you need to start by installing a guest with Ubuntu 12.04 server.
-Download an image file from `Ubuntu's web site <http://www.ubuntu.com/download/server>`_ and create a new guest from it.
-Virtualization solution should support nested virtualization.
+The DevStack could be installed on Fedora, Ubuntu and CentOS. For supported
+versions see `DevStack documentation <http://devstack.org>`_
 
-
-Install VMWare Fusion and create a new VM with Ubuntu Server 12.04.
-Recommended settings:
-
-- Processor - at least 2 cores
-- Enable hypervisor applications in this virtual machine
-- Memory - at least 4GB
-- Hard Drive - at least 60GB
-
-**How to set fixed IP address for your VM**
-
-1. Open file ``/Library/Preferences/VMware Fusion/vmnet8/dhcpd.conf``
-2. There is a block named "subnet". It might look like this:
-
-.. sourcecode:: text
-
-    subnet 192.168.55.0 netmask 255.255.255.0 {
-            range 192.168.55.128 192.168.55.254;
-
-3. You need to pick an IP address outside of that range. For example - ``192.168.55.20``
-4. Copy VM MAC address from VM settings->Network->Advanced
-5. Append the following block to file ``dhcpd.conf`` (don't forget to replace ``VM_HOSTNAME`` and ``VM_MAC_ADDRESS`` with actual values):
-
-.. sourcecode:: text
-
-    host VM_HOSTNAME {
-            hardware ethernet VM_MAC_ADDRESS;
-            fixed-address 192.168.55.20;
-    }
-
-6. Now quit all the VmWare Fusion applications and restart vmnet:
-
-.. sourcecode:: console
-
-    $ sudo /Applications/VMware\ Fusion.app/Contents/Library/vmnet-cli --stop
-    $ sudo /Applications/VMware\ Fusion.app/Contents/Library/vmnet-cli --start
-
-7. Now start your VM, it should have new fixed IP address
+We recommend to install DevStack not into your main system, but run it in
+a VM instead. That way you may avoid contamination of your system
+with various stuff. You may find hypervisor and VM requirements in the
+the next section. If you still want to install DevStack on top of your
+main system, just skip the next section and read further.
 
 
-Install DevStack on VM
+Start VM and set up OS
 ----------------------
 
-Now we are going to install DevStack in VM we just created. So, connect to VM with secure shell and follow instructions.
+In order to run DevStack in a local VM, you need to start by installing
+a guest with Ubuntu 12.04 server. Download an image file from
+`Ubuntu's web site <http://www.ubuntu.com/download/server>`_ and create
+a new guest from it. Virtualization solution must support
+nested virtualization. Without nested virtualization VMs running inside
+the DevStack will be extremely slow lacking hardware acceleration, i.e.
+you will run QEMU VMs without KVM.
+
+On Linux QEMU/KVM supports nested virtualization, on Mac OS - VMWare Fusion.
+VMWare Fusion requires adjustments to run VM with fixed IP. You may find
+instructions which can help :ref:`below <fusion-fixed-ip>`.
+
+Start a new VM with Ubuntu Server 12.04. Recommended settings:
+
+- Processor - at least 2 cores
+- Memory - at least 8GB
+- Hard Drive - at least 60GB
+
+When allocating CPUs and RAM to the DevStack, assess how big clusters you
+want to run. A single Hadoop VM needs at least 1 cpu and 1G of RAM to run.
+While it is possible for several VMs to share a single cpu core, remember
+that they can't share the RAM.
+
+After you installed the VM, connect to it via SSH and proceed with the
+instructions below.
+
+
+Install DevStack
+----------------
+
+The instructions assume that you've decided to install DevStack into
+Ubuntu 12.04 system.
 
 1. Clone DevStack:
 
@@ -124,3 +121,46 @@ Now we are going to install DevStack in VM we just created. So, connect to VM wi
 
 
 7. Congratulations! You have OpenStack running in your VM and ready to launch VMs inside that VM :)
+
+
+Managing Sahara in DevStack
+---------------------------
+
+If you install DevStack with Sahara included you can rejoin screen with
+``rejoin-stack.sh`` command and switch to ``sahara`` tab. Here you can manage
+the Sahara service as other OpenStack services. Sahara source code is located
+at ``$DEST/sahara`` which is usually ``/opt/stack/sahara``.
+
+
+.. _fusion-fixed-ip:
+
+Setting fixed IP address for VMWare Fusion VM
+---------------------------------------------
+
+1. Open file ``/Library/Preferences/VMware Fusion/vmnet8/dhcpd.conf``
+2. There is a block named "subnet". It might look like this:
+
+.. sourcecode:: text
+
+    subnet 192.168.55.0 netmask 255.255.255.0 {
+            range 192.168.55.128 192.168.55.254;
+
+3. You need to pick an IP address outside of that range. For example - ``192.168.55.20``
+4. Copy VM MAC address from VM settings->Network->Advanced
+5. Append the following block to file ``dhcpd.conf`` (don't forget to replace ``VM_HOSTNAME`` and ``VM_MAC_ADDRESS`` with actual values):
+
+.. sourcecode:: text
+
+    host VM_HOSTNAME {
+            hardware ethernet VM_MAC_ADDRESS;
+            fixed-address 192.168.55.20;
+    }
+
+6. Now quit all the VmWare Fusion applications and restart vmnet:
+
+.. sourcecode:: console
+
+    $ sudo /Applications/VMware\ Fusion.app/Contents/Library/vmnet-cli --stop
+    $ sudo /Applications/VMware\ Fusion.app/Contents/Library/vmnet-cli --start
+
+7. Now start your VM, it should have new fixed IP address
