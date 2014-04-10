@@ -36,18 +36,28 @@ Also you should specify username of default cloud-user used in the Image:
 +--------------+------------+
 
 
-Limitations
------------
+Cluster Validation
+------------------
 
 When user creates or scales a Hadoop cluster using a Vanilla plugin,
 the cluster topology requested by user is verified for consistency.
 
 Currently there are the following limitations in cluster topology for Vanilla plugin:
 
-* Cluster should contain
-    * exactly one namenode
-    * at most one jobtracker
-    * at most one oozie
+For Vanilla Hadoop version 1.X.X:
 
-* Cluster cannot be created if it contains worker processes without containing corresponding master processes. E.g. it cannot
-  contain tasktracker if there is no jobtracker
+  + Cluster must contain exactly one namenode
+  + Cluster can contain at most one jobtracker
+  + Cluster can contain at most one oozie and this process is also required for EDP
+  + Cluster can't contain oozie without jobtraker
+  + Cluster can't have tasktracker nodes if it doesn't have jobtracker
+
+For Vanilla Hadoop version 2.X.X:
+
+  + Cluster must contain exactly one namenode
+  + Cluster can contain at most one resourcemanager
+  + Cluster can contain at most one historyserver
+  + Cluster can contain at most one oozie and this process is also required for EDP
+  + Cluster can't contain oozie without resourcemanager and without historyserver
+  + Cluster can't have nodemanager nodes if it doesn't have resourcemanager
+
