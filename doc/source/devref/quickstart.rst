@@ -28,7 +28,7 @@ and Sahara API at ``127.0.0.1:8386``. Here is a list of commands to set env:
 
 
 You can append these lines to the ``.bashrc`` and execute ``source .bashrc``.
-Now you can get authentification token from OpenStack Keystone service.
+Now you can get authentication token from OpenStack Keystone service.
 
 .. sourcecode:: console
 
@@ -63,24 +63,24 @@ authentication token (X-Auth-Token):
 You can download pre-built images with vanilla Apache Hadoop or build this
 images yourself:
 
-* Download and install pre-built image with Ubuntu 13.04
+* Download and install pre-built image with Ubuntu 13.10
 
 .. sourcecode:: console
 
     $ ssh user@hostname
-    $ wget http://sahara-files.mirantis.com/savanna-0.3-vanilla-1.2.1-ubuntu-13.04.qcow2
-    $ glance image-create --name=sahara-0.3-vanilla-1.2.1-ubuntu-13.04 \
-      --disk-format=qcow2 --container-format=bare < ./savanna-0.3-vanilla-1.2.1-ubuntu-13.04.qcow2
+    $ wget http://sahara-files.mirantis.com/sahara-icehouse-vanilla-1.2.1-ubuntu-13.10.qcow2
+    $ glance image-create --name=sahara-icehouse-vanilla-1.2.1-ubuntu-13.10 \
+      --disk-format=qcow2 --container-format=bare < ./sahara-icehouse-vanilla-1.2.1-ubuntu-13.10.qcow2
 
 
-* OR with Fedora 19
+* OR with Fedora 20
 
 .. sourcecode:: console
 
     $ ssh user@hostname
-    $ wget http://sahara-files.mirantis.com/savanna-0.3-vanilla-1.2.1-fedora-19.qcow2
-    $ glance image-create --name=sahara-0.3-vanilla-1.2.1-fedora-19 \
-      --disk-format=qcow2 --container-format=bare < ./savanna-0.3-vanilla-1.2.1-fedora-19.qcow2
+    $ wget http://sahara-files.mirantis.com/sahara-icehouse-vanilla-1.2.1-fedora-20.qcow2
+    $ glance image-create --name=sahara-icehouse-vanilla-1.2.1-fedora-20 \
+      --disk-format=qcow2 --container-format=bare < ./sahara-icehouse-vanilla-1.2.1-fedora-20.qcow2
 
 
 * OR build image using :doc:`../userdoc/diskimagebuilder`.
@@ -90,12 +90,12 @@ Save image id. You can get image id from command ``glance image-list``:
 
 .. sourcecode:: console
 
-    $ glance image-list --name sahara-0.3-vanilla-1.2.1-ubuntu-13.04
-    +--------------------------------------+-----------------------------------------+
-    | ID                                   | Name                                    |
-    +--------------------------------------+-----------------------------------------+
-    | 3f9fc974-b484-4756-82a4-bff9e116919b | sahara-0.3-vanilla-1.2.1-ubuntu-13.04   |
-    +--------------------------------------+-----------------------------------------+
+    $ glance image-list --name sahara-icehouse-vanilla-1.2.1-ubuntu-13.10
+    +--------------------------------------+---------------------------------------------+
+    | ID                                   | Name                                        |
+    +--------------------------------------+---------------------------------------------+
+    | 3f9fc974-b484-4756-82a4-bff9e116919b | sahara-icehouse-vanilla-1.2.1-ubuntu-13.10  |
+    +--------------------------------------+---------------------------------------------+
 
     $ export IMAGE_ID="3f9fc974-b484-4756-82a4-bff9e116919b"
 
@@ -156,7 +156,7 @@ Save image id. You can get image id from command ``glance image-list``:
                 },
                 "minDisk": 0,
                 "minRam": 0,
-                "name": "sahara-0.3-vanilla-1.2.1-ubuntu-13.04",
+                "name": "sahara-icehouse-vanilla-1.2.1-ubuntu-13.10",
                 "progress": 100,
                 "status": "ACTIVE",
                 "tags": [
