@@ -3,7 +3,7 @@ Sahara REST API v1.1 (EDP)
 
 .. note::
 
-    REST API v1.1 corresponds to Sahara v0.3.X
+    REST API v1.1 corresponds to Sahara v0.3.X and Sahara Icehouse release
 
 1. General information
 ======================
