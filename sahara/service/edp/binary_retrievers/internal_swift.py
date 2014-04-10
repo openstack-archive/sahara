@@ -18,18 +18,23 @@ import swiftclient
 
 import sahara.exceptions as ex
 from sahara.swift import utils as su
-from sahara.utils.openstack import base
 
 
 CONF = cfg.CONF
 
 
 def _get_conn(user, password):
-    return swiftclient.Connection(base.retrieve_auth_url(),
+    return swiftclient.Connection(su.retrieve_auth_url(),
                                   user,
                                   password,
                                   tenant_name=CONF.os_admin_tenant_name,
                                   auth_version="2.0")
+
+
+def _strip_sahara_suffix(container_name):
+    if container_name.endswith(su.SWIFT_URL_SUFFIX):
+        container_name = container_name[:-len(su.SWIFT_URL_SUFFIX)]
+    return container_name
 
 
 def get_raw_data(context, job_binary):
@@ -53,6 +58,9 @@ def get_raw_data(context, job_binary):
         # We are getting a whole container, return as a dictionary.
         container = names[0]
 
+        # if container name has '.sahara' suffix we need to strip it
+        container = _strip_sahara_suffix(container)
+
         # First check the size...
         try:
             headers = conn.head_container(container)
@@ -64,15 +72,19 @@ def get_raw_data(context, job_binary):
                                              "is greater than maximum (%sKB)")
 
             body = {}
-            headers, objects = conn.get_container(names[0])
+            headers, objects = conn.get_container(container)
             for item in objects:
-                headers, obj = conn.get_object(names[0], item["name"])
+                headers, obj = conn.get_object(container, item["name"])
                 body[item["name"]] = obj
         except swiftclient.ClientException as e:
             raise ex.SwiftClientException(e.message)
 
     else:
         container, obj = names
+
+        # if container name has '.sahara' suffix we need to strip it
+        container = _strip_sahara_suffix(container)
+
         try:
             # First check the size
             headers = conn.head_object(container, obj)
