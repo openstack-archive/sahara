@@ -123,7 +123,14 @@ using the following command:
      $ ln -s $SAHARA_DASHBOARD_HOME/saharadashboard .venv/lib/python2.7/site-packages/saharadashboard
   ..
 
-8. Modify ``openstack_dashboard/settings.py``
+8. Install python-saharaclient into venv
+
+  .. sourcecode:: console
+
+     $ .venv/bin/pip install python-saharaclient
+  ..
+
+9. Modify ``openstack_dashboard/settings.py``
 
   Add sahara to to the Horizon config:
 
@@ -142,7 +149,7 @@ using the following command:
           ....
   ..
 
-9. Start Horizon
+10. Start Horizon
 
   .. sourcecode:: console
 
@@ -163,7 +170,7 @@ using the following command:
 
   **Note** It is not recommended to use Horizon in this mode for production.
 
-10. Applying changes
+11. Applying changes
 
   If you have changed any ``*.py`` files in ``$SAHARA_DASHBOARD_HOME`` directory,
   Horizon will notice that and reload automatically. However changes made to
