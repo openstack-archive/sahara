@@ -34,7 +34,7 @@ corresponding tox env:
 ..
 
 <tag> may have the following values: ``transient``, ``vanilla1``, ``vanilla2``,
-``hdp``, ``idh2`` and ``idh3``.
+``hdp``.
 
 For example, you want to run tests for the Vanilla plugin with the Hadoop
 version 1.2.1. In this case you should use the following tox env:
@@ -53,12 +53,12 @@ should use the corresponding tox env:
 ..
 
 For example, you want to run tests for the Vanilla plugin with the Hadoop
-version 2.3.0 and for the IDH plugin with the Intel Hadoop version 3.0.2. In
-this case you should use the following tox env:
+version 2.3.0 and for the HDP plugin with the Hortonworks Data Platform version
+1.3.2. In this case you should use the following tox env:
 
 .. sourcecode:: console
 
-    $ tox -e integration -- vanilla2 idh3
+    $ tox -e integration -- vanilla2 hdp
 ..
 
 Here are a few more examples.
@@ -69,9 +69,9 @@ version 1.2.1. More info about transient cluster see in section ``Contents``.
 
 ``tox -e integration -- hdp`` will run tests for the HDP plugin.
 
-``tox -e integration -- transient vanilla2 idh2`` will run test for transient
-cluster, tests for the Vanilla plugin with the Hadoop version 1.2.1 and tests
-for the IDH plugin with the Intel Hadoop version 2.5.1.
+``tox -e integration -- transient vanilla2 hdp`` will run test for transient
+cluster, tests for the Vanilla plugin with the Hadoop version 2.3.0 and tests
+for the HDP plugin with the Hortonworks Data Platform version 1.3.2.
 
 Contents
 --------
@@ -155,18 +155,3 @@ The HDP plugin has the following checks:
 4. Elastic Data Processing (EDP).
 5. Swift availability.
 6. Cluster scaling.
-
-The IDH plugin with the Intel Hadoop version 2.5.1 has the following checks:
-++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-
-1. Proper cluster creation.
-2. Map Reduce.
-3. Swift availability.
-4. Cluster scaling.
-
-The IDH plugin with the Intel Hadoop version 3.0.2 has the following checks:
-++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-
-1. Proper cluster creation.
-2. Swift availability.
-3. Cluster scaling.

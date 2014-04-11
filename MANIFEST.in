@@ -9,10 +9,6 @@ include sahara/db/migration/alembic_migrations/versions/README
 
 recursive-include sahara/locale *
 
-include sahara/plugins/intel/v2_5_1/resources/*.xml
-include sahara/plugins/intel/v2_5_1/resources/*.xsd
-include sahara/plugins/intel/v3_0_2/resources/*.xml
-include sahara/plugins/intel/v3_0_2/resources/*.xsd
 include sahara/plugins/vanilla/v1_2_1/resources/*.xml
 include sahara/plugins/vanilla/v1_2_1/resources/*.sh
 include sahara/plugins/vanilla/v1_2_1/resources/*.sql
