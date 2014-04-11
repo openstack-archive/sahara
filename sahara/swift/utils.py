@@ -26,6 +26,7 @@ CONF = cfg.CONF
 SWIFT_INTERNAL_PREFIX = "swift://"
 # TODO(mattf): remove support for OLD_SWIFT_INTERNAL_PREFIX
 OLD_SWIFT_INTERNAL_PREFIX = "swift-internal://"
+SWIFT_URL_SUFFIX = '.sahara'
 
 
 def _get_service_address(service_type):
