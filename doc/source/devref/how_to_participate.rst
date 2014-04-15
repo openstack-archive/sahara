@@ -40,7 +40,7 @@ How to stay in touch with the community?
   `OpenStack development mail-list <http://lists.openstack.org/cgi-bin/mailman/listinfo/openstack-dev>`_.
   Prefix mail subject with ``[Sahara]``
 
-* Join ``#sahara`` IRC channel on `freenode <http://freenode.net/>`_
+* Join ``#openstack-sahara`` IRC channel on `freenode <http://freenode.net/>`_
 
 * Join public weekly meetings on *Thursdays at 18:00 UTC* on
   ``#openstack-meeting-alt`` IRC channel
