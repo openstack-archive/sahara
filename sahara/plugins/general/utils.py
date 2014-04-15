@@ -25,6 +25,10 @@ def get_node_groups(cluster, node_process=None):
                 node_process in [n.lower() for n in ng.node_processes])]
 
 
+def get_instances_count(cluster, node_process=None):
+    return sum([ng.count for ng in get_node_groups(cluster, node_process)])
+
+
 def get_instances(cluster, node_process=None):
     nodes = get_node_groups(cluster, node_process)
     return reduce(lambda a, b: a + b.instances, nodes, [])

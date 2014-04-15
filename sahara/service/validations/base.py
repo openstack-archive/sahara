@@ -321,9 +321,6 @@ def check_required_image_tags(plugin_name, hadoop_version, image_id):
 ## EDP
 
 
-def check_cluster_contains_oozie(cluster_id):
+def check_edp_job_support(cluster_id):
     cluster = api.get_cluster(cluster_id)
-    if not plugin_base.PLUGINS.get_plugin(
-            cluster.plugin_name).get_oozie_server(cluster):
-        raise ex.InvalidDataException('MapReduce job could not be run, '
-                                      'Oozie service is not found.')
+    plugin_base.PLUGINS.get_plugin(cluster.plugin_name).validate_edp(cluster)

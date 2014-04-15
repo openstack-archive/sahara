@@ -13,6 +13,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from sahara.plugins.general import exceptions as ex
+from sahara.plugins.general import utils as u
 from sahara.plugins import provisioning as p
 from sahara.plugins.vanilla import versionfactory as vhf
 
@@ -77,3 +79,8 @@ class VanillaProvider(p.ProvisioningPluginBase):
     def get_oozie_server(self, cluster):
         return self._get_version_handler(
             cluster.hadoop_version).get_oozie_server(cluster)
+
+    def validate_edp(self, cluster):
+        oo_count = u.get_instances_count(cluster, 'oozie')
+        if oo_count != 1:
+            raise ex.InvalidComponentCountException('oozie', '1', oo_count)
