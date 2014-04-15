@@ -46,7 +46,7 @@ class TestJobExecValidation(u.ValidationTestCase):
                 'check_data_sources_are_different', lambda x, y: None)
     @mock.patch('sahara.service.validations.base.check_cluster_exists',
                 lambda x: None)
-    @mock.patch('sahara.service.validations.base.check_cluster_contains_oozie')
+    @mock.patch('sahara.service.validations.base.check_edp_job_support')
     @mock.patch('sahara.service.validations'
                 '.edp.base.check_data_source_exists')
     @mock.patch('sahara.service.edp.api.get_job')
@@ -84,7 +84,7 @@ class TestJobExecValidation(u.ValidationTestCase):
 
     @mock.patch('sahara.service.validations.base.check_cluster_exists',
                 lambda x: None)
-    @mock.patch('sahara.service.validations.base.check_cluster_contains_oozie',
+    @mock.patch('sahara.service.validations.base.check_edp_job_support',
                 lambda x: None)
     @mock.patch('sahara.service.edp.api.get_data_source')
     @mock.patch('sahara.service.edp.api.get_job')
@@ -135,7 +135,7 @@ class TestJobExecValidation(u.ValidationTestCase):
 
     @mock.patch('sahara.service.api.get_cluster')
     @mock.patch('sahara.service.edp.api.get_job')
-    def test_check_oozie(self, get_job, get_cluster):
+    def test_check_edp_job_support(self, get_job, get_cluster):
         get_job.return_value = FakeJob()
         self._assert_create_object_validation(
             data={
@@ -143,11 +143,12 @@ class TestJobExecValidation(u.ValidationTestCase):
                 "input_id": six.text_type(uuid.uuid4()),
                 "output_id": six.text_type(uuid.uuid4())
             },
-            bad_req_i=(1, "INVALID_DATA", "MapReduce job could not be run, "
-                                          "Oozie service is not found."))
+            bad_req_i=(1, "INVALID_COMPONENT_COUNT",
+                       "Hadoop cluster should contain 1 oozie components. "
+                       "Actual oozie count is 0"))
 
         ng = tu.make_ng_dict('master', 42, ['oozie'], 1,
                              instances=[tu.make_inst_dict('id', 'name')])
         get_cluster.return_value = tu.create_cluster("cluster", "tenant1",
                                                      "vanilla", "1.2.1", [ng])
-        validation_base.check_cluster_contains_oozie('some_id')
+        validation_base.check_edp_job_support('some_id')

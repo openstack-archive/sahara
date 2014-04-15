@@ -67,6 +67,10 @@ class ProvisioningPluginBase(plugins_base.PluginInterface):
         pass
 
     @plugins_base.optional
+    def validate_edp(self, cluster):
+        pass
+
+    @plugins_base.optional
     def get_resource_manager_uri(self, cluster):
         pass
 
