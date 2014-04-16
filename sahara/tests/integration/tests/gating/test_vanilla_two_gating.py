@@ -190,8 +190,10 @@ class VanillaTwoGatingTest(cluster_configs.ClusterConfigTest,
         # check pig
         pig_job = f.get_file_text(path + 'edp-job.pig')
         pig_lib = f.get_file_text(path + 'edp-lib.jar')
-        self.edp_testing(utils_edp.JOB_TYPE_PIG,
-                         [{'pig': pig_job}], [{'jar': pig_lib}])
+        self.edp_testing(job_type=utils_edp.JOB_TYPE_PIG,
+                         job_data_list=[{'pig': pig_job}],
+                         lib_data_list=[{'jar': pig_lib}],
+                         swift_binaries=True)
 
         # check mapreduce
         mapreduce_jar = f.get_file_text(path + 'edp-mapreduce.jar')
@@ -202,9 +204,11 @@ class VanillaTwoGatingTest(cluster_configs.ClusterConfigTest,
                 'org.apache.oozie.example.SampleReducer'
             }
         }
-        self.edp_testing(utils_edp.JOB_TYPE_MAPREDUCE,
-                         [], [{'jar': mapreduce_jar}],
-                         mapreduce_configs)
+        self.edp_testing(job_type=utils_edp.JOB_TYPE_MAPREDUCE,
+                         job_data_list=[],
+                         lib_data_list=[{'jar': mapreduce_jar}],
+                         configs=mapreduce_configs,
+                         swift_binaries=True)
 
         # check mapreduce streaming
         mapreduce_streaming_configs = {
@@ -213,9 +217,10 @@ class VanillaTwoGatingTest(cluster_configs.ClusterConfigTest,
                 'edp.streaming.reducer': '/usr/bin/wc'
             }
         }
-
-        self.edp_testing(utils_edp.JOB_TYPE_MAPREDUCE_STREAMING, [], [],
-                         mapreduce_streaming_configs)
+        self.edp_testing(job_type=utils_edp.JOB_TYPE_MAPREDUCE_STREAMING,
+                         job_data_list=[],
+                         lib_data_list=[],
+                         configs=mapreduce_streaming_configs)
 
         # check java
         java_jar = f.get_file_text(
@@ -228,7 +233,8 @@ class VanillaTwoGatingTest(cluster_configs.ClusterConfigTest,
             'args': ['10', '10']
         }
         self.edp_testing(utils_edp.JOB_TYPE_JAVA,
-                         [], lib_data_list=[{'jar': java_jar}],
+                         job_data_list=[],
+                         lib_data_list=[{'jar': java_jar}],
                          configs=java_configs)
 
     @b.errormsg("Failure while cluster scaling: ")

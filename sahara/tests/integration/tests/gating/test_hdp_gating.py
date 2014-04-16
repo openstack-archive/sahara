@@ -183,13 +183,21 @@ class HDPGatingTest(cinder.CinderVolumeTest, edp.EDPTest,
             }
         }
         try:
-            self.edp_testing(utils_edp.JOB_TYPE_PIG, [{'pig': pig_job_data}],
-                             [{'jar': pig_lib_data}])
-            self.edp_testing(utils_edp.JOB_TYPE_MAPREDUCE, [],
-                             [{'jar': mapreduce_jar_data}], mapreduce_configs)
-            self.edp_testing(utils_edp.JOB_TYPE_MAPREDUCE_STREAMING, [], [],
-                             mapreduce_streaming_configs)
-            self.edp_testing(utils_edp.JOB_TYPE_JAVA, [],
+            self.edp_testing(job_type=utils_edp.JOB_TYPE_PIG,
+                             job_data_list=[{'pig': pig_job_data}],
+                             lib_data_list=[{'jar': pig_lib_data}],
+                             swift_binaries=True)
+            self.edp_testing(job_type=utils_edp.JOB_TYPE_MAPREDUCE,
+                             job_data_list=[],
+                             lib_data_list=[{'jar': mapreduce_jar_data}],
+                             configs=mapreduce_configs,
+                             swift_binaries=True)
+            self.edp_testing(job_type=utils_edp.JOB_TYPE_MAPREDUCE_STREAMING,
+                             job_data_list=[],
+                             lib_data_list=[],
+                             configs=mapreduce_streaming_configs)
+            self.edp_testing(job_type=utils_edp.JOB_TYPE_JAVA,
+                             job_data_list=[],
                              lib_data_list=[{'jar': java_lib_data}],
                              configs=java_configs,
                              pass_input_output_args=True)
