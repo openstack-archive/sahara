@@ -133,7 +133,16 @@ def check_flavor_exists(flavor_id):
 
 
 def check_floatingip_pool_exists(ng_name, pool_id):
-    if not nova.get_network(id=pool_id):
+    network = None
+    if CONF.use_neutron:
+        network = nova.get_network(id=pool_id)
+    else:
+        for net in nova.client().floating_ip_pools.list():
+            if net.name == pool_id:
+                network = net.name
+                break
+
+    if not network:
         raise ex.InvalidException("Floating IP pool %s for node group "
                                   "'%s' not found" % (pool_id, ng_name))
 

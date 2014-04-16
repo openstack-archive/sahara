@@ -64,6 +64,10 @@ def _get_network(**kwargs):
     return 'OK'
 
 
+def _get_fl_ip_pool_list():
+    return [FakeNetwork("d9a3bebc-f788-4b81-9a93-aa048022c1ca")]
+
+
 def _get_heat_stack_list():
     return [FakeStack('test-heat')]
 
@@ -71,6 +75,11 @@ def _get_heat_stack_list():
 class FakeStack(object):
     def __init__(self, name):
         self.stack_name = name
+
+
+class FakeNetwork(object):
+    def __init__(self, name):
+        self.name = name
 
 
 class FakeFlavor(object):
@@ -124,6 +133,7 @@ def start_patch(patch_templates=True):
     nova().flavors.list.side_effect = _get_flavors_list
     nova().keypairs.get.side_effect = _get_keypair
     nova().networks.find.side_effect = _get_network
+    nova().floating_ip_pools.list.side_effect = _get_fl_ip_pool_list
 
     heat = heat_p.start()
     heat().stacks.list.side_effect = _get_heat_stack_list
