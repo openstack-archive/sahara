@@ -235,37 +235,38 @@ class HDPGatingTest(cinder.CinderVolumeTest, edp.EDPTest,
 
 #--------------------------------CLUSTER SCALING-------------------------------
 
-        datanode_count_after_resizing = (
-            cluster_info['node_info']['datanode_count']
-            + self.hdp_config.SCALE_EXISTING_NG_COUNT)
-        change_list = [
-            {
-                'operation': 'resize',
-                'info': ['worker-node-tt-dn', datanode_count_after_resizing]
-            },
-            {
-                'operation': 'add',
-                'info': [
-                    'new-worker-node-tt-dn',
-                    self.hdp_config.SCALE_NEW_NG_COUNT,
-                    '%s' % node_group_template_tt_dn_id
-                ]
-            }
-        ]
-        try:
-            new_cluster_info = self.cluster_scaling(cluster_info, change_list)
-            self.await_active_workers_for_namenode(
-                new_cluster_info['node_info'], self.hdp_config)
-        except Exception as e:
-            with excutils.save_and_reraise_exception():
-                self.delete_objects(
-                    cluster_info['cluster_id'], cluster_template_id,
-                    node_group_template_id_list
-                )
-                message = 'Failure while cluster scaling: '
-                self.print_error_log(message, e)
-
         if not self.hdp_config.SKIP_SCALING_TEST:
+            datanode_count_after_resizing = (
+                cluster_info['node_info']['datanode_count']
+                + self.hdp_config.SCALE_EXISTING_NG_COUNT)
+            change_list = [
+                {
+                    'operation': 'resize',
+                    'info': ['worker-node-tt-dn',
+                             datanode_count_after_resizing]
+                },
+                {
+                    'operation': 'add',
+                    'info': [
+                        'new-worker-node-tt-dn',
+                        self.hdp_config.SCALE_NEW_NG_COUNT,
+                        '%s' % node_group_template_tt_dn_id
+                    ]
+                }
+            ]
+            try:
+                new_cluster_info = self.cluster_scaling(cluster_info,
+                                                        change_list)
+                self.await_active_workers_for_namenode(
+                    new_cluster_info['node_info'], self.hdp_config)
+            except Exception as e:
+                with excutils.save_and_reraise_exception():
+                    self.delete_objects(
+                        cluster_info['cluster_id'], cluster_template_id,
+                        node_group_template_id_list
+                    )
+                    message = 'Failure while cluster scaling: '
+                    self.print_error_log(message, e)
 
 #--------------------------CINDER TESTING AFTER SCALING------------------------
 
