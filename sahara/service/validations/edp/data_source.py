@@ -59,10 +59,14 @@ def check_data_source_create(data, **kwargs):
 
 
 def _check_swift_data_source_create(data):
-    if "credentials" not in data or (
-        not ("user" in data["credentials"] and
-             "password" in data["credentials"])):
-        raise ex.InvalidCredentials("Invalid credentials for Swift")
+    if "credentials" not in data:
+        raise ex.InvalidCredentials("No credentials provided for Swift")
+    if "user" not in data["credentials"]:
+        raise ex.InvalidCredentials(
+            "User is not provided in credentials for Swift")
+    if "password" not in data["credentials"]:
+        raise ex.InvalidCredentials(
+            "Password is not provided in credentials for Swift")
 
 
 def _check_hdfs_data_source_create(data):
