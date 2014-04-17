@@ -28,6 +28,7 @@ HADOOP_SWIFT_AUTH_URL = 'fs.swift.service.sahara.auth.url'
 HADOOP_SWIFT_TENANT = 'fs.swift.service.sahara.tenant'
 HADOOP_SWIFT_USERNAME = 'fs.swift.service.sahara.username'
 HADOOP_SWIFT_PASSWORD = 'fs.swift.service.sahara.password'
+HADOOP_SWIFT_REGION = 'fs.swift.service.sahara.region'
 
 
 def _retrieve_tenant():
@@ -47,6 +48,8 @@ def get_swift_configs():
             conf['value'] = su.retrieve_auth_url() + "tokens/"
         if conf['name'] == HADOOP_SWIFT_TENANT:
             conf['value'] = _retrieve_tenant()
+        if CONF.os_region_name and conf['name'] == HADOOP_SWIFT_REGION:
+            conf['value'] = CONF.os_region_name
 
     result = [cfg for cfg in configs if cfg['value']]
     LOG.info("Swift would be integrated with the following "

@@ -31,6 +31,9 @@ def url_for(service_catalog, service_type, admin=False, endpoint_type=None):
 
     if service:
         endpoints = service['endpoints']
+        if CONF.os_region_name:
+            endpoints = [e for e in endpoints
+                         if e['region'] == CONF.os_region_name]
         try:
             return _get_endpoint_url(endpoints, endpoint_type)
         except Exception:
