@@ -23,6 +23,7 @@ from sahara.tests.integration.tests import edp
 from sahara.tests.integration.tests import map_reduce
 from sahara.tests.integration.tests import scaling
 from sahara.tests.integration.tests import swift
+from sahara.utils import edp as utils_edp
 from sahara.utils import files as f
 
 
@@ -189,7 +190,8 @@ class VanillaTwoGatingTest(cluster_configs.ClusterConfigTest,
         # check pig
         pig_job = f.get_file_text(path + 'edp-job.pig')
         pig_lib = f.get_file_text(path + 'edp-lib.jar')
-        self.edp_testing('Pig', [{'pig': pig_job}], [{'jar': pig_lib}])
+        self.edp_testing(utils_edp.JOB_TYPE_PIG,
+                         [{'pig': pig_job}], [{'jar': pig_lib}])
 
         # check mapreduce
         mapreduce_jar = f.get_file_text(path + 'edp-mapreduce.jar')
@@ -200,7 +202,8 @@ class VanillaTwoGatingTest(cluster_configs.ClusterConfigTest,
                 'org.apache.oozie.example.SampleReducer'
             }
         }
-        self.edp_testing('MapReduce', [], [{'jar': mapreduce_jar}],
+        self.edp_testing(utils_edp.JOB_TYPE_MAPREDUCE,
+                         [], [{'jar': mapreduce_jar}],
                          mapreduce_configs)
 
         # check mapreduce streaming
@@ -211,7 +214,7 @@ class VanillaTwoGatingTest(cluster_configs.ClusterConfigTest,
             }
         }
 
-        self.edp_testing('MapReduce.Streaming', [], [],
+        self.edp_testing(utils_edp.JOB_TYPE_MAPREDUCE_STREAMING, [], [],
                          mapreduce_streaming_configs)
 
         # check java
@@ -224,7 +227,8 @@ class VanillaTwoGatingTest(cluster_configs.ClusterConfigTest,
             },
             'args': ['10', '10']
         }
-        self.edp_testing('Java', [], lib_data_list=[{'jar': java_jar}],
+        self.edp_testing(utils_edp.JOB_TYPE_JAVA,
+                         [], lib_data_list=[{'jar': java_jar}],
                          configs=java_configs)
 
     @b.errormsg("Failure while cluster scaling: ")

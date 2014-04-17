@@ -23,6 +23,7 @@ from sahara.service.validations import base as validation_base
 from sahara.service.validations.edp import job_executor as je
 from sahara.tests.unit.service.validation import utils as u
 from sahara.tests.unit import testutils as tu
+from sahara.utils import edp
 
 
 def wrap_it(data):
@@ -30,7 +31,7 @@ def wrap_it(data):
 
 
 class FakeJob(object):
-    type = "MapReduce.Streaming"
+    type = edp.JOB_TYPE_MAPREDUCE_STREAMING
     libs = []
 
 

@@ -18,27 +18,32 @@ import unittest2
 from sahara.utils import edp
 
 
-MAPRED_STREAMING = "MapReduce" + edp.JOB_TYPE_SEP + "Streaming"
-
-
 class SplitJobTypeTest(unittest2.TestCase):
     def test_split_job_type(self):
-        jtype, stype = edp.split_job_type("MapReduce")
-        self.assertEqual(jtype, "MapReduce")
-        self.assertEqual(stype, "")
+        jtype, stype = edp.split_job_type(edp.JOB_TYPE_MAPREDUCE)
+        self.assertEqual(jtype, edp.JOB_TYPE_MAPREDUCE)
+        self.assertEqual(stype, edp.JOB_SUBTYPE_NONE)
 
-        jtype, stype = edp.split_job_type(MAPRED_STREAMING)
-        self.assertEqual(jtype, "MapReduce")
-        self.assertEqual(stype, "Streaming")
+        jtype, stype = edp.split_job_type(edp.JOB_TYPE_MAPREDUCE_STREAMING)
+        self.assertEqual(jtype, edp.JOB_TYPE_MAPREDUCE)
+        self.assertEqual(stype, edp.JOB_SUBTYPE_STREAMING)
 
     def test_compare_job_type(self):
-        self.assertTrue(edp.compare_job_type("Java",
-                                             "Java", "MapReduce",
-                                             strict=True))
-        self.assertFalse(edp.compare_job_type(MAPRED_STREAMING,
-                                              "Java", "MapReduce",
-                                              strict=True))
-        self.assertTrue(edp.compare_job_type(MAPRED_STREAMING,
-                                             "Java", "MapReduce"))
-        self.assertFalse(edp.compare_job_type("MapReduce",
-                                              "Java", MAPRED_STREAMING))
+        self.assertTrue(edp.compare_job_type(
+            edp.JOB_TYPE_JAVA,
+            edp.JOB_TYPE_JAVA,
+            edp.JOB_TYPE_MAPREDUCE,
+            strict=True))
+        self.assertFalse(edp.compare_job_type(
+            edp.JOB_TYPE_MAPREDUCE_STREAMING,
+            edp.JOB_TYPE_JAVA,
+            edp.JOB_TYPE_MAPREDUCE,
+            strict=True))
+        self.assertTrue(edp.compare_job_type(
+            edp.JOB_TYPE_MAPREDUCE_STREAMING,
+            edp.JOB_TYPE_JAVA,
+            edp.JOB_TYPE_MAPREDUCE))
+        self.assertFalse(edp.compare_job_type(
+            edp.JOB_TYPE_MAPREDUCE,
+            edp.JOB_TYPE_JAVA,
+            edp.JOB_TYPE_MAPREDUCE_STREAMING))

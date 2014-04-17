@@ -20,6 +20,7 @@ import six
 
 from sahara.service.validations.edp import job_executor as je
 from sahara.tests.unit.service.validation import utils as u
+from sahara.utils import edp
 
 
 def wrap_it(data):
@@ -27,7 +28,7 @@ def wrap_it(data):
 
 
 class FakeJob(object):
-    type = "Java"
+    type = edp.JOB_TYPE_JAVA
     libs = []
 
 

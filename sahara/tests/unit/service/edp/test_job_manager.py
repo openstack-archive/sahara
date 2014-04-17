@@ -46,7 +46,7 @@ class TestJobManager(base.SaharaWithDbTestCase):
         remote.return_value = remote_class
         helper.return_value = 'ok'
 
-        job, _ = _create_all_stack('Pig')
+        job, _ = _create_all_stack(edp.JOB_TYPE_PIG)
         res = job_manager.create_workflow_dir(mock.Mock(), job, 'hadoop')
         self.assertIn('/user/hadoop/special_name/', res)
 
@@ -67,12 +67,12 @@ class TestJobManager(base.SaharaWithDbTestCase):
         dir_missing.return_value = False
         conductor_raw_data.return_value = 'ok'
 
-        job, _ = _create_all_stack('Pig')
+        job, _ = _create_all_stack(edp.JOB_TYPE_PIG)
         res = job_manager.upload_job_files(mock.Mock(), 'job_prefix',
                                            job, 'hadoop')
         self.assertEqual(['job_prefix/script.pig'], res)
 
-        job, _ = _create_all_stack('MapReduce')
+        job, _ = _create_all_stack(edp.JOB_TYPE_MAPREDUCE)
         res = job_manager.upload_job_files(mock.Mock(), 'job_prefix',
                                            job, 'hadoop')
         self.assertEqual(['job_prefix/lib/main.jar'], res)
@@ -93,7 +93,7 @@ class TestJobManager(base.SaharaWithDbTestCase):
     @mock.patch('sahara.conductor.API.job_binary_get')
     def test_build_workflow_for_job_pig(self, job_binary):
 
-        job, job_exec = _create_all_stack('Pig')
+        job, job_exec = _create_all_stack(edp.JOB_TYPE_PIG)
         job_binary.return_value = {"name": "script.pig"}
 
         input_data = _create_data_source('swift://ex.sahara/i')
@@ -126,7 +126,7 @@ class TestJobManager(base.SaharaWithDbTestCase):
     def test_build_workflow_swift_configs(self, job_binary):
 
         # Test that swift configs come from either input or output data sources
-        job, job_exec = _create_all_stack('Pig')
+        job, job_exec = _create_all_stack(edp.JOB_TYPE_PIG)
         job_binary.return_value = {"name": "script.pig"}
 
         input_data = _create_data_source('swift://ex.sahara/i')
@@ -168,8 +168,8 @@ class TestJobManager(base.SaharaWithDbTestCase):
         </property>
       </configuration>""", res)
 
-        job, job_exec = _create_all_stack('Pig', configs={'configs':
-                                                          {'dummy': 'value'}})
+        job, job_exec = _create_all_stack(
+            edp.JOB_TYPE_PIG, configs={'configs': {'dummy': 'value'}})
         input_data = _create_data_source('hdfs://user/hadoop/in')
         output_data = _create_data_source('hdfs://user/hadoop/out')
 
@@ -236,8 +236,8 @@ class TestJobManager(base.SaharaWithDbTestCase):
         </property>""", res)
 
     def test_build_workflow_for_job_mapreduce(self):
-        self._build_workflow_common('MapReduce')
-        self._build_workflow_common('MapReduce', streaming=True)
+        self._build_workflow_common(edp.JOB_TYPE_MAPREDUCE)
+        self._build_workflow_common(edp.JOB_TYPE_MAPREDUCE, streaming=True)
 
     def test_build_workflow_for_job_java(self):
         # If args include swift paths, user and password values
@@ -252,7 +252,7 @@ class TestJobManager(base.SaharaWithDbTestCase):
                      'output_path']
         }
 
-        job, job_exec = _create_all_stack('Java', configs)
+        job, job_exec = _create_all_stack(edp.JOB_TYPE_JAVA, configs)
         creator = workflow_factory.get_creator(job)
         res = creator.get_workflow_xml(_create_cluster(), job_exec)
 
@@ -275,7 +275,7 @@ class TestJobManager(base.SaharaWithDbTestCase):
     @mock.patch('sahara.conductor.API.job_binary_get')
     def test_build_workflow_for_job_hive(self, job_binary):
 
-        job, job_exec = _create_all_stack('Hive')
+        job, job_exec = _create_all_stack(edp.JOB_TYPE_HIVE)
         job_binary.return_value = {"name": "script.q"}
 
         input_data = _create_data_source('swift://ex.sahara/i')
@@ -335,7 +335,7 @@ class TestJobManager(base.SaharaWithDbTestCase):
         </property>""", res)
 
     def test_build_workflow_for_job_mapreduce_with_conf(self):
-        self._build_workflow_with_conf_common('MapReduce')
+        self._build_workflow_with_conf_common(edp.JOB_TYPE_MAPREDUCE)
 
     def test_update_job_dict(self):
         w = workflow_factory.BaseFactory()
@@ -382,7 +382,7 @@ def _create_job(id, job_binary, type):
     job.id = id
     job.type = type
     job.name = 'special_name'
-    if edp.compare_job_type(type, 'Pig', 'Hive'):
+    if edp.compare_job_type(type, edp.JOB_TYPE_PIG, edp.JOB_TYPE_HIVE):
         job.mains = [job_binary]
         job.libs = None
     else:
@@ -395,9 +395,9 @@ def _create_job_binary(id, type):
     binary = mock.Mock()
     binary.id = id
     binary.url = "internal-db://42"
-    if edp.compare_job_type(type, 'Pig'):
+    if edp.compare_job_type(type, edp.JOB_TYPE_PIG):
         binary.name = "script.pig"
-    elif edp.compare_job_type(type, 'MapReduce', 'Java'):
+    elif edp.compare_job_type(type, edp.JOB_TYPE_MAPREDUCE, edp.JOB_TYPE_JAVA):
         binary.name = "main.jar"
     else:
         binary.name = "script.q"
@@ -426,7 +426,7 @@ def _create_job_exec(job_id, type, configs=None):
     j_exec = mock.Mock()
     j_exec.job_id = job_id
     j_exec.job_configs = configs
-    if edp.compare_job_type(type, "Java"):
+    if edp.compare_job_type(type, edp.JOB_TYPE_JAVA):
         j_exec.job_configs['configs']['edp.java.main_class'] = _java_main_class
         j_exec.job_configs['configs']['edp.java.java_opts'] = _java_opts
     return j_exec
