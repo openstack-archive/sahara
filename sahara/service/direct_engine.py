@@ -118,12 +118,8 @@ class DirectEngine(e.Engine):
 
                 cluster = conductor.cluster_get(ctx, cluster)
                 g.clean_cluster_from_empty_ng(cluster)
-                if cluster.status == 'Decommissioning':
-                    cluster = conductor.cluster_update(ctx, cluster,
-                                                       {"status": "Error"})
-                else:
-                    cluster = conductor.cluster_update(ctx, cluster,
-                                                       {"status": "Active"})
+                cluster = conductor.cluster_update(ctx, cluster,
+                                                   {"status": "Active"})
 
                 LOG.info(g.format_cluster_status(cluster))
 
