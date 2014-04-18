@@ -21,6 +21,7 @@ import uuid
 
 from neutronclient.v2_0 import client as neutron_client
 from novaclient.v1_1 import client as nova_client
+from saharaclient.api import base as client_base
 import saharaclient.client as sahara_client
 from swiftclient import client as swift_client
 import testtools
@@ -536,6 +537,23 @@ class ITestCase(testtools.TestCase, testtools.testcase.WithAttributes,
         if not self.common_config.RETAIN_CLUSTER_AFTER_TEST:
             if cluster_id:
                 self.sahara.clusters.delete(cluster_id)
+
+                # waiting roughly for 300 seconds for cluster to terminate
+                attempts = 60
+                while attempts > 0:
+                    try:
+                        self.sahara.clusters.get(cluster_id)
+                    except client_base.APIException:
+                        # Cluster is finally deleted
+                        break
+
+                    attempts -= 1
+                    time.sleep(5)
+
+                if attempts == 0:
+                    self.fail('Cluster failed to terminate in 300 seconds: '
+                              '%s' % cluster_id)
+
             if cluster_template_id:
                 self.sahara.cluster_templates.delete(cluster_template_id)
             if node_group_template_id_list:
