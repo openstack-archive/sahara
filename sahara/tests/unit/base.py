@@ -16,6 +16,7 @@
 import os
 import tempfile
 
+import mock
 import unittest2
 
 from sahara import context
@@ -62,3 +63,22 @@ class SaharaWithDbTestCase(SaharaTestCase):
         db_api.drop_db()
         os.close(self.db_fd)
         os.unlink(self.db_path)
+
+
+class _ConsecutiveThreadGroup(context.ThreadGroup):
+    def __init__(self, _thread_pool_size=1000):
+        pass
+
+    def spawn(self, thread_description, func, *args, **kwargs):
+        func(*args, **kwargs)
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, *ex):
+        pass
+
+
+def mock_thread_group(func):
+    return mock.patch('sahara.context.ThreadGroup',
+                      new=_ConsecutiveThreadGroup)(func)

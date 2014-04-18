@@ -13,10 +13,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import threading
-
 import eventlet
-from eventlet import corolocal
+from eventlet.green import threading
+from eventlet.green import time
 from eventlet import greenpool
 from eventlet import semaphore
 from oslo.config import cfg
@@ -88,20 +87,19 @@ def get_admin_context():
     return Context(is_admin=True)
 
 
-_CTXS = threading.local()
-_CTXS._curr_ctxs = {}
+_CTX_STORE = threading.local()
+_CTX_KEY = 'current_ctx'
 
 
 def has_ctx():
-    ident = corolocal.get_ident()
-    return ident in _CTXS._curr_ctxs and _CTXS._curr_ctxs[ident]
+    return hasattr(_CTX_STORE, _CTX_KEY)
 
 
 def ctx():
     if not has_ctx():
         # TODO(slukjanov): replace with specific error
         raise RuntimeError("Context isn't available here")
-    return _CTXS._curr_ctxs[corolocal.get_ident()]
+    return getattr(_CTX_STORE, _CTX_KEY)
 
 
 def current():
@@ -109,13 +107,11 @@ def current():
 
 
 def set_ctx(new_ctx):
-    ident = corolocal.get_ident()
-
-    if not new_ctx and ident in _CTXS._curr_ctxs:
-        del _CTXS._curr_ctxs[ident]
+    if not new_ctx and has_ctx():
+        delattr(_CTX_STORE, _CTX_KEY)
 
     if new_ctx:
-        _CTXS._curr_ctxs[ident] = new_ctx
+        setattr(_CTX_STORE, _CTX_KEY, new_ctx)
 
 
 def _wrapper(ctx, thread_description, thread_group, func, *args, **kwargs):
@@ -199,4 +195,4 @@ class ThreadGroup(object):
 
 
 def sleep(seconds=0):
-    eventlet.sleep(seconds)
+    time.sleep(seconds)

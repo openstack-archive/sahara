@@ -59,6 +59,7 @@ class TestAttachVolume(base.SaharaWithDbTestCase):
         p_delete.side_effect = RuntimeError
         self.assertRaises(RuntimeError, volumes.detach_from_instance, instance)
 
+    @base.mock_thread_group
     @mock.patch('sahara.service.volumes._mount_volume')
     @mock.patch('sahara.service.volumes._await_attach_volumes')
     @mock.patch('sahara.service.volumes._create_attach_volume')
