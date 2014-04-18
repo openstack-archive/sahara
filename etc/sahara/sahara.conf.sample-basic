@@ -104,7 +104,7 @@
 
 # List of plugins to be loaded. Sahara preserves the order of
 # the list when returning it. (list value)
-#plugins=vanilla,hdp,idh
+#plugins=vanilla,hdp
 
 [database]
 #connection=sqlite:////sahara/openstack/common/db/$sqlite_db
