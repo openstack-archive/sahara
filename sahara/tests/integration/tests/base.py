@@ -19,6 +19,7 @@ import telnetlib
 import time
 import uuid
 
+from keystoneclient.v2_0 import client as keystone_client
 from neutronclient.v2_0 import client as neutron_client
 from novaclient.v1_1 import client as nova_client
 import saharaclient.client as sahara_client
@@ -79,6 +80,18 @@ class ITestCase(testtools.TestCase, testtools.testcase.WithAttributes,
         telnetlib.Telnet(
             self.common_config.SAHARA_HOST, self.common_config.SAHARA_PORT
         )
+
+        keystone = keystone_client.Client(
+            username=self.common_config.OS_USERNAME,
+            password=self.common_config.OS_PASSWORD,
+            tenant_name=self.common_config.OS_TENANT_NAME,
+            auth_url=self.common_config.OS_AUTH_URL)
+
+        keystone.management_url = self.common_config.OS_AUTH_URL
+
+        self.common_config.OS_TENANT_ID = [
+            tenant.id for tenant in keystone.tenants.list()
+            if tenant.name == self.common_config.OS_TENANT_NAME][0]
 
         self.sahara = sahara_client.Client(
             version=self.common_config.SAHARA_API_VERSION,
