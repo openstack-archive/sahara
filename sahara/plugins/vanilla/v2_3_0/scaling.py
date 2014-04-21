@@ -14,8 +14,8 @@
 # limitations under the License.
 
 from sahara import context
-from sahara import exceptions as ex
 from sahara.openstack.common import timeutils
+from sahara.plugins.general import exceptions as ex
 from sahara.plugins.general import utils as u
 from sahara.plugins.vanilla.v2_3_0 import config
 from sahara.plugins.vanilla.v2_3_0 import run_scripts as run
@@ -115,8 +115,9 @@ def _check_decommission(cluster, instances, check_func, timeout):
         else:
             context.sleep(5)
     else:
-        ex.SaharaException("Cannot finish decommission in %d seconds" %
-                           timeout)
+        ex.DecommissionError(
+            "Cannot finish decommission of cluster %s in %d seconds" %
+            (cluster, timeout))
 
 
 def _check_nodemanagers_decommission(cluster, instances):

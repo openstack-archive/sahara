@@ -23,6 +23,15 @@ class NodeGroupCannotBeScaled(e.SaharaException):
         self.code = "NODE_GROUP_CANNOT_BE_SCALED"
 
 
+class DecommissionError(e.SaharaException):
+    code = "DECOMMISSION_ERROR"
+    message = "Failed to decommission cluster"
+
+    def __init__(self, message):
+        if message:
+            self.message = message
+
+
 class ClusterCannotBeScaled(e.SaharaException):
     def __init__(self, cluster_name, reason):
         self.message = ("Cluster %s cannot be scaled : "
