@@ -39,7 +39,7 @@ class VersionHandler(avm.AbstractVersionHandler):
         return {
             "Hadoop": [],
             "MapReduce": ["historyserver"],
-            "HDFS": ["namenode", "datanode"],
+            "HDFS": ["namenode", "datanode", "secondarynamenode"],
             "YARN": ["resourcemanager", "nodemanager"],
             "JobFlow": ["oozie"]
         }
@@ -57,6 +57,9 @@ class VersionHandler(avm.AbstractVersionHandler):
         nn = utils.get_namenode(cluster)
         run.format_namenode(nn)
         run.start_hadoop_process(nn, 'namenode')
+
+        for snn in utils.get_secondarynamenodes(cluster):
+            run.start_hadoop_process(snn, 'secondarynamenode')
 
         rm = utils.get_resourcemanager(cluster)
         run.start_yarn_process(rm, 'resourcemanager')

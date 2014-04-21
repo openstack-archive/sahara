@@ -128,7 +128,8 @@ class VanillaTwoGatingTest(cluster_configs.ClusterConfigTest,
                 {
                     'name': 'master-node-oo-hs',
                     'flavor_id': self.flavor_id,
-                    'node_processes': ['oozie', 'historyserver'],
+                    'node_processes': ['oozie', 'historyserver',
+                                       'secondarynamenode'],
                     'floating_ip_pool': self.floating_ip_pool,
                     'count': 1
                 },

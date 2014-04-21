@@ -24,6 +24,11 @@ def validate_cluster_creating(cluster):
     if nn_count != 1:
         raise ex.InvalidComponentCountException('namenode', 1, nn_count)
 
+    snn_count = _get_inst_count(cluster, 'secondarynamenode')
+    if snn_count not in [0, 1]:
+        raise ex.InvalidComponentCountException('secondarynamenode', '0 or 1',
+                                                snn_count)
+
     rm_count = _get_inst_count(cluster, 'resourcemanager')
     if rm_count not in [0, 1]:
         raise ex.InvalidComponentCountException('resourcemanager', '0 or 1',
