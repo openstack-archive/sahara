@@ -258,7 +258,7 @@
 # Minimal "lifetime" in seconds for a transient cluster.
 # Cluster is guarantied to be "alive" within this time period.
 # (integer value)
-#min_transient_cluster_active_time=0
+#min_transient_cluster_active_time=30
 
 
 #
