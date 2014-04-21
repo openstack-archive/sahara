@@ -341,46 +341,46 @@ class VanillaGatingTest(cinder.CinderVolumeTest,
 
 #--------------------------------CLUSTER SCALING-------------------------------
 
-        change_list = [
-            {
-                'operation': 'resize',
-                'info': ['worker-node-tt-dn', 4]
-            },
-            {
-                'operation': 'resize',
-                'info': ['worker-node-dn', 0]
-            },
-            {
-                'operation': 'resize',
-                'info': ['worker-node-tt', 0]
-            },
-            {
-                'operation': 'add',
-                'info': [
-                    'new-worker-node-tt', 1, '%s' % node_group_template_tt_id
-                ]
-            },
-            {
-                'operation': 'add',
-                'info': [
-                    'new-worker-node-dn', 1, '%s' % node_group_template_dn_id
-                ]
-            }
-        ]
-        try:
-            new_cluster_info = self.cluster_scaling(cluster_info, change_list)
-            self.await_active_workers_for_namenode(
-                new_cluster_info['node_info'], self.vanilla_config)
-        except Exception as e:
-            with excutils.save_and_reraise_exception():
-                self.delete_objects(
-                    cluster_info['cluster_id'], cluster_template_id,
-                    node_group_template_id_list
-                )
-                message = 'Failure while cluster scaling: '
-                self.print_error_log(message, e)
-
         if not self.vanilla_config.SKIP_SCALING_TEST:
+            change_list = [
+                {
+                    'operation': 'resize',
+                    'info': ['worker-node-tt-dn', 4]
+                },
+                {
+                    'operation': 'resize',
+                    'info': ['worker-node-dn', 0]
+                },
+                {
+                    'operation': 'resize',
+                    'info': ['worker-node-tt', 0]
+                },
+                {
+                    'operation': 'add',
+                    'info': [
+                        'new-worker-node-tt', 1, node_group_template_tt_id
+                    ]
+                },
+                {
+                    'operation': 'add',
+                    'info': [
+                        'new-worker-node-dn', 1, node_group_template_dn_id
+                    ]
+                }
+            ]
+            try:
+                new_cluster_info = self.cluster_scaling(cluster_info,
+                                                        change_list)
+                self.await_active_workers_for_namenode(
+                    new_cluster_info['node_info'], self.vanilla_config)
+            except Exception as e:
+                with excutils.save_and_reraise_exception():
+                    self.delete_objects(
+                        cluster_info['cluster_id'], cluster_template_id,
+                        node_group_template_id_list
+                    )
+                    message = 'Failure while cluster scaling: '
+                    self.print_error_log(message, e)
 
 #--------------------------CINDER TESTING AFTER SCALING------------------------
 
