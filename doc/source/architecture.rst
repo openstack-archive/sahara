@@ -9,16 +9,16 @@ Architecture
 
 The Sahara architecture consists of several components:
 
-* Cluster Configuration Manager  - all the business logic resides here
-
-* Auth component - responsible for client authentication & authorization
+* Auth component - responsible for client authentication & authorization, communicates with Keystone
 
 * DAL - Data Access Layer, persists internal models in DB
 
-* VM Provisioning - component responsible for communication with Nova and Glance
+* Provisioning Engine - component responsible for communication with Nova, Heat, Cinder and Glance
 
-* Deployment Engine - pluggable mechanism responsible for deploying Hadoop on provisioned VMs;
+* Vendor Plugins - pluggable mechanism responsible for configuring and launching Hadoop on provisioned VMs;
   existing management solutions like Apache Ambari and Cloudera Management Console could be utilized for that matter
+
+* EDP - :doc:`../userdoc/edp` responsible for scheduling and managing Hadoop jobs on clusters provisioned by Sahara
 
 * REST API - exposes Sahara functionality via REST
 
