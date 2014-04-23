@@ -29,6 +29,7 @@ class TestHeat(unittest2.TestCase):
     def test_gets(self):
         inst_name = "cluster-worker-001"
         self.assertEqual(h._get_inst_name("cluster", "worker", 0), inst_name)
+        self.assertEqual(h._get_inst_name("CLUSTER", "WORKER", 0), inst_name)
         self.assertEqual(h._get_port_name(inst_name),
                          "cluster-worker-001-port")
         self.assertEqual(h._get_floating_name(inst_name),
