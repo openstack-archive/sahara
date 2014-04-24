@@ -39,11 +39,14 @@ class SwiftIntegrationTestCase(base.SaharaTestCase):
         self.setup_context(tenant_name='test_tenant')
         self.override_config("os_auth_protocol", 'http')
         self.override_config("os_auth_port", '8080')
+        self.override_config("os_region_name", 'regionOne')
         authUrlConfig.return_value = "http://localhost:8080/v2.0/"
 
         result = h.get_swift_configs()
-        self.assertEqual(7, len(result))
+        self.assertEqual(8, len(result))
         self.assertIn({'name': "fs.swift.service.sahara.tenant",
                        'value': 'test_tenant', 'description': ''}, result)
         self.assertIn({'name': "fs.swift.service.sahara.http.port",
                        'value': '8080', 'description': ''}, result)
+        self.assertIn({'name': "fs.swift.service.sahara.region",
+                       'value': 'regionOne', 'description': ''}, result)

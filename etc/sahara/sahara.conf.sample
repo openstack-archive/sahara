@@ -66,6 +66,9 @@
 # Name of tenant where the user is admin. (string value)
 #os_admin_tenant_name=admin
 
+# Region name used to get services endpoints. (string value)
+#os_region_name=<None>
+
 # An engine which will be used to provision infrastructure for
 # Hadoop cluster. (string value)
 #infrastructure_engine=direct
