@@ -3,13 +3,14 @@
 # This file is distributed under the same license as the sahara project.
 #
 # Translators:
+# rsimai, 2014
 msgid ""
 msgstr ""
 "Project-Id-Version:  Sahara\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2014-04-24 06:06+0000\n"
-"PO-Revision-Date: 2014-03-23 18:30+0000\n"
-"Last-Translator: openstackjenkins <jenkins@openstack.org>\n"
+"POT-Creation-Date: 2014-04-25 06:06+0000\n"
+"PO-Revision-Date: 2014-04-24 12:53+0000\n"
+"Last-Translator: rsimai\n"
 "Language-Team: German "
 "(http://www.transifex.com/projects/p/sahara/language/de/)\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
@@ -25,17 +26,20 @@ msgstr "Nicht abgefangene Ausnahme"
 #: sahara/openstack/common/fileutils.py:63
 #, python-format
 msgid "Reloading cached file %s"
-msgstr "Im Cache gespeicherte Datei %s wird neu geladen"
+msgstr "Cache Datei %s wird neu geladen"
 
 #: sahara/openstack/common/gettextutils.py:297
 msgid "Message objects do not support addition."
-msgstr ""
+msgstr "Das Nachrichtenobjekt unterstützt kein Hinzufügen."
 
 #: sahara/openstack/common/gettextutils.py:306
 msgid ""
 "Message objects do not support str() because they may contain non-ascii "
 "characters. Please use unicode() or translate() instead."
 msgstr ""
+"Nachrichtenobjekte unterstützen kein str() denn sie können nicht-ASCII "
+"Zeichen enthalten. Bitte verwenden Sie statt dessen unicode() oder "
+"translate()."
 
 #: sahara/openstack/common/lockutils.py:103
 #, python-format
@@ -45,37 +49,37 @@ msgstr "Angeforderte Sperre '%s' konnte nicht freigegeben werden"
 #: sahara/openstack/common/lockutils.py:168
 #, python-format
 msgid "Got semaphore \"%(lock)s\""
-msgstr ""
+msgstr "Semaphor \"%(lock)s\" erhalten"
 
 #: sahara/openstack/common/lockutils.py:177
 #, python-format
 msgid "Attempting to grab file lock \"%(lock)s\""
-msgstr ""
+msgstr "Versuche Dateisperre \"%(lock)s\" zu übernehmen"
 
 #: sahara/openstack/common/lockutils.py:187
 #, python-format
 msgid "Created lock path: %s"
-msgstr ""
+msgstr "Sperrpfad erzeugt: %s"
 
 #: sahara/openstack/common/lockutils.py:205
 #, python-format
 msgid "Got file lock \"%(lock)s\" at %(path)s"
-msgstr ""
+msgstr "Dateisperre \"%(lock)s\" unter %(path)s erhalten"
 
 #: sahara/openstack/common/lockutils.py:209
 #, python-format
 msgid "Released file lock \"%(lock)s\" at %(path)s"
-msgstr ""
+msgstr "Dateisperre \"%(lock)s\" unter %(path)s freigegeben."
 
 #: sahara/openstack/common/lockutils.py:247
 #, python-format
 msgid "Got semaphore / lock \"%(function)s\""
-msgstr ""
+msgstr "Semaphor / Sperre \"%(function)s\" erhalten"
 
 #: sahara/openstack/common/lockutils.py:251
 #, python-format
 msgid "Semaphore / lock released \"%(function)s\""
-msgstr ""
+msgstr "Semaphor / Sperre freigegeben: \"%(function)s\""
 
 #: sahara/openstack/common/log.py:326
 #, python-format
@@ -85,7 +89,7 @@ msgstr "Veraltet: %s"
 #: sahara/openstack/common/log.py:437
 #, python-format
 msgid "Error loading logging config %(log_config)s: %(err_msg)s"
-msgstr "Fehler beim laden der Logging Konfiguration %(log_config)s: %(err_msg)s"
+msgstr "Fehler beim Laden der Logging-Konfiguration %(log_config)s: %(err_msg)s"
 
 #: sahara/openstack/common/log.py:488
 #, python-format
@@ -95,16 +99,18 @@ msgstr "syslog-Funktion muss einer der folgenden Werte sein: %s"
 #: sahara/openstack/common/log.py:709
 #, python-format
 msgid "Fatal call to deprecated config: %(msg)s"
-msgstr "Schwerwiegender Aufruf an veraltete Konfiguration: %(msg)s"
+msgstr "Schwerwiegender Aufruf einer veralteten Konfiguration: %(msg)s"
 
 #: sahara/openstack/common/periodic_task.py:39
 #, python-format
 msgid "Unexpected argument for periodic task creation: %(arg)s."
 msgstr ""
+"Unerwartetes Argument zur Erzeugung einer wiederkehrenden Aufgabe: "
+"%(arg)s."
 
 #: sahara/openstack/common/processutils.py:58
 msgid "Unexpected error while running command."
-msgstr ""
+msgstr "Unerwarteter Fehler beim Kommandoaufruf."
 
 #: sahara/openstack/common/processutils.py:61
 #, python-format
@@ -115,6 +121,11 @@ msgid ""
 "Stdout: %(stdout)r\n"
 "Stderr: %(stderr)r"
 msgstr ""
+"%(description)s\n"
+"Kommando: %(cmd)s\n"
+"Rückgabewert: %(exit_code)s\n"
+"Stdout: %(stdout)r\n"
+"Stderr: %(stderr)r"
 
 #: sahara/openstack/common/processutils.py:139
 #, python-format
@@ -124,14 +135,16 @@ msgstr "Unbekannte Schlüsselwortargumente für utils.execute erhalten: %r"
 #: sahara/openstack/common/processutils.py:145
 msgid "Command requested root, but did not specify a root helper."
 msgstr ""
+"Das Kommando erfordert root-Zugriff, aber es wurde kein root-"
+"Hilfsprogramm angegeben."
 
 #: sahara/openstack/common/processutils.py:241
 msgid "Environment not supported over SSH"
-msgstr "Umgebung über Secure Shell nicht unterstützt"
+msgstr "Umgebung über SSH nicht unterstützt"
 
 #: sahara/openstack/common/processutils.py:245
 msgid "process_input not supported over SSH"
-msgstr "'process_input' über Secure Shell nicht unterstützt"
+msgstr "'process_input' über SSH nicht unterstützt"
 
 #: sahara/openstack/common/sslutils.py:52
 #, python-format
@@ -153,36 +166,37 @@ msgid ""
 "When running server in SSL mode, you must specify both a cert_file and "
 "key_file option value in your configuration file"
 msgstr ""
-"Wenn der Server im SSL-Modus läuft, müssen Sie sowohl für die "
-"'cert_file'- als auch für die 'key_file'-Option in Ihrer "
-"Konfigurationsdatei einen Wert angeben"
+"Wenn der Server im SSL-Modus läuft, müssen Sie sowohl für 'cert_file' als"
+" auch für 'key_file' einen Wert in Ihrer Konfigurationsdatei angeben"
 
 #: sahara/openstack/common/sslutils.py:100
 #, python-format
 msgid "Invalid SSL version : %s"
-msgstr ""
+msgstr "Ungültige SSL Version: %s"
 
 #: sahara/openstack/common/wsgi.py:187
 msgid "cannot understand JSON"
-msgstr "kann JSON nicht verstehen"
+msgstr "verstehe JSON nicht"
 
 #: sahara/openstack/common/wsgi.py:211
 msgid "cannot understand XML"
-msgstr "Kann XML nicht verstehen"
+msgstr "Verstehe XML nicht"
 
 #: sahara/openstack/common/crypto/utils.py:29
 msgid "An unknown error occurred in crypto utils."
 msgstr ""
+"Ein unbekannter Fehler ist Zusammenhang mit den crypto-Hilfsprogrammen "
+"aufgetreten."
 
 #: sahara/openstack/common/crypto/utils.py:36
 #, python-format
 msgid "Block size of %(given)d is too big, max = %(maximum)d"
-msgstr ""
+msgstr "Blockgröße von %(given)d ist zu groß, max = %(maximum)d"
 
 #: sahara/openstack/common/crypto/utils.py:45
 #, python-format
 msgid "Length of %(given)d is too long, max = %(maximum)d"
-msgstr ""
+msgstr "Länge von %(given)d ist zu groß, max = %(maximum)d"
 
 #: sahara/openstack/common/db/exception.py:42
 msgid "Invalid Parameter: Unicode is not supported by the current database."
@@ -200,12 +214,16 @@ msgid ""
 "Tables \"%s\" have non utf8 collation, please make sure all tables are "
 "CHARSET=utf8"
 msgstr ""
+"Tabellen \"%s\" verwenden eine nicht-utf8 Kollation. Bitte stellen Sie "
+"sicher, dass alle Tabellen CHARSET=utf8 verwenden"
 
 #: sahara/openstack/common/db/sqlalchemy/migration.py:238
 msgid ""
 "The database is not under version control, but has tables. Please stamp "
 "the current version of the schema manually."
 msgstr ""
+"Die Datenbank hat keine Versionskontrolle aber Tabellen. Bitte "
+"\"stempeln\" Sie die aktuelle Version des Schemas manuell."
 
 #: sahara/openstack/common/db/sqlalchemy/session.py:596
 msgid "DB exception wrapped."
@@ -214,7 +232,7 @@ msgstr "Datenbankausnahme eingeschlossen."
 #: sahara/openstack/common/db/sqlalchemy/session.py:665
 #, python-format
 msgid "Database server has gone away: %s"
-msgstr ""
+msgstr "Datenbankserver ist nicht mehr vorhanden: %s"
 
 #: sahara/openstack/common/db/sqlalchemy/session.py:743
 msgid ""
@@ -222,21 +240,24 @@ msgid ""
 "silent data corruption may occur. Please encourage the application "
 "developers to enable this mode."
 msgstr ""
+"Der \"MySQL Traditional Mode\" wurde von dieser Applikation nicht "
+"aktiviert. Dies kann zu unbemerkter Datenkorruption führen. Bitte "
+"ermuntern Sie die Applikationsentwickler diesen Modus zu aktivieren."
 
 #: sahara/openstack/common/db/sqlalchemy/session.py:767
 #, python-format
 msgid "SQL connection failed. %s attempts left."
-msgstr "SQL-Verbindung fehlgeschlagen. Noch %s weitere Versuche."
+msgstr "SQL-Verbindung fehlgeschlagen. Noch %s weitere Versuche übrig."
 
 #: sahara/openstack/common/db/sqlalchemy/test_migrations.py:63
 #, python-format
 msgid "Got lock \"%s\""
-msgstr ""
+msgstr "Sperre erhalten: \"%s\""
 
 #: sahara/openstack/common/db/sqlalchemy/test_migrations.py:66
 #, python-format
 msgid "Lock released \"%s\""
-msgstr "Sperrung aufgehoben \"%s\""
+msgstr "Sperre freigegeben \"%s\""
 
 #: sahara/openstack/common/db/sqlalchemy/utils.py:58
 msgid "Sort key supplied was not valid."
@@ -244,11 +265,13 @@ msgstr "Der angegebene Sortierschlüssel war nicht gültig. "
 
 #: sahara/openstack/common/db/sqlalchemy/utils.py:97
 msgid "Id not in sort_keys; is sort_keys unique?"
-msgstr "ID nicht in 'sort_keys' enthalten; ist 'sort_keys' eindeutig?"
+msgstr "ID ist nicht in 'sort_keys' enthalten; ist 'sort_keys' eindeutig?"
 
 #: sahara/openstack/common/db/sqlalchemy/utils.py:119
 msgid "Unknown sort direction, must be 'desc' or 'asc'"
-msgstr "Unbekannte Sortierrichtung; muss 'desc' oder 'asc' sein"
+msgstr ""
+"Unbekannte Sortierrichtung; muss 'desc' (absteigend) oder 'asc' "
+"(aufsteigend) sein"
 
 #: sahara/openstack/common/db/sqlalchemy/utils.py:194
 #, python-format
@@ -256,6 +279,9 @@ msgid ""
 "Please specify column %s in col_name_col_instance param. It is required "
 "because column has unsupported type by sqlite)."
 msgstr ""
+"Bitte geben Sie die Spalte %s im col_name_col_instance Parameter an. Dies"
+" ist erforderlich, denn der Typ dieser Spalte wird von sqlite nicht "
+"unterstützt."
 
 #: sahara/openstack/common/db/sqlalchemy/utils.py:200
 #, python-format
@@ -263,13 +289,16 @@ msgid ""
 "col_name_col_instance param has wrong type of column instance for column "
 "%s It should be instance of sqlalchemy.Column."
 msgstr ""
+"col_name_col_instance Parameter hat einen falschen Typ der Spalteninstanz"
+" für die Spalte column %s. Es sollte eine Instanz von sqlalchemy.Column "
+"sein."
 
 #: sahara/openstack/common/db/sqlalchemy/utils.py:280
 #, python-format
 msgid "Deleting duplicated row with id: %(id)s from table: %(table)s"
-msgstr ""
+msgstr "Lösche doppelte Zeile mit der ID %(id)s aus der Tabelle %(table)s"
 
 #: sahara/openstack/common/db/sqlalchemy/utils.py:301
 msgid "Unsupported id columns type"
-msgstr ""
+msgstr "Nicht unterstützter Spaltentyp"
 
