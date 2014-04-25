@@ -271,10 +271,10 @@ class VanillaGatingTest(cinder.CinderVolumeTest,
         mapreduce_jar_data = open(path + 'edp-mapreduce.jar').read()
 
         # This is a modified version of WordCount that takes swift configs
-        java_lib_data = open(path + 'edp-java.jar').read()
+        java_lib_data = open(path + 'edp-java/edp-java.jar').read()
         java_configs = {
             "configs": {
-            "edp.java.main_class": "org.apache.hadoop.examples.WordCount"
+            "edp.java.main_class": "org.openstack.sahara.examples.WordCount"
             }
         }
 
