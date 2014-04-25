@@ -38,7 +38,7 @@ class TestJobExecValidation(u.ValidationTestCase):
         self._create_object_fun = wrap_it
         self.scheme = je.JOB_EXEC_SCHEMA
 
-    @mock.patch('sahara.service.validations.base.check_cluster_contains_oozie')
+    @mock.patch('sahara.service.validations.base.check_edp_job_support')
     @mock.patch('sahara.service.validations.base.check_cluster_exists')
     @mock.patch('sahara.service.edp.api.get_job')
     def test_java(self, get_job, check_cluster, check_oozie):
