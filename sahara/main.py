@@ -95,20 +95,16 @@ def setup_common(possible_topdir, service_name):
     plugins_base.setup_plugins()
 
 
-def setup_sahara_api(app, mode):
-    periodic.setup(app)
-
-    #TODO(dmitryme): move periodics to engine, until then the remote
-    # initialization here is a temporal hack
-    remote_driver = _get_remote_driver()
-    remote.setup_remote(remote_driver, None)
-
+def setup_sahara_api(mode):
     ops = _get_ops_driver(mode)
+
     service_api.setup_service_api(ops)
     edp_api.setup_edp_api(ops)
 
 
 def setup_sahara_engine():
+    periodic.setup()
+
     engine = _get_infrastructure_engine()
     service_ops.setup_ops(engine)
 

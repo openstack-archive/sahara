@@ -52,7 +52,7 @@ def main():
 
     app = server.make_app()
 
-    server.setup_sahara_api(app, 'all-in-one')
+    server.setup_sahara_api('all-in-one')
     server.setup_sahara_engine()
 
     wsgi.server(eventlet.listen((cfg.CONF.host, cfg.CONF.port), backlog=500),

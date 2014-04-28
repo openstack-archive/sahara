@@ -52,7 +52,7 @@ def main():
 
     app = server.make_app()
 
-    server.setup_sahara_api(app, 'distributed')
+    server.setup_sahara_api('distributed')
 
     wsgi.server(eventlet.listen((cfg.CONF.host, cfg.CONF.port), backlog=500),
                 app, log=logging.WritableLogger(LOG), debug=False)
