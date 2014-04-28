@@ -19,9 +19,11 @@ import saharaclient.api.base as sab
 
 from sahara.openstack.common import timeutils
 from sahara.tests.integration.tests import base
+from sahara.tests.integration.tests import edp
+from sahara.utils import edp as utils_edp
 
 
-class TransientClusterTest(base.ITestCase):
+class TransientClusterTest(edp.EDPTest):
     @base.skip_test(
         'SKIP_TRANSIENT_CLUSTER_TEST',
         message='Test for transient cluster was skipped.')
@@ -35,9 +37,15 @@ class TransientClusterTest(base.ITestCase):
             cluster_configs={},
             node_groups=[
                 dict(
-                    name='single-node',
+                    name='master-node',
                     flavor_id=self.flavor_id,
-                    node_processes=['namenode'],
+                    node_processes=['namenode', 'oozie', 'jobtracker'],
+                    floating_ip_pool=floating_ip_pool,
+                    count=1),
+                dict(
+                    name='worker-node',
+                    flavor_id=self.flavor_id,
+                    node_processes=['datanode', 'tasktracker'],
                     floating_ip_pool=floating_ip_pool,
                     count=1)
             ],
@@ -45,6 +53,7 @@ class TransientClusterTest(base.ITestCase):
         )
 
         try:
+            # create a transient cluster
             try:
                 cluster_name = (self.common_config.CLUSTER_NAME + '-transient-'
                                 + plugin_config.PLUGIN_NAME)
@@ -60,12 +69,21 @@ class TransientClusterTest(base.ITestCase):
                 self.delete_objects(cluster_id=self.cluster_id)
                 raise
 
+            # check EDP
+            path = 'sahara/tests/integration/tests/resources/'
+            pig_job_data = open(path + 'edp-job.pig').read()
+            pig_lib_data = open(path + 'edp-lib.jar').read()
+            self.edp_testing(job_type=utils_edp.JOB_TYPE_PIG,
+                             job_data_list=[{'pig': pig_job_data}],
+                             lib_data_list=[{'jar': pig_lib_data}])
+
             cluster_info = self.get_cluster_info(plugin_config)
 
             # set timeout in seconds
             timeout = self.common_config.TRANSIENT_CLUSTER_TIMEOUT * 60
             s_time = timeutils.utcnow()
             raise_failure = True
+            # wait for cluster deleting
             while timeutils.delta_seconds(
                     s_time, timeutils.utcnow()) < timeout:
                 try:
