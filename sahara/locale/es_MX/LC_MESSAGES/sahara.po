@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version:  Sahara\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2014-04-25 06:06+0000\n"
-"PO-Revision-Date: 2014-04-24 21:40+0000\n"
+"POT-Creation-Date: 2014-04-28 06:06+0000\n"
+"PO-Revision-Date: 2014-04-27 22:00+0000\n"
 "Last-Translator: openstackjenkins <jenkins@openstack.org>\n"
 "Language-Team: Spanish (Mexico) "
 "(http://www.transifex.com/projects/p/sahara/language/es_MX/)\n"
@@ -85,7 +85,7 @@ msgstr ""
 #: sahara/openstack/common/log.py:437
 #, python-format
 msgid "Error loading logging config %(log_config)s: %(err_msg)s"
-msgstr ""
+msgstr "Error al cargar configuración de entrada %(log_config)s: %(err_msg)s"
 
 #: sahara/openstack/common/log.py:488
 #, python-format
@@ -95,7 +95,7 @@ msgstr ""
 #: sahara/openstack/common/log.py:709
 #, python-format
 msgid "Fatal call to deprecated config: %(msg)s"
-msgstr ""
+msgstr "Llamado crítico de configuración en desuso ; %(msg)s"
 
 #: sahara/openstack/common/periodic_task.py:39
 #, python-format
@@ -183,7 +183,7 @@ msgstr ""
 
 #: sahara/openstack/common/db/exception.py:42
 msgid "Invalid Parameter: Unicode is not supported by the current database."
-msgstr ""
+msgstr "Parámetro inválido : Unicode no está soportado por la base de datos actual"
 
 #: sahara/openstack/common/db/sqlalchemy/migration.py:191
 msgid "version should be an integer"
