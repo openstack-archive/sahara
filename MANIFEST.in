@@ -9,13 +9,13 @@ include sahara/db/migration/alembic_migrations/versions/README
 
 recursive-include sahara/locale *
 
-include sahara/plugins/vanilla/v1_2_1/resources/*.xml
+include sahara/plugins/vanilla/hadoop2/resources/*.sh
+include sahara/plugins/vanilla/hadoop2/resources/*.sql
+include sahara/plugins/vanilla/hadoop2/resources/*.template
 include sahara/plugins/vanilla/v1_2_1/resources/*.sh
 include sahara/plugins/vanilla/v1_2_1/resources/*.sql
+include sahara/plugins/vanilla/v1_2_1/resources/*.xml
 include sahara/plugins/vanilla/v2_3_0/resources/*.xml
-include sahara/plugins/vanilla/v2_3_0/resources/*.sh
-include sahara/plugins/vanilla/v2_3_0/resources/*.sql
-include sahara/plugins/vanilla/v2_3_0/resources/*.template
 include sahara/plugins/hdp/versions/version_1_3_2/resources/*.template
 include sahara/plugins/hdp/versions/version_1_3_2/resources/*.json
 include sahara/plugins/hdp/versions/version_1_3_2/resources/*.sh
@@ -28,7 +28,7 @@ include sahara/plugins/spark/resources/*.template
 include sahara/resources/*.heat
 include sahara/service/edp/resources/*.xml
 include sahara/swift/resources/*.xml
-include sahara/tests/unit/plugins/vanilla/v2_3_0/resources/*.txt
+include sahara/tests/unit/plugins/vanilla/hadoop2/resources/*.txt
 include sahara/tests/unit/resources/*.heat
 include sahara/tests/unit/resources/*.xml
 include sahara/tests/unit/resources/*.txt

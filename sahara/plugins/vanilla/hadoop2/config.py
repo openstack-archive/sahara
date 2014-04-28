@@ -16,9 +16,9 @@
 import six
 
 from sahara.openstack.common import log as logging
+from sahara.plugins.vanilla.hadoop2 import config_helper as c_helper
+from sahara.plugins.vanilla.hadoop2 import oozie_helper as o_helper
 from sahara.plugins.vanilla import utils as vu
-from sahara.plugins.vanilla.v2_3_0 import config_helper as c_helper
-from sahara.plugins.vanilla.v2_3_0 import oozie_helper as o_helper
 from sahara.swift import swift_helper as swift
 from sahara.topology import topology_helper as th
 from sahara.utils import files as f
@@ -32,40 +32,39 @@ HADOOP_USER = 'hadoop'
 HADOOP_GROUP = 'hadoop'
 
 
-def configure_cluster(cluster):
+def configure_cluster(pctx, cluster):
     LOG.debug("Configuring cluster \"%s\"", cluster.name)
     instances = []
     for node_group in cluster.node_groups:
         for instance in node_group.instances:
             instances.append(instance)
 
-    configure_instances(instances)
-    configure_topology_data(cluster)
+    configure_instances(pctx, instances)
+    configure_topology_data(pctx, cluster)
 
 
-def configure_instances(instances):
+def configure_instances(pctx, instances):
     for instance in instances:
-        _provisioning_configs(instance)
-        _post_configuration(instance)
+        _provisioning_configs(pctx, instance)
+        _post_configuration(pctx, instance)
 
 
-def _provisioning_configs(instance):
-    xmls, env = _generate_configs(instance.node_group)
+def _provisioning_configs(pctx, instance):
+    xmls, env = _generate_configs(pctx, instance.node_group)
     _push_xml_configs(instance, xmls)
     _push_env_configs(instance, env)
 
 
-def _generate_configs(node_group):
-    user_xml_confs, user_env_confs = _get_user_configs(node_group)
-    hadoop_xml_confs, default_env_confs = _get_hadoop_configs(node_group)
-
+def _generate_configs(pctx, node_group):
+    hadoop_xml_confs = _get_hadoop_configs(pctx, node_group)
+    user_xml_confs, user_env_confs = _get_user_configs(pctx, node_group)
     xml_confs = _merge_configs(user_xml_confs, hadoop_xml_confs)
-    env_confs = _merge_configs(default_env_confs, user_env_confs)
+    env_confs = _merge_configs(pctx['env_confs'], user_env_confs)
 
     return xml_confs, env_confs
 
 
-def _get_hadoop_configs(node_group):
+def _get_hadoop_configs(pctx, node_group):
     cluster = node_group.cluster
     nn_hostname = vu.get_instance_hostname(vu.get_namenode(cluster))
     dirs = _get_hadoop_dirs(node_group)
@@ -108,39 +107,38 @@ def _get_hadoop_configs(node_group):
         confs['Hadoop'].update(hadoop_cfg)
 
         oozie_cfg = o_helper.get_oozie_required_xml_configs(HADOOP_CONF_DIR)
-        if c_helper.is_mysql_enabled(cluster):
+        if c_helper.is_mysql_enabled(pctx, cluster):
             oozie_cfg.update(o_helper.get_oozie_mysql_configs())
 
         confs['JobFlow'] = oozie_cfg
 
-    if c_helper.get_config_value(c_helper.ENABLE_SWIFT.applicable_target,
-                                 c_helper.ENABLE_SWIFT.name, cluster):
+    if c_helper.is_swift_enabled(pctx, cluster):
         swift_configs = {}
         for config in swift.get_swift_configs():
             swift_configs[config['name']] = config['value']
 
         confs['Hadoop'].update(swift_configs)
 
-    if c_helper.is_data_locality_enabled(cluster):
+    if c_helper.is_data_locality_enabled(pctx, cluster):
         confs['Hadoop'].update(th.TOPOLOGY_CONFIG)
         confs['Hadoop'].update({"topology.script.file.name":
                                 HADOOP_CONF_DIR + "/topology.sh"})
 
-    return confs, c_helper.get_env_configs()
+    return confs
 
 
-def _get_user_configs(node_group):
-    ng_xml_confs, ng_env_confs = _separate_configs(node_group.node_configs)
+def _get_user_configs(pctx, node_group):
+    ng_xml_confs, ng_env_confs = _separate_configs(node_group.node_configs,
+                                                   pctx['env_confs'])
     cl_xml_confs, cl_env_confs = _separate_configs(
-        node_group.cluster.cluster_configs)
+        node_group.cluster.cluster_configs, pctx['env_confs'])
 
     xml_confs = _merge_configs(cl_xml_confs, ng_xml_confs)
     env_confs = _merge_configs(cl_env_confs, ng_env_confs)
     return xml_confs, env_confs
 
 
-def _separate_configs(configs):
-    all_env_configs = c_helper.get_env_configs()
+def _separate_configs(configs, all_env_configs):
     xml_configs = {}
     env_configs = {}
     for service, params in six.iteritems(configs):
@@ -228,7 +226,7 @@ def _push_configs_to_instance(instance, configs):
             r.write_file_to(fl, data, run_as_root=True)
 
 
-def _post_configuration(instance):
+def _post_configuration(pctx, instance):
     node_group = instance.node_group
     dirs = _get_hadoop_dirs(node_group)
     args = {
@@ -243,7 +241,7 @@ def _post_configuration(instance):
         'yarn_log_dir': dirs['yarn_log_dir']
     }
     post_conf_script = f.get_file_text(
-        'plugins/vanilla/v2_3_0/resources/post_conf.template')
+        'plugins/vanilla/hadoop2/resources/post_conf.template')
     post_conf_script = post_conf_script.format(**args)
 
     with instance.remote() as r:
@@ -251,10 +249,11 @@ def _post_configuration(instance):
         r.execute_command('chmod +x /tmp/post_conf.sh')
         r.execute_command('sudo /tmp/post_conf.sh')
 
-        if c_helper.is_data_locality_enabled(instance.node_group.cluster):
+        if c_helper.is_data_locality_enabled(pctx,
+                                             instance.node_group.cluster):
             t_script = HADOOP_CONF_DIR + '/topology.sh'
             r.write_file_to(t_script, f.get_file_text(
-                            'plugins/vanilla/v2_3_0/resources/topology.sh'),
+                            'plugins/vanilla/hadoop2/resources/topology.sh'),
                             run_as_root=True)
             r.execute_command('chmod +x ' + t_script, run_as_root=True)
 
@@ -295,8 +294,8 @@ def _merge_configs(a, b):
     return res
 
 
-def configure_topology_data(cluster):
-    if c_helper.is_data_locality_enabled(cluster):
+def configure_topology_data(pctx, cluster):
+    if c_helper.is_data_locality_enabled(pctx, cluster):
         LOG.info("Node group awareness is not implemented in YARN yet "
                  "so enable_hypervisor_awareness set to False explicitly")
         tpl_map = th.generate_topology_map(cluster, is_node_awareness=False)

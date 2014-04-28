@@ -13,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from sahara.plugins.vanilla.v2_3_0 import config as c
+from sahara.plugins.vanilla.hadoop2 import config as c
 from sahara.tests.unit import base
 
 
