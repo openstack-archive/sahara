@@ -1,0 +1,4 @@
+Compiled against Hadoop 1.2.1
+$ mkdir wordcount_classes
+$ javac -classpath /usr/share/hadoop/hadoop-core-1.2.1.jar:/usr/share/hadoop/lib/commons-cli-1.2.jar -d wordcount_classes WordCount.java
+$ jar -cvf edp-java.jar -C wordcount_classes/ .
