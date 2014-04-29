@@ -19,7 +19,6 @@ from sahara.openstack.common import excutils
 from sahara.tests.integration.configs import config as cfg
 from sahara.tests.integration.tests import cinder
 from sahara.tests.integration.tests import cluster_configs
-from sahara.tests.integration.tests import edp
 from sahara.tests.integration.tests import map_reduce
 from sahara.tests.integration.tests import scaling
 from sahara.tests.integration.tests import swift
@@ -28,7 +27,7 @@ from sahara.utils import edp as utils_edp
 
 
 class VanillaGatingTest(cinder.CinderVolumeTest,
-                        cluster_configs.ClusterConfigTest, edp.EDPTest,
+                        cluster_configs.ClusterConfigTest,
                         map_reduce.MapReduceTest, swift.SwiftTest,
                         scaling.ScalingTest,
                         vanilla_transient_cluster.TransientClusterTest):
