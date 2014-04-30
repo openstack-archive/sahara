@@ -15,12 +15,12 @@
 
 import mock
 import pkg_resources as pkg
-import unittest2
 
 from sahara.conductor import resource as r
 from sahara.plugins.general import exceptions as ex
 from sahara.plugins.hdp import ambariplugin as ap
 from sahara.plugins.hdp import clusterspec as cs
+from sahara.tests.unit import base as sahara_base
 import sahara.tests.unit.plugins.hdp.hdp_test_base as base
 from sahara import version
 
@@ -33,7 +33,7 @@ def create_cluster_template(ctx, dct):
     return r.ClusterTemplateResource(dct)
 
 
-class AmbariPluginTest(unittest2.TestCase):
+class AmbariPluginTest(sahara_base.SaharaTestCase):
     def test_get_node_processes(self):
         plugin = ap.AmbariPlugin()
         service_components = plugin.get_node_processes('1.3.2')
@@ -89,8 +89,7 @@ class AmbariPluginTest(unittest2.TestCase):
         self.assertIn('HBASE_REGIONSERVER', components)
         self.assertIn('HBASE_CLIENT', components)
 
-    @mock.patch("sahara.context.ctx")
-    def test_convert(self, ctx_func):
+    def test_convert(self):
         plugin = ap.AmbariPlugin()
         cluster_config_file = pkg.resource_string(
             version.version_info.package,

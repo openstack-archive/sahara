@@ -13,7 +13,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import eventlet
 import flask
 from keystoneclient.middleware import auth_token
 from oslo.config import cfg
@@ -37,8 +36,6 @@ from sahara.utils import remote
 
 LOG = log.getLogger(__name__)
 
-eventlet.monkey_patch(
-    os=True, select=True, socket=True, thread=True, time=True)
 
 # Patches minidom's writexml to avoid excess whitespaces in generated xml
 # configuration files that brakes Hadoop.

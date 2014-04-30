@@ -13,6 +13,44 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import eventlet
+
+
+EVENTLET_MONKEY_PATCH_MODULES = dict(os=True,
+                                     select=True,
+                                     socket=True,
+                                     thread=True,
+                                     time=True)
+
+
+def patch_all():
+    """Apply all patches.
+
+    List of patches:
+
+    * eventlet's monkey patch for all cases;
+    * minidom's writexml patch for py < 2.7.3 only.
+    """
+    eventlet_monkey_patch()
+    patch_minidom_writexml()
+
+
+def eventlet_monkey_patch():
+    """Apply eventlet's monkey patch.
+
+    This call should be the first call in application. It's safe to call
+    monkey_patch multiple times.
+    """
+    eventlet.monkey_patch(**EVENTLET_MONKEY_PATCH_MODULES)
+
+
+def eventlet_import_monkey_patched(module):
+    """Returns module monkey patched by eventlet.
+
+    It's needed for some tests, for example, context test.
+    """
+    return eventlet.import_patched(module, **EVENTLET_MONKEY_PATCH_MODULES)
+
 
 def patch_minidom_writexml():
     """Patch for xml.dom.minidom toprettyxml bug with whitespaces around text
@@ -31,7 +69,7 @@ def patch_minidom_writexml():
 
     import xml.dom.minidom as md
 
-    def writexml(self, writer, indent="", addindent="", newl=""):
+    def element_writexml(self, writer, indent="", addindent="", newl=""):
         # indent = current indentation
         # addindent = indentation to add to higher levels
         # newl = newline string
@@ -59,9 +97,9 @@ def patch_minidom_writexml():
         else:
             writer.write("/>%s" % (newl))
 
-    md.Element.writexml = writexml
+    md.Element.writexml = element_writexml
 
-    def writexml(self, writer, indent="", addindent="", newl=""):
+    def text_writexml(self, writer, indent="", addindent="", newl=""):
         md._write_data(writer, "%s%s%s" % (indent, self.data, newl))
 
-    md.Text.writexml = writexml
+    md.Text.writexml = text_writexml
