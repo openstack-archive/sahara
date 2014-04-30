@@ -62,7 +62,7 @@ class InvalidComponentCountException(e.SaharaException):
     """
 
     def __init__(self, component, expected_count, count):
-        self.message = ("Hadoop cluster should contain {0} {1} components."
+        self.message = ("Hadoop cluster should contain {0} {1} component(s)."
                         " Actual {1} count is {2}".format(
                         expected_count, component, count))
         self.code = "INVALID_COMPONENT_COUNT"
