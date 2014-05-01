@@ -293,12 +293,14 @@ class VanillaGatingTest(cinder.CinderVolumeTest,
             self.edp_testing(job_type=utils_edp.JOB_TYPE_PIG,
                              job_data_list=[{'pig': pig_job_data}],
                              lib_data_list=[{'jar': pig_lib_data}],
-                             swift_binaries=True)
+                             swift_binaries=True,
+                             hdfs_local_output=True)
             self.edp_testing(job_type=utils_edp.JOB_TYPE_MAPREDUCE,
                              job_data_list=[],
                              lib_data_list=[{'jar': mapreduce_jar_data}],
                              configs=mapreduce_configs,
-                             swift_binaries=True)
+                             swift_binaries=True,
+                             hdfs_local_output=True)
             self.edp_testing(job_type=utils_edp.JOB_TYPE_MAPREDUCE_STREAMING,
                              job_data_list=[],
                              lib_data_list=[],

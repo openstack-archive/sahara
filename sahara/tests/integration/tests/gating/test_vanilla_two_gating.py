@@ -194,7 +194,8 @@ class VanillaTwoGatingTest(cluster_configs.ClusterConfigTest,
         self.edp_testing(job_type=utils_edp.JOB_TYPE_PIG,
                          job_data_list=[{'pig': pig_job}],
                          lib_data_list=[{'jar': pig_lib}],
-                         swift_binaries=True)
+                         swift_binaries=True,
+                         hdfs_local_output=True)
 
         # check mapreduce
         mapreduce_jar = f.get_file_text(path + 'edp-mapreduce.jar')
@@ -209,7 +210,8 @@ class VanillaTwoGatingTest(cluster_configs.ClusterConfigTest,
                          job_data_list=[],
                          lib_data_list=[{'jar': mapreduce_jar}],
                          configs=mapreduce_configs,
-                         swift_binaries=True)
+                         swift_binaries=True,
+                         hdfs_local_output=True)
 
         # check mapreduce streaming
         mapreduce_streaming_configs = {

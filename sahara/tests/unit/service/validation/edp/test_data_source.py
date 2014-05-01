@@ -166,3 +166,27 @@ class TestDataSourceValidation(u.ValidationTestCase):
             "description": "correct url schema"
         }
         ds.check_data_source_create(data)
+
+    @mock.patch("sahara.service.validations."
+                "edp.base.check_data_source_unique_name")
+    def test_hdfs_creation_local_rel_url(self, check_data_source_unique_name):
+        check_data_source_unique_name.return_value = True
+        data = {
+            "name": "test_data_data_source",
+            "url": "mydata/input",
+            "type": "hdfs",
+            "description": "correct url schema for relative path on local hdfs"
+        }
+        ds.check_data_source_create(data)
+
+    @mock.patch("sahara.service.validations."
+                "edp.base.check_data_source_unique_name")
+    def test_hdfs_creation_local_abs_url(self, check_data_source_unique_name):
+        check_data_source_unique_name.return_value = True
+        data = {
+            "name": "test_data_data_source",
+            "url": "/tmp/output",
+            "type": "hdfs",
+            "description": "correct url schema for absolute path on local hdfs"
+        }
+        ds.check_data_source_create(data)

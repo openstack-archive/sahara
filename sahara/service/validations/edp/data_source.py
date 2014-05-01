@@ -86,8 +86,9 @@ def _check_hdfs_data_source_create(data):
     if len(data['url']) == 0:
         raise ex.InvalidException("HDFS url must not be empty")
     url = urlparse.urlparse(data['url'])
-    if url.scheme != "hdfs":
-        raise ex.InvalidException("URL scheme must be 'hdfs'")
-    if not url.hostname:
-        raise ex.InvalidException("HDFS url is incorrect, "
-                                  "cannot determine a hostname")
+    if url.scheme:
+        if url.scheme != "hdfs":
+            raise ex.InvalidException("URL scheme must be 'hdfs'")
+        if not url.hostname:
+            raise ex.InvalidException("HDFS url is incorrect, "
+                                      "cannot determine a hostname")

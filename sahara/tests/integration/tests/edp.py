@@ -122,7 +122,7 @@ class EDPTest(base.ITestCase):
                     'Test for EDP was skipped.')
     def edp_testing(self, job_type, job_data_list, lib_data_list=None,
                     configs=None, pass_input_output_args=False,
-                    swift_binaries=False):
+                    swift_binaries=False, hdfs_local_output=False):
         try:
             swift = self.connect_to_swift()
             container_name = 'Edp-test-%s' % str(uuid.uuid4())[:8]
@@ -148,7 +148,14 @@ class EDPTest(base.ITestCase):
             job_binary_internal_list = []
 
             swift_input_url = 'swift://%s.sahara/input' % container_name
-            swift_output_url = 'swift://%s.sahara/output' % container_name
+            if hdfs_local_output:
+                # This will create a file in hdfs under the user
+                # executing the job (i.e. /usr/hadoop/Edp-test-xxxx-out)
+                output_type = "hdfs"
+                output_url = container_name + "-out"
+            else:
+                output_type = "swift"
+                output_url = 'swift://%s.sahara/output' % container_name
 
             # Java jobs don't use data sources.  Input/output paths must
             # be passed as args with corresponding username/password configs
@@ -157,8 +164,8 @@ class EDPTest(base.ITestCase):
                     'input-%s' % str(uuid.uuid4())[:8], 'swift',
                     swift_input_url)
                 output_id = self._create_data_source(
-                    'output-%s' % str(uuid.uuid4())[:8], 'swift',
-                    swift_output_url)
+                    'output-%s' % str(uuid.uuid4())[:8], output_type,
+                    output_url)
 
             if job_data_list:
                 if swift_binaries:
@@ -197,10 +204,10 @@ class EDPTest(base.ITestCase):
                 self._add_swift_configs(configs)
                 if "args" in configs:
                     configs["args"].extend([swift_input_url,
-                                            swift_output_url])
+                                            output_url])
                 else:
                     configs["args"] = [swift_input_url,
-                                       swift_output_url]
+                                       output_url]
 
             job_execution = self.sahara.job_executions.create(
                 job_id, self.cluster_id, input_id, output_id,
