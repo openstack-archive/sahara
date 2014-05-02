@@ -144,7 +144,7 @@ class TestJobExecValidation(u.ValidationTestCase):
                 "output_id": six.text_type(uuid.uuid4())
             },
             bad_req_i=(1, "INVALID_COMPONENT_COUNT",
-                       "Hadoop cluster should contain 1 oozie components. "
+                       "Hadoop cluster should contain 1 oozie component(s). "
                        "Actual oozie count is 0"))
 
         ng = tu.make_ng_dict('master', 42, ['oozie'], 1,
