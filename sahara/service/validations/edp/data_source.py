@@ -17,6 +17,7 @@ import six.moves.urllib.parse as urlparse
 
 import sahara.exceptions as ex
 import sahara.service.validations.edp.base as b
+from sahara.swift import utils as su
 
 
 DATA_SOURCE_SCHEMA = {
@@ -59,6 +60,18 @@ def check_data_source_create(data, **kwargs):
 
 
 def _check_swift_data_source_create(data):
+    if len(data['url']) == 0:
+        raise ex.InvalidException("Swift url must not be empty")
+    url = urlparse.urlparse(data['url'])
+    if url.scheme != "swift":
+        raise ex.InvalidException("URL scheme must be 'swift'")
+
+    # We must have the suffix, and the path must be more than '/'
+    if not url.netloc.endswith(su.SWIFT_URL_SUFFIX) or len(url.path) <= 1:
+        raise ex.InvalidException(
+            "URL must be of the form swift://container%s/object"
+            % su.SWIFT_URL_SUFFIX)
+
     if "credentials" not in data:
         raise ex.InvalidCredentials("No credentials provided for Swift")
     if "user" not in data["credentials"]:

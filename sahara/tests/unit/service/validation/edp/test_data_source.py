@@ -18,7 +18,10 @@ import mock
 import sahara.exceptions as ex
 from sahara.service import api
 from sahara.service.validations.edp import data_source as ds
+from sahara.swift import utils as su
 from sahara.tests.unit.service.validation import utils as u
+
+SAMPLE_SWIFT_URL = "swift://1234%s/object" % su.SWIFT_URL_SUFFIX
 
 
 class TestDataSourceValidation(u.ValidationTestCase):
@@ -30,7 +33,7 @@ class TestDataSourceValidation(u.ValidationTestCase):
     def test_swift_creation(self):
         data = {
             "name": "test_data_data_source",
-            "url": "swift://1234",
+            "url": SAMPLE_SWIFT_URL,
             "type": "swift",
             "credentials": {
                 "user": "user",
@@ -48,7 +51,7 @@ class TestDataSourceValidation(u.ValidationTestCase):
 
         data = {
             "name": "test_data_data_source",
-            "url": "swift://1234",
+            "url": SAMPLE_SWIFT_URL,
             "type": "swift",
             "description": "long description"
         }
@@ -64,7 +67,7 @@ class TestDataSourceValidation(u.ValidationTestCase):
 
         data = {
             "name": "test_data_data_source",
-            "url": "swift://1234",
+            "url": SAMPLE_SWIFT_URL,
             "type": "swift",
             "credentials": {
                 "password": "password"
@@ -83,7 +86,7 @@ class TestDataSourceValidation(u.ValidationTestCase):
 
         data = {
             "name": "test_data_data_source",
-            "url": "swift://1234",
+            "url": SAMPLE_SWIFT_URL,
             "type": "swift",
             "credentials": {
                 "user": "user",
@@ -91,6 +94,50 @@ class TestDataSourceValidation(u.ValidationTestCase):
             "description": "long description"
         }
         with self.assertRaises(ex.InvalidCredentials):
+            ds.check_data_source_create(data)
+
+    @mock.patch("sahara.service.validations."
+                "edp.base.check_data_source_unique_name")
+    def test_swift_creation_wrong_schema(self, check_data_source_unique_name):
+        check_data_source_unique_name.return_value = True
+
+        data = {
+            "name": "test_data_data_source",
+            "url": "swif://1234%s/object" % su.SWIFT_URL_SUFFIX,
+            "type": "swift",
+            "description": "incorrect url schema"
+        }
+        with self.assertRaises(ex.InvalidException):
+            ds.check_data_source_create(data)
+
+    @mock.patch("sahara.service.validations."
+                "edp.base.check_data_source_unique_name")
+    def test_swift_creation_missing_suffix(self,
+                                           check_data_source_unique_name):
+        check_data_source_unique_name.return_value = True
+
+        data = {
+            "name": "test_data_data_source",
+            "url": "swift://1234/object",
+            "type": "swift",
+            "description": "incorrect url schema"
+        }
+        with self.assertRaises(ex.InvalidException):
+            ds.check_data_source_create(data)
+
+    @mock.patch("sahara.service.validations."
+                "edp.base.check_data_source_unique_name")
+    def test_swift_creation_missing_object(self,
+                                           check_data_source_unique_name):
+        check_data_source_unique_name.return_value = True
+
+        data = {
+            "name": "test_data_data_source",
+            "url": "swift://1234%s/" % su.SWIFT_URL_SUFFIX,
+            "type": "swift",
+            "description": "incorrect url schema"
+        }
+        with self.assertRaises(ex.InvalidException):
             ds.check_data_source_create(data)
 
     @mock.patch("sahara.service.validations."
