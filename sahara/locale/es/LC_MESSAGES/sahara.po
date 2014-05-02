@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version:  Sahara\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2014-04-24 06:06+0000\n"
-"PO-Revision-Date: 2014-03-23 18:30+0000\n"
+"POT-Creation-Date: 2014-05-02 06:06+0000\n"
+"PO-Revision-Date: 2014-04-30 15:30+0000\n"
 "Last-Translator: openstackjenkins <jenkins@openstack.org>\n"
 "Language-Team: Spanish "
 "(http://www.transifex.com/projects/p/sahara/language/es/)\n"
@@ -105,7 +105,7 @@ msgstr "Argumento inesperado para la creación de tarea periódica: %(arg)s."
 
 #: sahara/openstack/common/processutils.py:58
 msgid "Unexpected error while running command."
-msgstr ""
+msgstr "Error inesperado mientras se ejecutaba el comando."
 
 #: sahara/openstack/common/processutils.py:61
 #, python-format
@@ -116,6 +116,11 @@ msgid ""
 "Stdout: %(stdout)r\n"
 "Stderr: %(stderr)r"
 msgstr ""
+"%(description)s\n"
+"Comando: %(cmd)s\n"
+"Código de salida: %(exit_code)s\n"
+"Stdout: %(stdout)r\n"
+"Stderr: %(stderr)r"
 
 #: sahara/openstack/common/processutils.py:139
 #, python-format
@@ -126,7 +131,7 @@ msgstr ""
 
 #: sahara/openstack/common/processutils.py:145
 msgid "Command requested root, but did not specify a root helper."
-msgstr ""
+msgstr "Comando ha solicitado root, pero no ha solicitado un auxiliar root."
 
 #: sahara/openstack/common/processutils.py:241
 msgid "Environment not supported over SSH"
