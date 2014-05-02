@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version:  Sahara\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2014-04-24 06:06+0000\n"
-"PO-Revision-Date: 2014-03-19 22:46+0000\n"
+"POT-Creation-Date: 2014-05-02 06:06+0000\n"
+"PO-Revision-Date: 2014-04-30 10:41+0000\n"
 "Last-Translator: openstackjenkins <jenkins@openstack.org>\n"
 "Language-Team: Polish (Poland) "
 "(http://www.transifex.com/projects/p/sahara/language/pl_PL/)\n"
@@ -189,7 +189,7 @@ msgstr ""
 
 #: sahara/openstack/common/db/sqlalchemy/migration.py:191
 msgid "version should be an integer"
-msgstr ""
+msgstr "wersja powinna być dana liczbą całkowitą"
 
 #: sahara/openstack/common/db/sqlalchemy/migration.py:214
 #, python-format
