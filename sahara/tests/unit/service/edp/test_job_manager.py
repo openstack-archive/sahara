@@ -21,6 +21,7 @@ from sahara import conductor as cond
 from sahara.plugins import base as pb
 from sahara.service.edp import job_manager
 from sahara.service.edp.workflow_creator import workflow_factory
+from sahara.swift import swift_helper as sw
 from sahara.tests.unit import base
 from sahara.utils import edp
 from sahara.utils import patches as p
@@ -96,8 +97,8 @@ class TestJobManager(base.SaharaWithDbTestCase):
         job, job_exec = _create_all_stack(edp.JOB_TYPE_PIG)
         job_binary.return_value = {"name": "script.pig"}
 
-        input_data = _create_data_source('swift://ex.sahara/i')
-        output_data = _create_data_source('swift://ex.sahara/o')
+        input_data = _create_data_source('swift://ex/i')
+        output_data = _create_data_source('swift://ex/o')
 
         creator = workflow_factory.get_creator(job)
 
@@ -129,7 +130,7 @@ class TestJobManager(base.SaharaWithDbTestCase):
         job, job_exec = _create_all_stack(edp.JOB_TYPE_PIG)
         job_binary.return_value = {"name": "script.pig"}
 
-        input_data = _create_data_source('swift://ex.sahara/i')
+        input_data = _create_data_source('swift://ex/i')
         output_data = _create_data_source('hdfs://user/hadoop/out')
 
         creator = workflow_factory.get_creator(job)
@@ -149,7 +150,7 @@ class TestJobManager(base.SaharaWithDbTestCase):
       </configuration>""", res)
 
         input_data = _create_data_source('hdfs://user/hadoop/in')
-        output_data = _create_data_source('swift://ex.sahara/o')
+        output_data = _create_data_source('swift://ex/o')
 
         creator = workflow_factory.get_creator(job)
 
@@ -196,8 +197,8 @@ class TestJobManager(base.SaharaWithDbTestCase):
 
         job, job_exec = _create_all_stack(job_type, configs)
 
-        input_data = _create_data_source('swift://ex.sahara/i')
-        output_data = _create_data_source('swift://ex.sahara/o')
+        input_data = _create_data_source('swift://ex/i')
+        output_data = _create_data_source('swift://ex/o')
 
         creator = workflow_factory.get_creator(job)
 
@@ -243,12 +244,12 @@ class TestJobManager(base.SaharaWithDbTestCase):
         # If args include swift paths, user and password values
         # will have to be supplied via configs instead of being
         # lifted from input or output data sources
-        configs = {workflow_factory.swift_username: 'admin',
-                   workflow_factory.swift_password: 'admin1'}
+        configs = {sw.HADOOP_SWIFT_USERNAME: 'admin',
+                   sw.HADOOP_SWIFT_PASSWORD: 'admin1'}
 
         configs = {
             'configs': configs,
-            'args': ['input_path',
+            'args': ['swift://ex/i',
                      'output_path']
         }
 
@@ -269,7 +270,7 @@ class TestJobManager(base.SaharaWithDbTestCase):
       </configuration>
       <main-class>%s</main-class>
       <java-opts>%s</java-opts>
-      <arg>input_path</arg>
+      <arg>swift://ex.sahara/i</arg>
       <arg>output_path</arg>""" % (_java_main_class, _java_opts), res)
 
     @mock.patch('sahara.conductor.API.job_binary_get')
@@ -278,8 +279,8 @@ class TestJobManager(base.SaharaWithDbTestCase):
         job, job_exec = _create_all_stack(edp.JOB_TYPE_HIVE)
         job_binary.return_value = {"name": "script.q"}
 
-        input_data = _create_data_source('swift://ex.sahara/i')
-        output_data = _create_data_source('swift://ex.sahara/o')
+        input_data = _create_data_source('swift://ex/i')
+        output_data = _create_data_source('swift://ex/o')
 
         creator = workflow_factory.get_creator(job)
 
@@ -305,8 +306,8 @@ class TestJobManager(base.SaharaWithDbTestCase):
     def _build_workflow_with_conf_common(self, job_type):
         job, _ = _create_all_stack(job_type)
 
-        input_data = _create_data_source('swift://ex.sahara/i')
-        output_data = _create_data_source('swift://ex.sahara/o')
+        input_data = _create_data_source('swift://ex/i')
+        output_data = _create_data_source('swift://ex/o')
 
         job_exec = _create_job_exec(job.id,
                                     job_type, configs={"configs": {'c': 'f'}})
@@ -368,6 +369,15 @@ class TestJobManager(base.SaharaWithDbTestCase):
                           'args': ['replaced']})
 
         self.assertEqual(orig_exec_job_dict, exec_job_dict)
+
+    def test_inject_swift_url_suffix(self):
+        w = workflow_factory.BaseFactory()
+        self.assertEqual(w.inject_swift_url_suffix("swift://ex/o"),
+                         "swift://ex.sahara/o")
+        self.assertEqual(w.inject_swift_url_suffix("swift://ex.sahara/o"),
+                         "swift://ex.sahara/o")
+        self.assertEqual(w.inject_swift_url_suffix("hdfs://my/path"),
+                         "hdfs://my/path")
 
 
 def _create_all_stack(type, configs=None):

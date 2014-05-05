@@ -19,6 +19,7 @@ import time
 import uuid
 
 from sahara.openstack.common import excutils
+from sahara.swift import swift_helper as sw
 from sahara.tests.integration.tests import base
 from sahara.utils import edp
 
@@ -107,16 +108,16 @@ class EDPTest(base.ITestCase):
             self.sahara.data_sources.delete(output_id)
 
     def _add_swift_configs(self, configs):
-        swift_user = "fs.swift.service.sahara.username"
-        swift_passw = "fs.swift.service.sahara.password"
 
         if "configs" not in configs:
             configs["configs"] = {}
 
-        if swift_user not in configs["configs"]:
-            configs["configs"][swift_user] = self.common_config.OS_USERNAME
-        if swift_passw not in configs["configs"]:
-            configs["configs"][swift_passw] = self.common_config.OS_PASSWORD
+        if sw.HADOOP_SWIFT_USERNAME not in configs["configs"]:
+            configs["configs"][
+                sw.HADOOP_SWIFT_USERNAME] = self.common_config.OS_USERNAME
+        if sw.HADOOP_SWIFT_PASSWORD not in configs["configs"]:
+            configs["configs"][
+                sw.HADOOP_SWIFT_PASSWORD] = self.common_config.OS_PASSWORD
 
     @base.skip_test('SKIP_EDP_TEST',
                     'Test for EDP was skipped.')

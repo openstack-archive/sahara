@@ -66,8 +66,12 @@ def _check_swift_data_source_create(data):
     if url.scheme != "swift":
         raise ex.InvalidException("URL scheme must be 'swift'")
 
-    # We must have the suffix, and the path must be more than '/'
-    if not url.netloc.endswith(su.SWIFT_URL_SUFFIX) or len(url.path) <= 1:
+    # The swift url suffix does not have to be included in the netloc.
+    # However, if the swift suffix indicator is part of the netloc then
+    # we require the right suffix.
+    # Additionally, the path must be more than '/'
+    if (su.SWIFT_URL_SUFFIX_START in url.netloc and not url.netloc.endswith(
+            su.SWIFT_URL_SUFFIX)) or len(url.path) <= 1:
         raise ex.InvalidException(
             "URL must be of the form swift://container%s/object"
             % su.SWIFT_URL_SUFFIX)

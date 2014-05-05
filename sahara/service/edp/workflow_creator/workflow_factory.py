@@ -14,6 +14,7 @@
 # limitations under the License.
 
 import six
+import six.moves.urllib.parse as urlparse
 
 from sahara import conductor as c
 from sahara import context
@@ -22,14 +23,13 @@ from sahara.service.edp.workflow_creator import hive_workflow
 from sahara.service.edp.workflow_creator import java_workflow
 from sahara.service.edp.workflow_creator import mapreduce_workflow
 from sahara.service.edp.workflow_creator import pig_workflow
+from sahara.swift import swift_helper as sw
+from sahara.swift import utils as su
 from sahara.utils import edp
 from sahara.utils import xmlutils
 
 
 conductor = c.API
-
-swift_username = 'fs.swift.service.sahara.username'
-swift_password = 'fs.swift.service.sahara.password'
 
 
 class BaseFactory(object):
@@ -69,6 +69,14 @@ class BaseFactory(object):
                     new_vals = src.get(key, {})
                     value.update(new_vals)
 
+    def inject_swift_url_suffix(self, url):
+        if url.startswith("swift://"):
+            u = urlparse.urlparse(url)
+            if not u.netloc.endswith(su.SWIFT_URL_SUFFIX):
+                return url.replace(u.netloc,
+                                   u.netloc+"%s" % su.SWIFT_URL_SUFFIX, 1)
+        return url
+
     def update_job_dict(self, job_dict, exec_dict):
         pruned_exec_dict, edp_configs = self._prune_edp_configs(exec_dict)
         self._update_dict(job_dict, pruned_exec_dict)
@@ -79,14 +87,29 @@ class BaseFactory(object):
         # Args are listed, not named. Simply replace them.
         job_dict['args'] = pruned_exec_dict.get('args', [])
 
+        # Find all swift:// paths in args, configs, and params and
+        # add the .sahara suffix to the container if it is not there
+        # already
+        job_dict['args'] = [
+            # TODO(tmckay) args for Pig can actually be -param name=value
+            # and value could conceivably contain swift paths
+            self.inject_swift_url_suffix(arg) for arg in job_dict['args']]
+
+        for k, v in six.iteritems(job_dict.get('configs', {})):
+            job_dict['configs'][k] = self.inject_swift_url_suffix(v)
+
+        for k, v in six.iteritems(job_dict.get('params', {})):
+            job_dict['params'][k] = self.inject_swift_url_suffix(v)
+
     def get_configs(self, input_data, output_data):
         configs = {}
         for src in (input_data, output_data):
             if src.type == "swift" and hasattr(src, "credentials"):
                 if "user" in src.credentials:
-                    configs[swift_username] = src.credentials['user']
+                    configs[sw.HADOOP_SWIFT_USERNAME] = src.credentials['user']
                 if "password" in src.credentials:
-                    configs[swift_password] = src.credentials['password']
+                    configs[
+                        sw.HADOOP_SWIFT_PASSWORD] = src.credentials['password']
                 break
         return configs
 
@@ -175,6 +198,7 @@ class JavaFactory(BaseFactory):
         job_dict = {'configs': {},
                     'args': []}
         self.update_job_dict(job_dict, execution.job_configs)
+
         main_class, java_opts = self._get_java_configs(job_dict)
         creator = java_workflow.JavaWorkflowCreator()
         creator.build_workflow_xml(main_class,
