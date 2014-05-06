@@ -20,10 +20,10 @@ include sahara/plugins/vanilla/v2_3_0/resources/*.xml
 include sahara/plugins/vanilla/v2_3_0/resources/*.sh
 include sahara/plugins/vanilla/v2_3_0/resources/*.sql
 include sahara/plugins/vanilla/v2_3_0/resources/*.template
-include sahara/plugins/hdp/versions/1_3_2/resources/*.template
-include sahara/plugins/hdp/versions/1_3_2/resources/*.json
-include sahara/plugins/hdp/versions/2_0/resources/*.template
-include sahara/plugins/hdp/versions/2_0/resources/*.json
+include sahara/plugins/hdp/versions/version_1_3_2/resources/*.template
+include sahara/plugins/hdp/versions/version_1_3_2/resources/*.json
+include sahara/plugins/hdp/versions/version_2_0_6/resources/*.template
+include sahara/plugins/hdp/versions/version_2_0_6/resources/*.json
 include sahara/resources/*.heat
 include sahara/service/edp/resources/*.xml
 include sahara/swift/resources/*.xml
