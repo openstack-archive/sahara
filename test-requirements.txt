@@ -11,7 +11,7 @@ psycopg2
 pylint==0.25.2
 sphinx>=1.1.2,<1.2
 sphinxcontrib-httpdomain
-sqlalchemy-migrate>=0.8.2,!=0.8.4
+sqlalchemy-migrate>=0.9.1
 testrepository>=0.0.18
 testscenarios>=0.4
 testtools>=0.9.34
