@@ -152,6 +152,12 @@ class AmbariPlugin(p.ProvisioningPluginBase):
             self.version_factory.get_version_handler(cluster.hadoop_version))
         return version_handler.get_resource_manager_uri(cluster)
 
+    def get_name_node_uri(self, cluster):
+        return cluster['info']['HDFS']['NameNode']
+
+    def get_oozie_server_uri(self, cluster):
+        return cluster['info']['JobFlow']['Oozie'] + "/oozie/"
+
     def update_infra(self, cluster):
         pass
 

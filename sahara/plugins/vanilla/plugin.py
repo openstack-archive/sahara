@@ -84,3 +84,9 @@ class VanillaProvider(p.ProvisioningPluginBase):
         oo_count = u.get_instances_count(cluster, 'oozie')
         if oo_count != 1:
             raise ex.InvalidComponentCountException('oozie', '1', oo_count)
+
+    def get_name_node_uri(self, cluster):
+        return cluster['info']['HDFS']['NameNode']
+
+    def get_oozie_server_uri(self, cluster):
+        return cluster['info']['JobFlow']['Oozie'] + "/oozie/"

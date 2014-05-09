@@ -122,11 +122,25 @@ When user terminates cluster, Sahara simply shuts down all the cluster VMs. This
 *Returns*: None
 
 get_oozie_server(cluster)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Returns the instance object for the host running the Oozie server (this service may be referenced by a vendor-dependent identifier)
 
 *Returns*: The Oozie server instance object
+
+get_name_node_uri(cluster)
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Returns the URI for access to the Name Node
+
+*Returns*: The Name Node URI
+
+get_oozie_server_uri(cluster)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Returns the URI for access to the Oozie server
+
+*Returns*: The Oozie server URI
 
 get_resource_manager_uri(cluster)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
