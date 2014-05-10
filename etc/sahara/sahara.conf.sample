@@ -98,21 +98,6 @@
 
 
 #
-# Options defined in sahara.openstack.common.eventlet_backdoor
-#
-
-# Enable eventlet backdoor.  Acceptable values are 0, <port>,
-# and <start>:<end>, where 0 results in listening on a random
-# tcp port number; <port> results in listening on the
-# specified port number (and not enabling backdoor if that
-# port is in use); and <start>:<end> results in listening on
-# the smallest unused port number within the specified range
-# of port numbers.  The chosen port is displayed in the
-# service's log file. (string value)
-#backdoor_port=<None>
-
-
-#
 # Options defined in sahara.openstack.common.lockutils
 #
 
@@ -405,24 +390,5 @@
 # (integer value)
 # Deprecated group/name - [DATABASE]/sqlalchemy_pool_timeout
 #pool_timeout=<None>
-
-
-[ssl]
-
-#
-# Options defined in sahara.openstack.common.sslutils
-#
-
-# CA certificate file to use to verify connecting clients
-# (string value)
-#ca_file=<None>
-
-# Certificate file to use when starting the server securely
-# (string value)
-#cert_file=<None>
-
-# Private key file to use when starting the server securely
-# (string value)
-#key_file=<None>
 
 
