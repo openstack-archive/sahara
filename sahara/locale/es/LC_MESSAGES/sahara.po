@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version:  Sahara\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2014-05-02 06:06+0000\n"
-"PO-Revision-Date: 2014-04-30 15:30+0000\n"
+"POT-Creation-Date: 2014-05-11 06:06+0000\n"
+"PO-Revision-Date: 2014-05-11 03:40+0000\n"
 "Last-Translator: openstackjenkins <jenkins@openstack.org>\n"
 "Language-Team: Spanish "
 "(http://www.transifex.com/projects/p/sahara/language/es/)\n"
@@ -30,13 +30,16 @@ msgstr "Volviendo a cargar el archivo en memoria caché %s "
 
 #: sahara/openstack/common/gettextutils.py:297
 msgid "Message objects do not support addition."
-msgstr ""
+msgstr "Los objetos de mensaje no soportan adición."
 
 #: sahara/openstack/common/gettextutils.py:306
 msgid ""
 "Message objects do not support str() because they may contain non-ascii "
 "characters. Please use unicode() or translate() instead."
 msgstr ""
+"Los objetos de mensaje no soportan str() debido a que pueden contener "
+"caracteres no-ascii. Por favor utiliza unicode() o translate() en su "
+"lugar."
 
 #: sahara/openstack/common/lockutils.py:103
 #, python-format
@@ -141,34 +144,6 @@ msgstr "Entorno no soportado a través de SSH"
 msgid "process_input not supported over SSH"
 msgstr "entrada de proceso no soporta a través de SSH"
 
-#: sahara/openstack/common/sslutils.py:52
-#, python-format
-msgid "Unable to find cert_file : %s"
-msgstr "No se puede encontrar cert_file: %s"
-
-#: sahara/openstack/common/sslutils.py:55
-#, python-format
-msgid "Unable to find ca_file : %s"
-msgstr "No se puede encontrar ca_file: %s"
-
-#: sahara/openstack/common/sslutils.py:58
-#, python-format
-msgid "Unable to find key_file : %s"
-msgstr "No se puede encontrar key_file: %s"
-
-#: sahara/openstack/common/sslutils.py:61
-msgid ""
-"When running server in SSL mode, you must specify both a cert_file and "
-"key_file option value in your configuration file"
-msgstr ""
-"Al ejecutar el servidor en modalidad SSL, debe especificar un valor para "
-"las opciones cert_file y key_file en el archivo de configuración"
-
-#: sahara/openstack/common/sslutils.py:100
-#, python-format
-msgid "Invalid SSL version : %s"
-msgstr "Versión SSL inválida : %s"
-
 #: sahara/openstack/common/wsgi.py:187
 msgid "cannot understand JSON"
 msgstr "no se puede entender JSON"
@@ -176,20 +151,6 @@ msgstr "no se puede entender JSON"
 #: sahara/openstack/common/wsgi.py:211
 msgid "cannot understand XML"
 msgstr "no se puede entender XML"
-
-#: sahara/openstack/common/crypto/utils.py:29
-msgid "An unknown error occurred in crypto utils."
-msgstr "Ha ocurrido un error desconocido en crypto utils."
-
-#: sahara/openstack/common/crypto/utils.py:36
-#, python-format
-msgid "Block size of %(given)d is too big, max = %(maximum)d"
-msgstr "Tamaño de bloque de %(given)d es demasiado grande, máximo = %(maximum)d"
-
-#: sahara/openstack/common/crypto/utils.py:45
-#, python-format
-msgid "Length of %(given)d is too long, max = %(maximum)d"
-msgstr "Longitud de %(given)d es demasiado larga, máxima = %(maximum)d"
 
 #: sahara/openstack/common/db/exception.py:42
 msgid "Invalid Parameter: Unicode is not supported by the current database."
@@ -205,12 +166,16 @@ msgid ""
 "Tables \"%s\" have non utf8 collation, please make sure all tables are "
 "CHARSET=utf8"
 msgstr ""
+"Las tablas \"%s\" tienen una colación no utf8, por favor asegúrate que "
+"todas las tablas tienen CHARSET=utf8"
 
 #: sahara/openstack/common/db/sqlalchemy/migration.py:238
 msgid ""
 "The database is not under version control, but has tables. Please stamp "
 "the current version of the schema manually."
 msgstr ""
+"La base de datos no está en control de versión, pero tiene tablas. Por "
+"favor indica la versión actual del esquema manualmente."
 
 #: sahara/openstack/common/db/sqlalchemy/session.py:596
 msgid "DB exception wrapped."

@@ -10,9 +10,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version:  Sahara\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2014-04-24 06:06+0000\n"
-"PO-Revision-Date: 2014-03-23 18:30+0000\n"
-"Last-Translator: Yu Zhang\n"
+"POT-Creation-Date: 2014-05-11 06:06+0000\n"
+"PO-Revision-Date: 2014-05-10 01:10+0000\n"
+"Last-Translator: openstackjenkins <jenkins@openstack.org>\n"
 "Language-Team: Chinese (China) "
 "(http://www.transifex.com/projects/p/sahara/language/zh_CN/)\n"
 "Plural-Forms: nplurals=1; plural=0\n"
@@ -141,32 +141,6 @@ msgstr "SSH上不支持环境变量"
 msgid "process_input not supported over SSH"
 msgstr "SSH上不支持的进程输入参数。"
 
-#: sahara/openstack/common/sslutils.py:52
-#, python-format
-msgid "Unable to find cert_file : %s"
-msgstr "找不到 cert_file：%s"
-
-#: sahara/openstack/common/sslutils.py:55
-#, python-format
-msgid "Unable to find ca_file : %s"
-msgstr "找不到 ca_file：%s"
-
-#: sahara/openstack/common/sslutils.py:58
-#, python-format
-msgid "Unable to find key_file : %s"
-msgstr "找不到 key_file：%s"
-
-#: sahara/openstack/common/sslutils.py:61
-msgid ""
-"When running server in SSL mode, you must specify both a cert_file and "
-"key_file option value in your configuration file"
-msgstr "以 SSL 方式运行服务器时，必须在配置文件中同时指定 cert_file 和 key_file 选项值"
-
-#: sahara/openstack/common/sslutils.py:100
-#, python-format
-msgid "Invalid SSL version : %s"
-msgstr "SSL版本无效: %s"
-
 #: sahara/openstack/common/wsgi.py:187
 msgid "cannot understand JSON"
 msgstr "无法理解JSON"
@@ -174,20 +148,6 @@ msgstr "无法理解JSON"
 #: sahara/openstack/common/wsgi.py:211
 msgid "cannot understand XML"
 msgstr "无法理解 XML"
-
-#: sahara/openstack/common/crypto/utils.py:29
-msgid "An unknown error occurred in crypto utils."
-msgstr "在加密工具中出现未知错误。"
-
-#: sahara/openstack/common/crypto/utils.py:36
-#, python-format
-msgid "Block size of %(given)d is too big, max = %(maximum)d"
-msgstr "块尺寸 %(given)d 过大， 最大值 = %(maximum)d"
-
-#: sahara/openstack/common/crypto/utils.py:45
-#, python-format
-msgid "Length of %(given)d is too long, max = %(maximum)d"
-msgstr "长度 %(given)d 过长， 最大值 = %(maximum)d"
 
 #: sahara/openstack/common/db/exception.py:42
 msgid "Invalid Parameter: Unicode is not supported by the current database."

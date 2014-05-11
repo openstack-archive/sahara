@@ -8,9 +8,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version:  Sahara\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2014-04-25 06:06+0000\n"
-"PO-Revision-Date: 2014-04-24 12:53+0000\n"
-"Last-Translator: rsimai\n"
+"POT-Creation-Date: 2014-05-11 06:06+0000\n"
+"PO-Revision-Date: 2014-05-10 01:10+0000\n"
+"Last-Translator: openstackjenkins <jenkins@openstack.org>\n"
 "Language-Team: German "
 "(http://www.transifex.com/projects/p/sahara/language/de/)\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
@@ -146,34 +146,6 @@ msgstr "Umgebung über SSH nicht unterstützt"
 msgid "process_input not supported over SSH"
 msgstr "'process_input' über SSH nicht unterstützt"
 
-#: sahara/openstack/common/sslutils.py:52
-#, python-format
-msgid "Unable to find cert_file : %s"
-msgstr "'cert_file' konnte nicht gefunden werden: %s"
-
-#: sahara/openstack/common/sslutils.py:55
-#, python-format
-msgid "Unable to find ca_file : %s"
-msgstr "'ca_file' konnte nicht gefunden werden: %s"
-
-#: sahara/openstack/common/sslutils.py:58
-#, python-format
-msgid "Unable to find key_file : %s"
-msgstr "'key_file' konnte nicht gefunden werden: %s"
-
-#: sahara/openstack/common/sslutils.py:61
-msgid ""
-"When running server in SSL mode, you must specify both a cert_file and "
-"key_file option value in your configuration file"
-msgstr ""
-"Wenn der Server im SSL-Modus läuft, müssen Sie sowohl für 'cert_file' als"
-" auch für 'key_file' einen Wert in Ihrer Konfigurationsdatei angeben"
-
-#: sahara/openstack/common/sslutils.py:100
-#, python-format
-msgid "Invalid SSL version : %s"
-msgstr "Ungültige SSL Version: %s"
-
 #: sahara/openstack/common/wsgi.py:187
 msgid "cannot understand JSON"
 msgstr "verstehe JSON nicht"
@@ -181,22 +153,6 @@ msgstr "verstehe JSON nicht"
 #: sahara/openstack/common/wsgi.py:211
 msgid "cannot understand XML"
 msgstr "Verstehe XML nicht"
-
-#: sahara/openstack/common/crypto/utils.py:29
-msgid "An unknown error occurred in crypto utils."
-msgstr ""
-"Ein unbekannter Fehler ist Zusammenhang mit den crypto-Hilfsprogrammen "
-"aufgetreten."
-
-#: sahara/openstack/common/crypto/utils.py:36
-#, python-format
-msgid "Block size of %(given)d is too big, max = %(maximum)d"
-msgstr "Blockgröße von %(given)d ist zu groß, max = %(maximum)d"
-
-#: sahara/openstack/common/crypto/utils.py:45
-#, python-format
-msgid "Length of %(given)d is too long, max = %(maximum)d"
-msgstr "Länge von %(given)d ist zu groß, max = %(maximum)d"
 
 #: sahara/openstack/common/db/exception.py:42
 msgid "Invalid Parameter: Unicode is not supported by the current database."

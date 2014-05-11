@@ -7,9 +7,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version:  Sahara\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2014-04-24 06:06+0000\n"
-"PO-Revision-Date: 2014-03-24 05:56+0000\n"
-"Last-Translator: Tom Fifield <tom@openstack.org>\n"
+"POT-Creation-Date: 2014-05-11 06:06+0000\n"
+"PO-Revision-Date: 2014-05-10 01:10+0000\n"
+"Last-Translator: openstackjenkins <jenkins@openstack.org>\n"
 "Language-Team: Telugu (India) "
 "(http://www.transifex.com/projects/p/sahara/language/te_IN/)\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
@@ -133,52 +133,12 @@ msgstr ""
 msgid "process_input not supported over SSH"
 msgstr ""
 
-#: sahara/openstack/common/sslutils.py:52
-#, python-format
-msgid "Unable to find cert_file : %s"
-msgstr ""
-
-#: sahara/openstack/common/sslutils.py:55
-#, python-format
-msgid "Unable to find ca_file : %s"
-msgstr ""
-
-#: sahara/openstack/common/sslutils.py:58
-#, python-format
-msgid "Unable to find key_file : %s"
-msgstr ""
-
-#: sahara/openstack/common/sslutils.py:61
-msgid ""
-"When running server in SSL mode, you must specify both a cert_file and "
-"key_file option value in your configuration file"
-msgstr ""
-
-#: sahara/openstack/common/sslutils.py:100
-#, python-format
-msgid "Invalid SSL version : %s"
-msgstr ""
-
 #: sahara/openstack/common/wsgi.py:187
 msgid "cannot understand JSON"
 msgstr ""
 
 #: sahara/openstack/common/wsgi.py:211
 msgid "cannot understand XML"
-msgstr ""
-
-#: sahara/openstack/common/crypto/utils.py:29
-msgid "An unknown error occurred in crypto utils."
-msgstr ""
-
-#: sahara/openstack/common/crypto/utils.py:36
-#, python-format
-msgid "Block size of %(given)d is too big, max = %(maximum)d"
-msgstr ""
-
-#: sahara/openstack/common/crypto/utils.py:45
-#, python-format
-msgid "Length of %(given)d is too long, max = %(maximum)d"
 msgstr ""
 
 #: sahara/openstack/common/db/exception.py:42
