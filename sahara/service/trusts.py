@@ -31,7 +31,7 @@ def create_trust(cluster):
 
     ctx = context.current()
 
-    trustee_id = keystone.client_for_admin(ctx.tenant_id).user_id
+    trustee_id = keystone.client_for_admin().user_id
 
     trust = client.trusts.create(trustor_user=client.user_id,
                                  trustee_user=trustee_id,
