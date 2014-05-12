@@ -15,16 +15,28 @@
 
 import re
 
+from oslo.config import cfg
+
 from sahara import conductor as c
 from sahara import context
 from sahara import exceptions as ex
 from sahara.openstack.common import log as logging
+from sahara.openstack.common import timeutils as tu
 from sahara.utils.openstack import cinder
 from sahara.utils.openstack import nova
 
 
 conductor = c.API
 LOG = logging.getLogger(__name__)
+
+
+detach_timeout_opt = cfg.IntOpt(
+    'detach_volume_timeout', default=300,
+    help='Timeout for detaching volumes from instance (in seconds).')
+
+
+CONF = cfg.CONF
+CONF.register_opt(detach_timeout_opt)
 
 
 def attach(cluster):
@@ -157,10 +169,40 @@ def _mount_volume(instance, device_path, mount_point):
 
 def detach_from_instance(instance):
     for volume_id in instance.volumes:
+        _detach_volume(instance, volume_id)
+        _delete_volume(volume_id)
+
+
+def _detach_volume(instance, volume_id):
+    volume = cinder.get_volume(volume_id)
+    try:
+        LOG.debug("Detaching volume %s from instance %s" % (
+            volume_id, instance.instance_name))
+        nova.client().volumes.delete_server_volume(instance.instance_id,
+                                                   volume_id)
+    except Exception:
+        LOG.exception("Can't detach volume %s" % volume.id)
+
+    detach_timeout = CONF.detach_volume_timeout
+    LOG.debug("Waiting %d seconds to detach %s volume" % (detach_timeout,
+                                                          volume_id))
+    s_time = tu.utcnow()
+    while tu.delta_seconds(s_time, tu.utcnow()) < detach_timeout:
         volume = cinder.get_volume(volume_id)
-        try:
-            volume.detach()
-            volume.delete()
-        except Exception:
-            LOG.error("Can't detach volume %s" % volume.id)
-            raise
+        if volume.status not in ['available', 'error']:
+            context.sleep(2)
+        else:
+            LOG.debug("Volume %s has been detached" % volume_id)
+            return
+    else:
+        LOG.warn("Can't detach volume %s. Current status of volume: %s" % (
+            volume_id, volume.status))
+
+
+def _delete_volume(volume_id):
+    LOG.debug("Deleting volume %s" % volume_id)
+    volume = cinder.get_volume(volume_id)
+    try:
+        volume.delete()
+    except Exception:
+        LOG.exception("Can't delete volume %s" % volume.id)
