@@ -1,0 +1,63 @@
+{
+    "AWSTemplateFormatVersion" : "2010-09-09",
+    "Description" : "Hadoop Cluster by Sahara",
+
+    "Resources" : {
+        "cluster-worker-001" : {
+            "Type" : "OS::Nova::Server",
+            "Properties" : {
+                "name" : "cluster-worker-001",
+                "flavor" : "42",
+                "image" : "1",
+                "key_name" : "user_key",
+                "user_data": {
+                    "Fn::Join" : ["\n", ["line2", "line3"]]
+                }
+            }
+        },
+        "cluster-worker-001-volume-0" : {
+            "Type" : "OS::Cinder::Volume",
+            "Properties" : {
+                "name" : "cluster-worker-001-volume-0",
+                "size" : "10"
+            }
+        },
+        "cluster-worker-001-volume-attachment-0" : {
+            "Type" : "OS::Cinder::VolumeAttachment",
+            "Properties" : {
+                "instance_uuid" : { "Ref" : "cluster-worker-001" },
+                "volume_id" : { "Ref" : "cluster-worker-001-volume-0" },
+                "mountpoint" : null
+            }
+        },
+        "cluster-worker-001-volume-1" : {
+            "Type" : "OS::Cinder::Volume",
+            "Properties" : {
+                "name" : "cluster-worker-001-volume-1",
+                "size" : "10"
+            }
+        },
+        "cluster-worker-001-volume-attachment-1" : {
+            "Type" : "OS::Cinder::VolumeAttachment",
+            "Properties" : {
+                "instance_uuid" : { "Ref" : "cluster-worker-001" },
+                "volume_id" : { "Ref" : "cluster-worker-001-volume-1" },
+                "mountpoint" : null
+            }
+        },
+        "cluster-master-001" : {
+            "Type" : "OS::Nova::Server",
+            "Properties" : {
+                "name" : "cluster-master-001",
+                "flavor" : "42",
+                "image" : "1",
+                "key_name" : "user_key",
+                "user_data": {
+                    "Fn::Join" : ["\n", ["line1", "line2"]]
+                }
+            }
+        }
+    },
+
+    "Outputs" : {}
+}
