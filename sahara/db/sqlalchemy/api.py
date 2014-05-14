@@ -18,6 +18,7 @@
 import sys
 
 from oslo.config import cfg
+import six
 import sqlalchemy as sa
 
 from sahara.db.sqlalchemy import models as m
@@ -460,7 +461,7 @@ def data_source_destroy(context, data_source_id):
                                            "Data Source id '%s' not found!")
             session.delete(data_source)
     except db_exc.DBError as e:
-        msg = "foreign key constraint" in e.message and\
+        msg = "foreign key constraint" in six.text_type(e) and\
               " on foreign key constraint" or ""
         raise ex.DeletionFailed("Data Source deletion failed%s" % msg)
 
@@ -597,7 +598,7 @@ def job_destroy(context, job_id):
                                            "Job id '%s' not found!")
             session.delete(job)
     except db_exc.DBError as e:
-        msg = "foreign key constraint" in e.message and\
+        msg = "foreign key constraint" in six.text_type(e) and\
               " on foreign key constraint" or ""
         raise ex.DeletionFailed("Job deletion failed%s" % msg)
 

@@ -14,6 +14,7 @@
 # limitations under the License.
 
 from oslo.config import cfg
+import six
 import swiftclient
 
 import sahara.exceptions as ex
@@ -77,7 +78,7 @@ def get_raw_data(context, job_binary):
                 headers, obj = conn.get_object(container, item["name"])
                 body[item["name"]] = obj
         except swiftclient.ClientException as e:
-            raise ex.SwiftClientException(e.message)
+            raise ex.SwiftClientException(six.text_type(e))
 
     else:
         container, obj = names
@@ -97,6 +98,6 @@ def get_raw_data(context, job_binary):
 
             headers, body = conn.get_object(container, obj)
         except swiftclient.ClientException as e:
-            raise ex.SwiftClientException(e.message)
+            raise ex.SwiftClientException(six.text_type(e))
 
     return body
