@@ -13,6 +13,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import os
+import sys
+
 import flask
 from keystoneclient.middleware import auth_token
 from oslo.config import cfg
@@ -22,24 +25,22 @@ from werkzeug import exceptions as werkzeug_exceptions
 
 from sahara.api import v10 as api_v10
 from sahara.api import v11 as api_v11
+from sahara import config
 from sahara import context
 from sahara.middleware import auth_valid
 from sahara.middleware import log_exchange
 from sahara.openstack.common import log
 from sahara.plugins import base as plugins_base
 from sahara.service import api as service_api
+from sahara.service.edp import api as edp_api
+from sahara.service import ops as service_ops
 from sahara.service import periodic
 from sahara.utils import api as api_utils
-from sahara.utils import patches
 from sahara.utils import remote
 
 
 LOG = log.getLogger(__name__)
 
-
-# Patches minidom's writexml to avoid excess whitespaces in generated xml
-# configuration files that brakes Hadoop.
-patches.patch_minidom_writexml()
 
 opts = [
     cfg.StrOpt('os_auth_protocol',
@@ -80,6 +81,44 @@ CONF = cfg.CONF
 CONF.register_opts(opts)
 
 
+def setup_common(possible_topdir, service_name):
+    dev_conf = os.path.join(possible_topdir,
+                            'etc',
+                            'sahara',
+                            'sahara.conf')
+    config_files = None
+    if os.path.exists(dev_conf):
+        config_files = [dev_conf]
+
+    config.parse_configs(sys.argv[1:], config_files)
+    log.setup("sahara")
+
+    LOG.info('Starting Sahara %s' % service_name)
+
+    plugins_base.setup_plugins()
+
+
+def setup_sahara_api(app, mode):
+    periodic.setup(app)
+
+    #TODO(dmitryme): move periodics to engine, until then the remote
+    # initialization here is a temporal hack
+    remote_driver = _get_remote_driver()
+    remote.setup_remote(remote_driver, None)
+
+    ops = _get_ops_driver(mode)
+    service_api.setup_service_api(ops)
+    edp_api.setup_edp_api(ops)
+
+
+def setup_sahara_engine():
+    engine = _get_infrastructure_engine()
+    service_ops.setup_ops(engine)
+
+    remote_driver = _get_remote_driver()
+    remote.setup_remote(remote_driver, engine)
+
+
 def make_app():
     """App builder (wsgi)
 
@@ -103,15 +142,6 @@ def make_app():
     app.register_blueprint(api_v10.rest, url_prefix='/v1.0')
     app.register_blueprint(api_v10.rest, url_prefix='/v1.1')
     app.register_blueprint(api_v11.rest, url_prefix='/v1.1')
-
-    plugins_base.setup_plugins()
-    periodic.setup(app)
-
-    engine = _get_infrastructure_engine()
-    service_api.setup_service_api(engine)
-
-    remote_driver = _get_remote_driver()
-    remote.setup_remote(remote_driver, engine)
 
     def make_json_error(ex):
         status_code = (ex.code
@@ -150,30 +180,35 @@ def make_app():
     return app
 
 
+def _load_driver(namespace, name):
+    extension_manager = stevedore.DriverManager(
+        namespace=namespace,
+        name=name,
+        invoke_on_load=True
+    )
+
+    return extension_manager.driver
+
+
 def _get_infrastructure_engine():
     """That should import and return one of
-    sahara.service.instances*.py modules
+    sahara.service.*_engine.py modules
     """
 
     LOG.info("Loading '%s' infrastructure engine" %
              CONF.infrastructure_engine)
 
-    extension_manager = stevedore.DriverManager(
-        namespace='sahara.infrastructure.engine',
-        name=CONF.infrastructure_engine,
-        invoke_on_load=True
-    )
-
-    return extension_manager.driver
+    return _load_driver('sahara.infrastructure.engine',
+                        CONF.infrastructure_engine)
 
 
 def _get_remote_driver():
     LOG.info("Loading '%s' remote" % CONF.remote)
 
-    extension_manager = stevedore.DriverManager(
-        namespace='sahara.remote',
-        name=CONF.remote,
-        invoke_on_load=True
-    )
+    return _load_driver('sahara.remote', CONF.remote)
 
-    return extension_manager.driver
+
+def _get_ops_driver(driver_name):
+    LOG.info("Loading '%s' ops" % driver_name)
+
+    return _load_driver('sahara.run.mode', driver_name)

@@ -55,6 +55,9 @@ def eventlet_import_monkey_patched(module):
 def patch_minidom_writexml():
     """Patch for xml.dom.minidom toprettyxml bug with whitespaces around text
 
+    We apply the patch to avoid excess whitespaces in generated xml
+    configuration files that brakes Hadoop.
+
     (This patch will be applied for all Python versions < 2.7.3)
 
     Issue: http://bugs.python.org/issue4147

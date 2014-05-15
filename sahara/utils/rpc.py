@@ -1,4 +1,5 @@
 # Copyright (c) 2013 Mirantis Inc.
+# Copyright (c) 2013 Julien Danjou <julien@danjou.info>
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,27 +14,64 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import functools
+from oslo.config import cfg
+from oslo import messaging
 
-from sahara.openstack.common.rpc import common as rpc_common
+from sahara import context
+from sahara.openstack.common import log as logging
 
 
-class RpcExceptionPassthrough(object):
-    """Class to wrap another and translate the ClientExceptions raised by its
-    function calls to the actual ones.
-    """
+CONF = cfg.CONF
+LOG = logging.getLogger(__name__)
 
+
+class RPCClient(object):
     def __init__(self, target):
-        self._target = target
+        self.__client = messaging.RPCClient(
+            target=target,
+            transport=messaging.get_transport(cfg.CONF),
+        )
+
+    def cast(self, name, **kwargs):
+        ctx = context.current()
+        self.__client.cast(ctx.to_dict(), name, **kwargs)
+
+    def call(self, name, **kwargs):
+        ctx = context.current()
+        return self.__client.call(ctx.to_dict(), name, **kwargs)
+
+
+class RPCServer(object):
+    def __init__(self, target):
+        self.__server = messaging.get_rpc_server(
+            target=target,
+            transport=messaging.get_transport(cfg.CONF),
+            endpoints=[ContextEndpointHandler(self)],
+            executor='eventlet'
+        )
+
+    def start(self):
+        self.__server.start()
+        self.__server.wait()
+
+
+class ContextEndpointHandler(object):
+    def __init__(self, endpoint):
+        self.__endpoint = endpoint
 
     def __getattr__(self, name):
-        func = getattr(self._target, name)
+        try:
+            method = getattr(self.__endpoint, name)
 
-        @functools.wraps(func)
-        def wrapper(*args, **kwargs):
-            try:
-                return func(*args, **kwargs)
-            except rpc_common.ClientException as e:
-                raise (e._exc_info[1], None, e._exc_info[2])
+            def run_method(ctx, **kwargs):
+                context.set_ctx(context.Context(**ctx))
+                try:
+                    return method(**kwargs)
+                finally:
+                    context.set_ctx(None)
 
-        return wrapper
+            return run_method
+        except AttributeError:
+            LOG.error("No %(method)s method found implemented in "
+                      "%(class)s class",
+                      {'method': name, 'class': self.__endpoint})

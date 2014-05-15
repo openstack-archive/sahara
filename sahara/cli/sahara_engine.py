@@ -22,10 +22,6 @@ import gettext
 import os
 import sys
 
-import eventlet
-from eventlet import wsgi
-from oslo.config import cfg
-
 
 # If ../sahara/__init__.py exists, add ../ to Python search path, so that
 # it will override what happens to be installed in /usr/(local/)lib/python...
@@ -41,18 +37,13 @@ gettext.install('sahara', unicode=1)
 
 
 import sahara.main as server
-from sahara.openstack.common import log as logging
-
-
-LOG = logging.getLogger(__name__)
+from sahara.service import ops
 
 
 def main():
-    server.setup_common(possible_topdir, 'API')
+    server.setup_common(possible_topdir, 'engine')
 
-    app = server.make_app()
+    server.setup_sahara_engine()
 
-    server.setup_sahara_api(app, 'distributed')
-
-    wsgi.server(eventlet.listen((cfg.CONF.host, cfg.CONF.port), backlog=500),
-                app, log=logging.WritableLogger(LOG), debug=False)
+    ops_server = ops.OpsServer()
+    ops_server.start()

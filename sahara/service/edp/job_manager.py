@@ -116,12 +116,27 @@ def cancel_job(job_execution_id):
     return job_execution
 
 
-def run_job(job_execution):
+def run_job(job_execution_id):
     ctx = context.ctx()
+
+    job_execution = conductor.job_execution_get(ctx,
+                                                job_execution_id)
 
     cluster = conductor.cluster_get(ctx, job_execution.cluster_id)
     if cluster.status != 'Active':
-        return job_execution
+        return
+
+    if CONF.use_namespaces and not CONF.use_floating_ips:
+        plugin = plugin_base.PLUGINS.get_plugin(cluster.plugin_name)
+        oozie = plugin.get_oozie_server(cluster)
+
+        info = oozie.remote().get_neutron_info()
+        extra = job_execution.extra.copy()
+        extra['neutron'] = info
+
+        job_execution = conductor.job_execution_update(ctx,
+                                                       job_execution_id,
+                                                       {'extra': extra})
 
     job = conductor.job_get(ctx, job_execution.job_id)
     if not edp.compare_job_type(job.type, edp.JOB_TYPE_JAVA):
@@ -170,8 +185,6 @@ def run_job(job_execution):
                                                     'start_time':
                                                     datetime.datetime.now()})
     client.run_job(job_execution, oozie_job_id)
-
-    return job_execution
 
 
 def upload_job_files(where, job_dir, job, hdfs_user):
