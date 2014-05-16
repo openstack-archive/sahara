@@ -15,7 +15,6 @@
 
 import random
 
-import eventlet
 import mock
 import unittest2
 
@@ -23,7 +22,6 @@ from sahara import context
 from sahara import exceptions
 
 
-eventlet.monkey_patch()
 rnd = random.Random()
 
 
