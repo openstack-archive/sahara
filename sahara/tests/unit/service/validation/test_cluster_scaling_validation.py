@@ -14,6 +14,7 @@
 # limitations under the License.
 
 import mock
+import six
 import unittest2
 
 from sahara import exceptions as ex
@@ -51,7 +52,7 @@ class TestScalingValidation(unittest2.TestCase):
             try:
                 c_s.check_cluster_scaling(data, cluster.id)
             except ex.InvalidException as e:
-                self.assertEqual(expected_message, e.message)
+                self.assertEqual(expected_message, six.text_type(e))
                 raise e
 
     def test_check_cluster_scaling_resize_ng(self):

@@ -14,6 +14,7 @@
 # limitations under the License.
 
 import mock
+import six
 
 from sahara import exceptions
 from sahara import main
@@ -338,7 +339,7 @@ class TestClusterCreateFlavorValidation(base.SaharaWithDbTestCase):
                     u.stop_patch(patchers)
                 except exceptions.InvalidException as e:
                     self.assertEqual("Requested flavor '10' not found",
-                                     e.message)
+                                     six.text_type(e))
                     raise e
 
     def test_cluster_create_cluster_tmpl_node_group_mixin(self):
@@ -398,5 +399,5 @@ class TestClusterCreateFlavorValidation(base.SaharaWithDbTestCase):
                 u.stop_patch(patchers)
             except exceptions.InvalidException as e:
                 self.assertEqual("Requested flavor '23' not found",
-                                 e.message)
+                                 six.text_type(e))
                 raise e
