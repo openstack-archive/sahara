@@ -32,7 +32,7 @@ class SaharaException(Exception):
 
 
 class NotFoundException(SaharaException):
-    message = "Object not found"
+    message = "Object '%s' is not found"
     # It could be a various property of object which was not found
     value = None
 
@@ -195,3 +195,24 @@ class HeatStackException(SaharaException):
     def __init__(self, heat_stack_status):
         self.code = "HEAT_STACK_EXCEPTION"
         self.message = "Heat stack failed with status %s" % heat_stack_status
+
+
+class ConfigurationError(SaharaException):
+    code = "CONFIGURATION_ERROR"
+
+    def __init__(self, message):
+        self.message = message
+
+
+class IncorrectStateError(SaharaException):
+    code = "INCORRECT_STATE_ERROR"
+
+    def __init__(self, message):
+        self.message = message
+
+
+class SystemError(SaharaException):
+    code = "SYSTEM_ERROR"
+
+    def __init__(self, message):
+        self.message = message

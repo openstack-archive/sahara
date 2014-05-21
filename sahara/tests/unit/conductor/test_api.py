@@ -77,7 +77,7 @@ class TestConductorClusterApi(base.SaharaWithDbTestCase):
             if obj.id == id:
                 return obj
 
-        raise RuntimeError('No such object with id %s' % id)
+        return None
 
     def test_update_by_id(self):
         ctx, cluster = self._make_sample()

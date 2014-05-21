@@ -15,6 +15,7 @@
 
 import unittest2
 
+from sahara import exceptions as ex
 from sahara.plugins import provisioning as p
 
 
@@ -41,14 +42,14 @@ class ProvisioningPluginBaseTest(unittest2.TestCase):
     def test__map_to_user_inputs_failure(self):
         c1, c2, c3, plugin = _build_configs_and_plugin()
 
-        with self.assertRaises(RuntimeError):
+        with self.assertRaises(ex.ConfigurationError):
             plugin._map_to_user_inputs(None, {
                 'at-X': {
                     'n-1': 'v-1',
                 },
             })
 
-        with self.assertRaises(RuntimeError):
+        with self.assertRaises(ex.ConfigurationError):
             plugin._map_to_user_inputs(None, {
                 'at-1': {
                     'n-X': 'v-1',

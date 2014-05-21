@@ -16,6 +16,7 @@
 import json
 
 from oslo.config import cfg
+from sahara import exceptions as ex
 
 
 CONF = cfg.CONF
@@ -37,12 +38,13 @@ def url_for(service_catalog, service_type, admin=False, endpoint_type=None):
         try:
             return _get_endpoint_url(endpoints, endpoint_type)
         except Exception:
-            raise RuntimeError("For service %s not found "
-                               "endpoint with type %s"
-                               % (service_type, endpoint_type))
+            raise ex.SystemError(
+                "Endpoint with type %s is not found for service %s"
+                % (endpoint_type, service_type))
 
     else:
-        raise Exception('Service "%s" not found' % service_type)
+        raise ex.SystemError('Service "%s" not found in service catalog'
+                             % service_type)
 
 
 def _get_service_from_catalog(catalog, service_type):
