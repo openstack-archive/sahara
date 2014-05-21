@@ -145,8 +145,6 @@ def run_job(job_execution_id):
     else:
         input_source = None
         output_source = None
-    #TODO(nprivalova): should be removed after all features implemented
-    validate(input_source, output_source, job)
 
     for data_source in [input_source, output_source]:
         if data_source and data_source.type == 'hdfs':
@@ -237,12 +235,3 @@ def _append_slash_if_needed(path):
     if path[-1] != '/':
         path += '/'
     return path
-
-
-#TODO(nprivalova): this validation should be removed after implementing
-#  all features
-def validate(input_data, output_data, job):
-    if not edp.compare_job_type(job.type, edp.JOB_TYPE_PIG,
-                                edp.JOB_TYPE_MAPREDUCE, edp.JOB_TYPE_HIVE,
-                                edp.JOB_TYPE_JAVA):
-        raise RuntimeError
