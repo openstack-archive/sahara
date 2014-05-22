@@ -1,6 +1,6 @@
 
-Hortonworks Data Plaform Plugin
-===============================
+Hortonworks Data Platform Plugin
+================================
 The Hortonworks Data Platform (HDP) Sahara plugin provides a way to provision HDP clusters on OpenStack using templates in a single click and in an easily repeatable fashion. As seen from the architecture diagram below, the Sahara controller serves as the glue between Hadoop and OpenStack. The HDP plugin mediates between the Sahara controller and Apache Ambari in order to deploy and configure Hadoop on OpenStack. Core to the HDP Plugin is Apache Ambari which is used as the orchestrator for deploying HDP on OpenStack.
 
 .. image:: ../images/hdp-plugin-architecture.png
