@@ -165,6 +165,7 @@ class TestClusterCreateValidation(u.ValidationTestCase):
         )
 
     def test_cluster_create_v_wrong_network(self):
+        self.override_config("use_neutron", True)
         self._assert_create_object_validation(
             data={
                 'name': "test-name",
@@ -178,10 +179,39 @@ class TestClusterCreateValidation(u.ValidationTestCase):
                                                "94ce-b6df85a68332 not found")
         )
 
+    def test_cluster_create_mixed_nova_neutron(self):
+        self._assert_create_object_validation(
+            data={
+                'name': "test-name",
+                'plugin_name': "vanilla",
+                'hadoop_version': "1.2.1",
+                'default_image_id': '550e8400-e29b-41d4-a716-446655440000',
+                'neutron_management_network': '53a36917-ab9f-4589-'
+                                              '94ce-b6df85a68332'
+            },
+            bad_req_i=(1, 'INVALID_REFERENCE',
+                       "'neutron_management_network' field can't "
+                       "be used with 'use_neutron=False'")
+        )
+
+    def test_cluster_create_v_missing_network(self):
+        self.override_config("use_neutron", True)
+        self._assert_create_object_validation(
+            data={
+                'name': "test-name",
+                'plugin_name': "vanilla",
+                'hadoop_version': "1.2.1",
+                'default_image_id': '550e8400-e29b-41d4-a716-446655440000'
+            },
+            bad_req_i=(1, 'NOT_FOUND',
+                       "'neutron_management_network' field is not found")
+        )
+
     def test_cluster_create_v_cluster_configs(self):
         self._assert_cluster_configs_validation(True)
 
     def test_cluster_create_v_right_data(self):
+        self.override_config("use_neutron", True)
         self._assert_create_object_validation(
             data={
                 'name': "testname",
