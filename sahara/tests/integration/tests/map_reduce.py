@@ -67,13 +67,10 @@ class MapReduceTest(base.ITestCase):
             hadoop_log_directory = (
                 plugin_config.HADOOP_LOG_DIRECTORY_ON_VOLUME)
         extra_script_parameters = {
-            'HADOOP_VERSION': plugin_config.HADOOP_VERSION,
-            'HADOOP_DIRECTORY': plugin_config.HADOOP_DIRECTORY,
             'HADOOP_EXAMPLES_JAR_PATH': plugin_config.HADOOP_EXAMPLES_JAR_PATH,
             'HADOOP_LOG_DIRECTORY': hadoop_log_directory,
             'HADOOP_USER': plugin_config.HADOOP_USER,
-            'NODE_COUNT': cluster_info['node_info']['node_count'],
-            'PLUGIN_NAME': plugin_config.PLUGIN_NAME
+            'NODE_COUNT': cluster_info['node_info']['node_count']
         }
         for instance in node_group['instances']:
             try:

@@ -141,9 +141,6 @@
 # Username which is used for access to Hadoop services (string value)
 #HADOOP_USER = 'hadoop'
 
-# Directory where Hadoop jar files are located (string value)
-#HADOOP_DIRECTORY = '/usr/share/hadoop'
-
 # Directory where logs of completed jobs are located (string value)
 #HADOOP_LOG_DIRECTORY = '/mnt/log/hadoop/hadoop/userlogs'
 
@@ -208,9 +205,6 @@
 
 # Username which is used for access to Hadoop services (string value)
 #HADOOP_USER = 'hdfs'
-
-# Directory where Hadoop jar files are located (string value)
-#HADOOP_DIRECTORY = '/usr/lib/hadoop'
 
 # Directory where logs of completed jobs are located (string value)
 #HADOOP_LOG_DIRECTORY = '/mnt/hadoop/mapred/userlogs'
