@@ -102,7 +102,7 @@ class SaharaPeriodicTasks(periodic_task.PeriodicTasks):
         context.set_ctx(None)
 
 
-def setup(app):
+def setup():
     if CONF.periodic_enable:
         if CONF.periodic_fuzzy_delay:
             initial_delay = random.randint(0, CONF.periodic_fuzzy_delay)
@@ -111,9 +111,9 @@ def setup(app):
         else:
             initial_delay = None
 
-        app.tg = threadgroup.ThreadGroup()
+        tg = threadgroup.ThreadGroup()
         pt = SaharaPeriodicTasks()
-        app.tg.add_dynamic_timer(
+        tg.add_dynamic_timer(
             pt.run_periodic_tasks,
             initial_delay=initial_delay,
             periodic_interval_max=CONF.periodic_interval_max,
