@@ -18,6 +18,7 @@ import six
 import swiftclient
 
 import sahara.exceptions as ex
+from sahara.swift import swift_helper
 from sahara.swift import utils as su
 
 
@@ -28,7 +29,7 @@ def _get_conn(user, password):
     return swiftclient.Connection(su.retrieve_auth_url(),
                                   user,
                                   password,
-                                  tenant_name=CONF.os_admin_tenant_name,
+                                  tenant_name=swift_helper.retrieve_tenant(),
                                   auth_version="2.0")
 
 

@@ -31,12 +31,11 @@ HADOOP_SWIFT_PASSWORD = 'fs.swift.service.sahara.password'
 HADOOP_SWIFT_REGION = 'fs.swift.service.sahara.region'
 
 
-def _retrieve_tenant():
+def retrieve_tenant():
     try:
         return context.current().tenant_name
     except RuntimeError:
-        LOG.exception("Cannot retrieve tenant for swift integration. "
-                      "Stopping cluster creation")
+        LOG.exception("Cannot retrieve tenant for swift integration.")
         #todo(slukjanov?) raise special error here
         raise RuntimeError("Cannot retrieve tenant for swift integration")
 
@@ -47,7 +46,7 @@ def get_swift_configs():
         if conf['name'] == HADOOP_SWIFT_AUTH_URL:
             conf['value'] = su.retrieve_auth_url() + "tokens/"
         if conf['name'] == HADOOP_SWIFT_TENANT:
-            conf['value'] = _retrieve_tenant()
+            conf['value'] = retrieve_tenant()
         if CONF.os_region_name and conf['name'] == HADOOP_SWIFT_REGION:
             conf['value'] = CONF.os_region_name
 
