@@ -21,7 +21,8 @@ from sahara.service.validations.edp import data_source as ds
 from sahara.swift import utils as su
 from sahara.tests.unit.service.validation import utils as u
 
-SAMPLE_SWIFT_URL = "swift://1234%s/object" % su.SWIFT_URL_SUFFIX
+SAMPLE_SWIFT_URL = "swift://1234/object"
+SAMPLE_SWIFT_URL_WITH_SUFFIX = "swift://1234%s/object" % su.SWIFT_URL_SUFFIX
 
 
 class TestDataSourceValidation(u.ValidationTestCase):
@@ -103,7 +104,7 @@ class TestDataSourceValidation(u.ValidationTestCase):
 
         data = {
             "name": "test_data_data_source",
-            "url": "swif://1234%s/object" % su.SWIFT_URL_SUFFIX,
+            "url": "swif://1234/object",
             "type": "swift",
             "description": "incorrect url schema"
         }
@@ -112,13 +113,31 @@ class TestDataSourceValidation(u.ValidationTestCase):
 
     @mock.patch("sahara.service.validations."
                 "edp.base.check_data_source_unique_name")
-    def test_swift_creation_missing_suffix(self,
-                                           check_data_source_unique_name):
+    def test_swift_creation_explicit_suffix(self,
+                                            check_data_source_unique_name):
         check_data_source_unique_name.return_value = True
 
         data = {
             "name": "test_data_data_source",
-            "url": "swift://1234/object",
+            "url": SAMPLE_SWIFT_URL_WITH_SUFFIX,
+            "type": "swift",
+            "description": "incorrect url schema",
+            "credentials": {
+                "user": "user",
+                "password": "password"
+            }
+        }
+        self._assert_types(data)
+
+    @mock.patch("sahara.service.validations."
+                "edp.base.check_data_source_unique_name")
+    def test_swift_creation_wrong_suffix(self,
+                                         check_data_source_unique_name):
+        check_data_source_unique_name.return_value = True
+
+        data = {
+            "name": "test_data_data_source",
+            "url": "swift://1234.suffix/object",
             "type": "swift",
             "description": "incorrect url schema"
         }
@@ -133,7 +152,7 @@ class TestDataSourceValidation(u.ValidationTestCase):
 
         data = {
             "name": "test_data_data_source",
-            "url": "swift://1234%s/" % su.SWIFT_URL_SUFFIX,
+            "url": "swift://1234/",
             "type": "swift",
             "description": "incorrect url schema"
         }
