@@ -7,4 +7,8 @@ another like config file updates, db migrations, architecture changes and etc.
 Icehouse -> Juno
 ----------------
 
-Nothing to do now.
+Main binary renamed to sahara-all
++++++++++++++++++++++++++++++++++
+
+Please, note that you should use `sahara-all` instead of `sahara-api` to start
+the All-In-One Sahara.
