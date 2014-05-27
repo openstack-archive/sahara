@@ -77,8 +77,6 @@ class TransientClusterTest(edp.EDPTest):
                              job_data_list=[{'pig': pig_job_data}],
                              lib_data_list=[{'jar': pig_lib_data}])
 
-            cluster_info = self.get_cluster_info(plugin_config)
-
             # set timeout in seconds
             timeout = self.common_config.TRANSIENT_CLUSTER_TIMEOUT * 60
             s_time = timeutils.utcnow()
@@ -87,7 +85,7 @@ class TransientClusterTest(edp.EDPTest):
             while timeutils.delta_seconds(
                     s_time, timeutils.utcnow()) < timeout:
                 try:
-                    self.sahara.clusters.get(cluster_info['cluster_id'])
+                    self.sahara.clusters.get(self.cluster_id)
                 except sab.APIException as api_ex:
                     if 'not found' in api_ex.message:
                         raise_failure = False
@@ -95,7 +93,7 @@ class TransientClusterTest(edp.EDPTest):
                 time.sleep(2)
 
             if raise_failure:
-                self.delete_objects(cluster_id=cluster_info['cluster_id'])
+                self.delete_objects(cluster_id=self.cluster_id)
                 self.fail('Transient cluster has not been deleted within %s '
                           'minutes.'
                           % self.common_config.TRANSIENT_CLUSTER_TIMEOUT)
