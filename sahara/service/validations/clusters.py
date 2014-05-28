@@ -55,7 +55,8 @@ def check_cluster_create(data, **kwargs):
         ct_id = data['cluster_template_id']
         b.check_cluster_template_exists(ct_id)
         if not data.get('node_groups'):
-            b.check_node_groups_in_cluster_templates(data['plugin_name'],
+            b.check_node_groups_in_cluster_templates(data['name'],
+                                                     data['plugin_name'],
                                                      data['hadoop_version'],
                                                      ct_id)
 
@@ -80,6 +81,7 @@ def check_cluster_create(data, **kwargs):
 
     if data.get('node_groups'):
         b.check_network_config(data['node_groups'])
+        b.check_cluster_hostnames_lengths(data['name'], data['node_groups'])
 
     neutron_net_id = _get_cluster_field(data, 'neutron_management_network')
     if neutron_net_id:

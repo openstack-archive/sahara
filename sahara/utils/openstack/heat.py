@@ -22,6 +22,7 @@ from sahara import context
 from sahara import exceptions as ex
 from sahara.openstack.common import log as logging
 from sahara.utils import files as f
+from sahara.utils import general as g
 from sahara.utils.openstack import base
 
 
@@ -36,7 +37,7 @@ def client():
 
 
 def _get_inst_name(cluster_name, ng_name, index):
-    return ('%s-%s-%03d' % (cluster_name, ng_name, (index + 1))).lower()
+    return g.generate_instance_name(cluster_name, ng_name, index + 1)
 
 
 def _get_port_name(inst_name):
