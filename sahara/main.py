@@ -65,7 +65,6 @@ opts = [
                default='admin',
                help='Name of tenant where the user is admin.'),
     cfg.StrOpt('os_region_name',
-               default=None,
                help='Region name used to get services endpoints.'),
     cfg.StrOpt('infrastructure_engine',
                default='direct',
