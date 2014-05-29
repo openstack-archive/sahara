@@ -145,7 +145,8 @@ class AmbariPlugin(p.ProvisioningPluginBase):
     def validate_edp(self, cluster):
         oo_count = u.get_instances_count(cluster, 'OOZIE_SERVER')
         if oo_count != 1:
-            raise ex.InvalidComponentCountException('oozie', '1', oo_count)
+            raise ex.InvalidComponentCountException(
+                'OOZIE_SERVER', '1', oo_count)
 
     def get_resource_manager_uri(self, cluster):
         version_handler = (
