@@ -82,17 +82,11 @@ CONF.register_cli_opts(cli_opts)
 CONF.register_opts(networking_opts)
 CONF.register_opts(edp_opts)
 
-ARGV = []
 
-
-def parse_configs(argv=None, conf_files=None):
-    if argv is not None:
-        global ARGV
-        ARGV = argv
-
+def parse_configs(conf_files=None):
     try:
         version_string = version.version_info.version_string()
-        CONF(ARGV, project='sahara', version=version_string,
+        CONF(project='sahara', version=version_string,
              default_config_files=conf_files)
     except cfg.RequiredOptError as roe:
         raise ex.ConfigurationError(
