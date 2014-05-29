@@ -47,6 +47,10 @@ def _get_floating_name(inst_name):
     return '%s-floating' % inst_name
 
 
+def _get_floating_assoc_name(inst_name):
+    return '%s-floating-assoc' % inst_name
+
+
 def _get_volume_name(inst_name, volume_idx):
     return '%s-volume-%i' % (inst_name, volume_idx)
 
@@ -132,9 +136,6 @@ class ClusterTemplate(object):
     def _serialize_instance(self, ng, idx, aa_groups):
         inst_name = _get_inst_name(self.cluster.name, ng.name, idx)
 
-        # TODO(dmitryme): support floating IPs for nova-network without
-        # auto-assignment
-
         nets = ''
         if CONF.use_neutron:
             port_name = _get_port_name(inst_name)
@@ -144,8 +145,12 @@ class ClusterTemplate(object):
             nets = '"networks" : [{ "port" : { "Ref" : "%s" }}],' % port_name
 
             if ng.floating_ip_pool:
-                yield self._serialize_floating(inst_name, port_name,
-                                               ng.floating_ip_pool)
+                yield self._serialize_neutron_floating(inst_name, port_name,
+                                                       ng.floating_ip_pool)
+        else:
+            if ng.floating_ip_pool:
+                yield self._serialize_nova_floating(inst_name,
+                                                    ng.floating_ip_pool)
 
         aa_names = []
         for node_process in ng.node_processes:
@@ -185,12 +190,23 @@ class ClusterTemplate(object):
 
         return _load_template('neutron-port.heat', fields)
 
-    def _serialize_floating(self, inst_name, port_name, floating_net_id):
+    def _serialize_neutron_floating(self, inst_name, port_name,
+                                    floating_net_id):
         fields = {'floating_ip_name': _get_floating_name(inst_name),
                   'floating_net_id': floating_net_id,
                   'port_name': port_name}
 
         return _load_template('neutron-floating.heat', fields)
+
+    def _serialize_nova_floating(self, inst_name, floating_pool_name):
+        fields = {
+            'floating_ip_name': _get_floating_name(inst_name),
+            'floating_ip_assoc_name': _get_floating_assoc_name(inst_name),
+            'instance_name': inst_name,
+            'pool': floating_pool_name
+        }
+
+        return _load_template('nova-floating.heat', fields)
 
     def _serialize_volume(self, inst_name, volume_idx, volumes_size):
         fields = {'volume_name': _get_volume_name(inst_name, volume_idx),
