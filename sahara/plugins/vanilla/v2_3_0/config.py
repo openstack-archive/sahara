@@ -67,8 +67,7 @@ def _generate_configs(node_group):
 
 def _get_hadoop_configs(node_group):
     cluster = node_group.cluster
-    nn_hostname = vu.get_namenode(cluster).hostname()
-    res_hostname = vu.get_resourcemanager(cluster).hostname()
+    nn_hostname = vu.get_instance_hostname(vu.get_namenode(cluster))
     dirs = _get_hadoop_dirs(node_group)
     confs = {
         'Hadoop': {
@@ -79,19 +78,22 @@ def _get_hadoop_configs(node_group):
             'dfs.namenode.data.dir': ','.join(dirs['hadoop_data_dirs']),
             'dfs.hosts': '%s/dn-include' % HADOOP_CONF_DIR,
             'dfs.hosts.exclude': '%s/dn-exclude' % HADOOP_CONF_DIR
-        },
-        'YARN': {
+        }
+    }
+
+    res_hostname = vu.get_instance_hostname(vu.get_resourcemanager(cluster))
+    if res_hostname:
+        confs['YARN'] = {
             'yarn.nodemanager.aux-services': 'mapreduce_shuffle',
             'yarn.resourcemanager.hostname': '%s' % res_hostname,
             'yarn.resourcemanager.nodes.include-path': '%s/nm-include' % (
                 HADOOP_CONF_DIR),
             'yarn.resourcemanager.nodes.exclude-path': '%s/nm-exclude' % (
                 HADOOP_CONF_DIR)
-        },
-        'MapReduce': {
+        }
+        confs['MapReduce'] = {
             'mapreduce.framework.name': 'yarn'
-        },
-    }
+        }
 
     oozie = vu.get_oozie(cluster)
     if oozie:

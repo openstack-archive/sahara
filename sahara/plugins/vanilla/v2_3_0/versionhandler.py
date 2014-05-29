@@ -62,7 +62,8 @@ class VersionHandler(avm.AbstractVersionHandler):
             run.start_hadoop_process(snn, 'secondarynamenode')
 
         rm = vu.get_resourcemanager(cluster)
-        run.start_yarn_process(rm, 'resourcemanager')
+        if rm:
+            run.start_yarn_process(rm, 'resourcemanager')
 
         for dn in vu.get_datanodes(cluster):
             run.start_hadoop_process(dn, 'datanode')
