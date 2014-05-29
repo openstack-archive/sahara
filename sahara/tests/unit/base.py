@@ -22,7 +22,7 @@ import unittest2
 from sahara import context
 from sahara.db import api as db_api
 from sahara import main
-from sahara.openstack.common.db.sqlalchemy import session
+from sahara.openstack.common.db import options
 
 
 class SaharaTestCase(unittest2.TestCase):
@@ -55,7 +55,7 @@ class SaharaWithDbTestCase(SaharaTestCase):
 
     def setup_db(self):
         self.db_fd, self.db_path = tempfile.mkstemp()
-        session.set_defaults('sqlite:///' + self.db_path, self.db_path)
+        options.set_defaults('sqlite:///' + self.db_path, self.db_path)
         db_api.setup_db()
         self.addCleanup(self._drop_db)
 

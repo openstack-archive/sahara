@@ -107,5 +107,8 @@
 #plugins=vanilla,hdp
 
 [database]
-#connection=sqlite:////sahara/openstack/common/db/$sqlite_db
+
+# The SQLAlchemy connection string used to connect to the
+# database (string value)
+#connection=<None>
 
