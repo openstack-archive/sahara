@@ -15,11 +15,11 @@
 
 import mock
 import novaclient.exceptions as nova_ex
-import unittest2
 
 from sahara.conductor import resource as r
 from sahara.plugins.vanilla import plugin
 import sahara.service.validation as v
+from sahara.tests.unit import base
 from sahara.tests.unit import testutils as tu
 
 
@@ -229,7 +229,7 @@ def stop_patch(patchers):
         patcher.stop()
 
 
-class ValidationTestCase(unittest2.TestCase):
+class ValidationTestCase(base.SaharaTestCase):
     def setUp(self):
         self._create_object_fun = None
         self.scheme = None
