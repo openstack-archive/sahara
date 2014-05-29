@@ -59,7 +59,6 @@ COMMON_CONFIG_OPTS = [
                default='1.1',
                help='API version for Sahara.'),
     cfg.StrOpt('FLAVOR_ID',
-               default=None,
                help='OpenStack flavor ID for virtual machines. If you leave '
                     'the default value of this parameter, then flavor ID will '
                     'be created automatically, using nova client. The created '
@@ -110,7 +109,6 @@ COMMON_CONFIG_OPTS = [
                     'and/or digits)) for its uniqueness. In the end of tests '
                     'key pair will be deleted.'),
     cfg.StrOpt('PATH_TO_SSH_KEY',
-               default=None,
                help='Path to id_rsa key which is used with tests for remote '
                     'command execution. If you specify wrong path to key '
                     'then you will have the error "Private key file is '
@@ -119,7 +117,6 @@ COMMON_CONFIG_OPTS = [
                     '(private and public SSH keys) will be generated '
                     'automatically, using nova client.'),
     cfg.StrOpt('FLOATING_IP_POOL',
-               default=None,
                help='Pool name for floating IPs. If Sahara uses Nova '
                     'management network and auto assignment of IPs was '
                     'enabled then you should leave default value of this '
@@ -154,28 +151,24 @@ VANILLA_CONFIG_OPTS = [
                default='vanilla',
                help='Name of plugin.'),
     cfg.StrOpt('IMAGE_ID',
-               default=None,
                help='ID for image which is used for cluster creation. Also '
                     'you can specify image name or tag of image instead of '
                     'image ID. If you do not specify image related parameters '
                     'then image for cluster creation will be chosen by '
                     'tag "sahara_i_tests".'),
     cfg.StrOpt('IMAGE_NAME',
-               default=None,
                help='Name for image which is used for cluster creation. Also '
                     'you can specify image ID or tag of image instead of '
                     'image name. If you do not specify image related '
                     'parameters, then the image for cluster creation will be '
                     'chosen by tag "sahara_i_tests".'),
     cfg.StrOpt('IMAGE_TAG',
-               default=None,
                help='Tag for image which is used for cluster creation. Also '
                     'you can specify image ID or image name instead of tag of '
                     'image. If you do not specify image related parameters, '
                     'then image for cluster creation will be chosen by '
                     'tag "sahara_i_tests".'),
     cfg.StrOpt('SSH_USERNAME',
-               default=None,
                help='Username to get cluster node with SSH.'),
     cfg.StrOpt('HADOOP_VERSION',
                default='1.2.1',
@@ -235,28 +228,24 @@ VANILLA_TWO_CONFIG_OPTS = [
                default='vanilla',
                help='Name of plugin.'),
     cfg.StrOpt('IMAGE_ID',
-               default=None,
                help='ID for image which is used for cluster creation. Also '
                     'you can specify image name or tag of image instead of '
                     'image ID. If you do not specify image related parameters '
                     'then image for cluster creation will be chosen by '
                     'tag "savanna_i_tests".'),
     cfg.StrOpt('IMAGE_NAME',
-               default=None,
                help='Name for image which is used for cluster creation. Also '
                     'you can specify image ID or tag of image instead of '
                     'image name. If you do not specify image related '
                     'parameters, then the image for cluster creation will be '
                     'chosen by tag "savanna_i_tests".'),
     cfg.StrOpt('IMAGE_TAG',
-               default=None,
                help='Tag for image which is used for cluster creation. Also '
                     'you can specify image ID or image name instead of tag of '
                     'image. If you do not specify image related parameters, '
                     'then image for cluster creation will be chosen by '
                     'tag "savanna_i_tests".'),
     cfg.StrOpt('SSH_USERNAME',
-               default=None,
                help='Username to get cluster node with SSH.'),
     cfg.StrOpt('HADOOP_VERSION',
                default='2.3.0',
@@ -313,28 +302,24 @@ HDP_CONFIG_OPTS = [
                default='hdp',
                help='Name of plugin.'),
     cfg.StrOpt('IMAGE_ID',
-               default=None,
                help='ID for image which is used for cluster creation. Also '
                     'you can specify image name or tag of image instead of '
                     'image ID. If you do not specify image related '
                     'parameters, then image for cluster creation will be '
                     'chosen by tag "sahara_i_tests".'),
     cfg.StrOpt('IMAGE_NAME',
-               default=None,
                help='Name for image which is used for cluster creation. Also '
                     'you can specify image ID or tag of image instead of '
                     'image name. If you do not specify image related '
                     'parameters, then image for cluster creation will be '
                     'chosen by tag "sahara_i_tests".'),
     cfg.StrOpt('IMAGE_TAG',
-               default=None,
                help='Tag for image which is used for cluster creation. Also '
                     'you can specify image ID or image name instead of tag of '
                     'image. If you do not specify image related parameters, '
                     'then image for cluster creation will be chosen by '
                     'tag "sahara_i_tests".'),
     cfg.StrOpt('SSH_USERNAME',
-               default=None,
                help='Username to get cluster node with SSH.'),
     cfg.ListOpt('MASTER_NODE_PROCESSES',
                 default=['JOBTRACKER', 'NAMENODE', 'SECONDARY_NAMENODE',
