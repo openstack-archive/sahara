@@ -392,14 +392,14 @@ class AmbariClient():
             else:
                 LOG.critical('Failed to change state of Hadoop '
                              'components')
-                raise RuntimeError('Failed to change state of Hadoop '
-                                   'components')
+                raise ex.HadoopProvisionError(
+                    'Failed to change state of Hadoop components')
 
         else:
             LOG.error(
                 'Command failed. Status: {0}, response: {1}'.
                 format(result.status_code, result.text))
-            raise RuntimeError('Hadoop/Ambari command failed.')
+            raise ex.HadoopProvisionError('Hadoop/Ambari command failed.')
 
     def _get_host_list(self, servers):
         host_list = [server.instance.fqdn().lower() for server in servers]

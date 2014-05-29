@@ -17,6 +17,8 @@ import contextlib
 import shutil
 import tempfile
 
+from sahara import exceptions as ex
+
 
 @contextlib.contextmanager
 def tempdir(**kwargs):
@@ -29,5 +31,6 @@ def tempdir(**kwargs):
     finally:
         try:
             shutil.rmtree(tmpdir)
-        except OSError:
-            raise RuntimeError("error")
+        except OSError as e:
+            raise ex.SystemError("Failed to delete temp dir %s (reason: %s)" %
+                                 (tmpdir, e))

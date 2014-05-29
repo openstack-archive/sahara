@@ -17,6 +17,7 @@ import mock
 
 from sahara import conductor as cond
 from sahara import context
+from sahara import exceptions as e
 from sahara.plugins.general import exceptions as ex
 from sahara.plugins.vanilla import plugin as p
 from sahara.plugins.vanilla.v1_2_1 import config_helper as c_h
@@ -184,7 +185,7 @@ class VanillaPluginTest(base.SaharaWithDbTestCase):
             c_h.get_config_value('HDFS', 'spam', cluster), 'eggs')
         self.assertEqual(
             c_h.get_config_value('HDFS', 'dfs.safemode.extension'), 30000)
-        self.assertRaises(RuntimeError,
+        self.assertRaises(e.ConfigurationError,
                           c_h.get_config_value,
                           'MapReduce', 'spam', cluster)
 

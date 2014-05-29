@@ -17,6 +17,7 @@ import re
 
 from sahara import conductor as c
 from sahara import context
+from sahara import exceptions as ex
 from sahara.openstack.common import log as logging
 from sahara.utils.openstack import cinder
 from sahara.utils.openstack import nova
@@ -52,8 +53,8 @@ def _await_attach_volumes(instance, count_volumes):
         timeout -= step
         context.sleep(step)
 
-    raise RuntimeError("Error attach volume to instance %s" %
-                       instance.instance_name)
+    raise ex.SystemError("Error attach volume to instance %s" %
+                         instance.instance_name)
 
 
 def _attach_volumes_to_node(node_group, instance, volume_type=None):
@@ -79,7 +80,7 @@ def _create_attach_volume(ctx, instance, size, display_name=None,
     while volume.status != 'available':
         volume = cinder.get_volume(volume.id)
         if volume.status == 'error':
-            raise RuntimeError("Volume %s has error status" % volume.id)
+            raise ex.SystemError("Volume %s has error status" % volume.id)
 
         context.sleep(1)
 

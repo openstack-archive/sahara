@@ -421,7 +421,7 @@ class ITConfig:
                        '\nINFO: Configuration file "%s" not found  *\n'
                        '**************************************************'
                        % config)
-            print(RuntimeError(message), file=sys.stderr)
+            print(message, file=sys.stderr)
 
         else:
             config = os.path.join(

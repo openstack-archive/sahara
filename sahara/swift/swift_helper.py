@@ -32,12 +32,7 @@ HADOOP_SWIFT_REGION = 'fs.swift.service.sahara.region'
 
 
 def retrieve_tenant():
-    try:
-        return context.current().tenant_name
-    except RuntimeError:
-        LOG.exception("Cannot retrieve tenant for swift integration.")
-        #todo(slukjanov?) raise special error here
-        raise RuntimeError("Cannot retrieve tenant for swift integration")
+    return context.current().tenant_name
 
 
 def get_swift_configs():

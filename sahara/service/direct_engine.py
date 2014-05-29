@@ -19,6 +19,7 @@ import six
 
 from sahara import conductor as c
 from sahara import context
+from sahara import exceptions as exc
 from sahara.openstack.common import excutils
 from sahara.openstack.common import log as logging
 from sahara.service import engine as e
@@ -275,8 +276,7 @@ class DirectEngine(e.Engine):
 
         server = nova.get_instance_info(instance)
         if server.status == 'ERROR':
-            # TODO(slukjanov): replace with specific error
-            raise RuntimeError("node %s has error status" % server.name)
+            raise exc.SystemError("Node %s has error status" % server.name)
 
         return server.status == 'ACTIVE'
 

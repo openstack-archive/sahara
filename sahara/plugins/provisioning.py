@@ -13,6 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from sahara import exceptions as ex
 from sahara.plugins import base as plugins_base
 from sahara.utils import resources
 
@@ -119,14 +120,14 @@ class ProvisioningPluginBase(plugins_base.PluginInterface):
             for config_name in configs[applicable_target]:
                 confs = config_objs_map.get(applicable_target)
                 if not confs:
-                    # TODO(slukjanov): raise specific exception
-                    raise RuntimeError("Can't find applicable target '%s'"
-                                       % applicable_target)
+                    raise ex.ConfigurationError(
+                        "Can't find applicable target '%s' for '%s'"
+                        % (applicable_target, config_name))
                 conf = confs.get(config_name)
                 if not conf:
-                    # TODO(slukjanov): raise specific exception
-                    raise RuntimeError("Can't find config '%s' in '%s'"
-                                       % (config_name, applicable_target))
+                    raise ex.ConfigurationError(
+                        "Can't find config '%s' in '%s'"
+                        % (config_name, applicable_target))
                 result.append(UserInput(
                     conf, configs[applicable_target][config_name]))
 

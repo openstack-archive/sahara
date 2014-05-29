@@ -116,8 +116,8 @@ class ClusterTemplate(object):
             if stack.stack_name == self.cluster.name:
                 return ClusterStack(self, stack)
 
-        raise RuntimeError('Failed to find just created stack %s' %
-                           self.cluster.name)
+        raise ex.HeatStackException(
+            'Failed to find just created stack %s' % self.cluster.name)
 
     def _serialize_resources(self):
         resources = []

@@ -19,6 +19,7 @@ from oslo.config import cfg
 import six
 from stevedore import enabled
 
+from sahara import exceptions as ex
 from sahara.openstack.common import log as logging
 from sahara.utils import resources
 
@@ -96,9 +97,8 @@ class PluginManager(object):
 
         for ext in extension_manager.extensions:
             if ext.name in self.plugins:
-                # TODO(slukjanov): replace with specific exception
-                raise RuntimeError("Plugin with name '%s' already exists." %
-                                   ext.name)
+                raise ex.ConfigurationError(
+                    "Plugin with name '%s' already exists." % ext.name)
             ext.obj.name = ext.name
             self.plugins[ext.name] = ext.obj
             LOG.info("Plugin '%s' loaded (%s)"
@@ -107,9 +107,9 @@ class PluginManager(object):
         if len(self.plugins) < len(config_plugins):
             loaded_plugins = set(six.iterkeys(self.plugins))
             requested_plugins = set(config_plugins)
-            # TODO(slukjanov): replace with specific exception
-            raise RuntimeError("Plugins couldn't be loaded: %s"
-                               % ", ".join(requested_plugins - loaded_plugins))
+            raise ex.ConfigurationError(
+                "Plugins couldn't be loaded: %s" %
+                ", ".join(requested_plugins - loaded_plugins))
 
     def get_plugins(self, base):
         return [

@@ -20,7 +20,7 @@ from eventlet import greenpool
 from eventlet import semaphore
 from oslo.config import cfg
 
-from sahara import exceptions
+from sahara import exceptions as ex
 from sahara.openstack.common import log as logging
 
 
@@ -97,8 +97,7 @@ def has_ctx():
 
 def ctx():
     if not has_ctx():
-        # TODO(slukjanov): replace with specific error
-        raise RuntimeError("Context isn't available here")
+        raise ex.IncorrectStateError("Context isn't available here")
     return getattr(_CTX_STORE, _CTX_KEY)
 
 
@@ -176,7 +175,7 @@ class ThreadGroup(object):
                 self.cv.wait()
 
         if self.exc:
-            raise exceptions.ThreadException(self.failed_thread, self.exc)
+            raise ex.ThreadException(self.failed_thread, self.exc)
 
     def __enter__(self):
         return self

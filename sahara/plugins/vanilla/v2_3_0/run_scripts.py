@@ -15,6 +15,7 @@
 
 from sahara import context
 from sahara.openstack.common import log as logging
+from sahara.plugins.general import exceptions as ex
 from sahara.plugins.vanilla import utils as vu
 from sahara.plugins.vanilla.v2_3_0 import config_helper as c_helper
 from sahara.utils import files
@@ -31,7 +32,8 @@ def start_instance(instance):
         elif process in ['resourcemanager', 'nodemanager']:
             start_yarn_process(instance, process)
         else:
-            raise RuntimeError("Process is not supported")
+            raise ex.HadoopProvisionError(
+                "Process %s is not supported" % process)
 
 
 def start_hadoop_process(instance, process):

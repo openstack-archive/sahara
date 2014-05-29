@@ -98,7 +98,7 @@ class TestAttachVolume(base.SaharaWithDbTestCase):
         instance = r.InstanceResource({'instance_id': '123454321',
                                        'instance_name': 'instt'})
         self.assertIsNone(volumes._await_attach_volumes(instance, 2))
-        self.assertRaises(RuntimeError, volumes._await_attach_volumes,
+        self.assertRaises(ex.SystemError, volumes._await_attach_volumes,
                           instance, 3)
 
     def test_get_unmounted_devices(self):
