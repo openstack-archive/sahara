@@ -22,6 +22,9 @@ include sahara/plugins/hdp/versions/version_1_3_2/resources/*.sh
 include sahara/plugins/hdp/versions/version_2_0_6/resources/*.template
 include sahara/plugins/hdp/versions/version_2_0_6/resources/*.json
 include sahara/plugins/hdp/versions/version_2_0_6/resources/*.sh
+include sahara/plugins/spark/resources/*.xml
+include sahara/plugins/spark/resources/*.sh
+include sahara/plugins/spark/resources/*.template
 include sahara/resources/*.heat
 include sahara/service/edp/resources/*.xml
 include sahara/swift/resources/*.xml
