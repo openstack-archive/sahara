@@ -14,9 +14,9 @@
 # limitations under the License.
 
 import mock
-
 from novaclient import exceptions as nova_exceptions
 import six
+import testtools
 
 from sahara import conductor as cond
 from sahara import context
@@ -68,7 +68,7 @@ class TestClusterRollBack(AbstractInstanceTest):
 
         self.nova.servers.list.return_value = [_mock_instance(1)]
 
-        with self.assertRaises(MockException):
+        with testtools.ExpectedException(MockException):
             self.engine.create_cluster(cluster)
 
         ctx = context.ctx()
@@ -172,11 +172,10 @@ class NodePlacementTest(AbstractInstanceTest):
             instance_names.append(instance_name)
 
         self.assertEqual(3, len(instance_names))
-        self.assertItemsEqual([
-            'test_cluster-test_group_1-001',
-            'test_cluster-test_group_1-002',
-            'test_cluster-test_group_2-001',
-        ], instance_names)
+        self.assertEqual(set(['test_cluster-test_group_1-001',
+                              'test_cluster-test_group_1-002',
+                              'test_cluster-test_group_2-001']),
+                         set(instance_names))
 
         self.nova.servers.create.assert_has_calls(
             [mock.call(instance_names[0],

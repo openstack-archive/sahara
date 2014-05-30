@@ -13,15 +13,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import unittest2
+import testtools
 
 from sahara.plugins.general import exceptions as ex
 from sahara.plugins.general import utils as u
 from sahara.tests.unit import testutils as tu
 
 
-class GeneralUtilsTest(unittest2.TestCase):
+class GeneralUtilsTest(testtools.TestCase):
     def setUp(self):
+        super(GeneralUtilsTest, self).setUp()
         i1 = tu.make_inst_dict('i1', 'master')
         i2 = tu.make_inst_dict('i2', 'worker1')
         i3 = tu.make_inst_dict('i3', 'worker2')
@@ -41,25 +42,25 @@ class GeneralUtilsTest(unittest2.TestCase):
         self.ng3 = self.c1.node_groups[2]
 
     def test_get_node_groups(self):
-        self.assertListEqual(u.get_node_groups(self.c1), self.c1.node_groups)
-        self.assertListEqual(u.get_node_groups(self.c1, "wrong-process"), [])
-        self.assertListEqual(u.get_node_groups(self.c1, 'dn'),
-                             [self.ng2, self.ng3])
+        self.assertEqual(u.get_node_groups(self.c1), self.c1.node_groups)
+        self.assertEqual(u.get_node_groups(self.c1, "wrong-process"), [])
+        self.assertEqual(u.get_node_groups(self.c1, 'dn'),
+                         [self.ng2, self.ng3])
 
     def test_get_instances(self):
         self.assertEqual(len(u.get_instances(self.c1)), 5)
-        self.assertListEqual(u.get_instances(self.c1, 'wrong-process'), [])
-        self.assertListEqual(u.get_instances(self.c1, 'nn'),
-                             self.ng1.instances)
+        self.assertEqual(u.get_instances(self.c1, 'wrong-process'), [])
+        self.assertEqual(u.get_instances(self.c1, 'nn'),
+                         self.ng1.instances)
         instances = list(self.ng2.instances)
         instances += self.ng3.instances
-        self.assertListEqual(u.get_instances(self.c1, 'dn'), instances)
+        self.assertEqual(u.get_instances(self.c1, 'dn'), instances)
 
     def test_get_instance(self):
         self.assertIsNone(u.get_instance(self.c1, 'wrong-process'))
         self.assertEqual(u.get_instance(self.c1, 'nn'),
                          self.ng1.instances[0])
-        with self.assertRaises(ex.InvalidComponentCountException):
+        with testtools.ExpectedException(ex.InvalidComponentCountException):
             u.get_instance(self.c1, 'dn')
 
     def test_generate_lines_from_list(self):
@@ -68,8 +69,9 @@ class GeneralUtilsTest(unittest2.TestCase):
         self.assertEqual(u.generate_host_names([]), "")
 
 
-class GetPortUtilsTest(unittest2.TestCase):
+class GetPortUtilsTest(testtools.TestCase):
     def setUp(self):
+        super(GetPortUtilsTest, self).setUp()
         self.test_values = [
             ('127.0.0.1:11000', 11000),
             ('http://somehost.com:8080/resource', 8080),

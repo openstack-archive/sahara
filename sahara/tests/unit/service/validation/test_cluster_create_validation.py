@@ -15,6 +15,7 @@
 
 import mock
 import six
+import testtools
 
 from sahara import exceptions
 from sahara import main
@@ -26,6 +27,7 @@ from sahara.tests.unit.service.validation import utils as u
 
 class TestClusterCreateValidation(u.ValidationTestCase):
     def setUp(self):
+        super(TestClusterCreateValidation, self).setUp()
         self._create_object_fun = c.check_cluster_create
         self.scheme = c.CLUSTER_SCHEMA
         api.plugin_base.setup_plugins()
@@ -387,7 +389,7 @@ class TestClusterCreateFlavorValidation(base.SaharaWithDbTestCase):
             'default_image_id': '550e8400-e29b-41d4-a716-446655440000'
         }
         for values in [data, data1]:
-            with self.assertRaises(exceptions.InvalidException):
+            with testtools.ExpectedException(exceptions.InvalidException):
                 try:
                     patchers = u.start_patch(False)
                     c.check_cluster_create(values)
@@ -447,7 +449,7 @@ class TestClusterCreateFlavorValidation(base.SaharaWithDbTestCase):
             ],
             'default_image_id': '550e8400-e29b-41d4-a716-446655440000'
         }
-        with self.assertRaises(exceptions.InvalidException):
+        with testtools.ExpectedException(exceptions.InvalidException):
             try:
                 patchers = u.start_patch(False)
                 c.check_cluster_create(data)

@@ -14,13 +14,13 @@
 # limitations under the License.
 
 import pkg_resources as pkg
-import unittest2
+import testtools
 
 from sahara.plugins.vanilla.v1_2_1 import scaling as sc
 from sahara import version
 
 
-class ProvisioningPluginBaseTest(unittest2.TestCase):
+class ProvisioningPluginBaseTest(testtools.TestCase):
     def test_result_for_3_nodes(self):
         ins = open(pkg.resource_filename(
             version.version_info.package, "tests/unit/resources/"
@@ -34,7 +34,7 @@ class ProvisioningPluginBaseTest(unittest2.TestCase):
                 "Remaining%": "93.42%"}
         expected = [exp1, exp2, exp3]
         res = sc.parse_dfs_report(big_string)
-        self.assertItemsEqual(expected, res)
+        self.assertEqual(expected, res)
 
     def test_result_for_0_nodes(self):
         ins = open(pkg.resource_filename(

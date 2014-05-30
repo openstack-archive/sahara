@@ -15,6 +15,8 @@
 
 import copy
 
+import testtools
+
 from sahara.conductor import manager
 from sahara import context
 from sahara import exceptions as ex
@@ -76,14 +78,14 @@ class ClusterTest(test_base.ConductorManagerTestCase):
         lst = self.api.cluster_get_all(ctx)
         self.assertEqual(len(lst), 0)
 
-        with self.assertRaises(ex.NotFoundException):
+        with testtools.ExpectedException(ex.NotFoundException):
             self.api.cluster_destroy(ctx, cl_id)
 
     def test_duplicate_cluster_create(self):
         ctx = context.ctx()
         self.api.cluster_create(ctx, SAMPLE_CLUSTER)
 
-        with self.assertRaises(ex.DBDuplicateEntry):
+        with testtools.ExpectedException(ex.DBDuplicateEntry):
             self.api.cluster_create(ctx, SAMPLE_CLUSTER)
 
     def test_cluster_fields(self):
@@ -142,7 +144,7 @@ class ClusterTest(test_base.ConductorManagerTestCase):
         get_cl_obj = self.api.cluster_get(ctx, _id)
         self.assertEqual(updated_cl, get_cl_obj)
 
-        with self.assertRaises(ex.NotFoundException):
+        with testtools.ExpectedException(ex.NotFoundException):
             self.api.cluster_update(ctx, "bad_id", {"status": "Active"})
 
     def _ng_in_cluster(self, cluster_db_obj, ng_id):
@@ -205,7 +207,7 @@ class ClusterTest(test_base.ConductorManagerTestCase):
 
         self.assertFalse(found_ng, "Node Group is still in a CLuster")
 
-        with self.assertRaises(ex.NotFoundException):
+        with testtools.ExpectedException(ex.NotFoundException):
             self.api.node_group_remove(ctx, ng_id)
 
     def _add_instance(self, ctx, ng_id):
@@ -279,5 +281,5 @@ class ClusterTest(test_base.ConductorManagerTestCase):
 
             self.assertEqual(count, ng["count"])
 
-        with self.assertRaises(ex.NotFoundException):
+        with testtools.ExpectedException(ex.NotFoundException):
             self.api.instance_remove(ctx, instance_id)

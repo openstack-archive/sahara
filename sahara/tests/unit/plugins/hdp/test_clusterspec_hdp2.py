@@ -15,7 +15,7 @@
 
 import mock
 import pkg_resources as pkg
-import unittest2
+import testtools
 
 from sahara.plugins.general import exceptions as ex
 from sahara.plugins.hdp import clusterspec as cs
@@ -37,8 +37,25 @@ class TestCONF(object):
 @mock.patch('sahara.plugins.hdp.versions.version_2_0_6.services.HdfsService.'
             '_get_swift_properties',
             return_value=[])
-class ClusterSpecTestForHDP2(unittest2.TestCase):
+class ClusterSpecTestForHDP2(testtools.TestCase):
     service_validators = {}
+
+    def setUp(self):
+        super(ClusterSpecTestForHDP2, self).setUp()
+        self.service_validators['YARN'] = self._assert_yarn
+        self.service_validators['HDFS'] = self._assert_hdfs
+        self.service_validators['MAPREDUCE2'] = self._assert_mrv2
+        self.service_validators['GANGLIA'] = self._assert_ganglia
+        self.service_validators['NAGIOS'] = self._assert_nagios
+        self.service_validators['AMBARI'] = self._assert_ambari
+        self.service_validators['PIG'] = self._assert_pig
+        self.service_validators['HIVE'] = self._assert_hive
+        self.service_validators['HCATALOG'] = self._assert_hcatalog
+        self.service_validators['ZOOKEEPER'] = self._assert_zookeeper
+        self.service_validators['WEBHCAT'] = self._assert_webhcat
+        self.service_validators['OOZIE'] = self._assert_oozie
+        self.service_validators['SQOOP'] = self._assert_sqoop
+        self.service_validators['HBASE'] = self._assert_hbase
 
     def test_parse_default_with_cluster(self, patched):
         cluster_config_file = pkg.resource_string(
@@ -1579,22 +1596,6 @@ class ClusterSpecTestForHDP2(unittest2.TestCase):
         self.assertIn('oozie-site', configurations)
         self.assertIn('hbase-site', configurations)
         self.assertIn('capacity-scheduler', configurations)
-
-    def setUp(self):
-        self.service_validators['YARN'] = self._assert_yarn
-        self.service_validators['HDFS'] = self._assert_hdfs
-        self.service_validators['MAPREDUCE2'] = self._assert_mrv2
-        self.service_validators['GANGLIA'] = self._assert_ganglia
-        self.service_validators['NAGIOS'] = self._assert_nagios
-        self.service_validators['AMBARI'] = self._assert_ambari
-        self.service_validators['PIG'] = self._assert_pig
-        self.service_validators['HIVE'] = self._assert_hive
-        self.service_validators['HCATALOG'] = self._assert_hcatalog
-        self.service_validators['ZOOKEEPER'] = self._assert_zookeeper
-        self.service_validators['WEBHCAT'] = self._assert_webhcat
-        self.service_validators['OOZIE'] = self._assert_oozie
-        self.service_validators['SQOOP'] = self._assert_sqoop
-        self.service_validators['HBASE'] = self._assert_hbase
 
 
 class TestNodeGroup:

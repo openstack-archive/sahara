@@ -19,6 +19,7 @@ from sahara.tests.unit.service.validation import utils as u
 
 class TestTagsAddingValidation(u.ValidationTestCase):
     def setUp(self):
+        super(TestTagsAddingValidation, self).setUp()
         self._create_object_fun = im.check_tags
         self.scheme = im.image_tags_schema
 

@@ -13,12 +13,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import unittest2
+import testtools
 
 from sahara.utils import types as types
 
 
-class TypesTestCase(unittest2.TestCase):
+class TypesTestCase(testtools.TestCase):
 
     def test_is_int(self):
         self.assertTrue(types.is_int('1'))

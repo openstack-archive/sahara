@@ -15,7 +15,7 @@
 
 import mock
 import six
-import unittest2
+import testtools
 
 from sahara import exceptions as ex
 from sahara.plugins.vanilla import plugin
@@ -32,8 +32,9 @@ def _get_plugin(plugin_name):
     return None
 
 
-class TestScalingValidation(unittest2.TestCase):
+class TestScalingValidation(testtools.TestCase):
     def setUp(self):
+        super(TestScalingValidation, self).setUp()
         api.plugin_base.setup_plugins()
         self._create_object_fun = mock.Mock()
 
@@ -48,7 +49,7 @@ class TestScalingValidation(unittest2.TestCase):
         get_cluster_p.return_value = cluster
         get_plugin_p.side_effect = _get_plugin
 
-        with self.assertRaises(ex.InvalidException):
+        with testtools.ExpectedException(ex.InvalidException):
             try:
                 c_s.check_cluster_scaling(data, cluster.id)
             except ex.InvalidException as e:

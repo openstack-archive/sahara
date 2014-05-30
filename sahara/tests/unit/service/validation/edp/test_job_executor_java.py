@@ -32,9 +32,10 @@ class FakeJob(object):
     libs = []
 
 
-class TestJobExecValidation(u.ValidationTestCase):
+class TestJobExecJavaValidation(u.ValidationTestCase):
 
     def setUp(self):
+        super(TestJobExecJavaValidation, self).setUp()
         self._create_object_fun = wrap_it
         self.scheme = je.JOB_EXEC_SCHEMA
 

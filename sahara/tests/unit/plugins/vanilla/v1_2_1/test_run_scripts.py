@@ -14,14 +14,12 @@
 # limitations under the License.
 
 import mock
-import unittest2
+import testtools
 
 from sahara.plugins.vanilla.v1_2_1 import run_scripts
 
 
-class RunScriptsTest(unittest2.TestCase):
-    def setUp(self):
-        pass
+class RunScriptsTest(testtools.TestCase):
 
     def test_check_datanodes_count_positive(self):
         remote = mock.Mock()

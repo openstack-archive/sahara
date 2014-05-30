@@ -13,6 +13,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import testtools
+
 from sahara.conductor import manager
 from sahara import context
 from sahara import exceptions as ex
@@ -97,7 +99,7 @@ class NodeGroupTemplates(test_base.ConductorManagerTestCase):
     def test_duplicate_ngt_create(self):
         ctx = context.ctx()
         self.api.node_group_template_create(ctx, SAMPLE_NGT)
-        with self.assertRaises(ex.DBDuplicateEntry):
+        with testtools.ExpectedException(ex.DBDuplicateEntry):
             self.api.node_group_template_create(ctx, SAMPLE_NGT)
 
     def test_ngt_fields(self):
@@ -119,7 +121,7 @@ class NodeGroupTemplates(test_base.ConductorManagerTestCase):
 
         self.api.node_group_template_destroy(ctx, _id)
 
-        with self.assertRaises(ex.NotFoundException):
+        with testtools.ExpectedException(ex.NotFoundException):
             self.api.node_group_template_destroy(ctx, _id)
 
 
@@ -147,13 +149,13 @@ class ClusterTemplates(test_base.ConductorManagerTestCase):
         lst = self.api.cluster_template_get_all(ctx)
         self.assertEqual(len(lst), 0)
 
-        with self.assertRaises(ex.NotFoundException):
+        with testtools.ExpectedException(ex.NotFoundException):
             self.api.cluster_template_destroy(ctx, clt_id)
 
     def test_duplicate_clt_create(self):
         ctx = context.ctx()
         self.api.cluster_template_create(ctx, SAMPLE_CLT)
-        with self.assertRaises(ex.DBDuplicateEntry):
+        with testtools.ExpectedException(ex.DBDuplicateEntry):
             self.api.cluster_template_create(ctx, SAMPLE_CLT)
 
     def test_clt_fields(self):
@@ -183,8 +185,8 @@ class ClusterTemplates(test_base.ConductorManagerTestCase):
             ng.pop("volumes_size")
             ng.pop("volumes_per_node")
 
-        self.assertListEqual(SAMPLE_CLT["node_groups"],
-                             clt_db_obj["node_groups"])
+        self.assertEqual(SAMPLE_CLT["node_groups"],
+                         clt_db_obj["node_groups"])
 
     def test_clt_delete(self):
         ctx = context.ctx()
@@ -193,5 +195,5 @@ class ClusterTemplates(test_base.ConductorManagerTestCase):
 
         self.api.cluster_template_destroy(ctx, _id)
 
-        with self.assertRaises(ex.NotFoundException):
+        with testtools.ExpectedException(ex.NotFoundException):
             self.api.cluster_template_destroy(ctx, _id)

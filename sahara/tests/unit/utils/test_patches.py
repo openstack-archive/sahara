@@ -16,13 +16,14 @@
 import xml.dom.minidom as xml
 
 import six
-import unittest2
+import testtools
 
 from sahara.utils import patches
 
 
-class MinidomPatchesTest(unittest2.TestCase):
+class MinidomPatchesTest(testtools.TestCase):
     def setUp(self):
+        super(MinidomPatchesTest, self).setUp()
         patches.patch_minidom_writexml()
 
     def _generate_n_prettify_xml(self):

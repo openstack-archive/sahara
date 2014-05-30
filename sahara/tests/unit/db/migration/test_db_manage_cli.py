@@ -17,12 +17,12 @@ import sys
 
 import mock
 import testscenarios
-import unittest2
+import testtools
 
 from sahara.db.migration import cli
 
 
-class TestCli(unittest2.TestCase):
+class TestCli(testtools.TestCase):
     func_name = ''
     exp_args = ()
     exp_kwargs = {}

@@ -15,19 +15,20 @@
 
 import xml.dom.minidom as xml
 
-import unittest2
+import testtools
 
 from sahara.utils import patches as p
 from sahara.utils import xmlutils as x
 
 
-class XMLUtilsTestCase(unittest2.TestCase):
+class XMLUtilsTestCase(testtools.TestCase):
 
     def setUp(self):
+        super(XMLUtilsTestCase, self).setUp()
         p.patch_minidom_writexml()
 
     def test_load_xml_defaults(self):
-        self.assertListEqual(
+        self.assertEqual(
             [{'name': u'name1', 'value': u'value1', 'description': 'descr1'},
              {'name': u'name2', 'value': u'value2', 'description': 'descr2'},
              {'name': u'name3', 'value': '', 'description': 'descr3'},

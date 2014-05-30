@@ -13,12 +13,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import unittest2
+import testtools
 
 from sahara.utils import general
 
 
-class UtilsGeneralTest(unittest2.TestCase):
+class UtilsGeneralTest(testtools.TestCase):
     def test_find_dict(self):
         iterable = [
             {

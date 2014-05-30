@@ -13,13 +13,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import unittest2
+import testtools
 
 from sahara.service.edp.workflow_creator import workflow_factory as w_f
 from sahara.utils import edp
 
 
-class TestJobPossibleConfigs(unittest2.TestCase):
+class TestJobPossibleConfigs(testtools.TestCase):
 
     def test_possible_configs(self):
         res = w_f.get_possible_job_config(edp.JOB_TYPE_MAPREDUCE)

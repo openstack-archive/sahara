@@ -15,7 +15,7 @@
 
 import copy
 
-import unittest2
+import testtools
 
 from sahara.conductor import resource as r
 from sahara.swift import swift_helper
@@ -123,10 +123,7 @@ SAMPLE_JOB_EXECUTION = {
 }
 
 
-class TestResource(unittest2.TestCase):
-    def setUp(self):
-        self.maxDiff = None
-
+class TestResource(testtools.TestCase):
     def test_resource_creation(self):
         res = r.Resource(SAMPLE_DICT)
 
@@ -139,13 +136,13 @@ class TestResource(unittest2.TestCase):
     def test_resource_immutability(self):
         res = r.Resource(SAMPLE_DICT)
 
-        with self.assertRaises(types.FrozenClassError):
+        with testtools.ExpectedException(types.FrozenClassError):
             res.first.append(123)
 
-        with self.assertRaises(types.FrozenClassError):
+        with testtools.ExpectedException(types.FrozenClassError):
             res.first = 123
 
-        with self.assertRaises(types.FrozenClassError):
+        with testtools.ExpectedException(types.FrozenClassError):
             res.second.a = 123
 
     def test_nested_lists(self):

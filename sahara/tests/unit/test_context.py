@@ -17,17 +17,18 @@ import random
 
 import mock
 import six
-import unittest2
+import testtools
 
 from sahara import context
-from sahara import exceptions
+from sahara import exceptions as ex
 
 
 rnd = random.Random()
 
 
-class ContextTest(unittest2.TestCase):
+class ContextTest(testtools.TestCase):
     def setUp(self):
+        super(ContextTest, self).setUp()
         ctx = context.Context('test_user', 'tenant_1', 'test_auth_token', {},
                               remote_semaphore='123')
         context.set_ctx(ctx)
@@ -55,7 +56,7 @@ class ContextTest(unittest2.TestCase):
     def test_thread_group_waits_threads_if_spawning_exception(self):
         lst = []
 
-        with self.assertRaises(Exception):
+        with testtools.ExpectedException(RuntimeError):
             with context.ThreadGroup() as tg:
                 for i in range(400):
                     tg.spawn('add %i' % i, self._add_element, lst, i)
@@ -67,7 +68,7 @@ class ContextTest(unittest2.TestCase):
     def test_thread_group_waits_threads_if_child_exception(self):
         lst = []
 
-        with self.assertRaises(Exception):
+        with testtools.ExpectedException(ex.ThreadException):
             with context.ThreadGroup() as tg:
                 tg.spawn('raiser', self._raise_test_exc, 'exc')
 
@@ -77,7 +78,7 @@ class ContextTest(unittest2.TestCase):
         self.assertEqual(len(lst), 400)
 
     def test_thread_group_handles_spawning_exception(self):
-        with self.assertRaises(TestException):
+        with testtools.ExpectedException(TestException):
             with context.ThreadGroup():
                 raise TestException()
 
@@ -85,12 +86,12 @@ class ContextTest(unittest2.TestCase):
         try:
             with context.ThreadGroup() as tg:
                 tg.spawn('raiser1', self._raise_test_exc, 'exc1')
-        except exceptions.ThreadException as te:
+        except ex.ThreadException as te:
             self.assertIn('exc1', six.text_type(te))
             self.assertIn('raiser1', six.text_type(te))
 
     def test_thread_group_prefers_spawning_exception(self):
-        with self.assertRaises(RuntimeError):
+        with testtools.ExpectedException(RuntimeError):
             with context.ThreadGroup() as tg:
                 tg.spawn('raiser1', self._raise_test_exc, 'exc1')
                 raise RuntimeError()

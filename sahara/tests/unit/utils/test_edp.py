@@ -13,12 +13,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import unittest2
+import testtools
 
 from sahara.utils import edp
 
 
-class SplitJobTypeTest(unittest2.TestCase):
+class SplitJobTypeTest(testtools.TestCase):
     def test_split_job_type(self):
         jtype, stype = edp.split_job_type(edp.JOB_TYPE_MAPREDUCE)
         self.assertEqual(jtype, edp.JOB_TYPE_MAPREDUCE)

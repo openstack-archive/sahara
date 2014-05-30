@@ -13,6 +13,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import testtools
+
 from sahara.plugins.general import exceptions as ex
 from sahara.plugins.vanilla import plugin as p
 from sahara.tests.unit import base
@@ -42,28 +44,28 @@ class ValidationTest(base.SaharaTestCase):
         self._validate_case(1, 0, 1, 1, 1, 1, 1)
         self._validate_case(1, 1, 1, 1, 1, 1, 0)
 
-        with self.assertRaises(ex.InvalidComponentCountException):
+        with testtools.ExpectedException(ex.InvalidComponentCountException):
             self._validate_case(0, 0, 1, 10, 1, 0, 0)
-        with self.assertRaises(ex.InvalidComponentCountException):
+        with testtools.ExpectedException(ex.InvalidComponentCountException):
             self._validate_case(2, 0, 1, 10, 1, 0, 0)
 
-        with self.assertRaises(ex.InvalidComponentCountException):
+        with testtools.ExpectedException(ex.InvalidComponentCountException):
             self._validate_case(1, 2, 1, 1, 1, 1, 1)
 
-        with self.assertRaises(ex.RequiredServiceMissingException):
+        with testtools.ExpectedException(ex.RequiredServiceMissingException):
             self._validate_case(1, 0, 0, 10, 1, 0, 0)
-        with self.assertRaises(ex.InvalidComponentCountException):
+        with testtools.ExpectedException(ex.InvalidComponentCountException):
             self._validate_case(1, 0, 2, 10, 1, 0, 0)
 
-        with self.assertRaises(ex.InvalidComponentCountException):
+        with testtools.ExpectedException(ex.InvalidComponentCountException):
             self._validate_case(1, 0, 1, 1, 1, 2, 1)
-        with self.assertRaises(ex.InvalidComponentCountException):
+        with testtools.ExpectedException(ex.InvalidComponentCountException):
             self._validate_case(1, 0, 1, 1, 1, 1, 2)
-        with self.assertRaises(ex.RequiredServiceMissingException):
+        with testtools.ExpectedException(ex.RequiredServiceMissingException):
             self._validate_case(1, 0, 1, 1, 1, 0, 1)
-        with self.assertRaises(ex.RequiredServiceMissingException):
+        with testtools.ExpectedException(ex.RequiredServiceMissingException):
             self._validate_case(1, 0, 1, 0, 1, 1, 1)
-        with self.assertRaises(ex.RequiredServiceMissingException):
+        with testtools.ExpectedException(ex.RequiredServiceMissingException):
             self._validate_case(1, 0, 1, 1, 0, 1, 1)
 
     def _validate_case(self, *args):

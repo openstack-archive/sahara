@@ -14,6 +14,7 @@
 # limitations under the License.
 
 import mock
+import testtools
 
 import sahara.exceptions as ex
 from sahara.service import api
@@ -27,6 +28,7 @@ SAMPLE_SWIFT_URL_WITH_SUFFIX = "swift://1234%s/object" % su.SWIFT_URL_SUFFIX
 
 class TestDataSourceValidation(u.ValidationTestCase):
     def setUp(self):
+        super(TestDataSourceValidation, self).setUp()
         self._create_object_fun = ds.check_data_source_create
         self.scheme = ds.DATA_SOURCE_SCHEMA
         api.plugin_base.setup_plugins()
@@ -56,7 +58,7 @@ class TestDataSourceValidation(u.ValidationTestCase):
             "type": "swift",
             "description": "long description"
         }
-        with self.assertRaises(ex.InvalidCredentials):
+        with testtools.ExpectedException(ex.InvalidCredentials):
             ds.check_data_source_create(data)
 
     @mock.patch("sahara.service.validations."
@@ -75,7 +77,7 @@ class TestDataSourceValidation(u.ValidationTestCase):
             },
             "description": "long description"
         }
-        with self.assertRaises(ex.InvalidCredentials):
+        with testtools.ExpectedException(ex.InvalidCredentials):
             ds.check_data_source_create(data)
 
     @mock.patch("sahara.service.validations."
@@ -94,7 +96,7 @@ class TestDataSourceValidation(u.ValidationTestCase):
             },
             "description": "long description"
         }
-        with self.assertRaises(ex.InvalidCredentials):
+        with testtools.ExpectedException(ex.InvalidCredentials):
             ds.check_data_source_create(data)
 
     @mock.patch("sahara.service.validations."
@@ -108,7 +110,7 @@ class TestDataSourceValidation(u.ValidationTestCase):
             "type": "swift",
             "description": "incorrect url schema"
         }
-        with self.assertRaises(ex.InvalidException):
+        with testtools.ExpectedException(ex.InvalidException):
             ds.check_data_source_create(data)
 
     @mock.patch("sahara.service.validations."
@@ -141,7 +143,7 @@ class TestDataSourceValidation(u.ValidationTestCase):
             "type": "swift",
             "description": "incorrect url schema"
         }
-        with self.assertRaises(ex.InvalidException):
+        with testtools.ExpectedException(ex.InvalidException):
             ds.check_data_source_create(data)
 
     @mock.patch("sahara.service.validations."
@@ -156,7 +158,7 @@ class TestDataSourceValidation(u.ValidationTestCase):
             "type": "swift",
             "description": "incorrect url schema"
         }
-        with self.assertRaises(ex.InvalidException):
+        with testtools.ExpectedException(ex.InvalidException):
             ds.check_data_source_create(data)
 
     @mock.patch("sahara.service.validations."
@@ -170,7 +172,7 @@ class TestDataSourceValidation(u.ValidationTestCase):
             "type": "hdfs",
             "description": "incorrect url schema"
         }
-        with self.assertRaises(ex.InvalidException):
+        with testtools.ExpectedException(ex.InvalidException):
             ds.check_data_source_create(data)
 
     @mock.patch("sahara.service.validations."

@@ -13,12 +13,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import unittest2
+import testtools
 
 from sahara.plugins.hdp.versions import versionhandlerfactory
 
 
-class VersionManagerFactoryTest(unittest2.TestCase):
+class VersionManagerFactoryTest(testtools.TestCase):
 
     def test_get_versions(self):
         factory = versionhandlerfactory.VersionHandlerFactory.get_instance()

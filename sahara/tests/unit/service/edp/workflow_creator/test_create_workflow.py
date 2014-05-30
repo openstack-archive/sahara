@@ -13,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import unittest2
+import testtools
 
 import sahara.exceptions as ex
 from sahara.service.edp.workflow_creator import hive_workflow as hw
@@ -23,9 +23,10 @@ from sahara.service.edp.workflow_creator import pig_workflow as pw
 from sahara.utils import patches as p
 
 
-class TestPigWorkflowCreator(unittest2.TestCase):
+class TestPigWorkflowCreator(testtools.TestCase):
 
     def setUp(self):
+        super(TestPigWorkflowCreator, self).setUp()
         p.patch_minidom_writexml()
         self.prepare = {'delete': ['delete_dir_1', 'delete_dir_2'],
                         'mkdir': ['mkdir_1']}
@@ -59,7 +60,7 @@ class TestPigWorkflowCreator(unittest2.TestCase):
         self.assertNotIn(mr_action, res)
 
         mr_workflow = mrw.MapReduceWorkFlowCreator()
-        with self.assertRaises(ex.NotFoundException):
+        with testtools.ExpectedException(ex.NotFoundException):
             mr_workflow.build_workflow_xml(self.prepare, self.job_xml,
                                            self.configuration, self.files,
                                            self.archives, {'bogus': 'element'})

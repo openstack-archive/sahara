@@ -20,6 +20,7 @@ from sahara.tests.unit.service.validation import utils as u
 
 class TestClusterTemplateCreateValidation(u.ValidationTestCase):
     def setUp(self):
+        super(TestClusterTemplateCreateValidation, self).setUp()
         self._create_object_fun = ct.check_cluster_template_create
         self.scheme = ct.CLUSTER_TEMPLATE_SCHEMA
         api.plugin_base.setup_plugins()

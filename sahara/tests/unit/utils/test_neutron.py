@@ -14,12 +14,12 @@
 # limitations under the License.
 
 import mock
-import unittest2
+import testtools
 
 from sahara.utils.openstack import neutron as neutron_client
 
 
-class NeutronClientRemoteWrapperTest(unittest2.TestCase):
+class NeutronClientRemoteWrapperTest(testtools.TestCase):
     @mock.patch("neutronclient.neutron.client.Client")
     def test_get_router(self, patched):
         patched.side_effect = _test_get_neutron_client

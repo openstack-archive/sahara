@@ -16,6 +16,8 @@
 import copy
 import datetime
 
+import testtools
+
 from sahara import context
 from sahara import exceptions as ex
 import sahara.tests.unit.conductor.base as test_base
@@ -107,7 +109,7 @@ class DataSourceTest(test_base.ConductorManagerTestCase):
     def test_duplicate_data_source_create(self):
         ctx = context.ctx()
         self.api.data_source_create(ctx, SAMPLE_DATA_SOURCE)
-        with self.assertRaises(ex.DBDuplicateEntry):
+        with testtools.ExpectedException(ex.DBDuplicateEntry):
             self.api.data_source_create(ctx, SAMPLE_DATA_SOURCE)
 
     def test_data_source_fields(self):
@@ -130,7 +132,7 @@ class DataSourceTest(test_base.ConductorManagerTestCase):
 
         self.api.data_source_destroy(ctx, _id)
 
-        with self.assertRaises(ex.NotFoundException):
+        with testtools.ExpectedException(ex.NotFoundException):
             self.api.data_source_destroy(ctx, _id)
 
 
@@ -166,10 +168,10 @@ class JobExecutionTest(test_base.ConductorManagerTestCase):
 
         self.api.job_execution_destroy(ctx, job_ex_id)
 
-        with self.assertRaises(ex.NotFoundException):
+        with testtools.ExpectedException(ex.NotFoundException):
             self.api.job_execution_update(ctx, job_ex_id, {'progress': '0.2'})
 
-        with self.assertRaises(ex.NotFoundException):
+        with testtools.ExpectedException(ex.NotFoundException):
             self.api.job_execution_destroy(ctx, job_ex_id)
 
         lst = self.api.job_execution_get_all(ctx)
@@ -213,11 +215,11 @@ class JobExecutionTest(test_base.ConductorManagerTestCase):
 
         self.api.job_execution_create(ctx, SAMPLE_CONF_JOB_EXECUTION)
 
-        with self.assertRaises(ex.DeletionFailed):
+        with testtools.ExpectedException(ex.DeletionFailed):
             self.api.data_source_destroy(ctx, ds_input['id'])
-        with self.assertRaises(ex.DeletionFailed):
+        with testtools.ExpectedException(ex.DeletionFailed):
             self.api.data_source_destroy(ctx, ds_output['id'])
-        with self.assertRaises(ex.DeletionFailed):
+        with testtools.ExpectedException(ex.DeletionFailed):
             self.api.job_destroy(ctx, job['id'])
 
 
@@ -247,7 +249,7 @@ class JobTest(test_base.ConductorManagerTestCase):
         lst = self.api.job_get_all(ctx)
         self.assertEqual(len(lst), 0)
 
-        with self.assertRaises(ex.NotFoundException):
+        with testtools.ExpectedException(ex.NotFoundException):
             self.api.job_destroy(ctx, jo_id)
 
     def test_job_fields(self):
@@ -284,13 +286,13 @@ class JobBinaryInternalTest(test_base.ConductorManagerTestCase):
         lst = self.api.job_binary_internal_get_all(ctx)
         self.assertEqual(len(lst), 0)
 
-        with self.assertRaises(ex.NotFoundException):
+        with testtools.ExpectedException(ex.NotFoundException):
             self.api.job_binary_internal_destroy(ctx, job_bin_int_id)
 
     def test_duplicate_job_binary_internal_create(self):
         ctx = context.ctx()
         self.api.job_binary_internal_create(ctx, SAMPLE_JOB_BINARY_INTERNAL)
-        with self.assertRaises(ex.DBDuplicateEntry):
+        with testtools.ExpectedException(ex.DBDuplicateEntry):
             self.api.job_binary_internal_create(ctx,
                                                 SAMPLE_JOB_BINARY_INTERNAL)
 
@@ -316,7 +318,7 @@ class JobBinaryInternalTest(test_base.ConductorManagerTestCase):
 
         internal = self.api.job_binary_internal_get(ctx, id)
         self.assertIsInstance(internal, dict)
-        with self.assertRaises(KeyError):
+        with testtools.ExpectedException(KeyError):
             internal["data"]
 
         internal["data"] = self.api.job_binary_internal_get_raw_data(ctx, id)
@@ -349,7 +351,7 @@ class JobBinaryTest(test_base.ConductorManagerTestCase):
         lst = self.api.job_binary_get_all(ctx)
         self.assertEqual(len(lst), 0)
 
-        with self.assertRaises(ex.NotFoundException):
+        with testtools.ExpectedException(ex.NotFoundException):
             self.api.job_binary_destroy(ctx, job_binary_id)
 
     def test_job_binary_fields(self):
@@ -375,7 +377,7 @@ class JobBinaryTest(test_base.ConductorManagerTestCase):
         job_id = self.api.job_create(ctx, job_values)['id']
 
         # Delete while referenced, fails
-        with self.assertRaises(ex.DeletionFailed):
+        with testtools.ExpectedException(ex.DeletionFailed):
             self.api.job_binary_destroy(ctx, job_binary_id)
 
         # Delete while not referenced
@@ -393,6 +395,6 @@ class JobBinaryTest(test_base.ConductorManagerTestCase):
     def test_duplicate_job_binary_create(self):
         ctx = context.ctx()
         self.api.job_binary_create(ctx, SAMPLE_JOB_BINARY)
-        with self.assertRaises(ex.DBDuplicateEntry):
+        with testtools.ExpectedException(ex.DBDuplicateEntry):
             self.api.job_binary_create(ctx,
                                        SAMPLE_JOB_BINARY)

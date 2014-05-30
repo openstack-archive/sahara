@@ -21,6 +21,7 @@ from sahara.tests.unit.service.validation import utils as u
 
 class TestJobBinaryValidation(u.ValidationTestCase):
     def setUp(self):
+        super(TestJobBinaryValidation, self).setUp()
         self._create_object_fun = b.check_job_binary
         self.scheme = b.JOB_BINARY_SCHEMA
         api.plugin_base.setup_plugins()

@@ -20,6 +20,7 @@ from sahara.tests.unit.service.validation import utils as u
 
 class TestNGTemplateCreateValidation(u.ValidationTestCase):
     def setUp(self):
+        super(TestNGTemplateCreateValidation, self).setUp()
         self._create_object_fun = nt.check_node_group_template_create
         self.scheme = nt.NODE_GROUP_TEMPLATE_SCHEMA
         api.plugin_base.setup_plugins()

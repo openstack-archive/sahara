@@ -42,4 +42,5 @@ class ConductorManagerTestCase(base.SaharaWithDbTestCase):
         for idx, check in enumerate(self._checks):
             check_val = check()
             self.assertEqual(self._results[idx], check_val,
-                             msg="Check '%s' failed" % idx)
+                             message="Check '%s' failed" % idx)
+        super(ConductorManagerTestCase, self).tearDown()

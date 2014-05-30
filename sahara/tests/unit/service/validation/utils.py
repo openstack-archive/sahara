@@ -231,11 +231,13 @@ def stop_patch(patchers):
 
 class ValidationTestCase(base.SaharaTestCase):
     def setUp(self):
+        super(ValidationTestCase, self).setUp()
         self._create_object_fun = None
         self.scheme = None
 
     def tearDown(self):
         self._create_object_fun = None
+        super(ValidationTestCase, self).tearDown()
 
     def _assert_calls(self, mock, call_info):
         if not call_info:

@@ -21,6 +21,7 @@ from sahara.utils import edp
 class TestJobValidation(u.ValidationTestCase):
 
     def setUp(self):
+        super(TestJobValidation, self).setUp()
         self._create_object_fun = j.check_mains_libs
         self.scheme = j.JOB_SCHEMA
 

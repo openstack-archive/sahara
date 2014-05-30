@@ -14,7 +14,7 @@
 # limitations under the License.
 
 import mock
-import unittest2
+import testtools
 
 from sahara import exceptions as e
 from sahara.plugins.general import exceptions as ex
@@ -24,7 +24,7 @@ from sahara.tests.unit.plugins.hdp import hdp_test_base
 versions = ['1.3.2', '2.0.6']
 
 
-class ServicesTest(unittest2.TestCase):
+class ServicesTest(testtools.TestCase):
     #TODO(jspeidel): test remaining service functionality which isn't
     # tested by coarser grained unit tests.
 

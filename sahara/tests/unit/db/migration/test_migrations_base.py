@@ -33,7 +33,7 @@ from oslo.config import cfg
 import six.moves.urllib.parse as urlparse
 import sqlalchemy
 import sqlalchemy.exc
-import unittest2
+import testtools
 
 import sahara.db.migration
 from sahara.db.sqlalchemy import api as sa
@@ -157,7 +157,7 @@ class CommonTestsMixIn(object):
             self.fail("Shouldn't have connected")
 
 
-class BaseMigrationTestCase(unittest2.TestCase):
+class BaseMigrationTestCase(testtools.TestCase):
     """Base class for testing migrations and migration utils. This sets up
     and configures the databases to run tests against.
     """

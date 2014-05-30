@@ -16,7 +16,7 @@
 import json
 
 import mock
-import unittest2
+import testtools
 
 from sahara import exceptions as ex
 from sahara.tests.unit import base
@@ -25,7 +25,7 @@ from sahara.utils import files as f
 from sahara.utils.openstack import heat as h
 
 
-class TestHeat(unittest2.TestCase):
+class TestHeat(testtools.TestCase):
     def test_gets(self):
         inst_name = "cluster-worker-001"
         self.assertEqual(h._get_inst_name("cluster", "worker", 0), inst_name)
@@ -200,7 +200,7 @@ class TestClusterTemplate(base.SaharaWithDbTestCase):
                 "test_serialize_resources_aa.heat")))
 
 
-class TestClusterStack(unittest2.TestCase):
+class TestClusterStack(testtools.TestCase):
     @mock.patch("sahara.context.sleep", return_value=None)
     def test_wait_till_active(self, _):
         cl_stack = h.ClusterStack(None, FakeHeatStack('CREATE_IN_PROGRESS',
@@ -211,11 +211,10 @@ class TestClusterStack(unittest2.TestCase):
         cl_stack.wait_till_active()
         cl_stack.heat_stack = FakeHeatStack('CREATE_IN_PROGRESS',
                                             'CREATE_FAILED')
-        with self.assertRaises(ex.HeatStackException) as context:
+        with testtools.ExpectedException(
+                ex.HeatStackException,
+                msg="Heat stack failed with status CREATE_FAILED"):
             cl_stack.wait_till_active()
-        self.assertEqual("HEAT_STACK_EXCEPTION", context.exception.code)
-        self.assertEqual("Heat stack failed with status CREATE_FAILED",
-                         context.exception.message)
 
 
 class FakeHeatStack():

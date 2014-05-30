@@ -20,6 +20,7 @@ from sahara.tests.unit import base as testbase
 class SwiftUtilsTest(testbase.SaharaTestCase):
 
     def setUp(self):
+        super(SwiftUtilsTest, self).setUp()
         self.override_config('use_identity_api_v3', True)
 
     def test_retrieve_auth_url(self):

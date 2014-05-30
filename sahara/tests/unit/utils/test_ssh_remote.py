@@ -13,12 +13,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import unittest2
+import testtools
 
 from sahara.utils import ssh_remote
 
 
-class TestEscapeQuotes(unittest2.TestCase):
+class TestEscapeQuotes(testtools.TestCase):
     def test_escape_quotes(self):
         s = ssh_remote._escape_quotes('echo "\\"Hello, world!\\""')
         self.assertEqual(s, r'echo \"\\\"Hello, world!\\\"\"')

@@ -13,12 +13,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import unittest2
+import testtools
 
 from sahara.utils import crypto as c
 
 
-class CryptoTest(unittest2.TestCase):
+class CryptoTest(testtools.TestCase):
     def test_generate_key_pair(self):
         kp = c.generate_key_pair()
 

@@ -15,12 +15,12 @@
 
 import mock
 import sqlalchemy as sa
-import unittest2
+import testtools
 
 from sahara.db.sqlalchemy import types
 
 
-class JsonEncodedTest(unittest2.TestCase):
+class JsonEncodedTest(testtools.TestCase):
     def test_impl(self):
         impl = types.JsonEncoded.impl
         self.assertEqual(sa.Text, impl)
@@ -42,7 +42,7 @@ class JsonEncodedTest(unittest2.TestCase):
         self.assertIsNone(t.process_result_value(None, None))
 
 
-class MutableDictTest(unittest2.TestCase):
+class MutableDictTest(testtools.TestCase):
     def test_creation(self):
         sample = {"a": 1, "b": 2}
         d = types.MutableDict(sample)
@@ -62,7 +62,7 @@ class MutableDictTest(unittest2.TestCase):
         self.assertIs(sample_md, md)
 
     def test_coerce_unsupported(self):
-        with self.assertRaises(ValueError):
+        with testtools.ExpectedException(ValueError):
             types.MutableDict.coerce("test", list())
 
     @mock.patch.object(types.MutableDict, 'changed')
@@ -90,7 +90,7 @@ class MutableDictTest(unittest2.TestCase):
         self.assertEqual(1, m.call_count)
 
 
-class MutableListTest(unittest2.TestCase):
+class MutableListTest(testtools.TestCase):
     def test_creation(self):
         sample = [1, 2, 3]
         d = types.MutableList(sample)
@@ -110,7 +110,7 @@ class MutableListTest(unittest2.TestCase):
         self.assertIs(sample_md, md)
 
     def test_coerce_unsupported(self):
-        with self.assertRaises(ValueError):
+        with testtools.ExpectedException(ValueError):
             types.MutableList.coerce("test", dict())
 
     @mock.patch.object(types.MutableList, 'changed')

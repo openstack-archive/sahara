@@ -15,12 +15,12 @@
 
 import collections
 
-import unittest2
+import testtools
 
 from sahara.utils import hashabledict as h
 
 
-class HashableDictTest(unittest2.TestCase):
+class HashableDictTest(testtools.TestCase):
 
     def test_is_hashable(self):
         hd = h.HashableDict()

@@ -13,14 +13,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import unittest2
+import testtools
 
 from sahara.plugins import base as pb
 
 
-class BasePluginsSupportTest(unittest2.TestCase):
+class BasePluginsSupportTest(testtools.TestCase):
 
     def setUp(self):
+        super(BasePluginsSupportTest, self).setUp()
         pb.setup_plugins()
 
     def test_plugins_loaded(self):

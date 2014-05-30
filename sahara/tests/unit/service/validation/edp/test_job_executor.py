@@ -38,6 +38,7 @@ class FakeJob(object):
 class TestJobExecValidation(u.ValidationTestCase):
 
     def setUp(self):
+        super(TestJobExecValidation, self).setUp()
         self._create_object_fun = wrap_it
         self.scheme = je.JOB_EXEC_SCHEMA
         api.plugin_base.setup_plugins()

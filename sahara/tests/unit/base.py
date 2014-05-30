@@ -14,19 +14,18 @@
 # limitations under the License.
 
 import mock
-import unittest2
+import testtools
 
 from sahara import context
 from sahara.db import api as db_api
 from sahara import main
 
 
-class SaharaTestCase(unittest2.TestCase):
+class SaharaTestCase(testtools.TestCase):
 
     def setUp(self):
         super(SaharaTestCase, self).setUp()
 
-        self.maxDiff = None
         self.setup_context()
 
     def setup_context(self, username="test_user", tenant_id="tenant_1",

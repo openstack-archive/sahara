@@ -17,7 +17,7 @@ import uuid
 
 import jsonschema
 import six
-import unittest2
+import testtools
 
 from sahara.utils import api_validator
 
@@ -27,7 +27,7 @@ def _validate(schema, data):
     validator.validate(data)
 
 
-class ApiValidatorTest(unittest2.TestCase):
+class ApiValidatorTest(testtools.TestCase):
     def _validate_success(self, schema, data):
         return _validate(schema, data)
 

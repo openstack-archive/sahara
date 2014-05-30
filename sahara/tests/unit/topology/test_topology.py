@@ -25,6 +25,7 @@ import sahara.topology.topology_helper as th
 
 class TopologyTestCase(base.SaharaTestCase):
     def setUp(self):
+        super(TopologyTestCase, self).setUp()
         context.set_ctx(context.Context(None, None, None, None))
 
     def test_core_config(self):
