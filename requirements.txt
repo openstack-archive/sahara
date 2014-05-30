@@ -10,11 +10,11 @@ paramiko>=1.13.0
 pbr>=0.6,!=0.7,<1.0
 requests>=1.1
 python-cinderclient>=1.0.6
-python-keystoneclient>=0.8.0
+python-keystoneclient>=0.9.0
 python-novaclient>=2.17.0
 python-swiftclient>=2.0.2
 python-neutronclient>=2.3.4,<3
-python-heatclient>=0.2.3
+python-heatclient>=0.2.9
 six>=1.6.0
 stevedore>=0.14
 SQLAlchemy>=0.7.8,<=0.9.99
