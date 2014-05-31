@@ -16,6 +16,5 @@ sqlalchemy-migrate>=0.9.1
 testrepository>=0.0.18
 testscenarios>=0.4
 testtools>=0.9.34
-unittest2
 
 python-saharaclient>=0.6.0
