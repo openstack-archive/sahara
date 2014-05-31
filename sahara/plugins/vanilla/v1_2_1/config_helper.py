@@ -225,10 +225,6 @@ def generate_cfg_from_general(cfg, configs, general_config,
     return cfg
 
 
-def _get_hostname(service):
-    return service.hostname() if service else None
-
-
 def get_hadoop_ssh_keys(cluster):
     extra = cluster.extra or {}
     private_key = extra.get('hadoop_private_ssh_key')
@@ -243,10 +239,10 @@ def get_hadoop_ssh_keys(cluster):
 
 
 def generate_sahara_configs(cluster, node_group=None):
-    nn_hostname = _get_hostname(vu.get_namenode(cluster))
-    jt_hostname = _get_hostname(vu.get_jobtracker(cluster))
-    oozie_hostname = _get_hostname(vu.get_oozie(cluster))
-    hive_hostname = _get_hostname(vu.get_hiveserver(cluster))
+    nn_hostname = vu.get_instance_hostname(vu.get_namenode(cluster))
+    jt_hostname = vu.get_instance_hostname(vu.get_jobtracker(cluster))
+    oozie_hostname = vu.get_instance_hostname(vu.get_oozie(cluster))
+    hive_hostname = vu.get_instance_hostname(vu.get_hiveserver(cluster))
 
     storage_path = node_group.storage_paths() if node_group else None
 
@@ -298,8 +294,8 @@ def generate_sahara_configs(cluster, node_group=None):
 
 
 def generate_xml_configs(cluster, node_group, hive_mysql_passwd):
-    oozie_hostname = _get_hostname(vu.get_oozie(cluster))
-    hive_hostname = _get_hostname(vu.get_hiveserver(cluster))
+    oozie_hostname = vu.get_instance_hostname(vu.get_oozie(cluster))
+    hive_hostname = vu.get_instance_hostname(vu.get_hiveserver(cluster))
 
     ng_configs = node_group.configuration()
 

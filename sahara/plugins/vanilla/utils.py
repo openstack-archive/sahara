@@ -56,3 +56,7 @@ def get_secondarynamenodes(cluster):
 
 def get_historyserver(cluster):
     return u.get_instance(cluster, 'historyserver')
+
+
+def get_instance_hostname(instance):
+    return instance.hostname() if instance else None
