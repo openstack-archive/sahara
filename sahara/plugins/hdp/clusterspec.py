@@ -175,10 +175,7 @@ class ClusterSpec():
                 node_group.components = ng.node_processes[:]
                 node_group.ng_storage_paths = ng.storage_paths()
                 for instance in ng.instances:
-                    node_group.instances.add(Instance(instance.fqdn(),
-                                                      instance.management_ip,
-                                                      instance.internal_ip,
-                                                      instance.remote()))
+                    node_group.instances.add(Instance(instance))
                 self.node_groups[node_group.name] = node_group
 
     def _determine_deployed_services(self, cluster):
@@ -249,17 +246,17 @@ class User():
 
 
 class Instance():
-    def __init__(self, fqdn, management_ip, internal_ip, remote):
-        self.inst_fqdn = fqdn
-        self.management_ip = management_ip
-        self.internal_ip = internal_ip
-        self.inst_remote = remote
+    def __init__(self, sahara_instance):
+        self.inst_fqdn = sahara_instance.fqdn()
+        self.management_ip = sahara_instance.management_ip
+        self.internal_ip = sahara_instance.internal_ip
+        self.sahara_instance = sahara_instance
 
     def fqdn(self):
         return self.inst_fqdn
 
     def remote(self):
-        return self.inst_remote
+        return self.sahara_instance.remote()
 
     def __hash__(self):
         return hash(self.fqdn())
