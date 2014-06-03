@@ -18,6 +18,7 @@ import copy
 import mock
 
 from sahara import conductor as cond
+from sahara import exceptions as ex
 from sahara.plugins import base as pb
 from sahara.service.edp import job_manager
 from sahara.service.edp.workflow_creator import workflow_factory
@@ -378,6 +379,18 @@ class TestJobManager(base.SaharaWithDbTestCase):
                          "swift://ex.sahara/o")
         self.assertEqual(w.inject_swift_url_suffix("hdfs://my/path"),
                          "hdfs://my/path")
+
+    @mock.patch('sahara.conductor.API.job_execution_update')
+    @mock.patch('sahara.service.edp.job_manager._run_job')
+    def test_run_job_handles_exceptions(self, runjob, job_ex_upd):
+        runjob.side_effect = ex.SwiftClientException("Unauthorised")
+        job, job_exec = _create_all_stack(edp.JOB_TYPE_PIG)
+        job_manager.run_job(job_exec.id)
+
+        self.assertEqual(1, job_ex_upd.call_count)
+
+        new_status = job_ex_upd.call_args[0][2]["status"]
+        self.assertEqual('FAILED', new_status)
 
 
 def _create_all_stack(type, configs=None):
