@@ -208,7 +208,7 @@ class JavaFactory(BaseFactory):
         return creator.get_built_workflow_xml()
 
 
-def get_creator(job):
+def _get_creator(job):
 
     def make_PigFactory():
         return PigFactory(job)
@@ -225,6 +225,11 @@ def get_creator(job):
     }
 
     return type_map[job.type]()
+
+
+def get_workflow_xml(job, cluster, execution, *args, **kwargs):
+    return _get_creator(job).get_workflow_xml(
+        cluster, execution, *args, **kwargs)
 
 
 def get_possible_job_config(job_type):

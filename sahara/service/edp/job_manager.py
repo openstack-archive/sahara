@@ -82,21 +82,14 @@ def update_job_statuses():
                           (je.id, e))
 
 
-def _get_hdfs_user(cluster):
-    plugin = plugin_base.PLUGINS.get_plugin(cluster.plugin_name)
-    hdfs_user = plugin.get_hdfs_user()
-    return hdfs_user
+def _get_plugin(cluster):
+    return plugin_base.PLUGINS.get_plugin(cluster.plugin_name)
 
 
 def _create_oozie_client(cluster):
-    plugin = plugin_base.PLUGINS.get_plugin(cluster.plugin_name)
+    plugin = _get_plugin(cluster)
     return o.OozieClient(plugin.get_oozie_server_uri(cluster),
                          plugin.get_oozie_server(cluster))
-
-
-def _get_oozie_server(cluster):
-    plugin = plugin_base.PLUGINS.get_plugin(cluster.plugin_name)
-    return plugin.get_oozie_server(cluster)
 
 
 def cancel_job(job_execution_id):
@@ -116,6 +109,41 @@ def cancel_job(job_execution_id):
     return job_execution
 
 
+def _update_job_execution_extra(job_execution, cluster):
+    if CONF.use_namespaces and not CONF.use_floating_ips:
+        oozie = _get_plugin(cluster).get_oozie_server(cluster)
+        info = oozie.remote().get_neutron_info()
+        extra = job_execution.extra.copy()
+        extra['neutron'] = info
+
+        job_execution = conductor.job_execution_update(
+            context.ctx(), job_execution.id, {'extra': extra})
+    return job_execution
+
+
+def _get_data_sources(job_execution, job):
+    if edp.compare_job_type(job.type, edp.JOB_TYPE_JAVA):
+        return None, None
+
+    ctx = context.ctx()
+    input_source = conductor.data_source_get(ctx, job_execution.input_id)
+    output_source = conductor.data_source_get(ctx, job_execution.output_id)
+    return input_source, output_source
+
+
+def _get_oozie_job_params(cluster, hdfs_user, path_to_workflow):
+    plugin = _get_plugin(cluster)
+    rm_path = plugin.get_resource_manager_uri(cluster)
+    nn_path = plugin.get_name_node_uri(cluster)
+    job_parameters = {
+        "jobTracker": rm_path,
+        "nameNode": nn_path,
+        "user.name": hdfs_user,
+        "oozie.wf.application.path": "%s%s" % (nn_path, path_to_workflow),
+        "oozie.use.system.libpath": "true"}
+    return job_parameters
+
+
 def run_job(job_execution_id):
     try:
         _run_job(job_execution_id)
@@ -133,74 +161,45 @@ def run_job(job_execution_id):
 def _run_job(job_execution_id):
     ctx = context.ctx()
 
-    job_execution = conductor.job_execution_get(ctx,
-                                                job_execution_id)
+    job_execution = conductor.job_execution_get(ctx, job_execution_id)
 
     cluster = conductor.cluster_get(ctx, job_execution.cluster_id)
     if cluster.status != 'Active':
         return
 
-    if CONF.use_namespaces and not CONF.use_floating_ips:
-        plugin = plugin_base.PLUGINS.get_plugin(cluster.plugin_name)
-        oozie = plugin.get_oozie_server(cluster)
-
-        info = oozie.remote().get_neutron_info()
-        extra = job_execution.extra.copy()
-        extra['neutron'] = info
-
-        job_execution = conductor.job_execution_update(ctx,
-                                                       job_execution_id,
-                                                       {'extra': extra})
+    job_execution = _update_job_execution_extra(job_execution, cluster)
 
     job = conductor.job_get(ctx, job_execution.job_id)
-    if not edp.compare_job_type(job.type, edp.JOB_TYPE_JAVA):
-        input_source = conductor.data_source_get(ctx,  job_execution.input_id)
-        output_source = conductor.data_source_get(ctx, job_execution.output_id)
-    else:
-        input_source = None
-        output_source = None
+    input_source, output_source = _get_data_sources(job_execution, job)
 
     for data_source in [input_source, output_source]:
         if data_source and data_source.type == 'hdfs':
             h.configure_cluster_for_hdfs(cluster, data_source)
 
-    hdfs_user = _get_hdfs_user(cluster)
-    oozie_server = _get_oozie_server(cluster)
+    plugin = _get_plugin(cluster)
+    hdfs_user = plugin.get_hdfs_user()
+    oozie_server = plugin.get_oozie_server(cluster)
+
     wf_dir = create_workflow_dir(oozie_server, job, hdfs_user)
     upload_job_files(oozie_server, wf_dir, job, hdfs_user)
 
-    creator = workflow_factory.get_creator(job)
-
-    wf_xml = creator.get_workflow_xml(cluster, job_execution,
-                                      input_source, output_source)
+    wf_xml = workflow_factory.get_workflow_xml(
+        job, cluster, job_execution, input_source, output_source)
 
     path_to_workflow = upload_workflow_file(oozie_server,
                                             wf_dir, wf_xml, hdfs_user)
 
-    plugin = plugin_base.PLUGINS.get_plugin(cluster.plugin_name)
-    rm_path = plugin.get_resource_manager_uri(cluster)
-    nn_path = plugin.get_name_node_uri(cluster)
-
     client = _create_oozie_client(cluster)
-    job_parameters = {"jobTracker": rm_path,
-                      "nameNode": nn_path,
-                      "user.name": hdfs_user,
-                      "oozie.wf.application.path":
-                      "%s%s" % (nn_path, path_to_workflow),
-                      "oozie.use.system.libpath": "true"}
-
-    oozie_job_id = client.add_job(x.create_hadoop_xml(job_parameters),
+    job_params = _get_oozie_job_params(cluster, hdfs_user, path_to_workflow)
+    oozie_job_id = client.add_job(x.create_hadoop_xml(job_params),
                                   job_execution)
-    job_execution = conductor.job_execution_update(ctx, job_execution,
-                                                   {'oozie_job_id':
-                                                    oozie_job_id,
-                                                    'start_time':
-                                                    datetime.datetime.now()})
+    job_execution = conductor.job_execution_update(
+        ctx, job_execution, {'oozie_job_id': oozie_job_id,
+                             'start_time': datetime.datetime.now()})
     client.run_job(job_execution, oozie_job_id)
 
 
 def upload_job_files(where, job_dir, job, hdfs_user):
-
     mains = job.mains or []
     libs = job.libs or []
     uploaded_paths = []
