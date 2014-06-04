@@ -37,7 +37,7 @@ class HDPGatingTest(cinder.CinderVolumeTest, edp.EDPTest,
 
     @testcase.skipIf(config.SKIP_ALL_TESTS_FOR_PLUGIN,
                      'All tests for HDP plugin were skipped')
-    @testcase.attr('hdp')
+    @testcase.attr('hdp1')
     def test_hdp_plugin_gating(self):
         self.hdp_config.IMAGE_ID, self.hdp_config.SSH_USERNAME = (
             self.get_image_id_and_ssh_username(self.hdp_config))
