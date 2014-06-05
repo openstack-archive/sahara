@@ -93,6 +93,10 @@ def setup_common(possible_topdir, service_name):
 
     LOG.info('Starting Sahara %s' % service_name)
 
+    if service_name != 'all-in-one':
+        LOG.warn("Distributed mode is in the alpha state, it's recommended to "
+                 "use all-in-one mode by running 'sahara-all' binary.")
+
     plugins_base.setup_plugins()
 
 
