@@ -22,12 +22,12 @@ from sahara.utils import files as f
 
 
 AMBARI_RPM = 'http://s3.amazonaws.com/public-repo-1.hortonworks.com/' \
-             'ambari/centos6/1.x/updates/1.4.3.38/ambari.repo'
+             'ambari/centos6/1.x/updates/1.6.0/ambari.repo'
 
 EPEL_RELEASE_PACKAGE_NAME = 'epel-release'
 
 HADOOP_SWIFT_RPM = 'https://s3.amazonaws.com/public-repo-1.hortonworks.com/' \
-                   'savanna/swift/hadoop-swift-1.0-1.x86_64.rpm'
+                   'sahara/swift/hadoop-swift-1.0-1.x86_64.rpm'
 
 HADOOP_SWIFT_LOCAL_RPM = '/opt/hdp-local-repos/hadoop-swift/' \
                          'hadoop-swift-1.0-1.x86_64.rpm'
@@ -129,10 +129,23 @@ class HadoopServer:
         # remove postgres data directory as a precaution since its existence
         # has prevented successful postgres installation
         r.execute_command('rm -rf /var/lib/pgsql/data', run_as_root=True)
+
+        # determine if the JDK is installed on this image
+        # in the case of the plain image, no JDK will be available
+        return_code, stdout = r.execute_command('ls -l {jdk_location}'.format(
+            jdk_location=jdk_path), raise_when_error=False)
+
+        LOG.debug('Queried for JDK location on VM instance, return code = ' +
+                  str(return_code))
+
         # do silent setup since we only use default responses now
+        # only add -j command if the JDK is configured for the template,
+        # and if the JDK is present
+        # in all other cases, allow Ambari to install the JDK
         r.execute_command(
             'ambari-server setup -s {jdk_arg} > /dev/null 2>&1'.format(
-                jdk_arg='-j ' + jdk_path if jdk_path else ''),
+                jdk_arg='-j ' + jdk_path if jdk_path and (return_code == 0)
+                else ''),
             run_as_root=True, timeout=1800
         )
 

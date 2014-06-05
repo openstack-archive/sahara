@@ -19,6 +19,7 @@ import testtools
 
 from sahara.plugins.general import exceptions as ex
 from sahara.plugins.hdp import clusterspec as cs
+from sahara.plugins.hdp import hadoopserver
 from sahara.plugins.hdp.versions.version_1_3_2 import services as s
 from sahara.plugins import provisioning
 import sahara.tests.unit.plugins.hdp.hdp_test_base as base
@@ -90,7 +91,7 @@ class ClusterSpecTest(testtools.TestCase):
 
         master_node_group = node_groups['master']
         self.assertEqual('master', master_node_group.name)
-        self.assertEqual(8, len(master_node_group.components))
+        self.assertEqual(9, len(master_node_group.components))
         self.assertIn('NAMENODE', master_node_group.components)
         self.assertIn('JOBTRACKER', master_node_group.components)
         self.assertIn('SECONDARY_NAMENODE', master_node_group.components)
@@ -99,6 +100,7 @@ class ClusterSpecTest(testtools.TestCase):
         self.assertIn('NAGIOS_SERVER', master_node_group.components)
         self.assertIn('AMBARI_SERVER', master_node_group.components)
         self.assertIn('AMBARI_AGENT', master_node_group.components)
+        self.assertIn('HISTORYSERVER', master_node_group.components)
 
         slave_node_group = node_groups['slave']
         self.assertEqual('slave', slave_node_group.name)
@@ -379,7 +381,13 @@ class ClusterSpecTest(testtools.TestCase):
         rpm = ambari_config.get('rpm', None)
         self.assertEqual('http://s3.amazonaws.com/'
                          'public-repo-1.hortonworks.com/ambari/centos6/'
-                         '1.x/updates/1.4.3.38/ambari.repo', rpm)
+                         '1.x/updates/1.6.0/ambari.repo', rpm)
+
+    def test_default_ambari_rpm_path(self, patched):
+        self.assertEqual('http://s3.amazonaws.com/'
+                         'public-repo-1.hortonworks.com/ambari/centos6/'
+                         '1.x/updates/1.6.0/ambari.repo',
+                         hadoopserver.AMBARI_RPM)
 
     def test_parse_default(self, patched):
         cluster_config_file = pkg.resource_string(
@@ -1363,13 +1371,15 @@ class ClusterSpecTest(testtools.TestCase):
         for component in service.components:
             found_components[component.name] = component
 
-        self.assertEqual(3, len(found_components))
+        self.assertEqual(4, len(found_components))
         self._assert_component('JOBTRACKER', 'MASTER', "1",
                                found_components['JOBTRACKER'])
         self._assert_component('TASKTRACKER', 'SLAVE', "1+",
                                found_components['TASKTRACKER'])
         self._assert_component('MAPREDUCE_CLIENT', 'CLIENT', "1+",
                                found_components['MAPREDUCE_CLIENT'])
+        self._assert_component('HISTORYSERVER', 'MASTER', "1",
+                               found_components['HISTORYSERVER'])
         # TODO(jspeidel) config
 
     def _assert_nagios(self, service):

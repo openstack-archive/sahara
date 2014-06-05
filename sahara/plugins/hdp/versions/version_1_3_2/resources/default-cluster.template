@@ -41,6 +41,11 @@
           "cardinality" : "1+"
         },
         {
+          "name" : "HISTORYSERVER",
+          "type" : "MASTER",
+          "cardinality" : "1"
+        },
+        {
           "name" : "MAPREDUCE_CLIENT",
           "type" : "CLIENT",
           "cardinality" : "1+"
@@ -320,7 +325,7 @@
         { "name" : "io_sort_spill_percent", "value" : "0.9" },
         { "name" : "mapreduce_userlog_retainhours", "value" : "24" },
         { "name" : "maxtasks_per_job", "value" : "-1" },
-        { "name" : "lzo_enabled", "value" : false },
+        { "name" : "lzo_enabled", "value" : true },
         { "name" : "snappy_enabled", "value" : true },
         { "name" : "rca_enabled", "value" : true },
         { "name" : "mapred_hosts_exclude", "value" : "mapred.exclude" },
@@ -334,6 +339,9 @@
         { "name" : "nagios_contact", "value" : "default@REPLACEME.com" },
         { "name" : "hbase_conf_dir", "value" : "/etc/hbase" },
         { "name" : "proxyuser_group", "value" : "users" },
+        { "name" : "user_group", "value": "hadoop" },
+        { "name" : "smokeuser", "value": "ambari-qa" },
+        { "name" : "rrdcached_base_dir", "value": "/var/lib/ganglia/rrds" },
         { "name" : "dfs_datanode_address", "value" : "50010" },
         { "name" : "dfs_datanode_http_address", "value" : "50075" },
         { "name" : "gpl_artifacts_download_url", "value" : "" },
@@ -448,7 +456,8 @@
         { "name" : "hadoop.proxyuser.hcat.groups", "value" : "users" },
         { "name" : "hadoop.proxyuser.hcat.hosts", "value" : "%WEBHCAT_HOST%" },
         { "name" : "hadoop.proxyuser.oozie.groups", "value" : "hadoop" },
-        { "name" : "hadoop.proxyuser.oozie.hosts", "value" : "%OOZIE_HOST%" }
+        { "name" : "hadoop.proxyuser.oozie.hosts", "value" : "%OOZIE_HOST%" },
+        { "name" : "io.compression.codecs", "value": "org.apache.hadoop.io.compress.GzipCodec,org.apache.hadoop.io.compress.DefaultCodec" }
       ]
     },
     {
@@ -522,7 +531,8 @@
         { "name" : "mapreduce.history.server.embedded", "value" : "false" },
         { "name" : "mapreduce.history.server.http.address", "value" : "%JT_HOST%:51111" },
         { "name" : "mapreduce.jobhistory.kerberos.principal", "value" : "jt/_HOST@EXAMPLE.COM" },
-        { "name" : "mapreduce.jobhistory.keytab.file", "value" : "/etc/security/keytabs/jt.service.keytab" }
+        { "name" : "mapreduce.jobhistory.keytab.file", "value" : "/etc/security/keytabs/jt.service.keytab" },
+        { "name" : "mapreduce.jobhistory.webapp.address", "value": "%HS_HOST%:19888" }
       ]
     },
     {
@@ -701,7 +711,7 @@
       "name" : "ambari",
       "properties" : [
         { "name" : "server.port", "value" : "8080" },
-        { "name" : "rpm", "value" : "http://s3.amazonaws.com/public-repo-1.hortonworks.com/ambari/centos6/1.x/updates/1.4.3.38/ambari.repo" }
+        { "name" : "rpm", "value" : "http://s3.amazonaws.com/public-repo-1.hortonworks.com/ambari/centos6/1.x/updates/1.6.0/ambari.repo" }
       ]
     }
   ]

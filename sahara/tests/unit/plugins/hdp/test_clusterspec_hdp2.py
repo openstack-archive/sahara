@@ -564,7 +564,7 @@ class ClusterSpecTestForHDP2(testtools.TestCase):
         rpm = ambari_config.get('rpm', None)
         self.assertEqual('http://s3.amazonaws.com/'
                          'public-repo-1.hortonworks.com/ambari/centos6/'
-                         '1.x/updates/1.4.3.38/ambari.repo', rpm)
+                         '1.x/updates/1.6.0/ambari.repo', rpm)
 
     def test_fs_umask(self, patched):
         s_conf = s2.CONF

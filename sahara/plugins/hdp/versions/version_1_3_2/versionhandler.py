@@ -119,24 +119,38 @@ class AmbariClient():
         return {"X-Requested-By": "sahara"}
 
     def _post(self, url, ambari_info, data=None):
+        if data:
+            LOG.debug('AmbariClient:_post call, url = ' + url +
+                      ' data = ' + str(data))
+        else:
+            LOG.debug('AmbariClient:_post call, url = ' + url)
+
         session = self._get_http_session(ambari_info.host, ambari_info.port)
         return session.post(url, data=data,
                             auth=(ambari_info.user, ambari_info.password),
                             headers=self._get_standard_headers())
 
     def _delete(self, url, ambari_info):
+        LOG.debug('AmbariClient:_delete call, url = ' + url)
         session = self._get_http_session(ambari_info.host, ambari_info.port)
         return session.delete(url,
                               auth=(ambari_info.user, ambari_info.password),
                               headers=self._get_standard_headers())
 
     def _put(self, url, ambari_info, data=None):
+        if data:
+            LOG.debug('AmbariClient:_put call, url = ' + url +
+                      ' data = ' + str(data))
+        else:
+            LOG.debug('AmbariClient:_put call, url = ' + url)
+
         session = self._get_http_session(ambari_info.host, ambari_info.port)
         auth = (ambari_info.user, ambari_info.password)
         return session.put(url, data=data, auth=auth,
                            headers=self._get_standard_headers())
 
     def _get(self, url, ambari_info):
+        LOG.debug('AmbariClient:_get call, url = ' + url)
         session = self._get_http_session(ambari_info.host, ambari_info.port)
         return session.get(url, auth=(ambari_info.user, ambari_info.password),
                            headers=self._get_standard_headers())

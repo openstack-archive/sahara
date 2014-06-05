@@ -18,6 +18,7 @@ import re
 from oslo.config import cfg
 import six
 
+
 from sahara import exceptions as e
 from sahara.plugins.general import exceptions as ex
 from sahara.plugins.general import utils
@@ -228,6 +229,14 @@ class MapReduceService(Service):
             self._replace_config_token(
                 cluster_spec, '%JT_HOST%', jt_hosts.pop().fqdn(), props)
 
+        # HISTORYSERVER component now a part of MapReduce 1 in Ambari 1.6.0
+        hs_hosts = cluster_spec.determine_component_hosts('HISTORYSERVER')
+        if hs_hosts:
+            props = {'mapred-site': ['mapreduce.jobhistory.webapp.address']}
+
+            self._replace_config_token(
+                cluster_spec, '%HS_HOST%', hs_hosts.pop().fqdn(), props)
+
         # data locality/rack awareness prop processing
         mapred_site_config = cluster_spec.configurations['mapred-site']
         if CONF.enable_data_locality:
@@ -247,12 +256,22 @@ class MapReduceService(Service):
             global_config['mapred_local_dir'] = self._generate_storage_path(
                 common_paths, '/hadoop/mapred')
 
+    def finalize_ng_components(self, cluster_spec):
+        # add HISTORYSERVER, since HDP 1.3.2 stack was
+        # modified in Ambari 1.5.1/1.6.0 to include this component
+        # in the MAPREDUCE service
+        ambari_server_ngs = \
+            cluster_spec.get_node_groups_containing_component('JOBTRACKER')
+        for ng in ambari_server_ngs:
+            if 'HISTORYSERVER' not in ng.components:
+                ng.components.append('HISTORYSERVER')
+
     def register_service_urls(self, cluster_spec, url_info):
         jobtracker_ip = cluster_spec.determine_component_hosts(
             'JOBTRACKER').pop().management_ip
 
         ui_port = self._get_port_from_cluster_spec(
-            cluster_spec, 'mapred-site', 'mapred.job.tracker.http.address')
+            cluster_spec, 'mapred-site', 'mapreduce.jobhistory.webapp.address')
         jt_port = self._get_port_from_cluster_spec(
             cluster_spec, 'mapred-site', 'mapred.job.tracker')
 

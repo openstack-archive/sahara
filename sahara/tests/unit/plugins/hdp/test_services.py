@@ -116,6 +116,8 @@ class ServicesTest(testtools.TestCase):
             'mapred-site': {
                 'mapred.job.tracker': 'hdfs://not_expected.com:10300',
                 'mapred.job.tracker.http.address':
+                'http://not_expected.com:10030',
+                'mapreduce.jobhistory.webapp.address':
                 'http://not_expected.com:10030'
             }
         }

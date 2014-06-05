@@ -1130,6 +1130,10 @@
             "value": "21600"
           },
           {
+            "name": "dfs.namenode.checkpoint.txns",
+            "value": "1000000"
+          },
+          {
             "name": "dfs.datanode.data.dir.perm",
             "value": "750"
           },
@@ -1663,7 +1667,7 @@
       "name" : "ambari",
       "properties" : [
         { "name" : "server.port", "value" : "8080" },
-        { "name" : "rpm", "value" : "http://s3.amazonaws.com/public-repo-1.hortonworks.com/ambari/centos6/1.x/updates/1.4.3.38/ambari.repo" }
+        { "name" : "rpm", "value" : "http://s3.amazonaws.com/public-repo-1.hortonworks.com/ambari/centos6/1.x/updates/1.6.0/ambari.repo" }
       ]
     },
     {
