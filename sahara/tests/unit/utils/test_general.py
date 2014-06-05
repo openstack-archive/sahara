@@ -18,7 +18,7 @@ import unittest2
 from sahara.utils import general
 
 
-class FindDictTest(unittest2.TestCase):
+class UtilsGeneralTest(unittest2.TestCase):
     def test_find_dict(self):
         iterable = [
             {
@@ -39,3 +39,10 @@ class FindDictTest(unittest2.TestCase):
 
         self.assertEqual({"a": 1, "b": 2, "c": 3},
                          general.find_dict(iterable, a=1, b=2))
+
+    def test_generate_instance_name(self):
+        inst_name = "cluster-worker-001"
+        self.assertEqual(
+            general.generate_instance_name("cluster", "worker", 1), inst_name)
+        self.assertEqual(
+            general.generate_instance_name("CLUSTER", "WORKER", 1), inst_name)

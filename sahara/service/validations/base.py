@@ -21,6 +21,7 @@ from sahara import context
 import sahara.exceptions as ex
 import sahara.plugins.base as plugin_base
 import sahara.service.api as api
+from sahara.utils import general as g
 import sahara.utils.openstack.heat as heat
 import sahara.utils.openstack.keystone as keystone
 import sahara.utils.openstack.nova as nova
@@ -28,6 +29,8 @@ import sahara.utils.openstack.nova as nova
 
 CONF = cfg.CONF
 conductor = cond.API
+
+MAX_HOSTNAME_LENGTH = 64
 
 
 def _get_plugin_configs(plugin_name, hadoop_version, scope=None):
@@ -192,6 +195,19 @@ def check_cluster_exists(id):
                                   " doesn't exist" % id)
 
 
+def check_cluster_hostnames_lengths(cluster_name, node_groups):
+    for ng in node_groups:
+        longest_hostname = g.generate_instance_name(cluster_name,
+                                                    ng['name'], ng['count'])
+        longest_hostname += '.'
+        longest_hostname += CONF.node_domain
+        if len(longest_hostname) > MAX_HOSTNAME_LENGTH:
+            raise ex.InvalidException(
+                "Composite hostname %s in provisioned cluster exceeds "
+                "maximum limit %s characters" % (longest_hostname,
+                                                 MAX_HOSTNAME_LENGTH))
+
+
 def check_keypair_exists(keypair):
     try:
         nova.client().keypairs.get(keypair)
@@ -218,13 +234,15 @@ def check_cluster_template_exists(cluster_template_id):
                                   " doesn't exist" % cluster_template_id)
 
 
-def check_node_groups_in_cluster_templates(plugin_name, hadoop_version,
+def check_node_groups_in_cluster_templates(cluster_name, plugin_name,
+                                           hadoop_version,
                                            cluster_template_id):
     c_t = api.get_cluster_template(id=cluster_template_id)
     n_groups = c_t.to_wrapped_dict()['cluster_template']['node_groups']
     check_network_config(n_groups)
     for node_group in n_groups:
         check_node_group_basic_fields(plugin_name, hadoop_version, node_group)
+    check_cluster_hostnames_lengths(cluster_name, n_groups)
 
 ## NodeGroup templates related checks
 

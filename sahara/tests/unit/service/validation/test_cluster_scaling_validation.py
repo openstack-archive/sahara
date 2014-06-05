@@ -137,6 +137,24 @@ class TestScalingValidation(unittest2.TestCase):
                                    "Cluster already has nodegroup "
                                    "with name 'ng'")
 
+        data = {
+            'add_node_groups': [
+                {
+                    'name': 'very-very-very-very-very-very-long-ng-name',
+                    'flavor_id': '42',
+                    'node_processes': ['namenode'],
+                    'count': 10
+                },
+            ]
+        }
+        patchers = u.start_patch()
+        self._assert_check_scaling(
+            data=data, cluster=cluster, expected_message=
+            "Composite hostname test-cluster-very-very-very-very-"
+            "very-very-long-ng-name-010.novalocal in provisioned cluster "
+            "exceeds maximum limit 64 characters")
+        u.stop_patch(patchers)
+
     def _assert_calls(self, mock, call_info):
         if not call_info:
             self.assertEqual(mock.call_count, 0)

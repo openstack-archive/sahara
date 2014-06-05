@@ -100,3 +100,7 @@ def generate_etc_hosts(cluster):
                                      instance.hostname())
 
     return hosts
+
+
+def generate_instance_name(cluster_name, node_group_name, index):
+    return ("%s-%s-%03d" % (cluster_name, node_group_name, index)).lower()
