@@ -165,6 +165,7 @@ def _generate_xml(configs):
 
 def _push_env_configs(instance, configs):
     nn_heap = configs['HDFS']['NameNode Heap Size']
+    snn_heap = configs['HDFS']['SecondaryNameNode Heap Size']
     dn_heap = configs['HDFS']['DataNode Heap Size']
     rm_heap = configs['YARN']['ResourceManager Heap Size']
     nm_heap = configs['YARN']['NodeManager Heap Size']
@@ -175,6 +176,10 @@ def _push_env_configs(instance, configs):
             '%s/hadoop-env.sh' % HADOOP_CONF_DIR,
             'export HADOOP_NAMENODE_OPTS=.*',
             'export HADOOP_NAMENODE_OPTS="-Xmx%dm"' % nn_heap)
+        r.replace_remote_string(
+            '%s/hadoop-env.sh' % HADOOP_CONF_DIR,
+            'export HADOOP_SECONDARYNAMENODE_OPTS=.*',
+            'export HADOOP_SECONDARYNAMENODE_OPTS="-Xmx%dm"' % snn_heap)
         r.replace_remote_string(
             '%s/hadoop-env.sh' % HADOOP_CONF_DIR,
             'export HADOOP_DATANODE_OPTS=.*',

@@ -57,7 +57,6 @@ XML_CONFS = {
     "Hive": [HIVE_DEFAULT]
 }
 
-# TODO(aignatov): Environmental configs could be more complex
 ENV_CONFS = {
     "MapReduce": {
         'Job Tracker Heap Size': 'HADOOP_JOBTRACKER_OPTS=\\"-Xmx%sm\\"',
@@ -65,6 +64,8 @@ ENV_CONFS = {
     },
     "HDFS": {
         'Name Node Heap Size': 'HADOOP_NAMENODE_OPTS=\\"-Xmx%sm\\"',
+        'Secondary Name Node Heap Size': 'HADOOP_SECONDARYNAMENODE_OPTS='
+                                         '\\"-Xmx%sm\\"',
         'Data Node Heap Size': 'HADOOP_DATANODE_OPTS=\\"-Xmx%sm\\"'
     },
     "JobFlow": {
