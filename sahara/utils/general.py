@@ -65,6 +65,13 @@ def format_cluster_status(cluster):
     return msg % ("Unknown", "Unknown")
 
 
+def format_cluster_deleted_message(cluster):
+    msg = "Cluster %s (id=%s) was deleted. Canceling current operation."
+    if cluster:
+        return msg % (cluster.name, cluster.id)
+    return msg % ("Unknown", "Unknown")
+
+
 def check_cluster_exists(cluster):
     ctx = context.ctx()
     # check if cluster still exists (it might have been removed)

@@ -51,6 +51,9 @@ class HeatEngine(e.Engine):
             launcher.launch_instances(ctx, cluster, target_count)
         except Exception as ex:
             with excutils.save_and_reraise_exception():
+                if not g.check_cluster_exists(cluster):
+                    LOG.info(g.format_cluster_deleted_message(cluster))
+                    return
                 self._log_operation_exception(
                     "Can't start cluster '%s' (reason: %s)", cluster, ex)
 
@@ -83,6 +86,9 @@ class HeatEngine(e.Engine):
             launcher.launch_instances(ctx, cluster, target_count)
         except Exception as ex:
             with excutils.save_and_reraise_exception():
+                if not g.check_cluster_exists(cluster):
+                    LOG.info(g.format_cluster_deleted_message(cluster))
+                    return
                 self._log_operation_exception(
                     "Can't scale cluster '%s' (reason: %s)", cluster, ex)
 
@@ -92,6 +98,9 @@ class HeatEngine(e.Engine):
                     self._rollback_cluster_scaling(
                         ctx, cluster, rollback_count, target_count)
                 except Exception:
+                    if not g.check_cluster_exists(cluster):
+                        LOG.info(g.format_cluster_deleted_message(cluster))
+                        return
                     # if something fails during the rollback, we stop
                     # doing anything further
                     cluster = conductor.cluster_update(ctx, cluster,
@@ -195,6 +204,10 @@ class _CreateLauncher(HeatEngine):
         instances = g.get_instances(cluster, self.inst_ids)
 
         self._await_networks(cluster, instances)
+
+        if not g.check_cluster_exists(cluster):
+            LOG.info(g.format_cluster_deleted_message(cluster))
+            return
 
         # prepare all instances
         cluster = conductor.cluster_update(ctx, cluster,
