@@ -7,6 +7,7 @@ docutils==0.9.1
 fixtures>=0.3.14
 mock>=1.0
 oslosphinx
+oslotest
 psycopg2
 pylint==0.25.2
 sphinx>=1.2.1,<1.3

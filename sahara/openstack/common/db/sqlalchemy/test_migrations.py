@@ -15,19 +15,19 @@
 #    under the License.
 
 import functools
+import logging
 import os
 import subprocess
 
 import lockfile
+from oslotest import base as test_base
 from six import moves
+from six.moves.urllib import parse
 import sqlalchemy
 import sqlalchemy.exc
 
 from sahara.openstack.common.db.sqlalchemy import utils
-from sahara.openstack.common.gettextutils import _
-from sahara.openstack.common import log as logging
-from sahara.openstack.common.py3kcompat import urlutils
-from sahara.openstack.common import test
+from sahara.openstack.common.gettextutils import _LE
 
 LOG = logging.getLogger(__name__)
 
@@ -60,15 +60,15 @@ def _set_db_lock(lock_path=None, lock_prefix=None):
                 path = lock_path or os.environ.get("SAHARA_LOCK_PATH")
                 lock = lockfile.FileLock(os.path.join(path, lock_prefix))
                 with lock:
-                    LOG.debug(_('Got lock "%s"') % f.__name__)
+                    LOG.debug('Got lock "%s"' % f.__name__)
                     return f(*args, **kwargs)
             finally:
-                LOG.debug(_('Lock released "%s"') % f.__name__)
+                LOG.debug('Lock released "%s"' % f.__name__)
         return wrapper
     return decorator
 
 
-class BaseMigrationTestCase(test.BaseTestCase):
+class BaseMigrationTestCase(test_base.BaseTestCase):
     """Base class fort testing of migration utils."""
 
     def __init__(self, *args, **kwargs):
@@ -153,7 +153,7 @@ class BaseMigrationTestCase(test.BaseTestCase):
     def _reset_databases(self):
         for key, engine in self.engines.items():
             conn_string = self.test_databases[key]
-            conn_pieces = urlutils.urlparse(conn_string)
+            conn_pieces = parse.urlparse(conn_string)
             engine.dispose()
             if conn_string.startswith('sqlite'):
                 # We can just delete the SQLite database, which is
@@ -264,6 +264,6 @@ class WalkVersionsMixin(object):
                 if check:
                     check(engine, data)
         except Exception:
-            LOG.error("Failed to migrate to version %s on engine %s" %
+            LOG.error(_LE("Failed to migrate to version %s on engine %s") %
                       (version, engine))
             raise

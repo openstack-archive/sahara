@@ -26,18 +26,16 @@ from sqlalchemy import Column, Integer
 from sqlalchemy import DateTime
 from sqlalchemy.orm import object_mapper
 
-from sahara.openstack.common.db.sqlalchemy import session as sa
 from sahara.openstack.common import timeutils
 
 
-class ModelBase(object):
+class ModelBase(six.Iterator):
     """Base class for models."""
     __table_initialized__ = False
 
-    def save(self, session=None):
+    def save(self, session):
         """Save this object."""
-        if not session:
-            session = sa.get_session()
+
         # NOTE(boris-42): This part of code should be look like:
         #                       session.add(self)
         #                       session.flush()
@@ -72,7 +70,7 @@ class ModelBase(object):
         return []
 
     def __iter__(self):
-        columns = dict(object_mapper(self).columns).keys()
+        columns = list(dict(object_mapper(self).columns).keys())
         # NOTE(russellb): Allow models to specify other keys that can be looked
         # up, beyond the actual db columns.  An example would be the 'name'
         # property for an Instance.
@@ -80,9 +78,13 @@ class ModelBase(object):
         self._i = iter(columns)
         return self
 
-    def next(self):
+    # In Python 3, __next__() has replaced next().
+    def __next__(self):
         n = six.advance_iterator(self._i)
         return n, getattr(self, n)
+
+    def next(self):
+        return self.__next__()
 
     def update(self, values):
         """Make the model object behave like a dict."""
@@ -110,7 +112,7 @@ class SoftDeleteMixin(object):
     deleted_at = Column(DateTime)
     deleted = Column(Integer, default=0)
 
-    def soft_delete(self, session=None):
+    def soft_delete(self, session):
         """Mark this object as deleted."""
         self.deleted = self.id
         self.deleted_at = timeutils.utcnow()

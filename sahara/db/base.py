@@ -36,4 +36,5 @@ class Base(object):
 
 
 def is_mysql_avail():
-    return CONF.database.connection.startswith('mysql')
+    connection = CONF.database.connection
+    return connection and connection.startswith('mysql')
