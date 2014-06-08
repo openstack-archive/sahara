@@ -68,6 +68,7 @@ CONF.register_opts(opts)
 
 
 def _read_swift_topology():
+    LOG.debug("Reading Swift nodes topology from %s", CONF.swift_topology_file)
     topology = {}
     try:
         with open(CONF.swift_topology_file) as f:
@@ -78,13 +79,16 @@ def _read_swift_topology():
                 (host, path) = line.split()
                 topology[host] = path
     except IOError:
-        raise ex.NotFoundException(
-            CONF.swift_topology_file,
-            "Unable to find file %s with Swift topology")
+        LOG.debug("Unable to read Swift nodes topology from %s",
+                  CONF.swift_topology_file)
+        return {}
+
     return topology
 
 
 def _read_compute_topology():
+    LOG.debug("Reading compute nodes topology from %s",
+              CONF.compute_topology_file)
     ctx = context.ctx()
     tenant_id = str(ctx.tenant_id)
     topology = {}
