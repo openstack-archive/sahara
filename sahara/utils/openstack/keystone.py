@@ -58,8 +58,10 @@ def _admin_client(project_name=None, trust_id=None):
                         ' less than v3')
 
     auth_url = base.retrieve_auth_url()
-    keystone = keystone_client_v3.Client(username=CONF.os_admin_username,
-                                         password=CONF.os_admin_password,
+    username = CONF.keystone_authtoken.admin_user
+    password = CONF.keystone_authtoken.admin_password
+    keystone = keystone_client_v3.Client(username=username,
+                                         password=password,
                                          project_name=project_name,
                                          auth_url=auth_url,
                                          trust_id=trust_id)
@@ -68,7 +70,8 @@ def _admin_client(project_name=None, trust_id=None):
 
 
 def client_for_admin():
-    return _admin_client(project_name=CONF.os_admin_tenant_name)
+    project_name = CONF.keystone_authtoken.admin_tenant_name
+    return _admin_client(project_name=project_name)
 
 
 def client_for_trusts(trust_id):

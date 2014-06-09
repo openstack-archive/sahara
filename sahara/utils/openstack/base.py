@@ -16,8 +16,10 @@
 import json
 
 from oslo.config import cfg
-from sahara import exceptions as ex
+from six.moves.urllib import parse as urlparse
 
+from sahara import context
+from sahara import exceptions as ex
 
 CONF = cfg.CONF
 
@@ -76,9 +78,7 @@ def _get_case_insensitive(dictionary, key):
 
 
 def retrieve_auth_url():
-    protocol = CONF.os_auth_protocol
-    host = CONF.os_auth_host
-    port = CONF.os_auth_port
+    info = urlparse.urlparse(context.current().auth_uri)
+    version = 'v3' if CONF.use_identity_api_v3 else 'v2.0'
 
-    return "%s://%s:%s/%s/" % (protocol, host, port,
-                               'v3' if CONF.use_identity_api_v3 else 'v2.0')
+    return "%s://%s:%s/%s/" % (info.scheme, info.hostname, info.port, version)

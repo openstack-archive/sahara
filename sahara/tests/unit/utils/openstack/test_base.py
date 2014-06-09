@@ -13,11 +13,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from sahara.tests.unit import base as ub
-from sahara.utils.openstack import base as b
+from sahara.tests.unit import base as testbase
+from sahara.utils.openstack import base
 
 
-class TestBase(ub.SaharaTestCase):
+class TestBase(testbase.SaharaTestCase):
 
     def test_url_for_regions(self):
         service_catalog = (
@@ -38,8 +38,47 @@ class TestBase(ub.SaharaTestCase):
 
         self.override_config("os_region_name", "RegionOne")
         self.assertEqual("http://172.18.184.5:8774/v2",
-                         b.url_for(service_catalog, "compute"))
+                         base.url_for(service_catalog, "compute"))
 
         self.override_config("os_region_name", "RegionTwo")
         self.assertEqual("http://172.18.184.6:8774/v2",
-                         b.url_for(service_catalog, "compute"))
+                         base.url_for(service_catalog, "compute"))
+
+
+class AuthUrlTest(testbase.SaharaTestCase):
+
+    def test_retrieve_auth_url_api_v3(self):
+        self.override_config('use_identity_api_v3', True)
+        correct = "https://127.0.0.1:8080/v3/"
+
+        def _assert(uri):
+            self.setup_context(auth_uri=uri)
+            self.assertEqual(correct, base.retrieve_auth_url())
+
+        _assert("%s/" % correct)
+        _assert("https://127.0.0.1:8080")
+        _assert("https://127.0.0.1:8080/")
+        _assert("https://127.0.0.1:8080/v2.0")
+        _assert("https://127.0.0.1:8080/v2.0/")
+        _assert("https://127.0.0.1:8080/v3")
+        _assert("https://127.0.0.1:8080/v3/")
+        _assert("https://127.0.0.1:8080/v42")
+        _assert("https://127.0.0.1:8080/v42/")
+
+    def test_retrieve_auth_url_api_v20(self):
+        self.override_config('use_identity_api_v3', False)
+        correct = "https://127.0.0.1:8080/v2.0/"
+
+        def _assert(uri):
+            self.setup_context(auth_uri=uri)
+            self.assertEqual(correct, base.retrieve_auth_url())
+
+        _assert("%s/" % correct)
+        _assert("https://127.0.0.1:8080")
+        _assert("https://127.0.0.1:8080/")
+        _assert("https://127.0.0.1:8080/v2.0")
+        _assert("https://127.0.0.1:8080/v2.0/")
+        _assert("https://127.0.0.1:8080/v3")
+        _assert("https://127.0.0.1:8080/v3/")
+        _assert("https://127.0.0.1:8080/v42")
+        _assert("https://127.0.0.1:8080/v42/")

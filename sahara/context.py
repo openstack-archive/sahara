@@ -20,6 +20,7 @@ from eventlet import greenpool
 from eventlet import semaphore
 from oslo.config import cfg
 
+from sahara.api import acl
 from sahara import exceptions as ex
 from sahara.openstack.common import log as logging
 
@@ -40,6 +41,7 @@ class Context(object):
                  roles=None,
                  is_admin=None,
                  remote_semaphore=None,
+                 auth_uri=None,
                  **kwargs):
         if kwargs:
             LOG.warn('Arguments dropped when creating context: %s', kwargs)
@@ -53,6 +55,7 @@ class Context(object):
         self.remote_semaphore = remote_semaphore or semaphore.Semaphore(
             CONF.cluster_remote_threshold)
         self.roles = roles
+        self.auth_uri = auth_uri or acl.AUTH_URI
 
     def clone(self):
         return Context(
@@ -76,6 +79,7 @@ class Context(object):
             'tenant_name': self.tenant_name,
             'is_admin': self.is_admin,
             'roles': self.roles,
+            'auth_uri': self.auth_uri,
         }
 
     def is_auth_capable(self):

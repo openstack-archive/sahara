@@ -13,8 +13,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import mock
-
 from sahara.swift import swift_helper as h
 from sahara.tests.unit import base
 
@@ -34,13 +32,10 @@ SERVICE_SPECIFIC = ["auth.url", "tenant",
 
 class SwiftIntegrationTestCase(base.SaharaTestCase):
 
-    @mock.patch('sahara.utils.openstack.base.url_for')
-    def test_get_swift_configs(self, authUrlConfig):
-        self.setup_context(tenant_name='test_tenant')
-        self.override_config("os_auth_protocol", 'http')
-        self.override_config("os_auth_port", '8080')
+    def test_get_swift_configs(self):
+        self.setup_context(tenant_name='test_tenant',
+                           auth_uri='http://localhost:8080/v2.0/')
         self.override_config("os_region_name", 'regionOne')
-        authUrlConfig.return_value = "http://localhost:8080/v2.0/"
 
         result = h.get_swift_configs()
         self.assertEqual(8, len(result))

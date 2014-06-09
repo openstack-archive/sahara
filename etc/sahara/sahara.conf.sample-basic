@@ -7,17 +7,6 @@
 # Port that will be used to listen on (integer value)
 #port=8386
 
-
-
-# Address and credentials that will be used to check auth tokens
-#os_auth_host=127.0.0.1
-#os_auth_port=5000
-#os_admin_username=admin
-#os_admin_password=nova
-#os_admin_tenant_name=admin
-
-
-
 # If set to True, Sahara will use floating IPs to communicate
 # with instances. To make sure that all instances have
 # floating IPs assigned in Nova Network set
@@ -112,3 +101,21 @@
 # database (string value)
 #connection=<None>
 
+[keystone_authtoken]
+# Complete public Identity API endpoint (string value)
+#auth_uri=http://127.0.0.1:5000/v2.0/
+
+# Complete admin Identity API endpoint. This should specify
+# the unversioned root endpoint eg. https://localhost:35357/
+# (string value)
+#identity_uri=http://127.0.0.1:35357/
+
+# Keystone account username (string value)
+#admin_user=demo
+
+# Keystone account password (string value)
+#admin_password=nova
+
+# Keystone service account tenant name to validate user tokens
+# (string value)
+#admin_tenant_name=demo

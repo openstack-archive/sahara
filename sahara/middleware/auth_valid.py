@@ -25,9 +25,8 @@ LOG = logging.getLogger(__name__)
 class AuthValidator:
     """Handles token auth results and tenants."""
 
-    def __init__(self, app, conf):
+    def __init__(self, app):
         self.app = app
-        self.conf = conf
 
     def __call__(self, env, start_response):
         """Ensures that tenants in url and token are equal.
@@ -61,11 +60,7 @@ class AuthValidator:
         return self.app(env, start_response)
 
 
-def filter_factory(global_conf, **local_conf):
-    conf = global_conf.copy()
-    conf.update(local_conf)
+def wrap(app):
+    """Wrap wsgi application with auth validator check."""
 
-    def auth_filter(app):
-        return AuthValidator(app, conf)
-
-    return auth_filter
+    return AuthValidator(app)
