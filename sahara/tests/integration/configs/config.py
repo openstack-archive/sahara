@@ -389,6 +389,88 @@ HDP_CONFIG_OPTS = [
     cfg.BoolOpt('SKIP_SCALING_TEST', default=False)
 ]
 
+HDP2_CONFIG_GROUP = cfg.OptGroup(name='HDP2')
+HDP2_CONFIG_OPTS = [
+    cfg.StrOpt('PLUGIN_NAME',
+               default='hdp',
+               help='Name of plugin.'),
+    cfg.StrOpt('IMAGE_ID',
+               default=None,
+               help='ID for image which is used for cluster creation. Also '
+                    'you can specify image name or tag of image instead of '
+                    'image ID. If you do not specify image related '
+                    'parameters, then image for cluster creation will be '
+                    'chosen by tag "sahara_i_tests".'),
+    cfg.StrOpt('IMAGE_NAME',
+               default=None,
+               help='Name for image which is used for cluster creation. Also '
+                    'you can specify image ID or tag of image instead of '
+                    'image name. If you do not specify image related '
+                    'parameters, then image for cluster creation will be '
+                    'chosen by tag "sahara_i_tests".'),
+    cfg.StrOpt('IMAGE_TAG',
+               default=None,
+               help='Tag for image which is used for cluster creation. Also '
+                    'you can specify image ID or image name instead of tag of '
+                    'image. If you do not specify image related parameters, '
+                    'then image for cluster creation will be chosen by '
+                    'tag "sahara_i_tests".'),
+    cfg.StrOpt('SSH_USERNAME',
+               default=None,
+               help='Username to get cluster node with SSH.'),
+    cfg.ListOpt('MASTER_NODE_PROCESSES',
+                default=['NAMENODE', 'SECONDARY_NAMENODE', 'ZOOKEEPER_SERVER',
+                         'AMBARI_SERVER', 'HISTORYSERVER', 'RESOURCEMANAGER',
+                         'GANGLIA_SERVER', 'NAGIOS_SERVER', 'OOZIE_SERVER'],
+                help='A list of processes that will be launched '
+                     'on master node'),
+    cfg.ListOpt('WORKER_NODE_PROCESSES',
+                default=['HDFS_CLIENT', 'DATANODE', 'ZOOKEEPER_CLIENT',
+                         'MAPREDUCE2_CLIENT', 'YARN_CLIENT', 'NODEMANAGER',
+                         'PIG', 'OOZIE_CLIENT'],
+                help='A list of processes that will be launched '
+                     'on worker nodes'),
+    cfg.StrOpt('HADOOP_VERSION',
+               default='2.0.6',
+               help='Version of Hadoop.'),
+    cfg.StrOpt('HADOOP_USER',
+               default='hdfs',
+               help='Username which is used for access to Hadoop services.'),
+    cfg.IntOpt('SCALE_EXISTING_NG_COUNT',
+               default=1,
+               help='The number of hosts to add while scaling '
+                    'an existing node group.'),
+    cfg.IntOpt('SCALE_NEW_NG_COUNT',
+               default=1,
+               help='The number of hosts to add while scaling '
+                    'a new node group.'),
+    cfg.DictOpt('HADOOP_PROCESSES_WITH_PORTS',
+                default={
+                    'RESOURCEMANAGER': 8088,
+                    'NAMENODE': 8020,
+                    'HISTORYSERVER': 19888,
+                    'SECONDARY_NAMENODE': 50090,
+                    'OOZIE_SERVER': 11000
+                },
+                help='Hadoop process map with ports for HDP plugin.'
+                ),
+    cfg.DictOpt('PROCESS_NAMES',
+                default={
+                    'nn': 'NAMENODE',
+                    'tt': 'NODEMANAGER',
+                    'dn': 'DATANODE'
+                },
+                help='Names for namenode, tasktracker and datanode '
+                     'processes.'),
+    cfg.BoolOpt('SKIP_ALL_TESTS_FOR_PLUGIN',
+                default=True,
+                help='If this flag is True, then all tests for HDP plugin '
+                     'will be skipped.'),
+    cfg.BoolOpt('SKIP_EDP_TEST', default=False),
+    cfg.BoolOpt('SKIP_SWIFT_TEST', default=False),
+    cfg.BoolOpt('SKIP_SCALING_TEST', default=False)
+]
+
 
 def register_config(config, config_group, config_opts):
     config.register_group(config_group)
@@ -417,6 +499,7 @@ class ITConfig:
         register_config(cfg.CONF, COMMON_CONFIG_GROUP, COMMON_CONFIG_OPTS)
         register_config(cfg.CONF, VANILLA_CONFIG_GROUP, VANILLA_CONFIG_OPTS)
         register_config(cfg.CONF, HDP_CONFIG_GROUP, HDP_CONFIG_OPTS)
+        register_config(cfg.CONF, HDP2_CONFIG_GROUP, HDP2_CONFIG_OPTS)
         register_config(
             cfg.CONF, VANILLA_TWO_CONFIG_GROUP, VANILLA_TWO_CONFIG_OPTS)
 
@@ -429,3 +512,4 @@ class ITConfig:
         self.vanilla_config = cfg.CONF.VANILLA
         self.vanilla_two_config = cfg.CONF.VANILLA_TWO
         self.hdp_config = cfg.CONF.HDP
+        self.hdp2_config = cfg.CONF.HDP2

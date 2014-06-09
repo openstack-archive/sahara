@@ -238,3 +238,60 @@
 #SKIP_MAP_REDUCE_TEST = False
 #SKIP_SWIFT_TEST = False
 #SKIP_SCALING_TEST = False
+
+[HDP2]
+
+# Name of plugin (string value)
+#PLUGIN_NAME = 'hdp2'
+
+# ID for image which is used for cluster creation. Also you can specify image
+# name or tag of image instead of image ID. If you do not specify image related
+# parameters then image for cluster creation will be chosen by tag
+# "sahara_i_tests" (string value)
+#IMAGE_ID = <None>
+
+# Name for image which is used for cluster creation. Also you can specify image
+# ID or tag of image instead of image name. If you do not specify image related
+# parameters then image for cluster creation will be chosen by tag
+# "sahara_i_tests" (string value)
+#IMAGE_NAME = <None>
+
+# Tag for image which is used for cluster creation. Also you can specify image
+# ID or image name instead of tag of image. If you do not specify image related
+# parameters then image for cluster creation will be chosen by tag
+# "sahara_i_tests" (string value)
+#IMAGE_TAG = <None>
+
+# Username to get cluster node with SSH (string value)
+#SSH_USERNAME = <None>
+
+# A list of processes that will be launched on master node (list value)
+#MASTER_NODE_PROCESSES = NAMENODE, SECONDARY_NAMENODE, ZOOKEEPER_SERVER, AMBARI_SERVER, HISTORYSERVER, RESOURCEMANAGER, GANGLIA_SERVER, NAGIOS_SERVER, OOZIE_SERVER
+
+# A list of processes that will be launched on worker nodes (list value)
+#WORKER_NODE_PROCESSES = HDFS_CLIENT, DATANODE, ZOOKEEPER_CLIENT, MAPREDUCE2_CLIENT, YARN_CLIENT, NODEMANAGER, PIG, OOZIE_CLIENT
+
+# Version of Hadoop (string value)
+#HADOOP_VERSION = '2.0.6'
+
+# Username which is used for access to Hadoop services (string value)
+#HADOOP_USER = 'hdfs'
+
+# The number of hosts to add while scaling an existing node group
+#SCALE_EXISTING_NG_COUNT = 1
+
+# The number of hosts to add while scaling a new node group
+#SCALE_NEW_NG_COUNT = 1
+
+# (dictionary value)
+#HADOOP_PROCESSES_WITH_PORTS = RESOURCEMANAGER: 8088, NAMENODE: 8020, HISTORYSERVER: 19888, SECONDARY_NAMENODE: 50090
+
+
+# (dictionary value)
+#PROCESS_NAMES = nn: NAMENODE, tt: NODEMANAGER, dn: DATANODE
+
+
+#SKIP_ALL_TESTS_FOR_PLUGIN = False
+#SKIP_EDP_TEST = False
+#SKIP_SWIFT_TEST = False
+#SKIP_SCALING_TEST = False
