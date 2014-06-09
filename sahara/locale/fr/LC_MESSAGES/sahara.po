@@ -3,15 +3,15 @@
 # This file is distributed under the same license as the sahara project.
 #
 # Translators:
-# c <cverheyd@hotmail.com>, 2014
-# Loïc Chabert <chabert.loic.74@gmail.com>, 2013
+# Corinne Verheyde <cverheyd@hotmail.com>, 2014
+# CHABERT Loic <chabert.loic.74@gmail.com>, 2013
 # François Bureau <francois.bureau@cloudwatt.com>, 2013
 msgid ""
 msgstr ""
 "Project-Id-Version:  Sahara\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2014-04-24 06:06+0000\n"
-"PO-Revision-Date: 2014-03-23 18:30+0000\n"
+"POT-Creation-Date: 2014-06-09 06:01+0000\n"
+"PO-Revision-Date: 2014-06-08 15:31+0000\n"
 "Last-Translator: openstackjenkins <jenkins@openstack.org>\n"
 "Language-Team: French "
 "(http://www.transifex.com/projects/p/sahara/language/fr/)\n"
@@ -30,11 +30,11 @@ msgstr "Exception non interceptée"
 msgid "Reloading cached file %s"
 msgstr "Rechargement du fichier mis en mémoire cache %s"
 
-#: sahara/openstack/common/gettextutils.py:297
+#: sahara/openstack/common/gettextutils.py:320
 msgid "Message objects do not support addition."
 msgstr "Les objets message ne supportent pas l'addition."
 
-#: sahara/openstack/common/gettextutils.py:306
+#: sahara/openstack/common/gettextutils.py:330
 msgid ""
 "Message objects do not support str() because they may contain non-ascii "
 "characters. Please use unicode() or translate() instead."
@@ -145,33 +145,20 @@ msgstr "Environnement non pris en charge sur SSH"
 msgid "process_input not supported over SSH"
 msgstr "process_input non pris en charge sur SSH"
 
-#: sahara/openstack/common/sslutils.py:52
+#: sahara/openstack/common/strutils.py:92
 #, python-format
-msgid "Unable to find cert_file : %s"
-msgstr "Impossible de trouver cert_file : %s"
+msgid "Unrecognized value '%(val)s', acceptable values are: %(acceptable)s"
+msgstr "Valeur inconnue '%(val)s', les valeurs acceptées sont: %(acceptable)s"
 
-#: sahara/openstack/common/sslutils.py:55
+#: sahara/openstack/common/strutils.py:197
 #, python-format
-msgid "Unable to find ca_file : %s"
-msgstr "Impossible de trouver ca_file : %s"
+msgid "Invalid unit system: \"%s\""
+msgstr "système d'unité \"%s\" invalide "
 
-#: sahara/openstack/common/sslutils.py:58
+#: sahara/openstack/common/strutils.py:206
 #, python-format
-msgid "Unable to find key_file : %s"
-msgstr "Impossible de trouver key_file : %s"
-
-#: sahara/openstack/common/sslutils.py:61
-msgid ""
-"When running server in SSL mode, you must specify both a cert_file and "
-"key_file option value in your configuration file"
-msgstr ""
-"Lors de l'exécution du serveur en mode SSL, vous devez spécifier une "
-"valeur d'option cert_file et key_file dans votre fichier de configuration"
-
-#: sahara/openstack/common/sslutils.py:100
-#, python-format
-msgid "Invalid SSL version : %s"
-msgstr "Version de SSL invalide : %s"
+msgid "Invalid string format: %s"
+msgstr "Format de chaine de caractères non valide : %s"
 
 #: sahara/openstack/common/wsgi.py:187
 msgid "cannot understand JSON"
@@ -181,29 +168,15 @@ msgstr "impossible de comprendre JSON"
 msgid "cannot understand XML"
 msgstr "impossible de comprendre XML"
 
-#: sahara/openstack/common/crypto/utils.py:29
-msgid "An unknown error occurred in crypto utils."
-msgstr "Une erreur inconnue s'est produite avec les outils crypto."
-
-#: sahara/openstack/common/crypto/utils.py:36
-#, python-format
-msgid "Block size of %(given)d is too big, max = %(maximum)d"
-msgstr "La taille du block %(given)d est trop grande. max = %(maximum)d"
-
-#: sahara/openstack/common/crypto/utils.py:45
-#, python-format
-msgid "Length of %(given)d is too long, max = %(maximum)d"
-msgstr "%(given)d est trop longue. max = %(maximum)d"
-
-#: sahara/openstack/common/db/exception.py:42
+#: sahara/openstack/common/db/exception.py:44
 msgid "Invalid Parameter: Unicode is not supported by the current database."
 msgstr "Paramètre invalide: La base de donnée ne supporte pas Unicode."
 
-#: sahara/openstack/common/db/sqlalchemy/migration.py:191
+#: sahara/openstack/common/db/sqlalchemy/migration.py:190
 msgid "version should be an integer"
 msgstr "version doit être un entier"
 
-#: sahara/openstack/common/db/sqlalchemy/migration.py:214
+#: sahara/openstack/common/db/sqlalchemy/migration.py:226
 #, python-format
 msgid ""
 "Tables \"%s\" have non utf8 collation, please make sure all tables are "
@@ -212,7 +185,7 @@ msgstr ""
 "Les tables \"%s\" ont une collation non utf8, assurez-vous que pour "
 "toutes les tables CHARSET=utf8."
 
-#: sahara/openstack/common/db/sqlalchemy/migration.py:238
+#: sahara/openstack/common/db/sqlalchemy/migration.py:250
 msgid ""
 "The database is not under version control, but has tables. Please stamp "
 "the current version of the schema manually."
@@ -220,50 +193,36 @@ msgstr ""
 "La base de données n'est pas versionnée, mais contient des tables. "
 "Veuillez indiquer manuellement la version courante du schéma."
 
-#: sahara/openstack/common/db/sqlalchemy/session.py:596
-msgid "DB exception wrapped."
-msgstr "Exception BD encapsulée."
-
-#: sahara/openstack/common/db/sqlalchemy/session.py:665
-#, python-format
-msgid "Database server has gone away: %s"
-msgstr "Le serveur de base de données a disparu: %s"
-
-#: sahara/openstack/common/db/sqlalchemy/session.py:743
-msgid ""
-"This application has not enabled MySQL traditional mode, which means "
-"silent data corruption may occur. Please encourage the application "
-"developers to enable this mode."
-msgstr ""
-
-#: sahara/openstack/common/db/sqlalchemy/session.py:767
-#, python-format
-msgid "SQL connection failed. %s attempts left."
-msgstr "Echec de connexion SQL. %s essais restants."
-
-#: sahara/openstack/common/db/sqlalchemy/test_migrations.py:63
-#, python-format
-msgid "Got lock \"%s\""
-msgstr "Verrou \"%s\" obtenu"
-
-#: sahara/openstack/common/db/sqlalchemy/test_migrations.py:66
-#, python-format
-msgid "Lock released \"%s\""
-msgstr "Verrou \"%s\" relaché"
-
 #: sahara/openstack/common/db/sqlalchemy/utils.py:58
 msgid "Sort key supplied was not valid."
 msgstr "Clé de tri fournie invalide."
-
-#: sahara/openstack/common/db/sqlalchemy/utils.py:97
-msgid "Id not in sort_keys; is sort_keys unique?"
-msgstr "ID absent de sort_keys ; sort_keys unique ?"
 
 #: sahara/openstack/common/db/sqlalchemy/utils.py:119
 msgid "Unknown sort direction, must be 'desc' or 'asc'"
 msgstr "Sens de tri inconnu, doit être 'desc' ou 'asc'"
 
-#: sahara/openstack/common/db/sqlalchemy/utils.py:194
+#: sahara/openstack/common/db/sqlalchemy/utils.py:162
+#, python-format
+msgid ""
+"There is no `deleted` column in `%s` table. Project doesn't use soft-"
+"deleted feature."
+msgstr ""
+
+#: sahara/openstack/common/db/sqlalchemy/utils.py:174
+#, python-format
+msgid "Unrecognized read_deleted value '%s'"
+msgstr "Valeur read_deleted non reconnue '%s'"
+
+#: sahara/openstack/common/db/sqlalchemy/utils.py:181
+#, python-format
+msgid "There is no `project_id` column in `%s` table."
+msgstr "Il n'y a pas de colonne `project_id` dans la table `%s`"
+
+#: sahara/openstack/common/db/sqlalchemy/utils.py:243
+msgid "model should be a subclass of ModelBase"
+msgstr "model doit etre une sous-classe de ModelBase"
+
+#: sahara/openstack/common/db/sqlalchemy/utils.py:294
 #, python-format
 msgid ""
 "Please specify column %s in col_name_col_instance param. It is required "
@@ -272,7 +231,7 @@ msgstr ""
 "Spécifiez la colonne %s dans le paramètre col_name_col_instance. Ceci est"
 " obligatoire car la colonne a un type non pris en charge dans sqlite)."
 
-#: sahara/openstack/common/db/sqlalchemy/utils.py:200
+#: sahara/openstack/common/db/sqlalchemy/utils.py:300
 #, python-format
 msgid ""
 "col_name_col_instance param has wrong type of column instance for column "
@@ -282,12 +241,7 @@ msgstr ""
 " incorrect pour la colonne %s. Il devrait être une instance de "
 "sqlalchemy.Column."
 
-#: sahara/openstack/common/db/sqlalchemy/utils.py:280
-#, python-format
-msgid "Deleting duplicated row with id: %(id)s from table: %(table)s"
-msgstr "Suppression ligne en double avec l'ID : %(id)s de la table : %(table)s"
-
-#: sahara/openstack/common/db/sqlalchemy/utils.py:301
+#: sahara/openstack/common/db/sqlalchemy/utils.py:408
 msgid "Unsupported id columns type"
 msgstr "Type de colonnes id non pris en charge"
 
