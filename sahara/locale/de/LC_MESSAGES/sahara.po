@@ -3,13 +3,14 @@
 # This file is distributed under the same license as the sahara project.
 #
 # Translators:
-# rsimai, 2014
+# Carsten Duch <cad@teuto.net>, 2014
+# Robert Simai, 2014
 msgid ""
 msgstr ""
 "Project-Id-Version:  Sahara\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2014-05-11 06:06+0000\n"
-"PO-Revision-Date: 2014-05-10 01:10+0000\n"
+"POT-Creation-Date: 2014-06-09 06:01+0000\n"
+"PO-Revision-Date: 2014-06-08 15:31+0000\n"
 "Last-Translator: openstackjenkins <jenkins@openstack.org>\n"
 "Language-Team: German "
 "(http://www.transifex.com/projects/p/sahara/language/de/)\n"
@@ -28,11 +29,11 @@ msgstr "Nicht abgefangene Ausnahme"
 msgid "Reloading cached file %s"
 msgstr "Cache Datei %s wird neu geladen"
 
-#: sahara/openstack/common/gettextutils.py:297
+#: sahara/openstack/common/gettextutils.py:320
 msgid "Message objects do not support addition."
 msgstr "Das Nachrichtenobjekt unterstützt kein Hinzufügen."
 
-#: sahara/openstack/common/gettextutils.py:306
+#: sahara/openstack/common/gettextutils.py:330
 msgid ""
 "Message objects do not support str() because they may contain non-ascii "
 "characters. Please use unicode() or translate() instead."
@@ -146,6 +147,21 @@ msgstr "Umgebung über SSH nicht unterstützt"
 msgid "process_input not supported over SSH"
 msgstr "'process_input' über SSH nicht unterstützt"
 
+#: sahara/openstack/common/strutils.py:92
+#, python-format
+msgid "Unrecognized value '%(val)s', acceptable values are: %(acceptable)s"
+msgstr "Unbekannter Wert '%(val)s', bekannte Werte sind: %(acceptable)s"
+
+#: sahara/openstack/common/strutils.py:197
+#, python-format
+msgid "Invalid unit system: \"%s\""
+msgstr "Ungültiges Einheitensystem: \"%s\""
+
+#: sahara/openstack/common/strutils.py:206
+#, python-format
+msgid "Invalid string format: %s"
+msgstr "Ungültiges String Format: %s"
+
 #: sahara/openstack/common/wsgi.py:187
 msgid "cannot understand JSON"
 msgstr "verstehe JSON nicht"
@@ -154,17 +170,17 @@ msgstr "verstehe JSON nicht"
 msgid "cannot understand XML"
 msgstr "Verstehe XML nicht"
 
-#: sahara/openstack/common/db/exception.py:42
+#: sahara/openstack/common/db/exception.py:44
 msgid "Invalid Parameter: Unicode is not supported by the current database."
 msgstr ""
 "Ungültiger Parameter: Unicode wird von der aktuellen Datenbank nicht "
 "unterstützt."
 
-#: sahara/openstack/common/db/sqlalchemy/migration.py:191
+#: sahara/openstack/common/db/sqlalchemy/migration.py:190
 msgid "version should be an integer"
 msgstr "Version sollte eine Ganzzahl sein"
 
-#: sahara/openstack/common/db/sqlalchemy/migration.py:214
+#: sahara/openstack/common/db/sqlalchemy/migration.py:226
 #, python-format
 msgid ""
 "Tables \"%s\" have non utf8 collation, please make sure all tables are "
@@ -173,7 +189,7 @@ msgstr ""
 "Tabellen \"%s\" verwenden eine nicht-utf8 Kollation. Bitte stellen Sie "
 "sicher, dass alle Tabellen CHARSET=utf8 verwenden"
 
-#: sahara/openstack/common/db/sqlalchemy/migration.py:238
+#: sahara/openstack/common/db/sqlalchemy/migration.py:250
 msgid ""
 "The database is not under version control, but has tables. Please stamp "
 "the current version of the schema manually."
@@ -181,47 +197,9 @@ msgstr ""
 "Die Datenbank hat keine Versionskontrolle aber Tabellen. Bitte "
 "\"stempeln\" Sie die aktuelle Version des Schemas manuell."
 
-#: sahara/openstack/common/db/sqlalchemy/session.py:596
-msgid "DB exception wrapped."
-msgstr "Datenbankausnahme eingeschlossen."
-
-#: sahara/openstack/common/db/sqlalchemy/session.py:665
-#, python-format
-msgid "Database server has gone away: %s"
-msgstr "Datenbankserver ist nicht mehr vorhanden: %s"
-
-#: sahara/openstack/common/db/sqlalchemy/session.py:743
-msgid ""
-"This application has not enabled MySQL traditional mode, which means "
-"silent data corruption may occur. Please encourage the application "
-"developers to enable this mode."
-msgstr ""
-"Der \"MySQL Traditional Mode\" wurde von dieser Applikation nicht "
-"aktiviert. Dies kann zu unbemerkter Datenkorruption führen. Bitte "
-"ermuntern Sie die Applikationsentwickler diesen Modus zu aktivieren."
-
-#: sahara/openstack/common/db/sqlalchemy/session.py:767
-#, python-format
-msgid "SQL connection failed. %s attempts left."
-msgstr "SQL-Verbindung fehlgeschlagen. Noch %s weitere Versuche übrig."
-
-#: sahara/openstack/common/db/sqlalchemy/test_migrations.py:63
-#, python-format
-msgid "Got lock \"%s\""
-msgstr "Sperre erhalten: \"%s\""
-
-#: sahara/openstack/common/db/sqlalchemy/test_migrations.py:66
-#, python-format
-msgid "Lock released \"%s\""
-msgstr "Sperre freigegeben \"%s\""
-
 #: sahara/openstack/common/db/sqlalchemy/utils.py:58
 msgid "Sort key supplied was not valid."
 msgstr "Der angegebene Sortierschlüssel war nicht gültig. "
-
-#: sahara/openstack/common/db/sqlalchemy/utils.py:97
-msgid "Id not in sort_keys; is sort_keys unique?"
-msgstr "ID ist nicht in 'sort_keys' enthalten; ist 'sort_keys' eindeutig?"
 
 #: sahara/openstack/common/db/sqlalchemy/utils.py:119
 msgid "Unknown sort direction, must be 'desc' or 'asc'"
@@ -229,7 +207,28 @@ msgstr ""
 "Unbekannte Sortierrichtung; muss 'desc' (absteigend) oder 'asc' "
 "(aufsteigend) sein"
 
-#: sahara/openstack/common/db/sqlalchemy/utils.py:194
+#: sahara/openstack/common/db/sqlalchemy/utils.py:162
+#, python-format
+msgid ""
+"There is no `deleted` column in `%s` table. Project doesn't use soft-"
+"deleted feature."
+msgstr ""
+
+#: sahara/openstack/common/db/sqlalchemy/utils.py:174
+#, python-format
+msgid "Unrecognized read_deleted value '%s'"
+msgstr "Nicht erkannter read_deleted-Wert '%s'"
+
+#: sahara/openstack/common/db/sqlalchemy/utils.py:181
+#, python-format
+msgid "There is no `project_id` column in `%s` table."
+msgstr ""
+
+#: sahara/openstack/common/db/sqlalchemy/utils.py:243
+msgid "model should be a subclass of ModelBase"
+msgstr ""
+
+#: sahara/openstack/common/db/sqlalchemy/utils.py:294
 #, python-format
 msgid ""
 "Please specify column %s in col_name_col_instance param. It is required "
@@ -239,7 +238,7 @@ msgstr ""
 " ist erforderlich, denn der Typ dieser Spalte wird von sqlite nicht "
 "unterstützt."
 
-#: sahara/openstack/common/db/sqlalchemy/utils.py:200
+#: sahara/openstack/common/db/sqlalchemy/utils.py:300
 #, python-format
 msgid ""
 "col_name_col_instance param has wrong type of column instance for column "
@@ -249,12 +248,7 @@ msgstr ""
 " für die Spalte column %s. Es sollte eine Instanz von sqlalchemy.Column "
 "sein."
 
-#: sahara/openstack/common/db/sqlalchemy/utils.py:280
-#, python-format
-msgid "Deleting duplicated row with id: %(id)s from table: %(table)s"
-msgstr "Lösche doppelte Zeile mit der ID %(id)s aus der Tabelle %(table)s"
-
-#: sahara/openstack/common/db/sqlalchemy/utils.py:301
+#: sahara/openstack/common/db/sqlalchemy/utils.py:408
 msgid "Unsupported id columns type"
 msgstr "Nicht unterstützter Spaltentyp"
 

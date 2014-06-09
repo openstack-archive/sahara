@@ -6,9 +6,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: sahara 2014.2.dev31.ga1538b6\n"
+"Project-Id-Version: sahara 2014.2.dev190.geb813fd\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2014-04-14 06:06+0000\n"
+"POT-Creation-Date: 2014-06-09 06:01+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -26,11 +26,11 @@ msgstr ""
 msgid "Reloading cached file %s"
 msgstr ""
 
-#: sahara/openstack/common/gettextutils.py:297
+#: sahara/openstack/common/gettextutils.py:320
 msgid "Message objects do not support addition."
 msgstr ""
 
-#: sahara/openstack/common/gettextutils.py:306
+#: sahara/openstack/common/gettextutils.py:330
 msgid ""
 "Message objects do not support str() because they may contain non-ascii "
 "characters. Please use unicode() or translate() instead."
@@ -132,30 +132,19 @@ msgstr ""
 msgid "process_input not supported over SSH"
 msgstr ""
 
-#: sahara/openstack/common/sslutils.py:52
+#: sahara/openstack/common/strutils.py:92
 #, python-format
-msgid "Unable to find cert_file : %s"
+msgid "Unrecognized value '%(val)s', acceptable values are: %(acceptable)s"
 msgstr ""
 
-#: sahara/openstack/common/sslutils.py:55
+#: sahara/openstack/common/strutils.py:197
 #, python-format
-msgid "Unable to find ca_file : %s"
+msgid "Invalid unit system: \"%s\""
 msgstr ""
 
-#: sahara/openstack/common/sslutils.py:58
+#: sahara/openstack/common/strutils.py:206
 #, python-format
-msgid "Unable to find key_file : %s"
-msgstr ""
-
-#: sahara/openstack/common/sslutils.py:61
-msgid ""
-"When running server in SSL mode, you must specify both a cert_file and "
-"key_file option value in your configuration file"
-msgstr ""
-
-#: sahara/openstack/common/sslutils.py:100
-#, python-format
-msgid "Invalid SSL version : %s"
+msgid "Invalid string format: %s"
 msgstr ""
 
 #: sahara/openstack/common/wsgi.py:187
@@ -166,104 +155,71 @@ msgstr ""
 msgid "cannot understand XML"
 msgstr ""
 
-#: sahara/openstack/common/crypto/utils.py:29
-msgid "An unknown error occurred in crypto utils."
-msgstr ""
-
-#: sahara/openstack/common/crypto/utils.py:36
-#, python-format
-msgid "Block size of %(given)d is too big, max = %(maximum)d"
-msgstr ""
-
-#: sahara/openstack/common/crypto/utils.py:45
-#, python-format
-msgid "Length of %(given)d is too long, max = %(maximum)d"
-msgstr ""
-
-#: sahara/openstack/common/db/exception.py:42
+#: sahara/openstack/common/db/exception.py:44
 msgid "Invalid Parameter: Unicode is not supported by the current database."
 msgstr ""
 
-#: sahara/openstack/common/db/sqlalchemy/migration.py:191
+#: sahara/openstack/common/db/sqlalchemy/migration.py:190
 msgid "version should be an integer"
 msgstr ""
 
-#: sahara/openstack/common/db/sqlalchemy/migration.py:214
+#: sahara/openstack/common/db/sqlalchemy/migration.py:226
 #, python-format
 msgid ""
 "Tables \"%s\" have non utf8 collation, please make sure all tables are "
 "CHARSET=utf8"
 msgstr ""
 
-#: sahara/openstack/common/db/sqlalchemy/migration.py:238
+#: sahara/openstack/common/db/sqlalchemy/migration.py:250
 msgid ""
 "The database is not under version control, but has tables. Please stamp "
 "the current version of the schema manually."
-msgstr ""
-
-#: sahara/openstack/common/db/sqlalchemy/session.py:596
-msgid "DB exception wrapped."
-msgstr ""
-
-#: sahara/openstack/common/db/sqlalchemy/session.py:665
-#, python-format
-msgid "Database server has gone away: %s"
-msgstr ""
-
-#: sahara/openstack/common/db/sqlalchemy/session.py:743
-msgid ""
-"This application has not enabled MySQL traditional mode, which means "
-"silent data corruption may occur. Please encourage the application "
-"developers to enable this mode."
-msgstr ""
-
-#: sahara/openstack/common/db/sqlalchemy/session.py:767
-#, python-format
-msgid "SQL connection failed. %s attempts left."
-msgstr ""
-
-#: sahara/openstack/common/db/sqlalchemy/test_migrations.py:63
-#, python-format
-msgid "Got lock \"%s\""
-msgstr ""
-
-#: sahara/openstack/common/db/sqlalchemy/test_migrations.py:66
-#, python-format
-msgid "Lock released \"%s\""
 msgstr ""
 
 #: sahara/openstack/common/db/sqlalchemy/utils.py:58
 msgid "Sort key supplied was not valid."
 msgstr ""
 
-#: sahara/openstack/common/db/sqlalchemy/utils.py:97
-msgid "Id not in sort_keys; is sort_keys unique?"
-msgstr ""
-
 #: sahara/openstack/common/db/sqlalchemy/utils.py:119
 msgid "Unknown sort direction, must be 'desc' or 'asc'"
 msgstr ""
 
-#: sahara/openstack/common/db/sqlalchemy/utils.py:194
+#: sahara/openstack/common/db/sqlalchemy/utils.py:162
+#, python-format
+msgid ""
+"There is no `deleted` column in `%s` table. Project doesn't use soft-"
+"deleted feature."
+msgstr ""
+
+#: sahara/openstack/common/db/sqlalchemy/utils.py:174
+#, python-format
+msgid "Unrecognized read_deleted value '%s'"
+msgstr ""
+
+#: sahara/openstack/common/db/sqlalchemy/utils.py:181
+#, python-format
+msgid "There is no `project_id` column in `%s` table."
+msgstr ""
+
+#: sahara/openstack/common/db/sqlalchemy/utils.py:243
+msgid "model should be a subclass of ModelBase"
+msgstr ""
+
+#: sahara/openstack/common/db/sqlalchemy/utils.py:294
 #, python-format
 msgid ""
 "Please specify column %s in col_name_col_instance param. It is required "
 "because column has unsupported type by sqlite)."
 msgstr ""
 
-#: sahara/openstack/common/db/sqlalchemy/utils.py:200
+#: sahara/openstack/common/db/sqlalchemy/utils.py:300
 #, python-format
 msgid ""
 "col_name_col_instance param has wrong type of column instance for column "
 "%s It should be instance of sqlalchemy.Column."
 msgstr ""
 
-#: sahara/openstack/common/db/sqlalchemy/utils.py:280
-#, python-format
-msgid "Deleting duplicated row with id: %(id)s from table: %(table)s"
-msgstr ""
-
-#: sahara/openstack/common/db/sqlalchemy/utils.py:301
+#: sahara/openstack/common/db/sqlalchemy/utils.py:408
 msgid "Unsupported id columns type"
 msgstr ""
 
