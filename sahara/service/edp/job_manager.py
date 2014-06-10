@@ -117,6 +117,20 @@ def cancel_job(job_execution_id):
 
 
 def run_job(job_execution_id):
+    try:
+        _run_job(job_execution_id)
+    except Exception as ex:
+        LOG.exception("Can't run job execution '%s' (reason: %s)",
+                      job_execution_id, ex)
+
+        conductor.job_execution_update(
+            context.ctx(), job_execution_id,
+            {'status': 'FAILED',
+             'start_time': datetime.datetime.now(),
+             'end_time': datetime.datetime.now()})
+
+
+def _run_job(job_execution_id):
     ctx = context.ctx()
 
     job_execution = conductor.job_execution_get(ctx,
