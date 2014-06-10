@@ -94,6 +94,10 @@ def _get_hadoop_configs(node_group):
         confs['MapReduce'] = {
             'mapreduce.framework.name': 'yarn'
         }
+        hs_hostname = vu.get_instance_hostname(vu.get_historyserver(cluster))
+        if hs_hostname:
+            confs['MapReduce']['mapreduce.jobhistory.address'] = (
+                "%s:10020" % hs_hostname)
 
     oozie = vu.get_oozie(cluster)
     if oozie:
