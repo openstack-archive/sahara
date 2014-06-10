@@ -3,14 +3,11 @@
 dir=/tmp/MapReduceTestOutput
 log=$dir/log.txt
 
-HADOOP_VERSION=""
 HADOOP_EXAMPLES_JAR_PATH=""
-HADOOP_DIRECTORY=""
 HADOOP_LOG_DIRECTORY=""
 HADOOP_USER=""
 
 NODE_COUNT=""
-PLUGIN_NAME=""
 
 case $1 in
     run_pi_job)
@@ -80,12 +77,6 @@ run_pi_job() {
 
     echo -e "`sudo netstat -plten | grep java` \n\n\n" >> $log
 
-    hadoop_version=""
-    if [ "$PLUGIN_NAME" = "vanilla" ]
-    then
-        hadoop_version=-$HADOOP_VERSION
-    fi
-
     echo -e "************************ START OF \"PI\" JOB *********************\n" >> $log
 
     sudo -u $HADOOP_USER bash -lc "hadoop jar $HADOOP_EXAMPLES_JAR_PATH pi $[$NODE_COUNT*10] $[$NODE_COUNT*1000]" >> $log
@@ -142,12 +133,6 @@ run_wordcount_job() {
 
     sudo -u $HADOOP_USER bash -lc "hadoop dfs -copyFromLocal $dir/input /map-reduce-test/mydata"
     check_return_code_after_command_execution -clean_hdfs `echo "$?"`
-
-    hadoop_version=""
-    if [ "$PLUGIN_NAME" = "vanilla" ]
-    then
-        hadoop_version=-$HADOOP_VERSION
-    fi
 
     sudo -u $HADOOP_USER bash -lc "hadoop jar $HADOOP_EXAMPLES_JAR_PATH wordcount /map-reduce-test/mydata /map-reduce-test/output"
     check_return_code_after_command_execution -clean_hdfs `echo "$?"`
