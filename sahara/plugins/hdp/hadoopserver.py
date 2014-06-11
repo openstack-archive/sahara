@@ -16,6 +16,7 @@
 import re
 
 from sahara.openstack.common import log as logging
+from sahara.plugins.general import exceptions as ex
 from sahara.plugins.hdp import saharautils
 from sahara.utils import files as f
 
@@ -23,8 +24,13 @@ from sahara.utils import files as f
 AMBARI_RPM = 'http://s3.amazonaws.com/public-repo-1.hortonworks.com/' \
              'ambari/centos6/1.x/updates/1.4.3.38/ambari.repo'
 
+EPEL_RELEASE_PACKAGE_NAME = 'epel-release'
+
 HADOOP_SWIFT_RPM = 'https://s3.amazonaws.com/public-repo-1.hortonworks.com/' \
                    'savanna/swift/hadoop-swift-1.0-1.x86_64.rpm'
+
+HADOOP_SWIFT_LOCAL_RPM = '/opt/hdp-local-repos/hadoop-swift/' \
+                         'hadoop-swift-1.0-1.x86_64.rpm'
 
 LOG = logging.getLogger(__name__)
 
@@ -48,24 +54,59 @@ class HadoopServer:
         self._setup_and_start_ambari_agent(ambari_info.host.internal_ip)
 
     @saharautils.inject_remote('r')
+    def rpms_installed(self, r):
+        yum_cmd = 'yum -q list installed %s' % EPEL_RELEASE_PACKAGE_NAME
+        ret_code, stdout = r.execute_command(yum_cmd,
+                                             run_as_root=True,
+                                             raise_when_error=False)
+        return ret_code == 0
+
+    @saharautils.inject_remote('r')
     def install_rpms(self, r):
         LOG.info(
             "{0}: Installing rpm's ...".format(self.instance.hostname()))
 
         #TODO(jspeidel): based on image type, use correct command
-        rpm_cmd = 'curl -f -s -o /etc/yum.repos.d/ambari.repo %s' % \
-                  self.ambari_rpm
-        r.execute_command(rpm_cmd, run_as_root=True)
-        r.execute_command('yum -y install epel-release', run_as_root=True)
+        curl_cmd = 'curl -f -s -o /etc/yum.repos.d/ambari.repo %s' % \
+            self.ambari_rpm
+        ret_code, stdout = r.execute_command(curl_cmd,
+                                             run_as_root=True,
+                                             raise_when_error=False)
+        if ret_code == 0:
+            yum_cmd = 'yum -y install %s' % EPEL_RELEASE_PACKAGE_NAME
+            r.execute_command(yum_cmd, run_as_root=True)
+        else:
+            LOG.info("{0}: Unable to install rpm's from repo, "
+                     "checking for local install."
+                     .format(self.instance.hostname()))
+            if not self.rpms_installed():
+                raise ex.HadoopProvisionError(
+                    'Failed to install Hortonworks Ambari')
 
     @saharautils.inject_remote('r')
     def install_swift_integration(self, r):
         LOG.info(
             "{0}: Installing swift integration ..."
             .format(self.instance.hostname()))
-
-        rpm_cmd = 'rpm -Uvh ' + HADOOP_SWIFT_RPM
-        r.execute_command(rpm_cmd, run_as_root=True)
+        base_rpm_cmd = 'rpm -U --quiet '
+        rpm_cmd = base_rpm_cmd + HADOOP_SWIFT_RPM
+        ret_code, stdout = r.execute_command(rpm_cmd,
+                                             run_as_root=True,
+                                             raise_when_error=False)
+        if ret_code != 0:
+            LOG.info("{0}: Unable to install swift integration from source, "
+                     "checking for local rpm."
+                     .format(self.instance.hostname()))
+            ret_code, stdout = r.execute_command(
+                'ls ' + HADOOP_SWIFT_LOCAL_RPM,
+                run_as_root=True,
+                raise_when_error=False)
+            if ret_code == 0:
+                rpm_cmd = base_rpm_cmd + HADOOP_SWIFT_LOCAL_RPM
+                r.execute_command(rpm_cmd, run_as_root=True)
+            else:
+                raise ex.HadoopProvisionError(
+                    'Failed to install Hadoop Swift integration')
 
     @saharautils.inject_remote('r')
     def configure_topology(self, topology_str, r):
