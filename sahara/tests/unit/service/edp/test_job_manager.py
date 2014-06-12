@@ -389,7 +389,7 @@ class TestJobManager(base.SaharaWithDbTestCase):
 
         self.assertEqual(1, job_ex_upd.call_count)
 
-        new_status = job_ex_upd.call_args[0][2]["status"]
+        new_status = job_ex_upd.call_args[0][2]["info"]["status"]
         self.assertEqual('FAILED', new_status)
 
 
