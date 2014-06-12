@@ -17,8 +17,8 @@ from sahara.openstack.common import excutils
 from sahara.tests.integration.tests import base
 
 
-#TODO(ylobankov): add secondary nn config when bug #1217245 will be fixed
 NN_CONFIG = {'Name Node Heap Size': 512}
+SNN_CONFIG = {'Secondary Name Node Heap Size': 521}
 JT_CONFIG = {'Job Tracker Heap Size': 514}
 
 DN_CONFIG = {'Data Node Heap Size': 513}
@@ -36,6 +36,10 @@ CONFIG_MAP = {
     'namenode': {
         'service': 'HDFS',
         'config': NN_CONFIG
+    },
+    'secondarynamenode': {
+        'service': 'HDFS',
+        'config': SNN_CONFIG
     },
     'jobtracker': {
         'service': 'MapReduce',
@@ -106,7 +110,6 @@ class ClusterConfigTest(base.ITestCase):
                 self._compare_configs_on_cluster_node(config, value)
             for config, value in CLUSTER_HDFS_CONFIG.items():
                 self._compare_configs_on_cluster_node(config, value)
-#TODO(ylobankov): add check for secondary nn when bug #1217245 will be fixed
             for process in processes:
                 if process in CONFIG_MAP:
                     for config, value in self._get_config_from_config_map(

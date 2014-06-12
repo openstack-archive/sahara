@@ -180,6 +180,7 @@ class VanillaGatingTest(cinder.CinderVolumeTest,
                         flavor_id=self.flavor_id,
                         node_processes=['secondarynamenode', 'oozie'],
                         node_configs={
+                            'HDFS': cluster_configs.SNN_CONFIG,
                             'JobFlow': cluster_configs.OOZIE_CONFIG
                         },
                         floating_ip_pool=floating_ip_pool,

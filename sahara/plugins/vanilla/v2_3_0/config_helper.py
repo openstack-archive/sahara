@@ -56,6 +56,7 @@ ENV_CONFS = {
     },
     "HDFS": {
         'NameNode Heap Size': 1024,
+        'SecondaryNameNode Heap Size': 1024,
         'DataNode Heap Size': 1024
     },
     "MapReduce": {

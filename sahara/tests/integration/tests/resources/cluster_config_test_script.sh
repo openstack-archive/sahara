@@ -7,6 +7,10 @@ case $1 in
         FUNC="check_nn_heap_size"
     ;;
 
+    SecondaryNameNodeHeapSize)
+        FUNC="check_snn_heap_size"
+    ;;
+
     JobTrackerHeapSize)
         FUNC="check_jt_heap_size"
     ;;
@@ -86,6 +90,13 @@ check_nn_heap_size() {
     echo -e "*********************** NAME NODE HEAP SIZE **********************\n" >> $log
 
     check_heap_size "namenode"
+}
+
+check_snn_heap_size() {
+
+    echo -e "*********************** SECONDARY NAME NODE HEAP SIZE **********************\n" >> $log
+
+    check_heap_size "secondarynamenode"
 }
 
 check_jt_heap_size() {
