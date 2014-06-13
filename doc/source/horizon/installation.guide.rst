@@ -103,9 +103,9 @@ approach see :doc:`/horizon/dev.environment.guide`
         --description "Sahara Data Processing"
 
     keystone endpoint-create --service sahara --region RegionOne \
-        --publicurl "http://10.0.0.2:8386/v1.1/\$(tenant_id)s" \
-        --adminurl "http://10.0.0.2:8386/v1.1/\$(tenant_id)s" \
-        --internalurl "http://10.0.0.2:8386/v1.1/\$(tenant_id)s"
+        --publicurl "http://10.0.0.2:8386/v1.1/%(tenant_id)s" \
+        --adminurl "http://10.0.0.2:8386/v1.1/%(tenant_id)s" \
+        --internalurl "http://10.0.0.2:8386/v1.1/%(tenant_id)s"
 ..
 
    While executing the commands above, don't forget to change IP
