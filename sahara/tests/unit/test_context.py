@@ -15,6 +15,7 @@
 
 import random
 
+import fixtures
 import mock
 import six
 import testtools
@@ -29,6 +30,7 @@ rnd = random.Random()
 class ContextTest(testtools.TestCase):
     def setUp(self):
         super(ContextTest, self).setUp()
+        self.useFixture(fixtures.FakeLogger('sahara'))
         ctx = context.Context('test_user', 'tenant_1', 'test_auth_token', {},
                               remote_semaphore='123')
         context.set_ctx(ctx)
