@@ -1,10 +1,10 @@
 [DEFAULT]
 
-# Hostname or IP address that will be used to listen on
+# Hostname or IP address that will be used to listen on.
 # (string value)
 #host=
 
-# Port that will be used to listen on (integer value)
+# Port that will be used to listen on. (integer value)
 #port=8386
 
 # If set to True, Sahara will use floating IPs to communicate
@@ -63,7 +63,7 @@
 
 
 # Log request/response exchange details: environ, headers and
-# bodies (boolean value)
+# bodies. (boolean value)
 #log_exchange=false
 
 # Print debugging output (set logging level to DEBUG instead
@@ -74,7 +74,7 @@
 # of default WARNING level). (boolean value)
 #verbose=false
 
-# Log output to standard error (boolean value)
+# Log output to standard error. (boolean value)
 #use_stderr=true
 
 # (Optional) Name of log file to output to. If no default is
@@ -82,13 +82,15 @@
 #log_file=<None>
 
 # (Optional) The base directory used for relative --log-file
-# paths (string value)
+# paths. (string value)
 #log_dir=<None>
 
-# Use syslog for logging. (boolean value)
+# Use syslog for logging. Existing syslog format is DEPRECATED
+# during I, and will change in J to honor RFC5424. (boolean
+# value)
 #use_syslog=false
 
-# syslog facility to receive log lines (string value)
+# Syslog facility to receive log lines. (string value)
 #syslog_log_facility=LOG_USER
 
 # List of plugins to be loaded. Sahara preserves the order of
