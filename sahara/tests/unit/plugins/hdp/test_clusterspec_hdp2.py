@@ -535,8 +535,8 @@ class ClusterSpecTestForHDP2(testtools.TestCase):
                 self.assertIn('NAGIOS_SERVER', components)
                 self.assertIn('AMBARI_SERVER', components)
                 self.assertIn('ZOOKEEPER_SERVER', components)
-                #TODO(jspeidel): node configs
-                #TODO(jspeidel): vm_requirements
+                # TODO(jspeidel): node configs
+                # TODO(jspeidel): vm_requirements
             elif node_group.name == 'slave':
                 contains_slave_group = True
                 self.assertEqual(5, len(components))
@@ -545,8 +545,8 @@ class ClusterSpecTestForHDP2(testtools.TestCase):
                 self.assertIn('HDFS_CLIENT', components)
                 self.assertIn('YARN_CLIENT', components)
                 self.assertIn('MAPREDUCE2_CLIENT', components)
-                #TODO(jspeidel): node configs
-                #TODO(jspeidel): vm requirements
+                # TODO(jspeidel): node configs
+                # TODO(jspeidel): vm requirements
             else:
                 self.fail('Unexpected node group: {0}'.format(node_group.name))
         self.assertTrue(contains_master_group)
@@ -899,8 +899,8 @@ class ClusterSpecTestForHDP2(testtools.TestCase):
             # expected
             pass
 
-    #TODO(jspeidel): move validate_* to test_services when validate
-    #is called independently of cluspterspec
+    # TODO(jspeidel): move validate_* to test_services when validate
+    # is called independently of cluspterspec
     def test_validate_hdfs(self, patched):
         server = base.TestServer('host1', 'slave', '11111', 3,
                                  '111.11.1111', '222.22.2222')
@@ -1001,7 +1001,7 @@ class ClusterSpecTestForHDP2(testtools.TestCase):
             # expected
             pass
 
-        #should fail due to no nodemanager
+        # should fail due to no nodemanager
         node_group = TestNodeGroup(
             'slave', [server], ["DATANODE", "HDFS_CLIENT",
                                 "MAPREDUCE2_CLIENT"])
@@ -1429,7 +1429,7 @@ class ClusterSpecTestForHDP2(testtools.TestCase):
                                found_components['SECONDARY_NAMENODE'])
         self._assert_component('HDFS_CLIENT', 'CLIENT', "1+",
                                found_components['HDFS_CLIENT'])
-        #TODO(jspeidel) config
+        # TODO(jspeidel) config
 
     def _assert_mrv2(self, service):
         self.assertEqual('MAPREDUCE2', service.name)

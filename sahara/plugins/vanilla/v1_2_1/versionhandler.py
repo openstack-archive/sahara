@@ -425,7 +425,7 @@ class VersionHandler(avm.AbstractVersionHandler):
             }
 
         if oozie:
-            #TODO(yrunts) change from hardcode value
+            # TODO(yrunts) change from hardcode value
             info['JobFlow'] = {
                 'Oozie': 'http://%s:11000' % oozie.management_ip
             }

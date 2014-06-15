@@ -186,7 +186,6 @@ def start_patch(patch_templates=True):
     if patch_templates:
         ngt_dict = {'name': 'test', 'tenant_id': 't', 'flavor_id': '42',
                     'plugin_name': 'vanilla', 'hadoop_version': '1.2.1',
-                    #'id': '1234321',
                     'id': '550e8400-e29b-41d4-a716-446655440000',
                     'node_processes': ['namenode']}
 

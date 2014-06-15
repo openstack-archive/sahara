@@ -83,12 +83,12 @@ def refresh_yarn_nodes(cluster):
 
 def _oozie_share_lib(remote):
     LOG.debug("Sharing Oozie libs")
-    #remote.execute_command('sudo su - -c "/opt/oozie/bin/oozie-setup.sh '
-    #                       'sharelib create -fs hdfs://%s:8020" hadoop'
-    #                       % nn_hostname)
+    # remote.execute_command('sudo su - -c "/opt/oozie/bin/oozie-setup.sh '
+    #                        'sharelib create -fs hdfs://%s:8020" hadoop'
+    #                        % nn_hostname)
 
-    #TODO(alazarev) return 'oozie-setup.sh sharelib create' back
-    #when #1262023 is resolved
+    # TODO(alazarev) return 'oozie-setup.sh sharelib create' back
+    # when #1262023 is resolved
 
     remote.execute_command(
         'sudo su - -c "mkdir /tmp/oozielib && '

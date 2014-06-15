@@ -167,7 +167,7 @@ class ClusterTemplates(test_base.ConductorManagerTestCase):
 
         for key, val in SAMPLE_CLT.items():
             if key == 'node_groups':
-                #this will be checked separately
+                # this will be checked separately
                 continue
             self.assertEqual(val, clt_db_obj.get(key),
                              "Key not found %s" % key)

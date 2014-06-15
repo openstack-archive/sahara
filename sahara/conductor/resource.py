@@ -209,7 +209,7 @@ class ClusterResource(Resource, objects.Cluster):
     _filter_fields = ['management_private_key', 'extra']
 
 
-##EDP Resources
+# EDP Resources
 
 class DataSource(Resource, objects.DataSource):
     _resource_name = "data_source"

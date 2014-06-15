@@ -54,7 +54,7 @@ class ConfigurationProvider:
 
                 setattr(config, 'tag', configuration['tag'].rsplit(".", 1)[0])
                 self.config_items.append(config)
-                #TODO(jspeidel): an assumption is made that property names
+                # TODO(jspeidel): an assumption is made that property names
                 # are unique across configuration sections which is dangerous
                 property_name = service_property['name']
                 # if property already exists, throw an exception

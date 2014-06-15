@@ -170,7 +170,7 @@ class NodeGroupTemplate(object):
     """
 
 
-##EDP Objects
+# EDP Objects
 
 class DataSource(object):
     """An object representing Data Source.

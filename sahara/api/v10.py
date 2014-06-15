@@ -31,7 +31,7 @@ LOG = logging.getLogger(__name__)
 rest = u.Rest('v10', __name__)
 
 
-## Cluster ops
+# Cluster ops
 
 @rest.get('/clusters')
 def clusters_list():
@@ -64,7 +64,7 @@ def clusters_delete(cluster_id):
     return u.render()
 
 
-## ClusterTemplate ops
+# ClusterTemplate ops
 
 @rest.get('/cluster-templates')
 def cluster_templates_list():
@@ -99,7 +99,7 @@ def cluster_templates_delete(cluster_template_id):
     return u.render()
 
 
-## NodeGroupTemplate ops
+# NodeGroupTemplate ops
 
 @rest.get('/node-group-templates')
 def node_group_templates_list():
@@ -136,7 +136,7 @@ def node_group_templates_delete(node_group_template_id):
     return u.render()
 
 
-## Plugins ops
+# Plugins ops
 
 @rest.get('/plugins')
 def plugins_list():
@@ -165,7 +165,7 @@ def plugins_convert_to_cluster_template(plugin_name, version, name, data):
                                                     data).to_wrapped_dict())
 
 
-## Image Registry ops
+# Image Registry ops
 
 @rest.get('/images')
 def images_list():

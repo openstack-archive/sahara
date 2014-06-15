@@ -60,9 +60,9 @@ class HDPGatingTest(cinder.CinderVolumeTest, edp.EDPTest,
 
         node_group_template_id_list = []
 
-#-------------------------------CLUSTER CREATION-------------------------------
+# ------------------------------CLUSTER CREATION-------------------------------
 
-#-----------------------"tt-dn" node group template creation-------------------
+# ----------------------"tt-dn" node group template creation-------------------
 
         try:
             node_group_template_tt_dn_id = self.create_node_group_template(
@@ -83,7 +83,7 @@ class HDPGatingTest(cinder.CinderVolumeTest, edp.EDPTest,
                           'template creation: '
                 self.print_error_log(message, e)
 
-#---------------------------Cluster template creation--------------------------
+# --------------------------Cluster template creation--------------------------
 
         try:
             cluster_template_id = self.create_cluster_template(
@@ -115,7 +115,7 @@ class HDPGatingTest(cinder.CinderVolumeTest, edp.EDPTest,
                 message = 'Failure while cluster template creation: '
                 self.print_error_log(message, e)
 
-#-------------------------------Cluster creation-------------------------------
+# ------------------------------Cluster creation-------------------------------
 
         cluster_name = (self.common_config.CLUSTER_NAME + '-' +
                         self.hdp_config.PLUGIN_NAME)
@@ -141,7 +141,7 @@ class HDPGatingTest(cinder.CinderVolumeTest, edp.EDPTest,
                 message = 'Failure while cluster creation: '
                 self.print_error_log(message, e)
 
-#---------------------------------CINDER TESTING-------------------------------
+# --------------------------------CINDER TESTING-------------------------------
 
         try:
             self.cinder_volume_testing(cluster_info)
@@ -155,7 +155,7 @@ class HDPGatingTest(cinder.CinderVolumeTest, edp.EDPTest,
                 message = 'Failure while Cinder testing: '
                 self.print_error_log(message, e)
 
-#----------------------------------EDP TESTING---------------------------------
+# ---------------------------------EDP TESTING---------------------------------
 
         path = 'sahara/tests/integration/tests/resources/'
         pig_job_data = open(path + 'edp-job.pig').read()
@@ -213,7 +213,7 @@ class HDPGatingTest(cinder.CinderVolumeTest, edp.EDPTest,
                 message = 'Failure while EDP testing: '
                 self.print_error_log(message, e)
 
-#------------------------------MAP REDUCE TESTING------------------------------
+# -----------------------------MAP REDUCE TESTING------------------------------
 
         try:
             self.map_reduce_testing(cluster_info)
@@ -227,7 +227,7 @@ class HDPGatingTest(cinder.CinderVolumeTest, edp.EDPTest,
                 message = 'Failure while Map Reduce testing: '
                 self.print_error_log(message, e)
 
-#---------------------------CHECK SWIFT AVAILABILITY---------------------------
+# --------------------------CHECK SWIFT AVAILABILITY---------------------------
 
         try:
             self.check_swift_availability(cluster_info)
@@ -241,7 +241,7 @@ class HDPGatingTest(cinder.CinderVolumeTest, edp.EDPTest,
                 message = 'Failure during check of Swift availability: '
                 self.print_error_log(message, e)
 
-#--------------------------------CLUSTER SCALING-------------------------------
+# -------------------------------CLUSTER SCALING-------------------------------
 
         if not self.hdp_config.SKIP_SCALING_TEST:
             datanode_count_after_resizing = (
@@ -276,7 +276,7 @@ class HDPGatingTest(cinder.CinderVolumeTest, edp.EDPTest,
                     message = 'Failure while cluster scaling: '
                     self.print_error_log(message, e)
 
-#--------------------------CINDER TESTING AFTER SCALING------------------------
+# -------------------------CINDER TESTING AFTER SCALING------------------------
 
             try:
                 self.cinder_volume_testing(new_cluster_info)
@@ -291,7 +291,7 @@ class HDPGatingTest(cinder.CinderVolumeTest, edp.EDPTest,
                               'scaling: '
                     self.print_error_log(message, e)
 
-#-----------------------MAP REDUCE TESTING AFTER SCALING-----------------------
+# ----------------------MAP REDUCE TESTING AFTER SCALING-----------------------
 
             try:
                 self.map_reduce_testing(new_cluster_info)
@@ -306,7 +306,7 @@ class HDPGatingTest(cinder.CinderVolumeTest, edp.EDPTest,
                               'cluster scaling: '
                     self.print_error_log(message, e)
 
-#--------------------CHECK SWIFT AVAILABILITY AFTER SCALING--------------------
+# -------------------CHECK SWIFT AVAILABILITY AFTER SCALING--------------------
 
             try:
                 self.check_swift_availability(new_cluster_info)
@@ -321,7 +321,7 @@ class HDPGatingTest(cinder.CinderVolumeTest, edp.EDPTest,
                               'after cluster scaling: '
                     self.print_error_log(message, e)
 
-#----------------------------DELETE CREATED OBJECTS----------------------------
+# ---------------------------DELETE CREATED OBJECTS----------------------------
 
         self.delete_objects(
             cluster_info['cluster_id'], cluster_template_id,

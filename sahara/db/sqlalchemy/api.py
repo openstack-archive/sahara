@@ -117,7 +117,7 @@ def drop_db():
     return True
 
 
-## Helpers for building constraints / equality checks
+# Helpers for building constraints / equality checks
 
 
 def constraint(**conditions):
@@ -159,7 +159,7 @@ class InequalityCondition(object):
         return [field != value for value in self.values]
 
 
-## Cluster ops
+# Cluster ops
 
 def _cluster_get(context, session, cluster_id):
     query = model_query(m.Cluster, context, session)
@@ -226,7 +226,7 @@ def cluster_destroy(context, cluster_id):
         session.delete(cluster)
 
 
-## Node Group ops
+# Node Group ops
 
 def _node_group_get(context, session, node_group_id):
     query = model_query(m.NodeGroup, context, session)
@@ -273,7 +273,7 @@ def node_group_remove(context, node_group_id):
         session.delete(node_group)
 
 
-## Instance ops
+# Instance ops
 
 def _instance_get(context, session, instance_id):
     query = model_query(m.Instance, context, session)
@@ -326,7 +326,7 @@ def instance_remove(context, instance_id):
         node_group.count -= 1
 
 
-## Volumes ops
+# Volumes ops
 
 def append_volume(context, instance_id, volume_id):
     session = get_session()
@@ -350,7 +350,7 @@ def remove_volume(context, instance_id, volume_id):
         instance.volumes.remove(volume_id)
 
 
-## Cluster Template ops
+# Cluster Template ops
 
 def _cluster_template_get(context, session, cluster_template_id):
     query = model_query(m.ClusterTemplate, context, session)
@@ -406,7 +406,7 @@ def cluster_template_destroy(context, cluster_template_id):
         session.delete(cluster_template)
 
 
-## Node Group Template ops
+# Node Group Template ops
 
 def _node_group_template_get(context, session, node_group_template_id):
     query = model_query(m.NodeGroupTemplate, context, session)
@@ -451,7 +451,7 @@ def node_group_template_destroy(context, node_group_template_id):
         session.delete(node_group_template)
 
 
-## Data Source ops
+# Data Source ops
 
 def _data_source_get(context, session, data_source_id):
     query = model_query(m.DataSource, context, session)
@@ -496,7 +496,7 @@ def data_source_destroy(context, data_source_id):
               " on foreign key constraint" or ""
         raise ex.DeletionFailed("Data Source deletion failed%s" % msg)
 
-## JobExecution ops
+# JobExecution ops
 
 
 def _job_execution_get(context, session, job_execution_id):
@@ -557,7 +557,7 @@ def job_execution_destroy(context, job_execution_id):
         session.delete(job_ex)
 
 
-## Job ops
+# Job ops
 
 def _job_get(context, session, job_id):
     query = model_query(m.Job, context, session)
@@ -634,7 +634,7 @@ def job_destroy(context, job_id):
         raise ex.DeletionFailed("Job deletion failed%s" % msg)
 
 
-## JobBinary ops
+# JobBinary ops
 
 def _job_binary_get(context, session, job_binary_id):
     query = model_query(m.JobBinary, context, session)
@@ -702,7 +702,7 @@ def job_binary_destroy(context, job_binary_id):
         session.delete(job_binary)
 
 
-## JobBinaryInternal ops
+# JobBinaryInternal ops
 
 def _job_binary_internal_get(context, session, job_binary_internal_id):
     query = model_query(m.JobBinaryInternal, context, session)

@@ -47,7 +47,7 @@ MAPRED_DEFAULT = x.load_hadoop_xml_defaults(
 HIVE_DEFAULT = x.load_hadoop_xml_defaults(
     'plugins/vanilla/v1_2_1/resources/hive-default.xml')
 
-## Append Oozie configs fore core-site.xml
+# Append Oozie configs fore core-site.xml
 CORE_DEFAULT += o_h.OOZIE_CORE_DEFAULT
 
 XML_CONFS = {

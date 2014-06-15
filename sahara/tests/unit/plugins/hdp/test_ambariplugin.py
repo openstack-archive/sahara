@@ -262,13 +262,13 @@ class AmbariPluginTest(sahara_base.SaharaTestCase):
         cluster_config.create_operational_config(cluster, [])
         plugin = ap.AmbariPlugin()
 
-        #change port
+        # change port
         cluster_config.configurations['ambari']['server.port'] = '9000'
 
         ambari_info = plugin.get_ambari_info(cluster_config)
         self.assertEqual('9000', ambari_info.port)
 
-        #remove port
+        # remove port
         del cluster_config.configurations['ambari']['server.port']
         ambari_info = plugin.get_ambari_info(cluster_config)
 

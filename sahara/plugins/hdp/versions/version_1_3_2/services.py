@@ -702,7 +702,7 @@ class AmbariService(Service):
     def __init__(self):
         super(AmbariService, self).__init__(AmbariService.get_service_id())
         self.configurations.add('ambari')
-        #TODO(jspeidel): don't hard code default admin user
+        # TODO(jspeidel): don't hard code default admin user
         self.admin_user_name = 'admin'
 
     @classmethod

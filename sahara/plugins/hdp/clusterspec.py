@@ -285,7 +285,7 @@ class NormalizedClusterConfig():
                 target = self._get_property_target(prop)
                 if target:
                     prop_type = self._get_property_type(prop, value)
-                    #todo: should we supply a scope?
+                    # TODO(sdpeidel): should we supply a scope?
                     self.cluster_configs.append(
                         NormalizedConfigEntry(NormalizedConfig(
                             prop, prop_type, value, target, 'cluster'),
@@ -299,14 +299,14 @@ class NormalizedClusterConfig():
         return self.handler.get_applicable_target(prop)
 
     def _get_property_type(self, prop, value):
-        #TODO(jspeidel): seems that all numeric prop values in default config
+        # TODO(jspeidel): seems that all numeric prop values in default config
         # are encoded as strings.  This may be incorrect.
-        #TODO(jspeidel): should probably analyze string value to determine if
+        # TODO(jspeidel): should probably analyze string value to determine if
         # it is numeric
-        #TODO(jspeidel): would then need to know whether Ambari expects a
+        # TODO(jspeidel): would then need to know whether Ambari expects a
         # string or a numeric value
         prop_type = type(value).__name__
-        #print 'Type: {0}'.format(prop_type)
+        # print 'Type: {0}'.format(prop_type)
         if prop_type == 'str' or prop_type == 'unicode' or value == '':
             return 'string'
         elif prop_type == 'int':
@@ -342,7 +342,7 @@ class NormalizedNodeGroup():
         self.name = node_group.name
         self.node_processes = node_group.components
         self.node_configs = None
-        #TODO(jpseidel): should not have to specify img/flavor
+        # TODO(jpseidel): should not have to specify img/flavor
         self.img = None
         # TODO(jmaron) the flavor will be set via an ambari blueprint setting,
         # but that setting doesn't exist yet.  It will be addressed by a bug

@@ -56,7 +56,7 @@ class ClusterSpecTest(testtools.TestCase):
         self.service_validators['SQOOP'] = self._assert_sqoop
         self.service_validators['HBASE'] = self._assert_hbase
 
-    #TODO(jspeidel): test host manifest
+    # TODO(jspeidel): test host manifest
     def test_parse_default_with_cluster(self, patched):
         cluster_config_file = pkg.resource_string(
             version.version_info.package,
@@ -494,8 +494,8 @@ class ClusterSpecTest(testtools.TestCase):
                 self.assertIn('GANGLIA_SERVER', components)
                 self.assertIn('NAGIOS_SERVER', components)
                 self.assertIn('AMBARI_SERVER', components)
-                #TODO(jspeidel): node configs
-                #TODO(jspeidel): vm_requirements
+                # TODO(jspeidel): node configs
+                # TODO(jspeidel): vm_requirements
             elif node_group.name == 'slave':
                 contains_slave_group = True
                 self.assertEqual(4, len(components))
@@ -503,8 +503,8 @@ class ClusterSpecTest(testtools.TestCase):
                 self.assertIn('TASKTRACKER', components)
                 self.assertIn('HDFS_CLIENT', components)
                 self.assertIn('MAPREDUCE_CLIENT', components)
-                #TODO(jspeidel): node configs
-                #TODO(jspeidel): vm requirements
+                # TODO(jspeidel): node configs
+                # TODO(jspeidel): vm requirements
             else:
                 self.fail('Unexpected node group: {0}'.format(node_group.name))
         self.assertTrue(contains_master_group)
@@ -846,8 +846,8 @@ class ClusterSpecTest(testtools.TestCase):
             # expected
             pass
 
-    #TODO(jspeidel): move validate_* to test_services when validate
-    #is called independently of cluspterspec
+    # TODO(jspeidel): move validate_* to test_services when validate
+    # is called independently of cluspterspec
     def test_validate_hdfs(self, patched):
         server = base.TestServer('host1', 'slave', '11111', 3,
                                  '111.11.1111', '222.22.2222')
@@ -944,7 +944,7 @@ class ClusterSpecTest(testtools.TestCase):
             # expected
             pass
 
-        #should fail due to no TT
+        # should fail due to no TT
         node_group = TestNodeGroup(
             'slave', [server], ["DATANODE", "HDFS_CLIENT",
                                 "MAPREDUCE_CLIENT"])
@@ -1354,7 +1354,7 @@ class ClusterSpecTest(testtools.TestCase):
                                found_components['SECONDARY_NAMENODE'])
         self._assert_component('HDFS_CLIENT', 'CLIENT', "1+",
                                found_components['HDFS_CLIENT'])
-        #TODO(jspeidel) config
+        # TODO(jspeidel) config
 
     def _assert_mr(self, service):
         self.assertEqual('MAPREDUCE', service.name)
