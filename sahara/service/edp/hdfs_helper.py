@@ -95,7 +95,7 @@ def configure_cluster_for_hdfs(cluster, data_source):
     copy_etc_host = 'sudo "cat /tmp/etc-hosts > /etc/hosts"'
 
     for inst in u.get_instances(cluster):
-        with inst.remote as r:
+        with inst.remote() as r:
             r.write_file_to('/tmp/etc-hosts-update', etc_hosts_information)
             r.execute_command(create_etc_host)
             r.execute_command(copy_etc_host)
