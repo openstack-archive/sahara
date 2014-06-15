@@ -10,7 +10,7 @@ oslosphinx
 oslotest
 psycopg2
 pylint==0.25.2
-sphinx>=1.2.1,<1.3
+sphinx>=1.1.2,!=1.2.0,<1.3
 sphinxcontrib-httpdomain
 sqlalchemy-migrate>=0.9.1
 testrepository>=0.0.18
