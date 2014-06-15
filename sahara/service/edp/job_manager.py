@@ -125,7 +125,7 @@ def run_job(job_execution_id):
 
         conductor.job_execution_update(
             context.ctx(), job_execution_id,
-            {'status': 'FAILED',
+            {'info': {'status': 'FAILED'},
              'start_time': datetime.datetime.now(),
              'end_time': datetime.datetime.now()})
 
