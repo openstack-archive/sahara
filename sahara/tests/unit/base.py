@@ -13,6 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import fixtures
 import mock
 import testtools
 
@@ -26,6 +27,7 @@ class SaharaTestCase(testtools.TestCase):
     def setUp(self):
         super(SaharaTestCase, self).setUp()
 
+        self.useFixture(fixtures.FakeLogger('sahara'))
         self.setup_context()
 
     def setup_context(self, username="test_user", tenant_id="tenant_1",
