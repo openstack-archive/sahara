@@ -40,9 +40,7 @@ class ClusterCannotBeScaled(e.SaharaException):
 
 
 class RequiredServiceMissingException(e.SaharaException):
-    """A validation exception indicating that a required service
-       has not been deployed
-    """
+    """Exception indicating that a required service has not been deployed."""
 
     def __init__(self, service_name, required_by=None):
         self.message = 'Cluster is missing a service: %s'\
@@ -57,8 +55,10 @@ class RequiredServiceMissingException(e.SaharaException):
 
 
 class InvalidComponentCountException(e.SaharaException):
-    """A validation exception indicating that an invalid number of
-       components are being deployed in a cluster
+    """Exception indicating invalid number of components in a cluster.
+
+    A message indicating a number of components cluster should contain and
+    an invalid number of components are being deployed in a cluster.
     """
 
     def __init__(self, component, expected_count, count):

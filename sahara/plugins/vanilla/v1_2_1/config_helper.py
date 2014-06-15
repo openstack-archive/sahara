@@ -343,8 +343,11 @@ def generate_xml_configs(cluster, node_group, hive_mysql_passwd):
 
 
 def extract_environment_confs(configs):
-    """Returns list of Hadoop parameters which should be passed via environment
+    """Returns environment specific Hadoop configurations.
+
+    :returns list of Hadoop parameters which should be passed via environment
     """
+
     lst = []
     for service, srv_confs in configs.items():
         if ENV_CONFS.get(service):
@@ -359,9 +362,12 @@ def extract_environment_confs(configs):
 
 
 def extract_xml_confs(configs):
-    """Returns list of Hadoop parameters which should be passed into general
+    """Returns xml specific Hadoop configurations.
+
+    :returns list of Hadoop parameters which should be passed into general
     configs like core-site.xml
     """
+
     lst = []
     for service, srv_confs in configs.items():
         if XML_CONFS.get(service):

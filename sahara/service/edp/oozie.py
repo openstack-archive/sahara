@@ -87,10 +87,8 @@ def _check_status_code(resp, expected_code):
 
 
 def get_json(response):
-    """This method provided backward compatibility with old versions
-    of requests library
+    """Provides backward compatibility for old versions of requests library."""
 
-    """
     json_field_or_function = getattr(response, 'json', None)
     if callable(json_field_or_function):
         return response.json()

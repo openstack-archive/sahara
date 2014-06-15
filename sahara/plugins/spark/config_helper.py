@@ -208,16 +208,6 @@ def _get_hostname(service):
 
 
 def generate_xml_configs(configs, storage_path, nn_hostname, hadoop_port):
-    """dfs.name.dir': extract_hadoop_path(storage_path,
-                                            '/lib/hadoop/hdfs/namenode'),
-    'dfs.data.dir': extract_hadoop_path(storage_path,
-                                            '/lib/hadoop/hdfs/datanode'),
-    'dfs.name.dir': storage_path + 'hdfs/name',
-    'dfs.data.dir': storage_path + 'hdfs/data',
-
-    'dfs.hosts': '/etc/hadoop/dn.incl',
-    'dfs.hosts.exclude': '/etc/hadoop/dn.excl',
-    """
     if hadoop_port is None:
         hadoop_port = 8020
 
@@ -306,8 +296,11 @@ def generate_spark_slaves_configs(workernames):
 
 
 def extract_hadoop_environment_confs(configs):
-    """Returns list of Hadoop parameters which should be passed via environment
+    """Returns environment specific Hadoop configurations.
+
+    :returns list of Hadoop parameters which should be passed via environment
     """
+
     lst = []
     for service, srv_confs in configs.items():
         if ENV_CONFS.get(service):
@@ -319,9 +312,12 @@ def extract_hadoop_environment_confs(configs):
 
 
 def extract_hadoop_xml_confs(configs):
-    """Returns list of Hadoop parameters which should be passed into general
+    """Returns xml specific Hadoop configurations.
+
+    :returns list of Hadoop parameters which should be passed into general
     configs like core-site.xml
     """
+
     lst = []
     for service, srv_confs in configs.items():
         if XML_CONFS.get(service):

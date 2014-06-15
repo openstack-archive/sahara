@@ -117,9 +117,10 @@ class ConductorManager(db_base.Base):
         return self.db.cluster_get(context, cluster)
 
     def cluster_get_all(self, context, **kwargs):
-        """Get all clusters filtered by **kwargs  e.g.
-            cluster_get_all(plugin_name='vanilla', hadoop_version='1.1')
-            """
+        """Get all clusters filtered by **kwargs.
+
+        e.g. cluster_get_all(plugin_name='vanilla', hadoop_version='1.1')
+        """
         return self.db.cluster_get_all(context, **kwargs)
 
     def cluster_create(self, context, values):
@@ -289,14 +290,16 @@ class ConductorManager(db_base.Base):
         return self.db.job_execution_get(context, job_execution)
 
     def job_execution_get_all(self, context, **kwargs):
-        """Get all JobExecutions filtered by **kwargs  e.g.
-            job_execution_get_all(cluster_id=12, input_id=123)
+        """Get all JobExecutions filtered by **kwargs.
+
+        e.g. job_execution_get_all(cluster_id=12, input_id=123)
         """
         return self.db.job_execution_get_all(context, **kwargs)
 
     def job_execution_count(self, context, **kwargs):
-        """Count number of JobExecutions filtered by **kwargs  e.g.
-            job_execution_count(cluster_id=12, input_id=123)
+        """Count number of JobExecutions filtered by **kwargs.
+
+        e.g. job_execution_count(cluster_id=12, input_id=123)
         """
         return self.db.job_execution_count(context, **kwargs)
 

@@ -158,9 +158,7 @@ def _load_driver(namespace, name):
 
 
 def _get_infrastructure_engine():
-    """That should import and return one of
-    sahara.service.*_engine.py modules
-    """
+    """Import and return one of sahara.service.*_engine.py modules."""
 
     LOG.info("Loading '%s' infrastructure engine" %
              CONF.infrastructure_engine)

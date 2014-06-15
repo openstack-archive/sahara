@@ -79,14 +79,14 @@ class Remote(object):
 
     @abc.abstractmethod
     def write_file_to(self, remote_file, data, run_as_root=False, timeout=120):
-        """Create remote file using existing ssh connection and write the given
-        data to it.
+        """Create remote file and write the given data to it.
+
+        Uses existing ssh connection.
         """
 
     @abc.abstractmethod
     def write_files_to(self, files, run_as_root=False, timeout=120):
-        """Copy file->data dictionary in a single ssh connection.
-        """
+        """Copy file->data dictionary in a single ssh connection."""
 
     @abc.abstractmethod
     def read_file_from(self, remote_file, run_as_root=False, timeout=120):

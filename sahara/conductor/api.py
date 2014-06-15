@@ -51,8 +51,9 @@ def _get_id(obj):
 
 
 class LocalApi(object):
-    """A local version of the conductor API that does database updates
-    locally instead of via RPC.
+    """A local version of the conductor API.
+
+    It does database updates locally instead of via RPC.
     """
 
     def __init__(self):
@@ -67,29 +68,33 @@ class LocalApi(object):
 
     @r.wrap(r.ClusterResource)
     def cluster_get_all(self, context, **kwargs):
-        """Get all clusters filtered by **kwargs  e.g.
-            cluster_get_all(plugin_name='vanilla', hadoop_version='1.1')
+        """Get all clusters filtered by **kwargs.
+
+        e.g.  cluster_get_all(plugin_name='vanilla', hadoop_version='1.1')
         """
         return self._manager.cluster_get_all(context, **kwargs)
 
     @r.wrap(r.ClusterResource)
     def cluster_create(self, context, values):
         """Create a cluster from the values dictionary.
-        Return the created cluster.
+
+        :returns: the created cluster.
         """
         return self._manager.cluster_create(context, values)
 
     @r.wrap(r.ClusterResource)
     def cluster_update(self, context, cluster, values):
         """Update the cluster with the given values dictionary.
-        Return the updated cluster.
+
+        :returns: the updated cluster.
         """
         return self._manager.cluster_update(context, _get_id(cluster),
                                             values)
 
     def cluster_destroy(self, context, cluster):
         """Destroy the cluster or raise if it does not exist.
-        Return None.
+
+        :returns: None.
         """
         self._manager.cluster_destroy(context, _get_id(cluster))
 
@@ -97,19 +102,22 @@ class LocalApi(object):
 
     def node_group_add(self, context, cluster, values):
         """Create a node group from the values dictionary.
-        Return ID of the created node group.
+
+        :returns: ID of the created node group.
         """
         return self._manager.node_group_add(context, _get_id(cluster), values)
 
     def node_group_update(self, context, node_group, values):
         """Update the node group with the given values dictionary.
-        Return None.
+
+        :returns: None.
         """
         self._manager.node_group_update(context, _get_id(node_group), values)
 
     def node_group_remove(self, context, node_group):
         """Destroy the node group or raise if it does not exist.
-        Return None.
+
+        :returns: None.
         """
         self._manager.node_group_remove(context, _get_id(node_group))
 
@@ -117,19 +125,22 @@ class LocalApi(object):
 
     def instance_add(self, context, node_group, values):
         """Create an instance from the values dictionary.
-        Return ID of the created instance.
+
+        :returns: ID of the created instance.
         """
         return self._manager.instance_add(context, _get_id(node_group), values)
 
     def instance_update(self, context, instance, values):
         """Update the instance with the given values dictionary.
-        Return None.
+
+        :returns: None.
         """
         self._manager.instance_update(context, _get_id(instance), values)
 
     def instance_remove(self, context, instance):
         """Destroy the instance or raise if it does not exist.
-        Return None.
+
+        :returns: None.
         """
         self._manager.instance_remove(context, _get_id(instance))
 
@@ -159,13 +170,15 @@ class LocalApi(object):
     @r.wrap(r.ClusterTemplateResource)
     def cluster_template_create(self, context, values):
         """Create a cluster template from the values dictionary.
-        Return the created cluster template
+
+        :returns: the created cluster template
         """
         return self._manager.cluster_template_create(context, values)
 
     def cluster_template_destroy(self, context, cluster_template):
         """Destroy the cluster template or raise if it does not exist.
-        Return None
+
+        :returns: None
         """
         self._manager.cluster_template_destroy(context,
                                                _get_id(cluster_template))
@@ -186,13 +199,15 @@ class LocalApi(object):
     @r.wrap(r.NodeGroupTemplateResource)
     def node_group_template_create(self, context, values):
         """Create a node group template from the values dictionary.
-        Return the created node group template
+
+        :returns: the created node group template
         """
         return self._manager.node_group_template_create(context, values)
 
     def node_group_template_destroy(self, context, node_group_template):
         """Destroy the node group template or raise if it does not exist.
-        Return None
+
+        :returns: None
         """
         self._manager.node_group_template_destroy(context,
                                                   _get_id(node_group_template))
@@ -228,14 +243,16 @@ class LocalApi(object):
 
     @r.wrap(r.JobExecution)
     def job_execution_get_all(self, context, **kwargs):
-        """Get all JobExecutions filtered by **kwargs  e.g.
-            job_execution_get_all(cluster_id=12, input_id=123)
+        """Get all JobExecutions filtered by **kwargs.
+
+        e.g. job_execution_get_all(cluster_id=12, input_id=123)
         """
         return self._manager.job_execution_get_all(context, **kwargs)
 
     def job_execution_count(self, context, **kwargs):
-        """Count number of JobExecutions filtered by **kwargs  e.g.
-            job_execution_count(cluster_id=12, input_id=123)
+        """Count number of JobExecutions filtered by **kwargs.
+
+        e.g. job_execution_count(cluster_id=12, input_id=123)
         """
         return self._manager.job_execution_count(context, **kwargs)
 
@@ -282,7 +299,7 @@ class LocalApi(object):
         self._manager.job_destroy(context, _get_id(job))
 
     def job_main_name(self, context, job):
-        """Return the name of the first main JobBinary or None
+        """Return the name of the first main JobBinary or None.
 
         At present the 'mains' element is expected to contain a single element.
         In the future if 'mains' contains more than one element we will need

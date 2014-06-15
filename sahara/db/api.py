@@ -117,8 +117,9 @@ def cluster_get(context, cluster):
 
 @to_dict
 def cluster_get_all(context, **kwargs):
-    """Get all clusters filtered by **kwargs  e.g.
-         cluster_get_all(plugin_name='vanilla', hadoop_version='1.1')
+    """Get all clusters filtered by **kwargs.
+
+    e.g. cluster_get_all(plugin_name='vanilla', hadoop_version='1.1')
     """
     return IMPL.cluster_get_all(context, **kwargs)
 
@@ -271,15 +272,17 @@ def job_execution_get(context, job_execution):
 
 @to_dict
 def job_execution_get_all(context, **kwargs):
-    """Get all JobExecutions filtered by **kwargs  e.g.
-        job_execution_get_all(cluster_id=12, input_id=123)
+    """Get all JobExecutions filtered by **kwargs.
+
+    e.g. job_execution_get_all(cluster_id=12, input_id=123)
     """
     return IMPL.job_execution_get_all(context, **kwargs)
 
 
 def job_execution_count(context, **kwargs):
-    """Count number of JobExecutions filtered by **kwargs  e.g.
-        job_execution_count(cluster_id=12, input_id=123)
+    """Count number of JobExecutions filtered by **kwargs.
+
+    e.g. job_execution_count(cluster_id=12, input_id=123)
     """
     return IMPL.job_execution_count(context, **kwargs)
 
