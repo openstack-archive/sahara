@@ -56,7 +56,7 @@ class Engine:
 
         ips_assigned = set()
         while len(ips_assigned) != len(instances):
-            if not g.check_cluster_exists(instances[0].node_group.cluster):
+            if not g.check_cluster_exists(cluster):
                 return
             for instance in instances:
                 if instance.id not in ips_assigned:
@@ -67,8 +67,7 @@ class Engine:
 
         LOG.info("Cluster '%s': all instances have IPs assigned" % cluster.id)
 
-        ctx = context.ctx()
-        cluster = conductor.cluster_get(ctx, instances[0].node_group.cluster)
+        cluster = conductor.cluster_get(context.ctx(), cluster)
         instances = g.get_instances(cluster, ips_assigned)
 
         with context.ThreadGroup() as tg:
