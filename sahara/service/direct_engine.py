@@ -56,9 +56,17 @@ class DirectEngine(e.Engine):
 
             self._await_active(cluster, instances)
 
+            if not g.check_cluster_exists(cluster):
+                LOG.info(g.format_cluster_deleted_message(cluster))
+                return
+
             self._assign_floating_ips(instances)
 
             self._await_networks(cluster, instances)
+
+            if not g.check_cluster_exists(cluster):
+                LOG.info(g.format_cluster_deleted_message(cluster))
+                return
 
             cluster = conductor.cluster_get(ctx, cluster)
 
@@ -73,6 +81,10 @@ class DirectEngine(e.Engine):
             self._configure_instances(cluster)
         except Exception as ex:
             with excutils.save_and_reraise_exception():
+                if not g.check_cluster_exists(cluster):
+                    LOG.info(g.format_cluster_deleted_message(cluster))
+                    return
+
                 self._log_operation_exception(
                     "Can't start cluster '%s' (reason: %s)", cluster, ex)
 
@@ -98,9 +110,17 @@ class DirectEngine(e.Engine):
 
             self._await_active(cluster, instances)
 
+            if not g.check_cluster_exists(cluster):
+                LOG.info(g.format_cluster_deleted_message(cluster))
+                return []
+
             self._assign_floating_ips(instances)
 
             self._await_networks(cluster, instances)
+
+            if not g.check_cluster_exists(cluster):
+                LOG.info(g.format_cluster_deleted_message(cluster))
+                return []
 
             cluster = conductor.cluster_get(ctx, cluster)
 
@@ -109,6 +129,10 @@ class DirectEngine(e.Engine):
 
         except Exception as ex:
             with excutils.save_and_reraise_exception():
+                if not g.check_cluster_exists(cluster):
+                    LOG.info(g.format_cluster_deleted_message(cluster))
+                    return []
+
                 self._log_operation_exception(
                     "Can't scale cluster '%s' (reason: %s)", cluster, ex)
 

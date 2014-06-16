@@ -129,16 +129,27 @@ def _provision_cluster(cluster_id):
     cluster = conductor.cluster_get(ctx, cluster_id)
     INFRA.create_cluster(cluster)
 
+    if not g.check_cluster_exists(cluster):
+        LOG.info(g.format_cluster_deleted_message(cluster))
+        return
+
     # configure cluster
     cluster = conductor.cluster_update(ctx, cluster, {"status": "Configuring"})
     LOG.info(g.format_cluster_status(cluster))
     try:
         plugin.configure_cluster(cluster)
     except Exception as ex:
+        if not g.check_cluster_exists(cluster):
+            LOG.info(g.format_cluster_deleted_message(cluster))
+            return
         LOG.exception("Can't configure cluster '%s' (reason: %s)",
                       cluster.name, ex)
         cluster = conductor.cluster_update(ctx, cluster, {"status": "Error"})
         LOG.info(g.format_cluster_status(cluster))
+        return
+
+    if not g.check_cluster_exists(cluster):
+        LOG.info(g.format_cluster_deleted_message(cluster))
         return
 
     # starting prepared and configured cluster
@@ -147,10 +158,17 @@ def _provision_cluster(cluster_id):
     try:
         plugin.start_cluster(cluster)
     except Exception as ex:
+        if not g.check_cluster_exists(cluster):
+            LOG.info(g.format_cluster_deleted_message(cluster))
+            return
         LOG.exception("Can't start services for cluster '%s' (reason: %s)",
                       cluster.name, ex)
         cluster = conductor.cluster_update(ctx, cluster, {"status": "Error"})
         LOG.info(g.format_cluster_status(cluster))
+        return
+
+    if not g.check_cluster_exists(cluster):
+        LOG.info(g.format_cluster_deleted_message(cluster))
         return
 
     # cluster is now up and ready
@@ -198,12 +216,19 @@ def _provision_scaled_cluster(cluster_id, node_group_id_map):
             instances = g.get_instances(cluster, instances)
             plugin.scale_cluster(cluster, instances)
         except Exception as ex:
+            if not g.check_cluster_exists(cluster):
+                LOG.info(g.format_cluster_deleted_message(cluster))
+                return
             LOG.exception("Can't scale cluster '%s' (reason: %s)",
                           cluster.name, ex)
             cluster = conductor.cluster_update(ctx, cluster,
                                                {"status": "Error"})
             LOG.info(g.format_cluster_status(cluster))
             return
+
+    if not g.check_cluster_exists(cluster):
+        LOG.info(g.format_cluster_deleted_message(cluster))
+        return
 
     cluster = conductor.cluster_update(ctx, cluster, {"status": "Active"})
     LOG.info(g.format_cluster_status(cluster))
