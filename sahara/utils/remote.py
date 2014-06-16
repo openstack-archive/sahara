@@ -19,6 +19,8 @@ import abc
 from oslo.config import cfg
 import six
 
+from sahara import exceptions as ex
+
 
 # These options are for SSH remote only
 ssh_opts = [
@@ -105,11 +107,21 @@ def setup_remote(driver, engine):
     DRIVER.setup_remote(engine)
 
 
+def _check_driver_is_loaded():
+    if not DRIVER:
+        raise ex.SystemError('Remote driver is not loaded. Most probably you '
+                             'see this error because you are running Sahara '
+                             'in distributed mode and it is broken. Try '
+                             'running sahara-all instead.')
+
+
 def get_remote(instance):
     """Returns Remote for a given instance."""
+    _check_driver_is_loaded()
     return DRIVER.get_remote(instance)
 
 
 def get_userdata_template():
     """Returns userdata template as a string."""
+    _check_driver_is_loaded()
     return DRIVER.get_userdata_template()
