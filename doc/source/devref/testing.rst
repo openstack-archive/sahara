@@ -24,11 +24,11 @@ We have some tests in Tempest (https://github.com/openstack/tempest) that are
 testing Sahara. Here is a list of currently implemented tests:
 
 * REST API tests are checking how the Sahara REST API works.
-The only part that is not tested is cluster creation, more info about api
-tests - http://docs.openstack.org/developer/tempest/field_guide/api.html
+  The only part that is not tested is cluster creation, more info about api
+  tests - http://docs.openstack.org/developer/tempest/field_guide/api.html
 
 * CLI tests are checking read-only operations using the Sahara CLI, more info -
-http://docs.openstack.org/developer/tempest/field_guide/cli.html
+  http://docs.openstack.org/developer/tempest/field_guide/cli.html
 
 Selenium Integration tests
 ++++++++++++++++++++++++++
