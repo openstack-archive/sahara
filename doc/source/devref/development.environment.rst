@@ -46,43 +46,27 @@ On Fedora-based distributions (e.g., Fedora/RHEL/CentOS/Scientific Linux):
     $ git clone git://github.com/openstack/sahara.git
     $ cd sahara
 
-3. Prepare virtual environment:
-
-.. sourcecode:: console
-
-    $ tools/install_venv
-
-4. Create config file from default template:
+3. Create config file from the sample:
 
 .. sourcecode:: console
 
     $ cp ./etc/sahara/sahara.conf.sample-basic ./etc/sahara/sahara.conf
 
-5. Look through the sahara.conf and change parameters which default values do
-not suite you. Set ``[keystone_authtoken]/auth_uri`` and
-``[keystone_authtoken]/identity_uri`` to complete public Identity API endpoint
-(like ``http://127.0.0.1:5000/v2.0/``) and to unversioned complete admin
-Identity API endpoint (like ``https://localhost:35357/``) correspondingly.
+4. Look through the sahara.conf and modify parameter values as needed.
+   For details see
+   :doc:`Sahara Configuration Guide </userdoc/configuration.guide>`
 
-If you are using Neutron instead of Nova Network add ``use_neutron = True`` to
-config.  If the linux kernel you're utilizing support network namespaces then
-also specify ``use_namespaces = True``.
-
-.. note::
-
-    Config file can be specified for ``sahara-api`` command using ``--config-file`` flag.
-
-6. Create database schema:
+5. Create database schema:
 
 .. sourcecode:: console
 
-    $ tox -evenv -- sahara-db-manage --config-file etc/sahara/sahara.conf upgrade head
+    $ tox -e venv -- sahara-db-manage --config-file etc/sahara/sahara.conf upgrade head
 
-7. To start Sahara call:
+6. To start Sahara call:
 
 .. sourcecode:: console
 
-    $ tox -evenv -- sahara-api --config-file etc/sahara/sahara.conf -d
+    $ tox -e venv -- sahara-api --config-file etc/sahara/sahara.conf --debug
 
 
 Setup local OpenStack dashboard with Sahara plugin
@@ -107,7 +91,7 @@ Add the following lines to ~/.pip/pip.conf
     download-cache = /home/<username>/.pip/cache
     index-url = <mirror url>
 
-Note! The ``~/.pip/cache`` folder should be created.
+Note that the ``~/.pip/cache`` folder should be created manually.
 
 2. Git hook for fast checks
 

@@ -26,27 +26,25 @@ Note that we recommend using MySQL or PostgreSQL backends for setups
 other than experimental. This is especially important if you plan to
 migrate later to a newer version of Sahara. With SQLite you will
 either have to start from scratch or migrate your DB to MySQL or
-PostgreSQL, might be non-trivial.
+PostgreSQL, which might be non-trivial.
 
-Return to the ``[DEFAULT]`` section. Start by editing the following
-5 parameters:
+Switch to the ``[keystone_authtoken]`` section. The ``auth_uri`` parameter
+should point to the public Identity API endpoint. ``identity_uri`` should
+point to the admin Identity API endpoint. For example:
 
 .. sourcecode:: cfg
 
-    os_auth_host
-    os_auth_port
-    os_admin_username
-    os_admin_password
-    os_admin_tenant_name
+    auth_uri=http://127.0.0.1:5000/v2.0/
+    identity_uri=http://127.0.0.1:35357/
 ..
 
-The first two parameters should point to Keystone public endpoint.
-The next three parameters must specify a user Sahara will use to verify
-credentials provided by users. The provided user must have ``admin`` role
-in the specified tenant.
+Next specify ``admin_user``, ``admin_password`` and
+``admin_tenant_name``. These parameters must specify a keystone user
+which has the ``admin`` role in the given tenant. These credentials allow
+Sahara to authenticate and authorize its users.
 
-Proceed to the networking parameters. If you are using Neutron for
-networking, then set
+Switch to the ``[DEFAULT]`` section.  Proceed to the networking parameters.
+If you are using Neutron for networking, then set
 
 .. sourcecode:: cfg
 
