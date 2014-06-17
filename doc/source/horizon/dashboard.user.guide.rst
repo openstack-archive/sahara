@@ -1,7 +1,7 @@
 Sahara UI User Guide
 ====================
 
-This guide assumes that you already have sahara-api and the Sahara Dashboard configured and running.
+This guide assumes that you already have Sahara and the Sahara Dashboard configured and running.
 If you require assistance with that, please see the installation guides.
 
 Launching a cluster via the Sahara Dashboard

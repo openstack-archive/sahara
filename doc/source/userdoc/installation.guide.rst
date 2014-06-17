@@ -30,15 +30,15 @@ To install with RDO
    <http://openstack.redhat.com/Quickstart>`_ to install and setup
    OpenStack.
 
-2. Install the sahara-api service:
+2. Install Sahara:
 
 .. sourcecode:: console
 
     $ yum install openstack-sahara
 ..
 
-3. Configure the sahara-api service to your liking. The configuration
-   file is located in ``/etc/sahara/sahara.conf``. For details see
+3. Configure Sahara as needed. The configuration file is located in
+   ``/etc/sahara/sahara.conf``. For details see
    :doc:`Sahara Configuration Guide <configuration.guide>`
 
 4. Create database schema:
@@ -150,7 +150,7 @@ To install into a virtual environment
 
 .. sourcecode:: console
 
-    $ sahara-venv/bin/sahara-api --config-file sahara-venv/etc/sahara.conf
+    $ sahara-venv/bin/sahara-all --config-file sahara-venv/etc/sahara.conf
 ..
 
 
@@ -168,7 +168,7 @@ To get the list of all possible options run:
 
 .. sourcecode:: console
 
-    $ sahara-venv/bin/python sahara-venv/bin/sahara-api --help
+    $ sahara-venv/bin/python sahara-venv/bin/sahara-all --help
 ..
 
 

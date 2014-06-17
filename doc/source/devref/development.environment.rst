@@ -66,7 +66,7 @@ On Fedora-based distributions (e.g., Fedora/RHEL/CentOS/Scientific Linux):
 
 .. sourcecode:: console
 
-    $ tox -e venv -- sahara-api --config-file etc/sahara/sahara.conf --debug
+    $ tox -e venv -- sahara-all --config-file etc/sahara/sahara.conf --debug
 
 
 Setup local OpenStack dashboard with Sahara plugin
