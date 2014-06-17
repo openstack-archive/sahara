@@ -11,7 +11,10 @@ The result of those checks and Unit tests are +1 or -1 to *Verify* column in a c
 Integration tests check CRUD operations for Image Registry, Templates and Clusters.
 Also a test job is launched on a created Cluster to verify Hadoop work.
 
-All integration tests are launched by `Jenkins <http://jenkins.savanna.mirantis.com/>`_ on internal Mirantis OpenStack Lab.
-Jenkins keeps a pool of VMs to run tests in parallel. Still integration testing may take a while.
+All integration tests are launched by `Jenkins <https://sahara.mirantis.com/jenkins/>`_ on the internal Mirantis OpenStack Lab.
+Jenkins keeps a pool of VMs to run tests in parallel. Even with the pool of VMs integration testing may take a while.
+Jenkins is controlled for the most part by Zuul which determines what jobs are run when.
+Zuul status is available by address: `Zuul Status <https://sahara.mirantis.com/zuul>`_.
+For more information see: `SaharaCI <https://wiki.openstack.org/wiki/Sahara/SaharaCI>`_.
 
 The integration tests result is +1 or -1 to *Verify* column in a code review from *savanna-ci* user.
