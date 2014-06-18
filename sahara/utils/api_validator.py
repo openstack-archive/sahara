@@ -25,7 +25,7 @@ from sahara.swift import utils as su
 @jsonschema.FormatChecker.cls_checks('valid_name_hostname')
 def validate_name_hostname_format(entry):
     if not isinstance(entry, six.string_types):
-        #shoud fail type validation
+        # shoud fail type validation
         return True
 
     res = re.match(r"^(([a-zA-Z]|[a-zA-Z][a-zA-Z0-9\-]"
@@ -37,7 +37,7 @@ def validate_name_hostname_format(entry):
 @jsonschema.FormatChecker.cls_checks('valid_name')
 def validate_name_format(entry):
     if not isinstance(entry, six.string_types):
-        #shoud fail type validation
+        # shoud fail type validation
         return True
 
     res = re.match(r"^[a-zA-Z][a-zA-Z0-9\-_\.]*$", entry)
@@ -52,7 +52,7 @@ def validate_job_location_format(entry):
     # TODO(mattf): remove support for OLD_SWIFT_INTERNAL_PREFIX
     if entry.startswith(su.SWIFT_INTERNAL_PREFIX) or (
             entry.startswith(su.OLD_SWIFT_INTERNAL_PREFIX)):
-        #TODO(nprivalova):add hostname validation
+        # TODO(nprivalova):add hostname validation
         return True
     return False
 
@@ -60,7 +60,7 @@ def validate_job_location_format(entry):
 @jsonschema.FormatChecker.cls_checks('valid_tag')
 def validate_valid_tag_format(entry):
     if not isinstance(entry, six.string_types):
-        #shoud fail type validation
+        # shoud fail type validation
         return True
 
     res = re.match(r"^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-_]"

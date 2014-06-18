@@ -40,7 +40,7 @@ def setup_service_api(ops):
     OPS = ops
 
 
-## Cluster ops
+# Cluster ops
 
 def get_clusters():
     return conductor.cluster_get_all(context.ctx())
@@ -58,8 +58,8 @@ def scale_cluster(id, data):
     existing_node_groups = data.get('resize_node_groups', [])
     additional_node_groups = data.get('add_node_groups', [])
 
-    #the next map is the main object we will work with
-    #to_be_enlarged : {node_group_id: desired_amount_of_instances}
+    # the next map is the main object we will work with
+    # to_be_enlarged : {node_group_id: desired_amount_of_instances}
     to_be_enlarged = {}
     for ng in existing_node_groups:
         ng_id = g.find(cluster.node_groups, name=ng['name'])['id']
@@ -126,7 +126,7 @@ def terminate_cluster(id):
     OPS.terminate_cluster(id)
 
 
-## ClusterTemplate ops
+# ClusterTemplate ops
 
 def get_cluster_templates():
     return conductor.cluster_template_get_all(context.ctx())
@@ -144,7 +144,7 @@ def terminate_cluster_template(id):
     return conductor.cluster_template_destroy(context.ctx(), id)
 
 
-## NodeGroupTemplate ops
+# NodeGroupTemplate ops
 
 def get_node_group_templates():
     return conductor.node_group_template_get_all(context.ctx())
@@ -162,7 +162,7 @@ def terminate_node_group_template(id):
     return conductor.node_group_template_destroy(context.ctx(), id)
 
 
-## Plugins ops
+# Plugins ops
 
 def get_plugins():
     return plugin_base.PLUGINS.get_plugins(
@@ -204,7 +204,7 @@ def construct_ngs_for_scaling(cluster, additional_node_groups):
         additional.update({ng_id: count})
     return additional
 
-## Image Registry
+# Image Registry
 
 
 def get_images(tags):

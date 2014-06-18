@@ -29,7 +29,7 @@ LOG = logging.getLogger(__name__)
 rest = u.Rest('v11', __name__)
 
 
-## EDP ops
+# EDP ops
 
 @rest.post('/jobs/<job_id>/execute')
 @v.check_exists(api.get_job, id='job_id')

@@ -170,7 +170,7 @@ class AmbariPlugin(p.ProvisioningPluginBase):
 
     def _provision_cluster(self, name, cluster_spec, ambari_info,
                            servers, version):
-        #TODO(jspeidel): encapsulate in another class
+        # TODO(jspeidel): encapsulate in another class
 
         LOG.info('Provisioning Cluster via Ambari Server: {0} ...'.format(
             ambari_info.get_address()))
@@ -189,7 +189,7 @@ class AmbariPlugin(p.ProvisioningPluginBase):
         ambari_client.provision_cluster(
             cluster_spec, servers, ambari_info, name)
 
-    #TODO(jspeidel): invoke during scale cluster.  Will need to handle dups
+    # TODO(jspeidel): invoke during scale cluster.  Will need to handle dups
     def _set_cluster_info(self, cluster, cluster_spec):
         info = {}
         for service in cluster_spec.services:

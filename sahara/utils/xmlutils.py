@@ -21,7 +21,7 @@ import pkg_resources as pkg
 from sahara import version
 
 
-## hadoop.xml related utils
+# hadoop.xml related utils
 
 def load_hadoop_xml_defaults(file_name):
     doc = load_xml_document(file_name)
@@ -66,7 +66,7 @@ def create_hadoop_xml(configs, config_filter=None):
     return doc.toprettyxml(indent="  ")
 
 
-## basic utils
+# basic utils
 
 def load_xml_document(file_name, strip=False):
     fname = pkg.resource_filename(

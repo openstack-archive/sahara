@@ -58,7 +58,7 @@ class LocalApi(object):
     def __init__(self):
         self._manager = manager.ConductorManager()
 
-    ## Cluster ops
+    # Cluster ops
 
     @r.wrap(r.ClusterResource)
     def cluster_get(self, context, cluster):
@@ -93,7 +93,7 @@ class LocalApi(object):
         """
         self._manager.cluster_destroy(context, _get_id(cluster))
 
-    ## Node Group ops
+    # Node Group ops
 
     def node_group_add(self, context, cluster, values):
         """Create a node group from the values dictionary.
@@ -113,7 +113,7 @@ class LocalApi(object):
         """
         self._manager.node_group_remove(context, _get_id(node_group))
 
-    ## Instance ops
+    # Instance ops
 
     def instance_add(self, context, node_group, values):
         """Create an instance from the values dictionary.
@@ -133,7 +133,7 @@ class LocalApi(object):
         """
         self._manager.instance_remove(context, _get_id(instance))
 
-    ## Volumes ops
+    # Volumes ops
 
     def append_volume(self, context, instance, volume_id):
         """Append volume_id to instance."""
@@ -143,7 +143,7 @@ class LocalApi(object):
         """Remove volume_id in instance."""
         self._manager.remove_volume(context, _get_id(instance), volume_id)
 
-    ## Cluster Template ops
+    # Cluster Template ops
 
     @r.wrap(r.ClusterTemplateResource)
     def cluster_template_get(self, context, cluster_template):
@@ -170,7 +170,7 @@ class LocalApi(object):
         self._manager.cluster_template_destroy(context,
                                                _get_id(cluster_template))
 
-    ## Node Group Template ops
+    # Node Group Template ops
 
     @r.wrap(r.NodeGroupTemplateResource)
     def node_group_template_get(self, context, node_group_template):
@@ -197,7 +197,7 @@ class LocalApi(object):
         self._manager.node_group_template_destroy(context,
                                                   _get_id(node_group_template))
 
-    ## Data Source ops
+    # Data Source ops
 
     @r.wrap(r.DataSource)
     def data_source_get(self, context, data_source):
@@ -218,7 +218,7 @@ class LocalApi(object):
         """Destroy the Data Source or raise if it does not exist."""
         self._manager.data_source_destroy(context, _get_id(data_source))
 
-    ## JobExecution ops
+    # JobExecution ops
 
     @r.wrap(r.JobExecution)
     def job_execution_get(self, context, job_execution):
@@ -255,7 +255,7 @@ class LocalApi(object):
         """Destroy the JobExecution or raise if it does not exist."""
         self._manager.job_execution_destroy(context, _get_id(job_execution))
 
-    ## Job ops
+    # Job ops
 
     @r.wrap(r.Job)
     def job_get(self, context, job):
@@ -296,7 +296,7 @@ class LocalApi(object):
                 return binary["name"]
         return None
 
-    ## JobBinary ops
+    # JobBinary ops
 
     @r.wrap(r.JobBinary)
     def job_binary_get_all(self, context):
@@ -317,7 +317,7 @@ class LocalApi(object):
         """Destroy the JobBinary or raise if it does not exist."""
         self._manager.job_binary_destroy(context, _get_id(job_binary))
 
-    ## JobBinaryInternal ops
+    # JobBinaryInternal ops
 
     @r.wrap(r.JobBinaryInternal)
     def job_binary_internal_get_all(self, context):

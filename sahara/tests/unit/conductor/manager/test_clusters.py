@@ -95,7 +95,7 @@ class ClusterTest(test_base.ConductorManagerTestCase):
 
         for key, val in SAMPLE_CLUSTER.items():
             if key == 'node_groups':
-                #this will be checked separately
+                # this will be checked separately
                 continue
             self.assertEqual(val, cl_db_obj.get(key),
                              "Key not found %s" % key)

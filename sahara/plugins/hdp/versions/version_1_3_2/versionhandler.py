@@ -254,7 +254,7 @@ class AmbariClient():
                     'Failed to add host: %s' % result.text)
 
             node_group_name = host.node_group.name
-            #TODO(jspeidel): ensure that node group exists
+            # TODO(jspeidel): ensure that node group exists
             node_group = cluster_spec.node_groups[node_group_name]
             for component in node_group.components:
                 # don't add any AMBARI components
@@ -420,7 +420,7 @@ class AmbariClient():
                  .format(cluster_name, ambari_info.get_address()))
         # query for the host components on the given hosts that are in the
         # INIT state
-        #TODO(jspeidel): provide request context
+        # TODO(jspeidel): provide request context
         body = '{"HostRoles": {"state" : "INSTALLED"}}'
         install_uri = 'http://{0}/api/v1/clusters/{' \
                       '1}/host_components?HostRoles/state=INIT&' \
@@ -453,7 +453,7 @@ class AmbariClient():
 
             # query and start all non-client components on the given set of
             # hosts
-            #TODO(jspeidel): Provide request context
+            # TODO(jspeidel): Provide request context
             body = '{"HostRoles": {"state" : "STARTED"}}'
             start_uri = 'http://{0}/api/v1/clusters/{'\
                         '1}/host_components?HostRoles/state=INSTALLED&'\
@@ -477,7 +477,7 @@ class AmbariClient():
         result = None
         json_result = None
 
-        #TODO(jspeidel): timeout
+        # TODO(jspeidel): timeout
         while result is None or len(json_result['items']) < num_hosts:
             context.sleep(5)
             try:
@@ -490,7 +490,7 @@ class AmbariClient():
                     LOG.debug('Registered Host: {0}'.format(
                         hosts['Hosts']['host_name']))
             except requests.ConnectionError:
-                #TODO(jspeidel): max wait time
+                # TODO(jspeidel): max wait time
                 LOG.info('Waiting to connect to ambari server ...')
 
     def update_ambari_admin_user(self, password, ambari_info):

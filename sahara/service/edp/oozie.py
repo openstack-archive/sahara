@@ -79,7 +79,7 @@ class OozieClient(object):
 def _check_status_code(resp, expected_code):
     if resp.status_code != expected_code:
         resp_text = resp.text
-        #cleaning tomcat error message
+        # cleaning tomcat error message
         message = resp_text.split("<HR size=\"1\" noshade=\"noshade\">")[1]
         message = message.replace("</p><p>", "\n")
         message = re.sub('<[^<]+?>', ' ', message)

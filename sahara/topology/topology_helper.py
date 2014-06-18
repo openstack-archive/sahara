@@ -99,10 +99,10 @@ def _read_compute_topology():
                 if not line:
                     continue
                 (host, path) = line.split()
-                #calulating host id based on tenant id and host
-                #using the same algorithm as in nova
-                #see nova/api/openstack/compute/views/servers.py
-                #def _get_host_id(instance):
+                # Calulating host id based on tenant id and host
+                # using the same algorithm as in nova
+                # see nova/api/openstack/compute/views/servers.py
+                # def _get_host_id(instance):
                 sha_hash = hashlib.sha224(tenant_id + host)
                 topology[sha_hash.hexdigest()] = path
     except IOError:
@@ -118,7 +118,7 @@ def generate_topology_map(cluster, is_node_awareness):
     topology_mapping = {}
     for ng in cluster.node_groups:
         for i in ng.instances:
-            #TODO(alazarev) get all servers info with one request
+            # TODO(alazarev) get all servers info with one request
             ni = nova_client.servers.get(i.instance_id)
             hostId = ni.hostId
             if hostId not in mapping:

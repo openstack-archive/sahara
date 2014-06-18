@@ -274,14 +274,14 @@ class VanillaPluginTest(base.SaharaWithDbTestCase):
         cluster1 = conductor.cluster_create(context.ctx(), cluster_dict)
         (private_key1, public_key1) = c_h.get_hadoop_ssh_keys(cluster1)
 
-        #should store keys for old cluster
+        # should store keys for old cluster
         cluster1 = conductor.cluster_get(context.ctx(), cluster1)
         (private_key2, public_key2) = c_h.get_hadoop_ssh_keys(cluster1)
 
         self.assertEqual(public_key1, public_key2)
         self.assertEqual(private_key1, private_key2)
 
-        #should generate new keys for new cluster
+        # should generate new keys for new cluster
         cluster_dict.update({'name': 'cluster2'})
         cluster2 = conductor.cluster_create(context.ctx(), cluster_dict)
         (private_key3, public_key3) = c_h.get_hadoop_ssh_keys(cluster2)

@@ -25,7 +25,7 @@ versions = ['1.3.2', '2.0.6']
 
 
 class ServicesTest(testtools.TestCase):
-    #TODO(jspeidel): test remaining service functionality which isn't
+    # TODO(jspeidel): test remaining service functionality which isn't
     # tested by coarser grained unit tests.
 
     def get_services_processor(self, version='1.3.2'):

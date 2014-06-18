@@ -73,7 +73,7 @@ def _get_case_insensitive(dictionary, key):
         if str(k).lower() == str(key).lower():
             return v
 
-    #this will raise an exception as usual if key was not found
+    # this will raise an exception as usual if key was not found
     return dictionary[key]
 
 

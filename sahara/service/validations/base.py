@@ -44,7 +44,7 @@ def _get_plugin_configs(plugin_name, hadoop_version, scope=None):
     return pl_confs
 
 
-## Common validation checks
+# Common validation checks
 
 def check_plugin_name_exists(name):
     if name not in [p.name for p in api.get_plugins()]:
@@ -95,7 +95,7 @@ def check_all_configurations(data):
                                           data['hadoop_version'],
                                           ng, pl_confs)
 
-## NodeGroup related checks
+# NodeGroup related checks
 
 
 def check_node_group_basic_fields(plugin_name, hadoop_version, ng,
@@ -171,7 +171,7 @@ def check_duplicates_node_groups_names(node_groups):
                                   "are detected")
 
 
-## Cluster creation related checks
+# Cluster creation related checks
 
 def check_cluster_unique_name(name):
     if name in [cluster.name for cluster in api.get_clusters()]:
@@ -220,7 +220,7 @@ def check_network_exists(net_id):
         raise ex.InvalidException("Network %s not found" % net_id)
 
 
-## Cluster templates related checks
+# Cluster templates related checks
 
 def check_cluster_template_unique_name(name):
     if name in [t.name for t in api.get_cluster_templates()]:
@@ -244,7 +244,7 @@ def check_node_groups_in_cluster_templates(cluster_name, plugin_name,
         check_node_group_basic_fields(plugin_name, hadoop_version, node_group)
     check_cluster_hostnames_lengths(cluster_name, n_groups)
 
-## NodeGroup templates related checks
+# NodeGroup templates related checks
 
 
 def check_node_group_template_unique_name(name):
@@ -281,7 +281,7 @@ def _get_floating_ip_pool(node_group):
     return None
 
 
-## Cluster scaling
+# Cluster scaling
 
 def check_resize(cluster, r_node_groups):
     cluster_ng_names = [ng.name for ng in cluster.node_groups]
@@ -311,7 +311,7 @@ def check_add_node_groups(cluster, add_node_groups):
                                       cluster.hadoop_version, ng, pl_confs)
 
 
-## Cinder
+# Cinder
 
 def check_cinder_exists():
     services = [service.name for service in
@@ -320,7 +320,7 @@ def check_cinder_exists():
         raise ex.InvalidException("Cinder is not supported")
 
 
-##Tags
+# Tags
 
 
 def check_required_image_tags(plugin_name, hadoop_version, image_id):
@@ -336,7 +336,7 @@ def check_required_image_tags(plugin_name, hadoop_version, image_id):
                                        hadoop_version))
 
 
-## EDP
+# EDP
 
 
 def check_edp_job_support(cluster_id):

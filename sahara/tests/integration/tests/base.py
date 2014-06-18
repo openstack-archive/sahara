@@ -138,7 +138,7 @@ class ITestCase(testtools.TestCase, testtools.testcase.WithAttributes,
         else:
             self.private_key = open(self.common_config.PATH_TO_SSH_KEY).read()
 
-#-------------------------Methods for object creation--------------------------
+# ------------------------Methods for object creation--------------------------
 
     def create_node_group_template(self, name, plugin_config, description,
                                    node_processes, node_configs,
@@ -218,7 +218,7 @@ class ITestCase(testtools.TestCase, testtools.testcase.WithAttributes,
             'plugin_config': plugin_config
         }
 
-#---------Helper methods for cluster info obtaining and its processing---------
+# --------Helper methods for cluster info obtaining and its processing---------
 
     def poll_cluster_state(self, cluster_id):
         data = self.sahara.clusters.get(cluster_id)
@@ -348,7 +348,7 @@ class ITestCase(testtools.TestCase, testtools.testcase.WithAttributes,
             )
         self.close_ssh_connection()
 
-#---------------------------------Remote---------------------------------------
+# --------------------------------Remote---------------------------------------
 
     def connect_to_swift(self):
         return swift_client.Connection(
@@ -403,7 +403,7 @@ class ITestCase(testtools.TestCase, testtools.testcase.WithAttributes,
             self.transfer_helper_script_to_node(script_name, parameter_list)
             self.close_ssh_connection()
 
-#--------------------------------Helper methods--------------------------------
+# -------------------------------Helper methods--------------------------------
 
     def get_image_id_and_ssh_username(self, plugin_config):
         def print_error_log(parameter, value):

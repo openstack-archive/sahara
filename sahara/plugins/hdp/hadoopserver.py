@@ -66,7 +66,7 @@ class HadoopServer:
         LOG.info(
             "{0}: Installing rpm's ...".format(self.instance.hostname()))
 
-        #TODO(jspeidel): based on image type, use correct command
+        # TODO(jspeidel): based on image type, use correct command
         curl_cmd = 'curl -f -s -o /etc/yum.repos.d/ambari.repo %s' % \
             self.ambari_rpm
         ret_code, stdout = r.execute_command(curl_cmd,
