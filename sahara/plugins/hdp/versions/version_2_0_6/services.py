@@ -19,6 +19,7 @@ import six
 from oslo.config import cfg
 
 from sahara import exceptions as e
+from sahara.openstack.common import log as logging
 from sahara.plugins.general import exceptions as ex
 from sahara.plugins.general import utils
 from sahara.swift import swift_helper as h
@@ -32,6 +33,8 @@ TOPOLOGY_CONFIG = {
     "/etc/hadoop/conf/topology.sh"
 }
 
+LOG = logging.getLogger(__name__)
+
 
 def create_service(name):
     for cls in Service.__subclasses__():
@@ -42,12 +45,13 @@ def create_service(name):
 
 
 class Service(object):
-    def __init__(self, name):
+    def __init__(self, name, ambari_managed=True):
         self.name = name
         self.configurations = set(['global', 'core-site'])
         self.components = []
         self.users = []
         self.deployed = False
+        self.ambari_managed = ambari_managed
 
     def add_component(self, component):
         self.components.append(component)
@@ -779,7 +783,8 @@ class GangliaService(Service):
 
 class AmbariService(Service):
     def __init__(self):
-        super(AmbariService, self).__init__(AmbariService.get_service_id())
+        super(AmbariService, self).__init__(AmbariService.get_service_id(),
+                                            False)
         self.configurations.add('ambari')
         # TODO(jspeidel): don't hard code default admin user
         self.admin_user_name = 'admin'
@@ -877,3 +882,374 @@ class NagiosService(Service):
                                             service.name == 'HCATALOG')
                         hcat_service.deployed = True
                     ng.components.append('HCAT')
+
+
+class HueService(Service):
+    default_web_ui_port = '8000'
+    required_services = ['HIVE', 'OOZIE', 'WEBHCAT', 'YARN']
+
+    def __init__(self):
+        super(HueService, self).__init__(HueService.get_service_id(), False)
+
+    @classmethod
+    def get_service_id(cls):
+        return "HUE"
+
+    @staticmethod
+    def _get_java_home_from_config(config):
+        return (config.get('java64_home', None)
+                or config.get('java_home', None) if config else None)
+
+    @staticmethod
+    def _get_java_home(cluster_spec):
+        java_home = HueService._get_java_home_from_config(
+            cluster_spec.configurations.get('hue', None)
+        )
+
+        if not java_home:
+            java_home = HueService._get_java_home_from_config(
+                cluster_spec.configurations.get('global', None)
+            )
+
+        return java_home or '/opt/jdk1.6.0_31'
+
+    @staticmethod
+    def _append_host_substitution(cluster_spec, component, var_name,
+                                  var_pattern_name, subs):
+        hosts = cluster_spec.determine_component_hosts(component)
+
+        if hosts:
+            subs[var_name] = hosts.pop().fqdn() or 'localhost'
+            subs[var_pattern_name] = subs[var_name].replace('.', '\.')
+
+    @staticmethod
+    def _create_hue_ini_file_section(property_sub_tree, level):
+        properties = property_sub_tree['properties']
+        sections = property_sub_tree['sections']
+
+        s = ''
+
+        if properties:
+            for name, value in six.iteritems(properties):
+                s += ' ' * (level * 2)
+                s += "{0} = {1}\n".format(name, value)
+
+        if sections:
+            for name, section in six.iteritems(sections):
+                s += "\n"
+
+                s += ' ' * ((level - 1) * 2)
+                s += '[' * level
+                s += name
+                s += ']' * level
+                s += "\n"
+
+                s += HueService._create_hue_ini_file_section(section,
+                                                             level + 1)
+
+        return s
+
+    @staticmethod
+    def _create_hue_ini_file(property_tree):
+        if property_tree:
+            return HueService._create_hue_ini_file_section(property_tree, 1)
+        else:
+            return ''
+
+    @staticmethod
+    def _create_hue_property_tree(cluster_spec):
+        config_name = 'hue-ini'
+
+        LOG.info('Creating Hue ini property tree from configuration named '
+                 '{0}'.format(config_name))
+
+        hue_ini_property_tree = {'sections': {}, 'properties': {}}
+
+        config = cluster_spec.configurations[config_name]
+
+        if config is None:
+            LOG.warning('Missing configuration named {0}, aborting Hue ini '
+                        'file creation'.format(config_name))
+        else:
+            # replace values in hue-ini configuration
+            subs = {}
+
+            subs['%JAVA_HOME%'] = HueService._get_java_home(cluster_spec)
+
+            HueService._append_host_substitution(cluster_spec,
+                                                 'NAMENODE',
+                                                 '%NN_HOST%',
+                                                 '%NN_HOST_PATTERN%',
+                                                 subs)
+
+            HueService._append_host_substitution(cluster_spec,
+                                                 'RESOURCEMANAGER',
+                                                 '%RM_HOST%',
+                                                 '%RM_HOST_PATTERN%',
+                                                 subs)
+
+            HueService._append_host_substitution(cluster_spec,
+                                                 'HISTORYSERVER',
+                                                 '%HS_HOST%',
+                                                 '%HS_HOST_PATTERN%',
+                                                 subs)
+
+            HueService._append_host_substitution(cluster_spec,
+                                                 'OOZIE_SERVER',
+                                                 '%OOZIE_HOST%',
+                                                 '%OOZIE_HOST_PATTERN%',
+                                                 subs)
+
+            HueService._append_host_substitution(cluster_spec,
+                                                 'WEBHCAT_SERVER',
+                                                 '%WEBHCAT_HOST%',
+                                                 '%WEBHCAT_HOST_PATTERN%',
+                                                 subs)
+
+            HueService._append_host_substitution(cluster_spec,
+                                                 'HUE',
+                                                 '%HUE_HOST%',
+                                                 '%HUE_HOST_PATTERN%',
+                                                 subs)
+
+            # Parse configuration properties into Hue ini configuration tree
+            # where <token1>:<token2>:<token3> = <value>
+            # becomes
+            #   <token1> {
+            #       <token2> {
+            #           <token3>=<value>
+            #       }
+            #   }
+            for prop_name, prop_value in six.iteritems(config):
+                # Skip empty property values
+                if prop_value:
+                    # Attempt to make any necessary substitutions
+                    if subs:
+                        for placeholder, sub in six.iteritems(subs):
+                            if prop_value.find(placeholder) >= 0:
+                                value = prop_value.replace(placeholder, sub)
+                                LOG.debug('Converting placeholder in property '
+                                          '{0}:\n\t\t{1}\n\tto\n\t\t{2}\n'.
+                                          format(prop_name, prop_value, value))
+                                prop_value = value
+
+                    # If the property value still is a value, add it and it's
+                    # relevant path to the tree
+                    if prop_value and len(prop_value) > 0:
+                        node = hue_ini_property_tree
+                        tokens = prop_name.split('/')
+
+                        if tokens:
+                            name = tokens.pop()
+
+                            while tokens:
+                                token = tokens.pop(0)
+
+                                if token not in node['sections']:
+                                    data = {'sections': {},
+                                            'properties': {}}
+
+                                    node['sections'][token] = data
+
+                                node = node['sections'][token]
+
+                            # TODO(rlevas) : handle collisions
+                            node['properties'][name] = prop_value
+
+        return hue_ini_property_tree
+
+    @staticmethod
+    def _merge_configurations(cluster_spec, src_config_name, dst_config_name):
+        LOG.info('Merging configuration properties: {0} -> {1}'
+                 .format(src_config_name, dst_config_name))
+
+        src_config = cluster_spec.configurations[src_config_name]
+        dst_config = cluster_spec.configurations[dst_config_name]
+
+        if src_config is None:
+            LOG.warning('Missing source configuration property set, aborting '
+                        'merge: {0}'.format(src_config_name))
+        elif dst_config is None:
+            LOG.warning('Missing destination configuration property set, '
+                        'aborting merge: {0}'.format(dst_config_name))
+        else:
+            for property_name, property_value in six.iteritems(src_config):
+                if property_name in dst_config:
+                    if dst_config[property_name] == src_config[property_name]:
+                        LOG.debug('Skipping unchanged configuration property '
+                                  'in {0} and {1}: {2}'.format(dst_config_name,
+                                                               src_config_name,
+                                                               property_name))
+                    else:
+                        LOG.warning('Overwriting existing configuration '
+                                    'property in {0} from {1} for Hue: {2} '
+                                    '[{3} -> {4}]'
+                                    .format(dst_config_name,
+                                            src_config_name,
+                                            property_name,
+                                            dst_config[property_name],
+                                            src_config[property_name]))
+                else:
+                    LOG.debug('Adding Hue configuration property to {0} from '
+                              '{1}: {2}'.format(dst_config_name,
+                                                src_config_name,
+                                                property_name))
+
+                dst_config[property_name] = property_value
+
+    @staticmethod
+    def _handle_pre_service_start(instance, cluster_spec, hue_ini,
+                                  create_user):
+        with instance.remote() as r:
+            LOG.info('Installing Hue on {0}'
+                     .format(instance.fqdn()))
+            r.execute_command('yum -y install hue',
+                              run_as_root=True)
+
+            LOG.info('Setting Hue configuration on {0}'
+                     .format(instance.fqdn()))
+            r.write_file_to('/etc/hue/conf/hue.ini',
+                            hue_ini,
+                            True)
+
+            LOG.info('Uninstalling Shell, if it is installed '
+                     'on {0}'.format(instance.fqdn()))
+            r.execute_command(
+                '/usr/lib/hue/build/env/bin/python '
+                '/usr/lib/hue/tools/app_reg/app_reg.py '
+                '--remove shell',
+                run_as_root=True)
+
+            if create_user:
+                LOG.info('Creating initial Hue user on {0}'
+                         .format(instance.fqdn()))
+                r.execute_command('/usr/lib/hue/build/env/bin/hue '
+                                  'create_sandbox_user', run_as_root=True)
+
+            LOG.info('(Re)starting Hue on {0}'
+                     .format(instance.fqdn()))
+            java_home = HueService._get_java_home(cluster_spec)
+
+            if java_home:
+                cmd = 'JAVA_HOME={0} '.format(java_home)
+            else:
+                cmd = ''
+
+            cmd += '/etc/init.d/hue restart'
+
+            r.execute_command(cmd, run_as_root=True)
+
+    def finalize_configuration(self, cluster_spec):
+        # add Hue-specific properties to the core-site file ideally only on
+        # the following nodes:
+        #
+        #       NameNode
+        #       Secondary
+        #       NameNode
+        #       DataNodes
+        #
+        LOG.debug('Inserting Hue configuration properties into core-site')
+        self._merge_configurations(cluster_spec, 'hue-core-site', 'core-site')
+
+        # add Hue-specific properties to the hdfs-site file
+        LOG.debug('Inserting Hue configuration properties into hdfs-site')
+        self._merge_configurations(cluster_spec, 'hue-hdfs-site', 'hdfs-site')
+
+        # add Hue-specific properties to the webhcat-site file
+        LOG.debug('Inserting Hue configuration properties into webhcat-site')
+        self._merge_configurations(cluster_spec, 'hue-webhcat-site',
+                                   'webhcat-site')
+
+        # add Hue-specific properties to the webhcat-site file
+        LOG.debug('Inserting Hue configuration properties into oozie-site')
+        self._merge_configurations(cluster_spec, 'hue-oozie-site',
+                                   'oozie-site')
+
+    def register_service_urls(self, cluster_spec, url_info):
+        hosts = cluster_spec.determine_component_hosts('HUE')
+
+        if hosts is not None:
+            host = hosts.pop()
+
+            if host is not None:
+                config = cluster_spec.configurations['hue-ini']
+                if config is not None:
+                    port = config.get('desktop/http_port',
+                                      self.default_web_ui_port)
+                else:
+                    port = self.default_web_ui_port
+
+                ip = host.management_ip
+
+                url_info[self.name.title()] = {
+                    'Web UI': 'http://{0}:{1}'.format(ip, port)
+                }
+
+        return url_info
+
+    def validate(self, cluster_spec, cluster):
+        count = cluster_spec.get_deployed_node_group_count('HUE')
+        if count != 1:
+            raise ex.InvalidComponentCountException('HUE', 1, count)
+
+        services = cluster_spec.services
+
+        for reqd_service in self.required_services:
+            reqd_service_deployed = False
+
+            if services is not None:
+                for service in services:
+                    reqd_service_deployed = (service.deployed
+                                             and service.name == reqd_service)
+
+                    if reqd_service_deployed:
+                        break
+
+            if not reqd_service_deployed:
+                raise ex.RequiredServiceMissingException(reqd_service,
+                                                         self.name)
+
+    def finalize_ng_components(self, cluster_spec):
+        hue_ngs = cluster_spec.get_node_groups_containing_component('HUE')
+
+        if hue_ngs is not None:
+            for hue_ng in hue_ngs:
+                components = hue_ng.components
+
+                if 'HDFS_CLIENT' not in components:
+                    LOG.info('Missing HDFS client from Hue node... adding it '
+                             'since it is required for Hue')
+                    components.append('HDFS_CLIENT')
+
+                if cluster_spec.get_deployed_node_group_count('HIVE_SERVER'):
+                    if 'HIVE_CLIENT' not in components:
+                        LOG.info('Missing HIVE client from Hue node... adding '
+                                 'it since it is required for Beeswax and '
+                                 'HCatalog')
+                        components.append('HIVE_CLIENT')
+
+    def pre_service_start(self, cluster_spec, ambari_info, started_services):
+
+        # Create hue.ini file
+        hue_property_tree = HueService._create_hue_property_tree(cluster_spec)
+        hue_ini = HueService._create_hue_ini_file(hue_property_tree)
+
+        create_user = False
+        config = cluster_spec.configurations['hue-ini']
+
+        if config is not None:
+            username = config.get('useradmin/default_username', '')
+            password = config.get('useradmin/default_user_password', '')
+
+            create_user = username != '' and password != ''
+
+        # Install Hue on the appropriate node(s)...
+        hue_ngs = cluster_spec.get_node_groups_containing_component("HUE")
+        if hue_ngs:
+            for ng in hue_ngs:
+                if ng.instances:
+                    for instance in ng.instances:
+                        HueService._handle_pre_service_start(instance,
+                                                             cluster_spec,
+                                                             hue_ini,
+                                                             create_user)

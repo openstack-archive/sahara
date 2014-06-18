@@ -206,7 +206,8 @@ class AmbariClient():
         services = cluster_spec.services
         add_service_url = 'http://{0}/api/v1/clusters/{1}/services/{2}'
         for service in services:
-            if service.deployed and service.name != 'AMBARI':
+            # Make sure the service is deployed and is managed by Ambari
+            if service.deployed and service.ambari_managed:
                 result = self._post(add_service_url.format(
                     ambari_info.get_address(), name, service.name),
                     ambari_info)
@@ -221,7 +222,8 @@ class AmbariClient():
         add_component_url = ('http://{0}/api/v1/clusters/{1}/services/{'
                              '2}/components/{3}')
         for service in cluster_spec.services:
-            if service.deployed and service.name != 'AMBARI':
+            # Make sure the service is deployed and is managed by Ambari
+            if service.deployed and service.ambari_managed:
                 for component in service.components:
                     result = self._post(add_component_url.format(
                         ambari_info.get_address(), name, service.name,
@@ -256,8 +258,11 @@ class AmbariClient():
             # TODO(jspeidel): ensure that node group exists
             node_group = cluster_spec.node_groups[node_group_name]
             for component in node_group.components:
-                # don't add any AMBARI components
-                if component.find('AMBARI') != 0:
+                # Don't add any AMBARI or HUE components
+                # TODO(rlevas): Pragmatically determine if component is
+                #   managed by Ambari
+                if component.find('AMBARI') != 0 \
+                        and component.find('HUE') != 0:
                     result = self._post(add_host_component_url.format(
                         ambari_info.get_address(), name, hostname, component),
                         ambari_info)

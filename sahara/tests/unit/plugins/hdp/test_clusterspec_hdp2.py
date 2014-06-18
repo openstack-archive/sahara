@@ -56,6 +56,7 @@ class ClusterSpecTestForHDP2(testtools.TestCase):
         self.service_validators['OOZIE'] = self._assert_oozie
         self.service_validators['SQOOP'] = self._assert_sqoop
         self.service_validators['HBASE'] = self._assert_hbase
+        self.service_validators['HUE'] = self._assert_hue
 
     def test_parse_default_with_cluster(self, patched):
         cluster_config_file = pkg.resource_string(
@@ -303,6 +304,189 @@ class ClusterSpecTestForHDP2(testtools.TestCase):
 
         self.assertEqual(config['oozie-site']['oozie.base.url'],
                          'http://oozie_host.novalocal:11000/oozie')
+        self.assertEqual(config['global']['oozie_hostname'],
+                         'oozie_host.novalocal')
+        self.assertEqual(config['core-site']['hadoop.proxyuser.oozie.hosts'],
+                         'oozie_host.novalocal,222.11.9999,111.11.9999')
+
+        # test swift properties
+        self.assertEqual('swift_prop_value',
+                         config['core-site']['swift.prop1'])
+        self.assertEqual('swift_prop_value2',
+                         config['core-site']['swift.prop2'])
+
+    def test_finalize_configuration_with_hue(self, patched):
+        patched.return_value = [{'name': 'swift.prop1',
+                                'value': 'swift_prop_value'},
+                                {'name': 'swift.prop2',
+                                'value': 'swift_prop_value2'}]
+        cluster_config_file = pkg.resource_string(
+            version.version_info.package,
+            'plugins/hdp/versions/version_2_0_6/resources/'
+            'default-cluster.template')
+
+        master_host = base.TestServer(
+            'master.novalocal', 'master', '11111', 3,
+            '111.11.1111', '222.11.1111')
+
+        jt_host = base.TestServer(
+            'jt_host.novalocal', 'jt', '11111', 3,
+            '111.11.2222', '222.11.2222')
+
+        nn_host = base.TestServer(
+            'nn_host.novalocal', 'nn', '11111', 3,
+            '111.11.3333', '222.11.3333')
+
+        snn_host = base.TestServer(
+            'snn_host.novalocal', 'jt', '11111', 3,
+            '111.11.4444', '222.11.4444')
+
+        hive_host = base.TestServer(
+            'hive_host.novalocal', 'hive', '11111', 3,
+            '111.11.5555', '222.11.5555')
+
+        hive_ms_host = base.TestServer(
+            'hive_ms_host.novalocal', 'hive_ms', '11111', 3,
+            '111.11.6666', '222.11.6666')
+
+        hive_mysql_host = base.TestServer(
+            'hive_mysql_host.novalocal', 'hive_mysql', '11111', 3,
+            '111.11.7777', '222.11.7777')
+
+        hcat_host = base.TestServer(
+            'hcat_host.novalocal', 'hcat', '11111', 3,
+            '111.11.8888', '222.11.8888')
+
+        zk_host = base.TestServer(
+            'zk_host.novalocal', 'zk', '11111', 3,
+            '111.11.9999', '222.11.9999')
+
+        oozie_host = base.TestServer(
+            'oozie_host.novalocal', 'oozie', '11111', 3,
+            '111.11.9999', '222.11.9999')
+
+        slave_host = base.TestServer(
+            'slave1.novalocal', 'slave', '11111', 3,
+            '222.22.6666', '333.22.6666')
+
+        master_ng = TestNodeGroup(
+            'master', [master_host], ["GANGLIA_SERVER",
+                                      "GANGLIA_MONITOR",
+                                      "NAGIOIS_SERVER",
+                                      "AMBARI_SERVER",
+                                      "AMBARI_AGENT"])
+
+        jt_ng = TestNodeGroup(
+            'jt', [jt_host], ["RESOURCEMANAGER", "GANGLIA_MONITOR",
+                              "HISTORYSERVER", "AMBARI_AGENT"])
+
+        nn_ng = TestNodeGroup(
+            'nn', [nn_host], ["NAMENODE", "GANGLIA_MONITOR",
+                              "AMBARI_AGENT"])
+
+        snn_ng = TestNodeGroup(
+            'snn', [snn_host], ["SECONDARY_NAMENODE", "GANGLIA_MONITOR",
+                                "AMBARI_AGENT"])
+
+        hive_ng = TestNodeGroup(
+            'hive', [hive_host], ["HIVE_SERVER", "GANGLIA_MONITOR",
+                                  "AMBARI_AGENT"])
+
+        hive_ms_ng = TestNodeGroup(
+            'meta', [hive_ms_host], ["HIVE_METASTORE", "GANGLIA_MONITOR",
+                                     "AMBARI_AGENT"])
+
+        hive_mysql_ng = TestNodeGroup(
+            'mysql', [hive_mysql_host], ["MYSQL_SERVER", "GANGLIA_MONITOR",
+                                         "AMBARI_AGENT"])
+
+        hcat_ng = TestNodeGroup(
+            'hcat', [hcat_host], ["WEBHCAT_SERVER", "GANGLIA_MONITOR",
+                                  "AMBARI_AGENT"])
+
+        zk_ng = TestNodeGroup(
+            'zk', [zk_host], ["ZOOKEEPER_SERVER", "GANGLIA_MONITOR",
+                              "AMBARI_AGENT"])
+
+        oozie_ng = TestNodeGroup(
+            'oozie', [oozie_host], ["OOZIE_SERVER", "GANGLIA_MONITOR",
+                                    "AMBARI_AGENT"])
+        slave_ng = TestNodeGroup(
+            'slave', [slave_host], ["DATANODE", "NODEMANAGER",
+                                    "GANGLIA_MONITOR", "HDFS_CLIENT",
+                                    "MAPREDUCE2_CLIENT", "OOZIE_CLIENT",
+                                    "AMBARI_AGENT", "HUE"])
+
+        user_input_config = TestUserInputConfig(
+            'core-site', 'cluster', 'fs.defaultFS')
+        user_input = provisioning.UserInput(
+            user_input_config, 'hdfs://nn_dif_host.novalocal:8020')
+
+        cluster = base.TestCluster([master_ng, jt_ng, nn_ng, snn_ng, hive_ng,
+                                    hive_ms_ng, hive_mysql_ng,
+                                    hcat_ng, zk_ng, oozie_ng, slave_ng])
+        cluster_config = cs.ClusterSpec(cluster_config_file, version='2.0.6')
+        cluster_config.create_operational_config(cluster, [user_input])
+        config = cluster_config.configurations
+
+        # for this value, validating that user inputs override configured
+        # values, whether they are processed by runtime or not
+        self.assertEqual(config['core-site']['fs.defaultFS'],
+                         'hdfs://nn_dif_host.novalocal:8020')
+
+        self.assertEqual(config['mapred-site']
+                         ['mapreduce.jobhistory.webapp.address'],
+                         'jt_host.novalocal:19888')
+
+        self.assertEqual(config['hdfs-site']['dfs.namenode.http-address'],
+                         'nn_host.novalocal:50070')
+        self.assertEqual(config['hdfs-site']
+                         ['dfs.namenode.secondary.http-address'],
+                         'snn_host.novalocal:50090')
+        self.assertEqual(config['hdfs-site']['dfs.namenode.https-address'],
+                         'nn_host.novalocal:50470')
+        self.assertEqual(config['hdfs-site']['dfs.support.broken.append'],
+                         'true')
+        self.assertEqual(config['hdfs-site']['dfs.webhdfs.enabled'],
+                         'true')
+
+        self.assertEqual(config['global']['hive_hostname'],
+                         'hive_host.novalocal')
+        self.assertEqual(config['core-site']['hadoop.proxyuser.hive.hosts'],
+                         'hive_host.novalocal')
+        self.assertEqual(config['hive-site']
+                         ['javax.jdo.option.ConnectionURL'],
+                         'jdbc:mysql://hive_mysql_host.novalocal/hive?'
+                         'createDatabaseIfNotExist=true')
+        self.assertEqual(config['hive-site']['hive.metastore.uris'],
+                         'thrift://hive_ms_host.novalocal:9083')
+        self.assertTrue(
+            'hive.metastore.uris=thrift://hive_ms_host.novalocal:9083' in
+            config['webhcat-site']['templeton.hive.properties'])
+        self.assertEqual(config['core-site']['hadoop.proxyuser.hcat.hosts'],
+                         '*')
+        self.assertEqual(config['core-site']['hadoop.proxyuser.hcat.groups'],
+                         '*')
+        self.assertEqual(config['core-site']['hadoop.proxyuser.hue.hosts'],
+                         '*')
+        self.assertEqual(config['core-site']['hadoop.proxyuser.hue.groups'],
+                         '*')
+        self.assertEqual(config['webhcat-site']['templeton.zookeeper.hosts'],
+                         'zk_host.novalocal:2181')
+        self.assertEqual(config['webhcat-site']['webhcat.proxyuser.hue.hosts'],
+                         '*')
+        self.assertEqual(config['webhcat-site']
+                         ['webhcat.proxyuser.hue.groups'],
+                         '*')
+
+        self.assertEqual(config['oozie-site']['oozie.base.url'],
+                         'http://oozie_host.novalocal:11000/oozie')
+        self.assertEqual(config['oozie-site']
+                         ['oozie.service.ProxyUserService.proxyuser.hue.'
+                          'groups'], '*')
+        self.assertEqual(config['oozie-site']
+                         ['oozie.service.ProxyUserService.proxyuser.hue.'
+                          'hosts'], '*')
         self.assertEqual(config['global']['oozie_hostname'],
                          'oozie_host.novalocal')
         self.assertEqual(config['core-site']['hadoop.proxyuser.oozie.hosts'],
@@ -1236,6 +1420,82 @@ class ClusterSpecTestForHDP2(testtools.TestCase):
             # expected
             pass
 
+    def test_validate_hue(self, patched):
+        server = base.TestServer('host1', 'slave', '11111', 3,
+                                 '111.11.1111', '222.22.2222')
+        server2 = base.TestServer('host2', 'master', '11112', 3,
+                                  '111.11.1112', '222.22.2223')
+
+        node_group = TestNodeGroup(
+            'slave', [server], ["DATANODE", "NODEMANAGER",
+                                "HUE"])
+        node_group2 = TestNodeGroup(
+            'master', [server2], ["NAMENODE", "RESOURCEMANAGER",
+                                  "HISTORYSERVER", "AMBARI_SERVER",
+                                  "ZOOKEEPER_SERVER"])
+
+        cluster = base.TestCluster([node_group, node_group2])
+        cluster_config = base.create_clusterspec(hdp_version='2.0.6')
+        # should fail due to missing hive_server, oozie_server and
+        # webhchat_server which is required by hue
+        self.assertRaises(ex.RequiredServiceMissingException,
+                          cluster_config.create_operational_config,
+                          cluster, [])
+
+        node_group2 = TestNodeGroup(
+            'master', [server2], ["NAMENODE", "RESOURCEMANAGER",
+                                  "HIVE_SERVER", "AMBARI_SERVER",
+                                  "ZOOKEEPER_SERVER", "HISTORYSERVER"])
+        cluster = base.TestCluster([node_group, node_group2])
+        cluster_config = base.create_clusterspec(hdp_version='2.0.6')
+        # should fail due to missing oozie_server and webhchat_server, which
+        # is required by hue
+        self.assertRaises(ex.RequiredServiceMissingException,
+                          cluster_config.create_operational_config,
+                          cluster, [])
+
+        node_group = TestNodeGroup(
+            'slave', [server], ["DATANODE", "NODEMANAGER",
+                                "OOZIE_CLIENT", "HUE"])
+        node_group2 = TestNodeGroup(
+            'master', [server2], ["NAMENODE", "RESOURCEMANAGER",
+                                  "HIVE_SERVER", "AMBARI_SERVER",
+                                  "ZOOKEEPER_SERVER", "HISTORYSERVER",
+                                  "OOZIE_SERVER"])
+        cluster = base.TestCluster([node_group, node_group2])
+        cluster_config = base.create_clusterspec(hdp_version='2.0.6')
+        # should fail due to missing webhchat_server, which is required by hue
+        self.assertRaises(ex.RequiredServiceMissingException,
+                          cluster_config.create_operational_config,
+                          cluster, [])
+
+        node_group = TestNodeGroup(
+            'slave', [server], ["DATANODE", "NODEMANAGER",
+                                "OOZIE_CLIENT", "HUE"])
+        node_group2 = TestNodeGroup(
+            'master', [server2], ["NAMENODE", "RESOURCEMANAGER",
+                                  "HIVE_SERVER", "AMBARI_SERVER",
+                                  "ZOOKEEPER_SERVER", "HISTORYSERVER",
+                                  "OOZIE_SERVER", "WEBHCAT_SERVER"])
+        cluster = base.TestCluster([node_group, node_group2])
+        cluster_config = base.create_clusterspec(hdp_version='2.0.6')
+        # should validate successfully now
+        cluster_config.create_operational_config(cluster, [])
+
+        # should have automatically added a HIVE_CLIENT to "slave" node group
+        hue_ngs = cluster_config.get_node_groups_containing_component("HUE")
+        self.assertEqual(1, len(hue_ngs))
+        self.assertIn("HIVE_CLIENT", hue_ngs.pop().components)
+
+        # should cause validation exception due to 2 hue instances
+        node_group3 = TestNodeGroup(
+            'master', [server2], ["HUE"])
+        cluster = base.TestCluster([node_group, node_group2, node_group3])
+        cluster_config = base.create_clusterspec(hdp_version='2.0.6')
+        self.assertRaises(ex.InvalidComponentCountException,
+                          cluster_config.create_operational_config,
+                          cluster, [])
+
     def test_validate_scaling_existing_ng(self, patched):
         server = base.TestServer('host1', 'slave', '11111', 3,
                                  '111.11.1111', '222.22.2222')
@@ -1377,7 +1637,7 @@ class ClusterSpecTestForHDP2(testtools.TestCase):
 
         expected_clients = set(['HCAT', 'ZOOKEEPER_CLIENT',
                                 'MAPREDUCE2_CLIENT', 'HIVE_CLIENT',
-                                'HDFS_CLIENT', 'PIG', 'YARN_CLIENT'])
+                                'HDFS_CLIENT', 'PIG', 'YARN_CLIENT', 'HUE'])
         self.assertEqual(expected_clients, expected_clients & set(clients))
 
         expected_slaves = set(['AMBARI_AGENT', 'NODEMANAGER', 'DATANODE',
@@ -1398,7 +1658,7 @@ class ClusterSpecTestForHDP2(testtools.TestCase):
             found_services.append(name)
             self.service_validators[name](service)
 
-        self.assertEqual(14, len(found_services))
+        self.assertEqual(15, len(found_services))
         self.assertIn('HDFS', found_services)
         self.assertIn('MAPREDUCE2', found_services)
         self.assertIn('GANGLIA', found_services)
@@ -1412,6 +1672,7 @@ class ClusterSpecTestForHDP2(testtools.TestCase):
         self.assertIn('OOZIE', found_services)
         self.assertIn('SQOOP', found_services)
         self.assertIn('HBASE', found_services)
+        self.assertIn('HUE', found_services)
 
     def _assert_hdfs(self, service):
         self.assertEqual('HDFS', service.name)
@@ -1578,13 +1839,23 @@ class ClusterSpecTestForHDP2(testtools.TestCase):
         self._assert_component('HBASE_CLIENT', 'CLIENT', "1+",
                                found_components['HBASE_CLIENT'])
 
+    def _assert_hue(self, service):
+        self.assertEqual('HUE', service.name)
+        found_components = {}
+        for component in service.components:
+            found_components[component.name] = component
+
+        self.assertEqual(1, len(found_components))
+        self._assert_component('HUE', 'CLIENT', "1",
+                               found_components['HUE'])
+
     def _assert_component(self, name, comp_type, cardinality, component):
         self.assertEqual(name, component.name)
         self.assertEqual(comp_type, component.type)
         self.assertEqual(cardinality, component.cardinality)
 
     def _assert_configurations(self, configurations):
-        self.assertEqual(11, len(configurations))
+        self.assertEqual(16, len(configurations))
         self.assertIn('global', configurations)
         self.assertIn('core-site', configurations)
         self.assertIn('yarn-site', configurations)
@@ -1596,6 +1867,11 @@ class ClusterSpecTestForHDP2(testtools.TestCase):
         self.assertIn('oozie-site', configurations)
         self.assertIn('hbase-site', configurations)
         self.assertIn('capacity-scheduler', configurations)
+        self.assertIn('hue-ini', configurations)
+        self.assertIn('hue-core-site', configurations)
+        self.assertIn('hue-hdfs-site', configurations)
+        self.assertIn('hue-webhcat-site', configurations)
+        self.assertIn('hue-oozie-site', configurations)
 
 
 class TestNodeGroup:
