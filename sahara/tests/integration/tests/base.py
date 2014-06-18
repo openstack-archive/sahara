@@ -26,7 +26,7 @@ from saharaclient.api import base as client_base
 import saharaclient.client as sahara_client
 from swiftclient import client as swift_client
 import testtools
-import unittest2
+from testtools import testcase
 
 from sahara.openstack.common import excutils
 from sahara.tests.integration.configs import config as cfg
@@ -69,8 +69,7 @@ def skip_test(config_name, message=''):
     return handle
 
 
-class ITestCase(testtools.TestCase, testtools.testcase.WithAttributes,
-                unittest2.TestCase):
+class ITestCase(testcase.WithAttributes, testtools.TestCase):
     def setUp(self):
         super(ITestCase, self).setUp()
         self.common_config = cfg.ITConfig().common_config
