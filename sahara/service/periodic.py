@@ -16,6 +16,7 @@
 import random
 
 from oslo.config import cfg
+import six
 
 from sahara import conductor as c
 from sahara import context
@@ -67,7 +68,7 @@ class SaharaPeriodicTasks(periodic_task.PeriodicTasks):
 
     @periodic_task.periodic_task(spacing=90)
     def terminate_unneeded_clusters(self, ctx):
-        LOG.debug('Terminating unneeded clusters')
+        LOG.debug('Terminating unneeded transient clusters')
         ctx = context.get_admin_context()
         context.set_ctx(ctx)
         for cluster in conductor.cluster_get_all(ctx, status='Active'):
@@ -90,9 +91,17 @@ class SaharaPeriodicTasks(periodic_task.PeriodicTasks):
 
             if CONF.use_identity_api_v3:
                 trusts.use_os_admin_auth_token(cluster)
-                api.terminate_cluster(cluster.id)
-                LOG.debug('Terminated cluster %s with id %s' %
-                          (cluster.name, cluster.id))
+
+                LOG.info('Terminating transient cluster %s with id %s' %
+                         (cluster.name, cluster.id))
+
+                try:
+                    api.terminate_cluster(cluster.id)
+                except Exception as e:
+                    LOG.info('Failed to terminate transient cluster '
+                             '%s with id %s: %s.' %
+                             (cluster.name, cluster.id, six.text_type(e)))
+
             else:
                 if cluster.status != 'AwaitingTermination':
                     conductor.cluster_update(
