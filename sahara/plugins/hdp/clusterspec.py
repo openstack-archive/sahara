@@ -150,7 +150,7 @@ class ClusterSpec():
         return config_names
 
     def _process_node_groups(self, template_json=None, cluster=None):
-    # get node_groups from config
+        # get node_groups from config
         if template_json and not cluster:
             for group in template_json['host_role_mappings']:
                 node_group = NodeGroup(group['name'].lower())

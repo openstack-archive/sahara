@@ -33,7 +33,7 @@ class VersionHandlerFactory():
             for version in VersionHandlerFactory.versions:
                 module_name = 'sahara.plugins.hdp.versions.version_{0}.'\
                               'versionhandler'.format(
-                              version.replace('.', '_'))
+                                  version.replace('.', '_'))
                 module_class = getattr(
                     __import__(module_name, fromlist=['sahara']),
                     'VersionHandler')

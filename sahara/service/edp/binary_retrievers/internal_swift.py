@@ -55,7 +55,7 @@ def get_raw_data(context, job_binary):
                                        "must start with %s"
                                        % su.SWIFT_INTERNAL_PREFIX)
 
-    names = job_binary.url[job_binary.url.index("://")+3:].split("/", 1)
+    names = job_binary.url[job_binary.url.index("://") + 3:].split("/", 1)
     if len(names) == 1:
         # We are getting a whole container, return as a dictionary.
         container = names[0]

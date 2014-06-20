@@ -224,6 +224,6 @@ class EDPTest(base.ITestCase):
         finally:
             self.delete_swift_container(swift, container_name)
             self._delete_job(
-                job_execution, job_id, job_binary_list+lib_binary_list,
+                job_execution, job_id, job_binary_list + lib_binary_list,
                 job_binary_internal_list, input_id, output_id
             )

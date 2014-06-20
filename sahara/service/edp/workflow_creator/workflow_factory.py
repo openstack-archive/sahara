@@ -74,7 +74,7 @@ class BaseFactory(object):
             u = urlparse.urlparse(url)
             if not u.netloc.endswith(su.SWIFT_URL_SUFFIX):
                 return url.replace(u.netloc,
-                                   u.netloc+"%s" % su.SWIFT_URL_SUFFIX, 1)
+                                   u.netloc + "%s" % su.SWIFT_URL_SUFFIX, 1)
         return url
 
     def update_job_dict(self, job_dict, exec_dict):

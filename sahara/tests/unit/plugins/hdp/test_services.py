@@ -438,11 +438,11 @@ class ServicesTest(testtools.TestCase):
             self.assertEqual(
                 "111",
                 cluster_spec.configurations['hbase-site'][
-                'hbase.regionserver.global.memstore.upperLimit'])
+                    'hbase.regionserver.global.memstore.upperLimit'])
             self.assertEqual(
                 "111",
                 cluster_spec.configurations['global'][
-                'regionserver_memstore_upperlimit'])
+                    'regionserver_memstore_upperlimit'])
             ui_handlers[
                 'hbase-site/hbase.hstore.blockingStoreFiles'](
                     hdp_test_base.TestUserInput(
@@ -825,10 +825,10 @@ class ServicesTest(testtools.TestCase):
 
             self.assertEqual("hdfs://master.novalocal:8020/apps/hbase/data",
                              cluster_spec.configurations['hbase-site'][
-                             'hbase.rootdir'])
+                                 'hbase.rootdir'])
             self.assertEqual("master.novalocal",
                              cluster_spec.configurations['hbase-site'][
-                             'hbase.zookeeper.quorum'])
+                                 'hbase.zookeeper.quorum'])
 
     def test_get_storage_paths(self):
         for version in versions:

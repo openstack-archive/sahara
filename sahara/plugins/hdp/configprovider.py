@@ -43,8 +43,7 @@ class ConfigurationProvider:
                                   self._get_target(
                                       service_property['applicable_target']),
                                   service_property['scope'],
-                                  config_type=
-                                  service_property['config_type'],
+                                  config_type=service_property['config_type'],
                                   default_value=service_property
                                   ['default_value'],
                                   is_optional=service_property[

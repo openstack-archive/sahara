@@ -31,8 +31,8 @@ class TestJobBinaryValidation(u.ValidationTestCase):
             "name": "main.jar",
             "url": "internal-db://3e4651a5-1f08-4880-94c4-596372b37c64",
             "extra": {
-            "user": "user",
-            "password": "password"
+                "user": "user",
+                "password": "password"
             },
             "description": "long description"
         }
@@ -42,7 +42,7 @@ class TestJobBinaryValidation(u.ValidationTestCase):
         self._assert_create_object_validation(
             data={
                 "name": "j_o_w",
-                "url": su.SWIFT_INTERNAL_PREFIX+"o.sahara/k"
+                "url": su.SWIFT_INTERNAL_PREFIX + "o.sahara/k"
             },
             bad_req_i=(1, "BAD_JOB_BINARY",
                        "To work with JobBinary located in internal "
@@ -53,7 +53,7 @@ class TestJobBinaryValidation(u.ValidationTestCase):
         self._assert_create_object_validation(
             data={
                 "name": "j_o_w",
-                "url": su.OLD_SWIFT_INTERNAL_PREFIX+"o.sahara/k"
+                "url": su.OLD_SWIFT_INTERNAL_PREFIX + "o.sahara/k"
             },
             bad_req_i=(1, "BAD_JOB_BINARY",
                        "To work with JobBinary located in internal "

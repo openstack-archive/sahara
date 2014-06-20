@@ -61,12 +61,12 @@ class TestScalingValidation(testtools.TestCase):
         cluster = tu.create_cluster("cluster1", "tenant1", "vanilla", "1.2.1",
                                     [ng1], status='Validating', id='12321')
 
-        self._assert_check_scaling(data={}, cluster=cluster,
-                                   expected_message=
-                                   "Cluster cannot be scaled "
-                                   "not in 'Active' "
-                                   "status. Cluster status: "
-                                   "Validating")
+        self._assert_check_scaling(
+            data={}, cluster=cluster,
+            expected_message="Cluster cannot be scaled "
+                             "not in 'Active' "
+                             "status. Cluster status: "
+                             "Validating")
 
         cluster = tu.create_cluster("cluster1", "tenant1", "vanilla", "1.2.1",
                                     [ng1], status='Active', id='12321')
@@ -79,10 +79,10 @@ class TestScalingValidation(testtools.TestCase):
                 }
             ],
         }
-        self._assert_check_scaling(data=data, cluster=cluster,
-                                   expected_message=
-                                   "Cluster doesn't contain "
-                                   "node group with name 'a'")
+        self._assert_check_scaling(
+            data=data, cluster=cluster,
+            expected_message="Cluster doesn't contain "
+                             "node group with name 'a'")
         data.update({'resize_node_groups': [
             {
                 'name': 'a',
@@ -95,10 +95,10 @@ class TestScalingValidation(testtools.TestCase):
                 'node_processes': ['namenode']
             }
         ]})
-        self._assert_check_scaling(data=data, cluster=cluster,
-                                   expected_message=
-                                   'Duplicates in node '
-                                   'group names are detected')
+        self._assert_check_scaling(
+            data=data, cluster=cluster,
+            expected_message='Duplicates in node '
+                             'group names are detected')
 
     def test_check_cluster_scaling_add_ng(self):
         ng1 = tu.make_ng_dict('ng', '42', ['namenode'], 1)
@@ -119,10 +119,10 @@ class TestScalingValidation(testtools.TestCase):
                 }
             ]
         }
-        self._assert_check_scaling(data=data, cluster=cluster,
-                                   expected_message=
-                                   'Duplicates in node '
-                                   'group names are detected')
+        self._assert_check_scaling(
+            data=data, cluster=cluster,
+            expected_message='Duplicates in node '
+                             'group names are detected')
         data = {
             'add_node_groups': [
                 {
@@ -132,11 +132,11 @@ class TestScalingValidation(testtools.TestCase):
                 },
             ]
         }
-        self._assert_check_scaling(data=data, cluster=cluster,
-                                   expected_message=
-                                   "Can't add new nodegroup. "
-                                   "Cluster already has nodegroup "
-                                   "with name 'ng'")
+        self._assert_check_scaling(
+            data=data, cluster=cluster,
+            expected_message="Can't add new nodegroup. "
+                             "Cluster already has nodegroup "
+                             "with name 'ng'")
 
         data = {
             'add_node_groups': [
@@ -150,10 +150,11 @@ class TestScalingValidation(testtools.TestCase):
         }
         patchers = u.start_patch()
         self._assert_check_scaling(
-            data=data, cluster=cluster, expected_message=
-            "Composite hostname test-cluster-very-very-very-very-"
-            "very-very-long-ng-name-010.novalocal in provisioned cluster "
-            "exceeds maximum limit 64 characters")
+            data=data, cluster=cluster,
+            expected_message="Composite hostname test-cluster-very-"
+                             "very-very-very-very-very-long-ng-name-"
+                             "010.novalocal in provisioned cluster exceeds "
+                             "maximum limit 64 characters")
         u.stop_patch(patchers)
 
     def _assert_calls(self, mock, call_info):
