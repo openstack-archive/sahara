@@ -116,3 +116,9 @@ def LargeBinary():
     if base.is_mysql_avail():
         return mysql.LONGBLOB
     return sa.LargeBinary
+
+
+def LongText():
+    if base.is_mysql_avail():
+        return mysql.LONGTEXT
+    return sa.Text
