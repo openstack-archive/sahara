@@ -105,6 +105,16 @@ ENABLE_DATA_LOCALITY = p.Config('Enable Data Locality', 'general', 'cluster',
                                 config_type="bool", priority=1,
                                 default_value=True, is_optional=True)
 
+# Default set to 1 day, which is the default Keystone token
+# expiration time. After the token is expired we can't continue
+# scaling anyway.
+DECOMISSIONING_TIMEOUT = p.Config('Decomissioning Timeout', 'general',
+                                  'cluster', config_type='int', priority=1,
+                                  default_value=86400, is_optional=True,
+                                  description='Timeout for datanode'
+                                              ' decomissioning operation'
+                                              ' during scaling, in seconds')
+
 HIDDEN_CONFS = ['fs.defaultFS', 'dfs.namenode.name.dir',
                 'dfs.datanode.data.dir']
 
@@ -160,6 +170,7 @@ def _initialise_configs():
                            priority=item["priority"])
             configs.append(cfg)
 
+    configs.append(DECOMISSIONING_TIMEOUT)
     if CONF.enable_data_locality:
         configs.append(ENABLE_DATA_LOCALITY)
 
@@ -376,18 +387,23 @@ def _set_config(cfg, gen_cfg, name=None):
     return cfg
 
 
-def _is_general_option_enabled(cluster, option):
-    for ng in cluster.node_groups:
-        conf = ng.configuration()
-        if 'general' in conf and option.name in conf['general']:
-            return conf['general'][option.name]
+def _get_general_cluster_config_value(cluster, option):
+    conf = cluster.cluster_configs
+
+    if 'general' in conf and option.name in conf['general']:
+        return conf['general'][option.name]
+
     return option.default_value
 
 
 def is_data_locality_enabled(cluster):
     if not CONF.enable_data_locality:
         return False
-    return _is_general_option_enabled(cluster, ENABLE_DATA_LOCALITY)
+    return _get_general_cluster_config_value(cluster, ENABLE_DATA_LOCALITY)
+
+
+def get_decommissioning_timeout(cluster):
+    return _get_general_cluster_config_value(cluster, DECOMISSIONING_TIMEOUT)
 
 
 def get_port_from_config(service, name, cluster=None):
