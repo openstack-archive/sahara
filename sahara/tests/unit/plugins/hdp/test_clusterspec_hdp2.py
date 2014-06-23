@@ -525,9 +525,10 @@ class ClusterSpecTestForHDP2(testtools.TestCase):
             '222.22.6666', '333.22.6666')
 
         master_ng = TestNodeGroup(
-            'master', [master_host], ['GANGLIA_SERVER',
-            'GANGLIA_MONITOR', 'NAGIOS_SERVER',
-            'AMBARI_SERVER', 'AMBARI_AGENT', 'ZOOKEEPER_SERVER'])
+            'master', [master_host],
+            ['GANGLIA_SERVER',
+             'GANGLIA_MONITOR', 'NAGIOS_SERVER',
+             'AMBARI_SERVER', 'AMBARI_AGENT', 'ZOOKEEPER_SERVER'])
         jt_ng = TestNodeGroup('jt', [jt_host], ["RESOURCEMANAGER",
                                                 "HISTORYSERVER",
                                                 "GANGLIA_MONITOR",
@@ -537,9 +538,10 @@ class ClusterSpecTestForHDP2(testtools.TestCase):
         snn_ng = TestNodeGroup('snn', [snn_host], ["SECONDARY_NAMENODE",
                                "GANGLIA_MONITOR", "AMBARI_AGENT"])
         slave_ng = TestNodeGroup(
-            'slave', [slave_host], ["DATANODE", "NODEMANAGER",
-            "GANGLIA_MONITOR", "HDFS_CLIENT", "MAPREDUCE2_CLIENT",
-            "AMBARI_AGENT"])
+            'slave', [slave_host],
+            ["DATANODE", "NODEMANAGER",
+             "GANGLIA_MONITOR", "HDFS_CLIENT", "MAPREDUCE2_CLIENT",
+             "AMBARI_AGENT"])
 
         cluster = base.TestCluster([master_ng, jt_ng, nn_ng,
                                    snn_ng, slave_ng])
@@ -784,13 +786,14 @@ class ClusterSpecTestForHDP2(testtools.TestCase):
                                   '222.22.2222', '333.22.2222')
 
         node_group1 = TestNodeGroup(
-            'master', [server1], ["NAMENODE", "RESOURCEMANAGER",
-            "HISTORYSERVER", "SECONDARY_NAMENODE", "GANGLIA_SERVER",
-            "GANGLIA_MONITOR", "NAGIOS_SERVER", "AMBARI_SERVER",
-            "ZOOKEEPER_SERVER", "AMBARI_AGENT"])
+            'master', [server1],
+            ["NAMENODE", "RESOURCEMANAGER",
+             "HISTORYSERVER", "SECONDARY_NAMENODE", "GANGLIA_SERVER",
+             "GANGLIA_MONITOR", "NAGIOS_SERVER", "AMBARI_SERVER",
+             "ZOOKEEPER_SERVER", "AMBARI_AGENT"])
         node_group2 = TestNodeGroup(
             'slave', [server2], ["NODEMANAGER", "DATANODE", "AMBARI_AGENT",
-            "GANGLIA_MONITOR"])
+                                 "GANGLIA_MONITOR"])
 
         cluster = base.TestCluster([node_group1, node_group2])
         cluster_config = cs.ClusterSpec(cluster_config_file, version='2.0.6')
@@ -924,13 +927,25 @@ class ClusterSpecTestForHDP2(testtools.TestCase):
                                   '222.22.2222', '333.22.2222')
 
         node_group1 = TestNodeGroup(
-            'master', [server1], ["NAMENODE", "RESOURCEMANAGER",
-            "HISTORYSERVER", "SECONDARY_NAMENODE", "GANGLIA_SERVER",
-            "GANGLIA_MONITOR", "NAGIOS_SERVER", "AMBARI_SERVER",
-            "ZOOKEEPER_SERVER", "AMBARI_AGENT"])
+            'master',
+            [server1],
+            ["NAMENODE",
+             "RESOURCEMANAGER",
+             "HISTORYSERVER",
+             "SECONDARY_NAMENODE",
+             "GANGLIA_SERVER",
+             "GANGLIA_MONITOR",
+             "NAGIOS_SERVER",
+             "AMBARI_SERVER",
+             "ZOOKEEPER_SERVER",
+             "AMBARI_AGENT"])
         node_group2 = TestNodeGroup(
-            'slave', [server2], ["NODEMANAGER", "DATANODE",
-            "AMBARI_AGENT", "GANGLIA_MONITOR"])
+            'slave',
+            [server2],
+            ["NODEMANAGER",
+             "DATANODE",
+             "AMBARI_AGENT",
+             "GANGLIA_MONITOR"])
 
         cluster = base.TestCluster([node_group1, node_group2])
         cluster_config = cs.ClusterSpec(cluster_config_file, version='2.0.6')
@@ -957,13 +972,25 @@ class ClusterSpecTestForHDP2(testtools.TestCase):
                                   '222.22.2222', '333.22.2222')
 
         node_group1 = TestNodeGroup(
-            'master', [server1], ["NAMENODE", "RESOURCEMANAGER",
-            "HISTORYSERVER", "SECONDARY_NAMENODE", "GANGLIA_SERVER",
-            "GANGLIA_MONITOR", "NAGIOS_SERVER", "AMBARI_SERVER",
-            "ZOOKEEPER_SERVER", "AMBARI_AGENT"])
+            'master',
+            [server1],
+            ["NAMENODE",
+             "RESOURCEMANAGER",
+             "HISTORYSERVER",
+             "SECONDARY_NAMENODE",
+             "GANGLIA_SERVER",
+             "GANGLIA_MONITOR",
+             "NAGIOS_SERVER",
+             "AMBARI_SERVER",
+             "ZOOKEEPER_SERVER",
+             "AMBARI_AGENT"])
         node_group2 = TestNodeGroup(
-            'slave', [server2], ["NODEMANAGER", "DATANODE",
-            "AMBARI_AGENT", "GANGLIA_MONITOR"])
+            'slave',
+            [server2],
+            ["NODEMANAGER",
+             "DATANODE",
+             "AMBARI_AGENT",
+             "GANGLIA_MONITOR"])
 
         cluster = base.TestCluster([node_group1, node_group2])
         cluster_config = cs.ClusterSpec(cluster_config_file, version='2.0.6')

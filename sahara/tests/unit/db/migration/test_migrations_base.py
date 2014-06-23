@@ -247,8 +247,8 @@ class BaseMigrationTestCase(testtools.TestCase):
 
     @synchronized('pgadmin', external=True, lock_path='/tmp')
     def _reset_pg(self, conn_pieces):
-        (user, password, database, host) = \
-            get_pgsql_connection_info(conn_pieces)
+        (user, password, database, host) = (
+            get_pgsql_connection_info(conn_pieces))
         os.environ['PGPASSWORD'] = password
         os.environ['PGUSER'] = user
         # note(boris-42): We must create and drop database, we can't
@@ -274,8 +274,8 @@ class BaseMigrationTestCase(testtools.TestCase):
         # We can execute the MySQL client to destroy and re-create
         # the MYSQL database, which is easier and less error-prone
         # than using SQLAlchemy to do this via MetaData...trust me.
-        (user, password, database, host) = \
-            get_mysql_connection_info(conn_pieces)
+        (user, password, database, host) = (
+            get_mysql_connection_info(conn_pieces))
         sql = ("drop database if exists %(database)s; "
                "create database %(database)s;" % {'database': database})
         cmd = ("mysql -u \"%(user)s\" %(password)s -h %(host)s -e \"%(sql)s\""
@@ -304,16 +304,16 @@ class BaseMigrationTestCase(testtools.TestCase):
         conn_pieces = urlparse.urlparse(conn_string)
 
         if conn_string.startswith('mysql'):
-            (user, password, database, host) = \
-                get_mysql_connection_info(conn_pieces)
+            (user, password, database, host) = (
+                get_mysql_connection_info(conn_pieces))
             sql = "create database if not exists %s;" % database
             cmd = ("mysql -u \"%(user)s\" %(password)s -h %(host)s "
                    "-e \"%(sql)s\"" % {'user': user, 'password': password,
                                        'host': host, 'sql': sql})
             self.execute_cmd(cmd)
         elif conn_string.startswith('postgresql'):
-            (user, password, database, host) = \
-                get_pgsql_connection_info(conn_pieces)
+            (user, password, database, host) = (
+                get_pgsql_connection_info(conn_pieces))
             os.environ['PGPASSWORD'] = password
             os.environ['PGUSER'] = user
 
@@ -410,8 +410,8 @@ class BaseWalkMigrationTestCase(BaseMigrationTestCase):
         # automatically in tearDown so no need to clean it up here.
         connect_string = _get_connect_string(
             "mysql", self.USER, self.PASSWD, self.DATABASE)
-        (user, password, database, host) = \
-            get_mysql_connection_info(urlparse.urlparse(connect_string))
+        (user, password, database, host) = (
+            get_mysql_connection_info(urlparse.urlparse(connect_string)))
         engine = sqlalchemy.create_engine(connect_string)
         self.engines[database] = engine
         self.test_databases[database] = connect_string
@@ -442,8 +442,8 @@ class BaseWalkMigrationTestCase(BaseMigrationTestCase):
         connect_string = _get_connect_string(
             "postgres", self.USER, self.PASSWD, self.DATABASE)
         engine = sqlalchemy.create_engine(connect_string)
-        (user, password, database, host) = \
-            get_mysql_connection_info(urlparse.urlparse(connect_string))
+        (user, password, database, host) = (
+            get_mysql_connection_info(urlparse.urlparse(connect_string)))
         self.engines[database] = engine
         self.test_databases[database] = connect_string
 

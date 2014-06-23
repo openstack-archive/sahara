@@ -39,10 +39,10 @@ def format_namenode(nn_remote):
 
 
 def clean_port_hadoop(nn_remote):
-    nn_remote.execute_command("sudo netstat -tlnp \
-                              | awk '/:8020 */ \
-                              {split($NF,a,\"/\"); print a[1]}' \
-                              | xargs sudo kill -9")
+    nn_remote.execute_command(("sudo netstat -tlnp"
+                               "| awk '/:8020 */"
+                               "{split($NF,a,\"/\"); print a[1]}'"
+                               "| xargs sudo kill -9"))
 
 
 def start_spark_master(nn_remote):

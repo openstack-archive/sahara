@@ -254,8 +254,14 @@ class ServicesTest(testtools.TestCase):
             'master.novalocal', 'master', '11111', 3,
             '111.11.1111', '222.11.1111')
         master_ng = hdp_test_base.TestNodeGroup(
-            'master', [master_host], ["NAMENODE", "JOBTRACKER",
-            "SECONDARY_NAMENODE", "TASKTRACKER", "DATANODE", "AMBARI_SERVER"])
+            'master',
+            [master_host],
+            ["NAMENODE",
+             "JOBTRACKER",
+             "SECONDARY_NAMENODE",
+             "TASKTRACKER",
+             "DATANODE",
+             "AMBARI_SERVER"])
         sqoop_host = hdp_test_base.TestServer(
             'sqoop.novalocal', 'sqoop', '11111', 3,
             '111.11.1111', '222.11.1111')

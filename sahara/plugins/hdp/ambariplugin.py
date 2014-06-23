@@ -206,18 +206,18 @@ class AmbariPlugin(p.ProvisioningPluginBase):
                 is_admin_provided = False
                 admin_user = ambari_info.user
                 admin_password = ambari_info.password
-                for u in service.users:
-                    if u.name == 'admin':
+                for user in service.users:
+                    if user.name == 'admin':
                         ambari_client.update_ambari_admin_user(
-                            u.password, ambari_info)
+                            user.password, ambari_info)
                         is_admin_provided = True
                         ambari_info.user = 'admin'
-                        ambari_info.password = u.password
+                        ambari_info.password = user.password
                     else:
-                        ambari_client.add_ambari_user(u, ambari_info)
-                        if 'admin' in u.groups:
-                            admin_user = u.name
-                            admin_password = u.password
+                        ambari_client.add_ambari_user(user, ambari_info)
+                        if 'admin' in user.groups:
+                            admin_user = user.name
+                            admin_password = user.password
 
                 if not is_admin_provided:
                     if admin_user is None:

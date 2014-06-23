@@ -26,8 +26,8 @@ import sahara.tests.unit.plugins.hdp.hdp_test_base as base
 from sahara import version
 
 
-GET_REST_REQ = "sahara.plugins.hdp.versions.version_1_3_2.versionhandler." \
-               "AmbariClient._get_http_session"
+GET_REST_REQ = ("sahara.plugins.hdp.versions.version_1_3_2.versionhandler."
+                "AmbariClient._get_http_session")
 
 
 def create_cluster_template(ctx, dct):

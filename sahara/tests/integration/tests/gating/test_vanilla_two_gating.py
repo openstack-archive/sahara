@@ -51,11 +51,12 @@ class VanillaTwoGatingTest(cluster_configs.ClusterConfigTest,
         self.internal_neutron_net = None
         if self.common_config.NEUTRON_ENABLED:
             self.internal_neutron_net = self.get_internal_neutron_net_id()
-            self.floating_ip_pool = \
-                self.get_floating_ip_pool_id_for_neutron_net()
+            self.floating_ip_pool = (
+                self.get_floating_ip_pool_id_for_neutron_net())
 
-        self.vanilla_two_config.IMAGE_ID, self.vanilla_two_config.SSH_USERNAME\
-            = (self.get_image_id_and_ssh_username(self.vanilla_two_config))
+        (self.vanilla_two_config.IMAGE_ID,
+         self.vanilla_two_config.SSH_USERNAME) = (
+            self.get_image_id_and_ssh_username(self.vanilla_two_config))
 
         self.volumes_per_node = 0
         self.volume_size = 0

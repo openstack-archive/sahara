@@ -288,10 +288,10 @@ class VersionHandler(avm.AbstractVersionHandler):
             'authorized_keys': public_key
         }
 
-        key_cmd = 'sudo mkdir -p /home/hadoop/.ssh/ && ' \
-                  'sudo mv id_rsa authorized_keys /home/hadoop/.ssh && ' \
-                  'sudo chown -R hadoop:hadoop /home/hadoop/.ssh && ' \
-                  'sudo chmod 600 /home/hadoop/.ssh/{id_rsa,authorized_keys}'
+        key_cmd = ('sudo mkdir -p /home/hadoop/.ssh/ && '
+                   'sudo mv id_rsa authorized_keys /home/hadoop/.ssh && '
+                   'sudo chown -R hadoop:hadoop /home/hadoop/.ssh && '
+                   'sudo chmod 600 /home/hadoop/.ssh/{id_rsa,authorized_keys}')
 
         with remote.get_remote(instance) as r:
             # TODO(aignatov): sudo chown is wrong solution. But it works.
@@ -465,8 +465,8 @@ class VersionHandler(avm.AbstractVersionHandler):
         dn_to_delete = 0
         for ng in cluster.node_groups:
             if ng.id in existing:
-                if ng.count > existing[ng.id] and "datanode" in \
-                        ng.node_processes:
+                if (ng.count > existing[ng.id] and "datanode" in
+                        ng.node_processes):
                     dn_to_delete += ng.count - existing[ng.id]
                 if not set(ng.node_processes).issubset(scalable_processes):
                     raise ex.NodeGroupCannotBeScaled(

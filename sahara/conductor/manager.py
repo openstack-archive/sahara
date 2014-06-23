@@ -155,8 +155,8 @@ class ConductorManager(db_base.Base):
                 c_tmpl.get('cluster_configs'),
                 values.get('cluster_configs'))
 
-        merged_values['node_groups'] = \
-            self._populate_node_groups(context, merged_values)
+        merged_values['node_groups'] = self._populate_node_groups(
+            context, merged_values)
 
         return self.db.cluster_create(context, merged_values)
 

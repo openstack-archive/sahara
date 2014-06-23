@@ -203,9 +203,9 @@ def get_config_value(service, name, cluster=None):
                     ng.configuration()[service].get(name)):
                 return ng.configuration()[service][name]
 
-    for c in PLUGIN_CONFIGS:
-        if c.applicable_target == service and c.name == name:
-            return c.default_value
+    for configs in PLUGIN_CONFIGS:
+        if configs.applicable_target == service and configs.name == name:
+            return configs.default_value
 
     raise ex.ConfigurationError("Unable get parameter '%s' from service %s" %
                                 (name, service))

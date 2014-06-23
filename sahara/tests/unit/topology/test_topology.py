@@ -40,8 +40,8 @@ class TopologyTestCase(base.SaharaTestCase):
         self.assertIn({'name': "net.topology.nodegroup.aware",
                        'value': 'true'},
                       result)
-        className = 'org.apache.hadoop.hdfs.server.namenode.' \
-                    'BlockPlacementPolicyWithNodeGroup'
+        className = ('org.apache.hadoop.hdfs.server.namenode.'
+                     'BlockPlacementPolicyWithNodeGroup')
         self.assertIn({'name': "dfs.block.replicator.classname",
                        'value': className},
                       result)

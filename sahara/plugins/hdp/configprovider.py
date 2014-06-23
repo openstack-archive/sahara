@@ -63,6 +63,6 @@ class ConfigurationProvider:
                     raise exceptions.InvalidDataException(
                         'Internal Error. Duplicate property '
                         'name detected: %s' % property_name)
-                self.config_mapper[service_property['name']] = \
+                self.config_mapper[service_property['name']] = (
                     self._get_target(
-                        service_property['applicable_target'])
+                        service_property['applicable_target']))

@@ -21,16 +21,16 @@ from sahara.plugins.hdp import saharautils
 from sahara.utils import files as f
 
 
-AMBARI_RPM = 'http://s3.amazonaws.com/public-repo-1.hortonworks.com/' \
-             'ambari/centos6/1.x/updates/1.6.0/ambari.repo'
+AMBARI_RPM = ('http://s3.amazonaws.com/public-repo-1.hortonworks.com/'
+              'ambari/centos6/1.x/updates/1.6.0/ambari.repo')
 
 EPEL_RELEASE_PACKAGE_NAME = 'epel-release'
 
-HADOOP_SWIFT_RPM = 'https://s3.amazonaws.com/public-repo-1.hortonworks.com/' \
-                   'sahara/swift/hadoop-swift-1.0-1.x86_64.rpm'
+HADOOP_SWIFT_RPM = ('https://s3.amazonaws.com/public-repo-1.hortonworks.com/'
+                    'sahara/swift/hadoop-swift-1.0-1.x86_64.rpm')
 
-HADOOP_SWIFT_LOCAL_RPM = '/opt/hdp-local-repos/hadoop-swift/' \
-                         'hadoop-swift-1.0-1.x86_64.rpm'
+HADOOP_SWIFT_LOCAL_RPM = ('/opt/hdp-local-repos/hadoop-swift/'
+                          'hadoop-swift-1.0-1.x86_64.rpm')
 
 LOG = logging.getLogger(__name__)
 
@@ -67,8 +67,8 @@ class HadoopServer:
             "{0}: Installing rpm's ...".format(self.instance.hostname()))
 
         # TODO(jspeidel): based on image type, use correct command
-        curl_cmd = 'curl -f -s -o /etc/yum.repos.d/ambari.repo %s' % \
-            self.ambari_rpm
+        curl_cmd = ('curl -f -s -o /etc/yum.repos.d/ambari.repo %s' %
+                    self.ambari_rpm)
         ret_code, stdout = r.execute_command(curl_cmd,
                                              run_as_root=True,
                                              raise_when_error=False)

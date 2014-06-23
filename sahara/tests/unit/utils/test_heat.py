@@ -47,8 +47,8 @@ class TestHeat(testtools.TestCase):
 
     def test_get_anti_affinity_scheduler_hints(self):
         inst_names = ['i1', 'i2']
-        expected = '"scheduler_hints" : {"different_host": ' \
-                   '[{"Ref": "i1"}, {"Ref": "i2"}]},'
+        expected = ('"scheduler_hints" : {"different_host": '
+                    '[{"Ref": "i1"}, {"Ref": "i2"}]},')
         actual = h._get_anti_affinity_scheduler_hints(inst_names)
         self.assertEqual(expected, actual)
 
