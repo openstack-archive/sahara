@@ -29,8 +29,9 @@ SWIFT_URL_SUFFIX = SWIFT_URL_SUFFIX_START + 'sahara'
 
 
 def retrieve_auth_url():
-    """This function return auth url v2.0 api. Hadoop Swift library doesn't
-    support keystone v3 api.
+    """This function returns auth url v2.0 api.
+
+    Hadoop Swift library doesn't support keystone v3 api.
     """
     info = urlparse.urlparse(context.current().auth_uri)
 

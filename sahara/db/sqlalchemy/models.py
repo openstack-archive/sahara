@@ -225,7 +225,8 @@ class TemplatesRelation(mb.SaharaBase):
 # EDP objects: DataSource, Job, Job Execution, JobBinary
 
 class DataSource(mb.SaharaBase):
-    """DataSource - represent a diffident types of data source,
+    """DataSource - represent a diffident types of data sources.
+
     e.g. Swift, Cassandra etc.
     """
 
@@ -245,8 +246,8 @@ class DataSource(mb.SaharaBase):
 
 
 class JobExecution(mb.SaharaBase):
-    """JobExecution - represent a job execution of specific cluster
-    """
+    """JobExecution - represent a job execution of specific cluster."""
+
     __tablename__ = 'job_executions'
 
     id = _id_column()
@@ -291,8 +292,7 @@ libs_association = sa.Table("libs_association",
 
 
 class Job(mb.SaharaBase):
-    """Job - description and location of a job binary
-    """
+    """Job - description and location of a job binary."""
 
     __tablename__ = 'jobs'
 
@@ -320,8 +320,8 @@ class Job(mb.SaharaBase):
 
 
 class JobBinaryInternal(mb.SaharaBase):
-    """JobBinaryInternal - raw binary storage for executable jobs
-    """
+    """JobBinaryInternal - raw binary storage for executable jobs."""
+
     __tablename__ = 'job_binary_internal'
 
     __table_args__ = (
@@ -336,8 +336,7 @@ class JobBinaryInternal(mb.SaharaBase):
 
 
 class JobBinary(mb.SaharaBase):
-    """JobBinary - raw binary storage for executable jobs
-    """
+    """JobBinary - raw binary storage for executable jobs."""
 
     __tablename__ = 'job_binaries'
 

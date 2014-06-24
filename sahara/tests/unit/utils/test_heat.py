@@ -64,15 +64,15 @@ class TestHeat(testtools.TestCase):
 
 
 class TestClusterTemplate(base.SaharaWithDbTestCase):
-    """This test checks valid structure of Resources
-       section in generated Heat templates:
-       1. It checks templates generation with different OpenStack
-       network installations: Neutron, NovaNetwork with floating Ip auto
-       assignment set to True or False.
-       2. Cinder volume attachments.
-       3. Basic instances creations with multi line user data provided.
-       4. Anti-affinity feature with proper nova scheduler hints included
-       into Heat templates.
+    """Checks valid structure of Resources section in generated Heat templates.
+
+    1. It checks templates generation with different OpenStack
+    network installations: Neutron, NovaNetwork with floating Ip auto
+    assignment set to True or False.
+    2. Cinder volume attachments.
+    3. Basic instances creations with multi line user data provided.
+    4. Anti-affinity feature with proper nova scheduler hints included
+    into Heat templates.
     """
 
     def _make_node_groups(self, floating_ip_pool=None):
@@ -101,9 +101,10 @@ class TestClusterTemplate(base.SaharaWithDbTestCase):
         return heat_template
 
     def test_load_template_use_neutron(self):
-        """This test checks Heat cluster template with Neutron enabled.
-           Two NodeGroups used: 'master' with Ephemeral drive attached and
-           'worker' with 2 attached volumes 10GB size each
+        """Test for Heat cluster template with Neutron enabled.
+
+        Two NodeGroups used: 'master' with Ephemeral drive attached and
+        'worker' with 2 attached volumes 10GB size each
         """
 
         ng1, ng2 = self._make_node_groups('floating')
@@ -121,10 +122,12 @@ class TestClusterTemplate(base.SaharaWithDbTestCase):
                 "test_serialize_resources_use_neutron.heat")))
 
     def test_load_template_use_nova_network_without_autoassignment(self):
-        """This test checks Heat cluster template with Nova Network enabled
-           without autoassignment floating ip.
-           Two NodeGroups used: 'master' with Ephemeral drive attached and
-           'worker' with 2 attached volumes 10GB size each
+        """Checks Heat cluster template with Nova Network enabled.
+
+        Nova Network checked without autoassignment of floating ip.
+
+        Two NodeGroups used: 'master' with Ephemeral drive attached and
+        'worker' with 2 attached volumes 10GB size each
         """
 
         ng1, ng2 = self._make_node_groups('floating')
@@ -143,10 +146,12 @@ class TestClusterTemplate(base.SaharaWithDbTestCase):
         )
 
     def test_load_template_use_nova_network_with_autoassignment(self):
-        """This test checks Heat cluster template with Nova Network enabled
-           with autoassignment floating ip.
-           Two NodeGroups used: 'master' with Ephemeral drive attached and
-           'worker' with 2 attached volumes 10GB size each
+        """Checks Heat cluster template with Nova Network enabled.
+
+        Nova Network checked with autoassignment of floating ip.
+
+        Two NodeGroups used: 'master' with Ephemeral drive attached and
+        'worker' with 2 attached volumes 10GB size each
         """
 
         ng1, ng2 = self._make_node_groups()
@@ -165,9 +170,10 @@ class TestClusterTemplate(base.SaharaWithDbTestCase):
         )
 
     def test_load_template_with_anti_affinity_single_ng(self):
-        """This test checks Heat cluster template with Neutron enabled
-           and anti-affinity feature enabled for single node process
-           in single node group.
+        """Checks Heat cluster template with Neutron enabled.
+
+        Checks also anti-affinity feature enabled for single node process
+        in single node group.
         """
 
         ng1 = tu.make_ng_dict('master', 42, ['namenode'], 1,
