@@ -3476,6 +3476,47 @@
                     "scope": "cluster"
                 }
             ]
+        },
+        {
+            "tag": "hue-ini",
+            "properties": [
+                {
+                    "applicable_target": "HUE",
+                    "config_type": "int",
+                    "default_value": "8000",
+                    "description": "The HTTP port for the web-based user interface.",
+                    "is_optional": true,
+                    "name": "desktop/http_port",
+                    "scope": "cluster"
+                },
+                {
+                    "applicable_target": "HUE",
+                    "config_type": "string",
+                    "default_value": "admin",
+                    "description": "The username of the initial administrative user.",
+                    "is_optional": true,
+                    "name": "useradmin/default_username",
+                    "scope": "cluster"
+                },
+                {
+                    "applicable_target": "HUE",
+                    "config_type": "string",
+                    "default_value": "admin",
+                    "description": "The password for the initial administrative user.",
+                    "is_optional": true,
+                    "name": "useradmin/default_user_password",
+                    "scope": "cluster"
+                },
+                {
+                    "applicable_target": "HUE",
+                    "config_type": "string",
+                    "default_value": "hadoop",
+                    "description": "The default group for hue users.",
+                    "is_optional": true,
+                    "name": "useradmin/default_user_group",
+                    "scope": "cluster"
+                }
+            ]
         }
     ]
 }

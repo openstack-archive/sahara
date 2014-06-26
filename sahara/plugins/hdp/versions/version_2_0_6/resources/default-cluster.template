@@ -251,7 +251,19 @@
           ]
         }
       ]
-    }
+    },
+    {
+      "name" : "HUE",
+      "components" : [
+        {
+          "name" : "HUE",
+          "type" : "CLIENT",
+          "cardinality" : "1"
+        }
+      ],
+      "configurations" : [
+      ]
+   }
   ],
   "host_role_mappings" : [
     {
@@ -1652,6 +1664,161 @@
       "properties" : [
         { "name" : "server.port", "value" : "8080" },
         { "name" : "rpm", "value" : "http://s3.amazonaws.com/public-repo-1.hortonworks.com/ambari/centos6/1.x/updates/1.4.3.38/ambari.repo" }
+      ]
+    },
+    {
+      "name" : "hue-ini",
+      "properties" : [
+        { "name": "desktop/kredentials_dir", "value": "'/tmp'" },
+        { "name": "desktop/send_dbug_messages", "value": "1" },
+        { "name": "desktop/database_logging", "value": "0" },
+        { "name": "desktop/secret_key", "value": "secretkeysecretkeysecretkeysecretkey" },
+        { "name": "desktop/http_host", "value": "0.0.0.0" },
+        { "name": "desktop/http_port", "value": "8000" },
+        { "name": "desktop/time_zone", "value": "America/Los_Angeles" },
+        { "name": "desktop/django_debug_mode", "value": "1" },
+        { "name": "desktop/http_500_debug_mode", "value": "1" },
+        { "name": "desktop/django_server_email", "value": "", "example": "'hue@localhost.localdomain'" },
+        { "name": "desktop/django_email_backend", "value": "", "example": "django.core.mail.backends.smtp.EmailBackend" },
+        { "name": "desktop/use_cherrypy_server", "value": "", "example": "false" },
+        { "name": "desktop/server_user", "value": "hue" },
+        { "name": "desktop/server_group", "value": "hadoop" },
+        { "name": "desktop/enable_server", "value": "yes" },
+        { "name": "desktop/cherrypy_server_threads", "value": "", "example": "10" },
+        { "name": "desktop/ssl_certificate", "value": "", "example": "" },
+        { "name": "desktop/ssl_private_key", "value": "", "example": "" },
+        { "name": "desktop/default_site_encoding", "value": "", "example": "utf-8" },
+        { "name": "desktop/x_frame_options", "value": "'ALLOWALL'" },
+        { "name": "desktop/auth/backend", "value": "desktop.auth.backend.AllowFirstUserDjangoBackend" },
+        { "name": "desktop/auth/pam_service", "value": "", "example": "login" },
+        { "name": "desktop/auth/remote_user_header", "value": "", "example": "HTTP_REMOTE_USER" },
+        { "name": "desktop/ldap/base_dn", "value": "", "example": "'DC=mycompany,DC=com'" },
+        { "name": "desktop/ldap/nt_domain", "value": "", "example": "mycompany.com" },
+        { "name": "desktop/ldap/ldap_url", "value": "", "example": "ldap://auth.mycompany.com" },
+        { "name": "desktop/ldap/ldap_cert", "value": "", "example": "" },
+        { "name": "desktop/ldap/bind_dn", "value": "", "example": "'CN=ServiceAccount,DC=mycompany,DC=com'" },
+        { "name": "desktop/ldap/bind_password", "value": "", "example": "" },
+        { "name": "desktop/ldap/ldap_username_pattern", "value": "", "example": "'uid=<username>,ou=People,dc=mycompany,dc=com'" },
+        { "name": "desktop/ldap/create_users_on_login", "value": "", "example": "true" },
+        { "name": "desktop/ldap/users/user_filter", "value": "", "example": "'objectclass=*'" },
+        { "name": "desktop/ldap/users/user_name_attr", "value": "", "example": "sAMAccountName" },
+        { "name": "desktop/ldap/users/groups/group_filter", "value": "", "example": "'objectclass=*'" },
+        { "name": "desktop/ldap/users/groups/group_name_attr", "value": "", "example": "cn" },
+        { "name": "desktop/database/engine", "value": "sqlite3" },
+        { "name": "desktop/database/name", "value": "/var/lib/hue/desktop.db" },
+        { "name": "desktop/database/host", "value": "", "example": "" },
+        { "name": "desktop/database/port", "value": "", "example": "" },
+        { "name": "desktop/database/user", "value": "", "example": "" },
+        { "name": "desktop/database/password", "value": "", "example": "" },
+        { "name": "desktop/smtp/host", "value": "localhost" },
+        { "name": "desktop/smtp/port", "value": "25" },
+        { "name": "desktop/smtp/user", "value": "" },
+        { "name": "desktop/smtp/password", "value": "" },
+        { "name": "desktop/smtp/tls", "value": "no" },
+        { "name": "desktop/smtp/default_from_email", "value": "", "example": "hue@localhost" },
+        { "name": "desktop/kerberos/hue_keytab", "value": "", "example": "/etc/security/keytabs/hue.service.keytab" },
+        { "name": "desktop/kerberos/hue_principal", "value": "", "example": "hue/IP" },
+        { "name": "desktop/kerberos/kinit_path", "value": "", "example": "/usr/bin/kinit" },
+        { "name": "desktop/kerberos/reinit_frequency", "value": "", "example": "3600" },
+        { "name": "desktop/kerberos/ccache_path", "value": "", "example": "/tmp/hue_krb5_ccache" },
+        { "name": "hadoop/hdfs_clusters/default/fs_defaultfs", "value": "hdfs://%NN_HOST%:8020" },
+        { "name": "hadoop/hdfs_clusters/default/webhdfs_url", "value": "http://%NN_HOST%:50070/webhdfs/v1/" },
+        { "name": "hadoop/hdfs_clusters/default/security_enabled", "value": "", "example": "true" },
+        { "name": "hadoop/hdfs_clusters/default/hadoop_hdfs_home", "value": "/usr/lib/hadoop-hdfs" },
+        { "name": "hadoop/hdfs_clusters/default/hadoop_bin", "value": "/usr/bin/hadoop" },
+        { "name": "hadoop/hdfs_clusters/default/hadoop_conf_dir", "value": "/etc/hadoop/conf" },
+        { "name": "hadoop/yarn_clusters/default/resourcemanager_host", "value": "%RM_HOST%" },
+        { "name": "hadoop/yarn_clusters/default/resourcemanager_port", "value": "8050" },
+        { "name": "hadoop/yarn_clusters/default/submit_to", "value": "true" },
+        { "name": "hadoop/yarn_clusters/default/security_enabled", "value": "", "example": "false" },
+        { "name": "hadoop/yarn_clusters/default/hadoop_mapred_home", "value": "/usr/lib/hadoop-mapreduce" },
+        { "name": "hadoop/yarn_clusters/default/hadoop_bin", "value": "/usr/bin/hadoop" },
+        { "name": "hadoop/yarn_clusters/default/hadoop_conf_dir", "value": "/etc/hadoop/conf" },
+        { "name": "hadoop/yarn_clusters/default/resourcemanager_api_url", "value": "http://%RM_HOST%:8088" },
+        { "name": "hadoop/yarn_clusters/default/proxy_api_url", "value": "http://%RM_HOST%:8088" },
+        { "name": "hadoop/yarn_clusters/default/history_server_api_url", "value": "http://%HS_HOST%:19888" },
+        { "name": "hadoop/yarn_clusters/default/node_manager_api_url", "value": "http://%RM_HOST%:8042" },
+        { "name": "liboozie/oozie_url", "value": "http://%OOZIE_HOST%:11000/oozie" },
+        { "name": "liboozie/security_enabled", "value": "", "example": "true" },
+        { "name": "liboozie/remote_deployement_dir", "value": "/user/hue/oozie/deployments" },
+        { "name": "oozie/local_data_dir", "value": "", "example": "..../examples" },
+        { "name": "oozie/sample_data_dir", "value": "", "example": "...thirdparty/sample_data" },
+        { "name": "oozie/remote_data_dir", "value": "", "example": "/user/hue/oozie/workspaces" },
+        { "name": "oozie/share_jobs", "value": "", "example": "true" },
+        { "name": "oozie/oozie_jobs_count", "value": "", "example": "100" },
+        { "name": "beeswax/beeswax_server_host", "value": "%HUE_HOST%" },
+        { "name": "beeswax/beeswax_server_port", "value": "8002" },
+        { "name": "beeswax/beeswax_meta_server_host", "value": "%HUE_HOST%" },
+        { "name": "beeswax/beeswax_meta_server_port", "value": "8003" },
+        { "name": "beeswax/hive_home_dir", "value": "/usr/lib/hive" },
+        { "name": "beeswax/hive_conf_dir", "value": "/etc/hive/conf" },
+        { "name": "beeswax/beeswax_server_conn_timeout", "value": "", "example": "120" },
+        { "name": "beeswax/metastore_conn_timeout", "value": "", "example": "10" },
+        { "name": "beeswax/beeswax_server_heapsize", "value": "", "example": "1000" },
+        { "name": "beeswax/share_saved_queries", "value": "", "example": "true" },
+        { "name": "beeswax/server_interface", "value": "", "example": "beeswax" },
+        { "name": "jobsub/remote_data_dir", "value": "", "example": "/user/hue/jobsub" },
+        { "name": "jobsub/local_data_dir", "value": "", "example": "..../data" },
+        { "name": "jobsub/sample_data_dir", "value": "", "example": "...thirdparty/sample_data" },
+        { "name": "jobbrowser/share_jobs", "value": "", "example": "true" },
+        { "name": "shell/shell_buffer_amount", "value": "", "example": "100" },
+        { "name": "shell/shell_delegation_token_dir", "value": "", "example": "/tmp/hue_delegation_tokens" },
+        { "name": "shell/shelltypes/flume/nice_name", "value": "", "example": "'Flume Shell'" },
+        { "name": "shell/shelltypes/flume/command", "value": "", "example": "'/usr/bin/flume shell'" },
+        { "name": "shell/shelltypes/flume/help", "value": "", "example": "'The command-line Flume client interface.'" },
+        { "name": "shell/shelltypes/pig/nice_name", "value": "'Pig Shell (Grunt)'" },
+        { "name": "shell/shelltypes/pig/command", "value": "'/usr/bin/pig -l /dev/null'" },
+        { "name": "shell/shelltypes/pig/help", "value": "'The command-line interpreter for Pig'" },
+        { "name": "shell/shelltypes/pig/environment/JAVA_HOME/value", "value": "'%JAVA_HOME%'" },
+        { "name": "shell/shelltypes/pig/environment/PATH/value" , "value": "'/usr/local/bin:/bin:/usr/bin'" },
+        { "name": "shell/shelltypes/hbase/nice_name", "value": "'HBase Shell'" },
+        { "name": "shell/shelltypes/hbase/command", "value": "'/usr/bin/hbase shell'" },
+        { "name": "shell/shelltypes/hbase/help", "value": "'The command-line HBase client interface.'" },
+        { "name": "shell/shelltypes/r_shell/nice_name", "value": "", "example": "'R shell'" },
+        { "name": "shell/shelltypes/r_shell/command", "value": "", "example": "'/usr/bin/R'" },
+        { "name": "shell/shelltypes/r_shell/help", "value": "", "example": "'The R language for Statistical Computing'" },
+        { "name": "shell/shelltypes/r_shell/environment/JAVA_HOME/value", "value": "", "example": "'%JAVA_HOME%'" },
+        { "name": "shell/shelltypes/bash/nice_name", "value": "'Bash (Test only!!!)'" },
+        { "name": "shell/shelltypes/bash/command", "value": "'/bin/bash'" },
+        { "name": "shell/shelltypes/bash/help", "value": "'A shell that does not depend on Hadoop components'" },
+        { "name": "useradmin/default_user_group", "value": "hadoop" },
+        { "name": "useradmin/default_username", "value": "admin" },
+        { "name": "useradmin/default_user_password", "value": "admin" },
+        { "name": "hcatalog/templeton_url", "value": "http://%WEBHCAT_HOST%:50111/templeton/v1/" },
+        { "name": "hcatalog/security_enabled", "value": "false" },
+        { "name": "about/tutorials_installed", "value": "false" },
+        { "name": "pig/udf_path", "value": "'/tmp/udfs'" },
+        { "name": "proxy/whitelist", "value": "\"(localhost|127\\.0\\.0\\.1|%NN_HOST_PATTERN%|%HUE_HOST_PATTERN%|%WEBHCAT_HOST_PATTERN%):(50030|50070|50060|50075|50111)\"," }
+      ]
+    },
+    {
+      "name" : "hue-core-site",
+      "properties" : [
+        { "name": "hadoop.proxyuser.hue.hosts", "value": "*" },
+        { "name": "hadoop.proxyuser.hue.groups", "value": "*" },
+        { "name": "hadoop.proxyuser.hcat.groups", "value": "*" },
+        { "name": "hadoop.proxyuser.hcat.hosts", "value": "*" }
+      ]
+    },
+    {
+      "name" : "hue-hdfs-site",
+      "properties" : [
+        { "name": "dfs.support.broken.append", "value": "true" },
+        { "name": "dfs.webhdfs.enabled", "value": "true" }
+      ]
+    },
+    {
+      "name" : "hue-webhcat-site",
+      "properties" : [
+        { "name": "webhcat.proxyuser.hue.hosts", "value": "*" },
+        { "name": "webhcat.proxyuser.hue.groups", "value": "*" }
+      ]
+    },
+    {
+      "name" : "hue-oozie-site",
+      "properties" : [
+        { "name": "oozie.service.ProxyUserService.proxyuser.hue.hosts", "value": "*" },
+        { "name": "oozie.service.ProxyUserService.proxyuser.hue.groups", "value": "*" }
       ]
     }
   ]
