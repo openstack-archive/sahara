@@ -350,8 +350,8 @@ class TestJobManager(base.SaharaWithDbTestCase):
         w.update_job_dict(job_dict, exec_job_dict)
         self.assertEqual(job_dict,
                          {'edp_configs': edp_configs,
-                          'configs':  {'default1': 'value1',
-                                       'default2': 'changed'},
+                          'configs': {'default1': 'value1',
+                                      'default2': 'changed'},
                           'params': {'param1': 'changed',
                                      'param2': 'value2'},
                           'args': ['replaced']})

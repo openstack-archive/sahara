@@ -56,7 +56,7 @@ def timed(f):
             raise
         finally:
             elapsed = time.time() - start
-            LOG.info('-'*indent_level + '{0}({1}), {2} seconds'.format(
+            LOG.info('-' * indent_level + '{0}({1}), {2} seconds'.format(
                      f.__name__, args[0].__class__.__name__, elapsed))
         return result
     return wrapper

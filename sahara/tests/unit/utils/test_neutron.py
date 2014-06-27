@@ -62,8 +62,8 @@ class FakeNeutronClient():
              "device_owner": "network:router_interface",
              "binding:capabilities": {"port_filter": True},
              "mac_address": "fa:16:3e:c5:b0:cb", "fixed_ips": [
-             {"subnet_id": "bfa9d0a1-9efb-4bff-bd2b-c103c053560f",
-             "ip_address": "10.0.0.1"}],
+                 {"subnet_id": "bfa9d0a1-9efb-4bff-bd2b-c103c053560f",
+                  "ip_address": "10.0.0.1"}],
              "id": "27193ae1-142a-436c-ab41-c77b1df032a1",
              "security_groups": [],
              "device_id": "6c4d4e32-3667-4cd4-84ea-4cc1e98d18be"}]}

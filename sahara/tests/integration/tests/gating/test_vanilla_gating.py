@@ -274,20 +274,23 @@ class VanillaGatingTest(cinder.CinderVolumeTest,
         java_lib_data = open(path + 'edp-java/edp-java.jar').read()
         java_configs = {
             "configs": {
-            "edp.java.main_class": "org.openstack.sahara.examples.WordCount"
+                "edp.java.main_class":
+                    "org.openstack.sahara.examples.WordCount"
             }
         }
 
         mapreduce_configs = {
             "configs": {
-            "mapred.mapper.class": "org.apache.oozie.example.SampleMapper",
-            "mapred.reducer.class": "org.apache.oozie.example.SampleReducer"
+                "mapred.mapper.class":
+                    "org.apache.oozie.example.SampleMapper",
+                "mapred.reducer.class":
+                    "org.apache.oozie.example.SampleReducer"
             }
         }
         mapreduce_streaming_configs = {
             "configs": {
-            "edp.streaming.mapper": "/bin/cat",
-            "edp.streaming.reducer": "/usr/bin/wc"
+                "edp.streaming.mapper": "/bin/cat",
+                "edp.streaming.reducer": "/usr/bin/wc"
             }
         }
         try:
