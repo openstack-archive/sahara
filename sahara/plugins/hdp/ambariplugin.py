@@ -17,7 +17,6 @@ from oslo.config import cfg
 
 from sahara import conductor
 from sahara import context
-from sahara import exceptions as exc
 from sahara.openstack.common import log as logging
 from sahara.plugins.general import exceptions as ex
 from sahara.plugins.general import utils as u
@@ -323,8 +322,20 @@ class AmbariPlugin(p.ProvisioningPluginBase):
         ambari_client.cleanup(ambari_info)
 
     def decommission_nodes(self, cluster, instances):
-        raise exc.InvalidException('The HDP plugin does not yet support the '
-                                   'decommissioning of nodes')
+        LOG.info('AmbariPlugin: decommission_nodes called for '
+                 'HDP version = ' + cluster.hadoop_version)
+
+        handler = self.version_factory.get_version_handler(
+            cluster.hadoop_version)
+        ambari_client = handler.get_ambari_client()
+        cluster_spec = handler.get_cluster_spec(
+            cluster, self._map_to_user_inputs(
+                cluster.hadoop_version, cluster.cluster_configs))
+
+        ambari_info = self.get_ambari_info(cluster_spec)
+        ambari_client.decommission_cluster_instances(cluster, cluster_spec,
+                                                     instances,
+                                                     ambari_info)
 
     def validate_scaling(self, cluster, existing, additional):
         handler = self.version_factory.get_version_handler(
