@@ -51,23 +51,20 @@ class TestPeriodicBack(base.SaharaWithDbTestCase):
         get_job_status.assert_has_calls([mock.call(u'2'),
                                          mock.call(u'3')])
 
-    @mock.patch('sahara.service.edp.job_manager.get_job_status')
+    @mock.patch('sahara.openstack.common.timeutils.utcnow')
     @mock.patch('sahara.service.api.terminate_cluster')
-    def test_cluster_terminate(self, terminate_cluster, get_job_status):
-        self.override_config("use_identity_api_v3", True)
+    def test_cluster_terminate(self, terminate_cluster, utcnow):
+
+        utcnow.return_value = datetime.datetime(2005, 2, 1, 0, 0)
+
         ctx = context.ctx()
         job = self.api.job_create(ctx, te.SAMPLE_JOB)
         ds = self.api.data_source_create(ctx, te.SAMPLE_DATA_SOURCE)
-        c = tc.SAMPLE_CLUSTER.copy()
-        c["status"] = "Active"
-        c["id"] = "1"
-        c["name"] = "1"
-        c['updated_at'] = timeutils.utcnow()
-        self.api.cluster_create(ctx, c)
-        c["id"] = "2"
-        c["name"] = "2"
-        self.api.cluster_create(ctx, c)
-        self._create_job_execution({"end_time": datetime.datetime.now(),
+
+        self._make_cluster('1')
+        self._make_cluster('2')
+
+        self._create_job_execution({"end_time": timeutils.utcnow(),
                                     "id": 1,
                                     "cluster_id": "1"},
                                    job, ds, ds)
@@ -79,9 +76,49 @@ class TestPeriodicBack(base.SaharaWithDbTestCase):
                                     "id": 3,
                                     "cluster_id": "2"},
                                    job, ds, ds)
+
+        utcnow.return_value = datetime.datetime(2005, 2, 1, 0, 1)
+
         p.SaharaPeriodicTasks().terminate_unneeded_clusters(None)
         self.assertEqual(terminate_cluster.call_count, 1)
         terminate_cluster.assert_has_calls([mock.call(u'1')])
+
+    @mock.patch('sahara.openstack.common.timeutils.utcnow')
+    @mock.patch('sahara.service.api.terminate_cluster')
+    def test_cluster_not_killed_too_early(self, terminate_cluster, utcnow):
+
+        utcnow.return_value = datetime.datetime(2005, 2, 1, second=0)
+
+        self._make_cluster('1')
+
+        utcnow.return_value = datetime.datetime(2005, 2, 1, second=20)
+
+        p.SaharaPeriodicTasks().terminate_unneeded_clusters(None)
+        self.assertEqual(terminate_cluster.call_count, 0)
+
+    @mock.patch('sahara.openstack.common.timeutils.utcnow')
+    @mock.patch('sahara.service.api.terminate_cluster')
+    def test_cluster_killed_in_time(self, terminate_cluster, utcnow):
+
+        utcnow.return_value = datetime.datetime(2005, 2, 1, second=0)
+
+        self._make_cluster('1')
+
+        utcnow.return_value = datetime.datetime(2005, 2, 1, second=40)
+
+        p.SaharaPeriodicTasks().terminate_unneeded_clusters(None)
+        self.assertEqual(terminate_cluster.call_count, 1)
+        terminate_cluster.assert_has_calls([mock.call(u'1')])
+
+    def _make_cluster(self, id_name):
+        ctx = context.ctx()
+
+        c = tc.SAMPLE_CLUSTER.copy()
+        c["status"] = "Active"
+        c["id"] = id_name
+        c["name"] = id_name
+        c['updated_at'] = timeutils.utcnow()
+        self.api.cluster_create(ctx, c)
 
     def _create_job_execution(self, values, job, input, output):
         values.update({"job_id": job['id'],
