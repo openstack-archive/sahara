@@ -48,16 +48,15 @@ class TestAttachVolume(base.SaharaWithDbTestCase):
             def __init__(self):
                 self.instance_id = '123454321'
                 self.volumes = [123]
+                self.instance_name = 'spam'
 
         instance = Instance()
-        p_get_volume.return_value = v.Volume(None, {'id': '123'})
+        p_get_volume.return_value = v.Volume(None, {'id': '123',
+                                                    'status': 'available'})
         p_detach.return_value = None
         p_delete.return_value = None
         self.assertIsNone(
             volumes.detach_from_instance(instance))
-
-        p_delete.side_effect = RuntimeError
-        self.assertRaises(RuntimeError, volumes.detach_from_instance, instance)
 
     @base.mock_thread_group
     @mock.patch('sahara.service.volumes._mount_volume')

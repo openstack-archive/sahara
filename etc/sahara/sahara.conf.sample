@@ -219,6 +219,15 @@
 
 
 #
+# Options defined in sahara.service.volumes
+#
+
+# Timeout for detaching volumes from instance (in seconds).
+# (integer value)
+#detach_volume_timeout=300
+
+
+#
 # Options defined in sahara.topology.topology_helper
 #
 
