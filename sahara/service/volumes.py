@@ -13,8 +13,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import re
-
 from oslo.config import cfg
 
 from sahara import conductor as c
@@ -39,27 +37,18 @@ CONF = cfg.CONF
 CONF.register_opt(detach_timeout_opt)
 
 
-def attach(cluster):
-    with context.ThreadGroup() as tg:
-        for node_group in cluster.node_groups:
-            tg.spawn('attach-volumes-for-ng-%s' % node_group.name,
-                     attach_to_instances, node_group.instances)
-
-
 def attach_to_instances(instances):
     with context.ThreadGroup() as tg:
         for instance in instances:
             tg.spawn('attach-volumes-for-instance-%s' % instance.instance_name,
                      _attach_volumes_to_node, instance.node_group, instance)
 
-    mount_to_instances(instances)
 
-
-def _await_attach_volumes(instance, count_volumes):
+def _await_attach_volumes(instance, devices):
     timeout = 10
     step = 2
     while timeout > 0:
-        if len(_get_unmounted_devices(instance)) == count_volumes:
+        if _count_attached_devices(instance, devices) == len(devices):
             return
 
         timeout -= step
@@ -69,24 +58,26 @@ def _await_attach_volumes(instance, count_volumes):
                          instance.instance_name)
 
 
-def _attach_volumes_to_node(node_group, instance, volume_type=None):
+def _attach_volumes_to_node(node_group, instance):
     ctx = context.ctx()
-    count = node_group.volumes_per_node
     size = node_group.volumes_size
-    for idx in range(1, count + 1):
+    devices = []
+    for idx in range(1, node_group.volumes_per_node + 1):
         display_name = "volume_" + instance.instance_name + "_" + str(idx)
-        _create_attach_volume(ctx, instance, size, display_name, volume_type)
-        LOG.debug("Attach volume to instance %s, type %s" %
-                  (instance.instance_id, volume_type))
+        device = _create_attach_volume(
+            ctx, instance, size, display_name)
+        devices.append(device)
+        LOG.debug("Attached volume %s to instance %s" %
+                  (device, instance.instance_id))
 
-    _await_attach_volumes(instance, node_group.volumes_per_node)
+    _await_attach_volumes(instance, devices)
+
+    _mount_volumes_to_node(instance, devices)
 
 
-def _create_attach_volume(ctx, instance, size, display_name=None,
-                          volume_type=None):
+def _create_attach_volume(ctx, instance, size, display_name=None):
     volume = cinder.client().volumes.create(size=size,
-                                            display_name=display_name,
-                                            volume_type=volume_type)
+                                            display_name=display_name)
     conductor.append_volume(ctx, instance, volume.id)
 
     while volume.status != 'available':
@@ -96,43 +87,23 @@ def _create_attach_volume(ctx, instance, size, display_name=None,
 
         context.sleep(1)
 
-    nova.client().volumes.create_server_volume(instance.instance_id,
-                                               volume.id, None)
+    resp = nova.client().volumes.create_server_volume(
+        instance.instance_id, volume.id, None)
+    return resp.device
 
 
-def _get_unmounted_devices(instance):
+def _count_attached_devices(instance, devices):
     code, part_info = instance.remote().execute_command('cat /proc/partitions')
 
-    devices = []
-    partitions = []
+    count = 0
     for line in part_info.split('\n')[1:]:
         tokens = line.split()
         if len(tokens) > 3:
-            dev = tokens[3]
-            if re.search('\d$', dev):
-                partitions.append(dev)
-            else:
-                devices.append(dev)
+            dev = '/dev/' + tokens[3]
+            if dev in devices:
+                count += 1
 
-    # remove devices for which there are partitions
-    for partition in partitions:
-        match = re.search(r'(.*)\d+', partition)
-        if match:
-            if match.group(1) in devices:
-                devices.remove(match.group(1))
-
-    # add dev prefix
-    devices = ['/dev/' + device for device in devices]
-
-    # remove mounted devices
-    code, mount_info = instance.remote().execute_command('mount')
-    for mount_item in mount_info.split('\n'):
-        tokens = mount_item.split(' ')
-        if tokens:
-            if tokens[0] in devices:
-                devices.remove(tokens[0])
-
-    return devices
+    return count
 
 
 def mount_to_instances(instances):
@@ -142,16 +113,23 @@ def mount_to_instances(instances):
                      _mount_volumes_to_node, instance)
 
 
-def _mount_volumes_to_node(instance, volume_type=None):
-    ng = instance.node_group
-    count = ng.volumes_per_node
-    device_paths = _get_unmounted_devices(instance)
+def _find_instance_volume_devices(instance):
+    volumes = nova.client().volumes.get_server_volumes(instance.instance_id)
+    devices = [volume.device for volume in volumes]
+    return devices
 
-    for idx in range(0, count):
-        LOG.debug("Mounting volume %s to instance %s, type %s" %
-                  (device_paths[idx], instance.instance_name, volume_type))
+
+def _mount_volumes_to_node(instance, devices=None):
+    if devices is None:
+        devices = _find_instance_volume_devices(instance)
+
+    ng = instance.node_group
+
+    for idx in range(0, ng.volumes_per_node):
+        LOG.debug("Mounting volume %s to instance %s" %
+                  (devices[idx], instance.instance_name))
         mount_point = ng.storage_paths()[idx]
-        _mount_volume(instance, device_paths[idx], mount_point)
+        _mount_volume(instance, devices[idx], mount_point)
         LOG.debug("Mounted volume to instance %s" % instance.instance_id)
 
 

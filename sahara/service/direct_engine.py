@@ -71,7 +71,7 @@ class DirectEngine(e.Engine):
             cluster = conductor.cluster_get(ctx, cluster)
 
             # attach volumes
-            volumes.attach(cluster)
+            volumes.attach_to_instances(g.get_instances(cluster))
 
             # prepare all instances
             cluster = conductor.cluster_update(ctx, cluster,
