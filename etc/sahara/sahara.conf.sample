@@ -188,7 +188,7 @@
 
 
 #
-# Options defined in sahara.service.edp.job_manager
+# Options defined in sahara.service.edp.job_utils
 #
 
 # Postfix for storing jobs in hdfs. Will be added to

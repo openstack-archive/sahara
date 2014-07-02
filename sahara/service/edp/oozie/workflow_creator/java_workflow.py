@@ -1,4 +1,4 @@
-# Copyright (c) 2013 Mirantis Inc.
+# Copyright (c) 2013 RedHat Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,31 +13,39 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from sahara.service.edp.workflow_creator import base_workflow
+from sahara.service.edp.oozie.workflow_creator import base_workflow
 from sahara.utils import xmlutils as x
 
 
-class PigWorkflowCreator(base_workflow.OozieWorkflowCreator):
+class JavaWorkflowCreator(base_workflow.OozieWorkflowCreator):
 
     def __init__(self):
-        super(PigWorkflowCreator, self).__init__('pig')
+        super(JavaWorkflowCreator, self).__init__('java')
 
-    def build_workflow_xml(self, script_name, prepare={},
-                           job_xml=None, configuration=None, params={},
-                           arguments=[], files=[], archives=[]):
+    def build_workflow_xml(self, main_class,
+                           prepare={},
+                           job_xml=None,
+                           configuration=None,
+                           java_opts=None,
+                           arguments=[],
+                           files=[], archives=[]):
 
         for k, v in prepare.items():
             self._add_to_prepare_element(k, v)
 
         self._add_job_xml_element(job_xml)
+
         self._add_configuration_elements(configuration)
 
         x.add_text_element_to_tag(self.doc, self.tag_name,
-                                  'script', script_name)
+                                  'main-class', main_class)
 
-        x.add_equal_separated_dict(self.doc, self.tag_name, 'param', params)
+        if java_opts:
+            x.add_text_element_to_tag(self.doc, self.tag_name,
+                                      'java-opts', java_opts)
 
         for arg in arguments:
-            x.add_text_element_to_tag(self.doc, self.tag_name, 'argument', arg)
+            x.add_text_element_to_tag(self.doc, self.tag_name,
+                                      'arg', arg)
 
         self._add_files_and_archives(files, archives)

@@ -16,10 +16,10 @@
 import testtools
 
 import sahara.exceptions as ex
-from sahara.service.edp.workflow_creator import hive_workflow as hw
-from sahara.service.edp.workflow_creator import java_workflow as jw
-from sahara.service.edp.workflow_creator import mapreduce_workflow as mrw
-from sahara.service.edp.workflow_creator import pig_workflow as pw
+from sahara.service.edp.oozie.workflow_creator import hive_workflow as hw
+from sahara.service.edp.oozie.workflow_creator import java_workflow as jw
+from sahara.service.edp.oozie.workflow_creator import mapreduce_workflow as mrw
+from sahara.service.edp.oozie.workflow_creator import pig_workflow as pw
 from sahara.utils import patches as p
 
 

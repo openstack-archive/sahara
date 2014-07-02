@@ -20,7 +20,6 @@ from sahara import context
 from sahara.openstack.common import log as logging
 from sahara.service.edp.binary_retrievers import dispatch
 from sahara.service.edp import job_manager as manager
-from sahara.service.edp.workflow_creator import workflow_factory as w_f
 
 
 conductor = c.API
@@ -38,7 +37,7 @@ def setup_edp_api(ops):
 
 
 def get_job_config_hints(job_type):
-    return w_f.get_possible_job_config(job_type)
+    return manager.get_job_config_hints(job_type)
 
 
 def execute_job(job_id, data):

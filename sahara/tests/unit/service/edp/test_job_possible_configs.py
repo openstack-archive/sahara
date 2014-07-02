@@ -15,7 +15,7 @@
 
 import testtools
 
-from sahara.service.edp.workflow_creator import workflow_factory as w_f
+from sahara.service.edp.oozie.workflow_creator import workflow_factory as w_f
 from sahara.utils import edp
 
 
