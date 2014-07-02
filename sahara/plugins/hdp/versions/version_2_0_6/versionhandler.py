@@ -21,6 +21,7 @@ from oslo.config import cfg
 import pkg_resources as pkg
 
 from sahara import context
+from sahara import exceptions as exc
 from sahara.plugins.general import exceptions as ex
 from sahara.plugins.hdp import clusterspec as cs
 from sahara.plugins.hdp import configprovider as cfgprov
@@ -310,6 +311,11 @@ class AmbariClient():
                     ambari_info.get_address(), cluster_name,
                     request_id))
 
+    # Returns the top-level requests API URI
+    def _get_command_request_uri(self, ambari_info, cluster_name):
+        return ('http://{0}/api/v1/clusters/{1}/requests'.format(
+            ambari_info.get_address(), cluster_name))
+
     def _wait_for_async_request(self, request_url, ambari_info):
         started = False
         while not started:
@@ -554,6 +560,114 @@ class AmbariClient():
             cluster_spec, servers, ambari_info, name)
         self._install_and_start_components(
             name, servers, ambari_info, cluster_spec)
+
+    def decommission_cluster_instances(self, cluster, clusterspec, instances,
+                                       ambari_info):
+
+        request_uri = self._get_command_request_uri(ambari_info, cluster.name)
+
+        hosts_to_decommission = []
+        # Decomission HDFS datanodes to avoid loss of data
+        # during decommissioning process
+        for instance in instances:
+            ng_name = instance.node_group.name
+            if "DATANODE" in clusterspec.node_groups[ng_name].components:
+                # determine the instances that include HDFS support
+                hosts_to_decommission.append(instance.fqdn())
+
+        LOG.debug('AmbariClient: hosts_to_decommission = '
+                  + str(hosts_to_decommission))
+
+        # template for request body
+        body_header = ('{"RequestInfo" : { "context": "Decommission DataNode",'
+                      ' "command" : "DECOMMISSION", "service_name" : "HDFS",'
+                      ' "component_name" : "NAMENODE", '
+                      ' "parameters" : { "slave_type" : "DATANODE", ')
+
+        excluded_hosts_request = '"excluded_hosts" : "{0}"'
+
+        # generate comma-separated list of hosts to de-commission
+        list_of_hosts = ",".join(hosts_to_decommission)
+
+        LOG.debug('AmbariClient: list_of_hosts = ' + list_of_hosts)
+
+        # create the request body
+        request_body = (body_header +
+            excluded_hosts_request.format(list_of_hosts)
+            + '}}'
+            + ', "Requests/resource_filters":[{"service_name":"HDFS",'
+            '"component_name":"NAMENODE"}]}')
+
+        LOG.debug('AmbariClient: about to make decommision request, uri = ' +
+                  request_uri)
+        LOG.debug('AmbariClient: about to make decommision request, ' +
+                  'request body  = ' + request_body)
+
+        # ask Ambari to decommission the datanodes
+        result = self._post(request_uri, ambari_info, request_body)
+        if result.status_code != 202:
+            LOG.error('AmbariClient: error while making decommision post ' +
+                      'request.  Error is = ' + result.text)
+            raise exc.InvalidException('An error occurred while trying to ' +
+                'decommission the DataNode instances that are ' +
+                'being shut down. ' +
+                'Please consult the Ambari server logs on the ' +
+                'master node for ' +
+                'more information about the failure.')
+        else:
+            LOG.info('AmbariClient: decommission post request succeeded!')
+
+        status_template = ('http://{0}/api/v1/clusters/{1}/hosts/{2}/'
+            'host_components/{3}')
+
+        # find the host that the NameNode is deployed on
+        name_node_host = clusterspec.determine_component_hosts(
+            'NAMENODE').pop()
+        status_request = status_template.format(
+            ambari_info.get_address(),
+            cluster.name, name_node_host.fqdn(),
+            'NAMENODE')
+
+        LOG.debug('AmbariClient: about to make decomission status request,' +
+                  'uri = ' + status_request)
+
+        count = 0
+        while count < 100 and len(hosts_to_decommission) > 0:
+            LOG.info('AmbariClient: number of hosts waiting for ' +
+                     'decommisioning to complete = ' +
+                     str(len(hosts_to_decommission)))
+
+            result = self._get(status_request, ambari_info)
+            if result.status_code != 200:
+                LOG.error('AmbariClient: error in making decomission status ' +
+                          'request, error = ' + result.text)
+            else:
+                LOG.info('AmbariClient: decommission status request ok, ' +
+                         'result = ' + result.text)
+                json_result = json.loads(result.text)
+                live_nodes = \
+                    json_result['metrics']['dfs']['namenode']['LiveNodes']
+                # parse out the map of live hosts associated with the NameNode
+                json_result_nodes = json.loads(live_nodes)
+                for node in json_result_nodes.keys():
+                    admin_state = json_result_nodes[node]['adminState']
+                    if admin_state == 'Decommissioned':
+                        LOG.info('AmbariClient: node = ' + node +
+                                 ' is now in adminState = ' +
+                                 admin_state)
+                        # remove from list, to track which nodes
+                        # are now in Decommissioned state
+                        hosts_to_decommission.remove(node)
+
+            LOG.info('AmbariClient: sleeping for 5 seconds')
+            context.sleep(5)
+
+            # increment loop counter
+            count += 1
+
+        if len(hosts_to_decommission) > 0:
+            LOG.error('AmbariClient: decommissioning process timed-out ' +
+                      'waiting for nodes to enter "Decommissioned" status.')
 
     def provision_cluster(self, cluster_spec, servers, ambari_info, name):
         self._add_cluster(ambari_info, name)

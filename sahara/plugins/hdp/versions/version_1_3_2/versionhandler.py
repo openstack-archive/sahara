@@ -21,6 +21,7 @@ import pkg_resources as pkg
 import requests
 
 from sahara import context
+from sahara import exceptions as exc
 from sahara.plugins.general import exceptions as ex
 from sahara.plugins.hdp import clusterspec as cs
 from sahara.plugins.hdp import configprovider as cfgprov
@@ -563,6 +564,12 @@ class AmbariClient():
             cluster_spec, servers, ambari_info, name)
         self._install_and_start_components(
             name, servers, ambari_info, cluster_spec)
+
+    def decommission_cluster_instances(self, cluster, clusterspec, instances,
+                                       ambari_info):
+        raise exc.InvalidException('The HDP plugin does not support '
+                                   'the decommissioning of nodes '
+                                   'for HDP version 1.3.2')
 
     def provision_cluster(self, cluster_spec, servers, ambari_info, name):
         self._add_cluster(ambari_info, name)
