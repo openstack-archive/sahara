@@ -16,8 +16,8 @@
 from sahara import context
 from sahara.openstack.common import log as logging
 from sahara.plugins.general import exceptions as ex
+from sahara.plugins.vanilla.hadoop2 import config_helper as c_helper
 from sahara.plugins.vanilla import utils as vu
-from sahara.plugins.vanilla.v2_3_0 import config_helper as c_helper
 from sahara.utils import files
 from sahara.utils import general as g
 
@@ -51,12 +51,12 @@ def start_historyserver(instance):
         'sudo su - -c "mr-jobhistory-daemon.sh start historyserver" hadoop')
 
 
-def start_oozie_process(instance):
+def start_oozie_process(pctx, instance):
     with instance.remote() as r:
-        if c_helper.is_mysql_enabled(instance.node_group.cluster):
+        if c_helper.is_mysql_enabled(pctx, instance.node_group.cluster):
             _start_mysql(r)
             sql_script = files.get_file_text(
-                'plugins/vanilla/v2_3_0/resources/create_oozie_db.sql')
+                'plugins/vanilla/hadoop2/resources/create_oozie_db.sql')
             r.write_file_to('/tmp/create_oozie_db.sql', sql_script)
             _oozie_create_db(r)
 
@@ -92,7 +92,7 @@ def _oozie_share_lib(remote):
 
     remote.execute_command(
         'sudo su - -c "mkdir /tmp/oozielib && '
-        'tar zxf /opt/oozie/oozie-sharelib-4.0.0.tar.gz -C '
+        'tar zxf /opt/oozie/oozie-sharelib-*.tar.gz -C '
         '/tmp/oozielib && '
         'hadoop fs -mkdir /user && '
         'hadoop fs -mkdir /user/hadoop && '

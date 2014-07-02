@@ -15,7 +15,7 @@
 
 import mock
 
-from sahara.plugins.vanilla.v2_3_0 import utils as u
+from sahara.plugins.vanilla.hadoop2 import utils as u
 from sahara.tests.unit import base
 from sahara.utils import files
 
@@ -24,7 +24,7 @@ class UtilsTestCase(base.SaharaTestCase):
     @mock.patch('sahara.plugins.vanilla.utils.get_namenode')
     def test_datanodes_status(self, nn):
         report = files.get_file_text(
-            'tests/unit/plugins/vanilla/v2_3_0/resources/dfs-report.txt')
+            'tests/unit/plugins/vanilla/hadoop2/resources/dfs-report.txt')
 
         nn.return_value = self._get_instance(report)
         statuses = u.get_datanodes_status(None)
@@ -41,7 +41,7 @@ class UtilsTestCase(base.SaharaTestCase):
     @mock.patch('sahara.plugins.vanilla.utils.get_resourcemanager')
     def test_nodemanagers_status(self, rm):
         report = files.get_file_text(
-            'tests/unit/plugins/vanilla/v2_3_0/resources/yarn-report.txt')
+            'tests/unit/plugins/vanilla/hadoop2/resources/yarn-report.txt')
 
         rm.return_value = self._get_instance(report)
         statuses = u.get_nodemanagers_status(None)

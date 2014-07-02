@@ -19,12 +19,13 @@ from sahara import conductor
 from sahara import context
 from sahara.openstack.common import log as logging
 from sahara.plugins.vanilla import abstractversionhandler as avm
+from sahara.plugins.vanilla.hadoop2 import config as c
+from sahara.plugins.vanilla.hadoop2 import run_scripts as run
+from sahara.plugins.vanilla.hadoop2 import scaling as sc
+from sahara.plugins.vanilla.hadoop2 import validation as vl
 from sahara.plugins.vanilla import utils as vu
-from sahara.plugins.vanilla.v2_3_0 import config as c
 from sahara.plugins.vanilla.v2_3_0 import config_helper as c_helper
-from sahara.plugins.vanilla.v2_3_0 import run_scripts as run
-from sahara.plugins.vanilla.v2_3_0 import scaling as sc
-from sahara.plugins.vanilla.v2_3_0 import validation as vl
+
 
 conductor = conductor.API
 LOG = logging.getLogger(__name__)
@@ -32,8 +33,14 @@ CONF = cfg.CONF
 
 
 class VersionHandler(avm.AbstractVersionHandler):
+    def __init__(self):
+        self.pctx = {
+            'env_confs': c_helper.get_env_configs(),
+            'all_confs': c_helper.get_plugin_configs()
+        }
+
     def get_plugin_configs(self):
-        return c_helper.get_plugin_configs()
+        return self.pctx['all_confs']
 
     def get_node_processes(self):
         return {
@@ -51,7 +58,7 @@ class VersionHandler(avm.AbstractVersionHandler):
         pass
 
     def configure_cluster(self, cluster):
-        c.configure_cluster(cluster)
+        c.configure_cluster(self.pctx, cluster)
 
     def start_cluster(self, cluster):
         nn = vu.get_namenode(cluster)
@@ -79,19 +86,19 @@ class VersionHandler(avm.AbstractVersionHandler):
 
         oo = vu.get_oozie(cluster)
         if oo:
-            run.start_oozie_process(oo)
+            run.start_oozie_process(self.pctx, oo)
 
         self._set_cluster_info(cluster)
 
     def decommission_nodes(self, cluster, instances):
-        sc.decommission_nodes(cluster, instances)
+        sc.decommission_nodes(self.pctx, cluster, instances)
 
     def validate_scaling(self, cluster, existing, additional):
         vl.validate_additional_ng_scaling(cluster, additional)
-        vl.validate_existing_ng_scaling(cluster, existing)
+        vl.validate_existing_ng_scaling(self.pctx, cluster, existing)
 
     def scale_cluster(self, cluster, instances):
-        sc.scale_cluster(cluster, instances)
+        sc.scale_cluster(self.pctx, cluster, instances)
 
     def _set_cluster_info(self, cluster):
         nn = vu.get_namenode(cluster)

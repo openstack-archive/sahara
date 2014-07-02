@@ -17,20 +17,20 @@ from sahara import context
 from sahara.openstack.common import timeutils
 from sahara.plugins.general import exceptions as ex
 from sahara.plugins.general import utils as u
+from sahara.plugins.vanilla.hadoop2 import config
+from sahara.plugins.vanilla.hadoop2 import run_scripts as run
+from sahara.plugins.vanilla.hadoop2 import utils as pu
 from sahara.plugins.vanilla import utils as vu
-from sahara.plugins.vanilla.v2_3_0 import config
-from sahara.plugins.vanilla.v2_3_0 import run_scripts as run
-from sahara.plugins.vanilla.v2_3_0 import utils as pu
 
 HADOOP_CONF_DIR = config.HADOOP_CONF_DIR
 
 
-def scale_cluster(cluster, instances):
-    config.configure_instances(instances)
+def scale_cluster(pctx, cluster, instances):
+    config.configure_instances(pctx, instances)
     _update_include_files(cluster)
     run.refresh_hadoop_nodes(cluster)
     run.refresh_yarn_nodes(cluster)
-    config.configure_topology_data(cluster)
+    config.configure_topology_data(pctx, cluster)
     for instance in instances:
         run.start_instance(instance)
 
@@ -61,7 +61,7 @@ def _update_include_files(cluster):
                     nm_hosts, HADOOP_CONF_DIR))
 
 
-def decommission_nodes(cluster, instances):
+def decommission_nodes(pctx, cluster, instances):
     datanodes = _get_instances_with_service(instances, 'datanode')
     nodemanagers = _get_instances_with_service(instances, 'nodemanager')
     _update_exclude_files(cluster, instances)
@@ -75,7 +75,7 @@ def decommission_nodes(cluster, instances):
     _update_include_files(cluster)
     _clear_exclude_files(cluster)
 
-    config.configure_topology_data(cluster)
+    config.configure_topology_data(pctx, cluster)
 
 
 def _update_exclude_files(cluster, instances):

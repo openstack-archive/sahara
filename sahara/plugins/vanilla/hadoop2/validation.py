@@ -15,8 +15,8 @@
 
 from sahara.plugins.general import exceptions as ex
 from sahara.plugins.general import utils as u
+from sahara.plugins.vanilla.hadoop2 import config_helper as cu
 from sahara.plugins.vanilla import utils as vu
-from sahara.plugins.vanilla.v2_3_0 import config_helper as c_helper
 from sahara.utils import general as gu
 
 
@@ -82,7 +82,7 @@ def validate_additional_ng_scaling(cluster, additional):
             raise ex.NodeGroupCannotBeScaled(ng.name, msg)
 
 
-def validate_existing_ng_scaling(cluster, existing):
+def validate_existing_ng_scaling(pctx, cluster, existing):
     scalable_processes = _get_scalable_processes()
     dn_to_delete = 0
     for ng in cluster.node_groups:
@@ -97,7 +97,7 @@ def validate_existing_ng_scaling(cluster, existing):
                     ng.name, msg % ' '.join(ng.node_processes))
 
     dn_amount = len(vu.get_datanodes(cluster))
-    rep_factor = c_helper.get_config_value('HDFS', 'dfs.replication', cluster)
+    rep_factor = cu.get_config_value(pctx, 'HDFS', 'dfs.replication', cluster)
 
     if dn_to_delete > 0 and dn_amount - dn_to_delete < rep_factor:
         msg = ("Vanilla plugin cannot shrink cluster because it would be not "
