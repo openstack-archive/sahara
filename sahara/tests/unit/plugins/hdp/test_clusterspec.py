@@ -15,13 +15,13 @@
 
 import mock
 import pkg_resources as pkg
-import testtools
 
 from sahara.plugins.general import exceptions as ex
 from sahara.plugins.hdp import clusterspec as cs
 from sahara.plugins.hdp import hadoopserver
 from sahara.plugins.hdp.versions.version_1_3_2 import services as s
 from sahara.plugins import provisioning
+from sahara.tests.unit import base as sahara_base
 import sahara.tests.unit.plugins.hdp.hdp_test_base as base
 from sahara.topology import topology_helper as th
 from sahara import version
@@ -38,7 +38,7 @@ class TestCONF(object):
 @mock.patch('sahara.plugins.hdp.versions.version_1_3_2.services.HdfsService.'
             '_get_swift_properties',
             return_value=[])
-class ClusterSpecTest(testtools.TestCase):
+class ClusterSpecTest(sahara_base.SaharaTestCase):
     service_validators = {}
 
     def setUp(self):
