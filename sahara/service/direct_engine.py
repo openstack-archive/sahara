@@ -15,7 +15,6 @@
 
 from novaclient import exceptions as nova_exceptions
 from oslo.config import cfg
-from oslo.utils import excutils
 import six
 
 from sahara import conductor as c
@@ -40,109 +39,98 @@ LOG = logging.getLogger(__name__)
 class DirectEngine(e.Engine):
     def create_cluster(self, cluster):
         ctx = context.ctx()
-        try:
-            # create all instances
-            cluster = g.change_cluster_status(cluster, "Spawning")
-            self._create_instances(cluster)
+        self._update_rollback_strategy(cluster, shutdown=True)
 
-            # wait for all instances are up and networks ready
-            cluster = g.change_cluster_status(cluster, "Waiting")
-            instances = g.get_instances(cluster)
+        # create all instances
+        cluster = g.change_cluster_status(cluster, "Spawning")
+        self._create_instances(cluster)
 
-            self._await_active(cluster, instances)
+        # wait for all instances are up and networks ready
+        cluster = g.change_cluster_status(cluster, "Waiting")
+        instances = g.get_instances(cluster)
 
-            if not g.check_cluster_exists(cluster):
-                LOG.info(g.format_cluster_deleted_message(cluster))
-                return
+        self._await_active(cluster, instances)
 
-            self._assign_floating_ips(instances)
+        self._assign_floating_ips(instances)
 
-            self._await_networks(cluster, instances)
+        self._await_networks(cluster, instances)
 
-            if not g.check_cluster_exists(cluster):
-                LOG.info(g.format_cluster_deleted_message(cluster))
-                return
+        cluster = conductor.cluster_get(ctx, cluster)
 
-            cluster = conductor.cluster_get(ctx, cluster)
+        # attach volumes
+        volumes.attach_to_instances(g.get_instances(cluster))
 
-            # attach volumes
-            volumes.attach_to_instances(g.get_instances(cluster))
+        # prepare all instances
+        cluster = g.change_cluster_status(cluster, "Preparing")
 
-            # prepare all instances
-            cluster = g.change_cluster_status(cluster, "Preparing")
+        self._configure_instances(cluster)
 
-            self._configure_instances(cluster)
-        except Exception as ex:
-            with excutils.save_and_reraise_exception():
-                if not g.check_cluster_exists(cluster):
-                    LOG.info(g.format_cluster_deleted_message(cluster))
-                    return
-
-                self._log_operation_exception(
-                    _LW("Can't start cluster '%(cluster)s' "
-                        "(reason: %(reason)s)"), cluster, ex)
-
-                cluster = g.change_cluster_status(
-                    cluster, "Error", status_description=six.text_type(ex))
-                self._rollback_cluster_creation(cluster, ex)
+        self._update_rollback_strategy(cluster)
 
     def scale_cluster(self, cluster, node_group_id_map):
         ctx = context.ctx()
+        cluster = g.change_cluster_status(cluster, "Scaling")
 
-        instance_ids = []
-        try:
-            instance_ids = self._scale_cluster_instances(cluster,
-                                                         node_group_id_map)
+        instance_ids = self._scale_cluster_instances(cluster,
+                                                     node_group_id_map)
 
-            cluster = conductor.cluster_get(ctx, cluster)
-            g.clean_cluster_from_empty_ng(cluster)
+        self._update_rollback_strategy(cluster, instance_ids=instance_ids)
 
-            cluster = conductor.cluster_get(ctx, cluster)
-            instances = g.get_instances(cluster, instance_ids)
+        cluster = conductor.cluster_get(ctx, cluster)
+        g.clean_cluster_from_empty_ng(cluster)
 
-            self._await_active(cluster, instances)
+        cluster = conductor.cluster_get(ctx, cluster)
+        instances = g.get_instances(cluster, instance_ids)
 
-            if not g.check_cluster_exists(cluster):
-                LOG.info(g.format_cluster_deleted_message(cluster))
-                return []
+        self._await_active(cluster, instances)
 
-            self._assign_floating_ips(instances)
+        self._assign_floating_ips(instances)
 
-            self._await_networks(cluster, instances)
+        self._await_networks(cluster, instances)
 
-            if not g.check_cluster_exists(cluster):
-                LOG.info(g.format_cluster_deleted_message(cluster))
-                return []
+        cluster = conductor.cluster_get(ctx, cluster)
 
-            cluster = conductor.cluster_get(ctx, cluster)
-
-            volumes.attach_to_instances(
-                g.get_instances(cluster, instance_ids))
-
-        except Exception as ex:
-            with excutils.save_and_reraise_exception():
-                if not g.check_cluster_exists(cluster):
-                    LOG.info(g.format_cluster_deleted_message(cluster))
-                    return []
-
-                self._log_operation_exception(
-                    _LW("Can't scale cluster '%(cluster)s' "
-                        "(reason: %(reason)s)"), cluster, ex)
-
-                cluster = conductor.cluster_get(ctx, cluster)
-                self._rollback_cluster_scaling(
-                    cluster, g.get_instances(cluster, instance_ids), ex)
-                instance_ids = []
-
-                cluster = conductor.cluster_get(ctx, cluster)
-                g.clean_cluster_from_empty_ng(cluster)
-                cluster = g.change_cluster_status(cluster, "Active")
+        volumes.attach_to_instances(
+            g.get_instances(cluster, instance_ids))
 
         # we should be here with valid cluster: if instances creation
         # was not successful all extra-instances will be removed above
         if instance_ids:
             self._configure_instances(cluster)
+
+        self._update_rollback_strategy(cluster)
+
         return instance_ids
+
+    def rollback_cluster(self, cluster, reason):
+        rollback_info = cluster.rollback_info or {}
+        self._update_rollback_strategy(cluster)
+
+        if rollback_info.get('shutdown', False):
+            self._rollback_cluster_creation(cluster, reason)
+            return False
+
+        instance_ids = rollback_info.get('instance_ids', [])
+        if instance_ids:
+            self._rollback_cluster_scaling(
+                cluster, g.get_instances(cluster, instance_ids), reason)
+
+            return True
+
+        return False
+
+    def _update_rollback_strategy(self, cluster, shutdown=False,
+                                  instance_ids=None):
+        rollback_info = {}
+        if shutdown:
+            rollback_info['shutdown'] = shutdown
+
+        if instance_ids:
+            rollback_info['instance_ids'] = instance_ids
+
+        cluster = conductor.cluster_update(
+            context.ctx(), cluster, {'rollback_info': rollback_info})
+        return cluster
 
     def _generate_anti_affinity_groups(self, cluster):
         aa_groups = {}
@@ -304,6 +292,9 @@ class DirectEngine(e.Engine):
 
         for i in instances:
             self._shutdown_instance(i)
+
+        cluster = conductor.cluster_get(context.ctx(), cluster)
+        g.clean_cluster_from_empty_ng(cluster)
 
     def _shutdown_instances(self, cluster):
         for node_group in cluster.node_groups:

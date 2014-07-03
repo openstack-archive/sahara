@@ -16,11 +16,11 @@
 import mock
 from novaclient import exceptions as nova_exceptions
 import six
-import testtools
 
 from sahara import conductor as cond
 from sahara import context
 from sahara.service import direct_engine as e
+from sahara.service import ops
 from sahara.tests.unit import base
 import sahara.utils.crypto as c
 from sahara.utils import general as g
@@ -57,19 +57,25 @@ class AbstractInstanceTest(base.SaharaWithDbTestCase):
 
 class TestClusterRollBack(AbstractInstanceTest):
 
-    def test_cluster_creation_with_errors(self):
+    @mock.patch('sahara.service.ops._prepare_provisioning')
+    @mock.patch('sahara.service.ops.INFRA')
+    def test_cluster_creation_with_errors(self, infra, prepare):
+        infra.create_cluster.side_effect = self.engine.create_cluster
+        infra.rollback_cluster.side_effect = self.engine.rollback_cluster
+
         node_groups = [_make_ng_dict('test_group', 'test_flavor',
                                      ['data node', 'task tracker'], 2)]
 
         cluster = _create_cluster_mock(node_groups, [])
+
+        prepare.return_value = (context.ctx(), cluster, mock.Mock())
 
         self.nova.servers.create.side_effect = [_mock_instance(1),
                                                 MockException("test")]
 
         self.nova.servers.list.return_value = [_mock_instance(1)]
 
-        with testtools.ExpectedException(MockException):
-            self.engine.create_cluster(cluster)
+        ops._provision_cluster(cluster.id)
 
         ctx = context.ctx()
         cluster_obj = conductor.cluster_get_all(ctx)[0]

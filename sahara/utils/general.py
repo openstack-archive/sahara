@@ -74,17 +74,6 @@ def change_cluster_status(cluster, status, status_description=None):
     return cluster
 
 
-def format_cluster_deleted_message(cluster):
-    msg = _LI("Cluster %(name)s (id=%(id)s) was deleted. "
-              "Canceling current operation.")
-
-    if cluster:
-        return (msg, {'name': cluster.name,
-                      'id': cluster.id})
-    return (msg, {'name': _LI("Unknown"),
-                  'id': _LI("Unknown")})
-
-
 def check_cluster_exists(cluster):
     ctx = context.ctx()
     # check if cluster still exists (it might have been removed)

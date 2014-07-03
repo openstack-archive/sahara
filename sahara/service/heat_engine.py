@@ -15,12 +15,9 @@
 
 from heatclient import exc as heat_exc
 from oslo.config import cfg
-from oslo.utils import excutils
-import six
 
 from sahara import conductor as c
 from sahara import context
-from sahara.i18n import _LE
 from sahara.i18n import _LI
 from sahara.i18n import _LW
 from sahara.openstack.common import log as logging
@@ -47,32 +44,20 @@ class HeatEngine(e.Engine):
                     conductor.append_volume(ctx, instance, volume_id)
 
     def create_cluster(self, cluster):
-        ctx = context.ctx()
+        self._update_rollback_strategy(cluster, shutdown=True)
 
         launcher = _CreateLauncher()
 
-        try:
-            target_count = self._get_ng_counts(cluster)
-            self._nullify_ng_counts(cluster)
+        target_count = self._get_ng_counts(cluster)
+        self._nullify_ng_counts(cluster)
 
-            cluster = conductor.cluster_get(ctx, cluster)
-            launcher.launch_instances(ctx, cluster, target_count)
+        launcher.launch_instances(cluster, target_count)
 
-            cluster = conductor.cluster_get(ctx, cluster)
-            self._add_volumes(ctx, cluster)
+        ctx = context.ctx()
+        cluster = conductor.cluster_get(ctx, cluster)
+        self._add_volumes(ctx, cluster)
 
-        except Exception as ex:
-            with excutils.save_and_reraise_exception():
-                if not g.check_cluster_exists(cluster):
-                    LOG.info(g.format_cluster_deleted_message(cluster))
-                    return
-                self._log_operation_exception(
-                    _LW("Can't start cluster '%(cluster)s' "
-                        "(reason: %(reason)s)"), cluster, ex)
-
-                cluster = g.change_cluster_status(
-                    cluster, "Error", status_description=six.text_type(ex))
-                self._rollback_cluster_creation(cluster)
+        self._update_rollback_strategy(cluster)
 
     def _get_ng_counts(self, cluster):
         count = {}
@@ -91,47 +76,58 @@ class HeatEngine(e.Engine):
 
         rollback_count = self._get_ng_counts(cluster)
 
+        self._update_rollback_strategy(cluster, rollback_count=rollback_count,
+                                       target_count=target_count)
+
         launcher = _ScaleLauncher()
 
-        try:
-            launcher.launch_instances(ctx, cluster, target_count)
-        except Exception as ex:
-            with excutils.save_and_reraise_exception():
-                if not g.check_cluster_exists(cluster):
-                    LOG.info(g.format_cluster_deleted_message(cluster))
-                    return
-                self._log_operation_exception(
-                    _LW("Can't scale cluster '%(cluster)s' "
-                        "(reason: %(reason)s)"), cluster, ex)
+        launcher.launch_instances(cluster, target_count)
 
-                cluster = conductor.cluster_get(ctx, cluster)
+        cluster = conductor.cluster_get(ctx, cluster)
+        g.clean_cluster_from_empty_ng(cluster)
 
-                try:
-                    self._rollback_cluster_scaling(
-                        ctx, cluster, rollback_count, target_count)
-                except Exception:
-                    if not g.check_cluster_exists(cluster):
-                        LOG.info(g.format_cluster_deleted_message(cluster))
-                        return
-                    # if something fails during the rollback, we stop
-                    # doing anything further
-                    cluster = g.change_cluster_status(cluster, "Error")
-                    LOG.error(_LE("Unable to complete rollback, aborting"))
-                    raise
-
-                cluster = g.change_cluster_status(cluster, "Active")
-                LOG.warn(
-                    _LW("Rollback successful. "
-                        "Throwing off an initial exception."))
-        finally:
-            cluster = conductor.cluster_get(ctx, cluster)
-            g.clean_cluster_from_empty_ng(cluster)
+        self._update_rollback_strategy(cluster)
 
         return launcher.inst_ids
 
-    def _populate_cluster(self, ctx, cluster, stack):
-        old_ids = [i.instance_id for i in g.get_instances(cluster)]
+    def rollback_cluster(self, cluster, reason):
+        rollback_info = cluster.rollback_info or {}
+        self._update_rollback_strategy(cluster)
 
+        if rollback_info.get('shutdown', False):
+            self._rollback_cluster_creation(cluster, reason)
+            return False
+
+        rollback_count = rollback_info.get('rollback_count', {})
+        target_count = rollback_info.get('target_count', {})
+        if rollback_count or target_count:
+            self._rollback_cluster_scaling(
+                cluster, rollback_count, target_count, reason)
+
+            return True
+
+        return False
+
+    def _update_rollback_strategy(self, cluster, shutdown=False,
+                                  rollback_count=None, target_count=None):
+        rollback_info = {}
+
+        if shutdown:
+            rollback_info['shutdown'] = shutdown
+
+        if rollback_count:
+            rollback_info['rollback_count'] = rollback_count
+
+        if target_count:
+            rollback_info['target_count'] = target_count
+
+        cluster = conductor.cluster_update(
+            context.ctx(), cluster, {'rollback_info': rollback_info})
+        return cluster
+
+    def _populate_cluster(self, cluster, stack):
+        ctx = context.ctx()
+        old_ids = [i.instance_id for i in g.get_instances(cluster)]
         new_ids = []
 
         for node_group in cluster.node_groups:
@@ -145,14 +141,16 @@ class HeatEngine(e.Engine):
 
         return new_ids
 
-    def _rollback_cluster_creation(self, cluster):
+    def _rollback_cluster_creation(self, cluster, ex):
         """Shutdown all instances and update cluster status."""
-        LOG.info(_LI("Cluster '%s' creation rollback"), cluster.name)
+        LOG.info(_LI("Cluster '%(name)s' creation rollback "
+                     "(reason: %(reason)s)"),
+                 {'name': cluster.name, 'reason': ex})
 
         self.shutdown_cluster(cluster)
 
-    def _rollback_cluster_scaling(self, ctx, cluster, rollback_count,
-                                  target_count):
+    def _rollback_cluster_scaling(self, cluster, rollback_count,
+                                  target_count, ex):
         """Attempt to rollback cluster scaling.
 
         Our rollback policy for scaling is as follows:
@@ -162,14 +160,16 @@ class HeatEngine(e.Engine):
         maximize the chance of rollback success.
         """
 
-        LOG.info(_LI("Cluster '%s' scaling rollback"), cluster.name)
+        LOG.info(_LI("Cluster '%(name)s' scaling rollback "
+                     "(reason: %(reason)s)"),
+                 {'name': cluster.name, 'reason': ex})
 
         for ng in rollback_count.keys():
             if rollback_count[ng] > target_count[ng]:
                 rollback_count[ng] = target_count[ng]
 
         launcher = _RollbackLauncher()
-        launcher.launch_instances(ctx, cluster, rollback_count)
+        launcher.launch_instances(cluster, rollback_count)
 
     def shutdown_cluster(self, cluster):
         """Shutdown specified cluster and all related resources."""
@@ -194,18 +194,18 @@ class _CreateLauncher(HeatEngine):
     DISABLE_ROLLBACK = True
     inst_ids = []
 
-    def launch_instances(self, ctx, cluster, target_count):
+    def launch_instances(self, cluster, target_count):
         # create all instances
         cluster = g.change_cluster_status(cluster, self.STAGES[0])
 
         tmpl = heat.ClusterTemplate(cluster)
 
-        self._configure_template(ctx, tmpl, cluster, target_count)
+        self._configure_template(tmpl, cluster, target_count)
         stack = tmpl.instantiate(update_existing=self.UPDATE_STACK,
                                  disable_rollback=self.DISABLE_ROLLBACK)
         heat.wait_stack_completion(stack.heat_stack)
 
-        self.inst_ids = self._populate_cluster(ctx, cluster, stack)
+        self.inst_ids = self._populate_cluster(cluster, stack)
 
         # wait for all instances are up and networks ready
         cluster = g.change_cluster_status(cluster, self.STAGES[1])
@@ -213,10 +213,6 @@ class _CreateLauncher(HeatEngine):
         instances = g.get_instances(cluster, self.inst_ids)
 
         self._await_networks(cluster, instances)
-
-        if not g.check_cluster_exists(cluster):
-            LOG.info(g.format_cluster_deleted_message(cluster))
-            return
 
         # prepare all instances
         cluster = g.change_cluster_status(cluster, self.STAGES[2])
@@ -226,7 +222,8 @@ class _CreateLauncher(HeatEngine):
 
         self._configure_instances(cluster)
 
-    def _configure_template(self, ctx, tmpl, cluster, target_count):
+    def _configure_template(self, tmpl, cluster, target_count):
+        ctx = context.ctx()
         for node_group in cluster.node_groups:
             count = target_count[node_group.id]
             tmpl.add_node_group_extra(node_group.id, count,
