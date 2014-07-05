@@ -295,8 +295,8 @@ class InstanceInteropHelper(remote.Remote):
 
     def get_neutron_info(self):
         neutron_info = h.HashableDict()
-        neutron_info['network'] = \
-            self.instance.node_group.cluster.neutron_management_network
+        neutron_info['network'] = (
+            self.instance.node_group.cluster.neutron_management_network)
         ctx = context.current()
         neutron_info['uri'] = base.url_for(ctx.service_catalog, 'network')
         neutron_info['token'] = ctx.token
@@ -344,8 +344,9 @@ class InstanceInteropHelper(remote.Remote):
             _release_remote_semaphore()
 
     def get_http_client(self, port, info=None, *args, **kwargs):
-        self._log_command('Retrieving http session for {0}:{1}'
-            .format(self.instance.management_ip, port))
+        self._log_command('Retrieving http session for {0}:{1}'.format(
+            self.instance.management_ip,
+            port))
         if CONF.use_namespaces and not CONF.use_floating_ips:
             # need neutron info
             if not info:

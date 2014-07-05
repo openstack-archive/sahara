@@ -44,11 +44,11 @@ class HDP2GatingTest(swift.SwiftTest, scaling.ScalingTest,
         self.internal_neutron_net = None
         if self.common_config.NEUTRON_ENABLED:
             self.internal_neutron_net = self.get_internal_neutron_net_id()
-            self.floating_ip_pool = \
-                self.get_floating_ip_pool_id_for_neutron_net()
+            self.floating_ip_pool = (
+                self.get_floating_ip_pool_id_for_neutron_net())
 
-        self.hdp2_config.IMAGE_ID, self.hdp2_config.SSH_USERNAME\
-            = (self.get_image_id_and_ssh_username(self.hdp2_config))
+        self.hdp2_config.IMAGE_ID, self.hdp2_config.SSH_USERNAME = (
+            self.get_image_id_and_ssh_username(self.hdp2_config))
 
     @b.errormsg("Failure while 'rm-nn' node group template creation: ")
     def _create_rm_nn_ng_template(self):

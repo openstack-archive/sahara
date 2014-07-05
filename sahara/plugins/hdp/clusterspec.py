@@ -270,8 +270,8 @@ class NormalizedClusterConfig():
         self.hadoop_version = cluster_spec.version
         self.cluster_configs = []
         self.node_groups = []
-        self.handler = vhf.VersionHandlerFactory.get_instance().\
-            get_version_handler(self.hadoop_version)
+        self.handler = (vhf.VersionHandlerFactory.get_instance().
+                        get_version_handler(self.hadoop_version))
 
         self._parse_configurations(cluster_spec.configurations)
         self._parse_node_groups(cluster_spec.node_groups)

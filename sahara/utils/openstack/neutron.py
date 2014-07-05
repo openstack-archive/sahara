@@ -101,8 +101,8 @@ class NeutronClientRemoteWrapper():
                 LOG.debug('Creating neutron adapter for {0}:{1}'
                           .format(host, port))
                 qrouter = self.get_router()
-                adapter = \
-                    NeutronHttpAdapter(qrouter, host, port)
+                adapter = (
+                    NeutronHttpAdapter(qrouter, host, port))
                 self.adapters[(host, port)] = adapter
                 adapters = [adapter]
 
@@ -123,8 +123,8 @@ class NeutronHttpAdapter(adapters.HTTPAdapter):
         self.host = host
 
     def get_connection(self, url, proxies=None):
-        pool_conn = \
-            super(NeutronHttpAdapter, self).get_connection(url, proxies)
+        pool_conn = (
+            super(NeutronHttpAdapter, self).get_connection(url, proxies))
         if hasattr(pool_conn, '_get_conn'):
             http_conn = pool_conn._get_conn()
             if http_conn.sock is None:

@@ -109,8 +109,8 @@ class SparkProvider(p.ProvisioningPluginBase):
 
         with remote.get_remote(nn_instance) as r:
             r.execute_command("sudo -u hdfs hdfs dfs -mkdir -p /user/$USER/")
-            r.execute_command("sudo -u hdfs hdfs dfs -chown $USER \
-                              /user/$USER/")
+            r.execute_command(("sudo -u hdfs hdfs dfs -chown $USER "
+                               "/user/$USER/"))
 
         # start spark nodes
         if sm_instance:
@@ -217,21 +217,21 @@ class SparkProvider(p.ProvisioningPluginBase):
 
         # pietro: This is required because the (secret) key is not stored in
         # .ssh which hinders password-less ssh required by spark scripts
-        key_cmd = 'sudo cp $HOME/id_rsa $HOME/.ssh/; '\
-            'sudo chown $USER $HOME/.ssh/id_rsa; '\
-            'sudo chmod 600 $HOME/.ssh/id_rsa'
+        key_cmd = ('sudo cp $HOME/id_rsa $HOME/.ssh/; '
+                   'sudo chown $USER $HOME/.ssh/id_rsa; '
+                   'sudo chmod 600 $HOME/.ssh/id_rsa')
 
         for ng in cluster.node_groups:
             dn_path = c_helper.extract_hadoop_path(ng.storage_paths(),
                                                    '/dfs/dn')
             nn_path = c_helper.extract_hadoop_path(ng.storage_paths(),
                                                    '/dfs/nn')
-            hdfs_dir_cmd = 'sudo mkdir -p %s %s;'\
-                'sudo chown -R hdfs:hadoop %s %s;'\
-                'sudo chmod 755 %s %s;'\
-                % (nn_path, dn_path,
-                   nn_path, dn_path,
-                   nn_path, dn_path)
+            hdfs_dir_cmd = (('sudo mkdir -p %s %s;'
+                             'sudo chown -R hdfs:hadoop %s %s;'
+                             'sudo chmod 755 %s %s;')
+                            % (nn_path, dn_path,
+                               nn_path, dn_path,
+                               nn_path, dn_path))
 
         with remote.get_remote(instance) as r:
             r.execute_command(

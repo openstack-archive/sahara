@@ -43,11 +43,11 @@ class RequiredServiceMissingException(e.SaharaException):
     """Exception indicating that a required service has not been deployed."""
 
     def __init__(self, service_name, required_by=None):
-        self.message = 'Cluster is missing a service: %s'\
-                       % service_name
+        self.message = ('Cluster is missing a service: %s'
+                        % service_name)
         if required_by:
-            self.message = '%s, required by service: %s'\
-                % (self.message, required_by)
+            self.message = ('%s, required by service: %s'
+                            % (self.message, required_by))
 
         self.code = 'MISSING_SERVICE'
 

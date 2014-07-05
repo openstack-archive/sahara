@@ -91,8 +91,8 @@ class VanillaGatingTest(cinder.CinderVolumeTest,
 
         except Exception as e:
             with excutils.save_and_reraise_exception():
-                message = 'Failure while \'tt-dn\' node group ' \
-                          'template creation: '
+                message = ('Failure while \'tt-dn\' node group '
+                           'template creation: ')
                 self.print_error_log(message, e)
 
 # ----------------------"tt" node group template creation----------------------
@@ -406,8 +406,8 @@ class VanillaGatingTest(cinder.CinderVolumeTest,
                         new_cluster_info['cluster_id'], cluster_template_id,
                         node_group_template_id_list
                     )
-                    message = 'Failure while Cinder testing after cluster ' \
-                              'scaling: '
+                    message = ('Failure while Cinder testing after cluster '
+                               'scaling: ')
                     self.print_error_log(message, e)
 
 # --------------------CLUSTER CONFIG TESTING AFTER SCALING---------------------
@@ -421,8 +421,8 @@ class VanillaGatingTest(cinder.CinderVolumeTest,
                         new_cluster_info['cluster_id'], cluster_template_id,
                         node_group_template_id_list
                     )
-                    message = 'Failure while cluster config testing after ' \
-                              'cluster scaling: '
+                    message = ('Failure while cluster config testing after '
+                               'cluster scaling: ')
                     self.print_error_log(message, e)
 
 # ----------------------MAP REDUCE TESTING AFTER SCALING-----------------------
@@ -436,8 +436,8 @@ class VanillaGatingTest(cinder.CinderVolumeTest,
                         new_cluster_info['cluster_id'], cluster_template_id,
                         node_group_template_id_list
                     )
-                    message = 'Failure while Map Reduce testing after ' \
-                              'cluster scaling: '
+                    message = ('Failure while Map Reduce testing after '
+                               'cluster scaling: ')
                     self.print_error_log(message, e)
 
 # -------------------CHECK SWIFT AVAILABILITY AFTER SCALING--------------------
@@ -451,8 +451,8 @@ class VanillaGatingTest(cinder.CinderVolumeTest,
                         new_cluster_info['cluster_id'], cluster_template_id,
                         node_group_template_id_list
                     )
-                    message = 'Failure during check of Swift availability ' \
-                              'after cluster scaling: '
+                    message = ('Failure during check of Swift availability '
+                               'after cluster scaling: ')
                     self.print_error_log(message, e)
 
 # ---------------------------DELETE CREATED OBJECTS----------------------------

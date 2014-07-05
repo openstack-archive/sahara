@@ -71,8 +71,8 @@ def create_dir(r, dir_name, hdfs_user):
 
 
 def _get_cluster_hosts_information(host, cluster):
-    for c in conductor.cluster_get_all(context.ctx()):
-        if c.id == cluster.id:
+    for clust in conductor.cluster_get_all(context.ctx()):
+        if clust.id == cluster.id:
             continue
 
         for i in u.get_instances(c):

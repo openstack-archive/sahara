@@ -15,10 +15,10 @@
 
 import json
 import logging
-import requests
 
 from oslo.config import cfg
 import pkg_resources as pkg
+import requests
 
 from sahara import context
 from sahara import exceptions as exc
@@ -44,7 +44,8 @@ class VersionHandler(avm.AbstractVersionHandler):
     def _get_config_provider(self):
         if self.config_provider is None:
             self.config_provider = cfgprov.ConfigurationProvider(
-                json.load(pkg.resource_stream(version.version_info.package,
+                json.load(pkg.resource_stream(
+                          version.version_info.package,
                           'plugins/hdp/versions/version_2_0_6/resources/'
                           'ambari-config-resource.json')))
 
@@ -262,8 +263,8 @@ class AmbariClient():
                 # Don't add any AMBARI or HUE components
                 # TODO(rlevas): Pragmatically determine if component is
                 #   managed by Ambari
-                if component.find('AMBARI') != 0 \
-                        and component.find('HUE') != 0:
+                if (component.find('AMBARI') != 0
+                        and component.find('HUE') != 0):
                     result = self._post(add_host_component_url.format(
                         ambari_info.get_address(), name, hostname, component),
                         ambari_info)
@@ -523,7 +524,7 @@ class AmbariClient():
 
         create_body = ('{{"Users":{{"password":"{0}","roles":"{1}"}} }}'.
                        format(user.password, '%s' % ','.
-                       join(map(str, user.groups))))
+                              join(map(str, user.groups))))
 
         result = self._post(user_url, ambari_info, data=create_body)
 
@@ -580,9 +581,9 @@ class AmbariClient():
 
         # template for request body
         body_header = ('{"RequestInfo" : { "context": "Decommission DataNode",'
-                      ' "command" : "DECOMMISSION", "service_name" : "HDFS",'
-                      ' "component_name" : "NAMENODE", '
-                      ' "parameters" : { "slave_type" : "DATANODE", ')
+                       ' "command" : "DECOMMISSION", "service_name" : "HDFS",'
+                       ' "component_name" : "NAMENODE", '
+                       ' "parameters" : { "slave_type" : "DATANODE", ')
 
         excluded_hosts_request = '"excluded_hosts" : "{0}"'
 
@@ -592,7 +593,8 @@ class AmbariClient():
         LOG.debug('AmbariClient: list_of_hosts = ' + list_of_hosts)
 
         # create the request body
-        request_body = (body_header +
+        request_body = (
+            body_header +
             excluded_hosts_request.format(list_of_hosts)
             + '}}'
             + ', "Requests/resource_filters":[{"service_name":"HDFS",'
@@ -608,7 +610,8 @@ class AmbariClient():
         if result.status_code != 202:
             LOG.error('AmbariClient: error while making decommision post ' +
                       'request.  Error is = ' + result.text)
-            raise exc.InvalidException('An error occurred while trying to ' +
+            raise exc.InvalidException(
+                'An error occurred while trying to ' +
                 'decommission the DataNode instances that are ' +
                 'being shut down. ' +
                 'Please consult the Ambari server logs on the ' +
@@ -618,7 +621,7 @@ class AmbariClient():
             LOG.info('AmbariClient: decommission post request succeeded!')
 
         status_template = ('http://{0}/api/v1/clusters/{1}/hosts/{2}/'
-            'host_components/{3}')
+                           'host_components/{3}')
 
         # find the host that the NameNode is deployed on
         name_node_host = clusterspec.determine_component_hosts(
@@ -645,8 +648,8 @@ class AmbariClient():
                 LOG.info('AmbariClient: decommission status request ok, ' +
                          'result = ' + result.text)
                 json_result = json.loads(result.text)
-                live_nodes = \
-                    json_result['metrics']['dfs']['namenode']['LiveNodes']
+                live_nodes = (
+                    json_result['metrics']['dfs']['namenode']['LiveNodes'])
                 # parse out the map of live hosts associated with the NameNode
                 json_result_nodes = json.loads(live_nodes)
                 for node in json_result_nodes.keys():

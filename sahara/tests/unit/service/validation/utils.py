@@ -95,18 +95,18 @@ def start_patch(patch_templates=True):
     get_clusters_p = mock.patch("sahara.service.api.get_clusters")
     get_cluster_p = mock.patch("sahara.service.api.get_cluster")
     if patch_templates:
-        get_ng_templates_p = \
-            mock.patch("sahara.service.api.get_node_group_templates")
-        get_ng_template_p = \
-            mock.patch("sahara.service.api.get_node_group_template")
+        get_ng_templates_p = mock.patch(
+            "sahara.service.api.get_node_group_templates")
+        get_ng_template_p = mock.patch(
+            "sahara.service.api.get_node_group_template")
     get_plugins_p = mock.patch("sahara.service.api.get_plugins")
-    get_plugin_p = \
-        mock.patch("sahara.plugins.base.PluginManager.get_plugin")
+    get_plugin_p = mock.patch(
+        "sahara.plugins.base.PluginManager.get_plugin")
     if patch_templates:
-        get_cl_templates_p = \
-            mock.patch("sahara.service.api.get_cluster_templates")
-        get_cl_template_p = \
-            mock.patch("sahara.service.api.get_cluster_template")
+        get_cl_templates_p = mock.patch(
+            "sahara.service.api.get_cluster_templates")
+        get_cl_template_p = mock.patch(
+            "sahara.service.api.get_cluster_template")
     nova_p = mock.patch("sahara.utils.openstack.nova.client")
     keystone_p = mock.patch("sahara.utils.openstack.keystone.client")
     heat_p = mock.patch("sahara.utils.openstack.heat.client")

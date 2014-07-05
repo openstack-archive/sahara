@@ -14,9 +14,9 @@
 # limitations under the License.
 
 import re
-import six
 
 from oslo.config import cfg
+import six
 
 from sahara import exceptions as e
 from sahara.openstack.common import log as logging

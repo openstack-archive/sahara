@@ -191,9 +191,9 @@ def get_config_value(service, name, cluster=None):
                     ng.configuration()[service].get(name)):
                 return ng.configuration()[service][name]
 
-    for c in PLUGIN_CONFIGS:
-        if c.applicable_target == service and c.name == name:
-            return c.default_value
+    for configs in PLUGIN_CONFIGS:
+        if configs.applicable_target == service and configs.name == name:
+            return configs.default_value
 
     raise RuntimeError("Unable to get parameter '%s' from service %s",
                        name, service)
@@ -271,8 +271,8 @@ def generate_spark_env_configs(cluster):
         configs.append('SPARK_MASTER_PORT=' + str(masterport))
 
     masterwebport = get_config_value("Spark", "Master webui port", cluster)
-    if masterwebport and \
-            masterwebport != _get_spark_opt_default("Master webui port"):
+    if (masterwebport and
+            masterwebport != _get_spark_opt_default("Master webui port")):
         configs.append('SPARK_MASTER_WEBUI_PORT=' + str(masterwebport))
 
     # configuration for workers
@@ -281,8 +281,8 @@ def generate_spark_env_configs(cluster):
         configs.append('SPARK_WORKER_CORES=' + str(workercores))
 
     workermemory = get_config_value("Spark", "Worker memory", cluster)
-    if workermemory and \
-            workermemory != _get_spark_opt_default("Worker memory"):
+    if (workermemory and
+            workermemory != _get_spark_opt_default("Worker memory")):
         configs.append('SPARK_WORKER_MEMORY=' + str(workermemory))
 
     workerport = get_config_value("Spark", "Worker port", cluster)
@@ -290,13 +290,13 @@ def generate_spark_env_configs(cluster):
         configs.append('SPARK_WORKER_PORT=' + str(workerport))
 
     workerwebport = get_config_value("Spark", "Worker webui port", cluster)
-    if workerwebport and \
-            workerwebport != _get_spark_opt_default("Worker webui port"):
+    if (workerwebport and
+            workerwebport != _get_spark_opt_default("Worker webui port")):
         configs.append('SPARK_WORKER_WEBUI_PORT=' + str(workerwebport))
 
     workerinstances = get_config_value("Spark", "Worker instances", cluster)
-    if workerinstances and \
-            workerinstances != _get_spark_opt_default("Worker instances"):
+    if (workerinstances and
+            workerinstances != _get_spark_opt_default("Worker instances")):
         configs.append('SPARK_WORKER_INSTANCES=' + str(workerinstances))
     return '\n'.join(configs)
 
