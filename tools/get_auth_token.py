@@ -38,9 +38,10 @@ cli_opts = [
 ]
 
 CONF = cfg.CONF
-CONF.import_opt('os_admin_username', 'sahara.main')
-CONF.import_opt('os_admin_password', 'sahara.main')
-CONF.import_opt('os_admin_tenant_name', 'sahara.main')
+CONF.import_opt('auth_uri', 'keystoneclient.middleware.auth_token', group='keystone_authtoken')
+CONF.import_opt('admin_user', 'keystoneclient.middleware.auth_token', group='keystone_authtoken')
+CONF.import_opt('admin_password', 'keystoneclient.middleware.auth_token', group='keystone_authtoken')
+CONF.import_opt('admin_tenant_name', 'keystoneclient.middleware.auth_token', group='keystone_authtoken')
 CONF.register_cli_opts(cli_opts)
 
 
@@ -56,26 +57,21 @@ def main():
     CONF(sys.argv[1:], project='get_auth_token',
          default_config_files=config_files)
 
-    user = CONF.username or CONF.os_admin_username
-    password = CONF.password or CONF.os_admin_password
-    tenant = CONF.tenant or CONF.os_admin_tenant_name
-
-    protocol = CONF.os_auth_protocol
-    host = CONF.os_auth_host
-    port = CONF.os_auth_port
-
-    auth_url = "%s://%s:%s/v2.0/" % (protocol, host, port)
+    auth_uri = CONF.keystone_authtoken.auth_uri
+    user = CONF.username or CONF.keystone_authtoken.admin_user
+    password = CONF.password or CONF.keystone_authtoken.admin_password
+    tenant = CONF.tenant or CONF.keystone_authtoken.admin_tenant_name
 
     print "User: %s" % user
     print "Password: %s" % password
     print "Tenant: %s" % tenant
-    print "Auth URL: %s" % auth_url
+    print "Auth URI: %s" % auth_uri
 
     keystone = keystone_client(
         username=user,
         password=password,
         tenant_name=tenant,
-        auth_url=auth_url
+        auth_url=auth_uri
     )
 
     result = keystone.authenticate()
@@ -83,6 +79,9 @@ def main():
     print "Auth succeed: %s" % result
     print "Auth token: %s" % keystone.auth_token
     print "Tenant [%s] id: %s" % (tenant, keystone.tenant_id)
+    print "For bash:"
+    print "export TOKEN=%s" % keystone.auth_token
+    print "export TENANT_ID=%s" % keystone.tenant_id
 
 
 if __name__ == "__main__":
