@@ -20,7 +20,7 @@ from sahara.plugins.vanilla import utils as vu
 from sahara.utils import general as gu
 
 
-def validate_cluster_creating(cluster):
+def validate_cluster_creating(pctx, cluster):
     nn_count = _get_inst_count(cluster, 'namenode')
     if nn_count != 1:
         raise ex.InvalidComponentCountException('namenode', 1, nn_count)
@@ -63,6 +63,12 @@ def validate_cluster_creating(cluster):
         if hs_count != 1:
             raise ex.RequiredServiceMissingException('historyserver',
                                                      required_by='oozie')
+
+    rep_factor = cu.get_config_value(pctx, 'HDFS', 'dfs.replication', cluster)
+    if dn_count < rep_factor:
+        raise ex.InvalidComponentCountException(
+            'datanode', rep_factor, dn_count, 'Number of datanodes must be not'
+                                              ' less than dfs.replication.')
 
 
 def validate_additional_ng_scaling(cluster, additional):

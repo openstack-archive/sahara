@@ -37,43 +37,56 @@ class ValidationTest(base.SaharaTestCase):
         self.ng.append(tu.make_ng_dict("oo", "f1", ["oozie"], 0))
 
         self._validate_case(1, 1, 1, 10, 10, 0, 0)
-        self._validate_case(1, 0, 1, 1, 0, 0, 0)
-        self._validate_case(1, 1, 1, 0, 1, 0, 0)
-        self._validate_case(1, 0, 1, 0, 0, 0, 0)
-        self._validate_case(1, 1, 0, 0, 0, 0, 0)
-        self._validate_case(1, 0, 1, 1, 1, 1, 1)
-        self._validate_case(1, 1, 1, 1, 1, 1, 0)
+        self._validate_case(1, 0, 1, 1, 4, 0, 0)
+        self._validate_case(1, 1, 1, 0, 3, 0, 0)
+        self._validate_case(1, 0, 1, 0, 3, 0, 0)
+        self._validate_case(1, 1, 0, 0, 3, 0, 0)
+        self._validate_case(1, 0, 1, 1, 3, 1, 1)
+        self._validate_case(1, 1, 1, 1, 3, 1, 0)
 
         with testtools.ExpectedException(ex.InvalidComponentCountException):
-            self._validate_case(0, 0, 1, 10, 1, 0, 0)
+            self._validate_case(0, 0, 1, 10, 3, 0, 0)
         with testtools.ExpectedException(ex.InvalidComponentCountException):
-            self._validate_case(2, 0, 1, 10, 1, 0, 0)
+            self._validate_case(2, 0, 1, 10, 3, 0, 0)
 
         with testtools.ExpectedException(ex.InvalidComponentCountException):
-            self._validate_case(1, 2, 1, 1, 1, 1, 1)
+            self._validate_case(1, 2, 1, 1, 3, 1, 1)
 
         with testtools.ExpectedException(ex.RequiredServiceMissingException):
-            self._validate_case(1, 0, 0, 10, 1, 0, 0)
+            self._validate_case(1, 0, 0, 10, 3, 0, 0)
         with testtools.ExpectedException(ex.InvalidComponentCountException):
-            self._validate_case(1, 0, 2, 10, 1, 0, 0)
+            self._validate_case(1, 0, 2, 10, 3, 0, 0)
 
         with testtools.ExpectedException(ex.InvalidComponentCountException):
-            self._validate_case(1, 0, 1, 1, 1, 2, 1)
+            self._validate_case(1, 0, 1, 1, 3, 2, 1)
         with testtools.ExpectedException(ex.InvalidComponentCountException):
-            self._validate_case(1, 0, 1, 1, 1, 1, 2)
+            self._validate_case(1, 0, 1, 1, 3, 1, 2)
+        with testtools.ExpectedException(ex.InvalidComponentCountException):
+            self._validate_case(1, 1, 1, 0, 2, 0, 0)
         with testtools.ExpectedException(ex.RequiredServiceMissingException):
-            self._validate_case(1, 0, 1, 1, 1, 0, 1)
+            self._validate_case(1, 0, 1, 1, 3, 0, 1)
         with testtools.ExpectedException(ex.RequiredServiceMissingException):
-            self._validate_case(1, 0, 1, 0, 1, 1, 1)
+            self._validate_case(1, 0, 1, 0, 3, 1, 1)
         with testtools.ExpectedException(ex.RequiredServiceMissingException):
             self._validate_case(1, 0, 1, 1, 0, 1, 1)
 
-    def _validate_case(self, *args):
+        cl = self._create_cluster(
+            1, 1, 1, 0, 3, 0, 0,
+            cluster_configs={'HDFS': {'dfs.replication': 4}})
+
+        with testtools.ExpectedException(ex.InvalidComponentCountException):
+            self.pl.validate(cl)
+
+    def _create_cluster(self, *args, **kwargs):
         lst = []
         for i in range(0, len(args)):
             self.ng[i]['count'] = args[i]
             lst.append(self.ng[i])
 
-        cl = tu.create_cluster("cluster1", "tenant1", "vanilla", "2.3.0", lst)
+        return tu.create_cluster("cluster1", "tenant1", "vanilla",
+                                 "2.3.0", lst, **kwargs)
+
+    def _validate_case(self, *args):
+        cl = self._create_cluster(*args)
 
         self.pl.validate(cl)

@@ -19,7 +19,8 @@ from sahara.conductor import resource as r
 
 def create_cluster(name, tenant, plugin, version, node_groups, **kwargs):
     dct = {'name': name, 'tenant_id': tenant, 'plugin_name': plugin,
-           'hadoop_version': version, 'node_groups': node_groups}
+           'hadoop_version': version, 'node_groups': node_groups,
+           'cluster_configs': {}}
     dct.update(kwargs)
     return r.ClusterResource(dct)
 
@@ -27,7 +28,7 @@ def create_cluster(name, tenant, plugin, version, node_groups, **kwargs):
 def make_ng_dict(name, flavor, processes, count, instances=None, **kwargs):
     instances = instances or []
     dct = {'name': name, 'flavor_id': flavor, 'node_processes': processes,
-           'count': count, 'instances': instances}
+           'count': count, 'instances': instances, 'node_configs': {}}
     dct.update(kwargs)
     return dct
 
