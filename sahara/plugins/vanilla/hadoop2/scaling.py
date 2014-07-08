@@ -31,8 +31,7 @@ def scale_cluster(pctx, cluster, instances):
     run.refresh_hadoop_nodes(cluster)
     run.refresh_yarn_nodes(cluster)
     config.configure_topology_data(pctx, cluster)
-    for instance in instances:
-        run.start_instance(instance)
+    run.start_all_processes(instances, [])
 
 
 def _get_instances_with_service(instances, service):

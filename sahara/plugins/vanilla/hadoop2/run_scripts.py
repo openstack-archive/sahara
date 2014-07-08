@@ -24,16 +24,33 @@ from sahara.utils import general as g
 LOG = logging.getLogger(__name__)
 
 
-def start_instance(instance):
-    processes = instance.node_group.node_processes
-    for process in processes:
-        if process in ['namenode', 'datanode']:
-            start_hadoop_process(instance, process)
-        elif process in ['resourcemanager', 'nodemanager']:
-            start_yarn_process(instance, process)
-        else:
-            raise ex.HadoopProvisionError(
-                "Process %s is not supported" % process)
+def start_all_processes(instances, filternames):
+    with context.ThreadGroup() as tg:
+        for instance in instances:
+            processes = set(instance.node_group.node_processes)
+            procs = processes
+            if filternames:
+                procs = processes.intersection(filternames)
+            if procs:
+                tg.spawn('vanilla-start-processes-%s' %
+                         instance.instance_name,
+                         _start_processes,
+                         instance, list(procs))
+
+
+def _start_processes(instance, processes):
+    with instance.remote() as r:
+        for process in processes:
+            if process in ['namenode', 'datanode']:
+                r.execute_command(
+                    'sudo su - -c "hadoop-daemon.sh start %s" hadoop'
+                    % process)
+            elif process in ['resourcemanager', 'nodemanager']:
+                r.execute_command(
+                    'sudo su - -c  "yarn-daemon.sh start %s" hadoop' % process)
+            else:
+                raise ex.HadoopProvisionError(
+                    "Process %s is not supported" % process)
 
 
 def start_hadoop_process(instance, process):
