@@ -14,6 +14,7 @@
 # limitations under the License.
 
 from oslo.config import cfg
+import six
 from six.moves.urllib import parse as urlparse
 
 from sahara import conductor as c
@@ -69,16 +70,12 @@ def scale_cluster(id, data):
     cluster = conductor.cluster_get(ctx, cluster)
 
     try:
-        cluster = conductor.cluster_update(ctx, cluster,
-                                           {"status": "Validating"})
-        LOG.info(g.format_cluster_status(cluster))
+        cluster = g.change_cluster_status(cluster, "Validating")
         plugin.validate_scaling(cluster, to_be_enlarged, additional)
     except Exception:
         with excutils.save_and_reraise_exception():
             g.clean_cluster_from_empty_ng(cluster)
-            cluster = conductor.cluster_update(ctx, cluster,
-                                               {"status": "Active"})
-            LOG.info(g.format_cluster_status(cluster))
+            g.change_cluster_status(cluster, "Active")
 
     # If we are here validation is successful.
     # So let's update to_be_enlarged map:
@@ -99,17 +96,12 @@ def create_cluster(values):
 
     # validating cluster
     try:
-        cluster = conductor.cluster_update(ctx, cluster,
-                                           {"status": "Validating"})
-        LOG.info(g.format_cluster_status(cluster))
-
+        cluster = g.change_cluster_status(cluster, "Validating")
         plugin.validate(cluster)
     except Exception as e:
         with excutils.save_and_reraise_exception():
-            cluster = conductor.cluster_update(ctx, cluster,
-                                               {"status": "Error",
-                                                "status_description": str(e)})
-            LOG.info(g.format_cluster_status(cluster))
+            g.change_cluster_status(cluster, "Error",
+                                    status_description=six.text_type(e))
 
     OPS.provision_cluster(cluster.id)
 
@@ -117,12 +109,7 @@ def create_cluster(values):
 
 
 def terminate_cluster(id):
-    ctx = context.ctx()
-    cluster = conductor.cluster_get(ctx, id)
-
-    cluster = conductor.cluster_update(ctx, cluster, {"status": "Deleting"})
-    LOG.info(g.format_cluster_status(cluster))
-
+    g.change_cluster_status(id, "Deleting")
     OPS.terminate_cluster(id)
 
 
