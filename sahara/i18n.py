@@ -33,22 +33,3 @@ _LI = _translators.log_info
 _LW = _translators.log_warning
 _LE = _translators.log_error
 _LC = _translators.log_critical
-
-
-# Due to the fact that some modules in oslo-incubator synced to the
-# sahara/openstack/common are using its own gettextutils we're monkey patching
-# our copy of oslo-incubator's gettextutils to use our initialized oslo.i18n
-# versions.
-
-# FIXME(slukjanov): Remove the monkey patch when oslo-incubator will fully use
-#                   oslo.i18n and this code will be synced to sahara. The
-#                   sahara/openstack/common/gettextutils.py after that
-
-from sahara.openstack.common import gettextutils
-
-
-gettextutils._ = _
-gettextutils._LI = _LI
-gettextutils._LW = _LW
-gettextutils._LE = _LE
-gettextutils._LC = _LC
