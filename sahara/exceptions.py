@@ -216,3 +216,10 @@ class SystemError(SaharaException):
 
     def __init__(self, message):
         self.message = message
+
+
+class EDPError(SaharaException):
+    code = "EDP_ERROR"
+
+    def __init__(self, message):
+        self.message = message

@@ -19,9 +19,12 @@ from oslo.config import cfg
 
 from sahara import conductor as c
 from sahara import context
+from sahara import exceptions as e
 from sahara.openstack.common import log
+from sahara.service.edp import job_utils
 from sahara.service.edp.oozie import engine as oozie_engine
 from sahara.service.edp.spark import engine as spark_engine
+from sahara.utils import edp
 
 
 LOG = log.getLogger(__name__)
@@ -33,14 +36,33 @@ conductor = c.API
 terminated_job_states = ['DONEWITHERROR', 'FAILED', 'KILLED', 'SUCCEEDED']
 
 
-def _get_job_engine(cluster):
-    # TODO(tmckay): The selection of a job engine can be more
-    # complicated in the future.  It can consider things like
-    # whether or not an Oozie process is present, or what the
-    # hadoop version is, or the job type, etc.
-    if cluster.plugin_name == 'spark':
-        return spark_engine.SparkJobEngine(cluster)
-    return oozie_engine.OozieJobEngine(cluster)
+def _make_engine(name, job_types, engine_class):
+    return {"name": name,
+            "job_types": job_types,
+            "engine": engine_class}
+
+default_engines = [_make_engine("oozie",
+                                [edp.JOB_TYPE_HIVE,
+                                 edp.JOB_TYPE_JAVA,
+                                 edp.JOB_TYPE_MAPREDUCE,
+                                 edp.JOB_TYPE_MAPREDUCE_STREAMING,
+                                 edp.JOB_TYPE_PIG],
+                                oozie_engine.OozieJobEngine),
+                   _make_engine("spark",
+                                [],
+                                spark_engine.SparkJobEngine)
+                   ]
+
+
+def _get_job_type(job_execution):
+    return conductor.job_get(context.ctx(), job_execution.job_id).type
+
+
+def _get_job_engine(cluster, job_execution):
+    return job_utils.get_plugin(cluster).get_edp_engine(cluster,
+                                                        _get_job_type(
+                                                            job_execution),
+                                                        default_engines)
 
 
 def _update_job_status(engine, job_execution):
@@ -73,8 +95,12 @@ def _run_job(job_execution_id):
     if cluster.status != 'Active':
         return
 
+    eng = _get_job_engine(cluster, job_execution)
+    if eng is None:
+        raise e.EDPError("Cluster does not support job type %s"
+                         % _get_job_type(job_execution))
     job_execution = _update_job_execution_extra(cluster, job_execution)
-    jid = _get_job_engine(cluster).run_job(job_execution)
+    jid = eng.run_job(job_execution)
 
     job_execution = conductor.job_execution_update(
         ctx, job_execution, {'oozie_job_id': jid,
@@ -100,13 +126,14 @@ def cancel_job(job_execution_id):
     job_execution = conductor.job_execution_get(ctx, job_execution_id)
     cluster = conductor.cluster_get(ctx, job_execution.cluster_id)
     if cluster is not None:
-        engine = _get_job_engine(cluster)
-        try:
-            engine.cancel_job(job_execution)
-        except Exception as e:
-            LOG.exception("Error during cancel of job execution %s: %s" %
-                          (job_execution.id, e))
-        job_execution = _update_job_status(engine, job_execution)
+        engine = _get_job_engine(cluster, job_execution)
+        if engine is not None:
+            try:
+                engine.cancel_job(job_execution)
+            except Exception as e:
+                LOG.exception("Error during cancel of job execution %s: %s" %
+                              (job_execution.id, e))
+            job_execution = _update_job_status(engine, job_execution)
     return job_execution
 
 
@@ -115,8 +142,10 @@ def get_job_status(job_execution_id):
     job_execution = conductor.job_execution_get(ctx, job_execution_id)
     cluster = conductor.cluster_get(ctx, job_execution.cluster_id)
     if cluster is not None and cluster.status == 'Active':
-        job_execution = _update_job_status(_get_job_engine(cluster),
-                                           job_execution)
+        engine = _get_job_engine(cluster, job_execution)
+        if engine is not None:
+            job_execution = _update_job_status(engine,
+                                               job_execution)
     return job_execution
 
 
