@@ -30,13 +30,8 @@ conductor = c.API
 CONF = cfg.CONF
 LOG = logging.getLogger(__name__)
 
-CLOUD_INIT_USERNAME = 'ec2-user'
-
 
 class HeatEngine(e.Engine):
-    def get_node_group_image_username(self, node_group):
-        return CLOUD_INIT_USERNAME
-
     def create_cluster(self, cluster):
         ctx = context.ctx()
 

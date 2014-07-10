@@ -78,10 +78,12 @@ class TestClusterTemplate(base.SaharaWithDbTestCase):
     def _make_node_groups(self, floating_ip_pool=None):
         ng1 = tu.make_ng_dict('master', 42, ['namenode'], 1,
                               floating_ip_pool=floating_ip_pool, image_id=None,
-                              volumes_per_node=0, volumes_size=0, id=1)
+                              volumes_per_node=0, volumes_size=0, id=1,
+                              image_username='root')
         ng2 = tu.make_ng_dict('worker', 42, ['datanode'], 1,
                               floating_ip_pool=floating_ip_pool, image_id=None,
-                              volumes_per_node=2, volumes_size=10, id=2)
+                              volumes_per_node=2, volumes_size=10, id=2,
+                              image_username='root')
         return ng1, ng2
 
     def _make_cluster(self, mng_network, ng1, ng2):
@@ -178,10 +180,12 @@ class TestClusterTemplate(base.SaharaWithDbTestCase):
 
         ng1 = tu.make_ng_dict('master', 42, ['namenode'], 1,
                               floating_ip_pool='floating', image_id=None,
-                              volumes_per_node=0, volumes_size=0, id=1)
+                              volumes_per_node=0, volumes_size=0, id=1,
+                              image_username='root')
         ng2 = tu.make_ng_dict('worker', 42, ['datanode'], 2,
                               floating_ip_pool='floating', image_id=None,
-                              volumes_per_node=0, volumes_size=0, id=2)
+                              volumes_per_node=0, volumes_size=0, id=2,
+                              image_username='root')
         cluster = tu.create_cluster("cluster", "tenant1", "general",
                                     "1.2.1", [ng1, ng2],
                                     user_keypair_id='user_key',

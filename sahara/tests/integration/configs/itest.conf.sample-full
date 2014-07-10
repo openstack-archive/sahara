@@ -131,10 +131,6 @@
 #IMAGE_TAG = <None>
 
 
-# Username to get cluster node with SSH (string value)
-#SSH_USERNAME = <None>
-
-
 # Version of Hadoop (string value)
 #HADOOP_VERSION = '1.2.1'
 

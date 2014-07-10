@@ -22,6 +22,7 @@
                 "name" : "cluster-worker-001",
                 "flavor" : "42",
                 "image" : "1",
+                "admin_user": "root",
                 "key_name" : "user_key",
                 "user_data": {
                     "Fn::Join" : ["\n", ["line2", "line3"]]
@@ -77,6 +78,7 @@
                 "name" : "cluster-master-001",
                 "flavor" : "42",
                 "image" : "1",
+                "admin_user": "root",
                 "key_name" : "user_key",
                 "user_data": {
                     "Fn::Join" : ["\n", ["line1", "line2"]]
