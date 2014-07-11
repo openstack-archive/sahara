@@ -269,7 +269,8 @@ class VanillaPluginTest(base.SaharaWithDbTestCase):
             'plugin_name': 'mock_plugin',
             'hadoop_version': 'mock_version',
             'default_image_id': 'initial',
-            'node_groups': [tu.make_ng_dict("ng1", "f1", ["s1"], 1)]}
+            'node_groups': [tu.make_ng_dict("ng1", "f1", ["s1"], 1)],
+            'extra': {'test': '1'}}
 
         cluster1 = conductor.cluster_create(context.ctx(), cluster_dict)
         (private_key1, public_key1) = c_h.get_hadoop_ssh_keys(cluster1)

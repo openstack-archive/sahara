@@ -227,7 +227,7 @@ def generate_cfg_from_general(cfg, configs, general_config,
 
 
 def get_hadoop_ssh_keys(cluster):
-    extra = cluster.extra or {}
+    extra = cluster.extra.to_dict() if cluster.extra else {}
     private_key = extra.get('hadoop_private_ssh_key')
     public_key = extra.get('hadoop_public_ssh_key')
     if not private_key or not public_key:
