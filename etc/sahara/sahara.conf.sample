@@ -68,7 +68,7 @@
 # Options defined in sahara.openstack.common.lockutils
 #
 
-# Whether to disable inter-process locks (boolean value)
+# Enables or disables inter-process locks. (boolean value)
 #disable_process_locking=false
 
 # Directory to use for lock files. (string value)
