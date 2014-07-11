@@ -105,70 +105,35 @@ Save image id. You can get image id from command ``glance image-list``:
 
 * Now we will actually start to interact with Sahara.
 
-.. sourcecode:: console
-
-    $ export SAHARA_URL="http://localhost:8386/v1.0/$TENANT_ID"
-
-* Install ``httpie`` REST client
+* Register the image with username ``ubuntu``.
 
 .. sourcecode:: console
 
-    $ sudo pip install httpie
-
-* Send POST request to Sahara API to register image with username ``ubuntu``.
-
-.. sourcecode:: console
-
-    $ http POST $SAHARA_URL/images/$IMAGE_ID X-Auth-Token:$AUTH_TOKEN \
-     username=ubuntu
-
+    $ sahara image-register --image-id $IMAGE_ID --username ubuntu
 
 * Tag the image:
 
 .. sourcecode:: console
 
-    $ http $SAHARA_URL/images/$IMAGE_ID/tag X-Auth-Token:$AUTH_TOKEN \
-     tags:='["vanilla", "1.2.1", "ubuntu"]'
+    $ sahara image-add-tag --image-id $IMAGE_ID --tag vanilla
+    $ sahara image-add-tag --image-id $IMAGE_ID --tag 1.2.1
 
 * Make sure that image is registered correctly:
 
 .. sourcecode:: console
 
-    $ http $SAHARA_URL/images X-Auth-Token:$AUTH_TOKEN
+    $ sahara image-list
 
 * Output should look like:
 
-.. sourcecode:: json
+.. sourcecode:: console
 
-    {
-        "images": [
-            {
-                "OS-EXT-IMG-SIZE:size": 550744576,
-                "created": "2013-07-07T15:18:50Z",
-                "description": "None",
-                "id": "3f9fc974-b484-4756-82a4-bff9e116919b",
-                "metadata": {
-                    "_sahara_description": "None",
-                    "_sahara_tag_1.2.1": "True",
-                    "_sahara_tag_ubuntu": "True",
-                    "_sahara_tag_vanilla": "True",
-                    "_sahara_username": "ubuntu"
-                },
-                "minDisk": 0,
-                "minRam": 0,
-                "name": "sahara-icehouse-vanilla-1.2.1-ubuntu-13.10",
-                "progress": 100,
-                "status": "ACTIVE",
-                "tags": [
-                    "vanilla",
-                    "ubuntu",
-                    "1.2.1"
-                ],
-                "updated": "2013-07-07T16:25:19Z",
-                "username": "ubuntu"
-            }
-        ]
-    }
+    $ sahara image-list
+    +----------------+---------------+----------+----------------+-------------+
+    | name           | id            | username | tags           | description |
+    +----------------+---------------+----------+----------------+-------------+
+    | sahara-iceh... | 3f9fc...6919b | ubuntu   | vanilla, 1.2.1 | None        |
+    +----------------+---------------+----------+----------------+-------------+
 
 
 5. Setup NodeGroup templates
