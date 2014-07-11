@@ -1,4 +1,4 @@
-# Copyright (c) 2013 RedHat Inc.
+# Copyright (c) 2013 Mirantis Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,39 +13,30 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from sahara.service.edp.workflow_creator import base_workflow
+from sahara.service.edp.oozie.workflow_creator import base_workflow
 from sahara.utils import xmlutils as x
 
 
-class JavaWorkflowCreator(base_workflow.OozieWorkflowCreator):
+class HiveWorkflowCreator(base_workflow.OozieWorkflowCreator):
 
     def __init__(self):
-        super(JavaWorkflowCreator, self).__init__('java')
+        super(HiveWorkflowCreator, self).__init__('hive')
+        hive_elem = self.doc.getElementsByTagName('hive')[0]
+        hive_elem.setAttribute('xmlns', 'uri:oozie:hive-action:0.2')
 
-    def build_workflow_xml(self, main_class,
-                           prepare={},
-                           job_xml=None,
-                           configuration=None,
-                           java_opts=None,
-                           arguments=[],
+    def build_workflow_xml(self, script, job_xml, prepare={},
+                           configuration=None, params={},
                            files=[], archives=[]):
 
         for k, v in prepare.items():
             self._add_to_prepare_element(k, v)
 
         self._add_job_xml_element(job_xml)
-
         self._add_configuration_elements(configuration)
 
         x.add_text_element_to_tag(self.doc, self.tag_name,
-                                  'main-class', main_class)
+                                  'script', script)
 
-        if java_opts:
-            x.add_text_element_to_tag(self.doc, self.tag_name,
-                                      'java-opts', java_opts)
-
-        for arg in arguments:
-            x.add_text_element_to_tag(self.doc, self.tag_name,
-                                      'arg', arg)
+        x.add_equal_separated_dict(self.doc, self.tag_name, 'param', params)
 
         self._add_files_and_archives(files, archives)

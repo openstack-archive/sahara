@@ -13,20 +13,18 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from sahara.service.edp.workflow_creator import base_workflow
+from sahara.service.edp.oozie.workflow_creator import base_workflow
 from sahara.utils import xmlutils as x
 
 
-class HiveWorkflowCreator(base_workflow.OozieWorkflowCreator):
+class PigWorkflowCreator(base_workflow.OozieWorkflowCreator):
 
     def __init__(self):
-        super(HiveWorkflowCreator, self).__init__('hive')
-        hive_elem = self.doc.getElementsByTagName('hive')[0]
-        hive_elem.setAttribute('xmlns', 'uri:oozie:hive-action:0.2')
+        super(PigWorkflowCreator, self).__init__('pig')
 
-    def build_workflow_xml(self, script, job_xml, prepare={},
-                           configuration=None, params={},
-                           files=[], archives=[]):
+    def build_workflow_xml(self, script_name, prepare={},
+                           job_xml=None, configuration=None, params={},
+                           arguments=[], files=[], archives=[]):
 
         for k, v in prepare.items():
             self._add_to_prepare_element(k, v)
@@ -35,8 +33,11 @@ class HiveWorkflowCreator(base_workflow.OozieWorkflowCreator):
         self._add_configuration_elements(configuration)
 
         x.add_text_element_to_tag(self.doc, self.tag_name,
-                                  'script', script)
+                                  'script', script_name)
 
         x.add_equal_separated_dict(self.doc, self.tag_name, 'param', params)
+
+        for arg in arguments:
+            x.add_text_element_to_tag(self.doc, self.tag_name, 'argument', arg)
 
         self._add_files_and_archives(files, archives)

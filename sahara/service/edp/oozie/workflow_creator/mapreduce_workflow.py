@@ -15,7 +15,7 @@
 
 import six
 
-from sahara.service.edp.workflow_creator import base_workflow
+from sahara.service.edp.oozie.workflow_creator import base_workflow
 
 
 class MapReduceWorkFlowCreator(base_workflow.OozieWorkflowCreator):

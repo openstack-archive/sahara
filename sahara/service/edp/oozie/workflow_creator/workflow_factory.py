@@ -19,10 +19,10 @@ import six.moves.urllib.parse as urlparse
 from sahara import conductor as c
 from sahara import context
 from sahara.plugins import base as plugin_base
-from sahara.service.edp.workflow_creator import hive_workflow
-from sahara.service.edp.workflow_creator import java_workflow
-from sahara.service.edp.workflow_creator import mapreduce_workflow
-from sahara.service.edp.workflow_creator import pig_workflow
+from sahara.service.edp.oozie.workflow_creator import hive_workflow
+from sahara.service.edp.oozie.workflow_creator import java_workflow
+from sahara.service.edp.oozie.workflow_creator import mapreduce_workflow
+from sahara.service.edp.oozie.workflow_creator import pig_workflow
 from sahara.swift import swift_helper as sw
 from sahara.swift import utils as su
 from sahara.utils import edp
