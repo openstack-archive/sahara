@@ -277,6 +277,9 @@ VANILLA_TWO_CONFIG_OPTS = [
                 },
                 help='Names for namenode, nodemanager and datanode '
                      'processes.'),
+    cfg.ListOpt('SKIP_EDP_JOB_TYPES',
+                default=[],
+                help='List of skipped EDP job types.'),
     cfg.BoolOpt('SKIP_ALL_TESTS_FOR_PLUGIN',
                 default=False,
                 help='If this flag is True, then all tests for Vanilla plugin '

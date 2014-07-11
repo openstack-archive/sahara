@@ -27,6 +27,9 @@ from sahara.utils import edp as utils_edp
 from sahara.utils import files as f
 
 
+RESOURCES_PATH = 'tests/integration/tests/resources/'
+
+
 class VanillaTwoGatingTest(cluster_configs.ClusterConfigTest,
                            map_reduce.MapReduceTest, swift.SwiftTest,
                            scaling.ScalingTest, cinder.CinderVolumeTest,
@@ -184,22 +187,28 @@ class VanillaTwoGatingTest(cluster_configs.ClusterConfigTest,
 
     @b.errormsg("Failure while EDP testing: ")
     def _check_edp(self):
-        self._edp_test()
+        skipped_edp_job_types = self.vanilla_two_config.SKIP_EDP_JOB_TYPES
 
-    def _edp_test(self):
-        path = 'tests/integration/tests/resources/'
+        if utils_edp.JOB_TYPE_PIG not in skipped_edp_job_types:
+            self._edp_pig_test()
+        if utils_edp.JOB_TYPE_MAPREDUCE not in skipped_edp_job_types:
+            self._edp_mapreduce_test()
+        if utils_edp.JOB_TYPE_MAPREDUCE_STREAMING not in skipped_edp_job_types:
+            self._edp_mapreduce_streaming_test()
+        if utils_edp.JOB_TYPE_JAVA not in skipped_edp_job_types:
+            self._edp_java_test()
 
-        # check pig
-        pig_job = f.get_file_text(path + 'edp-job.pig')
-        pig_lib = f.get_file_text(path + 'edp-lib.jar')
+    def _edp_pig_test(self):
+        pig_job = f.get_file_text(RESOURCES_PATH + 'edp-job.pig')
+        pig_lib = f.get_file_text(RESOURCES_PATH + 'edp-lib.jar')
         self.edp_testing(job_type=utils_edp.JOB_TYPE_PIG,
                          job_data_list=[{'pig': pig_job}],
                          lib_data_list=[{'jar': pig_lib}],
                          swift_binaries=True,
                          hdfs_local_output=True)
 
-        # check mapreduce
-        mapreduce_jar = f.get_file_text(path + 'edp-mapreduce.jar')
+    def _edp_mapreduce_test(self):
+        mapreduce_jar = f.get_file_text(RESOURCES_PATH + 'edp-mapreduce.jar')
         mapreduce_configs = {
             'configs': {
                 'mapred.mapper.class': 'org.apache.oozie.example.SampleMapper',
@@ -214,7 +223,7 @@ class VanillaTwoGatingTest(cluster_configs.ClusterConfigTest,
                          swift_binaries=True,
                          hdfs_local_output=True)
 
-        # check mapreduce streaming
+    def _edp_mapreduce_streaming_test(self):
         mapreduce_streaming_configs = {
             'configs': {
                 'edp.streaming.mapper': '/bin/cat',
@@ -226,9 +235,9 @@ class VanillaTwoGatingTest(cluster_configs.ClusterConfigTest,
                          lib_data_list=[],
                          configs=mapreduce_streaming_configs)
 
-        # check java
+    def _edp_java_test(self):
         java_jar = f.get_file_text(
-            path + 'hadoop-mapreduce-examples-2.3.0.jar')
+            RESOURCES_PATH + 'hadoop-mapreduce-examples-2.3.0.jar')
         java_configs = {
             'configs': {
                 'edp.java.main_class':
@@ -290,7 +299,7 @@ class VanillaTwoGatingTest(cluster_configs.ClusterConfigTest,
 
     @b.errormsg("Failure while EDP testing after cluster scaling: ")
     def _check_edp_after_scaling(self):
-        self._edp_test()
+        self._check_edp()
 
     @testcase.skipIf(
         cfg.ITConfig().vanilla_two_config.SKIP_ALL_TESTS_FOR_PLUGIN,
