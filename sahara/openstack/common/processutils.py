@@ -18,7 +18,8 @@ System-level utilities and helper functions.
 """
 
 import errno
-import logging as stdlib_logging
+import logging
+import multiprocessing
 import os
 import random
 import shlex
@@ -29,7 +30,7 @@ from eventlet import greenthread
 import six
 
 from sahara.openstack.common.gettextutils import _
-from sahara.openstack.common import log as logging
+from sahara.openstack.common import strutils
 
 
 LOG = logging.getLogger(__name__)
@@ -90,6 +91,9 @@ def execute(*cmd, **kwargs):
     :type cmd:              string
     :param process_input:   Send to opened process.
     :type process_input:    string
+    :param env_variables:   Environment variables and their values that
+                            will be set for the process.
+    :type env_variables:    dict
     :param check_exit_code: Single bool, int, or list of allowed exit
                             codes.  Defaults to [0].  Raise
                             :class:`ProcessExecutionError` unless
@@ -111,8 +115,7 @@ def execute(*cmd, **kwargs):
                             execute this command. Defaults to false.
     :type shell:            boolean
     :param loglevel:        log level for execute commands.
-    :type loglevel:         int.  (Should be stdlib_logging.DEBUG or
-                            stdlib_logging.INFO)
+    :type loglevel:         int.  (Should be logging.DEBUG or logging.INFO)
     :returns:               (stdout, stderr) from process execution
     :raises:                :class:`UnknownArgumentError` on
                             receiving unknown arguments
@@ -120,6 +123,7 @@ def execute(*cmd, **kwargs):
     """
 
     process_input = kwargs.pop('process_input', None)
+    env_variables = kwargs.pop('env_variables', None)
     check_exit_code = kwargs.pop('check_exit_code', [0])
     ignore_exit_code = False
     delay_on_retry = kwargs.pop('delay_on_retry', True)
@@ -127,7 +131,7 @@ def execute(*cmd, **kwargs):
     run_as_root = kwargs.pop('run_as_root', False)
     root_helper = kwargs.pop('root_helper', '')
     shell = kwargs.pop('shell', False)
-    loglevel = kwargs.pop('loglevel', stdlib_logging.DEBUG)
+    loglevel = kwargs.pop('loglevel', logging.DEBUG)
 
     if isinstance(check_exit_code, bool):
         ignore_exit_code = not check_exit_code
@@ -136,8 +140,7 @@ def execute(*cmd, **kwargs):
         check_exit_code = [check_exit_code]
 
     if kwargs:
-        raise UnknownArgumentError(_('Got unknown keyword args '
-                                     'to utils.execute: %r') % kwargs)
+        raise UnknownArgumentError(_('Got unknown keyword args: %r') % kwargs)
 
     if run_as_root and hasattr(os, 'geteuid') and os.geteuid() != 0:
         if not root_helper:
@@ -152,7 +155,7 @@ def execute(*cmd, **kwargs):
         attempts -= 1
         try:
             LOG.log(loglevel, 'Running cmd (subprocess): %s',
-                    ' '.join(cmd))
+                    strutils.mask_password(' '.join(cmd)))
             _PIPE = subprocess.PIPE  # pylint: disable=E1101
 
             if os.name == 'nt':
@@ -168,7 +171,8 @@ def execute(*cmd, **kwargs):
                                    stderr=_PIPE,
                                    close_fds=close_fds,
                                    preexec_fn=preexec_fn,
-                                   shell=shell)
+                                   shell=shell,
+                                   env=env_variables)
             result = None
             for _i in six.moves.range(20):
                 # NOTE(russellb) 20 is an arbitrary number of retries to
@@ -224,7 +228,7 @@ def trycmd(*args, **kwargs):
         out, err = execute(*args, **kwargs)
         failed = False
     except ProcessExecutionError as exn:
-        out, err = '', str(exn)
+        out, err = '', six.text_type(exn)
         failed = True
 
     if not failed and discard_warnings and err:
@@ -265,3 +269,15 @@ def ssh_execute(ssh, cmd, process_input=None,
                                         cmd=cmd)
 
     return (stdout, stderr)
+
+
+def get_worker_count():
+    """Utility to get the default worker count.
+
+    @return: The number of CPUs if that can be determined, else a default
+             worker count of 1 is returned.
+    """
+    try:
+        return multiprocessing.cpu_count()
+    except NotImplementedError:
+        return 1
