@@ -80,19 +80,19 @@ A Plugin object provides information about what Hadoop distribution/version it c
 
 **Plugins ops**
 
-+-----------------+-------------------------------------------------------------------+-----------------------------------------------------+
-| Verb            | URI                                                               | Description                                         |
-+=================+===================================================================+=====================================================+
-| GET             | /v1.0/{tenant_id}/plugins                                         | Lists all plugins registered in Sahara.             |
-+-----------------+-------------------------------------------------------------------+-----------------------------------------------------+
-| GET             | /v1.0/{tenant_id}/plugins/{plugin_name}                           | Shows short information about specified plugin.     |
-+-----------------+-------------------------------------------------------------------+-----------------------------------------------------+
-| GET             | /v1.0/{tenant_id}/plugins/{plugin_name}/{version}                 | Shows detailed information for plugin, like         |
-|                 |                                                                   | node_processes, required_image_tags and configs.    |
-+-----------------+-------------------------------------------------------------------+-----------------------------------------------------+
-| POST            | /v1.0/{tenant_id}/plugins/{plugin_name}/{version}/convert-config  | Converts file-based cluster config to Cluster       |
-|                 |                                                                   | Template Object                                     |
-+-----------------+-------------------------------------------------------------------+-----------------------------------------------------+
++-----------------+-----------------------------------------------------------------------------------+-----------------------------------------------------+
+| Verb            | URI                                                                               | Description                                         |
++=================+===================================================================================+=====================================================+
+| GET             | /v1.0/{tenant_id}/plugins                                                         | Lists all plugins registered in Sahara.             |
++-----------------+-----------------------------------------------------------------------------------+-----------------------------------------------------+
+| GET             | /v1.0/{tenant_id}/plugins/{plugin_name}                                           | Shows short information about specified plugin.     |
++-----------------+-----------------------------------------------------------------------------------+-----------------------------------------------------+
+| GET             | /v1.0/{tenant_id}/plugins/{plugin_name}/{version}                                 | Shows detailed information for plugin, like         |
+|                 |                                                                                   | node_processes, required_image_tags and configs.    |
++-----------------+-----------------------------------------------------------------------------------+-----------------------------------------------------+
+| POST            | /v1.0/{tenant_id}/plugins/{plugin_name}/{version}/convert-config/{template-name}  | Converts file-based cluster config to Cluster       |
+|                 |                                                                                   | Template Object                                     |
++-----------------+-----------------------------------------------------------------------------------+-----------------------------------------------------+
 
 **Examples**
 
@@ -258,7 +258,7 @@ This operation does not require a request body.
 2.4 Convert configuration file
 ------------------------------
 
-.. http:post:: /v1.0/{tenant_id}/plugins/{plugin_name}/{version}/convert-config
+.. http:post:: /v1.0/{tenant_id}/plugins/{plugin_name}/{version}/convert-config/{template-name}
 
 Normal Response Code: 202 (ACCEPTED)
 
@@ -273,7 +273,7 @@ The request body should contain configuration file.
 
     .. sourcecode:: http
 
-        POST http://sahara/v1.0/775181/plugins/some-plugin/1.1/convert-config
+        POST http://sahara/v1.0/775181/plugins/some-plugin/1.1/convert-config/tname
 
     **response**
 
