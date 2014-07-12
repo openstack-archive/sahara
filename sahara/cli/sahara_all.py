@@ -18,13 +18,12 @@
 from sahara.utils import patches
 patches.patch_all()
 
-import gettext
 import os
 import sys
 
 import eventlet
 from eventlet import wsgi
-from oslo.config import cfg
+from oslo import i18n
 
 
 # If ../sahara/__init__.py exists, add ../ to Python search path, so that
@@ -37,7 +36,11 @@ if os.path.exists(os.path.join(possible_topdir,
                                '__init__.py')):
     sys.path.insert(0, possible_topdir)
 
-gettext.install('sahara', unicode=1)
+
+# NOTE(slukjanov): i18n.enable_lazy() must be called before
+#                  sahara.utils.i18n._() is called to ensure it has the desired
+#                  lazy lookup behavior.
+i18n.enable_lazy()
 
 
 import sahara.main as server
@@ -55,5 +58,6 @@ def main():
     server.setup_sahara_api('all-in-one')
     server.setup_sahara_engine()
 
+    from oslo.config import cfg
     wsgi.server(eventlet.listen((cfg.CONF.host, cfg.CONF.port), backlog=500),
                 app, log=logging.WritableLogger(LOG), debug=False)
