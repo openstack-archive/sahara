@@ -75,9 +75,9 @@ def _get_cluster_hosts_information(host, cluster):
         if clust.id == cluster.id:
             continue
 
-        for i in u.get_instances(c):
+        for i in u.get_instances(clust):
             if i.instance_name == host:
-                return g.generate_etc_hosts(c)
+                return g.generate_etc_hosts(clust)
 
     return None
 
