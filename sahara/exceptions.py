@@ -223,3 +223,11 @@ class EDPError(SaharaException):
 
     def __init__(self, message):
         self.message = message
+
+
+class TimeoutException(SaharaException):
+    code = "TIMEOUT"
+    message = "Operation timed out after %i second(s)"
+
+    def __init__(self, timeout):
+        self.message = self.message % timeout
