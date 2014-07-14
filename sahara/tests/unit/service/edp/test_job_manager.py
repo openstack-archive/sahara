@@ -16,6 +16,7 @@
 import copy
 
 import mock
+import testtools
 
 from sahara import conductor as cond
 from sahara import exceptions as ex
@@ -385,6 +386,32 @@ class TestJobManager(base.SaharaWithDbTestCase):
         plugin = job_utils.get_plugin(_create_cluster())
         self.assertEqual("vanilla", plugin.name)
 
+    @mock.patch('sahara.conductor.API.job_get')
+    def test_job_type_supported(self, job_get):
+        job, job_exec = _create_all_stack(edp.JOB_TYPE_PIG)
+        job_get.return_value = job
+        self.assertIsNotNone(job_manager._get_job_engine(_create_cluster(),
+                                                         job_exec))
+
+        job.type = "unsupported_type"
+        self.assertIsNone(job_manager._get_job_engine(_create_cluster(),
+                                                      job_exec))
+
+    @mock.patch('sahara.conductor.API.job_get')
+    @mock.patch('sahara.conductor.API.job_execution_get')
+    @mock.patch('sahara.conductor.API.cluster_get')
+    def test_run_job_unsupported_type(self,
+                                      cluster_get, job_exec_get, job_get):
+        job, job_exec = _create_all_stack("unsupported_type")
+        job_exec_get.return_value = job_exec
+        job_get.return_value = job
+
+        cluster = _create_cluster()
+        cluster.status = "Active"
+        cluster_get.return_value = cluster
+        with testtools.ExpectedException(ex.EDPError):
+            job_manager._run_job(job_exec.id)
+
     @mock.patch('sahara.conductor.API.data_source_get')
     def test_get_data_sources(self, ds):
         job, job_exec = _create_all_stack(edp.JOB_TYPE_PIG)
@@ -467,10 +494,10 @@ def _create_job_binary(id, type):
     return binary
 
 
-def _create_cluster():
+def _create_cluster(plugin_name='vanilla', plugin_version='1.2.1'):
     cluster = mock.Mock()
-    cluster.plugin_name = 'vanilla'
-    cluster.plugin_version = '1.2.1'
+    cluster.plugin_name = plugin_name
+    cluster.plugin_version = plugin_version
     return cluster
 
 
