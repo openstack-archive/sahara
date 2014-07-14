@@ -20,6 +20,7 @@ from sahara.conductor import resource as r
 from sahara import exceptions as ex
 from sahara.service import volumes
 from sahara.tests.unit import base
+from sahara.utils import general as g
 
 
 class TestAttachVolume(base.SaharaWithDbTestCase):
@@ -62,17 +63,17 @@ class TestAttachVolume(base.SaharaWithDbTestCase):
     @mock.patch('sahara.service.volumes._mount_volume')
     @mock.patch('sahara.service.volumes._await_attach_volumes')
     @mock.patch('sahara.service.volumes._create_attach_volume')
-    @mock.patch('sahara.service.volumes._get_unmounted_devices')
-    def test_attach(self, p_dev_path, p_create_attach_vol,
+    def test_attach(self, p_create_attach_vol,
                     p_await, p_mount):
-        p_dev_path.return_value = ['123', '456']
-        p_create_attach_vol.return_value = None
+        p_create_attach_vol.side_effect = ['/dev/vdb', '/dev/vdc'] * 2
         p_await.return_value = None
         p_mount.return_value = None
 
-        instance1 = {'instance_id': '123',
+        instance1 = {'id': '1',
+                     'instance_id': '123',
                      'instance_name': 'inst_1'}
-        instance2 = {'instance_id': '456',
+        instance2 = {'id': '2',
+                     'instance_id': '456',
                      'instance_name': 'inst_2'}
 
         ng = {'volumes_per_node': 2,
@@ -83,24 +84,24 @@ class TestAttachVolume(base.SaharaWithDbTestCase):
 
         cluster = r.ClusterResource({'node_groups': [ng]})
 
-        volumes.attach(cluster)
+        volumes.attach_to_instances(g.get_instances(cluster))
         self.assertEqual(p_create_attach_vol.call_count, 4)
         self.assertEqual(p_await.call_count, 2)
         self.assertEqual(p_mount.call_count, 4)
-        self.assertEqual(p_dev_path.call_count, 2)
 
     @mock.patch('sahara.context.sleep')
-    @mock.patch('sahara.service.volumes._get_unmounted_devices')
-    def test_await_attach_volume(self, dev_paths, p_sleep):
-        dev_paths.return_value = ['/dev/vda', '/dev/vdb']
+    @mock.patch('sahara.service.volumes._count_attached_devices')
+    def test_await_attach_volume(self, dev_count, p_sleep):
+        dev_count.return_value = 2
         p_sleep.return_value = None
         instance = r.InstanceResource({'instance_id': '123454321',
                                        'instance_name': 'instt'})
-        self.assertIsNone(volumes._await_attach_volumes(instance, 2))
+        self.assertIsNone(volumes._await_attach_volumes(
+            instance, ['/dev/vda', '/dev/vdb']))
         self.assertRaises(ex.SystemError, volumes._await_attach_volumes,
-                          instance, 3)
+                          instance, ['/dev/vda', '/dev/vdb', '/dev/vdc'])
 
-    def test_get_unmounted_devices(self):
+    def test_count_attached_devices(self):
         partitions = """major minor  #blocks  name
 
    7        0   41943040 vdd
@@ -110,16 +111,12 @@ class TestAttachVolume(base.SaharaWithDbTestCase):
    8        0  111111111 vda1
    8        1  842576896 vdb"""
 
-        mount = """
-/dev/vda1 qwe rty
-/dev/vdb asd fgh"""
-
         instance = self._get_instance()
         ex_cmd = instance.remote().execute_command
-        ex_cmd.side_effect = [(0, partitions), (0, mount)]
+        ex_cmd.side_effect = [(0, partitions)]
 
-        self.assertEqual(
-            volumes._get_unmounted_devices(instance), ['/dev/vdd'])
+        self.assertEqual(volumes._count_attached_devices(
+            instance, ['/dev/vdd', '/dev/vdx']), 1)
 
     def _get_instance(self):
         inst_remote = mock.MagicMock()
