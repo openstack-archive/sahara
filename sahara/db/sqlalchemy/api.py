@@ -16,8 +16,11 @@
 """Implementation of SQLAlchemy backend."""
 
 import sys
+import threading
 
 from oslo.config import cfg
+from oslo.db import exception as db_exc
+from oslo.db.sqlalchemy import session as db_session
 import six
 import sqlalchemy as sa
 
@@ -25,8 +28,6 @@ from sahara.db.sqlalchemy import models as m
 from sahara import exceptions as ex
 from sahara.i18n import _
 from sahara.i18n import _LE
-from sahara.openstack.common.db import exception as db_exc
-from sahara.openstack.common.db.sqlalchemy import session as db_session
 from sahara.openstack.common import log as logging
 
 
@@ -35,18 +36,17 @@ LOG = logging.getLogger(__name__)
 CONF = cfg.CONF
 
 _FACADE = None
+_LOCK = threading.Lock()
 
 
 def _create_facade_lazily():
-    global _FACADE
+    global _LOCK, _FACADE
 
     if _FACADE is None:
-        params = dict(CONF.database.iteritems())
-        params["sqlite_fk"] = True
-        _FACADE = db_session.EngineFacade(
-            CONF.database.connection,
-            **params
-        )
+        with _LOCK:
+            if _FACADE is None:
+                _FACADE = db_session.EngineFacade.from_config(CONF,
+                                                              sqlite_fk=True)
     return _FACADE
 
 
