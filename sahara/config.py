@@ -16,6 +16,7 @@
 from oslo.config import cfg
 
 from sahara import exceptions as ex
+from sahara.i18n import _
 from sahara.openstack.common import log
 from sahara import version
 
@@ -90,16 +91,16 @@ def parse_configs(conf_files=None):
              default_config_files=conf_files)
     except cfg.RequiredOptError as roe:
         raise ex.ConfigurationError(
-            "Option '%s' is required for config group '%s'" %
-            (roe.opt_name, roe.group.name))
+            _("Option '%(option)s' is required for config group '%(group)s'") %
+            {'option': roe.opt_name, 'group': roe.group.name})
     validate_configs()
 
 
 def validate_network_configs():
     if CONF.use_namespaces and not CONF.use_neutron:
         raise ex.ConfigurationError(
-            'use_namespaces can not be set to "True" when use_neutron is set '
-            'to "False"')
+            _('use_namespaces can not be set to "True" when use_neutron '
+              'is set to "False"'))
 
 
 def validate_configs():
