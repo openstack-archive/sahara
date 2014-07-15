@@ -87,7 +87,18 @@ class Remote(object):
         """
 
     @abc.abstractmethod
+    def append_to_file(self, r_file, data, run_as_root=False, timeout=120):
+        """Append the given data to remote file.
+
+        Uses existing ssh connection.
+        """
+
+    @abc.abstractmethod
     def write_files_to(self, files, run_as_root=False, timeout=120):
+        """Copy file->data dictionary in a single ssh connection."""
+
+    @abc.abstractmethod
+    def append_to_files(self, files, run_as_root=False, timeout=120):
         """Copy file->data dictionary in a single ssh connection."""
 
     @abc.abstractmethod
