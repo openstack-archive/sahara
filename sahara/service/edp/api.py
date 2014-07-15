@@ -54,7 +54,7 @@ def execute_job(job_id, data):
     # a superset for all job types
     job_ex_dict = {'input_id': input_id, 'output_id': output_id,
                    'job_id': job_id, 'cluster_id': cluster_id,
-                   'info': {'status': 'Pending'}, 'job_configs': configs,
+                   'info': {'status': 'PENDING'}, 'job_configs': configs,
                    'extra': {}}
     job_execution = conductor.job_execution_create(context.ctx(), job_ex_dict)
 

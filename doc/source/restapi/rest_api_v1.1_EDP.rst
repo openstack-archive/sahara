@@ -1132,7 +1132,7 @@ This operation returns the created Job Execution object. Note that different job
             "job_execution": {
                 "output_id": "b63780f3-13d7-4286-b731-88270fb204de",
                 "info": {
-                    "status": "Pending"
+                    "status": "PENDING"
                 },
                 "job_id": "65afed9c-dad7-4658-9554-b7b4e1ca908f",
                 "tenant_id": "11587919cc534bcbb1027a161c82cf58",
@@ -1191,7 +1191,7 @@ This operation returns the created Job Execution object. Note that different job
             "job_execution": {
                 "output_id": null,
                 "info": {
-                    "status": "Pending"
+                    "status": "PENDING"
                 },
                 "job_id": "8236b1b4-e1b8-46ef-9174-355cd4234b62",
                 "tenant_id": "a4e4599e87e04bf1996862ae295f6f53",
@@ -1356,7 +1356,7 @@ This operation does not require a request body.
                 {
                     "output_id": "b63780f3-13d7-4286-b731-88270fb204de",
                     "info": {
-                        "status": "Pending"
+                        "status": "PENDING"
                     },
                     "job_id": "65afed9c-dad7-4658-9554-b7b4e1ca908f",
                     "tenant_id": "11587919cc534bcbb1027a161c82cf58",
