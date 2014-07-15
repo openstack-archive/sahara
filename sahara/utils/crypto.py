@@ -19,6 +19,7 @@ import paramiko
 import six
 
 from sahara import exceptions as ex
+from sahara.i18n import _
 from sahara.openstack.common import processutils
 from sahara.utils import tempfiles
 
@@ -47,11 +48,11 @@ def generate_key_pair(key_length=2048):
             args.extend(['-b', key_length])
         processutils.execute(*args)
         if not os.path.exists(keyfile):
-            raise ex.SystemError("Private key file hasn't been created")
+            raise ex.SystemError(_("Private key file hasn't been created"))
         private_key = open(keyfile).read()
         public_key_path = keyfile + '.pub'
         if not os.path.exists(public_key_path):
-            raise ex.SystemError("Public key file hasn't been created")
+            raise ex.SystemError(_("Public key file hasn't been created"))
         public_key = open(public_key_path).read()
 
         return private_key, public_key

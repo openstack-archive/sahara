@@ -17,8 +17,8 @@ import six
 
 from sahara import conductor as c
 from sahara import context
+from sahara.i18n import _LI
 from sahara.openstack.common import log as logging
-
 
 conductor = c.API
 LOG = logging.getLogger(__name__)
@@ -69,16 +69,20 @@ def change_cluster_status(cluster, status, status_description=None):
         update_dict["status_description"] = status_description
 
     cluster = conductor.cluster_update(context.ctx(), cluster, update_dict)
-    LOG.info("Cluster status has been changed: id=%s, New status=%s",
-             cluster.id, cluster.status)
+    LOG.info(_LI("Cluster status has been changed: id=%(id)s, New status="
+                 "%(status)s"), {'id': cluster.id, 'name': cluster.status})
     return cluster
 
 
 def format_cluster_deleted_message(cluster):
-    msg = "Cluster %s (id=%s) was deleted. Canceling current operation."
+    msg = _LI("Cluster %(name)s (id=%(id)s) was deleted. "
+              "Canceling current operation.")
+
     if cluster:
-        return msg % (cluster.name, cluster.id)
-    return msg % ("Unknown", "Unknown")
+        return (msg, {'name': cluster.name,
+                      'id': cluster.id})
+    return (msg, {'name': _LI("Unknown"),
+                  'id': _LI("Unknown")})
 
 
 def check_cluster_exists(cluster):
