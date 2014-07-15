@@ -29,7 +29,10 @@ def scale_cluster(pctx, cluster, instances):
     config.configure_instances(pctx, instances)
     _update_include_files(cluster)
     run.refresh_hadoop_nodes(cluster)
-    run.refresh_yarn_nodes(cluster)
+    rm = vu.get_resourcemanager(cluster)
+    if rm:
+        run.refresh_yarn_nodes(cluster)
+
     config.configure_topology_data(pctx, cluster)
     for instance in instances:
         run.start_instance(instance)
@@ -67,7 +70,9 @@ def decommission_nodes(pctx, cluster, instances):
     _update_exclude_files(cluster, instances)
 
     run.refresh_hadoop_nodes(cluster)
-    run.refresh_yarn_nodes(cluster)
+    rm = vu.get_resourcemanager(cluster)
+    if rm:
+        run.refresh_yarn_nodes(cluster)
 
     _check_nodemanagers_decommission(cluster, nodemanagers)
     _check_datanodes_decommission(cluster, datanodes)
