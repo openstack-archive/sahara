@@ -13,6 +13,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import os
+
 from oslo.config import cfg
 
 from sahara import conductor
@@ -115,12 +117,15 @@ class SparkProvider(p.ProvisioningPluginBase):
         # start spark nodes
         if sm_instance:
             with remote.get_remote(sm_instance) as r:
-                run.start_spark_master(r)
+                run.start_spark_master(r, self._spark_home(cluster))
                 LOG.info("Spark service at '%s' has been started",
                          sm_instance.hostname())
 
         LOG.info('Cluster %s has been started successfully' % cluster.name)
         self._set_cluster_info(cluster)
+
+    def _spark_home(self, cluster):
+        return c_helper.get_config_value("Spark", "Spark home", cluster)
 
     def _extract_configs_to_extra(self, cluster):
         nn = utils.get_instance(cluster, "namenode")
@@ -204,9 +209,10 @@ class SparkProvider(p.ProvisioningPluginBase):
             '/etc/hadoop/conf/hdfs-site.xml': ng_extra['xml']['hdfs-site'],
         }
 
+        sp_home = self._spark_home(cluster)
         files_spark = {
-            '/opt/spark/conf/spark-env.sh': ng_extra['sp_master'],
-            '/opt/spark/conf/slaves': ng_extra['sp_slaves']
+            os.path.join(sp_home, 'conf/spark-env.sh'): ng_extra['sp_master'],
+            os.path.join(sp_home, 'conf/slaves'): ng_extra['sp_slaves']
         }
 
         files_init = {
@@ -238,7 +244,7 @@ class SparkProvider(p.ProvisioningPluginBase):
                 'sudo chown -R $USER:$USER /etc/hadoop'
             )
             r.execute_command(
-                'sudo chown -R $USER:$USER /opt/spark'
+                'sudo chown -R $USER:$USER %s' % sp_home
             )
             r.write_files_to(files_hadoop)
             r.write_files_to(files_spark)
@@ -274,9 +280,11 @@ class SparkProvider(p.ProvisioningPluginBase):
 
         if need_update_spark:
             ng_extra = extra[instance.node_group.id]
+            sp_home = self._spark_home(cluster)
             files = {
-                '/opt/spark/conf/spark-env.sh': ng_extra['sp_master'],
-                '/opt/spark/conf/slaves': ng_extra['sp_slaves'],
+                os.path.join(sp_home,
+                             'conf/spark-env.sh'): ng_extra['sp_master'],
+                os.path.join(sp_home, 'conf/slaves'): ng_extra['sp_slaves'],
             }
             r = remote.get_remote(instance)
             r.write_files_to(files)
@@ -357,14 +365,14 @@ class SparkProvider(p.ProvisioningPluginBase):
         master = utils.get_instance(cluster, "master")
         r_master = remote.get_remote(master)
 
-        run.stop_spark(r_master)
+        run.stop_spark(r_master, self._spark_home(cluster))
 
         self._setup_instances(cluster, instances)
         nn = utils.get_instance(cluster, "namenode")
         run.refresh_nodes(remote.get_remote(nn), "dfsadmin")
         self._start_slave_datanode_processes(instances)
 
-        run.start_spark_master(r_master)
+        run.start_spark_master(r_master, self._spark_home(cluster))
         LOG.info("Spark master service at '%s' has been restarted",
                  master.hostname())
 

@@ -13,6 +13,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import os
+
 from sahara.openstack.common import log as logging
 
 
@@ -45,13 +47,11 @@ def clean_port_hadoop(nn_remote):
                                "| xargs sudo kill -9"))
 
 
-def start_spark_master(nn_remote):
-    nn_remote.execute_command("bash /opt/spark/sbin/start-all.sh")
+def start_spark_master(nn_remote, sp_home):
+    nn_remote.execute_command("bash " + os.path.join(sp_home,
+                                                     "sbin/start-all.sh"))
 
 
-def start_spark_slaves(nn_remote):
-    nn_remote.execute_command("bash /opt/spark/sbin/start-slaves.sh")
-
-
-def stop_spark(nn_remote):
-    nn_remote.execute_command("bash /opt/spark/sbin/stop-all.sh")
+def stop_spark(nn_remote, sp_home):
+    nn_remote.execute_command("bash " + os.path.join(sp_home,
+                                                     "sbin/stop-all.sh"))
