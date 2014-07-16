@@ -52,7 +52,7 @@ class VersionHandler(avm.AbstractVersionHandler):
         }
 
     def validate(self, cluster):
-        vl.validate_cluster_creating(cluster)
+        vl.validate_cluster_creating(self.pctx, cluster)
 
     def update_infra(self, cluster):
         pass
