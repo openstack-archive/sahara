@@ -347,7 +347,7 @@ def _mock_deletes(count):
 def _mock_delete(id):
     if id == 1:
         return None
-    return nova_exceptions.NotFound()
+    return nova_exceptions.NotFound(code=404)
 
 
 class MockException(Exception):
