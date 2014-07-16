@@ -18,6 +18,7 @@ from oslo.config import cfg
 from sahara import conductor
 from sahara import context
 from sahara.openstack.common import log as logging
+from sahara.plugins.general import utils
 from sahara.plugins.vanilla import abstractversionhandler as avm
 from sahara.plugins.vanilla.hadoop2 import config as c
 from sahara.plugins.vanilla.hadoop2 import run_scripts as run
@@ -72,13 +73,10 @@ class VersionHandler(avm.AbstractVersionHandler):
         if rm:
             run.start_yarn_process(rm, 'resourcemanager')
 
-        for dn in vu.get_datanodes(cluster):
-            run.start_hadoop_process(dn, 'datanode')
+        run.start_all_processes(utils.get_instances(cluster),
+                                ['datanode', 'nodemanager'])
 
         run.await_datanodes(cluster)
-
-        for nm in vu.get_nodemanagers(cluster):
-            run.start_yarn_process(nm, 'nodemanager')
 
         hs = vu.get_historyserver(cluster)
         if hs:
