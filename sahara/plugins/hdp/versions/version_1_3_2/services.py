@@ -354,32 +354,6 @@ class HiveService(Service):
             zk_service.deployed = True
             components.append('ZOOKEEPER_SERVER')
 
-    def pre_service_start(self, cluster_spec, ambari_info, started_services):
-        # this code is needed because of a bug in Ambari where hdfs dir's
-        # are only created at NN initial startup.  Remove this code when
-        # the bug is fixed in Ambari.
-        if 'HDFS' not in started_services:
-            return
-
-        # get any instance
-        with cluster_spec.servers[0].remote() as r:
-            r.execute_command('su -c "hadoop fs -mkdir /user/hive" '
-                              '-s /bin/sh hdfs')
-            r.execute_command('su -c "hadoop fs -chown -R '
-                              'hive:hdfs /user/hive" -s /bin/sh hdfs')
-
-            r.execute_command('su -c "hadoop fs -mkdir /apps/hive" '
-                              '-s /bin/sh hdfs')
-            r.execute_command('su -c "hadoop fs -chmod -R 755 /apps/hive" '
-                              '-s /bin/sh hdfs')
-
-            r.execute_command('su -c "hadoop fs -mkdir /apps/hive/warehouse" '
-                              '-s /bin/sh hdfs')
-            r.execute_command('su -c "hadoop fs -chown -R hive:hdfs '
-                              '/apps/hive/warehouse" -s /bin/sh hdfs')
-            r.execute_command('su -c "hadoop fs -chmod -R 777 '
-                              '/apps/hive/warehouse" -s /bin/sh hdfs')
-
 
 class WebHCatService(Service):
     def __init__(self):
@@ -435,30 +409,6 @@ class WebHCatService(Service):
                 zk_service.deployed = True
                 components.append('ZOOKEEPER_SERVER')
             components.append('ZOOKEEPER_CLIENT')
-
-    def pre_service_start(self, cluster_spec, ambari_info, started_services):
-        # this code is needed because of a bug in Ambari where hdfs dir's
-        # are only created at NN initial startup.  Remove this code when
-        # the bug is fixed in Ambari.
-
-        if 'HDFS' not in started_services:
-            return
-
-        # get any instance
-        with cluster_spec.servers[0].remote() as r:
-            r.execute_command('su -c "hadoop fs -mkdir /user/hcat" '
-                              '-s /bin/sh hdfs')
-            r.execute_command('su -c "hadoop fs -chown -R hcat:hdfs '
-                              '/user/hcat" -s /bin/sh hdfs')
-            r.execute_command('su -c "hadoop fs -chmod -R 755 /user/hcat" '
-                              '-s /bin/sh hdfs')
-
-            r.execute_command('su -c "hadoop fs -mkdir /apps/webhcat" '
-                              '-s /bin/sh hdfs')
-            r.execute_command('su -c "hadoop fs -chown -R hcat:hdfs '
-                              '/apps/webhcat" -s /bin/sh hdfs')
-            r.execute_command('su -c "hadoop fs -chmod -R 755 /apps/webhcat" '
-                              '-s /bin/sh hdfs')
 
 
 class HBaseService(Service):
