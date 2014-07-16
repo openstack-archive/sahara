@@ -37,6 +37,19 @@ def load_hadoop_xml_defaults(file_name):
     return configs
 
 
+def parse_hadoop_xml_with_name_and_value(data):
+    doc = xml.parseString(data)
+    configs = []
+    prop = doc.getElementsByTagName('property')
+    for elements in prop:
+        configs.append({
+            'name': _get_text_from_node(elements, 'name'),
+            'value': _get_text_from_node(elements, 'value')
+        })
+
+    return configs
+
+
 def _get_node_element(element, name):
     element = element.getElementsByTagName(name)
     return element[0] if element and element[0].hasChildNodes() else None
