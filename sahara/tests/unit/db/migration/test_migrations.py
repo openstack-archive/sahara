@@ -367,3 +367,10 @@ class TestMigrations(base.BaseWalkMigrationTestCase, base.CommonTestsMixIn):
         new_desc = engine.execute(t.select()).fetchone().status_description
         self.assertEqual(desc, new_desc)
         engine.execute(t.delete())
+
+    def _check_008(self, engine, date):
+        self.assertColumnExists(engine, 'node_group_templates',
+                                'security_groups')
+        self.assertColumnExists(engine, 'node_groups', 'security_groups')
+        self.assertColumnExists(engine, 'templates_relations',
+                                'security_groups')

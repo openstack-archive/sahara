@@ -58,7 +58,8 @@ SAMPLE_CLT = {
             "flavor_id": "42",
             "node_processes": ["p1", "p2"],
             "count": 1,
-            "floating_ip_pool": None
+            "floating_ip_pool": None,
+            "security_groups": None,
         },
         {
             "name": "ng_2",
@@ -66,6 +67,7 @@ SAMPLE_CLT = {
             "node_processes": ["p3", "p4"],
             "count": 3,
             "floating_ip_pool": None,
+            "security_groups": ["group1", "group2"],
         }
 
     ]

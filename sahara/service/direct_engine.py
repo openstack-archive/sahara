@@ -235,12 +235,13 @@ class DirectEngine(e.Engine):
                 name, node_group.get_image_id(), node_group.flavor_id,
                 scheduler_hints=hints, userdata=userdata,
                 key_name=cluster.user_keypair_id,
-                nics=nics)
+                nics=nics, security_groups=node_group.security_groups)
         else:
             nova_instance = nova.client().servers.create(
                 name, node_group.get_image_id(), node_group.flavor_id,
                 scheduler_hints=hints, userdata=userdata,
-                key_name=cluster.user_keypair_id)
+                key_name=cluster.user_keypair_id,
+                security_groups=node_group.security_groups)
 
         instance_id = conductor.instance_add(ctx, node_group,
                                              {"instance_id": nova_instance.id,

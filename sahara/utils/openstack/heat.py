@@ -152,10 +152,12 @@ class ClusterTemplate(object):
         inst_name = _get_inst_name(self.cluster.name, ng.name, idx)
 
         nets = ''
+        security_groups = ''
         if CONF.use_neutron:
             port_name = _get_port_name(inst_name)
             yield self._serialize_port(port_name,
-                                       self.cluster.neutron_management_network)
+                                       self.cluster.neutron_management_network,
+                                       ng.security_groups)
 
             nets = '"networks" : [{ "port" : { "Ref" : "%s" }}],' % port_name
 
@@ -166,6 +168,10 @@ class ClusterTemplate(object):
             if ng.floating_ip_pool:
                 yield self._serialize_nova_floating(inst_name,
                                                     ng.floating_ip_pool)
+
+            if ng.security_groups:
+                security_groups = (
+                    '"security_groups": %s,' % json.dumps(ng.security_groups))
 
         aa_names = []
         for node_process in ng.node_processes:
@@ -187,7 +193,8 @@ class ClusterTemplate(object):
                   'key_name': key_name,
                   'userdata': _prepare_userdata(userdata),
                   'scheduler_hints': _get_anti_affinity_scheduler_hints(
-                      aa_names)}
+                      aa_names),
+                  'security_groups': security_groups}
 
         for node_process in ng.node_processes:
             if node_process in self.cluster.anti_affinity:
@@ -200,9 +207,11 @@ class ClusterTemplate(object):
         for idx in range(0, ng.volumes_per_node):
             yield self._serialize_volume(inst_name, idx, ng.volumes_size)
 
-    def _serialize_port(self, port_name, fixed_net_id):
+    def _serialize_port(self, port_name, fixed_net_id, security_groups):
         fields = {'port_name': port_name,
-                  'fixed_net_id': fixed_net_id}
+                  'fixed_net_id': fixed_net_id,
+                  'security_groups': ('"security_groups": %s,' % json.dumps(
+                      security_groups) if security_groups else '')}
 
         return _load_template('neutron-port.heat', fields)
 

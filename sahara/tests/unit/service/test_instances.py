@@ -91,13 +91,15 @@ class NodePlacementTest(AbstractInstanceTest):
                        "test_flavor",
                        scheduler_hints=None,
                        userdata=userdata,
-                       key_name='user_keypair'),
+                       key_name='user_keypair',
+                       security_groups=None),
              mock.call("test_cluster-test_group-002",
                        "initial",
                        "test_flavor",
                        scheduler_hints={'different_host': ["1"]},
                        userdata=userdata,
-                       key_name='user_keypair')],
+                       key_name='user_keypair',
+                       security_groups=None)],
             any_order=False)
 
         ctx = context.ctx()
@@ -118,13 +120,15 @@ class NodePlacementTest(AbstractInstanceTest):
                        "test_flavor",
                        scheduler_hints=None,
                        userdata=userdata,
-                       key_name='user_keypair'),
+                       key_name='user_keypair',
+                       security_groups=None),
              mock.call("test_cluster-test_group-002",
                        "initial",
                        "test_flavor",
                        scheduler_hints=None,
                        userdata=userdata,
-                       key_name='user_keypair')],
+                       key_name='user_keypair',
+                       security_groups=None)],
             any_order=False)
 
         ctx = context.ctx()
@@ -183,19 +187,22 @@ class NodePlacementTest(AbstractInstanceTest):
                        "test_flavor",
                        scheduler_hints=None,
                        userdata=userdata,
-                       key_name='user_keypair'),
+                       key_name='user_keypair',
+                       security_groups=None),
              mock.call(instance_names[1],
                        "initial",
                        "test_flavor",
                        scheduler_hints={'different_host': ["1"]},
                        userdata=userdata,
-                       key_name='user_keypair'),
+                       key_name='user_keypair',
+                       security_groups=None),
              mock.call(instance_names[2],
                        "initial",
                        "test_flavor",
                        scheduler_hints={'different_host': ["1", "2"]},
                        userdata=userdata,
-                       key_name='user_keypair')],
+                       key_name='user_keypair',
+                       security_groups=None)],
             any_order=False)
 
         ctx = context.ctx()
