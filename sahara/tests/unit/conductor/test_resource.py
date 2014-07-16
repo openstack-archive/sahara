@@ -103,7 +103,7 @@ SAMPLE_JOB_EXECUTION = {
     "info": {
         "actions": [{"conf": "some stuff"},
                     {"conf": "more stuff"}],
-        "status": "Pending"
+        "status": "PENDING"
     },
     "input_id": "b5ddde55-594e-428f-9040-028be81eb3c2",
     "job_configs": {
