@@ -22,14 +22,14 @@ import stevedore
 from werkzeug import exceptions as werkzeug_exceptions
 
 from sahara.api import acl
+from sahara.api.middleware import auth_valid
+from sahara.api.middleware import log_exchange
 from sahara.api import v10 as api_v10
 from sahara.api import v11 as api_v11
 from sahara import config
 from sahara import context
 from sahara.i18n import _LI
 from sahara.i18n import _LW
-from sahara.middleware import auth_valid
-from sahara.middleware import log_exchange
 from sahara.openstack.common import log
 from sahara.plugins import base as plugins_base
 from sahara.service import api as service_api
