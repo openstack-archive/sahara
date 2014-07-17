@@ -13,21 +13,19 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import fixtures
 import mock
-import testtools
+from oslotest import base
 
 from sahara import context
 from sahara.db import api as db_api
 from sahara import main
 
 
-class SaharaTestCase(testtools.TestCase):
+class SaharaTestCase(base.BaseTestCase):
 
     def setUp(self):
         super(SaharaTestCase, self).setUp()
 
-        self.useFixture(fixtures.FakeLogger('sahara'))
         self.setup_context()
 
     def setup_context(self, username="test_user", tenant_id="tenant_1",
