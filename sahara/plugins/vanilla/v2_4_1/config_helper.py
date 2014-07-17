@@ -25,19 +25,19 @@ CONF.import_opt("enable_data_locality", "sahara.topology.topology_helper")
 LOG = logging.getLogger(__name__)
 
 CORE_DEFAULT = x.load_hadoop_xml_defaults(
-    'plugins/vanilla/v2_4_0/resources/core-default.xml')
+    'plugins/vanilla/v2_4_1/resources/core-default.xml')
 
 HDFS_DEFAULT = x.load_hadoop_xml_defaults(
-    'plugins/vanilla/v2_4_0/resources/hdfs-default.xml')
+    'plugins/vanilla/v2_4_1/resources/hdfs-default.xml')
 
 MAPRED_DEFAULT = x.load_hadoop_xml_defaults(
-    'plugins/vanilla/v2_4_0/resources/mapred-default.xml')
+    'plugins/vanilla/v2_4_1/resources/mapred-default.xml')
 
 YARN_DEFAULT = x.load_hadoop_xml_defaults(
-    'plugins/vanilla/v2_4_0/resources/yarn-default.xml')
+    'plugins/vanilla/v2_4_1/resources/yarn-default.xml')
 
 OOZIE_DEFAULT = x.load_hadoop_xml_defaults(
-    'plugins/vanilla/v2_4_0/resources/oozie-default.xml')
+    'plugins/vanilla/v2_4_1/resources/oozie-default.xml')
 
 XML_CONFS = {
     "Hadoop": [CORE_DEFAULT],
