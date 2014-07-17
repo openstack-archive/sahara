@@ -15,6 +15,7 @@
 
 
 from sahara import exceptions as ex
+from sahara.i18n import _
 from sahara.plugins import base as plugins_base
 from sahara.utils import resources
 
@@ -153,13 +154,17 @@ class ProvisioningPluginBase(plugins_base.PluginInterface):
                 confs = config_objs_map.get(applicable_target)
                 if not confs:
                     raise ex.ConfigurationError(
-                        "Can't find applicable target '%s' for '%s'"
-                        % (applicable_target, config_name))
+                        _("Can't find applicable target "
+                          "'%(applicable_target)s' for '%(config_name)s'")
+                        % {"applicable_target": applicable_target,
+                           "config_name": config_name})
                 conf = confs.get(config_name)
                 if not conf:
                     raise ex.ConfigurationError(
-                        "Can't find config '%s' in '%s'"
-                        % (config_name, applicable_target))
+                        _("Can't find config '%(config_name)s' "
+                          "in '%(applicable_target)s'")
+                        % {"config_name": config_name,
+                           "applicable_target": applicable_target})
                 result.append(UserInput(
                     conf, configs[applicable_target][config_name]))
 

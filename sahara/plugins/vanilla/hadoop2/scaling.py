@@ -16,6 +16,7 @@
 from oslo.utils import timeutils
 
 from sahara import context
+from sahara.i18n import _
 from sahara.plugins.general import exceptions as ex
 from sahara.plugins.general import utils as u
 from sahara.plugins.vanilla.hadoop2 import config
@@ -122,8 +123,9 @@ def _check_decommission(cluster, instances, check_func, timeout):
             context.sleep(5)
     else:
         ex.DecommissionError(
-            "Cannot finish decommission of cluster %s in %d seconds" %
-            (cluster, timeout))
+            _("Cannot finish decommission of cluster %(cluster)s in "
+              "%(seconds)d seconds") %
+            {"cluster": cluster, "seconds": timeout})
 
 
 def _check_nodemanagers_decommission(cluster, instances):

@@ -16,6 +16,8 @@
 from oslo.config import cfg
 
 from sahara import conductor as c
+from sahara.i18n import _
+from sahara.i18n import _LI
 from sahara.openstack.common import log as logging
 from sahara.plugins.general import utils
 from sahara.plugins import provisioning as p
@@ -202,8 +204,9 @@ def get_config_value(service, name, cluster=None):
         if configs.applicable_target == service and configs.name == name:
             return configs.default_value
 
-    raise RuntimeError("Unable to get parameter '%s' from service %s",
-                       name, service)
+    raise RuntimeError(_("Unable to get parameter '%(param_name)s' from "
+                         "service %(service)s"),
+                       {'param_name': name, 'service': service})
 
 
 def generate_cfg_from_general(cfg, configs, general_config,
@@ -215,7 +218,7 @@ def generate_cfg_from_general(cfg, configs, general_config,
         for name, value in configs['general'].items():
             if value:
                 cfg = _set_config(cfg, general_config, name)
-                LOG.info("Applying config: %s" % name)
+                LOG.info(_LI("Applying config: %s"), name)
     else:
         cfg = _set_config(cfg, general_config)
     return cfg

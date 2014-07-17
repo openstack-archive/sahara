@@ -13,6 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from sahara.i18n import _
 from sahara.plugins.general import exceptions as ex
 from sahara.plugins.general import utils as u
 from sahara.plugins import provisioning as p
@@ -25,9 +26,9 @@ class VanillaProvider(p.ProvisioningPluginBase):
 
     def get_description(self):
         return (
-            "This plugin provides an ability to launch vanilla Apache Hadoop "
-            "cluster without any management consoles. Also it can "
-            "deploy Oozie and Hive")
+            _("This plugin provides an ability to launch vanilla Apache Hadoop"
+              " cluster without any management consoles. Also it can "
+              "deploy Oozie and Hive"))
 
     def _get_version_handler(self, hadoop_version):
         return self.version_factory.get_version_handler(hadoop_version)

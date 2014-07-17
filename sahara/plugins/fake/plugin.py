@@ -13,6 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from sahara.i18n import _
 from sahara.plugins import provisioning as p
 
 
@@ -22,9 +23,9 @@ class FakePluginProvider(p.ProvisioningPluginBase):
         return "Fake Plugin"
 
     def get_description(self):
-        return ("It's a fake plugin that aimed to work on the CirrOS images. "
-                "It doesn't install Hadoop. It's needed to be able to test "
-                "provisioning part of Sahara codebase itself.")
+        return _("It's a fake plugin that aimed to work on the CirrOS images. "
+                 "It doesn't install Hadoop. It's needed to be able to test "
+                 "provisioning part of Sahara codebase itself.")
 
     def get_versions(self):
         return ["0.1"]

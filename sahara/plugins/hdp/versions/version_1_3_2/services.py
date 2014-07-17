@@ -20,6 +20,7 @@ import six
 
 
 from sahara import exceptions as e
+from sahara.i18n import _
 from sahara.plugins.general import exceptions as ex
 from sahara.plugins.general import utils
 from sahara.swift import swift_helper as h
@@ -518,8 +519,8 @@ class HBaseService(Service):
             configurations['global']['hbase_hdfs_root_dir'] = match.group(3)
         else:
             raise e.InvalidDataException(
-                "Invalid value for property 'hbase-site/hbase.rootdir' : %s" %
-                user_input.value)
+                _("Invalid value for property 'hbase-site/hbase.rootdir' : %s")
+                % user_input.value)
 
     def finalize_configuration(self, cluster_spec):
         nn_servers = cluster_spec.determine_component_hosts('NAMENODE')

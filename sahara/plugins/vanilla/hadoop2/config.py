@@ -15,6 +15,7 @@
 
 import six
 
+from sahara.i18n import _LI
 from sahara.openstack.common import log as logging
 from sahara.plugins.vanilla.hadoop2 import config_helper as c_helper
 from sahara.plugins.vanilla.hadoop2 import oozie_helper as o_helper
@@ -296,8 +297,8 @@ def _merge_configs(a, b):
 
 def configure_topology_data(pctx, cluster):
     if c_helper.is_data_locality_enabled(pctx, cluster):
-        LOG.info("Node group awareness is not implemented in YARN yet "
-                 "so enable_hypervisor_awareness set to False explicitly")
+        LOG.info(_LI("Node group awareness is not implemented in YARN yet "
+                     "so enable_hypervisor_awareness set to False explicitly"))
         tpl_map = th.generate_topology_map(cluster, is_node_awareness=False)
         topology_data = "\n".join(
             [k + " " + v for k, v in tpl_map.items()]) + "\n"

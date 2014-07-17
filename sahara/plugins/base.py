@@ -20,6 +20,8 @@ import six
 from stevedore import enabled
 
 from sahara import exceptions as ex
+from sahara.i18n import _
+from sahara.i18n import _LI
 from sahara.openstack.common import log as logging
 from sahara.utils import resources
 
@@ -98,17 +100,18 @@ class PluginManager(object):
         for ext in extension_manager.extensions:
             if ext.name in self.plugins:
                 raise ex.ConfigurationError(
-                    "Plugin with name '%s' already exists." % ext.name)
+                    _("Plugin with name '%s' already exists.") % ext.name)
             ext.obj.name = ext.name
             self.plugins[ext.name] = ext.obj
-            LOG.info("Plugin '%s' loaded (%s)"
-                     % (ext.name, ext.entry_point_target))
+            LOG.info(_LI("Plugin '%(plugin_name)s' loaded %(entry_point)s"),
+                     {'plugin_name': ext.name,
+                      'entry_point': ext.entry_point_target})
 
         if len(self.plugins) < len(config_plugins):
             loaded_plugins = set(six.iterkeys(self.plugins))
             requested_plugins = set(config_plugins)
             raise ex.ConfigurationError(
-                "Plugins couldn't be loaded: %s" %
+                _("Plugins couldn't be loaded: %s") %
                 ", ".join(requested_plugins - loaded_plugins))
 
     def get_plugins(self, base):

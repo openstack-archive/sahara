@@ -18,6 +18,9 @@ from oslo.config import cfg
 from sahara import conductor as c
 from sahara import context
 from sahara import exceptions as ex
+from sahara.i18n import _
+from sahara.i18n import _LI
+from sahara.i18n import _LW
 from sahara.openstack.common import log as logging
 from sahara.plugins.general import utils
 from sahara.plugins import provisioning as p
@@ -207,8 +210,9 @@ def get_config_value(service, name, cluster=None):
         if configs.applicable_target == service and configs.name == name:
             return configs.default_value
 
-    raise ex.ConfigurationError("Unable get parameter '%s' from service %s" %
-                                (name, service))
+    raise ex.ConfigurationError(_("Unable get parameter '%(parameter)s' from "
+                                  "service %(service)s")
+                                % {"parameter": name, "service": service})
 
 
 def generate_cfg_from_general(cfg, configs, general_config,
@@ -220,7 +224,7 @@ def generate_cfg_from_general(cfg, configs, general_config,
         for name, value in configs['general'].items():
             if value:
                 cfg = _set_config(cfg, general_config, name)
-                LOG.info("Applying config: %s" % name)
+                LOG.info(_LI("Applying config: %s"), name)
     else:
         cfg = _set_config(cfg, general_config)
     return cfg
@@ -356,8 +360,8 @@ def extract_environment_confs(configs):
                     if param_name == cfg_name and param_value is not None:
                         lst.append(cfg_format_str % param_value)
         else:
-            LOG.warn("Plugin received wrong applicable target '%s' in "
-                     "environmental configs" % service)
+            LOG.warn(_LW("Plugin received wrong applicable target '%s' in "
+                     "environmental configs"), service)
     return lst
 
 
@@ -377,8 +381,8 @@ def extract_xml_confs(configs):
                     if param_name in names and param_value is not None:
                         lst.append((param_name, param_value))
         else:
-            LOG.warn("Plugin received wrong applicable target '%s' for "
-                     "xml configs" % service)
+            LOG.warn(_LW("Plugin received wrong applicable target '%s' for "
+                     "xml configs"), service)
     return lst
 
 

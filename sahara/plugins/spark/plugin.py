@@ -19,6 +19,8 @@ from oslo.config import cfg
 
 from sahara import conductor
 from sahara import context
+from sahara.i18n import _
+from sahara.i18n import _LI
 from sahara.openstack.common import log as logging
 from sahara.plugins.general import exceptions as ex
 from sahara.plugins.general import utils
@@ -48,9 +50,8 @@ class SparkProvider(p.ProvisioningPluginBase):
         return "Apache Spark"
 
     def get_description(self):
-        return (
-            "This plugin provides an ability to launch Spark on Hadoop "
-            "CDH cluster without any management consoles.")
+        return _("This plugin provides an ability to launch Spark on Hadoop "
+                 "CDH cluster without any management consoles.")
 
     def get_versions(self):
         return ['1.0.0', '0.9.1']
@@ -70,7 +71,7 @@ class SparkProvider(p.ProvisioningPluginBase):
         dn_count = sum([ng.count for ng
                         in utils.get_node_groups(cluster, "datanode")])
         if dn_count < 1:
-            raise ex.InvalidComponentCountException("datanode", "1 or more",
+            raise ex.InvalidComponentCountException("datanode", _("1 or more"),
                                                     nn_count)
 
         # validate Spark Master Node and Spark Slaves
@@ -84,7 +85,8 @@ class SparkProvider(p.ProvisioningPluginBase):
                         in utils.get_node_groups(cluster, "slave")])
 
         if sl_count < 1:
-            raise ex.InvalidComponentCountException("Spark slave", "1 or more",
+            raise ex.InvalidComponentCountException("Spark slave",
+                                                    _("1 or more"),
                                                     sl_count)
 
     def update_infra(self, cluster):
@@ -106,7 +108,7 @@ class SparkProvider(p.ProvisioningPluginBase):
         # start the data nodes
         self._start_slave_datanode_processes(dn_instances)
 
-        LOG.info("Hadoop services in cluster %s have been started" %
+        LOG.info(_LI("Hadoop services in cluster %s have been started"),
                  cluster.name)
 
         with remote.get_remote(nn_instance) as r:
@@ -118,10 +120,11 @@ class SparkProvider(p.ProvisioningPluginBase):
         if sm_instance:
             with remote.get_remote(sm_instance) as r:
                 run.start_spark_master(r, self._spark_home(cluster))
-                LOG.info("Spark service at '%s' has been started",
+                LOG.info(_LI("Spark service at '%s' has been started"),
                          sm_instance.hostname())
 
-        LOG.info('Cluster %s has been started successfully' % cluster.name)
+        LOG.info(_LI('Cluster %s has been started successfully'),
+                 cluster.name)
         self._set_cluster_info(cluster)
 
     def _spark_home(self, cluster):
@@ -373,7 +376,7 @@ class SparkProvider(p.ProvisioningPluginBase):
         self._start_slave_datanode_processes(instances)
 
         run.start_spark_master(r_master, self._spark_home(cluster))
-        LOG.info("Spark master service at '%s' has been restarted",
+        LOG.info(_LI("Spark master service at '%s' has been restarted"),
                  master.hostname())
 
     def _get_scalable_processes(self):
@@ -386,9 +389,9 @@ class SparkProvider(p.ProvisioningPluginBase):
             ng = ug.get_by_id(cluster.node_groups, ng_id)
             if not set(ng.node_processes).issubset(scalable_processes):
                 raise ex.NodeGroupCannotBeScaled(
-                    ng.name, "Spark plugin cannot scale nodegroup"
-                             " with processes: " +
-                             ' '.join(ng.node_processes))
+                    ng.name, _("Spark plugin cannot scale nodegroup"
+                               " with processes: %s") %
+                    ' '.join(ng.node_processes))
 
     def _validate_existing_ng_scaling(self, cluster, existing):
         scalable_processes = self._get_scalable_processes()
@@ -400,9 +403,9 @@ class SparkProvider(p.ProvisioningPluginBase):
                     dn_to_delete += ng.count - existing[ng.id]
                 if not set(ng.node_processes).issubset(scalable_processes):
                     raise ex.NodeGroupCannotBeScaled(
-                        ng.name, "Spark plugin cannot scale nodegroup"
-                                 " with processes: " +
-                                 ' '.join(ng.node_processes))
+                        ng.name, _("Spark plugin cannot scale nodegroup"
+                                   " with processes: %s") %
+                        ' '.join(ng.node_processes))
 
         dn_amount = len(utils.get_instances(cluster, "datanode"))
         rep_factor = c_helper.get_config_value('HDFS', "dfs.replication",
@@ -410,10 +413,10 @@ class SparkProvider(p.ProvisioningPluginBase):
 
         if dn_to_delete > 0 and dn_amount - dn_to_delete < rep_factor:
             raise ex.ClusterCannotBeScaled(
-                cluster.name, "Spark plugin cannot shrink cluster because "
-                              "there would be not enough nodes for HDFS "
-                              "replicas (replication factor is %s)" %
-                              rep_factor)
+                cluster.name, _("Spark plugin cannot shrink cluster because "
+                                "there would be not enough nodes for HDFS "
+                                "replicas (replication factor is %s)") %
+                rep_factor)
 
     def get_edp_engine(self, cluster, job_type, default_engines):
         '''Select an EDP engine for Spark standalone deployment

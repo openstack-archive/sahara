@@ -14,18 +14,19 @@
 # limitations under the License.
 
 import sahara.exceptions as e
+from sahara.i18n import _
 
 
 class NodeGroupCannotBeScaled(e.SaharaException):
     def __init__(self, ng_name, reason):
-        self.message = ("Chosen node group %s cannot be scaled : "
-                        "%s" % (ng_name, reason))
+        self.message = _("Chosen node group %(ng_name)s cannot be scaled : "
+                         "%(reason)s") % {"ng_name": ng_name, "reason": reason}
         self.code = "NODE_GROUP_CANNOT_BE_SCALED"
 
 
 class DecommissionError(e.SaharaException):
     code = "DECOMMISSION_ERROR"
-    message = "Failed to decommission cluster"
+    message = _("Failed to decommission cluster")
 
     def __init__(self, message=None):
         if message:
@@ -34,8 +35,9 @@ class DecommissionError(e.SaharaException):
 
 class ClusterCannotBeScaled(e.SaharaException):
     def __init__(self, cluster_name, reason):
-        self.message = ("Cluster %s cannot be scaled : "
-                        "%s" % (cluster_name, reason))
+        self.message = _("Cluster %(cluster_name)s cannot be scaled : "
+                         "%(reason)s") % {"cluster_name": cluster_name,
+                                          "reason": reason}
         self.code = "CLUSTER_CANNOT_BE_SCALED"
 
 
@@ -43,11 +45,13 @@ class RequiredServiceMissingException(e.SaharaException):
     """Exception indicating that a required service has not been deployed."""
 
     def __init__(self, service_name, required_by=None):
-        self.message = ('Cluster is missing a service: %s'
+        self.message = (_('Cluster is missing a service: %s')
                         % service_name)
         if required_by:
-            self.message = ('%s, required by service: %s'
-                            % (self.message, required_by))
+            self.message = (_('%(message)s, required by service: '
+                              '%(required_by)s')
+                            % {'message': self.message,
+                               'required_by': required_by})
 
         self.code = 'MISSING_SERVICE'
 
@@ -62,11 +66,17 @@ class InvalidComponentCountException(e.SaharaException):
     """
 
     def __init__(self, component, expected_count, count, description=None):
-        self.message = ("Hadoop cluster should contain {0} {1} component(s)."
-                        " Actual {1} count is {2}".format(
-                            expected_count, component, count))
+        message = _("Hadoop cluster should contain %(expected_count)s "
+                    "%(component)s component(s)."
+                    " Actual %(component)s count is %(count)s")
+
         if description:
-            self.message += '. ' + description
+            message = ("%(message)s. %(description)s"
+                       % {'message': message, 'description': description})
+
+        self.message = message % {"expected_count": expected_count,
+                                  "component": component, "count": count}
+
         self.code = "INVALID_COMPONENT_COUNT"
 
         super(InvalidComponentCountException, self).__init__()
@@ -78,7 +88,7 @@ class HadoopProvisionError(e.SaharaException):
     A message indicating the reason for failure must be provided.
     """
 
-    base_message = "Failed to Provision Hadoop Cluster: %s"
+    base_message = _("Failed to Provision Hadoop Cluster: %s")
 
     def __init__(self, message):
         self.code = "HADOOP_PROVISION_FAILED"

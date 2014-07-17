@@ -14,6 +14,7 @@
 # limitations under the License.
 
 from sahara import exceptions
+from sahara.i18n import _
 from sahara.plugins import provisioning as p
 
 
@@ -61,8 +62,8 @@ class ConfigurationProvider:
                     # internal error
                     # ambari-config-resource contains duplicates
                     raise exceptions.InvalidDataException(
-                        'Internal Error. Duplicate property '
-                        'name detected: %s' % property_name)
+                        _('Internal Error. Duplicate property '
+                          'name detected: %s') % property_name)
                 self.config_mapper[service_property['name']] = (
                     self._get_target(
                         service_property['applicable_target']))
