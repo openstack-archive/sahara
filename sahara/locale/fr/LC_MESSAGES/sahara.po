@@ -10,8 +10,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version:  Sahara\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2014-06-09 06:01+0000\n"
-"PO-Revision-Date: 2014-06-08 15:31+0000\n"
+"POT-Creation-Date: 2014-07-17 06:10+0000\n"
+"PO-Revision-Date: 2014-07-16 14:42+0000\n"
 "Last-Translator: openstackjenkins <jenkins@openstack.org>\n"
 "Language-Team: French "
 "(http://www.transifex.com/projects/p/sahara/language/fr/)\n"
@@ -25,16 +25,11 @@ msgstr ""
 msgid "Uncaught exception"
 msgstr "Exception non interceptée"
 
-#: sahara/openstack/common/fileutils.py:63
-#, python-format
-msgid "Reloading cached file %s"
-msgstr "Rechargement du fichier mis en mémoire cache %s"
-
-#: sahara/openstack/common/gettextutils.py:320
+#: sahara/openstack/common/gettextutils.py:301
 msgid "Message objects do not support addition."
 msgstr "Les objets message ne supportent pas l'addition."
 
-#: sahara/openstack/common/gettextutils.py:330
+#: sahara/openstack/common/gettextutils.py:311
 msgid ""
 "Message objects do not support str() because they may contain non-ascii "
 "characters. Please use unicode() or translate() instead."
@@ -42,64 +37,31 @@ msgstr ""
 "Les objets message ne supportent pas str() parce qu'il peuvent contenir "
 "des caractères non-ascii. Utiliser unicode() ou translate() à la place."
 
-#: sahara/openstack/common/lockutils.py:103
+#: sahara/openstack/common/lockutils.py:101
 #, python-format
-msgid "Could not release the acquired lock `%s`"
-msgstr "Impossible de relâcher le verrou acquis `%s`"
+msgid "Unable to acquire lock on `%(filename)s` due to %(exception)s"
+msgstr ""
+"Impossible d'acquérir le verrou sur `%(filename)s` à cause de "
+"%(exception)s"
 
-#: sahara/openstack/common/lockutils.py:168
-#, python-format
-msgid "Got semaphore \"%(lock)s\""
-msgstr "Sémaphore \"%(lock)s\" obtenu"
-
-#: sahara/openstack/common/lockutils.py:177
-#, python-format
-msgid "Attempting to grab file lock \"%(lock)s\""
-msgstr "Tentative d'appropriation du fichier verrouillé \"%(lock)s\""
-
-#: sahara/openstack/common/lockutils.py:187
-#, python-format
-msgid "Created lock path: %s"
-msgstr "Chemin de verrou créé: %s"
-
-#: sahara/openstack/common/lockutils.py:205
-#, python-format
-msgid "Got file lock \"%(lock)s\" at %(path)s"
-msgstr "Verrou de fichier \"%(lock)s\" obtenu au niveau de %(path)s"
-
-#: sahara/openstack/common/lockutils.py:209
-#, python-format
-msgid "Released file lock \"%(lock)s\" at %(path)s"
-msgstr "Verrou de fichier \"%(lock)s\" libéré au niveau de %(path)s"
-
-#: sahara/openstack/common/lockutils.py:247
-#, python-format
-msgid "Got semaphore / lock \"%(function)s\""
-msgstr "Sémaphore / verrou \"%(function)s\" obtenu"
-
-#: sahara/openstack/common/lockutils.py:251
-#, python-format
-msgid "Semaphore / lock released \"%(function)s\""
-msgstr "Sémaphore / verrou \"%(function)s\" libéré"
-
-#: sahara/openstack/common/log.py:326
+#: sahara/openstack/common/log.py:276
 #, python-format
 msgid "Deprecated: %s"
 msgstr "Obsolète: %s"
 
-#: sahara/openstack/common/log.py:437
+#: sahara/openstack/common/log.py:385
 #, python-format
 msgid "Error loading logging config %(log_config)s: %(err_msg)s"
 msgstr ""
 "Erreur lors du chargement de la configuration de connexion "
 "%(log_config)s: %(err_msg)s"
 
-#: sahara/openstack/common/log.py:488
+#: sahara/openstack/common/log.py:444
 #, python-format
 msgid "syslog facility must be one of: %s"
 msgstr "la fonction syslog doit correspondre à l'une des options suivantes : %s"
 
-#: sahara/openstack/common/log.py:709
+#: sahara/openstack/common/log.py:687
 #, python-format
 msgid "Fatal call to deprecated config: %(msg)s"
 msgstr "Appel fatal adressé à une configuration obsolète : %(msg)s"
@@ -145,17 +107,17 @@ msgstr "Environnement non pris en charge sur SSH"
 msgid "process_input not supported over SSH"
 msgstr "process_input non pris en charge sur SSH"
 
-#: sahara/openstack/common/strutils.py:92
+#: sahara/openstack/common/strutils.py:114
 #, python-format
 msgid "Unrecognized value '%(val)s', acceptable values are: %(acceptable)s"
 msgstr "Valeur inconnue '%(val)s', les valeurs acceptées sont: %(acceptable)s"
 
-#: sahara/openstack/common/strutils.py:197
+#: sahara/openstack/common/strutils.py:219
 #, python-format
 msgid "Invalid unit system: \"%s\""
 msgstr "système d'unité \"%s\" invalide "
 
-#: sahara/openstack/common/strutils.py:206
+#: sahara/openstack/common/strutils.py:228
 #, python-format
 msgid "Invalid string format: %s"
 msgstr "Format de chaine de caractères non valide : %s"

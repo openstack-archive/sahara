@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Sahara\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2014-06-09 06:01+0000\n"
-"PO-Revision-Date: 2014-06-08 15:32+0000\n"
+"POT-Creation-Date: 2014-07-17 06:10+0000\n"
+"PO-Revision-Date: 2014-07-16 14:42+0000\n"
 "Last-Translator: openstackjenkins <jenkins@openstack.org>\n"
 "Language-Team: Portuguese (Brazil) (http://www.transifex.com/projects/p/"
 "sahara/language/pt_BR/)\n"
@@ -18,6 +18,16 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 1.3\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+#: sahara/openstack/common/lockutils.py:82
+#, python-format
+msgid "Created lock path: %s"
+msgstr "Criado caminho de lock: %s"
+
+#: sahara/openstack/common/lockutils.py:251
+#, python-format
+msgid "Failed to remove file %(file)s"
+msgstr ""
 
 #: sahara/openstack/common/periodic_task.py:125
 #, python-format
