@@ -16,6 +16,7 @@
 from oslo.config import cfg
 
 from sahara.conductor import api as conductor_api
+from sahara.i18n import _
 
 
 def Api(use_local=True, **kwargs):
@@ -27,7 +28,8 @@ def Api(use_local=True, **kwargs):
     if cfg.CONF.conductor.use_local or use_local:
         api = conductor_api.LocalApi
     else:
-        raise NotImplementedError("Remote conductor isn't implemented yet.")
+        raise NotImplementedError(
+            _("Remote conductor isn't implemented yet."))
         # api = conductor.RemoteApi
 
     return api(**kwargs)

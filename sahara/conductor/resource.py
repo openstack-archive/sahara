@@ -28,6 +28,7 @@ import datetime
 import six
 
 from sahara.conductor import objects
+from sahara.i18n import _
 from sahara.swift import swift_helper
 from sahara.utils import types
 
@@ -114,7 +115,7 @@ class Resource(types.FrozenDict):
         elif self._is_passthrough_type(entity):
             return entity
         else:
-            raise TypeError("Unsupported type: %s" % type(entity).__name__)
+            raise TypeError(_("Unsupported type: %s") % type(entity).__name__)
 
     def _wrap_list(self, refname, lst):
         newlst = [self._wrap_entity(refname, entity) for entity in lst]

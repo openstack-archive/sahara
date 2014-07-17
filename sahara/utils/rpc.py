@@ -18,6 +18,7 @@ from oslo.config import cfg
 from oslo import messaging
 
 from sahara import context
+from sahara.i18n import _LE
 from sahara.openstack.common import log as logging
 
 
@@ -72,6 +73,6 @@ class ContextEndpointHandler(object):
 
             return run_method
         except AttributeError:
-            LOG.error("No %(method)s method found implemented in "
-                      "%(class)s class",
+            LOG.error(_LE("No %(method)s method found implemented in "
+                      "%(class)s class"),
                       {'method': name, 'class': self.__endpoint})

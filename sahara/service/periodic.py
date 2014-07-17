@@ -20,6 +20,7 @@ import six
 
 from sahara import conductor as c
 from sahara import context
+from sahara.i18n import _LI
 from sahara.openstack.common import log
 from sahara.openstack.common import periodic_task
 from sahara.openstack.common import threadgroup
@@ -92,15 +93,18 @@ class SaharaPeriodicTasks(periodic_task.PeriodicTasks):
             if CONF.use_identity_api_v3:
                 trusts.use_os_admin_auth_token(cluster)
 
-                LOG.info('Terminating transient cluster %s with id %s' %
-                         (cluster.name, cluster.id))
+                LOG.info(_LI('Terminating transient cluster %(cluster)s '
+                             'with id %(id)s'),
+                         {'cluster': cluster.name, 'id': cluster.id})
 
                 try:
                     api.terminate_cluster(cluster.id)
                 except Exception as e:
-                    LOG.info('Failed to terminate transient cluster '
-                             '%s with id %s: %s.' %
-                             (cluster.name, cluster.id, six.text_type(e)))
+                    LOG.info(_LI('Failed to terminate transient cluster '
+                             '%(cluster)s with id %(id)s: %(error)s.'),
+                             {'cluster': cluster.name,
+                              'id': cluster.id,
+                              'error': six.text_type(e)})
 
             else:
                 if cluster.status != 'AwaitingTermination':

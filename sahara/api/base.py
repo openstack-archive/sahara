@@ -13,9 +13,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from sahara.i18n import _
 import sahara.utils.api as u
 
 
 def not_implemented():
     return u.internal_error(
-        501, NotImplementedError("This API operation isn't implemented"))
+        501, NotImplementedError(_("This API operation isn't implemented")))

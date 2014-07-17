@@ -20,6 +20,7 @@ from oslo import messaging
 
 from sahara import conductor as c
 from sahara import context
+from sahara.i18n import _LE
 from sahara.openstack.common import log as logging
 from sahara.plugins import base as plugin_base
 from sahara.service.edp import job_manager
@@ -139,8 +140,9 @@ def _provision_cluster(cluster_id):
         if not g.check_cluster_exists(cluster):
             LOG.info(g.format_cluster_deleted_message(cluster))
             return
-        LOG.exception("Can't configure cluster '%s' (reason: %s)",
-                      cluster.name, ex)
+        LOG.exception(
+            _LE("Can't configure cluster '%(name)s' (reason: %(reason)s)"),
+            {'name': cluster.name, 'reason': ex})
         g.change_cluster_status(cluster, "Error")
         return
 
@@ -156,8 +158,9 @@ def _provision_cluster(cluster_id):
         if not g.check_cluster_exists(cluster):
             LOG.info(g.format_cluster_deleted_message(cluster))
             return
-        LOG.exception("Can't start services for cluster '%s' (reason: %s)",
-                      cluster.name, ex)
+        LOG.exception(
+            _LE("Can't start services for cluster '%(name)s' (reason: "
+                "%(reason)s)"), {'name': cluster.name, 'reason': ex})
         g.change_cluster_status(cluster, "Error")
         return
 
@@ -206,8 +209,10 @@ def _provision_scaled_cluster(cluster_id, node_group_id_map):
             if not g.check_cluster_exists(cluster):
                 LOG.info(g.format_cluster_deleted_message(cluster))
                 return
-            LOG.exception("Can't scale cluster '%s' (reason: %s)",
-                          cluster.name, ex)
+            LOG.exception(
+                _LE("Can't scale cluster '%(name)s' (reason: %(reason)s)"),
+                {'name': cluster.name, 'reason': ex})
+
             g.change_cluster_status(cluster, "Error")
             return
 

@@ -19,6 +19,8 @@ from oslo.config import cfg
 
 from sahara import context
 from sahara import exceptions as ex
+from sahara.i18n import _
+from sahara.i18n import _LI
 from sahara.openstack.common import log
 from sahara.utils.openstack import nova
 from sahara.utils import xmlutils as x
@@ -108,7 +110,7 @@ def _read_compute_topology():
     except IOError:
         raise ex.NotFoundException(
             CONF.compute_topology_file,
-            "Unable to find file %s with compute topology")
+            _("Unable to find file %s with compute topology"))
     return topology
 
 
@@ -123,8 +125,8 @@ def generate_topology_map(cluster, is_node_awareness):
             hostId = ni.hostId
             if hostId not in mapping:
                 raise ex.NotFoundException(
-                    i.instance_id, "Was not able to find compute node "
-                                   "topology for VM %s")
+                    i.instance_id,
+                    _("Was not able to find compute node topology for VM %s"))
             rack = mapping[hostId]
             if is_node_awareness:
                 rack += "/" + hostId
@@ -149,16 +151,16 @@ def vm_awareness_core_config():
         if param:
             param['value'] = 'org.apache.hadoop.net.NetworkTopology'
 
-    LOG.info("Vm awareness will add following configs in core-site "
-             "params: %s", result)
+    LOG.info(_LI("Vm awareness will add following configs in core-site "
+             "params: %s"), result)
     return result
 
 
 def vm_awareness_mapred_config():
     c = x.load_hadoop_xml_defaults('topology/resources/mapred-template.xml')
     result = [cfg for cfg in c if cfg['value']]
-    LOG.info("Vm awareness will add following configs in map-red "
-             "params: %s", result)
+    LOG.info(_LI("Vm awareness will add following configs in map-red "
+             "params: %s"), result)
     return result
 
 

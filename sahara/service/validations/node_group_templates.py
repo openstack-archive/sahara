@@ -14,6 +14,7 @@
 # limitations under the License.
 
 from sahara import exceptions as ex
+from sahara.i18n import _
 from sahara.service import api
 import sahara.service.validations.base as b
 
@@ -107,8 +108,8 @@ def check_node_group_template_usage(node_group_template_id, **kwargs):
 
     if cluster_users or template_users:
         raise ex.InvalidException(
-            "Node group template %s is in use by "
-            "cluster templates: %s; and clusters: %s" %
-            (node_group_template_id,
-             template_users and ', '.join(template_users) or 'N/A',
-             cluster_users and ', '.join(cluster_users) or 'N/A'))
+            _("Node group template %(template)s is in use by "
+              "cluster templates: %(users)s; and clusters: %(clusters)s") %
+            {'template': node_group_template_id,
+             'users': template_users and ', '.join(template_users) or 'N/A',
+             'clusters': cluster_users and ', '.join(cluster_users) or 'N/A'})

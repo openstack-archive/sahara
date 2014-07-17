@@ -23,6 +23,7 @@ import time
 
 from oslo.config import cfg
 
+from sahara.i18n import _LI
 from sahara.openstack.common import log
 
 
@@ -51,8 +52,9 @@ def timed(f):
         try:
             result = f(*args, **kwds)
         except Exception:
-            LOG.info('Exception raised by invocation of {0}: {1}'
-                     .format(f.__name__, sys.exc_info()[0]))
+            LOG.info(
+                _LI('Exception raised by invocation of %(name)s: %(info)s'),
+                {'name': f.__name__, 'info': sys.exc_info()[0]})
             raise
         finally:
             elapsed = time.time() - start
