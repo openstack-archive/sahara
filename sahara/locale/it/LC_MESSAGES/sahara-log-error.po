@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Sahara\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2014-07-05 06:01+0000\n"
-"PO-Revision-Date: 2014-07-04 15:31+0000\n"
+"POT-Creation-Date: 2014-07-17 06:10+0000\n"
+"PO-Revision-Date: 2014-07-16 14:42+0000\n"
 "Last-Translator: openstackjenkins <jenkins@openstack.org>\n"
 "Language-Team: Italian (http://www.transifex.com/projects/p/sahara/language/"
 "it/)\n"
@@ -19,21 +19,26 @@ msgstr ""
 "Generated-By: Babel 1.3\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: sahara/openstack/common/excutils.py:62
+#: sahara/openstack/common/excutils.py:76
 #, python-format
 msgid "Original exception being dropped: %s"
 msgstr "Eccezione originale in corso di eliminazione: %s"
 
-#: sahara/openstack/common/excutils.py:91
+#: sahara/openstack/common/excutils.py:105
 #, python-format
 msgid "Unexpected exception occurred %d time(s)... retrying."
 msgstr "Un errore inatteso si è verificato %d volte... ritento."
 
-#: sahara/openstack/common/loopingcall.py:89
+#: sahara/openstack/common/lockutils.py:119
+#, python-format
+msgid "Could not release the acquired lock `%s`"
+msgstr "Impossibile rilasciare il blocco acquisito `%s`"
+
+#: sahara/openstack/common/loopingcall.py:95
 msgid "in fixed duration looping call"
 msgstr "chiamata in loop a durata fissa"
 
-#: sahara/openstack/common/loopingcall.py:136
+#: sahara/openstack/common/loopingcall.py:138
 msgid "in dynamic looping call"
 msgstr "chiamata in loop dinamico"
 

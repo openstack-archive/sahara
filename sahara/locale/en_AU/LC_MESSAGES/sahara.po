@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version:  Sahara\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2014-06-09 06:01+0000\n"
-"PO-Revision-Date: 2014-06-08 15:31+0000\n"
+"POT-Creation-Date: 2014-07-17 06:10+0000\n"
+"PO-Revision-Date: 2014-07-16 14:24+0000\n"
 "Last-Translator: openstackjenkins <jenkins@openstack.org>\n"
 "Language-Team: English (Australia) "
 "(http://www.transifex.com/projects/p/sahara/language/en_AU/)\n"
@@ -23,16 +23,11 @@ msgstr ""
 msgid "Uncaught exception"
 msgstr "Uncaught exception"
 
-#: sahara/openstack/common/fileutils.py:63
-#, python-format
-msgid "Reloading cached file %s"
-msgstr "Reloading cached file %s"
-
-#: sahara/openstack/common/gettextutils.py:320
+#: sahara/openstack/common/gettextutils.py:301
 msgid "Message objects do not support addition."
 msgstr "Message objects do not support addition."
 
-#: sahara/openstack/common/gettextutils.py:330
+#: sahara/openstack/common/gettextutils.py:311
 msgid ""
 "Message objects do not support str() because they may contain non-ascii "
 "characters. Please use unicode() or translate() instead."
@@ -40,62 +35,27 @@ msgstr ""
 "Message objects do not support str() because they may contain non-ascii "
 "characters. Please use unicode() or translate() instead."
 
-#: sahara/openstack/common/lockutils.py:103
+#: sahara/openstack/common/lockutils.py:101
 #, python-format
-msgid "Could not release the acquired lock `%s`"
-msgstr "Could not release the acquired lock `%s`"
+msgid "Unable to acquire lock on `%(filename)s` due to %(exception)s"
+msgstr ""
 
-#: sahara/openstack/common/lockutils.py:168
-#, python-format
-msgid "Got semaphore \"%(lock)s\""
-msgstr "Got semaphore \"%(lock)s\""
-
-#: sahara/openstack/common/lockutils.py:177
-#, python-format
-msgid "Attempting to grab file lock \"%(lock)s\""
-msgstr "Attempting to grab file lock \"%(lock)s\""
-
-#: sahara/openstack/common/lockutils.py:187
-#, python-format
-msgid "Created lock path: %s"
-msgstr "Created lock path: %s"
-
-#: sahara/openstack/common/lockutils.py:205
-#, python-format
-msgid "Got file lock \"%(lock)s\" at %(path)s"
-msgstr "Got file lock \"%(lock)s\" at %(path)s"
-
-#: sahara/openstack/common/lockutils.py:209
-#, python-format
-msgid "Released file lock \"%(lock)s\" at %(path)s"
-msgstr "Released file lock \"%(lock)s\" at %(path)s"
-
-#: sahara/openstack/common/lockutils.py:247
-#, python-format
-msgid "Got semaphore / lock \"%(function)s\""
-msgstr "Got semaphore / lock \"%(function)s\""
-
-#: sahara/openstack/common/lockutils.py:251
-#, python-format
-msgid "Semaphore / lock released \"%(function)s\""
-msgstr "Semaphore / lock released \"%(function)s\""
-
-#: sahara/openstack/common/log.py:326
+#: sahara/openstack/common/log.py:276
 #, python-format
 msgid "Deprecated: %s"
 msgstr "Deprecated: %s"
 
-#: sahara/openstack/common/log.py:437
+#: sahara/openstack/common/log.py:385
 #, python-format
 msgid "Error loading logging config %(log_config)s: %(err_msg)s"
 msgstr "Error loading logging config %(log_config)s: %(err_msg)s"
 
-#: sahara/openstack/common/log.py:488
+#: sahara/openstack/common/log.py:444
 #, python-format
 msgid "syslog facility must be one of: %s"
 msgstr "syslog facility must be one of: %s"
 
-#: sahara/openstack/common/log.py:709
+#: sahara/openstack/common/log.py:687
 #, python-format
 msgid "Fatal call to deprecated config: %(msg)s"
 msgstr "Fatal call to deprecated config: %(msg)s"
@@ -136,17 +96,17 @@ msgstr "Environment not supported over SSH"
 msgid "process_input not supported over SSH"
 msgstr "process_input not supported over SSH"
 
-#: sahara/openstack/common/strutils.py:92
+#: sahara/openstack/common/strutils.py:114
 #, python-format
 msgid "Unrecognized value '%(val)s', acceptable values are: %(acceptable)s"
 msgstr "Unrecognised value '%(val)s', acceptable values are: %(acceptable)s"
 
-#: sahara/openstack/common/strutils.py:197
+#: sahara/openstack/common/strutils.py:219
 #, python-format
 msgid "Invalid unit system: \"%s\""
 msgstr ""
 
-#: sahara/openstack/common/strutils.py:206
+#: sahara/openstack/common/strutils.py:228
 #, python-format
 msgid "Invalid string format: %s"
 msgstr "Invalid string format: %s"
