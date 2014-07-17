@@ -11,6 +11,7 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+import random
 import time
 
 from oslo.config import cfg
@@ -23,8 +24,8 @@ from sahara.openstack.common import log as logging
 periodic_opts = [
     cfg.BoolOpt('run_external_periodic_tasks',
                 default=True,
-                help=('Some periodic tasks can be run in a separate process. '
-                      'Should we run them here?')),
+                help='Some periodic tasks can be run in a separate process. '
+                     'Should we run them here?'),
 ]
 
 CONF = cfg.CONF
@@ -44,8 +45,8 @@ def periodic_task(*args, **kwargs):
 
     This decorator can be used in two ways:
 
-        1. Without arguments '@periodic_task', this will be run on every cycle
-           of the periodic scheduler.
+        1. Without arguments '@periodic_task', this will be run on the default
+           interval of 60 seconds.
 
         2. With arguments:
            @periodic_task(spacing=N [, run_immediately=[True|False]])
@@ -80,14 +81,14 @@ def periodic_task(*args, **kwargs):
         return f
 
     # NOTE(sirp): The `if` is necessary to allow the decorator to be used with
-    # and without parents.
+    # and without parenthesis.
     #
-    # In the 'with-parents' case (with kwargs present), this function needs to
-    # return a decorator function since the interpreter will invoke it like:
+    # In the 'with-parenthesis' case (with kwargs present), this function needs
+    # to return a decorator function since the interpreter will invoke it like:
     #
     #   periodic_task(*args, **kwargs)(f)
     #
-    # In the 'without-parents' case, the original function will be passed
+    # In the 'without-parenthesis' case, the original function will be passed
     # in as the first argument, like:
     #
     #   periodic_task(f)
@@ -133,12 +134,34 @@ class _PeriodicTasksMeta(type):
                     continue
 
                 # A periodic spacing of zero indicates that this task should
-                # be run every pass
+                # be run on the default interval to avoid running too
+                # frequently.
                 if task._periodic_spacing == 0:
-                    task._periodic_spacing = None
+                    task._periodic_spacing = DEFAULT_INTERVAL
 
                 cls._periodic_tasks.append((name, task))
                 cls._periodic_spacing[name] = task._periodic_spacing
+
+
+def _nearest_boundary(last_run, spacing):
+    """Find nearest boundary which is in the past, which is a multiple of the
+    spacing with the last run as an offset.
+
+    Eg if last run was 10 and spacing was 7, the new last run could be: 17, 24,
+    31, 38...
+
+    0% to 5% of the spacing value will be added to this value to ensure tasks
+    do not synchronize. This jitter is rounded to the nearest second, this
+    means that spacings smaller than 20 seconds will not have jitter.
+    """
+    current_time = time.time()
+    if last_run is None:
+        return current_time
+    delta = current_time - last_run
+    offset = delta % spacing
+    # Add up to 5% jitter
+    jitter = int(spacing * (random.random() / 20))
+    return current_time - offset + jitter
 
 
 @six.add_metaclass(_PeriodicTasksMeta)
@@ -158,18 +181,18 @@ class PeriodicTasks(object):
             spacing = self._periodic_spacing[task_name]
             last_run = self._periodic_last_run[task_name]
 
-            # If a periodic task is _nearly_ due, then we'll run it early
-            if spacing is not None:
-                idle_for = min(idle_for, spacing)
-                if last_run is not None:
-                    delta = last_run + spacing - time.time()
-                    if delta > 0.2:
-                        idle_for = min(idle_for, delta)
-                        continue
+            # Check if due, if not skip
+            idle_for = min(idle_for, spacing)
+            if last_run is not None:
+                delta = last_run + spacing - time.time()
+                if delta > 0:
+                    idle_for = min(idle_for, delta)
+                    continue
 
             LOG.debug("Running periodic task %(full_task_name)s",
                       {"full_task_name": full_task_name})
-            self._periodic_last_run[task_name] = time.time()
+            self._periodic_last_run[task_name] = _nearest_boundary(
+                last_run, spacing)
 
             try:
                 task(self, context)
