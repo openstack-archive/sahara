@@ -6,9 +6,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: sahara 2014.2.dev151.g27d0752\n"
+"Project-Id-Version: sahara 2014.2.dev169.g4aec15d\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2014-07-17 06:10+0000\n"
+"POT-Creation-Date: 2014-07-18 06:10+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -56,16 +56,16 @@ msgstr ""
 msgid "Fatal call to deprecated config: %(msg)s"
 msgstr ""
 
-#: sahara/openstack/common/periodic_task.py:39
+#: sahara/openstack/common/periodic_task.py:40
 #, python-format
 msgid "Unexpected argument for periodic task creation: %(arg)s."
 msgstr ""
 
-#: sahara/openstack/common/processutils.py:58
+#: sahara/openstack/common/processutils.py:59
 msgid "Unexpected error while running command."
 msgstr ""
 
-#: sahara/openstack/common/processutils.py:61
+#: sahara/openstack/common/processutils.py:62
 #, python-format
 msgid ""
 "%(description)s\n"
@@ -75,20 +75,20 @@ msgid ""
 "Stderr: %(stderr)r"
 msgstr ""
 
-#: sahara/openstack/common/processutils.py:139
+#: sahara/openstack/common/processutils.py:143
 #, python-format
-msgid "Got unknown keyword args to utils.execute: %r"
+msgid "Got unknown keyword args: %r"
 msgstr ""
 
-#: sahara/openstack/common/processutils.py:145
+#: sahara/openstack/common/processutils.py:148
 msgid "Command requested root, but did not specify a root helper."
 msgstr ""
 
-#: sahara/openstack/common/processutils.py:241
+#: sahara/openstack/common/processutils.py:245
 msgid "Environment not supported over SSH"
 msgstr ""
 
-#: sahara/openstack/common/processutils.py:245
+#: sahara/openstack/common/processutils.py:249
 msgid "process_input not supported over SSH"
 msgstr ""
 

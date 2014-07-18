@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Sahara\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2014-07-17 06:10+0000\n"
+"POT-Creation-Date: 2014-07-18 06:10+0000\n"
 "PO-Revision-Date: 2014-07-16 14:29+0000\n"
 "Last-Translator: openstackjenkins <jenkins@openstack.org>\n"
 "Language-Team: German (http://www.transifex.com/projects/p/sahara/language/"
@@ -23,6 +23,18 @@ msgstr ""
 #: sahara/openstack/common/loopingcall.py:87
 #, python-format
 msgid "task %(func_name)s run outlasted interval by %(delay).2f sec"
+msgstr ""
+
+#: sahara/openstack/common/network_utils.py:149
+msgid "tcp_keepidle not available on your system"
+msgstr ""
+
+#: sahara/openstack/common/network_utils.py:156
+msgid "tcp_keepintvl not available on your system"
+msgstr ""
+
+#: sahara/openstack/common/network_utils.py:163
+msgid "tcp_keepknt not available on your system"
 msgstr ""
 
 #: sahara/openstack/common/db/sqlalchemy/session.py:506

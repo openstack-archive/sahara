@@ -10,8 +10,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version:  Sahara\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2014-07-17 06:10+0000\n"
-"PO-Revision-Date: 2014-07-16 14:24+0000\n"
+"POT-Creation-Date: 2014-07-18 06:10+0000\n"
+"PO-Revision-Date: 2014-07-17 06:41+0000\n"
 "Last-Translator: openstackjenkins <jenkins@openstack.org>\n"
 "Language-Team: Chinese (China) "
 "(http://www.transifex.com/projects/p/sahara/language/zh_CN/)\n"
@@ -60,16 +60,16 @@ msgstr "系统日志工具必须是下列其中一项：%s"
 msgid "Fatal call to deprecated config: %(msg)s"
 msgstr "对建议不要使用的配置进行了后果极严重的调用：%(msg)s"
 
-#: sahara/openstack/common/periodic_task.py:39
+#: sahara/openstack/common/periodic_task.py:40
 #, python-format
 msgid "Unexpected argument for periodic task creation: %(arg)s."
 msgstr "对于周期性任务创建，以下是意外自变量：%(arg)s。"
 
-#: sahara/openstack/common/processutils.py:58
+#: sahara/openstack/common/processutils.py:59
 msgid "Unexpected error while running command."
 msgstr "在运行命令时发生预期外错误。"
 
-#: sahara/openstack/common/processutils.py:61
+#: sahara/openstack/common/processutils.py:62
 #, python-format
 msgid ""
 "%(description)s\n"
@@ -84,20 +84,20 @@ msgstr ""
 "Stdout: %(stdout)r\n"
 "Stderr: %(stderr)r"
 
-#: sahara/openstack/common/processutils.py:139
+#: sahara/openstack/common/processutils.py:143
 #, python-format
-msgid "Got unknown keyword args to utils.execute: %r"
-msgstr "发现未知的 utils.execute 关键字参数：%r"
+msgid "Got unknown keyword args: %r"
+msgstr ""
 
-#: sahara/openstack/common/processutils.py:145
+#: sahara/openstack/common/processutils.py:148
 msgid "Command requested root, but did not specify a root helper."
 msgstr "命令要求root，但没有指定root助手。"
 
-#: sahara/openstack/common/processutils.py:241
+#: sahara/openstack/common/processutils.py:245
 msgid "Environment not supported over SSH"
 msgstr "SSH上不支持环境变量"
 
-#: sahara/openstack/common/processutils.py:245
+#: sahara/openstack/common/processutils.py:249
 msgid "process_input not supported over SSH"
 msgstr "SSH上不支持的进程输入参数。"
 

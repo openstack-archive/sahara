@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Sahara\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2014-07-17 06:10+0000\n"
-"PO-Revision-Date: 2014-07-16 14:42+0000\n"
+"POT-Creation-Date: 2014-07-18 06:10+0000\n"
+"PO-Revision-Date: 2014-07-17 06:41+0000\n"
 "Last-Translator: openstackjenkins <jenkins@openstack.org>\n"
 "Language-Team: French (http://www.transifex.com/projects/p/sahara/language/"
 "fr/)\n"
@@ -42,7 +42,7 @@ msgstr "dans l'appel en boucle de durée fixe"
 msgid "in dynamic looping call"
 msgstr "dans l'appel en boucle dynamique"
 
-#: sahara/openstack/common/periodic_task.py:179
+#: sahara/openstack/common/periodic_task.py:202
 #, python-format
 msgid "Error during %(full_task_name)s: %(e)s"
 msgstr "Erreur pendant %(full_task_name)s : %(e)s"
@@ -61,5 +61,5 @@ msgstr "Exception BD encapsulée."
 
 #: sahara/openstack/common/db/sqlalchemy/test_migrations.py:267
 #, python-format
-msgid "Failed to migrate to version %s on engine %s"
-msgstr "Échec à migrer la version %s sur le moteur %s"
+msgid "Failed to migrate to version %(version)s on engine %(engine)s"
+msgstr ""

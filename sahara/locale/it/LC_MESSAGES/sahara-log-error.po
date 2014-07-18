@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Sahara\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2014-07-17 06:10+0000\n"
-"PO-Revision-Date: 2014-07-16 14:42+0000\n"
+"POT-Creation-Date: 2014-07-18 06:10+0000\n"
+"PO-Revision-Date: 2014-07-17 06:41+0000\n"
 "Last-Translator: openstackjenkins <jenkins@openstack.org>\n"
 "Language-Team: Italian (http://www.transifex.com/projects/p/sahara/language/"
 "it/)\n"
@@ -42,7 +42,7 @@ msgstr "chiamata in loop a durata fissa"
 msgid "in dynamic looping call"
 msgstr "chiamata in loop dinamico"
 
-#: sahara/openstack/common/periodic_task.py:179
+#: sahara/openstack/common/periodic_task.py:202
 #, python-format
 msgid "Error during %(full_task_name)s: %(e)s"
 msgstr "Errore durante %(full_task_name)s: %(e)s"
@@ -61,5 +61,5 @@ msgstr "Eccezione DB con wrapper."
 
 #: sahara/openstack/common/db/sqlalchemy/test_migrations.py:267
 #, python-format
-msgid "Failed to migrate to version %s on engine %s"
+msgid "Failed to migrate to version %(version)s on engine %(engine)s"
 msgstr ""

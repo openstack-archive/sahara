@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Sahara\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2014-07-17 06:10+0000\n"
-"PO-Revision-Date: 2014-07-16 14:42+0000\n"
+"POT-Creation-Date: 2014-07-18 06:10+0000\n"
+"PO-Revision-Date: 2014-07-17 06:41+0000\n"
 "Last-Translator: openstackjenkins <jenkins@openstack.org>\n"
 "Language-Team: Japanese (http://www.transifex.com/projects/p/sahara/language/"
 "ja/)\n"
@@ -42,7 +42,7 @@ msgstr "一定期間の呼び出しループ"
 msgid "in dynamic looping call"
 msgstr "動的呼び出しループ"
 
-#: sahara/openstack/common/periodic_task.py:179
+#: sahara/openstack/common/periodic_task.py:202
 #, python-format
 msgid "Error during %(full_task_name)s: %(e)s"
 msgstr "%(full_task_name)s 中のエラー: %(e)s"
@@ -61,5 +61,5 @@ msgstr "DB 例外がラップされました。"
 
 #: sahara/openstack/common/db/sqlalchemy/test_migrations.py:267
 #, python-format
-msgid "Failed to migrate to version %s on engine %s"
-msgstr "バージョン%sをエンジン%sへの移行が失敗しました。"
+msgid "Failed to migrate to version %(version)s on engine %(engine)s"
+msgstr ""
