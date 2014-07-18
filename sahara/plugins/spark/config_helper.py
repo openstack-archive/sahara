@@ -89,6 +89,13 @@ SPARK_CONFS = {
                 ' machine (default: 1)',
                 'default': '1',
                 'priority': 2,
+            },
+            {
+                'name': 'Spark home',
+                'description': 'The location of the spark installation'
+                ' (default: /opt/spark)',
+                'default': '/opt/spark',
+                'priority': 2,
             }
         ]
     }
