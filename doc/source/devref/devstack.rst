@@ -22,8 +22,8 @@ nested virtualization. Without nested virtualization VMs running inside
 the DevStack will be extremely slow lacking hardware acceleration, i.e.
 you will run QEMU VMs without KVM.
 
-On Linux QEMU/KVM supports nested virtualization, on Mac OS - VMWare Fusion.
-VMWare Fusion requires adjustments to run VM with fixed IP. You may find
+On Linux QEMU/KVM supports nested virtualization, on Mac OS - VMware Fusion.
+VMware Fusion requires adjustments to run VM with fixed IP. You may find
 instructions which can help :ref:`below <fusion-fixed-ip>`.
 
 Start a new VM with Ubuntu Server 12.04. Recommended settings:
@@ -79,7 +79,7 @@ Ubuntu 12.04 system.
     KEYSTONE_TOKEN_FORMAT=UUID
 
     # Change the FLOATING_RANGE to whatever IPs VM is working in.
-    # In NAT mode it is subnet VMWare Fusion provides, in bridged mode it is your local network.
+    # In NAT mode it is subnet VMware Fusion provides, in bridged mode it is your local network.
     # But only use the top end of the network by using a /27 and starting at the 224 octet.
     FLOATING_RANGE=192.168.55.224/27
 
@@ -138,7 +138,7 @@ at ``$DEST/sahara`` which is usually ``/opt/stack/sahara``.
 
 .. _fusion-fixed-ip:
 
-Setting fixed IP address for VMWare Fusion VM
+Setting fixed IP address for VMware Fusion VM
 ---------------------------------------------
 
 1. Open file ``/Library/Preferences/VMware Fusion/vmnet8/dhcpd.conf``
