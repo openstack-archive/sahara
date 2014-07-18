@@ -67,7 +67,8 @@ class Context(object):
             self.tenant_name,
             self.roles,
             self.is_admin,
-            self.remote_semaphore)
+            self.remote_semaphore,
+            self.auth_uri)
 
     def to_dict(self):
         return {
