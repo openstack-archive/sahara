@@ -52,7 +52,7 @@ class TestJobManager(base.SaharaWithDbTestCase):
         helper.return_value = 'ok'
 
         job, _ = _create_all_stack(edp.JOB_TYPE_PIG)
-        res = job_utils.create_workflow_dir(mock.Mock(), job, 'hadoop')
+        res = job_utils.create_hdfs_workflow_dir(mock.Mock(), job, 'hadoop')
         self.assertIn('/user/hadoop/special_name/', res)
 
         remote.reset_mock()
@@ -73,13 +73,13 @@ class TestJobManager(base.SaharaWithDbTestCase):
         conductor_raw_data.return_value = 'ok'
 
         job, _ = _create_all_stack(edp.JOB_TYPE_PIG)
-        res = job_utils.upload_job_files(mock.Mock(), 'job_prefix',
-                                         job, 'hadoop')
+        res = job_utils.upload_job_files_to_hdfs(mock.Mock(), 'job_prefix',
+                                                 job, 'hadoop')
         self.assertEqual(['job_prefix/script.pig'], res)
 
         job, _ = _create_all_stack(edp.JOB_TYPE_MAPREDUCE)
-        res = job_utils.upload_job_files(mock.Mock(), 'job_prefix',
-                                         job, 'hadoop')
+        res = job_utils.upload_job_files_to_hdfs(mock.Mock(), 'job_prefix',
+                                                 job, 'hadoop')
         self.assertEqual(['job_prefix/lib/main.jar'], res)
 
         remote.reset_mock()

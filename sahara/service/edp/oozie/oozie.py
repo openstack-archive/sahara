@@ -50,10 +50,11 @@ class OozieClient(object):
                            "?action=kill")
         _check_status_code(resp, 200)
 
-    def get_job_status(self, job_execution):
+    def get_job_status(self, job_execution, job_id=None):
+        if job_id is None:
+            job_id = job_execution.oozie_job_id
         session = self._get_http_session(job_execution.extra.get('neutron'))
-        resp = session.get(self.job_url % job_execution.oozie_job_id +
-                           "?show=info")
+        resp = session.get(self.job_url % job_id + "?show=info")
         _check_status_code(resp, 200)
         return get_json(resp)
 

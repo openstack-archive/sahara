@@ -13,6 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import os
 import uuid
 
 from oslo.config import cfg
@@ -39,12 +40,14 @@ CONF.register_opts(opts)
 
 conductor = c.API
 
+terminated_job_states = ['DONEWITHERROR', 'FAILED', 'KILLED', 'SUCCEEDED']
+
 
 def get_plugin(cluster):
     return plugin_base.PLUGINS.get_plugin(cluster.plugin_name)
 
 
-def upload_job_files(where, job_dir, job, hdfs_user):
+def upload_job_files_to_hdfs(where, job_dir, job, hdfs_user):
     mains = job.mains or []
     libs = job.libs or []
     uploaded_paths = []
@@ -64,7 +67,34 @@ def upload_job_files(where, job_dir, job, hdfs_user):
     return uploaded_paths
 
 
-def create_workflow_dir(where, job, hdfs_user):
+def upload_job_files(where, job_dir, job, libs_subdir=True):
+    mains = job.mains or []
+    libs = job.libs or []
+    uploaded_paths = []
+
+    # Include libs files in the main dir if libs_subdir is False
+    if not libs_subdir:
+        mains += libs
+
+    with remote.get_remote(where) as r:
+        for job_file in mains:
+            dst = os.path.join(job_dir, job_file.name)
+            raw_data = dispatch.get_raw_binary(job_file)
+            r.write_file_to(dst, raw_data)
+            uploaded_paths.append(dst)
+
+        if libs_subdir and libs:
+            libs_dir = os.path.join(job_dir, "libs")
+            r.execute_command("mkdir -p %s" % libs_dir)
+            for job_file in libs:
+                dst = os.path.join(libs_dir, job_file.name)
+                raw_data = dispatch.get_raw_binary(job_file)
+                r.write_file_to(dst, raw_data)
+                uploaded_paths.append(dst)
+    return uploaded_paths
+
+
+def create_hdfs_workflow_dir(where, job, hdfs_user):
 
     constructed_dir = '/user/%s/' % hdfs_user
     constructed_dir = _add_postfix(constructed_dir)
@@ -72,6 +102,18 @@ def create_workflow_dir(where, job, hdfs_user):
     with remote.get_remote(where) as r:
         h.create_dir(r, constructed_dir, hdfs_user)
 
+    return constructed_dir
+
+
+def create_workflow_dir(where, path, job, uuid=None):
+
+    if uuid is None:
+        uuid = six.text_type(uuid.uuid4())
+
+    constructed_dir = _add_postfix(path)
+    constructed_dir += '%s/%s' % (job.name, uuid)
+    with remote.get_remote(where) as r:
+        ret, stdout = r.execute_command("mkdir -p %s" % constructed_dir)
     return constructed_dir
 
 

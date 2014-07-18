@@ -35,8 +35,6 @@ CONF = cfg.CONF
 
 conductor = c.API
 
-terminated_job_states = ['DONEWITHERROR', 'FAILED', 'KILLED', 'SUCCEEDED']
-
 
 def _make_engine(name, job_types, engine_class):
     return {"name": name,
@@ -51,7 +49,7 @@ default_engines = [_make_engine("oozie",
                                  edp.JOB_TYPE_PIG],
                                 oozie_engine.OozieJobEngine),
                    _make_engine("spark",
-                                [],
+                                [edp.JOB_TYPE_JAVA],
                                 spark_engine.SparkJobEngine)
                    ]
 
@@ -67,15 +65,19 @@ def _get_job_engine(cluster, job_execution):
                                                         default_engines)
 
 
+def _write_job_status(job_execution, job_info):
+    update = {"info": job_info}
+    if job_info['status'] in job_utils.terminated_job_states:
+        update['end_time'] = datetime.datetime.now()
+    return conductor.job_execution_update(context.ctx(),
+                                          job_execution,
+                                          update)
+
+
 def _update_job_status(engine, job_execution):
     job_info = engine.get_job_status(job_execution)
     if job_info is not None:
-        update = {"info": job_info}
-        if job_info['status'] in terminated_job_states:
-            update['end_time'] = datetime.datetime.now()
-        job_execution = conductor.job_execution_update(context.ctx(),
-                                                       job_execution,
-                                                       update)
+        job_execution = _write_job_status(job_execution, job_info)
     return job_execution
 
 
@@ -102,11 +104,25 @@ def _run_job(job_execution_id):
         raise e.EDPError(_("Cluster does not support job type %s")
                          % _get_job_type(job_execution))
     job_execution = _update_job_execution_extra(cluster, job_execution)
-    jid = eng.run_job(job_execution)
+
+    # Job id is a string
+    # Status is a string
+    # Extra is a dictionary to add to extra in the job_execution
+    jid, status, extra = eng.run_job(job_execution)
+
+    # Set the job id and the start time
+    # Optionally, update the status and the 'extra' field
+    update_dict = {'oozie_job_id': jid,
+                   'start_time': datetime.datetime.now()}
+    if status:
+        update_dict['info'] = {'status': status}
+    if extra:
+        curr_extra = job_execution.extra.copy()
+        curr_extra.update(extra)
+        update_dict['extra'] = curr_extra
 
     job_execution = conductor.job_execution_update(
-        ctx, job_execution, {'oozie_job_id': jid,
-                             'start_time': datetime.datetime.now()})
+        ctx, job_execution, update_dict)
 
 
 def run_job(job_execution_id):
@@ -132,12 +148,14 @@ def cancel_job(job_execution_id):
         engine = _get_job_engine(cluster, job_execution)
         if engine is not None:
             try:
-                engine.cancel_job(job_execution)
+                job_info = engine.cancel_job(job_execution)
             except Exception as e:
+                job_info = None
                 LOG.exception(
                     _LE("Error during cancel of job execution %(job)s: "
                         "%(error)s"), {'job': job_execution.id, 'error': e})
-            job_execution = _update_job_status(engine, job_execution)
+            if job_info is not None:
+                job_execution = _write_job_status(job_execution, job_info)
     return job_execution
 
 

@@ -414,3 +414,36 @@ class SparkProvider(p.ProvisioningPluginBase):
                               "there would be not enough nodes for HDFS "
                               "replicas (replication factor is %s)" %
                               rep_factor)
+
+    def get_edp_engine(self, cluster, job_type, default_engines):
+        '''Select an EDP engine for Spark standalone deployment
+
+        The default_engines parameter is a list of default EDP implementations.
+        Each item in the list is a dictionary, and each dictionary has the
+        following elements:
+
+        name (a simple name for the implementation)
+        job_types (a list of EDP job types supported by the implementation)
+        engine (a class derived from sahara.service.edp.base_engine.JobEngine)
+
+        This method will choose the first engine that it finds from the default
+        list which meets the following criteria:
+
+        eng['name'] == spark
+        eng['job_types'] == job_type
+
+        An instance of that engine will be allocated and returned.
+
+        :param cluster: a Sahara cluster object
+        :param job_type: an EDP job type string
+        :param default_engines: a list of dictionaries describing the default
+        implementations.
+        :returns: an instance of a class derived from
+        sahara.service.edp.base_engine.JobEngine or None
+        '''
+        # We know that spark EDP requires at least spark 1.0.0
+        # to have spark-submit. Reject anything else.
+        if cluster.hadoop_version >= "1.0.0":
+            for eng in default_engines:
+                if self.name == eng['name'] and job_type in eng["job_types"]:
+                    return eng["engine"](cluster)

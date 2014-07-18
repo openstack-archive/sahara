@@ -58,7 +58,10 @@ class OozieJobEngine(base_engine.JobEngine):
         return "%s/workflow.xml" % job_dir
 
     def cancel_job(self, job_execution):
-        self._get_client().kill_job(job_execution)
+        if job_execution.oozie_job_id is not None:
+            client = self._get_client()
+            client.kill_job(job_execution)
+            return client.get_job_status(job_execution)
 
     def get_job_status(self, job_execution):
         if job_execution.oozie_job_id is not None:
@@ -83,8 +86,10 @@ class OozieJobEngine(base_engine.JobEngine):
         # However, other engines may need it.
         oozie_server = self.plugin.get_oozie_server(self.cluster)
 
-        wf_dir = job_utils.create_workflow_dir(oozie_server, job, hdfs_user)
-        job_utils.upload_job_files(oozie_server, wf_dir, job, hdfs_user)
+        wf_dir = job_utils.create_hdfs_workflow_dir(oozie_server,
+                                                    job, hdfs_user)
+        job_utils.upload_job_files_to_hdfs(oozie_server, wf_dir,
+                                           job, hdfs_user)
 
         wf_xml = workflow_factory.get_workflow_xml(
             job, self.cluster, job_execution, input_source, output_source)
@@ -99,7 +104,12 @@ class OozieJobEngine(base_engine.JobEngine):
         oozie_job_id = client.add_job(x.create_hadoop_xml(job_params),
                                       job_execution)
         client.run_job(job_execution, oozie_job_id)
-        return oozie_job_id
+        try:
+            status = client.get_job_status(job_execution,
+                                           oozie_job_id)['status']
+        except Exception:
+            status = None
+        return (oozie_job_id, status, None)
 
 
 def get_possible_job_config(job_type):
