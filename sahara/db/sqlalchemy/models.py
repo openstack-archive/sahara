@@ -62,7 +62,7 @@ class Cluster(mb.SaharaBase):
     management_public_key = sa.Column(sa.Text, nullable=False)
     user_keypair_id = sa.Column(sa.String(80))
     status = sa.Column(sa.String(80))
-    status_description = sa.Column(sa.String(200))
+    status_description = sa.Column(st.LongText())
     info = sa.Column(st.JsonDictType())
     extra = sa.Column(st.JsonDictType())
     node_groups = relationship('NodeGroup', cascade="all,delete",

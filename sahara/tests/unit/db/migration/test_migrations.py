@@ -355,3 +355,17 @@ class TestMigrations(base.BaseWalkMigrationTestCase, base.CommonTestsMixIn):
     def _check_006(self, engine, data):
         # currently, 006 is just a placeholder
         self._check_001(engine, data)
+
+    def _check_007(self, engine, data):
+        self._check_001(engine, data)
+
+        # check that status_description can keep 128kb.
+        # MySQL varchar can not keep more then 64kb
+        desc = 'a' * 128 * 1024  # 128kb
+        t = db_utils.get_table(engine, 'clusters')
+        engine.execute(t.insert(), id='123', name='name', plugin_name='plname',
+                       hadoop_version='hversion', management_private_key='1',
+                       management_public_key='2', status_description=desc)
+        new_desc = engine.execute(t.select()).fetchone().status_description
+        self.assertEqual(desc, new_desc)
+        engine.execute(t.delete())

@@ -1,4 +1,4 @@
-# Copyright ${create_date.year} OpenStack Foundation.
+# Copyright 2014 OpenStack Foundation.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,26 +13,31 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""${message}
+"""convert clusters.status_description to LongText
 
-Revision ID: ${up_revision}
-Revises: ${down_revision}
-Create Date: ${create_date}
+Revision ID: 007
+Revises: 006
+Create Date: 2014-06-20 22:36:00.783444
 
 """
 
 # revision identifiers, used by Alembic.
-revision = ${repr(up_revision)}
-down_revision = ${repr(down_revision)}
+revision = '007'
+down_revision = '006'
 
 from alembic import op
 import sqlalchemy as sa
-${imports if imports else ""}
+
+from sahara.db.sqlalchemy import types as st
 
 
 def upgrade():
-    ${upgrades if upgrades else "pass"}
+    op.alter_column('clusters', 'status_description',
+                    type_=st.LongText(), existing_nullable=True,
+                    existing_server_default=None)
 
 
 def downgrade():
-    ${downgrades if downgrades else "pass"}
+    op.alter_column('clusters', 'status_description',
+                    type_=sa.String(length=200), existing_nullable=True,
+                    existing_server_default=None)
