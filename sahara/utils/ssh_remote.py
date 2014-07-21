@@ -330,7 +330,7 @@ class InstanceInteropHelper(remote.Remote):
     def _run_with_log(self, func, timeout, *args, **kwargs):
         start_time = time.time()
         try:
-            with e_timeout.Timeout(timeout):
+            with e_timeout.Timeout(timeout, ex.TimeoutException(timeout)):
                 return self._run(func, *args, **kwargs)
         finally:
             self._log_command('%s took %.1f seconds to complete' % (
