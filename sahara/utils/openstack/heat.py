@@ -168,6 +168,7 @@ class ClusterTemplate(object):
         fields = {'instance_name': inst_name,
                   'flavor_id': ng.flavor_id,
                   'image_id': ng.get_image_id(),
+                  'image_username': ng.image_username,
                   'network_interfaces': nets,
                   'key_name': key_name,
                   'userdata': _prepare_userdata(userdata),

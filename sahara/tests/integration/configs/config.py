@@ -168,8 +168,6 @@ VANILLA_CONFIG_OPTS = [
                     'image. If you do not specify image related parameters, '
                     'then image for cluster creation will be chosen by '
                     'tag "sahara_i_tests".'),
-    cfg.StrOpt('SSH_USERNAME',
-               help='Username to get cluster node with SSH.'),
     cfg.StrOpt('HADOOP_VERSION',
                default='1.2.1',
                help='Version of Hadoop.'),
@@ -242,8 +240,6 @@ VANILLA_TWO_CONFIG_OPTS = [
                     'image. If you do not specify image related parameters, '
                     'then image for cluster creation will be chosen by '
                     'tag "savanna_i_tests".'),
-    cfg.StrOpt('SSH_USERNAME',
-               help='Username to get cluster node with SSH.'),
     cfg.StrOpt('HADOOP_VERSION',
                default='2.3.0',
                help='Version of Hadoop.'),
@@ -316,8 +312,6 @@ HDP_CONFIG_OPTS = [
                     'image. If you do not specify image related parameters, '
                     'then image for cluster creation will be chosen by '
                     'tag "sahara_i_tests".'),
-    cfg.StrOpt('SSH_USERNAME',
-               help='Username to get cluster node with SSH.'),
     cfg.ListOpt('MASTER_NODE_PROCESSES',
                 default=['JOBTRACKER', 'NAMENODE', 'SECONDARY_NAMENODE',
                          'GANGLIA_SERVER', 'NAGIOS_SERVER',
@@ -409,9 +403,6 @@ HDP2_CONFIG_OPTS = [
                     'image. If you do not specify image related parameters, '
                     'then image for cluster creation will be chosen by '
                     'tag "sahara_i_tests".'),
-    cfg.StrOpt('SSH_USERNAME',
-               default=None,
-               help='Username to get cluster node with SSH.'),
     cfg.ListOpt('MASTER_NODE_PROCESSES',
                 default=['NAMENODE', 'SECONDARY_NAMENODE', 'ZOOKEEPER_SERVER',
                          'AMBARI_SERVER', 'HISTORYSERVER', 'RESOURCEMANAGER',

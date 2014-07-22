@@ -35,10 +35,6 @@ LOG = logging.getLogger(__name__)
 
 
 class DirectEngine(e.Engine):
-    def get_node_group_image_username(self, node_group):
-        image_id = node_group.get_image_id()
-        return nova.client().images.get(image_id).username
-
     def create_cluster(self, cluster):
         ctx = context.ctx()
         try:

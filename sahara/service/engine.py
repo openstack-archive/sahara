@@ -25,6 +25,7 @@ from sahara import context
 from sahara.openstack.common import log as logging
 from sahara.service import networks
 from sahara.utils import general as g
+from sahara.utils.openstack import nova
 from sahara.utils import remote
 
 
@@ -46,9 +47,9 @@ class Engine:
     def shutdown_cluster(self, cluster):
         pass
 
-    @abc.abstractmethod
     def get_node_group_image_username(self, node_group):
-        pass
+        image_id = node_group.get_image_id()
+        return nova.client().images.get(image_id).username
 
     def _await_networks(self, cluster, instances):
         if not instances:

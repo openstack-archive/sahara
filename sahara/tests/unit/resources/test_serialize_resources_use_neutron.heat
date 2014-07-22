@@ -22,6 +22,7 @@
                 "name" : "cluster-worker-001",
                 "flavor" : "42",
                 "image" : "1",
+                "admin_user": "root",
                 "networks" : [{ "port" : { "Ref" : "cluster-worker-001-port" }}],
                 "key_name" : "user_key",
                 "user_data": {
@@ -78,6 +79,7 @@
                 "name" : "cluster-master-001",
                 "flavor" : "42",
                 "image" : "1",
+                "admin_user": "root",
                 "networks" : [{ "port" : { "Ref" : "cluster-master-001-port" }}],
                 "key_name" : "user_key",
                 "user_data": {

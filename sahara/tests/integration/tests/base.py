@@ -414,11 +414,7 @@ class ITestCase(testcase.WithAttributes, testtools.TestCase):
 
         def try_get_image_id_and_ssh_username(parameter, value):
             try:
-                if not plugin_config.SSH_USERNAME:
-                    return image.id, image.metadata[imgs.PROP_USERNAME]
-
-                else:
-                    return image.id, plugin_config.SSH_USERNAME
+                return image.id, image.metadata[imgs.PROP_USERNAME]
 
             except KeyError:
                 with excutils.save_and_reraise_exception():
@@ -479,11 +475,7 @@ class ITestCase(testcase.WithAttributes, testtools.TestCase):
                     image.metadata.get(imgs.PROP_TAG + (
                                        '%s' % plugin_config.PLUGIN_NAME))):
                 try:
-                    if not plugin_config.SSH_USERNAME:
-                        return image.id, image.metadata[imgs.PROP_USERNAME]
-
-                    else:
-                        return image.id, plugin_config.SSH_USERNAME
+                    return image.id, image.metadata[imgs.PROP_USERNAME]
 
                 except KeyError:
                         with excutils.save_and_reraise_exception():
