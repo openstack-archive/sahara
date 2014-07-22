@@ -185,6 +185,12 @@ def _write_fl(sftp, remote_file, data):
     fl.close()
 
 
+def _append_fl(sftp, remote_file, data):
+    fl = sftp.file(remote_file, 'a')
+    fl.write(data)
+    fl.close()
+
+
 def _write_file(sftp, remote_file, data, run_as_root):
     if run_as_root:
         temp_file = 'temp-file-%s' % six.text_type(uuid.uuid4())
@@ -193,6 +199,17 @@ def _write_file(sftp, remote_file, data, run_as_root):
             'mv %s %s' % (temp_file, remote_file), run_as_root=True)
     else:
         _write_fl(sftp, remote_file, data)
+
+
+def _append_file(sftp, remote_file, data, run_as_root):
+    if run_as_root:
+        temp_file = 'temp-file-%s' % six.text_type(uuid.uuid4())
+        _write_fl(sftp, temp_file, data)
+        _execute_command(
+            'cat %s >> %s' % (temp_file, remote_file), run_as_root=True)
+        _execute_command('rm -f %s' % temp_file)
+    else:
+        _append_fl(sftp, remote_file, data)
 
 
 def _write_file_to(remote_file, data, run_as_root=False):
@@ -206,8 +223,23 @@ def _write_files_to(files, run_as_root=False):
 
     sftp = _ssh.open_sftp()
 
-    for fl, data in files.iteritems():
+    for fl, data in six.iteritems(files):
         _write_file(sftp, fl, data, run_as_root)
+
+
+def _append_to_file(remote_file, data, run_as_root=False):
+    global _ssh
+
+    _append_file(_ssh.open_sftp(), remote_file, data, run_as_root)
+
+
+def _append_to_files(files, run_as_root=False):
+    global _ssh
+
+    sftp = _ssh.open_sftp()
+
+    for fl, data in six.iteritems(files):
+        _append_file(sftp, fl, data, run_as_root)
 
 
 def _read_file(sftp, remote_file):
@@ -374,6 +406,14 @@ class InstanceInteropHelper(remote.Remote):
     def write_files_to(self, files, run_as_root=False, timeout=120):
         self._log_command('Writing files "%s"' % files.keys())
         self._run_s(_write_files_to, timeout, files, run_as_root)
+
+    def append_to_file(self, r_file, data, run_as_root=False, timeout=120):
+        self._log_command('Appending to file "%s"' % r_file)
+        self._run_s(_append_to_file, timeout, r_file, data, run_as_root)
+
+    def append_to_files(self, files, run_as_root=False, timeout=120):
+        self._log_command('Appending to files "%s"' % files.keys())
+        self._run_s(_append_to_files, timeout, files, run_as_root)
 
     def read_file_from(self, remote_file, run_as_root=False, timeout=120):
         self._log_command('Reading file "%s"' % remote_file)
