@@ -9,7 +9,7 @@ mock>=1.0
 oslosphinx
 psycopg2
 pylint==0.25.2
-sphinx>=1.1.2,<1.2
+sphinx>=1.1.2,<1.1.999
 sphinxcontrib-httpdomain
 sqlalchemy-migrate>=0.8.2,!=0.8.4
 testrepository>=0.0.18
