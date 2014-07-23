@@ -439,6 +439,21 @@
 
 
 #
+# Options defined in sahara.utils.notification.sender
+#
+
+# Notification level for outgoing notifications (string value)
+#notification_level=INFO
+
+# Notification publisher_id for outgoing notifications (string
+# value)
+#notification_publisher_id=<None>
+
+# Enables sending notifications to Ceilometer (boolean value)
+#enable_notifications=false
+
+
+#
 # Options defined in sahara.utils.openstack.keystone
 #
 

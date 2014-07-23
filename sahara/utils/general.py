@@ -19,6 +19,7 @@ from sahara import conductor as c
 from sahara import context
 from sahara.i18n import _LI
 from sahara.openstack.common import log as logging
+from sahara.utils.notification import sender
 
 conductor = c.API
 LOG = logging.getLogger(__name__)
@@ -69,8 +70,13 @@ def change_cluster_status(cluster, status, status_description=None):
         update_dict["status_description"] = status_description
 
     cluster = conductor.cluster_update(context.ctx(), cluster, update_dict)
+
     LOG.info(_LI("Cluster status has been changed: id=%(id)s, New status="
                  "%(status)s"), {'id': cluster.id, 'status': cluster.status})
+
+    sender.notify(context.ctx(), cluster.id, cluster.name, cluster.status,
+                  "update")
+
     return cluster
 
 

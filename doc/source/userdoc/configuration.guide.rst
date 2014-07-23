@@ -50,3 +50,65 @@ level for troubleshooting, there are two parameters in the config:
 ``verbose`` and ``debug``. If the former is set to true, Sahara will start
 to write logs of INFO level and above. If ``debug`` is set to true,
 Sahara will write all the logs, including the DEBUG ones.
+
+Sahara notifications configuration
+==================================
+
+Sahara can send notifications to Ceilometer, if it's enabled.
+If you want to enable notifications you should switch to ``[DEFAULT]``
+section and set:
+
+.. sourcecode:: cfg
+
+    enable_notifications = true
+    notification_driver = messaging
+..
+
+The current default for Sahara is to use the backend that utilizes RabbitMQ
+as the message broker. You should configure your backend. It's recommended to use
+Rabbit or Qpid.
+
+If you are using Rabbit as a backend, then you should set:
+
+.. sourcecode:: cfg
+
+    rpc_backend = rabbit
+..
+
+And after that you should specify following options:
+``rabbit_host``, ``rabbit_port``, ``rabbit_userid``,
+``rabbit_password``, ``rabbit_virtual_host`` and ``rabbit_hosts``.
+
+As example you can see default values of these options:
+
+.. sourcecode:: cfg
+
+    rabbit_host=localhost
+    rabbit_port=5672
+    rabbit_hosts=$rabbit_host:$rabbit_port
+    rabbit_userid=guest
+    rabbit_password=guest
+    rabbit_virtual_host=/
+..
+
+If you are using Qpid as backend, then you should set:
+
+.. sourcecode:: cfg
+
+    rpc_backend = qpid
+..
+
+And after that you should specify following options:
+``qpid_hostname``, ``qpid_port``, ``qpid_username``,
+``qpid_password`` and ``qpid_hosts``.
+
+As example you can see default values of these options:
+
+.. sourcecode:: cfg
+
+    qpid_hostname=localhost
+    qpid_port=5672
+    qpid_hosts=$qpid_hostname:$qpid_port
+    qpid_username=
+    qpid_password=
+..

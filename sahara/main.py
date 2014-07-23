@@ -38,6 +38,7 @@ from sahara.service import ops as service_ops
 from sahara.service import periodic
 from sahara.utils import api as api_utils
 from sahara.utils import remote
+from sahara.utils import rpc as messaging
 
 
 LOG = log.getLogger(__name__)
@@ -73,6 +74,8 @@ def setup_common(possible_topdir, service_name):
     log.setup("sahara")
 
     LOG.info(_LI('Starting Sahara %s'), service_name)
+
+    messaging.setup()
 
     if service_name != 'all-in-one':
         LOG.warn(

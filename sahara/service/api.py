@@ -24,6 +24,7 @@ from sahara.openstack.common import log as logging
 from sahara.plugins import base as plugin_base
 from sahara.plugins import provisioning
 from sahara.utils import general as g
+from sahara.utils.notification import sender
 from sahara.utils.openstack import nova
 
 
@@ -93,6 +94,8 @@ def scale_cluster(id, data):
 def create_cluster(values):
     ctx = context.ctx()
     cluster = conductor.cluster_create(ctx, values)
+    sender.notify(ctx, cluster.id, cluster.name, "New",
+                  "create")
     plugin = plugin_base.PLUGINS.get_plugin(cluster.plugin_name)
 
     # validating cluster
@@ -110,11 +113,14 @@ def create_cluster(values):
 
 
 def terminate_cluster(id):
-    g.change_cluster_status(id, "Deleting")
-    OPS.terminate_cluster(id)
+    cluster = g.change_cluster_status(id, "Deleting")
 
+    OPS.terminate_cluster(id)
+    sender.notify(context.ctx(), cluster.id, cluster.name, cluster.status,
+                  "delete")
 
 # ClusterTemplate ops
+
 
 def get_cluster_templates():
     return conductor.cluster_template_get_all(context.ctx())
