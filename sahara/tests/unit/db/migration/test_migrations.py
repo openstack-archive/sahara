@@ -338,27 +338,25 @@ class TestMigrations(base.BaseWalkMigrationTestCase, base.CommonTestsMixIn):
 
     def _check_002(self, engine, data):
         # currently, 002 is just a placeholder
-        self._check_001(engine, data)
+        pass
 
     def _check_003(self, engine, data):
         # currently, 003 is just a placeholder
-        self._check_001(engine, data)
+        pass
 
     def _check_004(self, engine, data):
         # currently, 004 is just a placeholder
-        self._check_001(engine, data)
+        pass
 
     def _check_005(self, engine, data):
         # currently, 005 is just a placeholder
-        self._check_001(engine, data)
+        pass
 
     def _check_006(self, engine, data):
         # currently, 006 is just a placeholder
-        self._check_001(engine, data)
+        pass
 
     def _check_007(self, engine, data):
-        self._check_001(engine, data)
-
         # check that status_description can keep 128kb.
         # MySQL varchar can not keep more then 64kb
         desc = 'a' * 128 * 1024  # 128kb
