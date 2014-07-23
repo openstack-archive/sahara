@@ -87,7 +87,7 @@ class MapReduceTest(base.ITestCase):
 
     @base.skip_test('SKIP_MAP_REDUCE_TEST',
                     message='Test for Map Reduce was skipped.')
-    def map_reduce_testing(self, cluster_info):
+    def map_reduce_testing(self, cluster_info, check_log=True):
         self._transfer_helper_script_to_nodes(cluster_info)
         plugin_config = cluster_info['plugin_config']
         namenode_ip = cluster_info['node_info']['namenode_ip']
@@ -95,39 +95,40 @@ class MapReduceTest(base.ITestCase):
         self._run_pi_job()
         job_name = self._get_name_of_completed_pi_job()
         self.close_ssh_connection()
+
         # Check that cluster used each "tasktracker" node while work of PI-job.
         # Count of map-tasks and reduce-tasks in helper script guarantees that
         # cluster will use each from such nodes while work of PI-job.
-        node_ip_and_process_list = cluster_info['node_ip_list']
+        if check_log:
+            node_ip_and_process_list = cluster_info['node_ip_list']
 
-        have_logs = False
-        for node_ip, process_list in node_ip_and_process_list.items():
-            if plugin_config.PROCESS_NAMES['tt'] in process_list:
-                self.open_ssh_connection(
-                    node_ip, plugin_config.SSH_USERNAME
-                )
+            have_logs = False
+            for node_ip, process_list in node_ip_and_process_list.items():
+                if plugin_config.PROCESS_NAMES['tt'] in process_list:
+                    self.open_ssh_connection(
+                        node_ip, plugin_config.SSH_USERNAME
+                    )
+                    try:
+                        self.execute_command(
+                            './script.sh check_directory -job_name %s' %
+                            job_name)
+                        have_logs = True
+                    except Exception:
+                        pass
+                    finally:
+                        self.close_ssh_connection()
+
+            if not have_logs:
+                self.open_ssh_connection(namenode_ip,
+                                         plugin_config.SSH_USERNAME)
                 try:
-                    self.execute_command(
-                        './script.sh check_directory -job_name %s' % job_name)
-                    have_logs = True
-                except Exception:
-                    pass
+                    self.captupe_error_log_from_cluster_node(
+                        '/tmp/MapReduceTestOutput/log.txt')
                 finally:
                     self.close_ssh_connection()
 
-        if not have_logs:
-            self.open_ssh_connection(
-                namenode_ip, plugin_config.SSH_USERNAME
-            )
-            try:
-                self.capture_error_log_from_cluster_node(
-                    '/tmp/MapReduceTestOutput/log.txt'
-                )
-            finally:
-                self.close_ssh_connection()
-
-            self.fail("Log file of completed 'PI' job on 'tasktracker' or "
-                      "'nodemanager' cluster node not found.")
+                self.fail("Log file of completed 'PI' job on 'tasktracker' or "
+                          "'nodemanager' cluster node not found.")
 
         self.open_ssh_connection(namenode_ip, plugin_config.SSH_USERNAME)
         self._run_wordcount_job()
