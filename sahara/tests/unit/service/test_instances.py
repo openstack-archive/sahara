@@ -57,9 +57,11 @@ class AbstractInstanceTest(base.SaharaWithDbTestCase):
 
 class TestClusterRollBack(AbstractInstanceTest):
 
+    @mock.patch('sahara.service.direct_engine.DirectEngine._check_if_deleted')
     @mock.patch('sahara.service.ops._prepare_provisioning')
     @mock.patch('sahara.service.ops.INFRA')
-    def test_cluster_creation_with_errors(self, infra, prepare):
+    def test_cluster_creation_with_errors(self, infra, prepare,
+                                          deleted_checker):
         infra.create_cluster.side_effect = self.engine.create_cluster
         infra.rollback_cluster.side_effect = self.engine.rollback_cluster
 
@@ -74,6 +76,8 @@ class TestClusterRollBack(AbstractInstanceTest):
                                                 MockException("test")]
 
         self.nova.servers.list.return_value = [_mock_instance(1)]
+
+        deleted_checker.return_value = True
 
         ops._provision_cluster(cluster.id)
 
@@ -249,7 +253,9 @@ class IpManagementTest(AbstractInstanceTest):
 
 
 class ShutdownClusterTest(AbstractInstanceTest):
-    def test_delete_floating_ips(self):
+
+    @mock.patch('sahara.service.direct_engine.DirectEngine._check_if_deleted')
+    def test_delete_floating_ips(self, deleted_checker):
         node_groups = [_make_ng_dict("test_group_1", "test_flavor",
                                      ["data node", "test tracker"], 2, 'pool')]
 
@@ -261,6 +267,8 @@ class ShutdownClusterTest(AbstractInstanceTest):
         instances_list = g.get_instances(cluster)
 
         self.engine._assign_floating_ips(instances_list)
+
+        deleted_checker.return_value = True
 
         self.engine._shutdown_instances(cluster)
         self.assertEqual(self.nova.floating_ips.delete.call_count, 2,

@@ -145,3 +145,6 @@ class VersionHandler(avm.AbstractVersionHandler):
         if job_type in edp_engine.EdpOozieEngine.get_supported_job_types():
             return edp_engine.EdpOozieEngine(cluster)
         return None
+
+    def get_open_ports(self, node_group):
+        return []

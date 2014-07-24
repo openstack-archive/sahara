@@ -154,9 +154,12 @@ def _prepare_provisioning(cluster_id):
     plugin = plugin_base.PLUGINS.get_plugin(cluster.plugin_name)
 
     for nodegroup in cluster.node_groups:
-        conductor.node_group_update(
-            ctx, nodegroup,
-            {"image_username": INFRA.get_node_group_image_username(nodegroup)})
+        update_dict = {}
+        update_dict["image_username"] = INFRA.get_node_group_image_username(
+            nodegroup)
+        if nodegroup.auto_security_group:
+            update_dict["open_ports"] = plugin.get_open_ports(nodegroup)
+        conductor.node_group_update(ctx, nodegroup, update_dict)
 
     cluster = conductor.cluster_get(ctx, cluster_id)
 

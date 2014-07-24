@@ -35,6 +35,8 @@ conductor = c.API
 CONF = cfg.CONF
 LOG = logging.getLogger(__name__)
 
+SSH_PORT = 22
+
 
 class DirectEngine(e.Engine):
     def create_cluster(self, cluster):
@@ -149,6 +151,8 @@ class DirectEngine(e.Engine):
     def _create_instances(self, cluster):
         ctx = context.ctx()
 
+        cluster = self._create_auto_security_groups(cluster)
+
         aa_groups = {}
 
         for node_group in cluster.node_groups:
@@ -157,11 +161,20 @@ class DirectEngine(e.Engine):
             for idx in six.moves.xrange(1, count + 1):
                 self._run_instance(cluster, node_group, idx, aa_groups)
 
+    def _create_auto_security_groups(self, cluster):
+        ctx = context.ctx()
+        for node_group in cluster.node_groups:
+            if node_group.auto_security_group:
+                self._create_auto_security_group(node_group)
+
+        return conductor.cluster_get(ctx, cluster)
+
     def _scale_cluster_instances(self, cluster, node_group_id_map):
         ctx = context.ctx()
         aa_groups = self._generate_anti_affinity_groups(cluster)
         instances_to_delete = []
         node_groups_to_enlarge = []
+        node_groups_to_delete = []
 
         for node_group in cluster.node_groups:
             new_count = node_group_id_map[node_group.id]
@@ -169,14 +182,22 @@ class DirectEngine(e.Engine):
             if new_count < node_group.count:
                 instances_to_delete += node_group.instances[new_count:
                                                             node_group.count]
+                if new_count == 0:
+                    node_groups_to_delete.append(node_group)
             elif new_count > node_group.count:
                 node_groups_to_enlarge.append(node_group)
+                if node_group.count == 0 and node_group.auto_security_group:
+                    self._create_auto_security_group(node_group)
 
         if instances_to_delete:
             cluster = g.change_cluster_status(cluster, "Deleting Instances")
 
             for instance in instances_to_delete:
                 self._shutdown_instance(instance)
+
+        self._await_deleted(cluster, instances_to_delete)
+        for ng in node_groups_to_delete:
+            self._delete_auto_security_group(ng)
 
         cluster = conductor.cluster_get(ctx, cluster)
 
@@ -243,6 +264,30 @@ class DirectEngine(e.Engine):
 
         return instance_id
 
+    def _create_auto_security_group(self, node_group):
+        cluster = node_group.cluster
+        name = g.generate_auto_security_group_name(
+            cluster.name, node_group.name)
+        nova_client = nova.client()
+        security_group = nova_client.security_groups.create(
+            name, "Auto security group created by Sahara for Node Group '%s' "
+                  "of cluster '%s'." % (node_group.name, cluster.name))
+
+        # ssh remote needs ssh port, agents are not implemented yet
+        nova_client.security_group_rules.create(
+            security_group.id, 'tcp', SSH_PORT, SSH_PORT, "0.0.0.0/0")
+
+        # enable ports returned by plugin
+        for port in node_group.open_ports:
+            nova_client.security_group_rules.create(
+                security_group.id, 'tcp', port, port, "0.0.0.0/0")
+
+        security_groups = list(node_group.security_groups or [])
+        security_groups.append(security_group.id)
+        conductor.node_group_update(context.ctx(), node_group,
+                                    {"security_groups": security_groups})
+        return security_groups
+
     def _assign_floating_ips(self, instances):
         for instance in instances:
             node_group = instance.node_group
@@ -257,7 +302,7 @@ class DirectEngine(e.Engine):
 
         active_ids = set()
         while len(active_ids) != len(instances):
-            if not g.check_cluster_exists(instances[0].node_group.cluster):
+            if not g.check_cluster_exists(cluster):
                 return
             for instance in instances:
                 if instance.id not in active_ids:
@@ -268,13 +313,38 @@ class DirectEngine(e.Engine):
 
         LOG.info(_LI("Cluster '%s': all instances are active"), cluster.id)
 
-    def _check_if_active(self, instance):
+    def _await_deleted(self, cluster, instances):
+        """Await all instances are deleted."""
+        if not instances:
+            return
 
+        deleted_ids = set()
+        while len(deleted_ids) != len(instances):
+            if not g.check_cluster_exists(cluster):
+                return
+            for instance in instances:
+                if instance.id not in deleted_ids:
+                    if self._check_if_deleted(instance):
+                        LOG.debug("Instance '%s' is deleted" %
+                                  instance.instance_name)
+                        deleted_ids.add(instance.id)
+
+            context.sleep(1)
+
+    def _check_if_active(self, instance):
         server = nova.get_instance_info(instance)
         if server.status == 'ERROR':
             raise exc.SystemError(_("Node %s has error status") % server.name)
 
         return server.status == 'ACTIVE'
+
+    def _check_if_deleted(self, instance):
+        try:
+            nova.get_instance_info(instance)
+        except nova_exceptions.NotFound:
+            return True
+
+        return False
 
     def _rollback_cluster_creation(self, cluster, ex):
         """Shutdown all instances and update cluster status."""
@@ -300,6 +370,20 @@ class DirectEngine(e.Engine):
         for node_group in cluster.node_groups:
             for instance in node_group.instances:
                 self._shutdown_instance(instance)
+
+            self._await_deleted(cluster, node_group.instances)
+            self._delete_auto_security_group(node_group)
+
+    def _delete_auto_security_group(self, node_group):
+        if not node_group.auto_security_group:
+            return
+
+        name = node_group.security_groups[-1]
+
+        try:
+            nova.client().security_groups.delete(name)
+        except Exception:
+            LOG.exception("Failed to delete security group %s", name)
 
     def _shutdown_instance(self, instance):
         ctx = context.ctx()

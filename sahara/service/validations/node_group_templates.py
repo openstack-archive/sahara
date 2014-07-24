@@ -75,6 +75,9 @@ NODE_GROUP_TEMPLATE_SCHEMA = {
                 "type": "string",
             },
         },
+        "auto_security_group": {
+            "type": "boolean"
+        },
     },
     "additionalProperties": False,
     "required": [

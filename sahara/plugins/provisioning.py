@@ -81,6 +81,10 @@ class ProvisioningPluginBase(plugins_base.PluginInterface):
     def get_edp_engine(self, cluster, job_type):
         pass
 
+    @plugins_base.required_with_default
+    def get_open_ports(self, node_group):
+        return []
+
     @plugins_base.optional
     def get_resource_manager_uri(self, cluster):
         pass

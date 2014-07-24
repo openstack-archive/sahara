@@ -187,7 +187,7 @@ class NodeGroupResource(Resource, objects.NodeGroup):
     }
 
     _filter_fields = ['id', 'tenant_id', 'cluster_id', 'cluster_template_id',
-                      'image_username']
+                      'image_username', 'open_ports']
 
 
 class ClusterTemplateResource(Resource, objects.ClusterTemplate):

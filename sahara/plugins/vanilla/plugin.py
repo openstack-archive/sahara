@@ -92,3 +92,7 @@ class VanillaProvider(p.ProvisioningPluginBase):
     def get_edp_engine(self, cluster, job_type):
         return self._get_version_handler(
             cluster.hadoop_version).get_edp_engine(cluster, job_type)
+
+    def get_open_ports(self, node_group):
+        return self._get_version_handler(
+            node_group.cluster.hadoop_version).get_open_ports(node_group)

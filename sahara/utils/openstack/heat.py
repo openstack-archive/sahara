@@ -30,6 +30,8 @@ from sahara.utils.openstack import base
 CONF = cfg.CONF
 LOG = logging.getLogger(__name__)
 
+SSH_PORT = 22
+
 
 def client():
     ctx = context.current()
@@ -143,10 +145,34 @@ class ClusterTemplate(object):
         aa_groups = {}
 
         for ng in self.cluster.node_groups:
+            if ng.auto_security_group:
+                resources.extend(self._serialize_auto_security_group(ng))
             for idx in range(0, self.node_groups_extra[ng.id]['node_count']):
                 resources.extend(self._serialize_instance(ng, idx, aa_groups))
 
         return ',\n'.join(resources)
+
+    def _serialize_auto_security_group(self, ng):
+        fields = {
+            'security_group_name': g.generate_auto_security_group_name(
+                ng.cluster.name, ng.name),
+            'security_group_description':
+                "Auto security group created by Sahara for Node Group "
+                "'%s' of cluster '%s'." % (ng.name, ng.cluster.name),
+            'rules': self._serialize_auto_security_group_rules(ng)}
+
+        yield _load_template('security_group.heat', fields)
+
+    def _serialize_auto_security_group_rules(self, ng):
+        rules = []
+        for port in ng.open_ports:
+            rules.append({"remote_ip_prefix": "0.0.0.0/0", "protocol": "tcp",
+                          "port_range_min": port, "port_range_max": port})
+
+        rules.append({"remote_ip_prefix": "0.0.0.0/0", "protocol": "tcp",
+                      "port_range_min": SSH_PORT, "port_range_max": SSH_PORT})
+
+        return json.dumps(rules)
 
     def _serialize_instance(self, ng, idx, aa_groups):
         inst_name = _get_inst_name(self.cluster.name, ng.name, idx)
@@ -157,7 +183,7 @@ class ClusterTemplate(object):
             port_name = _get_port_name(inst_name)
             yield self._serialize_port(port_name,
                                        self.cluster.neutron_management_network,
-                                       ng.security_groups)
+                                       self._get_security_groups(ng))
 
             nets = '"networks" : [{ "port" : { "Ref" : "%s" }}],' % port_name
 
@@ -171,7 +197,8 @@ class ClusterTemplate(object):
 
             if ng.security_groups:
                 security_groups = (
-                    '"security_groups": %s,' % json.dumps(ng.security_groups))
+                    '"security_groups": %s,' % json.dumps(
+                        self._get_security_groups(ng)))
 
         aa_names = []
         for node_process in ng.node_processes:
@@ -241,6 +268,14 @@ class ClusterTemplate(object):
                   'instance_name': inst_name}
 
         return _load_template('volume.heat', fields)
+
+    def _get_security_groups(self, node_group):
+        if not node_group.auto_security_group:
+            return node_group.security_groups
+
+        return (list(node_group.security_groups or []) +
+                [{"Ref": g.generate_auto_security_group_name(
+                    node_group.cluster.name, node_group.name)}])
 
 
 class ClusterStack(object):

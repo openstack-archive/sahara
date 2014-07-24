@@ -492,3 +492,43 @@ class VersionHandler(avm.AbstractVersionHandler):
         if job_type in edp_engine.EdpOozieEngine.get_supported_job_types():
             return edp_engine.EdpOozieEngine(cluster)
         return None
+
+    def get_open_ports(self, node_group):
+        cluster = node_group.cluster
+
+        ports = []
+
+        if "namenode" in node_group.node_processes:
+            ports.append(c_helper.get_port_from_config(
+                'HDFS', 'dfs.http.address', cluster))
+            ports.append(8020)
+
+        if "datanode" in node_group.node_processes:
+            ports.append(c_helper.get_port_from_config(
+                'HDFS', 'dfs.datanode.http.address', cluster))
+            ports.append(c_helper.get_port_from_config(
+                'HDFS', 'dfs.datanode.address', cluster))
+            ports.append(c_helper.get_port_from_config(
+                'HDFS', 'dfs.datanode.ipc.address', cluster))
+
+        if "jobtracker" in node_group.node_processes:
+            ports.append(c_helper.get_port_from_config(
+                'MapReduce', 'mapred.job.tracker.http.address', cluster))
+            ports.append(8021)
+
+        if "tasktracker" in node_group.node_processes:
+            ports.append(c_helper.get_port_from_config(
+                'MapReduce', 'mapred.task.tracker.http.address', cluster))
+
+        if "secondarynamenode" in node_group.node_processes:
+            ports.append(c_helper.get_port_from_config(
+                'HDFS', 'dfs.secondary.http.address', cluster))
+
+        if "oozie" in node_group.node_processes:
+            ports.append(11000)
+
+        if "hive" in node_group.node_processes:
+            ports.append(9999)
+            ports.append(10000)
+
+        return ports

@@ -1,0 +1,8 @@
+     "%(security_group_name)s": {
+      "Type": "OS::Neutron::SecurityGroup",
+      "Properties": {
+        "description": "%(security_group_description)s",
+        "name": "%(security_group_name)s",
+        "rules": %(rules)s
+      }
+    }

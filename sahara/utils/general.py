@@ -113,3 +113,7 @@ def generate_etc_hosts(cluster):
 
 def generate_instance_name(cluster_name, node_group_name, index):
     return ("%s-%s-%03d" % (cluster_name, node_group_name, index)).lower()
+
+
+def generate_auto_security_group_name(cluster_name, node_group_name):
+    return ("%s-%s" % (cluster_name, node_group_name)).lower()
