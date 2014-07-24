@@ -224,6 +224,8 @@ class JobExecution(Resource, objects.JobExecution):
                 configs[swift_helper.HADOOP_SWIFT_USERNAME] = ""
             if swift_helper.HADOOP_SWIFT_PASSWORD in configs:
                 configs[swift_helper.HADOOP_SWIFT_PASSWORD] = ""
+        if 'trusts' in job_configs:
+            del job_configs['trusts']
         return job_configs
 
     def sanitize_info(self, info):
