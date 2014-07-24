@@ -79,7 +79,7 @@ approach see :doc:`/horizon/dev.environment.guide`
    SAHARA_USE_NEUTRON = True
 ..
 
-   If you are using Nova-Network with ``auto_assign_floating_ip=False`` add
+   If you are using Nova-Network with ``auto_assign_floating_ip=False`` or Neutron add
    the following parameter:
 
 .. sourcecode:: python
