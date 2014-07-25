@@ -17,7 +17,6 @@ import sqlalchemy as sa
 from sqlalchemy.dialects import mysql
 from sqlalchemy.ext import mutable
 
-from sahara.db import base
 from sahara.openstack.common import jsonutils
 
 
@@ -113,12 +112,8 @@ def JsonListType():
 
 
 def LargeBinary():
-    if base.is_mysql_avail():
-        return mysql.LONGBLOB
-    return sa.LargeBinary
+    return sa.LargeBinary().with_variant(mysql.LONGBLOB(), 'mysql')
 
 
 def LongText():
-    if base.is_mysql_avail():
-        return mysql.LONGTEXT
-    return sa.Text
+    return sa.Text().with_variant(mysql.LONGTEXT(), 'mysql')

@@ -33,8 +33,3 @@ class Base(object):
 
     def __init__(self):
         self.db = importutils.import_module(CONF.db_driver)
-
-
-def is_mysql_avail():
-    connection = CONF.database.connection
-    return connection and connection.startswith('mysql')
