@@ -26,13 +26,23 @@ from sahara.service import volumes
 from sahara.utils import general as g
 from sahara.utils.openstack import heat
 
-
 conductor = c.API
 CONF = cfg.CONF
 LOG = logging.getLogger(__name__)
 
 
 class HeatEngine(e.Engine):
+    def _add_volumes(self, ctx, cluster):
+        for instance in g.get_instances(cluster):
+            res_names = heat.client().resources.get(
+                cluster.name, instance.instance_name).required_by
+            for res_name in res_names:
+                vol_res = heat.client().resources.get(cluster.name, res_name)
+                if vol_res.resource_type == (('OS::Cinder::'
+                                              'VolumeAttachment')):
+                    volume_id = vol_res.physical_resource_id
+                    conductor.append_volume(ctx, instance, volume_id)
+
     def create_cluster(self, cluster):
         ctx = context.ctx()
 
@@ -43,8 +53,11 @@ class HeatEngine(e.Engine):
             self._nullify_ng_counts(cluster)
 
             cluster = conductor.cluster_get(ctx, cluster)
-
             launcher.launch_instances(ctx, cluster, target_count)
+
+            cluster = conductor.cluster_get(ctx, cluster)
+            self._add_volumes(ctx, cluster)
+
         except Exception as ex:
             with excutils.save_and_reraise_exception():
                 if not g.check_cluster_exists(cluster):
