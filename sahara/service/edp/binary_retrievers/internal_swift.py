@@ -18,6 +18,7 @@ import six
 import swiftclient
 
 import sahara.exceptions as ex
+from sahara.i18n import _
 from sahara.swift import swift_helper
 from sahara.swift import utils as su
 
@@ -51,9 +52,9 @@ def get_raw_data(context, job_binary):
             job_binary.url.startswith(su.OLD_SWIFT_INTERNAL_PREFIX)):
         # This should have been guaranteed already,
         # but we'll check just in case.
-        raise ex.BadJobBinaryException("Url for binary in internal swift "
-                                       "must start with %s"
-                                       % su.SWIFT_INTERNAL_PREFIX)
+        raise ex.BadJobBinaryException(
+            _("Url for binary in internal swift must start with %s")
+            % su.SWIFT_INTERNAL_PREFIX)
 
     names = job_binary.url[job_binary.url.index("://") + 3:].split("/", 1)
     if len(names) == 1:
@@ -68,10 +69,10 @@ def get_raw_data(context, job_binary):
             headers = conn.head_container(container)
             total_KB = int(headers.get('x-container-bytes-used', 0)) / 1024.0
             if total_KB > CONF.job_binary_max_KB:
-                raise ex.DataTooBigException(round(total_KB, 1),
-                                             CONF.job_binary_max_KB,
-                                             "Size of swift container (%sKB) "
-                                             "is greater than maximum (%sKB)")
+                raise ex.DataTooBigException(
+                    round(total_KB, 1), CONF.job_binary_max_KB,
+                    _("Size of swift container (%(size)sKB) is greater "
+                      "than maximum (%(maximum)sKB)"))
 
             body = {}
             headers, objects = conn.get_container(container)
@@ -92,10 +93,10 @@ def get_raw_data(context, job_binary):
             headers = conn.head_object(container, obj)
             total_KB = int(headers.get('content-length', 0)) / 1024.0
             if total_KB > CONF.job_binary_max_KB:
-                raise ex.DataTooBigException(round(total_KB, 1),
-                                             CONF.job_binary_max_KB,
-                                             "Size of swift object (%sKB) "
-                                             "is greater than maximum (%sKB)")
+                raise ex.DataTooBigException(
+                    round(total_KB, 1), CONF.job_binary_max_KB,
+                    _("Size of swift object (%(size)sKB) is greater "
+                      "than maximum (%(maximum)sKB)"))
 
             headers, body = conn.get_object(container, obj)
         except swiftclient.ClientException as e:

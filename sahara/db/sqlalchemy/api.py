@@ -23,6 +23,8 @@ import sqlalchemy as sa
 
 from sahara.db.sqlalchemy import models as m
 from sahara import exceptions as ex
+from sahara.i18n import _
+from sahara.i18n import _LE
 from sahara.openstack.common.db import exception as db_exc
 from sahara.openstack.common.db.sqlalchemy import session as db_session
 from sahara.openstack.common import log as logging
@@ -102,7 +104,7 @@ def setup_db():
         engine = get_engine()
         m.Cluster.metadata.create_all(engine)
     except sa.exc.OperationalError as e:
-        LOG.exception("Database registration exception: %s", e)
+        LOG.exception(_LE("Database registration exception: %s"), e)
         return False
     return True
 
@@ -112,7 +114,7 @@ def drop_db():
         engine = get_engine()
         m.Cluster.metadata.drop_all(engine)
     except Exception as e:
-        LOG.exception("Database shutdown exception: %s", e)
+        LOG.exception(_LE("Database shutdown exception: %s"), e)
         return False
     return True
 
@@ -186,8 +188,8 @@ def cluster_create(context, values):
         try:
             cluster.save(session=session)
         except db_exc.DBDuplicateEntry as e:
-            raise ex.DBDuplicateEntry("Duplicate entry for Cluster: %s"
-                                      % e.columns)
+            raise ex.DBDuplicateEntry(
+                _("Duplicate entry for Cluster: %s") % e.columns)
 
         try:
             for ng in node_groups:
@@ -196,8 +198,8 @@ def cluster_create(context, values):
                 node_group.update(ng)
                 node_group.save(session=session)
         except db_exc.DBDuplicateEntry as e:
-            raise ex.DBDuplicateEntry("Duplicate entry for NodeGroup: %s"
-                                      % e.columns)
+            raise ex.DBDuplicateEntry(
+                _("Duplicate entry for NodeGroup: %s") % e.columns)
 
     return cluster_get(context, cluster.id)
 
@@ -209,7 +211,7 @@ def cluster_update(context, cluster_id, values):
         cluster = _cluster_get(context, session, cluster_id)
         if cluster is None:
             raise ex.NotFoundException(cluster_id,
-                                       "Cluster id '%s' not found!")
+                                       _("Cluster id '%s' not found!"))
         cluster.update(values)
 
     return cluster
@@ -221,7 +223,7 @@ def cluster_destroy(context, cluster_id):
         cluster = _cluster_get(context, session, cluster_id)
         if not cluster:
             raise ex.NotFoundException(cluster_id,
-                                       "Cluster id '%s' not found!")
+                                       _("Cluster id '%s' not found!"))
 
         session.delete(cluster)
 
@@ -240,7 +242,7 @@ def node_group_add(context, cluster_id, values):
         cluster = _cluster_get(context, session, cluster_id)
         if not cluster:
             raise ex.NotFoundException(cluster_id,
-                                       "Cluster id '%s' not found!")
+                                       _("Cluster id '%s' not found!"))
 
         node_group = m.NodeGroup()
         node_group.update({"cluster_id": cluster_id})
@@ -256,7 +258,7 @@ def node_group_update(context, node_group_id, values):
         node_group = _node_group_get(context, session, node_group_id)
         if not node_group:
             raise ex.NotFoundException(node_group_id,
-                                       "Node Group id '%s' not found!")
+                                       _("Node Group id '%s' not found!"))
 
         node_group.update(values)
 
@@ -268,7 +270,7 @@ def node_group_remove(context, node_group_id):
         node_group = _node_group_get(context, session, node_group_id)
         if not node_group:
             raise ex.NotFoundException(node_group_id,
-                                       "Node Group id '%s' not found!")
+                                       _("Node Group id '%s' not found!"))
 
         session.delete(node_group)
 
@@ -287,7 +289,7 @@ def instance_add(context, node_group_id, values):
         node_group = _node_group_get(context, session, node_group_id)
         if not node_group:
             raise ex.NotFoundException(node_group_id,
-                                       "Node Group id '%s' not found!")
+                                       _("Node Group id '%s' not found!"))
 
         instance = m.Instance()
         instance.update({"node_group_id": node_group_id})
@@ -306,7 +308,7 @@ def instance_update(context, instance_id, values):
         instance = _instance_get(context, session, instance_id)
         if not instance:
             raise ex.NotFoundException(instance_id,
-                                       "Instance id '%s' not found!")
+                                       _("Instance id '%s' not found!"))
 
         instance.update(values)
 
@@ -317,7 +319,7 @@ def instance_remove(context, instance_id):
         instance = _instance_get(context, session, instance_id)
         if not instance:
             raise ex.NotFoundException(instance_id,
-                                       "Instance id '%s' not found!")
+                                       _("Instance id '%s' not found!"))
 
         session.delete(instance)
 
@@ -334,7 +336,7 @@ def append_volume(context, instance_id, volume_id):
         instance = _instance_get(context, session, instance_id)
         if not instance:
             raise ex.NotFoundException(instance_id,
-                                       "Instance id '%s' not found!")
+                                       _("Instance id '%s' not found!"))
 
         instance.volumes.append(volume_id)
 
@@ -345,7 +347,7 @@ def remove_volume(context, instance_id, volume_id):
         instance = _instance_get(context, session, instance_id)
         if not instance:
             raise ex.NotFoundException(instance_id,
-                                       "Instance id '%s' not found!")
+                                       _("Instance id '%s' not found!"))
 
         instance.volumes.remove(volume_id)
 
@@ -377,8 +379,8 @@ def cluster_template_create(context, values):
         try:
             cluster_template.save(session=session)
         except db_exc.DBDuplicateEntry as e:
-            raise ex.DBDuplicateEntry("Duplicate entry for ClusterTemplate: %s"
-                                      % e.columns)
+            raise ex.DBDuplicateEntry(
+                _("Duplicate entry for ClusterTemplate: %s") % e.columns)
 
         try:
             for ng in node_groups:
@@ -388,8 +390,8 @@ def cluster_template_create(context, values):
                 node_group.save(session=session)
 
         except db_exc.DBDuplicateEntry as e:
-            raise ex.DBDuplicateEntry("Duplicate entry for TemplatesRelation:"
-                                      "%s" % e.columns)
+            raise ex.DBDuplicateEntry(
+                _("Duplicate entry for TemplatesRelation: %s") % e.columns)
 
     return cluster_template_get(context, cluster_template.id)
 
@@ -400,8 +402,9 @@ def cluster_template_destroy(context, cluster_template_id):
         cluster_template = _cluster_template_get(context, session,
                                                  cluster_template_id)
         if not cluster_template:
-            raise ex.NotFoundException(cluster_template_id,
-                                       "Cluster Template id '%s' not found!")
+            raise ex.NotFoundException(
+                cluster_template_id,
+                _("Cluster Template id '%s' not found!"))
 
         session.delete(cluster_template)
 
@@ -432,8 +435,8 @@ def node_group_template_create(context, values):
         try:
             node_group_template.save(session=session)
         except db_exc.DBDuplicateEntry as e:
-            raise ex.DBDuplicateEntry("Duplicate entry for NodeGroupTemplate: "
-                                      "%s" % e.columns)
+            raise ex.DBDuplicateEntry(
+                _("Duplicate entry for NodeGroupTemplate: %s") % e.columns)
 
     return node_group_template
 
@@ -446,7 +449,7 @@ def node_group_template_destroy(context, node_group_template_id):
         if not node_group_template:
             raise ex.NotFoundException(
                 node_group_template_id,
-                "Node Group Template id '%s' not found!")
+                _("Node Group Template id '%s' not found!"))
 
         session.delete(node_group_template)
 
@@ -476,8 +479,8 @@ def data_source_create(context, values):
         try:
             data_source.save(session=session)
         except db_exc.DBDuplicateEntry as e:
-            raise ex.DBDuplicateEntry("Duplicate entry for DataSource: %s"
-                                      % e.columns)
+            raise ex.DBDuplicateEntry(
+                _("Duplicate entry for DataSource: %s") % e.columns)
 
     return data_source
 
@@ -488,13 +491,14 @@ def data_source_destroy(context, data_source_id):
         with session.begin():
             data_source = _data_source_get(context, session, data_source_id)
             if not data_source:
-                raise ex.NotFoundException(data_source_id,
-                                           "Data Source id '%s' not found!")
+                raise ex.NotFoundException(
+                    data_source_id,
+                    _("Data Source id '%s' not found!"))
             session.delete(data_source)
     except db_exc.DBError as e:
         msg = ("foreign key constraint" in six.text_type(e) and
-               " on foreign key constraint" or "")
-        raise ex.DeletionFailed("Data Source deletion failed%s" % msg)
+               _(" on foreign key constraint") or "")
+        raise ex.DeletionFailed(_("Data Source deletion failed%s") % msg)
 
 # JobExecution ops
 
@@ -527,8 +531,8 @@ def job_execution_create(context, values):
         try:
             job_ex.save(session=session)
         except db_exc.DBDuplicateEntry as e:
-            raise ex.DBDuplicateEntry("Duplicate entry for JobExecution: %s"
-                                      % e.columns)
+            raise ex.DBDuplicateEntry(
+                _("Duplicate entry for JobExecution: %s") % e.columns)
 
     return job_ex
 
@@ -540,7 +544,7 @@ def job_execution_update(context, job_execution_id, values):
         job_ex = _job_execution_get(context, session, job_execution_id)
         if not job_ex:
             raise ex.NotFoundException(job_execution_id,
-                                       "JobExecution id '%s' not found!")
+                                       _("JobExecution id '%s' not found!"))
         job_ex.update(values)
 
     return job_ex
@@ -552,7 +556,7 @@ def job_execution_destroy(context, job_execution_id):
         job_ex = _job_execution_get(context, session, job_execution_id)
         if not job_ex:
             raise ex.NotFoundException(job_execution_id,
-                                       "JobExecution id '%s' not found!")
+                                       _("JobExecution id '%s' not found!"))
 
         session.delete(job_ex)
 
@@ -600,8 +604,8 @@ def job_create(context, values):
 
             job.save(session=session)
         except db_exc.DBDuplicateEntry as e:
-            raise ex.DBDuplicateEntry("Duplicate entry for Job: %s"
-                                      % e.columns)
+            raise ex.DBDuplicateEntry(
+                _("Duplicate entry for Job: %s") % e.columns)
 
     return job
 
@@ -613,7 +617,7 @@ def job_update(context, job_id, values):
         job = _job_get(context, session, job_id)
         if not job:
             raise ex.NotFoundException(job_id,
-                                       "Job id '%s' not found!")
+                                       _("Job id '%s' not found!"))
         job.update(values)
 
     return job
@@ -626,12 +630,12 @@ def job_destroy(context, job_id):
             job = _job_get(context, session, job_id)
             if not job:
                 raise ex.NotFoundException(job_id,
-                                           "Job id '%s' not found!")
+                                           _("Job id '%s' not found!"))
             session.delete(job)
     except db_exc.DBError as e:
         msg = ("foreign key constraint" in six.text_type(e) and
-               " on foreign key constraint" or "")
-        raise ex.DeletionFailed("Job deletion failed%s" % msg)
+               _(" on foreign key constraint") or "")
+        raise ex.DeletionFailed(_("Job deletion failed%s") % msg)
 
 
 # JobBinary ops
@@ -671,8 +675,8 @@ def job_binary_create(context, values):
         try:
             job_binary.save(session=session)
         except db_exc.DBDuplicateEntry as e:
-            raise ex.DBDuplicateEntry("Duplicate entry for JobBinary: %s"
-                                      % e.columns)
+            raise ex.DBDuplicateEntry(
+                _("Duplicate entry for JobBinary: %s") % e.columns)
 
     return job_binary
 
@@ -693,11 +697,11 @@ def job_binary_destroy(context, job_binary_id):
         job_binary = _job_binary_get(context, session, job_binary_id)
         if not job_binary:
             raise ex.NotFoundException(job_binary_id,
-                                       "JobBinary id '%s' not found!")
+                                       _("JobBinary id '%s' not found!"))
 
         if _check_job_binary_referenced(context, session, job_binary_id):
-            raise ex.DeletionFailed("JobBinary is referenced"
-                                    "and cannot be deleted")
+            raise ex.DeletionFailed(
+                _("JobBinary is referenced and cannot be deleted"))
 
         session.delete(job_binary)
 
@@ -735,10 +739,10 @@ def job_binary_internal_get_raw_data(context, job_binary_internal_id):
     if res is not None:
         datasize_KB = res.datasize / 1024.0
         if datasize_KB > CONF.job_binary_max_KB:
-            raise ex.DataTooBigException(round(datasize_KB, 1),
-                                         CONF.job_binary_max_KB,
-                                         "Size of internal binary (%sKB) is "
-                                         "greater than the maximum (%sKB)")
+            raise ex.DataTooBigException(
+                round(datasize_KB, 1), CONF.job_binary_max_KB,
+                _("Size of internal binary (%(size)sKB) is greater than the "
+                  "maximum (%(maximum)sKB)"))
 
         # This assignment is sufficient to load the deferred column
         res = res.data
@@ -753,10 +757,10 @@ def job_binary_internal_create(context, values):
     values["datasize"] = len(values["data"])
     datasize_KB = values["datasize"] / 1024.0
     if datasize_KB > CONF.job_binary_max_KB:
-        raise ex.DataTooBigException(round(datasize_KB, 1),
-                                     CONF.job_binary_max_KB,
-                                     "Size of internal binary (%sKB) is "
-                                     "greater than the maximum (%sKB)")
+        raise ex.DataTooBigException(
+            round(datasize_KB, 1), CONF.job_binary_max_KB,
+            _("Size of internal binary (%(size)sKB) is greater "
+              "than the maximum (%(maximum)sKB)"))
 
     job_binary_int = m.JobBinaryInternal()
     job_binary_int.update(values)
@@ -766,8 +770,8 @@ def job_binary_internal_create(context, values):
         try:
             job_binary_int.save(session=session)
         except db_exc.DBDuplicateEntry as e:
-            raise ex.DBDuplicateEntry("Duplicate entry for JobBinaryInternal: "
-                                      "%s" % e.columns)
+            raise ex.DBDuplicateEntry(
+                _("Duplicate entry for JobBinaryInternal: %s") % e.columns)
 
     return job_binary_internal_get(context, job_binary_int.id)
 
@@ -778,7 +782,8 @@ def job_binary_internal_destroy(context, job_binary_internal_id):
         job_binary_internal = _job_binary_internal_get(context, session,
                                                        job_binary_internal_id)
         if not job_binary_internal:
-            raise ex.NotFoundException(job_binary_internal_id,
-                                       "JobBinaryInternal id '%s' not found!")
+            raise ex.NotFoundException(
+                job_binary_internal_id,
+                _("JobBinaryInternal id '%s' not found!"))
 
         session.delete(job_binary_internal)

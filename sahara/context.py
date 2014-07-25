@@ -22,6 +22,9 @@ from oslo.config import cfg
 
 from sahara.api import acl
 from sahara import exceptions as ex
+from sahara.i18n import _
+from sahara.i18n import _LE
+from sahara.i18n import _LW
 from sahara.openstack.common import log as logging
 
 
@@ -44,7 +47,8 @@ class Context(object):
                  auth_uri=None,
                  **kwargs):
         if kwargs:
-            LOG.warn('Arguments dropped when creating context: %s', kwargs)
+            LOG.warn(_LW('Arguments dropped when creating context: %s'),
+                     kwargs)
         self.user_id = user_id
         self.tenant_id = tenant_id
         self.token = token
@@ -102,7 +106,7 @@ def has_ctx():
 
 def ctx():
     if not has_ctx():
-        raise ex.IncorrectStateError("Context isn't available here")
+        raise ex.IncorrectStateError(_("Context isn't available here"))
     return getattr(_CTX_STORE, _CTX_KEY)
 
 
@@ -123,8 +127,9 @@ def _wrapper(ctx, thread_description, thread_group, func, *args, **kwargs):
         set_ctx(ctx)
         func(*args, **kwargs)
     except BaseException as e:
-        LOG.exception("Thread '%s' fails with exception: '%s'"
-                      % (thread_description, e))
+        LOG.exception(
+            _LE("Thread '%(thread)s' fails with exception: '%(exception)s'"),
+            {'thread': thread_description, 'exception': e})
         if thread_group and not thread_group.exc:
             thread_group.exc = e
             thread_group.failed_thread = thread_description

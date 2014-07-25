@@ -26,6 +26,8 @@ from sahara.api import v10 as api_v10
 from sahara.api import v11 as api_v11
 from sahara import config
 from sahara import context
+from sahara.i18n import _LI
+from sahara.i18n import _LW
 from sahara.middleware import auth_valid
 from sahara.middleware import log_exchange
 from sahara.openstack.common import log
@@ -70,11 +72,12 @@ def setup_common(possible_topdir, service_name):
     config.parse_configs(config_files)
     log.setup("sahara")
 
-    LOG.info('Starting Sahara %s' % service_name)
+    LOG.info(_LI('Starting Sahara %s'), service_name)
 
     if service_name != 'all-in-one':
-        LOG.warn("Distributed mode is in the alpha state, it's recommended to "
-                 "use all-in-one mode by running 'sahara-all' binary.")
+        LOG.warn(
+            _LW("Distributed mode is in the alpha state, it's recommended to "
+                "use all-in-one mode by running 'sahara-all' binary."))
 
     plugins_base.setup_plugins()
 
@@ -160,7 +163,7 @@ def _load_driver(namespace, name):
 def _get_infrastructure_engine():
     """Import and return one of sahara.service.*_engine.py modules."""
 
-    LOG.info("Loading '%s' infrastructure engine" %
+    LOG.info(_LI("Loading '%s' infrastructure engine"),
              CONF.infrastructure_engine)
 
     return _load_driver('sahara.infrastructure.engine',
@@ -168,12 +171,12 @@ def _get_infrastructure_engine():
 
 
 def _get_remote_driver():
-    LOG.info("Loading '%s' remote" % CONF.remote)
+    LOG.info(_LI("Loading '%s' remote"), CONF.remote)
 
     return _load_driver('sahara.remote', CONF.remote)
 
 
 def _get_ops_driver(driver_name):
-    LOG.info("Loading '%s' ops" % driver_name)
+    LOG.info(_LI("Loading '%s' ops"), driver_name)
 
     return _load_driver('sahara.run.mode', driver_name)
