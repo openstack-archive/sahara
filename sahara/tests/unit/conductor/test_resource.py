@@ -115,6 +115,10 @@ SAMPLE_JOB_EXECUTION = {
             swift_helper.HADOOP_SWIFT_PASSWORD: "openstack",
             swift_helper.HADOOP_SWIFT_USERNAME: "admin",
             "myfavoriteconfig": 1
+        },
+        "trusts": {
+            "input_id": "9c528755099149b8b7166f3d0fa3bf10",
+            "output_id": "3f2bde9d43ec440381dc9f736481e2b0"
         }
     },
     "job_id": "d0f3e397-7bef-42f9-a4db-e5a96059246e",
@@ -211,6 +215,9 @@ class TestResource(testtools.TestCase):
                       job_exec['job_configs']['configs'])
         for a in job_exec['info']['actions']:
             self.assertIn('conf', a)
+        self.assertIn('trusts', job_exec['job_configs'])
+        self.assertIn('input_id', job_exec['job_configs']['trusts'])
+        self.assertIn('output_id', job_exec['job_configs']['trusts'])
 
         wrapped_dict = job_exec.to_wrapped_dict()['job_execution']
         self.assertNotIn('extra', wrapped_dict)
@@ -223,3 +230,5 @@ class TestResource(testtools.TestCase):
 
         for a in wrapped_dict['info']['actions']:
             self.assertNotIn('conf', a)
+
+        self.assertNotIn('trusts', wrapped_dict['job_configs'])
