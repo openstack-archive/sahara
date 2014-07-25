@@ -26,11 +26,13 @@ import ConfigParser
 import io
 import os
 
+import alembic
 from alembic import command
 from alembic import config as alembic_config
 from alembic import migration
 from alembic import script as alembic_script
 from oslo.config import cfg
+import oslo.db.sqlalchemy.test_migrations as t_m
 import six.moves.urllib.parse as urlparse
 import sqlalchemy
 import sqlalchemy.exc
@@ -38,6 +40,7 @@ import testtools
 
 import sahara.db.migration
 from sahara.db.sqlalchemy import api as sa
+from sahara.db.sqlalchemy import model_base
 from sahara.openstack.common import lockutils
 from sahara.openstack.common import log as logging
 from sahara.openstack.common import processutils
@@ -136,6 +139,8 @@ class CommonTestsMixIn(object):
             self._reset_database(key)
             self._walk_versions(engine, self.snake_walk, self.downgrade)
 
+
+class MySQLTestsMixIn(CommonTestsMixIn):
     def test_mysql_opportunistically(self):
         self._test_mysql_opportunistically()
 
@@ -148,6 +153,8 @@ class CommonTestsMixIn(object):
                              self.DATABASE):
             self.fail("Shouldn't have connected")
 
+
+class PostgresqlTestsMixIn(CommonTestsMixIn):
     def test_postgresql_opportunistically(self):
         self._test_postgresql_opportunistically()
 
@@ -255,11 +262,27 @@ class BaseMigrationTestCase(testtools.TestCase):
         # note(boris-42): We must create and drop database, we can't
         # drop database which we have connected to, so for such
         # operations there is a special database template1.
-        sqlcmd = ("psql -w -U %(user)s -h %(host)s -c"
-                  " '%(sql)s' -d template1")
+        sqlcmd = ('psql -w -U %(user)s -h %(host)s -c '
+                  '"%(sql)s" -d template1')
         sqldict = {'user': user, 'host': host}
+        # note(apavlov): We need to kill all connections before dropping
+        # database. Otherwise it does not happen.
+        sqldict['sql'] = "select version();"
+        getversion = sqlcmd % sqldict
+        out, err = processutils.trycmd(getversion, shell=True)
+        version = out.split()
 
-        sqldict['sql'] = ("drop database if exists %s;") % database
+        sqldict['sql'] = ("SELECT pg_terminate_backend(%s) FROM "
+                          "pg_stat_activity WHERE datname = "
+                          "'%s';")
+        if float(version[version.index('PostgreSQL')+1][:3]) < 9.2:
+            sqldict['sql'] = sqldict['sql'] % ('procpid', database)
+        else:
+            sqldict['sql'] = sqldict['sql'] % ('pid', database)
+        killconnections = sqlcmd % sqldict
+        self.execute_cmd(killconnections)
+
+        sqldict['sql'] = "drop database if exists %s;" % database
         droptable = sqlcmd % sqldict
         self.execute_cmd(droptable)
 
@@ -585,3 +608,26 @@ class BaseWalkMigrationTestCase(BaseMigrationTestCase):
             LOG.error("Failed to migrate to version %s on engine %s" %
                       (version, engine))
             raise
+
+
+class TestModelsMigrationsSync(t_m.ModelsMigrationsSync):
+    """Class for comparison of DB migration scripts and models.
+
+    Allows to check if the DB schema obtained by applying of migration
+    scripts is equal to the one produced from models definitions.
+    """
+
+    def __init__(self):
+        self.ALEMBIC_CONFIG = alembic_config.Config(
+            os.path.join(os.path.dirname(sahara.db.migration.__file__),
+                         'alembic.ini')
+        )
+        self.ALEMBIC_CONFIG.sahara_config = CONF
+
+    def db_sync(self, engine):
+        CONF.set_override('connection', str(engine.url), group='database')
+        alembic.command.upgrade(self.ALEMBIC_CONFIG, 'head')
+
+    def get_metadata(self):
+        metadata = model_base.SaharaBase.metadata
+        return metadata

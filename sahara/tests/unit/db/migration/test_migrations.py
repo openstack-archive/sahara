@@ -44,10 +44,12 @@ from oslo.db.sqlalchemy import utils as db_utils
 
 from sahara.tests.unit.db.migration import test_migrations_base as base
 
+import sqlalchemy
+
 CONF = cfg.CONF
 
 
-class TestMigrations(base.BaseWalkMigrationTestCase, base.CommonTestsMixIn):
+class TestMigrations(base.BaseWalkMigrationTestCase):
     """Test sqlalchemy-migrate migrations."""
     USER = "openstack_citest"
     PASSWD = "openstack_citest"
@@ -447,3 +449,21 @@ class TestMigrations(base.BaseWalkMigrationTestCase, base.CommonTestsMixIn):
 
         self.assertColumnCount(engine, 'cluster_events', events_columns)
         self.assertColumnsExists(engine, 'cluster_events', events_columns)
+
+
+class TestMigrationsMySQL(TestMigrations, base.MySQLTestsMixIn,
+                          base.TestModelsMigrationsSync):
+    def get_engine(self):
+        conn_string = ("mysql+mysqldb://%s:%s@localhost/%s"
+                       % (self.USER, self.PASSWD, self.DATABASE))
+        engine = sqlalchemy.create_engine(conn_string)
+        return engine
+
+
+class TestMigrationsPostgresql(TestMigrations, base.PostgresqlTestsMixIn,
+                               base.TestModelsMigrationsSync):
+    def get_engine(self):
+        conn_string = ("postgresql+psycopg2://%s:%s@localhost/%s"
+                       % (self.USER, self.PASSWD, self.DATABASE))
+        engine = sqlalchemy.create_engine(conn_string)
+        return engine
