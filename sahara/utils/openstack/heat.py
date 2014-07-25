@@ -36,6 +36,23 @@ def client():
     return heat_client.Client('1', heat_url, token=ctx.token)
 
 
+def get_stack(stack_name):
+    heat = client()
+    for stack in heat.stacks.list(filters={'stack_name': stack_name}):
+        return stack
+
+    raise ex.NotFoundException('Failed to find stack %s' % stack_name)
+
+
+def wait_stack_completion(stack):
+    while stack.status == 'IN_PROGRESS':
+        context.sleep(1)
+        stack.get()
+
+    if stack.status != 'COMPLETE':
+        raise ex.HeatStackException(stack.stack_status)
+
+
 def _get_inst_name(cluster_name, ng_name, index):
     return g.generate_instance_name(cluster_name, ng_name, index + 1)
 
@@ -117,12 +134,7 @@ class ClusterTemplate(object):
                     stack.update(**kwargs)
                     break
 
-        for stack in heat.stacks.list():
-            if stack.stack_name == self.cluster.name:
-                return ClusterStack(self, stack)
-
-        raise ex.HeatStackException(
-            'Failed to find just created stack %s' % self.cluster.name)
+        return ClusterStack(self, get_stack(self.cluster.name))
 
     def _serialize_resources(self):
         resources = []
@@ -224,16 +236,6 @@ class ClusterStack(object):
     def __init__(self, tmpl, heat_stack):
         self.tmpl = tmpl
         self.heat_stack = heat_stack
-
-    def wait_till_active(self):
-        while self.heat_stack.stack_status in ('CREATE_IN_PROGRESS',
-                                               'UPDATE_IN_PROGRESS'):
-            context.sleep(1)
-            self.heat_stack.get()
-
-        if self.heat_stack.stack_status not in ('CREATE_COMPLETE',
-                                                'UPDATE_COMPLETE'):
-            raise ex.HeatStackException(self.heat_stack.stack_status)
 
     def get_node_group_instances(self, node_group):
         insts = []

@@ -212,29 +212,36 @@ class TestClusterTemplate(base.SaharaWithDbTestCase):
 
 class TestClusterStack(testtools.TestCase):
     @mock.patch("sahara.context.sleep", return_value=None)
-    def test_wait_till_active(self, _):
-        cl_stack = h.ClusterStack(None, FakeHeatStack('CREATE_IN_PROGRESS',
-                                                      'CREATE_COMPLETE'))
-        cl_stack.wait_till_active()
-        cl_stack.heat_stack = FakeHeatStack('UPDATE_IN_PROGRESS',
-                                            'UPDATE_COMPLETE')
-        cl_stack.wait_till_active()
-        cl_stack.heat_stack = FakeHeatStack('CREATE_IN_PROGRESS',
-                                            'CREATE_FAILED')
+    def test_wait_completion(self, _):
+        stack = FakeHeatStack('CREATE_IN_PROGRESS', 'CREATE_COMPLETE')
+        h.wait_stack_completion(stack)
+
+        stack = FakeHeatStack('UPDATE_IN_PROGRESS', 'UPDATE_COMPLETE')
+        h.wait_stack_completion(stack)
+
+        stack = FakeHeatStack('DELETE_IN_PROGRESS', 'DELETE_COMPLETE')
+        h.wait_stack_completion(stack)
+
+        stack = FakeHeatStack('CREATE_IN_PROGRESS', 'CREATE_FAILED')
         with testtools.ExpectedException(
                 ex.HeatStackException,
                 msg="Heat stack failed with status CREATE_FAILED"):
-            cl_stack.wait_till_active()
+            h.wait_stack_completion(stack)
 
 
 class FakeHeatStack():
-
-    def __init__(self, stack_status, new_status):
-        self.stack_status = stack_status
-        self.new_status = new_status
+    def __init__(self, stack_status=None, new_status=None, stack_name=None):
+        self.stack_status = stack_status or ''
+        self.new_status = new_status or ''
+        self.stack_name = stack_name or ''
 
     def get(self):
         self.stack_status = self.new_status
+
+    @property
+    def status(self):
+        s = self.stack_status
+        return s[s.index('_') + 1:]
 
 
 def get_ud_generator(s):
