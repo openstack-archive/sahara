@@ -17,9 +17,11 @@ import six
 
 from sahara import conductor as c
 from sahara import context
+from sahara.openstack.common import log as logging
 
 
 conductor = c.API
+LOG = logging.getLogger(__name__)
 
 
 def find_dict(iterable, **rules):
@@ -58,11 +60,18 @@ def get_by_id(lst, id):
     return None
 
 
-def format_cluster_status(cluster):
-    msg = "Cluster status has been changed: id=%s, New status=%s"
-    if cluster:
-        return msg % (cluster.id, cluster.status)
-    return msg % ("Unknown", "Unknown")
+def change_cluster_status(cluster, status, status_description=None):
+    if cluster is None:
+        return None
+
+    update_dict = {"status": status}
+    if status_description:
+        update_dict["status_description"] = status_description
+
+    cluster = conductor.cluster_update(context.ctx(), cluster, update_dict)
+    LOG.info("Cluster status has been changed: id=%s, New status=%s",
+             cluster.id, cluster.status)
+    return cluster
 
 
 def format_cluster_deleted_message(cluster):

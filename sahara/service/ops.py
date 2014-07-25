@@ -120,9 +120,7 @@ def _provision_cluster(cluster_id):
         trusts.create_trust(cluster)
 
     # updating cluster infra
-    cluster = conductor.cluster_update(ctx, cluster,
-                                       {"status": "InfraUpdating"})
-    LOG.info(g.format_cluster_status(cluster))
+    cluster = g.change_cluster_status(cluster, "InfraUpdating")
     plugin.update_infra(cluster)
 
     # creating instances and configuring them
@@ -134,8 +132,7 @@ def _provision_cluster(cluster_id):
         return
 
     # configure cluster
-    cluster = conductor.cluster_update(ctx, cluster, {"status": "Configuring"})
-    LOG.info(g.format_cluster_status(cluster))
+    cluster = g.change_cluster_status(cluster, "Configuring")
     try:
         plugin.configure_cluster(cluster)
     except Exception as ex:
@@ -144,8 +141,7 @@ def _provision_cluster(cluster_id):
             return
         LOG.exception("Can't configure cluster '%s' (reason: %s)",
                       cluster.name, ex)
-        cluster = conductor.cluster_update(ctx, cluster, {"status": "Error"})
-        LOG.info(g.format_cluster_status(cluster))
+        g.change_cluster_status(cluster, "Error")
         return
 
     if not g.check_cluster_exists(cluster):
@@ -153,8 +149,7 @@ def _provision_cluster(cluster_id):
         return
 
     # starting prepared and configured cluster
-    cluster = conductor.cluster_update(ctx, cluster, {"status": "Starting"})
-    LOG.info(g.format_cluster_status(cluster))
+    cluster = g.change_cluster_status(cluster, "Starting")
     try:
         plugin.start_cluster(cluster)
     except Exception as ex:
@@ -163,8 +158,7 @@ def _provision_cluster(cluster_id):
             return
         LOG.exception("Can't start services for cluster '%s' (reason: %s)",
                       cluster.name, ex)
-        cluster = conductor.cluster_update(ctx, cluster, {"status": "Error"})
-        LOG.info(g.format_cluster_status(cluster))
+        g.change_cluster_status(cluster, "Error")
         return
 
     if not g.check_cluster_exists(cluster):
@@ -172,8 +166,7 @@ def _provision_cluster(cluster_id):
         return
 
     # cluster is now up and ready
-    cluster = conductor.cluster_update(ctx, cluster, {"status": "Active"})
-    LOG.info(g.format_cluster_status(cluster))
+    cluster = g.change_cluster_status(cluster, "Active")
 
     # schedule execution pending job for cluster
     for je in conductor.job_execution_get_all(ctx, cluster_id=cluster.id):
@@ -184,10 +177,7 @@ def _provision_scaled_cluster(cluster_id, node_group_id_map):
     ctx, cluster, plugin = _prepare_provisioning(cluster_id)
 
     # Decommissioning surplus nodes with the plugin
-
-    cluster = conductor.cluster_update(ctx, cluster,
-                                       {"status": "Decommissioning"})
-    LOG.info(g.format_cluster_status(cluster))
+    cluster = g.change_cluster_status(cluster, "Decommissioning")
 
     instances_to_delete = []
 
@@ -201,17 +191,14 @@ def _provision_scaled_cluster(cluster_id, node_group_id_map):
         plugin.decommission_nodes(cluster, instances_to_delete)
 
     # Scaling infrastructure
-    cluster = conductor.cluster_update(ctx, cluster, {"status": "Scaling"})
-    LOG.info(g.format_cluster_status(cluster))
+    cluster = g.change_cluster_status(cluster, "Scaling")
 
     instances = INFRA.scale_cluster(cluster, node_group_id_map)
 
     # Setting up new nodes with the plugin
 
     if instances:
-        cluster = conductor.cluster_update(ctx, cluster,
-                                           {"status": "Configuring"})
-        LOG.info(g.format_cluster_status(cluster))
+        cluster = g.change_cluster_status(cluster, "Configuring")
         try:
             instances = g.get_instances(cluster, instances)
             plugin.scale_cluster(cluster, instances)
@@ -221,17 +208,14 @@ def _provision_scaled_cluster(cluster_id, node_group_id_map):
                 return
             LOG.exception("Can't scale cluster '%s' (reason: %s)",
                           cluster.name, ex)
-            cluster = conductor.cluster_update(ctx, cluster,
-                                               {"status": "Error"})
-            LOG.info(g.format_cluster_status(cluster))
+            g.change_cluster_status(cluster, "Error")
             return
 
     if not g.check_cluster_exists(cluster):
         LOG.info(g.format_cluster_deleted_message(cluster))
         return
 
-    cluster = conductor.cluster_update(ctx, cluster, {"status": "Active"})
-    LOG.info(g.format_cluster_status(cluster))
+    g.change_cluster_status(cluster, "Active")
 
 
 def _terminate_cluster(cluster_id):

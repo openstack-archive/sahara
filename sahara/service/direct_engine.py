@@ -39,15 +39,11 @@ class DirectEngine(e.Engine):
         ctx = context.ctx()
         try:
             # create all instances
-            conductor.cluster_update(ctx, cluster, {"status": "Spawning"})
-            LOG.info(g.format_cluster_status(cluster))
+            cluster = g.change_cluster_status(cluster, "Spawning")
             self._create_instances(cluster)
 
             # wait for all instances are up and networks ready
-            cluster = conductor.cluster_update(ctx, cluster,
-                                               {"status": "Waiting"})
-            LOG.info(g.format_cluster_status(cluster))
-
+            cluster = g.change_cluster_status(cluster, "Waiting")
             instances = g.get_instances(cluster)
 
             self._await_active(cluster, instances)
@@ -70,9 +66,7 @@ class DirectEngine(e.Engine):
             volumes.attach_to_instances(g.get_instances(cluster))
 
             # prepare all instances
-            cluster = conductor.cluster_update(ctx, cluster,
-                                               {"status": "Preparing"})
-            LOG.info(g.format_cluster_status(cluster))
+            cluster = g.change_cluster_status(cluster, "Preparing")
 
             self._configure_instances(cluster)
         except Exception as ex:
@@ -84,10 +78,8 @@ class DirectEngine(e.Engine):
                 self._log_operation_exception(
                     "Can't start cluster '%s' (reason: %s)", cluster, ex)
 
-                cluster = conductor.cluster_update(
-                    ctx, cluster, {"status": "Error",
-                                   "status_description": str(ex)})
-                LOG.info(g.format_cluster_status(cluster))
+                cluster = g.change_cluster_status(
+                    cluster, "Error", status_description=six.text_type(ex))
                 self._rollback_cluster_creation(cluster, ex)
 
     def scale_cluster(self, cluster, node_group_id_map):
@@ -139,10 +131,7 @@ class DirectEngine(e.Engine):
 
                 cluster = conductor.cluster_get(ctx, cluster)
                 g.clean_cluster_from_empty_ng(cluster)
-                cluster = conductor.cluster_update(ctx, cluster,
-                                                   {"status": "Active"})
-
-                LOG.info(g.format_cluster_status(cluster))
+                cluster = g.change_cluster_status(cluster, "Active")
 
         # we should be here with valid cluster: if instances creation
         # was not successful all extra-instances will be removed above
@@ -191,9 +180,7 @@ class DirectEngine(e.Engine):
                 node_groups_to_enlarge.append(node_group)
 
         if instances_to_delete:
-            cluster = conductor.cluster_update(
-                ctx, cluster, {"status": "Deleting Instances"})
-            LOG.info(g.format_cluster_status(cluster))
+            cluster = g.change_cluster_status(cluster, "Deleting Instances")
 
             for instance in instances_to_delete:
                 self._shutdown_instance(instance)
@@ -202,9 +189,7 @@ class DirectEngine(e.Engine):
 
         instances_to_add = []
         if node_groups_to_enlarge:
-            cluster = conductor.cluster_update(ctx, cluster,
-                                               {"status": "Adding Instances"})
-            LOG.info(g.format_cluster_status(cluster))
+            cluster = g.change_cluster_status(cluster, "Adding Instances")
             for node_group in node_groups_to_enlarge:
                 count = node_group_id_map[node_group.id]
                 for idx in six.moves.xrange(node_group.count + 1, count + 1):

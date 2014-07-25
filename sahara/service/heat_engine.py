@@ -15,6 +15,7 @@
 
 from heatclient import exc as heat_exc
 from oslo.config import cfg
+import six
 
 from sahara import conductor as c
 from sahara import context
@@ -52,10 +53,8 @@ class HeatEngine(e.Engine):
                 self._log_operation_exception(
                     "Can't start cluster '%s' (reason: %s)", cluster, ex)
 
-                cluster = conductor.cluster_update(
-                    ctx, cluster, {"status": "Error",
-                                   "status_description": str(ex)})
-                LOG.info(g.format_cluster_status(cluster))
+                cluster = g.change_cluster_status(
+                    cluster, "Error", status_description=six.text_type(ex))
                 self._rollback_cluster_creation(cluster)
 
     def _get_ng_counts(self, cluster):
@@ -98,15 +97,11 @@ class HeatEngine(e.Engine):
                         return
                     # if something fails during the rollback, we stop
                     # doing anything further
-                    cluster = conductor.cluster_update(ctx, cluster,
-                                                       {"status": "Error"})
-                    LOG.info(g.format_cluster_status(cluster))
+                    cluster = g.change_cluster_status(cluster, "Error")
                     LOG.error("Unable to complete rollback, aborting")
                     raise
 
-                cluster = conductor.cluster_update(ctx, cluster,
-                                                   {"status": "Active"})
-                LOG.info(g.format_cluster_status(cluster))
+                cluster = g.change_cluster_status(cluster, "Active")
                 LOG.warn(
                     "Rollback successful. Throwing off an initial exception.")
         finally:
@@ -179,9 +174,7 @@ class _CreateLauncher(HeatEngine):
 
     def launch_instances(self, ctx, cluster, target_count):
         # create all instances
-        cluster = conductor.cluster_update(ctx, cluster,
-                                           {"status": self.STAGES[0]})
-        LOG.info(g.format_cluster_status(cluster))
+        cluster = g.change_cluster_status(cluster, self.STAGES[0])
 
         tmpl = heat.ClusterTemplate(cluster)
 
@@ -192,9 +185,7 @@ class _CreateLauncher(HeatEngine):
         self.inst_ids = self._populate_cluster(ctx, cluster, stack)
 
         # wait for all instances are up and networks ready
-        cluster = conductor.cluster_update(ctx, cluster,
-                                           {"status": self.STAGES[1]})
-        LOG.info(g.format_cluster_status(cluster))
+        cluster = g.change_cluster_status(cluster, self.STAGES[1])
 
         instances = g.get_instances(cluster, self.inst_ids)
 
@@ -205,9 +196,7 @@ class _CreateLauncher(HeatEngine):
             return
 
         # prepare all instances
-        cluster = conductor.cluster_update(ctx, cluster,
-                                           {"status": self.STAGES[2]})
-        LOG.info(g.format_cluster_status(cluster))
+        cluster = g.change_cluster_status(cluster, self.STAGES[2])
 
         instances = g.get_instances(cluster, self.inst_ids)
         volumes.mount_to_instances(instances)
