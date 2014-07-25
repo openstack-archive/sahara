@@ -1,7 +1,0 @@
-{
-    "description": "This is pig job example",
-    "mains": ["84248975-3c82-4206-a58d-6e7fb3a563fd"],
-    "libs": ["508fc62d-1d58-4412-b603-bdab307bb926"],
-    "type": "Pig",
-    "name": "pig-job-example"
-}
