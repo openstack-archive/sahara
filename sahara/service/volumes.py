@@ -40,8 +40,10 @@ CONF.register_opt(detach_timeout_opt)
 def attach_to_instances(instances):
     with context.ThreadGroup() as tg:
         for instance in instances:
-            tg.spawn('attach-volumes-for-instance-%s' % instance.instance_name,
-                     _attach_volumes_to_node, instance.node_group, instance)
+            if instance.node_group.volumes_per_node > 0:
+                tg.spawn(
+                    'attach-volumes-for-instance-%s' % instance.instance_name,
+                    _attach_volumes_to_node, instance.node_group, instance)
 
 
 def _await_attach_volumes(instance, devices):
