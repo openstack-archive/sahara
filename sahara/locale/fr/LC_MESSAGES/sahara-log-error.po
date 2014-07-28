@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Sahara\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2014-07-18 06:10+0000\n"
-"PO-Revision-Date: 2014-07-17 06:41+0000\n"
+"POT-Creation-Date: 2014-07-28 06:10+0000\n"
+"PO-Revision-Date: 2014-07-25 15:11+0000\n"
 "Last-Translator: openstackjenkins <jenkins@openstack.org>\n"
 "Language-Team: French (http://www.transifex.com/projects/p/sahara/language/"
 "fr/)\n"
@@ -18,6 +18,21 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 1.3\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+#: sahara/context.py:131
+#, python-format
+msgid "Thread '%(thread)s' fails with exception: '%(exception)s'"
+msgstr ""
+
+#: sahara/db/sqlalchemy/api.py:107
+#, python-format
+msgid "Database registration exception: %s"
+msgstr "Exception d'enregistrement de base de données : %s"
+
+#: sahara/db/sqlalchemy/api.py:117
+#, python-format
+msgid "Database shutdown exception: %s"
+msgstr "exception lors de l'arrêt de la base de données %s"
 
 #: sahara/openstack/common/excutils.py:76
 #, python-format

@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version:  Sahara\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2014-07-18 06:10+0000\n"
+"POT-Creation-Date: 2014-07-28 06:10+0000\n"
 "PO-Revision-Date: 2014-07-17 06:41+0000\n"
 "Last-Translator: openstackjenkins <jenkins@openstack.org>\n"
 "Language-Team: Chinese (China) "
@@ -20,6 +20,227 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 1.3\n"
+
+#: sahara/config.py:94
+#, python-format
+msgid "Option '%(option)s' is required for config group '%(group)s'"
+msgstr ""
+
+#: sahara/config.py:102
+msgid ""
+"use_namespaces can not be set to \"True\" when use_neutron is set to "
+"\"False\""
+msgstr ""
+
+#: sahara/context.py:109
+msgid "Context isn't available here"
+msgstr ""
+
+#: sahara/exceptions.py:27
+msgid "An unknown exception occurred"
+msgstr ""
+
+#: sahara/exceptions.py:39
+#, python-format
+msgid "Object '%s' is not found"
+msgstr ""
+
+#: sahara/exceptions.py:51
+msgid "Name already exists"
+msgstr ""
+
+#: sahara/exceptions.py:60
+msgid "Invalid credentials"
+msgstr ""
+
+#: sahara/exceptions.py:69
+msgid "Invalid object reference"
+msgstr ""
+
+#: sahara/exceptions.py:78
+#, python-format
+msgid "Error during command execution: \"%s\""
+msgstr ""
+
+#: sahara/exceptions.py:109
+msgid "Data is invalid"
+msgstr ""
+
+#: sahara/exceptions.py:118
+msgid "Job binary internal data must be a string of length greater than zero"
+msgstr ""
+
+#: sahara/exceptions.py:128
+msgid ""
+"To work with JobBinary located in internal swift add 'user' and "
+"'password' to extra"
+msgstr ""
+
+#: sahara/exceptions.py:138
+msgid "Database object already exists"
+msgstr ""
+
+#: sahara/exceptions.py:147
+msgid "Object was not deleted"
+msgstr ""
+
+#: sahara/exceptions.py:157
+#, python-format
+msgid "Node Group %s is missing 'floating_ip_pool' field"
+msgstr ""
+
+#: sahara/exceptions.py:175
+#, python-format
+msgid "Size of data (%(size)s) is greater than maximum (%(maximum)s)"
+msgstr ""
+
+#: sahara/exceptions.py:187
+#, python-format
+msgid "An error occurred in thread '%(thread)s': %(e)s"
+msgstr ""
+
+#: sahara/exceptions.py:197
+#, python-format
+msgid "Feature '%s' is not implemented"
+msgstr ""
+
+#: sahara/exceptions.py:203
+#, python-format
+msgid "Heat stack failed with status %s"
+msgstr ""
+
+#: sahara/exceptions.py:237
+#, python-format
+msgid "Operation timed out after %i second(s)"
+msgstr ""
+
+#: sahara/db/sqlalchemy/api.py:192
+#, python-format
+msgid "Duplicate entry for Cluster: %s"
+msgstr ""
+
+#: sahara/db/sqlalchemy/api.py:202
+#, python-format
+msgid "Duplicate entry for NodeGroup: %s"
+msgstr ""
+
+#: sahara/db/sqlalchemy/api.py:214 sahara/db/sqlalchemy/api.py:226
+#: sahara/db/sqlalchemy/api.py:245
+#, python-format
+msgid "Cluster id '%s' not found!"
+msgstr ""
+
+#: sahara/db/sqlalchemy/api.py:261 sahara/db/sqlalchemy/api.py:273
+#: sahara/db/sqlalchemy/api.py:292
+#, python-format
+msgid "Node Group id '%s' not found!"
+msgstr ""
+
+#: sahara/db/sqlalchemy/api.py:311 sahara/db/sqlalchemy/api.py:322
+#: sahara/db/sqlalchemy/api.py:339 sahara/db/sqlalchemy/api.py:350
+#, python-format
+msgid "Instance id '%s' not found!"
+msgstr ""
+
+#: sahara/db/sqlalchemy/api.py:383
+#, python-format
+msgid "Duplicate entry for ClusterTemplate: %s"
+msgstr ""
+
+#: sahara/db/sqlalchemy/api.py:394
+#, python-format
+msgid "Duplicate entry for TemplatesRelation: %s"
+msgstr ""
+
+#: sahara/db/sqlalchemy/api.py:407
+#, python-format
+msgid "Cluster Template id '%s' not found!"
+msgstr ""
+
+#: sahara/db/sqlalchemy/api.py:439
+#, python-format
+msgid "Duplicate entry for NodeGroupTemplate: %s"
+msgstr ""
+
+#: sahara/db/sqlalchemy/api.py:452
+#, python-format
+msgid "Node Group Template id '%s' not found!"
+msgstr ""
+
+#: sahara/db/sqlalchemy/api.py:483
+#, python-format
+msgid "Duplicate entry for DataSource: %s"
+msgstr ""
+
+#: sahara/db/sqlalchemy/api.py:496
+#, python-format
+msgid "Data Source id '%s' not found!"
+msgstr ""
+
+#: sahara/db/sqlalchemy/api.py:500 sahara/db/sqlalchemy/api.py:637
+msgid " on foreign key constraint"
+msgstr ""
+
+#: sahara/db/sqlalchemy/api.py:501
+#, python-format
+msgid "Data Source deletion failed%s"
+msgstr ""
+
+#: sahara/db/sqlalchemy/api.py:535
+#, python-format
+msgid "Duplicate entry for JobExecution: %s"
+msgstr ""
+
+#: sahara/db/sqlalchemy/api.py:547 sahara/db/sqlalchemy/api.py:559
+#, python-format
+msgid "JobExecution id '%s' not found!"
+msgstr ""
+
+#: sahara/db/sqlalchemy/api.py:608
+#, python-format
+msgid "Duplicate entry for Job: %s"
+msgstr ""
+
+#: sahara/db/sqlalchemy/api.py:620 sahara/db/sqlalchemy/api.py:633
+#, python-format
+msgid "Job id '%s' not found!"
+msgstr ""
+
+#: sahara/db/sqlalchemy/api.py:638
+#, python-format
+msgid "Job deletion failed%s"
+msgstr ""
+
+#: sahara/db/sqlalchemy/api.py:679
+#, python-format
+msgid "Duplicate entry for JobBinary: %s"
+msgstr ""
+
+#: sahara/db/sqlalchemy/api.py:700
+#, python-format
+msgid "JobBinary id '%s' not found!"
+msgstr ""
+
+#: sahara/db/sqlalchemy/api.py:704
+msgid "JobBinary is referenced and cannot be deleted"
+msgstr ""
+
+#: sahara/db/sqlalchemy/api.py:744 sahara/db/sqlalchemy/api.py:762
+#, python-format
+msgid ""
+"Size of internal binary (%(size)sKB) is greater than the maximum "
+"(%(maximum)sKB)"
+msgstr ""
+
+#: sahara/db/sqlalchemy/api.py:774
+#, python-format
+msgid "Duplicate entry for JobBinaryInternal: %s"
+msgstr ""
+
+#: sahara/db/sqlalchemy/api.py:787
+#, python-format
+msgid "JobBinaryInternal id '%s' not found!"
+msgstr ""
 
 #: sahara/openstack/common/exception.py:103
 msgid "Uncaught exception"
@@ -191,4 +412,21 @@ msgstr "对于列 %s，col_name_col_instance 参数具有不正确类型的列�
 #: sahara/openstack/common/db/sqlalchemy/utils.py:408
 msgid "Unsupported id columns type"
 msgstr "不支持的id列类型"
+
+#: sahara/service/edp/binary_retrievers/internal_swift.py:56
+#, python-format
+msgid "Url for binary in internal swift must start with %s"
+msgstr ""
+
+#: sahara/service/edp/binary_retrievers/internal_swift.py:74
+#, python-format
+msgid ""
+"Size of swift container (%(size)sKB) is greater than maximum "
+"(%(maximum)sKB)"
+msgstr ""
+
+#: sahara/service/edp/binary_retrievers/internal_swift.py:98
+#, python-format
+msgid "Size of swift object (%(size)sKB) is greater than maximum (%(maximum)sKB)"
+msgstr ""
 

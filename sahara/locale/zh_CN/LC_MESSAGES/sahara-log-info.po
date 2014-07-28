@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Sahara\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2014-07-17 06:10+0000\n"
+"POT-Creation-Date: 2014-07-28 06:10+0000\n"
 "PO-Revision-Date: 2014-07-16 14:42+0000\n"
 "Last-Translator: openstackjenkins <jenkins@openstack.org>\n"
 "Language-Team: Chinese (China) (http://www.transifex.com/projects/p/sahara/"
@@ -19,6 +19,26 @@ msgstr ""
 "Generated-By: Babel 1.3\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 
+#: sahara/main.py:75
+#, python-format
+msgid "Starting Sahara %s"
+msgstr ""
+
+#: sahara/main.py:166
+#, python-format
+msgid "Loading '%s' infrastructure engine"
+msgstr ""
+
+#: sahara/main.py:174
+#, python-format
+msgid "Loading '%s' remote"
+msgstr ""
+
+#: sahara/main.py:180
+#, python-format
+msgid "Loading '%s' ops"
+msgstr ""
+
 #: sahara/openstack/common/lockutils.py:82
 #, python-format
 msgid "Created lock path: %s"
@@ -29,12 +49,12 @@ msgstr "已创建锁路径：%s"
 msgid "Failed to remove file %(file)s"
 msgstr ""
 
-#: sahara/openstack/common/periodic_task.py:125
+#: sahara/openstack/common/periodic_task.py:126
 #, python-format
 msgid "Skipping periodic task %(task)s because its interval is negative"
 msgstr "正在跳过周期性任务 %(task)s，因为其时间间隔为负"
 
-#: sahara/openstack/common/periodic_task.py:130
+#: sahara/openstack/common/periodic_task.py:131
 #, python-format
 msgid "Skipping periodic task %(task)s because it is disabled"
 msgstr "正在跳过周期性任务 %(task)s，因为它已禁用"
