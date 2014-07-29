@@ -22,8 +22,6 @@ from oslo.config import cfg
 
 
 CONF = cfg.CONF
-CONF.import_opt("connection", "sahara.openstack.common.db.sqlalchemy.session",
-                group="database")
 
 
 def do_alembic_command(config, cmd, *args, **kwargs):

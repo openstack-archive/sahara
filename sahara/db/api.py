@@ -32,21 +32,21 @@ interface.
 """
 
 from oslo.config import cfg
+from oslo.db import api as db_api
+from oslo.db import options
 
-from sahara.openstack.common.db import api as db_api
 from sahara.openstack.common import log as logging
 
 
 CONF = cfg.CONF
 
-CONF.import_opt('backend', 'sahara.openstack.common.db.options',
-                group='database')
+options.set_defaults(CONF)
 
 _BACKEND_MAPPING = {
     'sqlalchemy': 'sahara.db.sqlalchemy.api',
 }
 
-IMPL = db_api.DBAPI(CONF.database.backend, backend_mapping=_BACKEND_MAPPING)
+IMPL = db_api.DBAPI.from_config(CONF, backend_mapping=_BACKEND_MAPPING)
 LOG = logging.getLogger(__name__)
 
 

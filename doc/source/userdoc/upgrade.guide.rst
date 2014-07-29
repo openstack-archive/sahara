@@ -27,5 +27,10 @@ old config opts with the new ones.
 * ``os_admin_password`` -> ``[keystone_authtoken]/admin_password``
 * ``os_admin_tenant_name`` -> ``[keystone_authtoken]/admin_tenant_name``
 
+We've replaced oslo code from sahara.openstack.common.db by usage of oslo.db
+library. Default sqlite db name was changed as follows.
+
+* ``sahara.sqlite`` -> ``oslo.sqlite``
+
 You can find more info about config file options in sahara repository in file
 ``etc/sahara/sahara.conf.sample``.

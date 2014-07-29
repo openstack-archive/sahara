@@ -40,8 +40,8 @@ postgres=# create database openstack_citest with owner openstack_citest;
 import os
 
 from oslo.config import cfg
+from oslo.db.sqlalchemy import utils as db_utils
 
-from sahara.openstack.common.db.sqlalchemy import utils as db_utils
 from sahara.tests.unit.db.migration import test_migrations_base as base
 
 CONF = cfg.CONF
