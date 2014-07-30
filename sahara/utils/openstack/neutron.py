@@ -23,6 +23,7 @@ from requests import adapters
 
 from sahara import context
 from sahara import exceptions as ex
+from sahara.i18n import _
 from sahara.openstack.common import log as logging
 from sahara.utils.openstack import base
 
@@ -74,8 +75,8 @@ class NeutronClientRemoteWrapper():
                 break
 
         if not matching_router:
-            raise ex.SystemError('Neutron router corresponding to network {0} '
-                                 'is not found'.format(self.network))
+            raise ex.SystemError(_('Neutron router corresponding to network '
+                                   '%s is not found') % self.network)
 
         return matching_router['id']
 
@@ -181,7 +182,7 @@ class NetcatSocket:
             return self.process.stdout
         if mode.startswith('w'):
             return self.process.stdin
-        raise ex.IncorrectStateError("Unknown file mode %s" % mode)
+        raise ex.IncorrectStateError(_("Unknown file mode %s") % mode)
 
     def recv(self, size):
         try:

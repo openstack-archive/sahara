@@ -19,6 +19,9 @@ import six
 
 from sahara import conductor as c
 from sahara import context
+from sahara.i18n import _LE
+from sahara.i18n import _LI
+from sahara.i18n import _LW
 from sahara.openstack.common import excutils
 from sahara.openstack.common import log as logging
 from sahara.service import engine as e
@@ -64,7 +67,8 @@ class HeatEngine(e.Engine):
                     LOG.info(g.format_cluster_deleted_message(cluster))
                     return
                 self._log_operation_exception(
-                    "Can't start cluster '%s' (reason: %s)", cluster, ex)
+                    _LW("Can't start cluster '%(cluster)s' "
+                        "(reason: %(reason)s)"), cluster, ex)
 
                 cluster = g.change_cluster_status(
                     cluster, "Error", status_description=six.text_type(ex))
@@ -97,7 +101,8 @@ class HeatEngine(e.Engine):
                     LOG.info(g.format_cluster_deleted_message(cluster))
                     return
                 self._log_operation_exception(
-                    "Can't scale cluster '%s' (reason: %s)", cluster, ex)
+                    _LW("Can't scale cluster '%(cluster)s' "
+                        "(reason: %(reason)s)"), cluster, ex)
 
                 cluster = conductor.cluster_get(ctx, cluster)
 
@@ -111,12 +116,13 @@ class HeatEngine(e.Engine):
                     # if something fails during the rollback, we stop
                     # doing anything further
                     cluster = g.change_cluster_status(cluster, "Error")
-                    LOG.error("Unable to complete rollback, aborting")
+                    LOG.error(_LE("Unable to complete rollback, aborting"))
                     raise
 
                 cluster = g.change_cluster_status(cluster, "Active")
                 LOG.warn(
-                    "Rollback successful. Throwing off an initial exception.")
+                    _LW("Rollback successful. "
+                        "Throwing off an initial exception."))
         finally:
             cluster = conductor.cluster_get(ctx, cluster)
             g.clean_cluster_from_empty_ng(cluster)
@@ -141,7 +147,7 @@ class HeatEngine(e.Engine):
 
     def _rollback_cluster_creation(self, cluster):
         """Shutdown all instances and update cluster status."""
-        LOG.info("Cluster '%s' creation rollback", cluster.name)
+        LOG.info(_LI("Cluster '%s' creation rollback"), cluster.name)
 
         self.shutdown_cluster(cluster)
 
@@ -156,7 +162,7 @@ class HeatEngine(e.Engine):
         maximize the chance of rollback success.
         """
 
-        LOG.info("Cluster '%s' scaling rollback", cluster.name)
+        LOG.info(_LI("Cluster '%s' scaling rollback"), cluster.name)
 
         for ng in rollback_count.keys():
             if rollback_count[ng] > target_count[ng]:
@@ -172,7 +178,7 @@ class HeatEngine(e.Engine):
             stack = heat.get_stack(cluster.name)
             heat.wait_stack_completion(stack)
         except heat_exc.HTTPNotFound:
-            LOG.warn('Did not found stack for cluster %s' % cluster.name)
+            LOG.warn(_LW('Did not found stack for cluster %s') % cluster.name)
 
         self._clean_job_executions(cluster)
 

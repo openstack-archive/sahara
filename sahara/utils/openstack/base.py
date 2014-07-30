@@ -20,6 +20,7 @@ from six.moves.urllib import parse as urlparse
 
 from sahara import context
 from sahara import exceptions as ex
+from sahara.i18n import _
 
 CONF = cfg.CONF
 
@@ -41,12 +42,14 @@ def url_for(service_catalog, service_type, admin=False, endpoint_type=None):
             return _get_endpoint_url(endpoints, endpoint_type)
         except Exception:
             raise ex.SystemError(
-                "Endpoint with type %s is not found for service %s"
-                % (endpoint_type, service_type))
+                _("Endpoint with type %(type)s is not found for service "
+                  "%(service)s")
+                % {'type': endpoint_type,
+                   'service': service_type})
 
     else:
-        raise ex.SystemError('Service "%s" not found in service catalog'
-                             % service_type)
+        raise ex.SystemError(
+            _('Service "%s" not found in service catalog') % service_type)
 
 
 def _get_service_from_catalog(catalog, service_type):

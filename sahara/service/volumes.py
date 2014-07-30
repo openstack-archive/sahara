@@ -18,6 +18,9 @@ from oslo.config import cfg
 from sahara import conductor as c
 from sahara import context
 from sahara import exceptions as ex
+from sahara.i18n import _
+from sahara.i18n import _LE
+from sahara.i18n import _LW
 from sahara.openstack.common import log as logging
 from sahara.openstack.common import timeutils as tu
 from sahara.utils.openstack import cinder
@@ -56,7 +59,7 @@ def _await_attach_volumes(instance, devices):
         timeout -= step
         context.sleep(step)
 
-    raise ex.SystemError("Error attach volume to instance %s" %
+    raise ex.SystemError(_("Error attach volume to instance %s") %
                          instance.instance_name)
 
 
@@ -85,7 +88,7 @@ def _create_attach_volume(ctx, instance, size, display_name=None):
     while volume.status != 'available':
         volume = cinder.get_volume(volume.id)
         if volume.status == 'error':
-            raise ex.SystemError("Volume %s has error status" % volume.id)
+            raise ex.SystemError(_("Volume %s has error status") % volume.id)
 
         context.sleep(1)
 
@@ -142,7 +145,7 @@ def _mount_volume(instance, device_path, mount_point):
             r.execute_command('sudo mkfs.ext4 %s' % device_path)
             r.execute_command('sudo mount %s %s' % (device_path, mount_point))
         except Exception:
-            LOG.error("Error mounting volume to instance %s" %
+            LOG.error(_LE("Error mounting volume to instance %s"),
                       instance.instance_id)
             raise
 
@@ -161,7 +164,7 @@ def _detach_volume(instance, volume_id):
         nova.client().volumes.delete_server_volume(instance.instance_id,
                                                    volume_id)
     except Exception:
-        LOG.exception("Can't detach volume %s" % volume.id)
+        LOG.exception(_LE("Can't detach volume %s"), volume.id)
 
     detach_timeout = CONF.detach_volume_timeout
     LOG.debug("Waiting %d seconds to detach %s volume" % (detach_timeout,
@@ -175,8 +178,9 @@ def _detach_volume(instance, volume_id):
             LOG.debug("Volume %s has been detached" % volume_id)
             return
     else:
-        LOG.warn("Can't detach volume %s. Current status of volume: %s" % (
-            volume_id, volume.status))
+        LOG.warn(_LW("Can't detach volume %(volume)s. "
+                     "Current status of volume: %(status)s"),
+                 {'volume': volume_id, 'status': volume.status})
 
 
 def _delete_volume(volume_id):
@@ -185,4 +189,4 @@ def _delete_volume(volume_id):
     try:
         volume.delete()
     except Exception:
-        LOG.exception("Can't delete volume %s" % volume.id)
+        LOG.exception(_LE("Can't delete volume %s"), volume.id)

@@ -20,6 +20,8 @@ from oslo.config import cfg
 from sahara import conductor as c
 from sahara import context
 from sahara import exceptions as e
+from sahara.i18n import _
+from sahara.i18n import _LE
 from sahara.openstack.common import log
 from sahara.service.edp import job_utils
 from sahara.service.edp.oozie import engine as oozie_engine
@@ -97,7 +99,7 @@ def _run_job(job_execution_id):
 
     eng = _get_job_engine(cluster, job_execution)
     if eng is None:
-        raise e.EDPError("Cluster does not support job type %s"
+        raise e.EDPError(_("Cluster does not support job type %s")
                          % _get_job_type(job_execution))
     job_execution = _update_job_execution_extra(cluster, job_execution)
     jid = eng.run_job(job_execution)
@@ -111,8 +113,9 @@ def run_job(job_execution_id):
     try:
         _run_job(job_execution_id)
     except Exception as ex:
-        LOG.exception("Can't run job execution '%s' (reason: %s)",
-                      job_execution_id, ex)
+        LOG.exception(
+            _LE("Can't run job execution '%(job)s' (reason: %(reason)s)"),
+            {'job': job_execution_id, 'reason': ex})
 
         conductor.job_execution_update(
             context.ctx(), job_execution_id,
@@ -131,8 +134,9 @@ def cancel_job(job_execution_id):
             try:
                 engine.cancel_job(job_execution)
             except Exception as e:
-                LOG.exception("Error during cancel of job execution %s: %s" %
-                              (job_execution.id, e))
+                LOG.exception(
+                    _LE("Error during cancel of job execution %(job)s: "
+                        "%(error)s"), {'job': job_execution.id, 'error': e})
             job_execution = _update_job_status(engine, job_execution)
     return job_execution
 
@@ -155,8 +159,9 @@ def update_job_statuses():
         try:
             get_job_status(je.id)
         except Exception as e:
-            LOG.exception("Error during update job execution %s: %s" %
-                          (je.id, e))
+            LOG.exception(
+                _LE("Error during update job execution %(job)s: %(error)s"),
+                {'job': je.id, 'error': e})
 
 
 def get_job_config_hints(job_type):

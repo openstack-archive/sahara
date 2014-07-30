@@ -20,6 +20,9 @@ import six
 from sahara import conductor as c
 from sahara import context
 from sahara import exceptions as exc
+from sahara.i18n import _
+from sahara.i18n import _LI
+from sahara.i18n import _LW
 from sahara.openstack.common import excutils
 from sahara.openstack.common import log as logging
 from sahara.service import engine as e
@@ -76,7 +79,8 @@ class DirectEngine(e.Engine):
                     return
 
                 self._log_operation_exception(
-                    "Can't start cluster '%s' (reason: %s)", cluster, ex)
+                    _LW("Can't start cluster '%(cluster)s' "
+                        "(reason: %(reason)s)"), cluster, ex)
 
                 cluster = g.change_cluster_status(
                     cluster, "Error", status_description=six.text_type(ex))
@@ -122,7 +126,8 @@ class DirectEngine(e.Engine):
                     return []
 
                 self._log_operation_exception(
-                    "Can't scale cluster '%s' (reason: %s)", cluster, ex)
+                    _LW("Can't scale cluster '%(cluster)s' "
+                        "(reason: %(reason)s)"), cluster, ex)
 
                 cluster = conductor.cluster_get(ctx, cluster)
                 self._rollback_cluster_scaling(
@@ -272,27 +277,29 @@ class DirectEngine(e.Engine):
 
             context.sleep(1)
 
-        LOG.info("Cluster '%s': all instances are active" % cluster.id)
+        LOG.info(_LI("Cluster '%s': all instances are active"), cluster.id)
 
     def _check_if_active(self, instance):
 
         server = nova.get_instance_info(instance)
         if server.status == 'ERROR':
-            raise exc.SystemError("Node %s has error status" % server.name)
+            raise exc.SystemError(_("Node %s has error status") % server.name)
 
         return server.status == 'ACTIVE'
 
     def _rollback_cluster_creation(self, cluster, ex):
         """Shutdown all instances and update cluster status."""
-        LOG.info("Cluster '%s' creation rollback (reason: %s)",
-                 cluster.name, ex)
+        LOG.info(_LI("Cluster '%(name)s' creation rollback "
+                     "(reason: %(reason)s)"),
+                 {'name': cluster.name, 'reason': ex})
 
         self.shutdown_cluster(cluster)
 
     def _rollback_cluster_scaling(self, cluster, instances, ex):
         """Attempt to rollback cluster scaling."""
-        LOG.info("Cluster '%s' scaling rollback (reason: %s)",
-                 cluster.name, ex)
+        LOG.info(_LI("Cluster '%(name)s' scaling rollback "
+                     "(reason: %(reason)s)"),
+                 {'name': cluster.name, 'reason': ex})
 
         for i in instances:
             self._shutdown_instance(i)
@@ -309,21 +316,21 @@ class DirectEngine(e.Engine):
             try:
                 networks.delete_floating_ip(instance.instance_id)
             except nova_exceptions.NotFound:
-                LOG.warn("Attempted to delete non-existent floating IP in "
-                         "pool %s from instancie %s",
-                         instance.node_group.floating_ip_pool,
-                         instance.instance_id)
+                LOG.warn(_LW("Attempted to delete non-existent floating IP in "
+                         "pool %(pool)s from instance %(instance)s"),
+                         {'pool': instance.node_group.floating_ip_pool,
+                          'instance': instance.instance_id})
 
         try:
             volumes.detach_from_instance(instance)
         except Exception:
-            LOG.warn("Detaching volumes from instance %s failed",
+            LOG.warn(_LW("Detaching volumes from instance %s failed"),
                      instance.instance_id)
 
         try:
             nova.client().servers.delete(instance.instance_id)
         except nova_exceptions.NotFound:
-            LOG.warn("Attempted to delete non-existent instance %s",
+            LOG.warn(_LW("Attempted to delete non-existent instance %s"),
                      instance.instance_id)
 
         conductor.instance_remove(ctx, instance)
