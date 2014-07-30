@@ -75,16 +75,20 @@ def check_mains_libs(data, **kwargs):
     streaming = (job_type == edp.JOB_TYPE_MAPREDUCE and
                  subtype == edp.JOB_SUBTYPE_STREAMING)
 
-    # Pig or Hive flow has to contain script in mains, may also use libs
-    if job_type in [edp.JOB_TYPE_PIG, edp.JOB_TYPE_HIVE]:
+    # These types must have a value in mains and may also use libs
+    if job_type in [edp.JOB_TYPE_PIG, edp.JOB_TYPE_HIVE, edp.JOB_TYPE_SPARK]:
         if not mains:
-            raise e.InvalidDataException("%s flow requires main script" %
-                                         data.get("type"))
+            if job_type == edp.JOB_TYPE_SPARK:
+                msg = "%s job requires main application jar" % data.get("type")
+            else:
+                msg = "%s flow requires main script" % data.get("type")
+            raise e.InvalidDataException(msg)
         # Check for overlap
         if set(mains).intersection(set(libs)):
             raise e.InvalidDataException("'mains' and 'libs' overlap")
 
     else:
+        # Java and MapReduce require libs, but MapReduce.Streaming does not
         if not streaming and not libs:
             raise e.InvalidDataException("%s flow requires libs" %
                                          data.get("type"))

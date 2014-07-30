@@ -111,9 +111,6 @@ class OozieJobEngine(base_engine.JobEngine):
             status = None
         return (oozie_job_id, status, None)
 
-
-def get_possible_job_config(job_type):
-    # TODO(tmckay): when config hints are fixed to be relative
-    # to the plugin, this may move into the job engines as
-    # an abstract method
-    return workflow_factory.get_possible_job_config(job_type)
+    @staticmethod
+    def get_possible_job_config(job_type):
+        return workflow_factory.get_possible_job_config(job_type)
