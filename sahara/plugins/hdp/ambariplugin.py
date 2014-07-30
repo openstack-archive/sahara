@@ -266,10 +266,11 @@ class AmbariPlugin(p.ProvisioningPluginBase):
             cluster, self._map_to_user_inputs(
                 cluster.hadoop_version, cluster.cluster_configs))
 
-        client.start_services(cluster.name, cluster_spec,
-                              self.cluster_ambari_mapping[cluster.name])
-
-        client.cleanup(self.cluster_ambari_mapping[cluster.name])
+        try:
+            client.start_services(cluster.name, cluster_spec,
+                                  self.cluster_ambari_mapping[cluster.name])
+        finally:
+            client.cleanup(self.cluster_ambari_mapping[cluster.name])
 
     def get_title(self):
         return 'Hortonworks Data Platform'

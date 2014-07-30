@@ -44,6 +44,7 @@ import six
 
 from sahara import context
 from sahara import exceptions as ex
+from sahara.i18n import _
 from sahara.i18n import _LE
 from sahara.openstack.common import excutils
 from sahara.utils import crypto
@@ -387,12 +388,21 @@ class InstanceInteropHelper(remote.Remote):
         return _get_http_client(self.instance.management_ip, port, info,
                                 *args, **kwargs)
 
-    def close_http_sessions(self):
+    def close_http_session(self, port):
         global _sessions
 
-        LOG.debug('closing host related http sessions')
-        for session in _sessions.values():
-            session.close()
+        host = self.instance.management_ip
+        self._log_command(_("Closing HTTP session for %(host)s:%(port)s") % {
+                          'host': host, 'port': port})
+
+        session = _sessions.get((host, port), None)
+        if session is None:
+            raise ex.NotFoundException(
+                _('Session for %(host)s:%(port)s not cached') % {
+                    'host': host, 'port': port})
+
+        session.close()
+        del _sessions[(host, port)]
 
     def execute_command(self, cmd, run_as_root=False, get_stderr=False,
                         raise_when_error=True, timeout=300):
