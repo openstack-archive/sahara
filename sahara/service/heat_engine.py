@@ -169,6 +169,8 @@ class HeatEngine(e.Engine):
         """Shutdown specified cluster and all related resources."""
         try:
             heat.client().stacks.delete(cluster.name)
+            stack = heat.get_stack(cluster.name)
+            heat.wait_stack_completion(stack)
         except heat_exc.HTTPNotFound:
             LOG.warn('Did not found stack for cluster %s' % cluster.name)
 
@@ -193,7 +195,7 @@ class _CreateLauncher(HeatEngine):
 
         self._configure_template(ctx, tmpl, cluster, target_count)
         stack = tmpl.instantiate(update_existing=self.UPDATE_STACK)
-        stack.wait_till_active()
+        heat.wait_stack_completion(stack.heat_stack)
 
         self.inst_ids = self._populate_cluster(ctx, cluster, stack)
 
