@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Sahara\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2014-07-28 06:10+0000\n"
-"PO-Revision-Date: 2014-07-17 06:41+0000\n"
+"POT-Creation-Date: 2014-07-30 06:10+0000\n"
+"PO-Revision-Date: 2014-07-29 23:43+0000\n"
 "Last-Translator: openstackjenkins <jenkins@openstack.org>\n"
 "Language-Team: Italian (http://www.transifex.com/projects/p/sahara/language/"
 "it/)\n"
@@ -27,7 +27,7 @@ msgstr ""
 #: sahara/db/sqlalchemy/api.py:107
 #, python-format
 msgid "Database registration exception: %s"
-msgstr ""
+msgstr "Eccezione nella registrazione del database: %s"
 
 #: sahara/db/sqlalchemy/api.py:117
 #, python-format
@@ -61,20 +61,3 @@ msgstr "chiamata in loop dinamico"
 #, python-format
 msgid "Error during %(full_task_name)s: %(e)s"
 msgstr "Errore durante %(full_task_name)s: %(e)s"
-
-#: sahara/openstack/common/db/api.py:72
-msgid "DB exceeded retry limit."
-msgstr "Il DB ha superato il limite dei tentativi."
-
-#: sahara/openstack/common/db/api.py:76
-msgid "DB connection error."
-msgstr ""
-
-#: sahara/openstack/common/db/sqlalchemy/session.py:460
-msgid "DB exception wrapped."
-msgstr "Eccezione DB con wrapper."
-
-#: sahara/openstack/common/db/sqlalchemy/test_migrations.py:267
-#, python-format
-msgid "Failed to migrate to version %(version)s on engine %(engine)s"
-msgstr ""

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version:  Sahara\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2014-07-28 06:10+0000\n"
+"POT-Creation-Date: 2014-07-30 06:10+0000\n"
 "PO-Revision-Date: 2014-07-17 06:41+0000\n"
 "Last-Translator: openstackjenkins <jenkins@openstack.org>\n"
 "Language-Team: Spanish "
@@ -345,84 +345,6 @@ msgstr "no se puede entender JSON"
 #: sahara/openstack/common/wsgi.py:211
 msgid "cannot understand XML"
 msgstr "no se puede entender XML"
-
-#: sahara/openstack/common/db/exception.py:44
-msgid "Invalid Parameter: Unicode is not supported by the current database."
-msgstr "Parámetro no válido: la base de datos actual no soporta Unicode."
-
-#: sahara/openstack/common/db/sqlalchemy/migration.py:190
-msgid "version should be an integer"
-msgstr "la versión debe ser un entero"
-
-#: sahara/openstack/common/db/sqlalchemy/migration.py:226
-#, python-format
-msgid ""
-"Tables \"%s\" have non utf8 collation, please make sure all tables are "
-"CHARSET=utf8"
-msgstr ""
-"Las tablas \"%s\" tienen una colación no utf8, por favor asegúrate que "
-"todas las tablas tienen CHARSET=utf8"
-
-#: sahara/openstack/common/db/sqlalchemy/migration.py:250
-msgid ""
-"The database is not under version control, but has tables. Please stamp "
-"the current version of the schema manually."
-msgstr ""
-"La base de datos no está en control de versión, pero tiene tablas. Por "
-"favor indica la versión actual del esquema manualmente."
-
-#: sahara/openstack/common/db/sqlalchemy/utils.py:58
-msgid "Sort key supplied was not valid."
-msgstr "La clave de clasificación proporcionada no es válida. "
-
-#: sahara/openstack/common/db/sqlalchemy/utils.py:119
-msgid "Unknown sort direction, must be 'desc' or 'asc'"
-msgstr "Dirección de clasificación desconocida, debe ser 'desc' o ' asc'"
-
-#: sahara/openstack/common/db/sqlalchemy/utils.py:162
-#, python-format
-msgid ""
-"There is no `deleted` column in `%s` table. Project doesn't use soft-"
-"deleted feature."
-msgstr ""
-"No existe la columna `deleted` en la tbala `%s`. El projecto on utiliza "
-"la característica de remoción suave."
-
-#: sahara/openstack/common/db/sqlalchemy/utils.py:174
-#, python-format
-msgid "Unrecognized read_deleted value '%s'"
-msgstr "Valor de read_deleted no reconocido '%s'"
-
-#: sahara/openstack/common/db/sqlalchemy/utils.py:181
-#, python-format
-msgid "There is no `project_id` column in `%s` table."
-msgstr "No existe la columna `project_id` en la tabla `%s`."
-
-#: sahara/openstack/common/db/sqlalchemy/utils.py:243
-msgid "model should be a subclass of ModelBase"
-msgstr "el modelo debe ser una subclase de ModelBase"
-
-#: sahara/openstack/common/db/sqlalchemy/utils.py:294
-#, python-format
-msgid ""
-"Please specify column %s in col_name_col_instance param. It is required "
-"because column has unsupported type by sqlite)."
-msgstr ""
-"Especifique la columna %s en el parámetro col_name_col_instance. Es "
-"necesario porque la columna tiene un tipo no soportado por sqlite)."
-
-#: sahara/openstack/common/db/sqlalchemy/utils.py:300
-#, python-format
-msgid ""
-"col_name_col_instance param has wrong type of column instance for column "
-"%s It should be instance of sqlalchemy.Column."
-msgstr ""
-"col_name_col_instance param tiene el tipo incorrecto de instancia de "
-"columna para la columna %s. Debe ser una instancia de  sqlalchemy.Column."
-
-#: sahara/openstack/common/db/sqlalchemy/utils.py:408
-msgid "Unsupported id columns type"
-msgstr "Tipo de identificador de columnas no soportado"
 
 #: sahara/service/edp/binary_retrievers/internal_swift.py:56
 #, python-format

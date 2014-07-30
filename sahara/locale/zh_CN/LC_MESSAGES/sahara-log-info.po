@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Sahara\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2014-07-28 06:10+0000\n"
+"POT-Creation-Date: 2014-07-30 06:10+0000\n"
 "PO-Revision-Date: 2014-07-16 14:42+0000\n"
 "Last-Translator: openstackjenkins <jenkins@openstack.org>\n"
 "Language-Team: Chinese (China) (http://www.transifex.com/projects/p/sahara/"
@@ -58,8 +58,3 @@ msgstr "正在跳过周期性任务 %(task)s，因为其时间间隔为负"
 #, python-format
 msgid "Skipping periodic task %(task)s because it is disabled"
 msgstr "正在跳过周期性任务 %(task)s，因为它已禁用"
-
-#: sahara/openstack/common/db/sqlalchemy/utils.py:387
-#, python-format
-msgid "Deleting duplicated row with id: %(id)s from table: %(table)s"
-msgstr "正在从表 %(table)s 中删除具有id %(id)s 的重复行"

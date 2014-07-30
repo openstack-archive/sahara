@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version:  Sahara\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2014-07-28 06:10+0000\n"
+"POT-Creation-Date: 2014-07-30 06:10+0000\n"
 "PO-Revision-Date: 2014-07-17 06:41+0000\n"
 "Last-Translator: openstackjenkins <jenkins@openstack.org>\n"
 "Language-Team: Chinese (China) "
@@ -344,74 +344,6 @@ msgstr "无法理解JSON"
 #: sahara/openstack/common/wsgi.py:211
 msgid "cannot understand XML"
 msgstr "无法理解 XML"
-
-#: sahara/openstack/common/db/exception.py:44
-msgid "Invalid Parameter: Unicode is not supported by the current database."
-msgstr "参数无效：当前数据库不支持 Unicode。"
-
-#: sahara/openstack/common/db/sqlalchemy/migration.py:190
-msgid "version should be an integer"
-msgstr "版本应该为整数"
-
-#: sahara/openstack/common/db/sqlalchemy/migration.py:226
-#, python-format
-msgid ""
-"Tables \"%s\" have non utf8 collation, please make sure all tables are "
-"CHARSET=utf8"
-msgstr "表 \"%s\" 包含非utf8核对， 请确保所有表是 CHARSET=utf8"
-
-#: sahara/openstack/common/db/sqlalchemy/migration.py:250
-msgid ""
-"The database is not under version control, but has tables. Please stamp "
-"the current version of the schema manually."
-msgstr "数据库不受版本控制，但是包含表格。请手动标记schema的当前版本。"
-
-#: sahara/openstack/common/db/sqlalchemy/utils.py:58
-msgid "Sort key supplied was not valid."
-msgstr "提供的排序键无效。"
-
-#: sahara/openstack/common/db/sqlalchemy/utils.py:119
-msgid "Unknown sort direction, must be 'desc' or 'asc'"
-msgstr "排序方向未知，必须为“降序”或“升序”"
-
-#: sahara/openstack/common/db/sqlalchemy/utils.py:162
-#, python-format
-msgid ""
-"There is no `deleted` column in `%s` table. Project doesn't use soft-"
-"deleted feature."
-msgstr ""
-
-#: sahara/openstack/common/db/sqlalchemy/utils.py:174
-#, python-format
-msgid "Unrecognized read_deleted value '%s'"
-msgstr "无法识别的 read_deleted 取值”%s“"
-
-#: sahara/openstack/common/db/sqlalchemy/utils.py:181
-#, python-format
-msgid "There is no `project_id` column in `%s` table."
-msgstr ""
-
-#: sahara/openstack/common/db/sqlalchemy/utils.py:243
-msgid "model should be a subclass of ModelBase"
-msgstr ""
-
-#: sahara/openstack/common/db/sqlalchemy/utils.py:294
-#, python-format
-msgid ""
-"Please specify column %s in col_name_col_instance param. It is required "
-"because column has unsupported type by sqlite)."
-msgstr "请在 col_name_col_instance 参数中指定列 %s。要求执行此操作的原因是列中包含不受 sqlite 支持的类型）。"
-
-#: sahara/openstack/common/db/sqlalchemy/utils.py:300
-#, python-format
-msgid ""
-"col_name_col_instance param has wrong type of column instance for column "
-"%s It should be instance of sqlalchemy.Column."
-msgstr "对于列 %s，col_name_col_instance 参数具有不正确类型的列实例。它应该是 sqlalchemy.Column 的实例。"
-
-#: sahara/openstack/common/db/sqlalchemy/utils.py:408
-msgid "Unsupported id columns type"
-msgstr "不支持的id列类型"
 
 #: sahara/service/edp/binary_retrievers/internal_swift.py:56
 #, python-format
