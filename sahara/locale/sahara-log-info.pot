@@ -6,9 +6,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: sahara 2014.2.dev16.g37bfd3e\n"
+"Project-Id-Version: sahara 2014.2.dev21.g13ff6f8\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2014-07-28 06:10+0000\n"
+"POT-Creation-Date: 2014-07-30 06:10+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -55,10 +55,5 @@ msgstr ""
 #: sahara/openstack/common/periodic_task.py:131
 #, python-format
 msgid "Skipping periodic task %(task)s because it is disabled"
-msgstr ""
-
-#: sahara/openstack/common/db/sqlalchemy/utils.py:387
-#, python-format
-msgid "Deleting duplicated row with id: %(id)s from table: %(table)s"
 msgstr ""
 

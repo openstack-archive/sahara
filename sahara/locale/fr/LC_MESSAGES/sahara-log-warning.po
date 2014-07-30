@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Sahara\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2014-07-28 06:10+0000\n"
+"POT-Creation-Date: 2014-07-30 06:10+0000\n"
 "PO-Revision-Date: 2014-07-25 15:11+0000\n"
 "Last-Translator: openstackjenkins <jenkins@openstack.org>\n"
 "Language-Team: French (http://www.transifex.com/projects/p/sahara/language/"
@@ -46,29 +46,3 @@ msgstr "tcp_keepintvl n'est pas disponible sur votre système"
 #: sahara/openstack/common/network_utils.py:163
 msgid "tcp_keepknt not available on your system"
 msgstr "tcp_keepknt n'est pas disponible sur votre système"
-
-#: sahara/openstack/common/db/sqlalchemy/session.py:506
-#, python-format
-msgid "Database server has gone away: %s"
-msgstr "Le serveur de base de données a disparu: %s"
-
-#: sahara/openstack/common/db/sqlalchemy/session.py:559
-msgid "Unable to detect effective SQL mode"
-msgstr "Incapable de détecter le mode effectif de SQL"
-
-#: sahara/openstack/common/db/sqlalchemy/session.py:567
-#, python-format
-msgid ""
-"MySQL SQL mode is '%s', consider enabling TRADITIONAL or STRICT_ALL_TABLES"
-msgstr ""
-"Le mode SQL de MySQL est '%s', il tient compte de l'activation de "
-"TRADITIONAL ou STRICT_ALL_TABLES"
-
-#: sahara/openstack/common/db/sqlalchemy/session.py:673
-#, python-format
-msgid "SQL connection failed. %s attempts left."
-msgstr "Echec de la connexion SQL. %s tentatives restantes."
-
-#: sahara/openstack/common/db/sqlalchemy/utils.py:97
-msgid "Id not in sort_keys; is sort_keys unique?"
-msgstr "ID absent de sort_keys ; sort_keys unique ?"

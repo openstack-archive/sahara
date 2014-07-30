@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Sahara\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2014-07-28 06:10+0000\n"
+"POT-Creation-Date: 2014-07-30 06:10+0000\n"
 "PO-Revision-Date: 2014-07-16 14:42+0000\n"
 "Last-Translator: openstackjenkins <jenkins@openstack.org>\n"
 "Language-Team: French (http://www.transifex.com/projects/p/sahara/language/"
@@ -58,8 +58,3 @@ msgstr "Tâche périodique %(task)s ignorée car son intervalle est négatif"
 #, python-format
 msgid "Skipping periodic task %(task)s because it is disabled"
 msgstr "Tâche périodique %(task)s car elle est désactivée"
-
-#: sahara/openstack/common/db/sqlalchemy/utils.py:387
-#, python-format
-msgid "Deleting duplicated row with id: %(id)s from table: %(table)s"
-msgstr "Suppression ligne en double avec l'ID : %(id)s de la table : %(table)s"
