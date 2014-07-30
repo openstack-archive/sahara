@@ -356,7 +356,19 @@ class TestMigrations(base.BaseWalkMigrationTestCase, base.CommonTestsMixIn):
         # currently, 006 is just a placeholder
         pass
 
+    def _pre_upgrade_007(self, engine):
+        desc = 'magic'
+        t = db_utils.get_table(engine, 'clusters')
+        engine.execute(t.insert(), id='123', name='name', plugin_name='pname',
+                       hadoop_version='1',  management_private_key='2',
+                       management_public_key='3', status_description=desc)
+
     def _check_007(self, engine, data):
+        t = db_utils.get_table(engine, 'clusters')
+        res = engine.execute(t.select(), id='123').first()
+        self.assertEqual('magic', res['status_description'])
+        engine.execute(t.delete())
+
         # check that status_description can keep 128kb.
         # MySQL varchar can not keep more then 64kb
         desc = 'a' * 128 * 1024  # 128kb
