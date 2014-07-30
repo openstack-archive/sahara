@@ -162,6 +162,20 @@ set ``enable_hypervisor_awareness`` option to ``True`` in Sahara configuration
 file. In this case Sahara will add compute node ID as a second level of
 topology for Virtual Machines.
 
+Security group management
+-------------------------
+
+Sahara allows you to control which security groups will be used for created
+instances. This can be done by providing the ``security_groups`` parameter for
+the Node Group or Node Group Template. By default an empty list is used that
+will result in using the default security group.
+
+Sahara may also create a security group for instances in node group
+automatically. This security group will only have open ports which are
+required by instance processes or the Sahara engine. This option is useful
+for development and secured from outside environments, but for production
+environments it is recommended to control security group policy manually.
+
 Heat Integration
 ----------------
 

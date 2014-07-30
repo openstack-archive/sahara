@@ -118,22 +118,7 @@ Ubuntu 12.04 system.
 
 6. Once previous step is finished Devstack will print Horizon URL. Navigate to this URL and login with login "admin" and password from localrc.
 
-7. Now we need to modify security rules. It will allow to connect to VMs directly from your host. Navigate to Project -> Compute ->  Access & Security tab and edit default Security Group rules by clicking on Manage Rules button. Here add following four rules by cliking the Add Rules button on the right hand side top corner:
-
-   +-----------+------------+-------------+------------+------------------+
-   | Direction | Ether Type | IP Protocol | Port Range | Remote           |
-   +===========+============+=============+============+==================+
-   | Ingress   | IPv4       | TCP         | 1 - 65535  | 0.0.0.0/0 (CIDR) |
-   +-----------+------------+-------------+------------+------------------+
-   | Ingress   | IPv4       | ICMP        | -          | 0.0.0.0/0 (CIDR) |
-   +-----------+------------+-------------+------------+------------------+
-   | Egress    | IPv4       | TCP         | 1 - 65535  | 0.0.0.0/0 (CIDR) |
-   +-----------+------------+-------------+------------+------------------+
-   | Egress    | IPv4       | ICMP        | -          | 0.0.0.0/0 (CIDR) |
-   +-----------+------------+-------------+------------+------------------+
-
-
-8. Congratulations! You have OpenStack running in your VM and ready to launch VMs inside that VM :)
+7. Congratulations! You have OpenStack running in your VM and ready to launch VMs inside that VM :)
 
 
 Managing Sahara in DevStack
