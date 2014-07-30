@@ -306,3 +306,34 @@ def configure_topology_data(pctx, cluster):
             for i in ng.instances:
                 i.remote().write_file_to(HADOOP_CONF_DIR + "/topology.data",
                                          topology_data, run_as_root=True)
+
+
+def get_open_ports(node_group):
+    ports = []
+
+    if "namenode" in node_group.node_processes:
+        ports.append(50070)
+        ports.append(9000)
+
+    if "secondarynamenode" in node_group.node_processes:
+        ports.append(50090)
+
+    if "resourcemanager" in node_group.node_processes:
+        ports.append(8088)
+        ports.append(8032)
+
+    if "historyserver" in node_group.node_processes:
+        ports.append(19888)
+
+    if "datanode" in node_group.node_processes:
+        ports.append(50010)
+        ports.append(50075)
+        ports.append(50020)
+
+    if "nodemanager" in node_group.node_processes:
+        ports.append(8042)
+
+    if "oozie" in node_group.node_processes:
+        ports.append(11000)
+
+    return ports
