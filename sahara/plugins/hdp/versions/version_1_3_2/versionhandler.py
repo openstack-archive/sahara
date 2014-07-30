@@ -21,6 +21,7 @@ import pkg_resources as pkg
 import requests
 
 from sahara import context
+from sahara import exceptions as exc
 from sahara.plugins.general import exceptions as ex
 from sahara.plugins.hdp import clusterspec as cs
 from sahara.plugins.hdp import configprovider as cfgprov
@@ -562,7 +563,10 @@ class AmbariClient():
         self.handler.install_swift_integration(servers)
 
     def cleanup(self, ambari_info):
-        ambari_info.host.remote().close_http_sessions()
+        try:
+            ambari_info.host.remote().close_http_session(ambari_info.port)
+        except exc.NotFoundException:
+            LOG.info("HTTP session is not cached")
 
     def _get_services_in_state(self, cluster_name, ambari_info, state):
         services_url = 'http://{0}/api/v1/clusters/{1}/services?' \
