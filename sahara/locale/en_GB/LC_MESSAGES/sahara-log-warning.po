@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Sahara\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2014-07-30 06:10+0000\n"
+"POT-Creation-Date: 2014-07-31 06:10+0000\n"
 "PO-Revision-Date: 2014-07-29 23:43+0000\n"
 "Last-Translator: openstackjenkins <jenkins@openstack.org>\n"
 "Language-Team: English (United Kingdom) (http://www.transifex.com/projects/p/"
@@ -49,3 +49,50 @@ msgstr "tcp_keepintvl not available on your system"
 #: sahara/openstack/common/network_utils.py:163
 msgid "tcp_keepknt not available on your system"
 msgstr "tcp_keepknt not available on your system"
+
+#: sahara/service/direct_engine.py:82 sahara/service/heat_engine.py:70
+#, python-format
+msgid "Can't start cluster '%(cluster)s' (reason: %(reason)s)"
+msgstr ""
+
+#: sahara/service/direct_engine.py:129 sahara/service/heat_engine.py:104
+#, python-format
+msgid "Can't scale cluster '%(cluster)s' (reason: %(reason)s)"
+msgstr ""
+
+#: sahara/service/direct_engine.py:319
+#, python-format
+msgid ""
+"Attempted to delete non-existent floating IP in pool %(pool)s from instance "
+"%(instance)s"
+msgstr ""
+
+#: sahara/service/direct_engine.py:327
+#, python-format
+msgid "Detaching volumes from instance %s failed"
+msgstr ""
+
+#: sahara/service/direct_engine.py:333
+#, python-format
+msgid "Attempted to delete non-existent instance %s"
+msgstr ""
+
+#: sahara/service/engine.py:168
+msgid ""
+"Presumably the operation failed because the cluster was deleted by a user "
+"during the process."
+msgstr ""
+
+#: sahara/service/heat_engine.py:124
+msgid "Rollback successful. Throwing off an initial exception."
+msgstr ""
+
+#: sahara/service/heat_engine.py:181
+#, python-format
+msgid "Did not found stack for cluster %s"
+msgstr ""
+
+#: sahara/service/volumes.py:181
+#, python-format
+msgid "Can't detach volume %(volume)s. Current status of volume: %(status)s"
+msgstr ""

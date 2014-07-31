@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Sahara\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2014-07-30 06:10+0000\n"
+"POT-Creation-Date: 2014-07-31 06:10+0000\n"
 "PO-Revision-Date: 2014-07-29 23:43+0000\n"
 "Last-Translator: openstackjenkins <jenkins@openstack.org>\n"
 "Language-Team: Korean (Korea) (http://www.transifex.com/projects/p/sahara/"
@@ -61,3 +61,37 @@ msgstr "동적 루프 호출에서"
 #, python-format
 msgid "Error during %(full_task_name)s: %(e)s"
 msgstr "%(full_task_name)s 중 오류: %(e)s"
+
+#: sahara/service/heat_engine.py:119
+msgid "Unable to complete rollback, aborting"
+msgstr ""
+
+#: sahara/service/volumes.py:148
+#, python-format
+msgid "Error mounting volume to instance %s"
+msgstr ""
+
+#: sahara/service/volumes.py:167
+#, python-format
+msgid "Can't detach volume %s"
+msgstr ""
+
+#: sahara/service/volumes.py:192
+#, python-format
+msgid "Can't delete volume %s"
+msgstr ""
+
+#: sahara/service/edp/job_manager.py:117
+#, python-format
+msgid "Can't run job execution '%(job)s' (reason: %(reason)s)"
+msgstr ""
+
+#: sahara/service/edp/job_manager.py:138
+#, python-format
+msgid "Error during cancel of job execution %(job)s: %(error)s"
+msgstr ""
+
+#: sahara/service/edp/job_manager.py:163
+#, python-format
+msgid "Error during update job execution %(job)s: %(error)s"
+msgstr ""

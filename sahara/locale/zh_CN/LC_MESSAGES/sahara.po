@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version:  Sahara\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2014-07-30 06:10+0000\n"
+"POT-Creation-Date: 2014-07-31 06:10+0000\n"
 "PO-Revision-Date: 2014-07-17 06:41+0000\n"
 "Last-Translator: openstackjenkins <jenkins@openstack.org>\n"
 "Language-Team: Chinese (China) "
@@ -345,6 +345,26 @@ msgstr "无法理解JSON"
 msgid "cannot understand XML"
 msgstr "无法理解 XML"
 
+#: sahara/service/direct_engine.py:286
+#, python-format
+msgid "Node %s has error status"
+msgstr ""
+
+#: sahara/service/volumes.py:62
+#, python-format
+msgid "Error attach volume to instance %s"
+msgstr ""
+
+#: sahara/service/volumes.py:91
+#, python-format
+msgid "Volume %s has error status"
+msgstr ""
+
+#: sahara/service/edp/job_manager.py:102
+#, python-format
+msgid "Cluster does not support job type %s"
+msgstr ""
+
 #: sahara/service/edp/binary_retrievers/internal_swift.py:56
 #, python-format
 msgid "Url for binary in internal swift must start with %s"
@@ -360,5 +380,45 @@ msgstr ""
 #: sahara/service/edp/binary_retrievers/internal_swift.py:98
 #, python-format
 msgid "Size of swift object (%(size)sKB) is greater than maximum (%(maximum)sKB)"
+msgstr ""
+
+#: sahara/utils/crypto.py:51
+msgid "Private key file hasn't been created"
+msgstr ""
+
+#: sahara/utils/crypto.py:55
+msgid "Public key file hasn't been created"
+msgstr ""
+
+#: sahara/utils/remote.py:123
+msgid ""
+"Remote driver is not loaded. Most probably you see this error because you"
+" are running Sahara in distributed mode and it is broken.Try running "
+"sahara-all instead."
+msgstr ""
+
+#: sahara/utils/tempfiles.py:37
+#, python-format
+msgid "Failed to delete temp dir %(dir)s (reason: %(reason)s)"
+msgstr ""
+
+#: sahara/utils/openstack/base.py:45
+#, python-format
+msgid "Endpoint with type %(type)s is not found for service %(service)s"
+msgstr ""
+
+#: sahara/utils/openstack/base.py:52
+#, python-format
+msgid "Service \"%s\" not found in service catalog"
+msgstr ""
+
+#: sahara/utils/openstack/neutron.py:78
+#, python-format
+msgid "Neutron router corresponding to network %s is not found"
+msgstr ""
+
+#: sahara/utils/openstack/neutron.py:185
+#, python-format
+msgid "Unknown file mode %s"
 msgstr ""
 

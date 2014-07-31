@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Sahara\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2014-07-30 06:10+0000\n"
+"POT-Creation-Date: 2014-07-31 06:10+0000\n"
 "PO-Revision-Date: 2014-07-16 14:42+0000\n"
 "Last-Translator: openstackjenkins <jenkins@openstack.org>\n"
 "Language-Team: English (Australia) (http://www.transifex.com/projects/p/"
@@ -58,3 +58,52 @@ msgstr "Skipping periodic task %(task)s because its interval is negative"
 #, python-format
 msgid "Skipping periodic task %(task)s because it is disabled"
 msgstr "Skipping periodic task %(task)s because it is disabled"
+
+#: sahara/service/direct_engine.py:280
+#, python-format
+msgid "Cluster '%s': all instances are active"
+msgstr ""
+
+#: sahara/service/direct_engine.py:292
+#, python-format
+msgid "Cluster '%(name)s' creation rollback (reason: %(reason)s)"
+msgstr ""
+
+#: sahara/service/direct_engine.py:300
+#, python-format
+msgid "Cluster '%(name)s' scaling rollback (reason: %(reason)s)"
+msgstr ""
+
+#: sahara/service/engine.py:72
+#, python-format
+msgid "Cluster '%s': all instances have IPs assigned"
+msgstr ""
+
+#: sahara/service/engine.py:82
+#, python-format
+msgid "Cluster '%s': all instances are accessible"
+msgstr ""
+
+#: sahara/service/heat_engine.py:150
+#, python-format
+msgid "Cluster '%s' creation rollback"
+msgstr ""
+
+#: sahara/service/heat_engine.py:165
+#, python-format
+msgid "Cluster '%s' scaling rollback"
+msgstr ""
+
+#: sahara/utils/general.py:72
+#, python-format
+msgid "Cluster status has been changed: id=%(id)s, New status=%(status)s"
+msgstr ""
+
+#: sahara/utils/general.py:78
+#, python-format
+msgid "Cluster %(name)s (id=%(id)s) was deleted. Canceling current operation."
+msgstr ""
+
+#: sahara/utils/general.py:84 sahara/utils/general.py:85
+msgid "Unknown"
+msgstr ""
