@@ -19,6 +19,7 @@ import testtools
 
 from sahara.conductor import resource as r
 from sahara.swift import swift_helper
+from sahara.utils import edp
 from sahara.utils import types
 
 
@@ -103,7 +104,7 @@ SAMPLE_JOB_EXECUTION = {
     "info": {
         "actions": [{"conf": "some stuff"},
                     {"conf": "more stuff"}],
-        "status": "PENDING"
+        "status": edp.JOB_STATUS_PENDING
     },
     "input_id": "b5ddde55-594e-428f-9040-028be81eb3c2",
     "job_configs": {

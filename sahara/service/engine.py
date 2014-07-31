@@ -26,6 +26,7 @@ from sahara.i18n import _LI
 from sahara.i18n import _LW
 from sahara.openstack.common import log as logging
 from sahara.service import networks
+from sahara.utils import edp
 from sahara.utils import general as g
 from sahara.utils.openstack import nova
 from sahara.utils import remote
@@ -154,7 +155,7 @@ echo "${public_key}" >> ${user_home}/.ssh/authorized_keys\n
             update = {"cluster_id": None}
             if not je.end_time:
                 info = je.info.copy() if je.info else {}
-                info['status'] = 'KILLED'
+                info['status'] = edp.JOB_STATUS_KILLED
                 update.update({"info": info,
                                "end_time": datetime.datetime.now()})
             conductor.job_execution_update(ctx, je, update)

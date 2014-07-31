@@ -16,9 +16,9 @@
 import mock
 
 import sahara.exceptions as ex
-from sahara.service.edp import job_utils
 from sahara.service.edp.spark import engine as se
 from sahara.tests.unit import base
+from sahara.utils import edp
 
 
 class TestSpark(base.SaharaTestCase):
@@ -63,12 +63,12 @@ class TestSpark(base.SaharaTestCase):
                          eng._get_instance_if_running(job_exec))
 
         job_exec.oozie_job_id = "pid@inst_id"
-        for state in job_utils.terminated_job_states:
+        for state in edp.JOB_STATUSES_TERMINATED:
             job_exec.info = {'status': state}
             self.assertEqual((None, None),
                              eng._get_instance_if_running(job_exec))
 
-        job_exec.info = {'status': 'RUNNING'}
+        job_exec.info = {'status': edp.JOB_STATUS_RUNNING}
         self.assertEqual(("pid", "instance"),
                          eng._get_instance_if_running(job_exec))
         get_instances.assert_called_with("cluster", ["inst_id"])
@@ -128,33 +128,33 @@ class TestSpark(base.SaharaTestCase):
         _check_pid.return_value = 0
         status = eng._get_job_status_from_remote(remote, "pid", job_exec)
         _check_pid.assert_called_with(eng, remote, "pid")
-        self.assertEqual({"status": "RUNNING"}, status)
+        self.assertEqual({"status": edp.JOB_STATUS_RUNNING}, status)
 
         # Pretend process ended and result file contains 0 (success)
         _check_pid.return_value = 1
         _get_result_file.return_value = 0, "0"
         status = eng._get_job_status_from_remote(remote, "pid", job_exec)
-        self.assertEqual({"status": "SUCCEEDED"}, status)
+        self.assertEqual({"status": edp.JOB_STATUS_SUCCEEDED}, status)
 
         # Pretend process ended and result file contains 1 (success)
         _get_result_file.return_value = 0, "1"
         status = eng._get_job_status_from_remote(remote, "pid", job_exec)
-        self.assertEqual({"status": "DONEWITHERROR"}, status)
+        self.assertEqual({"status": edp.JOB_STATUS_DONEWITHERROR}, status)
 
         # Pretend process ended and result file contains 130 (killed)
         _get_result_file.return_value = 0, "130"
         status = eng._get_job_status_from_remote(remote, "pid", job_exec)
-        self.assertEqual({"status": "KILLED"}, status)
+        self.assertEqual({"status": edp.JOB_STATUS_KILLED}, status)
 
         # Pretend process ended and result file contains -2 (killed)
         _get_result_file.return_value = 0, "-2"
         status = eng._get_job_status_from_remote(remote, "pid", job_exec)
-        self.assertEqual({"status": "KILLED"}, status)
+        self.assertEqual({"status": edp.JOB_STATUS_KILLED}, status)
 
         # Pretend process ended and result file is missing
         _get_result_file.return_value = 1, ""
         status = eng._get_job_status_from_remote(remote, "pid", job_exec)
-        self.assertEqual({"status": "DONEWITHERROR"}, status)
+        self.assertEqual({"status": edp.JOB_STATUS_DONEWITHERROR}, status)
 
     @mock.patch.object(se.SparkJobEngine,
                        '_get_job_status_from_remote',
@@ -182,12 +182,13 @@ class TestSpark(base.SaharaTestCase):
 
         # Pretend we have an instance
         _get_instance_if_running.return_value = "pid", "instance"
-        _get_job_status_from_remote.return_value = {"status": "RUNNING"}
+        _get_job_status_from_remote.return_value = {"status":
+                                                    edp.JOB_STATUS_RUNNING}
         status = eng.get_job_status(job_exec)
         _get_job_status_from_remote.assert_called_with(eng,
                                                        remote_instance,
                                                        "pid", job_exec)
-        self.assertEqual(status, {"status": "RUNNING"})
+        self.assertEqual(status, {"status": edp.JOB_STATUS_RUNNING})
 
     @mock.patch.object(se.SparkJobEngine,
                        '_get_instance_if_running',
@@ -211,7 +212,7 @@ class TestSpark(base.SaharaTestCase):
     @mock.patch.object(se.SparkJobEngine,
                        '_get_job_status_from_remote',
                        autospec=True,
-                       return_value={"status": "KILLED"})
+                       return_value={"status": edp.JOB_STATUS_KILLED})
     @mock.patch.object(se.SparkJobEngine,
                        '_get_instance_if_running',
                        autospec=True,
@@ -256,7 +257,7 @@ class TestSpark(base.SaharaTestCase):
                                                        remote_instance,
                                                        "pid", job_exec)
 
-        self.assertEqual(status, {"status": "KILLED"})
+        self.assertEqual(status, {"status": edp.JOB_STATUS_KILLED})
 
     @mock.patch.object(se.SparkJobEngine,
                        '_get_job_status_from_remote',
@@ -365,7 +366,7 @@ class TestSpark(base.SaharaTestCase):
 
         # Check result here
         self.assertEqual(status, ("12345@6789",
-                                  "RUNNING",
+                                  edp.JOB_STATUS_RUNNING,
                                   {"spark-path": "/wfdir"}))
 
         # Run again without support jars.  Note the extra space

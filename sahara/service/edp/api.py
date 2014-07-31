@@ -20,6 +20,7 @@ from sahara import context
 from sahara.openstack.common import log as logging
 from sahara.service.edp.binary_retrievers import dispatch
 from sahara.service.edp import job_manager as manager
+from sahara.utils import edp
 
 
 conductor = c.API
@@ -54,8 +55,8 @@ def execute_job(job_id, data):
     # a superset for all job types
     job_ex_dict = {'input_id': input_id, 'output_id': output_id,
                    'job_id': job_id, 'cluster_id': cluster_id,
-                   'info': {'status': 'PENDING'}, 'job_configs': configs,
-                   'extra': {}}
+                   'info': {'status': edp.JOB_STATUS_PENDING},
+                   'job_configs': configs, 'extra': {}}
     job_execution = conductor.job_execution_create(context.ctx(), job_ex_dict)
 
     OPS.run_edp_job(job_execution.id)

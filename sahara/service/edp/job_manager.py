@@ -67,7 +67,7 @@ def _get_job_engine(cluster, job_execution):
 
 def _write_job_status(job_execution, job_info):
     update = {"info": job_info}
-    if job_info['status'] in job_utils.terminated_job_states:
+    if job_info['status'] in edp.JOB_STATUSES_TERMINATED:
         update['end_time'] = datetime.datetime.now()
     return conductor.job_execution_update(context.ctx(),
                                           job_execution,
@@ -135,7 +135,7 @@ def run_job(job_execution_id):
 
         conductor.job_execution_update(
             context.ctx(), job_execution_id,
-            {'info': {'status': 'FAILED'},
+            {'info': {'status': edp.JOB_STATUS_FAILED},
              'start_time': datetime.datetime.now(),
              'end_time': datetime.datetime.now()})
 
