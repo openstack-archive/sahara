@@ -124,42 +124,46 @@ class HDP2GatingTest(swift.SwiftTest, scaling.ScalingTest,
 
     @b.errormsg("Failure while EDP testing: ")
     def _check_edp(self):
-        self._edp_test()
+        self.poll_jobs_status(list(self._run_edp_test()))
 
-    def _edp_test(self):
+    def _run_edp_test(self):
         # check pig
         pig_job = self.edp_info.read_pig_example_script()
         pig_lib = self.edp_info.read_pig_example_jar()
 
-        self.edp_testing(job_type=utils_edp.JOB_TYPE_PIG,
-                         job_data_list=[{'pig': pig_job}],
-                         lib_data_list=[{'jar': pig_lib}],
-                         swift_binaries=True,
-                         hdfs_local_output=True)
+        yield self.edp_testing(
+            job_type=utils_edp.JOB_TYPE_PIG,
+            job_data_list=[{'pig': pig_job}],
+            lib_data_list=[{'jar': pig_lib}],
+            swift_binaries=True,
+            hdfs_local_output=True)
 
         # check mapreduce
         mapreduce_jar = self.edp_info.read_mapreduce_example_jar()
         mapreduce_configs = self.edp_info.mapreduce_example_configs()
-        self.edp_testing(job_type=utils_edp.JOB_TYPE_MAPREDUCE,
-                         job_data_list=[],
-                         lib_data_list=[{'jar': mapreduce_jar}],
-                         configs=mapreduce_configs,
-                         swift_binaries=True,
-                         hdfs_local_output=True)
+        yield self.edp_testing(
+            job_type=utils_edp.JOB_TYPE_MAPREDUCE,
+            job_data_list=[],
+            lib_data_list=[{'jar': mapreduce_jar}],
+            configs=mapreduce_configs,
+            swift_binaries=True,
+            hdfs_local_output=True)
 
         # check mapreduce streaming
-        self.edp_testing(job_type=utils_edp.JOB_TYPE_MAPREDUCE_STREAMING,
-                         job_data_list=[],
-                         lib_data_list=[],
-                         configs=self.edp_info.mapreduce_streaming_configs())
+        yield self.edp_testing(
+            job_type=utils_edp.JOB_TYPE_MAPREDUCE_STREAMING,
+            job_data_list=[],
+            lib_data_list=[],
+            configs=self.edp_info.mapreduce_streaming_configs())
 
         # check java
         java_jar = self.edp_info.read_java_example_lib(2)
         java_configs = self.edp_info.java_example_configs(2)
-        self.edp_testing(utils_edp.JOB_TYPE_JAVA,
-                         job_data_list=[],
-                         lib_data_list=[{'jar': java_jar}],
-                         configs=java_configs)
+        yield self.edp_testing(
+            utils_edp.JOB_TYPE_JAVA,
+            job_data_list=[],
+            lib_data_list=[{'jar': java_jar}],
+            configs=java_configs)
 
     @b.errormsg("Failure while cluster scaling: ")
     def _check_scaling(self):
@@ -192,7 +196,7 @@ class HDP2GatingTest(swift.SwiftTest, scaling.ScalingTest,
 
     @b.errormsg("Failure while EDP testing after cluster scaling: ")
     def _check_edp_after_scaling(self):
-        self._edp_test()
+        self._check_edp()
 
     @testcase.attr('hdp2')
     @testcase.skipIf(config.SKIP_ALL_TESTS_FOR_PLUGIN,
