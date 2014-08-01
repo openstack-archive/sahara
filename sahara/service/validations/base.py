@@ -19,6 +19,7 @@ from oslo.config import cfg
 from sahara import conductor as cond
 from sahara import context
 import sahara.exceptions as ex
+from sahara.i18n import _
 import sahara.plugins.base as plugin_base
 import sahara.service.api as api
 from sahara.utils import general as g
@@ -48,20 +49,21 @@ def _get_plugin_configs(plugin_name, hadoop_version, scope=None):
 
 def check_plugin_name_exists(name):
     if name not in [p.name for p in api.get_plugins()]:
-        raise ex.InvalidException("Sahara doesn't contain plugin with name "
-                                  "'%s'" % name)
+        raise ex.InvalidException(
+            _("Sahara doesn't contain plugin with name '%s'") % name)
 
 
 def check_plugin_supports_version(p_name, version):
     if version not in plugin_base.PLUGINS.get_plugin(p_name).get_versions():
-        raise ex.InvalidException("Requested plugin '%s' doesn't support"
-                                  " version '%s'" % (p_name, version))
+        raise ex.InvalidException(
+            _("Requested plugin '%(name)s' doesn't support version "
+              "'%(version)s'") % {'name': p_name, 'version': version})
 
 
 def check_image_registered(image_id):
     if image_id not in [i.id for i in nova.client().images.list_registered()]:
-        raise ex.InvalidException("Requested image '%s' is not registered"
-                                  % image_id)
+        raise ex.InvalidException(
+            _("Requested image '%s' is not registered") % image_id)
 
 
 def check_node_group_configs(plugin_name, hadoop_version, ng_configs,
@@ -71,13 +73,15 @@ def check_node_group_configs(plugin_name, hadoop_version, ng_configs,
                                                      hadoop_version)
     for app_target, configs in ng_configs.items():
         if app_target not in pl_confs:
-            raise ex.InvalidException("Plugin doesn't contain applicable "
-                                      "target '%s'" % app_target)
+            raise ex.InvalidException(
+                _("Plugin doesn't contain applicable target '%s'")
+                % app_target)
         for name, values in configs.items():
             if name not in pl_confs[app_target]:
-                raise ex.InvalidException("Plugin's applicable target '%s' "
-                                          "doesn't contain config with name "
-                                          "'%s'" % (app_target, name))
+                raise ex.InvalidException(
+                    _("Plugin's applicable target '%(target)s' doesn't "
+                      "contain config with name '%(name)s'") %
+                    {'target': app_target, 'name': name})
 
 
 def check_all_configurations(data):
@@ -131,8 +135,8 @@ def check_node_group_basic_fields(plugin_name, hadoop_version, ng,
 def check_flavor_exists(flavor_id):
     flavor_list = nova.client().flavors.list()
     if flavor_id not in [flavor.id for flavor in flavor_list]:
-        raise ex.InvalidException("Requested flavor '%s' not found"
-                                  % flavor_id)
+        raise ex.InvalidException(
+            _("Requested flavor '%s' not found") % flavor_id)
 
 
 def check_floatingip_pool_exists(ng_name, pool_id):
@@ -146,37 +150,39 @@ def check_floatingip_pool_exists(ng_name, pool_id):
                 break
 
     if not network:
-        raise ex.InvalidException("Floating IP pool %s for node group "
-                                  "'%s' not found" % (pool_id, ng_name))
+        raise ex.InvalidException(
+            _("Floating IP pool %(pool)s for node group '%(group)s' "
+              "not found") % {'pool': pool_id, 'group': ng_name})
 
 
 def check_node_processes(plugin_name, version, node_processes):
     if len(set(node_processes)) != len(node_processes):
-        raise ex.InvalidException("Duplicates in node processes "
-                                  "have been detected")
-    plugin_procesess = []
+        raise ex.InvalidException(
+            _("Duplicates in node processes have been detected"))
+    plugin_processes = []
     for process in plugin_base.PLUGINS.get_plugin(
             plugin_name).get_node_processes(version).values():
-        plugin_procesess += process
+        plugin_processes += process
 
-    if not set(node_processes).issubset(set(plugin_procesess)):
-        raise ex.InvalidException("Plugin supports the following "
-                                  "node procesess: %s" % plugin_procesess)
+    if not set(node_processes).issubset(set(plugin_processes)):
+        raise ex.InvalidException(
+            _("Plugin supports the following node procesess: %s")
+            % plugin_processes)
 
 
 def check_duplicates_node_groups_names(node_groups):
     ng_names = [ng['name'] for ng in node_groups]
     if len(set(ng_names)) < len(node_groups):
-        raise ex.InvalidException("Duplicates in node group names "
-                                  "are detected")
+        raise ex.InvalidException(
+            _("Duplicates in node group names are detected"))
 
 
 # Cluster creation related checks
 
 def check_cluster_unique_name(name):
     if name in [cluster.name for cluster in api.get_clusters()]:
-        raise ex.NameAlreadyExistsException("Cluster with name '%s' already"
-                                            " exists" % name)
+        raise ex.NameAlreadyExistsException(
+            _("Cluster with name '%s' already exists") % name)
     check_heat_stack_name(name)
 
 
@@ -185,14 +191,14 @@ def check_heat_stack_name(cluster_name):
         for stack in heat.client().stacks.list():
             if stack.stack_name == cluster_name:
                 raise ex.NameAlreadyExistsException(
-                    "Cluster name '%s' is already used as Heat stack name"
+                    _("Cluster name '%s' is already used as Heat stack name")
                     % cluster_name)
 
 
 def check_cluster_exists(id):
     if not api.get_cluster(id):
-        raise ex.InvalidException("Cluster with id '%s'"
-                                  " doesn't exist" % id)
+        raise ex.InvalidException(
+            _("Cluster with id '%s' doesn't exist") % id)
 
 
 def check_cluster_hostnames_lengths(cluster_name, node_groups):
@@ -203,35 +209,38 @@ def check_cluster_hostnames_lengths(cluster_name, node_groups):
         longest_hostname += CONF.node_domain
         if len(longest_hostname) > MAX_HOSTNAME_LENGTH:
             raise ex.InvalidException(
-                "Composite hostname %s in provisioned cluster exceeds "
-                "maximum limit %s characters" % (longest_hostname,
-                                                 MAX_HOSTNAME_LENGTH))
+                _("Composite hostname %(host)s in provisioned cluster exceeds"
+                  " maximum limit %(limit)s characters") %
+                {'host': longest_hostname,
+                 'limit': MAX_HOSTNAME_LENGTH})
 
 
 def check_keypair_exists(keypair):
     try:
         nova.client().keypairs.get(keypair)
     except nova_ex.NotFound:
-        raise ex.InvalidException("Requested keypair '%s' not found" % keypair)
+        raise ex.InvalidException(
+            _("Requested keypair '%s' not found") % keypair)
 
 
 def check_network_exists(net_id):
     if not nova.get_network(id=net_id):
-        raise ex.InvalidException("Network %s not found" % net_id)
+        raise ex.InvalidException(_("Network %s not found") % net_id)
 
 
 # Cluster templates related checks
 
 def check_cluster_template_unique_name(name):
     if name in [t.name for t in api.get_cluster_templates()]:
-        raise ex.NameAlreadyExistsException("Cluster template with name '%s'"
-                                            " already exists" % name)
+        raise ex.NameAlreadyExistsException(
+            _("Cluster template with name '%s' already exists") % name)
 
 
 def check_cluster_template_exists(cluster_template_id):
     if not api.get_cluster_template(id=cluster_template_id):
-        raise ex.InvalidException("Cluster template with id '%s'"
-                                  " doesn't exist" % cluster_template_id)
+        raise ex.InvalidException(
+            _("Cluster template with id '%s' doesn't exist")
+            % cluster_template_id)
 
 
 def check_node_groups_in_cluster_templates(cluster_name, plugin_name,
@@ -249,14 +258,14 @@ def check_node_groups_in_cluster_templates(cluster_name, plugin_name,
 
 def check_node_group_template_unique_name(name):
     if name in [t.name for t in api.get_node_group_templates()]:
-        raise ex.NameAlreadyExistsException("NodeGroup template with name '%s'"
-                                            " already exists" % name)
+        raise ex.NameAlreadyExistsException(
+            _("NodeGroup template with name '%s' already exists") % name)
 
 
 def check_node_group_template_exists(ng_tmpl_id):
     if not api.get_node_group_template(id=ng_tmpl_id):
-        raise ex.InvalidException("NodeGroup template with id '%s'"
-                                  " doesn't exist" % ng_tmpl_id)
+        raise ex.InvalidException(
+            _("NodeGroup template with id '%s' doesn't exist") % ng_tmpl_id)
 
 
 def check_network_config(node_groups):
@@ -290,8 +299,9 @@ def check_resize(cluster, r_node_groups):
 
     for ng in r_node_groups:
         if ng['name'] not in cluster_ng_names:
-            raise ex.InvalidException("Cluster doesn't contain node group "
-                                      "with name '%s'" % ng['name'])
+            raise ex.InvalidException(
+                _("Cluster doesn't contain node group with name '%s'")
+                % ng['name'])
 
 
 def check_add_node_groups(cluster, add_node_groups):
@@ -303,9 +313,9 @@ def check_add_node_groups(cluster, add_node_groups):
 
     for ng in add_node_groups:
         if ng['name'] in cluster_ng_names:
-            raise ex.InvalidException("Can't add new nodegroup. Cluster "
-                                      "already has nodegroup with name '%s'"
-                                      % ng['name'])
+            raise ex.InvalidException(
+                _("Can't add new nodegroup. Cluster already has nodegroup with"
+                  " name '%s'") % ng['name'])
 
         check_node_group_basic_fields(cluster.plugin_name,
                                       cluster.hadoop_version, ng, pl_confs)
@@ -317,7 +327,7 @@ def check_cinder_exists():
     services = [service.name for service in
                 keystone.client().services.list()]
     if 'cinder' not in services:
-        raise ex.InvalidException("Cinder is not supported")
+        raise ex.InvalidException(_("Cinder is not supported"))
 
 
 # Tags
@@ -328,12 +338,11 @@ def check_required_image_tags(plugin_name, hadoop_version, image_id):
     plugin = plugin_base.PLUGINS.get_plugin(plugin_name)
     req_tags = set(plugin.get_required_image_tags(hadoop_version))
     if not req_tags.issubset(set(image.tags)):
-            raise ex.InvalidException("Tags of requested image '%s' don't "
-                                      "contain required tags "
-                                      "['%s', '%s']" %
-                                      (image_id,
-                                       plugin_name,
-                                       hadoop_version))
+            raise ex.InvalidException(
+                _("Tags of requested image '%(image)s' don't contain required"
+                  " tags ['%(name)s', '%(version)s']")
+                % {'image': image_id, 'name': plugin_name,
+                   'version': hadoop_version})
 
 
 # EDP

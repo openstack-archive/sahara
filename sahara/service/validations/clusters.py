@@ -18,6 +18,7 @@ import copy
 from oslo.config import cfg
 
 import sahara.exceptions as ex
+from sahara.i18n import _
 import sahara.service.api as api
 import sahara.service.validations.base as b
 import sahara.service.validations.cluster_templates as cl_tmpl
@@ -71,7 +72,7 @@ def check_cluster_create(data, **kwargs):
                                     default_image_id)
     else:
         raise ex.NotFoundException('default_image_id',
-                                   "'%s' field is not found")
+                                   _("'%s' field is not found"))
 
     b.check_all_configurations(data)
 
@@ -86,13 +87,14 @@ def check_cluster_create(data, **kwargs):
     neutron_net_id = _get_cluster_field(data, 'neutron_management_network')
     if neutron_net_id:
         if not CONF.use_neutron:
-            raise ex.InvalidException("'neutron_management_network' field "
-                                      "can't be used with 'use_neutron=False'")
+            raise ex.InvalidException(
+                _("'neutron_management_network' field can't be used "
+                  "with 'use_neutron=False'"))
         b.check_network_exists(neutron_net_id)
     else:
         if CONF.use_neutron:
             raise ex.NotFoundException('neutron_management_network',
-                                       message="'%s' field is not found")
+                                       message=_("'%s' field is not found"))
 
 
 def _get_cluster_field(cluster, field):

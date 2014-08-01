@@ -18,6 +18,7 @@ import functools
 import jsonschema
 
 from sahara import exceptions as ex
+from sahara.i18n import _
 import sahara.openstack.common.exception as os_ex
 from sahara.utils import api as u
 from sahara.utils import api_validator
@@ -73,7 +74,7 @@ def check_exists(get_func, *id_prop, **get_args):
                     raise e
             if obj is None:
                 e = ex.NotFoundException(get_kwargs,
-                                         'Object with %s not found')
+                                         _('Object with %s not found'))
                 return u.not_found(e)
 
             return func(*args, **kwargs)

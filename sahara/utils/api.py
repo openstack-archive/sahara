@@ -20,6 +20,8 @@ from werkzeug import datastructures
 
 from sahara import context
 from sahara import exceptions as ex
+from sahara.i18n import _
+from sahara.i18n import _LE
 from sahara.openstack.common import log as logging
 from sahara.openstack.common import wsgi
 
@@ -131,7 +133,8 @@ def render(res=None, resp_type=None, status=None, **kwargs):
         res.update(kwargs)
     elif kwargs:
         # can't merge kwargs into the non-dict res
-        abort_and_log(500, "Non-dict and non-empty kwargs passed to render")
+        abort_and_log(500,
+                      _("Non-dict and non-empty kwargs passed to render"))
 
     status_code = getattr(flask.request, 'status_code', None)
     if status:
@@ -153,7 +156,7 @@ def render(res=None, resp_type=None, status=None, **kwargs):
         resp_type = RT_XML
         serializer = wsgi.XMLDictSerializer()
     else:
-        abort_and_log(400, "Content type '%s' isn't supported" % resp_type)
+        abort_and_log(400, _("Content type '%s' isn't supported") % resp_type)
 
     body = serializer.serialize(res)
     resp_type = str(resp_type)
@@ -178,10 +181,11 @@ def request_data():
     if not content_type or content_type in RT_JSON:
         deserializer = wsgi.JSONDeserializer()
     elif content_type in RT_XML:
-        abort_and_log(400, "XML requests are not supported yet")
+        abort_and_log(400, _("XML requests are not supported yet"))
         # deserializer = XMLDeserializer()
     else:
-        abort_and_log(400, "Content type '%s' isn't supported" % content_type)
+        abort_and_log(400,
+                      _("Content type '%s' isn't supported") % content_type)
 
     # parsed request data to avoid unwanted re-parsings
     parsed_data = deserializer.deserialize(flask.request.data)['body']
@@ -195,8 +199,9 @@ def get_request_args():
 
 
 def abort_and_log(status_code, descr, exc=None):
-    LOG.error("Request aborted with status code %s and message '%s'",
-              status_code, descr)
+    LOG.error(_LE("Request aborted with status code %(code)s and "
+                  "message '%(message)s'"),
+              {'code': status_code, 'message': descr})
 
     if exc is not None:
         LOG.error(traceback.format_exc())
@@ -218,8 +223,9 @@ def render_error_message(error_code, error_message, error_name):
 
 
 def internal_error(status_code, descr, exc=None):
-    LOG.error("Request aborted with status code %s and message '%s'",
-              status_code, descr)
+    LOG.error(_LE("Request aborted with status code %(code)s and "
+                  "message '%(message)s'"),
+              {'code': status_code, 'message': descr})
 
     if exc is not None:
         LOG.error(traceback.format_exc())

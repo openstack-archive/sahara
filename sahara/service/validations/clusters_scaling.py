@@ -16,6 +16,7 @@
 import copy
 
 import sahara.exceptions as ex
+from sahara.i18n import _
 import sahara.plugins.base as plugin_base
 import sahara.service.api as api
 import sahara.service.validations.base as b
@@ -73,12 +74,13 @@ def check_cluster_scaling(data, cluster_id, **kwargs):
             plugin_base.PLUGINS.is_plugin_implements(cluster.plugin_name,
                                                      'decommission_nodes'))):
         raise ex.InvalidException(
-            "Requested plugin '%s' doesn't support cluster scaling feature"
+            _("Requested plugin '%s' doesn't support cluster scaling feature")
             % cluster.plugin_name)
 
     if cluster.status != 'Active':
-        raise ex.InvalidException("Cluster cannot be scaled not in 'Active' "
-                                  "status. Cluster status: " + cluster.status)
+        raise ex.InvalidException(
+            _("Cluster cannot be scaled not in 'Active' status. "
+              "Cluster status: %s") % cluster.status)
 
     if data.get("resize_node_groups"):
         b.check_resize(cluster, data['resize_node_groups'])

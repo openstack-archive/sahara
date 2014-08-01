@@ -20,6 +20,7 @@ from alembic import config as alembic_cfg
 from alembic import util as alembic_u
 from oslo.config import cfg
 
+from sahara.i18n import _
 
 CONF = cfg.CONF
 
@@ -37,7 +38,7 @@ def do_check_migration(config, _cmd):
 
 def do_upgrade_downgrade(config, cmd):
     if not CONF.command.revision and not CONF.command.delta:
-        raise SystemExit('You must provide a revision or relative delta')
+        raise SystemExit(_('You must provide a revision or relative delta'))
 
     revision = CONF.command.revision
 

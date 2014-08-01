@@ -20,6 +20,7 @@ from oslo.config import cfg
 
 from sahara import context
 from sahara import exceptions as ex
+from sahara.i18n import _
 from sahara.openstack.common import log as logging
 from sahara.utils import files as f
 from sahara.utils import general as g
@@ -41,7 +42,8 @@ def get_stack(stack_name):
     for stack in heat.stacks.list(filters={'stack_name': stack_name}):
         return stack
 
-    raise ex.NotFoundException('Failed to find stack %s' % stack_name)
+    raise ex.NotFoundException(_('Failed to find stack %(stack)s')
+                               % {'stack': stack_name})
 
 
 def wait_stack_completion(stack):

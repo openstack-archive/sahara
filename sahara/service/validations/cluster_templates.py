@@ -16,6 +16,7 @@
 import copy
 
 from sahara import exceptions as ex
+from sahara.i18n import _
 from sahara.service import api
 import sahara.service.validations.base as b
 import sahara.service.validations.node_group_templates as ng_tml
@@ -133,5 +134,6 @@ def check_cluster_template_usage(cluster_template_id, **kwargs):
 
     if users:
         raise ex.InvalidException(
-            "Cluster template %s in use by %s" %
-            (cluster_template_id, ', '.join(users)))
+            _("Cluster template %(id)s in use by %(clusters)s") %
+            {'id': cluster_template_id,
+             'clusters':  ', '.join(users)})

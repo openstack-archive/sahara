@@ -44,6 +44,7 @@ import six
 
 from sahara import context
 from sahara import exceptions as ex
+from sahara.i18n import _LE
 from sahara.openstack.common import excutils
 from sahara.utils import crypto
 from sahara.utils import hashabledict as h
@@ -260,7 +261,7 @@ def _read_file_from(remote_file, run_as_root=False):
     try:
         return _read_file(_ssh.open_sftp(), fl)
     except IOError:
-        LOG.error('Can\'t read file "%s"' % remote_file)
+        LOG.error(_LE('Can\'t read file "%s"') % remote_file)
         raise
     finally:
         if run_as_root:

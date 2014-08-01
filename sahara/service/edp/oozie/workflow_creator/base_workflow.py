@@ -17,6 +17,7 @@
 import xml.dom.minidom as xml
 
 import sahara.exceptions as ex
+from sahara.i18n import _
 from sahara.utils import xmlutils as x
 
 
@@ -45,8 +46,8 @@ class OozieWorkflowCreator(object):
     def _add_to_prepare_element(self, element, paths):
         if element not in ['delete', 'mkdir']:
             raise ex.NotFoundException(element,
-                                       message='"%s" child cannot be '
-                                               'added to prepare element')
+                                       message=_('"%s" child cannot be '
+                                                 'added to prepare element'))
         prop = x.get_and_create_if_not_exist(self.doc, self.tag_name,
                                              'prepare')
         for path in paths:
@@ -56,8 +57,8 @@ class OozieWorkflowCreator(object):
     def _add_to_streaming_element(self, element, path):
         if element not in ['mapper', 'reducer']:
             raise ex.NotFoundException(element,
-                                       message='"%s" child cannot be added '
-                                               'to streaming element')
+                                       message=_('"%s" child cannot be added '
+                                                 'to streaming element'))
 
         x.get_and_create_if_not_exist(self.doc, self.tag_name,
                                       'streaming')

@@ -13,6 +13,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from sahara.i18n import _
+
 
 class FrozenList(list):
     def append(self, p_object):
@@ -83,7 +85,7 @@ class FrozenDict(dict):
 
 class FrozenClassError(Exception):
     def __init__(self, instance):
-        self.message = "Class %s is immutable!" % type(instance).__name__
+        self.message = _("Class %s is immutable!") % type(instance).__name__
 
 
 def is_int(s):
