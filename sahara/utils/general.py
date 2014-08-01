@@ -70,7 +70,7 @@ def change_cluster_status(cluster, status, status_description=None):
 
     cluster = conductor.cluster_update(context.ctx(), cluster, update_dict)
     LOG.info(_LI("Cluster status has been changed: id=%(id)s, New status="
-                 "%(status)s"), {'id': cluster.id, 'name': cluster.status})
+                 "%(status)s"), {'id': cluster.id, 'status': cluster.status})
     return cluster
 
 
