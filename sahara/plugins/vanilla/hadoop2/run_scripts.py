@@ -171,4 +171,4 @@ def _check_datanodes_count(remote, count):
         'awk \'{print $3}\'')
     LOG.debug("Datanode count='%s'" % stdout.rstrip())
 
-    return exit_code == 0 and int(stdout) == count
+    return exit_code == 0 and stdout and int(stdout) == count
