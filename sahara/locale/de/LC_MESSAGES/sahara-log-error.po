@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Sahara\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2014-07-31 06:10+0000\n"
+"POT-Creation-Date: 2014-08-04 06:10+0000\n"
 "PO-Revision-Date: 2014-07-29 23:43+0000\n"
 "Last-Translator: openstackjenkins <jenkins@openstack.org>\n"
 "Language-Team: German (http://www.transifex.com/projects/p/sahara/language/"
@@ -67,6 +67,21 @@ msgstr "Fehler bei %(full_task_name)s: %(e)s"
 msgid "Unable to complete rollback, aborting"
 msgstr ""
 
+#: sahara/service/ops.py:144
+#, python-format
+msgid "Can't configure cluster '%(name)s' (reason: %(reason)s)"
+msgstr ""
+
+#: sahara/service/ops.py:162
+#, python-format
+msgid "Can't start services for cluster '%(name)s' (reason: %(reason)s)"
+msgstr ""
+
+#: sahara/service/ops.py:213
+#, python-format
+msgid "Can't scale cluster '%(name)s' (reason: %(reason)s)"
+msgstr ""
+
 #: sahara/service/volumes.py:148
 #, python-format
 msgid "Error mounting volume to instance %s"
@@ -82,17 +97,32 @@ msgstr ""
 msgid "Can't delete volume %s"
 msgstr ""
 
-#: sahara/service/edp/job_manager.py:117
+#: sahara/service/edp/job_manager.py:133
 #, python-format
 msgid "Can't run job execution '%(job)s' (reason: %(reason)s)"
 msgstr ""
 
-#: sahara/service/edp/job_manager.py:138
+#: sahara/service/edp/job_manager.py:155
 #, python-format
 msgid "Error during cancel of job execution %(job)s: %(error)s"
 msgstr ""
 
-#: sahara/service/edp/job_manager.py:163
+#: sahara/service/edp/job_manager.py:181
 #, python-format
 msgid "Error during update job execution %(job)s: %(error)s"
+msgstr ""
+
+#: sahara/utils/api.py:202 sahara/utils/api.py:226
+#, python-format
+msgid "Request aborted with status code %(code)s and message '%(message)s'"
+msgstr ""
+
+#: sahara/utils/rpc.py:76
+#, python-format
+msgid "No %(method)s method found implemented in %(class)s class"
+msgstr ""
+
+#: sahara/utils/ssh_remote.py:264
+#, python-format
+msgid "Can't read file \"%s\""
 msgstr ""

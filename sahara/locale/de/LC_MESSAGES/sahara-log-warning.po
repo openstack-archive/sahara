@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Sahara\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2014-07-31 06:10+0000\n"
+"POT-Creation-Date: 2014-08-04 06:10+0000\n"
 "PO-Revision-Date: 2014-07-16 14:29+0000\n"
 "Last-Translator: openstackjenkins <jenkins@openstack.org>\n"
 "Language-Team: German (http://www.transifex.com/projects/p/sahara/language/"
@@ -29,6 +29,10 @@ msgstr ""
 msgid ""
 "Distributed mode is in the alpha state, it's recommended to use all-in-one "
 "mode by running 'sahara-all' binary."
+msgstr ""
+
+#: sahara/middleware/auth_valid.py:46
+msgid "Can't get tenant_id from env"
 msgstr ""
 
 #: sahara/openstack/common/loopingcall.py:87
