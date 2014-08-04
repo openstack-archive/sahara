@@ -118,7 +118,7 @@ def _provision_cluster(cluster_id):
     ctx, cluster, plugin = _prepare_provisioning(cluster_id)
 
     if CONF.use_identity_api_v3 and cluster.is_transient:
-        trusts.create_trust(cluster)
+        trusts.create_trust_for_cluster(cluster)
 
     # updating cluster infra
     cluster = g.change_cluster_status(cluster, "InfraUpdating")
@@ -233,7 +233,7 @@ def _terminate_cluster(cluster_id):
     INFRA.shutdown_cluster(cluster)
 
     if CONF.use_identity_api_v3:
-        trusts.delete_trust(cluster)
+        trusts.delete_trust_from_cluster(cluster)
 
     conductor.cluster_destroy(ctx, cluster)
 

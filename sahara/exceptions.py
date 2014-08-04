@@ -143,6 +143,15 @@ class DBDuplicateEntry(SaharaException):
             self.message = message
 
 
+class CreationFailed(SaharaException):
+    message = _("Object was not created")
+    code = "CREATION_FAILED"
+
+    def __init__(self, message=None):
+        if message:
+            self.message = message
+
+
 class DeletionFailed(SaharaException):
     message = _("Object was not deleted")
     code = "DELETION_FAILED"
