@@ -40,8 +40,6 @@ CONF.register_opts(opts)
 
 conductor = c.API
 
-terminated_job_states = ['DONEWITHERROR', 'FAILED', 'KILLED', 'SUCCEEDED']
-
 
 def get_plugin(cluster):
     return plugin_base.PLUGINS.get_plugin(cluster.plugin_name)

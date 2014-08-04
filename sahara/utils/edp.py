@@ -13,6 +13,20 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+# job execution status
+JOB_STATUS_DONEWITHERROR = 'DONEWITHERROR'
+JOB_STATUS_FAILED = 'FAILED'
+JOB_STATUS_KILLED = 'KILLED'
+JOB_STATUS_PENDING = 'PENDING'
+JOB_STATUS_RUNNING = 'RUNNING'
+JOB_STATUS_SUCCEEDED = 'SUCCEEDED'
+# statuses for terminated jobs
+JOB_STATUSES_TERMINATED = [
+    JOB_STATUS_DONEWITHERROR,
+    JOB_STATUS_FAILED,
+    JOB_STATUS_KILLED,
+    JOB_STATUS_SUCCEEDED
+]
 # job type separator character
 JOB_TYPE_SEP = '.'
 # job sub types available

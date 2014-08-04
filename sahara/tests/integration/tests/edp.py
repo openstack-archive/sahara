@@ -49,9 +49,10 @@ class EDPTest(base.ITestCase):
         status = self.sahara.job_executions.get(job.id).info['status']
         try:
             with fixtures.Timeout(timeout, gentle=True):
-                while status != 'SUCCEEDED':
-                    if status == 'KILLED':
-                        self.fail('Job status == \'KILLED\'.')
+                while status != edp.JOB_STATUS_SUCCEEDED:
+                    if status == edp.JOB_STATUS_KILLED:
+                        self.fail("Job status == '{0}'.".format(
+                            edp.JOB_STATUS_KILLED))
 
                     time.sleep(10)
                     status = self.sahara.job_executions.get(
@@ -59,8 +60,9 @@ class EDPTest(base.ITestCase):
 
         except fixtures.TimeoutException:
             self.fail(
-                'Job did not return to \'SUCCEEDED\' status within '
-                '%d minute(s).' % self.common_config.JOB_LAUNCH_TIMEOUT
+                "Job did not return to '{0}' status within {1:d} minute(s)."
+                .format(edp.JOB_STATUS_SUCCEEDED,
+                        self.common_config.JOB_LAUNCH_TIMEOUT)
             )
 
     def _create_job_binaries(self, job_data_list, job_binary_internal_list,

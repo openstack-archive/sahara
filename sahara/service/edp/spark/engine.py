@@ -22,6 +22,7 @@ from sahara.plugins.general import utils as plugin_utils
 from sahara.plugins.spark import config_helper as c_helper
 from sahara.service.edp import base_engine
 from sahara.service.edp import job_utils
+from sahara.utils import edp
 from sahara.utils import files
 from sahara.utils import general
 from sahara.utils import remote
@@ -45,7 +46,7 @@ class SparkJobEngine(base_engine.JobEngine):
     def _get_instance_if_running(self, job_execution):
         pid, inst_id = self._get_pid_and_inst_id(job_execution.oozie_job_id)
         if not pid or not inst_id or (
-           job_execution.info['status'] in job_utils.terminated_job_states):
+           job_execution.info['status'] in edp.JOB_STATUSES_TERMINATED):
             return None, None
         # TODO(tmckay): well, if there is a list index out of range
         # error here it probably means that the instance is gone. If we
@@ -71,20 +72,20 @@ class SparkJobEngine(base_engine.JobEngine):
     def _get_job_status_from_remote(self, r, pid, job_execution):
         # If the pid is there, it's still running
         if self._check_pid(r, pid) == 0:
-            return {"status": "RUNNING"}
+            return {"status": edp.JOB_STATUS_RUNNING}
 
         # The process ended. Look in the result file to get the exit status
         ret, stdout = self._get_result_file(r, job_execution)
         if ret == 0:
             exit_status = stdout.strip()
             if exit_status == "0":
-                return {"status": "SUCCEEDED"}
+                return {"status": edp.JOB_STATUS_SUCCEEDED}
             # SIGINT will yield either -2 or 130
             elif exit_status in ["-2", "130"]:
-                return {"status": "KILLED"}
+                return {"status": edp.JOB_STATUS_KILLED}
 
         # Well, process is done and result is missing or unexpected
-        return {"status": "DONEWITHERROR"}
+        return {"status": edp.JOB_STATUS_DONEWITHERROR}
 
     def cancel_job(self, job_execution):
         pid, instance = self._get_instance_if_running(job_execution)
@@ -176,7 +177,7 @@ class SparkJobEngine(base_engine.JobEngine):
             # pid@instance_id as the job id
             # We know the job is running so return "RUNNING"
             return (stdout.strip() + "@" + master.id,
-                    "RUNNING",
+                    edp.JOB_STATUS_RUNNING,
                     {'spark-path': wf_dir})
 
         # Hmm, no execption but something failed.

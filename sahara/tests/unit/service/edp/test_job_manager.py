@@ -380,7 +380,7 @@ class TestJobManager(base.SaharaWithDbTestCase):
         self.assertEqual(1, job_ex_upd.call_count)
 
         new_status = job_ex_upd.call_args[0][2]["info"]["status"]
-        self.assertEqual('FAILED', new_status)
+        self.assertEqual(edp.JOB_STATUS_FAILED, new_status)
 
     def test_get_plugin(self):
         plugin = job_utils.get_plugin(_create_cluster())
