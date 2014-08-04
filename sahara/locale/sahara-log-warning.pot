@@ -6,9 +6,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: sahara 2014.2.dev29.ge23efe5\n"
+"Project-Id-Version: sahara 2014.2.dev40.g4922543\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2014-07-31 06:10+0000\n"
+"POT-Creation-Date: 2014-08-04 06:10+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -26,6 +26,10 @@ msgstr ""
 msgid ""
 "Distributed mode is in the alpha state, it's recommended to use all-in-"
 "one mode by running 'sahara-all' binary."
+msgstr ""
+
+#: sahara/middleware/auth_valid.py:46
+msgid "Can't get tenant_id from env"
 msgstr ""
 
 #: sahara/openstack/common/loopingcall.py:87

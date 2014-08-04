@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Sahara\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2014-07-31 06:10+0000\n"
+"POT-Creation-Date: 2014-08-04 06:10+0000\n"
 "PO-Revision-Date: 2014-07-16 14:42+0000\n"
 "Last-Translator: openstackjenkins <jenkins@openstack.org>\n"
 "Language-Team: Spanish (http://www.transifex.com/projects/p/sahara/language/"
@@ -37,6 +37,11 @@ msgstr ""
 #: sahara/main.py:180
 #, python-format
 msgid "Loading '%s' ops"
+msgstr ""
+
+#: sahara/middleware/auth_valid.py:54
+#, python-format
+msgid "Incorrect path: %s"
 msgstr ""
 
 #: sahara/openstack/common/lockutils.py:82
@@ -94,6 +99,32 @@ msgstr ""
 msgid "Cluster '%s' scaling rollback"
 msgstr ""
 
+#: sahara/service/periodic.py:96
+#, python-format
+msgid "Terminating transient cluster %(cluster)s with id %(id)s"
+msgstr ""
+
+#: sahara/service/periodic.py:103
+#, python-format
+msgid ""
+"Failed to terminate transient cluster %(cluster)s with id %(id)s: %(error)s."
+msgstr ""
+
+#: sahara/swift/swift_helper.py:50
+#, python-format
+msgid "Swift would be integrated with the following params: %s"
+msgstr ""
+
+#: sahara/topology/topology_helper.py:154
+#, python-format
+msgid "Vm awareness will add following configs in core-site params: %s"
+msgstr ""
+
+#: sahara/topology/topology_helper.py:162
+#, python-format
+msgid "Vm awareness will add following configs in map-red params: %s"
+msgstr ""
+
 #: sahara/utils/general.py:72
 #, python-format
 msgid "Cluster status has been changed: id=%(id)s, New status=%(status)s"
@@ -106,4 +137,9 @@ msgstr ""
 
 #: sahara/utils/general.py:84 sahara/utils/general.py:85
 msgid "Unknown"
+msgstr ""
+
+#: sahara/utils/timing.py:56
+#, python-format
+msgid "Exception raised by invocation of %(name)s: %(info)s"
 msgstr ""

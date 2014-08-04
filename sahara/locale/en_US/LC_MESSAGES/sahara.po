@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version:  Sahara\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2014-07-31 06:10+0000\n"
+"POT-Creation-Date: 2014-08-04 06:10+0000\n"
 "PO-Revision-Date: 2014-03-19 22:46+0000\n"
 "Last-Translator: openstackjenkins <jenkins@openstack.org>\n"
 "Language-Team: English (United States) "
@@ -109,6 +109,23 @@ msgstr ""
 #: sahara/exceptions.py:237
 #, python-format
 msgid "Operation timed out after %i second(s)"
+msgstr ""
+
+#: sahara/api/base.py:22
+msgid "This API operation isn't implemented"
+msgstr ""
+
+#: sahara/conductor/__init__.py:32
+msgid "Remote conductor isn't implemented yet."
+msgstr ""
+
+#: sahara/conductor/resource.py:118
+#, python-format
+msgid "Unsupported type: %s"
+msgstr ""
+
+#: sahara/db/migration/cli.py:41
+msgid "You must provide a revision or relative delta"
 msgstr ""
 
 #: sahara/db/sqlalchemy/api.py:192
@@ -239,6 +256,14 @@ msgstr ""
 msgid "JobBinaryInternal id '%s' not found!"
 msgstr ""
 
+#: sahara/middleware/auth_valid.py:55
+msgid "Incorrect path"
+msgstr ""
+
+#: sahara/middleware/auth_valid.py:61
+msgid "Token tenant != requested tenant"
+msgstr ""
+
 #: sahara/openstack/common/exception.py:103
 msgid "Uncaught exception"
 msgstr ""
@@ -342,6 +367,11 @@ msgstr ""
 msgid "Node %s has error status"
 msgstr ""
 
+#: sahara/service/validation.py:77
+#, python-format
+msgid "Object with %s not found"
+msgstr ""
+
 #: sahara/service/volumes.py:62
 #, python-format
 msgid "Error attach volume to instance %s"
@@ -352,7 +382,7 @@ msgstr ""
 msgid "Volume %s has error status"
 msgstr ""
 
-#: sahara/service/edp/job_manager.py:102
+#: sahara/service/edp/job_manager.py:104
 #, python-format
 msgid "Cluster does not support job type %s"
 msgstr ""
@@ -372,6 +402,201 @@ msgstr ""
 #: sahara/service/edp/binary_retrievers/internal_swift.py:98
 #, python-format
 msgid "Size of swift object (%(size)sKB) is greater than maximum (%(maximum)sKB)"
+msgstr ""
+
+#: sahara/service/edp/oozie/workflow_creator/base_workflow.py:49
+#, python-format
+msgid "\"%s\" child cannot be added to prepare element"
+msgstr ""
+
+#: sahara/service/edp/oozie/workflow_creator/base_workflow.py:60
+#, python-format
+msgid "\"%s\" child cannot be added to streaming element"
+msgstr ""
+
+#: sahara/service/validations/base.py:53
+#, python-format
+msgid "Sahara doesn't contain plugin with name '%s'"
+msgstr ""
+
+#: sahara/service/validations/base.py:59
+#, python-format
+msgid "Requested plugin '%(name)s' doesn't support version '%(version)s'"
+msgstr ""
+
+#: sahara/service/validations/base.py:66
+#, python-format
+msgid "Requested image '%s' is not registered"
+msgstr ""
+
+#: sahara/service/validations/base.py:77
+#, python-format
+msgid "Plugin doesn't contain applicable target '%s'"
+msgstr ""
+
+#: sahara/service/validations/base.py:82
+#, python-format
+msgid ""
+"Plugin's applicable target '%(target)s' doesn't contain config with name "
+"'%(name)s'"
+msgstr ""
+
+#: sahara/service/validations/base.py:139
+#, python-format
+msgid "Requested flavor '%s' not found"
+msgstr ""
+
+#: sahara/service/validations/base.py:154
+#, python-format
+msgid "Floating IP pool %(pool)s for node group '%(group)s' not found"
+msgstr ""
+
+#: sahara/service/validations/base.py:161
+msgid "Duplicates in node processes have been detected"
+msgstr ""
+
+#: sahara/service/validations/base.py:169
+#, python-format
+msgid "Plugin supports the following node procesess: %s"
+msgstr ""
+
+#: sahara/service/validations/base.py:177
+msgid "Duplicates in node group names are detected"
+msgstr ""
+
+#: sahara/service/validations/base.py:185
+#, python-format
+msgid "Cluster with name '%s' already exists"
+msgstr ""
+
+#: sahara/service/validations/base.py:194
+#, python-format
+msgid "Cluster name '%s' is already used as Heat stack name"
+msgstr ""
+
+#: sahara/service/validations/base.py:201
+#, python-format
+msgid "Cluster with id '%s' doesn't exist"
+msgstr ""
+
+#: sahara/service/validations/base.py:212
+#, python-format
+msgid ""
+"Composite hostname %(host)s in provisioned cluster exceeds maximum limit "
+"%(limit)s characters"
+msgstr ""
+
+#: sahara/service/validations/base.py:223
+#, python-format
+msgid "Requested keypair '%s' not found"
+msgstr ""
+
+#: sahara/service/validations/base.py:228
+#, python-format
+msgid "Network %s not found"
+msgstr ""
+
+#: sahara/service/validations/base.py:236
+#, python-format
+msgid "Cluster template with name '%s' already exists"
+msgstr ""
+
+#: sahara/service/validations/base.py:242
+#, python-format
+msgid "Cluster template with id '%s' doesn't exist"
+msgstr ""
+
+#: sahara/service/validations/base.py:262
+#, python-format
+msgid "NodeGroup template with name '%s' already exists"
+msgstr ""
+
+#: sahara/service/validations/base.py:268
+#, python-format
+msgid "NodeGroup template with id '%s' doesn't exist"
+msgstr ""
+
+#: sahara/service/validations/base.py:303
+#, python-format
+msgid "Cluster doesn't contain node group with name '%s'"
+msgstr ""
+
+#: sahara/service/validations/base.py:317
+#, python-format
+msgid "Can't add new nodegroup. Cluster already has nodegroup with name '%s'"
+msgstr ""
+
+#: sahara/service/validations/base.py:330
+msgid "Cinder is not supported"
+msgstr ""
+
+#: sahara/service/validations/base.py:342
+#, python-format
+msgid ""
+"Tags of requested image '%(image)s' don't contain required tags "
+"['%(name)s', '%(version)s']"
+msgstr ""
+
+#: sahara/service/validations/cluster_templates.py:137
+#, python-format
+msgid "Cluster template %(id)s in use by %(clusters)s"
+msgstr ""
+
+#: sahara/service/validations/clusters.py:75
+#: sahara/service/validations/clusters.py:97
+#, python-format
+msgid "'%s' field is not found"
+msgstr ""
+
+#: sahara/service/validations/clusters.py:91
+msgid "'neutron_management_network' field can't be used with 'use_neutron=False'"
+msgstr ""
+
+#: sahara/service/validations/clusters_scaling.py:77
+#, python-format
+msgid "Requested plugin '%s' doesn't support cluster scaling feature"
+msgstr ""
+
+#: sahara/service/validations/clusters_scaling.py:82
+#, python-format
+msgid "Cluster cannot be scaled not in 'Active' status. Cluster status: %s"
+msgstr ""
+
+#: sahara/service/validations/node_group_templates.py:111
+#, python-format
+msgid ""
+"Node group template %(template)s is in use by cluster templates: "
+"%(users)s; and clusters: %(clusters)s"
+msgstr ""
+
+#: sahara/service/validations/plugins.py:27
+#, python-format
+msgid ""
+"Requested plugin '%s' doesn't support converting config files to cluster "
+"templates"
+msgstr ""
+
+#: sahara/topology/topology_helper.py:113
+#, python-format
+msgid "Unable to find file %s with compute topology"
+msgstr ""
+
+#: sahara/topology/topology_helper.py:129
+#, python-format
+msgid "Was not able to find compute node topology for VM %s"
+msgstr ""
+
+#: sahara/utils/api.py:137
+msgid "Non-dict and non-empty kwargs passed to render"
+msgstr ""
+
+#: sahara/utils/api.py:159 sahara/utils/api.py:188
+#, python-format
+msgid "Content type '%s' isn't supported"
+msgstr ""
+
+#: sahara/utils/api.py:184
+msgid "XML requests are not supported yet"
 msgstr ""
 
 #: sahara/utils/crypto.py:51
@@ -394,6 +619,11 @@ msgstr ""
 msgid "Failed to delete temp dir %(dir)s (reason: %(reason)s)"
 msgstr ""
 
+#: sahara/utils/types.py:88
+#, python-format
+msgid "Class %s is immutable!"
+msgstr ""
+
 #: sahara/utils/openstack/base.py:45
 #, python-format
 msgid "Endpoint with type %(type)s is not found for service %(service)s"
@@ -402,6 +632,11 @@ msgstr ""
 #: sahara/utils/openstack/base.py:52
 #, python-format
 msgid "Service \"%s\" not found in service catalog"
+msgstr ""
+
+#: sahara/utils/openstack/heat.py:45
+#, python-format
+msgid "Failed to find stack %(stack)s"
 msgstr ""
 
 #: sahara/utils/openstack/neutron.py:78
