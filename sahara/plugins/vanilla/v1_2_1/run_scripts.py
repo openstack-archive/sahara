@@ -78,7 +78,7 @@ def check_datanodes_count(remote, count):
         'awk \'{print \\$3}\'" hadoop')
     LOG.debug("Datanode count='%s'" % stdout.rstrip())
 
-    return exit_code == 0 and int(stdout) == count
+    return exit_code == 0 and stdout and int(stdout) == count
 
 
 def mysql_start(remote, mysql_instance):
