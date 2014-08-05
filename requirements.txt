@@ -14,12 +14,12 @@ pbr>=0.6,!=0.7,<1.0
 posix_ipc
 requests>=1.1
 python-cinderclient>=1.0.7
-python-keystoneclient>=0.9.0
+python-keystoneclient>=0.10.0
 python-novaclient>=2.17.0
-python-swiftclient>=2.0.2
-python-neutronclient>=2.3.5,<3
+python-swiftclient>=2.2.0
+python-neutronclient>=2.3.6,<3
 python-heatclient>=0.2.9
 six>=1.7.0
 stevedore>=0.14
-SQLAlchemy>=0.8.4,!=0.9.5,<=0.9.99
+SQLAlchemy>=0.8.4,<=0.8.99,>=0.9.7,<=0.9.99
 WebOb>=1.2.3
