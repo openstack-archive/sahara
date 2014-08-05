@@ -20,9 +20,8 @@
 from __future__ import print_function
 import sys
 
+from oslo.middleware import base
 import webob.dec
-
-from sahara.openstack.common.middleware import base
 
 
 class LogExchange(base.Middleware):
