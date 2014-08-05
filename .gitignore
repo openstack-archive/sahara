@@ -28,7 +28,6 @@ doc/source/apidoc
 doc/source/api
 doc/build
 *.db
-.coverage
 nosetests.xml
 pylint-report.txt
 etc/local.cfg
