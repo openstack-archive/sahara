@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Sahara\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2014-08-04 06:10+0000\n"
+"POT-Creation-Date: 2014-08-05 06:10+0000\n"
 "PO-Revision-Date: 2014-07-16 14:42+0000\n"
 "Last-Translator: openstackjenkins <jenkins@openstack.org>\n"
 "Language-Team: Spanish (http://www.transifex.com/projects/p/sahara/language/"
@@ -64,6 +64,10 @@ msgstr "Omitiendo la tarea periódica %(task)s porque el intervalo es negativo"
 msgid "Skipping periodic task %(task)s because it is disabled"
 msgstr "Omitiendo la tarea periódica %(task)s porque está inhabilitada"
 
+#: sahara/plugins/cdh/deploy.py:289
+msgid "Cloudera Manager has been started"
+msgstr ""
+
 #: sahara/service/direct_engine.py:280
 #, python-format
 msgid "Cluster '%s': all instances are active"
@@ -79,12 +83,12 @@ msgstr ""
 msgid "Cluster '%(name)s' scaling rollback (reason: %(reason)s)"
 msgstr ""
 
-#: sahara/service/engine.py:72
+#: sahara/service/engine.py:73
 #, python-format
 msgid "Cluster '%s': all instances have IPs assigned"
 msgstr ""
 
-#: sahara/service/engine.py:82
+#: sahara/service/engine.py:83
 #, python-format
 msgid "Cluster '%s': all instances are accessible"
 msgstr ""

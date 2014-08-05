@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Sahara\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2014-08-04 06:10+0000\n"
+"POT-Creation-Date: 2014-08-05 06:10+0000\n"
 "PO-Revision-Date: 2014-07-29 23:43+0000\n"
 "Last-Translator: openstackjenkins <jenkins@openstack.org>\n"
 "Language-Team: Korean (Korea) (http://www.transifex.com/projects/p/sahara/"
@@ -62,6 +62,12 @@ msgstr "동적 루프 호출에서"
 msgid "Error during %(full_task_name)s: %(e)s"
 msgstr "%(full_task_name)s 중 오류: %(e)s"
 
+#: sahara/plugins/cdh/validation.py:30
+msgid ""
+"For provisioning cluster with CDH plugin install'cm_api' package version "
+"6.0.2 or later."
+msgstr ""
+
 #: sahara/service/heat_engine.py:119
 msgid "Unable to complete rollback, aborting"
 msgstr ""
@@ -79,6 +85,16 @@ msgstr ""
 #: sahara/service/ops.py:213
 #, python-format
 msgid "Can't scale cluster '%(name)s' (reason: %(reason)s)"
+msgstr ""
+
+#: sahara/service/trusts.py:64
+#, python-format
+msgid "Unable to create trust (reason: %s)"
+msgstr ""
+
+#: sahara/service/trusts.py:101
+#, python-format
+msgid "Unable to delete trust (reason: %s)"
 msgstr ""
 
 #: sahara/service/volumes.py:148

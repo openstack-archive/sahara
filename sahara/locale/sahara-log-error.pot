@@ -6,9 +6,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: sahara 2014.2.dev40.g4922543\n"
+"Project-Id-Version: sahara 2014.2.dev56.g27704ba\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2014-08-04 06:10+0000\n"
+"POT-Creation-Date: 2014-08-05 06:10+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -60,6 +60,12 @@ msgstr ""
 msgid "Error during %(full_task_name)s: %(e)s"
 msgstr ""
 
+#: sahara/plugins/cdh/validation.py:30
+msgid ""
+"For provisioning cluster with CDH plugin install'cm_api' package version "
+"6.0.2 or later."
+msgstr ""
+
 #: sahara/service/heat_engine.py:119
 msgid "Unable to complete rollback, aborting"
 msgstr ""
@@ -77,6 +83,16 @@ msgstr ""
 #: sahara/service/ops.py:213
 #, python-format
 msgid "Can't scale cluster '%(name)s' (reason: %(reason)s)"
+msgstr ""
+
+#: sahara/service/trusts.py:64
+#, python-format
+msgid "Unable to create trust (reason: %s)"
+msgstr ""
+
+#: sahara/service/trusts.py:101
+#, python-format
+msgid "Unable to delete trust (reason: %s)"
 msgstr ""
 
 #: sahara/service/volumes.py:148

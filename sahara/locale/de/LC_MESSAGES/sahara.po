@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version:  Sahara\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2014-08-04 06:10+0000\n"
+"POT-Creation-Date: 2014-08-05 06:10+0000\n"
 "PO-Revision-Date: 2014-07-17 06:41+0000\n"
 "Last-Translator: openstackjenkins <jenkins@openstack.org>\n"
 "Language-Team: German "
@@ -80,35 +80,39 @@ msgid "Database object already exists"
 msgstr ""
 
 #: sahara/exceptions.py:147
+msgid "Object was not created"
+msgstr ""
+
+#: sahara/exceptions.py:156
 msgid "Object was not deleted"
 msgstr ""
 
-#: sahara/exceptions.py:157
+#: sahara/exceptions.py:166
 #, python-format
 msgid "Node Group %s is missing 'floating_ip_pool' field"
 msgstr ""
 
-#: sahara/exceptions.py:175
+#: sahara/exceptions.py:184
 #, python-format
 msgid "Size of data (%(size)s) is greater than maximum (%(maximum)s)"
 msgstr ""
 
-#: sahara/exceptions.py:187
+#: sahara/exceptions.py:196
 #, python-format
 msgid "An error occurred in thread '%(thread)s': %(e)s"
 msgstr ""
 
-#: sahara/exceptions.py:197
+#: sahara/exceptions.py:206
 #, python-format
 msgid "Feature '%s' is not implemented"
 msgstr ""
 
-#: sahara/exceptions.py:203
+#: sahara/exceptions.py:212
 #, python-format
 msgid "Heat stack failed with status %s"
 msgstr ""
 
-#: sahara/exceptions.py:237
+#: sahara/exceptions.py:246
 #, python-format
 msgid "Operation timed out after %i second(s)"
 msgstr ""
@@ -376,9 +380,52 @@ msgstr "verstehe JSON nicht"
 msgid "cannot understand XML"
 msgstr "Verstehe XML nicht"
 
+#: sahara/plugins/cdh/cloudera_utils.py:86
+msgid "'cluster' or 'instance' argument missed"
+msgstr ""
+
+#: sahara/plugins/cdh/cloudera_utils.py:96
+#, python-format
+msgid "Process %(process)s is not supported by CDH plugin"
+msgstr ""
+
+#: sahara/plugins/cdh/commands.py:80
+msgid "OS on image is not supported by CDH plugin"
+msgstr ""
+
+#: sahara/plugins/cdh/deploy.py:282
+#, python-format
+msgid ""
+"Cloudera Manager failed to start in %(timeout)s minutes on node "
+"'%(node)s' of cluster '%(cluster)s'"
+msgstr ""
+
+#: sahara/plugins/cdh/validation.py:32
+msgid "'cm_api' is not installed."
+msgstr ""
+
+#: sahara/plugins/cdh/validation.py:94 sahara/plugins/cdh/validation.py:114
+#, python-format
+msgid "CDH plugin cannot scale nodegroup with processes: %(processes)s"
+msgstr ""
+
+#: sahara/plugins/cdh/validation.py:100
+msgid ""
+"CDH plugin cannot scale node group with processes which have no master-"
+"processes run in cluster"
+msgstr ""
+
 #: sahara/service/direct_engine.py:286
 #, python-format
 msgid "Node %s has error status"
+msgstr ""
+
+#: sahara/service/trusts.py:65
+msgid "Failed to create trust"
+msgstr ""
+
+#: sahara/service/trusts.py:103
+msgid "Failed to delete trust {0}"
 msgstr ""
 
 #: sahara/service/validation.py:77
