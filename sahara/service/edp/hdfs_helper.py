@@ -93,13 +93,16 @@ def configure_cluster_for_hdfs(cluster, data_source):
         # Ip address hasn't been resolved, the last chance is for VM itself
         return
 
+    etc_hosts_update = '/tmp/etc-hosts-update.%s' % six.text_type(uuid.uuid4())
+    tmp_etc_hosts = '/tmp/etc-hosts.%s' % six.text_type(uuid.uuid4())
     update_etc_hosts_cmd = (
-        'cat /tmp/etc-hosts-update /etc/hosts | '
-        'sort | uniq > /tmp/etc-hosts && '
-        'cat /tmp/etc-hosts > /etc/hosts && '
-        'rm -f /tmp/etc-hosts /tmp/etc-hosts-update')
+        'cat %(etc_hosts_update)s /etc/hosts | '
+        'sort | uniq > %(tmp_etc_hosts)s && '
+        'cat %(tmp_etc_hosts)s > /etc/hosts && '
+        'rm -f %(tmp_etc_hosts)s %(etc_hosts_update)s' %
+        {'etc_hosts_update': etc_hosts_update, 'tmp_etc_hosts': tmp_etc_hosts})
 
     for inst in u.get_instances(cluster):
         with inst.remote() as r:
-            r.write_file_to('/tmp/etc-hosts-update', etc_hosts_information)
+            r.write_file_to(etc_hosts_update, etc_hosts_information)
             r.execute_command(update_etc_hosts_cmd, run_as_root=True)
