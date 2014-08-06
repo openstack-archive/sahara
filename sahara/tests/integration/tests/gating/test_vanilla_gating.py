@@ -265,43 +265,49 @@ class VanillaGatingTest(cinder.CinderVolumeTest,
 
 # ---------------------------------EDP TESTING---------------------------------
 
-        pig_job_data = self.edp_info.read_pig_example_script()
-        pig_lib_data = self.edp_info.read_pig_example_jar()
-        mapreduce_jar_data = self.edp_info.read_mapreduce_example_jar()
+        def edp_test():
+            pig_job_data = self.edp_info.read_pig_example_script()
+            pig_lib_data = self.edp_info.read_pig_example_jar()
+            mapreduce_jar_data = self.edp_info.read_mapreduce_example_jar()
+            # This is a modified version of WordCount that takes swift configs
+            java_lib_data = self.edp_info.read_java_example_lib()
 
-        # This is a modified version of WordCount that takes swift configs
-        java_lib_data = self.edp_info.read_java_example_lib()
-        try:
-            self.edp_testing(job_type=utils_edp.JOB_TYPE_PIG,
-                             job_data_list=[{'pig': pig_job_data}],
-                             lib_data_list=[{'jar': pig_lib_data}],
-                             swift_binaries=True,
-                             hdfs_local_output=True)
-            self.edp_testing(job_type=utils_edp.JOB_TYPE_MAPREDUCE,
-                             job_data_list=[],
-                             lib_data_list=[{'jar': mapreduce_jar_data}],
-                             configs=self.edp_info.mapreduce_example_configs(),
-                             swift_binaries=True,
-                             hdfs_local_output=True)
-            self.edp_testing(job_type=utils_edp.JOB_TYPE_MAPREDUCE_STREAMING,
-                             job_data_list=[],
-                             lib_data_list=[],
-                             configs=(
-                                 self.edp_info.mapreduce_streaming_configs()))
-            self.edp_testing(job_type=utils_edp.JOB_TYPE_JAVA,
-                             job_data_list=[],
-                             lib_data_list=[{'jar': java_lib_data}],
-                             configs=self.edp_info.java_example_configs(),
-                             pass_input_output_args=True)
+            try:
+                self.edp_testing(
+                    job_type=utils_edp.JOB_TYPE_PIG,
+                    job_data_list=[{'pig': pig_job_data}],
+                    lib_data_list=[{'jar': pig_lib_data}],
+                    swift_binaries=True,
+                    hdfs_local_output=True)
+                self.edp_testing(
+                    job_type=utils_edp.JOB_TYPE_MAPREDUCE,
+                    job_data_list=[],
+                    lib_data_list=[{'jar': mapreduce_jar_data}],
+                    configs=self.edp_info.mapreduce_example_configs(),
+                    swift_binaries=True,
+                    hdfs_local_output=True)
+                self.edp_testing(
+                    job_type=utils_edp.JOB_TYPE_MAPREDUCE_STREAMING,
+                    job_data_list=[],
+                    lib_data_list=[],
+                    configs=self.edp_info.mapreduce_streaming_configs())
+                self.edp_testing(
+                    job_type=utils_edp.JOB_TYPE_JAVA,
+                    job_data_list=[],
+                    lib_data_list=[{'jar': java_lib_data}],
+                    configs=self.edp_info.java_example_configs(),
+                    pass_input_output_args=True)
 
-        except Exception as e:
-            with excutils.save_and_reraise_exception():
-                self.delete_objects(
-                    cluster_info['cluster_id'], cluster_template_id,
-                    node_group_template_id_list
-                )
-                message = 'Failure while EDP testing: '
-                self.print_error_log(message, e)
+            except Exception as e:
+                with excutils.save_and_reraise_exception():
+                    self.delete_objects(
+                        cluster_info['cluster_id'], cluster_template_id,
+                        node_group_template_id_list
+                    )
+                    message = 'Failure while EDP testing: '
+                    self.print_error_log(message, e)
+
+        edp_test()
 
 # -----------------------------MAP REDUCE TESTING------------------------------
 
@@ -433,6 +439,10 @@ class VanillaGatingTest(cinder.CinderVolumeTest,
                     message = ('Failure during check of Swift availability '
                                'after cluster scaling: ')
                     self.print_error_log(message, e)
+
+# ----------------------------- EDP AFTER SCALING -----------------------------
+
+            edp_test()
 
 # ---------------------------DELETE CREATED OBJECTS----------------------------
 

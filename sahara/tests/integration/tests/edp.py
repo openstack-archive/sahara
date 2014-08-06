@@ -205,6 +205,10 @@ class EDPTest(base.ITestCase):
     def edp_testing(self, job_type, job_data_list, lib_data_list=None,
                     configs=None, pass_input_output_args=False,
                     swift_binaries=False, hdfs_local_output=False):
+        job_data_list = job_data_list or []
+        lib_data_list = lib_data_list or []
+        configs = configs or {}
+
         try:
             swift = self.connect_to_swift()
             container_name = 'Edp-test-%s' % str(uuid.uuid4())[:8]
