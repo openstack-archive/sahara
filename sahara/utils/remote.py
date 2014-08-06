@@ -68,8 +68,8 @@ class Remote(object):
         """Returns HTTP client for a given instance's port."""
 
     @abc.abstractmethod
-    def close_http_sessions(self):
-        """Closes all cached HTTP sessions."""
+    def close_http_session(self, port):
+        """Closes cached HTTP session for a given instance's port."""
 
     @abc.abstractmethod
     def execute_command(self, cmd, run_as_root=False, get_stderr=False,
