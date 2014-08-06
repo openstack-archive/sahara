@@ -184,3 +184,7 @@ class SparkJobEngine(base_engine.JobEngine):
         # Since we're using backgrounding with redirect, this is unlikely.
         raise e.EDPError("Spark job execution failed. Exit status = %s, "
                          "stdout = %s" % (ret, stdout))
+
+    @staticmethod
+    def get_possible_job_config(job_type):
+        return {'job_config': {'configs': [], 'args': []}}

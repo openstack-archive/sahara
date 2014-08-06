@@ -45,7 +45,7 @@ class TestJobManager(base.SaharaWithDbTestCase):
 
     @mock.patch('sahara.utils.remote.get_remote')
     @mock.patch('sahara.service.edp.hdfs_helper.create_dir')
-    def test_create_job_dir(self, helper, remote):
+    def test_hdfs_create_workflow_dir(self, helper, remote):
         remote_class = mock.MagicMock()
         remote_class.__exit__.return_value = 'closed'
         remote.return_value = remote_class
@@ -59,13 +59,36 @@ class TestJobManager(base.SaharaWithDbTestCase):
         remote_class.reset_mock()
         helper.reset_mock()
 
+    @mock.patch('uuid.uuid4')
+    @mock.patch('sahara.utils.remote.get_remote')
+    def test_create_workflow_dir(self, get_remote, uuid4):
+        job = mock.Mock()
+        job.name = "job"
+
+        # This is to mock "with remote.get_remote(instance) as r"
+        remote_instance = mock.Mock()
+        get_remote.return_value.__enter__ = mock.Mock(
+            return_value=remote_instance)
+        remote_instance.execute_command = mock.Mock()
+        remote_instance.execute_command.return_value = 0, "standard out"
+
+        uuid4.return_value = "generated_uuid"
+        job_utils.create_workflow_dir("where", "/tmp/somewhere", job, "uuid")
+        remote_instance.execute_command.assert_called_with(
+            "mkdir -p /tmp/somewhere/job/uuid")
+        remote_instance.execute_command.reset_mock()
+
+        job_utils.create_workflow_dir("where", "/tmp/somewhere", job)
+        remote_instance.execute_command.assert_called_with(
+            "mkdir -p /tmp/somewhere/job/generated_uuid")
+
     @mock.patch('sahara.utils.remote.get_remote')
     @mock.patch('sahara.service.edp.hdfs_helper.put_file_to_hdfs')
     @mock.patch('sahara.service.edp.hdfs_helper._dir_missing')
     @mock.patch('sahara.utils.ssh_remote.InstanceInteropHelper')
     @mock.patch('sahara.conductor.API.job_binary_internal_get_raw_data')
-    def test_upload_job_files(self, conductor_raw_data, remote_class,
-                              dir_missing, helper, remote):
+    def test_hdfs_upload_job_files(self, conductor_raw_data, remote_class,
+                                   dir_missing, helper, remote):
         remote_class.__exit__.return_value = 'closed'
         remote.return_value = remote_class
         helper.return_value = 'ok'
@@ -85,6 +108,49 @@ class TestJobManager(base.SaharaWithDbTestCase):
         remote.reset_mock()
         remote_class.reset_mock()
         helper.reset_mock()
+
+    @mock.patch('sahara.service.edp.binary_retrievers.dispatch.get_raw_binary')
+    @mock.patch('sahara.utils.remote.get_remote')
+    def test_upload_job_files(self, get_remote, get_raw_binary):
+        main_names = ["main1", "main2", "main3"]
+        lib_names = ["lib1", "lib2", "lib3"]
+
+        def make_data_objects(*args):
+            objs = []
+            for name in args:
+                m = mock.Mock()
+                m.name = name
+                objs.append(m)
+            return objs
+
+        job = mock.Mock()
+        job.name = "job"
+        job.mains = make_data_objects(*main_names)
+        job.libs = make_data_objects(*lib_names)
+
+        # This is to mock "with remote.get_remote(instance) as r"
+        remote_instance = mock.Mock()
+        get_remote.return_value.__enter__ = mock.Mock(
+            return_value=remote_instance)
+
+        get_raw_binary.return_value = "data"
+        paths = job_utils.upload_job_files(
+            "where", "/somedir", job, libs_subdir=False)
+        self.assertEqual(paths,
+                         ["/somedir/" + n for n in main_names + lib_names])
+        for path in paths:
+            remote_instance.write_file_to.assert_any_call(path, "data")
+        remote_instance.write_file_to.reset_mock()
+
+        paths = job_utils.upload_job_files(
+            "where", "/somedir", job, libs_subdir=True)
+        remote_instance.execute_command.assert_called_with(
+            "mkdir -p /somedir/libs")
+        expected = ["/somedir/" + n for n in main_names]
+        expected += ["/somedir/libs/" + n for n in lib_names]
+        self.assertEqual(paths, expected)
+        for path in paths:
+            remote_instance.write_file_to.assert_any_call(path, "data")
 
     def test_add_postfix(self):
         self.override_config("job_workflow_postfix", 'caba')

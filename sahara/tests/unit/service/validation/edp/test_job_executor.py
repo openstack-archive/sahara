@@ -18,6 +18,7 @@ import uuid
 import mock
 import six
 
+from sahara import main
 from sahara.service import api
 from sahara.service.validations import base as validation_base
 from sahara.service.validations.edp import job_executor as je
@@ -41,6 +42,9 @@ class TestJobExecValidation(u.ValidationTestCase):
         super(TestJobExecValidation, self).setUp()
         self._create_object_fun = wrap_it
         self.scheme = je.JOB_EXEC_SCHEMA
+        # Make sure that the spark plugin is loaded
+        if 'spark' not in main.CONF['plugins']:
+            self.override_config('plugins', main.CONF['plugins'] + ['spark'])
         api.plugin_base.setup_plugins()
 
     @mock.patch('sahara.service.validations.edp.base.'
@@ -153,3 +157,65 @@ class TestJobExecValidation(u.ValidationTestCase):
         get_cluster.return_value = tu.create_cluster("cluster", "tenant1",
                                                      "vanilla", "1.2.1", [ng])
         validation_base.check_edp_job_support('some_id')
+
+    @mock.patch('sahara.service.api.get_cluster')
+    @mock.patch('sahara.service.edp.api.get_job')
+    def test_check_edp_job_support_spark(self, get_job, get_cluster):
+        # utils.start_patch will construct a vanilla cluster as a
+        # default for get_cluster, but we want a Spark cluster.
+        # So, we'll make our own.
+
+        # Note that this means we cannot use assert_create_object_validation()
+        # because it calls start_patch() and will override our setting
+        job = mock.Mock()
+        job.type = edp.JOB_TYPE_SPARK
+        job.mains = ["main"]
+        get_job.return_value = job
+        ng = tu.make_ng_dict('master', 42, [], 1,
+                             instances=[tu.make_inst_dict('id', 'name')])
+        get_cluster.return_value = tu.create_cluster("cluster", "tenant1",
+                                                     "spark", "1.0.0", [ng])
+
+        # Everything is okay, spark cluster supports EDP by default
+        # because cluster requires a master and slaves >= 1
+        wrap_it(data={"cluster_id": six.text_type(uuid.uuid4()),
+                      "job_configs": {
+                          "configs": {
+                              "edp.java.main_class": "org.me.class"}}})
+
+    @mock.patch('sahara.service.validations.base.check_edp_job_support')
+    @mock.patch('sahara.service.validations.base.check_cluster_exists')
+    @mock.patch('sahara.service.edp.api.get_job')
+    def _test_edp_main_class(self, job_type,
+                             get_job,
+                             check_cluster_exists,
+                             check_edp_job_support):
+        check_cluster_exists.return_value = True
+        check_edp_job_support.return_value = None
+        get_job.return_value = mock.Mock()
+        get_job.return_value.type = job_type
+
+        self._assert_create_object_validation(
+            data={
+                "cluster_id": six.text_type(uuid.uuid4()),
+                "job_configs": {"configs": {},
+                                "params": {},
+                                "args": []}
+            },
+            bad_req_i=(1, "INVALID_DATA",
+                          "%s job must "
+                          "specify edp.java.main_class" % job_type))
+
+        self._assert_create_object_validation(
+            data={
+                "cluster_id": six.text_type(uuid.uuid4()),
+                "job_configs": {
+                    "configs": {
+                        "edp.java.main_class": "org.me.myclass"},
+                    "params": {},
+                    "args": []}
+            })
+
+    def test_edp_main_class(self):
+        for job_type in (edp.JOB_TYPE_JAVA, edp.JOB_TYPE_SPARK):
+            self._test_edp_main_class(job_type)

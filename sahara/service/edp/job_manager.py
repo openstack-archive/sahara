@@ -49,7 +49,8 @@ default_engines = [_make_engine("oozie",
                                  edp.JOB_TYPE_PIG],
                                 oozie_engine.OozieJobEngine),
                    _make_engine("spark",
-                                [edp.JOB_TYPE_JAVA],
+                                [edp.JOB_TYPE_JAVA,
+                                 edp.JOB_TYPE_SPARK],
                                 spark_engine.SparkJobEngine)
                    ]
 
@@ -184,8 +185,14 @@ def update_job_statuses():
 
 def get_job_config_hints(job_type):
     # TODO(tmckay) We need plugin-specific config hints
-    # (not a new problem) so this will need to change.  However,
-    # at the moment we don't have a plugin or cluster argument
-    # in this call so we will have to just use the configs for
-    # Oozie
-    return oozie_engine.get_possible_job_config(job_type)
+    # (not a new problem). At the moment we don't have a plugin
+    # or cluster argument in this call so we can only go by
+    # job type.
+
+    # Since we currently have a single engine for each
+    # job type (Spark will support Java only temporarily)
+    # we can just key off of job type
+
+    for eng in default_engines:
+        if job_type in eng["job_types"]:
+            return eng["engine"].get_possible_job_config(job_type)

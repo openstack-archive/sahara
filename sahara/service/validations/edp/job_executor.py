@@ -65,11 +65,13 @@ def check_job_executor(data, job_id):
     # Check if cluster contains Oozie service to run job
     main_base.check_edp_job_support(data['cluster_id'])
 
-    # All types except Java require input and output objects
-    if job_type == edp.JOB_TYPE_JAVA:
+    # All types except Java/Spark require input and output objects
+    # and Java/Spark require main class
+    if job_type in [edp.JOB_TYPE_JAVA, edp.JOB_TYPE_SPARK]:
         if not _is_main_class_present(data):
-            raise ex.InvalidDataException('Java job must '
-                                          'specify edp.java.main_class')
+            raise ex.InvalidDataException('%s job must '
+                                          'specify edp.java.main_class'
+                                          % job.type)
     else:
         if not ('input_id' in data and 'output_id' in data):
             raise ex.InvalidDataException("%s job requires 'input_id' "
