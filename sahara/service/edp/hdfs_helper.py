@@ -14,7 +14,9 @@
 # limitations under the License.
 
 import os
+import uuid
 
+import six
 from six.moves.urllib import parse as urlparse
 
 from sahara import conductor as c
@@ -27,8 +29,9 @@ conductor = c.API
 
 
 def put_file_to_hdfs(r, file, file_name, path, hdfs_user):
-    r.write_file_to('/tmp/%s' % file_name, file)
-    move_from_local(r, '/tmp/%s' % file_name, path + '/' + file_name,
+    tmp_file_name = '%s.%s' % (file_name, six.text_type(uuid.uuid4()))
+    r.write_file_to('/tmp/%s' % tmp_file_name, file)
+    move_from_local(r, '/tmp/%s' % tmp_file_name, path + '/' + file_name,
                     hdfs_user)
 
 
