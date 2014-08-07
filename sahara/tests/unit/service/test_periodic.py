@@ -16,10 +16,10 @@
 import datetime
 
 import mock
+from oslo.utils import timeutils
 
 from sahara.conductor import manager
 from sahara import context
-from sahara.openstack.common import timeutils
 import sahara.service.periodic as p
 import sahara.tests.unit.base as base
 from sahara.tests.unit.conductor.manager import test_clusters as tc
@@ -51,7 +51,7 @@ class TestPeriodicBack(base.SaharaWithDbTestCase):
         get_job_status.assert_has_calls([mock.call(u'2'),
                                          mock.call(u'3')])
 
-    @mock.patch('sahara.openstack.common.timeutils.utcnow')
+    @mock.patch('oslo.utils.timeutils.utcnow')
     @mock.patch('sahara.service.api.terminate_cluster')
     def test_cluster_terminate(self, terminate_cluster, utcnow):
 
@@ -83,7 +83,7 @@ class TestPeriodicBack(base.SaharaWithDbTestCase):
         self.assertEqual(terminate_cluster.call_count, 1)
         terminate_cluster.assert_has_calls([mock.call(u'1')])
 
-    @mock.patch('sahara.openstack.common.timeutils.utcnow')
+    @mock.patch('oslo.utils.timeutils.utcnow')
     @mock.patch('sahara.service.api.terminate_cluster')
     def test_cluster_not_killed_too_early(self, terminate_cluster, utcnow):
 
@@ -96,7 +96,7 @@ class TestPeriodicBack(base.SaharaWithDbTestCase):
         p.SaharaPeriodicTasks().terminate_unneeded_clusters(None)
         self.assertEqual(terminate_cluster.call_count, 0)
 
-    @mock.patch('sahara.openstack.common.timeutils.utcnow')
+    @mock.patch('oslo.utils.timeutils.utcnow')
     @mock.patch('sahara.service.api.terminate_cluster')
     def test_cluster_killed_in_time(self, terminate_cluster, utcnow):
 

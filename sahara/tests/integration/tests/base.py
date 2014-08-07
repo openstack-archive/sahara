@@ -22,6 +22,7 @@ import fixtures
 from keystoneclient.v2_0 import client as keystone_client
 from neutronclient.v2_0 import client as neutron_client
 from novaclient.v1_1 import client as nova_client
+from oslo.utils import excutils
 from oslotest import base
 from saharaclient.api import base as client_base
 import saharaclient.client as sahara_client
@@ -29,7 +30,6 @@ import six
 from swiftclient import client as swift_client
 from testtools import testcase
 
-from sahara.openstack.common import excutils
 from sahara.tests.integration.configs import config as cfg
 import sahara.utils.openstack.images as imgs
 from sahara.utils import ssh_remote

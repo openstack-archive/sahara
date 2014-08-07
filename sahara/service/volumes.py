@@ -14,6 +14,7 @@
 # limitations under the License.
 
 from oslo.config import cfg
+from oslo.utils import timeutils as tu
 
 from sahara import conductor as c
 from sahara import context
@@ -22,7 +23,6 @@ from sahara.i18n import _
 from sahara.i18n import _LE
 from sahara.i18n import _LW
 from sahara.openstack.common import log as logging
-from sahara.openstack.common import timeutils as tu
 from sahara.utils.openstack import cinder
 from sahara.utils.openstack import nova
 

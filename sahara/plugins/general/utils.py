@@ -13,9 +13,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from oslo.utils import netutils
 from six.moves.urllib import parse as urlparse
 
-from sahara.openstack.common import network_utils
 from sahara.plugins.general import exceptions as ex
 
 
@@ -53,9 +53,9 @@ def generate_fqdn_host_names(nodes):
 def get_port_from_address(address):
     parse_result = urlparse.urlparse(address)
     # urlparse do not parse values like 0.0.0.0:8000,
-    # network_utils do not parse values like http://localhost:8000,
+    # netutils do not parse values like http://localhost:8000,
     # so combine approach is using
     if parse_result.port:
         return parse_result.port
     else:
-        return network_utils.parse_host_port(address)[1]
+        return netutils.parse_host_port(address)[1]

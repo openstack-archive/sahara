@@ -19,14 +19,14 @@ from __future__ import with_statement
 from logging import config as c
 
 from alembic import context
+from oslo.utils import importutils
 from sqlalchemy import create_engine
 from sqlalchemy import pool
 
 from sahara.db.sqlalchemy import model_base
-from sahara.openstack.common import importutils
 
 
-importutils.import_module('sahara.db.sqlalchemy.models')
+importutils.try_import('sahara.db.sqlalchemy.models')
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
