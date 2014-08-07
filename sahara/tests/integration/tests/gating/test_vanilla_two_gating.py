@@ -24,10 +24,6 @@ from sahara.tests.integration.tests import map_reduce
 from sahara.tests.integration.tests import scaling
 from sahara.tests.integration.tests import swift
 from sahara.utils import edp as utils_edp
-from sahara.utils import files as f
-
-
-RESOURCES_PATH = 'tests/integration/tests/resources/'
 
 
 class VanillaTwoGatingTest(cluster_configs.ClusterConfigTest,
@@ -199,8 +195,10 @@ class VanillaTwoGatingTest(cluster_configs.ClusterConfigTest,
             self._edp_java_test()
 
     def _edp_pig_test(self):
-        pig_job = f.get_file_text(RESOURCES_PATH + 'edp-job.pig')
-        pig_lib = f.get_file_text(RESOURCES_PATH + 'edp-lib.jar')
+
+        pig_job = self.edp_info.read_pig_example_script()
+        pig_lib = self.edp_info.read_pig_example_jar()
+
         self.edp_testing(job_type=utils_edp.JOB_TYPE_PIG,
                          job_data_list=[{'pig': pig_job}],
                          lib_data_list=[{'jar': pig_lib}],
@@ -208,14 +206,8 @@ class VanillaTwoGatingTest(cluster_configs.ClusterConfigTest,
                          hdfs_local_output=True)
 
     def _edp_mapreduce_test(self):
-        mapreduce_jar = f.get_file_text(RESOURCES_PATH + 'edp-mapreduce.jar')
-        mapreduce_configs = {
-            'configs': {
-                'mapred.mapper.class': 'org.apache.oozie.example.SampleMapper',
-                'mapred.reducer.class':
-                'org.apache.oozie.example.SampleReducer'
-            }
-        }
+        mapreduce_jar = self.edp_info.read_mapreduce_example_jar()
+        mapreduce_configs = self.edp_info.mapreduce_example_configs()
         self.edp_testing(job_type=utils_edp.JOB_TYPE_MAPREDUCE,
                          job_data_list=[],
                          lib_data_list=[{'jar': mapreduce_jar}],
@@ -224,27 +216,14 @@ class VanillaTwoGatingTest(cluster_configs.ClusterConfigTest,
                          hdfs_local_output=True)
 
     def _edp_mapreduce_streaming_test(self):
-        mapreduce_streaming_configs = {
-            'configs': {
-                'edp.streaming.mapper': '/bin/cat',
-                'edp.streaming.reducer': '/usr/bin/wc'
-            }
-        }
         self.edp_testing(job_type=utils_edp.JOB_TYPE_MAPREDUCE_STREAMING,
                          job_data_list=[],
                          lib_data_list=[],
-                         configs=mapreduce_streaming_configs)
+                         configs=self.edp_info.mapreduce_streaming_configs())
 
     def _edp_java_test(self):
-        java_jar = f.get_file_text(
-            RESOURCES_PATH + 'hadoop-mapreduce-examples-2.3.0.jar')
-        java_configs = {
-            'configs': {
-                'edp.java.main_class':
-                'org.apache.hadoop.examples.QuasiMonteCarlo'
-            },
-            'args': ['10', '10']
-        }
+        java_jar = self.edp_info.read_java_example_lib(2)
+        java_configs = self.edp_info.java_example_configs(2)
         self.edp_testing(utils_edp.JOB_TYPE_JAVA,
                          job_data_list=[],
                          lib_data_list=[{'jar': java_jar}],

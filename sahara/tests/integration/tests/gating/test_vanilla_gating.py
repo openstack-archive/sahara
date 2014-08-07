@@ -265,34 +265,12 @@ class VanillaGatingTest(cinder.CinderVolumeTest,
 
 # ---------------------------------EDP TESTING---------------------------------
 
-        path = 'sahara/tests/integration/tests/resources/'
-        pig_job_data = open(path + 'edp-job.pig').read()
-        pig_lib_data = open(path + 'edp-lib.jar').read()
-        mapreduce_jar_data = open(path + 'edp-mapreduce.jar').read()
+        pig_job_data = self.edp_info.read_pig_example_script()
+        pig_lib_data = self.edp_info.read_pig_example_jar()
+        mapreduce_jar_data = self.edp_info.read_mapreduce_example_jar()
 
         # This is a modified version of WordCount that takes swift configs
-        java_lib_data = open(path + 'edp-java/edp-java.jar').read()
-        java_configs = {
-            "configs": {
-                "edp.java.main_class":
-                    "org.openstack.sahara.examples.WordCount"
-            }
-        }
-
-        mapreduce_configs = {
-            "configs": {
-                "mapred.mapper.class":
-                    "org.apache.oozie.example.SampleMapper",
-                "mapred.reducer.class":
-                    "org.apache.oozie.example.SampleReducer"
-            }
-        }
-        mapreduce_streaming_configs = {
-            "configs": {
-                "edp.streaming.mapper": "/bin/cat",
-                "edp.streaming.reducer": "/usr/bin/wc"
-            }
-        }
+        java_lib_data = self.edp_info.read_java_example_lib()
         try:
             self.edp_testing(job_type=utils_edp.JOB_TYPE_PIG,
                              job_data_list=[{'pig': pig_job_data}],
@@ -302,17 +280,18 @@ class VanillaGatingTest(cinder.CinderVolumeTest,
             self.edp_testing(job_type=utils_edp.JOB_TYPE_MAPREDUCE,
                              job_data_list=[],
                              lib_data_list=[{'jar': mapreduce_jar_data}],
-                             configs=mapreduce_configs,
+                             configs=self.edp_info.mapreduce_example_configs(),
                              swift_binaries=True,
                              hdfs_local_output=True)
             self.edp_testing(job_type=utils_edp.JOB_TYPE_MAPREDUCE_STREAMING,
                              job_data_list=[],
                              lib_data_list=[],
-                             configs=mapreduce_streaming_configs)
+                             configs=(
+                                 self.edp_info.mapreduce_streaming_configs()))
             self.edp_testing(job_type=utils_edp.JOB_TYPE_JAVA,
                              job_data_list=[],
                              lib_data_list=[{'jar': java_lib_data}],
-                             configs=java_configs,
+                             configs=self.edp_info.java_example_configs(),
                              pass_input_output_args=True)
 
         except Exception as e:

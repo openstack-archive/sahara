@@ -70,9 +70,8 @@ class TransientClusterTest(edp.EDPTest):
                 raise
 
             # check EDP
-            path = 'sahara/tests/integration/tests/resources/'
-            pig_job_data = open(path + 'edp-job.pig').read()
-            pig_lib_data = open(path + 'edp-lib.jar').read()
+            pig_job_data = self.edp_info.read_pig_example_script()
+            pig_lib_data = self.edp_info.read_pig_example_jar()
             self.edp_testing(job_type=utils_edp.JOB_TYPE_PIG,
                              job_data_list=[{'pig': pig_job_data}],
                              lib_data_list=[{'jar': pig_lib_data}])

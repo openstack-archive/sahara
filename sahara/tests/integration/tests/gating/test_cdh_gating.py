@@ -24,7 +24,6 @@ from sahara.tests.integration.tests import map_reduce
 from sahara.tests.integration.tests import scaling
 from sahara.tests.integration.tests import swift
 from sahara.utils import edp as utils_edp
-from sahara.utils import files as f
 
 
 class CDHGatingTest(cluster_configs.ClusterConfigTest,
@@ -203,11 +202,9 @@ class CDHGatingTest(cluster_configs.ClusterConfigTest,
         self._edp_test()
 
     def _edp_test(self):
-        path = 'tests/integration/tests/resources/'
-
         # check pig
-        pig_job = f.get_file_text(path + 'edp-job.pig')
-        pig_lib = f.get_file_text(path + 'edp-lib.jar')
+        pig_job = self.edp_info.read_pig_example_script()
+        pig_lib = self.edp_info.read_pig_example_jar()
         self.edp_testing(job_type=utils_edp.JOB_TYPE_PIG,
                          job_data_list=[{'pig': pig_job}],
                          lib_data_list=[{'jar': pig_lib}],
@@ -215,14 +212,8 @@ class CDHGatingTest(cluster_configs.ClusterConfigTest,
                          hdfs_local_output=True)
 
         # check mapreduce
-        mapreduce_jar = f.get_file_text(path + 'edp-mapreduce.jar')
-        mapreduce_configs = {
-            'configs': {
-                'mapred.mapper.class': 'org.apache.oozie.example.SampleMapper',
-                'mapred.reducer.class':
-                'org.apache.oozie.example.SampleReducer'
-            }
-        }
+        mapreduce_jar = self.edp_info.read_mapreduce_example_jar()
+        mapreduce_configs = self.edp_info.mapreduce_example_configs()
         self.edp_testing(job_type=utils_edp.JOB_TYPE_MAPREDUCE,
                          job_data_list=[],
                          lib_data_list=[{'jar': mapreduce_jar}],
@@ -231,36 +222,12 @@ class CDHGatingTest(cluster_configs.ClusterConfigTest,
                          hdfs_local_output=True)
 
         # check mapreduce streaming
-        mapreduce_streaming_configs = {
-            'configs': {
-                'edp.streaming.mapper': '/bin/cat',
-                'edp.streaming.reducer': '/usr/bin/wc'
-            }
-        }
         self.edp_testing(job_type=utils_edp.JOB_TYPE_MAPREDUCE_STREAMING,
                          job_data_list=[],
                          lib_data_list=[],
-                         configs=mapreduce_streaming_configs,
+                         configs=self.edp_info.mapreduce_streaming_configs(),
                          swift_binaries=False,
                          hdfs_local_output=True)
-
-        # check java
-        """
-        java_jar = f.get_file_text(
-            path + 'hadoop-mapreduce-examples-2.3.0.jar')
-        java_configs = {
-            'configs': {
-                'edp.java.main_class':
-                'org.apache.hadoop.examples.QuasiMonteCarlo'
-            },
-            'args': ['10', '10']
-        }
-        self.edp_testing(utils_edp.JOB_TYPE_JAVA,
-                         job_data_list=[],
-                         lib_data_list=[{'jar': java_jar}],
-                         configs=java_configs,
-                         swift_binaries=False,
-                         hdfs_local_output=True)"""
 
     @b.errormsg("Failure while cluster scaling: ")
     def _check_scaling(self):
