@@ -353,12 +353,21 @@ class InstanceInteropHelper(remote.Remote):
         return _get_http_client(self.instance.management_ip, port, info,
                                 *args, **kwargs)
 
-    def close_http_sessions(self):
+    def close_http_session(self, port):
         global _sessions
 
-        LOG.debug('closing host related http sessions')
-        for session in _sessions.values():
-            session.close()
+        host = self.instance.management_ip
+        self._log_command("Closing HTTP session for %(host)s:%(port)s" % {
+                          'host': host, 'port': port})
+
+        session = _sessions.get((host, port), None)
+        if session is None:
+            raise ex.NotFoundException(
+                'Session for %(host)s:%(port)s not cached' % {
+                    'host': host, 'port': port})
+
+        session.close()
+        del _sessions[(host, port)]
 
     def execute_command(self, cmd, run_as_root=False, get_stderr=False,
                         raise_when_error=True, timeout=300):
