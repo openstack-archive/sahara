@@ -175,7 +175,7 @@ def start_service(service):
 
 
 @cloudera_cmd
-def start_roles(service, role_names):
+def start_roles(service, *role_names):
     for role in service.start_roles(*role_names):
         yield role
 
