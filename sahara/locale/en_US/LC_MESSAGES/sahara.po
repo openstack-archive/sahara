@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version:  Sahara\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2014-08-05 06:10+0000\n"
+"POT-Creation-Date: 2014-08-08 06:10+0000\n"
 "PO-Revision-Date: 2014-03-19 22:46+0000\n"
 "Last-Translator: openstackjenkins <jenkins@openstack.org>\n"
 "Language-Team: English (United States) "
@@ -429,7 +429,7 @@ msgstr ""
 msgid "Volume %s has error status"
 msgstr ""
 
-#: sahara/service/edp/job_manager.py:104
+#: sahara/service/edp/job_manager.py:105
 #, python-format
 msgid "Cluster does not support job type %s"
 msgstr ""
@@ -659,6 +659,16 @@ msgid ""
 "Remote driver is not loaded. Most probably you see this error because you"
 " are running Sahara in distributed mode and it is broken.Try running "
 "sahara-all instead."
+msgstr ""
+
+#: sahara/utils/ssh_remote.py:395
+#, python-format
+msgid "Closing HTTP session for %(host)s:%(port)s"
+msgstr ""
+
+#: sahara/utils/ssh_remote.py:401
+#, python-format
+msgid "Session for %(host)s:%(port)s not cached"
 msgstr ""
 
 #: sahara/utils/tempfiles.py:37

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Sahara\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2014-08-05 06:10+0000\n"
+"POT-Creation-Date: 2014-08-08 06:10+0000\n"
 "PO-Revision-Date: 2014-07-16 14:42+0000\n"
 "Last-Translator: openstackjenkins <jenkins@openstack.org>\n"
 "Language-Team: German (http://www.transifex.com/projects/p/sahara/language/"
@@ -68,6 +68,11 @@ msgstr "Überspringe periodische Aufgabe %(task)s weil sie deaktiviert ist"
 
 #: sahara/plugins/cdh/deploy.py:289
 msgid "Cloudera Manager has been started"
+msgstr ""
+
+#: sahara/plugins/hdp/versions/version_1_3_2/versionhandler.py:592
+#: sahara/plugins/hdp/versions/version_2_0_6/versionhandler.py:691
+msgid "HTTP session is not cached"
 msgstr ""
 
 #: sahara/service/direct_engine.py:280
