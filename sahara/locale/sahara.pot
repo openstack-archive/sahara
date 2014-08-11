@@ -6,9 +6,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: sahara 2014.2.dev73.g8147413\n"
+"Project-Id-Version: sahara 2014.2.dev79.gb434226\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2014-08-08 06:10+0000\n"
+"POT-Creation-Date: 2014-08-11 06:09+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -116,6 +116,14 @@ msgstr ""
 
 #: sahara/api/base.py:22
 msgid "This API operation isn't implemented"
+msgstr ""
+
+#: sahara/api/middleware/auth_valid.py:55
+msgid "Incorrect path"
+msgstr ""
+
+#: sahara/api/middleware/auth_valid.py:61
+msgid "Token tenant != requested tenant"
 msgstr ""
 
 #: sahara/conductor/__init__.py:32
@@ -257,14 +265,6 @@ msgstr ""
 #: sahara/db/sqlalchemy/api.py:787
 #, python-format
 msgid "JobBinaryInternal id '%s' not found!"
-msgstr ""
-
-#: sahara/middleware/auth_valid.py:55
-msgid "Incorrect path"
-msgstr ""
-
-#: sahara/middleware/auth_valid.py:61
-msgid "Token tenant != requested tenant"
 msgstr ""
 
 #: sahara/openstack/common/exception.py:103
