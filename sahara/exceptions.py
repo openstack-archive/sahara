@@ -45,6 +45,8 @@ class NotFoundException(SaharaException):
         self.value = value
         if message:
             self.message = message % value
+        else:
+            self.message = self.message % value
 
 
 class NameAlreadyExistsException(SaharaException):
