@@ -19,8 +19,8 @@ import time
 import uuid
 
 import fixtures
+from oslo.utils import excutils
 
-from sahara.openstack.common import excutils
 from sahara.swift import swift_helper as sw
 from sahara.tests.integration.tests import base
 from sahara.utils import edp

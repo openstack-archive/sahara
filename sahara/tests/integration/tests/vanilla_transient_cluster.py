@@ -15,9 +15,9 @@
 
 import time
 
+from oslo.utils import timeutils
 import saharaclient.api.base as sab
 
-from sahara.openstack.common import timeutils
 from sahara.tests.integration.tests import base
 from sahara.tests.integration.tests import edp
 from sahara.utils import edp as utils_edp

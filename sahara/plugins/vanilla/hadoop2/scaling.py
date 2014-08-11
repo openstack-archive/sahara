@@ -13,8 +13,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from oslo.utils import timeutils
+
 from sahara import context
-from sahara.openstack.common import timeutils
 from sahara.plugins.general import exceptions as ex
 from sahara.plugins.general import utils as u
 from sahara.plugins.vanilla.hadoop2 import config

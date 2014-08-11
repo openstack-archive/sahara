@@ -15,7 +15,8 @@
 
 import uuid
 
-from sahara.openstack.common import excutils
+from oslo.utils import excutils
+
 from sahara.tests.integration.tests import base
 
 

@@ -38,6 +38,7 @@ import uuid
 from eventlet import semaphore
 from eventlet import timeout as e_timeout
 from oslo.config import cfg
+from oslo.utils import excutils
 import paramiko
 import requests
 import six
@@ -46,7 +47,6 @@ from sahara import context
 from sahara import exceptions as ex
 from sahara.i18n import _
 from sahara.i18n import _LE
-from sahara.openstack.common import excutils
 from sahara.utils import crypto
 from sahara.utils import hashabledict as h
 from sahara.utils.openstack import base

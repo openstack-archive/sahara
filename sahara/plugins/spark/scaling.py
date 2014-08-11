@@ -15,10 +15,10 @@
 
 import os
 
+from oslo.utils import timeutils
 import six
 
 from sahara import context
-from sahara.openstack.common import timeutils
 from sahara.plugins.general import exceptions as ex
 from sahara.plugins.general import utils
 from sahara.plugins.spark import config_helper as c_helper
