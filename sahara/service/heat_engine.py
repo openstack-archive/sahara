@@ -191,6 +191,7 @@ class HeatEngine(e.Engine):
 class _CreateLauncher(HeatEngine):
     STAGES = ["Spawning", "Waiting", "Preparing"]
     UPDATE_STACK = False
+    DISABLE_ROLLBACK = True
     inst_ids = []
 
     def launch_instances(self, ctx, cluster, target_count):
@@ -200,7 +201,8 @@ class _CreateLauncher(HeatEngine):
         tmpl = heat.ClusterTemplate(cluster)
 
         self._configure_template(ctx, tmpl, cluster, target_count)
-        stack = tmpl.instantiate(update_existing=self.UPDATE_STACK)
+        stack = tmpl.instantiate(update_existing=self.UPDATE_STACK,
+                                 disable_rollback=self.DISABLE_ROLLBACK)
         heat.wait_stack_completion(stack.heat_stack)
 
         self.inst_ids = self._populate_cluster(ctx, cluster, stack)
@@ -239,6 +241,7 @@ class _CreateLauncher(HeatEngine):
 class _ScaleLauncher(_CreateLauncher):
     STAGES = ["Scaling: Spawning", "Scaling: Waiting", "Scaling: Preparing"]
     UPDATE_STACK = True
+    DISABLE_ROLLBACK = False
 
 
 class _RollbackLauncher(_CreateLauncher):

@@ -116,7 +116,7 @@ class ClusterTemplate(object):
         }
 
     # Consider using a single Jinja template for all this
-    def instantiate(self, update_existing):
+    def instantiate(self, update_existing, disable_rollback=True):
         main_tmpl = _load_template('main.heat',
                                    {'resources': self._serialize_resources()})
         heat = client()
@@ -124,7 +124,7 @@ class ClusterTemplate(object):
         kwargs = {
             'stack_name': self.cluster.name,
             'timeout_mins': 180,
-            'disable_rollback': True,
+            'disable_rollback': disable_rollback,
             'parameters': {},
             'template': json.loads(main_tmpl)}
 
