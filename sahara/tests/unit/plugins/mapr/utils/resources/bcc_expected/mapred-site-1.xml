@@ -1,0 +1,16 @@
+<?xml version="1.0" ?>
+<?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
+<configuration>
+	<property>
+		<name>node_config_0</name>
+		<value>False</value>
+	</property>
+	<property>
+		<name>mapred.task.cache.levels</name>
+		<value>3</value>
+	</property>
+	<property>
+		<name>mapred.jobtracker.nodegroup.aware</name>
+		<value>True</value>
+	</property>
+</configuration>

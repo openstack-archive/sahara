@@ -283,3 +283,185 @@
 #SKIP_EDP_TEST = False
 #SKIP_SWIFT_TEST = False
 #SKIP_SCALING_TEST = False
+
+
+[MAPR]
+
+# Name of plugin (string value)
+#PLUGIN_NAME = 'mapr'
+
+
+# ID for image which is used for cluster creation. Also you can specify image
+# name or tag of image instead of image ID. If you do not specify image related
+# parameters then image for cluster creation will be chosen by tag
+# "sahara_i_tests" (string value)
+#IMAGE_ID = <None>
+
+# Name for image which is used for cluster creation. Also you can specify image
+# ID or tag of image instead of image name. If you do not specify image related
+# parameters then image for cluster creation will be chosen by tag
+# "sahara_i_tests" (string value)
+#IMAGE_NAME = <None>
+
+# Tag for image which is used for cluster creation. Also you can specify image
+# ID or image name instead of tag of image. If you do not specify image related
+# parameters then image for cluster creation will be chosen by tag
+# "sahara_i_tests" (string value)
+#IMAGE_TAG = <None>
+
+
+# Username to get cluster node with SSH (string value)
+#SSH_USERNAME = <None>
+
+# A list of processes that will be launched on master node (list value)
+#MASTER_NODE_PROCESSES = CLDB, FileServer, ZooKeeper, TaskTracker, JobTracker, Oozie
+
+# A list of processes that will be launched on worker nodes (list value)
+#WORKER_NODE_PROCESSES = FileServer, TaskTracker, Pig
+
+# Version of Hadoop (string value)
+#HADOOP_VERSION = '1.0.3'
+
+# Username which is used for access to Hadoop services (string value)
+#HADOOP_USER = 'mapr'
+
+# Directory where logs of completed jobs are located (string value)
+#HADOOP_LOG_DIRECTORY = '/opt/mapr/hadoop/hadoop-0.20.2/logs/userlogs'
+
+# Directory where logs of completed jobs on volume mounted to node are located
+# (string value)
+#HADOOP_LOG_DIRECTORY_ON_VOLUME = '/volumes/disk1/mapr/hadoop/hadoop-0.20.2/logs/userlogs'
+
+# The number of hosts to add while scaling an existing node group
+#SCALE_EXISTING_NG_COUNT = 1
+
+# The number of hosts to add while scaling a new node group
+#SCALE_NEW_NG_COUNT = 1
+
+# (dictionary value)
+#HADOOP_PROCESSES_WITH_PORTS = JobTracker: 50030, CLDB: 7222, TaskTracker: 50060
+
+
+# (dictionary value)
+#PROCESS_NAMES = nn: CLDB, tt: TaskTracker, dn: FileServer
+
+
+#SKIP_ALL_TESTS_FOR_PLUGIN = False
+#SKIP_CINDER_TEST = False
+#SKIP_MAP_REDUCE_TEST = False
+#SKIP_SWIFT_TEST = False
+#SKIP_SCALING_TEST = False
+
+[MAPR4_1]
+
+# Name of plugin (string value)
+#PLUGIN_NAME = 'mapr4_1'
+
+# ID for image which is used for cluster creation. Also you can specify image
+# name or tag of image instead of image ID. If you do not specify image related
+# parameters then image for cluster creation will be chosen by tag
+# "sahara_i_tests" (string value)
+#IMAGE_ID = <None>
+
+# Name for image which is used for cluster creation. Also you can specify image
+# ID or tag of image instead of image name. If you do not specify image related
+# parameters then image for cluster creation will be chosen by tag
+# "sahara_i_tests" (string value)
+#IMAGE_NAME = <None>
+
+# Tag for image which is used for cluster creation. Also you can specify image
+# ID or image name instead of tag of image. If you do not specify image related
+# parameters then image for cluster creation will be chosen by tag
+# "sahara_i_tests" (string value)
+#IMAGE_TAG = <None>
+
+# Username to get cluster node with SSH (string value)
+#SSH_USERNAME = <None>
+
+# A list of processes that will be launched on master node (list value)
+#MASTER_NODE_PROCESSES = CLDB, FileServer, ZooKeeper, TaskTracker, JobTracker, Oozie
+
+# A list of processes that will be launched on worker nodes (list value)
+#WORKER_NODE_PROCESSES = FileServer, TaskTracker, Pig
+
+# Version of Hadoop (string value)
+#HADOOP_VERSION = '2.4.0'
+
+# Username which is used for access to Hadoop services (string value)
+#HADOOP_USER = 'mapr'
+
+# The number of hosts to add while scaling an existing node group
+#SCALE_EXISTING_NG_COUNT = 1
+
+# The number of hosts to add while scaling a new node group
+#SCALE_NEW_NG_COUNT = 1
+
+# (dictionary value)
+#HADOOP_PROCESSES_WITH_PORTS = JobTracker: 50030, CLDB: 7222, TaskTracker: 50060
+
+
+# (dictionary value)
+#PROCESS_NAMES = nn: CLDB, tt: TaskTracker, dn: FileServer
+
+
+#SKIP_ALL_TESTS_FOR_PLUGIN = False
+#SKIP_EDP_TEST = False
+#SKIP_SWIFT_TEST = False
+#SKIP_SCALING_TEST = False
+
+[MAPR4_2]
+
+# Name of plugin (string value)
+#PLUGIN_NAME = 'mapr4_1'
+
+# ID for image which is used for cluster creation. Also you can specify image
+# name or tag of image instead of image ID. If you do not specify image related
+# parameters then image for cluster creation will be chosen by tag
+# "sahara_i_tests" (string value)
+#IMAGE_ID = <None>
+
+# Name for image which is used for cluster creation. Also you can specify image
+# ID or tag of image instead of image name. If you do not specify image related
+# parameters then image for cluster creation will be chosen by tag
+# "sahara_i_tests" (string value)
+#IMAGE_NAME = <None>
+
+# Tag for image which is used for cluster creation. Also you can specify image
+# ID or image name instead of tag of image. If you do not specify image related
+# parameters then image for cluster creation will be chosen by tag
+# "sahara_i_tests" (string value)
+#IMAGE_TAG = <None>
+
+# Username to get cluster node with SSH (string value)
+#SSH_USERNAME = <None>
+
+# A list of processes that will be launched on master node (list value)
+#MASTER_NODE_PROCESSES = CLDB, FileServer, ZooKeeper, NodeManager, ResourceManager, HistoryServer, Oozie
+
+# A list of processes that will be launched on worker nodes (list value)
+#WORKER_NODE_PROCESSES = FileServer, NodeManager, Pig
+
+# Version of Hadoop (string value)
+#HADOOP_VERSION = '2.4.0'
+
+# Username which is used for access to Hadoop services (string value)
+#HADOOP_USER = 'mapr'
+
+# The number of hosts to add while scaling an existing node group
+#SCALE_EXISTING_NG_COUNT = 1
+
+# The number of hosts to add while scaling a new node group
+#SCALE_NEW_NG_COUNT = 1
+
+# (dictionary value)
+#HADOOP_PROCESSES_WITH_PORTS = ResourceManager: 8032, CLDB: 7222, HistoryServer: 19888
+
+
+# (dictionary value)
+#PROCESS_NAMES = nn: CLDB, tt: NodeManager, dn: FileServer
+
+
+#SKIP_ALL_TESTS_FOR_PLUGIN = False
+#SKIP_EDP_TEST = False
+#SKIP_SWIFT_TEST = False
+#SKIP_SCALING_TEST = False

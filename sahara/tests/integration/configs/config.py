@@ -545,6 +545,259 @@ HDP2_CONFIG_OPTS = [
 ]
 
 
+MAPR_CONFIG_GROUP = cfg.OptGroup(name='MAPR')
+MAPR_CONFIG_OPTS = [
+    cfg.StrOpt('PLUGIN_NAME',
+               default='mapr',
+               help='Name of plugin.'),
+    cfg.StrOpt('IMAGE_ID',
+               help='ID for image which is used for cluster creation. Also '
+                    'you can specify image name or tag of image instead of '
+                    'image ID. If you do not specify image related '
+                    'parameters, then image for cluster creation will be '
+                    'chosen by tag "sahara_i_tests".'),
+    cfg.StrOpt('IMAGE_NAME',
+               help='Name for image which is used for cluster creation. Also '
+                    'you can specify image ID or tag of image instead of '
+                    'image name. If you do not specify image related '
+                    'parameters, then image for cluster creation will be '
+                    'chosen by tag "sahara_i_tests".'),
+    cfg.StrOpt('IMAGE_TAG',
+               help='Tag for image which is used for cluster creation. Also '
+                    'you can specify image ID or image name instead of tag of '
+                    'image. If you do not specify image related parameters, '
+                    'then image for cluster creation will be chosen by '
+                    'tag "sahara_i_tests".'),
+    cfg.StrOpt('SSH_USERNAME',
+               help='Username to get cluster node with SSH.'),
+    cfg.ListOpt('MASTER_NODE_PROCESSES',
+                default=['CLDB', 'FileServer', 'ZooKeeper',
+                         'TaskTracker', 'JobTracker', 'Oozie'],
+                help='A list of processes that will be launched '
+                     'on master node'),
+    cfg.ListOpt('WORKER_NODE_PROCESSES',
+                default=['FileServer', 'TaskTracker', 'Pig'],
+                help='A list of processes that will be launched '
+                     'on worker nodes'),
+    cfg.StrOpt('HADOOP_VERSION',
+               default='1.0.3',
+               help='Version of Hadoop.'),
+    cfg.StrOpt('HADOOP_USER',
+               default='mapr',
+               help='Username which is used for access to Hadoop services.'),
+    cfg.StrOpt('HADOOP_EXAMPLES_JAR_PATH',
+               default=('/opt/mapr/hadoop/hadoop-0.20.2'
+                        '/hadoop-0.20.2-dev-examples.jar'),
+               help='Path to hadoop examples jar file.'),
+    cfg.StrOpt('HADOOP_LOG_DIRECTORY',
+               default='/opt/mapr/hadoop/hadoop-0.20.2/logs/userlogs',
+               help='Directory where logs of completed jobs are located.'),
+    cfg.StrOpt('HADOOP_LOG_DIRECTORY_ON_VOLUME',
+               default=('/volumes/disk1/mapr/hadoop/'
+                        'hadoop-0.20.2/logs/userlogs'),
+               help='Directory where logs of completed jobs on volume mounted '
+                    'to node are located.'),
+    cfg.IntOpt('SCALE_EXISTING_NG_COUNT',
+               default=1,
+               help='The number of hosts to add while scaling '
+                    'an existing node group.'),
+    cfg.IntOpt('SCALE_NEW_NG_COUNT',
+               default=1,
+               help='The number of hosts to add while scaling '
+                    'a new node group.'),
+    cfg.DictOpt('HADOOP_PROCESSES_WITH_PORTS',
+                default={
+                    'JobTracker': 50030,
+                    'CLDB': 7222,
+                    'TaskTracker': 50060,
+                    'OOZIE': 11000
+                },
+                help='Hadoop process map with ports for MAPR plugin.'
+                ),
+    cfg.DictOpt('PROCESS_NAMES',
+                default={
+                    'nn': 'CLDB',
+                    'tt': 'TaskTracker',
+                    'dn': 'FileServer'
+                },
+                help='Names for namenode, tasktracker and datanode '
+                     'processes.'),
+    cfg.BoolOpt('SKIP_ALL_TESTS_FOR_PLUGIN',
+                default=True,
+                help='If this flag is True, then all tests for MAPR plugin '
+                     'will be skipped.'),
+    cfg.BoolOpt('SKIP_CINDER_TEST', default=False),
+    cfg.BoolOpt('SKIP_EDP_TEST', default=False),
+    cfg.BoolOpt('SKIP_MAP_REDUCE_TEST', default=False),
+    cfg.BoolOpt('SKIP_SWIFT_TEST', default=False),
+    cfg.BoolOpt('SKIP_SCALING_TEST', default=False)
+]
+
+MAPR4_1_CONFIG_GROUP = cfg.OptGroup(name='MAPR4_1')
+MAPR4_1_CONFIG_OPTS = [
+    cfg.StrOpt('PLUGIN_NAME',
+               default='mapr4_1',
+               help='Name of plugin.'),
+    cfg.StrOpt('IMAGE_ID',
+               default=None,
+               help='ID for image which is used for cluster creation. Also '
+                    'you can specify image name or tag of image instead of '
+                    'image ID. If you do not specify image related '
+                    'parameters, then image for cluster creation will be '
+                    'chosen by tag "sahara_i_tests".'),
+    cfg.StrOpt('IMAGE_NAME',
+               default=None,
+               help='Name for image which is used for cluster creation. Also '
+                    'you can specify image ID or tag of image instead of '
+                    'image name. If you do not specify image related '
+                    'parameters, then image for cluster creation will be '
+                    'chosen by tag "sahara_i_tests".'),
+    cfg.StrOpt('IMAGE_TAG',
+               default=None,
+               help='Tag for image which is used for cluster creation. Also '
+                    'you can specify image ID or image name instead of tag of '
+                    'image. If you do not specify image related parameters, '
+                    'then image for cluster creation will be chosen by '
+                    'tag "sahara_i_tests".'),
+    cfg.StrOpt('SSH_USERNAME',
+               default=None,
+               help='Username to get cluster node with SSH.'),
+    cfg.ListOpt('MASTER_NODE_PROCESSES',
+                default=['CLDB', 'FileServer', 'ZooKeeper',
+                         'TaskTracker', 'JobTracker', 'Oozie'],
+                help='A list of processes that will be launched '
+                     'on master node'),
+    cfg.ListOpt('WORKER_NODE_PROCESSES',
+                default=['FileServer', 'TaskTracker', 'Pig'],
+                help='A list of processes that will be launched '
+                     'on worker nodes'),
+    cfg.StrOpt('HADOOP_VERSION',
+               default='2.4.0',
+               help='Version of Hadoop.'),
+    cfg.StrOpt('HADOOP_USER',
+               default='mapr',
+               help='Username which is used for access to Hadoop services.'),
+    cfg.StrOpt('HADOOP_EXAMPLES_JAR_PATH',
+               default=('/opt/mapr/hadoop/hadoop-2.3.0/share/hadoop'
+                        '/hadoop-mapreduce-examples-2.3.0-mapr-4.0.0-FCS.jar'),
+               help='Path to hadoop examples jar file.'),
+    cfg.IntOpt('SCALE_EXISTING_NG_COUNT',
+               default=1,
+               help='The number of hosts to add while scaling '
+                    'an existing node group.'),
+    cfg.IntOpt('SCALE_NEW_NG_COUNT',
+               default=1,
+               help='The number of hosts to add while scaling '
+                    'a new node group.'),
+    cfg.DictOpt('HADOOP_PROCESSES_WITH_PORTS',
+                default={
+                    'JobTracker': 50030,
+                    'CLDB': 7222,
+                    'TaskTracker': 50060,
+                    'OOZIE': 11000
+                },
+                help='Hadoop process map with ports for MAPR plugin.'
+                ),
+    cfg.DictOpt('PROCESS_NAMES',
+                default={
+                    'nn': 'CLDB',
+                    'tt': 'TaskTracker',
+                    'dn': 'FileServer'
+                },
+                help='Names for namenode, tasktracker and datanode '
+                     'processes.'),
+    cfg.BoolOpt('SKIP_ALL_TESTS_FOR_PLUGIN',
+                default=True,
+                help='If this flag is True, then all tests for MAPR plugin '
+                     'will be skipped.'),
+    cfg.BoolOpt('SKIP_EDP_TEST', default=False),
+    cfg.BoolOpt('SKIP_SWIFT_TEST', default=False),
+    cfg.BoolOpt('SKIP_SCALING_TEST', default=False)
+]
+
+MAPR4_2_CONFIG_GROUP = cfg.OptGroup(name='MAPR4_2')
+MAPR4_2_CONFIG_OPTS = [
+    cfg.StrOpt('PLUGIN_NAME',
+               default='mapr4_2',
+               help='Name of plugin.'),
+    cfg.StrOpt('IMAGE_ID',
+               default=None,
+               help='ID for image which is used for cluster creation. Also '
+                    'you can specify image name or tag of image instead of '
+                    'image ID. If you do not specify image related '
+                    'parameters, then image for cluster creation will be '
+                    'chosen by tag "sahara_i_tests".'),
+    cfg.StrOpt('IMAGE_NAME',
+               default=None,
+               help='Name for image which is used for cluster creation. Also '
+                    'you can specify image ID or tag of image instead of '
+                    'image name. If you do not specify image related '
+                    'parameters, then image for cluster creation will be '
+                    'chosen by tag "sahara_i_tests".'),
+    cfg.StrOpt('IMAGE_TAG',
+               default=None,
+               help='Tag for image which is used for cluster creation. Also '
+                    'you can specify image ID or image name instead of tag of '
+                    'image. If you do not specify image related parameters, '
+                    'then image for cluster creation will be chosen by '
+                    'tag "sahara_i_tests".'),
+    cfg.StrOpt('SSH_USERNAME',
+               default=None,
+               help='Username to get cluster node with SSH.'),
+    cfg.ListOpt('MASTER_NODE_PROCESSES',
+                default=['CLDB', 'FileServer', 'ZooKeeper', 'NodeManager',
+                         'ResourceManager', 'HistoryServer', 'Oozie'],
+                help='A list of processes that will be launched '
+                     'on master node'),
+    cfg.ListOpt('WORKER_NODE_PROCESSES',
+                default=['FileServer', 'NodeManager', 'Pig'],
+                help='A list of processes that will be launched '
+                     'on worker nodes'),
+    cfg.StrOpt('HADOOP_VERSION',
+               default='2.4.0',
+               help='Version of Hadoop.'),
+    cfg.StrOpt('HADOOP_USER',
+               default='mapr',
+               help='Username which is used for access to Hadoop services.'),
+    cfg.StrOpt('HADOOP_EXAMPLES_JAR_PATH',
+               default=('/opt/mapr/hadoop/hadoop-2.3.0/share/hadoop'
+                        '/hadoop-mapreduce-examples-2.3.0-mapr-4.0.0-FCS.jar'),
+               help='Path to hadoop examples jar file.'),
+    cfg.IntOpt('SCALE_EXISTING_NG_COUNT',
+               default=1,
+               help='The number of hosts to add while scaling '
+                    'an existing node group.'),
+    cfg.IntOpt('SCALE_NEW_NG_COUNT',
+               default=1,
+               help='The number of hosts to add while scaling '
+                    'a new node group.'),
+    cfg.DictOpt('HADOOP_PROCESSES_WITH_PORTS',
+                default={
+                    'ResourceManager': 8032,
+                    'CLDB': 7222,
+                    'HistoryServer': 19888,
+                    'OOZIE': 11000
+                },
+                help='Hadoop process map with ports for MAPR plugin.'
+                ),
+    cfg.DictOpt('PROCESS_NAMES',
+                default={
+                    'nn': 'CLDB',
+                    'tt': 'NodeManager',
+                    'dn': 'FileServer'
+                },
+                help='Names for namenode, tasktracker and datanode '
+                     'processes.'),
+    cfg.BoolOpt('SKIP_ALL_TESTS_FOR_PLUGIN',
+                default=True,
+                help='If this flag is True, then all tests for MAPR plugin '
+                     'will be skipped.'),
+    cfg.BoolOpt('SKIP_EDP_TEST', default=False),
+    cfg.BoolOpt('SKIP_SWIFT_TEST', default=False),
+    cfg.BoolOpt('SKIP_SCALING_TEST', default=False)
+]
+
+
 SPARK_CONFIG_GROUP = cfg.OptGroup(name='SPARK')
 SPARK_CONFIG_OPTS = [
     cfg.StrOpt('PLUGIN_NAME',
@@ -641,6 +894,9 @@ class ITConfig(object):
         register_config(cfg.CONF, HDP2_CONFIG_GROUP, HDP2_CONFIG_OPTS)
         register_config(
             cfg.CONF, VANILLA_TWO_CONFIG_GROUP, VANILLA_TWO_CONFIG_OPTS)
+        register_config(cfg.CONF, MAPR_CONFIG_GROUP, MAPR_CONFIG_OPTS)
+        register_config(cfg.CONF, MAPR4_1_CONFIG_GROUP, MAPR4_1_CONFIG_OPTS)
+        register_config(cfg.CONF, MAPR4_2_CONFIG_GROUP, MAPR4_2_CONFIG_OPTS)
         register_config(cfg.CONF, SPARK_CONFIG_GROUP, SPARK_CONFIG_OPTS)
 
         cfg.CONF(
@@ -654,4 +910,7 @@ class ITConfig(object):
         self.cdh_config = cfg.CONF.CDH
         self.hdp_config = cfg.CONF.HDP
         self.hdp2_config = cfg.CONF.HDP2
+        self.mapr_config = cfg.CONF.MAPR
+        self.mapr4_1_config = cfg.CONF.MAPR4_1
+        self.mapr4_2_config = cfg.CONF.MAPR4_2
         self.spark_config = cfg.CONF.SPARK
