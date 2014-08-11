@@ -8,6 +8,7 @@
                 %(network_interfaces)s
                 %(key_name)s
                 %(scheduler_hints)s
+                %(security_groups)s
                 "user_data": {
                     "Fn::Join" : ["\n", [%(userdata)s]]
                 }

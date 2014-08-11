@@ -35,13 +35,15 @@ SAMPLE_CLUSTER = {
             "name": "ng_1",
             "flavor_id": "42",
             "node_processes": ["p1", "p2"],
-            "count": 1
+            "count": 1,
+            "security_groups": None
         },
         {
             "name": "ng_2",
             "flavor_id": "42",
             "node_processes": ["p3", "p4"],
-            "count": 3
+            "count": 3,
+            "security_groups": ["group1", "group2"]
         }
     ],
     "cluster_configs": {

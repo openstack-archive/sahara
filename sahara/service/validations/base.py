@@ -131,12 +131,23 @@ def check_node_group_basic_fields(plugin_name, hadoop_version, ng,
     if ng.get('floating_ip_pool'):
         check_floatingip_pool_exists(ng['name'], ng['floating_ip_pool'])
 
+    if ng.get('security_groups'):
+        check_security_groups_exist(ng['security_groups'])
+
 
 def check_flavor_exists(flavor_id):
     flavor_list = nova.client().flavors.list()
     if flavor_id not in [flavor.id for flavor in flavor_list]:
         raise ex.InvalidException(
             _("Requested flavor '%s' not found") % flavor_id)
+
+
+def check_security_groups_exist(security_groups):
+    security_group_list = nova.client().security_groups.list()
+    security_group_names = [sg.name for sg in security_group_list]
+    for sg in security_groups:
+        if sg not in security_group_names:
+            raise ex.InvalidException(_("Security group '%s' not found") % sg)
 
 
 def check_floatingip_pool_exists(ng_name, pool_id):

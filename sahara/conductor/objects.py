@@ -75,6 +75,7 @@ class NodeGroup(object):
     volume_mount_prefix
     floating_ip_pool - Floating IP Pool name used to assign Floating IPs to
                         instances in this Node Group
+    security_groups - List of security groups for instances in this Node Group
     count
     instances - list of Instance objects
     node_group_template_id
@@ -167,6 +168,7 @@ class NodeGroupTemplate(object):
     volumes_size
     volume_mount_prefix
     floating_ip_pool
+    security_groups
     """
 
 

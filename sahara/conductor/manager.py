@@ -36,7 +36,8 @@ NODE_GROUP_DEFAULTS = {
     "volumes_per_node": 0,
     "volumes_size": 0,
     "volume_mount_prefix": "/volumes/disk",
-    "floating_ip_pool": None
+    "floating_ip_pool": None,
+    "security_groups": None,
 }
 
 INSTANCE_DEFAULTS = {

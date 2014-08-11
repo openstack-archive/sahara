@@ -109,6 +109,7 @@ class NodeGroup(mb.SaharaBase):
     node_group_template = relationship('NodeGroupTemplate',
                                        backref="node_groups", lazy='joined')
     floating_ip_pool = sa.Column(sa.String(36))
+    security_groups = sa.Column(st.JsonListType())
 
     def to_dict(self):
         d = super(NodeGroup, self).to_dict()
@@ -190,6 +191,7 @@ class NodeGroupTemplate(mb.SaharaBase):
     volumes_size = sa.Column(sa.Integer)
     volume_mount_prefix = sa.Column(sa.String(80))
     floating_ip_pool = sa.Column(sa.String(36))
+    security_groups = sa.Column(st.JsonListType())
 
 
 class TemplatesRelation(mb.SaharaBase):
@@ -220,6 +222,7 @@ class TemplatesRelation(mb.SaharaBase):
                                        backref="templates_relations",
                                        lazy='joined')
     floating_ip_pool = sa.Column(sa.String(36))
+    security_groups = sa.Column(st.JsonListType())
 
 
 # EDP objects: DataSource, Job, Job Execution, JobBinary

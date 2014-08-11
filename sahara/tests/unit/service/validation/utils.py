@@ -87,8 +87,18 @@ class FakeFlavor(object):
         self.id = id
 
 
+class FakeSecurityGroup(object):
+    def __init__(self, name):
+        self.name = name
+
+
 def _get_flavors_list():
     return [FakeFlavor("42")]
+
+
+def _get_security_groups_list():
+    return [FakeSecurityGroup("default"),
+            FakeSecurityGroup("group1"), FakeSecurityGroup("group2")]
 
 
 def start_patch(patch_templates=True):
@@ -131,6 +141,7 @@ def start_patch(patch_templates=True):
         get_cl_templates.return_value = []
 
     nova().flavors.list.side_effect = _get_flavors_list
+    nova().security_groups.list.side_effect = _get_security_groups_list
     nova().keypairs.get.side_effect = _get_keypair
     nova().networks.find.side_effect = _get_network
     nova().floating_ip_pools.list.side_effect = _get_fl_ip_pool_list
