@@ -34,5 +34,6 @@ def make_ng_dict(name, flavor, processes, count, instances=None, **kwargs):
     return dct
 
 
-def make_inst_dict(inst_id, inst_name):
-    return {'instance_id': inst_id, 'instance_name': inst_name}
+def make_inst_dict(inst_id, inst_name, management_ip='1.2.3.4'):
+    return {'instance_id': inst_id, 'instance_name': inst_name,
+            'management_ip': management_ip}
