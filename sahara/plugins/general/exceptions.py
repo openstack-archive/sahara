@@ -27,7 +27,7 @@ class DecommissionError(e.SaharaException):
     code = "DECOMMISSION_ERROR"
     message = "Failed to decommission cluster"
 
-    def __init__(self, message):
+    def __init__(self, message=None):
         if message:
             self.message = message
 
