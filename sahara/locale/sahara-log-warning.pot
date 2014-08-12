@@ -6,9 +6,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: sahara 2014.2.dev40.g4922543\n"
+"Project-Id-Version: sahara 2014.2.dev88.g6d16437\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2014-08-04 06:10+0000\n"
+"POT-Creation-Date: 2014-08-12 06:10+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -28,25 +28,13 @@ msgid ""
 "one mode by running 'sahara-all' binary."
 msgstr ""
 
-#: sahara/middleware/auth_valid.py:46
+#: sahara/api/middleware/auth_valid.py:46
 msgid "Can't get tenant_id from env"
 msgstr ""
 
 #: sahara/openstack/common/loopingcall.py:87
 #, python-format
 msgid "task %(func_name)s run outlasted interval by %(delay).2f sec"
-msgstr ""
-
-#: sahara/openstack/common/network_utils.py:149
-msgid "tcp_keepidle not available on your system"
-msgstr ""
-
-#: sahara/openstack/common/network_utils.py:156
-msgid "tcp_keepintvl not available on your system"
-msgstr ""
-
-#: sahara/openstack/common/network_utils.py:163
-msgid "tcp_keepknt not available on your system"
 msgstr ""
 
 #: sahara/service/direct_engine.py:82 sahara/service/heat_engine.py:70
@@ -59,24 +47,24 @@ msgstr ""
 msgid "Can't scale cluster '%(cluster)s' (reason: %(reason)s)"
 msgstr ""
 
-#: sahara/service/direct_engine.py:319
+#: sahara/service/direct_engine.py:320
 #, python-format
 msgid ""
 "Attempted to delete non-existent floating IP in pool %(pool)s from "
 "instance %(instance)s"
 msgstr ""
 
-#: sahara/service/direct_engine.py:327
+#: sahara/service/direct_engine.py:328
 #, python-format
 msgid "Detaching volumes from instance %s failed"
 msgstr ""
 
-#: sahara/service/direct_engine.py:333
+#: sahara/service/direct_engine.py:334
 #, python-format
 msgid "Attempted to delete non-existent instance %s"
 msgstr ""
 
-#: sahara/service/engine.py:168
+#: sahara/service/engine.py:169
 msgid ""
 "Presumably the operation failed because the cluster was deleted by a user"
 " during the process."

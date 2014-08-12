@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version:  Sahara\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2014-08-11 06:09+0000\n"
+"POT-Creation-Date: 2014-08-12 06:09+0000\n"
 "PO-Revision-Date: 2014-07-17 06:41+0000\n"
 "Last-Translator: openstackjenkins <jenkins@openstack.org>\n"
 "Language-Team: Chinese (China) "
@@ -45,75 +45,75 @@ msgstr ""
 msgid "Object '%s' is not found"
 msgstr ""
 
-#: sahara/exceptions.py:51
+#: sahara/exceptions.py:53
 msgid "Name already exists"
 msgstr ""
 
-#: sahara/exceptions.py:60
+#: sahara/exceptions.py:62
 msgid "Invalid credentials"
 msgstr ""
 
-#: sahara/exceptions.py:69
+#: sahara/exceptions.py:71
 msgid "Invalid object reference"
 msgstr ""
 
-#: sahara/exceptions.py:78
+#: sahara/exceptions.py:80
 #, python-format
 msgid "Error during command execution: \"%s\""
 msgstr ""
 
-#: sahara/exceptions.py:109
+#: sahara/exceptions.py:111
 msgid "Data is invalid"
 msgstr ""
 
-#: sahara/exceptions.py:118
+#: sahara/exceptions.py:120
 msgid "Job binary internal data must be a string of length greater than zero"
 msgstr ""
 
-#: sahara/exceptions.py:128
+#: sahara/exceptions.py:130
 msgid ""
 "To work with JobBinary located in internal swift add 'user' and "
 "'password' to extra"
 msgstr ""
 
-#: sahara/exceptions.py:138
+#: sahara/exceptions.py:140
 msgid "Database object already exists"
 msgstr ""
 
-#: sahara/exceptions.py:147
+#: sahara/exceptions.py:149
 msgid "Object was not created"
 msgstr ""
 
-#: sahara/exceptions.py:156
+#: sahara/exceptions.py:158
 msgid "Object was not deleted"
 msgstr ""
 
-#: sahara/exceptions.py:166
+#: sahara/exceptions.py:168
 #, python-format
 msgid "Node Group %s is missing 'floating_ip_pool' field"
 msgstr ""
 
-#: sahara/exceptions.py:184
+#: sahara/exceptions.py:186
 #, python-format
 msgid "Size of data (%(size)s) is greater than maximum (%(maximum)s)"
 msgstr ""
 
-#: sahara/exceptions.py:196
+#: sahara/exceptions.py:198
 #, python-format
 msgid "An error occurred in thread '%(thread)s': %(e)s"
 msgstr ""
 
-#: sahara/exceptions.py:206
+#: sahara/exceptions.py:208
 #, python-format
 msgid "Feature '%s' is not implemented"
 msgstr ""
 
-#: sahara/exceptions.py:212
+#: sahara/exceptions.py:214
 #, python-format
 msgid "Heat stack failed with status %s"
 msgstr ""
 
-#: sahara/exceptions.py:246
+#: sahara/exceptions.py:248
 #, python-format
 msgid "Operation timed out after %i second(s)"
 msgstr ""
@@ -409,7 +409,7 @@ msgid ""
 "processes run in cluster"
 msgstr ""
 
-#: sahara/service/direct_engine.py:286
+#: sahara/service/direct_engine.py:287
 #, python-format
 msgid "Node %s has error status"
 msgstr ""
@@ -496,96 +496,101 @@ msgid ""
 "'%(name)s'"
 msgstr ""
 
-#: sahara/service/validations/base.py:139
+#: sahara/service/validations/base.py:142
 #, python-format
 msgid "Requested flavor '%s' not found"
 msgstr ""
 
-#: sahara/service/validations/base.py:154
+#: sahara/service/validations/base.py:150
+#, python-format
+msgid "Security group '%s' not found"
+msgstr ""
+
+#: sahara/service/validations/base.py:165
 #, python-format
 msgid "Floating IP pool %(pool)s for node group '%(group)s' not found"
 msgstr ""
 
-#: sahara/service/validations/base.py:161
+#: sahara/service/validations/base.py:172
 msgid "Duplicates in node processes have been detected"
 msgstr ""
 
-#: sahara/service/validations/base.py:169
+#: sahara/service/validations/base.py:180
 #, python-format
 msgid "Plugin supports the following node procesess: %s"
 msgstr ""
 
-#: sahara/service/validations/base.py:177
+#: sahara/service/validations/base.py:188
 msgid "Duplicates in node group names are detected"
 msgstr ""
 
-#: sahara/service/validations/base.py:185
+#: sahara/service/validations/base.py:196
 #, python-format
 msgid "Cluster with name '%s' already exists"
 msgstr ""
 
-#: sahara/service/validations/base.py:194
+#: sahara/service/validations/base.py:205
 #, python-format
 msgid "Cluster name '%s' is already used as Heat stack name"
 msgstr ""
 
-#: sahara/service/validations/base.py:201
+#: sahara/service/validations/base.py:212
 #, python-format
 msgid "Cluster with id '%s' doesn't exist"
 msgstr ""
 
-#: sahara/service/validations/base.py:212
+#: sahara/service/validations/base.py:223
 #, python-format
 msgid ""
 "Composite hostname %(host)s in provisioned cluster exceeds maximum limit "
 "%(limit)s characters"
 msgstr ""
 
-#: sahara/service/validations/base.py:223
+#: sahara/service/validations/base.py:234
 #, python-format
 msgid "Requested keypair '%s' not found"
 msgstr ""
 
-#: sahara/service/validations/base.py:228
+#: sahara/service/validations/base.py:239
 #, python-format
 msgid "Network %s not found"
 msgstr ""
 
-#: sahara/service/validations/base.py:236
+#: sahara/service/validations/base.py:247
 #, python-format
 msgid "Cluster template with name '%s' already exists"
 msgstr ""
 
-#: sahara/service/validations/base.py:242
+#: sahara/service/validations/base.py:253
 #, python-format
 msgid "Cluster template with id '%s' doesn't exist"
 msgstr ""
 
-#: sahara/service/validations/base.py:262
+#: sahara/service/validations/base.py:273
 #, python-format
 msgid "NodeGroup template with name '%s' already exists"
 msgstr ""
 
-#: sahara/service/validations/base.py:268
+#: sahara/service/validations/base.py:279
 #, python-format
 msgid "NodeGroup template with id '%s' doesn't exist"
 msgstr ""
 
-#: sahara/service/validations/base.py:303
+#: sahara/service/validations/base.py:314
 #, python-format
 msgid "Cluster doesn't contain node group with name '%s'"
 msgstr ""
 
-#: sahara/service/validations/base.py:317
+#: sahara/service/validations/base.py:328
 #, python-format
 msgid "Can't add new nodegroup. Cluster already has nodegroup with name '%s'"
 msgstr ""
 
-#: sahara/service/validations/base.py:330
+#: sahara/service/validations/base.py:341
 msgid "Cinder is not supported"
 msgstr ""
 
-#: sahara/service/validations/base.py:342
+#: sahara/service/validations/base.py:353
 #, python-format
 msgid ""
 "Tags of requested image '%(image)s' don't contain required tags "
@@ -617,7 +622,7 @@ msgstr ""
 msgid "Cluster cannot be scaled not in 'Active' status. Cluster status: %s"
 msgstr ""
 
-#: sahara/service/validations/node_group_templates.py:111
+#: sahara/service/validations/node_group_templates.py:117
 #, python-format
 msgid ""
 "Node group template %(template)s is in use by cluster templates: "
