@@ -13,6 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from sahara.i18n import _
 from sahara.openstack.common import jsonutils as json
 from sahara.openstack.common import log as logging
 from sahara.plugins.general import exceptions as ex
@@ -312,9 +313,9 @@ class NormalizedClusterConfig():
             return 'boolean'
         else:
             raise ValueError(
-                "Could not determine property type for property '{0}' with "
-                "value: {1}".
-                format(prop, value))
+                _("Could not determine property type for property "
+                  "'%(property)s' with value: %(value)s") %
+                {"property": prop, "value": value})
 
 
 class NormalizedConfig():

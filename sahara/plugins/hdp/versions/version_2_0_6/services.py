@@ -19,6 +19,9 @@ from oslo.config import cfg
 import six
 
 from sahara import exceptions as e
+from sahara.i18n import _
+from sahara.i18n import _LI
+from sahara.i18n import _LW
 from sahara.openstack.common import log as logging
 from sahara.plugins.general import exceptions as ex
 from sahara.plugins.general import utils
@@ -568,8 +571,8 @@ class HBaseService(Service):
             configurations['global']['hbase_hdfs_root_dir'] = match.group(3)
         else:
             raise e.InvalidDataException(
-                "Invalid value for property 'hbase-site/hbase.rootdir' : %s" %
-                user_input.value)
+                _("Invalid value for property 'hbase-site/hbase.rootdir' : %s")
+                % user_input.value)
 
     def finalize_configuration(self, cluster_spec):
         nn_servers = cluster_spec.determine_component_hosts('NAMENODE')
@@ -910,16 +913,16 @@ class HueService(Service):
     def _create_hue_property_tree(cluster_spec):
         config_name = 'hue-ini'
 
-        LOG.info('Creating Hue ini property tree from configuration named '
-                 '{0}'.format(config_name))
+        LOG.info(_LI('Creating Hue ini property tree from configuration named '
+                     '{0}').format(config_name))
 
         hue_ini_property_tree = {'sections': {}, 'properties': {}}
 
         config = cluster_spec.configurations[config_name]
 
         if config is None:
-            LOG.warning('Missing configuration named {0}, aborting Hue ini '
-                        'file creation'.format(config_name))
+            LOG.warning(_LW('Missing configuration named {0}, aborting Hue ini'
+                            ' file creation').format(config_name))
         else:
             # replace values in hue-ini configuration
             subs = {}
@@ -1010,18 +1013,19 @@ class HueService(Service):
 
     @staticmethod
     def _merge_configurations(cluster_spec, src_config_name, dst_config_name):
-        LOG.info('Merging configuration properties: {0} -> {1}'
-                 .format(src_config_name, dst_config_name))
+        LOG.info(_LI('Merging configuration properties: %(source)s -> '
+                     '%(destination)s'),
+                 {'source': src_config_name, 'destination': dst_config_name})
 
         src_config = cluster_spec.configurations[src_config_name]
         dst_config = cluster_spec.configurations[dst_config_name]
 
         if src_config is None:
-            LOG.warning('Missing source configuration property set, aborting '
-                        'merge: {0}'.format(src_config_name))
+            LOG.warning(_LW('Missing source configuration property set, '
+                            'aborting merge: {0}').format(src_config_name))
         elif dst_config is None:
-            LOG.warning('Missing destination configuration property set, '
-                        'aborting merge: {0}'.format(dst_config_name))
+            LOG.warning(_LW('Missing destination configuration property set, '
+                            'aborting merge: {0}').format(dst_config_name))
         else:
             for property_name, property_value in six.iteritems(src_config):
                 if property_name in dst_config:
@@ -1031,14 +1035,16 @@ class HueService(Service):
                                                                src_config_name,
                                                                property_name))
                     else:
-                        LOG.warning('Overwriting existing configuration '
-                                    'property in {0} from {1} for Hue: {2} '
-                                    '[{3} -> {4}]'
-                                    .format(dst_config_name,
-                                            src_config_name,
-                                            property_name,
-                                            dst_config[property_name],
-                                            src_config[property_name]))
+                        LOG.warning(_LW('Overwriting existing configuration '
+                                        'property in %(dst_config_name)s from '
+                                        '%(src_config_name)s for Hue: '
+                                        '%(property_name)s '
+                                        '[%(dst_config)s -> %(src_config)s]'),
+                                    {'dst_config_name': dst_config_name,
+                                     'src_config_name': src_config_name,
+                                     'property_name': property_name,
+                                     'dst_config': dst_config[property_name],
+                                     'src_config': src_config[property_name]})
                 else:
                     LOG.debug('Adding Hue configuration property to {0} from '
                               '{1}: {2}'.format(dst_config_name,
@@ -1051,19 +1057,19 @@ class HueService(Service):
     def _handle_pre_service_start(instance, cluster_spec, hue_ini,
                                   create_user):
         with instance.remote() as r:
-            LOG.info('Installing Hue on {0}'
+            LOG.info(_LI('Installing Hue on {0}')
                      .format(instance.fqdn()))
             r.execute_command('yum -y install hue',
                               run_as_root=True)
 
-            LOG.info('Setting Hue configuration on {0}'
+            LOG.info(_LI('Setting Hue configuration on {0}')
                      .format(instance.fqdn()))
             r.write_file_to('/etc/hue/conf/hue.ini',
                             hue_ini,
                             True)
 
-            LOG.info('Uninstalling Shell, if it is installed '
-                     'on {0}'.format(instance.fqdn()))
+            LOG.info(_LI('Uninstalling Shell, if it is installed '
+                         'on {0}').format(instance.fqdn()))
             r.execute_command(
                 '/usr/lib/hue/build/env/bin/python '
                 '/usr/lib/hue/tools/app_reg/app_reg.py '
@@ -1071,12 +1077,12 @@ class HueService(Service):
                 run_as_root=True)
 
             if create_user:
-                LOG.info('Creating initial Hue user on {0}'
+                LOG.info(_LI('Creating initial Hue user on {0}')
                          .format(instance.fqdn()))
                 r.execute_command('/usr/lib/hue/build/env/bin/hue '
                                   'create_sandbox_user', run_as_root=True)
 
-            LOG.info('(Re)starting Hue on {0}'
+            LOG.info(_LI('(Re)starting Hue on {0}')
                      .format(instance.fqdn()))
             java_home = HueService._get_java_home(cluster_spec)
 
@@ -1167,15 +1173,15 @@ class HueService(Service):
                 components = hue_ng.components
 
                 if 'HDFS_CLIENT' not in components:
-                    LOG.info('Missing HDFS client from Hue node... adding it '
-                             'since it is required for Hue')
+                    LOG.info(_LI('Missing HDFS client from Hue node... adding '
+                                 'it since it is required for Hue'))
                     components.append('HDFS_CLIENT')
 
                 if cluster_spec.get_deployed_node_group_count('HIVE_SERVER'):
                     if 'HIVE_CLIENT' not in components:
-                        LOG.info('Missing HIVE client from Hue node... adding '
-                                 'it since it is required for Beeswax and '
-                                 'HCatalog')
+                        LOG.info(_LI('Missing HIVE client from Hue node... '
+                                     'adding it since it is required for '
+                                     'Beeswax and HCatalog'))
                         components.append('HIVE_CLIENT')
 
     def pre_service_start(self, cluster_spec, ambari_info, started_services):

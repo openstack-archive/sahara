@@ -19,6 +19,7 @@ from oslo.utils import timeutils
 import six
 
 from sahara import context
+from sahara.i18n import _
 from sahara.plugins.general import exceptions as ex
 from sahara.plugins.general import utils
 from sahara.plugins.vanilla.v1_2_1 import config_helper
@@ -75,8 +76,9 @@ def decommission_dn(nn, inst_to_be_deleted, survived_inst):
 
         if not all_found:
             ex.DecommissionError(
-                "Cannot finish decommission of cluster %s in %d seconds" %
-                (nn.node_group.cluster, timeout))
+                _("Cannot finish decommission of cluster %(cluster)s in "
+                  "%(seconds)d seconds") %
+                {"cluster": nn.node_group.cluster, "seconds": timeout})
 
 
 def parse_dfs_report(cmd_output):

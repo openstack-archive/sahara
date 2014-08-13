@@ -16,6 +16,7 @@
 from oslo.config import cfg
 
 from sahara import exceptions as ex
+from sahara.i18n import _
 from sahara.plugins import provisioning as p
 from sahara.utils import types
 
@@ -157,7 +158,8 @@ def get_config_value(pctx, service, name, cluster=None):
             return c.default_value
 
     raise ex.NotFoundException(
-        name, "Unable to get parameter '%s' from service %s" % (name, service))
+        name, _("Unable to get parameter '%(name)s' from service %(service)s")
+        % {"name": name, "service": service})
 
 
 def is_swift_enabled(pctx, cluster):

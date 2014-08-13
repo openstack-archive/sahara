@@ -14,6 +14,8 @@
 # limitations under the License.
 
 from sahara import context
+from sahara.i18n import _
+from sahara.i18n import _LI
 from sahara.openstack.common import log as logging
 from sahara.plugins.general import exceptions as ex
 from sahara.plugins.vanilla.hadoop2 import config_helper as c_helper
@@ -50,7 +52,7 @@ def _start_processes(instance, processes):
                     'sudo su - -c  "yarn-daemon.sh start %s" hadoop' % process)
             else:
                 raise ex.HadoopProvisionError(
-                    "Process %s is not supported" % process)
+                    _("Process %s is not supported") % process)
 
 
 def start_hadoop_process(instance, process):
@@ -142,12 +144,12 @@ def await_datanodes(cluster):
     if datanodes_count < 1:
         return
 
-    LOG.info("Waiting %s datanodes to start up" % datanodes_count)
+    LOG.info(_LI("Waiting %s datanodes to start up"), datanodes_count)
     with vu.get_namenode(cluster).remote() as r:
         while True:
             if _check_datanodes_count(r, datanodes_count):
                 LOG.info(
-                    'Datanodes on cluster %s has been started' %
+                    _LI('Datanodes on cluster %s has been started'),
                     cluster.name)
                 return
 
@@ -155,8 +157,8 @@ def await_datanodes(cluster):
 
             if not g.check_cluster_exists(cluster):
                 LOG.info(
-                    'Stop waiting datanodes on cluster %s since it has '
-                    'been deleted' % cluster.name)
+                    _LI('Stop waiting datanodes on cluster %s since it has '
+                        'been deleted'), cluster.name)
                 return
 
 

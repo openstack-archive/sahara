@@ -17,6 +17,8 @@ from oslo.config import cfg
 
 from sahara import conductor
 from sahara import context
+from sahara.i18n import _
+from sahara.i18n import _LI
 from sahara.openstack.common import log as logging
 from sahara.plugins.general import exceptions as ex
 from sahara.plugins.general import utils as u
@@ -64,7 +66,7 @@ class AmbariPlugin(p.ProvisioningPluginBase):
         # enabled
         self._configure_topology_for_cluster(cluster, servers)
 
-        LOG.info("Install of Hadoop stack successful.")
+        LOG.info(_LI("Install of Hadoop stack successful."))
         # add service urls
         self._set_cluster_info(cluster, cluster_spec)
 
@@ -171,8 +173,8 @@ class AmbariPlugin(p.ProvisioningPluginBase):
                            servers, version):
         # TODO(jspeidel): encapsulate in another class
 
-        LOG.info('Provisioning Cluster via Ambari Server: {0} ...'.format(
-            ambari_info.get_address()))
+        LOG.info(_LI('Provisioning Cluster via Ambari Server: {0} ...')
+                 .format(ambari_info.get_address()))
 
         for server in servers:
             self._spawn(
@@ -221,9 +223,9 @@ class AmbariPlugin(p.ProvisioningPluginBase):
 
                 if not is_admin_provided:
                     if admin_user is None:
-                        raise ex.HadoopProvisionError("An Ambari user in the "
-                                                      "admin group must be "
-                                                      "configured.")
+                        raise ex.HadoopProvisionError(_("An Ambari user in the"
+                                                        " admin group must be "
+                                                        "configured."))
                     ambari_info.user = admin_user
                     ambari_info.password = admin_password
                     ambari_client.delete_ambari_user('admin', ambari_info)
@@ -240,7 +242,7 @@ class AmbariPlugin(p.ProvisioningPluginBase):
                 ambari_info.user = admin_user.name
                 ambari_info.password = admin_user.password
 
-        LOG.info('Using "{0}" as admin user for scaling of cluster'
+        LOG.info(_LI('Using "{0}" as admin user for scaling of cluster')
                  .format(ambari_info.user))
 
     # PLUGIN SPI METHODS:
@@ -276,9 +278,9 @@ class AmbariPlugin(p.ProvisioningPluginBase):
         return 'Hortonworks Data Platform'
 
     def get_description(self):
-        return ('The Hortonworks OpenStack plugin works with project '
-                'Sahara to automate the deployment of the Hortonworks data'
-                ' platform on OpenStack based public & private clouds')
+        return _('The Hortonworks OpenStack plugin works with project '
+                 'Sahara to automate the deployment of the Hortonworks data'
+                 ' platform on OpenStack based public & private clouds')
 
     def validate(self, cluster):
         # creating operational config results in validation
@@ -323,8 +325,8 @@ class AmbariPlugin(p.ProvisioningPluginBase):
         ambari_client.cleanup(ambari_info)
 
     def decommission_nodes(self, cluster, instances):
-        LOG.info('AmbariPlugin: decommission_nodes called for '
-                 'HDP version = ' + cluster.hadoop_version)
+        LOG.info(_LI('AmbariPlugin: decommission_nodes called for '
+                 'HDP version = %s'), cluster.hadoop_version)
 
         handler = self.version_factory.get_version_handler(
             cluster.hadoop_version)

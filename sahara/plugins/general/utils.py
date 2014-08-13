@@ -16,6 +16,7 @@
 from oslo.utils import netutils
 from six.moves.urllib import parse as urlparse
 
+from sahara.i18n import _
 from sahara.plugins.general import exceptions as ex
 
 
@@ -38,7 +39,7 @@ def get_instance(cluster, node_process):
     instances = get_instances(cluster, node_process)
     if len(instances) > 1:
         raise ex.InvalidComponentCountException(
-            node_process, '0 or 1', len(instances))
+            node_process, _('0 or 1'), len(instances))
     return instances[0] if instances else None
 
 
