@@ -195,6 +195,8 @@ class HDP2GatingTest(swift.SwiftTest, scaling.ScalingTest,
         self._edp_test()
 
     @testcase.attr('hdp2')
+    @testcase.skipIf(config.SKIP_ALL_TESTS_FOR_PLUGIN,
+                     'All tests for HDP2 plugin were skipped')
     def test_hdp2_plugin_gating(self):
         self._prepare_test()
         self._create_rm_nn_ng_template()

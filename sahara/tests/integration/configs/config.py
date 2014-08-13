@@ -547,6 +547,71 @@ HDP2_CONFIG_OPTS = [
 ]
 
 
+SPARK_CONFIG_GROUP = cfg.OptGroup(name='SPARK')
+SPARK_CONFIG_OPTS = [
+    cfg.StrOpt('PLUGIN_NAME',
+               default='spark',
+               help='Name of plugin.'),
+    cfg.StrOpt('IMAGE_ID',
+               default=None,
+               help='ID for image which is used for cluster creation. Also '
+                    'you can specify image name or tag of image instead of '
+                    'image ID. If you do not specify image related '
+                    'parameters, then image for cluster creation will be '
+                    'chosen by tag "sahara_i_tests".'),
+    cfg.StrOpt('IMAGE_NAME',
+               default=None,
+               help='Name for image which is used for cluster creation. Also '
+                    'you can specify image ID or tag of image instead of '
+                    'image name. If you do not specify image related '
+                    'parameters, then image for cluster creation will be '
+                    'chosen by tag "sahara_i_tests".'),
+    cfg.StrOpt('IMAGE_TAG',
+               default=None,
+               help='Tag for image which is used for cluster creation. Also '
+                    'you can specify image ID or image name instead of tag of '
+                    'image. If you do not specify image related parameters, '
+                    'then image for cluster creation will be chosen by '
+                    'tag "sahara_i_tests".'),
+    cfg.ListOpt('MASTER_NODE_PROCESSES',
+                default=['namenode', 'master'],
+                help='A list of processes that will be launched '
+                     'on master node'),
+    cfg.ListOpt('WORKER_NODE_PROCESSES',
+                default=['datanode', 'slave'],
+                help='A list of processes that will be launched '
+                     'on worker nodes'),
+    cfg.StrOpt('HADOOP_VERSION',
+               default='1.0.0',
+               help='Version of Spark (even though it says "HADOOP".'),
+    cfg.StrOpt('HADOOP_USER',
+               default='hdfs',
+               help='Username which is used for access to Hadoop services.'),
+    cfg.DictOpt('HADOOP_PROCESSES_WITH_PORTS',
+                default={
+                    'master': 7077,
+                    'namenode': 8020,
+                    'datanode': 50075
+                },
+                help='Spark process map with ports for spark plugin.'
+                ),
+    cfg.DictOpt('PROCESS_NAMES',
+                default={
+                    'nn': 'namenode',
+                    'tt': 'tasktracker',
+                    'dn': 'datanode'
+                },
+                help='Names for namenode, tasktracker and datanode '
+                     'processes.'),
+    cfg.BoolOpt('SKIP_ALL_TESTS_FOR_PLUGIN',
+                default=True,
+                help='If this flag is True, then all tests for Spark plugin '
+                     'will be skipped.'),
+    cfg.BoolOpt('SKIP_EDP_TEST', default=False),
+    cfg.BoolOpt('SKIP_SCALING_TEST', default=False)
+]
+
+
 def register_config(config, config_group, config_opts):
     config.register_group(config_group)
     config.register_opts(config_opts, config_group)
@@ -578,6 +643,7 @@ class ITConfig:
         register_config(cfg.CONF, HDP2_CONFIG_GROUP, HDP2_CONFIG_OPTS)
         register_config(
             cfg.CONF, VANILLA_TWO_CONFIG_GROUP, VANILLA_TWO_CONFIG_OPTS)
+        register_config(cfg.CONF, SPARK_CONFIG_GROUP, SPARK_CONFIG_OPTS)
 
         cfg.CONF(
             [], project='Sahara_integration_tests',
@@ -590,3 +656,4 @@ class ITConfig:
         self.cdh_config = cfg.CONF.CDH
         self.hdp_config = cfg.CONF.HDP
         self.hdp2_config = cfg.CONF.HDP2
+        self.spark_config = cfg.CONF.SPARK

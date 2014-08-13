@@ -30,6 +30,8 @@ class EDPJobInfo(object):
     PIG_PATH = 'etc/edp-examples/pig-job/'
     JAVA_PATH = 'etc/edp-examples/edp-java/'
     MAPREDUCE_PATH = 'etc/edp-examples/edp-mapreduce/'
+    SPARK_PATH = 'etc/edp-examples/edp-spark/'
+
     HADOOP2_JAVA_PATH = 'etc/edp-examples/hadoop2/edp-java/'
 
     def read_pig_example_script(self):
@@ -79,6 +81,18 @@ class EDPJobInfo(object):
                 "edp.streaming.mapper": "/bin/cat",
                 "edp.streaming.reducer": "/usr/bin/wc"
             }
+        }
+
+    def read_spark_example_jar(self):
+        return open(self.SPARK_PATH + 'spark-example.jar').read()
+
+    def spark_example_configs(self):
+        return {
+            'configs': {
+                'edp.java.main_class':
+                'org.apache.spark.examples.SparkPi'
+            },
+            'args': ['4']
         }
 
 
@@ -227,7 +241,9 @@ class EDPTest(base.ITestCase):
 
             # Java jobs don't use data sources.  Input/output paths must
             # be passed as args with corresponding username/password configs
-            if not edp.compare_job_type(job_type, edp.JOB_TYPE_JAVA):
+            if not edp.compare_job_type(job_type,
+                                        edp.JOB_TYPE_JAVA,
+                                        edp.JOB_TYPE_SPARK):
                 input_id = self._create_data_source(
                     'input-%s' % str(uuid.uuid4())[:8], 'swift',
                     swift_input_url)
@@ -264,6 +280,10 @@ class EDPTest(base.ITestCase):
                 job_binary_list, lib_binary_list)
             if not configs:
                 configs = {}
+
+            # TODO(tmckay): for spark we don't have support for swift
+            # yet.  When we do, we'll need something to here to set up
+            # swift paths and we can use a spark wordcount job
 
             # Append the input/output paths with the swift configs
             # if the caller has requested it...
