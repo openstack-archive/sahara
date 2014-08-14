@@ -77,6 +77,17 @@ class VersionHandler(avm.AbstractVersionHandler):
         if cluster_template:
             cluster_spec = cs.ClusterSpec(cluster_template)
         else:
+            if scaled_groups:
+                for ng in cluster.node_groups:
+                    ng_id = ng['id']
+                    if (ng_id in scaled_groups and
+                       ng['count'] > scaled_groups[ng_id]):
+                            raise ex.ClusterCannotBeScaled(
+                                cluster.name,
+                                _('The HDP plugin does not support '
+                                  'the decommissioning of nodes '
+                                  'for HDP version 1.3.2'))
+
             cluster_spec = self.get_default_cluster_configuration()
             cluster_spec.create_operational_config(
                 cluster, user_inputs, scaled_groups)
