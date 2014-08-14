@@ -138,7 +138,10 @@ def configure_cluster(cluster):
 
 
 def scale_cluster(cluster, instances):
-    if not cmd.is_pre_installed_cdh(pu.get_manager(cluster).remote()):
+    if not instances:
+        return
+
+    if not cmd.is_pre_installed_cdh(instances[0].remote()):
         _configure_os(instances)
         _install_packages(instances, PACKAGES)
         _post_install(instances)
