@@ -6,9 +6,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: sahara 2014.2.dev88.g6d16437\n"
+"Project-Id-Version: sahara 2014.2.dev95.g5b2a10e\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2014-08-12 06:10+0000\n"
+"POT-Creation-Date: 2014-08-14 06:10+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -35,6 +35,41 @@ msgstr ""
 #: sahara/openstack/common/loopingcall.py:87
 #, python-format
 msgid "task %(func_name)s run outlasted interval by %(delay).2f sec"
+msgstr ""
+
+#: sahara/plugins/hdp/versions/version_1_3_2/versionhandler.py:363
+#: sahara/plugins/hdp/versions/version_2_0_6/versionhandler.py:358
+msgid "Finalizing of Ambari cluster state failed. {0}"
+msgstr ""
+
+#: sahara/plugins/hdp/versions/version_2_0_6/services.py:924
+msgid "Missing configuration named {0}, aborting Hue ini file creation"
+msgstr ""
+
+#: sahara/plugins/hdp/versions/version_2_0_6/services.py:1024
+msgid "Missing source configuration property set, aborting merge: {0}"
+msgstr ""
+
+#: sahara/plugins/hdp/versions/version_2_0_6/services.py:1027
+msgid "Missing destination configuration property set, aborting merge: {0}"
+msgstr ""
+
+#: sahara/plugins/hdp/versions/version_2_0_6/services.py:1038
+#, python-format
+msgid ""
+"Overwriting existing configuration property in %(dst_config_name)s from "
+"%(src_config_name)s for Hue: %(property_name)s [%(dst_config)s -> "
+"%(src_config)s]"
+msgstr ""
+
+#: sahara/plugins/vanilla/v1_2_1/config_helper.py:363
+#, python-format
+msgid "Plugin received wrong applicable target '%s' in environmental configs"
+msgstr ""
+
+#: sahara/plugins/vanilla/v1_2_1/config_helper.py:384
+#, python-format
+msgid "Plugin received wrong applicable target '%s' for xml configs"
 msgstr ""
 
 #: sahara/service/direct_engine.py:82 sahara/service/heat_engine.py:70

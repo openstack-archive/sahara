@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Sahara\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2014-08-08 06:10+0000\n"
+"POT-Creation-Date: 2014-08-14 06:10+0000\n"
 "PO-Revision-Date: 2014-07-16 14:42+0000\n"
 "Last-Translator: openstackjenkins <jenkins@openstack.org>\n"
 "Language-Team: English (Australia) (http://www.transifex.com/projects/p/"
@@ -39,7 +39,7 @@ msgstr ""
 msgid "Loading '%s' ops"
 msgstr ""
 
-#: sahara/middleware/auth_valid.py:54
+#: sahara/api/middleware/auth_valid.py:54
 #, python-format
 msgid "Incorrect path: %s"
 msgstr ""
@@ -64,26 +64,272 @@ msgstr "Skipping periodic task %(task)s because its interval is negative"
 msgid "Skipping periodic task %(task)s because it is disabled"
 msgstr "Skipping periodic task %(task)s because it is disabled"
 
+#: sahara/plugins/base.py:106
+#, python-format
+msgid "Plugin '%(plugin_name)s' loaded %(entry_point)s"
+msgstr ""
+
 #: sahara/plugins/cdh/deploy.py:289
 msgid "Cloudera Manager has been started"
 msgstr ""
 
-#: sahara/plugins/hdp/versions/version_1_3_2/versionhandler.py:592
-#: sahara/plugins/hdp/versions/version_2_0_6/versionhandler.py:691
+#: sahara/plugins/hdp/ambariplugin.py:69
+#: sahara/plugins/hdp/versions/version_1_3_2/versionhandler.py:314
+#: sahara/plugins/hdp/versions/version_2_0_6/versionhandler.py:304
+msgid "Install of Hadoop stack successful."
+msgstr ""
+
+#: sahara/plugins/hdp/ambariplugin.py:176
+msgid "Provisioning Cluster via Ambari Server: {0} ..."
+msgstr ""
+
+#: sahara/plugins/hdp/ambariplugin.py:245
+msgid "Using \"{0}\" as admin user for scaling of cluster"
+msgstr ""
+
+#: sahara/plugins/hdp/ambariplugin.py:328
+#, python-format
+msgid "AmbariPlugin: decommission_nodes called for HDP version = %s"
+msgstr ""
+
+#: sahara/plugins/hdp/hadoopserver.py:69
+msgid "{0}: Installing rpm's ..."
+msgstr ""
+
+#: sahara/plugins/hdp/hadoopserver.py:81
+msgid "{0}: Unable to install rpm's from repo, checking for local install."
+msgstr ""
+
+#: sahara/plugins/hdp/hadoopserver.py:91
+msgid "{0}: Installing swift integration ..."
+msgstr ""
+
+#: sahara/plugins/hdp/hadoopserver.py:99
+msgid ""
+"{0}: Unable to install swift integration from source, checking for local rpm."
+msgstr ""
+
+#: sahara/plugins/hdp/hadoopserver.py:126
+msgid "{0}: Installing ambari-server ..."
+msgstr ""
+
+#: sahara/plugins/hdp/hadoopserver.py:130
+msgid "Running Ambari Server setup ..."
+msgstr ""
+
+#: sahara/plugins/hdp/hadoopserver.py:156
+msgid "Starting Ambari ..."
+msgstr ""
+
+#: sahara/plugins/hdp/hadoopserver.py:180
+msgid "{0}: Installing Ambari Agent ..."
+msgstr ""
+
+#: sahara/plugins/hdp/hadoopserver.py:192
+msgid "{0}: Starting Ambari Agent ..."
+msgstr ""
+
+#: sahara/plugins/hdp/versions/version_1_3_2/versionhandler.py:296
+#: sahara/plugins/hdp/versions/version_2_0_6/versionhandler.py:286
+msgid "Installing required Hadoop services ..."
+msgstr ""
+
+#: sahara/plugins/hdp/versions/version_1_3_2/versionhandler.py:352
+#: sahara/plugins/hdp/versions/version_2_0_6/versionhandler.py:347
+msgid "Finalizing Ambari cluster state."
+msgstr ""
+
+#: sahara/plugins/hdp/versions/version_1_3_2/versionhandler.py:369
+#: sahara/plugins/hdp/versions/version_2_0_6/versionhandler.py:364
+msgid "Starting Hadoop services ..."
+msgstr ""
+
+#: sahara/plugins/hdp/versions/version_1_3_2/versionhandler.py:370
+#: sahara/plugins/hdp/versions/version_2_0_6/versionhandler.py:365
+#, python-format
+msgid ""
+"Cluster name: %(cluster_name)s, Ambari server address: %(server_address)s"
+msgstr ""
+
+#: sahara/plugins/hdp/versions/version_1_3_2/versionhandler.py:391
+#: sahara/plugins/hdp/versions/version_2_0_6/versionhandler.py:386
+msgid "Successfully started Hadoop cluster '{0}'."
+msgstr ""
+
+#: sahara/plugins/hdp/versions/version_1_3_2/versionhandler.py:418
+#: sahara/plugins/hdp/versions/version_2_0_6/versionhandler.py:413
+msgid "Successfully changed state of Hadoop components "
+msgstr ""
+
+#: sahara/plugins/hdp/versions/version_1_3_2/versionhandler.py:446
+#: sahara/plugins/hdp/versions/version_2_0_6/versionhandler.py:441
+msgid "Starting Hadoop components while scaling up"
+msgstr ""
+
+#: sahara/plugins/hdp/versions/version_1_3_2/versionhandler.py:447
+#: sahara/plugins/hdp/versions/version_2_0_6/versionhandler.py:442
+#, python-format
+msgid "Cluster name %(cluster_name)s, Ambari server ip %(ip)s"
+msgstr ""
+
+#: sahara/plugins/hdp/versions/version_1_3_2/versionhandler.py:503
+#: sahara/plugins/hdp/versions/version_2_0_6/versionhandler.py:498
+msgid "Waiting for all Ambari agents to register with server ..."
+msgstr ""
+
+#: sahara/plugins/hdp/versions/version_1_3_2/versionhandler.py:516
+#: sahara/plugins/hdp/versions/version_2_0_6/versionhandler.py:511
+#, python-format
+msgid "Registered Hosts: %(current_number)s of %(final_number)s"
+msgstr ""
+
+#: sahara/plugins/hdp/versions/version_1_3_2/versionhandler.py:525
+#: sahara/plugins/hdp/versions/version_2_0_6/versionhandler.py:520
+msgid "Waiting to connect to ambari server ..."
+msgstr ""
+
+#: sahara/plugins/hdp/versions/version_1_3_2/versionhandler.py:607
+#: sahara/plugins/hdp/versions/version_2_0_6/versionhandler.py:708
 msgid "HTTP session is not cached"
 msgstr ""
 
-#: sahara/service/direct_engine.py:280
+#: sahara/plugins/hdp/versions/version_2_0_6/services.py:916
+msgid "Creating Hue ini property tree from configuration named {0}"
+msgstr ""
+
+#: sahara/plugins/hdp/versions/version_2_0_6/services.py:1016
+#, python-format
+msgid "Merging configuration properties: %(source)s -> %(destination)s"
+msgstr ""
+
+#: sahara/plugins/hdp/versions/version_2_0_6/services.py:1060
+msgid "Installing Hue on {0}"
+msgstr ""
+
+#: sahara/plugins/hdp/versions/version_2_0_6/services.py:1065
+msgid "Setting Hue configuration on {0}"
+msgstr ""
+
+#: sahara/plugins/hdp/versions/version_2_0_6/services.py:1071
+msgid "Uninstalling Shell, if it is installed on {0}"
+msgstr ""
+
+#: sahara/plugins/hdp/versions/version_2_0_6/services.py:1080
+msgid "Creating initial Hue user on {0}"
+msgstr ""
+
+#: sahara/plugins/hdp/versions/version_2_0_6/services.py:1085
+msgid "(Re)starting Hue on {0}"
+msgstr ""
+
+#: sahara/plugins/hdp/versions/version_2_0_6/services.py:1176
+msgid ""
+"Missing HDFS client from Hue node... adding it since it is required for Hue"
+msgstr ""
+
+#: sahara/plugins/hdp/versions/version_2_0_6/services.py:1182
+msgid ""
+"Missing HIVE client from Hue node... adding it since it is required for "
+"Beeswax and HCatalog"
+msgstr ""
+
+#: sahara/plugins/hdp/versions/version_2_0_6/versionhandler.py:637
+msgid "AmbariClient: decommission post request succeeded!"
+msgstr ""
+
+#: sahara/plugins/hdp/versions/version_2_0_6/versionhandler.py:655
+#, python-format
+msgid ""
+"AmbariClient: number of hosts waiting for decommisioning to complete = %s"
+msgstr ""
+
+#: sahara/plugins/hdp/versions/version_2_0_6/versionhandler.py:664
+#, python-format
+msgid "AmbariClient: decommission status request ok, result = %s"
+msgstr ""
+
+#: sahara/plugins/hdp/versions/version_2_0_6/versionhandler.py:674
+#, python-format
+msgid "AmbariClient: node = %(node)s is now in adminState = %(admin_state)s"
+msgstr ""
+
+#: sahara/plugins/hdp/versions/version_2_0_6/versionhandler.py:682
+msgid "AmbariClient: sleeping for 5 seconds"
+msgstr ""
+
+#: sahara/plugins/spark/config_helper.py:221
+#: sahara/plugins/vanilla/v1_2_1/config_helper.py:227
+#, python-format
+msgid "Applying config: %s"
+msgstr ""
+
+#: sahara/plugins/spark/plugin.py:111
+#: sahara/plugins/vanilla/v1_2_1/versionhandler.py:127
+#, python-format
+msgid "Hadoop services in cluster %s have been started"
+msgstr ""
+
+#: sahara/plugins/spark/plugin.py:123
+#, python-format
+msgid "Spark service at '%s' has been started"
+msgstr ""
+
+#: sahara/plugins/spark/plugin.py:126
+#: sahara/plugins/vanilla/v1_2_1/versionhandler.py:157
+#, python-format
+msgid "Cluster %s has been started successfully"
+msgstr ""
+
+#: sahara/plugins/spark/plugin.py:379
+#, python-format
+msgid "Spark master service at '%s' has been restarted"
+msgstr ""
+
+#: sahara/plugins/vanilla/hadoop2/config.py:300
+msgid ""
+"Node group awareness is not implemented in YARN yet so "
+"enable_hypervisor_awareness set to False explicitly"
+msgstr ""
+
+#: sahara/plugins/vanilla/hadoop2/run_scripts.py:147
+#: sahara/plugins/vanilla/v1_2_1/versionhandler.py:165
+#, python-format
+msgid "Waiting %s datanodes to start up"
+msgstr ""
+
+#: sahara/plugins/vanilla/hadoop2/run_scripts.py:152
+#: sahara/plugins/vanilla/v1_2_1/versionhandler.py:170
+#, python-format
+msgid "Datanodes on cluster %s has been started"
+msgstr ""
+
+#: sahara/plugins/vanilla/hadoop2/run_scripts.py:160
+#: sahara/plugins/vanilla/v1_2_1/versionhandler.py:178
+#, python-format
+msgid "Stop waiting datanodes on cluster %s since it has been deleted"
+msgstr ""
+
+#: sahara/plugins/vanilla/v1_2_1/versionhandler.py:138
+#, python-format
+msgid "Oozie service at '%s' has been started"
+msgstr ""
+
+#: sahara/plugins/vanilla/v1_2_1/versionhandler.py:153
+#, python-format
+msgid "Hive Metastore server at %s has been started"
+msgstr ""
+
+#: sahara/service/direct_engine.py:281
 #, python-format
 msgid "Cluster '%s': all instances are active"
 msgstr ""
 
-#: sahara/service/direct_engine.py:292
+#: sahara/service/direct_engine.py:293
 #, python-format
 msgid "Cluster '%(name)s' creation rollback (reason: %(reason)s)"
 msgstr ""
 
-#: sahara/service/direct_engine.py:300
+#: sahara/service/direct_engine.py:301
 #, python-format
 msgid "Cluster '%(name)s' scaling rollback (reason: %(reason)s)"
 msgstr ""
