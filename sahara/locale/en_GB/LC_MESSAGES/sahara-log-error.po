@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Sahara\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2014-08-05 06:10+0000\n"
+"POT-Creation-Date: 2014-08-14 06:10+0000\n"
 "PO-Revision-Date: 2014-07-29 23:43+0000\n"
 "Last-Translator: openstackjenkins <jenkins@openstack.org>\n"
 "Language-Team: English (United Kingdom) (http://www.transifex.com/projects/p/"
@@ -69,6 +69,72 @@ msgid ""
 "6.0.2 or later."
 msgstr ""
 
+#: sahara/plugins/hdp/versions/version_1_3_2/versionhandler.py:173
+#: sahara/plugins/hdp/versions/version_2_0_6/versionhandler.py:158
+#, python-format
+msgid "Create cluster command failed. %s"
+msgstr ""
+
+#: sahara/plugins/hdp/versions/version_1_3_2/versionhandler.py:221
+#: sahara/plugins/hdp/versions/version_2_0_6/versionhandler.py:206
+msgid "Set configuration command failed. {0}"
+msgstr ""
+
+#: sahara/plugins/hdp/versions/version_1_3_2/versionhandler.py:237
+#: sahara/plugins/hdp/versions/version_2_0_6/versionhandler.py:223
+msgid "Create service command failed. {0}"
+msgstr ""
+
+#: sahara/plugins/hdp/versions/version_1_3_2/versionhandler.py:255
+#: sahara/plugins/hdp/versions/version_2_0_6/versionhandler.py:242
+msgid "Create component command failed. {0}"
+msgstr ""
+
+#: sahara/plugins/hdp/versions/version_1_3_2/versionhandler.py:274
+#: sahara/plugins/hdp/versions/version_2_0_6/versionhandler.py:261
+msgid "Create host command failed. {0}"
+msgstr ""
+
+#: sahara/plugins/hdp/versions/version_1_3_2/versionhandler.py:289
+#: sahara/plugins/hdp/versions/version_2_0_6/versionhandler.py:279
+#, python-format
+msgid "Create host_component command failed. %s"
+msgstr ""
+
+#: sahara/plugins/hdp/versions/version_1_3_2/versionhandler.py:322
+#: sahara/plugins/hdp/versions/version_2_0_6/versionhandler.py:312
+msgid "Install command failed. {0}"
+msgstr ""
+
+#: sahara/plugins/hdp/versions/version_1_3_2/versionhandler.py:400
+#: sahara/plugins/hdp/versions/version_2_0_6/versionhandler.py:395
+#, python-format
+msgid "Start command failed. Status: %(status)s, response: %(response)s"
+msgstr ""
+
+#: sahara/plugins/hdp/versions/version_1_3_2/versionhandler.py:427
+#: sahara/plugins/hdp/versions/version_2_0_6/versionhandler.py:422
+#, python-format
+msgid "Command failed. Status: %(status)s, response: %(response)s"
+msgstr ""
+
+#: sahara/plugins/hdp/versions/version_2_0_6/versionhandler.py:627
+#, python-format
+msgid ""
+"AmbariClient: error while making decommision post request. Error is = %s"
+msgstr ""
+
+#: sahara/plugins/hdp/versions/version_2_0_6/versionhandler.py:661
+#, python-format
+msgid "AmbariClient: error in making decomission status request, error = %s"
+msgstr ""
+
+#: sahara/plugins/hdp/versions/version_2_0_6/versionhandler.py:689
+msgid ""
+"AmbariClient: decommissioning process timed-out waiting for nodes to enter "
+"\"Decommissioned\" status."
+msgstr ""
+
 #: sahara/service/heat_engine.py:119
 msgid "Unable to complete rollback, aborting"
 msgstr ""
@@ -113,17 +179,17 @@ msgstr ""
 msgid "Can't delete volume %s"
 msgstr ""
 
-#: sahara/service/edp/job_manager.py:133
+#: sahara/service/edp/job_manager.py:134
 #, python-format
 msgid "Can't run job execution '%(job)s' (reason: %(reason)s)"
 msgstr ""
 
-#: sahara/service/edp/job_manager.py:155
+#: sahara/service/edp/job_manager.py:156
 #, python-format
 msgid "Error during cancel of job execution %(job)s: %(error)s"
 msgstr ""
 
-#: sahara/service/edp/job_manager.py:181
+#: sahara/service/edp/job_manager.py:182
 #, python-format
 msgid "Error during update job execution %(job)s: %(error)s"
 msgstr ""
@@ -138,7 +204,7 @@ msgstr ""
 msgid "No %(method)s method found implemented in %(class)s class"
 msgstr ""
 
-#: sahara/utils/ssh_remote.py:264
+#: sahara/utils/ssh_remote.py:265
 #, python-format
 msgid "Can't read file \"%s\""
 msgstr ""
