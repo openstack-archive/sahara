@@ -333,12 +333,21 @@ class ITestCase(testcase.WithAttributes, base.BaseTestCase):
                         'sudo -u %s bash -lc "hadoop job -list-active-trackers'
                         '" | grep "^tracker_" | wc -l'
                         % plugin_config.HADOOP_USER)[1]
-                    active_tasktracker_count = int(active_tasktracker_count)
+                    try:
+                        active_tasktracker_count = int(
+                            active_tasktracker_count)
+                    except ValueError:
+                        active_tasktracker_count = -1
+
                     active_datanode_count = self.execute_command(
                         'sudo -u %s bash -lc "hadoop dfsadmin -report" | '
-                        'grep "Datanodes available:.*" | awk \'{print $3}\''
+                        'grep -e "Datanodes available:.*" '
+                        '-e "Live datanodes.*" | grep -o "[0-9]*" | head -1'
                         % plugin_config.HADOOP_USER)[1]
-                    active_datanode_count = int(active_datanode_count)
+                    try:
+                        active_datanode_count = int(active_datanode_count)
+                    except ValueError:
+                        active_datanode_count = -1
 
                     if (active_tasktracker_count ==
                             node_info['tasktracker_count'] and
