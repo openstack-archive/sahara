@@ -27,7 +27,7 @@ interface.
               `sqlalchemy` is the only supported backend right now.
 
 :sql_connection:  string specifying the sqlalchemy connection to use, like:
-                  `sqlite:///var/lib/sahara/sahara.sqlite`.
+                  `mysql://user:password@localhost/sahara`.
 
 """
 
