@@ -17,6 +17,7 @@ from sahara import conductor
 from sahara import context
 from sahara.plugins.cdh import config_helper as c_helper
 from sahara.plugins.cdh import deploy as dp
+from sahara.plugins.cdh import edp_engine
 from sahara.plugins.cdh import utils as cu
 from sahara.plugins.cdh import validation as vl
 from sahara.plugins import provisioning as p
@@ -74,9 +75,6 @@ class CDHPluginProvider(p.ProvisioningPluginBase):
         vl.validate_existing_ng_scaling(cluster, existing)
         vl.validate_additional_ng_scaling(cluster, additional)
 
-    def get_hdfs_user(self):
-        return 'hdfs'
-
     def get_oozie_server(self, cluster):
         return cu.get_oozie(cluster)
 
@@ -104,3 +102,8 @@ class CDHPluginProvider(p.ProvisioningPluginBase):
 
         ctx = context.ctx()
         conductor.cluster_update(ctx, cluster, {'info': info})
+
+    def get_edp_engine(self, cluster, job_type):
+        if job_type in edp_engine.EdpOozieEngine.get_supported_job_types():
+            return edp_engine.EdpOozieEngine(cluster)
+        return None

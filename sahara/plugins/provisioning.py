@@ -29,10 +29,6 @@ class ProvisioningPluginBase(plugins_base.PluginInterface):
     def get_configs(self, hadoop_version):
         pass
 
-    @plugins_base.optional
-    def get_hdfs_user(self):
-        pass
-
     @plugins_base.required
     def get_node_processes(self, hadoop_version):
         pass
@@ -81,36 +77,9 @@ class ProvisioningPluginBase(plugins_base.PluginInterface):
     def validate_edp(self, cluster):
         pass
 
-    @plugins_base.required_with_default
-    def get_edp_engine(self, cluster, job_type, default_engines):
-        '''Default implementation to select an EDP job engine
-
-        This method chooses an EDP implementation based on job type. It should
-        be overloaded by a plugin to allow different behavior or the selection
-        of a custom EDP implementation.
-
-        The default_engines parameter is a list of default EDP implementations.
-        Each item in the list is a dictionary, and each dictionary has the
-        following elements:
-
-        name (a simple name for the implementation)
-        job_types (a list of EDP job types supported by the implementation)
-        engine (a class derived from sahara.service.edp.base_engine.JobEngine)
-
-        This method will choose the first engine that it finds which lists the
-        job_type value in the job_types element. An instance of that engine
-        will be allocated and returned.
-
-        :param cluster: a Sahara cluster object
-        :param job_type: an EDP job type string
-        :param default_engines: a list of dictionaries describing the default
-        implementations.
-        :returns: an instance of a class derived from
-        sahara.service.edp.base_engine.JobEngine or None
-        '''
-        for eng in default_engines:
-            if job_type in eng["job_types"]:
-                return eng["engine"](cluster)
+    @plugins_base.optional
+    def get_edp_engine(self, cluster, job_type):
+        pass
 
     @plugins_base.optional
     def get_resource_manager_uri(self, cluster):
