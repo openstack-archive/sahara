@@ -31,6 +31,7 @@ from sahara.plugins.general import exceptions as ex
 from sahara.plugins.hdp import clusterspec as cs
 from sahara.plugins.hdp import configprovider as cfgprov
 from sahara.plugins.hdp.versions import abstractversionhandler as avm
+from sahara.plugins.hdp.versions.version_1_3_2 import edp_engine
 from sahara.plugins.hdp.versions.version_1_3_2 import services
 from sahara import version
 
@@ -111,6 +112,11 @@ class VersionHandler(avm.AbstractVersionHandler):
 
     def get_resource_manager_uri(self, cluster):
         return cluster['info']['MapReduce']['JobTracker']
+
+    def get_edp_engine(self, cluster, job_type):
+        if job_type in edp_engine.EdpOozieEngine.get_supported_job_types():
+            return edp_engine.EdpOozieEngine(cluster)
+        return None
 
 
 class AmbariClient():

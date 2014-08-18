@@ -20,6 +20,7 @@ from sahara import context
 from sahara.openstack.common import log as logging
 from sahara.plugins.vanilla import abstractversionhandler as avm
 from sahara.plugins.vanilla.hadoop2 import config as c
+from sahara.plugins.vanilla.hadoop2 import edp_engine
 from sahara.plugins.vanilla.hadoop2 import run_scripts as run
 from sahara.plugins.vanilla.hadoop2 import scaling as sc
 from sahara.plugins.vanilla.hadoop2 import validation as vl
@@ -139,3 +140,8 @@ class VersionHandler(avm.AbstractVersionHandler):
         rm = vu.get_resourcemanager(cluster)
         return 'http://%(host)s:%(port)s' % {'host': rm.management_ip,
                                              'port': '8032'}
+
+    def get_edp_engine(self, cluster, job_type):
+        if job_type in edp_engine.EdpOozieEngine.get_supported_job_types():
+            return edp_engine.EdpOozieEngine(cluster)
+        return None

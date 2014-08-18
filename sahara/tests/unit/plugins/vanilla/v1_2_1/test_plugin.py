@@ -19,6 +19,7 @@ import testtools
 from sahara import conductor as cond
 from sahara import context
 from sahara import exceptions as e
+from sahara.plugins import base as pb
 from sahara.plugins.general import exceptions as ex
 from sahara.plugins.vanilla import plugin as p
 from sahara.plugins.vanilla.v1_2_1 import config_helper as c_h
@@ -26,6 +27,7 @@ from sahara.plugins.vanilla.v1_2_1 import mysql_helper as m_h
 from sahara.plugins.vanilla.v1_2_1 import versionhandler as v_h
 from sahara.tests.unit import base
 from sahara.tests.unit import testutils as tu
+from sahara.utils import edp
 
 
 conductor = cond.API
@@ -34,6 +36,7 @@ conductor = cond.API
 class VanillaPluginTest(base.SaharaWithDbTestCase):
     def setUp(self):
         super(VanillaPluginTest, self).setUp()
+        pb.setup_plugins()
         self.pl = p.VanillaProvider()
 
     def test_validate(self):
@@ -289,3 +292,18 @@ class VanillaPluginTest(base.SaharaWithDbTestCase):
 
         self.assertNotEqual(public_key1, public_key3)
         self.assertNotEqual(private_key1, private_key3)
+
+    @mock.patch('sahara.service.edp.hdfs_helper.create_dir_hadoop1')
+    def test_edp_calls_hadoop1_create_dir(self, create_dir):
+        cluster_dict = {
+            'name': 'cluster1',
+            'plugin_name': 'vanilla',
+            'hadoop_version': '1.2.1',
+            'default_image_id': 'image'}
+
+        cluster = conductor.cluster_create(context.ctx(), cluster_dict)
+        plugin = pb.PLUGINS.get_plugin(cluster.plugin_name)
+        plugin.get_edp_engine(cluster, edp.JOB_TYPE_PIG).create_hdfs_dir(
+            mock.Mock(), '/tmp')
+
+        self.assertEqual(1, create_dir.call_count)

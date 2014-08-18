@@ -18,11 +18,13 @@ import pkg_resources as pkg
 import testtools
 
 from sahara.conductor import resource as r
+from sahara.plugins import base as pb
 from sahara.plugins.general import exceptions as ex
 from sahara.plugins.hdp import ambariplugin as ap
 from sahara.plugins.hdp import clusterspec as cs
 from sahara.tests.unit import base as sahara_base
 import sahara.tests.unit.plugins.hdp.hdp_test_base as base
+from sahara.utils import edp
 from sahara import version
 
 
@@ -35,6 +37,10 @@ def create_cluster_template(ctx, dct):
 
 
 class AmbariPluginTest(sahara_base.SaharaTestCase):
+    def setUp(self):
+        super(AmbariPluginTest, self).setUp()
+        pb.setup_plugins()
+
     def test_get_node_processes(self):
         plugin = ap.AmbariPlugin()
         service_components = plugin.get_node_processes('1.3.2')
@@ -308,6 +314,28 @@ class AmbariPluginTest(sahara_base.SaharaTestCase):
                                  "JOBTRACKER", "TASKTRACKER", "NOT_OOZIE"])
         cluster = base.TestCluster([node_group])
         self.assertIsNone(plugin.get_oozie_server(cluster))
+
+    @mock.patch('sahara.service.edp.hdfs_helper.create_dir_hadoop1')
+    def test_edp132_calls_hadoop1_create_dir(self, create_dir):
+        cluster = base.TestCluster([])
+        cluster.plugin_name = 'hdp'
+        cluster.hadoop_version = '1.3.2'
+        plugin = ap.AmbariPlugin()
+        plugin.get_edp_engine(cluster, edp.JOB_TYPE_PIG).create_hdfs_dir(
+            mock.Mock(), '/tmp')
+
+        self.assertEqual(1, create_dir.call_count)
+
+    @mock.patch('sahara.service.edp.hdfs_helper.create_dir_hadoop2')
+    def test_edp206_calls_hadoop2_create_dir(self, create_dir):
+        cluster = base.TestCluster([])
+        cluster.plugin_name = 'hdp'
+        cluster.hadoop_version = '2.0.6'
+        plugin = ap.AmbariPlugin()
+        plugin.get_edp_engine(cluster, edp.JOB_TYPE_PIG).create_hdfs_dir(
+            mock.Mock(), '/tmp')
+
+        self.assertEqual(1, create_dir.call_count)
 
     def _get_test_request(self, host, port):
         request = base.TestRequest()
