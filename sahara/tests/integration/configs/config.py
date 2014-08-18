@@ -314,9 +314,6 @@ CDH_CONFIG_OPTS = [
                     'image. If you do not specify image related parameters, '
                     'then image for cluster creation will be chosen by '
                     'tag "sahara_i_tests".'),
-    cfg.StrOpt('SSH_USERNAME',
-               default=None,
-               help='Username to get cluster node with SSH.'),
     cfg.StrOpt('HADOOP_VERSION',
                default='5',
                help='Version of Hadoop.'),
