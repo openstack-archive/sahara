@@ -468,6 +468,20 @@
 
 
 #
+# Options defined in sahara.utils.proxy
+#
+
+# Enables Sahara to use a domain for creating temporary proxy
+# users to access Swift. If this is enabled a domain must be
+# created for Sahara to use. (boolean value)
+#use_domain_for_proxy_users=false
+
+# The domain Sahara will use to create new proxy users for
+# Swift object access. (string value)
+#proxy_user_domain_name=<None>
+
+
+#
 # Options defined in sahara.utils.remote
 #
 
