@@ -98,10 +98,10 @@ class VanillaPluginTest(base.SaharaWithDbTestCase):
                 't1': 4
             }}
         self.assertEqual(c_h.extract_environment_confs(env_configs),
-                         ['HADOOP_NAMENODE_OPTS=\\"-Xmx3000m\\"',
+                         ['CATALINA_OPTS -Xmx4000m',
                           'HADOOP_DATANODE_OPTS=\\"-Xmx4000m\\"',
-                          'CATALINA_OPTS -Xmx4000m',
                           'HADOOP_JOBTRACKER_OPTS=\\"-Xmx1000m\\"',
+                          'HADOOP_NAMENODE_OPTS=\\"-Xmx3000m\\"',
                           'HADOOP_TASKTRACKER_OPTS=\\"-Xmx2000m\\"'])
 
     def test_extract_xml_configs(self):
@@ -121,10 +121,10 @@ class VanillaPluginTest(base.SaharaWithDbTestCase):
         }
 
         self.assertEqual(c_h.extract_xml_confs(xml_configs),
-                         [('fs.default.name', 'hdfs://'),
-                         ('dfs.replication', 3),
-                         ('mapred.reduce.tasks', 2),
-                         ('io.sort.factor', 10)])
+                         [('dfs.replication', 3),
+                         ('fs.default.name', 'hdfs://'),
+                         ('io.sort.factor', 10),
+                         ('mapred.reduce.tasks', 2)])
 
     def test_general_configs(self):
         gen_config = {

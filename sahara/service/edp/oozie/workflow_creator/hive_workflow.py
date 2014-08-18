@@ -28,8 +28,8 @@ class HiveWorkflowCreator(base_workflow.OozieWorkflowCreator):
                            configuration=None, params={},
                            files=[], archives=[]):
 
-        for k, v in prepare.items():
-            self._add_to_prepare_element(k, v)
+        for k in sorted(prepare):
+            self._add_to_prepare_element(k, prepare[k])
 
         self._add_job_xml_element(job_xml)
         self._add_configuration_elements(configuration)

@@ -33,11 +33,11 @@ class ProvisioningPluginBaseTest(testtools.TestCase):
             },
         })
 
-        self.assertEqual(user_inputs, [
-            p.UserInput(c3, 'v-3'),
+        self.assertEqual([
             p.UserInput(c1, 'v-1'),
             p.UserInput(c2, 'v-2'),
-        ])
+            p.UserInput(c3, 'v-3'),
+        ], user_inputs)
 
     def test__map_to_user_inputs_failure(self):
         c1, c2, c3, plugin = _build_configs_and_plugin()

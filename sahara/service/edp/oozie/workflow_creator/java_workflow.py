@@ -30,8 +30,8 @@ class JavaWorkflowCreator(base_workflow.OozieWorkflowCreator):
                            arguments=[],
                            files=[], archives=[]):
 
-        for k, v in prepare.items():
-            self._add_to_prepare_element(k, v)
+        for k in sorted(prepare):
+            self._add_to_prepare_element(k, prepare[k])
 
         self._add_job_xml_element(job_xml)
 

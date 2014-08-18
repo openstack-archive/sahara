@@ -191,6 +191,7 @@ class ApiValidatorTest(testtools.TestCase):
         schema = {
             "type": "string",
             "format": "valid_name_hostname",
+            "minLength": 1,
         }
 
         self._validate_success(schema, "abcd")

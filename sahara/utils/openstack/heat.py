@@ -84,7 +84,7 @@ def _get_anti_affinity_scheduler_hints(instances_names):
         return ''
 
     aa_list = []
-    for instances_name in set(instances_names):
+    for instances_name in sorted(set(instances_names)):
         aa_list.append({"Ref": instances_name})
     return '"scheduler_hints" : %s,' % json.dumps({"different_host": aa_list})
 

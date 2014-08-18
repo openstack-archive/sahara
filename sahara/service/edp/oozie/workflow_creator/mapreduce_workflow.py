@@ -13,8 +13,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import six
-
 from sahara.service.edp.oozie.workflow_creator import base_workflow
 
 
@@ -28,13 +26,13 @@ class MapReduceWorkFlowCreator(base_workflow.OozieWorkflowCreator):
                            files=[], archives=[],
                            streaming={}):
 
-        for k, v in six.iteritems(prepare):
-            self._add_to_prepare_element(k, v)
+        for k in sorted(prepare):
+            self._add_to_prepare_element(k, prepare[k])
 
         # TODO(aignatov): Need to add PIPES workflow
 
-        for k, v in six.iteritems(streaming):
-            self._add_to_streaming_element(k, v)
+        for k in sorted(streaming):
+            self._add_to_streaming_element(k, streaming[k])
 
         self._add_job_xml_element(job_xml)
 
