@@ -264,7 +264,8 @@ Normal Response Code: 202 (ACCEPTED)
 
 Errors: none
 
-This operation returns short plugin description.
+This operation returns Sahara's JSON representation of a cluster template created
+from the posted configuration.
 
 The request body should contain configuration file.
 
