@@ -37,3 +37,6 @@ class EdpOozieEngine(edp_engine.OozieJobEngine):
     def get_resource_manager_uri(self, cluster):
         resourcemanager_ip = cu.get_resourcemanager(cluster).fqdn()
         return '%s:8032' % resourcemanager_ip
+
+    def get_oozie_server(self, cluster):
+        return cu.get_oozie(cluster)

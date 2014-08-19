@@ -137,9 +137,6 @@ class AmbariPlugin(p.ProvisioningPluginBase):
                                         "node_groups": node_groups,
                                         "cluster_configs": cluster_configs})
 
-    def get_oozie_server(self, cluster):
-        return u.get_instance(cluster, "OOZIE_SERVER")
-
     def get_edp_engine(self, cluster, job_type):
         version_handler = (
             self.version_factory.get_version_handler(cluster.hadoop_version))

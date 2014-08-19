@@ -70,10 +70,6 @@ class VanillaProvider(p.ProvisioningPluginBase):
             cluster.hadoop_version).validate_scaling(cluster, existing,
                                                      additional)
 
-    def get_oozie_server(self, cluster):
-        return self._get_version_handler(
-            cluster.hadoop_version).get_oozie_server(cluster)
-
     def validate_edp(self, cluster):
         oo_count = u.get_instances_count(cluster, 'oozie')
         if oo_count != 1:

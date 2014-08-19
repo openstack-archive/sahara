@@ -137,9 +137,6 @@ class VersionHandler(avm.AbstractVersionHandler):
         ctx = context.ctx()
         conductor.cluster_update(ctx, cluster, {'info': info})
 
-    def get_oozie_server(self, cluster):
-        return vu.get_oozie(cluster)
-
     def get_edp_engine(self, cluster, job_type):
         if job_type in edp_engine.EdpOozieEngine.get_supported_job_types():
             return edp_engine.EdpOozieEngine(cluster)
