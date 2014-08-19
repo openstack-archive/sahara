@@ -59,9 +59,5 @@ class AbstractVersionHandler():
         return
 
     @abc.abstractmethod
-    def get_resource_manager_uri(self, cluster):
-        return
-
-    @abc.abstractmethod
     def get_edp_engine(self, cluster, job_type):
         return

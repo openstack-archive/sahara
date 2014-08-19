@@ -140,9 +140,6 @@ class VersionHandler(avm.AbstractVersionHandler):
     def get_oozie_server(self, cluster):
         return vu.get_oozie(cluster)
 
-    def get_resource_manager_uri(self, cluster):
-        return cluster['info']['YARN']['ResourceManager']
-
     def get_edp_engine(self, cluster, job_type):
         if job_type in edp_engine.EdpOozieEngine.get_supported_job_types():
             return edp_engine.EdpOozieEngine(cluster)

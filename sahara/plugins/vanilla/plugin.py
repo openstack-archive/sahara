@@ -33,10 +33,6 @@ class VanillaProvider(p.ProvisioningPluginBase):
     def _get_version_handler(self, hadoop_version):
         return self.version_factory.get_version_handler(hadoop_version)
 
-    def get_resource_manager_uri(self, cluster):
-        return self._get_version_handler(
-            cluster.hadoop_version).get_resource_manager_uri(cluster)
-
     def get_node_processes(self, hadoop_version):
         return self._get_version_handler(hadoop_version).get_node_processes()
 
@@ -82,12 +78,6 @@ class VanillaProvider(p.ProvisioningPluginBase):
         oo_count = u.get_instances_count(cluster, 'oozie')
         if oo_count != 1:
             raise ex.InvalidComponentCountException('oozie', '1', oo_count)
-
-    def get_name_node_uri(self, cluster):
-        return cluster['info']['HDFS']['NameNode']
-
-    def get_oozie_server_uri(self, cluster):
-        return cluster['info']['JobFlow']['Oozie'] + "/oozie/"
 
     def get_edp_engine(self, cluster, job_type):
         return self._get_version_handler(

@@ -21,3 +21,6 @@ class EdpOozieEngine(edp_engine.EdpOozieEngine):
 
     def create_hdfs_dir(self, remote, dir_name):
         hdfs_helper.create_dir_hadoop2(remote, dir_name, self.get_hdfs_user())
+
+    def get_resource_manager_uri(self, cluster):
+        return cluster['info']['YARN']['ResourceManager']

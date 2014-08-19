@@ -109,7 +109,8 @@ class VersionHandler(avm.AbstractVersionHandler):
 
         if rm:
             info['YARN'] = {
-                'Web UI': 'http://%s:%s' % (rm.management_ip, '8088')
+                'Web UI': 'http://%s:%s' % (rm.management_ip, '8088'),
+                'ResourceManager': 'http://%s:%s' % (rm.management_ip, '8032')
             }
 
         if nn:
@@ -133,11 +134,6 @@ class VersionHandler(avm.AbstractVersionHandler):
 
     def get_oozie_server(self, cluster):
         return vu.get_oozie(cluster)
-
-    def get_resource_manager_uri(self, cluster):
-        rm = vu.get_resourcemanager(cluster)
-        return 'http://%(host)s:%(port)s' % {'host': rm.management_ip,
-                                             'port': '8032'}
 
     def get_edp_engine(self, cluster, job_type):
         if job_type in edp_engine.EdpOozieEngine.get_supported_job_types():

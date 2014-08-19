@@ -78,18 +78,6 @@ class CDHPluginProvider(p.ProvisioningPluginBase):
     def get_oozie_server(self, cluster):
         return cu.get_oozie(cluster)
 
-    def get_oozie_server_uri(self, cluster):
-        oozie_ip = cu.get_oozie(cluster).management_ip
-        return 'http://%s:11000/oozie' % oozie_ip
-
-    def get_name_node_uri(self, cluster):
-        namenode_ip = cu.get_namenode(cluster).fqdn()
-        return 'hdfs://%s:8020' % namenode_ip
-
-    def get_resource_manager_uri(self, cluster):
-        resourcemanager_ip = cu.get_resourcemanager(cluster).fqdn()
-        return '%s:8032' % resourcemanager_ip
-
     def _set_cluster_info(self, cluster):
         mng = cu.get_manager(cluster)
         info = {

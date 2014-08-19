@@ -108,9 +108,6 @@ class VersionHandler(avm.AbstractVersionHandler):
     def get_services_processor(self):
         return services
 
-    def get_resource_manager_uri(self, cluster):
-        return cluster['info']['Yarn']['ResourceManager']
-
     def get_edp_engine(self, cluster, job_type):
         if job_type in edp_engine.EdpOozieEngine.get_supported_job_types():
             return edp_engine.EdpOozieEngine(cluster)

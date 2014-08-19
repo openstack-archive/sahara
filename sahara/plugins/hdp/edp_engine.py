@@ -20,3 +20,9 @@ class EdpOozieEngine(edp_engine.OozieJobEngine):
 
     def get_hdfs_user(self):
         return 'hdfs'
+
+    def get_name_node_uri(self, cluster):
+        return cluster['info']['HDFS']['NameNode']
+
+    def get_oozie_server_uri(self, cluster):
+        return cluster['info']['JobFlow']['Oozie'] + "/oozie/"

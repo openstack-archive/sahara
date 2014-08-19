@@ -13,6 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from sahara.plugins.cdh import utils as cu
 from sahara.service.edp import hdfs_helper
 from sahara.service.edp.oozie import engine as edp_engine
 
@@ -24,3 +25,15 @@ class EdpOozieEngine(edp_engine.OozieJobEngine):
 
     def create_hdfs_dir(self, remote, dir_name):
         hdfs_helper.create_dir_hadoop2(remote, dir_name, self.get_hdfs_user())
+
+    def get_oozie_server_uri(self, cluster):
+        oozie_ip = cu.get_oozie(cluster).management_ip
+        return 'http://%s:11000/oozie' % oozie_ip
+
+    def get_name_node_uri(self, cluster):
+        namenode_ip = cu.get_namenode(cluster).fqdn()
+        return 'hdfs://%s:8020' % namenode_ip
+
+    def get_resource_manager_uri(self, cluster):
+        resourcemanager_ip = cu.get_resourcemanager(cluster).fqdn()
+        return '%s:8032' % resourcemanager_ip
