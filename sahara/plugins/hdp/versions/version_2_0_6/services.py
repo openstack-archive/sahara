@@ -305,11 +305,12 @@ class YarnService(Service):
                 mapred_site_config[prop['name']] = prop['value']
 
         # process storage paths to accommodate ephemeral or cinder storage
+        yarn_site_config = cluster_spec.configurations['yarn-site']
         nm_node_groups = cluster_spec.get_node_groups_containing_component(
             'NODEMANAGER')
         if nm_node_groups:
             common_paths = self._get_common_paths(nm_node_groups)
-            mapred_site_config['yarn.nodemanager.local-dirs'] = (
+            yarn_site_config['yarn.nodemanager.local-dirs'] = (
                 self._generate_storage_path(common_paths,
                                             '/hadoop/yarn/local'))
 
