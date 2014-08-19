@@ -178,7 +178,7 @@ def check_node_processes(plugin_name, version, node_processes):
     if not set(node_processes).issubset(set(plugin_processes)):
         raise ex.InvalidException(
             _("Plugin supports the following node procesess: %s")
-            % plugin_processes)
+            % sorted(plugin_processes))
 
 
 def check_duplicates_node_groups_names(node_groups):

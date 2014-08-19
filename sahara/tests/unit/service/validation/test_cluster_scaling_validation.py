@@ -32,7 +32,7 @@ def _get_plugin(plugin_name):
     return None
 
 
-class TestScalingValidation(testtools.TestCase):
+class TestScalingValidation(u.ValidationTestCase):
     def setUp(self):
         super(TestScalingValidation, self).setUp()
         api.plugin_base.setup_plugins()
@@ -156,14 +156,6 @@ class TestScalingValidation(testtools.TestCase):
                              "010.novalocal in provisioned cluster exceeds "
                              "maximum limit 64 characters")
         u.stop_patch(patchers)
-
-    def _assert_calls(self, mock, call_info):
-        if not call_info:
-            self.assertEqual(mock.call_count, 0)
-        else:
-            self.assertEqual(mock.call_count, call_info[0])
-            self.assertEqual(mock.call_args[0][0].code, call_info[1])
-            self.assertEqual(mock.call_args[0][0].message, call_info[2])
 
     @mock.patch("sahara.utils.api.request_data")
     @mock.patch("sahara.utils.api.bad_request")
