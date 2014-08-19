@@ -584,7 +584,7 @@ class AmbariClient():
         request_uri = self._get_command_request_uri(ambari_info, cluster.name)
 
         hosts_to_decommission = []
-        # Decomission HDFS datanodes to avoid loss of data
+        # Decommission HDFS datanodes to avoid loss of data
         # during decommissioning process
         for instance in instances:
             ng_name = instance.node_group.name
@@ -616,15 +616,15 @@ class AmbariClient():
             + ', "Requests/resource_filters":[{"service_name":"HDFS",'
             '"component_name":"NAMENODE"}]}')
 
-        LOG.debug('AmbariClient: about to make decommision request, uri = ' +
+        LOG.debug('AmbariClient: about to make decommission request, uri = ' +
                   request_uri)
-        LOG.debug('AmbariClient: about to make decommision request, ' +
+        LOG.debug('AmbariClient: about to make decommission request, ' +
                   'request body  = ' + request_body)
 
         # ask Ambari to decommission the datanodes
         result = self._post(request_uri, ambari_info, request_body)
         if result.status_code != 202:
-            LOG.error(_LE('AmbariClient: error while making decommision post '
+            LOG.error(_LE('AmbariClient: error while making decommission post '
                           'request. Error is = %s'), result.text)
             raise exc.InvalidException(
                 _('An error occurred while trying to '
@@ -647,18 +647,18 @@ class AmbariClient():
             cluster.name, name_node_host.fqdn(),
             'NAMENODE')
 
-        LOG.debug('AmbariClient: about to make decomission status request,' +
+        LOG.debug('AmbariClient: about to make decommission status request,' +
                   'uri = ' + status_request)
 
         count = 0
         while count < 100 and len(hosts_to_decommission) > 0:
             LOG.info(_LI('AmbariClient: number of hosts waiting for '
-                         'decommisioning to complete = %s'),
+                         'decommissioning to complete = %s'),
                      str(len(hosts_to_decommission)))
 
             result = self._get(status_request, ambari_info)
             if result.status_code != 200:
-                LOG.error(_LE('AmbariClient: error in making decomission '
+                LOG.error(_LE('AmbariClient: error in making decommission '
                               'status request, error = %s'), result.text)
             else:
                 LOG.info(_LI('AmbariClient: decommission status request ok, '

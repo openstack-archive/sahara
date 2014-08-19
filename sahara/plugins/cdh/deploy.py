@@ -165,7 +165,7 @@ def scale_cluster(cluster, instances):
             cu.start_roles(yarn, cu.get_role_name(instance, 'NODEMANAGER'))
 
 
-def decomission_cluster(cluster, instances):
+def decommission_cluster(cluster, instances):
     dns = []
     nms = []
     for i in instances:
@@ -175,10 +175,10 @@ def decomission_cluster(cluster, instances):
             nms.append(cu.get_role_name(i, 'NODEMANAGER'))
 
     if dns:
-        cu.decomission_nodes(cluster, 'DATANODE', dns)
+        cu.decommission_nodes(cluster, 'DATANODE', dns)
 
     if nms:
-        cu.decomission_nodes(cluster, 'NODEMANAGER', nms)
+        cu.decommission_nodes(cluster, 'NODEMANAGER', nms)
 
     cu.delete_instances(cluster, instances)
 

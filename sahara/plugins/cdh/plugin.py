@@ -68,7 +68,7 @@ class CDHPluginProvider(p.ProvisioningPluginBase):
         dp.scale_cluster(cluster, instances)
 
     def decommission_nodes(self, cluster, instances):
-        dp.decomission_cluster(cluster, instances)
+        dp.decommission_cluster(cluster, instances)
 
     def validate_scaling(self, cluster, existing, additional):
         vl.validate_existing_ng_scaling(cluster, existing)
