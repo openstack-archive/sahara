@@ -13,6 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import functools
 import uuid
 
 from oslo.config import cfg
@@ -21,6 +22,7 @@ from oslo import messaging
 from sahara import conductor as c
 from sahara import context
 from sahara.i18n import _LE
+from sahara.i18n import _LI
 from sahara.openstack.common import log as logging
 from sahara.plugins import base as plugin_base
 from sahara.service.edp import job_manager
@@ -99,6 +101,53 @@ class OpsServer(rpc_utils.RPCServer):
         _run_edp_job(job_execution_id)
 
 
+def ops_error_handler(f):
+    @functools.wraps(f)
+    def wrapper(cluster_id, *args, **kwds):
+        try:
+            f(cluster_id, *args, **kwds)
+        except Exception as ex:
+            # something happened during cluster operation
+            ctx = context.ctx()
+            cluster = conductor.cluster_get(ctx, cluster_id)
+            # check if cluster still exists (it might have been removed)
+            if cluster is None:
+                LOG.info(_LI("Cluster with %s was deleted. Canceling current "
+                             "operation."),  cluster_id)
+                return
+
+            LOG.exception(
+                _LE("Error during operating cluster '%(name)s' (reason: "
+                    "%(reason)s)"), {'name': cluster.name, 'reason': ex})
+
+            try:
+                # trying to rollback
+                if _rollback_cluster(cluster, ex):
+                    g.change_cluster_status(cluster, "Active")
+                else:
+                    g.change_cluster_status(cluster, "Error")
+            except Exception as rex:
+                cluster = conductor.cluster_get(ctx, cluster_id)
+                # check if cluster still exists (it might have been
+                # removed during rollback)
+                if cluster is None:
+                    LOG.info(_LI("Cluster with %s was deleted. Canceling "
+                                 "current operation."), cluster_id)
+                    return
+
+                LOG.exception(
+                    _LE("Error during rollback of cluster '%(name)s' (reason: "
+                        "%(reason)s)"), {'name': cluster.name, 'reason': rex})
+
+                g.change_cluster_status(cluster, "Error")
+
+    return wrapper
+
+
+def _rollback_cluster(cluster, reason):
+    return INFRA.rollback_cluster(cluster, reason)
+
+
 def _prepare_provisioning(cluster_id):
     ctx = context.ctx()
     cluster = conductor.cluster_get(ctx, cluster_id)
@@ -114,6 +163,7 @@ def _prepare_provisioning(cluster_id):
     return ctx, cluster, plugin
 
 
+@ops_error_handler
 def _provision_cluster(cluster_id):
     ctx, cluster, plugin = _prepare_provisioning(cluster_id)
 
@@ -128,45 +178,13 @@ def _provision_cluster(cluster_id):
     cluster = conductor.cluster_get(ctx, cluster_id)
     INFRA.create_cluster(cluster)
 
-    if not g.check_cluster_exists(cluster):
-        LOG.info(g.format_cluster_deleted_message(cluster))
-        return
-
     # configure cluster
     cluster = g.change_cluster_status(cluster, "Configuring")
-    try:
-        plugin.configure_cluster(cluster)
-    except Exception as ex:
-        if not g.check_cluster_exists(cluster):
-            LOG.info(g.format_cluster_deleted_message(cluster))
-            return
-        LOG.exception(
-            _LE("Can't configure cluster '%(name)s' (reason: %(reason)s)"),
-            {'name': cluster.name, 'reason': ex})
-        g.change_cluster_status(cluster, "Error")
-        return
-
-    if not g.check_cluster_exists(cluster):
-        LOG.info(g.format_cluster_deleted_message(cluster))
-        return
+    plugin.configure_cluster(cluster)
 
     # starting prepared and configured cluster
     cluster = g.change_cluster_status(cluster, "Starting")
-    try:
-        plugin.start_cluster(cluster)
-    except Exception as ex:
-        if not g.check_cluster_exists(cluster):
-            LOG.info(g.format_cluster_deleted_message(cluster))
-            return
-        LOG.exception(
-            _LE("Can't start services for cluster '%(name)s' (reason: "
-                "%(reason)s)"), {'name': cluster.name, 'reason': ex})
-        g.change_cluster_status(cluster, "Error")
-        return
-
-    if not g.check_cluster_exists(cluster):
-        LOG.info(g.format_cluster_deleted_message(cluster))
-        return
+    plugin.start_cluster(cluster)
 
     # cluster is now up and ready
     cluster = g.change_cluster_status(cluster, "Active")
@@ -176,6 +194,7 @@ def _provision_cluster(cluster_id):
         job_manager.run_job(je.id)
 
 
+@ops_error_handler
 def _provision_scaled_cluster(cluster_id, node_group_id_map):
     ctx, cluster, plugin = _prepare_provisioning(cluster_id)
 
@@ -196,33 +215,18 @@ def _provision_scaled_cluster(cluster_id, node_group_id_map):
     # Scaling infrastructure
     cluster = g.change_cluster_status(cluster, "Scaling")
 
-    instances = INFRA.scale_cluster(cluster, node_group_id_map)
+    instance_ids = INFRA.scale_cluster(cluster, node_group_id_map)
 
     # Setting up new nodes with the plugin
-
-    if instances:
+    if instance_ids:
         cluster = g.change_cluster_status(cluster, "Configuring")
-        try:
-            instances = g.get_instances(cluster, instances)
-            plugin.scale_cluster(cluster, instances)
-        except Exception as ex:
-            if not g.check_cluster_exists(cluster):
-                LOG.info(g.format_cluster_deleted_message(cluster))
-                return
-            LOG.exception(
-                _LE("Can't scale cluster '%(name)s' (reason: %(reason)s)"),
-                {'name': cluster.name, 'reason': ex})
-
-            g.change_cluster_status(cluster, "Error")
-            return
-
-    if not g.check_cluster_exists(cluster):
-        LOG.info(g.format_cluster_deleted_message(cluster))
-        return
+        instances = g.get_instances(cluster, instance_ids)
+        plugin.scale_cluster(cluster, instances)
 
     g.change_cluster_status(cluster, "Active")
 
 
+@ops_error_handler
 def _terminate_cluster(cluster_id):
     ctx = context.ctx()
     cluster = conductor.cluster_get(ctx, cluster_id)

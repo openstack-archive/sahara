@@ -53,6 +53,7 @@ class Cluster(object):
     status_description
     info
     extra
+    rollback_info - internal information required for rollback
     node_groups - list of NodeGroup objects
     cluster_template_id
     cluster_template - ClusterTemplate object

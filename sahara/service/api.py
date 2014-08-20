@@ -71,6 +71,7 @@ def scale_cluster(id, data):
 
     try:
         cluster = g.change_cluster_status(cluster, "Validating")
+
         plugin.validate_scaling(cluster, to_be_enlarged, additional)
     except Exception:
         with excutils.save_and_reraise_exception():

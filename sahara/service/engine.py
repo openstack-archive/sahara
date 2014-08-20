@@ -50,6 +50,10 @@ class Engine:
     def shutdown_cluster(self, cluster):
         pass
 
+    @abc.abstractmethod
+    def rollback_cluster(self, cluster, reason):
+        pass
+
     def get_node_group_image_username(self, node_group):
         image_id = node_group.get_image_id()
         return nova.client().images.get(image_id).username

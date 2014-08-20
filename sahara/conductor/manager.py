@@ -28,6 +28,7 @@ CLUSTER_DEFAULTS = {
     "anti_affinity": [],
     "status_description": "",
     "info": {},
+    "rollback_info": {},
 }
 
 NODE_GROUP_DEFAULTS = {
