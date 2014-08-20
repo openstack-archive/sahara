@@ -27,6 +27,7 @@ from sahara.service.edp import hdfs_helper as h
 from sahara.service.edp import job_utils
 from sahara.service.edp.oozie import oozie as o
 from sahara.service.edp.oozie.workflow_creator import workflow_factory
+from sahara.service.validations.edp import job_execution as j
 from sahara.utils import edp
 from sahara.utils import remote
 from sahara.utils import xmlutils as x
@@ -139,6 +140,19 @@ class OozieJobEngine(base_engine.JobEngine):
     @abc.abstractmethod
     def get_resource_manager_uri(self, cluster):
         pass
+
+    def validate_job_execution(self, cluster, job, data):
+        # All types except Java require input and output objects
+        # and Java require main class
+        if job.type in [edp.JOB_TYPE_JAVA]:
+            j.check_main_class_present(data, job)
+        else:
+            j.check_data_sources(data, job)
+
+            job_type, subtype = edp.split_job_type(job.type)
+            if job_type == edp.JOB_TYPE_MAPREDUCE and (
+                    subtype == edp.JOB_SUBTYPE_STREAMING):
+                j.check_streaming_present(data, job)
 
     @staticmethod
     def get_possible_job_config(job_type):

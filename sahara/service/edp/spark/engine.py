@@ -22,6 +22,7 @@ from sahara.plugins.general import utils as plugin_utils
 from sahara.plugins.spark import config_helper as c_helper
 from sahara.service.edp import base_engine
 from sahara.service.edp import job_utils
+from sahara.service.validations.edp import job_execution as j
 from sahara.utils import edp
 from sahara.utils import files
 from sahara.utils import general
@@ -184,6 +185,9 @@ class SparkJobEngine(base_engine.JobEngine):
         # Since we're using backgrounding with redirect, this is unlikely.
         raise e.EDPError("Spark job execution failed. Exit status = %s, "
                          "stdout = %s" % (ret, stdout))
+
+    def validate_job_execution(self, cluster, job, data):
+        j.check_main_class_present(data, job)
 
     @staticmethod
     def get_possible_job_config(job_type):

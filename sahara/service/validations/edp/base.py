@@ -15,9 +15,11 @@
 
 """Cluster creation related checks"""
 
-import sahara.exceptions as ex
-import sahara.service.edp.api as api
+from sahara import conductor as c
+from sahara import context
+from sahara import exceptions as ex
 
+conductor = c.API
 
 data_source_type = {
     "type": "string",
@@ -45,32 +47,33 @@ job_configs = {
 
 
 def check_data_source_unique_name(name):
-    if name in [ds.name for ds in api.get_data_sources()]:
+    if name in [ds.name for ds in conductor.data_source_get_all(
+            context.ctx())]:
         raise ex.NameAlreadyExistsException("Data source with name '%s' "
                                             "already exists" % name)
 
 
 def check_data_source_exists(data_source_id):
-    if not api.get_data_source(data_source_id):
+    if not conductor.data_source_get(context.ctx(), data_source_id):
         raise ex.InvalidException("DataSource with id '%s'"
                                   " doesn't exist" % data_source_id)
 
 
 def check_job_unique_name(name):
-    if name in [j.name for j in api.get_jobs()]:
+    if name in [j.name for j in conductor.job_get_all(context.ctx())]:
         raise ex.NameAlreadyExistsException("Job with name '%s' "
                                             "already exists" % name)
 
 
 def check_job_binary_internal_exists(jbi_id):
-    if not api.get_job_binary_internal(jbi_id):
+    if not conductor.job_binary_internal_get(context.ctx(), jbi_id):
         raise ex.InvalidException("JobBinaryInternal with id '%s'"
                                   " doesn't exist" % jbi_id)
 
 
 def check_data_sources_are_different(data_source_1_id, data_source_2_id):
-    ds1 = api.get_data_source(data_source_1_id)
-    ds2 = api.get_data_source(data_source_2_id)
+    ds1 = conductor.data_source_get(context.ctx(), data_source_1_id)
+    ds2 = conductor.data_source_get(context.ctx(), data_source_2_id)
 
     if ds1.type == ds2.type and ds1.url == ds2.url:
         raise ex.InvalidDataException('Provided input and output '

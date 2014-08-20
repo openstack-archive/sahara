@@ -13,8 +13,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from sahara import exceptions as ex
+from sahara.i18n import _
 from sahara.service.edp.spark import engine as edp_engine
 
 
 class EdpEngine(edp_engine.SparkJobEngine):
-    pass
+    def validate_job_execution(self, cluster, job, data):
+        if cluster.hadoop_version < "1.0.0":
+            raise ex.InvalidDataException(
+                _('Spark 1.0.0 or higher required to run spark %s jobs')
+                % job.type)
+
+        super(EdpEngine, self).validate_job_execution(cluster, job, data)

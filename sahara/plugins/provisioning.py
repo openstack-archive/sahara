@@ -62,10 +62,6 @@ class ProvisioningPluginBase(plugins_base.PluginInterface):
         pass
 
     @plugins_base.optional
-    def validate_edp(self, cluster):
-        pass
-
-    @plugins_base.optional
     def get_edp_engine(self, cluster, job_type):
         pass
 

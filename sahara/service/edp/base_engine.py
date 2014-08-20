@@ -37,6 +37,10 @@ class JobEngine(object):
     def run_job(self, job_execution):
         pass
 
+    @abc.abstractmethod
+    def validate_job_execution(self, cluster, job, data):
+        pass
+
     @staticmethod
     @abc.abstractmethod
     def get_possible_job_config(job_type):
