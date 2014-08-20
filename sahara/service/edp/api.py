@@ -17,10 +17,13 @@ from oslo.config import cfg
 
 from sahara import conductor as c
 from sahara import context
+from sahara import exceptions as ex
+from sahara.i18n import _LE
 from sahara.openstack.common import log as logging
 from sahara.service.edp.binary_retrievers import dispatch
 from sahara.service.edp import job_manager as manager
 from sahara.utils import edp
+from sahara.utils import proxy as p
 
 
 conductor = c.API
@@ -42,7 +45,6 @@ def get_job_config_hints(job_type):
 
 
 def execute_job(job_id, data):
-
     # Elements common to all job types
     cluster_id = data['cluster_id']
     configs = data.get('job_configs', {})
@@ -58,6 +60,16 @@ def execute_job(job_id, data):
                    'info': {'status': edp.JOB_STATUS_PENDING},
                    'job_configs': configs, 'extra': {}}
     job_execution = conductor.job_execution_create(context.ctx(), job_ex_dict)
+
+    # check to use proxy user
+    if p.job_execution_requires_proxy_user(job_execution):
+        try:
+            p.create_proxy_user_for_job_execution(job_execution)
+        except ex.SaharaException as e:
+            LOG.exception(_LE("Can't run job execution '{0}' "
+                              "(reasons: {1})").format(job_execution.id, e))
+            conductor.job_execution_destroy(context.ctx(), job_execution)
+            raise e
 
     OPS.run_edp_job(job_execution.id)
 
