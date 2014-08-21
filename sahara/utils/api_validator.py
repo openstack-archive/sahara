@@ -49,9 +49,7 @@ def validate_job_location_format(entry):
     if entry.startswith('internal-db://'):
         return uuidutils.is_uuid_like(entry[len("internal-db://"):])
 
-    # TODO(mattf): remove support for OLD_SWIFT_INTERNAL_PREFIX
-    if entry.startswith(su.SWIFT_INTERNAL_PREFIX) or (
-            entry.startswith(su.OLD_SWIFT_INTERNAL_PREFIX)):
+    if entry.startswith(su.SWIFT_INTERNAL_PREFIX):
         # TODO(nprivalova):add hostname validation
         return True
     return False

@@ -51,9 +51,7 @@ JOB_BINARY_SCHEMA = {
 def check_job_binary(data, **kwargs):
     job_binary_location_type = data["url"]
     extra = data.get("extra", {})
-    # TODO(mattf): remove support for OLD_SWIFT_INTERNAL_PREFIX
-    if job_binary_location_type.startswith(su.SWIFT_INTERNAL_PREFIX) or (
-            job_binary_location_type.startswith(su.OLD_SWIFT_INTERNAL_PREFIX)):
+    if job_binary_location_type.startswith(su.SWIFT_INTERNAL_PREFIX):
         if not extra.get("user") or not extra.get("password"):
             raise e.BadJobBinaryException()
     if job_binary_location_type.startswith("internal-db"):
