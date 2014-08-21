@@ -24,7 +24,7 @@ conductor = c.API
 
 data_source_type = {
     "type": "string",
-    "enum": ["swift", "hdfs"]
+    "enum": ["swift", "hdfs", "maprfs"]
 }
 
 job_configs = {
