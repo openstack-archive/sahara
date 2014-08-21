@@ -13,6 +13,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import re
+
 import mock
 import novaclient.exceptions as nova_ex
 
@@ -255,7 +257,14 @@ class ValidationTestCase(base.SaharaTestCase):
         else:
             self.assertEqual(mock.call_count, call_info[0])
             self.assertEqual(mock.call_args[0][0].code, call_info[1])
-            self.assertEqual(mock.call_args[0][0].message, call_info[2])
+
+            # Note(slukjanov): the call_info[2] is an expected validation
+            #                  message regex; regex needed because of different
+            #                  versions of jsonschema generates different
+            #                  messages.
+            if not re.match(call_info[2], mock.call_args[0][0].message):
+                self.assertEqual(call_info[2], mock.call_args[0][0].message,
+                                 "Validation message didn't match expected")
 
     @mock.patch("sahara.utils.api.request_data")
     @mock.patch("sahara.utils.api.bad_request")
