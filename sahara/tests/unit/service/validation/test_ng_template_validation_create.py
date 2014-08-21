@@ -66,7 +66,7 @@ class TestNGTemplateCreateValidation(u.ValidationTestCase):
                 'node_processes': []
             },
             bad_req_i=(1, 'VALIDATION_ERROR',
-                       u'[] is too short')
+                       u'\[\] is too short')
         )
 
     def test_ng_template_create_v_names(self):
@@ -141,7 +141,7 @@ class TestNGTemplateCreateValidation(u.ValidationTestCase):
                 'volumes_per_node': -1
             },
             bad_req_i=(1, 'VALIDATION_ERROR',
-                       u'-1.0 is less than the minimum of 0')
+                       u'-1(.0)? is less than the minimum of 0')
         )
         self._assert_create_object_validation(
             data={
@@ -153,7 +153,7 @@ class TestNGTemplateCreateValidation(u.ValidationTestCase):
                 'volumes_size': 0
             },
             bad_req_i=(1, 'VALIDATION_ERROR',
-                       u'0.0 is less than the minimum of 1')
+                       u'0(.0)? is less than the minimum of 1')
         )
 
     def test_ng_template_create_v_types(self):
@@ -237,7 +237,7 @@ class TestNGTemplateCreateValidation(u.ValidationTestCase):
                 'volumes_per_node': -1
             },
             bad_req_i=(1, 'VALIDATION_ERROR',
-                       u'-1.0 is less than the minimum of 0')
+                       u'-1(.0)? is less than the minimum of 0')
         )
         self._assert_create_object_validation(
             data={
@@ -249,7 +249,7 @@ class TestNGTemplateCreateValidation(u.ValidationTestCase):
                 'volumes_size': 0
             },
             bad_req_i=(1, 'VALIDATION_ERROR',
-                       u'0.0 is less than the minimum of 1')
+                       u'0(.0)? is less than the minimum of 1')
         )
         self._assert_create_object_validation(
             data={
