@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Sahara\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2014-08-14 06:10+0000\n"
+"POT-Creation-Date: 2014-08-22 06:11+0000\n"
 "PO-Revision-Date: 2014-07-16 14:42+0000\n"
 "Last-Translator: openstackjenkins <jenkins@openstack.org>\n"
 "Language-Team: French (http://www.transifex.com/projects/p/sahara/language/"
@@ -69,7 +69,7 @@ msgstr "Tâche périodique %(task)s car elle est désactivée"
 msgid "Plugin '%(plugin_name)s' loaded %(entry_point)s"
 msgstr ""
 
-#: sahara/plugins/cdh/deploy.py:289
+#: sahara/plugins/cdh/deploy.py:292
 msgid "Cloudera Manager has been started"
 msgstr ""
 
@@ -319,39 +319,34 @@ msgstr ""
 msgid "Hive Metastore server at %s has been started"
 msgstr ""
 
-#: sahara/service/direct_engine.py:281
+#: sahara/service/direct_engine.py:269
 #, python-format
 msgid "Cluster '%s': all instances are active"
 msgstr ""
 
-#: sahara/service/direct_engine.py:293
+#: sahara/service/direct_engine.py:281 sahara/service/heat_engine.py:146
 #, python-format
 msgid "Cluster '%(name)s' creation rollback (reason: %(reason)s)"
 msgstr ""
 
-#: sahara/service/direct_engine.py:301
+#: sahara/service/direct_engine.py:289 sahara/service/heat_engine.py:163
 #, python-format
 msgid "Cluster '%(name)s' scaling rollback (reason: %(reason)s)"
 msgstr ""
 
-#: sahara/service/engine.py:73
+#: sahara/service/engine.py:77
 #, python-format
 msgid "Cluster '%s': all instances have IPs assigned"
 msgstr ""
 
-#: sahara/service/engine.py:83
+#: sahara/service/engine.py:87
 #, python-format
 msgid "Cluster '%s': all instances are accessible"
 msgstr ""
 
-#: sahara/service/heat_engine.py:150
+#: sahara/service/ops.py:115 sahara/service/ops.py:134
 #, python-format
-msgid "Cluster '%s' creation rollback"
-msgstr ""
-
-#: sahara/service/heat_engine.py:165
-#, python-format
-msgid "Cluster '%s' scaling rollback"
+msgid "Cluster with %s was deleted. Canceling current operation."
 msgstr ""
 
 #: sahara/service/periodic.py:96
@@ -383,15 +378,6 @@ msgstr ""
 #: sahara/utils/general.py:72
 #, python-format
 msgid "Cluster status has been changed: id=%(id)s, New status=%(status)s"
-msgstr ""
-
-#: sahara/utils/general.py:78
-#, python-format
-msgid "Cluster %(name)s (id=%(id)s) was deleted. Canceling current operation."
-msgstr ""
-
-#: sahara/utils/general.py:84 sahara/utils/general.py:85
-msgid "Unknown"
 msgstr ""
 
 #: sahara/utils/timing.py:56

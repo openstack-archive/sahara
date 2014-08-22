@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Sahara\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2014-08-14 06:10+0000\n"
+"POT-Creation-Date: 2014-08-22 06:11+0000\n"
 "PO-Revision-Date: 2014-07-25 15:11+0000\n"
 "Last-Translator: openstackjenkins <jenkins@openstack.org>\n"
 "Language-Team: French (http://www.transifex.com/projects/p/sahara/language/"
@@ -74,41 +74,27 @@ msgstr ""
 msgid "Plugin received wrong applicable target '%s' for xml configs"
 msgstr ""
 
-#: sahara/service/direct_engine.py:82 sahara/service/heat_engine.py:70
-#, python-format
-msgid "Can't start cluster '%(cluster)s' (reason: %(reason)s)"
-msgstr ""
-
-#: sahara/service/direct_engine.py:129 sahara/service/heat_engine.py:104
-#, python-format
-msgid "Can't scale cluster '%(cluster)s' (reason: %(reason)s)"
-msgstr ""
-
-#: sahara/service/direct_engine.py:320
+#: sahara/service/direct_engine.py:311
 #, python-format
 msgid ""
 "Attempted to delete non-existent floating IP in pool %(pool)s from instance "
 "%(instance)s"
 msgstr ""
 
-#: sahara/service/direct_engine.py:328
+#: sahara/service/direct_engine.py:319
 #, python-format
 msgid "Detaching volumes from instance %s failed"
 msgstr ""
 
-#: sahara/service/direct_engine.py:334
+#: sahara/service/direct_engine.py:325
 #, python-format
 msgid "Attempted to delete non-existent instance %s"
 msgstr ""
 
-#: sahara/service/engine.py:169
+#: sahara/service/engine.py:173
 msgid ""
 "Presumably the operation failed because the cluster was deleted by a user "
 "during the process."
-msgstr ""
-
-#: sahara/service/heat_engine.py:124
-msgid "Rollback successful. Throwing off an initial exception."
 msgstr ""
 
 #: sahara/service/heat_engine.py:181

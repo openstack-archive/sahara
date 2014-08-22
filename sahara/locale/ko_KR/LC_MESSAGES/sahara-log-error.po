@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Sahara\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2014-08-14 06:10+0000\n"
+"POT-Creation-Date: 2014-08-22 06:11+0000\n"
 "PO-Revision-Date: 2014-07-29 23:43+0000\n"
 "Last-Translator: openstackjenkins <jenkins@openstack.org>\n"
 "Language-Team: Korean (Korea) (http://www.transifex.com/projects/p/sahara/"
@@ -134,23 +134,14 @@ msgid ""
 "\"Decommissioned\" status."
 msgstr ""
 
-#: sahara/service/heat_engine.py:119
-msgid "Unable to complete rollback, aborting"
+#: sahara/service/ops.py:120
+#, python-format
+msgid "Error during operating cluster '%(name)s' (reason: %(reason)s)"
 msgstr ""
 
-#: sahara/service/ops.py:144
+#: sahara/service/ops.py:139
 #, python-format
-msgid "Can't configure cluster '%(name)s' (reason: %(reason)s)"
-msgstr ""
-
-#: sahara/service/ops.py:162
-#, python-format
-msgid "Can't start services for cluster '%(name)s' (reason: %(reason)s)"
-msgstr ""
-
-#: sahara/service/ops.py:213
-#, python-format
-msgid "Can't scale cluster '%(name)s' (reason: %(reason)s)"
+msgid "Error during rollback of cluster '%(name)s' (reason: %(reason)s)"
 msgstr ""
 
 #: sahara/service/trusts.py:64
