@@ -1,0 +1,2 @@
+This example includes software developed by The Apache Software
+Foundation (http://www.apache.org/).
