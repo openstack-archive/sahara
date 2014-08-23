@@ -113,7 +113,8 @@ def delete_trust_from_cluster(cluster):
 
     '''
     if cluster.trust_id:
-        keystone_client = keystone.client_for_trusts(cluster.trust_id)
+        keystone_client = keystone.client_for_admin_from_trust(
+            cluster.trust_id)
         delete_trust(keystone_client, cluster.trust_id)
         ctx = context.current()
         conductor.cluster_update(ctx,
@@ -136,7 +137,7 @@ def use_os_admin_auth_token(cluster):
         ctx = context.current()
         ctx.username = CONF.keystone_authtoken.admin_user
         ctx.tenant_id = cluster.tenant_id
-        client = keystone.client_for_trusts(cluster.trust_id)
+        client = keystone.client_for_admin_from_trust(cluster.trust_id)
         ctx.token = client.auth_token
         ctx.service_catalog = json.dumps(
             client.service_catalog.catalog['catalog'])

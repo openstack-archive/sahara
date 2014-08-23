@@ -23,6 +23,7 @@ from sahara import context
 from sahara import exceptions as ex
 from sahara.i18n import _
 from sahara.openstack.common import log as logging
+from sahara.service import trusts as t
 from sahara.swift import utils as su
 from sahara.utils.openstack import keystone as k
 
@@ -41,7 +42,11 @@ opts = [
     cfg.StrOpt('proxy_user_domain_name',
                default=None,
                help='The domain Sahara will use to create new proxy users '
-                    'for Swift object access.')
+                    'for Swift object access.'),
+    cfg.ListOpt('proxy_user_role_names',
+                default=['Member'],
+                help='A list of the role names that the proxy user should '
+                     'assume through trust for Swift object access.')
 ]
 CONF.register_opts(opts)
 
@@ -54,10 +59,16 @@ def create_proxy_user_for_job_execution(job_execution):
     '''
     username = 'job_{0}'.format(job_execution.id)
     password = proxy_user_create(username)
+    current_user = k.client()
+    proxy_user = k.client_for_proxy_user(username, password)
+    trust_id = t.create_trust(trustor=current_user,
+                              trustee=proxy_user,
+                              role_names=CONF.proxy_user_role_names)
     update = {'job_configs': job_execution.job_configs.to_dict()}
     update['job_configs']['proxy_configs'] = {
         'proxy_username': username,
-        'proxy_password': password
+        'proxy_password': password,
+        'proxy_trust_id': trust_id
         }
     conductor.job_execution_update(context.ctx(), job_execution, update)
 
@@ -72,8 +83,13 @@ def delete_proxy_user_for_job_execution(job_execution):
     proxy_configs = job_execution.job_configs.get('proxy_configs')
     if proxy_configs is not None:
         proxy_username = proxy_configs.get('proxy_username')
-        if proxy_username is not None:
-            proxy_user_delete(proxy_username)
+        proxy_password = proxy_configs.get('proxy_password')
+        proxy_trust_id = proxy_configs.get('proxy_trust_id')
+        proxy_user = k.client_for_proxy_user(proxy_username,
+                                             proxy_password,
+                                             proxy_trust_id)
+        t.delete_trust(proxy_user, proxy_trust_id)
+        proxy_user_delete(proxy_username)
         update = {'job_configs': job_execution.job_configs.to_dict()}
         del update['job_configs']['proxy_configs']
         return update
