@@ -19,12 +19,12 @@ from sahara.service.edp.binary_retrievers import sahara_db as db
 from sahara.swift import utils as su
 
 
-def get_raw_binary(job_binary):
+def get_raw_binary(job_binary, proxy_configs=None):
     url = job_binary.url
     if url.startswith("internal-db://"):
         res = db.get_raw_data(context.ctx(), job_binary)
 
     if url.startswith(su.SWIFT_INTERNAL_PREFIX):
-        res = i_swift.get_raw_data(context.ctx(), job_binary)
+        res = i_swift.get_raw_data(context.ctx(), job_binary, proxy_configs)
 
     return res

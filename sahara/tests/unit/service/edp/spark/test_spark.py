@@ -321,7 +321,7 @@ class TestSpark(base.SaharaTestCase):
     def test_run_job(self, ctx, job_get, get_instance, create_workflow_dir,
                      upload_job_files, get_config_value, get_remote):
 
-        def fix_get(field, default):
+        def fix_get(field, default=None):
             if field == "args":
                 return ["input_arg", "output_arg"]
             return default

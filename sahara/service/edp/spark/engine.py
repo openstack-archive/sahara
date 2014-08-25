@@ -112,6 +112,8 @@ class SparkJobEngine(base_engine.JobEngine):
         ctx = context.ctx()
         job = conductor.job_get(ctx, job_execution.job_id)
 
+        proxy_configs = job_execution.job_configs.get('proxy_configs')
+
         # We'll always run the driver program on the master
         master = plugin_utils.get_instance(self.cluster, "master")
 
@@ -120,7 +122,8 @@ class SparkJobEngine(base_engine.JobEngine):
         wf_dir = job_utils.create_workflow_dir(master, '/tmp/spark-edp', job,
                                                job_execution.id)
         paths = job_utils.upload_job_files(master, wf_dir, job,
-                                           libs_subdir=False)
+                                           libs_subdir=False,
+                                           proxy_configs=proxy_configs)
 
         # We can shorten the paths in this case since we'll run out of wf_dir
         paths = [os.path.basename(p) for p in paths]
