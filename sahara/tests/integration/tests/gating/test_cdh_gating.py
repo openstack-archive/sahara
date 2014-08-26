@@ -114,7 +114,7 @@ class CDHGatingTest(cluster_configs.ClusterConfigTest,
                 self.cdh_config.CDH_APT_KEY_URL,
                 'CM5 repo key URL (for debian-based only)':
                 self.cdh_config.CM_APT_KEY_URL,
-                'Enable Swift': not self.SKIP_SWIFT_TEST
+                'Enable Swift': True
             }
         }
         template = {
