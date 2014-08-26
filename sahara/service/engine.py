@@ -54,6 +54,13 @@ class Engine:
     def rollback_cluster(self, cluster, reason):
         pass
 
+    @abc.abstractmethod
+    def get_type_and_version(self):
+        """Returns engine type and version
+
+         Result should be in the form 'type.major.minor'.
+         """
+
     def get_node_group_image_username(self, node_group):
         image_id = node_group.get_image_id()
         return nova.client().images.get(image_id).username

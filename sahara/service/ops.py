@@ -28,6 +28,7 @@ from sahara.plugins import base as plugin_base
 from sahara.service.edp import job_manager
 from sahara.service import trusts
 from sahara.utils import general as g
+from sahara.utils import remote
 from sahara.utils import rpc as rpc_utils
 
 
@@ -43,6 +44,10 @@ def setup_ops(engine):
     global INFRA
 
     INFRA = engine
+
+
+def get_engine_type_and_version():
+    return INFRA.get_type_and_version()
 
 
 class LocalOps(object):
@@ -166,9 +171,20 @@ def _prepare_provisioning(cluster_id):
     return ctx, cluster, plugin
 
 
+def _update_sahara_info(ctx, cluster):
+    sahara_info = {
+        'infrastructure_engine': get_engine_type_and_version(),
+        'remote': remote.get_remote_type_and_version()}
+
+    return conductor.cluster_update(
+        ctx, cluster,  {'sahara_info': sahara_info})
+
+
 @ops_error_handler
 def _provision_cluster(cluster_id):
     ctx, cluster, plugin = _prepare_provisioning(cluster_id)
+
+    cluster = _update_sahara_info(ctx, cluster)
 
     if CONF.use_identity_api_v3 and cluster.is_transient:
         trusts.create_trust_for_cluster(cluster)

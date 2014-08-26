@@ -397,3 +397,6 @@ class TestMigrations(base.BaseWalkMigrationTestCase, base.CommonTestsMixIn):
         self.assertColumnExists(engine, 'templates_relations',
                                 'auto_security_group')
         self.assertColumnExists(engine, 'node_groups', 'open_ports')
+
+    def _check_011(self, engine, date):
+        self.assertColumnExists(engine, 'clusters', 'sahara_info')

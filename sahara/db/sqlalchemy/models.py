@@ -66,6 +66,7 @@ class Cluster(mb.SaharaBase):
     info = sa.Column(st.JsonDictType())
     extra = sa.Column(st.JsonDictType())
     rollback_info = sa.Column(st.JsonDictType())
+    sahara_info = sa.Column(st.JsonDictType())
     node_groups = relationship('NodeGroup', cascade="all,delete",
                                backref='cluster', lazy='joined')
     cluster_template_id = sa.Column(sa.String(36),

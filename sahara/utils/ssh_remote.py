@@ -481,6 +481,9 @@ class BulkInstanceInteropHelper(InstanceInteropHelper):
 
 
 class SshRemoteDriver(remote.RemoteDriver):
+    def get_type_and_version(self):
+        return "ssh.1.0"
+
     def setup_remote(self, engine):
         global _global_remote_semaphore
         global INFRA

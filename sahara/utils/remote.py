@@ -56,6 +56,13 @@ class RemoteDriver(object):
     def get_userdata_template(self):
         """Returns userdata template preparing instance to work with driver."""
 
+    @abc.abstractmethod
+    def get_type_and_version(self):
+        """Returns engine type and version
+
+         Result should be in the form 'type.major.minor'.
+         """
+
 
 @six.add_metaclass(abc.ABCMeta)
 class Remote(object):
@@ -116,6 +123,10 @@ def setup_remote(driver, engine):
 
     DRIVER = driver
     DRIVER.setup_remote(engine)
+
+
+def get_remote_type_and_version():
+    return DRIVER.get_type_and_version()
 
 
 def _check_driver_is_loaded():

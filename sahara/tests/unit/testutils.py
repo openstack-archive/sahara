@@ -20,7 +20,7 @@ from sahara.conductor import resource as r
 def create_cluster(name, tenant, plugin, version, node_groups, **kwargs):
     dct = {'name': name, 'tenant_id': tenant, 'plugin_name': plugin,
            'hadoop_version': version, 'node_groups': node_groups,
-           'cluster_configs': {}}
+           'cluster_configs': {}, "sahara_info": {}}
     dct.update(kwargs)
     return r.ClusterResource(dct)
 

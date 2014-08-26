@@ -62,10 +62,14 @@ class FakeINFRA():
     def shutdown_cluster(self, cluster):
         TestOPS.SEQUENCE.append('shutdown_cluster')
 
+    def rollback_cluster(self, cluster, reason):
+        TestOPS.SEQUENCE.append('rollback_cluster')
+
 
 class TestOPS(base.SaharaTestCase):
     SEQUENCE = []
 
+    @mock.patch('sahara.service.ops._update_sahara_info')
     @mock.patch('sahara.service.ops._prepare_provisioning',
                 return_value=(mock.Mock(), mock.Mock(), FakePlugin()))
     @mock.patch('sahara.utils.general.change_cluster_status')
@@ -76,7 +80,7 @@ class TestOPS(base.SaharaTestCase):
     @mock.patch('sahara.service.edp.job_manager.run_job')
     def test_provision_cluster(self, p_run_job, p_job_exec, p_create_trust,
                                p_conf, p_cluster_get, p_change_status,
-                               p_prep_provisioning):
+                               p_prep_provisioning, p_update_sahara_info):
         del self.SEQUENCE[:]
         ops.INFRA = FakeINFRA()
         ops._provision_cluster('123')
