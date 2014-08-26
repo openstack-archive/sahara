@@ -93,19 +93,10 @@ is not reliable because all replicas may turn up on one physical machine.
 Anti-affinity feature provides an ability to explicitly tell Sahara to run specified processes on different compute nodes. This
 is especially useful for Hadoop datanode process to make HDFS replicas reliable.
 
-.. _`enable-anti-affinity`:
-
-The Anti-Affinity feature requires certain scheduler filters to be enabled on Nova.
-Edit your ``/etc/nova/nova.conf`` in the following way:
-
-.. sourcecode:: cfg
-
-    [DEFAULT]
-
-    ...
-
-    scheduler_driver=nova.scheduler.filter_scheduler.FilterScheduler
-    scheduler_default_filters=DifferentHostFilter,SameHostFilter
+Starting with Juno release Sahara creates server groups with
+``anti-affinity`` policy to enable anti affinity feature. Sahara creates one
+server group per cluster and assigns all instances with affected processes to
+this server group. Refer to Nova documentation on how server groups work.
 
 This feature is supported by all plugins out of the box.
 

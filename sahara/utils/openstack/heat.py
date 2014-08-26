@@ -61,6 +61,10 @@ def _get_inst_name(cluster_name, ng_name, index):
     return g.generate_instance_name(cluster_name, ng_name, index + 1)
 
 
+def _get_aa_group_name(cluster_name):
+    return g.generate_aa_group_name(cluster_name)
+
+
 def _get_port_name(inst_name):
     return '%s-port' % inst_name
 
@@ -79,16 +83,6 @@ def _get_volume_name(inst_name, volume_idx):
 
 def _get_volume_attach_name(inst_name, volume_idx):
     return '%s-volume-attachment-%i' % (inst_name, volume_idx)
-
-
-def _get_anti_affinity_scheduler_hints(instances_names):
-    if not instances_names:
-        return ''
-
-    aa_list = []
-    for instances_name in sorted(set(instances_names)):
-        aa_list.append({"Ref": instances_name})
-    return '"scheduler_hints" : %s,' % json.dumps({"different_host": aa_list})
 
 
 def _load_template(template_name, fields):
@@ -121,6 +115,7 @@ class ClusterTemplate(object):
     def instantiate(self, update_existing, disable_rollback=True):
         main_tmpl = _load_template('main.heat',
                                    {'resources': self._serialize_resources()})
+
         heat = client()
 
         kwargs = {
@@ -140,15 +135,31 @@ class ClusterTemplate(object):
 
         return ClusterStack(self, get_stack(self.cluster.name))
 
+    def _need_aa_server_group(self, node_group):
+        for node_process in node_group.node_processes:
+            if node_process in self.cluster.anti_affinity:
+                return True
+        return False
+
+    def _get_anti_affinity_scheduler_hints(self, node_group):
+        if not self._need_aa_server_group(node_group):
+            return ''
+
+        return ('"scheduler_hints" : %s,' %
+                json.dumps({"group": {"Ref": _get_aa_group_name(
+                    self.cluster.name)}}))
+
     def _serialize_resources(self):
         resources = []
-        aa_groups = {}
+
+        if self.cluster.anti_affinity:
+            resources.extend(self._serialize_aa_server_group())
 
         for ng in self.cluster.node_groups:
             if ng.auto_security_group:
                 resources.extend(self._serialize_auto_security_group(ng))
             for idx in range(0, self.node_groups_extra[ng.id]['node_count']):
-                resources.extend(self._serialize_instance(ng, idx, aa_groups))
+                resources.extend(self._serialize_instance(ng, idx))
 
         return ',\n'.join(resources)
 
@@ -174,7 +185,7 @@ class ClusterTemplate(object):
 
         return json.dumps(rules)
 
-    def _serialize_instance(self, ng, idx, aa_groups):
+    def _serialize_instance(self, ng, idx):
         inst_name = _get_inst_name(self.cluster.name, ng.name, idx)
 
         nets = ''
@@ -200,10 +211,6 @@ class ClusterTemplate(object):
                     '"security_groups": %s,' % json.dumps(
                         self._get_security_groups(ng)))
 
-        aa_names = []
-        for node_process in ng.node_processes:
-            aa_names += aa_groups.get(node_process) or []
-
         # Check if cluster contains user key-pair and include it to template.
         key_name = ''
         if self.cluster.user_keypair_id:
@@ -219,15 +226,9 @@ class ClusterTemplate(object):
                   'network_interfaces': nets,
                   'key_name': key_name,
                   'userdata': _prepare_userdata(userdata),
-                  'scheduler_hints': _get_anti_affinity_scheduler_hints(
-                      aa_names),
+                  'scheduler_hints':
+                      self._get_anti_affinity_scheduler_hints(ng),
                   'security_groups': security_groups}
-
-        for node_process in ng.node_processes:
-            if node_process in self.cluster.anti_affinity:
-                aa_group_names = aa_groups.get(node_process, [])
-                aa_group_names.append(inst_name)
-                aa_groups[node_process] = aa_group_names
 
         yield _load_template('instance.heat', fields)
 
@@ -276,6 +277,11 @@ class ClusterTemplate(object):
         return (list(node_group.security_groups or []) +
                 [{"Ref": g.generate_auto_security_group_name(
                     node_group.cluster.name, node_group.name)}])
+
+    def _serialize_aa_server_group(self):
+        fields = {'server_group_name': _get_aa_group_name(self.cluster.name)}
+
+        yield _load_template('aa_server_group.heat', fields)
 
 
 class ClusterStack(object):

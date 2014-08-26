@@ -50,3 +50,21 @@ in the documentation.
 Note, this change breaks Sahara backward compatibility for clusters created
 using HEAT infrastructure engine before the change. Clusters will continue to
 operate, but it is not recommended to perform scale operation over them.
+
+Anti affinity implementation changed
+++++++++++++++++++++++++++++++++++++
+
+Starting with Juno release anti affinity feature is implemented using server
+groups. There should not be much difference in Sahara behaviour from user
+perspective, but there are internal changes:
+
+1) Server group object will be created if anti affinity feature is enabled
+2) New implementation doesn't allow several affected instances on the same
+   host even if they don't have common processes. So, if anti affinity enabled
+   for 'datanode' and 'tasktracker' processes, previous implementation allowed
+   to have instance with 'datanode' process and other instance with
+   'tasktracker' process on one host. New implementation guarantees that
+   instances will be on different hosts.
+
+Note, new implementation will be applied for new clusters only. Old
+implementation will be applied if user scales cluster created in Icehouse.

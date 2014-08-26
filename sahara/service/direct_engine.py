@@ -134,6 +134,7 @@ class DirectEngine(e.Engine):
             context.ctx(), cluster, {'rollback_info': rollback_info})
         return cluster
 
+    # TODO(alazarev) remove when we fully switch to server groups
     def _generate_anti_affinity_groups(self, cluster):
         aa_groups = {}
 
@@ -153,13 +154,52 @@ class DirectEngine(e.Engine):
 
         cluster = self._create_auto_security_groups(cluster)
 
-        aa_groups = {}
+        aa_group = None
+        if cluster.anti_affinity:
+            aa_group = self._create_aa_server_group(cluster)
 
         for node_group in cluster.node_groups:
             count = node_group.count
             conductor.node_group_update(ctx, node_group, {'count': 0})
             for idx in six.moves.xrange(1, count + 1):
-                self._run_instance(cluster, node_group, idx, aa_groups)
+                self._run_instance(cluster, node_group, idx, aa_group=aa_group)
+
+    def _create_aa_server_group(self, cluster):
+        server_group_name = g.generate_aa_group_name(cluster.name)
+        client = nova.client().server_groups
+
+        if client.findall(name=server_group_name):
+            raise exc.InvalidDataException(
+                _("Server group with name %s is already exists")
+                % server_group_name)
+
+        server_group = client.create(name=server_group_name,
+                                     policies=['anti-affinity'])
+        return server_group.id
+
+    def _delete_aa_server_group(self, cluster):
+        if cluster.anti_affinity:
+            server_group_name = g.generate_aa_group_name(cluster.name)
+            client = nova.client().server_groups
+
+            server_groups = client.findall(name=server_group_name)
+            if len(server_groups) == 1:
+                client.delete(server_groups[0].id)
+
+    def _find_aa_server_group(self, cluster):
+        server_group_name = g.generate_aa_group_name(cluster.name)
+        server_groups = nova.client().server_groups.findall(
+            name=server_group_name)
+
+        if len(server_groups) > 1:
+            raise exc.IncorrectStateError(
+                _("Several server groups with name %s found")
+                % server_group_name)
+
+        if len(server_groups) == 1:
+            return server_groups[0].id
+
+        return None
 
     def _create_auto_security_groups(self, cluster):
         ctx = context.ctx()
@@ -171,7 +211,14 @@ class DirectEngine(e.Engine):
 
     def _scale_cluster_instances(self, cluster, node_group_id_map):
         ctx = context.ctx()
-        aa_groups = self._generate_anti_affinity_groups(cluster)
+
+        aa_group = None
+        old_aa_groups = None
+        if cluster.anti_affinity:
+            aa_group = self._find_aa_server_group(cluster)
+            if not aa_group:
+                old_aa_groups = self._generate_anti_affinity_groups(cluster)
+
         instances_to_delete = []
         node_groups_to_enlarge = []
         node_groups_to_delete = []
@@ -207,8 +254,9 @@ class DirectEngine(e.Engine):
             for node_group in node_groups_to_enlarge:
                 count = node_group_id_map[node_group.id]
                 for idx in six.moves.xrange(node_group.count + 1, count + 1):
-                    instance_id = self._run_instance(cluster, node_group, idx,
-                                                     aa_groups)
+                    instance_id = self._run_instance(
+                        cluster, node_group, idx,
+                        aa_group=aa_group, old_aa_groups=old_aa_groups)
                     instances_to_add.append(instance_id)
 
         return instances_to_add
@@ -220,21 +268,26 @@ class DirectEngine(e.Engine):
 
         return None
 
-    def _run_instance(self, cluster, node_group, idx, aa_groups):
+    def _run_instance(self, cluster, node_group, idx, aa_group=None,
+                      old_aa_groups=None):
         """Create instance using nova client and persist them into DB."""
         ctx = context.ctx()
         name = g.generate_instance_name(cluster.name, node_group.name, idx)
 
         userdata = self._generate_user_data_script(node_group, name)
 
-        # aa_groups: node process -> instance ids
-        aa_ids = []
-        for node_process in node_group.node_processes:
-            aa_ids += aa_groups.get(node_process) or []
+        if old_aa_groups:
+            # aa_groups: node process -> instance ids
+            aa_ids = []
+            for node_process in node_group.node_processes:
+                aa_ids += old_aa_groups.get(node_process) or []
 
-        # create instances only at hosts w/ no instances
-        # w/ aa-enabled processes
-        hints = {'different_host': sorted(set(aa_ids))} if aa_ids else None
+            # create instances only at hosts w/ no instances
+            # w/ aa-enabled processes
+            hints = {'different_host': sorted(set(aa_ids))} if aa_ids else None
+        else:
+            hints = {'group': aa_group} if (
+                aa_group and self._need_aa_server_group(node_group)) else None
 
         if CONF.use_neutron:
             net_id = cluster.neutron_management_network
@@ -255,12 +308,14 @@ class DirectEngine(e.Engine):
         instance_id = conductor.instance_add(ctx, node_group,
                                              {"instance_id": nova_instance.id,
                                               "instance_name": name})
-        # save instance id to aa_groups to support aa feature
-        for node_process in node_group.node_processes:
-            if node_process in cluster.anti_affinity:
-                aa_group_ids = aa_groups.get(node_process, [])
-                aa_group_ids.append(nova_instance.id)
-                aa_groups[node_process] = aa_group_ids
+
+        if old_aa_groups:
+            # save instance id to aa_groups to support aa feature
+            for node_process in node_group.node_processes:
+                if node_process in cluster.anti_affinity:
+                    aa_group_ids = old_aa_groups.get(node_process, [])
+                    aa_group_ids.append(nova_instance.id)
+                    old_aa_groups[node_process] = aa_group_ids
 
         return instance_id
 
@@ -287,6 +342,12 @@ class DirectEngine(e.Engine):
         conductor.node_group_update(context.ctx(), node_group,
                                     {"security_groups": security_groups})
         return security_groups
+
+    def _need_aa_server_group(self, node_group):
+        for node_process in node_group.node_processes:
+            if node_process in node_group.cluster.anti_affinity:
+                return True
+        return False
 
     def _assign_floating_ips(self, instances):
         for instance in instances:
@@ -415,3 +476,4 @@ class DirectEngine(e.Engine):
         """Shutdown specified cluster and all related resources."""
         self._shutdown_instances(cluster)
         self._clean_job_executions(cluster)
+        self._delete_aa_server_group(cluster)
