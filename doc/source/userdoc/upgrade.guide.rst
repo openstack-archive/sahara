@@ -34,3 +34,16 @@ library. Default sqlite db name was changed as follows.
 
 You can find more info about config file options in sahara repository in file
 ``etc/sahara/sahara.conf.sample``.
+
+VM user name changed for HEAT infrastructure engine
++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+We've updated HEAT infrastructure engine (``infrastructure_engine=heat``) to
+use the same rules for instance user name as in direct engine. Before the
+change user name for VMs created by Sahara using HEAT engine was always
+'ec2-user'. Now user name is taken from the image registry as it is described
+in the documentation.
+
+Note, this change breaks Sahara backward compatibility for clusters created
+using HEAT infrastructure engine before the change. Clusters will continue to
+operate, but it is not recommended to perform scale operation over them.
