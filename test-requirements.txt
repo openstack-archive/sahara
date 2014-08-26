@@ -5,8 +5,8 @@ coverage>=3.6
 discover
 fixtures>=0.3.14
 mock>=1.0
-oslosphinx
-oslotest
+oslosphinx>=2.2.0.0a2
+oslotest>=1.1.0.0a1
 psycopg2
 pylint==0.25.2
 sphinx>=1.1.2,!=1.2.0,<1.3
