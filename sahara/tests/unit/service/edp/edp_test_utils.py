@@ -26,10 +26,11 @@ _java_main_class = "org.apache.hadoop.examples.WordCount"
 _java_opts = "-Dparam1=val1 -Dparam2=val2"
 
 
-def create_job_exec(type, configs=None):
+def create_job_exec(type, configs=None, proxy=False):
     b = create_job_binary('1', type)
     j = _create_job('2', b, type)
-    e = _create_job_exec(j.id, type, configs)
+    _cje_func = _create_job_exec_with_proxy if proxy else _create_job_exec
+    e = _cje_func(j.id, type, configs)
     return j, e
 
 
@@ -86,4 +87,17 @@ def _create_job_exec(job_id, type, configs=None):
     if edp.compare_job_type(type, edp.JOB_TYPE_JAVA):
         j_exec.job_configs['configs']['edp.java.main_class'] = _java_main_class
         j_exec.job_configs['configs']['edp.java.java_opts'] = _java_opts
+    return j_exec
+
+
+def _create_job_exec_with_proxy(job_id, type, configs=None):
+    j_exec = _create_job_exec(job_id, type, configs)
+    j_exec.id = '00000000-1111-2222-3333-4444444444444444'
+    if not j_exec.job_configs:
+        j_exec.job_configs = {}
+    j_exec.job_configs['proxy_configs'] = {
+        'proxy_username': 'job_' + j_exec.id,
+        'proxy_password': '55555555-6666-7777-8888-999999999999',
+        'proxy_trust_id': '0123456789abcdef0123456789abcdef'
+        }
     return j_exec

@@ -13,6 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from oslo.config import cfg
 import six
 import six.moves.urllib.parse as urlparse
 
@@ -29,6 +30,7 @@ from sahara.utils import xmlutils
 
 
 conductor = c.API
+CONF = cfg.CONF
 
 
 class BaseFactory(object):
@@ -95,13 +97,25 @@ class BaseFactory(object):
             self.inject_swift_url_suffix(arg) for arg in job_dict['args']]
 
         for k, v in six.iteritems(job_dict.get('configs', {})):
-            job_dict['configs'][k] = self.inject_swift_url_suffix(v)
+            if k != 'proxy_configs':
+                job_dict['configs'][k] = self.inject_swift_url_suffix(v)
 
         for k, v in six.iteritems(job_dict.get('params', {})):
             job_dict['params'][k] = self.inject_swift_url_suffix(v)
 
-    def get_configs(self, input_data, output_data):
+    def get_configs(self, input_data, output_data, proxy_configs=None):
         configs = {}
+
+        if proxy_configs:
+            configs[sw.HADOOP_SWIFT_USERNAME] = proxy_configs.get(
+                'proxy_username')
+            configs[sw.HADOOP_SWIFT_PASSWORD] = proxy_configs.get(
+                'proxy_password')
+            configs[sw.HADOOP_SWIFT_TRUST_ID] = proxy_configs.get(
+                'proxy_trust_id')
+            configs[sw.HADOOP_SWIFT_DOMAIN_NAME] = CONF.proxy_user_domain_name
+            return configs
+
         for src in (input_data, output_data):
             if src.type == "swift" and hasattr(src, "credentials"):
                 if "user" in src.credentials:
@@ -128,7 +142,9 @@ class PigFactory(BaseFactory):
 
     def get_workflow_xml(self, cluster, execution, input_data, output_data,
                          hdfs_user):
-        job_dict = {'configs': self.get_configs(input_data, output_data),
+        proxy_configs = execution.job_configs.get('proxy_configs')
+        job_dict = {'configs': self.get_configs(input_data, output_data,
+                                                proxy_configs),
                     'params': self.get_params(input_data, output_data),
                     'args': []}
         self.update_job_dict(job_dict, execution.job_configs)
@@ -151,7 +167,9 @@ class HiveFactory(BaseFactory):
 
     def get_workflow_xml(self, cluster, execution, input_data, output_data,
                          hdfs_user):
-        job_dict = {'configs': self.get_configs(input_data, output_data),
+        proxy_configs = execution.job_configs.get('proxy_configs')
+        job_dict = {'configs': self.get_configs(input_data, output_data,
+                                                proxy_configs),
                     'params': self.get_params(input_data, output_data)}
         self.update_job_dict(job_dict, execution.job_configs)
 
@@ -165,9 +183,10 @@ class HiveFactory(BaseFactory):
 
 class MapReduceFactory(BaseFactory):
 
-    def get_configs(self, input_data, output_data):
+    def get_configs(self, input_data, output_data, proxy_configs):
         configs = super(MapReduceFactory, self).get_configs(input_data,
-                                                            output_data)
+                                                            output_data,
+                                                            proxy_configs)
         configs['mapred.input.dir'] = input_data.url
         configs['mapred.output.dir'] = output_data.url
         return configs
@@ -179,7 +198,9 @@ class MapReduceFactory(BaseFactory):
 
     def get_workflow_xml(self, cluster, execution, input_data, output_data,
                          hdfs_user):
-        job_dict = {'configs': self.get_configs(input_data, output_data)}
+        proxy_configs = execution.job_configs.get('proxy_configs')
+        job_dict = {'configs': self.get_configs(input_data, output_data,
+                                                proxy_configs)}
         self.update_job_dict(job_dict, execution.job_configs)
         creator = mapreduce_workflow.MapReduceWorkFlowCreator()
         creator.build_workflow_xml(configuration=job_dict['configs'],
@@ -194,8 +215,24 @@ class JavaFactory(BaseFactory):
         java_opts = job_dict['edp_configs'].get('edp.java.java_opts', None)
         return main_class, java_opts
 
+    def get_configs(self, proxy_configs=None):
+        configs = {}
+
+        if proxy_configs:
+            configs[sw.HADOOP_SWIFT_USERNAME] = proxy_configs.get(
+                'proxy_username')
+            configs[sw.HADOOP_SWIFT_PASSWORD] = proxy_configs.get(
+                'proxy_password')
+            configs[sw.HADOOP_SWIFT_TRUST_ID] = proxy_configs.get(
+                'proxy_trust_id')
+            configs[sw.HADOOP_SWIFT_DOMAIN_NAME] = CONF.proxy_user_domain_name
+            return configs
+
+        return configs
+
     def get_workflow_xml(self, cluster, execution, *args, **kwargs):
-        job_dict = {'configs': {},
+        proxy_configs = execution.job_configs.get('proxy_configs')
+        job_dict = {'configs': self.get_configs(proxy_configs=proxy_configs),
                     'args': []}
         self.update_job_dict(job_dict, execution.job_configs)
 

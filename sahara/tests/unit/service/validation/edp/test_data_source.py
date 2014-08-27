@@ -60,6 +60,9 @@ class TestDataSourceValidation(u.ValidationTestCase):
         }
         with testtools.ExpectedException(ex.InvalidCredentials):
             ds.check_data_source_create(data)
+        # proxy enabled should allow creation without credentials
+        self.override_config('use_domain_for_proxy_users', True)
+        ds.check_data_source_create(data)
 
     @mock.patch("sahara.service.validations."
                 "edp.base.check_data_source_unique_name")
@@ -79,6 +82,9 @@ class TestDataSourceValidation(u.ValidationTestCase):
         }
         with testtools.ExpectedException(ex.InvalidCredentials):
             ds.check_data_source_create(data)
+        # proxy enabled should allow creation without credentials
+        self.override_config('use_domain_for_proxy_users', True)
+        ds.check_data_source_create(data)
 
     @mock.patch("sahara.service.validations."
                 "edp.base.check_data_source_unique_name")
@@ -98,6 +104,9 @@ class TestDataSourceValidation(u.ValidationTestCase):
         }
         with testtools.ExpectedException(ex.InvalidCredentials):
             ds.check_data_source_create(data)
+        # proxy enabled should allow creation without credentials
+        self.override_config('use_domain_for_proxy_users', True)
+        ds.check_data_source_create(data)
 
     @mock.patch("sahara.service.validations."
                 "edp.base.check_data_source_unique_name")
