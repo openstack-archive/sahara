@@ -16,11 +16,11 @@
 
 from oslo.config import cfg
 from oslo import messaging
+from oslo.serialization import jsonutils
 
 from sahara import context
 from sahara.i18n import _LE
 from sahara.i18n import _LI
-from sahara.openstack.common import jsonutils
 from sahara.openstack.common import log as logging
 
 TRANSPORT = None
