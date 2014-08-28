@@ -97,7 +97,7 @@ def get_service(process, cluster=None, instance=None):
             {'process': process})
 
 
-def decomission_nodes(cluster, process, role_names):
+def decommission_nodes(cluster, process, role_names):
     service = get_service(process, cluster)
     service.decommission(*role_names).wait()
     for role_name in role_names:
