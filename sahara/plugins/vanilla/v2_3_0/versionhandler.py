@@ -17,6 +17,8 @@ from oslo.config import cfg
 
 from sahara import conductor
 from sahara import context
+from sahara import exceptions as ex
+from sahara.i18n import _
 from sahara.openstack.common import log as logging
 from sahara.plugins.general import utils
 from sahara.plugins.vanilla import abstractversionhandler as avm
@@ -53,7 +55,10 @@ class VersionHandler(avm.AbstractVersionHandler):
         }
 
     def validate(self, cluster):
-        vl.validate_cluster_creating(self.pctx, cluster)
+        raise ex.DeprecatedException(
+            _("The Vanilla 2.3.0 plugin is now deprecated and will be removed"
+              " in the Kylo release. The Vanilla 2.4.1 plugin remains and"
+              " continues to be supported."))
 
     def update_infra(self, cluster):
         pass

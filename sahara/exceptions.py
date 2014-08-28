@@ -250,3 +250,10 @@ class TimeoutException(SaharaException):
 
     def __init__(self, timeout):
         self.message = self.message % timeout
+
+
+class DeprecatedException(SaharaException):
+    code = "DEPRECATED"
+
+    def __init__(self, message):
+        self.message = message
