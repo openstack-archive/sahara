@@ -6,9 +6,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: sahara 2014.2.dev95.g5b2a10e\n"
+"Project-Id-Version: sahara 2014.2.dev132.g9c581ed\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2014-08-14 06:10+0000\n"
+"POT-Creation-Date: 2014-08-28 06:10+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -58,58 +58,58 @@ msgstr ""
 msgid "Error during command execution: \"%s\""
 msgstr ""
 
-#: sahara/exceptions.py:111
+#: sahara/exceptions.py:112
 msgid "Data is invalid"
 msgstr ""
 
-#: sahara/exceptions.py:120
+#: sahara/exceptions.py:121
 msgid "Job binary internal data must be a string of length greater than zero"
 msgstr ""
 
-#: sahara/exceptions.py:130
+#: sahara/exceptions.py:131
 msgid ""
 "To work with JobBinary located in internal swift add 'user' and "
 "'password' to extra"
 msgstr ""
 
-#: sahara/exceptions.py:140
+#: sahara/exceptions.py:141
 msgid "Database object already exists"
 msgstr ""
 
-#: sahara/exceptions.py:149
+#: sahara/exceptions.py:150
 msgid "Object was not created"
 msgstr ""
 
-#: sahara/exceptions.py:158
+#: sahara/exceptions.py:159
 msgid "Object was not deleted"
 msgstr ""
 
-#: sahara/exceptions.py:168
+#: sahara/exceptions.py:169
 #, python-format
 msgid "Node Group %s is missing 'floating_ip_pool' field"
 msgstr ""
 
-#: sahara/exceptions.py:186
+#: sahara/exceptions.py:187
 #, python-format
 msgid "Size of data (%(size)s) is greater than maximum (%(maximum)s)"
 msgstr ""
 
-#: sahara/exceptions.py:198
+#: sahara/exceptions.py:199
 #, python-format
 msgid "An error occurred in thread '%(thread)s': %(e)s"
 msgstr ""
 
-#: sahara/exceptions.py:208
+#: sahara/exceptions.py:209
 #, python-format
 msgid "Feature '%s' is not implemented"
 msgstr ""
 
-#: sahara/exceptions.py:214
+#: sahara/exceptions.py:215
 #, python-format
 msgid "Heat stack failed with status %s"
 msgstr ""
 
-#: sahara/exceptions.py:248
+#: sahara/exceptions.py:249
 #, python-format
 msgid "Operation timed out after %i second(s)"
 msgstr ""
@@ -398,7 +398,7 @@ msgstr ""
 msgid "OS on image is not supported by CDH plugin"
 msgstr ""
 
-#: sahara/plugins/cdh/deploy.py:282
+#: sahara/plugins/cdh/deploy.py:285
 #, python-format
 msgid ""
 "Cloudera Manager failed to start in %(timeout)s minutes on node "
@@ -502,7 +502,7 @@ msgid "Failed to install Hadoop Swift integration"
 msgstr ""
 
 #: sahara/plugins/hdp/versions/version_1_3_2/services.py:522
-#: sahara/plugins/hdp/versions/version_2_0_6/services.py:574
+#: sahara/plugins/hdp/versions/version_2_0_6/services.py:575
 #, python-format
 msgid "Invalid value for property 'hbase-site/hbase.rootdir' : %s"
 msgstr ""
@@ -690,7 +690,14 @@ msgstr ""
 msgid "Unable get parameter '%(parameter)s' from service %(service)s"
 msgstr ""
 
-#: sahara/service/direct_engine.py:287
+#: sahara/plugins/vanilla/v2_3_0/versionhandler.py:59
+msgid ""
+"The Vanilla 2.3.0 plugin is now deprecated and will be removed in the "
+"Kylo release. The Vanilla 2.4.1 plugin remains and continues to be "
+"supported."
+msgstr ""
+
+#: sahara/service/direct_engine.py:275
 #, python-format
 msgid "Node %s has error status"
 msgstr ""

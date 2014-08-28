@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Sahara\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2014-08-22 06:11+0000\n"
+"POT-Creation-Date: 2014-08-28 06:10+0000\n"
 "PO-Revision-Date: 2014-07-29 23:43+0000\n"
 "Last-Translator: openstackjenkins <jenkins@openstack.org>\n"
 "Language-Team: French (http://www.transifex.com/projects/p/sahara/language/"
@@ -120,12 +120,12 @@ msgstr ""
 #: sahara/plugins/hdp/versions/version_2_0_6/versionhandler.py:627
 #, python-format
 msgid ""
-"AmbariClient: error while making decommision post request. Error is = %s"
+"AmbariClient: error while making decommission post request. Error is = %s"
 msgstr ""
 
 #: sahara/plugins/hdp/versions/version_2_0_6/versionhandler.py:661
 #, python-format
-msgid "AmbariClient: error in making decomission status request, error = %s"
+msgid "AmbariClient: error in making decommission status request, error = %s"
 msgstr ""
 
 #: sahara/plugins/hdp/versions/version_2_0_6/versionhandler.py:689

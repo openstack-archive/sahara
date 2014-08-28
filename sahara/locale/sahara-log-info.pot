@@ -6,9 +6,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: sahara 2014.2.dev118.g44f37ef\n"
+"Project-Id-Version: sahara 2014.2.dev132.g9c581ed\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2014-08-22 06:11+0000\n"
+"POT-Creation-Date: 2014-08-28 06:10+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -191,42 +191,42 @@ msgstr ""
 msgid "HTTP session is not cached"
 msgstr ""
 
-#: sahara/plugins/hdp/versions/version_2_0_6/services.py:916
+#: sahara/plugins/hdp/versions/version_2_0_6/services.py:917
 msgid "Creating Hue ini property tree from configuration named {0}"
 msgstr ""
 
-#: sahara/plugins/hdp/versions/version_2_0_6/services.py:1016
+#: sahara/plugins/hdp/versions/version_2_0_6/services.py:1017
 #, python-format
 msgid "Merging configuration properties: %(source)s -> %(destination)s"
 msgstr ""
 
-#: sahara/plugins/hdp/versions/version_2_0_6/services.py:1060
+#: sahara/plugins/hdp/versions/version_2_0_6/services.py:1061
 msgid "Installing Hue on {0}"
 msgstr ""
 
-#: sahara/plugins/hdp/versions/version_2_0_6/services.py:1065
+#: sahara/plugins/hdp/versions/version_2_0_6/services.py:1066
 msgid "Setting Hue configuration on {0}"
 msgstr ""
 
-#: sahara/plugins/hdp/versions/version_2_0_6/services.py:1071
+#: sahara/plugins/hdp/versions/version_2_0_6/services.py:1072
 msgid "Uninstalling Shell, if it is installed on {0}"
 msgstr ""
 
-#: sahara/plugins/hdp/versions/version_2_0_6/services.py:1080
+#: sahara/plugins/hdp/versions/version_2_0_6/services.py:1081
 msgid "Creating initial Hue user on {0}"
 msgstr ""
 
-#: sahara/plugins/hdp/versions/version_2_0_6/services.py:1085
+#: sahara/plugins/hdp/versions/version_2_0_6/services.py:1086
 msgid "(Re)starting Hue on {0}"
 msgstr ""
 
-#: sahara/plugins/hdp/versions/version_2_0_6/services.py:1176
+#: sahara/plugins/hdp/versions/version_2_0_6/services.py:1177
 msgid ""
 "Missing HDFS client from Hue node... adding it since it is required for "
 "Hue"
 msgstr ""
 
-#: sahara/plugins/hdp/versions/version_2_0_6/services.py:1182
+#: sahara/plugins/hdp/versions/version_2_0_6/services.py:1183
 msgid ""
 "Missing HIVE client from Hue node... adding it since it is required for "
 "Beeswax and HCatalog"
@@ -238,7 +238,7 @@ msgstr ""
 
 #: sahara/plugins/hdp/versions/version_2_0_6/versionhandler.py:655
 #, python-format
-msgid "AmbariClient: number of hosts waiting for decommisioning to complete = %s"
+msgid "AmbariClient: number of hosts waiting for decommissioning to complete = %s"
 msgstr ""
 
 #: sahara/plugins/hdp/versions/version_2_0_6/versionhandler.py:664
