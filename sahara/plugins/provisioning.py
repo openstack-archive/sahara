@@ -168,7 +168,7 @@ class ProvisioningPluginBase(plugins_base.PluginInterface):
                 result.append(UserInput(
                     conf, configs[applicable_target][config_name]))
 
-        return result
+        return sorted(result)
 
 
 class Config(resources.BaseResource):
@@ -205,6 +205,9 @@ class Config(resources.BaseResource):
         # TODO(slukjanov): all custom fields from res
         return res
 
+    def __lt__(self, other):
+        return self.name < other.name
+
     def __repr__(self):
         return '<Config %s in %s>' % (self.name, self.applicable_target)
 
@@ -218,6 +221,9 @@ class UserInput(object):
 
     def __eq__(self, other):
         return self.config == other.config and self.value == other.value
+
+    def __lt__(self, other):
+        return (self.config, self.value) < (other.config, other.value)
 
     def __repr__(self):
         return '<UserInput %s = %s>' % (self.config.name, self.value)

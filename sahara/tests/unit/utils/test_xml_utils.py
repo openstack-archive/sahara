@@ -53,12 +53,12 @@ class XMLUtilsTestCase(testtools.TestCase):
 <?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
 <configuration>
   <property>
-    <name>name2</name>
-    <value>2</value>
-  </property>
-  <property>
     <name>name1</name>
     <value>some_val1</value>
+  </property>
+  <property>
+    <name>name2</name>
+    <value>2</value>
   </property>
 </configuration>
 """)
@@ -82,12 +82,12 @@ class XMLUtilsTestCase(testtools.TestCase):
 <test>
   <configuration>
     <property>
-      <name>name2</name>
-      <value>value2</value>
-    </property>
-    <property>
       <name>name1</name>
       <value>value1</value>
+    </property>
+    <property>
+      <name>name2</name>
+      <value>value2</value>
     </property>
   </configuration>
 </test>
@@ -98,12 +98,12 @@ class XMLUtilsTestCase(testtools.TestCase):
 <test>
   <configuration>
     <property>
-      <name>name2</name>
-      <value>value2</value>
-    </property>
-    <property>
       <name>name1</name>
       <value>value1</value>
+    </property>
+    <property>
+      <name>name2</name>
+      <value>value2</value>
     </property>
     <property>
       <name>name3</name>

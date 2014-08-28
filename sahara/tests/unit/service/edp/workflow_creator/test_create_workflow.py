@@ -75,9 +75,9 @@ class TestPigWorkflowCreator(testtools.TestCase):
       <job-tracker>${jobTracker}</job-tracker>
       <name-node>${nameNode}</name-node>
       <prepare>
-        <mkdir path="mkdir_1"/>
         <delete path="delete_dir_1"/>
         <delete path="delete_dir_2"/>
+        <mkdir path="mkdir_1"/>
       </prepare>
       <job-xml>job_xml.xml</job-xml>
       <configuration>
@@ -113,9 +113,9 @@ class TestPigWorkflowCreator(testtools.TestCase):
       <job-tracker>${jobTracker}</job-tracker>
       <name-node>${nameNode}</name-node>
       <prepare>
-        <mkdir path="mkdir_1"/>
         <delete path="delete_dir_1"/>
         <delete path="delete_dir_2"/>
+        <mkdir path="mkdir_1"/>
       </prepare>
       <job-xml>job_xml.xml</job-xml>
       <configuration>
@@ -151,9 +151,9 @@ class TestPigWorkflowCreator(testtools.TestCase):
       <job-tracker>${jobTracker}</job-tracker>
       <name-node>${nameNode}</name-node>
       <prepare>
-        <mkdir path="mkdir_1"/>
         <delete path="delete_dir_1"/>
         <delete path="delete_dir_2"/>
+        <mkdir path="mkdir_1"/>
       </prepare>
       <job-xml>job_xml.xml</job-xml>
       <configuration>
@@ -167,8 +167,8 @@ class TestPigWorkflowCreator(testtools.TestCase):
         </property>
       </configuration>
       <script>script.q</script>
-      <param>key2=value2</param>
       <param>key=value</param>
+      <param>key2=value2</param>
       <file>file1</file>
       <file>file2</file>
       <archive>arch1</archive>
@@ -193,9 +193,9 @@ class TestPigWorkflowCreator(testtools.TestCase):
       <job-tracker>${jobTracker}</job-tracker>
       <name-node>${nameNode}</name-node>
       <prepare>
-        <mkdir path="mkdir_1"/>
         <delete path="delete_dir_1"/>
         <delete path="delete_dir_2"/>
+        <mkdir path="mkdir_1"/>
       </prepare>
       <job-xml>job_xml.xml</job-xml>
       <configuration>

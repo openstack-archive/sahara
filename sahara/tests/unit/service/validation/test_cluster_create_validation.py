@@ -442,14 +442,15 @@ class TestClusterCreateFlavorValidation(base.SaharaWithDbTestCase):
         }
         for values in [data, data1]:
             with testtools.ExpectedException(exceptions.InvalidException):
+                patchers = u.start_patch(False)
                 try:
-                    patchers = u.start_patch(False)
                     c.check_cluster_create(values)
-                    u.stop_patch(patchers)
                 except exceptions.InvalidException as e:
                     self.assertEqual("Requested flavor '10' not found",
                                      six.text_type(e))
                     raise e
+                finally:
+                    u.stop_patch(patchers)
 
     def test_cluster_create_cluster_tmpl_node_group_mixin(self):
         ng_id = self._create_node_group_template(flavor='10')

@@ -213,7 +213,7 @@ class DirectEngine(e.Engine):
 
         # create instances only at hosts w/ no instances
         # w/ aa-enabled processes
-        hints = {'different_host': list(set(aa_ids))} if aa_ids else None
+        hints = {'different_host': sorted(set(aa_ids))} if aa_ids else None
 
         if CONF.use_neutron:
             net_id = cluster.neutron_management_network

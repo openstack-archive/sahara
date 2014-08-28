@@ -24,8 +24,8 @@ from sahara.swift import utils as su
 
 @jsonschema.FormatChecker.cls_checks('valid_name_hostname')
 def validate_name_hostname_format(entry):
-    if not isinstance(entry, six.string_types):
-        # shoud fail type validation
+    if not isinstance(entry, six.string_types) or not entry:
+        # shoud fail type or length validation
         return True
 
     res = re.match(r"^(([a-zA-Z]|[a-zA-Z][a-zA-Z0-9\-]"
@@ -46,6 +46,10 @@ def validate_name_format(entry):
 
 @jsonschema.FormatChecker.cls_checks('valid_job_location')
 def validate_job_location_format(entry):
+    if not isinstance(entry, six.string_types):
+        # shoud fail type validation
+        return True
+
     if entry.startswith('internal-db://'):
         return uuidutils.is_uuid_like(entry[len("internal-db://"):])
 
@@ -71,11 +75,19 @@ def validate_valid_tag_format(entry):
 
 @jsonschema.FormatChecker.cls_checks('uuid')
 def validate_uuid_format(entry):
+    if not isinstance(entry, six.string_types):
+        # shoud fail type validation
+        return True
+
     return uuidutils.is_uuid_like(entry)
 
 
 @jsonschema.FormatChecker.cls_checks('posix_path')
 def validate_posix_path(entry):
+    if not isinstance(entry, six.string_types):
+        # shoud fail type validation
+        return True
+
     res = re.match("^(/([A-Z]|[a-z]|[0-9]|\-|_)+)+$", entry)
     return res is not None
 

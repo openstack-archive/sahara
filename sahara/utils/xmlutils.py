@@ -71,9 +71,9 @@ def create_hadoop_xml(configs, config_filter=None):
     if config_filter is not None:
         default_configs = [cfg['name'] for cfg in config_filter]
 
-    for name, value in configs.items():
+    for name in sorted(configs):
         if name in default_configs or config_filter is None:
-            add_property_to_configuration(doc, name, value)
+            add_property_to_configuration(doc, name, configs[name])
 
     # Return newly created XML
     return doc.toprettyxml(indent="  ")
@@ -110,9 +110,9 @@ def add_property_to_configuration(doc, name, value):
 
 def add_properties_to_configuration(doc, parent_for_conf, configs):
     get_and_create_if_not_exist(doc, parent_for_conf, 'configuration')
-    for n, v in configs.items():
+    for n in sorted(configs):
         if n:
-            add_property_to_configuration(doc, n, v)
+            add_property_to_configuration(doc, n, configs[n])
 
 
 def add_child(doc, parent, tag_to_add):
@@ -145,10 +145,10 @@ def add_text_element_to_element(doc, parent, element, value):
 
 
 def add_equal_separated_dict(doc, parent_tag, each_elem_tag, value):
-    for k, v in value.items():
+    for k in sorted(value):
         if k:
             add_text_element_to_tag(doc, parent_tag, each_elem_tag,
-                                    "%s=%s" % (k, v))
+                                    "%s=%s" % (k, value[k]))
 
 
 def add_tagged_list(doc, parent_tag, each_elem_tag, values):

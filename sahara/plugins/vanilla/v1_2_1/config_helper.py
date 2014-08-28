@@ -362,7 +362,7 @@ def extract_environment_confs(configs):
         else:
             LOG.warn(_LW("Plugin received wrong applicable target '%s' in "
                      "environmental configs"), service)
-    return lst
+    return sorted(lst)
 
 
 def extract_xml_confs(configs):
@@ -383,7 +383,7 @@ def extract_xml_confs(configs):
         else:
             LOG.warn(_LW("Plugin received wrong applicable target '%s' for "
                      "xml configs"), service)
-    return lst
+    return sorted(lst)
 
 
 def generate_setup_script(storage_paths, env_configs, append_oozie=False):
