@@ -43,11 +43,9 @@ def copy_from_local(r, source, target, hdfs_user):
 def move_from_local(r, source, target, hdfs_user):
     # using copyFromLocal followed by rm to address permission issues that
     # arise when image user is not the same as hdfs user (permissions-wise).
-    # The moveFromLocal implementation actually is a copy and delete
-    # combination, so functionally the implementation is equivalent
-    r.execute_command('sudo su - -c "hadoop dfs -copyFromLocal '
-                      '%s %s" %s' % (source, target, hdfs_user))
-    r.execute_command('sudo rm -f %s' % source)
+    r.execute_command('sudo su - -c "hadoop dfs -copyFromLocal %(source)s '
+                      '%(target)s" %(user)s && sudo rm -f %(source)s' %
+                      {"source": source, "target": target, "user": hdfs_user})
 
 
 def _dir_missing(path, hdfs_user, r):
