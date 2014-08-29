@@ -25,8 +25,8 @@ from sahara.i18n import _LI
 from sahara.openstack.common import log
 from sahara.openstack.common import periodic_task
 from sahara.openstack.common import threadgroup
-from sahara.service import api
 from sahara.service.edp import job_manager
+from sahara.service import ops
 from sahara.service import trusts
 from sahara.utils import edp
 from sahara.utils import proxy as p
@@ -110,7 +110,7 @@ def _make_periodic_tasks():
                              {'cluster': cluster.name, 'id': cluster.id})
 
                     try:
-                        api.terminate_cluster(cluster.id)
+                        ops.terminate_cluster(cluster.id)
                     except Exception as e:
                         LOG.info(_LI('Failed to terminate transient cluster '
                                  '%(cluster)s with id %(id)s: %(error)s.'),
