@@ -13,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from keystoneclient.middleware import auth_token
+from keystonemiddleware import auth_token
 from oslo.config import cfg
 
 from sahara.openstack.common import log
@@ -27,16 +27,6 @@ AUTH_OPT_GROUP_NAME = 'keystone_authtoken'
 AUTH_URI = None
 
 
-def register_auth_opts(conf):
-    """Register keystoneclient auth_token middleware options."""
-
-    conf.register_opts(auth_token.opts, group=AUTH_OPT_GROUP_NAME)
-    auth_token.CONF = conf
-
-
-register_auth_opts(CONF)
-
-
 def wrap(app, conf):
     """Wrap wsgi application with ACL check."""
 
@@ -45,6 +35,6 @@ def wrap(app, conf):
 
     # store auth uri in global var to be able to use it in runtime
     global AUTH_URI
-    AUTH_URI = auth_protocol.auth_uri
+    AUTH_URI = auth_protocol._identity_server.auth_uri
 
     return auth_protocol
