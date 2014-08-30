@@ -17,6 +17,7 @@ from sahara.i18n import _
 from sahara.plugins.general import exceptions as ex
 from sahara.plugins.general import utils as u
 from sahara.plugins import provisioning as p
+from sahara.plugins.vanilla import edp_engine
 from sahara.plugins.vanilla import versionfactory as vhf
 
 
@@ -36,9 +37,6 @@ class VanillaProvider(p.ProvisioningPluginBase):
     def get_resource_manager_uri(self, cluster):
         return self._get_version_handler(
             cluster.hadoop_version).get_resource_manager_uri(cluster)
-
-    def get_hdfs_user(self):
-        return 'hadoop'
 
     def get_node_processes(self, hadoop_version):
         return self._get_version_handler(hadoop_version).get_node_processes()
@@ -91,3 +89,8 @@ class VanillaProvider(p.ProvisioningPluginBase):
 
     def get_oozie_server_uri(self, cluster):
         return cluster['info']['JobFlow']['Oozie'] + "/oozie/"
+
+    def get_edp_engine(self, cluster, job_type):
+        if job_type in edp_engine.EdpOozieEngine.get_supported_job_types():
+            return edp_engine.EdpOozieEngine(cluster)
+        return None

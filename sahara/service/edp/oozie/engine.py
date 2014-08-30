@@ -13,8 +13,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import abc
 
 from oslo.config import cfg
+import six
 
 from sahara import conductor as c
 from sahara import context
@@ -23,6 +25,7 @@ from sahara.service.edp import hdfs_helper as h
 from sahara.service.edp import job_utils
 from sahara.service.edp.oozie import oozie as o
 from sahara.service.edp.oozie.workflow_creator import workflow_factory
+from sahara.utils import edp
 from sahara.utils import remote
 from sahara.utils import xmlutils as x
 
@@ -31,9 +34,10 @@ CONF = cfg.CONF
 conductor = c.API
 
 
+@six.add_metaclass(abc.ABCMeta)
 class OozieJobEngine(base_engine.JobEngine):
-    def __init__(self, cluster):
 
+    def __init__(self, cluster):
         self.cluster = cluster
         self.plugin = job_utils.get_plugin(self.cluster)
 
@@ -79,7 +83,7 @@ class OozieJobEngine(base_engine.JobEngine):
                 h.configure_cluster_for_hdfs(self.cluster, data_source)
                 break
 
-        hdfs_user = self.plugin.get_hdfs_user()
+        hdfs_user = self.get_hdfs_user()
 
         # TODO(tmckay): this should probably be "get_namenode"
         # but that call does not exist in the plugin api now.
@@ -92,7 +96,8 @@ class OozieJobEngine(base_engine.JobEngine):
                                            job, hdfs_user)
 
         wf_xml = workflow_factory.get_workflow_xml(
-            job, self.cluster, job_execution, input_source, output_source)
+            job, self.cluster, job_execution, input_source, output_source,
+            hdfs_user)
 
         path_to_workflow = self._upload_workflow_file(oozie_server, wf_dir,
                                                       wf_xml, hdfs_user)
@@ -111,6 +116,18 @@ class OozieJobEngine(base_engine.JobEngine):
             status = None
         return (oozie_job_id, status, None)
 
+    @abc.abstractmethod
+    def get_hdfs_user(self):
+        pass
+
     @staticmethod
     def get_possible_job_config(job_type):
         return workflow_factory.get_possible_job_config(job_type)
+
+    @staticmethod
+    def get_supported_job_types():
+        return [edp.JOB_TYPE_HIVE,
+                edp.JOB_TYPE_JAVA,
+                edp.JOB_TYPE_MAPREDUCE,
+                edp.JOB_TYPE_MAPREDUCE_STREAMING,
+                edp.JOB_TYPE_PIG]

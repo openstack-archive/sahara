@@ -188,3 +188,7 @@ class SparkJobEngine(base_engine.JobEngine):
     @staticmethod
     def get_possible_job_config(job_type):
         return {'job_config': {'configs': [], 'args': []}}
+
+    @staticmethod
+    def get_supported_job_types():
+        return [edp.JOB_TYPE_SPARK]

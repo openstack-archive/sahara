@@ -171,7 +171,8 @@ class TestJobManager(base.SaharaWithDbTestCase):
         output_data = _create_data_source('swift://ex/o')
 
         res = workflow_factory.get_workflow_xml(
-            job, _create_cluster(), job_exec, input_data, output_data)
+            job, _create_cluster(), job_exec, input_data, output_data,
+            'hadoop')
 
         self.assertIn("""
       <param>INPUT=swift://ex.sahara/i</param>
@@ -202,7 +203,8 @@ class TestJobManager(base.SaharaWithDbTestCase):
         output_data = _create_data_source('hdfs://user/hadoop/out')
 
         res = workflow_factory.get_workflow_xml(
-            job, _create_cluster(), job_exec, input_data, output_data)
+            job, _create_cluster(), job_exec, input_data, output_data,
+            'hadoop')
 
         self.assertIn("""
       <configuration>
@@ -220,7 +222,8 @@ class TestJobManager(base.SaharaWithDbTestCase):
         output_data = _create_data_source('swift://ex/o')
 
         res = workflow_factory.get_workflow_xml(
-            job, _create_cluster(), job_exec, input_data, output_data)
+            job, _create_cluster(), job_exec, input_data, output_data,
+            'hadoop')
 
         self.assertIn("""
       <configuration>
@@ -240,7 +243,8 @@ class TestJobManager(base.SaharaWithDbTestCase):
         output_data = _create_data_source('hdfs://user/hadoop/out')
 
         res = workflow_factory.get_workflow_xml(
-            job, _create_cluster(), job_exec, input_data, output_data)
+            job, _create_cluster(), job_exec, input_data, output_data,
+            'hadoop')
 
         self.assertIn("""
       <configuration>
@@ -264,7 +268,8 @@ class TestJobManager(base.SaharaWithDbTestCase):
         output_data = _create_data_source('swift://ex/o')
 
         res = workflow_factory.get_workflow_xml(
-            job, _create_cluster(), job_exec, input_data, output_data)
+            job, _create_cluster(), job_exec, input_data, output_data,
+            'hadoop')
 
         if streaming:
             self.assertIn("""
@@ -344,7 +349,8 @@ class TestJobManager(base.SaharaWithDbTestCase):
         output_data = _create_data_source('swift://ex/o')
 
         res = workflow_factory.get_workflow_xml(
-            job, _create_cluster(), job_exec, input_data, output_data)
+            job, _create_cluster(), job_exec, input_data, output_data,
+            'hadoop')
 
         self.assertIn("""
       <job-xml>/user/hadoop/conf/hive-site.xml</job-xml>
@@ -372,7 +378,8 @@ class TestJobManager(base.SaharaWithDbTestCase):
                                     job_type, configs={"configs": {'c': 'f'}})
 
         res = workflow_factory.get_workflow_xml(
-            job, _create_cluster(), job_exec, input_data, output_data)
+            job, _create_cluster(), job_exec, input_data, output_data,
+            'hadoop')
 
         self.assertIn("""
         <property>
@@ -512,6 +519,10 @@ class TestJobManager(base.SaharaWithDbTestCase):
 
     @mock.patch('sahara.service.edp.job_utils.get_plugin')
     def test_get_oozie_job_params(self, getplugin):
+        class OozieJobEngine(oozie_engine.OozieJobEngine):
+            def get_hdfs_user(self):
+                return 'hadoop'
+
         plugin = mock.Mock()
         getplugin.return_value = plugin
 
@@ -519,7 +530,7 @@ class TestJobManager(base.SaharaWithDbTestCase):
         plugin.get_name_node_uri.return_value = 'hdfs://localhost:8020'
 
         cluster = _create_cluster()
-        oje = oozie_engine.OozieJobEngine(cluster)
+        oje = OozieJobEngine(cluster)
         job_params = oje._get_oozie_job_params('hadoop', '/tmp')
         self.assertEqual('http://localhost:50030', job_params["jobTracker"])
         self.assertEqual('hdfs://localhost:8020', job_params["nameNode"])

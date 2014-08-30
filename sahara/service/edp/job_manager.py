@@ -35,24 +35,8 @@ CONF = cfg.CONF
 
 conductor = c.API
 
-
-def _make_engine(name, job_types, engine_class):
-    return {"name": name,
-            "job_types": job_types,
-            "engine": engine_class}
-
-default_engines = [_make_engine("oozie",
-                                [edp.JOB_TYPE_HIVE,
-                                 edp.JOB_TYPE_JAVA,
-                                 edp.JOB_TYPE_MAPREDUCE,
-                                 edp.JOB_TYPE_MAPREDUCE_STREAMING,
-                                 edp.JOB_TYPE_PIG],
-                                oozie_engine.OozieJobEngine),
-                   _make_engine("spark",
-                                [edp.JOB_TYPE_JAVA,
-                                 edp.JOB_TYPE_SPARK],
-                                spark_engine.SparkJobEngine)
-                   ]
+ENGINES = [oozie_engine.OozieJobEngine,
+           spark_engine.SparkJobEngine]
 
 
 def _get_job_type(job_execution):
@@ -62,8 +46,7 @@ def _get_job_type(job_execution):
 def _get_job_engine(cluster, job_execution):
     return job_utils.get_plugin(cluster).get_edp_engine(cluster,
                                                         _get_job_type(
-                                                            job_execution),
-                                                        default_engines)
+                                                            job_execution))
 
 
 def _write_job_status(job_execution, job_info):
@@ -184,15 +167,6 @@ def update_job_statuses():
 
 
 def get_job_config_hints(job_type):
-    # TODO(tmckay) We need plugin-specific config hints
-    # (not a new problem). At the moment we don't have a plugin
-    # or cluster argument in this call so we can only go by
-    # job type.
-
-    # Since we currently have a single engine for each
-    # job type (Spark will support Java only temporarily)
-    # we can just key off of job type
-
-    for eng in default_engines:
-        if job_type in eng["job_types"]:
-            return eng["engine"].get_possible_job_config(job_type)
+    for eng in ENGINES:
+        if job_type in eng.get_supported_job_types():
+            return eng.get_possible_job_config(job_type)

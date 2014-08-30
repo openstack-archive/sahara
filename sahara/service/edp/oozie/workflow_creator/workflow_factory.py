@@ -18,7 +18,6 @@ import six.moves.urllib.parse as urlparse
 
 from sahara import conductor as c
 from sahara import context
-from sahara.plugins import base as plugin_base
 from sahara.service.edp.oozie.workflow_creator import hive_workflow
 from sahara.service.edp.oozie.workflow_creator import java_workflow
 from sahara.service.edp.oozie.workflow_creator import mapreduce_workflow
@@ -127,7 +126,8 @@ class PigFactory(BaseFactory):
     def get_script_name(self, job):
         return conductor.job_main_name(context.ctx(), job)
 
-    def get_workflow_xml(self, cluster, execution, input_data, output_data):
+    def get_workflow_xml(self, cluster, execution, input_data, output_data,
+                         hdfs_user):
         job_dict = {'configs': self.get_configs(input_data, output_data),
                     'params': self.get_params(input_data, output_data),
                     'args': []}
@@ -149,13 +149,12 @@ class HiveFactory(BaseFactory):
     def get_script_name(self, job):
         return conductor.job_main_name(context.ctx(), job)
 
-    def get_workflow_xml(self, cluster, execution, input_data, output_data):
+    def get_workflow_xml(self, cluster, execution, input_data, output_data,
+                         hdfs_user):
         job_dict = {'configs': self.get_configs(input_data, output_data),
                     'params': self.get_params(input_data, output_data)}
         self.update_job_dict(job_dict, execution.job_configs)
 
-        plugin = plugin_base.PLUGINS.get_plugin(cluster.plugin_name)
-        hdfs_user = plugin.get_hdfs_user()
         creator = hive_workflow.HiveWorkflowCreator()
         creator.build_workflow_xml(self.name,
                                    edp.get_hive_shared_conf_path(hdfs_user),
@@ -178,7 +177,8 @@ class MapReduceFactory(BaseFactory):
         return dict((k[len(prefix):], v) for (k, v) in six.iteritems(
             job_dict['edp_configs']) if k.startswith(prefix))
 
-    def get_workflow_xml(self, cluster, execution, input_data, output_data):
+    def get_workflow_xml(self, cluster, execution, input_data, output_data,
+                         hdfs_user):
         job_dict = {'configs': self.get_configs(input_data, output_data)}
         self.update_job_dict(job_dict, execution.job_configs)
         creator = mapreduce_workflow.MapReduceWorkFlowCreator()

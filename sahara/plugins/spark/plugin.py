@@ -26,6 +26,7 @@ from sahara.plugins.general import exceptions as ex
 from sahara.plugins.general import utils
 from sahara.plugins import provisioning as p
 from sahara.plugins.spark import config_helper as c_helper
+from sahara.plugins.spark import edp_engine
 from sahara.plugins.spark import run_scripts as run
 from sahara.plugins.spark import scaling as sc
 from sahara.topology import topology_helper as th
@@ -418,35 +419,11 @@ class SparkProvider(p.ProvisioningPluginBase):
                                 "replicas (replication factor is %s)") %
                 rep_factor)
 
-    def get_edp_engine(self, cluster, job_type, default_engines):
-        '''Select an EDP engine for Spark standalone deployment
+    def get_edp_engine(self, cluster, job_type):
+        if cluster.hadoop_version < "1.0.0":
+            return
 
-        The default_engines parameter is a list of default EDP implementations.
-        Each item in the list is a dictionary, and each dictionary has the
-        following elements:
+        if job_type in edp_engine.EdpEngine.get_supported_job_types():
+            return edp_engine.EdpEngine(cluster)
 
-        name (a simple name for the implementation)
-        job_types (a list of EDP job types supported by the implementation)
-        engine (a class derived from sahara.service.edp.base_engine.JobEngine)
-
-        This method will choose the first engine that it finds from the default
-        list which meets the following criteria:
-
-        eng['name'] == spark
-        eng['job_types'] == job_type
-
-        An instance of that engine will be allocated and returned.
-
-        :param cluster: a Sahara cluster object
-        :param job_type: an EDP job type string
-        :param default_engines: a list of dictionaries describing the default
-        implementations.
-        :returns: an instance of a class derived from
-        sahara.service.edp.base_engine.JobEngine or None
-        '''
-        # We know that spark EDP requires at least spark 1.0.0
-        # to have spark-submit. Reject anything else.
-        if cluster.hadoop_version >= "1.0.0":
-            for eng in default_engines:
-                if self.name == eng['name'] and job_type in eng["job_types"]:
-                    return eng["engine"](cluster)
+        return None

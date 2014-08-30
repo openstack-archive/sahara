@@ -22,6 +22,7 @@ from sahara.i18n import _LI
 from sahara.openstack.common import log as logging
 from sahara.plugins.general import exceptions as ex
 from sahara.plugins.general import utils as u
+from sahara.plugins.hdp import edp_engine
 from sahara.plugins.hdp import hadoopserver as h
 from sahara.plugins.hdp import saharautils as utils
 from sahara.plugins.hdp.versions import versionhandlerfactory as vhf
@@ -96,9 +97,6 @@ class AmbariPlugin(p.ProvisioningPluginBase):
 
         return node_processes
 
-    def get_hdfs_user(self):
-        return 'hdfs'
-
     def convert(self, config, plugin_name, version, template_name,
                 cluster_template_create):
         handler = self.version_factory.get_version_handler(version)
@@ -142,6 +140,11 @@ class AmbariPlugin(p.ProvisioningPluginBase):
 
     def get_oozie_server(self, cluster):
         return u.get_instance(cluster, "OOZIE_SERVER")
+
+    def get_edp_engine(self, cluster, job_type):
+        if job_type in edp_engine.EdpOozieEngine.get_supported_job_types():
+            return edp_engine.EdpOozieEngine(cluster)
+        return None
 
     def validate_edp(self, cluster):
         oo_count = u.get_instances_count(cluster, 'OOZIE_SERVER')

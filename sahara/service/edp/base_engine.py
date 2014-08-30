@@ -41,3 +41,8 @@ class JobEngine(object):
     @abc.abstractmethod
     def get_possible_job_config(job_type):
         return None
+
+    @staticmethod
+    @abc.abstractmethod
+    def get_supported_job_types():
+        return None
