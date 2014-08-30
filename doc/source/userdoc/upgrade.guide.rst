@@ -28,9 +28,12 @@ old config opts with the new ones.
 * ``os_admin_tenant_name`` -> ``[keystone_authtoken]/admin_tenant_name``
 
 We've replaced oslo code from sahara.openstack.common.db by usage of oslo.db
-library. Default sqlite db name was changed as follows.
+library.
 
-* ``sahara.sqlite`` -> ``oslo.sqlite``
+Also sqlite database is not supported anymore. Please use MySQL or PostgreSQL
+db backends for Sahara. Sqlite support was dropped because it doesn't support
+(and not going to support, see http://www.sqlite.org/omitted.html) ALTER
+COLUMN and DROP COLUMN commands required for DB migrations between versions.
 
-You can find more info about config file options in sahara repository in file
+You can find more info about config file options in Sahara repository in file
 ``etc/sahara/sahara.conf.sample``.
