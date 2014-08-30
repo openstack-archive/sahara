@@ -47,9 +47,7 @@ def get_raw_data(context, job_binary):
 
     conn = _get_conn(user, password)
 
-    # TODO(mattf): remove support for OLD_SWIFT_INTERNAL_PREFIX
-    if not (job_binary.url.startswith(su.SWIFT_INTERNAL_PREFIX) or
-            job_binary.url.startswith(su.OLD_SWIFT_INTERNAL_PREFIX)):
+    if not (job_binary.url.startswith(su.SWIFT_INTERNAL_PREFIX)):
         # This should have been guaranteed already,
         # but we'll check just in case.
         raise ex.BadJobBinaryException(
