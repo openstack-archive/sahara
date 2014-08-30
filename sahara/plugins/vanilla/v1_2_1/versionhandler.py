@@ -28,6 +28,7 @@ from sahara.plugins.general import utils
 from sahara.plugins.vanilla import abstractversionhandler as avm
 from sahara.plugins.vanilla import utils as vu
 from sahara.plugins.vanilla.v1_2_1 import config_helper as c_helper
+from sahara.plugins.vanilla.v1_2_1 import edp_engine
 from sahara.plugins.vanilla.v1_2_1 import run_scripts as run
 from sahara.plugins.vanilla.v1_2_1 import scaling as sc
 from sahara.topology import topology_helper as th
@@ -486,3 +487,8 @@ class VersionHandler(avm.AbstractVersionHandler):
                 cluster.name, _("Vanilla plugin cannot shrink cluster because "
                                 "it would be not enough nodes for replicas "
                                 "(replication factor is %s)") % rep_factor)
+
+    def get_edp_engine(self, cluster, job_type):
+        if job_type in edp_engine.EdpOozieEngine.get_supported_job_types():
+            return edp_engine.EdpOozieEngine(cluster)
+        return None

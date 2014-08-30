@@ -13,7 +13,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import os
 import uuid
 
 import six
@@ -48,27 +47,14 @@ def move_from_local(r, source, target, hdfs_user):
                       {"source": source, "target": target, "user": hdfs_user})
 
 
-def _dir_missing(path, hdfs_user, r):
-    ret_code, stdout = r.execute_command(
-        'sudo su - -c "hadoop dfs -test -e %s" %s' % (path, hdfs_user),
-        raise_when_error=False)
-
-    return ret_code == 1
+def create_dir_hadoop1(r, dir_name, hdfs_user):
+    r.execute_command(
+        'sudo su - -c "hadoop dfs -mkdir %s" %s' % (dir_name, hdfs_user))
 
 
-def create_dir(r, dir_name, hdfs_user):
-    # there were significant differences between the 'mkdir' and 'mkdir -p'
-    # behaviors in Hadoop 1.2.0 vs. 2.2.0 forcing the creation of a
-    # manual implementation of 'mkdir -p'
-    comp_paths = dir_name.split(os.sep)
-    path = os.sep
-    for comp in comp_paths:
-        if len(comp) > 0:
-            path += comp + os.sep
-        if _dir_missing(path, hdfs_user, r):
-            r.execute_command(
-                'sudo su - -c "hadoop dfs -mkdir %s" %s' %
-                (path, hdfs_user))
+def create_dir_hadoop2(r, dir_name, hdfs_user):
+    r.execute_command(
+        'sudo su - -c "hadoop dfs -mkdir -p %s" %s' % (dir_name, hdfs_user))
 
 
 def _get_cluster_hosts_information(host, cluster):

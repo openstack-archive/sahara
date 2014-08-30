@@ -60,3 +60,7 @@ class AbstractVersionHandler():
     @abc.abstractmethod
     def get_oozie_server(self, cluster):
         return
+
+    @abc.abstractmethod
+    def get_edp_engine(self, cluster, job_type):
+        return

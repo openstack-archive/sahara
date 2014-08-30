@@ -14,6 +14,7 @@
 # limitations under the License.
 
 import abc
+import uuid
 
 from oslo.config import cfg
 import six
@@ -21,6 +22,7 @@ import six
 from sahara import conductor as c
 from sahara import context
 from sahara.service.edp import base_engine
+from sahara.service.edp.binary_retrievers import dispatch
 from sahara.service.edp import hdfs_helper as h
 from sahara.service.edp import job_utils
 from sahara.service.edp.oozie import oozie as o
@@ -28,6 +30,7 @@ from sahara.service.edp.oozie.workflow_creator import workflow_factory
 from sahara.utils import edp
 from sahara.utils import remote
 from sahara.utils import xmlutils as x
+
 
 CONF = cfg.CONF
 
@@ -90,10 +93,8 @@ class OozieJobEngine(base_engine.JobEngine):
         # However, other engines may need it.
         oozie_server = self.plugin.get_oozie_server(self.cluster)
 
-        wf_dir = job_utils.create_hdfs_workflow_dir(oozie_server,
-                                                    job, hdfs_user)
-        job_utils.upload_job_files_to_hdfs(oozie_server, wf_dir,
-                                           job, hdfs_user)
+        wf_dir = self._create_hdfs_workflow_dir(oozie_server, job)
+        self._upload_job_files_to_hdfs(oozie_server, wf_dir, job)
 
         wf_xml = workflow_factory.get_workflow_xml(
             job, self.cluster, job_execution, input_source, output_source,
@@ -120,6 +121,10 @@ class OozieJobEngine(base_engine.JobEngine):
     def get_hdfs_user(self):
         pass
 
+    @abc.abstractmethod
+    def create_hdfs_dir(self, remote, dir_name):
+        pass
+
     @staticmethod
     def get_possible_job_config(job_type):
         return workflow_factory.get_possible_job_config(job_type)
@@ -131,3 +136,44 @@ class OozieJobEngine(base_engine.JobEngine):
                 edp.JOB_TYPE_MAPREDUCE,
                 edp.JOB_TYPE_MAPREDUCE_STREAMING,
                 edp.JOB_TYPE_PIG]
+
+    def _upload_job_files_to_hdfs(self, where, job_dir, job):
+        mains = job.mains or []
+        libs = job.libs or []
+        uploaded_paths = []
+        hdfs_user = self.get_hdfs_user()
+
+        with remote.get_remote(where) as r:
+            for main in mains:
+                raw_data = dispatch.get_raw_binary(main)
+                h.put_file_to_hdfs(r, raw_data, main.name, job_dir, hdfs_user)
+                uploaded_paths.append(job_dir + '/' + main.name)
+            for lib in libs:
+                raw_data = dispatch.get_raw_binary(lib)
+                # HDFS 2.2.0 fails to put file if the lib dir does not exist
+                self.create_hdfs_dir(r, job_dir + "/lib")
+                h.put_file_to_hdfs(r, raw_data, lib.name, job_dir + "/lib",
+                                   hdfs_user)
+                uploaded_paths.append(job_dir + '/lib/' + lib.name)
+        return uploaded_paths
+
+    def _create_hdfs_workflow_dir(self, where, job):
+        constructed_dir = '/user/%s/' % self.get_hdfs_user()
+        constructed_dir = self._add_postfix(constructed_dir)
+        constructed_dir += '%s/%s' % (job.name, six.text_type(uuid.uuid4()))
+        with remote.get_remote(where) as r:
+            self.create_hdfs_dir(r, constructed_dir)
+
+        return constructed_dir
+
+    def _add_postfix(self, constructed_dir):
+        def _append_slash_if_needed(path):
+            if path[-1] != '/':
+                path += '/'
+            return path
+
+        constructed_dir = _append_slash_if_needed(constructed_dir)
+        if CONF.job_workflow_postfix:
+            constructed_dir = ''.join([str(constructed_dir),
+                                       str(CONF.job_workflow_postfix)])
+        return _append_slash_if_needed(constructed_dir)
