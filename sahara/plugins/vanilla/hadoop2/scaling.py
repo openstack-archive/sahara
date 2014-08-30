@@ -48,11 +48,16 @@ def _get_instances_with_service(instances, service):
     return ret
 
 
-def _update_include_files(cluster):
+def _update_include_files(cluster, dec_instances=None):
+    dec_instances = dec_instances or []
+    dec_instances_ids = [instance.id for instance in dec_instances]
+
     instances = u.get_instances(cluster)
 
-    datanodes = vu.get_datanodes(cluster)
-    nodemanagers = vu.get_nodemanagers(cluster)
+    inst_filter = lambda inst: inst.id not in dec_instances_ids
+
+    datanodes = filter(inst_filter, vu.get_datanodes(cluster))
+    nodemanagers = filter(inst_filter, vu.get_nodemanagers(cluster))
     dn_hosts = u.generate_fqdn_host_names(datanodes)
     nm_hosts = u.generate_fqdn_host_names(nodemanagers)
     for instance in instances:
@@ -78,8 +83,9 @@ def decommission_nodes(pctx, cluster, instances):
     _check_nodemanagers_decommission(cluster, nodemanagers)
     _check_datanodes_decommission(cluster, datanodes)
 
-    _update_include_files(cluster)
+    _update_include_files(cluster, instances)
     _clear_exclude_files(cluster)
+    run.refresh_hadoop_nodes(cluster)
 
     config.configure_topology_data(pctx, cluster)
 
