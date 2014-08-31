@@ -35,7 +35,7 @@ edp_opts = [
     cfg.IntOpt('job_binary_max_KB',
                default=5120,
                help='Maximum length of job binary data in kilobytes that '
-                    'may be stored or retrieved in a single operation')
+                    'may be stored or retrieved in a single operation.')
 ]
 
 networking_opts = [

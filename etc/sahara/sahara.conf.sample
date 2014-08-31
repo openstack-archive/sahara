@@ -197,7 +197,7 @@
 #log_exchange=false
 
 # Maximum length of job binary data in kilobytes that may be
-# stored or retrieved in a single operation (integer value)
+# stored or retrieved in a single operation. (integer value)
 #job_binary_max_KB=5120
 
 # If set to True, Sahara will use floating IPs to communicate
@@ -390,11 +390,11 @@
 #periodic_fuzzy_delay=60
 
 # Max interval size between periodic tasks execution in
-# seconds (integer value)
+# seconds. (integer value)
 #periodic_interval_max=60
 
 # Minimal "lifetime" in seconds for a transient cluster.
-# Cluster is guarantied to be "alive" within this time period.
+# Cluster is guaranteed to be "alive" within this time period.
 # (integer value)
 #min_transient_cluster_active_time=30
 
