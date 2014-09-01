@@ -13,10 +13,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import ast
 import re
 
 import mock
 import novaclient.exceptions as nova_ex
+import six
 
 from sahara.conductor import resource as r
 from sahara.plugins.vanilla import plugin
@@ -253,18 +255,39 @@ class ValidationTestCase(base.SaharaTestCase):
 
     def _assert_calls(self, mock, call_info):
         if not call_info:
-            self.assertEqual(mock.call_count, 0)
+            self.assertEqual(0, mock.call_count)
         else:
-            self.assertEqual(mock.call_count, call_info[0])
-            self.assertEqual(mock.call_args[0][0].code, call_info[1])
+            self.assertEqual(call_info[0], mock.call_count)
+            self.assertEqual(call_info[1], mock.call_args[0][0].code)
+            possible_messages = ([call_info[2]] if isinstance(
+                call_info[2], six.string_types) else call_info[2])
+            match = False
+            for message in possible_messages:
+                if self._check_match(message, mock.call_args[0][0].message):
+                    match = True
+                    break
+            if not match:
+                self.assertIn(mock.call_args[0][0].message, possible_messages)
 
-            # Note(slukjanov): the call_info[2] is an expected validation
-            #                  message regex; regex needed because of different
-            #                  versions of jsonschema generates different
-            #                  messages.
-            if not re.match(call_info[2], mock.call_args[0][0].message):
-                self.assertEqual(call_info[2], mock.call_args[0][0].message,
-                                 "Validation message didn't match expected")
+    def _check_match(self, expected, actual):
+        d1, r1 = self._extract_printed_dict(expected)
+        d2, r2 = self._extract_printed_dict(actual)
+
+        # Note(slukjanov): regex needed because of different
+        #                  versions of jsonschema generate different
+        #                  messages.
+        return (r1 == r2 or re.match(r1, r2)) and (d1 == d2)
+
+    def _extract_printed_dict(self, s):
+        start = s.find('{')
+        if start == -1:
+            return None, s
+
+        end = s.rfind('}')
+        if end == -1:
+            return None, s
+
+        return ast.literal_eval(s[start:end+1]), s[0:start+1] + s[end]
 
     @mock.patch("sahara.utils.api.request_data")
     @mock.patch("sahara.utils.api.bad_request")
@@ -321,20 +344,15 @@ class ValidationTestCase(base.SaharaTestCase):
                     if isinstance(value, str):
                         value_str = "'%s'" % value_str
                     data.update({p_name: value})
+                    message = ("%s is not of type '%s'" %
+                               (value_str, prop["type"]))
                     if "enum" in prop:
-                        self._assert_create_object_validation(
-                            data=data,
-                            bad_req_i=(1, 'VALIDATION_ERROR',
-                                       u"%s is not one of %s"
-                                       % (value_str, prop["enum"]))
-                        )
-                    else:
-                        self._assert_create_object_validation(
-                            data=data,
-                            bad_req_i=(1, 'VALIDATION_ERROR',
-                                       u"%s is not of type '%s'"
-                                       % (value_str, prop["type"]))
-                        )
+                        message = [message, "%s is not one of %s" %
+                                            (value_str, prop["enum"])]
+                    self._assert_create_object_validation(
+                        data=data,
+                        bad_req_i=(1, 'VALIDATION_ERROR', message)
+                    )
 
     def _assert_cluster_configs_validation(self, require_image_id=False):
         data = {
