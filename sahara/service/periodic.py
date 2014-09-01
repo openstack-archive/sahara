@@ -44,11 +44,11 @@ periodic_opts = [
     cfg.IntOpt('periodic_interval_max',
                default=60,
                help='Max interval size between periodic tasks execution in '
-                    'seconds'),
+                    'seconds.'),
     cfg.IntOpt('min_transient_cluster_active_time',
                default=30,
                help='Minimal "lifetime" in seconds for a transient cluster. '
-                    'Cluster is guarantied to be "alive" within this time '
+                    'Cluster is guaranteed to be "alive" within this time '
                     'period.'),
 ]
 
