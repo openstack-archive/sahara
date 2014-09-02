@@ -69,10 +69,12 @@ def start_instances(cluster):
 
 def delete_instances(cluster, instances):
     api = get_api_client(cluster)
+    cm_cluster = get_cloudera_cluster(cluster)
     hosts = api.get_all_hosts(view='full')
     hostsnames_to_deleted = [i.fqdn() for i in instances]
     for host in hosts:
         if host.hostname in hostsnames_to_deleted:
+            cm_cluster.remove_host(host.hostId)
             api.delete_host(host.hostId)
 
 
