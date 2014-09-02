@@ -18,7 +18,6 @@ import logging
 
 from oslo.config import cfg
 import pkg_resources as pkg
-import requests
 
 from sahara import context
 from sahara import exceptions as exc
@@ -526,7 +525,7 @@ class AmbariClient():
                 for hosts in json_result['items']:
                     LOG.debug('Registered Host: {0}'.format(
                         hosts['Hosts']['host_name']))
-            except requests.ConnectionError:
+            except Exception:
                 # TODO(jspeidel): max wait time
                 LOG.info(_LI('Waiting to connect to ambari server ...'))
 
