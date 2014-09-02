@@ -159,6 +159,15 @@ def job_execution_requires_proxy_user(job_execution):
     return False
 
 
+def proxy_domain_users_list():
+    '''Return a list of all users in the proxy domain.'''
+    admin = k.client_for_admin()
+    domain = domain_for_proxy()
+    if domain:
+        return admin.users.list(domain=domain.id)
+    return []
+
+
 def proxy_user_create(username):
     '''Create a new user in the proxy domain
 
@@ -176,23 +185,27 @@ def proxy_user_create(username):
     return password
 
 
-def proxy_user_delete(username):
+def proxy_user_delete(username=None, user_id=None):
     '''Delete the user from the proxy domain.
 
     :param username: The name of the user to delete.
+    :param user_id: The id of the user to delete, if provided this overrides
+                    the username.
     :raises NotFoundException: If there is an error locating the user in the
                                proxy domain.
 
     '''
     admin = k.client_for_admin()
-    domain = domain_for_proxy()
-    user_list = admin.users.list(domain=domain.id, name=username)
-    if len(user_list) == 0:
-        raise ex.NotFoundException(value=username,
-                                   message=_('Failed to find user %s'))
-    if len(user_list) > 1:
-        raise ex.NotFoundException(value=username,
-                                   message=_('Unexpected results found when '
-                                             'searching for user %s'))
-    admin.users.delete(user_list[0].id)
-    LOG.debug('deleted proxy user {0}'.format(username))
+    if not user_id:
+        domain = domain_for_proxy()
+        user_list = admin.users.list(domain=domain.id, name=username)
+        if len(user_list) == 0:
+            raise ex.NotFoundException(value=username,
+                                       message=_('Failed to find user %s'))
+        if len(user_list) > 1:
+            raise ex.NotFoundException(value=username,
+                                       message=_('Unexpected results found '
+                                                 'when searching for user %s'))
+        user_id = user_list[0].id
+    admin.users.delete(user_id)
+    LOG.debug('deleted proxy user id {0}'.format(user_id))
