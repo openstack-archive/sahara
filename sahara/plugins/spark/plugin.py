@@ -114,8 +114,8 @@ class SparkProvider(p.ProvisioningPluginBase):
 
         with remote.get_remote(nn_instance) as r:
             r.execute_command("sudo -u hdfs hdfs dfs -mkdir -p /user/$USER/")
-            r.execute_command(("sudo -u hdfs hdfs dfs -chown $USER "
-                               "/user/$USER/"))
+            r.execute_command("sudo -u hdfs hdfs dfs -chown $USER "
+                              "/user/$USER/")
 
         # start spark nodes
         if sm_instance:
