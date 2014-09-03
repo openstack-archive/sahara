@@ -211,9 +211,7 @@ VANILLA_CONFIG_OPTS = [
     cfg.BoolOpt('SKIP_EDP_TEST', default=False),
     cfg.BoolOpt('SKIP_MAP_REDUCE_TEST', default=False),
     cfg.BoolOpt('SKIP_SWIFT_TEST', default=False),
-    cfg.BoolOpt('SKIP_SCALING_TEST', default=False),
-    cfg.BoolOpt('SKIP_TRANSIENT_CLUSTER_TEST', default=False),
-    cfg.BoolOpt('ONLY_TRANSIENT_CLUSTER_TEST', default=False)
+    cfg.BoolOpt('SKIP_SCALING_TEST', default=False)
 ]
 
 
