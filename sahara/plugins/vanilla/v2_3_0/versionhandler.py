@@ -149,4 +149,4 @@ class VersionHandler(avm.AbstractVersionHandler):
         return None
 
     def get_open_ports(self, node_group):
-        return []
+        return c.get_open_ports(node_group)
