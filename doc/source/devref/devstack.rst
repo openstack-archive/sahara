@@ -101,15 +101,24 @@ Ubuntu 12.04 system.
     # Enable Sahara
     ENABLED_SERVICES+=,sahara
 
-4. Start DevStack:
+4. Also Sahara can send notifications to Ceilometer by default at DevStack, if Ceilometer is enabled.
+   As example, if you want to enable Ceilometer you can add following lines to file ``localrc``:
+
+.. sourcecode:: bash
+
+    enable_service ceilometer-acompute ceilometer-acentral ceilometer-anotification ceilometer-collector
+    enable_service ceilometer-alarm-evaluator,ceilometer-alarm-notifier
+    enable_service ceilometer-api
+
+5. Start DevStack:
 
 .. sourcecode:: console
 
     $ ./stack.sh
 
-5. Once previous step is finished Devstack will print Horizon URL. Navigate to this URL and login with login "admin" and password from localrc.
+6. Once previous step is finished Devstack will print Horizon URL. Navigate to this URL and login with login "admin" and password from localrc.
 
-6. Now we need to modify security rules. It will allow to connect to VMs directly from your host. Navigate to Project -> Compute ->  Access & Security tab and edit default Security Group rules by clicking on Manage Rules button. Here add following four rules by cliking the Add Rules button on the right hand side top corner:
+7. Now we need to modify security rules. It will allow to connect to VMs directly from your host. Navigate to Project -> Compute ->  Access & Security tab and edit default Security Group rules by clicking on Manage Rules button. Here add following four rules by cliking the Add Rules button on the right hand side top corner:
 
    +-----------+------------+-------------+------------+------------------+
    | Direction | Ether Type | IP Protocol | Port Range | Remote           |
@@ -124,7 +133,7 @@ Ubuntu 12.04 system.
    +-----------+------------+-------------+------------+------------------+
 
 
-7. Congratulations! You have OpenStack running in your VM and ready to launch VMs inside that VM :)
+8. Congratulations! You have OpenStack running in your VM and ready to launch VMs inside that VM :)
 
 
 Managing Sahara in DevStack
