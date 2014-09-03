@@ -92,7 +92,8 @@ class FakeFlavor(object):
 
 
 class FakeSecurityGroup(object):
-    def __init__(self, name):
+    def __init__(self, id, name):
+        self.id = id
         self.name = name
 
 
@@ -101,8 +102,9 @@ def _get_flavors_list():
 
 
 def _get_security_groups_list():
-    return [FakeSecurityGroup("default"),
-            FakeSecurityGroup("group1"), FakeSecurityGroup("group2")]
+    return [FakeSecurityGroup("1", "default"),
+            FakeSecurityGroup("2", "group1"),
+            FakeSecurityGroup("3", "group2")]
 
 
 def start_patch(patch_templates=True):

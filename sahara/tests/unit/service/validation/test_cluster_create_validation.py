@@ -285,6 +285,31 @@ class TestClusterCreateValidation(u.ValidationTestCase):
             }
         )
 
+    def test_cluster_create_security_groups_by_ids(self):
+        self.override_config("use_neutron", True)
+        self._assert_create_object_validation(
+            data={
+                'name': "testname",
+                'plugin_name': "vanilla",
+                'hadoop_version': "1.2.1",
+                'user_keypair_id': 'test_keypair',
+                'default_image_id': '550e8400-e29b-41d4-a716-446655440000',
+                'neutron_management_network': 'd9a3bebc-f788-4b81-'
+                                              '9a93-aa048022c1ca',
+                'node_groups': [
+                    {
+                        "name": "nodegroup",
+                        "node_processes": ["namenode"],
+                        "flavor_id": "42",
+                        "count": 100,
+                        'security_groups': ['2', '3'],
+                        'floating_ip_pool':
+                            'd9a3bebc-f788-4b81-9a93-aa048022c1ca'
+                    }
+                ]
+            }
+        )
+
     def test_cluster_missing_security_groups(self):
         self.override_config("use_neutron", True)
         self._assert_create_object_validation(
