@@ -29,7 +29,8 @@ def make_ng_dict(name, flavor, processes, count, instances=None, **kwargs):
     instances = instances or []
     dct = {'name': name, 'flavor_id': flavor, 'node_processes': processes,
            'count': count, 'instances': instances, 'node_configs': {},
-           'security_groups': None}
+           'security_groups': None, 'auto_security_group': False,
+           'open_ports': []}
     dct.update(kwargs)
     return dct
 

@@ -39,6 +39,7 @@ NODE_GROUP_DEFAULTS = {
     "volume_mount_prefix": "/volumes/disk",
     "floating_ip_pool": None,
     "security_groups": None,
+    "auto_security_group": False,
 }
 
 INSTANCE_DEFAULTS = {
