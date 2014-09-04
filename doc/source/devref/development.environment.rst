@@ -3,7 +3,7 @@ Setting Up a Development Environment
 
 This page describes how to setup a Sahara development environment by either
 installing it as a part of DevStack or pointing a local running instance at an
-external OpenStack. You should be able to debug and test your changes without 
+external OpenStack. You should be able to debug and test your changes without
 having to deploy Sahara.
 
 Setup a Local Environment with Sahara inside DevStack

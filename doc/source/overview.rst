@@ -85,7 +85,7 @@ For analytic as a service generic workflow will be as following:
 
 * get the results of computations (for example, from Swift).
 
-User’s Perspective
+User's Perspective
 ------------------
 
 While provisioning cluster through Sahara, user operates on three types of entities: Node Group Templates, Cluster Templates and Clusters.
