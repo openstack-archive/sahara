@@ -45,23 +45,6 @@ class TestHeat(testtools.TestCase):
         userdata = "line1\nline2"
         self.assertEqual(h._prepare_userdata(userdata), '"line1",\n"line2"')
 
-    def test_get_anti_affinity_scheduler_hints(self):
-        inst_names = ['i1', 'i2']
-        expected = ('"scheduler_hints" : {"different_host": '
-                    '[{"Ref": "i1"}, {"Ref": "i2"}]},')
-        actual = h._get_anti_affinity_scheduler_hints(inst_names)
-        self.assertEqual(expected, actual)
-
-        inst_names = ['i1', 'i1']
-        expected = '"scheduler_hints" : {"different_host": [{"Ref": "i1"}]},'
-        actual = h._get_anti_affinity_scheduler_hints(inst_names)
-        self.assertEqual(expected, actual)
-
-        inst_names = []
-        expected = ''
-        actual = h._get_anti_affinity_scheduler_hints(inst_names)
-        self.assertEqual(expected, actual)
-
 
 class TestClusterTemplate(base.SaharaWithDbTestCase):
     """Checks valid structure of Resources section in generated Heat templates.
@@ -86,13 +69,13 @@ class TestClusterTemplate(base.SaharaWithDbTestCase):
                               image_username='root')
         return ng1, ng2
 
-    def _make_cluster(self, mng_network, ng1, ng2):
+    def _make_cluster(self, mng_network, ng1, ng2, anti_affinity=[]):
         return tu.create_cluster("cluster", "tenant1", "general",
                                  "1.2.1", [ng1, ng2],
                                  user_keypair_id='user_key',
                                  neutron_management_network=mng_network,
-                                 default_image_id='1', anti_affinity=[],
-                                 image_id=None)
+                                 default_image_id='1', image_id=None,
+                                 anti_affinity=anti_affinity)
 
     def _make_heat_template(self, cluster, ng1, ng2):
         heat_template = h.ClusterTemplate(cluster)
@@ -101,6 +84,24 @@ class TestClusterTemplate(base.SaharaWithDbTestCase):
         heat_template.add_node_group_extra(ng2['id'], 1,
                                            get_ud_generator('line2\nline3'))
         return heat_template
+
+    def test_get_anti_affinity_scheduler_hints(self):
+        ng1, ng2 = self._make_node_groups('floating')
+        cluster = self._make_cluster('private_net', ng1, ng2,
+                                     anti_affinity=["datanode"])
+        heat_template = self._make_heat_template(cluster, ng1, ng2)
+
+        ng1 = [ng for ng in cluster.node_groups if ng.name == "master"][0]
+        ng2 = [ng for ng in cluster.node_groups if ng.name == "worker"][0]
+
+        expected = ('"scheduler_hints" : '
+                    '{"group": {"Ref": "cluster-aa-group"}},')
+        actual = heat_template._get_anti_affinity_scheduler_hints(ng2)
+        self.assertEqual(expected, actual)
+
+        expected = ''
+        actual = heat_template._get_anti_affinity_scheduler_hints(ng1)
+        self.assertEqual(expected, actual)
 
     def test_load_template_use_neutron(self):
         """Test for Heat cluster template with Neutron enabled.

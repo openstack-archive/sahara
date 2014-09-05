@@ -123,3 +123,7 @@ def generate_instance_name(cluster_name, node_group_name, index):
 
 def generate_auto_security_group_name(cluster_name, node_group_name):
     return ("%s-%s" % (cluster_name, node_group_name)).lower()
+
+
+def generate_aa_group_name(cluster_name):
+    return ("%s-aa-group" % cluster_name).lower()
