@@ -1,3 +1,5 @@
+.. _swift-integration-label:
+
 Swift Integration
 =================
 Hadoop and Swift integration is the essential continuation of Hadoop&OpenStack
