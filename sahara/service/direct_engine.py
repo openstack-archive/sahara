@@ -289,22 +289,17 @@ class DirectEngine(e.Engine):
             hints = {'group': aa_group} if (
                 aa_group and self._need_aa_server_group(node_group)) else None
 
+        nova_kwargs = {'scheduler_hints': hints, 'userdata': userdata,
+                       'key_name': cluster.user_keypair_id,
+                       'security_groups': node_group.security_groups}
         if CONF.use_neutron:
             net_id = cluster.neutron_management_network
-            nics = [{"net-id": net_id, "v4-fixed-ip": ""}]
+            nova_kwargs['nics'] = [{"net-id": net_id, "v4-fixed-ip": ""}]
 
-            nova_instance = nova.client().servers.create(
-                name, node_group.get_image_id(), node_group.flavor_id,
-                scheduler_hints=hints, userdata=userdata,
-                key_name=cluster.user_keypair_id,
-                nics=nics, security_groups=node_group.security_groups)
-        else:
-            nova_instance = nova.client().servers.create(
-                name, node_group.get_image_id(), node_group.flavor_id,
-                scheduler_hints=hints, userdata=userdata,
-                key_name=cluster.user_keypair_id,
-                security_groups=node_group.security_groups)
-
+        nova_instance = nova.client().servers.create(name,
+                                                     node_group.get_image_id(),
+                                                     node_group.flavor_id,
+                                                     **nova_kwargs)
         instance_id = conductor.instance_add(ctx, node_group,
                                              {"instance_id": nova_instance.id,
                                               "instance_name": name})
