@@ -46,11 +46,11 @@ class ContextTest(testtools.TestCase):
         # That can fail with some probability, so making 5 attempts
         # Actually it takes around 1 second, so maybe we should
         # just remove it
-        for _ in range(5):
+        for _ in six.moves.range(5):
             lst = []
 
             with context.ThreadGroup() as tg:
-                for i in range(400):
+                for i in six.moves.range(400):
                     tg.spawn('add %i' % i, self._add_element, lst, i)
 
             self.assertEqual(len(lst), 400)
@@ -60,7 +60,7 @@ class ContextTest(testtools.TestCase):
 
         with testtools.ExpectedException(RuntimeError):
             with context.ThreadGroup() as tg:
-                for i in range(400):
+                for i in six.moves.range(400):
                     tg.spawn('add %i' % i, self._add_element, lst, i)
 
                 raise RuntimeError()
@@ -74,7 +74,7 @@ class ContextTest(testtools.TestCase):
             with context.ThreadGroup() as tg:
                 tg.spawn('raiser', self._raise_test_exc, 'exc')
 
-                for i in range(400):
+                for i in six.moves.range(400):
                     tg.spawn('add %i' % i, self._add_element, lst, i)
 
         self.assertEqual(len(lst), 400)

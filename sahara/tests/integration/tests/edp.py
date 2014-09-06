@@ -20,6 +20,7 @@ import uuid
 
 import fixtures
 from oslo.utils import excutils
+import six
 
 from sahara.swift import swift_helper as sw
 from sahara.tests.integration.tests import base
@@ -216,7 +217,7 @@ class EDPTest(base.ITestCase):
             swift.put_object(
                 container_name, 'input', ''.join(
                     random.choice(':' + ' ' + '\n' + string.ascii_lowercase)
-                    for x in range(10000)
+                    for x in six.moves.range(10000)
                 )
             )
 
