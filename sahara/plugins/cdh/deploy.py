@@ -128,6 +128,7 @@ def configure_cluster(cluster):
 
     _start_cloudera_agents(instances)
     _start_cloudera_manager(cluster)
+    _await_agents(instances)
     _configure_manager(cluster)
     _create_services(cluster)
     _configure_services(cluster)
@@ -147,6 +148,7 @@ def scale_cluster(cluster, instances):
         _post_install(instances)
 
     _start_cloudera_agents(instances)
+    _await_agents(instances)
     for instance in instances:
         _configure_instance(instance)
         cu.update_configs(instance)
@@ -255,6 +257,30 @@ def _start_cloudera_agents(instances):
         for i in instances:
             tg.spawn('cdh-agent-start-%s' % i.instance_name,
                      _start_cloudera_agent, i)
+
+
+def _await_agents(instances):
+    api = cu.get_api_client(instances[0].node_group.cluster)
+    timeout = 300
+    LOG.debug("Waiting %(timeout)s seconds for agent connected to manager" % {
+        'timeout': timeout})
+    s_time = timeutils.utcnow()
+    while timeutils.delta_seconds(s_time, timeutils.utcnow()) < timeout:
+        hostnames = [i.fqdn() for i in instances]
+        hostnames_to_manager = [h.hostname for h in api.get_all_hosts('full')]
+        is_ok = True
+        for hostname in hostnames:
+            if hostname not in hostnames_to_manager:
+                is_ok = False
+                break
+
+        if not is_ok:
+            context.sleep(5)
+        else:
+            break
+    else:
+        raise ex.HadoopProvisionError(_("Cloudera agents failed to connect to"
+                                        " Cloudera Manager"))
 
 
 def _start_cloudera_agent(instance):
