@@ -15,7 +15,7 @@ consistent state. We suggest the following options:
 To install with Fuel
 --------------------
 
-1. Start by following the `Quickstart
+1. Start by following the `MOS Quickstart
    <http://software.mirantis.com/quick-start/>`_ to install and setup
    OpenStack.
 
@@ -26,7 +26,7 @@ To install with Fuel
 To install with RDO
 -------------------
 
-1. Start by following the `Quickstart
+1. Start by following the `RDO Quickstart
    <http://openstack.redhat.com/Quickstart>`_ to install and setup
    OpenStack.
 
