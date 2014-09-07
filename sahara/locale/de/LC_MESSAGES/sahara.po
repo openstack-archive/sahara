@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version:  Sahara\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2014-09-05 06:08+0000\n"
+"POT-Creation-Date: 2014-09-06 06:10+0000\n"
 "PO-Revision-Date: 2014-07-17 06:41+0000\n"
 "Last-Translator: openstackjenkins <jenkins@openstack.org>\n"
 "Language-Team: German "
@@ -413,7 +413,11 @@ msgstr ""
 msgid "OS on image is not supported by CDH plugin"
 msgstr ""
 
-#: sahara/plugins/cdh/deploy.py:285
+#: sahara/plugins/cdh/deploy.py:282
+msgid "Cloudera agents failed to connect to Cloudera Manager"
+msgstr ""
+
+#: sahara/plugins/cdh/deploy.py:311
 #, python-format
 msgid ""
 "Cloudera Manager failed to start in %(timeout)s minutes on node "
@@ -713,7 +717,17 @@ msgid ""
 "supported."
 msgstr ""
 
-#: sahara/service/direct_engine.py:337
+#: sahara/service/direct_engine.py:173
+#, python-format
+msgid "Server group with name %s is already exists"
+msgstr ""
+
+#: sahara/service/direct_engine.py:196
+#, python-format
+msgid "Several server groups with name %s found"
+msgstr ""
+
+#: sahara/service/direct_engine.py:398
 #, python-format
 msgid "Node %s has error status"
 msgstr ""
