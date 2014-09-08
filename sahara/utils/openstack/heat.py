@@ -49,7 +49,9 @@ def get_stack(stack_name):
 
 
 def wait_stack_completion(stack):
-    while stack.status == 'IN_PROGRESS':
+    # NOTE: expected empty status because status of stack
+    # maybe is not set in heat database
+    while stack.status in ['IN_PROGRESS', '']:
         context.sleep(1)
         stack.get()
 
@@ -168,8 +170,8 @@ class ClusterTemplate(object):
             'security_group_name': g.generate_auto_security_group_name(
                 ng.cluster.name, ng.name),
             'security_group_description':
-                "Auto security group created by Sahara for Node Group "
-                "'%s' of cluster '%s'." % (ng.name, ng.cluster.name),
+            "Auto security group created by Sahara for Node Group "
+            "'%s' of cluster '%s'." % (ng.name, ng.cluster.name),
             'rules': self._serialize_auto_security_group_rules(ng)}
 
         yield _load_template('security_group.heat', fields)
@@ -227,7 +229,7 @@ class ClusterTemplate(object):
                   'key_name': key_name,
                   'userdata': _prepare_userdata(userdata),
                   'scheduler_hints':
-                      self._get_anti_affinity_scheduler_hints(ng),
+                  self._get_anti_affinity_scheduler_hints(ng),
                   'security_groups': security_groups}
 
         yield _load_template('instance.heat', fields)
