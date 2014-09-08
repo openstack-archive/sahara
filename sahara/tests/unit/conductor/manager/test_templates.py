@@ -29,6 +29,7 @@ SAMPLE_NGT = {
     "name": "ngt_test",
     "node_processes": ["p1", "p2"],
     "floating_ip_pool": None,
+    "availability_zone": None,
     "node_configs": {
         "service_1": {
             "config_1": "value_1"
@@ -60,6 +61,7 @@ SAMPLE_CLT = {
             "count": 1,
             "floating_ip_pool": None,
             "security_groups": None,
+            "availability_zone": None,
         },
         {
             "name": "ng_2",
@@ -68,6 +70,7 @@ SAMPLE_CLT = {
             "count": 3,
             "floating_ip_pool": None,
             "security_groups": ["group1", "group2"],
+            "availability_zone": None,
         }
 
     ]

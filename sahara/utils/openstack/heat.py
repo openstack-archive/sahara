@@ -221,6 +221,13 @@ class ClusterTemplate(object):
         gen_userdata_func = self.node_groups_extra[ng.id]['gen_userdata_func']
         userdata = gen_userdata_func(ng, inst_name)
 
+        availability_zone = ''
+        if ng.availability_zone:
+            # Use json.dumps to escape ng.availability_zone
+            # (in case it contains quotes)
+            availability_zone = ('"availability_zone" : %s,' %
+                                 json.dumps(ng.availability_zone))
+
         fields = {'instance_name': inst_name,
                   'flavor_id': ng.flavor_id,
                   'image_id': ng.get_image_id(),
@@ -230,7 +237,8 @@ class ClusterTemplate(object):
                   'userdata': _prepare_userdata(userdata),
                   'scheduler_hints':
                   self._get_anti_affinity_scheduler_hints(ng),
-                  'security_groups': security_groups}
+                  'security_groups': security_groups,
+                  'availability_zone': availability_zone}
 
         yield _load_template('instance.heat', fields)
 

@@ -119,6 +119,7 @@ class ClusterTest(test_base.ConductorManagerTestCase):
             ng.pop("open_ports")
             ng.pop("auto_security_group")
             ng.pop("tenant_id")
+            ng.pop("availability_zone")
 
         self.assertEqual(SAMPLE_CLUSTER["node_groups"],
                          cl_db_obj["node_groups"])

@@ -113,6 +113,7 @@ class NodeGroup(mb.SaharaBase):
     floating_ip_pool = sa.Column(sa.String(36))
     security_groups = sa.Column(st.JsonListType())
     auto_security_group = sa.Column(sa.Boolean())
+    availability_zone = sa.Column(sa.String(255))
     open_ports = sa.Column(st.JsonListType())
 
     def to_dict(self):
@@ -197,6 +198,7 @@ class NodeGroupTemplate(mb.SaharaBase):
     floating_ip_pool = sa.Column(sa.String(36))
     security_groups = sa.Column(st.JsonListType())
     auto_security_group = sa.Column(sa.Boolean())
+    availability_zone = sa.Column(sa.String(255))
 
 
 class TemplatesRelation(mb.SaharaBase):
@@ -229,6 +231,7 @@ class TemplatesRelation(mb.SaharaBase):
     floating_ip_pool = sa.Column(sa.String(36))
     security_groups = sa.Column(st.JsonListType())
     auto_security_group = sa.Column(sa.Boolean())
+    availability_zone = sa.Column(sa.String(255))
 
 
 # EDP objects: DataSource, Job, Job Execution, JobBinary
