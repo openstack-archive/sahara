@@ -305,15 +305,19 @@ class AmbariPluginTest(sahara_base.SaharaTestCase):
             'ng1', [test_host], ["AMBARI_SERVER", "NAMENODE", "DATANODE",
                                  "JOBTRACKER", "TASKTRACKER", "OOZIE_SERVER"])
         cluster = base.TestCluster([node_group])
+        cluster.hadoop_version = '2.0.6'
         plugin = ap.AmbariPlugin()
 
-        self.assertIsNotNone(plugin.get_oozie_server(cluster))
+        self.assertIsNotNone(plugin.get_edp_engine(
+            cluster, edp.JOB_TYPE_PIG).get_oozie_server(cluster))
 
         node_group = base.TestNodeGroup(
             'ng1', [test_host], ["AMBARI_SERVER", "NAMENODE", "DATANODE",
                                  "JOBTRACKER", "TASKTRACKER", "NOT_OOZIE"])
         cluster = base.TestCluster([node_group])
-        self.assertIsNone(plugin.get_oozie_server(cluster))
+        cluster.hadoop_version = '2.0.6'
+        self.assertIsNone(plugin.get_edp_engine(
+            cluster, edp.JOB_TYPE_PIG).get_oozie_server(cluster))
 
     @mock.patch('sahara.service.edp.hdfs_helper.create_dir_hadoop1')
     def test_edp132_calls_hadoop1_create_dir(self, create_dir):

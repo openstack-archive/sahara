@@ -85,6 +85,9 @@ class FakeOozieJobEngine(oe.OozieJobEngine):
     def get_oozie_server_uri(self, cluster):
         return 'http://localhost:11000/oozie'
 
+    def get_oozie_server(self, cluster):
+        return None
+
     def get_name_node_uri(self, cluster):
         return 'hdfs://localhost:8020'
 

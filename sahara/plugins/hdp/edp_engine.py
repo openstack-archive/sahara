@@ -13,6 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from sahara.plugins.general import utils as u
 from sahara.service.edp.oozie import engine as edp_engine
 
 
@@ -26,3 +27,6 @@ class EdpOozieEngine(edp_engine.OozieJobEngine):
 
     def get_oozie_server_uri(self, cluster):
         return cluster['info']['JobFlow']['Oozie'] + "/oozie/"
+
+    def get_oozie_server(self, cluster):
+        return u.get_instance(cluster, "OOZIE_SERVER")

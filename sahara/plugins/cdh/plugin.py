@@ -75,9 +75,6 @@ class CDHPluginProvider(p.ProvisioningPluginBase):
         vl.validate_existing_ng_scaling(cluster, existing)
         vl.validate_additional_ng_scaling(cluster, additional)
 
-    def get_oozie_server(self, cluster):
-        return cu.get_oozie(cluster)
-
     def _set_cluster_info(self, cluster):
         mng = cu.get_manager(cluster)
         info = {

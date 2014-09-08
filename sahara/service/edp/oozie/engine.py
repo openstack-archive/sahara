@@ -46,7 +46,7 @@ class OozieJobEngine(base_engine.JobEngine):
 
     def _get_client(self):
         return o.OozieClient(self.get_oozie_server_uri(self.cluster),
-                             self.plugin.get_oozie_server(self.cluster))
+                             self.get_oozie_server(self.cluster))
 
     def _get_oozie_job_params(self, hdfs_user, path_to_workflow):
         rm_path = self.get_resource_manager_uri(self.cluster)
@@ -89,9 +89,8 @@ class OozieJobEngine(base_engine.JobEngine):
         hdfs_user = self.get_hdfs_user()
 
         # TODO(tmckay): this should probably be "get_namenode"
-        # but that call does not exist in the plugin api now.
-        # However, other engines may need it.
-        oozie_server = self.plugin.get_oozie_server(self.cluster)
+        # but that call does not exist in the oozie engine api now.
+        oozie_server = self.get_oozie_server(self.cluster)
 
         wf_dir = self._create_hdfs_workflow_dir(oozie_server, job)
         self._upload_job_files_to_hdfs(oozie_server, wf_dir, job)
@@ -127,6 +126,10 @@ class OozieJobEngine(base_engine.JobEngine):
 
     @abc.abstractmethod
     def get_oozie_server_uri(self, cluster):
+        pass
+
+    @abc.abstractmethod
+    def get_oozie_server(self, cluster):
         pass
 
     @abc.abstractmethod

@@ -55,9 +55,6 @@ class VersionHandler(avm.AbstractVersionHandler):
             "Hive": ["hiveserver"]
         }
 
-    def get_oozie_server(self, cluster):
-        return vu.get_oozie(cluster)
-
     def validate(self, cluster):
         nn_count = sum([ng.count for ng
                         in utils.get_node_groups(cluster, "namenode")])

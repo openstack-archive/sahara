@@ -61,6 +61,7 @@ class InstanceInfo:
 
 class TestCluster():
     def __init__(self, node_groups):
+        self.plugin_name = 'hdp'
         self.hadoop_version = None
         self.cluster_configs = {}
         self.node_groups = node_groups
