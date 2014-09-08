@@ -55,9 +55,6 @@ class VersionHandler(avm.AbstractVersionHandler):
             "Hive": ["hiveserver"]
         }
 
-    def get_resource_manager_uri(self, cluster):
-        return cluster['info']['MapReduce']['JobTracker']
-
     def get_oozie_server(self, cluster):
         return vu.get_oozie(cluster)
 

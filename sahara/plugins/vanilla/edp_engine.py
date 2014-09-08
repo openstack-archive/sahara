@@ -19,3 +19,9 @@ from sahara.service.edp.oozie import engine as edp_engine
 class EdpOozieEngine(edp_engine.OozieJobEngine):
     def get_hdfs_user(self):
         return 'hadoop'
+
+    def get_name_node_uri(self, cluster):
+        return cluster['info']['HDFS']['NameNode']
+
+    def get_oozie_server_uri(self, cluster):
+        return cluster['info']['JobFlow']['Oozie'] + "/oozie/"

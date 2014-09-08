@@ -54,10 +54,6 @@ class AbstractVersionHandler():
         return
 
     @abc.abstractmethod
-    def get_resource_manager_uri(self, cluster):
-        return
-
-    @abc.abstractmethod
     def get_oozie_server(self, cluster):
         return
 

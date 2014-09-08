@@ -45,12 +45,12 @@ class OozieJobEngine(base_engine.JobEngine):
         self.plugin = job_utils.get_plugin(self.cluster)
 
     def _get_client(self):
-        return o.OozieClient(self.plugin.get_oozie_server_uri(self.cluster),
+        return o.OozieClient(self.get_oozie_server_uri(self.cluster),
                              self.plugin.get_oozie_server(self.cluster))
 
     def _get_oozie_job_params(self, hdfs_user, path_to_workflow):
-        rm_path = self.plugin.get_resource_manager_uri(self.cluster)
-        nn_path = self.plugin.get_name_node_uri(self.cluster)
+        rm_path = self.get_resource_manager_uri(self.cluster)
+        nn_path = self.get_name_node_uri(self.cluster)
         job_parameters = {
             "jobTracker": rm_path,
             "nameNode": nn_path,
@@ -123,6 +123,18 @@ class OozieJobEngine(base_engine.JobEngine):
 
     @abc.abstractmethod
     def create_hdfs_dir(self, remote, dir_name):
+        pass
+
+    @abc.abstractmethod
+    def get_oozie_server_uri(self, cluster):
+        pass
+
+    @abc.abstractmethod
+    def get_name_node_uri(self, cluster):
+        pass
+
+    @abc.abstractmethod
+    def get_resource_manager_uri(self, cluster):
         pass
 
     @staticmethod

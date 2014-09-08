@@ -38,14 +38,7 @@ class TestOozieEngine(base.SaharaTestCase):
         res = oje._add_postfix('aba')
         self.assertEqual("aba/", res)
 
-    @mock.patch('sahara.service.edp.job_utils.get_plugin')
-    def test_get_oozie_job_params(self, getplugin):
-        plugin = mock.Mock()
-        getplugin.return_value = plugin
-
-        plugin.get_resource_manager_uri.return_value = 'http://localhost:50030'
-        plugin.get_name_node_uri.return_value = 'hdfs://localhost:8020'
-
+    def test_get_oozie_job_params(self):
         oje = FakeOozieJobEngine(u.create_cluster())
         job_params = oje._get_oozie_job_params('hadoop', '/tmp')
         self.assertEqual('http://localhost:50030', job_params["jobTracker"])
@@ -88,3 +81,12 @@ class FakeOozieJobEngine(oe.OozieJobEngine):
 
     def create_hdfs_dir(self, remote, dir_name):
         return
+
+    def get_oozie_server_uri(self, cluster):
+        return 'http://localhost:11000/oozie'
+
+    def get_name_node_uri(self, cluster):
+        return 'hdfs://localhost:8020'
+
+    def get_resource_manager_uri(self, cluster):
+        return 'http://localhost:50030'
