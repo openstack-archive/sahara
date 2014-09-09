@@ -18,6 +18,7 @@ import os
 from sahara import conductor as c
 from sahara import context
 from sahara import exceptions as e
+from sahara.i18n import _
 from sahara.plugins.general import utils as plugin_utils
 from sahara.plugins.spark import config_helper as c_helper
 from sahara.service.edp import base_engine
@@ -182,8 +183,9 @@ class SparkJobEngine(base_engine.JobEngine):
 
         # Hmm, no execption but something failed.
         # Since we're using backgrounding with redirect, this is unlikely.
-        raise e.EDPError("Spark job execution failed. Exit status = %s, "
-                         "stdout = %s" % (ret, stdout))
+        raise e.EDPError(_("Spark job execution failed. Exit status = "
+                           "%(status)s, stdout = %(stdout)s") %
+                         {'status': ret, 'stdout': stdout})
 
     @staticmethod
     def get_possible_job_config(job_type):
