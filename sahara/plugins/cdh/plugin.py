@@ -15,6 +15,7 @@
 
 from sahara import conductor
 from sahara import context
+from sahara.i18n import _
 from sahara.plugins.cdh import config_helper as c_helper
 from sahara.plugins.cdh import deploy as dp
 from sahara.plugins.cdh import edp_engine
@@ -31,8 +32,8 @@ class CDHPluginProvider(p.ProvisioningPluginBase):
         return "Cloudera Plugin"
 
     def get_description(self):
-        return ("This plugin provides an ability to launch CDH clusters with"
-                "Cloudera Manager management console.")
+        return _("This plugin provides an ability to launch CDH clusters with"
+                 "Cloudera Manager management console.")
 
     def get_versions(self):
         return ['5']
