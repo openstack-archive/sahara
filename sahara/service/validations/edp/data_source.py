@@ -17,6 +17,7 @@ from oslo.config import cfg
 import six.moves.urllib.parse as urlparse
 
 import sahara.exceptions as ex
+from sahara.i18n import _
 import sahara.service.validations.edp.base as b
 from sahara.swift import utils as su
 
@@ -63,10 +64,10 @@ def check_data_source_create(data, **kwargs):
 
 def _check_swift_data_source_create(data):
     if len(data['url']) == 0:
-        raise ex.InvalidException("Swift url must not be empty")
+        raise ex.InvalidException(_("Swift url must not be empty"))
     url = urlparse.urlparse(data['url'])
     if url.scheme != "swift":
-        raise ex.InvalidException("URL scheme must be 'swift'")
+        raise ex.InvalidException(_("URL scheme must be 'swift'"))
 
     # The swift url suffix does not have to be included in the netloc.
     # However, if the swift suffix indicator is part of the netloc then
@@ -75,28 +76,28 @@ def _check_swift_data_source_create(data):
     if (su.SWIFT_URL_SUFFIX_START in url.netloc and not url.netloc.endswith(
             su.SWIFT_URL_SUFFIX)) or len(url.path) <= 1:
         raise ex.InvalidException(
-            "URL must be of the form swift://container%s/object"
+            _("URL must be of the form swift://container%s/object")
             % su.SWIFT_URL_SUFFIX)
 
     if not CONF.use_domain_for_proxy_users and "credentials" not in data:
-        raise ex.InvalidCredentials("No credentials provided for Swift")
+        raise ex.InvalidCredentials(_("No credentials provided for Swift"))
     if not CONF.use_domain_for_proxy_users and (
             "user" not in data["credentials"]):
         raise ex.InvalidCredentials(
-            "User is not provided in credentials for Swift")
+            _("User is not provided in credentials for Swift"))
     if not CONF.use_domain_for_proxy_users and (
             "password" not in data["credentials"]):
         raise ex.InvalidCredentials(
-            "Password is not provided in credentials for Swift")
+            _("Password is not provided in credentials for Swift"))
 
 
 def _check_hdfs_data_source_create(data):
     if len(data['url']) == 0:
-        raise ex.InvalidException("HDFS url must not be empty")
+        raise ex.InvalidException(_("HDFS url must not be empty"))
     url = urlparse.urlparse(data['url'])
     if url.scheme:
         if url.scheme != "hdfs":
-            raise ex.InvalidException("URL scheme must be 'hdfs'")
+            raise ex.InvalidException(_("URL scheme must be 'hdfs'"))
         if not url.hostname:
-            raise ex.InvalidException("HDFS url is incorrect, "
-                                      "cannot determine a hostname")
+            raise ex.InvalidException(_("HDFS url is incorrect, "
+                                        "cannot determine a hostname"))

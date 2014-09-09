@@ -14,6 +14,7 @@
 # limitations under the License.
 
 import sahara.exceptions as e
+from sahara.i18n import _
 from sahara.service.edp import api
 from sahara.utils import edp
 
@@ -65,7 +66,7 @@ def _check_binaries(values):
     for job_binary in values:
         if not api.get_job_binary(job_binary):
             raise e.NotFoundException(job_binary,
-                                      "Job binary '%s' does not exist")
+                                      _("Job binary '%s' does not exist"))
 
 
 def check_mains_libs(data, **kwargs):
@@ -79,21 +80,22 @@ def check_mains_libs(data, **kwargs):
     if job_type in [edp.JOB_TYPE_PIG, edp.JOB_TYPE_HIVE, edp.JOB_TYPE_SPARK]:
         if not mains:
             if job_type == edp.JOB_TYPE_SPARK:
-                msg = "%s job requires main application jar" % data.get("type")
+                msg = _(
+                    "%s job requires main application jar") % data.get("type")
             else:
-                msg = "%s flow requires main script" % data.get("type")
+                msg = _("%s flow requires main script") % data.get("type")
             raise e.InvalidDataException(msg)
         # Check for overlap
         if set(mains).intersection(set(libs)):
-            raise e.InvalidDataException("'mains' and 'libs' overlap")
+            raise e.InvalidDataException(_("'mains' and 'libs' overlap"))
 
     else:
         # Java and MapReduce require libs, but MapReduce.Streaming does not
         if not streaming and not libs:
-            raise e.InvalidDataException("%s flow requires libs" %
+            raise e.InvalidDataException(_("%s flow requires libs") %
                                          data.get("type"))
         if mains:
-            raise e.InvalidDataException("%s flow does not use mains" %
+            raise e.InvalidDataException(_("%s flow does not use mains") %
                                          data.get("type"))
 
     # Make sure that all referenced binaries exist
