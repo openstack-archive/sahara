@@ -149,7 +149,8 @@ following content:
         "flavor_id": "2",
         "plugin_name": "vanilla",
         "hadoop_version": "1.2.1",
-        "node_processes": ["jobtracker", "namenode"]
+        "node_processes": ["jobtracker", "namenode"],
+        "auto_security_group": True
     }
 
 Create file with name ``ng_worker_template_create.json`` and fill it with the
@@ -162,7 +163,8 @@ following content:
         "flavor_id": "2",
         "plugin_name": "vanilla",
         "hadoop_version": "1.2.1",
-        "node_processes": ["tasktracker", "datanode"]
+        "node_processes": ["tasktracker", "datanode"],
+        "auto_security_group": True
     }
 
 Send POST requests to Sahara API to upload NodeGroup templates:
@@ -204,7 +206,9 @@ Output should look like:
                 "updated": "2013-07-07T18:53:55",
                 "volume_mount_prefix": "/volumes/disk",
                 "volumes_per_node": 0,
-                "volumes_size": 10
+                "volumes_size": 10,
+                "security_groups": [],
+                "auto_security_group": True
             },
             {
                 "created": "2013-07-07T18:54:00",
@@ -221,7 +225,9 @@ Output should look like:
                 "updated": "2013-07-07T18:54:00",
                 "volume_mount_prefix": "/volumes/disk",
                 "volumes_per_node": 0,
-                "volumes_size": 10
+                "volumes_size": 10,
+                "security_groups": [],
+                "auto_security_group": True
             }
         ]
     }
@@ -350,7 +356,9 @@ Once cluster started, you'll get similar output:
                         "updated": "2013-07-07T19:01:51",
                         "volume_mount_prefix": "/volumes/disk",
                         "volumes_per_node": 0,
-                        "volumes_size": 10
+                        "volumes_size": 10,
+                        "security_groups": ["a314895b-d2ee-431d-a26b-7c37b45894c9"],
+                        "auto_security_group": True
                     },
                     {
                         "count": 2,
@@ -386,7 +394,9 @@ Once cluster started, you'll get similar output:
                         "updated": "2013-07-07T19:01:51",
                         "volume_mount_prefix": "/volumes/disk",
                         "volumes_per_node": 0,
-                        "volumes_size": 10
+                        "volumes_size": 10,
+                        "security_groups": ["b260407f-a566-43bf-a010-7e8b23953dc6"],
+                        "auto_security_group": True
                     }
                 ],
                 "plugin_name": "vanilla",
