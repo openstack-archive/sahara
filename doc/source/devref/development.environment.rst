@@ -9,7 +9,7 @@ having to deploy Sahara.
 Setup a Local Environment with Sahara inside DevStack
 -----------------------------------------------------
 
-See `the main article <devstack.html>`_.
+See :doc:`the main article <devstack>`.
 
 Setup a Local Environment with an external OpenStack
 ----------------------------------------------------
