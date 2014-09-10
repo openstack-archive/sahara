@@ -98,8 +98,8 @@ class HeatEngine(e.Engine):
             self._rollback_cluster_creation(cluster, reason)
             return False
 
-        rollback_count = rollback_info.get('rollback_count', {})
-        target_count = rollback_info.get('target_count', {})
+        rollback_count = rollback_info.get('rollback_count', {}).copy()
+        target_count = rollback_info.get('target_count', {}).copy()
         if rollback_count or target_count:
             self._rollback_cluster_scaling(
                 cluster, rollback_count, target_count, reason)
