@@ -47,6 +47,12 @@ class TestJobBinaryValidation(u.ValidationTestCase):
             bad_req_i=(1, "BAD_JOB_BINARY",
                        "To work with JobBinary located in internal "
                        "swift add 'user' and 'password' to extra"))
+        self.override_config('use_domain_for_proxy_users', True)
+        self._assert_create_object_validation(
+            data={
+                "name": "j_o_w",
+                "url": su.SWIFT_INTERNAL_PREFIX + "o.sahara/k"
+            })
 
     def test_job_binary_create_internal(self):
         self._assert_create_object_validation(

@@ -21,6 +21,7 @@ import sahara.exceptions as ex
 from sahara.i18n import _
 from sahara.swift import swift_helper
 from sahara.swift import utils as su
+from sahara.utils.openstack import keystone as k
 
 
 CONF = cfg.CONF
@@ -34,18 +35,30 @@ def _get_conn(user, password):
                                   auth_version="2.0")
 
 
+def _get_conn_for_proxy_user(configs):
+    preauthurl = su.retrieve_preauth_url()
+    proxyclient = k.client_for_proxy_user(configs['proxy_username'],
+                                          configs['proxy_password'],
+                                          configs['proxy_trust_id'])
+    return swiftclient.Connection(preauthurl=preauthurl,
+                                  preauthtoken=proxyclient.auth_token,
+                                  auth_version='2.0')
+
+
 def _strip_sahara_suffix(container_name):
     if container_name.endswith(su.SWIFT_URL_SUFFIX):
         container_name = container_name[:-len(su.SWIFT_URL_SUFFIX)]
     return container_name
 
 
-def get_raw_data(context, job_binary):
+def get_raw_data(context, job_binary, proxy_configs=None):
+    if proxy_configs:
+        conn = _get_conn_for_proxy_user(proxy_configs)
+    else:
+        user = job_binary.extra["user"]
+        password = job_binary.extra["password"]
 
-    user = job_binary.extra["user"]
-    password = job_binary.extra["password"]
-
-    conn = _get_conn(user, password)
+        conn = _get_conn(user, password)
 
     if not (job_binary.url.startswith(su.SWIFT_INTERNAL_PREFIX)):
         # This should have been guaranteed already,

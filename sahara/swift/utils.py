@@ -17,6 +17,7 @@ from oslo.config import cfg
 from six.moves.urllib import parse as urlparse
 
 from sahara import context
+from sahara.utils.openstack import keystone as k
 
 
 CONF = cfg.CONF
@@ -34,3 +35,18 @@ def retrieve_auth_url():
     info = urlparse.urlparse(context.current().auth_uri)
 
     return "%s://%s:%s/%s/" % (info.scheme, info.hostname, info.port, 'v2.0')
+
+
+def retrieve_preauth_url():
+    '''This function returns the storage URL for Swift in the current project.
+
+    :returns: The storage URL for the current project's Swift store, or None
+              if it can't be found.
+
+    '''
+    client = k.client()
+    catalog = client.service_catalog.get_endpoints('object-store')
+    for ep in catalog.get('object-store'):
+        if ep.get('interface') == 'public':
+            return ep.get('url')
+    return None

@@ -13,10 +13,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from oslo.config import cfg
+
 import sahara.exceptions as e
 import sahara.service.validations.edp.base as b
 from sahara.swift import utils as su
 
+CONF = cfg.CONF
 
 JOB_BINARY_SCHEMA = {
     "type": "object",
@@ -52,7 +55,8 @@ def check_job_binary(data, **kwargs):
     job_binary_location_type = data["url"]
     extra = data.get("extra", {})
     if job_binary_location_type.startswith(su.SWIFT_INTERNAL_PREFIX):
-        if not extra.get("user") or not extra.get("password"):
+        if (not extra.get("user") or not extra.get("password")) and (
+                not CONF.use_domain_for_proxy_users):
             raise e.BadJobBinaryException()
     if job_binary_location_type.startswith("internal-db"):
         internal_uid = job_binary_location_type[len("internal-db://"):]
