@@ -15,13 +15,13 @@
 
 import telnetlib
 
+from oslo.utils import timeutils
 import six
 
 from sahara import context
 from sahara.i18n import _
 from sahara.i18n import _LI
 from sahara.openstack.common import log as logging
-from sahara.openstack.common import timeutils
 from sahara.plugins.cdh import cloudera_utils as cu
 from sahara.plugins.cdh import commands as cmd
 from sahara.plugins.cdh import config_helper as c_helper
