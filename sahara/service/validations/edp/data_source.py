@@ -13,12 +13,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from oslo.config import cfg
 import six.moves.urllib.parse as urlparse
 
 import sahara.exceptions as ex
 import sahara.service.validations.edp.base as b
 from sahara.swift import utils as su
 
+CONF = cfg.CONF
 
 DATA_SOURCE_SCHEMA = {
     "type": "object",
@@ -76,12 +78,14 @@ def _check_swift_data_source_create(data):
             "URL must be of the form swift://container%s/object"
             % su.SWIFT_URL_SUFFIX)
 
-    if "credentials" not in data:
+    if not CONF.use_domain_for_proxy_users and "credentials" not in data:
         raise ex.InvalidCredentials("No credentials provided for Swift")
-    if "user" not in data["credentials"]:
+    if not CONF.use_domain_for_proxy_users and (
+            "user" not in data["credentials"]):
         raise ex.InvalidCredentials(
             "User is not provided in credentials for Swift")
-    if "password" not in data["credentials"]:
+    if not CONF.use_domain_for_proxy_users and (
+            "password" not in data["credentials"]):
         raise ex.InvalidCredentials(
             "Password is not provided in credentials for Swift")
 

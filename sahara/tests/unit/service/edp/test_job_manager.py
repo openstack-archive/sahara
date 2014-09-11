@@ -112,7 +112,7 @@ class TestJobManager(base.SaharaWithDbTestCase):
     @mock.patch('sahara.conductor.API.job_binary_get')
     def test_build_workflow_for_job_pig(self, job_binary):
 
-        job, job_exec = u.create_job_exec(edp.JOB_TYPE_PIG)
+        job, job_exec = u.create_job_exec(edp.JOB_TYPE_PIG, configs={})
         job_binary.return_value = {"name": "script.pig"}
 
         input_data = u.create_data_source('swift://ex/i')
@@ -140,11 +140,40 @@ class TestJobManager(base.SaharaWithDbTestCase):
 
         self.assertIn("<script>script.pig</script>", res)
 
+        # testing workflow creation with a proxy domain
+        self.override_config('use_domain_for_proxy_users', True)
+        self.override_config("proxy_user_domain_name", 'sahara_proxy_domain')
+        job, job_exec = u.create_job_exec(edp.JOB_TYPE_PIG, proxy=True)
+
+        res = workflow_factory.get_workflow_xml(
+            job, u.create_cluster(), job_exec, input_data, output_data,
+            'hadoop')
+
+        self.assertIn("""
+      <configuration>
+        <property>
+          <name>fs.swift.service.sahara.domain.name</name>
+          <value>sahara_proxy_domain</value>
+        </property>
+        <property>
+          <name>fs.swift.service.sahara.password</name>
+          <value>55555555-6666-7777-8888-999999999999</value>
+        </property>
+        <property>
+          <name>fs.swift.service.sahara.trust.id</name>
+          <value>0123456789abcdef0123456789abcdef</value>
+        </property>
+        <property>
+          <name>fs.swift.service.sahara.username</name>
+          <value>job_00000000-1111-2222-3333-4444444444444444</value>
+        </property>
+      </configuration>""", res)
+
     @mock.patch('sahara.conductor.API.job_binary_get')
     def test_build_workflow_swift_configs(self, job_binary):
 
         # Test that swift configs come from either input or output data sources
-        job, job_exec = u.create_job_exec(edp.JOB_TYPE_PIG)
+        job, job_exec = u.create_job_exec(edp.JOB_TYPE_PIG, configs={})
         job_binary.return_value = {"name": "script.pig"}
 
         input_data = u.create_data_source('swift://ex/i')
@@ -202,7 +231,7 @@ class TestJobManager(base.SaharaWithDbTestCase):
         </property>
       </configuration>""", res)
 
-    def _build_workflow_common(self, job_type, streaming=False):
+    def _build_workflow_common(self, job_type, streaming=False, proxy=False):
         if streaming:
             configs = {'edp.streaming.mapper': '/usr/bin/cat',
                        'edp.streaming.reducer': '/usr/bin/wc'}
@@ -238,21 +267,53 @@ class TestJobManager(base.SaharaWithDbTestCase):
           <value>swift://ex.sahara/i</value>
         </property>""", res)
 
-        self.assertIn("""
+        if not proxy:
+            self.assertIn("""
         <property>
           <name>fs.swift.service.sahara.password</name>
           <value>admin1</value>
         </property>""", res)
 
-        self.assertIn("""
+            self.assertIn("""
         <property>
           <name>fs.swift.service.sahara.username</name>
           <value>admin</value>
+        </property>""", res)
+        else:
+            # testing workflow creation with a proxy domain
+            self.override_config('use_domain_for_proxy_users', True)
+            self.override_config("proxy_user_domain_name",
+                                 'sahara_proxy_domain')
+            job, job_exec = u.create_job_exec(job_type, proxy=True)
+
+            res = workflow_factory.get_workflow_xml(
+                job, u.create_cluster(), job_exec, input_data, output_data,
+                'hadoop')
+
+            self.assertIn("""
+        <property>
+          <name>fs.swift.service.sahara.domain.name</name>
+          <value>sahara_proxy_domain</value>
+        </property>
+        <property>
+          <name>fs.swift.service.sahara.password</name>
+          <value>55555555-6666-7777-8888-999999999999</value>
+        </property>
+        <property>
+          <name>fs.swift.service.sahara.trust.id</name>
+          <value>0123456789abcdef0123456789abcdef</value>
+        </property>
+        <property>
+          <name>fs.swift.service.sahara.username</name>
+          <value>job_00000000-1111-2222-3333-4444444444444444</value>
         </property>""", res)
 
     def test_build_workflow_for_job_mapreduce(self):
         self._build_workflow_common(edp.JOB_TYPE_MAPREDUCE)
         self._build_workflow_common(edp.JOB_TYPE_MAPREDUCE, streaming=True)
+        self._build_workflow_common(edp.JOB_TYPE_MAPREDUCE, proxy=True)
+        self._build_workflow_common(edp.JOB_TYPE_MAPREDUCE, streaming=True,
+                                    proxy=True)
 
     def test_build_workflow_for_job_java(self):
         # If args include swift paths, user and password values
@@ -287,10 +348,48 @@ class TestJobManager(base.SaharaWithDbTestCase):
       <arg>swift://ex.sahara/i</arg>
       <arg>output_path</arg>""" % (_java_main_class, _java_opts), res)
 
+        # testing workflow creation with a proxy domain
+        self.override_config('use_domain_for_proxy_users', True)
+        self.override_config("proxy_user_domain_name", 'sahara_proxy_domain')
+        configs = {
+            'configs': {},
+            'args': ['swift://ex/i',
+                     'output_path']
+        }
+
+        job, job_exec = u.create_job_exec(edp.JOB_TYPE_JAVA, configs,
+                                          proxy=True)
+        res = workflow_factory.get_workflow_xml(job, u.create_cluster(),
+                                                job_exec)
+
+        self.assertIn("""
+      <configuration>
+        <property>
+          <name>fs.swift.service.sahara.domain.name</name>
+          <value>sahara_proxy_domain</value>
+        </property>
+        <property>
+          <name>fs.swift.service.sahara.password</name>
+          <value>55555555-6666-7777-8888-999999999999</value>
+        </property>
+        <property>
+          <name>fs.swift.service.sahara.trust.id</name>
+          <value>0123456789abcdef0123456789abcdef</value>
+        </property>
+        <property>
+          <name>fs.swift.service.sahara.username</name>
+          <value>job_00000000-1111-2222-3333-4444444444444444</value>
+        </property>
+      </configuration>
+      <main-class>%s</main-class>
+      <java-opts>%s</java-opts>
+      <arg>swift://ex.sahara/i</arg>
+      <arg>output_path</arg>""" % (_java_main_class, _java_opts), res)
+
     @mock.patch('sahara.conductor.API.job_binary_get')
     def test_build_workflow_for_job_hive(self, job_binary):
 
-        job, job_exec = u.create_job_exec(edp.JOB_TYPE_HIVE)
+        job, job_exec = u.create_job_exec(edp.JOB_TYPE_HIVE, configs={})
         job_binary.return_value = {"name": "script.q"}
 
         input_data = u.create_data_source('swift://ex/i')
@@ -316,38 +415,39 @@ class TestJobManager(base.SaharaWithDbTestCase):
       <param>INPUT=swift://ex.sahara/i</param>
       <param>OUTPUT=swift://ex.sahara/o</param>""", res)
 
-    def _build_workflow_with_conf_common(self, job_type):
+        # testing workflow creation with a proxy domain
+        self.override_config('use_domain_for_proxy_users', True)
+        self.override_config("proxy_user_domain_name", 'sahara_proxy_domain')
 
-        input_data = u.create_data_source('swift://ex/i')
-        output_data = u.create_data_source('swift://ex/o')
-
-        job, job_exec = u.create_job_exec(job_type,
-                                          configs={"configs": {'c': 'f'}})
+        job, job_exec = u.create_job_exec(edp.JOB_TYPE_HIVE, proxy=True)
 
         res = workflow_factory.get_workflow_xml(
             job, u.create_cluster(), job_exec, input_data, output_data,
             'hadoop')
 
         self.assertIn("""
+      <job-xml>/user/hadoop/conf/hive-site.xml</job-xml>
+      <configuration>
         <property>
-          <name>c</name>
-          <value>f</value>
-        </property>""", res)
-
-        self.assertIn("""
+          <name>fs.swift.service.sahara.domain.name</name>
+          <value>sahara_proxy_domain</value>
+        </property>
         <property>
-          <name>mapred.input.dir</name>
-          <value>swift://ex.sahara/i</value>
-        </property>""", res)
-
-        self.assertIn("""
+          <name>fs.swift.service.sahara.password</name>
+          <value>55555555-6666-7777-8888-999999999999</value>
+        </property>
         <property>
-          <name>mapred.output.dir</name>
-          <value>swift://ex.sahara/o</value>
-        </property>""", res)
-
-    def test_build_workflow_for_job_mapreduce_with_conf(self):
-        self._build_workflow_with_conf_common(edp.JOB_TYPE_MAPREDUCE)
+          <name>fs.swift.service.sahara.trust.id</name>
+          <value>0123456789abcdef0123456789abcdef</value>
+        </property>
+        <property>
+          <name>fs.swift.service.sahara.username</name>
+          <value>job_00000000-1111-2222-3333-4444444444444444</value>
+        </property>
+      </configuration>
+      <script>script.q</script>
+      <param>INPUT=swift://ex.sahara/i</param>
+      <param>OUTPUT=swift://ex.sahara/o</param>""", res)
 
     def test_update_job_dict(self):
         w = workflow_factory.BaseFactory()

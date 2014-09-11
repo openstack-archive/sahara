@@ -30,6 +30,8 @@ HADOOP_SWIFT_TENANT = 'fs.swift.service.sahara.tenant'
 HADOOP_SWIFT_USERNAME = 'fs.swift.service.sahara.username'
 HADOOP_SWIFT_PASSWORD = 'fs.swift.service.sahara.password'
 HADOOP_SWIFT_REGION = 'fs.swift.service.sahara.region'
+HADOOP_SWIFT_TRUST_ID = 'fs.swift.service.sahara.trust.id'
+HADOOP_SWIFT_DOMAIN_NAME = 'fs.swift.service.sahara.domain.name'
 
 
 def retrieve_tenant():

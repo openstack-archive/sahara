@@ -34,7 +34,15 @@ def retrieve_auth_url():
     """
     info = urlparse.urlparse(context.current().auth_uri)
 
-    return "%s://%s:%s/%s/" % (info.scheme, info.hostname, info.port, 'v2.0')
+    if CONF.use_domain_for_proxy_users:
+        url = 'v3/auth'
+    else:
+        url = 'v2.0'
+
+    return '{scheme}://{hostname}:{port}/{url}/'.format(scheme=info.scheme,
+                                                        hostname=info.hostname,
+                                                        port=info.port,
+                                                        url=url)
 
 
 def retrieve_preauth_url():
