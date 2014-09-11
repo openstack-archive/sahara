@@ -13,6 +13,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import operator
+
 import novaclient.exceptions as nova_ex
 from oslo.config import cfg
 
@@ -145,9 +147,10 @@ def check_flavor_exists(flavor_id):
 
 def check_security_groups_exist(security_groups):
     security_group_list = nova.client().security_groups.list()
-    security_group_names = [sg.name for sg in security_group_list]
+    allowed_groups = set(reduce(
+        operator.add, [[sg.id, sg.name] for sg in security_group_list], []))
     for sg in security_groups:
-        if sg not in security_group_names:
+        if sg not in allowed_groups:
             raise ex.InvalidException(_("Security group '%s' not found") % sg)
 
 
