@@ -289,7 +289,7 @@
         { "name" : "hadoop_heapsize", "value" : "1024" },
         { "name" : "namenode_heapsize", "value" : "1024m" },
         { "name" : "namenode_opt_newsize", "value" : "200m" },
-        { "name" : "namenode_opt_maxnewsize", "value" : "640m" },
+        { "name" : "namenode_opt_maxnewsize", "value" : "200m" },
         { "name" : "datanode_du_reserved", "value" : "1" },
         { "name" : "dtnode_heapsize", "value" : "1024m" },
         { "name" : "dfs_datanode_failed_volume_tolerated", "value" : "0" },
