@@ -28,6 +28,8 @@ from sahara.openstack.common import threadgroup
 from sahara.service import api
 from sahara.service.edp import job_manager
 from sahara.service import trusts
+from sahara.utils import edp
+from sahara.utils import proxy as p
 
 
 LOG = log.getLogger(__name__)
@@ -58,61 +60,88 @@ CONF.register_opts(periodic_opts)
 conductor = c.API
 
 
-class SaharaPeriodicTasks(periodic_task.PeriodicTasks):
-    @periodic_task.periodic_task(spacing=45, run_immediately=True)
-    def update_job_statuses(self, ctx):
-        LOG.debug('Updating job statuses')
-        ctx = context.get_admin_context()
-        context.set_ctx(ctx)
-        job_manager.update_job_statuses()
-        context.set_ctx(None)
+def _make_periodic_tasks():
+    '''Return the periodic tasks object
 
-    @periodic_task.periodic_task(spacing=90)
-    def terminate_unneeded_clusters(self, ctx):
-        LOG.debug('Terminating unneeded transient clusters')
-        ctx = context.get_admin_context()
-        context.set_ctx(ctx)
-        for cluster in conductor.cluster_get_all(ctx, status='Active'):
-            if not cluster.is_transient:
-                continue
+    This function creates the periodic tasks class object, it is wrapped in
+    this manner to allow easier control of enabling and disabling tasks.
 
-            jc = conductor.job_execution_count(ctx,
-                                               end_time=None,
-                                               cluster_id=cluster.id)
+    '''
+    zombie_task_spacing = 300 if CONF.use_domain_for_proxy_users else -1
 
-            if jc > 0:
-                continue
+    class SaharaPeriodicTasks(periodic_task.PeriodicTasks):
+        @periodic_task.periodic_task(spacing=45, run_immediately=True)
+        def update_job_statuses(self, ctx):
+            LOG.debug('Updating job statuses')
+            ctx = context.get_admin_context()
+            context.set_ctx(ctx)
+            job_manager.update_job_statuses()
+            context.set_ctx(None)
 
-            cluster_updated_at = timeutils.normalize_time(
-                timeutils.parse_isotime(cluster.updated_at))
-            current_time = timeutils.utcnow()
-            spacing = timeutils.delta_seconds(cluster_updated_at, current_time)
-            if spacing < CONF.min_transient_cluster_active_time:
-                continue
+        @periodic_task.periodic_task(spacing=90)
+        def terminate_unneeded_clusters(self, ctx):
+            LOG.debug('Terminating unneeded transient clusters')
+            ctx = context.get_admin_context()
+            context.set_ctx(ctx)
+            for cluster in conductor.cluster_get_all(ctx, status='Active'):
+                if not cluster.is_transient:
+                    continue
 
-            if CONF.use_identity_api_v3:
-                trusts.use_os_admin_auth_token(cluster)
+                jc = conductor.job_execution_count(ctx,
+                                                   end_time=None,
+                                                   cluster_id=cluster.id)
 
-                LOG.info(_LI('Terminating transient cluster %(cluster)s '
-                             'with id %(id)s'),
-                         {'cluster': cluster.name, 'id': cluster.id})
+                if jc > 0:
+                    continue
 
-                try:
-                    api.terminate_cluster(cluster.id)
-                except Exception as e:
-                    LOG.info(_LI('Failed to terminate transient cluster '
-                             '%(cluster)s with id %(id)s: %(error)s.'),
-                             {'cluster': cluster.name,
-                              'id': cluster.id,
-                              'error': six.text_type(e)})
+                cluster_updated_at = timeutils.normalize_time(
+                    timeutils.parse_isotime(cluster.updated_at))
+                current_time = timeutils.utcnow()
+                spacing = timeutils.delta_seconds(cluster_updated_at,
+                                                  current_time)
+                if spacing < CONF.min_transient_cluster_active_time:
+                    continue
 
-            else:
-                if cluster.status != 'AwaitingTermination':
-                    conductor.cluster_update(
-                        ctx,
-                        cluster,
-                        {'status': 'AwaitingTermination'})
-        context.set_ctx(None)
+                if CONF.use_identity_api_v3:
+                    trusts.use_os_admin_auth_token(cluster)
+
+                    LOG.info(_LI('Terminating transient cluster %(cluster)s '
+                                 'with id %(id)s'),
+                             {'cluster': cluster.name, 'id': cluster.id})
+
+                    try:
+                        api.terminate_cluster(cluster.id)
+                    except Exception as e:
+                        LOG.info(_LI('Failed to terminate transient cluster '
+                                 '%(cluster)s with id %(id)s: %(error)s.'),
+                                 {'cluster': cluster.name,
+                                  'id': cluster.id,
+                                  'error': six.text_type(e)})
+
+                else:
+                    if cluster.status != 'AwaitingTermination':
+                        conductor.cluster_update(
+                            ctx,
+                            cluster,
+                            {'status': 'AwaitingTermination'})
+            context.set_ctx(None)
+
+        @periodic_task.periodic_task(spacing=zombie_task_spacing)
+        def check_for_zombie_proxy_users(self, ctx):
+            ctx = context.get_admin_context()
+            context.set_ctx(ctx)
+            for user in p.proxy_domain_users_list():
+                if user.name.startswith('job_'):
+                    je_id = user.name[4:]
+                    je = conductor.job_execution_get(ctx, je_id)
+                    if je is None or (je.info['status'] in
+                                      edp.JOB_STATUSES_TERMINATED):
+                        LOG.debug('Found zombie proxy user {0}'.format(
+                            user.name))
+                        p.proxy_user_delete(user_id=user.id)
+            context.set_ctx(None)
+
+    return SaharaPeriodicTasks()
 
 
 def setup():
@@ -125,7 +154,7 @@ def setup():
             initial_delay = None
 
         tg = threadgroup.ThreadGroup()
-        pt = SaharaPeriodicTasks()
+        pt = _make_periodic_tasks()
         tg.add_dynamic_timer(
             pt.run_periodic_tasks,
             initial_delay=initial_delay,
