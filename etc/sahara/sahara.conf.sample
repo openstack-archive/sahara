@@ -480,6 +480,10 @@
 # Swift object access. (string value)
 #proxy_user_domain_name=<None>
 
+# A list of the role names that the proxy user should assume
+# through trust for Swift object access. (list value)
+#proxy_user_role_names=Member
+
 
 #
 # Options defined in sahara.utils.remote
