@@ -27,6 +27,7 @@ from sahara.service.edp import job_utils
 from sahara.service.edp.oozie import engine as oozie_engine
 from sahara.service.edp.spark import engine as spark_engine
 from sahara.utils import edp
+from sahara.utils import proxy as p
 
 
 LOG = log.getLogger(__name__)
@@ -53,6 +54,9 @@ def _write_job_status(job_execution, job_info):
     update = {"info": job_info}
     if job_info['status'] in edp.JOB_STATUSES_TERMINATED:
         update['end_time'] = datetime.datetime.now()
+        job_configs = p.delete_proxy_user_for_job_execution(job_execution)
+        if job_configs:
+            update['job_configs'] = job_configs
     return conductor.job_execution_update(context.ctx(),
                                           job_execution,
                                           update)

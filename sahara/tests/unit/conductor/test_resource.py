@@ -117,6 +117,10 @@ SAMPLE_JOB_EXECUTION = {
             swift_helper.HADOOP_SWIFT_USERNAME: "admin",
             "myfavoriteconfig": 1
         },
+        "proxy_configs": {
+            "proxy_username": "admin",
+            "proxy_password": "openstack"
+        },
         "trusts": {
             "input_id": "9c528755099149b8b7166f3d0fa3bf10",
             "output_id": "3f2bde9d43ec440381dc9f736481e2b0"
@@ -219,6 +223,11 @@ class TestResource(testtools.TestCase):
         self.assertIn('trusts', job_exec['job_configs'])
         self.assertIn('input_id', job_exec['job_configs']['trusts'])
         self.assertIn('output_id', job_exec['job_configs']['trusts'])
+        self.assertIn('proxy_configs', job_exec['job_configs'])
+        self.assertIn('proxy_username',
+                      job_exec['job_configs']['proxy_configs'])
+        self.assertIn('proxy_password',
+                      job_exec['job_configs']['proxy_configs'])
 
         wrapped_dict = job_exec.to_wrapped_dict()['job_execution']
         self.assertNotIn('extra', wrapped_dict)
@@ -233,3 +242,4 @@ class TestResource(testtools.TestCase):
             self.assertNotIn('conf', a)
 
         self.assertNotIn('trusts', wrapped_dict['job_configs'])
+        self.assertNotIn('proxy_configs', wrapped_dict['job_configs'])

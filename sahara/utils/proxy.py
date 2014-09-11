@@ -13,14 +13,23 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from oslo.config import cfg
+import uuid
 
+from oslo.config import cfg
+import six
+
+from sahara import conductor as c
+from sahara import context
 from sahara import exceptions as ex
 from sahara.i18n import _
+from sahara.openstack.common import log as logging
+from sahara.swift import utils as su
 from sahara.utils.openstack import keystone as k
 
 
 PROXY_DOMAIN = None
+conductor = c.API
+LOG = logging.getLogger(__name__)
 CONF = cfg.CONF
 
 opts = [
@@ -35,6 +44,40 @@ opts = [
                     'for Swift object access.')
 ]
 CONF.register_opts(opts)
+
+
+def create_proxy_user_for_job_execution(job_execution):
+    '''Creates a proxy user and adds the credentials to the job execution
+
+    :param job_execution: The job execution model to update
+
+    '''
+    username = 'job_{0}'.format(job_execution.id)
+    password = proxy_user_create(username)
+    update = {'job_configs': job_execution.job_configs.to_dict()}
+    update['job_configs']['proxy_configs'] = {
+        'proxy_username': username,
+        'proxy_password': password
+        }
+    conductor.job_execution_update(context.ctx(), job_execution, update)
+
+
+def delete_proxy_user_for_job_execution(job_execution):
+    '''Delete a proxy user based on a JobExecution
+
+    :param job_execution: The job execution with proxy user information
+    :returns: An updated job_configs dictionary or None
+
+    '''
+    proxy_configs = job_execution.job_configs.get('proxy_configs')
+    if proxy_configs is not None:
+        proxy_username = proxy_configs.get('proxy_username')
+        if proxy_username is not None:
+            proxy_user_delete(proxy_username)
+        update = {'job_configs': job_execution.job_configs.to_dict()}
+        del update['job_configs']['proxy_configs']
+        return update
+    return None
 
 
 def domain_for_proxy():
@@ -72,3 +115,68 @@ def domain_for_proxy():
                                                  '%s'))
         PROXY_DOMAIN = domain_list[0]
     return PROXY_DOMAIN
+
+
+def job_execution_requires_proxy_user(job_execution):
+    '''Returns True if the job execution requires a proxy user.'''
+    if CONF.use_domain_for_proxy_users is False:
+        return False
+    input_ds = conductor.data_source_get(context.ctx(),
+                                         job_execution.input_id)
+    if input_ds and input_ds.url.startswith(su.SWIFT_INTERNAL_PREFIX):
+            return True
+    output_ds = conductor.data_source_get(context.ctx(),
+                                          job_execution.output_id)
+    if output_ds and output_ds.url.startswith(su.SWIFT_INTERNAL_PREFIX):
+            return True
+    if job_execution.job_configs.get('args'):
+        for arg in job_execution.job_configs['args']:
+            if arg.startswith(su.SWIFT_INTERNAL_PREFIX):
+                return True
+    job = conductor.job_get(context.ctx(), job_execution.job_id)
+    for main in job.mains:
+        if main.url.startswith(su.SWIFT_INTERNAL_PREFIX):
+            return True
+    for lib in job.libs:
+        if lib.url.startswith(su.SWIFT_INTERNAL_PREFIX):
+            return True
+    return False
+
+
+def proxy_user_create(username):
+    '''Create a new user in the proxy domain
+
+    Creates the username specified with a random password.
+
+    :param username: The name of the new user.
+    :returns: The password created for the user.
+
+    '''
+    admin = k.client_for_admin()
+    domain = domain_for_proxy()
+    password = six.text_type(uuid.uuid4())
+    admin.users.create(name=username, password=password, domain=domain.id)
+    LOG.debug(_('created proxy user {0}').format(username))
+    return password
+
+
+def proxy_user_delete(username):
+    '''Delete the user from the proxy domain.
+
+    :param username: The name of the user to delete.
+    :raises NotFoundException: If there is an error locating the user in the
+                               proxy domain.
+
+    '''
+    admin = k.client_for_admin()
+    domain = domain_for_proxy()
+    user_list = admin.users.list(domain=domain.id, name=username)
+    if len(user_list) == 0:
+        raise ex.NotFoundException(value=username,
+                                   message=_('Failed to find user %s'))
+    if len(user_list) > 1:
+        raise ex.NotFoundException(value=username,
+                                   message=_('Unexpected results found when '
+                                             'searching for user %s'))
+    admin.users.delete(user_list[0].id)
+    LOG.debug('deleted proxy user {0}'.format(username))
