@@ -46,7 +46,7 @@ PACKAGES = [
     'cloudera-manager-agent',
     'cloudera-manager-daemons',
     'cloudera-manager-server',
-    'cloudera-manager-server-db',
+    'cloudera-manager-server-db-2',
     'hadoop-hdfs-datanode',
     'hadoop-hdfs-namenode',
     'hadoop-hdfs-secondarynamenode',
