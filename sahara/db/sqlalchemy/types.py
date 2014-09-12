@@ -13,11 +13,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from oslo.serialization import jsonutils
 import sqlalchemy as sa
 from sqlalchemy.dialects import mysql
 from sqlalchemy.ext import mutable
-
-from sahara.openstack.common import jsonutils
 
 
 class JsonEncoded(sa.TypeDecorator):
