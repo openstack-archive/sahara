@@ -341,6 +341,9 @@ CDH_CONFIG_OPTS = [
     cfg.StrOpt('CM_APT_KEY_URL',
                default='http://archive-primary.cloudera.com/cm5/ubuntu'
                        '/precise/amd64/cm/archive.key'),
+    cfg.StrOpt('MANAGERNODE_FLAVOR',
+               default='3',
+               help='Id of flavor for manager-node'),
     cfg.DictOpt('HADOOP_PROCESSES_WITH_PORTS',
                 default={
                     'RESOURCEMANAGER': 8088,

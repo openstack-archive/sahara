@@ -125,7 +125,7 @@ class CDHGatingTest(cluster_configs.ClusterConfigTest,
             'node_groups': [
                 {
                     'name': 'manager-node',
-                    'flavor_id': self.flavor_id,
+                    'flavor_id': self.cdh_config.MANAGERNODE_FLAVOR,
                     'node_processes': ['MANAGER'],
                     'floating_ip_pool': self.floating_ip_pool,
                     'count': 1
