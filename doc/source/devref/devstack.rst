@@ -65,7 +65,7 @@ Ubuntu 12.04 system.
     SERVICE_TOKEN=nova
 
     # Enable Swift
-    ENABLED_SERVICES+=,swift
+    enable_service s-proxy s-object s-container s-account
 
     SWIFT_HASH=66a3d6b56c1f479c8b4e70ab5c2000f5
     SWIFT_REPLICAS=1
