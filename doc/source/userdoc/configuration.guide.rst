@@ -52,7 +52,7 @@ to write logs of INFO level and above. If ``debug`` is set to true,
 Sahara will write all the logs, including the DEBUG ones.
 
 Sahara notifications configuration
-==================================
+----------------------------------
 
 Sahara can send notifications to Ceilometer, if it's enabled.
 If you want to enable notifications you should switch to ``[DEFAULT]``

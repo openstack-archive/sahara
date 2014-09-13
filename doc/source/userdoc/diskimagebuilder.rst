@@ -1,3 +1,5 @@
+.. _diskimage-builder-label:
+
 Building Images for Vanilla Plugin
 ==================================
 
