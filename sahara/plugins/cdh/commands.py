@@ -39,18 +39,6 @@ def is_pre_installed_cdh(remote):
     return code == 0
 
 
-def stop_resourcemanager(remote):
-    _root(remote, 'service hadoop-yarn-resourcemanager stop')
-
-
-def stop_nodemanager(remote):
-    _root(remote, 'service hadoop-yarn-nodemanager stop')
-
-
-def stop_historyserver(remote):
-    _root(remote, 'service hadoop-mapreduce-historyserver stop')
-
-
 def start_cloudera_db(remote):
     _root(remote, 'service cloudera-scm-server-db start')
 
@@ -72,7 +60,7 @@ def start_agent(remote):
 def install_packages(remote, packages, timeout=1800):
     distrib = _get_os_distrib(remote)
     if distrib == 'ubuntu':
-        cmd = 'apt-get install -y %s'
+        cmd = 'RUNLEVEL=1 apt-get install -y %s'
     elif distrib == 'centos':
         cmd = 'yum install %s'
     else:

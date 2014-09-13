@@ -124,7 +124,6 @@ def configure_cluster(cluster):
     if not cmd.is_pre_installed_cdh(pu.get_manager(cluster).remote()):
         _configure_os(instances)
         _install_packages(instances, PACKAGES)
-        _post_install(instances)
 
     _start_cloudera_agents(instances)
     _start_cloudera_manager(cluster)
@@ -145,7 +144,6 @@ def scale_cluster(cluster, instances):
     if not cmd.is_pre_installed_cdh(instances[0].remote()):
         _configure_os(instances)
         _install_packages(instances, PACKAGES)
-        _post_install(instances)
 
     _start_cloudera_agents(instances)
     _await_agents(instances)
@@ -236,20 +234,6 @@ def _install_packages(instances, packages):
 def _install_pkgs(instance, packages):
     with instance.remote() as r:
         cmd.install_packages(r, packages)
-
-
-def _post_install(instances):
-    with context.ThreadGroup() as tg:
-        for i in instances:
-            tg.spawn('cdh-post-inst-%s' % i.instance_name,
-                     _stop_services, i)
-
-
-def _stop_services(instance):
-    with instance.remote() as r:
-        cmd.stop_resourcemanager(r)
-        cmd.stop_nodemanager(r)
-        cmd.stop_historyserver(r)
 
 
 def _start_cloudera_agents(instances):
