@@ -33,13 +33,17 @@ Details
 
 The Sahara product communicates with the following OpenStack components:
 
-* Horizon - provides GUI with ability to use all of Sahara’s features;
+* Horizon - provides GUI with ability to use all of Sahara’s features.
 * Keystone - authenticates users and provides security token that is used to work with the OpenStack,
-  hence limiting user abilities in Sahara to his OpenStack privileges;
-* Nova - is used to provision VMs for Hadoop Cluster;
-* Glance - Hadoop VM images are stored there, each image containing an installed OS and Hadoop;
-  the pre-installed Hadoop should give us good handicap on node start-up;
+  hence limiting user abilities in Sahara to his OpenStack privileges.
+* Nova - is used to provision VMs for Hadoop Cluster.
+* Heat - Sahara can be configured to use Heat; Heat orchestrates the required services for Hadoop Cluster.
+* Glance - Hadoop VM images are stored there, each image containing an installed OS and Hadoop.
+  the pre-installed Hadoop should give us good handicap on node start-up.
 * Swift - can be used as a storage for data that will be processed by Hadoop jobs.
+* Cinder - can be used as a block storage.
+* Neutron - provides the networking service.
+* Ceilometer - used to collect measures of cluster usage for metering and monitoring purposes.
 
 .. image:: images/openstack-interop.png
     :width: 800 px
