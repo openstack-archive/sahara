@@ -2675,7 +2675,7 @@
                 {
                     "applicable_target": "HDFS",
                     "config_type": "string",
-                    "default_value": "640m",
+                    "default_value": "200m",
                     "description": "...",
                     "is_optional": true,
                     "name": "namenode_opt_maxnewsize",
