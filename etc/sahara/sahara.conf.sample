@@ -458,6 +458,14 @@
 
 
 #
+# Options defined in sahara.utils.openstack.cinder
+#
+
+# Version of the Cinder API to use. (integer value)
+#cinder_api_version=2
+
+
+#
 # Options defined in sahara.utils.openstack.keystone
 #
 
