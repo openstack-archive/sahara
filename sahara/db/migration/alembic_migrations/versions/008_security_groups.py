@@ -13,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""security_groups
+"""add security_groups field to node groups
 
 Revision ID: 008
 Revises: 007

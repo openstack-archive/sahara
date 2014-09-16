@@ -13,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""convert clusters.status_description to LongText
+"""add Sahara settings info to cluster
 
 Revision ID: 011
 Revises: 010
