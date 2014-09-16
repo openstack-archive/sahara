@@ -13,6 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from sahara.plugins.general import exceptions as ex
 from sahara.plugins.general import utils as u
 from sahara.service.edp.oozie import engine as edp_engine
 
@@ -30,3 +31,11 @@ class EdpOozieEngine(edp_engine.OozieJobEngine):
 
     def get_oozie_server(self, cluster):
         return u.get_instance(cluster, "OOZIE_SERVER")
+
+    def validate_job_execution(self, cluster, job, data):
+        oo_count = u.get_instances_count(cluster, 'OOZIE_SERVER')
+        if oo_count != 1:
+            raise ex.InvalidComponentCountException(
+                'OOZIE_SERVER', '1', oo_count)
+
+        super(EdpOozieEngine, self).validate_job_execution(cluster, job, data)

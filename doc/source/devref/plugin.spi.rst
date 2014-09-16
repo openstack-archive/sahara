@@ -53,14 +53,6 @@ Validates a given cluster object. Raises *SaharaException* with meaningful messa
 
 *Example exception*: <NotSingleNameNodeException {code='NOT_SINGLE_NAME_NODE', message='Hadoop cluster should contain only 1 NameNode instance. Actual NN count is 2' }>
 
-validate_edp(cluster)
-~~~~~~~~~~~~~~~~~~~~~
-
-Validates that given cluster can be used to run EDP jobs. In case of
-incompatibility raises *SaharaException* with meaningful message.
-
-*Returns*: None
-
 validate_scaling(cluster, existing, additional)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 

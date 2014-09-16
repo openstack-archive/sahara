@@ -115,9 +115,6 @@ def start_patch(patch_templates=True):
             "sahara.service.api.get_node_group_templates")
         get_ng_template_p = mock.patch(
             "sahara.service.api.get_node_group_template")
-    get_plugins_p = mock.patch("sahara.service.api.get_plugins")
-    get_plugin_p = mock.patch(
-        "sahara.plugins.base.PluginManager.get_plugin")
     if patch_templates:
         get_cl_templates_p = mock.patch(
             "sahara.service.api.get_cluster_templates")
@@ -134,8 +131,6 @@ def start_patch(patch_templates=True):
     if patch_templates:
         get_ng_templates = get_ng_templates_p.start()
         get_ng_template = get_ng_template_p.start()
-    get_plugins = get_plugins_p.start()
-    get_plugin = get_plugin_p.start()
     if patch_templates:
         get_cl_templates = get_cl_templates_p.start()
         get_cl_template_p.start()
@@ -213,26 +208,16 @@ def start_patch(patch_templates=True):
 
         get_cl_templates.return_value = [r.ClusterTemplateResource(ct_dict)]
 
-    vanilla = plugin.VanillaProvider()
-    vanilla.name = 'vanilla'
-    get_plugins.return_value = [vanilla]
-
     def _get_ng_template(id):
         for template in get_ng_templates():
             if template.id == id:
                 return template
         return None
 
-    def _get_plugin(name):
-        if name == 'vanilla':
-            return vanilla
-        return None
-
-    get_plugin.side_effect = _get_plugin
     if patch_templates:
         get_ng_template.side_effect = _get_ng_template
     # request data to validate
-    patchers = [get_clusters_p, get_cluster_p, get_plugins_p, get_plugin_p,
+    patchers = [get_clusters_p, get_cluster_p,
                 nova_p, keystone_p, get_image_p, heat_p]
     if patch_templates:
         patchers.extend([get_ng_template_p, get_ng_templates_p,

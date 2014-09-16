@@ -420,9 +420,6 @@ class SparkProvider(p.ProvisioningPluginBase):
                 rep_factor)
 
     def get_edp_engine(self, cluster, job_type):
-        if cluster.hadoop_version < "1.0.0":
-            return
-
         if job_type in edp_engine.EdpEngine.get_supported_job_types():
             return edp_engine.EdpEngine(cluster)
 

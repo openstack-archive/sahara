@@ -220,12 +220,6 @@ def check_heat_stack_name(cluster_name):
                     % cluster_name)
 
 
-def check_cluster_exists(id):
-    if not api.get_cluster(id):
-        raise ex.InvalidException(
-            _("Cluster with id '%s' doesn't exist") % id)
-
-
 def check_cluster_hostnames_lengths(cluster_name, node_groups):
     for ng in node_groups:
         longest_hostname = g.generate_instance_name(cluster_name,
@@ -370,11 +364,3 @@ def check_required_image_tags(plugin_name, hadoop_version, image_id):
                   " tags ['%(name)s', '%(version)s']")
                 % {'image': image_id, 'name': plugin_name,
                    'version': hadoop_version})
-
-
-# EDP
-
-
-def check_edp_job_support(cluster_id):
-    cluster = api.get_cluster(cluster_id)
-    plugin_base.PLUGINS.get_plugin(cluster.plugin_name).validate_edp(cluster)

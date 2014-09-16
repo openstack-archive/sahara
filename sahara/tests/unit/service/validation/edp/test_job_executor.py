@@ -20,20 +20,14 @@ import six
 
 from sahara import main
 from sahara.service import api
-from sahara.service.validations import base as validation_base
-from sahara.service.validations.edp import job_executor as je
+from sahara.service.validations.edp import job_execution as je
 from sahara.tests.unit.service.validation import utils as u
 from sahara.tests.unit import testutils as tu
 from sahara.utils import edp
 
 
 def wrap_it(data):
-    je.check_job_executor(data, 0)
-
-
-class FakeJob(object):
-    type = edp.JOB_TYPE_MAPREDUCE_STREAMING
-    libs = []
+    je.check_job_execution(data, 0)
 
 
 class TestJobExecValidation(u.ValidationTestCase):
@@ -47,24 +41,33 @@ class TestJobExecValidation(u.ValidationTestCase):
             self.override_config('plugins', main.CONF['plugins'] + ['spark'])
         api.plugin_base.setup_plugins()
 
-    @mock.patch('sahara.service.validations.edp.base.'
-                'check_data_sources_are_different', lambda x, y: None)
-    @mock.patch('sahara.service.validations.base.check_cluster_exists',
-                lambda x: None)
-    @mock.patch('sahara.service.validations.base.check_edp_job_support')
-    @mock.patch('sahara.service.validations'
-                '.edp.base.check_data_source_exists')
-    @mock.patch('sahara.service.edp.api.get_job')
-    def test_streaming(self, get_job, check_data, check_cluster):
-        check_cluster.return_value = True
-        check_data.return_value = True
-        get_job.return_value = FakeJob()
+    @mock.patch('sahara.conductor.api.LocalApi.cluster_get')
+    @mock.patch('sahara.conductor.api.LocalApi.data_source_get')
+    @mock.patch('sahara.conductor.api.LocalApi.job_get')
+    def test_streaming(self, get_job, get_data_source, get_cluster):
+        get_job.return_value = mock.Mock(
+            type=edp.JOB_TYPE_MAPREDUCE_STREAMING, libs=[])
+
+        ds1_id = six.text_type(uuid.uuid4())
+        ds2_id = six.text_type(uuid.uuid4())
+
+        data_sources = {
+            ds1_id: mock.Mock(type="swift", url="http://swift/test"),
+            ds2_id: mock.Mock(type="swift", url="http://swift/test2"),
+        }
+
+        get_data_source.side_effect = lambda ctx, x: data_sources[x]
+
+        ng = tu.make_ng_dict('master', 42, ['oozie'], 1,
+                             instances=[tu.make_inst_dict('id', 'name')])
+        get_cluster.return_value = tu.create_cluster("cluster", "tenant1",
+                                                     "vanilla", "1.2.1", [ng])
 
         self._assert_create_object_validation(
             data={
                 "cluster_id": six.text_type(uuid.uuid4()),
-                "input_id": six.text_type(uuid.uuid4()),
-                "output_id": six.text_type(uuid.uuid4()),
+                "input_id": ds1_id,
+                "output_id": ds2_id,
                 "job_configs": {"configs": {},
                                 "params": {},
                                 "args": []}
@@ -77,8 +80,8 @@ class TestJobExecValidation(u.ValidationTestCase):
         self._assert_create_object_validation(
             data={
                 "cluster_id": six.text_type(uuid.uuid4()),
-                "input_id": six.text_type(uuid.uuid4()),
-                "output_id": six.text_type(uuid.uuid4()),
+                "input_id": ds1_id,
+                "output_id": ds2_id,
                 "job_configs": {
                     "configs": {
                         "edp.streaming.mapper": "/bin/cat",
@@ -87,14 +90,12 @@ class TestJobExecValidation(u.ValidationTestCase):
                     "args": []}
             })
 
-    @mock.patch('sahara.service.validations.base.check_cluster_exists',
-                lambda x: None)
-    @mock.patch('sahara.service.validations.base.check_edp_job_support',
-                lambda x: None)
-    @mock.patch('sahara.service.edp.api.get_data_source')
-    @mock.patch('sahara.service.edp.api.get_job')
-    def test_data_sources_differ(self, get_job, get_data_source):
-        get_job.return_value = FakeJob()
+    @mock.patch('sahara.conductor.api.LocalApi.cluster_get')
+    @mock.patch('sahara.conductor.api.LocalApi.data_source_get')
+    @mock.patch('sahara.conductor.api.LocalApi.job_get')
+    def test_data_sources_differ(self, get_job, get_data_source, get_cluster):
+        get_job.return_value = mock.Mock(
+            type=edp.JOB_TYPE_MAPREDUCE_STREAMING, libs=[])
 
         ds1_id = six.text_type(uuid.uuid4())
         ds2_id = six.text_type(uuid.uuid4())
@@ -104,7 +105,12 @@ class TestJobExecValidation(u.ValidationTestCase):
             ds2_id: mock.Mock(type="swift", url="http://swift/test2"),
         }
 
-        get_data_source.side_effect = lambda x: data_sources[x]
+        get_data_source.side_effect = lambda ctx, x: data_sources[x]
+
+        ng = tu.make_ng_dict('master', 42, ['oozie'], 1,
+                             instances=[tu.make_inst_dict('id', 'name')])
+        get_cluster.return_value = tu.create_cluster("cluster", "tenant1",
+                                                     "vanilla", "1.2.1", [ng])
 
         self._assert_create_object_validation(
             data={
@@ -138,10 +144,16 @@ class TestJobExecValidation(u.ValidationTestCase):
             },
             bad_req_i=(1, "INVALID_DATA", err_msg))
 
-    @mock.patch('sahara.service.api.get_cluster')
-    @mock.patch('sahara.service.edp.api.get_job')
-    def test_check_edp_job_support(self, get_job, get_cluster):
-        get_job.return_value = FakeJob()
+    @mock.patch('sahara.conductor.api.LocalApi.cluster_get')
+    @mock.patch('sahara.conductor.api.LocalApi.job_get')
+    def test_check_edp_no_oozie(self, get_job, get_cluster):
+        get_job.return_value = mock.Mock(type=edp.JOB_TYPE_PIG, libs=[])
+
+        ng = tu.make_ng_dict('master', 42, ['namenode'], 1,
+                             instances=[tu.make_inst_dict('id', 'name')])
+        get_cluster.return_value = tu.create_cluster("cluster", "tenant1",
+                                                     "vanilla", "1.2.1", [ng])
+
         self._assert_create_object_validation(
             data={
                 "cluster_id": six.text_type(uuid.uuid4()),
@@ -152,14 +164,8 @@ class TestJobExecValidation(u.ValidationTestCase):
                        "Hadoop cluster should contain 1 oozie component(s). "
                        "Actual oozie count is 0"))
 
-        ng = tu.make_ng_dict('master', 42, ['oozie'], 1,
-                             instances=[tu.make_inst_dict('id', 'name')])
-        get_cluster.return_value = tu.create_cluster("cluster", "tenant1",
-                                                     "vanilla", "1.2.1", [ng])
-        validation_base.check_edp_job_support('some_id')
-
-    @mock.patch('sahara.service.api.get_cluster')
-    @mock.patch('sahara.service.edp.api.get_job')
+    @mock.patch('sahara.conductor.api.LocalApi.cluster_get')
+    @mock.patch('sahara.conductor.api.LocalApi.job_get')
     def test_check_edp_job_support_spark(self, get_job, get_cluster):
         # utils.start_patch will construct a vanilla cluster as a
         # default for get_cluster, but we want a Spark cluster.
@@ -167,9 +173,7 @@ class TestJobExecValidation(u.ValidationTestCase):
 
         # Note that this means we cannot use assert_create_object_validation()
         # because it calls start_patch() and will override our setting
-        job = mock.Mock()
-        job.type = edp.JOB_TYPE_SPARK
-        job.mains = ["main"]
+        job = mock.Mock(type=edp.JOB_TYPE_SPARK, mains=["main"])
         get_job.return_value = job
         ng = tu.make_ng_dict('master', 42, [], 1,
                              instances=[tu.make_inst_dict('id', 'name')])
@@ -183,17 +187,15 @@ class TestJobExecValidation(u.ValidationTestCase):
                           "configs": {
                               "edp.java.main_class": "org.me.class"}}})
 
-    @mock.patch('sahara.service.validations.base.check_edp_job_support')
-    @mock.patch('sahara.service.validations.base.check_cluster_exists')
-    @mock.patch('sahara.service.edp.api.get_job')
-    def _test_edp_main_class(self, job_type,
-                             get_job,
-                             check_cluster_exists,
-                             check_edp_job_support):
-        check_cluster_exists.return_value = True
-        check_edp_job_support.return_value = None
-        get_job.return_value = mock.Mock()
-        get_job.return_value.type = job_type
+    @mock.patch('sahara.conductor.api.LocalApi.cluster_get')
+    @mock.patch('sahara.conductor.api.LocalApi.job_get')
+    def test_edp_main_class_java(self, job_get, cluster_get):
+        job_get.return_value = mock.Mock()
+        job_get.return_value.type = edp.JOB_TYPE_JAVA
+        ng = tu.make_ng_dict('master', 42, ['namenode', 'oozie'], 1,
+                             instances=[tu.make_inst_dict('id', 'name')])
+        cluster_get.return_value = tu.create_cluster("cluster", "tenant1",
+                                                     "vanilla", "1.2.1", [ng])
 
         self._assert_create_object_validation(
             data={
@@ -204,7 +206,7 @@ class TestJobExecValidation(u.ValidationTestCase):
             },
             bad_req_i=(1, "INVALID_DATA",
                           "%s job must "
-                          "specify edp.java.main_class" % job_type))
+                          "specify edp.java.main_class" % edp.JOB_TYPE_JAVA))
 
         self._assert_create_object_validation(
             data={
@@ -216,6 +218,32 @@ class TestJobExecValidation(u.ValidationTestCase):
                     "args": []}
             })
 
-    def test_edp_main_class(self):
-        for job_type in (edp.JOB_TYPE_JAVA, edp.JOB_TYPE_SPARK):
-            self._test_edp_main_class(job_type)
+    @mock.patch('sahara.conductor.api.LocalApi.cluster_get')
+    @mock.patch('sahara.conductor.api.LocalApi.job_get')
+    def test_edp_main_class_spark(self, job_get, cluster_get):
+        job_get.return_value = mock.Mock(type=edp.JOB_TYPE_SPARK)
+        ng = tu.make_ng_dict('master', 42, ['namenode'], 1,
+                             instances=[tu.make_inst_dict('id', 'name')])
+        cluster_get.return_value = tu.create_cluster("cluster", "tenant1",
+                                                     "spark", "1.0.0", [ng])
+
+        self._assert_create_object_validation(
+            data={
+                "cluster_id": six.text_type(uuid.uuid4()),
+                "job_configs": {"configs": {},
+                                "params": {},
+                                "args": []}
+            },
+            bad_req_i=(1, "INVALID_DATA",
+                          "%s job must "
+                          "specify edp.java.main_class" % edp.JOB_TYPE_SPARK))
+
+        self._assert_create_object_validation(
+            data={
+                "cluster_id": six.text_type(uuid.uuid4()),
+                "job_configs": {
+                    "configs": {
+                        "edp.java.main_class": "org.me.myclass"},
+                    "params": {},
+                    "args": []}
+            })

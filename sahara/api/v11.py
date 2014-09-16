@@ -20,7 +20,7 @@ from sahara.service.validations.edp import data_source as v_d_s
 from sahara.service.validations.edp import job as v_j
 from sahara.service.validations.edp import job_binary as v_j_b
 from sahara.service.validations.edp import job_binary_internal as v_j_b_i
-from sahara.service.validations.edp import job_executor as v_j_e
+from sahara.service.validations.edp import job_execution as v_j_e
 import sahara.utils.api as u
 
 
@@ -33,7 +33,7 @@ rest = u.Rest('v11', __name__)
 
 @rest.post('/jobs/<job_id>/execute')
 @v.check_exists(api.get_job, id='job_id')
-@v.validate(v_j_e.JOB_EXEC_SCHEMA, v_j_e.check_job_executor)
+@v.validate(v_j_e.JOB_EXEC_SCHEMA, v_j_e.check_job_execution)
 def job_execute(job_id, data):
     return u.render(job_execution=api.execute_job(job_id, data).to_dict())
 

@@ -13,8 +13,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import mock
+import testtools
+
 from sahara import conductor as cond
 from sahara import context
+from sahara import exceptions as ex
 from sahara.plugins import base as pb
 from sahara.service.edp.spark import engine
 from sahara.tests.unit import base
@@ -30,16 +34,24 @@ class SparkPluginTest(base.SaharaWithDbTestCase):
         self.override_config("plugins", ["spark"])
         pb.setup_plugins()
 
-    def test_plugin09_no_edp_engine(self):
+    def test_plugin09_edp_engine_validation(self):
         cluster_dict = {
             'name': 'cluster',
             'plugin_name': 'spark',
             'hadoop_version': '0.9.1',
             'default_image_id': 'image'}
 
+        job = mock.Mock()
+        job.type = edp.JOB_TYPE_SPARK
+
         cluster = conductor.cluster_create(context.ctx(), cluster_dict)
         plugin = pb.PLUGINS.get_plugin(cluster.plugin_name)
-        self.assertIsNone(plugin.get_edp_engine(cluster, edp.JOB_TYPE_SPARK))
+        edp_engine = plugin.get_edp_engine(cluster, edp.JOB_TYPE_SPARK)
+        with testtools.ExpectedException(
+                ex.InvalidDataException,
+                value_re="Spark 1.0.0 or higher required to run "
+                         "spark Spark jobs"):
+            edp_engine.validate_job_execution(cluster, job, mock.Mock())
 
     def test_plugin10_edp_engine(self):
         cluster_dict = {
