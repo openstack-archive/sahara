@@ -68,13 +68,13 @@ SAMPLE_JOB_BINARY_DICT = {
     "name": "bob",
     "tenant_id": "6b859fb8d1f44e8eafdfb91f21309b5f",
     "updated_at": "null",
-    "url": "swift-internal://bob.sahara/job"
+    "url": "swift://bob.sahara/job"
 }
 
 SAMPLE_JOB_BINARY_DICT2 = copy.copy(SAMPLE_JOB_BINARY_DICT)
 SAMPLE_JOB_BINARY_DICT2["name"] = "bill"
 SAMPLE_JOB_BINARY_DICT2["id"] = "c0caf119-1111-2222-a46e-0f28ebd23b5c"
-SAMPLE_JOB_BINARY_DICT2["url"] = "swift-internal://bill.sahara/job"
+SAMPLE_JOB_BINARY_DICT2["url"] = "swift://bill.sahara/job"
 
 SAMPLE_JOB_DICT = {
     "tenant_id": "test_tenant",
