@@ -8,9 +8,7 @@ and running from the command line.
 Install as a part of DevStack
 -----------------------------
 
-The easiest way to have a local Sahara UI environment with DevStack is to
-include the Sahara-Dashboard component in DevStack. This can be accomplished
-by modifying your DevStack ``local.conf`` file to enable ``sahara-dashboard``.
+Sahara-Dashboard will be installed as a component of Horizon in DevStack.
 See the `DevStack documentation <http://devstack.org>`_ for more information
 on installing and configuring DevStack.
 
@@ -19,9 +17,10 @@ DevStack on a virtual machine. See
 `Setup VM for DevStack on OSX <../devref/devstack.html>`_ for more
 information.
 
-After Sahara-Dashboard installation as a part of DevStack, Horizon will contain
-a Sahara tab. Sahara-Dashboard source code will be located at
-``$DEST/sahara-dashboard`` which is usually ``/opt/stack/sahara-dashboard``.
+After Horizon installation, it will contain a Data Processing tab under Projects tab.
+Sahara-Dashboard source code will be located at
+``$DEST/horizon/openstack_dashboard/dashboards/project/data_processing``
+where ``$DEST/`` is usually ``/opt/stack/``.
 
 Isolated Dashboard for Sahara
 -----------------------------
@@ -43,7 +42,7 @@ using the following command:
   .. sourcecode:: console
 
       $ sudo apt-get update
-      $ sudo apt-get install git-core python-dev gcc python-setuptools python-virtualenv node-less libssl-dev libffi-dev
+      $ sudo apt-get install git-core python-dev gcc python-setuptools python-virtualenv node-less libssl-dev libffi-dev libxslt-dev
   ..
 
   On Ubuntu 12.10 and higher you have to install the following lib as well:
@@ -55,11 +54,11 @@ using the following command:
 
 2. Checkout Horizon from git and switch to your version of OpenStack
 
-  Here is an example for the Icehouse release:
+  Here is an example:
 
   .. sourcecode:: console
 
-      $ git clone https://github.com/openstack/horizon -b stable/icehouse
+      $ git clone https://github.com/openstack/horizon
   ..
 
   Then install the virtual environment:
@@ -83,73 +82,45 @@ using the following command:
   .. sourcecode:: python
 
      OPENSTACK_HOST = "ip of your controller"
-     SAHARA_URL = "url for sahara (e.g. "http://localhost:8386/v1.1")"
   ..
 
-  If you are using Neutron instead of Nova-Network:
+  If you are using Nova-Network with ``auto_assign_floating_ip=True`` add the following parameter:
 
   .. sourcecode:: python
 
-     SAHARA_USE_NEUTRON = True
+     SAHARA_AUTO_IP_ALLOCATION_ENABLED = True
   ..
 
-  If you are using Nova-Network with ``auto_assign_floating_ip=False`` or Neutron add
-  the following parameter:
+5. If Sahara is not registered in keystone service catalog, then we should modify
+   ``openstack_dashboard/api/sahara.py``:
 
-  .. sourcecode:: python
+   Add following lines before ``def client(request)``:
+   Note, that you should replace the ip and port in ``SAHARA_URL`` with the
+   appropriate values.
 
-     AUTO_ASSIGNMENT_ENABLED = False
-  ..
+   .. sourcecode:: python
 
-5. Clone sahara-dashboard sources from ``https://github.com/openstack/sahara-dashboard.git``
+        SAHARA_URL = "http://localhost:8386/v1.1"
 
-  .. sourcecode:: console
+        def get_sahara_url(request):
 
-      $ git clone https://github.com/openstack/sahara-dashboard.git
-  ..
+            if SAHARA_URL:
+                url = SAHARA_URL.rstrip('/')
+                if url.split('/')[-1] in ['v1.0', 'v1.1']:
+                    url = SAHARA_URL + '/' + request.user.tenant_id
+                return url
 
-6. Export SAHARA_DASHBOARD_HOME environment variable with a path to
-   sahara-dashboard folder
+            return base.url_for(request, SAHARA_SERVICE)
+   ..
 
-  .. sourcecode:: console
+   After that modify sahara_url provided in ``def client(request):``
 
-      $ export SAHARA_DASHBOARD_HOME=$(pwd)/sahara-dashboard
-  ..
+   .. sourcecode:: python
 
-7. Create a symlink to sahara-dashboard source
+        sahara_url=get_sahara_url(request)
+   ..
 
-  .. sourcecode:: console
-
-     $ ln -s $SAHARA_DASHBOARD_HOME/saharadashboard .venv/lib/python2.7/site-packages/saharadashboard
-  ..
-
-8. Install python-saharaclient into venv
-
-  .. sourcecode:: console
-
-     $ .venv/bin/pip install python-saharaclient
-  ..
-
-9. Modify ``openstack_dashboard/settings.py``
-
-  Add sahara to to the Horizon config:
-
-  .. sourcecode:: python
-
-      HORIZON_CONFIG = {
-          'dashboards': ('nova', 'syspanel', 'settings', 'sahara'),
-  ..
-
-  and add saharadashboard to the installed apps:
-
-  .. sourcecode:: python
-
-      INSTALLED_APPS = (
-          'saharadashboard',
-          ....
-  ..
-
-10. Start Horizon
+6. Start Horizon
 
   .. sourcecode:: console
 
@@ -170,9 +141,10 @@ using the following command:
 
   **Note** It is not recommended to use Horizon in this mode for production.
 
-11. Applying changes
+7. Applying changes
 
-  If you have changed any ``*.py`` files in ``$SAHARA_DASHBOARD_HOME`` directory,
+  If you have changed any ``*.py`` files in
+  ``horizon/openstack_dashboard/dashboards/project/data_processing`` directory,
   Horizon will notice that and reload automatically. However changes made to
   non-python files may not be noticed, so you have to restart Horizon again
-  manually, as described in step 10.
+  manually, as described in step 6.
