@@ -39,6 +39,9 @@ SSH_PORT = 22
 
 
 class DirectEngine(e.Engine):
+    def get_type_and_version(self):
+        return "direct.1.0"
+
     def create_cluster(self, cluster):
         ctx = context.ctx()
         self._update_rollback_strategy(cluster, shutdown=True)

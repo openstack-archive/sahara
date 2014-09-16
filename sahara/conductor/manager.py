@@ -29,6 +29,7 @@ CLUSTER_DEFAULTS = {
     "status_description": "",
     "info": {},
     "rollback_info": {},
+    "sahara_info": {},
 }
 
 NODE_GROUP_DEFAULTS = {
