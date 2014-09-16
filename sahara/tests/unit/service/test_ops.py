@@ -113,7 +113,7 @@ class TestOPS(base.SaharaTestCase):
         base_plugins.PLUGINS.get_plugin.return_value = FakePlugin()
         ops.INFRA = FakeINFRA()
         ops.conductor = FakePlugin()
-        ops._terminate_cluster('123')
+        ops.terminate_cluster('123')
         # checking that order of calls is right
         self.assertEqual(['on_terminate_cluster', 'shutdown_cluster',
                          'cluster_destroy'], self.SEQUENCE,

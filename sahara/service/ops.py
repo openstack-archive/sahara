@@ -61,7 +61,7 @@ class LocalOps(object):
 
     def terminate_cluster(self, cluster_id):
         context.spawn("cluster-terminating-%s" % cluster_id,
-                      _terminate_cluster, cluster_id)
+                      terminate_cluster, cluster_id)
 
     def run_edp_job(self, job_execution_id):
         context.spawn("Starting Job Execution %s" % job_execution_id,
@@ -100,7 +100,7 @@ class OpsServer(rpc_utils.RPCServer):
         _provision_scaled_cluster(cluster_id, node_group_id_map)
 
     def terminate_cluster(self, cluster_id):
-        _terminate_cluster(cluster_id)
+        terminate_cluster(cluster_id)
 
     def run_edp_job(self, job_execution_id):
         _run_edp_job(job_execution_id)
@@ -246,7 +246,7 @@ def _provision_scaled_cluster(cluster_id, node_group_id_map):
 
 
 @ops_error_handler
-def _terminate_cluster(cluster_id):
+def terminate_cluster(cluster_id):
     ctx = context.ctx()
     cluster = conductor.cluster_get(ctx, cluster_id)
     plugin = plugin_base.PLUGINS.get_plugin(cluster.plugin_name)
