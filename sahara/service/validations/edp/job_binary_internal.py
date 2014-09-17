@@ -14,6 +14,7 @@
 # limitations under the License.
 
 import sahara.exceptions as e
+from sahara.i18n import _
 from sahara.utils import api_validator as a
 
 
@@ -23,5 +24,5 @@ def check_job_binary_internal(data, **kwargs):
     if "name" in kwargs:
         name = kwargs["name"]
         if not a.validate_name_format(name):
-            raise e.BadJobBinaryInternalException("%s is not a valid name"
+            raise e.BadJobBinaryInternalException(_("%s is not a valid name")
                                                   % name)
