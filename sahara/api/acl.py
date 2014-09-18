@@ -23,18 +23,9 @@ CONF = cfg.CONF
 
 AUTH_OPT_GROUP_NAME = 'keystone_authtoken'
 
-# Keystone auth uri that could be used in other places in Sahara
-AUTH_URI = None
-
 
 def wrap(app, conf):
     """Wrap wsgi application with ACL check."""
 
     auth_cfg = dict(conf.get(AUTH_OPT_GROUP_NAME))
-    auth_protocol = auth_token.AuthProtocol(app, conf=auth_cfg)
-
-    # store auth uri in global var to be able to use it in runtime
-    global AUTH_URI
-    AUTH_URI = auth_protocol._identity_server.auth_uri
-
-    return auth_protocol
+    return auth_token.AuthProtocol(app, conf=auth_cfg)

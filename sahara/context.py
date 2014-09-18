@@ -20,7 +20,6 @@ from eventlet import greenpool
 from eventlet import semaphore
 from oslo.config import cfg
 
-from sahara.api import acl
 from sahara import exceptions as ex
 from sahara.i18n import _
 from sahara.i18n import _LE
@@ -49,6 +48,7 @@ class Context(object):
         if kwargs:
             LOG.warn(_LW('Arguments dropped when creating context: %s'),
                      kwargs)
+
         self.user_id = user_id
         self.tenant_id = tenant_id
         self.token = token
@@ -59,7 +59,10 @@ class Context(object):
         self.remote_semaphore = remote_semaphore or semaphore.Semaphore(
             CONF.cluster_remote_threshold)
         self.roles = roles
-        self.auth_uri = auth_uri or acl.AUTH_URI
+        if auth_uri:
+            self.auth_uri = auth_uri
+        else:
+            self.auth_uri = _get_auth_uri()
 
     def clone(self):
         return Context(
@@ -120,6 +123,28 @@ def set_ctx(new_ctx):
 
     if new_ctx:
         setattr(_CTX_STORE, _CTX_KEY, new_ctx)
+
+
+def _get_auth_uri():
+    if CONF.keystone_authtoken.auth_uri is not None:
+        auth_uri = CONF.keystone_authtoken.auth_uri
+    else:
+        if CONF.keystone_authtoken.identity_uri is not None:
+            identity_uri = CONF.keystone_authtoken.identity_uri
+        else:
+            host = CONF.keystone_authtoken.auth_host
+            port = CONF.keystone_authtoken.auth_port
+            protocol = CONF.keystone_authtoken.auth_protocol
+            identity_uri = '%s://%s:%s' % (protocol, host, port)
+
+        if CONF.use_identity_api_v3 is False:
+            auth_version = 'v2.0'
+        else:
+            auth_version = 'v3'
+
+        auth_uri = '%s/%s' % (identity_uri, auth_version)
+
+    return auth_uri
 
 
 def _wrapper(ctx, thread_description, thread_group, func, *args, **kwargs):
