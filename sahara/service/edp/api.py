@@ -89,7 +89,10 @@ def get_job_execution(id):
 
 
 def cancel_job_execution(id):
-    return manager.cancel_job(id)
+    job_execution = conductor.job_execution_get(context.ctx(), id)
+    OPS.cancel_job_execution(id)
+
+    return job_execution
 
 
 def delete_job_execution(id):

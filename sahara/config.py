@@ -35,7 +35,12 @@ edp_opts = [
     cfg.IntOpt('job_binary_max_KB',
                default=5120,
                help='Maximum length of job binary data in kilobytes that '
-                    'may be stored or retrieved in a single operation.')
+                    'may be stored or retrieved in a single operation.'),
+    cfg.IntOpt('job_canceling_timeout',
+               default=300,
+               help='Timeout for canceling job execution (in seconds). '
+                    'Sahara will try to cancel job execution during '
+                    'this time.')
 ]
 
 networking_opts = [
