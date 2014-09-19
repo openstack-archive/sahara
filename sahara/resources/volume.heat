@@ -2,6 +2,7 @@
             "Type" : "OS::Cinder::Volume",
             "Properties" : {
                 "name" : "%(volume_name)s",
+                %(availability_zone)s
                 "size" : "%(volumes_size)s"
             }
         },

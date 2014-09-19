@@ -99,6 +99,7 @@ class NodeGroup(mb.SaharaBase):
     node_configs = sa.Column(st.JsonDictType())
     volumes_per_node = sa.Column(sa.Integer)
     volumes_size = sa.Column(sa.Integer)
+    volumes_availability_zone = sa.Column(sa.String(255))
     volume_mount_prefix = sa.Column(sa.String(80))
     count = sa.Column(sa.Integer, nullable=False)
     instances = relationship('Instance', cascade="all,delete",
@@ -194,6 +195,7 @@ class NodeGroupTemplate(mb.SaharaBase):
     node_configs = sa.Column(st.JsonDictType())
     volumes_per_node = sa.Column(sa.Integer, nullable=False)
     volumes_size = sa.Column(sa.Integer)
+    volumes_availability_zone = sa.Column(sa.String(255))
     volume_mount_prefix = sa.Column(sa.String(80))
     floating_ip_pool = sa.Column(sa.String(36))
     security_groups = sa.Column(st.JsonListType())
@@ -218,6 +220,7 @@ class TemplatesRelation(mb.SaharaBase):
     node_configs = sa.Column(st.JsonDictType())
     volumes_per_node = sa.Column(sa.Integer)
     volumes_size = sa.Column(sa.Integer)
+    volumes_availability_zone = sa.Column(sa.String(255))
     volume_mount_prefix = sa.Column(sa.String(80))
     count = sa.Column(sa.Integer, nullable=False)
     cluster_template_id = sa.Column(sa.String(36),

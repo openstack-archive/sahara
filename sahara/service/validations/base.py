@@ -25,6 +25,7 @@ from sahara.i18n import _
 import sahara.plugins.base as plugin_base
 import sahara.service.api as api
 from sahara.utils import general as g
+import sahara.utils.openstack.cinder as cinder
 import sahara.utils.openstack.heat as heat
 import sahara.utils.openstack.keystone as keystone
 import sahara.utils.openstack.nova as nova
@@ -130,6 +131,9 @@ def check_node_group_basic_fields(plugin_name, hadoop_version, ng,
 
     if ng.get('volumes_per_node'):
         check_cinder_exists()
+        if ng.get('volumes_availability_zone'):
+            check_volume_availability_zone_exist(
+                ng['volumes_availability_zone'])
 
     if ng.get('floating_ip_pool'):
         check_floatingip_pool_exists(ng['name'], ng['floating_ip_pool'])
@@ -209,7 +213,16 @@ def check_availability_zone_exist(az):
     az_list = nova.client().availability_zones.list(False)
     az_names = [a.zoneName for a in az_list]
     if az not in az_names:
-        raise ex.InvalidException(_("Availability zone '%s' not found") % az)
+        raise ex.InvalidException(_("Nova availability zone '%s' not found")
+                                  % az)
+
+
+def check_volume_availability_zone_exist(az):
+    az_list = cinder.client().availability_zones.list()
+    az_names = [a.zoneName for a in az_list]
+    if az not in az_names:
+        raise ex.InvalidException(_("Cinder availability zone '%s' not found")
+                                  % az)
 
 
 # Cluster creation related checks

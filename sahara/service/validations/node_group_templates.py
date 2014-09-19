@@ -59,6 +59,9 @@ NODE_GROUP_TEMPLATE_SCHEMA = {
             "type": "integer",
             "minimum": 1,
         },
+        "volumes_availability_zone": {
+            "type": "string",
+        },
         "volume_mount_prefix": {
             "type": "string",
             "format": "posix_path",

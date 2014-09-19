@@ -357,7 +357,9 @@ class TestClusterCreateValidation(u.ValidationTestCase):
                         'security_groups': [],
                         'floating_ip_pool':
                             'd9a3bebc-f788-4b81-9a93-aa048022c1ca',
-                        'availability_zone': 'nova'
+                        'availability_zone': 'nova',
+                        'volumes_per_node': 1,
+                        'volumes_availability_zone': 'nova'
                     }
                 ]
             }
@@ -388,7 +390,36 @@ class TestClusterCreateValidation(u.ValidationTestCase):
                 ]
             },
             bad_req_i=(1, 'INVALID_REFERENCE',
-                       "Availability zone 'nonexistent' not found")
+                       "Nova availability zone 'nonexistent' not found")
+        )
+
+    def test_cluster_create_wrong_volumes_availability_zone(self):
+        self.override_config('use_neutron', True)
+        self._assert_create_object_validation(
+            data={
+                'name': 'testname',
+                'plugin_name': 'vanilla',
+                'hadoop_version': '1.2.1',
+                'user_keypair_id': 'test_keypair',
+                'default_image_id': '550e8400-e29b-41d4-a716-446655440000',
+                'neutron_management_network': 'd9a3bebc-f788-4b81-'
+                                              '9a93-aa048022c1ca',
+                'node_groups': [
+                    {
+                        'name': 'nodegroup',
+                        'node_processes': ['namenode'],
+                        'flavor_id': '42',
+                        'count': 100,
+                        'security_groups': [],
+                        'floating_ip_pool':
+                            'd9a3bebc-f788-4b81-9a93-aa048022c1ca',
+                        'volumes_per_node': 1,
+                        'volumes_availability_zone': 'nonexistent'
+                    }
+                ]
+            },
+            bad_req_i=(1, 'INVALID_REFERENCE',
+                       "Cinder availability zone 'nonexistent' not found")
         )
 
 

@@ -132,6 +132,7 @@ def start_patch(patch_templates=True):
     nova_p = mock.patch("sahara.utils.openstack.nova.client")
     keystone_p = mock.patch("sahara.utils.openstack.keystone._client")
     heat_p = mock.patch("sahara.utils.openstack.heat.client")
+    cinder_p = mock.patch("sahara.utils.openstack.cinder.client")
     get_image_p = mock.patch("sahara.service.api.get_image")
 
     get_image = get_image_p.start()
@@ -159,6 +160,9 @@ def start_patch(patch_templates=True):
 
     heat = heat_p.start()
     heat().stacks.list.side_effect = _get_heat_stack_list
+
+    cinder = cinder_p.start()
+    cinder().availability_zones.list.side_effect = _get_availability_zone_list
 
     class Service(object):
         @property
@@ -228,7 +232,7 @@ def start_patch(patch_templates=True):
         get_ng_template.side_effect = _get_ng_template
     # request data to validate
     patchers = [get_clusters_p, get_cluster_p,
-                nova_p, keystone_p, get_image_p, heat_p]
+                nova_p, keystone_p, get_image_p, heat_p, cinder_p]
     if patch_templates:
         patchers.extend([get_ng_template_p, get_ng_templates_p,
                          get_cl_template_p, get_cl_templates_p])
