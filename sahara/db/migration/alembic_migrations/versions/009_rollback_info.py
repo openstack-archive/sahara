@@ -13,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""convert clusters.status_description to LongText
+"""add rollback info to cluster
 
 Revision ID: 009
 Revises: 008

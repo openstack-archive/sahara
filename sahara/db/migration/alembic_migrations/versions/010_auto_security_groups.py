@@ -13,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""auto_security_groups
+"""add auto_security_groups flag to node group
 
 Revision ID: 010
 Revises: 009
