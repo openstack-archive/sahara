@@ -59,14 +59,6 @@ addition, if the OpenStack Cluster supports network namespaces, set the ``use_na
     use_neutron=True
     use_namespaces=True
 
-Sahara Dashboard should also be configured properly to support Neutron. ``SAHARA_USE_NEUTRON`` should be set to ``True`` in
-OpenStack Dashboard ``local_settings.py`` configuration file.
-
-.. sourcecode:: python
-
-    SAHARA_USE_NEUTRON=True
-
-
 Floating IP Management
 ----------------------
 
