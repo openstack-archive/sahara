@@ -32,7 +32,7 @@ class CDHPluginProvider(p.ProvisioningPluginBase):
         return "Cloudera Plugin"
 
     def get_description(self):
-        return _("This plugin provides an ability to launch CDH clusters with"
+        return _("This plugin provides an ability to launch CDH clusters with "
                  "Cloudera Manager management console.")
 
     def get_versions(self):
