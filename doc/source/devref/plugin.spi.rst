@@ -13,7 +13,7 @@ as well as configs and whatever else that plugin needs to create the Hadoop clus
 
 *Returns*: list of strings - Hadoop versions
 
-*Example return value*: (“Apache Hadoop 1.1.1”, “CDH 3”, “HDP 1.2”)
+*Example return value*: [“1.2.1”, “2.3.0”, “2.4.1”]
 
 get_configs(hadoop_version)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
