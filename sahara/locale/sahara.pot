@@ -6,9 +6,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: sahara 2014.2.dev97.g9cd0a55\n"
+"Project-Id-Version: sahara 2014.2.dev123.gcc4a472\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2014-09-17 06:16+0000\n"
+"POT-Creation-Date: 2014-09-20 06:12+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -421,7 +421,7 @@ msgstr ""
 
 #: sahara/plugins/cdh/plugin.py:35
 msgid ""
-"This plugin provides an ability to launch CDH clusters withCloudera "
+"This plugin provides an ability to launch CDH clusters with Cloudera "
 "Manager management console."
 msgstr ""
 
@@ -521,8 +521,8 @@ msgstr ""
 msgid "Failed to install Hadoop Swift integration"
 msgstr ""
 
-#: sahara/plugins/hdp/versions/version_1_3_2/services.py:522
-#: sahara/plugins/hdp/versions/version_2_0_6/services.py:575
+#: sahara/plugins/hdp/versions/version_1_3_2/services.py:523
+#: sahara/plugins/hdp/versions/version_2_0_6/services.py:576
 #, python-format
 msgid "Invalid value for property 'hbase-site/hbase.rootdir' : %s"
 msgstr ""
