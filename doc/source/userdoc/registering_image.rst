@@ -12,5 +12,5 @@ A registered image must have two properties set:
 * username - a name of the default cloud-init user.
 * tags - certain tags mark image to be suitable for certain plugins.
 
-Username depends on image used. Tags depend on the plugin used
+Username depends on image used. Tags depend on the plugin used.
 You can find both in the respective plugin's documentation.
