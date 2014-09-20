@@ -157,7 +157,7 @@
         {
           "name" : "ZOOKEEPER_SERVER",
           "type" : "MASTER",
-          "cardinality" : "1"
+          "cardinality" : "1+"
         },
         {
           "name" : "ZOOKEEPER_CLIENT",
@@ -1374,7 +1374,7 @@
           },
           {
             "name": "templeton.zookeeper.hosts",
-            "value": "%ZOOKEEPER_HOST%:2181"
+            "value": "%ZOOKEEPER_HOSTS%"
           },
           {
             "name": "templeton.port",
@@ -1495,7 +1495,7 @@
           },
           {
             "name": "hbase.zookeeper.quorum",
-            "value": "%ZOOKEEPER_HOST%"
+            "value": "%ZOOKEEPER_HOSTS%"
           },
           {
             "name": "zookeeper.znode.parent",

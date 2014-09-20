@@ -145,7 +145,7 @@
         {
           "name" : "ZOOKEEPER_SERVER",
           "type" : "MASTER",
-          "cardinality" : "1"
+          "cardinality" : "1+"
         },
         {
           "name" : "ZOOKEEPER_CLIENT",
@@ -640,7 +640,7 @@
         { "name" : "templeton.storage.class", "value" : "org.apache.hcatalog.templeton.tool.ZooKeeperStorage" },
         { "name" : "templeton.hadoop.conf.dir", "value" : "/etc/hadoop/conf" },
         { "name" : "templeton.hive.properties", "value" : "hive.metastore.local=false,hive.metastore.uris=thrift://%HIVE_METASTORE_HOST%:9083,hive.metastore.sasl.enabled=yes,hive.metastore.execute.setugi=true,hive.metastore.warehouse.dir=/apps/hive/warehouse" },
-        { "name" : "templeton.zookeeper.hosts", "value" : "%ZOOKEEPER_HOST%:2181" }
+        { "name" : "templeton.zookeeper.hosts", "value" : "%ZOOKEEPER_HOSTS%" }
       ]
     },
     {
@@ -672,7 +672,7 @@
         { "name" : "hbase.client.keyvalue.maxsize", "value" : "10485760" },
         { "name" : "dfs.support.append", "value" : "true" },
         { "name" : "dfs.client.read.shortcircuit", "value" : "true" },
-        { "name" : "hbase.zookeeper.quorum", "value" : "%ZOOKEEPER_HOST%" },
+        { "name" : "hbase.zookeeper.quorum", "value" : "%ZOOKEEPER_HOSTS%" },
         { "name" : "hbase.master.info.port", "value" : "60010" }
       ]
     },

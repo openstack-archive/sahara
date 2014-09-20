@@ -834,9 +834,9 @@ class ServicesTest(base.SaharaTestCase):
             self.assertEqual("hdfs://master.novalocal:8020/apps/hbase/data",
                              cluster_spec.configurations['hbase-site'][
                                  'hbase.rootdir'])
-            self.assertEqual("master.novalocal",
-                             cluster_spec.configurations['hbase-site'][
-                                 'hbase.zookeeper.quorum'])
+            self.assertEqual(set(['zk.novalocal', 'master.novalocal']),
+                             set(cluster_spec.configurations['hbase-site'][
+                                 'hbase.zookeeper.quorum'].split(',')))
 
     def test_get_storage_paths(self):
         for version in versions:
@@ -881,9 +881,14 @@ class ServicesTest(base.SaharaTestCase):
                                           "SECONDARY_NAMENODE", "NODEMANAGER",
                                           "DATANODE", "AMBARI_SERVER",
                                           "HISTORYSERVER", "ZOOKEEPER_SERVER"])
+        extra_zk_host = hdp_test_base.TestServer(
+            'zk.novalocal', 'zk', '11112', 3,
+            '111.11.1112', '222.11.1112')
+        extra_zk_ng = hdp_test_base.TestNodeGroup(
+            'zk', [extra_zk_host], ['ZOOKEEPER_SERVER'])
         hbase_host = hdp_test_base.TestServer(
             'hbase.novalocal', 'hbase', '11111', 3,
             '222.22.2222', '222.11.1111')
         hbase_ng = hdp_test_base.TestNodeGroup(
             'hbase', [hbase_host], ["HBASE_MASTER"])
-        return hdp_test_base.TestCluster([master_ng, hbase_ng])
+        return hdp_test_base.TestCluster([master_ng, extra_zk_ng, hbase_ng])
