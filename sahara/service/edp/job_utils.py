@@ -30,8 +30,8 @@ from sahara.utils import remote
 opts = [
     cfg.StrOpt('job_workflow_postfix',
                default='',
-               help='Postfix for storing jobs in hdfs. Will be '
-                    'added to /user/hadoop/.')
+               help="Postfix for storing jobs in hdfs. Will be "
+                    "added to '/user/<hdfs user>/' path.")
 ]
 
 CONF = cfg.CONF
