@@ -74,10 +74,14 @@ def start_oozie_process(pctx, instance):
     with instance.remote() as r:
         if c_helper.is_mysql_enabled(pctx, instance.node_group.cluster):
             _start_mysql(r)
+            LOG.debug("Creating Oozie DB Schema...")
             sql_script = files.get_file_text(
                 'plugins/vanilla/hadoop2/resources/create_oozie_db.sql')
-            r.write_file_to('/tmp/create_oozie_db.sql', sql_script)
-            _oozie_create_db(r)
+            script_location = "create_oozie_db.sql"
+            r.write_file_to(script_location, sql_script)
+            r.execute_command('mysql -u root < %(script_location)s && '
+                              'rm %(script_location)s' %
+                              {"script_location": script_location})
 
         _oozie_share_lib(r)
         _start_oozie(r)
@@ -127,11 +131,6 @@ def _oozie_share_lib(remote):
 def _start_mysql(remote):
     LOG.debug("Starting mysql")
     remote.execute_command('/opt/start-mysql.sh')
-
-
-def _oozie_create_db(remote):
-    LOG.debug("Creating Oozie DB Schema...")
-    remote.execute_command('mysql -u root < /tmp/create_oozie_db.sql')
 
 
 def _start_oozie(remote):
