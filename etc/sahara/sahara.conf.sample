@@ -377,7 +377,7 @@
 #
 
 # Postfix for storing jobs in hdfs. Will be added to
-# /user/hadoop/. (string value)
+# '/user/<hdfs user>/' path. (string value)
 #job_workflow_postfix=
 
 
