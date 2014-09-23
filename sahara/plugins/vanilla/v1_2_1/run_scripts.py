@@ -14,6 +14,7 @@
 # limitations under the License.
 
 from sahara.openstack.common import log as logging
+from sahara.utils import files
 
 
 LOG = logging.getLogger(__name__)
@@ -88,7 +89,13 @@ def mysql_start(remote, mysql_instance):
 
 def oozie_create_db(remote):
     LOG.debug("Creating Oozie DB Schema...")
-    remote.execute_command("mysql -u root < /tmp/create_oozie_db.sql")
+    sql_script = files.get_file_text(
+        'plugins/vanilla/v1_2_1/resources/create_oozie_db.sql')
+    script_location = "create_oozie_db.sql"
+    remote.write_file_to(script_location, sql_script)
+    remote.execute_command('mysql -u root < %(script_location)s && '
+                           'rm %(script_location)s' %
+                           {"script_location": script_location})
 
 
 def start_oozie(remote):
@@ -96,9 +103,16 @@ def start_oozie(remote):
         'sudo su - -c "/opt/oozie/bin/oozied.sh start" hadoop')
 
 
-def hive_create_db(remote):
+def hive_create_db(remote, hive_mysql_passwd):
     LOG.debug("Creating Hive metastore db...")
-    remote.execute_command("mysql -u root < /tmp/create_hive_db.sql")
+    sql_script = files.get_file_text(
+        'plugins/vanilla/v1_2_1/resources/create_hive_db.sql')
+    sql_script = sql_script.replace('pass', hive_mysql_passwd)
+    script_location = "create_hive_db.sql"
+    remote.write_file_to(script_location, sql_script)
+    remote.execute_command('mysql -u root < %(script_location)s && '
+                           'rm %(script_location)s' %
+                           {"script_location": script_location})
 
 
 def hive_metastore_start(remote):

@@ -143,7 +143,7 @@ class VersionHandler(avm.AbstractVersionHandler):
                 if c_helper.is_mysql_enable(cluster):
                     if not oozie or hive_server.hostname() != oozie.hostname():
                         run.mysql_start(r, hive_server)
-                    run.hive_create_db(r)
+                    run.hive_create_db(r, cluster.extra['hive_mysql_passwd'])
                     run.hive_metastore_start(r)
                     LOG.info(_LI("Hive Metastore server at %s has been "
                                  "started"),
@@ -174,6 +174,15 @@ class VersionHandler(avm.AbstractVersionHandler):
                             ' been deleted'), cluster.name)
                     return
 
+    def _generate_hive_mysql_password(self, cluster):
+        extra = cluster.extra.to_dict() if cluster.extra else {}
+        password = extra.get('hive_mysql_passwd')
+        if not password:
+            password = six.text_type(uuid.uuid4())
+            extra['hive_mysql_passwd'] = password
+            conductor.cluster_update(context.ctx(), cluster, {'extra': extra})
+        return password
+
     def _extract_configs_to_extra(self, cluster):
         oozie = vu.get_oozie(cluster)
         hive = vu.get_hiveserver(cluster)
@@ -181,7 +190,8 @@ class VersionHandler(avm.AbstractVersionHandler):
         extra = dict()
 
         if hive:
-            extra['hive_mysql_passwd'] = six.text_type(uuid.uuid4())
+            extra['hive_mysql_passwd'] = self._generate_hive_mysql_password(
+                cluster)
 
         for ng in cluster.node_groups:
             extra[ng.id] = {
@@ -258,13 +268,15 @@ class VersionHandler(avm.AbstractVersionHandler):
 
     def _setup_instances(self, cluster, instances):
         extra = self._extract_configs_to_extra(cluster)
+        cluster = conductor.cluster_get(context.ctx(), cluster)
         self._push_configs_to_nodes(cluster, extra, instances)
 
     def _push_configs_to_nodes(self, cluster, extra, new_instances):
         all_instances = utils.get_instances(cluster)
+        new_ids = set([instance.id for instance in new_instances])
         with context.ThreadGroup() as tg:
             for instance in all_instances:
-                if instance in new_instances:
+                if instance.id in new_ids:
                     tg.spawn('vanilla-configure-%s' % instance.instance_name,
                              self._push_configs_to_new_node, cluster,
                              extra, instance)
@@ -352,11 +364,10 @@ class VersionHandler(avm.AbstractVersionHandler):
             self._push_jobtracker_configs(cluster, r)
 
         if 'oozie' in node_processes:
-            self._push_oozie_configs(cluster, ng_extra, r)
+            self._push_oozie_configs(ng_extra, r)
 
         if 'hiveserver' in node_processes:
-            self._push_hive_configs(cluster, ng_extra,
-                                    extra['hive_mysql_passwd'], r)
+            self._push_hive_configs(ng_extra, r)
 
     def _push_namenode_configs(self, cluster, r):
         r.write_file_to('/etc/hadoop/dn.incl',
@@ -368,30 +379,15 @@ class VersionHandler(avm.AbstractVersionHandler):
                         utils.generate_fqdn_host_names(
                             vu.get_tasktrackers(cluster)))
 
-    def _push_oozie_configs(self, cluster, ng_extra, r):
+    def _push_oozie_configs(self, ng_extra, r):
         r.write_file_to('/opt/oozie/conf/oozie-site.xml',
                         ng_extra['xml']['oozie-site'])
 
-        if c_helper.is_mysql_enable(cluster):
-            sql_script = f.get_file_text(
-                'plugins/vanilla/v1_2_1/resources/create_oozie_db.sql')
-            files = {
-                '/tmp/create_oozie_db.sql': sql_script
-            }
-            r.write_files_to(files)
-
-    def _push_hive_configs(self, cluster, ng_extra, hive_mysql_passwd, r):
+    def _push_hive_configs(self, ng_extra, r):
         files = {
             '/opt/hive/conf/hive-site.xml':
             ng_extra['xml']['hive-site']
         }
-        if c_helper.is_mysql_enable(cluster):
-            sql_script = f.get_file_text(
-                'plugins/vanilla/v1_2_1/resources/create_hive_db.sql'
-            )
-            sql_script = sql_script.replace('pass',
-                                            hive_mysql_passwd)
-            files.update({'/tmp/create_hive_db.sql': sql_script})
         r.write_files_to(files)
 
     def _set_cluster_info(self, cluster):
