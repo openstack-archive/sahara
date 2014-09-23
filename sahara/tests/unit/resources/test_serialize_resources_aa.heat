@@ -1,6 +1,6 @@
 {
     "AWSTemplateFormatVersion" : "2010-09-09",
-    "Description" : "Hadoop Cluster by Sahara",
+    "Description" : "Data Processing Cluster by Sahara",
 
     "Resources" : {
         "cluster-aa-group" : {
