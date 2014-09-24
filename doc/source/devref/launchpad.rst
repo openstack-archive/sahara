@@ -1,5 +1,5 @@
-Project hosting with Launchpad
-==============================
+Project hosting
+===============
 
 `Launchpad`_ hosts the Sahara project. The Sahara project homepage on Launchpad is
 http://launchpad.net/sahara.
@@ -37,12 +37,13 @@ Feature requests (Blueprints)
 Sahara uses Launchpad Blueprints to track feature requests. Blueprints are at
 https://blueprints.launchpad.net/sahara.
 
-Technical support (Answers)
----------------------------
+Technical support
+-----------------
 
-Sahara uses Launchpad Answers to track Sahara technical support questions. The Sahara
-Answers page is at https://answers.launchpad.net/sahara
+Sahara uses `Ask OpenStack`_ to track Sahara technical support questions.
+Questions related to Sahara should be tagged with 'sahara'.
 
 .. _Launchpad: http://launchpad.net
 .. _Wiki: http://wiki.openstack.org/sahara
 .. _Sahara Team: https://launchpad.net/~sahara-all
+.. _Ask OpenStack: https://ask.openstack.org
