@@ -62,6 +62,20 @@ To create vanilla images follow these steps:
    necessary packages and configure them. You will find these images in
    current directory.
 
+.. note::
+
+    Disk Image Builder will generate QCOW2 images, used with the default
+    OpenStack Qemu/KVM hypervisors. If your OpenStack uses a different
+    hypervisor, the generated image should be converted to an appropriate format.
+
+    VMware Nova backend requires VMDK image format. You may use qemu-img
+    utility to convert a QCOW2 image to VMDK.
+
+    .. sourcecode:: console
+
+        qemu-img convert -O vmdk <original_image>.qcow2 <converted_image>.vmdk
+
+
 For finer control of diskimage-create.sh see the `official documentation
 <https://github.com/openstack/sahara-image-elements/blob/master/diskimage-create/README.rst>`_
 or run ``$ diskimage-create.sh -h``.
