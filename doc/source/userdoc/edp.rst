@@ -245,7 +245,9 @@ If the Swift service *is* running in the OpenStack installation
 Cluster Processes
 -----------------
 
-At a minimum the Sahara cluster must run a single instance of these processes to support EDP:
+Requirements for EDP support depend on EDP job type and plugin used for the cluster.
+For example Vanilla Sahara cluster must run at least one instance of these processes
+to support EDP:
 
 * For Hadoop version 1:
 
@@ -264,7 +266,6 @@ At a minimum the Sahara cluster must run a single instance of these processes to
   + historyserver
   + oozie
 
-Note, a typical cluster may have more than a single instance of the tasktracker and datanode processes.
 
 EDP Technical Considerations
 ============================
