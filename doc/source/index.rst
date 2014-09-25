@@ -83,6 +83,7 @@ Developer Guide
 
     devref/development.guidelines
     devref/development.environment
+    devref/devstack
     horizon/dev.environment.guide
     devref/quickstart
     devref/how_to_participate
