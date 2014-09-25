@@ -153,6 +153,9 @@ Errors: none
 This operation returns the created Data Source.
 
 **Example**:
+
+    This example creates a Swift data source.
+
     **request**
 
     .. sourcecode:: http

@@ -1,6 +1,0 @@
-{
-    "name": "cluster-1",
-    "plugin_name": "vanilla",
-    "hadoop_version": "1.2.1",
-    "cluster_template_id" : "3ebd3aa9-2252-4830-b814-25bf0d58abfe"
-}
