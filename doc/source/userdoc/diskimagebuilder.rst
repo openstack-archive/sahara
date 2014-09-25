@@ -31,22 +31,23 @@ To create vanilla images follow these steps:
 2. Run the diskimage-create.sh script.
 
    You can run the script diskimage-create.sh in any directory (for example, in
-   your home directory). By default this script will attempt to create 6 cloud
-   images, 2 each of Ubuntu, Fedora, and CentOS with versions 1 and 2 of Apache
-   Hadoop. This script must be run with root privileges.
+   your home directory). By default this script will attempt to create cloud
+   images for all versions of supported plugins and all operating systems
+   (subset of Ubuntu, Fedora, and CentOS depending on plugin). This script
+   must be run with root privileges.
 
    .. sourcecode:: console
 
       sudo bash diskimage-create.sh
 
-   This scripts will update your system and install required packages.
+   This scripts will update your system and install required packages:
         * kpartx
         * qemu
    Then it will clone the repositories "https://github.com/openstack/diskimage-builder" and "https://github.com/openstack/sahara-image-elements" and export nessesary parameters.
         * ``DIB_HADOOP_VERSION`` - version of Hadoop to install
         * ``JAVA_DOWNLOAD_URL`` - download link for JDK (tarball or bin)
         * ``OOZIE_DOWNLOAD_URL`` - download link for OOZIE (we have built
-   Oozie libs here: http://sahara-files.mirantis.com/oozie-4.0.0.tar.gz
+          Oozie libs here: http://sahara-files.mirantis.com/oozie-4.0.0.tar.gz)
         * ``HIVE_VERSION`` - version of Hive to install (currently supports only 0.11.0)
         * ``ubuntu_image_name``
         * ``fedora_image_name``
@@ -55,12 +56,11 @@ To create vanilla images follow these steps:
         * ``DIB_COMMIT_ID`` - latest commit id of diksimage-builder project
         * ``SAHARA_ELEMENTS_COMMIT_ID`` - latest commit id of sahara-image-elements project
 
-   NOTE: If you don't want to use default values, you should edit this script and set your values of parameters.
+   NOTE: If you don't want to use default values, you should set your values of parameters.
 
-   Then it will create a series of cloud images with ``hadoop``, ``hive``,
-   ``oozie``, ``mysql``, and ``swift_hadoop`` elements that install all the
-   necessary packages and configure them. You will find these images in
-   current directory.
+   Then it will create required cloud images using image elements that install
+   all the necessary packages and configure them. You will find created images in
+   the current directory.
 
 .. note::
 
@@ -78,4 +78,8 @@ To create vanilla images follow these steps:
 
 For finer control of diskimage-create.sh see the `official documentation
 <https://github.com/openstack/sahara-image-elements/blob/master/diskimage-create/README.rst>`_
-or run ``$ diskimage-create.sh -h``.
+or run:
+
+.. sourcecode:: console
+
+   $ diskimage-create.sh -h
