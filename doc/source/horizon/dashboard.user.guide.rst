@@ -1,7 +1,7 @@
-Sahara UI User Guide
-====================
+Sahara (Data Processing) UI User Guide
+======================================
 
-This guide assumes that you already have Sahara and the Sahara Dashboard configured and running.
+This guide assumes that you already have Sahara service and the Horizon dashboard up and running.
 If you require assistance with that, please see the installation guides.
 
 Launching a cluster via the Sahara Dashboard
@@ -9,7 +9,7 @@ Launching a cluster via the Sahara Dashboard
 Registering an Image
 --------------------
 
-1) Navigate to the "Sahara" tab in the dashboard, then click on the "Image Registry" panel.
+1) Navigate to the "Project" dashboard, then the "Data Processing" tab, then click on the "Image Registry" panel.
 
 2) From that page, click on the "Register Image" button at the top right.
 
@@ -24,7 +24,7 @@ Registering an Image
 Create Node Group Templates
 ---------------------------
 
-1) Navigate to the "Sahara" tab in the dashboard, then click on the "Node Group Templates" panel.
+1) Navigate to the "Project" dashboard, then the "Data Processing" tab, then click on the "Node Group Templates" panel.
 
 2) From that page, click on the "Create Template" button at the top right.
 
@@ -43,7 +43,7 @@ Create Node Group Templates
 Create a Cluster Template
 -------------------------
 
-1) Navigate to the "Sahara" tab in the dashboard, then click on the "Cluster Templates" panel.
+1) Navigate to the "Project" dashboard, then the "Data Processing" tab, then click on the "Cluster Templates" panel.
 
 2) From that page, click on the "Create Template" button at the top right.
 
@@ -64,7 +64,7 @@ Create a Cluster Template
 Launching a Cluster
 -------------------
 
-1) Navigate to the "Sahara" tab in the dashboard, then click on the "Clusters" panel.
+1) Navigate to the "Project" dashboard, then the "Data Processing" tab, then click on the "Clusters" panel.
 
 2) Click on the "Launch Cluster" button at the top right.
 
@@ -85,7 +85,7 @@ Launching a Cluster
 
 Scaling a Cluster
 -----------------
-1) From the Sahara/Clusters page, click on the "Scale Cluster" button of the row that contains the cluster that you want to scale.
+1) From the Data Processing/Clusters page, click on the "Scale Cluster" button of the row that contains the cluster that you want to scale.
 
 2) You can adjust the numbers of instances for existing Node Group Templates.
 
@@ -102,7 +102,7 @@ Data Sources
 ------------
 Data Sources are where the input and output from your jobs are housed.
 
-1) From the Sahara/Data Sources page, click on the "Create Data Source" button at the top right.
+1) From the Data Processing/Data Sources page, click on the "Create Data Source" button at the top right.
 
 2) Give your Data Source a name.
 
@@ -123,7 +123,7 @@ Job Binaries
 ------------
 Job Binaries are where you define/upload the source code (mains and libraries) for your job.
 
-1) From the Sahara/Job Binaries page, click on the "Create Job Binary" button at the top right.
+1) From the Data Processing/Job Binaries page, click on the "Create Job Binary" button at the top right.
 
 2) Give your Job Binary a name (this can be different than the actual filename).
 
@@ -142,7 +142,7 @@ Jobs
 ----
 Jobs are where you define the type of job you'd like to run as well as which "Job Binaries" are required.
 
-1) From the Sahara/Jobs page, click on the "Create Job" button at the top right.
+1) From the Data Processing/Jobs page, click on the "Create Job" button at the top right.
 
 2) Give your Job a name.
 
@@ -160,7 +160,7 @@ Job Executions
 --------------
 Job Executions are what you get by "Launching" a job.  You can monitor the status of your job to see when it has completed its run.
 
-1) From the Sahara/Jobs page, find the row that contains the job you want to launch and click on the "Launch Job" button at the right side of that row.
+1) From the Data Processing/Jobs page, find the row that contains the job you want to launch and click on the "Launch Job" button at the right side of that row.
 
 2) Choose the cluster (already running--see `Launching a Cluster`_ above) on which you would like the job to run.
 
@@ -178,7 +178,97 @@ Job Executions are what you get by "Launching" a job.  You can monitor the statu
   - Relaunch on New Cluster will take you through the forms to start a new cluster before letting you specify input/output Data Sources and job configuration.
   - Relaunch on Existing Cluster will prompt you for input/output Data Sources as well as allow you to change job configuration before launching the job.
 
+Example Jobs
+------------
+There are sample jobs located in the sahara repository.  The instructions there guide you through running the jobs via the command line.
+In this section, we will give a walkthrough on how to run those jobs via the Horizon UI.
+These steps assume that you already have a cluster up and running (in the "Active" state).
+
+1) Sample Pig job - https://github.com/openstack/sahara/tree/master/etc/edp-examples/pig-job
+
+  - Load the input data file from https://github.com/openstack/sahara/tree/master/etc/edp-examples/pig-job/data/input into swift
+
+    - Click on Projet/Object Store/Containers and create a container with any name ("samplecontainer" for our purposes here).
+
+    - Click on Upload Object and give the object a name ("piginput" in this case)
+
+    - Navigate to Data Processing/Data Sources, Click on Create Data Source.
+
+    - Name your Data Source ("pig-input-ds" in this sample)
+
+    - Type = Swift, URL samplecontainer.sahara/piginput, fill-in the Source username/password fields with your username/password and click "Create"
+
+  - Create another Data Source to use as output for the job
+
+    - Create another Data Source to use as output for our job.  Name = pig-output-ds, Type = Swift, URL = samplecontainer.sahara/pigoutput, Source username/password, "Create"
+
+  - Store your Job Binaries in the Sahara database
+
+    - Navigate to Data Processing/Job Binaries, Click on Create Job Binary
+
+    - Name = example.pig, Storage type = Internal database, click Browse and find example.pig wherever you checked out the sahara project <sahara root>/etc/edp-examples/pig-job
+
+    - Create another Job Binary:  Name = udf.jar, Storage type = Internal database, click Browse and find udf.jar wherever you checked out the sahara project <sahara root>/etc/edp-examples/pig-job
+
+  - Create a Job
+
+    - Navigate to Data Processing/Jobs, Click on Create Job
+
+    - Name = pigsample, Job Type = Pig, Choose "example.pig" as the main binary
+
+    - Click on the "Libs" tab and choose "udf.jar", then hit the "Choose" button beneath the dropdown, then click on "Create"
+
+  - Launch your job
+
+    - To launch your job from the Jobs page, click on the down arrow at the far right of the screen and choose "Launch on Existing Cluster"
+
+    - For the input, choose "pig-input-ds", for output choose "pig-output-ds".  Also choose whichever cluster you'd like to run the job on.
+
+    - For this job, no additional configuration is necessary, so you can just click on "Launch"
+
+    - You will be taken to the "Job Executions" page where you can see your job progress through "PENDING, RUNNING, SUCCEEDED" phases
+
+    - When your job finishes with "SUCCEEDED", you can navigate back to Object Store/Containers and browse to the samplecontainer to see your output.  It should be in the "pigoutput" folder.
+
+2) Sample Spark job - https://github.com/openstack/sahara/tree/master/etc/edp-examples/edp-spark
+
+  - Store the Job Binary in the Sahara database
+
+    - Navigate to Data Processing/Job Binaries, Click on Create Job Binary
+
+    - Name = sparkexample.jar, Storage type = Internal database, Browse to the location <sahara root>/etc/edp-examples/edp-spark and choose spark-example.jar, Click "Create"
+
+  - Create a Job
+
+    - Name = sparkexamplejob, Job Type = Spark, Main binary = Choose sparkexample.jar, Click "Create"
+
+  - Launch your job
+
+    - To launch your job from the Jobs page, click on the down arrow at the far right of the screen and choose "Launch on Existing Cluster"
+
+    - Choose whichever cluster you'd like to run the job on.
+
+    - Click on the "Configure" tab
+
+    - Set the main class to be:  org.apache.spark.examples.SparkPi
+
+    - Under Arguments, click Add and fill in the number of "Slices" you want to use for the job.  For this example, let's use 100 as the value
+
+    - Click on Launch
+
+    - You will be taken to the "Job Executions" page where you can see your job progress through "PENDING, RUNNING, SUCCEEDED" phases
+
+    - When your job finishes with "SUCCEEDED", you can see your results by sshing to the Spark "master" node.
+
+    - The output is located at /tmp/spark-edp/<name of job>/<job execution id>.  You can do ``cat stdout`` which should display something like "Pi is roughly 3.14156132"
+
+    - It should be noted that for more complex jobs, the input/output may be elsewhere.  This particular job just writes to stdout, which is logged in the folder under /tmp.
+
 Additional Notes
 ----------------
 1) Throughout the Sahara UI, you will find that if you try to delete an object that you will not be able to delete it if another object depends on it.
 An example of this would be trying to delete a Job that has an existing Job Execution.  In order to be able to delete that job, you would first need to delete any Job Executions that relate to that job.
+
+2) In the examples above, we mention adding your username/password for the Swift Data Sources.
+It should be noted that it is possible to configure Sahara such that the username/password credentials are *not* required.
+For more information on that, please refer to: :doc:`Sahara Advanced Configuration Guide <../userdoc/advanced.configuration.guide>`
