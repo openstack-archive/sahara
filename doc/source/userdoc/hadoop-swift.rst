@@ -2,84 +2,39 @@
 
 Swift Integration
 =================
-Hadoop and Swift integration is the essential continuation of Hadoop&OpenStack
-marriage. There were two steps to achieve this:
+Hadoop and Swift integration are the essential continuation of the
+Hadoop/OpenStack marriage. The key component to making this marriage work is
+the Hadoop Swift filesystem implementation. Although this implementation has
+been merged into the upstream Hadoop project, Sahara maintains a version with
+the most current features enabled.
 
-* Hadoop side: https://issues.apache.org/jira/browse/HADOOP-8545
-    This patch is not merged yet and is still being developed, so that's why
-    there is an ability to get the latest-version jar file from CDN:
-    http://sahara-files.mirantis.com/hadoop-swift/hadoop-swift-latest.jar
-* Swift side: https://review.openstack.org/#/c/21015
-    This patch is merged into Grizzly. If you want to make it work in Folsom
-    see the instructions in the section below.
+* The original Hadoop patch can be found at
+  https://issues.apache.org/jira/browse/HADOOP-8545
 
+* The most current Sahara maintained version of this patch can be found in the
+  Sahara Extra repository https://github.com/openstack/sahara-extra
 
-Swift patching
---------------
-If you are still using Folsom you need to follow these steps:
-
-* Go to proxy server and find proxy-server.conf file. Go to ``[pipeline-main]``
-  section and insert a new filter BEFORE 'authtoken' filter. The name of your
-  new filter is not very important, you will use it only for configuration.
-  E.g. let it be ``${list_endpoints}``:
-
-.. sourcecode:: cfg
-
-    [pipeline:main]
-    pipeline = catch_errors healthcheck cache ratelimit swift3 s3token list_endpoints authtoken keystone proxy-server
-..
-
-  The next thing you need to do here is to add the description of new filter:
-
-.. sourcecode:: cfg
-
-    [filter:list_endpoints]
-    use = egg:swift#${list_endpoints}
-    # list_endpoints_path = /endpoints/
-..
-
-  ``list_endpoints_path`` is not mandatory and is "endpoints" by default.
-  This param is used for http-request construction. See details below.
-
-* Go to ``entry_points.txt`` in egg-info. For swift-1.7.4 it may be found in
-  ``/usr/lib/python2.7/dist-packages/swift-1.7.4.egg-info/entry_points.txt``.
-  Add the following description to ``[paste.filter_factory]`` section:
-
-.. sourcecode:: cfg
-
-    ${list_endpoints} = swift.common.middleware.list_endpoints:filter_factory
-
-* And the last step: put `list_endpoints.py <https://review.openstack.org/#/c/21015/7/swift/common/middleware/list_endpoints.py>`_
-  to ``/python2.7/dist-packages/swift/common/middleware/``.
-
-Is Swift was patched successfully?
-----------------------------------
-You may check if patching is successful just sending the following http requests:
-
-.. sourcecode:: bash
-
-    http://${proxy}:8080/endpoints/${account}/${container}/${object}
-    http://${proxy}:8080/endpoints/${account}/${container}
-    http://${proxy}:8080/endpoints/${account}
-
-You don't need any additional headers here and authorization
-(see previous section: filter ${list_endpoints} is before 'authtoken' filter).
-The response will contain ip's of all swift nodes which contains the corresponding object.
-
+* The latest compiled version of the jar for this component can be downloaded
+  from http://sahara-files.mirantis.com/hadoop-swift/hadoop-swift-latest.jar
 
 Hadoop patching
 ---------------
-You may build jar file by yourself choosing the latest patch from
-https://issues.apache.org/jira/browse/HADOOP-8545. Or you may get the latest
-one from CDN http://sahara-files.mirantis.com/hadoop-swift/hadoop-swift-latest.jar
-You need to put this file to hadoop libraries (e.g. /usr/lib/share/hadoop/lib)
-into each job-tracker and task-tracker node in cluster. The main step in this
-section is to configure core-site.xml file on each of this node.
+You may build the jar file yourself by choosing the latest patch from the
+Sahara Extra repository and using Maven to build with the pom.xml file
+provided. Or you may get the latest jar pre-built from the CDN at
+http://sahara-files.mirantis.com/hadoop-swift/hadoop-swift-latest.jar
+
+You will need to put this file into the hadoop libraries
+(e.g. /usr/lib/share/hadoop/lib) on each job-tracker and task-tracker node
+for Hadoop 1.x, or each ResourceManager and NodeManager node for Hadoop 2.x
+in the cluster.
 
 Hadoop configurations
 ---------------------
-All of configs may be rewritten by Hadoop-job or set in ``core-site.xml``
-using this template:
+In general, when Sahara runs a job on a cluster it will handle configuring the
+Hadoop installation. In cases where a user might require more in-depth
+configuration all the data is set in the ``core-site.xml`` file on the cluster
+instances using this template:
 
 .. sourcecode:: xml
 
@@ -105,7 +60,7 @@ There are two types of configs here:
 
 
 
-2. Provider-specific. Patch for Hadoop supports different cloud providers.
+2. Provider-specific. The patch for Hadoop supports different cloud providers.
    The ``${name}`` in this case equals to ``fs.swift.service.${provider}``.
 
    Here is the list of ``${config}``:
@@ -114,6 +69,10 @@ There are two types of configs here:
    * ``.tenant``
    * ``.username``
    * ``.password``
+   * ``.domain.name`` - Domains can be used to specify users who are not in
+     the tenant specified.
+   * ``.trust.id`` - Trusts are optionally  used to scope the authentication
+     tokens of the supplied user.
    * ``.http.port``
    * ``.https.port``
    * ``.region`` - Swift region is used when cloud has more than one Swift
@@ -126,17 +85,22 @@ There are two types of configs here:
 
 Example
 -------
-By this point Swift and Hadoop is ready for use. All configs in hadoop is ok.
+For this example it is assumed that you have setup a Hadoop instance with
+a valid configuration and the Swift filesystem component. Furthermore there is
+assumed to be a Swift container named ``integration`` holding an object named
+``temp``, as well as a Keystone user named ``admin`` with a password of
+``swordfish``.
 
-In example below provider's name is ``sahara``. So let's copy one object
-to another in one swift container and account. E.g. /dev/integration/temp
-to /dev/integration/temp1. Will use distcp for this purpose:
-http://hadoop.apache.org/docs/r0.19.0/distcp.html
+The following example illustrates how to copy an object to a new location in
+the same container. We will use Hadoop's ``distcp`` command
+(http://hadoop.apache.org/docs/r0.19.0/distcp.html) to accomplish the copy.
+Note that the service provider for our Swift access is ``sahara``, and that
+we will not need to specify the project of our Swift container as it will
+be provided in the Hadoop configuration.
 
-How to write swift path? In our case it will look as follows: ``swift://integration.sahara/temp``.
-So the template is: ``swift://${container}.${provider}/${object}``.
-We don't need to point out the account because it will be automatically
-determined from tenant name from configs. Actually, account=tenant.
+Swift paths are expressed in Hadoop according to the following template:
+``swift://${container}.${provider}/${object}``. For our example source this
+will appear as ``swift://integration.sahara/temp``.
 
 Let's run the job:
 
@@ -146,9 +110,10 @@ Let's run the job:
      -D fs.swift.service.sahara.password=swordfish \
      swift://integration.sahara/temp swift://integration.sahara/temp1
 
-After that just check if temp1 is created.
+After that just confirm that ``temp1`` has been created in our ``integration``
+container.
 
 Limitations
 -----------
 
-**Note:** Please note that container name should be a valid URI.
+**Note:** Please note that container names should be a valid URI.
