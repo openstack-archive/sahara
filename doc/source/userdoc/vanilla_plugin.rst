@@ -10,9 +10,11 @@ can be found at the following locations:
 
 * http://sahara-files.mirantis.com/sahara-juno-vanilla-1.2.1-ubuntu-14.04.qcow2
 * http://sahara-files.mirantis.com/sahara-juno-vanilla-1.2.1-centos-6.5.qcow2
+* http://sahara-files.mirantis.com/sahara-juno-vanilla-1.2.1-fedora-20.qcow2
 
 * http://sahara-files.mirantis.com/sahara-juno-vanilla-2.4.1-ubuntu-14.04.qcow2
 * http://sahara-files.mirantis.com/sahara-juno-vanilla-2.4.1-centos-6.5.qcow2
+* http://sahara-files.mirantis.com/sahara-juno-vanilla-2.4.1-fedora-20.qcow2
 
 Additionally, you may build images by yourself using :doc:`diskimagebuilder`.
 Keep in mind that if you want to use the Swift Integration feature
