@@ -27,7 +27,6 @@ User guide
    userdoc/installation.guide
    userdoc/configuration.guide
    userdoc/advanced.configuration.guide
-   horizon/installation.guide
    userdoc/upgrade.guide
 
 **How To**

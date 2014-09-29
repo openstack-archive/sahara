@@ -33,8 +33,9 @@ testing Sahara. Here is a list of currently implemented tests:
 Selenium Integration tests
 ++++++++++++++++++++++++++
 
-We have a bunch of Selenium-based UI tests for sahara-dashboard in
-`saharadashboard/tests`. The following UI parts are covered:
+We have a bunch of Selenium-based UI tests for Sahara UI in
+https://git.openstack.org/cgit/openstack/sahara-dashboard repository.
+The following UI parts are covered:
 
 * Clusters
 * Cluster templates

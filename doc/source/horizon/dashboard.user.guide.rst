@@ -2,10 +2,11 @@ Sahara (Data Processing) UI User Guide
 ======================================
 
 This guide assumes that you already have Sahara service and the Horizon dashboard up and running.
-If you require assistance with that, please see the installation guides.
+Don't forget to make sure that Sahara is registered in Keystone.
+If you require assistance with that, please see the `installation guide <../installation.guide.html>`_.
 
-Launching a cluster via the Sahara Dashboard
---------------------------------------------
+Launching a cluster via the Sahara UI
+-------------------------------------
 Registering an Image
 --------------------
 

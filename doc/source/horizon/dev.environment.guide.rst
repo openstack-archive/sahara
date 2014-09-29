@@ -1,24 +1,18 @@
 Sahara UI Dev Environment Setup
 ===============================
 
-This page describes how to setup the Sahara dashboard UI component by either
-installing it as part of DevStack or installing it in an isolated environment
+This page describes how to setup Horizon for developing Sahara by either
+installing it as part of DevStack with Sahara or installing it in an isolated environment
 and running from the command line.
 
 Install as a part of DevStack
 -----------------------------
 
-Sahara-Dashboard will be installed as a component of Horizon in DevStack.
-See the `DevStack documentation <http://devstack.org>`_ for more information
-on installing and configuring DevStack.
-
-If you are developing Sahara from an OSX environment you will need to run
-DevStack on a virtual machine. See
-`Setup VM for DevStack on OSX <../devref/devstack.html>`_ for more
-information.
+See the `DevStack guide <../devref/devstack.html>`_ for more information
+on installing and configuring DevStack with Sahara.
 
 After Horizon installation, it will contain a Data Processing tab under Projects tab.
-Sahara-Dashboard source code will be located at
+Sahara UI source code will be located at
 ``$DEST/horizon/openstack_dashboard/dashboards/project/data_processing``
 where ``$DEST/`` is usually ``/opt/stack/``.
 

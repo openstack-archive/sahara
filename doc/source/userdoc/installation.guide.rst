@@ -48,7 +48,10 @@ To install with RDO
     $ sahara-db-manage --config-file /etc/sahara/sahara.conf upgrade head
 ..
 
-5. Start the sahara-api service:
+5. Go through :ref:`common_installation_steps` and make the
+   necessary changes.
+
+6. Start the sahara-api service:
 
 .. sourcecode:: console
 
@@ -125,7 +128,15 @@ To install into a virtual environment
     Make the necessary changes in ``sahara-venv/etc/sahara.conf``.
     For details see :doc:`Sahara Configuration Guide <configuration.guide>`
 
-5. If you use Sahara with MySQL database, then for storing big Job Binaries
+.. _common_installation_steps:
+
+Common installation steps
+-------------------------
+
+The steps below are common for both installing Sahara as part of RDO and
+installing it in virtual environment.
+
+1. If you use Sahara with MySQL database, then for storing big Job Binaries
    in Sahara Internal Database you must configure size of max allowed packet.
    Edit ``my.cnf`` and change parameter:
 
@@ -139,18 +150,34 @@ To install into a virtual environment
 
     and restart mysql server.
 
-6. Create database schema:
+2. Create database schema:
 
 .. sourcecode:: console
 
     $ sahara-venv/bin/sahara-db-manage --config-file sahara-venv/etc/sahara.conf upgrade head
 ..
 
-7. To start Sahara call:
+3. To start Sahara call:
 
 .. sourcecode:: console
 
     $ sahara-venv/bin/sahara-all --config-file sahara-venv/etc/sahara.conf
+..
+
+.. _register-sahara-label:
+4. In order for Sahara to be accessible in OpenStack Dashboard and for
+   python-saharaclient to work properly you need to register Sahara in
+   Keystone. For example:
+
+.. sourcecode:: console
+
+    keystone service-create --name sahara --type data_processing \
+        --description "Sahara Data Processing"
+
+    keystone endpoint-create --service sahara --region RegionOne \
+        --publicurl "http://10.0.0.2:8386/v1.1/%(tenant_id)s" \
+        --adminurl "http://10.0.0.2:8386/v1.1/%(tenant_id)s" \
+        --internalurl "http://10.0.0.2:8386/v1.1/%(tenant_id)s"
 ..
 
 
