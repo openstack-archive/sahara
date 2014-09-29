@@ -34,7 +34,7 @@ To install with RDO
 
 .. sourcecode:: console
 
-    $ yum install openstack-sahara
+    # yum install openstack-sahara
 ..
 
 3. Configure Sahara as needed. The configuration file is located in
@@ -45,19 +45,25 @@ To install with RDO
 
 .. sourcecode:: console
 
-    $ sahara-db-manage --config-file /etc/sahara/sahara.conf upgrade head
+    # sahara-db-manage --config-file /etc/sahara/sahara.conf upgrade head
 ..
 
 5. Go through :ref:`common_installation_steps` and make the
    necessary changes.
 
-6. Start the sahara-api service:
+6. Start the sahara-all service:
 
 .. sourcecode:: console
 
-    $ service openstack-sahara-api start
+    # systemctl start openstack-sahara-all
 ..
 
+7. *(Optional)* Enable Sahara to start on boot
+
+.. sourcecode:: console
+
+    # systemctl enable openstack-sahara-all
+..
 
 
 To install into a virtual environment
