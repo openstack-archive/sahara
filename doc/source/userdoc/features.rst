@@ -199,3 +199,90 @@ The below tables provides a plugin capability matrix:
 +--------------------------+---------+----------+----------+-------+
 | EDP                      | x       | x        | x        | x     |
 +--------------------------+---------+----------+----------+-------+
+
+Running Sahara in Distributed Mode
+----------------------------------
+
+.. warning::
+    Currently distributed mode for Sahara is in alpha state. We do not
+    recommend using it in production environment.
+
+The `installation guide <installation.guide.html>`_ suggests to launch
+Sahara as a single 'sahara-all' process. It is also possible to run Sahara
+in distributed mode with 'sahara-api' and 'sahara-engine' processes running
+on several machines simultaneously.
+
+Sahara-api works as a frontend and serves users' requests. It
+offloads 'heavy' tasks to sahara-engine via RPC mechanism. While
+sahara-engine could be loaded, sahara-api by design stays free
+and hence may quickly respond on user queries.
+
+If Sahara runs on several machines, the API requests could be
+balanced between several sahara-api instances using a load balancer.
+It is not required to balance load between different sahara-engine
+instances, as that will be automatically done via a message queue.
+
+If a single machine goes down, others will continue serving
+users' requests. Hence a better scalability is achieved and some
+fault tolerance as well. Note that the proposed solution is not
+a true High Availability. While failure of a single machine does not
+affect work of other machines, all of the operations running on
+the failed machine will stop. For example, if a cluster
+scaling is interrupted, the cluster will be stuck in a half-scaled state.
+The cluster will probably continue working, but it will be impossible
+to scale it further or run jobs on it via EDP.
+
+To run Sahara in distributed mode pick several machines on which
+you want to run Sahara services and follow these steps:
+
+ * On each machine install and configure Sahara using the
+   `installation guide <../installation.guide.html>`_
+   except:
+
+    * Do not run 'sahara-db-manage' or launch Sahara with 'sahara-all'
+    * Make sure sahara.conf provides database connection string to a
+      single database on all machines.
+
+ * Run 'sahara-db-manage' as described in the installation guide,
+   but only on a single (arbitrarily picked) machine.
+
+ * sahara-api and sahara-engine processes use oslo.messaging to
+   communicate with each other. You need to configure it properly on
+   each node (see below).
+
+ * run sahara-api and sahara-engine on the desired nodes. On a node
+   you can run both sahara-api and sahara-engine or you can run them on
+   separate nodes. It does not matter as long as they are configured
+   to use the same message broker and database.
+
+To configure oslo.messaging, first you need to pick the driver you are
+going to use. Right now three drivers are provided: Rabbit MQ, Qpid or Zmq.
+To use Rabbit MQ or Qpid driver, you will have to setup messaging broker.
+The picked driver must be supplied in ``sahara.conf`` in
+``[DEFAULT]/rpc_backend`` parameter. Use one the following values:
+``rabbit``, ``qpid`` or ``zmq``. Next you have to supply
+driver-specific options.
+
+Unfortunately, right now there is no documentation with description of
+drivers' configuration. The options are available only in source code.
+
+ * For Rabbit MQ see
+
+   * rabbit_opts variable in `impl_rabbit.py <https://git.openstack.org/cgit/openstack/oslo.messaging/tree/oslo/messaging/_drivers/impl_rabbit.py?id=1.4.0#n38>`_
+   * amqp_opts variable in `amqp.py <https://git.openstack.org/cgit/openstack/oslo.messaging/tree/oslo/messaging/_drivers/amqp.py?id=1.4.0#n37>`_
+
+ * For Qpid see
+
+   * qpid_opts variable in `impl_qpid.py <https://git.openstack.org/cgit/openstack/oslo.messaging/tree/oslo/messaging/_drivers/impl_qpid.py?id=1.4.0#n40>`_
+   * amqp_opts variable in `amqp.py <https://git.openstack.org/cgit/openstack/oslo.messaging/tree/oslo/messaging/_drivers/amqp.py?id=1.4.0#n37>`_
+
+ * For Zmq see
+
+   * zmq_opts variable in `impl_zmq.py <https://git.openstack.org/cgit/openstack/oslo.messaging/tree/oslo/messaging/_drivers/impl_zmq.py?id=1.4.0#n49>`_
+   * matchmaker_opts variable in `matchmaker.py <https://git.openstack.org/cgit/openstack/oslo.messaging/tree/oslo/messaging/_drivers/matchmaker.py?id=1.4.0#n27>`_
+   * matchmaker_redis_opts variable in `matchmaker_redis.py <https://git.openstack.org/cgit/openstack/oslo.messaging/tree/oslo/messaging/_drivers/matchmaker_redis.py?id=1.4.0#n26>`_
+   * matchmaker_opts variable in `matchmaker_ring.py <https://git.openstack.org/cgit/openstack/oslo.messaging/tree/oslo/messaging/_drivers/matchmaker_ring.py?id=1.4.0#n27>`_
+
+You can find the same options defined in ``sahara.conf.sample``. You can use
+it to find section names for each option (matchmaker options are
+defined not in ``[DEFAULT]``)
