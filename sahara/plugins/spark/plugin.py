@@ -231,17 +231,14 @@ class SparkProvider(p.ProvisioningPluginBase):
                    'sudo chown $USER $HOME/.ssh/id_rsa; '
                    'sudo chmod 600 $HOME/.ssh/id_rsa')
 
-        for ng in cluster.node_groups:
-            dn_path = c_helper.extract_hadoop_path(ng.storage_paths(),
-                                                   '/dfs/dn')
-            nn_path = c_helper.extract_hadoop_path(ng.storage_paths(),
-                                                   '/dfs/nn')
-            hdfs_dir_cmd = (('sudo mkdir -p %s %s;'
-                             'sudo chown -R hdfs:hadoop %s %s;'
-                             'sudo chmod 755 %s %s;')
-                            % (nn_path, dn_path,
-                               nn_path, dn_path,
-                               nn_path, dn_path))
+        storage_paths = instance.node_group.storage_paths()
+        dn_path = c_helper.extract_hadoop_path(storage_paths, '/dfs/dn')
+        nn_path = c_helper.extract_hadoop_path(storage_paths, '/dfs/nn')
+
+        hdfs_dir_cmd = ('sudo mkdir -p %(nn_path)s %(dn_path)s &&'
+                        'sudo chown -R hdfs:hadoop %(nn_path)s %(dn_path)s &&'
+                        'sudo chmod 755 %(nn_path)s %(dn_path)s' %
+                        {"nn_path": nn_path, "dn_path": dn_path})
 
         with remote.get_remote(instance) as r:
             r.execute_command(
