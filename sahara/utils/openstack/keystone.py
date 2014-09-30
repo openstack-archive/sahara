@@ -37,37 +37,35 @@ CONF.register_opts(opts)
 def client():
     '''Return the current context client.'''
     ctx = context.current()
+
+    return _client(username=ctx.username, token=ctx.token,
+                   tenant_id=ctx.tenant_id)
+
+
+def _client(username, password=None, token=None, tenant_name=None,
+            tenant_id=None, trust_id=None, domain_name=None):
+
+    if trust_id and not CONF.use_identity_api_v3:
+        raise Exception("Trusts aren't implemented in keystone api"
+                        " less than v3")
+
     auth_url = base.retrieve_auth_url()
+
+    client_kwargs = {'username': username,
+                     'password': password,
+                     'token': token,
+                     'tenant_name': tenant_name,
+                     'tenant_id': tenant_id,
+                     'trust_id': trust_id,
+                     'user_domain_name': domain_name,
+                     'auth_url': auth_url}
 
     if CONF.use_identity_api_v3:
-        keystone = keystone_client_v3.Client(username=ctx.username,
-                                             token=ctx.token,
-                                             tenant_id=ctx.tenant_id,
-                                             auth_url=auth_url)
+        keystone = keystone_client_v3.Client(**client_kwargs)
         keystone.management_url = auth_url
     else:
-        keystone = keystone_client.Client(username=ctx.username,
-                                          token=ctx.token,
-                                          tenant_id=ctx.tenant_id,
-                                          auth_url=auth_url)
+        keystone = keystone_client.Client(**client_kwargs)
 
-    return keystone
-
-
-def _client(username, password, project_name=None, trust_id=None,
-            domain_name=None):
-    if not CONF.use_identity_api_v3:
-        raise Exception('Trusts aren\'t implemented in keystone api'
-                        ' less than v3')
-
-    auth_url = base.retrieve_auth_url()
-    keystone = keystone_client_v3.Client(username=username,
-                                         password=password,
-                                         project_name=project_name,
-                                         user_domain_name=domain_name,
-                                         auth_url=auth_url,
-                                         trust_id=trust_id)
-    keystone.management_url = auth_url
     return keystone
 
 
@@ -76,7 +74,7 @@ def _admin_client(project_name=None, trust_id=None):
     password = CONF.keystone_authtoken.admin_password
     keystone = _client(username=username,
                        password=password,
-                       project_name=project_name,
+                       tenant_name=project_name,
                        trust_id=trust_id)
     return keystone
 

@@ -121,7 +121,7 @@ def start_patch(patch_templates=True):
         get_cl_template_p = mock.patch(
             "sahara.service.api.get_cluster_template")
     nova_p = mock.patch("sahara.utils.openstack.nova.client")
-    keystone_p = mock.patch("sahara.utils.openstack.keystone.client")
+    keystone_p = mock.patch("sahara.utils.openstack.keystone._client")
     heat_p = mock.patch("sahara.utils.openstack.heat.client")
     get_image_p = mock.patch("sahara.service.api.get_image")
 

@@ -346,7 +346,7 @@ def check_add_node_groups(cluster, add_node_groups):
 
 def check_cinder_exists():
     services = [service.name for service in
-                keystone.client().services.list()]
+                keystone.client_for_admin().services.list()]
     if 'cinder' not in services:
         raise ex.InvalidException(_("Cinder is not supported"))
 
