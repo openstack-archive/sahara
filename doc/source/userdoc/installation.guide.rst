@@ -180,6 +180,8 @@ installing it in virtual environment.
         --internalurl "http://10.0.0.2:8386/v1.1/%(tenant_id)s"
 ..
 
+5. To adjust OpenStack Dashboard configuration with your Sahara installation
+   please follow the UI configuration guide :doc:`here. <dashboard.guide>`
 
 Notes:
 ------
