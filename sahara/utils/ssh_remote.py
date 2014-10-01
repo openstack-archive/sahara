@@ -75,8 +75,11 @@ def _get_proxy(neutron_info):
                                                 neutron_info['token'],
                                                 neutron_info['tenant'])
     qrouter = client.get_router()
-    proxy = paramiko.ProxyCommand('ip netns exec qrouter-{0} nc {1} 22'
-                                  .format(qrouter, neutron_info['host']))
+    proxy = paramiko.ProxyCommand('{0} ip netns exec qrouter-{1} nc {2} 22'
+                                  .format(neutron_info['rootwrap_command']
+                                          if neutron_info['use_rootwrap']
+                                          else '',
+                                          qrouter, neutron_info['host']))
 
     return proxy
 
@@ -158,7 +161,8 @@ def _get_http_client(host, port, neutron_info, *args, **kwargs):
             # the same adapter (and same connection pools) for a given
             # host and port tuple
             _http_session = neutron_client.get_http_session(
-                host, port=port, *args, **kwargs)
+                host, port=port, use_rootwrap=CONF.use_rootwrap,
+                rootwrap_command=CONF.rootwrap_command, *args, **kwargs)
             LOG.debug('created neutron based HTTP session for {0}:{1}'
                       .format(host, port))
         else:
@@ -336,6 +340,8 @@ class InstanceInteropHelper(remote.Remote):
         neutron_info['token'] = ctx.token
         neutron_info['tenant'] = ctx.tenant_name
         neutron_info['host'] = self.instance.management_ip
+        neutron_info['use_rootwrap'] = CONF.use_rootwrap
+        neutron_info['rootwrap_command'] = CONF.rootwrap_command
 
         LOG.debug('Returning neutron info: {0}'.format(neutron_info))
         return neutron_info

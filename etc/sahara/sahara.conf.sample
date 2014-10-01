@@ -224,6 +224,16 @@
 # in conjunction with use_neutron=True). (boolean value)
 #use_namespaces=false
 
+# Use rootwrap facility to allow non-root users to run the
+# sahara-all server instance and access private network IPs
+# (only valid to use in conjunction with use_namespaces=True)
+# (boolean value)
+#use_rootwrap=false
+
+# Rootwrap command to leverage.  Use in conjunction with
+# use_rootwrap=True (string value)
+#rootwrap_command=sudo sahara-rootwrap /etc/sahara/rootwrap.conf
+
 
 #
 # Options defined in sahara.main

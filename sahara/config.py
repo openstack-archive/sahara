@@ -59,7 +59,17 @@ networking_opts = [
     cfg.BoolOpt('use_namespaces',
                 default=False,
                 help="Use network namespaces for communication (only valid to "
-                     "use in conjunction with use_neutron=True).")
+                     "use in conjunction with use_neutron=True)."),
+    cfg.BoolOpt('use_rootwrap',
+                default=False,
+                help="Use rootwrap facility to allow non-root users to run "
+                     "the sahara-all server instance and access private "
+                     "network IPs (only valid to use in conjunction with "
+                     "use_namespaces=True)"),
+    cfg.StrOpt('rootwrap_command',
+               default='sudo sahara-rootwrap /etc/sahara/rootwrap.conf',
+               help="Rootwrap command to leverage.  Use in conjunction with "
+                    "use_rootwrap=True")
 ]
 
 

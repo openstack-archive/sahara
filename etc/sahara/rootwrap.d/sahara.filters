@@ -1,0 +1,4 @@
+[Filters]
+ip: IpNetnsExecFilter, ip, root
+nc: CommandFilter, nc, root
+kill: CommandFilter, kill, root
