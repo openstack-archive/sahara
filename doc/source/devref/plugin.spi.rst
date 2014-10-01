@@ -96,6 +96,18 @@ method and start all services on those instances.
 
 *Returns*: None
 
+.. _get_edp_engine:
+
+get_edp_engine(cluster, job_type)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Returns an EDP job engine object that supports the specified job_type on the
+given cluster, or None if there is no support. The EDP job engine object
+returned must implement the interface described in :doc:`edp.spi`.  The job_type
+is a String matching one of the job types listed in :ref:`edp_spi_job_types`.
+
+*Returns*: an EDP job engine object or None
+
 decommission_nodes(cluster, instances)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
