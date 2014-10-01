@@ -107,7 +107,12 @@ parameters, and arguments are used by different job types.
 *Returns*: a dictionary of the following form, containing hints for configs,
 parameters, and arguments for the job type:
 
-{'job_config': {'configs': {}, 'params': {}, 'args': []}}
+{'job_config': {'configs': [], 'params': {}, 'args': []}}
+
+* *args* is a list of strings
+* *params* contains simple key/value pairs
+* each item in *configs* is a dictionary with entries
+  for 'name' (required), 'value', and 'description'
 
 
 get_supported_job_types()
