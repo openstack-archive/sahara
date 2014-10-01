@@ -60,7 +60,5 @@ with each slave to maximize data locality.
 Limitations
 -----------
 
-For now scaling and EDP are not supported.
-
 Swift support is not available in Spark. Once it is developed there, it will be
 possible to add it to this plugin.
