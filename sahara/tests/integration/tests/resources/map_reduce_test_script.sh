@@ -79,7 +79,7 @@ run_pi_job() {
 
     echo -e "************************ START OF \"PI\" JOB *********************\n" >> $log
 
-    sudo -u $HADOOP_USER bash -lc "hadoop jar $HADOOP_EXAMPLES_JAR_PATH pi $[$NODE_COUNT*10] $[$NODE_COUNT*1000]" >> $log
+    sudo -u $HADOOP_USER bash -lc "hadoop jar $HADOOP_EXAMPLES_JAR_PATH pi $(($NODE_COUNT*10)) $(($NODE_COUNT*1000))" >> $log
 
     echo -e "************************ END OF \"PI\" JOB ***********************" >> $log
 }
