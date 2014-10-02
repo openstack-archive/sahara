@@ -137,6 +137,9 @@ def check_node_group_basic_fields(plugin_name, hadoop_version, ng,
     if ng.get('security_groups'):
         check_security_groups_exist(ng['security_groups'])
 
+    if ng.get('availability_zone'):
+        check_availability_zone_exist(ng['availability_zone'])
+
 
 def check_flavor_exists(flavor_id):
     flavor_list = nova.client().flavors.list()
@@ -200,6 +203,13 @@ def check_auto_security_group(cluster_name, nodegroup):
                     nova.client().security_groups.list()]:
             raise ex.NameAlreadyExistsException(
                 _("Security group with name '%s' already exists") % name)
+
+
+def check_availability_zone_exist(az):
+    az_list = nova.client().availability_zones.list(False)
+    az_names = [a.zoneName for a in az_list]
+    if az not in az_names:
+        raise ex.InvalidException(_("Availability zone '%s' not found") % az)
 
 
 # Cluster creation related checks

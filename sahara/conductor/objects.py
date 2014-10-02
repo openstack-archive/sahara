@@ -80,6 +80,7 @@ class NodeGroup(object):
     security_groups - List of security groups for instances in this Node Group
     auto_security_group - indicates if Sahara should create additional
                           security group for the Node Group
+    availability_zone - name of Nova availability zone where to spawn instances
     open_ports - List of ports that will be opened if auto_security_group is
                  True
 
@@ -177,6 +178,7 @@ class NodeGroupTemplate(object):
     floating_ip_pool
     security_groups
     auto_security_group
+    availability_zone
     """
 
 

@@ -400,3 +400,10 @@ class TestMigrations(base.BaseWalkMigrationTestCase, base.CommonTestsMixIn):
 
     def _check_011(self, engine, date):
         self.assertColumnExists(engine, 'clusters', 'sahara_info')
+
+    def _check_012(self, engine, date):
+        self.assertColumnExists(engine, 'node_group_templates',
+                                'availability_zone')
+        self.assertColumnExists(engine, 'node_groups', 'availability_zone')
+        self.assertColumnExists(engine, 'templates_relations',
+                                'availability_zone')

@@ -41,6 +41,7 @@ NODE_GROUP_DEFAULTS = {
     "floating_ip_pool": None,
     "security_groups": None,
     "auto_security_group": False,
+    "availability_zone": None,
 }
 
 INSTANCE_DEFAULTS = {
