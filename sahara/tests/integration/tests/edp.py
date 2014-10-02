@@ -44,7 +44,7 @@ class EDPJobInfo(object):
         if hadoop_vers == 1:
             return open(self.JAVA_PATH + 'edp-java.jar').read()
         return open(self.HADOOP2_JAVA_PATH + (
-            'hadoop-mapreduce-examples-2.3.0.jar')).read()
+            'hadoop-mapreduce-examples-2.4.1.jar')).read()
 
     def java_example_configs(self, hadoop_vers=1):
         if hadoop_vers == 1:
