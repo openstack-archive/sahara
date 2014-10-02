@@ -4,11 +4,16 @@ Elastic Data Processing (EDP)
 Overview
 --------
 
-Sahara's Elastic Data Processing facility or :dfn:`EDP` allows the execution of Hadoop jobs on clusters created from Sahara. EDP supports:
+Sahara's Elastic Data Processing facility or :dfn:`EDP` allows the execution of jobs on clusters created from Sahara. EDP supports:
 
-* Hive, Pig, MapReduce, and Java job types
+* Hive, Pig, MapReduce, MapReduce.Streaming and Java job types on Hadoop clusters
+* Spark jobs on Spark standalone clusters
 * storage of job binaries in Swift or Sahara's own database
-* access to input and output data sources in Swift or HDFS
+* access to input and output data sources in
+
+  + HDFS for all job types
+  + Swift for all types excluding Spark and Hive
+
 * configuration of jobs at submission time
 * execution of jobs on existing clusters or transient clusters
 
@@ -22,7 +27,7 @@ The EDP features also can be used directly by a client through the :doc:`../rest
 EDP Concepts
 ------------
 
-Sahara EDP uses a collection of simple objects to define and execute Hadoop jobs. These objects are stored in the Sahara database when they
+Sahara EDP uses a collection of simple objects to define and execute jobs. These objects are stored in the Sahara database when they
 are created, allowing them to be reused.  This modular approach with database persistence allows code and data to be reused across multiple jobs.
 
 The essential components of a job are:
@@ -37,30 +42,34 @@ These components are supplied through the objects described below.
 Job Binaries
 ++++++++++++
 
-A :dfn:`Job Binary` object stores a URL to a single Pig script, Hive script, or Jar file and any credentials needed to retrieve the file.  The file itself may be stored in the Sahara internal database or in Swift.
+A :dfn:`Job Binary` object stores a URL to a single script or Jar file and any credentials needed to retrieve the file.  The file itself may be stored in the Sahara internal database or in Swift.
 
 Files in the Sahara database are stored as raw bytes in a :dfn:`Job Binary Internal` object.  This object's sole purpose is to store a file for later retrieval.  No extra credentials need to be supplied for files stored internally.
 
-Sahara requires credentials (username and password) to access files stored in Swift. The Swift service must be running in the same OpenStack installation referenced by Sahara.
+Sahara requires credentials (username and password) to access files stored in Swift unless Swift proxy users are configured as described in :doc:`../userdoc/advanced.configuration.guide`. The Swift service must be running in the same OpenStack installation referenced by Sahara.
 
 There is a configurable limit on the size of a single job binary that may be retrieved by Sahara.  This limit is 5MB and may be set with the *job_binary_max_KB* setting in the :file:`sahara.conf` configuration file.
 
 Jobs
 ++++
 
-A :dfn:`Job` object specifies the type of the job and lists all of the individual Job Binary objects that are required for execution. An individual Job Binary may be referenced by multiple Jobs.  A Job object specifies a main binary and/or supporting libraries depending on its type.
+A :dfn:`Job` object specifies the type of the job and lists all of the individual Job Binary objects that are required for execution. An individual Job Binary may be referenced by multiple Jobs.  A Job object specifies a main binary and/or supporting libraries depending on its type:
 
-      +----------------+-------------+-----------+
-      | Job type       | Main binary | Libraries |
-      +================+=============+===========+
-      | ``Hive``       | required    | optional  |
-      +----------------+-------------+-----------+
-      | ``Pig``        | required    | optional  |
-      +----------------+-------------+-----------+
-      | ``MapReduce``  | not used    | required  |
-      +----------------+-------------+-----------+
-      | ``Java``       | not used    | required  |
-      +----------------+-------------+-----------+
+      +-------------------------+-------------+-----------+
+      | Job type                | Main binary | Libraries |
+      +=========================+=============+===========+
+      | ``Hive``                | required    | optional  |
+      +-------------------------+-------------+-----------+
+      | ``Pig``                 | required    | optional  |
+      +-------------------------+-------------+-----------+
+      | ``MapReduce``           | not used    | required  |
+      +-------------------------+-------------+-----------+
+      | ``MapReduce.Streaming`` | not used    | optional  |
+      +-------------------------+-------------+-----------+
+      | ``Java``                | not used    | required  |
+      +-------------------------+-------------+-----------+
+      | ``Spark``               | required    | optional  |
+      +-------------------------+-------------+-----------+
 
 
 Data Sources
@@ -77,7 +86,9 @@ Job Execution
 
 Job objects must be *launched* or *executed* in order for them to run on the cluster. During job launch, a user specifies execution details including data sources, configuration values, and program arguments. The relevant details will vary by job type. The launch will create a :dfn:`Job Execution` object in Sahara which is used to monitor and manage the job.
 
-To execute the job, Sahara generates a workflow and submits it to the Oozie server running on the cluster. Familiarity with Oozie is not necessary for using Sahara but it may be beneficial to the user.  A link to the Oozie web console can be found in the Sahara web UI in the cluster details.
+To execute Hadoop jobs, Sahara generates an Oozie workflow and submits it to the Oozie server running on the cluster. Familiarity with Oozie is not necessary for using Sahara but it may be beneficial to the user.  A link to the Oozie web console can be found in the Sahara web UI in the cluster details.
+
+For Spark jobs, Sahara uses the *spark-submit* shell script and executes the Spark job from the master node. Logs of spark jobs run by Sahara can be found on the master node under the */tmp/spark-edp* directory.
 
 .. _edp_workflow:
 
@@ -96,7 +107,7 @@ The general workflow for defining and executing a job in Sahara is essentially t
 4. Create an input Data Source which points to the data you wish to process
 5. Create an output Data Source which points to the location for output data
 
-(Steps 4 and 5 do not apply to Java job types. See `Additional Details for Java jobs`_)
+(Steps 4 and 5 do not apply to Java or Spark job types. See `Additional Details for Java jobs`_ and `Additional Details for Spark jobs`_)
 
 6. Create a Job Execution object specifying the cluster and Job object plus relevant data sources, configuration values, and program arguments
 
@@ -110,26 +121,31 @@ Specifying Configuration Values, Parameters, and Arguments
 
 Jobs can be configured at launch. The job type determines the kinds of values that may be set:
 
-      +----------------+--------------+------------+-----------+
-      | Job type       | Configration | Parameters | Arguments |
-      |                | Values       |            |           |
-      +================+==============+============+===========+
-      | ``Hive``       | Yes          | Yes        | No        |
-      +----------------+--------------+------------+-----------+
-      | ``Pig``        | Yes          | Yes        | Yes       |
-      +----------------+--------------+------------+-----------+
-      | ``MapReduce``  | Yes          | No         | No        |
-      +----------------+--------------+------------+-----------+
-      | ``Java``       | Yes          | No         | Yes       |
-      +----------------+--------------+------------+-----------+
+      +--------------------------+--------------+------------+-----------+
+      | Job type                 | Configration | Parameters | Arguments |
+      |                          | Values       |            |           |
+      +==========================+==============+============+===========+
+      | ``Hive``                 | Yes          | Yes        | No        |
+      +--------------------------+--------------+------------+-----------+
+      | ``Pig``                  | Yes          | Yes        | Yes       |
+      +--------------------------+--------------+------------+-----------+
+      | ``MapReduce``            | Yes          | No         | No        |
+      +--------------------------+--------------+------------+-----------+
+      | ``MapReduce.Streaming``  | Yes          | No         | No        |
+      +--------------------------+--------------+------------+-----------+
+      | ``Java``                 | Yes          | No         | Yes       |
+      +--------------------------+--------------+------------+-----------+
+      | ``Spark``                | Yes          | No         | Yes       |
+      +--------------------------+--------------+------------+-----------+
 
-* :dfn:`Configuration values` are key/value pairs. They set options for EDP, Oozie or Hadoop.
+* :dfn:`Configuration values` are key/value pairs.
 
   + The EDP configuration values have names beginning with *edp.* and are consumed by Sahara
-  + The Oozie and Hadoop configuration values may be read by running jobs
+  + Other configuration values may be read at runtime by Hadoop jobs
+  + Currently additional configuration values are not available to Spark jobs at runtime
 
 * :dfn:`Parameters` are key/value pairs. They supply values for the Hive and Pig parameter substitution mechanisms.
-* :dfn:`Arguments` are strings passed to the pig shell or to a Java ``main()`` method.
+* :dfn:`Arguments` are strings passed as command line arguments to a shell or main program
 
 These values can be set on the :guilabel:`Configure` tab during job launch through the web UI or through the *job_configs* parameter when using the  */jobs/<job_id>/execute* REST method.
 
@@ -138,7 +154,7 @@ In some cases Sahara generates configuration values or parameters automatically.
 Generation of Swift Properties for Data Sources
 +++++++++++++++++++++++++++++++++++++++++++++++
 
-If a job is run with data sources in Swift, Sahara will automatically generate Swift username and password configuration values based on the credentials in the data sources.  If the input and output data sources are both in Swift, it is expected that they specify the same credentials.
+If Swift proxy users are not configured (see :doc:`../userdoc/advanced.configuration.guide`) and a job is run with data sources in Swift, Sahara will automatically generate Swift username and password configuration values based on the credentials in the data sources.  If the input and output data sources are both in Swift, it is expected that they specify the same credentials.
 
 The Swift credentials can be set explicitly with the following configuration values:
 
@@ -169,7 +185,9 @@ Additional Details for MapReduce jobs
 
 **Important!**
 
-If the job type is MapReduce, the mapper and reducer classes *must* be specified as configuration values:
+If the job type is MapReduce, the mapper and reducer classes *must* be specified as configuration values.
+Note, the UI will not prompt the user for these required values, they must be added manually with the ``Configure`` tab.
+Make sure to add these values with the correct names:
 
       +-------------------------+-----------------------------------------+
       | Name                    | Example Value                           |
@@ -179,11 +197,29 @@ If the job type is MapReduce, the mapper and reducer classes *must* be specified
       | mapred.reducer.class    | org.apache.oozie.example.SampleReducer  |
       +-------------------------+-----------------------------------------+
 
+Additional Details for MapReduce.Streaming jobs
++++++++++++++++++++++++++++++++++++++++++++++++
+
+**Important!**
+
+If the job type is MapReduce.Streaming, the streaming mapper and reducer classes *must* be specified.
+
+In this case, the UI *will* prompt the user to enter mapper and reducer values on the form and will take care of
+adding them to the job configuration with the appropriate names. If using the python client, however, be certain
+to add these values to the job configuration manually with the correct names:
+
+      +-------------------------+---------------+
+      | Name                    | Example Value |
+      +=========================+===============+
+      | edp.streaming.mapper    | /bin/cat      |
+      +-------------------------+---------------+
+      | edp.streaming.reducer   | /usr/bin/wc   |
+      +-------------------------+---------------+
 
 Additional Details for Java jobs
 ++++++++++++++++++++++++++++++++
 
-Java jobs use two configuration values that do not apply to other job types:
+Java jobs use two special configuration values:
 
 * ``edp.java.main_class`` (required) Specifies the class containing ``main(String[] args)``
 
@@ -206,19 +242,46 @@ using one of the above two methods. Furthermore, if Swift data sources are used 
 The ``edp-wordcount`` example bundled with Sahara shows how to use configuration values, arguments, and Swift data paths in a Java job type.
 
 
+Additional Details for Spark jobs
++++++++++++++++++++++++++++++++++
+
+Spark jobs use a special configuration value:
+
+* ``edp.java.main_class`` (required) Specifies the class containing the Java or Scala main method:
+
+  + ``main(String[] args)`` for Java
+  + ``main(args: Array[String]`` for Scala
+
+A Spark job will execute the ``main`` method of the specified main class. Values may be passed to
+the main method through the ``args`` array. Any arguments set during job launch will be passed to the
+program as commandline arguments by *spark-submit*.
+
+Data Source objects are not used with Spark job types. Instead, any input or output paths must be passed to the ``main`` method
+as arguments. Remember that Swift paths are not supported for Spark jobs currently.
+
+The ``edp-spark`` example bundled with Sahara contains a Spark program for estimating Pi.
+
+
 Special Sahara URLs
 --------------------
 
 Sahara uses custom URLs to refer to objects stored in Swift or the Sahara internal database.  These URLs are not meant to be used
 outside of Sahara.
 
-Sahara Swift URLs have the form:
+Sahara Swift URLs passed to running jobs as input or output sources include a ".sahara" suffix on the container, for example:
 
   ``swift://container.sahara/object``
+
+You may notice these Swift URLs in job logs, however, you do not need to add the suffix to the containers
+yourself. Sahara will add the suffix if necessary, so when using the UI or the python client you may write the above URL simply as:
+
+  ``swift://container/object``
 
 Sahara internal database URLs have the form:
 
   ``internal-db://sahara-generated-uuid``
+
+This indicates a file object in the Sahara database which has the given uuid as a key
 
 
 EDP Requirements
@@ -229,7 +292,7 @@ The OpenStack installation and the cluster launched from Sahara must meet the fo
 OpenStack Services
 ------------------
 
-When a job is executed, binaries are first uploaded to a job tracker and then moved from the job tracker's local filesystem to HDFS. Therefore, there must be an instance of HDFS available to the nodes in the Sahara cluster.
+When a Hadoop job is executed, binaries are first uploaded to a cluster node and then moved from the node local filesystem to HDFS. Therefore, there must be an instance of HDFS available to the nodes in the Sahara cluster.
 
 If the Swift service *is not* running in the OpenStack installation
 
@@ -245,8 +308,8 @@ If the Swift service *is* running in the OpenStack installation
 Cluster Processes
 -----------------
 
-Requirements for EDP support depend on EDP job type and plugin used for the cluster.
-For example Vanilla Sahara cluster must run at least one instance of these processes
+Requirements for EDP support depend on the EDP job type and plugin used for the cluster.
+For example a Vanilla Sahara cluster must run at least one instance of these processes
 to support EDP:
 
 * For Hadoop version 1:
