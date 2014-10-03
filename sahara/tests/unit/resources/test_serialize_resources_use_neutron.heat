@@ -6,7 +6,8 @@
         "cluster-worker-001-port" : {
             "Type" : "OS::Neutron::Port",
             "Properties" : {
-               "network_id" : "private_net"
+               "network_id" : "private_net",
+               "replacement_policy": "AUTO"
             }
         },
         "cluster-worker-001-floating" : {
@@ -63,7 +64,8 @@
         "cluster-master-001-port" : {
             "Type" : "OS::Neutron::Port",
             "Properties" : {
-               "network_id" : "private_net"
+               "network_id" : "private_net",
+               "replacement_policy": "AUTO"
             }
         },
         "cluster-master-001-floating" : {
