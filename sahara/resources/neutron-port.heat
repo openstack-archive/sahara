@@ -2,6 +2,7 @@
             "Type" : "OS::Neutron::Port",
             "Properties" : {
                 %(security_groups)s
-               "network_id" : "%(fixed_net_id)s"
+               "network_id" : "%(fixed_net_id)s",
+               "replacement_policy": "AUTO"
             }
         }
