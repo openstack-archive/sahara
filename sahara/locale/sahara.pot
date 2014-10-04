@@ -6,9 +6,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: sahara 2014.2.dev123.gcc4a472\n"
+"Project-Id-Version: sahara 2015.1.dev22.g398fa34\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2014-09-20 06:12+0000\n"
+"POT-Creation-Date: 2014-10-04 06:10+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -28,7 +28,7 @@ msgid ""
 "\"False\""
 msgstr ""
 
-#: sahara/context.py:109
+#: sahara/context.py:112
 msgid "Context isn't available here"
 msgstr ""
 
@@ -649,12 +649,12 @@ msgstr ""
 msgid "1 or more"
 msgstr ""
 
-#: sahara/plugins/spark/plugin.py:393 sahara/plugins/spark/plugin.py:407
+#: sahara/plugins/spark/plugin.py:390 sahara/plugins/spark/plugin.py:404
 #, python-format
 msgid "Spark plugin cannot scale nodegroup with processes: %s"
 msgstr ""
 
-#: sahara/plugins/spark/plugin.py:417
+#: sahara/plugins/spark/plugin.py:414
 #, python-format
 msgid ""
 "Spark plugin cannot shrink cluster because there would be not enough "
@@ -690,21 +690,21 @@ msgstr ""
 
 #: sahara/plugins/vanilla/hadoop2/validation.py:83
 #: sahara/plugins/vanilla/hadoop2/validation.py:102
-#: sahara/plugins/vanilla/v1_2_1/versionhandler.py:452
-#: sahara/plugins/vanilla/v1_2_1/versionhandler.py:471
+#: sahara/plugins/vanilla/v1_2_1/versionhandler.py:448
+#: sahara/plugins/vanilla/v1_2_1/versionhandler.py:467
 #, python-format
 msgid "Vanilla plugin cannot scale nodegroup with processes: %s"
 msgstr ""
 
 #: sahara/plugins/vanilla/hadoop2/validation.py:88
-#: sahara/plugins/vanilla/v1_2_1/versionhandler.py:457
+#: sahara/plugins/vanilla/v1_2_1/versionhandler.py:453
 msgid ""
 "Vanilla plugin cannot scale node group with processes which have no "
 "master-processes run in cluster"
 msgstr ""
 
 #: sahara/plugins/vanilla/hadoop2/validation.py:111
-#: sahara/plugins/vanilla/v1_2_1/versionhandler.py:481
+#: sahara/plugins/vanilla/v1_2_1/versionhandler.py:477
 #, python-format
 msgid ""
 "Vanilla plugin cannot shrink cluster because it would be not enough nodes"
@@ -733,7 +733,7 @@ msgstr ""
 msgid "Several server groups with name %s found"
 msgstr ""
 
-#: sahara/service/direct_engine.py:396
+#: sahara/service/direct_engine.py:397
 #, python-format
 msgid "Node %s has error status"
 msgstr ""
@@ -825,101 +825,106 @@ msgid ""
 "'%(name)s'"
 msgstr ""
 
-#: sahara/service/validations/base.py:145
+#: sahara/service/validations/base.py:148
 #, python-format
 msgid "Requested flavor '%s' not found"
 msgstr ""
 
-#: sahara/service/validations/base.py:154
+#: sahara/service/validations/base.py:157
 #, python-format
 msgid "Security group '%s' not found"
 msgstr ""
 
-#: sahara/service/validations/base.py:169
+#: sahara/service/validations/base.py:172
 #, python-format
 msgid "Floating IP pool %(pool)s for node group '%(group)s' not found"
 msgstr ""
 
-#: sahara/service/validations/base.py:176
+#: sahara/service/validations/base.py:179
 msgid "Duplicates in node processes have been detected"
 msgstr ""
 
-#: sahara/service/validations/base.py:184
+#: sahara/service/validations/base.py:187
 #, python-format
 msgid "Plugin supports the following node procesess: %s"
 msgstr ""
 
-#: sahara/service/validations/base.py:192
+#: sahara/service/validations/base.py:195
 msgid "Duplicates in node group names are detected"
 msgstr ""
 
-#: sahara/service/validations/base.py:202
+#: sahara/service/validations/base.py:205
 #, python-format
 msgid "Security group with name '%s' already exists"
 msgstr ""
 
-#: sahara/service/validations/base.py:210
+#: sahara/service/validations/base.py:212
+#, python-format
+msgid "Availability zone '%s' not found"
+msgstr ""
+
+#: sahara/service/validations/base.py:220
 #, python-format
 msgid "Cluster with name '%s' already exists"
 msgstr ""
 
-#: sahara/service/validations/base.py:219
+#: sahara/service/validations/base.py:229
 #, python-format
 msgid "Cluster name '%s' is already used as Heat stack name"
 msgstr ""
 
-#: sahara/service/validations/base.py:231
+#: sahara/service/validations/base.py:241
 #, python-format
 msgid ""
 "Composite hostname %(host)s in provisioned cluster exceeds maximum limit "
 "%(limit)s characters"
 msgstr ""
 
-#: sahara/service/validations/base.py:242
+#: sahara/service/validations/base.py:252
 #, python-format
 msgid "Requested keypair '%s' not found"
 msgstr ""
 
-#: sahara/service/validations/base.py:247
+#: sahara/service/validations/base.py:257
 #, python-format
 msgid "Network %s not found"
 msgstr ""
 
-#: sahara/service/validations/base.py:255
+#: sahara/service/validations/base.py:265
 #, python-format
 msgid "Cluster template with name '%s' already exists"
 msgstr ""
 
-#: sahara/service/validations/base.py:261
+#: sahara/service/validations/base.py:271
 #, python-format
 msgid "Cluster template with id '%s' doesn't exist"
 msgstr ""
 
-#: sahara/service/validations/base.py:282
+#: sahara/service/validations/base.py:292
 #, python-format
 msgid "NodeGroup template with name '%s' already exists"
 msgstr ""
 
-#: sahara/service/validations/base.py:288
+#: sahara/service/validations/base.py:298
 #, python-format
 msgid "NodeGroup template with id '%s' doesn't exist"
 msgstr ""
 
-#: sahara/service/validations/base.py:323
+#: sahara/service/validations/base.py:333
 #, python-format
 msgid "Cluster doesn't contain node group with name '%s'"
 msgstr ""
 
-#: sahara/service/validations/base.py:337
+#: sahara/service/validations/base.py:347
 #, python-format
 msgid "Can't add new nodegroup. Cluster already has nodegroup with name '%s'"
 msgstr ""
 
-#: sahara/service/validations/base.py:351
+#: sahara/service/validations/base.py:361
 msgid "Cinder is not supported"
 msgstr ""
 
-#: sahara/service/validations/base.py:363
+#: sahara/service/validations/base.py:373
 #, python-format
 msgid ""
 "Tags of requested image '%(image)s' don't contain required tags "
@@ -963,7 +968,7 @@ msgstr ""
 msgid "Cluster cannot be scaled not in 'Active' status. Cluster status: %s"
 msgstr ""
 
-#: sahara/service/validations/node_group_templates.py:120
+#: sahara/service/validations/node_group_templates.py:123
 #, python-format
 msgid ""
 "Node group template %(template)s is in use by cluster templates: "
