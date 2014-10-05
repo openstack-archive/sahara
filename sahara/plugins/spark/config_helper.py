@@ -379,9 +379,13 @@ def extract_name_values(configs):
     return dict((cfg['name'], cfg['value']) for cfg in configs)
 
 
+def make_hadoop_path(base_dirs, suffix):
+    return [base_dir + suffix for base_dir in base_dirs]
+
+
 def extract_hadoop_path(lst, hadoop_dir):
     if lst:
-        return ",".join([p + hadoop_dir for p in lst])
+        return ",".join(make_hadoop_path(lst, hadoop_dir))
 
 
 def _set_config(cfg, gen_cfg, name=None):

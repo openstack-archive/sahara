@@ -232,8 +232,10 @@ class SparkProvider(p.ProvisioningPluginBase):
                    'sudo chmod 600 $HOME/.ssh/id_rsa')
 
         storage_paths = instance.node_group.storage_paths()
-        dn_path = c_helper.extract_hadoop_path(storage_paths, '/dfs/dn')
-        nn_path = c_helper.extract_hadoop_path(storage_paths, '/dfs/nn')
+        dn_path = ' '.join(c_helper.make_hadoop_path(storage_paths,
+                                                     '/dfs/dn'))
+        nn_path = ' '.join(c_helper.make_hadoop_path(storage_paths,
+                                                     '/dfs/nn'))
 
         hdfs_dir_cmd = ('sudo mkdir -p %(nn_path)s %(dn_path)s &&'
                         'sudo chown -R hdfs:hadoop %(nn_path)s %(dn_path)s &&'
