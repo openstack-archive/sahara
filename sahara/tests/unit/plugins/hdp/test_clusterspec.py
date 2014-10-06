@@ -16,7 +16,7 @@
 import mock
 import pkg_resources as pkg
 
-from sahara.plugins.general import exceptions as ex
+from sahara.plugins import exceptions as ex
 from sahara.plugins.hdp import clusterspec as cs
 from sahara.plugins.hdp import hadoopserver
 from sahara.plugins.hdp.versions.version_1_3_2 import services as s

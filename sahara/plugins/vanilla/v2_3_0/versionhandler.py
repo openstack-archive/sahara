@@ -20,7 +20,7 @@ from sahara import context
 from sahara import exceptions as ex
 from sahara.i18n import _
 from sahara.openstack.common import log as logging
-from sahara.plugins.general import utils
+from sahara.plugins import utils
 from sahara.plugins.vanilla import abstractversionhandler as avm
 from sahara.plugins.vanilla.hadoop2 import config as c
 from sahara.plugins.vanilla.hadoop2 import edp_engine

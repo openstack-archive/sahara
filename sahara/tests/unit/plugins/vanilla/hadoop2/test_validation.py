@@ -15,7 +15,7 @@
 
 import testtools
 
-from sahara.plugins.general import exceptions as ex
+from sahara.plugins import exceptions as ex
 from sahara.plugins.vanilla import plugin as p
 from sahara.tests.unit import base
 from sahara.tests.unit import testutils as tu

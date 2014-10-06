@@ -14,8 +14,8 @@
 # limitations under the License.
 
 from sahara.plugins.cdh import utils as cu
-from sahara.plugins.general import exceptions as ex
-from sahara.plugins.general import utils as u
+from sahara.plugins import exceptions as ex
+from sahara.plugins import utils as u
 from sahara.service.edp import hdfs_helper
 from sahara.service.edp.oozie import engine as edp_engine
 

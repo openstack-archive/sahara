@@ -16,7 +16,7 @@
 import mock
 
 from sahara import exceptions as e
-from sahara.plugins.general import exceptions as ex
+from sahara.plugins import exceptions as ex
 from sahara.plugins.hdp.versions import versionhandlerfactory as vhf
 from sahara.tests.unit import base
 from sahara.tests.unit.plugins.hdp import hdp_test_base

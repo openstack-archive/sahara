@@ -20,7 +20,7 @@ from sahara import context
 from sahara.i18n import _
 from sahara.i18n import _LI
 from sahara.openstack.common import log as logging
-from sahara.plugins.general import exceptions as ex
+from sahara.plugins import exceptions as ex
 from sahara.plugins.hdp import hadoopserver as h
 from sahara.plugins.hdp import saharautils as utils
 from sahara.plugins.hdp.versions import versionhandlerfactory as vhf

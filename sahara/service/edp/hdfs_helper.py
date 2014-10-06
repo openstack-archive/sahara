@@ -20,7 +20,7 @@ from six.moves.urllib import parse as urlparse
 
 from sahara import conductor as c
 from sahara import context
-from sahara.plugins.general import utils as u
+from sahara.plugins import utils as u
 from sahara.utils import general as g
 
 

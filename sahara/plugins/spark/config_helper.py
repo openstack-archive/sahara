@@ -19,8 +19,8 @@ from sahara import conductor as c
 from sahara.i18n import _
 from sahara.i18n import _LI
 from sahara.openstack.common import log as logging
-from sahara.plugins.general import utils
 from sahara.plugins import provisioning as p
+from sahara.plugins import utils
 from sahara.topology import topology_helper as topology
 from sahara.utils import types as types
 from sahara.utils import xmlutils as x

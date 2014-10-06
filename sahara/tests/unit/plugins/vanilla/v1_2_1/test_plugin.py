@@ -20,7 +20,7 @@ from sahara import conductor as cond
 from sahara import context
 from sahara import exceptions as e
 from sahara.plugins import base as pb
-from sahara.plugins.general import exceptions as ex
+from sahara.plugins import exceptions as ex
 from sahara.plugins.vanilla import plugin as p
 from sahara.plugins.vanilla.v1_2_1 import config_helper as c_h
 from sahara.plugins.vanilla.v1_2_1 import mysql_helper as m_h

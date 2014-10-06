@@ -17,7 +17,7 @@ from oslo.serialization import jsonutils as json
 
 from sahara.i18n import _
 from sahara.openstack.common import log as logging
-from sahara.plugins.general import exceptions as ex
+from sahara.plugins import exceptions as ex
 from sahara.plugins.hdp.versions import versionhandlerfactory as vhf
 
 

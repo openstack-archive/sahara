@@ -18,8 +18,8 @@ from sahara.i18n import _LE
 from sahara.openstack.common import log as logging
 from sahara.plugins.cdh import cloudera_utils as cmu
 from sahara.plugins.cdh import utils as cu
-from sahara.plugins.general import exceptions as ex
-from sahara.plugins.general import utils as u
+from sahara.plugins import exceptions as ex
+from sahara.plugins import utils as u
 from sahara.utils import general as gu
 
 LOG = logging.getLogger(__name__)

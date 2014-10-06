@@ -22,13 +22,13 @@ from sahara import context
 from sahara.i18n import _
 from sahara.i18n import _LI
 from sahara.openstack.common import log as logging
-from sahara.plugins.general import exceptions as ex
-from sahara.plugins.general import utils
+from sahara.plugins import exceptions as ex
 from sahara.plugins import provisioning as p
 from sahara.plugins.spark import config_helper as c_helper
 from sahara.plugins.spark import edp_engine
 from sahara.plugins.spark import run_scripts as run
 from sahara.plugins.spark import scaling as sc
+from sahara.plugins import utils
 from sahara.topology import topology_helper as th
 from sahara.utils import files as f
 from sahara.utils import general as ug
