@@ -13,6 +13,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import re
+
 import six
 
 from sahara import conductor as c
@@ -23,6 +25,8 @@ from sahara.utils.notification import sender
 
 conductor = c.API
 LOG = logging.getLogger(__name__)
+
+NATURAL_SORT_RE = re.compile('([0-9]+)')
 
 
 def find_dict(iterable, **rules):
@@ -59,6 +63,13 @@ def get_by_id(lst, id):
             return obj
 
     return None
+
+
+# Taken from http://stackoverflow.com/questions/4836710/does-
+# python-have-a-built-in-function-for-string-natural-sort
+def natural_sort_key(s):
+    return [int(text) if text.isdigit() else text.lower()
+            for text in re.split(NATURAL_SORT_RE, s)]
 
 
 def change_cluster_status(cluster, status, status_description=None):

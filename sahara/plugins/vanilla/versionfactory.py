@@ -16,6 +16,8 @@
 import os
 import re
 
+from sahara.utils import general
+
 
 class VersionFactory():
     versions = None
@@ -26,11 +28,14 @@ class VersionFactory():
     def get_instance():
         if not VersionFactory.initialized:
             src_dir = os.path.join(os.path.dirname(__file__), '')
-            VersionFactory.versions = (
+            versions = (
                 [name[1:].replace('_', '.')
                  for name in os.listdir(src_dir)
                  if (os.path.isdir(os.path.join(src_dir, name))
                      and re.match(r'^v\d+_\d+_\d+$', name))])
+            versions.sort(key=general.natural_sort_key)
+            VersionFactory.versions = versions
+
             VersionFactory.modules = {}
             for version in VersionFactory.versions:
                 module_name = 'sahara.plugins.vanilla.v%s.versionhandler' % (

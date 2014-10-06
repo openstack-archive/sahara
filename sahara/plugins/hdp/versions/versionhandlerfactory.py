@@ -15,6 +15,8 @@
 
 import os
 
+from sahara.utils import general
+
 
 class VersionHandlerFactory():
     versions = None
@@ -25,10 +27,12 @@ class VersionHandlerFactory():
     def get_instance():
         if not VersionHandlerFactory.initialized:
             src_dir = os.path.join(os.path.dirname(__file__), '')
-            VersionHandlerFactory.versions = [name[8:].replace('_', '.')
-                                              for name in os.listdir(src_dir)
-                                              if os.path.isdir(
-                                              os.path.join(src_dir, name))]
+            versions = [name[8:].replace('_', '.')
+                        for name in os.listdir(src_dir)
+                        if os.path.isdir(os.path.join(src_dir, name))]
+            versions.sort(key=general.natural_sort_key)
+            VersionHandlerFactory.versions = versions
+
             VersionHandlerFactory.modules = {}
             for version in VersionHandlerFactory.versions:
                 module_name = ('sahara.plugins.hdp.versions.version_{0}.'
