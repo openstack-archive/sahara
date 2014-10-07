@@ -19,7 +19,6 @@ import time
 import uuid
 
 import fixtures
-from oslo.utils import excutils
 import six
 
 from sahara.swift import swift_helper as sw
@@ -103,41 +102,54 @@ class EDPTest(base.ITestCase):
         self.edp_info = EDPJobInfo()
 
     def _create_data_source(self, name, data_type, url, description=''):
-        return self.sahara.data_sources.create(
+        source_id = self.sahara.data_sources.create(
             name, description, data_type, url, self.common_config.OS_USERNAME,
             self.common_config.OS_PASSWORD).id
+        self.addCleanup(self.sahara.data_sources.delete, source_id)
+        return source_id
 
     def _create_job_binary_internals(self, name, data):
-        return self.sahara.job_binary_internals.create(name, data).id
+        job_binary_id = self.sahara.job_binary_internals.create(name, data).id
+        self.addCleanup(self.sahara.job_binary_internals.delete, job_binary_id)
+        return job_binary_id
 
     def _create_job_binary(self, name, url, extra=None, description=None):
-        return self.sahara.job_binaries.create(
+        job_binary_id = self.sahara.job_binaries.create(
             name, url, description or '', extra or {}).id
+        self.addCleanup(self.sahara.job_binaries.delete, job_binary_id)
+        return job_binary_id
 
     def _create_job(self, name, job_type, mains, libs):
-        return self.sahara.jobs.create(name, job_type, mains, libs,
-                                       description='').id
+        job_id = self.sahara.jobs.create(name, job_type, mains, libs,
+                                         description='').id
+        self.addCleanup(self.sahara.jobs.delete, job_id)
+        return job_id
 
-    def _await_job_execution(self, job):
-        timeout = self.common_config.JOB_LAUNCH_TIMEOUT * 60
-        status = self.sahara.job_executions.get(job.id).info['status']
+    def _get_job_status(self, job_id):
+        return self.sahara.job_executions.get(job_id).info['status']
+
+    def poll_jobs_status(self, job_ids):
+        timeout = self.common_config.JOB_LAUNCH_TIMEOUT * 60 * len(job_ids)
         try:
             with fixtures.Timeout(timeout, gentle=True):
-                while status != edp.JOB_STATUS_SUCCEEDED:
-                    if status == edp.JOB_STATUS_KILLED:
-                        self.fail("Job status == '{0}'.".format(
-                            edp.JOB_STATUS_KILLED))
+                success = False
+                while not success:
+                    success = True
+                    for job_id in job_ids:
+                        status = self._get_job_status(job_id)
+                        if status in [edp.JOB_STATUS_FAILED,
+                                      edp.JOB_STATUS_KILLED,
+                                      edp.JOB_STATUS_DONEWITHERROR]:
+                            self.fail(
+                                'Job status "%s" \'%s\'.' % (job_id, status))
+                        if status != edp.JOB_STATUS_SUCCEEDED:
+                            success = False
 
-                    time.sleep(10)
-                    status = self.sahara.job_executions.get(
-                        job.id).info['status']
-
+                    time.sleep(5)
         except fixtures.TimeoutException:
             self.fail(
-                "Job did not return to '{0}' status within {1:d} minute(s)."
-                .format(edp.JOB_STATUS_SUCCEEDED,
-                        self.common_config.JOB_LAUNCH_TIMEOUT)
-            )
+                "Jobs did not return to '{0}' status within {1:d} minute(s)."
+                .format(edp.JOB_STATUS_SUCCEEDED, timeout / 60))
 
     def _create_job_binaries(self, job_data_list, job_binary_internal_list,
                              job_binary_list, swift_connection=None,
@@ -172,23 +184,6 @@ class EDPTest(base.ITestCase):
                     )
                 )
 
-    def _delete_job(self, execution_job, job_id, job_binary_list,
-                    job_binary_internal_list, input_id, output_id):
-        if execution_job:
-            self.sahara.job_executions.delete(execution_job.id)
-        if job_id:
-            self.sahara.jobs.delete(job_id)
-        if job_binary_list:
-            for job_binary_id in job_binary_list:
-                self.sahara.job_binaries.delete(job_binary_id)
-        if job_binary_internal_list:
-            for internal_id in job_binary_internal_list:
-                self.sahara.job_binary_internals.delete(internal_id)
-        if input_id:
-            self.sahara.data_sources.delete(input_id)
-        if output_id:
-            self.sahara.data_sources.delete(output_id)
-
     def _add_swift_configs(self, configs):
 
         if "configs" not in configs:
@@ -201,8 +196,7 @@ class EDPTest(base.ITestCase):
             configs["configs"][
                 sw.HADOOP_SWIFT_PASSWORD] = self.common_config.OS_PASSWORD
 
-    @base.skip_test('SKIP_EDP_TEST',
-                    'Test for EDP was skipped.')
+    @base.skip_test('SKIP_EDP_TEST', 'Test for EDP was skipped.')
     def edp_testing(self, job_type, job_data_list, lib_data_list=None,
                     configs=None, pass_input_output_args=False,
                     swift_binaries=False, hdfs_local_output=False):
@@ -210,112 +204,94 @@ class EDPTest(base.ITestCase):
         lib_data_list = lib_data_list or []
         configs = configs or {}
 
-        try:
-            swift = self.connect_to_swift()
-            container_name = 'Edp-test-%s' % str(uuid.uuid4())[:8]
-            swift.put_container(container_name)
-            swift.put_object(
-                container_name, 'input', ''.join(
-                    random.choice(':' + ' ' + '\n' + string.ascii_lowercase)
-                    for x in six.moves.range(10000)
-                )
+        swift = self.connect_to_swift()
+        container_name = 'Edp-test-%s' % str(uuid.uuid4())[:8]
+        swift.put_container(container_name)
+        self.addCleanup(self.delete_swift_container, swift, container_name)
+        swift.put_object(
+            container_name, 'input', ''.join(
+                random.choice(':' + ' ' + '\n' + string.ascii_lowercase)
+                for x in six.moves.range(10000)
             )
+        )
 
-        except Exception as e:
-            with excutils.save_and_reraise_exception():
-                self.delete_swift_container(swift, container_name)
-                print(str(e))
         input_id = None
         output_id = None
         job_id = None
         job_execution = None
-        try:
-            job_binary_list = []
-            lib_binary_list = []
-            job_binary_internal_list = []
+        job_binary_list = []
+        lib_binary_list = []
+        job_binary_internal_list = []
 
-            swift_input_url = 'swift://%s.sahara/input' % container_name
-            if hdfs_local_output:
-                # This will create a file in hdfs under the user
-                # executing the job (i.e. /usr/hadoop/Edp-test-xxxx-out)
-                output_type = "hdfs"
-                output_url = container_name + "-out"
+        swift_input_url = 'swift://%s.sahara/input' % container_name
+        if hdfs_local_output:
+            # This will create a file in hdfs under the user
+            # executing the job (i.e. /usr/hadoop/Edp-test-xxxx-out)
+            output_type = "hdfs"
+            output_url = container_name + "-out"
+        else:
+            output_type = "swift"
+            output_url = 'swift://%s.sahara/output' % container_name
+
+        # Java jobs don't use data sources.  Input/output paths must
+        # be passed as args with corresponding username/password configs
+        if not edp.compare_job_type(job_type,
+                                    edp.JOB_TYPE_JAVA,
+                                    edp.JOB_TYPE_SPARK):
+            input_id = self._create_data_source(
+                'input-%s' % str(uuid.uuid4())[:8], 'swift',
+                swift_input_url)
+            output_id = self._create_data_source(
+                'output-%s' % str(uuid.uuid4())[:8], output_type,
+                output_url)
+
+        if job_data_list:
+            if swift_binaries:
+                self._create_job_binaries(job_data_list,
+                                          job_binary_internal_list,
+                                          job_binary_list,
+                                          swift_connection=swift,
+                                          container_name=container_name)
             else:
-                output_type = "swift"
-                output_url = 'swift://%s.sahara/output' % container_name
+                self._create_job_binaries(job_data_list,
+                                          job_binary_internal_list,
+                                          job_binary_list)
 
-            # Java jobs don't use data sources.  Input/output paths must
-            # be passed as args with corresponding username/password configs
-            if not edp.compare_job_type(job_type,
-                                        edp.JOB_TYPE_JAVA,
-                                        edp.JOB_TYPE_SPARK):
-                input_id = self._create_data_source(
-                    'input-%s' % str(uuid.uuid4())[:8], 'swift',
-                    swift_input_url)
-                output_id = self._create_data_source(
-                    'output-%s' % str(uuid.uuid4())[:8], output_type,
-                    output_url)
+        if lib_data_list:
+            if swift_binaries:
+                self._create_job_binaries(lib_data_list,
+                                          job_binary_internal_list,
+                                          lib_binary_list,
+                                          swift_connection=swift,
+                                          container_name=container_name)
+            else:
+                self._create_job_binaries(lib_data_list,
+                                          job_binary_internal_list,
+                                          lib_binary_list)
 
-            if job_data_list:
-                if swift_binaries:
-                    self._create_job_binaries(job_data_list,
-                                              job_binary_internal_list,
-                                              job_binary_list,
-                                              swift_connection=swift,
-                                              container_name=container_name)
-                else:
-                    self._create_job_binaries(job_data_list,
-                                              job_binary_internal_list,
-                                              job_binary_list)
+        job_id = self._create_job(
+            'Edp-test-job-%s' % str(uuid.uuid4())[:8], job_type,
+            job_binary_list, lib_binary_list)
+        if not configs:
+            configs = {}
 
-            if lib_data_list:
-                if swift_binaries:
-                    self._create_job_binaries(lib_data_list,
-                                              job_binary_internal_list,
-                                              lib_binary_list,
-                                              swift_connection=swift,
-                                              container_name=container_name)
-                else:
-                    self._create_job_binaries(lib_data_list,
-                                              job_binary_internal_list,
-                                              lib_binary_list)
+        # TODO(tmckay): for spark we don't have support for swift
+        # yet.  When we do, we'll need something to here to set up
+        # swift paths and we can use a spark wordcount job
 
-            job_id = self._create_job(
-                'Edp-test-job-%s' % str(uuid.uuid4())[:8], job_type,
-                job_binary_list, lib_binary_list)
-            if not configs:
-                configs = {}
+        # Append the input/output paths with the swift configs
+        # if the caller has requested it...
+        if edp.compare_job_type(
+                job_type, edp.JOB_TYPE_JAVA) and pass_input_output_args:
+            self._add_swift_configs(configs)
+            if "args" in configs:
+                configs["args"].extend([swift_input_url, output_url])
+            else:
+                configs["args"] = [swift_input_url, output_url]
 
-            # TODO(tmckay): for spark we don't have support for swift
-            # yet.  When we do, we'll need something to here to set up
-            # swift paths and we can use a spark wordcount job
+        job_execution = self.sahara.job_executions.create(
+            job_id, self.cluster_id, input_id, output_id,
+            configs=configs)
+        self.addCleanup(self.sahara.job_executions.delete, job_execution.id)
 
-            # Append the input/output paths with the swift configs
-            # if the caller has requested it...
-            if edp.compare_job_type(
-                    job_type, edp.JOB_TYPE_JAVA) and pass_input_output_args:
-                self._add_swift_configs(configs)
-                if "args" in configs:
-                    configs["args"].extend([swift_input_url,
-                                            output_url])
-                else:
-                    configs["args"] = [swift_input_url,
-                                       output_url]
-
-            job_execution = self.sahara.job_executions.create(
-                job_id, self.cluster_id, input_id, output_id,
-                configs=configs)
-
-            if job_execution:
-                self._await_job_execution(job_execution)
-
-        except Exception as e:
-            with excutils.save_and_reraise_exception():
-                print(str(e))
-
-        finally:
-            self.delete_swift_container(swift, container_name)
-            self._delete_job(
-                job_execution, job_id, job_binary_list + lib_binary_list,
-                job_binary_internal_list, input_id, output_id
-            )
+        return job_execution.id

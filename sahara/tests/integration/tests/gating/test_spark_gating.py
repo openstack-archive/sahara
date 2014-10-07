@@ -121,10 +121,12 @@ class SparkGatingTest(swift.SwiftTest, scaling.ScalingTest,
         # check spark
         spark_jar = self.edp_info.read_spark_example_jar()
         spark_configs = self.edp_info.spark_example_configs()
-        self.edp_testing(utils_edp.JOB_TYPE_SPARK,
-                         job_data_list=[{'jar': spark_jar}],
-                         lib_data_list=[],
-                         configs=spark_configs)
+        job_id = self.edp_testing(
+            utils_edp.JOB_TYPE_SPARK,
+            job_data_list=[{'jar': spark_jar}],
+            lib_data_list=[],
+            configs=spark_configs)
+        self.poll_jobs_status([job_id])
 
     @b.errormsg("Failure while cluster scaling: ")
     def _check_scaling(self):

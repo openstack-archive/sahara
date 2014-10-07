@@ -101,9 +101,10 @@ class TransientGatingTest(edp.EDPTest):
     def _check_transient(self):
         pig_job_data = self.edp_info.read_pig_example_script()
         pig_lib_data = self.edp_info.read_pig_example_jar()
-        self.edp_testing(job_type=utils_edp.JOB_TYPE_PIG,
-                         job_data_list=[{'pig': pig_job_data}],
-                         lib_data_list=[{'jar': pig_lib_data}])
+        job_id = self.edp_testing(job_type=utils_edp.JOB_TYPE_PIG,
+                                  job_data_list=[{'pig': pig_job_data}],
+                                  lib_data_list=[{'jar': pig_lib_data}])
+        self.poll_jobs_status([job_id])
 
         # set timeout in seconds
         timeout = self.common_config.TRANSIENT_CLUSTER_TIMEOUT * 60
