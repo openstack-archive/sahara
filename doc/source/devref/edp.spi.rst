@@ -78,10 +78,10 @@ Starts the job described by the job_execution object
 *Returns*: a tuple of the form (job_id, job_status_value, job_extra_info)
 
 * *job_id* is required and must be a string that allows the EDP engine to
-uniquely identify the job.
+  uniquely identify the job.
 * *job_status_value* may be None or a job status value
 * *job_extra_info* may be None or optionally a dictionary that the EDP engine
-uses to store extra information on the job_execution_object.
+  uses to store extra information on the job_execution_object.
 
 
 validate_job_execution(cluster, job, data)
