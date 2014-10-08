@@ -209,7 +209,7 @@ Running Sahara in Distributed Mode
     Currently distributed mode for Sahara is in alpha state. We do not
     recommend using it in production environment.
 
-The `installation guide <installation.guide.html>`_ suggests to launch
+The :doc:`installation.guide` suggests to launch
 Sahara as a single 'sahara-all' process. It is also possible to run Sahara
 in distributed mode with 'sahara-api' and 'sahara-engine' processes running
 on several machines simultaneously.
