@@ -13,8 +13,7 @@ compare_files() {
     a=`md5sum $1 | awk {'print \$1'}`
     b=`md5sum $2 | awk {'print \$1'}`
 
-    if [ "$a" = "$b" ]
-    then
+    if [ "$a" = "$b" ]; then
         echo "md5-sums of files $1 and $2 are equal"
     else
         echo -e "\nUpload file to Swift: $1 \n"
@@ -26,18 +25,14 @@ compare_files() {
 
 check_return_code_after_command_execution() {
 
-    if [ "$1" = "-exit" ]
-    then
-        if [ "$2" -ne 0 ]
-        then
+    if [ "$1" = "-exit" ]; then
+        if [ "$2" -ne 0 ]; then
             exit 1
         fi
     fi
 
-    if [ "$1" = "-clean_hdfs" ]
-    then
-        if [ "$2" -ne 0 ]
-        then
+    if [ "$1" = "-clean_hdfs" ]; then
+        if [ "$2" -ne 0 ]; then
             sudo -u $HADOOP_USER bash -lc "hadoop dfs -rmr /swift-test" && exit 1
         fi
     fi

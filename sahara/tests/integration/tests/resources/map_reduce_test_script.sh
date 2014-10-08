@@ -28,8 +28,7 @@ case $1 in
 esac
 shift
 
-if [ "$1" = "-job_name" ]
-then
+if [ "$1" = "-job_name" ]; then
     JOB_NAME="$2"
 fi
 shift
@@ -38,8 +37,7 @@ check_submitted_parameter() {
 
     case "$1" in
         job_name)
-            if [ -z "$JOB_NAME" ]
-            then
+            if [ -z "$JOB_NAME" ]; then
                 echo "Job name not specified"
                 exit 1
             fi
@@ -52,8 +50,7 @@ check_job_directory_existence() {
     check_submitted_parameter job_name
 
     app_name=${JOB_NAME/"job"/"application"}
-    if ! [ -d $HADOOP_LOG_DIRECTORY/$JOB_NAME -o -d $HADOOP_LOG_DIRECTORY/$app_name ]
-    then
+    if ! [ -d $HADOOP_LOG_DIRECTORY/$JOB_NAME -o -d $HADOOP_LOG_DIRECTORY/$app_name ]; then
         echo "Log file of \"PI\" job not found"
         exit 1
     fi
@@ -61,8 +58,7 @@ check_job_directory_existence() {
 
 create_log_directory() {
 
-    if ! [ -d $dir ]
-    then
+    if ! [ -d $dir ]; then
         mkdir $dir
         chmod -R 777 $dir
         touch $log
@@ -91,8 +87,7 @@ get_pi_job_name() {
 
     job_name=`sudo -u $HADOOP_USER bash -lc "hadoop job -list all | grep '^[[:space:]]*job_' | sort | tail -n1" | awk '{print $1}'`
 
-    if [ $job_name = "JobId" ]
-    then
+    if [ $job_name = "JobId" ]; then
         echo "\"PI\" job name has not been obtained since \"PI\" job was not launched" >> $log
         exit 1
     fi
@@ -102,18 +97,14 @@ get_pi_job_name() {
 
 check_return_code_after_command_execution() {
 
-    if [ "$1" = "-exit" ]
-    then
-        if [ "$2" -ne 0 ]
-        then
+    if [ "$1" = "-exit" ]; then
+        if [ "$2" -ne 0 ]; then
             exit 1
         fi
     fi
 
-    if [ "$1" = "-clean_hdfs" ]
-    then
-        if [ "$2" -ne 0 ]
-        then
+    if [ "$1" = "-clean_hdfs" ]; then
+        if [ "$2" -ne 0 ]; then
             sudo -u $HADOOP_USER bash -lc "hadoop dfs -rmr /map-reduce-test" && exit 1
         fi
     fi
