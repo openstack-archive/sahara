@@ -38,6 +38,7 @@ detach_timeout_opt = cfg.IntOpt(
 
 CONF = cfg.CONF
 CONF.register_opt(detach_timeout_opt)
+CONF.import_opt('cinder_api_version', 'sahara.utils.openstack.cinder')
 
 
 def attach_to_instances(instances):
@@ -80,9 +81,12 @@ def _attach_volumes_to_node(node_group, instance):
     _mount_volumes_to_node(instance, devices)
 
 
-def _create_attach_volume(ctx, instance, size, display_name=None):
-    volume = cinder.client().volumes.create(size=size,
-                                            display_name=display_name)
+def _create_attach_volume(ctx, instance, size, name=None):
+    if CONF.cinder_api_version == 1:
+        kwargs = {'size': size, 'display_name': name}
+    else:
+        kwargs = {'size': size, 'name': name}
+    volume = cinder.client().volumes.create(**kwargs)
     conductor.append_volume(ctx, instance, volume.id)
 
     while volume.status != 'available':

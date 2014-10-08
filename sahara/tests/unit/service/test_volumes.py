@@ -13,7 +13,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from cinderclient.v1 import volumes as v
+from cinderclient.v1 import volumes as vol_v1
+from cinderclient.v2 import volumes as vol_v2
 import mock
 
 from sahara.conductor import resource as r
@@ -25,8 +26,7 @@ from sahara.utils import general as g
 
 class TestAttachVolume(base.SaharaWithDbTestCase):
 
-    @mock.patch(
-        'sahara.service.engine.Engine.get_node_group_image_username')
+    @mock.patch('sahara.service.engine.Engine.get_node_group_image_username')
     def test_mount_volume(self, p_get_username):
         p_get_username.return_value = 'root'
 
@@ -52,8 +52,27 @@ class TestAttachVolume(base.SaharaWithDbTestCase):
                 self.instance_name = 'spam'
 
         instance = Instance()
-        p_get_volume.return_value = v.Volume(None, {'id': '123',
-                                                    'status': 'available'})
+        p_get_volume.return_value = vol_v1.Volume(None, {'id': '123', 'status':
+                                                         'available'})
+        p_detach.return_value = None
+        p_delete.return_value = None
+        self.assertIsNone(
+            volumes.detach_from_instance(instance))
+
+    @mock.patch('sahara.conductor.manager.ConductorManager.cluster_get')
+    @mock.patch('cinderclient.v2.volumes.Volume.delete')
+    @mock.patch('cinderclient.v2.volumes.Volume.detach')
+    @mock.patch('sahara.utils.openstack.cinder.get_volume')
+    def test_detach_volumes_v2(self, p_get_volume, p_detach, p_delete, p_cond):
+        class Instance:
+            def __init__(self):
+                self.instance_id = '123454321'
+                self.volumes = [123]
+                self.instance_name = 'spam'
+
+        instance = Instance()
+        p_get_volume.return_value = vol_v2.Volume(None, {'id': '123', 'status':
+                                                         'available'})
         p_detach.return_value = None
         p_delete.return_value = None
         self.assertIsNone(
@@ -63,8 +82,7 @@ class TestAttachVolume(base.SaharaWithDbTestCase):
     @mock.patch('sahara.service.volumes._mount_volume')
     @mock.patch('sahara.service.volumes._await_attach_volumes')
     @mock.patch('sahara.service.volumes._create_attach_volume')
-    def test_attach(self, p_create_attach_vol,
-                    p_await, p_mount):
+    def test_attach(self, p_create_attach_vol, p_await, p_mount):
         p_create_attach_vol.side_effect = ['/dev/vdb', '/dev/vdc'] * 2
         p_await.return_value = None
         p_mount.return_value = None

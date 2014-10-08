@@ -37,6 +37,7 @@ from sahara.service.edp import api as edp_api
 from sahara.service import ops as service_ops
 from sahara.service import periodic
 from sahara.utils import api as api_utils
+from sahara.utils.openstack import cinder
 from sahara.utils import remote
 from sahara.utils import rpc as messaging
 
@@ -74,6 +75,9 @@ def setup_common(possible_topdir, service_name):
     log.setup("sahara")
 
     LOG.info(_LI('Starting Sahara %s'), service_name)
+
+    # Validate other configurations (that may produce logs) here
+    cinder.validate_config()
 
     messaging.setup()
 
