@@ -120,13 +120,14 @@ class HDPGatingTest(cinder.CinderVolumeTest, edp.EDPTest,
         cluster_name = (self.common_config.CLUSTER_NAME + '-' +
                         self.hdp_config.PLUGIN_NAME)
         try:
-            self.create_cluster(
+            cluster_id = self.create_cluster(
                 name=cluster_name,
                 plugin_config=self.hdp_config,
                 cluster_template_id=cluster_template_id,
                 description='test cluster',
                 cluster_configs={}
             )
+            self.poll_cluster_state(cluster_id)
 
             cluster_info = self.get_cluster_info(self.hdp_config)
             self.await_active_workers_for_namenode(cluster_info['node_info'],

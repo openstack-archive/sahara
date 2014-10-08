@@ -96,6 +96,7 @@ class TransientGatingTest(edp.EDPTest):
         }
         cluster_id = self.create_cluster(**cluster)
         self.addCleanup(self.delete_objects, cluster_id=cluster_id)
+        self.poll_cluster_state(cluster_id)
 
     @b.errormsg("Failure while transient cluster testing: ")
     def _check_transient(self):
