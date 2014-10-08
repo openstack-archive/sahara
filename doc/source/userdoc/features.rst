@@ -180,6 +180,12 @@ There is a feature parity between direct and heat infrastructure engines. It is
 recommended to use heat engine since direct engine will be deprecated at some
 point.
 
+Multi region deployment
+-----------------------
+Sahara supports multi region deployment. In this case, each instance of Sahara
+should have the ``os_region_name=<region>`` property set in the
+configuration file.
+
 Plugin Capabilities
 -------------------
 The below tables provides a plugin capability matrix:
