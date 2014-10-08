@@ -20,7 +20,7 @@ from sahara.service import ops
 from sahara.tests.unit import base
 
 
-class FakeNodeGroup():
+class FakeNodeGroup(object):
     id = 'id'
     count = 2
     instances = [1, 2]
@@ -51,7 +51,7 @@ class FakePlugin(mock.Mock):
         TestOPS.SEQUENCE.append('cluster_destroy')
 
 
-class FakeINFRA():
+class FakeINFRA(object):
     def create_cluster(self, cluster):
         TestOPS.SEQUENCE.append('create_cluster')
 

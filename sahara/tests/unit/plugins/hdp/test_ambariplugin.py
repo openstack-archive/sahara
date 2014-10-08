@@ -347,7 +347,7 @@ class AmbariPluginTest(sahara_base.SaharaTestCase):
         return request
 
 
-class TestHost:
+class TestHost(object):
     def __init__(self, management_ip, role=None):
         self.management_ip = management_ip
         self.role = role

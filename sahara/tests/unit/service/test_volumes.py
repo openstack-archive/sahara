@@ -45,7 +45,7 @@ class TestAttachVolume(base.SaharaWithDbTestCase):
     @mock.patch('cinderclient.v1.volumes.Volume.detach')
     @mock.patch('sahara.utils.openstack.cinder.get_volume')
     def test_detach_volumes(self, p_get_volume, p_detach, p_delete, p_cond):
-        class Instance:
+        class Instance(object):
             def __init__(self):
                 self.instance_id = '123454321'
                 self.volumes = [123]

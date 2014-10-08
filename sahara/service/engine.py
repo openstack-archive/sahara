@@ -37,7 +37,7 @@ conductor = c.API
 
 
 @six.add_metaclass(abc.ABCMeta)
-class Engine:
+class Engine(object):
     @abc.abstractmethod
     def create_cluster(self, cluster):
         pass

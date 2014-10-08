@@ -230,7 +230,7 @@ class TestClusterStack(testtools.TestCase):
             h.wait_stack_completion(stack)
 
 
-class FakeHeatStack():
+class FakeHeatStack(object):
     def __init__(self, stack_status=None, new_status=None, stack_name=None):
         self.stack_status = stack_status or ''
         self.new_status = new_status or ''

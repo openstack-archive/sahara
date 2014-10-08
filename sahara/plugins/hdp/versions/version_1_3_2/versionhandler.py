@@ -126,7 +126,7 @@ class VersionHandler(avm.AbstractVersionHandler):
         return None
 
 
-class AmbariClient():
+class AmbariClient(object):
 
     def __init__(self, handler):
         #  add an argument for neutron discovery

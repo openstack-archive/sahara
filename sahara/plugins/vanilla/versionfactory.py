@@ -19,7 +19,7 @@ import re
 from sahara.utils import general
 
 
-class VersionFactory():
+class VersionFactory(object):
     versions = None
     modules = None
     initialized = False

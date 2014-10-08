@@ -37,7 +37,7 @@ HADOOP_SWIFT_LOCAL_RPM = ('/opt/hdp-local-repos/hadoop-swift/'
 LOG = logging.getLogger(__name__)
 
 
-class HadoopServer:
+class HadoopServer(object):
     _master_ip = None
 
     def __init__(self, instance, node_group, ambari_rpm=None):
@@ -211,7 +211,7 @@ class HadoopServer:
         return self._is_component_available('GANGLIA_MONITOR')
 
 
-class DefaultPromptMatcher():
+class DefaultPromptMatcher(object):
     prompt_pattern = re.compile('(.*\()(.)(\)\?\s*$)', re.DOTALL)
 
     def __init__(self, terminal_token):
