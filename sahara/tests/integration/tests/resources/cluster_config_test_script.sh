@@ -45,8 +45,7 @@ case $1 in
 esac
 shift
 
-if [ "$1" = "-value" ]
-then
+if [ "$1" = "-value" ]; then
     VALUE="$2"
 fi
 shift
@@ -55,8 +54,7 @@ check_submitted_parameter() {
 
     case "$1" in
         config_value)
-            if [ -z "$VALUE" ]
-            then
+            if [ -z "$VALUE" ]; then
                 echo "Config value is not specified" >> $log
                 exit 1
             fi
@@ -68,8 +66,7 @@ compare_config_values() {
 
     check_submitted_parameter config_value
 
-    if [ "$VALUE" = "$1" ]
-    then
+    if [ "$VALUE" = "$1" ]; then
         echo -e "CHECK IS SUCCESSFUL \n\n" >> $log && exit 0
     else
         echo -e "Config value while cluster creation request: $VALUE \n" >> $log
