@@ -176,7 +176,7 @@ class ITestCase(testcase.WithAttributes, base.BaseTestCase):
             description, cluster_configs, node_groups,
             self.common_config.USER_KEYPAIR_ID, anti_affinity, net_id)
         self.cluster_id = data.id
-        self.poll_cluster_state(self.cluster_id)
+        return self.cluster_id
 
     def get_cluster_info(self, plugin_config):
         node_ip_list_with_node_processes = (
@@ -557,7 +557,11 @@ class ITestCase(testcase.WithAttributes, base.BaseTestCase):
                        node_group_template_id_list=None):
         if not self.common_config.RETAIN_CLUSTER_AFTER_TEST:
             if cluster_id:
-                self.sahara.clusters.delete(cluster_id)
+                try:
+                    self.sahara.clusters.delete(cluster_id)
+                except client_base.APIException:
+                    # cluster in deleting state or deleted
+                    pass
 
                 try:
                     # waiting roughly for 300 seconds for cluster to terminate

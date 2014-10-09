@@ -113,7 +113,8 @@ class HDP2GatingTest(swift.SwiftTest, scaling.ScalingTest,
             'description': 'test cluster',
             'cluster_configs': {}
         }
-        self.create_cluster(**cluster)
+        cluster_id = self.create_cluster(**cluster)
+        self.poll_cluster_state(cluster_id)
         self.cluster_info = self.get_cluster_info(self.hdp2_config)
         self.await_active_workers_for_namenode(self.cluster_info['node_info'],
                                                self.hdp2_config)

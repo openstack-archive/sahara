@@ -197,13 +197,14 @@ class VanillaGatingTest(cinder.CinderVolumeTest,
         try:
             cluster_name = "%s-%s-v1" % (self.common_config.CLUSTER_NAME,
                                          self.vanilla_config.PLUGIN_NAME)
-            self.create_cluster(
+            cluster_id = self.create_cluster(
                 name=cluster_name,
                 plugin_config=self.vanilla_config,
                 cluster_template_id=cluster_template_id,
                 description='test cluster',
                 cluster_configs={}
             )
+            self.poll_cluster_state(cluster_id)
 
             cluster_info = self.get_cluster_info(self.vanilla_config)
             self.await_active_workers_for_namenode(cluster_info['node_info'],
