@@ -25,7 +25,7 @@ import sahara.openstack.commons as commons
 LOG = logging.getLogger(__name__)
 
 
-class AuthValidator:
+class AuthValidator(object):
     """Handles token auth results and tenants."""
 
     def __init__(self, app):

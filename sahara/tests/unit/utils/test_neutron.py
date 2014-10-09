@@ -33,7 +33,7 @@ def _test_get_neutron_client(api_version, *args, **kwargs):
     return FakeNeutronClient()
 
 
-class FakeNeutronClient():
+class FakeNeutronClient(object):
     def list_routers(self):
         return {"routers": [{"status": "ACTIVE", "external_gateway_info": {
             "network_id": "61f95d3f-495e-4409-8c29-0b806283c81e"},

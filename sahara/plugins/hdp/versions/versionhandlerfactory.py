@@ -18,7 +18,7 @@ import os
 from sahara.utils import general
 
 
-class VersionHandlerFactory():
+class VersionHandlerFactory(object):
     versions = None
     modules = None
     initialized = False

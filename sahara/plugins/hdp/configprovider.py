@@ -18,7 +18,7 @@ from sahara.i18n import _
 from sahara.plugins import provisioning as p
 
 
-class ConfigurationProvider:
+class ConfigurationProvider(object):
     def __init__(self, config):
         self.config = config
         self.config_mapper = {}

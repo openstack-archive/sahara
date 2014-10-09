@@ -160,7 +160,7 @@ def start_patch(patch_templates=True):
     heat = heat_p.start()
     heat().stacks.list.side_effect = _get_heat_stack_list
 
-    class Service:
+    class Service(object):
         @property
         def name(self):
             return 'cinder'
@@ -170,7 +170,7 @@ def start_patch(patch_templates=True):
 
     keystone().services.list.side_effect = _services_list
 
-    class Image:
+    class Image(object):
         def __init__(self, name='test'):
             self.name = name
 

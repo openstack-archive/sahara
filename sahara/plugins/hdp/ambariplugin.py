@@ -363,7 +363,7 @@ class AmbariPlugin(p.ProvisioningPluginBase):
                 server.configure_topology(topology_str)
 
 
-class AmbariInfo():
+class AmbariInfo(object):
     def __init__(self, host, port, user, password):
         self.host = host
         self.port = port

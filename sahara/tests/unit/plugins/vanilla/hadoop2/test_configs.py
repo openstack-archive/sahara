@@ -63,7 +63,7 @@ class VanillaTwoConfigTestCase(base.SaharaTestCase):
         self.assertEqual(res, expected)
 
 
-class FakeNG():
+class FakeNG(object):
     def __init__(self, storage_paths=None):
         self.paths = storage_paths
 

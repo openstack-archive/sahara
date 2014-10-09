@@ -19,7 +19,7 @@ from sahara.plugins.hdp import clusterspec as cs
 from sahara import version
 
 
-class TestServer:
+class TestServer(object):
     def __init__(self, hostname, role, img, flavor, public_ip, private_ip):
         self.inst_fqdn = hostname
         self.role = role
@@ -51,7 +51,7 @@ def create_clusterspec(hdp_version='1.3.2'):
     return cs.ClusterSpec(cluster_config_file, version=hdp_version)
 
 
-class InstanceInfo:
+class InstanceInfo(object):
     def __init__(self, hostname, image, flavor, management_ip, internal_ip):
         self.image = image
         self.flavor = flavor
@@ -59,7 +59,7 @@ class InstanceInfo:
         self.internal_ip = internal_ip
 
 
-class TestCluster():
+class TestCluster(object):
     def __init__(self, node_groups):
         self.plugin_name = 'hdp'
         self.hadoop_version = None
@@ -68,7 +68,7 @@ class TestCluster():
         self.default_image_id = '11111'
 
 
-class TestNodeGroup:
+class TestNodeGroup(object):
     def __init__(self, name, instances, node_processes, count=1):
         self.name = name
         self.instances = instances
@@ -84,14 +84,14 @@ class TestNodeGroup:
         return self.ng_storage_paths
 
 
-class TestUserInputConfig:
+class TestUserInputConfig(object):
     def __init__(self, tag, target, name):
         self.tag = tag
         self.applicable_target = target
         self.name = name
 
 
-class TestRequest:
+class TestRequest(object):
     def put(self, url, data=None, auth=None, headers=None):
         self.url = url
         self.data = data
@@ -120,13 +120,13 @@ class TestRequest:
         return TestResult(200)
 
 
-class TestResult:
+class TestResult(object):
     def __init__(self, status):
         self.status_code = status
         self.text = ''
 
 
-class TestUserInput:
+class TestUserInput(object):
     def __init__(self, config, value):
         self.config = config
         self.value = value

@@ -616,7 +616,7 @@ def register_config(config, config_group, config_opts):
 
 
 @singleton
-class ITConfig:
+class ITConfig(object):
     def __init__(self):
         config = 'itest.conf'
         config_files = []

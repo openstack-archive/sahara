@@ -43,7 +43,7 @@ def client():
     return neutron_cli.Client('2.0', **args)
 
 
-class NeutronClientRemoteWrapper():
+class NeutronClientRemoteWrapper(object):
     neutron = None
     adapters = {}
     routers = {}
@@ -165,7 +165,7 @@ class NeutronHttpAdapter(adapters.HTTPAdapter):
         return NetcatSocket(self.cmd, rootwrap_command=self.rootwrap_command)
 
 
-class NetcatSocket:
+class NetcatSocket(object):
 
     def _create_process(self):
         self.process = e_subprocess.Popen(self.cmd,

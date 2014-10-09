@@ -1918,7 +1918,7 @@ class ClusterSpecTestForHDP2(sahara_base.SaharaTestCase):
         self.assertIn('hue-oozie-site', configurations)
 
 
-class TestNodeGroup:
+class TestNodeGroup(object):
     def __init__(self, name, instances, node_processes, count=1):
         self.name = name
         self.instances = instances
@@ -1932,7 +1932,7 @@ class TestNodeGroup:
         return ['']
 
 
-class TestUserInputConfig:
+class TestUserInputConfig(object):
     def __init__(self, tag, target, name):
         self.tag = tag
         self.applicable_target = target
