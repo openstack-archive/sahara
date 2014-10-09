@@ -39,6 +39,7 @@ NODE_GROUP_DEFAULTS = {
     "volumes_size": 0,
     "volumes_availability_zone": None,
     "volume_mount_prefix": "/volumes/disk",
+    "volume_type": None,
     "floating_ip_pool": None,
     "security_groups": None,
     "auto_security_group": False,

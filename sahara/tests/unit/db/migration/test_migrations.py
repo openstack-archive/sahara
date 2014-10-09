@@ -407,3 +407,8 @@ class TestMigrations(base.BaseWalkMigrationTestCase, base.CommonTestsMixIn):
         self.assertColumnExists(engine, 'node_groups', 'availability_zone')
         self.assertColumnExists(engine, 'templates_relations',
                                 'availability_zone')
+
+    def _check_014(self, engine, data):
+        self.assertColumnExists(engine, 'node_group_templates', 'volume_type')
+        self.assertColumnExists(engine, 'node_groups', 'volume_type')
+        self.assertColumnExists(engine, 'templates_relations', 'volume_type')

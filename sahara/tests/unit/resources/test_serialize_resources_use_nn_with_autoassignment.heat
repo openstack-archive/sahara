@@ -20,7 +20,8 @@
             "Type" : "OS::Cinder::Volume",
             "Properties" : {
                 "name" : "cluster-worker-001-volume-0",
-                "size" : "10"
+                "size" : "10",
+                "volume_type": null
             }
         },
         "cluster-worker-001-volume-attachment-0" : {
@@ -35,7 +36,8 @@
             "Type" : "OS::Cinder::Volume",
             "Properties" : {
                 "name" : "cluster-worker-001-volume-1",
-                "size" : "10"
+                "size" : "10",
+                "volume_type": null
             }
         },
         "cluster-worker-001-volume-attachment-1" : {

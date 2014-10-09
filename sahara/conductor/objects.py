@@ -77,6 +77,7 @@ class NodeGroup(object):
     volumes_availability_zone - name of Cinder availability zone
                                 where to spawn volumes
     volume_mount_prefix
+    volume_type
     floating_ip_pool - Floating IP Pool name used to assign Floating IPs to
                        instances in this Node Group
     security_groups - List of security groups for instances in this Node Group
@@ -178,6 +179,7 @@ class NodeGroupTemplate(object):
     volumes_size
     volumes_availability_zone
     volume_mount_prefix
+    volume_type
     floating_ip_pool
     security_groups
     auto_security_group
