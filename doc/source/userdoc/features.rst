@@ -33,19 +33,25 @@ All volumes are attached during Cluster creation/scaling operations.
 
 Neutron and Nova Network support
 --------------------------------
-OpenStack Cluster may use Nova Network or Neutron as a networking service.
-Sahara supports both, but when deployed,
-a special configuration for networking should be set explicitly. By default
-Sahara will behave as if Nova Network is used.
-If OpenStack Cluster uses Neutron, then ``use_neutron`` option should be set
-to ``True`` in Sahara configuration file.  In
-addition, if the OpenStack Cluster supports network namespaces, set the
-``use_namespaces`` option to ``True``
+OpenStack clusters may use Nova or Neutron as a networking service. Sahara
+supports both, but when deployed a special configuration for networking
+should be set explicitly. By default Sahara will behave as if Nova is used.
+If an OpenStack cluster uses Neutron, then the ``use_neutron`` property should
+be set to ``True`` in the Sahara configuration file. Additionally, if the
+cluster supports network namespaces the ``use_namespaces`` property can be
+used to enable their usage.
 
 .. sourcecode:: cfg
 
+    [DEFAULT]
     use_neutron=True
     use_namespaces=True
+
+.. note::
+    If a user other than ``root`` will be running the Sahara server
+    instance and namespaces are used, some additional configuration is
+    required, please see the :doc:`advanced.configuration.guide` for more
+    information.
 
 Floating IP Management
 ----------------------

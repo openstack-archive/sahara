@@ -80,15 +80,20 @@ class NeutronClientRemoteWrapper():
 
         return matching_router['id']
 
-    def get_http_session(self, host, port=None, *args, **kwargs):
+    def get_http_session(self, host, port=None, use_rootwrap=False,
+                         rootwrap_command=None, *args, **kwargs):
         session = requests.Session()
-        adapters = self._get_adapters(host, port=port, *args, **kwargs)
+        adapters = self._get_adapters(host, port=port,
+                                      use_rootwrap=use_rootwrap,
+                                      rootwrap_command=rootwrap_command,
+                                      *args, **kwargs)
         for adapter in adapters:
             session.mount('http://{0}:{1}'.format(host, adapter.port), adapter)
 
         return session
 
-    def _get_adapters(self, host, port=None, *args, **kwargs):
+    def _get_adapters(self, host, port=None, use_rootwrap=False,
+                      rootwrap_command=None, *args, **kwargs):
         LOG.debug('Retrieving neutron adapters for {0}:{1}'.format(host, port))
         adapters = []
         if not port:
@@ -103,7 +108,9 @@ class NeutronClientRemoteWrapper():
                           .format(host, port))
                 qrouter = self.get_router()
                 adapter = (
-                    NeutronHttpAdapter(qrouter, host, port))
+                    NeutronHttpAdapter(qrouter, host, port,
+                                       use_rootwrap=use_rootwrap,
+                                       rootwrap_command=rootwrap_command))
                 self.adapters[(host, port)] = adapter
                 adapters = [adapter]
 
@@ -114,14 +121,17 @@ class NeutronHttpAdapter(adapters.HTTPAdapter):
     port = None
     host = None
 
-    def __init__(self, qrouter, host, port, *args, **kwargs):
+    def __init__(self, qrouter, host, port, use_rootwrap=False,
+                 rootwrap_command=None, *args, **kwargs):
         super(NeutronHttpAdapter, self).__init__(*args, **kwargs)
-        command = 'ip netns exec qrouter-{0} nc {1} {2}'.format(qrouter,
-                                                                host, port)
+        command = '{0} ip netns exec qrouter-{1} nc {2} {3}'.format(
+                  rootwrap_command if use_rootwrap else '',
+                  qrouter, host, port)
         LOG.debug('Neutron adapter created with cmd {0}'.format(command))
         self.cmd = shlex.split(command)
         self.port = port
         self.host = host
+        self.rootwrap_command = rootwrap_command if use_rootwrap else None
 
     def get_connection(self, url, proxies=None):
         pool_conn = (
@@ -152,7 +162,7 @@ class NeutronHttpAdapter(adapters.HTTPAdapter):
     def _connect(self):
         LOG.debug('returning netcat socket with command {0}'
                   .format(self.cmd))
-        return NetcatSocket(self.cmd)
+        return NetcatSocket(self.cmd, rootwrap_command=self.rootwrap_command)
 
 
 class NetcatSocket:
@@ -163,8 +173,9 @@ class NetcatSocket:
                                           stdout=e_subprocess.PIPE,
                                           stderr=e_subprocess.PIPE)
 
-    def __init__(self, cmd):
+    def __init__(self, cmd, rootwrap_command=None):
         self.cmd = cmd
+        self.rootwrap_command = rootwrap_command
         self._create_process()
 
     def send(self, content):
@@ -191,7 +202,11 @@ class NetcatSocket:
             raise ex.SystemError(e)
 
     def _terminate(self):
-        self.process.terminate()
+        if self.rootwrap_command:
+            os.system('{0} kill {1}'.format(self.rootwrap_command,
+                                            self.process.pid))
+        else:
+            self.process.terminate()
 
     def close(self):
         LOG.debug('Socket close called')

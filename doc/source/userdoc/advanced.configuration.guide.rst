@@ -67,3 +67,60 @@ integration see the Sahara documentation sections
 :ref:`diskimage-builder-label` and :ref:`swift-integration-label`.
 
 .. _Sahara extra repository: http://github.com/openstack/sahara-extra
+
+Namespaces and non-root users
+-----------------------------
+
+In cases where namespaces are being used to access cluster VMs via private IPs,
+rootwrap functionality is provided to allow users other than ``root`` access
+to the namespace related OS facilities. To use rootwrap the following
+configuration property is required to be set:
+
+.. sourcecode:: cfg
+
+    [DEFAULT]
+    use_rootwrap=True
+
+
+Assuming you elect to leverage the default rootwrap command
+(``sahara-rootwrap``), you will need to perform the following additional setup
+steps:
+
+* Copy the provided sudoers configuration file from the local project file
+  ``etc/sudoers.d/sahara-rootwrap`` to the system specific location, usually
+  ``/etc/sudoers.d``. This file is setup to allow a user named ``sahara``
+  access to the rootwrap script. It contains the following:
+
+.. sourcecode:: cfg
+
+    sahara ALL = (root) NOPASSWD: /usr/bin/sahara-rootwrap /etc/sahara/rootwrap.conf *
+
+
+* Copy the provided rootwrap configuration file from the local project file
+  ``etc/sahara/rootwrap.conf`` to the system specific location, usually
+  ``/etc/sahara``. This file contains the default configuration for rootwrap.
+
+* Copy the provided rootwrap filers file from the local project file
+  ``etc/sahara/rootwrap.d/sahara.filters`` to the location specified in the
+  rootwrap configuration file, usually ``/etc/sahara/rootwrap.d``. This file
+  contains the filters that will allow the ``sahara`` user to acces the
+  ``ip netns exec``, ``nc``, and ``kill`` commands through the rootwrap. It
+  should look similar to the followings:
+
+.. sourcecode:: cfg
+
+    [Filters]
+    ip: IpNetnsExecFilter, ip, root
+    nc: CommandFilter, nc, root
+    kill: CommandFilter, kill, root
+
+If you wish to use a rootwrap command other than ``sahara-rootwrap`` you can
+set the following configuration property in your sahara configuration file:
+
+.. sourcecode:: cfg
+
+    [DEFAULT]
+    rootwrap_command='sudo sahara-rootwrap /etc/sahara/rootwrap.conf'
+
+For more information on rootwrap please refer to the
+`official Rootwrap documentation <https://wiki.openstack.org/wiki/Rootwrap>`_
