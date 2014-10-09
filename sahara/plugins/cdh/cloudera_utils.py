@@ -25,7 +25,7 @@ except ImportError:
 
 from sahara.i18n import _
 from sahara.plugins.cdh import utils as pu
-from sahara.plugins.general import exceptions as ex
+from sahara.plugins import exceptions as ex
 
 CM_DEFAULT_USERNAME = 'admin'
 CM_DEFAULT_PASSWD = 'admin'

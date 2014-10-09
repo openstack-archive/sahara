@@ -26,7 +26,7 @@ from sahara.i18n import _LC
 from sahara.i18n import _LE
 from sahara.i18n import _LI
 from sahara.i18n import _LW
-from sahara.plugins.general import exceptions as ex
+from sahara.plugins import exceptions as ex
 from sahara.plugins.hdp import clusterspec as cs
 from sahara.plugins.hdp import configprovider as cfgprov
 from sahara.plugins.hdp.versions import abstractversionhandler as avm

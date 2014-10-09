@@ -13,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from sahara.plugins.general import utils as u
+from sahara.plugins import utils as u
 
 
 def get_namenode(cluster):

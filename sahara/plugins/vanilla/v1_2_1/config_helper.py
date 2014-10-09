@@ -22,8 +22,8 @@ from sahara.i18n import _
 from sahara.i18n import _LI
 from sahara.i18n import _LW
 from sahara.openstack.common import log as logging
-from sahara.plugins.general import utils
 from sahara.plugins import provisioning as p
+from sahara.plugins import utils
 from sahara.plugins.vanilla import utils as vu
 from sahara.plugins.vanilla.v1_2_1 import mysql_helper as m_h
 from sahara.plugins.vanilla.v1_2_1 import oozie_helper as o_h

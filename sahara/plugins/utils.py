@@ -17,7 +17,7 @@ from oslo.utils import netutils
 from six.moves.urllib import parse as urlparse
 
 from sahara.i18n import _
-from sahara.plugins.general import exceptions as ex
+from sahara.plugins import exceptions as ex
 
 
 def get_node_groups(cluster, node_process=None):

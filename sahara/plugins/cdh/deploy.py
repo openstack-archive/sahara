@@ -26,8 +26,8 @@ from sahara.plugins.cdh import cloudera_utils as cu
 from sahara.plugins.cdh import commands as cmd
 from sahara.plugins.cdh import config_helper as c_helper
 from sahara.plugins.cdh import utils as pu
-from sahara.plugins.general import exceptions as ex
-from sahara.plugins.general import utils as gu
+from sahara.plugins import exceptions as ex
+from sahara.plugins import utils as gu
 from sahara.swift import swift_helper
 from sahara.utils import xmlutils
 

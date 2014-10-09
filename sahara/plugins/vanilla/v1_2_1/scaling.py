@@ -20,8 +20,8 @@ import six
 
 from sahara import context
 from sahara.i18n import _
-from sahara.plugins.general import exceptions as ex
-from sahara.plugins.general import utils
+from sahara.plugins import exceptions as ex
+from sahara.plugins import utils
 from sahara.plugins.vanilla.v1_2_1 import config_helper
 from sahara.plugins.vanilla.v1_2_1 import run_scripts as run
 from sahara.utils import remote

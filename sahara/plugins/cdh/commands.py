@@ -14,7 +14,7 @@
 # limitations under the License.
 
 from sahara.i18n import _
-from sahara.plugins.general import exceptions as ex
+from sahara.plugins import exceptions as ex
 
 
 def _root(remote, cmd, **kwargs):

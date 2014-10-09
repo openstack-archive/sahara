@@ -315,7 +315,7 @@ class TestSpark(base.SaharaTestCase):
                               "/wfdir/jar2.jar"])
     @mock.patch('sahara.service.edp.job_utils.create_workflow_dir',
                 return_value="/wfdir")
-    @mock.patch('sahara.plugins.general.utils.get_instance')
+    @mock.patch('sahara.plugins.utils.get_instance')
     @mock.patch('sahara.conductor.API.job_get')
     @mock.patch('sahara.context.ctx', return_value="ctx")
     def test_run_job(self, ctx, job_get, get_instance, create_workflow_dir,

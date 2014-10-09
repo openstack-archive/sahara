@@ -21,8 +21,8 @@ import six
 
 from sahara import exceptions as e
 from sahara.i18n import _
-from sahara.plugins.general import exceptions as ex
-from sahara.plugins.general import utils
+from sahara.plugins import exceptions as ex
+from sahara.plugins import utils
 from sahara.swift import swift_helper as h
 from sahara.topology import topology_helper as th
 

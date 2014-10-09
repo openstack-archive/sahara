@@ -17,8 +17,8 @@ from oslo.utils import timeutils
 
 from sahara import context
 from sahara.i18n import _
-from sahara.plugins.general import exceptions as ex
-from sahara.plugins.general import utils as u
+from sahara.plugins import exceptions as ex
+from sahara.plugins import utils as u
 from sahara.plugins.vanilla.hadoop2 import config
 from sahara.plugins.vanilla.hadoop2 import run_scripts as run
 from sahara.plugins.vanilla.hadoop2 import utils as pu
