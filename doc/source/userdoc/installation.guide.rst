@@ -171,6 +171,7 @@ installing it in virtual environment.
 ..
 
 .. _register-sahara-label:
+
 4. In order for Sahara to be accessible in OpenStack Dashboard and for
    python-saharaclient to work properly you need to register Sahara in
    Keystone. For example:

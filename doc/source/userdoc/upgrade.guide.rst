@@ -48,7 +48,7 @@ The Sahara UI is available in OpenStack Dashboard in
 
 Note that you have to properly register Sahara in Keystone in
 order for Sahara UI in the Dashboard to work. For details see
-``:ref:`registering Sahara in installation guide <register-sahara-label>```.
+:ref:`registering Sahara in installation guide <register-sahara-label>`.
 
 The `sahara-dashboard <https://git.openstack.org/cgit/openstack/sahara-dashboard>`_
 project is now used solely to host Sahara UI integration tests.
