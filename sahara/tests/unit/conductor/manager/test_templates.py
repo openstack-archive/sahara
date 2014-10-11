@@ -189,6 +189,7 @@ class ClusterTemplates(test_base.ConductorManagerTestCase):
             ng.pop("volume_mount_prefix")
             ng.pop("volumes_size")
             ng.pop("volumes_per_node")
+            ng.pop("volumes_availability_zone")
             ng.pop("auto_security_group")
 
         self.assertEqual(SAMPLE_CLT["node_groups"],

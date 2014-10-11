@@ -96,6 +96,7 @@ class TestAttachVolume(base.SaharaWithDbTestCase):
 
         ng = {'volumes_per_node': 2,
               'volumes_size': 2,
+              'volumes_availability_zone': None,
               'volume_mount_prefix': '/mnt/vols',
               'name': 'master',
               'instances': [instance1, instance2]}

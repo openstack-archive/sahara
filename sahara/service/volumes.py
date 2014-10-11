@@ -71,7 +71,8 @@ def _attach_volumes_to_node(node_group, instance):
     for idx in range(1, node_group.volumes_per_node + 1):
         display_name = "volume_" + instance.instance_name + "_" + str(idx)
         device = _create_attach_volume(
-            ctx, instance, size, display_name)
+            ctx, instance, size, display_name,
+            node_group.volumes_availability_zone)
         devices.append(device)
         LOG.debug("Attached volume %s to instance %s" %
                   (device, instance.instance_id))
@@ -81,11 +82,16 @@ def _attach_volumes_to_node(node_group, instance):
     _mount_volumes_to_node(instance, devices)
 
 
-def _create_attach_volume(ctx, instance, size, name=None):
+def _create_attach_volume(ctx, instance, size, name=None,
+                          availability_zone=None):
     if CONF.cinder_api_version == 1:
         kwargs = {'size': size, 'display_name': name}
     else:
         kwargs = {'size': size, 'name': name}
+
+    if availability_zone is not None:
+        kwargs['availability_zone'] = availability_zone
+
     volume = cinder.client().volumes.create(**kwargs)
     conductor.append_volume(ctx, instance, volume.id)
 

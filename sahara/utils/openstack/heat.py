@@ -243,7 +243,8 @@ class ClusterTemplate(object):
         yield _load_template('instance.heat', fields)
 
         for idx in range(0, ng.volumes_per_node):
-            yield self._serialize_volume(inst_name, idx, ng.volumes_size)
+            yield self._serialize_volume(inst_name, idx, ng.volumes_size,
+                                         ng.volumes_availability_zone)
 
     def _serialize_port(self, port_name, fixed_net_id, security_groups):
         fields = {'port_name': port_name,
@@ -271,12 +272,21 @@ class ClusterTemplate(object):
 
         return _load_template('nova-floating.heat', fields)
 
-    def _serialize_volume(self, inst_name, volume_idx, volumes_size):
+    def _serialize_volume(self, inst_name, volume_idx, volumes_size,
+                          volumes_availability_zone):
         fields = {'volume_name': _get_volume_name(inst_name, volume_idx),
                   'volumes_size': volumes_size,
                   'volume_attach_name': _get_volume_attach_name(inst_name,
                                                                 volume_idx),
+                  'availability_zone': '',
                   'instance_name': inst_name}
+
+        if volumes_availability_zone:
+            # Use json.dumps to escape volumes_availability_zone
+            # (in case it contains quotes)
+            fields['availability_zone'] = (
+                '"availability_zone": %s,' %
+                json.dumps(volumes_availability_zone))
 
         return _load_template('volume.heat', fields)
 
