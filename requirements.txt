@@ -23,7 +23,7 @@ paramiko>=1.13.0
 posix_ipc
 requests>=2.2.0,!=2.4.0
 python-cinderclient>=1.1.0
-python-keystoneclient>=0.10.0
+python-keystoneclient>=0.11.1
 python-novaclient>=2.18.0
 python-swiftclient>=2.2.0
 python-neutronclient>=2.3.6,<3
