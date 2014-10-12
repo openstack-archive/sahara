@@ -53,10 +53,10 @@ class HDPGatingTest(cinder.CinderVolumeTest, edp.EDPTest,
 
         if not self.hdp_config.SKIP_CINDER_TEST:
             volumes_per_node = 2
-            volume_size = 2
+            volumes_size = 2
         else:
             volumes_per_node = 0
-            volume_size = 0
+            volumes_size = 0
 
         node_group_template_id_list = []
 
@@ -70,7 +70,7 @@ class HDPGatingTest(cinder.CinderVolumeTest, edp.EDPTest,
                 plugin_config=self.hdp_config,
                 description='test node group template for HDP plugin',
                 volumes_per_node=volumes_per_node,
-                volume_size=volume_size,
+                volumes_size=volumes_size,
                 node_processes=self.hdp_config.WORKER_NODE_PROCESSES,
                 node_configs={},
                 floating_ip_pool=floating_ip_pool

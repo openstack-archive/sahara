@@ -58,10 +58,10 @@ class VanillaTwoGatingTest(cluster_configs.ClusterConfigTest,
             self.get_image_id_and_ssh_username(self.vanilla_two_config))
 
         self.volumes_per_node = 0
-        self.volume_size = 0
+        self.volumes_size = 0
         if not self.SKIP_CINDER_TEST:
             self.volumes_per_node = 2
-            self.volume_size = 2
+            self.volumes_size = 2
 
     ng_params = {
         'MapReduce': {
@@ -94,7 +94,7 @@ class VanillaTwoGatingTest(cluster_configs.ClusterConfigTest,
             'plugin_config': self.vanilla_two_config,
             'description': 'test node group template for Vanilla plugin',
             'volumes_per_node': self.volumes_per_node,
-            'volume_size': self.volume_size,
+            'volumes_size': self.volumes_size,
             'node_processes': ['nodemanager'],
             'floating_ip_pool': self.floating_ip_pool,
             'node_configs': self.ng_params
@@ -109,7 +109,7 @@ class VanillaTwoGatingTest(cluster_configs.ClusterConfigTest,
             'plugin_config': self.vanilla_two_config,
             'description': 'test node group template for Vanilla plugin',
             'volumes_per_node': self.volumes_per_node,
-            'volume_size': self.volume_size,
+            'volumes_size': self.volumes_size,
             'node_processes': ['datanode'],
             'floating_ip_pool': self.floating_ip_pool,
             'node_configs': self.ng_params
