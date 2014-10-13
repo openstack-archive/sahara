@@ -82,10 +82,10 @@ class VanillaGatingTest(cinder.CinderVolumeTest,
 
         if not self.vanilla_config.SKIP_CINDER_TEST:
             volumes_per_node = 2
-            volume_size = 2
+            volumes_size = 2
         else:
             volumes_per_node = 0
-            volume_size = 0
+            volumes_size = 0
 
         try:
             node_group_template_tt_id = self.create_node_group_template(
@@ -93,7 +93,7 @@ class VanillaGatingTest(cinder.CinderVolumeTest,
                 plugin_config=self.vanilla_config,
                 description='test node group template for Vanilla plugin',
                 volumes_per_node=volumes_per_node,
-                volume_size=volume_size,
+                volumes_size=volumes_size,
                 node_processes=['tasktracker'],
                 node_configs={
                     'MapReduce': cluster_configs.TT_CONFIG
@@ -118,7 +118,7 @@ class VanillaGatingTest(cinder.CinderVolumeTest,
                 plugin_config=self.vanilla_config,
                 description='test node group template for Vanilla plugin',
                 volumes_per_node=volumes_per_node,
-                volume_size=volume_size,
+                volumes_size=volumes_size,
                 node_processes=['datanode'],
                 node_configs={
                     'HDFS': cluster_configs.DN_CONFIG

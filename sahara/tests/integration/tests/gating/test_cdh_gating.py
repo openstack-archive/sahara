@@ -56,10 +56,10 @@ class CDHGatingTest(cluster_configs.ClusterConfigTest,
             self.get_image_id_and_ssh_username(self.cdh_config))
 
         self.volumes_per_node = 0
-        self.volume_size = 0
+        self.volumes_size = 0
         if not self.SKIP_CINDER_TEST:
             self.volumes_per_node = 2
-            self.volume_size = 2
+            self.volumes_size = 2
 
     @b.errormsg("Failure while 'nm-dn' node group template creation: ")
     def _create_nm_dn_ng_template(self):
@@ -81,7 +81,7 @@ class CDHGatingTest(cluster_configs.ClusterConfigTest,
             'plugin_config': self.cdh_config,
             'description': 'test node group template for CDH plugin',
             'volumes_per_node': self.volumes_per_node,
-            'volume_size': self.volume_size,
+            'volumes_size': self.volumes_size,
             'node_processes': ['NODEMANAGER'],
             'floating_ip_pool': self.floating_ip_pool,
             'node_configs': {}
@@ -96,7 +96,7 @@ class CDHGatingTest(cluster_configs.ClusterConfigTest,
             'plugin_config': self.cdh_config,
             'description': 'test node group template for CDH plugin',
             'volumes_per_node': self.volumes_per_node,
-            'volume_size': self.volume_size,
+            'volumes_size': self.volumes_size,
             'node_processes': ['DATANODE'],
             'floating_ip_pool': self.floating_ip_pool,
             'node_configs': {}
