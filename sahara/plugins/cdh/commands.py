@@ -41,6 +41,11 @@ def is_pre_installed_cdh(remote):
 
 def start_cloudera_db(remote):
     _root(remote, 'service cloudera-scm-server-db start')
+    # for Hive access
+    hive_access_param = 'host metastore hive 0.0.0.0/0 md5'
+    remote.append_to_file('/var/lib/cloudera-scm-server-db/data/pg_hba.conf',
+                          hive_access_param, run_as_root=True)
+    _root(remote, 'service cloudera-scm-server-db restart')
 
 
 def start_manager(remote):
@@ -93,3 +98,7 @@ def add_apt_key(remote, key_url):
 
 def add_centos_repository(r, repo_list_url, repo_name):
     push_remote_file(r, repo_list_url, '/etc/yum.repos.d/%s.repo' % repo_name)
+
+
+def start_mysql_server(remote):
+    _root(remote, 'service mysql start')

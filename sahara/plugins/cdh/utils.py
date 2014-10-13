@@ -46,3 +46,7 @@ def get_secondarynamenode(cluster):
 
 def get_historyserver(cluster):
     return u.get_instance(cluster, 'JOBHISTORY')
+
+
+def get_hive_metastore(cluster):
+    return u.get_instance(cluster, 'HIVEMETASTORE')

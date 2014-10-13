@@ -49,7 +49,11 @@ class CDHPluginProvider(p.ProvisioningPluginBase):
             "RESOURCEMANAGER": ['RESOURCEMANAGER'],
             "NODEMANAGER": ['NODEMANAGER'],
             "JOBHISTORY": ['JOBHISTORY'],
-            "OOZIE": ['OOZIE_SERVER']
+            "OOZIE": ['OOZIE_SERVER'],
+            "HIVE": [],
+            "HIVESERVER": ['HIVESERVER2'],
+            "HIVEMETASTORE": ['HIVEMETASTORE'],
+            "WEBHCAT": ['WEBHCAT']
         }
 
     def get_configs(self, hadoop_version):
