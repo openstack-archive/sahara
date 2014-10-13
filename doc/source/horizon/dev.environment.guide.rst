@@ -31,6 +31,12 @@ using the following command:
 
     $ keystone endpoint-list
 
+You can list the registered services with this command:
+
+.. sourcecode:: console
+
+    $ keystone service-list
+
 1. Install prerequisites
 
   .. sourcecode:: console
@@ -85,34 +91,16 @@ using the following command:
      SAHARA_AUTO_IP_ALLOCATION_ENABLED = True
   ..
 
-5. If Sahara is not registered in keystone service catalog, then we should modify
-   ``openstack_dashboard/api/sahara.py``:
+5. If Sahara is not registered with the keystone service catalog, it may be addded
+   with the following commands.  To use Sahara from Horizon without keystone
+   registration, see `Using the Data Processing Dashboard without Keystone Registration`_.
 
-   Add following lines before ``def client(request)``:
-   Note, that you should replace the ip and port in ``SAHARA_URL`` with the
-   appropriate values.
+   .. sourcecode:: console
 
-   .. sourcecode:: python
+       $ keystone service-create --name sahara --type data_processing
+       $ keystone endpoint-create --region RegionOne --service sahara --publicurl 'http://localhost:8386/v1.1/%(tenant_id)s'
 
-        SAHARA_URL = "http://localhost:8386/v1.1"
-
-        def get_sahara_url(request):
-
-            if SAHARA_URL:
-                url = SAHARA_URL.rstrip('/')
-                if url.split('/')[-1] in ['v1.0', 'v1.1']:
-                    url = SAHARA_URL + '/' + request.user.tenant_id
-                return url
-
-            return base.url_for(request, SAHARA_SERVICE)
-   ..
-
-   After that modify sahara_url provided in ``def client(request):``
-
-   .. sourcecode:: python
-
-        sahara_url=get_sahara_url(request)
-   ..
+   **Note** you should replace the ip and port in with the appropriate values.
 
 6. Start Horizon
 
@@ -142,3 +130,62 @@ using the following command:
   Horizon will notice that and reload automatically. However changes made to
   non-python files may not be noticed, so you have to restart Horizon again
   manually, as described in step 6.
+
+Using the Data Processing Dashboard without Keystone Registration
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+**Note** These modifications are strictly for a development environment
+
+If Sahara is not registered as a service with keystone, Horizon must be
+modified so that the Sahara URL can be known and so service-based
+permissions do not prevent the Data Processing dashboard from displaying.
+
+
+1. Modify ``openstack_dashboard/api/sahara.py``:
+
+   Add the following lines before ``def client(request)``:
+
+   **Note** you should replace the ip and port in ``SAHARA_URL`` with the
+   appropriate values.
+
+   .. sourcecode:: python
+
+        SAHARA_URL = "http://localhost:8386/v1.1"
+
+        def get_sahara_url(request):
+
+            if SAHARA_URL:
+                url = SAHARA_URL.rstrip('/')
+                if url.split('/')[-1] in ['v1.0', 'v1.1']:
+                    url = SAHARA_URL + '/' + request.user.tenant_id
+                return url
+
+            return base.url_for(request, SAHARA_SERVICE)
+   ..
+
+   After that modify ``sahara_url`` provided in ``def client(request):``
+
+   .. sourcecode:: python
+
+        sahara_url=get_sahara_url(request)
+   ..
+
+
+2. Modify ``openstack_dashboard/dashboards/project/dashboard.py``:
+
+   Overload the ``register`` method in ``class Project`` to programmatically
+   remove ``data_processing`` permissions from all panels.
+
+   .. sourcecode:: python
+
+        @classmethod
+        def register(cls, panel):
+            if hasattr(panel, 'permissions'):
+               panel.permissions = tuple(
+                   [perm for perm in panel.permissions if not perm.startswith(
+                       'openstack.services.data_processing')])
+            super(Project, cls).register(panel)
+   ..
+
+   Alternatively the ``data_processing`` permissions can be removed
+   manually from each panel under ``openstack_dashboard/dashboards/project/data_processing``
