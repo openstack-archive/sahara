@@ -39,6 +39,12 @@ On Fedora-based distributions (e.g., Fedora/RHEL/CentOS/Scientific Linux):
     $ sudo yum install git-core python-devel python-virtualenv gcc python-pip mariadb-devel postgresql-devel
     $ sudo pip install tox
 
+On openSUSE-based distributions (SLES 12, openSUSE, Factory or Tumbleweed)::
+
+.. sourcecode:: console
+
+    $ sudo zypper in gcc git libmysqlclient-devel postgresql-devel python-devel python-pip python-tox python-virtualenv
+
 2. Grab the code from GitHub:
 
 .. sourcecode:: console
