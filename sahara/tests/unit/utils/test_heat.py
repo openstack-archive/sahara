@@ -58,15 +58,15 @@ class TestClusterTemplate(base.SaharaWithDbTestCase):
     into Heat templates.
     """
 
-    def _make_node_groups(self, floating_ip_pool=None):
+    def _make_node_groups(self, floating_ip_pool=None, volume_type=None):
         ng1 = tu.make_ng_dict('master', 42, ['namenode'], 1,
                               floating_ip_pool=floating_ip_pool, image_id=None,
                               volumes_per_node=0, volumes_size=0, id=1,
-                              image_username='root')
+                              image_username='root', volume_type=None)
         ng2 = tu.make_ng_dict('worker', 42, ['datanode'], 1,
                               floating_ip_pool=floating_ip_pool, image_id=None,
                               volumes_per_node=2, volumes_size=10, id=2,
-                              image_username='root')
+                              image_username='root', volume_type=volume_type)
         return ng1, ng2
 
     def _make_cluster(self, mng_network, ng1, ng2, anti_affinity=[]):
@@ -110,7 +110,7 @@ class TestClusterTemplate(base.SaharaWithDbTestCase):
         'worker' with 2 attached volumes 10GB size each
         """
 
-        ng1, ng2 = self._make_node_groups('floating')
+        ng1, ng2 = self._make_node_groups('floating', 'vol_type')
         cluster = self._make_cluster('private_net', ng1, ng2)
         heat_template = self._make_heat_template(cluster, ng1, ng2)
         self.override_config("use_neutron", True)

@@ -59,6 +59,9 @@ NODE_GROUP_TEMPLATE_SCHEMA = {
             "type": "integer",
             "minimum": 1,
         },
+        "volume_type": {
+            "type": "string"
+        },
         "volumes_availability_zone": {
             "type": "string",
         },

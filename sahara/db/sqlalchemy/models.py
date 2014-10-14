@@ -101,6 +101,7 @@ class NodeGroup(mb.SaharaBase):
     volumes_size = sa.Column(sa.Integer)
     volumes_availability_zone = sa.Column(sa.String(255))
     volume_mount_prefix = sa.Column(sa.String(80))
+    volume_type = sa.Column(sa.String(255))
     count = sa.Column(sa.Integer, nullable=False)
     instances = relationship('Instance', cascade="all,delete",
                              backref='node_group',
@@ -197,6 +198,7 @@ class NodeGroupTemplate(mb.SaharaBase):
     volumes_size = sa.Column(sa.Integer)
     volumes_availability_zone = sa.Column(sa.String(255))
     volume_mount_prefix = sa.Column(sa.String(80))
+    volume_type = sa.Column(sa.String(255))
     floating_ip_pool = sa.Column(sa.String(36))
     security_groups = sa.Column(st.JsonListType())
     auto_security_group = sa.Column(sa.Boolean())
@@ -222,6 +224,7 @@ class TemplatesRelation(mb.SaharaBase):
     volumes_size = sa.Column(sa.Integer)
     volumes_availability_zone = sa.Column(sa.String(255))
     volume_mount_prefix = sa.Column(sa.String(80))
+    volume_type = sa.Column(sa.String(255))
     count = sa.Column(sa.Integer, nullable=False)
     cluster_template_id = sa.Column(sa.String(36),
                                     sa.ForeignKey('cluster_templates.id'))

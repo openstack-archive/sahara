@@ -3,7 +3,8 @@
             "Properties" : {
                 "name" : "%(volume_name)s",
                 %(availability_zone)s
-                "size" : "%(volumes_size)s"
+                "size" : "%(volumes_size)s",
+                %(volume_type)s
             }
         },
         "%(volume_attach_name)s" : {

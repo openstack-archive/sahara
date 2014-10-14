@@ -98,6 +98,7 @@ class TestAttachVolume(base.SaharaWithDbTestCase):
               'volumes_size': 2,
               'volumes_availability_zone': None,
               'volume_mount_prefix': '/mnt/vols',
+              'volume_type': None,
               'name': 'master',
               'instances': [instance1, instance2]}
 

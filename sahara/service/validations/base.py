@@ -135,6 +135,9 @@ def check_node_group_basic_fields(plugin_name, hadoop_version, ng,
             check_volume_availability_zone_exist(
                 ng['volumes_availability_zone'])
 
+        if ng.get('volume_type'):
+            check_volume_type_exists(ng['volume_type'])
+
     if ng.get('floating_ip_pool'):
         check_floatingip_pool_exists(ng['name'], ng['floating_ip_pool'])
 
@@ -223,6 +226,14 @@ def check_volume_availability_zone_exist(az):
     if az not in az_names:
         raise ex.InvalidException(_("Cinder availability zone '%s' not found")
                                   % az)
+
+
+def check_volume_type_exists(volume_type):
+    volume_types = cinder.client().volume_types.list(search_opts={'name':
+                                                                  volume_type})
+    if len(volume_types) == 1 and volume_types[0] == volume_type:
+        return
+    raise ex.NotFoundException(_("Volume type '%s' not found") % volume_type)
 
 
 # Cluster creation related checks
