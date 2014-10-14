@@ -264,12 +264,24 @@ class DirectEngine(e.Engine):
 
         return instances_to_add
 
-    def _find_by_id(self, lst, id):
-        for obj in lst:
-            if obj.id == id:
-                return obj
+    def _map_security_groups(self, security_groups):
+        if not security_groups:
+            # Nothing to do here
+            return None
 
-        return None
+        if CONF.use_neutron:
+            # When using Neutron, ids work fine.
+            return security_groups
+        else:
+            # Nova Network requires that security groups are passed by names.
+            # security_groups.get method accepts both ID and names, so in case
+            # IDs are provided they will be converted, otherwise the names will
+            # just map to themselves.
+            names = []
+            for group_id_or_name in security_groups:
+                group = nova.client().security_groups.get(group_id_or_name)
+                names.append(group.name)
+            return names
 
     def _run_instance(self, cluster, node_group, idx, aa_group=None,
                       old_aa_groups=None):
@@ -292,9 +304,11 @@ class DirectEngine(e.Engine):
             hints = {'group': aa_group} if (
                 aa_group and self._need_aa_server_group(node_group)) else None
 
+        security_groups = self._map_security_groups(node_group.security_groups)
         nova_kwargs = {'scheduler_hints': hints, 'userdata': userdata,
                        'key_name': cluster.user_keypair_id,
-                       'security_groups': node_group.security_groups}
+                       'security_groups': security_groups}
+
         if CONF.use_neutron:
             net_id = cluster.neutron_management_network
             nova_kwargs['nics'] = [{"net-id": net_id, "v4-fixed-ip": ""}]
