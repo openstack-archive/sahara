@@ -166,6 +166,10 @@ class SparkJobEngine(base_engine.JobEngine):
             port,
             args)
 
+        job_execution = conductor.job_execution_get(ctx, job_execution.id)
+        if job_execution.info['status'] == edp.JOB_STATUS_TOBEKILLED:
+            return (None, edp.JOB_STATUS_KILLED, None)
+
         # If an exception is raised here, the job_manager will mark
         # the job failed and log the exception
         with remote.get_remote(master) as r:

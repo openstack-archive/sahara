@@ -204,6 +204,11 @@
 # stored or retrieved in a single operation. (integer value)
 #job_binary_max_KB=5120
 
+# Timeout for canceling job execution (in seconds). Sahara
+# will try to cancel job execution during this time. (integer
+# value)
+#job_canceling_timeout=300
+
 # If set to True, Sahara will use floating IPs to communicate
 # with instances. To make sure that all instances have
 # floating IPs assigned in Nova Network set

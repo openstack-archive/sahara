@@ -67,6 +67,10 @@ class LocalOps(object):
         context.spawn("Starting Job Execution %s" % job_execution_id,
                       _run_edp_job, job_execution_id)
 
+    def cancel_job_execution(self, job_execution_id):
+        context.spawn("Canceling Job Execution %s" % job_execution_id,
+                      _cancel_job_execution, job_execution_id)
+
 
 class RemoteOps(rpc_utils.RPCClient):
     def __init__(self):
@@ -86,6 +90,10 @@ class RemoteOps(rpc_utils.RPCClient):
     def run_edp_job(self, job_execution_id):
         self.cast('run_edp_job', job_execution_id=job_execution_id)
 
+    def cancel_job_execution(self, job_execution_id):
+        self.cast('cancel_job_execution',
+                  job_execution_id=job_execution_id)
+
 
 class OpsServer(rpc_utils.RPCServer):
     def __init__(self):
@@ -104,6 +112,9 @@ class OpsServer(rpc_utils.RPCServer):
 
     def run_edp_job(self, job_execution_id):
         _run_edp_job(job_execution_id)
+
+    def cancel_job_execution(self, job_execution_id):
+        _cancel_job_execution(job_execution_id)
 
 
 def ops_error_handler(f):
@@ -263,3 +274,7 @@ def terminate_cluster(cluster_id):
 
 def _run_edp_job(job_execution_id):
     job_manager.run_job(job_execution_id)
+
+
+def _cancel_job_execution(job_execution_id):
+    job_manager.cancel_job(job_execution_id)

@@ -111,6 +111,9 @@ class OozieJobEngine(base_engine.JobEngine):
         client = self._get_client()
         oozie_job_id = client.add_job(x.create_hadoop_xml(job_params),
                                       job_execution)
+        job_execution = conductor.job_execution_get(ctx, job_execution.id)
+        if job_execution.info['status'] == edp.JOB_STATUS_TOBEKILLED:
+            return (None, edp.JOB_STATUS_KILLED, None)
         client.run_job(job_execution, oozie_job_id)
         try:
             status = client.get_job_status(job_execution,

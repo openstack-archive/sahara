@@ -155,6 +155,15 @@ class CreationFailed(SaharaException):
             self.message = message
 
 
+class CancelingFailed(SaharaException):
+    message = _("Operation was not canceled")
+    code = "CANCELING_FAILED"
+
+    def __init__(self, message=None):
+        if message:
+            self.message = message
+
+
 class DeletionFailed(SaharaException):
     message = _("Object was not deleted")
     code = "DELETION_FAILED"
