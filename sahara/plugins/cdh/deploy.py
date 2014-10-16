@@ -40,6 +40,7 @@ HDFS_SERVICE_TYPE = 'HDFS'
 YARN_SERVICE_TYPE = 'YARN'
 OOZIE_SERVICE_TYPE = 'OOZIE'
 HIVE_SERVICE_TYPE = 'HIVE'
+HUE_SERVICE_TYPE = 'HUE'
 
 PATH_TO_CORE_SITE_XML = '/etc/hadoop/conf/core-site.xml'
 HADOOP_LIB_DIR = '/usr/lib/hadoop-mapreduce'
@@ -58,6 +59,7 @@ PACKAGES = [
     'hadoop-yarn-resourcemanager',
     'hive-metastore',
     'hive-server2',
+    'hue',
     'oozie',
     'oracle-j2sdk1.7',
 ]
@@ -90,6 +92,10 @@ def _get_configs(service, cluster=None, node_group=None):
         },
         'YARN': {
             'hdfs_service': cu.HDFS_SERVICE_NAME
+        },
+        'HUE': {
+            'hive_service': cu.HIVE_SERVICE_NAME,
+            'oozie_service': cu.OOZIE_SERVICE_NAME
         }
     }
 
@@ -128,7 +134,14 @@ def _get_configs(service, cluster=None, node_group=None):
                 'mapreduce_yarn_service': cu.YARN_SERVICE_NAME
             }
         }
+        hue_confs = {
+            'HUE': {
+                'hue_webhdfs': cu.get_role_name(pu.get_namenode(cluster),
+                                                'NAMENODE')
+            }
+        }
 
+        all_confs = _merge_dicts(all_confs, hue_confs)
         all_confs = _merge_dicts(all_confs, hive_confs)
         all_confs = _merge_dicts(all_confs, cluster.cluster_configs)
 
@@ -329,6 +342,8 @@ def _create_services(cluster):
     cm_cluster.create_service(cu.OOZIE_SERVICE_NAME, OOZIE_SERVICE_TYPE)
     if pu.get_hive_metastore(cluster):
         cm_cluster.create_service(cu.HIVE_SERVICE_NAME, HIVE_SERVICE_TYPE)
+    if pu.get_hue(cluster):
+        cm_cluster.create_service(cu.HUE_SERVICE_NAME, HUE_SERVICE_TYPE)
 
 
 def _configure_services(cluster):
@@ -346,6 +361,10 @@ def _configure_services(cluster):
     if pu.get_hive_metastore(cluster):
         hive = cm_cluster.get_service(cu.HIVE_SERVICE_NAME)
         hive.update_config(_get_configs(HIVE_SERVICE_TYPE, cluster=cluster))
+
+    if pu.get_hue(cluster):
+        hue = cm_cluster.get_service(cu.HUE_SERVICE_NAME)
+        hue.update_config(_get_configs(HUE_SERVICE_TYPE, cluster=cluster))
 
 
 def _configure_instances(instances):
@@ -428,3 +447,7 @@ def start_cluster(cluster):
         cu.create_hive_metastore_db(hive)
         cu.create_hive_dirs(hive)
         cu.start_service(hive)
+
+    if pu.get_hue(cluster):
+        hue = cm_cluster.get_service(cu.HUE_SERVICE_NAME)
+        cu.start_service(hue)

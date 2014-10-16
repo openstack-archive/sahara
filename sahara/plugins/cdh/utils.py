@@ -50,3 +50,7 @@ def get_historyserver(cluster):
 
 def get_hive_metastore(cluster):
     return u.get_instance(cluster, 'HIVEMETASTORE')
+
+
+def get_hue(cluster):
+    return u.get_instance(cluster, 'HUE_SERVER')
