@@ -96,7 +96,7 @@ def cancel_job_execution(id):
 
 
 def delete_job_execution(id):
-    conductor.job_execution_destroy(context.ctx(), id)
+    OPS.delete_job_execution(id)
 
 
 def get_data_sources():
