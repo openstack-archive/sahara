@@ -430,19 +430,12 @@ class VersionHandler(avm.AbstractVersionHandler):
     def _get_scalable_processes(self):
         return ["datanode", "tasktracker"]
 
-    def _get_by_id(self, lst, id):
-        for obj in lst:
-            if obj.id == id:
-                return obj
-
-        return None
-
     def _validate_additional_ng_scaling(self, cluster, additional):
         jt = vu.get_jobtracker(cluster)
         scalable_processes = self._get_scalable_processes()
 
         for ng_id in additional:
-            ng = self._get_by_id(cluster.node_groups, ng_id)
+            ng = g.get_by_id(cluster.node_groups, ng_id)
             if not set(ng.node_processes).issubset(scalable_processes):
                 raise ex.NodeGroupCannotBeScaled(
                     ng.name, _("Vanilla plugin cannot scale nodegroup"

@@ -16,6 +16,7 @@
 from sahara import conductor
 from sahara import context
 from sahara.tests.unit import base
+from sahara.utils import general as gu
 
 
 SAMPLE_CLUSTER = {
@@ -72,13 +73,6 @@ class TestConductorClusterApi(base.SaharaWithDbTestCase):
         cluster = self.api.cluster_create(ctx, SAMPLE_CLUSTER)
         return ctx, cluster
 
-    def _get_by_id(self, lst, id):
-        for obj in lst:
-            if obj.id == id:
-                return obj
-
-        return None
-
     def test_update_by_id(self):
         ctx, cluster = self._make_sample()
 
@@ -102,7 +96,7 @@ class TestConductorClusterApi(base.SaharaWithDbTestCase):
         self.api.node_group_update(ctx, ng_id, {'name': 'changed_ng'})
         cluster = self.api.cluster_get(ctx, cluster.id)
 
-        ng = self._get_by_id(cluster.node_groups, ng_id)
+        ng = gu.get_by_id(cluster.node_groups, ng_id)
         self.assertEqual(ng.name, 'changed_ng')
 
     def test_add_instance_to_node_group_id(self):
@@ -119,5 +113,5 @@ class TestConductorClusterApi(base.SaharaWithDbTestCase):
         self.api.instance_update(ctx, inst_id, {'instance_name': 'tst123'})
         cluster = self.api.cluster_get(ctx, cluster.id)
 
-        ng = self._get_by_id(cluster.node_groups, ng_id)
+        ng = gu.get_by_id(cluster.node_groups, ng_id)
         self.assertEqual(ng.instances[0].instance_name, 'tst123')
