@@ -27,10 +27,10 @@ import signal
 
 from eventlet.green import subprocess
 from eventlet import greenthread
+from oslo.utils import strutils
 import six
 
-from sahara.openstack.common.gettextutils import _
-from sahara.openstack.common import strutils
+from sahara.openstack.common._i18n import _
 
 
 LOG = logging.getLogger(__name__)
