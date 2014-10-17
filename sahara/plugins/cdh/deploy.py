@@ -270,6 +270,7 @@ def _await_agents(instances):
 def _start_cloudera_agent(instance):
     mng_hostname = pu.get_manager(instance.node_group.cluster).hostname()
     with instance.remote() as r:
+        cmd.start_ntp(r)
         cmd.configure_agent(r, mng_hostname)
         cmd.start_agent(r)
 
