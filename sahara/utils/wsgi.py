@@ -1,5 +1,3 @@
-# vim: tabstop=4 shiftwidth=4 softtabstop=4
-
 # Copyright 2011 OpenStack LLC.
 # All Rights Reserved.
 #
@@ -23,14 +21,70 @@
 import datetime
 from xml.dom import minidom
 from xml.parsers import expat
+from xml import sax
+from xml.sax import expatreader
 
+from oslo.serialization import jsonutils
+
+from sahara.i18n import _
 from sahara.openstack.common import exception
-from sahara.openstack.common.gettextutils import _
-from sahara.openstack.common import jsonutils
 from sahara.openstack.common import log as logging
-from sahara.openstack.common import xmlutils
 
 LOG = logging.getLogger(__name__)
+
+
+class ProtectedExpatParser(expatreader.ExpatParser):
+    """An expat parser which disables DTD's and entities by default."""
+
+    def __init__(self, forbid_dtd=True, forbid_entities=True,
+                 *args, **kwargs):
+        # Python 2.x old style class
+        expatreader.ExpatParser.__init__(self, *args, **kwargs)
+        self.forbid_dtd = forbid_dtd
+        self.forbid_entities = forbid_entities
+
+    def start_doctype_decl(self, name, sysid, pubid, has_internal_subset):
+        raise ValueError("Inline DTD forbidden")
+
+    def entity_decl(self, entityName, is_parameter_entity, value, base,
+                    systemId, publicId, notationName):
+        raise ValueError("<!ENTITY> entity declaration forbidden")
+
+    def unparsed_entity_decl(self, name, base, sysid, pubid, notation_name):
+        # expat 1.2
+        raise ValueError("<!ENTITY> unparsed entity forbidden")
+
+    def external_entity_ref(self, context, base, systemId, publicId):
+        raise ValueError("<!ENTITY> external entity forbidden")
+
+    def notation_decl(self, name, base, sysid, pubid):
+        raise ValueError("<!ENTITY> notation forbidden")
+
+    def reset(self):
+        expatreader.ExpatParser.reset(self)
+        if self.forbid_dtd:
+            self._parser.StartDoctypeDeclHandler = self.start_doctype_decl
+            self._parser.EndDoctypeDeclHandler = None
+        if self.forbid_entities:
+            self._parser.EntityDeclHandler = self.entity_decl
+            self._parser.UnparsedEntityDeclHandler = self.unparsed_entity_decl
+            self._parser.ExternalEntityRefHandler = self.external_entity_ref
+            self._parser.NotationDeclHandler = self.notation_decl
+            try:
+                self._parser.SkippedEntityHandler = None
+            except AttributeError:
+                # some pyexpat versions do not support SkippedEntity
+                pass
+
+
+def safe_minidom_parse_string(xml_string):
+    """Parse an XML string using minidom safely.
+
+    """
+    try:
+        return minidom.parseString(xml_string, parser=ProtectedExpatParser())
+    except sax.SAXParseException:
+        raise expat.ExpatError()
 
 
 class ActionDispatcher(object):
@@ -47,7 +101,7 @@ class ActionDispatcher(object):
 
 
 class DictSerializer(ActionDispatcher):
-    """Default request body serialization"""
+    """Default request body serialization."""
 
     def serialize(self, data, action='default'):
         return self.dispatch(data, action=action)
@@ -57,7 +111,7 @@ class DictSerializer(ActionDispatcher):
 
 
 class JSONDictSerializer(DictSerializer):
-    """Default JSON request body serialization"""
+    """Default JSON request body serialization."""
 
     def default(self, data):
         def sanitizer(obj):
@@ -71,9 +125,9 @@ class JSONDictSerializer(DictSerializer):
 class XMLDictSerializer(DictSerializer):
 
     def __init__(self, metadata=None, xmlns=None):
-        """
-        :param metadata: information needed to deserialize xml into
-                         a dictionary.
+        """:param metadata: information needed to deserialize xml
+
+        into a dictionary.
         :param xmlns: XML namespace to include with serialized xml
         """
         super(XMLDictSerializer, self).__init__()
@@ -92,7 +146,7 @@ class XMLDictSerializer(DictSerializer):
         self._add_xmlns(node, has_atom)
         return node.toprettyxml(indent='    ', encoding='UTF-8')
 
-    #NOTE (ameade): the has_atom should be removed after all of the
+    # NOTE (ameade): the has_atom should be removed after all of the
     # xml serializers and view builders have been updated to the current
     # spec that required all responses include the xmlns:atom, the has_atom
     # flag is to prevent current tests from breaking
@@ -112,7 +166,7 @@ class XMLDictSerializer(DictSerializer):
         if xmlns:
             result.setAttribute('xmlns', xmlns)
 
-        #TODO(bcwaldon): accomplish this without a type-check
+        # TODO(bcwaldon): accomplish this without a type-check
         if type(data) is list:
             collections = metadata.get('list_collections', {})
             if nodename in collections:
@@ -131,7 +185,7 @@ class XMLDictSerializer(DictSerializer):
             for item in data:
                 node = self._to_xml_node(doc, metadata, singular, item)
                 result.appendChild(node)
-        #TODO(bcwaldon): accomplish this without a type-check
+        # TODO(bcwaldon): accomplish this without a type-check
         elif type(data) is dict:
             collections = metadata.get('dict_collections', {})
             if nodename in collections:
@@ -169,7 +223,7 @@ class XMLDictSerializer(DictSerializer):
 
 
 class TextDeserializer(ActionDispatcher):
-    """Default request body deserialization"""
+    """Default request body deserialization."""
 
     def deserialize(self, datastring, action='default'):
         return self.dispatch(datastring, action=action)
@@ -194,9 +248,9 @@ class JSONDeserializer(TextDeserializer):
 class XMLDeserializer(TextDeserializer):
 
     def __init__(self, metadata=None):
-        """
-        :param metadata: information needed to deserialize xml into
-                         a dictionary.
+        """:param metadata: information needed to
+
+        deserialize xml into a dictionary.
         """
         super(XMLDeserializer, self).__init__()
         self.metadata = metadata or {}
@@ -205,7 +259,7 @@ class XMLDeserializer(TextDeserializer):
         plurals = set(self.metadata.get('plurals', {}))
 
         try:
-            node = xmlutils.safe_minidom_parse_string(datastring).childNodes[0]
+            node = safe_minidom_parse_string(datastring).childNodes[0]
             return {node.nodeName: self._from_xml_node(node, plurals)}
         except expat.ExpatError:
             msg = _("cannot understand XML")
@@ -234,20 +288,20 @@ class XMLDeserializer(TextDeserializer):
             return result
 
     def find_first_child_named(self, parent, name):
-        """Search a nodes children for the first child with a given name"""
+        """Search a nodes children for the first child with a given name."""
         for node in parent.childNodes:
             if node.nodeName == name:
                 return node
         return None
 
     def find_children_named(self, parent, name):
-        """Return all of a nodes children who have the given name"""
+        """Return all of a nodes children who have the given name."""
         for node in parent.childNodes:
             if node.nodeName == name:
                 yield node
 
     def extract_text(self, node):
-        """Get the text field contained by the given node"""
+        """Get the text field contained by the given node."""
         if len(node.childNodes) == 1:
             child = node.childNodes[0]
             if child.nodeType == child.TEXT_NODE:
