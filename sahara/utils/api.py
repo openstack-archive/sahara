@@ -23,7 +23,7 @@ from sahara import exceptions as ex
 from sahara.i18n import _
 from sahara.i18n import _LE
 from sahara.openstack.common import log as logging
-from sahara.openstack.common import wsgi
+from sahara.utils import wsgi
 
 
 LOG = logging.getLogger(__name__)
