@@ -70,7 +70,8 @@ class VanillaTwoGatingTest(cluster_configs.ClusterConfigTest,
         },
         'YARN': {
             'yarn.scheduler.minimum-allocation-mb': 256,
-            'yarn.scheduler.maximum-allocation-mb': 1024
+            'yarn.scheduler.maximum-allocation-mb': 1024,
+            'yarn.nodemanager.vmem-check-enabled': False
         }
     }
 
