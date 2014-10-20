@@ -109,14 +109,14 @@ Save image id. You can get image id from command ``glance image-list``:
 
 .. sourcecode:: console
 
-    $ sahara image-register --image-id $IMAGE_ID --username ubuntu
+    $ sahara image-register --id $IMAGE_ID --username ubuntu
 
 * Tag the image:
 
 .. sourcecode:: console
 
-    $ sahara image-add-tag --image-id $IMAGE_ID --tag vanilla
-    $ sahara image-add-tag --image-id $IMAGE_ID --tag 1.2.1
+    $ sahara image-add-tag --id $IMAGE_ID --tag vanilla
+    $ sahara image-add-tag --id $IMAGE_ID --tag 1.2.1
 
 * Make sure that image is registered correctly:
 
