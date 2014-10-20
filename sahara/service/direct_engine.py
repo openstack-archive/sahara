@@ -264,13 +264,6 @@ class DirectEngine(e.Engine):
 
         return instances_to_add
 
-    def _find_by_id(self, lst, id):
-        for obj in lst:
-            if obj.id == id:
-                return obj
-
-        return None
-
     def _run_instance(self, cluster, node_group, idx, aa_group=None,
                       old_aa_groups=None):
         """Create instance using nova client and persist them into DB."""
