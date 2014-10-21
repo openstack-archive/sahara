@@ -46,12 +46,12 @@ def validate_cluster_creating(cluster):
 
     rm_count = _get_inst_count(cluster, 'RESOURCEMANAGER')
     if rm_count not in [0, 1]:
-        raise ex.InvalidComponentCountException('RESOURCEMANAGER', '0 or 1',
+        raise ex.InvalidComponentCountException('RESOURCEMANAGER', _('0 or 1'),
                                                 rm_count)
 
     hs_count = _get_inst_count(cluster, 'JOBHISTORY')
     if hs_count not in [0, 1]:
-        raise ex.InvalidComponentCountException('JOBHISTORY', '0 or 1',
+        raise ex.InvalidComponentCountException('JOBHISTORY', _('0 or 1'),
                                                 hs_count)
 
     if rm_count > 0 and hs_count < 1:
@@ -67,7 +67,7 @@ def validate_cluster_creating(cluster):
     oo_count = _get_inst_count(cluster, 'OOZIE_SERVER')
     dn_count = _get_inst_count(cluster, 'DATANODE')
     if oo_count not in [0, 1]:
-        raise ex.InvalidComponentCountException('OOZIE_SERVER', '0 or 1',
+        raise ex.InvalidComponentCountException('OOZIE_SERVER', _('0 or 1'),
                                                 oo_count)
 
     if oo_count == 1:
