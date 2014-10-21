@@ -167,8 +167,7 @@ class ClusterTemplate(object):
 
     def _serialize_auto_security_group(self, ng):
         fields = {
-            'security_group_name': g.generate_auto_security_group_name(
-                ng.cluster.name, ng.name),
+            'security_group_name': g.generate_auto_security_group_name(ng),
             'security_group_description':
             "Auto security group created by Sahara for Node Group "
             "'%s' of cluster '%s'." % (ng.name, ng.cluster.name),
@@ -277,8 +276,7 @@ class ClusterTemplate(object):
             return node_group.security_groups
 
         return (list(node_group.security_groups or []) +
-                [{"Ref": g.generate_auto_security_group_name(
-                    node_group.cluster.name, node_group.name)}])
+                [{"Ref": g.generate_auto_security_group_name(node_group)}])
 
     def _serialize_aa_server_group(self):
         fields = {'server_group_name': _get_aa_group_name(self.cluster.name)}
