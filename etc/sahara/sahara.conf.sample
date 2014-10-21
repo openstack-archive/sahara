@@ -521,6 +521,13 @@
 # cluster. (integer value)
 #cluster_remote_threshold=70
 
+# Proxy command used to connect to instances. If set, this
+# command should open a netcat socket, that Sahara will use
+# for SSH and HTTP connections. Use {host} and {port} to
+# describe the destination. Other available keywords:
+# {tenant_id}, {network_id}, {router_id}. (string value)
+#proxy_command=
+
 
 [conductor]
 

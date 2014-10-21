@@ -13,14 +13,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import os
-import shlex
 
-from eventlet.green import subprocess as e_subprocess
 from neutronclient.neutron import client as neutron_cli
-import requests
-from requests import adapters
-import six
 
 from sahara import context
 from sahara import exceptions as ex
@@ -44,9 +38,8 @@ def client():
     return neutron_cli.Client('2.0', **args)
 
 
-class NeutronClientRemoteWrapper(object):
+class NeutronClient(object):
     neutron = None
-    adapters = {}
     routers = {}
 
     def __init__(self, network, uri, token, tenant_name):
@@ -57,8 +50,7 @@ class NeutronClientRemoteWrapper(object):
         self.network = network
 
     def get_router(self):
-        matching_router = NeutronClientRemoteWrapper.routers.get(self.network,
-                                                                 None)
+        matching_router = NeutronClient.routers.get(self.network, None)
         if matching_router:
             LOG.debug('Returning cached qrouter')
             return matching_router['id']
@@ -71,8 +63,7 @@ class NeutronClientRemoteWrapper(object):
                          if port['network_id'] == self.network), None)
             if port:
                 matching_router = router
-                NeutronClientRemoteWrapper.routers[
-                    self.network] = matching_router
+                NeutronClient.routers[self.network] = matching_router
                 break
 
         if not matching_router:
@@ -80,149 +71,3 @@ class NeutronClientRemoteWrapper(object):
                                    '%s is not found') % self.network)
 
         return matching_router['id']
-
-    def get_http_session(self, host, port=None, use_rootwrap=False,
-                         rootwrap_command=None, *args, **kwargs):
-        session = requests.Session()
-        adapters = self._get_adapters(host, port=port,
-                                      use_rootwrap=use_rootwrap,
-                                      rootwrap_command=rootwrap_command,
-                                      *args, **kwargs)
-        for adapter in adapters:
-            session.mount('http://{0}:{1}'.format(host, adapter.port), adapter)
-
-        return session
-
-    def _get_adapters(self, host, port=None, use_rootwrap=False,
-                      rootwrap_command=None, *args, **kwargs):
-        LOG.debug('Retrieving neutron adapters for {0}:{1}'.format(host, port))
-        adapters = []
-        if not port:
-            # returning all registered adapters for given host
-            adapters = [adapter for adapter in six.itervalues(self.adapters)
-                        if adapter.host == host]
-        else:
-            # need to retrieve or create specific adapter
-            adapter = self.adapters.get((host, port), None)
-            if not adapter:
-                LOG.debug('Creating neutron adapter for {0}:{1}'
-                          .format(host, port))
-                qrouter = self.get_router()
-                kwargs['use_rootwrap'] = use_rootwrap
-                kwargs['rootwrap_command'] = rootwrap_command
-                adapter = (
-                    NeutronHttpAdapter(qrouter, host, port, *args, **kwargs))
-                self.adapters[(host, port)] = adapter
-                adapters = [adapter]
-
-        return adapters
-
-
-class NeutronHttpAdapter(adapters.HTTPAdapter):
-    port = None
-    host = None
-
-    def __init__(self, qrouter, host, port, use_rootwrap=False,
-                 rootwrap_command=None, *args, **kwargs):
-        super(NeutronHttpAdapter, self).__init__(*args, **kwargs)
-        command = '{0} ip netns exec qrouter-{1} nc {2} {3}'.format(
-                  rootwrap_command if use_rootwrap else '',
-                  qrouter, host, port)
-        LOG.debug('Neutron adapter created with cmd {0}'.format(command))
-        self.cmd = shlex.split(command)
-        self.port = port
-        self.host = host
-        self.rootwrap_command = rootwrap_command if use_rootwrap else None
-
-    def get_connection(self, url, proxies=None):
-        pool_conn = (
-            super(NeutronHttpAdapter, self).get_connection(url, proxies))
-        if hasattr(pool_conn, '_get_conn'):
-            http_conn = pool_conn._get_conn()
-            if http_conn.sock is None:
-                if hasattr(http_conn, 'connect'):
-                    sock = self._connect()
-                    LOG.debug('HTTP connection {0} getting new '
-                              'netcat socket {1}'.format(http_conn, sock))
-                    http_conn.sock = sock
-            else:
-                if hasattr(http_conn.sock, 'is_netcat_socket'):
-                    LOG.debug('pooled http connection has existing '
-                              'netcat socket. resetting pipe...')
-                    http_conn.sock.reset()
-
-            pool_conn._put_conn(http_conn)
-
-        return pool_conn
-
-    def close(self):
-        LOG.debug('Closing neutron adapter for {0}:{1}'
-                  .format(self.host, self.port))
-        super(NeutronHttpAdapter, self).close()
-
-    def _connect(self):
-        LOG.debug('returning netcat socket with command {0}'
-                  .format(self.cmd))
-        return NetcatSocket(self.cmd, rootwrap_command=self.rootwrap_command)
-
-
-class NetcatSocket(object):
-
-    def _create_process(self):
-        self.process = e_subprocess.Popen(self.cmd,
-                                          stdin=e_subprocess.PIPE,
-                                          stdout=e_subprocess.PIPE,
-                                          stderr=e_subprocess.PIPE)
-
-    def __init__(self, cmd, rootwrap_command=None):
-        self.cmd = cmd
-        self.rootwrap_command = rootwrap_command
-        self._create_process()
-
-    def send(self, content):
-        try:
-            self.process.stdin.write(content)
-            self.process.stdin.flush()
-        except IOError as e:
-            raise ex.SystemError(e)
-        return len(content)
-
-    def sendall(self, content):
-        return self.send(content)
-
-    def makefile(self, mode, *arg):
-        if mode.startswith('r'):
-            return self.process.stdout
-        if mode.startswith('w'):
-            return self.process.stdin
-        raise ex.IncorrectStateError(_("Unknown file mode %s") % mode)
-
-    def recv(self, size):
-        try:
-            return os.read(self.process.stdout.fileno(), size)
-        except IOError as e:
-            raise ex.SystemError(e)
-
-    def _terminate(self):
-        if self.rootwrap_command:
-            os.system('{0} kill {1}'.format(self.rootwrap_command,
-                                            self.process.pid))
-        else:
-            self.process.terminate()
-
-    def close(self):
-        LOG.debug('Socket close called')
-        self._terminate()
-
-    def settimeout(self, timeout):
-        pass
-
-    def fileno(self):
-        return self.process.stdin.fileno()
-
-    def is_netcat_socket(self):
-        return True
-
-    def reset(self):
-        self._terminate()
-        self._create_process()
