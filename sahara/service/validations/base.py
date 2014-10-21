@@ -97,7 +97,6 @@ def check_all_configurations(data):
     if data.get('node_groups'):
         check_duplicates_node_groups_names(data['node_groups'])
         for ng in data['node_groups']:
-            check_auto_security_group(data['name'], ng)
             check_node_group_basic_fields(data['plugin_name'],
                                           data['hadoop_version'],
                                           ng, pl_confs)
@@ -195,16 +194,6 @@ def check_duplicates_node_groups_names(node_groups):
             _("Duplicates in node group names are detected"))
 
 
-def check_auto_security_group(cluster_name, nodegroup):
-    if nodegroup.get('auto_security_group'):
-        name = g.generate_auto_security_group_name(
-            cluster_name, nodegroup['name'])
-        if name in [security_group.name for security_group in
-                    nova.client().security_groups.list()]:
-            raise ex.NameAlreadyExistsException(
-                _("Security group with name '%s' already exists") % name)
-
-
 def check_availability_zone_exist(az):
     az_list = nova.client().availability_zones.list(False)
     az_names = [a.zoneName for a in az_list]
@@ -279,7 +268,6 @@ def check_node_groups_in_cluster_templates(cluster_name, plugin_name,
     n_groups = c_t.to_wrapped_dict()['cluster_template']['node_groups']
     check_network_config(n_groups)
     for node_group in n_groups:
-        check_auto_security_group(cluster_name, node_group)
         check_node_group_basic_fields(plugin_name, hadoop_version, node_group)
     check_cluster_hostnames_lengths(cluster_name, n_groups)
 
@@ -349,7 +337,6 @@ def check_add_node_groups(cluster, add_node_groups):
 
         check_node_group_basic_fields(cluster.plugin_name,
                                       cluster.hadoop_version, ng, pl_confs)
-        check_auto_security_group(cluster.name, ng)
 
 
 # Cinder
