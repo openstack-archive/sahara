@@ -20,6 +20,7 @@ from eventlet.green import subprocess as e_subprocess
 from neutronclient.neutron import client as neutron_cli
 import requests
 from requests import adapters
+import six
 
 from sahara import context
 from sahara import exceptions as ex
@@ -98,7 +99,7 @@ class NeutronClientRemoteWrapper(object):
         adapters = []
         if not port:
             # returning all registered adapters for given host
-            adapters = [adapter for adapter in self.adapters
+            adapters = [adapter for adapter in six.itervalues(self.adapters)
                         if adapter.host == host]
         else:
             # need to retrieve or create specific adapter
