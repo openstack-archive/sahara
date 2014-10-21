@@ -167,7 +167,7 @@ class HeatEngine(e.Engine):
                      "(reason: %(reason)s)"),
                  {'name': cluster.name, 'reason': ex})
 
-        for ng in rollback_count.keys():
+        for ng in rollback_count:
             if rollback_count[ng] > target_count[ng]:
                 rollback_count[ng] = target_count[ng]
 

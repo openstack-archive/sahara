@@ -25,6 +25,7 @@ from xml import sax
 from xml.sax import expatreader
 
 from oslo.serialization import jsonutils
+import six
 
 from sahara.i18n import _
 from sahara.openstack.common import exception
@@ -279,8 +280,8 @@ class XMLDeserializer(TextDeserializer):
             return [self._from_xml_node(n, listnames) for n in node.childNodes]
         else:
             result = dict()
-            for attr in node.attributes.keys():
-                result[attr] = node.attributes[attr].nodeValue
+            for attr, val in six.iteritems(node.attributes):
+                result[attr] = val.nodeValue
             for child in node.childNodes:
                 if child.nodeType != node.TEXT_NODE:
                     result[child.nodeName] = self._from_xml_node(child,
