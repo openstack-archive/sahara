@@ -4,12 +4,12 @@ Features Overview
 Cluster Scaling
 ---------------
 
-The mechanism of cluster scaling is designed to enable user to change the
+The mechanism of cluster scaling is designed to enable a user to change the
 number of running instances without creating a new cluster.
-User may change number of instances in existing Node Groups or add new Node
+A user may change the number of instances in existing Node Groups or add new Node
 Groups.
 
-If cluster fails to scale properly, all changes will be rolled back.
+If a cluster fails to scale properly, all changes will be rolled back.
 
 Swift Integration
 -----------------
@@ -26,7 +26,7 @@ Cinder is a block storage service that can be used as an alternative for an
 ephemeral drive. Using Cinder volumes increases reliability of data which is
 important for HDFS service.
 
-User can set how many volumes will be attached to each node in a Node Group
+A user can set how many volumes will be attached to each node in a Node Group
 and the size of each volume.
 
 All volumes are attached during Cluster creation/scaling operations.
@@ -60,7 +60,7 @@ Sahara needs to access instances through ssh during a Cluster setup. To
 establish a connection Sahara may
 use both: fixed and floating IP of an Instance. By default
 ``use_floating_ips`` parameter is set to ``True``, so
-Sahara will use Floating IP of an Instance to connect. In this case, user has
+Sahara will use Floating IP of an Instance to connect. In this case, the user has
 two options for how to make all instances
 get a floating IP:
 
@@ -76,7 +76,7 @@ If ``use_floating_ips`` parameter is set to ``False`` Sahara will use
 Instances' fixed IPs for management. In this case
 the node where Sahara is running should have access to Instances' fixed IP
 network. When OpenStack uses Neutron for
-networking, user will be able to choose fixed IP network for all instances
+networking, a user will be able to choose fixed IP network for all instances
 in a Cluster.
 
 Anti-affinity
@@ -142,13 +142,13 @@ racks in the following format:
     node3 /rack2
 
 Note that swift node must be exactly the same as configures in object.builder
-swift ring. Also make sure that VMs with tasktracker service has direct access
+swift ring. Also make sure that VMs with the task tracker service have direct access
 to swift nodes.
 
 Hadoop versions after 1.2.0 support four-layer topology
 (https://issues.apache.org/jira/browse/HADOOP-8468). To enable this feature
 set ``enable_hypervisor_awareness`` option to ``True`` in Sahara configuration
-file. In this case Sahara will add compute node ID as a second level of
+file. In this case Sahara will add the compute node ID as a second level of
 topology for Virtual Machines.
 
 Security group management
@@ -159,11 +159,11 @@ instances. This can be done by providing the ``security_groups`` parameter for
 the Node Group or Node Group Template. By default an empty list is used that
 will result in using the default security group.
 
-Sahara may also create a security group for instances in node group
+Sahara may also create a security group for instances in the node group
 automatically. This security group will only have open ports which are
 required by instance processes or the Sahara engine. This option is useful
 for development and secured from outside environments, but for production
-environments it is recommended to control security group policy manually.
+environments it is recommended to control the security group policy manually.
 
 Heat Integration
 ----------------
@@ -219,15 +219,15 @@ Running Sahara in Distributed Mode
 
 .. warning::
     Currently distributed mode for Sahara is in alpha state. We do not
-    recommend using it in production environment.
+    recommend using it in a production environment.
 
 The :doc:`installation.guide` suggests to launch
 Sahara as a single 'sahara-all' process. It is also possible to run Sahara
 in distributed mode with 'sahara-api' and 'sahara-engine' processes running
 on several machines simultaneously.
 
-Sahara-api works as a frontend and serves users' requests. It
-offloads 'heavy' tasks to sahara-engine via RPC mechanism. While
+Sahara-api works as a front-end and serves users' requests. It
+offloads 'heavy' tasks to the sahara-engine via RPC mechanism. While the
 sahara-engine could be loaded, sahara-api by design stays free
 and hence may quickly respond on user queries.
 
