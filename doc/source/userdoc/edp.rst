@@ -28,7 +28,7 @@ EDP Concepts
 ------------
 
 Sahara EDP uses a collection of simple objects to define and execute jobs. These objects are stored in the Sahara database when they
-are created, allowing them to be reused.  This modular approach with database persistence allows code and data to be reused across multiple jobs.
+are created, allowing them to be reused. This modular approach with database persistence allows code and data to be reused across multiple jobs.
 
 The essential components of a job are:
 
@@ -121,22 +121,22 @@ Specifying Configuration Values, Parameters, and Arguments
 
 Jobs can be configured at launch. The job type determines the kinds of values that may be set:
 
-      +--------------------------+--------------+------------+-----------+
-      | Job type                 | Configration | Parameters | Arguments |
-      |                          | Values       |            |           |
-      +==========================+==============+============+===========+
-      | ``Hive``                 | Yes          | Yes        | No        |
-      +--------------------------+--------------+------------+-----------+
-      | ``Pig``                  | Yes          | Yes        | Yes       |
-      +--------------------------+--------------+------------+-----------+
-      | ``MapReduce``            | Yes          | No         | No        |
-      +--------------------------+--------------+------------+-----------+
-      | ``MapReduce.Streaming``  | Yes          | No         | No        |
-      +--------------------------+--------------+------------+-----------+
-      | ``Java``                 | Yes          | No         | Yes       |
-      +--------------------------+--------------+------------+-----------+
-      | ``Spark``                | Yes          | No         | Yes       |
-      +--------------------------+--------------+------------+-----------+
+      +--------------------------+---------------+------------+-----------+
+      | Job type                 | Configuration | Parameters | Arguments |
+      |                          | Values        |            |           |
+      +==========================+===============+============+===========+
+      | ``Hive``                 | Yes           | Yes        | No        |
+      +--------------------------+---------------+------------+-----------+
+      | ``Pig``                  | Yes           | Yes        | Yes       |
+      +--------------------------+---------------+------------+-----------+
+      | ``MapReduce``            | Yes           | No         | No        |
+      +--------------------------+---------------+------------+-----------+
+      | ``MapReduce.Streaming``  | Yes           | No         | No        |
+      +--------------------------+---------------+------------+-----------+
+      | ``Java``                 | Yes           | No         | Yes       |
+      +--------------------------+---------------+------------+-----------+
+      | ``Spark``                | Yes           | No         | Yes       |
+      +--------------------------+---------------+------------+-----------+
 
 * :dfn:`Configuration values` are key/value pairs.
 
@@ -254,7 +254,7 @@ Spark jobs use a special configuration value:
 
 A Spark job will execute the ``main`` method of the specified main class. Values may be passed to
 the main method through the ``args`` array. Any arguments set during job launch will be passed to the
-program as commandline arguments by *spark-submit*.
+program as command-line arguments by *spark-submit*.
 
 Data Source objects are not used with Spark job types. Instead, any input or output paths must be passed to the ``main`` method
 as arguments. Remember that Swift paths are not supported for Spark jobs currently.
@@ -265,7 +265,7 @@ The ``edp-spark`` example bundled with Sahara contains a Spark program for estim
 Special Sahara URLs
 --------------------
 
-Sahara uses custom URLs to refer to objects stored in Swift or the Sahara internal database.  These URLs are not meant to be used
+Sahara uses custom URLs to refer to objects stored in Swift or the Sahara internal database. These URLs are not meant to be used
 outside of Sahara.
 
 Sahara Swift URLs passed to running jobs as input or output sources include a ".sahara" suffix on the container, for example:
