@@ -54,7 +54,8 @@ class CDHPluginProvider(p.ProvisioningPluginBase):
             "HIVESERVER": ['HIVESERVER2'],
             "HIVEMETASTORE": ['HIVEMETASTORE'],
             "WEBHCAT": ['WEBHCAT'],
-            "HUE": ['HUE_SERVER']
+            "HUE": ['HUE_SERVER'],
+            "SPARK_ON_YARN": ['SPARK_YARN_HISTORY_SERVER']
         }
 
     def get_configs(self, hadoop_version):

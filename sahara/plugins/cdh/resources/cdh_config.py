@@ -30,6 +30,7 @@ yarn_service_name = 'yarn01'
 oozie_service_name = 'oozie01'
 hive_service_name = 'hive01'
 hue_service_name = 'hue01'
+spark_service_name = 'spark_on_yarn01'
 
 
 def get_cm_api():
@@ -93,6 +94,9 @@ def main():
 
     hue = cluster.get_service(hue_service_name)
     process_service(hue, 'hue')
+
+    spark = cluster.get_service(spark_service_name)
+    process_service(spark, 'spark')
 
 
 if __name__ == '__main__':
