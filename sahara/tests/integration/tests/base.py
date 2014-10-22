@@ -77,6 +77,9 @@ class ITestCase(testcase.WithAttributes, base.BaseTestCase):
         self.vanilla_config = cfg.ITConfig().vanilla_config
         self.vanilla_two_config = cfg.ITConfig().vanilla_two_config
         self.hdp_config = cfg.ITConfig().hdp_config
+        self.mapr_config = cfg.ITConfig().mapr_config
+        self.mapr4_1_config = cfg.ITConfig().mapr4_1_config
+        self.mapr4_2_config = cfg.ITConfig().mapr4_2_config
 
         telnetlib.Telnet(
             self.common_config.SAHARA_HOST, self.common_config.SAHARA_PORT
@@ -365,6 +368,25 @@ class ITestCase(testcase.WithAttributes, base.BaseTestCase):
             )
         finally:
             self.close_ssh_connection()
+
+    def await_active_tasktracker(self, node_info, plugin_config):
+        self.open_ssh_connection(
+            node_info['namenode_ip'], plugin_config.SSH_USERNAME)
+        for i in range(self.common_config.HDFS_INITIALIZATION_TIMEOUT * 6):
+            time.sleep(10)
+            active_tasktracker_count = self.execute_command(
+                'sudo -u %s bash -lc "hadoop job -list-active-trackers" '
+                '| grep "^tracker_" | wc -l'
+                % plugin_config.HADOOP_USER)[1]
+            active_tasktracker_count = int(active_tasktracker_count)
+            if (active_tasktracker_count == node_info['tasktracker_count']):
+                break
+        else:
+            self.fail(
+                'Tasktracker or datanode cannot be started within '
+                '%s minute(s) for namenode.'
+                % self.common_config.HDFS_INITIALIZATION_TIMEOUT)
+        self.close_ssh_connection()
 
 # --------------------------------Remote---------------------------------------
 

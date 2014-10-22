@@ -1,0 +1,203 @@
+{
+	"files": [
+		{
+			"remote": null,
+			"type": null,
+			"configs": {
+				"required": {
+					"cluster": [
+						{
+							"name": "Enable MapR-DB",
+							"config_type": "bool",
+							"default_value": false,
+							"priority": 1
+						}
+					]
+				}
+			}
+		},
+		{
+			"remote": "/opt/mapr/hadoop/hadoop-2.4.1/etc/hadoop/core-site.xml",
+			"local": "default/core-site.xml",
+			"type": "xml",
+			"configs": {
+				"optional": {
+					"cluster": [
+						{
+							"name": "fs.swift.impl",
+							"default_value": "org.apache.hadoop.fs.swift.snative.SwiftNativeFileSystem"
+						},
+						{
+							"name": "fs.swift.connect.timeout",
+							"config_type": "int",
+							"default_value": 15000
+						},
+						{
+							"name": "fs.swift.socket.timeout",
+							"config_type": "int",
+							"default_value": 60000
+						},
+						{
+							"name": "fs.swift.connect.retry.count",
+							"config_type": "int",
+							"default_value": 3
+						},
+						{
+							"name": "fs.swift.connect.throttle.delay",
+							"config_type": "int",
+							"default_value": 0
+						},
+						{
+							"name": "fs.swift.blocksize",
+							"config_type": "int",
+							"default_value": 32768
+						},
+						{
+							"name": "fs.swift.partsize",
+							"config_type": "int",
+							"default_value": 4718592
+						},
+						{
+							"name": "fs.swift.requestsize",
+							"config_type": "int",
+							"default_value": 64
+						},
+						{
+							"name": "fs.swift.service.sahara.public",
+							"config_type": "bool",
+							"default_value": true
+						},
+						{
+							"name": "fs.swift.service.sahara.http.port",
+							"config_type": "int",
+							"default_value": 8080
+						},
+						{
+							"name": "fs.swift.service.sahara.https.port",
+							"config_type": "int",
+							"default_value": 443
+						},
+						{
+							"name": "fs.swift.service.sahara.auth.endpoint.prefix",
+							"default_value": "/endpoints/AUTH_"
+						}
+					]
+				}
+			}
+		},
+		{
+			"remote": "/opt/mapr/hadoop/hadoop-2.4.1/etc/hadoop/mapred-site.xml",
+			"type": "xml"
+		},
+		{
+			"remote": "/opt/mapr/conf/hadoop-metrics.properties",
+			"local": "default/hadoop-metrics.properties",
+			"type": "properties"
+		},
+		{
+			"remote": "/opt/mapr/conf/cldb.conf",
+			"local": "default/cldb.conf",
+			"type": "properties"
+		},
+		{
+			"remote": "/opt/mapr/conf/mfs.conf",
+			"local": "default/mfs.conf",
+			"type": "properties"
+		},
+		{
+			"remote": "/opt/mapr/conf/nfsserver.conf",
+			"local": "default/nfsserver.conf",
+			"type": "properties"
+		},
+		{
+			"remote": "/opt/mapr/conf/exports",
+			"local": "default/exports",
+			"type": "raw"
+		}
+	],
+	"services": [
+		{
+			"name": "general",
+			"files": [
+				null
+			]
+		},
+		{
+			"name": "Management",
+			"node_processes": [
+				"ZooKeeper",
+				"Webserver",
+				"MapR-Client",
+				"Metrics"
+			]
+		},
+		{
+			"name": "YARN",
+			"node_processes": [
+				"HistoryServer",
+				"ResourceManager",
+				"NodeManager"
+			],
+			"files": [
+				"/opt/mapr/hadoop/hadoop-2.4.1/etc/hadoop/mapred-site.xml"
+			]
+		},
+		{
+			"name": "MapR FS",
+			"node_processes": [
+				"CLDB",
+				"FileServer",
+				"NFS"
+			],
+			"files": [
+				"/opt/mapr/conf/cldb.conf",
+				"/opt/mapr/conf/hadoop-metrics.properties",
+				"/opt/mapr/conf/mfs.conf",
+				"/opt/mapr/conf/nfsserver.conf",
+				"/opt/mapr/conf/exports",
+				"/opt/mapr/hadoop/hadoop-2.4.1/etc/hadoop/core-site.xml"
+			]
+		},
+		{
+			"name": "HBase",
+			"node_processes": [
+				"HBase-Master",
+				"HBase-RegionServer",
+				"HBase-Client"
+			]
+		},
+		{
+			"name": "Hive",
+			"node_processes": [
+				"HiveMetastore",
+				"HiveServer2"
+			],
+			"versions": [
+				"0.13",
+				"0.12"
+			]
+		},
+		{
+			"name": "Oozie",
+			"node_processes": [
+				"Oozie"
+			],
+			"versions": [
+				"4.0.1",
+				"4.0.0"
+			]
+		},
+		{
+			"name": "Pig",
+			"node_processes": [
+				"Pig"
+			]
+		},
+		{
+			"name": "Mahout",
+			"node_processes": [
+				"Mahout"
+			]
+		}
+	]
+}

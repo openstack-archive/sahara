@@ -1,0 +1,6 @@
+edp-master-0001 /rack1
+10.50.0.8 /rack1
+edp-slave-0002 /rack1
+10.50.0.5 /rack1
+edp-slave-0001 /rack2
+10.50.0.6 /rack2

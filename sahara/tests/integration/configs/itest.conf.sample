@@ -22,3 +22,7 @@ SKIP_CLUSTER_CONFIG_TEST = True
 
 IMAGE_ID = 'f7de0ea9-eb4d-4b63-8ed0-abcf11cfaff8'
 SKIP_ALL_TESTS_FOR_PLUGIN = False
+
+[MAPR]
+IMAGE_ID = 'sahara-mapr-image'
+SKIP_ALL_TESTS_FOR_PLUGIN = False
