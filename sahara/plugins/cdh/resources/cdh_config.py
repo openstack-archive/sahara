@@ -28,6 +28,7 @@ cm_password = 'admin'
 hdfs_service_name = 'hdfs01'
 yarn_service_name = 'yarn01'
 oozie_service_name = 'oozie01'
+hive_service_name = 'hive01'
 
 
 def get_cm_api():
@@ -85,6 +86,9 @@ def main():
 
     oozie = cluster.get_service(oozie_service_name)
     process_service(oozie, 'oozie')
+
+    hive = cluster.get_service(hive_service_name)
+    process_service(hive, 'hive')
 
 if __name__ == '__main__':
     main()

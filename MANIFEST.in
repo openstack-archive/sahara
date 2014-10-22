@@ -12,6 +12,7 @@ recursive-include sahara/locale *
 include sahara/plugins/cdh/resources/cdh_config.py
 include sahara/plugins/cdh/resources/*.sh
 include sahara/plugins/cdh/resources/*.json
+include sahara/plugins/cdh/resources/*.sql
 include sahara/plugins/vanilla/hadoop2/resources/*.sh
 include sahara/plugins/vanilla/hadoop2/resources/*.sql
 include sahara/plugins/vanilla/hadoop2/resources/*.template

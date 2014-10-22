@@ -83,6 +83,26 @@ def validate_cluster_creating(cluster):
             raise ex.RequiredServiceMissingException(
                 'JOBHISTORY', required_by='OOZIE_SERVER')
 
+    hms_count = _get_inst_count(cluster, 'HIVEMETASTORE')
+    hvs_count = _get_inst_count(cluster, 'HIVESERVER2')
+    whc_count = _get_inst_count(cluster, 'WEBHCAT')
+
+    if hms_count and rm_count < 1:
+        raise ex.RequiredServiceMissingException(
+            'RESOURCEMANAGER', required_by='HIVEMETASTORE')
+
+    if hms_count and not hvs_count:
+        raise ex.RequiredServiceMissingException(
+            'HIVESERVER2', required_by='HIVEMETASTORE')
+
+    if hvs_count and not hms_count:
+        raise ex.RequiredServiceMissingException(
+            'HIVEMETASTORE', required_by='HIVESERVER2')
+
+    if whc_count and not hms_count:
+        raise ex.RequiredServiceMissingException(
+            'HIVEMETASTORE', required_by='WEBHCAT')
+
 
 def validate_additional_ng_scaling(cluster, additional):
     rm = cu.get_resourcemanager(cluster)

@@ -91,6 +91,10 @@ nodemanager_confs = _load_json(path_to_config + 'yarn-nodemanager.json')
 jobhistory_confs = _load_json(path_to_config + 'yarn-jobhistory.json')
 oozie_service_confs = _load_json(path_to_config + 'oozie-service.json')
 oozie_role_confs = _load_json(path_to_config + 'oozie-oozie.json')
+hive_service_confs = _load_json(path_to_config + 'hive-service.json')
+hive_metastore_confs = _load_json(path_to_config + 'hive-metastore.json')
+hive_hiveserver_confs = _load_json(path_to_config + 'hive-hiveserver2.json')
+hive_webhcat_confs = _load_json(path_to_config + 'hive-webhcat.json')
 
 priority_one_confs = _load_json(path_to_config + 'priority-one-confs.json')
 
@@ -126,6 +130,10 @@ def _get_ng_plugin_configs():
     cfg += _init_configs(jobhistory_confs, 'JOBHISTORY', 'node')
     cfg += _init_configs(oozie_service_confs, 'OOZIE', 'cluster')
     cfg += _init_configs(oozie_role_confs, 'OOZIE', 'node')
+    cfg += _init_configs(hive_service_confs, 'HIVE', 'cluster')
+    cfg += _init_configs(hive_metastore_confs, 'HIVEMETASTORE', 'node')
+    cfg += _init_configs(hive_hiveserver_confs, 'HIVESERVER', 'node')
+    cfg += _init_configs(hive_webhcat_confs, 'WEBHCAT', 'node')
     return cfg
 
 
