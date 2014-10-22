@@ -21,7 +21,7 @@ Exceptions common to OpenStack projects
 
 import logging
 
-from sahara.openstack.common.gettextutils import _  # noqa
+from sahara.openstack.common._i18n import _  # noqa
 
 _FATAL_EXCEPTION_FORMAT_ERRORS = False
 
