@@ -31,13 +31,14 @@ conductor = c.API
 LOG = logging.getLogger(__name__)
 
 
-detach_timeout_opt = cfg.IntOpt(
-    'detach_volume_timeout', default=300,
-    help='Timeout for detaching volumes from instance (in seconds).')
-
+opts = [
+    cfg.IntOpt(
+        'detach_volume_timeout', default=300,
+        help='Timeout for detaching volumes from instance (in seconds).')
+]
 
 CONF = cfg.CONF
-CONF.register_opt(detach_timeout_opt)
+CONF.register_opts(opts)
 CONF.import_opt('cinder_api_version', 'sahara.utils.openstack.cinder')
 
 

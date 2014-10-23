@@ -19,12 +19,7 @@ from oslo.config import cfg
 from oslo.utils import importutils
 
 
-db_driver_opt = cfg.StrOpt('db_driver',
-                           default='sahara.db',
-                           help='Driver to use for database access.')
-
 CONF = cfg.CONF
-CONF.register_opt(db_driver_opt)
 
 
 class Base(object):

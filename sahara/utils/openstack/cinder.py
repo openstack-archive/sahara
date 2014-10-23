@@ -28,11 +28,13 @@ from sahara.utils.openstack import base
 LOG = logging.getLogger(__name__)
 
 
-cinder_opt = cfg.IntOpt('cinder_api_version', default=2,
-                        help='Version of the Cinder API to use.')
+opts = [
+    cfg.IntOpt('cinder_api_version', default=2,
+               help='Version of the Cinder API to use.')
+]
 
 CONF = cfg.CONF
-CONF.register_opt(cinder_opt)
+CONF.register_opts(opts)
 
 
 def validate_config():
