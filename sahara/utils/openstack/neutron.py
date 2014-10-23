@@ -102,15 +102,15 @@ class NeutronClientRemoteWrapper(object):
                         if adapter.host == host]
         else:
             # need to retrieve or create specific adapter
-            adapter = self.adapters.get((host, port), None, *args, **kwargs)
+            adapter = self.adapters.get((host, port), None)
             if not adapter:
                 LOG.debug('Creating neutron adapter for {0}:{1}'
                           .format(host, port))
                 qrouter = self.get_router()
+                kwargs['use_rootwrap'] = use_rootwrap
+                kwargs['rootwrap_command'] = rootwrap_command
                 adapter = (
-                    NeutronHttpAdapter(qrouter, host, port,
-                                       use_rootwrap=use_rootwrap,
-                                       rootwrap_command=rootwrap_command))
+                    NeutronHttpAdapter(qrouter, host, port, *args, **kwargs))
                 self.adapters[(host, port)] = adapter
                 adapters = [adapter]
 
