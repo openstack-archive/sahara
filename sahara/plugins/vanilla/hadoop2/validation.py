@@ -28,17 +28,17 @@ def validate_cluster_creating(pctx, cluster):
 
     snn_count = _get_inst_count(cluster, 'secondarynamenode')
     if snn_count not in [0, 1]:
-        raise ex.InvalidComponentCountException('secondarynamenode', '0 or 1',
-                                                snn_count)
+        raise ex.InvalidComponentCountException('secondarynamenode',
+                                                _('0 or 1'), snn_count)
 
     rm_count = _get_inst_count(cluster, 'resourcemanager')
     if rm_count not in [0, 1]:
-        raise ex.InvalidComponentCountException('resourcemanager', '0 or 1',
+        raise ex.InvalidComponentCountException('resourcemanager', _('0 or 1'),
                                                 rm_count)
 
     hs_count = _get_inst_count(cluster, 'historyserver')
     if hs_count not in [0, 1]:
-        raise ex.InvalidComponentCountException('historyserver', '0 or 1',
+        raise ex.InvalidComponentCountException('historyserver', _('0 or 1'),
                                                 hs_count)
 
     nm_count = _get_inst_count(cluster, 'nodemanager')
@@ -50,7 +50,7 @@ def validate_cluster_creating(pctx, cluster):
     oo_count = _get_inst_count(cluster, 'oozie')
     dn_count = _get_inst_count(cluster, 'datanode')
     if oo_count not in [0, 1]:
-        raise ex.InvalidComponentCountException('oozie', '0 or 1', oo_count)
+        raise ex.InvalidComponentCountException('oozie', _('0 or 1'), oo_count)
 
     if oo_count == 1:
         if dn_count < 1:
