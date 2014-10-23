@@ -20,7 +20,6 @@ import six
 import sahara.plugins.mapr.util.config_file_utils as cfu
 import sahara.plugins.mapr.util.plugin_spec as ps
 import sahara.plugins.mapr.versions.v4_0_1_mrv1.cluster_configurer as bcc
-import sahara.swift.swift_helper as sh
 import sahara.tests.unit.base as b
 import sahara.tests.unit.plugins.mapr.stubs as s
 import sahara.utils.files as f
@@ -53,7 +52,6 @@ class BaseClusterConfigurerTest(b.SaharaTestCase):
         cc_mock.return_value = s.AttrDict(auth_uri='http://auth',
                                           tenant_name='tenant_0',
                                           tenant_id='tenant_id')
-        sh.CONF.os_region_name = None
 
         i0 = s.Instance(instance_name='i0',
                         management_ip='192.168.1.10',
@@ -137,7 +135,7 @@ class BaseClusterConfigurerTest(b.SaharaTestCase):
         cc_mock.return_value = s.AttrDict(auth_uri='http://auth',
                                           tenant_name='tenant_0',
                                           tenant_id='tenant_id')
-        sh.CONF.os_region_name = None
+
         i0 = s.Instance(instance_name='i0',
                         management_ip='192.168.1.10',
                         internal_ip='10.10.1.10')
