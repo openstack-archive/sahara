@@ -141,7 +141,7 @@ class NeutronHttpAdapter(adapters.HTTPAdapter):
             if http_conn.sock is None:
                 if hasattr(http_conn, 'connect'):
                     sock = self._connect()
-                    LOG.debug('HTTP connecction {0} getting new '
+                    LOG.debug('HTTP connection {0} getting new '
                               'netcat socket {1}'.format(http_conn, sock))
                     http_conn.sock = sock
             else:
@@ -181,6 +181,7 @@ class NetcatSocket(object):
     def send(self, content):
         try:
             self.process.stdin.write(content)
+            self.process.stdin.flush()
         except IOError as e:
             raise ex.SystemError(e)
         return len(content)
