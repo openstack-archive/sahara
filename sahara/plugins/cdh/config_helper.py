@@ -95,6 +95,8 @@ hive_service_confs = _load_json(path_to_config + 'hive-service.json')
 hive_metastore_confs = _load_json(path_to_config + 'hive-metastore.json')
 hive_hiveserver_confs = _load_json(path_to_config + 'hive-hiveserver2.json')
 hive_webhcat_confs = _load_json(path_to_config + 'hive-webhcat.json')
+hue_service_confs = _load_json(path_to_config + 'hue-service.json')
+hue_role_confs = _load_json(path_to_config + 'hue-hue.json')
 
 priority_one_confs = _load_json(path_to_config + 'priority-one-confs.json')
 
@@ -134,6 +136,8 @@ def _get_ng_plugin_configs():
     cfg += _init_configs(hive_metastore_confs, 'HIVEMETASTORE', 'node')
     cfg += _init_configs(hive_hiveserver_confs, 'HIVESERVER', 'node')
     cfg += _init_configs(hive_webhcat_confs, 'WEBHCAT', 'node')
+    cfg += _init_configs(hue_service_confs, 'HUE', 'cluster')
+    cfg += _init_configs(hue_role_confs, 'HUE', 'node')
     return cfg
 
 

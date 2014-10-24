@@ -103,6 +103,19 @@ def validate_cluster_creating(cluster):
         raise ex.RequiredServiceMissingException(
             'HIVEMETASTORE', required_by='WEBHCAT')
 
+    hue_count = _get_inst_count(cluster, 'HUE_SERVER')
+    if hue_count not in [0, 1]:
+        raise ex.InvalidComponentCountException('HUE_SERVER', '0 or 1',
+                                                hue_count)
+
+    if oo_count < 1 and hue_count:
+        raise ex.RequiredServiceMissingException(
+            'OOZIE_SERVER', required_by='HUE_SERVER')
+
+    if hms_count < 1 and hue_count:
+        raise ex.RequiredServiceMissingException(
+            'HIVEMETASTORE', required_by='HUE_SERVER')
+
 
 def validate_additional_ng_scaling(cluster, additional):
     rm = cu.get_resourcemanager(cluster)
