@@ -18,6 +18,7 @@ import logging
 
 from oslo.config import cfg
 import pkg_resources as pkg
+import six
 
 from sahara import context
 from sahara import exceptions as exc
@@ -670,8 +671,8 @@ class AmbariClient(object):
                     json_result['metrics']['dfs']['namenode']['LiveNodes'])
                 # parse out the map of live hosts associated with the NameNode
                 json_result_nodes = json.loads(live_nodes)
-                for node in json_result_nodes.keys():
-                    admin_state = json_result_nodes[node]['adminState']
+                for node, val in six.iteritems(json_result_nodes):
+                    admin_state = val['adminState']
                     if admin_state == 'Decommissioned':
                         LOG.info(_LI('AmbariClient: node = %(node)s is '
                                      'now in adminState = %(admin_state)s'),
