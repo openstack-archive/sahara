@@ -21,6 +21,7 @@ from oslo import messaging
 
 from sahara import conductor as c
 from sahara import context
+from sahara import exceptions
 from sahara.i18n import _LE
 from sahara.i18n import _LI
 from sahara.openstack.common import log as logging
@@ -71,6 +72,10 @@ class LocalOps(object):
         context.spawn("Canceling Job Execution %s" % job_execution_id,
                       _cancel_job_execution, job_execution_id)
 
+    def delete_job_execution(self, job_execution_id):
+        context.spawn("Deleting Job Execution %s" % job_execution_id,
+                      _delete_job_execution, job_execution_id)
+
 
 class RemoteOps(rpc_utils.RPCClient):
     def __init__(self):
@@ -94,6 +99,10 @@ class RemoteOps(rpc_utils.RPCClient):
         self.cast('cancel_job_execution',
                   job_execution_id=job_execution_id)
 
+    def delete_job_execution(self, job_execution_id):
+        self.cast('delete_job_execution',
+                  job_execution_id=job_execution_id)
+
 
 class OpsServer(rpc_utils.RPCServer):
     def __init__(self):
@@ -115,6 +124,9 @@ class OpsServer(rpc_utils.RPCServer):
 
     def cancel_job_execution(self, job_execution_id):
         _cancel_job_execution(job_execution_id)
+
+    def delete_job_execution(self, job_execution_id):
+        _delete_job_execution(job_execution_id)
 
 
 def ops_error_handler(f):
@@ -278,3 +290,12 @@ def _run_edp_job(job_execution_id):
 
 def _cancel_job_execution(job_execution_id):
     job_manager.cancel_job(job_execution_id)
+
+
+def _delete_job_execution(job_execution_id):
+    try:
+        _cancel_job_execution(job_execution_id)
+    except exceptions.CancelingFailed:
+        LOG.error(_LE("Job execution %s can't be cancelled in time. "
+                      "Deleting it anyway."), job_execution_id)
+    conductor.job_execution_destroy(context.ctx(), job_execution_id)
