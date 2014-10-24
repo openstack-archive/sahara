@@ -32,7 +32,7 @@ import six
 import stevedore.named
 
 from sahara.openstack.common import gettextutils
-from sahara.openstack.common import importutils
+from oslo.utils import importutils
 
 gettextutils.install('sahara')
 
