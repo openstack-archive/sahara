@@ -29,20 +29,7 @@ LOG = logging.getLogger(__name__)
 rest = u.Rest('v11', __name__)
 
 
-# EDP ops
-
-@rest.post('/jobs/<job_id>/execute')
-@v.check_exists(api.get_job, id='job_id')
-@v.validate(v_j_e.JOB_EXEC_SCHEMA, v_j_e.check_job_execution)
-def job_execute(job_id, data):
-    return u.render(job_execution=api.execute_job(job_id, data).to_dict())
-
-
-@rest.get('/jobs/config-hints/<job_type>')
-@v.check_exists(api.get_job_config_hints, job_type='job_type')
-def job_config_hints_get(job_type):
-    return u.render(api.get_job_config_hints(job_type))
-
+# Job execution ops
 
 @rest.get('/job-executions')
 def job_executions_list():
@@ -78,6 +65,8 @@ def job_executions_delete(job_execution_id):
     return u.render()
 
 
+# Data source ops
+
 @rest.get('/data-sources')
 def data_sources_list():
     return u.render(
@@ -103,6 +92,8 @@ def data_source_delete(data_source_id):
     return u.render()
 
 
+# Job ops
+
 @rest.get('/jobs')
 def job_list():
     return u.render(jobs=[j.to_dict() for j in api.get_jobs()])
@@ -127,6 +118,21 @@ def job_delete(job_id):
     return u.render()
 
 
+@rest.post('/jobs/<job_id>/execute')
+@v.check_exists(api.get_job, id='job_id')
+@v.validate(v_j_e.JOB_EXEC_SCHEMA, v_j_e.check_job_execution)
+def job_execute(job_id, data):
+    return u.render(job_execution=api.execute_job(job_id, data).to_dict())
+
+
+@rest.get('/jobs/config-hints/<job_type>')
+@v.check_exists(api.get_job_config_hints, job_type='job_type')
+def job_config_hints_get(job_type):
+    return u.render(api.get_job_config_hints(job_type))
+
+
+# Job binary ops
+
 @rest.post('/job-binaries')
 @v.validate(v_j_b.JOB_BINARY_SCHEMA, v_j_b.check_job_binary)
 def job_binary_create(data):
@@ -150,6 +156,17 @@ def job_binary_delete(job_binary_id):
     api.delete_job_binary(job_binary_id)
     return u.render()
 
+
+@rest.get('/job-binaries/<job_binary_id>/data')
+@v.check_exists(api.get_job_binary, 'job_binary_id')
+def job_binary_data(job_binary_id):
+    data = api.get_job_binary_data(job_binary_id)
+    if type(data) == dict:
+        data = u.render(data)
+    return data
+
+
+# Job binary internals ops
 
 @rest.put_file('/job-binary-internals/<name>')
 @v.validate(None, v_j_b_i.check_job_binary_internal)
@@ -181,12 +198,3 @@ def job_binary_internal_delete(job_binary_internal_id):
 @v.check_exists(api.get_job_binary_internal, 'job_binary_internal_id')
 def job_binary_internal_data(job_binary_internal_id):
     return api.get_job_binary_internal_data(job_binary_internal_id)
-
-
-@rest.get('/job-binaries/<job_binary_id>/data')
-@v.check_exists(api.get_job_binary, 'job_binary_id')
-def job_binary_data(job_binary_id):
-    data = api.get_job_binary_data(job_binary_id)
-    if type(data) == dict:
-        data = u.render(data)
-    return data
