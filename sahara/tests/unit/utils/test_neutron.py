@@ -28,6 +28,33 @@ class NeutronClientRemoteWrapperTest(testtools.TestCase):
         self.assertEqual('6c4d4e32-3667-4cd4-84ea-4cc1e98d18be',
                          neutron.get_router())
 
+    @mock.patch("neutronclient.neutron.client.Client")
+    def test__get_adapters(self, patched):
+        patched.side_effect = _test_get_neutron_client
+        neutron = neutron_client.NeutronClientRemoteWrapper(
+            '33b47310-b7a8-4559-bf95-45ba669a448e', None, None, None)
+        host1 = '127.0.0.1'
+        port1 = '9999'
+        expected_adapters = [
+            neutron_client.NeutronHttpAdapter(neutron.get_router(),
+                                              host1, port1)]
+        # this should create an adapter and cache it
+        actual_adapters = neutron._get_adapters(host=host1, port=port1)
+        self.assertEqual(len(expected_adapters), len(actual_adapters))
+        self.assertEqual(expected_adapters[0].host,
+                         actual_adapters[0].host)
+        self.assertEqual(expected_adapters[0].port,
+                         actual_adapters[0].port)
+
+        # this should return all adapters for the host, which at this
+        # time only contains the single adapter
+        actual_adapters = neutron._get_adapters(host=host1)
+        self.assertEqual(len(expected_adapters), len(actual_adapters))
+        self.assertEqual(expected_adapters[0].host,
+                         actual_adapters[0].host)
+        self.assertEqual(expected_adapters[0].port,
+                         actual_adapters[0].port)
+
 
 def _test_get_neutron_client(api_version, *args, **kwargs):
     return FakeNeutronClient()
