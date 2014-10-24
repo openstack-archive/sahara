@@ -41,6 +41,7 @@ YARN_SERVICE_TYPE = 'YARN'
 OOZIE_SERVICE_TYPE = 'OOZIE'
 HIVE_SERVICE_TYPE = 'HIVE'
 HUE_SERVICE_TYPE = 'HUE'
+SPARK_SERVICE_TYPE = 'SPARK_ON_YARN'
 
 PATH_TO_CORE_SITE_XML = '/etc/hadoop/conf/core-site.xml'
 HADOOP_LIB_DIR = '/usr/lib/hadoop-mapreduce'
@@ -62,6 +63,7 @@ PACKAGES = [
     'hue',
     'oozie',
     'oracle-j2sdk1.7',
+    'spark-history-server',
 ]
 
 LOG = logging.getLogger(__name__)
@@ -96,6 +98,9 @@ def _get_configs(service, cluster=None, node_group=None):
         'HUE': {
             'hive_service': cu.HIVE_SERVICE_NAME,
             'oozie_service': cu.OOZIE_SERVICE_NAME
+        },
+        'SPARK_ON_YARN': {
+            'yarn_service': cu.YARN_SERVICE_NAME
         }
     }
 
@@ -344,6 +349,8 @@ def _create_services(cluster):
         cm_cluster.create_service(cu.HIVE_SERVICE_NAME, HIVE_SERVICE_TYPE)
     if pu.get_hue(cluster):
         cm_cluster.create_service(cu.HUE_SERVICE_NAME, HUE_SERVICE_TYPE)
+    if pu.get_spark_historyserver(cluster):
+        cm_cluster.create_service(cu.SPARK_SERVICE_NAME, SPARK_SERVICE_TYPE)
 
 
 def _configure_services(cluster):
@@ -365,6 +372,10 @@ def _configure_services(cluster):
     if pu.get_hue(cluster):
         hue = cm_cluster.get_service(cu.HUE_SERVICE_NAME)
         hue.update_config(_get_configs(HUE_SERVICE_TYPE, cluster=cluster))
+
+    if pu.get_spark_historyserver(cluster):
+        spark = cm_cluster.get_service(cu.SPARK_SERVICE_NAME)
+        spark.update_config(_get_configs(SPARK_SERVICE_TYPE, cluster=cluster))
 
 
 def _configure_instances(instances):
@@ -425,6 +436,27 @@ def _configure_hive(cluster):
             'sudo su - -c "hadoop fs -chown hive /tmp/hive-hive" hdfs')
 
 
+def _configure_spark(cluster):
+    spark = pu.get_spark_historyserver(cluster)
+    with spark.remote() as r:
+        r.execute_command(
+            'sudo su - -c "hdfs dfs -mkdir -p /user/spark/applicationHistory" '
+            'hdfs')
+        r.execute_command(
+            'sudo su - -c "hdfs dfs -mkdir -p /user/spark/share/lib" hdfs')
+        r.execute_command(
+            'sudo su - -c "hdfs dfs -put /usr/lib/spark/assembly/lib/'
+            'spark-assembly-hadoop* /user/spark/share/lib/spark-assembly.jar"'
+            ' hdfs')
+        r.execute_command(
+            'sudo su - -c "hdfs dfs -chown -R spark:spark /user/spark" hdfs')
+        r.execute_command(
+            'sudo su - -c "hdfs dfs -chmod 0751 /user/spark" hdfs')
+        r.execute_command(
+            'sudo su - -c "hdfs dfs -chmod 1777 /user/spark/'
+            'applicationHistory" hdfs')
+
+
 def start_cluster(cluster):
     cm_cluster = cu.get_cloudera_cluster(cluster)
 
@@ -451,3 +483,8 @@ def start_cluster(cluster):
     if pu.get_hue(cluster):
         hue = cm_cluster.get_service(cu.HUE_SERVICE_NAME)
         cu.start_service(hue)
+
+    if pu.get_spark_historyserver(cluster):
+        _configure_spark(cluster)
+        spark = cm_cluster.get_service(cu.SPARK_SERVICE_NAME)
+        cu.start_service(spark)

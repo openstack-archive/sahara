@@ -97,6 +97,8 @@ hive_hiveserver_confs = _load_json(path_to_config + 'hive-hiveserver2.json')
 hive_webhcat_confs = _load_json(path_to_config + 'hive-webhcat.json')
 hue_service_confs = _load_json(path_to_config + 'hue-service.json')
 hue_role_confs = _load_json(path_to_config + 'hue-hue.json')
+spark_service_confs = _load_json(path_to_config + 'spark-service.json')
+spark_role_confs = _load_json(path_to_config + 'spark-history.json')
 
 priority_one_confs = _load_json(path_to_config + 'priority-one-confs.json')
 
@@ -138,6 +140,8 @@ def _get_ng_plugin_configs():
     cfg += _init_configs(hive_webhcat_confs, 'WEBHCAT', 'node')
     cfg += _init_configs(hue_service_confs, 'HUE', 'cluster')
     cfg += _init_configs(hue_role_confs, 'HUE', 'node')
+    cfg += _init_configs(spark_service_confs, 'SPARK_ON_YARN', 'cluster')
+    cfg += _init_configs(spark_role_confs, 'SPARK_ON_YARN', 'node')
     return cfg
 
 

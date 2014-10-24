@@ -35,6 +35,7 @@ YARN_SERVICE_NAME = 'yarn01'
 OOZIE_SERVICE_NAME = 'oozie01'
 HIVE_SERVICE_NAME = 'hive01'
 HUE_SERVICE_NAME = 'hue01'
+SPARK_SERVICE_NAME = 'spark_on_yarn01'
 
 
 def have_cm_api_libs():
@@ -99,6 +100,8 @@ def get_service(process, cluster=None, instance=None):
         return cm_cluster.get_service(HIVE_SERVICE_NAME)
     elif process in ['HUE_SERVER']:
         return cm_cluster.get_service(HUE_SERVICE_NAME)
+    elif process in ['SPARK_YARN_HISTORY_SERVER']:
+        return cm_cluster.get_service(SPARK_SERVICE_NAME)
     else:
         raise ValueError(
             _("Process %(process)s is not supported by CDH plugin") %
@@ -152,7 +155,8 @@ def get_role_name(instance, service):
         'RESOURCEMANAGER': 'RM',
         'SECONDARYNAMENODE': 'SNN',
         'SERVICEMONITOR': 'SM',
-        'WEBHCAT': 'WHC'
+        'WEBHCAT': 'WHC',
+        'SPARK_YARN_HISTORY_SERVER': 'SHS',
     }
     return '%s_%s' % (shortcuts.get(service, service),
                       instance.hostname().replace('-', '_'))
