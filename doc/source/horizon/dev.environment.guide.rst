@@ -91,7 +91,7 @@ You can list the registered services with this command:
      SAHARA_AUTO_IP_ALLOCATION_ENABLED = True
   ..
 
-5. If Sahara is not registered with the keystone service catalog, it may be addded
+5. If Sahara is not registered with the keystone service catalog, it may be added
    with the following commands.  To use Sahara from Horizon without keystone
    registration, see `Using the Data Processing Dashboard without Keystone Registration`_.
 
