@@ -64,6 +64,7 @@ PACKAGES = [
     'oozie',
     'oracle-j2sdk1.7',
     'spark-history-server',
+    'unzip'
 ]
 
 LOG = logging.getLogger(__name__)
@@ -458,6 +459,21 @@ def _configure_spark(cluster):
             'applicationHistory" hdfs')
 
 
+def _install_extjs(cluster):
+    extjs_remote_location = c_helper.get_extjs_lib_url(cluster)
+    extjs_vm_location_dir = '/var/lib/oozie'
+    extjs_vm_location_path = extjs_vm_location_dir + '/extjs.zip'
+    with pu.get_oozie(cluster).remote() as r:
+        if r.execute_command('ls %s/ext-2.2' % extjs_vm_location_dir,
+                             raise_when_error=False)[0] != 0:
+            r.execute_command('curl -L -o \'%s\' %s' % (
+                extjs_vm_location_path,  extjs_remote_location),
+                run_as_root=True)
+            r.execute_command('unzip %s -d %s' % (
+                extjs_vm_location_path, extjs_vm_location_dir),
+                run_as_root=True)
+
+
 def start_cluster(cluster):
     cm_cluster = cu.get_cloudera_cluster(cluster)
 
@@ -469,10 +485,13 @@ def start_cluster(cluster):
     cu.create_yarn_job_history_dir(yarn)
     cu.start_service(yarn)
 
-    oozie = cm_cluster.get_service(cu.OOZIE_SERVICE_NAME)
-    cu.create_oozie_db(oozie)
-    cu.install_oozie_sharelib(oozie)
-    cu.start_service(oozie)
+    oozie_inst = pu.get_oozie(cluster)
+    if oozie_inst:
+        _install_extjs(cluster)
+        oozie = cm_cluster.get_service(cu.OOZIE_SERVICE_NAME)
+        cu.create_oozie_db(oozie)
+        cu.install_oozie_sharelib(oozie)
+        cu.start_service(oozie)
 
     if pu.get_hive_metastore(cluster):
         hive = cm_cluster.get_service(cu.HIVE_SERVICE_NAME)

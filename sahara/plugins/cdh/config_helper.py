@@ -39,6 +39,7 @@ DEFAULT_CM5_CENTOS_REPO_LIST_URL = ('http://archive.cloudera.com/cm5/redhat'
 DEFAULT_SWIFT_LIB_URL = ('https://repository.cloudera.com/artifactory/repo/org'
                          '/apache/hadoop/hadoop-openstack/2.3.0-cdh5.1.0'
                          '/hadoop-openstack-2.3.0-cdh5.1.0.jar')
+DEFAULT_EXTJS_LIB_URL = 'http://extjs.com/deploy/ext-2.2.zip'
 
 CDH5_REPO_URL = p.Config(
     'CDH5 repo list URL', 'general', 'cluster', priority=1,
@@ -67,9 +68,16 @@ SWIFT_LIB_URL = p.Config(
                  "downloaded from VM."))
 
 
+EXTJS_LIB_URL = p.Config(
+    "ExtJS library URL", 'general', 'cluster', priority=1,
+    default_value=DEFAULT_EXTJS_LIB_URL,
+    description=("Ext 2.2 library is required for Oozie Web Console. "
+                 "The file will be downloaded from VM with oozie."))
+
+
 def _get_cluster_plugin_configs():
     return [CDH5_REPO_URL, CDH5_REPO_KEY_URL, CM5_REPO_URL, CM5_REPO_KEY_URL,
-            ENABLE_SWIFT, SWIFT_LIB_URL]
+            ENABLE_SWIFT, SWIFT_LIB_URL, EXTJS_LIB_URL]
 
 
 # ng wide configs
@@ -178,3 +186,7 @@ def is_swift_enabled(cluster):
 
 def get_swift_lib_url(cluster):
     return _get_config_value(cluster, SWIFT_LIB_URL)
+
+
+def get_extjs_lib_url(cluster):
+    return _get_config_value(cluster, EXTJS_LIB_URL)
