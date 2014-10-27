@@ -28,7 +28,7 @@ TT_CONFIG = {'Task Tracker Heap Size': 515}
 OOZIE_CONFIG = {'Oozie Heap Size': 520,
                 'oozie.notification.url.connection.timeout': 10001}
 
-CLUSTER_HDFS_CONFIG = {'dfs.replication': 2}
+CLUSTER_HDFS_CONFIG = {'dfs.replication': 1}
 CLUSTER_MR_CONFIG = {'mapred.map.tasks.speculative.execution': False,
                      'mapred.child.java.opts': '-Xmx500m'}
 

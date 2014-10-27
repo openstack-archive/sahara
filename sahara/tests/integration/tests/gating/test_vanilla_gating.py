@@ -13,10 +13,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from oslo.utils import excutils
 from testtools import testcase
 
 from sahara.tests.integration.configs import config as cfg
+from sahara.tests.integration.tests import base as b
 from sahara.tests.integration.tests import cinder
 from sahara.tests.integration.tests import cluster_configs
 from sahara.tests.integration.tests import edp
@@ -38,399 +38,281 @@ class VanillaGatingTest(cinder.CinderVolumeTest,
     SKIP_SWIFT_TEST = config.SKIP_SWIFT_TEST
     SKIP_SCALING_TEST = config.SKIP_SCALING_TEST
 
+    def _prepare_test(self):
+        self.plugin_config = cfg.ITConfig().vanilla_config
+        self.floating_ip_pool = self.common_config.FLOATING_IP_POOL
+        self.internal_neutron_net = None
+        if self.common_config.NEUTRON_ENABLED:
+            self.internal_neutron_net = self.get_internal_neutron_net_id()
+            self.floating_ip_pool = (
+                self.get_floating_ip_pool_id_for_neutron_net())
+
+        self.plugin_config.IMAGE_ID, self.plugin_config.SSH_USERNAME = (
+            self.get_image_id_and_ssh_username(self.plugin_config))
+
+        self.volumes_per_node = 0
+        self.volumes_size = 0
+        if not self.SKIP_CINDER_TEST:
+            self.volumes_per_node = 2
+            self.volumes_size = 2
+
+    @b.errormsg("Failure while 'tt-dn' node group template creation: ")
+    def _create_tt_dn_ng_template(self):
+        template = {
+            'name': 'test-node-group-template-vanilla-tt-dn',
+            'plugin_config': self.plugin_config,
+            'description': 'test node group template for Vanilla 1 plugin',
+            'node_processes': ['tasktracker', 'datanode'],
+            'floating_ip_pool': self.floating_ip_pool,
+            'node_configs': {
+                'HDFS': cluster_configs.DN_CONFIG,
+                'MapReduce': cluster_configs.TT_CONFIG
+            }
+        }
+        self.ng_tmpl_tt_dn_id = self.create_node_group_template(**template)
+        self.addCleanup(self.delete_objects,
+                        node_group_template_id_list=[self.ng_tmpl_tt_dn_id])
+
+    @b.errormsg("Failure while 'tt' node group template creation: ")
+    def _create_tt_ng_template(self):
+        template = {
+            'name': 'test-node-group-template-vanilla-tt',
+            'plugin_config': self.plugin_config,
+            'description': 'test node group template for Vanilla 1 plugin',
+            'volumes_per_node': self.volumes_per_node,
+            'volumes_size': self.volumes_size,
+            'node_processes': ['tasktracker'],
+            'floating_ip_pool': self.floating_ip_pool,
+            'node_configs': {
+                'MapReduce': cluster_configs.TT_CONFIG
+            }
+        }
+        self.ng_tmpl_tt_id = self.create_node_group_template(**template)
+        self.addCleanup(self.delete_objects,
+                        node_group_template_id_list=[self.ng_tmpl_tt_id])
+
+    @b.errormsg("Failure while 'dn' node group template creation: ")
+    def _create_dn_ng_template(self):
+        template = {
+            'name': 'test-node-group-template-vanilla-dn',
+            'plugin_config': self.plugin_config,
+            'description': 'test node group template for Vanilla 1 plugin',
+            'volumes_per_node': self.volumes_per_node,
+            'volumes_size': self.volumes_size,
+            'node_processes': ['datanode'],
+            'floating_ip_pool': self.floating_ip_pool,
+            'node_configs': {
+                'HDFS': cluster_configs.DN_CONFIG
+            }
+        }
+        self.ng_tmpl_dn_id = self.create_node_group_template(**template)
+        self.addCleanup(self.delete_objects,
+                        node_group_template_id_list=[self.ng_tmpl_dn_id])
+
+    @b.errormsg("Failure while cluster template creation: ")
+    def _create_cluster_template(self):
+        template = {
+            'name': 'test-cluster-template-vanilla',
+            'plugin_config': self.plugin_config,
+            'description': 'test cluster template for Vanilla 1 plugin',
+            'net_id': self.internal_neutron_net,
+            'cluster_configs': {
+                'HDFS': cluster_configs.CLUSTER_HDFS_CONFIG,
+                'MapReduce': cluster_configs.CLUSTER_MR_CONFIG,
+                'general': {
+                    'Enable Swift': True
+                }
+            },
+            'node_groups': [
+                {
+                    'name': 'master-node-jt-nn',
+                    'flavor_id': self.flavor_id,
+                    'node_processes': ['namenode', 'jobtracker'],
+                    'floating_ip_pool': self.floating_ip_pool,
+                    'node_configs': {
+                        'HDFS': cluster_configs.NN_CONFIG,
+                        'MapReduce': cluster_configs.JT_CONFIG
+                    },
+                    'count': 1
+                },
+                {
+                    'name': 'master-node-sec-nn-oz',
+                    'flavor_id': self.flavor_id,
+                    'node_processes': ['secondarynamenode', 'oozie'],
+                    'floating_ip_pool': self.floating_ip_pool,
+                    'node_configs': {
+                        'HDFS': cluster_configs.SNN_CONFIG,
+                        'JobFlow': cluster_configs.OOZIE_CONFIG
+                    },
+                    'count': 1
+                },
+                {
+                    'name': 'worker-node-tt-dn',
+                    'node_group_template_id': self.ng_tmpl_tt_dn_id,
+                    'count': 2
+                },
+                {
+                    'name': 'worker-node-tt',
+                    'node_group_template_id': self.ng_tmpl_tt_id,
+                    'count': 1
+                },
+                {
+                    'name': 'worker-node-dn',
+                    'node_group_template_id': self.ng_tmpl_dn_id,
+                    'count': 1
+                }
+            ]
+        }
+        self.cluster_template_id = self.create_cluster_template(**template)
+        self.addCleanup(self.delete_objects,
+                        cluster_template_id=self.cluster_template_id)
+
+    @b.errormsg("Failure while cluster creation: ")
+    def _create_cluster(self):
+        cluster_name = '%s-%s' % (self.common_config.CLUSTER_NAME,
+                                  self.plugin_config.PLUGIN_NAME)
+        kw = {
+            'name': cluster_name,
+            'plugin_config': self.plugin_config,
+            'cluster_template_id': self.cluster_template_id,
+            'description': 'test cluster',
+            'cluster_configs': {}
+        }
+        cluster_id = self.create_cluster(**kw)
+        self.addCleanup(self.delete_objects, cluster_id=cluster_id)
+        self.poll_cluster_state(cluster_id)
+        self.cluster_info = self.get_cluster_info(self.plugin_config)
+        self.await_active_workers_for_namenode(self.cluster_info['node_info'],
+                                               self.plugin_config)
+
+    @b.errormsg("Failure while Cinder testing: ")
+    def _check_cinder(self):
+        self.cinder_volume_testing(self.cluster_info)
+
+    @b.errormsg("Failure while cluster config testing: ")
+    def _check_cluster_config(self):
+        self.cluster_config_testing(self.cluster_info)
+
+    def _run_edp_test(self):
+        pig_job_data = self.edp_info.read_pig_example_script()
+        pig_lib_data = self.edp_info.read_pig_example_jar()
+        mapreduce_jar_data = self.edp_info.read_mapreduce_example_jar()
+        # This is a modified version of WordCount that takes swift configs
+        java_lib_data = self.edp_info.read_java_example_lib()
+
+        yield self.edp_testing(
+            job_type=utils_edp.JOB_TYPE_PIG,
+            job_data_list=[{'pig': pig_job_data}],
+            lib_data_list=[{'jar': pig_lib_data}],
+            configs=self.edp_info.pig_example_configs(),
+            swift_binaries=True,
+            hdfs_local_output=True)
+
+        yield self.edp_testing(
+            job_type=utils_edp.JOB_TYPE_MAPREDUCE,
+            job_data_list=[],
+            lib_data_list=[{'jar': mapreduce_jar_data}],
+            configs=self.edp_info.mapreduce_example_configs(),
+            swift_binaries=True,
+            hdfs_local_output=True)
+
+        yield self.edp_testing(
+            job_type=utils_edp.JOB_TYPE_MAPREDUCE_STREAMING,
+            job_data_list=[],
+            lib_data_list=[],
+            configs=self.edp_info.mapreduce_streaming_configs())
+
+        yield self.edp_testing(
+            job_type=utils_edp.JOB_TYPE_JAVA,
+            job_data_list=[],
+            lib_data_list=[{'jar': java_lib_data}],
+            configs=self.edp_info.java_example_configs(),
+            pass_input_output_args=True)
+
+    @b.errormsg("Failure while EDP testing: ")
+    def _check_edp(self):
+        self.poll_jobs_status(list(self._run_edp_test()))
+
+    @b.errormsg("Failure while MapReduce testing: ")
+    def _check_mapreduce(self):
+        self.map_reduce_testing(self.cluster_info)
+
+    @b.errormsg("Failure during check of Swift availability: ")
+    def _check_swift(self):
+        self.check_swift_availability(self.cluster_info)
+
+    @b.errormsg("Failure while cluster scaling: ")
+    def _check_scaling(self):
+        change_list = [
+            {
+                'operation': 'resize',
+                'info': ['worker-node-tt-dn', 1]
+            },
+            {
+                'operation': 'resize',
+                'info': ['worker-node-dn', 0]
+            },
+            {
+                'operation': 'resize',
+                'info': ['worker-node-tt', 0]
+            },
+            {
+                'operation': 'add',
+                'info': [
+                    'new-worker-node-tt', 1, self.ng_tmpl_tt_id
+                ]
+            },
+            {
+                'operation': 'add',
+                'info': [
+                    'new-worker-node-dn', 1, self.ng_tmpl_dn_id
+                ]
+            }
+        ]
+        self.cluster_info = self.cluster_scaling(self.cluster_info,
+                                                 change_list)
+        self.await_active_workers_for_namenode(self.cluster_info['node_info'],
+                                               self.plugin_config)
+
+    @b.errormsg("Failure while Cinder testing after cluster scaling: ")
+    def _check_cinder_after_scaling(self):
+        self.cluster_config_testing(self.cluster_info)
+
+    @b.errormsg("Failure while config testing after cluster scaling: ")
+    def _check_cluster_config_after_scaling(self):
+        self.cluster_config_testing(self.cluster_info)
+
+    @b.errormsg("Failure while Map Reduce testing after cluster scaling: ")
+    def _check_mapredure_after_scaling(self):
+        self.map_reduce_testing(self.cluster_info)
+
+    @b.errormsg("Failure during check of Swift availability after scaling: ")
+    def _check_swift_after_scaling(self):
+        self.check_swift_availability(self.cluster_info)
+
+    @b.errormsg("Failure while EDP testing after cluster scaling: ")
+    def _check_edp_after_scaling(self):
+        self.poll_jobs_status(list(self._run_edp_test()))
+
     @testcase.skipIf(config.SKIP_ALL_TESTS_FOR_PLUGIN,
                      'All tests for Vanilla plugin were skipped')
     @testcase.attr('vanilla1')
     def test_vanilla_plugin_gating(self):
-        self.vanilla_config.IMAGE_ID, self.vanilla_config.SSH_USERNAME = (
-            self.get_image_id_and_ssh_username(self.vanilla_config))
-
-        # Default value of self.common_config.FLOATING_IP_POOL is None
-        floating_ip_pool = self.common_config.FLOATING_IP_POOL
-        internal_neutron_net = None
-        # If Neutron enabled then get ID of floating IP pool and ID of internal
-        # Neutron network
-        if self.common_config.NEUTRON_ENABLED:
-            floating_ip_pool = self.get_floating_ip_pool_id_for_neutron_net()
-            internal_neutron_net = self.get_internal_neutron_net_id()
-
-# --------------------"tt-dn" node group template creation---------------------
-
-        node_group_template_id_list = []
-
-        try:
-            node_group_template_tt_dn_id = self.create_node_group_template(
-                name='test-node-group-template-vanilla-tt-dn',
-                plugin_config=self.vanilla_config,
-                description='test node group template for Vanilla plugin',
-                node_processes=['tasktracker', 'datanode'],
-                node_configs={
-                    'HDFS': cluster_configs.DN_CONFIG,
-                    'MapReduce': cluster_configs.TT_CONFIG
-                },
-                floating_ip_pool=floating_ip_pool
-            )
-            node_group_template_id_list.append(node_group_template_tt_dn_id)
-
-        except Exception as e:
-            with excutils.save_and_reraise_exception():
-                message = ('Failure while \'tt-dn\' node group '
-                           'template creation: ')
-                self.print_error_log(message, e)
-
-# ----------------------"tt" node group template creation----------------------
-
-        if not self.vanilla_config.SKIP_CINDER_TEST:
-            volumes_per_node = 2
-            volumes_size = 2
-        else:
-            volumes_per_node = 0
-            volumes_size = 0
-
-        try:
-            node_group_template_tt_id = self.create_node_group_template(
-                name='test-node-group-template-vanilla-tt',
-                plugin_config=self.vanilla_config,
-                description='test node group template for Vanilla plugin',
-                volumes_per_node=volumes_per_node,
-                volumes_size=volumes_size,
-                node_processes=['tasktracker'],
-                node_configs={
-                    'MapReduce': cluster_configs.TT_CONFIG
-                },
-                floating_ip_pool=floating_ip_pool
-            )
-            node_group_template_id_list.append(node_group_template_tt_id)
-
-        except Exception as e:
-            with excutils.save_and_reraise_exception():
-                self.delete_objects(
-                    node_group_template_id_list=node_group_template_id_list
-                )
-                message = 'Failure while \'tt\' node group template creation: '
-                self.print_error_log(message, e)
-
-# ---------------------"dn" node group template creation-----------------------
-
-        try:
-            node_group_template_dn_id = self.create_node_group_template(
-                name='test-node-group-template-vanilla-dn',
-                plugin_config=self.vanilla_config,
-                description='test node group template for Vanilla plugin',
-                volumes_per_node=volumes_per_node,
-                volumes_size=volumes_size,
-                node_processes=['datanode'],
-                node_configs={
-                    'HDFS': cluster_configs.DN_CONFIG
-                },
-                floating_ip_pool=floating_ip_pool
-            )
-            node_group_template_id_list.append(node_group_template_dn_id)
-
-        except Exception as e:
-            with excutils.save_and_reraise_exception():
-                self.delete_objects(
-                    node_group_template_id_list=node_group_template_id_list
-                )
-                message = 'Failure while \'dn\' node group template creation: '
-                self.print_error_log(message, e)
-
-# --------------------------Cluster template creation--------------------------
-
-        try:
-            cluster_template_id = self.create_cluster_template(
-                name='test-cluster-template-vanilla',
-                plugin_config=self.vanilla_config,
-                description='test cluster template for Vanilla plugin',
-                cluster_configs={
-                    'HDFS': cluster_configs.CLUSTER_HDFS_CONFIG,
-                    'MapReduce': cluster_configs.CLUSTER_MR_CONFIG,
-                    'general': {'Enable Swift': True}
-                },
-                node_groups=[
-                    dict(
-                        name='master-node-jt-nn',
-                        flavor_id=self.flavor_id,
-                        node_processes=['namenode', 'jobtracker'],
-                        node_configs={
-                            'HDFS': cluster_configs.NN_CONFIG,
-                            'MapReduce': cluster_configs.JT_CONFIG
-                        },
-                        floating_ip_pool=floating_ip_pool,
-                        count=1),
-                    dict(
-                        name='master-node-sec-nn-oz',
-                        flavor_id=self.flavor_id,
-                        node_processes=['secondarynamenode', 'oozie'],
-                        node_configs={
-                            'HDFS': cluster_configs.SNN_CONFIG,
-                            'JobFlow': cluster_configs.OOZIE_CONFIG
-                        },
-                        floating_ip_pool=floating_ip_pool,
-                        count=1),
-                    dict(
-                        name='worker-node-tt-dn',
-                        node_group_template_id=node_group_template_tt_dn_id,
-                        count=3),
-                    dict(
-                        name='worker-node-dn',
-                        node_group_template_id=node_group_template_dn_id,
-                        count=1),
-                    dict(
-                        name='worker-node-tt',
-                        node_group_template_id=node_group_template_tt_id,
-                        count=1)
-                ],
-                net_id=internal_neutron_net
-            )
-
-        except Exception as e:
-            with excutils.save_and_reraise_exception():
-                self.delete_objects(
-                    node_group_template_id_list=node_group_template_id_list
-                )
-                message = 'Failure while cluster template creation: '
-                self.print_error_log(message, e)
-
-# ------------------------------Cluster creation-------------------------------
-
-        try:
-            cluster_name = "%s-%s-v1" % (self.common_config.CLUSTER_NAME,
-                                         self.vanilla_config.PLUGIN_NAME)
-            cluster_id = self.create_cluster(
-                name=cluster_name,
-                plugin_config=self.vanilla_config,
-                cluster_template_id=cluster_template_id,
-                description='test cluster',
-                cluster_configs={}
-            )
-            self.poll_cluster_state(cluster_id)
-
-            cluster_info = self.get_cluster_info(self.vanilla_config)
-            self.await_active_workers_for_namenode(cluster_info['node_info'],
-                                                   self.vanilla_config)
-
-        except Exception as e:
-            with excutils.save_and_reraise_exception():
-                self.delete_objects(
-                    self.cluster_id, cluster_template_id,
-                    node_group_template_id_list
-                )
-                message = 'Failure while cluster creation: '
-                self.print_error_log(message, e)
-
-# --------------------------------CINDER TESTING-------------------------------
-
-        try:
-            self.cinder_volume_testing(cluster_info)
-
-        except Exception as e:
-            with excutils.save_and_reraise_exception():
-                self.delete_objects(
-                    cluster_info['cluster_id'], cluster_template_id,
-                    node_group_template_id_list
-                )
-                message = 'Failure while Cinder testing: '
-                self.print_error_log(message, e)
-
-# ---------------------------CLUSTER CONFIG TESTING----------------------------
-
-        try:
-            self.cluster_config_testing(cluster_info)
-
-        except Exception as e:
-            with excutils.save_and_reraise_exception():
-                self.delete_objects(
-                    cluster_info['cluster_id'], cluster_template_id,
-                    node_group_template_id_list
-                )
-                message = 'Failure while cluster config testing: '
-                self.print_error_log(message, e)
-
-# ---------------------------------EDP TESTING---------------------------------
-
-        def edp_test():
-            pig_job_data = self.edp_info.read_pig_example_script()
-            pig_lib_data = self.edp_info.read_pig_example_jar()
-            mapreduce_jar_data = self.edp_info.read_mapreduce_example_jar()
-            # This is a modified version of WordCount that takes swift configs
-            java_lib_data = self.edp_info.read_java_example_lib()
-
-            job_ids = []
-            job_id = self.edp_testing(
-                job_type=utils_edp.JOB_TYPE_PIG,
-                job_data_list=[{'pig': pig_job_data}],
-                lib_data_list=[{'jar': pig_lib_data}],
-                swift_binaries=True,
-                hdfs_local_output=True)
-            job_ids.append(job_id)
-
-            job_id = self.edp_testing(
-                job_type=utils_edp.JOB_TYPE_MAPREDUCE,
-                job_data_list=[],
-                lib_data_list=[{'jar': mapreduce_jar_data}],
-                configs=self.edp_info.mapreduce_example_configs(),
-                swift_binaries=True,
-                hdfs_local_output=True)
-            job_ids.append(job_id)
-
-            job_id = self.edp_testing(
-                job_type=utils_edp.JOB_TYPE_MAPREDUCE_STREAMING,
-                job_data_list=[],
-                lib_data_list=[],
-                configs=self.edp_info.mapreduce_streaming_configs())
-            job_ids.append(job_id)
-
-            job_id = self.edp_testing(
-                job_type=utils_edp.JOB_TYPE_JAVA,
-                job_data_list=[],
-                lib_data_list=[{'jar': java_lib_data}],
-                configs=self.edp_info.java_example_configs(),
-                pass_input_output_args=True)
-            job_ids.append(job_id)
-
-            self.poll_jobs_status(job_ids)
-
-        edp_test()
-
-# -----------------------------MAP REDUCE TESTING------------------------------
-
-        try:
-            self.map_reduce_testing(cluster_info)
-
-        except Exception as e:
-            with excutils.save_and_reraise_exception():
-                self.delete_objects(
-                    cluster_info['cluster_id'], cluster_template_id,
-                    node_group_template_id_list
-                )
-                message = 'Failure while Map Reduce testing: '
-                self.print_error_log(message, e)
-
-# --------------------------CHECK SWIFT AVAILABILITY---------------------------
-
-        try:
-            self.check_swift_availability(cluster_info)
-
-        except Exception as e:
-            with excutils.save_and_reraise_exception():
-                self.delete_objects(
-                    cluster_info['cluster_id'], cluster_template_id,
-                    node_group_template_id_list
-                )
-                message = 'Failure during check of Swift availability: '
-                self.print_error_log(message, e)
-
-# -------------------------------CLUSTER SCALING-------------------------------
-
-        if not self.vanilla_config.SKIP_SCALING_TEST:
-            change_list = [
-                {
-                    'operation': 'resize',
-                    'info': ['worker-node-tt-dn', 4]
-                },
-                {
-                    'operation': 'resize',
-                    'info': ['worker-node-dn', 0]
-                },
-                {
-                    'operation': 'resize',
-                    'info': ['worker-node-tt', 0]
-                },
-                {
-                    'operation': 'add',
-                    'info': [
-                        'new-worker-node-tt', 1, node_group_template_tt_id
-                    ]
-                },
-                {
-                    'operation': 'add',
-                    'info': [
-                        'new-worker-node-dn', 1, node_group_template_dn_id
-                    ]
-                }
-            ]
-            try:
-                new_cluster_info = self.cluster_scaling(cluster_info,
-                                                        change_list)
-                self.await_active_workers_for_namenode(
-                    new_cluster_info['node_info'], self.vanilla_config)
-            except Exception as e:
-                with excutils.save_and_reraise_exception():
-                    self.delete_objects(
-                        cluster_info['cluster_id'], cluster_template_id,
-                        node_group_template_id_list
-                    )
-                    message = 'Failure while cluster scaling: '
-                    self.print_error_log(message, e)
-
-# -------------------------CINDER TESTING AFTER SCALING------------------------
-
-            try:
-                self.cinder_volume_testing(new_cluster_info)
-
-            except Exception as e:
-                with excutils.save_and_reraise_exception():
-                    self.delete_objects(
-                        new_cluster_info['cluster_id'], cluster_template_id,
-                        node_group_template_id_list
-                    )
-                    message = ('Failure while Cinder testing after cluster '
-                               'scaling: ')
-                    self.print_error_log(message, e)
-
-# --------------------CLUSTER CONFIG TESTING AFTER SCALING---------------------
-
-            try:
-                self.cluster_config_testing(new_cluster_info)
-
-            except Exception as e:
-                with excutils.save_and_reraise_exception():
-                    self.delete_objects(
-                        new_cluster_info['cluster_id'], cluster_template_id,
-                        node_group_template_id_list
-                    )
-                    message = ('Failure while cluster config testing after '
-                               'cluster scaling: ')
-                    self.print_error_log(message, e)
-
-# ----------------------MAP REDUCE TESTING AFTER SCALING-----------------------
-
-            try:
-                self.map_reduce_testing(new_cluster_info)
-
-            except Exception as e:
-                with excutils.save_and_reraise_exception():
-                    self.delete_objects(
-                        new_cluster_info['cluster_id'], cluster_template_id,
-                        node_group_template_id_list
-                    )
-                    message = ('Failure while Map Reduce testing after '
-                               'cluster scaling: ')
-                    self.print_error_log(message, e)
-
-# -------------------CHECK SWIFT AVAILABILITY AFTER SCALING--------------------
-
-            try:
-                self.check_swift_availability(new_cluster_info)
-
-            except Exception as e:
-                with excutils.save_and_reraise_exception():
-                    self.delete_objects(
-                        new_cluster_info['cluster_id'], cluster_template_id,
-                        node_group_template_id_list
-                    )
-                    message = ('Failure during check of Swift availability '
-                               'after cluster scaling: ')
-                    self.print_error_log(message, e)
-
-# ----------------------------- EDP AFTER SCALING -----------------------------
-
-            edp_test()
-
-# ---------------------------DELETE CREATED OBJECTS----------------------------
-
-        self.delete_objects(
-            cluster_info['cluster_id'], cluster_template_id,
-            node_group_template_id_list
-        )
+        self._prepare_test()
+        self._create_tt_dn_ng_template()
+        self._create_tt_ng_template()
+        self._create_dn_ng_template()
+        self._create_cluster_template()
+        self._create_cluster()
+        self._check_cinder()
+        self._check_cluster_config()
+        self._check_edp()
+        self._check_mapreduce()
+        self._check_swift()
+        if not self.plugin_config.SKIP_SCALING_TEST:
+            self._check_scaling()
+            self._check_cinder_after_scaling()
+            self._check_cluster_config_after_scaling()
+            self._check_mapredure_after_scaling()
+            self._check_swift_after_scaling()
+            self._check_edp_after_scaling()
