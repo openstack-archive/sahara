@@ -13,8 +13,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from sahara import context
 from sahara.i18n import _
+from sahara.plugins import exceptions as pex
 from sahara.plugins import provisioning as p
+from sahara.plugins import utils as plugin_utils
 
 
 class FakePluginProvider(p.ProvisioningPluginBase):
@@ -41,15 +44,48 @@ class FakePluginProvider(p.ProvisioningPluginBase):
         return []
 
     def configure_cluster(self, cluster):
-        # noop
-        pass
+        with context.ThreadGroup() as tg:
+            for instance in plugin_utils.get_instances(cluster):
+                tg.spawn('fake-write-%s' % instance.id,
+                         self._write_ops, instance)
 
     def start_cluster(self, cluster):
-        # noop
-        pass
+        with context.ThreadGroup() as tg:
+            for instance in plugin_utils.get_instances(cluster):
+                tg.spawn('fake-check-%s' % instance.id,
+                         self._check_ops, instance)
 
     def scale_cluster(self, cluster, instances):
-        pass
+        with context.ThreadGroup() as tg:
+            for instance in instances:
+                tg.spawn('fake-scaling-%s' % instance.id,
+                         self._all_check_ops, instance)
 
     def decommission_nodes(self, cluster, instances):
         pass
+
+    def _write_ops(self, instance):
+        with instance.remote() as r:
+            # check typical SSH command
+            r.execute_command('echo "Hello, world!"')
+            # check write file
+            data_1 = "sp@m"
+            r.write_file_to('~/test_data', data_1, run_as_root=True)
+            # check append file
+            data_2 = " and eggs"
+            r.append_to_file('~/test_data', data_2, run_as_root=True)
+            # check replace string
+            r.replace_remote_string('~/test_data', "eggs", "pony")
+
+    def _check_ops(self, instance):
+        expected_data = "sp@m and pony"
+        with instance.remote() as r:
+            actual_data = r.read_file_from('~/test_data', run_as_root=True)
+
+            if actual_data.strip() != expected_data.strip():
+                raise pex.HadoopProvisionError("ACTUAL:\n%s\nEXPECTED:\n%s" % (
+                    actual_data, expected_data))
+
+    def _all_check_ops(self, instance):
+        self._write_ops(instance)
+        self._check_ops(instance)
