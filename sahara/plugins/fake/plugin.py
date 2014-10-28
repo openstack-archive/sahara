@@ -47,3 +47,9 @@ class FakePluginProvider(p.ProvisioningPluginBase):
     def start_cluster(self, cluster):
         # noop
         pass
+
+    def scale_cluster(self, cluster, instances):
+        pass
+
+    def decommission_nodes(self, cluster, instances):
+        pass
