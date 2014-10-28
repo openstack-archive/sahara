@@ -20,11 +20,11 @@ Before performing any operations with OpenStack environment, Sahara validates
 user input.
 
 There are two types of validations, that are done:
- * Check that a request contains all necessary fields and request does not violate
-any constraints like unique naming and etc.
+ * Check that a request contains all necessary fields and that the request does not violate
+any constraints like unique naming, etc.
  * Plugin check (optional). The provisioning Plugin may also perform any specific checks like Cluster topology validation.
 
-If any of validations fails, the Cluster will still be kept in database with ``Error``
+If any of the validations fails, the Cluster will still be kept in the database with an ``Error``
 status.
 
 2. InfraUpdating
@@ -40,8 +40,8 @@ Sahara sends requests to OpenStack for all resources to be created:
  * Volumes
  * Floating IPs (if Sahara is configured to use Floating IPs)
 
-It takes some time for OpenStack to schedule all required VMs and Volumes,
-so Sahara wait until all of them are in ``Active`` state.
+It takes some time for OpenStack to schedule all the required VMs and Volumes,
+so Sahara will wait until all of them are in an ``Active`` state.
 
 4. Waiting
 ~~~~~~~~~~
@@ -52,9 +52,9 @@ components like networks and volumes are attached and ready to use.
 5. Preparing
 ~~~~~~~~~~~~
 
-Sahara preparers a Cluster for starting. This step includes generating ``/etc/hosts``
-file, so that all instances could access each other by a hostname. Also Sahara
-updates ``authorized_keys`` file on each VM, so that communications could be done
+Sahara prepares a Cluster for starting. This step includes generating the ``/etc/hosts``
+file, so that all instances can access each other by a hostname. Also Sahara
+updates the ``authorized_keys`` file on each VM, so that communication can be done
 without passwords.
 
 6. Configuring
@@ -106,8 +106,8 @@ with a new ``/etc/hosts`` file.
 ~~~~~~~~~~~~~~~~~~
 
 Sahara stops Hadoop services on VMs that will be deleted from a Cluster.
-Decommissioning Data Node may take some time because Hadoop rearranges data replicas
-around the Cluster, so that no data will be lost after tht VM is deleted.
+Decommissioning a Data Node may take some time because Hadoop rearranges data replicas
+around the Cluster, so that no data will be lost after that VM is deleted.
 
 6. Deleting Instances
 ~~~~~~~~~~~~~~~~~~~~~
@@ -129,17 +129,17 @@ Deleting an existing Cluster
 1. Deleting
 ~~~~~~~~~~~
 
-The only step, that releases all Cluster's resources and removes it form database.
+The only step, that releases all Cluster's resources and removes it from the database.
 
 Error State
 -----------
 
-If Cluster creation fails, the Cluster will get into ``Error`` state.
+If the Cluster creation fails, the Cluster will get into an ``Error`` state.
 This state means the Cluster may not be able to perform any operations normally.
-This cluster will stay in database until it is manually deleted. The reason of
-failure may be found in Sahara logs.
+This cluster will stay in the database until it is manually deleted. The reason for
+failure may be found in the Sahara logs.
 
 
-If an error occurs during ``Adding Instances`` operation, Sahara will first
-try to rollback this operation. If rollback is impossible or fails itself, then
-the Cluster will also get into ``Error`` state.
+If an error occurs during the ``Adding Instances`` operation, Sahara will first
+try to rollback this operation. If a rollback is impossible or fails itself, then
+the Cluster will also go into an ``Error`` state.
