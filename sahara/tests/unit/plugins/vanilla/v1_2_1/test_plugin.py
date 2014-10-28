@@ -79,7 +79,10 @@ class VanillaPluginTest(base.SaharaWithDbTestCase):
             if cfg.config_type is "bool":
                 self.assertIsInstance(cfg.default_value, bool)
             elif cfg.config_type is "int":
-                self.assertIsInstance(cfg.default_value, int)
+                try:
+                    self.assertIsInstance(cfg.default_value, int)
+                except AssertionError:
+                    self.assertIsInstance(cfg.default_value, long)
             else:
                 self.assertIsInstance(cfg.default_value, str)
             self.assertNotIn(cfg.name, c_h.HIDDEN_CONFS)
