@@ -72,7 +72,7 @@ Note: When using floating IPs for management (``use_floating_ip=True``)
 **every** instance in the Cluster should have a floating IP,
 otherwise Sahara will not be able to work with it.
 
-If ``use_floating_ips`` parameter is set to ``False`` Sahara will use
+If the ``use_floating_ips`` parameter is set to ``False`` Sahara will use
 Instances' fixed IPs for management. In this case
 the node where Sahara is running should have access to Instances' fixed IP
 network. When OpenStack uses Neutron for
@@ -82,29 +82,28 @@ in a Cluster.
 Anti-affinity
 -------------
 One of the problems in Hadoop running on OpenStack is that there is no
-ability to control where machine is actually running.
+ability to control where the machine is actually running.
 We cannot be sure that two new virtual machines are started on different
-physical machines. As a result, any replication with cluster
+physical machines. As a result, any replication with the cluster
 is not reliable because all replicas may turn up on one physical machine.
-Anti-affinity feature provides an ability to explicitly tell Sahara to run
+The anti-affinity feature provides an ability to explicitly tell Sahara to run
 specified processes on different compute nodes. This
-is especially useful for Hadoop datanode process to make HDFS replicas
+is especially useful for the Hadoop data node process to make HDFS replicas
 reliable.
 
-Starting with Juno release Sahara creates server groups with
-``anti-affinity`` policy to enable anti affinity feature. Sahara creates one
+Starting with the Juno release, Sahara creates server groups with the
+``anti-affinity`` policy to enable the anti-affinity feature. Sahara creates one
 server group per cluster and assigns all instances with affected processes to
-this server group. Refer to Nova documentation on how server groups work.
+this server group. Refer to the Nova documentation on how server groups work.
 
 This feature is supported by all plugins out of the box.
 
 Data-locality
 -------------
-It is extremely important for data processing to do locally (on the same rack,
-openstack compute node or even VM) as much work as
-possible. Hadoop supports data-locality feature and can schedule jobs to
-tasktracker nodes that are local for input stream. In this case tasktracker
-could communicate directly with local data node.
+It is extremely important for data processing to work locally (on the same rack,
+OpenStack compute node or even VM). Hadoop supports the data-locality feature and can schedule jobs to
+task tracker nodes that are local for input stream. In this case task tracker
+could communicate directly with the local data node.
 
 Sahara supports topology configuration for HDFS and Swift data sources.
 
@@ -129,8 +128,8 @@ racks in the following format:
     compute1 /rack2
     compute1 /rack2
 
-Note that compute node name must be exactly the same as configured in
-openstack (``host`` column in admin list for instances).
+Note that the compute node name must be exactly the same as configured in
+OpenStack (``host`` column in admin list for instances).
 
 ``swift_topology_file`` should contain mapping between swift nodes and
 racks in the following format:
@@ -141,7 +140,7 @@ racks in the following format:
     node2 /rack2
     node3 /rack2
 
-Note that swift node must be exactly the same as configures in object.builder
+Note that the swift node must be exactly the same as configures in object.builder
 swift ring. Also make sure that VMs with the task tracker service have direct access
 to swift nodes.
 
@@ -183,7 +182,7 @@ To make Sahara work with Heat the following steps are required:
 
 
 There is a feature parity between direct and heat infrastructure engines. It is
-recommended to use heat engine since direct engine will be deprecated at some
+recommended to use the heat engine since the direct engine will be deprecated at some
 point.
 
 Multi region deployment
@@ -277,7 +276,7 @@ The picked driver must be supplied in ``sahara.conf`` in
 ``rabbit``, ``qpid`` or ``zmq``. Next you have to supply
 driver-specific options.
 
-Unfortunately, right now there is no documentation with description of
+Unfortunately, right now there is no documentation with a description of
 drivers' configuration. The options are available only in source code.
 
  * For Rabbit MQ see
