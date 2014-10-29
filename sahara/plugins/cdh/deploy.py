@@ -61,6 +61,7 @@ PACKAGES = [
     'hive-metastore',
     'hive-server2',
     'hue',
+    'ntp',
     'oozie',
     'oracle-j2sdk1.7',
     'spark-history-server',
