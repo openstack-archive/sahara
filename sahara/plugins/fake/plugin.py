@@ -16,6 +16,7 @@
 from sahara import context
 from sahara.i18n import _
 from sahara.plugins import exceptions as pex
+from sahara.plugins.fake import edp_engine
 from sahara.plugins import provisioning as p
 from sahara.plugins import utils as plugin_utils
 
@@ -89,3 +90,6 @@ class FakePluginProvider(p.ProvisioningPluginBase):
     def _all_check_ops(self, instance):
         self._write_ops(instance)
         self._check_ops(instance)
+
+    def get_edp_engine(self, cluster, job_type):
+        return edp_engine.FakeJobEngine()
