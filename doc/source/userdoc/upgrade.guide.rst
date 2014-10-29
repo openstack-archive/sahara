@@ -83,3 +83,14 @@ perspective, but there are internal changes:
 
 Note, new implementation will be applied for new clusters only. Old
 implementation will be applied if user scales cluster created in Icehouse.
+
+Juno -> Kilo
+------------
+
+Sahara requires policy configuration
+++++++++++++++++++++++++++++++++++++
+
+Starting from Kilo Sahara requires policy configuration provided. Place
+``policy.json`` file near Sahara configuration file or specify ``policy_file``
+parameter. For details see :ref:`policy section in configuration guide <policy-configuration-label>`.
+

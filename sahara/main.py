@@ -106,6 +106,10 @@ def setup_sahara_engine():
     remote.setup_remote(remote_driver, engine)
 
 
+def setup_auth_policy():
+    acl.setup_policy()
+
+
 def make_app():
     """App builder (wsgi)
 

@@ -379,6 +379,22 @@
 
 
 #
+# Options defined in sahara.openstack.common.policy
+#
+
+# The JSON file that defines policies. (string value)
+#policy_file=policy.json
+
+# Default rule. Enforced when a requested rule is not found.
+# (string value)
+#policy_default_rule=default
+
+# Directories where policy configuration files are stored
+# (multi valued)
+#policy_dirs=policy.d
+
+
+#
 # Options defined in sahara.plugins.base
 #
 
