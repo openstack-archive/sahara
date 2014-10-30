@@ -489,6 +489,8 @@ class TestJobManager(base.SaharaWithDbTestCase):
                          "swift://ex.sahara/o")
         self.assertEqual(w.inject_swift_url_suffix("hdfs://my/path"),
                          "hdfs://my/path")
+        self.assertEqual(w.inject_swift_url_suffix(12345), 12345)
+        self.assertEqual(w.inject_swift_url_suffix(['test']), ['test'])
 
     @mock.patch('sahara.conductor.API.job_execution_update')
     @mock.patch('sahara.service.edp.job_manager._run_job')

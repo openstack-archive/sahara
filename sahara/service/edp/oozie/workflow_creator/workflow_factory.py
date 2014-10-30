@@ -71,7 +71,7 @@ class BaseFactory(object):
                     value.update(new_vals)
 
     def inject_swift_url_suffix(self, url):
-        if url.startswith("swift://"):
+        if isinstance(url, six.string_types) and url.startswith("swift://"):
             u = urlparse.urlparse(url)
             if not u.netloc.endswith(su.SWIFT_URL_SUFFIX):
                 return url.replace(u.netloc,
