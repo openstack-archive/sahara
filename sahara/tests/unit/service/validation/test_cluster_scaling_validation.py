@@ -56,9 +56,9 @@ class TestScalingValidation(u.ValidationTestCase):
                 self.assertEqual(expected_message, six.text_type(e))
                 raise e
 
-    @mock.patch("sahara.service.ops.get_engine_type_and_version",
-                return_value="direct.1.1")
-    def test_check_cluster_scaling_resize_ng(self, engine_version):
+    @mock.patch("sahara.service.api.OPS")
+    def test_check_cluster_scaling_resize_ng(self, ops):
+        ops.get_engine_type_and_version.return_value = "direct.1.1"
         ng1 = tu.make_ng_dict('ng', '42', ['namenode'], 1)
         cluster = tu.create_cluster("cluster1", "tenant1", "vanilla", "1.2.1",
                                     [ng1], status='Validating', id='12321')
@@ -102,9 +102,9 @@ class TestScalingValidation(u.ValidationTestCase):
             expected_message='Duplicates in node '
                              'group names are detected')
 
-    @mock.patch("sahara.service.ops.get_engine_type_and_version",
-                return_value="direct.1.1")
-    def test_check_cluster_scaling_add_ng(self, engine_version):
+    @mock.patch("sahara.service.api.OPS")
+    def test_check_cluster_scaling_add_ng(self, ops):
+        ops.get_engine_type_and_version.return_value = "direct.1.1"
         ng1 = tu.make_ng_dict('ng', '42', ['namenode'], 1)
         cluster = tu.create_cluster("test-cluster", "tenant", "vanilla",
                                     "1.2.1", [ng1], status='Active',
@@ -178,9 +178,9 @@ class TestScalingValidation(u.ValidationTestCase):
         self.assertEqual(req_data.call_count, 1)
         self._assert_calls(bad_req, bad_req_i)
 
-    @mock.patch("sahara.service.ops.get_engine_type_and_version",
-                return_value="direct.1.1")
-    def test_cluster_scaling_scheme_v_resize_ng(self, engine_version):
+    @mock.patch("sahara.service.api.OPS")
+    def test_cluster_scaling_scheme_v_resize_ng(self, ops):
+        ops.get_engine_type_and_version.return_value = "direct.1.1"
         self._create_object_fun = mock.Mock()
         data = {
         }
@@ -210,9 +210,9 @@ class TestScalingValidation(u.ValidationTestCase):
                        u"'count' is a required property")
         )
 
-    @mock.patch("sahara.service.ops.get_engine_type_and_version",
-                return_value="direct.1.1")
-    def test_cluster_scaling_validation_add_ng(self, engine_version):
+    @mock.patch("sahara.service.api.OPS")
+    def test_cluster_scaling_validation_add_ng(self, ops):
+        ops.get_engine_type_and_version.return_value = "direct.1.1"
         data = {
             'add_node_groups': [
                 {
@@ -246,9 +246,9 @@ class TestScalingValidation(u.ValidationTestCase):
                        u"of the given schemas")
         )
 
-    @mock.patch("sahara.service.ops.get_engine_type_and_version",
-                return_value="direct.1.1")
-    def test_cluster_scaling_validation_right_schema(self, engine_version):
+    @mock.patch("sahara.service.api.OPS")
+    def test_cluster_scaling_validation_right_schema(self, ops):
+        ops.get_engine_type_and_version.return_value = "direct.1.1"
         data = {
             'add_node_groups': [
                 {
@@ -293,9 +293,9 @@ class TestScalingValidation(u.ValidationTestCase):
             data=data
         )
 
-    @mock.patch("sahara.service.ops.get_engine_type_and_version",
-                return_value="direct.1.1")
-    def test_cluster_scaling_scheme_validation_types(self, engine_version):
+    @mock.patch("sahara.service.api.OPS")
+    def test_cluster_scaling_scheme_validation_types(self, ops):
+        ops.get_engine_type_and_version.return_value = "direct.1.1"
         data = {
             'resize_node_groups': {},
         }
@@ -321,9 +321,9 @@ class TestScalingValidation(u.ValidationTestCase):
                        u'[] is too short')
         )
 
-    @mock.patch("sahara.service.ops.get_engine_type_and_version",
-                return_value="direct.1.1")
-    def test_cluster_scaling_v_right_data(self, engine_version):
+    @mock.patch("sahara.service.api.OPS")
+    def test_cluster_scaling_v_right_data(self, ops):
+        ops.get_engine_type_and_version.return_value = "direct.1.1"
         self._create_object_fun = c_s.check_cluster_scaling
 
         data = {
@@ -346,9 +346,9 @@ class TestScalingValidation(u.ValidationTestCase):
         self._assert_cluster_scaling_validation(data=data)
         u.stop_patch(patchers)
 
-    @mock.patch("sahara.service.ops.get_engine_type_and_version",
-                return_value="direct.1.1")
-    def test_check_cluster_scaling_wrong_engine(self, engine_version):
+    @mock.patch("sahara.service.api.OPS")
+    def test_check_cluster_scaling_wrong_engine(self, ops):
+        ops.get_engine_type_and_version.return_value = "direct.1.1"
         ng1 = tu.make_ng_dict('ng', '42', ['namenode'], 1)
         cluster = tu.create_cluster(
             "cluster1", "tenant1", "vanilla", "1.2.1", [ng1],
@@ -360,9 +360,9 @@ class TestScalingValidation(u.ValidationTestCase):
             expected_message="Cluster created with heat.1.1 infrastructure "
                              "engine can't be scaled with direct.1.1 engine")
 
-    @mock.patch("sahara.service.ops.get_engine_type_and_version",
-                return_value="heat.1.1")
-    def test_check_heat_cluster_scaling_missing_engine(self, engine_version):
+    @mock.patch("sahara.service.api.OPS")
+    def test_check_heat_cluster_scaling_missing_engine(self, ops):
+        ops.get_engine_type_and_version.return_value = "heat.1.1"
         ng1 = tu.make_ng_dict('ng', '42', ['namenode'], 1)
         cluster = tu.create_cluster("cluster1", "tenant1", "vanilla", "1.2.1",
                                     [ng1], status='Active', id='12321')

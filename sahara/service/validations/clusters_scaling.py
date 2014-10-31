@@ -19,7 +19,6 @@ import sahara.exceptions as ex
 from sahara.i18n import _
 import sahara.plugins.base as plugin_base
 import sahara.service.api as api
-from sahara.service import ops
 import sahara.service.validations.base as b
 import sahara.service.validations.cluster_templates as cl_t
 
@@ -74,20 +73,21 @@ def check_cluster_scaling(data, cluster_id, **kwargs):
     cluster_engine = cluster.sahara_info.get(
         'infrastructure_engine') if cluster.sahara_info else None
 
+    engine_type_and_version = api.OPS.get_engine_type_and_version()
     if (not cluster_engine and
-            not ops.get_engine_type_and_version().startswith('direct')):
+            not engine_type_and_version.startswith('direct')):
         raise ex.InvalidException(
             _("Cluster created before Juno release "
               "can't be scaled with %(engine)s engine") %
-            {"engine": ops.get_engine_type_and_version()})
+            {"engine": engine_type_and_version})
 
     if (cluster.sahara_info and
-            cluster_engine != ops.get_engine_type_and_version()):
+            cluster_engine != engine_type_and_version):
         raise ex.InvalidException(
             _("Cluster created with %(old_engine)s infrastructure engine "
               "can't be scaled with %(new_engine)s engine") %
             {"old_engine": cluster.sahara_info.get('infrastructure_engine'),
-             "new_engine": ops.get_engine_type_and_version()})
+             "new_engine": engine_type_and_version})
 
     if not (plugin_base.PLUGINS.is_plugin_implements(cluster.plugin_name,
                                                      'scale_cluster') and (
