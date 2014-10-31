@@ -19,30 +19,11 @@ import swiftclient
 
 import sahara.exceptions as ex
 from sahara.i18n import _
-from sahara.swift import swift_helper
 from sahara.swift import utils as su
-from sahara.utils.openstack import keystone as k
+from sahara.utils.openstack import swift as sw
 
 
 CONF = cfg.CONF
-
-
-def _get_conn(user, password):
-    return swiftclient.Connection(su.retrieve_auth_url(),
-                                  user,
-                                  password,
-                                  tenant_name=swift_helper.retrieve_tenant(),
-                                  auth_version="2.0")
-
-
-def _get_conn_for_proxy_user(configs):
-    preauthurl = su.retrieve_preauth_url()
-    proxyclient = k.client_for_proxy_user(configs['proxy_username'],
-                                          configs['proxy_password'],
-                                          configs['proxy_trust_id'])
-    return swiftclient.Connection(preauthurl=preauthurl,
-                                  preauthtoken=proxyclient.auth_token,
-                                  auth_version='2.0')
 
 
 def _strip_sahara_suffix(container_name):
@@ -51,14 +32,17 @@ def _strip_sahara_suffix(container_name):
     return container_name
 
 
-def get_raw_data(context, job_binary, proxy_configs=None):
+def get_raw_data(job_binary, proxy_configs=None):
+    conn_kwargs = {}
     if proxy_configs:
-        conn = _get_conn_for_proxy_user(proxy_configs)
+        conn_kwargs.update(username=proxy_configs.get('proxy_username'),
+                           password=proxy_configs.get('proxy_password'),
+                           trust_id=proxy_configs.get('proxy_trust_id'))
     else:
-        user = job_binary.extra["user"]
-        password = job_binary.extra["password"]
+        conn_kwargs.update(username=job_binary.extra.get('user'),
+                           password=job_binary.extra.get('password'))
 
-        conn = _get_conn(user, password)
+    conn = sw.client(**conn_kwargs)
 
     if not (job_binary.url.startswith(su.SWIFT_INTERNAL_PREFIX)):
         # This should have been guaranteed already,
@@ -69,30 +53,10 @@ def get_raw_data(context, job_binary, proxy_configs=None):
 
     names = job_binary.url[job_binary.url.index("://") + 3:].split("/", 1)
     if len(names) == 1:
-        # We are getting a whole container, return as a dictionary.
-        container = names[0]
-
-        # if container name has '.sahara' suffix we need to strip it
-        container = _strip_sahara_suffix(container)
-
-        # First check the size...
-        try:
-            headers = conn.head_container(container)
-            total_KB = int(headers.get('x-container-bytes-used', 0)) / 1024.0
-            if total_KB > CONF.job_binary_max_KB:
-                raise ex.DataTooBigException(
-                    round(total_KB, 1), CONF.job_binary_max_KB,
-                    _("Size of swift container (%(size)sKB) is greater "
-                      "than maximum (%(maximum)sKB)"))
-
-            body = {}
-            headers, objects = conn.get_container(container)
-            for item in objects:
-                headers, obj = conn.get_object(container, item["name"])
-                body[item["name"]] = obj
-        except swiftclient.ClientException as e:
-            raise ex.SwiftClientException(six.text_type(e))
-
+        # a container has been requested, this is currently unsupported
+        raise ex.BadJobBinaryException(
+            _('Url for binary in internal swift must specify an object not '
+              'a container'))
     else:
         container, obj = names
 
