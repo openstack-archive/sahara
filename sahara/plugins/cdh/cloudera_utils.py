@@ -29,6 +29,7 @@ from sahara.plugins import exceptions as ex
 
 CM_DEFAULT_USERNAME = 'admin'
 CM_DEFAULT_PASSWD = 'admin'
+CM_API_VERSION = 7
 
 HDFS_SERVICE_NAME = 'hdfs01'
 YARN_SERVICE_NAME = 'yarn01'
@@ -56,7 +57,8 @@ def cloudera_cmd(f):
 def get_api_client(cluster):
     manager_ip = pu.get_manager(cluster).management_ip
     return api_client.ApiResource(manager_ip, username=CM_DEFAULT_USERNAME,
-                                  password=CM_DEFAULT_PASSWD)
+                                  password=CM_DEFAULT_PASSWD,
+                                  version=CM_API_VERSION)
 
 
 def get_cloudera_cluster(cluster):
