@@ -31,6 +31,7 @@ oozie_service_name = 'oozie01'
 hive_service_name = 'hive01'
 hue_service_name = 'hue01'
 spark_service_name = 'spark_on_yarn01'
+zookeeper_service_name = 'zookeeper01'
 
 
 def get_cm_api():
@@ -97,6 +98,9 @@ def main():
 
     spark = cluster.get_service(spark_service_name)
     process_service(spark, 'spark')
+
+    zookeeper = cluster.get_service(zookeeper_service_name)
+    process_service(zookeeper, 'zookeeper')
 
 
 if __name__ == '__main__':
