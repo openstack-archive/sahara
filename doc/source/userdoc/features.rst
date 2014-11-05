@@ -31,6 +31,8 @@ and the size of each volume.
 
 All volumes are attached during Cluster creation/scaling operations.
 
+.. _neutron-nova-network:
+
 Neutron and Nova Network support
 --------------------------------
 OpenStack clusters may use Nova or Neutron as a networking service. Sahara

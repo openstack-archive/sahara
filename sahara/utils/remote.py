@@ -32,6 +32,12 @@ ssh_opts = [
     cfg.IntOpt('cluster_remote_threshold', default=70,
                help='The same as global_remote_threshold, but for '
                     'a single cluster.'),
+    cfg.StrOpt('proxy_command', default='',
+               help='Proxy command used to connect to instances. If set, this '
+               'command should open a netcat socket, that Sahara will use for '
+               'SSH and HTTP connections. Use {host} and {port} to describe '
+               'the destination. Other available keywords: {tenant_id}, '
+               '{network_id}, {router_id}.'),
 ]
 
 

@@ -32,15 +32,19 @@ implementations which are run in a separate process.
 """
 
 import logging
+import os
+import shlex
 import time
 import uuid
 
+from eventlet.green import subprocess as e_subprocess
 from eventlet import semaphore
 from eventlet import timeout as e_timeout
 from oslo.config import cfg
 from oslo.utils import excutils
 import paramiko
 import requests
+from requests import adapters
 import six
 
 from sahara import context
@@ -69,33 +73,20 @@ INFRA = None
 _global_remote_semaphore = None
 
 
-def _get_proxy(neutron_info):
-    client = neutron.NeutronClientRemoteWrapper(neutron_info['network'],
-                                                neutron_info['uri'],
-                                                neutron_info['token'],
-                                                neutron_info['tenant'])
-    qrouter = client.get_router()
-    proxy = paramiko.ProxyCommand('{0} ip netns exec qrouter-{1} nc {2} 22'
-                                  .format(neutron_info['rootwrap_command']
-                                          if neutron_info['use_rootwrap']
-                                          else '',
-                                          qrouter, neutron_info['host']))
-
-    return proxy
-
-
-def _connect(host, username, private_key, neutron_info=None):
+def _connect(host, username, private_key, proxy_command=None):
     global _ssh
 
     LOG.debug('Creating SSH connection')
-    proxy = None
     if type(private_key) in [str, unicode]:
         private_key = crypto.to_paramiko_private_key(private_key)
     _ssh = paramiko.SSHClient()
     _ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-    if neutron_info:
-        LOG.debug('creating proxy using info: {0}'.format(neutron_info))
-        proxy = _get_proxy(neutron_info)
+
+    proxy = None
+    if proxy_command:
+        LOG.debug('creating proxy using command: {0}'.format(proxy_command))
+        proxy = paramiko.ProxyCommand(proxy_command)
+
     _ssh.connect(host, username=username, pkey=private_key, sock=proxy)
 
 
@@ -146,28 +137,24 @@ def _execute_command(cmd, run_as_root=False, get_stderr=False,
         return ret_code, stdout
 
 
-def _get_http_client(host, port, neutron_info, *args, **kwargs):
+def _get_http_client(host, port, proxy_command=None, *args, **kwargs):
     global _sessions
 
     _http_session = _sessions.get((host, port), None)
     LOG.debug('cached HTTP session for {0}:{1} is {2}'.format(host, port,
                                                               _http_session))
     if not _http_session:
-        if neutron_info:
-            neutron_client = neutron.NeutronClientRemoteWrapper(
-                neutron_info['network'], neutron_info['uri'],
-                neutron_info['token'], neutron_info['tenant'])
+        if proxy_command:
             # can return a new session here because it actually uses
             # the same adapter (and same connection pools) for a given
             # host and port tuple
-            _http_session = neutron_client.get_http_session(
-                host, port=port, use_rootwrap=CONF.use_rootwrap,
-                rootwrap_command=CONF.rootwrap_command, *args, **kwargs)
-            LOG.debug('created neutron based HTTP session for {0}:{1}'
+            _http_session = HTTPRemoteWrapper().get_http_session(
+                proxy_command, host, port=port, *args, **kwargs)
+            LOG.debug('created proxied HTTP session for {0}:{1}'
                       .format(host, port))
         else:
-            # need to cache the session for the non-neutron or neutron
-            # floating ip cases so that a new session with a new HTTPAdapter
+            # need to cache the sessions that are not proxied through
+            # HTTPRemoteWrapper so that a new session with a new HTTPAdapter
             # and associated pools is not recreated for each HTTP invocation
             _http_session = requests.Session()
             LOG.debug('created standard HTTP session for {0}:{1}'
@@ -312,6 +299,146 @@ def _release_remote_semaphore():
     context.current().remote_semaphore.release()
 
 
+class HTTPRemoteWrapper(object):
+    adapters = {}
+
+    def get_http_session(self, proxy_command, host, port=None,
+                         *args, **kwargs):
+        session = requests.Session()
+        adapters = self._get_adapters(proxy_command, host, port=port,
+                                      *args, **kwargs)
+        for adapter in adapters:
+            session.mount('http://{0}:{1}'.format(host, adapter.port), adapter)
+
+        return session
+
+    def _get_adapters(self, proxy_command, host, port=None, *args, **kwargs):
+        LOG.debug('Retrieving HTTP adapters for {0}:{1}'.format(host, port))
+        adapters = []
+        if not port:
+            # returning all registered adapters for given host
+            adapters = [adapter for adapter in six.itervalues(self.adapters)
+                        if adapter.host == host]
+        else:
+            # need to retrieve or create specific adapter
+            adapter = self.adapters.get((host, port), None)
+            if not adapter:
+                LOG.debug('Creating HTTP adapter for {0}:{1}'
+                          .format(host, port))
+                adapter = ProxiedHTTPAdapter(proxy_command, host, port,
+                                             *args, **kwargs)
+                self.adapters[(host, port)] = adapter
+                adapters = [adapter]
+
+        return adapters
+
+
+class ProxiedHTTPAdapter(adapters.HTTPAdapter):
+    port = None
+    host = None
+
+    def __init__(self, proxy_command, host, port, *args, **kwargs):
+        super(ProxiedHTTPAdapter, self).__init__(*args, **kwargs)
+        LOG.debug('HTTP adapter created with cmd {0}'.format(proxy_command))
+        self.cmd = shlex.split(proxy_command)
+        self.port = port
+        self.host = host
+
+    def get_connection(self, url, proxies=None):
+        pool_conn = (
+            super(ProxiedHTTPAdapter, self).get_connection(url, proxies))
+        if hasattr(pool_conn, '_get_conn'):
+            http_conn = pool_conn._get_conn()
+            if http_conn.sock is None:
+                if hasattr(http_conn, 'connect'):
+                    sock = self._connect()
+                    LOG.debug('HTTP connection {0} getting new '
+                              'netcat socket {1}'.format(http_conn, sock))
+                    http_conn.sock = sock
+            else:
+                if hasattr(http_conn.sock, 'is_netcat_socket'):
+                    LOG.debug('pooled http connection has existing '
+                              'netcat socket. resetting pipe...')
+                    http_conn.sock.reset()
+
+            pool_conn._put_conn(http_conn)
+
+        return pool_conn
+
+    def close(self):
+        LOG.debug('Closing HTTP adapter for {0}:{1}'
+                  .format(self.host, self.port))
+        super(ProxiedHTTPAdapter, self).close()
+
+    def _connect(self):
+        LOG.debug('Returning netcat socket with command {0}'
+                  .format(self.cmd))
+        rootwrap_command = CONF.rootwrap_command if CONF.use_rootwrap else ''
+        return NetcatSocket(self.cmd, rootwrap_command)
+
+
+class NetcatSocket(object):
+
+    def _create_process(self):
+        self.process = e_subprocess.Popen(self.cmd,
+                                          stdin=e_subprocess.PIPE,
+                                          stdout=e_subprocess.PIPE,
+                                          stderr=e_subprocess.PIPE)
+
+    def __init__(self, cmd, rootwrap_command=None):
+        self.cmd = cmd
+        self.rootwrap_command = rootwrap_command
+        self._create_process()
+
+    def send(self, content):
+        try:
+            self.process.stdin.write(content)
+            self.process.stdin.flush()
+        except IOError as e:
+            raise ex.SystemError(e)
+        return len(content)
+
+    def sendall(self, content):
+        return self.send(content)
+
+    def makefile(self, mode, *arg):
+        if mode.startswith('r'):
+            return self.process.stdout
+        if mode.startswith('w'):
+            return self.process.stdin
+        raise ex.IncorrectStateError(_("Unknown file mode %s") % mode)
+
+    def recv(self, size):
+        try:
+            return os.read(self.process.stdout.fileno(), size)
+        except IOError as e:
+            raise ex.SystemError(e)
+
+    def _terminate(self):
+        if self.rootwrap_command:
+            os.system('{0} kill {1}'.format(self.rootwrap_command,
+                                            self.process.pid))
+        else:
+            self.process.terminate()
+
+    def close(self):
+        LOG.debug('Socket close called')
+        self._terminate()
+
+    def settimeout(self, timeout):
+        pass
+
+    def fileno(self):
+        return self.process.stdin.fileno()
+
+    def is_netcat_socket(self):
+        return True
+
+    def reset(self):
+        self._terminate()
+        self._create_process()
+
+
 class InstanceInteropHelper(remote.Remote):
     def __init__(self, instance):
         self.instance = instance
@@ -340,19 +467,61 @@ class InstanceInteropHelper(remote.Remote):
         neutron_info['token'] = ctx.token
         neutron_info['tenant'] = ctx.tenant_name
         neutron_info['host'] = self.instance.management_ip
-        neutron_info['use_rootwrap'] = CONF.use_rootwrap
-        neutron_info['rootwrap_command'] = CONF.rootwrap_command
 
         LOG.debug('Returning neutron info: {0}'.format(neutron_info))
         return neutron_info
 
-    def _get_conn_params(self):
-        info = None
-        if CONF.use_namespaces and not CONF.use_floating_ips:
+    def _build_proxy_command(self, command, host=None, port=None, info=None,
+                             rootwrap_command=None):
+        # Accepted keywords in the proxy command template:
+        # {host}, {port}, {tenant_id}, {network_id}, {router_id}
+        keywords = {}
+
+        if not info:
             info = self.get_neutron_info()
+        keywords['tenant_id'] = context.current().tenant_id
+        keywords['network_id'] = info['network']
+
+        # Query Neutron only if needed
+        if '{router_id}' in command:
+            client = neutron.NeutronClient(info['network'], info['uri'],
+                                           info['token'], info['tenant'])
+            keywords['router_id'] = client.get_router()
+
+        keywords['host'] = host
+        keywords['port'] = port
+
+        try:
+            command = command.format(**keywords)
+        except KeyError as e:
+            LOG.error(_('Invalid keyword in proxy_command: %s'), str(e))
+            # Do not give more details to the end-user
+            raise ex.SystemError('Misconfiguration')
+        if rootwrap_command:
+            command = '{0} {1}'.format(rootwrap_command, command)
+        return command
+
+    def _get_conn_params(self):
+        proxy_command = None
+        if CONF.proxy_command:
+            # Build a session through a user-defined socket
+            proxy_command = CONF.proxy_command
+        elif CONF.use_namespaces and not CONF.use_floating_ips:
+            # Build a session through a netcat socket in the Neutron namespace
+            proxy_command = (
+                'ip netns exec qrouter-{router_id} nc {host} {port}')
+        # proxy_command is currently a template, turn it into a real command
+        # i.e. dereference {host}, {port}, etc.
+        if proxy_command:
+            rootwrap = CONF.rootwrap_command if CONF.use_rootwrap else ''
+            proxy_command = self._build_proxy_command(
+                proxy_command, host=self.instance.management_ip, port=22,
+                info=None, rootwrap_command=rootwrap)
+
         return (self.instance.management_ip,
                 self.instance.node_group.image_username,
-                self.instance.node_group.cluster.management_private_key, info)
+                self.instance.node_group.cluster.management_private_key,
+                proxy_command)
 
     def _run(self, func, *args, **kwargs):
         proc = procutils.start_subprocess()
@@ -384,15 +553,29 @@ class InstanceInteropHelper(remote.Remote):
             _release_remote_semaphore()
 
     def get_http_client(self, port, info=None, *args, **kwargs):
-        self._log_command('Retrieving http session for {0}:{1}'.format(
-            self.instance.management_ip,
-            port))
-        if CONF.use_namespaces and not CONF.use_floating_ips:
+        self._log_command('Retrieving HTTP session for {0}:{1}'.format(
+            self.instance.management_ip, port))
+        proxy_command = None
+        if CONF.proxy_command:
+            # Build a session through a user-defined socket
+            proxy_command = CONF.proxy_command
+        elif info or (CONF.use_namespaces and not CONF.use_floating_ips):
             # need neutron info
             if not info:
                 info = self.get_neutron_info()
-        return _get_http_client(self.instance.management_ip, port, info,
-                                *args, **kwargs)
+            # Build a session through a netcat socket in the Neutron namespace
+            proxy_command = (
+                'ip netns exec qrouter-{router_id} nc {host} {port}')
+        # proxy_command is currently a template, turn it into a real command
+        # i.e. dereference {host}, {port}, etc.
+        if proxy_command:
+            rootwrap = CONF.rootwrap_command if CONF.use_rootwrap else ''
+            proxy_command = self._build_proxy_command(
+                proxy_command, host=self.instance.management_ip, port=port,
+                info=info, rootwrap_command=rootwrap)
+
+        return _get_http_client(self.instance.management_ip, port,
+                                proxy_command, *args, **kwargs)
 
     def close_http_session(self, port):
         global _sessions

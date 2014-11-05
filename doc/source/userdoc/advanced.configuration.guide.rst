@@ -68,13 +68,46 @@ integration see the Sahara documentation sections
 
 .. _Sahara extra repository: http://github.com/openstack/sahara-extra
 
-Namespaces and non-root users
------------------------------
+Custom network topologies
+-------------------------
 
-In cases where namespaces are being used to access cluster VMs via private IPs,
-rootwrap functionality is provided to allow users other than ``root`` access
-to the namespace related OS facilities. To use rootwrap the following
-configuration property is required to be set:
+Sahara accesses VMs at several stages of cluster spawning, both via SSH and
+HTTP. When floating IPs are not assigned to instances, Sahara needs to be able
+to reach them another way.  Floating IPs and network namespaces (see
+:ref:`neutron-nova-network`) are automatically used when present.
+
+When none of these are enabled, the ``proxy_command`` property can be used to
+give Sahara a command to access VMs. This command is run on the Sahara host and
+must open a netcat socket to the instance destination port. ``{host}`` and
+``{port}`` keywords should be used to describe the destination, they will be
+translated at runtime.  Other keywords can be used: ``{tenant_id}``,
+``{network_id}`` and ``{router_id}``.
+
+For instance, the following configuration property in the Sahara configuration
+file would be used if VMs are accessed through a relay machine:
+
+.. sourcecode:: cfg
+
+    [DEFAULT]
+    proxy_command='ssh relay-machine-{tenant_id} nc {host} {port}'
+
+Whereas the following property would be used to access VMs through a custom
+network namespace:
+
+.. sourcecode:: cfg
+
+    [DEFAULT]
+    proxy_command='ip netns exec ns_for_{network_id} nc {host} {port}'
+
+
+Non-root users
+--------------
+
+In cases where a proxy command is being used to access cluster VMs (for
+instance when using namespaces or when specifying a custom proxy command),
+rootwrap functionality is provided to allow users other than ``root`` access to
+the needed OS facilities. To use rootwrap the following configuration property
+is required to be set:
 
 .. sourcecode:: cfg
 
@@ -100,12 +133,13 @@ steps:
   ``etc/sahara/rootwrap.conf`` to the system specific location, usually
   ``/etc/sahara``. This file contains the default configuration for rootwrap.
 
-* Copy the provided rootwrap filers file from the local project file
+* Copy the provided rootwrap filters file from the local project file
   ``etc/sahara/rootwrap.d/sahara.filters`` to the location specified in the
   rootwrap configuration file, usually ``/etc/sahara/rootwrap.d``. This file
-  contains the filters that will allow the ``sahara`` user to acces the
-  ``ip netns exec``, ``nc``, and ``kill`` commands through the rootwrap. It
-  should look similar to the followings:
+  contains the filters that will allow the ``sahara`` user to access the
+  ``ip netns exec``, ``nc``, and ``kill`` commands through the rootwrap
+  (depending on ``proxy_command`` you may need to set additional filters).
+  It should look similar to the followings:
 
 .. sourcecode:: cfg
 
