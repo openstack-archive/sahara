@@ -137,7 +137,7 @@ def _execute_command(cmd, run_as_root=False, get_stderr=False,
         return ret_code, stdout
 
 
-def _get_http_client(host, port, proxy_command=None, *args, **kwargs):
+def _get_http_client(host, port, proxy_command=None):
     global _sessions
 
     _http_session = _sessions.get((host, port), None)
@@ -148,8 +148,8 @@ def _get_http_client(host, port, proxy_command=None, *args, **kwargs):
             # can return a new session here because it actually uses
             # the same adapter (and same connection pools) for a given
             # host and port tuple
-            _http_session = HTTPRemoteWrapper().get_http_session(
-                proxy_command, host, port=port, *args, **kwargs)
+            _http_session = _get_proxied_http_session(
+                proxy_command, host, port=port)
             LOG.debug('created proxied HTTP session for {0}:{1}'
                       .format(host, port))
         else:
@@ -160,7 +160,7 @@ def _get_http_client(host, port, proxy_command=None, *args, **kwargs):
             LOG.debug('created standard HTTP session for {0}:{1}'
                       .format(host, port))
 
-            adapter = requests.adapters.HTTPAdapter(*args, **kwargs)
+            adapter = requests.adapters.HTTPAdapter()
             for prefix in ['http://', 'https://']:
                 _http_session.mount(prefix + '%s:%s' % (host, port),
                                     adapter)
@@ -299,46 +299,20 @@ def _release_remote_semaphore():
     context.current().remote_semaphore.release()
 
 
-class HTTPRemoteWrapper(object):
-    adapters = {}
+def _get_proxied_http_session(proxy_command, host, port=None):
+    session = requests.Session()
+    adapter = ProxiedHTTPAdapter(proxy_command, host, port)
+    session.mount('http://{0}:{1}'.format(host, adapter.port), adapter)
 
-    def get_http_session(self, proxy_command, host, port=None,
-                         *args, **kwargs):
-        session = requests.Session()
-        adapters = self._get_adapters(proxy_command, host, port=port,
-                                      *args, **kwargs)
-        for adapter in adapters:
-            session.mount('http://{0}:{1}'.format(host, adapter.port), adapter)
-
-        return session
-
-    def _get_adapters(self, proxy_command, host, port=None, *args, **kwargs):
-        LOG.debug('Retrieving HTTP adapters for {0}:{1}'.format(host, port))
-        adapters = []
-        if not port:
-            # returning all registered adapters for given host
-            adapters = [adapter for adapter in six.itervalues(self.adapters)
-                        if adapter.host == host]
-        else:
-            # need to retrieve or create specific adapter
-            adapter = self.adapters.get((host, port), None)
-            if not adapter:
-                LOG.debug('Creating HTTP adapter for {0}:{1}'
-                          .format(host, port))
-                adapter = ProxiedHTTPAdapter(proxy_command, host, port,
-                                             *args, **kwargs)
-                self.adapters[(host, port)] = adapter
-                adapters = [adapter]
-
-        return adapters
+    return session
 
 
 class ProxiedHTTPAdapter(adapters.HTTPAdapter):
     port = None
     host = None
 
-    def __init__(self, proxy_command, host, port, *args, **kwargs):
-        super(ProxiedHTTPAdapter, self).__init__(*args, **kwargs)
+    def __init__(self, proxy_command, host, port):
+        super(ProxiedHTTPAdapter, self).__init__()
         LOG.debug('HTTP adapter created with cmd {0}'.format(proxy_command))
         self.cmd = shlex.split(proxy_command)
         self.port = port
@@ -552,7 +526,7 @@ class InstanceInteropHelper(remote.Remote):
         finally:
             _release_remote_semaphore()
 
-    def get_http_client(self, port, info=None, *args, **kwargs):
+    def get_http_client(self, port, info=None):
         self._log_command('Retrieving HTTP session for {0}:{1}'.format(
             self.instance.management_ip, port))
         proxy_command = None
@@ -575,7 +549,7 @@ class InstanceInteropHelper(remote.Remote):
                 info=info, rootwrap_command=rootwrap)
 
         return _get_http_client(self.instance.management_ip, port,
-                                proxy_command, *args, **kwargs)
+                                proxy_command)
 
     def close_http_session(self, port):
         global _sessions
