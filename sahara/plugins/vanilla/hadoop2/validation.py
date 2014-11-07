@@ -72,6 +72,11 @@ def validate_cluster_creating(pctx, cluster):
                                                 'not less than '
                                                 'dfs.replication.'))
 
+    hive_count = _get_inst_count(cluster, 'hiveserver')
+    if hive_count not in [0, 1]:
+        raise ex.InvalidComponentCountException('hive', _('0 or 1'),
+                                                hive_count)
+
 
 def validate_additional_ng_scaling(cluster, additional):
     rm = vu.get_resourcemanager(cluster)
