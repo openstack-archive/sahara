@@ -60,3 +60,6 @@ class AbstractVersionHandler(object):
     @abc.abstractmethod
     def get_open_ports(self, node_group):
         return
+
+    def on_terminate_cluster(self, cluster):
+        pass
