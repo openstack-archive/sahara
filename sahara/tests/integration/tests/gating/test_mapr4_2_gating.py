@@ -36,26 +36,17 @@ class Mapr4_2GatingTest(swift.SwiftTest, scaling.ScalingTest,
         self.cluster_id = None
         self.cluster_template_id = None
 
-    def _prepare_test(self):
-        self.mapr4_2_config = cfg.ITConfig().mapr4_2_config
-        self.floating_ip_pool = self.common_config.FLOATING_IP_POOL
-        self.internal_neutron_net = None
-        if self.common_config.NEUTRON_ENABLED:
-            self.internal_neutron_net = self.get_internal_neutron_net_id()
-            self.floating_ip_pool = (
-                self.get_floating_ip_pool_id_for_neutron_net())
-
-        self.mapr4_2_config.IMAGE_ID, self.mapr4_2_config.SSH_USERNAME = (
-            (self.get_image_id_and_ssh_username(self.mapr4_2_config)))
+    def get_plugin_config(self):
+        return cfg.ITConfig().mapr4_2_config
 
     @b.errormsg("Failure while 'rm-nn' node group template creation: ")
     def _create_rm_nn_ng_template(self):
         template = {
             'name': 'test-node-group-template-mapr4_2-rm-nn',
-            'plugin_config': self.mapr4_2_config,
+            'plugin_config': self.plugin_config,
             'description': 'test node group template for MAPR plugin',
             # NEED CHANGES MASTER_NODE
-            'node_processes': self.mapr4_2_config.MASTER_NODE_PROCESSES,
+            'node_processes': self.plugin_config.MASTER_NODE_PROCESSES,
             'floating_ip_pool': self.floating_ip_pool,
             'node_configs': {}
         }
@@ -67,10 +58,10 @@ class Mapr4_2GatingTest(swift.SwiftTest, scaling.ScalingTest,
     def _create_nm_dn_ng_template(self):
         template = {
             'name': 'test-node-group-template-mapr4_2-nm-dn',
-            'plugin_config': self.mapr4_2_config,
+            'plugin_config': self.plugin_config,
             'description': 'test node group template for MAPR plugin',
             # NEED CHANGES WORKER
-            'node_processes': self.mapr4_2_config.WORKER_NODE_PROCESSES,
+            'node_processes': self.plugin_config.WORKER_NODE_PROCESSES,
             'floating_ip_pool': self.floating_ip_pool,
             'node_configs': {}
         }
@@ -82,7 +73,7 @@ class Mapr4_2GatingTest(swift.SwiftTest, scaling.ScalingTest,
     def _create_cluster_template(self):
         template = {
             'name': 'test-cluster-template-mapr4_2',
-            'plugin_config': self.mapr4_2_config,
+            'plugin_config': self.plugin_config,
             'description': 'test cluster template for MAPR plugin',
             'cluster_configs': {
                 'YARN': {
@@ -110,10 +101,10 @@ class Mapr4_2GatingTest(swift.SwiftTest, scaling.ScalingTest,
     @b.errormsg("Failure while cluster creation: ")
     def _create_cluster(self):
         cluster_name = '%s-%s-v2' % (self.common_config.CLUSTER_NAME,
-                                     self.mapr4_2_config.PLUGIN_NAME)
+                                     self.plugin_config.PLUGIN_NAME)
         cluster = {
             'name': cluster_name,
-            'plugin_config': self.mapr4_2_config,
+            'plugin_config': self.plugin_config,
             'cluster_template_id': self.cluster_template_id,
             'description': 'test cluster',
             'cluster_configs': {}
@@ -121,9 +112,9 @@ class Mapr4_2GatingTest(swift.SwiftTest, scaling.ScalingTest,
         cluster_id = self.create_cluster(**cluster)
         self.addCleanup(self.delete_objects, cluster_id=cluster_id)
         self.poll_cluster_state(cluster_id)
-        self.cluster_info = self.get_cluster_info(self.mapr4_2_config)
+        self.cluster_info = self.get_cluster_info(self.plugin_config)
         self.await_active_tasktracker(
-            self.cluster_info['node_info'], self.mapr4_2_config)
+            self.cluster_info['node_info'], self.plugin_config)
 
     @b.errormsg("Failure during check of Swift availability: ")
     def _check_swift(self):
@@ -134,7 +125,7 @@ class Mapr4_2GatingTest(swift.SwiftTest, scaling.ScalingTest,
         self.poll_jobs_status(list(self._run_edp_tests()))
 
     def _run_edp_tests(self):
-        skipped_edp_job_types = self.mapr4_2_config.SKIP_EDP_JOB_TYPES
+        skipped_edp_job_types = self.plugin_config.SKIP_EDP_JOB_TYPES
 
         if utils_edp.JOB_TYPE_PIG not in skipped_edp_job_types:
             yield self._edp_pig_test()
@@ -187,7 +178,7 @@ class Mapr4_2GatingTest(swift.SwiftTest, scaling.ScalingTest,
     def _check_scaling(self):
         datanode_count_after_resizing = (
             self.cluster_info['node_info']['datanode_count']
-            + self.mapr4_2_config.SCALE_EXISTING_NG_COUNT)
+            + self.plugin_config.SCALE_EXISTING_NG_COUNT)
         change_list = [
             {
                 'operation': 'resize',
@@ -197,7 +188,7 @@ class Mapr4_2GatingTest(swift.SwiftTest, scaling.ScalingTest,
             {
                 'operation': 'add',
                 'info': ['new-worker-node-tt-dn',
-                         self.mapr4_2_config.SCALE_NEW_NG_COUNT,
+                         self.plugin_config.SCALE_NEW_NG_COUNT,
                          '%s' % self.ng_tmpl_nm_dn_id]
             }
         ]
@@ -205,7 +196,7 @@ class Mapr4_2GatingTest(swift.SwiftTest, scaling.ScalingTest,
         self.cluster_info = self.cluster_scaling(self.cluster_info,
                                                  change_list)
         self.await_active_tasktracker(
-            self.cluster_info['node_info'], self.mapr4_2_config)
+            self.cluster_info['node_info'], self.plugin_config)
 
     @b.errormsg(
         "Failure during check of Swift availability after cluster scaling: ")
@@ -218,7 +209,6 @@ class Mapr4_2GatingTest(swift.SwiftTest, scaling.ScalingTest,
 
     @testcase.attr('mapr4_2')
     def test_mapr4_2_plugin_gating(self):
-        self._prepare_test()
         self._create_rm_nn_ng_template()
         self._create_nm_dn_ng_template()
         self._create_cluster_template()
@@ -227,7 +217,7 @@ class Mapr4_2GatingTest(swift.SwiftTest, scaling.ScalingTest,
         self._check_swift()
         self._check_edp()
 
-        if not self.mapr4_2_config.SKIP_SCALING_TEST:
+        if not self.plugin_config.SKIP_SCALING_TEST:
             self._check_scaling()
             self._check_swift_after_scaling()
             self._check_edp_after_scaling()

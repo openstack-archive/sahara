@@ -36,7 +36,7 @@ class SwiftTest(base.ITestCase):
             'SWIFT_CONTAINER_NAME': swift_container_name
         }
         namenode_ip = cluster_info['node_info']['namenode_ip']
-        self.open_ssh_connection(namenode_ip, plugin_config.SSH_USERNAME)
+        self.open_ssh_connection(namenode_ip)
         try:
             self.transfer_helper_script_to_node(
                 'swift_test_script.sh', parameter_list=extra_script_parameters
