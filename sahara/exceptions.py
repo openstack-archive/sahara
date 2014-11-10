@@ -266,3 +266,12 @@ class DeprecatedException(SaharaException):
 
     def __init__(self, message):
         self.message = message
+
+
+class Forbidden(SaharaException):
+    code = "FORBIDDEN"
+    message = _("You are not authorized to complete this action.")
+
+    def __init__(self, message=None):
+        if message:
+            self.message = message

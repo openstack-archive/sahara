@@ -56,6 +56,7 @@ def main():
     app = server.make_app()
 
     server.setup_sahara_api('distributed')
+    server.setup_auth_policy()
 
     from oslo.config import cfg
     wsgi.server(eventlet.listen((cfg.CONF.host, cfg.CONF.port), backlog=500),

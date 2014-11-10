@@ -1,0 +1,64 @@
+{
+    "context_is_admin": "role:admin",
+    "default": "",
+
+    "clusters:get_all": "",
+    "clusters:create": "",
+    "clusters:scale": "",
+    "clusters:get": "",
+    "clusters:delete": "",
+
+    "cluster-templates:get_all": "",
+    "cluster-templates:create": "",
+    "cluster-templates:get": "",
+    "cluster-templates:modify": "",
+    "cluster-templates:delete": "",
+
+    "node-group-templates:get_all": "",
+    "node-group-templates:create": "",
+    "node-group-templates:get": "",
+    "node-group-templates:modify": "",
+    "node-group-templates:delete": "",
+
+    "plugins:get_all": "",
+    "plugins:get": "",
+    "plugins:get_version": "",
+    "plugins:convert_config": "",
+
+    "images:get_all": "",
+    "images:get": "",
+    "images:register": "",
+    "images:unregister": "",
+    "images:add_tags": "",
+    "images:remove_tags": "",
+
+    "job-executions:get_all": "",
+    "job-executions:get": "",
+    "job-executions:refresh_status": "",
+    "job-executions:cancel": "",
+    "job-executions:delete": "",
+
+    "data-sources:get_all": "",
+    "data-sources:get": "",
+    "data-sources:register": "",
+    "data-sources:delete": "",
+
+    "jobs:get_all": "",
+    "jobs:create": "",
+    "jobs:get": "",
+    "jobs:delete": "",
+    "jobs:get_config_hints": "",
+    "jobs:execute": "",
+
+    "job-binaries:get_all": "",
+    "job-binaries:create": "",
+    "job-binaries:get": "",
+    "job-binaries:delete": "",
+    "job-binaries:get_data": "",
+
+    "job-binary-internals:get_all": "",
+    "job-binary-internals:create": "",
+    "job-binary-internals:get": "",
+    "job-binary-internals:delete": "",
+    "job-binary-internals:get_data": ""
+}

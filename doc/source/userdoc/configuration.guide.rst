@@ -112,3 +112,39 @@ As example you can see default values of these options:
     qpid_username=
     qpid_password=
 ..
+
+.. _policy-configuration-label:
+
+Sahara policy configuration
+---------------------------
+
+Sahara’s public API calls may be restricted to certain sets of users using a
+policy configuration file. Location of policy file is controlled by
+``policy_file`` and ``policy_dirs`` parameters. By default Sahara will search
+for ``policy.json`` file in the same directory where Sahara configuration is
+located.
+
+Examples
+++++++++
+
+Example 1. Allow all method to all users (default policy).
+
+.. sourcecode:: json
+
+    {
+        "default": ""
+    }
+
+
+Example 2. Disallow image registry manipulations to non-admin users.
+
+.. sourcecode:: json
+
+    {
+        "default": "",
+
+        "images:register": "role:admin",
+        "images:unregister": "role:admin",
+        "images:add_tags": "role:admin",
+        "images:remove_tags": "role:admin"
+    }
