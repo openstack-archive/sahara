@@ -424,3 +424,29 @@ class ConductorManager(db_base.Base):
         return self.db.job_binary_internal_get_raw_data(
             context,
             job_binary_internal_id)
+
+    # Events ops
+
+    def cluster_provision_step_add(self, context, cluster_id, values):
+        """Create a cluster assigned ProvisionStep
+
+        from the values dictionary
+        """
+        return self.db.cluster_provision_step_add(context, cluster_id, values)
+
+    def cluster_provision_step_update(self, context, provision_step, values):
+        """Update the ProvisionStep from the values dictionary."""
+        self.db.cluster_provision_step_update(context, provision_step, values)
+
+    def cluster_provision_step_get_events(self, context, provision_step):
+        """Return all events from the specified ProvisionStep."""
+        return self.db.cluster_provision_step_get_events(
+            context, provision_step)
+
+    def cluster_provision_step_remove_events(self, context, provision_step):
+        """Delete all event from the specified ProvisionStep."""
+        self.db.cluster_provision_step_remove_events(context, provision_step)
+
+    def cluster_event_add(self, context, provision_step, values):
+        """Assign new event to the specified ProvisionStep."""
+        self.db.cluster_event_add(context, provision_step, values)

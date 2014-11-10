@@ -851,3 +851,108 @@ def job_binary_internal_destroy(context, job_binary_internal_id):
                 _("JobBinaryInternal id '%s' not found!"))
 
         session.delete(job_binary_internal)
+
+# Events ops
+
+
+def _cluster_provision_step_get(context, session, provision_step_id):
+    query = model_query(m.ClusterProvisionStep, context, session)
+    return query.filter_by(id=provision_step_id).first()
+
+
+def cluster_provision_step_add(context, cluster_id, values):
+    session = get_session()
+
+    with session.begin():
+        cluster = _cluster_get(context, session, cluster_id)
+        if not cluster:
+            raise ex.NotFoundException(cluster_id,
+                                       _("Cluster id '%s' not found!"))
+
+        provision_step = m.ClusterProvisionStep()
+        values['cluster_id'] = cluster_id
+        values['tenant_id'] = context.tenant_id
+        provision_step.update(values)
+        session.add(provision_step)
+
+    return provision_step.id
+
+
+def cluster_provision_step_update(context, provision_step_id, values):
+    session = get_session()
+
+    with session.begin():
+        provision_step = _cluster_provision_step_get(
+            context, session, provision_step_id)
+
+        if not provision_step:
+            raise ex.NotFoundException(
+                provision_step_id,
+                _("Cluster Provision Step id '%s' not found!"))
+
+        provision_step.update(values)
+
+
+def cluster_provision_step_get_events(context, provision_step_id):
+    session = get_session()
+    with session.begin():
+        provision_step = _cluster_provision_step_get(
+            context, session, provision_step_id)
+
+        if not provision_step:
+            raise ex.NotFoundException(
+                provision_step_id,
+                _("Cluster Provision Step id '%s' not found!"))
+
+    return provision_step.events
+
+
+def cluster_provision_step_remove_events(context, provision_step_id):
+    session = get_session()
+
+    with session.begin():
+        provision_step = _cluster_provision_step_get(
+            context, session, provision_step_id)
+
+        if not provision_step:
+            raise ex.NotFoundException(
+                provision_step_id,
+                _("Cluster Provision Step id '%s' not found!"))
+
+        for event in provision_step.events:
+            session.delete(event)
+
+
+def cluster_provision_step_remove(context, provision_step_id):
+    session = get_session()
+    cluster_provision_step_remove_events(context, provision_step_id)
+    with session.begin():
+        provision_step = _cluster_provision_step_get(
+            context, session, provision_step_id)
+
+        if not provision_step:
+            raise ex.NotFoundException(
+                provision_step_id,
+                _("Cluster Provision Step id '%s' not found!"))
+
+        session.delete(provision_step)
+
+
+def cluster_event_add(context, step_id, values):
+    session = get_session()
+
+    with session.begin():
+        provision_step = _cluster_provision_step_get(
+            context, session, step_id)
+
+        if not provision_step:
+            raise ex.NotFoundException(
+                step_id,
+                _("Cluster Provision Step id '%s' not found!"))
+
+        event = m.ClusterEvent()
+        values['step_id'] = step_id
+        event.update(values)
+        session.add(event)
+
+    return event.id
