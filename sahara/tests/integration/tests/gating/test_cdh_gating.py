@@ -180,8 +180,8 @@ class CDHGatingTest(cluster_configs.ClusterConfigTest,
                 }
             }
         }
-        cluster_id = self.create_cluster(**cluster)
-        self.poll_cluster_state(cluster_id)
+        self.cluster_id = self.create_cluster(**cluster)
+        self.poll_cluster_state(self.cluster_id)
         self.cluster_info = self.get_cluster_info(self.cdh_config)
         self.await_active_workers_for_namenode(self.cluster_info['node_info'],
                                                self.cdh_config)
@@ -289,6 +289,7 @@ class CDHGatingTest(cluster_configs.ClusterConfigTest,
         "All tests for CDH plugin were skipped")
     @testcase.attr('cdh')
     def test_cdh_plugin_gating(self):
+        self._success = False
         self._prepare_test()
         self._create_nm_dn_ng_template()
         self._create_nm_ng_template()
@@ -306,7 +307,37 @@ class CDHGatingTest(cluster_configs.ClusterConfigTest,
             self._check_cinder_after_scaling()
             self._check_edp_after_scaling()
 
+        self._success = True
+
+    def print_manager_log(self):
+        if not self.cluster_id:
+            return
+
+        manager_node = None
+        for ng in self.sahara.clusters.get(self.cluster_id).node_groups:
+            if 'MANAGER' in ng['node_processes']:
+                manager_node = ng['instances'][0]['management_ip']
+                break
+
+        if not manager_node:
+            print("Cloudera Manager node not found")
+            return
+
+        self.open_ssh_connection(manager_node, self.cdh_config.SSH_USERNAME)
+        try:
+            log = self.execute_command('sudo cat /var/log/cloudera-scm-server/'
+                                       'cloudera-scm-server.log')[1]
+        finally:
+            self.close_ssh_connection()
+
+        print("\n\nCLOUDERA MANAGER LOGS\n\n")
+        print(log)
+        print("\n\nEND OF CLOUDERA MANAGER LOGS\n\n")
+
     def tearDown(self):
+        if not self._success:
+            self.print_manager_log()
+
         self.delete_objects(self.cluster_id, self.cluster_template_id,
                             self.ng_template_ids)
         super(CDHGatingTest, self).tearDown()
