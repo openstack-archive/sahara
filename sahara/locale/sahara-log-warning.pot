@@ -6,9 +6,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: sahara 2014.2.dev118.g44f37ef\n"
+"Project-Id-Version: sahara 2015.1.dev159.g1d23159\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2014-08-22 06:11+0000\n"
+"POT-Creation-Date: 2014-11-11 06:12+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,12 +17,12 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 1.3\n"
 
-#: sahara/context.py:50
+#: sahara/context.py:49
 #, python-format
 msgid "Arguments dropped when creating context: %s"
 msgstr ""
 
-#: sahara/main.py:79
+#: sahara/main.py:86
 msgid ""
 "Distributed mode is in the alpha state, it's recommended to use all-in-"
 "one mode by running 'sahara-all' binary."
@@ -37,24 +37,29 @@ msgstr ""
 msgid "task %(func_name)s run outlasted interval by %(delay).2f sec"
 msgstr ""
 
-#: sahara/plugins/hdp/versions/version_1_3_2/versionhandler.py:363
-#: sahara/plugins/hdp/versions/version_2_0_6/versionhandler.py:358
+#: sahara/openstack/common/policy.py:248
+#, python-format
+msgid "Can not find policy directories %s"
+msgstr ""
+
+#: sahara/plugins/hdp/versions/version_1_3_2/versionhandler.py:376
+#: sahara/plugins/hdp/versions/version_2_0_6/versionhandler.py:361
 msgid "Finalizing of Ambari cluster state failed. {0}"
 msgstr ""
 
-#: sahara/plugins/hdp/versions/version_2_0_6/services.py:924
+#: sahara/plugins/hdp/versions/version_2_0_6/services.py:927
 msgid "Missing configuration named {0}, aborting Hue ini file creation"
 msgstr ""
 
-#: sahara/plugins/hdp/versions/version_2_0_6/services.py:1024
+#: sahara/plugins/hdp/versions/version_2_0_6/services.py:1027
 msgid "Missing source configuration property set, aborting merge: {0}"
 msgstr ""
 
-#: sahara/plugins/hdp/versions/version_2_0_6/services.py:1027
+#: sahara/plugins/hdp/versions/version_2_0_6/services.py:1030
 msgid "Missing destination configuration property set, aborting merge: {0}"
 msgstr ""
 
-#: sahara/plugins/hdp/versions/version_2_0_6/services.py:1038
+#: sahara/plugins/hdp/versions/version_2_0_6/services.py:1041
 #, python-format
 msgid ""
 "Overwriting existing configuration property in %(dst_config_name)s from "
@@ -72,35 +77,35 @@ msgstr ""
 msgid "Plugin received wrong applicable target '%s' for xml configs"
 msgstr ""
 
-#: sahara/service/direct_engine.py:311
+#: sahara/service/direct_engine.py:467
 #, python-format
 msgid ""
 "Attempted to delete non-existent floating IP in pool %(pool)s from "
 "instance %(instance)s"
 msgstr ""
 
-#: sahara/service/direct_engine.py:319
+#: sahara/service/direct_engine.py:475
 #, python-format
 msgid "Detaching volumes from instance %s failed"
 msgstr ""
 
-#: sahara/service/direct_engine.py:325
+#: sahara/service/direct_engine.py:481
 #, python-format
 msgid "Attempted to delete non-existent instance %s"
 msgstr ""
 
-#: sahara/service/engine.py:173
+#: sahara/service/engine.py:180
 msgid ""
 "Presumably the operation failed because the cluster was deleted by a user"
 " during the process."
 msgstr ""
 
-#: sahara/service/heat_engine.py:181
+#: sahara/service/heat_engine.py:184
 #, python-format
 msgid "Did not found stack for cluster %s"
 msgstr ""
 
-#: sahara/service/volumes.py:181
+#: sahara/service/volumes.py:193
 #, python-format
 msgid "Can't detach volume %(volume)s. Current status of volume: %(status)s"
 msgstr ""

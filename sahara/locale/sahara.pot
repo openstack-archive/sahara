@@ -6,9 +6,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: sahara 2015.1.dev125.g3926501\n"
+"Project-Id-Version: sahara 2015.1.dev159.g1d23159\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2014-10-27 06:13+0000\n"
+"POT-Creation-Date: 2014-11-11 06:12+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -116,6 +116,10 @@ msgstr ""
 #: sahara/exceptions.py:258
 #, python-format
 msgid "Operation timed out after %i second(s)"
+msgstr ""
+
+#: sahara/exceptions.py:273
+msgid "You are not authorized to complete this action."
 msgstr ""
 
 #: sahara/api/base.py:22
@@ -315,6 +319,28 @@ msgstr ""
 msgid "Unexpected argument for periodic task creation: %(arg)s."
 msgstr ""
 
+#: sahara/openstack/common/policy.py:97
+msgid "The JSON file that defines policies."
+msgstr ""
+
+#: sahara/openstack/common/policy.py:100
+msgid "Default rule. Enforced when a requested rule is not found."
+msgstr ""
+
+#: sahara/openstack/common/policy.py:104
+msgid "Directories where policy configuration files are stored"
+msgstr ""
+
+#: sahara/openstack/common/policy.py:119
+#, python-format
+msgid "Policy doesn't allow %s to be performed."
+msgstr ""
+
+#: sahara/openstack/common/policy.py:213
+#, python-format
+msgid "Rules must be an instance of dict or Rules, got %s instead"
+msgstr ""
+
 #: sahara/openstack/common/processutils.py:59
 msgid "Unexpected error while running command."
 msgstr ""
@@ -425,24 +451,24 @@ msgstr ""
 msgid "0 or 1"
 msgstr ""
 
-#: sahara/plugins/cdh/cloudera_utils.py:91
+#: sahara/plugins/cdh/cloudera_utils.py:93
 msgid "'cluster' or 'instance' argument missed"
 msgstr ""
 
-#: sahara/plugins/cdh/cloudera_utils.py:107
+#: sahara/plugins/cdh/cloudera_utils.py:109
 #, python-format
 msgid "Process %(process)s is not supported by CDH plugin"
 msgstr ""
 
-#: sahara/plugins/cdh/commands.py:73
+#: sahara/plugins/cdh/commands.py:81
 msgid "OS on image is not supported by CDH plugin"
 msgstr ""
 
-#: sahara/plugins/cdh/deploy.py:301
+#: sahara/plugins/cdh/deploy.py:303
 msgid "Cloudera agents failed to connect to Cloudera Manager"
 msgstr ""
 
-#: sahara/plugins/cdh/deploy.py:330
+#: sahara/plugins/cdh/deploy.py:333
 #, python-format
 msgid ""
 "Cloudera Manager failed to start in %(timeout)s minutes on node "
@@ -470,7 +496,7 @@ msgid ""
 "processes run in cluster"
 msgstr ""
 
-#: sahara/plugins/fake/plugin.py:26
+#: sahara/plugins/fake/plugin.py:30
 msgid ""
 "It's a fake plugin that aimed to work on the CirrOS images. It doesn't "
 "install Hadoop. It's needed to be able to test provisioning part of "
@@ -1131,16 +1157,16 @@ msgstr ""
 msgid "Was not able to find compute node topology for VM %s"
 msgstr ""
 
-#: sahara/utils/api.py:137
+#: sahara/utils/api.py:139
 msgid "Non-dict and non-empty kwargs passed to render"
 msgstr ""
 
-#: sahara/utils/api.py:159 sahara/utils/api.py:188
+#: sahara/utils/api.py:161 sahara/utils/api.py:190
 #, python-format
 msgid "Content type '%s' isn't supported"
 msgstr ""
 
-#: sahara/utils/api.py:184
+#: sahara/utils/api.py:186
 msgid "XML requests are not supported yet"
 msgstr ""
 
@@ -1180,19 +1206,29 @@ msgstr ""
 msgid "Unexpected results found when searching for user %s"
 msgstr ""
 
-#: sahara/utils/remote.py:134
+#: sahara/utils/remote.py:140
 msgid ""
 "Remote driver is not loaded. Most probably you see this error because you"
 " are running Sahara in distributed mode and it is broken.Try running "
 "sahara-all instead."
 msgstr ""
 
-#: sahara/utils/ssh_remote.py:401
+#: sahara/utils/ssh_remote.py:409
+#, python-format
+msgid "Unknown file mode %s"
+msgstr ""
+
+#: sahara/utils/ssh_remote.py:497
+#, python-format
+msgid "Invalid keyword in proxy_command: %s"
+msgstr ""
+
+#: sahara/utils/ssh_remote.py:584
 #, python-format
 msgid "Closing HTTP session for %(host)s:%(port)s"
 msgstr ""
 
-#: sahara/utils/ssh_remote.py:407
+#: sahara/utils/ssh_remote.py:590
 #, python-format
 msgid "Session for %(host)s:%(port)s not cached"
 msgstr ""
@@ -1244,13 +1280,8 @@ msgstr ""
 msgid "Failed to find stack %(stack)s"
 msgstr ""
 
-#: sahara/utils/openstack/neutron.py:79
+#: sahara/utils/openstack/neutron.py:70
 #, python-format
 msgid "Neutron router corresponding to network %s is not found"
-msgstr ""
-
-#: sahara/utils/openstack/neutron.py:198
-#, python-format
-msgid "Unknown file mode %s"
 msgstr ""
 

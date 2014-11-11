@@ -6,9 +6,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: sahara 2015.1.dev125.g3926501\n"
+"Project-Id-Version: sahara 2015.1.dev159.g1d23159\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2014-10-27 06:13+0000\n"
+"POT-Creation-Date: 2014-11-11 06:12+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -48,6 +48,16 @@ msgstr ""
 #: sahara/openstack/common/periodic_task.py:202
 #, python-format
 msgid "Error during %(full_task_name)s: %(e)s"
+msgstr ""
+
+#: sahara/openstack/common/policy.py:535 sahara/openstack/common/policy.py:815
+#, python-format
+msgid "Failed to understand rule %s"
+msgstr ""
+
+#: sahara/openstack/common/policy.py:545
+#, python-format
+msgid "No handler for matches of kind %s"
 msgstr ""
 
 #: sahara/plugins/cdh/validation.py:30
@@ -121,17 +131,17 @@ msgid ""
 "enter \"Decommissioned\" status."
 msgstr ""
 
-#: sahara/service/ops.py:148
+#: sahara/service/ops.py:153
 #, python-format
 msgid "Error during operating cluster '%(name)s' (reason: %(reason)s)"
 msgstr ""
 
-#: sahara/service/ops.py:167
+#: sahara/service/ops.py:172
 #, python-format
 msgid "Error during rollback of cluster '%(name)s' (reason: %(reason)s)"
 msgstr ""
 
-#: sahara/service/ops.py:299
+#: sahara/service/ops.py:304
 #, python-format
 msgid "Job execution %s can't be cancelled in time. Deleting it anyway."
 msgstr ""
@@ -180,7 +190,7 @@ msgstr ""
 msgid "Error during update job execution %(job)s: %(error)s"
 msgstr ""
 
-#: sahara/utils/api.py:202 sahara/utils/api.py:226
+#: sahara/utils/api.py:204 sahara/utils/api.py:228
 #, python-format
 msgid "Request aborted with status code %(code)s and message '%(message)s'"
 msgstr ""
@@ -190,7 +200,7 @@ msgstr ""
 msgid "No %(method)s method found implemented in %(class)s class"
 msgstr ""
 
-#: sahara/utils/ssh_remote.py:269
+#: sahara/utils/ssh_remote.py:256
 #, python-format
 msgid "Can't read file \"%s\""
 msgstr ""
