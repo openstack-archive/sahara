@@ -30,6 +30,6 @@ python-swiftclient>=2.2.0
 python-neutronclient>=2.3.6,<3
 python-heatclient>=0.2.9
 six>=1.7.0
-stevedore>=1.0.0  # Apache-2.0
+stevedore>=1.1.0  # Apache-2.0
 SQLAlchemy>=0.8.4,<=0.8.99,>=0.9.7,<=0.9.99
 WebOb>=1.2.3
