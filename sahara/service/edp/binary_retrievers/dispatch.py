@@ -25,6 +25,6 @@ def get_raw_binary(job_binary, proxy_configs=None):
         res = db.get_raw_data(context.ctx(), job_binary)
 
     if url.startswith(su.SWIFT_INTERNAL_PREFIX):
-        res = i_swift.get_raw_data(context.ctx(), job_binary, proxy_configs)
+        res = i_swift.get_raw_data(job_binary, proxy_configs)
 
     return res
