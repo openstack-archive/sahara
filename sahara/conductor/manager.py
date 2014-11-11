@@ -44,6 +44,7 @@ NODE_GROUP_DEFAULTS = {
     "security_groups": None,
     "auto_security_group": False,
     "availability_zone": None,
+    "is_proxy_gateway": False,
 }
 
 INSTANCE_DEFAULTS = {

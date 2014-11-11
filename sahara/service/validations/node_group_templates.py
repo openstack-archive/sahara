@@ -87,6 +87,9 @@ NODE_GROUP_TEMPLATE_SCHEMA = {
         "availability_zone": {
             "type": "string",
         },
+        "is_proxy_gateway": {
+            "type": "boolean"
+        },
     },
     "additionalProperties": False,
     "required": [

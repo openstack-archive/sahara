@@ -38,19 +38,20 @@ def start_subprocess():
                             stderr=subprocess.PIPE)
 
 
-def run_in_subprocess(proc, func, args=(), kwargs={}):
+def run_in_subprocess(proc, func, args=(), kwargs={}, interactive=False):
     try:
         pickle.dump(func, proc.stdin)
         pickle.dump(args, proc.stdin)
         pickle.dump(kwargs, proc.stdin)
         proc.stdin.flush()
 
-        result = pickle.load(proc.stdout)
+        if not interactive:
+            result = pickle.load(proc.stdout)
 
-        if 'exception' in result:
-            raise SubprocessException(result['exception'])
+            if 'exception' in result:
+                raise SubprocessException(result['exception'])
 
-        return result['output']
+            return result['output']
     finally:
         # NOTE(dmitryme): in openstack/common/processutils.py it
         # is suggested to sleep a little between calls to multiprocessing.
