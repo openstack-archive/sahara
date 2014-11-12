@@ -143,11 +143,11 @@ class ITestCase(testcase.WithAttributes, base.BaseTestCase):
     def create_node_group_template(self, name, plugin_config, description,
                                    node_processes, node_configs,
                                    volumes_per_node=0, volume_size=0,
-                                   floating_ip_pool=None):
+                                   floating_ip_pool=None, **kwargs):
         data = self.sahara.node_group_templates.create(
             name, plugin_config.PLUGIN_NAME, plugin_config.HADOOP_VERSION,
             self.flavor_id, description, volumes_per_node, volume_size,
-            node_processes, node_configs, floating_ip_pool)
+            node_processes, node_configs, floating_ip_pool, **kwargs)
         node_group_template_id = data.id
         return node_group_template_id
 
