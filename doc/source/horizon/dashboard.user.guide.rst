@@ -235,7 +235,7 @@ status of your job to see when it has completed its run
 
 Example Jobs
 ------------
-There are sample jobs located in the sahara repository. In this section, we
+There are sample jobs located in the Sahara repository. In this section, we
 will give a walkthrough on how to run those jobs via the Horizon UI. These steps
 assume that you already have a cluster up and running (in the "Active" state).
 
@@ -246,7 +246,7 @@ assume that you already have a cluster up and running (in the "Active" state).
     https://github.com/openstack/sahara/tree/master/etc/edp-examples/pig-job/data/input
     into swift
 
-    - Click on Projet/Object Store/Containers and create a container with any
+    - Click on Project/Object Store/Containers and create a container with any
       name ("samplecontainer" for our purposes here)
 
     - Click on Upload Object and give the object a name
