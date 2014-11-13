@@ -61,3 +61,7 @@ class AbstractVersionHandler(object):
     @abc.abstractmethod
     def get_edp_engine(self, cluster, job_type):
         return
+
+    @abc.abstractmethod
+    def get_open_ports(self, node_group):
+        return []

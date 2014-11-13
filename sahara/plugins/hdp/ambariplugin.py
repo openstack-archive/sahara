@@ -362,6 +362,11 @@ class AmbariPlugin(p.ProvisioningPluginBase):
             for server in servers:
                 server.configure_topology(topology_str)
 
+    def get_open_ports(self, node_group):
+        handler = self.version_factory.get_version_handler(
+            node_group.cluster.hadoop_version)
+        return handler.get_open_ports(node_group)
+
 
 class AmbariInfo(object):
     def __init__(self, host, port, user, password):

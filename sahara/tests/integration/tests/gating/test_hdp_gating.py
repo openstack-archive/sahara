@@ -73,7 +73,8 @@ class HDPGatingTest(cinder.CinderVolumeTest, edp.EDPTest,
                 volumes_size=volumes_size,
                 node_processes=self.hdp_config.WORKER_NODE_PROCESSES,
                 node_configs={},
-                floating_ip_pool=floating_ip_pool
+                floating_ip_pool=floating_ip_pool,
+                auto_security_group=True
             )
             node_group_template_id_list.append(node_group_template_tt_dn_id)
 
@@ -98,7 +99,9 @@ class HDPGatingTest(cinder.CinderVolumeTest, edp.EDPTest,
                         node_processes=self.hdp_config.MASTER_NODE_PROCESSES,
                         node_configs={},
                         floating_ip_pool=floating_ip_pool,
-                        count=1),
+                        count=1,
+                        auto_security_group=True
+                    ),
                     dict(
                         name='worker-node-tt-dn',
                         node_group_template_id=node_group_template_tt_dn_id,
