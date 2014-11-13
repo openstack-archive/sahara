@@ -509,3 +509,29 @@ def start_cluster(cluster):
         _configure_spark(cluster)
         spark = cm_cluster.get_service(cu.SPARK_SERVICE_NAME)
         cu.start_service(spark)
+
+
+def get_open_ports(node_group):
+    ports = [9000]  # for CM agent
+
+    ports_map = {
+        'MANAGER': [7180, 7182, 7183, 7432, 7184, 8084, 8086, 10101,
+                    9997, 9996, 8087, 9998, 9999, 8085, 9995, 9994],
+        'NAMENODE': [8020, 8022, 50070, 50470],
+        'SECONDARYNAMENODE': [50090, 50495],
+        'DATANODE': [50010, 1004, 50075, 1006, 50020],
+        'RESOURCEMANAGER': [8030, 8031, 8032, 8033, 8088],
+        'NODEMANAGER': [8040, 8041, 8042],
+        'JOBHISTORY': [10020, 19888],
+        'HIVEMETASTORE': [9083],
+        'HIVESERVER2': [10000],
+        'HUE_SERVER': [8888],
+        'OOZIE_SERVER': [11000, 11001],
+        'SPARK_YARN_HISTORY_SERVER': [18088]
+    }
+
+    for process in node_group.node_processes:
+        if process in ports_map:
+            ports.extend(ports_map[process])
+
+    return ports
