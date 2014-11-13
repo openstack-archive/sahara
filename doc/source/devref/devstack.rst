@@ -72,7 +72,7 @@ Ubuntu 12.04 system.
     SWIFT_REPLICAS=1
     SWIFT_DATA_DIR=$DEST/data
 
-    # Force checkout prerequsites
+    # Force checkout prerequisites
     # FORCE_PREREQ=1
 
     # keystone is now configured by default to use PKI as the token format which produces huge tokens.
