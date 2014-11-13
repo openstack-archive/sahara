@@ -21,6 +21,7 @@ from sahara import conductor as c
 from sahara import context
 from sahara import exceptions as exc
 from sahara.i18n import _
+from sahara.i18n import _LE
 from sahara.i18n import _LI
 from sahara.i18n import _LW
 from sahara.openstack.common import log as logging
@@ -450,12 +451,24 @@ class DirectEngine(e.Engine):
         if not node_group.auto_security_group:
             return
 
+        if not node_group.security_groups:
+            # node group has no security groups
+            # nothing to delete
+            return
+
         name = node_group.security_groups[-1]
 
         try:
-            nova.client().security_groups.delete(name)
+            client = nova.client().security_groups
+            security_group = client.get(name)
+            if (security_group.name !=
+                    g.generate_auto_security_group_name(node_group)):
+                LOG.warn(_LW("Auto security group for node group %s is not "
+                             "found"), node_group.name)
+                return
+            client.delete(name)
         except Exception:
-            LOG.exception("Failed to delete security group %s", name)
+            LOG.exception(_LE("Failed to delete security group %s"), name)
 
     def _shutdown_instance(self, instance):
         ctx = context.ctx()
