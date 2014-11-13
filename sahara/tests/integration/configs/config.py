@@ -203,7 +203,7 @@ VANILLA_CONFIG_OPTS = [
                 help='Names for namenode, tasktracker and datanode '
                      'processes.'),
     cfg.BoolOpt('SKIP_ALL_TESTS_FOR_PLUGIN',
-                default=False,
+                default=True,
                 help='If this flag is True, then all tests for Vanilla plugin '
                      'will be skipped.'),
     cfg.BoolOpt('SKIP_CINDER_TEST', default=False),
@@ -275,7 +275,7 @@ VANILLA_TWO_CONFIG_OPTS = [
                 default=[],
                 help='List of skipped EDP job types.'),
     cfg.BoolOpt('SKIP_ALL_TESTS_FOR_PLUGIN',
-                default=False,
+                default=True,
                 help='If this flag is True, then all tests for Vanilla plugin '
                      'will be skipped.'),
     cfg.BoolOpt('SKIP_CINDER_TEST', default=False),
@@ -365,7 +365,7 @@ CDH_CONFIG_OPTS = [
                 help='Names for namenode, nodemanager and datanode '
                      'processes.'),
     cfg.BoolOpt('SKIP_ALL_TESTS_FOR_PLUGIN',
-                default=False,
+                default=True,
                 help='If this flag is True, then all tests for CDH plugin '
                      'will be skipped.'),
     cfg.BoolOpt('SKIP_CINDER_TEST', default=False),
