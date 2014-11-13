@@ -55,7 +55,7 @@ For Vanilla Hadoop version 1.X.X:
   + Cluster can contain at most one jobtracker
   + Cluster can contain at most one oozie and this process is also required
     for EDP
-  + Cluster can't contain oozie without jobtraker
+  + Cluster can't contain oozie without jobtracker
   + Cluster can't have tasktracker nodes if it doesn't have jobtracker
 
 For Vanilla Hadoop version 2.X.X:
