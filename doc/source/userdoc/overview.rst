@@ -33,7 +33,7 @@ wants to launch a cluster.
 
 In the REST interface, templates have extended functionality. First you can
 specify node-scoped parameters here, they will work as a defaults for node
-groups. Also with the REST interface, during cluster creationm a user can override
+groups. Also with the REST interface, during cluster creation a user can override
 template parameters for both cluster and node groups.
 
 Provisioning Plugins
