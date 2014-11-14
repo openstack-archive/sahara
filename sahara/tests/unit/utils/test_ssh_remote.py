@@ -27,34 +27,6 @@ class TestEscapeQuotes(testtools.TestCase):
         self.assertEqual(s, r'echo \"\\\"Hello, world!\\\"\"')
 
 
-class TestHTTPRemoteWrapper(testtools.TestCase):
-    def test__get_adapters(self):
-        wrapper = ssh_remote.HTTPRemoteWrapper()
-        host1 = '127.0.0.1'
-        port1 = '9999'
-        proxy_command = ('ip netns exec qrouter-{router_id} nc {host} {port}'
-                         .format(router_id='fake', host=host1, port=port1))
-        expected_adapters = [
-            ssh_remote.ProxiedHTTPAdapter(proxy_command, host1, port1)]
-        # this should create an adapter and cache it
-        actual_adapters = wrapper._get_adapters(proxy_command,
-                                                host=host1, port=port1)
-        self.assertEqual(len(expected_adapters), len(actual_adapters))
-        self.assertEqual(expected_adapters[0].host,
-                         actual_adapters[0].host)
-        self.assertEqual(expected_adapters[0].port,
-                         actual_adapters[0].port)
-
-        # this should return all adapters for the host, which at this
-        # time only contains the single adapter
-        actual_adapters = wrapper._get_adapters(proxy_command, host=host1)
-        self.assertEqual(len(expected_adapters), len(actual_adapters))
-        self.assertEqual(expected_adapters[0].host,
-                         actual_adapters[0].host)
-        self.assertEqual(expected_adapters[0].port,
-                         actual_adapters[0].port)
-
-
 class FakeCluster(object):
     def __init__(self, priv_key):
         self.management_private_key = priv_key
