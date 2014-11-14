@@ -167,9 +167,12 @@ following content:
         "auto_security_group": true
     }
 
-Send POST requests to Sahara API to upload NodeGroup templates:
+Send POST requests to Sahara API to upload NodeGroup templates. Make sure that
+the ``SAHARA_URL`` is set:
 
 .. sourcecode:: console
+
+    $ export SAHARA_URL=http://127.0.0.1:8386/v1.1/$TENANT_ID
 
     $ http $SAHARA_URL/node-group-templates X-Auth-Token:$AUTH_TOKEN \
      < ng_master_template_create.json
