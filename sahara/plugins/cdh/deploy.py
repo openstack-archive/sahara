@@ -449,9 +449,9 @@ def _configure_swift_to_inst(instance):
         r.write_file_to(PATH_TO_CORE_SITE_XML, new_core_site, run_as_root=True)
 
 
-def _configure_hive(cluster):
-    server = pu.get_hive_server(cluster)
-    with server.remote() as r:
+def _put_hive_hdfs_xml(cluster):
+    servers = pu.get_hive_servers(cluster)
+    with servers[0].remote() as r:
         conf_path = edp_u.get_hive_shared_conf_path('hdfs')
         r.execute_command(
             'sudo su - -c "hadoop fs -mkdir -p %s" hdfs'
@@ -460,38 +460,11 @@ def _configure_hive(cluster):
             'sudo su - -c "hadoop fs -put /etc/hive/conf/hive-site.xml '
             '%s" hdfs' % conf_path)
 
+
+def _configure_hive(cluster):
     manager = pu.get_manager(cluster)
     with manager.remote() as r:
         db_helper.create_hive_database(cluster, r)
-
-    # Hive requires /tmp/hive-hive directory
-    namenode = pu.get_namenode(cluster)
-    with namenode.remote() as r:
-        r.execute_command(
-            'sudo su - -c "hadoop fs -mkdir -p /tmp/hive-hive" hdfs')
-        r.execute_command(
-            'sudo su - -c "hadoop fs -chown hive /tmp/hive-hive" hdfs')
-
-
-def _configure_spark(cluster):
-    spark = pu.get_spark_historyserver(cluster)
-    with spark.remote() as r:
-        r.execute_command(
-            'sudo su - -c "hdfs dfs -mkdir -p /user/spark/applicationHistory" '
-            'hdfs')
-        r.execute_command(
-            'sudo su - -c "hdfs dfs -mkdir -p /user/spark/share/lib" hdfs')
-        r.execute_command(
-            'sudo su - -c "hdfs dfs -put /usr/lib/spark/assembly/lib/'
-            'spark-assembly-hadoop* /user/spark/share/lib/spark-assembly.jar"'
-            ' hdfs')
-        r.execute_command(
-            'sudo su - -c "hdfs dfs -chown -R spark:spark /user/spark" hdfs')
-        r.execute_command(
-            'sudo su - -c "hdfs dfs -chmod 0751 /user/spark" hdfs')
-        r.execute_command(
-            'sudo su - -c "hdfs dfs -chmod 1777 /user/spark/'
-            'applicationHistory" hdfs')
 
 
 def _install_extjs(cluster):
@@ -509,49 +482,42 @@ def _install_extjs(cluster):
                 run_as_root=True)
 
 
+def _clean_deploy_cc(cluster):
+    # We need to disable Deploy Client Configuration in first_run.
+    instances = gu.get_instances(cluster)
+    for instance in instances:
+        with instance.remote() as r:
+            r.execute_command(
+                'cp `find /usr/ -name deploy-cc.sh` cc.sh')
+            r.execute_command('echo "#!/bin/bash\necho \$1" > cc1.sh')
+            r.execute_command(
+                'sudo cp cc1.sh `find /usr/ -name deploy-cc.sh`')
+
+
+def _restore_deploy_cc(cluster):
+    # Restore back the script after first_run.
+    instances = gu.get_instances(cluster)
+    for instance in instances:
+        with instance.remote() as r:
+            r.execute_command(
+                'sudo cp cc.sh `find /usr/ -name deploy-cc.sh`')
+
+
 def start_cluster(cluster):
-    cm_cluster = cu.get_cloudera_cluster(cluster)
+    _clean_deploy_cc(cluster)
 
-    if len(pu.get_zookeepers(cluster)) > 0:
-        zookeeper = cm_cluster.get_service(cu.ZOOKEEPER_SERVICE_NAME)
-        cu.start_service(zookeeper)
-
-    hdfs = cm_cluster.get_service(cu.HDFS_SERVICE_NAME)
-    cu.format_namenode(hdfs)
-    cu.start_service(hdfs)
-
-    yarn = cm_cluster.get_service(cu.YARN_SERVICE_NAME)
-    cu.create_yarn_job_history_dir(yarn)
-    cu.start_service(yarn)
-
-    oozie_inst = pu.get_oozie(cluster)
-    if oozie_inst:
+    if pu.get_oozie(cluster):
         _install_extjs(cluster)
-        oozie = cm_cluster.get_service(cu.OOZIE_SERVICE_NAME)
-        cu.create_oozie_db(oozie)
-        cu.install_oozie_sharelib(oozie)
-        cu.start_service(oozie)
 
     if pu.get_hive_metastore(cluster):
-        hive = cm_cluster.get_service(cu.HIVE_SERVICE_NAME)
         _configure_hive(cluster)
-        cu.create_hive_metastore_db(hive)
-        cu.create_hive_dirs(hive)
-        cu.start_service(hive)
 
-    if pu.get_hue(cluster):
-        hue = cm_cluster.get_service(cu.HUE_SERVICE_NAME)
-        cu.start_service(hue)
+    cu.first_run(cluster)
 
-    if pu.get_spark_historyserver(cluster):
-        _configure_spark(cluster)
-        spark = cm_cluster.get_service(cu.SPARK_SERVICE_NAME)
-        cu.start_service(spark)
+    if pu.get_hive_metastore(cluster):
+        _put_hive_hdfs_xml(cluster)
 
-    if pu.get_hbase_master(cluster):
-        hbase = cm_cluster.get_service(cu.HBASE_SERVICE_NAME)
-        cu.create_hbase_root(hbase)
-        cu.start_service(hbase)
+    _restore_deploy_cc(cluster)
 
 
 def get_open_ports(node_group):

@@ -53,8 +53,8 @@ def get_hive_metastore(cluster):
     return u.get_instance(cluster, 'HIVEMETASTORE')
 
 
-def get_hive_server(cluster):
-    return u.get_instance(cluster, 'HIVESERVER2')
+def get_hive_servers(cluster):
+    return u.get_instances(cluster, 'HIVESERVER2')
 
 
 def get_hue(cluster):
