@@ -72,7 +72,8 @@ def _update_job_status(engine, job_execution):
 
 
 def _update_job_execution_extra(cluster, job_execution):
-    if CONF.use_namespaces and not CONF.use_floating_ips:
+    if ((CONF.use_namespaces and not CONF.use_floating_ips) or
+            CONF.proxy_command):
         info = cluster.node_groups[0].instances[0].remote().get_neutron_info()
         extra = job_execution.extra.copy()
         extra['neutron'] = info
