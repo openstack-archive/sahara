@@ -423,3 +423,27 @@ class SparkProvider(p.ProvisioningPluginBase):
             return edp_engine.EdpEngine(cluster)
 
         return None
+
+    def get_open_ports(self, node_group):
+        cluster = node_group.cluster
+        ports_map = {
+            'namenode': [8020, 50070, 50470],
+            'datanode': [50010, 1004, 50075, 1006, 50020],
+            'master': [
+                int(c_helper.get_config_value("Spark", "Master port",
+                                              cluster)),
+                int(c_helper.get_config_value("Spark", "Master webui port",
+                                              cluster)),
+            ],
+            'slave': [
+                int(c_helper.get_config_value("Spark", "Worker webui port",
+                                              cluster))
+            ]
+        }
+
+        ports = []
+        for process in node_group.node_processes:
+            if process in ports_map:
+                ports.extend(ports_map[process])
+
+        return ports
