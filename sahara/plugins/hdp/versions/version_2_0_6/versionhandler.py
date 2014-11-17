@@ -114,6 +114,34 @@ class VersionHandler(avm.AbstractVersionHandler):
             return edp_engine.EdpOozieEngine(cluster)
         return None
 
+    def get_open_ports(self, node_group):
+        ports = [8660]  # for Ganglia
+
+        ports_map = {
+            'AMBARI_SERVER': [8080, 8440, 8441],
+            'NAMENODE': [50070, 50470, 8020, 9000],
+            'DATANODE': [50075, 50475, 50010, 8010],
+            'SECONDARY_NAMENODE': [50090],
+            'HISTORYSERVER': [19888],
+            'RESOURCEMANAGER': [8025, 8041, 8050],
+            'NODEMANAGER': [45454],
+            'HIVE_SERVER': [10000],
+            'HIVE_METASTORE': [9083],
+            'HBASE_MASTER': [60000, 60010],
+            'HBASE_REGIONSERVER': [60020, 60030],
+            'WEBHCAT_SERVER': [50111],
+            'GANGLIA_SERVER': [8661, 8662, 8663, 8651],
+            'MYSQL_SERVER': [3306],
+            'OOZIE_SERVER': [11000, 11001],
+            'ZOOKEEPER_SERVER': [2181, 2888, 3888],
+            'NAGIOS_SERVER': [80]
+        }
+        for process in node_group.node_processes:
+            if process in ports_map:
+                ports.extend(ports_map[process])
+
+        return ports
+
 
 class AmbariClient(object):
 

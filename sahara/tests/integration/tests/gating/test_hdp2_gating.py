@@ -57,6 +57,9 @@ class HDP2GatingTest(swift.SwiftTest, scaling.ScalingTest,
             'description': 'test node group template for HDP plugin',
             'node_processes': self.hdp2_config.MASTER_NODE_PROCESSES,
             'floating_ip_pool': self.floating_ip_pool,
+            # TODO(sreshetniak): Enable auto security group when #1392738 is
+            # resolved
+            'auto_security_group': False,
             'node_configs': {}
         }
         self.ng_tmpl_rm_nn_id = self.create_node_group_template(**template)
@@ -70,6 +73,9 @@ class HDP2GatingTest(swift.SwiftTest, scaling.ScalingTest,
             'description': 'test node group template for HDP plugin',
             'node_processes': self.hdp2_config.WORKER_NODE_PROCESSES,
             'floating_ip_pool': self.floating_ip_pool,
+            # TODO(sreshetniak): Enable auto security group when #1392738 is
+            # resolved
+            'auto_security_group': False,
             'node_configs': {}
         }
         self.ng_tmpl_nm_dn_id = self.create_node_group_template(**template)
