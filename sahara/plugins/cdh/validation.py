@@ -116,6 +116,21 @@ def validate_cluster_creating(cluster):
         raise ex.RequiredServiceMissingException(
             'HIVEMETASTORE', required_by='HUE_SERVER')
 
+    hbm_count = _get_inst_count(cluster, 'MASTER')
+    hbr_count = _get_inst_count(cluster, 'REGIONSERVER')
+    zk_count = _get_inst_count(cluster, 'SERVER')
+
+    if hbm_count >= 1:
+        if zk_count < 1:
+            raise ex.RequiredServiceMissingException('ZOOKEEPER',
+                                                     required_by='HBASE')
+        if hbr_count < 1:
+            raise ex.InvalidComponentCountException('REGIONSERVER',
+                                                    _('at least 1'), hbr_count)
+    elif hbr_count >= 1:
+        raise ex.InvalidComponentCountException('MASTER',
+                                                _('at least 1'), hbm_count)
+
 
 def validate_additional_ng_scaling(cluster, additional):
     rm = cu.get_resourcemanager(cluster)

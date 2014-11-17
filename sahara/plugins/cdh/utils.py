@@ -62,3 +62,7 @@ def get_spark_historyserver(cluster):
 
 def get_zookeepers(cluster):
     return u.get_instances(cluster, 'SERVER')
+
+
+def get_hbase_master(cluster):
+    return u.get_instance(cluster, 'MASTER')
