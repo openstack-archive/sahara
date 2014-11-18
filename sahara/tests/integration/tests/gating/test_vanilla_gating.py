@@ -64,6 +64,7 @@ class VanillaGatingTest(cinder.CinderVolumeTest,
             'description': 'test node group template for Vanilla 1 plugin',
             'node_processes': ['tasktracker', 'datanode'],
             'floating_ip_pool': self.floating_ip_pool,
+            'auto_security_group': True,
             'node_configs': {
                 'HDFS': cluster_configs.DN_CONFIG,
                 'MapReduce': cluster_configs.TT_CONFIG
@@ -83,6 +84,7 @@ class VanillaGatingTest(cinder.CinderVolumeTest,
             'volumes_size': self.volumes_size,
             'node_processes': ['tasktracker'],
             'floating_ip_pool': self.floating_ip_pool,
+            'auto_security_group': True,
             'node_configs': {
                 'MapReduce': cluster_configs.TT_CONFIG
             }
@@ -101,6 +103,7 @@ class VanillaGatingTest(cinder.CinderVolumeTest,
             'volumes_size': self.volumes_size,
             'node_processes': ['datanode'],
             'floating_ip_pool': self.floating_ip_pool,
+            'auto_security_group': True,
             'node_configs': {
                 'HDFS': cluster_configs.DN_CONFIG
             }
@@ -129,6 +132,7 @@ class VanillaGatingTest(cinder.CinderVolumeTest,
                     'flavor_id': self.flavor_id,
                     'node_processes': ['namenode', 'jobtracker'],
                     'floating_ip_pool': self.floating_ip_pool,
+                    'auto_security_group': True,
                     'node_configs': {
                         'HDFS': cluster_configs.NN_CONFIG,
                         'MapReduce': cluster_configs.JT_CONFIG
@@ -140,6 +144,7 @@ class VanillaGatingTest(cinder.CinderVolumeTest,
                     'flavor_id': self.flavor_id,
                     'node_processes': ['secondarynamenode', 'oozie'],
                     'floating_ip_pool': self.floating_ip_pool,
+                    'auto_security_group': True,
                     'node_configs': {
                         'HDFS': cluster_configs.SNN_CONFIG,
                         'JobFlow': cluster_configs.OOZIE_CONFIG

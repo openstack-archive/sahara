@@ -83,6 +83,7 @@ class VanillaTwoGatingTest(cluster_configs.ClusterConfigTest,
             'description': 'test node group template for Vanilla plugin',
             'node_processes': ['nodemanager', 'datanode'],
             'floating_ip_pool': self.floating_ip_pool,
+            'auto_security_group': True,
             'node_configs': self.ng_params
         }
         self.ng_tmpl_nm_dn_id = self.create_node_group_template(**template)
@@ -98,6 +99,7 @@ class VanillaTwoGatingTest(cluster_configs.ClusterConfigTest,
             'volumes_size': self.volumes_size,
             'node_processes': ['nodemanager'],
             'floating_ip_pool': self.floating_ip_pool,
+            'auto_security_group': True,
             'node_configs': self.ng_params
         }
         self.ng_tmpl_nm_id = self.create_node_group_template(**template)
@@ -113,6 +115,7 @@ class VanillaTwoGatingTest(cluster_configs.ClusterConfigTest,
             'volumes_size': self.volumes_size,
             'node_processes': ['datanode'],
             'floating_ip_pool': self.floating_ip_pool,
+            'auto_security_group': True,
             'node_configs': self.ng_params
         }
         self.ng_tmpl_dn_id = self.create_node_group_template(**template)
@@ -135,6 +138,7 @@ class VanillaTwoGatingTest(cluster_configs.ClusterConfigTest,
                     'flavor_id': self.flavor_id,
                     'node_processes': ['namenode', 'resourcemanager'],
                     'floating_ip_pool': self.floating_ip_pool,
+                    'auto_security_group': True,
                     'count': 1,
                     'node_configs': self.ng_params
                 },
@@ -144,6 +148,7 @@ class VanillaTwoGatingTest(cluster_configs.ClusterConfigTest,
                     'node_processes': ['oozie', 'historyserver',
                                        'secondarynamenode'],
                     'floating_ip_pool': self.floating_ip_pool,
+                    'auto_security_group': True,
                     'count': 1,
                     'node_configs': self.ng_params
                 },
