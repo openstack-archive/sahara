@@ -36,10 +36,12 @@ class BaseClusterConfigurerTest(b.SaharaTestCase):
         for a in actual:
             self.assertIn(a, expected)
 
+    @m.patch('sahara.utils.openstack.base.url_for')
     @m.patch('sahara.context.ctx')
     @m.patch('sahara.plugins.mapr.util.config.is_data_locality_enabled')
     @m.patch('sahara.plugins.mapr.util.config_file_utils.to_file_content')
-    def test_configure_wo_generals(self, tfc_mock, gtm_mock, cc_mock):
+    def test_configure_wo_generals(self, tfc_mock, gtm_mock, cc_mock,
+                                   url_for_mock):
         def to_file_content(*args, **kargs):
             data = args[0]
             if isinstance(data, dict):
@@ -49,9 +51,10 @@ class BaseClusterConfigurerTest(b.SaharaTestCase):
                 return {None: data}
         tfc_mock.side_effect = to_file_content
         gtm_mock.return_value = False
-        cc_mock.return_value = s.AttrDict(auth_uri='http://auth',
-                                          tenant_name='tenant_0',
-                                          tenant_id='tenant_id')
+        url_for_mock.return_value = 'http://auth'
+        cc_mock.return_value = s.AttrDict(tenant_name='tenant_0',
+                                          tenant_id='tenant_id',
+                                          service_catalog=None)
 
         i0 = s.Instance(instance_name='i0',
                         management_ip='192.168.1.10',
@@ -111,12 +114,13 @@ class BaseClusterConfigurerTest(b.SaharaTestCase):
         self.assertItemsEqual(i2.remote().fs, [core_site, cldb,
                                                hadoop_v])
 
+    @m.patch('sahara.utils.openstack.base.url_for')
     @m.patch('sahara.context.ctx')
     @m.patch('sahara.plugins.mapr.util.config.is_data_locality_enabled')
     @m.patch('sahara.topology.topology_helper.generate_topology_map')
     @m.patch('sahara.plugins.mapr.util.config_file_utils.to_file_content')
     def test_configure_with_topology(self, tfc_mock, gtm_mock,
-                                     dle_mock, cc_mock):
+                                     dle_mock, cc_mock, url_for_mock):
         def to_file_content(*args, **kargs):
             data = args[0]
             if isinstance(data, dict):
@@ -132,9 +136,10 @@ class BaseClusterConfigurerTest(b.SaharaTestCase):
                                  '10.10.1.11': 'r',
                                  'i2': 'r', '192.168.1.12': 'r',
                                  '10.10.1.12': 'r'}
-        cc_mock.return_value = s.AttrDict(auth_uri='http://auth',
-                                          tenant_name='tenant_0',
-                                          tenant_id='tenant_id')
+        url_for_mock.return_value = 'http://auth'
+        cc_mock.return_value = s.AttrDict(tenant_name='tenant_0',
+                                          tenant_id='tenant_id',
+                                          service_catalog=None)
 
         i0 = s.Instance(instance_name='i0',
                         management_ip='192.168.1.10',
