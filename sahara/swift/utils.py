@@ -17,6 +17,7 @@ from oslo.config import cfg
 from six.moves.urllib import parse as urlparse
 
 from sahara import context
+from sahara.utils.openstack import base as clients_base
 from sahara.utils.openstack import keystone as k
 
 
@@ -32,7 +33,9 @@ def retrieve_auth_url():
 
     Hadoop Swift library doesn't support keystone v3 api.
     """
-    info = urlparse.urlparse(context.current().auth_uri)
+    auth_url = clients_base.url_for(context.current().service_catalog,
+                                    'identity')
+    info = urlparse.urlparse(auth_url)
 
     if CONF.use_domain_for_proxy_users:
         url = 'v3/auth'
