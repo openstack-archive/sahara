@@ -16,6 +16,7 @@
 import mock
 import pkg_resources as pkg
 
+from sahara.conductor import resource as rsc
 from sahara.plugins import exceptions as ex
 from sahara.plugins.hdp import clusterspec as cs
 from sahara.plugins.hdp.versions.version_2_0_6 import services as s2
@@ -1177,6 +1178,92 @@ class ClusterSpecTestForHDP2(sahara_base.SaharaTestCase):
             # expected
             pass
 
+    def test_validate_hdfs_ha(self, patched):
+        server1 = base.TestServer('host1', 'slave', '11111', 3,
+                                  '111.11.1111', '222.22.2222')
+        server2 = base.TestServer('host2', 'master', '11112', 3,
+                                  '111.11.1112', '222.22.2223')
+        server3 = base.TestServer('host3', 'master', '11113', 3,
+                                  '111.11.1113', '222.22.2224')
+
+        node_group1 = TestNodeGroup(
+            'slave', [server1], ["DATANODE", "NODEMANAGER", "HDFS_CLIENT",
+                                 "MAPREDUCE2_CLIENT"], 1)
+        node_group2 = TestNodeGroup(
+            'master1', [server2], ["NAMENODE", "ZOOKEEPER_SERVER",
+                                   "JOURNALNODE"], 1)
+        node_group3 = TestNodeGroup(
+            'master2', [server3], ["RESOURCEMANAGER", "HISTORYSERVER",
+                                   "ZOOKEEPER_SERVER", "AMBARI_SERVER",
+                                   "JOURNALNODE"], 1)
+
+        # Setup a cluster_configs resource with HDFS HA ON
+        cc = {'HDFSHA': {'hdfs.nnha': True}}
+        cc_r = rsc.Resource(cc)
+        cluster_config = base.create_clusterspec(hdp_version='2.0.6')
+
+        # Test namenodes
+        cluster1 = base.TestCluster([node_group1, node_group2, node_group3],
+                                    cc_r)
+        # should fail due to missing second namenode
+        self.assertRaises(ex.NameNodeHAConfigurationError,
+                          cluster_config.create_operational_config,
+                          cluster1, [])
+
+        # Test Journalnodes
+        node_group2 = TestNodeGroup(
+            'master1', [server2], ["NAMENODE", "ZOOKEEPER_SERVER"], 2)
+        cluster1 = base.TestCluster([node_group1, node_group2, node_group3],
+                                    cc_r)
+        # should fail due to missing odd number greater than 3 of journalnodes
+        self.assertRaises(ex.NameNodeHAConfigurationError,
+                          cluster_config.create_operational_config,
+                          cluster1, [])
+
+        # Test zookeepers
+        node_group2 = TestNodeGroup(
+            'master1', [server2], ["NAMENODE", "JOURNALNODE"], 2)
+        cluster1 = base.TestCluster([node_group1, node_group2, node_group3],
+                                    cc_r)
+        # should fail due to missing odd number greater than 3 of zookeepers
+        self.assertRaises(ex.NameNodeHAConfigurationError,
+                          cluster_config.create_operational_config,
+                          cluster1, [])
+
+        # should validate successfully now
+        node_group2 = TestNodeGroup(
+            'master1', [server2], ["NAMENODE", "JOURNALNODE",
+                                   "ZOOKEEPER_SERVER"], 2)
+        cluster1 = base.TestCluster([node_group1, node_group2, node_group3],
+                                    cc_r)
+        cluster_config.create_operational_config(cluster1, [])
+
+        # Test when HDFS HA disabled
+        cc = {'HDFSHA': {'hdfs.nnha': False}}
+        cc_r = rsc.Resource(cc)
+
+        node_group2 = TestNodeGroup(
+            'master1', [server2], ["NAMENODE", "JOURNALNODE",
+                                   "ZOOKEEPER_SERVER"], 1)
+        cluster1 = base.TestCluster([node_group1, node_group2, node_group3],
+                                    cc_r)
+
+        # should fail due to using journalnode in non HDFS HA case
+        self.assertRaises(ex.NameNodeHAConfigurationError,
+                          cluster_config.create_operational_config,
+                          cluster1, [])
+
+        node_group2 = TestNodeGroup(
+            'master1', [server2], ["NAMENODE", "ZKFC", "ZOOKEEPER_SERVER"], 1)
+
+        cluster1 = base.TestCluster([node_group1, node_group2, node_group3],
+                                    cc_r)
+
+        # should fail due to using zkfc in non HDFS HA case
+        self.assertRaises(ex.NameNodeHAConfigurationError,
+                          cluster_config.create_operational_config,
+                          cluster1, [])
+
     def test_validate_yarn(self, patched):
         server = base.TestServer('host1', 'slave', '11111', 3,
                                  '111.11.1111', '222.22.2222')
@@ -1725,7 +1812,7 @@ class ClusterSpecTestForHDP2(sahara_base.SaharaTestCase):
         for component in service.components:
             found_components[component.name] = component
 
-        self.assertEqual(4, len(found_components))
+        self.assertEqual(6, len(found_components))
         self._assert_component('NAMENODE', 'MASTER', "1",
                                found_components['NAMENODE'])
         self._assert_component('DATANODE', 'SLAVE', "1+",
@@ -1734,6 +1821,10 @@ class ClusterSpecTestForHDP2(sahara_base.SaharaTestCase):
                                found_components['SECONDARY_NAMENODE'])
         self._assert_component('HDFS_CLIENT', 'CLIENT', "1+",
                                found_components['HDFS_CLIENT'])
+        self._assert_component('JOURNALNODE', 'MASTER', "1+",
+                               found_components['JOURNALNODE'])
+        self._assert_component('ZKFC', 'MASTER', "1+",
+                               found_components['ZKFC'])
         # TODO(jspeidel) config
 
     def _assert_mrv2(self, service):
@@ -1899,7 +1990,7 @@ class ClusterSpecTestForHDP2(sahara_base.SaharaTestCase):
         self.assertEqual(cardinality, component.cardinality)
 
     def _assert_configurations(self, configurations):
-        self.assertEqual(16, len(configurations))
+        self.assertEqual(17, len(configurations))
         self.assertIn('global', configurations)
         self.assertIn('core-site', configurations)
         self.assertIn('yarn-site', configurations)
@@ -1916,6 +2007,7 @@ class ClusterSpecTestForHDP2(sahara_base.SaharaTestCase):
         self.assertIn('hue-hdfs-site', configurations)
         self.assertIn('hue-webhcat-site', configurations)
         self.assertIn('hue-oozie-site', configurations)
+        self.assertIn('hdfsha', configurations)
 
 
 class TestNodeGroup(object):

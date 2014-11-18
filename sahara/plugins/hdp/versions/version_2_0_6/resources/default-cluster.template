@@ -44,6 +44,16 @@
           "name" : "HDFS_CLIENT",
           "type" : "CLIENT",
           "cardinality" : "1+"
+        },
+        {
+          "name" : "JOURNALNODE",
+          "type" : "MASTER",
+          "cardinality" : "1+"
+        },
+        {
+          "name" : "ZKFC",
+          "type" : "MASTER",
+          "cardinality" : "1+"
         }
       ],
       "configurations" : [
@@ -1824,6 +1834,12 @@
         { "name": "oozie.service.ProxyUserService.proxyuser.hue.hosts", "value": "*" },
         { "name": "oozie.service.ProxyUserService.proxyuser.hue.groups", "value": "*" }
       ]
+    },
+    {
+      "name" : "hdfsha",
+      "properties" : [
+        { "name": "hdfs.nnha", "value": "false"}
+     ]
     }
   ]
 }

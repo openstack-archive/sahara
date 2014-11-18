@@ -85,6 +85,38 @@ tags: 'hdp' and '<hdp version>' (e.g. '1.3.2').
 Also in the Image Registry you will need to specify username for an image.
 The username specified should be 'cloud-user'.
 
+HDFS NameNode High Availability
+-------------------------------
+HDFS NameNode High Availability (Using the Quorum Journal Manager) can be deployed
+automatically with HDP 2.0.6. Currently the only way to deploy it is through the
+command line client (python-saharaclient) or Sahara REST API by simply adding the
+following cluster_configs parameter in the cluster's JSON :
+
+.. sourcecode:: cfg
+        "cluster_configs": {
+                "HDFSHA": {
+                        "hdfs.nnha": true
+                }
+        }
+
+Support for deploying the NameNode High Availability through Sahara Dashboard
+will be added in the future.
+
+The NameNode High Availability is deployed using 2 NameNodes, one active and
+one standby. The NameNodes use a set of JOURNALNODES and ZOOKEEPER_SERVERS to
+ensure the necessary synchronization.
+
+A typical Highly available HDP 2.0.6 cluster uses 2 separate NameNodes, at least 3
+JOURNALNODES and at least 3 ZOOKEEPER_SERVERS.
+
+When HDFS NameNode High Availability is enabled, the plugin will perform the
+following additional validations:
+
+* Ensure the existence of 2 NAMENODES processes in the cluster
+* Ensure the existence of at least 3 JOURNALNODES processes in the cluster
+* Ensure the existence of at least 3 ZOOKEEPER_SERVERS processes in the cluster
+
+
 Limitations
 -----------
 The HDP plugin currently has the following limitations:

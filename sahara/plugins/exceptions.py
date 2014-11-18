@@ -98,3 +98,18 @@ class HadoopProvisionError(e.SaharaException):
         self.message = self.base_message % message
 
         super(HadoopProvisionError, self).__init__()
+
+
+class NameNodeHAConfigurationError(e.SaharaException):
+    """Exception indicating that hdp-2.0.6 HDFS HA failed.
+
+    A message indicating the reason for failure must be provided.
+    """
+
+    base_message = _("NameNode High Availability: %s")
+
+    def __init__(self, message):
+        self.code = "NAMENODE_HIGHAVAILABILITY_CONFIGURATION_FAILED"
+        self.message = self.base_message % message
+
+        super(NameNodeHAConfigurationError, self).__init__()

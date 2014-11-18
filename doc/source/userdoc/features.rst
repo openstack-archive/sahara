@@ -193,6 +193,24 @@ Sahara supports multi region deployment. In this case, each instance of Sahara
 should have the ``os_region_name=<region>`` property set in the
 configuration file.
 
+Hadoop HDFS High Availability
+-----------------------------
+Hadoop HDFS High Availability (HDFS HA) uses 2 Namenodes in an active/standby
+architecture to ensure that HDFS will continue to work even when the active namenode fails.
+The High Availability is achieved by using a set of JournalNodes and Zookeeper servers along
+with ZooKeeper Failover Controllers (ZKFC) and some additional configurations and changes to
+HDFS and other services that use HDFS.
+
+Currently HDFS HA is only supported with the HDP 2.0.6 plugin. The feature is enabled through
+a cluster_configs parameter in the cluster's JSON:
+
+.. sourcecode:: cfg
+        "cluster_configs": {
+                "HDFSHA": {
+                        "hdfs.nnha": true
+                }
+        }
+
 Plugin Capabilities
 -------------------
 The below tables provides a plugin capability matrix:

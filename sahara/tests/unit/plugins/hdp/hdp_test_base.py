@@ -60,10 +60,13 @@ class InstanceInfo(object):
 
 
 class TestCluster(object):
-    def __init__(self, node_groups):
+    def __init__(self, node_groups, cluster_configs=None):
         self.plugin_name = 'hdp'
         self.hadoop_version = None
-        self.cluster_configs = {}
+        if cluster_configs:
+            self.cluster_configs = cluster_configs
+        else:
+            self.cluster_configs = {}
         self.node_groups = node_groups
         self.default_image_id = '11111'
 

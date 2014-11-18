@@ -198,6 +198,49 @@ class HadoopServer(object):
         # running)
         r.execute_command('ambari-agent restart', run_as_root=True)
 
+    @saharautils.inject_remote('r')
+    def set_namenode_safemode(self, jh, r):
+        r.execute_command("sudo su -l hdfs -c 'JAVA_HOME={0} "
+                          "hdfs dfsadmin -safemode enter'".format(jh),
+                          run_as_root=True)
+
+    @saharautils.inject_remote('r')
+    def save_namenode_namespace(self, jh, r):
+        r.execute_command("sudo su -l hdfs -c 'JAVA_HOME={0} "
+                          "hdfs dfsadmin -saveNamespace'".format(jh),
+                          run_as_root=True)
+
+    @saharautils.inject_remote('r')
+    def initialize_shared_edits(self, jh, r):
+        r.execute_command("sudo su -l hdfs -c 'JAVA_HOME={0} "
+                          "hdfs namenode -initializeSharedEdits'".format(jh),
+                          run_as_root=True)
+
+    @saharautils.inject_remote('r')
+    def format_zookeeper_fc(self, jh, r):
+        r.execute_command("sudo su -l hdfs -c 'JAVA_HOME={0} "
+                          "hdfs zkfc -formatZK'".format(jh),
+                          run_as_root=True)
+
+    @saharautils.inject_remote('r')
+    def bootstrap_standby_namenode(self, jh, r):
+        r.execute_command("sudo su -l hdfs -c 'JAVA_HOME={0} "
+                          "hdfs namenode -bootstrapStandby'".format(jh),
+                          run_as_root=True)
+
+    @saharautils.inject_remote('r')
+    def install_httpfs(self, r):
+        r.execute_command("yum -y install hadoop-httpfs", run_as_root=True)
+
+    @saharautils.inject_remote('r')
+    def start_httpfs(self, r):
+        r.execute_command("service hadoop-httpfs start", run_as_root=True)
+
+    @saharautils.inject_remote('r')
+    def write_hue_temp_file(self, filename, content, r):
+        r.execute_command("echo %s > %s" % (content, filename),
+                          run_as_root=True)
+
     def _log(self, buf):
         LOG.debug(buf)
 

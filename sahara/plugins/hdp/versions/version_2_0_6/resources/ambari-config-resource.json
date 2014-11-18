@@ -3517,6 +3517,20 @@
                     "scope": "cluster"
                 }
             ]
+        },
+        {
+            "tag": "hdfsha",
+            "properties": [
+                {
+                    "applicable_target": "HDFSHA",
+                    "config_type": "boolean",
+                    "default_value": false,
+                    "description": "Enable HDFS NameNode High Availability",
+                    "is_optional": true,
+                    "name": "hdfs.nnha",
+                    "scope": "cluster"
+                }
+            ]
         }
     ]
 }

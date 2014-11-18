@@ -112,6 +112,14 @@ class ClusterSpec(object):
 
         return components
 
+    def is_hdfs_ha_enabled(self, cluster):
+        if self.version == '2.0.6':
+            if cluster.cluster_configs.get('HDFSHA', False):
+                if cluster.cluster_configs.HDFSHA.get('hdfs.nnha',
+                                                      False) is True:
+                    return True
+        return False
+
     def _parse_services(self, template_json):
         handler = (vhf.VersionHandlerFactory.get_instance().
                    get_version_handler(self.version))
