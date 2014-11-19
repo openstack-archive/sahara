@@ -37,7 +37,8 @@ rest = u.Rest('v10', __name__)
 @rest.get('/clusters')
 @acl.enforce("clusters:get_all")
 def clusters_list():
-    return u.render(clusters=[c.to_dict() for c in api.get_clusters()])
+    return u.render(clusters=[c.to_dict() for c in api.get_clusters(
+        **u.get_request_args().to_dict())])
 
 
 @rest.post('/clusters')
