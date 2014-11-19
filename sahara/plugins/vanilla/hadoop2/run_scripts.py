@@ -148,7 +148,7 @@ def await_datanodes(cluster):
         while True:
             if _check_datanodes_count(r, datanodes_count):
                 LOG.info(
-                    _LI('Datanodes on cluster %s has been started'),
+                    _LI('Datanodes on cluster %s have been started'),
                     cluster.name)
                 return
 
