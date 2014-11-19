@@ -81,7 +81,8 @@ def _attach_volumes_to_node(node_group, instance):
 
     _await_attach_volumes(instance, devices)
 
-    _mount_volumes_to_node(instance, devices)
+    for idx in range(0, instance.node_group.volumes_per_node):
+        _mount_volume_to_node(instance, idx, devices[idx])
 
 
 def _create_attach_volume(ctx, instance, size, volume_type, name=None,
@@ -127,8 +128,13 @@ def _count_attached_devices(instance, devices):
 def mount_to_instances(instances):
     with context.ThreadGroup() as tg:
         for instance in instances:
-            tg.spawn('mount-volumes-to-node-%s' % instance.instance_name,
-                     _mount_volumes_to_node, instance)
+            devices = _find_instance_volume_devices(instance)
+            # Since formating can take several minutes (for large disks) and
+            # can be done in parallel, launch one thread per disk.
+            for idx in range(0, instance.node_group.volumes_per_node):
+                tg.spawn('mount-volume-%d-to-node-%s' %
+                         (idx, instance.instance_name),
+                         _mount_volume_to_node, instance, idx, devices[idx])
 
 
 def _find_instance_volume_devices(instance):
@@ -137,18 +143,12 @@ def _find_instance_volume_devices(instance):
     return devices
 
 
-def _mount_volumes_to_node(instance, devices=None):
-    if devices is None:
-        devices = _find_instance_volume_devices(instance)
-
-    ng = instance.node_group
-
-    for idx in range(0, ng.volumes_per_node):
-        LOG.debug("Mounting volume %s to instance %s" %
-                  (devices[idx], instance.instance_name))
-        mount_point = ng.storage_paths()[idx]
-        _mount_volume(instance, devices[idx], mount_point)
-        LOG.debug("Mounted volume to instance %s" % instance.instance_id)
+def _mount_volume_to_node(instance, idx, device):
+    LOG.debug("Mounting volume %s to instance %s" %
+              (device, instance.instance_name))
+    mount_point = instance.node_group.storage_paths()[idx]
+    _mount_volume(instance, device, mount_point)
+    LOG.debug("Mounted volume to instance %s" % instance.instance_id)
 
 
 def _mount_volume(instance, device_path, mount_point):
