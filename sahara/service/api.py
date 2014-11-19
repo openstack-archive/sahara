@@ -122,8 +122,8 @@ def terminate_cluster(id):
 # ClusterTemplate ops
 
 
-def get_cluster_templates():
-    return conductor.cluster_template_get_all(context.ctx())
+def get_cluster_templates(**kwargs):
+    return conductor.cluster_template_get_all(context.ctx(), **kwargs)
 
 
 def get_cluster_template(id):
@@ -140,8 +140,8 @@ def terminate_cluster_template(id):
 
 # NodeGroupTemplate ops
 
-def get_node_group_templates():
-    return conductor.node_group_template_get_all(context.ctx())
+def get_node_group_templates(**kwargs):
+    return conductor.node_group_template_get_all(context.ctx(), **kwargs)
 
 
 def get_node_group_template(id):
