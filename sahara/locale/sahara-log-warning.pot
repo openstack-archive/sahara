@@ -6,9 +6,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: sahara 2015.1.dev159.g1d23159\n"
+"Project-Id-Version: sahara 2015.1.dev188.g2452036\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2014-11-11 06:12+0000\n"
+"POT-Creation-Date: 2014-11-20 06:13+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -42,8 +42,8 @@ msgstr ""
 msgid "Can not find policy directories %s"
 msgstr ""
 
-#: sahara/plugins/hdp/versions/version_1_3_2/versionhandler.py:376
-#: sahara/plugins/hdp/versions/version_2_0_6/versionhandler.py:361
+#: sahara/plugins/hdp/versions/version_1_3_2/versionhandler.py:404
+#: sahara/plugins/hdp/versions/version_2_0_6/versionhandler.py:389
 msgid "Finalizing of Ambari cluster state failed. {0}"
 msgstr ""
 
@@ -77,19 +77,24 @@ msgstr ""
 msgid "Plugin received wrong applicable target '%s' for xml configs"
 msgstr ""
 
-#: sahara/service/direct_engine.py:467
+#: sahara/service/direct_engine.py:466
+#, python-format
+msgid "Auto security group for node group %s is not found"
+msgstr ""
+
+#: sahara/service/direct_engine.py:480
 #, python-format
 msgid ""
 "Attempted to delete non-existent floating IP in pool %(pool)s from "
 "instance %(instance)s"
 msgstr ""
 
-#: sahara/service/direct_engine.py:475
+#: sahara/service/direct_engine.py:488
 #, python-format
 msgid "Detaching volumes from instance %s failed"
 msgstr ""
 
-#: sahara/service/direct_engine.py:481
+#: sahara/service/direct_engine.py:494
 #, python-format
 msgid "Attempted to delete non-existent instance %s"
 msgstr ""
@@ -105,7 +110,7 @@ msgstr ""
 msgid "Did not found stack for cluster %s"
 msgstr ""
 
-#: sahara/service/volumes.py:193
+#: sahara/service/volumes.py:194
 #, python-format
 msgid "Can't detach volume %(volume)s. Current status of volume: %(status)s"
 msgstr ""
