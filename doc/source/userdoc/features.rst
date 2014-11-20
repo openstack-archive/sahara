@@ -55,6 +55,8 @@ used to enable their usage.
     required, please see the :doc:`advanced.configuration.guide` for more
     information.
 
+.. _floating_ip_management:
+
 Floating IP Management
 ----------------------
 
@@ -320,3 +322,29 @@ drivers' configuration. The options are available only in source code.
 You can find the same options defined in ``sahara.conf.sample``. You can use
 it to find section names for each option (matchmaker options are
 defined not in ``[DEFAULT]``)
+
+Managing instances with limited access
+--------------------------------------
+
+.. warning::
+    The indirect VMs access feature is in alpha state. We do not
+    recommend using it in a production environment.
+
+Sahara needs to access instances through ssh during a Cluster setup. This
+could be obtained by a number of ways (see :ref:`neutron-nova-network`,
+:ref:`floating_ip_management`, :ref:`custom_network_topologies`). But
+sometimes it is impossible to provide access to all nodes (because of limited
+numbers of floating IPs or security policies). In this case
+access can be gained using other nodes of the cluster. To do that set
+``is_proxy_gateway=True`` for the node group you want to use as proxy. In this
+case Sahara will communicate with all other instances via instances of this
+node group.
+
+Note, if ``use_floating_ips=true`` and the cluster contains a node group with
+``is_proxy_gateway=True``, requirement to have ``floating_ip_pool`` specified
+is applied only to the proxy node group. Other instances will be accessed via
+proxy instances using standard private network.
+
+Note, Cloudera hadoop plugin doesn't support access to Cloudera manager via
+proxy node. This means that for CDH cluster only node with manager could be
+be a proxy gateway node.
