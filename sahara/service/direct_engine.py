@@ -29,6 +29,7 @@ from sahara.service import engine as e
 from sahara.service import networks
 from sahara.service import volumes
 from sahara.utils import general as g
+from sahara.utils.openstack import neutron
 from sahara.utils.openstack import nova
 
 
@@ -343,6 +344,16 @@ class DirectEngine(e.Engine):
         # ssh remote needs ssh port, agents are not implemented yet
         nova_client.security_group_rules.create(
             security_group.id, 'tcp', SSH_PORT, SSH_PORT, "0.0.0.0/0")
+
+        # open all traffic for private networks
+        if CONF.use_neutron:
+            for cidr in neutron.get_private_network_cidrs(node_group.cluster):
+                for protocol in ['tcp', 'udp']:
+                    nova_client.security_group_rules.create(
+                        security_group.id, protocol, 1, 65535, cidr)
+
+                nova_client.security_group_rules.create(
+                    security_group.id, 'icmp', -1, -1, cidr)
 
         # enable ports returned by plugin
         for port in node_group.open_ports:

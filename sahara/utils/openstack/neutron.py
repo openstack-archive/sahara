@@ -71,3 +71,16 @@ class NeutronClient(object):
                                    '%s is not found') % self.network)
 
         return matching_router['id']
+
+
+def get_private_network_cidrs(cluster):
+    neutron_client = client()
+    private_net = neutron_client.show_network(
+        cluster.neutron_management_network)
+
+    cidrs = []
+    for subnet_id in private_net['network']['subnets']:
+        subnet = neutron_client.show_subnet(subnet_id)
+        cidrs.append(subnet['subnet']['cidr'])
+
+    return cidrs

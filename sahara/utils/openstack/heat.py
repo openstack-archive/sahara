@@ -25,6 +25,7 @@ from sahara.openstack.common import log as logging
 from sahara.utils import files as f
 from sahara.utils import general as g
 from sahara.utils.openstack import base
+from sahara.utils.openstack import neutron
 
 
 CONF = cfg.CONF
@@ -176,13 +177,24 @@ class ClusterTemplate(object):
         yield _load_template('security_group.heat', fields)
 
     def _serialize_auto_security_group_rules(self, ng):
+        create_rule = lambda cidr, proto, from_port, to_port: {
+            'remote_ip_prefix': cidr,
+            'protocol': proto,
+            'port_range_min': from_port,
+            'port_range_max': to_port}
+
         rules = []
         for port in ng.open_ports:
-            rules.append({"remote_ip_prefix": "0.0.0.0/0", "protocol": "tcp",
-                          "port_range_min": port, "port_range_max": port})
+            rules.append(create_rule('0.0.0.0/0', 'tcp', port, port))
 
-        rules.append({"remote_ip_prefix": "0.0.0.0/0", "protocol": "tcp",
-                      "port_range_min": SSH_PORT, "port_range_max": SSH_PORT})
+        rules.append(create_rule('0.0.0.0/0', 'tcp', SSH_PORT, SSH_PORT))
+
+        # open all traffic for private networks
+        if CONF.use_neutron:
+            for cidr in neutron.get_private_network_cidrs(ng.cluster):
+                for protocol in ['tcp', 'udp']:
+                    rules.append(create_rule(cidr, protocol, 1, 65535))
+                rules.append(create_rule(cidr, 'icmp', -1, -1))
 
         return json.dumps(rules)
 
