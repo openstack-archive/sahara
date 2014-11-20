@@ -144,9 +144,10 @@ def ops_error_handler(f):
             ctx = context.ctx()
             cluster = conductor.cluster_get(ctx, cluster_id)
             # check if cluster still exists (it might have been removed)
-            if cluster is None:
-                LOG.info(_LI("Cluster with %s was deleted. Canceling current "
-                             "operation."),  cluster_id)
+            if cluster is None or cluster.status == 'Deleting':
+                LOG.info(_LI("Cluster %s was deleted or marked for "
+                             "deletion. Canceling current operation."),
+                         cluster_id)
                 return
 
             LOG.exception(

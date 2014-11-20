@@ -73,19 +73,26 @@ def natural_sort_key(s):
 
 
 def change_cluster_status(cluster, status, status_description=None):
-    if cluster is None:
-        return None
+    ctx = context.ctx()
+
+    # Update cluster status. Race conditions with deletion are still possible,
+    # but this reduces probability at least.
+    cluster = conductor.cluster_get(ctx, cluster) if cluster else None
+
+    # 'Deleting' is final and can't be changed
+    if cluster is None or cluster.status == 'Deleting':
+        return cluster
 
     update_dict = {"status": status}
     if status_description:
         update_dict["status_description"] = status_description
 
-    cluster = conductor.cluster_update(context.ctx(), cluster, update_dict)
+    cluster = conductor.cluster_update(ctx, cluster, update_dict)
 
     LOG.info(_LI("Cluster status has been changed: id=%(id)s, New status="
                  "%(status)s"), {'id': cluster.id, 'status': cluster.status})
 
-    sender.notify(context.ctx(), cluster.id, cluster.name, cluster.status,
+    sender.notify(ctx, cluster.id, cluster.name, cluster.status,
                   "update")
 
     return cluster
