@@ -58,3 +58,7 @@ def get_hue(cluster):
 
 def get_spark_historyserver(cluster):
     return u.get_instance(cluster, 'SPARK_YARN_HISTORY_SERVER')
+
+
+def get_zookeepers(cluster):
+    return u.get_instances(cluster, 'SERVER')

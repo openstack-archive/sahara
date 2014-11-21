@@ -42,6 +42,7 @@ OOZIE_SERVICE_TYPE = 'OOZIE'
 HIVE_SERVICE_TYPE = 'HIVE'
 HUE_SERVICE_TYPE = 'HUE'
 SPARK_SERVICE_TYPE = 'SPARK_ON_YARN'
+ZOOKEEPER_SERVICE_TYPE = 'ZOOKEEPER'
 
 PATH_TO_CORE_SITE_XML = '/etc/hadoop/conf/core-site.xml'
 HADOOP_LIB_DIR = '/usr/lib/hadoop-mapreduce'
@@ -65,7 +66,8 @@ PACKAGES = [
     'oozie',
     'oracle-j2sdk1.7',
     'spark-history-server',
-    'unzip'
+    'unzip',
+    'zookeeper'
 ]
 
 LOG = logging.getLogger(__name__)
@@ -345,6 +347,9 @@ def _create_services(cluster):
 
     cm_cluster = api.create_cluster(cluster.name, CDH_VERSION)
 
+    if len(pu.get_zookeepers(cluster)) > 0:
+        cm_cluster.create_service(cu.ZOOKEEPER_SERVICE_NAME,
+                                  ZOOKEEPER_SERVICE_TYPE)
     cm_cluster.create_service(cu.HDFS_SERVICE_NAME, HDFS_SERVICE_TYPE)
     cm_cluster.create_service(cu.YARN_SERVICE_NAME, YARN_SERVICE_TYPE)
     cm_cluster.create_service(cu.OOZIE_SERVICE_NAME, OOZIE_SERVICE_TYPE)
@@ -358,6 +363,11 @@ def _create_services(cluster):
 
 def _configure_services(cluster):
     cm_cluster = cu.get_cloudera_cluster(cluster)
+
+    if len(pu.get_zookeepers(cluster)) > 0:
+        zookeeper = cm_cluster.get_service(cu.ZOOKEEPER_SERVICE_NAME)
+        zookeeper.update_config(_get_configs(ZOOKEEPER_SERVICE_TYPE,
+                                cluster=cluster))
 
     hdfs = cm_cluster.get_service(cu.HDFS_SERVICE_NAME)
     hdfs.update_config(_get_configs(HDFS_SERVICE_TYPE, cluster=cluster))
@@ -478,6 +488,10 @@ def _install_extjs(cluster):
 def start_cluster(cluster):
     cm_cluster = cu.get_cloudera_cluster(cluster)
 
+    if len(pu.get_zookeepers(cluster)) > 0:
+        zookeeper = cm_cluster.get_service(cu.ZOOKEEPER_SERVICE_NAME)
+        cu.start_service(zookeeper)
+
     hdfs = cm_cluster.get_service(cu.HDFS_SERVICE_NAME)
     cu.format_namenode(hdfs)
     cu.start_service(hdfs)
@@ -527,7 +541,8 @@ def get_open_ports(node_group):
         'HIVESERVER2': [10000],
         'HUE_SERVER': [8888],
         'OOZIE_SERVER': [11000, 11001],
-        'SPARK_YARN_HISTORY_SERVER': [18088]
+        'SPARK_YARN_HISTORY_SERVER': [18088],
+        'SERVER': [2181, 3181, 4181, 9010]
     }
 
     for process in node_group.node_processes:
