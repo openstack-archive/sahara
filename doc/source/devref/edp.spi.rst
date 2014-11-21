@@ -196,7 +196,7 @@ get_resource_manager_uri(self, cluster)
 Returns the full URI for the Hadoop JobTracker for Hadoop version 1 or the
 Hadoop ResourceManager for Hadoop version 2.
 
-*Returns*: a string giving the JobTrakcer or ResourceManager URI
+*Returns*: a string giving the JobTracker or ResourceManager URI
 
 Spark Job Engine
 ----------------
