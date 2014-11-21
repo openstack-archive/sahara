@@ -53,7 +53,7 @@ To create vanilla images follow these steps:
         * ``fedora_image_name``
         * ``DIB_IMAGE_SIZE`` - parameter that specifies a volume of hard disk of
           instance. You need to specify it only for Fedora because Fedora doesn't use all available volume
-        * ``DIB_COMMIT_ID`` - latest commit id of diksimage-builder project
+        * ``DIB_COMMIT_ID`` - latest commit id of diskimage-builder project
         * ``SAHARA_ELEMENTS_COMMIT_ID`` - latest commit id of sahara-image-elements project
 
    NOTE: If you don't want to use default values, you should set your values of parameters.
