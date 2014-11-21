@@ -1,0 +1,9 @@
+{
+    "name": "spark-example.jar",
+    "description": "An example Spark binary",
+    "url": "swift://edp-examples/edp-spark/spark-example.jar",
+    "extra": {
+        "user": "demo",
+        "password": "password"
+    }
+}

@@ -1,0 +1,9 @@
+{
+    "cluster_id": "%(cluster_id)s",
+    "job_configs": {
+        "configs": {
+            "edp.java.main_class": "org.apache.spark.examples.SparkPi"
+        },
+        "args": ["2"]
+    }
+}

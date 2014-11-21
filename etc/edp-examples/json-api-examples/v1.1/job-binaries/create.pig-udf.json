@@ -1,0 +1,9 @@
+{
+    "name": "udf.jar",
+    "description": "An example pig UDF library",
+    "url": "swift://edp-examples/pig-job/udf.jar",
+    "extra": {
+        "user": "demo",
+        "password": "password"
+    }
+}

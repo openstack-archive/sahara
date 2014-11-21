@@ -1,0 +1,6 @@
+{
+    "name": "demo-map-reduce-job",
+    "type": "MapReduce",
+    "description": "A runnable MapReduce job",
+    "libs": ["%(job_binary_id)s"]
+}

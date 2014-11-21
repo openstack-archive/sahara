@@ -1,0 +1,6 @@
+{
+    "name": "edp-java.jar",
+    "description": "An example Java binary",
+    "url": "internal-db://%(job_binary_internal_id)s",
+    "extra": {}
+}

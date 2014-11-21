@@ -1,0 +1,15 @@
+{
+    "cluster_id": "%(cluster_id)s",
+    "input_id": "%(input_source_id)s",
+    "output_id": "%(output_source_id)s",
+    "job_configs": {
+        "configs": {
+            "mapred.map.tasks": "1",
+            "mapred.reduce.tasks": "1",
+            "fs.swift.service.sahara.username": "demo",
+            "fs.swift.service.sahara.password": "password"
+        },
+        "args": [],
+        "params": {}
+    }
+}
