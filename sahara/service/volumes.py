@@ -154,9 +154,20 @@ def _mount_volume_to_node(instance, idx, device):
 def _mount_volume(instance, device_path, mount_point):
     with instance.remote() as r:
         try:
+            # Mount volumes with better performance options:
+            # - reduce number of blocks reserved for root to 1%
+            # - use 'dir_index' for faster directory listings
+            # - use 'extents' to work faster with large files
+            # - disable journaling
+            # - enable write-back
+            # - do not store access time
+            fs_opts = '-m 1 -O dir_index,extents,^has_journal'
+            mount_opts = '-o data=writeback,noatime,nodiratime'
+
             r.execute_command('sudo mkdir -p %s' % mount_point)
-            r.execute_command('sudo mkfs.ext4 %s' % device_path)
-            r.execute_command('sudo mount %s %s' % (device_path, mount_point))
+            r.execute_command('sudo mkfs.ext4 %s %s' % (fs_opts, device_path))
+            r.execute_command('sudo mount %s %s %s' %
+                              (mount_opts, device_path, mount_point))
         except Exception:
             LOG.error(_LE("Error mounting volume to instance %s"),
                       instance.instance_id)
