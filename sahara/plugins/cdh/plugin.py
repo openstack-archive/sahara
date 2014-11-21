@@ -56,7 +56,10 @@ class CDHPluginProvider(p.ProvisioningPluginBase):
             "WEBHCAT": ['WEBHCAT'],
             "HUE": ['HUE_SERVER'],
             "SPARK_ON_YARN": ['SPARK_YARN_HISTORY_SERVER'],
-            "ZOOKEEPER": ['SERVER']
+            "ZOOKEEPER": ['SERVER'],
+            "HBASE": [],
+            "MASTER": ['MASTER'],
+            "REGIONSERVER": ['REGIONSERVER']
         }
 
     def get_configs(self, hadoop_version):

@@ -32,6 +32,7 @@ hive_service_name = 'hive01'
 hue_service_name = 'hue01'
 spark_service_name = 'spark_on_yarn01'
 zookeeper_service_name = 'zookeeper01'
+hbase_service_name = 'hbase01'
 
 
 def get_cm_api():
@@ -102,6 +103,8 @@ def main():
     zookeeper = cluster.get_service(zookeeper_service_name)
     process_service(zookeeper, 'zookeeper')
 
+    hbase = cluster.get_service(hbase_service_name)
+    process_service(hbase, 'hbase')
 
 if __name__ == '__main__':
     main()

@@ -38,6 +38,7 @@ HIVE_SERVICE_NAME = 'hive01'
 HUE_SERVICE_NAME = 'hue01'
 SPARK_SERVICE_NAME = 'spark_on_yarn01'
 ZOOKEEPER_SERVICE_NAME = 'zookeeper01'
+HBASE_SERVICE_NAME = 'hbase01'
 
 
 def have_cm_api_libs():
@@ -107,6 +108,8 @@ def get_service(process, cluster=None, instance=None):
         return cm_cluster.get_service(SPARK_SERVICE_NAME)
     elif process in ['SERVER']:
         return cm_cluster.get_service(ZOOKEEPER_SERVICE_NAME)
+    elif process in ['MASTER', 'REGIONSERVER']:
+        return cm_cluster.get_service(HBASE_SERVICE_NAME)
     else:
         raise ValueError(
             _("Process %(process)s is not supported by CDH plugin") %
@@ -163,6 +166,8 @@ def get_role_name(instance, service):
         'WEBHCAT': 'WHC',
         'SPARK_YARN_HISTORY_SERVER': 'SHS',
         'SERVER': 'S',
+        'MASTER': 'M',
+        'REGIONSERVER': 'RS'
     }
     return '%s_%s' % (shortcuts.get(service, service),
                       instance.hostname().replace('-', '_'))
@@ -225,3 +230,8 @@ def create_hive_metastore_db(hive_service):
 def create_hive_dirs(hive_service):
     yield hive_service.create_hive_userdir()
     yield hive_service.create_hive_warehouse()
+
+
+@cloudera_cmd
+def create_hbase_root(hbase_service):
+    yield hbase_service.create_hbase_root()

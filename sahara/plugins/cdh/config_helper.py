@@ -109,6 +109,9 @@ spark_service_confs = _load_json(path_to_config + 'spark-service.json')
 spark_role_confs = _load_json(path_to_config + 'spark-history.json')
 zookeeper_server_confs = _load_json(path_to_config + 'zookeeper-server.json')
 zookeeper_service_confs = _load_json(path_to_config + 'zookeeper-service.json')
+hbase_confs = _load_json(path_to_config + 'hbase-service.json')
+master_confs = _load_json(path_to_config + 'hbase-master.json')
+regionserver_confs = _load_json(path_to_config + 'hbase-regionserver.json')
 
 priority_one_confs = _load_json(path_to_config + 'priority-one-confs.json')
 
@@ -154,6 +157,9 @@ def _get_ng_plugin_configs():
     cfg += _init_configs(spark_role_confs, 'SPARK_ON_YARN', 'node')
     cfg += _init_configs(zookeeper_service_confs, 'ZOOKEEPER', 'cluster')
     cfg += _init_configs(zookeeper_server_confs, 'ZOOKEEPER', 'node')
+    cfg += _init_configs(hbase_confs, 'HBASE', 'cluster')
+    cfg += _init_configs(master_confs, 'MASTER', 'node')
+    cfg += _init_configs(regionserver_confs, 'REGIONSERVER', 'node')
     return cfg
 
 

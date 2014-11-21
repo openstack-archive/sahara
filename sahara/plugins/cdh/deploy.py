@@ -43,6 +43,7 @@ HIVE_SERVICE_TYPE = 'HIVE'
 HUE_SERVICE_TYPE = 'HUE'
 SPARK_SERVICE_TYPE = 'SPARK_ON_YARN'
 ZOOKEEPER_SERVICE_TYPE = 'ZOOKEEPER'
+HBASE_SERVICE_TYPE = 'HBASE'
 
 PATH_TO_CORE_SITE_XML = '/etc/hadoop/conf/core-site.xml'
 HADOOP_LIB_DIR = '/usr/lib/hadoop-mapreduce'
@@ -67,7 +68,8 @@ PACKAGES = [
     'oracle-j2sdk1.7',
     'spark-history-server',
     'unzip',
-    'zookeeper'
+    'zookeeper',
+    'hbase'
 ]
 
 LOG = logging.getLogger(__name__)
@@ -105,6 +107,10 @@ def _get_configs(service, cluster=None, node_group=None):
         },
         'SPARK_ON_YARN': {
             'yarn_service': cu.YARN_SERVICE_NAME
+        },
+        'HBASE': {
+            'hdfs_service': cu.HDFS_SERVICE_NAME,
+            'zookeeper_service': cu.ZOOKEEPER_SERVICE_NAME
         }
     }
 
@@ -359,6 +365,8 @@ def _create_services(cluster):
         cm_cluster.create_service(cu.HUE_SERVICE_NAME, HUE_SERVICE_TYPE)
     if pu.get_spark_historyserver(cluster):
         cm_cluster.create_service(cu.SPARK_SERVICE_NAME, SPARK_SERVICE_TYPE)
+    if pu.get_hbase_master(cluster):
+        cm_cluster.create_service(cu.HBASE_SERVICE_NAME, HBASE_SERVICE_TYPE)
 
 
 def _configure_services(cluster):
@@ -389,6 +397,9 @@ def _configure_services(cluster):
     if pu.get_spark_historyserver(cluster):
         spark = cm_cluster.get_service(cu.SPARK_SERVICE_NAME)
         spark.update_config(_get_configs(SPARK_SERVICE_TYPE, cluster=cluster))
+    if pu.get_hbase_master(cluster):
+        hbase = cm_cluster.get_service(cu.HBASE_SERVICE_NAME)
+        hbase.update_config(_get_configs(HBASE_SERVICE_TYPE, cluster=cluster))
 
 
 def _configure_instances(instances):
@@ -524,6 +535,11 @@ def start_cluster(cluster):
         spark = cm_cluster.get_service(cu.SPARK_SERVICE_NAME)
         cu.start_service(spark)
 
+    if pu.get_hbase_master(cluster):
+        hbase = cm_cluster.get_service(cu.HBASE_SERVICE_NAME)
+        cu.create_hbase_root(hbase)
+        cu.start_service(hbase)
+
 
 def get_open_ports(node_group):
     ports = [9000]  # for CM agent
@@ -542,7 +558,9 @@ def get_open_ports(node_group):
         'HUE_SERVER': [8888],
         'OOZIE_SERVER': [11000, 11001],
         'SPARK_YARN_HISTORY_SERVER': [18088],
-        'SERVER': [2181, 3181, 4181, 9010]
+        'SERVER': [2181, 3181, 4181, 9010],
+        'MASTER': [60000],
+        'REGIONSERVER': [60020]
     }
 
     for process in node_group.node_processes:
