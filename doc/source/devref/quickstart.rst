@@ -1,7 +1,7 @@
 Quickstart guide
 ================
 
-This guide will help you to setup vanilla Hadoop cluster using
+This guide will help you setup a vanilla Hadoop cluster using
 :doc:`../restapi/rest_api_v1.0`.
 
 1. Install Sahara
@@ -28,14 +28,14 @@ and Sahara API at ``127.0.0.1:8386``. Here is a list of commands to set env:
 
 
 You can append these lines to the ``.bashrc`` and execute ``source .bashrc``.
-Now you can get authentication token from OpenStack Keystone service.
+Now you can get an authentication token from the OpenStack Keystone service.
 
 .. sourcecode:: console
 
     $ keystone token-get
 
 
-If authentication succeed, output will be as follows:
+If authentication succeeds, the output will be as follows:
 
 .. sourcecode:: console
 
@@ -60,7 +60,7 @@ authentication token (X-Auth-Token):
 3. Upload image to Glance
 -------------------------
 
-You can download pre-built images with vanilla Apache Hadoop or build this
+You can download pre-built images with vanilla Apache Hadoop or build the
 images yourself:
 
 * Download and install pre-built image with Ubuntu 13.10
@@ -83,10 +83,10 @@ images yourself:
       --disk-format=qcow2 --container-format=bare < ./sahara-icehouse-vanilla-1.2.1-fedora-20.qcow2
 
 
-* OR build image using :doc:`../userdoc/diskimagebuilder`.
+* OR build the image using :doc:`../userdoc/diskimagebuilder`.
 
 
-Save image id. You can get image id from command ``glance image-list``:
+Save the image id. You can get the image id from the command ``glance image-list``:
 
 .. sourcecode:: console
 
@@ -118,7 +118,7 @@ Save image id. You can get image id from command ``glance image-list``:
     $ sahara image-add-tag --id $IMAGE_ID --tag vanilla
     $ sahara image-add-tag --id $IMAGE_ID --tag 1.2.1
 
-* Make sure that image is registered correctly:
+* Make sure the image is registered correctly:
 
 .. sourcecode:: console
 
@@ -139,7 +139,7 @@ Save image id. You can get image id from command ``glance image-list``:
 5. Setup NodeGroup templates
 ----------------------------
 
-Create file with name ``ng_master_template_create.json`` and fill it with the
+Create a file with the name ``ng_master_template_create.json`` and fill it with the
 following content:
 
 .. sourcecode:: json
@@ -153,7 +153,7 @@ following content:
         "auto_security_group": true
     }
 
-Create file with name ``ng_worker_template_create.json`` and fill it with the
+Create a file with the name ``ng_worker_template_create.json`` and fill it with the
 following content:
 
 .. sourcecode:: json
@@ -167,7 +167,7 @@ following content:
         "auto_security_group": true
     }
 
-Send POST requests to Sahara API to upload NodeGroup templates. Make sure that
+Send POST requests to the Sahara API to upload NodeGroup templates. Make sure that
 the ``SAHARA_URL`` is set:
 
 .. sourcecode:: console
@@ -181,14 +181,14 @@ the ``SAHARA_URL`` is set:
      < ng_worker_template_create.json
 
 
-You can list available NodeGroup templates by sending the following request to
+You can list the available NodeGroup templates by sending the following request to the
 Sahara API:
 
 .. sourcecode:: console
 
     $ http $SAHARA_URL/node-group-templates X-Auth-Token:$AUTH_TOKEN
 
-Output should look like:
+The output should look like:
 
 .. sourcecode:: json
 
@@ -236,7 +236,7 @@ Output should look like:
     }
 
 
-Save id for the master and worker NodeGroup templates. For example:
+Save the id for the master and worker NodeGroup templates. For example:
 
 * Master NodeGroup template id: ``b38227dc-64fe-42bf-8792-d1456b453ef3``
 * Worker NodeGroup template id: ``634827b9-6a18-4837-ae15-5371d6ecf02c``
@@ -245,7 +245,7 @@ Save id for the master and worker NodeGroup templates. For example:
 6. Setup Cluster Template
 -------------------------
 
-Create file with name ``cluster_template_create.json`` and fill it with the
+Create a file named ``cluster_template_create.json`` and fill it with the
 following content:
 
 .. sourcecode:: json
@@ -275,12 +275,12 @@ Send POST request to Sahara API to upload Cluster template:
     $ http $SAHARA_URL/cluster-templates X-Auth-Token:$AUTH_TOKEN \
      < cluster_template_create.json
 
-Save template id. For example ``ce897df2-1610-4caa-bdb8-408ef90561cf``.
+Save the template id. For example ``ce897df2-1610-4caa-bdb8-408ef90561cf``.
 
 7. Create cluster
 -----------------
 
-Create file with name ``cluster_create.json`` and fill it with the
+Create a file named ``cluster_create.json`` and fill it with the
 following content:
 
 .. sourcecode:: json
@@ -295,7 +295,7 @@ following content:
     }
 
 There is a parameter ``user_keypair_id`` with value ``stack``. You can create
-your own keypair in in Horizon UI, or using the command line client:
+your own keypair in Horizon UI, or using the command line client:
 
 .. sourcecode:: console
 
@@ -310,7 +310,7 @@ Send POST request to Sahara API to create and start the cluster:
      < cluster_create.json
 
 
-Once cluster started, you'll get similar output:
+Once the cluster has started, you'll get similar output:
 
 .. sourcecode:: json
 
@@ -427,11 +427,11 @@ To check that your Hadoop installation works correctly:
 
     $ sudo su hadoop
 
-* Go to hadoop home directory and run the simpliest MapReduce example:
+* Go to the hadoop home directory and run the simplest MapReduce example:
 
 .. sourcecode:: console
 
     $ cd /usr/share/hadoop
     $ hadoop jar hadoop-examples-1.2.1.jar pi 10 100
 
-Congratulations! Now you have Hadoop cluster ready on the OpenStack cloud!
+Congratulations! Now you have the Hadoop cluster ready on the OpenStack cloud!
