@@ -225,10 +225,12 @@ class IpManagementTest(AbstractInstanceTest):
 class ShutdownClusterTest(AbstractInstanceTest):
 
     @mock.patch('sahara.service.direct_engine.DirectEngine._check_if_deleted')
-    def test_delete_floating_ips(self, deleted_checker):
+    @mock.patch('sahara.service.direct_engine.DirectEngine.'
+                '_map_security_groups')
+    def test_delete_floating_ips(self, map_mock, deleted_checker):
         node_groups = [_make_ng_dict("test_group_1", "test_flavor",
                                      ["data node", "test tracker"], 2, 'pool')]
-
+        map_mock.return_value = []
         ctx = context.ctx()
         cluster = _create_cluster_mock(node_groups, ["datanode"])
         self.engine._create_instances(cluster)
