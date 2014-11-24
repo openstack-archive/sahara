@@ -48,6 +48,7 @@ User guide
    userdoc/vanilla_plugin
    userdoc/hdp_plugin
    userdoc/spark_plugin
+   userdoc/cdh_plugin
 
 **Elastic Data Processing**
 
