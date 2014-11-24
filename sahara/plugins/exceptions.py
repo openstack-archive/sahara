@@ -22,6 +22,7 @@ class NodeGroupCannotBeScaled(e.SaharaException):
         self.message = _("Chosen node group %(ng_name)s cannot be scaled : "
                          "%(reason)s") % {"ng_name": ng_name, "reason": reason}
         self.code = "NODE_GROUP_CANNOT_BE_SCALED"
+        super(NodeGroupCannotBeScaled, self).__init__()
 
 
 class DecommissionError(e.SaharaException):
@@ -31,6 +32,7 @@ class DecommissionError(e.SaharaException):
     def __init__(self, message=None):
         if message:
             self.message = message
+        super(DecommissionError, self).__init__()
 
 
 class ClusterCannotBeScaled(e.SaharaException):
@@ -39,6 +41,7 @@ class ClusterCannotBeScaled(e.SaharaException):
                          "%(reason)s") % {"cluster_name": cluster_name,
                                           "reason": reason}
         self.code = "CLUSTER_CANNOT_BE_SCALED"
+        super(ClusterCannotBeScaled, self).__init__()
 
 
 class RequiredServiceMissingException(e.SaharaException):
