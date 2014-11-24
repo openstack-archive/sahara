@@ -290,3 +290,24 @@ class ClusterTest(test_base.ConductorManagerTestCase):
 
         with testtools.ExpectedException(ex.NotFoundException):
             self.api.instance_remove(ctx, instance_id)
+
+    def test_cluster_search(self):
+        ctx = context.ctx()
+        self.api.cluster_create(ctx, SAMPLE_CLUSTER)
+
+        lst = self.api.cluster_get_all(ctx)
+        self.assertEqual(len(lst), 1)
+
+        kwargs = {'name': SAMPLE_CLUSTER['name'],
+                  'plugin_name': SAMPLE_CLUSTER['plugin_name']}
+        lst = self.api.cluster_get_all(ctx, **kwargs)
+        self.assertEqual(len(lst), 1)
+
+        # Valid field but no matching value
+        kwargs = {'name': SAMPLE_CLUSTER['name']+'foo'}
+        lst = self.api.cluster_get_all(ctx, **kwargs)
+        self.assertEqual(len(lst), 0)
+
+        # Invalid field
+        lst = self.api.cluster_get_all(ctx, **{'badfield': 'somevalue'})
+        self.assertEqual(len(lst), 0)

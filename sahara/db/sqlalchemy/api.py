@@ -174,7 +174,15 @@ def cluster_get(context, cluster_id):
 
 def cluster_get_all(context, **kwargs):
     query = model_query(m.Cluster, context)
-    return query.filter_by(**kwargs).all()
+    try:
+        return query.filter_by(**kwargs).all()
+    except sa.exc.InvalidRequestError as e:
+        if kwargs:
+            # If kwargs is non-empty then we assume this
+            # is a bad field reference. User asked for something
+            # that doesn't exist, so return empty list
+            return []
+        raise e
 
 
 def cluster_create(context, values):

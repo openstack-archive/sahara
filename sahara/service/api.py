@@ -44,8 +44,8 @@ def setup_service_api(ops):
 
 # Cluster ops
 
-def get_clusters():
-    return conductor.cluster_get_all(context.ctx())
+def get_clusters(**kwargs):
+    return conductor.cluster_get_all(context.ctx(), **kwargs)
 
 
 def get_cluster(id):
