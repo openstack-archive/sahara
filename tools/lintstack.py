@@ -55,7 +55,7 @@ class LintOutput(object):
 
     @classmethod
     def from_line(cls, line):
-        m = re.search(r"(\S+):(\d+): \[(\S+)(, \S+)?] (.*)", line)
+        m = re.search(r"(\S+):(\d+): \[(\S+)(, \S*)?] (.*)", line)
         matched = m.groups()
         filename, lineno, code, message = (matched[0], int(matched[1]),
                                            matched[2], matched[-1])
@@ -74,6 +74,8 @@ class LintOutput(object):
         """
         result = {}
         for line in msg.splitlines():
+            if line.startswith('*****'):
+                continue
             obj = cls.from_line(line)
             if obj.is_ignored():
                 continue
