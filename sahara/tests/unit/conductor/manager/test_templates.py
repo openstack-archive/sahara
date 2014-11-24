@@ -129,6 +129,27 @@ class NodeGroupTemplates(test_base.ConductorManagerTestCase):
         with testtools.ExpectedException(ex.NotFoundException):
             self.api.node_group_template_destroy(ctx, _id)
 
+    def test_ngt_search(self):
+        ctx = context.ctx()
+        self.api.node_group_template_create(ctx, SAMPLE_NGT)
+
+        lst = self.api.node_group_template_get_all(ctx)
+        self.assertEqual(len(lst), 1)
+
+        kwargs = {'name': SAMPLE_NGT['name'],
+                  'plugin_name': SAMPLE_NGT['plugin_name']}
+        lst = self.api.node_group_template_get_all(ctx, **kwargs)
+        self.assertEqual(len(lst), 1)
+
+        # Valid field but no matching value
+        kwargs = {'name': SAMPLE_NGT['name']+"foo"}
+        lst = self.api.node_group_template_get_all(ctx, **kwargs)
+        self.assertEqual(len(lst), 0)
+
+        # Invalid field
+        lst = self.api.node_group_template_get_all(ctx, **{'badfield': 'junk'})
+        self.assertEqual(len(lst), 0)
+
 
 class ClusterTemplates(test_base.ConductorManagerTestCase):
     def __init__(self, *args, **kwargs):
@@ -205,3 +226,24 @@ class ClusterTemplates(test_base.ConductorManagerTestCase):
 
         with testtools.ExpectedException(ex.NotFoundException):
             self.api.cluster_template_destroy(ctx, _id)
+
+    def test_clt_search(self):
+        ctx = context.ctx()
+        self.api.cluster_template_create(ctx, SAMPLE_CLT)
+
+        lst = self.api.cluster_template_get_all(ctx)
+        self.assertEqual(len(lst), 1)
+
+        kwargs = {'name': SAMPLE_CLT['name'],
+                  'plugin_name': SAMPLE_CLT['plugin_name']}
+        lst = self.api.cluster_template_get_all(ctx, **kwargs)
+        self.assertEqual(len(lst), 1)
+
+        # Valid field but no matching value
+        kwargs = {'name': SAMPLE_CLT['name']+"foo"}
+        lst = self.api.cluster_template_get_all(ctx, **kwargs)
+        self.assertEqual(len(lst), 0)
+
+        # Invalid field
+        lst = self.api.cluster_template_get_all(ctx, **{'badfield': 'junk'})
+        self.assertEqual(len(lst), 0)

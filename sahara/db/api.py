@@ -196,9 +196,13 @@ def cluster_template_get(context, cluster_template):
 
 
 @to_dict
-def cluster_template_get_all(context):
-    """Get all cluster_templates."""
-    return IMPL.cluster_template_get_all(context)
+def cluster_template_get_all(context, **kwargs):
+    """Get all cluster templates filtered by **kwargs.
+
+    e.g.  cluster_template_get_all(plugin_name='vanilla',
+                                   hadoop_version='1.1')
+    """
+    return IMPL.cluster_template_get_all(context, **kwargs)
 
 
 @to_dict
@@ -221,9 +225,13 @@ def node_group_template_get(context, node_group_template):
 
 
 @to_dict
-def node_group_template_get_all(context):
-    """Get all Node Group Templates."""
-    return IMPL.node_group_template_get_all(context)
+def node_group_template_get_all(context, **kwargs):
+    """Get all Node Group Templates filtered by **kwargs.
+
+    e.g.  node_group_template_get_all(plugin_name='vanilla',
+                                      hadoop_version='1.1')
+    """
+    return IMPL.node_group_template_get_all(context, **kwargs)
 
 
 @to_dict
@@ -246,9 +254,12 @@ def data_source_get(context, data_source):
 
 
 @to_dict
-def data_source_get_all(context):
-    """Get all Data Sources."""
-    return IMPL.data_source_get_all(context)
+def data_source_get_all(context, **kwargs):
+    """Get all Data Sources filtered by **kwargs.
+
+    e.g.  data_source_get_all(name='myfile', type='swift')
+    """
+    return IMPL.data_source_get_all(context, **kwargs)
 
 
 @to_dict
@@ -313,9 +324,12 @@ def job_get(context, job):
 
 
 @to_dict
-def job_get_all(context):
-    """Get all Jobs."""
-    return IMPL.job_get_all(context)
+def job_get_all(context, **kwargs):
+    """Get all Jobs filtered by **kwargs.
+
+    e.g.  job_get_all(name='myjob', type='MapReduce')
+    """
+    return IMPL.job_get_all(context, **kwargs)
 
 
 @to_dict
@@ -335,9 +349,12 @@ def job_destroy(context, job):
 
 
 @to_dict
-def job_binary_get_all(context):
-    """Get all JobBinarys."""
-    return IMPL.job_binary_get_all(context)
+def job_binary_get_all(context, **kwargs):
+    """Get all JobBinarys filtered by **kwargs.
+
+    e.g.  job_binary_get_all(name='wordcount.jar')
+    """
+    return IMPL.job_binary_get_all(context, **kwargs)
 
 
 @to_dict
@@ -358,9 +375,14 @@ def job_binary_destroy(context, job_binary):
 
 
 @to_dict
-def job_binary_internal_get_all(context):
-    """Get all JobBinaryInternals."""
-    return IMPL.job_binary_internal_get_all(context)
+def job_binary_internal_get_all(context, **kwargs):
+    """Get all JobBinaryInternals filtered by **kwargs.
+
+    e.g.  cluster_get_all(name='wordcount.jar')
+
+    The JobBinaryInternals returned do not contain a data field.
+    """
+    return IMPL.job_binary_internal_get_all(context, **kwargs)
 
 
 @to_dict

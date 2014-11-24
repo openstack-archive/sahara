@@ -163,9 +163,13 @@ class LocalApi(object):
                                                   _get_id(cluster_template))
 
     @r.wrap(r.ClusterTemplateResource)
-    def cluster_template_get_all(self, context):
-        """Get all cluster templates."""
-        return self._manager.cluster_template_get_all(context)
+    def cluster_template_get_all(self, context, **kwargs):
+        """Get all cluster templates filtered by **kwargs.
+
+        e.g.  cluster_template_get_all(plugin_name='vanilla',
+                                       hadoop_version='1.1')
+        """
+        return self._manager.cluster_template_get_all(context, **kwargs)
 
     @r.wrap(r.ClusterTemplateResource)
     def cluster_template_create(self, context, values):
@@ -192,9 +196,13 @@ class LocalApi(object):
             context, _get_id(node_group_template))
 
     @r.wrap(r.NodeGroupTemplateResource)
-    def node_group_template_get_all(self, context):
-        """Get all node group templates."""
-        return self._manager.node_group_template_get_all(context)
+    def node_group_template_get_all(self, context, **kwargs):
+        """Get all node group templates filtered by **kwargs.
+
+        e.g.  node_group_template_get_all(plugin_name='vanilla',
+                                          hadoop_version='1.1')
+        """
+        return self._manager.node_group_template_get_all(context, **kwargs)
 
     @r.wrap(r.NodeGroupTemplateResource)
     def node_group_template_create(self, context, values):
@@ -220,9 +228,12 @@ class LocalApi(object):
         return self._manager.data_source_get(context, _get_id(data_source))
 
     @r.wrap(r.DataSource)
-    def data_source_get_all(self, context):
-        """Get all Data Sources."""
-        return self._manager.data_source_get_all(context)
+    def data_source_get_all(self, context, **kwargs):
+        """Get all Data Sources filtered by **kwargs.
+
+        e.g.  data_source_get_all(name='myfile', type='swift')
+        """
+        return self._manager.data_source_get_all(context, **kwargs)
 
     @r.wrap(r.DataSource)
     def data_source_create(self, context, values):
@@ -280,9 +291,12 @@ class LocalApi(object):
         return self._manager.job_get(context, _get_id(job))
 
     @r.wrap(r.Job)
-    def job_get_all(self, context):
-        """Get all Jobs."""
-        return self._manager.job_get_all(context)
+    def job_get_all(self, context, **kwargs):
+        """Get all Jobs filtered by **kwargs.
+
+        e.g.  job_get_all(name='myjob', type='MapReduce')
+        """
+        return self._manager.job_get_all(context, **kwargs)
 
     @r.wrap(r.Job)
     def job_create(self, context, values):
@@ -316,9 +330,12 @@ class LocalApi(object):
     # JobBinary ops
 
     @r.wrap(r.JobBinary)
-    def job_binary_get_all(self, context):
-        """Get all JobBinarys."""
-        return self._manager.job_binary_get_all(context)
+    def job_binary_get_all(self, context, **kwargs):
+        """Get all JobBinarys filtered by **kwargs.
+
+        e.g.  job_binary_get_all(name='wordcount.jar')
+        """
+        return self._manager.job_binary_get_all(context, **kwargs)
 
     @r.wrap(r.JobBinary)
     def job_binary_get(self, context, job_binary):
@@ -337,9 +354,12 @@ class LocalApi(object):
     # JobBinaryInternal ops
 
     @r.wrap(r.JobBinaryInternal)
-    def job_binary_internal_get_all(self, context):
-        """Get all JobBinaryInternals."""
-        return self._manager.job_binary_internal_get_all(context)
+    def job_binary_internal_get_all(self, context, **kwargs):
+        """Get all JobBinaryInternals filtered by **kwargs.
+
+        e.g.  cluster_get_all(name='wordcount.jar')
+        """
+        return self._manager.job_binary_internal_get_all(context, **kwargs)
 
     @r.wrap(r.JobBinaryInternal)
     def job_binary_internal_get(self, context, job_binary_internal):

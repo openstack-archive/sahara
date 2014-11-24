@@ -77,7 +77,8 @@ def clusters_delete(cluster_id):
 @acl.enforce("cluster-templates:get_all")
 def cluster_templates_list():
     return u.render(
-        cluster_templates=[t.to_dict() for t in api.get_cluster_templates()])
+        cluster_templates=[t.to_dict() for t in api.get_cluster_templates(
+            **u.get_request_args().to_dict())])
 
 
 @rest.post('/cluster-templates')
@@ -118,7 +119,8 @@ def cluster_templates_delete(cluster_template_id):
 def node_group_templates_list():
     return u.render(
         node_group_templates=[t.to_dict()
-                              for t in api.get_node_group_templates()])
+                              for t in api.get_node_group_templates(
+                              **u.get_request_args().to_dict())])
 
 
 @rest.post('/node-group-templates')

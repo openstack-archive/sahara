@@ -35,7 +35,8 @@ rest = u.Rest('v11', __name__)
 @rest.get('/job-executions')
 @acl.enforce("job-executions:get_all")
 def job_executions_list():
-    job_executions = [je.to_dict() for je in api.job_execution_list()]
+    job_executions = [je.to_dict() for je in api.job_execution_list(
+        **u.get_request_args().to_dict())]
     return u.render(job_executions=job_executions)
 
 
@@ -77,7 +78,8 @@ def job_executions_delete(job_execution_id):
 @acl.enforce("data-sources:get_all")
 def data_sources_list():
     return u.render(
-        data_sources=[ds.to_dict() for ds in api.get_data_sources()])
+        data_sources=[ds.to_dict() for ds in api.get_data_sources(
+            **u.get_request_args().to_dict())])
 
 
 @rest.post('/data-sources')
@@ -107,7 +109,8 @@ def data_source_delete(data_source_id):
 @rest.get('/jobs')
 @acl.enforce("jobs:get_all")
 def job_list():
-    return u.render(jobs=[j.to_dict() for j in api.get_jobs()])
+    return u.render(jobs=[j.to_dict() for j in api.get_jobs(
+        **u.get_request_args().to_dict())])
 
 
 @rest.post('/jobs')
@@ -159,7 +162,8 @@ def job_binary_create(data):
 @rest.get('/job-binaries')
 @acl.enforce("job-binaries:get_all")
 def job_binary_list():
-    return u.render(binaries=[j.to_dict() for j in api.get_job_binaries()])
+    return u.render(binaries=[j.to_dict() for j in api.get_job_binaries(
+        **u.get_request_args().to_dict())])
 
 
 @rest.get('/job-binaries/<job_binary_id>')
@@ -200,7 +204,8 @@ def job_binary_internal_create(**values):
 @acl.enforce("job-binary-internals:get_all")
 def job_binary_internal_list():
     return u.render(binaries=[j.to_dict() for j in
-                              api.get_job_binary_internals()])
+                              api.get_job_binary_internals(
+                                  **u.get_request_args().to_dict())])
 
 
 @rest.get('/job-binary-internals/<job_binary_internal_id>')

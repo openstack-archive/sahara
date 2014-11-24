@@ -371,9 +371,17 @@ def cluster_template_get(context, cluster_template_id):
     return _cluster_template_get(context, get_session(), cluster_template_id)
 
 
-def cluster_template_get_all(context):
+def cluster_template_get_all(context, **kwargs):
     query = model_query(m.ClusterTemplate, context)
-    return query.all()
+    try:
+        return query.filter_by(**kwargs).all()
+    except sa.exc.InvalidRequestError as e:
+        if kwargs:
+            # If kwargs is non-empty then we assume this
+            # is a bad field reference. User asked for something
+            # that doesn't exist, so return empty list
+            return []
+        raise e
 
 
 def cluster_template_create(context, values):
@@ -429,9 +437,17 @@ def node_group_template_get(context, node_group_template_id):
                                     node_group_template_id)
 
 
-def node_group_template_get_all(context):
+def node_group_template_get_all(context, **kwargs):
     query = model_query(m.NodeGroupTemplate, context)
-    return query.all()
+    try:
+        return query.filter_by(**kwargs).all()
+    except sa.exc.InvalidRequestError as e:
+        if kwargs:
+            # If kwargs is non-empty then we assume this
+            # is a bad field reference. User asked for something
+            # that doesn't exist, so return empty list
+            return []
+        raise e
 
 
 def node_group_template_create(context, values):
@@ -473,9 +489,17 @@ def data_source_get(context, data_source_id):
     return _data_source_get(context, get_session(), data_source_id)
 
 
-def data_source_get_all(context):
+def data_source_get_all(context, **kwargs):
     query = model_query(m.DataSource, context)
-    return query.all()
+    try:
+        return query.filter_by(**kwargs).all()
+    except sa.exc.InvalidRequestError as e:
+        if kwargs:
+            # If kwargs is non-empty then we assume this
+            # is a bad field reference. User asked for something
+            # that doesn't exist, so return empty list
+            return []
+        raise e
 
 
 def data_source_create(context, values):
@@ -522,7 +546,15 @@ def job_execution_get(context, job_execution_id):
 
 def job_execution_get_all(context, **kwargs):
     query = model_query(m.JobExecution, context)
-    return query.filter_by(**kwargs).all()
+    try:
+        return query.filter_by(**kwargs).all()
+    except sa.exc.InvalidRequestError as e:
+        if kwargs:
+            # If kwargs is non-empty then we assume this
+            # is a bad field reference. User asked for something
+            # that doesn't exist, so return empty list
+            return []
+        raise e
 
 
 def job_execution_count(context, **kwargs):
@@ -580,9 +612,17 @@ def job_get(context, job_id):
     return _job_get(context, get_session(), job_id)
 
 
-def job_get_all(context):
+def job_get_all(context, **kwargs):
     query = model_query(m.Job, context)
-    return query.all()
+    try:
+        return query.filter_by(**kwargs).all()
+    except sa.exc.InvalidRequestError as e:
+        if kwargs:
+            # If kwargs is non-empty then we assume this
+            # is a bad field reference. User asked for something
+            # that doesn't exist, so return empty list
+            return []
+        raise e
 
 
 def _append_job_binaries(context, session, from_list, to_list):
@@ -653,13 +693,21 @@ def _job_binary_get(context, session, job_binary_id):
     return query.filter_by(id=job_binary_id).first()
 
 
-def job_binary_get_all(context):
+def job_binary_get_all(context, **kwargs):
     """Returns JobBinary objects that do not contain a data field
 
     The data column uses deferred loading.
     """
     query = model_query(m.JobBinary, context)
-    return query.all()
+    try:
+        return query.filter_by(**kwargs).all()
+    except sa.exc.InvalidRequestError as e:
+        if kwargs:
+            # If kwargs is non-empty then we assume this
+            # is a bad field reference. User asked for something
+            # that doesn't exist, so return empty list
+            return []
+        raise e
 
 
 def job_binary_get(context, job_binary_id):
@@ -721,13 +769,21 @@ def _job_binary_internal_get(context, session, job_binary_internal_id):
     return query.filter_by(id=job_binary_internal_id).first()
 
 
-def job_binary_internal_get_all(context):
+def job_binary_internal_get_all(context, **kwargs):
     """Returns JobBinaryInternal objects that do not contain a data field
 
     The data column uses deferred loading.
     """
     query = model_query(m.JobBinaryInternal, context)
-    return query.all()
+    try:
+        return query.filter_by(**kwargs).all()
+    except sa.exc.InvalidRequestError as e:
+        if kwargs:
+            # If kwargs is non-empty then we assume this
+            # is a bad field reference. User asked for something
+            # that doesn't exist, so return empty list
+            return []
+        raise e
 
 
 def job_binary_internal_get(context, job_binary_internal_id):
