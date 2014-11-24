@@ -285,7 +285,15 @@ def job_execution_get(context, job_execution):
 def job_execution_get_all(context, **kwargs):
     """Get all JobExecutions filtered by **kwargs.
 
+    kwargs key values are the names of fields in a JobExecution
+    with the addition of two special fields -- 'cluster.name'
+    and 'job.name'. These two fields support searching on the
+    names of the Cluster and/or Job objects referenced by the
+    JobExecution.
+
     e.g. job_execution_get_all(cluster_id=12, input_id=123)
+         job_execution_get_all(**{'cluster.name': 'test',
+                                  'job.name': 'wordcount'})
     """
     return IMPL.job_execution_get_all(context, **kwargs)
 
