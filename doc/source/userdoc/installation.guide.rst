@@ -178,7 +178,7 @@ installing it in virtual environment.
 
 .. sourcecode:: console
 
-    keystone service-create --name sahara --type data_processing \
+    keystone service-create --name sahara --type data-processing \
         --description "Sahara Data Processing"
 
     keystone endpoint-create --service sahara --region RegionOne \

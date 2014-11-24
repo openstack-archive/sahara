@@ -97,7 +97,7 @@ You can list the registered services with this command:
 
    .. sourcecode:: console
 
-       $ keystone service-create --name sahara --type data_processing
+       $ keystone service-create --name sahara --type data-processing
        $ keystone endpoint-create --region RegionOne --service sahara --publicurl 'http://localhost:8386/v1.1/%(tenant_id)s'
 
    **Note** you should replace the ip and port in with the appropriate values.
@@ -174,7 +174,7 @@ permissions do not prevent the Data Processing dashboard from displaying.
 2. Modify ``openstack_dashboard/dashboards/project/dashboard.py``:
 
    Overload the ``register`` method in ``class Project`` to programmatically
-   remove ``data_processing`` permissions from all panels.
+   remove ``data-processing`` permissions from all panels.
 
    .. sourcecode:: python
 
@@ -187,5 +187,5 @@ permissions do not prevent the Data Processing dashboard from displaying.
             super(Project, cls).register(panel)
    ..
 
-   Alternatively the ``data_processing`` permissions can be removed
+   Alternatively the ``data-processing`` permissions can be removed
    manually from each panel under ``openstack_dashboard/dashboards/project/data_processing``
