@@ -95,6 +95,11 @@ class CDHPluginProvider(p.ProvisioningPluginBase):
                 'Password': 'admin'
             }
         }
+        hue = cu.get_hue(cluster)
+        if hue:
+            info['Hue Dashboard'] = {
+                'Web UI': 'http://%s:8888' % hue.management_ip
+            }
 
         ctx = context.ctx()
         conductor.cluster_update(ctx, cluster, {'info': info})
