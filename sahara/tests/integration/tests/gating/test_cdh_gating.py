@@ -143,10 +143,11 @@ class CDHGatingTest(cluster_configs.ClusterConfigTest,
                     'count': 1
                 },
                 {
-                    'name': 'master-node-oo-hs-snn',
+                    'name': 'master-node-oo-hs-snn-hm-hs2',
                     'flavor_id': self.flavor_id,
                     'node_processes': ['OOZIE_SERVER', 'JOBHISTORY',
-                                       'SECONDARYNAMENODE'],
+                                       'SECONDARYNAMENODE', 'HIVEMETASTORE',
+                                       'HIVESERVER2'],
                     'floating_ip_pool': self.floating_ip_pool,
                     'auto_security_group': True,
                     'count': 1

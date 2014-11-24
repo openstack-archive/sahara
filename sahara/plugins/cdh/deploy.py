@@ -13,6 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import os
 import telnetlib
 
 from oslo.utils import timeutils
@@ -30,6 +31,7 @@ from sahara.plugins.cdh import utils as pu
 from sahara.plugins import exceptions as ex
 from sahara.plugins import utils as gu
 from sahara.swift import swift_helper
+from sahara.utils import edp as edp_u
 from sahara.utils import xmlutils
 
 CM_API_PORT = 7180
@@ -447,6 +449,16 @@ def _configure_swift_to_inst(instance):
 
 
 def _configure_hive(cluster):
+    server = pu.get_hive_server(cluster)
+    with server.remote() as r:
+        conf_path = edp_u.get_hive_shared_conf_path('hdfs')
+        r.execute_command(
+            'sudo su - -c "hadoop fs -mkdir -p %s" hdfs'
+            % os.path.dirname(conf_path))
+        r.execute_command(
+            'sudo su - -c "hadoop fs -put /etc/hive/conf/hive-site.xml '
+            '%s" hdfs' % conf_path)
+
     manager = pu.get_manager(cluster)
     with manager.remote() as r:
         db_helper.create_hive_database(cluster, r)
