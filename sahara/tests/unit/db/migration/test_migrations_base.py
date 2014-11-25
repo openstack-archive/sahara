@@ -29,6 +29,7 @@ import os
 from alembic import command
 from alembic import config as alembic_config
 from alembic import migration
+from alembic import script as alembic_script
 from oslo.config import cfg
 import six.moves.urllib.parse as urlparse
 import sqlalchemy
@@ -467,22 +468,7 @@ class BaseWalkMigrationTestCase(BaseMigrationTestCase):
         sa.cleanup()
         return res
 
-    def _get_alembic_versions(self, engine):
-        """Support of full testing of migrations.
-
-        An opportunity to run command step by step for each version in repo.
-        :returns list of alembic_versions by historical order.
-        """
-        full_history = self._alembic_command('history',
-                                             engine, self.ALEMBIC_CONFIG)
-        # The piece of output data with version can looked as:
-        # 'Rev: 17738166b91 (head)' or 'Rev: 43b1a023dfaa'
-        alembic_history = [r.split(' ')[1] for r in full_history.split("\n")
-                           if r.startswith("Rev")]
-        alembic_history.reverse()
-        return alembic_history
-
-    def _up_and_down_versions(self, engine):
+    def _up_and_down_versions(self):
         """Stores a tuple of versions.
 
         Since alembic version has a random algorithm of generation
@@ -490,8 +476,14 @@ class BaseWalkMigrationTestCase(BaseMigrationTestCase):
         a tuple of versions (version for upgrade and version for downgrade)
         for successful testing of migrations in up>down>up mode.
         """
-        versions = self._get_alembic_versions(engine)
-        return zip(versions, ['-1'] + versions)
+
+        env = alembic_script.ScriptDirectory.from_config(self.ALEMBIC_CONFIG)
+        versions = []
+        for rev in env.walk_revisions():
+            versions.append((rev.revision, rev.down_revision or '-1'))
+
+        versions.reverse()
+        return versions
 
     def _walk_versions(self, engine=None, snake_walk=False,
                        downgrade=True):
@@ -501,7 +493,7 @@ class BaseWalkMigrationTestCase(BaseMigrationTestCase):
         # upgrades successfully.
 
         self._configure(engine)
-        up_and_down_versions = self._up_and_down_versions(engine)
+        up_and_down_versions = self._up_and_down_versions()
         for ver_up, ver_down in up_and_down_versions:
             # upgrade -> downgrade -> upgrade
             self._migrate_up(engine, ver_up, with_data=True)
