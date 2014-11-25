@@ -299,7 +299,10 @@ def _cancel_job_execution(job_execution_id):
 
 def _delete_job_execution(job_execution_id):
     try:
-        _cancel_job_execution(job_execution_id)
+        job_execution = job_manager.cancel_job(job_execution_id)
+        if not job_execution:
+            # job_execution was deleted already, nothing to do
+            return
     except exceptions.CancelingFailed:
         LOG.error(_LE("Job execution %s can't be cancelled in time. "
                       "Deleting it anyway."), job_execution_id)

@@ -165,6 +165,11 @@ def cancel_job(job_execution_id):
                 context.sleep(3)
                 job_execution = conductor.job_execution_get(
                     ctx, job_execution_id)
+                if not job_execution:
+                    LOG.info(_LI("Job execution %(job_exec_id)s was deleted. "
+                                 "Canceling current operation."),
+                             {'job_exec_id': job_execution_id})
+                    return job_execution
             else:
                 LOG.info(_LI("Job execution status %(job)s: %(status)s"),
                          {'job': job_execution.id,
