@@ -17,6 +17,7 @@ import json
 
 from heatclient import client as heat_client
 from oslo.config import cfg
+import six
 
 from sahara import context
 from sahara import exceptions as ex
@@ -178,10 +179,10 @@ class ClusterTemplate(object):
 
     def _serialize_auto_security_group_rules(self, ng):
         create_rule = lambda cidr, proto, from_port, to_port: {
-            'remote_ip_prefix': cidr,
-            'protocol': proto,
-            'port_range_min': from_port,
-            'port_range_max': to_port}
+            "CidrIp": cidr,
+            "IpProtocol": proto,
+            "FromPort": six.text_type(from_port),
+            "ToPort": six.text_type(to_port)}
 
         rules = []
         for port in ng.open_ports:
