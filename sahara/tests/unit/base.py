@@ -29,14 +29,14 @@ class SaharaTestCase(base.BaseTestCase):
         self.setup_context()
 
     def setup_context(self, username="test_user", tenant_id="tenant_1",
-                      token="test_auth_token", tenant_name='test_tenant',
+                      auth_token="test_auth_token", tenant_name='test_tenant',
                       service_catalog=None, **kwargs):
         self.addCleanup(context.set_ctx,
                         context.ctx() if context.has_ctx() else None)
 
         context.set_ctx(context.Context(
             username=username, tenant_id=tenant_id,
-            token=token, service_catalog=service_catalog or {},
+            auth_token=auth_token, service_catalog=service_catalog or {},
             tenant_name=tenant_name, **kwargs))
 
     def override_config(self, name, override, group=None):

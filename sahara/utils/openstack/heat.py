@@ -37,7 +37,7 @@ SSH_PORT = 22
 def client():
     ctx = context.current()
     heat_url = base.url_for(ctx.service_catalog, 'orchestration')
-    return heat_client.Client('1', heat_url, token=ctx.token)
+    return heat_client.Client('1', heat_url, token=ctx.auth_token)
 
 
 def get_stack(stack_name):

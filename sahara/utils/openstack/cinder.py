@@ -55,14 +55,14 @@ def client():
     ctx = context.current()
     if CONF.cinder_api_version == 1:
         volume_url = base.url_for(ctx.service_catalog, 'volume')
-        cinder = cinder_client_v1.Client(ctx.username, ctx.token,
+        cinder = cinder_client_v1.Client(ctx.username, ctx.auth_token,
                                          ctx.tenant_id, volume_url)
     else:
         volume_url = base.url_for(ctx.service_catalog, 'volumev2')
-        cinder = cinder_client_v2.Client(ctx.username, ctx.token,
+        cinder = cinder_client_v2.Client(ctx.username, ctx.auth_token,
                                          ctx.tenant_id, volume_url)
 
-    cinder.client.auth_token = ctx.token
+    cinder.client.auth_token = ctx.auth_token
     cinder.client.management_url = volume_url
 
     return cinder
