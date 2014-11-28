@@ -67,6 +67,10 @@ class Cluster(mb.SaharaBase):
     extra = sa.Column(st.JsonDictType())
     rollback_info = sa.Column(st.JsonDictType())
     sahara_info = sa.Column(st.JsonDictType())
+    provision_progress = relationship('ClusterProvisionStep',
+                                      cascade="all,delete",
+                                      backref='cluster',
+                                      lazy='joined')
     node_groups = relationship('NodeGroup', cascade="all,delete",
                                backref='cluster', lazy='joined')
     cluster_template_id = sa.Column(sa.String(36),
@@ -77,6 +81,8 @@ class Cluster(mb.SaharaBase):
     def to_dict(self):
         d = super(Cluster, self).to_dict()
         d['node_groups'] = [ng.to_dict() for ng in self.node_groups]
+        d['provision_progress'] = [pp.to_dict() for pp in
+                                   self.provision_progress]
         return d
 
 
@@ -368,3 +374,46 @@ class JobBinary(mb.SaharaBase):
     description = sa.Column(sa.Text())
     url = sa.Column(sa.String(256), nullable=False)
     extra = sa.Column(st.JsonDictType())
+
+
+class ClusterEvent(mb.SaharaBase):
+    """"Event - represent a info about current provision step."""
+
+    __tablename__ = 'cluster_events'
+
+    __table_args__ = (
+        sa.UniqueConstraint('id', 'step_id'),
+    )
+
+    id = _id_column()
+    node_group_id = sa.Column(sa.String(36))
+    instance_id = sa.Column(sa.String(36))
+    instance_name = sa.Column(sa.String(80))
+    event_info = sa.Column(sa.Text)
+    successful = sa.Column(sa.Boolean, nullable=False)
+    step_id = sa.Column(sa.String(36), sa.ForeignKey(
+        'cluster_provision_steps.id'))
+
+
+class ClusterProvisionStep(mb.SaharaBase):
+    """ProvisionStep - represent a current provision step of cluster."""
+
+    __tablename__ = 'cluster_provision_steps'
+
+    __table_args__ = (
+        sa.UniqueConstraint('id', 'cluster_id'),
+    )
+
+    id = _id_column()
+    cluster_id = sa.Column(sa.String(36), sa.ForeignKey('clusters.id'))
+    tenant_id = sa.Column(sa.String(36))
+    step_name = sa.Column(sa.String(80))
+    step_type = sa.Column(sa.String(36))
+    completed = sa.Column(sa.Integer)
+    total = sa.Column(sa.Integer)
+    successful = sa.Column(sa.Boolean, nullable=True)
+    started_at = sa.Column(sa.DateTime())
+    completed_at = sa.Column(sa.DateTime())
+    events = relationship('ClusterEvent', cascade="all,delete",
+                          backref='ClusterProvisionStep',
+                          lazy='joined')

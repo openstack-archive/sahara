@@ -412,3 +412,38 @@ class TestMigrations(base.BaseWalkMigrationTestCase, base.CommonTestsMixIn):
         self.assertColumnExists(engine, 'node_group_templates', 'volume_type')
         self.assertColumnExists(engine, 'node_groups', 'volume_type')
         self.assertColumnExists(engine, 'templates_relations', 'volume_type')
+
+    def _check_015(self, engine, data):
+        provision_steps_columns = [
+            'created_at',
+            'updated_at',
+            'id',
+            'cluster_id',
+            'tenant_id',
+            'step_name',
+            'step_type',
+            'completed',
+            'total',
+            'successful',
+            'started_at',
+            'completed_at',
+        ]
+        events_columns = [
+            'created_at',
+            'updated_at',
+            'id',
+            'node_group_id',
+            'instance_id',
+            'instance_name',
+            'event_info',
+            'successful',
+            'step_id',
+        ]
+
+        self.assertColumnCount(engine, 'cluster_provision_steps',
+                               provision_steps_columns)
+        self.assertColumnsExists(engine, 'cluster_provision_steps',
+                                 provision_steps_columns)
+
+        self.assertColumnCount(engine, 'cluster_events', events_columns)
+        self.assertColumnsExists(engine, 'cluster_events', events_columns)
