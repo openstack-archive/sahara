@@ -27,6 +27,7 @@ from sahara.plugins.vanilla.hadoop2 import scaling as sc
 from sahara.plugins.vanilla.hadoop2 import validation as vl
 from sahara.plugins.vanilla import utils as vu
 from sahara.plugins.vanilla.v2_4_1 import config_helper as c_helper
+from sahara.utils import proxy
 
 
 conductor = conductor.API
@@ -50,7 +51,8 @@ class VersionHandler(avm.AbstractVersionHandler):
             "MapReduce": ["historyserver"],
             "HDFS": ["namenode", "datanode", "secondarynamenode"],
             "YARN": ["resourcemanager", "nodemanager"],
-            "JobFlow": ["oozie"]
+            "JobFlow": ["oozie"],
+            "Hive": ["hiveserver"]
         }
 
     def validate(self, cluster):
@@ -86,6 +88,10 @@ class VersionHandler(avm.AbstractVersionHandler):
         oo = vu.get_oozie(cluster)
         if oo:
             run.start_oozie_process(self.pctx, oo)
+
+        hiveserver = vu.get_hiveserver(cluster)
+        if hiveserver:
+            run.start_hiveserver_process(self.pctx, hiveserver)
 
         self._set_cluster_info(cluster)
 
@@ -139,3 +145,6 @@ class VersionHandler(avm.AbstractVersionHandler):
 
     def get_open_ports(self, node_group):
         return c.get_open_ports(node_group)
+
+    def on_terminate_cluster(self, cluster):
+        proxy.delete_proxy_user_for_cluster(cluster)

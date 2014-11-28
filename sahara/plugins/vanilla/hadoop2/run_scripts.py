@@ -13,6 +13,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import os
+
 from sahara import context
 from sahara.i18n import _
 from sahara.i18n import _LI
@@ -20,6 +22,7 @@ from sahara.openstack.common import log as logging
 from sahara.plugins import exceptions as ex
 from sahara.plugins.vanilla.hadoop2 import config_helper as c_helper
 from sahara.plugins.vanilla import utils as vu
+from sahara.utils import edp
 from sahara.utils import files
 from sahara.utils import general as g
 
@@ -173,3 +176,52 @@ def _check_datanodes_count(remote, count):
     LOG.debug("Datanode count='%s'" % stdout.rstrip())
 
     return exit_code == 0 and stdout and int(stdout) == count
+
+
+def _hive_create_warehouse_dir(remote):
+    LOG.debug("Creating Hive warehouse dir")
+    remote.execute_command("sudo su - -c 'hadoop fs -mkdir -p "
+                           "/user/hive/warehouse' hadoop")
+
+
+def _hive_copy_shared_conf(remote, dest):
+    LOG.debug("Copying shared Hive conf")
+    dirname, filename = os.path.split(dest)
+    remote.execute_command(
+        "sudo su - -c 'hadoop fs -mkdir -p %s && "
+        "hadoop fs -put /opt/hive/conf/hive-site.xml "
+        "%s' hadoop" % (dirname, dest))
+
+
+def _hive_create_db(remote):
+    LOG.debug("Creating Hive metastore db...")
+    remote.execute_command("mysql -u root < /tmp/create_hive_db.sql")
+
+
+def _hive_metastore_start(remote):
+    LOG.debug("Starting Hive Metastore Server...")
+    remote.execute_command("sudo su - -c 'nohup /opt/hive/bin/hive"
+                           " --service metastore > /dev/null &' hadoop")
+
+
+def start_hiveserver_process(pctx, instance):
+    with instance.remote() as r:
+        _hive_create_warehouse_dir(r)
+        _hive_copy_shared_conf(
+            r, edp.get_hive_shared_conf_path('hadoop'))
+
+        if c_helper.is_mysql_enabled(pctx, instance.node_group.cluster):
+            oozie = vu.get_oozie(instance.node_group.cluster)
+            if not oozie or instance.hostname() != oozie.hostname():
+                _start_mysql(r)
+
+            sql_script = files.get_file_text(
+                'plugins/vanilla/hadoop2/resources/create_hive_db.sql'
+            )
+
+            r.write_file_to('/tmp/create_hive_db.sql', sql_script)
+            _hive_create_db(r)
+            _hive_metastore_start(r)
+            LOG.info(_LI("Hive Metastore server at %s has been "
+                         "started"),
+                     instance.hostname())

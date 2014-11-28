@@ -39,12 +39,16 @@ YARN_DEFAULT = x.load_hadoop_xml_defaults(
 OOZIE_DEFAULT = x.load_hadoop_xml_defaults(
     'plugins/vanilla/v2_4_1/resources/oozie-default.xml')
 
+HIVE_DEFAULT = x.load_hadoop_xml_defaults(
+    'plugins/vanilla/v2_4_1/resources/hive-default.xml')
+
 XML_CONFS = {
     "Hadoop": [CORE_DEFAULT],
     "HDFS": [HDFS_DEFAULT],
     "YARN": [YARN_DEFAULT],
     "MapReduce": [MAPRED_DEFAULT],
-    "JobFlow": [OOZIE_DEFAULT]
+    "JobFlow": [OOZIE_DEFAULT],
+    "Hive": [HIVE_DEFAULT]
 }
 
 ENV_CONFS = {

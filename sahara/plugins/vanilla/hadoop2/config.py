@@ -13,6 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from oslo.config import cfg
 import six
 
 from sahara.i18n import _LI
@@ -23,18 +24,25 @@ from sahara.plugins.vanilla import utils as vu
 from sahara.swift import swift_helper as swift
 from sahara.topology import topology_helper as th
 from sahara.utils import files as f
+from sahara.utils import proxy
 from sahara.utils import xmlutils as x
 
+CONF = cfg.CONF
 LOG = logging.getLogger(__name__)
 
 HADOOP_CONF_DIR = '/opt/hadoop/etc/hadoop'
 OOZIE_CONF_DIR = '/opt/oozie/conf'
+HIVE_CONF_DIR = '/opt/hive/conf'
 HADOOP_USER = 'hadoop'
 HADOOP_GROUP = 'hadoop'
 
 
 def configure_cluster(pctx, cluster):
     LOG.debug("Configuring cluster \"%s\"", cluster.name)
+    if (CONF.use_identity_api_v3 and vu.get_hiveserver(cluster) and
+            c_helper.is_swift_enabled(pctx, cluster)):
+        cluster = proxy.create_proxy_user_for_cluster(cluster)
+
     instances = []
     for node_group in cluster.node_groups:
         for instance in node_group.instances:
@@ -125,6 +133,38 @@ def _get_hadoop_configs(pctx, node_group):
         confs['Hadoop'].update({"topology.script.file.name":
                                 HADOOP_CONF_DIR + "/topology.sh"})
 
+    hive_hostname = vu.get_instance_hostname(vu.get_hiveserver(cluster))
+    if hive_hostname:
+        hive_cfg = {
+            'hive.warehouse.subdir.inherit.perms': True,
+            'javax.jdo.option.ConnectionURL':
+            'jdbc:derby:;databaseName=/opt/hive/metastore_db;create=true'
+        }
+
+        if c_helper.is_mysql_enabled(pctx, cluster):
+            hive_cfg.update({
+                'javax.jdo.option.ConnectionURL':
+                'jdbc:mysql://%s/metastore' % hive_hostname,
+                'javax.jdo.option.ConnectionDriverName':
+                'com.mysql.jdbc.Driver',
+                'javax.jdo.option.ConnectionUserName': 'hive',
+                'javax.jdo.option.ConnectionPassword': 'pass',
+                'datanucleus.autoCreateSchema': 'false',
+                'datanucleus.fixedDatastore': 'true',
+                'hive.metastore.uris': 'thrift://%s:9083' % hive_hostname,
+            })
+
+        proxy_configs = cluster.cluster_configs.get('proxy_configs')
+        if proxy_configs and c_helper.is_swift_enabled(pctx, cluster):
+            hive_cfg.update({
+                swift.HADOOP_SWIFT_USERNAME: proxy_configs['proxy_username'],
+                swift.HADOOP_SWIFT_PASSWORD: proxy_configs['proxy_password'],
+                swift.HADOOP_SWIFT_TRUST_ID: proxy_configs['proxy_trust_id'],
+                swift.HADOOP_SWIFT_DOMAIN_NAME: CONF.proxy_user_domain_name
+            })
+
+        confs['Hive'] = hive_cfg
+
     return confs
 
 
@@ -208,7 +248,8 @@ def _push_xml_configs(instance, configs):
         'HDFS': '%s/hdfs-site.xml' % HADOOP_CONF_DIR,
         'YARN': '%s/yarn-site.xml' % HADOOP_CONF_DIR,
         'MapReduce': '%s/mapred-site.xml' % HADOOP_CONF_DIR,
-        'JobFlow': '%s/oozie-site.xml' % OOZIE_CONF_DIR
+        'JobFlow': '%s/oozie-site.xml' % OOZIE_CONF_DIR,
+        'Hive': '%s/hive-site.xml' % HIVE_CONF_DIR
     }
     xml_confs = {}
     for service, confs in six.iteritems(xmls):
