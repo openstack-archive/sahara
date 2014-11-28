@@ -199,6 +199,12 @@ class ClusterTemplateResource(Resource, objects.ClusterTemplate):
 
 
 class ClusterResource(Resource, objects.Cluster):
+
+    def sanitize_cluster_configs(self, cluster_configs):
+        if 'proxy_configs' in cluster_configs:
+            del cluster_configs['proxy_configs']
+        return cluster_configs
+
     _resource_name = 'cluster'
 
     _children = {
@@ -208,6 +214,7 @@ class ClusterResource(Resource, objects.Cluster):
 
     _filter_fields = ['management_private_key', 'extra', 'rollback_info',
                       'sahara_info']
+    _sanitize_fields = {'cluster_configs': sanitize_cluster_configs}
 
 
 # EDP Resources

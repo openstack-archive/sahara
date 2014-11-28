@@ -35,6 +35,7 @@ from sahara.topology import topology_helper as th
 from sahara.utils import edp
 from sahara.utils import files as f
 from sahara.utils import general as g
+from sahara.utils import proxy
 from sahara.utils import remote
 
 
@@ -267,6 +268,11 @@ class VersionHandler(avm.AbstractVersionHandler):
             run.start_processes(r, *tt_dn_procs)
 
     def _setup_instances(self, cluster, instances):
+        if (CONF.use_identity_api_v3 and vu.get_hiveserver(cluster) and
+                c_helper.is_swift_enable(cluster)):
+            cluster = proxy.create_proxy_user_for_cluster(cluster)
+            instances = utils.get_instances(cluster)
+
         extra = self._extract_configs_to_extra(cluster)
         cluster = conductor.cluster_get(context.ctx(), cluster)
         self._push_configs_to_nodes(cluster, extra, instances)
@@ -515,3 +521,6 @@ class VersionHandler(avm.AbstractVersionHandler):
             ports.append(10000)
 
         return ports
+
+    def on_terminate_cluster(self, cluster):
+        proxy.delete_proxy_user_for_cluster(cluster)

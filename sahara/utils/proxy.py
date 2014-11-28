@@ -96,6 +96,51 @@ def delete_proxy_user_for_job_execution(job_execution):
     return None
 
 
+def create_proxy_user_for_cluster(cluster):
+    '''Creates a proxy user and adds the credentials to the cluster
+
+    :param cluster: The cluster model to update
+
+    '''
+    if cluster.cluster_configs.get('proxy_configs'):
+        return cluster
+    username = 'cluster_{0}'.format(cluster.id)
+    password = proxy_user_create(username)
+    current_user = k.client()
+    proxy_user = k.client_for_proxy_user(username, password)
+    trust_id = t.create_trust(trustor=current_user,
+                              trustee=proxy_user,
+                              role_names=CONF.proxy_user_role_names)
+    update = {'cluster_configs': cluster.cluster_configs.to_dict()}
+    update['cluster_configs']['proxy_configs'] = {
+        'proxy_username': username,
+        'proxy_password': password,
+        'proxy_trust_id': trust_id
+        }
+    return conductor.cluster_update(context.ctx(), cluster, update)
+
+
+def delete_proxy_user_for_cluster(cluster):
+    '''Delete a proxy user based on a Cluster
+
+    :param cluster: The cluster model with proxy user information
+
+    '''
+    proxy_configs = cluster.cluster_configs.get('proxy_configs')
+    if proxy_configs is not None:
+        proxy_username = proxy_configs.get('proxy_username')
+        proxy_password = proxy_configs.get('proxy_password')
+        proxy_trust_id = proxy_configs.get('proxy_trust_id')
+        proxy_user = k.client_for_proxy_user(proxy_username,
+                                             proxy_password,
+                                             proxy_trust_id)
+        t.delete_trust(proxy_user, proxy_trust_id)
+        proxy_user_delete(proxy_username)
+        update = {'cluster_configs': cluster.cluster_configs.to_dict()}
+        del update['cluster_configs']['proxy_configs']
+        conductor.cluster_update(context.ctx(), cluster, update)
+
+
 def domain_for_proxy():
     '''Return the proxy domain or None
 

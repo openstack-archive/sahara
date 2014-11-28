@@ -334,8 +334,15 @@ def generate_xml_configs(cluster, node_group, hive_mysql_passwd):
     }
 
     if hive_hostname:
+        cfg = all_cfg
+        cfg_filter = HIVE_DEFAULT
+        proxy_configs = cluster.cluster_configs.get('proxy_configs')
+        if CONF.use_identity_api_v3 and proxy_configs:
+            cfg, cfg_filter = _inject_swift_trust_info(cfg,
+                                                       cfg_filter,
+                                                       proxy_configs)
         xml_configs.update({'hive-site':
-                            x.create_hadoop_xml(all_cfg, HIVE_DEFAULT)})
+                            x.create_hadoop_xml(cfg, cfg_filter)})
         LOG.debug('Generated hive-site.xml for hive % s', hive_hostname)
 
     if oozie_hostname:
@@ -344,6 +351,26 @@ def generate_xml_configs(cluster, node_group, hive_mysql_passwd):
         LOG.debug('Generated oozie-site.xml for oozie % s', oozie_hostname)
 
     return xml_configs
+
+
+def _inject_swift_trust_info(cfg, cfg_filter, proxy_configs):
+    cfg = cfg.copy()
+    cfg.update({
+        swift.HADOOP_SWIFT_USERNAME: proxy_configs['proxy_username'],
+        swift.HADOOP_SWIFT_PASSWORD: proxy_configs['proxy_password'],
+        swift.HADOOP_SWIFT_TRUST_ID: proxy_configs['proxy_trust_id'],
+        swift.HADOOP_SWIFT_DOMAIN_NAME: CONF.proxy_user_domain_name
+    })
+
+    allow_swift_auth_filter = [
+        {'name': swift.HADOOP_SWIFT_USERNAME},
+        {'name': swift.HADOOP_SWIFT_PASSWORD},
+        {'name': swift.HADOOP_SWIFT_TRUST_ID},
+        {'name': swift.HADOOP_SWIFT_DOMAIN_NAME}
+    ]
+    cfg_filter = cfg_filter + allow_swift_auth_filter
+
+    return cfg, cfg_filter
 
 
 def extract_environment_confs(configs):
@@ -449,6 +476,10 @@ def is_data_locality_enabled(cluster):
     if not CONF.enable_data_locality:
         return False
     return _get_general_cluster_config_value(cluster, ENABLE_DATA_LOCALITY)
+
+
+def is_swift_enable(cluster):
+    return _get_general_cluster_config_value(cluster, ENABLE_SWIFT)
 
 
 def get_decommissioning_timeout(cluster):
