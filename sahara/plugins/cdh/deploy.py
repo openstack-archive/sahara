@@ -135,7 +135,7 @@ def _get_configs(service, cluster=None, node_group=None):
             }
         }
 
-        ng_user_confs = node_group.node_configs
+        ng_user_confs = pu.convert_process_configs(node_group.node_configs)
         all_confs = _merge_dicts(all_confs, ng_user_confs)
         all_confs = _merge_dicts(all_confs, ng_default_confs)
 

@@ -13,6 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from sahara.conductor import resource as res
 from sahara.plugins import utils as u
 
 
@@ -70,3 +71,33 @@ def get_zookeepers(cluster):
 
 def get_hbase_master(cluster):
     return u.get_instance(cluster, 'MASTER')
+
+
+def convert_process_configs(configs):
+    p_dict = {
+        "CLOUDERA": ['MANAGER'],
+        "NAMENODE": ['NAMENODE'],
+        "DATANODE": ['DATANODE'],
+        "SECONDARYNAMENODE": ['SECONDARYNAMENODE'],
+        "RESOURCEMANAGER": ['RESOURCEMANAGER'],
+        "NODEMANAGER": ['NODEMANAGER'],
+        "JOBHISTORY": ['JOBHISTORY'],
+        "OOZIE": ['OOZIE_SERVER'],
+        "HIVESERVER": ['HIVESERVER2'],
+        "HIVEMETASTORE": ['HIVEMETASTORE'],
+        "WEBHCAT": ['WEBHCAT'],
+        "HUE": ['HUE_SERVER'],
+        "SPARK_ON_YARN": ['SPARK_YARN_HISTORY_SERVER'],
+        "ZOOKEEPER": ['SERVER'],
+        "MASTER": ['MASTER'],
+        "REGIONSERVER": ['REGIONSERVER']
+    }
+    if isinstance(configs, res.Resource):
+        configs = configs.to_dict()
+    for k in configs.keys():
+        if k in p_dict.keys():
+            item = configs[k]
+            del configs[k]
+            newkey = p_dict[k][0]
+            configs[newkey] = item
+    return res.Resource(configs)
