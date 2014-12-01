@@ -1,0 +1,6 @@
+{
+    "name": "demo-java-job",
+    "type": "Java",
+    "description": "A runnable Java job",
+    "libs": ["%(job_binary_id)s"]
+}

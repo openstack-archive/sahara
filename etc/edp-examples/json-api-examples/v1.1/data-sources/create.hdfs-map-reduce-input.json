@@ -1,0 +1,6 @@
+{
+    "name": "demo-map-reduce-input",
+    "description": "A data source for Map/Reduce input, stored in HDFS",
+    "type": "hdfs",
+    "url": "hdfs://hadoop-cluster-master-001:8020/user/edp-examples/edp-map-reduce/input"
+}

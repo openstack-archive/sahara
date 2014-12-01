@@ -1,0 +1,9 @@
+{
+    "name": "edp-mapreduce.jar",
+    "description": "An example map/reduce job binary",
+    "url": "swift://edp-examples/edp-mapreduce/edp-mapreduce.jar",
+    "extra": {
+        "user": "demo",
+        "password": "password"
+    }
+}

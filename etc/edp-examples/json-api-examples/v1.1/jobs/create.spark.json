@@ -1,0 +1,7 @@
+{
+    "name": "demo-spark-job",
+    "type": "Spark",
+    "description": "A runnable Spark job",
+    "mains": ["%(job_binary_id)s"],
+    "libs": []
+}

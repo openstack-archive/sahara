@@ -1,0 +1,7 @@
+{
+    "name": "demo-pig-job",
+    "type": "Pig",
+    "description": "A runnable Pig job",
+    "mains": ["%(job_binary_id)s"],
+    "libs": ["%(udf_binary_id)s"]
+}

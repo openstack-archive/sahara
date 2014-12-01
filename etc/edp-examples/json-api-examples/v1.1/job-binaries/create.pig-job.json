@@ -1,0 +1,9 @@
+{
+    "name": "example.pig",
+    "description": "An example pig script",
+    "url": "swift://edp-examples/pig-job/example.pig",
+    "extra": {
+        "user": "demo",
+        "password": "password"
+    }
+}
