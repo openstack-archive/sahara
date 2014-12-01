@@ -55,6 +55,7 @@ class Cluster(object):
     extra
     rollback_info - internal information required for rollback
     sahara_info - internal information about sahara settings
+    provision_progress - list of ProvisionStep objects
     node_groups - list of NodeGroup objects
     cluster_template_id
     cluster_template - ClusterTemplate object
@@ -256,4 +257,36 @@ class JobBinaryInternal(object):
     tenant_id
     name
     datasize
+    """
+
+# Events ops
+
+
+class ClusterProvisionStep(object):
+    """An object representing cluster ProvisionStep
+
+    id
+    cluster_id
+    tenant_id
+    step_name
+    step_type
+    completed
+    total
+    successful
+    started_at
+    completed_at
+    events - list of Events objects assigned to the cluster
+    """
+
+
+class ClusterEvent(object):
+    """An object representing events about cluster provision
+
+    id
+    node_group_id
+    instance_id
+    instance_name
+    event_info
+    successful
+    step_id
     """
