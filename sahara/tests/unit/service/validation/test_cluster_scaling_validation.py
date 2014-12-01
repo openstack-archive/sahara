@@ -53,7 +53,8 @@ class TestScalingValidation(u.ValidationTestCase):
             try:
                 c_s.check_cluster_scaling(data, cluster.id)
             except ex.InvalidException as e:
-                self.assertEqual(expected_message, six.text_type(e))
+                message = six.text_type(e).split('\n')[0]
+                self.assertEqual(expected_message, message)
                 raise e
 
     @mock.patch("sahara.service.api.OPS")

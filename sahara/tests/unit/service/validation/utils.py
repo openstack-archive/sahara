@@ -263,12 +263,15 @@ class ValidationTestCase(base.SaharaTestCase):
             possible_messages = ([call_info[2]] if isinstance(
                 call_info[2], six.string_types) else call_info[2])
             match = False
+            check = mock.call_args[0][0].message
+            if check.find('Error ID:') != -1:
+                check = check.split('\n')[0]
             for message in possible_messages:
-                if self._check_match(message, mock.call_args[0][0].message):
+                if self._check_match(message, check):
                     match = True
                     break
             if not match:
-                self.assertIn(mock.call_args[0][0].message, possible_messages)
+                self.assertIn(check, possible_messages)
 
     def _check_match(self, expected, actual):
         d1, r1 = self._extract_printed_dict(expected)

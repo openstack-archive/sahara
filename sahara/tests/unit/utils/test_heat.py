@@ -226,7 +226,8 @@ class TestClusterStack(testtools.TestCase):
         stack = FakeHeatStack('CREATE_IN_PROGRESS', 'CREATE_FAILED')
         with testtools.ExpectedException(
                 ex.HeatStackException,
-                value_re="Heat stack failed with status CREATE_FAILED"):
+                value_re=("Heat stack failed with status "
+                          "CREATE_FAILED\nError ID: .*")):
             h.wait_stack_completion(stack)
 
 

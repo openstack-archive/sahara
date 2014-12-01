@@ -556,8 +556,9 @@ class TestClusterCreateFlavorValidation(base.SaharaWithDbTestCase):
                 try:
                     c.check_cluster_create(values)
                 except exceptions.InvalidException as e:
+                    message = six.text_type(e).split('\n')[0]
                     self.assertEqual("Requested flavor '10' not found",
-                                     six.text_type(e))
+                                     message)
                     raise e
                 finally:
                     u.stop_patch(patchers)
@@ -618,6 +619,7 @@ class TestClusterCreateFlavorValidation(base.SaharaWithDbTestCase):
                 c.check_cluster_create(data)
                 u.stop_patch(patchers)
             except exceptions.InvalidException as e:
+                message = six.text_type(e).split('\n')[0]
                 self.assertEqual("Requested flavor '23' not found",
-                                 six.text_type(e))
+                                 message)
                 raise e
