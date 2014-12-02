@@ -21,6 +21,7 @@ import testtools
 from sahara import context
 from sahara import exceptions as ex
 import sahara.tests.unit.conductor.base as test_base
+from sahara.tests.unit.conductor.manager import test_clusters
 from sahara.utils import edp
 
 
@@ -273,6 +274,71 @@ class JobExecutionTest(test_base.ConductorManagerTestCase):
 
         # Invalid field
         lst = self.api.job_execution_get_all(ctx, **{'badfield': 'somevalue'})
+        self.assertEqual(len(lst), 0)
+
+    def test_job_execution_advanced_search(self):
+        ctx = context.ctx()
+        job = self.api.job_create(ctx, SAMPLE_JOB)
+        ds_input = self.api.data_source_create(ctx, SAMPLE_DATA_SOURCE)
+        SAMPLE_DATA_OUTPUT = copy.copy(SAMPLE_DATA_SOURCE)
+        SAMPLE_DATA_OUTPUT['name'] = 'output'
+        ds_output = self.api.data_source_create(ctx, SAMPLE_DATA_OUTPUT)
+
+        # Create a cluster
+        cl1 = self.api.cluster_create(ctx, test_clusters.SAMPLE_CLUSTER)
+
+        # Create a second cluster with a different name
+        cl2_vals = copy.copy(test_clusters.SAMPLE_CLUSTER)
+        cl2_vals['name'] = 'test_cluster2'
+        cl2 = self.api.cluster_create(ctx, cl2_vals)
+
+        my_sample_job_exec = copy.copy(SAMPLE_JOB_EXECUTION)
+
+        my_sample_job_exec['job_id'] = job['id']
+        my_sample_job_exec['input_id'] = ds_input['id']
+        my_sample_job_exec['output_id'] = ds_output['id']
+        my_sample_job_exec['cluster_id'] = cl1['id']
+
+        # Run job on cluster 1
+        self.api.job_execution_create(ctx, my_sample_job_exec)
+
+        # Run the same job on cluster 2
+        my_sample_job_exec['cluster_id'] = cl2['id']
+        self.api.job_execution_create(ctx, my_sample_job_exec)
+
+        # Search only with job exeuction fields (finds both)
+        lst = self.api.job_execution_get_all(ctx, **{'return_code': 1})
+        self.assertEqual(len(lst), 2)
+
+        # Search on cluster name
+        kwargs = {'cluster.name': test_clusters.SAMPLE_CLUSTER['name'],
+                  'return_code': 1}
+        lst = self.api.job_execution_get_all(ctx, **kwargs)
+        self.assertEqual(len(lst), 1)
+
+        # Search on cluster name and job name
+        kwargs = {'cluster.name': test_clusters.SAMPLE_CLUSTER['name'],
+                  'job.name': SAMPLE_JOB['name'],
+                  'return_code': 1}
+        lst = self.api.job_execution_get_all(ctx, **kwargs)
+        self.assertEqual(len(lst), 1)
+
+        # Search on job name (finds both)
+        kwargs = {'job.name': SAMPLE_JOB['name'],
+                  'return_code': 1}
+        lst = self.api.job_execution_get_all(ctx, **kwargs)
+        self.assertEqual(len(lst), 2)
+
+        # invalid cluster name value
+        kwargs = {'cluster.name': test_clusters.SAMPLE_CLUSTER['name']+'foo',
+                  'job.name': SAMPLE_JOB['name']}
+        lst = self.api.job_execution_get_all(ctx, **kwargs)
+        self.assertEqual(len(lst), 0)
+
+        # invalid job name value
+        kwargs = {'cluster.name': test_clusters.SAMPLE_CLUSTER['name'],
+                  'job.name': SAMPLE_JOB['name']+'foo'}
+        lst = self.api.job_execution_get_all(ctx, **kwargs)
         self.assertEqual(len(lst), 0)
 
 

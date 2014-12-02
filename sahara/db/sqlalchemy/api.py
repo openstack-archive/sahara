@@ -545,9 +545,30 @@ def job_execution_get(context, job_execution_id):
 
 
 def job_execution_get_all(context, **kwargs):
+    """Get all JobExecutions filtered by **kwargs.
+
+    kwargs key values are the names of fields in a JobExecution
+    with the addition of two special fields -- 'cluster.name'
+    and 'job.name'. These two fields support searching on the
+    names of the Cluster and/or Job objects referenced by the
+    JobExecution.
+
+    e.g. job_execution_get_all(cluster_id=12, input_id=123)
+         job_execution_get_all(**{'cluster.name': 'test',
+                                  'job.name': 'wordcount'})
+    """
     query = model_query(m.JobExecution, context)
+
+    # Remove the external fields if present, they'll
+    # be handled with a join and filter
+    externals = {k: kwargs.pop(k) for k in ['cluster.name',
+                                            'job.name'] if k in kwargs}
+
+    # Filter JobExecution by the remaining kwargs. This has to be done
+    # before application of the joins and filters because those
+    # change the class that query.filter_by will apply to
     try:
-        return query.filter_by(**kwargs).all()
+        query = query.filter_by(**kwargs)
     except sa.exc.InvalidRequestError as e:
         if kwargs:
             # If kwargs is non-empty then we assume this
@@ -555,6 +576,17 @@ def job_execution_get_all(context, **kwargs):
             # that doesn't exist, so return empty list
             return []
         raise e
+
+    # Now add the joins and filters for the externals
+    if 'cluster.name' in externals:
+        query = query.join(m.Cluster).filter(
+            m.Cluster.name == externals['cluster.name'])
+
+    if 'job.name' in externals:
+        query = query.join(m.Job).filter(
+            m.Job.name == externals['job.name'])
+
+    return query.all()
 
 
 def job_execution_count(context, **kwargs):
