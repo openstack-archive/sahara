@@ -133,6 +133,15 @@ When user terminates cluster, Sahara simply shuts down all the cluster VMs. This
 
 *Returns*: None
 
+get_open_ports(node_group)
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+When user requests Sahara to automatically create security group for the node
+group (``auto_security_group`` property set to True), Sahara will call this
+plugin method to get list of ports that need to be opened.
+
+*Returns*: list of ports to be open in auto security group for the given node group
+
 Object Model
 ============
 
