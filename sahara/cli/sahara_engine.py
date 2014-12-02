@@ -49,11 +49,10 @@ from sahara.service import ops
 def main():
     server.setup_common(possible_topdir, 'engine')
 
-    from oslo.config import cfg
     # NOTE(apavlov): acl.wrap is called here to set up auth_uri value
     # in context by using keystone functionality (mostly to avoid
     # code duplication).
-    acl.wrap(None, cfg.CONF)
+    acl.wrap(None)
 
     server.setup_sahara_engine()
 
