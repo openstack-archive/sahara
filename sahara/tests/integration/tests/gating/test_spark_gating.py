@@ -55,6 +55,7 @@ class SparkGatingTest(swift.SwiftTest, scaling.ScalingTest,
             'description': 'test node group template for Spark plugin',
             'node_processes': self.spark_config.MASTER_NODE_PROCESSES,
             'floating_ip_pool': self.floating_ip_pool,
+            'auto_security_group': True,
             'node_configs': {}
         }
         self.ng_tmpl_m_nn_id = self.create_node_group_template(**template)
@@ -68,6 +69,7 @@ class SparkGatingTest(swift.SwiftTest, scaling.ScalingTest,
             'description': 'test node group template for Spark plugin',
             'node_processes': self.spark_config.WORKER_NODE_PROCESSES,
             'floating_ip_pool': self.floating_ip_pool,
+            'auto_security_group': True,
             'node_configs': {}
         }
         self.ng_tmpl_s_dn_id = self.create_node_group_template(**template)
