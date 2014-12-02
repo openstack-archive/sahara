@@ -31,8 +31,15 @@ class EDPJobInfo(object):
     JAVA_PATH = 'etc/edp-examples/edp-java/'
     MAPREDUCE_PATH = 'etc/edp-examples/edp-mapreduce/'
     SPARK_PATH = 'etc/edp-examples/edp-spark/'
+    HIVE_PATH = 'etc/edp-examples/edp-hive/'
 
     HADOOP2_JAVA_PATH = 'etc/edp-examples/hadoop2/edp-java/'
+
+    def read_hive_example_script(self):
+        return open(self.HIVE_PATH + 'script.q').read()
+
+    def read_hive_example_input(self):
+        return open(self.HIVE_PATH + 'input.csv').read()
 
     def read_pig_example_script(self):
         return open(self.PIG_PATH + 'example.pig').read()
@@ -203,6 +210,29 @@ class EDPTest(base.ITestCase):
         if sw.HADOOP_SWIFT_PASSWORD not in configs["configs"]:
             configs["configs"][
                 sw.HADOOP_SWIFT_PASSWORD] = self.common_config.OS_PASSWORD
+
+    @base.skip_test('SKIP_EDP_TEST', 'Test for EDP was skipped.')
+    def check_edp_hive(self):
+        hdfs_input_path = '/user/hive/warehouse/input.csv'
+        # put input data to HDFS
+        self.put_file_to_hdfs(
+            self.cluster_info['node_info']['namenode_ip'],
+            hdfs_input_path, self.edp_info.read_hive_example_input())
+
+        input_id = self._create_data_source('hive-input', 'hdfs',
+                                            hdfs_input_path)
+        output_id = self._create_data_source('hive-output', 'hdfs',
+                                             '/user/hive/warehouse/output')
+        script_id = self._create_job_binary_internals(
+            'hive-script', self.edp_info.read_hive_example_script())
+        job_binary_id = self._create_job_binary('hive-edp',
+                                                'internal-db://%s' % script_id)
+        job_id = self._create_job('edp-test-hive', edp.JOB_TYPE_HIVE,
+                                  [job_binary_id], [])
+        job_execution_id = self.sahara.job_executions.create(
+            job_id, self.cluster_id, input_id, output_id, {}).id
+        self.addCleanup(self.sahara.job_executions.delete, job_execution_id)
+        return job_execution_id
 
     @base.skip_test('SKIP_EDP_TEST', 'Test for EDP was skipped.')
     def edp_testing(self, job_type, job_data_list, lib_data_list=None,
