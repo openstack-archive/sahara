@@ -256,11 +256,12 @@ class LocalApi(object):
     def job_execution_get_all(self, context, **kwargs):
         """Get all JobExecutions filtered by **kwargs.
 
-        kwargs key values are the names of fields in a JobExecution
-        with the addition of two special fields -- 'cluster.name'
-        and 'job.name'. These two fields support searching on the
-        names of the Cluster and/or Job objects referenced by the
-        JobExecution.
+        kwargs key values may be the names of fields in a JobExecution
+        plus the following special values with the indicated meaning:
+
+        'cluster.name' -- name of the Cluster referenced by the JobExecution
+        'job.name' -- name of the Job referenced by the JobExecution
+        'status' -- JobExecution['info']['status']
 
         e.g. job_execution_get_all(cluster_id=12, input_id=123)
              job_execution_get_all(**{'cluster.name': 'test',
