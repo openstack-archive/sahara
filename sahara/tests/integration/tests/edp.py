@@ -69,9 +69,17 @@ class EDPJobInfo(object):
     def mapreduce_example_configs(self):
         return {
             'configs': {
+                'dfs.replication': '1',  # for Hadoop 1 only
                 'mapred.mapper.class': 'org.apache.oozie.example.SampleMapper',
                 'mapred.reducer.class':
                 'org.apache.oozie.example.SampleReducer'
+            }
+        }
+
+    def pig_example_configs(self):
+        return {
+            'configs': {
+                'dfs.replication': '1'  # for Hadoop 1 only
             }
         }
 
