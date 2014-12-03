@@ -332,13 +332,12 @@ class DirectEngine(e.Engine):
         return instance_id
 
     def _create_auto_security_group(self, node_group):
-        cluster = node_group.cluster
-        name = g.generate_auto_security_group_name(
-            cluster.name, node_group.name)
+        name = g.generate_auto_security_group_name(node_group)
         nova_client = nova.client()
         security_group = nova_client.security_groups.create(
             name, "Auto security group created by Sahara for Node Group '%s' "
-                  "of cluster '%s'." % (node_group.name, cluster.name))
+                  "of cluster '%s'." %
+                  (node_group.name, node_group.cluster.name))
 
         # ssh remote needs ssh port, agents are not implemented yet
         nova_client.security_group_rules.create(
