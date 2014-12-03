@@ -108,6 +108,14 @@ def validate_cluster_creating(cluster):
         raise ex.InvalidComponentCountException('HUE_SERVER', '0 or 1',
                                                 hue_count)
 
+    shs_count = _get_inst_count(cluster, 'SPARK_YARN_HISTORY_SERVER')
+    if shs_count not in [0, 1]:
+        raise ex.InvalidComponentCountException('SPARK_YARN_HISTORY_SERVER',
+                                                '0 or 1', shs_count)
+    if shs_count and not rm_count:
+        raise ex.RequiredServiceMissingException(
+            'RESOURCEMANAGER', required_by='SPARK_YARN_HISTORY_SERVER')
+
     if oo_count < 1 and hue_count:
         raise ex.RequiredServiceMissingException(
             'OOZIE_SERVER', required_by='HUE_SERVER')
