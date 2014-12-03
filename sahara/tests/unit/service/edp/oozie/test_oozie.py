@@ -56,11 +56,11 @@ class TestOozieEngine(base.SaharaTestCase):
 
         oje = FakeOozieJobEngine(u.create_cluster())
         job, _ = u.create_job_exec(edp.JOB_TYPE_PIG)
-        res = oje._upload_job_files_to_hdfs(mock.Mock(), 'job_prefix', job)
+        res = oje._upload_job_files_to_hdfs(mock.Mock(), 'job_prefix', job, {})
         self.assertEqual(['job_prefix/script.pig'], res)
 
         job, _ = u.create_job_exec(edp.JOB_TYPE_MAPREDUCE)
-        res = oje._upload_job_files_to_hdfs(mock.Mock(), 'job_prefix', job)
+        res = oje._upload_job_files_to_hdfs(mock.Mock(), 'job_prefix', job, {})
         self.assertEqual(['job_prefix/lib/main.jar'], res)
 
     @mock.patch('sahara.utils.remote.get_remote')

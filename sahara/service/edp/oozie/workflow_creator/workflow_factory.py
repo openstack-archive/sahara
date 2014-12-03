@@ -213,7 +213,14 @@ class JavaFactory(BaseFactory):
     def _get_java_configs(self, job_dict):
         main_class = job_dict['edp_configs']['edp.java.main_class']
         java_opts = job_dict['edp_configs'].get('edp.java.java_opts', None)
-        return main_class, java_opts
+        args = job_dict['args']
+        if edp.is_adapt_for_oozie_enabled(job_dict['edp_configs']):
+            if args:
+                args = [main_class] + args
+            else:
+                args = [main_class]
+            main_class = 'org.openstack.sahara.edp.MainWrapper'
+        return main_class, java_opts, args
 
     def get_configs(self, proxy_configs=None):
         configs = {}
@@ -236,12 +243,12 @@ class JavaFactory(BaseFactory):
                     'args': []}
         self.update_job_dict(job_dict, job_configs)
 
-        main_class, java_opts = self._get_java_configs(job_dict)
+        main_class, java_opts, args = self._get_java_configs(job_dict)
         creator = java_workflow.JavaWorkflowCreator()
         creator.build_workflow_xml(main_class,
                                    configuration=job_dict['configs'],
                                    java_opts=java_opts,
-                                   arguments=job_dict['args'])
+                                   arguments=args)
         return creator.get_built_workflow_xml()
 
 
