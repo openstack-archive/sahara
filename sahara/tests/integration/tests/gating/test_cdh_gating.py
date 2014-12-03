@@ -44,7 +44,7 @@ class CDHGatingTest(cluster_configs.ClusterConfigTest,
         self.ng_template_ids = []
 
     def _prepare_test(self):
-        self.cdh_config = cfg.ITConfig().cdh_config
+        self.plugin_config = cfg.ITConfig().cdh_config
         self.floating_ip_pool = self.common_config.FLOATING_IP_POOL
         self.internal_neutron_net = None
         if self.common_config.NEUTRON_ENABLED:
@@ -52,8 +52,8 @@ class CDHGatingTest(cluster_configs.ClusterConfigTest,
             self.floating_ip_pool = (
                 self.get_floating_ip_pool_id_for_neutron_net())
 
-        self.cdh_config.IMAGE_ID, self.cdh_config.SSH_USERNAME = (
-            self.get_image_id_and_ssh_username(self.cdh_config))
+        self.plugin_config.IMAGE_ID, self.plugin_config.SSH_USERNAME = (
+            self.get_image_id_and_ssh_username(self.plugin_config))
 
         self.volumes_per_node = 0
         self.volumes_size = 0
@@ -65,7 +65,7 @@ class CDHGatingTest(cluster_configs.ClusterConfigTest,
     def _create_nm_dn_ng_template(self):
         template = {
             'name': 'test-node-group-template-cdh-nm-dn',
-            'plugin_config': self.cdh_config,
+            'plugin_config': self.plugin_config,
             'description': 'test node group template for CDH plugin',
             'node_processes': ['NODEMANAGER', 'DATANODE'],
             'floating_ip_pool': self.floating_ip_pool,
@@ -79,7 +79,7 @@ class CDHGatingTest(cluster_configs.ClusterConfigTest,
     def _create_nm_ng_template(self):
         template = {
             'name': 'test-node-group-template-cdh-nm',
-            'plugin_config': self.cdh_config,
+            'plugin_config': self.plugin_config,
             'description': 'test node group template for CDH plugin',
             'volumes_per_node': self.volumes_per_node,
             'volumes_size': self.volumes_size,
@@ -95,7 +95,7 @@ class CDHGatingTest(cluster_configs.ClusterConfigTest,
     def _create_dn_ng_template(self):
         template = {
             'name': 'test-node-group-template-cdh-dn',
-            'plugin_config': self.cdh_config,
+            'plugin_config': self.plugin_config,
             'description': 'test node group template for CDH plugin',
             'volumes_per_node': self.volumes_per_node,
             'volumes_size': self.volumes_size,
@@ -111,24 +111,24 @@ class CDHGatingTest(cluster_configs.ClusterConfigTest,
     def _create_cluster_template(self):
         cl_config = {
             'general': {
-                'CDH5 repo list URL': self.cdh_config.CDH_REPO_LIST_URL,
-                'CM5 repo list URL': self.cdh_config.CM_REPO_LIST_URL,
+                'CDH5 repo list URL': self.plugin_config.CDH_REPO_LIST_URL,
+                'CM5 repo list URL': self.plugin_config.CM_REPO_LIST_URL,
                 'CDH5 repo key URL (for debian-based only)':
-                self.cdh_config.CDH_APT_KEY_URL,
+                self.plugin_config.CDH_APT_KEY_URL,
                 'CM5 repo key URL (for debian-based only)':
-                self.cdh_config.CM_APT_KEY_URL,
+                self.plugin_config.CM_APT_KEY_URL,
                 'Enable Swift': True
             }
         }
         template = {
             'name': 'test-cluster-template-cdh',
-            'plugin_config': self.cdh_config,
+            'plugin_config': self.plugin_config,
             'description': 'test cluster template for CDH plugin',
             'cluster_configs': cl_config,
             'node_groups': [
                 {
                     'name': 'manager-node',
-                    'flavor_id': self.cdh_config.MANAGERNODE_FLAVOR,
+                    'flavor_id': self.plugin_config.MANAGERNODE_FLAVOR,
                     'node_processes': ['MANAGER'],
                     'floating_ip_pool': self.floating_ip_pool,
                     'auto_security_group': True,
@@ -175,10 +175,10 @@ class CDHGatingTest(cluster_configs.ClusterConfigTest,
     @b.errormsg("Failure while cluster creation: ")
     def _create_cluster(self):
         cluster_name = '%s-%s' % (self.common_config.CLUSTER_NAME,
-                                  self.cdh_config.PLUGIN_NAME)
+                                  self.plugin_config.PLUGIN_NAME)
         cluster = {
             'name': cluster_name,
-            'plugin_config': self.cdh_config,
+            'plugin_config': self.plugin_config,
             'cluster_template_id': self.cluster_template_id,
             'description': 'test cluster',
             'cluster_configs': {
@@ -189,9 +189,9 @@ class CDHGatingTest(cluster_configs.ClusterConfigTest,
         }
         self.cluster_id = self.create_cluster(**cluster)
         self.poll_cluster_state(self.cluster_id)
-        self.cluster_info = self.get_cluster_info(self.cdh_config)
+        self.cluster_info = self.get_cluster_info(self.plugin_config)
         self.await_active_workers_for_namenode(self.cluster_info['node_info'],
-                                               self.cdh_config)
+                                               self.plugin_config)
 
     @b.errormsg("Failure while Cinder testing: ")
     def _check_cinder(self):
@@ -240,6 +240,9 @@ class CDHGatingTest(cluster_configs.ClusterConfigTest,
             swift_binaries=False,
             hdfs_local_output=True)
 
+        # check hive
+        yield self.check_edp_hive()
+
     @b.errormsg("Failure while cluster scaling: ")
     def _check_scaling(self):
         change_list = [
@@ -272,7 +275,7 @@ class CDHGatingTest(cluster_configs.ClusterConfigTest,
         self.cluster_info = self.cluster_scaling(self.cluster_info,
                                                  change_list)
         self.await_active_workers_for_namenode(self.cluster_info['node_info'],
-                                               self.cdh_config)
+                                               self.plugin_config)
 
     @b.errormsg("Failure while Cinder testing after cluster scaling: ")
     def _check_cinder_after_scaling(self):
@@ -309,7 +312,7 @@ class CDHGatingTest(cluster_configs.ClusterConfigTest,
         self._check_swift()
         self._check_edp()
 
-        if not self.cdh_config.SKIP_SCALING_TEST:
+        if not self.plugin_config.SKIP_SCALING_TEST:
             self._check_scaling()
             self._check_cinder_after_scaling()
             self._check_edp_after_scaling()
@@ -330,7 +333,7 @@ class CDHGatingTest(cluster_configs.ClusterConfigTest,
             print("Cloudera Manager node not found")
             return
 
-        self.open_ssh_connection(manager_node, self.cdh_config.SSH_USERNAME)
+        self.open_ssh_connection(manager_node, self.plugin_config.SSH_USERNAME)
         try:
             log = self.execute_command('sudo cat /var/log/cloudera-scm-server/'
                                        'cloudera-scm-server.log')[1]

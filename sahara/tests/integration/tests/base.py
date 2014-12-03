@@ -267,6 +267,16 @@ class ITestCase(testcase.WithAttributes, base.BaseTestCase):
         # }
         return node_ip_list_with_node_processes
 
+    def put_file_to_hdfs(self, namenode_ip, remote_path, data):
+        tmp_file_path = '/tmp/%s' % six.text_type(uuid.uuid4())
+        self.open_ssh_connection(namenode_ip, self.plugin_config.SSH_USERNAME)
+        self.write_file_to(tmp_file_path, data)
+        self.execute_command(
+            'sudo su - -c "hadoop dfs -copyFromLocal %s %s" %s' % (
+                tmp_file_path, remote_path, self.plugin_config.HADOOP_USER))
+        self.execute_command('rm -fr %s' % tmp_file_path)
+        self.close_ssh_connection()
+
     def try_telnet(self, host, port):
         try:
             telnetlib.Telnet(host, port)
