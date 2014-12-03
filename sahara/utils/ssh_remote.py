@@ -438,7 +438,7 @@ class InstanceInteropHelper(remote.Remote):
             self.instance.node_group.cluster.neutron_management_network)
         ctx = context.current()
         neutron_info['uri'] = base.url_for(ctx.service_catalog, 'network')
-        neutron_info['token'] = ctx.token
+        neutron_info['token'] = ctx.auth_token
         neutron_info['tenant'] = ctx.tenant_name
         neutron_info['host'] = self.instance.management_ip
 

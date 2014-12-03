@@ -38,7 +38,7 @@ def client():
     '''Return the current context client.'''
     ctx = context.current()
 
-    return _client(username=ctx.username, token=ctx.token,
+    return _client(username=ctx.username, token=ctx.auth_token,
                    tenant_id=ctx.tenant_id)
 
 

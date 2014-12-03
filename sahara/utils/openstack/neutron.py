@@ -32,7 +32,7 @@ def client():
         'username': ctx.username,
         'tenant_name': ctx.tenant_name,
         'tenant_id': ctx.tenant_id,
-        'token': ctx.token,
+        'token': ctx.auth_token,
         'endpoint_url': base.url_for(ctx.service_catalog, 'network')
     }
     return neutron_cli.Client('2.0', **args)

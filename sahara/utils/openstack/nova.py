@@ -31,7 +31,7 @@ def client():
                               project_id=ctx.tenant_id,
                               auth_url=auth_url)
 
-    nova.client.auth_token = ctx.token
+    nova.client.auth_token = ctx.auth_token
     nova.client.management_url = compute_url
     nova.images = images.SaharaImageManager(nova)
     return nova

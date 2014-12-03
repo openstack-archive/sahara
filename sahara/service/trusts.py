@@ -138,6 +138,6 @@ def use_os_admin_auth_token(cluster):
         ctx.username = CONF.keystone_authtoken.admin_user
         ctx.tenant_id = cluster.tenant_id
         client = keystone.client_for_admin_from_trust(cluster.trust_id)
-        ctx.token = client.auth_token
+        ctx.auth_token = client.auth_token
         ctx.service_catalog = json.dumps(
             client.service_catalog.catalog['catalog'])

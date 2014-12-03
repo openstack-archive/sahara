@@ -24,6 +24,7 @@ from sahara import exceptions as ex
 from sahara.i18n import _
 from sahara.i18n import _LE
 from sahara.i18n import _LW
+from sahara.openstack.common import context
 from sahara.openstack.common import log as logging
 
 
@@ -31,12 +32,11 @@ CONF = cfg.CONF
 LOG = logging.getLogger(__name__)
 
 
-# TODO(slukjanov): it'll be better to use common_context.RequestContext as base
-class Context(object):
+class Context(context.RequestContext):
     def __init__(self,
                  user_id=None,
                  tenant_id=None,
-                 token=None,
+                 auth_token=None,
                  service_catalog=None,
                  username=None,
                  tenant_name=None,
@@ -49,13 +49,13 @@ class Context(object):
             LOG.warn(_LW('Arguments dropped when creating context: %s'),
                      kwargs)
 
-        self.user_id = user_id
-        self.tenant_id = tenant_id
-        self.token = token
+        super(Context, self).__init__(auth_token=auth_token,
+                                      user=user_id,
+                                      tenant=tenant_id,
+                                      is_admin=is_admin)
         self.service_catalog = service_catalog
         self.username = username
         self.tenant_name = tenant_name
-        self.is_admin = is_admin
         self.remote_semaphore = remote_semaphore or semaphore.Semaphore(
             CONF.cluster_remote_threshold)
         self.roles = roles
@@ -68,7 +68,7 @@ class Context(object):
         return Context(
             self.user_id,
             self.tenant_id,
-            self.token,
+            self.auth_token,
             self.service_catalog,
             self.username,
             self.tenant_name,
@@ -81,7 +81,7 @@ class Context(object):
         return {
             'user_id': self.user_id,
             'tenant_id': self.tenant_id,
-            'token': self.token,
+            'auth_token': self.auth_token,
             'service_catalog': self.service_catalog,
             'username': self.username,
             'tenant_name': self.tenant_name,
@@ -91,8 +91,27 @@ class Context(object):
         }
 
     def is_auth_capable(self):
-        return (self.service_catalog and self.token and self.tenant_id and
+        return (self.service_catalog and self.auth_token and self.tenant and
                 self.user_id)
+
+    # NOTE(adrienverge): The Context class uses the 'user' and 'tenant'
+    # properties internally (inherited from oslo.context), but Sahara code
+    # often uses 'user_id' and 'tenant_id'.
+    @property
+    def user_id(self):
+        return self.user
+
+    @user_id.setter
+    def user_id(self, value):
+        self.user = value
+
+    @property
+    def tenant_id(self):
+        return self.tenant
+
+    @tenant_id.setter
+    def tenant_id(self, value):
+        self.tenant = value
 
 
 def get_admin_context():
