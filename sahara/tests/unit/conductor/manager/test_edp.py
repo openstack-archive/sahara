@@ -302,8 +302,9 @@ class JobExecutionTest(test_base.ConductorManagerTestCase):
         # Run job on cluster 1
         self.api.job_execution_create(ctx, my_sample_job_exec)
 
-        # Run the same job on cluster 2
+        # Run the same job on cluster 2 and set status
         my_sample_job_exec['cluster_id'] = cl2['id']
+        my_sample_job_exec['info'] = {'status': 'KiLLeD'}
         self.api.job_execution_create(ctx, my_sample_job_exec)
 
         # Search only with job exeuction fields (finds both)
@@ -311,14 +312,22 @@ class JobExecutionTest(test_base.ConductorManagerTestCase):
         self.assertEqual(len(lst), 2)
 
         # Search on cluster name
-        kwargs = {'cluster.name': test_clusters.SAMPLE_CLUSTER['name'],
+        kwargs = {'cluster.name': cl1['name'],
                   'return_code': 1}
         lst = self.api.job_execution_get_all(ctx, **kwargs)
         self.assertEqual(len(lst), 1)
 
         # Search on cluster name and job name
-        kwargs = {'cluster.name': test_clusters.SAMPLE_CLUSTER['name'],
+        kwargs = {'cluster.name': cl1['name'],
                   'job.name': SAMPLE_JOB['name'],
+                  'return_code': 1}
+        lst = self.api.job_execution_get_all(ctx, **kwargs)
+        self.assertEqual(len(lst), 1)
+
+        # Search on cluster name, job name, and status
+        kwargs = {'cluster.name': cl2['name'],
+                  'job.name': SAMPLE_JOB['name'],
+                  'status': 'killed',
                   'return_code': 1}
         lst = self.api.job_execution_get_all(ctx, **kwargs)
         self.assertEqual(len(lst), 1)
@@ -330,14 +339,20 @@ class JobExecutionTest(test_base.ConductorManagerTestCase):
         self.assertEqual(len(lst), 2)
 
         # invalid cluster name value
-        kwargs = {'cluster.name': test_clusters.SAMPLE_CLUSTER['name']+'foo',
+        kwargs = {'cluster.name': cl1['name']+'foo',
                   'job.name': SAMPLE_JOB['name']}
         lst = self.api.job_execution_get_all(ctx, **kwargs)
         self.assertEqual(len(lst), 0)
 
         # invalid job name value
-        kwargs = {'cluster.name': test_clusters.SAMPLE_CLUSTER['name'],
+        kwargs = {'cluster.name': cl1['name'],
                   'job.name': SAMPLE_JOB['name']+'foo'}
+        lst = self.api.job_execution_get_all(ctx, **kwargs)
+        self.assertEqual(len(lst), 0)
+
+        # invalid status value
+        kwargs = {'cluster.name': cl1['name'],
+                  'status': 'PENDING'}
         lst = self.api.job_execution_get_all(ctx, **kwargs)
         self.assertEqual(len(lst), 0)
 

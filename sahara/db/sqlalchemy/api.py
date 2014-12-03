@@ -547,11 +547,12 @@ def job_execution_get(context, job_execution_id):
 def job_execution_get_all(context, **kwargs):
     """Get all JobExecutions filtered by **kwargs.
 
-    kwargs key values are the names of fields in a JobExecution
-    with the addition of two special fields -- 'cluster.name'
-    and 'job.name'. These two fields support searching on the
-    names of the Cluster and/or Job objects referenced by the
-    JobExecution.
+    kwargs key values may be the names of fields in a JobExecution
+    plus the following special values with the indicated meaning:
+
+    'cluster.name' -- name of the Cluster referenced by the JobExecution
+    'job.name' -- name of the Job referenced by the JobExecution
+    'status' -- JobExecution['info']['status']
 
     e.g. job_execution_get_all(cluster_id=12, input_id=123)
          job_execution_get_all(**{'cluster.name': 'test',
@@ -562,7 +563,8 @@ def job_execution_get_all(context, **kwargs):
     # Remove the external fields if present, they'll
     # be handled with a join and filter
     externals = {k: kwargs.pop(k) for k in ['cluster.name',
-                                            'job.name'] if k in kwargs}
+                                            'job.name',
+                                            'status'] if k in kwargs}
 
     # Filter JobExecution by the remaining kwargs. This has to be done
     # before application of the joins and filters because those
@@ -586,7 +588,20 @@ def job_execution_get_all(context, **kwargs):
         query = query.join(m.Job).filter(
             m.Job.name == externals['job.name'])
 
-    return query.all()
+    res = query.all()
+
+    # 'info' is a JsonDictType which is stored as a string.
+    # It would be possible to search for the substring containing
+    # the value of 'status' in 'info', but 'info' also contains
+    # data returned from a client and not managed by Sahara.
+    # In the case of Oozie jobs, for example, other fields (actions)
+    # also contain 'status'. Therefore we can't filter on it reliably
+    # by a substring search in the query.
+    if 'status' in externals:
+        status = externals['status'].lower()
+        res = [je for je in res if (
+            je['info'] and je['info'].get('status', '').lower() == status)]
+    return res
 
 
 def job_execution_count(context, **kwargs):
