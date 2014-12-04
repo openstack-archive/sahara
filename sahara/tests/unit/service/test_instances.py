@@ -319,6 +319,8 @@ def _mock_ips(count):
 def _generate_user_data_script(cluster):
     script_template = """#!/bin/bash
 echo "%(public_key)s" >> %(user_home)s/.ssh/authorized_keys\n
+# ====== COMMENT OUT Defaults requiretty in /etc/sudoers ========
+sed '/^Defaults    requiretty*/ s/^/#/' -i /etc/sudoers\n
 """
     return script_template % {
         "public_key": cluster.management_public_key,
