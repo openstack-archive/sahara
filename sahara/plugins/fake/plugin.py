@@ -71,17 +71,17 @@ class FakePluginProvider(p.ProvisioningPluginBase):
             r.execute_command('echo "Hello, world!"')
             # check write file
             data_1 = "sp@m"
-            r.write_file_to('~/test_data', data_1, run_as_root=True)
+            r.write_file_to('test_data', data_1, run_as_root=True)
             # check append file
             data_2 = " and eggs"
-            r.append_to_file('~/test_data', data_2, run_as_root=True)
+            r.append_to_file('test_data', data_2, run_as_root=True)
             # check replace string
-            r.replace_remote_string('~/test_data', "eggs", "pony")
+            r.replace_remote_string('test_data', "eggs", "pony")
 
     def _check_ops(self, instance):
         expected_data = "sp@m and pony"
         with instance.remote() as r:
-            actual_data = r.read_file_from('~/test_data', run_as_root=True)
+            actual_data = r.read_file_from('test_data', run_as_root=True)
 
             if actual_data.strip() != expected_data.strip():
                 raise pex.HadoopProvisionError("ACTUAL:\n%s\nEXPECTED:\n%s" % (
