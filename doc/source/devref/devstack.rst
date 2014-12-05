@@ -52,7 +52,7 @@ Ubuntu 12.04 system.
 .. sourcecode:: console
 
     $ sudo apt-get install git-core
-    $ git clone https://github.com/openstack-dev/devstack.git
+    $ git clone https://git.openstack.org/cgit/openstack-dev/devstack.git
 
 2. Create file ``local.conf`` in devstack directory with the following content:
 

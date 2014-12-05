@@ -51,9 +51,9 @@ How to send your first patch on review?
 
 * Checkout Sahara code from `Github <https://github.com/openstack/sahara>`_
 
-* Carefully read https://wiki.openstack.org/wiki/Gerrit_Workflow
+* Carefully read http://docs.openstack.org/infra/manual/developers.html#development-workflow
 
-  * Pay special attention to https://wiki.openstack.org/wiki/Gerrit_Workflow#Committing_Changes
+  * Pay special attention to http://docs.openstack.org/infra/manual/developers.html#committing-a-change
 
 * Apply and commit your changes
 
