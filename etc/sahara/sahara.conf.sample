@@ -4,10 +4,10 @@
 # From oslo.messaging
 #
 
-# Auto-delete queues in amqp. (boolean value)
+# Auto-delete queues in AMQP. (boolean value)
 #amqp_auto_delete = false
 
-# Use durable queues in amqp. (boolean value)
+# Use durable queues in AMQP. (boolean value)
 # Deprecated group/name - [DEFAULT]/rabbit_durable_queues
 #amqp_durable_queues = false
 
@@ -16,7 +16,8 @@
 # option. (string value)
 #control_exchange = openstack
 
-# If passed, use a fake RabbitMQ provider. (boolean value)
+# Deprecated, use rpc_backend=kombu+memory or rpc_backend=fake
+# (boolean value)
 #fake_rabbit = false
 
 # How long to wait before reconnecting in response to an AMQP consumer
@@ -34,7 +35,7 @@
 #kombu_ssl_keyfile =
 
 # SSL version to use (valid only if SSL enabled). valid values are
-# TLSv1, SSLv23 and SSLv3. SSLv2 may be available on some
+# TLSv1 and SSLv23. SSLv2 and SSLv3 may be available on some
 # distributions. (string value)
 #kombu_ssl_version =
 
@@ -100,7 +101,7 @@
 # RabbitMQ HA cluster host:port pairs. (list value)
 #rabbit_hosts = $rabbit_host:$rabbit_port
 
-# the RabbitMQ login method (string value)
+# The RabbitMQ login method. (string value)
 #rabbit_login_method = AMQPLAIN
 
 # Maximum number of RabbitMQ connection retries. Default is 0
@@ -757,3 +758,57 @@
 # Matchmaker ring file (JSON). (string value)
 # Deprecated group/name - [DEFAULT]/matchmaker_ringfile
 #ringfile = /etc/oslo/matchmaker_ring.json
+
+
+[oslo_messaging_amqp]
+
+#
+# From oslo.messaging
+#
+
+# Accept clients using either SSL or plain TCP (boolean value)
+# Deprecated group/name - [amqp1]/allow_insecure_clients
+#allow_insecure_clients = false
+
+# address prefix used when broadcasting to all servers (string value)
+# Deprecated group/name - [amqp1]/broadcast_prefix
+#broadcast_prefix = broadcast
+
+# Name for the AMQP container (string value)
+# Deprecated group/name - [amqp1]/container_name
+#container_name = <None>
+
+# address prefix when sending to any server in group (string value)
+# Deprecated group/name - [amqp1]/group_request_prefix
+#group_request_prefix = unicast
+
+# Timeout for inactive connections (in seconds) (integer value)
+# Deprecated group/name - [amqp1]/idle_timeout
+#idle_timeout = 0
+
+# address prefix used when sending to a specific server (string value)
+# Deprecated group/name - [amqp1]/server_request_prefix
+#server_request_prefix = exclusive
+
+# CA certificate PEM file for verifing server certificate (string
+# value)
+# Deprecated group/name - [amqp1]/ssl_ca_file
+#ssl_ca_file =
+
+# Identifying certificate PEM file to present to clients (string
+# value)
+# Deprecated group/name - [amqp1]/ssl_cert_file
+#ssl_cert_file =
+
+# Private key PEM file used to sign cert_file certificate (string
+# value)
+# Deprecated group/name - [amqp1]/ssl_key_file
+#ssl_key_file =
+
+# Password for decrypting ssl_key_file (if encrypted) (string value)
+# Deprecated group/name - [amqp1]/ssl_key_password
+#ssl_key_password = <None>
+
+# Debug: dump AMQP frames to stdout (boolean value)
+# Deprecated group/name - [amqp1]/trace
+#trace = false
