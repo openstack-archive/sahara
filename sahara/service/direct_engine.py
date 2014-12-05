@@ -225,8 +225,8 @@ class DirectEngine(e.Engine):
                 old_aa_groups = self._generate_anti_affinity_groups(cluster)
 
         instances_to_delete = []
-        node_groups_to_enlarge = []
-        node_groups_to_delete = []
+        node_groups_to_enlarge = set()
+        node_groups_to_delete = set()
 
         for node_group in cluster.node_groups:
             new_count = node_group_id_map[node_group.id]
@@ -235,9 +235,9 @@ class DirectEngine(e.Engine):
                 instances_to_delete += node_group.instances[new_count:
                                                             node_group.count]
                 if new_count == 0:
-                    node_groups_to_delete.append(node_group)
+                    node_groups_to_delete.add(node_group.id)
             elif new_count > node_group.count:
-                node_groups_to_enlarge.append(node_group)
+                node_groups_to_enlarge.add(node_group.id)
                 if node_group.count == 0 and node_group.auto_security_group:
                     self._create_auto_security_group(node_group)
 
@@ -248,21 +248,22 @@ class DirectEngine(e.Engine):
                 self._shutdown_instance(instance)
 
         self._await_deleted(cluster, instances_to_delete)
-        for ng in node_groups_to_delete:
-            self._delete_auto_security_group(ng)
+        for ng in cluster.node_groups:
+            if ng.id in node_groups_to_delete:
+                self._delete_auto_security_group(ng)
 
         cluster = conductor.cluster_get(ctx, cluster)
-
         instances_to_add = []
         if node_groups_to_enlarge:
             cluster = g.change_cluster_status(cluster, "Adding Instances")
-            for node_group in node_groups_to_enlarge:
-                count = node_group_id_map[node_group.id]
-                for idx in six.moves.xrange(node_group.count + 1, count + 1):
-                    instance_id = self._run_instance(
-                        cluster, node_group, idx,
-                        aa_group=aa_group, old_aa_groups=old_aa_groups)
-                    instances_to_add.append(instance_id)
+            for ng in cluster.node_groups:
+                if ng.id in node_groups_to_enlarge:
+                    count = node_group_id_map[ng.id]
+                    for idx in six.moves.xrange(ng.count + 1, count + 1):
+                        instance_id = self._run_instance(
+                            cluster, ng, idx,
+                            aa_group=aa_group, old_aa_groups=old_aa_groups)
+                        instances_to_add.append(instance_id)
 
         return instances_to_add
 
