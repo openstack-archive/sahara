@@ -18,15 +18,10 @@
 import functools
 
 from keystonemiddleware import auth_token
-from oslo.config import cfg
 
 from sahara import context
 from sahara import exceptions
 from sahara.openstack.common import policy
-
-CONF = cfg.CONF
-
-AUTH_OPT_GROUP_NAME = 'keystone_authtoken'
 
 ENFORCER = None
 
@@ -51,8 +46,6 @@ def enforce(rule):
     return decorator
 
 
-def wrap(app, conf):
+def wrap(app):
     """Wrap wsgi application with ACL check."""
-
-    auth_cfg = dict(conf.get(AUTH_OPT_GROUP_NAME))
-    return auth_token.AuthProtocol(app, conf=auth_cfg)
+    return auth_token.AuthProtocol(app, {})
