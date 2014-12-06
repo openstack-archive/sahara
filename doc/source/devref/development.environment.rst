@@ -45,7 +45,7 @@ On openSUSE-based distributions (SLES 12, openSUSE, Factory or Tumbleweed)::
 
     $ sudo zypper in gcc git libmysqlclient-devel postgresql-devel python-devel python-pip python-tox python-virtualenv
 
-2. Grab the code from GitHub:
+2. Grab the code:
 
 .. sourcecode:: console
 
