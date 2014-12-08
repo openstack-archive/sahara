@@ -37,7 +37,7 @@ class CDHPluginProvider(p.ProvisioningPluginBase):
                  '(CDH) with Cloudera Manager management console.')
 
     def get_versions(self):
-        return ['5']
+        return ['5', '5.2.0']
 
     def get_node_processes(self, hadoop_version):
         return {

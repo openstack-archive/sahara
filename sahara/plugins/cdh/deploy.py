@@ -36,8 +36,6 @@ from sahara.utils import xmlutils
 
 CM_API_PORT = 7180
 
-CDH_VERSION = 'CDH5'
-
 HDFS_SERVICE_TYPE = 'HDFS'
 YARN_SERVICE_TYPE = 'YARN'
 OOZIE_SERVICE_TYPE = 'OOZIE'
@@ -353,7 +351,10 @@ def _start_cloudera_manager(cluster):
 def _create_services(cluster):
     api = cu.get_api_client(cluster)
 
-    cm_cluster = api.create_cluster(cluster.name, CDH_VERSION)
+    fullversion = ('5.0.0' if cluster.hadoop_version == '5'
+                   else cluster.hadoop_version)
+    cm_cluster = api.create_cluster(cluster.name,
+                                    fullVersion=fullversion)
 
     if len(pu.get_zookeepers(cluster)) > 0:
         cm_cluster.create_service(cu.ZOOKEEPER_SERVICE_NAME,
