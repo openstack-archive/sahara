@@ -23,10 +23,10 @@ class VanillaProvider(p.ProvisioningPluginBase):
         self.version_factory = vhf.VersionFactory.get_instance()
 
     def get_description(self):
-        return (
-            _("This plugin provides an ability to launch vanilla Apache Hadoop"
-              " cluster without any management consoles. Also it can "
-              "deploy Oozie and Hive"))
+        return _('The Apache Vanilla plugin provides the ability to launch '
+                 'upstream Vanilla Apache Hadoop cluster without any '
+                 'management consoles. It can also deploy the Oozie '
+                 'component.')
 
     def _get_version_handler(self, hadoop_version):
         return self.version_factory.get_version_handler(hadoop_version)

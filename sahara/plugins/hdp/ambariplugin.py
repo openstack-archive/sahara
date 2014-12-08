@@ -259,9 +259,8 @@ class AmbariPlugin(p.ProvisioningPluginBase):
         return 'Hortonworks Data Platform'
 
     def get_description(self):
-        return _('The Hortonworks OpenStack plugin works with project '
-                 'Sahara to automate the deployment of the Hortonworks data'
-                 ' platform on OpenStack based public & private clouds')
+        return _('The Hortonworks Sahara plugin automates the deployment '
+                 'of the Hortonworks Data Platform (HDP) on OpenStack.')
 
     def validate(self, cluster):
         # creating operational config results in validation
