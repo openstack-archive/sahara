@@ -103,12 +103,13 @@ class RemoteCommandException(SaharaException):
                                                     six.text_type(ret_code))
 
         if stderr:
-            self.message = '%s\nSTDERR:\n%s' % (self.message, stderr)
+            self.message = '%s\nSTDERR:\n%s' % (
+                self.message, stderr.decode('ascii', 'ignore'))
 
         if stdout:
-            self.message = '%s\nSTDOUT:\n%s' % (self.message, stdout)
+            self.message = '%s\nSTDOUT:\n%s' % (
+                self.message, stdout.decode('ascii', 'ignore'))
 
-        self.message = self.message.decode('ascii', 'ignore')
         super(RemoteCommandException, self).__init__()
 
 
