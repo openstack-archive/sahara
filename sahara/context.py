@@ -19,12 +19,12 @@ from eventlet.green import time
 from eventlet import greenpool
 from eventlet import semaphore
 from oslo.config import cfg
+from oslo_context import context
 
 from sahara import exceptions as ex
 from sahara.i18n import _
 from sahara.i18n import _LE
 from sahara.i18n import _LW
-from sahara.openstack.common import context
 from sahara.openstack.common import log as logging
 
 
