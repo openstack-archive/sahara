@@ -120,24 +120,29 @@ class EDPTest(base.ITestCase):
         source_id = self.sahara.data_sources.create(
             name, description, data_type, url, self.common_config.OS_USERNAME,
             self.common_config.OS_PASSWORD).id
-        self.addCleanup(self.sahara.data_sources.delete, source_id)
+        if not self.common_config.RETAIN_EDP_AFTER_TEST:
+            self.addCleanup(self.sahara.data_sources.delete, source_id)
         return source_id
 
     def _create_job_binary_internals(self, name, data):
         job_binary_id = self.sahara.job_binary_internals.create(name, data).id
-        self.addCleanup(self.sahara.job_binary_internals.delete, job_binary_id)
+        if not self.common_config.RETAIN_EDP_AFTER_TEST:
+            self.addCleanup(self.sahara.job_binary_internals.delete,
+                            job_binary_id)
         return job_binary_id
 
     def _create_job_binary(self, name, url, extra=None, description=None):
         job_binary_id = self.sahara.job_binaries.create(
             name, url, description or '', extra or {}).id
-        self.addCleanup(self.sahara.job_binaries.delete, job_binary_id)
+        if not self.common_config.RETAIN_EDP_AFTER_TEST:
+            self.addCleanup(self.sahara.job_binaries.delete, job_binary_id)
         return job_binary_id
 
     def _create_job(self, name, job_type, mains, libs):
         job_id = self.sahara.jobs.create(name, job_type, mains, libs,
                                          description='').id
-        self.addCleanup(self.sahara.jobs.delete, job_id)
+        if not self.common_config.RETAIN_EDP_AFTER_TEST:
+            self.addCleanup(self.sahara.jobs.delete, job_id)
         return job_id
 
     def _get_job_status(self, job_id):
@@ -231,7 +236,9 @@ class EDPTest(base.ITestCase):
                                   [job_binary_id], [])
         job_execution_id = self.sahara.job_executions.create(
             job_id, self.cluster_id, input_id, output_id, {}).id
-        self.addCleanup(self.sahara.job_executions.delete, job_execution_id)
+        if not self.common_config.RETAIN_EDP_AFTER_TEST:
+            self.addCleanup(self.sahara.job_executions.delete,
+                            job_execution_id)
         return job_execution_id
 
     @base.skip_test('SKIP_EDP_TEST', 'Test for EDP was skipped.')
@@ -245,7 +252,8 @@ class EDPTest(base.ITestCase):
         swift = self.connect_to_swift()
         container_name = 'Edp-test-%s' % str(uuid.uuid4())[:8]
         swift.put_container(container_name)
-        self.addCleanup(self.delete_swift_container, swift, container_name)
+        if not self.common_config.RETAIN_EDP_AFTER_TEST:
+            self.addCleanup(self.delete_swift_container, swift, container_name)
         swift.put_object(
             container_name, 'input', ''.join(
                 random.choice(':' + ' ' + '\n' + string.ascii_lowercase)
@@ -330,6 +338,8 @@ class EDPTest(base.ITestCase):
         job_execution = self.sahara.job_executions.create(
             job_id, self.cluster_id, input_id, output_id,
             configs=configs)
-        self.addCleanup(self.sahara.job_executions.delete, job_execution.id)
+        if not self.common_config.RETAIN_EDP_AFTER_TEST:
+            self.addCleanup(self.sahara.job_executions.delete,
+                            job_execution.id)
 
         return job_execution.id
