@@ -183,8 +183,6 @@ def _separate_configs(configs, all_env_configs):
     xml_configs = {}
     env_configs = {}
     for service, params in six.iteritems(configs):
-        xml_configs[service] = {}
-        env_configs[service] = {}
         for param, value in six.iteritems(params):
             if all_env_configs.get(service, {}).get(param):
                 if not env_configs.get(service):
