@@ -1,8 +1,7 @@
-     "%(security_group_name)s": {
-      "Type": "OS::Neutron::SecurityGroup",
+    "%(security_group_name)s": {
+      "Type": "AWS::EC2::SecurityGroup",
       "Properties": {
-        "description": "%(security_group_description)s",
-        "name": "%(security_group_name)s",
-        "rules": %(rules)s
+        "GroupDescription": "%(security_group_description)s",
+        "SecurityGroupIngress": %(rules)s
       }
     }
