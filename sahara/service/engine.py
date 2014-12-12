@@ -142,6 +142,8 @@ class Engine(object):
     def _generate_user_data_script(self, node_group, instance_name):
         script = """#!/bin/bash
 echo "${public_key}" >> ${user_home}/.ssh/authorized_keys\n
+# ====== COMMENT OUT Defaults requiretty in /etc/sudoers ========
+sed '/^Defaults    requiretty*/ s/^/#/' -i /etc/sudoers\n
 """
 
         script += remote.get_userdata_template()
