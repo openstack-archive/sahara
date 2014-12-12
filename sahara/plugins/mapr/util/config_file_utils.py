@@ -30,8 +30,8 @@ def load_properties_file(path):
 
 
 def load_xml_file(path):
-    kv_mapper = lambda i: (x._get_text_from_node(i, 'name'),
-                           x._adjust_field(x._get_text_from_node(i, 'value')))
+    kv_mapper = lambda i: (x.get_text_from_node(i, 'name'),
+                           x._adjust_field(x.get_text_from_node(i, 'value')))
     strip_mapper = lambda i: (i[0].strip(), i[1].strip())
     props = x.load_xml_document(path).getElementsByTagName('property')
     return dict(map(strip_mapper, map(kv_mapper, props)))

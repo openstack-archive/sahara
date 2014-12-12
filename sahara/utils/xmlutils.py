@@ -29,10 +29,10 @@ def load_hadoop_xml_defaults(file_name):
     prop = doc.getElementsByTagName('property')
     for elements in prop:
         configs.append({
-            "name": _get_text_from_node(elements, 'name'),
-            "value": _adjust_field(_get_text_from_node(elements, 'value')),
+            "name": get_text_from_node(elements, 'name'),
+            "value": _adjust_field(get_text_from_node(elements, 'value')),
             "description": _adjust_field(
-                _get_text_from_node(elements, 'description'))
+                get_text_from_node(elements, 'description'))
         })
     return configs
 
@@ -43,8 +43,8 @@ def parse_hadoop_xml_with_name_and_value(data):
     prop = doc.getElementsByTagName('property')
     for elements in prop:
         configs.append({
-            'name': _get_text_from_node(elements, 'name'),
-            'value': _get_text_from_node(elements, 'value')
+            'name': get_text_from_node(elements, 'name'),
+            'value': get_text_from_node(elements, 'value')
         })
 
     return configs
@@ -92,7 +92,7 @@ def load_xml_document(file_name, strip=False):
         return xml.parse(fname)
 
 
-def _get_text_from_node(element, name):
+def get_text_from_node(element, name):
     element = element.getElementsByTagName(name) if element else None
     return element[0].firstChild.nodeValue if (
         element and element[0].hasChildNodes()) else ''
@@ -154,3 +154,22 @@ def add_equal_separated_dict(doc, parent_tag, each_elem_tag, value):
 def add_tagged_list(doc, parent_tag, each_elem_tag, values):
     for v in values:
         add_text_element_to_tag(doc, parent_tag, each_elem_tag, v)
+
+
+def get_property_dict(elem):
+    res = {}
+    properties = elem.getElementsByTagName('property')
+    for prop in properties:
+        k = get_text_from_node(prop, 'name')
+        v = get_text_from_node(prop, 'value')
+        res[k] = v
+    return res
+
+
+def get_param_dict(elem):
+    res = {}
+    params = elem.getElementsByTagName('param')
+    for param in params:
+        k, v = param.firstChild.nodeValue.split('=')
+        res[k] = v
+    return res

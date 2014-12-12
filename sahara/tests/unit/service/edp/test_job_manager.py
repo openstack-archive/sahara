@@ -14,6 +14,7 @@
 # limitations under the License.
 
 import copy
+import xml.dom.minidom as xml
 
 import mock
 import testtools
@@ -29,7 +30,7 @@ from sahara.tests.unit import base
 from sahara.tests.unit.service.edp import edp_test_utils as u
 from sahara.utils import edp
 from sahara.utils import patches as p
-
+from sahara.utils import xmlutils
 
 conductor = cond.API
 
@@ -399,21 +400,23 @@ class TestJobManager(base.SaharaWithDbTestCase):
             job, u.create_cluster(), job_exec, input_data, output_data,
             'hadoop')
 
-        self.assertIn("""
-      <job-xml>/user/hadoop/conf/hive-site.xml</job-xml>
-      <configuration>
-        <property>
-          <name>fs.swift.service.sahara.password</name>
-          <value>admin1</value>
-        </property>
-        <property>
-          <name>fs.swift.service.sahara.username</name>
-          <value>admin</value>
-        </property>
-      </configuration>
-      <script>script.q</script>
-      <param>INPUT=swift://ex.sahara/i</param>
-      <param>OUTPUT=swift://ex.sahara/o</param>""", res)
+        doc = xml.parseString(res)
+        hive = doc.getElementsByTagName('hive')[0]
+        self.assertEqual(xmlutils.get_text_from_node(hive, 'job-xml'),
+                         '/user/hadoop/conf/hive-site.xml')
+
+        configuration = hive.getElementsByTagName('configuration')
+        properties = xmlutils.get_property_dict(configuration[0])
+        self.assertEqual({'fs.swift.service.sahara.password': 'admin1',
+                          'fs.swift.service.sahara.username': 'admin'},
+                         properties)
+
+        self.assertEqual(xmlutils.get_text_from_node(hive, 'script'),
+                         'script.q')
+
+        params = xmlutils.get_param_dict(hive)
+        self.assertEqual({'INPUT': 'swift://ex.sahara/i',
+                          'OUTPUT': 'swift://ex.sahara/o'}, params)
 
         # testing workflow creation with a proxy domain
         self.override_config('use_domain_for_proxy_users', True)
@@ -425,29 +428,22 @@ class TestJobManager(base.SaharaWithDbTestCase):
             job, u.create_cluster(), job_exec, input_data, output_data,
             'hadoop')
 
-        self.assertIn("""
-      <job-xml>/user/hadoop/conf/hive-site.xml</job-xml>
-      <configuration>
-        <property>
-          <name>fs.swift.service.sahara.domain.name</name>
-          <value>sahara_proxy_domain</value>
-        </property>
-        <property>
-          <name>fs.swift.service.sahara.password</name>
-          <value>55555555-6666-7777-8888-999999999999</value>
-        </property>
-        <property>
-          <name>fs.swift.service.sahara.trust.id</name>
-          <value>0123456789abcdef0123456789abcdef</value>
-        </property>
-        <property>
-          <name>fs.swift.service.sahara.username</name>
-          <value>job_00000000-1111-2222-3333-4444444444444444</value>
-        </property>
-      </configuration>
-      <script>script.q</script>
-      <param>INPUT=swift://ex.sahara/i</param>
-      <param>OUTPUT=swift://ex.sahara/o</param>""", res)
+        doc = xml.parseString(res)
+        hive = doc.getElementsByTagName('hive')[0]
+        configuration = hive.getElementsByTagName('configuration')
+        properties = xmlutils.get_property_dict(configuration[0])
+        self.assertEqual({
+            'fs.swift.service.sahara.domain.name':
+            'sahara_proxy_domain',
+
+            'fs.swift.service.sahara.trust.id':
+            '0123456789abcdef0123456789abcdef',
+
+            'fs.swift.service.sahara.password':
+            '55555555-6666-7777-8888-999999999999',
+
+            'fs.swift.service.sahara.username':
+            'job_00000000-1111-2222-3333-4444444444444444'}, properties)
 
     def test_update_job_dict(self):
         w = workflow_factory.BaseFactory()
