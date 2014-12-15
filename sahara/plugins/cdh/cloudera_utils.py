@@ -39,6 +39,12 @@ HUE_SERVICE_NAME = 'hue01'
 SPARK_SERVICE_NAME = 'spark_on_yarn01'
 ZOOKEEPER_SERVICE_NAME = 'zookeeper01'
 HBASE_SERVICE_NAME = 'hbase01'
+FLUME_SERVICE_NAME = 'flume01'
+SENTRY_SERVICE_NAME = 'sentry01'
+SOLR_SERVICE_NAME = 'solr01'
+SQOOP_SERVICE_NAME = 'sqoop01'
+KS_INDEXER_SERVICE_NAME = 'ks_indexer01'
+IMPALA_SERVICE_NAME = 'impala01'
 
 
 def have_cm_api_libs():
@@ -115,6 +121,18 @@ def get_service(process, cluster=None, instance=None):
         return cm_cluster.get_service(ZOOKEEPER_SERVICE_NAME)
     elif process in ['MASTER', 'REGIONSERVER']:
         return cm_cluster.get_service(HBASE_SERVICE_NAME)
+    elif process in ['AGENT']:
+        return cm_cluster.get_service(FLUME_SERVICE_NAME)
+    elif process in ['SQOOP_SERVER']:
+        return cm_cluster.get_service(SQOOP_SERVICE_NAME)
+    elif process in ['SENTRY_SERVER']:
+        return cm_cluster.get_service(SENTRY_SERVICE_NAME)
+    elif process in ['SOLR_SERVER']:
+        return cm_cluster.get_service(SOLR_SERVICE_NAME)
+    elif process in ['HBASE_INDEXER']:
+        return cm_cluster.get_service(KS_INDEXER_SERVICE_NAME)
+    elif process in ['CATALOGSERVER', 'STATESTORE', 'IMPALAD', 'LLAMA']:
+        return cm_cluster.get_service(IMPALA_SERVICE_NAME)
     else:
         raise ValueError(
             _("Process %(process)s is not supported by CDH plugin") %
@@ -161,24 +179,32 @@ def first_run(cluster):
 def get_role_name(instance, service):
     # NOTE: role name must match regexp "[_A-Za-z][-_A-Za-z0-9]{0,63}"
     shortcuts = {
+        'AGENT': 'A',
         'ALERTPUBLISHER': 'AP',
+        'CATALOGSERVER': 'ICS',
         'DATANODE': 'DN',
         'EVENTSERVER': 'ES',
+        'HBASE_INDEXER': 'LHBI',
         'HIVEMETASTORE': 'HVM',
         'HIVESERVER2': 'HVS',
         'HOSTMONITOR': 'HM',
+        'IMPALAD': 'ID',
         'JOBHISTORY': 'JS',
+        'MASTER': 'M',
         'NAMENODE': 'NN',
         'NODEMANAGER': 'NM',
         'OOZIE_SERVER': 'OS',
+        'REGIONSERVER': 'RS',
         'RESOURCEMANAGER': 'RM',
         'SECONDARYNAMENODE': 'SNN',
-        'SERVICEMONITOR': 'SM',
-        'WEBHCAT': 'WHC',
-        'SPARK_YARN_HISTORY_SERVER': 'SHS',
+        'SENTRY_SERVER': 'SS',
         'SERVER': 'S',
-        'MASTER': 'M',
-        'REGIONSERVER': 'RS'
+        'SERVICEMONITOR': 'SM',
+        'SOLR_SERVER': 'SS',
+        'SPARK_YARN_HISTORY_SERVER': 'SHS',
+        'SQOOP_SERVER': 'S2S',
+        'STATESTORE': 'ISS',
+        'WEBHCAT': 'WHC'
     }
     return '%s_%s' % (shortcuts.get(service, service),
                       instance.hostname().replace('-', '_'))
@@ -198,6 +224,14 @@ def create_mgmt_service(cluster):
 
     cm.create_mgmt_service(setup_info)
     cm.hosts_start_roles([hostname])
+
+
+@cloudera_cmd
+def restart_mgmt_service(cluster):
+    api = get_api_client(cluster)
+    cm = api.get_cloudera_manager()
+    mgmt_service = cm.get_service()
+    yield mgmt_service.restart()
 
 
 @cloudera_cmd

@@ -107,11 +107,34 @@ hue_service_confs = _load_json(path_to_config + 'hue-service.json')
 hue_role_confs = _load_json(path_to_config + 'hue-hue.json')
 spark_service_confs = _load_json(path_to_config + 'spark-service.json')
 spark_role_confs = _load_json(path_to_config + 'spark-history.json')
-zookeeper_server_confs = _load_json(path_to_config + 'zookeeper-server.json')
 zookeeper_service_confs = _load_json(path_to_config + 'zookeeper-service.json')
+zookeeper_server_confs = _load_json(path_to_config + 'zookeeper-server.json')
 hbase_confs = _load_json(path_to_config + 'hbase-service.json')
 master_confs = _load_json(path_to_config + 'hbase-master.json')
 regionserver_confs = _load_json(path_to_config + 'hbase-regionserver.json')
+flume_service_confs = _load_json(path_to_config + 'flume-service.json')
+flume_agent_confs = _load_json(path_to_config + 'flume-agent.json')
+sentry_service_confs = _load_json(path_to_config + 'sentry-service.json')
+sentry_server_confs = _load_json(path_to_config +
+                                 'sentry-sentry_server.json')
+solr_service_confs = _load_json(path_to_config + 'solr-service.json')
+solr_server_confs = _load_json(path_to_config + 'solr-solr_server.json')
+sqoop_service_confs = _load_json(path_to_config + 'sqoop-service.json')
+sqoop_server_confs = _load_json(path_to_config +
+                                'sqoop-sqoop_server.json')
+ks_indexer_service_confs = _load_json(path_to_config +
+                                      'ks_indexer-service.json')
+ks_indexer_role_confs = _load_json(path_to_config +
+                                   'ks_indexer-hbase_indexer.json')
+impala_service_confs = _load_json(path_to_config + 'impala-service.json')
+impala_catalogserver_confs = _load_json(path_to_config +
+                                        'impala-catalogserver.json')
+impala_impalad_confs = _load_json(path_to_config +
+                                  'impala-impalad.json')
+impala_llama_confs = _load_json(path_to_config +
+                                'impala-llama.json')
+impala_statestore_confs = _load_json(path_to_config +
+                                     'impala-statestore.json')
 
 priority_one_confs = _load_json(path_to_config + 'priority-one-confs.json')
 
@@ -160,6 +183,20 @@ def _get_ng_plugin_configs():
     cfg += _init_configs(hbase_confs, 'HBASE', 'cluster')
     cfg += _init_configs(master_confs, 'MASTER', 'node')
     cfg += _init_configs(regionserver_confs, 'REGIONSERVER', 'node')
+    cfg += _init_configs(flume_service_confs, 'FLUME', 'cluster')
+    cfg += _init_configs(flume_agent_confs, 'FLUME', 'node')
+    cfg += _init_configs(sentry_service_confs, 'SENTRY', 'cluster')
+    cfg += _init_configs(sentry_server_confs, 'SENTRY', 'node')
+    cfg += _init_configs(solr_service_confs, 'SOLR', 'cluster')
+    cfg += _init_configs(solr_server_confs, 'SOLR', 'node')
+    cfg += _init_configs(sqoop_service_confs, 'SQOOP', 'cluster')
+    cfg += _init_configs(sqoop_server_confs, 'SQOOP', 'node')
+    cfg += _init_configs(ks_indexer_service_confs, 'KS_INDEXER', 'cluster')
+    cfg += _init_configs(ks_indexer_role_confs, 'KS_INDEXER', 'node')
+    cfg += _init_configs(impala_service_confs, 'IMPALA', 'cluster')
+    cfg += _init_configs(impala_catalogserver_confs, 'CATALOGSERVER', 'node')
+    cfg += _init_configs(impala_impalad_confs, 'IMPALAD', 'node')
+    cfg += _init_configs(impala_statestore_confs, 'STATESTORE', 'node')
     return cfg
 
 
