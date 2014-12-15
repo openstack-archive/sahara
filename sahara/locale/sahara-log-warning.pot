@@ -6,9 +6,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: sahara 2015.1.dev188.g2452036\n"
+"Project-Id-Version: sahara 2015.1.dev317.ga37345d\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2014-11-20 06:13+0000\n"
+"POT-Creation-Date: 2014-12-15 06:12+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -37,29 +37,24 @@ msgstr ""
 msgid "task %(func_name)s run outlasted interval by %(delay).2f sec"
 msgstr ""
 
-#: sahara/openstack/common/policy.py:248
-#, python-format
-msgid "Can not find policy directories %s"
-msgstr ""
-
 #: sahara/plugins/hdp/versions/version_1_3_2/versionhandler.py:404
-#: sahara/plugins/hdp/versions/version_2_0_6/versionhandler.py:389
+#: sahara/plugins/hdp/versions/version_2_0_6/versionhandler.py:390
 msgid "Finalizing of Ambari cluster state failed. {0}"
 msgstr ""
 
-#: sahara/plugins/hdp/versions/version_2_0_6/services.py:927
+#: sahara/plugins/hdp/versions/version_2_0_6/services.py:962
 msgid "Missing configuration named {0}, aborting Hue ini file creation"
 msgstr ""
 
-#: sahara/plugins/hdp/versions/version_2_0_6/services.py:1027
+#: sahara/plugins/hdp/versions/version_2_0_6/services.py:1062
 msgid "Missing source configuration property set, aborting merge: {0}"
 msgstr ""
 
-#: sahara/plugins/hdp/versions/version_2_0_6/services.py:1030
+#: sahara/plugins/hdp/versions/version_2_0_6/services.py:1065
 msgid "Missing destination configuration property set, aborting merge: {0}"
 msgstr ""
 
-#: sahara/plugins/hdp/versions/version_2_0_6/services.py:1041
+#: sahara/plugins/hdp/versions/version_2_0_6/services.py:1076
 #, python-format
 msgid ""
 "Overwriting existing configuration property in %(dst_config_name)s from "
@@ -67,39 +62,39 @@ msgid ""
 "%(src_config)s]"
 msgstr ""
 
-#: sahara/plugins/vanilla/v1_2_1/config_helper.py:363
+#: sahara/plugins/vanilla/v1_2_1/config_helper.py:390
 #, python-format
 msgid "Plugin received wrong applicable target '%s' in environmental configs"
 msgstr ""
 
-#: sahara/plugins/vanilla/v1_2_1/config_helper.py:384
+#: sahara/plugins/vanilla/v1_2_1/config_helper.py:411
 #, python-format
 msgid "Plugin received wrong applicable target '%s' for xml configs"
 msgstr ""
 
-#: sahara/service/direct_engine.py:466
+#: sahara/service/direct_engine.py:478
 #, python-format
 msgid "Auto security group for node group %s is not found"
 msgstr ""
 
-#: sahara/service/direct_engine.py:480
+#: sahara/service/direct_engine.py:492
 #, python-format
 msgid ""
 "Attempted to delete non-existent floating IP in pool %(pool)s from "
 "instance %(instance)s"
 msgstr ""
 
-#: sahara/service/direct_engine.py:488
+#: sahara/service/direct_engine.py:500
 #, python-format
 msgid "Detaching volumes from instance %s failed"
 msgstr ""
 
-#: sahara/service/direct_engine.py:494
+#: sahara/service/direct_engine.py:506
 #, python-format
 msgid "Attempted to delete non-existent instance %s"
 msgstr ""
 
-#: sahara/service/engine.py:180
+#: sahara/service/engine.py:182
 msgid ""
 "Presumably the operation failed because the cluster was deleted by a user"
 " during the process."
