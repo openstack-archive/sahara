@@ -27,7 +27,7 @@ from sahara.utils import edp
 
 
 class EDPJobInfo(object):
-    PIG_PATH = 'etc/edp-examples/pig-job/'
+    PIG_PATH = 'etc/edp-examples/edp-pig/trim-spaces/'
     JAVA_PATH = 'etc/edp-examples/edp-java/'
     MAPREDUCE_PATH = 'etc/edp-examples/edp-mapreduce/'
     SPARK_PATH = 'etc/edp-examples/edp-spark/'
