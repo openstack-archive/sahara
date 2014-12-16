@@ -68,7 +68,7 @@ def create_cluster(plugin_name='vanilla', hadoop_version='1.2.1'):
     return cluster
 
 
-def create_data_source(url):
+def create_data_source(url, name=None, id=None):
     data_source = mock.Mock()
     data_source.url = url
     if url.startswith("swift"):
@@ -77,6 +77,10 @@ def create_data_source(url):
                                    'password': 'admin1'}
     elif url.startswith("hdfs"):
         data_source.type = "hdfs"
+    if name is not None:
+        data_source.name = name
+    if id is not None:
+        data_source.id = id
     return data_source
 
 

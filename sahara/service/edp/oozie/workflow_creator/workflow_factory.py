@@ -140,14 +140,14 @@ class PigFactory(BaseFactory):
     def get_script_name(self, job):
         return conductor.job_main_name(context.ctx(), job)
 
-    def get_workflow_xml(self, cluster, execution, input_data, output_data,
+    def get_workflow_xml(self, cluster, job_configs, input_data, output_data,
                          hdfs_user):
-        proxy_configs = execution.job_configs.get('proxy_configs')
+        proxy_configs = job_configs.get('proxy_configs')
         job_dict = {'configs': self.get_configs(input_data, output_data,
                                                 proxy_configs),
                     'params': self.get_params(input_data, output_data),
                     'args': []}
-        self.update_job_dict(job_dict, execution.job_configs)
+        self.update_job_dict(job_dict, job_configs)
         creator = pig_workflow.PigWorkflowCreator()
         creator.build_workflow_xml(self.name,
                                    configuration=job_dict['configs'],
@@ -165,13 +165,13 @@ class HiveFactory(BaseFactory):
     def get_script_name(self, job):
         return conductor.job_main_name(context.ctx(), job)
 
-    def get_workflow_xml(self, cluster, execution, input_data, output_data,
+    def get_workflow_xml(self, cluster, job_configs, input_data, output_data,
                          hdfs_user):
-        proxy_configs = execution.job_configs.get('proxy_configs')
+        proxy_configs = job_configs.get('proxy_configs')
         job_dict = {'configs': self.get_configs(input_data, output_data,
                                                 proxy_configs),
                     'params': self.get_params(input_data, output_data)}
-        self.update_job_dict(job_dict, execution.job_configs)
+        self.update_job_dict(job_dict, job_configs)
 
         creator = hive_workflow.HiveWorkflowCreator()
         creator.build_workflow_xml(self.name,
@@ -196,12 +196,12 @@ class MapReduceFactory(BaseFactory):
         return dict((k[len(prefix):], v) for (k, v) in six.iteritems(
             job_dict['edp_configs']) if k.startswith(prefix))
 
-    def get_workflow_xml(self, cluster, execution, input_data, output_data,
+    def get_workflow_xml(self, cluster, job_configs, input_data, output_data,
                          hdfs_user):
-        proxy_configs = execution.job_configs.get('proxy_configs')
+        proxy_configs = job_configs.get('proxy_configs')
         job_dict = {'configs': self.get_configs(input_data, output_data,
                                                 proxy_configs)}
-        self.update_job_dict(job_dict, execution.job_configs)
+        self.update_job_dict(job_dict, job_configs)
         creator = mapreduce_workflow.MapReduceWorkFlowCreator()
         creator.build_workflow_xml(configuration=job_dict['configs'],
                                    streaming=self._get_streaming(job_dict))
@@ -230,11 +230,11 @@ class JavaFactory(BaseFactory):
 
         return configs
 
-    def get_workflow_xml(self, cluster, execution, *args, **kwargs):
-        proxy_configs = execution.job_configs.get('proxy_configs')
+    def get_workflow_xml(self, cluster, job_configs, *args, **kwargs):
+        proxy_configs = job_configs.get('proxy_configs')
         job_dict = {'configs': self.get_configs(proxy_configs=proxy_configs),
                     'args': []}
-        self.update_job_dict(job_dict, execution.job_configs)
+        self.update_job_dict(job_dict, job_configs)
 
         main_class, java_opts = self._get_java_configs(job_dict)
         creator = java_workflow.JavaWorkflowCreator()
@@ -264,9 +264,9 @@ def _get_creator(job):
     return type_map[job.type]()
 
 
-def get_workflow_xml(job, cluster, execution, *args, **kwargs):
+def get_workflow_xml(job, cluster, job_configs, *args, **kwargs):
     return _get_creator(job).get_workflow_xml(
-        cluster, execution, *args, **kwargs)
+        cluster, job_configs, *args, **kwargs)
 
 
 def get_possible_job_config(job_type):

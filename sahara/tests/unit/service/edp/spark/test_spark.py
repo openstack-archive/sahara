@@ -323,11 +323,6 @@ class TestSpark(base.SaharaTestCase):
                      upload_job_files, get_config_value, get_remote,
                      job_exec_get):
 
-        def fix_get(field, default=None):
-            if field == "args":
-                return ["input_arg", "output_arg"]
-            return default
-
         eng = se.SparkJobEngine("cluster")
 
         job = mock.Mock()
@@ -335,9 +330,9 @@ class TestSpark(base.SaharaTestCase):
         job_get.return_value = job
 
         job_exec = mock.Mock()
-        job_exec.job_configs.configs = {"edp.java.main_class":
-                                        "org.me.myclass"}
-        job_exec.job_configs.get = fix_get
+        job_exec.job_configs = {'configs': {"edp.java.main_class":
+                                            "org.me.myclass"},
+                                'args': ['input_arg', 'output_arg']}
 
         master = mock.Mock()
         get_instance.return_value = master

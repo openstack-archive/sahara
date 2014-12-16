@@ -81,9 +81,20 @@ class OozieJobEngine(base_engine.JobEngine):
         job = conductor.job_get(ctx, job_execution.job_id)
         input_source, output_source = job_utils.get_data_sources(job_execution,
                                                                  job)
-        proxy_configs = job_execution.job_configs.get('proxy_configs')
 
-        for data_source in [input_source, output_source]:
+        # Updated_job_configs will be a copy of job_execution.job_configs with
+        # any name or uuid references to data_sources resolved to paths
+        # assuming substitution is enabled.
+        # If substitution is not enabled then updated_job_configs will
+        # just be a reference to job_execution.job_configs to avoid a copy.
+        # Additional_sources will be a list of any data_sources found.
+        additional_sources, updated_job_configs = (
+            job_utils.resolve_data_source_references(job_execution.job_configs)
+        )
+
+        proxy_configs = updated_job_configs.get('proxy_configs')
+
+        for data_source in [input_source, output_source] + additional_sources:
             if data_source and data_source.type == 'hdfs':
                 h.configure_cluster_for_hdfs(self.cluster, data_source)
                 break
@@ -99,7 +110,8 @@ class OozieJobEngine(base_engine.JobEngine):
                                        proxy_configs)
 
         wf_xml = workflow_factory.get_workflow_xml(
-            job, self.cluster, job_execution, input_source, output_source,
+            job, self.cluster, updated_job_configs,
+            input_source, output_source,
             hdfs_user)
 
         path_to_workflow = self._upload_workflow_file(oozie_server, wf_dir,

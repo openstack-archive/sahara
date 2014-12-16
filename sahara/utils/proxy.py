@@ -23,6 +23,7 @@ from sahara import context
 from sahara import exceptions as ex
 from sahara.i18n import _
 from sahara.openstack.common import log as logging
+from sahara.service.edp import job_utils
 from sahara.service import trusts as t
 from sahara.swift import utils as su
 from sahara.utils.openstack import keystone as k
@@ -180,27 +181,63 @@ def domain_for_proxy():
 
 def job_execution_requires_proxy_user(job_execution):
     '''Returns True if the job execution requires a proxy user.'''
+
+    def _check_values(values):
+        return any(value.startswith(
+            su.SWIFT_INTERNAL_PREFIX) for value in values if (
+                isinstance(value, six.string_types)))
+
     if CONF.use_domain_for_proxy_users is False:
         return False
-    input_ds = conductor.data_source_get(context.ctx(),
-                                         job_execution.input_id)
-    if input_ds and input_ds.url.startswith(su.SWIFT_INTERNAL_PREFIX):
-            return True
-    output_ds = conductor.data_source_get(context.ctx(),
-                                          job_execution.output_id)
-    if output_ds and output_ds.url.startswith(su.SWIFT_INTERNAL_PREFIX):
-            return True
-    if job_execution.job_configs.get('args'):
-        for arg in job_execution.job_configs['args']:
-            if arg.startswith(su.SWIFT_INTERNAL_PREFIX):
-                return True
+
+    paths = [conductor.data_source_get(context.ctx(), job_execution.output_id),
+             conductor.data_source_get(context.ctx(), job_execution.input_id)]
+    if _check_values(ds.url for ds in paths if ds):
+        return True
+
+    if _check_values(six.itervalues(
+            job_execution.job_configs.get('configs', {}))):
+        return True
+
+    if _check_values(six.itervalues(
+            job_execution.job_configs.get('params', {}))):
+        return True
+
+    if _check_values(job_execution.job_configs.get('args', [])):
+        return True
+
     job = conductor.job_get(context.ctx(), job_execution.job_id)
-    for main in job.mains:
-        if main.url.startswith(su.SWIFT_INTERNAL_PREFIX):
+    if _check_values(main.url for main in job.mains):
+        return True
+
+    if _check_values(lib.url for lib in job.libs):
+        return True
+
+    # We did the simple checks, now if data_source referencing is
+    # enabled and we have values that could be a name or uuid,
+    # query for data_sources that match and contain a swift path
+    by_name, by_uuid = job_utils.may_contain_data_source_refs(
+        job_execution.job_configs)
+    if by_name:
+        names = tuple(job_utils.find_possible_data_source_refs_by_name(
+            job_execution.job_configs))
+        # do a query here for name in names and path starts with swift-prefix
+        if names and conductor.data_source_count(
+                context.ctx(),
+                name=names,
+                url=su.SWIFT_INTERNAL_PREFIX+'%') > 0:
             return True
-    for lib in job.libs:
-        if lib.url.startswith(su.SWIFT_INTERNAL_PREFIX):
+
+    if by_uuid:
+        uuids = tuple(job_utils.find_possible_data_source_refs_by_uuid(
+            job_execution.job_configs))
+        # do a query here for id in uuids and path starts with swift-prefix
+        if uuids and conductor.data_source_count(
+                context.ctx(),
+                id=uuids,
+                url=su.SWIFT_INTERNAL_PREFIX+'%') > 0:
             return True
+
     return False
 
 

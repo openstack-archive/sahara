@@ -235,6 +235,14 @@ class LocalApi(object):
         """
         return self._manager.data_source_get_all(context, **kwargs)
 
+    def data_source_count(self, context, **kwargs):
+        """Count Data Sources filtered by **kwargs.
+
+        Uses sqlalchemy "in_" clause for any tuple values
+        Uses sqlalchemy "like" clause for any string values containing %
+        """
+        return self._manager.data_source_count(context, **kwargs)
+
     @r.wrap(r.DataSource)
     def data_source_create(self, context, values):
         """Create a Data Source from the values dictionary."""
