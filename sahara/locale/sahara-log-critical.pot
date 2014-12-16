@@ -6,9 +6,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: sahara 2014.2.dev95.g5b2a10e\n"
+"Project-Id-Version: sahara 2015.1.dev317.ga37345d\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2014-08-14 06:10+0000\n"
+"POT-Creation-Date: 2014-12-15 06:12+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,18 +17,22 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 1.3\n"
 
-#: sahara/plugins/hdp/versions/version_1_3_2/versionhandler.py:317
-#: sahara/plugins/hdp/versions/version_2_0_6/versionhandler.py:307
+#: sahara/plugins/hdp/versions/version_1_3_2/versionhandler.py:358
+#: sahara/plugins/hdp/versions/version_2_0_6/versionhandler.py:338
 msgid "Install command failed."
 msgstr ""
 
-#: sahara/plugins/hdp/versions/version_1_3_2/versionhandler.py:394
-#: sahara/plugins/hdp/versions/version_2_0_6/versionhandler.py:389
+#: sahara/plugins/hdp/versions/version_1_3_2/versionhandler.py:435
+#: sahara/plugins/hdp/versions/version_2_0_6/versionhandler.py:421
 msgid "Failed to start Hadoop cluster."
 msgstr ""
 
-#: sahara/plugins/hdp/versions/version_1_3_2/versionhandler.py:420
-#: sahara/plugins/hdp/versions/version_2_0_6/versionhandler.py:415
+#: sahara/plugins/hdp/versions/version_1_3_2/versionhandler.py:461
+#: sahara/plugins/hdp/versions/version_2_0_6/versionhandler.py:447
 msgid "Failed to change state of Hadoop components"
+msgstr ""
+
+#: sahara/plugins/hdp/versions/version_2_0_6/versionhandler.py:996
+msgid "HDFS-HA: Host component update failed: {0} {1}"
 msgstr ""
 

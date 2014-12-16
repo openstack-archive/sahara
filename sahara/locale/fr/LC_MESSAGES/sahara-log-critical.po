@@ -8,9 +8,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Sahara\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2014-09-18 06:14+0000\n"
-"PO-Revision-Date: 2014-09-17 21:20+0000\n"
-"Last-Translator: Maxime COQUEREL <max.coquerel@gmail.com>\n"
+"POT-Creation-Date: 2014-12-15 06:12+0000\n"
+"PO-Revision-Date: 2014-12-12 10:20+0000\n"
+"Last-Translator: openstackjenkins <jenkins@openstack.org>\n"
 "Language-Team: French (http://www.transifex.com/projects/p/sahara/language/"
 "fr/)\n"
 "Language: fr\n"
@@ -20,17 +20,21 @@ msgstr ""
 "Generated-By: Babel 1.3\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
-#: sahara/plugins/hdp/versions/version_1_3_2/versionhandler.py:330
-#: sahara/plugins/hdp/versions/version_2_0_6/versionhandler.py:309
+#: sahara/plugins/hdp/versions/version_1_3_2/versionhandler.py:358
+#: sahara/plugins/hdp/versions/version_2_0_6/versionhandler.py:338
 msgid "Install command failed."
 msgstr "Échec de la commande install"
 
-#: sahara/plugins/hdp/versions/version_1_3_2/versionhandler.py:407
-#: sahara/plugins/hdp/versions/version_2_0_6/versionhandler.py:391
+#: sahara/plugins/hdp/versions/version_1_3_2/versionhandler.py:435
+#: sahara/plugins/hdp/versions/version_2_0_6/versionhandler.py:421
 msgid "Failed to start Hadoop cluster."
 msgstr "Impossible de démarrer le cluster Hadoop."
 
-#: sahara/plugins/hdp/versions/version_1_3_2/versionhandler.py:433
-#: sahara/plugins/hdp/versions/version_2_0_6/versionhandler.py:417
+#: sahara/plugins/hdp/versions/version_1_3_2/versionhandler.py:461
+#: sahara/plugins/hdp/versions/version_2_0_6/versionhandler.py:447
 msgid "Failed to change state of Hadoop components"
 msgstr "Impossible de changer l'état des composants Hadoop"
+
+#: sahara/plugins/hdp/versions/version_2_0_6/versionhandler.py:996
+msgid "HDFS-HA: Host component update failed: {0} {1}"
+msgstr ""

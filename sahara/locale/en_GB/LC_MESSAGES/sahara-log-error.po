@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Sahara\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2014-11-20 06:13+0000\n"
-"PO-Revision-Date: 2014-11-18 20:38+0000\n"
+"POT-Creation-Date: 2014-12-15 06:12+0000\n"
+"PO-Revision-Date: 2014-12-12 10:20+0000\n"
 "Last-Translator: openstackjenkins <jenkins@openstack.org>\n"
 "Language-Team: English (United Kingdom) (http://www.transifex.com/projects/p/"
 "sahara/language/en_GB/)\n"
@@ -20,7 +20,7 @@ msgstr ""
 "Generated-By: Babel 1.3\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: sahara/context.py:156
+#: sahara/context.py:175
 #, python-format
 msgid "Thread '%(thread)s' fails with exception: '%(exception)s'"
 msgstr "Thread '%(thread)s' fails with exception: '%(exception)s'"
@@ -48,17 +48,17 @@ msgstr "in fixed duration looping call"
 msgid "in dynamic looping call"
 msgstr "in dynamic looping call"
 
-#: sahara/openstack/common/periodic_task.py:202
+#: sahara/openstack/common/periodic_task.py:208
 #, python-format
 msgid "Error during %(full_task_name)s: %(e)s"
 msgstr "Error during %(full_task_name)s: %(e)s"
 
-#: sahara/openstack/common/policy.py:535 sahara/openstack/common/policy.py:815
+#: sahara/openstack/common/policy.py:563 sahara/openstack/common/policy.py:843
 #, python-format
 msgid "Failed to understand rule %s"
 msgstr "Failed to understand rule %s"
 
-#: sahara/openstack/common/policy.py:545
+#: sahara/openstack/common/policy.py:573
 #, python-format
 msgid "No handler for matches of kind %s"
 msgstr "No handler for matches of kind %s"
@@ -107,50 +107,63 @@ msgid "Install command failed. {0}"
 msgstr ""
 
 #: sahara/plugins/hdp/versions/version_1_3_2/versionhandler.py:441
-#: sahara/plugins/hdp/versions/version_2_0_6/versionhandler.py:426
+#: sahara/plugins/hdp/versions/version_2_0_6/versionhandler.py:427
 #, python-format
 msgid "Start command failed. Status: %(status)s, response: %(response)s"
 msgstr ""
 
 #: sahara/plugins/hdp/versions/version_1_3_2/versionhandler.py:468
-#: sahara/plugins/hdp/versions/version_2_0_6/versionhandler.py:453
+#: sahara/plugins/hdp/versions/version_2_0_6/versionhandler.py:454
 #, python-format
 msgid "Command failed. Status: %(status)s, response: %(response)s"
 msgstr ""
 
-#: sahara/plugins/hdp/versions/version_2_0_6/versionhandler.py:658
+#: sahara/plugins/hdp/versions/version_2_0_6/versionhandler.py:659
 #, python-format
 msgid ""
 "AmbariClient: error while making decommission post request. Error is = %s"
 msgstr ""
 
-#: sahara/plugins/hdp/versions/version_2_0_6/versionhandler.py:692
+#: sahara/plugins/hdp/versions/version_2_0_6/versionhandler.py:693
 #, python-format
 msgid "AmbariClient: error in making decommission status request, error = %s"
 msgstr ""
 
-#: sahara/plugins/hdp/versions/version_2_0_6/versionhandler.py:720
+#: sahara/plugins/hdp/versions/version_2_0_6/versionhandler.py:721
 msgid ""
 "AmbariClient: decommissioning process timed-out waiting for nodes to enter "
 "\"Decommissioned\" status."
 msgstr ""
 
-#: sahara/service/direct_engine.py:471
+#: sahara/plugins/hdp/versions/version_2_0_6/versionhandler.py:958
+#: sahara/plugins/hdp/versions/version_2_0_6/versionhandler.py:970
+#, python-format
+msgid "Configuring HDFS HA failed. %s"
+msgstr ""
+
+#: sahara/plugins/hdp/versions/version_2_0_6/versionhandler.py:1002
+#: sahara/plugins/hdp/versions/version_2_0_6/versionhandler.py:1020
+#: sahara/plugins/hdp/versions/version_2_0_6/versionhandler.py:1038
+#: sahara/plugins/hdp/versions/version_2_0_6/versionhandler.py:1061
+msgid "Configuring HDFS HA failed. {0}"
+msgstr ""
+
+#: sahara/service/direct_engine.py:483
 #, python-format
 msgid "Failed to delete security group %s"
 msgstr ""
 
-#: sahara/service/ops.py:153
+#: sahara/service/ops.py:154
 #, python-format
 msgid "Error during operating cluster '%(name)s' (reason: %(reason)s)"
 msgstr ""
 
-#: sahara/service/ops.py:172
+#: sahara/service/ops.py:173
 #, python-format
 msgid "Error during rollback of cluster '%(name)s' (reason: %(reason)s)"
 msgstr ""
 
-#: sahara/service/ops.py:304
+#: sahara/service/ops.py:308
 #, python-format
 msgid "Job execution %s can't be cancelled in time. Deleting it anyway."
 msgstr ""
@@ -194,7 +207,7 @@ msgstr ""
 msgid "Error during cancel of job execution %(job)s: %(error)s"
 msgstr ""
 
-#: sahara/service/edp/job_manager.py:197
+#: sahara/service/edp/job_manager.py:202
 #, python-format
 msgid "Error during update job execution %(job)s: %(error)s"
 msgstr ""
