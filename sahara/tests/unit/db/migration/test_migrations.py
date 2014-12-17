@@ -459,6 +459,9 @@ class TestMigrationsMySQL(TestMigrations, base.MySQLTestsMixIn,
         engine = sqlalchemy.create_engine(conn_string)
         return engine
 
+    def have_database(self):
+        return base.have_mysql(self.USER, self.PASSWD, self.DATABASE)
+
 
 class TestMigrationsPostgresql(TestMigrations, base.PostgresqlTestsMixIn,
                                base.TestModelsMigrationsSync):
@@ -467,3 +470,6 @@ class TestMigrationsPostgresql(TestMigrations, base.PostgresqlTestsMixIn,
                        % (self.USER, self.PASSWD, self.DATABASE))
         engine = sqlalchemy.create_engine(conn_string)
         return engine
+
+    def have_database(self):
+        return base.have_postgresql(self.USER, self.PASSWD, self.DATABASE)

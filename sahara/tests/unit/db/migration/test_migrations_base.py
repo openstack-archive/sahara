@@ -83,14 +83,14 @@ def _is_backend_avail(backend, user, passwd, database):
         return True
 
 
-def _have_mysql(user, passwd, database):
+def have_mysql(user, passwd, database):
     present = os.environ.get('SAHARA_MYSQL_PRESENT')
     if present is None:
         return _is_backend_avail('mysql', user, passwd, database)
     return present.lower() in ('', 'true')
 
 
-def _have_postgresql(user, passwd, database):
+def have_postgresql(user, passwd, database):
     present = os.environ.get('SAHARA_TEST_POSTGRESQL_PRESENT')
     if present is None:
         return _is_backend_avail('postgres', user, passwd, database)
@@ -428,7 +428,7 @@ class BaseWalkMigrationTestCase(BaseMigrationTestCase):
 
     def _test_mysql_opportunistically(self):
         # Test that table creation on mysql only builds InnoDB tables
-        if not _have_mysql(self.USER, self.PASSWD, self.DATABASE):
+        if not have_mysql(self.USER, self.PASSWD, self.DATABASE):
             self.skipTest("mysql not available")
         # add this to the global lists to make reset work with it, it's removed
         # automatically in tearDown so no need to clean it up here.
@@ -459,7 +459,7 @@ class BaseWalkMigrationTestCase(BaseMigrationTestCase):
 
     def _test_postgresql_opportunistically(self):
         # Test postgresql database migration walk
-        if not _have_postgresql(self.USER, self.PASSWD, self.DATABASE):
+        if not have_postgresql(self.USER, self.PASSWD, self.DATABASE):
             self.skipTest("postgresql not available")
         # add this to the global lists to make reset work with it, it's removed
         # automatically in tearDown so no need to clean it up here.
@@ -631,3 +631,19 @@ class TestModelsMigrationsSync(t_m.ModelsMigrationsSync):
     def get_metadata(self):
         metadata = model_base.SaharaBase.metadata
         return metadata
+
+    def have_database(self):
+        '''return True if the database is available
+
+        This function should be overridden by subclasses to allow skipping of
+        tests based on the presence of the database server. Since this
+        implementation is a base class, there is no associated database and
+        this function will always return False.
+        '''
+        return False
+
+    def test_models_sync(self):
+        '''check for database and run test if available.'''
+        if not self.have_database():
+            self.skipTest('database not available')
+        super(TestModelsMigrationsSync, self).test_models_sync()
