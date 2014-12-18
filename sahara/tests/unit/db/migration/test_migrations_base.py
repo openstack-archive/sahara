@@ -32,7 +32,7 @@ from alembic import config as alembic_config
 from alembic import migration
 from alembic import script as alembic_script
 from oslo.config import cfg
-import oslo.db.sqlalchemy.test_migrations as t_m
+from oslo.db.sqlalchemy import test_migrations as t_m
 import six.moves.urllib.parse as urlparse
 import sqlalchemy
 import sqlalchemy.exc
