@@ -240,10 +240,10 @@ will give a walkthrough on how to run those jobs via the Horizon UI. These steps
 assume that you already have a cluster up and running (in the "Active" state).
 
 1) Sample Pig job -
-   https://github.com/openstack/sahara/tree/master/etc/edp-examples/pig-job
+   https://github.com/openstack/sahara/tree/master/etc/edp-examples/edp-pig/trim-spaces
 
   - Load the input data file from
-    https://github.com/openstack/sahara/tree/master/etc/edp-examples/pig-job/data/input
+    https://github.com/openstack/sahara/tree/master/etc/edp-examples/edp-pig/trim-spaces/data/input
     into swift
 
     - Click on Project/Object Store/Containers and create a container with any
@@ -270,11 +270,11 @@ assume that you already have a cluster up and running (in the "Active" state).
 
     - Name = example.pig, Storage type = Internal database, click Browse and
       find example.pig wherever you checked out the sahara project
-      <sahara root>/etc/edp-examples/pig-job
+      <sahara root>/etc/edp-examples/edp-pig/trim-spaces
 
     - Create another Job Binary:  Name = udf.jar, Storage type = Internal
       database, click Browse and find udf.jar wherever you checked out the
-      sahara project <sahara root>/etc/edp-examples/pig-job
+      sahara project <sahara root>/etc/edp-examples/edp-pig/trim-spaces
 
   - Create a Job
 

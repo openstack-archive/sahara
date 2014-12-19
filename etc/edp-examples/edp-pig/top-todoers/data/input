@@ -1,0 +1,18 @@
+# There is some source file with TODO labels inside
+
+
+def sum(a, b):
+    # TODO(slukjanov): implement how to add numbers
+    return None
+
+def sum(a, b):
+    # TODO(slukjanov): implement how to subtract numbers
+    return None
+
+def divide(a, b):
+    # TODO(aignatov): implement how to divide numbers
+    return None
+
+def mul(a, b):
+    # TODO(mimccune): implement how to multiply numbers
+    return None
