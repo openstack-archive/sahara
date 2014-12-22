@@ -152,3 +152,13 @@ The HDP plugin has the following checks:
 4. Elastic Data Processing (EDP).
 5. Swift availability.
 6. Cluster scaling.
+
+The CDH plugin has the following checks:
+++++++++++++++++++++++++++++++++++++++++
+
+1. Proper cluster creation.
+2. Cinder support.
+3. Map Reduce.
+4. Elastic Data Processing (EDP).
+5. Swift availability.
+6. Cluster scaling.
