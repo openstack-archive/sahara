@@ -87,7 +87,7 @@ def check_cluster_create(data, **kwargs):
     neutron_net_id = _get_cluster_field(data, 'neutron_management_network')
     if neutron_net_id:
         if not CONF.use_neutron:
-            raise ex.InvalidException(
+            raise ex.InvalidReferenceException(
                 _("'neutron_management_network' field can't be used "
                   "with 'use_neutron=False'"))
         b.check_network_exists(neutron_net_id)

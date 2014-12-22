@@ -658,7 +658,7 @@ class AmbariClient(object):
         if result.status_code != 202:
             LOG.error(_LE('AmbariClient: error while making decommission post '
                           'request. Error is = %s'), result.text)
-            raise exc.InvalidException(
+            raise ex.DecommissionError(
                 _('An error occurred while trying to '
                   'decommission the DataNode instances that are '
                   'being shut down. '

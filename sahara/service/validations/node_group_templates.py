@@ -125,7 +125,7 @@ def check_node_group_template_usage(node_group_template_id, **kwargs):
             template_users += [cluster_template.name]
 
     if cluster_users or template_users:
-        raise ex.InvalidException(
+        raise ex.InvalidReferenceException(
             _("Node group template %(template)s is in use by "
               "cluster templates: %(users)s; and clusters: %(clusters)s") %
             {'template': node_group_template_id,

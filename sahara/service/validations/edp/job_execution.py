@@ -79,7 +79,7 @@ def check_job_execution(data, job_id):
 
     cluster = conductor.cluster_get(ctx, data['cluster_id'])
     if not cluster:
-        raise ex.InvalidException(
+        raise ex.InvalidReferenceException(
             _("Cluster with id '%s' doesn't exist") % data['cluster_id'])
 
     job = conductor.job_get(ctx, job_id)
@@ -87,7 +87,7 @@ def check_job_execution(data, job_id):
     plugin = plugin_base.PLUGINS.get_plugin(cluster.plugin_name)
     edp_engine = plugin.get_edp_engine(cluster, job.type)
     if not edp_engine:
-        raise ex.InvalidException(
+        raise ex.InvalidReferenceException(
             _("Cluster with id '%(cluster_id)s' doesn't support job type "
               "'%(job_type)s'") % {"cluster_id": cluster.id,
                                    "job_type": job.type})

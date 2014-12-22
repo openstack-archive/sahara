@@ -74,14 +74,14 @@ class InvalidCredentials(SaharaException):
         super(InvalidCredentials, self).__init__()
 
 
-class InvalidException(SaharaException):
+class InvalidReferenceException(SaharaException):
     message = _("Invalid object reference")
 
     def __init__(self, message=None):
         self.code = "INVALID_REFERENCE"
         if message:
             self.message = message
-        super(InvalidException, self).__init__()
+        super(InvalidReferenceException, self).__init__()
 
 
 class RemoteCommandException(SaharaException):

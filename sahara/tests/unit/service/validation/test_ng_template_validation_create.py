@@ -89,7 +89,7 @@ class TestNGTemplateCreateValidation(u.ValidationTestCase):
                 'hadoop_version': '1.2.1',
                 'node_processes': ["namenode", "namenode"]
             },
-            bad_req_i=(1, 'INVALID_REFERENCE',
+            bad_req_i=(1, 'INVALID_DATA',
                        'Duplicates in node processes have been detected')
         )
         self._assert_create_object_validation(
@@ -188,7 +188,7 @@ class TestNGTemplateCreateValidation(u.ValidationTestCase):
                 'hadoop_version': '1.2.1',
                 'node_processes': ['namenode']
             },
-            bad_req_i=(1, 'INVALID_REFERENCE',
+            bad_req_i=(1, 'NOT_FOUND',
                        "Requested flavor '1' not found")
         )
 
@@ -289,6 +289,6 @@ class TestNGTemplateCreateValidation(u.ValidationTestCase):
                 'node_processes': ['datanode', 'tasktracker'],
                 'floating_ip_pool': 'network_bad'
             },
-            bad_req_i=(1, 'INVALID_REFERENCE', "Floating IP pool network_bad "
-                                               "for node group 'a' not found")
+            bad_req_i=(1, 'NOT_FOUND', "Floating IP pool network_bad "
+                                       "not found")
         )
