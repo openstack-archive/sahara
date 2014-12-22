@@ -23,6 +23,7 @@ from sahara.i18n import _
 from sahara.i18n import _LE
 from sahara.i18n import _LW
 from sahara.openstack.common import log as logging
+from sahara.utils import cluster_progress_ops as cpo
 from sahara.utils.openstack import cinder
 from sahara.utils.openstack import nova
 
@@ -43,7 +44,27 @@ CONF.import_opt('api_version', 'sahara.utils.openstack.cinder',
                 group='cinder')
 
 
+def _count_instances_to_attach(instances):
+    result = 0
+    for instance in instances:
+        if instance.node_group.volumes_per_node > 0:
+            result += 1
+    return result
+
+
+def _get_cluster_id(instance):
+    return instance.node_group.cluster_id
+
+
 def attach_to_instances(instances):
+    instances_to_attach = _count_instances_to_attach(instances)
+    if instances_to_attach == 0:
+        return
+
+    cpo.add_provisioning_step(
+        _get_cluster_id(instances[0]), _("Attach volumes to instances"),
+        instances_to_attach)
+
     with context.ThreadGroup() as tg:
         for instance in instances:
             if instance.node_group.volumes_per_node > 0:
@@ -66,6 +87,7 @@ def _await_attach_volumes(instance, devices):
                          instance.instance_name)
 
 
+@cpo.event_wrapper(mark_successful_on_exit=True)
 def _attach_volumes_to_node(node_group, instance):
     ctx = context.ctx()
     size = node_group.volumes_size

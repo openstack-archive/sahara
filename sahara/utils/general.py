@@ -98,6 +98,10 @@ def change_cluster_status(cluster, status, status_description=None):
     return cluster
 
 
+def count_instances(cluster):
+    return sum([node_group.count for node_group in cluster.node_groups])
+
+
 def check_cluster_exists(cluster):
     ctx = context.ctx()
     # check if cluster still exists (it might have been removed)

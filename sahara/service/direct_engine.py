@@ -28,6 +28,7 @@ from sahara.openstack.common import log as logging
 from sahara.service import engine as e
 from sahara.service import networks
 from sahara.service import volumes
+from sahara.utils import cluster_progress_ops as cpo
 from sahara.utils import general as g
 from sahara.utils.openstack import neutron
 from sahara.utils.openstack import nova
@@ -385,6 +386,10 @@ class DirectEngine(e.Engine):
         if not instances:
             return
 
+        cpo.add_provisioning_step(
+            cluster.id, _("Wait for instances to become active"),
+            len(instances))
+
         active_ids = set()
         while len(active_ids) != len(instances):
             if not g.check_cluster_exists(cluster):
@@ -393,6 +398,7 @@ class DirectEngine(e.Engine):
                 if instance.id not in active_ids:
                     if self._check_if_active(instance):
                         active_ids.add(instance.id)
+                        cpo.add_successful_event(instance)
 
             context.sleep(1)
 
@@ -402,6 +408,8 @@ class DirectEngine(e.Engine):
         """Await all instances are deleted."""
         if not instances:
             return
+        cpo.add_provisioning_step(
+            cluster.id, _("Wait for instances to be deleted"), len(instances))
 
         deleted_ids = set()
         while len(deleted_ids) != len(instances):
@@ -413,9 +421,11 @@ class DirectEngine(e.Engine):
                         LOG.debug("Instance '%s' is deleted" %
                                   instance.instance_name)
                         deleted_ids.add(instance.id)
+                        cpo.add_successful_event(instance)
 
             context.sleep(1)
 
+    @cpo.event_wrapper(mark_successful_on_exit=False)
     def _check_if_active(self, instance):
         server = nova.get_instance_info(instance)
         if server.status == 'ERROR':
@@ -423,6 +433,7 @@ class DirectEngine(e.Engine):
 
         return server.status == 'ACTIVE'
 
+    @cpo.event_wrapper(mark_successful_on_exit=False)
     def _check_if_deleted(self, instance):
         try:
             nova.get_instance_info(instance)
