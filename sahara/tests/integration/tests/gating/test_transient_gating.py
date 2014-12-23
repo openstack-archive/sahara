@@ -54,6 +54,7 @@ class TransientGatingTest(edp.EDPTest):
                     'node_processes': ['namenode', 'resourcemanager',
                                        'oozie', 'historyserver'],
                     'floating_ip_pool': self.floating_ip_pool,
+                    'auto_security_group': True,
                     'count': 1
                 },
                 {
@@ -61,6 +62,7 @@ class TransientGatingTest(edp.EDPTest):
                     'flavor_id': self.flavor_id,
                     'node_processes': ['datanode', 'nodemanager'],
                     'floating_ip_pool': self.floating_ip_pool,
+                    'auto_security_group': True,
                     'count': 1
                 }
             ],
