@@ -90,8 +90,8 @@ def delete_proxy_user_for_job_execution(job_execution):
                                              proxy_trust_id)
         t.delete_trust(proxy_user, proxy_trust_id)
         proxy_user_delete(proxy_username)
-        update = {'job_configs': job_execution.job_configs.to_dict()}
-        del update['job_configs']['proxy_configs']
+        update = job_execution.job_configs.to_dict()
+        del update['proxy_configs']
         return update
     return None
 
