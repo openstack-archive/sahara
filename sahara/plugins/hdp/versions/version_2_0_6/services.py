@@ -19,6 +19,7 @@ from oslo_config import cfg
 from oslo_log import log as logging
 import six
 
+from sahara import context
 from sahara import exceptions as e
 from sahara.i18n import _
 from sahara.i18n import _LI
@@ -1268,7 +1269,9 @@ class HueService(Service):
             for ng in hue_ngs:
                 if ng.instances:
                     for instance in ng.instances:
-                        HueService._handle_pre_service_start(instance,
-                                                             cluster_spec,
-                                                             hue_ini,
-                                                             create_user)
+                        with context.set_current_instance_id(
+                                instance.instance_id):
+                            HueService._handle_pre_service_start(instance,
+                                                                 cluster_spec,
+                                                                 hue_ini,
+                                                                 create_user)

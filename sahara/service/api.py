@@ -54,6 +54,7 @@ def get_cluster(id, show_progress=False):
 
 
 def scale_cluster(id, data):
+    context.set_current_cluster_id(id)
     ctx = context.ctx()
 
     cluster = conductor.cluster_get(ctx, id)
@@ -96,6 +97,7 @@ def scale_cluster(id, data):
 def create_cluster(values):
     ctx = context.ctx()
     cluster = conductor.cluster_create(ctx, values)
+    context.set_current_cluster_id(cluster.id)
     sender.notify(ctx, cluster.id, cluster.name, "New",
                   "create")
     plugin = plugin_base.PLUGINS.get_plugin(cluster.plugin_name)
@@ -124,6 +126,7 @@ def _add_ports_for_auto_sg(ctx, cluster, plugin):
 
 
 def terminate_cluster(id):
+    context.set_current_cluster_id(id)
     cluster = g.change_cluster_status(id, "Deleting")
 
     OPS.terminate_cluster(id)

@@ -114,7 +114,9 @@ class VersionHandler(avm.AbstractVersionHandler):
                 len(servers))
 
         for server in servers:
-            server.install_swift_integration()
+            with context.set_current_instance_id(
+                    server.instance['instance_id']):
+                server.install_swift_integration()
 
     def get_services_processor(self):
         return services
@@ -308,36 +310,37 @@ class AmbariClient(object):
         add_host_component_url = ('http://{0}/api/v1/clusters/{1}'
                                   '/hosts/{2}/host_components/{3}')
         for host in servers:
-            hostname = host.instance.fqdn().lower()
-            result = self._post(
-                add_host_url.format(ambari_info.get_address(), name, hostname),
-                ambari_info)
-            if result.status_code != 201:
-                LOG.error(
-                    _LE('Create host command failed. {result}').format(
-                        result=result.text))
-                raise ex.HadoopProvisionError(
-                    _('Failed to add host: %s') % result.text)
+            with context.set_current_instance_id(host.instance['instance_id']):
+                hostname = host.instance.fqdn().lower()
+                result = self._post(
+                    add_host_url.format(ambari_info.get_address(), name,
+                                        hostname), ambari_info)
+                if result.status_code != 201:
+                    LOG.error(
+                        _LE('Create host command failed. {result}').format(
+                            result=result.text))
+                    raise ex.HadoopProvisionError(
+                        _('Failed to add host: %s') % result.text)
 
-            node_group_name = host.node_group.name
-            # TODO(jspeidel): ensure that node group exists
-            node_group = cluster_spec.node_groups[node_group_name]
-            for component in node_group.components:
-                # Don't add any AMBARI or HUE components
-                # TODO(rlevas): Pragmatically determine if component is
-                #   managed by Ambari
-                if (component.find('AMBARI') != 0
-                        and component.find('HUE') != 0):
-                    result = self._post(add_host_component_url.format(
-                        ambari_info.get_address(), name, hostname, component),
-                        ambari_info)
-                    if result.status_code != 201:
-                        LOG.error(
-                            _LE('Create host_component command failed. '
-                                '{result}').format(result=result.text))
-                        raise ex.HadoopProvisionError(
-                            _('Failed to add host component: %s')
-                            % result.text)
+                node_group_name = host.node_group.name
+                # TODO(jspeidel): ensure that node group exists
+                node_group = cluster_spec.node_groups[node_group_name]
+                for component in node_group.components:
+                    # Don't add any AMBARI or HUE components
+                    # TODO(rlevas): Pragmatically determine if component is
+                    #   managed by Ambari
+                    if (component.find('AMBARI') != 0
+                            and component.find('HUE') != 0):
+                        result = self._post(add_host_component_url.format(
+                            ambari_info.get_address(), name, hostname,
+                            component), ambari_info)
+                        if result.status_code != 201:
+                            LOG.error(
+                                _LE('Create host_component command failed. '
+                                    '{result}').format(result=result.text))
+                            raise ex.HadoopProvisionError(
+                                _('Failed to add host component: %s')
+                                % result.text)
 
     @cpo.event_wrapper(
         True, step=_("Install services"), param=('ambari_info', 2))

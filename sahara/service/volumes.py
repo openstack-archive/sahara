@@ -59,9 +59,11 @@ def attach_to_instances(instances):
     with context.ThreadGroup() as tg:
         for instance in instances:
             if instance.node_group.volumes_per_node > 0:
-                tg.spawn(
-                    'attach-volumes-for-instance-%s' % instance.instance_name,
-                    _attach_volumes_to_node, instance.node_group, instance)
+                with context.set_current_instance_id(instance.instance_id):
+                    tg.spawn(
+                        'attach-volumes-for-instance-%s'
+                        % instance.instance_name, _attach_volumes_to_node,
+                        instance.node_group, instance)
 
 
 @poll_utils.poll_status(
@@ -156,14 +158,15 @@ def mount_to_instances(instances):
 
     with context.ThreadGroup() as tg:
         for instance in instances:
-            devices = _find_instance_volume_devices(instance)
-
-            # Since formatting can take several minutes (for large disks) and
-            # can be done in parallel, launch one thread per disk.
-            for idx in range(0, instance.node_group.volumes_per_node):
-                tg.spawn('mount-volume-%d-to-node-%s' %
-                         (idx, instance.instance_name),
-                         _mount_volume_to_node, instance, idx, devices[idx])
+            with context.set_current_instance_id(instance.instance_id):
+                devices = _find_instance_volume_devices(instance)
+                # Since formating can take several minutes (for large disks)
+                # and can be done in parallel, launch one thread per disk.
+                for idx in range(0, instance.node_group.volumes_per_node):
+                    tg.spawn(
+                        'mount-volume-%d-to-node-%s' %
+                        (idx, instance.instance_name),
+                        _mount_volume_to_node, instance, idx, devices[idx])
 
 
 def _find_instance_volume_devices(instance):

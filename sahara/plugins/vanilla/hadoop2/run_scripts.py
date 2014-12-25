@@ -45,10 +45,11 @@ def start_dn_nm_processes(instances):
 
     with context.ThreadGroup() as tg:
         for instance in instances:
-            processes = set(instance.node_group.node_processes)
-            processes = processes.intersection(filternames)
-            tg.spawn('vanilla-start-processes-%s' % instance.instance_name,
-                     _start_processes, instance, list(processes))
+            with context.set_current_instance_id(instance.instance_id):
+                processes = set(instance.node_group.node_processes)
+                processes = processes.intersection(filternames)
+                tg.spawn('vanilla-start-processes-%s' % instance.instance_name,
+                         _start_processes, instance, list(processes))
 
 
 @cpo.event_wrapper(True)
@@ -80,20 +81,21 @@ def start_historyserver(instance):
 
 @cpo.event_wrapper(True, step=pu.start_process_event_message("Oozie"))
 def start_oozie_process(pctx, instance):
-    with instance.remote() as r:
-        if c_helper.is_mysql_enabled(pctx, instance.cluster):
-            _start_mysql(r)
-            LOG.debug("Creating Oozie DB Schema")
-            sql_script = files.get_file_text(
-                'plugins/vanilla/hadoop2/resources/create_oozie_db.sql')
-            script_location = "create_oozie_db.sql"
-            r.write_file_to(script_location, sql_script)
-            r.execute_command('mysql -u root < %(script_location)s && '
-                              'rm %(script_location)s' %
-                              {"script_location": script_location})
+    with context.set_current_instance_id(instance.instance_id):
+        with instance.remote() as r:
+            if c_helper.is_mysql_enabled(pctx, instance.cluster):
+                _start_mysql(r)
+                LOG.debug("Creating Oozie DB Schema")
+                sql_script = files.get_file_text(
+                    'plugins/vanilla/hadoop2/resources/create_oozie_db.sql')
+                script_location = "create_oozie_db.sql"
+                r.write_file_to(script_location, sql_script)
+                r.execute_command('mysql -u root < %(script_location)s && '
+                                  'rm %(script_location)s' %
+                                  {"script_location": script_location})
 
-        _oozie_share_lib(r)
-        _start_oozie(r)
+            _oozie_share_lib(r)
+            _start_oozie(r)
 
 
 def format_namenode(instance):
@@ -208,22 +210,23 @@ def _hive_metastore_start(remote):
 
 @cpo.event_wrapper(True, step=pu.start_process_event_message("HiveServer"))
 def start_hiveserver_process(pctx, instance):
-    with instance.remote() as r:
-        _hive_create_warehouse_dir(r)
-        _hive_copy_shared_conf(
-            r, edp.get_hive_shared_conf_path('hadoop'))
+    with context.set_current_instance_id(instance.instance_id):
+        with instance.remote() as r:
+            _hive_create_warehouse_dir(r)
+            _hive_copy_shared_conf(
+                r, edp.get_hive_shared_conf_path('hadoop'))
 
-        if c_helper.is_mysql_enabled(pctx, instance.cluster):
-            oozie = vu.get_oozie(instance.node_group.cluster)
-            if not oozie or instance.hostname() != oozie.hostname():
-                _start_mysql(r)
+            if c_helper.is_mysql_enabled(pctx, instance.cluster):
+                oozie = vu.get_oozie(instance.node_group.cluster)
+                if not oozie or instance.hostname() != oozie.hostname():
+                    _start_mysql(r)
 
-            sql_script = files.get_file_text(
-                'plugins/vanilla/hadoop2/resources/create_hive_db.sql'
-            )
+                sql_script = files.get_file_text(
+                    'plugins/vanilla/hadoop2/resources/create_hive_db.sql'
+                )
 
-            r.write_file_to('/tmp/create_hive_db.sql', sql_script)
-            _hive_create_db(r)
-            _hive_metastore_start(r)
-            LOG.info(_LI("Hive Metastore server at {host} has been "
-                         "started").format(host=instance.hostname()))
+                r.write_file_to('/tmp/create_hive_db.sql', sql_script)
+                _hive_create_db(r)
+                _hive_metastore_start(r)
+                LOG.info(_LI("Hive Metastore server at {host} has been "
+                             "started").format(host=instance.hostname()))

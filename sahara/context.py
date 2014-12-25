@@ -301,3 +301,29 @@ class InstanceInfoManager(object):
 
     def __exit__(self, *args):
         current().current_instance_info = self.prev_instance_info
+
+
+def set_current_cluster_id(cluster_id):
+    current().resource_uuid = 'none, cluster: %s' % cluster_id
+
+
+def set_current_job_execution_id(je_id):
+    current().resource_uuid = 'none, job_execution: %s' % je_id
+
+
+class SetCurrentInstanceId(object):
+    def __init__(self, instance_id):
+        ctx = current()
+        self.prev_uuid = ctx.resource_uuid
+        if ctx.resource_uuid:
+            ctx.resource_uuid = ctx.resource_uuid.replace('none', instance_id)
+
+    def __enter__(self):
+        pass
+
+    def __exit__(self, *ex):
+        current().resource_uuid = self.prev_uuid
+
+
+def set_current_instance_id(instance_id):
+    return SetCurrentInstanceId(instance_id)

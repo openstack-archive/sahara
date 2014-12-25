@@ -282,7 +282,8 @@ class DirectEngine(e.Engine):
             cluster = g.change_cluster_status(cluster, "Deleting Instances")
 
             for instance in instances_to_delete:
-                self._shutdown_instance(instance)
+                with context.set_current_instance_id(instance.instance_id):
+                    self._shutdown_instance(instance)
 
         self._await_deleted(cluster, instances_to_delete)
         for ng in cluster.node_groups:
@@ -418,10 +419,11 @@ class DirectEngine(e.Engine):
 
     def _assign_floating_ips(self, instances):
         for instance in instances:
-            node_group = instance.node_group
-            if node_group.floating_ip_pool:
-                networks.assign_floating_ip(instance.instance_id,
-                                            node_group.floating_ip_pool)
+            with context.set_current_instance_id(instance.instance_id):
+                node_group = instance.node_group
+                if node_group.floating_ip_pool:
+                    networks.assign_floating_ip(instance.instance_id,
+                                                node_group.floating_ip_pool)
 
     @poll_utils.poll_status(
         'await_for_instances_active',
@@ -431,9 +433,10 @@ class DirectEngine(e.Engine):
             return True
         for instance in instances:
             if instance.id not in active_ids:
-                if self._check_if_active(instance):
-                    active_ids.add(instance.id)
-                    cpo.add_successful_event(instance)
+                with context.set_current_instance_id(instance.instance_id):
+                    if self._check_if_active(instance):
+                        active_ids.add(instance.id)
+                        cpo.add_successful_event(instance)
         return len(instances) == len(active_ids)
 
     def _await_active(self, cluster, instances):
@@ -460,11 +463,12 @@ class DirectEngine(e.Engine):
 
         for instance in instances:
             if instance.id not in deleted_ids:
-                if self._check_if_deleted(instance):
-                    LOG.debug("Instance {instance} is deleted".format(
-                              instance=instance.instance_name))
-                    deleted_ids.add(instance.id)
-                    cpo.add_successful_event(instance)
+                with context.set_current_instance_id(instance.instance_id):
+                    if self._check_if_deleted(instance):
+                        LOG.debug("Instance {instance} is deleted".format(
+                                  instance=instance.instance_name))
+                        deleted_ids.add(instance.id)
+                        cpo.add_successful_event(instance)
         return len(deleted_ids) == len(instances)
 
     def _await_deleted(self, cluster, instances):
@@ -503,7 +507,8 @@ class DirectEngine(e.Engine):
         """Attempt to rollback cluster scaling."""
 
         for i in instances:
-            self._shutdown_instance(i)
+            with context.set_current_instance_id(i.instance_id):
+                self._shutdown_instance(i)
 
         cluster = conductor.cluster_get(context.ctx(), cluster)
         g.clean_cluster_from_empty_ng(cluster)
@@ -511,7 +516,8 @@ class DirectEngine(e.Engine):
     def _shutdown_instances(self, cluster):
         for node_group in cluster.node_groups:
             for instance in node_group.instances:
-                self._shutdown_instance(instance)
+                with context.set_current_instance_id(instance.instance_id):
+                    self._shutdown_instance(instance)
 
             self._await_deleted(cluster, node_group.instances)
             self._delete_auto_security_group(node_group)

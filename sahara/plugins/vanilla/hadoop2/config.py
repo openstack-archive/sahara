@@ -17,6 +17,7 @@ from oslo_config import cfg
 from oslo_log import log as logging
 import six
 
+from sahara import context
 from sahara.i18n import _
 from sahara.i18n import _LW
 from sahara.plugins.vanilla.hadoop2 import config_helper as c_helper
@@ -63,7 +64,8 @@ def configure_instances(pctx, instances):
         instances[0].cluster_id, _("Configure instances"), len(instances))
 
     for instance in instances:
-        _configure_instance(pctx, instance)
+        with context.set_current_instance_id(instance.instance_id):
+            _configure_instance(pctx, instance)
 
 
 @cpo.event_wrapper(True)

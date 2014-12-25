@@ -123,6 +123,7 @@ def execute_job(job_id, data):
                    'info': {'status': edp.JOB_STATUS_PENDING},
                    'job_configs': configs, 'extra': {}}
     job_execution = conductor.job_execution_create(context.ctx(), job_ex_dict)
+    context.set_current_job_execution_id(job_execution.id)
 
     # check to use proxy user
     if p.job_execution_requires_proxy_user(job_execution):
@@ -153,6 +154,7 @@ def get_job_execution(id):
 
 
 def cancel_job_execution(id):
+    context.set_current_job_execution_id(id)
     job_execution = conductor.job_execution_get(context.ctx(), id)
     OPS.cancel_job_execution(id)
 
@@ -160,6 +162,7 @@ def cancel_job_execution(id):
 
 
 def delete_job_execution(id):
+    context.set_current_job_execution_id(id)
     OPS.delete_job_execution(id)
 
 

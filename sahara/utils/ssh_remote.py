@@ -763,8 +763,8 @@ class InstanceInteropHelper(remote.Remote):
         self._run_s(_execute_on_vm_interactive, timeout, cmd, matcher)
 
     def _log_command(self, str):
-        LOG.debug('[{instance}] {command}'.format(
-            instance=self.instance.instance_name, command=str))
+        with context.set_current_instance_id(self.instance.instance_id):
+            LOG.debug(str)
 
 
 class BulkInstanceInteropHelper(InstanceInteropHelper):

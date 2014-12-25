@@ -72,9 +72,10 @@ class Engine(object):
             return True
         for instance in instances:
             if instance.id not in ips_assigned:
-                if networks.init_instances_ips(instance):
-                    ips_assigned.add(instance.id)
-                    cpo.add_successful_event(instance)
+                with context.set_current_instance_id(instance.instance_id):
+                    if networks.init_instances_ips(instance):
+                        ips_assigned.add(instance.id)
+                        cpo.add_successful_event(instance)
         return len(ips_assigned) == len(instances)
 
     def _await_networks(self, cluster, instances):
@@ -98,8 +99,9 @@ class Engine(object):
 
         with context.ThreadGroup() as tg:
             for instance in instances:
-                tg.spawn("wait-for-ssh-%s" % instance.instance_name,
-                         self._wait_until_accessible, instance)
+                with context.set_current_instance_id(instance.instance_id):
+                    tg.spawn("wait-for-ssh-%s" % instance.instance_name,
+                             self._wait_until_accessible, instance)
 
         LOG.info(_LI("Cluster {cluster_id}: all instances are accessible")
                  .format(cluster_id=cluster.id))
@@ -148,8 +150,10 @@ class Engine(object):
         with context.ThreadGroup() as tg:
             for node_group in cluster.node_groups:
                 for instance in node_group.instances:
-                    tg.spawn("configure-instance-%s" % instance.instance_name,
-                             self._configure_instance, instance, hosts_file)
+                    with context.set_current_instance_id(instance.instance_id):
+                        tg.spawn(
+                            "configure-instance-%s" % instance.instance_name,
+                            self._configure_instance, instance, hosts_file)
 
     @cpo.event_wrapper(mark_successful_on_exit=True)
     def _configure_instance(self, instance, hosts_file):

@@ -48,8 +48,9 @@ class FakeNodeGroup(object):
 
 
 class FakeInstance(object):
-    def __init__(self, inst_name, management_ip, user, priv_key):
+    def __init__(self, inst_name, inst_id, management_ip, user, priv_key):
         self.instance_name = inst_name
+        self.instance_id = inst_id
         self.management_ip = management_ip
         self.node_group = FakeNodeGroup(user, priv_key)
 
@@ -107,7 +108,7 @@ class TestInstanceInteropHelper(base.SaharaTestCase):
     def test_use_floating_ips(self, p_adapter):
         self.override_config('use_floating_ips', True)
 
-        instance = FakeInstance('inst1', '10.0.0.1', 'user1', 'key1')
+        instance = FakeInstance('inst1', '123', '10.0.0.1', 'user1', 'key1')
         remote = ssh_remote.InstanceInteropHelper(instance)
 
         # Test SSH
@@ -128,7 +129,7 @@ class TestInstanceInteropHelper(base.SaharaTestCase):
         self.override_config('use_floating_ips', False)
         self.override_config('use_namespaces', True)
 
-        instance = FakeInstance('inst2', '10.0.0.2', 'user2', 'key2')
+        instance = FakeInstance('inst2', '123', '10.0.0.2', 'user2', 'key2')
         remote = ssh_remote.InstanceInteropHelper(instance)
 
         # Test SSH
@@ -152,7 +153,7 @@ class TestInstanceInteropHelper(base.SaharaTestCase):
     def test_proxy_command(self, p_adapter, p_simple_exec_func):
         self.override_config('proxy_command', 'ssh fakerelay nc {host} {port}')
 
-        instance = FakeInstance('inst3', '10.0.0.3', 'user3', 'key3')
+        instance = FakeInstance('inst3', '123', '10.0.0.3', 'user3', 'key3')
         remote = ssh_remote.InstanceInteropHelper(instance)
 
         # Test SSH
@@ -171,7 +172,7 @@ class TestInstanceInteropHelper(base.SaharaTestCase):
     def test_proxy_command_bad(self):
         self.override_config('proxy_command', '{bad_kw} nc {host} {port}')
 
-        instance = FakeInstance('inst4', '10.0.0.4', 'user4', 'key4')
+        instance = FakeInstance('inst4', '123', '10.0.0.4', 'user4', 'key4')
         remote = ssh_remote.InstanceInteropHelper(instance)
 
         # Test SSH

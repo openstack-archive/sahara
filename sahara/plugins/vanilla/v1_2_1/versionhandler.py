@@ -159,13 +159,15 @@ class VersionHandler(avm.AbstractVersionHandler):
         nn_instance = vu.get_namenode(cluster)
 
         with remote.get_remote(oozie) as r:
-            if c_helper.is_mysql_enable(cluster):
-                run.mysql_start(r, oozie)
-                run.oozie_create_db(r)
-            run.oozie_share_lib(r, nn_instance.hostname())
-            run.start_oozie(r)
-            LOG.info(_LI("Oozie service at {host} has been started").format(
-                     host=nn_instance.hostname()))
+            with context.set_current_instance_id(oozie.instance_id):
+                if c_helper.is_mysql_enable(cluster):
+                    run.mysql_start(r, oozie)
+                    run.oozie_create_db(r)
+                run.oozie_share_lib(r, nn_instance.hostname())
+                run.start_oozie(r)
+                LOG.info(
+                    _LI("Oozie service at {host} has been started").format(
+                        host=nn_instance.hostname()))
 
     def start_hiveserver(self, cluster):
         hs = vu.get_hiveserver(cluster)
@@ -178,18 +180,19 @@ class VersionHandler(avm.AbstractVersionHandler):
         oozie = vu.get_oozie(cluster)
 
         with remote.get_remote(hive_server) as r:
-            run.hive_create_warehouse_dir(r)
-            run.hive_copy_shared_conf(
-                r, edp.get_hive_shared_conf_path('hadoop'))
+            with context.set_current_instance_id(hive_server.instance_id):
+                run.hive_create_warehouse_dir(r)
+                run.hive_copy_shared_conf(
+                    r, edp.get_hive_shared_conf_path('hadoop'))
 
-            if c_helper.is_mysql_enable(cluster):
-                if not oozie or hive_server.hostname() != oozie.hostname():
-                    run.mysql_start(r, hive_server)
-                run.hive_create_db(r, cluster.extra['hive_mysql_passwd'])
-                run.hive_metastore_start(r)
-                LOG.info(_LI("Hive Metastore server at {host} has been "
-                             "started").format(
-                                 host=hive_server.hostname()))
+                if c_helper.is_mysql_enable(cluster):
+                    if not oozie or hive_server.hostname() != oozie.hostname():
+                        run.mysql_start(r, hive_server)
+                    run.hive_create_db(r, cluster.extra['hive_mysql_passwd'])
+                    run.hive_metastore_start(r)
+                    LOG.info(_LI("Hive Metastore server at {host} has been "
+                                 "started").format(
+                                     host=hive_server.hostname()))
 
     def start_cluster(self, cluster):
         self.start_namenode(cluster)
