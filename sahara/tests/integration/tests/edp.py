@@ -220,15 +220,18 @@ class EDPTest(base.ITestCase):
             self.cluster_info['node_info']['namenode_ip'],
             hdfs_input_path, self.edp_info.read_hive_example_input())
 
-        input_id = self._create_data_source('hive-input', 'hdfs',
-                                            hdfs_input_path)
-        output_id = self._create_data_source('hive-output', 'hdfs',
+        input_id = self._create_data_source(self.rand_name('hive-input'),
+                                            'hdfs', hdfs_input_path)
+        output_id = self._create_data_source(self.rand_name('hive-output'),
+                                             'hdfs',
                                              '/user/hive/warehouse/output')
         script_id = self._create_job_binary_internals(
-            'hive-script', self.edp_info.read_hive_example_script())
-        job_binary_id = self._create_job_binary('hive-edp',
+            self.rand_name('hive-script'),
+            self.edp_info.read_hive_example_script())
+        job_binary_id = self._create_job_binary(self.rand_name('hive-edp'),
                                                 'internal-db://%s' % script_id)
-        job_id = self._create_job('edp-test-hive', edp.JOB_TYPE_HIVE,
+        job_id = self._create_job(self.rand_name('edp-test-hive'),
+                                  edp.JOB_TYPE_HIVE,
                                   [job_binary_id], [])
         job_execution_id = self.sahara.job_executions.create(
             job_id, self.cluster_id, input_id, output_id, {}).id
