@@ -14,15 +14,7 @@
 # under the License.
 
 """
-Tests for database migrations. This test case reads the configuration
-file test_migrations.conf for database connection settings
-to use in the tests. For each connection found in the config file,
-the test case runs a series of test cases to ensure that migrations work
-properly.
-
-There are also "opportunistic" tests for both mysql and postgresql in here,
-which allows testing against mysql and pg) in a properly configured unit
-test environment.
+Tests for database migrations.
 
 For the opportunistic testing you need to set up a db named 'openstack_citest'
 with user 'openstack_citest' and password 'openstack_citest' on localhost.
@@ -39,27 +31,18 @@ postgres=# create database openstack_citest with owner openstack_citest;
 
 import os
 
-from oslo.config import cfg
+from oslo.db.sqlalchemy import test_base
 from oslo.db.sqlalchemy import utils as db_utils
 
 from sahara.tests.unit.db.migration import test_migrations_base as base
 
-import sqlalchemy
 
-CONF = cfg.CONF
+class SaharaMigrationsCheckers(object):
 
+    TIMEOUT_SCALING_FACTOR = 2
 
-class TestMigrations(base.BaseWalkMigrationTestCase):
-    """Test sqlalchemy-migrate migrations."""
-    USER = "openstack_citest"
-    PASSWD = "openstack_citest"
-    DATABASE = "openstack_citest"
-
-    def __init__(self, *args, **kwargs):
-        super(TestMigrations, self).__init__(*args, **kwargs)
-
-    def setUp(self):
-        super(TestMigrations, self).setUp()
+    snake_walk = True
+    downgrade = True
 
     def assertColumnExists(self, engine, table, column):
         t = db_utils.get_table(engine, table)
@@ -93,6 +76,9 @@ class TestMigrations(base.BaseWalkMigrationTestCase):
                 break
 
         self.assertEqual(sorted(members), sorted(index_columns))
+
+    def test_walk_versions(self):
+        self.walk_versions(self.engine, self.snake_walk, self.downgrade)
 
     def _pre_upgrade_001(self, engine):
         # Anything returned from this method will be
@@ -451,25 +437,16 @@ class TestMigrations(base.BaseWalkMigrationTestCase):
         self.assertColumnsExists(engine, 'cluster_events', events_columns)
 
 
-class TestMigrationsMySQL(TestMigrations, base.MySQLTestsMixIn,
-                          base.TestModelsMigrationsSync):
-    def get_engine(self):
-        conn_string = ("mysql+mysqldb://%s:%s@localhost/%s"
-                       % (self.USER, self.PASSWD, self.DATABASE))
-        engine = sqlalchemy.create_engine(conn_string)
-        return engine
-
-    def have_database(self):
-        return base.have_mysql(self.USER, self.PASSWD, self.DATABASE)
+class TestMigrationsMySQL(SaharaMigrationsCheckers,
+                          base.BaseWalkMigrationTestCase,
+                          base.TestModelsMigrationsSync,
+                          test_base.MySQLOpportunisticTestCase,
+                          ):
+    pass
 
 
-class TestMigrationsPostgresql(TestMigrations, base.PostgresqlTestsMixIn,
-                               base.TestModelsMigrationsSync):
-    def get_engine(self):
-        conn_string = ("postgresql+psycopg2://%s:%s@localhost/%s"
-                       % (self.USER, self.PASSWD, self.DATABASE))
-        engine = sqlalchemy.create_engine(conn_string)
-        return engine
-
-    def have_database(self):
-        return base.have_postgresql(self.USER, self.PASSWD, self.DATABASE)
+class TestMigrationsPostgresql(SaharaMigrationsCheckers,
+                               base.BaseWalkMigrationTestCase,
+                               base.TestModelsMigrationsSync,
+                               test_base.PostgreSQLOpportunisticTestCase):
+    pass
