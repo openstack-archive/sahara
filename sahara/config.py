@@ -19,7 +19,6 @@ from oslo.config import cfg
 
 from sahara import exceptions as ex
 from sahara.i18n import _
-from sahara.openstack.common import lockutils
 from sahara.openstack.common import log
 from sahara.openstack.common import periodic_task
 from sahara.openstack.common import policy
@@ -124,7 +123,6 @@ def list_opts():
                          edp_opts,
                          networking_opts,
                          db_opts,
-                         lockutils.util_opts,
                          policy.policy_opts,
                          log.common_cli_opts,
                          log.generic_log_opts,

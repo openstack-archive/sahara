@@ -33,6 +33,8 @@ from alembic import migration
 from alembic import script as alembic_script
 from oslo.config import cfg
 from oslo.db.sqlalchemy import test_migrations as t_m
+from oslo_concurrency import lockutils
+from oslo_concurrency import processutils
 import six.moves.urllib.parse as urlparse
 import sqlalchemy
 import sqlalchemy.exc
@@ -41,9 +43,7 @@ import testtools
 import sahara.db.migration
 from sahara.db.sqlalchemy import api as sa
 from sahara.db.sqlalchemy import model_base
-from sahara.openstack.common import lockutils
 from sahara.openstack.common import log as logging
-from sahara.openstack.common import processutils
 
 
 LOG = logging.getLogger(__name__)

@@ -15,12 +15,12 @@
 
 import os
 
+from oslo_concurrency import processutils
 import paramiko
 import six
 
 from sahara import exceptions as ex
 from sahara.i18n import _
-from sahara.openstack.common import processutils
 from sahara.utils import tempfiles
 
 

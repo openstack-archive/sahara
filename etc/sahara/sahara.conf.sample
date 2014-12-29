@@ -205,9 +205,6 @@
 # List of logger=LEVEL pairs. (list value)
 #default_log_levels = amqplib=WARN,qpid.messaging=INFO,stevedore=INFO,eventlet.wsgi.server=WARN,sqlalchemy=WARN,boto=WARN,suds=INFO,keystone=INFO,paramiko=WARN,requests=WARN,iso8601=WARN
 
-# Enables or disables inter-process locks. (boolean value)
-#disable_process_locking = false
-
 # Enables data locality for hadoop cluster.                  Also
 # enables data locality for Swift used by hadoop.                  If
 # enabled, 'compute_topology' and 'swift_topology'
@@ -249,9 +246,6 @@
 # Timeout for canceling job execution (in seconds). Sahara will try to
 # cancel job execution during this time. (integer value)
 #job_canceling_timeout = 300
-
-# Directory to use for lock files. (string value)
-#lock_path = <None>
 
 # The name of a logging configuration file. This file is appended to
 # any existing logging configuration files. For details about logging
@@ -760,6 +754,24 @@
 # Matchmaker ring file (JSON). (string value)
 # Deprecated group/name - [DEFAULT]/matchmaker_ringfile
 #ringfile = /etc/oslo/matchmaker_ring.json
+
+
+[oslo_concurrency]
+
+#
+# From oslo.concurrency
+#
+
+# Enables or disables inter-process locks. (boolean value)
+# Deprecated group/name - [DEFAULT]/disable_process_locking
+#disable_process_locking = false
+
+# Directory to use for lock files.  For security, the specified
+# directory should only be writable by the user running the processes
+# that need locking. Defaults to environment variable OSLO_LOCK_PATH.
+# If external locks are used, a lock path must be set. (string value)
+# Deprecated group/name - [DEFAULT]/lock_path
+#lock_path = <None>
 
 
 [oslo_messaging_amqp]
