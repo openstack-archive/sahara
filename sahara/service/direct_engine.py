@@ -163,12 +163,15 @@ class DirectEngine(e.Engine):
         aa_group = None
         if cluster.anti_affinity:
             aa_group = self._create_aa_server_group(cluster)
+        cpo.add_provisioning_step(
+            cluster.id, _("Run instances"), g.count_instances(cluster))
 
         for node_group in cluster.node_groups:
             count = node_group.count
             conductor.node_group_update(ctx, node_group, {'count': 0})
             for idx in six.moves.xrange(1, count + 1):
-                self._run_instance(cluster, node_group, idx, aa_group=aa_group)
+                self._start_instance(
+                    cluster, node_group, idx, aa_group=aa_group)
 
     def _create_aa_server_group(self, cluster):
         server_group_name = g.generate_aa_group_name(cluster.name)
@@ -215,6 +218,34 @@ class DirectEngine(e.Engine):
 
         return conductor.cluster_get(ctx, cluster)
 
+    def _count_instances_to_scale(self, node_groups_to_enlarge,
+                                  node_group_id_map, cluster):
+
+        total_count = 0
+        if node_groups_to_enlarge:
+            for ng in cluster.node_groups:
+                if ng.id in node_groups_to_enlarge:
+                    count = node_group_id_map[ng.id]
+                    total_count += count - ng.count
+
+        return total_count
+
+    def _start_instance(self, cluster, node_group, idx, aa_group,
+                        old_aa_groups=None):
+
+        instance_name = g.generate_instance_name(
+            cluster.name, node_group.name, idx)
+
+        current_instance_info = [
+            cluster.id, None, instance_name, node_group.id]
+
+        with context.InstanceInfoManager(current_instance_info):
+            instance_id = self._run_instance(
+                cluster, node_group, idx,
+                aa_group=aa_group, old_aa_groups=old_aa_groups)
+
+        return instance_id
+
     def _scale_cluster_instances(self, cluster, node_group_id_map):
         ctx = context.ctx()
 
@@ -256,14 +287,19 @@ class DirectEngine(e.Engine):
         cluster = conductor.cluster_get(ctx, cluster)
         instances_to_add = []
         if node_groups_to_enlarge:
+
+            cpo.add_provisioning_step(
+                cluster.id, _("Add instances"),
+                self._count_instances_to_scale(
+                    node_groups_to_enlarge, node_group_id_map, cluster))
+
             cluster = g.change_cluster_status(cluster, "Adding Instances")
             for ng in cluster.node_groups:
                 if ng.id in node_groups_to_enlarge:
                     count = node_group_id_map[ng.id]
                     for idx in six.moves.xrange(ng.count + 1, count + 1):
-                        instance_id = self._run_instance(
-                            cluster, ng, idx,
-                            aa_group=aa_group, old_aa_groups=old_aa_groups)
+                        instance_id = self._start_instance(
+                            cluster, ng, idx, aa_group, old_aa_groups)
                         instances_to_add.append(instance_id)
 
         return instances_to_add
@@ -287,6 +323,7 @@ class DirectEngine(e.Engine):
                 names.append(group.name)
             return names
 
+    @cpo.event_wrapper_without_instance(mark_successful_on_exit=True)
     def _run_instance(self, cluster, node_group, idx, aa_group=None,
                       old_aa_groups=None):
         """Create instance using nova client and persist them into DB."""
