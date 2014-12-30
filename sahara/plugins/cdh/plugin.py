@@ -37,7 +37,7 @@ class CDHPluginProvider(p.ProvisioningPluginBase):
                  '(CDH) with Cloudera Manager management console.')
 
     def get_versions(self):
-        return ['5', '5.2.0']
+        return ['5', '5.2.0', '5.3.0']
 
     def get_node_processes(self, hadoop_version):
         processes = {
@@ -70,7 +70,7 @@ class CDHPluginProvider(p.ProvisioningPluginBase):
             "SOLR": ['SOLR_SERVER'],
             "SQOOP": ['SQOOP_SERVER']
         }
-        if hadoop_version == '5.2.0':
+        if hadoop_version >= '5.2.0':
             processes["SENTRY"] = ['SENTRY_SERVER']
         return processes
 
