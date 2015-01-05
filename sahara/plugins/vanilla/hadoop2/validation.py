@@ -13,18 +13,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from oslo.config import cfg
-
-from sahara import exceptions as e
 from sahara.i18n import _
 from sahara.plugins import exceptions as ex
 from sahara.plugins import utils as u
 from sahara.plugins.vanilla.hadoop2 import config_helper as cu
 from sahara.plugins.vanilla import utils as vu
 from sahara.utils import general as gu
-
-
-CONF = cfg.CONF
 
 
 def validate_cluster_creating(pctx, cluster):
@@ -82,10 +76,6 @@ def validate_cluster_creating(pctx, cluster):
     if hive_count not in [0, 1]:
         raise ex.InvalidComponentCountException('hive', _('0 or 1'),
                                                 hive_count)
-
-    if hive_count and not CONF.use_domain_for_proxy_users:
-        raise e.ConfigurationError(
-            _("Service 'hiveserver' requires configured proxy domain."))
 
 
 def validate_additional_ng_scaling(cluster, additional):

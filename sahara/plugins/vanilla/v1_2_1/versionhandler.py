@@ -268,7 +268,8 @@ class VersionHandler(avm.AbstractVersionHandler):
             run.start_processes(r, *tt_dn_procs)
 
     def _setup_instances(self, cluster, instances):
-        if (CONF.use_identity_api_v3 and vu.get_hiveserver(cluster) and
+        if (CONF.use_identity_api_v3 and CONF.use_domain_for_proxy_users and
+                vu.get_hiveserver(cluster) and
                 c_helper.is_swift_enable(cluster)):
             cluster = proxy.create_proxy_user_for_cluster(cluster)
             instances = utils.get_instances(cluster)
