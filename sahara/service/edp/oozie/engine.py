@@ -183,10 +183,11 @@ class OozieJobEngine(base_engine.JobEngine):
                 raw_data = dispatch.get_raw_binary(main, proxy_configs)
                 h.put_file_to_hdfs(r, raw_data, main.name, job_dir, hdfs_user)
                 uploaded_paths.append(job_dir + '/' + main.name)
-            for lib in libs:
-                raw_data = dispatch.get_raw_binary(lib, proxy_configs)
+            if len(libs) > 0:
                 # HDFS 2.2.0 fails to put file if the lib dir does not exist
                 self.create_hdfs_dir(r, job_dir + "/lib")
+            for lib in libs:
+                raw_data = dispatch.get_raw_binary(lib, proxy_configs)
                 h.put_file_to_hdfs(r, raw_data, lib.name, job_dir + "/lib",
                                    hdfs_user)
                 uploaded_paths.append(job_dir + '/lib/' + lib.name)
