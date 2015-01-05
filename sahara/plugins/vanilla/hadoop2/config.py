@@ -39,7 +39,8 @@ HADOOP_GROUP = 'hadoop'
 
 def configure_cluster(pctx, cluster):
     LOG.debug("Configuring cluster \"%s\"", cluster.name)
-    if (CONF.use_identity_api_v3 and vu.get_hiveserver(cluster) and
+    if (CONF.use_identity_api_v3 and CONF.use_domain_for_proxy_users and
+            vu.get_hiveserver(cluster) and
             c_helper.is_swift_enabled(pctx, cluster)):
         cluster = proxy.create_proxy_user_for_cluster(cluster)
 
