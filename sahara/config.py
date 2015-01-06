@@ -20,8 +20,6 @@ from oslo.config import cfg
 from sahara import exceptions as ex
 from sahara.i18n import _
 from sahara.openstack.common import log
-from sahara.openstack.common import periodic_task
-from sahara.openstack.common import policy
 from sahara.plugins import base as plugins_base
 from sahara.topology import topology_helper
 from sahara.utils.notification import sender
@@ -117,29 +115,6 @@ CONF.register_opts(db_opts)
 
 
 def list_opts():
-    return [
-        ('DEFAULT',
-         itertools.chain(cli_opts,
-                         edp_opts,
-                         networking_opts,
-                         db_opts,
-                         policy.policy_opts,
-                         log.common_cli_opts,
-                         log.generic_log_opts,
-                         log.log_opts,
-                         log.logging_cli_opts,
-                         periodic_task.periodic_opts,
-                         plugins_base.opts,
-                         topology_helper.opts,
-                         sender.notifier_opts,
-                         cinder.opts,
-                         keystone.opts,
-                         remote.ssh_opts,
-                         )),
-    ]
-
-
-def main_opts():
     # NOTE (vgridnev): we make these import here to avoid problems
     #                  with importing unregistered options in sahara code.
     #                  As example, importing 'node_domain' in
@@ -153,13 +128,23 @@ def main_opts():
     from sahara.utils import proxy
 
     return [
-        ('DEFAULT',
-         itertools.chain(sahara_main.opts,
+        (None,
+         itertools.chain(cli_opts,
+                         edp_opts,
+                         networking_opts,
+                         db_opts,
+                         plugins_base.opts,
+                         topology_helper.opts,
+                         sender.notifier_opts,
+                         cinder.opts,
+                         keystone.opts,
+                         remote.ssh_opts,
+                         sahara_main.opts,
                          job_utils.opts,
                          periodic.periodic_opts,
                          volumes.opts,
                          proxy.opts)),
-        ('conductor',
+        (api.conductor_group.name,
          itertools.chain(api.conductor_opts)),
     ]
 
