@@ -29,38 +29,53 @@ LOG = logging.getLogger(__name__)
 
 
 opts = [
-    cfg.IntOpt('cinder_api_version', default=2,
-               help='Version of the Cinder API to use.')
+    cfg.IntOpt('api_version', default=2,
+               help='Version of the Cinder API to use.',
+               deprecated_name='cinder_api_version'),
+    cfg.BoolOpt('api_insecure',
+                default=False,
+                help='Allow to perform insecure SSL requests to cinder.'),
+    cfg.StrOpt('ca_file',
+               help='Location of ca certificates file to use for cinder '
+                    'client requests.')
 ]
 
+cinder_group = cfg.OptGroup(name='cinder',
+                            title='Cinder client options')
+
 CONF = cfg.CONF
-CONF.register_opts(opts)
+CONF.register_group(cinder_group)
+CONF.register_opts(opts, group=cinder_group)
 
 
 def validate_config():
-    if CONF.cinder_api_version == 1:
+    if CONF.cinder.api_version == 1:
         LOG.warn(_('The Cinder v1 API is deprecated and will be removed after '
-                   'the Juno release.  You should set cinder_api_version=2 in '
+                   'the Juno release.  You should set cinder.api_version=2 in '
                    'your sahara.conf file.'))
-    elif CONF.cinder_api_version != 2:
+    elif CONF.cinder.api_version != 2:
         LOG.warn(_('Unsupported Cinder API version: %(bad)s.  Please set a '
-                   'correct value for cinder_api_version in your sahara.conf '
+                   'correct value for cinder.api_version in your sahara.conf '
                    'file (currently supported versions are: %(supported)s).  '
                    'Falling back to Cinder API version 2.'),
-                 {'bad': CONF.cinder_api_version, 'supported': [1, 2]})
-        CONF.set_override('cinder_api_version', 2)
+                 {'bad': CONF.cinder.api_version, 'supported': [1, 2]})
+        CONF.set_override('api_version', 2, group='cinder')
 
 
 def client():
     ctx = context.current()
-    if CONF.cinder_api_version == 1:
+    args = {
+        'insecure': CONF.cinder.api_insecure,
+        'cacert': CONF.cinder.ca_file
+    }
+    if CONF.cinder.api_version == 1:
         volume_url = base.url_for(ctx.service_catalog, 'volume')
         cinder = cinder_client_v1.Client(ctx.username, ctx.auth_token,
-                                         ctx.tenant_id, volume_url)
+                                         ctx.tenant_id, volume_url, **args)
     else:
         volume_url = base.url_for(ctx.service_catalog, 'volumev2')
         cinder = cinder_client_v2.Client(ctx.username, ctx.auth_token,
-                                         ctx.tenant_id, volume_url)
+                                         ctx.tenant_id, volume_url, **args)
 
     cinder.client.auth_token = ctx.auth_token
     cinder.client.management_url = volume_url

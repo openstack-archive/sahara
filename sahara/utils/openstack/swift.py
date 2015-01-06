@@ -13,11 +13,28 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from oslo.config import cfg
 import swiftclient
 
 from sahara.swift import swift_helper as sh
 from sahara.swift import utils as su
 from sahara.utils.openstack import keystone as k
+
+opts = [
+    cfg.BoolOpt('api_insecure',
+                default=False,
+                help='Allow to perform insecure SSL requests to swift.'),
+    cfg.StrOpt('ca_file',
+               help='Location of ca certificates file to use for swift '
+                    'client requests.')
+]
+
+swift_group = cfg.OptGroup(name='swift',
+                           title='Swift client options')
+
+CONF = cfg.CONF
+CONF.register_group(swift_group)
+CONF.register_opts(opts, group=swift_group)
 
 
 def client(username, password, trust_id=None):
@@ -36,7 +53,10 @@ def client(username, password, trust_id=None):
     :returns: A Swift client object
 
     '''
-    client_kwargs = dict(auth_version='2.0')
+    client_kwargs = dict(
+        auth_version='2.0',
+        cacert=CONF.swift.ca_file,
+        insecure=CONF.swift.api_insecure)
     if trust_id:
         proxyclient = k.client_for_proxy_user(username, password, trust_id)
         client_kwargs.update(preauthurl=su.retrieve_preauth_url(),

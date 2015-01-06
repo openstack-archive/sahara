@@ -47,7 +47,7 @@ class TestCinder(test_base.SaharaTestCase):
     @mock.patch('cinderclient.v2.client.Client')
     @mock.patch('cinderclient.v1.client.Client')
     def test_get_cinder_client_api_v1(self, patched1, patched2):
-        self.override_config('cinder_api_version', 1)
+        self.override_config('api_version', 1, group='cinder')
         patched1.return_value = FakeCinderClient(1)
         patched2.return_value = FakeCinderClient(2)
 
@@ -57,7 +57,7 @@ class TestCinder(test_base.SaharaTestCase):
     @mock.patch('cinderclient.v2.client.Client')
     @mock.patch('cinderclient.v1.client.Client')
     def test_get_cinder_client_api_v2(self, patched1, patched2):
-        self.override_config('cinder_api_version', 2)
+        self.override_config('api_version', 2, group='cinder')
         patched1.return_value = FakeCinderClient(1)
         patched2.return_value = FakeCinderClient(2)
 
@@ -65,11 +65,11 @@ class TestCinder(test_base.SaharaTestCase):
         self.assertEqual(2, client.client.api_version)
 
     def test_cinder_bad_api_version(self):
-        self.override_config('cinder_api_version', 0)
+        self.override_config('api_version', 0, group='cinder')
         cinder.validate_config()
 
         # Check bad version falls back to latest supported version
-        self.assertEqual(2, main.CONF.cinder_api_version)
+        self.assertEqual(2, main.CONF.cinder.api_version)
 
 
 class FakeCinderClient(object):

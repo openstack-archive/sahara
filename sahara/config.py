@@ -125,6 +125,10 @@ def list_opts():
     from sahara.service.edp import job_utils
     from sahara.service import periodic
     from sahara.service import volumes
+    from sahara.utils.openstack import heat
+    from sahara.utils.openstack import neutron
+    from sahara.utils.openstack import nova
+    from sahara.utils.openstack import swift
     from sahara.utils import proxy
 
     return [
@@ -136,7 +140,6 @@ def list_opts():
                          plugins_base.opts,
                          topology_helper.opts,
                          sender.notifier_opts,
-                         cinder.opts,
                          keystone.opts,
                          remote.ssh_opts,
                          sahara_main.opts,
@@ -146,6 +149,18 @@ def list_opts():
                          proxy.opts)),
         (api.conductor_group.name,
          itertools.chain(api.conductor_opts)),
+        (cinder.cinder_group.name,
+         itertools.chain(cinder.opts)),
+        (heat.heat_group.name,
+         itertools.chain(heat.opts)),
+        (neutron.neutron_group.name,
+         itertools.chain(neutron.opts)),
+        (nova.nova_group.name,
+         itertools.chain(nova.opts)),
+        (swift.swift_group.name,
+         itertools.chain(swift.opts)),
+        (keystone.keystone_group.name,
+         itertools.chain(keystone.ssl_opts))
     ]
 
 
