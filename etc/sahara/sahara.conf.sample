@@ -337,27 +337,22 @@
 # when returning it. (list value)
 #plugins = vanilla,hdp,spark
 
-# Enables data locality for hadoop cluster.                  Also
-# enables data locality for Swift used by hadoop.                  If
-# enabled, 'compute_topology' and 'swift_topology'
-# configuration parameters should point to OpenStack and Swift
-# topology correspondingly. (boolean value)
+# Enables data locality for hadoop cluster. Also enables data locality
+# for Swift used by hadoop. If enabled, 'compute_topology' and
+# 'swift_topology' configuration parameters should point to OpenStack
+# and Swift topology correspondingly. (boolean value)
 #enable_data_locality = false
 
-# Enables four-level topology for data locality.                 Works
-# only if corresponding plugin supports such mode. (boolean value)
+# Enables four-level topology for data locality. Works only if
+# corresponding plugin supports such mode. (boolean value)
 #enable_hypervisor_awareness = true
 
-# File with nova compute topology.                 It should contain
-# mapping between nova computes and racks.                 File
-# format:                 compute1 /rack1                 compute2
-# /rack2                 compute3 /rack2 (string value)
+# File with nova compute topology. It should contain mapping between
+# nova computes and racks. (string value)
 #compute_topology_file = etc/sahara/compute.topology
 
-# File with Swift topology.                 It should contain mapping
-# between Swift nodes and racks.                 File format:
-# node1 /rack1                 node2 /rack2                 node3
-# /rack2 (string value)
+# File with Swift topology.It should contain mapping between Swift
+# nodes and racks. (string value)
 #swift_topology_file = etc/sahara/swift.topology
 
 # Notification level for outgoing notifications (string value)

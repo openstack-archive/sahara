@@ -38,31 +38,25 @@ LOG = log.getLogger(__name__)
 opts = [
     cfg.BoolOpt('enable_data_locality',
                 default=False,
-                help="""Enables data locality for hadoop cluster.
-                 Also enables data locality for Swift used by hadoop.
-                 If enabled, 'compute_topology' and 'swift_topology'
-                 configuration parameters should point to OpenStack and Swift
-                 topology correspondingly."""),
+                help="Enables data locality for hadoop cluster. "
+                     "Also enables data locality for Swift used by hadoop. "
+                     "If enabled, 'compute_topology' and 'swift_topology' "
+                     "configuration parameters should point to OpenStack and "
+                     "Swift topology correspondingly."),
     cfg.BoolOpt('enable_hypervisor_awareness',
                 default=True,
-                help="""Enables four-level topology for data locality.
-                Works only if corresponding plugin supports such mode."""),
+                help="Enables four-level topology for data locality. "
+                     "Works only if corresponding plugin supports such mode."),
     cfg.StrOpt('compute_topology_file',
                default='etc/sahara/compute.topology',
-               help="""File with nova compute topology.
-                It should contain mapping between nova computes and racks.
-                File format:
-                compute1 /rack1
-                compute2 /rack2
-                compute3 /rack2"""),
+               help="File with nova compute topology. "
+                    "It should contain mapping between nova computes and "
+                    "racks."),
     cfg.StrOpt('swift_topology_file',
                default='etc/sahara/swift.topology',
-               help="""File with Swift topology.
-                It should contain mapping between Swift nodes and racks.
-                File format:
-                node1 /rack1
-                node2 /rack2
-                node3 /rack2""")
+               help="File with Swift topology."
+                    "It should contain mapping between Swift nodes and "
+                    "racks.")
 ]
 
 CONF = cfg.CONF
