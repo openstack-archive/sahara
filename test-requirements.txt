@@ -17,4 +17,4 @@ testscenarios>=0.4
 testtools>=0.9.34,!=1.2.0,!=1.4.0
 unittest2
 
-python-saharaclient>=0.6.0
+python-saharaclient>=0.6.0,<0.8
