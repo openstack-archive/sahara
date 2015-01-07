@@ -259,8 +259,6 @@ def configure_cluster(cluster):
     _configure_services(cluster)
     _configure_instances(instances)
     cu.deploy_configs(cluster)
-    if c_helper.is_swift_enabled(cluster):
-        _configure_swift(instances)
 
 
 def scale_cluster(cluster, instances):
@@ -611,30 +609,7 @@ def _install_extjs(cluster):
                 run_as_root=True)
 
 
-def _clean_deploy_cc(cluster):
-    # We need to disable Deploy Client Configuration in first_run.
-    instances = gu.get_instances(cluster)
-    for instance in instances:
-        with instance.remote() as r:
-            r.execute_command(
-                'cp `find /usr/ -name deploy-cc.sh` cc.sh')
-            r.execute_command('echo "#!/bin/bash\necho \$1" > cc1.sh')
-            r.execute_command(
-                'sudo cp cc1.sh `find /usr/ -name deploy-cc.sh`')
-
-
-def _restore_deploy_cc(cluster):
-    # Restore back the script after first_run.
-    instances = gu.get_instances(cluster)
-    for instance in instances:
-        with instance.remote() as r:
-            r.execute_command(
-                'sudo cp cc.sh `find /usr/ -name deploy-cc.sh`')
-
-
 def start_cluster(cluster):
-    _clean_deploy_cc(cluster)
-
     if pu.get_oozie(cluster):
         _install_extjs(cluster)
 
@@ -646,10 +621,12 @@ def start_cluster(cluster):
 
     cu.first_run(cluster)
 
+    if c_helper.is_swift_enabled(cluster):
+        instances = gu.get_instances(cluster)
+        _configure_swift(instances)
+
     if pu.get_hive_metastore(cluster):
         _put_hive_hdfs_xml(cluster)
-
-    _restore_deploy_cc(cluster)
 
     if pu.get_flumes(cluster):
         cm_cluster = cu.get_cloudera_cluster(cluster)
