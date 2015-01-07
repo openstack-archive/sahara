@@ -243,6 +243,15 @@ class CDHGatingTest(cluster_configs.ClusterConfigTest,
         # check hive
         yield self.check_edp_hive()
 
+        # check Java
+        java_jar = self.edp_info.read_java_example_lib(2)
+        java_configs = self.edp_info.java_example_configs(2)
+        yield self.edp_testing(
+            utils_edp.JOB_TYPE_JAVA,
+            job_data_list=[],
+            lib_data_list=[{'jar': java_jar}],
+            configs=java_configs)
+
     @b.errormsg("Failure while cluster scaling: ")
     def _check_scaling(self):
         change_list = [
