@@ -33,6 +33,12 @@ hue_service_name = 'hue01'
 spark_service_name = 'spark_on_yarn01'
 zookeeper_service_name = 'zookeeper01'
 hbase_service_name = 'hbase01'
+flume_service_name = 'flume01'
+sqoop_service_name = 'sqoop01'
+solr_service_name = 'solr01'
+ks_indexer_service_name = 'ks_indexer01'
+impala_service_name = 'impala01'
+sentry_service_name = 'sentry01'
 
 
 def get_cm_api():
@@ -48,7 +54,7 @@ def process_service(service, service_name):
     for role_cfgs in service.get_all_role_config_groups():
         role_cm_cfg = role_cfgs.get_config(view='full')
         role_cfg = parse_config(role_cm_cfg)
-        role_name = role_cfgs.displayName.split(' ')[0].lower()
+        role_name = role_cfgs.roleType
         write_cfg(role_cfg, '%s-%s.json' % (service_name, role_name))
 
     service_cm_cfg = service.get_config(view='full')[0]
@@ -105,6 +111,25 @@ def main():
 
     hbase = cluster.get_service(hbase_service_name)
     process_service(hbase, 'hbase')
+
+    flume = cluster.get_service(flume_service_name)
+    process_service(flume, 'flume')
+
+    sqoop = cluster.get_service(sqoop_service_name)
+    process_service(sqoop, 'sqoop')
+
+    solr = cluster.get_service(solr_service_name)
+    process_service(solr, 'solr')
+
+    ks_indexer = cluster.get_service(ks_indexer_service_name)
+    process_service(ks_indexer, 'ks_indexer')
+
+    impala = cluster.get_service(impala_service_name)
+    process_service(impala, 'impala')
+
+    sentry = cluster.get_service(sentry_service_name)
+    process_service(sentry, 'sentry')
+
 
 if __name__ == '__main__':
     main()

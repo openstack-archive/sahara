@@ -40,7 +40,7 @@ class CDHPluginProvider(p.ProvisioningPluginBase):
         return ['5', '5.2.0']
 
     def get_node_processes(self, hadoop_version):
-        return {
+        processes = {
             "CLOUDERA": ['MANAGER'],
             "HDFS": [],
             "NAMENODE": ['NAMENODE'],
@@ -60,8 +60,19 @@ class CDHPluginProvider(p.ProvisioningPluginBase):
             "ZOOKEEPER": ['SERVER'],
             "HBASE": [],
             "MASTER": ['MASTER'],
-            "REGIONSERVER": ['REGIONSERVER']
+            "REGIONSERVER": ['REGIONSERVER'],
+            "FLUME": ['AGENT'],
+            "IMPALA": [],
+            "CATALOGSERVER": ['CATALOGSERVER'],
+            "STATESTORE": ['STATESTORE'],
+            "IMPALAD": ['IMPALAD'],
+            "KS_INDEXER": ['HBASE_INDEXER'],
+            "SOLR": ['SOLR_SERVER'],
+            "SQOOP": ['SQOOP_SERVER']
         }
+        if hadoop_version == '5.2.0':
+            processes["SENTRY"] = ['SENTRY_SERVER']
+        return processes
 
     def get_configs(self, hadoop_version):
         return c_helper.get_plugin_configs()

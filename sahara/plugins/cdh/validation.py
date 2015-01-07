@@ -139,6 +139,86 @@ def validate_cluster_creating(cluster):
         raise ex.InvalidComponentCountException('MASTER',
                                                 _('at least 1'), hbm_count)
 
+    a_count = _get_inst_count(cluster, 'AGENT')
+    if a_count >= 1:
+        if dn_count < 1:
+            raise ex.RequiredServiceMissingException(
+                'DATANODE', required_by='FLUME_AGENT')
+
+    ss1_count = _get_inst_count(cluster, 'SENTRY_SERVER')
+    if ss1_count not in [0, 1]:
+        raise ex.InvalidComponentCountException('SENTRY_SERVER', _('0 or 1'),
+                                                ss1_count)
+    if ss1_count == 1:
+        if dn_count < 1:
+            raise ex.RequiredServiceMissingException(
+                'DATANODE', required_by='SENTRY_SERVER')
+        if zk_count < 1:
+            raise ex.RequiredServiceMissingException(
+                'ZOOKEEPER', required_by='SENTRY_SERVER')
+
+    ss2_count = _get_inst_count(cluster, 'SOLR_SERVER')
+    if ss2_count >= 1:
+        if dn_count < 1:
+            raise ex.RequiredServiceMissingException(
+                'DATANODE', required_by='SOLR_SERVER')
+        if zk_count < 1:
+            raise ex.RequiredServiceMissingException(
+                'ZOOKEEPER', required_by='SOLR_SERVER')
+
+    s2s_count = _get_inst_count(cluster, 'SQOOP_SERVER')
+    if s2s_count not in [0, 1]:
+        raise ex.InvalidComponentCountException('SQOOP_SERVER', _('0 or 1'),
+                                                s2s_count)
+    if s2s_count == 1:
+        if dn_count < 1:
+            raise ex.RequiredServiceMissingException(
+                'DATANODE', required_by='SQOOP_SERVER')
+        if nm_count < 1:
+            raise ex.RequiredServiceMissingException(
+                'NODEMANAGER', required_by='SQOOP_SERVER')
+        if hs_count != 1:
+            raise ex.RequiredServiceMissingException(
+                'JOBHISTORY', required_by='SQOOP_SERVER')
+
+    lhbi_count = _get_inst_count(cluster, 'HBASE_INDEXER')
+    if lhbi_count >= 1:
+        if dn_count < 1:
+            raise ex.RequiredServiceMissingException(
+                'DATANODE', required_by='HBASE_INDEXER')
+        if zk_count < 1:
+            raise ex.RequiredServiceMissingException(
+                'ZOOKEEPER', required_by='HBASE_INDEXER')
+        if ss2_count < 1:
+            raise ex.RequiredServiceMissingException(
+                'SOLR_SERVER', required_by='HBASE_INDEXER')
+        if hbm_count < 1:
+            raise ex.RequiredServiceMissingException(
+                'HBASE_MASTER', required_by='HBASE_INDEXER')
+
+    ics_count = _get_inst_count(cluster, 'CATALOGSERVER')
+    iss_count = _get_inst_count(cluster, 'STATESTORE')
+    id_count = _get_inst_count(cluster, 'IMPALAD')
+    if ics_count not in [0, 1]:
+        raise ex.InvalidComponentCountException('CATALOGSERVER', _('0 or 1'),
+                                                ics_count)
+    if iss_count not in [0, 1]:
+        raise ex.InvalidComponentCountException('STATESTORE', _('0 or 1'),
+                                                iss_count)
+    if ics_count == 1:
+        if iss_count != 1:
+            raise ex.RequiredServiceMissingException(
+                'STATESTORE', required_by='IMPALA')
+        if id_count < 1:
+            raise ex.RequiredServiceMissingException(
+                'IMPALAD', required_by='IMPALA')
+        if dn_count < 1:
+            raise ex.RequiredServiceMissingException(
+                'DATANODE', required_by='IMPALA')
+        if hms_count < 1:
+            raise ex.RequiredServiceMissingException(
+                'HIVEMETASTORE', required_by='IMPALA')
+
 
 def validate_additional_ng_scaling(cluster, additional):
     rm = cu.get_resourcemanager(cluster)

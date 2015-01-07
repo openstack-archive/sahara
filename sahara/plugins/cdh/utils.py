@@ -73,6 +73,38 @@ def get_hbase_master(cluster):
     return u.get_instance(cluster, 'MASTER')
 
 
+def get_flumes(cluster):
+    return u.get_instances(cluster, 'AGENT')
+
+
+def get_sentry(cluster):
+    return u.get_instance(cluster, 'SENTRY_SERVER')
+
+
+def get_solrs(cluster):
+    return u.get_instances(cluster, 'SOLR_SERVER')
+
+
+def get_sqoop(cluster):
+    return u.get_instance(cluster, 'SQOOP_SERVER')
+
+
+def get_hbase_indexers(cluster):
+    return u.get_instances(cluster, 'HBASE_INDEXER')
+
+
+def get_catalogserver(cluster):
+    return u.get_instance(cluster, 'CATALOGSERVER')
+
+
+def get_statestore(cluster):
+    return u.get_instance(cluster, 'STATESTORE')
+
+
+def get_impalads(cluster):
+    return u.get_instances(cluster, 'IMPALAD')
+
+
 def convert_process_configs(configs):
     p_dict = {
         "CLOUDERA": ['MANAGER'],
@@ -90,7 +122,15 @@ def convert_process_configs(configs):
         "SPARK_ON_YARN": ['SPARK_YARN_HISTORY_SERVER'],
         "ZOOKEEPER": ['SERVER'],
         "MASTER": ['MASTER'],
-        "REGIONSERVER": ['REGIONSERVER']
+        "REGIONSERVER": ['REGIONSERVER'],
+        "FLUME": ['AGENT'],
+        "CATALOGSERVER": ['CATALOGSERVER'],
+        "STATESTORE": ['STATESTORE'],
+        "IMPALAD": ['IMPALAD'],
+        "KS_INDEXER": ['HBASE_INDEXER'],
+        "SENTRY": ['SENTRY_SERVER'],
+        "SOLR": ['SOLR_SERVER'],
+        "SQOOP": ['SQOOP_SERVER']
     }
     if isinstance(configs, res.Resource):
         configs = configs.to_dict()

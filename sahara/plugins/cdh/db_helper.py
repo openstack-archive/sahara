@@ -51,3 +51,32 @@ def create_hive_database(cluster, remote):
                 '-h localhost -p 7432 -d scm -f %s') % script_name
     remote.execute_command(psql_cmd)
     remote.execute_command('rm %s' % script_name)
+
+
+def get_sentry_db_password(cluster):
+    ctx = context.ctx()
+    cluster = conductor.cluster_get(ctx, cluster.id)
+    passwd = cluster.extra.get('sentry_db_password') if cluster.extra else None
+    if passwd:
+        return passwd
+
+    passwd = six.text_type(uuid.uuid4())
+    extra = cluster.extra.to_dict() if cluster.extra else {}
+    extra['sentry_db_password'] = passwd
+    cluster = conductor.cluster_update(ctx, cluster, {'extra': extra})
+    return passwd
+
+
+def create_sentry_database(cluster, remote):
+    db_password = get_sentry_db_password(cluster)
+    create_db_script = files.get_file_text(
+        'plugins/cdh/resources/create_sentry_db.sql')
+    create_db_script = create_db_script % db_password
+    script_name = 'create_sentry_db.sql'
+    remote.write_file_to(script_name, create_db_script)
+
+    psql_cmd = ('PGPASSWORD=$(sudo head -1 /var/lib/cloudera-scm-server-db'
+                '/data/generated_password.txt) psql -U cloudera-scm '
+                '-h localhost -p 7432 -d scm -f %s') % script_name
+    remote.execute_command(psql_cmd)
+    remote.execute_command('rm %s' % script_name)

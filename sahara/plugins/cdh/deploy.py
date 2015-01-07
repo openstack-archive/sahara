@@ -28,6 +28,7 @@ from sahara.plugins.cdh import commands as cmd
 from sahara.plugins.cdh import config_helper as c_helper
 from sahara.plugins.cdh import db_helper
 from sahara.plugins.cdh import utils as pu
+from sahara.plugins.cdh import validation as v
 from sahara.plugins import exceptions as ex
 from sahara.plugins import utils as gu
 from sahara.swift import swift_helper
@@ -44,6 +45,12 @@ HUE_SERVICE_TYPE = 'HUE'
 SPARK_SERVICE_TYPE = 'SPARK_ON_YARN'
 ZOOKEEPER_SERVICE_TYPE = 'ZOOKEEPER'
 HBASE_SERVICE_TYPE = 'HBASE'
+FLUME_SERVICE_TYPE = 'FLUME'
+SENTRY_SERVICE_TYPE = 'SENTRY'
+SOLR_SERVICE_TYPE = 'SOLR'
+SQOOP_SERVICE_TYPE = 'SQOOP'
+KS_INDEXER_SERVICE_TYPE = 'KS_INDEXER'
+IMPALA_SERVICE_TYPE = 'IMPALA'
 
 PATH_TO_CORE_SITE_XML = '/etc/hadoop/conf/core-site.xml'
 HADOOP_LIB_DIR = '/usr/lib/hadoop-mapreduce'
@@ -53,6 +60,7 @@ PACKAGES = [
     'cloudera-manager-daemons',
     'cloudera-manager-server',
     'cloudera-manager-server-db-2',
+    'flume-ng',
     'hadoop-hdfs-datanode',
     'hadoop-hdfs-namenode',
     'hadoop-hdfs-secondarynamenode',
@@ -60,16 +68,26 @@ PACKAGES = [
     'hadoop-mapreduce-historyserver',
     'hadoop-yarn-nodemanager',
     'hadoop-yarn-resourcemanager',
+    'hbase',
+    'hbase-solr',
+    'hive-hcatalog',
     'hive-metastore',
     'hive-server2',
+    'hive-webhcat-server',
     'hue',
+    'impala',
+    'impala-server',
+    'impala-state-store',
+    'impala-catalog',
     'ntp',
     'oozie',
     'oracle-j2sdk1.7',
+    'sentry',
+    'solr-server',
     'spark-history-server',
+    'sqoop2',
     'unzip',
-    'zookeeper',
-    'hbase'
+    'zookeeper'
 ]
 
 LOG = logging.getLogger(__name__)
@@ -94,25 +112,106 @@ def _get_configs(service, cluster=None, node_group=None):
     def get_hadoop_dirs(mount_points, suffix):
         return ','.join([x + suffix for x in mount_points])
 
-    all_confs = {
-        'OOZIE': {
-            'mapreduce_yarn_service': cu.YARN_SERVICE_NAME
-        },
-        'YARN': {
-            'hdfs_service': cu.HDFS_SERVICE_NAME
-        },
-        'HUE': {
-            'hive_service': cu.HIVE_SERVICE_NAME,
-            'oozie_service': cu.OOZIE_SERVICE_NAME
-        },
-        'SPARK_ON_YARN': {
-            'yarn_service': cu.YARN_SERVICE_NAME
-        },
-        'HBASE': {
-            'hdfs_service': cu.HDFS_SERVICE_NAME,
-            'zookeeper_service': cu.ZOOKEEPER_SERVICE_NAME
+    all_confs = {}
+    if cluster:
+        zk_count = v._get_inst_count(cluster, 'SERVER')
+        hbm_count = v._get_inst_count(cluster, 'MASTER')
+        ss_count = v._get_inst_count(cluster, 'SENTRY_SERVER')
+        ks_count = v._get_inst_count(cluster, 'HBASE_INDEXER')
+        imp_count = v._get_inst_count(cluster, 'CATALOGSERVER')
+        all_confs = {
+            'HDFS': {
+                'zookeeper_service':
+                    cu.ZOOKEEPER_SERVICE_NAME if zk_count else '',
+                'dfs_block_local_path_access_user':
+                    'impala' if imp_count else ''
+            },
+            'HIVE': {
+                'mapreduce_yarn_service': cu.YARN_SERVICE_NAME,
+                'zookeeper_service':
+                    cu.ZOOKEEPER_SERVICE_NAME if zk_count else ''
+            },
+            'OOZIE': {
+                'mapreduce_yarn_service': cu.YARN_SERVICE_NAME,
+                'zookeeper_service':
+                    cu.ZOOKEEPER_SERVICE_NAME if zk_count else ''
+            },
+            'YARN': {
+                'hdfs_service': cu.HDFS_SERVICE_NAME,
+                'zookeeper_service':
+                    cu.ZOOKEEPER_SERVICE_NAME if zk_count else ''
+            },
+            'HUE': {
+                'hive_service': cu.HIVE_SERVICE_NAME,
+                'oozie_service': cu.OOZIE_SERVICE_NAME,
+                'sentry_service': cu.SENTRY_SERVICE_NAME if ss_count else '',
+                'zookeeper_service':
+                    cu.ZOOKEEPER_SERVICE_NAME if zk_count else ''
+            },
+            'SPARK_ON_YARN': {
+                'yarn_service': cu.YARN_SERVICE_NAME
+            },
+            'HBASE': {
+                'hdfs_service': cu.HDFS_SERVICE_NAME,
+                'zookeeper_service': cu.ZOOKEEPER_SERVICE_NAME,
+                'hbase_enable_indexing': 'true' if ks_count else 'false',
+                'hbase_enable_replication': 'true' if ks_count else 'false'
+            },
+            'FLUME': {
+                'hdfs_service': cu.HDFS_SERVICE_NAME,
+                'hbase_service': cu.HBASE_SERVICE_NAME if hbm_count else ''
+            },
+            'SENTRY': {
+                'hdfs_service': cu.HDFS_SERVICE_NAME
+            },
+            'SOLR': {
+                'hdfs_service': cu.HDFS_SERVICE_NAME,
+                'zookeeper_service': cu.ZOOKEEPER_SERVICE_NAME
+            },
+            'SQOOP': {
+                'mapreduce_yarn_service': cu.YARN_SERVICE_NAME
+            },
+            'KS_INDEXER': {
+                'hbase_service': cu.HBASE_SERVICE_NAME,
+                'solr_service': cu.SOLR_SERVICE_NAME
+            },
+            'IMPALA': {
+                'hdfs_service': cu.HDFS_SERVICE_NAME,
+                'hbase_service': cu.HBASE_SERVICE_NAME if hbm_count else '',
+                'hive_service': cu.HIVE_SERVICE_NAME
+            }
         }
-    }
+        hive_confs = {
+            'HIVE': {
+                'hive_metastore_database_type': 'postgresql',
+                'hive_metastore_database_host':
+                pu.get_manager(cluster).internal_ip,
+                'hive_metastore_database_port': '7432',
+                'hive_metastore_database_password':
+                db_helper.get_hive_db_password(cluster)
+            }
+        }
+        hue_confs = {
+            'HUE': {
+                'hue_webhdfs': cu.get_role_name(pu.get_namenode(cluster),
+                                                'NAMENODE')
+            }
+        }
+        sentry_confs = {
+            'SENTRY': {
+                'sentry_server_database_type': 'postgresql',
+                'sentry_server_database_host':
+                pu.get_manager(cluster).internal_ip,
+                'sentry_server_database_port': '7432',
+                'sentry_server_database_password':
+                db_helper.get_sentry_db_password(cluster)
+            }
+        }
+
+        all_confs = _merge_dicts(all_confs, hue_confs)
+        all_confs = _merge_dicts(all_confs, hive_confs)
+        all_confs = _merge_dicts(all_confs, sentry_confs)
+        all_confs = _merge_dicts(all_confs, cluster.cluster_configs)
 
     if node_group:
         paths = node_group.storage_paths()
@@ -125,40 +224,22 @@ def _get_configs(service, cluster=None, node_group=None):
                 'fs_checkpoint_dir_list': get_hadoop_dirs(paths, '/fs/snn')
             },
             'DATANODE': {
-                'dfs_data_dir_list': get_hadoop_dirs(paths, '/fs/dn')
+                'dfs_data_dir_list': get_hadoop_dirs(paths, '/fs/dn'),
+                'dfs_datanode_data_dir_perm': 755,
+                'dfs_datanode_handler_count': 30
             },
             'NODEMANAGER': {
                 'yarn_nodemanager_local_dirs': get_hadoop_dirs(paths,
                                                                '/yarn/local')
+            },
+            'SERVER': {
+                'maxSessionTimeout': 60000
             }
         }
 
         ng_user_confs = pu.convert_process_configs(node_group.node_configs)
         all_confs = _merge_dicts(all_confs, ng_user_confs)
         all_confs = _merge_dicts(all_confs, ng_default_confs)
-
-    if cluster:
-        hive_confs = {
-            'HIVE': {
-                'hive_metastore_database_type': 'postgresql',
-                'hive_metastore_database_host':
-                pu.get_manager(cluster).internal_ip,
-                'hive_metastore_database_port': '7432',
-                'hive_metastore_database_password':
-                db_helper.get_hive_db_password(cluster),
-                'mapreduce_yarn_service': cu.YARN_SERVICE_NAME
-            }
-        }
-        hue_confs = {
-            'HUE': {
-                'hue_webhdfs': cu.get_role_name(pu.get_namenode(cluster),
-                                                'NAMENODE')
-            }
-        }
-
-        all_confs = _merge_dicts(all_confs, hue_confs)
-        all_confs = _merge_dicts(all_confs, hive_confs)
-        all_confs = _merge_dicts(all_confs, cluster.cluster_configs)
 
     return all_confs.get(service, {})
 
@@ -370,6 +451,20 @@ def _create_services(cluster):
         cm_cluster.create_service(cu.SPARK_SERVICE_NAME, SPARK_SERVICE_TYPE)
     if pu.get_hbase_master(cluster):
         cm_cluster.create_service(cu.HBASE_SERVICE_NAME, HBASE_SERVICE_TYPE)
+    if len(pu.get_flumes(cluster)) > 0:
+        cm_cluster.create_service(cu.FLUME_SERVICE_NAME, FLUME_SERVICE_TYPE)
+    if pu.get_sentry(cluster):
+        cm_cluster.create_service(cu.SENTRY_SERVICE_NAME, SENTRY_SERVICE_TYPE)
+    if len(pu.get_solrs(cluster)) > 0:
+        cm_cluster.create_service(cu.SOLR_SERVICE_NAME,
+                                  SOLR_SERVICE_TYPE)
+    if pu.get_sqoop(cluster):
+        cm_cluster.create_service(cu.SQOOP_SERVICE_NAME, SQOOP_SERVICE_TYPE)
+    if len(pu.get_hbase_indexers(cluster)) > 0:
+        cm_cluster.create_service(cu.KS_INDEXER_SERVICE_NAME,
+                                  KS_INDEXER_SERVICE_TYPE)
+    if pu.get_catalogserver(cluster):
+        cm_cluster.create_service(cu.IMPALA_SERVICE_NAME, IMPALA_SERVICE_TYPE)
 
 
 def _configure_services(cluster):
@@ -400,9 +495,37 @@ def _configure_services(cluster):
     if pu.get_spark_historyserver(cluster):
         spark = cm_cluster.get_service(cu.SPARK_SERVICE_NAME)
         spark.update_config(_get_configs(SPARK_SERVICE_TYPE, cluster=cluster))
+
     if pu.get_hbase_master(cluster):
         hbase = cm_cluster.get_service(cu.HBASE_SERVICE_NAME)
         hbase.update_config(_get_configs(HBASE_SERVICE_TYPE, cluster=cluster))
+
+    if len(pu.get_flumes(cluster)) > 0:
+        flume = cm_cluster.get_service(cu.FLUME_SERVICE_NAME)
+        flume.update_config(_get_configs(FLUME_SERVICE_TYPE, cluster=cluster))
+
+    if pu.get_sentry(cluster):
+        sentry = cm_cluster.get_service(cu.SENTRY_SERVICE_NAME)
+        sentry.update_config(_get_configs(SENTRY_SERVICE_TYPE,
+                                          cluster=cluster))
+
+    if len(pu.get_solrs(cluster)) > 0:
+        solr = cm_cluster.get_service(cu.SOLR_SERVICE_NAME)
+        solr.update_config(_get_configs(SOLR_SERVICE_TYPE, cluster=cluster))
+
+    if pu.get_sqoop(cluster):
+        sqoop = cm_cluster.get_service(cu.SQOOP_SERVICE_NAME)
+        sqoop.update_config(_get_configs(SQOOP_SERVICE_TYPE, cluster=cluster))
+
+    if len(pu.get_hbase_indexers(cluster)) > 0:
+        ks_indexer = cm_cluster.get_service(cu.KS_INDEXER_SERVICE_NAME)
+        ks_indexer.update_config(_get_configs(KS_INDEXER_SERVICE_TYPE,
+                                              cluster=cluster))
+
+    if pu.get_catalogserver(cluster):
+        impala = cm_cluster.get_service(cu.IMPALA_SERVICE_NAME)
+        impala.update_config(_get_configs(IMPALA_SERVICE_TYPE,
+                                          cluster=cluster))
 
 
 def _configure_instances(instances):
@@ -467,6 +590,12 @@ def _configure_hive(cluster):
         db_helper.create_hive_database(cluster, r)
 
 
+def _configure_sentry(cluster):
+    manager = pu.get_manager(cluster)
+    with manager.remote() as r:
+        db_helper.create_sentry_database(cluster, r)
+
+
 def _install_extjs(cluster):
     extjs_remote_location = c_helper.get_extjs_lib_url(cluster)
     extjs_vm_location_dir = '/var/lib/oozie'
@@ -512,12 +641,22 @@ def start_cluster(cluster):
     if pu.get_hive_metastore(cluster):
         _configure_hive(cluster)
 
+    if pu.get_sentry(cluster):
+        _configure_sentry(cluster)
+
     cu.first_run(cluster)
 
     if pu.get_hive_metastore(cluster):
         _put_hive_hdfs_xml(cluster)
 
     _restore_deploy_cc(cluster)
+
+    if pu.get_flumes(cluster):
+        cm_cluster = cu.get_cloudera_cluster(cluster)
+        flume = cm_cluster.get_service(cu.FLUME_SERVICE_NAME)
+        cu.start_service(flume)
+
+    cu.restart_mgmt_service(cluster)
 
 
 def get_open_ports(node_group):
@@ -539,7 +678,15 @@ def get_open_ports(node_group):
         'SPARK_YARN_HISTORY_SERVER': [18088],
         'SERVER': [2181, 3181, 4181, 9010],
         'MASTER': [60000],
-        'REGIONSERVER': [60020]
+        'REGIONSERVER': [60020],
+        'AGENT': [41414],
+        'SENTRY_SERVER': [8038],
+        'SOLR_SERVER': [8983, 8984],
+        'SQOOP_SERVER': [8005, 12000],
+        'HBASE_INDEXER': [],
+        'CATALOGSERVER': [25020, 26000],
+        'STATESTORE': [25010, 24000],
+        'IMPALAD': [21050, 21000, 23000, 25000, 28000, 22000]
     }
 
     for process in node_group.node_processes:
