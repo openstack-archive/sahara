@@ -1,14 +1,14 @@
 # Translations template for sahara.
-# Copyright (C) 2014 ORGANIZATION
+# Copyright (C) 2015 ORGANIZATION
 # This file is distributed under the same license as the sahara project.
-# FIRST AUTHOR <EMAIL@ADDRESS>, 2014.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2015.
 #
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: sahara 2015.1.dev317.ga37345d\n"
+"Project-Id-Version: sahara 2015.1.dev21\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2014-12-15 06:12+0000\n"
+"POT-Creation-Date: 2015-01-07 06:13+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -40,16 +40,6 @@ msgstr ""
 #: sahara/api/middleware/auth_valid.py:54
 #, python-format
 msgid "Incorrect path: %s"
-msgstr ""
-
-#: sahara/openstack/common/lockutils.py:82
-#, python-format
-msgid "Created lock path: %s"
-msgstr ""
-
-#: sahara/openstack/common/lockutils.py:194
-#, python-format
-msgid "Failed to remove file %(file)s"
 msgstr ""
 
 #: sahara/openstack/common/periodic_task.py:132
@@ -472,7 +462,7 @@ msgstr ""
 msgid "Storm master at '%s' has been started"
 msgstr ""
 
-#: sahara/plugins/vanilla/hadoop2/config.py:339
+#: sahara/plugins/vanilla/hadoop2/config.py:340
 msgid ""
 "Node group awareness is not implemented in YARN yet so "
 "enable_hypervisor_awareness set to False explicitly"
