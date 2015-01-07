@@ -1,5 +1,5 @@
 # Translations template for sahara.
-# Copyright (C) 2014 ORGANIZATION
+# Copyright (C) 2015 ORGANIZATION
 # This file is distributed under the same license as the sahara project.
 #
 # Translators:
@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Sahara\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2014-12-15 06:12+0000\n"
-"PO-Revision-Date: 2014-12-12 10:20+0000\n"
+"POT-Creation-Date: 2015-01-07 06:13+0000\n"
+"PO-Revision-Date: 2015-01-05 20:11+0000\n"
 "Last-Translator: openstackjenkins <jenkins@openstack.org>\n"
 "Language-Team: English (United Kingdom) (http://www.transifex.com/projects/p/"
 "sahara/language/en_GB/)\n"
@@ -34,11 +34,6 @@ msgstr "Database registration exception: %s"
 #, python-format
 msgid "Database shutdown exception: %s"
 msgstr "Database shutdown exception: %s"
-
-#: sahara/openstack/common/lockutils.py:117
-#, python-format
-msgid "Could not release the acquired lock `%s`"
-msgstr "Could not release the acquired lock `%s`"
 
 #: sahara/openstack/common/loopingcall.py:95
 msgid "in fixed duration looping call"
@@ -178,17 +173,17 @@ msgstr ""
 msgid "Unable to delete trust (reason: %s)"
 msgstr ""
 
-#: sahara/service/volumes.py:161
+#: sahara/service/volumes.py:172
 #, python-format
 msgid "Error mounting volume to instance %s"
 msgstr ""
 
-#: sahara/service/volumes.py:180
+#: sahara/service/volumes.py:191
 #, python-format
 msgid "Can't detach volume %s"
 msgstr ""
 
-#: sahara/service/volumes.py:205
+#: sahara/service/volumes.py:216
 #, python-format
 msgid "Can't delete volume %s"
 msgstr ""
