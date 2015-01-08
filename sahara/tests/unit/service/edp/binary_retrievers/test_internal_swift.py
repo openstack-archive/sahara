@@ -24,44 +24,95 @@ class TestInternalSwift(base.SaharaTestCase):
     def setUp(self):
         super(TestInternalSwift, self).setUp()
 
-    @mock.patch('sahara.utils.openstack.swift.client')
-    def test_get_raw_data(self, swift_client):
+    def test__get_raw_data(self):
         client_instance = mock.Mock()
-        swift_client.return_value = client_instance
+        client_instance.head_object = mock.Mock()
+        client_instance.get_object = mock.Mock()
 
         job_binary = mock.Mock()
-        job_binary.extra = dict(user='test', password='secret')
+        job_binary.url = 'swift://container/object'
+
+        # an object that is too large should raise an exception
+        header = {'content-length': '2048'}
+        client_instance.head_object.return_value = header
+        self.override_config('job_binary_max_KB', 1)
+        self.assertRaises(ex.DataTooBigException,
+                          i_s._get_raw_data,
+                          job_binary,
+                          client_instance)
+        client_instance.head_object.assert_called_once_with('container',
+                                                            'object')
+
+        # valid return
+        header = {'content-length': '4'}
+        body = 'data'
+        client_instance.head_object.return_value = header
+        client_instance.get_object.return_value = (header, body)
+        self.assertEqual(body, i_s._get_raw_data(job_binary, client_instance))
+        client_instance.get_object.assert_called_once_with('container',
+                                                           'object')
+
+    def test__validate_job_binary_url(self):
+        @i_s._validate_job_binary_url
+        def empty_method(job_binary):
+            pass
+
+        job_binary = mock.Mock()
 
         # bad swift url should raise an exception
         job_binary.url = 'notswift://container/object'
         self.assertRaises(ex.BadJobBinaryException,
-                          i_s.get_raw_data,
+                          empty_method,
                           job_binary)
 
         # specifying a container should raise an exception
         job_binary.url = 'swift://container'
         self.assertRaises(ex.BadJobBinaryException,
-                          i_s.get_raw_data,
+                          empty_method,
                           job_binary)
 
-        # an object that is too large should raise an exception
+    @mock.patch(
+        'sahara.service.edp.binary_retrievers.internal_swift._get_raw_data')
+    @mock.patch('sahara.utils.openstack.swift.client')
+    def test_get_raw_data(self, swift_client, _get_raw_data):
+        client_instance = mock.Mock()
+        swift_client.return_value = client_instance
+
+        job_binary = mock.Mock()
         job_binary.url = 'swift://container/object'
-        client_instance.head_object = mock.Mock()
-        header = {'content-length': '2048'}
-        client_instance.head_object.return_value = header
-        self.override_config('job_binary_max_KB', 1)
-        self.assertRaises(ex.DataTooBigException,
-                          i_s.get_raw_data,
-                          job_binary)
-        client_instance.head_object.assert_called_once_with('container',
-                                                            'object')
 
-        # valid return
-        client_instance.get_object = mock.Mock()
-        header = {'content-length': '4'}
-        body = 'data'
-        client_instance.head_object.return_value = header
-        client_instance.get_object.return_value = (header, body)
-        self.assertEqual(body, i_s.get_raw_data(job_binary))
-        client_instance.get_object.assert_called_once_with('container',
-                                                           'object')
+        # embedded credentials
+        job_binary.extra = dict(user='test', password='secret')
+        i_s.get_raw_data(job_binary)
+        swift_client.assert_called_with(username='test',
+                                        password='secret')
+        _get_raw_data.assert_called_with(job_binary, client_instance)
+
+        # proxy configs should override embedded credentials
+        proxy_configs = dict(proxy_username='proxytest',
+                             proxy_password='proxysecret',
+                             proxy_trust_id='proxytrust')
+        i_s.get_raw_data(job_binary, proxy_configs)
+        swift_client.assert_called_with(username='proxytest',
+                                        password='proxysecret',
+                                        trust_id='proxytrust')
+        _get_raw_data.assert_called_with(job_binary, client_instance)
+
+    @mock.patch('sahara.context.ctx')
+    @mock.patch(
+        'sahara.service.edp.binary_retrievers.internal_swift._get_raw_data')
+    @mock.patch('sahara.utils.openstack.swift.client_from_token')
+    def test_get_raw_data_with_context(self, swift_client, _get_raw_data, ctx):
+        client_instance = mock.Mock()
+        swift_client.return_value = client_instance
+        test_context = mock.Mock()
+        test_context.auth_token = 'testtoken'
+        ctx.return_value = test_context
+
+        job_binary = mock.Mock()
+        job_binary.url = 'swift://container/object'
+
+        job_binary.extra = dict(user='test', password='secret')
+        i_s.get_raw_data_with_context(job_binary)
+        swift_client.assert_called_with('testtoken')
+        _get_raw_data.assert_called_with(job_binary, client_instance)

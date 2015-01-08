@@ -19,12 +19,29 @@ from sahara.service.edp.binary_retrievers import sahara_db as db
 from sahara.swift import utils as su
 
 
-def get_raw_binary(job_binary, proxy_configs=None):
+def get_raw_binary(job_binary, proxy_configs=None, with_context=False):
+    '''Get the raw data for a job binary
+
+    This will retrieve the raw data for a job binary from it's source. In the
+    case of Swift based binaries there is a precedence of credentials for
+    authenticating the client. Requesting a context based authentication takes
+    precendence over proxy user which takes precendence over embedded
+    credentials.
+
+    :param job_binary: The job binary to retrieve
+    :param proxy_configs: Proxy user configuration to use as credentials
+    :param with_context: Use the current context as credentials
+    :returns: The raw data from a job binary
+
+    '''
     url = job_binary.url
     if url.startswith("internal-db://"):
         res = db.get_raw_data(context.ctx(), job_binary)
 
     if url.startswith(su.SWIFT_INTERNAL_PREFIX):
-        res = i_swift.get_raw_data(job_binary, proxy_configs)
+        if with_context:
+            res = i_swift.get_raw_data_with_context(job_binary)
+        else:
+            res = i_swift.get_raw_data(job_binary, proxy_configs)
 
     return res
