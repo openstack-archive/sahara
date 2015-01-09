@@ -88,6 +88,7 @@ class ScalingTest(base.ITestCase):
                 self._change_node_info_while_ng_adding(
                     node_group_id, node_group_size, cluster_info
                 )
+        scale_body = {key: value for key, value in scale_body.items() if value}
         self.sahara.clusters.scale(cluster_info['cluster_id'], scale_body)
         self.poll_cluster_state(cluster_info['cluster_id'])
         new_node_ip_list = self.get_cluster_node_ip_list_with_node_processes(

@@ -1,135 +1,175 @@
-# Copyright (c) 2014, MapR Technologies
+# Copyright (c) 2015, MapR Technologies
 #
-#  Licensed under the Apache License, Version 2.0 (the "License"); you may
-#  not use this file except in compliance with the License. You may obtain
-#  a copy of the License at
+# Licensed under the Apache License, Version 2.0 (the "License"); you may
+# not use this file except in compliance with the License. You may obtain
+# a copy of the License at
 #
 #       http://www.apache.org/licenses/LICENSE-2.0
 #
-#  Unless required by applicable law or agreed to in writing, software
-#  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
-#  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
-#  License for the specific language governing permissions and limitations
-#  under the License.
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+# WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+# License for the specific language governing permissions and limitations
+# under the License.
+
 
 import functools as ft
 
+from sahara.conductor import resource as r
+import sahara.exceptions as ex
 from sahara.i18n import _
 import sahara.plugins.exceptions as e
-import sahara.plugins.mapr.util.cluster_info as ci
-import sahara.plugins.mapr.util.wrapper as w
 
 
 class LessThanCountException(e.InvalidComponentCountException):
+    MESSAGE = _("Hadoop cluster should contain at least"
+                " %(expected_count)d %(component)s component(s)."
+                " Actual %(component)s count is %(actual_count)d")
 
     def __init__(self, component, expected_count, count):
         super(LessThanCountException, self).__init__(
             component, expected_count, count)
-        self.message = (_("Hadoop cluster should contain at least"
-                          " %(expected_count)d %(component)s component(s)."
-                          " Actual %(component)s count is %(count)d")
-                        % {'expected_count': expected_count,
-                           'component': component, 'count': count})
+        args = {
+            'expected_count': expected_count,
+            'component': component,
+            'actual_count': count,
+        }
+        self.message = LessThanCountException.MESSAGE % args
 
 
-class MoreThanCountException(e.InvalidComponentCountException):
+class EvenCountException(ex.SaharaException):
+    MESSAGE = _("Hadoop cluster should contain odd number of %(component)s"
+                " but %(actual_count)s found.")
 
-    def __init__(self, component, expected_count, count):
-        super(MoreThanCountException, self).__init__(
-            component, expected_count, count)
-        self.message = (_("Hadoop cluster should contain not more than"
-                          " %(expected_count)d %(component)s component(s)."
-                          " Actual %(component)s count is %(count)d")
-                        % {'expected_count': expected_count,
-                           'component': component, 'count': count})
+    def __init__(self, component, count):
+        super(EvenCountException, self).__init__()
+        args = {'component': component, 'actual_count': count}
+        self.message = EvenCountException.MESSAGE % args
 
 
 class NodeRequiredServiceMissingException(e.RequiredServiceMissingException):
+    MISSING_MSG = _('Node "%(ng_name)s" is missing component %(component)s')
+    REQUIRED_MSG = _('%(message)s, required by %(required_by)s')
 
-    def __init__(self, service_name, required_by=None):
+    def __init__(self, service_name, ng_name, required_by=None):
         super(NodeRequiredServiceMissingException, self).__init__(
             service_name, required_by)
-        self.message = _('Node is missing a service: %s') % service_name
+        args = {'ng_name': ng_name, 'component': service_name}
+        self.message = (
+            NodeRequiredServiceMissingException.MISSING_MSG % args)
         if required_by:
-            self.message = (_('%(message)s, required by service:'
-                              ' %(required_by)s')
-                            % {'message': self.message,
-                               'required_by': required_by})
+            args = {'message': self.message, 'required_by': required_by}
+            self.message = (
+                NodeRequiredServiceMissingException.REQUIRED_MSG % args)
 
 
-def not_less_than_count_component_vr(component, count):
-    def validate(cluster, component, count):
-        c_info = ci.ClusterInfo(cluster, None)
-        actual_count = c_info.get_instances_count(component)
+class NodeServiceConflictException(ex.SaharaException):
+    MESSAGE = _('%(service)s service cannot be installed alongside'
+                ' %(package)s package')
+    ERROR_CODE = "NODE_PROCESS_CONFLICT"
+
+    def __init__(self, service_name, conflicted_package):
+        super(NodeServiceConflictException, self).__init__()
+        args = {
+            'service': service_name,
+            'package': conflicted_package,
+        }
+        self.message = NodeServiceConflictException.MESSAGE % args
+        self.code = NodeServiceConflictException.ERROR_CODE
+
+
+def at_least(count, component):
+    def validate(cluster_context, component, count):
+        actual_count = cluster_context.get_instances_count(component)
         if not actual_count >= count:
-            raise LessThanCountException(component, count, actual_count)
+            raise LessThanCountException(
+                component.ui_name, count, actual_count)
+
     return ft.partial(validate, component=component, count=count)
 
 
-def not_more_than_count_component_vr(component, count):
-    def validate(cluster, component, count):
-        c_info = ci.ClusterInfo(cluster, None)
-        actual_count = c_info.get_instances_count(component)
-        if not actual_count <= count:
-            raise MoreThanCountException(component, count, actual_count)
-    return ft.partial(validate, component=component, count=count)
-
-
-def equal_count_component_vr(component, count):
-    def validate(cluster, component, count):
-        c_info = ci.ClusterInfo(cluster, None)
-        actual_count = c_info.get_instances_count(component)
+def exactly(count, component):
+    def validate(cluster_context, component, count):
+        actual_count = cluster_context.get_instances_count(component)
         if not actual_count == count:
             raise e.InvalidComponentCountException(
-                component, count, actual_count)
+                component.ui_name, count, actual_count)
+
     return ft.partial(validate, component=component, count=count)
 
 
-def require_component_vr(component):
-    def validate(instance, component):
-        if component not in instance.node_group.node_processes:
-            raise NodeRequiredServiceMissingException(component)
-    return ft.partial(validate, component=component)
-
-
-def require_of_listed_components(components):
-    def validate(instance, components):
-        if (False in (c in instance.node_group.node_processes
-                      for c in components)):
-            raise NodeRequiredServiceMissingException(components)
-    return ft.partial(validate, components=components)
-
-
-def each_node_has_component_vr(component):
-    def validate(cluster, component):
-        rc_vr = require_component_vr(component)
-        c_info = ci.ClusterInfo(cluster, None)
-        for i in c_info.get_instances():
-            rc_vr(i)
-    return ft.partial(validate, component=component)
-
-
-def each_node_has_at_least_one_of_listed_components(components):
-    def validate(cluster, components):
-        rc_vr = require_of_listed_components(components)
-        c_info = ci.ClusterInfo(cluster, None)
-        for i in c_info.get_instances():
-            rc_vr(i)
-    return ft.partial(validate, components=components)
-
-
-def node_dependency_satisfied_vr(component, dependency):
-    def validate(cluster, component, dependency):
-        c_info = ci.ClusterInfo(cluster, None)
-        for ng in c_info.get_node_groups(component):
-            if dependency not in ng.node_processes:
+def each_node_has(component):
+    def validate(cluster_context, component):
+        for node_group in cluster_context.cluster.node_groups:
+            if component.ui_name not in node_group.node_processes:
                 raise NodeRequiredServiceMissingException(
-                    component, dependency)
+                    component.ui_name, node_group.name)
+
+    return ft.partial(validate, component=component)
+
+
+def odd_count_of(component):
+    def validate(cluster_context, component):
+        actual_count = cluster_context.get_instances_count(component)
+        if actual_count > 1 and actual_count % 2 == 0:
+            raise EvenCountException(component.ui_name, actual_count)
+
+    return ft.partial(validate, component=component)
+
+
+def on_same_node(component, dependency):
+    def validate(cluster_context, component, dependency):
+        for ng in cluster_context.get_node_groups(component):
+            if dependency.ui_name not in ng.node_processes:
+                raise NodeRequiredServiceMissingException(
+                    dependency.ui_name, ng.name, component.ui_name)
+
     return ft.partial(validate, component=component, dependency=dependency)
 
 
+def depends_on(service, required_by=None):
+    def validate(cluster_context, service, required_by):
+        if not cluster_context.is_present(service):
+            raise e.RequiredServiceMissingException(
+                service.ui_name, required_by.ui_name)
+
+    return ft.partial(validate, service=service, required_by=required_by)
+
+
+def node_client_package_conflict_vr(components, client_component):
+    def validate(cluster_context, components):
+        for ng in cluster_context.get_node_groups():
+            for c in components:
+                nps = ng.node_processes
+                if c in nps and client_component in nps:
+                    raise NodeServiceConflictException(c, client_component)
+
+    return ft.partial(validate, components=components)
+
+
+def assert_present(service, cluster_context):
+    if not cluster_context.is_present(service):
+        raise e.RequiredServiceMissingException(service.ui_name)
+
+
 def create_fake_cluster(cluster, existing, additional):
-    w_node_groups = [w.Wrapper(ng, count=existing[ng.id])
-                     if ng.id in existing else ng
-                     for ng in cluster.node_groups]
-    return w.Wrapper(cluster, node_groups=w_node_groups)
+    counts = existing.copy()
+    counts.update(additional)
+
+    def update_ng(node_group):
+        ng_dict = node_group.to_dict()
+        count = counts[node_group.id]
+        ng_dict.update(dict(count=count))
+        return r.NodeGroupResource(ng_dict)
+
+    def need_upd(node_group):
+        return node_group.id in counts and counts[node_group.id] > 0
+
+    updated = map(update_ng, filter(need_upd, cluster.node_groups))
+    not_updated = filter(lambda ng:
+                         not need_upd(ng) and ng is not None,
+                         cluster.node_groups)
+    cluster_dict = cluster.to_dict()
+    cluster_dict.update({'node_groups': updated + not_updated})
+    fake = r.ClusterResource(cluster_dict)
+    return fake

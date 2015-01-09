@@ -1,0 +1,12 @@
+[
+  {
+    "value": "*",
+    "priority": 1,
+    "name": "httpfs.proxyuser.mapr.hosts"
+  },
+  {
+    "value": "*",
+    "priority": 1,
+    "name": "httpfs.proxyuser.mapr.groups"
+  }
+]

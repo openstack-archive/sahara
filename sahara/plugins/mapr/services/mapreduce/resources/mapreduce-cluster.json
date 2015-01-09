@@ -1,0 +1,91 @@
+[
+  {
+    "name": "mapred.fairscheduler.assignmultiple",
+    "value": true,
+    "config_type": "bool",
+    "description": "CoreDefaultProperties"
+  },
+  {
+    "name": "mapred.fairscheduler.eventlog.enabled",
+    "value": false,
+    "config_type": "bool",
+    "description": "Enable scheduler logging in ${HADOOP_LOG_DIR}/fairscheduler/"
+  },
+  {
+    "name": "mapred.fairscheduler.smalljob.schedule.enable",
+    "value": true,
+    "config_type": "bool",
+    "description": "Enable small job fast scheduling inside fair scheduler. TaskTrackers should reserve a slot called ephemeral slot which is used for smalljob if cluster is busy."
+  },
+  {
+    "name": "mapred.fairscheduler.smalljob.max.maps",
+    "value": 10,
+    "config_type": "int",
+    "description": "Small job definition. Max number of maps allowed in small job."
+  },
+  {
+    "name": "mapred.fairscheduler.smalljob.max.reducers",
+    "value": 10,
+    "config_type": "int",
+    "description": "Small job definition. Max number of reducers allowed in small job."
+  },
+  {
+    "name": "mapred.fairscheduler.smalljob.max.inputsize",
+    "value": 10737418240,
+    "config_type": "int",
+    "description": "Small job definition. Max input size in bytes allowed for a small job. Default is 10 GB"
+  },
+  {
+    "name": "mapred.fairscheduler.smalljob.max.reducer.inputsize",
+    "value": 1073741824,
+    "config_type": "int",
+    "description": "Small job definition. Max estimated input size for a reducer allowed in small job. Default is 1 GB per reducer."
+  },
+  {
+    "name": "mapred.cluster.ephemeral.tasks.memory.limit.mb",
+    "value": 200,
+    "config_type": "int",
+    "description": "Small job definition. Max memory in mbytes reserved for an ephermal slot. Default is 200 mb. This value must be same on JobTracker and TaskTracker nodes."
+  },
+  {
+    "name": "mapreduce.jobtracker.node.labels.file",
+    "value": "/",
+    "description": "File on maprfs that has mapping of nodes and labels."
+  },
+  {
+    "name": "mapred.tasktracker.ephemeral.tasks.maximum",
+    "value": 1,
+    "config_type": "int",
+    "description": "Reserved slot for small job scheduling"
+  },
+  {
+    "name": "mapred.tasktracker.ephemeral.tasks.timeout",
+    "value": 10000,
+    "config_type": "int",
+    "description": "Maximum time in ms a task is allowed to occupy ephemeral slot"
+  },
+  {
+    "name": "mapred.tasktracker.ephemeral.tasks.ulimit",
+    "value": 4294967296,
+    "config_type": "int",
+    "description": "Ulimit (bytes) on all tasks sheduled on an ephemeral slot"
+  },
+  {
+    "name": "mapreduce.tasktracker.group",
+    "value": "root",
+    "description": "Group to which TaskTracker belongs."
+  },
+  {
+    "name": "mapred.local.dir",
+    "value": "/tmp/mapr-hadoop/mapred/local",
+    "description": "The local directory where MapReduce stores job jar, xml files and creates work dirs for tasks. MapR hadoop uses a local volume map outputs."
+  },
+  {
+    "name": "mapred.map.child.java.opts",
+    "value": "-Xmx1024m"
+  },
+  {
+    "name": "mapred.reduce.child.java.opts",
+    "value": "-Xmx3072m"
+  }
+]
