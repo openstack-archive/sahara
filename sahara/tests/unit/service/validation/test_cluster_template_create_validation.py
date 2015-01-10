@@ -94,7 +94,7 @@ class TestClusterTemplateCreateValidation(u.ValidationTestCase):
                     }
                 ]
             },
-            bad_req_i=(1, "INVALID_REFERENCE",
+            bad_req_i=(1, "INVALID_DATA",
                        "Duplicates in node group names are detected")
         )
 
@@ -235,8 +235,8 @@ class TestClusterTemplateCreateValidation(u.ValidationTestCase):
         }
         self._assert_create_object_validation(
             data=data,
-            bad_req_i=(1, 'INVALID_REFERENCE', "Network 53a36917-ab9f-4589-"
-                                               "94ce-b6df85a68332 not found")
+            bad_req_i=(1, 'NOT_FOUND', "Network 53a36917-ab9f-4589-"
+                                       "94ce-b6df85a68332 not found")
         )
 
     def test_cluster_create_v_default_image_required_tags(self):

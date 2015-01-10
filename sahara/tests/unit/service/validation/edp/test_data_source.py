@@ -119,7 +119,7 @@ class TestDataSourceValidation(u.ValidationTestCase):
             "type": "swift",
             "description": "incorrect url schema"
         }
-        with testtools.ExpectedException(ex.InvalidException):
+        with testtools.ExpectedException(ex.InvalidDataException):
             ds.check_data_source_create(data)
 
     @mock.patch("sahara.service.validations."
@@ -152,7 +152,7 @@ class TestDataSourceValidation(u.ValidationTestCase):
             "type": "swift",
             "description": "incorrect url schema"
         }
-        with testtools.ExpectedException(ex.InvalidException):
+        with testtools.ExpectedException(ex.InvalidDataException):
             ds.check_data_source_create(data)
 
     @mock.patch("sahara.service.validations."
@@ -167,7 +167,7 @@ class TestDataSourceValidation(u.ValidationTestCase):
             "type": "swift",
             "description": "incorrect url schema"
         }
-        with testtools.ExpectedException(ex.InvalidException):
+        with testtools.ExpectedException(ex.InvalidDataException):
             ds.check_data_source_create(data)
 
     @mock.patch("sahara.service.validations."
@@ -181,7 +181,7 @@ class TestDataSourceValidation(u.ValidationTestCase):
             "type": "hdfs",
             "description": "incorrect url schema"
         }
-        with testtools.ExpectedException(ex.InvalidException):
+        with testtools.ExpectedException(ex.InvalidDataException):
             ds.check_data_source_create(data)
 
     @mock.patch("sahara.service.validations."
@@ -232,7 +232,7 @@ class TestDataSourceValidation(u.ValidationTestCase):
             "type": "maprfs",
             "description": "incorrect url schema"
         }
-        with testtools.ExpectedException(ex.InvalidException):
+        with testtools.ExpectedException(ex.InvalidDataException):
             ds.check_data_source_create(data)
 
     @mock.patch("sahara.service.validations."

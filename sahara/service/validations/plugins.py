@@ -23,6 +23,6 @@ CONVERT_TO_TEMPLATE_SCHEMA = None
 
 def check_convert_to_template(plugin_name, version, **kwargs):
     if not plugin_base.PLUGINS.is_plugin_implements(plugin_name, 'convert'):
-        raise ex.InvalidException(
+        raise ex.InvalidReferenceException(
             _("Requested plugin '%s' doesn't support converting config files "
               "to cluster templates") % plugin_name)

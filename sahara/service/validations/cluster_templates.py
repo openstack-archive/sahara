@@ -133,7 +133,7 @@ def check_cluster_template_usage(cluster_template_id, **kwargs):
             users.append(cluster.name)
 
     if users:
-        raise ex.InvalidException(
+        raise ex.InvalidReferenceException(
             _("Cluster template %(id)s in use by %(clusters)s") %
             {'id': cluster_template_id,
              'clusters':  ', '.join(users)})

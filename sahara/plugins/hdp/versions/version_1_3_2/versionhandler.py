@@ -626,9 +626,9 @@ class AmbariClient(object):
 
     def decommission_cluster_instances(self, cluster, clusterspec, instances,
                                        ambari_info):
-        raise exc.InvalidException(_('The HDP plugin does not support '
-                                     'the decommissioning of nodes '
-                                     'for HDP version 1.3.2'))
+        raise exc.InvalidDataException(_('The HDP plugin does not support '
+                                         'the decommissioning of nodes '
+                                         'for HDP version 1.3.2'))
 
     def provision_cluster(self, cluster_spec, servers, ambari_info, name):
         self._add_cluster(ambari_info, name)

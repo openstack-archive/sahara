@@ -67,10 +67,10 @@ def check_data_source_create(data, **kwargs):
 
 def _check_swift_data_source_create(data):
     if len(data['url']) == 0:
-        raise ex.InvalidException(_("Swift url must not be empty"))
+        raise ex.InvalidDataException(_("Swift url must not be empty"))
     url = urlparse.urlparse(data['url'])
     if url.scheme != "swift":
-        raise ex.InvalidException(_("URL scheme must be 'swift'"))
+        raise ex.InvalidDataException(_("URL scheme must be 'swift'"))
 
     # The swift url suffix does not have to be included in the netloc.
     # However, if the swift suffix indicator is part of the netloc then
@@ -78,7 +78,7 @@ def _check_swift_data_source_create(data):
     # Additionally, the path must be more than '/'
     if (su.SWIFT_URL_SUFFIX_START in url.netloc and not url.netloc.endswith(
             su.SWIFT_URL_SUFFIX)) or len(url.path) <= 1:
-        raise ex.InvalidException(
+        raise ex.InvalidDataException(
             _("URL must be of the form swift://container%s/object")
             % su.SWIFT_URL_SUFFIX)
 
@@ -96,20 +96,20 @@ def _check_swift_data_source_create(data):
 
 def _check_hdfs_data_source_create(data):
     if len(data['url']) == 0:
-        raise ex.InvalidException(_("HDFS url must not be empty"))
+        raise ex.InvalidDataException(_("HDFS url must not be empty"))
     url = urlparse.urlparse(data['url'])
     if url.scheme:
         if url.scheme != "hdfs":
-            raise ex.InvalidException(_("URL scheme must be 'hdfs'"))
+            raise ex.InvalidDataException(_("URL scheme must be 'hdfs'"))
         if not url.hostname:
-            raise ex.InvalidException(_("HDFS url is incorrect, "
-                                        "cannot determine a hostname"))
+            raise ex.InvalidDataException(
+                _("HDFS url is incorrect, cannot determine a hostname"))
 
 
 def _check_maprfs_data_source_create(data):
     if len(data['url']) == 0:
-        raise ex.InvalidException(_("MapR FS url must not be empty"))
+        raise ex.InvalidDataException(_("MapR FS url must not be empty"))
     url = urlparse.urlparse(data['url'])
     if url.scheme:
         if url.scheme != "maprfs":
-            raise ex.InvalidException(_("URL scheme must be 'maprfs'"))
+            raise ex.InvalidDataException(_("URL scheme must be 'maprfs'"))

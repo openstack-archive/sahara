@@ -56,8 +56,8 @@ def check_data_source_unique_name(name):
 
 def check_data_source_exists(data_source_id):
     if not conductor.data_source_get(context.ctx(), data_source_id):
-        raise ex.InvalidException(_("DataSource with id '%s'"
-                                  " doesn't exist") % data_source_id)
+        raise ex.InvalidReferenceException(
+            _("DataSource with id '%s' doesn't exist") % data_source_id)
 
 
 def check_job_unique_name(name):
@@ -68,8 +68,8 @@ def check_job_unique_name(name):
 
 def check_job_binary_internal_exists(jbi_id):
     if not conductor.job_binary_internal_get(context.ctx(), jbi_id):
-        raise ex.InvalidException(_("JobBinaryInternal with id '%s'"
-                                  " doesn't exist") % jbi_id)
+        raise ex.InvalidReferenceException(
+            _("JobBinaryInternal with id '%s' doesn't exist") % jbi_id)
 
 
 def check_data_sources_are_different(data_source_1_id, data_source_2_id):

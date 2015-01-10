@@ -44,15 +44,16 @@ class TestScalingValidation(u.ValidationTestCase):
                               get_plugin_p=None,
                               get_cluster_p=None,
                               data=None, cluster=None,
-                              expected_message=None):
+                              expected_message=None,
+                              expected_exception=ex.InvalidReferenceException):
 
         get_cluster_p.return_value = cluster
         get_plugin_p.side_effect = _get_plugin
 
-        with testtools.ExpectedException(ex.InvalidException):
+        with testtools.ExpectedException(expected_exception):
             try:
                 c_s.check_cluster_scaling(data, cluster.id)
-            except ex.InvalidException as e:
+            except expected_exception as e:
                 message = six.text_type(e).split('\n')[0]
                 self.assertEqual(expected_message, message)
                 raise e
@@ -101,7 +102,8 @@ class TestScalingValidation(u.ValidationTestCase):
         self._assert_check_scaling(
             data=data, cluster=cluster,
             expected_message='Duplicates in node '
-                             'group names are detected')
+                             'group names are detected',
+            expected_exception=ex.InvalidDataException)
 
     @mock.patch("sahara.service.api.OPS")
     def test_check_cluster_scaling_add_ng(self, ops):
@@ -127,7 +129,8 @@ class TestScalingValidation(u.ValidationTestCase):
         self._assert_check_scaling(
             data=data, cluster=cluster,
             expected_message='Duplicates in node '
-                             'group names are detected')
+                             'group names are detected',
+            expected_exception=ex.InvalidDataException)
         data = {
             'add_node_groups': [
                 {
@@ -159,7 +162,8 @@ class TestScalingValidation(u.ValidationTestCase):
             expected_message="Composite hostname test-cluster-very-"
                              "very-very-very-very-very-long-ng-name-"
                              "010.novalocal in provisioned cluster exceeds "
-                             "maximum limit 64 characters")
+                             "maximum limit 64 characters",
+            expected_exception=ex.InvalidDataException)
         u.stop_patch(patchers)
 
     @mock.patch("sahara.utils.api.request_data")
