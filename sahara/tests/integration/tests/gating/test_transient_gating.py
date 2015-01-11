@@ -26,19 +26,11 @@ from sahara.utils import edp as utils_edp
 
 
 class TransientGatingTest(edp.EDPTest):
-    def _prepare_test(self):
-        self.plugin_config = cfg.ITConfig().vanilla_two_config
-        self.SKIP_EDP_TEST = self.plugin_config.SKIP_EDP_TEST
-        self.floating_ip_pool = self.common_config.FLOATING_IP_POOL
-        self.internal_neutron_net = None
-        if self.common_config.NEUTRON_ENABLED:
-            self.internal_neutron_net = self.get_internal_neutron_net_id()
-            self.floating_ip_pool = (
-                self.get_floating_ip_pool_id_for_neutron_net())
+    def get_plugin_config(self):
+        return cfg.ITConfig().vanilla_two_config
 
-        (self.vanilla_two_config.IMAGE_ID,
-         self.vanilla_two_config.SSH_USERNAME) = (
-            self.get_image_id_and_ssh_username(self.vanilla_two_config))
+    def _prepare_test(self):
+        self.SKIP_EDP_TEST = self.plugin_config.SKIP_EDP_TEST
 
     @b.errormsg("Failure while cluster template creation: ")
     def _create_cluster_template(self):

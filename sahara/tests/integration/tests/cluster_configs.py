@@ -106,7 +106,7 @@ class ClusterConfigTest(base.ITestCase):
     def _check_config_application_on_cluster_nodes(
             self, node_ip_list_with_node_processes):
         for node_ip, processes in node_ip_list_with_node_processes.items():
-            self.open_ssh_connection(node_ip, self.vanilla_config.SSH_USERNAME)
+            self.open_ssh_connection(node_ip)
             for config, value in CLUSTER_MR_CONFIG.items():
                 self._compare_configs_on_cluster_node(config, value)
             for config, value in CLUSTER_HDFS_CONFIG.items():
@@ -139,7 +139,6 @@ class ClusterConfigTest(base.ITestCase):
         try:
             self.transfer_helper_script_to_nodes(
                 node_ip_list_with_node_processes,
-                self.vanilla_config.SSH_USERNAME,
                 'cluster_config_test_script.sh'
             )
 

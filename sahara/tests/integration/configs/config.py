@@ -574,8 +574,6 @@ MAPR_CONFIG_OPTS = [
                     'image. If you do not specify image related parameters, '
                     'then image for cluster creation will be chosen by '
                     'tag "sahara_i_tests".'),
-    cfg.StrOpt('SSH_USERNAME',
-               help='Username to get cluster node with SSH.'),
     cfg.ListOpt('MASTER_NODE_PROCESSES',
                 default=['CLDB', 'FileServer', 'ZooKeeper',
                          'TaskTracker', 'JobTracker', 'Oozie'],
@@ -665,9 +663,6 @@ MAPR4_1_CONFIG_OPTS = [
                     'image. If you do not specify image related parameters, '
                     'then image for cluster creation will be chosen by '
                     'tag "sahara_i_tests".'),
-    cfg.StrOpt('SSH_USERNAME',
-               default=None,
-               help='Username to get cluster node with SSH.'),
     cfg.ListOpt('MASTER_NODE_PROCESSES',
                 default=['CLDB', 'FileServer', 'ZooKeeper',
                          'TaskTracker', 'JobTracker', 'Oozie'],
@@ -747,9 +742,6 @@ MAPR4_2_CONFIG_OPTS = [
                     'image. If you do not specify image related parameters, '
                     'then image for cluster creation will be chosen by '
                     'tag "sahara_i_tests".'),
-    cfg.StrOpt('SSH_USERNAME',
-               default=None,
-               help='Username to get cluster node with SSH.'),
     cfg.ListOpt('MASTER_NODE_PROCESSES',
                 default=['CLDB', 'FileServer', 'ZooKeeper', 'NodeManager',
                          'ResourceManager', 'HistoryServer', 'Oozie'],

@@ -193,9 +193,6 @@
 #IMAGE_TAG = <None>
 
 
-# Username to get cluster node with SSH (string value)
-#SSH_USERNAME = <None>
-
 # A list of processes that will be launched on master node (list value)
 #MASTER_NODE_PROCESSES = JOBTRACKER, NAMENODE, SECONDARY_NAMENODE, GANGLIA_SERVER, NAGIOS_SERVER, AMBARI_SERVER, OOZIE_SERVER
 
@@ -258,9 +255,6 @@
 # "sahara_i_tests" (string value)
 #IMAGE_TAG = <None>
 
-# Username to get cluster node with SSH (string value)
-#SSH_USERNAME = <None>
-
 # A list of processes that will be launched on master node (list value)
 #MASTER_NODE_PROCESSES = NAMENODE, SECONDARY_NAMENODE, ZOOKEEPER_SERVER, AMBARI_SERVER, HISTORYSERVER, RESOURCEMANAGER, GANGLIA_SERVER, NAGIOS_SERVER, OOZIE_SERVER
 
@@ -317,9 +311,6 @@
 # "sahara_i_tests" (string value)
 #IMAGE_TAG = <None>
 
-
-# Username to get cluster node with SSH (string value)
-#SSH_USERNAME = <None>
 
 # A list of processes that will be launched on master node (list value)
 #MASTER_NODE_PROCESSES = CLDB, FileServer, ZooKeeper, TaskTracker, JobTracker, Oozie
@@ -383,9 +374,6 @@
 # "sahara_i_tests" (string value)
 #IMAGE_TAG = <None>
 
-# Username to get cluster node with SSH (string value)
-#SSH_USERNAME = <None>
-
 # A list of processes that will be launched on master node (list value)
 #MASTER_NODE_PROCESSES = CLDB, FileServer, ZooKeeper, TaskTracker, JobTracker, Oozie
 
@@ -439,9 +427,6 @@
 # parameters then image for cluster creation will be chosen by tag
 # "sahara_i_tests" (string value)
 #IMAGE_TAG = <None>
-
-# Username to get cluster node with SSH (string value)
-#SSH_USERNAME = <None>
 
 # A list of processes that will be launched on master node (list value)
 #MASTER_NODE_PROCESSES = CLDB, FileServer, ZooKeeper, NodeManager, ResourceManager, HistoryServer, Oozie

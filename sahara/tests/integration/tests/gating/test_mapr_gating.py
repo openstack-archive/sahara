@@ -35,27 +35,13 @@ class MaprGatingTest(cinder.CinderVolumeTest, edp.EDPTest,
     SKIP_SWIFT_TEST = config.SKIP_SWIFT_TEST
     SKIP_SCALING_TEST = config.SKIP_SCALING_TEST
 
+    def get_plugin_config(self):
+        return cfg.ITConfig().mapr_config
+
     @testcase.skipIf(config.SKIP_ALL_TESTS_FOR_PLUGIN,
                      'All tests for MAPR plugin were skipped')
     @testcase.attr('mapr1')
     def test_mapr_plugin_gating(self):
-        self.mapr_config.IMAGE_ID, self.mapr_config.SSH_USERNAME = (
-            self.get_image_id_and_ssh_username(self.mapr_config))
-
-        # Default value of self.common_config.FLOATING_IP_POOL is None
-        floating_ip_pool = self.common_config.FLOATING_IP_POOL
-        internal_neutron_net = None
-        # If Neutron enabled then get ID of floating IP pool and ID of internal
-        # Neutron network
-        if self.common_config.NEUTRON_ENABLED:
-            floating_ip_pool = self.get_floating_ip_pool_id_for_neutron_net()
-            internal_neutron_net = self.get_internal_neutron_net_id()
-
-        if not self.mapr_config.SKIP_CINDER_TEST:
-            volumes_per_node = 2
-        else:
-            volumes_per_node = 0
-
         node_group_template_id_list = []
 
 # ------------------------------CLUSTER CREATION-------------------------------
@@ -65,13 +51,13 @@ class MaprGatingTest(cinder.CinderVolumeTest, edp.EDPTest,
         try:
             node_group_template_tt_dn_id = self.create_node_group_template(
                 name='test-node-group-template-mapr-tt-dn',
-                plugin_config=self.mapr_config,
+                plugin_config=self.plugin_config,
                 description='test node group template for MAPR plugin',
-                volumes_per_node=volumes_per_node,
-                node_processes=self.mapr_config.WORKER_NODE_PROCESSES,
+                volumes_per_node=self.volumes_per_node,
+                node_processes=self.plugin_config.WORKER_NODE_PROCESSES,
                 # NEED CREATE WORKER_NODE_PROCESSES
                 node_configs={},
-                floating_ip_pool=floating_ip_pool
+                floating_ip_pool=self.floating_ip_pool
             )
             node_group_template_id_list.append(node_group_template_tt_dn_id)
 
@@ -86,24 +72,25 @@ class MaprGatingTest(cinder.CinderVolumeTest, edp.EDPTest,
         try:
             cluster_template_id = self.create_cluster_template(
                 name='test-cluster-template-mapr',
-                plugin_config=self.mapr_config,
+                plugin_config=self.plugin_config,
                 description='test cluster template for MAPR plugin',
                 cluster_configs={},
                 node_groups=[
                     dict(
                         name='master-node-jt-nn',
                         flavor_id=self.flavor_id,
-                        node_processes=self.mapr_config.MASTER_NODE_PROCESSES,
+                        node_processes=(
+                            self.plugin_config.MASTER_NODE_PROCESSES),
                         # NEED CREATE MASTER_NODE_PROCESSES
                         node_configs={},
-                        floating_ip_pool=floating_ip_pool,
+                        floating_ip_pool=self.floating_ip_pool,
                         count=1),
                     dict(
                         name='worker-node-tt-dn',
                         node_group_template_id=node_group_template_tt_dn_id,
                         count=3)
                 ],
-                net_id=internal_neutron_net
+                net_id=self.internal_neutron_net
             )
 
         except Exception as e:
@@ -117,19 +104,19 @@ class MaprGatingTest(cinder.CinderVolumeTest, edp.EDPTest,
 # ------------------------------Cluster creation-------------------------------
 
         cluster_name = (self.common_config.CLUSTER_NAME + '-' +
-                        self.mapr_config.PLUGIN_NAME)
+                        self.plugin_config.PLUGIN_NAME)
         try:
             self.create_cluster(
                 name=cluster_name,
-                plugin_config=self.mapr_config,
+                plugin_config=self.plugin_config,
                 cluster_template_id=cluster_template_id,
                 description='test cluster',
                 cluster_configs={}
             )
 
-            cluster_info = self.get_cluster_info(self.mapr_config)
+            cluster_info = self.get_cluster_info(self.plugin_config)
             self.await_active_tasktracker(
-                cluster_info['node_info'], self.mapr_config)
+                cluster_info['node_info'], self.plugin_config)
 
         except Exception as e:
             with excutils.save_and_reraise_exception():
@@ -244,10 +231,10 @@ class MaprGatingTest(cinder.CinderVolumeTest, edp.EDPTest,
 
 # -------------------------------CLUSTER SCALING-------------------------------
 
-        if not self.mapr_config.SKIP_SCALING_TEST:
+        if not self.plugin_config.SKIP_SCALING_TEST:
             datanode_count_after_resizing = (
                 cluster_info['node_info']['datanode_count']
-                + self.mapr_config.SCALE_EXISTING_NG_COUNT)
+                + self.plugin_config.SCALE_EXISTING_NG_COUNT)
             change_list = [
                 {
                     'operation': 'resize',
@@ -258,7 +245,7 @@ class MaprGatingTest(cinder.CinderVolumeTest, edp.EDPTest,
                     'operation': 'add',
                     'info': [
                         'new-worker-node-tt-dn',
-                        self.mapr_config.SCALE_NEW_NG_COUNT,
+                        self.plugin_config.SCALE_NEW_NG_COUNT,
                         '%s' % node_group_template_tt_dn_id
                     ]
                 }
@@ -267,7 +254,7 @@ class MaprGatingTest(cinder.CinderVolumeTest, edp.EDPTest,
                 new_cluster_info = self.cluster_scaling(cluster_info,
                                                         change_list)
                 self.await_active_tasktracker(
-                    new_cluster_info['node_info'], self.mapr_config)
+                    new_cluster_info['node_info'], self.plugin_config)
             except Exception as e:
                 with excutils.save_and_reraise_exception():
                     self.delete_objects(

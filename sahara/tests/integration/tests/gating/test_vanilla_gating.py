@@ -38,23 +38,8 @@ class VanillaGatingTest(cinder.CinderVolumeTest,
     SKIP_SWIFT_TEST = config.SKIP_SWIFT_TEST
     SKIP_SCALING_TEST = config.SKIP_SCALING_TEST
 
-    def _prepare_test(self):
-        self.plugin_config = cfg.ITConfig().vanilla_config
-        self.floating_ip_pool = self.common_config.FLOATING_IP_POOL
-        self.internal_neutron_net = None
-        if self.common_config.NEUTRON_ENABLED:
-            self.internal_neutron_net = self.get_internal_neutron_net_id()
-            self.floating_ip_pool = (
-                self.get_floating_ip_pool_id_for_neutron_net())
-
-        self.plugin_config.IMAGE_ID, self.plugin_config.SSH_USERNAME = (
-            self.get_image_id_and_ssh_username(self.plugin_config))
-
-        self.volumes_per_node = 0
-        self.volumes_size = 0
-        if not self.SKIP_CINDER_TEST:
-            self.volumes_per_node = 2
-            self.volumes_size = 2
+    def get_plugin_config(self):
+        return cfg.ITConfig().vanilla_config
 
     @b.errormsg("Failure while 'tt-dn' node group template creation: ")
     def _create_tt_dn_ng_template(self):
@@ -303,7 +288,6 @@ class VanillaGatingTest(cinder.CinderVolumeTest,
                      'All tests for Vanilla plugin were skipped')
     @testcase.attr('vanilla1')
     def test_vanilla_plugin_gating(self):
-        self._prepare_test()
         self._create_tt_dn_ng_template()
         self._create_tt_ng_template()
         self._create_dn_ng_template()

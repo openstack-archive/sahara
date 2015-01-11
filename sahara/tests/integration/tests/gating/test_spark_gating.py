@@ -35,25 +35,16 @@ class SparkGatingTest(swift.SwiftTest, scaling.ScalingTest,
         self.cluster_template_id = None
         self.ng_template_ids = []
 
-    def _prepare_test(self):
-        self.spark_config = cfg.ITConfig().spark_config
-        self.floating_ip_pool = self.common_config.FLOATING_IP_POOL
-        self.internal_neutron_net = None
-        if self.common_config.NEUTRON_ENABLED:
-            self.internal_neutron_net = self.get_internal_neutron_net_id()
-            self.floating_ip_pool = (
-                self.get_floating_ip_pool_id_for_neutron_net())
-
-        self.spark_config.IMAGE_ID, self.spark_config.SSH_USERNAME = (
-            self.get_image_id_and_ssh_username(self.spark_config))
+    def get_plugin_config(self):
+        return cfg.ITConfig().spark_config
 
     @b.errormsg("Failure while 'm-nn' node group template creation: ")
     def _create_m_nn_ng_template(self):
         template = {
             'name': 'test-node-group-template-spark-m-nn',
-            'plugin_config': self.spark_config,
+            'plugin_config': self.plugin_config,
             'description': 'test node group template for Spark plugin',
-            'node_processes': self.spark_config.MASTER_NODE_PROCESSES,
+            'node_processes': self.plugin_config.MASTER_NODE_PROCESSES,
             'floating_ip_pool': self.floating_ip_pool,
             'auto_security_group': True,
             'node_configs': {}
@@ -65,9 +56,9 @@ class SparkGatingTest(swift.SwiftTest, scaling.ScalingTest,
     def _create_s_dn_ng_template(self):
         template = {
             'name': 'test-node-group-template-spark-s-dn',
-            'plugin_config': self.spark_config,
+            'plugin_config': self.plugin_config,
             'description': 'test node group template for Spark plugin',
-            'node_processes': self.spark_config.WORKER_NODE_PROCESSES,
+            'node_processes': self.plugin_config.WORKER_NODE_PROCESSES,
             'floating_ip_pool': self.floating_ip_pool,
             'auto_security_group': True,
             'node_configs': {}
@@ -79,7 +70,7 @@ class SparkGatingTest(swift.SwiftTest, scaling.ScalingTest,
     def _create_cluster_template(self):
         template = {
             'name': 'test-cluster-template-spark',
-            'plugin_config': self.spark_config,
+            'plugin_config': self.plugin_config,
             'description': 'test cluster template for Spark plugin',
             'cluster_configs': {
             },
@@ -102,19 +93,19 @@ class SparkGatingTest(swift.SwiftTest, scaling.ScalingTest,
     @b.errormsg("Failure while cluster creation: ")
     def _create_cluster(self):
         cluster_name = '%s-%s' % (self.common_config.CLUSTER_NAME,
-                                  self.spark_config.PLUGIN_NAME)
+                                  self.plugin_config.PLUGIN_NAME)
         cluster = {
             'name': cluster_name,
-            'plugin_config': self.spark_config,
+            'plugin_config': self.plugin_config,
             'cluster_template_id': self.cluster_template_id,
             'description': 'test cluster',
             'cluster_configs': {}
         }
         cluster_id = self.create_cluster(**cluster)
         self.poll_cluster_state(cluster_id)
-        self.cluster_info = self.get_cluster_info(self.spark_config)
+        self.cluster_info = self.get_cluster_info(self.plugin_config)
         self.await_active_workers_for_namenode(self.cluster_info['node_info'],
-                                               self.spark_config)
+                                               self.plugin_config)
 
     @b.errormsg("Failure while EDP testing: ")
     def _check_edp(self):
@@ -145,7 +136,6 @@ class SparkGatingTest(swift.SwiftTest, scaling.ScalingTest,
                      'All tests for Spark plugin were skipped')
     def test_spark_plugin_gating(self):
 
-        self._prepare_test()
         self._create_m_nn_ng_template()
         self._create_s_dn_ng_template()
         self._create_cluster_template()
@@ -153,7 +143,7 @@ class SparkGatingTest(swift.SwiftTest, scaling.ScalingTest,
 
         self._check_edp()
 
-        if not self.spark_config.SKIP_SCALING_TEST:
+        if not self.plugin_config.SKIP_SCALING_TEST:
             self._check_scaling()
             self._check_edp_after_scaling()
 

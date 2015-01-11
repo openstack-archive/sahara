@@ -49,11 +49,8 @@ class CinderVolumeTest(base.ITestCase):
     @base.skip_test('SKIP_CINDER_TEST', message='Test for Cinder was skipped.')
     def cinder_volume_testing(self, cluster_info):
         node_list_with_volumes = self._get_node_list_with_volumes(cluster_info)
-        plugin_config = cluster_info['plugin_config']
         for node_with_volumes in node_list_with_volumes:
-            self.open_ssh_connection(
-                node_with_volumes['node_ip'], plugin_config.SSH_USERNAME
-            )
+            self.open_ssh_connection(node_with_volumes['node_ip'])
             volume_count_on_node = int(
                 self.execute_command(
                     'mount | grep %s | wc -l' % node_with_volumes[
