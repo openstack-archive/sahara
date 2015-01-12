@@ -19,19 +19,30 @@
 """Utility methods for working with WSGI servers."""
 
 import datetime
+import errno
+import os
+import signal
 from xml.dom import minidom
 from xml.parsers import expat
 from xml import sax
 from xml.sax import expatreader
 
+import eventlet
+from eventlet import wsgi
+from oslo_config import cfg
 from oslo_log import log as logging
+from oslo_log import loggers
 from oslo_serialization import jsonutils
 import six
 
 from sahara import exceptions
 from sahara.i18n import _
+from sahara.i18n import _LE
+from sahara.i18n import _LI
+from sahara.openstack.common import sslutils
 
 LOG = logging.getLogger(__name__)
+CONF = cfg.CONF
 
 
 class ProtectedExpatParser(expatreader.ExpatParser):
@@ -311,3 +322,111 @@ class XMLDeserializer(TextDeserializer):
 
     def default(self, datastring):
         return {'body': self._from_xml(datastring)}
+
+
+class Server(object):
+    """Server class to manage multiple WSGI sockets and applications."""
+
+    def __init__(self, threads=500):
+        self.threads = threads
+        self.children = []
+        self.running = True
+
+    def start(self, application):
+        """Run a WSGI server with the given application.
+
+        :param application: The application to run in the WSGI server
+        """
+        def kill_children(*args):
+            """Kills the entire process group."""
+            LOG.error(_LE('SIGTERM received'))
+            signal.signal(signal.SIGTERM, signal.SIG_IGN)
+            self.running = False
+            os.killpg(0, signal.SIGTERM)
+
+        def hup(*args):
+            """Shuts down the server(s).
+
+            Shuts down the server(s), but allows running requests to complete
+            """
+            LOG.error(_LE('SIGHUP received'))
+            signal.signal(signal.SIGHUP, signal.SIG_IGN)
+            os.killpg(0, signal.SIGHUP)
+            signal.signal(signal.SIGHUP, hup)
+
+        self.application = application
+        self.sock = eventlet.listen((CONF.host, CONF.port), backlog=500)
+        if sslutils.is_enabled():
+            LOG.info(_LI("Using HTTPS for port %s"), CONF.port)
+            self.sock = sslutils.wrap(self.sock)
+
+        if CONF.api_workers == 0:
+            # Useful for profiling, test, debug etc.
+            self.pool = eventlet.GreenPool(size=self.threads)
+            self.pool.spawn_n(self._single_run, application, self.sock)
+            return
+
+        LOG.debug("Starting %d workers", CONF.api_workers)
+        signal.signal(signal.SIGTERM, kill_children)
+        signal.signal(signal.SIGHUP, hup)
+        while len(self.children) < CONF.api_workers:
+            self.run_child()
+
+    def wait_on_children(self):
+        while self.running:
+            try:
+                pid, status = os.wait()
+                if os.WIFEXITED(status) or os.WIFSIGNALED(status):
+                    LOG.error(_LE('Removing dead child %s'), pid)
+                    self.children.remove(pid)
+                    self.run_child()
+            except OSError as err:
+                if err.errno not in (errno.EINTR, errno.ECHILD):
+                    raise
+            except KeyboardInterrupt:
+                LOG.info(_LI('Caught keyboard interrupt. Exiting.'))
+                os.killpg(0, signal.SIGTERM)
+                break
+        eventlet.greenio.shutdown_safe(self.sock)
+        self.sock.close()
+        LOG.debug('Server exited')
+
+    def wait(self):
+        """Wait until all servers have completed running."""
+        try:
+            if self.children:
+                self.wait_on_children()
+            else:
+                self.pool.waitall()
+        except KeyboardInterrupt:
+            pass
+
+    def run_child(self):
+        pid = os.fork()
+        if pid == 0:
+            signal.signal(signal.SIGHUP, signal.SIG_DFL)
+            signal.signal(signal.SIGTERM, signal.SIG_DFL)
+            self.run_server()
+            LOG.debug('Child %d exiting normally', os.getpid())
+            return
+        else:
+            LOG.info(_LI('Started child %s'), pid)
+            self.children.append(pid)
+
+    def run_server(self):
+        """Run a WSGI server."""
+        self.pool = eventlet.GreenPool(size=self.threads)
+        wsgi.server(self.sock,
+                    self.application,
+                    custom_pool=self.pool,
+                    log=loggers.WritableLogger(LOG),
+                    debug=False)
+        self.pool.waitall()
+
+    def _single_run(self, application, sock):
+        """Start a WSGI server in a new green thread."""
+        LOG.info(_LI("Starting single process server"))
+        eventlet.wsgi.server(sock, application,
+                             custom_pool=self.pool,
+                             log=loggers.WritableLogger(LOG),
+                             debug=False)
