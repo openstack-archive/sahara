@@ -46,7 +46,6 @@ class TransientGatingTest(edp.EDPTest):
                     'node_processes': ['namenode', 'resourcemanager',
                                        'oozie', 'historyserver'],
                     'floating_ip_pool': self.floating_ip_pool,
-                    'auto_security_group': True,
                     'count': 1
                 },
                 {
@@ -54,7 +53,6 @@ class TransientGatingTest(edp.EDPTest):
                     'flavor_id': self.flavor_id,
                     'node_processes': ['datanode', 'nodemanager'],
                     'floating_ip_pool': self.floating_ip_pool,
-                    'auto_security_group': True,
                     'count': 1
                 }
             ],
@@ -79,27 +77,39 @@ class TransientGatingTest(edp.EDPTest):
 
     @b.errormsg("Failure while cluster creation: ")
     def _create_cluster(self):
-        cluster_name = '%s-transient' % self.common_config.CLUSTER_NAME
-        cluster = {
-            'name': cluster_name,
-            'plugin_config': self.plugin_config,
-            'cluster_template_id': self.cluster_template_id,
-            'description': 'transient cluster',
-            'cluster_configs': {},
-            'is_transient': True
-        }
-        cluster_id = self.create_cluster(**cluster)
-        self.addCleanup(self.delete_objects, cluster_id=cluster_id)
-        self.poll_cluster_state(cluster_id)
+        self.cluster_ids = []
+        for number_of_cluster in range(3):
+            cluster_name = '%s-%d-transient' % (
+                self.common_config.CLUSTER_NAME,
+                number_of_cluster+1)
+            cluster = {
+                'name': cluster_name,
+                'plugin_config': self.plugin_config,
+                'cluster_template_id': self.cluster_template_id,
+                'description': 'transient cluster',
+                'cluster_configs': {},
+                'is_transient': True
+            }
+
+            self.cluster_ids.append(self.create_cluster(**cluster))
+            self.addCleanup(self.delete_objects,
+                            self.cluster_ids[number_of_cluster])
+
+        for number_of_cluster in range(3):
+            self.poll_cluster_state(self.cluster_ids[number_of_cluster])
 
     @b.errormsg("Failure while transient cluster testing: ")
     def _check_transient(self):
         pig_job_data = self.edp_info.read_pig_example_script()
         pig_lib_data = self.edp_info.read_pig_example_jar()
-        job_id = self.edp_testing(job_type=utils_edp.JOB_TYPE_PIG,
-                                  job_data_list=[{'pig': pig_job_data}],
-                                  lib_data_list=[{'jar': pig_lib_data}])
-        self.poll_jobs_status([job_id])
+        job_ids = []
+        for cluster_id in self.cluster_ids:
+            self.cluster_id = cluster_id
+            job_ids.append(self.edp_testing(
+                job_type=utils_edp.JOB_TYPE_PIG,
+                job_data_list=[{'pig': pig_job_data}],
+                lib_data_list=[{'jar': pig_lib_data}]))
+        self.poll_jobs_status(job_ids)
 
         # set timeout in seconds
         timeout = self.common_config.TRANSIENT_CLUSTER_TIMEOUT * 60
