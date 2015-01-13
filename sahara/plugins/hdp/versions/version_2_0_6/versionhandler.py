@@ -14,7 +14,6 @@
 # limitations under the License.
 
 import json
-import logging
 
 from oslo.config import cfg
 import pkg_resources as pkg
@@ -27,6 +26,7 @@ from sahara.i18n import _LC
 from sahara.i18n import _LE
 from sahara.i18n import _LI
 from sahara.i18n import _LW
+from sahara.openstack.common import log as logging
 from sahara.plugins import exceptions as ex
 from sahara.plugins.hdp import clusterspec as cs
 from sahara.plugins.hdp import configprovider as cfgprov

@@ -13,7 +13,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import logging
 import os
 import pickle
 import sys
@@ -22,7 +21,7 @@ from eventlet.green import subprocess
 from eventlet import timeout as e_timeout
 
 from sahara import context
-
+from sahara.openstack.common import log as logging
 
 LOG = logging.getLogger(__name__)
 
