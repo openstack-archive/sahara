@@ -46,8 +46,10 @@ Cluster Validation
 Mr1 Cluster is valid if and only if:
 
 1. Zookeeper component count per cluster equals 1 or greater.  Zookeeper service is up and running.
+
     2.1 Each node has Fileserver component.  Fileserver is up and running on each node. Or
     2.2 Each node has NFS server component. NFS server is up and running.
+
 3. If node has TaskTracker component then  Fileserver must be also.
 4. Web-server component  count per cluster equals 0 or 1.  Web-server is up and running.
 
@@ -56,8 +58,10 @@ YARN Cluster is valid if and only if:
 
 1. Zookeeper component count per cluster equals 1 or greater.  Zookeeper service is up and running.
 2.  Resource manager component count per cluster equals 1 or greater.  Resource manager component is up and running.
+
     3.1 Each node has Fileserver component.  Fileserver is up and running on each node. Or
     3.2 Each node has NFS server component. NFS server is up and running.
+
 4. Web-server component  count per cluster equals 0 or 1.  Web-server is up and running.
 5. History server component count per cluster equals 1.  History server  is up and running.
 
