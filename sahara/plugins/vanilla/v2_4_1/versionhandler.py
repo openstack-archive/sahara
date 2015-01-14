@@ -18,6 +18,8 @@ from oslo_log import log as logging
 
 from sahara import conductor
 from sahara import context
+from sahara import exceptions as ex
+from sahara.i18n import _
 from sahara.plugins import utils
 from sahara.plugins.vanilla import abstractversionhandler as avm
 from sahara.plugins.vanilla.hadoop2 import config as c
@@ -56,7 +58,10 @@ class VersionHandler(avm.AbstractVersionHandler):
         }
 
     def validate(self, cluster):
-        vl.validate_cluster_creating(self.pctx, cluster)
+        raise ex.DeprecatedException(
+            _("The vanilla 2.4.1 plugin is now deprecated and will be removed"
+              " in 2015.2 release. The vanilla 2.6.0 plugin remains and "
+              " continues to be supported."))
 
     def update_infra(self, cluster):
         pass
