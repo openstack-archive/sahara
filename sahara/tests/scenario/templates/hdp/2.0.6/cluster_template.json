@@ -1,0 +1,7 @@
+{
+    "name": "hdp-206",
+    "node_group_templates": {
+        "hdp-master": 1,
+        "hdp-worker": 3
+    }
+}

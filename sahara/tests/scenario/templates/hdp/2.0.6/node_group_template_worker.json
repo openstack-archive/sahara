@@ -1,0 +1,15 @@
+{
+    "name": "hdp-worker",
+    "flavor_id": "3",
+    "node_processes": [
+        "HDFS_CLIENT",
+        "DATANODE",
+        "ZOOKEEPER_CLIENT",
+        "MAPREDUCE2_CLIENT",
+        "YARN_CLIENT",
+        "NODEMANAGER",
+        "PIG",
+        "OOZIE_CLIENT"
+    ],
+    "auto_security_group" : true
+}

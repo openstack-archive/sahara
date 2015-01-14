@@ -48,6 +48,8 @@ include sahara/service/edp/resources/*.xml
 include sahara/service/edp/resources/*.jar
 include sahara/service/edp/resources/launch_command.py
 include sahara/swift/resources/*.xml
+include sahara/tests/scenario/testcase.py.mako
+recursive-include sahara/tests/scenario/templates *.json
 include sahara/tests/unit/plugins/vanilla/hadoop2/resources/*.txt
 include sahara/tests/unit/plugins/mapr/utils/resources/*.topology
 include sahara/tests/unit/plugins/mapr/utils/resources/*.json

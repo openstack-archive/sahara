@@ -1,0 +1,17 @@
+credentials:
+    os_username: admin
+    os_password: nova
+    os_tenant: admin
+    os_auth_url: http://localhost:5000/v2.0
+
+network:
+    private_network: private
+    public_network: public
+
+clusters:
+    - plugin_name: vanilla
+      plugin_version: 2.6.0
+      image: sahara-juno-vanilla-2.6.0-ubuntu-14.04
+    - plugin_name: hdp
+      plugin_version: 2.0.6
+      image: f3c4a228-9ba4-41f1-b100-a0587689d4dd

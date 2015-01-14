@@ -1,0 +1,9 @@
+{
+    "name": "vanilla-worker",
+    "flavor_id": "3",
+    "node_processes": [
+        "datanode",
+        "nodemanager"
+    ],
+    "auto_security_group": true
+}

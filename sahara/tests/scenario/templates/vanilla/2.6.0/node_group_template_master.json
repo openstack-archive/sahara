@@ -1,0 +1,11 @@
+{
+    "name": "vanilla-master",
+    "flavor_id": "3",
+    "node_processes": [
+        "namenode",
+        "resourcemanager",
+        "historyserver",
+        "oozie"
+    ],
+    "auto_security_group": true
+}
