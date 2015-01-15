@@ -119,12 +119,18 @@ def _get_configs(service, cluster=None, node_group=None):
         ss_count = v._get_inst_count(cluster, 'SENTRY_SERVER')
         ks_count = v._get_inst_count(cluster, 'HBASE_INDEXER')
         imp_count = v._get_inst_count(cluster, 'CATALOGSERVER')
+        core_site_safety_valve = ''
+        if c_helper.is_swift_enabled(cluster):
+            configs = swift_helper.get_swift_configs()
+            confs = dict((c['name'], c['value']) for c in configs)
+            core_site_safety_valve = xmlutils.create_elements_xml(confs)
         all_confs = {
             'HDFS': {
                 'zookeeper_service':
                     cu.ZOOKEEPER_SERVICE_NAME if zk_count else '',
                 'dfs_block_local_path_access_user':
-                    'impala' if imp_count else ''
+                    'impala' if imp_count else '',
+                'core_site_safety_valve': core_site_safety_valve
             },
             'HIVE': {
                 'mapreduce_yarn_service': cu.YARN_SERVICE_NAME,
@@ -562,12 +568,6 @@ def _configure_swift_to_inst(instance):
     with instance.remote() as r:
         r.execute_command('sudo curl %s -o %s/hadoop-openstack.jar' % (
             c_helper.get_swift_lib_url(cluster), HADOOP_LIB_DIR))
-        core_site = r.read_file_from(PATH_TO_CORE_SITE_XML)
-        configs = xmlutils.parse_hadoop_xml_with_name_and_value(core_site)
-        configs.extend(swift_helper.get_swift_configs())
-        confs = dict((c['name'], c['value']) for c in configs)
-        new_core_site = xmlutils.create_hadoop_xml(confs)
-        r.write_file_to(PATH_TO_CORE_SITE_XML, new_core_site, run_as_root=True)
 
 
 def _put_hive_hdfs_xml(cluster):

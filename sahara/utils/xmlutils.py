@@ -79,6 +79,17 @@ def create_hadoop_xml(configs, config_filter=None):
     return doc.toprettyxml(indent="  ")
 
 
+def create_elements_xml(configs):
+    doc = xml.Document()
+    text = ''
+    for name in sorted(configs):
+        element = doc.createElement('property')
+        add_text_element_to_element(doc, element, 'name', name)
+        add_text_element_to_element(doc, element, 'value', configs[name])
+        text += element.toprettyxml(indent="  ")
+    return text
+
+
 # basic utils
 
 def load_xml_document(file_name, strip=False):
