@@ -21,8 +21,6 @@ patches.patch_all()
 import os
 import sys
 
-import eventlet
-from eventlet import wsgi
 from oslo import i18n
 
 
@@ -58,6 +56,4 @@ def main():
     server.setup_sahara_api('distributed')
     server.setup_auth_policy()
 
-    from oslo.config import cfg
-    wsgi.server(eventlet.listen((cfg.CONF.host, cfg.CONF.port), backlog=500),
-                app, log=logging.WritableLogger(LOG), debug=False)
+    server.start_server(app)
