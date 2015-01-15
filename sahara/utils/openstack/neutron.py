@@ -15,6 +15,7 @@
 
 
 from neutronclient.neutron import client as neutron_cli
+from oslo.config import cfg
 
 from sahara import context
 from sahara import exceptions as ex
@@ -22,6 +23,22 @@ from sahara.i18n import _
 from sahara.openstack.common import log as logging
 from sahara.utils.openstack import base
 
+
+opts = [
+    cfg.BoolOpt('api_insecure',
+                default=False,
+                help='Allow to perform insecure SSL requests to neutron.'),
+    cfg.StrOpt('ca_file',
+               help='Location of ca certificates file to use for neutron '
+                    'client requests.')
+]
+
+neutron_group = cfg.OptGroup(name='neutron',
+                             title='Neutron client options')
+
+CONF = cfg.CONF
+CONF.register_group(neutron_group)
+CONF.register_opts(opts, group=neutron_group)
 
 LOG = logging.getLogger(__name__)
 
@@ -33,7 +50,9 @@ def client():
         'tenant_name': ctx.tenant_name,
         'tenant_id': ctx.tenant_id,
         'token': ctx.auth_token,
-        'endpoint_url': base.url_for(ctx.service_catalog, 'network')
+        'endpoint_url': base.url_for(ctx.service_catalog, 'network'),
+        'ca_cert': CONF.neutron.ca_file,
+        'insecure': CONF.neutron.api_insecure
     }
     return neutron_cli.Client('2.0', **args)
 
@@ -46,7 +65,9 @@ class NeutronClient(object):
         self.neutron = neutron_cli.Client('2.0',
                                           endpoint_url=uri,
                                           token=token,
-                                          tenant_name=tenant_name)
+                                          tenant_name=tenant_name,
+                                          ca_cert=CONF.neutron.ca_file,
+                                          insecure=CONF.neutron.api_insecure)
         self.network = network
 
     def get_router(self):

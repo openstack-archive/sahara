@@ -21,8 +21,7 @@ from sahara import context
 from sahara.utils.openstack import base
 
 
-CONF = cfg.CONF
-
+# TODO(alazarev) Move to [keystone] section
 opts = [
     cfg.BoolOpt('use_identity_api_v3',
                 default=True,
@@ -31,7 +30,23 @@ opts = [
                      'per-job clusters will not be terminated '
                      'automatically.')
 ]
+
+ssl_opts = [
+    cfg.BoolOpt('api_insecure',
+                default=False,
+                help='Allow to perform insecure SSL requests to keystone.'),
+    cfg.StrOpt('ca_file',
+               help='Location of ca certificates file to use for keystone '
+                    'client requests.')
+]
+
+keystone_group = cfg.OptGroup(name='keystone',
+                              title='Keystone client options')
+
+CONF = cfg.CONF
+CONF.register_group(keystone_group)
 CONF.register_opts(opts)
+CONF.register_opts(ssl_opts, group=keystone_group)
 
 
 def client():
@@ -58,7 +73,10 @@ def _client(username, password=None, token=None, tenant_name=None,
                      'tenant_id': tenant_id,
                      'trust_id': trust_id,
                      'user_domain_name': domain_name,
-                     'auth_url': auth_url}
+                     'auth_url': auth_url,
+                     'cacert': CONF.keystone.ca_file,
+                     'insecure': CONF.keystone.api_insecure
+                     }
 
     if CONF.use_identity_api_v3:
         keystone = keystone_client_v3.Client(**client_kwargs)

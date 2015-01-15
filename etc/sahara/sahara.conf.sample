@@ -82,7 +82,7 @@
 #logging_exception_prefix = %(asctime)s.%(msecs)03d %(process)d TRACE %(name)s %(instance)s
 
 # List of logger=LEVEL pairs. (list value)
-#default_log_levels = amqp=WARN,amqplib=WARN,boto=WARN,qpid=WARN,sqlalchemy=WARN,suds=INFO,oslo.messaging=INFO,iso8601=WARN,requests.packages.urllib3.connectionpool=WARN,urllib3.connectionpool=WARN,websocket=WARN,keystonemiddleware=WARN,routes.middleware=WARN,stevedore=WARN
+#default_log_levels = amqplib=WARN,qpid.messaging=INFO,stevedore=INFO,eventlet.wsgi.server=WARN,sqlalchemy=WARN,boto=WARN,suds=INFO,keystone=INFO,paramiko=WARN,requests=WARN,iso8601=WARN
 
 # Enables or disables publication of error events. (boolean value)
 #publish_errors = false
@@ -388,9 +388,6 @@
 # Enables sending notifications to Ceilometer (boolean value)
 #enable_notifications = false
 
-# Version of the Cinder API to use. (integer value)
-#cinder_api_version = 2
-
 # Enables Sahara to use Keystone API v3. If that flag is disabled,
 # per-job clusters will not be terminated automatically. (boolean
 # value)
@@ -458,6 +455,24 @@
 # A list of the role names that the proxy user should assume through
 # trust for Swift object access. (list value)
 #proxy_user_role_names = Member
+
+
+[cinder]
+
+#
+# From sahara.config
+#
+
+# Version of the Cinder API to use. (integer value)
+# Deprecated group/name - [DEFAULT]/cinder_api_version
+#api_version = 2
+
+# Allow to perform insecure SSL requests to cinder. (boolean value)
+#api_insecure = false
+
+# Location of ca certificates file to use for cinder client requests.
+# (string value)
+#ca_file = <None>
 
 
 [conductor]
@@ -573,6 +588,34 @@
 # Maximum database connection retries before error is raised. Set to
 # -1 to specify an infinite retry count. (integer value)
 #db_max_retries = 20
+
+
+[heat]
+
+#
+# From sahara.config
+#
+
+# Allow to perform insecure SSL requests to heat. (boolean value)
+#api_insecure = false
+
+# Location of ca certificates file to use for heat client requests.
+# (string value)
+#ca_file = <None>
+
+
+[keystone]
+
+#
+# From sahara.config
+#
+
+# Allow to perform insecure SSL requests to keystone. (boolean value)
+#api_insecure = false
+
+# Location of ca certificates file to use for keystone client
+# requests. (string value)
+#ca_file = <None>
 
 
 [keystone_authtoken]
@@ -771,6 +814,34 @@
 #ringfile = /etc/oslo/matchmaker_ring.json
 
 
+[neutron]
+
+#
+# From sahara.config
+#
+
+# Allow to perform insecure SSL requests to neutron. (boolean value)
+#api_insecure = false
+
+# Location of ca certificates file to use for neutron client requests.
+# (string value)
+#ca_file = <None>
+
+
+[nova]
+
+#
+# From sahara.config
+#
+
+# Allow to perform insecure SSL requests to nova. (boolean value)
+#api_insecure = false
+
+# Location of ca certificates file to use for nova client requests.
+# (string value)
+#ca_file = <None>
+
+
 [oslo_concurrency]
 
 #
@@ -841,3 +912,17 @@
 # Accept clients using either SSL or plain TCP (boolean value)
 # Deprecated group/name - [amqp1]/allow_insecure_clients
 #allow_insecure_clients = false
+
+
+[swift]
+
+#
+# From sahara.config
+#
+
+# Allow to perform insecure SSL requests to swift. (boolean value)
+#api_insecure = false
+
+# Location of ca certificates file to use for swift client requests.
+# (string value)
+#ca_file = <None>

@@ -39,7 +39,8 @@ opts = [
 
 CONF = cfg.CONF
 CONF.register_opts(opts)
-CONF.import_opt('cinder_api_version', 'sahara.utils.openstack.cinder')
+CONF.import_opt('api_version', 'sahara.utils.openstack.cinder',
+                group='cinder')
 
 
 def attach_to_instances(instances):
@@ -87,7 +88,7 @@ def _attach_volumes_to_node(node_group, instance):
 
 def _create_attach_volume(ctx, instance, size, volume_type, name=None,
                           availability_zone=None):
-    if CONF.cinder_api_version == 1:
+    if CONF.cinder.api_version == 1:
         kwargs = {'size': size, 'display_name': name}
     else:
         kwargs = {'size': size, 'name': name}
