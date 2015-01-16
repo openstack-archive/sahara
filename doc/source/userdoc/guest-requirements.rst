@@ -39,7 +39,7 @@ This plugin does not have any additional requirements.  Currently, only the Cent
 To speed up provisioning, the HDP packages can be pre-installed on the image used. The packages' versions depend on the HDP version being used.
 
 Cloudera Plugin Requirements
----------------------------
+----------------------------
 
 If the Cloudera Plugin is used for cluster deployment the guest is required to have
 

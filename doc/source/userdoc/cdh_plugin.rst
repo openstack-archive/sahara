@@ -1,5 +1,5 @@
 Cloudera Plugin
-==============
+===============
 
 The cloudera plugin is a Sahara plugin which allows the user to deploy and
 operate a cluster with Cloudera Manager.
