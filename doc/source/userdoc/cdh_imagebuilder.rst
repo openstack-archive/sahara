@@ -1,7 +1,7 @@
-.. _diskimage-builder-label:
+.. _cdh_diskimage-builder-label:
 
 Building Images for Cloudera Plugin
-==================================
+===================================
 
 In this document you will find instructions on how to build Ubuntu and CentOS
 images with Cloudera Express versions 5.2.0.

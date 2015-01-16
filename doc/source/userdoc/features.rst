@@ -205,6 +205,7 @@ Currently HDFS HA is only supported with the HDP 2.0.6 plugin. The feature is en
 a cluster_configs parameter in the cluster's JSON:
 
 .. sourcecode:: cfg
+
         "cluster_configs": {
                 "HDFSHA": {
                         "hdfs.nnha": true

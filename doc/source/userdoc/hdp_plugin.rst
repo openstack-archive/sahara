@@ -93,6 +93,7 @@ command line client (python-saharaclient) or Sahara REST API by simply adding th
 following cluster_configs parameter in the cluster's JSON :
 
 .. sourcecode:: cfg
+
         "cluster_configs": {
                 "HDFSHA": {
                         "hdfs.nnha": true

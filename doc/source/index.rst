@@ -26,6 +26,7 @@ User guide
 
    userdoc/installation.guide
    userdoc/configuration.guide
+   userdoc/dashboard.guide
    userdoc/advanced.configuration.guide
    userdoc/upgrade.guide
 
@@ -49,6 +50,7 @@ User guide
    userdoc/hdp_plugin
    userdoc/spark_plugin
    userdoc/cdh_plugin
+   userdoc/mapr_plugin
 
 **Elastic Data Processing**
 
@@ -72,7 +74,7 @@ User guide
    userdoc/guest-requirements
    userdoc/hadoop-swift
    userdoc/diskimagebuilder
-
+   userdoc/cdh_imagebuilder
 
 Developer Guide
 ---------------
