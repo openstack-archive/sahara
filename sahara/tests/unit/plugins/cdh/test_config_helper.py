@@ -13,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from sahara.plugins.cdh import config_helper as c_h
+from sahara.plugins.cdh.v5_3_0 import config_helper as c_h
 from sahara.tests.unit import base
 from sahara.tests.unit.plugins.cdh import utils as ctu
 
