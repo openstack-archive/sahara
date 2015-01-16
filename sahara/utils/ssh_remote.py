@@ -31,7 +31,6 @@ and eventlet together. The private high-level module methods are
 implementations which are run in a separate process.
 """
 
-import logging
 import os
 import shlex
 import time
@@ -51,6 +50,7 @@ from sahara import context
 from sahara import exceptions as ex
 from sahara.i18n import _
 from sahara.i18n import _LE
+from sahara.openstack.common import log as logging
 from sahara.utils import crypto
 from sahara.utils import hashabledict as h
 from sahara.utils.openstack import base
