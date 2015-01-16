@@ -50,7 +50,8 @@ class VersionHandler(avm.AbstractVersionHandler):
             "MapReduce": ["historyserver"],
             "HDFS": ["namenode", "datanode", "secondarynamenode"],
             "YARN": ["resourcemanager", "nodemanager"],
-            "JobFlow": ["oozie"]
+            "JobFlow": ["oozie"],
+            "Hive": ["hiveserver"]
         }
 
     def validate(self, cluster):
@@ -86,6 +87,10 @@ class VersionHandler(avm.AbstractVersionHandler):
         oo = vu.get_oozie(cluster)
         if oo:
             run.start_oozie_process(self.pctx, oo)
+
+        hiveserver = vu.get_hiveserver(cluster)
+        if hiveserver:
+            run.start_hiveserver_process(self.pctx, hiveserver)
 
         self._set_cluster_info(cluster)
 
