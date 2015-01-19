@@ -18,13 +18,9 @@ OpenStack-related sites. These sites include:
 Mailing list
 ------------
 
-The mailing list email is ``sahara-all@lists.launchpad.net``. To participate in the mailing list:
-
-#. Join the `Sahara Team`_ on Launchpad.
-#. Subscribe to the list on the `Sahara Team`_ page on Launchpad.
-
-The mailing list archives are at https://lists.launchpad.net/sahara-all
-
+The mailing list email is ``openstack-dev@lists.openstack.org`` with subject prefix
+``[sahara]``. To participate in the mailing list subscribe to the list at
+http://lists.openstack.org/cgi-bin/mailman/listinfo
 
 Bug tracking
 ------------
@@ -34,8 +30,13 @@ Report Sahara bugs at https://bugs.launchpad.net/sahara
 Feature requests (Blueprints)
 -----------------------------
 
-Sahara uses Launchpad Blueprints to track feature requests. Blueprints are at
-https://blueprints.launchpad.net/sahara.
+Sahara uses specs to track feature requests. Blueprints are at
+https://blueprints.launchpad.net/sahara. They provide a high-level summary of
+proposed changes and track associated commits. Sahara also uses specs for
+in-depth descriptions and discussions of blueprints. Specs follow a defined
+format and are submitted as change requests to the openstack/sahara-specs
+repository. Every blueprint should have an associated spec that is agreed
+on and merged to the sahara-specs repository before it is approved.
 
 Technical support
 -----------------
