@@ -158,6 +158,57 @@ class DataSourceTest(test_base.ConductorManagerTestCase):
         lst = self.api.data_source_get_all(ctx, **{'badfield': 'somevalue'})
         self.assertEqual(len(lst), 0)
 
+    def test_data_source_count_in(self):
+        ctx = context.ctx()
+        ctx.tenant_id = SAMPLE_DATA_SOURCE['tenant_id']
+        src = copy.copy(SAMPLE_DATA_SOURCE)
+        self.api.data_source_create(ctx, src)
+
+        cnt = self.api.data_source_count(ctx, name='ngt_test')
+        self.assertEqual(cnt, 1)
+
+        cnt = self.api.data_source_count(ctx, name=('ngt_test',
+                                                    'test2', 'test3'))
+        self.assertEqual(cnt, 1)
+
+        cnt = self.api.data_source_count(ctx, name=('test1',
+                                                    'test2', 'test3'))
+        self.assertEqual(cnt, 0)
+
+        lst = self.api.data_source_get_all(ctx, name='ngt_test')
+        myid = lst[0]['id']
+        cnt = self.api.data_source_count(ctx,
+                                         name=('ngt_test', 'test2', 'test3'),
+                                         id=myid)
+        self.assertEqual(cnt, 1)
+
+        cnt = self.api.data_source_count(ctx,
+                                         name=('ngt_test', 'test2', 'test3'),
+                                         id=(myid, '2'))
+        self.assertEqual(cnt, 1)
+
+    def test_data_source_count_like(self):
+        ctx = context.ctx()
+        ctx.tenant_id = SAMPLE_DATA_SOURCE['tenant_id']
+        src = copy.copy(SAMPLE_DATA_SOURCE)
+        self.api.data_source_create(ctx, src)
+
+        cnt = self.api.data_source_count(ctx, name='ngt_test')
+        self.assertEqual(cnt, 1)
+
+        cnt = self.api.data_source_count(ctx, name='ngt%')
+        self.assertEqual(cnt, 1)
+
+        cnt = self.api.data_source_count(ctx,
+                                         name=('ngt_test',),
+                                         url='localhost%')
+        self.assertEqual(cnt, 1)
+
+        cnt = self.api.data_source_count(ctx,
+                                         name=('ngt_test',),
+                                         url='localhost')
+        self.assertEqual(cnt, 0)
+
 
 class JobExecutionTest(test_base.ConductorManagerTestCase):
     def test_crud_operation_create_list_delete_update(self):

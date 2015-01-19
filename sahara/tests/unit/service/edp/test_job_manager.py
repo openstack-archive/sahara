@@ -120,8 +120,8 @@ class TestJobManager(base.SaharaWithDbTestCase):
         output_data = u.create_data_source('swift://ex/o')
 
         res = workflow_factory.get_workflow_xml(
-            job, u.create_cluster(), job_exec, input_data, output_data,
-            'hadoop')
+            job, u.create_cluster(), job_exec.job_configs,
+            input_data, output_data, 'hadoop')
 
         self.assertIn("""
       <param>INPUT=swift://ex.sahara/i</param>
@@ -147,8 +147,8 @@ class TestJobManager(base.SaharaWithDbTestCase):
         job, job_exec = u.create_job_exec(edp.JOB_TYPE_PIG, proxy=True)
 
         res = workflow_factory.get_workflow_xml(
-            job, u.create_cluster(), job_exec, input_data, output_data,
-            'hadoop')
+            job, u.create_cluster(), job_exec.job_configs,
+            input_data, output_data, 'hadoop')
 
         self.assertIn("""
       <configuration>
@@ -181,8 +181,8 @@ class TestJobManager(base.SaharaWithDbTestCase):
         output_data = u.create_data_source('hdfs://user/hadoop/out')
 
         res = workflow_factory.get_workflow_xml(
-            job, u.create_cluster(), job_exec, input_data, output_data,
-            'hadoop')
+            job, u.create_cluster(), job_exec.job_configs,
+            input_data, output_data, 'hadoop')
 
         self.assertIn("""
       <configuration>
@@ -200,8 +200,8 @@ class TestJobManager(base.SaharaWithDbTestCase):
         output_data = u.create_data_source('swift://ex/o')
 
         res = workflow_factory.get_workflow_xml(
-            job, u.create_cluster(), job_exec, input_data, output_data,
-            'hadoop')
+            job, u.create_cluster(), job_exec.job_configs,
+            input_data, output_data, 'hadoop')
 
         self.assertIn("""
       <configuration>
@@ -221,8 +221,8 @@ class TestJobManager(base.SaharaWithDbTestCase):
         output_data = u.create_data_source('hdfs://user/hadoop/out')
 
         res = workflow_factory.get_workflow_xml(
-            job, u.create_cluster(), job_exec, input_data, output_data,
-            'hadoop')
+            job, u.create_cluster(), job_exec.job_configs,
+            input_data, output_data, 'hadoop')
 
         self.assertIn("""
       <configuration>
@@ -246,8 +246,8 @@ class TestJobManager(base.SaharaWithDbTestCase):
         output_data = u.create_data_source('swift://ex/o')
 
         res = workflow_factory.get_workflow_xml(
-            job, u.create_cluster(), job_exec, input_data, output_data,
-            'hadoop')
+            job, u.create_cluster(), job_exec.job_configs,
+            input_data, output_data, 'hadoop')
 
         if streaming:
             self.assertIn("""
@@ -288,8 +288,8 @@ class TestJobManager(base.SaharaWithDbTestCase):
             job, job_exec = u.create_job_exec(job_type, proxy=True)
 
             res = workflow_factory.get_workflow_xml(
-                job, u.create_cluster(), job_exec, input_data, output_data,
-                'hadoop')
+                job, u.create_cluster(), job_exec.job_configs,
+                input_data, output_data, 'hadoop')
 
             self.assertIn("""
         <property>
@@ -331,7 +331,7 @@ class TestJobManager(base.SaharaWithDbTestCase):
 
         job, job_exec = u.create_job_exec(edp.JOB_TYPE_JAVA, configs)
         res = workflow_factory.get_workflow_xml(
-            job, u.create_cluster(), job_exec)
+            job, u.create_cluster(), job_exec.job_configs)
 
         self.assertIn("""
       <configuration>
@@ -361,7 +361,7 @@ class TestJobManager(base.SaharaWithDbTestCase):
         job, job_exec = u.create_job_exec(edp.JOB_TYPE_JAVA, configs,
                                           proxy=True)
         res = workflow_factory.get_workflow_xml(job, u.create_cluster(),
-                                                job_exec)
+                                                job_exec.job_configs)
 
         self.assertIn("""
       <configuration>
@@ -397,8 +397,8 @@ class TestJobManager(base.SaharaWithDbTestCase):
         output_data = u.create_data_source('swift://ex/o')
 
         res = workflow_factory.get_workflow_xml(
-            job, u.create_cluster(), job_exec, input_data, output_data,
-            'hadoop')
+            job, u.create_cluster(), job_exec.job_configs,
+            input_data, output_data, 'hadoop')
 
         doc = xml.parseString(res)
         hive = doc.getElementsByTagName('hive')[0]
@@ -425,8 +425,8 @@ class TestJobManager(base.SaharaWithDbTestCase):
         job, job_exec = u.create_job_exec(edp.JOB_TYPE_HIVE, proxy=True)
 
         res = workflow_factory.get_workflow_xml(
-            job, u.create_cluster(), job_exec, input_data, output_data,
-            'hadoop')
+            job, u.create_cluster(), job_exec.job_configs,
+            input_data, output_data, 'hadoop')
 
         doc = xml.parseString(res)
         hive = doc.getElementsByTagName('hive')[0]

@@ -262,6 +262,15 @@ def data_source_get_all(context, **kwargs):
     return IMPL.data_source_get_all(context, **kwargs)
 
 
+def data_source_count(context, **kwargs):
+    """Count Data Sources filtered by **kwargs.
+
+    Uses sqlalchemy "in_" clause for any tuple values
+    Uses sqlalchemy "like" clause for any string values containing %
+    """
+    return IMPL.data_source_count(context, **kwargs)
+
+
 @to_dict
 def data_source_create(context, values):
     """Create a Data Source from the values dictionary."""

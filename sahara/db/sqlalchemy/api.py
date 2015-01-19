@@ -99,6 +99,76 @@ def count_query(model, context, session=None, project_only=None):
     return model_query(sa.func.count(model.id), context, session, project_only)
 
 
+def in_filter(query, cls, search_opts):
+    """Add 'in' filters for specified columns.
+
+    Add a sqlalchemy 'in' filter to the query for any entry in the
+    'search_opts' dict where the key is the name of a column in
+    'cls' and the value is a tuple.
+
+    This allows the value of a column to be matched
+    against multiple possible values (OR).
+
+    Return the modified query and any entries in search_opts
+    whose keys do not match columns or whose values are not
+    tuples.
+
+    :param query: a non-null query object
+    :param cls: the database model class that filters will apply to
+    :param search_opts: a dictionary whose key/value entries are interpreted as
+    column names and search values
+    :returns: a tuple containing the modified query and a dictionary of
+    unused search_opts
+    """
+    if not search_opts:
+        return query, search_opts
+
+    remaining = {}
+    for k, v in six.iteritems(search_opts):
+        if type(v) == tuple and k in cls.__table__.columns:
+            col = cls.__table__.columns[k]
+            query = query.filter(col.in_(v))
+        else:
+            remaining[k] = v
+    return query, remaining
+
+
+def like_filter(query, cls, search_opts):
+    """Add 'like' filters for specified columns.
+
+    Add a sqlalchemy 'like' filter to the query for any entry in the
+    'search_opts' dict where the key is the name of a column in
+    'cls' and the value is a string containing '%'.
+
+    This allows the value of a column to be matched
+    against simple sql string patterns using LIKE and the
+    '%' wildcard.
+
+    Return the modified query and any entries in search_opts
+    whose keys do not match columns or whose values are not
+    strings containing '%'.
+
+    :param query: a non-null query object
+    :param cls: the database model class the filters will apply to
+    :param search_opts: a dictionary whose key/value entries are interpreted as
+    column names and search patterns
+    :returns: a tuple containing the modified query and a dictionary of
+    unused search_opts
+    """
+    if not search_opts:
+        return query, search_opts
+
+    remaining = {}
+    for k, v in six.iteritems(search_opts):
+        if isinstance(v, six.string_types) and (
+                '%' in v and k in cls.__table__.columns):
+            col = cls.__table__.columns[k]
+            query = query.filter(col.like(v))
+        else:
+            remaining[k] = v
+    return query, remaining
+
+
 def setup_db():
     try:
         engine = get_engine()
@@ -487,6 +557,37 @@ def _data_source_get(context, session, data_source_id):
 
 def data_source_get(context, data_source_id):
     return _data_source_get(context, get_session(), data_source_id)
+
+
+def data_source_count(context, **kwargs):
+    """Count DataSource objects filtered by search criteria in kwargs.
+
+    Entries in kwargs indicate column names and search values.
+
+    'in' filters will be used to search for any entries in kwargs
+    that name DataSource columns and have values of type tuple. This
+    allows column values to match multiple values (OR)
+
+    'like' filters will be used for any entries in kwargs that
+    name DataSource columns and have string values containing '%'.
+    This allows column values to match simple wildcards.
+
+    Any other entries in kwargs will be searched for using filter_by()
+    """
+    query = model_query(m.DataSource, context)
+    query, kwargs = in_filter(query, m.DataSource, kwargs)
+    query, kwargs = like_filter(query, m.DataSource, kwargs)
+
+    # Use normal filter_by for remaining keys
+    try:
+        return query.filter_by(**kwargs).count()
+    except Exception as e:
+        if kwargs:
+            # If kwargs is non-empty then we assume this
+            # is a bad field reference. User asked for something
+            # that doesn't exist, so return empty list
+            return []
+        raise e
 
 
 def data_source_get_all(context, **kwargs):

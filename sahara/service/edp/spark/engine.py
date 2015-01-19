@@ -114,7 +114,11 @@ class SparkJobEngine(base_engine.JobEngine):
         ctx = context.ctx()
         job = conductor.job_get(ctx, job_execution.job_id)
 
-        proxy_configs = job_execution.job_configs.get('proxy_configs')
+        additional_sources, updated_job_configs = (
+            job_utils.resolve_data_source_references(job_execution.job_configs)
+        )
+
+        proxy_configs = updated_job_configs.get('proxy_configs')
 
         # We'll always run the driver program on the master
         master = plugin_utils.get_instance(self.cluster, "master")
@@ -150,11 +154,11 @@ class SparkJobEngine(base_engine.JobEngine):
                                       self.cluster),
             "bin/spark-submit")
 
-        job_class = job_execution.job_configs.configs["edp.java.main_class"]
+        job_class = updated_job_configs['configs']["edp.java.main_class"]
 
         # TODO(tmckay): we need to clean up wf_dirs on long running clusters
         # TODO(tmckay): probably allow for general options to spark-submit
-        args = " ".join(job_execution.job_configs.get('args', []))
+        args = " ".join(updated_job_configs.get('args', []))
 
         # The redirects of stdout and stderr will preserve output in the wf_dir
         cmd = "%s %s --class %s %s --master spark://%s:%s %s" % (
