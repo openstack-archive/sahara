@@ -30,8 +30,8 @@ from alembic import command
 from alembic import config as alembic_config
 from alembic import migration
 from alembic import script as alembic_script
-from oslo.config import cfg
-from oslo.db.sqlalchemy import test_migrations as t_m
+from oslo_config import cfg
+from oslo_db.sqlalchemy import test_migrations as t_m
 from oslo_log import log as logging
 
 import sahara.db.migration
@@ -57,7 +57,7 @@ class BaseWalkMigrationTestCase(object):
 
         For migrate_repo we should set under version control our database.
         For alembic we should configure database settings. For this goal we
-        should use oslo.config and openstack.commom.db.sqlalchemy.session with
+        should use oslo_config and openstack.commom.db.sqlalchemy.session with
         database functionality (reset default settings and session cleanup).
         """
         CONF.set_override('connection', str(engine.url), group='database')

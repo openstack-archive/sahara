@@ -13,9 +13,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from oslo.config import cfg
-from oslo.utils import excutils
+from oslo_config import cfg
 from oslo_log import log as logging
+from oslo_utils import excutils
 import six
 from six.moves.urllib import parse as urlparse
 

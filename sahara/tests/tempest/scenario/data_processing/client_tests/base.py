@@ -14,7 +14,7 @@
 
 import time
 
-from oslo.utils import timeutils
+from oslo_utils import timeutils
 from saharaclient.api import base as sab
 from saharaclient import client as sahara_client
 from tempest import config

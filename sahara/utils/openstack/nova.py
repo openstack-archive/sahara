@@ -15,7 +15,7 @@
 
 from novaclient import exceptions as nova_ex
 from novaclient.v1_1 import client as nova_client
-from oslo.config import cfg
+from oslo_config import cfg
 
 from sahara import context
 import sahara.utils.openstack.base as base

@@ -13,9 +13,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from oslo.config import cfg
-from oslo.utils import timeutils as tu
+from oslo_config import cfg
 from oslo_log import log as logging
+from oslo_utils import timeutils as tu
 
 from sahara import conductor as c
 from sahara import context

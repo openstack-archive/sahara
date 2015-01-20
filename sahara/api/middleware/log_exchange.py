@@ -20,7 +20,7 @@
 from __future__ import print_function
 import sys
 
-from oslo.middleware import base
+from oslo_middleware import base
 import webob.dec
 
 

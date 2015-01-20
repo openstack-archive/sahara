@@ -15,7 +15,7 @@
 
 import copy
 
-from oslo.config import cfg
+from oslo_config import cfg
 
 import sahara.exceptions as ex
 from sahara.i18n import _

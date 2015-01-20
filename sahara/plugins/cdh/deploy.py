@@ -16,8 +16,8 @@
 import os
 import telnetlib
 
-from oslo.utils import timeutils
 from oslo_log import log as logging
+from oslo_utils import timeutils
 import six
 
 from sahara import context

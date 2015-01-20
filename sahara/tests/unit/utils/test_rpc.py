@@ -42,7 +42,7 @@ class TestMessagingSetup(base.SaharaTestCase):
             messaging.TRANSPORT.cleanup()
             messaging.TRANSPORT = messaging.NOTIFIER = None
 
-    @mock.patch('oslo.messaging.set_transport_defaults')
+    @mock.patch('oslo_messaging.set_transport_defaults')
     def test_set_defaults(self, mock_transport):
         self._install()
 
@@ -53,7 +53,7 @@ class TestMessagingSetup(base.SaharaTestCase):
 
         self._remove_install()
 
-    @mock.patch('oslo.messaging.get_transport')
+    @mock.patch('oslo_messaging.get_transport')
     def test_get_transport(self, mock_transport):
         self._install()
 
@@ -64,7 +64,7 @@ class TestMessagingSetup(base.SaharaTestCase):
 
         self._remove_install()
 
-    @mock.patch('oslo.messaging.Notifier')
+    @mock.patch('oslo_messaging.Notifier')
     def test_notifier(self, mock_init):
         self._install()
 

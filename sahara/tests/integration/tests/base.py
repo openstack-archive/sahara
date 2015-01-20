@@ -21,7 +21,7 @@ import fixtures
 from keystoneclient.v2_0 import client as keystone_client
 from neutronclient.v2_0 import client as neutron_client
 from novaclient.v1_1 import client as nova_client
-from oslo.utils import excutils
+from oslo_utils import excutils
 from oslo_utils import uuidutils
 from oslotest import base
 from saharaclient.api import base as client_base
@@ -237,7 +237,7 @@ class ITestCase(testcase.WithAttributes, base.BaseTestCase):
         #               '172.18.168.242': ['namenode', 'jobtracker'],
         #               '172.18.168.167': ['datanode']
         #       },
-        #       'plugin_config': <oslo.config.cfg.GroupAttr object at 0x215d9d>
+        #       'plugin_config': <oslo_config.cfg.GroupAttr object at 0x215d9d>
         # }
         return {
             'cluster_id': self.cluster_id,

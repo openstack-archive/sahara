@@ -15,9 +15,9 @@
 
 import datetime
 
-from oslo.config import cfg
-from oslo.utils import timeutils
+from oslo_config import cfg
 from oslo_log import log
+from oslo_utils import timeutils
 
 from sahara import conductor as c
 from sahara import context

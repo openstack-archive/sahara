@@ -15,7 +15,7 @@
 
 import time
 
-from oslo.utils import timeutils
+from oslo_utils import timeutils
 import saharaclient.api.base as sab
 from testtools import testcase
 

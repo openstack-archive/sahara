@@ -49,7 +49,7 @@ class NotificationTest(base.SaharaTestCase):
                                    'project_id': self.ctx.tenant_id,
                                    'user_id': self.ctx.user_id})
 
-    @mock.patch('oslo.messaging.notify.notifier.Notifier.info')
+    @mock.patch('oslo_messaging.notify.notifier.Notifier.info')
     def test_update_cluster(self, mock_notify):
         self.override_config("enable_notifications", True)
         messaging.setup("fake://", optional=True)

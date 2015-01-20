@@ -13,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from oslo.utils import excutils
+from oslo_utils import excutils
 
 from sahara.tests.integration.tests import base
 

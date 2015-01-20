@@ -19,7 +19,7 @@ from __future__ import with_statement
 from logging import config as c
 
 from alembic import context
-from oslo.utils import importutils
+from oslo_utils import importutils
 from sqlalchemy import create_engine
 from sqlalchemy import pool
 

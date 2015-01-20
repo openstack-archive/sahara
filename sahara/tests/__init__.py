@@ -13,9 +13,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from oslo import i18n
+import oslo_i18n
 
 # NOTE(slukjanov): i18n.enable_lazy() must be called before
 #                  sahara.utils.i18n._() is called to ensure it has the desired
 #                  lazy lookup behavior.
-i18n.enable_lazy()
+oslo_i18n.enable_lazy()

@@ -16,7 +16,7 @@ from __future__ import print_function
 
 import os
 
-from oslo.config import cfg
+from oslo_config import cfg
 
 
 def class_wrapper(cls):

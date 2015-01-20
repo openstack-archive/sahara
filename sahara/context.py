@@ -18,7 +18,7 @@ from eventlet.green import threading
 from eventlet.green import time
 from eventlet import greenpool
 from eventlet import semaphore
-from oslo.config import cfg
+from oslo_config import cfg
 from oslo_context import context
 from oslo_log import log as logging
 

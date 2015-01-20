@@ -31,9 +31,9 @@ interface.
 
 """
 
-from oslo.config import cfg
-from oslo.db import api as db_api
-from oslo.db import options
+from oslo_config import cfg
+from oslo_db import api as db_api
+from oslo_db import options
 from oslo_log import log as logging
 
 CONF = cfg.CONF
