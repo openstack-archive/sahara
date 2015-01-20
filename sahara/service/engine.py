@@ -22,15 +22,16 @@ import six
 
 from sahara import conductor as c
 from sahara import context
+from sahara.i18n import _
 from sahara.i18n import _LI
 from sahara.i18n import _LW
 from sahara.openstack.common import log as logging
 from sahara.service import networks
+from sahara.utils import cluster_progress_ops as cpo
 from sahara.utils import edp
 from sahara.utils import general as g
 from sahara.utils.openstack import nova
 from sahara.utils import remote
-
 
 LOG = logging.getLogger(__name__)
 conductor = c.API
@@ -69,6 +70,8 @@ class Engine(object):
         if not instances:
             return
 
+        cpo.add_provisioning_step(cluster.id, _("Assign IPs"), len(instances))
+
         ips_assigned = set()
         while len(ips_assigned) != len(instances):
             if not g.check_cluster_exists(cluster):
@@ -77,6 +80,7 @@ class Engine(object):
                 if instance.id not in ips_assigned:
                     if networks.init_instances_ips(instance):
                         ips_assigned.add(instance.id)
+                        cpo.add_successful_event(instance)
 
             context.sleep(1)
 
@@ -86,6 +90,9 @@ class Engine(object):
         cluster = conductor.cluster_get(context.ctx(), cluster)
         instances = g.get_instances(cluster, ips_assigned)
 
+        cpo.add_provisioning_step(
+            cluster.id, _("Wait for instance accessibility"), len(instances))
+
         with context.ThreadGroup() as tg:
             for instance in instances:
                 tg.spawn("wait-for-ssh-%s" % instance.instance_name,
@@ -93,6 +100,7 @@ class Engine(object):
 
         LOG.info(_LI("Cluster '%s': all instances are accessible"), cluster.id)
 
+    @cpo.event_wrapper(mark_successful_on_exit=True)
     def _wait_until_accessible(self, instance):
         while True:
             try:
@@ -122,6 +130,8 @@ class Engine(object):
         * etc.
         """
         hosts_file = g.generate_etc_hosts(cluster)
+        cpo.add_provisioning_step(
+            cluster.id, _("Configure instances"), g.count_instances(cluster))
 
         with context.ThreadGroup() as tg:
             for node_group in cluster.node_groups:
@@ -129,6 +139,7 @@ class Engine(object):
                     tg.spawn("configure-instance-%s" % instance.instance_name,
                              self._configure_instance, instance, hosts_file)
 
+    @cpo.event_wrapper(mark_successful_on_exit=True)
     def _configure_instance(self, instance, hosts_file):
         LOG.debug('Configuring instance %s' % instance.instance_name)
 

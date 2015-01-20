@@ -82,14 +82,22 @@ class TestAttachVolume(base.SaharaWithDbTestCase):
     @mock.patch('sahara.service.volumes._mount_volume')
     @mock.patch('sahara.service.volumes._await_attach_volumes')
     @mock.patch('sahara.service.volumes._create_attach_volume')
-    def test_attach(self, p_create_attach_vol, p_await, p_mount):
+    @mock.patch('sahara.utils.cluster_progress_ops.add_successful_event')
+    @mock.patch('sahara.utils.cluster_progress_ops.update_provisioning_steps')
+    @mock.patch('sahara.utils.cluster_progress_ops.add_provisioning_step')
+    def test_attach(self, add_step, update_step, add_event,
+                    p_create_attach_vol, p_await, p_mount):
         p_create_attach_vol.side_effect = ['/dev/vdb', '/dev/vdc'] * 2
         p_await.return_value = None
         p_mount.return_value = None
+        add_event.return_value = None
+        update_step.return_value = None
+        add_step.return_value = None
 
         instance1 = {'id': '1',
                      'instance_id': '123',
                      'instance_name': 'inst_1'}
+
         instance2 = {'id': '2',
                      'instance_id': '456',
                      'instance_name': 'inst_2'}
@@ -100,6 +108,7 @@ class TestAttachVolume(base.SaharaWithDbTestCase):
               'volume_mount_prefix': '/mnt/vols',
               'volume_type': None,
               'name': 'master',
+              'cluster_id': '11',
               'instances': [instance1, instance2]}
 
         cluster = r.ClusterResource({'node_groups': [ng]})
