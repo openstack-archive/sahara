@@ -50,12 +50,15 @@ def set_defaults(config):
                                                  False)
     net['public_network'] = net.get('public_network', 'public')
 
+    default_scenario = ['scale']
+
     # set up tests parameters
     for testcase in config['clusters']:
         testcase['class_name'] = "".join([
             testcase['plugin_name'],
             testcase['plugin_version'].replace('.', '_')])
         testcase['retain_resources'] = testcase.get('retain_resources', False)
+        testcase['scenario'] = testcase.get('scenario', default_scenario)
 
 
 def main():

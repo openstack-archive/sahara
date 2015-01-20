@@ -68,6 +68,9 @@ class SaharaClient(Client):
             self.sahara_client.clusters.delete,
             cluster_id)
 
+    def scale_cluster(self, cluster_id, body):
+        return self.sahara_client.clusters.scale(cluster_id, body)
+
     def get_cluster_status(self, cluster_id):
         data = self.sahara_client.clusters.get(cluster_id)
         return str(data.status)

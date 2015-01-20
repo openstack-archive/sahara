@@ -15,3 +15,7 @@ clusters:
     - plugin_name: hdp
       plugin_version: 2.0.6
       image: f3c4a228-9ba4-41f1-b100-a0587689d4dd
+      scaling:
+          - operation: resize
+            node_group: hdp-worker
+            size: 5

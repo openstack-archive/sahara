@@ -15,4 +15,7 @@ class ${testcase['class_name']}TestCase(base.BaseTestCase):
 
     def test_plugin(self):
         self.create_cluster()
+    % for check in testcase['scenario']:
+        self.check_${check}()
+    % endfor
 </%def>

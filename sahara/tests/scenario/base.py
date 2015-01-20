@@ -84,10 +84,44 @@ class BaseTestCase(base.BaseTestCase):
                                              auth_url=auth_url)
 
     def create_cluster(self):
-        ngs = self._create_node_group_templates()
-        cl_tmpl_id = self._create_cluster_template(ngs)
-        cl_id = self._create_cluster(cl_tmpl_id)
-        self._poll_cluster_status(cl_id)
+        self.ng_id_map = self._create_node_group_templates()
+        cl_tmpl_id = self._create_cluster_template()
+        self.cluster_id = self._create_cluster(cl_tmpl_id)
+        self._poll_cluster_status(self.cluster_id)
+
+    @errormsg("Cluster scaling failed")
+    def check_scale(self):
+        scale_ops = []
+        if self.testcase.get('scaling'):
+            scale_ops = self.testcase['scaling']
+        else:
+            scale_path = os.path.join(self.template_path, 'scale.json')
+            if os.path.exists(scale_path):
+                with open(scale_path) as data:
+                    scale_ops = json.load(data)
+
+        body = {}
+        for op in scale_ops:
+            if op['operation'] == 'add':
+                if 'add_node_groups' not in body:
+                    body['add_node_groups'] = []
+                body['add_node_groups'].append({
+                    'node_group_template_id':
+                    self.ng_id_map[op['node_group']],
+                    'count': op['size'],
+                    'name': utils.rand_name(op['node_group'])
+                })
+            if op['operation'] == 'resize':
+                if 'resize_node_groups' not in body:
+                    body['resize_node_groups'] = []
+                body['resize_node_groups'].append({
+                    'name': self.ng_name_map[op['node_group']],
+                    'count': op['size']
+                })
+
+        if body:
+            self.sahara.scale_cluster(self.cluster_id, body)
+            self._poll_cluster_status(self.cluster_id)
 
     @errormsg("Create node group templates failed")
     def _create_node_group_templates(self):
@@ -121,7 +155,8 @@ class BaseTestCase(base.BaseTestCase):
         return ng_id_map
 
     @errormsg("Create cluster template failed")
-    def _create_cluster_template(self, node_groups):
+    def _create_cluster_template(self):
+        self.ng_name_map = {}
         template = None
         if self.testcase.get('cluster_template'):
             template = self.testcase['cluster_template']
@@ -136,9 +171,11 @@ class BaseTestCase(base.BaseTestCase):
         del kwargs['node_group_templates']
         kwargs['node_groups'] = []
         for ng, count in ngs.items():
+            ng_name = utils.rand_name(ng)
+            self.ng_name_map[ng] = ng_name
             kwargs['node_groups'].append({
-                'name': utils.rand_name(ng),
-                'node_group_template_id': node_groups[ng],
+                'name': ng_name,
+                'node_group_template_id': self.ng_id_map[ng],
                 'count': count})
 
         kwargs.update(self.plugin_opts)
