@@ -106,30 +106,46 @@ class RemoteOps(rpc_utils.RPCClient):
         return self.call('get_engine_type_and_version')
 
 
+def request_context(func):
+    @functools.wraps(func)
+    def wrapped(self, ctx, *args, **kwargs):
+        context.set_ctx(context.Context(**ctx))
+        return func(self, *args, **kwargs)
+
+    return wrapped
+
+
 class OpsServer(rpc_utils.RPCServer):
     def __init__(self):
         target = messaging.Target(topic='sahara-ops', server=uuid.uuid4(),
                                   version='1.0')
         super(OpsServer, self).__init__(target)
 
+    @request_context
     def provision_cluster(self, cluster_id):
         _provision_cluster(cluster_id)
 
+    @request_context
     def provision_scaled_cluster(self, cluster_id, node_group_id_map):
         _provision_scaled_cluster(cluster_id, node_group_id_map)
 
+    @request_context
     def terminate_cluster(self, cluster_id):
         terminate_cluster(cluster_id)
 
+    @request_context
     def run_edp_job(self, job_execution_id):
         _run_edp_job(job_execution_id)
 
+    @request_context
     def cancel_job_execution(self, job_execution_id):
         _cancel_job_execution(job_execution_id)
 
+    @request_context
     def delete_job_execution(self, job_execution_id):
         _delete_job_execution(job_execution_id)
 
+    @request_context
     def get_engine_type_and_version(self):
         return INFRA.get_type_and_version()
 

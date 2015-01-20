@@ -19,9 +19,9 @@ from oslo import messaging
 from oslo.serialization import jsonutils
 
 from sahara import context
-from sahara.i18n import _LE
 from sahara.i18n import _LI
 from sahara.openstack.common import log as logging
+
 
 TRANSPORT = None
 NOTIFIER = None
@@ -83,34 +83,12 @@ class RPCServer(object):
         self.__server = messaging.get_rpc_server(
             target=target,
             transport=messaging.get_transport(cfg.CONF),
-            endpoints=[ContextEndpointHandler(self)],
+            endpoints=[self],
             executor='eventlet')
 
     def start(self):
         self.__server.start()
         self.__server.wait()
-
-
-class ContextEndpointHandler(object):
-    def __init__(self, endpoint):
-        self.__endpoint = endpoint
-
-    def __getattr__(self, name):
-        try:
-            method = getattr(self.__endpoint, name)
-
-            def run_method(ctx, **kwargs):
-                context.set_ctx(context.Context(**ctx))
-                try:
-                    return method(**kwargs)
-                finally:
-                    context.set_ctx(None)
-
-            return run_method
-        except AttributeError:
-            LOG.error(_LE("No %(method)s method found implemented in "
-                      "%(class)s class"),
-                      {'method': name, 'class': self.__endpoint})
 
 
 def setup(url=None, optional=False):
