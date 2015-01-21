@@ -440,8 +440,7 @@ class SaharaMigrationsCheckers(object):
 class TestMigrationsMySQL(SaharaMigrationsCheckers,
                           base.BaseWalkMigrationTestCase,
                           base.TestModelsMigrationsSync,
-                          test_base.MySQLOpportunisticTestCase,
-                          ):
+                          test_base.MySQLOpportunisticTestCase):
     pass
 
 
