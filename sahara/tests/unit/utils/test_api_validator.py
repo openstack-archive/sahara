@@ -154,7 +154,7 @@ class ApiValidatorTest(testtools.TestCase):
         id = six.text_type(uuid.uuid4())
 
         self._validate_success(schema, id)
-        self._validate_failure(schema, id.replace("-", ""))
+        self._validate_success(schema, id.replace("-", ""))
 
     def test_validate_valid_name(self):
         schema = {
