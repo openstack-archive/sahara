@@ -350,6 +350,9 @@ CDH_CONFIG_OPTS = [
     cfg.StrOpt('MANAGERNODE_FLAVOR',
                default='3',
                help='Id of flavor for manager-node'),
+    cfg.StrOpt('LARGE_FLAVOR',
+               default='4',
+               help='Id of flavor for services-node'),
     cfg.DictOpt('HADOOP_PROCESSES_WITH_PORTS',
                 default={
                     'YARN_RESOURCEMANAGER': 8088,
@@ -379,7 +382,8 @@ CDH_CONFIG_OPTS = [
     cfg.BoolOpt('SKIP_EDP_TEST', default=False),
     cfg.BoolOpt('SKIP_MAP_REDUCE_TEST', default=False),
     cfg.BoolOpt('SKIP_SWIFT_TEST', default=False),
-    cfg.BoolOpt('SKIP_SCALING_TEST', default=False)
+    cfg.BoolOpt('SKIP_SCALING_TEST', default=False),
+    cfg.BoolOpt('SKIP_CHECK_SERVICES_TEST', default=True)
 ]
 
 

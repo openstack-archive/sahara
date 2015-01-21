@@ -17,6 +17,7 @@ from testtools import testcase
 
 from sahara.tests.integration.configs import config as cfg
 from sahara.tests.integration.tests import base as b
+from sahara.tests.integration.tests import check_services
 from sahara.tests.integration.tests import cinder
 from sahara.tests.integration.tests import cluster_configs
 from sahara.tests.integration.tests import edp
@@ -26,7 +27,8 @@ from sahara.tests.integration.tests import swift
 from sahara.utils import edp as utils_edp
 
 
-class CDHGatingTest(cluster_configs.ClusterConfigTest,
+class CDHGatingTest(check_services.CheckServicesTest,
+                    cluster_configs.ClusterConfigTest,
                     map_reduce.MapReduceTest, swift.SwiftTest,
                     scaling.ScalingTest, cinder.CinderVolumeTest, edp.EDPTest):
 
@@ -36,12 +38,15 @@ class CDHGatingTest(cluster_configs.ClusterConfigTest,
     SKIP_SCALING_TEST = cdh_config.SKIP_SCALING_TEST
     SKIP_CINDER_TEST = cdh_config.SKIP_CINDER_TEST
     SKIP_EDP_TEST = cdh_config.SKIP_EDP_TEST
+    SKIP_CHECK_SERVICES_TEST = cdh_config.SKIP_CHECK_SERVICES_TEST
 
     def setUp(self):
         super(CDHGatingTest, self).setUp()
         self.cluster_id = None
         self.cluster_template_id = None
+        self.services_cluster_template_id = None
         self.ng_template_ids = []
+        self.flavor_id = self.plugin_config.LARGE_FLAVOR
 
     def get_plugin_config(self):
         return cfg.ITConfig().cdh_config
@@ -59,38 +64,6 @@ class CDHGatingTest(cluster_configs.ClusterConfigTest,
         }
         self.ng_tmpl_nm_dn_id = self.create_node_group_template(**template)
         self.ng_template_ids.append(self.ng_tmpl_nm_dn_id)
-
-    @b.errormsg("Failure while 'nm' node group template creation: ")
-    def _create_nm_ng_template(self):
-        template = {
-            'name': 'test-node-group-template-cdh-nm',
-            'plugin_config': self.plugin_config,
-            'description': 'test node group template for CDH plugin',
-            'volumes_per_node': self.volumes_per_node,
-            'volumes_size': self.volumes_size,
-            'node_processes': ['YARN_NODEMANAGER'],
-            'floating_ip_pool': self.floating_ip_pool,
-            'auto_security_group': True,
-            'node_configs': {}
-        }
-        self.ng_tmpl_nm_id = self.create_node_group_template(**template)
-        self.ng_template_ids.append(self.ng_tmpl_nm_id)
-
-    @b.errormsg("Failure while 'dn' node group template creation: ")
-    def _create_dn_ng_template(self):
-        template = {
-            'name': 'test-node-group-template-cdh-dn',
-            'plugin_config': self.plugin_config,
-            'description': 'test node group template for CDH plugin',
-            'volumes_per_node': self.volumes_per_node,
-            'volumes_size': self.volumes_size,
-            'node_processes': ['HDFS_DATANODE'],
-            'floating_ip_pool': self.floating_ip_pool,
-            'auto_security_group': True,
-            'node_configs': {}
-        }
-        self.ng_tmpl_dn_id = self.create_node_group_template(**template)
-        self.ng_template_ids.append(self.ng_tmpl_dn_id)
 
     @b.errormsg("Failure while cluster template creation: ")
     def _create_cluster_template(self):
@@ -141,22 +114,15 @@ class CDHGatingTest(cluster_configs.ClusterConfigTest,
                 {
                     'name': 'worker-node-nm-dn',
                     'node_group_template_id': self.ng_tmpl_nm_dn_id,
-                    'count': 2
-                },
-                {
-                    'name': 'worker-node-dn',
-                    'node_group_template_id': self.ng_tmpl_dn_id,
                     'count': 1
                 },
-                {
-                    'name': 'worker-node-nm',
-                    'node_group_template_id': self.ng_tmpl_nm_id,
-                    'count': 1
-                }
             ],
             'net_id': self.internal_neutron_net
         }
         self.cluster_template_id = self.create_cluster_template(**template)
+        self.addCleanup(self.delete_objects,
+                        cluster_template_id=self.cluster_template_id,
+                        node_group_template_id_list=self.ng_template_ids)
 
     @b.errormsg("Failure while cluster creation: ")
     def _create_cluster(self):
@@ -178,6 +144,100 @@ class CDHGatingTest(cluster_configs.ClusterConfigTest,
         self.cluster_info = self.get_cluster_info(self.plugin_config)
         self.await_active_workers_for_namenode(self.cluster_info['node_info'],
                                                self.plugin_config)
+        self.addCleanup(self.delete_objects, self.cluster_id)
+
+    @b.errormsg("Failure while 's-nn' node group template creation: ")
+    def _create_s_nn_ng_template(self):
+        template = {
+            'name': 'test-node-group-template-cdh-s-nn',
+            'plugin_config': self.cdh_config,
+            'description': 'test node group template for CDH plugin',
+            'node_processes': ['HDFS_NAMENODE', 'YARN_RESOURCEMANAGER',
+                               'YARN_NODEMANAGER', 'HDFS_DATANODE',
+                               'HBASE_MASTER', 'CLOUDERA_MANAGER',
+                               'ZOOKEEPER_SERVER', 'HBASE_REGIONSERVER',
+                               'YARN_JOBHISTORY', 'OOZIE_SERVER'],
+            'floating_ip_pool': self.floating_ip_pool,
+            'auto_security_group': True,
+            'node_configs': {}
+        }
+        self.ng_tmpl_s_nn_id = self.create_node_group_template(**template)
+        self.ng_template_ids.append(self.ng_tmpl_s_nn_id)
+
+    @b.errormsg("Failure while 's-dn' node group template creation: ")
+    def _create_s_dn_ng_template(self):
+        template = {
+            'name': 'test-node-group-template-cdh-s-dn',
+            'plugin_config': self.cdh_config,
+            'description': 'test node group template for CDH plugin',
+            'node_processes': ['HDFS_SECONDARYNAMENODE', 'HDFS_DATANODE',
+                               'HBASE_REGIONSERVER'],
+            'floating_ip_pool': self.floating_ip_pool,
+            'auto_security_group': True,
+            'node_configs': {}
+        }
+        self.ng_tmpl_s_dn_id = self.create_node_group_template(**template)
+        self.ng_template_ids.append(self.ng_tmpl_s_dn_id)
+
+    @b.errormsg("Failure while services cluster template creation: ")
+    def _create_services_cluster_template(self):
+        s_cl_config = {
+            'general': {
+                'CDH5 repo list URL': self.plugin_config.CDH_REPO_LIST_URL,
+                'CM5 repo list URL': self.plugin_config.CM_REPO_LIST_URL,
+                'CDH5 repo key URL (for debian-based only)':
+                self.plugin_config.CDH_APT_KEY_URL,
+                'CM5 repo key URL (for debian-based only)':
+                self.plugin_config.CM_APT_KEY_URL,
+                'Enable Swift': True
+            }
+        }
+        template = {
+            'name': 'test-services-cluster-template-cdh',
+            'plugin_config': self.plugin_config,
+            'description': 'test cluster template for CDH plugin',
+            'cluster_configs': s_cl_config,
+            'node_groups': [
+                {
+                    'name': 'worker-node-s-nn',
+                    'node_group_template_id': self.ng_tmpl_s_nn_id,
+                    'count': 1
+                },
+                {
+                    'name': 'worker-node-s-dn',
+                    'node_group_template_id': self.ng_tmpl_s_dn_id,
+                    'count': 1
+                }
+            ],
+            'net_id': self.internal_neutron_net
+        }
+        self.services_cluster_template_id = self.create_cluster_template(
+            **template)
+        self.addCleanup(self.delete_objects,
+                        cluster_template_id=self.services_cluster_template_id,
+                        node_group_template_id_list=self.ng_template_ids)
+
+    @b.errormsg("Failure while services cluster creation: ")
+    def _create_services_cluster(self):
+        cluster_name = '%s-%s' % (self.common_config.CLUSTER_NAME,
+                                  self.plugin_config.PLUGIN_NAME)
+        cluster = {
+            'name': cluster_name,
+            'plugin_config': self.plugin_config,
+            'cluster_template_id': self.services_cluster_template_id,
+            'description': 'services test cluster',
+            'cluster_configs': {
+                'HDFS': {
+                    'dfs_replication': 1
+                }
+            }
+        }
+        self.cluster_id = self.create_cluster(**cluster)
+        self.poll_cluster_state(self.cluster_id)
+        self.cluster_info = self.get_cluster_info(self.plugin_config)
+        self.await_active_workers_for_namenode(self.cluster_info['node_info'],
+                                               self.plugin_config)
+        self.addCleanup(self.delete_objects, self.cluster_id)
 
     @b.errormsg("Failure while Cinder testing: ")
     def _check_cinder(self):
@@ -238,6 +298,11 @@ class CDHGatingTest(cluster_configs.ClusterConfigTest,
             lib_data_list=[{'jar': java_jar}],
             configs=java_configs)
 
+    @b.errormsg("Failure while check services testing: ")
+    def _check_services(self):
+        # check HBase
+        self.check_hbase_availability(self.cluster_info)
+
     @b.errormsg("Failure while cluster scaling: ")
     def _check_scaling(self):
         change_list = [
@@ -296,8 +361,6 @@ class CDHGatingTest(cluster_configs.ClusterConfigTest,
     def test_cdh_plugin_gating(self):
         self._success = False
         self._create_nm_dn_ng_template()
-        self._create_nm_ng_template()
-        self._create_dn_ng_template()
         self._create_cluster_template()
         self._create_cluster()
 
@@ -311,6 +374,19 @@ class CDHGatingTest(cluster_configs.ClusterConfigTest,
             self._check_cinder_after_scaling()
             self._check_edp_after_scaling()
 
+        self._success = True
+
+    @testcase.skipIf(
+        cfg.ITConfig().cdh_config.SKIP_CHECK_SERVICES_TEST,
+        "All services tests for CDH plugin were skipped")
+    @testcase.attr('cdh')
+    def test_cdh_plugin_services_gating(self):
+        self._success = False
+        self._create_s_nn_ng_template()
+        self._create_s_dn_ng_template()
+        self._create_services_cluster_template()
+        self._create_services_cluster()
+        self._check_services()
         self._success = True
 
     def print_manager_log(self):
@@ -341,7 +417,4 @@ class CDHGatingTest(cluster_configs.ClusterConfigTest,
     def tearDown(self):
         if not self._success:
             self.print_manager_log()
-
-        self.delete_objects(self.cluster_id, self.cluster_template_id,
-                            self.ng_template_ids)
         super(CDHGatingTest, self).tearDown()
