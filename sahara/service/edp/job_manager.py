@@ -17,6 +17,7 @@ import datetime
 
 from oslo.config import cfg
 from oslo.utils import timeutils
+from oslo_log import log
 
 from sahara import conductor as c
 from sahara import context
@@ -24,7 +25,6 @@ from sahara import exceptions as e
 from sahara.i18n import _
 from sahara.i18n import _LE
 from sahara.i18n import _LI
-from sahara.openstack.common import log
 from sahara.service.edp import job_utils
 from sahara.service.edp.oozie import engine as oozie_engine
 from sahara.service.edp.spark import engine as spark_engine

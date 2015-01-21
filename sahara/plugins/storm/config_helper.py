@@ -14,11 +14,11 @@
 # limitations under the License.
 
 from oslo.config import cfg
+from oslo_log import log as logging
 
 from sahara import conductor as c
 from sahara import exceptions as ex
 from sahara.i18n import _
-from sahara.openstack.common import log as logging
 
 
 conductor = c.API

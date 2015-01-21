@@ -15,10 +15,11 @@
 
 import os
 
+from oslo_log import log as logging
+
 from sahara import context
 from sahara.i18n import _
 from sahara.i18n import _LI
-from sahara.openstack.common import log as logging
 from sahara.plugins import exceptions as ex
 from sahara.plugins.vanilla.hadoop2 import config_helper as c_helper
 from sahara.plugins.vanilla import utils as vu

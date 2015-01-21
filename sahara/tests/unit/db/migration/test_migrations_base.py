@@ -32,11 +32,11 @@ from alembic import migration
 from alembic import script as alembic_script
 from oslo.config import cfg
 from oslo.db.sqlalchemy import test_migrations as t_m
+from oslo_log import log as logging
 
 import sahara.db.migration
 from sahara.db.sqlalchemy import api as sa
 from sahara.db.sqlalchemy import model_base
-from sahara.openstack.common import log as logging
 
 
 LOG = logging.getLogger(__name__)

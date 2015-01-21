@@ -15,12 +15,12 @@
 
 from heatclient import exc as heat_exc
 from oslo.config import cfg
+from oslo_log import log as logging
 
 from sahara import conductor as c
 from sahara import context
 from sahara.i18n import _LI
 from sahara.i18n import _LW
-from sahara.openstack.common import log as logging
 from sahara.service import engine as e
 from sahara.service import volumes
 from sahara.utils import general as g

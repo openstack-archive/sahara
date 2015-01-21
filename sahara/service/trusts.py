@@ -16,6 +16,7 @@
 import json
 
 from oslo.config import cfg
+from oslo_log import log as logging
 import six
 
 from sahara import conductor as c
@@ -23,7 +24,6 @@ from sahara import context
 from sahara import exceptions as ex
 from sahara.i18n import _
 from sahara.i18n import _LE
-from sahara.openstack.common import log as logging
 from sahara.utils.openstack import keystone
 
 

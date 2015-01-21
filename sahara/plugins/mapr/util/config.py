@@ -13,11 +13,11 @@
 #  under the License.
 
 from oslo.config import cfg
+from oslo_log import log as logging
 
 from sahara import exceptions as ex
 from sahara.i18n import _
 from sahara.i18n import _LI
-from sahara.openstack.common import log as logging
 import sahara.plugins.mapr.util.config_file_utils as cfu
 import sahara.plugins.mapr.versions.version_handler_factory as vhf
 from sahara.plugins import provisioning as p

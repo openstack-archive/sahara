@@ -15,8 +15,7 @@
 
 import os
 
-from sahara.openstack.common import log as logging
-
+from oslo_log import log as logging
 
 LOG = logging.getLogger(__name__)
 

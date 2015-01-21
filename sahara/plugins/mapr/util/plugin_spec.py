@@ -15,9 +15,9 @@
 import json
 import os.path
 
+from oslo_log import log as logging
 import six
 
-import sahara.openstack.common.log as logging
 import sahara.plugins.mapr.util.config_file_utils as cfu
 import sahara.plugins.mapr.util.dict_utils as du
 import sahara.plugins.mapr.util.func_utils as fu

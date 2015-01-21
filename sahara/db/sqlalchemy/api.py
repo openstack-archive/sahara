@@ -21,6 +21,7 @@ import threading
 from oslo.config import cfg
 from oslo.db import exception as db_exc
 from oslo.db.sqlalchemy import session as db_session
+from oslo_log import log as logging
 import six
 import sqlalchemy as sa
 
@@ -28,7 +29,6 @@ from sahara.db.sqlalchemy import models as m
 from sahara import exceptions as ex
 from sahara.i18n import _
 from sahara.i18n import _LE
-from sahara.openstack.common import log as logging
 
 
 LOG = logging.getLogger(__name__)

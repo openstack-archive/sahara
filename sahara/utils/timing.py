@@ -22,9 +22,9 @@ import sys
 import time
 
 from oslo.config import cfg
+from oslo_log import log
 
 from sahara.i18n import _LI
-from sahara.openstack.common import log
 
 
 CONF = cfg.CONF

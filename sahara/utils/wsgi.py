@@ -25,12 +25,11 @@ from xml import sax
 from xml.sax import expatreader
 
 from oslo.serialization import jsonutils
+from oslo_log import log as logging
 import six
 
 from sahara.i18n import _
 from sahara.openstack.common import exception
-from sahara.openstack.common import log as logging
-
 LOG = logging.getLogger(__name__)
 
 

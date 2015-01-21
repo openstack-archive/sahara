@@ -13,7 +13,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from sahara.openstack.common import log as logging
+from oslo_log import log as logging
+
 from sahara.utils import files
 
 

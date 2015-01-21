@@ -13,12 +13,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from oslo_log import log as logging
 import webob.exc as ex
 
 from sahara.i18n import _
 from sahara.i18n import _LI
 from sahara.i18n import _LW
-from sahara.openstack.common import log as logging
 import sahara.openstack.commons as commons
 
 

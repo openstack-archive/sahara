@@ -15,12 +15,12 @@
 
 import re
 
+from oslo_log import log as logging
 import six
 
 from sahara import conductor as c
 from sahara import context
 from sahara.i18n import _LI
-from sahara.openstack.common import log as logging
 from sahara.utils.notification import sender
 
 conductor = c.API

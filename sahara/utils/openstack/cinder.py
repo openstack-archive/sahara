@@ -18,10 +18,10 @@
 from cinderclient.v1 import client as cinder_client_v1
 from cinderclient.v2 import client as cinder_client_v2
 from oslo.config import cfg
+from oslo_log import log as logging
 
 from sahara import context
 from sahara.i18n import _
-from sahara.openstack.common import log as logging
 from sahara.utils.openstack import base
 
 

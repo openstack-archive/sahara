@@ -16,10 +16,10 @@
 """Handles all requests to the conductor service."""
 
 from oslo.config import cfg
+from oslo_log import log as logging
 
 from sahara.conductor import manager
 from sahara.conductor import resource as r
-from sahara.openstack.common import log as logging
 
 
 conductor_opts = [

@@ -15,12 +15,12 @@
 
 from oslo.config import cfg
 from oslo.utils import excutils
+from oslo_log import log as logging
 import six
 from six.moves.urllib import parse as urlparse
 
 from sahara import conductor as c
 from sahara import context
-from sahara.openstack.common import log as logging
 from sahara.plugins import base as plugin_base
 from sahara.plugins import provisioning
 from sahara.utils import general as g

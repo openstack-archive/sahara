@@ -16,10 +16,10 @@
 import itertools
 
 from oslo.config import cfg
+from oslo_log import log
 
 from sahara import exceptions as ex
 from sahara.i18n import _
-from sahara.openstack.common import log
 from sahara.plugins import base as plugins_base
 from sahara.topology import topology_helper
 from sahara.utils.notification import sender
@@ -92,7 +92,15 @@ networking_opts = [
 ]
 
 
-cfg.set_defaults(log.log_opts, default_log_levels=[
+CONF = cfg.CONF
+CONF.register_cli_opts(cli_opts)
+CONF.register_opts(networking_opts)
+CONF.register_opts(edp_opts)
+CONF.register_opts(db_opts)
+
+log.register_options(CONF)
+
+log.set_defaults(default_log_levels=[
     'amqplib=WARN',
     'qpid.messaging=INFO',
     'stevedore=INFO',
@@ -106,13 +114,6 @@ cfg.set_defaults(log.log_opts, default_log_levels=[
     'iso8601=WARN',
     'oslo.messaging=INFO',
 ])
-
-
-CONF = cfg.CONF
-CONF.register_cli_opts(cli_opts)
-CONF.register_opts(networking_opts)
-CONF.register_opts(edp_opts)
-CONF.register_opts(db_opts)
 
 
 def list_opts():
