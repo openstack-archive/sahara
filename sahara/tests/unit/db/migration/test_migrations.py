@@ -39,8 +39,6 @@ from sahara.tests.unit.db.migration import test_migrations_base as base
 
 class SaharaMigrationsCheckers(object):
 
-    TIMEOUT_SCALING_FACTOR = 2
-
     snake_walk = True
     downgrade = True
 
