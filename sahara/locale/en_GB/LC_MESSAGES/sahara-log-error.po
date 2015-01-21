@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Sahara\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2015-01-07 06:13+0000\n"
-"PO-Revision-Date: 2015-01-05 20:11+0000\n"
+"POT-Creation-Date: 2015-01-21 06:15+0000\n"
+"PO-Revision-Date: 2015-01-20 17:09+0000\n"
 "Last-Translator: openstackjenkins <jenkins@openstack.org>\n"
 "Language-Team: English (United Kingdom) (http://www.transifex.com/projects/p/"
 "sahara/language/en_GB/)\n"
@@ -20,17 +20,17 @@ msgstr ""
 "Generated-By: Babel 1.3\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: sahara/context.py:175
+#: sahara/context.py:187
 #, python-format
 msgid "Thread '%(thread)s' fails with exception: '%(exception)s'"
 msgstr "Thread '%(thread)s' fails with exception: '%(exception)s'"
 
-#: sahara/db/sqlalchemy/api.py:107
+#: sahara/db/sqlalchemy/api.py:177
 #, python-format
 msgid "Database registration exception: %s"
 msgstr "Database registration exception: %s"
 
-#: sahara/db/sqlalchemy/api.py:117
+#: sahara/db/sqlalchemy/api.py:187
 #, python-format
 msgid "Database shutdown exception: %s"
 msgstr "Database shutdown exception: %s"
@@ -143,22 +143,22 @@ msgstr ""
 msgid "Configuring HDFS HA failed. {0}"
 msgstr ""
 
-#: sahara/service/direct_engine.py:483
+#: sahara/service/direct_engine.py:494
 #, python-format
 msgid "Failed to delete security group %s"
 msgstr ""
 
-#: sahara/service/ops.py:154
+#: sahara/service/ops.py:170
 #, python-format
 msgid "Error during operating cluster '%(name)s' (reason: %(reason)s)"
 msgstr ""
 
-#: sahara/service/ops.py:173
+#: sahara/service/ops.py:189
 #, python-format
 msgid "Error during rollback of cluster '%(name)s' (reason: %(reason)s)"
 msgstr ""
 
-#: sahara/service/ops.py:308
+#: sahara/service/ops.py:324
 #, python-format
 msgid "Job execution %s can't be cancelled in time. Deleting it anyway."
 msgstr ""
@@ -173,17 +173,17 @@ msgstr ""
 msgid "Unable to delete trust (reason: %s)"
 msgstr ""
 
-#: sahara/service/volumes.py:172
+#: sahara/service/volumes.py:195
 #, python-format
 msgid "Error mounting volume to instance %s"
 msgstr ""
 
-#: sahara/service/volumes.py:191
+#: sahara/service/volumes.py:214
 #, python-format
 msgid "Can't detach volume %s"
 msgstr ""
 
-#: sahara/service/volumes.py:216
+#: sahara/service/volumes.py:239
 #, python-format
 msgid "Can't delete volume %s"
 msgstr ""
@@ -210,11 +210,6 @@ msgstr ""
 #: sahara/utils/api.py:204 sahara/utils/api.py:228
 #, python-format
 msgid "Request aborted with status code %(code)s and message '%(message)s'"
-msgstr ""
-
-#: sahara/utils/rpc.py:111
-#, python-format
-msgid "No %(method)s method found implemented in %(class)s class"
 msgstr ""
 
 #: sahara/utils/ssh_remote.py:256

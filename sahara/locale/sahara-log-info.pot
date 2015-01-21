@@ -6,9 +6,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: sahara 2015.1.dev21\n"
+"Project-Id-Version: sahara 2015.1.dev89\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2015-01-07 06:13+0000\n"
+"POT-Creation-Date: 2015-01-21 06:15+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,24 +17,29 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 1.3\n"
 
-#: sahara/main.py:77
+#: sahara/main.py:80
 #, python-format
 msgid "Starting Sahara %s"
 msgstr ""
 
-#: sahara/main.py:177
+#: sahara/main.py:180
 #, python-format
 msgid "Loading '%s' infrastructure engine"
 msgstr ""
 
-#: sahara/main.py:185
+#: sahara/main.py:188
 #, python-format
 msgid "Loading '%s' remote"
 msgstr ""
 
-#: sahara/main.py:191
+#: sahara/main.py:194
 #, python-format
 msgid "Loading '%s' ops"
+msgstr ""
+
+#: sahara/main.py:202
+#, python-format
+msgid "Using HTTPS for port %s"
 msgstr ""
 
 #: sahara/api/middleware/auth_valid.py:54
@@ -62,7 +67,7 @@ msgstr ""
 msgid "Plugin '%(plugin_name)s' loaded %(entry_point)s"
 msgstr ""
 
-#: sahara/plugins/cdh/deploy.py:348
+#: sahara/plugins/cdh/deploy.py:433
 msgid "Cloudera Manager has been started"
 msgstr ""
 
@@ -497,39 +502,39 @@ msgstr ""
 msgid "Oozie service at '%s' has been started"
 msgstr ""
 
-#: sahara/service/direct_engine.py:399
+#: sahara/service/direct_engine.py:405
 #, python-format
 msgid "Cluster '%s': all instances are active"
 msgstr ""
 
-#: sahara/service/direct_engine.py:436 sahara/service/heat_engine.py:149
+#: sahara/service/direct_engine.py:447 sahara/service/heat_engine.py:149
 #, python-format
 msgid "Cluster '%(name)s' creation rollback (reason: %(reason)s)"
 msgstr ""
 
-#: sahara/service/direct_engine.py:444 sahara/service/heat_engine.py:166
+#: sahara/service/direct_engine.py:455 sahara/service/heat_engine.py:166
 #, python-format
 msgid "Cluster '%(name)s' scaling rollback (reason: %(reason)s)"
 msgstr ""
 
-#: sahara/service/engine.py:84
+#: sahara/service/engine.py:88
 #, python-format
 msgid "Cluster '%s': all instances have IPs assigned"
 msgstr ""
 
-#: sahara/service/engine.py:94
+#: sahara/service/engine.py:101
 #, python-format
 msgid "Cluster '%s': all instances are accessible"
 msgstr ""
 
-#: sahara/service/ops.py:148
+#: sahara/service/ops.py:164
 #, python-format
 msgid ""
 "Cluster %s was deleted or marked for deletion. Canceling current "
 "operation."
 msgstr ""
 
-#: sahara/service/ops.py:168
+#: sahara/service/ops.py:184
 #, python-format
 msgid "Cluster with %s was deleted. Canceling current operation."
 msgstr ""
@@ -561,17 +566,17 @@ msgstr ""
 msgid "Job execution status %(job)s: %(status)s"
 msgstr ""
 
-#: sahara/swift/swift_helper.py:52
+#: sahara/swift/swift_helper.py:51
 #, python-format
 msgid "Swift would be integrated with the following params: %s"
 msgstr ""
 
-#: sahara/topology/topology_helper.py:154
+#: sahara/topology/topology_helper.py:148
 #, python-format
 msgid "Vm awareness will add following configs in core-site params: %s"
 msgstr ""
 
-#: sahara/topology/topology_helper.py:162
+#: sahara/topology/topology_helper.py:156
 #, python-format
 msgid "Vm awareness will add following configs in map-red params: %s"
 msgstr ""
@@ -581,11 +586,11 @@ msgstr ""
 msgid "Cluster status has been changed: id=%(id)s, New status=%(status)s"
 msgstr ""
 
-#: sahara/utils/rpc.py:121
+#: sahara/utils/rpc.py:99
 msgid "Notifications disabled"
 msgstr ""
 
-#: sahara/utils/rpc.py:123
+#: sahara/utils/rpc.py:101
 msgid "Notifications enabled"
 msgstr ""
 
