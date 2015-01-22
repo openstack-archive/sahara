@@ -13,11 +13,19 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import uuid
+
 from sahara import conductor
 from sahara import context
 from sahara.tests.unit import base
 from sahara.tests.unit.conductor import test_api
 from sahara.utils import cluster_progress_ops as cpo
+
+
+class FakeInstance(object):
+    def __init__(self):
+        self.id = uuid.uuid4()
+        self.name = uuid.uuid4()
 
 
 class ClusterProgressOpsTest(base.SaharaWithDbTestCase):
@@ -121,3 +129,31 @@ class ClusterProgressOpsTest(base.SaharaWithDbTestCase):
         self.assertEqual(2, len(cpo.get_cluster_events(cluster.id)))
         self.assertEqual(1, len(cpo.get_cluster_events(cluster.id, step_id1)))
         self.assertEqual(1, len(cpo.get_cluster_events(cluster.id, step_id2)))
+
+    def _make_checks(self, instance, sleep=True):
+        ctx = context.ctx()
+
+        if sleep:
+            context.sleep(2)
+
+        current_instance_info = ctx.current_instance_info
+        expected = [None, instance.id, instance.name, None]
+        self.assertEqual(expected, current_instance_info)
+
+    def test_instance_context_manager(self):
+        fake_instances = [FakeInstance() for _ in range(50)]
+
+        # check that InstanceContextManager works fine sequentially
+
+        for instance in fake_instances:
+            info = [None, instance.id, instance.name, None]
+            with context.InstanceInfoManager(info):
+                self._make_checks(instance, sleep=False)
+
+        # check that InstanceContextManager works fine in parallel
+
+        with context.ThreadGroup() as tg:
+            for instance in fake_instances:
+                info = [None, instance.id, instance.name, None]
+                with context.InstanceInfoManager(info):
+                    tg.spawn("make_checks", self._make_checks, instance)

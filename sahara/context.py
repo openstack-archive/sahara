@@ -46,6 +46,7 @@ class Context(context.RequestContext):
                  remote_semaphore=None,
                  auth_uri=None,
                  resource_uuid=None,
+                 current_instance_info=None,
                  overwrite=True,
                  **kwargs):
         if kwargs:
@@ -70,6 +71,11 @@ class Context(context.RequestContext):
         if overwrite or not hasattr(local.store, 'context'):
             local.store.context = self
 
+        if current_instance_info is not None:
+            self.current_instance_info = current_instance_info
+        else:
+            self.current_instance_info = []
+
     def clone(self):
         return Context(
             self.user_id,
@@ -83,6 +89,7 @@ class Context(context.RequestContext):
             self.remote_semaphore,
             self.auth_uri,
             self.resource_uuid,
+            self.current_instance_info,
             overwrite=False)
 
     def to_dict(self):
@@ -96,7 +103,7 @@ class Context(context.RequestContext):
             'is_admin': self.is_admin,
             'roles': self.roles,
             'auth_uri': self.auth_uri,
-            'instance_uuid': self.resource_uuid
+            'instance_uuid': self.resource_uuid,
         }
 
     def is_auth_capable(self):
@@ -265,3 +272,15 @@ class ThreadGroup(object):
 
 def sleep(seconds=0):
     time.sleep(seconds)
+
+
+class InstanceInfoManager(object):
+    def __init__(self, instance_info):
+        self.prev_instance_info = current().current_instance_info
+        current().current_instance_info = instance_info
+
+    def __enter__(self):
+        pass
+
+    def __exit__(self, *args):
+        current().current_instance_info = self.prev_instance_info

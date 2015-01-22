@@ -167,3 +167,41 @@ def event_wrapper(mark_successful_on_exit):
             return value
         return handler
     return decorator
+
+
+def event_wrapper_without_instance(mark_successful_on_exit):
+    def decorator(func):
+        @functools.wraps(func)
+        def handler(*args, **kwargs):
+            ctx = context.ctx()
+            (cluster_id, instance_id, instance_name,
+                node_group_id) = ctx.current_instance_info
+            step_id = get_current_provisioning_step(cluster_id)
+
+            try:
+                value = func(*args, **kwargs)
+            except Exception as e:
+                with excutils.save_and_reraise_exception():
+                    conductor.cluster_event_add(
+                        context.ctx(),
+                        step_id, {
+                            'successful': False,
+                            'node_group_id': node_group_id,
+                            'instance_id': instance_id,
+                            'instance_name': instance_name,
+                            'event_info': six.text_type(e),
+                        })
+
+            if mark_successful_on_exit:
+                conductor.cluster_event_add(
+                    context.ctx(),
+                    step_id, {
+                        'successful': True,
+                        'node_group_id': node_group_id,
+                        'instance_id': instance_id,
+                        'instance_name': instance_name,
+                    })
+
+            return value
+        return handler
+    return decorator
