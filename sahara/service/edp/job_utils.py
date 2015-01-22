@@ -17,11 +17,11 @@ import os
 import uuid
 
 from oslo.config import cfg
+from oslo_utils import uuidutils
 import six
 
 from sahara import conductor as c
 from sahara import context
-from sahara.openstack.common import uuidutils
 from sahara.plugins import base as plugin_base
 from sahara.service.edp.binary_retrievers import dispatch
 from sahara.swift import swift_helper as sw

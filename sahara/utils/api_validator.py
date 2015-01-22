@@ -16,9 +16,9 @@
 import re
 
 import jsonschema
+from oslo_utils import uuidutils
 import six
 
-from sahara.openstack.common import uuidutils
 from sahara.swift import utils as su
 
 
