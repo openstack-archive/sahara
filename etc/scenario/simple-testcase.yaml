@@ -12,6 +12,7 @@ clusters:
     - plugin_name: vanilla
       plugin_version: 2.6.0
       image: sahara-juno-vanilla-2.6.0-ubuntu-14.04
+      edp_jobs_flow: test_flow
     - plugin_name: hdp
       plugin_version: 2.0.6
       image: f3c4a228-9ba4-41f1-b100-a0587689d4dd
@@ -19,3 +20,27 @@ clusters:
           - operation: resize
             node_group: hdp-worker
             size: 5
+
+edp_jobs_flow:
+    test_flow:
+        - type: Pig
+          input_datasource:
+              type: swift
+              source: etc/edp-examples/edp-pig/top-todoers/data/input
+          output_datasource:
+              type: hdfs
+              destination: /user/hadoop/edp-output
+          main_lib:
+              type: swift
+              source: etc/edp-examples/edp-pig/top-todoers/example.pig
+          configs:
+              dfs.replication: 1
+        - type: Java
+          additional_libs:
+              - type: database
+                source: etc/edp-examples/hadoop2/edp-java/hadoop-mapreduce-examples-2.6.0.jar
+          configs:
+              edp.java.main_class: org.apache.hadoop.examples.QuasiMonteCarlo
+          args:
+              - 10
+              - 10

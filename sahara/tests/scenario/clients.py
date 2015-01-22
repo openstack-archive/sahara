@@ -21,6 +21,8 @@ from novaclient import client as nova_client
 from oslo_utils import uuidutils
 from saharaclient.api import base as saharaclient_base
 from saharaclient import client as sahara_client
+from swiftclient import client as swift_client
+from swiftclient import exceptions as swift_exc
 from tempest_lib import exceptions as exc
 
 
@@ -71,9 +73,58 @@ class SaharaClient(Client):
     def scale_cluster(self, cluster_id, body):
         return self.sahara_client.clusters.scale(cluster_id, body)
 
+    def create_datasource(self, *args, **kwargs):
+        data = self.sahara_client.data_sources.create(*args, **kwargs)
+        return data.id
+
+    def delete_datasource(self, datasource_id):
+        return self.delete_resource(
+            self.sahara_client.data_sources.delete,
+            datasource_id)
+
+    def create_job_binary_internal(self, *args, **kwargs):
+        data = self.sahara_client.job_binary_internals.create(*args, **kwargs)
+        return data.id
+
+    def delete_job_binary_internal(self, job_binary_internal_id):
+        return self.delete_resource(
+            self.sahara_client.job_binary_internals.delete,
+            job_binary_internal_id)
+
+    def create_job_binary(self, *args, **kwargs):
+        data = self.sahara_client.job_binaries.create(*args, **kwargs)
+        return data.id
+
+    def delete_job_binary(self, job_binary_id):
+        return self.delete_resource(
+            self.sahara_client.job_binaries.delete,
+            job_binary_id)
+
+    def create_job(self, *args, **kwargs):
+        data = self.sahara_client.jobs.create(*args, **kwargs)
+        return data.id
+
+    def delete_job(self, job_id):
+        return self.delete_resource(
+            self.sahara_client.jobs.delete,
+            job_id)
+
+    def run_job(self, *args, **kwargs):
+        data = self.sahara_client.job_executions.create(*args, **kwargs)
+        return data.id
+
+    def delete_job_execution(self, job_execution_id):
+        return self.delete_resource(
+            self.sahara_client.job_executions.delete,
+            job_execution_id)
+
     def get_cluster_status(self, cluster_id):
         data = self.sahara_client.clusters.get(cluster_id)
         return str(data.status)
+
+    def get_job_status(self, exec_id):
+        data = self.sahara_client.job_executions.get(exec_id)
+        return str(data.info['status'])
 
     def is_resource_deleted(self, method, *args, **kwargs):
         try:
@@ -110,3 +161,34 @@ class NeutronClient(Client):
         if len(networks) < 1:
             raise exc.NotFound(network_name)
         return networks[0]['id']
+
+
+class SwiftClient(Client):
+    def __init__(self, *args, **kwargs):
+        self.swift_client = swift_client.Connection(auth_version='2.0',
+                                                    *args, **kwargs)
+
+    def create_container(self, container_name):
+        return self.swift_client.put_container(container_name)
+
+    def delete_container(self, container_name):
+        return self.delete_resource(
+            self.swift_client.delete_container,
+            container_name)
+
+    def upload_data(self, container_name, object_name, data):
+        return self.swift_client.put_object(container_name, object_name, data)
+
+    def delete_object(self, container_name, object_name):
+        return self.delete_resource(
+            self.swift_client.delete_object,
+            container_name,
+            object_name)
+
+    def is_resource_deleted(self, method, *args, **kwargs):
+        try:
+            method(*args, **kwargs)
+        except swift_exc.ClientException as ex:
+            return ex.http_status == 404
+
+        return False
