@@ -103,18 +103,78 @@ class VersionHandler(avm.AbstractVersionHandler):
 
         self._setup_instances(cluster, instances)
 
-    def start_cluster(self, cluster):
-        nn_instance = vu.get_namenode(cluster)
+    def start_namenode(self, cluster):
+        nn = vu.get_namenode(cluster)
+        self._start_namenode(nn)
+
+    def _start_namenode(self, nn_instance):
         with remote.get_remote(nn_instance) as r:
             run.format_namenode(r)
             run.start_processes(r, "namenode")
 
-        for snn in vu.get_secondarynamenodes(cluster):
-            run.start_processes(remote.get_remote(snn), "secondarynamenode")
+    def start_secondarynamenodes(self, cluster):
+        if vu.get_secondarynamenodes(cluster) == 0:
+            return
 
-        jt_instance = vu.get_jobtracker(cluster)
-        if jt_instance:
-            run.start_processes(remote.get_remote(jt_instance), "jobtracker")
+        for snn in vu.get_secondarynamenodes(cluster):
+            self._start_secondarynamenode(snn)
+
+    def _start_secondarynamenode(self, snn):
+        run.start_processes(remote.get_remote(snn), "secondarynamenode")
+
+    def start_jobtracker(self, cluster):
+        jt = vu.get_jobtracker(cluster)
+        if jt:
+            self._start_jobtracker(jt)
+
+    def _start_jobtracker(self, jt_instance):
+        run.start_processes(remote.get_remote(jt_instance), "jobtracker")
+
+    def start_oozie(self, cluster):
+        oozie = vu.get_oozie(cluster)
+        if oozie:
+            self._start_oozie(cluster, oozie)
+
+    def _start_oozie(self, cluster, oozie):
+        nn_instance = vu.get_namenode(cluster)
+
+        with remote.get_remote(oozie) as r:
+            if c_helper.is_mysql_enable(cluster):
+                run.mysql_start(r, oozie)
+                run.oozie_create_db(r)
+            run.oozie_share_lib(r, nn_instance.hostname())
+            run.start_oozie(r)
+            LOG.info(_LI("Oozie service at '%s' has been started"),
+                     nn_instance.hostname())
+
+    def start_hiveserver(self, cluster):
+        hs = vu.get_hiveserver(cluster)
+        if hs:
+            self._start_hiveserver(cluster, hs)
+
+    def _start_hiveserver(self, cluster, hive_server):
+        oozie = vu.get_oozie(cluster)
+
+        with remote.get_remote(hive_server) as r:
+            run.hive_create_warehouse_dir(r)
+            run.hive_copy_shared_conf(
+                r, edp.get_hive_shared_conf_path('hadoop'))
+
+            if c_helper.is_mysql_enable(cluster):
+                if not oozie or hive_server.hostname() != oozie.hostname():
+                    run.mysql_start(r, hive_server)
+                    run.hive_create_db(r, cluster.extra['hive_mysql_passwd'])
+                    run.hive_metastore_start(r)
+                    LOG.info(_LI("Hive Metastore server at %s has been "
+                                 "started"),
+                             hive_server.hostname())
+
+    def start_cluster(self, cluster):
+        self.start_namenode(cluster)
+
+        self.start_secondarynamenodes(cluster)
+
+        self.start_jobtracker(cluster)
 
         self._start_tt_dn_processes(utils.get_instances(cluster))
 
@@ -123,32 +183,9 @@ class VersionHandler(avm.AbstractVersionHandler):
         LOG.info(_LI("Hadoop services in cluster %s have been started"),
                  cluster.name)
 
-        oozie = vu.get_oozie(cluster)
-        if oozie:
-            with remote.get_remote(oozie) as r:
-                if c_helper.is_mysql_enable(cluster):
-                    run.mysql_start(r, oozie)
-                    run.oozie_create_db(r)
-                run.oozie_share_lib(r, nn_instance.hostname())
-                run.start_oozie(r)
-                LOG.info(_LI("Oozie service at '%s' has been started"),
-                         nn_instance.hostname())
+        self.start_oozie(cluster)
 
-        hive_server = vu.get_hiveserver(cluster)
-        if hive_server:
-            with remote.get_remote(hive_server) as r:
-                run.hive_create_warehouse_dir(r)
-                run.hive_copy_shared_conf(
-                    r, edp.get_hive_shared_conf_path('hadoop'))
-
-                if c_helper.is_mysql_enable(cluster):
-                    if not oozie or hive_server.hostname() != oozie.hostname():
-                        run.mysql_start(r, hive_server)
-                    run.hive_create_db(r, cluster.extra['hive_mysql_passwd'])
-                    run.hive_metastore_start(r)
-                    LOG.info(_LI("Hive Metastore server at %s has been "
-                                 "started"),
-                             hive_server.hostname())
+        self.start_hiveserver(cluster)
 
         LOG.info(_LI('Cluster %s has been started successfully'), cluster.name)
         self._set_cluster_info(cluster)
