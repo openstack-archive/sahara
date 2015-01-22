@@ -114,11 +114,11 @@ def _get_configs(service, cluster=None, node_group=None):
 
     all_confs = {}
     if cluster:
-        zk_count = v._get_inst_count(cluster, 'SERVER')
-        hbm_count = v._get_inst_count(cluster, 'MASTER')
-        ss_count = v._get_inst_count(cluster, 'SENTRY_SERVER')
-        ks_count = v._get_inst_count(cluster, 'HBASE_INDEXER')
-        imp_count = v._get_inst_count(cluster, 'CATALOGSERVER')
+        zk_count = v._get_inst_count(cluster, 'ZOOKEEPER_SERVER')
+        hbm_count = v._get_inst_count(cluster, 'HBASE_MASTER')
+        snt_count = v._get_inst_count(cluster, 'SENTRY_SERVER')
+        ks_count = v._get_inst_count(cluster, 'KEY_VALUE_STORE_INDEXER')
+        imp_count = v._get_inst_count(cluster, 'IMPALA_CATALOGSERVER')
         core_site_safety_valve = ''
         if c_helper.is_swift_enabled(cluster):
             configs = swift_helper.get_swift_configs()
@@ -150,7 +150,7 @@ def _get_configs(service, cluster=None, node_group=None):
             'HUE': {
                 'hive_service': cu.HIVE_SERVICE_NAME,
                 'oozie_service': cu.OOZIE_SERVICE_NAME,
-                'sentry_service': cu.SENTRY_SERVICE_NAME if ss_count else '',
+                'sentry_service': cu.SENTRY_SERVICE_NAME if snt_count else '',
                 'zookeeper_service':
                     cu.ZOOKEEPER_SERVICE_NAME if zk_count else ''
             },
@@ -281,16 +281,16 @@ def scale_cluster(cluster, instances):
         _configure_instance(instance)
         cu.update_configs(instance)
 
-        if 'DATANODE' in instance.node_group.node_processes:
+        if 'HDFS_DATANODE' in instance.node_group.node_processes:
             cu.refresh_nodes(cluster, 'DATANODE', cu.HDFS_SERVICE_NAME)
 
         _configure_swift_to_inst(instance)
 
-        if 'DATANODE' in instance.node_group.node_processes:
+        if 'HDFS_DATANODE' in instance.node_group.node_processes:
             hdfs = cu.get_service('DATANODE', instance=instance)
             cu.start_roles(hdfs, cu.get_role_name(instance, 'DATANODE'))
 
-        if 'NODEMANAGER' in instance.node_group.node_processes:
+        if 'YARN_NODEMANAGER' in instance.node_group.node_processes:
             yarn = cu.get_service('NODEMANAGER', instance=instance)
             cu.start_roles(yarn, cu.get_role_name(instance, 'NODEMANAGER'))
 
@@ -299,9 +299,9 @@ def decommission_cluster(cluster, instances):
     dns = []
     nms = []
     for i in instances:
-        if 'DATANODE' in i.node_group.node_processes:
+        if 'HDFS_DATANODE' in i.node_group.node_processes:
             dns.append(cu.get_role_name(i, 'DATANODE'))
-        if 'NODEMANAGER' in i.node_group.node_processes:
+        if 'YARN_NODEMANAGER' in i.node_group.node_processes:
             nms.append(cu.get_role_name(i, 'NODEMANAGER'))
 
     if dns:
@@ -543,9 +543,10 @@ def _configure_instance(instance):
 
 
 def _add_role(instance, process):
-    if process in ['MANAGER']:
+    if process in ['CLOUDERA_MANAGER']:
         return
 
+    process = pu.convert_role_showname(process)
     service = cu.get_service(process, instance=instance)
     role = service.create_role(cu.get_role_name(instance, process),
                                process, instance.fqdn())
@@ -640,29 +641,29 @@ def get_open_ports(node_group):
     ports = [9000]  # for CM agent
 
     ports_map = {
-        'MANAGER': [7180, 7182, 7183, 7432, 7184, 8084, 8086, 10101,
-                    9997, 9996, 8087, 9998, 9999, 8085, 9995, 9994],
-        'NAMENODE': [8020, 8022, 50070, 50470],
-        'SECONDARYNAMENODE': [50090, 50495],
-        'DATANODE': [50010, 1004, 50075, 1006, 50020],
-        'RESOURCEMANAGER': [8030, 8031, 8032, 8033, 8088],
-        'NODEMANAGER': [8040, 8041, 8042],
-        'JOBHISTORY': [10020, 19888],
-        'HIVEMETASTORE': [9083],
-        'HIVESERVER2': [10000],
+        'CLOUDERA_MANAGER': [7180, 7182, 7183, 7432, 7184, 8084, 8086, 10101,
+                             9997, 9996, 8087, 9998, 9999, 8085, 9995, 9994],
+        'HDFS_NAMENODE': [8020, 8022, 50070, 50470],
+        'HDFS_SECONDARYNAMENODE': [50090, 50495],
+        'HDFS_DATANODE': [50010, 1004, 50075, 1006, 50020],
+        'YARN_RESOURCEMANAGER': [8030, 8031, 8032, 8033, 8088],
+        'YARN_NODEMANAGER': [8040, 8041, 8042],
+        'YARN_JOBHISTORY': [10020, 19888],
+        'HIVE_METASTORE': [9083],
+        'HIVE_SERVER2': [10000],
         'HUE_SERVER': [8888],
         'OOZIE_SERVER': [11000, 11001],
         'SPARK_YARN_HISTORY_SERVER': [18088],
-        'SERVER': [2181, 3181, 4181, 9010],
-        'MASTER': [60000],
-        'REGIONSERVER': [60020],
-        'AGENT': [41414],
+        'ZOOKEEPER_SERVER': [2181, 3181, 4181, 9010],
+        'HBASE_MASTER': [60000],
+        'HBASE_REGIONSERVER': [60020],
+        'FLUME_AGENT': [41414],
         'SENTRY_SERVER': [8038],
         'SOLR_SERVER': [8983, 8984],
         'SQOOP_SERVER': [8005, 12000],
-        'HBASE_INDEXER': [],
-        'CATALOGSERVER': [25020, 26000],
-        'STATESTORE': [25010, 24000],
+        'KEY_VALUE_STORE_INDEXER': [],
+        'IMPALA_CATALOGSERVER': [25020, 26000],
+        'IMPALA_STATESTORE': [25010, 24000],
         'IMPALAD': [21050, 21000, 23000, 25000, 28000, 22000]
     }
 
