@@ -51,6 +51,8 @@ class SparkGatingTest(swift.SwiftTest, scaling.ScalingTest,
         }
         self.ng_tmpl_m_nn_id = self.create_node_group_template(**template)
         self.ng_template_ids.append(self.ng_tmpl_m_nn_id)
+        self.addCleanup(self.delete_objects,
+                        node_group_template_id_list=[self.ng_tmpl_m_nn_id])
 
     @b.errormsg("Failure while 's-dn' node group template creation: ")
     def _create_s_dn_ng_template(self):
@@ -65,6 +67,8 @@ class SparkGatingTest(swift.SwiftTest, scaling.ScalingTest,
         }
         self.ng_tmpl_s_dn_id = self.create_node_group_template(**template)
         self.ng_template_ids.append(self.ng_tmpl_s_dn_id)
+        self.addCleanup(self.delete_objects,
+                        node_group_template_id_list=[self.ng_tmpl_s_dn_id])
 
     @b.errormsg("Failure while cluster template creation: ")
     def _create_cluster_template(self):
@@ -89,6 +93,8 @@ class SparkGatingTest(swift.SwiftTest, scaling.ScalingTest,
             'net_id': self.internal_neutron_net
         }
         self.cluster_template_id = self.create_cluster_template(**template)
+        self.addCleanup(self.delete_objects,
+                        cluster_template_id=self.cluster_template_id)
 
     @b.errormsg("Failure while cluster creation: ")
     def _create_cluster(self):
@@ -102,6 +108,7 @@ class SparkGatingTest(swift.SwiftTest, scaling.ScalingTest,
             'cluster_configs': {}
         }
         cluster_id = self.create_cluster(**cluster)
+        self.addCleanup(self.delete_objects, cluster_id=cluster_id)
         self.poll_cluster_state(cluster_id)
         self.cluster_info = self.get_cluster_info(self.plugin_config)
         self.await_active_workers_for_namenode(self.cluster_info['node_info'],
@@ -148,6 +155,4 @@ class SparkGatingTest(swift.SwiftTest, scaling.ScalingTest,
             self._check_edp_after_scaling()
 
     def tearDown(self):
-        self.delete_objects(self.cluster_id, self.cluster_template_id,
-                            self.ng_template_ids)
         super(SparkGatingTest, self).tearDown()
