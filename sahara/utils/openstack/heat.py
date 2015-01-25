@@ -42,8 +42,9 @@ def client():
 
 def get_stack(stack_name):
     heat = client()
-    for stack in heat.stacks.list(filters={'stack_name': stack_name}):
-        return stack
+    for stack in heat.stacks.list():
+        if stack.stack_name == stack_name:
+            return stack
 
     raise ex.NotFoundException(_('Failed to find stack %(stack)s')
                                % {'stack': stack_name})
