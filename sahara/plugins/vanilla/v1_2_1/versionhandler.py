@@ -32,6 +32,7 @@ from sahara.plugins.vanilla.v1_2_1 import edp_engine
 from sahara.plugins.vanilla.v1_2_1 import run_scripts as run
 from sahara.plugins.vanilla.v1_2_1 import scaling as sc
 from sahara.topology import topology_helper as th
+from sahara.utils import cluster_progress_ops as cpo
 from sahara.utils import edp
 from sahara.utils import files as f
 from sahara.utils import general as g
@@ -100,25 +101,32 @@ class VersionHandler(avm.AbstractVersionHandler):
 
     def configure_cluster(self, cluster):
         instances = utils.get_instances(cluster)
-
         self._setup_instances(cluster, instances)
 
     def start_namenode(self, cluster):
         nn = vu.get_namenode(cluster)
         self._start_namenode(nn)
 
+    @cpo.event_wrapper(
+        True, step=utils.start_process_event_message("NameNode"))
     def _start_namenode(self, nn_instance):
         with remote.get_remote(nn_instance) as r:
             run.format_namenode(r)
             run.start_processes(r, "namenode")
 
     def start_secondarynamenodes(self, cluster):
-        if vu.get_secondarynamenodes(cluster) == 0:
+        snns = vu.get_secondarynamenodes(cluster)
+        if len(snns) == 0:
             return
+        cpo.add_provisioning_step(
+            cluster.id,
+            utils.start_process_event_message("SecondaryNameNodes"),
+            len(snns))
 
-        for snn in vu.get_secondarynamenodes(cluster):
+        for snn in snns:
             self._start_secondarynamenode(snn)
 
+    @cpo.event_wrapper(True)
     def _start_secondarynamenode(self, snn):
         run.start_processes(remote.get_remote(snn), "secondarynamenode")
 
@@ -127,6 +135,8 @@ class VersionHandler(avm.AbstractVersionHandler):
         if jt:
             self._start_jobtracker(jt)
 
+    @cpo.event_wrapper(
+        True, step=utils.start_process_event_message("JobTracker"))
     def _start_jobtracker(self, jt_instance):
         run.start_processes(remote.get_remote(jt_instance), "jobtracker")
 
@@ -135,6 +145,8 @@ class VersionHandler(avm.AbstractVersionHandler):
         if oozie:
             self._start_oozie(cluster, oozie)
 
+    @cpo.event_wrapper(
+        True, step=utils.start_process_event_message("Oozie"))
     def _start_oozie(self, cluster, oozie):
         nn_instance = vu.get_namenode(cluster)
 
@@ -152,6 +164,8 @@ class VersionHandler(avm.AbstractVersionHandler):
         if hs:
             self._start_hiveserver(cluster, hs)
 
+    @cpo.event_wrapper(
+        True, step=utils.start_process_event_message("HiveServer"))
     def _start_hiveserver(self, cluster, hive_server):
         oozie = vu.get_oozie(cluster)
 
@@ -190,6 +204,8 @@ class VersionHandler(avm.AbstractVersionHandler):
         LOG.info(_LI('Cluster %s has been started successfully'), cluster.name)
         self._set_cluster_info(cluster)
 
+    @cpo.event_wrapper(
+        True, step=_("Await %s start up") % "DataNodes", param=('cluster', 1))
     def _await_datanodes(self, cluster):
         datanodes_count = len(vu.get_datanodes(cluster))
         if datanodes_count < 1:
@@ -291,19 +307,30 @@ class VersionHandler(avm.AbstractVersionHandler):
     def _start_tt_dn_processes(self, instances):
         tt_dn_names = ["datanode", "tasktracker"]
 
+        instances = utils.instances_with_services(instances, tt_dn_names)
+
+        if not instances:
+            return
+
+        cpo.add_provisioning_step(
+            instances[0].cluster_id,
+            utils.start_process_event_message("DataNodes, TaskTrackers"),
+            len(instances))
+
         with context.ThreadGroup() as tg:
             for i in instances:
                 processes = set(i.node_group.node_processes)
                 tt_dn_procs = processes.intersection(tt_dn_names)
+                tg.spawn('vanilla-start-tt-dn-%s' % i.instance_name,
+                         self._start_tt_dn, i, list(tt_dn_procs))
 
-                if tt_dn_procs:
-                    tg.spawn('vanilla-start-tt-dn-%s' % i.instance_name,
-                             self._start_tt_dn, i, list(tt_dn_procs))
-
+    @cpo.event_wrapper(True)
     def _start_tt_dn(self, instance, tt_dn_procs):
         with instance.remote() as r:
             run.start_processes(r, *tt_dn_procs)
 
+    @cpo.event_wrapper(True, step=_("Setup instances and push configs"),
+                       param=('cluster', 1))
     def _setup_instances(self, cluster, instances):
         if (CONF.use_identity_api_v3 and CONF.use_domain_for_proxy_users and
                 vu.get_hiveserver(cluster) and

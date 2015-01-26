@@ -21,8 +21,10 @@ from sahara import context
 from sahara.i18n import _
 from sahara.i18n import _LI
 from sahara.plugins import exceptions as ex
+from sahara.plugins import utils as pu
 from sahara.plugins.vanilla.hadoop2 import config_helper as c_helper
 from sahara.plugins.vanilla import utils as vu
+from sahara.utils import cluster_progress_ops as cpo
 from sahara.utils import edp
 from sahara.utils import files
 from sahara.utils import general as g
@@ -31,19 +33,28 @@ LOG = logging.getLogger(__name__)
 
 
 def start_all_processes(instances, filternames):
+    if filternames:
+        instances = pu.instances_with_services(instances, filternames)
+
+    if len(instances) == 0:
+        return
+
+    name = pu.start_process_event_message(", ".join(filternames))
+    cpo.add_provisioning_step(instances[0].cluster_id, name, len(instances))
+
     with context.ThreadGroup() as tg:
         for instance in instances:
             processes = set(instance.node_group.node_processes)
-            procs = processes
             if filternames:
-                procs = processes.intersection(filternames)
-            if procs:
+                processes = processes.intersection(filternames)
+            if processes:
                 tg.spawn('vanilla-start-processes-%s' %
                          instance.instance_name,
                          _start_processes,
-                         instance, list(procs))
+                         instance, list(processes))
 
 
+@cpo.event_wrapper(True)
 def _start_processes(instance, processes):
     with instance.remote() as r:
         for process in processes:
@@ -69,11 +80,13 @@ def start_yarn_process(instance, process):
         'sudo su - -c  "yarn-daemon.sh start %s" hadoop' % process)
 
 
+@cpo.event_wrapper(True, step=pu.start_process_event_message("HistoryServer"))
 def start_historyserver(instance):
     instance.remote().execute_command(
         'sudo su - -c "mr-jobhistory-daemon.sh start historyserver" hadoop')
 
 
+@cpo.event_wrapper(True, step=pu.start_process_event_message("Oozie"))
 def start_oozie_process(pctx, instance):
     with instance.remote() as r:
         if c_helper.is_mysql_enabled(pctx, instance.cluster):
@@ -96,12 +109,16 @@ def format_namenode(instance):
         'sudo su - -c "hdfs namenode -format" hadoop')
 
 
+@cpo.event_wrapper(
+    True, step=pu.start_process_event_message("Oozie"), param=('cluster', 0))
 def refresh_hadoop_nodes(cluster):
     nn = vu.get_namenode(cluster)
     nn.remote().execute_command(
         'sudo su - -c "hdfs dfsadmin -refreshNodes" hadoop')
 
 
+@cpo.event_wrapper(
+    True, step=_("Refresh %s nodes") % "YARN", param=('cluster', 0))
 def refresh_yarn_nodes(cluster):
     rm = vu.get_resourcemanager(cluster)
     rm.remote().execute_command(
@@ -142,6 +159,8 @@ def _start_oozie(remote):
         'sudo su - -c "/opt/oozie/bin/oozied.sh start" hadoop')
 
 
+@cpo.event_wrapper(
+    True, step=_("Await %s start up") % "DataNodes", param=('cluster', 0))
 def await_datanodes(cluster):
     datanodes_count = len(vu.get_datanodes(cluster))
     if datanodes_count < 1:
@@ -205,6 +224,7 @@ def _hive_metastore_start(remote):
                            " --service metastore > /dev/null &' hadoop")
 
 
+@cpo.event_wrapper(True, step=pu.start_process_event_message("HiveServer"))
 def start_hiveserver_process(pctx, instance):
     with instance.remote() as r:
         _hive_create_warehouse_dir(r)

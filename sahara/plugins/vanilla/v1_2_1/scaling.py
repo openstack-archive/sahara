@@ -24,9 +24,11 @@ from sahara.plugins import exceptions as ex
 from sahara.plugins import utils
 from sahara.plugins.vanilla.v1_2_1 import config_helper
 from sahara.plugins.vanilla.v1_2_1 import run_scripts as run
+from sahara.utils import cluster_progress_ops as cpo
 from sahara.utils import remote
 
 
+@cpo.event_wrapper(True, step=_("Decommission %s") % "TaskTrackers")
 def decommission_tt(jt, inst_to_be_deleted, survived_inst):
     with remote.get_remote(jt) as r:
         r.write_file_to('/etc/hadoop/tt.excl',
@@ -40,6 +42,7 @@ def decommission_tt(jt, inst_to_be_deleted, survived_inst):
                           })
 
 
+@cpo.event_wrapper(True, step=_("Decommission %s") % "DataNodes")
 def decommission_dn(nn, inst_to_be_deleted, survived_inst):
     with remote.get_remote(nn) as r:
         r.write_file_to('/etc/hadoop/dn.excl',
