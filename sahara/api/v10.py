@@ -194,7 +194,8 @@ def plugins_convert_to_cluster_template(plugin_name, version, name, data):
 @acl.enforce("images:get_all")
 def images_list():
     tags = u.get_request_args().getlist('tags')
-    return u.render(images=[i.dict for i in api.get_images(tags)])
+    name = u.get_request_args().get('name', None)
+    return u.render(images=[i.dict for i in api.get_images(name, tags)])
 
 
 @rest.get('/images/<image_id>')
