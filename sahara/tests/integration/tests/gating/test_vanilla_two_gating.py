@@ -120,7 +120,8 @@ class VanillaTwoGatingTest(cluster_configs.ClusterConfigTest,
                 {
                     'name': 'master-node-rm-nn',
                     'flavor_id': self.flavor_id,
-                    'node_processes': ['namenode', 'resourcemanager'],
+                    'node_processes': ['namenode', 'resourcemanager',
+                                       'hiveserver'],
                     'floating_ip_pool': self.floating_ip_pool,
                     'auto_security_group': True,
                     'count': 1,
@@ -200,6 +201,21 @@ class VanillaTwoGatingTest(cluster_configs.ClusterConfigTest,
             yield self._edp_mapreduce_streaming_test()
         if utils_edp.JOB_TYPE_JAVA not in skipped_edp_job_types:
             yield self._edp_java_test()
+        if utils_edp.JOB_TYPE_HIVE not in skipped_edp_job_types:
+            yield self._check_edp_hive()
+
+    # TODO(esikachev): Until fix bug 1413602
+    def _run_edp_tests_after_scaling(self):
+        skipped_edp_job_types = self.plugin_config.SKIP_EDP_JOB_TYPES
+
+        if utils_edp.JOB_TYPE_PIG not in skipped_edp_job_types:
+            yield self._edp_pig_test()
+        if utils_edp.JOB_TYPE_MAPREDUCE not in skipped_edp_job_types:
+            yield self._edp_mapreduce_test()
+        if utils_edp.JOB_TYPE_MAPREDUCE_STREAMING not in skipped_edp_job_types:
+            yield self._edp_mapreduce_streaming_test()
+        if utils_edp.JOB_TYPE_JAVA not in skipped_edp_job_types:
+            yield self._edp_java_test()
 
     def _edp_pig_test(self):
         pig_job = self.edp_info.read_pig_example_script()
@@ -238,6 +254,9 @@ class VanillaTwoGatingTest(cluster_configs.ClusterConfigTest,
             job_data_list=[],
             lib_data_list=[{'jar': java_jar}],
             configs=java_configs)
+
+    def _check_edp_hive(self):
+        return self.check_edp_hive()
 
     @b.errormsg("Failure while cluster scaling: ")
     def _check_scaling(self):
@@ -288,7 +307,7 @@ class VanillaTwoGatingTest(cluster_configs.ClusterConfigTest,
 
     @b.errormsg("Failure while EDP testing after cluster scaling: ")
     def _check_edp_after_scaling(self):
-        self._check_edp()
+        self.poll_jobs_status(list(self._run_edp_tests_after_scaling()))
 
     @testcase.skipIf(
         cfg.ITConfig().vanilla_two_config.SKIP_ALL_TESTS_FOR_PLUGIN,
