@@ -22,6 +22,7 @@ from sahara.openstack.common import log as logging
 from sahara.plugins import provisioning as p
 from sahara.plugins import utils
 from sahara.topology import topology_helper as topology
+from sahara.utils import files as f
 from sahara.utils import types as types
 from sahara.utils import xmlutils as x
 
@@ -98,7 +99,28 @@ SPARK_CONFS = {
                 ' (default: /opt/spark)',
                 'default': '/opt/spark',
                 'priority': 2,
-            }
+            },
+            {
+                'name': 'Minimum cleanup seconds',
+                'description': 'Job data will never be purged before this'
+                ' amount of time elapses (default: 86400 = 1 day)',
+                'default': '86400',
+                'priority': 2,
+            },
+            {
+                'name': 'Maximum cleanup seconds',
+                'description': 'Job data will always be purged after this'
+                ' amount of time elapses (default: 1209600 = 14 days)',
+                'default': '1209600',
+                'priority': 2,
+            },
+            {
+                'name': 'Minimum cleanup megabytes',
+                'description': 'No job data will be purged unless the total'
+                ' job data exceeds this size (default: 4096 = 4GB)',
+                'default': '4096',
+                'priority': 2,
+            },
         ]
     }
 }
@@ -373,6 +395,27 @@ def generate_hadoop_setup_script(storage_paths, env_configs):
         script_lines.append("chown -R hadoop:hadoop %s" % path)
         script_lines.append("chmod -R 755 %s" % path)
     return "\n".join(script_lines)
+
+
+def generate_job_cleanup_config(cluster):
+    args = {
+        'minimum_cleanup_megabytes': get_config_value(
+            "Spark", "Minimum cleanup megabytes", cluster),
+        'minimum_cleanup_seconds': get_config_value(
+            "Spark", "Minimum cleanup seconds", cluster),
+        'maximum_cleanup_seconds': get_config_value(
+            "Spark", "Maximum cleanup seconds", cluster)
+    }
+    job_conf = {'valid': (args['maximum_cleanup_seconds'] > 0 and
+                          (args['minimum_cleanup_megabytes'] > 0
+                           and args['minimum_cleanup_seconds'] > 0))}
+    if job_conf['valid']:
+        job_conf['cron'] = f.get_file_text(
+            'plugins/spark/resources/spark-cleanup.cron'),
+        job_cleanup_script = f.get_file_text(
+            'plugins/spark/resources/tmp-cleanup.sh.template')
+        job_conf['script'] = job_cleanup_script.format(**args)
+    return job_conf
 
 
 def extract_name_values(configs):

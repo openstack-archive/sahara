@@ -65,3 +65,40 @@ class SparkPluginTest(base.SaharaWithDbTestCase):
         self.assertIsInstance(
             plugin.get_edp_engine(cluster, edp.JOB_TYPE_SPARK),
             engine.SparkJobEngine)
+
+    def test_cleanup_configs(self):
+        remote = mock.Mock()
+        instance = mock.Mock()
+
+        extra_conf = {'job_cleanup': {
+            'valid': True,
+            'script': 'script_text',
+            'cron': 'cron_text'}}
+        instance.node_group.node_processes = ["master"]
+        instance.node_group.id = id
+        cluster_dict = {
+            'name': 'cluster',
+            'plugin_name': 'spark',
+            'hadoop_version': '1.0.0',
+            'default_image_id': 'image'}
+
+        cluster = conductor.cluster_create(context.ctx(), cluster_dict)
+        plugin = pb.PLUGINS.get_plugin(cluster.plugin_name)
+        plugin._push_cleanup_job(remote, cluster, extra_conf, instance)
+        remote.write_file_to.assert_called_with(
+            '/etc/hadoop/tmp-cleanup.sh',
+            'script_text')
+        remote.execute_command.assert_called_with(
+            'sudo sh -c \'echo "cron_text" > /etc/cron.d/spark-cleanup\'')
+
+        remote.reset_mock()
+        instance.node_group.node_processes = ["worker"]
+        plugin._push_cleanup_job(remote, cluster, extra_conf, instance)
+        self.assertFalse(remote.called)
+
+        remote.reset_mock()
+        instance.node_group.node_processes = ["master"]
+        extra_conf['job_cleanup']['valid'] = False
+        plugin._push_cleanup_job(remote, cluster, extra_conf, instance)
+        remote.execute_command.assert_called_with(
+            'sudo rm -f /etc/crond.d/spark-cleanup')
