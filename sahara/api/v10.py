@@ -201,7 +201,7 @@ def images_list():
 @acl.enforce("images:get")
 @v.check_exists(api.get_image, id='image_id')
 def images_get(image_id):
-    return u.render(api.get_image(id=image_id).wrapped_dict)
+    return u.render(api.get_registered_image(id=image_id).wrapped_dict)
 
 
 @rest.post('/images/<image_id>')
