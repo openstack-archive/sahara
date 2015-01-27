@@ -13,6 +13,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import uuid
+
+import six
+
+from sahara.utils import files
+
 # job execution status
 JOB_STATUS_DONEWITHERROR = 'DONEWITHERROR'
 JOB_STATUS_FAILED = 'FAILED'
@@ -51,6 +57,8 @@ JOB_TYPES_ALL = [
     JOB_TYPE_SPARK
 ]
 
+ADAPT_FOR_OOZIE = 'edp.java.adapt_for_oozie'
+
 
 def split_job_type(job_type):
     '''Split a job type string into a type and subtype
@@ -85,3 +93,17 @@ def compare_job_type(job_type, *args, **kwargs):
 
 def get_hive_shared_conf_path(hdfs_user):
     return "/user/%s/conf/hive-site.xml" % hdfs_user
+
+
+def is_adapt_for_oozie_enabled(configs):
+    return configs.get(ADAPT_FOR_OOZIE, False)
+
+
+def get_builtin_binaries(job, configs):
+    if job.type == JOB_TYPE_JAVA:
+        if is_adapt_for_oozie_enabled(configs):
+            path = 'service/edp/resources/edp-main-wrapper.jar'
+            name = 'builtin-%s.jar' % six.text_type(uuid.uuid4())
+            return [{'raw': files.get_file_text(path),
+                     'name': name}]
+    return []
