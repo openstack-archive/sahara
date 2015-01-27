@@ -127,19 +127,9 @@ class TestClusterCreateValidation(u.ValidationTestCase):
                 'name': "test-name",
                 'plugin_name': "vanilla",
                 'hadoop_version': "1.2.1",
-                'user_keypair_id': '1'
-            },
-            bad_req_i=(1, 'VALIDATION_ERROR',
-                       "'1' is not a 'valid_name'")
-        )
-        self._assert_create_object_validation(
-            data={
-                'name': "test-name",
-                'plugin_name': "vanilla",
-                'hadoop_version': "1.2.1",
                 'user_keypair_id': '!'},
             bad_req_i=(1, 'VALIDATION_ERROR',
-                       "'!' is not a 'valid_name'")
+                       "'!' is not a 'valid_keypair_name'")
         )
 
     def test_cluster_create_v_image_exists(self):
