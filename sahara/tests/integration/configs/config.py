@@ -352,21 +352,21 @@ CDH_CONFIG_OPTS = [
                help='Id of flavor for manager-node'),
     cfg.DictOpt('HADOOP_PROCESSES_WITH_PORTS',
                 default={
-                    'RESOURCEMANAGER': 8088,
-                    'NAMENODE': 50070,
-                    'SECONDARYNAMENODE': 50090,
-                    'NODEMANAGER': 8042,
-                    'DATANODE': 50075,
-                    'MANAGER': 7180,
-                    'JOBHISTORY': 19888,
+                    'YARN_RESOURCEMANAGER': 8088,
+                    'HDFS_NAMENODE': 50070,
+                    'HDFS_SECONDARYNAMENODE': 50090,
+                    'YARN_NODEMANAGER': 8042,
+                    'HDFS_DATANODE': 50075,
+                    'CLOUDERA_MANAGER': 7180,
+                    'YARN_JOBHISTORY': 19888,
                     'OOZIE_SERVER': 11000
                 },
                 help='Hadoop process map with ports for CDH plugin.'),
     cfg.DictOpt('PROCESS_NAMES',
                 default={
-                    'nn': 'NAMENODE',
-                    'tt': 'NODEMANAGER',
-                    'dn': 'DATANODE'
+                    'nn': 'HDFS_NAMENODE',
+                    'tt': 'YARN_NODEMANAGER',
+                    'dn': 'HDFS_DATANODE'
                 },
                 help='Names for namenode, nodemanager and datanode '
                      'processes.'),

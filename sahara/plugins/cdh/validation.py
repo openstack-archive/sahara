@@ -31,41 +31,42 @@ def validate_cluster_creating(cluster):
                       "'cm_api' package version 6.0.2 or later."))
         raise ex.HadoopProvisionError(_("'cm_api' is not installed."))
 
-    mng_count = _get_inst_count(cluster, 'MANAGER')
+    mng_count = _get_inst_count(cluster, 'CLOUDERA_MANAGER')
     if mng_count != 1:
-        raise ex.InvalidComponentCountException('MANAGER', 1, mng_count)
+        raise ex.InvalidComponentCountException('CLOUDERA_MANAGER',
+                                                1, mng_count)
 
-    nn_count = _get_inst_count(cluster, 'NAMENODE')
+    nn_count = _get_inst_count(cluster, 'HDFS_NAMENODE')
     if nn_count != 1:
-        raise ex.InvalidComponentCountException('NAMENODE', 1, nn_count)
+        raise ex.InvalidComponentCountException('HDFS_NAMENODE', 1, nn_count)
 
-    snn_count = _get_inst_count(cluster, 'SECONDARYNAMENODE')
+    snn_count = _get_inst_count(cluster, 'HDFS_SECONDARYNAMENODE')
     if snn_count != 1:
-        raise ex.InvalidComponentCountException('SECONDARYNAMENODE', 1,
+        raise ex.InvalidComponentCountException('HDFS_SECONDARYNAMENODE', 1,
                                                 snn_count)
 
-    rm_count = _get_inst_count(cluster, 'RESOURCEMANAGER')
+    rm_count = _get_inst_count(cluster, 'YARN_RESOURCEMANAGER')
     if rm_count not in [0, 1]:
-        raise ex.InvalidComponentCountException('RESOURCEMANAGER', _('0 or 1'),
-                                                rm_count)
+        raise ex.InvalidComponentCountException('YARN_RESOURCEMANAGER',
+                                                _('0 or 1'), rm_count)
 
-    hs_count = _get_inst_count(cluster, 'JOBHISTORY')
+    hs_count = _get_inst_count(cluster, 'YARN_JOBHISTORY')
     if hs_count not in [0, 1]:
-        raise ex.InvalidComponentCountException('JOBHISTORY', _('0 or 1'),
-                                                hs_count)
+        raise ex.InvalidComponentCountException('YARN_JOBHISTORY',
+                                                _('0 or 1'), hs_count)
 
     if rm_count > 0 and hs_count < 1:
-        raise ex.RequiredServiceMissingException('JOBHISTORY',
-                                                 required_by='RESOURCEMANAGER')
+        raise ex.RequiredServiceMissingException(
+            'YARN_JOBHISTORY', required_by='YARN_RESOURCEMANAGER')
 
-    nm_count = _get_inst_count(cluster, 'NODEMANAGER')
+    nm_count = _get_inst_count(cluster, 'YARN_NODEMANAGER')
     if rm_count == 0:
         if nm_count > 0:
-            raise ex.RequiredServiceMissingException('RESOURCEMANAGER',
-                                                     required_by='NODEMANAGER')
+            raise ex.RequiredServiceMissingException(
+                'YARN_RESOURCEMANAGER', required_by='YARN_NODEMANAGER')
 
     oo_count = _get_inst_count(cluster, 'OOZIE_SERVER')
-    dn_count = _get_inst_count(cluster, 'DATANODE')
+    dn_count = _get_inst_count(cluster, 'HDFS_DATANODE')
     if oo_count not in [0, 1]:
         raise ex.InvalidComponentCountException('OOZIE_SERVER', _('0 or 1'),
                                                 oo_count)
@@ -73,35 +74,35 @@ def validate_cluster_creating(cluster):
     if oo_count == 1:
         if dn_count < 1:
             raise ex.RequiredServiceMissingException(
-                'DATANODE', required_by='OOZIE_SERVER')
+                'HDFS_DATANODE', required_by='OOZIE_SERVER')
 
         if nm_count < 1:
             raise ex.RequiredServiceMissingException(
-                'NODEMANAGER', required_by='OOZIE_SERVER')
+                'YARN_NODEMANAGER', required_by='OOZIE_SERVER')
 
         if hs_count != 1:
             raise ex.RequiredServiceMissingException(
-                'JOBHISTORY', required_by='OOZIE_SERVER')
+                'YARN_JOBHISTORY', required_by='OOZIE_SERVER')
 
-    hms_count = _get_inst_count(cluster, 'HIVEMETASTORE')
-    hvs_count = _get_inst_count(cluster, 'HIVESERVER2')
-    whc_count = _get_inst_count(cluster, 'WEBHCAT')
+    hms_count = _get_inst_count(cluster, 'HIVE_METASTORE')
+    hvs_count = _get_inst_count(cluster, 'HIVE_SERVER2')
+    whc_count = _get_inst_count(cluster, 'HIVE_WEBHCAT')
 
     if hms_count and rm_count < 1:
         raise ex.RequiredServiceMissingException(
-            'RESOURCEMANAGER', required_by='HIVEMETASTORE')
+            'YARN_RESOURCEMANAGER', required_by='HIVE_METASTORE')
 
     if hms_count and not hvs_count:
         raise ex.RequiredServiceMissingException(
-            'HIVESERVER2', required_by='HIVEMETASTORE')
+            'HIVE_SERVER2', required_by='HIVE_METASTORE')
 
     if hvs_count and not hms_count:
         raise ex.RequiredServiceMissingException(
-            'HIVEMETASTORE', required_by='HIVESERVER2')
+            'HIVE_METASTORE', required_by='HIVE_SERVER2')
 
     if whc_count and not hms_count:
         raise ex.RequiredServiceMissingException(
-            'HIVEMETASTORE', required_by='WEBHCAT')
+            'HIVE_METASTORE', required_by='HIVE_WEBHCAT')
 
     hue_count = _get_inst_count(cluster, 'HUE_SERVER')
     if hue_count not in [0, 1]:
@@ -114,7 +115,7 @@ def validate_cluster_creating(cluster):
                                                 '0 or 1', shs_count)
     if shs_count and not rm_count:
         raise ex.RequiredServiceMissingException(
-            'RESOURCEMANAGER', required_by='SPARK_YARN_HISTORY_SERVER')
+            'YARN_RESOURCEMANAGER', required_by='SPARK_YARN_HISTORY_SERVER')
 
     if oo_count < 1 and hue_count:
         raise ex.RequiredServiceMissingException(
@@ -122,46 +123,46 @@ def validate_cluster_creating(cluster):
 
     if hms_count < 1 and hue_count:
         raise ex.RequiredServiceMissingException(
-            'HIVEMETASTORE', required_by='HUE_SERVER')
+            'HIVE_METASTORE', required_by='HUE_SERVER')
 
-    hbm_count = _get_inst_count(cluster, 'MASTER')
-    hbr_count = _get_inst_count(cluster, 'REGIONSERVER')
-    zk_count = _get_inst_count(cluster, 'SERVER')
+    hbm_count = _get_inst_count(cluster, 'HBASE_MASTER')
+    hbr_count = _get_inst_count(cluster, 'HBASE_REGIONSERVER')
+    zk_count = _get_inst_count(cluster, 'ZOOKEEPER_SERVER')
 
     if hbm_count >= 1:
         if zk_count < 1:
             raise ex.RequiredServiceMissingException('ZOOKEEPER',
                                                      required_by='HBASE')
         if hbr_count < 1:
-            raise ex.InvalidComponentCountException('REGIONSERVER',
-                                                    _('at least 1'), hbr_count)
+            raise ex.InvalidComponentCountException(
+                'HBASE_REGIONSERVER', _('at least 1'), hbr_count)
     elif hbr_count >= 1:
-        raise ex.InvalidComponentCountException('MASTER',
+        raise ex.InvalidComponentCountException('HBASE_MASTER',
                                                 _('at least 1'), hbm_count)
 
-    a_count = _get_inst_count(cluster, 'AGENT')
+    a_count = _get_inst_count(cluster, 'FLUME_AGENT')
     if a_count >= 1:
         if dn_count < 1:
             raise ex.RequiredServiceMissingException(
-                'DATANODE', required_by='FLUME_AGENT')
+                'HDFS_DATANODE', required_by='FLUME_AGENT')
 
-    ss1_count = _get_inst_count(cluster, 'SENTRY_SERVER')
-    if ss1_count not in [0, 1]:
+    snt_count = _get_inst_count(cluster, 'SENTRY_SERVER')
+    if snt_count not in [0, 1]:
         raise ex.InvalidComponentCountException('SENTRY_SERVER', _('0 or 1'),
-                                                ss1_count)
-    if ss1_count == 1:
+                                                snt_count)
+    if snt_count == 1:
         if dn_count < 1:
             raise ex.RequiredServiceMissingException(
-                'DATANODE', required_by='SENTRY_SERVER')
+                'HDFS_DATANODE', required_by='SENTRY_SERVER')
         if zk_count < 1:
             raise ex.RequiredServiceMissingException(
                 'ZOOKEEPER', required_by='SENTRY_SERVER')
 
-    ss2_count = _get_inst_count(cluster, 'SOLR_SERVER')
-    if ss2_count >= 1:
+    slr_count = _get_inst_count(cluster, 'SOLR_SERVER')
+    if slr_count >= 1:
         if dn_count < 1:
             raise ex.RequiredServiceMissingException(
-                'DATANODE', required_by='SOLR_SERVER')
+                'HDFS_DATANODE', required_by='SOLR_SERVER')
         if zk_count < 1:
             raise ex.RequiredServiceMissingException(
                 'ZOOKEEPER', required_by='SOLR_SERVER')
@@ -173,51 +174,51 @@ def validate_cluster_creating(cluster):
     if s2s_count == 1:
         if dn_count < 1:
             raise ex.RequiredServiceMissingException(
-                'DATANODE', required_by='SQOOP_SERVER')
+                'HDFS_DATANODE', required_by='SQOOP_SERVER')
         if nm_count < 1:
             raise ex.RequiredServiceMissingException(
-                'NODEMANAGER', required_by='SQOOP_SERVER')
+                'YARN_NODEMANAGER', required_by='SQOOP_SERVER')
         if hs_count != 1:
             raise ex.RequiredServiceMissingException(
-                'JOBHISTORY', required_by='SQOOP_SERVER')
+                'YARN_JOBHISTORY', required_by='SQOOP_SERVER')
 
     lhbi_count = _get_inst_count(cluster, 'HBASE_INDEXER')
     if lhbi_count >= 1:
         if dn_count < 1:
             raise ex.RequiredServiceMissingException(
-                'DATANODE', required_by='HBASE_INDEXER')
+                'HDFS_DATANODE', required_by='HBASE_INDEXER')
         if zk_count < 1:
             raise ex.RequiredServiceMissingException(
                 'ZOOKEEPER', required_by='HBASE_INDEXER')
-        if ss2_count < 1:
+        if slr_count < 1:
             raise ex.RequiredServiceMissingException(
                 'SOLR_SERVER', required_by='HBASE_INDEXER')
         if hbm_count < 1:
             raise ex.RequiredServiceMissingException(
                 'HBASE_MASTER', required_by='HBASE_INDEXER')
 
-    ics_count = _get_inst_count(cluster, 'CATALOGSERVER')
-    iss_count = _get_inst_count(cluster, 'STATESTORE')
+    ics_count = _get_inst_count(cluster, 'IMPALA_CATALOGSERVER')
+    iss_count = _get_inst_count(cluster, 'IMPALA_STATESTORE')
     id_count = _get_inst_count(cluster, 'IMPALAD')
     if ics_count not in [0, 1]:
-        raise ex.InvalidComponentCountException('CATALOGSERVER', _('0 or 1'),
-                                                ics_count)
+        raise ex.InvalidComponentCountException('IMPALA_CATALOGSERVER',
+                                                _('0 or 1'), ics_count)
     if iss_count not in [0, 1]:
-        raise ex.InvalidComponentCountException('STATESTORE', _('0 or 1'),
-                                                iss_count)
+        raise ex.InvalidComponentCountException('IMPALA_STATESTORE',
+                                                _('0 or 1'), iss_count)
     if ics_count == 1:
         if iss_count != 1:
             raise ex.RequiredServiceMissingException(
-                'STATESTORE', required_by='IMPALA')
+                'IMPALA_STATESTORE', required_by='IMPALA')
         if id_count < 1:
             raise ex.RequiredServiceMissingException(
                 'IMPALAD', required_by='IMPALA')
         if dn_count < 1:
             raise ex.RequiredServiceMissingException(
-                'DATANODE', required_by='IMPALA')
+                'HDFS_DATANODE', required_by='IMPALA')
         if hms_count < 1:
             raise ex.RequiredServiceMissingException(
-                'HIVEMETASTORE', required_by='IMPALA')
+                'HIVE_METASTORE', required_by='IMPALA')
 
 
 def validate_additional_ng_scaling(cluster, additional):
@@ -232,7 +233,7 @@ def validate_additional_ng_scaling(cluster, additional):
             raise ex.NodeGroupCannotBeScaled(
                 ng.name, msg % {'processes': ' '.join(ng.node_processes)})
 
-        if not rm and 'NODEMANAGER' in ng.node_processes:
+        if not rm and 'YARN_NODEMANAGER' in ng.node_processes:
             msg = _("CDH plugin cannot scale node group with processes "
                     "which have no master-processes run in cluster")
             raise ex.NodeGroupCannotBeScaled(ng.name, msg)
@@ -254,7 +255,7 @@ def validate_existing_ng_scaling(cluster, existing):
 
 
 def _get_scalable_processes():
-    return ['DATANODE', 'NODEMANAGER']
+    return ['HDFS_DATANODE', 'YARN_NODEMANAGER']
 
 
 def _get_inst_count(cluster, process):

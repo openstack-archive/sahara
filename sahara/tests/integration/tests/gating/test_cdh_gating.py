@@ -52,7 +52,7 @@ class CDHGatingTest(cluster_configs.ClusterConfigTest,
             'name': 'test-node-group-template-cdh-nm-dn',
             'plugin_config': self.plugin_config,
             'description': 'test node group template for CDH plugin',
-            'node_processes': ['NODEMANAGER', 'DATANODE'],
+            'node_processes': ['YARN_NODEMANAGER', 'HDFS_DATANODE'],
             'floating_ip_pool': self.floating_ip_pool,
             'auto_security_group': True,
             'node_configs': {}
@@ -68,7 +68,7 @@ class CDHGatingTest(cluster_configs.ClusterConfigTest,
             'description': 'test node group template for CDH plugin',
             'volumes_per_node': self.volumes_per_node,
             'volumes_size': self.volumes_size,
-            'node_processes': ['NODEMANAGER'],
+            'node_processes': ['YARN_NODEMANAGER'],
             'floating_ip_pool': self.floating_ip_pool,
             'auto_security_group': True,
             'node_configs': {}
@@ -84,7 +84,7 @@ class CDHGatingTest(cluster_configs.ClusterConfigTest,
             'description': 'test node group template for CDH plugin',
             'volumes_per_node': self.volumes_per_node,
             'volumes_size': self.volumes_size,
-            'node_processes': ['DATANODE'],
+            'node_processes': ['HDFS_DATANODE'],
             'floating_ip_pool': self.floating_ip_pool,
             'auto_security_group': True,
             'node_configs': {}
@@ -114,7 +114,7 @@ class CDHGatingTest(cluster_configs.ClusterConfigTest,
                 {
                     'name': 'manager-node',
                     'flavor_id': self.plugin_config.MANAGERNODE_FLAVOR,
-                    'node_processes': ['MANAGER'],
+                    'node_processes': ['CLOUDERA_MANAGER'],
                     'floating_ip_pool': self.floating_ip_pool,
                     'auto_security_group': True,
                     'count': 1
@@ -122,7 +122,8 @@ class CDHGatingTest(cluster_configs.ClusterConfigTest,
                 {
                     'name': 'master-node-rm-nn',
                     'flavor_id': self.plugin_config.MANAGERNODE_FLAVOR,
-                    'node_processes': ['NAMENODE', 'RESOURCEMANAGER'],
+                    'node_processes': ['HDFS_NAMENODE',
+                                       'YARN_RESOURCEMANAGER'],
                     'floating_ip_pool': self.floating_ip_pool,
                     'auto_security_group': True,
                     'count': 1
@@ -130,9 +131,9 @@ class CDHGatingTest(cluster_configs.ClusterConfigTest,
                 {
                     'name': 'master-node-oo-hs-snn-hm-hs2',
                     'flavor_id': self.plugin_config.MANAGERNODE_FLAVOR,
-                    'node_processes': ['OOZIE_SERVER', 'JOBHISTORY',
-                                       'SECONDARYNAMENODE', 'HIVEMETASTORE',
-                                       'HIVESERVER2'],
+                    'node_processes': ['OOZIE_SERVER', 'YARN_JOBHISTORY',
+                                       'HDFS_SECONDARYNAMENODE',
+                                       'HIVE_METASTORE', 'HIVE_SERVER2'],
                     'floating_ip_pool': self.floating_ip_pool,
                     'auto_security_group': True,
                     'count': 1
@@ -318,7 +319,7 @@ class CDHGatingTest(cluster_configs.ClusterConfigTest,
 
         manager_node = None
         for ng in self.sahara.clusters.get(self.cluster_id).node_groups:
-            if 'MANAGER' in ng['node_processes']:
+            if 'CLOUDERA_MANAGER' in ng['node_processes']:
                 manager_node = ng['instances'][0]['management_ip']
                 break
 

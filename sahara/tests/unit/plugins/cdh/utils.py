@@ -18,15 +18,18 @@ from sahara.tests.unit import testutils as tu
 
 def get_fake_cluster(**kwargs):
     mng = tu.make_inst_dict('id1', 'manager_inst', management_ip='1.2.3.4')
-    mng_ng = tu.make_ng_dict('manager_ng', 1, ['MANAGER'], 1, [mng])
+    mng_ng = tu.make_ng_dict('manager_ng', 1, ['CLOUDERA_MANAGER'], 1, [mng])
 
     mst = tu.make_inst_dict('id2', 'master_inst', management_ip='1.2.3.5')
-    mst_ng = tu.make_ng_dict('master_ng', 1, ['NAMENODE', 'SECONDARYNAMENODE',
-                                              'RESOURCEMANAGER', 'JOBHISTORY',
+    mst_ng = tu.make_ng_dict('master_ng', 1, ['HDFS_NAMENODE',
+                                              'HDFS_SECONDARYNAMENODE',
+                                              'YARN_RESOURCEMANAGER',
+                                              'YARN_JOBHISTORY',
                                               'OOZIE_SERVER'], 1, [mst])
 
     wkrs = _get_workers()
-    wkrs_ng = tu.make_ng_dict('worker_ng', 1, ['DATANODE', 'NODEMANAGER'],
+    wkrs_ng = tu.make_ng_dict('worker_ng', 1, ['HDFS_DATANODE',
+                                               'YARN_NODEMANAGER'],
                               len(wkrs), wkrs)
     return tu.create_cluster('test_cluster', 1, 'cdh', '5',
                              [mng_ng, mst_ng, wkrs_ng],
