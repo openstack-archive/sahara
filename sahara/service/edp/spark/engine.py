@@ -143,7 +143,7 @@ class SparkJobEngine(base_engine.JobEngine):
         # The rest of the paths will be passed with --jars
         additional_jars = ",".join(paths)
         if additional_jars:
-            additional_jars = "--jars " + additional_jars
+            additional_jars = " --jars " + additional_jars
 
         # Launch the spark job using spark-submit and deploy_mode = client
         host = master.hostname()
@@ -159,15 +159,17 @@ class SparkJobEngine(base_engine.JobEngine):
         # TODO(tmckay): we need to clean up wf_dirs on long running clusters
         # TODO(tmckay): probably allow for general options to spark-submit
         args = " ".join(updated_job_configs.get('args', []))
+        if args:
+            args = " " + args
 
         # The redirects of stdout and stderr will preserve output in the wf_dir
-        cmd = "%s %s --class %s %s --master spark://%s:%s %s" % (
+        cmd = "%s --class %s%s --master spark://%s:%s %s%s" % (
             spark_submit,
-            app_jar,
             job_class,
             additional_jars,
             host,
             port,
+            app_jar,
             args)
 
         job_execution = conductor.job_execution_get(ctx, job_execution.id)

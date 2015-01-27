@@ -356,9 +356,9 @@ class TestSpark(base.SaharaTestCase):
 
         # Check the command
         remote_instance.execute_command.assert_called_with(
-            'cd /wfdir; ./launch_command /opt/spark/bin/spark-submit app.jar '
+            'cd /wfdir; ./launch_command /opt/spark/bin/spark-submit '
             '--class org.me.myclass --jars jar1.jar,jar2.jar '
-            '--master spark://master:7077 input_arg output_arg '
+            '--master spark://master:7077 app.jar input_arg output_arg '
             '> /dev/null 2>&1 & echo $!')
 
         # Check result here
@@ -366,14 +366,22 @@ class TestSpark(base.SaharaTestCase):
                                   edp.JOB_STATUS_RUNNING,
                                   {"spark-path": "/wfdir"}))
 
-        # Run again without support jars.  Note the extra space
-        # after 'myclass', this is from a %s with empty string
+        # Run again without arguments
+        job_exec.job_configs['args'] = []
+        status = eng.run_job(job_exec)
+        remote_instance.execute_command.assert_called_with(
+            'cd /wfdir; ./launch_command /opt/spark/bin/spark-submit '
+            '--class org.me.myclass --jars jar1.jar,jar2.jar '
+            '--master spark://master:7077 app.jar '
+            '> /dev/null 2>&1 & echo $!')
+
+        # Run again without support jars.
         upload_job_files.return_value = ["/wfdir/app.jar"]
         status = eng.run_job(job_exec)
         remote_instance.execute_command.assert_called_with(
-            'cd /wfdir; ./launch_command /opt/spark/bin/spark-submit app.jar '
-            '--class org.me.myclass  '
-            '--master spark://master:7077 input_arg output_arg '
+            'cd /wfdir; ./launch_command /opt/spark/bin/spark-submit '
+            '--class org.me.myclass '
+            '--master spark://master:7077 app.jar '
             '> /dev/null 2>&1 & echo $!')
 
         # run again with non-zero result, should raise EDPError
