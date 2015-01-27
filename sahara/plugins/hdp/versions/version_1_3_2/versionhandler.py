@@ -32,11 +32,20 @@ from sahara.plugins.hdp import configprovider as cfgprov
 from sahara.plugins.hdp.versions import abstractversionhandler as avm
 from sahara.plugins.hdp.versions.version_1_3_2 import edp_engine
 from sahara.plugins.hdp.versions.version_1_3_2 import services
+from sahara.utils import general as g
 from sahara import version
 
 
 LOG = logging.getLogger(__name__)
 CONF = cfg.CONF
+
+
+def _check_ambari(obj):
+    try:
+        obj.is_ambari_info()
+        return obj.get_cluster()
+    except AttributeError:
+        return None
 
 
 class VersionHandler(avm.AbstractVersionHandler):
@@ -539,31 +548,25 @@ class AmbariClient(object):
                   'components in scaled instances.  status'
                   ' code returned = {0}').format(result.status))
 
+    @g.await_process(
+        3600, 5, _("Ambari agents registering with server"), _check_ambari)
     def wait_for_host_registrations(self, num_hosts, ambari_info):
-        LOG.info(
-            _LI('Waiting for all Ambari agents to register with server ...'))
-
         url = 'http://{0}/api/v1/hosts'.format(ambari_info.get_address())
-        result = None
-        json_result = None
+        try:
+            result = self._get(url, ambari_info)
+            json_result = json.loads(result.text)
 
-        # TODO(jspeidel): timeout
-        while result is None or len(json_result['items']) < num_hosts:
-            context.sleep(5)
-            try:
-                result = self._get(url, ambari_info)
-                json_result = json.loads(result.text)
-
-                LOG.info(_LI('Registered Hosts: %(current_number)s of '
-                             '%(final_number)s'),
-                         {'current_number': len(json_result['items']),
-                          'final_number': num_hosts})
-                for hosts in json_result['items']:
-                    LOG.debug('Registered Host: {0}'.format(
-                        hosts['Hosts']['host_name']))
-            except Exception:
-                # TODO(jspeidel): max wait time
-                LOG.info(_LI('Waiting to connect to ambari server ...'))
+            LOG.info(_LI('Registered Hosts: %(current_number)s '
+                         'of %(final_number)s'),
+                     {'current_number': len(json_result['items']),
+                      'final_number': num_hosts})
+            for hosts in json_result['items']:
+                LOG.debug('Registered Host: {0}'.format(
+                    hosts['Hosts']['host_name']))
+            return result and len(json_result['items']) >= num_hosts
+        except Exception:
+            LOG.info(_LI('Waiting to connect to ambari server ...'))
+            return False
 
     def update_ambari_admin_user(self, password, ambari_info):
         old_pwd = ambari_info.password
