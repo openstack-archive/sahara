@@ -84,9 +84,6 @@ Ubuntu 12.04 system.
     # But only use the top end of the network by using a /27 and starting at the 224 octet.
     FLOATING_RANGE=192.168.55.224/27
 
-    # Enable auto assignment of floating IPs. By default Sahara expects this setting to be enabled
-    EXTRA_OPTS=(auto_assign_floating_ip=True)
-
     # Enable logging
     SCREEN_LOGDIR=$DEST/logs/screen
 
