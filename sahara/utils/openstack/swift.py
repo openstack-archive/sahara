@@ -53,18 +53,23 @@ def client(username, password, trust_id=None):
     :returns: A Swift client object
 
     '''
-    client_kwargs = dict(
-        auth_version='2.0',
-        cacert=CONF.swift.ca_file,
-        insecure=CONF.swift.api_insecure)
     if trust_id:
         proxyclient = k.client_for_proxy_user(username, password, trust_id)
-        client_kwargs.update(preauthurl=su.retrieve_preauth_url(),
-                             preauthtoken=proxyclient.auth_token)
+        return client_from_token(proxyclient.auth_token)
     else:
-        client_kwargs.update(authurl=su.retrieve_auth_url(),
-                             user=username,
-                             key=password,
-                             tenant_name=sh.retrieve_tenant())
+        return swiftclient.Connection(auth_version='2.0',
+                                      cacert=CONF.swift.ca_file,
+                                      insecure=CONF.swift.api_insecure,
+                                      authurl=su.retrieve_auth_url(),
+                                      user=username,
+                                      key=password,
+                                      tenant_name=sh.retrieve_tenant())
 
-    return swiftclient.Connection(**client_kwargs)
+
+def client_from_token(token):
+    '''return a Swift client authenticated from a token.'''
+    return swiftclient.Connection(auth_version='2.0',
+                                  cacert=CONF.swift.ca_file,
+                                  insecure=CONF.swift.api_insecure,
+                                  preauthurl=su.retrieve_preauth_url(),
+                                  preauthtoken=token)
