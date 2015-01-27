@@ -111,6 +111,7 @@ def execute_job(job_id, data):
     # Elements common to all job types
     cluster_id = data['cluster_id']
     configs = data.get('job_configs', {})
+    interface = data.get('interface', {})
 
     # Not in Java job types but present for all others
     input_id = data.get('input_id', None)
@@ -121,7 +122,8 @@ def execute_job(job_id, data):
     job_ex_dict = {'input_id': input_id, 'output_id': output_id,
                    'job_id': job_id, 'cluster_id': cluster_id,
                    'info': {'status': edp.JOB_STATUS_PENDING},
-                   'job_configs': configs, 'extra': {}}
+                   'job_configs': configs, 'extra': {},
+                   'interface': interface}
     job_execution = conductor.job_execution_create(context.ctx(), job_ex_dict)
     context.set_current_job_execution_id(job_execution.id)
 

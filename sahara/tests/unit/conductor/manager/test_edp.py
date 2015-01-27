@@ -27,7 +27,7 @@ from sahara.utils import edp
 
 
 SAMPLE_DATA_SOURCE = {
-    "tenant_id": "test_tenant",
+    "tenant_id": "tenant_1",
     "name": "ngt_test",
     "description": "test_desc",
     "type": "Cassandra",
@@ -39,7 +39,7 @@ SAMPLE_DATA_SOURCE = {
 }
 
 SAMPLE_JOB = {
-    "tenant_id": "test_tenant",
+    "tenant_id": "tenant_1",
     "name": "job_test",
     "description": "test_desc",
     "type": edp.JOB_TYPE_PIG,
@@ -47,7 +47,7 @@ SAMPLE_JOB = {
 }
 
 SAMPLE_JOB_EXECUTION = {
-    "tenant_id": "tenant_id",
+    "tenant_id": "tenant_1",
     "return_code": "1",
     "job_id": "undefined",
     "input_id": "undefined",
@@ -57,7 +57,7 @@ SAMPLE_JOB_EXECUTION = {
 }
 
 SAMPLE_CONF_JOB_EXECUTION = {
-    "tenant_id": "tenant_id",
+    "tenant_id": "tenant_1",
     "progress": "0.1",
     "return_code": "1",
     "job_id": "undefined",

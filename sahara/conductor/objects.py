@@ -242,6 +242,7 @@ class JobExecution(object):
     oozie_job_id
     return_code
     job_configs
+    interface
     extra
     data_source_urls
     """
@@ -257,6 +258,7 @@ class Job(object):
     type
     mains
     libs
+    interface
     """
 
 
