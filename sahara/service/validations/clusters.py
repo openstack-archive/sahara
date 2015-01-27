@@ -35,7 +35,7 @@ def _build_cluster_schema():
         },
         "user_keypair_id": {
             "type": "string",
-            "format": "valid_name",
+            "format": "valid_keypair_name",
         },
         "cluster_template_id": {
             "type": "string",

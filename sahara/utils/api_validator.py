@@ -40,7 +40,18 @@ def validate_name_format(entry):
         # shoud fail type validation
         return True
 
-    res = re.match(r"^[a-zA-Z][a-zA-Z0-9\-_\.]*$", entry)
+    res = re.match(r"^[a-zA-Z0-9][a-zA-Z0-9\-_\.]*$", entry)
+    return res is not None
+
+
+@jsonschema.FormatChecker.cls_checks('valid_keypair_name')
+def validate_keypair_name_format(entry):
+    if not isinstance(entry, six.string_types):
+        # should fail type validation
+        return True
+
+    # this follows the validation put forth by nova for keypair names
+    res = re.match(r'^[a-zA-Z0-9\-_ ]+$', entry)
     return res is not None
 
 
