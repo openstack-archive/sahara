@@ -39,8 +39,8 @@ import sys
 import traceback
 
 from oslo.config import cfg
-from oslo.serialization import jsonutils
 from oslo.utils import importutils
+from oslo.serialization import jsonutils
 import six
 from six import moves
 
