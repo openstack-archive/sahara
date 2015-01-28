@@ -16,13 +16,13 @@
 import abc
 
 from oslo.config import cfg
+from oslo_log import log as logging
 import six
 from stevedore import enabled
 
 from sahara import exceptions as ex
 from sahara.i18n import _
 from sahara.i18n import _LI
-from sahara.openstack.common import log as logging
 from sahara.utils import resources
 
 

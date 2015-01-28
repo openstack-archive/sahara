@@ -17,12 +17,12 @@ import random
 
 from oslo.config import cfg
 from oslo.utils import timeutils
+from oslo_log import log
 import six
 
 from sahara import conductor as c
 from sahara import context
 from sahara.i18n import _LI
-from sahara.openstack.common import log
 from sahara.openstack.common import periodic_task
 from sahara.openstack.common import threadgroup
 from sahara.service.edp import job_manager

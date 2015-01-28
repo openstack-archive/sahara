@@ -18,6 +18,7 @@ import abc
 import datetime
 import string
 
+from oslo_log import log as logging
 import six
 
 from sahara import conductor as c
@@ -25,7 +26,6 @@ from sahara import context
 from sahara.i18n import _
 from sahara.i18n import _LI
 from sahara.i18n import _LW
-from sahara.openstack.common import log as logging
 from sahara.service import networks
 from sahara.utils import cluster_progress_ops as cpo
 from sahara.utils import edp

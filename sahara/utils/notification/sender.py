@@ -14,8 +14,8 @@
 # limitations under the License.
 
 from oslo.config import cfg
+from oslo_log import log as logging
 
-from sahara.openstack.common import log as logging
 from sahara.utils import rpc as messaging
 
 LOG = logging.getLogger(__name__)

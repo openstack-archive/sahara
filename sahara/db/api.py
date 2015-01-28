@@ -34,9 +34,7 @@ interface.
 from oslo.config import cfg
 from oslo.db import api as db_api
 from oslo.db import options
-
-from sahara.openstack.common import log as logging
-
+from oslo_log import log as logging
 
 CONF = cfg.CONF
 

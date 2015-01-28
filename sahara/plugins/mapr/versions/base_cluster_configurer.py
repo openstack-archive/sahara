@@ -16,10 +16,10 @@ import abc
 import collections as c
 import os
 
+from oslo_log import log as logging
 import six
 
 from sahara.i18n import _LI
-from sahara.openstack.common import log as logging
 import sahara.plugins.mapr.util.cluster_helper as ch
 import sahara.plugins.mapr.util.cluster_info as ci
 from sahara.plugins.mapr.util import config

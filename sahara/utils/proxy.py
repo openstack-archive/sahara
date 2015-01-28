@@ -16,13 +16,13 @@
 import uuid
 
 from oslo.config import cfg
+from oslo_log import log as logging
 import six
 
 from sahara import conductor as c
 from sahara import context
 from sahara import exceptions as ex
 from sahara.i18n import _
-from sahara.openstack.common import log as logging
 from sahara.service.edp import job_utils
 from sahara.service import trusts as t
 from sahara.swift import utils as su

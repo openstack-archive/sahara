@@ -13,9 +13,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from oslo_log import log as logging
+
 from sahara.i18n import _
 from sahara.i18n import _LE
-from sahara.openstack.common import log as logging
 from sahara.plugins.cdh import cloudera_utils as cmu
 from sahara.plugins.cdh import utils as cu
 from sahara.plugins import exceptions as ex

@@ -12,9 +12,10 @@
 #  License for the specific language governing permissions and limitations
 #  under the License.
 
+from oslo_log import log as logging
+
 from sahara import context
 from sahara.i18n import _LI
-from sahara.openstack.common import log as logging
 from sahara.plugins.mapr.util import names
 from sahara.plugins.mapr.util import run_scripts
 import sahara.plugins.mapr.versions.version_handler_factory as vhf

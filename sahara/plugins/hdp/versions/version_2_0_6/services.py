@@ -16,13 +16,13 @@
 import re
 
 from oslo.config import cfg
+from oslo_log import log as logging
 import six
 
 from sahara import exceptions as e
 from sahara.i18n import _
 from sahara.i18n import _LI
 from sahara.i18n import _LW
-from sahara.openstack.common import log as logging
 from sahara.plugins import exceptions as ex
 from sahara.plugins import utils
 from sahara.swift import swift_helper as h

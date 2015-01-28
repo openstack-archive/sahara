@@ -15,6 +15,7 @@
 
 from novaclient import exceptions as nova_exceptions
 from oslo.config import cfg
+from oslo_log import log as logging
 import six
 
 from sahara import conductor as c
@@ -24,7 +25,6 @@ from sahara.i18n import _
 from sahara.i18n import _LE
 from sahara.i18n import _LI
 from sahara.i18n import _LW
-from sahara.openstack.common import log as logging
 from sahara.service import engine as e
 from sahara.service import networks
 from sahara.service import volumes

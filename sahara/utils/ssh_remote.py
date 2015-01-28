@@ -41,6 +41,7 @@ from eventlet import semaphore
 from eventlet import timeout as e_timeout
 from oslo.config import cfg
 from oslo.utils import excutils
+from oslo_log import log as logging
 import paramiko
 import requests
 from requests import adapters
@@ -50,7 +51,6 @@ from sahara import context
 from sahara import exceptions as ex
 from sahara.i18n import _
 from sahara.i18n import _LE
-from sahara.openstack.common import log as logging
 from sahara.utils import crypto
 from sahara.utils import hashabledict as h
 from sahara.utils.openstack import base

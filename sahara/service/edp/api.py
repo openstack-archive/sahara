@@ -14,12 +14,12 @@
 # limitations under the License.
 
 from oslo.config import cfg
+from oslo_log import log as logging
 
 from sahara import conductor as c
 from sahara import context
 from sahara import exceptions as ex
 from sahara.i18n import _LE
-from sahara.openstack.common import log as logging
 from sahara.service.edp.binary_retrievers import dispatch
 from sahara.service.edp import job_manager as manager
 from sahara.utils import edp

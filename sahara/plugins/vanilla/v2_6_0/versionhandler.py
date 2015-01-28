@@ -14,10 +14,10 @@
 # limitations under the License.
 
 from oslo.config import cfg
+from oslo_log import log as logging
 
 from sahara import conductor
 from sahara import context
-from sahara.openstack.common import log as logging
 from sahara.plugins import utils
 from sahara.plugins.vanilla import abstractversionhandler as avm
 from sahara.plugins.vanilla.hadoop2 import config as c

@@ -22,7 +22,7 @@ import os
 import sys
 
 from oslo import i18n
-
+from oslo_log import log as logging
 
 # If ../sahara/__init__.py exists, add ../ to Python search path, so that
 # it will override what happens to be installed in /usr/(local/)lib/python...
@@ -42,7 +42,6 @@ i18n.enable_lazy()
 
 
 import sahara.main as server
-from sahara.openstack.common import log as logging
 
 
 LOG = logging.getLogger(__name__)
