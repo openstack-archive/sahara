@@ -45,7 +45,6 @@ class CDHGatingTest(check_services.CheckServicesTest,
         self.cluster_id = None
         self.cluster_template_id = None
         self.services_cluster_template_id = None
-        self.ng_template_ids = []
         self.flavor_id = self.plugin_config.LARGE_FLAVOR
 
     def get_plugin_config(self):
@@ -63,7 +62,7 @@ class CDHGatingTest(check_services.CheckServicesTest,
             'node_configs': {}
         }
         self.ng_tmpl_nm_dn_id = self.create_node_group_template(**template)
-        self.ng_template_ids.append(self.ng_tmpl_nm_dn_id)
+        self.addCleanup(self.delete_node_group_template, self.ng_tmpl_nm_dn_id)
 
     @b.errormsg("Failure while cluster template creation: ")
     def _create_cluster_template(self):
@@ -120,9 +119,7 @@ class CDHGatingTest(check_services.CheckServicesTest,
             'net_id': self.internal_neutron_net
         }
         self.cluster_template_id = self.create_cluster_template(**template)
-        self.addCleanup(self.delete_objects,
-                        cluster_template_id=self.cluster_template_id,
-                        node_group_template_id_list=self.ng_template_ids)
+        self.addCleanup(self.delete_cluster_template, self.cluster_template_id)
 
     @b.errormsg("Failure while cluster creation: ")
     def _create_cluster(self):
@@ -140,11 +137,11 @@ class CDHGatingTest(check_services.CheckServicesTest,
             }
         }
         self.cluster_id = self.create_cluster(**cluster)
+        self.addCleanup(self.delete_cluster, self.cluster_id)
         self.poll_cluster_state(self.cluster_id)
         self.cluster_info = self.get_cluster_info(self.plugin_config)
         self.await_active_workers_for_namenode(self.cluster_info['node_info'],
                                                self.plugin_config)
-        self.addCleanup(self.delete_objects, self.cluster_id)
 
     @b.errormsg("Failure while 's-nn' node group template creation: ")
     def _create_s_nn_ng_template(self):
@@ -169,7 +166,7 @@ class CDHGatingTest(check_services.CheckServicesTest,
             'node_configs': {}
         }
         self.ng_tmpl_s_nn_id = self.create_node_group_template(**template)
-        self.ng_template_ids.append(self.ng_tmpl_s_nn_id)
+        self.addCleanup(self.delete_node_group_template, self.ng_tmpl_s_nn_id)
 
     @b.errormsg("Failure while 's-dn' node group template creation: ")
     def _create_s_dn_ng_template(self):
@@ -184,7 +181,8 @@ class CDHGatingTest(check_services.CheckServicesTest,
             'node_configs': {}
         }
         self.ng_tmpl_s_dn_id = self.create_node_group_template(**template)
-        self.ng_template_ids.append(self.ng_tmpl_s_dn_id)
+        self.addCleanup(self.delete_node_group_template,
+                        self.ng_tmpl_s_dn_id)
 
     @b.errormsg("Failure while services cluster template creation: ")
     def _create_services_cluster_template(self):
@@ -220,9 +218,8 @@ class CDHGatingTest(check_services.CheckServicesTest,
         }
         self.services_cluster_template_id = self.create_cluster_template(
             **template)
-        self.addCleanup(self.delete_objects,
-                        cluster_template_id=self.services_cluster_template_id,
-                        node_group_template_id_list=self.ng_template_ids)
+        self.addCleanup(self.delete_cluster_template,
+                        self.services_cluster_template_id)
 
     @b.errormsg("Failure while services cluster creation: ")
     def _create_services_cluster(self):
@@ -244,7 +241,7 @@ class CDHGatingTest(check_services.CheckServicesTest,
         self.cluster_info = self.get_cluster_info(self.plugin_config)
         self.await_active_workers_for_namenode(self.cluster_info['node_info'],
                                                self.plugin_config)
-        self.addCleanup(self.delete_objects, self.cluster_id)
+        self.addCleanup(self.delete_cluster, self.cluster_id)
 
     @b.errormsg("Failure while Cinder testing: ")
     def _check_cinder(self):

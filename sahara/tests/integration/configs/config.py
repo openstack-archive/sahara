@@ -87,6 +87,10 @@ COMMON_CONFIG_OPTS = [
                default=3,
                help='Timeout for a poll of state of transient cluster '
                     '(in minutes); minimal value is 1.'),
+    cfg.IntOpt('DELETE_RESOURCE_TIMEOUT',
+               default=5,
+               help='Timeout for a removing resource '
+                    '(in minutes); minimal value is 1.'),
     cfg.StrOpt('CLUSTER_NAME',
                default='test-cluster',
                help='Name for cluster.'),

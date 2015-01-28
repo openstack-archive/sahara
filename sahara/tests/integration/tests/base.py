@@ -645,40 +645,37 @@ class ITestCase(testcase.WithAttributes, base.BaseTestCase):
                     % self.common_config.INTERNAL_NEUTRON_NETWORK
                 )
 
-    def delete_objects(self, cluster_id=None,
-                       cluster_template_id=None,
-                       node_group_template_id_list=None):
+    def delete_cluster(self, cluster_id):
         if not self.common_config.RETAIN_CLUSTER_AFTER_TEST:
-            if cluster_id:
-                try:
-                    self.sahara.clusters.delete(cluster_id)
-                except client_base.APIException:
-                    # cluster in deleting state or deleted
-                    pass
+            return self.delete_resource(self.sahara.clusters.delete,
+                                        cluster_id)
 
-                try:
-                    # waiting roughly for 300 seconds for cluster to terminate
-                    with fixtures.Timeout(300, gentle=True):
-                        while True:
-                            try:
-                                self.sahara.clusters.get(cluster_id)
-                            except client_base.APIException:
-                                # Cluster is finally deleted
-                                break
+    def delete_cluster_template(self, cluster_template_id):
+        if not self.common_config.RETAIN_CLUSTER_AFTER_TEST:
+            return self.delete_resource(self.sahara.cluster_templates.delete,
+                                        cluster_template_id)
 
-                            time.sleep(5)
+    def delete_node_group_template(self, node_group_template_id):
+        if not self.common_config.RETAIN_CLUSTER_AFTER_TEST:
+            return self.delete_resource(
+                self.sahara.node_group_templates.delete,
+                node_group_template_id)
 
-                except fixtures.TimeoutException:
-                    self.fail('Cluster failed to terminate in 300 seconds: '
-                              '%s' % cluster_id)
+    def is_resource_deleted(self, method, *args, **kwargs):
+        try:
+            method(*args, **kwargs)
+        except client_base.APIException as ex:
+            return ex.error_code == 404
 
-            if cluster_template_id:
-                self.sahara.cluster_templates.delete(cluster_template_id)
-            if node_group_template_id_list:
-                for node_group_template_id in node_group_template_id_list:
-                    self.sahara.node_group_templates.delete(
-                        node_group_template_id
-                    )
+        return False
+
+    def delete_resource(self, method, *args, **kwargs):
+        with fixtures.Timeout(self.common_config.DELETE_RESOURCE_TIMEOUT*60,
+                              gentle=True):
+            while True:
+                if self.is_resource_deleted(method, *args, **kwargs):
+                    break
+                time.sleep(5)
 
     @staticmethod
     def delete_swift_container(swift, container):

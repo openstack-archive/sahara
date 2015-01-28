@@ -196,7 +196,6 @@ class MapRGatingTest(map_reduce.MapReduceTest, swift.SwiftTest,
         super(MapRGatingTest, self).setUp()
         self.cluster_id = None
         self.cluster_template_id = None
-        self.ng_template_ids = []
         self._mkdir_cmd = 'sudo -u %(user)s hadoop fs -mkdir -p %(path)s'
         self._tt_name = None
         self._mr_version = None
@@ -218,7 +217,8 @@ class MapRGatingTest(map_reduce.MapReduceTest, swift.SwiftTest,
             'node_configs': self.ng_params
         }
         self.ng_tmpl_single_id = self.create_node_group_template(**template)
-        self.ng_template_ids.append(self.ng_tmpl_single_id)
+        self.addCleanup(self.delete_node_group_template,
+                        self.ng_tmpl_single_id)
 
     @b.errormsg("Failure while 'master' node group template creation: ")
     def _create_master_ng_template(self):
@@ -233,9 +233,8 @@ class MapRGatingTest(map_reduce.MapReduceTest, swift.SwiftTest,
             'node_configs': {}
         }
         self.ng_tmpl_master_id = self.create_node_group_template(**template)
-        self.ng_template_ids.append(self.ng_tmpl_master_id)
-        self.addCleanup(self.delete_objects,
-                        node_group_template_id_list=[self.ng_tmpl_master_id])
+        self.addCleanup(self.delete_node_group_template,
+                        self.ng_tmpl_master_id)
 
     @b.errormsg("Failure while 'worker' node group template creation: ")
     def _create_worker_ng_template(self):
@@ -250,9 +249,8 @@ class MapRGatingTest(map_reduce.MapReduceTest, swift.SwiftTest,
             'node_configs': {}
         }
         self.ng_tmpl_worker_id = self.create_node_group_template(**template)
-        self.ng_template_ids.append(self.ng_tmpl_worker_id)
-        self.addCleanup(self.delete_objects,
-                        node_group_template_id_list=[self.ng_tmpl_worker_id])
+        self.addCleanup(self.delete_node_group_template,
+                        self.ng_tmpl_worker_id)
 
     @b.errormsg("Failure while cluster template creation: ")
     def _create_master_worker_cluster_template(self):
@@ -276,8 +274,8 @@ class MapRGatingTest(map_reduce.MapReduceTest, swift.SwiftTest,
             'net_id': self.internal_neutron_net
         }
         self.cluster_template_id = self.create_cluster_template(**template)
-        self.addCleanup(self.delete_objects,
-                        cluster_template_id=self.cluster_template_id)
+        self.addCleanup(self.delete_cluster_template,
+                        self.cluster_template_id)
 
     @b.errormsg("Failure while cluster template creation: ")
     def _create_single_node_cluster_template(self):
@@ -300,8 +298,8 @@ class MapRGatingTest(map_reduce.MapReduceTest, swift.SwiftTest,
             'net_id': self.internal_neutron_net
         }
         self.cluster_template_id = self.create_cluster_template(**template)
-        self.addCleanup(self.delete_objects,
-                        cluster_template_id=self.cluster_template_id)
+        self.addCleanup(self.delete_cluster_template,
+                        self.cluster_template_id)
 
     @b.errormsg("Failure while cluster creation: ")
     def _create_cluster(self):
@@ -315,7 +313,7 @@ class MapRGatingTest(map_reduce.MapReduceTest, swift.SwiftTest,
             'cluster_configs': {}
         }
         cluster_id = self.create_cluster(**cluster)
-        self.addCleanup(self.delete_objects, cluster_id=cluster_id)
+        self.addCleanup(self.delete_cluster, cluster_id)
         self.poll_cluster_state(cluster_id)
         self.cluster_info = self.get_cluster_info(self.plugin_config)
         self.await_active_workers_for_namenode(self.cluster_info['node_info'],
