@@ -119,10 +119,14 @@ class SaharaImageManager(images.ImageManager):
         tags = _ensure_tags(tags)
         return [i for i in self.list() if set(tags).issubset(i.tags)]
 
-    def list_registered(self, tags=None):
+    def list_registered(self, name=None, tags=None):
         tags = _ensure_tags(tags)
-        return [i for i in self.list()
-                if i.username and set(tags).issubset(i.tags)]
+        images = [i for i in self.list()
+                  if i.username and set(tags).issubset(i.tags)]
+        if name:
+            return [i for i in images if i.name == name]
+        else:
+            return images
 
     def get_registered_image(self, image):
         img = self.get(image)
