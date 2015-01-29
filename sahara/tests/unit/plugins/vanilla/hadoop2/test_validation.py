@@ -84,7 +84,7 @@ class ValidationTest(base.SaharaTestCase):
             lst.append(self.ng[i])
 
         return tu.create_cluster("cluster1", "tenant1", "vanilla",
-                                 "2.4.1", lst, **kwargs)
+                                 "2.6.0", lst, **kwargs)
 
     def _validate_case(self, *args):
         cl = self._create_cluster(*args)
