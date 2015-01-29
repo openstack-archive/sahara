@@ -373,6 +373,8 @@ class CDHGatingTest(check_services.CheckServicesTest,
             self._check_scaling()
             self._check_cinder_after_scaling()
             self._check_edp_after_scaling()
+            self._check_mapreduce_after_scaling()
+            self._check_swift_after_scaling()
 
         self._success = True
 
