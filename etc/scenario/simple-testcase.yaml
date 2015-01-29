@@ -1,3 +1,5 @@
+concurrency: 1
+
 credentials:
     os_username: admin
     os_password: nova
