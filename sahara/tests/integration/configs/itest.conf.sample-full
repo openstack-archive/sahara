@@ -168,6 +168,73 @@
 #SKIP_SWIFT_TEST = False
 #SKIP_SCALING_TEST = False
 
+[CDH]
+
+# Name of plugin (string value)
+#PLUGIN_NAME = 'cdh'
+
+
+# ID for image which is used for cluster creation. Also you can specify image
+# name or tag of image instead of image ID. If you do not specify image related
+# parameters then image for cluster creation will be chosen by tag
+# "sahara_i_tests" (string value)
+#IMAGE_ID = <None>
+
+# Name for image which is used for cluster creation. Also you can specify image
+# ID or tag of image instead of image name. If you do not specify image related
+# parameters then image for cluster creation will be chosen by tag
+# "sahara_i_tests" (string value)
+#IMAGE_NAME = <None>
+
+# Tag for image which is used for cluster creation. Also you can specify image
+# ID or image name instead of tag of image. If you do not specify image related
+# parameters then image for cluster creation will be chosen by tag
+# "sahara_i_tests (string value)
+#IMAGE_TAG = <None>
+
+
+# Version of Hadoop (string value)
+#HADOOP_VERSION = '5'
+
+# Username which is used for access to Hadoop services (string value)
+#HADOOP_USER = 'hdfs'
+
+# Directory where logs of completed jobs are located (string value)
+#HADOOP_LOG_DIRECTORY = ''
+
+# Directory where logs of completed jobs on volume mounted to node are located
+# (string value)
+#HADOOP_LOG_DIRECTORY_ON_VOLUME = ''
+
+# (dictionary value)
+#HADOOP_PROCESSES_WITH_PORTS = YARN_RESOURCEMANAGER: 8088, HDFS_NAMENODE: 50070, HDFS_SECONDARYNAMENODE: 50090, YARN_NODEMANAGER: 8042, HDFS_DATANODE: 50075
+#CLOUDERA_MANAGER: 7180, YARN_JOBHISTORY: 19888, OOZIE_SERVER: 11000
+
+
+# (dictionary value)
+#PROCESS_NAMES = nn: HDFS_NAMENODE, tt: YARN_NODEMANAGER, dn: HDFS_DATANODE
+
+# (string value)
+#CDH_REPO_LIST_URL = 'http://archive-primary.cloudera.com/cdh5/ubuntu/precise/amd64/cdh/cloudera.list'
+#CM_REPO_LIST_URL = 'http://archive-primary.cloudera.com/cm5/ubuntu/precise/amd64/cm/cloudera.list'
+#CDH_APT_KEY_URL = 'http://archive-primary.cloudera.com/cdh5/ubuntu/precise/amd64/cdh/archive.key'
+#CM_APT_KEY_URL = 'http://archive-primary.cloudera.com/cm5/ubuntu/precise/amd64/cm/archive.key'
+
+#Manager flavor for manager node
+#MANAGERNODE_FLAVOR = 3
+
+#Lager flavor for services tests node
+#LARGE_FLAVOR = 4
+
+#SKIP_ALL_TESTS_FOR_PLUGIN = False
+#SKIP_CINDER_TEST = False
+#SKIP_CLUSTER_CONFIG_TEST = False
+#SKIP_EDP_TEST = False
+#SKIP_MAP_REDUCE_TEST = False
+#SKIP_SWIFT_TEST = False
+#SKIP_SCALING_TEST = False
+#SKIP_CHECK_SERVICES_TEST = False
+
 [HDP]
 
 # Name of plugin (string value)
