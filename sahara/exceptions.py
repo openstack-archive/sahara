@@ -305,3 +305,12 @@ class Forbidden(SaharaException):
         if message:
             self.message = message
         super(Forbidden, self).__init__()
+
+
+class ImageNotRegistered(SaharaException):
+    code = "IMAGE_NOT_REGISTERED"
+    message = _("Image %s is not registered in Sahara")
+
+    def __init__(self, image):
+        self.message = self.message % image
+        super(ImageNotRegistered, self).__init__()

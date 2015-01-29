@@ -212,6 +212,10 @@ def get_image(**kwargs):
         return nova.client().images.find(**kwargs)
 
 
+def get_registered_image(id):
+    return nova.client().images.get_registered_image(id)
+
+
 def register_image(image_id, username, description=None):
     client = nova.client()
     client.images.set_description(image_id, username, description)

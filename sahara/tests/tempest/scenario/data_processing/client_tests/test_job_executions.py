@@ -270,8 +270,8 @@ class JobExecutionTest(base.BaseDataProcessingTest):
     @test.services('data_processing')
     def test_job_executions(self):
         image_id = CONF.data_processing.fake_image_id
-        self._check_image_get(image_id)
         self._check_register_image(image_id)
+        self._check_image_get(image_id)
         self._check_image_list(image_id)
         self._check_adding_tags(image_id)
 

@@ -15,6 +15,8 @@
 
 from novaclient.v1_1 import images
 
+from sahara import exceptions as exc
+
 
 PROP_DESCR = '_sahara_description'
 PROP_USERNAME = '_sahara_username'
@@ -121,3 +123,10 @@ class SaharaImageManager(images.ImageManager):
         tags = _ensure_tags(tags)
         return [i for i in self.list()
                 if i.username and set(tags).issubset(i.tags)]
+
+    def get_registered_image(self, image):
+        img = self.get(image)
+        if img.username:
+            return img
+        else:
+            raise exc.ImageNotRegistered(image)
