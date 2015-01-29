@@ -52,6 +52,10 @@ def _count_instances_to_attach(instances):
     return result
 
 
+def _count_volumes_to_attach(instances):
+    return sum([inst.node_group.volumes_per_node for inst in instances])
+
+
 def _get_cluster_id(instance):
     return instance.node_group.cluster_id
 
@@ -149,10 +153,18 @@ def _count_attached_devices(instance, devices):
 
 
 def mount_to_instances(instances):
+    if len(instances) == 0:
+        return
+
+    cpo.add_provisioning_step(
+        _get_cluster_id(instances[0]),
+        _("Mount volumes to instances"), _count_volumes_to_attach(instances))
+
     with context.ThreadGroup() as tg:
         for instance in instances:
             devices = _find_instance_volume_devices(instance)
-            # Since formating can take several minutes (for large disks) and
+
+            # Since formatting can take several minutes (for large disks) and
             # can be done in parallel, launch one thread per disk.
             for idx in range(0, instance.node_group.volumes_per_node):
                 tg.spawn('mount-volume-%d-to-node-%s' %
@@ -166,6 +178,7 @@ def _find_instance_volume_devices(instance):
     return devices
 
 
+@cpo.event_wrapper(mark_successful_on_exit=True)
 def _mount_volume_to_node(instance, idx, device):
     LOG.debug("Mounting volume %s to instance %s" %
               (device, instance.instance_name))

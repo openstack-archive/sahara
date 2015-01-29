@@ -19,10 +19,12 @@ from oslo_log import log as logging
 
 from sahara import conductor as c
 from sahara import context
+from sahara.i18n import _
 from sahara.i18n import _LI
 from sahara.i18n import _LW
 from sahara.service import engine as e
 from sahara.service import volumes
+from sahara.utils import cluster_progress_ops as cpo
 from sahara.utils import general as g
 from sahara.utils.openstack import heat
 
@@ -197,18 +199,23 @@ class _CreateLauncher(HeatEngine):
     DISABLE_ROLLBACK = True
     inst_ids = []
 
-    def launch_instances(self, cluster, target_count):
-        # create all instances
-        cluster = g.change_cluster_status(cluster, self.STAGES[0])
-
+    @cpo.event_wrapper_without_instance(mark_successful_on_exit=True)
+    def create_instances(self, cluster, target_count):
         tmpl = heat.ClusterTemplate(cluster)
 
         self._configure_template(tmpl, cluster, target_count)
         stack = tmpl.instantiate(update_existing=self.UPDATE_STACK,
                                  disable_rollback=self.DISABLE_ROLLBACK)
         heat.wait_stack_completion(stack.heat_stack)
-
         self.inst_ids = self._populate_cluster(cluster, stack)
+
+    def launch_instances(self, cluster, target_count):
+        # create all instances
+        cluster = g.change_cluster_status(cluster, self.STAGES[0])
+
+        cpo.add_provisioning_step(cluster.id, _("Create Heat stack"), 1)
+        with context.InstanceInfoManager([cluster.id, None, None, None]):
+            self.create_instances(cluster, target_count)
 
         # wait for all instances are up and networks ready
         cluster = g.change_cluster_status(cluster, self.STAGES[1])
