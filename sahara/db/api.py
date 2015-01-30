@@ -117,7 +117,7 @@ def cluster_get(context, cluster):
 def cluster_get_all(context, **kwargs):
     """Get all clusters filtered by **kwargs.
 
-    e.g. cluster_get_all(plugin_name='vanilla', hadoop_version='1.1')
+    e.g. cluster_get_all(ctx, plugin_name='vanilla', hadoop_version='1.1')
     """
     return IMPL.cluster_get_all(context, **kwargs)
 
@@ -395,7 +395,7 @@ def job_binary_destroy(context, job_binary):
 def job_binary_internal_get_all(context, **kwargs):
     """Get all JobBinaryInternals filtered by **kwargs.
 
-    e.g.  cluster_get_all(name='wordcount.jar')
+    e.g.  job_binary_internal_get_all(ctx, name='wordcount.jar')
 
     The JobBinaryInternals returned do not contain a data field.
     """
