@@ -150,6 +150,7 @@ class SparkProvider(p.ProvisioningPluginBase):
         else:
             config_slaves = "\n"
 
+        extra['job_cleanup'] = c_helper.generate_job_cleanup_config(cluster)
         for ng in cluster.node_groups:
             extra[ng.id] = {
                 'xml': c_helper.generate_xml_configs(
@@ -273,6 +274,7 @@ class SparkProvider(p.ProvisioningPluginBase):
 
             self._write_topology_data(r, cluster, extra)
             self._push_master_configs(r, cluster, extra, instance)
+            self._push_cleanup_job(r, cluster, extra, instance)
 
     def _push_configs_to_existing_node(self, cluster, extra, instance):
         node_processes = instance.node_group.node_processes
@@ -291,6 +293,7 @@ class SparkProvider(p.ProvisioningPluginBase):
             }
             r = remote.get_remote(instance)
             r.write_files_to(files)
+            self._push_cleanup_job(r, cluster, extra, instance)
         if need_update_hadoop:
             with remote.get_remote(instance) as r:
                 self._write_topology_data(r, cluster, extra)
@@ -303,9 +306,21 @@ class SparkProvider(p.ProvisioningPluginBase):
 
     def _push_master_configs(self, r, cluster, extra, instance):
         node_processes = instance.node_group.node_processes
-
         if 'namenode' in node_processes:
             self._push_namenode_configs(cluster, r)
+
+    def _push_cleanup_job(self, r, cluster, extra, instance):
+        node_processes = instance.node_group.node_processes
+        if 'master' in node_processes:
+            if extra['job_cleanup']['valid']:
+                r.write_file_to('/etc/hadoop/tmp-cleanup.sh',
+                                extra['job_cleanup']['script'])
+                r.execute_command("chmod 755 /etc/hadoop/tmp-cleanup.sh")
+                cmd = 'sudo sh -c \'echo "%s" > /etc/cron.d/spark-cleanup\''
+                r.execute_command(cmd % extra['job_cleanup']['cron'])
+            else:
+                r.execute_command("sudo rm -f /etc/hadoop/tmp-cleanup.sh")
+                r.execute_command("sudo rm -f /etc/crond.d/spark-cleanup")
 
     def _push_namenode_configs(self, cluster, r):
         r.write_file_to('/etc/hadoop/dn.incl',

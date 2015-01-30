@@ -1,0 +1,2 @@
+# Cleans up old Spark job directories once per hour.
+0 * * * * root /etc/hadoop/tmp-cleanup.sh
