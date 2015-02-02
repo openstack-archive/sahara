@@ -14,6 +14,7 @@
 # limitations under the License.
 
 from oslo.config import cfg
+import six
 from six.moves.urllib import parse as urlparse
 
 from sahara import context
@@ -61,3 +62,12 @@ def retrieve_preauth_url():
         if ep.get('interface') == 'public':
             return ep.get('url')
     return None
+
+
+def inject_swift_url_suffix(url):
+    if isinstance(url, six.string_types) and url.startswith("swift://"):
+        u = urlparse.urlparse(url)
+        if not u.netloc.endswith(SWIFT_URL_SUFFIX):
+            return url.replace(u.netloc,
+                               u.netloc + SWIFT_URL_SUFFIX, 1)
+    return url
