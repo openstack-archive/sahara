@@ -30,6 +30,7 @@ from sahara.plugins.spark import run_scripts as run
 from sahara.plugins.spark import scaling as sc
 from sahara.plugins import utils
 from sahara.topology import topology_helper as th
+from sahara.utils import cluster_progress_ops as cpo
 from sahara.utils import files as f
 from sahara.utils import general as ug
 from sahara.utils import remote
@@ -105,15 +106,32 @@ class SparkProvider(p.ProvisioningPluginBase):
     def configure_cluster(self, cluster):
         self._setup_instances(cluster)
 
-    def start_cluster(self, cluster):
-        nn_instance = utils.get_instance(cluster, "namenode")
-        sm_instance = utils.get_instance(cluster, "master")
-        dn_instances = utils.get_instances(cluster, "datanode")
-
-        # Start the name node
+    @cpo.event_wrapper(
+        True, step=utils.start_process_event_message("NameNode"))
+    def _start_namenode(self, nn_instance):
         with remote.get_remote(nn_instance) as r:
             run.format_namenode(r)
             run.start_processes(r, "namenode")
+
+    def start_spark(self, cluster):
+        sm_instance = utils.get_instance(cluster, "master")
+        if sm_instance:
+            self._start_spark(cluster, sm_instance)
+
+    @cpo.event_wrapper(
+        True, step=utils.start_process_event_message("SparkMasterNode"))
+    def _start_spark(self, cluster, sm_instance):
+        with remote.get_remote(sm_instance) as r:
+            run.start_spark_master(r, self._spark_home(cluster))
+            LOG.info(_LI("Spark service at '%s' has been started"),
+                     sm_instance.hostname())
+
+    def start_cluster(self, cluster):
+        nn_instance = utils.get_instance(cluster, "namenode")
+        dn_instances = utils.get_instances(cluster, "datanode")
+
+        # Start the name node
+        self._start_namenode(nn_instance)
 
         # start the data nodes
         self._start_datanode_processes(dn_instances)
@@ -127,11 +145,7 @@ class SparkProvider(p.ProvisioningPluginBase):
                               "/user/$USER/")
 
         # start spark nodes
-        if sm_instance:
-            with remote.get_remote(sm_instance) as r:
-                run.start_spark_master(r, self._spark_home(cluster))
-                LOG.info(_LI("Spark service at '%s' has been started"),
-                         sm_instance.hostname())
+        self.start_spark(cluster)
 
         LOG.info(_LI('Cluster %s has been started successfully'),
                  cluster.name)
@@ -190,11 +204,19 @@ class SparkProvider(p.ProvisioningPluginBase):
         return extra
 
     def _start_datanode_processes(self, dn_instances):
+        if len(dn_instances) == 0:
+            return
+
+        cpo.add_provisioning_step(
+            dn_instances[0].cluster_id,
+            utils.start_process_event_message("DataNodes"), len(dn_instances))
+
         with context.ThreadGroup() as tg:
             for i in dn_instances:
                 tg.spawn('spark-start-dn-%s' % i.instance_name,
                          self._start_datanode, i)
 
+    @cpo.event_wrapper(mark_successful_on_exit=True)
     def _start_datanode(self, instance):
         with instance.remote() as r:
             run.start_processes(r, "datanode")
@@ -209,6 +231,8 @@ class SparkProvider(p.ProvisioningPluginBase):
 
     def _push_configs_to_nodes(self, cluster, extra, new_instances):
         all_instances = utils.get_instances(cluster)
+        cpo.add_provisioning_step(
+            cluster.id, _("Push configs to nodes"), len(all_instances))
         with context.ThreadGroup() as tg:
             for instance in all_instances:
                 if instance in new_instances:
@@ -220,6 +244,7 @@ class SparkProvider(p.ProvisioningPluginBase):
                              self._push_configs_to_existing_node, cluster,
                              extra, instance)
 
+    @cpo.event_wrapper(mark_successful_on_exit=True)
     def _push_configs_to_new_node(self, cluster, extra, instance):
         ng_extra = extra[instance.node_group.id]
 
@@ -294,6 +319,7 @@ class SparkProvider(p.ProvisioningPluginBase):
             self._push_master_configs(r, cluster, extra, instance)
             self._push_cleanup_job(r, cluster, extra, instance)
 
+    @cpo.event_wrapper(mark_successful_on_exit=True)
     def _push_configs_to_existing_node(self, cluster, extra, instance):
         node_processes = instance.node_group.node_processes
         need_update_hadoop = (c_helper.is_data_locality_enabled(cluster) or
