@@ -77,7 +77,7 @@ class DirectEngine(e.Engine):
 
     def scale_cluster(self, cluster, node_group_id_map):
         ctx = context.ctx()
-        cluster = g.change_cluster_status(cluster, "Scaling")
+        cluster = g.change_cluster_status(cluster, "Scaling: Spawning")
 
         instance_ids = self._scale_cluster_instances(cluster,
                                                      node_group_id_map)
