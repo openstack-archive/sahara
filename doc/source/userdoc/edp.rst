@@ -221,7 +221,7 @@ Additional Details for Java jobs
 
 Java jobs use two special configuration values:
 
-* ``edp.java.main_class`` (required) Specifies the class containing ``main(String[] args)``
+* ``edp.java.main_class`` (required) Specifies the class(including the package name, for example: org.openstack.sahara.examples.WordCount) containing ``main(String[] args)``
 
 * ``edp.java.java_opts`` (optional) Specifies configuration values for the JVM
 
