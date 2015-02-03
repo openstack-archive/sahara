@@ -240,7 +240,7 @@ def start_patch(patch_templates=True):
 
 
 def stop_patch(patchers):
-    for patcher in patchers:
+    for patcher in reversed(patchers):
         patcher.stop()
 
 

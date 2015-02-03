@@ -673,12 +673,13 @@ class TestClusterCreateFlavorValidation(base.SaharaWithDbTestCase):
             'default_image_id': '550e8400-e29b-41d4-a716-446655440000'
         }
         with testtools.ExpectedException(exceptions.NotFoundException):
+            patchers = u.start_patch(False)
             try:
-                patchers = u.start_patch(False)
                 c.check_cluster_create(data)
-                u.stop_patch(patchers)
             except exceptions.NotFoundException as e:
                 message = six.text_type(e).split('\n')[0]
                 self.assertEqual("Requested flavor '23' not found",
                                  message)
                 raise e
+            finally:
+                u.stop_patch(patchers)
