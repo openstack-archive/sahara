@@ -26,6 +26,7 @@ from sahara.plugins.hdp import saharautils as utils
 from sahara.plugins.hdp.versions import versionhandlerfactory as vhf
 from sahara.plugins import provisioning as p
 from sahara.topology import topology_helper as th
+from sahara.utils import cluster_progress_ops as cpo
 from sahara.utils import general as g
 
 
@@ -75,6 +76,8 @@ class AmbariPlugin(p.ProvisioningPluginBase):
             cluster = g.change_cluster_status(cluster, "Configuring HA")
             self.configure_hdfs_ha(cluster)
 
+    @cpo.event_wrapper(
+        True, step=_("Add configurations to cluster"), param=('cluster', 1))
     def configure_hdfs_ha(self, cluster):
         version = cluster.hadoop_version
         handler = self.version_factory.get_version_handler(version)
@@ -177,6 +180,11 @@ class AmbariPlugin(p.ProvisioningPluginBase):
     def _provision_cluster(self, name, cluster_spec, ambari_info,
                            servers, version):
         # TODO(jspeidel): encapsulate in another class
+
+        if servers:
+            cpo.add_provisioning_step(
+                servers[0].cluster_id,
+                _("Provision cluster via Ambari"), len(servers))
 
         for server in servers:
             self._spawn(
@@ -314,6 +322,9 @@ class AmbariPlugin(p.ProvisioningPluginBase):
         ambari_info = self.get_ambari_info(cluster_spec)
         self._update_ambari_info_credentials(cluster_spec, ambari_info)
 
+        cpo.add_provisioning_step(
+            cluster.id, _("Provision cluster via Ambari"), len(servers))
+
         for server in servers:
             self._spawn('Ambari provisioning thread',
                         server.provision_ambari, ambari_info, cluster_spec)
@@ -397,6 +408,9 @@ class AmbariPlugin(p.ProvisioningPluginBase):
 
     def _configure_topology_for_cluster(self, cluster, servers):
         if CONF.enable_data_locality:
+            cpo.add_provisioning_step(
+                cluster.id, _("Enable data locality for cluster"),
+                len(servers))
             topology_data = th.generate_topology_map(
                 cluster, CONF.enable_hypervisor_awareness)
             topology_str = "\n".join(
@@ -426,3 +440,6 @@ class AmbariInfo(object):
     def get_cluster(self):
         sahara_instance = self.host.sahara_instance
         return sahara_instance.cluster
+
+    def get_event_info(self):
+        return self.host.sahara_instance

@@ -31,6 +31,7 @@ from sahara.plugins.hdp import configprovider as cfgprov
 from sahara.plugins.hdp.versions import abstractversionhandler as avm
 from sahara.plugins.hdp.versions.version_1_3_2 import edp_engine
 from sahara.plugins.hdp.versions.version_1_3_2 import services
+from sahara.utils import cluster_progress_ops as cpo
 from sahara.utils import general as g
 from sahara import version
 
@@ -125,6 +126,11 @@ class VersionHandler(avm.AbstractVersionHandler):
         return node_processes
 
     def install_swift_integration(self, servers):
+        if servers:
+            cpo.add_provisioning_step(
+                servers[0].cluster_id, _("Install Swift integration"),
+                len(servers))
+
         for server in servers:
             server.install_swift_integration()
 
@@ -233,6 +239,8 @@ class AmbariClient(object):
             raise ex.HadoopProvisionError(
                 _('Failed to add cluster: %s') % result.text)
 
+    @cpo.event_wrapper(True, step=_("Add configurations to cluster"),
+                       param=('ambari_info', 2))
     def _add_configurations_to_cluster(
             self, cluster_spec, ambari_info, name):
 
@@ -283,6 +291,8 @@ class AmbariClient(object):
                     _('Failed to set configurations on cluster: %s')
                     % result.text)
 
+    @cpo.event_wrapper(
+        True, step=_("Add services to cluster"), param=('ambari_info', 2))
     def _add_services_to_cluster(self, cluster_spec, ambari_info, name):
         services = cluster_spec.services
         add_service_url = 'http://{0}/api/v1/clusters/{1}/services/{2}'
@@ -299,6 +309,8 @@ class AmbariClient(object):
                         _('Failed to add services to cluster: %s')
                         % result.text)
 
+    @cpo.event_wrapper(
+        True, step=_("Add components to services"), param=('ambari_info', 2))
     def _add_components_to_services(self, cluster_spec, ambari_info, name):
         add_component_url = ('http://{0}/api/v1/clusters/{1}/services/{'
                              '2}/components/{3}')
@@ -317,6 +329,8 @@ class AmbariClient(object):
                             _('Failed to add components to services: %s')
                             % result.text)
 
+    @cpo.event_wrapper(
+        True, step=_("Add hosts and components"), param=('ambari_info', 3))
     def _add_hosts_and_components(
             self, cluster_spec, servers, ambari_info, name):
 
@@ -352,6 +366,8 @@ class AmbariClient(object):
                             _('Failed to add host component: %s')
                             % result.text)
 
+    @cpo.event_wrapper(
+        True, step=_("Install services"), param=('ambari_info', 2))
     def _install_services(self, cluster_name, ambari_info):
 
         ambari_address = ambari_info.get_address()
@@ -426,6 +442,8 @@ class AmbariClient(object):
                                             'state.'))
         LOG.info(_LI('Ambari cluster state finalized.'))
 
+    @cpo.event_wrapper(
+        True, step=_("Start services"), param=('ambari_info', 3))
     def start_services(self, cluster_name, cluster_spec, ambari_info):
         start_url = ('http://{0}/api/v1/clusters/{1}/services?ServiceInfo/'
                      'state=INSTALLED'.format(
@@ -557,6 +575,8 @@ class AmbariClient(object):
                   'components in scaled instances.  status'
                   ' code returned = {0}').format(result.status))
 
+    @cpo.event_wrapper(True, step=_("Wait for all Ambari agents to register"),
+                       param=('ambari_info', 2))
     @g.await_process(
         3600, 5, _("Ambari agents registering with server"), _check_ambari)
     def wait_for_host_registrations(self, num_hosts, ambari_info):
@@ -636,6 +656,8 @@ class AmbariClient(object):
         self._install_and_start_components(
             name, servers, ambari_info, cluster_spec)
 
+    @cpo.event_wrapper(
+        True, step=_("Decommission nodes"), param=('cluster', 1))
     def decommission_cluster_instances(self, cluster, clusterspec, instances,
                                        ambari_info):
         raise exc.InvalidDataException(_('The HDP plugin does not support '

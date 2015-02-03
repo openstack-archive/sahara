@@ -21,6 +21,7 @@ from sahara.i18n import _
 from sahara.i18n import _LI
 from sahara.plugins import exceptions as ex
 from sahara.plugins.hdp import saharautils
+from sahara.utils import cluster_progress_ops as cpo
 from sahara.utils import files as f
 
 
@@ -46,6 +47,14 @@ class HadoopServer(object):
         self.node_group = node_group
         self.ambari_rpm = ambari_rpm or AMBARI_RPM
 
+    def get_event_info(self):
+        return self.instance
+
+    @property
+    def cluster_id(self):
+        return self.instance.cluster_id
+
+    @cpo.event_wrapper(True, param=('self', 0))
     def provision_ambari(self, ambari_info, cluster_spec):
         self.install_rpms()
         global_config = cluster_spec.configurations['global']
@@ -87,6 +96,7 @@ class HadoopServer(object):
                 raise ex.HadoopProvisionError(
                     _('Failed to install Hortonworks Ambari'))
 
+    @cpo.event_wrapper(True, param=('self', 0))
     @saharautils.inject_remote('r')
     def install_swift_integration(self, r):
         LOG.debug(
@@ -112,6 +122,7 @@ class HadoopServer(object):
                 raise ex.HadoopProvisionError(
                     _('Failed to install Hadoop Swift integration'))
 
+    @cpo.event_wrapper(True, param=('self', 0))
     @saharautils.inject_remote('r')
     def configure_topology(self, topology_str, r):
         r.write_file_to(
