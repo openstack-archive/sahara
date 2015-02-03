@@ -123,7 +123,7 @@ class VersionHandler(avm.AbstractVersionHandler):
             'DATANODE': [50075, 50475, 50010, 8010],
             'SECONDARY_NAMENODE': [50090],
             'HISTORYSERVER': [19888],
-            'RESOURCEMANAGER': [8025, 8041, 8050],
+            'RESOURCEMANAGER': [8025, 8041, 8050, 8088],
             'NODEMANAGER': [45454],
             'HIVE_SERVER': [10000],
             'HIVE_METASTORE': [9083],
