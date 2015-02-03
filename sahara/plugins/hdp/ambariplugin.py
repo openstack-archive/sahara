@@ -16,7 +16,7 @@
 from oslo.config import cfg
 from oslo_log import log as logging
 
-from sahara import conductor
+from sahara import conductor as c
 from sahara import context
 from sahara.i18n import _
 from sahara.i18n import _LI
@@ -29,7 +29,7 @@ from sahara.topology import topology_helper as th
 from sahara.utils import general as g
 
 
-conductor = conductor.API
+conductor = c.API
 LOG = logging.getLogger(__name__)
 CONF = cfg.CONF
 
@@ -405,3 +405,11 @@ class AmbariInfo(object):
 
     def get_address(self):
         return '{0}:{1}'.format(self.host.management_ip, self.port)
+
+    def is_ambari_info(self):
+        pass
+
+    def get_cluster(self):
+        sahara_instance = self.host.sahara_instance
+        cluster_id = sahara_instance.node_group.cluster_id
+        return conductor.cluster_get(context.ctx(), cluster_id)
