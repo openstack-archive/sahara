@@ -33,6 +33,8 @@ implementations which are run in a separate process.
 
 import os
 import shlex
+import sys
+import threading
 import time
 import uuid
 
@@ -64,6 +66,7 @@ CONF = cfg.CONF
 
 
 _ssh = None
+_proxy_ssh = None
 _sessions = {}
 
 
@@ -73,26 +76,44 @@ INFRA = None
 _global_remote_semaphore = None
 
 
-def _connect(host, username, private_key, proxy_command=None):
+def _connect(host, username, private_key, proxy_command=None,
+             gateway_host=None, gateway_image_username=None):
     global _ssh
+    global _proxy_ssh
 
     LOG.debug('Creating SSH connection')
     if type(private_key) in [str, unicode]:
         private_key = crypto.to_paramiko_private_key(private_key)
+
     _ssh = paramiko.SSHClient()
     _ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
 
     proxy = None
     if proxy_command:
-        LOG.debug('creating proxy using command: {0}'.format(proxy_command))
+        LOG.debug('creating proxy using command: %s', proxy_command)
         proxy = paramiko.ProxyCommand(proxy_command)
+
+    if gateway_host:
+        _proxy_ssh = paramiko.SSHClient()
+        _proxy_ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+
+        LOG.debug('connecting to proxy gateway at: %s', gateway_host)
+        _proxy_ssh.connect(gateway_host, username=gateway_image_username,
+                           pkey=private_key, sock=proxy)
+
+        proxy = _proxy_ssh.get_transport().open_session()
+        proxy.exec_command("nc {0} 22".format(host))
 
     _ssh.connect(host, username=username, pkey=private_key, sock=proxy)
 
 
 def _cleanup():
     global _ssh
+    global _proxy_ssh
+
     _ssh.close()
+    if _proxy_ssh:
+        _proxy_ssh.close()
 
 
 def _read_paramimko_stream(recv_func):
@@ -137,14 +158,54 @@ def _execute_command(cmd, run_as_root=False, get_stderr=False,
         return ret_code, stdout
 
 
-def _get_http_client(host, port, proxy_command=None):
+def _execute_command_interactive(cmd, run_as_root=False):
+    global _ssh
+
+    chan = _ssh.get_transport().open_session()
+    if run_as_root:
+        chan.exec_command('sudo bash -c "%s"' % _escape_quotes(cmd))
+    else:
+        chan.exec_command(cmd)
+
+    _proxy_shell(chan)
+
+    _ssh.close()
+
+
+def _proxy_shell(chan):
+    def readall():
+        while True:
+            d = sys.stdin.read(1)
+            if not d or chan.exit_status_ready():
+                break
+            chan.send(d)
+
+    reader = threading.Thread(target=readall)
+    reader.start()
+
+    while True:
+        data = chan.recv(256)
+        if not data or chan.exit_status_ready():
+            break
+        sys.stdout.write(data)
+        sys.stdout.flush()
+
+
+def _get_http_client(host, port, proxy_command=None, gateway_host=None,
+                     gateway_username=None, gateway_private_key=None):
     global _sessions
 
     _http_session = _sessions.get((host, port), None)
     LOG.debug('cached HTTP session for {0}:{1} is {2}'.format(host, port,
                                                               _http_session))
     if not _http_session:
-        if proxy_command:
+        if gateway_host:
+            _http_session = _get_proxy_gateway_http_session(
+                gateway_host, gateway_username,
+                gateway_private_key, host, port, proxy_command)
+            LOG.debug('created ssh proxied HTTP session for {0}:{1}'
+                      .format(host, port))
+        elif proxy_command:
             # can return a new session here because it actually uses
             # the same adapter (and same connection pools) for a given
             # host and port tuple
@@ -301,20 +362,64 @@ def _release_remote_semaphore():
 
 def _get_proxied_http_session(proxy_command, host, port=None):
     session = requests.Session()
-    adapter = ProxiedHTTPAdapter(proxy_command, host, port)
+
+    adapter = ProxiedHTTPAdapter(
+        _simple_exec_func(shlex.split(proxy_command)), host, port)
     session.mount('http://{0}:{1}'.format(host, adapter.port), adapter)
 
     return session
 
 
-class ProxiedHTTPAdapter(adapters.HTTPAdapter):
-    port = None
-    host = None
+def _get_proxy_gateway_http_session(gateway_host, gateway_username,
+                                    gateway_private_key, host, port=None,
+                                    proxy_command=None):
+    session = requests.Session()
+    adapter = ProxiedHTTPAdapter(
+        _proxy_gateway_func(gateway_host, gateway_username,
+                            gateway_private_key, host,
+                            port, proxy_command),
+        host, port)
+    session.mount('http://{0}:{1}'.format(host, port), adapter)
 
-    def __init__(self, proxy_command, host, port):
+    return session
+
+
+def _simple_exec_func(cmd):
+    def func():
+        return e_subprocess.Popen(cmd,
+                                  stdin=e_subprocess.PIPE,
+                                  stdout=e_subprocess.PIPE,
+                                  stderr=e_subprocess.PIPE)
+
+    return func
+
+
+def _proxy_gateway_func(gateway_host, gateway_username,
+                        gateway_private_key, host,
+                        port, proxy_command):
+    def func():
+        proc = procutils.start_subprocess()
+
+        try:
+            conn_params = (gateway_host, gateway_username, gateway_private_key,
+                           proxy_command, None, None)
+            procutils.run_in_subprocess(proc, _connect, conn_params)
+            cmd = "nc {host} {port}".format(host=host, port=port)
+            procutils.run_in_subprocess(
+                proc, _execute_command_interactive, (cmd,), interactive=True)
+            return proc
+        except Exception:
+            with excutils.save_and_reraise_exception():
+                procutils.shutdown_subprocess(proc, _cleanup)
+
+    return func
+
+
+class ProxiedHTTPAdapter(adapters.HTTPAdapter):
+    def __init__(self, create_process_func, host, port):
         super(ProxiedHTTPAdapter, self).__init__()
-        LOG.debug('HTTP adapter created with cmd {0}'.format(proxy_command))
-        self.cmd = shlex.split(proxy_command)
+        LOG.debug('HTTP adapter created for {0}:{1}'.format(host, port))
+        self.create_process_func = create_process_func
         self.port = port
         self.host = host
 
@@ -345,22 +450,19 @@ class ProxiedHTTPAdapter(adapters.HTTPAdapter):
         super(ProxiedHTTPAdapter, self).close()
 
     def _connect(self):
-        LOG.debug('Returning netcat socket with command {0}'
-                  .format(self.cmd))
+        LOG.debug('Returning netcat socket for {0}:{1}'
+                  .format(self.host, self.port))
         rootwrap_command = CONF.rootwrap_command if CONF.use_rootwrap else ''
-        return NetcatSocket(self.cmd, rootwrap_command)
+        return NetcatSocket(self.create_process_func, rootwrap_command)
 
 
 class NetcatSocket(object):
 
     def _create_process(self):
-        self.process = e_subprocess.Popen(self.cmd,
-                                          stdin=e_subprocess.PIPE,
-                                          stdout=e_subprocess.PIPE,
-                                          stderr=e_subprocess.PIPE)
+        self.process = self.create_process_func()
 
-    def __init__(self, cmd, rootwrap_command=None):
-        self.cmd = cmd
+    def __init__(self, create_process_func, rootwrap_command=None):
+        self.create_process_func = create_process_func
         self.rootwrap_command = rootwrap_command
         self._create_process()
 
@@ -432,27 +534,29 @@ class InstanceInteropHelper(remote.Remote):
         finally:
             _release_remote_semaphore()
 
-    def get_neutron_info(self):
+    def get_neutron_info(self, instance=None):
+        if not instance:
+            instance = self.instance
         neutron_info = h.HashableDict()
         neutron_info['network'] = (
-            self.instance.node_group.cluster.neutron_management_network)
+            instance.node_group.cluster.neutron_management_network)
         ctx = context.current()
         neutron_info['uri'] = base.url_for(ctx.service_catalog, 'network')
         neutron_info['token'] = ctx.auth_token
         neutron_info['tenant'] = ctx.tenant_name
-        neutron_info['host'] = self.instance.management_ip
+        neutron_info['host'] = instance.management_ip
 
         LOG.debug('Returning neutron info: {0}'.format(neutron_info))
         return neutron_info
 
-    def _build_proxy_command(self, command, host=None, port=None, info=None,
-                             rootwrap_command=None):
+    def _build_proxy_command(self, command, instance=None, port=None,
+                             info=None, rootwrap_command=None):
         # Accepted keywords in the proxy command template:
         # {host}, {port}, {tenant_id}, {network_id}, {router_id}
         keywords = {}
 
         if not info:
-            info = self.get_neutron_info()
+            info = self.get_neutron_info(instance)
         keywords['tenant_id'] = context.current().tenant_id
         keywords['network_id'] = info['network']
 
@@ -462,7 +566,7 @@ class InstanceInteropHelper(remote.Remote):
                                            info['token'], info['tenant'])
             keywords['router_id'] = client.get_router()
 
-        keywords['host'] = host
+        keywords['host'] = instance.management_ip
         keywords['port'] = port
 
         try:
@@ -476,6 +580,19 @@ class InstanceInteropHelper(remote.Remote):
         return command
 
     def _get_conn_params(self):
+        host_ng = self.instance.node_group
+        cluster = host_ng.cluster
+        access_instance = self.instance
+        proxy_gateway_node = cluster.get_proxy_gateway_node()
+
+        gateway_host = None
+        gateway_image_username = None
+        if proxy_gateway_node and not host_ng.is_proxy_gateway:
+            access_instance = proxy_gateway_node
+            gateway_host = proxy_gateway_node.management_ip
+            ng = proxy_gateway_node.node_group
+            gateway_image_username = ng.image_username
+
         proxy_command = None
         if CONF.proxy_command:
             # Build a session through a user-defined socket
@@ -489,13 +606,15 @@ class InstanceInteropHelper(remote.Remote):
         if proxy_command:
             rootwrap = CONF.rootwrap_command if CONF.use_rootwrap else ''
             proxy_command = self._build_proxy_command(
-                proxy_command, host=self.instance.management_ip, port=22,
+                proxy_command, instance=access_instance, port=22,
                 info=None, rootwrap_command=rootwrap)
 
         return (self.instance.management_ip,
-                self.instance.node_group.image_username,
-                self.instance.node_group.cluster.management_private_key,
-                proxy_command)
+                host_ng.image_username,
+                cluster.management_private_key,
+                proxy_command,
+                gateway_host,
+                gateway_image_username)
 
     def _run(self, func, *args, **kwargs):
         proc = procutils.start_subprocess()
@@ -529,6 +648,23 @@ class InstanceInteropHelper(remote.Remote):
     def get_http_client(self, port, info=None):
         self._log_command('Retrieving HTTP session for {0}:{1}'.format(
             self.instance.management_ip, port))
+
+        host_ng = self.instance.node_group
+        cluster = host_ng.cluster
+        access_instance = self.instance
+        access_port = port
+        proxy_gateway_node = cluster.get_proxy_gateway_node()
+
+        gateway_host = None
+        gateway_username = None
+        gateway_private_key = None
+        if proxy_gateway_node and not host_ng.is_proxy_gateway:
+            access_instance = proxy_gateway_node
+            access_port = 22
+            gateway_host = proxy_gateway_node.management_ip
+            gateway_username = proxy_gateway_node.node_group.image_username
+            gateway_private_key = cluster.management_private_key
+
         proxy_command = None
         if CONF.proxy_command:
             # Build a session through a user-defined socket
@@ -536,7 +672,7 @@ class InstanceInteropHelper(remote.Remote):
         elif info or (CONF.use_namespaces and not CONF.use_floating_ips):
             # need neutron info
             if not info:
-                info = self.get_neutron_info()
+                info = self.get_neutron_info(access_instance)
             # Build a session through a netcat socket in the Neutron namespace
             proxy_command = (
                 'ip netns exec qrouter-{router_id} nc {host} {port}')
@@ -545,11 +681,13 @@ class InstanceInteropHelper(remote.Remote):
         if proxy_command:
             rootwrap = CONF.rootwrap_command if CONF.use_rootwrap else ''
             proxy_command = self._build_proxy_command(
-                proxy_command, host=self.instance.management_ip, port=port,
+                proxy_command, instance=access_instance, port=access_port,
                 info=info, rootwrap_command=rootwrap)
 
         return _get_http_client(self.instance.management_ip, port,
-                                proxy_command)
+                                proxy_command, gateway_host,
+                                gateway_username,
+                                gateway_private_key)
 
     def close_http_session(self, port):
         global _sessions

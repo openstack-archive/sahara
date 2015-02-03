@@ -275,6 +275,74 @@ class TestClusterCreateValidation(u.ValidationTestCase):
             }
         )
 
+    def test_cluster_create_missing_floating_pool(self):
+        self.override_config("use_neutron", True)
+        self._assert_create_object_validation(
+            data={
+                'name': "testname",
+                'plugin_name': "vanilla",
+                'hadoop_version': "1.2.1",
+                'user_keypair_id': 'test_keypair',
+                'default_image_id': '550e8400-e29b-41d4-a716-446655440000',
+                'neutron_management_network': 'd9a3bebc-f788-4b81-'
+                                              '9a93-aa048022c1ca',
+                'node_groups': [
+                    {
+                        "name": "ng1",
+                        "node_processes": ["namenode"],
+                        "flavor_id": "42",
+                        "count": 100,
+                        'security_groups': ['group1', 'group2'],
+                        'floating_ip_pool':
+                            'd9a3bebc-f788-4b81-9a93-aa048022c1ca'
+                    },
+                    {
+                        "name": "ng2",
+                        "node_processes": ["datanode"],
+                        "flavor_id": "42",
+                        "count": 100,
+                        'security_groups': ['group1', 'group2']
+                    }
+                ]
+            },
+            bad_req_i=(1, 'MISSING_FLOATING_NETWORK',
+                       "Node Group ng2 is missing 'floating_ip_pool' "
+                       "field")
+        )
+
+    def test_cluster_create_with_proxy_gateway(self):
+        self.override_config("use_neutron", True)
+        self._assert_create_object_validation(
+            data={
+                'name': "testname",
+                'plugin_name': "vanilla",
+                'hadoop_version': "1.2.1",
+                'user_keypair_id': 'test_keypair',
+                'default_image_id': '550e8400-e29b-41d4-a716-446655440000',
+                'neutron_management_network': 'd9a3bebc-f788-4b81-'
+                                              '9a93-aa048022c1ca',
+                'node_groups': [
+                    {
+                        "name": "ng1",
+                        "node_processes": ["namenode"],
+                        "flavor_id": "42",
+                        "count": 100,
+                        'security_groups': ['group1', 'group2'],
+                        'floating_ip_pool':
+                            'd9a3bebc-f788-4b81-9a93-aa048022c1ca',
+                        "is_proxy_gateway": True
+                    },
+                    {
+                        "name": "ng2",
+                        "node_processes": ["datanode"],
+                        "flavor_id": "42",
+                        "count": 100,
+                        'security_groups': ['group1', 'group2']
+                    }
+                ]
+            }
+        )
+
     def test_cluster_create_security_groups_by_ids(self):
         self.override_config("use_neutron", True)
         self._assert_create_object_validation(

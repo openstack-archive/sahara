@@ -120,6 +120,7 @@ class ClusterTest(test_base.ConductorManagerTestCase):
             ng.pop("image_username")
             ng.pop("open_ports")
             ng.pop("auto_security_group")
+            ng.pop("is_proxy_gateway")
             ng.pop("tenant_id")
             ng.pop("availability_zone")
 

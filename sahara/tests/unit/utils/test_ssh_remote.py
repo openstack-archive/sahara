@@ -13,6 +13,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import shlex
+
 import mock
 import testtools
 
@@ -31,6 +33,12 @@ class FakeCluster(object):
     def __init__(self, priv_key):
         self.management_private_key = priv_key
         self.neutron_management_network = 'network1'
+
+    def has_proxy_gateway(self):
+        return False
+
+    def get_proxy_gateway_node(self):
+        return None
 
 
 class FakeNodeGroup(object):
@@ -101,7 +109,8 @@ class TestInstanceInteropHelper(base.SaharaTestCase):
         # Test SSH
         remote.execute_command('/bin/true')
         self.run_in_subprocess.assert_any_call(
-            42, ssh_remote._connect, ('10.0.0.1', 'user1', 'key1', None))
+            42, ssh_remote._connect, ('10.0.0.1', 'user1', 'key1',
+                                      None, None, None))
         # Test HTTP
         remote.get_http_client(8080)
         self.assertFalse(p_adapter.called)
@@ -109,8 +118,9 @@ class TestInstanceInteropHelper(base.SaharaTestCase):
     # When use_floating_ips=False and use_namespaces=True, a netcat socket
     # created with 'ip netns exec qrouter-...' should be used to access
     # instances.
+    @mock.patch('sahara.utils.ssh_remote._simple_exec_func')
     @mock.patch('sahara.utils.ssh_remote.ProxiedHTTPAdapter')
-    def test_use_namespaces(self, p_adapter):
+    def test_use_namespaces(self, p_adapter, p_simple_exec_func):
         self.override_config('use_floating_ips', False)
         self.override_config('use_namespaces', True)
 
@@ -122,17 +132,20 @@ class TestInstanceInteropHelper(base.SaharaTestCase):
         self.run_in_subprocess.assert_any_call(
             42, ssh_remote._connect,
             ('10.0.0.2', 'user2', 'key2',
-             'ip netns exec qrouter-fakerouter nc 10.0.0.2 22'))
+             'ip netns exec qrouter-fakerouter nc 10.0.0.2 22', None, None))
         # Test HTTP
         remote.get_http_client(8080)
         p_adapter.assert_called_once_with(
-            'ip netns exec qrouter-fakerouter nc 10.0.0.2 8080',
+            p_simple_exec_func(),
             '10.0.0.2', 8080)
+        p_simple_exec_func.assert_any_call(
+            shlex.split('ip netns exec qrouter-fakerouter nc 10.0.0.2 8080'))
 
     # When proxy_command is set, a user-defined netcat socket should be used to
     # access instances.
+    @mock.patch('sahara.utils.ssh_remote._simple_exec_func')
     @mock.patch('sahara.utils.ssh_remote.ProxiedHTTPAdapter')
-    def test_proxy_command(self, p_adapter):
+    def test_proxy_command(self, p_adapter, p_simple_exec_func):
         self.override_config('proxy_command', 'ssh fakerelay nc {host} {port}')
 
         instance = FakeInstance('inst3', '10.0.0.3', 'user3', 'key3')
@@ -142,11 +155,14 @@ class TestInstanceInteropHelper(base.SaharaTestCase):
         remote.execute_command('/bin/true')
         self.run_in_subprocess.assert_any_call(
             42, ssh_remote._connect,
-            ('10.0.0.3', 'user3', 'key3', 'ssh fakerelay nc 10.0.0.3 22'))
+            ('10.0.0.3', 'user3', 'key3', 'ssh fakerelay nc 10.0.0.3 22',
+             None, None))
         # Test HTTP
         remote.get_http_client(8080)
         p_adapter.assert_called_once_with(
-            'ssh fakerelay nc 10.0.0.3 8080', '10.0.0.3', 8080)
+            p_simple_exec_func(), '10.0.0.3', 8080)
+        p_simple_exec_func.assert_any_call(
+            shlex.split('ssh fakerelay nc 10.0.0.3 8080'))
 
     def test_proxy_command_bad(self):
         self.override_config('proxy_command', '{bad_kw} nc {host} {port}')

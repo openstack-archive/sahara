@@ -48,7 +48,10 @@ def init_instances_ips(instance):
             else:
                 management_ip = management_ip or address['addr']
 
-    if not CONF.use_floating_ips:
+    cluster = instance.node_group.cluster
+    if (not CONF.use_floating_ips or
+            (cluster.has_proxy_gateway() and
+             not instance.node_group.is_proxy_gateway)):
         management_ip = internal_ip
 
     # NOTE(aignatov): Once bug #1262529 is fixed this 'if' block should be
