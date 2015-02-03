@@ -26,7 +26,6 @@ from sahara import exceptions as ex
 from sahara.i18n import _
 from sahara.i18n import _LE
 from sahara.i18n import _LW
-from sahara.openstack.common import local
 
 
 CONF = cfg.CONF
@@ -68,8 +67,8 @@ class Context(context.RequestContext):
             self.auth_uri = auth_uri
         else:
             self.auth_uri = _get_auth_uri()
-        if overwrite or not hasattr(local.store, 'context'):
-            local.store.context = self
+        if overwrite or not hasattr(context._request_store, 'context'):
+            self.update_store()
 
         if current_instance_info is not None:
             self.current_instance_info = current_instance_info
@@ -103,7 +102,7 @@ class Context(context.RequestContext):
             'is_admin': self.is_admin,
             'roles': self.roles,
             'auth_uri': self.auth_uri,
-            'instance_uuid': self.resource_uuid,
+            'resource_uuid': self.resource_uuid,
         }
 
     def is_auth_capable(self):
@@ -155,12 +154,12 @@ def current():
 def set_ctx(new_ctx):
     if not new_ctx and has_ctx():
         delattr(_CTX_STORE, _CTX_KEY)
-        if hasattr(local.store, 'context'):
-            delattr(local.store, 'context')
+        if hasattr(context._request_store, 'context'):
+            delattr(context._request_store, 'context')
 
     if new_ctx:
         setattr(_CTX_STORE, _CTX_KEY, new_ctx)
-        setattr(local.store, 'context', new_ctx)
+        setattr(context._request_store, 'context', new_ctx)
 
 
 def _get_auth_uri():
