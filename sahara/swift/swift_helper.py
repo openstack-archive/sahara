@@ -51,3 +51,7 @@ def get_swift_configs():
     LOG.info(_LI("Swift would be integrated with the following "
              "params: %s"), result)
     return result
+
+
+def read_default_swift_configs():
+    return x.load_hadoop_xml_defaults('swift/resources/conf-template.xml')

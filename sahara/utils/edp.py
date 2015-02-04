@@ -59,6 +59,8 @@ JOB_TYPES_ALL = [
 
 ADAPT_FOR_OOZIE = 'edp.java.adapt_for_oozie'
 
+ADAPT_SPARK_FOR_SWIFT = 'edp.spark.adapt_for_swift'
+
 
 def split_job_type(job_type):
     '''Split a job type string into a type and subtype
@@ -97,6 +99,10 @@ def get_hive_shared_conf_path(hdfs_user):
 
 def is_adapt_for_oozie_enabled(configs):
     return configs.get(ADAPT_FOR_OOZIE, False)
+
+
+def is_adapt_spark_for_swift_enabled(configs):
+    return configs.get(ADAPT_SPARK_FOR_SWIFT, False)
 
 
 def get_builtin_binaries(job, configs):

@@ -150,13 +150,17 @@ class SparkProvider(p.ProvisioningPluginBase):
         else:
             config_slaves = "\n"
 
+        # Any node that might be used to run spark-submit will need
+        # these libs for swift integration
+        config_defaults = c_helper.generate_spark_executor_classpath(cluster)
+
         extra['job_cleanup'] = c_helper.generate_job_cleanup_config(cluster)
         for ng in cluster.node_groups:
             extra[ng.id] = {
                 'xml': c_helper.generate_xml_configs(
                     ng.configuration(),
                     ng.storage_paths(),
-                    nn.hostname(), None,
+                    nn.hostname(), None
                 ),
                 'setup_script': c_helper.generate_hadoop_setup_script(
                     ng.storage_paths(),
@@ -164,7 +168,8 @@ class SparkProvider(p.ProvisioningPluginBase):
                         ng.configuration())
                 ),
                 'sp_master': config_master,
-                'sp_slaves': config_slaves
+                'sp_slaves': config_slaves,
+                'sp_defaults': config_defaults
             }
 
         if c_helper.is_data_locality_enabled(cluster):
@@ -210,14 +215,18 @@ class SparkProvider(p.ProvisioningPluginBase):
         ng_extra = extra[instance.node_group.id]
 
         files_hadoop = {
-            '/etc/hadoop/conf/core-site.xml': ng_extra['xml']['core-site'],
-            '/etc/hadoop/conf/hdfs-site.xml': ng_extra['xml']['hdfs-site'],
+            os.path.join(c_helper.HADOOP_CONF_DIR,
+                         "core-site.xml"): ng_extra['xml']['core-site'],
+            os.path.join(c_helper.HADOOP_CONF_DIR,
+                         "hdfs-site.xml"): ng_extra['xml']['hdfs-site'],
         }
 
         sp_home = self._spark_home(cluster)
         files_spark = {
             os.path.join(sp_home, 'conf/spark-env.sh'): ng_extra['sp_master'],
-            os.path.join(sp_home, 'conf/slaves'): ng_extra['sp_slaves']
+            os.path.join(sp_home, 'conf/slaves'): ng_extra['sp_slaves'],
+            os.path.join(sp_home,
+                         'conf/spark-defaults.conf'): ng_extra['sp_defaults']
         }
 
         files_init = {
@@ -290,6 +299,9 @@ class SparkProvider(p.ProvisioningPluginBase):
                 os.path.join(sp_home,
                              'conf/spark-env.sh'): ng_extra['sp_master'],
                 os.path.join(sp_home, 'conf/slaves'): ng_extra['sp_slaves'],
+                os.path.join(
+                    sp_home,
+                    'conf/spark-defaults.conf'): ng_extra['sp_defaults']
             }
             r = remote.get_remote(instance)
             r.write_files_to(files)

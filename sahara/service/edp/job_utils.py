@@ -13,7 +13,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import os
 import uuid
 
 from oslo.config import cfg
@@ -23,7 +22,6 @@ import six
 from sahara import conductor as c
 from sahara import context
 from sahara.plugins import base as plugin_base
-from sahara.service.edp.binary_retrievers import dispatch
 from sahara.swift import swift_helper as sw
 from sahara.utils import edp
 from sahara.utils import remote
@@ -52,31 +50,7 @@ def get_plugin(cluster):
     return plugin_base.PLUGINS.get_plugin(cluster.plugin_name)
 
 
-def upload_job_files(where, job_dir, job, libs_subdir=True,
-                     proxy_configs=None):
-    mains = job.mains or []
-    libs = job.libs or []
-    uploaded_paths = []
-
-    def upload(r, dir, job_file):
-        dst = os.path.join(dir, job_file.name)
-        raw_data = dispatch.get_raw_binary(job_file, proxy_configs)
-        r.write_file_to(dst, raw_data)
-        uploaded_paths.append(dst)
-
-    with remote.get_remote(where) as r:
-        libs_dir = job_dir
-        if libs_subdir and libs:
-            libs_dir = os.path.join(libs_dir, "libs")
-            r.execute_command("mkdir -p %s" % libs_dir)
-        for job_file in mains:
-            upload(r, job_dir, job_file)
-        for job_file in libs:
-            upload(r, libs_dir, job_file)
-    return uploaded_paths
-
-
-def create_workflow_dir(where, path, job, use_uuid=None):
+def create_workflow_dir(where, path, job, use_uuid=None, chmod=""):
 
     if use_uuid is None:
         use_uuid = six.text_type(uuid.uuid4())
@@ -84,7 +58,10 @@ def create_workflow_dir(where, path, job, use_uuid=None):
     constructed_dir = _append_slash_if_needed(path)
     constructed_dir += '%s/%s' % (job.name, use_uuid)
     with remote.get_remote(where) as r:
-        ret, stdout = r.execute_command("mkdir -p %s" % constructed_dir)
+        if chmod:
+            r.execute_command("mkdir -p -m %s %s" % (chmod, constructed_dir))
+        else:
+            r.execute_command("mkdir -p %s" % constructed_dir)
     return constructed_dir
 
 

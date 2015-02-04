@@ -15,8 +15,13 @@
 
 import mock
 
+import copy
+import xml.dom.minidom as xml
+
 from sahara.plugins.spark import config_helper as c_helper
+from sahara.swift import swift_helper as swift
 from sahara.tests.unit import base as test_base
+from sahara.utils import xmlutils
 
 
 class ConfigHelperUtilsTest(test_base.SaharaTestCase):
@@ -56,3 +61,39 @@ class ConfigHelperUtilsTest(test_base.SaharaTestCase):
         self.assertFalse(configs['valid'])
         self.assertNotIn(configs, 'script')
         self.assertNotIn(configs, 'cron')
+
+    @mock.patch("sahara.swift.utils.retrieve_auth_url")
+    def test_generate_xml_configs(self, auth_url):
+        auth_url.return_value = "http://localhost:5000/v2/"
+
+        # Make a dict of swift configs to verify generated values
+        swift_vals = c_helper.extract_name_values(swift.get_swift_configs())
+
+        # Make sure that all the swift configs are in core-site
+        c = c_helper.generate_xml_configs({}, ['/mnt/one'], 'localhost', None)
+        doc = xml.parseString(c['core-site'])
+        configuration = doc.getElementsByTagName('configuration')
+        properties = xmlutils.get_property_dict(configuration[0])
+        self.assertDictContainsSubset(swift_vals, properties)
+
+        # Make sure that user values have precedence over defaults
+        c = c_helper.generate_xml_configs(
+            {'HDFS': {'fs.swift.service.sahara.tenant': 'fred'}},
+            ['/mnt/one'], 'localhost', None)
+        doc = xml.parseString(c['core-site'])
+        configuration = doc.getElementsByTagName('configuration')
+        properties = xmlutils.get_property_dict(configuration[0])
+        mod_swift_vals = copy.copy(swift_vals)
+        mod_swift_vals['fs.swift.service.sahara.tenant'] = 'fred'
+        self.assertDictContainsSubset(mod_swift_vals, properties)
+
+        # Make sure that swift confgs are left out if not enabled
+        c = c_helper.generate_xml_configs(
+            {'HDFS': {'fs.swift.service.sahara.tenant': 'fred'},
+             'general': {'Enable Swift': False}},
+            ['/mnt/one'], 'localhost', None)
+        doc = xml.parseString(c['core-site'])
+        configuration = doc.getElementsByTagName('configuration')
+        properties = xmlutils.get_property_dict(configuration[0])
+        for key in mod_swift_vals.keys():
+            self.assertNotIn(key, properties)

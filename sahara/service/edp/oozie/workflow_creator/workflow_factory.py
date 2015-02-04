@@ -15,7 +15,6 @@
 
 from oslo.config import cfg
 import six
-import six.moves.urllib.parse as urlparse
 
 from sahara import conductor as c
 from sahara import context
@@ -70,14 +69,6 @@ class BaseFactory(object):
                     new_vals = src.get(key, {})
                     value.update(new_vals)
 
-    def inject_swift_url_suffix(self, url):
-        if isinstance(url, six.string_types) and url.startswith("swift://"):
-            u = urlparse.urlparse(url)
-            if not u.netloc.endswith(su.SWIFT_URL_SUFFIX):
-                return url.replace(u.netloc,
-                                   u.netloc + "%s" % su.SWIFT_URL_SUFFIX, 1)
-        return url
-
     def update_job_dict(self, job_dict, exec_dict):
         pruned_exec_dict, edp_configs = self._prune_edp_configs(exec_dict)
         self._update_dict(job_dict, pruned_exec_dict)
@@ -94,14 +85,13 @@ class BaseFactory(object):
         job_dict['args'] = [
             # TODO(tmckay) args for Pig can actually be -param name=value
             # and value could conceivably contain swift paths
-            self.inject_swift_url_suffix(arg) for arg in job_dict['args']]
+            su.inject_swift_url_suffix(arg) for arg in job_dict['args']]
 
         for k, v in six.iteritems(job_dict.get('configs', {})):
-            if k != 'proxy_configs':
-                job_dict['configs'][k] = self.inject_swift_url_suffix(v)
+            job_dict['configs'][k] = su.inject_swift_url_suffix(v)
 
         for k, v in six.iteritems(job_dict.get('params', {})):
-            job_dict['params'][k] = self.inject_swift_url_suffix(v)
+            job_dict['params'][k] = su.inject_swift_url_suffix(v)
 
     def get_configs(self, input_data, output_data, proxy_configs=None):
         configs = {}

@@ -15,12 +15,14 @@
 
 from oslo.config import cfg
 from oslo_log import log as logging
+import six
 
 from sahara import conductor as c
 from sahara.i18n import _
 from sahara.i18n import _LI
 from sahara.plugins import provisioning as p
 from sahara.plugins import utils
+from sahara.swift import swift_helper as swift
 from sahara.topology import topology_helper as topology
 from sahara.utils import files as f
 from sahara.utils import types as types
@@ -37,13 +39,27 @@ CORE_DEFAULT = x.load_hadoop_xml_defaults(
 HDFS_DEFAULT = x.load_hadoop_xml_defaults(
     'plugins/spark/resources/hdfs-default.xml')
 
+SWIFT_DEFAULTS = swift.read_default_swift_configs()
+
 XML_CONFS = {
-    "HDFS": [CORE_DEFAULT, HDFS_DEFAULT]
+    "HDFS": [CORE_DEFAULT, HDFS_DEFAULT, SWIFT_DEFAULTS]
 }
+
+_default_executor_classpath = ":".join(
+    ['/usr/lib/hadoop/lib/jackson-core-asl-1.8.8.jar',
+     '/usr/lib/hadoop/hadoop-swift.jar'])
 
 SPARK_CONFS = {
     'Spark': {
         "OPTIONS": [
+            {
+                'name': 'Executor extra classpath',
+                'description': 'Value for spark.executor.extraClassPath'
+                ' in spark-defaults.conf'
+                ' (default: %s)' % _default_executor_classpath,
+                'default': '%s' % _default_executor_classpath,
+                'priority': 2,
+            },
             {
                 'name': 'Master port',
                 'description': 'Start the master on a different port'
@@ -125,6 +141,8 @@ SPARK_CONFS = {
     }
 }
 
+HADOOP_CONF_DIR = "/etc/hadoop/conf"
+
 ENV_CONFS = {
     "HDFS": {
         'Name Node Heap Size': 'HADOOP_NAMENODE_OPTS=\\"-Xmx%sm\\"',
@@ -135,6 +153,10 @@ ENV_CONFS = {
 ENABLE_DATA_LOCALITY = p.Config('Enable Data Locality', 'general', 'cluster',
                                 config_type="bool", priority=1,
                                 default_value=True, is_optional=True)
+
+ENABLE_SWIFT = p.Config('Enable Swift', 'general', 'cluster',
+                        config_type="bool", priority=1,
+                        default_value=True, is_optional=False)
 
 # Default set to 1 day, which is the default Keystone token
 # expiration time. After the token is expired we can't continue
@@ -202,6 +224,7 @@ def _initialise_configs():
             configs.append(cfg)
 
     configs.append(DECOMMISSIONING_TIMEOUT)
+    configs.append(ENABLE_SWIFT)
     if CONF.enable_data_locality:
         configs.append(ENABLE_DATA_LOCALITY)
 
@@ -268,8 +291,17 @@ def generate_xml_configs(configs, storage_path, nn_hostname, hadoop_port):
     for key, value in extract_hadoop_xml_confs(configs):
         cfg[key] = value
 
+    # Add the swift defaults if they have not been set by the user
+    swft_def = []
+    if is_swift_enabled(configs):
+        swft_def = SWIFT_DEFAULTS
+        swift_configs = extract_name_values(swift.get_swift_configs())
+        for key, value in six.iteritems(swift_configs):
+            if key not in cfg:
+                cfg[key] = value
+
     # invoking applied configs to appropriate xml files
-    core_all = CORE_DEFAULT
+    core_all = CORE_DEFAULT + swft_def
 
     if CONF.enable_data_locality:
         cfg.update(topology.TOPOLOGY_CONFIG)
@@ -297,6 +329,11 @@ def generate_spark_env_configs(cluster):
     # master configuration
     sp_master = utils.get_instance(cluster, "master")
     configs.append('SPARK_MASTER_IP=' + sp_master.hostname())
+
+    # point to the hadoop conf dir so that Spark can read things
+    # like the swift configuration without having to copy core-site
+    # to /opt/spark/conf
+    configs.append('HADOOP_CONF_DIR=' + HADOOP_CONF_DIR)
 
     masterport = get_config_value("Spark", "Master port", cluster)
     if masterport and masterport != _get_spark_opt_default("Master port"):
@@ -336,6 +373,13 @@ def generate_spark_env_configs(cluster):
 # workernames need to be a list of woker names
 def generate_spark_slaves_configs(workernames):
     return '\n'.join(workernames)
+
+
+def generate_spark_executor_classpath(cluster):
+    cp = get_config_value("Spark", "Executor extra classpath", cluster)
+    if cp:
+        return "spark.executor.extraClassPath " + cp
+    return "\n"
 
 
 def extract_hadoop_environment_confs(configs):
@@ -440,19 +484,24 @@ def _set_config(cfg, gen_cfg, name=None):
     return cfg
 
 
-def _get_general_cluster_config_value(cluster, option):
-    conf = cluster.cluster_configs
-
+def _get_general_config_value(conf, option):
     if 'general' in conf and option.name in conf['general']:
         return conf['general'][option.name]
-
     return option.default_value
+
+
+def _get_general_cluster_config_value(cluster, option):
+    return _get_general_config_value(cluster.cluster_configs, option)
 
 
 def is_data_locality_enabled(cluster):
     if not CONF.enable_data_locality:
         return False
     return _get_general_cluster_config_value(cluster, ENABLE_DATA_LOCALITY)
+
+
+def is_swift_enabled(configs):
+    return _get_general_config_value(configs, ENABLE_SWIFT)
 
 
 def get_decommissioning_timeout(cluster):

@@ -14,6 +14,10 @@
 # limitations under the License.
 
 import os
+import uuid
+
+from oslo.config import cfg
+import six
 
 from sahara import conductor as c
 from sahara import context
@@ -22,14 +26,19 @@ from sahara.i18n import _
 from sahara.plugins.spark import config_helper as c_helper
 from sahara.plugins import utils as plugin_utils
 from sahara.service.edp import base_engine
+from sahara.service.edp.binary_retrievers import dispatch
 from sahara.service.edp import job_utils
 from sahara.service.validations.edp import job_execution as j
+from sahara.swift import swift_helper as sw
+from sahara.swift import utils as su
 from sahara.utils import edp
 from sahara.utils import files
 from sahara.utils import general
 from sahara.utils import remote
+from sahara.utils import xmlutils
 
 conductor = c.API
+CONF = cfg.CONF
 
 
 class SparkJobEngine(base_engine.JobEngine):
@@ -89,6 +98,70 @@ class SparkJobEngine(base_engine.JobEngine):
         # Well, process is done and result is missing or unexpected
         return {"status": edp.JOB_STATUS_DONEWITHERROR}
 
+    def _job_script(self):
+        path = "service/edp/resources/launch_command.py"
+        return files.get_file_text(path)
+
+    def _upload_wrapper_xml(self, where, job_dir, job_configs):
+        xml_name = 'spark.xml'
+        proxy_configs = job_configs.get('proxy_configs')
+        configs = {}
+        if proxy_configs:
+            configs[sw.HADOOP_SWIFT_USERNAME] = proxy_configs.get(
+                'proxy_username')
+            configs[sw.HADOOP_SWIFT_PASSWORD] = proxy_configs.get(
+                'proxy_password')
+            configs[sw.HADOOP_SWIFT_TRUST_ID] = proxy_configs.get(
+                'proxy_trust_id')
+            configs[sw.HADOOP_SWIFT_DOMAIN_NAME] = CONF.proxy_user_domain_name
+        else:
+            cfgs = job_configs.get('configs', {})
+            targets = [sw.HADOOP_SWIFT_USERNAME, sw.HADOOP_SWIFT_PASSWORD]
+            configs = {k: cfgs[k] for k in targets if k in cfgs}
+
+        content = xmlutils.create_hadoop_xml(configs)
+        with remote.get_remote(where) as r:
+            dst = os.path.join(job_dir, xml_name)
+            r.write_file_to(dst, content)
+        return xml_name
+
+    def _upload_job_files(self, where, job_dir, job, job_configs):
+
+        def upload(r, dir, job_file, proxy_configs):
+            dst = os.path.join(dir, job_file.name)
+            raw_data = dispatch.get_raw_binary(job_file, proxy_configs)
+            r.write_file_to(dst, raw_data)
+            return dst
+
+        def upload_builtin(r, dir, builtin):
+            dst = os.path.join(dir, builtin['name'])
+            r.write_file_to(dst, builtin['raw'])
+            return dst
+
+        builtin_libs = []
+        if edp.is_adapt_spark_for_swift_enabled(
+                job_configs.get('configs', {})):
+            path = 'service/edp/resources/edp-spark-wrapper.jar'
+            name = 'builtin-%s.jar' % six.text_type(uuid.uuid4())
+            builtin_libs = [{'raw': files.get_file_text(path),
+                             'name': name}]
+
+        uploaded_paths = []
+        builtin_paths = []
+        with remote.get_remote(where) as r:
+            mains = list(job.mains) if job.mains else []
+            libs = list(job.libs) if job.libs else []
+            for job_file in mains+libs:
+                uploaded_paths.append(
+                    upload(r, job_dir, job_file,
+                           job_configs.get('proxy_configs')))
+
+            for builtin in builtin_libs:
+                builtin_paths.append(
+                    upload_builtin(r, job_dir, builtin))
+
+        return uploaded_paths, builtin_paths
+
     def cancel_job(self, job_execution):
         pid, instance = self._get_instance_if_running(job_execution)
         if instance is not None:
@@ -106,10 +179,6 @@ class SparkJobEngine(base_engine.JobEngine):
             with remote.get_remote(instance) as r:
                 return self._get_job_status_from_remote(r, pid, job_execution)
 
-    def _job_script(self):
-        path = "service/edp/resources/launch_command.py"
-        return files.get_file_text(path)
-
     def run_job(self, job_execution):
         ctx = context.ctx()
         job = conductor.job_get(ctx, job_execution.job_id)
@@ -118,30 +187,46 @@ class SparkJobEngine(base_engine.JobEngine):
             job_utils.resolve_data_source_references(job_execution.job_configs)
         )
 
-        proxy_configs = updated_job_configs.get('proxy_configs')
-
         # We'll always run the driver program on the master
         master = plugin_utils.get_instance(self.cluster, "master")
 
         # TODO(tmckay): wf_dir should probably be configurable.
         # The only requirement is that the dir is writable by the image user
         wf_dir = job_utils.create_workflow_dir(master, '/tmp/spark-edp', job,
-                                               job_execution.id)
-        paths = job_utils.upload_job_files(master, wf_dir, job,
-                                           libs_subdir=False,
-                                           proxy_configs=proxy_configs)
+                                               job_execution.id, "700")
+
+        paths, builtin_paths = self._upload_job_files(
+            master, wf_dir, job, updated_job_configs)
 
         # We can shorten the paths in this case since we'll run out of wf_dir
         paths = [os.path.basename(p) for p in paths]
+        builtin_paths = [os.path.basename(p) for p in builtin_paths]
 
         # TODO(tmckay): for now, paths[0] is always assumed to be the app
         # jar and we generate paths in order (mains, then libs).
         # When we have a Spark job type, we can require a "main" and set
         # the app jar explicitly to be "main"
         app_jar = paths.pop(0)
+        job_class = updated_job_configs["configs"]["edp.java.main_class"]
 
-        # The rest of the paths will be passed with --jars
-        additional_jars = ",".join(paths)
+        # If we uploaded builtins then we are using a wrapper jar. It will
+        # be the first one on the builtin list and the original app_jar needs
+        # to be added to the  'additional' jars
+        if builtin_paths:
+            wrapper_jar = builtin_paths.pop(0)
+            wrapper_class = 'org.openstack.sahara.edp.SparkWrapper'
+            wrapper_xml = self._upload_wrapper_xml(master,
+                                                   wf_dir,
+                                                   updated_job_configs)
+            wrapper_args = "%s %s" % (wrapper_xml, job_class)
+
+            additional_jars = ",".join([app_jar] + paths + builtin_paths)
+
+        else:
+            wrapper_jar = wrapper_class = wrapper_args = ""
+            additional_jars = ",".join(paths)
+
+        # All additional jars are passed with the --jars option
         if additional_jars:
             additional_jars = " --jars " + additional_jars
 
@@ -154,23 +239,45 @@ class SparkJobEngine(base_engine.JobEngine):
                                       self.cluster),
             "bin/spark-submit")
 
-        job_class = updated_job_configs['configs']["edp.java.main_class"]
-
         # TODO(tmckay): we need to clean up wf_dirs on long running clusters
         # TODO(tmckay): probably allow for general options to spark-submit
-        args = " ".join(updated_job_configs.get('args', []))
+        args = updated_job_configs.get('args', [])
+        args = " ".join([su.inject_swift_url_suffix(arg) for arg in args])
         if args:
             args = " " + args
 
-        # The redirects of stdout and stderr will preserve output in the wf_dir
-        cmd = "%s --class %s%s --master spark://%s:%s %s%s" % (
-            spark_submit,
-            job_class,
-            additional_jars,
-            host,
-            port,
-            app_jar,
-            args)
+        if wrapper_jar and wrapper_class:
+            # Substrings which may be empty have spaces
+            # embedded if they are non-empty
+            cmd = (
+                '%(spark_submit)s%(driver_cp)s'
+                ' --class %(wrapper_class)s%(addnl_jars)s'
+                ' --master spark://%(host)s:%(port)s'
+                ' %(wrapper_jar)s %(wrapper_args)s%(args)s') % (
+                {
+                    "spark_submit": spark_submit,
+                    "driver_cp": self.get_driver_classpath(),
+                    "wrapper_class": wrapper_class,
+                    "addnl_jars": additional_jars,
+                    "host": host,
+                    "port": port,
+                    "wrapper_jar": wrapper_jar,
+                    "wrapper_args": wrapper_args,
+                    "args": args
+                })
+        else:
+            cmd = (
+                '%(spark_submit)s --class %(job_class)s%(addnl_jars)s'
+                ' --master spark://%(host)s:%(port)s %(app_jar)s%(args)s') % (
+                {
+                    "spark_submit": spark_submit,
+                    "job_class": job_class,
+                    "addnl_jars": additional_jars,
+                    "host": host,
+                    "port": port,
+                    "app_jar": app_jar,
+                    "args": args
+                })
 
         job_execution = conductor.job_execution_get(ctx, job_execution.id)
         if job_execution.info['status'] == edp.JOB_STATUS_TOBEKILLED:
@@ -178,6 +285,7 @@ class SparkJobEngine(base_engine.JobEngine):
 
         # If an exception is raised here, the job_manager will mark
         # the job failed and log the exception
+        # The redirects of stdout and stderr will preserve output in the wf_dir
         with remote.get_remote(master) as r:
             # Upload the command launch script
             launch = os.path.join(wf_dir, "launch_command")
@@ -211,3 +319,11 @@ class SparkJobEngine(base_engine.JobEngine):
     @staticmethod
     def get_supported_job_types():
         return [edp.JOB_TYPE_SPARK]
+
+    def get_driver_classpath(self):
+        cp = c_helper.get_config_value("Spark",
+                                       "Executor extra classpath",
+                                       self.cluster)
+        if cp:
+            cp = " --driver-class-path " + cp
+        return cp
