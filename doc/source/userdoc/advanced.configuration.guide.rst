@@ -68,6 +68,8 @@ integration see the Sahara documentation sections
 
 .. _Sahara extra repository: http://github.com/openstack/sahara-extra
 
+.. _custom_network_topologies:
+
 Custom network topologies
 -------------------------
 
