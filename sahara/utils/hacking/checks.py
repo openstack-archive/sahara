@@ -14,6 +14,7 @@
 # limitations under the License.
 
 
+import re
 import tokenize
 
 
@@ -61,6 +62,26 @@ def hacking_no_author_attr(logical_line, tokens):
                    "S362: __author__ should not be used")
 
 
+def check_oslo_namespace_imports(logical_line):
+    """Check to prevent old oslo namespace usage.
+
+    S363
+    """
+    oslo_imports = (re.compile(r"(((from)|(import))\s+oslo\.)"),
+                    re.compile(r"(from\s+oslo\s+import)"))
+
+    if re.match(oslo_imports[0], logical_line):
+        yield(0, "S363: '%s' must be used instead of '%s'." % (
+            logical_line.replace('oslo.', 'oslo_'),
+            logical_line))
+
+    if re.match(oslo_imports[1], logical_line):
+        yield(0, "S363: '%s' must be used instead of '%s'" % (
+              'import oslo_%s' % logical_line.split()[-1],
+              logical_line))
+
+
 def factory(register):
     register(import_db_only_in_conductor)
     register(hacking_no_author_attr)
+    register(check_oslo_namespace_imports)
