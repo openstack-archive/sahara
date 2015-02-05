@@ -14,10 +14,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from oslo.config import cfg
-from oslo import messaging
-from oslo.serialization import jsonutils
+from oslo_config import cfg
 from oslo_log import log as logging
+import oslo_messaging as messaging
+from oslo_serialization import jsonutils
 
 from sahara import context
 from sahara.i18n import _LI
@@ -92,7 +92,7 @@ class RPCServer(object):
 
 
 def setup(url=None, optional=False):
-    """Initialise the oslo.messaging layer."""
+    """Initialise the oslo_messaging layer."""
     global TRANSPORT, NOTIFIER, SERIALIZER
 
     if not cfg.CONF.enable_notifications:
@@ -117,5 +117,5 @@ def setup(url=None, optional=False):
 
 
 def get_notifier(publisher_id):
-    """Return a configured oslo.messaging notifier."""
+    """Return a configured oslo_messaging notifier."""
     return NOTIFIER.prepare(publisher_id=publisher_id)

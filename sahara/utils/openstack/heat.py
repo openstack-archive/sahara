@@ -16,7 +16,7 @@
 import json
 
 from heatclient import client as heat_client
-from oslo.config import cfg
+from oslo_config import cfg
 from oslo_log import log as logging
 import six
 

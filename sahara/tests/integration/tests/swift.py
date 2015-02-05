@@ -15,7 +15,7 @@
 
 import uuid
 
-from oslo.utils import excutils
+from oslo_utils import excutils
 
 from sahara.tests.integration.tests import base
 

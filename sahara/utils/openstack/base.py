@@ -15,7 +15,7 @@
 
 import json
 
-from oslo.config import cfg
+from oslo_config import cfg
 from six.moves.urllib import parse as urlparse
 
 from sahara import context

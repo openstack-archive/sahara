@@ -14,7 +14,7 @@
 # limitations under the License.
 
 from heatclient import exc as heat_exc
-from oslo.config import cfg
+from oslo_config import cfg
 from oslo_log import log as logging
 
 from sahara import conductor as c

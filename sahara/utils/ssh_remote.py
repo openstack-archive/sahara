@@ -41,9 +41,9 @@ import uuid
 from eventlet.green import subprocess as e_subprocess
 from eventlet import semaphore
 from eventlet import timeout as e_timeout
-from oslo.config import cfg
-from oslo.utils import excutils
+from oslo_config import cfg
 from oslo_log import log as logging
+from oslo_utils import excutils
 import paramiko
 import requests
 from requests import adapters

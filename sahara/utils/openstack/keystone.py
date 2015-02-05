@@ -15,7 +15,7 @@
 
 from keystoneclient.v2_0 import client as keystone_client
 from keystoneclient.v3 import client as keystone_client_v3
-from oslo.config import cfg
+from oslo_config import cfg
 
 from sahara import context
 from sahara.utils.openstack import base

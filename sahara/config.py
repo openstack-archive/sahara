@@ -15,7 +15,7 @@
 
 import itertools
 
-from oslo.config import cfg
+from oslo_config import cfg
 from oslo_log import log
 
 from sahara import exceptions as ex
@@ -112,7 +112,7 @@ log.set_defaults(default_log_levels=[
     'paramiko=WARN',
     'requests=WARN',
     'iso8601=WARN',
-    'oslo.messaging=INFO',
+    'oslo_messaging=INFO',
 ])
 
 

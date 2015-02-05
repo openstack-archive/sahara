@@ -15,9 +15,9 @@
 
 import random
 
-from oslo.config import cfg
-from oslo.utils import timeutils
+from oslo_config import cfg
 from oslo_log import log
+from oslo_utils import timeutils
 import six
 
 from sahara import conductor as c

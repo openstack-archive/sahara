@@ -18,7 +18,7 @@ import os
 import eventlet
 from eventlet import wsgi
 import flask
-from oslo.config import cfg
+from oslo_config import cfg
 from oslo_log import log
 from oslo_log import loggers
 import six

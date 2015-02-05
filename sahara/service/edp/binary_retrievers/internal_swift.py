@@ -14,7 +14,7 @@
 # limitations under the License.
 import functools
 
-from oslo.config import cfg
+from oslo_config import cfg
 import six
 import swiftclient
 

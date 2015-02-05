@@ -23,7 +23,7 @@ fields via docstrings and contains implementation of helper methods.
 
 import random
 
-from oslo.config import cfg
+from oslo_config import cfg
 
 from sahara.utils import configs
 from sahara.utils import remote

@@ -16,9 +16,9 @@
 import functools
 import uuid
 
-from oslo.config import cfg
-from oslo import messaging
+from oslo_config import cfg
 from oslo_log import log as logging
+import oslo_messaging as messaging
 
 from sahara import conductor as c
 from sahara import context

@@ -70,7 +70,7 @@
 #logging_exception_prefix = %(asctime)s.%(msecs)03d %(process)d TRACE %(name)s %(instance)s
 
 # List of logger=LEVEL pairs. (list value)
-#default_log_levels = amqplib=WARN,qpid.messaging=INFO,stevedore=INFO,eventlet.wsgi.server=WARN,sqlalchemy=WARN,boto=WARN,suds=INFO,keystone=INFO,paramiko=WARN,requests=WARN,iso8601=WARN,oslo.messaging=INFO
+#default_log_levels = amqplib=WARN,qpid.messaging=INFO,stevedore=INFO,eventlet.wsgi.server=WARN,sqlalchemy=WARN,boto=WARN,suds=INFO,keystone=INFO,paramiko=WARN,requests=WARN,iso8601=WARN,oslo_messaging=INFO
 
 # Enables or disables publication of error events. (boolean value)
 #publish_errors = false

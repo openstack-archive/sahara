@@ -18,9 +18,9 @@
 import sys
 import threading
 
-from oslo.config import cfg
-from oslo.db import exception as db_exc
-from oslo.db.sqlalchemy import session as db_session
+from oslo_config import cfg
+from oslo_db import exception as db_exc
+from oslo_db.sqlalchemy import session as db_session
 from oslo_log import log as logging
 import six
 import sqlalchemy as sa

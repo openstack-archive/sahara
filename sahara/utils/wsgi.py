@@ -24,8 +24,8 @@ from xml.parsers import expat
 from xml import sax
 from xml.sax import expatreader
 
-from oslo.serialization import jsonutils
 from oslo_log import log as logging
+from oslo_serialization import jsonutils
 import six
 
 from sahara.i18n import _
