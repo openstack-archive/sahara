@@ -25,7 +25,6 @@ from sahara import conductor as c
 from sahara import context
 from sahara.i18n import _
 from sahara.i18n import _LI
-from sahara.i18n import _LW
 from sahara.service import networks
 from sahara.utils import cluster_progress_ops as cpo
 from sahara.utils import edp
@@ -183,12 +182,3 @@ sed '/^Defaults    requiretty*/ s/^/#/' -i /etc/sudoers\n
                 update.update({"info": info,
                                "end_time": datetime.datetime.now()})
             conductor.job_execution_update(ctx, je, update)
-
-    def _log_operation_exception(self, message, cluster, ex):
-        # we want to log the initial exception even if cluster was deleted
-        cluster_name = cluster.name if cluster is not None else '_unknown_'
-        LOG.warn(message, {'cluster': cluster_name, 'reason': ex})
-        if cluster is None:
-            LOG.warn(
-                _LW("Presumably the operation failed because the cluster was "
-                    "deleted by a user during the process."))
