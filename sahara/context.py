@@ -73,7 +73,7 @@ class Context(context.RequestContext):
         if current_instance_info is not None:
             self.current_instance_info = current_instance_info
         else:
-            self.current_instance_info = []
+            self.current_instance_info = InstanceInfo()
 
     def clone(self):
         return Context(
@@ -271,6 +271,15 @@ class ThreadGroup(object):
 
 def sleep(seconds=0):
     time.sleep(seconds)
+
+
+class InstanceInfo(object):
+    def __init__(self, cluster_id=None, instance_id=None, instance_name=None,
+                 node_group_id=None):
+        self.cluster_id = cluster_id
+        self.instance_id = instance_id
+        self.instance_name = instance_name
+        self.node_group_id = node_group_id
 
 
 class InstanceInfoManager(object):

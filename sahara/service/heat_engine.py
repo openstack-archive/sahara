@@ -199,7 +199,8 @@ class _CreateLauncher(HeatEngine):
     DISABLE_ROLLBACK = True
     inst_ids = []
 
-    @cpo.event_wrapper_without_instance(mark_successful_on_exit=True)
+    @cpo.event_wrapper(
+        True, step=_('Create Heat stack'), param=('cluster', 1))
     def create_instances(self, cluster, target_count):
         tmpl = heat.ClusterTemplate(cluster)
 
@@ -213,9 +214,7 @@ class _CreateLauncher(HeatEngine):
         # create all instances
         cluster = g.change_cluster_status(cluster, self.STAGES[0])
 
-        cpo.add_provisioning_step(cluster.id, _("Create Heat stack"), 1)
-        with context.InstanceInfoManager([cluster.id, None, None, None]):
-            self.create_instances(cluster, target_count)
+        self.create_instances(cluster, target_count)
 
         # wait for all instances are up and networks ready
         cluster = g.change_cluster_status(cluster, self.STAGES[1])

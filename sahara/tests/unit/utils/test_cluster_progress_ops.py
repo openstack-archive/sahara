@@ -130,15 +130,14 @@ class ClusterProgressOpsTest(base.SaharaWithDbTestCase):
         self.assertEqual(1, len(cpo.get_cluster_events(cluster.id, step_id1)))
         self.assertEqual(1, len(cpo.get_cluster_events(cluster.id, step_id2)))
 
-    def _make_checks(self, instance, sleep=True):
+    def _make_checks(self, instance_info, sleep=True):
         ctx = context.ctx()
 
         if sleep:
             context.sleep(2)
 
         current_instance_info = ctx.current_instance_info
-        expected = [None, instance.id, instance.name, None]
-        self.assertEqual(expected, current_instance_info)
+        self.assertEqual(instance_info, current_instance_info)
 
     def test_instance_context_manager(self):
         fake_instances = [FakeInstance() for _ in range(50)]
@@ -146,14 +145,16 @@ class ClusterProgressOpsTest(base.SaharaWithDbTestCase):
         # check that InstanceContextManager works fine sequentially
 
         for instance in fake_instances:
-            info = [None, instance.id, instance.name, None]
+            info = context.InstanceInfo(
+                None, instance.id, instance.name, None)
             with context.InstanceInfoManager(info):
-                self._make_checks(instance, sleep=False)
+                self._make_checks(info, sleep=False)
 
         # check that InstanceContextManager works fine in parallel
 
         with context.ThreadGroup() as tg:
             for instance in fake_instances:
-                info = [None, instance.id, instance.name, None]
+                info = context.InstanceInfo(
+                    None, instance.id, instance.name, None)
                 with context.InstanceInfoManager(info):
-                    tg.spawn("make_checks", self._make_checks, instance)
+                    tg.spawn("make_checks", self._make_checks, info)

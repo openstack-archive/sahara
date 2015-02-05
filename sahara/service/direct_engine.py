@@ -236,8 +236,8 @@ class DirectEngine(e.Engine):
         instance_name = g.generate_instance_name(
             cluster.name, node_group.name, idx)
 
-        current_instance_info = [
-            cluster.id, None, instance_name, node_group.id]
+        current_instance_info = context.InstanceInfo(
+            cluster.id, None, instance_name, node_group.id)
 
         with context.InstanceInfoManager(current_instance_info):
             instance_id = self._run_instance(
@@ -323,7 +323,7 @@ class DirectEngine(e.Engine):
                 names.append(group.name)
             return names
 
-    @cpo.event_wrapper_without_instance(mark_successful_on_exit=True)
+    @cpo.event_wrapper(mark_successful_on_exit=True)
     def _run_instance(self, cluster, node_group, idx, aa_group=None,
                       old_aa_groups=None):
         """Create instance using nova client and persist them into DB."""
