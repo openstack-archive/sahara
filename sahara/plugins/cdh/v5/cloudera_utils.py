@@ -13,14 +13,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# cm_api client is not present in OS requirements
-try:
-    from cm_api import api_client
-    from cm_api.endpoints import services
-except ImportError:
-    api_client = None
-    services = None
-
 import six
 
 from sahara.i18n import _

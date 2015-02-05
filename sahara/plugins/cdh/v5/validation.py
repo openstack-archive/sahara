@@ -13,15 +13,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from oslo_log import log as logging
-
 from sahara.i18n import _
 from sahara.plugins.cdh.v5 import plugin_utils as pu
 from sahara.plugins import exceptions as ex
 from sahara.plugins import utils as u
 from sahara.utils import general as gu
 
-LOG = logging.getLogger(__name__)
 PU = pu.PluginUtilsV5()
 
 
