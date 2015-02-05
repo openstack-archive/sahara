@@ -33,7 +33,7 @@ class TestMessagingSetup(base.SaharaTestCase):
         self.override_config('enable_notifications', True)
 
     def _install(self):
-        messaging.setup('fake://', optional=True)
+        messaging.setup()
         self.assertNotEqual(None, messaging.TRANSPORT)
         self.assertNotEqual(None, messaging.NOTIFIER)
 
@@ -58,7 +58,7 @@ class TestMessagingSetup(base.SaharaTestCase):
         self._install()
 
         expected = [
-            mock.call(main.CONF, 'fake://', aliases=_ALIASES)
+            mock.call(main.CONF, aliases=_ALIASES)
         ]
         self.assertEqual(expected, mock_transport.call_args_list)
 
@@ -68,11 +68,6 @@ class TestMessagingSetup(base.SaharaTestCase):
     def test_notifier(self, mock_init):
         self._install()
 
-        serializer = messaging.SERIALIZER
-        expected = [
-            mock.call(messaging.TRANSPORT, serializer=serializer)
-        ]
-
-        self.assertEqual(expected, mock_init.call_args_list)
+        self.assertEqual(1, mock_init.call_count)
 
         self._remove_install()

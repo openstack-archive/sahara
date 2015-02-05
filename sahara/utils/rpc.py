@@ -25,7 +25,6 @@ from sahara.i18n import _LI
 
 TRANSPORT = None
 NOTIFIER = None
-SERIALIZER = None
 
 CONF = cfg.CONF
 LOG = logging.getLogger(__name__)
@@ -64,9 +63,11 @@ class JsonPayloadSerializer(messaging.NoOpSerializer):
 
 class RPCClient(object):
     def __init__(self, target):
+        global TRANSPORT
+
         self.__client = messaging.RPCClient(
             target=target,
-            transport=messaging.get_transport(cfg.CONF),
+            transport=TRANSPORT,
         )
 
     def cast(self, name, **kwargs):
@@ -80,9 +81,11 @@ class RPCClient(object):
 
 class RPCServer(object):
     def __init__(self, target):
+        global TRANSPORT
+
         self.__server = messaging.get_rpc_server(
             target=target,
-            transport=messaging.get_transport(cfg.CONF),
+            transport=TRANSPORT,
             endpoints=[self],
             executor='eventlet')
 
@@ -91,29 +94,21 @@ class RPCServer(object):
         self.__server.wait()
 
 
-def setup(url=None, optional=False):
+def setup():
     """Initialise the oslo_messaging layer."""
-    global TRANSPORT, NOTIFIER, SERIALIZER
+    global TRANSPORT, NOTIFIER
+
+    messaging.set_transport_defaults('sahara')
+
+    TRANSPORT = messaging.get_transport(cfg.CONF, aliases=_ALIASES)
 
     if not cfg.CONF.enable_notifications:
         LOG.info(_LI("Notifications disabled"))
         return
     LOG.info(_LI("Notifications enabled"))
 
-    messaging.set_transport_defaults('sahara')
-
-    SERIALIZER = ContextSerializer(JsonPayloadSerializer())
-
-    try:
-        TRANSPORT = messaging.get_transport(cfg.CONF, url,
-                                            aliases=_ALIASES)
-    except messaging.InvalidTransportURL as e:
-        TRANSPORT = None
-        if not optional or e.url:
-            raise
-
-    if TRANSPORT:
-        NOTIFIER = messaging.Notifier(TRANSPORT, serializer=SERIALIZER)
+    serializer = ContextSerializer(JsonPayloadSerializer())
+    NOTIFIER = messaging.Notifier(TRANSPORT, serializer=serializer)
 
 
 def get_notifier(publisher_id):
