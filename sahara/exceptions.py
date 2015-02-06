@@ -320,3 +320,12 @@ class ImageNotRegistered(SaharaException):
     def __init__(self, image):
         self.message = self.message % image
         super(ImageNotRegistered, self).__init__()
+
+
+class MalformedRequestBody(SaharaException):
+    code = "MALFORMED_REQUEST_BODY"
+    message = _("Malformed message body: %(reason)s")
+
+    def __init__(self, reason):
+        self.message = self.message % reason
+        super(MalformedRequestBody, self).__init__()
