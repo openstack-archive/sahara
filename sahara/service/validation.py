@@ -19,7 +19,6 @@ import jsonschema
 
 from sahara import exceptions as ex
 from sahara.i18n import _
-import sahara.openstack.common.exception as os_ex
 from sahara.utils import api as u
 from sahara.utils import api_validator
 
@@ -40,9 +39,6 @@ def validate(schema, *validators):
                 e.code = "VALIDATION_ERROR"
                 return u.bad_request(e)
             except ex.SaharaException as e:
-                return u.bad_request(e)
-            except os_ex.MalformedRequestBody as e:
-                e.code = "MALFORMED_REQUEST_BODY"
                 return u.bad_request(e)
             except Exception as e:
                 return u.internal_error(
