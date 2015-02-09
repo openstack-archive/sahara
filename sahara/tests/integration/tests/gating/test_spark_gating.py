@@ -76,8 +76,7 @@ class SparkGatingTest(swift.SwiftTest, scaling.ScalingTest,
             'name': 'test-cluster-template-spark',
             'plugin_config': self.plugin_config,
             'description': 'test cluster template for Spark plugin',
-            'cluster_configs': {
-            },
+            'cluster_configs': {'HDFS': {'dfs.replication': 1}},
             'node_groups': [
                 {
                     'name': 'master-node',
