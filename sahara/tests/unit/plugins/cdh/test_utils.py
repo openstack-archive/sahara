@@ -13,50 +13,53 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from sahara.plugins.cdh import utils as u
+from sahara.plugins.cdh.v5_3_0 import plugin_utils as pu
 from sahara.tests.unit import base
 from sahara.tests.unit.plugins.cdh import utils as tu
+
+
+PU = pu.PluginUtilsV530()
 
 
 class UtilsTestCase(base.SaharaTestCase):
     def test_get_manager(self):
         cluster = tu.get_fake_cluster()
-        inst = u.get_manager(cluster)
+        inst = PU.get_manager(cluster)
         self.assertEqual('id1', inst.instance_id)
 
     def test_get_namenode(self):
         cluster = tu.get_fake_cluster()
-        inst = u.get_namenode(cluster)
+        inst = PU.get_namenode(cluster)
         self.assertEqual('id2', inst.instance_id)
 
     def test_get_secondarynamenode(self):
         cluster = tu.get_fake_cluster()
-        inst = u.get_secondarynamenode(cluster)
+        inst = PU.get_secondarynamenode(cluster)
         self.assertEqual('id2', inst.instance_id)
 
     def test_get_resourcemanager(self):
         cluster = tu.get_fake_cluster()
-        inst = u.get_resourcemanager(cluster)
+        inst = PU.get_resourcemanager(cluster)
         self.assertEqual('id2', inst.instance_id)
 
     def test_get_datanodes(self):
         cluster = tu.get_fake_cluster()
-        dns = u.get_datanodes(cluster)
+        dns = PU.get_datanodes(cluster)
         ids = [dn.instance_id for dn in dns]
         self.assertEqual(sorted(['id00', 'id01', 'id02']), sorted(ids))
 
     def test_get_nodemanagers(self):
         cluster = tu.get_fake_cluster()
-        nms = u.get_nodemanagers(cluster)
+        nms = PU.get_nodemanagers(cluster)
         ids = [nm.instance_id for nm in nms]
         self.assertEqual(sorted(['id00', 'id01', 'id02']), sorted(ids))
 
     def test_get_historyserver(self):
         cluster = tu.get_fake_cluster()
-        inst = u.get_historyserver(cluster)
+        inst = PU.get_historyserver(cluster)
         self.assertEqual('id2', inst.instance_id)
 
     def test_get_oozie(self):
         cluster = tu.get_fake_cluster()
-        inst = u.get_oozie(cluster)
+        inst = PU.get_oozie(cluster)
         self.assertEqual('id2', inst.instance_id)

@@ -87,6 +87,8 @@ def install_packages(remote, packages, timeout=1800):
 def update_repository(remote):
     if is_ubuntu_os(remote):
         _root(remote, 'apt-get update')
+    if is_centos_os(remote):
+        _root(remote, 'yum clean all')
 
 
 def push_remote_file(remote, src, dst):
@@ -99,6 +101,11 @@ def add_ubuntu_repository(r, repo_list_url, repo_name):
                      '/etc/apt/sources.list.d/%s.list' % repo_name)
 
 
+def write_ubuntu_repository(r, repo_content, repo_name):
+    r.write_file_to('/etc/apt/sources.list.d/%s.list' % repo_name,
+                    repo_content, run_as_root=True)
+
+
 def add_apt_key(remote, key_url):
     cmd = 'wget -qO - %s | apt-key add -' % key_url
     _root(remote, cmd)
@@ -106,6 +113,11 @@ def add_apt_key(remote, key_url):
 
 def add_centos_repository(r, repo_list_url, repo_name):
     push_remote_file(r, repo_list_url, '/etc/yum.repos.d/%s.repo' % repo_name)
+
+
+def write_centos_repository(r, repo_content, repo_name):
+    r.write_file_to('/etc/yum.repos.d/%s.repo' % repo_name,
+                    repo_content, root_as_root=True)
 
 
 def start_mysql_server(remote):

@@ -23,32 +23,16 @@ except ImportError:
     api_client = None
     services = None
 
+from oslo_log import log as logging
+from oslo_utils import timeutils
+
+from sahara import context
 from sahara.i18n import _
-from sahara.plugins.cdh import utils as pu
+from sahara.i18n import _LE
 from sahara.plugins import exceptions as ex
 
-CM_DEFAULT_USERNAME = 'admin'
-CM_DEFAULT_PASSWD = 'admin'
-CM_API_VERSION = 7
 
-HDFS_SERVICE_NAME = 'hdfs01'
-YARN_SERVICE_NAME = 'yarn01'
-OOZIE_SERVICE_NAME = 'oozie01'
-HIVE_SERVICE_NAME = 'hive01'
-HUE_SERVICE_NAME = 'hue01'
-SPARK_SERVICE_NAME = 'spark_on_yarn01'
-ZOOKEEPER_SERVICE_NAME = 'zookeeper01'
-HBASE_SERVICE_NAME = 'hbase01'
-FLUME_SERVICE_NAME = 'flume01'
-SENTRY_SERVICE_NAME = 'sentry01'
-SOLR_SERVICE_NAME = 'solr01'
-SQOOP_SERVICE_NAME = 'sqoop01'
-KS_INDEXER_SERVICE_NAME = 'ks_indexer01'
-IMPALA_SERVICE_NAME = 'impala01'
-
-
-def have_cm_api_libs():
-    return api_client and services
+LOG = logging.getLogger(__name__)
 
 
 def cloudera_cmd(f):
@@ -63,183 +47,195 @@ def cloudera_cmd(f):
                             raise ex.HadoopProvisionError(c.resultMessage)
                 else:
                     raise ex.HadoopProvisionError(result.resultMessage)
-
     return wrapper
 
 
-def get_api_client(cluster):
-    manager_ip = pu.get_manager(cluster).management_ip
-    return api_client.ApiResource(manager_ip, username=CM_DEFAULT_USERNAME,
-                                  password=CM_DEFAULT_PASSWD,
-                                  version=CM_API_VERSION)
+class ClouderaUtils(object):
+    CM_DEFAULT_USERNAME = 'admin'
+    CM_DEFAULT_PASSWD = 'admin'
+    CM_API_VERSION = 6
 
+    HDFS_SERVICE_NAME = 'hdfs01'
+    YARN_SERVICE_NAME = 'yarn01'
+    OOZIE_SERVICE_NAME = 'oozie01'
+    HIVE_SERVICE_NAME = 'hive01'
+    HUE_SERVICE_NAME = 'hue01'
+    SPARK_SERVICE_NAME = 'spark_on_yarn01'
+    ZOOKEEPER_SERVICE_NAME = 'zookeeper01'
+    HBASE_SERVICE_NAME = 'hbase01'
 
-def get_cloudera_cluster(cluster):
-    api = get_api_client(cluster)
-    return api.get_cluster(cluster.name)
+    def __init__(self):
+        # pu will be defined in derived class.
+        self.pu = None
 
+    def have_cm_api_libs(self):
+        return api_client and services
 
-@cloudera_cmd
-def start_instances(cluster):
-    cm_cluster = get_cloudera_cluster(cluster)
-    yield cm_cluster.start()
+    def validate_cm_api_libs(self):
+        if not self.have_cm_api_libs():
+            LOG.error(_LE("For provisioning cluster with CDH plugin install"
+                          " 'cm_api' package version 6.0.2 or later."))
+            raise ex.HadoopProvisionError(_("'cm_api' is not installed."))
 
+    def get_api_client(self, cluster):
+        manager_ip = self.pu.get_manager(cluster).management_ip
+        return api_client.ApiResource(manager_ip,
+                                      username=self.CM_DEFAULT_USERNAME,
+                                      password=self.CM_DEFAULT_PASSWD,
+                                      version=self.CM_API_VERSION)
 
-def delete_instances(cluster, instances):
-    api = get_api_client(cluster)
-    cm_cluster = get_cloudera_cluster(cluster)
-    hosts = api.get_all_hosts(view='full')
-    hostsnames_to_deleted = [i.fqdn() for i in instances]
-    for host in hosts:
-        if host.hostname in hostsnames_to_deleted:
-            cm_cluster.remove_host(host.hostId)
-            api.delete_host(host.hostId)
+    def get_cloudera_cluster(self, cluster):
+        api = self.get_api_client(cluster)
+        return api.get_cluster(cluster.name)
 
+    @cloudera_cmd
+    def start_instances(self, cluster):
+        cm_cluster = self.get_cloudera_cluster(cluster)
+        yield cm_cluster.start()
 
-def get_service(process, cluster=None, instance=None):
-    cm_cluster = None
-    if cluster:
-        cm_cluster = get_cloudera_cluster(cluster)
-    elif instance:
-        cm_cluster = get_cloudera_cluster(instance.node_group.cluster)
-    else:
-        raise ValueError(_("'cluster' or 'instance' argument missed"))
+    def delete_instances(self, cluster, instances):
+        api = self.get_api_client(cluster)
+        cm_cluster = self.get_cloudera_cluster(cluster)
+        hosts = api.get_all_hosts(view='full')
+        hostsnames_to_deleted = [i.fqdn() for i in instances]
+        for host in hosts:
+            if host.hostname in hostsnames_to_deleted:
+                cm_cluster.remove_host(host.hostId)
+                api.delete_host(host.hostId)
 
-    if process in ['NAMENODE', 'DATANODE', 'SECONDARYNAMENODE']:
-        return cm_cluster.get_service(HDFS_SERVICE_NAME)
-    elif process in ['RESOURCEMANAGER', 'NODEMANAGER', 'JOBHISTORY']:
-        return cm_cluster.get_service(YARN_SERVICE_NAME)
-    elif process in ['OOZIE_SERVER']:
-        return cm_cluster.get_service(OOZIE_SERVICE_NAME)
-    elif process in ['HIVESERVER2', 'HIVEMETASTORE', 'WEBHCAT']:
-        return cm_cluster.get_service(HIVE_SERVICE_NAME)
-    elif process in ['HUE_SERVER']:
-        return cm_cluster.get_service(HUE_SERVICE_NAME)
-    elif process in ['SPARK_YARN_HISTORY_SERVER']:
-        return cm_cluster.get_service(SPARK_SERVICE_NAME)
-    elif process in ['SERVER']:
-        return cm_cluster.get_service(ZOOKEEPER_SERVICE_NAME)
-    elif process in ['MASTER', 'REGIONSERVER']:
-        return cm_cluster.get_service(HBASE_SERVICE_NAME)
-    elif process in ['AGENT']:
-        return cm_cluster.get_service(FLUME_SERVICE_NAME)
-    elif process in ['SQOOP_SERVER']:
-        return cm_cluster.get_service(SQOOP_SERVICE_NAME)
-    elif process in ['SENTRY_SERVER']:
-        return cm_cluster.get_service(SENTRY_SERVICE_NAME)
-    elif process in ['SOLR_SERVER']:
-        return cm_cluster.get_service(SOLR_SERVICE_NAME)
-    elif process in ['HBASE_INDEXER']:
-        return cm_cluster.get_service(KS_INDEXER_SERVICE_NAME)
-    elif process in ['CATALOGSERVER', 'STATESTORE', 'IMPALAD', 'LLAMA']:
-        return cm_cluster.get_service(IMPALA_SERVICE_NAME)
-    else:
-        raise ValueError(
-            _("Process %(process)s is not supported by CDH plugin") %
-            {'process': process})
+    def decommission_nodes(self, cluster, process, role_names):
+        service = self.get_service_by_role(process, cluster)
+        service.decommission(*role_names).wait()
+        for role_name in role_names:
+            service.delete_role(role_name)
 
+    @cloudera_cmd
+    def refresh_nodes(self, cluster, process, service_name):
+        cm_cluster = self.get_cloudera_cluster(cluster)
+        service = cm_cluster.get_service(service_name)
+        nds = [n.name for n in service.get_roles_by_type(process)]
+        for nd in nds:
+            for st in service.refresh(nd):
+                yield st
 
-def decommission_nodes(cluster, process, role_names):
-    service = get_service(process, cluster)
-    service.decommission(*role_names).wait()
-    for role_name in role_names:
-        service.delete_role(role_name)
+    @cloudera_cmd
+    def deploy_configs(self, cluster):
+        cm_cluster = self.get_cloudera_cluster(cluster)
+        yield cm_cluster.deploy_client_config()
 
+    @cloudera_cmd
+    def update_configs(self, instance):
+        for process in instance.node_group.node_processes:
+            process = self.pu.convert_role_showname(process)
+            service = self.get_service_by_role(process, instance=instance)
+            yield service.deploy_client_config(self.pu.get_role_name(instance,
+                                                                     process))
 
-@cloudera_cmd
-def refresh_nodes(cluster, process, service_name):
-    cm_cluster = get_cloudera_cluster(cluster)
-    service = cm_cluster.get_service(service_name)
+    @cloudera_cmd
+    def restart_mgmt_service(self, cluster):
+        api = self.get_api_client(cluster)
+        cm = api.get_cloudera_manager()
+        mgmt_service = cm.get_service()
+        yield mgmt_service.restart()
 
-    nds = [n.name for n in service.get_roles_by_type(process)]
-    for nd in nds:
-        for st in service.refresh(nd):
-            yield st
+    @cloudera_cmd
+    def start_service(self, service):
+        yield service.start()
 
+    @cloudera_cmd
+    def start_roles(self, service, *role_names):
+        for role in service.start_roles(*role_names):
+            yield role
 
-@cloudera_cmd
-def deploy_configs(cluster):
-    cm_cluster = get_cloudera_cluster(cluster)
-    yield cm_cluster.deploy_client_config()
+    def create_mgmt_service(self, cluster):
+        api = self.get_api_client(cluster)
+        cm = api.get_cloudera_manager()
 
+        setup_info = services.ApiServiceSetupInfo()
+        manager = self.pu.get_manager(cluster)
+        hostname = manager.fqdn()
+        processes = ['SERVICEMONITOR', 'HOSTMONITOR',
+                     'EVENTSERVER', 'ALERTPUBLISHER']
+        for proc in processes:
+            setup_info.add_role_info(self.pu.get_role_name(manager, proc),
+                                     proc, hostname)
 
-@cloudera_cmd
-def update_configs(instance):
-    for process in instance.node_group.node_processes:
-        service = get_service(process, instance=instance)
-        yield service.deploy_client_config(get_role_name(instance, process))
+        cm.create_mgmt_service(setup_info)
+        cm.hosts_start_roles([hostname])
 
+    def get_service_by_role(self, process, cluster=None, instance=None):
+        cm_cluster = None
+        if cluster:
+            cm_cluster = self.get_cloudera_cluster(cluster)
+        elif instance:
+            cm_cluster = self.get_cloudera_cluster(instance.node_group.cluster)
+        else:
+            raise ValueError(_("'cluster' or 'instance' argument missed"))
 
-@cloudera_cmd
-def first_run(cluster):
-    cm_cluster = get_cloudera_cluster(cluster)
-    yield cm_cluster.first_run()
+        if process in ['NAMENODE', 'DATANODE', 'SECONDARYNAMENODE']:
+            return cm_cluster.get_service(self.HDFS_SERVICE_NAME)
+        elif process in ['RESOURCEMANAGER', 'NODEMANAGER', 'JOBHISTORY']:
+            return cm_cluster.get_service(self.YARN_SERVICE_NAME)
+        elif process in ['OOZIE_SERVER']:
+            return cm_cluster.get_service(self.OOZIE_SERVICE_NAME)
+        elif process in ['HIVESERVER2', 'HIVEMETASTORE', 'WEBHCAT']:
+            return cm_cluster.get_service(self.HIVE_SERVICE_NAME)
+        elif process in ['HUE_SERVER']:
+            return cm_cluster.get_service(self.HUE_SERVICE_NAME)
+        elif process in ['SPARK_YARN_HISTORY_SERVER']:
+            return cm_cluster.get_service(self.SPARK_SERVICE_NAME)
+        elif process in ['SERVER']:
+            return cm_cluster.get_service(self.ZOOKEEPER_SERVICE_NAME)
+        elif process in ['MASTER', 'REGIONSERVER']:
+            return cm_cluster.get_service(self.HBASE_SERVICE_NAME)
+        else:
+            raise ValueError(
+                _("Process %(process)s is not supported by CDH plugin") %
+                {'process': process})
 
+    def await_agents(self, instances):
+        api = self.get_api_client(instances[0].node_group.cluster)
+        timeout = 300
+        LOG.debug("Waiting %(timeout)s seconds for agent connected to manager"
+                  % {'timeout': timeout})
+        s_time = timeutils.utcnow()
+        while timeutils.delta_seconds(s_time, timeutils.utcnow()) < timeout:
+            hostnames = [i.fqdn() for i in instances]
+            hostnames_to_manager = [h.hostname for h in
+                                    api.get_all_hosts('full')]
+            is_ok = True
+            for hostname in hostnames:
+                if hostname not in hostnames_to_manager:
+                    is_ok = False
+                    break
 
-def get_role_name(instance, service):
-    # NOTE: role name must match regexp "[_A-Za-z][-_A-Za-z0-9]{0,63}"
-    shortcuts = {
-        'AGENT': 'A',
-        'ALERTPUBLISHER': 'AP',
-        'CATALOGSERVER': 'ICS',
-        'DATANODE': 'DN',
-        'EVENTSERVER': 'ES',
-        'HBASE_INDEXER': 'LHBI',
-        'HIVEMETASTORE': 'HVM',
-        'HIVESERVER2': 'HVS',
-        'HOSTMONITOR': 'HM',
-        'IMPALAD': 'ID',
-        'JOBHISTORY': 'JS',
-        'MASTER': 'M',
-        'NAMENODE': 'NN',
-        'NODEMANAGER': 'NM',
-        'OOZIE_SERVER': 'OS',
-        'REGIONSERVER': 'RS',
-        'RESOURCEMANAGER': 'RM',
-        'SECONDARYNAMENODE': 'SNN',
-        'SENTRY_SERVER': 'SNT',
-        'SERVER': 'S',
-        'SERVICEMONITOR': 'SM',
-        'SOLR_SERVER': 'SLR',
-        'SPARK_YARN_HISTORY_SERVER': 'SHS',
-        'SQOOP_SERVER': 'S2S',
-        'STATESTORE': 'ISS',
-        'WEBHCAT': 'WHC'
-    }
-    return '%s_%s' % (shortcuts.get(service, service),
-                      instance.hostname().replace('-', '_'))
+            if not is_ok:
+                context.sleep(5)
+            else:
+                break
+        else:
+            raise ex.HadoopProvisionError(_("Cloudera agents failed to connect"
+                                            " to Cloudera Manager"))
 
+    def configure_instances(self, instances, cluster=None):
+        for inst in instances:
+            self.configure_instance(inst, cluster)
 
-def create_mgmt_service(cluster):
-    api = get_api_client(cluster)
-    cm = api.get_cloudera_manager()
+    def configure_instance(self, instance, cluster=None):
+        for process in instance.node_group.node_processes:
+            self._add_role(instance, process, cluster)
 
-    setup_info = services.ApiServiceSetupInfo()
-    manager = pu.get_manager(cluster)
-    hostname = manager.fqdn()
-    processes = ['SERVICEMONITOR', 'HOSTMONITOR',
-                 'EVENTSERVER', 'ALERTPUBLISHER']
-    for proc in processes:
-        setup_info.add_role_info(get_role_name(manager, proc), proc, hostname)
+    def _add_role(self, instance, process, cluster):
+        if process in ['CLOUDERA_MANAGER']:
+            return
 
-    cm.create_mgmt_service(setup_info)
-    cm.hosts_start_roles([hostname])
+        process = self.pu.convert_role_showname(process)
+        service = self.get_service_by_role(process, instance=instance)
+        role = service.create_role(self.pu.get_role_name(instance, process),
+                                   process, instance.fqdn())
+        role.update_config(self._get_configs(process, cluster,
+                                             node_group=instance.node_group))
 
-
-@cloudera_cmd
-def restart_mgmt_service(cluster):
-    api = get_api_client(cluster)
-    cm = api.get_cloudera_manager()
-    mgmt_service = cm.get_service()
-    yield mgmt_service.restart()
-
-
-@cloudera_cmd
-def start_service(service):
-    yield service.start()
-
-
-@cloudera_cmd
-def start_roles(service, *role_names):
-    for role in service.start_roles(*role_names):
-        yield role
+    def _get_configs(self, service, cluster=None, node_group=None):
+        # Defined in derived class.
+        return

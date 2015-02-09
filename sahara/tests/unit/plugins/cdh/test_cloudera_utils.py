@@ -15,22 +15,28 @@
 
 import mock
 
-from sahara.plugins.cdh import cloudera_utils as cu
+from sahara.plugins.cdh.v5_3_0 import cloudera_utils as cu
 from sahara.tests.unit import base
 from sahara.tests.unit.plugins.cdh import utils as ctu
 
 
+CU = cu.ClouderaUtilsV530()
+
+
 class ClouderaUtilsTestCase(base.SaharaTestCase):
-    @mock.patch('sahara.plugins.cdh.cloudera_utils.get_cloudera_cluster')
+    @mock.patch('sahara.plugins.cdh.v5_3_0.cloudera_utils.ClouderaUtilsV530.'
+                'get_cloudera_cluster')
     def test_get_service(self, mock_get_cl_cluster):
-        self.assertRaises(ValueError, cu.get_service, 'NAMENODE')
+        self.assertRaises(ValueError, CU.get_service_by_role, 'NAMENODE')
 
         cluster = ctu.get_fake_cluster()
         inst = cluster.node_groups[0].instances[0]
         mock_get_cl_cluster.return_value = None
 
-        self.assertRaises(ValueError, cu.get_service, 'spam', cluster)
-        self.assertRaises(ValueError, cu.get_service, 'spam', instance=inst)
+        self.assertRaises(ValueError, CU.get_service_by_role, 'spam',
+                          cluster)
+        self.assertRaises(ValueError, CU.get_service_by_role, 'spam',
+                          instance=inst)
 
         mock_get_cl_cluster.reset_mock()
 
@@ -38,22 +44,23 @@ class ClouderaUtilsTestCase(base.SaharaTestCase):
         mock_get_service.get_service.return_value = mock.Mock()
         mock_get_cl_cluster.return_value = mock_get_service
 
-        cu.get_service('NAMENODE', cluster)
-        args = ((cu.HDFS_SERVICE_NAME,),)
+        CU.get_service_by_role('NAMENODE', cluster)
+        args = ((CU.HDFS_SERVICE_NAME,),)
         self.assertEqual(args, mock_get_service.get_service.call_args)
 
         mock_get_service.reset_mock()
-        cu.get_service('JOBHISTORY', instance=inst)
-        args = ((cu.YARN_SERVICE_NAME,),)
+        CU.get_service_by_role('JOBHISTORY', instance=inst)
+        args = ((CU.YARN_SERVICE_NAME,),)
         self.assertEqual(args, mock_get_service.get_service.call_args)
 
         mock_get_service.reset_mock()
-        cu.get_service('OOZIE_SERVER', cluster)
-        args = ((cu.OOZIE_SERVICE_NAME,),)
+        CU.get_service_by_role('OOZIE_SERVER', cluster)
+        args = ((CU.OOZIE_SERVICE_NAME,),)
         self.assertEqual(args, mock_get_service.get_service.call_args)
 
     def test_get_role_name(self):
         inst_mock = mock.Mock()
         inst_mock.hostname.return_value = 'spam-host'
 
-        self.assertEqual('eggs_spam_host', cu.get_role_name(inst_mock, 'eggs'))
+        self.assertEqual('eggs_spam_host',
+                         CU.pu.get_role_name(inst_mock, 'eggs'))
