@@ -40,7 +40,8 @@ class BaseFactory(object):
             for k, v in six.iteritems(job_dict['configs']):
                 if k.startswith('edp.'):
                     edp_configs[k] = v
-                else:
+                elif not k.startswith('oozie.'):
+                    # 'oozie.' configs have been written to the properties file
                     configs[k] = v
         return configs, edp_configs
 
