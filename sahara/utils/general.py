@@ -103,8 +103,8 @@ def change_cluster_status(cluster, status, status_description=None):
 
     cluster = conductor.cluster_update(ctx, cluster, update_dict)
 
-    LOG.info(_LI("Cluster status has been changed: id=%(id)s, New status="
-                 "%(status)s"), {'id': cluster.id, 'status': cluster.status})
+    LOG.info(_LI("Cluster status has been changed: id={id}, New status="
+                 "{status}").format(id=cluster.id, status=cluster.status))
 
     sender.notify(ctx, cluster.id, cluster.name, cluster.status,
                   "update")
@@ -195,9 +195,9 @@ def await_process(timeout, sleeping_time, op_name, check_object):
                 consumed = _get_consumed(start_time)
                 if func(*args, **kwargs):
                     LOG.info(
-                        _LI("Operation %(op_name)s was successfully executed "
-                            "in seconds: %(sec)s"), {'op_name': op_name,
-                                                     'sec': consumed})
+                        _LI("Operation {op_name} was successfully executed "
+                            "in seconds: {sec}").format(op_name=op_name,
+                                                        sec=consumed))
                     return
 
                 if not check_cluster_exists(cluster):

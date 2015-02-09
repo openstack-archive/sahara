@@ -156,8 +156,8 @@ class VersionHandler(avm.AbstractVersionHandler):
                 run.oozie_create_db(r)
             run.oozie_share_lib(r, nn_instance.hostname())
             run.start_oozie(r)
-            LOG.info(_LI("Oozie service at '%s' has been started"),
-                     nn_instance.hostname())
+            LOG.info(_LI("Oozie service at {host} has been started").format(
+                     host=nn_instance.hostname()))
 
     def start_hiveserver(self, cluster):
         hs = vu.get_hiveserver(cluster)
@@ -179,9 +179,9 @@ class VersionHandler(avm.AbstractVersionHandler):
                     run.mysql_start(r, hive_server)
                 run.hive_create_db(r, cluster.extra['hive_mysql_passwd'])
                 run.hive_metastore_start(r)
-                LOG.info(_LI("Hive Metastore server at %s has been "
-                             "started"),
-                         hive_server.hostname())
+                LOG.info(_LI("Hive Metastore server at {host} has been "
+                             "started").format(
+                                 host=hive_server.hostname()))
 
     def start_cluster(self, cluster):
         self.start_namenode(cluster)
@@ -194,14 +194,15 @@ class VersionHandler(avm.AbstractVersionHandler):
 
         self._await_datanodes(cluster)
 
-        LOG.info(_LI("Hadoop services in cluster %s have been started"),
-                 cluster.name)
+        LOG.info(_LI("Hadoop services in cluster {cluster} have been started")
+                 .format(cluster=cluster.name))
 
         self.start_oozie(cluster)
 
         self.start_hiveserver(cluster)
 
-        LOG.info(_LI('Cluster %s has been started successfully'), cluster.name)
+        LOG.info(_LI('Cluster {cluster} has been started successfully')
+                 .format(cluster=cluster.name))
         self._set_cluster_info(cluster)
 
     @cpo.event_wrapper(
@@ -211,21 +212,22 @@ class VersionHandler(avm.AbstractVersionHandler):
         if datanodes_count < 1:
             return
 
-        LOG.info(_LI("Waiting %s datanodes to start up"), datanodes_count)
+        LOG.debug("Waiting {count} datanodes to start up".format(
+            count=datanodes_count))
         with remote.get_remote(vu.get_namenode(cluster)) as r:
             while True:
                 if run.check_datanodes_count(r, datanodes_count):
                     LOG.info(
-                        _LI('Datanodes on cluster %s have been started'),
-                        cluster.name)
+                        _LI('Datanodes on cluster {cluster} have been started')
+                        .format(cluster=cluster.name))
                     return
 
                 context.sleep(1)
 
                 if not g.check_cluster_exists(cluster):
-                    LOG.info(
-                        _LI('Stop waiting datanodes on cluster %s since it has'
-                            ' been deleted'), cluster.name)
+                    LOG.debug('Stop waiting for datanodes on cluster {cluster}'
+                              ' since it has been deleted'.format(
+                                  cluster=cluster.name))
                     return
 
     def _generate_hive_mysql_password(self, cluster):

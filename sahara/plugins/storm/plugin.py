@@ -96,8 +96,8 @@ class StormProvider(p.ProvisioningPluginBase):
         # start storm slaves
         self._start_slave_processes(sl_instances)
 
-        LOG.info(_LI('Cluster %s has been started successfully'),
-                 cluster.name)
+        LOG.info(_LI('Cluster {cluster} has been started successfully').format(
+                 cluster=cluster.name))
         self._set_cluster_info(cluster)
 
     def _extract_configs_to_extra(self, cluster):
@@ -137,8 +137,8 @@ class StormProvider(p.ProvisioningPluginBase):
     def _start_storm_master(self, sm_instance):
         with remote.get_remote(sm_instance) as r:
             run.start_storm_nimbus_and_ui(r)
-            LOG.info(_LI("Storm master at '%s' has been started"),
-                     sm_instance.hostname())
+            LOG.info(_LI("Storm master at {host} has been started").format(
+                     host=sm_instance.hostname()))
 
     def _start_slave_processes(self, sl_instances):
         if len(sl_instances) == 0:

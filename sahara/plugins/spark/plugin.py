@@ -123,8 +123,8 @@ class SparkProvider(p.ProvisioningPluginBase):
     def _start_spark(self, cluster, sm_instance):
         with remote.get_remote(sm_instance) as r:
             run.start_spark_master(r, self._spark_home(cluster))
-            LOG.info(_LI("Spark service at '%s' has been started"),
-                     sm_instance.hostname())
+            LOG.info(_LI("Spark service at {host} has been started").format(
+                     host=sm_instance.hostname()))
 
     def start_cluster(self, cluster):
         nn_instance = utils.get_instance(cluster, "namenode")
@@ -136,8 +136,8 @@ class SparkProvider(p.ProvisioningPluginBase):
         # start the data nodes
         self._start_datanode_processes(dn_instances)
 
-        LOG.info(_LI("Hadoop services in cluster %s have been started"),
-                 cluster.name)
+        LOG.info(_LI("Hadoop services in cluster {cluster} have been started")
+                 .format(cluster=cluster.name))
 
         with remote.get_remote(nn_instance) as r:
             r.execute_command("sudo -u hdfs hdfs dfs -mkdir -p /user/$USER/")
@@ -147,8 +147,8 @@ class SparkProvider(p.ProvisioningPluginBase):
         # start spark nodes
         self.start_spark(cluster)
 
-        LOG.info(_LI('Cluster %s has been started successfully'),
-                 cluster.name)
+        LOG.info(_LI('Cluster {cluster} has been started successfully').format(
+                 cluster=cluster.name))
         self._set_cluster_info(cluster)
 
     def _spark_home(self, cluster):
@@ -441,8 +441,8 @@ class SparkProvider(p.ProvisioningPluginBase):
         self._start_datanode_processes(dn_instances)
 
         run.start_spark_master(r_master, self._spark_home(cluster))
-        LOG.info(_LI("Spark master service at '%s' has been restarted"),
-                 master.hostname())
+        LOG.info(_LI("Spark master service at {host} has been restarted")
+                 .format(host=master.hostname()))
 
     def _get_scalable_processes(self):
         return ["datanode", "slave"]

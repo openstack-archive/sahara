@@ -271,8 +271,8 @@ class AbstractPluginUtils(object):
             cmd.start_manager(r)
 
         timeout = 300
-        LOG.debug("Waiting %(timeout)s seconds for Manager to start : " % {
-            'timeout': timeout})
+        LOG.debug("Waiting {timeout} seconds for Manager to start: "
+                  .format(timeout=timeout))
         s_time = timeutils.utcnow()
         while timeutils.delta_seconds(s_time, timeutils.utcnow()) < timeout:
             try:
@@ -303,8 +303,8 @@ class AbstractPluginUtils(object):
 
     @cpo.event_wrapper(True)
     def _configure_repo_from_inst(self, instance):
-        LOG.debug("Configure repos from instance '%(instance)s'" % {
-                  'instance': instance.instance_name})
+        LOG.debug("Configure repos from instance {instance}".format(
+                  instance=instance.instance_name))
         cluster = instance.cluster
 
         cdh5_key = self.c_helper.get_cdh5_key_url(cluster)

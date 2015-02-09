@@ -84,9 +84,8 @@ class Resource(object):
                 _("Command %(method)s %(path)s failed: %(msg)s")
                 % {'method': method, 'path': path, 'msg': six.text_type(ex)})
 
-        LOG.debug("%s Got response: %s%s"
-                  % (method, body[:32], "..." if len(body) > 32 else ""))
-
+        LOG.debug("{method} got response: {body}".format(method=method,
+                                                         body=body[:32]))
         # Is the response application/json?
         if (len(body) != 0 and resp.info().getmaintype() == "application"
                 and resp.info().getsubtype() == "json"):
@@ -94,7 +93,7 @@ class Resource(object):
                 json_dict = json.loads(body)
                 return json_dict
             except Exception as ex:
-                LOG.exception(_LE('JSON decode error: %s'), body)
+                LOG.error(_LE('JSON decode error: {body}').format(body=body))
                 raise ex
         else:
             return body
@@ -114,13 +113,14 @@ class Resource(object):
                 return self.invoke("GET", relpath, params)
             except (socket.error, urllib2.URLError) as e:
                 if "timed out" in six.text_type(e).lower():
-                    LOG.warn(
-                        _LW("Timeout issuing GET request for"
-                            " %(path)s. %(post_msg)s")
-                        % {'path': self._join_uri(relpath),
-                           'post_msg':
-                               _LW("Will retry") if retry < self.retries
-                               else _LW("No retries left.")})
+                    if retry < self.retries:
+                        LOG.warning(_LW("Timeout issuing GET request for "
+                                        "{path}. Will retry").format(
+                                            path=self._join_uri(relpath)))
+                    else:
+                        LOG.warning(_LW("Timeout issuing GET request for "
+                                        "{path}. No retries left").format(
+                                            path=self._join_uri(relpath)))
                 else:
                     raise e
         else:

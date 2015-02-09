@@ -20,7 +20,6 @@ from sahara import conductor as c
 from sahara import context
 from sahara import exceptions as ex
 from sahara.i18n import _
-from sahara.i18n import _LI
 from sahara.i18n import _LW
 from sahara.plugins import provisioning as p
 from sahara.plugins import utils
@@ -224,7 +223,7 @@ def generate_cfg_from_general(cfg, configs, general_config,
         for name, value in configs['general'].items():
             if value:
                 cfg = _set_config(cfg, general_config, name)
-                LOG.info(_LI("Applying config: %s"), name)
+                LOG.debug("Applying config: {config}".format(config=name))
     else:
         cfg = _set_config(cfg, general_config)
     return cfg
@@ -343,12 +342,14 @@ def generate_xml_configs(cluster, node_group, hive_mysql_passwd):
                                                        proxy_configs)
         xml_configs.update({'hive-site':
                             x.create_hadoop_xml(cfg, cfg_filter)})
-        LOG.debug('Generated hive-site.xml for hive % s', hive_hostname)
+        LOG.debug('Generated hive-site.xml for hive {host}'.format(
+            host=hive_hostname))
 
     if oozie_hostname:
         xml_configs.update({'oozie-site':
                             x.create_hadoop_xml(all_cfg, o_h.OOZIE_DEFAULT)})
-        LOG.debug('Generated oozie-site.xml for oozie % s', oozie_hostname)
+        LOG.debug('Generated oozie-site.xml for oozie {host}'.format(
+            host=oozie_hostname))
 
     return xml_configs
 
@@ -387,8 +388,9 @@ def extract_environment_confs(configs):
                     if param_name == cfg_name and param_value is not None:
                         lst.append(cfg_format_str % param_value)
         else:
-            LOG.warn(_LW("Plugin received wrong applicable target '%s' in "
-                     "environmental configs"), service)
+            LOG.warning(_LW("Plugin received wrong applicable target {service}"
+                            " in environmental configs").format(
+                                service=service))
     return sorted(lst)
 
 
@@ -408,8 +410,8 @@ def extract_xml_confs(configs):
                     if param_name in names and param_value is not None:
                         lst.append((param_name, param_value))
         else:
-            LOG.warn(_LW("Plugin received wrong applicable target '%s' for "
-                     "xml configs"), service)
+            LOG.warning(_LW("Plugin received wrong applicable target {service}"
+                            " for xml configs").format(service=service))
     return sorted(lst)
 
 

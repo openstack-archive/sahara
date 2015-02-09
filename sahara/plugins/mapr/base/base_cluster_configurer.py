@@ -21,6 +21,8 @@ import six
 
 from sahara import conductor
 from sahara import context
+from sahara.i18n import _LI
+from sahara.i18n import _LW
 import sahara.plugins.mapr.abstract.configurer as ac
 import sahara.plugins.mapr.services.management.management as mng
 import sahara.plugins.mapr.services.mapreduce.mapreduce as mr
@@ -83,7 +85,7 @@ class BaseConfigurer(ac.AbstractConfigurer):
         self._write_config_files(cluster_context, existing)
         self._update_services(cluster_context, existing)
         self._restart_services(cluster_context)
-        LOG.debug('Existing instances successfully configured')
+        LOG.info(_LI('Existing instances successfully configured'))
 
     def _configure_services(self, cluster_context, instances):
         for service in cluster_context.cluster_services:
@@ -132,7 +134,7 @@ class BaseConfigurer(ac.AbstractConfigurer):
                 instances, util.run_script, _TOPO_SCRIPT, 'root', data_path)
         else:
             LOG.debug('Data locality is disabled.')
-        LOG.debug('Cluster topology successfully configured')
+        LOG.info(_LI('Cluster topology successfully configured'))
 
     def _write_config_files(self, cluster_context, instances):
         LOG.debug('Writing config files')
@@ -154,7 +156,8 @@ class BaseConfigurer(ac.AbstractConfigurer):
                     configs=ng_configs[service.ui_name],
                     instance=ng.instances[0]
                 )
-                LOG.debug('Rendering %s config files', service.ui_name)
+                LOG.debug('Rendering {ui_name} config files'.format(
+                    ui_name=service.ui_name))
                 for conf_file in service_conf_files:
                     ng_config_files.update({
                         conf_file.remote_path: conf_file.render()
@@ -162,7 +165,7 @@ class BaseConfigurer(ac.AbstractConfigurer):
 
             ng_instances = filter(lambda i: i in instances, ng.instances)
             self._write_ng_config_files(ng_instances, ng_config_files)
-        LOG.debug('Config files successfully written')
+        LOG.debug('Config files successfully wrote')
 
     def _write_ng_config_files(self, instances, conf_files):
         with context.ThreadGroup() as tg:
@@ -195,7 +198,7 @@ class BaseConfigurer(ac.AbstractConfigurer):
         LOG.debug('Executing service post install hooks')
         for s in cluster_context.cluster_services:
             s.post_install(cluster_context, instances)
-        LOG.debug('Post install hooks execution successfully executed')
+        LOG.info(_LI('Post install hooks execution successfully executed'))
 
     def _update_cluster_info(self, cluster_context):
         LOG.debug('Updating UI information.')
@@ -226,7 +229,7 @@ class BaseConfigurer(ac.AbstractConfigurer):
                         'echo "%s:%s"|chpasswd' % ('mapr', 'mapr'),
                         run_as_root=True)
             else:
-                LOG.debug('user "mapr" does not exists')
+                LOG.warning(_LW('User "mapr" does not exists'))
 
         def create_home_mapr(instance):
             target_path = '/home/mapr'
@@ -237,7 +240,7 @@ class BaseConfigurer(ac.AbstractConfigurer):
                 with instance.remote() as r:
                     r.execute_command(cmd, run_as_root=True)
             else:
-                LOG.debug('user "mapr" does not exists')
+                LOG.warning(_LW('User "mapr" does not exists'))
 
         util.execute_on_instances(instances, set_user_password)
         util.execute_on_instances(instances, create_home_mapr)

@@ -263,7 +263,7 @@ def proxy_user_create(username):
     domain = domain_for_proxy()
     password = six.text_type(uuid.uuid4())
     admin.users.create(name=username, password=password, domain=domain.id)
-    LOG.debug('created proxy user {0}'.format(username))
+    LOG.debug('Created proxy user {username}'.format(username=username))
     return password
 
 
@@ -290,4 +290,4 @@ def proxy_user_delete(username=None, user_id=None):
                                                  'when searching for user %s'))
         user_id = user_list[0].id
     admin.users.delete(user_id)
-    LOG.debug('deleted proxy user id {0}'.format(user_id))
+    LOG.debug('Deleted proxy user id {user_id}'.format(user_id=user_id))

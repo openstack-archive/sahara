@@ -21,7 +21,7 @@ from oslo_log import log
 from sahara import context
 from sahara import exceptions as ex
 from sahara.i18n import _
-from sahara.i18n import _LI
+from sahara.i18n import _LW
 from sahara.utils.openstack import nova
 from sahara.utils import xmlutils as x
 
@@ -64,7 +64,8 @@ CONF.register_opts(opts)
 
 
 def _read_swift_topology():
-    LOG.debug("Reading Swift nodes topology from %s", CONF.swift_topology_file)
+    LOG.debug("Reading Swift nodes topology from {config}".format(
+              config=CONF.swift_topology_file))
     topology = {}
     try:
         with open(CONF.swift_topology_file) as f:
@@ -75,16 +76,16 @@ def _read_swift_topology():
                 (host, path) = line.split()
                 topology[host] = path
     except IOError:
-        LOG.debug("Unable to read Swift nodes topology from %s",
-                  CONF.swift_topology_file)
+        LOG.warning(_LW("Unable to read Swift nodes topology from {config}")
+                    .format(config=CONF.swift_topology_file))
         return {}
 
     return topology
 
 
 def _read_compute_topology():
-    LOG.debug("Reading compute nodes topology from %s",
-              CONF.compute_topology_file)
+    LOG.debug("Reading compute nodes topology from {config}".format(
+              config=CONF.compute_topology_file))
     ctx = context.ctx()
     tenant_id = str(ctx.tenant_id)
     topology = {}
@@ -145,16 +146,16 @@ def vm_awareness_core_config():
         if param:
             param['value'] = 'org.apache.hadoop.net.NetworkTopology'
 
-    LOG.info(_LI("Vm awareness will add following configs in core-site "
-             "params: %s"), result)
+    LOG.debug("Vm awareness will add following configs in core-site "
+              "params: {result}".format(result=result))
     return result
 
 
 def vm_awareness_mapred_config():
     c = x.load_hadoop_xml_defaults('topology/resources/mapred-template.xml')
     result = [cfg for cfg in c if cfg['value']]
-    LOG.info(_LI("Vm awareness will add following configs in map-red "
-             "params: %s"), result)
+    LOG.debug("Vm awareness will add following configs in map-red "
+              "params: {result}".format(result=result))
     return result
 
 

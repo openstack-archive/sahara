@@ -82,23 +82,23 @@ def terminate_cluster(ctx, cluster, description):
     if CONF.use_identity_api_v3:
         trusts.use_os_admin_auth_token(cluster)
 
-        LOG.debug('Terminating %(description)s cluster %(cluster)s '
-                  'in "%(status)s" state with id %(id)s',
-                  {'cluster': cluster.name, 'id': cluster.id,
-                   'status': cluster.status,
-                   'description': description})
+        LOG.debug('Terminating {description} cluster {cluster} '
+                  'in "{status}" state with id {id}'
+                  .format(cluster=cluster.name,
+                          id=cluster.id,
+                          status=cluster.status,
+                          description=description))
 
         try:
             ops.terminate_cluster(cluster.id)
         except Exception as e:
-            LOG.warn(_LW('Failed to terminate %(description)s cluster '
-                         '%(cluster)s in "%(status)s" state with id %(id)s: '
-                         '%(error)s.'),
-                     {'cluster': cluster.name,
-                      'id': cluster.id,
-                      'error': six.text_type(e),
-                      'status': cluster.status,
-                      'description': description})
+            LOG.warning(_LW('Failed to terminate {description} cluster '
+                            '{cluster} in "{status}" state with id {id}: '
+                            '{error}.').format(cluster=cluster.name,
+                                               id=cluster.id,
+                                               error=six.text_type(e),
+                                               status=cluster.status,
+                                               description=description))
 
     else:
         if cluster.status != 'AwaitingTermination':
@@ -159,8 +159,8 @@ def _make_periodic_tasks():
                     je = conductor.job_execution_get(ctx, je_id)
                     if je is None or (je.info['status'] in
                                       edp.JOB_STATUSES_TERMINATED):
-                        LOG.debug('Found zombie proxy user {0}'.format(
-                            user.name))
+                        LOG.debug('Found zombie proxy user {username}'.format(
+                            username=user.name))
                         p.proxy_user_delete(user_id=user.id)
             context.set_ctx(None)
 
@@ -195,8 +195,8 @@ def setup():
     if CONF.periodic_enable:
         if CONF.periodic_fuzzy_delay:
             initial_delay = random.randint(0, CONF.periodic_fuzzy_delay)
-            LOG.debug("Starting periodic tasks with initial delay '%s' "
-                      "seconds", initial_delay)
+            LOG.debug("Starting periodic tasks with initial delay {seconds} "
+                      "seconds".format(seconds=initial_delay))
         else:
             initial_delay = None
 

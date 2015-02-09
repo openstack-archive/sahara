@@ -22,7 +22,6 @@ from sahara import conductor as c
 from sahara import context
 from sahara import exceptions as exc
 from sahara.i18n import _
-from sahara.i18n import _LE
 from sahara.i18n import _LI
 from sahara.i18n import _LW
 from sahara.service import engine as e
@@ -439,7 +438,8 @@ class DirectEngine(e.Engine):
 
             context.sleep(1)
 
-        LOG.info(_LI("Cluster '%s': all instances are active"), cluster.id)
+        LOG.info(_LI("Cluster {cluster_id}: all instances are active").format(
+                 cluster_id=cluster.id))
 
     def _await_deleted(self, cluster, instances):
         """Await all instances are deleted."""
@@ -455,8 +455,8 @@ class DirectEngine(e.Engine):
             for instance in instances:
                 if instance.id not in deleted_ids:
                     if self._check_if_deleted(instance):
-                        LOG.debug("Instance '%s' is deleted" %
-                                  instance.instance_name)
+                        LOG.debug("Instance {instance} is deleted".format(
+                                  instance=instance.instance_name))
                         deleted_ids.add(instance.id)
                         cpo.add_successful_event(instance)
 
@@ -481,17 +481,19 @@ class DirectEngine(e.Engine):
 
     def _rollback_cluster_creation(self, cluster, ex):
         """Shutdown all instances and update cluster status."""
-        LOG.info(_LI("Cluster '%(name)s' creation rollback "
-                     "(reason: %(reason)s)"),
-                 {'name': cluster.name, 'reason': ex})
+        # TODO(starodubcevna): Need to add LOG.warning to upper level in next
+        # commits
+        LOG.debug("Cluster {name} creation rollback "
+                  "(reason: {reason})".format(name=cluster.name, reason=ex))
 
         self.shutdown_cluster(cluster)
 
     def _rollback_cluster_scaling(self, cluster, instances, ex):
+        # TODO(starodubcevna): Need to add LOG.warning to upper level in next
+        # commits
         """Attempt to rollback cluster scaling."""
-        LOG.info(_LI("Cluster '%(name)s' scaling rollback "
-                     "(reason: %(reason)s)"),
-                 {'name': cluster.name, 'reason': ex})
+        LOG.debug("Cluster {name} scaling rollback "
+                  "(reason: {reason})".format(name=cluster.name, reason=ex))
 
         for i in instances:
             self._shutdown_instance(i)
@@ -523,12 +525,13 @@ class DirectEngine(e.Engine):
             security_group = client.get(name)
             if (security_group.name !=
                     g.generate_auto_security_group_name(node_group)):
-                LOG.warn(_LW("Auto security group for node group %s is not "
-                             "found"), node_group.name)
+                LOG.warning(_LW("Auto security group for node group {name} is "
+                                "not found").format(name=node_group.name))
                 return
             client.delete(name)
         except Exception:
-            LOG.exception(_LE("Failed to delete security group %s"), name)
+            LOG.warning(_LW("Failed to delete security group {name}").format(
+                name=name))
 
     def _shutdown_instance(self, instance):
         ctx = context.ctx()
@@ -537,22 +540,22 @@ class DirectEngine(e.Engine):
             try:
                 networks.delete_floating_ip(instance.instance_id)
             except nova_exceptions.NotFound:
-                LOG.warn(_LW("Attempted to delete non-existent floating IP in "
-                         "pool %(pool)s from instance %(instance)s"),
-                         {'pool': instance.node_group.floating_ip_pool,
-                          'instance': instance.instance_id})
+                LOG.warning(_LW("Attempted to delete non-existent floating IP "
+                                "in pool {pool} from instance {instance}")
+                            .format(pool=instance.node_group.floating_ip_pool,
+                                    instance=instance.instance_id))
 
         try:
             volumes.detach_from_instance(instance)
         except Exception:
-            LOG.warn(_LW("Detaching volumes from instance %s failed"),
-                     instance.instance_id)
+            LOG.warning(_LW("Detaching volumes from instance {id} failed")
+                        .format(id=instance.instance_id))
 
         try:
             nova.client().servers.delete(instance.instance_id)
         except nova_exceptions.NotFound:
-            LOG.warn(_LW("Attempted to delete non-existent instance %s"),
-                     instance.instance_id)
+            LOG.warning(_LW("Attempted to delete non-existent instance {id}")
+                        .format(id=instance.instance_id))
 
         conductor.instance_remove(ctx, instance)
 

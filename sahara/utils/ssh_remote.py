@@ -90,14 +90,16 @@ def _connect(host, username, private_key, proxy_command=None,
 
     proxy = None
     if proxy_command:
-        LOG.debug('creating proxy using command: %s', proxy_command)
+        LOG.debug('Creating proxy using command: {command}'.format(
+            command=proxy_command))
         proxy = paramiko.ProxyCommand(proxy_command)
 
     if gateway_host:
         _proxy_ssh = paramiko.SSHClient()
         _proxy_ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
 
-        LOG.debug('connecting to proxy gateway at: %s', gateway_host)
+        LOG.debug('Connecting to proxy gateway at: {gateway}'.format(
+            gateway=gateway_host))
         _proxy_ssh.connect(gateway_host, username=gateway_image_username,
                            pkey=private_key, sock=proxy)
 
@@ -197,38 +199,38 @@ def _get_http_client(host, port, proxy_command=None, gateway_host=None,
     global _sessions
 
     _http_session = _sessions.get((host, port), None)
-    LOG.debug('cached HTTP session for {0}:{1} is {2}'.format(host, port,
-                                                              _http_session))
+    LOG.debug('Cached HTTP session for {host}:{port} is {session}'.format(
+        host=host, port=port, session=_http_session))
     if not _http_session:
         if gateway_host:
             _http_session = _get_proxy_gateway_http_session(
                 gateway_host, gateway_username,
                 gateway_private_key, host, port, proxy_command)
-            LOG.debug('created ssh proxied HTTP session for {0}:{1}'
-                      .format(host, port))
+            LOG.debug('Created ssh proxied HTTP session for {host}:{port}'
+                      .format(host=host, port=port))
         elif proxy_command:
             # can return a new session here because it actually uses
             # the same adapter (and same connection pools) for a given
             # host and port tuple
             _http_session = _get_proxied_http_session(
                 proxy_command, host, port=port)
-            LOG.debug('created proxied HTTP session for {0}:{1}'
-                      .format(host, port))
+            LOG.debug('Created proxied HTTP session for {host}:{port}'
+                      .format(host=host, port=port))
         else:
             # need to cache the sessions that are not proxied through
             # HTTPRemoteWrapper so that a new session with a new HTTPAdapter
             # and associated pools is not recreated for each HTTP invocation
             _http_session = requests.Session()
-            LOG.debug('created standard HTTP session for {0}:{1}'
-                      .format(host, port))
+            LOG.debug('Created standard HTTP session for {host}:{port}'
+                      .format(host=host, port=port))
 
             adapter = requests.adapters.HTTPAdapter()
             for prefix in ['http://', 'https://']:
                 _http_session.mount(prefix + '%s:%s' % (host, port),
                                     adapter)
 
-        LOG.debug('caching session {0} for {1}:{2}'
-                  .format(_http_session, host, port))
+        LOG.debug('Caching session {session} for {host}:{port}'
+                  .format(session=_http_session, host=host, port=port))
         _sessions[(host, port)] = _http_session
 
     return _http_session
@@ -315,7 +317,8 @@ def _read_file_from(remote_file, run_as_root=False):
     try:
         return _read_file(_ssh.open_sftp(), fl)
     except IOError:
-        LOG.error(_LE('Can\'t read file "%s"') % remote_file)
+        LOG.error(_LE("Can't read file {filename}").format(
+            filename=remote_file))
         raise
     finally:
         if run_as_root:
@@ -336,9 +339,9 @@ def _execute_on_vm_interactive(cmd, matcher):
     buf = ''
 
     channel = _ssh.invoke_shell()
-    LOG.debug('channel is {0}'.format(channel))
+    LOG.debug('Channel is {channel}'.format(channel=channel))
     try:
-        LOG.debug('sending cmd {0}'.format(cmd))
+        LOG.debug('Sending cmd {command}'.format(command=cmd))
         channel.send(cmd + '\n')
         while not matcher.is_eof(buf):
             buf += channel.recv(4096)
@@ -347,7 +350,7 @@ def _execute_on_vm_interactive(cmd, matcher):
                 channel.send(response + '\n')
                 buf = ''
     finally:
-        LOG.debug('closing channel')
+        LOG.debug('Closing channel')
         channel.close()
 
 
@@ -419,7 +422,8 @@ def _proxy_gateway_func(gateway_host, gateway_username,
 class ProxiedHTTPAdapter(adapters.HTTPAdapter):
     def __init__(self, create_process_func, host, port):
         super(ProxiedHTTPAdapter, self).__init__()
-        LOG.debug('HTTP adapter created for {0}:{1}'.format(host, port))
+        LOG.debug('HTTP adapter created for {host}:{port}'.format(host=host,
+                                                                  port=port))
         self.create_process_func = create_process_func
         self.port = port
         self.host = host
@@ -432,13 +436,14 @@ class ProxiedHTTPAdapter(adapters.HTTPAdapter):
             if http_conn.sock is None:
                 if hasattr(http_conn, 'connect'):
                     sock = self._connect()
-                    LOG.debug('HTTP connection {0} getting new '
-                              'netcat socket {1}'.format(http_conn, sock))
+                    LOG.debug('HTTP connection {connection} getting new '
+                              'netcat socket {socket}'.format(
+                                  connection=http_conn, socket=sock))
                     http_conn.sock = sock
             else:
                 if hasattr(http_conn.sock, 'is_netcat_socket'):
-                    LOG.debug('pooled http connection has existing '
-                              'netcat socket. resetting pipe...')
+                    LOG.debug('Pooled http connection has existing '
+                              'netcat socket. resetting pipe')
                     http_conn.sock.reset()
 
             pool_conn._put_conn(http_conn)
@@ -446,13 +451,13 @@ class ProxiedHTTPAdapter(adapters.HTTPAdapter):
         return pool_conn
 
     def close(self):
-        LOG.debug('Closing HTTP adapter for {0}:{1}'
-                  .format(self.host, self.port))
+        LOG.debug('Closing HTTP adapter for {host}:{port}'
+                  .format(host=self.host, port=self.port))
         super(ProxiedHTTPAdapter, self).close()
 
     def _connect(self):
-        LOG.debug('Returning netcat socket for {0}:{1}'
-                  .format(self.host, self.port))
+        LOG.debug('Returning netcat socket for {host}:{port}'
+                  .format(host=self.host, port=self.port))
         rootwrap_command = CONF.rootwrap_command if CONF.use_rootwrap else ''
         return NetcatSocket(self.create_process_func, rootwrap_command)
 
@@ -546,7 +551,7 @@ class InstanceInteropHelper(remote.Remote):
         neutron_info['tenant'] = ctx.tenant_name
         neutron_info['host'] = instance.management_ip
 
-        LOG.debug('Returning neutron info: {0}'.format(neutron_info))
+        LOG.debug('Returning neutron info: {info}'.format(info=neutron_info))
         return neutron_info
 
     def _build_proxy_command(self, command, instance=None, port=None,
@@ -572,7 +577,8 @@ class InstanceInteropHelper(remote.Remote):
         try:
             command = command.format(**keywords)
         except KeyError as e:
-            LOG.error(_LE('Invalid keyword in proxy_command: %s'), str(e))
+            LOG.error(_LE('Invalid keyword in proxy_command: {result}').format(
+                result=e))
             # Do not give more details to the end-user
             raise ex.SystemError('Misconfiguration')
         if rootwrap_command:
@@ -757,7 +763,8 @@ class InstanceInteropHelper(remote.Remote):
         self._run_s(_execute_on_vm_interactive, timeout, cmd, matcher)
 
     def _log_command(self, str):
-        LOG.debug('[%s] %s' % (self.instance.instance_name, str))
+        LOG.debug('[{instance}] {command}'.format(
+            instance=self.instance.instance_name, command=str))
 
 
 class BulkInstanceInteropHelper(InstanceInteropHelper):

@@ -20,7 +20,6 @@ from oslo_log import log as logging
 from sahara import conductor as c
 from sahara import context
 from sahara.i18n import _
-from sahara.i18n import _LI
 from sahara.i18n import _LW
 from sahara.service import engine as e
 from sahara.service.heat import templates as ht
@@ -149,9 +148,12 @@ class HeatEngine(e.Engine):
 
     def _rollback_cluster_creation(self, cluster, ex):
         """Shutdown all instances and update cluster status."""
-        LOG.info(_LI("Cluster '%(name)s' creation rollback "
-                     "(reason: %(reason)s)"),
-                 {'name': cluster.name, 'reason': ex})
+
+        # TODO(starodubcevna): Need to add LOG.warning to upper level in next
+        # commits
+        LOG.debug("Cluster {name} creation rollback "
+                  "(reason: {reason})".format(name=cluster.name,
+                                              reason=ex))
 
         self.shutdown_cluster(cluster)
 
@@ -166,9 +168,11 @@ class HeatEngine(e.Engine):
         maximize the chance of rollback success.
         """
 
-        LOG.info(_LI("Cluster '%(name)s' scaling rollback "
-                     "(reason: %(reason)s)"),
-                 {'name': cluster.name, 'reason': ex})
+        # TODO(starodubcevna): Need to add LOG.warning to upper level in next
+        # commits
+        LOG.debug("Cluster {name} scaling rollback "
+                  "(reason: {reason})".format(name=cluster.name,
+                                              reason=ex))
 
         for ng in rollback_count:
             if rollback_count[ng] > target_count[ng]:
@@ -184,7 +188,8 @@ class HeatEngine(e.Engine):
             stack = heat.get_stack(cluster.name)
             heat.wait_stack_completion(stack)
         except heat_exc.HTTPNotFound:
-            LOG.warn(_LW('Did not found stack for cluster %s') % cluster.name)
+            LOG.warning(_LW('Did not found stack for cluster {cluster_name}')
+                        .format(cluster_name=cluster.name))
 
         self._clean_job_executions(cluster)
 

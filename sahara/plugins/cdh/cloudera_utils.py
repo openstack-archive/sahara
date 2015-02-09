@@ -208,8 +208,8 @@ class ClouderaUtils(object):
     def await_agents(self, cluster, instances):
         api = self.get_api_client(instances[0].cluster)
         timeout = 300
-        LOG.debug("Waiting %(timeout)s seconds for agent connected to manager"
-                  % {'timeout': timeout})
+        LOG.debug("Waiting {timeout} seconds for agent connected to manager"
+                  .format(timeout=timeout))
         s_time = timeutils.utcnow()
         while timeutils.delta_seconds(s_time, timeutils.utcnow()) < timeout:
             hostnames = [i.fqdn() for i in instances]

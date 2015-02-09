@@ -18,7 +18,7 @@ from oslo_log import log as logging
 import six
 
 from sahara.i18n import _
-from sahara.i18n import _LI
+from sahara.i18n import _LW
 from sahara.plugins.vanilla.hadoop2 import config_helper as c_helper
 from sahara.plugins.vanilla.hadoop2 import oozie_helper as o_helper
 from sahara.plugins.vanilla import utils as vu
@@ -40,7 +40,7 @@ HADOOP_GROUP = 'hadoop'
 
 
 def configure_cluster(pctx, cluster):
-    LOG.debug("Configuring cluster \"%s\"", cluster.name)
+    LOG.debug("Configuring cluster {cluster}".format(cluster=cluster.name))
     if (CONF.use_identity_api_v3 and CONF.use_domain_for_proxy_users and
             vu.get_hiveserver(cluster) and
             c_helper.is_swift_enabled(pctx, cluster)):
@@ -274,7 +274,8 @@ def _push_xml_configs(instance, configs):
 
 
 def _push_configs_to_instance(instance, configs):
-    LOG.debug("Push configs to instance \"%s\"", instance.instance_name)
+    LOG.debug("Push configs to instance {instance}".format(
+        instance=instance.instance_name))
     with instance.remote() as r:
         for fl, data in six.iteritems(configs):
             r.write_file_to(fl, data, run_as_root=True)
@@ -352,8 +353,9 @@ def _merge_configs(a, b):
     True, step=_("Configure topology data"), param=('cluster', 1))
 def configure_topology_data(pctx, cluster):
     if c_helper.is_data_locality_enabled(pctx, cluster):
-        LOG.info(_LI("Node group awareness is not implemented in YARN yet "
-                     "so enable_hypervisor_awareness set to False explicitly"))
+        LOG.warning(_LW("Node group awareness is not implemented in YARN yet "
+                        "so enable_hypervisor_awareness set to False "
+                        "explicitly"))
         tpl_map = th.generate_topology_map(cluster, is_node_awareness=False)
         topology_data = "\n".join(
             [k + " " + v for k, v in tpl_map.items()]) + "\n"

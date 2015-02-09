@@ -19,7 +19,6 @@ import six
 
 from sahara import conductor as c
 from sahara.i18n import _
-from sahara.i18n import _LI
 from sahara.plugins import provisioning as p
 from sahara.plugins import utils
 from sahara.swift import swift_helper as swift
@@ -263,7 +262,7 @@ def generate_cfg_from_general(cfg, configs, general_config,
         for name, value in configs['general'].items():
             if value:
                 cfg = _set_config(cfg, general_config, name)
-                LOG.info(_LI("Applying config: %s"), name)
+                LOG.debug("Applying config: {name}".format(name=name))
     else:
         cfg = _set_config(cfg, general_config)
     return cfg

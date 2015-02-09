@@ -49,7 +49,7 @@ def get_swift_configs():
 
     result = [cfg for cfg in configs if cfg['value']]
     LOG.info(_LI("Swift would be integrated with the following "
-             "params: %s"), result)
+             "params: {result}").format(result=result))
     return result
 
 
