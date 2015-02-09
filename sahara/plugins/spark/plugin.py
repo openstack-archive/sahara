@@ -107,7 +107,7 @@ class SparkProvider(p.ProvisioningPluginBase):
             run.start_processes(r, "namenode")
 
         # start the data nodes
-        self._start_slave_datanode_processes(dn_instances)
+        self._start_datanode_processes(dn_instances)
 
         LOG.info(_LI("Hadoop services in cluster %s have been started"),
                  cluster.name)
@@ -180,7 +180,7 @@ class SparkProvider(p.ProvisioningPluginBase):
 
         return extra
 
-    def _start_slave_datanode_processes(self, dn_instances):
+    def _start_datanode_processes(self, dn_instances):
         with context.ThreadGroup() as tg:
             for i in dn_instances:
                 tg.spawn('spark-start-dn-%s' % i.instance_name,
@@ -338,6 +338,7 @@ class SparkProvider(p.ProvisioningPluginBase):
         r.write_file_to('/etc/hadoop/dn.incl',
                         utils.generate_fqdn_host_names(
                             utils.get_instances(cluster, "datanode")))
+        r.write_file_to('/etc/hadoop/dn.excl', '')
 
     def _set_cluster_info(self, cluster):
         nn = utils.get_instance(cluster, "namenode")
@@ -400,7 +401,9 @@ class SparkProvider(p.ProvisioningPluginBase):
         self._setup_instances(cluster, instances)
         nn = utils.get_instance(cluster, "namenode")
         run.refresh_nodes(remote.get_remote(nn), "dfsadmin")
-        self._start_slave_datanode_processes(instances)
+        dn_instances = [instance for instance in instances if
+                        'datanode' in instance.node_group.node_processes]
+        self._start_datanode_processes(dn_instances)
 
         run.start_spark_master(r_master, self._spark_home(cluster))
         LOG.info(_LI("Spark master service at '%s' has been restarted"),
