@@ -75,6 +75,17 @@ def natural_sort_key(s):
             for text in re.split(NATURAL_SORT_RE, s)]
 
 
+def change_cluster_status_description(cluster, status_description):
+    ctx = context.ctx()
+
+    cluster = conductor.cluster_get(ctx, cluster) if cluster else None
+
+    if cluster is None or cluster.status == "Deleting":
+        return cluster
+    return conductor.cluster_update(
+        ctx, cluster, {'status_description': status_description})
+
+
 def change_cluster_status(cluster, status, status_description=None):
     ctx = context.ctx()
 

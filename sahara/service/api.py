@@ -76,10 +76,10 @@ def scale_cluster(id, data):
         cluster = g.change_cluster_status(cluster, "Validating")
         quotas.check_scaling(cluster, to_be_enlarged, additional)
         plugin.validate_scaling(cluster, to_be_enlarged, additional)
-    except Exception:
+    except Exception as e:
         with excutils.save_and_reraise_exception():
             g.clean_cluster_from_empty_ng(cluster)
-            g.change_cluster_status(cluster, "Active")
+            g.change_cluster_status(cluster, "Active", six.text_type(e))
 
     # If we are here validation is successful.
     # So let's update to_be_enlarged map:
@@ -109,7 +109,7 @@ def create_cluster(values):
     except Exception as e:
         with excutils.save_and_reraise_exception():
             g.change_cluster_status(cluster, "Error",
-                                    status_description=six.text_type(e))
+                                    six.text_type(e))
 
     OPS.provision_cluster(cluster.id)
 
