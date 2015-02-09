@@ -83,7 +83,8 @@ def setup_common(possible_topdir, service_name):
     # Validate other configurations (that may produce logs) here
     cinder.validate_config()
 
-    messaging.setup()
+    if service_name != 'all-in-one' or cfg.CONF.enable_notifications:
+        messaging.setup()
 
     if service_name != 'all-in-one':
         LOG.warn(
