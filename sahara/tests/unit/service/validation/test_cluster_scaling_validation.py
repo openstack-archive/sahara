@@ -37,6 +37,8 @@ class TestScalingValidation(u.ValidationTestCase):
         super(TestScalingValidation, self).setUp()
         api.plugin_base.setup_plugins()
         self._create_object_fun = mock.Mock()
+        self.duplicates_detected = ("Duplicates in node group names are"
+                                    " detected: ['a']")
 
     @mock.patch('sahara.service.api.get_cluster')
     @mock.patch('sahara.plugins.base.PluginManager.get_plugin')
@@ -101,8 +103,7 @@ class TestScalingValidation(u.ValidationTestCase):
         ]})
         self._assert_check_scaling(
             data=data, cluster=cluster,
-            expected_message='Duplicates in node '
-                             'group names are detected',
+            expected_message=self.duplicates_detected,
             expected_exception=ex.InvalidDataException)
 
     @mock.patch("sahara.service.api.OPS")
@@ -128,8 +129,7 @@ class TestScalingValidation(u.ValidationTestCase):
         }
         self._assert_check_scaling(
             data=data, cluster=cluster,
-            expected_message='Duplicates in node '
-                             'group names are detected',
+            expected_message=self.duplicates_detected,
             expected_exception=ex.InvalidDataException)
         data = {
             'add_node_groups': [

@@ -101,9 +101,8 @@ class TestNGTemplateCreateValidation(u.ValidationTestCase):
                 'node_processes': ['wrong_process']
             },
             bad_req_i=(1, 'INVALID_REFERENCE',
-                       "Plugin supports the following node procesess: ["
-                       "'datanode', 'hiveserver', 'jobtracker', 'namenode', "
-                       "'oozie', 'secondarynamenode', 'tasktracker']")
+                       "Plugin doesn't support the following node processes: "
+                       "['wrong_process']")
         )
 
     def test_ng_template_create_v_right(self):
