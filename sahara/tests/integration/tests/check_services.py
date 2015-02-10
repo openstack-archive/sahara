@@ -55,3 +55,17 @@ class CheckServicesTest(base.ITestCase):
                 print(six.text_type(e))
         finally:
             self.close_ssh_connection()
+
+    @base.skip_test('SKIP_CHECK_SERVICES_TEST', message='Test for Services'
+                    ' checking was skipped.')
+    def check_sqoop2_availability(self, cluster_info):
+        namenode_ip = cluster_info['node_info']['namenode_ip']
+        self.open_ssh_connection(namenode_ip)
+        try:
+            self.transfer_helper_script_to_node('sqoop2_service_test.sh')
+            self.execute_command('./script.sh')
+        except Exception as e:
+            with excutils.save_and_reraise_exception():
+                print(six.text_type(e))
+        finally:
+            self.close_ssh_connection()

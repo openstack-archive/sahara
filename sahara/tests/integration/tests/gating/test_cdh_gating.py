@@ -311,6 +311,8 @@ class CDHGatingTest(check_services.CheckServicesTest,
         self.check_hbase_availability(self.cluster_info)
         # check flume
         self.check_flume_availability(self.cluster_info)
+        # check sqoop2
+        self.check_sqoop2_availability(self.cluster_info)
 
     @b.errormsg("Failure while cluster scaling: ")
     def _check_scaling(self):
