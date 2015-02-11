@@ -49,15 +49,23 @@ class OozieJobEngine(base_engine.JobEngine):
         return o.OozieClient(self.get_oozie_server_uri(self.cluster),
                              self.get_oozie_server(self.cluster))
 
-    def _get_oozie_job_params(self, hdfs_user, path_to_workflow):
+    def _get_oozie_job_params(self, hdfs_user, path_to_workflow, oozie_params):
+        app_path = "oozie.wf.application.path"
         rm_path = self.get_resource_manager_uri(self.cluster)
         nn_path = self.get_name_node_uri(self.cluster)
         job_parameters = {
             "jobTracker": rm_path,
             "nameNode": nn_path,
             "user.name": hdfs_user,
-            "oozie.wf.application.path": "%s%s" % (nn_path, path_to_workflow),
+            app_path: "%s%s" % (nn_path, path_to_workflow),
             "oozie.use.system.libpath": "true"}
+
+        # Don't let the application path be overwritten, that can't
+        # possibly make any sense
+        if app_path in oozie_params:
+            del oozie_params[app_path]
+
+        job_parameters.update(oozie_params)
         return job_parameters
 
     def _upload_workflow_file(self, where, job_dir, wf_xml, hdfs_user):
@@ -95,6 +103,14 @@ class OozieJobEngine(base_engine.JobEngine):
         proxy_configs = updated_job_configs.get('proxy_configs')
         configs = updated_job_configs.get('configs', {})
 
+        # Extract all the 'oozie.' configs so that they can be set in the
+        # job properties file. These are config values for Oozie itself,
+        # not the job code
+        oozie_params = {}
+        for k in list(configs):
+            if k.startswith('oozie.'):
+                oozie_params[k] = configs[k]
+
         for data_source in [input_source, output_source] + additional_sources:
             if data_source and data_source.type == 'hdfs':
                 h.configure_cluster_for_hdfs(self.cluster, data_source)
@@ -119,7 +135,8 @@ class OozieJobEngine(base_engine.JobEngine):
                                                       wf_xml, hdfs_user)
 
         job_params = self._get_oozie_job_params(hdfs_user,
-                                                path_to_workflow)
+                                                path_to_workflow,
+                                                oozie_params)
 
         client = self._get_client()
         oozie_job_id = client.add_job(x.create_hadoop_xml(job_params),
