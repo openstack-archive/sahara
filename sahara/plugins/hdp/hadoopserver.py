@@ -58,8 +58,8 @@ class HadoopServer(object):
 
     @saharautils.inject_remote('r')
     def rpms_installed(self, r):
-        yum_cmd = 'yum -q list installed %s' % EPEL_RELEASE_PACKAGE_NAME
-        ret_code, stdout = r.execute_command(yum_cmd,
+        rpm_cmd = 'rpm -q %s' % EPEL_RELEASE_PACKAGE_NAME
+        ret_code, stdout = r.execute_command(rpm_cmd,
                                              run_as_root=True,
                                              raise_when_error=False)
         return ret_code == 0
