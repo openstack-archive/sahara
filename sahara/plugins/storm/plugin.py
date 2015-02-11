@@ -196,7 +196,7 @@ class StormProvider(p.ProvisioningPluginBase):
             '/usr/local/storm/conf/storm.yaml': ng_extra['st_instances']
         }
         files_zk = {
-            '/opt/zookeeper/zookeeper-3.4.6/conf/zoo.cfg': ng_extra['zk_conf']
+            '/opt/zookeeper/zookeeper/conf/zoo.cfg': ng_extra['zk_conf']
         }
         files_supervisor_master = {
             '/etc/supervisor/supervisord.conf': ng_extra['master_sv_conf']
