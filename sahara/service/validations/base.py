@@ -13,6 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import collections
 import operator
 
 import novaclient.exceptions as nova_ex
@@ -47,6 +48,17 @@ def _get_plugin_configs(plugin_name, hadoop_version, scope=None):
         else:
             pl_confs[config.applicable_target] = [config.name]
     return pl_confs
+
+
+def _check_duplicates(lst, message):
+    invalid = []
+    lst = collections.Counter(lst)
+    for (key, value) in lst.iteritems():
+        if value > 1:
+            invalid.append(key)
+
+    if len(invalid) > 0:
+        raise ex.InvalidDataException(message % invalid)
 
 
 # Common validation checks
@@ -181,25 +193,30 @@ def check_floatingip_pool_exists(ng_name, pool_id):
 
 
 def check_node_processes(plugin_name, version, node_processes):
-    if len(set(node_processes)) != len(node_processes):
-        raise ex.InvalidDataException(
-            _("Duplicates in node processes have been detected"))
+    _check_duplicates(node_processes, _("Duplicates in node processes have "
+                                        "been detected: %s"))
+
     plugin_processes = []
     for process in plugin_base.PLUGINS.get_plugin(
             plugin_name).get_node_processes(version).values():
         plugin_processes += process
+    plugin_processes = set(plugin_processes)
 
-    if not set(node_processes).issubset(set(plugin_processes)):
+    invalid_processes = []
+    for node_process in node_processes:
+        if node_process not in plugin_processes:
+            invalid_processes.append(node_process)
+
+    if len(invalid_processes) > 0:
         raise ex.InvalidReferenceException(
-            _("Plugin supports the following node procesess: %s")
-            % sorted(plugin_processes))
+            _("Plugin doesn't support the following node processes: %s")
+            % sorted(invalid_processes))
 
 
 def check_duplicates_node_groups_names(node_groups):
     ng_names = [ng['name'] for ng in node_groups]
-    if len(set(ng_names)) < len(node_groups):
-        raise ex.InvalidDataException(
-            _("Duplicates in node group names are detected"))
+    _check_duplicates(
+        ng_names, _("Duplicates in node group names are detected: %s"))
 
 
 def check_availability_zone_exist(az):
