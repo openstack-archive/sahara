@@ -376,4 +376,8 @@ def get_open_ports(node_group):
     if "oozie" in node_group.node_processes:
         ports.append(11000)
 
+    if "hiveserver" in node_group.node_processes:
+        ports.append(9999)
+        ports.append(10000)
+
     return ports
