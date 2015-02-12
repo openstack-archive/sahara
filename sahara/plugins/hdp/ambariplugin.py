@@ -411,5 +411,4 @@ class AmbariInfo(object):
 
     def get_cluster(self):
         sahara_instance = self.host.sahara_instance
-        cluster_id = sahara_instance.node_group.cluster_id
-        return conductor.cluster_get(context.ctx(), cluster_id)
+        return sahara_instance.cluster

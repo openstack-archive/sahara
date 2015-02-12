@@ -186,7 +186,7 @@ class AbstractPluginUtils(object):
                          self.start_cloudera_agent, i)
 
     def start_cloudera_agent(self, instance):
-        mng_hostname = self.get_manager(instance.node_group.cluster).hostname()
+        mng_hostname = self.get_manager(instance.cluster).hostname()
         with instance.remote() as r:
             cmd.start_ntp(r)
             cmd.configure_agent(r, mng_hostname)
@@ -201,7 +201,7 @@ class AbstractPluginUtils(object):
                              self.configure_swift_to_inst, i)
 
     def configure_swift_to_inst(self, instance):
-        cluster = instance.node_group.cluster
+        cluster = instance.cluster
         with instance.remote() as r:
             r.execute_command('sudo curl %s -o %s/hadoop-openstack.jar' % (
                 self.c_helper.get_swift_lib_url(cluster), HADOOP_LIB_DIR))
@@ -282,7 +282,7 @@ class AbstractPluginUtils(object):
     def _configure_repo_from_inst(self, instance):
         LOG.debug("Configure repos from instance '%(instance)s'" % {
                   'instance': instance.instance_name})
-        cluster = instance.node_group.cluster
+        cluster = instance.cluster
 
         cdh5_key = self.c_helper.get_cdh5_key_url(cluster)
         cm5_key = self.c_helper.get_cm5_key_url(cluster)

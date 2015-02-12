@@ -118,7 +118,7 @@ class Engine(object):
 
             context.sleep(5)
 
-            if not g.check_cluster_exists(instance.node_group.cluster):
+            if not g.check_cluster_exists(instance.cluster):
                 return
 
     def _configure_instances(self, cluster):

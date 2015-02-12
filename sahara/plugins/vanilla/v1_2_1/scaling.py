@@ -49,7 +49,7 @@ def decommission_dn(nn, inst_to_be_deleted, survived_inst):
         context.sleep(3)
 
         timeout = config_helper.get_decommissioning_timeout(
-            nn.node_group.cluster)
+            nn.cluster)
         s_time = timeutils.utcnow()
         all_found = False
 
@@ -78,7 +78,7 @@ def decommission_dn(nn, inst_to_be_deleted, survived_inst):
             ex.DecommissionError(
                 _("Cannot finish decommission of cluster %(cluster)s in "
                   "%(seconds)d seconds") %
-                {"cluster": nn.node_group.cluster, "seconds": timeout})
+                {"cluster": nn.cluster, "seconds": timeout})
 
 
 def parse_dfs_report(cmd_output):

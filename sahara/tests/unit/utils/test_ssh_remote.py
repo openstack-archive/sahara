@@ -53,6 +53,10 @@ class FakeInstance(object):
         self.management_ip = management_ip
         self.node_group = FakeNodeGroup(user, priv_key)
 
+    @property
+    def cluster(self):
+        return self.node_group.cluster
+
 
 class TestInstanceInteropHelper(base.SaharaTestCase):
     def setUp(self):

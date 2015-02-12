@@ -538,8 +538,7 @@ class InstanceInteropHelper(remote.Remote):
         if not instance:
             instance = self.instance
         neutron_info = h.HashableDict()
-        neutron_info['network'] = (
-            instance.node_group.cluster.neutron_management_network)
+        neutron_info['network'] = instance.cluster.neutron_management_network
         ctx = context.current()
         neutron_info['uri'] = base.url_for(ctx.service_catalog, 'network')
         neutron_info['token'] = ctx.auth_token

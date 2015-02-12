@@ -168,7 +168,7 @@ class ClouderaUtils(object):
         if cluster:
             cm_cluster = self.get_cloudera_cluster(cluster)
         elif instance:
-            cm_cluster = self.get_cloudera_cluster(instance.node_group.cluster)
+            cm_cluster = self.get_cloudera_cluster(instance.cluster)
         else:
             raise ValueError(_("'cluster' or 'instance' argument missed"))
 
@@ -194,7 +194,7 @@ class ClouderaUtils(object):
                 {'process': process})
 
     def await_agents(self, instances):
-        api = self.get_api_client(instances[0].node_group.cluster)
+        api = self.get_api_client(instances[0].cluster)
         timeout = 300
         LOG.debug("Waiting %(timeout)s seconds for agent connected to manager"
                   % {'timeout': timeout})

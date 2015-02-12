@@ -90,7 +90,7 @@ class ClouderaUtilsV530(cu.ClouderaUtils):
         if cluster:
             cm_cluster = self.get_cloudera_cluster(cluster)
         elif instance:
-            cm_cluster = self.get_cloudera_cluster(instance.node_group.cluster)
+            cm_cluster = self.get_cloudera_cluster(instance.cluster)
         else:
             raise ValueError(_("'cluster' or 'instance' argument missed"))
 

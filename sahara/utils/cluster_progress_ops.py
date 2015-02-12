@@ -26,16 +26,8 @@ from sahara import context
 conductor = c.API
 
 
-def _get_cluster_id(instance):
-    # If instance is InstanceInfo from context, then get cluster_id directly
-    if hasattr(instance, 'node_group'):
-        return instance.node_group.cluster_id
-    else:
-        return instance.cluster_id
-
-
 def add_successful_event(instance):
-    cluster_id = _get_cluster_id(instance)
+    cluster_id = instance.cluster_id
     step_id = get_current_provisioning_step(cluster_id)
     if step_id:
         conductor.cluster_event_add(context.ctx(), step_id, {
@@ -48,7 +40,7 @@ def add_successful_event(instance):
 
 
 def add_fail_event(instance, exception):
-    cluster_id = _get_cluster_id(instance)
+    cluster_id = instance.cluster_id
     step_id = get_current_provisioning_step(cluster_id)
     event_info = six.text_type(exception)
 
@@ -162,7 +154,7 @@ def event_wrapper(mark_successful_on_exit, **spec):
 
             if step_name:
                 # It's single process, let's add provisioning step here
-                cluster_id = _get_cluster_id(instance)
+                cluster_id = instance.cluster_id
                 add_provisioning_step(cluster_id, step_name, 1)
 
             try:
