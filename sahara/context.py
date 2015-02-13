@@ -24,7 +24,6 @@ from oslo_log import log as logging
 
 from sahara import exceptions as ex
 from sahara.i18n import _
-from sahara.i18n import _LE
 from sahara.i18n import _LW
 
 
@@ -189,8 +188,8 @@ def _wrapper(ctx, thread_description, thread_group, func, *args, **kwargs):
         set_ctx(ctx)
         func(*args, **kwargs)
     except BaseException as e:
-        LOG.exception(
-            _LE("Thread '%(thread)s' fails with exception: '%(exception)s'"),
+        LOG.debug(
+            "Thread '%(thread)s' failed with exception: '%(exception)s'",
             {'thread': thread_description, 'exception': e})
         if thread_group and not thread_group.exc:
             thread_group.exc = e
