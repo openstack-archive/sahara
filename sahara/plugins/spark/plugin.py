@@ -75,6 +75,15 @@ class SparkProvider(p.ProvisioningPluginBase):
             raise ex.InvalidComponentCountException("datanode", _("1 or more"),
                                                     nn_count)
 
+        rep_factor = c_helper.get_config_value('HDFS', "dfs.replication",
+                                               cluster)
+        if dn_count < rep_factor:
+            raise ex.InvalidComponentCountException(
+                'datanode', _('%s or more') % rep_factor, dn_count,
+                _('Number of %(dn)s instances should not be less '
+                  'than %(replication)s')
+                % {'dn': 'datanode', 'replication': 'dfs.replication'})
+
         # validate Spark Master Node and Spark Slaves
         sm_count = sum([ng.count for ng
                         in utils.get_node_groups(cluster, "master")])
