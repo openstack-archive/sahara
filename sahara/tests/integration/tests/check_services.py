@@ -97,3 +97,27 @@ class CheckServicesTest(base.ITestCase):
                 print(six.text_type(e))
         finally:
             self.close_ssh_connection()
+
+    def check_solr_availability(self, cluster_info):
+        self._check_service_availability(cluster_info, 'solr_service_test.sh')
+
+    def _check_service_availability(self, cluster_info, helper_script,
+                                    script_parameters=[], conf_files=[]):
+        namenode_ip = cluster_info['node_info']['namenode_ip']
+        self.open_ssh_connection(namenode_ip)
+        try:
+            self.transfer_helper_script_to_node(helper_script)
+            if conf_files:
+                for conf_file in conf_files:
+                    self.transfer_helper_conf_file_to_node(conf_file)
+            if script_parameters:
+                parameters = ' '.join(script_parameters)
+                script_command = './script.sh %s' % parameters
+                self.execute_command(script_command)
+            else:
+                self.execute_command('./script.sh')
+        except Exception as e:
+            with excutils.save_and_reraise_exception():
+                print(six.text_type(e))
+        finally:
+            self.close_ssh_connection()

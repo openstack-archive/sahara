@@ -315,6 +315,8 @@ class CDHGatingTest(check_services.CheckServicesTest,
         self.check_sqoop2_availability(self.cluster_info)
         # check key value store
         self.check_key_value_store_availability(self.cluster_info)
+        # check solr
+        self.check_solr_availability(self.cluster_info)
 
     @b.errormsg("Failure while cluster scaling: ")
     def _check_scaling(self):
