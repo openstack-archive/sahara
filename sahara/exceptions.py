@@ -329,3 +329,15 @@ class MalformedRequestBody(SaharaException):
     def __init__(self, reason):
         self.message = self.message % reason
         super(MalformedRequestBody, self).__init__()
+
+
+class QuotaException(SaharaException):
+    code = "QUOTA_ERROR"
+    message = _("Quota exceeded for %(resource)s: Requested %(requested)s,"
+                " but available %(available)s")
+
+    def __init__(self, resource, requested, available):
+        self.message = self.message % {'resource': resource,
+                                       'requested': requested,
+                                       'available': available}
+        super(QuotaException, self).__init__()

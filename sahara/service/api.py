@@ -23,6 +23,7 @@ from sahara import conductor as c
 from sahara import context
 from sahara.plugins import base as plugin_base
 from sahara.plugins import provisioning
+from sahara.service import quotas
 from sahara.utils import general as g
 from sahara.utils.notification import sender
 from sahara.utils.openstack import nova
@@ -69,10 +70,11 @@ def scale_cluster(id, data):
 
     additional = construct_ngs_for_scaling(cluster, additional_node_groups)
     cluster = conductor.cluster_get(ctx, cluster)
+    _add_ports_for_auto_sg(ctx, cluster, plugin)
 
     try:
         cluster = g.change_cluster_status(cluster, "Validating")
-
+        quotas.check_scaling(cluster, to_be_enlarged, additional)
         plugin.validate_scaling(cluster, to_be_enlarged, additional)
     except Exception:
         with excutils.save_and_reraise_exception():
@@ -97,10 +99,12 @@ def create_cluster(values):
     sender.notify(ctx, cluster.id, cluster.name, "New",
                   "create")
     plugin = plugin_base.PLUGINS.get_plugin(cluster.plugin_name)
+    _add_ports_for_auto_sg(ctx, cluster, plugin)
 
     # validating cluster
     try:
         cluster = g.change_cluster_status(cluster, "Validating")
+        quotas.check_cluster(cluster)
         plugin.validate(cluster)
     except Exception as e:
         with excutils.save_and_reraise_exception():
@@ -110,6 +114,13 @@ def create_cluster(values):
     OPS.provision_cluster(cluster.id)
 
     return cluster
+
+
+def _add_ports_for_auto_sg(ctx, cluster, plugin):
+    for ng in cluster.node_groups:
+        if ng.auto_security_group:
+            ports = {'open_ports': plugin.get_open_ports(ng)}
+            conductor.node_group_update(ctx, ng, ports)
 
 
 def terminate_cluster(id):
