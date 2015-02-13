@@ -26,7 +26,6 @@ from sahara import context
 from sahara import exceptions
 from sahara.i18n import _
 from sahara.i18n import _LE
-from sahara.i18n import _LI
 from sahara.plugins import base as plugin_base
 from sahara.service.edp import job_manager
 from sahara.service import trusts
@@ -166,9 +165,10 @@ def ops_error_handler(description):
                 cluster = conductor.cluster_get(ctx, cluster_id)
                 # check if cluster still exists (it might have been removed)
                 if cluster is None or cluster.status == 'Deleting':
-                    LOG.info(_LI("Cluster id={id} was deleted or "
-                                 "marked for deletion. Canceling "
-                                 "current operation.").format(id=cluster_id))
+                    LOG.debug(
+                        "Cluster id=%(id)s was deleted or marked for "
+                        "deletion. Canceling current operation.",
+                        {"id": cluster_id})
                     return
 
                 msg = six.text_type(ex)
@@ -187,10 +187,11 @@ def ops_error_handler(description):
                     cluster = conductor.cluster_get(ctx, cluster_id)
                     # check if cluster still exists (it might have been
                     # removed during rollback)
-                    if cluster is None:
-                        LOG.info(_LI("Cluster id={id} was deleted. Canceling "
-                                     "current operation.").format(
-                            id=cluster_id))
+                    if cluster is None or cluster.status == 'Deleting':
+                        LOG.debug(
+                            "Cluster id=%(id)s was deleted or marked for "
+                            "deletion. Canceling current operation.",
+                            {"id": cluster_id})
                         return
 
                     LOG.exception(
