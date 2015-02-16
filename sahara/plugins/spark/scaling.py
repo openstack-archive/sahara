@@ -36,7 +36,7 @@ def decommission_sl(master, inst_to_be_deleted, survived_inst):
     else:
         slaves_content = "\n"
 
-    cluster = master.node_group.cluster
+    cluster = master.cluster
     sp_home = c_helper.get_config_value("Spark", "Spark home", cluster)
     r_master = remote.get_remote(master)
     run.stop_spark(r_master, sp_home)
@@ -61,8 +61,7 @@ def decommission_dn(nn, inst_to_be_deleted, survived_inst):
         run.refresh_nodes(remote.get_remote(nn), "dfsadmin")
         context.sleep(3)
 
-        timeout = c_helper.get_decommissioning_timeout(
-            nn.node_group.cluster)
+        timeout = c_helper.get_decommissioning_timeout(nn.cluster)
         s_time = timeutils.utcnow()
         all_found = False
 
@@ -91,8 +90,7 @@ def decommission_dn(nn, inst_to_be_deleted, survived_inst):
             ex.DecommissionError(
                 _("Cannot finish decommission of cluster %(cluster)s in "
                   "%(seconds)d seconds") %
-                {"cluster": nn.node_group.cluster,
-                 "seconds": timeout})
+                {"cluster": nn.cluster, "seconds": timeout})
 
 
 def parse_dfs_report(cmd_output):

@@ -291,7 +291,7 @@ def _post_configuration(pctx, instance):
         r.execute_command('sudo /tmp/post_conf.sh')
 
         if c_helper.is_data_locality_enabled(pctx,
-                                             instance.node_group.cluster):
+                                             instance.cluster):
             t_script = HADOOP_CONF_DIR + '/topology.sh'
             r.write_file_to(t_script, f.get_file_text(
                             'plugins/vanilla/hadoop2/resources/topology.sh'),

@@ -76,7 +76,7 @@ def start_historyserver(instance):
 
 def start_oozie_process(pctx, instance):
     with instance.remote() as r:
-        if c_helper.is_mysql_enabled(pctx, instance.node_group.cluster):
+        if c_helper.is_mysql_enabled(pctx, instance.cluster):
             _start_mysql(r)
             LOG.debug("Creating Oozie DB Schema...")
             sql_script = files.get_file_text(
@@ -211,7 +211,7 @@ def start_hiveserver_process(pctx, instance):
         _hive_copy_shared_conf(
             r, edp.get_hive_shared_conf_path('hadoop'))
 
-        if c_helper.is_mysql_enabled(pctx, instance.node_group.cluster):
+        if c_helper.is_mysql_enabled(pctx, instance.cluster):
             oozie = vu.get_oozie(instance.node_group.cluster)
             if not oozie or instance.hostname() != oozie.hostname():
                 _start_mysql(r)

@@ -56,17 +56,13 @@ def _count_volumes_to_attach(instances):
     return sum([inst.node_group.volumes_per_node for inst in instances])
 
 
-def _get_cluster_id(instance):
-    return instance.node_group.cluster_id
-
-
 def attach_to_instances(instances):
     instances_to_attach = _count_instances_to_attach(instances)
     if instances_to_attach == 0:
         return
 
     cpo.add_provisioning_step(
-        _get_cluster_id(instances[0]), _("Attach volumes to instances"),
+        instances[0].cluster_id, _("Attach volumes to instances"),
         instances_to_attach)
 
     with context.ThreadGroup() as tg:
@@ -157,7 +153,7 @@ def mount_to_instances(instances):
         return
 
     cpo.add_provisioning_step(
-        _get_cluster_id(instances[0]),
+        instances[0].cluster_id,
         _("Mount volumes to instances"), _count_volumes_to_attach(instances))
 
     with context.ThreadGroup() as tg:

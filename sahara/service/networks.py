@@ -48,7 +48,7 @@ def init_instances_ips(instance):
             else:
                 management_ip = management_ip or address['addr']
 
-    cluster = instance.node_group.cluster
+    cluster = instance.cluster
     if (not CONF.use_floating_ips or
             (cluster.has_proxy_gateway() and
              not instance.node_group.is_proxy_gateway)):
