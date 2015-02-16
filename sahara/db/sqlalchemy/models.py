@@ -124,6 +124,7 @@ class NodeGroup(mb.SaharaBase):
     availability_zone = sa.Column(sa.String(255))
     open_ports = sa.Column(st.JsonListType())
     is_proxy_gateway = sa.Column(sa.Boolean())
+    volume_local_to_instance = sa.Column(sa.Boolean())
 
     def to_dict(self):
         d = super(NodeGroup, self).to_dict()
@@ -211,6 +212,7 @@ class NodeGroupTemplate(mb.SaharaBase):
     auto_security_group = sa.Column(sa.Boolean())
     availability_zone = sa.Column(sa.String(255))
     is_proxy_gateway = sa.Column(sa.Boolean())
+    volume_local_to_instance = sa.Column(sa.Boolean())
 
 
 class TemplatesRelation(mb.SaharaBase):
@@ -247,6 +249,7 @@ class TemplatesRelation(mb.SaharaBase):
     auto_security_group = sa.Column(sa.Boolean())
     availability_zone = sa.Column(sa.String(255))
     is_proxy_gateway = sa.Column(sa.Boolean())
+    volume_local_to_instance = sa.Column(sa.Boolean())
 
 
 # EDP objects: DataSource, Job, Job Execution, JobBinary

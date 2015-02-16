@@ -90,6 +90,9 @@ NODE_GROUP_TEMPLATE_SCHEMA = {
         "is_proxy_gateway": {
             "type": "boolean"
         },
+        "volume_local_to_instance": {
+            "type": "boolean"
+        },
     },
     "additionalProperties": False,
     "required": [
