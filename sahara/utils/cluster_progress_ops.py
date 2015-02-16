@@ -22,6 +22,7 @@ import six
 from sahara import conductor as c
 from sahara.conductor import resource
 from sahara import context
+from sahara.utils import general as g
 
 conductor = c.API
 
@@ -55,6 +56,9 @@ def add_fail_event(instance, exception):
 
 
 def add_provisioning_step(cluster_id, step_name, total):
+    if not g.check_cluster_exists(cluster_id):
+        return
+
     update_provisioning_steps(cluster_id)
     return conductor.cluster_provision_step_add(context.ctx(), cluster_id, {
         'step_name': step_name,
@@ -65,6 +69,9 @@ def add_provisioning_step(cluster_id, step_name, total):
 
 
 def get_current_provisioning_step(cluster_id):
+    if not g.check_cluster_exists(cluster_id):
+        return None
+
     update_provisioning_steps(cluster_id)
     ctx = context.ctx()
     cluster = conductor.cluster_get(ctx, cluster_id)
@@ -78,6 +85,9 @@ def get_current_provisioning_step(cluster_id):
 
 
 def update_provisioning_steps(cluster_id):
+    if not g.check_cluster_exists(cluster_id):
+        return
+
     ctx = context.ctx()
     cluster = conductor.cluster_get(ctx, cluster_id)
 
@@ -117,6 +127,8 @@ def update_provisioning_steps(cluster_id):
 
 
 def get_cluster_events(cluster_id, provision_step=None):
+    if not g.check_cluster_exists(cluster_id):
+        return []
     update_provisioning_steps(cluster_id)
     if provision_step:
         return conductor.cluster_provision_step_get_events(
@@ -151,10 +163,13 @@ def event_wrapper(mark_successful_on_exit, **spec):
         def handler(*args, **kwargs):
             step_name = spec.get('step', None)
             instance = _find_in_args(spec, *args, **kwargs)
+            cluster_id = instance.cluster_id
+
+            if not g.check_cluster_exists(cluster_id):
+                return func(*args, **kwargs)
 
             if step_name:
                 # It's single process, let's add provisioning step here
-                cluster_id = instance.cluster_id
                 add_provisioning_step(cluster_id, step_name, 1)
 
             try:
