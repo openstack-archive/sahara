@@ -13,6 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import mock
 import uuid
 
 from sahara import conductor
@@ -26,6 +27,7 @@ class FakeInstance(object):
     def __init__(self):
         self.id = uuid.uuid4()
         self.name = uuid.uuid4()
+        self.cluster_id = uuid.uuid4()
 
 
 class ClusterProgressOpsTest(base.SaharaWithDbTestCase):
@@ -158,3 +160,23 @@ class ClusterProgressOpsTest(base.SaharaWithDbTestCase):
                     None, instance.id, instance.name, None)
                 with context.InstanceInfoManager(info):
                     tg.spawn("make_checks", self._make_checks, info)
+
+    @cpo.event_wrapper(True)
+    def _do_nothing(self):
+        pass
+
+    @mock.patch('sahara.utils.cluster_progress_ops._find_in_args')
+    @mock.patch('sahara.utils.general.check_cluster_exists')
+    def test_event_wrapper(self, p_check_cluster_exists, p_find):
+        self.override_config("disable_event_log", True)
+        self._do_nothing()
+
+        self.assertEqual(0, p_find.call_count)
+
+        self.override_config("disable_event_log", False)
+        p_find.return_value = FakeInstance()
+        p_check_cluster_exists.return_value = False
+        self._do_nothing()
+
+        self.assertEqual(1, p_find.call_count)
+        self.assertEqual(1, p_check_cluster_exists.call_count)

@@ -444,6 +444,9 @@
 # trust for Swift object access. (list value)
 #proxy_user_role_names = Member
 
+# Disables event log feature. (boolean value)
+#disable_event_log = false
+
 
 [cinder]
 
