@@ -21,7 +21,7 @@ LOG = logging.getLogger(__name__)
 
 def start_zookeeper(remote):
     remote.execute_command("sudo %s %s" % (
-        "/opt/zookeeper/zookeeper-3.4.6/bin/zkServer.sh",
+        "/opt/zookeeper/zookeeper/bin/zkServer.sh",
         "start"))
 
 
