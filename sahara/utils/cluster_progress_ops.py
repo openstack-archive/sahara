@@ -15,6 +15,7 @@
 
 import functools
 
+from oslo_config import cfg
 from oslo_utils import excutils
 from oslo_utils import timeutils
 import six
@@ -25,6 +26,16 @@ from sahara import context
 from sahara.utils import general as g
 
 conductor = c.API
+CONF = cfg.CONF
+
+event_log_opts = [
+    cfg.BoolOpt('disable_event_log',
+                default=False,
+                help="Disables event log feature.")
+]
+
+
+CONF.register_opts(event_log_opts)
 
 
 def add_successful_event(instance):
@@ -58,7 +69,7 @@ def add_fail_event(instance, exception):
 
 
 def add_provisioning_step(cluster_id, step_name, total):
-    if not g.check_cluster_exists(cluster_id):
+    if CONF.disable_event_log or not g.check_cluster_exists(cluster_id):
         return
 
     update_provisioning_steps(cluster_id)
@@ -71,7 +82,7 @@ def add_provisioning_step(cluster_id, step_name, total):
 
 
 def get_current_provisioning_step(cluster_id):
-    if not g.check_cluster_exists(cluster_id):
+    if CONF.disable_event_log or not g.check_cluster_exists(cluster_id):
         return None
 
     update_provisioning_steps(cluster_id)
@@ -87,7 +98,7 @@ def get_current_provisioning_step(cluster_id):
 
 
 def update_provisioning_steps(cluster_id):
-    if not g.check_cluster_exists(cluster_id):
+    if CONF.disable_event_log or not g.check_cluster_exists(cluster_id):
         return
 
     ctx = context.ctx()
@@ -129,7 +140,7 @@ def update_provisioning_steps(cluster_id):
 
 
 def get_cluster_events(cluster_id, provision_step=None):
-    if not g.check_cluster_exists(cluster_id):
+    if CONF.disable_event_log or not g.check_cluster_exists(cluster_id):
         return []
     update_provisioning_steps(cluster_id)
     if provision_step:
@@ -163,6 +174,8 @@ def event_wrapper(mark_successful_on_exit, **spec):
     def decorator(func):
         @functools.wraps(func)
         def handler(*args, **kwargs):
+            if CONF.disable_event_log:
+                return func(*args, **kwargs)
             step_name = spec.get('step', None)
             instance = _find_in_args(spec, *args, **kwargs)
             cluster_id = instance.cluster_id
