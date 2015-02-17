@@ -130,7 +130,10 @@ class HDPGatingTest(cinder.CinderVolumeTest, edp.EDPTest,
                 message = 'Failure while cluster creation: '
                 self.print_error_log(message, e)
 
-# --------------------------------CINDER TESTING-------------------------------
+# --------------------------------EVENT LOG TESTING---------------------------
+        self._test_event_log(cluster_id)
+
+# --------------------------------CINDER TESTING------------------------------
 
         try:
             self.cinder_volume_testing(cluster_info)
@@ -226,7 +229,7 @@ class HDPGatingTest(cinder.CinderVolumeTest, edp.EDPTest,
                 message = 'Failure during check of Swift availability: '
                 self.print_error_log(message, e)
 
-# -------------------------------CLUSTER SCALING-------------------------------
+# -------------------------------CLUSTER SCALING------------------------------
 
         if not self.plugin_config.SKIP_SCALING_TEST:
             datanode_count_after_resizing = (
@@ -261,7 +264,10 @@ class HDPGatingTest(cinder.CinderVolumeTest, edp.EDPTest,
                     message = 'Failure while cluster scaling: '
                     self.print_error_log(message, e)
 
-# -------------------------CINDER TESTING AFTER SCALING------------------------
+# --------------------------------EVENT LOG TESTING---------------------------
+            self._test_event_log(cluster_id)
+
+# -------------------------CINDER TESTING AFTER SCALING-----------------------
 
             try:
                 self.cinder_volume_testing(new_cluster_info)

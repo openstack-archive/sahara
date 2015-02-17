@@ -363,6 +363,7 @@ class CDHGatingTest(check_services.CheckServicesTest,
         self._create_nm_dn_ng_template()
         self._create_cluster_template()
         self._create_cluster()
+        self._test_event_log(self.cluster_id)
 
         self._check_cinder()
         self._check_mapreduce()
@@ -371,6 +372,7 @@ class CDHGatingTest(check_services.CheckServicesTest,
 
         if not self.plugin_config.SKIP_SCALING_TEST:
             self._check_scaling()
+            self._test_event_log(self.cluster_id)
             self._check_cinder_after_scaling()
             self._check_edp_after_scaling()
             self._check_mapreduce_after_scaling()
