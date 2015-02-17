@@ -38,6 +38,7 @@ def add_successful_event(instance):
             'instance_name': instance.instance_name,
             'event_info': None,
         })
+        update_provisioning_steps(cluster_id)
 
 
 def add_fail_event(instance, exception):
@@ -53,6 +54,7 @@ def add_fail_event(instance, exception):
             'instance_name': instance.instance_name,
             'event_info': event_info,
         })
+        update_provisioning_steps(cluster_id)
 
 
 def add_provisioning_step(cluster_id, step_name, total):
