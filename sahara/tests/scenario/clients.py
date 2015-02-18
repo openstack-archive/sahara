@@ -118,6 +118,9 @@ class SaharaClient(Client):
             self.sahara_client.job_executions.delete,
             job_execution_id)
 
+    def get_cluster(self, cluster_id, show_progress=False):
+        return self.sahara_client.clusters.get(cluster_id, show_progress)
+
     def get_cluster_status(self, cluster_id):
         data = self.sahara_client.clusters.get(cluster_id)
         return str(data.status)
