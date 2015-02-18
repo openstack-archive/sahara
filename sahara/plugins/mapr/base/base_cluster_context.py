@@ -59,6 +59,7 @@ class BaseClusterContext(cc.AbstractClusterContext):
         self._oozie_server = None
         self._oozie_http = None
         self._some_instance = None
+        self._configure_sh_path = None
         self._configure_sh = None
         self._mapr_db = None
         self._hadoop_home = None
@@ -159,6 +160,12 @@ class BaseClusterContext(cc.AbstractClusterContext):
         return self._mapr_db
 
     @property
+    def configure_sh_path(self):
+        if not self._configure_sh_path:
+            self._configure_sh_path = '%s/server/configure.sh' % self.mapr_home
+        return self._configure_sh_path
+
+    @property
     def configure_sh(self):
         if not self._configure_sh:
             f = ('%(script_path)s'
@@ -167,7 +174,7 @@ class BaseClusterContext(cc.AbstractClusterContext):
                  ' -Z %(zookeepers)s'
                  ' -no-autostart -f %(m7)s')
             args = {
-                'script_path': '/opt/mapr/server/configure.sh',
+                'script_path': self.configure_sh_path,
                 'cluster_name': self.cluster.name,
                 'cldbs': self.get_cldb_nodes_ip(),
                 'zookeepers': self.get_zookeeper_nodes_ip(),

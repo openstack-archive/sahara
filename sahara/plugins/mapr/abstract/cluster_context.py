@@ -25,6 +25,14 @@ class AbstractClusterContext(object):
         return
 
     @abc.abstractproperty
+    def configure_sh_path(self):
+        return
+
+    @abc.abstractproperty
+    def configure_sh(self):
+        return
+
+    @abc.abstractproperty
     def hadoop_version(self):
         return
 
