@@ -144,7 +144,8 @@ def node_group_templates_get(node_group_template_id):
 @acl.enforce("node-group-templates:modify")
 @v.check_exists(api.get_node_group_template, 'node_group_template_id')
 def node_group_templates_update(node_group_template_id, data):
-    return b.not_implemented()
+    return u.render(
+        api.update_node_group_template(node_group_template_id, data))
 
 
 @rest.delete('/node-group-templates/<node_group_template_id>')

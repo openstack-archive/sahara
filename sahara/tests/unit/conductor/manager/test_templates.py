@@ -150,6 +150,24 @@ class NodeGroupTemplates(test_base.ConductorManagerTestCase):
         lst = self.api.node_group_template_get_all(ctx, **{'badfield': 'junk'})
         self.assertEqual(len(lst), 0)
 
+    def test_ngt_update(self):
+        ctx = context.ctx()
+        ngt = self.api.node_group_template_create(ctx, SAMPLE_NGT)
+        ngt_id = ngt["id"]
+
+        UPDATE_NAME = "UpdatedSampleNGTName"
+        update_values = {"name": UPDATE_NAME}
+        updated_ngt = self.api.node_group_template_update(ctx,
+                                                          ngt_id,
+                                                          update_values)
+        self.assertEqual(UPDATE_NAME, updated_ngt["name"])
+
+        updated_ngt = self.api.node_group_template_get(ctx, ngt_id)
+        self.assertEqual(UPDATE_NAME, updated_ngt["name"])
+
+        with testtools.ExpectedException(ex.NotFoundException):
+            self.api.node_group_template_update(ctx, -1, update_values)
+
 
 class ClusterTemplates(test_base.ConductorManagerTestCase):
     def __init__(self, *args, **kwargs):

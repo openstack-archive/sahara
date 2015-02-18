@@ -341,3 +341,15 @@ class QuotaException(SaharaException):
                                        'requested': requested,
                                        'available': available}
         super(QuotaException, self).__init__()
+
+
+class UpdateFailedException(SaharaException):
+    message = _("Object '%s' could not be updated")
+    # Object was unable to be updated
+
+    def __init__(self, value, message=None):
+        self.code = "UPDATE_FAILED"
+        if message:
+            self.message = message
+        self.message = self.message % value
+        super(UpdateFailedException, self).__init__()

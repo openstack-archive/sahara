@@ -867,6 +867,8 @@ Also node scoped configurations can be defined in a Node Group Template.
 +-----------------+-------------------------------------------------------------------+-------------------------------------------------------+
 | DELETE          | /v1.0/{tenant_id}/node-group-templates/<node_group_template_id>   | Deletes an existing Node Group Template by id.        |
 +-----------------+-------------------------------------------------------------------+-------------------------------------------------------+
+| PUT             | /v1.0/{tenant_id}/node-group-templates/<node_group_template_id>   | Updates an existing Node Group Template by id.        |
++-----------------+-------------------------------------------------------------------+-------------------------------------------------------+
 
 **Examples**
 
@@ -1182,6 +1184,81 @@ This operation does not require a request body.
 
         HTTP/1.1 204 NO CONTENT
         Content-Type: application/json
+
+4.5 Update Node Group Template
+------------------------------
+
+.. http:put:: /v1.0/{tenant_id}/node-group-templates/<node_group_template_id>
+
+Normal Response Code: 202 (ACCEPTED)
+
+Errors: none
+
+This operation returns the updated Node Group Template.
+
+**Example**:
+    **request**
+
+    .. sourcecode:: http
+
+        PUT http://sahara/v1.0/775181/node-group-templates/b900b4dc-d3ee-4341-99c3-ac078301f9d8
+
+    .. sourcecode:: json
+
+        {
+            "node_group_template": {
+                "name": "updated-master",
+                "volume_mount_prefix": "/volumes/disk",
+                "tenant_id": "af8996ec973444048f159f2bf2e3c24e",
+                "created_at": "2014-08-26 08:14:46.119233",
+                "plugin_name": "vanilla",
+                "floating_ip_pool": "77e2c46d-9585-46a2-95f9-8721c302b257",
+                "volumes_size": 0,
+                "node_processes": [
+                    "namenode",
+                    "resourcemanager",
+                    "oozie",
+                    "historyserver"
+                ],
+                "flavor_id": "3",
+                "volumes_per_node": 0,
+                "auto_security_group": null,
+                "hadoop_version": "2.4.1",
+                "id": "b900b4dc-d3ee-4341-99c3-ac078301f9d8",
+                "security_groups": null
+            }
+        }
+
+    **response**
+
+    .. sourcecode:: http
+
+        HTTP/1.1 202 ACCEPTED
+        Content-Type: application/json
+
+    .. sourcecode:: json
+
+        {
+            "name": "updated-master",
+            "volume_mount_prefix": "/volumes/disk",
+            "tenant_id": "af8996ec973444048f159f2bf2e3c24e",
+            "created_at": "2014-08-26 08:14:46.119233",
+            "plugin_name": "vanilla",
+            "floating_ip_pool": "77e2c46d-9585-46a2-95f9-8721c302b257",
+            "volumes_size": 0,
+            "node_processes": [
+                "namenode",
+                "resourcemanager",
+                "oozie",
+                "historyserver"
+            ],
+            "flavor_id": "3",
+            "volumes_per_node": 0,
+            "auto_security_group": null,
+            "hadoop_version": "2.4.1",
+            "id": "b900b4dc-d3ee-4341-99c3-ac078301f9d8",
+            "security_groups": null
+        }
 
 5 Cluster Templates
 ===================
