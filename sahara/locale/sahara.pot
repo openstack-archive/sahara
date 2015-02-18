@@ -6,9 +6,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: sahara 2015.1.dev17\n"
+"Project-Id-Version: sahara 2015.1.dev51\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2015-02-10 06:22+0000\n"
+"POT-Creation-Date: 2015-02-18 06:14+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,18 +17,18 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 1.3\n"
 
-#: sahara/config.py:176
+#: sahara/config.py:178
 #, python-format
 msgid "Option '%(option)s' is required for config group '%(group)s'"
 msgstr ""
 
-#: sahara/config.py:184
+#: sahara/config.py:186
 msgid ""
 "use_namespaces can not be set to \"True\" when use_neutron is set to "
 "\"False\""
 msgstr ""
 
-#: sahara/context.py:146
+#: sahara/context.py:145
 msgid "Context isn't available here"
 msgstr ""
 
@@ -146,6 +146,13 @@ msgstr ""
 #: sahara/exceptions.py:327
 #, python-format
 msgid "Malformed message body: %(reason)s"
+msgstr ""
+
+#: sahara/exceptions.py:336
+#, python-format
+msgid ""
+"Quota exceeded for %(resource)s: Requested %(requested)s, but available "
+"%(available)s"
 msgstr ""
 
 #: sahara/api/base.py:22
@@ -702,24 +709,34 @@ msgid ""
 "without any management consoles."
 msgstr ""
 
-#: sahara/plugins/spark/plugin.py:75 sahara/plugins/spark/plugin.py:90
+#: sahara/plugins/spark/plugin.py:75 sahara/plugins/spark/plugin.py:99
 #: sahara/plugins/storm/plugin.py:74
 msgid "1 or more"
 msgstr ""
 
-#: sahara/plugins/spark/plugin.py:419 sahara/plugins/spark/plugin.py:433
+#: sahara/plugins/spark/plugin.py:82
+#, python-format
+msgid "%s or more"
+msgstr ""
+
+#: sahara/plugins/spark/plugin.py:83
+#, python-format
+msgid "Number of %(dn)s instances should not be less than %(replication)s"
+msgstr ""
+
+#: sahara/plugins/spark/plugin.py:431 sahara/plugins/spark/plugin.py:445
 #, python-format
 msgid "Spark plugin cannot scale nodegroup with processes: %s"
 msgstr ""
 
-#: sahara/plugins/spark/plugin.py:443
+#: sahara/plugins/spark/plugin.py:455
 #, python-format
 msgid ""
 "Spark plugin cannot shrink cluster because there would be not enough "
 "nodes for HDFS replicas (replication factor is %s)"
 msgstr ""
 
-#: sahara/plugins/spark/scaling.py:92
+#: sahara/plugins/spark/scaling.py:91
 #: sahara/plugins/vanilla/hadoop2/scaling.py:132
 #: sahara/plugins/vanilla/v1_2_1/scaling.py:79
 #, python-format
@@ -825,8 +842,44 @@ msgstr ""
 msgid "Configure instances"
 msgstr ""
 
-#: sahara/service/heat_engine.py:216
+#: sahara/service/heat_engine.py:203
 msgid "Create Heat stack"
+msgstr ""
+
+#: sahara/service/quotas.py:55
+msgid "RAM"
+msgstr ""
+
+#: sahara/service/quotas.py:56
+msgid "VCPU"
+msgstr ""
+
+#: sahara/service/quotas.py:57
+msgid "instance"
+msgstr ""
+
+#: sahara/service/quotas.py:58
+msgid "floating ip"
+msgstr ""
+
+#: sahara/service/quotas.py:59
+msgid "security group"
+msgstr ""
+
+#: sahara/service/quotas.py:60
+msgid "security group rule"
+msgstr ""
+
+#: sahara/service/quotas.py:61
+msgid "port"
+msgstr ""
+
+#: sahara/service/quotas.py:62
+msgid "volume"
+msgstr ""
+
+#: sahara/service/quotas.py:63
+msgid "volume storage"
 msgstr ""
 
 #: sahara/service/trusts.py:65
@@ -842,21 +895,21 @@ msgstr ""
 msgid "Object with %s not found"
 msgstr ""
 
-#: sahara/service/volumes.py:69
+#: sahara/service/volumes.py:65
 msgid "Attach volumes to instances"
 msgstr ""
 
-#: sahara/service/volumes.py:90
+#: sahara/service/volumes.py:86
 #, python-format
 msgid "Error attach volume to instance %s"
 msgstr ""
 
-#: sahara/service/volumes.py:132
+#: sahara/service/volumes.py:128
 #, python-format
 msgid "Volume %s has error status"
 msgstr ""
 
-#: sahara/service/volumes.py:161
+#: sahara/service/volumes.py:157
 msgid "Mount volumes to instances"
 msgstr ""
 
@@ -899,138 +952,140 @@ msgstr ""
 msgid "Spark job execution failed. Exit status = %(status)s, stdout = %(stdout)s"
 msgstr ""
 
-#: sahara/service/validations/base.py:57
+#: sahara/service/validations/base.py:69
 #, python-format
 msgid "Sahara doesn't contain plugin with name '%s'"
 msgstr ""
 
-#: sahara/service/validations/base.py:63
+#: sahara/service/validations/base.py:75
 #, python-format
 msgid "Requested plugin '%(name)s' doesn't support version '%(version)s'"
 msgstr ""
 
-#: sahara/service/validations/base.py:70
+#: sahara/service/validations/base.py:82
 #, python-format
 msgid "Requested image '%s' is not registered"
 msgstr ""
 
-#: sahara/service/validations/base.py:81
+#: sahara/service/validations/base.py:93
 #, python-format
 msgid "Plugin doesn't contain applicable target '%s'"
 msgstr ""
 
-#: sahara/service/validations/base.py:86
+#: sahara/service/validations/base.py:98
 #, python-format
 msgid ""
 "Plugin's applicable target '%(target)s' doesn't contain config with name "
 "'%(name)s'"
 msgstr ""
 
-#: sahara/service/validations/base.py:155
+#: sahara/service/validations/base.py:167
 #, python-format
 msgid "Requested flavor '%s' not found"
 msgstr ""
 
-#: sahara/service/validations/base.py:166
+#: sahara/service/validations/base.py:178
 #, python-format
 msgid "Security group '%s' not found"
 msgstr ""
 
-#: sahara/service/validations/base.py:180
+#: sahara/service/validations/base.py:192
 #, python-format
 msgid "Floating IP pool %s not found"
 msgstr ""
 
-#: sahara/service/validations/base.py:186
-msgid "Duplicates in node processes have been detected"
-msgstr ""
-
-#: sahara/service/validations/base.py:194
+#: sahara/service/validations/base.py:196
 #, python-format
-msgid "Plugin supports the following node procesess: %s"
+msgid "Duplicates in node processes have been detected: %s"
 msgstr ""
 
-#: sahara/service/validations/base.py:202
-msgid "Duplicates in node group names are detected"
+#: sahara/service/validations/base.py:212
+#, python-format
+msgid "Plugin doesn't support the following node processes: %s"
 msgstr ""
 
-#: sahara/service/validations/base.py:210
+#: sahara/service/validations/base.py:219
+#, python-format
+msgid "Duplicates in node group names are detected: %s"
+msgstr ""
+
+#: sahara/service/validations/base.py:227
 #, python-format
 msgid "Nova availability zone '%s' not found"
 msgstr ""
 
-#: sahara/service/validations/base.py:218
+#: sahara/service/validations/base.py:235
 #, python-format
 msgid "Cinder availability zone '%s' not found"
 msgstr ""
 
-#: sahara/service/validations/base.py:226
+#: sahara/service/validations/base.py:243
 #, python-format
 msgid "Volume type '%s' not found"
 msgstr ""
 
-#: sahara/service/validations/base.py:234
+#: sahara/service/validations/base.py:251
 #, python-format
 msgid "Cluster with name '%s' already exists"
 msgstr ""
 
-#: sahara/service/validations/base.py:243
+#: sahara/service/validations/base.py:260
 #, python-format
 msgid "Cluster name '%s' is already used as Heat stack name"
 msgstr ""
 
-#: sahara/service/validations/base.py:255
+#: sahara/service/validations/base.py:272
 #, python-format
 msgid ""
 "Composite hostname %(host)s in provisioned cluster exceeds maximum limit "
 "%(limit)s characters"
 msgstr ""
 
-#: sahara/service/validations/base.py:266
+#: sahara/service/validations/base.py:283
 #, python-format
 msgid "Requested keypair '%s' not found"
 msgstr ""
 
-#: sahara/service/validations/base.py:271
+#: sahara/service/validations/base.py:288
 #, python-format
 msgid "Network %s not found"
 msgstr ""
 
-#: sahara/service/validations/base.py:279
+#: sahara/service/validations/base.py:296
 #, python-format
 msgid "Cluster template with name '%s' already exists"
 msgstr ""
 
-#: sahara/service/validations/base.py:286
+#: sahara/service/validations/base.py:303
 #, python-format
 msgid "Cluster template with id '%s' not found"
 msgstr ""
 
-#: sahara/service/validations/base.py:307
+#: sahara/service/validations/base.py:324
 #, python-format
 msgid "NodeGroup template with name '%s' already exists"
 msgstr ""
 
-#: sahara/service/validations/base.py:313
+#: sahara/service/validations/base.py:330
 #, python-format
 msgid "NodeGroup template with id '%s' not found"
 msgstr ""
 
-#: sahara/service/validations/base.py:352
+#: sahara/service/validations/base.py:369
 #, python-format
 msgid "Cluster doesn't contain node group with name '%s'"
 msgstr ""
 
-#: sahara/service/validations/base.py:366
+#: sahara/service/validations/base.py:383
 #, python-format
 msgid "Can't add new nodegroup. Cluster already has nodegroup with name '%s'"
 msgstr ""
 
-#: sahara/service/validations/base.py:379
+#: sahara/service/validations/base.py:396
 msgid "Cinder is not supported"
 msgstr ""
 
-#: sahara/service/validations/base.py:391
+#: sahara/service/validations/base.py:408
 #, python-format
 msgid ""
 "Tags of requested image '%(image)s' don't contain required tags "
@@ -1240,10 +1295,6 @@ msgstr ""
 msgid "XML requests are not supported yet"
 msgstr ""
 
-#: sahara/utils/cluster_progress_ops.py:156
-msgid "Function should have an Instance as argument"
-msgstr ""
-
 #: sahara/utils/crypto.py:51
 msgid "Private key file hasn't been created"
 msgstr ""
@@ -1292,17 +1343,17 @@ msgstr ""
 msgid "Unknown file mode %s"
 msgstr ""
 
-#: sahara/utils/ssh_remote.py:575
+#: sahara/utils/ssh_remote.py:574
 #, python-format
 msgid "Invalid keyword in proxy_command: %s"
 msgstr ""
 
-#: sahara/utils/ssh_remote.py:696
+#: sahara/utils/ssh_remote.py:695
 #, python-format
 msgid "Closing HTTP session for %(host)s:%(port)s"
 msgstr ""
 
-#: sahara/utils/ssh_remote.py:702
+#: sahara/utils/ssh_remote.py:701
 #, python-format
 msgid "Session for %(host)s:%(port)s not cached"
 msgstr ""
