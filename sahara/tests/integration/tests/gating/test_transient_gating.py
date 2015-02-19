@@ -135,4 +135,7 @@ class TransientGatingTest(edp.EDPTest):
         self._prepare_test()
         self._create_cluster_template()
         self._create_cluster()
+        for cluster_id in self.cluster_ids:
+            self._test_event_log(cluster_id)
+
         self._check_transient()

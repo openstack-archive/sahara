@@ -293,13 +293,16 @@ class VanillaGatingTest(cinder.CinderVolumeTest,
         self._create_dn_ng_template()
         self._create_cluster_template()
         self._create_cluster()
+        self._test_event_log(self.cluster_id)
         self._check_cinder()
         self._check_cluster_config()
         self._check_edp()
         self._check_mapreduce()
         self._check_swift()
+
         if not self.plugin_config.SKIP_SCALING_TEST:
             self._check_scaling()
+            self._test_event_log(self.cluster_id)
             self._check_cinder_after_scaling()
             self._check_cluster_config_after_scaling()
             self._check_mapredure_after_scaling()
