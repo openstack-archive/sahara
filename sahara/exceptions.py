@@ -327,7 +327,7 @@ class MalformedRequestBody(SaharaException):
     message = _("Malformed message body: %(reason)s")
 
     def __init__(self, reason):
-        self.message = self.message % reason
+        self.message = self.message % {"reason": reason}
         super(MalformedRequestBody, self).__init__()
 
 
