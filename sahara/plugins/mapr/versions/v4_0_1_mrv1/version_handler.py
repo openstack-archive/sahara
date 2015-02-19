@@ -19,6 +19,7 @@ from sahara.plugins.mapr.services.flume import flume
 from sahara.plugins.mapr.services.hbase import hbase
 from sahara.plugins.mapr.services.hive import hive
 from sahara.plugins.mapr.services.httpfs import httpfs
+from sahara.plugins.mapr.services.impala import impala
 from sahara.plugins.mapr.services.mahout import mahout
 from sahara.plugins.mapr.services.management import management
 from sahara.plugins.mapr.services.mapreduce import mapreduce
@@ -59,6 +60,7 @@ class VersionHandler(bvh.BaseVersionHandler):
             flume.Flume(),
             drill.Drill(),
             sqoop2.Sqoop2(),
+            impala.ImpalaV123(),
         ]
 
     def get_context(self, cluster, added=None, removed=None):
