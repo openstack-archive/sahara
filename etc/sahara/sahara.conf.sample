@@ -427,6 +427,14 @@
 # guaranteed to be "alive" within this time period. (integer value)
 #min_transient_cluster_active_time = 30
 
+# Maximal time (in hours) for clusters allowed to be in states other
+# than "Active", "Deleting" or "Error". If a cluster is not in
+# "Active", "Deleting" or "Error" state and last update of it was
+# longer than "cleanup_time_for_incomplete_clusters" hours ago then it
+# will be deleted automatically. (0 value means that automatic clean
+# up is disabled). (integer value)
+#cleanup_time_for_incomplete_clusters = 0
+
 # Timeout for detaching volumes from instance (in seconds). (integer
 # value)
 #detach_volume_timeout = 300
