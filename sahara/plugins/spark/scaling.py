@@ -15,16 +15,15 @@
 
 import os
 
-from oslo_utils import timeutils
 import six
 
 from sahara import context
 from sahara.i18n import _
-from sahara.plugins import exceptions as ex
 from sahara.plugins.spark import config_helper as c_helper
 from sahara.plugins.spark import run_scripts as run
 from sahara.plugins import utils
 from sahara.utils import cluster_progress_ops as cpo
+from sahara.utils import poll_utils
 from sahara.utils import remote
 
 
@@ -55,6 +54,17 @@ def decommission_sl(master, inst_to_be_deleted, survived_inst):
     run.start_spark_master(r_master, sp_home)
 
 
+def _is_decommissioned(r, inst_to_be_deleted):
+    cmd = r.execute_command("sudo -u hdfs hadoop dfsadmin -report")
+    datanodes_info = parse_dfs_report(cmd[1])
+    for i in inst_to_be_deleted:
+        for dn in datanodes_info:
+            if (dn["Name"].startswith(i.internal_ip)) and (
+                    dn["Decommission Status"] != "Decommissioned"):
+                return False
+    return True
+
+
 @cpo.event_wrapper(True, step=_("Decommission %s") % "DataNodes")
 def decommission_dn(nn, inst_to_be_deleted, survived_inst):
     with remote.get_remote(nn) as r:
@@ -64,36 +74,15 @@ def decommission_dn(nn, inst_to_be_deleted, survived_inst):
         run.refresh_nodes(remote.get_remote(nn), "dfsadmin")
         context.sleep(3)
 
-        timeout = c_helper.get_decommissioning_timeout(nn.cluster)
-        s_time = timeutils.utcnow()
-        all_found = False
+        poll_utils.plugin_option_poll(
+            nn.cluster, _is_decommissioned, c_helper.DECOMMISSIONING_TIMEOUT,
+            _("Decommission %s") % "DataNodes", 3, {
+                'r': r, 'inst_to_be_deleted': inst_to_be_deleted})
 
-        while timeutils.delta_seconds(s_time, timeutils.utcnow()) < timeout:
-            cmd = r.execute_command(
-                "sudo -u hdfs hadoop dfsadmin -report")
-            all_found = True
-            datanodes_info = parse_dfs_report(cmd[1])
-            for i in inst_to_be_deleted:
-                for dn in datanodes_info:
-                    if (dn["Name"].startswith(i.internal_ip)) and (
-                            dn["Decommission Status"] != "Decommissioned"):
-                        all_found = False
-                        break
-
-            if all_found:
-                r.write_files_to({'/etc/hadoop/dn.incl':
-                                 utils.
-                                 generate_fqdn_host_names(survived_inst),
-                                  '/etc/hadoop/dn.excl': "",
-                                  })
-                break
-            context.sleep(3)
-
-        if not all_found:
-            ex.DecommissionError(
-                _("Cannot finish decommission of cluster %(cluster)s in "
-                  "%(seconds)d seconds") %
-                {"cluster": nn.cluster, "seconds": timeout})
+        r.write_files_to({
+            '/etc/hadoop/dn.incl': utils.
+            generate_fqdn_host_names(survived_inst),
+            '/etc/hadoop/dn.excl': ""})
 
 
 def parse_dfs_report(cmd_output):

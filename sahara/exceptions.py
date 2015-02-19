@@ -284,13 +284,19 @@ class TimeoutException(SaharaException):
     code = "TIMEOUT"
     message = _("'%(operation)s' timed out after %(timeout)i second(s)")
 
-    def __init__(self, timeout, op_name=None):
+    def __init__(self, timeout, op_name=None, timeout_name=None):
         if op_name:
-            op_name = _("Operation '%s'") % op_name
+            op_name = _("Operation with name '%s'") % op_name
         else:
             op_name = _("Operation")
         self.message = self.message % {
             'operation': op_name, 'timeout': timeout}
+
+        if timeout_name:
+            desc = _("%(message)s and following timeout was violated: "
+                     "%(timeout_name)s")
+            self.message = desc % {
+                'message': self.message, 'timeout_name': timeout_name}
 
         super(TimeoutException, self).__init__()
 
