@@ -25,6 +25,7 @@ from sahara.plugins.mapr.services.mapreduce import mapreduce
 from sahara.plugins.mapr.services.maprfs import maprfs
 from sahara.plugins.mapr.services.oozie import oozie
 from sahara.plugins.mapr.services.pig import pig
+from sahara.plugins.mapr.services.sqoop import sqoop2
 from sahara.plugins.mapr.services.swift import swift
 import sahara.plugins.mapr.versions.v4_0_1_mrv1.context as c
 
@@ -57,6 +58,7 @@ class VersionHandler(bvh.BaseVersionHandler):
             mapreduce.MapReduce(),
             flume.Flume(),
             drill.Drill(),
+            sqoop2.Sqoop2(),
         ]
 
     def get_context(self, cluster, added=None, removed=None):

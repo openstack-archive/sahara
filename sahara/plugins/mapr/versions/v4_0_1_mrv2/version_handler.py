@@ -24,6 +24,7 @@ from sahara.plugins.mapr.services.management import management
 from sahara.plugins.mapr.services.maprfs import maprfs
 from sahara.plugins.mapr.services.oozie import oozie
 from sahara.plugins.mapr.services.pig import pig
+from sahara.plugins.mapr.services.sqoop import sqoop2
 from sahara.plugins.mapr.services.swift import swift
 from sahara.plugins.mapr.services.yarn import yarn
 import sahara.plugins.mapr.versions.v4_0_1_mrv2.context as c
@@ -57,6 +58,7 @@ class VersionHandler(bvh.BaseVersionHandler):
             yarn.YARNv241(),
             flume.Flume(),
             drill.Drill(),
+            sqoop2.Sqoop2(),
         ]
 
     def get_context(self, cluster, added=None, removed=None):
