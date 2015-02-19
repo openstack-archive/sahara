@@ -451,6 +451,19 @@ class ITestCase(testcase.WithAttributes, base.BaseTestCase):
     def close_ssh_connection():
         ssh_remote._cleanup()
 
+    def transfer_helper_conf_file_to_node(self, file_name):
+        file = open('sahara/tests/integration/tests/resources/%s' % file_name
+                    ).read()
+        try:
+            self.write_file_to(file_name, file)
+
+        except Exception as e:
+            with excutils.save_and_reraise_exception():
+                print(
+                    '\nFailure while conf file transferring '
+                    'to cluster node: ' + six.text_type(e)
+                )
+
     def transfer_helper_script_to_node(self, script_name, parameter_list=None):
         script = open('sahara/tests/integration/tests/resources/%s'
                       % script_name).read()
