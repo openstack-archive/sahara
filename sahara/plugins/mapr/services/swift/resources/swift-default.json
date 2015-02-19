@@ -1,0 +1,61 @@
+[
+  {
+    "name": "fs.swift.impl",
+    "config_type": "string",
+    "value": "org.apache.hadoop.fs.swift.snative.SwiftNativeFileSystem"
+  },
+  {
+    "name": "fs.swift.connect.timeout",
+    "config_type": "int",
+    "value": 15000
+  },
+  {
+    "name": "fs.swift.socket.timeout",
+    "config_type": "int",
+    "value": 60000
+  },
+  {
+    "name": "fs.swift.connect.retry.count",
+    "config_type": "int",
+    "value": 3
+  },
+  {
+    "name": "fs.swift.connect.throttle.delay",
+    "config_type": "int",
+    "value": 0
+  },
+  {
+    "name": "fs.swift.blocksize",
+    "config_type": "int",
+    "value": 32768
+  },
+  {
+    "name": "fs.swift.partsize",
+    "config_type": "int",
+    "value": 4718592
+  },
+  {
+    "name": "fs.swift.requestsize",
+    "config_type": "int",
+    "value": 64
+  },
+  {
+    "name": "fs.swift.service.sahara.public",
+    "config_type": "bool",
+    "value": true
+  },
+  {
+    "name": "fs.swift.service.sahara.http.port",
+    "config_type": "int",
+    "value": 8080
+  },
+  {
+    "name": "fs.swift.service.sahara.https.port",
+    "config_type": "int",
+    "value": 443
+  },
+  {
+    "name": "fs.swift.service.sahara.auth.endpoint.prefix",
+    "value": "/endpoints/AUTH_"
+  }
+]

@@ -1,0 +1,28 @@
+[
+  {
+    "value": "/oozie/share/lib",
+    "name": "oozie.service.WorkflowAppService.system.libpath",
+    "description": "System library path to use for workflow applications.This path is added to workflow application if their job properties setsthe property 'oozie.use.system.libpath' to true."
+  },
+  {
+    "value": "yarn-tez",
+    "name": "mapreduce.framework.name",
+    "description": "The runtime framework for executing MapReduce jobs."
+  },
+  {
+    "value": false,
+    "name": "use.system.libpath.for.mapreduce.and.pig.jobs",
+    "config_type": "bool",
+    "description": "If set to true, submissions of MapReduce and Pig jobs will includeautomatically the system library path, thus not requiring users tospecify where the Pig JAR files are. Instead, the ones from the systemlibrary path are used."
+  },
+  {
+    "value": "*",
+    "name": "oozie.service.ProxyUserService.proxyuser.mapr.hosts",
+    "description": "List of hosts the '#USER#' user is allowed to perform 'doAs'operations.The '#USER#' must be replaced with the username o the user who isallowed to perform 'doAs' operations.The value can be the '*' wildcard or a list of hostnames.For multiple users copy this property and replace the user namein the property name."
+  },
+  {
+    "value": "*",
+    "name": "oozie.service.ProxyUserService.proxyuser.mapr.groups",
+    "description": "List of groups the '#USER#' user is allowed to impersonate usersfrom to perform 'doAs' operations.The '#USER#' must be replaced with the username o the user who isallowed to perform 'doAs' operations.The value can be the '*' wildcard or a list of groups.For multiple users copy this property and replace the user namein the property name."
+  }
+]

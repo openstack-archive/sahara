@@ -1,0 +1,23 @@
+[
+  {
+    "value": 8192,
+    "name": "yarn.nodemanager.resource.memory-mb",
+    "priority": 1,
+    "config_type": "int",
+    "description": "Amount of physical memory, in MB, that can be allocated for containers."
+  },
+  {
+    "value": 4,
+    "name": "yarn.nodemanager.resource.cpu-vcores",
+    "priority": 1,
+    "config_type": "int",
+    "description": "Number of CPU cores that can be allocated for containers."
+  },
+  {
+    "value": 1,
+    "name": "yarn.nodemanager.resource.io-spindles",
+    "priority": 1,
+    "config_type": "int",
+    "description": "Number of spindles that can be allocated for containers."
+  }
+]

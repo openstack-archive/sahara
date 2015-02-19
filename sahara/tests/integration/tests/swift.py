@@ -21,10 +21,13 @@ from sahara.tests.integration.tests import base
 
 
 class SwiftTest(base.ITestCase):
+    DEFAULT_TEST_SCRIPT = 'swift_test_script.sh'
+
     @base.skip_test(
         'SKIP_SWIFT_TEST',
         message='Test for check of Swift availability was skipped.')
-    def check_swift_availability(self, cluster_info):
+    def check_swift_availability(self, cluster_info, script=None):
+        script = script or SwiftTest.DEFAULT_TEST_SCRIPT
         plugin_config = cluster_info['plugin_config']
         # Make unique name of Swift container during Swift testing
         swift_container_name = 'Swift-test-' + str(uuid.uuid4())[:8]
@@ -39,7 +42,7 @@ class SwiftTest(base.ITestCase):
         self.open_ssh_connection(namenode_ip)
         try:
             self.transfer_helper_script_to_node(
-                'swift_test_script.sh', parameter_list=extra_script_parameters
+                script, parameter_list=extra_script_parameters
             )
 
         except Exception as e:

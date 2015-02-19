@@ -1,0 +1,16 @@
+[
+  {
+    "value": 1024,
+    "name": "yarn.scheduler.minimum-allocation-mb",
+    "priority": 1,
+    "config_type": "int",
+    "description": "The minimum allocation for every container request at the RM, in MBs. Memory requests lower than this won't take effect, and the specified value will get allocated at minimum."
+  },
+  {
+    "value": 8192,
+    "name": "yarn.scheduler.maximum-allocation-mb",
+    "priority": 1,
+    "config_type": "int",
+    "description": "The maximum allocation for every container request at the RM, in MBs. Memory requests higher than this won't take effect, and will get capped to this value."
+  }
+]
