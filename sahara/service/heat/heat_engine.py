@@ -23,6 +23,7 @@ from sahara.i18n import _
 from sahara.i18n import _LI
 from sahara.i18n import _LW
 from sahara.service import engine as e
+from sahara.service.heat import templates as ht
 from sahara.service import volumes
 from sahara.utils import cluster_progress_ops as cpo
 from sahara.utils import general as g
@@ -202,7 +203,7 @@ class _CreateLauncher(HeatEngine):
     @cpo.event_wrapper(
         True, step=_('Create Heat stack'), param=('cluster', 1))
     def create_instances(self, cluster, target_count):
-        tmpl = heat.ClusterTemplate(cluster)
+        tmpl = ht.ClusterTemplate(cluster)
 
         self._configure_template(tmpl, cluster, target_count)
         stack = tmpl.instantiate(update_existing=self.UPDATE_STACK,
