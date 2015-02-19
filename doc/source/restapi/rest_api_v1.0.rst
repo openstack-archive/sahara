@@ -1283,6 +1283,8 @@ Also cluster scoped configurations can be defined in a Cluster Template.
 +-----------------+-------------------------------------------------------------------+-------------------------------------------------------+
 | DELETE          | /v1.0/{tenant_id}/cluster-templates/<cluster_template_id>         | Deletes an existing Cluster Template by id.           |
 +-----------------+-------------------------------------------------------------------+-------------------------------------------------------+
+| PUT             | /v1.0/{tenant_id}/cluster-templates/<cluster_template_id>         | Updates an existing Cluster Template by id.           |
++-----------------+-------------------------------------------------------------------+-------------------------------------------------------+
 
 **Examples**
 
@@ -1844,6 +1846,172 @@ This operation does not require a request body.
 
         HTTP/1.1 204 NO CONTENT
         Content-Type: application/json
+
+5.5 Update Cluster Template
+---------------------------
+
+.. http:put:: /v1.0/{tenant_id}/cluster-templates/{cluster_template_id}
+
+Normal Response Code: 202 (ACCEPTED)
+
+Errors: none
+
+This operation returns the updated Cluster Template.
+
+**Example**:
+    **request**
+
+    .. sourcecode:: http
+
+        PUT http://sahara/v1.0/775181/cluster-templates/1beae95b-fd20-47c0-a745-5125dccbd560
+
+    .. sourcecode:: json
+
+        {
+            "cluster_template": {
+                "neutron_management_network": "0b001fb7-b172-43f0-8c99-444672fd0513",
+                "description": null,
+                "cluster_configs": {},
+                "created_at": "2014-08-28 20:00:40",
+                "default_image_id": null,
+                "updated_at": null,
+                "plugin_name": "vanilla",
+                "anti_affinity": [],
+                "tenant_id": "28a4d0e49b024dc0875ed6a862b129f0",
+                "node_groups": [
+                    {
+                        "count": 3,
+                        "name": "worker",
+                        "volume_mount_prefix": "/volumes/disk",
+                        "auto_security_group": null,
+                        "created_at": "2014-08-28 20:00:40",
+                        "updated_at": null,
+                        "floating_ip_pool": "cdeaa720-5517-4878-860e-71a1926744aa",
+                        "image_id": null,
+                        "volumes_size": 0,
+                        "node_processes": [
+                            "datanode",
+                            "nodemanager"
+                        ],
+                        "node_group_template_id": "3b975888-42d4-43d3-be70-8e4401e3cb65",
+                        "volumes_per_node": 0,
+                        "node_configs": {
+                            "HDFS": {
+                                "DataNode Heap Size": 1024
+                            },
+                            "YARN": {
+                                "NodeManager Heap Size": 2048
+                            }
+                        },
+                        "security_groups": null,
+                        "flavor_id": "3"
+                    },
+                    {
+                        "count": 1,
+                        "name": "master",
+                        "volume_mount_prefix": "/volumes/disk",
+                        "auto_security_group": null,
+                        "created_at": "2014-08-28 20:00:40",
+                        "updated_at": null,
+                        "floating_ip_pool": "cdeaa720-5517-4878-860e-71a1926744aa",
+                        "image_id": null,
+                        "volumes_size": 0,
+                        "node_processes": [
+                            "namenode",
+                            "resourcemanager",
+                            "oozie",
+                            "historyserver"
+                        ],
+                        "node_group_template_id": "208f2d53-69c3-48c3-9830-986db4c29c95",
+                        "volumes_per_node": 0,
+                        "node_configs": {},
+                        "security_groups": null,
+                        "flavor_id": "3"
+                    }
+                ],
+                "hadoop_version": "2.4.1",
+                "id": "1beae95b-fd20-47c0-a745-5125dccbd560",
+                "name": "cluster-template"
+            }
+        }
+
+    **response**
+
+    .. sourcecode:: http
+
+        HTTP/1.1 202 ACCEPTED
+        Content-Type: application/json
+
+    .. sourcecode:: json
+
+        {
+            "cluster_template": {
+                "neutron_management_network": "0b001fb7-b172-43f0-8c99-444672fd0513",
+                "description": null,
+                "cluster_configs": {},
+                "created_at": "2014-08-28 20:00:40",
+                "default_image_id": null,
+                "updated_at": "2015-02-26 14:50:32.354180",
+                "plugin_name": "vanilla",
+                "anti_affinity": [],
+                "tenant_id": "28a4d0e49b024dc0875ed6a862b129f0",
+                "node_groups": [
+                    {
+                        "count": 3,
+                        "name": "worker",
+                        "volume_mount_prefix": "/volumes/disk",
+                        "auto_security_group": null,
+                        "created_at": "2014-08-28 20:00:40",
+                        "updated_at": null,
+                        "floating_ip_pool": "cdeaa720-5517-4878-860e-71a1926744aa",
+                        "image_id": null,
+                        "volumes_size": 0,
+                        "node_processes": [
+                            "datanode",
+                            "nodemanager"
+                        ],
+                        "node_group_template_id": "3b975888-42d4-43d3-be70-8e4401e3cb65",
+                        "volumes_per_node": 0,
+                        "node_configs": {
+                            "HDFS": {
+                                "DataNode Heap Size": 1024
+                            },
+                            "YARN": {
+                                "NodeManager Heap Size": 2048
+                            }
+                        },
+                        "security_groups": null,
+                        "flavor_id": "3"
+                    },
+                    {
+                        "count": 1,
+                        "name": "master",
+                        "volume_mount_prefix": "/volumes/disk",
+                        "auto_security_group": null,
+                        "created_at": "2014-08-28 20:00:40",
+                        "updated_at": null,
+                        "floating_ip_pool": "cdeaa720-5517-4878-860e-71a1926744aa",
+                        "image_id": null,
+                        "volumes_size": 0,
+                        "node_processes": [
+                            "namenode",
+                            "resourcemanager",
+                            "oozie",
+                            "historyserver"
+                        ],
+                        "node_group_template_id": "208f2d53-69c3-48c3-9830-986db4c29c95",
+                        "volumes_per_node": 0,
+                        "node_configs": {},
+                        "security_groups": null,
+                        "flavor_id": "3"
+                    }
+                ],
+                "hadoop_version": "2.4.1",
+                "id": "1beae95b-fd20-47c0-a745-5125dccbd560",
+                "name": "updated-cluster-template-name"
+            }
+        }
+
 
 6 Clusters
 ==========

@@ -13,12 +13,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import copy
 import testtools
 
 from sahara.conductor import manager
 from sahara import context
 from sahara import exceptions as ex
 import sahara.tests.unit.conductor.base as test_base
+import sahara.tests.unit.conductor.manager.test_clusters as cluster_tests
 
 
 SAMPLE_NGT = {
@@ -266,3 +268,37 @@ class ClusterTemplates(test_base.ConductorManagerTestCase):
         # Invalid field
         lst = self.api.cluster_template_get_all(ctx, **{'badfield': 'junk'})
         self.assertEqual(len(lst), 0)
+
+    def test_clt_update(self):
+        ctx = context.ctx()
+        clt = self.api.cluster_template_create(ctx, SAMPLE_CLT)
+        clt_id = clt["id"]
+
+        UPDATE_NAME = "UpdatedClusterTemplate"
+        update_values = {"name": UPDATE_NAME}
+        updated_clt = self.api.cluster_template_update(ctx,
+                                                       clt_id,
+                                                       update_values)
+        self.assertEqual(UPDATE_NAME, updated_clt["name"])
+
+        updated_clt = self.api.cluster_template_get(ctx, clt_id)
+        self.assertEqual(UPDATE_NAME, updated_clt["name"])
+
+        # check duplicate name handling
+        clt = self.api.cluster_template_create(ctx, SAMPLE_CLT)
+        clt_id = clt["id"]
+        with testtools.ExpectedException(ex.DBDuplicateEntry):
+            self.api.cluster_template_update(ctx, clt_id, update_values)
+
+        with testtools.ExpectedException(ex.NotFoundException):
+            self.api.cluster_template_update(ctx, -1, update_values)
+
+        # create a cluster and try updating the referenced cluster template
+        cluster_val = copy.deepcopy(cluster_tests.SAMPLE_CLUSTER)
+        cluster_val['name'] = "ClusterTempalteUpdateTestCluster"
+        cluster_val['cluster_template_id'] = clt['id']
+        self.api.cluster_create(ctx, cluster_val)
+        update_values = {"name": "noUpdateInUseName"}
+
+        with testtools.ExpectedException(ex.UpdateFailedException):
+            self.api.cluster_template_update(ctx, clt['id'], update_values)

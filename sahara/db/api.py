@@ -214,6 +214,12 @@ def cluster_template_destroy(context, cluster_template):
     IMPL.cluster_template_destroy(context, cluster_template)
 
 
+@to_dict
+def cluster_template_update(context, values):
+    """Update a cluster_template from the values dictionary."""
+    return IMPL.cluster_template_update(context, values)
+
+
 # Node Group Template ops
 
 @to_dict

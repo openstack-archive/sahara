@@ -251,6 +251,17 @@ class ConductorManager(db_base.Base):
         """Destroy the cluster_template or raise if it does not exist."""
         self.db.cluster_template_destroy(context, cluster_template)
 
+    def cluster_template_update(self, context, id, values):
+        """Update a cluster_template from the values dictionary."""
+        values = copy.deepcopy(values)
+        values = _apply_defaults(values, CLUSTER_DEFAULTS)
+        values['tenant_id'] = context.tenant_id
+        values['id'] = id
+
+        values['node_groups'] = self._populate_node_groups(context, values)
+
+        return self.db.cluster_template_update(context, values)
+
     # Node Group Template ops
 
     def node_group_template_get(self, context, node_group_template):
