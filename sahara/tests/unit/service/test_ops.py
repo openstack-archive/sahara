@@ -20,6 +20,12 @@ from sahara.service import ops
 from sahara.tests.unit import base
 
 
+class FakeCluster(object):
+    id = 'id'
+    status = "Some_status"
+    name = "Fake_cluster"
+
+
 class FakeNodeGroup(object):
     id = 'id'
     count = 2
@@ -66,9 +72,11 @@ class FakeINFRA(object):
         TestOPS.SEQUENCE.append('rollback_cluster')
 
 
-class TestOPS(base.SaharaTestCase):
+class TestOPS(base.SaharaWithDbTestCase):
     SEQUENCE = []
 
+    @mock.patch('sahara.utils.general.change_cluster_status_description',
+                return_value=FakeCluster())
     @mock.patch('sahara.service.ops._update_sahara_info')
     @mock.patch('sahara.service.ops._prepare_provisioning',
                 return_value=(mock.Mock(), mock.Mock(), FakePlugin()))
@@ -80,7 +88,8 @@ class TestOPS(base.SaharaTestCase):
     @mock.patch('sahara.service.edp.job_manager.run_job')
     def test_provision_cluster(self, p_run_job, p_job_exec, p_create_trust,
                                p_conf, p_cluster_get, p_change_status,
-                               p_prep_provisioning, p_update_sahara_info):
+                               p_prep_provisioning, p_update_sahara_info,
+                               p_change_cluster_status_desc):
         del self.SEQUENCE[:]
         ops.INFRA = FakeINFRA()
         ops._provision_cluster('123')
@@ -118,3 +127,51 @@ class TestOPS(base.SaharaTestCase):
         self.assertEqual(['on_terminate_cluster', 'shutdown_cluster',
                          'cluster_destroy'], self.SEQUENCE,
                          'Order of calls is wrong')
+
+    @mock.patch('sahara.utils.general.change_cluster_status_description')
+    @mock.patch('sahara.service.ops._prepare_provisioning')
+    @mock.patch('sahara.utils.general.change_cluster_status')
+    @mock.patch('sahara.service.ops._rollback_cluster')
+    @mock.patch('sahara.conductor.API.cluster_get')
+    def test_ops_error_hadler_success_rollback(
+            self, p_cluster_get, p_rollback_cluster, p_change_cluster_status,
+            p__prepare_provisioning, p_change_cluster_status_desc):
+        # Test scenario: failed scaling -> success_rollback
+        fake_cluster = FakeCluster()
+        p_change_cluster_status_desc.return_value = FakeCluster()
+        p_rollback_cluster.return_value = True
+        p_cluster_get.return_value = fake_cluster
+        p__prepare_provisioning.side_effect = ValueError('error1')
+
+        expected = [
+            mock.call(fake_cluster, 'Active',
+                      'Scaling cluster failed for the following '
+                      'reason(s): error1')
+        ]
+
+        ops._provision_scaled_cluster(fake_cluster.id, {'id': 1})
+        self.assertEqual(expected, p_change_cluster_status.call_args_list)
+
+    @mock.patch('sahara.utils.general.change_cluster_status_description')
+    @mock.patch('sahara.service.ops._prepare_provisioning')
+    @mock.patch('sahara.utils.general.change_cluster_status')
+    @mock.patch('sahara.service.ops._rollback_cluster')
+    @mock.patch('sahara.conductor.API.cluster_get')
+    def test_ops_error_hadler_failed_rollback(
+            self, p_cluster_get, p_rollback_cluster, p_change_cluster_status,
+            p__prepare_provisioning, p_change_cluster_status_desc):
+        # Test scenario: failed scaling -> failed_rollback
+        fake_cluster = FakeCluster()
+        p_change_cluster_status_desc.return_value = FakeCluster()
+        p__prepare_provisioning.side_effect = ValueError('error1')
+        p_rollback_cluster.side_effect = ValueError('error2')
+        p_cluster_get.return_value = fake_cluster
+
+        expected = [
+            mock.call(
+                fake_cluster, 'Error', 'Scaling cluster failed for the '
+                                       'following reason(s): error1, error2')
+        ]
+
+        ops._provision_scaled_cluster(fake_cluster.id, {'id': 1})
+        self.assertEqual(expected, p_change_cluster_status.call_args_list)
