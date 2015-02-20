@@ -12,7 +12,7 @@ mkdir -p $JAVA_HOME
 
 JAVA_FILE=$(basename $JAVA_DOWNLOAD_URL)
 wget --no-check-certificate --no-cookies -c \
-    --header "Cookie: gpw_e24=http%3A%2F%2Fwww.oracle.com%2F; oraclelicense=accept-securebackup-cookie" \
+    --header "Cookie: gpw_e24=http://www.oracle.com/; oraclelicense=accept-securebackup-cookie" \
     -O $JAVA_HOME/$JAVA_FILE $JAVA_DOWNLOAD_URL
 if [ $? -eq 0 ]; then
     echo "Java download successful"

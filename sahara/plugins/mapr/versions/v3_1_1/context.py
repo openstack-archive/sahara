@@ -16,18 +16,9 @@
 import sahara.plugins.mapr.base.base_cluster_context as bc
 import sahara.plugins.mapr.services.mapreduce.mapreduce as mr
 import sahara.plugins.mapr.services.maprfs.maprfs as maprfs
-from sahara.utils import files as f
 
 
 class Context(bc.BaseClusterContext):
-    UBUNTU_MAPR_BASE_REPO = ('http://package.mapr.com/releases/v3.1.1/ubuntu/ '
-                             'mapr optional')
-    UBUNTU_MAPR_ECOSYSTEM_REPO = ('http://package.mapr.com/releases/'
-                                  'ecosystem/ubuntu binary/')
-    CENTOS_MAPR_BASE_REPO = 'http://package.mapr.com/releases/v3.1.1/redhat/'
-    CENTOS_MAPR_ECOSYSTEM_REPO = ('http://package.mapr.com/releases/'
-                                  'ecosystem/redhat')
-
     def __init__(self, cluster, version_handler, added=None, removed=None):
         super(Context, self).__init__(cluster, version_handler, added, removed)
         self._hadoop_version = mr.MapReduce().version
@@ -36,25 +27,22 @@ class Context(bc.BaseClusterContext):
         self._resource_manager_uri = 'maprfs:///'
         self._cluster_mode = None
         self._node_aware = False
+        self._mapr_version = '3.1.1'
+        self._ubuntu_ecosystem_repo = (
+            'http://package.mapr.com/releases/ecosystem/ubuntu binary/')
+        self._centos_ecosystem_repo = (
+            'http://package.mapr.com/releases/ecosystem/redhat')
 
     @property
     def hadoop_lib(self):
         if not self._hadoop_lib:
-            f = '%(hadoop_home)s/lib'
-            args = {
-                'hadoop_home': self.hadoop_home,
-            }
-            self._hadoop_lib = f % args
+            self._hadoop_lib = '%s/lib' % self.hadoop_home
         return self._hadoop_lib
 
     @property
     def hadoop_conf(self):
         if not self._hadoop_conf:
-            f = '%(hadoop_home)s/conf'
-            args = {
-                'hadoop_home': self.hadoop_home,
-            }
-            self._hadoop_conf = f % args
+            self._hadoop_conf = '%s/conf' % self.hadoop_home
         return self._hadoop_conf
 
     @property
@@ -68,14 +56,3 @@ class Context(bc.BaseClusterContext):
             mapr_db = self._get_cluster_config_value(mapr_db)
             self._mapr_db = '-M7' if mapr_db else ''
         return self._mapr_db
-
-    def get_install_repo_script_data(self):
-        script_template = 'plugins/mapr/resources/add_mapr_repo.sh'
-        script_template = f.get_file_text(script_template)
-        args = {
-            "ubuntu_mapr_base_repo": Context.UBUNTU_MAPR_BASE_REPO,
-            "ubuntu_mapr_ecosystem_repo": Context.UBUNTU_MAPR_ECOSYSTEM_REPO,
-            "centos_mapr_repo": Context.CENTOS_MAPR_BASE_REPO,
-            "centos_mapr_ecosystem_repo": Context.CENTOS_MAPR_ECOSYSTEM_REPO,
-        }
-        return script_template % args

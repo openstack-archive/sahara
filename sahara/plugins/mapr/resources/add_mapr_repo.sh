@@ -16,7 +16,7 @@ elif [ "$1" = 'CentOS' -o "$1" = 'RedHatEnterpriseServer' ]; then
     cat >> /etc/yum.repos.d/maprtech.repo << EOF
 [maprtech]
 name=MapR Technologies
-baseurl=%(centos_mapr_repo)s
+baseurl=%(centos_mapr_base_repo)s
 enabled=1
 gpgcheck=0
 protect=1
