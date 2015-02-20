@@ -64,7 +64,7 @@ def configure_cluster(cluster):
 
     CU.pu.start_cloudera_agents(instances)
     CU.pu.start_cloudera_manager(cluster)
-    CU.await_agents(instances)
+    CU.await_agents(cluster, instances)
     CU.create_mgmt_service(cluster)
     CU.create_services(cluster)
     CU.configure_services(cluster)
@@ -82,7 +82,7 @@ def scale_cluster(cluster, instances):
         CU.pu.install_packages(instances, PACKAGES)
 
     CU.pu.start_cloudera_agents(instances)
-    CU.await_agents(instances)
+    CU.await_agents(cluster, instances)
     CU.configure_instances(instances)
     CU.pu.configure_swift(cluster, instances)
     CU.update_configs(instances)
