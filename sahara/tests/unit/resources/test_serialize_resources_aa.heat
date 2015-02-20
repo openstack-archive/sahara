@@ -1,96 +1,76 @@
-{
-    "AWSTemplateFormatVersion" : "2010-09-09",
-    "Description" : "Data Processing Cluster by Sahara",
+description: Data Processing Cluster by Sahara
+heat_template_version: '2013-05-23'
+outputs: {}
+resources:
+  cluster-aa-group:
+    properties:
+      name: cluster-aa-group
+      policies: [anti-affinity]
+    type: OS::Nova::ServerGroup
+  cluster-master-001:
+    properties:
+      admin_user: root
+      flavor: '42'
+      image: '1'
+      key_name: user_key
+      name: cluster-master-001
+      networks:
+      - port: {Ref: cluster-master-001-port}
+      user_data: 'line1
 
-    "Resources" : {
-        "cluster-aa-group" : {
-            "Type" : "OS::Nova::ServerGroup",
-            "Properties" : {
-                "name" : "cluster-aa-group",
-                "policies": ["anti-affinity"]
-            }
-        },
-        "cluster-worker-001-port" : {
-            "Type" : "OS::Neutron::Port",
-            "Properties" : {
-               "network_id" : "private_net",
-               "replacement_policy": "AUTO"
-            }
-        },
-        "cluster-worker-001-floating" : {
-            "Type" : "OS::Neutron::FloatingIP" ,
-            "Properties" : {
-                "floating_network_id" : "floating",
-                "port_id" : { "Ref" :  "cluster-worker-001-port" }
-            }
-        },
-        "cluster-worker-001" : {
-            "Type" : "OS::Nova::Server",
-            "Properties" : {
-                "name" : "cluster-worker-001",
-                "flavor" : "42",
-                "image" : "1",
-                "admin_user": "root",
-                "networks" : [{ "port" : { "Ref" : "cluster-worker-001-port" }}],
-                "key_name" : "user_key",
-                "scheduler_hints" : {"group": {"Ref": "cluster-aa-group"}},
-                "user_data": "line2\nline3"
-            }
-        },
-        "cluster-worker-002-port" : {
-            "Type" : "OS::Neutron::Port",
-            "Properties" : {
-               "network_id" : "private_net",
-               "replacement_policy": "AUTO"
-            }
-        },
-        "cluster-worker-002-floating" : {
-            "Type" : "OS::Neutron::FloatingIP" ,
-            "Properties" : {
-                "floating_network_id" : "floating",
-                "port_id" : { "Ref" :  "cluster-worker-002-port" }
-            }
-        },
-        "cluster-worker-002" : {
-            "Type" : "OS::Nova::Server",
-            "Properties" : {
-                "name" : "cluster-worker-002",
-                "flavor" : "42",
-                "image" : "1",
-                "admin_user": "root",
-                "networks" : [{ "port" : { "Ref" : "cluster-worker-002-port" }}],
-                "key_name" : "user_key",
-                "scheduler_hints" : {"group": {"Ref": "cluster-aa-group"}},
-                "user_data": "line2\nline3"
-            }
-        },
-        "cluster-master-001-port" : {
-            "Type" : "OS::Neutron::Port",
-            "Properties" : {
-               "network_id" : "private_net",
-               "replacement_policy": "AUTO"
-            }
-        },
-        "cluster-master-001-floating" : {
-            "Type" : "OS::Neutron::FloatingIP" ,
-            "Properties" : {
-                "floating_network_id" : "floating",
-                "port_id" : { "Ref" :  "cluster-master-001-port" }
-            }
-        },
-        "cluster-master-001" : {
-            "Type" : "OS::Nova::Server",
-            "Properties" : {
-                "name" : "cluster-master-001",
-                "flavor" : "42",
-                "image" : "1",
-                "admin_user": "root",
-                "networks" : [{ "port" : { "Ref" : "cluster-master-001-port" }}],
-                "key_name" : "user_key",
-                "user_data" : "line1\nline2"
-            }
-        }
-    },
+        line2'
+    type: OS::Nova::Server
+  cluster-master-001-floating:
+    properties:
+      floating_network_id: floating
+      port_id: {Ref: cluster-master-001-port}
+    type: OS::Neutron::FloatingIP
+  cluster-master-001-port:
+    properties: {network_id: private_net, replacement_policy: AUTO}
+    type: OS::Neutron::Port
+  cluster-worker-001:
+    properties:
+      admin_user: root
+      flavor: '42'
+      image: '1'
+      key_name: user_key
+      name: cluster-worker-001
+      networks:
+      - port: {Ref: cluster-worker-001-port}
+      scheduler_hints:
+        group: {Ref: cluster-aa-group}
+      user_data: 'line2
 
-    "Outputs" : {}
-}
+        line3'
+    type: OS::Nova::Server
+  cluster-worker-001-floating:
+    properties:
+      floating_network_id: floating
+      port_id: {Ref: cluster-worker-001-port}
+    type: OS::Neutron::FloatingIP
+  cluster-worker-001-port:
+    properties: {network_id: private_net, replacement_policy: AUTO}
+    type: OS::Neutron::Port
+  cluster-worker-002:
+    properties:
+      admin_user: root
+      flavor: '42'
+      image: '1'
+      key_name: user_key
+      name: cluster-worker-002
+      networks:
+      - port: {Ref: cluster-worker-002-port}
+      scheduler_hints:
+        group: {Ref: cluster-aa-group}
+      user_data: 'line2
+
+        line3'
+    type: OS::Nova::Server
+  cluster-worker-002-floating:
+    properties:
+      floating_network_id: floating
+      port_id: {Ref: cluster-worker-002-port}
+    type: OS::Neutron::FloatingIP
+  cluster-worker-002-port:
+    properties: {network_id: private_net, replacement_policy: AUTO}
+    type: OS::Neutron::Port

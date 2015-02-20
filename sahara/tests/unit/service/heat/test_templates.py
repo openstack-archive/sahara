@@ -13,9 +13,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import json
-
 import testtools
+import yaml
 
 from sahara.service.heat import templates as h
 from sahara.tests.unit import base
@@ -110,10 +109,10 @@ class TestClusterTemplate(base.SaharaWithDbTestCase):
         main_template = heat_template._get_main_template()
 
         self.assertEqual(
-            json.loads(f.get_file_text(
+            yaml.load(f.get_file_text(
                 "tests/unit/resources/"
                 "test_serialize_resources_use_neutron.heat")),
-            json.loads(main_template)
+            yaml.load(main_template)
         )
 
     def test_load_template_use_nova_network_without_autoassignment(self):
@@ -132,10 +131,10 @@ class TestClusterTemplate(base.SaharaWithDbTestCase):
         main_template = heat_template._get_main_template()
 
         self.assertEqual(
-            json.loads(f.get_file_text(
+            yaml.load(f.get_file_text(
                 "tests/unit/resources/test_serialize_"
                 "resources_use_nn_without_autoassignment.heat")),
-            json.loads(main_template)
+            yaml.load(main_template)
         )
 
     def test_load_template_use_nova_network_with_autoassignment(self):
@@ -154,10 +153,10 @@ class TestClusterTemplate(base.SaharaWithDbTestCase):
         main_template = heat_template._get_main_template()
 
         self.assertEqual(
-            json.loads(f.get_file_text(
+            yaml.load(f.get_file_text(
                 "tests/unit/resources/"
                 "test_serialize_resources_use_nn_with_autoassignment.heat")),
-            json.loads(main_template)
+            yaml.load(main_template)
         )
 
     def test_load_template_with_anti_affinity_single_ng(self):
@@ -191,11 +190,11 @@ class TestClusterTemplate(base.SaharaWithDbTestCase):
         main_template = aa_heat_template._get_main_template()
 
         self.assertEqual(
-            json.loads(f.get_file_text(
+            yaml.load(f.get_file_text(
                 "tests/unit/resources/"
                 "test_serialize_resources_aa.heat")),
-            json.loads(main_template)
-            )
+            yaml.load(main_template)
+        )
 
     def test_load_template_with_volume_local_to_instance(self):
         """Checks Heat cluster template with Neutron enabled.
@@ -229,10 +228,10 @@ class TestClusterTemplate(base.SaharaWithDbTestCase):
         main_template = heat_template._get_main_template()
 
         self.assertEqual(
-            json.loads(f.get_file_text(
+            yaml.load(f.get_file_text(
                 "tests/unit/resources/"
                 "test_serialize_resources_volume_local_to_instance.heat")),
-            json.loads(main_template))
+            yaml.load(main_template))
 
 
 def get_ud_generator(s):
