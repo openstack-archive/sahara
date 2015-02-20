@@ -50,7 +50,7 @@ def set_defaults(config):
                                                  False)
     net['public_network'] = net.get('public_network', 'public')
 
-    default_scenario = ['scale']
+    default_scenario = ['run_jobs', 'scale', 'run_jobs']
 
     # set up tests parameters
     for testcase in config['clusters']:
@@ -59,6 +59,9 @@ def set_defaults(config):
             testcase['plugin_version'].replace('.', '_')])
         testcase['retain_resources'] = testcase.get('retain_resources', False)
         testcase['scenario'] = testcase.get('scenario', default_scenario)
+        testcase['edp_jobs_flow'] = (
+            config.get('edp_jobs_flow', {}).get(
+                testcase.get('edp_jobs_flow', None), None))
 
 
 def main():
