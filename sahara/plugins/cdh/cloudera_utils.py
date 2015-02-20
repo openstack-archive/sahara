@@ -123,8 +123,14 @@ class ClouderaUtils(object):
         cm_cluster = self.get_cloudera_cluster(cluster)
         yield cm_cluster.deploy_client_config()
 
+    def update_configs(self, instances):
+        with context.ThreadGroup as tg:
+            for instance in instances:
+                tg.spawn("update-configs-%s" % instances.instance_name,
+                         self._update_configs, instance)
+
     @cloudera_cmd
-    def update_configs(self, instance):
+    def _update_configs(self, instance):
         for process in instance.node_group.node_processes:
             process = self.pu.convert_role_showname(process)
             service = self.get_service_by_role(process, instance=instance)

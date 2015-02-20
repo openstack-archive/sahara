@@ -86,14 +86,13 @@ def scale_cluster(cluster, instances):
 
     CU.pu.start_cloudera_agents(instances)
     CU.await_agents(instances)
-    for instance in instances:
-        CU.configure_instance(instance)
-        CU.update_configs(instance)
+    CU.configure_instances(instances, cluster)
+    CU.update_configs(instances)
+    CU.pu.configure_swift(cluster, instances)
 
+    for instance in instances:
         if 'HDFS_DATANODE' in instance.node_group.node_processes:
             CU.refresh_nodes(cluster, 'DATANODE', CU.HDFS_SERVICE_NAME)
-
-        CU.pu.configure_swift_to_inst(instance)
 
         if 'HDFS_DATANODE' in instance.node_group.node_processes:
             hdfs = CU.get_service_by_role('DATANODE', instance=instance)

@@ -16,6 +16,14 @@
 from sahara.plugins.cdh import commands as cmd
 from sahara.plugins.cdh.v5 import cloudera_utils as cu
 from sahara.plugins import utils as gu
+from sahara.utils import cluster_progress_ops as cpo
+
+
+def _step_description(x):
+    return {
+        'step': gu.start_process_event_message(x),
+        'param': ('cluster', 0)
+    }
 
 
 PACKAGES = [
@@ -75,14 +83,13 @@ def scale_cluster(cluster, instances):
 
     CU.pu.start_cloudera_agents(instances)
     CU.await_agents(instances)
-    for instance in instances:
-        CU.configure_instance(instance)
-        CU.update_configs(instance)
+    CU.configure_instances(instances)
+    CU.pu.configure_swift(cluster, instances)
+    CU.update_configs(instances)
 
+    for instance in instances:
         if 'HDFS_DATANODE' in instance.node_group.node_processes:
             CU.refresh_nodes(cluster, 'DATANODE', CU.HDFS_SERVICE_NAME)
-
-        CU.pu.configure_swift_to_inst(instance)
 
         if 'HDFS_DATANODE' in instance.node_group.node_processes:
             hdfs = CU.get_service_by_role('DATANODE', instance=instance)
@@ -114,52 +121,100 @@ def decommission_cluster(cluster, instances):
     CU.refresh_nodes(cluster, 'NODEMANAGER', CU.YARN_SERVICE_NAME)
 
 
-def start_cluster(cluster):
-    cm_cluster = CU.get_cloudera_cluster(cluster)
+@cpo.event_wrapper(True, **_step_description("Zookeeper"))
+def start_zookeeper(cluster, cm_cluster):
+    # Cluster cannot be removed from args list, because it used inside
+    # event wrapper
+    zookeeper = cm_cluster.get_service(CU.ZOOKEEPER_SERVICE_NAME)
+    CU.start_service(zookeeper)
 
-    if len(CU.pu.get_zookeepers(cluster)) > 0:
-        zookeeper = cm_cluster.get_service(CU.ZOOKEEPER_SERVICE_NAME)
-        CU.start_service(zookeeper)
 
+@cpo.event_wrapper(True, **_step_description("HDFS"))
+def start_hdfs(cluster, cm_cluster):
+    # Cluster cannot be removed from args list, because it used inside
+    # event wrapper
     hdfs = cm_cluster.get_service(CU.HDFS_SERVICE_NAME)
     CU.format_namenode(hdfs)
     CU.start_service(hdfs)
     CU.create_hdfs_tmp(hdfs)
 
+
+@cpo.event_wrapper(True, **_step_description("YARN"))
+def start_yarn(cluster, cm_cluster):
+    # Cluster cannot be removed from args list, because it used inside
+    # event wrapper
     yarn = cm_cluster.get_service(CU.YARN_SERVICE_NAME)
     CU.create_yarn_job_history_dir(yarn)
     CU.start_service(yarn)
 
-    if CU.pu.get_hive_metastore(cluster):
-        hive = cm_cluster.get_service(CU.HIVE_SERVICE_NAME)
-        CU.pu.put_hive_hdfs_xml(cluster)
-        CU.pu.configure_hive(cluster)
-        CU.pu.create_hive_hive_directory(cluster)
-        CU.create_hive_metastore_db(hive)
-        CU.create_hive_dirs(hive)
-        CU.start_service(hive)
 
-    oozie_inst = CU.pu.get_oozie(cluster)
-    if oozie_inst:
-        CU.pu.install_extjs(cluster)
-        oozie = cm_cluster.get_service(CU.OOZIE_SERVICE_NAME)
-        CU.create_oozie_db(oozie)
-        CU.install_oozie_sharelib(oozie)
-        CU.start_service(oozie)
+@cpo.event_wrapper(True, **_step_description("Hive"))
+def start_hive(cluster, cm_cluster):
+    hive = cm_cluster.get_service(CU.HIVE_SERVICE_NAME)
+    CU.pu.put_hive_hdfs_xml(cluster)
+    CU.pu.configure_hive(cluster)
+    CU.pu.create_hive_hive_directory(cluster)
+    CU.create_hive_metastore_db(hive)
+    CU.create_hive_dirs(hive)
+    CU.start_service(hive)
+
+
+@cpo.event_wrapper(True, **_step_description("Oozie"))
+def start_oozie(cluster, cm_cluster):
+    CU.pu.install_extjs(cluster)
+    oozie = cm_cluster.get_service(CU.OOZIE_SERVICE_NAME)
+    CU.create_oozie_db(oozie)
+    CU.install_oozie_sharelib(oozie)
+    CU.start_service(oozie)
+
+
+@cpo.event_wrapper(True, **_step_description("Hue"))
+def start_hue(cluster, cm_cluster):
+    # Cluster cannot be removed from args list, because it used inside
+    # event wrapper
+    hue = cm_cluster.get_service(CU.HUE_SERVICE_NAME)
+    CU.start_service(hue)
+
+
+@cpo.event_wrapper(True, **_step_description("Spark"))
+def start_spark_historyserver(cluster, cm_cluster):
+    CU.pu.configure_spark(cluster)
+    spark = cm_cluster.get_service(CU.SPARK_SERVICE_NAME)
+    CU.start_service(spark)
+
+
+@cpo.event_wrapper(True, **_step_description("HBase master"))
+def start_hbase_master(cluster, cm_cluster):
+    # Cluster cannot be removed from args list, because it used inside
+    # event wrapper
+    hbase = cm_cluster.get_service(CU.HBASE_SERVICE_NAME)
+    CU.create_hbase_root(hbase)
+    CU.start_service(hbase)
+
+
+def start_cluster(cluster):
+    cm_cluster = CU.get_cloudera_cluster(cluster)
+
+    if len(CU.pu.get_zookeepers(cluster)) > 0:
+        start_zookeeper(cluster, cm_cluster)
+
+    start_hdfs(cluster, cm_cluster)
+    start_yarn(cluster, cm_cluster)
+
+    if CU.pu.get_hive_metastore(cluster):
+        start_hive(cluster, cm_cluster)
+
+    if CU.pu.get_oozie(cluster):
+        start_oozie(cluster, cm_cluster)
 
     if CU.pu.get_hue(cluster):
-        hue = cm_cluster.get_service(CU.HUE_SERVICE_NAME)
-        CU.start_service(hue)
+        start_hue(cluster, cm_cluster)
 
     if CU.pu.get_spark_historyserver(cluster):
-        CU.pu.configure_spark(cluster)
-        spark = cm_cluster.get_service(CU.SPARK_SERVICE_NAME)
-        CU.start_service(spark)
+        start_spark_historyserver(cluster, cm_cluster)
 
     if CU.pu.get_hbase_master(cluster):
-        hbase = cm_cluster.get_service(CU.HBASE_SERVICE_NAME)
-        CU.create_hbase_root(hbase)
-        CU.start_service(hbase)
+        start_hbase_master(cluster, cm_cluster)
 
 
 def get_open_ports(node_group):
