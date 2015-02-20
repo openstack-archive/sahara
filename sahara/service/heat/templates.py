@@ -19,7 +19,6 @@ from oslo_config import cfg
 from oslo_log import log as logging
 import six
 
-from sahara.utils import files as f
 from sahara.utils import general as g
 from sahara.utils.openstack import heat as h
 from sahara.utils.openstack import neutron
@@ -59,21 +58,6 @@ def _get_volume_attach_name(inst_name, volume_idx):
     return '%s-volume-attachment-%i' % (inst_name, volume_idx)
 
 
-def _load_template(template_name, fields):
-    template_file = f.get_file_text(
-        'service/heat/resources/%s' % template_name)
-    return template_file.rstrip() % fields
-
-
-def _prepare_userdata(userdata):
-    """Converts userdata as a text into format consumable by heat template."""
-
-    userdata = userdata.replace('"', '\\"')
-
-    lines = userdata.splitlines()
-    return '"' + '",\n"'.join(lines) + '"'
-
-
 class ClusterTemplate(object):
     def __init__(self, cluster):
         self.cluster = cluster
@@ -86,10 +70,16 @@ class ClusterTemplate(object):
             'gen_userdata_func': gen_userdata_func
         }
 
-    # Consider using a single Jinja template for all this
+    def _get_main_template(self):
+        return json.dumps({
+            "AWSTemplateFormatVersion": "2010-09-09",
+            "Description": "Data Processing Cluster by Sahara",
+            "Resources": self._serialize_resources(),
+            "Outputs": {}
+        })
+
     def instantiate(self, update_existing, disable_rollback=True):
-        main_tmpl = _load_template('main.heat',
-                                   {'resources': self._serialize_resources()})
+        main_tmpl = self._get_main_template()
 
         heat = h.client()
 
@@ -98,7 +88,7 @@ class ClusterTemplate(object):
             'timeout_mins': 180,
             'disable_rollback': disable_rollback,
             'parameters': {},
-            'template': json.loads(main_tmpl)}
+            'template': main_tmpl}
 
         if not update_existing:
             heat.stacks.create(**kwargs)
@@ -118,35 +108,41 @@ class ClusterTemplate(object):
 
     def _get_anti_affinity_scheduler_hints(self, node_group):
         if not self._need_aa_server_group(node_group):
-            return ''
+            return {}
 
-        return ('"scheduler_hints" : %s,' %
-                json.dumps({"group": {"Ref": _get_aa_group_name(
-                    self.cluster.name)}}))
+        return {"scheduler_hints": {"group": {"Ref": _get_aa_group_name(
+            self.cluster.name)}}}
 
     def _serialize_resources(self):
-        resources = []
+        resources = {}
 
         if self.cluster.anti_affinity:
-            resources.extend(self._serialize_aa_server_group())
+            resources.update(self._serialize_aa_server_group())
 
         for ng in self.cluster.node_groups:
             if ng.auto_security_group:
-                resources.extend(self._serialize_auto_security_group(ng))
+                resources.update(self._serialize_auto_security_group(ng))
             for idx in range(0, self.node_groups_extra[ng.id]['node_count']):
-                resources.extend(self._serialize_instance(ng, idx))
+                resources.update(self._serialize_instance(ng, idx))
 
-        return ',\n'.join(resources)
+        return resources
 
     def _serialize_auto_security_group(self, ng):
-        fields = {
-            'security_group_name': g.generate_auto_security_group_name(ng),
-            'security_group_description':
+        security_group_name = g.generate_auto_security_group_name(ng)
+        security_group_description = (
             "Auto security group created by Sahara for Node Group "
-            "'%s' of cluster '%s'." % (ng.name, ng.cluster.name),
-            'rules': self._serialize_auto_security_group_rules(ng)}
+            "'%s' of cluster '%s'." % (ng.name, ng.cluster.name))
+        rules = self._serialize_auto_security_group_rules(ng)
 
-        yield _load_template('security_group.heat', fields)
+        return {
+            security_group_name: {
+                "Type": "AWS::EC2::SecurityGroup",
+                "Properties": {
+                    "GroupDescription": security_group_description,
+                    "SecurityGroupIngress": rules
+                }
+            }
+        }
 
     def _serialize_auto_security_group_rules(self, ng):
         create_rule = lambda cidr, proto, from_port, to_port: {
@@ -168,119 +164,141 @@ class ClusterTemplate(object):
                     rules.append(create_rule(cidr, protocol, 1, 65535))
                 rules.append(create_rule(cidr, 'icmp', -1, -1))
 
-        return json.dumps(rules)
+        return rules
 
     def _serialize_instance(self, ng, idx):
+        resources = {}
+        properties = {}
+
         inst_name = _get_inst_name(self.cluster.name, ng.name, idx)
 
-        nets = ''
-        security_groups = ''
         if CONF.use_neutron:
             port_name = _get_port_name(inst_name)
-            yield self._serialize_port(port_name,
-                                       self.cluster.neutron_management_network,
-                                       self._get_security_groups(ng))
+            resources.update(self._serialize_port(
+                port_name, self.cluster.neutron_management_network,
+                self._get_security_groups(ng)))
 
-            nets = '"networks" : [{ "port" : { "Ref" : "%s" }}],' % port_name
+            properties["networks"] = [{"port": {"Ref": port_name}}]
 
             if ng.floating_ip_pool:
-                yield self._serialize_neutron_floating(inst_name, port_name,
-                                                       ng.floating_ip_pool)
+                resources.update(self._serialize_neutron_floating(
+                    inst_name, port_name, ng.floating_ip_pool))
         else:
             if ng.floating_ip_pool:
-                yield self._serialize_nova_floating(inst_name,
-                                                    ng.floating_ip_pool)
+                resources.update(self._serialize_nova_floating(
+                    inst_name, ng.floating_ip_pool))
 
             if ng.security_groups:
-                security_groups = (
-                    '"security_groups": %s,' % json.dumps(
-                        self._get_security_groups(ng)))
+                properties["security_groups"] = self._get_security_groups(ng)
 
         # Check if cluster contains user key-pair and include it to template.
-        key_name = ''
         if self.cluster.user_keypair_id:
-            key_name = '"key_name" : "%s",' % self.cluster.user_keypair_id
+            properties["key_name"] = self.cluster.user_keypair_id
 
         gen_userdata_func = self.node_groups_extra[ng.id]['gen_userdata_func']
         userdata = gen_userdata_func(ng, inst_name)
 
-        availability_zone = ''
         if ng.availability_zone:
-            # Use json.dumps to escape ng.availability_zone
-            # (in case it contains quotes)
-            availability_zone = ('"availability_zone" : %s,' %
-                                 json.dumps(ng.availability_zone))
+            properties["availability_zone"] = ng.availability_zone
 
-        fields = {'instance_name': inst_name,
-                  'flavor_id': ng.flavor_id,
-                  'image_id': ng.get_image_id(),
-                  'image_username': ng.image_username,
-                  'network_interfaces': nets,
-                  'key_name': key_name,
-                  'userdata': _prepare_userdata(userdata),
-                  'scheduler_hints':
-                  self._get_anti_affinity_scheduler_hints(ng),
-                  'security_groups': security_groups,
-                  'availability_zone': availability_zone}
+        properties.update(self._get_anti_affinity_scheduler_hints(ng))
 
-        yield _load_template('instance.heat', fields)
+        properties.update({
+            "name": inst_name,
+            "flavor": six.text_type(ng.flavor_id),
+            "image": ng.get_image_id(),
+            "admin_user": ng.image_username,
+            "user_data": userdata
+        })
+
+        resources.update({
+            inst_name: {
+                "Type": "OS::Nova::Server",
+                "Properties": properties
+            }
+        })
 
         for idx in range(0, ng.volumes_per_node):
-            yield self._serialize_volume(inst_name, idx, ng.volumes_size,
-                                         ng.volumes_availability_zone,
-                                         ng.volume_type)
+            resources.update(self._serialize_volume(
+                inst_name, idx, ng.volumes_size, ng.volumes_availability_zone,
+                ng.volume_type))
+
+        return resources
 
     def _serialize_port(self, port_name, fixed_net_id, security_groups):
-        fields = {'port_name': port_name,
-                  'fixed_net_id': fixed_net_id,
-                  'security_groups': ('"security_groups": %s,' % json.dumps(
-                      security_groups) if security_groups else '')}
+        properties = {
+            "network_id": fixed_net_id,
+            "replacement_policy": "AUTO"
+        }
+        if security_groups:
+            properties["security_groups"] = security_groups
 
-        return _load_template('neutron-port.heat', fields)
+        return {
+            port_name: {
+                "Type": "OS::Neutron::Port",
+                "Properties": properties
+            }
+        }
 
     def _serialize_neutron_floating(self, inst_name, port_name,
                                     floating_net_id):
-        fields = {'floating_ip_name': _get_floating_name(inst_name),
-                  'floating_net_id': floating_net_id,
-                  'port_name': port_name}
+        floating_ip_name = _get_floating_name(inst_name)
 
-        return _load_template('neutron-floating.heat', fields)
-
-    def _serialize_nova_floating(self, inst_name, floating_pool_name):
-        fields = {
-            'floating_ip_name': _get_floating_name(inst_name),
-            'floating_ip_assoc_name': _get_floating_assoc_name(inst_name),
-            'instance_name': inst_name,
-            'pool': floating_pool_name
+        return {
+            floating_ip_name: {
+                "Type": "OS::Neutron::FloatingIP",
+                "Properties": {
+                    "floating_network_id": floating_net_id,
+                    "port_id": {"Ref": port_name}
+                }
+            }
         }
 
-        return _load_template('nova-floating.heat', fields)
-
-    def _serialize_volume_type(self, volume_type):
-        property = '"volume_type" : %s'
-        if volume_type is None:
-            return property % 'null'
-        else:
-            return property % ('"%s"' % volume_type)
+    def _serialize_nova_floating(self, inst_name, floating_pool_name):
+        floating_ip_name = _get_floating_name(inst_name)
+        floating_ip_assoc_name = _get_floating_assoc_name(inst_name)
+        return {
+            floating_ip_name: {
+                "Type": "OS::Nova::FloatingIP",
+                "Properties": {
+                    "pool": floating_pool_name
+                }
+            },
+            floating_ip_assoc_name: {
+                "Type": "OS::Nova::FloatingIPAssociation",
+                "Properties": {
+                    "floating_ip": {"Ref": floating_ip_name},
+                    "server_id": {"Ref": inst_name}
+                }
+            }
+        }
 
     def _serialize_volume(self, inst_name, volume_idx, volumes_size,
                           volumes_availability_zone, volume_type):
-        fields = {'volume_name': _get_volume_name(inst_name, volume_idx),
-                  'volumes_size': volumes_size,
-                  'volume_attach_name': _get_volume_attach_name(inst_name,
-                                                                volume_idx),
-                  'availability_zone': '',
-                  'instance_name': inst_name,
-                  'volume_type': self._serialize_volume_type(volume_type)}
-
+        volume_name = _get_volume_name(inst_name, volume_idx)
+        volume_attach_name = _get_volume_attach_name(inst_name, volume_idx)
+        properties = {
+            "name": volume_name,
+            "size": six.text_type(volumes_size),
+            "volume_type": volume_type
+        }
         if volumes_availability_zone:
-            # Use json.dumps to escape volumes_availability_zone
-            # (in case it contains quotes)
-            fields['availability_zone'] = (
-                '"availability_zone": %s,' %
-                json.dumps(volumes_availability_zone))
+            properties["availability_zone"] = volumes_availability_zone
 
-        return _load_template('volume.heat', fields)
+        return {
+            volume_name: {
+                "Type": "OS::Cinder::Volume",
+                "Properties": properties
+            },
+            volume_attach_name: {
+                "Type": "OS::Cinder::VolumeAttachment",
+                "Properties": {
+                    "instance_uuid": {"Ref": inst_name},
+                    "volume_id": {"Ref": volume_name},
+                    "mountpoint": None
+                }
+            }
+        }
 
     def _get_security_groups(self, node_group):
         if not node_group.auto_security_group:
@@ -290,9 +308,16 @@ class ClusterTemplate(object):
                 [{"Ref": g.generate_auto_security_group_name(node_group)}])
 
     def _serialize_aa_server_group(self):
-        fields = {'server_group_name': _get_aa_group_name(self.cluster.name)}
-
-        yield _load_template('aa_server_group.heat', fields)
+        server_group_name = _get_aa_group_name(self.cluster.name)
+        return {
+            server_group_name: {
+                "Type": "OS::Nova::ServerGroup",
+                "Properties": {
+                    "name": server_group_name,
+                    "policies": ["anti-affinity"]
+                }
+            }
+        }
 
 
 class ClusterStack(object):

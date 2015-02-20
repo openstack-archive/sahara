@@ -1,7 +1,0 @@
-    "%(security_group_name)s": {
-      "Type": "AWS::EC2::SecurityGroup",
-      "Properties": {
-        "GroupDescription": "%(security_group_description)s",
-        "SecurityGroupIngress": %(rules)s
-      }
-    }

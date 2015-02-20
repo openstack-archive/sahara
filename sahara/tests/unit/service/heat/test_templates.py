@@ -39,10 +39,6 @@ class TestHeat(testtools.TestCase):
         self.assertEqual(h._get_volume_attach_name(inst_name, 1),
                          "cluster-worker-001-volume-attachment-1")
 
-    def test_prepare_user_data(self):
-        userdata = "line1\nline2"
-        self.assertEqual(h._prepare_userdata(userdata), '"line1",\n"line2"')
-
 
 class TestClusterTemplate(base.SaharaWithDbTestCase):
     """Checks valid structure of Resources section in generated Heat templates.
@@ -92,12 +88,11 @@ class TestClusterTemplate(base.SaharaWithDbTestCase):
         ng1 = [ng for ng in cluster.node_groups if ng.name == "master"][0]
         ng2 = [ng for ng in cluster.node_groups if ng.name == "worker"][0]
 
-        expected = ('"scheduler_hints" : '
-                    '{"group": {"Ref": "cluster-aa-group"}},')
+        expected = {"scheduler_hints": {"group": {"Ref": "cluster-aa-group"}}}
         actual = heat_template._get_anti_affinity_scheduler_hints(ng2)
         self.assertEqual(expected, actual)
 
-        expected = ''
+        expected = {}
         actual = heat_template._get_anti_affinity_scheduler_hints(ng1)
         self.assertEqual(expected, actual)
 
@@ -112,15 +107,14 @@ class TestClusterTemplate(base.SaharaWithDbTestCase):
         cluster = self._make_cluster('private_net', ng1, ng2)
         heat_template = self._make_heat_template(cluster, ng1, ng2)
         self.override_config("use_neutron", True)
-        main_template = h._load_template(
-            'main.heat', {'resources':
-                          heat_template._serialize_resources()})
+        main_template = heat_template._get_main_template()
 
         self.assertEqual(
-            json.loads(main_template),
             json.loads(f.get_file_text(
                 "tests/unit/resources/"
-                "test_serialize_resources_use_neutron.heat")))
+                "test_serialize_resources_use_neutron.heat")),
+            json.loads(main_template)
+        )
 
     def test_load_template_use_nova_network_without_autoassignment(self):
         """Checks Heat cluster template with Nova Network enabled.
@@ -135,15 +129,13 @@ class TestClusterTemplate(base.SaharaWithDbTestCase):
         cluster = self._make_cluster(None, ng1, ng2)
         heat_template = self._make_heat_template(cluster, ng1, ng2)
         self.override_config("use_neutron", False)
-        main_template = h._load_template(
-            'main.heat', {'resources':
-                          heat_template._serialize_resources()})
+        main_template = heat_template._get_main_template()
 
         self.assertEqual(
-            json.loads(main_template),
             json.loads(f.get_file_text(
-                "tests/unit/resources/"
-                "test_serialize_resources_use_nn_without_autoassignment.heat"))
+                "tests/unit/resources/test_serialize_"
+                "resources_use_nn_without_autoassignment.heat")),
+            json.loads(main_template)
         )
 
     def test_load_template_use_nova_network_with_autoassignment(self):
@@ -159,15 +151,13 @@ class TestClusterTemplate(base.SaharaWithDbTestCase):
         cluster = self._make_cluster(None, ng1, ng2)
         heat_template = self._make_heat_template(cluster, ng1, ng2)
         self.override_config("use_neutron", False)
-        main_template = h._load_template(
-            'main.heat', {'resources':
-                          heat_template._serialize_resources()})
+        main_template = heat_template._get_main_template()
 
         self.assertEqual(
-            json.loads(main_template),
             json.loads(f.get_file_text(
                 "tests/unit/resources/"
-                "test_serialize_resources_use_nn_with_autoassignment.heat"))
+                "test_serialize_resources_use_nn_with_autoassignment.heat")),
+            json.loads(main_template)
         )
 
     def test_load_template_with_anti_affinity_single_ng(self):
@@ -198,15 +188,14 @@ class TestClusterTemplate(base.SaharaWithDbTestCase):
                                               get_ud_generator('line2\nline3'))
 
         self.override_config("use_neutron", True)
-        main_template = h._load_template(
-            'main.heat', {'resources':
-                          aa_heat_template._serialize_resources()})
+        main_template = aa_heat_template._get_main_template()
 
         self.assertEqual(
-            json.loads(main_template),
             json.loads(f.get_file_text(
                 "tests/unit/resources/"
-                "test_serialize_resources_aa.heat")))
+                "test_serialize_resources_aa.heat")),
+            json.loads(main_template)
+            )
 
 
 def get_ud_generator(s):

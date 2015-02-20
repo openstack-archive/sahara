@@ -47,7 +47,6 @@ include sahara/plugins/mapr/services/yarn/resources/*.json
 include sahara/plugins/spark/resources/*.xml
 include sahara/plugins/spark/resources/*.sh
 include sahara/plugins/spark/resources/*.template
-include sahara/service/heat/resources/*.heat
 include sahara/service/edp/resources/*.xml
 include sahara/service/edp/resources/*.jar
 include sahara/service/edp/resources/launch_command.py

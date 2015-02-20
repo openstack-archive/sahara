@@ -36,7 +36,7 @@ LOG = logging.getLogger(__name__)
 
 class HeatEngine(e.Engine):
     def get_type_and_version(self):
-        return "heat.1.1"
+        return "heat.1.2"
 
     def _add_volumes(self, ctx, cluster):
         for instance in g.get_instances(cluster):

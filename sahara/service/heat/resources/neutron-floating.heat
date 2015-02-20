@@ -1,7 +1,0 @@
-        "%(floating_ip_name)s" : {
-            "Type" : "OS::Neutron::FloatingIP" ,
-            "Properties" : {
-                "floating_network_id" : "%(floating_net_id)s",
-                "port_id" : { "Ref" :  "%(port_name)s" }
-            }
-        }
