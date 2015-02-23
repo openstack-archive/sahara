@@ -277,6 +277,14 @@ class ConductorManager(db_base.Base):
         """Destroy the Node Group Template or raise if it does not exist."""
         self.db.node_group_template_destroy(context, node_group_template)
 
+    def node_group_template_update(self, context, id, values):
+        """Update a Node Group Template from the values dictionary."""
+        values = copy.deepcopy(values)
+        values['tenant_id'] = context.tenant_id
+        values['id'] = id
+
+        return self.db.node_group_template_update(context, values)
+
     # Data Source ops
 
     def data_source_get(self, context, data_source):

@@ -243,6 +243,12 @@ def node_group_template_destroy(context, node_group_template):
     IMPL.node_group_template_destroy(context, node_group_template)
 
 
+@to_dict
+def node_group_template_update(context, node_group_template):
+    """Update a Node Group Template from the values in a dictionary."""
+    return IMPL.node_group_template_update(context, node_group_template)
+
+
 # Data Source ops
 
 @to_dict

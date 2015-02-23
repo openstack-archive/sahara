@@ -220,6 +220,14 @@ class LocalApi(object):
         self._manager.node_group_template_destroy(context,
                                                   _get_id(node_group_template))
 
+    @r.wrap(r.NodeGroupTemplateResource)
+    def node_group_template_update(self, context, id, values):
+        """Update a node group template from the values dictionary.
+
+        :returns: the updated node group template
+        """
+        return self._manager.node_group_template_update(context, id, values)
+
     # Data Source ops
 
     @r.wrap(r.DataSource)

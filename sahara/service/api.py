@@ -167,6 +167,10 @@ def terminate_node_group_template(id):
     return conductor.node_group_template_destroy(context.ctx(), id)
 
 
+def update_node_group_template(id, values):
+    return conductor.node_group_template_update(context.ctx(), id, values)
+
+
 # Plugins ops
 
 def get_plugins():

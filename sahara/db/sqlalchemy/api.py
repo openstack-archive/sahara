@@ -548,6 +548,30 @@ def node_group_template_destroy(context, node_group_template_id):
         session.delete(node_group_template)
 
 
+def node_group_template_update(context, values):
+    session = get_session()
+    with session.begin():
+        ngt_id = values['id']
+        node_group_template = (
+            _node_group_template_get(context, session, ngt_id))
+        if not node_group_template:
+            raise ex.NotFoundException(
+                ngt_id, _("NodeGroupTemplate id '%s' not found"))
+
+        # Check to see that the node group template to be updated is not in
+        # use by an existing cluster.
+        for template_relationship in node_group_template.templates_relations:
+            if len(template_relationship.cluster_template.clusters) > 0:
+                raise ex.UpdateFailedException(
+                    ngt_id,
+                    _("NodeGroupTemplate id '%s' can not be updated. "
+                      "It is referenced by an existing cluster.")
+                )
+
+        node_group_template.update(values)
+    return node_group_template
+
+
 # Data Source ops
 
 def _data_source_get(context, session, data_source_id):
