@@ -290,7 +290,6 @@ class JobExecution(mb.SaharaBase):
     cluster_id = sa.Column(sa.String(36),
                            sa.ForeignKey('clusters.id'))
     info = sa.Column(st.JsonDictType())
-    progress = sa.Column(sa.Float)
     oozie_job_id = sa.Column(sa.String(100))
     return_code = sa.Column(sa.String(80))
     job_configs = sa.Column(st.JsonDictType())

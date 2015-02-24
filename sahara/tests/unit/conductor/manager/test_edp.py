@@ -47,7 +47,6 @@ SAMPLE_JOB = {
 
 SAMPLE_JOB_EXECUTION = {
     "tenant_id": "tenant_id",
-    "progress": "0.1",
     "return_code": "1",
     "job_id": "undefined",
     "input_id": "undefined",
@@ -233,17 +232,18 @@ class JobExecutionTest(test_base.ConductorManagerTestCase):
 
         job_ex_id = lst[0]['id']
 
-        self.assertEqual(lst[0]['progress'], 0.1)
-        self.api.job_execution_update(ctx, job_ex_id, {'progress': '0.2'})
+        self.assertIsNone(lst[0]['info'])
+        new_info = {"status": edp.JOB_STATUS_PENDING}
+        self.api.job_execution_update(ctx, job_ex_id, {'info': new_info})
         updated_job = self.api.job_execution_get(ctx, job_ex_id)
-        self.assertEqual(updated_job['progress'], 0.2)
+        self.assertEqual(updated_job['info'], new_info)
         self.assertEqual(updated_job['start_time'],
                          SAMPLE_JOB_EXECUTION['start_time'])
 
         self.api.job_execution_destroy(ctx, job_ex_id)
 
         with testtools.ExpectedException(ex.NotFoundException):
-            self.api.job_execution_update(ctx, job_ex_id, {'progress': '0.2'})
+            self.api.job_execution_update(ctx, job_ex_id, {'info': new_info})
 
         with testtools.ExpectedException(ex.NotFoundException):
             self.api.job_execution_destroy(ctx, job_ex_id)
