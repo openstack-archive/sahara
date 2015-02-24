@@ -96,6 +96,8 @@ class ClouderaUtilsV530(cu.ClouderaUtils):
             return super(ClouderaUtilsV530, self).get_service_by_role(
                 process, cluster, instance)
 
+    @cpo.event_wrapper(
+        True, step=_("First run cluster"), param=('cluster', 1))
     @cu.cloudera_cmd
     def first_run(self, cluster):
         cm_cluster = self.get_cloudera_cluster(cluster)

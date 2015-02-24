@@ -13,6 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from sahara.i18n import _
 from sahara.plugins.cdh import commands as cmd
 from sahara.plugins.cdh.v5 import cloudera_utils as cu
 from sahara.plugins import utils as gu
@@ -73,6 +74,19 @@ def configure_cluster(cluster):
     CU.pu.configure_swift(cluster)
 
 
+@cpo.event_wrapper(
+    True, step=_("Start roles: NODEMANAGER, DATANODE"), param=('cluster', 0))
+def _start_roles(cluster, instances):
+    for instance in instances:
+        if 'HDFS_DATANODE' in instance.node_group.node_processes:
+            hdfs = CU.get_service_by_role('DATANODE', instance=instance)
+            CU.start_roles(hdfs, CU.pu.get_role_name(instance, 'DATANODE'))
+
+        if 'YARN_NODEMANAGER' in instance.node_group.node_processes:
+            yarn = CU.get_service_by_role('NODEMANAGER', instance=instance)
+            CU.start_roles(yarn, CU.pu.get_role_name(instance, 'NODEMANAGER'))
+
+
 def scale_cluster(cluster, instances):
     if not instances:
         return
@@ -86,18 +100,8 @@ def scale_cluster(cluster, instances):
     CU.configure_instances(instances)
     CU.pu.configure_swift(cluster, instances)
     CU.update_configs(instances)
-
-    for instance in instances:
-        if 'HDFS_DATANODE' in instance.node_group.node_processes:
-            CU.refresh_nodes(cluster, 'DATANODE', CU.HDFS_SERVICE_NAME)
-
-        if 'HDFS_DATANODE' in instance.node_group.node_processes:
-            hdfs = CU.get_service_by_role('DATANODE', instance=instance)
-            CU.start_roles(hdfs, CU.pu.get_role_name(instance, 'DATANODE'))
-
-        if 'YARN_NODEMANAGER' in instance.node_group.node_processes:
-            yarn = CU.get_service_by_role('NODEMANAGER', instance=instance)
-            CU.start_roles(yarn, CU.pu.get_role_name(instance, 'NODEMANAGER'))
+    CU.refresh_datanodes(cluster)
+    _start_roles(cluster, instances)
 
 
 def decommission_cluster(cluster, instances):
@@ -117,8 +121,8 @@ def decommission_cluster(cluster, instances):
 
     CU.delete_instances(cluster, instances)
 
-    CU.refresh_nodes(cluster, 'DATANODE', CU.HDFS_SERVICE_NAME)
-    CU.refresh_nodes(cluster, 'NODEMANAGER', CU.YARN_SERVICE_NAME)
+    CU.refresh_datanodes(cluster)
+    CU.refresh_yarn_nodes(cluster)
 
 
 @cpo.event_wrapper(True, **_step_description("Zookeeper"))

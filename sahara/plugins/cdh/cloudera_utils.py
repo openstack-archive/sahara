@@ -78,6 +78,7 @@ class ClouderaUtils(object):
         cm_cluster = self.get_cloudera_cluster(cluster)
         yield cm_cluster.start()
 
+    @cpo.event_wrapper(True, step=_("Delete instances"), param=('cluster', 1))
     def delete_instances(self, cluster, instances):
         api = self.get_api_client(cluster)
         cm_cluster = self.get_cloudera_cluster(cluster)
@@ -88,14 +89,26 @@ class ClouderaUtils(object):
                 cm_cluster.remove_host(host.hostId)
                 api.delete_host(host.hostId)
 
+    @cpo.event_wrapper(
+        True, step=_("Decommission nodes"), param=('cluster', 1))
     def decommission_nodes(self, cluster, process, role_names):
         service = self.get_service_by_role(process, cluster)
         service.decommission(*role_names).wait()
         for role_name in role_names:
             service.delete_role(role_name)
 
+    @cpo.event_wrapper(
+        True, step=_("Refresh DataNodes"), param=('cluster', 1))
+    def refresh_datanodes(self, cluster):
+        self._refresh_nodes(cluster, 'DATANODE', self.HDFS_SERVICE_NAME)
+
+    @cpo.event_wrapper(
+        True, step=_("Refresh YARNNodes"), param=('cluster', 1))
+    def refresh_yarn_nodes(self, cluster):
+        self._refresh_nodes(cluster, 'NODEMANAGER', self.YARN_SERVICE_NAME)
+
     @cloudera_cmd
-    def refresh_nodes(self, cluster, process, service_name):
+    def _refresh_nodes(self, cluster, process, service_name):
         cm_cluster = self.get_cloudera_cluster(cluster)
         service = cm_cluster.get_service(service_name)
         nds = [n.name for n in service.get_roles_by_type(process)]
