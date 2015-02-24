@@ -299,6 +299,7 @@ class JobExecution(mb.SaharaBase):
     return_code = sa.Column(sa.String(80))
     job_configs = sa.Column(st.JsonDictType())
     extra = sa.Column(st.JsonDictType())
+    data_source_urls = sa.Column(st.JsonDictType())
 
 mains_association = sa.Table("mains_association",
                              mb.SaharaBase.metadata,

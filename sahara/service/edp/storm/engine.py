@@ -164,9 +164,15 @@ class StormJobEngine(base_engine.JobEngine):
         ctx = context.ctx()
         job = conductor.job_get(ctx, job_execution.job_id)
 
+        data_source_urls = {}
+
         additional_sources, updated_job_configs = (
-            job_utils.resolve_data_source_references(job_execution.job_configs)
+            job_utils.resolve_data_source_references(
+                job_execution.job_configs, job_execution.id, data_source_urls)
         )
+
+        job_execution = conductor.job_execution_update(
+            ctx, job_execution, {"data_source_urls": data_source_urls})
 
         # We'll always run the driver program on the master
         master = plugin_utils.get_instance(self.cluster, "nimbus")

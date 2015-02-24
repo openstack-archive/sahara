@@ -363,6 +363,7 @@ class TestSpark(base.SaharaTestCase):
                 ("Spark", "Executor extra classpath",
                  "cluster"): self.driver_cp}[key]
 
+    @mock.patch('sahara.conductor.API.job_execution_update')
     @mock.patch('sahara.conductor.API.job_execution_get')
     @mock.patch('sahara.utils.remote.get_remote')
     @mock.patch('sahara.plugins.spark.config_helper.get_config_value')
@@ -372,7 +373,8 @@ class TestSpark(base.SaharaTestCase):
     @mock.patch('sahara.context.ctx', return_value="ctx")
     def _setup_run_job(self, master_instance, job_configs, files,
                        ctx, job_get, get_instance, create_workflow_dir,
-                       get_config_value, get_remote, job_exec_get):
+                       get_config_value, get_remote, job_exec_get,
+                       job_exec_update):
 
         def _upload_job_files(where, job_dir, job,
                               libs_subdir=True, job_configs=None):

@@ -161,14 +161,16 @@ class JobUtilsTestCase(testtools.TestCase):
         ctx.return_value = 'dummy'
 
         name_ref = job_utils.DATA_SOURCE_PREFIX+'input'
+        job_exec_id = six.text_type(uuid.uuid4())
 
         input = u.create_data_source("swift://container/input",
                                      name="input",
                                      id=six.text_type(uuid.uuid4()))
 
-        output = u.create_data_source("swift://container/output",
+        output = u.create_data_source("swift://container/output.%JOB_EXEC_ID%",
                                       name="output",
                                       id=six.text_type(uuid.uuid4()))
+        output_url = "swift://container/output." + job_exec_id
 
         by_name = {'input': input,
                    'output': output}
@@ -199,9 +201,10 @@ class JobUtilsTestCase(testtools.TestCase):
                 job_utils.DATA_SOURCE_SUBST_UUID: True},
             'args': [name_ref, output.id, input.id]}
 
-        ds, nc = job_utils.resolve_data_source_references(job_configs)
+        ds, nc = job_utils.resolve_data_source_references(job_configs,
+                                                          job_exec_id, {})
         self.assertEqual(2, len(ds))
-        self.assertEqual([input.url, output.url, input.url], nc['args'])
+        self.assertEqual([input.url, output_url, input.url], nc['args'])
         # Swift configs should be filled in since they were blank
         self.assertEqual(input.credentials['user'],
                          nc['configs']['fs.swift.service.sahara.username'])
@@ -212,9 +215,10 @@ class JobUtilsTestCase(testtools.TestCase):
                                   'fs.swift.service.sahara.password': 'gamgee',
                                   job_utils.DATA_SOURCE_SUBST_NAME: False,
                                   job_utils.DATA_SOURCE_SUBST_UUID: True}
-        ds, nc = job_utils.resolve_data_source_references(job_configs)
+        ds, nc = job_utils.resolve_data_source_references(job_configs,
+                                                          job_exec_id, {})
         self.assertEqual(2, len(ds))
-        self.assertEqual([name_ref, output.url, input.url], nc['args'])
+        self.assertEqual([name_ref, output_url, input.url], nc['args'])
         # Swift configs should not be overwritten
         self.assertEqual(job_configs['configs'], nc['configs'])
 
@@ -223,7 +227,8 @@ class JobUtilsTestCase(testtools.TestCase):
         job_configs['proxy_configs'] = {'proxy_username': 'john',
                                         'proxy_password': 'smith',
                                         'proxy_trust_id': 'trustme'}
-        ds, nc = job_utils.resolve_data_source_references(job_configs)
+        ds, nc = job_utils.resolve_data_source_references(job_configs,
+                                                          job_exec_id, {})
         self.assertEqual(1, len(ds))
         self.assertEqual([input.url, output.id, input.id], nc['args'])
 
@@ -234,7 +239,8 @@ class JobUtilsTestCase(testtools.TestCase):
         # Substitution not enabled
         job_configs['configs'] = {job_utils.DATA_SOURCE_SUBST_NAME: False,
                                   job_utils.DATA_SOURCE_SUBST_UUID: False}
-        ds, nc = job_utils.resolve_data_source_references(job_configs)
+        ds, nc = job_utils.resolve_data_source_references(job_configs,
+                                                          job_exec_id, {})
         self.assertEqual(0, len(ds))
         self.assertEqual(job_configs['args'], nc['args'])
         self.assertEqual(job_configs['configs'], nc['configs'])
@@ -243,7 +249,34 @@ class JobUtilsTestCase(testtools.TestCase):
         job_configs['configs'] = {job_utils.DATA_SOURCE_SUBST_NAME: True,
                                   job_utils.DATA_SOURCE_SUBST_UUID: True}
         job_configs['args'] = ['val1', 'val2', 'val3']
-        ds, nc = job_utils.resolve_data_source_references(job_configs)
+        ds, nc = job_utils.resolve_data_source_references(job_configs,
+                                                          job_exec_id, {})
         self.assertEqual(0, len(ds))
-        self.assertEqual(job_configs['args'], nc['args'])
-        self.assertEqual(job_configs['configs'], nc['configs'])
+        self.assertEqual(nc['args'], job_configs['args'])
+        self.assertEqual(nc['configs'], job_configs['configs'])
+
+    def test_construct_data_source_url_no_placeholders(self):
+        base_url = "swift://container/input"
+        job_exec_id = six.text_type(uuid.uuid4())
+
+        url = job_utils._construct_data_source_url(base_url, job_exec_id)
+
+        self.assertEqual(base_url, url)
+
+    def test_construct_data_source_url_job_exec_id_placeholder(self):
+        base_url = "swift://container/input.%JOB_EXEC_ID%.out"
+        job_exec_id = six.text_type(uuid.uuid4())
+
+        url = job_utils._construct_data_source_url(base_url, job_exec_id)
+
+        self.assertEqual(
+            "swift://container/input." + job_exec_id + ".out", url)
+
+    def test_construct_data_source_url_randstr_placeholder(self):
+        base_url = "swift://container/input.%RANDSTR(4)%.%RANDSTR(7)%.out"
+        job_exec_id = six.text_type(uuid.uuid4())
+
+        url = job_utils._construct_data_source_url(base_url, job_exec_id)
+
+        self.assertRegex(
+            url, "swift://container/input\.[a-z]{4}\.[a-z]{7}\.out")

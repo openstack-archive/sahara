@@ -87,8 +87,8 @@ def _get_cluster_hosts_information(host, cluster):
     return None
 
 
-def configure_cluster_for_hdfs(cluster, data_source):
-    host = urlparse.urlparse(data_source.url).hostname
+def configure_cluster_for_hdfs(cluster, data_source_url):
+    host = urlparse.urlparse(data_source_url).hostname
 
     etc_hosts_information = _get_cluster_hosts_information(host, cluster)
     if etc_hosts_information is None:

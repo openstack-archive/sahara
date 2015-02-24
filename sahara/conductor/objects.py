@@ -241,6 +241,9 @@ class JobExecution(object):
     info
     oozie_job_id
     return_code
+    job_configs
+    extra
+    data_source_urls
     """
 
 
