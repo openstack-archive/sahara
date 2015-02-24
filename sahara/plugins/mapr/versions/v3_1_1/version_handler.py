@@ -14,6 +14,7 @@
 
 
 from sahara.plugins.mapr.base import base_version_handler as bvh
+from sahara.plugins.mapr.services.flume import flume
 from sahara.plugins.mapr.services.hbase import hbase
 from sahara.plugins.mapr.services.hive import hive
 from sahara.plugins.mapr.services.httpfs import httpfs
@@ -54,6 +55,7 @@ class VersionHandler(bvh.BaseVersionHandler):
             mahout.Mahout(),
             pig.Pig(),
             swift.Swift(),
+            flume.Flume(),
         ]
 
     def get_context(self, cluster, added=None, removed=None):
