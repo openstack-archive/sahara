@@ -107,10 +107,13 @@ def to_dict(func):
 
 # Cluster ops
 
-@to_dict
-def cluster_get(context, cluster):
+
+def cluster_get(context, cluster, show_progress=False):
     """Return the cluster or None if it does not exist."""
-    return IMPL.cluster_get(context, cluster)
+    cluster = IMPL.cluster_get(context, cluster)
+    if cluster:
+        return cluster.to_dict(show_progress)
+    return None
 
 
 @to_dict

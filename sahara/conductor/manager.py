@@ -120,9 +120,9 @@ class ConductorManager(db_base.Base):
 
     # Cluster ops
 
-    def cluster_get(self, context, cluster):
+    def cluster_get(self, context, cluster, show_progress=False):
         """Return the cluster or None if it does not exist."""
-        return self.db.cluster_get(context, cluster)
+        return self.db.cluster_get(context, cluster, show_progress)
 
     def cluster_get_all(self, context, **kwargs):
         """Get all clusters filtered by **kwargs.

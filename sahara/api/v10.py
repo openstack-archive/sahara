@@ -61,7 +61,9 @@ def clusters_scale(cluster_id, data):
 @acl.enforce("clusters:get")
 @v.check_exists(api.get_cluster, 'cluster_id')
 def clusters_get(cluster_id):
-    return u.render(api.get_cluster(cluster_id).to_wrapped_dict())
+    data = u.get_request_args()
+    show_events = unicode(data.get('show_progress', 'false')).lower() == 'true'
+    return u.render(api.get_cluster(cluster_id, show_events).to_wrapped_dict())
 
 
 @rest.delete('/clusters/<cluster_id>')

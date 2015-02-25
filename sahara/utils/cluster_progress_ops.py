@@ -139,23 +139,6 @@ def update_provisioning_steps(cluster_id):
                 ctx, step.id)
 
 
-def get_cluster_events(cluster_id, provision_step=None):
-    if CONF.disable_event_log or not g.check_cluster_exists(cluster_id):
-        return []
-    update_provisioning_steps(cluster_id)
-    if provision_step:
-        return conductor.cluster_provision_step_get_events(
-            context.ctx(), provision_step)
-    else:
-        cluster = conductor.cluster_get(context.ctx(), cluster_id)
-        events = []
-        for step in cluster['provision_progress']:
-            step_id = step['id']
-            events += conductor.cluster_provision_step_get_events(
-                context.ctx(), step_id)
-        return events
-
-
 def event_wrapper(mark_successful_on_exit, **spec):
     """"General event-log wrapper
 

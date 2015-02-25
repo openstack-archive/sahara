@@ -127,10 +127,9 @@ class ClusterProgressOpsTest(base.SaharaWithDbTestCase):
             "event_info": "INFO",
             'successful': True,
         })
-
-        self.assertEqual(2, len(cpo.get_cluster_events(cluster.id)))
-        self.assertEqual(1, len(cpo.get_cluster_events(cluster.id, step_id1)))
-        self.assertEqual(1, len(cpo.get_cluster_events(cluster.id, step_id2)))
+        cluster = self.api.cluster_get(context.ctx(), cluster.id, True)
+        for step in cluster.provision_progress:
+            self.assertEqual(1, len(step.events))
 
     def _make_checks(self, instance_info, sleep=True):
         ctx = context.ctx()
@@ -180,3 +179,17 @@ class ClusterProgressOpsTest(base.SaharaWithDbTestCase):
 
         self.assertEqual(1, p_find.call_count)
         self.assertEqual(1, p_check_cluster_exists.call_count)
+
+    def test_cluster_get_with_events(self):
+        ctx, cluster = self._make_sample()
+
+        step_id = cpo.add_provisioning_step(cluster.id, "Some name", 3)
+        self.api.cluster_event_add(ctx, step_id, {
+            'event_info': "INFO", 'successful': True})
+        cluster = self.api.cluster_get(ctx, cluster.id, True)
+
+        steps = cluster.provision_progress
+        step = steps[0]
+        self.assertEqual("Some name", step.step_name)
+        self.assertEqual(3, step.total)
+        self.assertEqual("INFO", step.events[0].event_info)
