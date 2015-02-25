@@ -319,7 +319,7 @@ CDH_CONFIG_OPTS = [
                     'then image for cluster creation will be chosen by '
                     'tag "sahara_i_tests".'),
     cfg.StrOpt('HADOOP_VERSION',
-               default='5',
+               default='5.3.0',
                help='Version of Hadoop.'),
     cfg.StrOpt('HADOOP_USER',
                default='hdfs',
