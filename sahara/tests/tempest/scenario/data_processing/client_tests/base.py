@@ -114,16 +114,16 @@ class BaseDataProcessingTest(manager.ScenarioTest):
 
     @classmethod
     def get_floating_ip_pool_id_for_neutron(cls):
-        for network in cls.networks_client.list_networks()[1]:
-            if network['label'] == CONF.data_processing.floating_ip_pool:
+        for network in cls.networks_client.list_networks()['networks']:
+            if network['name'] == CONF.data_processing.floating_ip_pool:
                 return network['id']
         raise exceptions.NotFound(
             'Floating IP pool \'%s\' not found in pool list.'
             % CONF.data_processing.floating_ip_pool)
 
     def get_private_network_id(cls):
-        for network in cls.networks_client.list_networks()[1]:
-            if network['label'] == CONF.data_processing.private_network:
+        for network in cls.networks_client.list_networks()['networks']:
+            if network['name'] == CONF.data_processing.private_network:
                 return network['id']
         raise exceptions.NotFound(
             'Private network \'%s\' not found in network list.'
