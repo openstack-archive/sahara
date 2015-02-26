@@ -366,17 +366,17 @@ class SaharaMigrationsCheckers(object):
         self.assertEqual(desc, new_desc)
         engine.execute(t.delete())
 
-    def _check_008(self, engine, date):
+    def _check_008(self, engine, data):
         self.assertColumnExists(engine, 'node_group_templates',
                                 'security_groups')
         self.assertColumnExists(engine, 'node_groups', 'security_groups')
         self.assertColumnExists(engine, 'templates_relations',
                                 'security_groups')
 
-    def _check_009(self, engine, date):
+    def _check_009(self, engine, data):
         self.assertColumnExists(engine, 'clusters', 'rollback_info')
 
-    def _check_010(self, engine, date):
+    def _check_010(self, engine, data):
         self.assertColumnExists(engine, 'node_group_templates',
                                 'auto_security_group')
         self.assertColumnExists(engine, 'node_groups', 'auto_security_group')
@@ -384,10 +384,10 @@ class SaharaMigrationsCheckers(object):
                                 'auto_security_group')
         self.assertColumnExists(engine, 'node_groups', 'open_ports')
 
-    def _check_011(self, engine, date):
+    def _check_011(self, engine, data):
         self.assertColumnExists(engine, 'clusters', 'sahara_info')
 
-    def _check_012(self, engine, date):
+    def _check_012(self, engine, data):
         self.assertColumnExists(engine, 'node_group_templates',
                                 'availability_zone')
         self.assertColumnExists(engine, 'node_groups', 'availability_zone')
@@ -434,7 +434,7 @@ class SaharaMigrationsCheckers(object):
         self.assertColumnCount(engine, 'cluster_events', events_columns)
         self.assertColumnsExists(engine, 'cluster_events', events_columns)
 
-    def _check_016(self, engine, date):
+    def _check_016(self, engine, data):
         self.assertColumnExists(engine, 'node_group_templates',
                                 'is_proxy_gateway')
         self.assertColumnExists(engine, 'node_groups', 'is_proxy_gateway')
