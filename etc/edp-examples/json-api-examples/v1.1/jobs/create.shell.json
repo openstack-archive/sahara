@@ -1,0 +1,7 @@
+{
+    "name": "demo-shell-job",
+    "type": "Shell",
+    "description": "A runnable Shell job",
+    "mains": ["%(script_binary_id)s"],
+    "libs": ["%(text_binary_id)s"]
+}

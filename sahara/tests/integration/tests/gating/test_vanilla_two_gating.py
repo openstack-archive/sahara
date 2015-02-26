@@ -204,6 +204,8 @@ class VanillaTwoGatingTest(cluster_configs.ClusterConfigTest,
             yield self._edp_java_test()
         if utils_edp.JOB_TYPE_HIVE not in skipped_edp_job_types:
             yield self._check_edp_hive()
+        if utils_edp.JOB_TYPE_SHELL not in skipped_edp_job_types:
+            yield self._edp_shell_test()
 
     # TODO(esikachev): Until fix bug 1413602
     def _run_edp_tests_after_scaling(self):
@@ -217,6 +219,8 @@ class VanillaTwoGatingTest(cluster_configs.ClusterConfigTest,
             yield self._edp_mapreduce_streaming_test()
         if utils_edp.JOB_TYPE_JAVA not in skipped_edp_job_types:
             yield self._edp_java_test()
+        if utils_edp.JOB_TYPE_SHELL not in skipped_edp_job_types:
+            yield self._edp_shell_test()
 
     def _edp_pig_test(self):
         pig_job = self.edp_info.read_pig_example_script()
@@ -255,6 +259,15 @@ class VanillaTwoGatingTest(cluster_configs.ClusterConfigTest,
             job_data_list=[],
             lib_data_list=[{'jar': java_jar}],
             configs=java_configs)
+
+    def _edp_shell_test(self):
+        shell_script_data = self.edp_info.read_shell_example_script()
+        shell_file_data = self.edp_info.read_shell_example_text_file()
+        return self.edp_testing(
+            job_type=utils_edp.JOB_TYPE_SHELL,
+            job_data_list=[{'script': shell_script_data}],
+            lib_data_list=[{'text': shell_file_data}],
+            configs=self.edp_info.shell_example_configs())
 
     def _check_edp_hive(self):
         return self.check_edp_hive()

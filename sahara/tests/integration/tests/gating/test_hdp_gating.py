@@ -121,6 +121,9 @@ class HDPGatingTest(cinder.CinderVolumeTest, edp.EDPTest,
 
         mapreduce_jar_data = self.edp_info.read_mapreduce_example_jar()
 
+        shell_script_data = self.edp_info.read_shell_example_script()
+        shell_file_data = self.edp_info.read_shell_example_text_file()
+
         # This is a modified version of WordCount that takes swift configs
         java_lib_data = self.edp_info.read_java_example_lib()
 
@@ -156,7 +159,16 @@ class HDPGatingTest(cinder.CinderVolumeTest, edp.EDPTest,
             configs=self.edp_info.java_example_configs(),
             pass_input_output_args=True)
         job_ids.append(job_id)
+
+        job_id = self.edp_testing(
+            job_type=utils_edp.JOB_TYPE_SHELL,
+            job_data_list=[{'script': shell_script_data}],
+            lib_data_list=[{'text': shell_file_data}],
+            configs=self.edp_info.shell_example_configs())
+        job_ids.append(job_id)
+
         self.poll_jobs_status(job_ids)
+
 
 # -----------------------------MAP REDUCE TESTING------------------------------
 

@@ -32,6 +32,7 @@ class EDPJobInfo(object):
     MAPREDUCE_PATH = 'etc/edp-examples/edp-mapreduce/'
     SPARK_PATH = 'etc/edp-examples/edp-spark/'
     HIVE_PATH = 'etc/edp-examples/edp-hive/'
+    SHELL_PATH = 'etc/edp-examples/edp-shell/'
 
     HADOOP2_JAVA_PATH = 'etc/edp-examples/hadoop2/edp-java/'
 
@@ -96,6 +97,20 @@ class EDPJobInfo(object):
                 "edp.streaming.mapper": "/bin/cat",
                 "edp.streaming.reducer": "/usr/bin/wc"
             }
+        }
+
+    def read_shell_example_script(self):
+        return open(self.SHELL_PATH + 'shell-example.sh').read()
+
+    def read_shell_example_text_file(self):
+        return open(self.SHELL_PATH + 'shell-example.txt').read()
+
+    def shell_example_configs(self):
+        return {
+            "params": {
+                "EXTRA_FILE": "*text"
+            },
+            "args": ["/tmp/edp-integration-shell-output.txt"]
         }
 
     def read_spark_example_jar(self):

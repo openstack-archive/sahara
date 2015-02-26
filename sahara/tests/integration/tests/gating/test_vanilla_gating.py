@@ -185,6 +185,8 @@ class VanillaGatingTest(cinder.CinderVolumeTest,
         mapreduce_jar_data = self.edp_info.read_mapreduce_example_jar()
         # This is a modified version of WordCount that takes swift configs
         java_lib_data = self.edp_info.read_java_example_lib()
+        shell_script_data = self.edp_info.read_shell_example_script()
+        shell_file_data = self.edp_info.read_shell_example_text_file()
 
         yield self.edp_testing(
             job_type=utils_edp.JOB_TYPE_PIG,
@@ -214,6 +216,12 @@ class VanillaGatingTest(cinder.CinderVolumeTest,
             lib_data_list=[{'jar': java_lib_data}],
             configs=self.edp_info.java_example_configs(),
             pass_input_output_args=True)
+
+        yield self.edp_testing(
+            job_type=utils_edp.JOB_TYPE_SHELL,
+            job_data_list=[{'script': shell_script_data}],
+            lib_data_list=[{'text': shell_file_data}],
+            configs=self.edp_info.shell_example_configs())
 
     @b.errormsg("Failure while EDP testing: ")
     def _check_edp(self):
