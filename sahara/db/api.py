@@ -110,7 +110,10 @@ def to_dict(func):
 
 def cluster_get(context, cluster, show_progress=False):
     """Return the cluster or None if it does not exist."""
-    cluster = IMPL.cluster_get(context, cluster)
+    if show_progress:
+        cluster = IMPL.cluster_provision_progress_update(context, cluster)
+    else:
+        cluster = IMPL.cluster_get(context, cluster)
     if cluster:
         return cluster.to_dict(show_progress)
     return None
@@ -446,27 +449,24 @@ def job_binary_internal_get_raw_data(context, job_binary_internal_id):
     return IMPL.job_binary_internal_get_raw_data(context,
                                                  job_binary_internal_id)
 
+# Events ops
+
 
 def cluster_provision_step_add(context, cluster_id, values):
     """Create a cluster assigned ProvisionStep from the values dictionary."""
     return IMPL.cluster_provision_step_add(context, cluster_id, values)
 
 
-def cluster_provision_step_update(context, provision_step, values):
-    """Update the ProvisionStep from the values dictionary."""
-    IMPL.cluster_provision_step_update(context, provision_step, values)
+def cluster_provision_step_update(context, step_id):
+    """Updates provision step."""
+    return IMPL.cluster_provision_step_update(context, step_id)
 
 
-def cluster_provision_step_get_events(context, provision_step):
-    """Return all events from the specified ProvisionStep."""
-    return IMPL.cluster_provision_step_get_events(context, provision_step)
-
-
-def cluster_provision_step_remove_events(context, provision_step):
-    """Delete all event from the specified ProvisionStep."""
-    IMPL.cluster_provision_step_remove_events(context, provision_step)
+def cluster_provision_progress_update(context, cluster_id):
+    """Return cluster with provision progress updated field."""
+    return IMPL.cluster_provision_progress_update(context, cluster_id)
 
 
 def cluster_event_add(context, provision_step, values):
-    """Assign new event to the specified ProvisionStep."""
-    IMPL.cluster_event_add(context, provision_step, values)
+    """Assign new event to the specified provision step."""
+    return IMPL.cluster_event_add(context, provision_step, values)

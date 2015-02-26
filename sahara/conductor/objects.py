@@ -293,11 +293,8 @@ class ClusterProvisionStep(object):
     tenant_id
     step_name
     step_type
-    completed
     total
     successful
-    started_at
-    completed_at
     events - list of Events objects assigned to the cluster
     """
 

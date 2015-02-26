@@ -1114,6 +1114,22 @@ def _cluster_provision_step_get(context, session, provision_step_id):
     return query.filter_by(id=provision_step_id).first()
 
 
+def _cluster_provision_step_update(context, session, step_id):
+    step = _cluster_provision_step_get(context, session, step_id)
+
+    if step is None:
+        raise ex.NotFoundException(
+            step_id,
+            _("Cluster Provision Step id '%s' not found!"))
+
+    if step.successful is not None:
+        return
+    if len(step.events) == step.total:
+        for event in step.events:
+            session.delete(event)
+        step.update({'successful': True})
+
+
 def cluster_provision_step_add(context, cluster_id, values):
     session = get_session()
 
@@ -1132,64 +1148,29 @@ def cluster_provision_step_add(context, cluster_id, values):
     return provision_step.id
 
 
-def cluster_provision_step_update(context, provision_step_id, values):
-    session = get_session()
-
-    with session.begin():
-        provision_step = _cluster_provision_step_get(
-            context, session, provision_step_id)
-
-        if not provision_step:
-            raise ex.NotFoundException(
-                provision_step_id,
-                _("Cluster Provision Step id '%s' not found!"))
-
-        provision_step.update(values)
-
-
-def cluster_provision_step_get_events(context, provision_step_id):
+def cluster_provision_step_update(context, step_id):
+    if CONF.disable_event_log:
+        return
     session = get_session()
     with session.begin():
-        provision_step = _cluster_provision_step_get(
-            context, session, provision_step_id)
-
-        if not provision_step:
-            raise ex.NotFoundException(
-                provision_step_id,
-                _("Cluster Provision Step id '%s' not found!"))
-
-    return provision_step.events
+        _cluster_provision_step_update(context, session, step_id)
 
 
-def cluster_provision_step_remove_events(context, provision_step_id):
+def cluster_provision_progress_update(context, cluster_id):
+    if CONF.disable_event_log:
+        return _cluster_get(context, get_session(), cluster_id)
     session = get_session()
-
     with session.begin():
-        provision_step = _cluster_provision_step_get(
-            context, session, provision_step_id)
+        cluster = _cluster_get(context, session, cluster_id)
 
-        if not provision_step:
-            raise ex.NotFoundException(
-                provision_step_id,
-                _("Cluster Provision Step id '%s' not found!"))
-
-        for event in provision_step.events:
-            session.delete(event)
-
-
-def cluster_provision_step_remove(context, provision_step_id):
-    session = get_session()
-    cluster_provision_step_remove_events(context, provision_step_id)
-    with session.begin():
-        provision_step = _cluster_provision_step_get(
-            context, session, provision_step_id)
-
-        if not provision_step:
-            raise ex.NotFoundException(
-                provision_step_id,
-                _("Cluster Provision Step id '%s' not found!"))
-
-        session.delete(provision_step)
+        if cluster is None:
+            raise ex.NotFoundException(cluster_id,
+                                       _("Cluster id '%s' not found!"))
+        for step in cluster.provision_progress:
+            if step.successful is None:
+                _cluster_provision_step_update(context, session, step.id)
+        result_cluster = _cluster_get(context, session, cluster_id)
+    return result_cluster
 
 
 def cluster_event_add(context, step_id, values):
@@ -1206,6 +1187,8 @@ def cluster_event_add(context, step_id, values):
 
         event = m.ClusterEvent()
         values['step_id'] = step_id
+        if not values['successful']:
+            provision_step.update({'successful': False})
         event.update(values)
         session.add(event)
 

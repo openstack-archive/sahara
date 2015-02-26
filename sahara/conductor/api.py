@@ -442,31 +442,24 @@ class LocalApi(object):
     # Events ops
 
     def cluster_provision_step_add(self, context, cluster_id, values):
-        """Create a cluster assigned ProvisionStep
-
-        from the values dictionary
-        """
+        """Create a provisioning step assigned to cluster from values dict."""
         return self._manager.cluster_provision_step_add(
             context, cluster_id, values)
 
-    def cluster_provision_step_update(self, context, provision_step, values):
-        """Update the ProvisionStep from the values dictionary."""
-        self._manager.cluster_provision_step_update(
-            context, provision_step, values)
-
-    def cluster_provision_step_get_events(self, context, provision_step):
-        """Return all events from the specified ProvisionStep."""
-        return self._manager.cluster_provision_step_get_events(
+    def cluster_provision_step_update(self, context, provision_step):
+        """Update the cluster provisioning step."""
+        return self._manager.cluster_provision_step_update(
             context, provision_step)
 
-    def cluster_provision_step_remove_events(self, context, provision_step):
-        """Delete all event from the specified ProvisionStep."""
-        self._manager.cluster_provision_step_remove_events(
-            context, provision_step)
+    def cluster_provision_progress_update(self, context, cluster_id):
+        """Return cluster with provision progress updated field."""
+        return self._manager.cluster_provision_progress_update(
+            context, cluster_id)
 
     def cluster_event_add(self, context, provision_step, values):
-        """Assign new event to the specified ProvisionStep."""
-        self._manager.cluster_event_add(context, provision_step, values)
+        """Assign new event to the specified provision step."""
+        return self._manager.cluster_event_add(
+            context, provision_step, values)
 
 
 class RemoteApi(LocalApi):

@@ -147,6 +147,8 @@ def _make_periodic_tasks():
                     continue
 
                 terminate_cluster(ctx, cluster, description='transient')
+                # Add event log info cleanup
+                context.ctx().current_instance_info = context.InstanceInfo()
             context.set_ctx(None)
 
         @periodic_task.periodic_task(spacing=zombie_task_spacing)
@@ -185,7 +187,8 @@ def _make_periodic_tasks():
                     continue
 
                 terminate_cluster(ctx, cluster, description='incomplete')
-
+                # Add event log info cleanup
+                context.ctx().current_instance_info = context.InstanceInfo()
             context.set_ctx(None)
 
     return SaharaPeriodicTasks()
