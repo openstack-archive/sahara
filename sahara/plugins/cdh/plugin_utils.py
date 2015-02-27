@@ -192,15 +192,16 @@ class AbstractPluginUtils(object):
             cmd.configure_agent(r, mng_hostname)
             cmd.start_agent(r)
 
-    def configure_swift(self, cluster):
+    def configure_swift(self, cluster, instances=None):
         if self.c_helper.is_swift_enabled(cluster):
-            instances = u.get_instances(cluster)
+            if not instances:
+                instances = u.get_instances(cluster)
             with context.ThreadGroup() as tg:
                 for i in instances:
                     tg.spawn('cdh-swift-conf-%s' % i.instance_name,
-                             self.configure_swift_to_inst, i)
+                             self._configure_swift_to_inst, i)
 
-    def configure_swift_to_inst(self, instance):
+    def _configure_swift_to_inst(self, instance):
         cluster = instance.cluster
         with instance.remote() as r:
             r.execute_command('sudo curl %s -o %s/hadoop-openstack.jar' % (
