@@ -29,6 +29,7 @@ from sahara.plugins.cdh.v5_3_0 import config_helper as c_helper
 from sahara.plugins.cdh.v5_3_0 import plugin_utils as pu
 from sahara.plugins.cdh.v5_3_0 import validation as v
 from sahara.swift import swift_helper
+from sahara.utils import cluster_progress_ops as cpo
 from sahara.utils import xmlutils
 
 
@@ -115,6 +116,7 @@ class ClouderaUtilsV530(cu.ClouderaUtils):
         cm_cluster = self.get_cloudera_cluster(cluster)
         yield cm_cluster.first_run()
 
+    @cpo.event_wrapper(True, step=_("Create services"), param=('cluster', 1))
     def create_services(self, cluster):
         api = self.get_api_client(cluster)
 
@@ -159,6 +161,8 @@ class ClouderaUtilsV530(cu.ClouderaUtils):
             cm_cluster.create_service(self.IMPALA_SERVICE_NAME,
                                       IMPALA_SERVICE_TYPE)
 
+    @cpo.event_wrapper(
+        True, step=_("Configure services"), param=('cluster', 1))
     def configure_services(self, cluster):
         cm_cluster = self.get_cloudera_cluster(cluster)
 

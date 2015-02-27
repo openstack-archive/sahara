@@ -30,6 +30,7 @@ from sahara import context
 from sahara.i18n import _
 from sahara.i18n import _LE
 from sahara.plugins import exceptions as ex
+from sahara.utils import cluster_progress_ops as cpo
 
 
 LOG = logging.getLogger(__name__)
@@ -118,17 +119,22 @@ class ClouderaUtils(object):
             for st in service.refresh(nd):
                 yield st
 
+    @cpo.event_wrapper(True, step=_("Deploy configs"), param=('cluster', 1))
     @cloudera_cmd
     def deploy_configs(self, cluster):
         cm_cluster = self.get_cloudera_cluster(cluster)
         yield cm_cluster.deploy_client_config()
 
     def update_configs(self, instances):
+        # instances non-empty
+        cpo.add_provisioning_step(
+            instances[0].cluster_id, _("Update configs"), len(instances))
         with context.ThreadGroup as tg:
             for instance in instances:
                 tg.spawn("update-configs-%s" % instances.instance_name,
                          self._update_configs, instance)
 
+    @cpo.event_wrapper(True)
     @cloudera_cmd
     def _update_configs(self, instance):
         for process in instance.node_group.node_processes:
@@ -153,6 +159,8 @@ class ClouderaUtils(object):
         for role in service.start_roles(*role_names):
             yield role
 
+    @cpo.event_wrapper(
+        True, step=_("Create mgmt service"), param=('cluster', 1))
     def create_mgmt_service(self, cluster):
         api = self.get_api_client(cluster)
         cm = api.get_cloudera_manager()
@@ -199,7 +207,8 @@ class ClouderaUtils(object):
                 _("Process %(process)s is not supported by CDH plugin") %
                 {'process': process})
 
-    def await_agents(self, instances):
+    @cpo.event_wrapper(True, step=_("Await agents"), param=('cluster', 1))
+    def await_agents(self, cluster, instances):
         api = self.get_api_client(instances[0].cluster)
         timeout = 300
         LOG.debug("Waiting %(timeout)s seconds for agent connected to manager"
@@ -224,9 +233,13 @@ class ClouderaUtils(object):
                                             " to Cloudera Manager"))
 
     def configure_instances(self, instances, cluster=None):
+        # instances non-empty
+        cpo.add_provisioning_step(
+            instances[0].cluster_id, _("Configure instances"), len(instances))
         for inst in instances:
             self.configure_instance(inst, cluster)
 
+    @cpo.event_wrapper(True)
     def configure_instance(self, instance, cluster=None):
         for process in instance.node_group.node_processes:
             self._add_role(instance, process, cluster)

@@ -23,10 +23,12 @@ except ImportError:
 
 import six
 
+from sahara.i18n import _
 from sahara.plugins.cdh import cloudera_utils as cu
 from sahara.plugins.cdh.v5 import plugin_utils as pu
 from sahara.plugins.cdh.v5 import validation as v
 from sahara.swift import swift_helper
+from sahara.utils import cluster_progress_ops as cpo
 from sahara.utils import xmlutils
 
 
@@ -96,6 +98,7 @@ class ClouderaUtilsV5(cu.ClouderaUtils):
     def create_hbase_root(self, hbase_service):
         yield hbase_service.create_hbase_root()
 
+    @cpo.event_wrapper(True, step=_("Create services"), param=('cluster', 1))
     def create_services(self, cluster):
         api = self.get_api_client(cluster)
 
@@ -122,6 +125,8 @@ class ClouderaUtilsV5(cu.ClouderaUtils):
             cm_cluster.create_service(self.HBASE_SERVICE_NAME,
                                       HBASE_SERVICE_TYPE)
 
+    @cpo.event_wrapper(
+        True, step=_("Configure services"), param=('cluster', 1))
     def configure_services(self, cluster):
         cm_cluster = self.get_cloudera_cluster(cluster)
 

@@ -28,6 +28,7 @@ from sahara.i18n import _LI
 from sahara.plugins.cdh import commands as cmd
 from sahara.plugins import exceptions as ex
 from sahara.plugins import utils as u
+from sahara.utils import cluster_progress_ops as cpo
 from sahara.utils import edp as edp_u
 
 
@@ -170,22 +171,33 @@ class AbstractPluginUtils(object):
         return name_dict.get(showname, showname)
 
     def install_packages(self, instances, packages):
+        # instances non-empty
+        cpo.add_provisioning_step(
+            instances[0].cluster_id, _("Install packages"), len(instances))
+
         with context.ThreadGroup() as tg:
             for i in instances:
                 tg.spawn('cdh-inst-pkgs-%s' % i.instance_name,
                          self._install_pkgs, i, packages)
 
+    @cpo.event_wrapper(True)
     def _install_pkgs(self, instance, packages):
         with instance.remote() as r:
             cmd.install_packages(r, packages)
 
     def start_cloudera_agents(self, instances):
+        # instances non-empty
+        cpo.add_provisioning_step(
+            instances[0].cluster_id, _("Start Cloudera Agents"),
+            len(instances))
+
         with context.ThreadGroup() as tg:
             for i in instances:
                 tg.spawn('cdh-agent-start-%s' % i.instance_name,
-                         self.start_cloudera_agent, i)
+                         self._start_cloudera_agent, i)
 
-    def start_cloudera_agent(self, instance):
+    @cpo.event_wrapper(True)
+    def _start_cloudera_agent(self, instance):
         mng_hostname = self.get_manager(instance.cluster).hostname()
         with instance.remote() as r:
             cmd.start_ntp(r)
@@ -196,11 +208,15 @@ class AbstractPluginUtils(object):
         if self.c_helper.is_swift_enabled(cluster):
             if not instances:
                 instances = u.get_instances(cluster)
+            cpo.add_provisioning_step(
+                cluster.id, _("Configure Swift"), len(instances))
+
             with context.ThreadGroup() as tg:
                 for i in instances:
                     tg.spawn('cdh-swift-conf-%s' % i.instance_name,
                              self._configure_swift_to_inst, i)
 
+    @cpo.event_wrapper(True)
     def _configure_swift_to_inst(self, instance):
         cluster = instance.cluster
         with instance.remote() as r:
@@ -246,6 +262,8 @@ class AbstractPluginUtils(object):
                     extjs_vm_location_path, extjs_vm_location_dir),
                     run_as_root=True)
 
+    @cpo.event_wrapper(
+        True, step=_("Start Cloudera manager"), param=('cluster', 1))
     def start_cloudera_manager(self, cluster):
         manager = self.get_manager(cluster)
         with manager.remote() as r:
@@ -275,11 +293,15 @@ class AbstractPluginUtils(object):
         LOG.info(_LI("Cloudera Manager has been started"))
 
     def configure_os(self, instances):
+        # instances non-empty
+        cpo.add_provisioning_step(
+            instances[0].cluster_id, _("Configure OS"), len(instances))
         with context.ThreadGroup() as tg:
             for inst in instances:
                 tg.spawn('cdh-repo-conf-%s' % inst.instance_name,
                          self._configure_repo_from_inst, inst)
 
+    @cpo.event_wrapper(True)
     def _configure_repo_from_inst(self, instance):
         LOG.debug("Configure repos from instance '%(instance)s'" % {
                   'instance': instance.instance_name})
