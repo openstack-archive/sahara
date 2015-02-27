@@ -163,11 +163,11 @@ class VersionHandler(avm.AbstractVersionHandler):
             if c_helper.is_mysql_enable(cluster):
                 if not oozie or hive_server.hostname() != oozie.hostname():
                     run.mysql_start(r, hive_server)
-                    run.hive_create_db(r, cluster.extra['hive_mysql_passwd'])
-                    run.hive_metastore_start(r)
-                    LOG.info(_LI("Hive Metastore server at %s has been "
-                                 "started"),
-                             hive_server.hostname())
+                run.hive_create_db(r, cluster.extra['hive_mysql_passwd'])
+                run.hive_metastore_start(r)
+                LOG.info(_LI("Hive Metastore server at %s has been "
+                             "started"),
+                         hive_server.hostname())
 
     def start_cluster(self, cluster):
         self.start_namenode(cluster)
