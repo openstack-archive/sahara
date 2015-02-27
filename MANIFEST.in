@@ -4,7 +4,9 @@ include ChangeLog
 include LICENSE
 include sahara/db/migration/README
 include sahara/db/migration/alembic.ini
+include sahara/db/migration/alembic_migrations/env.py
 include sahara/db/migration/alembic_migrations/script.py.mako
+include sahara/db/migration/alembic_migrations/versions/*.py
 include sahara/db/migration/alembic_migrations/versions/README
 
 recursive-include sahara/locale *
