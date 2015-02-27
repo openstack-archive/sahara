@@ -33,7 +33,6 @@ from sahara.api import v11 as api_v11
 from sahara import config
 from sahara import context
 from sahara.i18n import _LI
-from sahara.i18n import _LW
 from sahara.openstack.common import sslutils
 from sahara.plugins import base as plugins_base
 from sahara.service import api as service_api
@@ -85,11 +84,6 @@ def setup_common(possible_topdir, service_name):
 
     if service_name != 'all-in-one' or cfg.CONF.enable_notifications:
         messaging.setup()
-
-    if service_name != 'all-in-one':
-        LOG.warn(
-            _LW("Distributed mode is in the alpha state, it's recommended to "
-                "use all-in-one mode by running 'sahara-all' binary."))
 
     plugins_base.setup_plugins()
 

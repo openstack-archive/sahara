@@ -239,10 +239,6 @@ The below tables provides a plugin capability matrix:
 Running Sahara in Distributed Mode
 ----------------------------------
 
-.. warning::
-    Currently distributed mode for Sahara is in alpha state. We do not
-    recommend using it in a production environment.
-
 The :doc:`installation.guide` suggests to launch
 Sahara as a single 'sahara-all' process. It is also possible to run Sahara
 in distributed mode with 'sahara-api' and 'sahara-engine' processes running
