@@ -571,7 +571,7 @@ class InstanceInteropHelper(remote.Remote):
         try:
             command = command.format(**keywords)
         except KeyError as e:
-            LOG.error(_('Invalid keyword in proxy_command: %s'), str(e))
+            LOG.error(_LE('Invalid keyword in proxy_command: %s'), str(e))
             # Do not give more details to the end-user
             raise ex.SystemError('Misconfiguration')
         if rootwrap_command:
