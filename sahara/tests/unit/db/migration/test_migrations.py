@@ -441,6 +441,9 @@ class SaharaMigrationsCheckers(object):
         self.assertColumnExists(engine, 'templates_relations',
                                 'is_proxy_gateway')
 
+    def _check_017(self, engine, data):
+        self.assertColumnNotExists(engine, 'job_executions', 'progress')
+
 
 class TestMigrationsMySQL(SaharaMigrationsCheckers,
                           base.BaseWalkMigrationTestCase,

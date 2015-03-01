@@ -236,7 +236,6 @@ class JobExecution(object):
     end_time
     cluster_id
     info
-    progress
     oozie_job_id
     return_code
     """
