@@ -14,6 +14,7 @@
 
 
 from sahara.plugins.mapr.base import base_version_handler as bvh
+from sahara.plugins.mapr.services.drill import drill
 from sahara.plugins.mapr.services.flume import flume
 from sahara.plugins.mapr.services.hbase import hbase
 from sahara.plugins.mapr.services.hive import hive
@@ -55,6 +56,7 @@ class VersionHandler(bvh.BaseVersionHandler):
             swift.Swift(),
             mapreduce.MapReduce(),
             flume.Flume(),
+            drill.Drill(),
         ]
 
     def get_context(self, cluster, added=None, removed=None):

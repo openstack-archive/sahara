@@ -17,3 +17,9 @@ def chown(instance, owner, path, run_as_root=True):
     cmd = 'chown -R %(owner)s %(path)s' % {'owner': owner, 'path': path}
     with instance.remote() as r:
         r.execute_command(cmd, run_as_root=run_as_root)
+
+
+def re_configure_sh(instance, cluster_context):
+    with instance.remote() as r:
+        command = '%s -R' % cluster_context.configure_sh_path
+        r.execute_command(command, run_as_root=True)
