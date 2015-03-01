@@ -263,7 +263,7 @@ def proxy_user_create(username):
     domain = domain_for_proxy()
     password = six.text_type(uuid.uuid4())
     admin.users.create(name=username, password=password, domain=domain.id)
-    LOG.debug(_('created proxy user {0}').format(username))
+    LOG.debug('created proxy user {0}'.format(username))
     return password
 
 
