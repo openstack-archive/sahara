@@ -843,6 +843,152 @@ MAPR_401MRV2_CONFIG_OPTS = [
 ]
 
 
+MAPR_402MRV1_CONFIG_GROUP = cfg.OptGroup(name='MAPR_402MRV1')
+MAPR_402MRV1_CONFIG_OPTS = [
+    cfg.StrOpt('PLUGIN_NAME',
+               default='mapr',
+               help='Name of plugin.'),
+    cfg.StrOpt('IMAGE_ID',
+               help='ID for image which is used for cluster creation. Also '
+                    'you can specify image name or tag of image instead of '
+                    'image ID. If you do not specify image related parameters '
+                    'then image for cluster creation will be chosen by '
+                    'tag "sahara_i_tests".'),
+    cfg.StrOpt('IMAGE_NAME',
+               help='Name for image which is used for cluster creation. Also '
+                    'you can specify image ID or tag of image instead of '
+                    'image name. If you do not specify image related '
+                    'parameters, then the image for cluster creation will be '
+                    'chosen by tag "sahara_i_tests".'),
+    cfg.StrOpt('IMAGE_TAG',
+               help='Tag for image which is used for cluster creation. Also '
+                    'you can specify image ID or image name instead of tag of '
+                    'image. If you do not specify image related parameters, '
+                    'then image for cluster creation will be chosen by '
+                    'tag "sahara_i_tests".'),
+    cfg.StrOpt('HADOOP_VERSION',
+               default='4.0.2.mrv1',
+               help='Version of Hadoop.'),
+    cfg.StrOpt('HADOOP_USER',
+               default='mapr',
+               help='Username which is used for access to Hadoop services.'),
+    cfg.StrOpt('HADOOP_EXAMPLES_JAR_PATH',
+               default='/opt/mapr/hadoop/hadoop-0.20.2/'
+                       'hadoop-0.20.2-dev-examples.jar',
+               help='Path to hadoop examples jar file.'),
+    cfg.StrOpt('HADOOP_LOG_DIRECTORY',
+               default='/opt/mapr/hadoop/hadoop-0.20.2/logs/userlogs',
+               help='Directory where logs of completed jobs are located.'),
+    cfg.StrOpt('HADOOP_LOG_DIRECTORY_ON_VOLUME',
+               default='/opt/mapr/hadoop/hadoop-0.20.2/logs/userlogs',
+               help='Directory where logs of completed jobs on volume mounted '
+                    'to node are located.'),
+    cfg.DictOpt('HADOOP_PROCESSES_WITH_PORTS',
+                default={
+                    'JobTracker': 50030,
+                    'CLDB': 7221,
+                    'TaskTracker': 50060,
+                    'Oozie': 11000
+                },
+                help='Hadoop process map with ports for MapR plugin.'),
+    cfg.DictOpt('PROCESS_NAMES',
+                default={
+                    'nn': 'CLDB',
+                    'tt': 'TaskTracker',
+                    'dn': 'FileServer'
+                },
+                help='Names for namenode, tasktracker and datanode '
+                     'processes.'),
+    cfg.ListOpt('SKIP_EDP_JOB_TYPES',
+                default=[],
+                help='List of skipped EDP job types.'),
+    cfg.BoolOpt('SKIP_ALL_TESTS_FOR_PLUGIN',
+                default=True,
+                help='If this flag is True, then all tests for MapR plugin '
+                     'will be skipped.'),
+    cfg.BoolOpt('SKIP_CINDER_TEST', default=False),
+    cfg.BoolOpt('SKIP_CLUSTER_CONFIG_TEST', default=False),
+    cfg.BoolOpt('SKIP_EDP_TEST', default=False),
+    cfg.BoolOpt('SKIP_MAP_REDUCE_TEST', default=False),
+    cfg.BoolOpt('SKIP_SWIFT_TEST', default=False),
+    cfg.BoolOpt('SKIP_SCALING_TEST', default=False),
+    cfg.BoolOpt('SKIP_DECOMISSION_TEST', default=False),
+]
+
+
+MAPR_402MRV2_CONFIG_GROUP = cfg.OptGroup(name='MAPR_402MRV2')
+MAPR_402MRV2_CONFIG_OPTS = [
+    cfg.StrOpt('PLUGIN_NAME',
+               default='mapr',
+               help='Name of plugin.'),
+    cfg.StrOpt('IMAGE_ID',
+               help='ID for image which is used for cluster creation. Also '
+                    'you can specify image name or tag of image instead of '
+                    'image ID. If you do not specify image related parameters '
+                    'then image for cluster creation will be chosen by '
+                    'tag "sahara_i_tests".'),
+    cfg.StrOpt('IMAGE_NAME',
+               help='Name for image which is used for cluster creation. Also '
+                    'you can specify image ID or tag of image instead of '
+                    'image name. If you do not specify image related '
+                    'parameters, then the image for cluster creation will be '
+                    'chosen by tag "sahara_i_tests".'),
+    cfg.StrOpt('IMAGE_TAG',
+               help='Tag for image which is used for cluster creation. Also '
+                    'you can specify image ID or image name instead of tag of '
+                    'image. If you do not specify image related parameters, '
+                    'then image for cluster creation will be chosen by '
+                    'tag "sahara_i_tests".'),
+    cfg.StrOpt('HADOOP_VERSION',
+               default='4.0.2.mrv2',
+               help='Version of Hadoop.'),
+    cfg.StrOpt('HADOOP_USER',
+               default='mapr',
+               help='Username which is used for access to Hadoop services.'),
+    cfg.StrOpt('HADOOP_EXAMPLES_JAR_PATH',
+               default='/opt/mapr/hadoop/hadoop-2.5.1/share/hadoop/mapreduce'
+                       '/hadoop-mapreduce-examples-2.5.1-mapr-1501.jar',
+               help='Path to hadoop examples jar file.'),
+    cfg.StrOpt('HADOOP_LOG_DIRECTORY',
+               default='/opt/mapr/hadoop/hadoop-2.5.1/logs/userlogs',
+               help='Directory where logs of completed jobs are located.'),
+    cfg.StrOpt('HADOOP_LOG_DIRECTORY_ON_VOLUME',
+               default='/opt/mapr/hadoop/hadoop-2.5.1/logs/userlogs',
+               help='Directory where logs of completed jobs on volume mounted '
+                    'to node are located.'),
+    cfg.DictOpt('HADOOP_PROCESSES_WITH_PORTS',
+                default={
+                    'ResourceManager': 8088,
+                    'CLDB': 7221,
+                    'NodeManager': 8042,
+                    'Oozie': 11000
+                },
+                help='Hadoop process map with ports for MapR plugin.'),
+    cfg.DictOpt('PROCESS_NAMES',
+                default={
+                    'nn': 'CLDB',
+                    'tt': 'NodeManager',
+                    'dn': 'FileServer'
+                },
+                help='Names for namenode, tasktracker and datanode '
+                     'processes.'),
+    cfg.ListOpt('SKIP_EDP_JOB_TYPES',
+                default=[],
+                help='List of skipped EDP job types.'),
+    cfg.BoolOpt('SKIP_ALL_TESTS_FOR_PLUGIN',
+                default=True,
+                help='If this flag is True, then all tests for MapR plugin '
+                     'will be skipped.'),
+    cfg.BoolOpt('SKIP_CINDER_TEST', default=False),
+    cfg.BoolOpt('SKIP_CLUSTER_CONFIG_TEST', default=False),
+    cfg.BoolOpt('SKIP_EDP_TEST', default=False),
+    cfg.BoolOpt('SKIP_MAP_REDUCE_TEST', default=False),
+    cfg.BoolOpt('SKIP_SWIFT_TEST', default=False),
+    cfg.BoolOpt('SKIP_SCALING_TEST', default=False),
+    cfg.BoolOpt('SKIP_DECOMISSION_TEST', default=False),
+]
+
+
 def register_config(config, config_group, config_opts):
     config.register_group(config_group)
     config.register_opts(config_opts, config_group)
@@ -880,6 +1026,10 @@ class ITConfig(object):
             cfg.CONF, MAPR_401MRV1_CONFIG_GROUP, MAPR_401MRV1_CONFIG_OPTS)
         register_config(
             cfg.CONF, MAPR_401MRV2_CONFIG_GROUP, MAPR_401MRV2_CONFIG_OPTS)
+        register_config(
+            cfg.CONF, MAPR_402MRV1_CONFIG_GROUP, MAPR_402MRV1_CONFIG_OPTS)
+        register_config(
+            cfg.CONF, MAPR_402MRV2_CONFIG_GROUP, MAPR_402MRV2_CONFIG_OPTS)
 
         cfg.CONF(
             [], project='Sahara_integration_tests',
@@ -896,3 +1046,5 @@ class ITConfig(object):
         self.mapr_311_config = cfg.CONF.MAPR_311
         self.mapr_401mrv1_config = cfg.CONF.MAPR_401MRV1
         self.mapr_401mrv2_config = cfg.CONF.MAPR_401MRV2
+        self.mapr_402mrv1_config = cfg.CONF.MAPR_402MRV1
+        self.mapr_402mrv2_config = cfg.CONF.MAPR_402MRV2
