@@ -15,18 +15,9 @@
 
 import sahara.plugins.mapr.base.base_cluster_context as bc
 import sahara.plugins.mapr.services.mapreduce.mapreduce as mr
-from sahara.utils import files as f
 
 
 class Context(bc.BaseClusterContext):
-    UBUNTU_MAPR_BASE_REPO = ('http://package.mapr.com/releases/v4.0.1/ubuntu/ '
-                             'mapr optional')
-    UBUNTU_MAPR_ECOSYSTEM_REPO = ('http://package.mapr.com/releases/'
-                                  'ecosystem-4.x/ubuntu binary/')
-    CENTOS_MAPR_BASE_REPO = 'http://package.mapr.com/releases/v4.0.1/redhat/'
-    CENTOS_MAPR_ECOSYSTEM_REPO = ('http://package.mapr.com/releases/'
-                                  'ecosystem-4.x/redhat')
-
     def __init__(self, cluster, version_handler, added=None, removed=None):
         super(Context, self).__init__(cluster, version_handler, added, removed)
         self._hadoop_version = mr.MapReduce().version
@@ -35,38 +26,24 @@ class Context(bc.BaseClusterContext):
         self._resource_manager_uri = 'maprfs:///'
         self._cluster_mode = mr.MapReduce.cluster_mode
         self._node_aware = False
+        self._mapr_version = '4.0.1'
+        self._ubuntu_ecosystem_repo = (
+            'http://package.mapr.com/releases/ecosystem-4.x/ubuntu binary/')
+        self._centos_ecosystem_repo = (
+            'http://package.mapr.com/releases/ecosystem-4.x/redhat')
 
     @property
     def hadoop_lib(self):
         if not self._hadoop_lib:
-            f = '%(hadoop_home)s/lib'
-            args = {
-                'hadoop_home': self.hadoop_home,
-            }
-            self._hadoop_lib = f % args
+            self._hadoop_lib = '%s/lib' % self.hadoop_home
         return self._hadoop_lib
 
     @property
     def hadoop_conf(self):
         if not self._hadoop_conf:
-            f = '%(hadoop_home)s/conf'
-            args = {
-                'hadoop_home': self.hadoop_home,
-            }
-            self._hadoop_conf = f % args
+            self._hadoop_conf = '%s/conf' % self.hadoop_home
         return self._hadoop_conf
 
     @property
     def resource_manager_uri(self):
         return self._resource_manager_uri
-
-    def get_install_repo_script_data(self):
-        script_template = 'plugins/mapr/resources/add_mapr_repo.sh'
-        script_template = f.get_file_text(script_template)
-        args = {
-            "ubuntu_mapr_base_repo": Context.UBUNTU_MAPR_BASE_REPO,
-            "ubuntu_mapr_ecosystem_repo": Context.UBUNTU_MAPR_ECOSYSTEM_REPO,
-            "centos_mapr_repo": Context.CENTOS_MAPR_BASE_REPO,
-            "centos_mapr_ecosystem_repo": Context.CENTOS_MAPR_ECOSYSTEM_REPO,
-        }
-        return script_template % args

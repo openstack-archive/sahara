@@ -15,6 +15,9 @@
 
 import uuid
 
+from sahara import context
+import sahara.utils.files as files
+
 
 def unique_list(iterable, mapper=lambda i: i):
     result = []
@@ -88,3 +91,21 @@ def copy(s_path, s_instance, d_path, d_instance, run_as=None):
         copy_dir(s_path, s_instance, d_path, d_instance, run_as)
     else:
         copy_file(s_path, s_instance, d_path, d_instance, run_as)
+
+
+def run_script(instance, script, run_as=None, *args, **kwargs):
+    with instance.remote() as r:
+        path = '/tmp/%s.sh' % uuid.uuid4()
+        script = files.get_file_text(script) % kwargs
+        r.write_file_to(path, script, run_as_root=(run_as == 'root'))
+        r.execute_command(_run_as(run_as, 'chmod +x %s' % path))
+        r.execute_command(_run_as(run_as, '%s %s' % (path, ' '.join(args))))
+        # FIXME(aosadchyi): reuse existing remote
+        remove(instance, path, run_as=run_as)
+
+
+def execute_on_instances(instances, function, *args, **kwargs):
+    with context.ThreadGroup() as tg:
+        for instance in instances:
+            t_name = '%s-execution' % function.__name__
+            tg.spawn(t_name, function, instance, *args, **kwargs)

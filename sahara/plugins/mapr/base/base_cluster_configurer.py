@@ -30,19 +30,21 @@ import sahara.plugins.mapr.services.yarn.yarn as yarn
 import sahara.plugins.mapr.util.general as util
 from sahara.topology import topology_helper as th
 import sahara.utils.configs as sahara_configs
-from sahara.utils import files as f
 
 
 LOG = logging.getLogger(__name__)
 conductor = conductor.API
 
-MAPR_REPO_DIR = '/opt/mapr-repository'
 _MAPR_HOME = '/opt/mapr'
 _JAVA_HOME = '/usr/java/jdk1.7.0_51'
 _CONFIGURE_SH_TIMEOUT = 600
 _SET_MODE_CMD = 'maprcli cluster mapreduce set -mode '
 
 _TOPO_SCRIPT = 'plugins/mapr/resources/topology.sh'
+INSTALL_JAVA_SCRIPT = 'plugins/mapr/resources/install_java.sh'
+INSTALL_SCALA_SCRIPT = 'plugins/mapr/resources/install_scala.sh'
+INSTALL_MYSQL_CLIENT = 'plugins/mapr/resources/install_mysql_client.sh'
+ADD_MAPR_REPO_SCRIPT = 'plugins/mapr/resources/add_mapr_repo.sh'
 
 SERVICE_INSTALL_PRIORITY = [
     mng.Management(),
@@ -59,6 +61,8 @@ class BaseConfigurer(ac.AbstractConfigurer):
         instances = instances or cluster_context.get_instances()
         self._configure_ssh_connection(cluster_context, instances)
         self._install_mapr_repo(cluster_context, instances)
+        if not cluster_context.is_prebuilt:
+            self._prepare_bare_image(cluster_context, instances)
         self._install_services(cluster_context, instances)
         self._configure_topology(cluster_context, instances)
         self._configure_database(cluster_context, instances)
@@ -97,33 +101,38 @@ class BaseConfigurer(ac.AbstractConfigurer):
 
         return sorted(cluster_context.cluster_services, key=key, reverse=True)
 
+    def _prepare_bare_image(self, cluster_context, instances):
+        LOG.debug('Preparing bare image')
+        d_name = cluster_context.distro.name
+
+        LOG.debug('Installing Java')
+        util.execute_on_instances(
+            instances, util.run_script, INSTALL_JAVA_SCRIPT, 'root', d_name)
+        LOG.debug('Installing Scala')
+        util.execute_on_instances(
+            instances, util.run_script, INSTALL_SCALA_SCRIPT, 'root', d_name)
+        LOG.debug('Installing MySQL client')
+        util.execute_on_instances(
+            instances, util.run_script, INSTALL_MYSQL_CLIENT, 'root', d_name)
+        LOG.debug('Bare images successfully prepared')
+
     def _configure_topology(self, context, instances):
+        def write_file(instance, path, data):
+            with instance.remote() as r:
+                r.write_file_to(path, data, run_as_root=True)
+
         LOG.debug('Configuring cluster topology')
         is_node_aware = context.is_node_aware
         if is_node_aware:
             topo = th.generate_topology_map(context.cluster, is_node_aware)
             topo = '\n'.join(['%s %s' % i for i in six.iteritems(topo)])
             data_path = '%s/topology.data' % context.mapr_home
-            script_path = '%s/topology.sh' % context.mapr_home
-            files = {
-                data_path: topo,
-                script_path: f.get_file_text(_TOPO_SCRIPT),
-            }
-            chmod_cmd = 'chmod +x %s' % script_path
-            for instance in instances:
-                with instance.remote() as r:
-                    r.write_files_to(files, run_as_root=True)
-                    r.execute_command(chmod_cmd, run_as_root=True)
+            util.execute_on_instances(instances, write_file, data_path, topo)
+            util.execute_on_instances(
+                instances, util.run_script, _TOPO_SCRIPT, 'root', data_path)
         else:
             LOG.debug('Data locality is disabled.')
         LOG.debug('Cluster topology successfully configured')
-
-    def _execute_on_instances(self, function, cluster_context, instances,
-                              **kwargs):
-        with context.ThreadGroup() as tg:
-            for instance in instances:
-                tg.spawn('%s-execution' % function.__name__,
-                         function, instance, **kwargs)
 
     def _write_config_files(self, cluster_context, instances):
         LOG.debug('Writing config files')
@@ -230,10 +239,8 @@ class BaseConfigurer(ac.AbstractConfigurer):
             else:
                 LOG.debug('user "mapr" does not exists')
 
-        self._execute_on_instances(set_user_password, cluster_context,
-                                   instances)
-        self._execute_on_instances(create_home_mapr, cluster_context,
-                                   instances)
+        util.execute_on_instances(instances, set_user_password)
+        util.execute_on_instances(instances, create_home_mapr)
 
     def _configure_sh_cluster(self, cluster_context, instances):
         LOG.debug('Executing configure.sh')
@@ -273,8 +280,7 @@ class BaseConfigurer(ac.AbstractConfigurer):
                 r.execute_command(echo_param)
                 r.execute_command(echo_timeout)
 
-        self._execute_on_instances(keep_alive_connection,
-                                   cluster_context, instances)
+        util.execute_on_instances(instances, keep_alive_connection)
 
     def mapr_user_exists(self, instance):
             with instance.remote() as r:
@@ -300,18 +306,10 @@ class BaseConfigurer(ac.AbstractConfigurer):
             r.execute_command(cmd % cluster_mode)
 
     def _install_mapr_repo(self, cluster_context, instances):
-        def add_repo(instance, **kwargs):
-            with instance.remote() as r:
-                script = '/tmp/repo_install.sh'
-                data = cluster_context.get_install_repo_script_data()
-                r.write_file_to(script, data, run_as_root=True)
-                r.execute_command('chmod +x %s' % script, run_as_root=True)
-                r.execute_command('%s %s' % (script, kwargs.get('distro')),
-                                  run_as_root=True, raise_when_error=False)
-
         d_name = cluster_context.distro.name
-        self._execute_on_instances(
-            add_repo, cluster_context, instances, distro=d_name)
+        util.execute_on_instances(
+            instances, util.run_script, ADD_MAPR_REPO_SCRIPT, 'root', d_name,
+            **cluster_context.mapr_repos)
 
     def _update_services(self, c_context, instances):
         for service in c_context.cluster_services:

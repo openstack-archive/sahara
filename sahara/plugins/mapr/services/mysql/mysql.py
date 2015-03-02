@@ -21,6 +21,7 @@ import six
 import sahara.plugins.mapr.domain.configuration_file as cf
 import sahara.plugins.mapr.domain.service as s
 import sahara.plugins.mapr.services.hive.hive as hive
+import sahara.plugins.mapr.util.general as g
 import sahara.utils.files as f
 
 LOG = logging.getLogger(__name__)
@@ -198,11 +199,4 @@ class MySQL(s.Service):
 
     @staticmethod
     def install_mysql(instance, distro_name):
-        with instance.remote() as r:
-            script = '/tmp/install_mysql.sh'
-            data = f.get_file_text(MySQL.MYSQL_INSTALL_SCRIPT)
-            r.write_file_to(script, data, run_as_root=True)
-            r.execute_command('chmod +x %s' % script, run_as_root=True)
-            r.execute_command('%s %s' % (script, distro_name),
-                              run_as_root=True,
-                              timeout=MySQL.INSTALL_PACKAGES_TIMEOUT)
+        g.run_script(instance, MySQL.MYSQL_INSTALL_SCRIPT, 'root', distro_name)

@@ -21,6 +21,7 @@ from sahara.i18n import _
 import sahara.plugins.mapr.domain.configuration_file as bcf
 import sahara.plugins.mapr.domain.node_process as np
 import sahara.plugins.mapr.domain.service as s
+import sahara.plugins.mapr.util.general as g
 import sahara.plugins.mapr.util.validation_utils as vu
 import sahara.plugins.provisioning as p
 from sahara.utils import files
@@ -103,14 +104,8 @@ class MapRFS(s.Service):
 
     def _generate_disk_list_file(self, instance, path_to_disk_setup_script):
         LOG.debug('Creating disk list file')
-        script_path = '/tmp/disk_setup_script.sh'
-        with instance.remote() as r:
-            r.write_file_to(
-                script_path, files.get_file_text(path_to_disk_setup_script))
-            r.execute_command('chmod +x ' + script_path, run_as_root=True)
-            args = ' '.join(instance.node_group.storage_paths())
-            cmd = '%s %s' % (script_path, args)
-            r.execute_command(cmd, run_as_root=True)
+        g.run_script(instance, path_to_disk_setup_script, 'root',
+                     *instance.node_group.storage_paths())
 
     def _execute_disksetup(self, instance):
         with instance.remote() as rmt:

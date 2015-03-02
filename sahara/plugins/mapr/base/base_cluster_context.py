@@ -45,10 +45,13 @@ def _get_node_process_name(node_process):
 
 
 class BaseClusterContext(cc.AbstractClusterContext):
+    ubuntu_base = 'http://package.mapr.com/releases/v%s/ubuntu/ mapr optional'
+    centos_base = 'http://package.mapr.com/releases/v%s/redhat/'
+
     def __init__(self, cluster, version_handler, added=None, removed=None):
         self._cluster = cluster
         self._distro = None
-        self.all_services_list = version_handler.get_services()
+        self._all_services = version_handler.get_services()
         self._required_services = version_handler.get_required_services()
         self._cluster_services = None
         self._mapr_home = '/opt/mapr'
@@ -71,6 +74,14 @@ class BaseClusterContext(cc.AbstractClusterContext):
         self._existing_instances = [i for i in self.get_instances()
                                     if i not in self._changed_instances]
         self._restart = collections.defaultdict(list)
+        self._ubuntu_base_repo = None
+        self._ubuntu_ecosystem_repo = None
+        self._centos_base_repo = None
+        self._centos_ecosystem_repo = None
+        self._repos = {}
+        self._is_prebuilt = None
+        self._local_repo = '/opt/mapr-repository'
+        self._mapr_version = None
 
     @property
     def cluster(self):
@@ -85,6 +96,10 @@ class BaseClusterContext(cc.AbstractClusterContext):
     @property
     def required_services(self):
         return self._required_services
+
+    @property
+    def all_services(self):
+        return self._all_services
 
     @property
     def mapr_home(self):
@@ -225,9 +240,6 @@ class BaseClusterContext(cc.AbstractClusterContext):
             result.update(service.get_configs_dict())
         return result
 
-    def get_configure_sh_path(self):
-        return '/opt/mapr/server/configure.sh'
-
     def get_chosen_service_version(self, service_name):
         service_configs = self.cluster.cluster_configs.get(service_name, None)
         if not service_configs:
@@ -259,7 +271,7 @@ class BaseClusterContext(cc.AbstractClusterContext):
         return service
 
     def _find_service_instance(self, ui_name, version):
-        for service in self.all_services_list:
+        for service in self.all_services:
             if service.ui_name == ui_name:
                 if version is not None and service.version != version:
                     continue
@@ -267,7 +279,7 @@ class BaseClusterContext(cc.AbstractClusterContext):
 
     def get_service_name_by_node_process(self, node_process):
         node_process = _get_node_process_name(node_process)
-        for service in self.all_services_list:
+        for service in self.all_services:
             node_processes = [np.ui_name for np in service.node_processes]
             if node_process in node_processes:
                 return service.ui_name
@@ -337,3 +349,49 @@ class BaseClusterContext(cc.AbstractClusterContext):
     @property
     def should_be_restarted(self):
         return self._restart
+
+    @property
+    def mapr_repos(self):
+        if not self._repos:
+            self._repos = {
+                "ubuntu_mapr_base_repo": self.ubuntu_base_repo,
+                "ubuntu_mapr_ecosystem_repo": self.ubuntu_ecosystem_repo,
+                "centos_mapr_base_repo": self.centos_base_repo,
+                "centos_mapr_ecosystem_repo": self.centos_ecosystem_repo,
+            }
+        return self._repos
+
+    @property
+    def local_repo(self):
+        return self._local_repo
+
+    @property
+    def is_prebuilt(self):
+        if self._is_prebuilt is None:
+            self._is_prebuilt = g.is_directory(
+                self.some_instance, self.local_repo)
+        return self._is_prebuilt
+
+    @property
+    def mapr_version(self):
+        return self._mapr_version
+
+    @property
+    def ubuntu_base_repo(self):
+        if not self._ubuntu_base_repo:
+            self._ubuntu_base_repo = self.ubuntu_base % self.mapr_version
+        return self._ubuntu_base_repo
+
+    @property
+    def ubuntu_ecosystem_repo(self):
+        return self._ubuntu_ecosystem_repo
+
+    @property
+    def centos_base_repo(self):
+        if not self._centos_base_repo:
+            self._centos_base_repo = self.centos_base % self.mapr_version
+        return self._centos_base_repo
+
+    @property
+    def centos_ecosystem_repo(self):
+        return self._centos_ecosystem_repo
