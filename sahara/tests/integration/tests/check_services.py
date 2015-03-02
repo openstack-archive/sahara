@@ -14,9 +14,9 @@
 # limitations under the License.
 
 from oslo_utils import excutils
+import six
 
 from sahara.tests.integration.tests import base
-import six
 
 
 class CheckServicesTest(base.ITestCase):
@@ -64,6 +64,34 @@ class CheckServicesTest(base.ITestCase):
         try:
             self.transfer_helper_script_to_node('sqoop2_service_test.sh')
             self.execute_command('./script.sh')
+        except Exception as e:
+            with excutils.save_and_reraise_exception():
+                print(six.text_type(e))
+        finally:
+            self.close_ssh_connection()
+
+    @base.skip_test('SKIP_CHECK_SERVICES_TEST', message='Test for Services'
+                    ' checking was skipped.')
+    def check_key_value_store_availability(self, cluster_info):
+        namenode_ip = cluster_info['node_info']['namenode_ip']
+        self.open_ssh_connection(namenode_ip)
+        try:
+            self.transfer_helper_script_to_node('key_value_store_service'
+                                                '_test.sh')
+            self.transfer_helper_conf_file_to_node('key_value_store'
+                                                   '_indexer.xml')
+            self.execute_command('./script.sh create_table -ip %s' %
+                                 namenode_ip)
+            self.execute_command('./script.sh create_solr_collection -ip %s' %
+                                 namenode_ip)
+            self.execute_command('./script.sh add_indexer -ip %s' %
+                                 namenode_ip)
+            self.execute_command('./script.sh create_data -ip %s' %
+                                 namenode_ip)
+            self.execute_command('./script.sh check_solr -ip %s' %
+                                 namenode_ip)
+            self.execute_command('./script.sh remove_data -ip %s' %
+                                 namenode_ip)
         except Exception as e:
             with excutils.save_and_reraise_exception():
                 print(six.text_type(e))
