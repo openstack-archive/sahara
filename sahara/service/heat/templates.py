@@ -221,7 +221,7 @@ class ClusterTemplate(object):
         for idx in range(0, ng.volumes_per_node):
             resources.update(self._serialize_volume(
                 inst_name, idx, ng.volumes_size, ng.volumes_availability_zone,
-                ng.volume_type))
+                ng.volume_type, ng.volume_local_to_instance))
 
         return resources
 
@@ -274,7 +274,8 @@ class ClusterTemplate(object):
         }
 
     def _serialize_volume(self, inst_name, volume_idx, volumes_size,
-                          volumes_availability_zone, volume_type):
+                          volumes_availability_zone, volume_type,
+                          volume_local_to_instance):
         volume_name = _get_volume_name(inst_name, volume_idx)
         volume_attach_name = _get_volume_attach_name(inst_name, volume_idx)
         properties = {
@@ -284,6 +285,10 @@ class ClusterTemplate(object):
         }
         if volumes_availability_zone:
             properties["availability_zone"] = volumes_availability_zone
+
+        if volume_local_to_instance:
+            properties["scheduler_hints"] = {
+                "local_to_instance": {"Ref": inst_name}}
 
         return {
             volume_name: {

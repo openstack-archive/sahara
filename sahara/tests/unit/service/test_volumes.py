@@ -109,7 +109,8 @@ class TestAttachVolume(base.SaharaWithDbTestCase):
               'volume_type': None,
               'name': 'master',
               'cluster_id': '11',
-              'instances': [instance1, instance2]}
+              'instances': [instance1, instance2],
+              'volume_local_to_instance': False}
 
         cluster = r.ClusterResource({'node_groups': [ng]})
 

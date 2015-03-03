@@ -1,0 +1,110 @@
+{
+    "AWSTemplateFormatVersion" : "2010-09-09",
+    "Description" : "Data Processing Cluster by Sahara",
+
+    "Resources" : {
+        "cluster-worker-001-port" : {
+            "Type" : "OS::Neutron::Port",
+            "Properties" : {
+               "network_id" : "private_net",
+               "replacement_policy": "AUTO"
+            }
+        },
+        "cluster-worker-001-floating" : {
+            "Type" : "OS::Neutron::FloatingIP" ,
+            "Properties" : {
+                "floating_network_id" : "floating",
+                "port_id" : { "Ref" :  "cluster-worker-001-port" }
+            }
+        },
+        "cluster-worker-001" : {
+            "Type" : "OS::Nova::Server",
+            "Properties" : {
+                "name" : "cluster-worker-001",
+                "flavor" : "42",
+                "image" : "1",
+                "admin_user": "root",
+                "networks" : [{ "port" : { "Ref" : "cluster-worker-001-port" }}],
+                "key_name" : "user_key",
+                "user_data": "line2\nline3"
+            }
+        },
+        "cluster-worker-001-volume-0" : {
+            "Type" : "OS::Cinder::Volume",
+            "Properties" : {
+                "name" : "cluster-worker-001-volume-0",
+                "size" : "10",
+                "scheduler_hints": {"local_to_instance": {"Ref": "cluster-worker-001"}},
+                "volume_type" : "vol_type"
+            }
+        },
+        "cluster-worker-001-volume-attachment-0" : {
+            "Type" : "OS::Cinder::VolumeAttachment",
+            "Properties" : {
+                "instance_uuid" : { "Ref" : "cluster-worker-001" },
+                "volume_id" : { "Ref" : "cluster-worker-001-volume-0" },
+                "mountpoint" : null
+            }
+        },
+        "cluster-worker-001-volume-1" : {
+            "Type" : "OS::Cinder::Volume",
+            "Properties" : {
+                "name" : "cluster-worker-001-volume-1",
+                "size" : "10",
+                "scheduler_hints": {"local_to_instance": {"Ref": "cluster-worker-001"}},
+                "volume_type": "vol_type"
+            }
+        },
+        "cluster-worker-001-volume-attachment-1" : {
+            "Type" : "OS::Cinder::VolumeAttachment",
+            "Properties" : {
+                "instance_uuid" : { "Ref" : "cluster-worker-001" },
+                "volume_id" : { "Ref" : "cluster-worker-001-volume-1" },
+                "mountpoint" : null
+            }
+        },
+        "cluster-master-001-port" : {
+            "Type" : "OS::Neutron::Port",
+            "Properties" : {
+               "network_id" : "private_net",
+               "replacement_policy": "AUTO"
+            }
+        },
+        "cluster-master-001-floating" : {
+            "Type" : "OS::Neutron::FloatingIP" ,
+            "Properties" : {
+                "floating_network_id" : "floating",
+                "port_id" : { "Ref" :  "cluster-master-001-port" }
+            }
+        },
+        "cluster-master-001" : {
+            "Type" : "OS::Nova::Server",
+            "Properties" : {
+                "name" : "cluster-master-001",
+                "flavor" : "42",
+                "image" : "1",
+                "admin_user": "root",
+                "networks" : [{ "port" : { "Ref" : "cluster-master-001-port" }}],
+                "key_name" : "user_key",
+                "user_data": "line1\nline2"
+            }
+        },
+        "cluster-master-001-volume-0": {
+            "Type": "OS::Cinder::Volume",
+            "Properties": {
+                "name": "cluster-master-001-volume-0",
+                "size": "10",
+                "volume_type": null
+            }
+        },
+        "cluster-master-001-volume-attachment-0": {
+            "Type": "OS::Cinder::VolumeAttachment",
+            "Properties": {
+                "instance_uuid": {"Ref": "cluster-master-001"},
+                "volume_id": {"Ref": "cluster-master-001-volume-0"},
+                "mountpoint": null}
+        }
+    },
+
+    "Outputs" : {}
+}
