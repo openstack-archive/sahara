@@ -495,6 +495,51 @@ def cluster_template_destroy(context, cluster_template_id):
         session.delete(cluster_template)
 
 
+def cluster_template_update(context, values):
+    node_groups = values.pop("node_groups", [])
+
+    session = get_session()
+    with session.begin():
+        cluster_template_id = values['id']
+        cluster_template = (_cluster_template_get(
+            context, session, cluster_template_id))
+        if not cluster_template:
+            raise ex.NotFoundException(
+                cluster_template_id,
+                _("Cluster Template id '%s' not found!"))
+
+        name = values.get('name')
+        if name:
+            same_name_tmpls = model_query(
+                m.ClusterTemplate, context).filter_by(
+                name=name).all()
+            if (len(same_name_tmpls) > 0 and
+                    same_name_tmpls[0].id != cluster_template_id):
+                raise ex.DBDuplicateEntry(
+                    _("Cluster Template can not be updated. "
+                      "Another cluster template with name %s already exists.")
+                    % name
+                )
+
+        if len(cluster_template.clusters) > 0:
+            raise ex.UpdateFailedException(
+                cluster_template_id,
+                _("Cluster Template id '%s' can not be updated. "
+                  "It is referenced by at least one cluster.")
+            )
+        cluster_template.update(values)
+
+        model_query(m.TemplatesRelation, context).filter_by(
+            cluster_template_id=cluster_template_id).delete()
+        for ng in node_groups:
+            node_group = m.TemplatesRelation()
+            node_group.update(ng)
+            node_group.update({"cluster_template_id": cluster_template_id})
+            node_group.save(session=session)
+
+    return cluster_template
+
+
 # Node Group Template ops
 
 def _node_group_template_get(context, session, node_group_template_id):

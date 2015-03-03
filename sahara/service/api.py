@@ -149,6 +149,10 @@ def terminate_cluster_template(id):
     return conductor.cluster_template_destroy(context.ctx(), id)
 
 
+def update_cluster_template(id, values):
+    return conductor.cluster_template_update(context.ctx(), id, values)
+
+
 # NodeGroupTemplate ops
 
 def get_node_group_templates(**kwargs):

@@ -137,3 +137,26 @@ def check_cluster_template_usage(cluster_template_id, **kwargs):
             _("Cluster template %(id)s in use by %(clusters)s") %
             {'id': cluster_template_id,
              'clusters':  ', '.join(users)})
+
+
+def check_cluster_template_update(data, **kwargs):
+    if data.get('plugin_name'):
+        b.check_plugin_name_exists(data['plugin_name'])
+
+    if data.get('plugin_name') and data.get('hadoop_version'):
+        b.check_plugin_supports_version(data['plugin_name'],
+                                        data['hadoop_version'])
+        b.check_all_configurations(data)
+
+        if data.get('default_image_id'):
+            b.check_image_registered(data['default_image_id'])
+            b.check_required_image_tags(data['plugin_name'],
+                                        data['hadoop_version'],
+                                        data['default_image_id'])
+
+        if data.get('anti_affinity'):
+            b.check_node_processes(data['plugin_name'], data['hadoop_version'],
+                                   data['anti_affinity'])
+
+    if data.get('neutron_management_network'):
+        b.check_network_exists(data['neutron_management_network'])
