@@ -13,16 +13,32 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import copy
+
 from sahara import exceptions
 from sahara.i18n import _
 from sahara.plugins import provisioning as p
 
 
+HOST_REGISTRATIONS_TIMEOUT = p.Config(
+    'Host registrations timeout', 'general',
+    'cluster', config_type='int', priority=1,
+    default_value=3600, is_optional=True,
+    description='Timeout for host registrations, in seconds')
+
+DECOMMISSIONING_TIMEOUT = p.Config(
+    'Timeout for decommissioning nodes', 'general',
+    'cluster', config_type='int', priority=1,
+    default_value=1000, is_optional=True,
+    description='Timeout for decommissioning nodes, in seconds')
+
+
 class ConfigurationProvider(object):
-    def __init__(self, config):
+    def __init__(self, config, hadoop_version):
         self.config = config
         self.config_mapper = {}
         self.config_items = []
+        self.hadoop_version = hadoop_version
         self._initialize(config)
 
     def get_config_items(self):
@@ -67,3 +83,12 @@ class ConfigurationProvider(object):
                 self.config_mapper[service_property['name']] = (
                     self._get_target(
                         service_property['applicable_target']))
+        host_reg_timeout = copy.copy(HOST_REGISTRATIONS_TIMEOUT)
+        setattr(host_reg_timeout, 'tag', 'global')
+        self.config_items.append(host_reg_timeout)
+        self.config_mapper[host_reg_timeout.name] = 'global'
+        if self.hadoop_version == '2.0.6':
+            dec_timeout = copy.copy(DECOMMISSIONING_TIMEOUT)
+            setattr(dec_timeout, 'tag', 'global')
+            self.config_items.append(dec_timeout)
+            self.config_mapper[dec_timeout.name] = 'global'
