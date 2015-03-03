@@ -103,6 +103,10 @@ CLUSTER_TEMPLATE_SCHEMA = {
 }
 
 
+CLUSTER_TEMPLATE_UPDATE_SCHEMA = copy.copy(CLUSTER_TEMPLATE_SCHEMA)
+CLUSTER_TEMPLATE_UPDATE_SCHEMA["required"] = []
+
+
 def check_cluster_template_create(data, **kwargs):
     b.check_cluster_template_unique_name(data['name'])
     b.check_plugin_name_exists(data['plugin_name'])
