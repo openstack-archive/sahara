@@ -27,7 +27,7 @@ from sahara.plugins.vanilla import utils as vu
 from sahara.utils import cluster_progress_ops as cpo
 from sahara.utils import edp
 from sahara.utils import files
-from sahara.utils import general as g
+from sahara.utils import poll_utils
 
 LOG = logging.getLogger(__name__)
 
@@ -166,23 +166,12 @@ def await_datanodes(cluster):
     if datanodes_count < 1:
         return
 
-    LOG.debug("Waiting {count} datanodes to start up".format(
-        count=datanodes_count))
+    l_message = _("Waiting on %s datanodes to start up") % datanodes_count
     with vu.get_namenode(cluster).remote() as r:
-        while True:
-            if _check_datanodes_count(r, datanodes_count):
-                LOG.info(
-                    _LI('Datanodes on cluster {cluster} have been started')
-                    .format(cluster=cluster.name))
-                return
-
-            context.sleep(1)
-
-            if not g.check_cluster_exists(cluster):
-                LOG.info(
-                    _LI('Stop waiting for datanodes on cluster {cluster} since'
-                        ' it has been deleted').format(cluster=cluster.name))
-                return
+        poll_utils.plugin_option_poll(
+            cluster, _check_datanodes_count,
+            c_helper.DATANODES_STARTUP_TIMEOUT, l_message, 1, {
+                'remote': r, 'count': datanodes_count})
 
 
 def _check_datanodes_count(remote, count):

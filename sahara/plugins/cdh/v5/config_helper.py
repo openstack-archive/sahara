@@ -92,11 +92,23 @@ EXTJS_LIB_URL = p.Config(
     description=("Ext 2.2 library is required for Oozie Web Console. "
                  "The file will be downloaded from VM with oozie."))
 
+AWAIT_AGENTS_TIMEOUT = p.Config(
+    'Await Cloudera agents timeout', 'general', 'cluster', config_type='int',
+    priority=1, default_value=300, is_optional=True,
+    description="Timeout for Cloudera agents connecting to Coudera Manager, "
+                "in seconds")
+
+AWAIT_MANAGER_STARTING_TIMEOUT = p.Config(
+    'Timeout for Cloudera Manager starting', 'general', 'cluster',
+    config_type='int', priority=1, default_value=300, is_optional=True,
+    description='Timeout for Cloudera Manager starting, in seconds')
+
 
 def _get_cluster_plugin_configs():
     return [CDH5_REPO_URL, CDH5_REPO_KEY_URL, CM5_REPO_URL, CM5_REPO_KEY_URL,
             ENABLE_SWIFT, ENABLE_HBASE_COMMON_LIB, SWIFT_LIB_URL,
-            EXTJS_LIB_URL]
+            EXTJS_LIB_URL, AWAIT_MANAGER_STARTING_TIMEOUT,
+            AWAIT_AGENTS_TIMEOUT]
 
 
 # ng wide configs
