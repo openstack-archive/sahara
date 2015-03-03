@@ -60,7 +60,5 @@
     "job-binary-internals:create": "",
     "job-binary-internals:get": "",
     "job-binary-internals:delete": "",
-    "job-binary-internals:get_data": "",
-
-    "clusters:progress": ""
+    "job-binary-internals:get_data": ""
 }

@@ -62,9 +62,10 @@ class LocalApi(object):
     # Cluster ops
 
     @r.wrap(r.ClusterResource)
-    def cluster_get(self, context, cluster):
+    def cluster_get(self, context, cluster, show_progress=False):
         """Return the cluster or None if it does not exist."""
-        return self._manager.cluster_get(context, _get_id(cluster))
+        return self._manager.cluster_get(
+            context, _get_id(cluster), show_progress)
 
     @r.wrap(r.ClusterResource)
     def cluster_get_all(self, context, **kwargs):

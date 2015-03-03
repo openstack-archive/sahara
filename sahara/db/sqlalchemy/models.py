@@ -78,10 +78,10 @@ class Cluster(mb.SaharaBase):
     cluster_template = relationship('ClusterTemplate',
                                     backref="clusters", lazy='joined')
 
-    def to_dict(self):
+    def to_dict(self, show_progress=False):
         d = super(Cluster, self).to_dict()
         d['node_groups'] = [ng.to_dict() for ng in self.node_groups]
-        d['provision_progress'] = [pp.to_dict() for pp in
+        d['provision_progress'] = [pp.to_dict(show_progress) for pp in
                                    self.provision_progress]
         return d
 
@@ -419,3 +419,9 @@ class ClusterProvisionStep(mb.SaharaBase):
     events = relationship('ClusterEvent', cascade="all,delete",
                           backref='ClusterProvisionStep',
                           lazy='joined')
+
+    def to_dict(self, show_progress):
+        d = super(ClusterProvisionStep, self).to_dict()
+        if show_progress:
+            d['events'] = [event.to_dict() for event in self.events]
+        return d

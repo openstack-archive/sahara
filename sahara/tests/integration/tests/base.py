@@ -80,6 +80,7 @@ class ITestCase(testcase.WithAttributes, base.BaseTestCase):
         self._setup_volume_params()
         self._setup_flavor()
         self._setup_ssh_access()
+        self.TEST_EVENT_LOG = True
 
         self._image_id, self._ssh_username = (
             self.get_image_id_and_ssh_username())
@@ -421,6 +422,8 @@ class ITestCase(testcase.WithAttributes, base.BaseTestCase):
                 % self.common_config.HDFS_INITIALIZATION_TIMEOUT)
         self.close_ssh_connection()
 
+    @skip_test('TEST_EVENT_LOG',
+               'Testing event log was skipped until 0.7.8 client release')
     @errormsg("Failure while event log testing: ")
     def _test_event_log(self, cluster_id):
         cluster = self.sahara.clusters.get(cluster_id)
