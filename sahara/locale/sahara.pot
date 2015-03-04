@@ -6,9 +6,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: sahara 2015.1.dev51\n"
+"Project-Id-Version: sahara 2015.1.dev131\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2015-02-18 06:14+0000\n"
+"POT-Creation-Date: 2015-03-04 06:12+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -155,6 +155,11 @@ msgid ""
 "%(available)s"
 msgstr ""
 
+#: sahara/exceptions.py:347
+#, python-format
+msgid "Object '%s' could not be updated"
+msgstr ""
+
 #: sahara/api/base.py:22
 msgid "This API operation isn't implemented"
 msgstr ""
@@ -191,7 +196,7 @@ msgid "Duplicate entry for NodeGroup: %s"
 msgstr ""
 
 #: sahara/db/sqlalchemy/api.py:292 sahara/db/sqlalchemy/api.py:304
-#: sahara/db/sqlalchemy/api.py:323 sahara/db/sqlalchemy/api.py:1018
+#: sahara/db/sqlalchemy/api.py:323 sahara/db/sqlalchemy/api.py:1087
 #, python-format
 msgid "Cluster id '%s' not found!"
 msgstr ""
@@ -218,99 +223,125 @@ msgstr ""
 msgid "Duplicate entry for TemplatesRelation: %s"
 msgstr ""
 
-#: sahara/db/sqlalchemy/api.py:493
+#: sahara/db/sqlalchemy/api.py:493 sahara/db/sqlalchemy/api.py:509
 #, python-format
 msgid "Cluster Template id '%s' not found!"
 msgstr ""
 
-#: sahara/db/sqlalchemy/api.py:533
+#: sahara/db/sqlalchemy/api.py:519
+#, python-format
+msgid ""
+"Cluster Template can not be updated. Another cluster template with name "
+"%s already exists."
+msgstr ""
+
+#: sahara/db/sqlalchemy/api.py:527
+#, python-format
+msgid ""
+"Cluster Template id '%s' can not be updated. It is referenced by at least"
+" one cluster."
+msgstr ""
+
+#: sahara/db/sqlalchemy/api.py:578
 #, python-format
 msgid "Duplicate entry for NodeGroupTemplate: %s"
 msgstr ""
 
-#: sahara/db/sqlalchemy/api.py:546
+#: sahara/db/sqlalchemy/api.py:591
 #, python-format
 msgid "Node Group Template id '%s' not found!"
 msgstr ""
 
-#: sahara/db/sqlalchemy/api.py:616
+#: sahara/db/sqlalchemy/api.py:604
+#, python-format
+msgid "NodeGroupTemplate id '%s' not found"
+msgstr ""
+
+#: sahara/db/sqlalchemy/api.py:612
+#, python-format
+msgid ""
+"NodeGroupTemplate id '%s' can not be updated. It is referenced by an "
+"existing cluster."
+msgstr ""
+
+#: sahara/db/sqlalchemy/api.py:685
 #, python-format
 msgid "Duplicate entry for DataSource: %s"
 msgstr ""
 
-#: sahara/db/sqlalchemy/api.py:629
+#: sahara/db/sqlalchemy/api.py:698
 #, python-format
 msgid "Data Source id '%s' not found!"
 msgstr ""
 
-#: sahara/db/sqlalchemy/api.py:633 sahara/db/sqlalchemy/api.py:833
+#: sahara/db/sqlalchemy/api.py:702 sahara/db/sqlalchemy/api.py:902
 msgid " on foreign key constraint"
 msgstr ""
 
-#: sahara/db/sqlalchemy/api.py:634
+#: sahara/db/sqlalchemy/api.py:703
 #, python-format
 msgid "Data Source deletion failed%s"
 msgstr ""
 
-#: sahara/db/sqlalchemy/api.py:723
+#: sahara/db/sqlalchemy/api.py:792
 #, python-format
 msgid "Duplicate entry for JobExecution: %s"
 msgstr ""
 
-#: sahara/db/sqlalchemy/api.py:735 sahara/db/sqlalchemy/api.py:747
+#: sahara/db/sqlalchemy/api.py:804 sahara/db/sqlalchemy/api.py:816
 #, python-format
 msgid "JobExecution id '%s' not found!"
 msgstr ""
 
-#: sahara/db/sqlalchemy/api.py:804
+#: sahara/db/sqlalchemy/api.py:873
 #, python-format
 msgid "Duplicate entry for Job: %s"
 msgstr ""
 
-#: sahara/db/sqlalchemy/api.py:816 sahara/db/sqlalchemy/api.py:829
+#: sahara/db/sqlalchemy/api.py:885 sahara/db/sqlalchemy/api.py:898
 #, python-format
 msgid "Job id '%s' not found!"
 msgstr ""
 
-#: sahara/db/sqlalchemy/api.py:834
+#: sahara/db/sqlalchemy/api.py:903
 #, python-format
 msgid "Job deletion failed%s"
 msgstr ""
 
-#: sahara/db/sqlalchemy/api.py:883
+#: sahara/db/sqlalchemy/api.py:952
 #, python-format
 msgid "Duplicate entry for JobBinary: %s"
 msgstr ""
 
-#: sahara/db/sqlalchemy/api.py:904
+#: sahara/db/sqlalchemy/api.py:973
 #, python-format
 msgid "JobBinary id '%s' not found!"
 msgstr ""
 
-#: sahara/db/sqlalchemy/api.py:908
+#: sahara/db/sqlalchemy/api.py:977
 msgid "JobBinary is referenced and cannot be deleted"
 msgstr ""
 
-#: sahara/db/sqlalchemy/api.py:956 sahara/db/sqlalchemy/api.py:974
+#: sahara/db/sqlalchemy/api.py:1025 sahara/db/sqlalchemy/api.py:1043
 #, python-format
 msgid ""
 "Size of internal binary (%(size)sKB) is greater than the maximum "
 "(%(maximum)sKB)"
 msgstr ""
 
-#: sahara/db/sqlalchemy/api.py:986
+#: sahara/db/sqlalchemy/api.py:1055
 #, python-format
 msgid "Duplicate entry for JobBinaryInternal: %s"
 msgstr ""
 
-#: sahara/db/sqlalchemy/api.py:999
+#: sahara/db/sqlalchemy/api.py:1068
 #, python-format
 msgid "JobBinaryInternal id '%s' not found!"
 msgstr ""
 
-#: sahara/db/sqlalchemy/api.py:1039 sahara/db/sqlalchemy/api.py:1053
-#: sahara/db/sqlalchemy/api.py:1068 sahara/db/sqlalchemy/api.py:1084
-#: sahara/db/sqlalchemy/api.py:1099
+#: sahara/db/sqlalchemy/api.py:1108 sahara/db/sqlalchemy/api.py:1122
+#: sahara/db/sqlalchemy/api.py:1137 sahara/db/sqlalchemy/api.py:1153
+#: sahara/db/sqlalchemy/api.py:1168
 #, python-format
 msgid "Cluster Provision Step id '%s' not found!"
 msgstr ""
@@ -402,7 +433,6 @@ msgid "Cluster is missing a service: %s"
 msgstr ""
 
 #: sahara/plugins/exceptions.py:54
-#: sahara/plugins/mapr/util/validation_utils.py:54
 #, python-format
 msgid "%(message)s, required by service: %(required_by)s"
 msgstr ""
@@ -434,20 +464,20 @@ msgstr ""
 msgid "Can't find config '%(config_name)s' in '%(applicable_target)s'"
 msgstr ""
 
-#: sahara/plugins/utils.py:42 sahara/plugins/cdh/v5/validation.py:46
-#: sahara/plugins/cdh/v5/validation.py:50
-#: sahara/plugins/cdh/v5/validation.py:66
-#: sahara/plugins/cdh/v5/validation.py:104
-#: sahara/plugins/cdh/v5/validation.py:110
-#: sahara/plugins/cdh/v5_3_0/validation.py:46
-#: sahara/plugins/cdh/v5_3_0/validation.py:51
-#: sahara/plugins/cdh/v5_3_0/validation.py:66
-#: sahara/plugins/cdh/v5_3_0/validation.py:104
-#: sahara/plugins/cdh/v5_3_0/validation.py:110
-#: sahara/plugins/cdh/v5_3_0/validation.py:146
-#: sahara/plugins/cdh/v5_3_0/validation.py:167
+#: sahara/plugins/utils.py:42 sahara/plugins/cdh/v5/validation.py:43
+#: sahara/plugins/cdh/v5/validation.py:47
+#: sahara/plugins/cdh/v5/validation.py:63
+#: sahara/plugins/cdh/v5/validation.py:101
+#: sahara/plugins/cdh/v5/validation.py:107
+#: sahara/plugins/cdh/v5_3_0/validation.py:43
+#: sahara/plugins/cdh/v5_3_0/validation.py:48
+#: sahara/plugins/cdh/v5_3_0/validation.py:63
+#: sahara/plugins/cdh/v5_3_0/validation.py:101
+#: sahara/plugins/cdh/v5_3_0/validation.py:107
+#: sahara/plugins/cdh/v5_3_0/validation.py:143
+#: sahara/plugins/cdh/v5_3_0/validation.py:164
+#: sahara/plugins/cdh/v5_3_0/validation.py:197
 #: sahara/plugins/cdh/v5_3_0/validation.py:200
-#: sahara/plugins/cdh/v5_3_0/validation.py:203
 #: sahara/plugins/vanilla/hadoop2/validation.py:32
 #: sahara/plugins/vanilla/hadoop2/validation.py:36
 #: sahara/plugins/vanilla/hadoop2/validation.py:41
@@ -459,26 +489,66 @@ msgstr ""
 msgid "0 or 1"
 msgstr ""
 
-#: sahara/plugins/cdh/cloudera_utils.py:78
-msgid "'cm_api' is not installed."
+#: sahara/plugins/utils.py:66
+msgid "Start the following process(es): {process}"
 msgstr ""
 
-#: sahara/plugins/cdh/cloudera_utils.py:173
-#: sahara/plugins/cdh/v5_3_0/cloudera_utils.py:95
+#: sahara/plugins/cdh/cloudera_utils.py:106
+msgid "Deploy configs"
+msgstr ""
+
+#: sahara/plugins/cdh/cloudera_utils.py:115
+msgid "Update configs"
+msgstr ""
+
+#: sahara/plugins/cdh/cloudera_utils.py:147
+msgid "Create mgmt service"
+msgstr ""
+
+#: sahara/plugins/cdh/cloudera_utils.py:171
+#: sahara/plugins/cdh/v5_3_0/cloudera_utils.py:81
 msgid "'cluster' or 'instance' argument missed"
 msgstr ""
 
-#: sahara/plugins/cdh/cloudera_utils.py:193
+#: sahara/plugins/cdh/cloudera_utils.py:191
 #, python-format
 msgid "Process %(process)s is not supported by CDH plugin"
 msgstr ""
 
-#: sahara/plugins/cdh/cloudera_utils.py:217
+#: sahara/plugins/cdh/cloudera_utils.py:194
+msgid "Await agents"
+msgstr ""
+
+#: sahara/plugins/cdh/cloudera_utils.py:216
 msgid "Cloudera agents failed to connect to Cloudera Manager"
+msgstr ""
+
+#: sahara/plugins/cdh/cloudera_utils.py:222 sahara/service/engine.py:133
+msgid "Configure instances"
 msgstr ""
 
 #: sahara/plugins/cdh/commands.py:81
 msgid "OS on image is not supported by CDH plugin"
+msgstr ""
+
+#: sahara/plugins/cdh/exceptions.py:26
+#, python-format
+msgid "CM API version not meet requirement: %s"
+msgstr ""
+
+#: sahara/plugins/cdh/exceptions.py:42
+#, python-format
+msgid "CM API error: %s"
+msgstr ""
+
+#: sahara/plugins/cdh/exceptions.py:57
+#, python-format
+msgid "CM API attribute error: %s"
+msgstr ""
+
+#: sahara/plugins/cdh/exceptions.py:72
+#, python-format
+msgid "CM API value error: %s"
 msgstr ""
 
 #: sahara/plugins/cdh/plugin.py:29
@@ -488,30 +558,96 @@ msgid ""
 "console."
 msgstr ""
 
+#: sahara/plugins/cdh/plugin_utils.py:176
+msgid "Install packages"
+msgstr ""
+
+#: sahara/plugins/cdh/plugin_utils.py:191
+msgid "Start Cloudera Agents"
+msgstr ""
+
+#: sahara/plugins/cdh/plugin_utils.py:212
+msgid "Configure Swift"
+msgstr ""
+
 #: sahara/plugins/cdh/plugin_utils.py:266
+msgid "Start Cloudera manager"
+msgstr ""
+
+#: sahara/plugins/cdh/plugin_utils.py:285
 #, python-format
 msgid ""
 "Cloudera Manager failed to start in %(timeout)s minutes on node "
 "'%(node)s' of cluster '%(cluster)s'"
 msgstr ""
 
+#: sahara/plugins/cdh/plugin_utils.py:298
+msgid "Configure OS"
+msgstr ""
+
+#: sahara/plugins/cdh/client/clusters.py:48
+msgid "Either 'version' or 'fullVersion' must be specified"
+msgstr ""
+
+#: sahara/plugins/cdh/client/resource.py:84
+#, python-format
+msgid "Command %(method)s %(path)s failed: %(msg)s"
+msgstr ""
+
+#: sahara/plugins/cdh/client/resource.py:127
+msgid "Get retry max time reached."
+msgstr ""
+
+#: sahara/plugins/cdh/client/types.py:124
+#: sahara/plugins/cdh/client/types.py:348
+#, python-format
+msgid "API version %(minv)s is required but %(acv)s is in use."
+msgstr ""
+
+#: sahara/plugins/cdh/client/types.py:250
+#, python-format
+msgid "Invalid property %(attname)s for class %(classname)s."
+msgstr ""
+
+#: sahara/plugins/cdh/client/types.py:255
+#, python-format
+msgid "Attribute %(attname)s of class %(classname)s is read only."
+msgstr ""
+
+#: sahara/plugins/cdh/client/types.py:267
+#, python-format
+msgid ""
+"Class %(class1)s does not derive from %(class2)s; cannot update "
+"attributes."
+msgstr ""
+
+#: sahara/plugins/cdh/v5/cloudera_utils.py:93
+#: sahara/plugins/cdh/v5_3_0/cloudera_utils.py:104
+msgid "Create services"
+msgstr ""
+
+#: sahara/plugins/cdh/v5/cloudera_utils.py:121
+#: sahara/plugins/cdh/v5_3_0/cloudera_utils.py:150
+msgid "Configure services"
+msgstr ""
+
+#: sahara/plugins/cdh/v5/validation.py:130
 #: sahara/plugins/cdh/v5/validation.py:133
-#: sahara/plugins/cdh/v5/validation.py:136
+#: sahara/plugins/cdh/v5_3_0/validation.py:130
 #: sahara/plugins/cdh/v5_3_0/validation.py:133
-#: sahara/plugins/cdh/v5_3_0/validation.py:136
 msgid "at least 1"
 msgstr ""
 
-#: sahara/plugins/cdh/v5/validation.py:146
-#: sahara/plugins/cdh/v5/validation.py:166
-#: sahara/plugins/cdh/v5_3_0/validation.py:226
-#: sahara/plugins/cdh/v5_3_0/validation.py:246
+#: sahara/plugins/cdh/v5/validation.py:143
+#: sahara/plugins/cdh/v5/validation.py:163
+#: sahara/plugins/cdh/v5_3_0/validation.py:223
+#: sahara/plugins/cdh/v5_3_0/validation.py:243
 #, python-format
 msgid "CDH plugin cannot scale nodegroup with processes: %(processes)s"
 msgstr ""
 
-#: sahara/plugins/cdh/v5/validation.py:152
-#: sahara/plugins/cdh/v5_3_0/validation.py:232
+#: sahara/plugins/cdh/v5/validation.py:149
+#: sahara/plugins/cdh/v5_3_0/validation.py:229
 msgid ""
 "CDH plugin cannot scale node group with processes which have no master-"
 "processes run in cluster"
@@ -667,29 +803,78 @@ msgid ""
 "master node for more information about the failure."
 msgstr ""
 
-#: sahara/plugins/mapr/util/config.py:102
-#: sahara/plugins/vanilla/hadoop2/config_helper.py:161
-#, python-format
-msgid "Unable to get parameter '%(name)s' from service %(service)s"
+#: sahara/plugins/mapr/plugin.py:23
+msgid ""
+"The MapR Distribution provides a full Hadoop stack that includes the MapR"
+" File System (MapR-FS), MapReduce, a complete Hadoop ecosystem, and the "
+"MapR Control System user interface"
 msgstr ""
 
-#: sahara/plugins/mapr/util/validation_utils.py:28
+#: sahara/plugins/mapr/base/base_cluster_context.py:266
+msgid "Service not found in services list"
+msgstr ""
+
+#: sahara/plugins/mapr/base/base_cluster_context.py:270
+msgid "Can not map service"
+msgstr ""
+
+#: sahara/plugins/mapr/base/base_node_manager.py:112
+#, python-format
+msgid "Node failed to connect to CLDB: %s"
+msgstr ""
+
+#: sahara/plugins/mapr/base/base_node_manager.py:119
+msgid "CLDB failed to start"
+msgstr ""
+
+#: sahara/plugins/mapr/domain/configuration_file.py:126
+msgid "Template object must be defined"
+msgstr ""
+
+#: sahara/plugins/mapr/domain/service.py:158
+msgid "Config missing 'name'"
+msgstr ""
+
+#: sahara/plugins/mapr/domain/service.py:162
+#, python-format
+msgid "Config '%s' missing 'value'"
+msgstr ""
+
+#: sahara/plugins/mapr/domain/service.py:188
+msgid "Specify the version of the service"
+msgstr ""
+
+#: sahara/plugins/mapr/services/maprfs/maprfs.py:66
+msgid "Specifies that MapR-DB is in use."
+msgstr ""
+
+#: sahara/plugins/mapr/util/validation_utils.py:25
 #, python-format
 msgid ""
 "Hadoop cluster should contain at least %(expected_count)d %(component)s "
-"component(s). Actual %(component)s count is %(count)d"
+"component(s). Actual %(component)s count is %(actual_count)d"
 msgstr ""
 
-#: sahara/plugins/mapr/util/validation_utils.py:40
+#: sahara/plugins/mapr/util/validation_utils.py:41
 #, python-format
 msgid ""
-"Hadoop cluster should contain not more than %(expected_count)d "
-"%(component)s component(s). Actual %(component)s count is %(count)d"
+"Hadoop cluster should contain odd number of %(component)s but "
+"%(actual_count)s found."
+msgstr ""
+
+#: sahara/plugins/mapr/util/validation_utils.py:51
+#, python-format
+msgid "Node \"%(ng_name)s\" is missing component %(component)s"
 msgstr ""
 
 #: sahara/plugins/mapr/util/validation_utils.py:52
 #, python-format
-msgid "Node is missing a service: %s"
+msgid "%(message)s, required by %(required_by)s"
+msgstr ""
+
+#: sahara/plugins/mapr/util/validation_utils.py:67
+#, python-format
+msgid "%(service)s service cannot be installed alongside %(package)s package"
 msgstr ""
 
 #: sahara/plugins/spark/config_helper.py:252
@@ -703,47 +888,56 @@ msgstr ""
 msgid "Spark 1.0.0 or higher required to run spark %s jobs"
 msgstr ""
 
-#: sahara/plugins/spark/plugin.py:54
+#: sahara/plugins/spark/plugin.py:55
 msgid ""
 "This plugin provides an ability to launch Spark on Hadoop CDH cluster "
 "without any management consoles."
 msgstr ""
 
-#: sahara/plugins/spark/plugin.py:75 sahara/plugins/spark/plugin.py:99
-#: sahara/plugins/storm/plugin.py:74
+#: sahara/plugins/spark/plugin.py:76 sahara/plugins/spark/plugin.py:100
+#: sahara/plugins/storm/plugin.py:75
 msgid "1 or more"
-msgstr ""
-
-#: sahara/plugins/spark/plugin.py:82
-#, python-format
-msgid "%s or more"
 msgstr ""
 
 #: sahara/plugins/spark/plugin.py:83
 #, python-format
+msgid "%s or more"
+msgstr ""
+
+#: sahara/plugins/spark/plugin.py:84
+#, python-format
 msgid "Number of %(dn)s instances should not be less than %(replication)s"
 msgstr ""
 
-#: sahara/plugins/spark/plugin.py:431 sahara/plugins/spark/plugin.py:445
+#: sahara/plugins/spark/plugin.py:235 sahara/plugins/storm/plugin.py:189
+msgid "Push configs to nodes"
+msgstr ""
+
+#: sahara/plugins/spark/plugin.py:457 sahara/plugins/spark/plugin.py:471
 #, python-format
 msgid "Spark plugin cannot scale nodegroup with processes: %s"
 msgstr ""
 
-#: sahara/plugins/spark/plugin.py:455
+#: sahara/plugins/spark/plugin.py:481
 #, python-format
 msgid ""
 "Spark plugin cannot shrink cluster because there would be not enough "
 "nodes for HDFS replicas (replication factor is %s)"
 msgstr ""
 
-#: sahara/plugins/spark/scaling.py:91
+#: sahara/plugins/spark/scaling.py:31 sahara/plugins/spark/scaling.py:58
+#, python-format
+msgid "Decommission %s"
+msgstr ""
+
+#: sahara/plugins/spark/scaling.py:94
 #: sahara/plugins/vanilla/hadoop2/scaling.py:132
 #: sahara/plugins/vanilla/v1_2_1/scaling.py:79
 #, python-format
 msgid "Cannot finish decommission of cluster %(cluster)s in %(seconds)d seconds"
 msgstr ""
 
-#: sahara/plugins/storm/plugin.py:49
+#: sahara/plugins/storm/plugin.py:50
 msgid ""
 "This plugin provides an ability to launch Storm cluster without any "
 "management consoles."
@@ -754,6 +948,11 @@ msgid ""
 "The Apache Vanilla plugin provides the ability to launch upstream Vanilla"
 " Apache Hadoop cluster without any management consoles. It can also "
 "deploy the Oozie component."
+msgstr ""
+
+#: sahara/plugins/vanilla/hadoop2/config_helper.py:161
+#, python-format
+msgid "Unable to get parameter '%(name)s' from service %(service)s"
 msgstr ""
 
 #: sahara/plugins/vanilla/hadoop2/run_scripts.py:59
@@ -838,12 +1037,16 @@ msgstr ""
 msgid "Wait for instance accessibility"
 msgstr ""
 
-#: sahara/service/engine.py:133
-msgid "Configure instances"
+#: sahara/service/ops.py:238
+msgid "Creating cluster failed for the following reason(s): {reason}"
 msgstr ""
 
-#: sahara/service/heat_engine.py:203
-msgid "Create Heat stack"
+#: sahara/service/ops.py:272
+msgid "Scaling cluster failed for the following reason(s): {reason}"
+msgstr ""
+
+#: sahara/service/ops.py:305
+msgid "Terminating cluster failed for the following reason(s): {reason}"
 msgstr ""
 
 #: sahara/service/quotas.py:55
@@ -950,6 +1153,10 @@ msgstr ""
 #: sahara/service/edp/spark/engine.py:308
 #, python-format
 msgid "Spark job execution failed. Exit status = %(status)s, stdout = %(stdout)s"
+msgstr ""
+
+#: sahara/service/heat/heat_engine.py:204
+msgid "Create Heat stack"
 msgstr ""
 
 #: sahara/service/validations/base.py:69
@@ -1317,10 +1524,6 @@ msgstr ""
 msgid "Unexpected results found when searching for domain %s"
 msgstr ""
 
-#: sahara/utils/proxy.py:266
-msgid "created proxy user {0}"
-msgstr ""
-
 #: sahara/utils/proxy.py:286
 #, python-format
 msgid "Failed to find user %s"
@@ -1341,11 +1544,6 @@ msgstr ""
 #: sahara/utils/ssh_remote.py:485
 #, python-format
 msgid "Unknown file mode %s"
-msgstr ""
-
-#: sahara/utils/ssh_remote.py:574
-#, python-format
-msgid "Invalid keyword in proxy_command: %s"
 msgstr ""
 
 #: sahara/utils/ssh_remote.py:695
@@ -1386,21 +1584,7 @@ msgstr ""
 msgid "Service \"%s\" not found in service catalog"
 msgstr ""
 
-#: sahara/utils/openstack/cinder.py:53
-msgid ""
-"The Cinder v1 API is deprecated and will be removed after the Juno "
-"release.  You should set cinder.api_version=2 in your sahara.conf file."
-msgstr ""
-
-#: sahara/utils/openstack/cinder.py:57
-#, python-format
-msgid ""
-"Unsupported Cinder API version: %(bad)s.  Please set a correct value for "
-"cinder.api_version in your sahara.conf file (currently supported versions"
-" are: %(supported)s).  Falling back to Cinder API version 2."
-msgstr ""
-
-#: sahara/utils/openstack/heat.py:66
+#: sahara/utils/openstack/heat.py:56
 #, python-format
 msgid "Failed to find stack %(stack)s"
 msgstr ""
