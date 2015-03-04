@@ -13,9 +13,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from oslo_config import cfg
-from oslo_log import log as logging
-
 from sahara import conductor
 from sahara import context
 from sahara.plugins.cdh import abstractversionhandler as avm
@@ -27,8 +24,6 @@ from sahara.plugins.cdh.v5_3_0 import validation as vl
 
 
 conductor = conductor.API
-LOG = logging.getLogger(__name__)
-CONF = cfg.CONF
 CU = cu.ClouderaUtilsV530()
 
 
@@ -71,7 +66,6 @@ class VersionHandler(avm.AbstractVersionHandler):
         }
 
     def validate(self, cluster):
-        CU.validate_cm_api_libs()
         vl.validate_cluster_creating(cluster)
 
     def configure_cluster(self, cluster):

@@ -15,20 +15,13 @@
 
 import functools
 
-# cm_api client is not present in OS requirements
-try:
-    from cm_api import api_client
-    from cm_api.endpoints import services
-except ImportError:
-    api_client = None
-    services = None
-
 from oslo_log import log as logging
 from oslo_utils import timeutils
 
 from sahara import context
 from sahara.i18n import _
-from sahara.i18n import _LE
+from sahara.plugins.cdh.client import api_client
+from sahara.plugins.cdh.client import services
 from sahara.plugins import exceptions as ex
 from sahara.utils import cluster_progress_ops as cpo
 
@@ -68,15 +61,6 @@ class ClouderaUtils(object):
     def __init__(self):
         # pu will be defined in derived class.
         self.pu = None
-
-    def have_cm_api_libs(self):
-        return api_client and services
-
-    def validate_cm_api_libs(self):
-        if not self.have_cm_api_libs():
-            LOG.error(_LE("For provisioning cluster with CDH plugin install"
-                          " 'cm_api' package version 6.0.2 or later."))
-            raise ex.HadoopProvisionError(_("'cm_api' is not installed."))
 
     def get_api_client(self, cluster):
         manager_ip = self.pu.get_manager(cluster).management_ip

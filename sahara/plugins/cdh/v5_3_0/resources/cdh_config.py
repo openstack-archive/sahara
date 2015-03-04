@@ -15,8 +15,7 @@
 
 import json
 
-from cm_api import api_client
-
+from sahara.plugins.cdh.client import api_client
 
 # -- cm config --
 

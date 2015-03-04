@@ -13,14 +13,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# cm_api client is not present in OS requirements
-try:
-    from cm_api import api_client
-    from cm_api.endpoints import services
-except ImportError:
-    api_client = None
-    services = None
-
 import six
 
 from sahara.i18n import _
@@ -78,13 +70,6 @@ class ClouderaUtilsV530(cu.ClouderaUtils):
     def __init__(self):
         cu.ClouderaUtils.__init__(self)
         self.pu = pu.PluginUtilsV530()
-
-    def get_api_client(self, cluster):
-        manager_ip = self.pu.get_manager(cluster).management_ip
-        return api_client.ApiResource(manager_ip,
-                                      username=self.CM_DEFAULT_USERNAME,
-                                      password=self.CM_DEFAULT_PASSWD,
-                                      version=self.CM_API_VERSION)
 
     def get_service_by_role(self, process, cluster=None, instance=None):
         cm_cluster = None
