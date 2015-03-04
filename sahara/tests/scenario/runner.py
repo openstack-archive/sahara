@@ -64,16 +64,64 @@ def set_defaults(config):
                 testcase.get('edp_jobs_flow', None), None))
 
 
+def _merge_dicts_sections(dict_with_section, dict_for_merge, section):
+    if dict_with_section.get(section) is not None:
+        for key in dict_with_section[section]:
+            if dict_for_merge[section].get(key) is not None:
+                if dict_for_merge[section][key] != (
+                        dict_with_section[section][key]):
+                    raise ValueError('Sections %s is different' % section)
+            else:
+                dict_for_merge[section][key] = dict_with_section[section][key]
+    return dict_for_merge
+
+
+def recursive_walk(directory):
+    list_of_files = []
+    for file in os.listdir(directory):
+        path = os.path.join(directory, file)
+        if os.path.isfile(path):
+            list_of_files.append(path)
+        else:
+            list_of_files += recursive_walk(path)
+    return list_of_files
+
+
 def main():
     # parse args
     parser = argparse.ArgumentParser(description="Scenario tests runner.")
-    parser.add_argument('scenario_file', help="Path to scenario file.")
+    parser.add_argument('scenario_arguments', help="Path to scenario files",
+                        nargs='+')
     args = parser.parse_args()
-    scenario_file = args.scenario_file
+    scenario_arguments = args.scenario_arguments
 
     # parse config
-    with open(scenario_file, 'r') as yaml_file:
-        config = yaml.load(yaml_file)
+    config = {'credentials': {},
+              'network': {},
+              'clusters': [],
+              'edp_jobs_flow': {}}
+    files = []
+    for scenario_argument in scenario_arguments:
+        if os.path.isdir(scenario_argument):
+            files += recursive_walk(scenario_argument)
+        if os.path.isfile(scenario_argument):
+            files.append(scenario_argument)
+    for scenario_argument in files:
+        with open(scenario_argument, 'r') as yaml_file:
+            test_scenario = yaml.load(yaml_file)
+        config = _merge_dicts_sections(test_scenario, config, 'credentials')
+        config = _merge_dicts_sections(test_scenario, config, 'network')
+
+        if test_scenario.get('clusters') is not None:
+            config['clusters'] += test_scenario['clusters']
+
+        if test_scenario.get('edp_jobs_flow') is not None:
+            for key in test_scenario['edp_jobs_flow']:
+                if key not in config['edp_jobs_flow']:
+                    config['edp_jobs_flow'][key] = (
+                        test_scenario['edp_jobs_flow'][key])
+                else:
+                    raise ValueError('Job flow exist')
 
     set_defaults(config)
     credentials = config['credentials']
