@@ -60,5 +60,7 @@
     "job-binary-internals:create": "",
     "job-binary-internals:get": "",
     "job-binary-internals:delete": "",
-    "job-binary-internals:get_data": ""
+    "job-binary-internals:get_data": "",
+
+    "job-types:get_all": ""
 }

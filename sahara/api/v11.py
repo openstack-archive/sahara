@@ -151,7 +151,17 @@ def job_config_hints_get(job_type):
     return u.render(api.get_job_config_hints(job_type))
 
 
+@rest.get('/job-types')
+@acl.enforce("job-types:get_all")
+def job_types_get():
+    # We want to use flat=False with to_dict() so that
+    # the value of each arg is given as a list. This supports
+    # filters of the form ?type=Pig&type=Java, etc.
+    return u.render(job_types=api.get_job_types(
+        **u.get_request_args().to_dict(flat=False)))
+
 # Job binary ops
+
 
 @rest.post('/job-binaries')
 @acl.enforce("job-binaries:create")
