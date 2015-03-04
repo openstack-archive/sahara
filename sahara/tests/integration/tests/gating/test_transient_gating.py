@@ -72,8 +72,7 @@ class TransientGatingTest(edp.EDPTest):
             }
         }
         self.cluster_template_id = self.create_cluster_template(**template)
-        self.addCleanup(self.delete_objects,
-                        cluster_template_id=self.cluster_template_id)
+        self.addCleanup(self.delete_cluster_template, self.cluster_template_id)
 
     @b.errormsg("Failure while cluster creation: ")
     def _create_cluster(self):
@@ -92,7 +91,7 @@ class TransientGatingTest(edp.EDPTest):
             }
 
             self.cluster_ids.append(self.create_cluster(**cluster))
-            self.addCleanup(self.delete_objects,
+            self.addCleanup(self.delete_cluster,
                             self.cluster_ids[number_of_cluster])
 
         for number_of_cluster in range(3):

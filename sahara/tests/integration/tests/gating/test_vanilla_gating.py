@@ -56,8 +56,7 @@ class VanillaGatingTest(cinder.CinderVolumeTest,
             }
         }
         self.ng_tmpl_tt_dn_id = self.create_node_group_template(**template)
-        self.addCleanup(self.delete_objects,
-                        node_group_template_id_list=[self.ng_tmpl_tt_dn_id])
+        self.addCleanup(self.delete_node_group_template, self.ng_tmpl_tt_dn_id)
 
     @b.errormsg("Failure while 'tt' node group template creation: ")
     def _create_tt_ng_template(self):
@@ -75,8 +74,7 @@ class VanillaGatingTest(cinder.CinderVolumeTest,
             }
         }
         self.ng_tmpl_tt_id = self.create_node_group_template(**template)
-        self.addCleanup(self.delete_objects,
-                        node_group_template_id_list=[self.ng_tmpl_tt_id])
+        self.addCleanup(self.delete_node_group_template, self.ng_tmpl_tt_id)
 
     @b.errormsg("Failure while 'dn' node group template creation: ")
     def _create_dn_ng_template(self):
@@ -94,8 +92,7 @@ class VanillaGatingTest(cinder.CinderVolumeTest,
             }
         }
         self.ng_tmpl_dn_id = self.create_node_group_template(**template)
-        self.addCleanup(self.delete_objects,
-                        node_group_template_id_list=[self.ng_tmpl_dn_id])
+        self.addCleanup(self.delete_node_group_template, self.ng_tmpl_dn_id)
 
     @b.errormsg("Failure while cluster template creation: ")
     def _create_cluster_template(self):
@@ -154,8 +151,7 @@ class VanillaGatingTest(cinder.CinderVolumeTest,
             ]
         }
         self.cluster_template_id = self.create_cluster_template(**template)
-        self.addCleanup(self.delete_objects,
-                        cluster_template_id=self.cluster_template_id)
+        self.addCleanup(self.delete_cluster_template, self.cluster_template_id)
 
     @b.errormsg("Failure while cluster creation: ")
     def _create_cluster(self):
@@ -169,7 +165,7 @@ class VanillaGatingTest(cinder.CinderVolumeTest,
             'cluster_configs': {}
         }
         cluster_id = self.create_cluster(**kw)
-        self.addCleanup(self.delete_objects, cluster_id=cluster_id)
+        self.addCleanup(self.delete_cluster, cluster_id)
         self.poll_cluster_state(cluster_id)
         self.cluster_info = self.get_cluster_info(self.plugin_config)
         self.await_active_workers_for_namenode(self.cluster_info['node_info'],
