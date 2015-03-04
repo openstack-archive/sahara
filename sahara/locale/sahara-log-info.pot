@@ -6,9 +6,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: sahara 2015.1.dev17\n"
+"Project-Id-Version: sahara 2015.1.dev131\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2015-02-10 06:22+0000\n"
+"POT-Creation-Date: 2015-03-04 06:12+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,27 +17,27 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 1.3\n"
 
-#: sahara/main.py:81
+#: sahara/main.py:80
 #, python-format
 msgid "Starting Sahara %s"
 msgstr ""
 
-#: sahara/main.py:182
+#: sahara/main.py:176
 #, python-format
 msgid "Loading '%s' infrastructure engine"
 msgstr ""
 
-#: sahara/main.py:190
+#: sahara/main.py:184
 #, python-format
 msgid "Loading '%s' remote"
 msgstr ""
 
-#: sahara/main.py:196
+#: sahara/main.py:190
 #, python-format
 msgid "Loading '%s' ops"
 msgstr ""
 
-#: sahara/main.py:204
+#: sahara/main.py:198
 #, python-format
 msgid "Using HTTPS for port %s"
 msgstr ""
@@ -67,7 +67,7 @@ msgstr ""
 msgid "Plugin '%(plugin_name)s' loaded %(entry_point)s"
 msgstr ""
 
-#: sahara/plugins/cdh/plugin_utils.py:274
+#: sahara/plugins/cdh/plugin_utils.py:293
 msgid "Cloudera Manager has been started"
 msgstr ""
 
@@ -254,210 +254,35 @@ msgstr ""
 msgid "HDFS-HA: Host component updated successfully: {0} {1}"
 msgstr ""
 
-#: sahara/plugins/mapr/util/config.py:39
-msgid "START: Post configuration for instance."
-msgstr ""
-
-#: sahara/plugins/mapr/util/config.py:53
-msgid "END: Post configuration for instance."
-msgstr ""
-
-#: sahara/plugins/mapr/util/config.py:65
-msgid "START: configuring topology data."
-msgstr ""
-
-#: sahara/plugins/mapr/util/config.py:80
-msgid "END: configuring topology data."
-msgstr ""
-
-#: sahara/plugins/mapr/util/run_scripts.py:24
-msgid "running configure.sh script"
-msgstr ""
-
-#: sahara/plugins/mapr/util/run_scripts.py:29
-msgid "Starting mapr-zookeeper"
-msgstr ""
-
-#: sahara/plugins/mapr/util/run_scripts.py:34
-msgid "Starting mapr-oozie"
-msgstr ""
-
-#: sahara/plugins/mapr/util/run_scripts.py:41
-#: sahara/plugins/mapr/util/run_scripts.py:47
-msgid "Starting mapr-hive-server2"
-msgstr ""
-
-#: sahara/plugins/mapr/util/run_scripts.py:52
-msgid "Starting mapr-warden"
-msgstr ""
-
-#: sahara/plugins/mapr/util/run_scripts.py:57
-msgid "Starting mapr-cldb"
-msgstr ""
-
-#: sahara/plugins/mapr/util/run_scripts.py:62
-msgid "Starting nodemanager"
-msgstr ""
-
-#: sahara/plugins/mapr/util/run_scripts.py:69
-msgid "Starting resourcemanager"
-msgstr ""
-
-#: sahara/plugins/mapr/util/scaling.py:46
-#, python-format
-msgid "START: Cluster scaling. Cluster = %s"
-msgstr ""
-
-#: sahara/plugins/mapr/util/scaling.py:52
-#, python-format
-msgid "END: Cluster scaling. Cluster = %s"
-msgstr ""
-
-#: sahara/plugins/mapr/util/scaling.py:56
-#, python-format
-msgid "Start decommission . Cluster = %s"
-msgstr ""
-
-#: sahara/plugins/mapr/util/scaling.py:69
-#, python-format
-msgid "End decommission. Cluster = %s"
-msgstr ""
-
-#: sahara/plugins/mapr/util/scaling.py:74
-msgid "START: Starting services."
-msgstr ""
-
-#: sahara/plugins/mapr/util/scaling.py:89
-msgid "END: Starting services."
-msgstr ""
-
-#: sahara/plugins/mapr/util/scaling.py:93
-msgid "Stop warden and zookeeper"
-msgstr ""
-
-#: sahara/plugins/mapr/util/scaling.py:99
-msgid "Warden and zookeeper stoped"
-msgstr ""
-
-#: sahara/plugins/mapr/util/scaling.py:103
-msgid "Start moving the node to the /decommissioned"
-msgstr ""
-
-#: sahara/plugins/mapr/util/scaling.py:110
-msgid "Nodes moved to the /decommissioned"
-msgstr ""
-
-#: sahara/plugins/mapr/util/scaling.py:126
-msgid "Start remove all mapr services"
-msgstr ""
-
-#: sahara/plugins/mapr/util/scaling.py:132
-msgid "All mapr services removed"
-msgstr ""
-
-#: sahara/plugins/mapr/util/start_helper.py:36
-msgid "START: Executing configure.sh"
-msgstr ""
-
-#: sahara/plugins/mapr/util/start_helper.py:43
-msgid "END: Executing configure.sh"
-msgstr ""
-
-#: sahara/plugins/mapr/util/start_helper.py:59
-#, python-format
-msgid "START: Setup maprfs on instance %s"
-msgstr ""
-
-#: sahara/plugins/mapr/util/start_helper.py:62
-msgid "END: Setup maprfs on instance."
-msgstr ""
-
-#: sahara/plugins/mapr/util/start_helper.py:66
-msgid "START: Creating disk list file."
-msgstr ""
-
-#: sahara/plugins/mapr/util/start_helper.py:79
-msgid "END: Creating disk list file."
-msgstr ""
-
-#: sahara/plugins/mapr/util/start_helper.py:83
-msgid "START: Executing disksetup."
-msgstr ""
-
-#: sahara/plugins/mapr/util/start_helper.py:87
-msgid "END: Executing disksetup."
-msgstr ""
-
-#: sahara/plugins/mapr/util/start_helper.py:123
-msgid "START: Creating waiting script file."
-msgstr ""
-
-#: sahara/plugins/mapr/util/start_helper.py:127
-msgid "END: Creating waiting script file."
-msgstr ""
-
-#: sahara/plugins/mapr/util/start_helper.py:131
-msgid "START: Waiting script"
-msgstr ""
-
-#: sahara/plugins/mapr/util/start_helper.py:135
-msgid "END: Waiting script"
-msgstr ""
-
-#: sahara/plugins/mapr/util/start_helper.py:151
-msgid "START: Installing roles on node "
-msgstr ""
-
-#: sahara/plugins/mapr/util/start_helper.py:159
-msgid "END: Installing roles on node "
-msgstr ""
-
-#: sahara/plugins/mapr/util/start_helper.py:163
-msgid "START: Installing roles on cluster"
-msgstr ""
-
-#: sahara/plugins/mapr/util/start_helper.py:171
-msgid "END: Installing roles on cluster"
-msgstr ""
-
-#: sahara/plugins/mapr/versions/base_cluster_configurer.py:129
-#, python-format
-msgid "Writing files %(f_names)s to node %(node)s"
-msgstr ""
-
-#: sahara/plugins/mapr/versions/v4_0_1_mrv1/cluster_configurer.py:39
-msgid "Setting cluster mode to classic"
-msgstr ""
-
 #: sahara/plugins/spark/config_helper.py:266
 #: sahara/plugins/vanilla/v1_2_1/config_helper.py:227
 #, python-format
 msgid "Applying config: %s"
 msgstr ""
 
-#: sahara/plugins/spark/plugin.py:112
+#: sahara/plugins/spark/plugin.py:126
+#, python-format
+msgid "Spark service at '%s' has been started"
+msgstr ""
+
+#: sahara/plugins/spark/plugin.py:139
 #: sahara/plugins/vanilla/v1_2_1/versionhandler.py:183
 #, python-format
 msgid "Hadoop services in cluster %s have been started"
 msgstr ""
 
-#: sahara/plugins/spark/plugin.py:124
-#, python-format
-msgid "Spark service at '%s' has been started"
-msgstr ""
-
-#: sahara/plugins/spark/plugin.py:127 sahara/plugins/storm/plugin.py:101
+#: sahara/plugins/spark/plugin.py:150 sahara/plugins/storm/plugin.py:99
 #: sahara/plugins/vanilla/v1_2_1/versionhandler.py:190
 #, python-format
 msgid "Cluster %s has been started successfully"
 msgstr ""
 
-#: sahara/plugins/spark/plugin.py:406
+#: sahara/plugins/spark/plugin.py:444
 #, python-format
 msgid "Spark master service at '%s' has been restarted"
 msgstr ""
 
-#: sahara/plugins/storm/plugin.py:95
+#: sahara/plugins/storm/plugin.py:140
 #, python-format
 msgid "Storm master at '%s' has been started"
 msgstr ""
@@ -502,12 +327,12 @@ msgstr ""
 msgid "Cluster '%s': all instances are active"
 msgstr ""
 
-#: sahara/service/direct_engine.py:484 sahara/service/heat_engine.py:151
+#: sahara/service/direct_engine.py:484 sahara/service/heat/heat_engine.py:152
 #, python-format
 msgid "Cluster '%(name)s' creation rollback (reason: %(reason)s)"
 msgstr ""
 
-#: sahara/service/direct_engine.py:492 sahara/service/heat_engine.py:168
+#: sahara/service/direct_engine.py:492 sahara/service/heat/heat_engine.py:169
 #, python-format
 msgid "Cluster '%(name)s' scaling rollback (reason: %(reason)s)"
 msgstr ""
@@ -520,30 +345,6 @@ msgstr ""
 #: sahara/service/engine.py:100
 #, python-format
 msgid "Cluster '%s': all instances are accessible"
-msgstr ""
-
-#: sahara/service/ops.py:164
-#, python-format
-msgid ""
-"Cluster %s was deleted or marked for deletion. Canceling current "
-"operation."
-msgstr ""
-
-#: sahara/service/ops.py:184
-#, python-format
-msgid "Cluster with %s was deleted. Canceling current operation."
-msgstr ""
-
-#: sahara/service/periodic.py:108
-#, python-format
-msgid "Terminating transient cluster %(cluster)s with id %(id)s"
-msgstr ""
-
-#: sahara/service/periodic.py:115
-#, python-format
-msgid ""
-"Failed to terminate transient cluster %(cluster)s with id %(id)s: "
-"%(error)s."
 msgstr ""
 
 #: sahara/service/edp/job_manager.py:162
@@ -576,12 +377,12 @@ msgstr ""
 msgid "Vm awareness will add following configs in map-red params: %s"
 msgstr ""
 
-#: sahara/utils/general.py:95
+#: sahara/utils/general.py:106
 #, python-format
 msgid "Cluster status has been changed: id=%(id)s, New status=%(status)s"
 msgstr ""
 
-#: sahara/utils/general.py:187
+#: sahara/utils/general.py:198
 #, python-format
 msgid "Operation %(op_name)s was successfully executed in seconds: %(sec)s"
 msgstr ""
@@ -592,10 +393,5 @@ msgstr ""
 
 #: sahara/utils/rpc.py:108
 msgid "Notifications enabled"
-msgstr ""
-
-#: sahara/utils/timing.py:56
-#, python-format
-msgid "Exception raised by invocation of %(name)s: %(info)s"
 msgstr ""
 
