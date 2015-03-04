@@ -621,3 +621,21 @@ class TestSpark(base.SaharaTestCase):
         self.assertEqual(status, ("%s@%s" % (self.spark_pid, self.master_inst),
                                   edp.JOB_STATUS_RUNNING,
                                   {"spark-path": self.workflow_dir}))
+
+    @mock.patch('sahara.service.edp.hdfs_helper.configure_cluster_for_hdfs')
+    @mock.patch('sahara.service.edp.job_utils.resolve_data_source_references')
+    def test_external_hdfs_config(self, resolver, configurer):
+        job_configs = {
+            'configs': {"edp.java.main_class": "org.me.myclass"},
+        }
+
+        files = {'jars': ["app.jar"]}
+
+        data_source = mock.Mock()
+        data_source.type = 'hdfs'
+        resolver.return_value = ([data_source], job_configs)
+
+        master_instance = self._make_master_instance()
+        self._setup_run_job(master_instance, job_configs, files)
+
+        configurer.assert_called_with("cluster", data_source)

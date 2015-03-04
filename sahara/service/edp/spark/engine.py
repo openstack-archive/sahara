@@ -27,6 +27,7 @@ from sahara.plugins.spark import config_helper as c_helper
 from sahara.plugins import utils as plugin_utils
 from sahara.service.edp import base_engine
 from sahara.service.edp.binary_retrievers import dispatch
+from sahara.service.edp import hdfs_helper as h
 from sahara.service.edp import job_utils
 from sahara.service.validations.edp import job_execution as j
 from sahara.swift import swift_helper as sw
@@ -186,6 +187,11 @@ class SparkJobEngine(base_engine.JobEngine):
         additional_sources, updated_job_configs = (
             job_utils.resolve_data_source_references(job_execution.job_configs)
         )
+
+        for data_source in additional_sources:
+            if data_source and data_source.type == 'hdfs':
+                h.configure_cluster_for_hdfs(self.cluster, data_source)
+                break
 
         # We'll always run the driver program on the master
         master = plugin_utils.get_instance(self.cluster, "master")
