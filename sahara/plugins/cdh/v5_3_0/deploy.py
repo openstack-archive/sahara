@@ -13,9 +13,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from sahara.i18n import _
 from sahara.plugins.cdh import commands as cmd
 from sahara.plugins.cdh.v5_3_0 import cloudera_utils as cu
 from sahara.plugins import utils as gu
+from sahara.utils import cluster_progress_ops as cpo
 
 
 PACKAGES = [
@@ -76,6 +78,19 @@ def configure_cluster(cluster):
     CU.deploy_configs(cluster)
 
 
+@cpo.event_wrapper(
+    True, step=_("Start roles: NODEMANAGER, DATANODE"), param=('cluster', 0))
+def _start_roles(cluster, instances):
+    for instance in instances:
+        if 'HDFS_DATANODE' in instance.node_group.node_processes:
+            hdfs = CU.get_service_by_role('DATANODE', instance=instance)
+            CU.start_roles(hdfs, CU.pu.get_role_name(instance, 'DATANODE'))
+
+        if 'YARN_NODEMANAGER' in instance.node_group.node_processes:
+            yarn = CU.get_service_by_role('NODEMANAGER', instance=instance)
+            CU.start_roles(yarn, CU.pu.get_role_name(instance, 'NODEMANAGER'))
+
+
 def scale_cluster(cluster, instances):
     if not instances:
         return
@@ -89,18 +104,8 @@ def scale_cluster(cluster, instances):
     CU.configure_instances(instances, cluster)
     CU.update_configs(instances)
     CU.pu.configure_swift(cluster, instances)
-
-    for instance in instances:
-        if 'HDFS_DATANODE' in instance.node_group.node_processes:
-            CU.refresh_nodes(cluster, 'DATANODE', CU.HDFS_SERVICE_NAME)
-
-        if 'HDFS_DATANODE' in instance.node_group.node_processes:
-            hdfs = CU.get_service_by_role('DATANODE', instance=instance)
-            CU.start_roles(hdfs, CU.pu.get_role_name(instance, 'DATANODE'))
-
-        if 'YARN_NODEMANAGER' in instance.node_group.node_processes:
-            yarn = CU.get_service_by_role('NODEMANAGER', instance=instance)
-            CU.start_roles(yarn, CU.pu.get_role_name(instance, 'NODEMANAGER'))
+    CU.refresh_datanodes(cluster)
+    _start_roles(cluster, instances)
 
 
 def decommission_cluster(cluster, instances):
@@ -120,11 +125,12 @@ def decommission_cluster(cluster, instances):
 
     CU.delete_instances(cluster, instances)
 
-    CU.refresh_nodes(cluster, 'DATANODE', CU.HDFS_SERVICE_NAME)
-    CU.refresh_nodes(cluster, 'NODEMANAGER', CU.YARN_SERVICE_NAME)
+    CU.refresh_datanodes(cluster)
+    CU.refresh_yarn_nodes(cluster)
 
 
-def start_cluster(cluster):
+@cpo.event_wrapper(True, step=_("Prepare cluster"), param=('cluster', 0))
+def _prepare_cluster(cluster):
     if CU.pu.get_oozie(cluster):
         CU.pu.install_extjs(cluster)
 
@@ -134,16 +140,26 @@ def start_cluster(cluster):
     if CU.pu.get_sentry(cluster):
         CU.pu.configure_sentry(cluster)
 
-    CU.first_run(cluster)
 
-    CU.pu.configure_swift(cluster)
-
+@cpo.event_wrapper(
+    True, step=_("Finish cluster starting"), param=('cluster', 0))
+def _finish_cluster_starting(cluster):
     if CU.pu.get_hive_metastore(cluster):
         CU.pu.put_hive_hdfs_xml(cluster)
 
     if CU.pu.get_flumes(cluster):
         flume = CU.get_service_by_role('AGENT', cluster)
         CU.start_service(flume)
+
+
+def start_cluster(cluster):
+    _prepare_cluster(cluster)
+
+    CU.first_run(cluster)
+
+    CU.pu.configure_swift(cluster)
+
+    _finish_cluster_starting(cluster)
 
 
 def get_open_ports(node_group):
