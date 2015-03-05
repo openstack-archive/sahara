@@ -23,6 +23,7 @@ from sahara.plugins.vanilla.hadoop2 import config
 from sahara.plugins.vanilla.hadoop2 import run_scripts as run
 from sahara.plugins.vanilla.hadoop2 import utils as pu
 from sahara.plugins.vanilla import utils as vu
+from sahara.utils import cluster_progress_ops as cpo
 
 HADOOP_CONF_DIR = config.HADOOP_CONF_DIR
 
@@ -48,6 +49,7 @@ def _get_instances_with_service(instances, service):
     return ret
 
 
+@cpo.event_wrapper(True, step=_("Update include files"), param=('cluster', 0))
 def _update_include_files(cluster, dec_instances=None):
     dec_instances = dec_instances or []
     dec_instances_ids = [instance.id for instance in dec_instances]
@@ -134,9 +136,13 @@ def _check_decommission(cluster, instances, check_func, timeout):
             {"cluster": cluster, "seconds": timeout})
 
 
+@cpo.event_wrapper(
+    True, step=_("Decommission %s") % "NodeManagers", param=('cluster', 0))
 def _check_nodemanagers_decommission(cluster, instances):
     _check_decommission(cluster, instances, pu.get_nodemanagers_status, 300)
 
 
+@cpo.event_wrapper(
+    True, step=_("Decommission %s") % "DataNodes", param=('cluster', 0))
 def _check_datanodes_decommission(cluster, instances):
     _check_decommission(cluster, instances, pu.get_datanodes_status, 3600 * 4)

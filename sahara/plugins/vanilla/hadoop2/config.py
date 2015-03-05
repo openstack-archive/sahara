@@ -17,12 +17,14 @@ from oslo_config import cfg
 from oslo_log import log as logging
 import six
 
+from sahara.i18n import _
 from sahara.i18n import _LI
 from sahara.plugins.vanilla.hadoop2 import config_helper as c_helper
 from sahara.plugins.vanilla.hadoop2 import oozie_helper as o_helper
 from sahara.plugins.vanilla import utils as vu
 from sahara.swift import swift_helper as swift
 from sahara.topology import topology_helper as th
+from sahara.utils import cluster_progress_ops as cpo
 from sahara.utils import files as f
 from sahara.utils import proxy
 from sahara.utils import xmlutils as x
@@ -54,9 +56,20 @@ def configure_cluster(pctx, cluster):
 
 
 def configure_instances(pctx, instances):
+    if len(instances) == 0:
+        return
+
+    cpo.add_provisioning_step(
+        instances[0].cluster_id, _("Configure instances"), len(instances))
+
     for instance in instances:
-        _provisioning_configs(pctx, instance)
-        _post_configuration(pctx, instance)
+        _configure_instance(pctx, instance)
+
+
+@cpo.event_wrapper(True)
+def _configure_instance(pctx, instance):
+    _provisioning_configs(pctx, instance)
+    _post_configuration(pctx, instance)
 
 
 def _provisioning_configs(pctx, instance):
@@ -335,6 +348,8 @@ def _merge_configs(a, b):
     return res
 
 
+@cpo.event_wrapper(
+    True, step=_("Configure topology data"), param=('cluster', 1))
 def configure_topology_data(pctx, cluster):
     if c_helper.is_data_locality_enabled(pctx, cluster):
         LOG.info(_LI("Node group awareness is not implemented in YARN yet "

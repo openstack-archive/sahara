@@ -27,6 +27,7 @@ from sahara.plugins.vanilla.hadoop2 import scaling as sc
 from sahara.plugins.vanilla.hadoop2 import validation as vl
 from sahara.plugins.vanilla import utils as vu
 from sahara.plugins.vanilla.v2_4_1 import config_helper as c_helper
+from sahara.utils import cluster_progress_ops as cpo
 
 
 conductor = conductor.API
@@ -63,34 +64,73 @@ class VersionHandler(avm.AbstractVersionHandler):
     def configure_cluster(self, cluster):
         c.configure_cluster(self.pctx, cluster)
 
-    def start_cluster(self, cluster):
+    def start_namenode(self, cluster):
         nn = vu.get_namenode(cluster)
+        self._start_namenode(nn)
+
+    @cpo.event_wrapper(
+        True, step=utils.start_process_event_message('NameNode'))
+    def _start_namenode(self, nn):
         run.format_namenode(nn)
         run.start_hadoop_process(nn, 'namenode')
 
-        for snn in vu.get_secondarynamenodes(cluster):
-            run.start_hadoop_process(snn, 'secondarynamenode')
+    def start_secondarynamenodes(self, cluster):
+        snns = vu.get_secondarynamenodes(cluster)
+        if len(snns) == 0:
+            return
+        cpo.add_provisioning_step(
+            snns[0].cluster_id, utils.start_process_event_message(
+                "SecondaryNameNodes"), len(snns))
 
+        for snn in vu.get_secondarynamenodes(cluster):
+            self._start_secondarynamenode(snn)
+
+    @cpo.event_wrapper(True)
+    def _start_secondarynamenode(self, snn):
+        run.start_hadoop_process(snn, 'secondarynamenode')
+
+    def start_resourcemanager(self, cluster):
         rm = vu.get_resourcemanager(cluster)
         if rm:
-            run.start_yarn_process(rm, 'resourcemanager')
+            self._start_resourcemanager(rm)
+
+    @cpo.event_wrapper(
+        True, step=utils.start_process_event_message('ResourceManager'))
+    def _start_resourcemanager(self, snn):
+        run.start_yarn_process(snn, 'resourcemanager')
+
+    def start_historyserver(self, cluster):
+        hs = vu.get_historyserver(cluster)
+        if hs:
+            run.start_historyserver(hs)
+
+    def start_oozie(self, cluster):
+        oo = vu.get_oozie(cluster)
+        if oo:
+            run.start_oozie_process(self.pctx, oo)
+
+    def start_hiveserver(self, cluster):
+        hiveserver = vu.get_hiveserver(cluster)
+        if hiveserver:
+            run.start_hiveserver_process(self.pctx, hiveserver)
+
+    def start_cluster(self, cluster):
+        self.start_namenode(cluster)
+
+        self.start_secondarynamenodes(cluster)
+
+        self.start_resourcemanager(cluster)
 
         run.start_all_processes(utils.get_instances(cluster),
                                 ['datanode', 'nodemanager'])
 
         run.await_datanodes(cluster)
 
-        hs = vu.get_historyserver(cluster)
-        if hs:
-            run.start_historyserver(hs)
+        self.start_historyserver(cluster)
 
-        oo = vu.get_oozie(cluster)
-        if oo:
-            run.start_oozie_process(self.pctx, oo)
+        self.start_oozie(cluster)
 
-        hiveserver = vu.get_hiveserver(cluster)
-        if hiveserver:
-            run.start_hiveserver_process(self.pctx, hiveserver)
+        self.start_hiveserver(cluster)
 
         self._set_cluster_info(cluster)
 
