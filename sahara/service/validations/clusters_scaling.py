@@ -20,11 +20,11 @@ from sahara.i18n import _
 import sahara.plugins.base as plugin_base
 import sahara.service.api as api
 import sahara.service.validations.base as b
-import sahara.service.validations.cluster_templates as cl_t
+import sahara.service.validations.cluster_template_schema as ct_schema
 
 
 def _build_node_groups_schema():
-    schema = copy.deepcopy(cl_t.CLUSTER_TEMPLATE_SCHEMA)
+    schema = copy.deepcopy(ct_schema.CLUSTER_TEMPLATE_SCHEMA)
     return schema['properties']['node_groups']
 
 

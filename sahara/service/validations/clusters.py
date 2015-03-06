@@ -21,14 +21,14 @@ import sahara.exceptions as ex
 from sahara.i18n import _
 import sahara.service.api as api
 import sahara.service.validations.base as b
-import sahara.service.validations.cluster_templates as cl_tmpl
+import sahara.service.validations.cluster_template_schema as ct_schema
 
 
 CONF = cfg.CONF
 
 
 def _build_cluster_schema():
-    cluster_schema = copy.deepcopy(cl_tmpl.CLUSTER_TEMPLATE_SCHEMA)
+    cluster_schema = copy.deepcopy(ct_schema.CLUSTER_TEMPLATE_SCHEMA)
     cluster_schema['properties'].update({
         "is_transient": {
             "type": "boolean"
