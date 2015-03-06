@@ -71,7 +71,7 @@ def get_images():
 
 def get_limits():
     limits = client().limits.get().absolute
-    return dict((l.name, l.value) for l in limits)
+    return {l.name: l.value for l in limits}
 
 
 def get_user_keypair(cluster):

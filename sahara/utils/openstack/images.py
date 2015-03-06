@@ -106,7 +106,7 @@ class SaharaImageManager(images.ImageManager):
         """Adds tags to the specified image."""
         tags = _ensure_tags(tags)
 
-        self.set_meta(image, dict((PROP_TAG + tag, True) for tag in tags))
+        self.set_meta(image, {PROP_TAG + tag: True for tag in tags})
 
     def untag(self, image, tags):
         """Removes tags from the specified image."""

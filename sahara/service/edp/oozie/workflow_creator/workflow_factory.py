@@ -185,8 +185,8 @@ class MapReduceFactory(BaseFactory):
 
     def _get_streaming(self, job_dict):
         prefix = 'edp.streaming.'
-        return dict((k[len(prefix):], v) for (k, v) in six.iteritems(
-            job_dict['edp_configs']) if k.startswith(prefix))
+        return {k[len(prefix):]: v for (k, v) in six.iteritems(
+            job_dict['edp_configs']) if k.startswith(prefix)}
 
     def get_workflow_xml(self, cluster, job_configs, input_data, output_data,
                          hdfs_user):

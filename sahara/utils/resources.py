@@ -43,8 +43,8 @@ class BaseResource(object):
 
     def to_dict(self):
         dictionary = self.__dict__.copy()
-        return dict([(k, v) for k, v in dictionary.iteritems()
-                     if not self._filter_field(k)])
+        return {k: v for k, v in dictionary.iteritems()
+                if not self._filter_field(k)}
 
     def as_resource(self):
         return Resource(self.__resource_name__, self.to_dict())
