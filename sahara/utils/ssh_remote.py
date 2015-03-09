@@ -129,6 +129,7 @@ def _read_paramimko_stream(recv_func):
 def _escape_quotes(command):
     command = command.replace('\\', '\\\\')
     command = command.replace('"', '\\"')
+    command = command.replace('`', '\\`')
     return command
 
 
