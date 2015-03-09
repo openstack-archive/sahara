@@ -43,18 +43,20 @@ class TestOozieEngine(base.SaharaTestCase):
         oozie_params = {'oozie.libpath': '/mylibpath',
                         'oozie.wf.application.path': '/wrong'}
         job_params = oje._get_oozie_job_params('hadoop',
-                                               '/tmp', oozie_params)
+                                               '/tmp', oozie_params, True)
         self.assertEqual('http://localhost:50030', job_params["jobTracker"])
         self.assertEqual('hdfs://localhost:8020', job_params["nameNode"])
         self.assertEqual('hadoop', job_params["user.name"])
         self.assertEqual('hdfs://localhost:8020/tmp',
                          job_params['oozie.wf.application.path'])
-        self.assertEqual('/mylibpath', job_params['oozie.libpath'])
+        self.assertEqual("/mylibpath,hdfs://localhost:8020/user/"
+                         "sahara-hbase-lib", job_params['oozie.libpath'])
 
         # Make sure this doesn't raise an exception
         job_params = oje._get_oozie_job_params('hadoop',
-                                               '/tmp', {})
-        self.assertNotIn('oozie.libpath', job_params)
+                                               '/tmp', {}, True)
+        self.assertEqual("hdfs://localhost:8020/user/"
+                         "sahara-hbase-lib", job_params['oozie.libpath'])
 
     @mock.patch('sahara.utils.remote.get_remote')
     @mock.patch('sahara.utils.ssh_remote.InstanceInteropHelper')

@@ -132,6 +132,10 @@ ENABLE_SWIFT = p.Config('Enable Swift', 'general', 'cluster',
                         config_type='bool', priority=1,
                         default_value=True)
 
+ENABLE_HBASE_COMMON_LIB = p.Config('Enable HBase Common Lib',
+                                   'general', 'cluster', config_type='bool',
+                                   priority=1, default_value=True)
+
 SWIFT_LIB_URL = p.Config(
     'Hadoop OpenStack library URL', 'general', 'cluster', priority=1,
     default_value=DEFAULT_SWIFT_LIB_URL,
@@ -148,7 +152,8 @@ EXTJS_LIB_URL = p.Config(
 
 def _get_cluster_plugin_configs():
     return [CDH5_REPO_URL, CDH5_REPO_KEY_URL, CM5_REPO_URL, CM5_REPO_KEY_URL,
-            ENABLE_SWIFT, SWIFT_LIB_URL, EXTJS_LIB_URL]
+            ENABLE_SWIFT, ENABLE_HBASE_COMMON_LIB, SWIFT_LIB_URL,
+            EXTJS_LIB_URL]
 
 
 # ng wide configs
@@ -301,6 +306,10 @@ def get_cm5_key_url(cluster):
 
 def is_swift_enabled(cluster):
     return _get_config_value(cluster, ENABLE_SWIFT)
+
+
+def is_hbase_common_lib_enabled(cluster):
+    return _get_config_value(cluster, ENABLE_HBASE_COMMON_LIB)
 
 
 def get_swift_lib_url(cluster):

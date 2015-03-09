@@ -17,6 +17,7 @@ from sahara.i18n import _
 from sahara.plugins.cdh import commands as cmd
 from sahara.plugins.cdh.v5 import cloudera_utils as cu
 from sahara.plugins import utils as gu
+from sahara.service.edp import hdfs_helper as h
 from sahara.utils import cluster_progress_ops as cpo
 
 
@@ -219,6 +220,17 @@ def start_cluster(cluster):
 
     if CU.pu.get_hbase_master(cluster):
         start_hbase_master(cluster, cm_cluster)
+
+    create_hbase_common_lib(cluster)
+
+
+@cpo.event_wrapper(
+    True, step=_("Create HBase common lib"), param=('cluster', 0))
+def create_hbase_common_lib(cluster):
+    server = CU.pu.get_hbase_master(cluster)
+    if CU.pu.c_helper.is_hbase_common_lib_enabled(cluster) and server:
+        with server.remote() as r:
+            h.create_hbase_common_lib(r)
 
 
 def get_open_ports(node_group):

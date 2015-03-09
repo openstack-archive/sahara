@@ -20,11 +20,29 @@ from six.moves.urllib import parse as urlparse
 
 from sahara import conductor as c
 from sahara import context
+from sahara.plugins import exceptions as ex
 from sahara.plugins import utils as u
 from sahara.utils import general as g
 
-
 conductor = c.API
+
+HBASE_COMMON_LIB_PATH = "/user/sahara-hbase-lib"
+
+
+def create_hbase_common_lib(r):
+    r.execute_command(
+        'sudo su - -c "hadoop dfs -mkdir -p %s" hdfs' % (
+            HBASE_COMMON_LIB_PATH))
+    ret_code, stdout = r.execute_command(
+        'hbase classpath')
+    if ret_code == 0:
+        paths = stdout.split(':')
+        for p in paths:
+            if p.endswith(".jar"):
+                r.execute_command('sudo su - -c "hadoop fs -put -p %s %s" hdfs'
+                                  % (p, HBASE_COMMON_LIB_PATH))
+    else:
+        raise ex.RequiredServiceMissingException('hbase')
 
 
 def put_file_to_hdfs(r, file, file_name, path, hdfs_user):
