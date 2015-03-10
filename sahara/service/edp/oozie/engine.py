@@ -14,6 +14,7 @@
 # limitations under the License.
 
 import abc
+import os
 import uuid
 
 from oslo_config import cfg
@@ -177,9 +178,12 @@ class OozieJobEngine(base_engine.JobEngine):
         pass
 
     def validate_job_execution(self, cluster, job, data):
-        # All types except Java require input and output objects
-        # and Java require main class
-        if job.type in [edp.JOB_TYPE_JAVA]:
+        # Shell job type requires no specific fields
+        if job.type == edp.JOB_TYPE_SHELL:
+            return
+        # All other types except Java require input and output
+        # objects and Java require main class
+        if job.type == edp.JOB_TYPE_JAVA:
             j.check_main_class_present(data, job)
         else:
             j.check_data_sources(data, job)
@@ -199,7 +203,8 @@ class OozieJobEngine(base_engine.JobEngine):
                 edp.JOB_TYPE_JAVA,
                 edp.JOB_TYPE_MAPREDUCE,
                 edp.JOB_TYPE_MAPREDUCE_STREAMING,
-                edp.JOB_TYPE_PIG]
+                edp.JOB_TYPE_PIG,
+                edp.JOB_TYPE_SHELL]
 
     def _upload_job_files_to_hdfs(self, where, job_dir, job, configs,
                                   proxy_configs=None):
@@ -208,14 +213,15 @@ class OozieJobEngine(base_engine.JobEngine):
         builtin_libs = edp.get_builtin_binaries(job, configs)
         uploaded_paths = []
         hdfs_user = self.get_hdfs_user()
-        lib_dir = job_dir + '/lib'
+        job_dir_suffix = 'lib' if job.type != edp.JOB_TYPE_SHELL else ''
+        lib_dir = os.path.join(job_dir, job_dir_suffix)
 
         with remote.get_remote(where) as r:
             for main in mains:
                 raw_data = dispatch.get_raw_binary(main, proxy_configs)
                 h.put_file_to_hdfs(r, raw_data, main.name, job_dir, hdfs_user)
                 uploaded_paths.append(job_dir + '/' + main.name)
-            if len(libs) > 0:
+            if len(libs) and job_dir_suffix:
                 # HDFS 2.2.0 fails to put file if the lib dir does not exist
                 self.create_hdfs_dir(r, lib_dir)
             for lib in libs:

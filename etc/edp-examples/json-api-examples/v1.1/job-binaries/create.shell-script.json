@@ -1,0 +1,6 @@
+{
+    "name": "shell-example.sh",
+    "description": "An example shell script",
+    "url": "internal-db://%(script_binary_internal_id)s",
+    "extra": {}
+}

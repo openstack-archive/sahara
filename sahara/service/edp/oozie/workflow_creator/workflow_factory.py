@@ -22,6 +22,7 @@ from sahara.service.edp.oozie.workflow_creator import hive_workflow
 from sahara.service.edp.oozie.workflow_creator import java_workflow
 from sahara.service.edp.oozie.workflow_creator import mapreduce_workflow
 from sahara.service.edp.oozie.workflow_creator import pig_workflow
+from sahara.service.edp.oozie.workflow_creator import shell_workflow
 from sahara.swift import swift_helper as sw
 from sahara.swift import utils as su
 from sahara.utils import edp
@@ -243,6 +244,34 @@ class JavaFactory(BaseFactory):
         return creator.get_built_workflow_xml()
 
 
+class ShellFactory(BaseFactory):
+
+    def __init__(self, job):
+        super(ShellFactory, self).__init__()
+        self.name, self.file_names = self.get_file_names(job)
+
+    def get_file_names(self, job):
+        ctx = context.ctx()
+        return (conductor.job_main_name(ctx, job),
+                conductor.job_lib_names(ctx, job))
+
+    def get_configs(self):
+        return {'configs': {},
+                'params': {},
+                'args': []}
+
+    def get_workflow_xml(self, cluster, job_configs, *args, **kwargs):
+        job_dict = self.get_configs()
+        self.update_job_dict(job_dict, job_configs)
+        creator = shell_workflow.ShellWorkflowCreator()
+        creator.build_workflow_xml(self.name,
+                                   configuration=job_dict['configs'],
+                                   env_vars=job_dict['params'],
+                                   arguments=job_dict['args'],
+                                   files=self.file_names)
+        return creator.get_built_workflow_xml()
+
+
 def _get_creator(job):
 
     def make_PigFactory():
@@ -251,12 +280,16 @@ def _get_creator(job):
     def make_HiveFactory():
         return HiveFactory(job)
 
+    def make_ShellFactory():
+        return ShellFactory(job)
+
     type_map = {
         edp.JOB_TYPE_HIVE: make_HiveFactory,
         edp.JOB_TYPE_JAVA: JavaFactory,
         edp.JOB_TYPE_MAPREDUCE: MapReduceFactory,
         edp.JOB_TYPE_MAPREDUCE_STREAMING: MapReduceFactory,
-        edp.JOB_TYPE_PIG: make_PigFactory
+        edp.JOB_TYPE_PIG: make_PigFactory,
+        edp.JOB_TYPE_SHELL: make_ShellFactory
     }
 
     return type_map[job.type]()
@@ -273,6 +306,9 @@ def get_possible_job_config(job_type):
 
     if edp.compare_job_type(job_type, edp.JOB_TYPE_JAVA):
         return {'job_config': {'configs': [], 'args': []}}
+
+    if edp.compare_job_type(job_type, edp.JOB_TYPE_SHELL):
+        return {'job_config': {'configs': [], 'params': [], 'args': []}}
 
     if edp.compare_job_type(job_type,
                             edp.JOB_TYPE_MAPREDUCE, edp.JOB_TYPE_PIG):

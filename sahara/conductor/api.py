@@ -363,6 +363,15 @@ class LocalApi(object):
                 return binary["name"]
         return None
 
+    def job_lib_names(self, context, job):
+        """Return the name of all job lib binaries or an empty list.
+
+        :param job: This is expected to be a Job object
+        """
+        lib_ids = job.libs or []
+        binaries = (self.job_binary_get(context, lib_id) for lib_id in lib_ids)
+        return [binary["name"] for binary in binaries if binary is not None]
+
     # JobBinary ops
 
     @r.wrap(r.JobBinary)

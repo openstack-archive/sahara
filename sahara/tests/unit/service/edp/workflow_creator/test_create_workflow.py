@@ -20,13 +20,14 @@ from sahara.service.edp.oozie.workflow_creator import hive_workflow as hw
 from sahara.service.edp.oozie.workflow_creator import java_workflow as jw
 from sahara.service.edp.oozie.workflow_creator import mapreduce_workflow as mrw
 from sahara.service.edp.oozie.workflow_creator import pig_workflow as pw
+from sahara.service.edp.oozie.workflow_creator import shell_workflow as shw
 from sahara.utils import patches as p
 
 
-class TestPigWorkflowCreator(testtools.TestCase):
+class TestWorkflowCreators(testtools.TestCase):
 
     def setUp(self):
-        super(TestPigWorkflowCreator, self).setUp()
+        super(TestWorkflowCreators, self).setUp()
         p.patch_minidom_writexml()
         self.prepare = {'delete': ['delete_dir_1', 'delete_dir_2'],
                         'mkdir': ['mkdir_1']}
@@ -218,3 +219,47 @@ class TestPigWorkflowCreator(testtools.TestCase):
     </java>"""
 
         self.assertIn(java_action, res)
+
+    def test_create_shell_workflow(self):
+        shell_workflow = shw.ShellWorkflowCreator()
+        main_class = 'doit.sh'
+        args = ['now']
+        env_vars = {"VERSION": 3}
+
+        shell_workflow.build_workflow_xml(main_class,
+                                          self.prepare,
+                                          self.job_xml,
+                                          self.configuration,
+                                          env_vars,
+                                          args,
+                                          self.files)
+
+        res = shell_workflow.get_built_workflow_xml()
+        shell_action = """
+    <shell xmlns="uri:oozie:shell-action:0.1">
+      <job-tracker>${jobTracker}</job-tracker>
+      <name-node>${nameNode}</name-node>
+      <prepare>
+        <delete path="delete_dir_1"/>
+        <delete path="delete_dir_2"/>
+        <mkdir path="mkdir_1"/>
+      </prepare>
+      <configuration>
+        <property>
+          <name>conf_param_1</name>
+          <value>conf_value_1</value>
+        </property>
+        <property>
+          <name>conf_param_2</name>
+          <value>conf_value_3</value>
+        </property>
+      </configuration>
+      <exec>doit.sh</exec>
+      <argument>now</argument>
+      <env-var>VERSION=3</env-var>
+      <file>file1</file>
+      <file>file2</file>
+      <file>doit.sh</file>
+    </shell>"""
+
+        self.assertIn(shell_action, res)

@@ -1,0 +1,8 @@
+{
+    "cluster_id": "%(cluster_id)s",
+    "job_configs": {
+        "configs": {},
+        "args": ["/tmp/edp-shell-example-output.txt"],
+        "params": {"EXTRA_FILE": "shell-example.txt"}
+    }
+}

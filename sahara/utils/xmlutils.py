@@ -162,6 +162,12 @@ def add_equal_separated_dict(doc, parent_tag, each_elem_tag, value):
                                     "%s=%s" % (k, value[k]))
 
 
+def add_attributes_to_element(doc, tag, attributes):
+    element = doc.getElementsByTagName(tag)[0]
+    for name, value in attributes.items():
+        element.setAttribute(name, value)
+
+
 def add_tagged_list(doc, parent_tag, each_elem_tag, values):
     for v in values:
         add_text_element_to_tag(doc, parent_tag, each_elem_tag, v)

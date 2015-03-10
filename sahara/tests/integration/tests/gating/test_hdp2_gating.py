@@ -125,7 +125,6 @@ class HDP2GatingTest(swift.SwiftTest, scaling.ScalingTest,
         # check pig
         pig_job = self.edp_info.read_pig_example_script()
         pig_lib = self.edp_info.read_pig_example_jar()
-
         yield self.edp_testing(
             job_type=utils_edp.JOB_TYPE_PIG,
             job_data_list=[{'pig': pig_job}],
@@ -159,6 +158,15 @@ class HDP2GatingTest(swift.SwiftTest, scaling.ScalingTest,
             job_data_list=[],
             lib_data_list=[{'jar': java_jar}],
             configs=java_configs)
+
+        # check shell
+        shell_script_data = self.edp_info.read_shell_example_script()
+        shell_file_data = self.edp_info.read_shell_example_text_file()
+        yield self.edp_testing(
+            job_type=utils_edp.JOB_TYPE_SHELL,
+            job_data_list=[{'script': shell_script_data}],
+            lib_data_list=[{'text': shell_file_data}],
+            configs=self.edp_info.shell_example_configs())
 
     @b.errormsg("Failure while cluster scaling: ")
     def _check_scaling(self):

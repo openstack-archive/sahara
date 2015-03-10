@@ -6,7 +6,7 @@ Overview
 
 Sahara's Elastic Data Processing facility or :dfn:`EDP` allows the execution of jobs on clusters created from Sahara. EDP supports:
 
-* Hive, Pig, MapReduce, MapReduce.Streaming and Java job types on Hadoop clusters
+* Hive, Pig, MapReduce, MapReduce.Streaming, Java, and Shell job types on Hadoop clusters
 * Spark jobs on Spark standalone clusters
 * storage of job binaries in Swift or Sahara's own database
 * access to input and output data sources in
@@ -67,6 +67,8 @@ A :dfn:`Job` object specifies the type of the job and lists all of the individua
       | ``MapReduce.Streaming`` | not used    | optional  |
       +-------------------------+-------------+-----------+
       | ``Java``                | not used    | required  |
+      +-------------------------+-------------+-----------+
+      | ``Shell``               | required    | optional  |
       +-------------------------+-------------+-----------+
       | ``Spark``               | required    | optional  |
       +-------------------------+-------------+-----------+
@@ -135,6 +137,8 @@ Jobs can be configured at launch. The job type determines the kinds of values th
       +--------------------------+---------------+------------+-----------+
       | ``Java``                 | Yes           | No         | Yes       |
       +--------------------------+---------------+------------+-----------+
+      | ``Shell``                | Yes           | Yes        | Yes       |
+      +--------------------------+---------------+------------+-----------+
       | ``Spark``                | Yes           | No         | Yes       |
       +--------------------------+---------------+------------+-----------+
 
@@ -144,7 +148,7 @@ Jobs can be configured at launch. The job type determines the kinds of values th
   + Other configuration values may be read at runtime by Hadoop jobs
   + Currently additional configuration values are not available to Spark jobs at runtime
 
-* :dfn:`Parameters` are key/value pairs. They supply values for the Hive and Pig parameter substitution mechanisms.
+* :dfn:`Parameters` are key/value pairs. They supply values for the Hive and Pig parameter substitution mechanisms. In Shell jobs, they are passed as environment variables.
 * :dfn:`Arguments` are strings passed as command line arguments to a shell or main program
 
 These values can be set on the :guilabel:`Configure` tab during job launch through the web UI or through the *job_configs* parameter when using the  */jobs/<job_id>/execute* REST method.
@@ -243,6 +247,17 @@ using one of the above two methods. Furthermore, if Swift data sources are used 
 
 The ``edp-wordcount`` example bundled with Sahara shows how to use configuration values, arguments, and Swift data paths in a Java job type.
 
+Additional Details for Shell jobs
++++++++++++++++++++++++++++++++++
+
+A shell job will execute the script specified as ``main``, and will place any files specified as ``libs``
+in the same working directory (on both the filesystem and in HDFS). Command line arguments may be passed to
+the script through the ``args`` array, and any ``params`` values will be passed as environment variables.
+
+Data Source objects are not used with Shell job types.
+
+The ``edp-shell`` example bundled with Sahara contains a script which will output the executing user to
+a file specified by the first command line argument.
 
 Additional Details for Spark jobs
 +++++++++++++++++++++++++++++++++

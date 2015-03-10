@@ -40,13 +40,18 @@ class TestJSONApiExamplesV11(testtools.TestCase):
     def test_job_binaries(self):
         schema = job_binary.JOB_BINARY_SCHEMA
         path = self.EXAMPLES_PATH % 'job-binaries'
-        formatter = self._formatter("job_binary_internal_id")
+        formatter = self._formatter("job_binary_internal_id",
+                                    "script_binary_internal_id",
+                                    "text_binary_internal_id")
         self._test(schema, path, formatter)
 
     def test_jobs(self):
         schema = job.JOB_SCHEMA
         path = self.EXAMPLES_PATH % 'jobs'
-        formatter = self._formatter("job_binary_id", "udf_binary_id")
+        formatter = self._formatter("job_binary_id",
+                                    "udf_binary_id",
+                                    "script_binary_id",
+                                    "text_binary_id")
         self._test(schema, path, formatter)
 
     def test_job_executions(self):
