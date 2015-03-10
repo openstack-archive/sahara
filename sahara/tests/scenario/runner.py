@@ -140,8 +140,12 @@ def main():
                                 path=test_dir_path)
 
     # run tests
+    concurrency = config.get('concurrency')
     os.environ['DISCOVER_DIRECTORY'] = test_dir_path
-    return_code = os.system('bash tools/pretty_tox.sh')
+    command = 'bash tools/pretty_tox.sh'
+    if concurrency:
+        command = command + ' -- --concurrency %d' % concurrency
+    return_code = os.system(command)
     sys.exit(return_code)
 
 
