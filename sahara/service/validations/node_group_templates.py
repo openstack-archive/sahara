@@ -13,6 +13,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import copy
+
 from sahara import exceptions as ex
 from sahara.i18n import _
 from sahara.service import api
@@ -100,6 +102,11 @@ NODE_GROUP_TEMPLATE_SCHEMA = {
         "node_processes",
     ]
 }
+
+# For an update we do not require any fields but we want the given
+# fields to be validated
+NODE_GROUP_TEMPLATE_UPDATE_SCHEMA = copy.copy(NODE_GROUP_TEMPLATE_SCHEMA)
+NODE_GROUP_TEMPLATE_UPDATE_SCHEMA["required"] = []
 
 
 def check_node_group_template_create(data, **kwargs):
