@@ -15,6 +15,7 @@
 
 import uuid
 
+from sahara.conductor import objects
 from sahara import context
 import sahara.utils.files as files
 
@@ -65,12 +66,6 @@ def unpack_archive(instance, src, dest, cleanup=False, run_as=None):
             r.execute_command(_run_as(run_as, 'rm -r %s' % src))
 
 
-def is_directory(instance, path):
-    with instance.remote() as r:
-        ec, out = r.execute_command('[ -d %s ]' % path, raise_when_error=False)
-    return not ec
-
-
 def copy_file(s_path, s_instance, d_path, d_instance, run_as=None):
     with s_instance.remote() as sr:
         data = sr.read_file_from(s_path, run_as_root=(run_as == 'root'))
@@ -109,3 +104,81 @@ def execute_on_instances(instances, function, *args, **kwargs):
         for instance in instances:
             t_name = '%s-execution' % function.__name__
             tg.spawn(t_name, function, instance, *args, **kwargs)
+
+
+def _replace(args, position, value):
+    return args[:position] + (value,) + args[position + 1:]
+
+
+def remote_command(position):
+    def wrap(func):
+        def wrapped(*args, **kwargs):
+            target = args[position]
+            if isinstance(target, objects.Instance):
+                with target.remote() as remote:
+                    return func(*_replace(args, position, remote), **kwargs)
+            return func(*args, **kwargs)
+
+        return wrapped
+
+    return wrap
+
+
+def execute_command(instances, command, run_as=None):
+    def _execute_command(instance):
+        with instance.remote() as remote:
+            remote.execute_command(_run_as(run_as, command), timeout=1800)
+
+    execute_on_instances(instances, _execute_command)
+
+
+@remote_command(0)
+def is_directory(remote, path):
+    command = '[ -d %s ]' % path
+    ec = remote.execute_command(command, True, raise_when_error=False)[0]
+    return not ec
+
+
+@remote_command(0)
+def chown(remote, owner, path):
+    args = {'owner': owner, 'path': path}
+    remote.execute_command('chown -R %(owner)s %(path)s' % args, True)
+
+
+@remote_command(0)
+def chmod(remote, mode, path):
+    args = {'mode': mode, 'path': path}
+    remote.execute_command('chmod -R %(mode)s %(path)s' % args, True)
+
+
+@remote_command(0)
+def mkdir(remote, path, mode=None, owner=''):
+    args = {'mode': '-m %s' % mode if mode else '', 'path': path}
+    remote.execute_command('mkdir -p %(mode)s %(path)s' % args, bool(owner))
+    if owner:
+        chown(remote, owner, path)
+
+
+@remote_command(0)
+def write_file(remote, path, data, mode=None, owner=''):
+    remote.write_file_to(path, data, run_as_root=bool(owner))
+    if mode:
+        chmod(remote, mode, path)
+    if owner:
+        chown(remote, owner, path)
+
+
+@remote_command(0)
+def install_ssh_key(remote, user, private_key, public_key):
+    ssh_dir = '/home/%s/.ssh' % user
+    owner = '%s:%s' % (user, user)
+    if not is_directory(remote, ssh_dir):
+        mkdir(remote, ssh_dir, 700, owner)
+    write_file(remote, '%s/id_rsa.pub' % ssh_dir, public_key, 644, owner)
+    write_file(remote, '%s/id_rsa' % ssh_dir, private_key, 600, owner)
+
+
+@remote_command(0)
+def authorize_key(remote, user, public_key):
+    authorized_keys = '/home/%s/.ssh/authorized_keys' % user
+    remote.append_to_file(authorized_keys, public_key, run_as_root=True)

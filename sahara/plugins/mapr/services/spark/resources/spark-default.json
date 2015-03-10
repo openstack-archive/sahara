@@ -1,0 +1,20 @@
+[
+  {
+    "name": "SPARK_WORKER_CORES",
+    "config_type": "int",
+    "value": 1,
+    "description": "The number of cores to use on this machine."
+  },
+  {
+    "name": "SPARK_WORKER_MEMORY",
+    "config_type": "string",
+    "value": "16g",
+    "description": "How much total memory workers have to give executors (e.g. 1000m, 2g)."
+  },
+  {
+    "name": "SPARK_WORKER_INSTANCES",
+    "config_type": "int",
+    "value": 1,
+    "description": "The number of worker processes per node."
+  }
+]
