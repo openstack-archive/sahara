@@ -17,6 +17,8 @@
 import re
 import tokenize
 
+from sahara.utils.hacking import commit_message
+
 
 def _starts_with_any(line, *prefixes):
     for prefix in prefixes:
@@ -85,3 +87,5 @@ def factory(register):
     register(import_db_only_in_conductor)
     register(hacking_no_author_attr)
     register(check_oslo_namespace_imports)
+    register(commit_message.OnceGitCheckCommitTitleBug)
+    register(commit_message.OnceGitCheckCommitTitleLength)
