@@ -19,10 +19,12 @@ import glob
 import json
 import logging
 import os
+import sys
 import time
+import traceback
 
 import fixtures
-from oslo_utils import excutils
+import prettytable
 import six
 from tempest_lib import base
 from tempest_lib import exceptions as exc
@@ -30,22 +32,34 @@ from tempest_lib import exceptions as exc
 from sahara.tests.scenario import clients
 from sahara.tests.scenario import utils
 
+
 logger = logging.getLogger('swiftclient')
 logger.setLevel(logging.CRITICAL)
 
 DEFAULT_TEMPLATES_PATH = (
     'sahara/tests/scenario/templates/%(plugin_name)s/%(hadoop_version)s')
+CHECK_OK_STATUS = "OK"
+CHECK_FAILED_STATUS = "FAILED"
 
 
-def errormsg(message):
+def track_result(check_name, exit_with_error=True):
     def decorator(fct):
         @functools.wraps(fct)
-        def wrapper(*args, **kwargs):
+        def wrapper(self, *args, **kwargs):
+            test_info = {
+                'check_name': check_name,
+                'status': CHECK_OK_STATUS,
+                'traceback': None
+            }
+            self._results.append(test_info)
             try:
-                return fct(*args, **kwargs)
+                return fct(self, *args, **kwargs)
             except Exception:
-                with excutils.save_and_reraise_exception():
-                    print(message)
+                test_info['status'] = CHECK_FAILED_STATUS
+                test_info['traceback'] = traceback.format_exception(
+                    *sys.exc_info())
+                if exit_with_error:
+                    raise
         return wrapper
     return decorator
 
@@ -57,6 +71,7 @@ class BaseTestCase(base.BaseTestCase):
         cls.network = None
         cls.credentials = None
         cls.testcase = None
+        cls._results = []
 
     def setUp(self):
         super(BaseTestCase, self).setUp()
@@ -99,6 +114,7 @@ class BaseTestCase(base.BaseTestCase):
         self.cluster_id = self._create_cluster(cl_tmpl_id)
         self._poll_cluster_status(self.cluster_id)
 
+    @track_result("Check EDP jobs", False)
     def check_run_jobs(self):
         jobs = {}
         if self.testcase['edp_jobs_flow']:
@@ -227,7 +243,7 @@ class BaseTestCase(base.BaseTestCase):
                 utils.rand_name('sahara-tests'))
         return self.__swift_container
 
-    @errormsg("Cluster scaling failed")
+    @track_result("Cluster scaling", False)
     def check_scale(self):
         scale_ops = []
         if self.testcase.get('scaling'):
@@ -261,7 +277,7 @@ class BaseTestCase(base.BaseTestCase):
             self.sahara.scale_cluster(self.cluster_id, body)
             self._poll_cluster_status(self.cluster_id)
 
-    @errormsg("Create node group templates failed")
+    @track_result("Create node group templates")
     def _create_node_group_templates(self):
         ng_id_map = {}
         floating_ip_pool = None
@@ -292,7 +308,7 @@ class BaseTestCase(base.BaseTestCase):
 
         return ng_id_map
 
-    @errormsg("Create cluster template failed")
+    @track_result("Create cluster template")
     def _create_cluster_template(self):
         self.ng_name_map = {}
         template = None
@@ -324,7 +340,7 @@ class BaseTestCase(base.BaseTestCase):
 
         return self.__create_cluster_template(**kwargs)
 
-    @errormsg("Create cluster failed")
+    @track_result("Create cluster")
     def _create_cluster(self, cluster_template_id):
         if self.testcase.get('cluster'):
             kwargs = dict(self.testcase['cluster'])
@@ -412,3 +428,22 @@ class BaseTestCase(base.BaseTestCase):
         if not self.testcase['retain_resources']:
             self.addCleanup(self.swift.delete_object, container_name,
                             object_name)
+
+    def tearDown(self):
+        tbs = []
+        table = prettytable.PrettyTable(["Check", "Status"])
+        table.align["Check"] = "l"
+        for check in self._results:
+            table.add_row([check['check_name'], check['status']])
+            if check['status'] == CHECK_FAILED_STATUS:
+                tbs.extend(check['traceback'])
+                tbs.append("")
+        print(table)
+        print("\n".join(tbs), file=sys.stderr)
+
+        super(BaseTestCase, self).tearDown()
+
+        test_failed = any([c['status'] == CHECK_FAILED_STATUS
+                           for c in self._results])
+        if test_failed:
+            self.fail("Scenario tests failed")
