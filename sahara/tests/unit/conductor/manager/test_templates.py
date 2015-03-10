@@ -170,6 +170,11 @@ class NodeGroupTemplates(test_base.ConductorManagerTestCase):
         with testtools.ExpectedException(ex.NotFoundException):
             self.api.node_group_template_update(ctx, -1, update_values)
 
+        ngt = self.api.node_group_template_create(ctx, SAMPLE_NGT)
+        ngt_id = ngt['id']
+        with testtools.ExpectedException(ex.DBDuplicateEntry):
+            self.api.node_group_template_update(ctx, ngt_id, update_values)
+
 
 class ClusterTemplates(test_base.ConductorManagerTestCase):
     def __init__(self, *args, **kwargs):

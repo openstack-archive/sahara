@@ -603,6 +603,19 @@ def node_group_template_update(context, values):
             raise ex.NotFoundException(
                 ngt_id, _("NodeGroupTemplate id '%s' not found"))
 
+        name = values.get('name')
+        if name and name != node_group_template.name:
+            same_name_tmpls = model_query(
+                m.NodeGroupTemplate, context).filter_by(name=name).all()
+            if (len(same_name_tmpls) > 0 and
+                    same_name_tmpls[0].id != ngt_id):
+                raise ex.DBDuplicateEntry(
+                    _("Node Group Template can not be updated. "
+                      "Another node group template with name %s "
+                      "already exists.")
+                    % name
+                )
+
         # Check to see that the node group template to be updated is not in
         # use by an existing cluster.
         for template_relationship in node_group_template.templates_relations:
