@@ -407,6 +407,10 @@
 # A method for Sahara to execute commands on VMs. (string value)
 #remote = ssh
 
+# Number of workers for Sahara API service (0 means all-in-one-thread
+# configuration). (integer value)
+#api_workers = 0
+
 # Postfix for storing jobs in hdfs. Will be added to '/user/<hdfs
 # user>/' path. (string value)
 #job_workflow_postfix =

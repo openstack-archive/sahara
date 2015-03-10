@@ -15,12 +15,9 @@
 
 import os
 
-import eventlet
-from eventlet import wsgi
 import flask
 from oslo_config import cfg
 from oslo_log import log
-from oslo_log import loggers
 import six
 import stevedore
 from werkzeug import exceptions as werkzeug_exceptions
@@ -33,7 +30,7 @@ from sahara.api import v11 as api_v11
 from sahara import config
 from sahara import context
 from sahara.i18n import _LI
-from sahara.openstack.common import sslutils
+from sahara.openstack.common import systemd
 from sahara.plugins import base as plugins_base
 from sahara.service import api as service_api
 from sahara.service.edp import api as edp_api
@@ -43,6 +40,7 @@ from sahara.utils import api as api_utils
 from sahara.utils.openstack import cinder
 from sahara.utils import remote
 from sahara.utils import rpc as messaging
+from sahara.utils import wsgi
 
 
 LOG = log.getLogger(__name__)
@@ -58,7 +56,10 @@ opts = [
     cfg.StrOpt('remote',
                default='ssh',
                help='A method for Sahara to execute commands '
-                    'on VMs.')
+                    'on VMs.'),
+    cfg.IntOpt('api_workers', default=0,
+               help="Number of workers for Sahara API service (0 means "
+                    "all-in-one-thread configuration).")
 ]
 
 CONF = cfg.CONF
@@ -193,9 +194,7 @@ def _get_ops_driver(driver_name):
 
 
 def start_server(app):
-    sock = eventlet.listen((cfg.CONF.host, cfg.CONF.port), backlog=500)
-    if sslutils.is_enabled():
-        LOG.info(_LI("Using HTTPS for port %s"), cfg.CONF.port)
-        sock = sslutils.wrap(sock)
-
-    wsgi.server(sock, app, log=loggers.WritableLogger(LOG), debug=False)
+    server = wsgi.Server()
+    server.start(app)
+    systemd.notify_once()
+    server.wait()
