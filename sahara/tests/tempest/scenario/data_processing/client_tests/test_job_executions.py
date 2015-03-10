@@ -22,6 +22,7 @@ from tempest import exceptions
 from tempest.scenario.data_processing.client_tests import base
 from tempest.scenario.data_processing import config as sahara_test_config
 from tempest import test
+from tempest_lib import decorators
 
 CONF = sahara_test_config.SAHARA_TEST_CONF
 TEMPEST_CONF = config.CONF
@@ -266,6 +267,7 @@ class JobExecutionTest(base.BaseDataProcessingTest):
         self.assertNotIn(job_exec_id, [job_exec.id for
                                        job_exec in job_exec_list])
 
+    @decorators.skip_because(bug="1430252")
     @test.attr(type='slow')
     @test.services('data_processing')
     def test_job_executions(self):
