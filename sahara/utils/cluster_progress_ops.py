@@ -73,12 +73,15 @@ def add_provisioning_step(cluster_id, step_name, total):
         return
 
     update_provisioning_steps(cluster_id)
-    return conductor.cluster_provision_step_add(context.ctx(), cluster_id, {
-        'step_name': step_name,
-        'completed': 0,
-        'total': total,
-        'started_at': timeutils.utcnow(),
-    })
+    step_type = context.ctx().current_instance_info.step_type
+    return conductor.cluster_provision_step_add(
+        context.ctx(), cluster_id, {
+            'step_name': step_name,
+            'step_type': step_type,
+            'completed': 0,
+            'total': total,
+            'started_at': timeutils.utcnow(),
+        })
 
 
 def get_current_provisioning_step(cluster_id):
