@@ -3,14 +3,15 @@
 # This file is distributed under the same license as the sahara project.
 #
 # Translators:
+# eckeman <eckeman@zoho.com>, 2015
 # Martin Tyrefors Branden <martin@tyrefors.com>, 2015
 msgid ""
 msgstr ""
 "Project-Id-Version: Sahara\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2015-03-04 06:12+0000\n"
-"PO-Revision-Date: 2015-03-03 22:01+0000\n"
-"Last-Translator: Martin Tyrefors Branden <martin@tyrefors.com>\n"
+"POT-Creation-Date: 2015-03-10 06:14+0000\n"
+"PO-Revision-Date: 2015-03-09 22:01+0000\n"
+"Last-Translator: eckeman <eckeman@zoho.com>\n"
 "Language-Team: Swedish (http://www.transifex.com/projects/p/sahara/language/"
 "sv/)\n"
 "Language: sv\n"
@@ -28,12 +29,12 @@ msgstr "Installation misslyckades."
 #: sahara/plugins/hdp/versions/version_1_3_2/versionhandler.py:444
 #: sahara/plugins/hdp/versions/version_2_0_6/versionhandler.py:431
 msgid "Failed to start Hadoop cluster."
-msgstr "Start av Hadoop kluster misslyckades."
+msgstr "Start av Hadoop-kluster misslyckades."
 
 #: sahara/plugins/hdp/versions/version_1_3_2/versionhandler.py:470
 #: sahara/plugins/hdp/versions/version_2_0_6/versionhandler.py:457
 msgid "Failed to change state of Hadoop components"
-msgstr "Misslyckades med att ändra state på Hadoop komponenter"
+msgstr "Misslyckades med att ändra läge för Hadoop-komponenter"
 
 #: sahara/plugins/hdp/versions/version_2_0_6/versionhandler.py:1000
 msgid "HDFS-HA: Host component update failed: {0} {1}"

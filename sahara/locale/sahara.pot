@@ -6,9 +6,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: sahara 2015.1.dev131\n"
+"Project-Id-Version: sahara 2015.1.dev140\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2015-03-04 06:12+0000\n"
+"POT-Creation-Date: 2015-03-10 06:14+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -483,47 +483,64 @@ msgstr ""
 #: sahara/plugins/vanilla/hadoop2/validation.py:41
 #: sahara/plugins/vanilla/hadoop2/validation.py:53
 #: sahara/plugins/vanilla/hadoop2/validation.py:77
-#: sahara/plugins/vanilla/v1_2_1/versionhandler.py:69
-#: sahara/plugins/vanilla/v1_2_1/versionhandler.py:76
-#: sahara/plugins/vanilla/v1_2_1/versionhandler.py:98
+#: sahara/plugins/vanilla/v1_2_1/versionhandler.py:70
+#: sahara/plugins/vanilla/v1_2_1/versionhandler.py:77
+#: sahara/plugins/vanilla/v1_2_1/versionhandler.py:99
 msgid "0 or 1"
 msgstr ""
 
-#: sahara/plugins/utils.py:66
+#: sahara/plugins/utils.py:73
 msgid "Start the following process(es): {process}"
 msgstr ""
 
+#: sahara/plugins/cdh/cloudera_utils.py:81
+msgid "Delete instances"
+msgstr ""
+
+#: sahara/plugins/cdh/cloudera_utils.py:93
+msgid "Decommission nodes"
+msgstr ""
+
+#: sahara/plugins/cdh/cloudera_utils.py:101
+msgid "Refresh DataNodes"
+msgstr ""
+
 #: sahara/plugins/cdh/cloudera_utils.py:106
+msgid "Refresh YARNNodes"
+msgstr ""
+
+#: sahara/plugins/cdh/cloudera_utils.py:119
 msgid "Deploy configs"
 msgstr ""
 
-#: sahara/plugins/cdh/cloudera_utils.py:115
+#: sahara/plugins/cdh/cloudera_utils.py:128
 msgid "Update configs"
 msgstr ""
 
-#: sahara/plugins/cdh/cloudera_utils.py:147
+#: sahara/plugins/cdh/cloudera_utils.py:160
 msgid "Create mgmt service"
 msgstr ""
 
-#: sahara/plugins/cdh/cloudera_utils.py:171
+#: sahara/plugins/cdh/cloudera_utils.py:184
 #: sahara/plugins/cdh/v5_3_0/cloudera_utils.py:81
 msgid "'cluster' or 'instance' argument missed"
 msgstr ""
 
-#: sahara/plugins/cdh/cloudera_utils.py:191
+#: sahara/plugins/cdh/cloudera_utils.py:204
 #, python-format
 msgid "Process %(process)s is not supported by CDH plugin"
 msgstr ""
 
-#: sahara/plugins/cdh/cloudera_utils.py:194
+#: sahara/plugins/cdh/cloudera_utils.py:207
 msgid "Await agents"
 msgstr ""
 
-#: sahara/plugins/cdh/cloudera_utils.py:216
+#: sahara/plugins/cdh/cloudera_utils.py:229
 msgid "Cloudera agents failed to connect to Cloudera Manager"
 msgstr ""
 
-#: sahara/plugins/cdh/cloudera_utils.py:222 sahara/service/engine.py:133
+#: sahara/plugins/cdh/cloudera_utils.py:235
+#: sahara/plugins/vanilla/hadoop2/config.py:63 sahara/service/engine.py:133
 msgid "Configure instances"
 msgstr ""
 
@@ -622,13 +639,17 @@ msgid ""
 msgstr ""
 
 #: sahara/plugins/cdh/v5/cloudera_utils.py:93
-#: sahara/plugins/cdh/v5_3_0/cloudera_utils.py:104
+#: sahara/plugins/cdh/v5_3_0/cloudera_utils.py:106
 msgid "Create services"
 msgstr ""
 
 #: sahara/plugins/cdh/v5/cloudera_utils.py:121
-#: sahara/plugins/cdh/v5_3_0/cloudera_utils.py:150
+#: sahara/plugins/cdh/v5_3_0/cloudera_utils.py:152
 msgid "Configure services"
+msgstr ""
+
+#: sahara/plugins/cdh/v5/deploy.py:78 sahara/plugins/cdh/v5_3_0/deploy.py:82
+msgid "Start roles: NODEMANAGER, DATANODE"
 msgstr ""
 
 #: sahara/plugins/cdh/v5/validation.py:130
@@ -651,6 +672,18 @@ msgstr ""
 msgid ""
 "CDH plugin cannot scale node group with processes which have no master-"
 "processes run in cluster"
+msgstr ""
+
+#: sahara/plugins/cdh/v5_3_0/cloudera_utils.py:100
+msgid "First run cluster"
+msgstr ""
+
+#: sahara/plugins/cdh/v5_3_0/deploy.py:132
+msgid "Prepare cluster"
+msgstr ""
+
+#: sahara/plugins/cdh/v5_3_0/deploy.py:145
+msgid "Finish cluster starting"
 msgstr ""
 
 #: sahara/plugins/fake/plugin.py:30
@@ -926,13 +959,17 @@ msgid ""
 msgstr ""
 
 #: sahara/plugins/spark/scaling.py:31 sahara/plugins/spark/scaling.py:58
+#: sahara/plugins/vanilla/hadoop2/scaling.py:140
+#: sahara/plugins/vanilla/hadoop2/scaling.py:146
+#: sahara/plugins/vanilla/v1_2_1/scaling.py:31
+#: sahara/plugins/vanilla/v1_2_1/scaling.py:45
 #, python-format
 msgid "Decommission %s"
 msgstr ""
 
 #: sahara/plugins/spark/scaling.py:94
-#: sahara/plugins/vanilla/hadoop2/scaling.py:132
-#: sahara/plugins/vanilla/v1_2_1/scaling.py:79
+#: sahara/plugins/vanilla/hadoop2/scaling.py:134
+#: sahara/plugins/vanilla/v1_2_1/scaling.py:82
 #, python-format
 msgid "Cannot finish decommission of cluster %(cluster)s in %(seconds)d seconds"
 msgstr ""
@@ -950,14 +987,33 @@ msgid ""
 "deploy the Oozie component."
 msgstr ""
 
+#: sahara/plugins/vanilla/hadoop2/config.py:352
+msgid "Configure topology data"
+msgstr ""
+
 #: sahara/plugins/vanilla/hadoop2/config_helper.py:161
 #, python-format
 msgid "Unable to get parameter '%(name)s' from service %(service)s"
 msgstr ""
 
-#: sahara/plugins/vanilla/hadoop2/run_scripts.py:59
+#: sahara/plugins/vanilla/hadoop2/run_scripts.py:70
 #, python-format
 msgid "Process %s is not supported"
+msgstr ""
+
+#: sahara/plugins/vanilla/hadoop2/run_scripts.py:121
+#, python-format
+msgid "Refresh %s nodes"
+msgstr ""
+
+#: sahara/plugins/vanilla/hadoop2/run_scripts.py:163
+#: sahara/plugins/vanilla/v1_2_1/versionhandler.py:208
+#, python-format
+msgid "Await %s start up"
+msgstr ""
+
+#: sahara/plugins/vanilla/hadoop2/scaling.py:52
+msgid "Update include files"
 msgstr ""
 
 #: sahara/plugins/vanilla/hadoop2/validation.py:71
@@ -966,21 +1022,21 @@ msgstr ""
 
 #: sahara/plugins/vanilla/hadoop2/validation.py:88
 #: sahara/plugins/vanilla/hadoop2/validation.py:107
-#: sahara/plugins/vanilla/v1_2_1/versionhandler.py:485
-#: sahara/plugins/vanilla/v1_2_1/versionhandler.py:504
+#: sahara/plugins/vanilla/v1_2_1/versionhandler.py:512
+#: sahara/plugins/vanilla/v1_2_1/versionhandler.py:531
 #, python-format
 msgid "Vanilla plugin cannot scale nodegroup with processes: %s"
 msgstr ""
 
 #: sahara/plugins/vanilla/hadoop2/validation.py:93
-#: sahara/plugins/vanilla/v1_2_1/versionhandler.py:490
+#: sahara/plugins/vanilla/v1_2_1/versionhandler.py:517
 msgid ""
 "Vanilla plugin cannot scale node group with processes which have no "
 "master-processes run in cluster"
 msgstr ""
 
 #: sahara/plugins/vanilla/hadoop2/validation.py:116
-#: sahara/plugins/vanilla/v1_2_1/versionhandler.py:514
+#: sahara/plugins/vanilla/v1_2_1/versionhandler.py:541
 #, python-format
 msgid ""
 "Vanilla plugin cannot shrink cluster because it would be not enough nodes"
@@ -990,6 +1046,10 @@ msgstr ""
 #: sahara/plugins/vanilla/v1_2_1/config_helper.py:213
 #, python-format
 msgid "Unable get parameter '%(parameter)s' from service %(service)s"
+msgstr ""
+
+#: sahara/plugins/vanilla/v1_2_1/versionhandler.py:332
+msgid "Setup instances and push configs"
 msgstr ""
 
 #: sahara/plugins/vanilla/v2_4_1/versionhandler.py:62
