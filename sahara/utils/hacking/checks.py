@@ -18,6 +18,7 @@ import re
 import tokenize
 
 from sahara.utils.hacking import commit_message
+from sahara.utils.hacking import import_checks
 
 
 def _starts_with_any(line, *prefixes):
@@ -89,3 +90,5 @@ def factory(register):
     register(check_oslo_namespace_imports)
     register(commit_message.OnceGitCheckCommitTitleBug)
     register(commit_message.OnceGitCheckCommitTitleLength)
+    register(import_checks.hacking_import_groups)
+    register(import_checks.hacking_import_groups_together)

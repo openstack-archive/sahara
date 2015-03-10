@@ -18,3 +18,7 @@ readable. Follow these guidelines:
 
 - [S364] The first line of the commit message should provide an accurate
   description of the change, not just a reference to a bug or blueprint.
+
+Imports
+-------
+- [S366, S367] Organize your imports according to the ``Import order``
