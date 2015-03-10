@@ -13,10 +13,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import mock
-
 import copy
 import xml.dom.minidom as xml
+
+import mock
 
 from sahara.plugins.spark import config_helper as c_helper
 from sahara.swift import swift_helper as swift
