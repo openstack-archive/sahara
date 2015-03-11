@@ -13,9 +13,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from oslo_policy import policy as cpolicy
+
 from sahara.api import acl
 from sahara import exceptions as ex
-from sahara.openstack.common import policy as cpolicy
 from sahara.tests.unit import base
 
 
