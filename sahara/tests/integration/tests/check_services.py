@@ -121,3 +121,17 @@ class CheckServicesTest(base.ITestCase):
                 print(six.text_type(e))
         finally:
             self.close_ssh_connection()
+
+    @base.skip_test('SKIP_CHECK_SERVICES_TEST', message='Test for Services'
+                    ' checking was skipped.')
+    def check_impala_services(self, cluster_info):
+        namenode_ip = cluster_info['node_info']['namenode_ip']
+        self.open_ssh_connection(namenode_ip)
+        try:
+            self.transfer_helper_script_to_node('impala_test_script.sh')
+            self.execute_command('./script.sh query -ip %s' % namenode_ip)
+        except Exception as e:
+            with excutils.save_and_reraise_exception():
+                print(six.text_type(e))
+        finally:
+            self.close_ssh_connection()

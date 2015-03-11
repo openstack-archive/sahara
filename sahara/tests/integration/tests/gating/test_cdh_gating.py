@@ -175,7 +175,8 @@ class CDHGatingTest(check_services.CheckServicesTest,
             'plugin_config': self.cdh_config,
             'description': 'test node group template for CDH plugin',
             'node_processes': ['HDFS_SECONDARYNAMENODE', 'HDFS_DATANODE',
-                               'HBASE_REGIONSERVER', 'FLUME_AGENT'],
+                               'HBASE_REGIONSERVER', 'FLUME_AGENT',
+                               'IMPALAD'],
             'floating_ip_pool': self.floating_ip_pool,
             'auto_security_group': True,
             'node_configs': {}
@@ -323,6 +324,8 @@ class CDHGatingTest(check_services.CheckServicesTest,
         self.check_key_value_store_availability(self.cluster_info)
         # check solr
         self.check_solr_availability(self.cluster_info)
+        # check Impala
+        self.check_impala_services(self.cluster_info)
 
     @b.errormsg("Failure while cluster scaling: ")
     def _check_scaling(self):
