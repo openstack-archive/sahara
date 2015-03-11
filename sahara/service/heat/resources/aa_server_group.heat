@@ -1,7 +1,0 @@
-        "%(server_group_name)s" : {
-            "Type" : "OS::Nova::ServerGroup",
-            "Properties" : {
-                "name" : "%(server_group_name)s",
-                "policies": ["anti-affinity"]
-            }
-        }

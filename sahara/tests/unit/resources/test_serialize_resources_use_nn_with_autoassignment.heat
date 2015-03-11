@@ -11,9 +11,7 @@
                 "image" : "1",
                 "admin_user": "root",
                 "key_name" : "user_key",
-                "user_data": {
-                    "Fn::Join" : ["\n", ["line2", "line3"]]
-                }
+                "user_data": "line2\nline3"
             }
         },
         "cluster-worker-001-volume-0" : {
@@ -56,9 +54,7 @@
                 "image" : "1",
                 "admin_user": "root",
                 "key_name" : "user_key",
-                "user_data": {
-                    "Fn::Join" : ["\n", ["line1", "line2"]]
-                }
+                "user_data": "line1\nline2"
             }
         }
     },

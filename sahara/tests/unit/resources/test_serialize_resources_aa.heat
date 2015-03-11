@@ -34,9 +34,7 @@
                 "networks" : [{ "port" : { "Ref" : "cluster-worker-001-port" }}],
                 "key_name" : "user_key",
                 "scheduler_hints" : {"group": {"Ref": "cluster-aa-group"}},
-                "user_data": {
-                    "Fn::Join" : ["\n", ["line2", "line3"]]
-                }
+                "user_data": "line2\nline3"
             }
         },
         "cluster-worker-002-port" : {
@@ -63,9 +61,7 @@
                 "networks" : [{ "port" : { "Ref" : "cluster-worker-002-port" }}],
                 "key_name" : "user_key",
                 "scheduler_hints" : {"group": {"Ref": "cluster-aa-group"}},
-                "user_data": {
-                    "Fn::Join" : ["\n", ["line2", "line3"]]
-                }
+                "user_data": "line2\nline3"
             }
         },
         "cluster-master-001-port" : {
@@ -91,9 +87,7 @@
                 "admin_user": "root",
                 "networks" : [{ "port" : { "Ref" : "cluster-master-001-port" }}],
                 "key_name" : "user_key",
-                "user_data": {
-                    "Fn::Join" : ["\n", ["line1", "line2"]]
-                }
+                "user_data" : "line1\nline2"
             }
         }
     },
