@@ -1108,11 +1108,11 @@ class HueService(Service):
             # update hue.ini if HDFS HA is enabled and restart hadoop-httpfs
             # /tmp/hueini-hdfsha is written by versionhandler when HDFS is
             # enabled
-            r.execute_command('[ -f /tmp/hueini-hdfsha ] && sed -i '
+            r.execute_command('[ ! -f /tmp/hueini-hdfsha ] || sed -i '
                               '"s/hdfs.*.:8020/hdfs:\\/\\/`cat '
                               '/tmp/hueini-hdfsha`/g" /etc/hue/conf/hue.ini',
                               run_as_root=True)
-            r.execute_command('[ -f /tmp/hueini-hdfsha ] && sed -i '
+            r.execute_command('[ ! -f /tmp/hueini-hdfsha ] || sed -i '
                               '"s/http.*.\\/webhdfs\\/v1\\//http:\\/\\'
                               '/localhost:14000\\/webhdfs\\/v1\\//g" '
                               '/etc/hue/conf/hue.ini', run_as_root=True)
@@ -1145,7 +1145,7 @@ class HueService(Service):
             r.execute_command(cmd, run_as_root=True)
 
             # start httpfs if HDFS HA is enabled
-            r.execute_command('[ -f /tmp/hueini-hdfsha ] &&'
+            r.execute_command('[ ! -f /tmp/hueini-hdfsha ] || '
                               'service hadoop-httpfs start',
                               run_as_root=True)
 
