@@ -444,6 +444,14 @@ class SaharaMigrationsCheckers(object):
     def _check_017(self, engine, data):
         self.assertColumnNotExists(engine, 'job_executions', 'progress')
 
+    def _check_018(self, engine, data):
+        self.assertColumnExists(engine, 'node_group_templates',
+                                'volume_local_to_instance')
+        self.assertColumnExists(engine, 'node_groups',
+                                'volume_local_to_instance')
+        self.assertColumnExists(engine, 'templates_relations',
+                                'volume_local_to_instance')
+
 
 class TestMigrationsMySQL(SaharaMigrationsCheckers,
                           base.BaseWalkMigrationTestCase,

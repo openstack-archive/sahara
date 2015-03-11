@@ -36,7 +36,8 @@ def make_ng_dict(name, flavor, processes, count, instances=None, **kwargs):
            'count': count, 'instances': instances, 'node_configs': {},
            'security_groups': None, 'auto_security_group': False,
            'availability_zone': None, 'volumes_availability_zone': None,
-           'open_ports': [], 'is_proxy_gateway': False}
+           'open_ports': [], 'is_proxy_gateway': False,
+           'volume_local_to_instance': False}
     dct.update(kwargs)
     return dct
 

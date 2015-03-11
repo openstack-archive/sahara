@@ -239,6 +239,7 @@ class ClusterTemplates(test_base.ConductorManagerTestCase):
             ng.pop("volume_type")
             ng.pop("auto_security_group")
             ng.pop("is_proxy_gateway")
+            ng.pop('volume_local_to_instance')
 
         self.assertEqual(SAMPLE_CLT["node_groups"],
                          clt_db_obj["node_groups"])

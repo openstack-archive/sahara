@@ -123,6 +123,7 @@ class ClusterTest(test_base.ConductorManagerTestCase):
             ng.pop("is_proxy_gateway")
             ng.pop("tenant_id")
             ng.pop("availability_zone")
+            ng.pop('volume_local_to_instance')
 
         self.assertEqual(SAMPLE_CLUSTER["node_groups"],
                          cl_db_obj["node_groups"])

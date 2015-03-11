@@ -107,6 +107,8 @@ class NodeGroup(object):
                  True
     is_proxy_gateway - indicates if nodes from this node group should be used
                        as proxy to access other cluster nodes
+    volume_local_to_instance - indicates if volumes and instances should be
+                               created on the same physical host
 
     count
     instances - list of Instance objects
@@ -206,6 +208,7 @@ class NodeGroupTemplate(object):
     auto_security_group
     availability_zone
     is_proxy_gateway
+    volume_local_to_instance
     """
 
 
