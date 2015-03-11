@@ -13,6 +13,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from keystoneclient.auth import identity as keystone_identity
+from keystoneclient import session as keystone_session
 from keystoneclient.v2_0 import client as keystone_client
 from keystoneclient.v3 import client as keystone_client_v3
 from oslo_config import cfg
@@ -21,14 +23,24 @@ from sahara import context
 from sahara.utils.openstack import base
 
 
-# TODO(alazarev) Move to [keystone] section
 opts = [
+    # TODO(alazarev) Move to [keystone] section
     cfg.BoolOpt('use_identity_api_v3',
                 default=True,
                 help='Enables Sahara to use Keystone API v3. '
                      'If that flag is disabled, '
                      'per-job clusters will not be terminated '
-                     'automatically.')
+                     'automatically.'),
+    # TODO(mimccune) The following should be integrated into a custom
+    # auth section
+    cfg.StrOpt('admin_user_domain_name',
+               default='default',
+               help='The name of the domain to which the admin user '
+                    'belongs.'),
+    cfg.StrOpt('admin_project_domain_name',
+               default='default',
+               help='The name of the domain for the service '
+                    'project(ex. tenant).')
 ]
 
 ssl_opts = [
@@ -114,3 +126,37 @@ def client_for_proxy_user(username, password, trust_id=None):
                    password=password,
                    domain_name=CONF.proxy_user_domain_name,
                    trust_id=trust_id)
+
+
+def _session(username, password, project_name, user_domain_name=None,
+             project_domain_name=None):
+    passwd_kwargs = dict(
+        auth_url=base.retrieve_auth_url(),
+        username=CONF.keystone_authtoken.admin_user,
+        password=CONF.keystone_authtoken.admin_password
+    )
+
+    if CONF.use_identity_api_v3:
+        passwd_kwargs.update(dict(
+            project_name=project_name,
+            user_domain_name=user_domain_name,
+            project_domain_name=project_domain_name
+        ))
+        auth = keystone_identity.v3.Password(**passwd_kwargs)
+    else:
+        passwd_kwargs.update(dict(
+            tenant_name=project_name
+        ))
+        auth = keystone_identity.v2.Password(**passwd_kwargs)
+
+    return keystone_session.Session(auth=auth)
+
+
+def session_for_admin():
+    '''Return a Keystone session for the admin user.'''
+    return _session(
+        username=CONF.keystone_authtoken.admin_user,
+        password=CONF.keystone_authtoken.admin_password,
+        project_name=CONF.keystone_authtoken.admin_tenant_name,
+        user_domain_name=CONF.admin_user_domain_name,
+        project_domain_name=CONF.admin_project_domain_name)

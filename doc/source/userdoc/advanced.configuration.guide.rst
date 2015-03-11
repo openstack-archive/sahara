@@ -160,3 +160,40 @@ set the following configuration property in your sahara configuration file:
 
 For more information on rootwrap please refer to the
 `official Rootwrap documentation <https://wiki.openstack.org/wiki/Rootwrap>`_
+
+External key manager usage
+--------------------------
+
+Sahara generates and stores several passwords during the course of operation.
+To harden Sahara's usage of passwords it can be instructed to use an
+external key manager for storage and retrieval of these secrets. To enable
+this feature there must first be an OpenStack Key Manager service deployed
+within the stack. Currently, the Barbican project is the only key manager
+supported by Sahara.
+
+With a Key Manager service deployed on the stack, Sahara must be configured
+to enable the external storage of secrets. This is accomplished by editing
+the configuration file as follows:
+
+.. sourcecode:: cfg
+
+    [DEFAULT]
+    use_external_key_manager=True
+
+.. TODO (mimccune)
+    this language should be removed once a new keystone authentication
+    section has been created in the configuration file.
+
+Additionally, at this time there are two more values which must be provided
+to ensure proper access for Sahara to the Key Manager service. These are
+the Identity domain for the administrative user and the domain for the
+administrative project. By default these values will appear as:
+
+.. sourcecode:: cfg
+
+    [DEFAULT]
+    admin_user_domain_name=default
+    admin_project_domain_name=default
+
+With all of these values configured and the Key Manager service deployed,
+Sahara will begin storing its secrets in the external manager.

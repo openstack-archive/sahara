@@ -25,6 +25,7 @@ oslo.serialization>=1.2.0               # Apache-2.0
 oslo.utils>=1.2.0                       # Apache-2.0
 paramiko>=1.13.0
 requests>=2.2.0,!=2.4.0
+python-barbicanclient>=3.0.1
 python-cinderclient>=1.1.0
 python-keystoneclient>=1.1.0
 python-novaclient>=2.18.0,!=2.21.0
