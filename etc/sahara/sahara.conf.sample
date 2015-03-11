@@ -347,7 +347,7 @@
 
 # List of plugins to be loaded. Sahara preserves the order of the list
 # when returning it. (list value)
-#plugins = vanilla,hdp,spark
+#plugins = vanilla,hdp,spark,cdh
 
 # Enables data locality for hadoop cluster. Also enables data locality
 # for Swift used by hadoop. If enabled, 'compute_topology' and
