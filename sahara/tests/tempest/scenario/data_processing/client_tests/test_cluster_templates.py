@@ -12,10 +12,10 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-from tempest.common.utils import data_utils
 from tempest.scenario.data_processing.client_tests import base
 from tempest.scenario.data_processing import config as sahara_test_config
 from tempest import test
+from tempest_lib.common.utils import data_utils
 
 CONF = sahara_test_config.SAHARA_TEST_CONF
 
