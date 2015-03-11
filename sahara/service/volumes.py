@@ -15,31 +15,22 @@
 
 from oslo_config import cfg
 from oslo_log import log as logging
-from oslo_utils import timeutils as tu
 
 from sahara import conductor as c
 from sahara import context
 from sahara import exceptions as ex
 from sahara.i18n import _
 from sahara.i18n import _LE
-from sahara.i18n import _LW
 from sahara.utils import cluster_progress_ops as cpo
 from sahara.utils.openstack import cinder
 from sahara.utils.openstack import nova
+from sahara.utils import poll_utils
 
 
 conductor = c.API
 LOG = logging.getLogger(__name__)
 
-
-opts = [
-    cfg.IntOpt(
-        'detach_volume_timeout', default=300,
-        help='Timeout for detaching volumes from instance (in seconds).')
-]
-
 CONF = cfg.CONF
-CONF.register_opts(opts)
 CONF.import_opt('api_version', 'sahara.utils.openstack.cinder',
                 group='cinder')
 
@@ -73,18 +64,11 @@ def attach_to_instances(instances):
                     _attach_volumes_to_node, instance.node_group, instance)
 
 
+@poll_utils.poll_status(
+    'await_attach_volumes', _("Await for attaching volumes to instances"),
+    sleep=2)
 def _await_attach_volumes(instance, devices):
-    timeout = 10
-    step = 2
-    while timeout > 0:
-        if _count_attached_devices(instance, devices) == len(devices):
-            return
-
-        timeout -= step
-        context.sleep(step)
-
-    raise ex.SystemError(_("Error attach volume to instance %s") %
-                         instance.instance_name)
+    return _count_attached_devices(instance, devices) == len(devices)
 
 
 @cpo.event_wrapper(mark_successful_on_exit=True)
@@ -114,6 +98,16 @@ def _attach_volumes_to_node(node_group, instance):
                   .format(id=instance.instance_id))
 
 
+@poll_utils.poll_status(
+    'volume_available_timeout', _("Await for volume become available"),
+    sleep=1)
+def _await_available(volume):
+    volume = cinder.get_volume(volume.id)
+    if volume.status == 'error':
+        raise ex.SystemError(_("Volume %s has error status") % volume.id)
+    return volume.status == 'available'
+
+
 def _create_attach_volume(ctx, instance, size, volume_type,
                           volume_local_to_instance, name=None,
                           availability_zone=None):
@@ -131,13 +125,7 @@ def _create_attach_volume(ctx, instance, size, volume_type,
 
     volume = cinder.client().volumes.create(**kwargs)
     conductor.append_volume(ctx, instance, volume.id)
-
-    while volume.status != 'available':
-        volume = cinder.get_volume(volume.id)
-        if volume.status == 'error':
-            raise ex.SystemError(_("Volume %s has error status") % volume.id)
-
-        context.sleep(1)
+    _await_available(volume)
 
     resp = nova.client().volumes.create_server_volume(
         instance.instance_id, volume.id, None)
@@ -223,6 +211,15 @@ def detach_from_instance(instance):
         _delete_volume(volume_id)
 
 
+@poll_utils.poll_status(
+    'detach_volume_timeout', _("Await for volume become detached"), sleep=2)
+def _await_detach(volume_id):
+    volume = cinder.get_volume(volume_id)
+    if volume.status not in ['available', 'error']:
+        return False
+    return True
+
+
 def _detach_volume(instance, volume_id):
     volume = cinder.get_volume(volume_id)
     try:
@@ -233,21 +230,10 @@ def _detach_volume(instance, volume_id):
     except Exception:
         LOG.error(_LE("Can't detach volume {id}").format(id=volume.id))
 
-    detach_timeout = CONF.detach_volume_timeout
+    detach_timeout = CONF.timeouts.detach_volume_timeout
     LOG.debug("Waiting {timeout} seconds to detach {id} volume".format(
               timeout=detach_timeout, id=volume_id))
-    s_time = tu.utcnow()
-    while tu.delta_seconds(s_time, tu.utcnow()) < detach_timeout:
-        volume = cinder.get_volume(volume_id)
-        if volume.status not in ['available', 'error']:
-            context.sleep(2)
-        else:
-            LOG.debug("Volume {id} has been detached".format(id=volume_id))
-            return
-    else:
-        LOG.warning(_LW("Can't detach volume {volume}. "
-                        "Current status of volume: {status}").format(
-                            volume=volume_id, status=volume.status))
+    _await_detach(volume_id)
 
 
 def _delete_volume(volume_id):

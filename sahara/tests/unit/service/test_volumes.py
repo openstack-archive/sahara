@@ -117,16 +117,18 @@ class TestAttachVolume(base.SaharaWithDbTestCase):
         self.assertEqual(2, p_await.call_count)
         self.assertEqual(4, p_mount.call_count)
 
+    @mock.patch('sahara.utils.poll_utils._get_consumed', return_value=0)
     @mock.patch('sahara.context.sleep')
     @mock.patch('sahara.service.volumes._count_attached_devices')
-    def test_await_attach_volume(self, dev_count, p_sleep):
+    def test_await_attach_volume(self, dev_count, p_sleep, p_get_cons):
+        self.override_config('await_attach_volumes', 0, group='timeouts')
         dev_count.return_value = 2
         p_sleep.return_value = None
         instance = r.InstanceResource({'instance_id': '123454321',
                                        'instance_name': 'instt'})
         self.assertIsNone(volumes._await_attach_volumes(
             instance, ['/dev/vda', '/dev/vdb']))
-        self.assertRaises(ex.SystemError, volumes._await_attach_volumes,
+        self.assertRaises(ex.TimeoutException, volumes._await_attach_volumes,
                           instance, ['/dev/vda', '/dev/vdb', '/dev/vdc'])
 
     def test_count_attached_devices(self):

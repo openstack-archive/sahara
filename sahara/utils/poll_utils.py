@@ -13,6 +13,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import functools
+
+from oslo_config import cfg
 from oslo_log import log as logging
 from oslo_utils import timeutils
 
@@ -25,6 +28,46 @@ LOG = logging.getLogger(__name__)
 # set 3 hours timeout by default
 DEFAULT_TIMEOUT = 10800
 DEFAULT_SLEEP_TIME = 5
+
+timeouts_opts = [
+    # engine opts
+    cfg.IntOpt('ips_assign_timeout',
+               default=DEFAULT_TIMEOUT,
+               help="Assign IPs timeout, in seconds"),
+    cfg.IntOpt('wait_until_accessible',
+               default=DEFAULT_TIMEOUT,
+               help="Wait for instance accessibility, in seconds"),
+
+    # direct engine opts
+    cfg.IntOpt('delete_instances_timeout',
+               default=DEFAULT_TIMEOUT,
+               help="Wait for instances to be deleted, in seconds"),
+    cfg.IntOpt('await_for_instances_active',
+               default=DEFAULT_TIMEOUT,
+               help="Wait for instances to become active, in seconds"),
+
+    # volumes opts
+    cfg.IntOpt(
+        'detach_volume_timeout', default=300,
+        help='Timeout for detaching volumes from instance, in seconds',
+        deprecated_name='detach_volume_timeout',
+        deprecated_group=None),
+
+    cfg.IntOpt('volume_available_timeout',
+               default=DEFAULT_TIMEOUT,
+               help="Wait for volumes to become available, in seconds"),
+
+    cfg.IntOpt('await_attach_volumes',
+               default=10,
+               help="Wait for attaching volumes to instances, in seconds")
+]
+
+timeouts = cfg.OptGroup(name='timeouts',
+                        title='Sahara timeouts')
+
+CONF = cfg.CONF
+CONF.register_group(timeouts)
+CONF.register_opts(timeouts_opts, group=timeouts)
 
 
 def _get_consumed(started_at):
@@ -39,8 +82,8 @@ def _get_current_value(cluster, option):
     return option.default_value
 
 
-def poll(get_status, kwargs, operation_name=None, timeout_name=None,
-         timeout=DEFAULT_TIMEOUT, sleep=DEFAULT_SLEEP_TIME,
+def poll(get_status, kwargs=None, args=None, operation_name=None,
+         timeout_name=None, timeout=DEFAULT_TIMEOUT, sleep=DEFAULT_SLEEP_TIME,
          exception_strategy='raise'):
     """This util poll status of object obj during some timeout.
 
@@ -63,11 +106,15 @@ def poll(get_status, kwargs, operation_name=None, timeout_name=None,
     # We shouldn't raise TimeoutException if incorrect timeout specified and
     # status is ok now. In such way we should execute get_status at least once.
     at_least_once = True
+    if not kwargs:
+        kwargs = {}
+    if not args:
+        args = ()
 
     while at_least_once or _get_consumed(start_time) < timeout:
         at_least_once = False
         try:
-            status = get_status(**kwargs)
+            status = get_status(*args, **kwargs)
         except BaseException:
             if exception_strategy == 'raise':
                 raise
@@ -109,3 +156,21 @@ def plugin_option_poll(cluster, get_status, option, operation_name, sleep_time,
     }
 
     poll(**poll_description)
+
+
+def poll_status(option, operation_name, sleep):
+    def decorator(f):
+        @functools.wraps(f)
+        def handler(*args, **kwargs):
+            poll_description = {
+                'get_status': f,
+                'kwargs': kwargs,
+                'args': args,
+                'timeout': getattr(CONF.timeouts, option),
+                'operation_name': operation_name,
+                'timeout_name': option,
+                'sleep': sleep,
+            }
+            poll(**poll_description)
+        return handler
+    return decorator
