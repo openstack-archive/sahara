@@ -34,7 +34,7 @@ class TestImages(base.SaharaTestCase):
             FakeImage('baz', [], 'test'),
             FakeImage('spam', [], "")]
 
-        with mock.patch('novaclient.v1_1.images.ImageManager.list',
+        with mock.patch('novaclient.v2.images.ImageManager.list',
                         return_value=some_images):
             nova = nova_client.client()
 

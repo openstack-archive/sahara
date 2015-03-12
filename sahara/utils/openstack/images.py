@@ -13,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from novaclient.v1_1 import images
+from novaclient.v2 import images
 
 from sahara import exceptions as exc
 

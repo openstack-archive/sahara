@@ -14,7 +14,7 @@
 # limitations under the License.
 
 from novaclient import exceptions as nova_ex
-from novaclient.v1_1 import client as nova_client
+from novaclient.v2 import client as nova_client
 from oslo_config import cfg
 
 from sahara import context
