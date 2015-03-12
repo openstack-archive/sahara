@@ -19,11 +19,11 @@ from sahara import exceptions as ex
 from sahara.i18n import _
 from sahara.service import api
 import sahara.service.validations.base as b
-import sahara.service.validations.node_group_templates as ng_tml
+import sahara.service.validations.node_group_template_schema as ngt_schema
 
 
 def _build_ng_schema_for_cluster_tmpl():
-    cl_tmpl_ng_schema = copy.deepcopy(ng_tml.NODE_GROUP_TEMPLATE_SCHEMA)
+    cl_tmpl_ng_schema = copy.deepcopy(ngt_schema.NODE_GROUP_TEMPLATE_SCHEMA)
     cl_tmpl_ng_schema['properties'].update({"count": {"type": "integer"}})
     cl_tmpl_ng_schema["required"] = ['name', 'flavor_id',
                                      'node_processes', 'count']
