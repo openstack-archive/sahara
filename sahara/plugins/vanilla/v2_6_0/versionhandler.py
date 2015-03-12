@@ -121,8 +121,7 @@ class VersionHandler(avm.AbstractVersionHandler):
 
         self.start_resourcemanager(cluster)
 
-        run.start_all_processes(utils.get_instances(cluster),
-                                ['datanode', 'nodemanager'])
+        run.start_dn_nm_processes(utils.get_instances(cluster))
 
         run.await_datanodes(cluster)
 
