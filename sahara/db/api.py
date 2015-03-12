@@ -212,15 +212,17 @@ def cluster_template_create(context, values):
     return IMPL.cluster_template_create(context, values)
 
 
-def cluster_template_destroy(context, cluster_template):
+def cluster_template_destroy(context,
+                             cluster_template,
+                             ignore_default=False):
     """Destroy the cluster_template or raise if it does not exist."""
-    IMPL.cluster_template_destroy(context, cluster_template)
+    IMPL.cluster_template_destroy(context, cluster_template, ignore_default)
 
 
 @to_dict
-def cluster_template_update(context, values):
+def cluster_template_update(context, values, ignore_default=False):
     """Update a cluster_template from the values dictionary."""
-    return IMPL.cluster_template_update(context, values)
+    return IMPL.cluster_template_update(context, values, ignore_default)
 
 
 # Node Group Template ops
@@ -247,15 +249,20 @@ def node_group_template_create(context, values):
     return IMPL.node_group_template_create(context, values)
 
 
-def node_group_template_destroy(context, node_group_template):
+def node_group_template_destroy(context,
+                                node_group_template,
+                                ignore_default=False):
     """Destroy the Node Group Template or raise if it does not exist."""
-    IMPL.node_group_template_destroy(context, node_group_template)
+    IMPL.node_group_template_destroy(context, node_group_template,
+                                     ignore_default)
 
 
 @to_dict
-def node_group_template_update(context, node_group_template):
+def node_group_template_update(context, node_group_template,
+                               ignore_default=False):
     """Update a Node Group Template from the values in a dictionary."""
-    return IMPL.node_group_template_update(context, node_group_template)
+    return IMPL.node_group_template_update(context, node_group_template,
+                                           ignore_default)
 
 
 # Data Source ops
