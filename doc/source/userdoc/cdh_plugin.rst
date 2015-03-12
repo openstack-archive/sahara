@@ -4,26 +4,16 @@ Cloudera Plugin
 The cloudera plugin is a Sahara plugin which allows the user to deploy and
 operate a cluster with Cloudera Manager.
 
-The cloudera plugin is not enabled in Sahara by default. To enable it you should
-manually modify the Sahara configuration file (default /etc/sahara/sahara.conf)
-to add "cdh" in "plugins" value.
-
-.. sourcecode:: cfg
-
-    plugins=cdh,vanilla,hdp,fake
-
-To use the cloudera plugin, you should have cm_api (version >=8.0.0) installed
-on the server where Sahara is running. To install cm_api, simply use pip:
-
-.. sourcecode:: console
-
-    sudo pip install cm_api
+The cloudera plugin is enabled in Sahara by default. You can manually
+modify the Sahara configuration file (default /etc/sahara/sahara.conf) to
+explicitly enable or disable it in "plugins" line.
 
 You need to build images using :doc:`cdh_imagebuilder` to produce images used
-to provision cluster. They already have Cloudera Express 5.2.0 installed.
+to provision cluster. They already have Cloudera Express installed (5.0.0 or
+5.3.0 version).
 
 The cloudera plugin requires an image to be tagged in Sahara Image Registry with
-two tags: 'cdh' and '<cloudera version>' (e.g. '5').
+two tags: 'cdh' and '<cloudera version>' (e.g. '5' or '5.3.0').
 
 The default username specified for these images is different for each
 distribution:

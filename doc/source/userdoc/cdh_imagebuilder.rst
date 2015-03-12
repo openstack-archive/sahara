@@ -4,7 +4,7 @@ Building Images for Cloudera Plugin
 ===================================
 
 In this document you will find instructions on how to build Ubuntu and CentOS
-images with Cloudera Express versions 5.2.0.
+images with Cloudera Express (now only 5.0.0 and 5.3.0 versions are supported).
 
 Apache Hadoop. To simplify the task of building such images we use
 `Disk Image Builder <https://github.com/openstack/diskimage-builder>`_.
@@ -35,13 +35,16 @@ To create cloudera images follow these steps:
    (subset of Ubuntu, Fedora, and CentOS depending on plugin). To only create
    Cloudera images, you should use the "-p cloudera" parameter in the command
    line. If you want to create the image only for a specific operating system,
-   you should use the "-i ubuntu|fedora|centos" parameter to assign the operating
-   system. This script must be run with root privileges. Below is an example to
-   create Cloudera images for both Ubuntu and CentOS.
+   you should use the "-i ubuntu|centos" parameter to assign the operating
+   system (the cloudera plugin only supports Ubuntu and Centos). If you want
+   to create the image only for a specific Cloudera version, you should use the
+   "-v 5.0|5.3" parameter to assign the version. This script must be run with
+   root privileges. Below is an example to create Cloudera images for both
+   Ubuntu and CentOS with Cloudera Express 5.3.0 version.
 
    .. sourcecode:: console
 
-      sudo bash diskimage-create.sh -p cloudera
+      sudo bash diskimage-create.sh -p cloudera -v 5.3
 
    NOTE: If you don't want to use default values, you should explicitly set the
    values of your required parameters.
