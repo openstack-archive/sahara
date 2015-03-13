@@ -42,8 +42,10 @@ SAMPLE_CLUSTER_DICT = {
     'node_groups': [
         {
             'name': 'master',
+            'id': 'some_id'
         },
         {
+            'id': 'some_id',
             'name': 'worker',
             'node_processes': ['tasktracker', 'datanode'],
             'node_configs': {},
