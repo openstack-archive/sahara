@@ -98,6 +98,8 @@ class CheckServicesTest(base.ITestCase):
         finally:
             self.close_ssh_connection()
 
+    @base.skip_test('SKIP_CHECK_SERVICES_TEST', message='Test for Services'
+                    ' checking was skipped.')
     def check_solr_availability(self, cluster_info):
         self._check_service_availability(cluster_info, 'solr_service_test.sh')
 
