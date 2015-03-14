@@ -32,6 +32,7 @@ db_spec = c.namedtuple('DatabaseSpec', ['db_name', 'user', 'password'])
 @six.add_metaclass(s.Single)
 class MySQL(s.Service):
     METRICS_SPECS = db_spec('metrics', 'maprmetrics', 'mapr')
+    HUE_SPECS = db_spec('hue', 'maprhue', 'mapr')
     METASTORE_SPECS = db_spec('metastore', 'maprmetastore', 'mapr')
     RDBMS_SPECS = db_spec('rdbms', 'maprrdbms', 'mapr')
     OOZIE_SPECS = db_spec('oozie', 'maproozie', 'mapr')
@@ -91,6 +92,12 @@ class MySQL(s.Service):
             MySQL._execute_script(instance=instance,
                                   script_path='/opt/mapr/bin/setup.sql')
         MySQL._grant_access(instance, MySQL.METRICS_SPECS, instances)
+
+    @staticmethod
+    def _create_hue_db(instance, databases, instances):
+        if MySQL.HUE_SPECS.db_name not in databases:
+            MySQL._create_service_db(instance, MySQL.HUE_SPECS)
+        MySQL._grant_access(instance, MySQL.HUE_SPECS, instances)
 
     @staticmethod
     def _create_rdbms_db(instance, databases, instances):
@@ -170,6 +177,7 @@ class MySQL(s.Service):
         db_instance = MySQL.get_db_instance(cluster_context)
         databases = MySQL.get_databases_list(db_instance)
         MySQL._create_metrics_db(db_instance, databases, instances)
+        MySQL._create_hue_db(db_instance, databases, instances)
         MySQL._create_rdbms_db(db_instance, databases, instances)
         MySQL._create_oozie_db(db_instance, databases, instances)
         MySQL._create_metastore_db(
