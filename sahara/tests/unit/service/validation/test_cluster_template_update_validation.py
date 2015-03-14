@@ -16,6 +16,7 @@
 import copy
 
 from sahara.service import api
+from sahara.service.validations import cluster_template_schema as ct_schema
 from sahara.service.validations import cluster_templates as ct
 from sahara.tests.unit.service.validation import utils as u
 
@@ -31,7 +32,7 @@ class TestClusterTemplateUpdateValidation(u.ValidationTestCase):
     def setUp(self):
         super(TestClusterTemplateUpdateValidation, self).setUp()
         self._create_object_fun = ct.check_cluster_template_update
-        self.scheme = ct.CLUSTER_TEMPLATE_UPDATE_SCHEMA
+        self.scheme = ct_schema.CLUSTER_TEMPLATE_UPDATE_SCHEMA
         api.plugin_base.setup_plugins()
 
     def test_cluster_template_update_nothing_required(self):
@@ -40,8 +41,8 @@ class TestClusterTemplateUpdateValidation(u.ValidationTestCase):
         )
 
     def test_cluster_template_update_schema(self):
-        create = copy.copy(ct.CLUSTER_TEMPLATE_SCHEMA)
-        update = copy.copy(ct.CLUSTER_TEMPLATE_UPDATE_SCHEMA)
+        create = copy.copy(ct_schema.CLUSTER_TEMPLATE_SCHEMA)
+        update = copy.copy(ct_schema.CLUSTER_TEMPLATE_UPDATE_SCHEMA)
 
         # No required items for update
         self.assertEqual(update["required"], [])
