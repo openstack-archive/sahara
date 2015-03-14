@@ -14,12 +14,12 @@
 # limitations under the License.
 
 import functools
-import six
 import uuid
 
 from oslo_config import cfg
 from oslo_log import log as logging
 import oslo_messaging as messaging
+import six
 
 from sahara import conductor as c
 from sahara import context

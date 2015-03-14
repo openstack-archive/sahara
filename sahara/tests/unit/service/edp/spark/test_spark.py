@@ -13,8 +13,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import mock
 import os
+
+import mock
 
 import sahara.exceptions as ex
 from sahara.service.edp.spark import engine as se

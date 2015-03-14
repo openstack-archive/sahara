@@ -14,6 +14,7 @@
 # limitations under the License.
 
 import copy
+
 import testtools
 
 from sahara.conductor import manager
