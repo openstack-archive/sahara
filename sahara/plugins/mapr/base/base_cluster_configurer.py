@@ -303,10 +303,8 @@ class BaseConfigurer(ac.AbstractConfigurer):
         cluster_mode = cluster_context.cluster_mode
         if not cluster_mode:
             return
-        cldb = cluster_context.get_instance(maprfs.CLDB)
-        with cldb.remote() as r:
-            cmd = 'sudo -u mapr maprcli cluster mapreduce set -mode %s'
-            r.execute_command(cmd % cluster_mode)
+        cmd = 'maprcli cluster mapreduce set -mode %s' % cluster_mode
+        util.execute_command(cluster_context.get_instances(), cmd, 'mapr')
 
     def _install_mapr_repo(self, cluster_context, instances):
         d_name = cluster_context.distro.name
