@@ -114,6 +114,16 @@ class BaseTestCase(base.BaseTestCase):
         self.cluster_id = self._create_cluster(cl_tmpl_id)
         self._poll_cluster_status(self.cluster_id)
 
+    @track_result("Check transient")
+    def check_transient(self):
+        # TODO(sreshetniak): make timeout configurable
+        with fixtures.Timeout(300, gentle=True):
+            while True:
+                if self.sahara.is_resource_deleted(
+                        self.sahara.get_cluster_status, self.cluster_id):
+                    break
+                time.sleep(5)
+
     @track_result("Check EDP jobs", False)
     def check_run_jobs(self):
         jobs = {}
