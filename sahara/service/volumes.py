@@ -52,7 +52,7 @@ def _count_instances_to_attach(instances):
     return result
 
 
-def _count_volumes_to_attach(instances):
+def _count_volumes_to_mount(instances):
     return sum([inst.node_group.volumes_per_node for inst in instances])
 
 
@@ -104,8 +104,13 @@ def _attach_volumes_to_node(node_group, instance):
 
     _await_attach_volumes(instance, devices)
 
+    paths = instance.node_group.storage_paths()
     for idx in range(0, instance.node_group.volumes_per_node):
-        _mount_volume_to_node(instance, idx, devices[idx])
+        LOG.debug("Mounting volume {volume} to instance {instance}"
+                  .format(volume=device, instance=instance.instance_name))
+        _mount_volume(instance, devices[idx], paths[idx])
+        LOG.debug("Mounted volume to instance {instance}"
+                  .format(instance=instance.instance_name))
 
 
 def _create_attach_volume(ctx, instance, size, volume_type, name=None,
@@ -154,7 +159,7 @@ def mount_to_instances(instances):
 
     cpo.add_provisioning_step(
         instances[0].cluster_id,
-        _("Mount volumes to instances"), _count_volumes_to_attach(instances))
+        _("Mount volumes to instances"), _count_volumes_to_mount(instances))
 
     with context.ThreadGroup() as tg:
         for instance in instances:
