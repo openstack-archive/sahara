@@ -20,6 +20,7 @@ import six
 
 from sahara import conductor as c
 from sahara import context
+from sahara import exceptions as e
 from sahara.i18n import _LI
 from sahara.utils.notification import sender
 
@@ -73,14 +74,14 @@ def natural_sort_key(s):
 
 
 def change_cluster_status_description(cluster, status_description):
-    ctx = context.ctx()
-
-    cluster = conductor.cluster_get(ctx, cluster) if cluster else None
-
-    if cluster is None or cluster.status == "Deleting":
-        return cluster
-    return conductor.cluster_update(
-        ctx, cluster, {'status_description': status_description})
+    if cluster is None:
+        return None
+    try:
+        ctx = context.ctx()
+        return conductor.cluster_update(
+            ctx, cluster, {'status_description': status_description})
+    except e.NotFoundException:
+        return None
 
 
 def change_cluster_status(cluster, status, status_description=None):
@@ -90,14 +91,14 @@ def change_cluster_status(cluster, status, status_description=None):
     # but this reduces probability at least.
     cluster = conductor.cluster_get(ctx, cluster) if cluster else None
 
+    if status_description is not None:
+        change_cluster_status_description(cluster, status_description)
+
     # 'Deleting' is final and can't be changed
     if cluster is None or cluster.status == 'Deleting':
         return cluster
 
     update_dict = {"status": status}
-    if status_description:
-        update_dict["status_description"] = status_description
-
     cluster = conductor.cluster_update(ctx, cluster, update_dict)
     conductor.cluster_provision_progress_update(ctx, cluster.id)
 
