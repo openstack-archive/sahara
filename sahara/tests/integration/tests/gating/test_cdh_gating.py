@@ -326,6 +326,8 @@ class CDHGatingTest(check_services.CheckServicesTest,
         self.check_solr_availability(self.cluster_info)
         # check Impala
         self.check_impala_services(self.cluster_info)
+        # check sentry
+        self.check_sentry_availability(self.cluster_info)
 
     @b.errormsg("Failure while cluster scaling: ")
     def _check_scaling(self):

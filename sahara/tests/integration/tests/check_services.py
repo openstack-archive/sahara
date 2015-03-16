@@ -103,6 +103,12 @@ class CheckServicesTest(base.ITestCase):
     def check_solr_availability(self, cluster_info):
         self._check_service_availability(cluster_info, 'solr_service_test.sh')
 
+    @base.skip_test('SKIP_CHECK_SERVICES_TEST', message='Test for Services'
+                    ' checking was skipped.')
+    def check_sentry_availability(self, cluster_info):
+        self._check_service_availability(cluster_info,
+                                         'sentry_service_test.sh')
+
     def _check_service_availability(self, cluster_info, helper_script,
                                     script_parameters=[], conf_files=[]):
         namenode_ip = cluster_info['node_info']['namenode_ip']
