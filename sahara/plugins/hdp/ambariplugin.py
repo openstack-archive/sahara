@@ -165,11 +165,6 @@ class AmbariPlugin(p.ProvisioningPluginBase):
                                         "node_groups": node_groups,
                                         "cluster_configs": cluster_configs})
 
-    def get_edp_engine(self, cluster, job_type):
-        version_handler = (
-            self.version_factory.get_version_handler(cluster.hadoop_version))
-        return version_handler.get_edp_engine(cluster, job_type)
-
     def update_infra(self, cluster):
         pass
 
@@ -332,6 +327,24 @@ class AmbariPlugin(p.ProvisioningPluginBase):
                                                      ambari_info)
 
         ambari_client.cleanup(ambari_info)
+
+    def get_edp_engine(self, cluster, job_type):
+        version_handler = (
+            self.version_factory.get_version_handler(cluster.hadoop_version))
+        return version_handler.get_edp_engine(cluster, job_type)
+
+    def get_edp_job_types(self, versions=[]):
+        res = {}
+        for vers in self.version_factory.get_versions():
+            if not versions or vers in versions:
+                vh = self.version_factory.get_version_handler(vers)
+                res[vers] = vh.get_edp_job_types()
+        return res
+
+    def get_edp_config_hints(self, job_type, version):
+        version_handler = (
+            self.version_factory.get_version_handler(version))
+        return version_handler.get_edp_config_hints(job_type)
 
     def decommission_nodes(self, cluster, instances):
         LOG.info(_LI('AmbariPlugin: decommission_nodes called for '
