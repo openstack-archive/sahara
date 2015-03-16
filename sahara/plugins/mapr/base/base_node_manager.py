@@ -21,6 +21,7 @@ from oslo_utils import timeutils
 
 from sahara import context
 from sahara.i18n import _
+from sahara.i18n import _LI
 import sahara.plugins.exceptions as ex
 import sahara.plugins.mapr.abstract.node_manager as s
 import sahara.plugins.mapr.services.management.management as mng
@@ -56,7 +57,7 @@ class BaseNodeManager(s.AbstractNodeManager):
                     ec, out = r.execute_command(command, run_as_root=True)
                     command = MOVE_NODE_CMD % out.strip()
                     cldb_remote.execute_command(command, run_as_root=True)
-        LOG.debug("Nodes successfully moved")
+        LOG.info(_LI("Nodes successfully moved"))
 
     def remove_nodes(self, c_context, instances):
         LOG.debug("Removing nodes from cluster")
@@ -70,7 +71,7 @@ class BaseNodeManager(s.AbstractNodeManager):
                 }
                 command = REMOVE_NODE_CMD % args
                 cldb_remote.execute_command(command, run_as_root=True)
-        LOG.debug("Nodes successfully removed")
+        LOG.info(_LI("Nodes successfully removed"))
 
     def start(self, cluster_context, instances=None):
         instances = instances or cluster_context.get_instances()
@@ -96,7 +97,8 @@ class BaseNodeManager(s.AbstractNodeManager):
         start_time = timeutils.utcnow()
         retry_count = 0
         with cldb_node.remote() as r:
-            LOG.debug("Waiting %s seconds for CLDB initialization", timeout)
+            LOG.debug("Waiting {count} seconds for CLDB initialization".format(
+                count=timeout))
             while timeutils.delta_seconds(start_time,
                                           timeutils.utcnow()) < timeout:
                 ec, out = r.execute_command(NODE_LIST_CMD,
@@ -133,17 +135,17 @@ class BaseNodeManager(s.AbstractNodeManager):
     def _start_zk_nodes(self, instances):
         LOG.debug('Starting ZooKeeper nodes')
         self._start_nodes(instances, mng.ZOOKEEPER.ui_name)
-        LOG.debug('ZooKeeper nodes successfully started')
+        LOG.info(_LI('ZooKeeper nodes successfully started'))
 
     def _start_cldb_nodes(self, instances):
         LOG.debug('Starting CLDB nodes')
         self._start_nodes(instances, WARDEN_SERVICE)
-        LOG.debug('CLDB nodes successfully started')
+        LOG.info(_LI('CLDB nodes successfully started'))
 
     def _start_non_cldb_nodes(self, instances):
         LOG.debug('Starting non-control nodes')
         self._start_nodes(instances, WARDEN_SERVICE)
-        LOG.debug('Non-control nodes successfully started')
+        LOG.info(_LI('Non-control nodes successfully started'))
 
     def _stop_zk_nodes(self, instances):
         self._stop_nodes(instances, mng.ZOOKEEPER.ui_name)
@@ -158,9 +160,8 @@ class BaseNodeManager(s.AbstractNodeManager):
             args = {'service': service.lower(), 'action': action}
             cmd = cmd % args
             LOG.debug(
-                'Executing "%(command)s" on node=%(ip)s',
-                {'command': cmd, 'ip': instance.management_ip}
-            )
+                'Executing "{command}" on node={ip}'.format(
+                    command=cmd, ip=instance.management_ip))
             r.execute_command(cmd, run_as_root=True)
 
     def _start_service(self, instance, service):

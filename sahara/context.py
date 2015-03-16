@@ -48,8 +48,8 @@ class Context(context.RequestContext):
                  overwrite=True,
                  **kwargs):
         if kwargs:
-            LOG.warn(_LW('Arguments dropped when creating context: %s'),
-                     kwargs)
+            LOG.warning(_LW('Arguments dropped when creating context: '
+                            '{args}').format(args=kwargs))
 
         super(Context, self).__init__(auth_token=auth_token,
                                       user=user_id,
@@ -189,8 +189,8 @@ def _wrapper(ctx, thread_description, thread_group, func, *args, **kwargs):
         func(*args, **kwargs)
     except BaseException as e:
         LOG.debug(
-            "Thread '%(thread)s' failed with exception: '%(exception)s'",
-            {'thread': thread_description, 'exception': e})
+            "Thread {thread} failed with exception: {exception}".format(
+                thread=thread_description, exception=e))
         if thread_group and not thread_group.exc:
             thread_group.exc = e
             thread_group.failed_thread = thread_description

@@ -63,7 +63,8 @@ class Rest(flask.Blueprint):
             def handler(**kwargs):
                 context.set_ctx(None)
 
-                LOG.debug("Rest.route.decorator.handler, kwargs=%s", kwargs)
+                LOG.debug("Rest.route.decorator.handler, kwargs={kwargs}"
+                          .format(kwargs=kwargs))
 
                 _init_resp_type(file_upload)
 
@@ -201,9 +202,9 @@ def get_request_args():
 
 
 def abort_and_log(status_code, descr, exc=None):
-    LOG.error(_LE("Request aborted with status code %(code)s and "
-                  "message '%(message)s'"),
-              {'code': status_code, 'message': descr})
+    LOG.error(_LE("Request aborted with status code {code} and "
+                  "message '{message}'").format(code=status_code,
+                                                message=descr))
 
     if exc is not None:
         LOG.error(traceback.format_exc())
@@ -225,9 +226,9 @@ def render_error_message(error_code, error_message, error_name):
 
 
 def internal_error(status_code, descr, exc=None):
-    LOG.error(_LE("Request aborted with status code %(code)s and "
-                  "message '%(message)s'"),
-              {'code': status_code, 'message': descr})
+    LOG.error(_LE("Request aborted with status code {code} and "
+                  "message '{message}'").format(code=status_code,
+                                                message=descr))
 
     if exc is not None:
         LOG.error(traceback.format_exc())
@@ -242,9 +243,11 @@ def internal_error(status_code, descr, exc=None):
 def bad_request(error):
     error_code = 400
 
-    LOG.debug("Validation Error occurred: "
-              "error_code=%s, error_message=%s, error_name=%s",
-              error_code, error.message, error.code)
+    LOG.error(_LE("Validation Error occurred: "
+                  "error_code={code}, error_message={message}, "
+                  "error_name={name}").format(code=error_code,
+                                              message=error.message,
+                                              name=error.code))
 
     return render_error_message(error_code, error.message, error.code)
 
@@ -252,9 +255,11 @@ def bad_request(error):
 def access_denied(error):
     error_code = 403
 
-    LOG.debug("Access Denied: "
-              "error_code=%s, error_message=%s, error_name=%s",
-              error_code, error.message, error.code)
+    LOG.error(_LE("Access Denied: "
+                  "error_code={code}, error_message={message}, "
+                  "error_name={name}").format(code=error_code,
+                                              message=error.message,
+                                              name=error.code))
 
     return render_error_message(error_code, error.message, error.code)
 
@@ -262,8 +267,10 @@ def access_denied(error):
 def not_found(error):
     error_code = 404
 
-    LOG.debug("Not Found exception occurred: "
-              "error_code=%s, error_message=%s, error_name=%s",
-              error_code, error.message, error.code)
+    LOG.error(_LE("Not Found exception occurred: "
+                  "error_code={code}, error_message={message}, "
+                  "error_name={name}").format(code=error_code,
+                                              message=error.message,
+                                              name=error.code))
 
     return render_error_message(error_code, error.message, error.code)

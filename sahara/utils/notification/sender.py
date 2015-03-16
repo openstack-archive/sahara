@@ -73,10 +73,10 @@ def notify(context, cluster_id, cluster_name, cluster_status, ev_type):
     if not cfg.CONF.enable_notifications:
         return
 
-    LOG.debug("Notification about cluster (id=%(id)s, name=%(name)s, "
-              "type=%(type)s, status = %(status)s) is going to be sent",
-              {'id': cluster_id, 'name': cluster_name, 'type': ev_type,
-               'status': cluster_status})
+    LOG.debug("Notification about cluster (id={id}, name={name}, "
+              "type={type}, status = {status}) is going to be sent"
+              .format(id=cluster_id, name=cluster_name, type=ev_type,
+                      status=cluster_status))
 
     level = CONF.notification_level
 

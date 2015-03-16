@@ -66,8 +66,9 @@ class HadoopServer(object):
 
     @saharautils.inject_remote('r')
     def install_rpms(self, r):
-        LOG.info(
-            _LI("{0}: Installing rpm's ...").format(self.instance.hostname()))
+        LOG.debug(
+            "{hostname}: Installing rpm's"
+            .format(hostname=self.instance.hostname()))
 
         # TODO(jspeidel): based on image type, use correct command
         curl_cmd = ('curl -f -s -o /etc/yum.repos.d/ambari.repo %s' %
@@ -79,27 +80,27 @@ class HadoopServer(object):
             yum_cmd = 'yum -y install %s' % EPEL_RELEASE_PACKAGE_NAME
             r.execute_command(yum_cmd, run_as_root=True)
         else:
-            LOG.info(_LI("{0}: Unable to install rpm's from repo, "
-                         "checking for local install.")
-                     .format(self.instance.hostname()))
+            LOG.debug("{hostname}: Unable to install rpm's from repo, "
+                      "checking for local install.".format(
+                          hostname=self.instance.hostname()))
             if not self.rpms_installed():
                 raise ex.HadoopProvisionError(
                     _('Failed to install Hortonworks Ambari'))
 
     @saharautils.inject_remote('r')
     def install_swift_integration(self, r):
-        LOG.info(
-            _LI("{0}: Installing swift integration ...")
-            .format(self.instance.hostname()))
+        LOG.debug(
+            "{hostname}: Installing swift integration"
+            .format(hostname=self.instance.hostname()))
         base_rpm_cmd = 'rpm -U --quiet '
         rpm_cmd = base_rpm_cmd + HADOOP_SWIFT_RPM
         ret_code, stdout = r.execute_command(rpm_cmd,
                                              run_as_root=True,
                                              raise_when_error=False)
         if ret_code != 0:
-            LOG.info(_LI("{0}: Unable to install swift integration from "
-                         "source, checking for local rpm.")
-                     .format(self.instance.hostname()))
+            LOG.debug("{hostname}: Unable to install swift integration from "
+                      "source, checking for local rpm.".format(
+                          hostname=self.instance.hostname()))
             ret_code, stdout = r.execute_command(
                 'ls ' + HADOOP_SWIFT_LOCAL_RPM,
                 run_as_root=True,
@@ -124,11 +125,11 @@ class HadoopServer(object):
 
     @saharautils.inject_remote('r')
     def _setup_and_start_ambari_server(self, port, jdk_path, r):
-        LOG.info(_LI('{0}: Installing ambari-server ...').format(
-            self.instance.hostname()))
+        LOG.debug('{hostname}: Installing ambari-server'.format(
+            hostname=self.instance.hostname()))
         r.execute_command('yum -y install ambari-server', run_as_root=True)
 
-        LOG.info(_LI('Running Ambari Server setup ...'))
+        LOG.debug('Running Ambari Server setup')
         # remove postgres data directory as a precaution since its existence
         # has prevented successful postgres installation
         r.execute_command('rm -rf /var/lib/pgsql/data', run_as_root=True)
@@ -138,8 +139,8 @@ class HadoopServer(object):
         return_code, stdout = r.execute_command('ls -l {jdk_location}'.format(
             jdk_location=jdk_path), raise_when_error=False)
 
-        LOG.debug('Queried for JDK location on VM instance, return code = ' +
-                  str(return_code))
+        LOG.debug('Queried for JDK location on VM instance, return code = '
+                  '{code}'.format(code=str(return_code)))
 
         # do silent setup since we only use default responses now
         # only add -j command if the JDK is configured for the template,
@@ -154,12 +155,12 @@ class HadoopServer(object):
 
         self._configure_ambari_server_api_port(port)
 
-        LOG.info(_LI('Starting Ambari ...'))
         # NOTE(dmitryme): Reading stdout from 'ambari-server start'
         # hangs ssh. Redirecting output to /dev/null fixes that
         r.execute_command(
             'ambari-server start > /dev/null 2>&1', run_as_root=True
         )
+        LOG.info(_LI('Ambari started'))
 
     @saharautils.inject_remote('r')
     def _configure_ambari_server_api_port(self, port, r):
@@ -168,7 +169,8 @@ class HadoopServer(object):
             return
 
         ambari_config_file = '/etc/ambari-server/conf/ambari.properties'
-        LOG.debug('Configuring Ambari Server API port: {0}'.format(port))
+        LOG.debug('Configuring Ambari Server API port: {port}'.format(
+                  port=port))
         # read the current contents
         data = r.read_file_from(ambari_config_file)
         data = '{0}\nclient.api.port={1}\n'.format(data, port)
@@ -178,26 +180,26 @@ class HadoopServer(object):
 
     @saharautils.inject_remote('r')
     def _setup_and_start_ambari_agent(self, ambari_server_ip, r):
-        LOG.info(_LI('{0}: Installing Ambari Agent ...').format(
-            self.instance.hostname()))
+        LOG.debug('{hostname}: Installing Ambari agent'.format(
+            hostname=self.instance.hostname()))
 
         r.execute_command('yum -y install ambari-agent', run_as_root=True)
         LOG.debug(
-            '{0}: setting master-ip: {1} in ambari-agent.ini'.format(
-                self.instance.hostname(), ambari_server_ip))
+            '{hostname}: setting master-ip: {ip} in ambari-agent.ini'.format(
+                hostname=self.instance.hostname(), ip=ambari_server_ip))
         r.replace_remote_string(
             '/etc/ambari-agent/conf/ambari-agent.ini', 'localhost',
             ambari_server_ip)
 
-        LOG.info(
-            _LI('{0}: Starting Ambari Agent ...').format(
-                self.instance.hostname()))
         # If the HDP 2 ambari agent is pre-installed on an image, the agent
         # will start up during instance launch and therefore the agent
         # registration will fail.  It is therefore more appropriate to call
         # restart since it will either start (if stopped) or restart (if
         # running)
         r.execute_command('ambari-agent restart', run_as_root=True)
+        LOG.info(
+            _LI('{hostname}: Ambari Agent started').format(
+                hostname=self.instance.hostname()))
 
     @saharautils.inject_remote('r')
     def set_namenode_safemode(self, jh, r):
@@ -243,6 +245,7 @@ class HadoopServer(object):
                           run_as_root=True)
 
     def _log(self, buf):
+        # FIXME(Kezar): I don't know what's this. Will check later.
         LOG.debug(buf)
 
     def _is_component_available(self, component):

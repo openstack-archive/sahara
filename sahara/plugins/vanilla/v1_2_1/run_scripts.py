@@ -50,7 +50,8 @@ def hive_copy_shared_conf(remote, dest):
 
 
 def oozie_share_lib(remote, nn_hostname):
-    LOG.debug("Sharing Oozie libs to hdfs://%s:8020" % nn_hostname)
+    LOG.debug("Sharing Oozie libs to hdfs://{host}:8020".format(
+        host=nn_hostname))
     # remote.execute_command('sudo su - -c "/opt/oozie/bin/oozie-setup.sh '
     #                        'sharelib create -fs hdfs://%s:8020" hadoop'
     #                        % nn_hostname)
@@ -78,18 +79,19 @@ def check_datanodes_count(remote, count):
         'sudo su -c "hadoop dfsadmin -report | '
         'grep \'Datanodes available:\' | '
         'awk \'{print \\$3}\'" hadoop')
-    LOG.debug("Datanode count='%s'" % stdout.rstrip())
+    LOG.debug("Datanode count={count}".format(count=stdout.rstrip()))
 
     return exit_code == 0 and stdout and int(stdout) == count
 
 
 def mysql_start(remote, mysql_instance):
-    LOG.debug("Starting mysql at %s" % mysql_instance.hostname())
+    LOG.debug("Starting mysql at {host}".format(
+        host=mysql_instance.hostname()))
     remote.execute_command("/opt/start-mysql.sh")
 
 
 def oozie_create_db(remote):
-    LOG.debug("Creating Oozie DB Schema...")
+    LOG.debug("Creating Oozie DB Schema")
     sql_script = files.get_file_text(
         'plugins/vanilla/v1_2_1/resources/create_oozie_db.sql')
     script_location = "create_oozie_db.sql"
@@ -105,7 +107,7 @@ def start_oozie(remote):
 
 
 def hive_create_db(remote, hive_mysql_passwd):
-    LOG.debug("Creating Hive metastore db...")
+    LOG.debug("Creating Hive metastore db")
     sql_script = files.get_file_text(
         'plugins/vanilla/v1_2_1/resources/create_hive_db.sql')
     sql_script = sql_script.replace('pass', hive_mysql_passwd)
@@ -117,6 +119,6 @@ def hive_create_db(remote, hive_mysql_passwd):
 
 
 def hive_metastore_start(remote):
-    LOG.debug("Starting Hive Metastore Server...")
+    LOG.debug("Starting Hive Metastore Server")
     remote.execute_command("sudo su - -c 'nohup /opt/hive/bin/hive"
                            " --service metastore > /dev/null &' hadoop")

@@ -91,7 +91,7 @@ def start_oozie_process(pctx, instance):
     with instance.remote() as r:
         if c_helper.is_mysql_enabled(pctx, instance.cluster):
             _start_mysql(r)
-            LOG.debug("Creating Oozie DB Schema...")
+            LOG.debug("Creating Oozie DB Schema")
             sql_script = files.get_file_text(
                 'plugins/vanilla/hadoop2/resources/create_oozie_db.sql')
             script_location = "create_oozie_db.sql"
@@ -166,21 +166,22 @@ def await_datanodes(cluster):
     if datanodes_count < 1:
         return
 
-    LOG.info(_LI("Waiting %s datanodes to start up"), datanodes_count)
+    LOG.debug("Waiting {count} datanodes to start up".format(
+        count=datanodes_count))
     with vu.get_namenode(cluster).remote() as r:
         while True:
             if _check_datanodes_count(r, datanodes_count):
                 LOG.info(
-                    _LI('Datanodes on cluster %s have been started'),
-                    cluster.name)
+                    _LI('Datanodes on cluster {cluster} have been started')
+                    .format(cluster=cluster.name))
                 return
 
             context.sleep(1)
 
             if not g.check_cluster_exists(cluster):
                 LOG.info(
-                    _LI('Stop waiting datanodes on cluster %s since it has '
-                        'been deleted'), cluster.name)
+                    _LI('Stop waiting for datanodes on cluster {cluster} since'
+                        ' it has been deleted').format(cluster=cluster.name))
                 return
 
 
@@ -193,7 +194,7 @@ def _check_datanodes_count(remote, count):
         'sudo su -lc "hdfs dfsadmin -report" hadoop | '
         'grep \'Live datanodes\|Datanodes available:\' | '
         'grep -o \'[0-9]\+\' | head -n 1')
-    LOG.debug("Datanode count='%s'" % stdout.rstrip())
+    LOG.debug("Datanode count='{count}'".format(count=stdout.rstrip()))
 
     return exit_code == 0 and stdout and int(stdout) == count
 
@@ -214,12 +215,12 @@ def _hive_copy_shared_conf(remote, dest):
 
 
 def _hive_create_db(remote):
-    LOG.debug("Creating Hive metastore db...")
+    LOG.debug("Creating Hive metastore db")
     remote.execute_command("mysql -u root < /tmp/create_hive_db.sql")
 
 
 def _hive_metastore_start(remote):
-    LOG.debug("Starting Hive Metastore Server...")
+    LOG.debug("Starting Hive Metastore Server")
     remote.execute_command("sudo su - -c 'nohup /opt/hive/bin/hive"
                            " --service metastore > /dev/null &' hadoop")
 
@@ -243,6 +244,5 @@ def start_hiveserver_process(pctx, instance):
             r.write_file_to('/tmp/create_hive_db.sql', sql_script)
             _hive_create_db(r)
             _hive_metastore_start(r)
-            LOG.info(_LI("Hive Metastore server at %s has been "
-                         "started"),
-                     instance.hostname())
+            LOG.info(_LI("Hive Metastore server at {host} has been "
+                         "started").format(host=instance.hostname()))

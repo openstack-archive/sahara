@@ -69,7 +69,7 @@ class MySQL(s.Service):
         with instance.remote() as r:
             if script_text:
                 r.write_file_to(script_path, script_text, run_as_root=True)
-            LOG.debug('Executing SQL script %s', script_path)
+            LOG.debug('Executing SQL script {path}'.format(path=script_path))
             r.execute_command(("mysql %s %s < %s" %
                                ('-u' + user if user else '',
                                 '-p' + password if password else '',

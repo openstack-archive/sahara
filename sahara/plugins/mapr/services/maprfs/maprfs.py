@@ -18,6 +18,7 @@ import six
 
 from sahara import context
 from sahara.i18n import _
+from sahara.i18n import _LI
 import sahara.plugins.mapr.domain.configuration_file as bcf
 import sahara.plugins.mapr.domain.node_process as np
 import sahara.plugins.mapr.domain.service as s
@@ -96,7 +97,7 @@ class MapRFS(s.Service):
             for instance in file_servers:
                 tg.spawn('init-mfs-%s' % instance.id,
                          self._init_mfs_instance, instance)
-        LOG.debug('MapR FS successfully initialized')
+        LOG.info(_LI('MapR FS successfully initialized'))
 
     def _init_mfs_instance(self, instance):
         self._generate_disk_list_file(instance, self._CREATE_DISK_LIST)

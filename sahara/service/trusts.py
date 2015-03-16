@@ -58,10 +58,12 @@ def create_trust(trustor,
                                       impersonation=impersonation,
                                       role_names=role_names,
                                       project=project_id)
-        LOG.debug('Created trust {0}'.format(six.text_type(trust.id)))
+        LOG.debug('Created trust {trust_id}'.format(
+            trust_id=six.text_type(trust.id)))
         return trust.id
     except Exception as e:
-        LOG.exception(_LE('Unable to create trust (reason: %s)'), e)
+        LOG.error(_LE('Unable to create trust (reason: {reason})').format(
+            reason=e))
         raise ex.CreationFailed(_('Failed to create trust'))
 
 
@@ -96,9 +98,11 @@ def delete_trust(trustee, trust_id):
     '''
     try:
         trustee.trusts.delete(trust_id)
-        LOG.debug('Deleted trust {0}'.format(six.text_type(trust_id)))
+        LOG.debug('Deleted trust {trust_id}'.format(
+            trust_id=six.text_type(trust_id)))
     except Exception as e:
-        LOG.exception(_LE('Unable to delete trust (reason: %s)'), e)
+        LOG.error(_LE('Unable to delete trust (reason: {reason})').format(
+            reason=e))
         raise ex.DeletionFailed(
             _('Failed to delete trust {0}').format(trust_id))
 

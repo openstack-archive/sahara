@@ -103,9 +103,9 @@ class PluginManager(object):
                     _("Plugin with name '%s' already exists.") % ext.name)
             ext.obj.name = ext.name
             self.plugins[ext.name] = ext.obj
-            LOG.info(_LI("Plugin '%(plugin_name)s' loaded %(entry_point)s"),
-                     {'plugin_name': ext.name,
-                      'entry_point': ext.entry_point_target})
+            LOG.info(_LI("Plugin {plugin_name} loaded {entry_point}").format(
+                     plugin_name=ext.name,
+                     entry_point=ext.entry_point_target))
 
         if len(self.plugins) < len(config_plugins):
             loaded_plugins = set(six.iterkeys(self.plugins))

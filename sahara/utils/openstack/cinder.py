@@ -50,15 +50,16 @@ CONF.register_opts(opts, group=cinder_group)
 
 def validate_config():
     if CONF.cinder.api_version == 1:
-        LOG.warn(_LW('The Cinder v1 API is deprecated and will be removed '
-                     'after the Juno release.  You should set '
-                     'cinder.api_version=2 in your sahara.conf file.'))
+        LOG.warning(_LW('The Cinder v1 API is deprecated and will be removed '
+                        'after the Juno release.  You should set '
+                        'cinder.api_version=2 in your sahara.conf file.'))
     elif CONF.cinder.api_version != 2:
-        LOG.warn(_LW('Unsupported Cinder API version: %(bad)s.  Please set a '
-                     'correct value for cinder.api_version in your sahara.conf'
-                     ' file (currently supported versions are: %(supported)s).'
-                     ' Falling back to Cinder API version 2.'),
-                 {'bad': CONF.cinder.api_version, 'supported': [1, 2]})
+        LOG.warning(_LW('Unsupported Cinder API version: {bad}.  Please set a '
+                        'correct value for cinder.api_version in your '
+                        'sahara.conf file (currently supported versions are: '
+                        '{supported}). Falling back to Cinder API version 2.')
+                    .format(bad=CONF.cinder.api_version,
+                            supported=[1, 2]))
         CONF.set_override('api_version', 2, group='cinder')
 
 

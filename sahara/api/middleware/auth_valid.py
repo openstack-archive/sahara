@@ -17,7 +17,6 @@ from oslo_log import log as logging
 import webob.exc as ex
 
 from sahara.i18n import _
-from sahara.i18n import _LI
 from sahara.i18n import _LW
 import sahara.openstack.commons as commons
 
@@ -43,7 +42,7 @@ class AuthValidator(object):
         """
         token_tenant = env['HTTP_X_TENANT_ID']
         if not token_tenant:
-            LOG.warn(_LW("Can't get tenant_id from env"))
+            LOG.warning(_LW("Can't get tenant_id from env"))
             resp = ex.HTTPServiceUnavailable()
             return resp(env, start_response)
 
@@ -51,7 +50,7 @@ class AuthValidator(object):
         if path != '/':
             version, url_tenant, rest = commons.split_path(path, 3, 3, True)
             if not version or not url_tenant or not rest:
-                LOG.info(_LI("Incorrect path: %s"), path)
+                LOG.warning(_LW("Incorrect path: {path}").format(path=path))
                 resp = ex.HTTPNotFound(_("Incorrect path"))
                 return resp(env, start_response)
 

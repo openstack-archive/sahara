@@ -78,8 +78,6 @@ def setup_common(possible_topdir, service_name):
     config.parse_configs(config_files)
     log.setup(CONF, "sahara")
 
-    LOG.info(_LI('Starting Sahara %s'), service_name)
-
     # Validate other configurations (that may produce logs) here
     cinder.validate_config()
 
@@ -87,6 +85,8 @@ def setup_common(possible_topdir, service_name):
         messaging.setup()
 
     plugins_base.setup_plugins()
+
+    LOG.info(_LI('Sahara {service} started').format(service=service_name))
 
 
 def setup_sahara_api(mode):
@@ -162,6 +162,7 @@ def make_app():
 
 
 def _load_driver(namespace, name):
+    # TODO(starodubcevna): add LI here in the future for logging improvement
     extension_manager = stevedore.DriverManager(
         namespace=namespace,
         name=name,
@@ -174,21 +175,21 @@ def _load_driver(namespace, name):
 def _get_infrastructure_engine():
     """Import and return one of sahara.service.*_engine.py modules."""
 
-    LOG.info(_LI("Loading '%s' infrastructure engine"),
-             CONF.infrastructure_engine)
+    LOG.debug("Infrastructure engine {engine} is loading".format(
+        engine=CONF.infrastructure_engine))
 
     return _load_driver('sahara.infrastructure.engine',
                         CONF.infrastructure_engine)
 
 
 def _get_remote_driver():
-    LOG.info(_LI("Loading '%s' remote"), CONF.remote)
+    LOG.debug("Remote {remote} is loading".format(remote=CONF.remote))
 
     return _load_driver('sahara.remote', CONF.remote)
 
 
 def _get_ops_driver(driver_name):
-    LOG.info(_LI("Loading '%s' ops"), driver_name)
+    LOG.debug("Ops {driver} is loading".format(driver=driver_name))
 
     return _load_driver('sahara.run.mode', driver_name)
 

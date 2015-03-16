@@ -166,13 +166,13 @@ def ops_error_handler(description):
                 # check if cluster still exists (it might have been removed)
                 if cluster is None or cluster.status == 'Deleting':
                     LOG.debug(
-                        "Cluster id=%(id)s was deleted or marked for "
-                        "deletion. Canceling current operation.",
-                        {"id": cluster_id})
+                        "Cluster id={id} was deleted or marked for "
+                        "deletion. Canceling current operation.".format(
+                            id=cluster_id))
                     return
 
                 msg = six.text_type(ex)
-                LOG.exception(
+                LOG.error(
                     _LE("Error during operating on cluster {name} (reason: "
                         "{reason})").format(name=cluster.name, reason=msg))
 
@@ -189,12 +189,12 @@ def ops_error_handler(description):
                     # removed during rollback)
                     if cluster is None or cluster.status == 'Deleting':
                         LOG.debug(
-                            "Cluster id=%(id)s was deleted or marked for "
-                            "deletion. Canceling current operation.",
-                            {"id": cluster_id})
+                            "Cluster id={id} was deleted or marked for "
+                            "deletion. Canceling current operation."
+                            .format(id=cluster_id))
                         return
 
-                    LOG.exception(
+                    LOG.error(
                         _LE("Error during rollback of cluster {name} (reason:"
                             " {reason})").format(name=cluster.name,
                                                  reason=six.text_type(rex)))
@@ -333,6 +333,6 @@ def _delete_job_execution(job_execution_id):
             # job_execution was deleted already, nothing to do
             return
     except exceptions.CancelingFailed:
-        LOG.error(_LE("Job execution %s can't be cancelled in time. "
-                      "Deleting it anyway."), job_execution_id)
+        LOG.error(_LE("Job execution {j_id} can't be cancelled in time. "
+                      "Deleting it anyway.").format(j_id=job_execution_id))
     conductor.job_execution_destroy(context.ctx(), job_execution_id)

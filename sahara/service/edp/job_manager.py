@@ -25,6 +25,7 @@ from sahara import exceptions as e
 from sahara.i18n import _
 from sahara.i18n import _LE
 from sahara.i18n import _LI
+from sahara.i18n import _LW
 from sahara.service.edp import job_utils
 from sahara.service.edp.oozie import engine as oozie_engine
 from sahara.service.edp.spark import engine as spark_engine
@@ -120,9 +121,9 @@ def run_job(job_execution_id):
     try:
         _run_job(job_execution_id)
     except Exception as ex:
-        LOG.exception(
-            _LE("Can't run job execution '%(job)s' (reason: %(reason)s)"),
-            {'job': job_execution_id, 'reason': ex})
+        LOG.warning(
+            _LW("Can't run job execution {job} (reason: {reason})").format(
+                job=job_execution_id, reason=ex))
 
         conductor.job_execution_update(
             context.ctx(), job_execution_id,
@@ -153,27 +154,28 @@ def cancel_job(job_execution_id):
                     job_info = engine.cancel_job(job_execution)
                 except Exception as ex:
                     job_info = None
-                    LOG.exception(
-                        _LE("Error during cancel of job execution %(job)s: "
-                            "%(error)s"), {'job': job_execution.id,
-                                           'error': ex})
+                    LOG.warning(
+                        _LW("Error during cancel of job execution {job}: "
+                            "{error}").format(job=job_execution.id,
+                                              error=ex))
                 if job_info is not None:
                     job_execution = _write_job_status(job_execution, job_info)
-                    LOG.info(_LI("Job execution %s was canceled successfully"),
-                             job_execution.id)
+                    LOG.info(_LI("Job execution {job_id} was canceled "
+                                 "successfully").format(
+                                     job_id=job_execution.id))
                     return job_execution
                 context.sleep(3)
                 job_execution = conductor.job_execution_get(
                     ctx, job_execution_id)
                 if not job_execution:
-                    LOG.info(_LI("Job execution %(job_exec_id)s was deleted. "
-                                 "Canceling current operation."),
-                             {'job_exec_id': job_execution_id})
+                    LOG.info(_LI("Job execution {job_exec_id} was deleted. "
+                                 "Canceling current operation.").format(
+                             job_exec_id=job_execution_id))
                     return job_execution
             else:
-                LOG.info(_LI("Job execution status %(job)s: %(status)s"),
-                         {'job': job_execution.id,
-                          'status': job_execution.info['status']})
+                LOG.info(_LI("Job execution status {job}: {status}").format(
+                         job=job_execution.id,
+                         status=job_execution.info['status']))
                 return job_execution
         else:
             raise e.CancelingFailed(_('Job execution %s was not canceled')
@@ -198,9 +200,8 @@ def update_job_statuses():
         try:
             get_job_status(je.id)
         except Exception as e:
-            LOG.exception(
-                _LE("Error during update job execution %(job)s: %(error)s"),
-                {'job': je.id, 'error': e})
+            LOG.error(_LE("Error during update job execution {job}: {error}")
+                      .format(job=je.id, error=e))
 
 
 def get_job_config_hints(job_type):

@@ -57,9 +57,11 @@ def init_instances_ips(instance):
     # NOTE(aignatov): Once bug #1262529 is fixed this 'if' block should be
     # reviewed and reformatted again, probably removed completely.
     if CONF.use_neutron and not (management_ip and internal_ip):
-        LOG.debug("Instance %s doesn't contain yet Floating IP or Internal IP."
-                  " Floating IP=%s, Internal IP=%s. Trying to get via Neutron."
-                  % (server.name, management_ip, internal_ip))
+        LOG.debug("Instance {instance_name} doesn't yet contain Floating "
+                  "IP or Internal IP. Floating IP={mgmt_ip}, Internal IP="
+                  "{internal_ip}. Trying to get via Neutron.".format(
+                      instance_name=server.name, mgmt_ip=management_ip,
+                      internal_ip=internal_ip))
         neutron_client = neutron.client()
         ports = neutron_client.list_ports(device_id=server.id)["ports"]
         if ports:
@@ -70,15 +72,17 @@ def init_instances_ips(instance):
                 fl_ip = fl_ips[0]
                 if not internal_ip:
                     internal_ip = fl_ip['fixed_ip_address']
-                    LOG.debug('Found fixed IP %s for %s' % (internal_ip,
-                                                            server.name))
+                    LOG.debug('Found fixed IP {internal_ip} for {server}'
+                              .format(internal_ip=internal_ip,
+                                      server=server.name))
                 # Zeroing management_ip if Sahara in private network
                 if not CONF.use_floating_ips:
                     management_ip = internal_ip
                 elif not management_ip:
                     management_ip = fl_ip['floating_ip_address']
-                    LOG.debug('Found floating IP %s for %s' % (management_ip,
-                                                               server.name))
+                    LOG.debug('Found floating IP {mgmt_ip} for {server}'
+                              .format(mgmt_ip=management_ip,
+                                      server=server.name))
 
     conductor.instance_update(context.ctx(), instance,
                               {"management_ip": management_ip,

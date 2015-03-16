@@ -109,9 +109,9 @@ class HttpClient(object):
         url = self._make_url(path, params)
         if http_method in ("GET", "DELETE"):
             if data is not None:
-                LOG.warn(_LW("%(method)s method does not pass any data."
-                             " Path '%(path)s'"),
-                         {'method': http_method, 'path': path})
+                LOG.warning(_LW("{method} method does not pass any data. "
+                                "Path {path}").format(method=http_method,
+                                                      path=path))
                 data = None
 
         # Setup the request
@@ -124,7 +124,8 @@ class HttpClient(object):
             request.add_header(k, v)
 
         # Call it
-        LOG.debug("Method: %s, URL: %s" % (http_method, url))
+        LOG.debug("Method: {method}, URL: {url}".format(method=http_method,
+                                                        url=url))
         try:
             return self._opener.open(request)
         except urllib2.HTTPError as ex:
