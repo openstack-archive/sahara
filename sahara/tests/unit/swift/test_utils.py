@@ -13,6 +13,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import mock
+
 from sahara.swift import utils
 from sahara.tests.unit import base as testbase
 
@@ -23,11 +25,12 @@ class SwiftUtilsTest(testbase.SaharaTestCase):
         super(SwiftUtilsTest, self).setUp()
         self.override_config('use_identity_api_v3', True)
 
-    def test_retrieve_auth_url(self):
+    @mock.patch('sahara.utils.openstack.base.url_for')
+    def test_retrieve_auth_url(self, url_for_mock):
         correct = "https://127.0.0.1:8080/v2.0/"
 
         def _assert(uri):
-            self.setup_context(auth_uri=uri)
+            url_for_mock.return_value = uri
             self.assertEqual(correct, utils.retrieve_auth_url())
 
         _assert("%s/" % correct)
