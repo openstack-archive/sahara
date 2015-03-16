@@ -107,11 +107,11 @@ def _attach_volumes_to_node(node_group, instance):
 
     paths = instance.node_group.storage_paths()
     for idx in range(0, instance.node_group.volumes_per_node):
-        LOG.debug("Mounting volume {volume} to instance {instance}"
-                  .format(volume=device, instance=instance.instance_name))
+        LOG.debug("Mounting volume {volume} to instance {id}"
+                  .format(volume=devices[idx], id=instance.instance_id))
         _mount_volume(instance, devices[idx], paths[idx])
-        LOG.debug("Mounted volume to instance {instance}"
-                  .format(instance=instance.instance_name))
+        LOG.debug("Mounted volume to instance {id}"
+                  .format(id=instance.instance_id))
 
 
 def _create_attach_volume(ctx, instance, size, volume_type,
