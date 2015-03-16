@@ -69,6 +69,7 @@ class CDHGatingTest(cluster_configs.ClusterConfigTest,
             'description': 'test node group template for CDH plugin',
             'node_processes': ['NODEMANAGER', 'DATANODE'],
             'floating_ip_pool': self.floating_ip_pool,
+            'auto_security_group': True,
             'node_configs': {}
         }
         self.ng_tmpl_nm_dn_id = self.create_node_group_template(**template)
@@ -84,6 +85,7 @@ class CDHGatingTest(cluster_configs.ClusterConfigTest,
             'volume_size': self.volume_size,
             'node_processes': ['NODEMANAGER'],
             'floating_ip_pool': self.floating_ip_pool,
+            'auto_security_group': True,
             'node_configs': {}
         }
         self.ng_tmpl_nm_id = self.create_node_group_template(**template)
@@ -99,6 +101,7 @@ class CDHGatingTest(cluster_configs.ClusterConfigTest,
             'volume_size': self.volume_size,
             'node_processes': ['DATANODE'],
             'floating_ip_pool': self.floating_ip_pool,
+            'auto_security_group': True,
             'node_configs': {}
         }
         self.ng_tmpl_dn_id = self.create_node_group_template(**template)
@@ -128,6 +131,7 @@ class CDHGatingTest(cluster_configs.ClusterConfigTest,
                     'flavor_id': self.cdh_config.MANAGERNODE_FLAVOR,
                     'node_processes': ['MANAGER'],
                     'floating_ip_pool': self.floating_ip_pool,
+                    'auto_security_group': True,
                     'count': 1
                 },
                 {
@@ -135,6 +139,7 @@ class CDHGatingTest(cluster_configs.ClusterConfigTest,
                     'flavor_id': self.flavor_id,
                     'node_processes': ['NAMENODE', 'RESOURCEMANAGER'],
                     'floating_ip_pool': self.floating_ip_pool,
+                    'auto_security_group': True,
                     'count': 1
                 },
                 {
@@ -143,6 +148,7 @@ class CDHGatingTest(cluster_configs.ClusterConfigTest,
                     'node_processes': ['OOZIE_SERVER', 'JOBHISTORY',
                                        'SECONDARYNAMENODE'],
                     'floating_ip_pool': self.floating_ip_pool,
+                    'auto_security_group': True,
                     'count': 1
                 },
                 {
