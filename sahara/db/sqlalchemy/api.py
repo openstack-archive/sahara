@@ -482,7 +482,8 @@ def cluster_template_create(context, values):
     return cluster_template_get(context, cluster_template.id)
 
 
-def cluster_template_destroy(context, cluster_template_id):
+def cluster_template_destroy(context, cluster_template_id,
+                             ignore_default=False):
     session = get_session()
     with session.begin():
         cluster_template = _cluster_template_get(context, session,
@@ -491,11 +492,15 @@ def cluster_template_destroy(context, cluster_template_id):
             raise ex.NotFoundException(
                 cluster_template_id,
                 _("Cluster Template id '%s' not found!"))
+        elif not ignore_default and cluster_template.is_default:
+            raise ex.DeletionFailed(
+                _("Cluster template id '%s' "
+                  "is a default template") % cluster_template.id)
 
         session.delete(cluster_template)
 
 
-def cluster_template_update(context, values):
+def cluster_template_update(context, values, ignore_default=False):
     node_groups = values.pop("node_groups", [])
 
     session = get_session()
@@ -507,6 +512,13 @@ def cluster_template_update(context, values):
             raise ex.NotFoundException(
                 cluster_template_id,
                 _("Cluster Template id '%s' not found!"))
+
+        elif not ignore_default and cluster_template.is_default:
+            raise ex.UpdateFailedException(
+                cluster_template_id,
+                _("ClusterTemplate id '%s' can not be updated. "
+                  "It is a default template.")
+            )
 
         name = values.get('name')
         if name:
@@ -580,7 +592,8 @@ def node_group_template_create(context, values):
     return node_group_template
 
 
-def node_group_template_destroy(context, node_group_template_id):
+def node_group_template_destroy(context, node_group_template_id,
+                                ignore_default=False):
     session = get_session()
     with session.begin():
         node_group_template = _node_group_template_get(context, session,
@@ -589,11 +602,15 @@ def node_group_template_destroy(context, node_group_template_id):
             raise ex.NotFoundException(
                 node_group_template_id,
                 _("Node Group Template id '%s' not found!"))
+        elif not ignore_default and node_group_template.is_default:
+            raise ex.DeletionFailed(
+                _("Node group template id '%s' "
+                  "is a default template") % node_group_template_id)
 
         session.delete(node_group_template)
 
 
-def node_group_template_update(context, values):
+def node_group_template_update(context, values, ignore_default=False):
     session = get_session()
     with session.begin():
         ngt_id = values['id']
@@ -602,6 +619,12 @@ def node_group_template_update(context, values):
         if not node_group_template:
             raise ex.NotFoundException(
                 ngt_id, _("NodeGroupTemplate id '%s' not found"))
+        elif not ignore_default and node_group_template.is_default:
+            raise ex.UpdateFailedException(
+                ngt_id,
+                _("NodeGroupTemplate id '%s' can not be updated. "
+                  "It is a default template.")
+            )
 
         name = values.get('name')
         if name and name != node_group_template.name:

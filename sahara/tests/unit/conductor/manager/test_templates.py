@@ -132,6 +132,21 @@ class NodeGroupTemplates(test_base.ConductorManagerTestCase):
         with testtools.ExpectedException(ex.NotFoundException):
             self.api.node_group_template_destroy(ctx, _id)
 
+    def test_ngt_delete_default(self):
+        ctx = context.ctx()
+        vals = copy.copy(SAMPLE_NGT)
+        vals["is_default"] = True
+        db_obj_ngt = self.api.node_group_template_create(ctx, vals)
+        _id = db_obj_ngt['id']
+
+        with testtools.ExpectedException(ex.DeletionFailed):
+            self.api.node_group_template_destroy(ctx, _id)
+
+        self.api.node_group_template_destroy(ctx, _id, ignore_default=True)
+
+        with testtools.ExpectedException(ex.NotFoundException):
+            self.api.node_group_template_destroy(ctx, _id)
+
     def test_ngt_search(self):
         ctx = context.ctx()
         self.api.node_group_template_create(ctx, SAMPLE_NGT)
@@ -175,6 +190,26 @@ class NodeGroupTemplates(test_base.ConductorManagerTestCase):
         ngt_id = ngt['id']
         with testtools.ExpectedException(ex.DBDuplicateEntry):
             self.api.node_group_template_update(ctx, ngt_id, update_values)
+
+    def test_ngt_update_default(self):
+        ctx = context.ctx()
+        vals = copy.copy(SAMPLE_NGT)
+        vals["is_default"] = True
+        ngt = self.api.node_group_template_create(ctx, vals)
+        ngt_id = ngt["id"]
+
+        UPDATE_NAME = "UpdatedSampleNGTName"
+        update_values = {"name": UPDATE_NAME}
+        with testtools.ExpectedException(ex.UpdateFailedException):
+            self.api.node_group_template_update(ctx,
+                                                ngt_id,
+                                                update_values)
+
+        updated_ngt = self.api.node_group_template_update(ctx,
+                                                          ngt_id,
+                                                          update_values,
+                                                          ignore_default=True)
+        self.assertEqual(UPDATE_NAME, updated_ngt["name"])
 
 
 class ClusterTemplates(test_base.ConductorManagerTestCase):
@@ -255,6 +290,21 @@ class ClusterTemplates(test_base.ConductorManagerTestCase):
         with testtools.ExpectedException(ex.NotFoundException):
             self.api.cluster_template_destroy(ctx, _id)
 
+    def test_clt_delete_default(self):
+        ctx = context.ctx()
+        vals = copy.copy(SAMPLE_CLT)
+        vals["is_default"] = True
+        db_obj_clt = self.api.cluster_template_create(ctx, vals)
+        _id = db_obj_clt['id']
+
+        with testtools.ExpectedException(ex.DeletionFailed):
+            self.api.cluster_template_destroy(ctx, _id)
+
+        self.api.cluster_template_destroy(ctx, _id, ignore_default=True)
+
+        with testtools.ExpectedException(ex.NotFoundException):
+            self.api.cluster_template_destroy(ctx, _id)
+
     def test_clt_search(self):
         ctx = context.ctx()
         self.api.cluster_template_create(ctx, SAMPLE_CLT)
@@ -309,3 +359,23 @@ class ClusterTemplates(test_base.ConductorManagerTestCase):
 
         with testtools.ExpectedException(ex.UpdateFailedException):
             self.api.cluster_template_update(ctx, clt['id'], update_values)
+
+    def test_clt_update_default(self):
+        ctx = context.ctx()
+        vals = copy.copy(SAMPLE_CLT)
+        vals["is_default"] = True
+        clt = self.api.cluster_template_create(ctx, vals)
+        clt_id = clt["id"]
+
+        UPDATE_NAME = "UpdatedClusterTemplate"
+        update_values = {"name": UPDATE_NAME}
+        with testtools.ExpectedException(ex.UpdateFailedException):
+            self.api.cluster_template_update(ctx,
+                                             clt_id,
+                                             update_values)
+
+        updated_clt = self.api.cluster_template_update(ctx,
+                                                       clt_id,
+                                                       update_values,
+                                                       ignore_default=True)
+        self.assertEqual(UPDATE_NAME, updated_clt["name"])

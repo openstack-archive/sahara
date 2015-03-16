@@ -175,6 +175,7 @@ class ClusterTemplate(mb.SaharaBase):
     hadoop_version = sa.Column(sa.String(80), nullable=False)
     node_groups = relationship('TemplatesRelation', cascade="all,delete",
                                backref='cluster_template', lazy='joined')
+    is_default = sa.Column(sa.Boolean(), default=False)
 
     def to_dict(self):
         d = super(ClusterTemplate, self).to_dict()
@@ -213,6 +214,7 @@ class NodeGroupTemplate(mb.SaharaBase):
     availability_zone = sa.Column(sa.String(255))
     is_proxy_gateway = sa.Column(sa.Boolean())
     volume_local_to_instance = sa.Column(sa.Boolean())
+    is_default = sa.Column(sa.Boolean(), default=False)
 
 
 class TemplatesRelation(mb.SaharaBase):

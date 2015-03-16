@@ -248,11 +248,14 @@ class ConductorManager(db_base.Base):
 
         return self.db.cluster_template_create(context, values)
 
-    def cluster_template_destroy(self, context, cluster_template):
+    def cluster_template_destroy(self, context, cluster_template,
+                                 ignore_default=False):
         """Destroy the cluster_template or raise if it does not exist."""
-        self.db.cluster_template_destroy(context, cluster_template)
+        self.db.cluster_template_destroy(context, cluster_template,
+                                         ignore_default)
 
-    def cluster_template_update(self, context, id, values):
+    def cluster_template_update(self, context, id, values,
+                                ignore_default=False):
         """Update a cluster_template from the values dictionary."""
         values = copy.deepcopy(values)
         values = _apply_defaults(values, CLUSTER_DEFAULTS)
@@ -261,7 +264,7 @@ class ConductorManager(db_base.Base):
 
         values['node_groups'] = self._populate_node_groups(context, values)
 
-        return self.db.cluster_template_update(context, values)
+        return self.db.cluster_template_update(context, values, ignore_default)
 
     # Node Group Template ops
 
@@ -285,17 +288,21 @@ class ConductorManager(db_base.Base):
 
         return self.db.node_group_template_create(context, values)
 
-    def node_group_template_destroy(self, context, node_group_template):
+    def node_group_template_destroy(self, context, node_group_template,
+                                    ignore_default=False):
         """Destroy the Node Group Template or raise if it does not exist."""
-        self.db.node_group_template_destroy(context, node_group_template)
+        self.db.node_group_template_destroy(context, node_group_template,
+                                            ignore_default)
 
-    def node_group_template_update(self, context, id, values):
+    def node_group_template_update(self, context, id, values,
+                                   ignore_default=False):
         """Update a Node Group Template from the values dictionary."""
         values = copy.deepcopy(values)
         values['tenant_id'] = context.tenant_id
         values['id'] = id
 
-        return self.db.node_group_template_update(context, values)
+        return self.db.node_group_template_update(context, values,
+                                                  ignore_default)
 
     # Data Source ops
 
