@@ -96,7 +96,8 @@ def _attach_volumes_to_node(node_group, instance):
     for idx in range(1, node_group.volumes_per_node + 1):
         display_name = "volume_" + instance.instance_name + "_" + str(idx)
         device = _create_attach_volume(
-            ctx, instance, size, volume_type, display_name,
+            ctx, instance, size, volume_type,
+            node_group.volume_local_to_instance, display_name,
             node_group.volumes_availability_zone)
         devices.append(device)
         LOG.debug("Attached volume {device} to instance {uuid}".format(
@@ -113,7 +114,8 @@ def _attach_volumes_to_node(node_group, instance):
                   .format(instance=instance.instance_name))
 
 
-def _create_attach_volume(ctx, instance, size, volume_type, name=None,
+def _create_attach_volume(ctx, instance, size, volume_type,
+                          volume_local_to_instance, name=None,
                           availability_zone=None):
     if CONF.cinder.api_version == 1:
         kwargs = {'size': size, 'display_name': name}
@@ -123,6 +125,9 @@ def _create_attach_volume(ctx, instance, size, volume_type, name=None,
     kwargs['volume_type'] = volume_type
     if availability_zone is not None:
         kwargs['availability_zone'] = availability_zone
+
+    if volume_local_to_instance:
+        kwargs['scheduler_hints'] = {'local_to_instance': instance.instance_id}
 
     volume = cinder.client().volumes.create(**kwargs)
     conductor.append_volume(ctx, instance, volume.id)

@@ -197,6 +197,43 @@ class TestClusterTemplate(base.SaharaWithDbTestCase):
             json.loads(main_template)
             )
 
+    def test_load_template_with_volume_local_to_instance(self):
+        """Checks Heat cluster template with Neutron enabled.
+
+        Two NodeGroups used: 'master' with disabled volume_local_to_instance
+        and 'worker' with enabled volume_local_to_instance.
+        """
+        ng1 = tu.make_ng_dict('master', 42, ['namenode'], 1,
+                              floating_ip_pool='floating', image_id=None,
+                              volumes_per_node=1, volumes_size=10, id=1,
+                              volume_type=None, image_username='root')
+        ng2 = tu.make_ng_dict('worker', 42, ['datanode'], 1,
+                              floating_ip_pool='floating', image_id=None,
+                              volumes_per_node=2, volumes_size=10, id=2,
+                              image_username='root', volume_type='vol_type',
+                              volume_local_to_instance=True)
+
+        cluster = tu.create_cluster("cluster", "tenant1", "general",
+                                    "1.2.1", [ng1, ng2],
+                                    user_keypair_id='user_key',
+                                    neutron_management_network='private_net',
+                                    default_image_id='1', image_id=None,
+                                    anti_affinity=[])
+        heat_template = h.ClusterTemplate(cluster)
+        heat_template.add_node_group_extra(ng1['id'], 1,
+                                           get_ud_generator('line1\nline2'))
+        heat_template.add_node_group_extra(ng2['id'], 1,
+                                           get_ud_generator('line2\nline3'))
+
+        self.override_config("use_neutron", True)
+        main_template = heat_template._get_main_template()
+
+        self.assertEqual(
+            json.loads(f.get_file_text(
+                "tests/unit/resources/"
+                "test_serialize_resources_volume_local_to_instance.heat")),
+            json.loads(main_template))
+
 
 def get_ud_generator(s):
     def generator(*args, **kwargs):
