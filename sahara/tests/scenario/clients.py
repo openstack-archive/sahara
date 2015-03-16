@@ -137,7 +137,7 @@ class SaharaClient(Client):
 
 class NovaClient(Client):
     def __init__(self, *args, **kwargs):
-        self.nova_client = nova_client.Client('1.1', *args, **kwargs)
+        self.nova_client = nova_client.Client('2', *args, **kwargs)
 
     def get_image_id(self, image_name):
         if uuidutils.is_uuid_like(image_name):

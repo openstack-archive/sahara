@@ -20,7 +20,7 @@ import time
 import fixtures
 from keystoneclient.v2_0 import client as keystone_client
 from neutronclient.v2_0 import client as neutron_client
-from novaclient.v1_1 import client as nova_client
+from novaclient.v2 import client as nova_client
 from oslo_utils import excutils
 from oslo_utils import uuidutils
 from oslotest import base
