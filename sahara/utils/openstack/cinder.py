@@ -21,6 +21,7 @@ from oslo_config import cfg
 from oslo_log import log as logging
 
 from sahara import context
+from sahara import exceptions as ex
 from sahara.i18n import _LW
 from sahara.utils.openstack import base
 
@@ -82,6 +83,18 @@ def client():
     cinder.client.management_url = volume_url
 
     return cinder
+
+
+def check_cinder_exists():
+    if CONF.cinder.api_version == 1:
+        service_type = 'volume'
+    else:
+        service_type = 'volumev2'
+    try:
+        base.url_for(context.current().service_catalog, service_type)
+        return True
+    except ex.SystemError:
+        return False
 
 
 def get_volumes():

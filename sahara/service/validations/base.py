@@ -29,7 +29,6 @@ import sahara.service.api as api
 from sahara.utils import general as g
 import sahara.utils.openstack.cinder as cinder
 import sahara.utils.openstack.heat as heat
-import sahara.utils.openstack.keystone as keystone
 import sahara.utils.openstack.nova as nova
 
 
@@ -142,7 +141,9 @@ def check_node_group_basic_fields(plugin_name, hadoop_version, ng,
         check_image_registered(ng['image_id'])
 
     if ng.get('volumes_per_node'):
-        check_cinder_exists()
+        if not cinder.check_cinder_exists():
+            raise ex.InvalidReferenceException(_("Cinder is not supported"))
+
         if ng.get('volumes_availability_zone'):
             check_volume_availability_zone_exist(
                 ng['volumes_availability_zone'])
@@ -385,15 +386,6 @@ def check_add_node_groups(cluster, add_node_groups):
 
         check_node_group_basic_fields(cluster.plugin_name,
                                       cluster.hadoop_version, ng, pl_confs)
-
-
-# Cinder
-
-def check_cinder_exists():
-    services = [service.name for service in
-                keystone.client_for_admin().services.list()]
-    if 'cinder' not in services:
-        raise ex.InvalidReferenceException(_("Cinder is not supported"))
 
 
 # Tags

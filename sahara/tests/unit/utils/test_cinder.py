@@ -17,6 +17,7 @@
 import mock
 from oslo_config import cfg
 
+from sahara import exceptions as ex
 from sahara import main
 from sahara.tests.unit import base as test_base
 from sahara.utils.openstack import cinder
@@ -70,6 +71,16 @@ class TestCinder(test_base.SaharaTestCase):
 
         # Check bad version falls back to latest supported version
         self.assertEqual(2, main.CONF.cinder.api_version)
+
+    @mock.patch('sahara.utils.openstack.base.url_for')
+    def test_check_cinder_exists(self, mock_url_for):
+        mock_url_for.return_value = None
+        self.assertTrue(cinder.check_cinder_exists())
+
+        mock_url_for.reset_mock()
+
+        mock_url_for.side_effect = ex.SystemError("BANANA")
+        self.assertFalse(cinder.check_cinder_exists())
 
 
 class FakeCinderClient(object):

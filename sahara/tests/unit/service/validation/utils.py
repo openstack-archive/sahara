@@ -130,9 +130,10 @@ def start_patch(patch_templates=True):
         get_cl_template_p = mock.patch(
             "sahara.service.api.get_cluster_template")
     nova_p = mock.patch("sahara.utils.openstack.nova.client")
-    keystone_p = mock.patch("sahara.utils.openstack.keystone._client")
     heat_p = mock.patch("sahara.utils.openstack.heat.client")
     cinder_p = mock.patch("sahara.utils.openstack.cinder.client")
+    cinder_exists_p = mock.patch(
+        "sahara.utils.openstack.cinder.check_cinder_exists")
     get_image_p = mock.patch("sahara.service.api.get_image")
 
     get_image = get_image_p.start()
@@ -146,7 +147,6 @@ def start_patch(patch_templates=True):
         get_cl_template_p.start()
 
     nova = nova_p.start()
-    keystone = keystone_p.start()
 
     if patch_templates:
         get_cl_templates.return_value = []
@@ -164,15 +164,8 @@ def start_patch(patch_templates=True):
     cinder = cinder_p.start()
     cinder().availability_zones.list.side_effect = _get_availability_zone_list
 
-    class Service(object):
-        @property
-        def name(self):
-            return 'cinder'
-
-    def _services_list():
-        return [Service()]
-
-    keystone().services.list.side_effect = _services_list
+    cinder_exists = cinder_exists_p.start()
+    cinder_exists.return_value = True
 
     class Image(object):
         def __init__(self, name='test'):
@@ -232,7 +225,8 @@ def start_patch(patch_templates=True):
         get_ng_template.side_effect = _get_ng_template
     # request data to validate
     patchers = [get_clusters_p, get_cluster_p,
-                nova_p, keystone_p, get_image_p, heat_p, cinder_p]
+                nova_p, get_image_p, heat_p, cinder_p,
+                cinder_exists_p]
     if patch_templates:
         patchers.extend([get_ng_template_p, get_ng_templates_p,
                          get_cl_template_p, get_cl_templates_p])
