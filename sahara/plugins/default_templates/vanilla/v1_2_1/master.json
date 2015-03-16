@@ -1,0 +1,11 @@
+{
+    "plugin_name": "vanilla",
+    "hadoop_version": "1.2.1",
+    "node_processes": [
+        "namenode",
+        "jobtracker"
+    ],
+    "name": "vanilla-121-default-master",
+    "floating_ip_pool": "{floating_ip_pool}",
+    "flavor_id": "{flavor_id}"
+}

@@ -1,0 +1,12 @@
+{
+    "plugin_name": "vanilla",
+    "hadoop_version": "2.6.0",
+    "node_processes": [
+        "secondarynamenode",
+        "oozie",
+        "historyserver"
+    ],
+    "name": "vanilla-260-default-secondary-master",
+    "floating_ip_pool": "{floating_ip_pool}",
+    "flavor_id": "{flavor_id}"
+}
