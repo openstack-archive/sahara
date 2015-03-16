@@ -1,0 +1,12 @@
+{
+    "plugin_name": "hdp",
+    "hadoop_version": "2.0.6",
+    "node_processes": [
+        "SECONDARY_NAMENODE",
+        "OOZIE_SERVER",
+        "OOZIE_CLIENT"
+    ],
+    "name": "hdp-206-default-secondary-master",
+    "floating_ip_pool": "{floating_ip_pool}",
+    "flavor_id": "{flavor_id}"
+}

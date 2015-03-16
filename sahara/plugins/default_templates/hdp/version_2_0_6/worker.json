@@ -1,0 +1,11 @@
+{
+    "plugin_name": "hdp",
+    "hadoop_version": "2.0.6",
+    "node_processes": [
+        "DATANODE",
+        "NODEMANAGER"
+    ],
+    "name": "hdp-206-default-worker",
+    "floating_ip_pool": "{floating_ip_pool}",
+    "flavor_id": "{flavor_id}"
+}
