@@ -17,8 +17,8 @@ from sahara.i18n import _
 from sahara.plugins.cdh import commands as cmd
 from sahara.plugins.cdh.v5_3_0 import cloudera_utils as cu
 from sahara.plugins import utils as gu
+from sahara.service.edp import hdfs_helper as h
 from sahara.utils import cluster_progress_ops as cpo
-
 
 PACKAGES = [
     'cloudera-manager-agent',
@@ -146,6 +146,11 @@ def _prepare_cluster(cluster):
 def _finish_cluster_starting(cluster):
     if CU.pu.get_hive_metastore(cluster):
         CU.pu.put_hive_hdfs_xml(cluster)
+
+    server = CU.pu.get_hbase_master(cluster)
+    if CU.pu.c_helper.is_hbase_common_lib_enabled(cluster) and server:
+        with server.remote() as r:
+            h.create_hbase_common_lib(r)
 
     if CU.pu.get_flumes(cluster):
         flume = CU.get_service_by_role('AGENT', cluster)

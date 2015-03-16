@@ -50,14 +50,27 @@ class OozieJobEngine(base_engine.JobEngine):
         return o.OozieClient(self.get_oozie_server_uri(self.cluster),
                              self.get_oozie_server(self.cluster))
 
-    def _get_oozie_job_params(self, hdfs_user, path_to_workflow, oozie_params):
+    def _get_oozie_job_params(self, hdfs_user, path_to_workflow, oozie_params,
+                              use_hbase_lib):
         app_path = "oozie.wf.application.path"
+        oozie_libpath_key = "oozie.libpath"
+        oozie_libpath = ""
         rm_path = self.get_resource_manager_uri(self.cluster)
         nn_path = self.get_name_node_uri(self.cluster)
+        hbase_common_lib_path = "%s%s" % (nn_path, h.HBASE_COMMON_LIB_PATH)
+
+        if use_hbase_lib:
+            if oozie_libpath_key in oozie_params:
+                oozie_libpath = "%s,%s" % (oozie_params.get(oozie_libpath_key,
+                                           ""), hbase_common_lib_path)
+            else:
+                oozie_libpath = hbase_common_lib_path
+
         job_parameters = {
             "jobTracker": rm_path,
             "nameNode": nn_path,
             "user.name": hdfs_user,
+            oozie_libpath_key: oozie_libpath,
             app_path: "%s%s" % (nn_path, path_to_workflow),
             "oozie.use.system.libpath": "true"}
 
@@ -65,6 +78,8 @@ class OozieJobEngine(base_engine.JobEngine):
         # possibly make any sense
         if app_path in oozie_params:
             del oozie_params[app_path]
+        if oozie_libpath_key in oozie_params:
+            del oozie_params[oozie_libpath_key]
 
         job_parameters.update(oozie_params)
         return job_parameters
@@ -103,6 +118,7 @@ class OozieJobEngine(base_engine.JobEngine):
 
         proxy_configs = updated_job_configs.get('proxy_configs')
         configs = updated_job_configs.get('configs', {})
+        use_hbase_lib = configs.get('edp.hbase_common_lib', {})
 
         # Extract all the 'oozie.' configs so that they can be set in the
         # job properties file. These are config values for Oozie itself,
@@ -137,7 +153,8 @@ class OozieJobEngine(base_engine.JobEngine):
 
         job_params = self._get_oozie_job_params(hdfs_user,
                                                 path_to_workflow,
-                                                oozie_params)
+                                                oozie_params,
+                                                use_hbase_lib)
 
         client = self._get_client()
         oozie_job_id = client.add_job(x.create_hadoop_xml(job_params),
