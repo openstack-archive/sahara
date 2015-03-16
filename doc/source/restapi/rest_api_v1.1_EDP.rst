@@ -729,21 +729,21 @@ A Job may be run on an existing cluster or a new transient cluster may be create
 
 **Job ops**
 
-+-----------------+-------------------------------------------------------------------+-----------------------------------------------------+
-| Verb            | URI                                                               | Description                                         |
-+=================+===================================================================+=====================================================+
-| GET             | /v1.1/{tenant_id}/jobs                                            | Lists all created Jobs                              |
-+-----------------+-------------------------------------------------------------------+-----------------------------------------------------+
-| GET             | /v1.1/{tenant_id}/jobs/<job_id>                                   | Shows info about specified Job by id                |
-+-----------------+-------------------------------------------------------------------+-----------------------------------------------------+
-| POST            | /v1.1/{tenant_id}/jobs                                            | Create a new Job object                             |
-+-----------------+-------------------------------------------------------------------+-----------------------------------------------------+
-| DELETE          | /v1.1/{tenant_id}/jobs/<job_id>                                   | Removes specified Job                               |
-+-----------------+-------------------------------------------------------------------+-----------------------------------------------------+
-| GET             | /v1.1/{tenant_id}/jobs/config-hints/<job_type>                    | Shows default configuration by specified Job type   |
-+-----------------+-------------------------------------------------------------------+-----------------------------------------------------+
-| POST            | /v1.1/{tenant_id}/jobs/<job_id>/execute                           | Starts Job executing                                |
-+-----------------+-------------------------------------------------------------------+-----------------------------------------------------+
++-----------------+-------------------------------------------------------------------+--------------------------------------------------------+
+| Verb            | URI                                                               | Description                                            |
++=================+===================================================================+========================================================+
+| GET             | /v1.1/{tenant_id}/jobs                                            | Lists all created Jobs                                 |
++-----------------+-------------------------------------------------------------------+--------------------------------------------------------+
+| GET             | /v1.1/{tenant_id}/jobs/<job_id>                                   | Shows info about specified Job by id                   |
++-----------------+-------------------------------------------------------------------+--------------------------------------------------------+
+| POST            | /v1.1/{tenant_id}/jobs                                            | Create a new Job object                                |
++-----------------+-------------------------------------------------------------------+--------------------------------------------------------+
+| DELETE          | /v1.1/{tenant_id}/jobs/<job_id>                                   | Removes specified Job                                  |
++-----------------+-------------------------------------------------------------------+--------------------------------------------------------+
+| GET             | /v1.1/{tenant_id}/jobs/config-hints/<job_type>                    | Shows default configuration for Job type (deprecated)  |
++-----------------+-------------------------------------------------------------------+--------------------------------------------------------+
+| POST            | /v1.1/{tenant_id}/jobs/<job_id>/execute                           | Starts Job executing                                   |
++-----------------+-------------------------------------------------------------------+--------------------------------------------------------+
 
 **Examples**
 
@@ -995,6 +995,8 @@ Normal Response Code: 200 (OK)
 Errors: none
 
 This operation returns hints for configuration parameters which can be applied during job execution.
+
+(deprecated) For config-hints, the *job-types* endpoint should be used instead.
 
 This operation does not require a request body.
 
@@ -1587,3 +1589,420 @@ The following json response represents a Job Execution object returned from Saha
         "job_configs": {},
         "created_at": "2013-10-17 13:51:11.671977"
     }
+
+
+7 Job Types
+===========
+
+**Description**
+
+Each plugin that supports EDP will support specific job types.
+Different versions of a plugin may actually support different job types.
+Configuration options will vary by plugin, version, and job type.
+
+This endpoint provides information on which job types are supported by
+which plugins and optionally how they may be configured.
+
+**Job Binary Internal ops**
+
++-----------------+------------------------------------------------------+----------------------------------------------------------+
+| Verb            | URI                                                  | Description                                              |
++=================+======================================================+==========================================================+
+| GET             | /v1.1/{tenant_id}/job-types                          | Lists job types supported by all versions of all plugins |
++-----------------+------------------------------------------------------+----------------------------------------------------------+
+| GET             | /v1.1/{tenant_id}/job-types?plugin=<plugin_name>     | Filter results by plugin name                            |
++-----------------+------------------------------------------------------+----------------------------------------------------------+
+| GET             | /v1.1/{tenant_id}/job-types?version=<plugin_version> | Filter results by plugin version                         |
++-----------------+------------------------------------------------------+----------------------------------------------------------+
+| GET             | /v1.1/{tenant_id}/job-types?type=<job_type>          | Filter results by job type                               |
++-----------------+------------------------------------------------------+----------------------------------------------------------+
+| GET             | /v1.1/{tenant_id}/job-types?hints=true               | Include configuration hints in results                   |
++-----------------+------------------------------------------------------+----------------------------------------------------------+
+
+Note that multiple search filters may be combined in the query string with *&* (for example ?type=Java&type=Pig&plugin=vanilla).
+
+**Examples**
+
+7.1 List all Job Types
+----------------------
+
+.. http:get:: /v1.1/{tenant_id}/job-types
+
+Normal Response Code: 200 (OK)
+
+Errors: none
+
+For all job types show which versions of which plugins support them
+
+This operation does not require a request body.
+
+**Example**:
+    **request**
+
+    .. sourcecode:: http
+
+        GET http://sahara:8386/v1.1/775181/job-types
+
+    **response**
+
+    .. sourcecode:: http
+
+        HTTP/1.1 200 OK
+        Content-Type: application/json
+
+    .. sourcecode:: json
+
+        {
+            "job_types": [
+                {
+                    "name": "Hive",
+                    "plugins": [
+                        {
+                            "description": "The Apache Vanilla plugin.",
+                            "name": "vanilla",
+                            "title": "Vanilla Apache Hadoop",
+                            "versions": {
+                                "1.2.1": {}
+                            }
+                        },
+                        {
+                            "description": "The Hortonworks Sahara plugin.",
+                            "name": "hdp",
+                            "title": "Hortonworks Data Platform",
+                            "versions": {
+                                "1.3.2": {},
+                                "2.0.6": {}
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Java",
+                    "plugins": [
+                        {
+                            "description": "The Apache Vanilla plugin.",
+                            "name": "vanilla",
+                            "title": "Vanilla Apache Hadoop",
+                            "versions": {
+                                "1.2.1": {}
+                            }
+                        },
+                        {
+                            "description": "The Hortonworks Sahara plugin.",
+                            "name": "hdp",
+                            "title": "Hortonworks Data Platform",
+                            "versions": {
+                                "1.3.2": {},
+                                "2.0.6": {}
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "MapReduce",
+                    "plugins": [
+                        {
+                            "description": "The Apache Vanilla plugin.",
+                            "name": "vanilla",
+                            "title": "Vanilla Apache Hadoop",
+                            "versions": {
+                                "1.2.1": {}
+                            }
+                        },
+                        {
+                            "description": "The Hortonworks Sahara plugin.",
+                            "name": "hdp",
+                            "title": "Hortonworks Data Platform",
+                            "versions": {
+                                "1.3.2": {},
+                                "2.0.6": {}
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "MapReduce.Streaming",
+                    "plugins": [
+                        {
+                            "description": "The Apache Vanilla plugin.",
+                            "name": "vanilla",
+                            "title": "Vanilla Apache Hadoop",
+                            "versions": {
+                                "1.2.1": {}
+                            }
+                        },
+                        {
+                            "description": "The Hortonworks Sahara plugin.",
+                            "name": "hdp",
+                            "title": "Hortonworks Data Platform",
+                            "versions": {
+                                "1.3.2": {},
+                                "2.0.6": {}
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Pig",
+                    "plugins": [
+                        {
+                            "description": "The Apache Vanilla plugin.",
+                            "name": "vanilla",
+                            "title": "Vanilla Apache Hadoop",
+                            "versions": {
+                                "1.2.1": {}
+                            }
+                        },
+                        {
+                            "description": "The Hortonworks Sahara plugin.",
+                            "name": "hdp",
+                            "title": "Hortonworks Data Platform",
+                            "versions": {
+                                "1.3.2": {},
+                                "2.0.6": {}
+                            }
+                        }
+                    ]
+                }
+            ]
+        }
+
+7.2 List a subset of Job Types
+------------------------------
+
+.. http:get:: /v1.1/{tenant_id}/job-types?type=<job_type>&type=<job_type>
+
+Normal Response Code: 200 (OK)
+
+Errors: none
+
+For the specified job types show which versions of which plugins support them
+
+This operation does not require a request body.
+
+**Example**:
+    **request**
+
+    .. sourcecode:: http
+
+        GET http://sahara:8386/v1.1/775181/job-types?type=Hive&type=Java
+
+    **response**
+
+    .. sourcecode:: http
+
+        HTTP/1.1 200 OK
+        Content-Type: application/json
+
+    .. sourcecode:: json
+
+        {
+            "job_types": [
+                {
+                    "name": "Hive",
+                    "plugins": [
+                        {
+                            "description": "The Apache Vanilla plugin.",
+                            "name": "vanilla",
+                            "title": "Vanilla Apache Hadoop",
+                            "versions": {
+                                "1.2.1": {}
+                            }
+                        },
+                        {
+                            "description": "The Hortonworks Sahara plugin.",
+                            "name": "hdp",
+                            "title": "Hortonworks Data Platform",
+                            "versions": {
+                                "1.3.2": {},
+                                "2.0.6": {}
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Java",
+                    "plugins": [
+                        {
+                            "description": "The Apache Vanilla plugin.",
+                            "name": "vanilla",
+                            "title": "Vanilla Apache Hadoop",
+                            "versions": {
+                                "1.2.1": {}
+                            }
+                        },
+                        {
+                            "description": "The Hortonworks Sahara plugin.",
+                            "name": "hdp",
+                            "title": "Hortonworks Data Platform",
+                            "versions": {
+                                "1.3.2": {},
+                                "2.0.6": {}
+                            }
+                        }
+                    ]
+                }
+            ]
+        }
+
+7.3 List all Job Types supported by a plugin version
+----------------------------------------------------
+
+.. http:get:: /v1.1/{tenant_id}/job-types?plugin=<plugin_name>&version=<plugin_version>
+
+Normal Response Code: 200 (OK)
+
+Errors: none
+
+Show all of the job types that are supported by a specified version
+of a specified plugin
+
+This operation does not require a request body.
+
+**Example**:
+    **request**
+
+    .. sourcecode:: http
+
+        GET http://sahara:8386/v1.1/775181/job-types?plugin=hdp&version=2.0.6
+
+    **response**
+
+    .. sourcecode:: http
+
+        HTTP/1.1 200 OK
+        Content-Type: application/json
+
+    .. sourcecode:: json
+
+        {
+            "job_types": [
+                {
+                    "name": "Hive",
+                    "plugins": [
+                        {
+                            "description": "The Hortonworks Sahara plugin.",
+                            "name": "hdp",
+                            "title": "Hortonworks Data Platform",
+                            "versions": {
+                                "2.0.6": {}
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Java",
+                    "plugins": [
+                        {
+                            "description": "The Hortonworks Sahara plugin.",
+                            "name": "hdp",
+                            "title": "Hortonworks Data Platform",
+                            "versions": {
+                                "2.0.6": {}
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "MapReduce",
+                    "plugins": [
+                        {
+                            "description": "The Hortonworks Sahara plugin.",
+                            "name": "hdp",
+                            "title": "Hortonworks Data Platform",
+                            "versions": {
+                                "2.0.6": {}
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "MapReduce.Streaming",
+                    "plugins": [
+                        {
+                            "description": "The Hortonworks Sahara plugin.",
+                            "name": "hdp",
+                            "title": "Hortonworks Data Platform",
+                            "versions": {
+                                "2.0.6": {}
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Pig",
+                    "plugins": [
+                        {
+                            "description": "The Hortonworks Sahara plugin.",
+                            "name": "hdp",
+                            "title": "Hortonworks Data Platform",
+                            "versions": {
+                                "2.0.6": {}
+                            }
+                        }
+                    ]
+                }
+            ]
+        }
+
+7.4 Show configuration hints for a specific Job Type supported by a specific plugin version
+-------------------------------------------------------------------------------------------
+
+.. http:get:: /v1.1/{tenant_id}/job-types?hints=true&plugin=<plugin_name>&version=<plugin_version>&type=<job_type>
+
+Normal Response Code: 200 (OK)
+
+Errors: none
+
+Show the configuration hints for a single job type supported by a particular plugin version
+
+This operation does not require a request body.
+
+**Example**
+    **request**
+
+    .. sourcecode:: http
+
+        GET http://sahara/v1.1/775181/job-types?hints=true&plugin=hdp&version=1.3.2&type=Hive
+
+    **response**
+
+    .. sourcecode:: http
+
+        HTTP/1.1 200 OK
+        Content-Type: application/json
+
+    .. sourcecode:: json
+
+        {
+            "job_types": [
+                {
+                    "name": "Hive",
+                    "plugins": [
+                        {
+                            "description": "The Hortonworks Sahara plugin.",
+                            "name": "hdp",
+                            "title": "Hortonworks Data Platform",
+                            "versions": {
+                                "1.3.2": {
+                                    "job_config": {
+                                        "args": {},
+                                        "configs": [
+                                            {
+                                                "description": "Reduce tasks.",
+                                                "name": "mapred.reduce.tasks",
+                                                "value": "-1"
+                                            }
+                                        ],
+                                        "params": {}
+                                    }
+                                }
+                            }
+                        }
+                    ]
+                }
+            ]
+        }
+
+
+This is an abbreviated example that shows imaginary config hints.
