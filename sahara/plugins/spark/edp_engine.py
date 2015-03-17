@@ -19,10 +19,17 @@ from sahara.service.edp.spark import engine as edp_engine
 
 
 class EdpEngine(edp_engine.SparkJobEngine):
+
+    edp_base_version = "1.0.0"
+
+    @staticmethod
+    def edp_supported(version):
+        return version >= EdpEngine.edp_base_version
+
     def validate_job_execution(self, cluster, job, data):
-        if cluster.hadoop_version < "1.0.0":
+        if not self.edp_supported(cluster.hadoop_version):
             raise ex.InvalidDataException(
-                _('Spark 1.0.0 or higher required to run spark %s jobs')
-                % job.type)
+                _('Spark {base} or higher required to run {type} jobs').format(
+                    base=EdpEngine.edp_base_version, type=job.type))
 
         super(EdpEngine, self).validate_job_execution(cluster, job, data)
