@@ -1,0 +1,11 @@
+{
+    "plugin_name": "cdh",
+    "hadoop_version": "5.3.0",
+    "node_processes": [
+        "HDFS_DATANODE",
+        "YARN_NODEMANAGER"
+    ],
+    "name": "cdh-530-default-datanode",
+    "floating_ip_pool": "{floating_ip_pool}",
+    "flavor_id": "{flavor_id}"
+}

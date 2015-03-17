@@ -1,0 +1,12 @@
+{
+    "plugin_name": "cdh",
+    "hadoop_version": "5",
+    "node_processes": [
+        "HDFS_SECONDARYNAMENODE",
+        "OOZIE_SERVER",
+        "YARN_JOBHISTORY"
+    ],
+    "name": "cdh-5-default-secondary-namenode",
+    "floating_ip_pool": "{floating_ip_pool}",
+    "flavor_id": "{flavor_id}"
+}
