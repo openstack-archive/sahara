@@ -72,6 +72,19 @@ class VanillaProvider(p.ProvisioningPluginBase):
         return self._get_version_handler(
             cluster.hadoop_version).get_edp_engine(cluster, job_type)
 
+    def get_edp_job_types(self, versions=[]):
+        res = {}
+        for vers in self.version_factory.get_versions():
+            if not versions or vers in versions:
+                vh = self.version_factory.get_version_handler(vers)
+                res[vers] = vh.get_edp_job_types()
+        return res
+
+    def get_edp_config_hints(self, job_type, version):
+        version_handler = (
+            self.version_factory.get_version_handler(version))
+        return version_handler.get_edp_config_hints(job_type)
+
     def get_open_ports(self, node_group):
         return self._get_version_handler(
             node_group.cluster.hadoop_version).get_open_ports(node_group)
