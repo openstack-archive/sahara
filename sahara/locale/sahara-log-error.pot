@@ -6,9 +6,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: sahara 2015.1.dev131\n"
+"Project-Id-Version: sahara 2015.1.dev216\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2015-03-04 06:12+0000\n"
+"POT-Creation-Date: 2015-03-17 06:46+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,16 +16,6 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 1.3\n"
-
-#: sahara/db/sqlalchemy/api.py:177
-#, python-format
-msgid "Database registration exception: %s"
-msgstr ""
-
-#: sahara/db/sqlalchemy/api.py:187
-#, python-format
-msgid "Database shutdown exception: %s"
-msgstr ""
 
 #: sahara/openstack/common/loopingcall.py:95
 msgid "in fixed duration looping call"
@@ -50,92 +40,99 @@ msgstr ""
 msgid "No handler for matches of kind %s"
 msgstr ""
 
-#: sahara/plugins/cdh/client/resource.py:97
-#, python-format
-msgid "JSON decode error: %s"
+#: sahara/plugins/cdh/client/resource.py:96
+msgid "JSON decode error: {body}"
 msgstr ""
 
-#: sahara/plugins/hdp/versions/version_1_3_2/versionhandler.py:223
-#: sahara/plugins/hdp/versions/version_2_0_6/versionhandler.py:199
-#, python-format
-msgid "Create cluster command failed. %s"
+#: sahara/plugins/hdp/versions/version_1_3_2/versionhandler.py:228
+#: sahara/plugins/hdp/versions/version_2_0_6/versionhandler.py:204
+msgid "Create cluster command failed. {result}"
 msgstr ""
 
-#: sahara/plugins/hdp/versions/version_1_3_2/versionhandler.py:271
-#: sahara/plugins/hdp/versions/version_2_0_6/versionhandler.py:247
-msgid "Set configuration command failed. {0}"
+#: sahara/plugins/hdp/versions/version_1_3_2/versionhandler.py:277
+#: sahara/plugins/hdp/versions/version_2_0_6/versionhandler.py:253
+msgid "Set configuration command failed. {result}"
 msgstr ""
 
-#: sahara/plugins/hdp/versions/version_1_3_2/versionhandler.py:287
-#: sahara/plugins/hdp/versions/version_2_0_6/versionhandler.py:264
-msgid "Create service command failed. {0}"
+#: sahara/plugins/hdp/versions/version_1_3_2/versionhandler.py:293
+#: sahara/plugins/hdp/versions/version_2_0_6/versionhandler.py:270
+msgid "Create service command failed. {result}"
 msgstr ""
 
-#: sahara/plugins/hdp/versions/version_1_3_2/versionhandler.py:305
-#: sahara/plugins/hdp/versions/version_2_0_6/versionhandler.py:283
-msgid "Create component command failed. {0}"
+#: sahara/plugins/hdp/versions/version_1_3_2/versionhandler.py:311
+#: sahara/plugins/hdp/versions/version_2_0_6/versionhandler.py:289
+msgid "Create component command failed. {result}"
 msgstr ""
 
-#: sahara/plugins/hdp/versions/version_1_3_2/versionhandler.py:324
-#: sahara/plugins/hdp/versions/version_2_0_6/versionhandler.py:302
-msgid "Create host command failed. {0}"
+#: sahara/plugins/hdp/versions/version_1_3_2/versionhandler.py:330
+#: sahara/plugins/hdp/versions/version_2_0_6/versionhandler.py:308
+msgid "Create host command failed. {result}"
 msgstr ""
 
-#: sahara/plugins/hdp/versions/version_1_3_2/versionhandler.py:339
-#: sahara/plugins/hdp/versions/version_2_0_6/versionhandler.py:320
-#, python-format
-msgid "Create host_component command failed. %s"
+#: sahara/plugins/hdp/versions/version_1_3_2/versionhandler.py:346
+#: sahara/plugins/hdp/versions/version_2_0_6/versionhandler.py:327
+msgid "Create host_component command failed. {result}"
 msgstr ""
 
-#: sahara/plugins/hdp/versions/version_1_3_2/versionhandler.py:372
+#: sahara/plugins/hdp/versions/version_1_3_2/versionhandler.py:373
 #: sahara/plugins/hdp/versions/version_2_0_6/versionhandler.py:353
-msgid "Install command failed. {0}"
+msgid "Install command failed."
 msgstr ""
 
-#: sahara/plugins/hdp/versions/version_1_3_2/versionhandler.py:450
-#: sahara/plugins/hdp/versions/version_2_0_6/versionhandler.py:437
-#, python-format
-msgid "Start command failed. Status: %(status)s, response: %(response)s"
+#: sahara/plugins/hdp/versions/version_1_3_2/versionhandler.py:378
+#: sahara/plugins/hdp/versions/version_2_0_6/versionhandler.py:358
+msgid "Install command failed. {result}"
+msgstr ""
+
+#: sahara/plugins/hdp/versions/version_1_3_2/versionhandler.py:451
+#: sahara/plugins/hdp/versions/version_2_0_6/versionhandler.py:435
+msgid "Failed to start Hadoop cluster."
+msgstr ""
+
+#: sahara/plugins/hdp/versions/version_1_3_2/versionhandler.py:457
+#: sahara/plugins/hdp/versions/version_2_0_6/versionhandler.py:441
+msgid "Start command failed. Status: {status}, response: {response}"
 msgstr ""
 
 #: sahara/plugins/hdp/versions/version_1_3_2/versionhandler.py:477
-#: sahara/plugins/hdp/versions/version_2_0_6/versionhandler.py:464
-#, python-format
-msgid "Command failed. Status: %(status)s, response: %(response)s"
+#: sahara/plugins/hdp/versions/version_2_0_6/versionhandler.py:461
+msgid "Failed to change state of Hadoop components"
 msgstr ""
 
-#: sahara/plugins/hdp/versions/version_2_0_6/versionhandler.py:663
-#, python-format
-msgid "AmbariClient: error while making decommission post request. Error is = %s"
+#: sahara/plugins/hdp/versions/version_1_3_2/versionhandler.py:483
+#: sahara/plugins/hdp/versions/version_2_0_6/versionhandler.py:467
+msgid "Command failed. Status: {status}, response: {response}"
 msgstr ""
 
-#: sahara/plugins/hdp/versions/version_2_0_6/versionhandler.py:697
-#, python-format
-msgid "AmbariClient: error in making decommission status request, error = %s"
+#: sahara/plugins/hdp/versions/version_2_0_6/versionhandler.py:667
+msgid ""
+"AmbariClient: error while making decommission post request. Error is = "
+"{result}"
 msgstr ""
 
-#: sahara/plugins/hdp/versions/version_2_0_6/versionhandler.py:725
+#: sahara/plugins/hdp/versions/version_2_0_6/versionhandler.py:702
+msgid ""
+"AmbariClient: error in making decommission status request, error = "
+"{result}"
+msgstr ""
+
+#: sahara/plugins/hdp/versions/version_2_0_6/versionhandler.py:730
 msgid ""
 "AmbariClient: decommissioning process timed-out waiting for nodes to "
 "enter \"Decommissioned\" status."
 msgstr ""
 
-#: sahara/plugins/hdp/versions/version_2_0_6/versionhandler.py:962
-#: sahara/plugins/hdp/versions/version_2_0_6/versionhandler.py:974
-#, python-format
-msgid "Configuring HDFS HA failed. %s"
+#: sahara/plugins/hdp/versions/version_2_0_6/versionhandler.py:967
+#: sahara/plugins/hdp/versions/version_2_0_6/versionhandler.py:980
+#: sahara/plugins/hdp/versions/version_2_0_6/versionhandler.py:1015
+#: sahara/plugins/hdp/versions/version_2_0_6/versionhandler.py:1034
+#: sahara/plugins/hdp/versions/version_2_0_6/versionhandler.py:1053
+#: sahara/plugins/hdp/versions/version_2_0_6/versionhandler.py:1077
+msgid "Configuring HDFS HA failed. {result}"
 msgstr ""
 
-#: sahara/plugins/hdp/versions/version_2_0_6/versionhandler.py:1006
-#: sahara/plugins/hdp/versions/version_2_0_6/versionhandler.py:1024
-#: sahara/plugins/hdp/versions/version_2_0_6/versionhandler.py:1042
-#: sahara/plugins/hdp/versions/version_2_0_6/versionhandler.py:1065
-msgid "Configuring HDFS HA failed. {0}"
-msgstr ""
-
-#: sahara/service/direct_engine.py:531
-#, python-format
-msgid "Failed to delete security group %s"
+#: sahara/plugins/hdp/versions/version_2_0_6/versionhandler.py:1008
+msgid "HDFS-HA: Host component update failed: {host} {component}"
 msgstr ""
 
 #: sahara/service/ops.py:176
@@ -147,66 +144,77 @@ msgid "Error during rollback of cluster {name} (reason: {reason})"
 msgstr ""
 
 #: sahara/service/ops.py:336
-#, python-format
-msgid "Job execution %s can't be cancelled in time. Deleting it anyway."
+msgid "Job execution {j_id} can't be cancelled in time. Deleting it anyway."
 msgstr ""
 
-#: sahara/service/trusts.py:64
-#, python-format
-msgid "Unable to create trust (reason: %s)"
+#: sahara/service/trusts.py:65
+msgid "Unable to create trust (reason: {reason})"
 msgstr ""
 
-#: sahara/service/trusts.py:101
-#, python-format
-msgid "Unable to delete trust (reason: %s)"
+#: sahara/service/trusts.py:104
+msgid "Unable to delete trust (reason: {reason})"
 msgstr ""
 
-#: sahara/service/volumes.py:204
-#, python-format
-msgid "Error mounting volume to instance %s"
+#: sahara/service/volumes.py:215
+msgid "Error mounting volume to instance {id}"
 msgstr ""
 
-#: sahara/service/volumes.py:223
-#, python-format
-msgid "Can't detach volume %s"
+#: sahara/service/volumes.py:234
+msgid "Can't detach volume {id}"
 msgstr ""
 
-#: sahara/service/volumes.py:248
-#, python-format
-msgid "Can't delete volume %s"
+#: sahara/service/volumes.py:259
+msgid "Can't delete volume {volume}"
 msgstr ""
 
-#: sahara/service/edp/api.py:69
-msgid "Can't run job execution '{0}' (reasons: {1})"
+#: sahara/service/edp/api.py:132
+msgid "Can't run job execution {job} (reasons: {reason})"
 msgstr ""
 
-#: sahara/service/edp/job_manager.py:124
-#, python-format
-msgid "Can't run job execution '%(job)s' (reason: %(reason)s)"
+#: sahara/service/edp/job_manager.py:203
+msgid "Error during update job execution {job}: {error}"
 msgstr ""
 
-#: sahara/service/edp/job_manager.py:157
-#, python-format
-msgid "Error during cancel of job execution %(job)s: %(error)s"
+#: sahara/utils/api.py:205 sahara/utils/api.py:229
+msgid "Request aborted with status code {code} and message '{message}'"
 msgstr ""
 
-#: sahara/service/edp/job_manager.py:202
-#, python-format
-msgid "Error during update job execution %(job)s: %(error)s"
+#: sahara/utils/api.py:246
+msgid ""
+"Validation Error occurred: error_code={code}, error_message={message}, "
+"error_name={name}"
 msgstr ""
 
-#: sahara/utils/api.py:204 sahara/utils/api.py:228
-#, python-format
-msgid "Request aborted with status code %(code)s and message '%(message)s'"
+#: sahara/utils/api.py:258
+msgid ""
+"Access Denied: error_code={code}, error_message={message}, "
+"error_name={name}"
 msgstr ""
 
-#: sahara/utils/ssh_remote.py:317
-#, python-format
-msgid "Can't read file \"%s\""
+#: sahara/utils/api.py:270
+msgid ""
+"Not Found exception occurred: error_code={code}, error_message={message},"
+" error_name={name}"
 msgstr ""
 
-#: sahara/utils/ssh_remote.py:574
+#: sahara/utils/ssh_remote.py:320
+msgid "Can't read file {filename}"
+msgstr ""
+
+#: sahara/utils/ssh_remote.py:580
+msgid "Invalid keyword in proxy_command: {result}"
+msgstr ""
+
+#: sahara/utils/wsgi.py:342
+msgid "SIGTERM received"
+msgstr ""
+
+#: sahara/utils/wsgi.py:352
+msgid "SIGHUP received"
+msgstr ""
+
+#: sahara/utils/wsgi.py:380
 #, python-format
-msgid "Invalid keyword in proxy_command: %s"
+msgid "Removing dead child %s"
 msgstr ""
 
