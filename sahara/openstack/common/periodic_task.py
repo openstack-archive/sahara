@@ -16,7 +16,7 @@ import logging
 import random
 import time
 
-from oslo.config import cfg
+from oslo_config import cfg
 import six
 
 from sahara.openstack.common._i18n import _, _LE, _LI
@@ -38,7 +38,7 @@ DEFAULT_INTERVAL = 60.0
 
 
 def list_opts():
-    """Entry point for oslo.config-generator."""
+    """Entry point for oslo-config-generator."""
     return [(None, copy.deepcopy(periodic_opts))]
 
 
