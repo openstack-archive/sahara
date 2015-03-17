@@ -1143,15 +1143,13 @@ class HueService(Service):
                          .format(fqdn=instance.fqdn()))
 
             java_home = HueService._get_java_home(cluster_spec)
-
             if java_home:
-                cmd = 'JAVA_HOME={0} '.format(java_home)
-            else:
-                cmd = ''
+                r.replace_remote_string(
+                    '/etc/hadoop/conf/hadoop-env.sh',
+                    'export JAVA_HOME=.*',
+                    'export JAVA_HOME=%s' % java_home)
 
-            cmd += 'service hue start'
-
-            r.execute_command(cmd, run_as_root=True)
+            r.execute_command('service hue start', run_as_root=True)
 
             # start httpfs if HDFS HA is enabled
             r.execute_command('[ ! -f /tmp/hueini-hdfsha ] || '
