@@ -50,7 +50,7 @@ should use the corresponding tox env:
 ..
 
 For example, you want to run tests for the Vanilla plugin with the Hadoop
-version 2.4.1 and for the HDP plugin with the Hortonworks Data Platform version
+version 2.6.0 and for the HDP plugin with the Hortonworks Data Platform version
 1.3.2. In this case you should use the following tox env:
 
 .. sourcecode:: console
@@ -67,7 +67,7 @@ version 1.2.1. More info about transient cluster see in section ``Contents``.
 ``tox -e integration -- hdp`` will run tests for the HDP plugin.
 
 ``tox -e integration -- transient vanilla2 hdp`` will run test for transient
-cluster, tests for the Vanilla plugin with the Hadoop version 2.4.1 and tests
+cluster, tests for the Vanilla plugin with the Hadoop version 2.6.0 and tests
 for the HDP plugin with the Hortonworks Data Platform version 1.3.2.
 
 Contents
@@ -133,7 +133,7 @@ The Vanilla plugin with the Hadoop version 1.2.1 has the following checks:
 7. Cluster scaling.
 8. Transient cluster.
 
-The Vanilla plugin with the Hadoop version 2.4.1 has the following checks:
+The Vanilla plugin with the Hadoop version 2.6.0 has the following checks:
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 1. Proper cluster creation.

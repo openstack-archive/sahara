@@ -249,14 +249,14 @@ VANILLA_TWO_CONFIG_OPTS = [
                     'then image for cluster creation will be chosen by '
                     'tag "sahara_i_tests".'),
     cfg.StrOpt('HADOOP_VERSION',
-               default='2.4.1',
+               default='2.6.0',
                help='Version of Hadoop.'),
     cfg.StrOpt('HADOOP_USER',
                default='hadoop',
                help='Username which is used for access to Hadoop services.'),
     cfg.StrOpt('HADOOP_EXAMPLES_JAR_PATH',
                default='/opt/hadoop/share/hadoop/mapreduce/'
-                       'hadoop-mapreduce-examples-2.4.1.jar',
+                       'hadoop-mapreduce-examples-2.6.0.jar',
                help='Path to hadoop examples jar file.'),
     cfg.StrOpt('HADOOP_LOG_DIRECTORY',
                default='/mnt/yarn/logs/userlogs',
