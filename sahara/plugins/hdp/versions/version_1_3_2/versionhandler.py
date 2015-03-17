@@ -100,6 +100,9 @@ class VersionHandler(avm.AbstractVersionHandler):
             cluster_spec.create_operational_config(
                 cluster, user_inputs, scaled_groups)
 
+            cs.validate_number_of_datanodes(
+                cluster, scaled_groups, self.get_config_items())
+
         return cluster_spec
 
     def get_default_cluster_configuration(self):
