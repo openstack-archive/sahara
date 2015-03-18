@@ -49,8 +49,7 @@ class MinidomPatchesTest(testtools.TestCase):
         return doc.toprettyxml(indent="  ")
 
     def test_minidom_toprettyxml(self):
-        self.assertEqual(self._generate_n_prettify_xml(),
-                         """<?xml version="1.0" ?>
+        self.assertEqual("""<?xml version="1.0" ?>
 <?xml-smth type="text/smth" href="test.smth"?>
 <root>
   <element>
@@ -74,4 +73,4 @@ class MinidomPatchesTest(testtools.TestCase):
     <value>value-4</value>
   </element>
 </root>
-""")
+""", self._generate_n_prettify_xml())

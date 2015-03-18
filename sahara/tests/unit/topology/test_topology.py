@@ -114,7 +114,7 @@ class TopologyTestCase(base.SaharaTestCase):
         cluster.node_groups = [ng1, ng2]
 
         top = th.generate_topology_map(cluster, False)
-        self.assertEqual(top, {
+        self.assertEqual({
             "i1": "/r1",
             "1.1.1.1": "/r1",
             "0.0.1.1": "/r1",
@@ -125,10 +125,10 @@ class TopologyTestCase(base.SaharaTestCase):
             "1.1.1.3": "/r2",
             "0.0.1.3": "/r2",
             "s1": "/r1"
-        })
+        }, top)
 
         top = th.generate_topology_map(cluster, True)
-        self.assertEqual(top, {
+        self.assertEqual({
             "i1": "/r1/o1",
             "1.1.1.1": "/r1/o1",
             "0.0.1.1": "/r1/o1",
@@ -139,7 +139,7 @@ class TopologyTestCase(base.SaharaTestCase):
             "1.1.1.3": "/r2/o2",
             "0.0.1.3": "/r2/o2",
             "s1": "/r1"
-        })
+        }, top)
 
     def _read_swift_topology(self, content):
         temp_file = tempfile.NamedTemporaryFile()
@@ -153,17 +153,17 @@ class TopologyTestCase(base.SaharaTestCase):
 
     def test_read_swift_topology(self):
         topology = self._read_swift_topology("")
-        self.assertEqual(topology, {})
+        self.assertEqual({}, topology)
 
         topology = self._read_swift_topology(
             "192.168.1.1 /rack1\n192.168.1.2 /rack2")
         self.assertEqual(
-            topology, {"192.168.1.1": "/rack1", "192.168.1.2": "/rack2"})
+            {"192.168.1.1": "/rack1", "192.168.1.2": "/rack2"}, topology)
 
         topology = self._read_swift_topology(
             "192.168.1.1 /rack1\n192.168.1.2 /rack2\n\n")
         self.assertEqual(
-            topology, {"192.168.1.1": "/rack1", "192.168.1.2": "/rack2"})
+            {"192.168.1.1": "/rack1", "192.168.1.2": "/rack2"}, topology)
 
     def _read_compute_topology(self, content):
         temp_file = tempfile.NamedTemporaryFile()
@@ -177,12 +177,12 @@ class TopologyTestCase(base.SaharaTestCase):
 
     def test_read_compute_topology(self):
         topology = self._read_swift_topology("")
-        self.assertEqual(topology, {})
+        self.assertEqual({}, topology)
 
         topology = self._read_swift_topology(
             "192.168.1.1 /rack1\n192.168.1.2 /rack2")
-        self.assertEqual(len(topology), 2)
+        self.assertEqual(2, len(topology))
 
         topology = self._read_swift_topology(
             "192.168.1.1 /rack1\n192.168.1.2 /rack2\n\n")
-        self.assertEqual(len(topology), 2)
+        self.assertEqual(2, len(topology))

@@ -61,7 +61,7 @@ class ClusterProgressOpsTest(base.SaharaWithDbTestCase):
         result_cluster = self.api.cluster_get(ctx, cluster.id)
         result_step = result_cluster.provision_progress[0]
 
-        self.assertEqual(None, result_step.successful)
+        self.assertIsNone(result_step.successful)
 
         # check updating in case of successful provision step
 

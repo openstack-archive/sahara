@@ -26,7 +26,7 @@ from sahara.utils import ssh_remote
 class TestEscapeQuotes(testtools.TestCase):
     def test_escape_quotes(self):
         s = ssh_remote._escape_quotes('echo "\\"Hello, world!\\""')
-        self.assertEqual(s, r'echo \"\\\"Hello, world!\\\"\"')
+        self.assertEqual(r'echo \"\\\"Hello, world!\\\"\"', s)
 
 
 class FakeCluster(object):

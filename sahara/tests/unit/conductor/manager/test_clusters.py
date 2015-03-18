@@ -73,12 +73,12 @@ class ClusterTest(test_base.ConductorManagerTestCase):
         self.assertIsInstance(cluster_db_obj, dict)
 
         lst = self.api.cluster_get_all(ctx)
-        self.assertEqual(len(lst), 1)
+        self.assertEqual(1, len(lst))
         cl_id = lst[0]["id"]
 
         self.api.cluster_destroy(ctx, cl_id)
         lst = self.api.cluster_get_all(ctx)
-        self.assertEqual(len(lst), 0)
+        self.assertEqual(0, len(lst))
 
         with testtools.ExpectedException(ex.NotFoundException):
             self.api.cluster_destroy(ctx, cl_id)
@@ -106,9 +106,9 @@ class ClusterTest(test_base.ConductorManagerTestCase):
             ng.pop("created_at")
             ng.pop("updated_at")
             ng.pop("id")
-            self.assertEqual(ng.pop("cluster_id"), cl_db_obj["id"])
+            self.assertEqual(cl_db_obj["id"], ng.pop("cluster_id"))
             ng.pop("image_id")
-            self.assertEqual(ng.pop("instances"), [])
+            self.assertEqual([], ng.pop("instances"))
             ng.pop("node_configs")
             ng.pop("node_group_template_id")
             ng.pop("volume_mount_prefix")
@@ -139,7 +139,7 @@ class ClusterTest(test_base.ConductorManagerTestCase):
             self.assertEqual(val, cl_db_obj.get(key),
                              "Key not found %s" % key)
 
-        self.assertEqual(cl_db_obj["node_groups"], [])
+        self.assertEqual([], cl_db_obj["node_groups"])
 
     def test_cluster_update_status(self):
         ctx = context.ctx()
@@ -148,7 +148,7 @@ class ClusterTest(test_base.ConductorManagerTestCase):
 
         updated_cl = self.api.cluster_update(ctx, _id, {"status": "Active"})
         self.assertIsInstance(updated_cl, dict)
-        self.assertEqual(updated_cl["status"], "Active")
+        self.assertEqual("Active", updated_cl["status"])
 
         get_cl_obj = self.api.cluster_get(ctx, _id)
         self.assertEqual(updated_cl, get_cl_obj)
@@ -186,7 +186,7 @@ class ClusterTest(test_base.ConductorManagerTestCase):
         cluster_db_obj = self.api.cluster_create(ctx, SAMPLE_CLUSTER)
         _id = cluster_db_obj["id"]
 
-        self.assertEqual(len(cluster_db_obj["node_groups"]), 2)
+        self.assertEqual(2, len(cluster_db_obj["node_groups"]))
         ng_id = cluster_db_obj["node_groups"][-1]["id"]
 
         self.api.node_group_update(ctx, ng_id, {"image_id": "test_image"})
@@ -200,7 +200,7 @@ class ClusterTest(test_base.ConductorManagerTestCase):
             if ng["id"] != ng_id:
                 continue
 
-            self.assertEqual(ng["image_id"], "test_image")
+            self.assertEqual("test_image", ng["image_id"])
 
     def test_delete_node_group(self):
         ctx = context.ctx()
@@ -298,18 +298,18 @@ class ClusterTest(test_base.ConductorManagerTestCase):
         self.api.cluster_create(ctx, SAMPLE_CLUSTER)
 
         lst = self.api.cluster_get_all(ctx)
-        self.assertEqual(len(lst), 1)
+        self.assertEqual(1, len(lst))
 
         kwargs = {'name': SAMPLE_CLUSTER['name'],
                   'plugin_name': SAMPLE_CLUSTER['plugin_name']}
         lst = self.api.cluster_get_all(ctx, **kwargs)
-        self.assertEqual(len(lst), 1)
+        self.assertEqual(1, len(lst))
 
         # Valid field but no matching value
         kwargs = {'name': SAMPLE_CLUSTER['name']+'foo'}
         lst = self.api.cluster_get_all(ctx, **kwargs)
-        self.assertEqual(len(lst), 0)
+        self.assertEqual(0, len(lst))
 
         # Invalid field
         lst = self.api.cluster_get_all(ctx, **{'badfield': 'somevalue'})
-        self.assertEqual(len(lst), 0)
+        self.assertEqual(0, len(lst))

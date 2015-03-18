@@ -52,7 +52,7 @@ class SaharaMigrationsCheckers(object):
 
     def assertColumnCount(self, engine, table, columns):
         t = db_utils.get_table(engine, table)
-        self.assertEqual(len(t.columns), len(columns))
+        self.assertEqual(len(columns), len(t.columns))
 
     def assertColumnNotExists(self, engine, table, column):
         t = db_utils.get_table(engine, table)
