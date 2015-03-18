@@ -360,8 +360,8 @@ class TestJobManager(base.SaharaWithDbTestCase):
 
         doc = xml.parseString(res)
         hive = doc.getElementsByTagName('hive')[0]
-        self.assertEqual(xmlutils.get_text_from_node(hive, 'job-xml'),
-                         '/user/hadoop/conf/hive-site.xml')
+        self.assertEqual('/user/hadoop/conf/hive-site.xml',
+                         xmlutils.get_text_from_node(hive, 'job-xml'))
 
         configuration = hive.getElementsByTagName('configuration')
         properties = xmlutils.get_property_dict(configuration[0])
@@ -369,8 +369,8 @@ class TestJobManager(base.SaharaWithDbTestCase):
                           'fs.swift.service.sahara.username': 'admin'},
                          properties)
 
-        self.assertEqual(xmlutils.get_text_from_node(hive, 'script'),
-                         'script.q')
+        self.assertEqual('script.q',
+                         xmlutils.get_text_from_node(hive, 'script'))
 
         params = xmlutils.get_param_dict(hive)
         self.assertEqual({'INPUT': 'swift://ex.sahara/i',
@@ -425,25 +425,24 @@ class TestJobManager(base.SaharaWithDbTestCase):
 
         orig_exec_job_dict = copy.deepcopy(exec_job_dict)
         w.update_job_dict(job_dict, exec_job_dict)
-        self.assertEqual(job_dict,
-                         {'edp_configs': edp_configs,
+        self.assertEqual({'edp_configs': edp_configs,
                           'configs': {'default1': 'value1',
                                       'default2': 'changed'},
                           'params': {'param1': 'changed',
                                      'param2': 'value2'},
-                          'args': ['replaced']})
+                          'args': ['replaced']}, job_dict)
 
         self.assertEqual(orig_exec_job_dict, exec_job_dict)
 
     def test_inject_swift_url_suffix(self):
-        self.assertEqual(su.inject_swift_url_suffix("swift://ex/o"),
-                         "swift://ex.sahara/o")
-        self.assertEqual(su.inject_swift_url_suffix("swift://ex.sahara/o"),
-                         "swift://ex.sahara/o")
-        self.assertEqual(su.inject_swift_url_suffix("hdfs://my/path"),
-                         "hdfs://my/path")
-        self.assertEqual(su.inject_swift_url_suffix(12345), 12345)
-        self.assertEqual(su.inject_swift_url_suffix(['test']), ['test'])
+        self.assertEqual("swift://ex.sahara/o",
+                         su.inject_swift_url_suffix("swift://ex/o"))
+        self.assertEqual("swift://ex.sahara/o",
+                         su.inject_swift_url_suffix("swift://ex.sahara/o"))
+        self.assertEqual("hdfs://my/path",
+                         su.inject_swift_url_suffix("hdfs://my/path"))
+        self.assertEqual(12345, su.inject_swift_url_suffix(12345))
+        self.assertEqual(['test'], su.inject_swift_url_suffix(['test']))
 
     @mock.patch('sahara.conductor.API.job_execution_update')
     @mock.patch('sahara.service.edp.job_manager._run_job')
@@ -519,5 +518,5 @@ class TestJobManager(base.SaharaWithDbTestCase):
         input_source, output_source = (
             job_utils.get_data_sources(job_exec, job))
 
-        self.assertEqual(None, input_source)
-        self.assertEqual(None, output_source)
+        self.assertIsNone(input_source)
+        self.assertIsNone(output_source)

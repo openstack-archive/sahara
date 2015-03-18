@@ -47,7 +47,7 @@ class TestPeriodicBack(base.SaharaWithDbTestCase):
                                     "id": 3},
                                    job, ds, ds)
         p._make_periodic_tasks().update_job_statuses(None)
-        self.assertEqual(get_job_status.call_count, 2)
+        self.assertEqual(2, get_job_status.call_count)
         get_job_status.assert_has_calls([mock.call(u'2'),
                                          mock.call(u'3')])
 
@@ -79,7 +79,7 @@ class TestPeriodicBack(base.SaharaWithDbTestCase):
         timeutils.set_time_override(datetime.datetime(2005, 2, 1, 0, 1))
 
         p._make_periodic_tasks().terminate_unneeded_transient_clusters(None)
-        self.assertEqual(terminate_cluster.call_count, 1)
+        self.assertEqual(1, terminate_cluster.call_count)
         terminate_cluster.assert_has_calls([mock.call(u'1')])
 
     @mock.patch('sahara.service.ops.terminate_cluster')
@@ -92,7 +92,7 @@ class TestPeriodicBack(base.SaharaWithDbTestCase):
         timeutils.set_time_override(datetime.datetime(2005, 2, 1, second=20))
 
         p._make_periodic_tasks().terminate_unneeded_transient_clusters(None)
-        self.assertEqual(terminate_cluster.call_count, 0)
+        self.assertEqual(0, terminate_cluster.call_count)
 
     @mock.patch('sahara.service.ops.terminate_cluster')
     def test_transient_cluster_killed_in_time(self, terminate_cluster):
@@ -104,7 +104,7 @@ class TestPeriodicBack(base.SaharaWithDbTestCase):
         timeutils.set_time_override(datetime.datetime(2005, 2, 1, second=40))
 
         p._make_periodic_tasks().terminate_unneeded_transient_clusters(None)
-        self.assertEqual(terminate_cluster.call_count, 1)
+        self.assertEqual(1, terminate_cluster.call_count)
         terminate_cluster.assert_has_calls([mock.call(u'1')])
 
     @mock.patch('sahara.service.ops.terminate_cluster')
@@ -120,7 +120,7 @@ class TestPeriodicBack(base.SaharaWithDbTestCase):
             2005, 2, 1, minute=59, second=50))
 
         p._make_periodic_tasks().terminate_incomplete_clusters(None)
-        self.assertEqual(terminate_cluster.call_count, 0)
+        self.assertEqual(0, terminate_cluster.call_count)
 
     @mock.patch('sahara.service.ops.terminate_cluster')
     def test_incomplete_cluster_killed_in_time(self, terminate_cluster):
@@ -134,7 +134,7 @@ class TestPeriodicBack(base.SaharaWithDbTestCase):
             2005, 2, 1, hour=1, second=10))
 
         p._make_periodic_tasks().terminate_incomplete_clusters(None)
-        self.assertEqual(terminate_cluster.call_count, 1)
+        self.assertEqual(1, terminate_cluster.call_count)
         terminate_cluster.assert_has_calls([mock.call(u'1')])
 
     @mock.patch('sahara.service.ops.terminate_cluster')
@@ -150,7 +150,7 @@ class TestPeriodicBack(base.SaharaWithDbTestCase):
             2005, 2, 1, hour=1, second=10))
 
         p._make_periodic_tasks().terminate_incomplete_clusters(None)
-        self.assertEqual(terminate_cluster.call_count, 0)
+        self.assertEqual(0, terminate_cluster.call_count)
 
     def _make_cluster(self, id_name, status='Active'):
         ctx = context.ctx()

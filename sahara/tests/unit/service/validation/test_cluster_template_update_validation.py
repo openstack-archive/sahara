@@ -45,12 +45,12 @@ class TestClusterTemplateUpdateValidation(u.ValidationTestCase):
         update = copy.copy(ct_schema.CLUSTER_TEMPLATE_UPDATE_SCHEMA)
 
         # No required items for update
-        self.assertEqual(update["required"], [])
+        self.assertEqual([], update["required"])
 
         # Other than required, schemas are equal
         del update["required"]
         del create["required"]
-        self.assertEqual(update, create)
+        self.assertEqual(create, update)
 
     def test_cluster_template_update(self):
         self._assert_create_object_validation(

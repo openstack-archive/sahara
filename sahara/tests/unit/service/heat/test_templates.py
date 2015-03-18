@@ -26,18 +26,18 @@ from sahara.utils import files as f
 class TestHeat(testtools.TestCase):
     def test_gets(self):
         inst_name = "cluster-worker-001"
-        self.assertEqual(h._get_inst_name("cluster", "worker", 0), inst_name)
-        self.assertEqual(h._get_inst_name("CLUSTER", "WORKER", 0), inst_name)
-        self.assertEqual(h._get_port_name(inst_name),
-                         "cluster-worker-001-port")
-        self.assertEqual(h._get_floating_name(inst_name),
-                         "cluster-worker-001-floating")
-        self.assertEqual(h._get_floating_assoc_name(inst_name),
-                         "cluster-worker-001-floating-assoc")
-        self.assertEqual(h._get_volume_name(inst_name, 1),
-                         "cluster-worker-001-volume-1")
-        self.assertEqual(h._get_volume_attach_name(inst_name, 1),
-                         "cluster-worker-001-volume-attachment-1")
+        self.assertEqual(inst_name, h._get_inst_name("cluster", "worker", 0))
+        self.assertEqual(inst_name, h._get_inst_name("CLUSTER", "WORKER", 0))
+        self.assertEqual("cluster-worker-001-port",
+                         h._get_port_name(inst_name))
+        self.assertEqual("cluster-worker-001-floating",
+                         h._get_floating_name(inst_name))
+        self.assertEqual("cluster-worker-001-floating-assoc",
+                         h._get_floating_assoc_name(inst_name))
+        self.assertEqual("cluster-worker-001-volume-1",
+                         h._get_volume_name(inst_name, 1))
+        self.assertEqual("cluster-worker-001-volume-attachment-1",
+                         h._get_volume_attach_name(inst_name, 1))
 
 
 class TestClusterTemplate(base.SaharaWithDbTestCase):

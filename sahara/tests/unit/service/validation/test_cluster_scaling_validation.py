@@ -180,7 +180,7 @@ class TestScalingValidation(u.ValidationTestCase):
                    self._create_object_fun)(m_func)(data=data,
                                                     cluster_id='42')
 
-        self.assertEqual(req_data.call_count, 1)
+        self.assertEqual(1, req_data.call_count)
         self._assert_calls(bad_req, bad_req_i)
 
     @mock.patch("sahara.service.api.OPS")

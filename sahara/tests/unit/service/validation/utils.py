@@ -300,7 +300,7 @@ class ValidationTestCase(base.SaharaTestCase):
         m_func.__name__ = "m_func"
         v.validate(self.scheme, self._create_object_fun)(m_func)(data=data)
 
-        self.assertEqual(request_data.call_count, 1)
+        self.assertEqual(1, request_data.call_count)
         self._assert_calls(bad_req, bad_req_i)
         stop_patch(patchers)
 
