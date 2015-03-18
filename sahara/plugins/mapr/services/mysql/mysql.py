@@ -21,6 +21,7 @@ import six
 import sahara.plugins.mapr.domain.configuration_file as cf
 import sahara.plugins.mapr.domain.service as s
 import sahara.plugins.mapr.services.hive.hive as hive
+from sahara.plugins.mapr.services.spark import spark
 import sahara.plugins.mapr.util.general as g
 import sahara.utils.files as f
 
@@ -170,7 +171,7 @@ class MySQL(s.Service):
 
     @staticmethod
     def get_db_instance(context):
-        return context.oozie_server
+        return context.oozie_server or context.get_instance(spark.SPARK_MASTER)
 
     @staticmethod
     def create_databases(cluster_context, instances):

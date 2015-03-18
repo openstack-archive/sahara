@@ -15,6 +15,7 @@
 
 import abc
 import os
+import re
 
 import jinja2 as j2
 import six
@@ -130,3 +131,37 @@ class TemplateFile(BaseConfigurationFile):
 
     def parse(self, content):
         self._template = j2.Template(content)
+
+
+class EnvironmentConfig(BaseConfigurationFile):
+    def __init__(self, file_name):
+        super(EnvironmentConfig, self).__init__(file_name)
+        self._lines = []
+        self._regex = re.compile(r'export\s+(\w+)=(.+)')
+        self._tmpl = 'export %s="%s"'
+
+    def parse(self, content):
+        for line in content.splitlines():
+            line = line.strip().decode("utf-8")
+            match = self._regex.match(line)
+            if match:
+                name, value = match.groups()
+                value = value.replace("\"", '')
+                self._lines.append((name, value))
+                self.add_property(name, value)
+            else:
+                self._lines.append(line)
+
+    def render(self):
+        result = []
+        for line in self._lines:
+            if isinstance(line, tuple):
+                name, value = line
+                args = (name, self._config_dict.get(name) or value)
+                result.append(self._tmpl % args)
+                if name in self._config_dict:
+                    del self._config_dict[name]
+            else:
+                result.append(line)
+        extra_ops = [self._tmpl % i for i in six.iteritems(self._config_dict)]
+        return '\n'.join(result + extra_ops) + '\n'

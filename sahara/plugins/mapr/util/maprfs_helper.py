@@ -18,6 +18,9 @@ import uuid
 
 import six
 
+import sahara.plugins.mapr.util.general as g
+
+
 MV_TO_MAPRFS_CMD = ('sudo -u %(user)s'
                     ' hadoop fs -copyFromLocal %(source)s %(target)s'
                     ' && sudo rm -f %(source)s')
@@ -45,3 +48,15 @@ def create_maprfs4_dir(remote, dir_name, hdfs_user):
 def create_maprfs3_dir(remote, dir_name, hdfs_user):
     remote.execute_command(MKDIR_CMD_MAPR3 % {'user': hdfs_user,
                                               'path': dir_name})
+
+
+def mkdir(remote, path, recursive=True, run_as=None):
+    command = 'hadoop fs -mkdir %(recursive)s %(path)s'
+    args = {'recursive': '-p' if recursive else '', 'path': path}
+    remote.execute_command(g._run_as(run_as, command % args))
+
+
+def chmod(remote, path, mode, recursive=True, run_as=None):
+    command = 'hadoop fs -chmod %(recursive)s %(mode)s %(path)s'
+    args = {'recursive': '-R' if recursive else '', 'path': path, 'mode': mode}
+    remote.execute_command(g._run_as(run_as, command % args))
