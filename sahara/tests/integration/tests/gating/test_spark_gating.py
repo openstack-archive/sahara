@@ -127,12 +127,27 @@ class SparkGatingTest(swift.SwiftTest, scaling.ScalingTest,
 
     @b.errormsg("Failure while cluster scaling: ")
     def _check_scaling(self):
-        pass
+        change_list = [
+            {
+                'operation': 'resize',
+                'info': ['worker-node', 2]
+            },
+            {
+                'operation': 'add',
+                'info': [
+                    'new-worker-node', 1, '%s' % self.ng_tmpl_s_dn_id
+                ]
+            }
+        ]
+
+        self.cluster_info = self.cluster_scaling(self.cluster_info,
+                                                 change_list)
+        self.await_active_workers_for_namenode(self.cluster_info['node_info'],
+                                               self.plugin_config)
 
     @b.errormsg("Failure while EDP testing after cluster scaling: ")
     def _check_edp_after_scaling(self):
-        # Leave this blank until scaling is implemented
-        pass
+        self._check_edp()
 
     @testcase.attr('spark')
     @testcase.skipIf(config.SKIP_ALL_TESTS_FOR_PLUGIN,
