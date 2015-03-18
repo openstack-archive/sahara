@@ -93,3 +93,14 @@ class FakePluginProvider(p.ProvisioningPluginBase):
 
     def get_edp_engine(self, cluster, job_type):
         return edp_engine.FakeJobEngine()
+
+    def get_edp_job_types(self, versions=[]):
+        res = {}
+        for vers in self.get_versions():
+            if not versions or vers in versions:
+                res[vers] = edp_engine.FakeJobEngine.get_supported_job_types()
+        return res
+
+    def get_edp_config_hints(self, job_type, version):
+        if version in self.get_versions():
+            return edp_engine.FakeJobEngine.get_possible_job_config(job_type)
