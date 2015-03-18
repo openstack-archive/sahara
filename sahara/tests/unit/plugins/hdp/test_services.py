@@ -211,8 +211,8 @@ class ServicesTest(base.SaharaTestCase):
                 return_value=[instance_mock])
             url_info = {}
             url_info = service.register_service_urls(cluster_spec, url_info)
-            self.assertEqual(url_info['JobFlow']['Oozie'],
-                             'http://127.0.0.1:21000')
+            self.assertEqual('http://127.0.0.1:21000',
+                             url_info['JobFlow']['Oozie'])
 
     def test_create_ganglia_service(self):
         for version in versions:

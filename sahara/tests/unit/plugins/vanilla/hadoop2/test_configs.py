@@ -30,7 +30,7 @@ class VanillaTwoConfigTestCase(base.SaharaTestCase):
             'hadoop_secure_dn_log_dir': '/vol1/hadoop/logs/secure',
             'yarn_log_dir': '/vol1/yarn/logs'
         }
-        self.assertEqual(dirs, expected)
+        self.assertEqual(expected, dirs)
 
     def test_merge_configs(self):
         a = {
@@ -60,7 +60,7 @@ class VanillaTwoConfigTestCase(base.SaharaTestCase):
                 'param5': 'value5'
             }
         }
-        self.assertEqual(res, expected)
+        self.assertEqual(expected, res)
 
 
 class FakeNG(object):
