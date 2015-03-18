@@ -43,8 +43,7 @@ class Sqoop2(s.Service):
         self._version = '2.0.0'
         self._node_processes = [SQOOP_2_CLIENT, SQOOP_2_SERVER]
         self._validation_rules = [
-            vu.at_least(1, SQOOP_2_CLIENT),
-            vu.at_least(1, SQOOP_2_SERVER),
+            vu.exactly(1, SQOOP_2_SERVER),
         ]
 
     def post_install(self, context, instances):

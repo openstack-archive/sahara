@@ -88,6 +88,9 @@ class ImpalaV123(Impala):
         self._validation_rules = [
             vu.depends_on(hive.HiveV012(), self),
             vu.on_same_node(IMPALA_CATALOG, hive.HIVE_SERVER_2),
+            vu.exactly(1, IMPALA_STATE_STORE),
+            vu.exactly(1, IMPALA_CATALOG),
+            vu.at_least(1, IMPALA_SERVER),
         ]
 
     def _get_impala_env_props(self, context):
@@ -110,6 +113,9 @@ class ImpalaV141(Impala):
         self._validation_rules = [
             vu.depends_on(hive.HiveV013(), self),
             vu.on_same_node(IMPALA_CATALOG, hive.HIVE_SERVER_2),
+            vu.exactly(1, IMPALA_STATE_STORE),
+            vu.exactly(1, IMPALA_CATALOG),
+            vu.at_least(1, IMPALA_SERVER),
         ]
 
     def _get_impala_env_props(self, context):

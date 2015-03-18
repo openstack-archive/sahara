@@ -38,7 +38,7 @@ class HttpFS(s.Service):
         self._version = '1.0'
         self._node_processes = [HTTP_FS]
         self._cluster_defaults = ['httpfs-default.json']
-        self._validation_rules = [vu.at_least(1, HTTP_FS)]
+        self._validation_rules = [vu.exactly(1, HTTP_FS)]
 
     def post_install(self, cluster_context, instances):
         instance = cluster_context.get_instance(HTTP_FS)

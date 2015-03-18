@@ -46,8 +46,8 @@ class Hive(s.Service):
         self._ui_name = 'Hive'
         self._node_processes = [HIVE_METASTORE, HIVE_SERVER_2]
         self._validation_rules = [
-            vu.at_least(1, HIVE_METASTORE),
-            vu.at_least(1, HIVE_SERVER_2),
+            vu.exactly(1, HIVE_METASTORE),
+            vu.exactly(1, HIVE_SERVER_2),
         ]
 
     # hive-site.xml
