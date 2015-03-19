@@ -196,8 +196,16 @@ def _get_info_from_cluster(arg):
     return None
 
 
+def _get_event_info(arg):
+    try:
+        return arg.get_event_info()
+    except AttributeError:
+        return None
+
+
 def _get_info_from_obj(arg):
-    functions = [_get_info_from_instance, _get_info_from_cluster]
+    functions = [_get_info_from_instance, _get_info_from_cluster,
+                 _get_event_info]
 
     for func in functions:
         value = func(arg)
