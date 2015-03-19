@@ -206,6 +206,7 @@ def ops_error_handler(description):
 
 
 def _rollback_cluster(cluster, reason):
+    context.set_step_type(_("Engine: rollback cluster"))
     return INFRA.rollback_cluster(cluster, reason)
 
 
@@ -250,14 +251,17 @@ def _provision_cluster(cluster_id):
 
     # creating instances and configuring them
     cluster = conductor.cluster_get(ctx, cluster_id)
+    context.set_step_type(_("Engine: create cluster"))
     INFRA.create_cluster(cluster)
 
     # configure cluster
     cluster = g.change_cluster_status(cluster, "Configuring")
+    context.set_step_type(_("Plugin: configure cluster"))
     plugin.configure_cluster(cluster)
 
     # starting prepared and configured cluster
     cluster = g.change_cluster_status(cluster, "Starting")
+    context.set_step_type(_("Plugin: start cluster"))
     plugin.start_cluster(cluster)
 
     # cluster is now up and ready
@@ -285,17 +289,19 @@ def _provision_scaled_cluster(cluster_id, node_group_id_map):
                                                         node_group.count]
 
     if instances_to_delete:
+        context.set_step_type(_("Plugin: decommission cluster"))
         plugin.decommission_nodes(cluster, instances_to_delete)
 
     # Scaling infrastructure
     cluster = g.change_cluster_status(cluster, "Scaling")
-
+    context.set_step_type(_("Engine: scale cluster"))
     instance_ids = INFRA.scale_cluster(cluster, node_group_id_map)
 
     # Setting up new nodes with the plugin
     if instance_ids:
         cluster = g.change_cluster_status(cluster, "Configuring")
         instances = g.get_instances(cluster, instance_ids)
+        context.set_step_type(_("Plugin: scale cluster"))
         plugin.scale_cluster(cluster, instances)
 
     g.change_cluster_status(cluster, "Active")
@@ -308,8 +314,10 @@ def terminate_cluster(cluster_id):
     cluster = conductor.cluster_get(ctx, cluster_id)
     plugin = plugin_base.PLUGINS.get_plugin(cluster.plugin_name)
 
+    context.set_step_type(_("Plugin: shutdown cluster"))
     plugin.on_terminate_cluster(cluster)
 
+    context.set_step_type(_("Engine: shutdown cluster"))
     INFRA.shutdown_cluster(cluster)
 
     if CONF.use_identity_api_v3:

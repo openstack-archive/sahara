@@ -274,16 +274,23 @@ def sleep(seconds=0):
 
 class InstanceInfo(object):
     def __init__(self, cluster_id=None, instance_id=None, instance_name=None,
-                 node_group_id=None):
+                 node_group_id=None, step_type=None):
         self.cluster_id = cluster_id
         self.instance_id = instance_id
         self.instance_name = instance_name
         self.node_group_id = node_group_id
+        self.step_type = step_type
+
+
+def set_step_type(step_type):
+    current().current_instance_info.step_type = step_type
 
 
 class InstanceInfoManager(object):
     def __init__(self, instance_info):
         self.prev_instance_info = current().current_instance_info
+        if not instance_info.step_type:
+            instance_info.step_type = self.prev_instance_info.step_type
         current().current_instance_info = instance_info
 
     def __enter__(self):
