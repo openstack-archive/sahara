@@ -39,6 +39,9 @@ CONF.register_opts(event_log_opts)
 
 
 def add_successful_event(instance):
+    if CONF.disable_event_log:
+        return
+
     cluster_id = instance.cluster_id
     step_id = get_current_provisioning_step(cluster_id)
     if step_id:
@@ -49,10 +52,12 @@ def add_successful_event(instance):
             'instance_name': instance.instance_name,
             'event_info': None,
         })
-        update_provisioning_steps(cluster_id)
 
 
 def add_fail_event(instance, exception):
+    if CONF.disable_event_log:
+        return
+
     cluster_id = instance.cluster_id
     step_id = get_current_provisioning_step(cluster_id)
     event_info = six.text_type(exception)
@@ -65,16 +70,18 @@ def add_fail_event(instance, exception):
             'instance_name': instance.instance_name,
             'event_info': event_info,
         })
-        update_provisioning_steps(cluster_id)
 
 
 def add_provisioning_step(cluster_id, step_name, total):
     if CONF.disable_event_log or not g.check_cluster_exists(cluster_id):
         return
 
-    update_provisioning_steps(cluster_id)
+    prev_step = get_current_provisioning_step(cluster_id)
+    if prev_step:
+        conductor.cluster_provision_step_update(context.ctx(), prev_step)
+
     step_type = context.ctx().current_instance_info.step_type
-    return conductor.cluster_provision_step_add(
+    new_step = conductor.cluster_provision_step_add(
         context.ctx(), cluster_id, {
             'step_name': step_name,
             'step_type': step_type,
@@ -82,64 +89,15 @@ def add_provisioning_step(cluster_id, step_name, total):
             'total': total,
             'started_at': timeutils.utcnow(),
         })
+    context.current().current_instance_info.step_id = new_step
+    return new_step
 
 
 def get_current_provisioning_step(cluster_id):
     if CONF.disable_event_log or not g.check_cluster_exists(cluster_id):
         return None
-
-    update_provisioning_steps(cluster_id)
-    ctx = context.ctx()
-    cluster = conductor.cluster_get(ctx, cluster_id)
-    for step in cluster.provision_progress:
-        if step.successful is not None:
-            continue
-
-        return step.id
-
-    return None
-
-
-def update_provisioning_steps(cluster_id):
-    if CONF.disable_event_log or not g.check_cluster_exists(cluster_id):
-        return
-
-    ctx = context.ctx()
-    cluster = conductor.cluster_get(ctx, cluster_id)
-
-    for step in cluster.provision_progress:
-        if step.successful is not None:
-            continue
-
-        has_failed = False
-        successful_events_count = 0
-        events = conductor.cluster_provision_step_get_events(
-            ctx, step.id)
-        for event in events:
-            if event.successful:
-                successful_events_count += 1
-            else:
-                has_failed = True
-
-        successful = None
-        if has_failed:
-            successful = False
-        elif successful_events_count == step.total:
-            successful = True
-
-        completed_at = None
-        if successful and not step.completed_at:
-            completed_at = timeutils.utcnow()
-
-        conductor.cluster_provision_step_update(ctx, step.id, {
-            'completed': successful_events_count,
-            'successful': successful,
-            'completed_at': completed_at,
-        })
-
-        if successful:
-            conductor.cluster_provision_step_remove_events(
-                ctx, step.id)
+    current_instance_info = context.ctx().current_instance_info
+    return current_instance_info.step_id
 
 
 def event_wrapper(mark_successful_on_exit, **spec):

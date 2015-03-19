@@ -416,11 +416,8 @@ class ClusterProvisionStep(mb.SaharaBase):
     tenant_id = sa.Column(sa.String(36))
     step_name = sa.Column(sa.String(80))
     step_type = sa.Column(sa.String(36))
-    completed = sa.Column(sa.Integer)
     total = sa.Column(sa.Integer)
     successful = sa.Column(sa.Boolean, nullable=True)
-    started_at = sa.Column(sa.DateTime())
-    completed_at = sa.Column(sa.DateTime())
     events = relationship('ClusterEvent', cascade="all,delete",
                           backref='ClusterProvisionStep',
                           lazy='joined')

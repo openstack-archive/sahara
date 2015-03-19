@@ -102,6 +102,7 @@ def change_cluster_status(cluster, status, status_description=None):
         update_dict["status_description"] = status_description
 
     cluster = conductor.cluster_update(ctx, cluster, update_dict)
+    conductor.cluster_provision_progress_update(ctx, cluster.id)
 
     LOG.info(_LI("Cluster status has been changed: id={id}, New status="
                  "{status}").format(id=cluster.id, status=cluster.status))

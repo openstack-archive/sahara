@@ -13,8 +13,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+
+import testtools
+
 from sahara import conductor
 from sahara import context
+from sahara import exceptions
 from sahara.tests.unit import base
 from sahara.utils import general as gu
 
@@ -116,6 +120,19 @@ class TestConductorClusterApi(base.SaharaWithDbTestCase):
         ng = gu.get_by_id(cluster.node_groups, ng_id)
         self.assertEqual(ng.instances[0].instance_name, 'tst123')
 
+    def _get_events(self, ctx, cluster_id, step_id=None):
+        cluster = self.api.cluster_get(ctx, cluster_id, show_progress=True)
+        events = []
+        for step in cluster.provision_progress:
+            if step_id == step['id']:
+                return step['events']
+            else:
+                events += step['events']
+        if step_id:
+            return events
+        else:
+            return []
+
     def test_events_ops(self):
         ctx, cluster = self._make_sample()
 
@@ -138,20 +155,6 @@ class TestConductorClusterApi(base.SaharaWithDbTestCase):
         self.assertEqual(st_type, provision_step['step_type'])
         self.assertEqual(cluster.id, provision_step['cluster_id'])
 
-        # test provision step updating
-
-        self.api.cluster_provision_step_update(ctx, step_id, {
-            'total': 100,
-            'completed': 59,
-        })
-
-        ncluster = self.api.cluster_get(ctx, cluster.id)
-        self.assertEqual(1, len(ncluster['provision_progress']))
-        provision_step = ncluster['provision_progress'][0]
-
-        self.assertEqual(100, provision_step['total'])
-        self.assertEqual(59, provision_step['completed'])
-
         # test adding event to step and getting events from step
 
         self.api.cluster_event_add(ctx, step_id, {
@@ -162,14 +165,13 @@ class TestConductorClusterApi(base.SaharaWithDbTestCase):
             'successful': True
         })
 
-        events = self.api.cluster_provision_step_get_events(ctx, step_id)
+        events = self._get_events(ctx, cluster.id, step_id)
         self.assertEqual(1, len(events))
         self.assertEqual(st_name, events[0].instance_name)
         self.assertEqual(True, events[0].successful)
         self.assertEqual(st_info, events[0].event_info)
 
-        # test removing events from step
+        self.api.cluster_destroy(ctx, cluster.id)
 
-        self.api.cluster_provision_step_remove_events(ctx, step_id)
-        events = self.api.cluster_provision_step_get_events(ctx, step_id)
-        self.assertEqual(0, len(events))
+        with testtools.ExpectedException(exceptions.NotFoundException):
+            self._get_events(ctx, cluster.id, step_id)

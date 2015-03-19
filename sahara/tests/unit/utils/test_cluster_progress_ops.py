@@ -54,7 +54,7 @@ class ClusterProgressOpsTest(base.SaharaWithDbTestCase):
             "successful": True
         })
 
-        cpo.update_provisioning_steps(cluster.id)
+        self.api.cluster_provision_progress_update(ctx, cluster.id)
 
         # check that we have correct provision step
 
@@ -62,7 +62,6 @@ class ClusterProgressOpsTest(base.SaharaWithDbTestCase):
         result_step = result_cluster.provision_progress[0]
 
         self.assertEqual(None, result_step.successful)
-        self.assertEqual(1, result_step.completed)
 
         # check updating in case of successful provision step
 
@@ -71,13 +70,12 @@ class ClusterProgressOpsTest(base.SaharaWithDbTestCase):
             "successful": True
         })
 
-        cpo.update_provisioning_steps(cluster.id)
+        self.api.cluster_provision_progress_update(ctx, cluster.id)
 
         result_cluster = self.api.cluster_get(ctx, cluster.id)
         result_step = result_cluster.provision_progress[0]
 
         self.assertEqual(True, result_step.successful)
-        self.assertEqual(2, result_step.completed)
 
         # check updating in case of failed provision step
 
@@ -91,7 +89,7 @@ class ClusterProgressOpsTest(base.SaharaWithDbTestCase):
             "successful": False,
         })
 
-        cpo.update_provisioning_steps(cluster.id)
+        self.api.cluster_provision_progress_update(ctx, cluster.id)
 
         result_cluster = self.api.cluster_get(ctx, cluster.id)
 
@@ -100,11 +98,7 @@ class ClusterProgressOpsTest(base.SaharaWithDbTestCase):
                 self.assertEqual(False, step.successful)
 
         # check that it's possible to add provision step after failed step
-
-        step_id3 = self.api.cluster_provision_step_add(ctx, cluster.id, {
-            "step_name": "some_name",
-            "total": 2,
-        })
+        step_id3 = cpo.add_provisioning_step(cluster.id, "some_name", 2)
 
         self.assertEqual(
             step_id3, cpo.get_current_provisioning_step(cluster.id))
@@ -114,9 +108,11 @@ class ClusterProgressOpsTest(base.SaharaWithDbTestCase):
 
         step_id1 = self.api.cluster_provision_step_add(ctx, cluster.id, {
             'step_name': "some_name1",
+            'total': 3,
         })
         step_id2 = self.api.cluster_provision_step_add(ctx, cluster.id, {
             'step_name': "some_name",
+            'total': 2,
         })
 
         self.api.cluster_event_add(ctx, step_id1, {
