@@ -115,12 +115,18 @@ class DirectEngine(e.Engine):
 
         if rollback_info.get('shutdown', False):
             self._rollback_cluster_creation(cluster, reason)
+            LOG.warning(_LW("Cluster {name} creation rollback "
+                            "(reason: {reason})").format(name=cluster.name,
+                                                         reason=reason))
             return False
 
         instance_ids = rollback_info.get('instance_ids', [])
         if instance_ids:
             self._rollback_cluster_scaling(
                 cluster, g.get_instances(cluster, instance_ids), reason)
+            LOG.warning(_LW("Cluster {name} scaling rollback "
+                            "(reason: {reason})").format(name=cluster.name,
+                                                         reason=reason))
 
             return True
 
@@ -481,19 +487,11 @@ class DirectEngine(e.Engine):
 
     def _rollback_cluster_creation(self, cluster, ex):
         """Shutdown all instances and update cluster status."""
-        # TODO(starodubcevna): Need to add LOG.warning to upper level in next
-        # commits
-        LOG.debug("Cluster {name} creation rollback "
-                  "(reason: {reason})".format(name=cluster.name, reason=ex))
 
         self.shutdown_cluster(cluster)
 
     def _rollback_cluster_scaling(self, cluster, instances, ex):
-        # TODO(starodubcevna): Need to add LOG.warning to upper level in next
-        # commits
         """Attempt to rollback cluster scaling."""
-        LOG.debug("Cluster {name} scaling rollback "
-                  "(reason: {reason})".format(name=cluster.name, reason=ex))
 
         for i in instances:
             self._shutdown_instance(i)
