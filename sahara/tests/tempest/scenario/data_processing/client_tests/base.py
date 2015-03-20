@@ -14,12 +14,12 @@
 
 import time
 
+from oslo_log import log as logging
 from oslo_utils import timeutils
 from saharaclient.api import base as sab
 from saharaclient import client as sahara_client
 from tempest import config
 from tempest import exceptions
-from tempest.openstack.common import log as logging
 from tempest.scenario.data_processing import config as sahara_test_config
 from tempest.scenario import manager
 
