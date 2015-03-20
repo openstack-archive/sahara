@@ -489,6 +489,19 @@ class SparkProvider(p.ProvisioningPluginBase):
 
         return None
 
+    def get_edp_job_types(self, versions=[]):
+        res = {}
+        for vers in self.get_versions():
+            if not versions or vers in versions:
+                if edp_engine.EdpEngine.edp_supported(vers):
+                    res[vers] = edp_engine.EdpEngine.get_supported_job_types()
+        return res
+
+    def get_edp_config_hints(self, job_type, version):
+        if edp_engine.EdpEngine.edp_supported(version):
+            return edp_engine.EdpEngine.get_possible_job_config(job_type)
+        return {}
+
     def get_open_ports(self, node_group):
         cluster = node_group.cluster
         ports_map = {

@@ -50,7 +50,7 @@ class SparkPluginTest(base.SaharaWithDbTestCase):
         with testtools.ExpectedException(
                 ex.InvalidDataException,
                 value_re="Spark 1.0.0 or higher required to run "
-                         "spark Spark jobs\nError ID: .*"):
+                         "Spark jobs\nError ID: .*"):
             edp_engine.validate_job_execution(cluster, job, mock.Mock())
 
     def test_plugin10_edp_engine(self):
