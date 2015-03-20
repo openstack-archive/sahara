@@ -133,6 +133,7 @@ def list_opts():
     from sahara.utils.openstack import nova
     from sahara.utils.openstack import swift
     from sahara.utils import proxy
+    from sahara.utils import wsgi
 
     return [
         (None,
@@ -150,7 +151,8 @@ def list_opts():
                          periodic.periodic_opts,
                          volumes.opts,
                          proxy.opts,
-                         cpo.event_log_opts)),
+                         cpo.event_log_opts,
+                         wsgi.wsgi_opts)),
         (api.conductor_group.name,
          itertools.chain(api.conductor_opts)),
         (cinder.cinder_group.name,
