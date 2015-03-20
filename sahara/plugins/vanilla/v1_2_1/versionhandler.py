@@ -549,6 +549,12 @@ class VersionHandler(avm.AbstractVersionHandler):
             return edp_engine.EdpOozieEngine(cluster)
         return None
 
+    def get_edp_job_types(self):
+        return edp_engine.EdpOozieEngine.get_supported_job_types()
+
+    def get_edp_config_hints(self, job_type):
+        return edp_engine.EdpOozieEngine.get_possible_job_config(job_type)
+
     def get_open_ports(self, node_group):
         cluster = node_group.cluster
 
