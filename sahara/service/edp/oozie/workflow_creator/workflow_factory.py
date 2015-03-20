@@ -308,7 +308,7 @@ def get_possible_job_config(job_type):
         return {'job_config': {'configs': [], 'args': []}}
 
     if edp.compare_job_type(job_type, edp.JOB_TYPE_SHELL):
-        return {'job_config': {'configs': [], 'params': [], 'args': []}}
+        return {'job_config': {'configs': [], 'params': {}, 'args': []}}
 
     if edp.compare_job_type(job_type,
                             edp.JOB_TYPE_MAPREDUCE, edp.JOB_TYPE_PIG):
@@ -316,16 +316,22 @@ def get_possible_job_config(job_type):
         cfg = xmlutils.load_hadoop_xml_defaults(
             'plugins/vanilla/v1_2_1/resources/mapred-default.xml')
         if edp.compare_job_type(job_type, edp.JOB_TYPE_MAPREDUCE):
-            cfg += xmlutils.load_hadoop_xml_defaults(
-                'service/edp/resources/mapred-job-config.xml')
+            cfg += get_possible_mapreduce_configs()
     elif edp.compare_job_type(job_type, edp.JOB_TYPE_HIVE):
         # TODO(nmakhotkin): Here we need return config based on specific plugin
         cfg = xmlutils.load_hadoop_xml_defaults(
             'plugins/vanilla/v1_2_1/resources/hive-default.xml')
 
-    # TODO(tmckay): args should be a list when bug #269968
-    # is fixed on the UI side
-    config = {'configs': cfg, "args": {}}
-    if not edp.compare_job_type(edp.JOB_TYPE_MAPREDUCE, edp.JOB_TYPE_JAVA):
+    config = {'configs': cfg}
+    if edp.compare_job_type(job_type, edp.JOB_TYPE_PIG, edp.JOB_TYPE_HIVE):
         config.update({'params': {}})
+    if edp.compare_job_type(job_type, edp.JOB_TYPE_PIG):
+        config.update({'args': []})
     return {'job_config': config}
+
+
+def get_possible_mapreduce_configs():
+    '''return a list of possible configuration values for map reduce jobs.'''
+    cfg = xmlutils.load_hadoop_xml_defaults(
+        'service/edp/resources/mapred-job-config.xml')
+    return cfg
