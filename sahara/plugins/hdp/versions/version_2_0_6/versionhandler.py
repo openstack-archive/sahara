@@ -992,7 +992,7 @@ class AmbariClient(object):
             LOG.error(_LE('Configuring HDFS HA failed. {result}').format(
                 result=result.text))
             raise ex.NameNodeHAConfigurationError(
-                'Configuring HDFS HA failed. %s' % result.text)
+                _('Configuring HDFS HA failed. %s') % result.text)
 
     def _hdfs_ha_add_host_component(self, hac, host, component):
         add_host_component_url = ('http://{0}/api/v1/clusters/{1}'
@@ -1005,7 +1005,7 @@ class AmbariClient(object):
             LOG.error(_LE('Configuring HDFS HA failed. {result}').format(
                 result=result.text))
             raise ex.NameNodeHAConfigurationError(
-                'Configuring HDFS HA failed. %s' % result.text)
+                _('Configuring HDFS HA failed. %s') % result.text)
 
     def _hdfs_ha_update_host_component(self, hac, host, component, state):
 
@@ -1034,13 +1034,13 @@ class AmbariClient(object):
                               "{host} {component}").format(
                                   host=host, component=component))
                 raise ex.NameNodeHAConfigurationError(
-                    'Configuring HDFS HA failed. %s' % result.text)
+                    _('Configuring HDFS HA failed. %s') % result.text)
         elif result.status_code != 200:
             LOG.error(
                 _LE('Configuring HDFS HA failed. {result}').format(
                     result=result.text))
             raise ex.NameNodeHAConfigurationError(
-                'Configuring HDFS HA failed. %s' % result.text)
+                _('Configuring HDFS HA failed. %s') % result.text)
 
     def _hdfs_ha_get_config_tag(self, hac, config_name):
 
@@ -1059,7 +1059,7 @@ class AmbariClient(object):
                 _LE('Configuring HDFS HA failed. {result}').format(
                     result=result.text))
             raise ex.NameNodeHAConfigurationError(
-                'Configuring HDFS HA failed. %s' % result.text)
+                _('Configuring HDFS HA failed. %s') % result.text)
 
     def _hdfs_ha_get_config(self, hac, config_name, tag):
 
@@ -1078,7 +1078,7 @@ class AmbariClient(object):
                 _LE('Configuring HDFS HA failed. {result}').format(
                     result=result.text))
             raise ex.NameNodeHAConfigurationError(
-                'Configuring HDFS HA failed. %s' % result.text)
+                _('Configuring HDFS HA failed. %s') % result.text)
 
     def _hdfs_ha_put_config(self, hac, config_name, tag, properties):
 
@@ -1102,7 +1102,7 @@ class AmbariClient(object):
                 _LE('Configuring HDFS HA failed. {result}').format(
                     result=result.text))
             raise ex.NameNodeHAConfigurationError(
-                'Configuring HDFS HA failed. %s' % result.text)
+                _('Configuring HDFS HA failed. %s') % result.text)
 
     def _hdfs_ha_update_hdfs_site(self, hac, hdfs_site):
 
