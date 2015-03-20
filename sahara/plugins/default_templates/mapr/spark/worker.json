@@ -1,0 +1,11 @@
+{
+    "plugin_name": "mapr",
+    "hadoop_version": "spark",
+    "node_processes": [
+        "FileServer",
+        "Spark Slave"
+    ],
+    "name": "mapr-spark-default-worker",
+    "floating_ip_pool": "{floating_ip_pool}",
+    "flavor_id": "{flavor_id}"
+}

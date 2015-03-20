@@ -1,0 +1,11 @@
+{
+    "plugin_name": "mapr",
+    "hadoop_version": "4.0.2.mrv2",
+    "node_processes": [
+        "FileServer",
+        "NodeManager"
+    ],
+    "name": "mapr-402mr2-default-worker",
+    "floating_ip_pool": "{floating_ip_pool}",
+    "flavor_id": "{flavor_id}"
+}
