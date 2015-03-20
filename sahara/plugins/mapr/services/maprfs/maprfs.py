@@ -130,7 +130,4 @@ class MapRFS(s.Service):
 
     def _get_cldb_conf_props(self, context):
         zookeepers = context.get_zookeeper_nodes_ip_with_port()
-        result = {'cldb.zookeeper.servers': zookeepers}
-        if context.is_node_aware:
-            result['net.topology.script.file.name'] = '/opt/mapr/topology.sh'
-        return result
+        return {'cldb.zookeeper.servers': zookeepers}

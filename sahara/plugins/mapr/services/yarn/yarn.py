@@ -20,6 +20,7 @@ import sahara.plugins.mapr.domain.node_process as np
 import sahara.plugins.mapr.domain.service as s
 import sahara.plugins.mapr.util.validation_utils as vu
 from sahara.swift import swift_helper
+from sahara.topology import topology_helper as topo
 
 
 RESOURCE_MANAGER = np.NodeProcess(
@@ -81,8 +82,19 @@ class YARN(s.Service):
             'hadoop.proxyuser.mapr.groups': '*',
             'hadoop.proxyuser.mapr.hosts': '*',
         }
+        if context.is_node_aware:
+            result.update(self._get_core_site_node_aware_props())
         for conf in swift_helper.get_swift_configs():
             result[conf['name']] = conf['value']
+        return result
+
+    def _get_core_site_node_aware_props(self):
+        result = topo.vm_awareness_core_config()
+        result = {c['name']: c['value'] for c in result}
+        result.update({
+            'net.topology.script.file.name': '/opt/mapr/topology.sh',
+            'net.topology.script.number.args': '75',
+        })
         return result
 
     def _get_yarn_site_props(self, context):
