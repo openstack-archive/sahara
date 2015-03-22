@@ -27,6 +27,7 @@ from sahara.plugins.cdh.client import cms
 from sahara.plugins.cdh.client import hosts
 from sahara.plugins.cdh.client import http_client
 from sahara.plugins.cdh.client import resource
+from sahara.plugins.cdh.client import users
 
 API_AUTH_REALM = "Cloudera Manager"
 API_CURRENT_VERSION = 8
@@ -117,3 +118,19 @@ class ApiResource(resource.Resource):
         :return: A list of ApiHost objects.
         """
         return hosts.get_all_hosts(self, view)
+
+    def get_user(self, username):
+        """Look up a user by username.
+
+        @param username: Username to look up
+        @return: An ApiUser object
+        """
+        return users.get_user(self, username)
+
+    def update_user(self, user):
+        """Update a user detail profile.
+
+        @param user: An ApiUser object
+        @return: An ApiUser object
+        """
+        return users.update_user(self, user)
