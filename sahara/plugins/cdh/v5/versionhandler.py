@@ -16,6 +16,7 @@
 from sahara import conductor
 from sahara import context
 from sahara.plugins.cdh import abstractversionhandler as avm
+from sahara.plugins.cdh import db_helper
 from sahara.plugins.cdh.v5 import cloudera_utils as cu
 from sahara.plugins.cdh.v5 import config_helper as c_helper
 from sahara.plugins.cdh.v5 import deploy as dp
@@ -83,7 +84,7 @@ class VersionHandler(avm.AbstractVersionHandler):
             'Cloudera Manager': {
                 'Web UI': 'http://%s:7180' % mng.management_ip,
                 'Username': 'admin',
-                'Password': 'admin'
+                'Password': db_helper.get_cm_password(cluster)
             }
         }
         hue = CU.pu.get_hue(cluster)

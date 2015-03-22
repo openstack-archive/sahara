@@ -22,6 +22,7 @@ from sahara import context
 from sahara.i18n import _
 from sahara.plugins.cdh.client import api_client
 from sahara.plugins.cdh.client import services
+from sahara.plugins.cdh import db_helper
 from sahara.plugins import exceptions as ex
 from sahara.utils import cluster_progress_ops as cpo
 
@@ -62,12 +63,26 @@ class ClouderaUtils(object):
         # pu will be defined in derived class.
         self.pu = None
 
-    def get_api_client(self, cluster):
+    def get_api_client_by_default_password(self, cluster):
         manager_ip = self.pu.get_manager(cluster).management_ip
         return api_client.ApiResource(manager_ip,
                                       username=self.CM_DEFAULT_USERNAME,
                                       password=self.CM_DEFAULT_PASSWD,
                                       version=self.CM_API_VERSION)
+
+    def get_api_client(self, cluster):
+        manager_ip = self.pu.get_manager(cluster).management_ip
+        cm_password = db_helper.get_cm_password(cluster)
+        return api_client.ApiResource(manager_ip,
+                                      username=self.CM_DEFAULT_USERNAME,
+                                      password=cm_password,
+                                      version=self.CM_API_VERSION)
+
+    def update_cloudera_password(self, cluster):
+        api = self.get_api_client_by_default_password(cluster)
+        user = api.get_user(self.CM_DEFAULT_USERNAME)
+        user.password = db_helper.get_cm_password(cluster)
+        api.update_user(user)
 
     def get_cloudera_cluster(self, cluster):
         api = self.get_api_client(cluster)
