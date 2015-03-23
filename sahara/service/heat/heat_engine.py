@@ -101,6 +101,9 @@ class HeatEngine(e.Engine):
 
         if rollback_info.get('shutdown', False):
             self._rollback_cluster_creation(cluster, reason)
+            LOG.warning(_LW("Cluster {name} creation rollback "
+                            "(reason: {reason})").format(name=cluster.name,
+                                                         reason=reason))
             return False
 
         rollback_count = rollback_info.get('rollback_count', {}).copy()
@@ -108,6 +111,9 @@ class HeatEngine(e.Engine):
         if rollback_count or target_count:
             self._rollback_cluster_scaling(
                 cluster, rollback_count, target_count, reason)
+            LOG.warning(_LW("Cluster {name} scaling rollback "
+                            "(reason: {reason})").format(name=cluster.name,
+                                                         reason=reason))
 
             return True
 
@@ -149,12 +155,6 @@ class HeatEngine(e.Engine):
     def _rollback_cluster_creation(self, cluster, ex):
         """Shutdown all instances and update cluster status."""
 
-        # TODO(starodubcevna): Need to add LOG.warning to upper level in next
-        # commits
-        LOG.debug("Cluster {name} creation rollback "
-                  "(reason: {reason})".format(name=cluster.name,
-                                              reason=ex))
-
         self.shutdown_cluster(cluster)
 
     def _rollback_cluster_scaling(self, cluster, rollback_count,
@@ -167,12 +167,6 @@ class HeatEngine(e.Engine):
         we only shut down nodes and not launch them. That approach should
         maximize the chance of rollback success.
         """
-
-        # TODO(starodubcevna): Need to add LOG.warning to upper level in next
-        # commits
-        LOG.debug("Cluster {name} scaling rollback "
-                  "(reason: {reason})".format(name=cluster.name,
-                                              reason=ex))
 
         for ng in rollback_count:
             if rollback_count[ng] > target_count[ng]:

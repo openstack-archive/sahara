@@ -162,12 +162,12 @@ def make_app():
 
 
 def _load_driver(namespace, name):
-    # TODO(starodubcevna): add LI here in the future for logging improvement
     extension_manager = stevedore.DriverManager(
         namespace=namespace,
         name=name,
         invoke_on_load=True
     )
+    LOG.info(_LI("Driver {name} successfully loaded").format(name=name))
 
     return extension_manager.driver
 
