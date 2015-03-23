@@ -56,7 +56,10 @@ class Hue(s.Service):
         self._version = '3.6.0'
         self._node_processes = [HUE]
         self._ui_info = [('HUE', HUE, 'http://%s:8888')]
-        self._validation_rules = [vu.on_same_node(HUE, httpfs.HTTP_FS)]
+        self._validation_rules = [
+            vu.exactly(1, HUE),
+            vu.on_same_node(HUE, httpfs.HTTP_FS),
+        ]
 
     def conf_dir(self, cluster_context):
         return '%s/desktop/conf' % self.home_dir(cluster_context)
