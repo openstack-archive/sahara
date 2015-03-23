@@ -13,17 +13,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from oslo_utils import timeutils
-
-from sahara import context
 from sahara.i18n import _
-from sahara.plugins import exceptions as ex
 from sahara.plugins import utils as u
 from sahara.plugins.vanilla.hadoop2 import config
+from sahara.plugins.vanilla.hadoop2 import config_helper as c_helper
 from sahara.plugins.vanilla.hadoop2 import run_scripts as run
 from sahara.plugins.vanilla.hadoop2 import utils as pu
 from sahara.plugins.vanilla import utils as vu
 from sahara.utils import cluster_progress_ops as cpo
+from sahara.utils import poll_utils
+
 
 HADOOP_CONF_DIR = config.HADOOP_CONF_DIR
 
@@ -116,33 +115,30 @@ def _clear_exclude_files(cluster):
                 'sudo su - -c "echo > %s/nm-exclude" hadoop' % HADOOP_CONF_DIR)
 
 
-def _check_decommission(cluster, instances, check_func, timeout):
-    s_time = timeutils.utcnow()
-    while timeutils.delta_seconds(s_time, timeutils.utcnow()) < timeout:
-        statuses = check_func(cluster)
-        dec_ok = True
-        for instance in instances:
-            if statuses[instance.fqdn()] != 'decommissioned':
-                dec_ok = False
+def is_decommissioned(cluster, check_func, instances):
+    statuses = check_func(cluster)
+    for instance in instances:
+        if statuses[instance.fqdn()] != 'decommissioned':
+            return False
+    return True
 
-        if dec_ok:
-            return
-        else:
-            context.sleep(5)
-    else:
-        ex.DecommissionError(
-            _("Cannot finish decommission of cluster %(cluster)s in "
-              "%(seconds)d seconds") %
-            {"cluster": cluster, "seconds": timeout})
+
+def _check_decommission(cluster, instances, check_func, option):
+    poll_utils.plugin_option_poll(
+        cluster, is_decommissioned, option, _("Wait for decommissioning"),
+        5, {'cluster': cluster, 'check_func': check_func,
+            'instances': instances})
 
 
 @cpo.event_wrapper(
     True, step=_("Decommission %s") % "NodeManagers", param=('cluster', 0))
 def _check_nodemanagers_decommission(cluster, instances):
-    _check_decommission(cluster, instances, pu.get_nodemanagers_status, 300)
+    _check_decommission(cluster, instances, pu.get_nodemanagers_status,
+                        c_helper.NODEMANAGERS_DECOMMISSIONING_TIMEOUT)
 
 
 @cpo.event_wrapper(
     True, step=_("Decommission %s") % "DataNodes", param=('cluster', 0))
 def _check_datanodes_decommission(cluster, instances):
-    _check_decommission(cluster, instances, pu.get_datanodes_status, 3600 * 4)
+    _check_decommission(cluster, instances, pu.get_datanodes_status,
+                        c_helper.DATANODES_DECOMMISSIONING_TIMEOUT)

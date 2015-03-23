@@ -126,6 +126,28 @@ ENABLE_DATA_LOCALITY = p.Config('Enable Data Locality', 'general', 'cluster',
                                 default_value=True, is_optional=True)
 
 
+DATANODES_DECOMMISSIONING_TIMEOUT = p.Config(
+    'DataNodes decommissioning timeout', 'general',
+    'cluster', config_type='int', priority=1,
+    default_value=3600 * 4, is_optional=True,
+    description='Timeout for datanode decommissioning operation'
+                ' during scaling, in seconds')
+
+
+NODEMANAGERS_DECOMMISSIONING_TIMEOUT = p.Config(
+    'NodeManagers decommissioning timeout', 'general',
+    'cluster', config_type='int', priority=1,
+    default_value=300, is_optional=True,
+    description='Timeout for NodeManager decommissioning operation'
+                ' during scaling, in seconds')
+
+
+DATANODES_STARTUP_TIMEOUT = p.Config(
+    'DataNodes startup timeout', 'general', 'cluster', config_type='int',
+    priority=1, default_value=10800, is_optional=True,
+    description='Timeout for DataNodes startup, in seconds')
+
+
 def init_env_configs(env_confs):
     configs = []
     for service, config_items in env_confs.iteritems():
@@ -138,7 +160,9 @@ def init_env_configs(env_confs):
 
 
 def _init_general_configs():
-    configs = [ENABLE_SWIFT, ENABLE_MYSQL]
+    configs = [ENABLE_SWIFT, ENABLE_MYSQL, DATANODES_STARTUP_TIMEOUT,
+               DATANODES_DECOMMISSIONING_TIMEOUT,
+               NODEMANAGERS_DECOMMISSIONING_TIMEOUT]
     if CONF.enable_data_locality:
         configs.append(ENABLE_DATA_LOCALITY)
     return configs

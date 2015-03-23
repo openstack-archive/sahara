@@ -19,17 +19,15 @@ import os
 import telnetlib
 
 from oslo_log import log as logging
-from oslo_utils import timeutils
 
 from sahara.conductor import resource as res
 from sahara import context
 from sahara.i18n import _
-from sahara.i18n import _LI
 from sahara.plugins.cdh import commands as cmd
-from sahara.plugins import exceptions as ex
 from sahara.plugins import utils as u
 from sahara.utils import cluster_progress_ops as cpo
 from sahara.utils import edp as edp_u
+from sahara.utils import poll_utils
 
 
 PATH_TO_CORE_SITE_XML = '/etc/hadoop/conf/core-site.xml'
@@ -262,35 +260,24 @@ class AbstractPluginUtils(object):
                     extjs_vm_location_path, extjs_vm_location_dir),
                     run_as_root=True)
 
+    def _check_cloudera_manager_started(self, manager):
+        try:
+            conn = telnetlib.Telnet(manager.management_ip, CM_API_PORT)
+            conn.close()
+            return True
+        except IOError:
+            return False
+
     @cpo.event_wrapper(
-        True, step=_("Start Cloudera manager"), param=('cluster', 1))
-    def start_cloudera_manager(self, cluster):
+        True, step=_("Start Cloudera Manager"), param=('cluster', 1))
+    def _start_cloudera_manager(self, cluster, timeout_config):
         manager = self.get_manager(cluster)
         with manager.remote() as r:
             cmd.start_cloudera_db(r)
             cmd.start_manager(r)
-
-        timeout = 300
-        LOG.debug("Waiting {timeout} seconds for Manager to start: "
-                  .format(timeout=timeout))
-        s_time = timeutils.utcnow()
-        while timeutils.delta_seconds(s_time, timeutils.utcnow()) < timeout:
-            try:
-                conn = telnetlib.Telnet(manager.management_ip, CM_API_PORT)
-                conn.close()
-                break
-            except IOError:
-                context.sleep(2)
-        else:
-            message = _("Cloudera Manager failed to start in %(timeout)s "
-                        "minutes on node '%(node)s' of cluster "
-                        "'%(cluster)s'") % {
-                            'timeout': timeout / 60,
-                            'node': manager.management_ip,
-                            'cluster': cluster.name}
-            raise ex.HadoopProvisionError(message)
-
-        LOG.info(_LI("Cloudera Manager has been started"))
+        poll_utils.plugin_option_poll(
+            cluster, self._check_cloudera_manager_started, timeout_config,
+            _("Await starting Cloudera Manager"), 2, {'manager': manager})
 
     def configure_os(self, instances):
         # instances non-empty

@@ -25,8 +25,6 @@ from sahara.utils import cluster_progress_ops as cpo
 from sahara.utils import xmlutils
 
 
-CM_API_PORT = 7180
-
 HDFS_SERVICE_TYPE = 'HDFS'
 YARN_SERVICE_TYPE = 'YARN'
 OOZIE_SERVICE_TYPE = 'OOZIE'
@@ -147,6 +145,9 @@ class ClouderaUtilsV530(cu.ClouderaUtils):
         if self.pu.get_catalogserver(cluster):
             cm_cluster.create_service(self.IMPALA_SERVICE_NAME,
                                       IMPALA_SERVICE_TYPE)
+
+    def await_agents(self, cluster, instances):
+        self._await_agents(cluster, instances, c_helper.AWAIT_AGENTS_TIMEOUT)
 
     @cpo.event_wrapper(
         True, step=_("Configure services"), param=('cluster', 1))

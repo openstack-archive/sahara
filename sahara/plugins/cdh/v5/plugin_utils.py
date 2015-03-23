@@ -53,3 +53,7 @@ class PluginUtilsV5(pu.AbstractPluginUtils):
                 'sudo su - -c "hadoop fs -mkdir -p /tmp/hive-hive" hdfs')
             r.execute_command(
                 'sudo su - -c "hadoop fs -chown hive /tmp/hive-hive" hdfs')
+
+    def start_cloudera_manager(self, cluster):
+        self._start_cloudera_manager(
+            cluster, c_helper.AWAIT_MANAGER_STARTING_TIMEOUT)
