@@ -21,10 +21,10 @@ and Sahara API at ``127.0.0.1:8386``. Here is a list of commands to set env:
 
 .. sourcecode:: console
 
-    $ export OS_AUTH_URL=http://127.0.0.1:5000/v2.0/
-    $ export OS_TENANT_NAME=admin
-    $ export OS_USERNAME=admin
-    $ export OS_PASSWORD=nova
+   $ export OS_AUTH_URL=http://127.0.0.1:5000/v2.0/
+   $ export OS_TENANT_NAME=admin
+   $ export OS_USERNAME=admin
+   $ export OS_PASSWORD=nova
 
 
 You can append these lines to the ``.bashrc`` and execute ``source .bashrc``.
@@ -32,7 +32,7 @@ Now you can get an authentication token from the OpenStack Keystone service.
 
 .. sourcecode:: console
 
-    $ keystone token-get
+   $ keystone token-get
 
 
 If authentication succeeds, the output will be as follows:
@@ -53,8 +53,8 @@ authentication token (X-Auth-Token):
 
 .. sourcecode:: console
 
-    $ export AUTH_TOKEN="dd92e3cdb4e1462690cd444d6b01b746"
-    $ export TENANT_ID="62bd2046841e4e94a87b4a22aa886c13"
+   $ export AUTH_TOKEN="dd92e3cdb4e1462690cd444d6b01b746"
+   $ export TENANT_ID="62bd2046841e4e94a87b4a22aa886c13"
 
 
 3. Upload image to Glance
@@ -67,9 +67,9 @@ images yourself:
 
 .. sourcecode:: console
 
-    $ ssh user@hostname
-    $ wget http://sahara-files.mirantis.com/sahara-icehouse-vanilla-1.2.1-ubuntu-13.10.qcow2
-    $ glance image-create --name=sahara-icehouse-vanilla-1.2.1-ubuntu-13.10 \
+   $ ssh user@hostname
+   $ wget http://sahara-files.mirantis.com/sahara-icehouse-vanilla-1.2.1-ubuntu-13.10.qcow2
+   $ glance image-create --name=sahara-icehouse-vanilla-1.2.1-ubuntu-13.10 \
       --disk-format=qcow2 --container-format=bare < ./sahara-icehouse-vanilla-1.2.1-ubuntu-13.10.qcow2
 
 
@@ -77,9 +77,9 @@ images yourself:
 
 .. sourcecode:: console
 
-    $ ssh user@hostname
-    $ wget http://sahara-files.mirantis.com/sahara-icehouse-vanilla-1.2.1-fedora-20.qcow2
-    $ glance image-create --name=sahara-icehouse-vanilla-1.2.1-fedora-20 \
+   $ ssh user@hostname
+   $ wget http://sahara-files.mirantis.com/sahara-icehouse-vanilla-1.2.1-fedora-20.qcow2
+   $ glance image-create --name=sahara-icehouse-vanilla-1.2.1-fedora-20 \
       --disk-format=qcow2 --container-format=bare < ./sahara-icehouse-vanilla-1.2.1-fedora-20.qcow2
 
 
@@ -90,14 +90,14 @@ Save the image id. You can get the image id from the command ``glance image-list
 
 .. sourcecode:: console
 
-    $ glance image-list --name sahara-icehouse-vanilla-1.2.1-ubuntu-13.10
+   $ glance image-list --name sahara-icehouse-vanilla-1.2.1-ubuntu-13.10
     +--------------------------------------+---------------------------------------------+
     | ID                                   | Name                                        |
     +--------------------------------------+---------------------------------------------+
     | 3f9fc974-b484-4756-82a4-bff9e116919b | sahara-icehouse-vanilla-1.2.1-ubuntu-13.10  |
     +--------------------------------------+---------------------------------------------+
 
-    $ export IMAGE_ID="3f9fc974-b484-4756-82a4-bff9e116919b"
+   $ export IMAGE_ID="3f9fc974-b484-4756-82a4-bff9e116919b"
 
 
 4. Register image in Image Registry
@@ -109,26 +109,25 @@ Save the image id. You can get the image id from the command ``glance image-list
 
 .. sourcecode:: console
 
-    $ sahara image-register --id $IMAGE_ID --username ubuntu
+   $ sahara image-register --id $IMAGE_ID --username ubuntu
 
 * Tag the image:
 
 .. sourcecode:: console
 
-    $ sahara image-add-tag --id $IMAGE_ID --tag vanilla
-    $ sahara image-add-tag --id $IMAGE_ID --tag 1.2.1
+   $ sahara image-add-tag --id $IMAGE_ID --tag vanilla
+   $ sahara image-add-tag --id $IMAGE_ID --tag 1.2.1
 
 * Make sure the image is registered correctly:
 
 .. sourcecode:: console
 
-    $ sahara image-list
+   $ sahara image-list
 
 * Output should look like:
 
 .. sourcecode:: console
 
-    $ sahara image-list
     +----------------+---------------+----------+----------------+-------------+
     | name           | id            | username | tags           | description |
     +----------------+---------------+----------+----------------+-------------+
@@ -139,8 +138,7 @@ Save the image id. You can get the image id from the command ``glance image-list
 5. Setup NodeGroup templates
 ----------------------------
 
-Create a file with the name ``ng_master_template_create.json`` and fill it with the
-following content:
+Create a file named ``ng_master_template_create.json`` with the following content:
 
 .. sourcecode:: json
 
@@ -153,8 +151,7 @@ following content:
         "auto_security_group": true
     }
 
-Create a file with the name ``ng_worker_template_create.json`` and fill it with the
-following content:
+Create a file named ``ng_worker_template_create.json`` with the following content:
 
 .. sourcecode:: json
 
@@ -167,74 +164,24 @@ following content:
         "auto_security_group": true
     }
 
-Send POST requests to the Sahara API to upload NodeGroup templates. Make sure that
-the ``SAHARA_URL`` is set:
+Use the Sahara client to upload NodeGroup templates:
 
 .. sourcecode:: console
 
-    $ export SAHARA_URL=http://127.0.0.1:8386/v1.1/$TENANT_ID
+   $ sahara node-group-template-create --json ng_master_template_create.json
+   $ sahara node-group-template-create --json ng_worker_template_create.json
 
-    $ http $SAHARA_URL/node-group-templates X-Auth-Token:$AUTH_TOKEN \
-     < ng_master_template_create.json
-
-    $ http $SAHARA_URL/node-group-templates X-Auth-Token:$AUTH_TOKEN \
-     < ng_worker_template_create.json
-
-
-You can list the available NodeGroup templates by sending the following request to the
-Sahara API:
+List the available NodeGroup templates:
 
 .. sourcecode:: console
 
-    $ http $SAHARA_URL/node-group-templates X-Auth-Token:$AUTH_TOKEN
-
-The output should look like:
-
-.. sourcecode:: json
-
-    {
-        "node_group_templates": [
-            {
-                "created": "2013-07-07T18:53:55",
-                "flavor_id": "2",
-                "hadoop_version": "1.2.1",
-                "id": "b38227dc-64fe-42bf-8792-d1456b453ef3",
-                "name": "demo-master",
-                "node_configs": {},
-                "node_processes": [
-                    "jobtracker",
-                    "namenode"
-                ],
-                "plugin_name": "vanilla",
-                "updated": "2013-07-07T18:53:55",
-                "volume_mount_prefix": "/volumes/disk",
-                "volumes_per_node": 0,
-                "volumes_size": 10,
-                "security_groups": [],
-                "auto_security_group": true
-            },
-            {
-                "created": "2013-07-07T18:54:00",
-                "flavor_id": "2",
-                "hadoop_version": "1.2.1",
-                "id": "634827b9-6a18-4837-ae15-5371d6ecf02c",
-                "name": "demo-worker",
-                "node_configs": {},
-                "node_processes": [
-                    "tasktracker",
-                    "datanode"
-                ],
-                "plugin_name": "vanilla",
-                "updated": "2013-07-07T18:54:00",
-                "volume_mount_prefix": "/volumes/disk",
-                "volumes_per_node": 0,
-                "volumes_size": 10,
-                "security_groups": [],
-                "auto_security_group": true
-            }
-        ]
-    }
-
+   $ sahara node-group-template-list
+    +--------+--------------------------------------+-------------+-------------------------------------------------+-------------+
+    | name   | id                                   | plugin_name | node_processes                                  | description |
+    +--------+--------------------------------------+-------------+-------------------------------------------------+-------------+
+    | master | b38227dc-64fe-42bf-8792-d1456b453ef3 | vanilla     | namenode, resourcemanager, oozie, historyserver | None        |
+    | worker | 634827b9-6a18-4837-ae15-5371d6ecf02c | vanilla     | datanode, nodemanager                           | None        |
+    +--------+--------------------------------------+-------------+-------------------------------------------------+-------------+
 
 Save the id for the master and worker NodeGroup templates. For example:
 
@@ -245,8 +192,7 @@ Save the id for the master and worker NodeGroup templates. For example:
 6. Setup Cluster Template
 -------------------------
 
-Create a file named ``cluster_template_create.json`` and fill it with the
-following content:
+Create a file named ``cluster_template_create.json`` with the following content:
 
 .. sourcecode:: json
 
@@ -257,31 +203,29 @@ following content:
         "node_groups": [
             {
                 "name": "master",
-                "node_group_template_id": "b1ac3f04-c67f-445f-b06c-fb722736ccc6",
+                "node_group_template_id": "b38227dc-64fe-42bf-8792-d1456b453ef3",
                 "count": 1
             },
             {
                 "name": "workers",
-                "node_group_template_id": "dbc6147e-4020-4695-8b5d-04f2efa978c5",
+                "node_group_template_id": "634827b9-6a18-4837-ae15-5371d6ecf02c",
                 "count": 2
             }
         ]
     }
 
-Send POST request to Sahara API to upload Cluster template:
+Upload the Cluster template:
 
 .. sourcecode:: console
 
-    $ http $SAHARA_URL/cluster-templates X-Auth-Token:$AUTH_TOKEN \
-     < cluster_template_create.json
+   $ sahara cluster-template-create --json cluster_template_create.json
 
 Save the template id. For example ``ce897df2-1610-4caa-bdb8-408ef90561cf``.
 
 7. Create cluster
 -----------------
 
-Create a file named ``cluster_create.json`` and fill it with the
-following content:
+Create a file named ``cluster_create.json`` with the following content:
 
 .. sourcecode:: json
 
@@ -292,6 +236,7 @@ following content:
         "cluster_template_id" : "ce897df2-1610-4caa-bdb8-408ef90561cf",
         "user_keypair_id": "stack",
         "default_image_id": "3f9fc974-b484-4756-82a4-bff9e116919b"
+        "neutron_management_network": "8cccf998-85e4-4c5f-8850-63d33c1c6916"
     }
 
 There is a parameter ``user_keypair_id`` with value ``stack``. You can create
@@ -299,116 +244,90 @@ your own keypair in Horizon UI, or using the command line client:
 
 .. sourcecode:: console
 
-    nova keypair-add stack --pub-key $PATH_TO_PUBLIC_KEY
+   $ nova keypair-add stack --pub-key $PATH_TO_PUBLIC_KEY
 
-
-Send POST request to Sahara API to create and start the cluster:
+If ``use_neutron = true`` is set in sahara.conf, you will also need to include
+the ``neutron_management_network`` parameter in ``cluster_create.json``. Instances
+will get fixed IPs in this network. Find the Neutron network id:
 
 .. sourcecode:: console
 
-    $ http $SAHARA_URL/clusters X-Auth-Token:$AUTH_TOKEN \
-     < cluster_create.json
+   $ neutron net-list
 
 
-Once the cluster has started, you'll get similar output:
+Create and start the cluster:
 
-.. sourcecode:: json
+.. sourcecode:: console
 
-    {
-        "clusters": [
-            {
-                "anti_affinity": [],
-                "cluster_configs": {},
-                "cluster_template_id": "ce897df2-1610-4caa-bdb8-408ef90561cf",
-                "created": "2013-07-07T19:01:51",
-                "default_image_id": "3f9fc974-b484-4756-82a4-bff9e116919b",
-                "hadoop_version": "1.2.1",
-                "id": "c5e755a2-b3f9-417b-948b-e99ed7fbf1e3",
-                "info": {
-                    "HDFS": {
-                        "Web UI": "http://172.24.4.225:50070"
-                    },
-                    "MapReduce": {
-                        "Web UI": "http://172.24.4.225:50030"
-                    }
-                },
-                "name": "cluster-1",
-                "node_groups": [
-                    {
-                        "count": 1,
-                        "created": "2013-07-07T19:01:51",
-                        "flavor_id": "999",
-                        "instances": [
-                            {
-                                "created": "2013-07-07T19:01:51",
-                                "instance_id": "4f6dc715-9c65-4d74-bddd-5f1820e6ce02",
-                                "instance_name": "cluster-1-master-001",
-                                "internal_ip": "10.0.0.5",
-                                "management_ip": "172.24.4.225",
-                                "updated": "2013-07-07T19:06:07",
-                                "volumes": []
-                            }
-                        ],
-                        "name": "master",
-                        "node_configs": {},
-                        "node_group_template_id": "b38227dc-64fe-42bf-8792-d1456b453ef3",
-                        "node_processes": [
-                            "jobtracker",
-                            "namenode"
-                        ],
-                        "updated": "2013-07-07T19:01:51",
-                        "volume_mount_prefix": "/volumes/disk",
-                        "volumes_per_node": 0,
-                        "volumes_size": 10,
-                        "security_groups": ["a314895b-d2ee-431d-a26b-7c37b45894c9"],
-                        "auto_security_group": true
-                    },
-                    {
-                        "count": 2,
-                        "created": "2013-07-07T19:01:51",
-                        "flavor_id": "999",
-                        "instances": [
-                            {
-                                "created": "2013-07-07T19:01:52",
-                                "instance_id": "11089dd0-8832-4473-a835-d3dd36bc3d00",
-                                "instance_name": "cluster-1-workers-001",
-                                "internal_ip": "10.0.0.6",
-                                "management_ip": "172.24.4.227",
-                                "updated": "2013-07-07T19:06:07",
-                                "volumes": []
-                            },
-                            {
-                                "created": "2013-07-07T19:01:52",
-                                "instance_id": "d59ee54f-19e6-401b-8662-04a156ba811f",
-                                "instance_name": "cluster-1-workers-002",
-                                "internal_ip": "10.0.0.7",
-                                "management_ip": "172.24.4.226",
-                                "updated": "2013-07-07T19:06:07",
-                                "volumes": []
-                            }
-                        ],
-                        "name": "workers",
-                        "node_configs": {},
-                        "node_group_template_id": "634827b9-6a18-4837-ae15-5371d6ecf02c",
-                        "node_processes": [
-                            "tasktracker",
-                            "datanode"
-                        ],
-                        "updated": "2013-07-07T19:01:51",
-                        "volume_mount_prefix": "/volumes/disk",
-                        "volumes_per_node": 0,
-                        "volumes_size": 10,
-                        "security_groups": ["b260407f-a566-43bf-a010-7e8b23953dc6"],
-                        "auto_security_group": true
-                    }
-                ],
-                "plugin_name": "vanilla",
-                "status": "Active",
-                "updated": "2013-07-07T19:06:24",
-                "user_keypair_id": "stack"
-            }
-        ]
-    }
+   $ sahara cluster-create --json cluster_create.json
+    +----------------------------+-------------------------------------------------+
+    | Property                   | Value                                           |
+    +----------------------------+-------------------------------------------------+
+    | status                     | Validating                                      |
+    | neutron_management_network | 8cccf998-85e4-4c5f-8850-63d33c1c6916            |
+    | is_transient               | False                                           |
+    | description                | None                                            |
+    | user_keypair_id            | stack                                           |
+    | updated_at                 | 2013-07-07T19:01:51                             |
+    | plugin_name                | vanilla                                         |
+    | anti_affinity              | []                                              |
+    | node_groups                | [{u'count': 1, u'name': u'master',              |
+    |                            | u'instances': [], u'volume_mount_prefix':       |
+    |                            | u'/volumes/disk', u'created_at': u'2015-03-17   |
+    |                            | 18:33:42', u'updated_at': None,                 |
+    |                            | u'floating_ip_pool': u'70b8c139-096b-4b3b-b29f- |
+    |                            | f42b16316758', u'image_id': None,               |
+    |                            | u'volumes_size': 0, u'node_configs': {},        |
+    |                            | u'node_group_template_id': u'09946a01-7973-4f63 |
+    |                            | -9aca-7fc6d498d8a6', u'volumes_per_node': 0,    |
+    |                            | u'node_processes': [u'jobtracker',              |
+    |                            | u'namenode'], u'auto_security_group': True,     |
+    |                            | u'security_groups': None, u'flavor_id': u'2'},  |
+    |                            | {u'count': 2, u'name': u'workers',              |
+    |                            | u'instances': [], u'volume_mount_prefix':       |
+    |                            | u'/volumes/disk', u'created_at': u'2015-03-17   |
+    |                            | 18:33:42', u'updated_at': None,                 |
+    |                            | u'floating_ip_pool': u'70b8c139-096b-4b3b-b29f- |
+    |                            | f42b16316758', u'image_id': None,               |
+    |                            | u'volumes_size': 0, u'node_configs': {},        |
+    |                            | u'node_group_template_id': u'ceb017bd-0568-42e9 |
+    |                            | -890b-03eb298dc99f', u'volumes_per_node': 0,    |
+    |                            | u'node_processes': [u'tasktracker',             |
+    |                            | u'datanode'], u'auto_security_group': True,     |
+    |                            | u'security_groups': None, u'flavor_id': u'2'}]  |
+    | management_public_key      | ssh-rsa BBBBB3NzaB1yc2EAAAADAQABAAABAQCziEF+3oJ |
+    |                            | ki6Fd1rvuiducJ470DN9ZFagiFbLfcwqu7TNKee10uice5P |
+    |                            | KmvpusXMaL5LiZFTHafbFJfNUlah90yGpfsYqbcx2dMNqoU |
+    |                            | EF4ZvEVO7RVU8jCe7DXBEkBFGQ1x/v17vyaxIJ8AqnFVSuu |
+    |                            | FgfcHuihLAC250ZlfNWMcoFhUy6MsBocoxCF6MVal5Xt8nw |
+    |                            | Y8o8xTQwd/f4wbAeAE3P0TaOCpXpMxxLL/hMDALekdxs1Gh |
+    |                            | Mk0k5rbj4oD9AKx8+/jucIxS6mmwqWwwqo7jmy2jIsukOGZ |
+    |                            | 1LdeNe0ctOX56k1LoZybzMzT6NbgUwfuIRbOwuryy2QbWwV |
+    |                            | gX6t Generated by Sahara                        |
+    | status_description         |                                                 |
+    | hadoop_version             | 1.2.1                                           |
+    | id                         | c5e755a2-b3f9-417b-948b-e99ed7fbf1e3            |
+    | trust_id                   | None                                            |
+    | info                       | {}                                              |
+    | cluster_template_id        | ce897df2-1610-4caa-bdb8-408ef90561cf            |
+    | name                       | cluster-1                                       |
+    | cluster_configs            | {}                                              |
+    | created_at                 | 2013-07-07T19:01:51                             |
+    | default_image_id           | 3f9fc974-b484-4756-82a4-bff9e116919b            |
+    | tenant_id                  | 3fd7266fb3b547b1a45307b481bcadfd                |
+    +----------------------------+-------------------------------------------------+
+
+Verify the cluster launched successfully:
+
+.. sourcecode:: console
+
+   $ sahara cluster-list
+    +-----------+--------------------------------------+--------+------------+
+    | name      | id                                   | status | node_count |
+    +-----------+--------------------------------------+--------+------------+
+    | cluster-1 | c5e755a2-b3f9-417b-948b-e99ed7fbf1e3 | Active | 3          |
+    +-----------+--------------------------------------+--------+------------+
+
 
 8. Run MapReduce job
 --------------------
@@ -419,19 +338,19 @@ To check that your Hadoop installation works correctly:
 
 .. sourcecode:: console
 
-    $ ssh ubuntu@<namenode_ip>
+   $ ssh ubuntu@<namenode_ip>
 
 * Switch to hadoop user:
 
 .. sourcecode:: console
 
-    $ sudo su hadoop
+   $ sudo su hadoop
 
 * Go to the hadoop home directory and run the simplest MapReduce example:
 
 .. sourcecode:: console
 
-    $ cd /usr/share/hadoop
-    $ hadoop jar hadoop-examples-1.2.1.jar pi 10 100
+   $ cd /usr/share/hadoop
+   $ hadoop jar hadoop-examples-1.2.1.jar pi 10 100
 
 Congratulations! Now you have the Hadoop cluster ready on the OpenStack cloud!
