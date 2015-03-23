@@ -21,12 +21,12 @@ from sahara import context
 from sahara.plugins import utils
 from sahara.plugins.vanilla import abstractversionhandler as avm
 from sahara.plugins.vanilla.hadoop2 import config as c
-from sahara.plugins.vanilla.hadoop2 import edp_engine
 from sahara.plugins.vanilla.hadoop2 import run_scripts as run
 from sahara.plugins.vanilla.hadoop2 import scaling as sc
 from sahara.plugins.vanilla.hadoop2 import validation as vl
 from sahara.plugins.vanilla import utils as vu
 from sahara.plugins.vanilla.v2_4_1 import config_helper as c_helper
+from sahara.plugins.vanilla.v2_6_0 import edp_engine
 from sahara.utils import cluster_progress_ops as cpo
 
 
