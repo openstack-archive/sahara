@@ -31,14 +31,14 @@ clusters:
           DATANODE:
             dfs_datanode_du_reserved: 0
     cluster_template:
-      name: hdp-1-3-2
+      name: hdp132
       node_group_templates:
         master: 1
         worker: 3
       HDFS:
           datanode_du_reserved: 0
     cluster:
-      name: scenario-hdp1
+      name: hdp132
     scaling:
       - operation: add
         node_group: worker
