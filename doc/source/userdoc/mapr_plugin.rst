@@ -1,13 +1,10 @@
 MapR Distribution Plugin
 ========================
-
 The MapR Sahara plugin allows to provision MapR clusters on
 OpenStack in an easy way and do it, quickly, conveniently and simply.
 
-
 Operation
 ---------
-
 The MapR Plugin performs the following four primary functions during cluster creation:
 
 1. MapR components deployment - the plugin manages the deployment of the required software to the target VMs
@@ -17,15 +14,38 @@ The MapR Plugin performs the following four primary functions during cluster cre
 
 Images
 ------
+The Sahara MapR plugin can make use of either minimal (operating system only)
+images or pre-populated MapR images. The base requirement for both is that the
+image is cloud-init enabled and contains a supported operating system
+(see http://doc.mapr.com/display/MapR/OS+Support+Matrix).
 
-For cluster provisioning prepared images should be used. They already have
-MapR 3.1.1 (with Apache Hadoop 0.20.2) and MapR 4.0.1 (with Apache Hadoop 2.4.1) installed.
+The advantage of a pre-populated image is that provisioning time is reduced,
+as packages do not need to be downloaded which make up the majority of the time
+spent in the provisioning cycle. In addition, provisioning large clusters will
+put a burden on the network as packages for all nodes need to be downloaded
+from the package repository.
 
+For more information about MapR images, refer to
+https://github.com/openstack/sahara-image-elements.
+
+There are eight VM images provided for use with the MapR Plugin, that can also
+be built using the tools available in sahara-image-elements:
+
+* https://s3-us-west-2.amazonaws.com/sahara-images/ubuntu_trusty_mapr_plain_latest.qcow2
+* https://s3-us-west-2.amazonaws.com/sahara-images/centos_6.5_mapr_plain_latest.qcow2
+* https://s3-us-west-2.amazonaws.com/sahara-images/ubuntu_trusty_mapr_3.1.1_latest.qcow2
+* https://s3-us-west-2.amazonaws.com/sahara-images/centos_6.5_mapr_3.1.1_latest.qcow2
+* https://s3-us-west-2.amazonaws.com/sahara-images/ubuntu_trusty_mapr_4.0.1_latest.qcow2
+* https://s3-us-west-2.amazonaws.com/sahara-images/centos_6.5_mapr_4.0.1_latest.qcow2
+* https://s3-us-west-2.amazonaws.com/sahara-images/ubuntu_trusty_mapr_4.0.2_latest.qcow2
+* https://s3-us-west-2.amazonaws.com/sahara-images/centos_6.5_mapr_4.0.2_latest.qcow2
 
 MapR plugin needs an image to be tagged in Sahara Image Registry with
-two tags: 'MapR' and '<MapR version>' (e.g. '4.0.1').
+two tags: 'mapr' and '<MapR version>' (e.g. '4.0.1.mrv2').
 
-Note that you should provide username of default cloud-user used in the Image:
+Note that Spark should be run on plain or 4.0.1 images.
+
+The default username specified for these images is different for each distribution:
 
 +--------------+------------+
 | OS           | username   |
@@ -38,33 +58,58 @@ Note that you should provide username of default cloud-user used in the Image:
 
 Hadoop Version Support
 ----------------------
-The MapR plugin currently supports Hadoop 0.20.2 and Hadoop 2.4.1.
+The MapR plugin currently supports Hadoop 0.20.2 (3.1.1, 4.0.1.mrv1, 4.0.2.mrv1),
+Hadoop 2.4.1 (4.0.2.mrv2) and Hadoop 2.5.1 (4.0.2.mrv2).
 
 Cluster Validation
 ------------------
+When the user creates or scales a Hadoop cluster using a mapr plugin, the
+cluster topology requested by the user is verified for consistency.
 
-Mr1 Cluster is valid if and only if:
+Every MapR cluster must contain:
 
-1. Zookeeper component count per cluster equals 1 or greater.  Zookeeper service is up and running.
+* at least 1 *CLDB* process
+* exactly 1 *Webserver* process
+* odd number of *ZooKeeper* processes but not less than 1
+* *FileServer* process on every node
 
-    2.1 Each node has Fileserver component.  Fileserver is up and running on each node. Or
-    2.2 Each node has NFS server component. NFS server is up and running.
+Every Hadoop cluster must contain exactly 1 *Oozie* process
 
-3. If node has TaskTracker component then  Fileserver must be also.
-4. Web-server component  count per cluster equals 0 or 1.  Web-server is up and running.
+Every MapReduce v1 cluster must contain:
 
+* at least 1 *JobTracker* process
+* at least 1 *TaskTracker* process
 
-YARN Cluster is valid if and only if:
+Every MapReduce v2 cluster must contain:
 
-1. Zookeeper component count per cluster equals 1 or greater.  Zookeeper service is up and running.
-2.  Resource manager component count per cluster equals 1 or greater.  Resource manager component is up and running.
+* exactly 1 *ResourceManager* process
+* exactly 1 *HistoryServer* process
+* at least 1 *NodeManager* process
 
-    3.1 Each node has Fileserver component.  Fileserver is up and running on each node. Or
-    3.2 Each node has NFS server component. NFS server is up and running.
+Every Spark cluster must contain:
 
-4. Web-server component  count per cluster equals 0 or 1.  Web-server is up and running.
-5. History server component count per cluster equals 1.  History server  is up and running.
+* exactly 1 *Spark Master* process
+* exactly 1 *Spark HistoryServer* process
+* at least 1 *Spark Slave* (worker) process
 
+HBase service is considered valid if:
+
+* cluster has at least 1 *HBase-Master* process
+* cluster has at least 1 *HBase-RegionServer* process
+
+Hive service is considered valid if:
+
+* cluster has exactly 1 *HiveMetastore* process
+* cluster has exactly 1 *HiveServer2* process
+
+Hue service is considered valid if:
+
+* cluster has exactly 1 *Hue* process
+* *Hue* process resides on the same node as *HttpFS* process
+
+HttpFS service is considered valid if cluster has exactly 1 *HttpFS* process
+
+Sqoop service is considered valid if cluster has exactly 1 *Sqoop2-Server* process
 
 The MapR Plugin
 ---------------
