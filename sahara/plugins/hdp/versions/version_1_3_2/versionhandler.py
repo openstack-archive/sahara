@@ -32,20 +32,12 @@ from sahara.plugins.hdp.versions import abstractversionhandler as avm
 from sahara.plugins.hdp.versions.version_1_3_2 import edp_engine
 from sahara.plugins.hdp.versions.version_1_3_2 import services
 from sahara.utils import cluster_progress_ops as cpo
-from sahara.utils import general as g
+from sahara.utils import poll_utils
 from sahara import version
 
 
 LOG = logging.getLogger(__name__)
 CONF = cfg.CONF
-
-
-def _check_ambari(obj):
-    try:
-        obj.is_ambari_info()
-        return obj.get_cluster()
-    except AttributeError:
-        return None
 
 
 class VersionHandler(avm.AbstractVersionHandler):
@@ -62,7 +54,8 @@ class VersionHandler(avm.AbstractVersionHandler):
                 json.load(pkg.resource_stream(
                           version.version_info.package,
                           'plugins/hdp/versions/version_1_3_2/resources/'
-                          'ambari-config-resource.json')))
+                          'ambari-config-resource.json')),
+                hadoop_version='1.3.2')
 
         return self.config_provider
 
@@ -575,11 +568,7 @@ class AmbariClient(object):
                   'components in scaled instances.  status'
                   ' code returned = {0}').format(result.status))
 
-    @cpo.event_wrapper(True, step=_("Wait for all Ambari agents to register"),
-                       param=('ambari_info', 2))
-    @g.await_process(
-        3600, 5, _("Ambari agents registering with server"), _check_ambari)
-    def wait_for_host_registrations(self, num_hosts, ambari_info):
+    def _check_host_registrations(self, num_hosts, ambari_info):
         url = 'http://{0}/api/v1/hosts'.format(ambari_info.get_address())
         try:
             result = self._get(url, ambari_info)
@@ -596,6 +585,16 @@ class AmbariClient(object):
         except Exception:
             LOG.debug('Waiting to connect to ambari server')
             return False
+
+    @cpo.event_wrapper(True, step=_("Wait for all Ambari agents to register"),
+                       param=('ambari_info', 2))
+    def wait_for_host_registrations(self, num_hosts, ambari_info):
+        cluster = ambari_info.get_cluster()
+        poll_utils.plugin_option_poll(
+            cluster, self._check_host_registrations,
+            cfgprov.HOST_REGISTRATIONS_TIMEOUT,
+            _("Wait for host registrations"), 5, {
+                'num_hosts': num_hosts, 'ambari_info': ambari_info})
 
     def update_ambari_admin_user(self, password, ambari_info):
         old_pwd = ambari_info.password

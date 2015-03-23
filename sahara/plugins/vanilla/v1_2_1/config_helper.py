@@ -97,6 +97,11 @@ DECOMMISSIONING_TIMEOUT = p.Config('Decommissioning Timeout', 'general',
                                                ' decommissioning operation'
                                                ' during scaling, in seconds')
 
+DATANODES_STARTUP_TIMEOUT = p.Config(
+    'Datanodes startup timeout', 'general', 'cluster', config_type='int',
+    priority=1, default_value=10800, is_optional=True,
+    description='Timeout for datanodes startup, in seconds')
+
 
 HIDDEN_CONFS = ['fs.default.name', 'dfs.name.dir', 'dfs.data.dir',
                 'mapred.job.tracker', 'mapred.system.dir', 'mapred.local.dir',
@@ -159,6 +164,7 @@ def _initialise_configs():
     configs.append(ENABLE_SWIFT)
     configs.append(ENABLE_MYSQL)
     configs.append(DECOMMISSIONING_TIMEOUT)
+    configs.append(DATANODES_STARTUP_TIMEOUT)
     if CONF.enable_data_locality:
         configs.append(ENABLE_DATA_LOCALITY)
 

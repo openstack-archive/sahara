@@ -33,20 +33,12 @@ from sahara.plugins.hdp.versions import abstractversionhandler as avm
 from sahara.plugins.hdp.versions.version_2_0_6 import edp_engine
 from sahara.plugins.hdp.versions.version_2_0_6 import services
 from sahara.utils import cluster_progress_ops as cpo
-from sahara.utils import general as g
+from sahara.utils import poll_utils
 from sahara import version
 
 
 LOG = logging.getLogger(__name__)
 CONF = cfg.CONF
-
-
-def _check_ambari(obj):
-    try:
-        obj.is_ambari_info()
-        return obj.get_cluster()
-    except AttributeError:
-        return None
 
 
 class VersionHandler(avm.AbstractVersionHandler):
@@ -63,7 +55,8 @@ class VersionHandler(avm.AbstractVersionHandler):
                 json.load(pkg.resource_stream(
                           version.version_info.package,
                           'plugins/hdp/versions/version_2_0_6/resources/'
-                          'ambari-config-resource.json')))
+                          'ambari-config-resource.json')),
+                hadoop_version='2.0.6')
 
         return self.config_provider
 
@@ -559,20 +552,16 @@ class AmbariClient(object):
                   'components in scaled instances.  status'
                   ' code returned = {0}').format(result.status))
 
-    @cpo.event_wrapper(True, step=_("Wait for all Ambari agents to register"),
-                       param=('ambari_info', 2))
-    @g.await_process(
-        3600, 5, _("Ambari agents registering with server"), _check_ambari)
-    def wait_for_host_registrations(self, num_hosts, ambari_info):
+    def _check_host_registrations(self, num_hosts, ambari_info):
         url = 'http://{0}/api/v1/hosts'.format(ambari_info.get_address())
         try:
             result = self._get(url, ambari_info)
             json_result = json.loads(result.text)
 
-            LOG.info(_LI('Registered Hosts: {current_number} '
-                         'of {final_number}').format(
-                     current_number=len(json_result['items']),
-                     final_number=num_hosts))
+            LOG.debug('Registered Hosts: {current_number} '
+                      'of {final_number}'.format(
+                          current_number=len(json_result['items']),
+                          final_number=num_hosts))
             for hosts in json_result['items']:
                 LOG.debug('Registered Host: {host}'.format(
                     host=hosts['Hosts']['host_name']))
@@ -580,6 +569,16 @@ class AmbariClient(object):
         except Exception:
             LOG.debug('Waiting to connect to ambari server')
             return False
+
+    @cpo.event_wrapper(True, step=_("Wait for all Ambari agents to register"),
+                       param=('ambari_info', 2))
+    def wait_for_host_registrations(self, num_hosts, ambari_info):
+        cluster = ambari_info.get_cluster()
+        poll_utils.plugin_option_poll(
+            cluster, self._check_host_registrations,
+            cfgprov.HOST_REGISTRATIONS_TIMEOUT,
+            _("Wait for host registrations"), 5, {
+                'num_hosts': num_hosts, 'ambari_info': ambari_info})
 
     def update_ambari_admin_user(self, password, ambari_info):
         old_pwd = ambari_info.password
@@ -716,45 +715,46 @@ class AmbariClient(object):
         LOG.debug('AmbariClient: about to make decommission status request,'
                   'uri = {uri}'.format(uri=status_request))
 
-        count = 0
-        while count < 100 and len(hosts_to_decommission) > 0:
-            LOG.debug('AmbariClient: number of hosts waiting for '
-                      'decommissioning to complete = {count}'.format(
-                          count=str(len(hosts_to_decommission))))
+        poll_utils.plugin_option_poll(
+            ambari_info.get_cluster(),
+            self.process_decommission,
+            cfgprov.DECOMMISSIONING_TIMEOUT, _("Decommission nodes"), 5,
+            {'status_request': status_request, 'ambari_info': ambari_info,
+             'hosts_to_decommission': hosts_to_decommission})
 
-            result = self._get(status_request, ambari_info)
-            if result.status_code != 200:
-                LOG.error(_LE('AmbariClient: error in making decommission '
-                              'status request, error = {result}').format(
-                          result=result.text))
-            else:
-                LOG.info(_LI('AmbariClient: decommission status request ok, '
-                             'result = {result}').format(result=result.text))
-                json_result = json.loads(result.text)
-                live_nodes = (
-                    json_result['metrics']['dfs']['namenode']['LiveNodes'])
-                # parse out the map of live hosts associated with the NameNode
-                json_result_nodes = json.loads(live_nodes)
-                for node, val in six.iteritems(json_result_nodes):
-                    admin_state = val['adminState']
-                    if admin_state == 'Decommissioned':
-                        LOG.debug('AmbariClient: node = {node} is '
-                                  'now in adminState = {admin_state}'.format(
-                                      node=node, admin_state=admin_state))
-                        # remove from list, to track which nodes
-                        # are now in Decommissioned state
-                        hosts_to_decommission.remove(node)
+    def process_decommission(self, status_request, ambari_info,
+                             hosts_to_decommission):
+        if len(hosts_to_decommission) == 0:
+            # Nothing for decommissioning
+            return True
 
-            LOG.debug('AmbariClient: sleeping for 5 seconds')
-            context.sleep(5)
+        LOG.debug('AmbariClient: number of hosts waiting for '
+                  'decommissioning to complete = {count}'.format(
+                      count=str(len(hosts_to_decommission))))
 
-            # increment loop counter
-            count += 1
-
-        if len(hosts_to_decommission) > 0:
-            LOG.error(_LE('AmbariClient: decommissioning process timed-out '
-                          'waiting for nodes to enter "Decommissioned" '
-                          'status.'))
+        result = self._get(status_request, ambari_info)
+        if result.status_code != 200:
+            LOG.error(_LE('AmbariClient: error in making decommission '
+                          'status request, error = {result}').format(
+                      result=result.text))
+        else:
+            LOG.info(_LI('AmbariClient: decommission status request ok, '
+                         'result = {result}').format(result=result.text))
+            json_result = json.loads(result.text)
+            live_nodes = (
+                json_result['metrics']['dfs']['namenode']['LiveNodes'])
+            # parse out the map of live hosts associated with the NameNode
+            json_result_nodes = json.loads(live_nodes)
+            for node, val in six.iteritems(json_result_nodes):
+                admin_state = val['adminState']
+                if admin_state == 'Decommissioned':
+                    LOG.debug('AmbariClient: node = {node} is '
+                              'now in adminState = {admin_state}'.format(
+                                  node=node, admin_state=admin_state))
+                    # remove from list, to track which nodes
+                    # are now in Decommissioned state
+                    hosts_to_decommission.remove(node)
+        return False
 
     def provision_cluster(self, cluster_spec, servers, ambari_info, name):
         self._add_cluster(ambari_info, name)
