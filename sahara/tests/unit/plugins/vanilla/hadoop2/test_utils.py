@@ -36,7 +36,7 @@ class UtilsTestCase(base.SaharaTestCase):
             'cluster-worker-004.novalocal': 'decommissioned'
         }
 
-        self.assertEqual(statuses, expected)
+        self.assertEqual(expected, statuses)
 
     @mock.patch('sahara.plugins.vanilla.utils.get_resourcemanager')
     def test_nodemanagers_status(self, rm):
@@ -53,7 +53,7 @@ class UtilsTestCase(base.SaharaTestCase):
             'cluster-worker-004.novalocal': 'decommissioned'
         }
 
-        self.assertEqual(statuses, expected)
+        self.assertEqual(expected, statuses)
 
     def _get_instance(self, out):
         inst_remote = mock.MagicMock()

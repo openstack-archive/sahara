@@ -39,4 +39,4 @@ class RunScriptsTest(testtools.TestCase):
     def test_check_datanodes_count_expects_zero(self):
         remote = mock.Mock()
         self.assertTrue(run_scripts.check_datanodes_count(remote, 0))
-        self.assertEqual(remote.execute_command.call_count, 0)
+        self.assertEqual(0, remote.execute_command.call_count)

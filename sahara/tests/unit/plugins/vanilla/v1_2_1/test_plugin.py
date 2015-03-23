@@ -103,12 +103,12 @@ class VanillaPluginTest(base.SaharaWithDbTestCase):
             "Wrong-applicable-target": {
                 't1': 4
             }}
-        self.assertEqual(c_h.extract_environment_confs(env_configs),
-                         ['CATALINA_OPTS -Xmx4000m',
+        self.assertEqual(['CATALINA_OPTS -Xmx4000m',
                           'HADOOP_DATANODE_OPTS=\\"-Xmx4000m\\"',
                           'HADOOP_JOBTRACKER_OPTS=\\"-Xmx1000m\\"',
                           'HADOOP_NAMENODE_OPTS=\\"-Xmx3000m\\"',
-                          'HADOOP_TASKTRACKER_OPTS=\\"-Xmx2000m\\"'])
+                          'HADOOP_TASKTRACKER_OPTS=\\"-Xmx2000m\\"'],
+                         c_h.extract_environment_confs(env_configs))
 
     def test_extract_xml_configs(self):
         xml_configs = {
@@ -126,11 +126,11 @@ class VanillaPluginTest(base.SaharaWithDbTestCase):
             }
         }
 
-        self.assertEqual(c_h.extract_xml_confs(xml_configs),
-                         [('dfs.replication', 3),
+        self.assertEqual([('dfs.replication', 3),
                          ('fs.default.name', 'hdfs://'),
                          ('io.sort.factor', 10),
-                         ('mapred.reduce.tasks', 2)])
+                         ('mapred.reduce.tasks', 2)],
+                         c_h.extract_xml_confs(xml_configs))
 
     def test_general_configs(self):
         gen_config = {
@@ -157,19 +157,19 @@ class VanillaPluginTest(base.SaharaWithDbTestCase):
             }
         }
         cfg = c_h.generate_cfg_from_general({}, configs, gen_config)
-        self.assertEqual(cfg, all_configured)
+        self.assertEqual(all_configured, cfg)
         configs['general'].update({'Enable MySQL': False})
         cfg = c_h.generate_cfg_from_general({}, configs, gen_config)
-        self.assertEqual(cfg, {'fs.swift.enabled': True})
+        self.assertEqual({'fs.swift.enabled': True}, cfg)
         configs['general'].update({
             'Enable Swift': False,
             'Enable MySQL': False
         })
         cfg = c_h.generate_cfg_from_general({}, configs, gen_config)
-        self.assertEqual(cfg, {})
+        self.assertEqual({}, cfg)
         configs = {}
         cfg = c_h.generate_cfg_from_general({}, configs, gen_config)
-        self.assertEqual(cfg, all_configured)
+        self.assertEqual(all_configured, cfg)
 
     def test_get_mysql_configs(self):
         cfg = m_h.get_required_mysql_configs(None, None)
@@ -186,12 +186,12 @@ class VanillaPluginTest(base.SaharaWithDbTestCase):
         cond_get_cluster.return_value = cluster
 
         self.assertEqual(
-            c_h.get_config_value('HDFS', 'fs.default.name', cluster),
-            'hdfs://inst1:8020')
+            'hdfs://inst1:8020',
+            c_h.get_config_value('HDFS', 'fs.default.name', cluster))
         self.assertEqual(
-            c_h.get_config_value('HDFS', 'spam', cluster), 'eggs')
+            'eggs', c_h.get_config_value('HDFS', 'spam', cluster))
         self.assertEqual(
-            c_h.get_config_value('HDFS', 'dfs.safemode.extension'), 30000)
+            30000, c_h.get_config_value('HDFS', 'dfs.safemode.extension'))
         self.assertRaises(e.ConfigurationError,
                           c_h.get_config_value,
                           'MapReduce', 'spam', cluster)

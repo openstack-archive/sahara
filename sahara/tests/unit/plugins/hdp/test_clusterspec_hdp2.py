@@ -279,46 +279,47 @@ class ClusterSpecTestForHDP2(sahara_base.SaharaTestCase):
 
         # for this value, validating that user inputs override configured
         # values, whether they are processed by runtime or not
-        self.assertEqual(config['core-site']['fs.defaultFS'],
-                         'hdfs://nn_dif_host.novalocal:8020')
+        self.assertEqual('hdfs://nn_dif_host.novalocal:8020',
+                         config['core-site']['fs.defaultFS'])
 
-        self.assertEqual(config['mapred-site']
-                         ['mapreduce.jobhistory.webapp.address'],
-                         'jt_host.novalocal:19888')
+        self.assertEqual('jt_host.novalocal:19888',
+                         config['mapred-site']
+                         ['mapreduce.jobhistory.webapp.address'])
 
-        self.assertEqual(config['hdfs-site']['dfs.namenode.http-address'],
-                         'nn_host.novalocal:50070')
-        self.assertEqual(config['hdfs-site']
-                         ['dfs.namenode.secondary.http-address'],
-                         'snn_host.novalocal:50090')
-        self.assertEqual(config['hdfs-site']['dfs.namenode.https-address'],
-                         'nn_host.novalocal:50470')
+        self.assertEqual('nn_host.novalocal:50070',
+                         config['hdfs-site']['dfs.namenode.http-address'])
+        self.assertEqual('snn_host.novalocal:50090',
+                         config['hdfs-site']
+                         ['dfs.namenode.secondary.http-address'])
+        self.assertEqual('nn_host.novalocal:50470',
+                         config['hdfs-site']['dfs.namenode.https-address'])
 
-        self.assertEqual(config['global']['hive_hostname'],
-                         'hive_host.novalocal')
-        self.assertEqual(config['core-site']['hadoop.proxyuser.hive.hosts'],
-                         'hive_host.novalocal')
-        self.assertEqual(config['hive-site']
-                         ['javax.jdo.option.ConnectionURL'],
-                         'jdbc:mysql://hive_mysql_host.novalocal/hive?'
-                         'createDatabaseIfNotExist=true')
-        self.assertEqual(config['hive-site']['hive.metastore.uris'],
-                         'thrift://hive_ms_host.novalocal:9083')
+        self.assertEqual('hive_host.novalocal',
+                         config['global']['hive_hostname'])
+        self.assertEqual('hive_host.novalocal',
+                         config['core-site']['hadoop.proxyuser.hive.hosts'])
+        self.assertEqual('jdbc:mysql://hive_mysql_host.novalocal/hive?'
+                         'createDatabaseIfNotExist=true',
+                         config['hive-site']
+                         ['javax.jdo.option.ConnectionURL'])
+        self.assertEqual('thrift://hive_ms_host.novalocal:9083',
+                         config['hive-site']['hive.metastore.uris'])
         self.assertTrue(
             'hive.metastore.uris=thrift://hive_ms_host.novalocal:9083' in
             config['webhcat-site']['templeton.hive.properties'])
-        self.assertEqual(config['core-site']['hadoop.proxyuser.hcat.hosts'],
-                         'hcat_host.novalocal')
-        self.assertEqual(set(
-            config['webhcat-site']['templeton.zookeeper.hosts'].split(',')),
-            set(['zk1_host.novalocal:2181', 'zk2_host.novalocal:2181']))
+        self.assertEqual('hcat_host.novalocal',
+                         config['core-site']['hadoop.proxyuser.hcat.hosts'])
+        self.assertEqual(
+            set(['zk1_host.novalocal:2181', 'zk2_host.novalocal:2181']),
+            set(config['webhcat-site']
+                ['templeton.zookeeper.hosts'].split(',')))
 
-        self.assertEqual(config['oozie-site']['oozie.base.url'],
-                         'http://oozie_host.novalocal:11000/oozie')
-        self.assertEqual(config['global']['oozie_hostname'],
-                         'oozie_host.novalocal')
-        self.assertEqual(config['core-site']['hadoop.proxyuser.oozie.hosts'],
-                         'oozie_host.novalocal,222.11.9999,111.11.9999')
+        self.assertEqual('http://oozie_host.novalocal:11000/oozie',
+                         config['oozie-site']['oozie.base.url'])
+        self.assertEqual('oozie_host.novalocal',
+                         config['global']['oozie_hostname'])
+        self.assertEqual('oozie_host.novalocal,222.11.9999,111.11.9999',
+                         config['core-site']['hadoop.proxyuser.oozie.hosts'])
 
         # test swift properties
         self.assertEqual('swift_prop_value',
@@ -451,67 +452,70 @@ class ClusterSpecTestForHDP2(sahara_base.SaharaTestCase):
 
         # for this value, validating that user inputs override configured
         # values, whether they are processed by runtime or not
-        self.assertEqual(config['core-site']['fs.defaultFS'],
-                         'hdfs://nn_dif_host.novalocal:8020')
+        self.assertEqual('hdfs://nn_dif_host.novalocal:8020',
+                         config['core-site']['fs.defaultFS'])
 
-        self.assertEqual(config['mapred-site']
-                         ['mapreduce.jobhistory.webapp.address'],
-                         'jt_host.novalocal:19888')
+        self.assertEqual('jt_host.novalocal:19888',
+                         config['mapred-site']
+                         ['mapreduce.jobhistory.webapp.address'])
 
-        self.assertEqual(config['hdfs-site']['dfs.namenode.http-address'],
-                         'nn_host.novalocal:50070')
-        self.assertEqual(config['hdfs-site']
-                         ['dfs.namenode.secondary.http-address'],
-                         'snn_host.novalocal:50090')
-        self.assertEqual(config['hdfs-site']['dfs.namenode.https-address'],
-                         'nn_host.novalocal:50470')
-        self.assertEqual(config['hdfs-site']['dfs.support.broken.append'],
-                         'true')
-        self.assertEqual(config['hdfs-site']['dfs.webhdfs.enabled'],
-                         'true')
+        self.assertEqual('nn_host.novalocal:50070',
+                         config['hdfs-site']['dfs.namenode.http-address'])
+        self.assertEqual('snn_host.novalocal:50090',
+                         config['hdfs-site']
+                         ['dfs.namenode.secondary.http-address'])
+        self.assertEqual('nn_host.novalocal:50470',
+                         config['hdfs-site']['dfs.namenode.https-address'])
+        self.assertEqual('true',
+                         config['hdfs-site']['dfs.support.broken.append'])
+        self.assertEqual('true',
+                         config['hdfs-site']['dfs.webhdfs.enabled'])
 
-        self.assertEqual(config['global']['hive_hostname'],
-                         'hive_host.novalocal')
-        self.assertEqual(config['core-site']['hadoop.proxyuser.hive.hosts'],
-                         'hive_host.novalocal')
-        self.assertEqual(config['hive-site']
-                         ['javax.jdo.option.ConnectionURL'],
-                         'jdbc:mysql://hive_mysql_host.novalocal/hive?'
-                         'createDatabaseIfNotExist=true')
-        self.assertEqual(config['hive-site']['hive.metastore.uris'],
-                         'thrift://hive_ms_host.novalocal:9083')
+        self.assertEqual('hive_host.novalocal',
+                         config['global']['hive_hostname'])
+        self.assertEqual('hive_host.novalocal',
+                         config['core-site']['hadoop.proxyuser.hive.hosts'])
+        self.assertEqual('jdbc:mysql://hive_mysql_host.novalocal/hive?'
+                         'createDatabaseIfNotExist=true',
+                         config['hive-site']
+                         ['javax.jdo.option.ConnectionURL'])
+        self.assertEqual('thrift://hive_ms_host.novalocal:9083',
+                         config['hive-site']['hive.metastore.uris'])
         self.assertTrue(
             'hive.metastore.uris=thrift://hive_ms_host.novalocal:9083' in
             config['webhcat-site']['templeton.hive.properties'])
-        self.assertEqual(config['core-site']['hadoop.proxyuser.hcat.hosts'],
-                         '*')
-        self.assertEqual(config['core-site']['hadoop.proxyuser.hcat.groups'],
-                         '*')
-        self.assertEqual(config['core-site']['hadoop.proxyuser.hue.hosts'],
-                         '*')
-        self.assertEqual(config['core-site']['hadoop.proxyuser.hue.groups'],
-                         '*')
-        self.assertEqual(set(
-            config['webhcat-site']['templeton.zookeeper.hosts'].split(',')),
-            set(['zk1_host.novalocal:2181', 'zk2_host.novalocal:2181']))
-        self.assertEqual(config['webhcat-site']['webhcat.proxyuser.hue.hosts'],
-                         '*')
-        self.assertEqual(config['webhcat-site']
-                         ['webhcat.proxyuser.hue.groups'],
-                         '*')
+        self.assertEqual('*',
+                         config['core-site']['hadoop.proxyuser.hcat.hosts'])
+        self.assertEqual('*',
+                         config['core-site']['hadoop.proxyuser.hcat.groups'])
+        self.assertEqual('*',
+                         config['core-site']['hadoop.proxyuser.hue.hosts'])
+        self.assertEqual('*',
+                         config['core-site']['hadoop.proxyuser.hue.groups'])
+        self.assertEqual(
+            set(['zk1_host.novalocal:2181', 'zk2_host.novalocal:2181']),
+            set(config['webhcat-site']
+                ['templeton.zookeeper.hosts'].split(',')))
+        self.assertEqual('*',
+                         config['webhcat-site']['webhcat.proxyuser.hue.hosts'])
+        self.assertEqual('*',
+                         config['webhcat-site']
+                         ['webhcat.proxyuser.hue.groups'])
 
-        self.assertEqual(config['oozie-site']['oozie.base.url'],
-                         'http://oozie_host.novalocal:11000/oozie')
-        self.assertEqual(config['oozie-site']
+        self.assertEqual('http://oozie_host.novalocal:11000/oozie',
+                         config['oozie-site']['oozie.base.url'])
+        self.assertEqual('*',
+                         config['oozie-site']
                          ['oozie.service.ProxyUserService.proxyuser.hue.'
-                          'groups'], '*')
-        self.assertEqual(config['oozie-site']
+                          'groups'])
+        self.assertEqual('*',
+                         config['oozie-site']
                          ['oozie.service.ProxyUserService.proxyuser.hue.'
-                          'hosts'], '*')
-        self.assertEqual(config['global']['oozie_hostname'],
-                         'oozie_host.novalocal')
-        self.assertEqual(config['core-site']['hadoop.proxyuser.oozie.hosts'],
-                         'oozie_host.novalocal,222.11.9999,111.11.9999')
+                          'hosts'])
+        self.assertEqual('oozie_host.novalocal',
+                         config['global']['oozie_hostname'])
+        self.assertEqual('oozie_host.novalocal,222.11.9999,111.11.9999',
+                         config['core-site']['hadoop.proxyuser.oozie.hosts'])
 
         # test swift properties
         self.assertEqual('swift_prop_value',

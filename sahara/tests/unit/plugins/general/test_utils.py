@@ -42,31 +42,31 @@ class GeneralUtilsTest(testtools.TestCase):
         self.ng3 = self.c1.node_groups[2]
 
     def test_get_node_groups(self):
-        self.assertEqual(u.get_node_groups(self.c1), self.c1.node_groups)
-        self.assertEqual(u.get_node_groups(self.c1, "wrong-process"), [])
-        self.assertEqual(u.get_node_groups(self.c1, 'dn'),
-                         [self.ng2, self.ng3])
+        self.assertEqual(self.c1.node_groups, u.get_node_groups(self.c1))
+        self.assertEqual([], u.get_node_groups(self.c1, "wrong-process"))
+        self.assertEqual([self.ng2, self.ng3],
+                         u.get_node_groups(self.c1, 'dn'))
 
     def test_get_instances(self):
-        self.assertEqual(len(u.get_instances(self.c1)), 5)
-        self.assertEqual(u.get_instances(self.c1, 'wrong-process'), [])
-        self.assertEqual(u.get_instances(self.c1, 'nn'),
-                         self.ng1.instances)
+        self.assertEqual(5, len(u.get_instances(self.c1)))
+        self.assertEqual([], u.get_instances(self.c1, 'wrong-process'))
+        self.assertEqual(self.ng1.instances,
+                         u.get_instances(self.c1, 'nn'))
         instances = list(self.ng2.instances)
         instances += self.ng3.instances
-        self.assertEqual(u.get_instances(self.c1, 'dn'), instances)
+        self.assertEqual(instances, u.get_instances(self.c1, 'dn'))
 
     def test_get_instance(self):
         self.assertIsNone(u.get_instance(self.c1, 'wrong-process'))
-        self.assertEqual(u.get_instance(self.c1, 'nn'),
-                         self.ng1.instances[0])
+        self.assertEqual(self.ng1.instances[0],
+                         u.get_instance(self.c1, 'nn'))
         with testtools.ExpectedException(ex.InvalidComponentCountException):
             u.get_instance(self.c1, 'dn')
 
     def test_generate_lines_from_list(self):
-        self.assertEqual(u.generate_host_names(self.ng2.instances),
-                         "worker1\nworker2\nworker3")
-        self.assertEqual(u.generate_host_names([]), "")
+        self.assertEqual("worker1\nworker2\nworker3",
+                         u.generate_host_names(self.ng2.instances))
+        self.assertEqual("", u.generate_host_names([]))
 
 
 class GetPortUtilsTest(testtools.TestCase):
@@ -82,4 +82,4 @@ class GetPortUtilsTest(testtools.TestCase):
 
     def test_get_port_from_address(self):
         for address, port in self.test_values:
-            self.assertEqual(u.get_port_from_address(address), port)
+            self.assertEqual(port, u.get_port_from_address(address))
