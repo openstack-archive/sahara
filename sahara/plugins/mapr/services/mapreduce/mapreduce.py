@@ -110,6 +110,11 @@ class MapReduce(s.Service):
         result = {}
         if context.is_node_aware:
             result.update(self._get_mapred_site_node_aware_props())
+        result.update({
+            'jobtracker.thrift.address': '0.0.0.0:9290',
+            'mapred.jobtracker.plugins':
+                'org.apache.hadoop.thriftfs.ThriftJobTrackerPlugin',
+        })
         return result
 
     def _get_mapred_site_node_aware_props(self):
