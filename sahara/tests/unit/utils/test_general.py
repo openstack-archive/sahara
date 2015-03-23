@@ -43,6 +43,6 @@ class UtilsGeneralTest(testtools.TestCase):
     def test_generate_instance_name(self):
         inst_name = "cluster-worker-001"
         self.assertEqual(
-            general.generate_instance_name("cluster", "worker", 1), inst_name)
+            inst_name, general.generate_instance_name("cluster", "worker", 1))
         self.assertEqual(
-            general.generate_instance_name("CLUSTER", "WORKER", 1), inst_name)
+            inst_name, general.generate_instance_name("CLUSTER", "WORKER", 1))

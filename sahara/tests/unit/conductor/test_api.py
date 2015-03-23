@@ -83,11 +83,11 @@ class TestConductorClusterApi(base.SaharaWithDbTestCase):
         self.api.cluster_update(ctx, cluster.id, {'name': 'changed'})
 
         updated_cluster = self.api.cluster_get(ctx, cluster.id)
-        self.assertEqual(updated_cluster['name'], 'changed')
+        self.assertEqual('changed', updated_cluster['name'])
 
         self.api.cluster_destroy(ctx, updated_cluster.id)
         cluster_list = self.api.cluster_get_all(ctx)
-        self.assertEqual(len(cluster_list), 0)
+        self.assertEqual(0, len(cluster_list))
 
     def test_add_node_group_to_cluster_id(self):
         ctx, cluster = self._make_sample()
@@ -101,7 +101,7 @@ class TestConductorClusterApi(base.SaharaWithDbTestCase):
         cluster = self.api.cluster_get(ctx, cluster.id)
 
         ng = gu.get_by_id(cluster.node_groups, ng_id)
-        self.assertEqual(ng.name, 'changed_ng')
+        self.assertEqual('changed_ng', ng.name)
 
     def test_add_instance_to_node_group_id(self):
         ctx, cluster = self._make_sample()
@@ -118,7 +118,7 @@ class TestConductorClusterApi(base.SaharaWithDbTestCase):
         cluster = self.api.cluster_get(ctx, cluster.id)
 
         ng = gu.get_by_id(cluster.node_groups, ng_id)
-        self.assertEqual(ng.instances[0].instance_name, 'tst123')
+        self.assertEqual('tst123', ng.instances[0].instance_name)
 
     def _get_events(self, ctx, cluster_id, step_id=None):
         cluster = self.api.cluster_get(ctx, cluster_id, show_progress=True)

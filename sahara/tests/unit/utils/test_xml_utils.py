@@ -38,18 +38,16 @@ class XMLUtilsTestCase(testtools.TestCase):
                 'tests/unit/resources/test-default.xml'))
 
     def test_adjust_description(self):
-        self.assertEqual(x._adjust_field("\n"), "")
-        self.assertEqual(x._adjust_field("\n  "), "")
-        self.assertEqual(x._adjust_field(u"abc\n  def\n  "), "abcdef")
-        self.assertEqual(x._adjust_field("abc d\n e f\n"), "abc de f")
-        self.assertEqual(x._adjust_field("a\tb\t\nc"), "abc")
+        self.assertEqual("", x._adjust_field("\n"))
+        self.assertEqual("", x._adjust_field("\n  "))
+        self.assertEqual("abcdef", x._adjust_field(u"abc\n  def\n  "))
+        self.assertEqual("abc de f", x._adjust_field("abc d\n e f\n"))
+        self.assertEqual("abc", x._adjust_field("a\tb\t\nc"))
 
     def test_create_hadoop_xml(self):
         conf = x.load_hadoop_xml_defaults(
             'tests/unit/resources/test-default.xml')
-        self.assertEqual(x.create_hadoop_xml({'name1': 'some_val1',
-                                              'name2': 2}, conf),
-                         """<?xml version="1.0" ?>
+        self.assertEqual("""<?xml version="1.0" ?>
 <?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
 <configuration>
   <property>
@@ -61,24 +59,25 @@ class XMLUtilsTestCase(testtools.TestCase):
     <value>2</value>
   </property>
 </configuration>
-""")
+""",
+                         x.create_hadoop_xml({'name1': 'some_val1',
+                                              'name2': 2}, conf),)
 
     def test_add_property_to_configuration(self):
         doc = self.create_default_doc()
         x.add_properties_to_configuration(doc, 'test', {'': 'empty1',
                                                         None: 'empty2'})
-        self.assertEqual(doc.toprettyxml(indent="  "),
-                         """<?xml version="1.0" ?>
+        self.assertEqual("""<?xml version="1.0" ?>
 <test>
   <configuration/>
 </test>
-""")
+""",
+                         doc.toprettyxml(indent="  "))
 
         test_conf = {'name1': 'value1', 'name2': 'value2'}
         x.add_properties_to_configuration(doc, 'test', test_conf)
 
-        self.assertEqual(doc.toprettyxml(indent="  "),
-                         """<?xml version="1.0" ?>
+        self.assertEqual("""<?xml version="1.0" ?>
 <test>
   <configuration>
     <property>
@@ -91,10 +90,10 @@ class XMLUtilsTestCase(testtools.TestCase):
     </property>
   </configuration>
 </test>
-""")
+""",
+                         doc.toprettyxml(indent="  "))
         x.add_property_to_configuration(doc, 'name3', 'value3')
-        self.assertEqual(doc.toprettyxml(indent="  "),
-                         """<?xml version="1.0" ?>
+        self.assertEqual("""<?xml version="1.0" ?>
 <test>
   <configuration>
     <property>
@@ -111,71 +110,72 @@ class XMLUtilsTestCase(testtools.TestCase):
     </property>
   </configuration>
 </test>
-""")
+""",
+                         doc.toprettyxml(indent="  "))
 
     def test_get_if_not_exist_and_add_text_element(self):
         doc = self.create_default_doc()
         x.get_and_create_if_not_exist(doc, 'test', 'tag_to_add')
-        self.assertEqual(doc.toprettyxml(indent="  "),
-                         """<?xml version="1.0" ?>
+        self.assertEqual("""<?xml version="1.0" ?>
 <test>
   <tag_to_add/>
 </test>
-""")
+""",
+                         doc.toprettyxml(indent="  "))
         x.add_text_element_to_tag(doc, 'tag_to_add', 'p', 'v')
-        self.assertEqual(doc.toprettyxml(indent="  "),
-                         """<?xml version="1.0" ?>
+        self.assertEqual("""<?xml version="1.0" ?>
 <test>
   <tag_to_add>
     <p>v</p>
   </tag_to_add>
 </test>
-""")
+""",
+                         doc.toprettyxml(indent="  "))
 
     def test_get_if_not_exist_and_add_to_element(self):
         doc = self.create_default_doc()
         elem = x.get_and_create_if_not_exist(doc, 'test', 'tag_to_add')
 
         x.add_text_element_to_element(doc, elem, 'p', 'v')
-        self.assertEqual(doc.toprettyxml(indent="  "),
-                         """<?xml version="1.0" ?>
+        self.assertEqual("""<?xml version="1.0" ?>
 <test>
   <tag_to_add>
     <p>v</p>
   </tag_to_add>
 </test>
-""")
+""",
+                         doc.toprettyxml(indent="  "))
 
     def test_add_tagged_list(self):
         doc = self.create_default_doc()
         x.add_tagged_list(doc, 'test', 'list_item', ['a', 'b'])
-        self.assertEqual(doc.toprettyxml(indent="  "),
-                         """<?xml version="1.0" ?>
+        self.assertEqual("""<?xml version="1.0" ?>
 <test>
   <list_item>a</list_item>
   <list_item>b</list_item>
 </test>
-""")
+""",
+                         doc.toprettyxml(indent="  "))
 
     def test_add_equal_separated_dict(self):
         doc = self.create_default_doc()
 
         x.add_equal_separated_dict(doc, 'test', 'dict_item',
                                    {'': 'empty1', None: 'empty2'})
-        self.assertEqual(doc.toprettyxml(indent="  "),
-                         """<?xml version="1.0" ?>
+        self.assertEqual("""<?xml version="1.0" ?>
 <test/>
-""")
+""",
+                         doc.toprettyxml(indent="  "))
 
         x.add_equal_separated_dict(doc, 'test', 'dict_item',
                                    {'a': 'b', 'c': 'd'})
-        self.assertEqual(doc.toprettyxml(indent="  "),
-                         """<?xml version="1.0" ?>
+        self.assertEqual("""<?xml version="1.0" ?>
 <test>
   <dict_item>a=b</dict_item>
   <dict_item>c=d</dict_item>
 </test>
-""")
+""",
+                         doc.toprettyxml(indent="  "))
 
     def create_default_doc(self):
         doc = xml.Document()
@@ -200,4 +200,4 @@ class XMLUtilsTestCase(testtools.TestCase):
 
         # Prove the differences are only blank lines
         non_blank_diffs = [l for l in diff if not l.isspace()]
-        self.assertEqual(len(non_blank_diffs), 0)
+        self.assertEqual(0, len(non_blank_diffs))

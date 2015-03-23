@@ -21,12 +21,12 @@ from sahara.utils import edp
 class SplitJobTypeTest(testtools.TestCase):
     def test_split_job_type(self):
         jtype, stype = edp.split_job_type(edp.JOB_TYPE_MAPREDUCE)
-        self.assertEqual(jtype, edp.JOB_TYPE_MAPREDUCE)
-        self.assertEqual(stype, edp.JOB_SUBTYPE_NONE)
+        self.assertEqual(edp.JOB_TYPE_MAPREDUCE, jtype)
+        self.assertEqual(edp.JOB_SUBTYPE_NONE, stype)
 
         jtype, stype = edp.split_job_type(edp.JOB_TYPE_MAPREDUCE_STREAMING)
-        self.assertEqual(jtype, edp.JOB_TYPE_MAPREDUCE)
-        self.assertEqual(stype, edp.JOB_SUBTYPE_STREAMING)
+        self.assertEqual(edp.JOB_TYPE_MAPREDUCE, jtype)
+        self.assertEqual(edp.JOB_SUBTYPE_STREAMING, stype)
 
     def test_compare_job_type(self):
         self.assertTrue(edp.compare_job_type(

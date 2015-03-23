@@ -55,7 +55,7 @@ class ContextTest(testtools.TestCase):
                 for i in six.moves.range(400):
                     tg.spawn('add %i' % i, self._add_element, lst, i)
 
-            self.assertEqual(len(lst), 400)
+            self.assertEqual(400, len(lst))
 
     def test_thread_group_waits_threads_if_spawning_exception(self):
         lst = []
@@ -67,7 +67,7 @@ class ContextTest(testtools.TestCase):
 
                 raise RuntimeError()
 
-        self.assertEqual(len(lst), 400)
+        self.assertEqual(400, len(lst))
 
     def test_thread_group_waits_threads_if_child_exception(self):
         lst = []
@@ -79,7 +79,7 @@ class ContextTest(testtools.TestCase):
                 for i in six.moves.range(400):
                     tg.spawn('add %i' % i, self._add_element, lst, i)
 
-        self.assertEqual(len(lst), 400)
+        self.assertEqual(400, len(lst))
 
     def test_thread_group_handles_spawning_exception(self):
         with testtools.ExpectedException(TestException):
@@ -119,7 +119,7 @@ class ContextTest(testtools.TestCase):
         context._wrapper(None, 'test thread', tg, func)
 
         self.assertIsNotNone(tg.exc)
-        self.assertEqual(tg.failed_thread, 'test thread')
+        self.assertEqual('test thread', tg.failed_thread)
 
     def test_is_auth_capable_for_admin_ctx(self):
         ctx = context.ctx()

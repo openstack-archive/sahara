@@ -98,13 +98,13 @@ class DataSourceTest(test_base.ConductorManagerTestCase):
         self.api.data_source_create(ctx, SAMPLE_DATA_SOURCE)
 
         lst = self.api.data_source_get_all(ctx)
-        self.assertEqual(len(lst), 1)
+        self.assertEqual(1, len(lst))
 
         ds_id = lst[0]['id']
         self.api.data_source_destroy(ctx, ds_id)
 
         lst = self.api.data_source_get_all(ctx)
-        self.assertEqual(len(lst), 0)
+        self.assertEqual(0, len(lst))
 
     def test_duplicate_data_source_create(self):
         ctx = context.ctx()
@@ -141,21 +141,21 @@ class DataSourceTest(test_base.ConductorManagerTestCase):
         self.api.data_source_create(ctx, SAMPLE_DATA_SOURCE)
 
         lst = self.api.data_source_get_all(ctx)
-        self.assertEqual(len(lst), 1)
+        self.assertEqual(1, len(lst))
 
         kwargs = {'name': SAMPLE_DATA_SOURCE['name'],
                   'tenant_id': SAMPLE_DATA_SOURCE['tenant_id']}
         lst = self.api.data_source_get_all(ctx, **kwargs)
-        self.assertEqual(len(lst), 1)
+        self.assertEqual(1, len(lst))
 
         # Valid field but no matching value
         kwargs = {'name': SAMPLE_DATA_SOURCE['name']+"foo"}
         lst = self.api.data_source_get_all(ctx, **kwargs)
-        self.assertEqual(len(lst), 0)
+        self.assertEqual(0, len(lst))
 
         # Invalid field
         lst = self.api.data_source_get_all(ctx, **{'badfield': 'somevalue'})
-        self.assertEqual(len(lst), 0)
+        self.assertEqual(0, len(lst))
 
     def test_data_source_count_in(self):
         ctx = context.ctx()
@@ -164,27 +164,27 @@ class DataSourceTest(test_base.ConductorManagerTestCase):
         self.api.data_source_create(ctx, src)
 
         cnt = self.api.data_source_count(ctx, name='ngt_test')
-        self.assertEqual(cnt, 1)
+        self.assertEqual(1, cnt)
 
         cnt = self.api.data_source_count(ctx, name=('ngt_test',
                                                     'test2', 'test3'))
-        self.assertEqual(cnt, 1)
+        self.assertEqual(1, cnt)
 
         cnt = self.api.data_source_count(ctx, name=('test1',
                                                     'test2', 'test3'))
-        self.assertEqual(cnt, 0)
+        self.assertEqual(0, cnt)
 
         lst = self.api.data_source_get_all(ctx, name='ngt_test')
         myid = lst[0]['id']
         cnt = self.api.data_source_count(ctx,
                                          name=('ngt_test', 'test2', 'test3'),
                                          id=myid)
-        self.assertEqual(cnt, 1)
+        self.assertEqual(1, cnt)
 
         cnt = self.api.data_source_count(ctx,
                                          name=('ngt_test', 'test2', 'test3'),
                                          id=(myid, '2'))
-        self.assertEqual(cnt, 1)
+        self.assertEqual(1, cnt)
 
     def test_data_source_count_like(self):
         ctx = context.ctx()
@@ -193,20 +193,20 @@ class DataSourceTest(test_base.ConductorManagerTestCase):
         self.api.data_source_create(ctx, src)
 
         cnt = self.api.data_source_count(ctx, name='ngt_test')
-        self.assertEqual(cnt, 1)
+        self.assertEqual(1, cnt)
 
         cnt = self.api.data_source_count(ctx, name='ngt%')
-        self.assertEqual(cnt, 1)
+        self.assertEqual(1, cnt)
 
         cnt = self.api.data_source_count(ctx,
                                          name=('ngt_test',),
                                          url='localhost%')
-        self.assertEqual(cnt, 1)
+        self.assertEqual(1, cnt)
 
         cnt = self.api.data_source_count(ctx,
                                          name=('ngt_test',),
                                          url='localhost')
-        self.assertEqual(cnt, 0)
+        self.assertEqual(0, cnt)
 
 
 class JobExecutionTest(test_base.ConductorManagerTestCase):
@@ -225,10 +225,10 @@ class JobExecutionTest(test_base.ConductorManagerTestCase):
         self.api.job_execution_create(ctx, SAMPLE_JOB_EXECUTION)
 
         lst = self.api.job_execution_get_all(ctx)
-        self.assertEqual(len(lst), 1)
+        self.assertEqual(1, len(lst))
 
         count = self.api.job_execution_count(ctx)
-        self.assertEqual(count, 1)
+        self.assertEqual(1, count)
 
         job_ex_id = lst[0]['id']
 
@@ -236,9 +236,9 @@ class JobExecutionTest(test_base.ConductorManagerTestCase):
         new_info = {"status": edp.JOB_STATUS_PENDING}
         self.api.job_execution_update(ctx, job_ex_id, {'info': new_info})
         updated_job = self.api.job_execution_get(ctx, job_ex_id)
-        self.assertEqual(updated_job['info'], new_info)
-        self.assertEqual(updated_job['start_time'],
-                         SAMPLE_JOB_EXECUTION['start_time'])
+        self.assertEqual(new_info, updated_job['info'])
+        self.assertEqual(SAMPLE_JOB_EXECUTION['start_time'],
+                         updated_job['start_time'])
 
         self.api.job_execution_destroy(ctx, job_ex_id)
 
@@ -249,7 +249,7 @@ class JobExecutionTest(test_base.ConductorManagerTestCase):
             self.api.job_execution_destroy(ctx, job_ex_id)
 
         lst = self.api.job_execution_get_all(ctx)
-        self.assertEqual(len(lst), 0)
+        self.assertEqual(0, len(lst))
 
     def test_crud_operation_on_configured_jobs(self):
         ctx = context.ctx()
@@ -266,7 +266,7 @@ class JobExecutionTest(test_base.ConductorManagerTestCase):
         self.api.job_execution_create(ctx, SAMPLE_CONF_JOB_EXECUTION)
 
         lst = self.api.job_execution_get_all(ctx)
-        self.assertEqual(len(lst), 1)
+        self.assertEqual(1, len(lst))
 
         job_ex = lst[0]
         configs = {
@@ -312,20 +312,20 @@ class JobExecutionTest(test_base.ConductorManagerTestCase):
         self.api.job_execution_create(ctx, SAMPLE_JOB_EXECUTION)
 
         lst = self.api.job_execution_get_all(ctx)
-        self.assertEqual(len(lst), 1)
+        self.assertEqual(1, len(lst))
 
         kwargs = {'tenant_id': SAMPLE_JOB_EXECUTION['tenant_id']}
         lst = self.api.job_execution_get_all(ctx, **kwargs)
-        self.assertEqual(len(lst), 1)
+        self.assertEqual(1, len(lst))
 
         # Valid field but no matching value
         kwargs = {'job_id': SAMPLE_JOB_EXECUTION['job_id']+"foo"}
         lst = self.api.job_execution_get_all(ctx, **kwargs)
-        self.assertEqual(len(lst), 0)
+        self.assertEqual(0, len(lst))
 
         # Invalid field
         lst = self.api.job_execution_get_all(ctx, **{'badfield': 'somevalue'})
-        self.assertEqual(len(lst), 0)
+        self.assertEqual(0, len(lst))
 
     def test_job_execution_advanced_search(self):
         ctx = context.ctx()
@@ -360,20 +360,20 @@ class JobExecutionTest(test_base.ConductorManagerTestCase):
 
         # Search only with job exeuction fields (finds both)
         lst = self.api.job_execution_get_all(ctx, **{'return_code': 1})
-        self.assertEqual(len(lst), 2)
+        self.assertEqual(2, len(lst))
 
         # Search on cluster name
         kwargs = {'cluster.name': cl1['name'],
                   'return_code': 1}
         lst = self.api.job_execution_get_all(ctx, **kwargs)
-        self.assertEqual(len(lst), 1)
+        self.assertEqual(1, len(lst))
 
         # Search on cluster name and job name
         kwargs = {'cluster.name': cl1['name'],
                   'job.name': SAMPLE_JOB['name'],
                   'return_code': 1}
         lst = self.api.job_execution_get_all(ctx, **kwargs)
-        self.assertEqual(len(lst), 1)
+        self.assertEqual(1, len(lst))
 
         # Search on cluster name, job name, and status
         kwargs = {'cluster.name': cl2['name'],
@@ -381,31 +381,31 @@ class JobExecutionTest(test_base.ConductorManagerTestCase):
                   'status': 'killed',
                   'return_code': 1}
         lst = self.api.job_execution_get_all(ctx, **kwargs)
-        self.assertEqual(len(lst), 1)
+        self.assertEqual(1, len(lst))
 
         # Search on job name (finds both)
         kwargs = {'job.name': SAMPLE_JOB['name'],
                   'return_code': 1}
         lst = self.api.job_execution_get_all(ctx, **kwargs)
-        self.assertEqual(len(lst), 2)
+        self.assertEqual(2, len(lst))
 
         # invalid cluster name value
         kwargs = {'cluster.name': cl1['name']+'foo',
                   'job.name': SAMPLE_JOB['name']}
         lst = self.api.job_execution_get_all(ctx, **kwargs)
-        self.assertEqual(len(lst), 0)
+        self.assertEqual(0, len(lst))
 
         # invalid job name value
         kwargs = {'cluster.name': cl1['name'],
                   'job.name': SAMPLE_JOB['name']+'foo'}
         lst = self.api.job_execution_get_all(ctx, **kwargs)
-        self.assertEqual(len(lst), 0)
+        self.assertEqual(0, len(lst))
 
         # invalid status value
         kwargs = {'cluster.name': cl1['name'],
                   'status': 'PENDING'}
         lst = self.api.job_execution_get_all(ctx, **kwargs)
-        self.assertEqual(len(lst), 0)
+        self.assertEqual(0, len(lst))
 
 
 class JobTest(test_base.ConductorManagerTestCase):
@@ -421,18 +421,18 @@ class JobTest(test_base.ConductorManagerTestCase):
         self.api.job_create(ctx, SAMPLE_JOB)
 
         lst = self.api.job_get_all(ctx)
-        self.assertEqual(len(lst), 1)
+        self.assertEqual(1, len(lst))
 
         jo_id = lst[0]['id']
 
         update_jo = self.api.job_update(ctx, jo_id,
                                         {'description': 'update'})
-        self.assertEqual(update_jo['description'], 'update')
+        self.assertEqual('update', update_jo['description'])
 
         self.api.job_destroy(ctx, jo_id)
 
         lst = self.api.job_get_all(ctx)
-        self.assertEqual(len(lst), 0)
+        self.assertEqual(0, len(lst))
 
         with testtools.ExpectedException(ex.NotFoundException):
             self.api.job_destroy(ctx, jo_id)
@@ -455,20 +455,20 @@ class JobTest(test_base.ConductorManagerTestCase):
         self.api.job_create(ctx, SAMPLE_JOB)
 
         lst = self.api.job_get_all(ctx)
-        self.assertEqual(len(lst), 1)
+        self.assertEqual(1, len(lst))
 
         kwargs = {'name': SAMPLE_JOB['name'],
                   'tenant_id': SAMPLE_JOB['tenant_id']}
         lst = self.api.job_get_all(ctx, **kwargs)
-        self.assertEqual(len(lst), 1)
+        self.assertEqual(1, len(lst))
 
         # Valid field but no matching value
         lst = self.api.job_get_all(ctx, **{'name': SAMPLE_JOB['name']+"foo"})
-        self.assertEqual(len(lst), 0)
+        self.assertEqual(0, len(lst))
 
         # Invalid field
         lst = self.api.job_get_all(ctx, **{'badfield': 'somevalue'})
-        self.assertEqual(len(lst), 0)
+        self.assertEqual(0, len(lst))
 
 
 class JobBinaryInternalTest(test_base.ConductorManagerTestCase):
@@ -484,13 +484,13 @@ class JobBinaryInternalTest(test_base.ConductorManagerTestCase):
         self.api.job_binary_internal_create(ctx, SAMPLE_JOB_BINARY_INTERNAL)
 
         lst = self.api.job_binary_internal_get_all(ctx)
-        self.assertEqual(len(lst), 1)
+        self.assertEqual(1, len(lst))
 
         job_bin_int_id = lst[0]['id']
         self.api.job_binary_internal_destroy(ctx, job_bin_int_id)
 
         lst = self.api.job_binary_internal_get_all(ctx)
-        self.assertEqual(len(lst), 0)
+        self.assertEqual(0, len(lst))
 
         with testtools.ExpectedException(ex.NotFoundException):
             self.api.job_binary_internal_destroy(ctx, job_bin_int_id)
@@ -509,7 +509,7 @@ class JobBinaryInternalTest(test_base.ConductorManagerTestCase):
                                                  SAMPLE_JOB_BINARY_INTERNAL
                                                  )['id']
         data = self.api.job_binary_internal_get_raw_data(ctx, id)
-        self.assertEqual(data, SAMPLE_JOB_BINARY_INTERNAL["data"])
+        self.assertEqual(SAMPLE_JOB_BINARY_INTERNAL["data"], data)
 
         self.api.job_binary_internal_destroy(ctx, id)
 
@@ -541,21 +541,21 @@ class JobBinaryInternalTest(test_base.ConductorManagerTestCase):
         self.api.job_binary_internal_create(ctx, SAMPLE_JOB_BINARY_INTERNAL)
 
         lst = self.api.job_binary_internal_get_all(ctx)
-        self.assertEqual(len(lst), 1)
+        self.assertEqual(1, len(lst))
 
         kwargs = {'name': SAMPLE_JOB_BINARY_INTERNAL['name'],
                   'tenant_id': SAMPLE_JOB_BINARY_INTERNAL['tenant_id']}
         lst = self.api.job_binary_internal_get_all(ctx, **kwargs)
-        self.assertEqual(len(lst), 1)
+        self.assertEqual(1, len(lst))
 
         # Valid field but no matching value
         kwargs = {'name': SAMPLE_JOB_BINARY_INTERNAL['name']+"foo"}
         lst = self.api.job_binary_internal_get_all(ctx, **kwargs)
-        self.assertEqual(len(lst), 0)
+        self.assertEqual(0, len(lst))
 
         # Invalid field
         lst = self.api.job_binary_internal_get_all(ctx, **{'badfield': 'junk'})
-        self.assertEqual(len(lst), 0)
+        self.assertEqual(0, len(lst))
 
 
 class JobBinaryTest(test_base.ConductorManagerTestCase):
@@ -571,13 +571,13 @@ class JobBinaryTest(test_base.ConductorManagerTestCase):
         self.api.job_binary_create(ctx, SAMPLE_JOB_BINARY)
 
         lst = self.api.job_binary_get_all(ctx)
-        self.assertEqual(len(lst), 1)
+        self.assertEqual(1, len(lst))
 
         job_binary_id = lst[0]['id']
         self.api.job_binary_destroy(ctx, job_binary_id)
 
         lst = self.api.job_binary_get_all(ctx)
-        self.assertEqual(len(lst), 0)
+        self.assertEqual(0, len(lst))
 
         with testtools.ExpectedException(ex.NotFoundException):
             self.api.job_binary_destroy(ctx, job_binary_id)
@@ -612,7 +612,7 @@ class JobBinaryTest(test_base.ConductorManagerTestCase):
         self.api.job_destroy(ctx, job_id)
         self.api.job_binary_destroy(ctx, job_binary_id)
         lst = self.api.job_binary_get_all(ctx)
-        self.assertEqual(len(lst), 0)
+        self.assertEqual(0, len(lst))
 
     def test_job_binary_referenced_mains(self):
         self._test_job_binary_referenced("mains")
@@ -633,18 +633,18 @@ class JobBinaryTest(test_base.ConductorManagerTestCase):
         self.api.job_binary_create(ctx, SAMPLE_JOB_BINARY)
 
         lst = self.api.job_binary_get_all(ctx)
-        self.assertEqual(len(lst), 1)
+        self.assertEqual(1, len(lst))
 
         kwargs = {'name': SAMPLE_JOB_BINARY['name'],
                   'tenant_id': SAMPLE_JOB_BINARY['tenant_id']}
         lst = self.api.job_binary_get_all(ctx, **kwargs)
-        self.assertEqual(len(lst), 1)
+        self.assertEqual(1, len(lst))
 
         # Valid field but no matching value
         kwargs = {'name': SAMPLE_JOB_BINARY['name']+"foo"}
         lst = self.api.job_binary_get_all(ctx, **kwargs)
-        self.assertEqual(len(lst), 0)
+        self.assertEqual(0, len(lst))
 
         # Invalid field
         lst = self.api.job_binary_get_all(ctx, **{'badfield': 'somevalue'})
-        self.assertEqual(len(lst), 0)
+        self.assertEqual(0, len(lst))

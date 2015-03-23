@@ -178,7 +178,7 @@ class JobExecutionTest(base.BaseDataProcessingTest):
 
         # check that cluster moved to deleting state
         cluster = self.client.clusters.get(cluster_id)
-        self.assertEqual(cluster.status, 'Deleting')
+        self.assertEqual('Deleting', cluster.status)
 
         timeout = CONF.data_processing.cluster_timeout
         s_time = timeutils.utcnow()

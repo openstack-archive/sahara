@@ -96,13 +96,13 @@ class NodeGroupTemplates(test_base.ConductorManagerTestCase):
         self.api.node_group_template_create(ctx, SAMPLE_NGT)
 
         lst = self.api.node_group_template_get_all(ctx)
-        self.assertEqual(len(lst), 1)
+        self.assertEqual(1, len(lst))
 
         ngt_id = lst[0]['id']
         self.api.node_group_template_destroy(ctx, ngt_id)
 
         lst = self.api.node_group_template_get_all(ctx)
-        self.assertEqual(len(lst), 0)
+        self.assertEqual(0, len(lst))
 
     def test_duplicate_ngt_create(self):
         ctx = context.ctx()
@@ -152,21 +152,21 @@ class NodeGroupTemplates(test_base.ConductorManagerTestCase):
         self.api.node_group_template_create(ctx, SAMPLE_NGT)
 
         lst = self.api.node_group_template_get_all(ctx)
-        self.assertEqual(len(lst), 1)
+        self.assertEqual(1, len(lst))
 
         kwargs = {'name': SAMPLE_NGT['name'],
                   'plugin_name': SAMPLE_NGT['plugin_name']}
         lst = self.api.node_group_template_get_all(ctx, **kwargs)
-        self.assertEqual(len(lst), 1)
+        self.assertEqual(1, len(lst))
 
         # Valid field but no matching value
         kwargs = {'name': SAMPLE_NGT['name']+"foo"}
         lst = self.api.node_group_template_get_all(ctx, **kwargs)
-        self.assertEqual(len(lst), 0)
+        self.assertEqual(0, len(lst))
 
         # Invalid field
         lst = self.api.node_group_template_get_all(ctx, **{'badfield': 'junk'})
-        self.assertEqual(len(lst), 0)
+        self.assertEqual(0, len(lst))
 
     def test_ngt_update(self):
         ctx = context.ctx()
@@ -228,13 +228,13 @@ class ClusterTemplates(test_base.ConductorManagerTestCase):
         self.api.cluster_template_create(ctx, SAMPLE_CLT)
 
         lst = self.api.cluster_template_get_all(ctx)
-        self.assertEqual(len(lst), 1)
+        self.assertEqual(1, len(lst))
 
         clt_id = lst[0]['id']
         self.api.cluster_template_destroy(ctx, clt_id)
 
         lst = self.api.cluster_template_get_all(ctx)
-        self.assertEqual(len(lst), 0)
+        self.assertEqual(0, len(lst))
 
         with testtools.ExpectedException(ex.NotFoundException):
             self.api.cluster_template_destroy(ctx, clt_id)
@@ -264,7 +264,7 @@ class ClusterTemplates(test_base.ConductorManagerTestCase):
             ng.pop("updated_at")
             ng.pop("id")
             ng.pop("tenant_id")
-            self.assertEqual(ng.pop("cluster_template_id"), clt_db_obj_id)
+            self.assertEqual(clt_db_obj_id, ng.pop("cluster_template_id"))
             ng.pop("image_id")
             ng.pop("node_configs")
             ng.pop("node_group_template_id")
@@ -310,21 +310,21 @@ class ClusterTemplates(test_base.ConductorManagerTestCase):
         self.api.cluster_template_create(ctx, SAMPLE_CLT)
 
         lst = self.api.cluster_template_get_all(ctx)
-        self.assertEqual(len(lst), 1)
+        self.assertEqual(1, len(lst))
 
         kwargs = {'name': SAMPLE_CLT['name'],
                   'plugin_name': SAMPLE_CLT['plugin_name']}
         lst = self.api.cluster_template_get_all(ctx, **kwargs)
-        self.assertEqual(len(lst), 1)
+        self.assertEqual(1, len(lst))
 
         # Valid field but no matching value
         kwargs = {'name': SAMPLE_CLT['name']+"foo"}
         lst = self.api.cluster_template_get_all(ctx, **kwargs)
-        self.assertEqual(len(lst), 0)
+        self.assertEqual(0, len(lst))
 
         # Invalid field
         lst = self.api.cluster_template_get_all(ctx, **{'badfield': 'junk'})
-        self.assertEqual(len(lst), 0)
+        self.assertEqual(0, len(lst))
 
     def test_clt_update(self):
         ctx = context.ctx()

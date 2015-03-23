@@ -139,10 +139,10 @@ class TestResource(testtools.TestCase):
         res = r.Resource(SAMPLE_DICT)
 
         self.assertIsInstance(res.first, list)
-        self.assertEqual(res.first, [1, 2])
+        self.assertEqual([1, 2], res.first)
         self.assertIsInstance(res.second, r.Resource)
-        self.assertEqual(res.second.a, 1)
-        self.assertEqual(res.second.b, 2)
+        self.assertEqual(1, res.second.a)
+        self.assertEqual(2, res.second.b)
 
     def test_resource_immutability(self):
         res = r.Resource(SAMPLE_DICT)
@@ -158,28 +158,27 @@ class TestResource(testtools.TestCase):
 
     def test_nested_lists(self):
         res = r.Resource(SAMPLE_NESTED_LISTS_DICT)
-        self.assertEqual(res.a[0][0].b, 123)
+        self.assertEqual(123, res.a[0][0].b)
 
     def test_cluster_resource(self):
         cluster = r.ClusterResource(SAMPLE_CLUSTER_DICT)
 
-        self.assertEqual(cluster.name, 'test-cluster')
+        self.assertEqual('test-cluster', cluster.name)
 
-        self.assertEqual(cluster.node_groups[0].name, 'master')
+        self.assertEqual('master', cluster.node_groups[0].name)
         self.assertIsInstance(cluster.node_groups[0], r.NodeGroupResource)
-        self.assertEqual(cluster.node_groups[0].cluster.name, 'test-cluster')
+        self.assertEqual('test-cluster', cluster.node_groups[0].cluster.name)
 
-        self.assertEqual(cluster.node_groups[1].instances[0].name,
-                         'test-cluster-001')
+        self.assertEqual('test-cluster-001',
+                         cluster.node_groups[1].instances[0].name)
         self.assertIsInstance(cluster.node_groups[1].instances[0],
                               r.InstanceResource)
-        self.assertEqual(
-            cluster.node_groups[1].instances[0].node_group.name,
-            'worker')
+        self.assertEqual('worker',
+                         cluster.node_groups[1].instances[0].node_group.name)
 
     def test_to_dict(self):
         cluster = r.ClusterResource(SAMPLE_CLUSTER_DICT)
-        self.assertEqual(cluster.to_dict(), SAMPLE_CLUSTER_DICT)
+        self.assertEqual(SAMPLE_CLUSTER_DICT, cluster.to_dict())
 
     def test_to_dict_filtering(self):
         cluster_dict = copy.deepcopy(SAMPLE_CLUSTER_DICT)
@@ -187,13 +186,13 @@ class TestResource(testtools.TestCase):
         cluster_dict['node_groups'][0]['id'] = 'some_id'
 
         cluster = r.ClusterResource(cluster_dict)
-        self.assertEqual(cluster.to_dict(), SAMPLE_CLUSTER_DICT)
+        self.assertEqual(SAMPLE_CLUSTER_DICT, cluster.to_dict())
 
     def test_to_wrapped_dict(self):
         cluster = r.ClusterResource(SAMPLE_CLUSTER_DICT)
         wrapped_dict = cluster.to_wrapped_dict()
-        self.assertEqual(len(wrapped_dict), 1)
-        self.assertEqual(wrapped_dict['cluster'], SAMPLE_CLUSTER_DICT)
+        self.assertEqual(1, len(wrapped_dict))
+        self.assertEqual(SAMPLE_CLUSTER_DICT, wrapped_dict['cluster'])
 
     def test_job_binary_filter_extra(self):
         job_binary = r.JobBinary(SAMPLE_JOB_BINARY_DICT)
