@@ -1,0 +1,42 @@
+clusters:
+  - plugin_name: vanilla
+    plugin_version: 2.6.0
+    image: image_name_for_vanilla_2_6_0
+    node_group_templates:
+      - name: transient_ng
+        flavor_id: '3'
+        node_processes:
+          - datanode
+          - nodemanager
+          - oozie
+          - historyserver
+          - secondarynamenode
+          - resourcemanager
+        volumes_per_node: 2
+        volumes_size: 2
+        auto_security_group: true
+        node_configs:
+          &ng_configs
+          MapReduce:
+            yarn.app.mapreduce.am.resource.mb: 256
+            yarn.app.mapreduce.am.command-opts: -Xmx256m
+          YARN:
+            yarn.scheduler.minimum-allocation-mb: 256
+            yarn.scheduler.maximum-allocation-mb: 1024
+            yarn.nodemanager.vmem-check-enabled: false
+    cluster_template:
+      name: vanilla-2-6
+      node_group_templates:
+        transient_ng: 1
+      cluster_configs:
+        HDFS:
+          dfs.replication: 1
+        MapReduce:
+          mapreduce.tasktracker.map.tasks.maximum: 16,
+          mapreduce.tasktracker.reduce.tasks.maximum: 16
+        YARN:
+          yarn.resourcemanager.scheduler.class: org.apache.hadoop.yarn.server.resourcemanager.scheduler.fair.FairScheduler
+    cluster:
+      name: scenario-transient
+      is_transient: true
+    edp_jobs_flow: hadoop_2

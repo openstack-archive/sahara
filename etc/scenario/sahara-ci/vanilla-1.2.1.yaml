@@ -1,0 +1,73 @@
+clusters:
+  - plugin_name: vanilla
+    plugin_version: 1.2.1
+    image: image_name_for_vanilla_1_2_1
+    node_group_templates:
+      - name: worker-tt-dn
+        flavor_id: '3'
+        node_processes:
+          - datanode
+          - tasktracker
+        volumes_per_node: 2
+        volumes_size: 2
+        auto_security_group: true
+      - name: worker-tt
+        flavor_id: '3'
+        node_processes:
+          - tasktracker
+        auto_security_group: true
+      - name: worker-dn
+        flavor_id: '3'
+        node_processes:
+          - datanode
+        volumes_per_node: 2
+        volumes_size: 2
+        auto_security_group: true
+      - name: master-jt-nn
+        flavor_id: '3'
+        node_processes:
+          - namenode
+          - jobtracker
+        auto_security_group: true
+      - name: master-sec-nn-oz
+        flavor_id: '3'
+        node_processes:
+          - oozie
+          - secondarynamenode
+        auto_security_group: true
+
+    cluster_template:
+      name: vanilla-1-2-1
+      node_group_templates:
+        master-sec-nn-oz: 1
+        master-jt-nn: 1
+        worker-tt: 1
+        worker-tt-dn: 2
+        worker-dn: 1
+      cluster_configs:
+        HDFS:
+          dfs.replication: 1
+        MapReduce:
+          mapred.map.tasks.speculative.execution: False
+          mapred.child.java.opts: -Xmx500m
+        general:
+          'Enable Swift': True
+    cluster:
+      name: scenario-vanilla1
+    scaling:
+      - operation: resize
+        node_group: worker-tt-dn
+        size: 1
+      - operation: resize
+        node_group: worker-dn
+        size: 0
+      - operation: resize
+        node_group: worker-tt
+        size: 0
+      - operation: add
+        node_group: worker-tt
+        size: 1
+      - operation: add
+        node_group: worker-dn
+        size: 1
+    edp_jobs_flow: hadoop_1

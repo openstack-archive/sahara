@@ -1,0 +1,44 @@
+clusters:
+  - plugin_name: hdp
+    plugin_version: 2.0.6
+    image: image_name_for_hdp_2_0_6
+    node_group_templates:
+      - name: master
+        flavor_id: '3'
+        node_processes:
+          - AMBARI_SERVER
+          - GANGLIA_SERVER
+          - HISTORYSERVER
+          - NAGIOS_SERVER
+          - NAMENODE
+          - OOZIE_SERVER
+          - RESOURCEMANAGER
+          - SECONDARY_NAMENODE
+          - ZOOKEEPER_SERVER
+        auto_security_group: true
+      - name: worker
+        flavor_id: '3'
+        node_processes:
+          - DATANODE
+          - HDFS_CLIENT
+          - MAPREDUCE2_CLIENT
+          - NODEMANAGER
+          - OOZIE_CLIENT
+          - PIG
+          - YARN_CLIENT
+          - ZOOKEEPER_CLIENT
+        volumes_per_node: 2
+        volumes_size: 2
+        auto_security_group: true
+    cluster_template:
+      name: hdp-2-0-6
+      node_group_templates:
+        master: 1
+        worker: 3
+      cluster_configs:
+        YARN:
+          yarn.log-aggregation-enable: false
+        HDFS:
+          datanode_du_reserved: 0
+    cluster:
+      name: scenario-hdp2
