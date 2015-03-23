@@ -81,8 +81,7 @@ class VersionHandler(avm.AbstractVersionHandler):
         if rm:
             run.start_yarn_process(rm, 'resourcemanager')
 
-        run.start_all_processes(utils.get_instances(cluster),
-                                ['datanode', 'nodemanager'])
+        run.start_dn_nm_processes(utils.get_instances(cluster))
 
         run.await_datanodes(cluster)
 

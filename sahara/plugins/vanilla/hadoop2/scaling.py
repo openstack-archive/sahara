@@ -37,7 +37,7 @@ def scale_cluster(pctx, cluster, instances):
         run.refresh_yarn_nodes(cluster)
 
     config.configure_topology_data(pctx, cluster)
-    run.start_all_processes(instances, [])
+    run.start_dn_nm_processes(instances)
 
 
 def _get_instances_with_service(instances, service):
