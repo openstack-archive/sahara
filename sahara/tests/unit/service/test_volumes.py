@@ -34,7 +34,7 @@ class TestAttachVolume(base.SaharaWithDbTestCase):
         execute_com = instance.remote().execute_command
 
         self.assertIsNone(volumes._mount_volume(instance, '123', '456'))
-        self.assertEqual(execute_com.call_count, 3)
+        self.assertEqual(3, execute_com.call_count)
 
         execute_com.side_effect = ex.RemoteCommandException('cmd')
         self.assertRaises(ex.RemoteCommandException, volumes._mount_volume,
@@ -113,9 +113,9 @@ class TestAttachVolume(base.SaharaWithDbTestCase):
         cluster = r.ClusterResource({'node_groups': [ng]})
 
         volumes.attach_to_instances(g.get_instances(cluster))
-        self.assertEqual(p_create_attach_vol.call_count, 4)
-        self.assertEqual(p_await.call_count, 2)
-        self.assertEqual(p_mount.call_count, 4)
+        self.assertEqual(4, p_create_attach_vol.call_count)
+        self.assertEqual(2, p_await.call_count)
+        self.assertEqual(4, p_mount.call_count)
 
     @mock.patch('sahara.context.sleep')
     @mock.patch('sahara.service.volumes._count_attached_devices')
@@ -143,8 +143,8 @@ class TestAttachVolume(base.SaharaWithDbTestCase):
         ex_cmd = instance.remote().execute_command
         ex_cmd.side_effect = [(0, partitions)]
 
-        self.assertEqual(volumes._count_attached_devices(
-            instance, ['/dev/vdd', '/dev/vdx']), 1)
+        self.assertEqual(1, volumes._count_attached_devices(
+            instance, ['/dev/vdd', '/dev/vdx']))
 
     def _get_instance(self):
         inst_remote = mock.MagicMock()

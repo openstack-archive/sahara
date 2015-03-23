@@ -45,7 +45,7 @@ class TestSpark(base.SaharaTestCase):
         eng = se.SparkJobEngine(None)
         for job_id in [None, "", "@", "something", "pid@", "@instance"]:
             pid, inst_id = eng._get_pid_and_inst_id(job_id)
-            self.assertEqual((pid, inst_id), ("", ""))
+            self.assertEqual(("", ""), (pid, inst_id))
 
         pid, inst_id = eng._get_pid_and_inst_id("pid@instance")
         self.assertEqual(("pid", "instance"), (pid, inst_id))
@@ -86,12 +86,12 @@ class TestSpark(base.SaharaTestCase):
         # Pretend get_instances returns nothing
         get_instances.return_value = []
         pid, instance = eng._get_instance_if_running(job_exec)
-        self.assertEqual(instance, None)
+        self.assertIsNone(instance)
 
         # Pretend get_instances throws an exception
         get_instances.side_effect = Exception("some failure")
         pid, instance = eng._get_instance_if_running(job_exec)
-        self.assertEqual(instance, None)
+        self.assertIsNone(instance)
 
     def test_get_result_file(self):
         remote = mock.Mock()
@@ -115,7 +115,7 @@ class TestSpark(base.SaharaTestCase):
         ret = eng._check_pid(remote, "pid")
         remote.execute_command.assert_called_with("ps hp pid",
                                                   raise_when_error=False)
-        self.assertEqual(ret, 999)
+        self.assertEqual(999, ret)
 
     @mock.patch.object(se.SparkJobEngine,
                        '_get_result_file',
@@ -188,7 +188,7 @@ class TestSpark(base.SaharaTestCase):
         job_exec = mock.Mock()
         eng = se.SparkJobEngine("cluster")
         status = eng.get_job_status(job_exec)
-        self.assertEqual(status, None)
+        self.assertIsNone(status)
 
         # Pretend we have an instance
         _get_instance_if_running.return_value = "pid", "instance"
@@ -198,7 +198,7 @@ class TestSpark(base.SaharaTestCase):
         _get_job_status_from_remote.assert_called_with(eng,
                                                        remote_instance,
                                                        "pid", job_exec)
-        self.assertEqual(status, {"status": edp.JOB_STATUS_RUNNING})
+        self.assertEqual({"status": edp.JOB_STATUS_RUNNING}, status)
 
     @mock.patch.object(se.SparkJobEngine,
                        '_get_instance_if_running',
@@ -267,7 +267,7 @@ class TestSpark(base.SaharaTestCase):
                                                        remote_instance,
                                                        "pid", job_exec)
 
-        self.assertEqual(status, {"status": edp.JOB_STATUS_KILLED})
+        self.assertEqual({"status": edp.JOB_STATUS_KILLED}, status)
 
     @mock.patch.object(se.SparkJobEngine,
                        '_get_job_status_from_remote',
@@ -312,10 +312,10 @@ class TestSpark(base.SaharaTestCase):
             raise_when_error=False)
 
         # check that the job status was not retrieved since the command failed
-        self.assertEqual(_get_job_status_from_remote.called, 0)
+        self.assertEqual(0, _get_job_status_from_remote.called)
 
         # check that we have nothing new to report ...
-        self.assertEqual(status, None)
+        self.assertIsNone(status)
 
     @mock.patch('sahara.service.edp.binary_retrievers.dispatch.get_raw_binary')
     @mock.patch('sahara.utils.remote.get_remote')
@@ -345,8 +345,8 @@ class TestSpark(base.SaharaTestCase):
 
         eng = se.SparkJobEngine("cluster")
         paths, builtins = eng._upload_job_files("where", "/somedir", job, {})
-        self.assertEqual(paths,
-                         ["/somedir/" + n for n in main_names + lib_names])
+        self.assertEqual(["/somedir/" + n for n in main_names + lib_names],
+                         paths)
         for path in paths:
             remote_instance.write_file_to.assert_any_call(path, "data")
 
@@ -454,9 +454,9 @@ class TestSpark(base.SaharaTestCase):
                                             "master_port": self.master_port})
 
         # Check result here
-        self.assertEqual(status, ("%s@%s" % (self.spark_pid, self.master_inst),
-                                  edp.JOB_STATUS_RUNNING,
-                                  {"spark-path": self.workflow_dir}))
+        self.assertEqual(("%s@%s" % (self.spark_pid, self.master_inst),
+                          edp.JOB_STATUS_RUNNING,
+                          {"spark-path": self.workflow_dir}), status)
 
     def test_run_job_args(self):
         job_configs = {
@@ -484,9 +484,9 @@ class TestSpark(base.SaharaTestCase):
                                             "master_port": self.master_port})
 
         # Check result here
-        self.assertEqual(status, ("%s@%s" % (self.spark_pid, self.master_inst),
-                                  edp.JOB_STATUS_RUNNING,
-                                  {"spark-path": self.workflow_dir}))
+        self.assertEqual(("%s@%s" % (self.spark_pid, self.master_inst),
+                          edp.JOB_STATUS_RUNNING,
+                          {"spark-path": self.workflow_dir}), status)
 
     def test_run_job(self):
         job_configs = {
@@ -513,9 +513,9 @@ class TestSpark(base.SaharaTestCase):
                                             "master_port": self.master_port})
 
         # Check result here
-        self.assertEqual(status, ("%s@%s" % (self.spark_pid, self.master_inst),
-                                  edp.JOB_STATUS_RUNNING,
-                                  {"spark-path": self.workflow_dir}))
+        self.assertEqual(("%s@%s" % (self.spark_pid, self.master_inst),
+                          edp.JOB_STATUS_RUNNING,
+                          {"spark-path": self.workflow_dir}), status)
 
     def test_run_job_wrapper_extra_jars_args(self):
         job_configs = {
@@ -550,9 +550,9 @@ class TestSpark(base.SaharaTestCase):
                                             "master_port": self.master_port})
 
         # Check result here
-        self.assertEqual(status, ("%s@%s" % (self.spark_pid, self.master_inst),
-                                  edp.JOB_STATUS_RUNNING,
-                                  {"spark-path": self.workflow_dir}))
+        self.assertEqual(("%s@%s" % (self.spark_pid, self.master_inst),
+                          edp.JOB_STATUS_RUNNING,
+                          {"spark-path": self.workflow_dir}), status)
 
     def test_run_job_wrapper_args(self):
         job_configs = {
@@ -585,9 +585,9 @@ class TestSpark(base.SaharaTestCase):
                                             "master_port": self.master_port})
 
         # Check result here
-        self.assertEqual(status, ("%s@%s" % (self.spark_pid, self.master_inst),
-                                  edp.JOB_STATUS_RUNNING,
-                                  {"spark-path": self.workflow_dir}))
+        self.assertEqual(("%s@%s" % (self.spark_pid, self.master_inst),
+                          edp.JOB_STATUS_RUNNING,
+                          {"spark-path": self.workflow_dir}), status)
 
     def test_run_job_wrapper(self):
         job_configs = {
@@ -619,9 +619,9 @@ class TestSpark(base.SaharaTestCase):
                                             "master_port": self.master_port})
 
         # Check result here
-        self.assertEqual(status, ("%s@%s" % (self.spark_pid, self.master_inst),
-                                  edp.JOB_STATUS_RUNNING,
-                                  {"spark-path": self.workflow_dir}))
+        self.assertEqual(("%s@%s" % (self.spark_pid, self.master_inst),
+                          edp.JOB_STATUS_RUNNING,
+                          {"spark-path": self.workflow_dir}), status)
 
     @mock.patch('sahara.service.edp.hdfs_helper.configure_cluster_for_hdfs')
     @mock.patch('sahara.service.edp.job_utils.resolve_data_source_references')

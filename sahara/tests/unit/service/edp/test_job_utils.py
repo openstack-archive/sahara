@@ -200,23 +200,23 @@ class JobUtilsTestCase(testtools.TestCase):
             'args': [name_ref, output.id, input.id]}
 
         ds, nc = job_utils.resolve_data_source_references(job_configs)
-        self.assertEqual(len(ds), 2)
-        self.assertEqual(nc['args'], [input.url, output.url, input.url])
+        self.assertEqual(2, len(ds))
+        self.assertEqual([input.url, output.url, input.url], nc['args'])
         # Swift configs should be filled in since they were blank
-        self.assertEqual(nc['configs']['fs.swift.service.sahara.username'],
-                         input.credentials['user'])
-        self.assertEqual(nc['configs']['fs.swift.service.sahara.password'],
-                         input.credentials['password'])
+        self.assertEqual(input.credentials['user'],
+                         nc['configs']['fs.swift.service.sahara.username'])
+        self.assertEqual(input.credentials['password'],
+                         nc['configs']['fs.swift.service.sahara.password'])
 
         job_configs['configs'] = {'fs.swift.service.sahara.username': 'sam',
                                   'fs.swift.service.sahara.password': 'gamgee',
                                   job_utils.DATA_SOURCE_SUBST_NAME: False,
                                   job_utils.DATA_SOURCE_SUBST_UUID: True}
         ds, nc = job_utils.resolve_data_source_references(job_configs)
-        self.assertEqual(len(ds), 2)
-        self.assertEqual(nc['args'], [name_ref, output.url, input.url])
+        self.assertEqual(2, len(ds))
+        self.assertEqual([name_ref, output.url, input.url], nc['args'])
         # Swift configs should not be overwritten
-        self.assertEqual(nc['configs'], job_configs['configs'])
+        self.assertEqual(job_configs['configs'], nc['configs'])
 
         job_configs['configs'] = {job_utils.DATA_SOURCE_SUBST_NAME: True,
                                   job_utils.DATA_SOURCE_SUBST_UUID: False}
@@ -224,26 +224,26 @@ class JobUtilsTestCase(testtools.TestCase):
                                         'proxy_password': 'smith',
                                         'proxy_trust_id': 'trustme'}
         ds, nc = job_utils.resolve_data_source_references(job_configs)
-        self.assertEqual(len(ds), 1)
-        self.assertEqual(nc['args'], [input.url, output.id, input.id])
+        self.assertEqual(1, len(ds))
+        self.assertEqual([input.url, output.id, input.id], nc['args'])
 
         # Swift configs should be empty and proxy configs should be preserved
-        self.assertEqual(nc['configs'], job_configs['configs'])
-        self.assertEqual(nc['proxy_configs'], job_configs['proxy_configs'])
+        self.assertEqual(job_configs['configs'], nc['configs'])
+        self.assertEqual(job_configs['proxy_configs'], nc['proxy_configs'])
 
         # Substitution not enabled
         job_configs['configs'] = {job_utils.DATA_SOURCE_SUBST_NAME: False,
                                   job_utils.DATA_SOURCE_SUBST_UUID: False}
         ds, nc = job_utils.resolve_data_source_references(job_configs)
-        self.assertEqual(len(ds), 0)
-        self.assertEqual(nc['args'], job_configs['args'])
-        self.assertEqual(nc['configs'], job_configs['configs'])
+        self.assertEqual(0, len(ds))
+        self.assertEqual(job_configs['args'], nc['args'])
+        self.assertEqual(job_configs['configs'], nc['configs'])
 
         # Substitution enabled but no values to modify
         job_configs['configs'] = {job_utils.DATA_SOURCE_SUBST_NAME: True,
                                   job_utils.DATA_SOURCE_SUBST_UUID: True}
         job_configs['args'] = ['val1', 'val2', 'val3']
         ds, nc = job_utils.resolve_data_source_references(job_configs)
-        self.assertEqual(len(ds), 0)
-        self.assertEqual(nc['args'], job_configs['args'])
-        self.assertEqual(nc['configs'], job_configs['configs'])
+        self.assertEqual(0, len(ds))
+        self.assertEqual(job_configs['args'], nc['args'])
+        self.assertEqual(job_configs['configs'], nc['configs'])

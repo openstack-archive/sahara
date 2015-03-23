@@ -64,12 +64,12 @@ class TestNGTemplateUpdateValidation(u.ValidationTestCase):
         update = copy.copy(nt.NODE_GROUP_TEMPLATE_UPDATE_SCHEMA)
 
         # No required items for update
-        self.assertEqual(update["required"], [])
+        self.assertEqual([], update["required"])
 
         # Other than required, schemas are equal
         del update["required"]
         del create["required"]
-        self.assertEqual(update, create)
+        self.assertEqual(create, update)
 
     def test_ng_template_update_v(self):
 

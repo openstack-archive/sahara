@@ -83,7 +83,7 @@ class TestClusterRollBack(AbstractInstanceTest):
 
         ctx = context.ctx()
         cluster_obj = conductor.cluster_get_all(ctx)[0]
-        self.assertEqual(len(cluster_obj.node_groups[0].instances), 0)
+        self.assertEqual(0, len(cluster_obj.node_groups[0].instances))
 
 
 class NodePlacementTest(AbstractInstanceTest):
@@ -117,7 +117,7 @@ class NodePlacementTest(AbstractInstanceTest):
 
         ctx = context.ctx()
         cluster_obj = conductor.cluster_get_all(ctx)[0]
-        self.assertEqual(len(cluster_obj.node_groups[0].instances), 2)
+        self.assertEqual(2, len(cluster_obj.node_groups[0].instances))
 
     def test_one_node_groups_and_no_affinity_group(self):
         self.nova.server_groups.create.return_value = mock.Mock(id='123')
@@ -151,7 +151,7 @@ class NodePlacementTest(AbstractInstanceTest):
 
         ctx = context.ctx()
         cluster_obj = conductor.cluster_get_all(ctx)[0]
-        self.assertEqual(len(cluster_obj.node_groups[0].instances), 2)
+        self.assertEqual(2, len(cluster_obj.node_groups[0].instances))
 
     def test_two_node_groups_and_one_affinity_group(self):
         self.nova.server_groups.create.return_value = mock.Mock(id='123')
@@ -196,7 +196,7 @@ class NodePlacementTest(AbstractInstanceTest):
         cluster_obj = conductor.cluster_get_all(ctx)[0]
         inst_number = len(cluster_obj.node_groups[0].instances)
         inst_number += len(cluster_obj.node_groups[1].instances)
-        self.assertEqual(inst_number, 3)
+        self.assertEqual(3, inst_number)
 
 
 class IpManagementTest(AbstractInstanceTest):
@@ -225,7 +225,7 @@ class IpManagementTest(AbstractInstanceTest):
         self.nova.floating_ips.create.assert_has_calls(
             [mock.call("pool"), mock.call("pool")])
 
-        self.assertEqual(self.nova.floating_ips.create.call_count, 2,
+        self.assertEqual(2, self.nova.floating_ips.create.call_count,
                          "Not expected floating IPs number found.")
 
 
@@ -250,9 +250,9 @@ class ShutdownClusterTest(AbstractInstanceTest):
         deleted_checker.return_value = True
 
         self.engine._shutdown_instances(cluster)
-        self.assertEqual(self.nova.floating_ips.delete.call_count, 2,
+        self.assertEqual(2, self.nova.floating_ips.delete.call_count,
                          "Not expected floating IPs number found in delete")
-        self.assertEqual(self.nova.servers.delete.call_count, 2,
+        self.assertEqual(2, self.nova.servers.delete.call_count,
                          "Not expected")
 
 
