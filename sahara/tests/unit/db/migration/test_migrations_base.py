@@ -78,54 +78,33 @@ class BaseWalkMigrationTestCase(object):
         sa.cleanup()
         return res
 
-    def _up_and_down_versions(self):
-        """Stores a tuple of versions.
+    def _get_versions(self):
+        """Stores a list of versions.
 
         Since alembic version has a random algorithm of generation
         (SA-migrate has an ordered autoincrement naming) we should store
-        a tuple of versions (version for upgrade and version for downgrade)
-        for successful testing of migrations in up>down>up mode.
+        a list of versions (version for upgrade)
+        for successful testing of migrations in up mode.
         """
 
         env = alembic_script.ScriptDirectory.from_config(self.ALEMBIC_CONFIG)
         versions = []
         for rev in env.walk_revisions():
-            versions.append((rev.revision, rev.down_revision or '-1'))
+            versions.append(rev.revision)
 
         versions.reverse()
         return versions
 
-    def walk_versions(self, engine=None, snake_walk=False, downgrade=True):
+    def walk_versions(self, engine=None):
         # Determine latest version script from the repo, then
         # upgrade from 1 through to the latest, with no data
         # in the databases. This just checks that the schema itself
         # upgrades successfully.
 
         self._configure(engine)
-        up_and_down_versions = self._up_and_down_versions()
-        for ver_up, ver_down in up_and_down_versions:
-            # upgrade -> downgrade -> upgrade
-            self._migrate_up(engine, ver_up, with_data=True)
-            if snake_walk:
-                downgraded = self._migrate_down(engine,
-                                                ver_down,
-                                                with_data=True,
-                                                next_version=ver_up)
-                if downgraded:
-                    self._migrate_up(engine, ver_up)
-
-        if downgrade:
-            # Now walk it back down to 0 from the latest, testing
-            # the downgrade paths.
-            up_and_down_versions.reverse()
-            for ver_up, ver_down in up_and_down_versions:
-                # downgrade -> upgrade -> downgrade
-                downgraded = self._migrate_down(engine,
-                                                ver_down, next_version=ver_up)
-
-                if snake_walk and downgraded:
-                    self._migrate_up(engine, ver_up)
-                    self._migrate_down(engine, ver_down, next_version=ver_up)
+        versions = self._get_versions()
+        for ver in versions:
+            self._migrate_up(engine, ver, with_data=True)
 
     def _get_version_from_db(self, engine):
         """Returns latest version from db for each type of migrate repo."""
@@ -145,27 +124,6 @@ class BaseWalkMigrationTestCase(object):
         """
 
         self._alembic_command(cmd, engine, self.ALEMBIC_CONFIG, version)
-
-    def _migrate_down(self, engine, version, with_data=False,
-                      next_version=None):
-        try:
-            self._migrate(engine, version, 'downgrade')
-        except NotImplementedError:
-            # NOTE(sirp): some migrations, namely release-level
-            # migrations, don't support a downgrade.
-            return False
-        self.assertEqual(version, self._get_version_from_db(engine))
-
-        # NOTE(sirp): `version` is what we're downgrading to (i.e. the 'target'
-        # version). So if we have any downgrade checks, they need to be run for
-        # the previous (higher numbered) migration.
-        if with_data:
-            post_downgrade = getattr(
-                self, "_post_downgrade_%s" % next_version, None)
-            if post_downgrade:
-                post_downgrade(engine)
-
-        return True
 
     def _migrate_up(self, engine, version, with_data=False):
         """migrate up to a new version of the db.

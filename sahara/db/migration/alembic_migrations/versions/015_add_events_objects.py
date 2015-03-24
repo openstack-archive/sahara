@@ -91,8 +91,3 @@ def upgrade():
                     sa.UniqueConstraint('id', 'step_id'),
                     mysql_engine=MYSQL_ENGINE,
                     mysql_charset=MYSQL_CHARSET)
-
-
-def downgrade():
-    op.drop_table('cluster_events')
-    op.drop_table('cluster_provision_steps')

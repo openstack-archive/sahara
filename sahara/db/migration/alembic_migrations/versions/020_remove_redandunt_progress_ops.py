@@ -26,19 +26,9 @@ revision = '020'
 down_revision = '019'
 
 from alembic import op
-import sqlalchemy as sa
 
 
 def upgrade():
     op.drop_column('cluster_provision_steps', 'completed_at')
     op.drop_column('cluster_provision_steps', 'completed')
     op.drop_column('cluster_provision_steps', 'started_at')
-
-
-def downgrade():
-    op.add_column('cluster_provision_steps',
-                  sa.Column('completed', sa.Integer(), nullable=True))
-    op.add_column('cluster_provision_steps',
-                  sa.Column('started_at', sa.DateTime(), nullable=True))
-    op.add_column('cluster_provision_steps',
-                  sa.Column('completed_at', sa.DateTime(), nullable=True))

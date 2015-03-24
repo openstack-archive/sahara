@@ -332,19 +332,3 @@ def upgrade():
                     sa.UniqueConstraint('instance_id', 'node_group_id'),
                     mysql_engine=MYSQL_ENGINE,
                     mysql_charset=MYSQL_CHARSET)
-
-
-def downgrade():
-    op.drop_table('instances')
-    op.drop_table('node_groups')
-    op.drop_table('job_executions')
-    op.drop_table('mains_association')
-    op.drop_table('templates_relations')
-    op.drop_table('clusters')
-    op.drop_table('libs_association')
-    op.drop_table('data_sources')
-    op.drop_table('job_binaries')
-    op.drop_table('job_binary_internal')
-    op.drop_table('cluster_templates')
-    op.drop_table('node_group_templates')
-    op.drop_table('jobs')

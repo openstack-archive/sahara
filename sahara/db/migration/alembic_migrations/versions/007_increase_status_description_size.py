@@ -26,7 +26,6 @@ revision = '007'
 down_revision = '006'
 
 from alembic import op
-import sqlalchemy as sa
 
 from sahara.db.sqlalchemy import types as st
 
@@ -34,10 +33,4 @@ from sahara.db.sqlalchemy import types as st
 def upgrade():
     op.alter_column('clusters', 'status_description',
                     type_=st.LongText(), existing_nullable=True,
-                    existing_server_default=None)
-
-
-def downgrade():
-    op.alter_column('clusters', 'status_description',
-                    type_=sa.String(length=200), existing_nullable=True,
                     existing_server_default=None)

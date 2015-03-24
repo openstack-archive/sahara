@@ -16,7 +16,7 @@ under the License.
 
 The migrations in `alembic_migrations/versions` contain the changes needed to migrate
 between Sahara database revisions. A migration occurs by executing a script that
-details the changes needed to upgrade or downgrade the database. The migration scripts
+details the changes needed to upgrade the database. The migration scripts
 are ordered so that multiple scripts can run sequentially. The scripts are executed by
 Sahara's migration wrapper which uses the Alembic library to manage the migration. Sahara
 supports migration from Icehouse or later.
@@ -44,11 +44,6 @@ $ sahara-db-manage --config-file /path/to/sahara.conf upgrade <start version>:<e
 Upgrade the database incrementally:
 ```
 $ sahara-db-manage --config-file /path/to/sahara.conf upgrade --delta <# of revs>
-```
-
-Downgrade the database by a certain number of revisions:
-```
-$ sahara-db-manage --config-file /path/to/sahara.conf downgrade --delta <# of revs>
 ```
 
 Create new revision:

@@ -39,9 +39,6 @@ from sahara.tests.unit.db.migration import test_migrations_base as base
 
 class SaharaMigrationsCheckers(object):
 
-    snake_walk = True
-    downgrade = True
-
     def assertColumnExists(self, engine, table, column):
         t = db_utils.get_table(engine, table)
         self.assertIn(column, t.c)
@@ -76,7 +73,7 @@ class SaharaMigrationsCheckers(object):
         self.assertEqual(sorted(members), sorted(index_columns))
 
     def test_walk_versions(self):
-        self.walk_versions(self.engine, self.snake_walk, self.downgrade)
+        self.walk_versions(self.engine)
 
     def _pre_upgrade_001(self, engine):
         # Anything returned from this method will be

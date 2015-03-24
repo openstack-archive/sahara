@@ -26,13 +26,7 @@ revision = '017'
 down_revision = '016'
 
 from alembic import op
-import sqlalchemy as sa
 
 
 def upgrade():
     op.drop_column('job_executions', 'progress')
-
-
-def downgrade():
-    op.add_column('job_executions',
-                  sa.Column('progress', sa.FLOAT(), nullable=True))
