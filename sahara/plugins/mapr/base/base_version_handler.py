@@ -40,6 +40,12 @@ class BaseVersionHandler(vh.AbstractVersionHandler):
             return edp.MapROozieJobEngine(cluster)
         return None
 
+    def get_edp_job_types(self):
+        return edp.MapROozieJobEngine.get_supported_job_types()
+
+    def get_edp_config_hints(self, job_type):
+        return edp.MapROozieJobEngine.get_possible_job_config(job_type)
+
     def get_services(self):
         return self._services
 

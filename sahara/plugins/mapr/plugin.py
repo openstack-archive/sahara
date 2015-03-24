@@ -68,6 +68,18 @@ class MapRPlugin(p.ProvisioningPluginBase):
         v_handler = self._get_handler(cluster.hadoop_version)
         return v_handler.get_edp_engine(cluster, job_type)
 
+    def get_edp_job_types(self, versions=[]):
+        res = {}
+        for vers in self.get_versions():
+            if not versions or vers in versions:
+                vh = self._get_handler(vers)
+                res[vers] = vh.get_edp_job_types()
+        return res
+
+    def get_edp_config_hints(self, job_type, version):
+        v_handler = self._get_handler(version)
+        return v_handler.get_edp_config_hints(job_type)
+
     def get_open_ports(self, node_group):
         v_handler = self._get_handler(node_group.cluster.hadoop_version)
         return v_handler.get_open_ports(node_group)
