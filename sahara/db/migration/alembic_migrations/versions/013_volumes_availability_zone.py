@@ -38,9 +38,3 @@ def upgrade():
                                            sa.String(length=255)))
     op.add_column('templates_relations', sa.Column('volumes_availability_zone',
                                                    sa.String(length=255)))
-
-
-def downgrade():
-    op.drop_column('node_group_templates', 'volumes_availability_zone')
-    op.drop_column('node_groups', 'volumes_availability_zone')
-    op.drop_column('templates_relations', 'volumes_availability_zone')

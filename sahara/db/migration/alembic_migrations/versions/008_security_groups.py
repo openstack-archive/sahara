@@ -38,9 +38,3 @@ def upgrade():
                   sa.Column('security_groups', st.JsonEncoded()))
     op.add_column('templates_relations',
                   sa.Column('security_groups', st.JsonEncoded()))
-
-
-def downgrade():
-    op.drop_column('node_group_templates', 'security_groups')
-    op.drop_column('node_groups', 'security_groups')
-    op.drop_column('templates_relations', 'security_groups')

@@ -34,7 +34,3 @@ from sahara.db.sqlalchemy import types as st
 def upgrade():
     op.add_column('clusters',
                   sa.Column('sahara_info', st.JsonEncoded()))
-
-
-def downgrade():
-    op.drop_column('clusters', 'sahara_info')

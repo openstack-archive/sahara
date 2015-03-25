@@ -36,9 +36,3 @@ def upgrade():
                   sa.Column('volume_local_to_instance', sa.Boolean()))
     op.add_column('templates_relations',
                   sa.Column('volume_local_to_instance', sa.Boolean()))
-
-
-def downgrade():
-    op.drop_column('node_group_templates', 'volume_local_to_instance')
-    op.drop_column('node_groups', 'volume_local_to_instance')
-    op.drop_column('templates_relations', 'volume_local_to_instance')

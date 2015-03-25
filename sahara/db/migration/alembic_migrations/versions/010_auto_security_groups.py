@@ -40,10 +40,3 @@ def upgrade():
                   sa.Column('auto_security_group', sa.Boolean()))
     op.add_column('node_groups',
                   sa.Column('open_ports', st.JsonEncoded()))
-
-
-def downgrade():
-    op.drop_column('node_group_templates', 'auto_security_group')
-    op.drop_column('node_groups', 'auto_security_group')
-    op.drop_column('templates_relations', 'auto_security_group')
-    op.drop_column('node_groups', 'open_ports')

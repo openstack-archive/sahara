@@ -65,19 +65,7 @@ class TestCli(testtools.TestCase):
          dict(argv=['prog', 'upgrade', '--delta', '3'],
               func_name='upgrade',
               exp_args=('+3',),
-              exp_kwargs={'sql': False})),
-
-        ('downgrade-sql',
-         dict(argv=['prog', 'downgrade', '--sql', 'folsom'],
-              func_name='downgrade',
-              exp_args=('folsom',),
-              exp_kwargs={'sql': True})),
-
-        ('downgrade-delta',
-         dict(argv=['prog', 'downgrade', '--delta', '2'],
-              func_name='downgrade',
-              exp_args=('-2',),
-              exp_kwargs={'sql': False})),
+              exp_kwargs={'sql': False}))
     ]
 
     def setUp(self):

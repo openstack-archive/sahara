@@ -28,7 +28,3 @@ down_revision = '005'
 
 def upgrade():
     pass
-
-
-def downgrade():
-    pass

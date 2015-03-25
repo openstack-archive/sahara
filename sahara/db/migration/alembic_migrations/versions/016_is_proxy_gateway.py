@@ -36,9 +36,3 @@ def upgrade():
                   sa.Column('is_proxy_gateway', sa.Boolean()))
     op.add_column('templates_relations',
                   sa.Column('is_proxy_gateway', sa.Boolean()))
-
-
-def downgrade():
-    op.drop_column('templates_relations', 'is_proxy_gateway')
-    op.drop_column('node_groups', 'is_proxy_gateway')
-    op.drop_column('node_group_templates', 'is_proxy_gateway')

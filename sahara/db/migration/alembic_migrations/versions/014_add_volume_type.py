@@ -39,9 +39,3 @@ def upgrade():
     op.add_column('templates_relations',
                   sa.Column('volume_type', sa.String(length=255),
                             nullable=True))
-
-
-def downgrade():
-    op.drop_column('templates_relations', 'volume_type')
-    op.drop_column('node_groups', 'volume_type')
-    op.drop_column('node_group_templates', 'volume_type')

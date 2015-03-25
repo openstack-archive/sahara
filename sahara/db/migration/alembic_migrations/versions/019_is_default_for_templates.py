@@ -34,8 +34,3 @@ def upgrade():
                   sa.Column('is_default', sa.Boolean(), nullable=True))
     op.add_column('node_group_templates',
                   sa.Column('is_default', sa.Boolean(), nullable=True))
-
-
-def downgrade():
-    op.drop_column('node_group_templates', 'is_default')
-    op.drop_column('cluster_templates', 'is_default')
