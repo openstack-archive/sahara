@@ -448,6 +448,8 @@ class BaseTestCase(base.BaseTestCase):
             if check['status'] == CHECK_FAILED_STATUS:
                 tbs.extend(check['traceback'])
                 tbs.append("")
+        print("Results of testing plugin", self.plugin_opts['plugin_name'],
+              self.plugin_opts['hadoop_version'])
         print(table)
         print("\n".join(tbs), file=sys.stderr)
 
