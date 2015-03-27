@@ -54,6 +54,7 @@ class BaseDataProcessingTest(manager.ScenarioTest):
 
         cls.object_client = cls.manager.object_client
         cls.container_client = cls.manager.container_client
+        cls.networks_client = cls.manager.networks_client
 
         cls.floating_ip_pool = CONF.data_processing.floating_ip_pool
         if TEMPEST_CONF.service_available.neutron:
