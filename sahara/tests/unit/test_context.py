@@ -13,7 +13,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import functools
 import random
 
 import fixtures
@@ -23,7 +22,6 @@ import testtools
 
 from sahara import context
 from sahara import exceptions as ex
-from sahara.tests.unit import base as test_base
 
 
 rnd = random.Random()
@@ -137,31 +135,3 @@ class ContextTest(testtools.TestCase):
 
 class TestException(Exception):
     pass
-
-
-class GetAuthURITest(test_base.SaharaTestCase):
-    def setUp(self):
-        super(GetAuthURITest, self).setUp()
-
-        self.override_auth_config = functools.partial(
-            self.override_config, group='keystone_authtoken')
-
-    def test_get_auth_url_from_auth_uri_param(self):
-        self.override_auth_config('auth_uri', 'http://pony:5000/v2.0')
-        self.assertEqual('http://pony:5000/v2.0', context._get_auth_uri())
-
-    def test_get_auth_uri_from_identity_uri(self):
-        self.override_auth_config('identity_uri', 'http://spam:35357')
-        self.assertEqual('http://spam:35357/v3', context._get_auth_uri())
-
-        self.override_config('use_identity_api_v3', False)
-        self.assertEqual('http://spam:35357/v2.0', context._get_auth_uri())
-
-    def test_get_auth_uri_from_auth_params(self):
-        self.override_auth_config('auth_host', 'eggs')
-        self.override_auth_config('auth_port', 12345)
-        self.override_auth_config('auth_protocol', 'http')
-        self.assertEqual('http://eggs:12345/v3', context._get_auth_uri())
-
-        self.override_config('use_identity_api_v3', False)
-        self.assertEqual('http://eggs:12345/v2.0', context._get_auth_uri())
