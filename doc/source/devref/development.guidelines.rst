@@ -115,3 +115,36 @@ running ``tox -e docs`` first time):
 .. _PEP 257: http://www.python.org/dev/peps/pep-0257/
 .. _Tox: http://tox.testrun.org/
 .. _Sphinx: http://sphinx.pocoo.org/markup/index.html
+
+Event log Guidelines
+--------------------
+
+Currently Sahara keep with cluster useful information about provisioning.
+Cluster provisioning can be represented as a linear series of provisioning
+steps, which are executed one after another. Also each step would consist of
+several events. The amount of events depends on the step and the amount of
+instances in the cluster. Also each event can contain information about
+cluster, instance, and node group. In case of errors, this event would contain
+information about reasons of errors. Each exception in sahara contains a
+unique identifier that will allow the user to find extra information about
+the reasons for errors in the sahara logs. Here
+http://developer.openstack.org/api-ref-data-processing-v1.1.html#v1.1eventlog
+you can see an example of provisioning progress information.
+
+This means that if you add some important phase for cluster provisioning to
+sahara code, it's recommended to add new provisioning step for this phase.
+It would allow users to use event log for handling errors during this phase.
+
+Sahara already have special utils for operating provisioning steps and events
+in module ``sahara/utils/cluster_progress_ops.py``.
+
+.. note::
+    It's strictly recommended not use ``conductor`` event log ops directly
+    to assign events and operate provisioning steps.
+
+.. note::
+    You should not add a new provisioning step until the previous step
+    successfully completed.
+
+.. note::
+    It's strictly recommended to use ``event_wrapper`` for events handling
