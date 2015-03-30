@@ -24,6 +24,7 @@ import time
 import traceback
 
 import fixtures
+from oslo_utils import timeutils
 import prettytable
 import six
 from tempest_lib import base
@@ -49,9 +50,11 @@ def track_result(check_name, exit_with_error=True):
             test_info = {
                 'check_name': check_name,
                 'status': CHECK_OK_STATUS,
+                'duration': None,
                 'traceback': None
             }
             self._results.append(test_info)
+            started_at = timeutils.utcnow()
             try:
                 return fct(self, *args, **kwargs)
             except Exception:
@@ -60,6 +63,9 @@ def track_result(check_name, exit_with_error=True):
                     *sys.exc_info())
                 if exit_with_error:
                     raise
+            finally:
+                test_time = timeutils.utcnow() - started_at
+                test_info['duration'] = test_time.seconds
         return wrapper
     return decorator
 
@@ -445,10 +451,11 @@ class BaseTestCase(base.BaseTestCase):
 
     def tearDown(self):
         tbs = []
-        table = prettytable.PrettyTable(["Check", "Status"])
+        table = prettytable.PrettyTable(["Check", "Status", "Duration, s"])
         table.align["Check"] = "l"
         for check in self._results:
-            table.add_row([check['check_name'], check['status']])
+            table.add_row(
+                [check['check_name'], check['status'], check['duration']])
             if check['status'] == CHECK_FAILED_STATUS:
                 tbs.extend(check['traceback'])
                 tbs.append("")
