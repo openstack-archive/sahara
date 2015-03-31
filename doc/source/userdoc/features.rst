@@ -154,6 +154,44 @@ set ``enable_hypervisor_awareness`` option to ``True`` in Sahara configuration
 file. In this case Sahara will add the compute node ID as a second level of
 topology for Virtual Machines.
 
+Volume-to-instance locality
+---------------------------
+
+Having an instance and an attached volume on the same physical host can be very
+helpful in order to achieve high-performance disk I/O. To achieve this,
+volume-to-instance locality should be used.
+
+Cinder has ``InstanceLocalityFilter`` which enables selection of a storage
+back-end located on the host where the instance's hypervisor is running. It
+allows volumes to be created on the same physical host as the instance.
+
+To enable this functionality for instances of a specific node group, the
+``volume_local_to_instance`` field in node group template should be set to
+``True`` and some extra configurations are needed:
+
+* Cinder-volume service should be launched on every physical host and at least
+  one physical host should run both cinder-scheduler and cinder-volume services.
+* ``InstanceLocalityFilter`` should be added to the list of default filters
+  (``scheduler_default_filters`` in Cinder config).
+* The Extended Server Attributes extension needs to be active in Nova
+  (this is true by default), so that the ``OS-EXT-SRV-ATTR:host`` property is
+  returned when requesting instance info.
+* The user making the call needs to have sufficient rights for the property to
+  be returned by Nova.
+  This can be made:
+
+  * by changing Nova's ``policy.json`` (the ``extended_server_attributes`` option)
+  * by setting an account with privileged rights in Cinder config:
+
+    .. sourcecode:: cfg
+
+        os_privileged_user_name =
+        os_privileged_user_password =
+        os_privileged_user_tenant =
+
+It should be noted that in a situation when the host has no space for volume
+creation, the created volume will have an ``Error`` state and can not be used.
+
 Security group management
 -------------------------
 
