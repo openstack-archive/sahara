@@ -13,11 +13,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from sahara.plugins.cdh import confighints_helper as ch_helper
 from sahara.plugins.cdh.v5 import cloudera_utils as cu
 from sahara.plugins import exceptions as ex
 from sahara.plugins import utils as u
 from sahara.service.edp import hdfs_helper
 from sahara.service.edp.oozie import engine as edp_engine
+from sahara.utils import edp
 
 CU = cu.ClouderaUtilsV5()
 
@@ -52,3 +54,18 @@ class EdpOozieEngine(edp_engine.OozieJobEngine):
                 'OOZIE_SERVER', '1', oo_count)
 
         super(EdpOozieEngine, self).validate_job_execution(cluster, job, data)
+
+    @staticmethod
+    def get_possible_job_config(job_type):
+        if edp.compare_job_type(job_type, edp.JOB_TYPE_HIVE):
+            return {'job_config': ch_helper.get_possible_hive_config_from(
+                    'plugins/cdh/v5/resources/hive-site.xml')}
+        if edp.compare_job_type(job_type,
+                                edp.JOB_TYPE_MAPREDUCE,
+                                edp.JOB_TYPE_MAPREDUCE_STREAMING):
+            return {'job_config': ch_helper.get_possible_mapreduce_config_from(
+                    'plugins/cdh/v5/resources/mapred-site.xml')}
+        if edp.compare_job_type(job_type, edp.JOB_TYPE_PIG):
+            return {'job_config': ch_helper.get_possible_pig_config_from(
+                    'plugins/cdh/v5/resources/mapred-site.xml')}
+        return edp_engine.OozieJobEngine.get_possible_job_config(job_type)
