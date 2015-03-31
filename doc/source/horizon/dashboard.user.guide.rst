@@ -174,15 +174,15 @@ for your job.
 
 6) Repeat for additional Job Binaries
 
-Jobs
-----
-Jobs are where you define the type of job you'd like to run as well as which
-"Job Binaries" are required
+Job Templates (Known as "Jobs" in the API)
+------------------------------------------
+Job templates are where you define the type of job you'd like to run as well
+as which "Job Binaries" are required.
 
-1) From the Data Processing/Jobs page, click on the "Create Job" button at the
-   top right
+1) From the Data Processing/Jobs page, click on the "Create Job Template"
+   button at the top right
 
-2) Give your Job a name
+2) Give your Job Template a name
 
 3) Choose the type of job you'd like to run
 
@@ -191,23 +191,23 @@ Jobs are where you define the type of job you'd like to run as well as which
    - This is required for Hive, Pig, and Spark jobs
    - Other job types do not use a main binary
 
-5) Enter an optional description for your Job
+5) Enter an optional description for your Job Template
 
-6) Click on the "Libs" tab and choose any libraries needed by your job
+6) Click on the "Libs" tab and choose any libraries needed by your job template
 
    - MapReduce and Java jobs require at least one library
    - Other job types may optionally use libraries
 
 7) Click on "Create"
 
-Job Executions
---------------
-Job Executions are what you get by "Launching" a job.  You can monitor the
+Jobs (Known as "Job Executions" in the API)
+-------------------------------------------
+Jobs are what you get by "Launching" a job template.  You can monitor the
 status of your job to see when it has completed its run
 
-1) From the Data Processing/Jobs page, find the row that contains the job you
-   want to launch and click on the "Launch Job" button at the right side of that
-   row
+1) From the Data Processing/Job Templates page, find the row that contains the
+   job template you  want to launch and click either "Launch on New Cluster" or
+   "Launch on Existing Cluster" the right side of that row
 
 2) Choose the cluster (already running--see `Launching a Cluster`_ above) on
    which you would like the job to run
@@ -222,9 +222,9 @@ status of your job to see when it has completed its run
     org.apache.oozie.example.SampleMapper for the Value
 
 5) Click on "Launch".  To monitor the status of your job, you can navigate to
-   the Sahara/Job Executions panel
+   the Data Processing/Jobs panel
 
-6) You can relaunch a Job Execution from the Job Executions page by using the
+6) You can relaunch a Job from the Jobs page by using the
    "Relaunch on New Cluster" or "Relaunch on Existing Cluster" links
 
   - Relaunch on New Cluster will take you through the forms to start a new
@@ -276,9 +276,9 @@ assume that you already have a cluster up and running (in the "Active" state).
       database, click Browse and find udf.jar wherever you checked out the
       sahara project <sahara root>/etc/edp-examples/edp-pig/trim-spaces
 
-  - Create a Job
+  - Create a Job Template
 
-    - Navigate to Data Processing/Jobs, Click on Create Job
+    - Navigate to Data Processing/Job Templates, Click on Create Job Template
 
     - Name = pigsample, Job Type = Pig, Choose "example.pig" as the main binary
 
@@ -287,8 +287,9 @@ assume that you already have a cluster up and running (in the "Active" state).
 
   - Launch your job
 
-    - To launch your job from the Jobs page, click on the down arrow at the far
-      right of the screen and choose "Launch on Existing Cluster"
+    - To launch your job from the Job Templates page, click on the down
+      arrow at the far right of the screen and choose
+      "Launch on Existing Cluster"
 
     - For the input, choose "pig-input-ds", for output choose "pig-output-ds".
       Also choose whichever cluster you'd like to run the job on
@@ -296,7 +297,7 @@ assume that you already have a cluster up and running (in the "Active" state).
     - For this job, no additional configuration is necessary, so you can just
       click on "Launch"
 
-    - You will be taken to the "Job Executions" page where you can see your job
+    - You will be taken to the "Jobs" page where you can see your job
       progress through "PENDING, RUNNING, SUCCEEDED" phases
 
     - When your job finishes with "SUCCEEDED", you can navigate back to Object
@@ -314,15 +315,16 @@ assume that you already have a cluster up and running (in the "Active" state).
       location <sahara root>/etc/edp-examples/edp-spark and choose
       spark-example.jar, Click "Create"
 
-  - Create a Job
+  - Create a Job Template
 
     - Name = sparkexamplejob, Job Type = Spark,
       Main binary = Choose sparkexample.jar, Click "Create"
 
   - Launch your job
 
-    - To launch your job from the Jobs page, click on the down arrow at the far
-      right of the screen and choose "Launch on Existing Cluster"
+    - To launch your job from the Job Templates page, click on the
+      down arrow at the far right of the screen and choose
+      "Launch on Existing Cluster"
 
     - Choose whichever cluster you'd like to run the job on
 
@@ -335,13 +337,13 @@ assume that you already have a cluster up and running (in the "Active" state).
 
     - Click on Launch
 
-    - You will be taken to the "Job Executions" page where you can see your job
+    - You will be taken to the "Jobs" page where you can see your job
       progress through "PENDING, RUNNING, SUCCEEDED" phases
 
     - When your job finishes with "SUCCEEDED", you can see your results by
       sshing to the Spark "master" node
 
-    - The output is located at /tmp/spark-edp/<name of job>/<job execution id>.
+    - The output is located at /tmp/spark-edp/<name of job template>/<job id>.
       You can do ``cat stdout`` which should display something like
       "Pi is roughly 3.14156132"
 
@@ -353,9 +355,9 @@ Additional Notes
 ----------------
 1) Throughout the Sahara UI, you will find that if you try to delete an object
    that you will not be able to delete it if another object depends on it.
-   An example of this would be trying to delete a Job that has an existing Job
-   Execution.  In order to be able to delete that job, you would first need to
-   delete any Job Executions that relate to that job.
+   An example of this would be trying to delete a Job Template that has an
+   existing Job.  In order to be able to delete that job, you would
+   first need to delete any Job Templates that relate to that job.
 
 2) In the examples above, we mention adding your username/password for the Swift
    Data Sources. It should be noted that it is possible to configure Sahara such
