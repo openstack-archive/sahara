@@ -96,21 +96,15 @@ class BaseTestCase(base.BaseTestCase):
         sahara_service_type = self.credentials['sahara_service_type']
         sahara_url = self.credentials['sahara_url']
 
-        self.sahara = clients.SaharaClient(username=username,
-                                           api_key=password,
-                                           project_name=tenant_name,
-                                           auth_url=auth_url,
+        session = clients.get_session(
+            auth_url, username, password, tenant_name)
+
+        self.sahara = clients.SaharaClient(session=session,
                                            service_type=sahara_service_type,
                                            sahara_url=sahara_url)
-        self.nova = clients.NovaClient(username=username,
-                                       api_key=password,
-                                       project_id=tenant_name,
-                                       auth_url=auth_url)
-        self.neutron = clients.NeutronClient(username=username,
-                                             password=password,
-                                             tenant_name=tenant_name,
-                                             auth_url=auth_url)
-
+        self.nova = clients.NovaClient(session=session)
+        self.neutron = clients.NeutronClient(session=session)
+        # swiftclient doesn't support keystone sessions
         self.swift = clients.SwiftClient(authurl=auth_url,
                                          user=username,
                                          key=password,
