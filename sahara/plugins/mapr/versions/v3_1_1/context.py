@@ -26,7 +26,7 @@ class Context(bc.BaseClusterContext):
         self._hadoop_conf = None
         self._resource_manager_uri = 'maprfs:///'
         self._cluster_mode = None
-        self._node_aware = False
+        self._node_aware = True
         self._mapr_version = '3.1.1'
         self._ubuntu_ecosystem_repo = (
             'http://package.mapr.com/releases/ecosystem/ubuntu binary/')

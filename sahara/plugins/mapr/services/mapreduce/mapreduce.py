@@ -90,19 +90,34 @@ class MapReduce(s.Service):
     def _get_core_site_props(self, context):
         result = {}
         if context.is_node_aware:
-            for conf in topo.vm_awareness_core_config():
-                result[conf['name']] = conf['value']
+            result.update(self._get_core_site_node_aware_props())
         for conf in swift_helper.get_swift_configs():
             result[conf['name']] = conf['value']
         for conf in self._get_impersonation_props():
             result[conf['name']] = conf['value']
         return result
 
+    def _get_core_site_node_aware_props(self):
+        result = topo.vm_awareness_core_config()
+        result = {c['name']: c['value'] for c in result}
+        result.update({
+            'net.topology.script.file.name': '/opt/mapr/topology.sh',
+            'net.topology.script.number.args': '75',
+        })
+        return result
+
     def _get_mapred_site_props(self, context):
         result = {}
         if context.is_node_aware:
-            for conf in topo.vm_awareness_mapred_config():
-                result[conf['name']] = conf['value']
+            result.update(self._get_mapred_site_node_aware_props())
+        return result
+
+    def _get_mapred_site_node_aware_props(self):
+        result = topo.vm_awareness_mapred_config()
+        result = {c['name']: c['value'] for c in result}
+        # This config causes failure
+        result.pop('mapred.task.cache.levels')
+        result['mapreduce.jobtracker.taskcache.levels'] = '3'
         return result
 
     def _get_impersonation_props(self):
