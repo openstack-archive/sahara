@@ -26,6 +26,20 @@ distribution:
 | CentOS 6.5   | cloud-user |
 +--------------+------------+
 
+Services Supported
+------------------
+
+Currently below services are supported in Cloudera plugin:
+HDFS, Oozie, YARN, Spark, Zookeeper, Hive, Hue, HBase, Impala, Flume, Solr, Sqoop,
+and Key-value Store Indexer.
+
+.. note::
+
+    Sentry service is enabled in Cloudera plugin. However, for we do not enable
+    Kerberos authentication in the cluster, which is required for Sentry
+    functionality, using Sentry service will not really take any effect, and
+    other services depending on Sentry will not do any authentication too.
+
 
 Cluster Validation
 ------------------
