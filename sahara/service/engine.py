@@ -30,6 +30,7 @@ from sahara.utils import cluster_progress_ops as cpo
 from sahara.utils import edp
 from sahara.utils import general as g
 from sahara.utils.openstack import nova
+from sahara.utils import poll_utils
 from sahara.utils import remote
 
 LOG = logging.getLogger(__name__)
@@ -65,6 +66,17 @@ class Engine(object):
         image_id = node_group.get_image_id()
         return nova.client().images.get(image_id).username
 
+    @poll_utils.poll_status('ips_assign_timeout', _("Assign IPs"), sleep=1)
+    def _ips_assign(self, ips_assigned, cluster, instances):
+        if not g.check_cluster_exists(cluster):
+            return True
+        for instance in instances:
+            if instance.id not in ips_assigned:
+                if networks.init_instances_ips(instance):
+                    ips_assigned.add(instance.id)
+                    cpo.add_successful_event(instance)
+        return len(ips_assigned) == len(instances)
+
     def _await_networks(self, cluster, instances):
         if not instances:
             return
@@ -72,16 +84,7 @@ class Engine(object):
         cpo.add_provisioning_step(cluster.id, _("Assign IPs"), len(instances))
 
         ips_assigned = set()
-        while len(ips_assigned) != len(instances):
-            if not g.check_cluster_exists(cluster):
-                return
-            for instance in instances:
-                if instance.id not in ips_assigned:
-                    if networks.init_instances_ips(instance):
-                        ips_assigned.add(instance.id)
-                        cpo.add_successful_event(instance)
-
-            context.sleep(1)
+        self._ips_assign(ips_assigned, cluster, instances)
 
         LOG.info(
             _LI("Cluster {cluster_id}: all instances have IPs assigned")
@@ -101,30 +104,35 @@ class Engine(object):
         LOG.info(_LI("Cluster {cluster_id}: all instances are accessible")
                  .format(cluster_id=cluster.id))
 
+    @poll_utils.poll_status(
+        'wait_until_accessible', _("Wait for instance accessibility"),
+        sleep=5)
+    def _is_accessible(self, instance):
+        try:
+            # check if ssh is accessible and cloud-init
+            # script is finished generating authorized_keys
+            exit_code, stdout = instance.remote().execute_command(
+                "ls .ssh/authorized_keys", raise_when_error=False)
+
+            if exit_code == 0:
+                LOG.debug(
+                    'Instance {instance_name} is accessible'.format(
+                        instance_name=instance.instance_name))
+                return True
+        except Exception as ex:
+            LOG.debug("Can't login to node {instance_name} {mgmt_ip}, "
+                      "reason {reason}".format(
+                          instance_name=instance.instance_name,
+                          mgmt_ip=instance.management_ip, reason=ex))
+            return False
+
+        if not g.check_cluster_exists(instance.cluster):
+            return True
+        return False
+
     @cpo.event_wrapper(mark_successful_on_exit=True)
     def _wait_until_accessible(self, instance):
-        while True:
-            try:
-                # check if ssh is accessible and cloud-init
-                # script is finished generating authorized_keys
-                exit_code, stdout = instance.remote().execute_command(
-                    "ls .ssh/authorized_keys", raise_when_error=False)
-
-                if exit_code == 0:
-                    LOG.debug(
-                        'Instance {instance_name} is accessible'.format(
-                            instance_name=instance.instance_name))
-                    return
-            except Exception as ex:
-                LOG.debug("Can't login to node {instance_name} {mgmt_ip}, "
-                          "reason {reason}".format(
-                              instance_name=instance.instance_name,
-                              mgmt_ip=instance.management_ip, reason=ex))
-
-            context.sleep(5)
-
-            if not g.check_cluster_exists(instance.cluster):
-                return
+        self._is_accessible(instance)
 
     def _configure_instances(self, cluster):
         """Configure active instances.
