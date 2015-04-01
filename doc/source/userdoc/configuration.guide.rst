@@ -1,28 +1,42 @@
 Sahara Configuration Guide
 ==========================
 
-This guide covers steps for basic configuration of Sahara.
-It will help you to configure the service in the most simple manner.
+This guide covers the steps for a basic configuration of sahara.
+It will help you to configure the service in the most simple
+manner.
 
-Let's start by configuring Sahara server. The server is packaged
-with two sample config files: ``sahara.conf.sample-basic`` and
-``sahara.conf.sample``. The former contains all essential parameters,
-while the later contains the full list. We recommend to create your config
-based on the basic sample, as most probably changing parameters listed here
-will be enough.
+Sahara is packaged with a basic sample configration file:
+``sahara.conf.sample-basic``. This file contains all the essential
+parameters that are required for sahara. We recommend creating your
+configuration file based on this basic example.
 
-First, edit ``connection`` parameter in the ``[database]`` section. The URL
-provided here should point to an empty database. For instance, connection
-string for mysql database will be:
+If a more thorough configuration is needed we recommend using the ``tox``
+tool to create a full configuration file by executing the following
+command:
+
+.. sourcecode:: cfg
+
+    $ tox -e genconfig
+
+..
+
+Running this command will create a file named ``sahara.conf.sample``
+in the ``etc/sahara`` directory of the project.
+
+After creating a configuration file by either copying the basic example
+or generating one, edit the ``connection`` parameter in the
+``[database]`` section. The URL provided here should point to an empty
+database. For example, the connection string for a MySQL database will be:
 
 .. sourcecode:: cfg
 
     connection=mysql://username:password@host:port/database
 ..
 
-Switch to the ``[keystone_authtoken]`` section. The ``auth_uri`` parameter
-should point to the public Identity API endpoint. ``identity_uri`` should
-point to the admin Identity API endpoint. For example:
+Next you will configure the Identity service parameters in the
+``[keystone_authtoken]`` section. The ``auth_uri`` parameter
+should point to the public Identity API endpoint. The ``identity_uri``
+should point to the admin Identity API endpoint. For example:
 
 .. sourcecode:: cfg
 
@@ -30,33 +44,38 @@ point to the admin Identity API endpoint. For example:
     identity_uri=http://127.0.0.1:35357/
 ..
 
-Next specify ``admin_user``, ``admin_password`` and
-``admin_tenant_name``. These parameters must specify a keystone user
-which has the ``admin`` role in the given tenant. These credentials allow
-Sahara to authenticate and authorize its users.
+Specify the ``admin_user``, ``admin_password`` and ``admin_tenant_name``.
+These parameters must specify an Identity user who has the ``admin`` role
+in the given tenant. These credentials allow sahara to authenticate and
+authorize its users.
 
-Switch to the ``[DEFAULT]`` section.  Proceed to the networking parameters.
-If you are using Neutron for networking, then set
+Next you will configure the default Networking service. If using
+neutron for networking the following parameter should be set
+in the ``[DEFAULT]`` section:
 
 .. sourcecode:: cfg
 
     use_neutron=true
 ..
 
-Otherwise if you are using Nova-Network set the given parameter to false.
+If you are using nova-network for networking then this parameter should
+be set to ``false``.
 
-That should be enough for the first run. If you want to increase logging
-level for troubleshooting, there are two parameters in the config:
-``verbose`` and ``debug``. If the former is set to true, Sahara will start
-to write logs of INFO level and above. If ``debug`` is set to true,
-Sahara will write all the logs, including the DEBUG ones.
+With these paramaters set, sahara is ready to run.
+
+If you wish to increase the logging levels for troubleshooting there
+are two parameters in the ``[DEFAULT]`` section of the configuration
+file which control the level of logging output; ``verbose`` and
+``debug``. With ``verbose`` set to ``true`` sahara's default logging
+level will be set to INFO, and with ``debug`` set to ``true`` it will
+be set to DEBUG. By default the sahara's log level is set to WARNING.
 
 Sahara notifications configuration
 ----------------------------------
 
-Sahara can send notifications to Ceilometer, if it's enabled.
-If you want to enable notifications you should switch to ``[DEFAULT]``
-section and set:
+Sahara can be configured to send notifications to the OpenStack
+Telemetry module. To enable this functionality the following parameters
+should be set in the ``[DEFAULT]`` section of the configuration file:
 
 .. sourcecode:: cfg
 
@@ -64,22 +83,21 @@ section and set:
     notification_driver = messaging
 ..
 
-The current default for Sahara is to use the backend that utilizes RabbitMQ
-as the message broker. You should configure your backend. It's recommended to use
-Rabbit or Qpid.
+By default sahara is configured to use RabbitMQ as its message broker,
+but it can be configured to use Qpid instead if needed.
 
-If you are using Rabbit as a backend, then you should set:
+If you are using RabbitMQ as the message broker, then you should set the
+following parameter in the ``[DEFAULT]`` section:
 
 .. sourcecode:: cfg
 
     rpc_backend = rabbit
 ..
 
-And after that you should specify following options:
-``rabbit_host``, ``rabbit_port``, ``rabbit_userid``,
-``rabbit_password``, ``rabbit_virtual_host`` and ``rabbit_hosts``.
-
-As example you can see default values of these options:
+You may also need to specify the connection parameters for your
+RabbitMQ installation. The following example shows the default
+values in the ``[oslo_messaging_rabbit]`` section which may need
+adjustment:
 
 .. sourcecode:: cfg
 
@@ -91,18 +109,16 @@ As example you can see default values of these options:
     rabbit_virtual_host=/
 ..
 
-If you are using Qpid as backend, then you should set:
+If you are using Qpid as the message broker, then you should
+set the ``rpc_backend`` as follows:
 
 .. sourcecode:: cfg
 
     rpc_backend = qpid
 ..
 
-And after that you should specify following options:
-``qpid_hostname``, ``qpid_port``, ``qpid_username``,
-``qpid_password`` and ``qpid_hosts``.
-
-As example you can see default values of these options:
+You may also need to adjust the following default connection parameters
+in the ``[oslo_messaging_qpid]`` section:
 
 .. sourcecode:: cfg
 
@@ -118,11 +134,11 @@ As example you can see default values of these options:
 Sahara policy configuration
 ---------------------------
 
-Sahara’s public API calls may be restricted to certain sets of users using a
-policy configuration file. Location of policy file is controlled by
-``policy_file`` and ``policy_dirs`` parameters. By default Sahara will search
-for ``policy.json`` file in the same directory where Sahara configuration is
-located.
+Sahara’s public API calls may be restricted to certain sets of users by
+using a policy configuration file. The location of the policy file(s)
+is controlled by the ``policy_file`` and ``policy_dirs`` parameters
+in the ``[DEFAULT]`` section. By default sahara will search for
+a ``policy.json`` file in the same directory as the configuration file.
 
 Examples
 ++++++++
