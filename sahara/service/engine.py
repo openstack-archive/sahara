@@ -108,6 +108,8 @@ class Engine(object):
         'wait_until_accessible', _("Wait for instance accessibility"),
         sleep=5)
     def _is_accessible(self, instance):
+        if not g.check_cluster_exists(instance.cluster):
+            return True
         try:
             # check if ssh is accessible and cloud-init
             # script is finished generating authorized_keys
@@ -126,8 +128,6 @@ class Engine(object):
                           mgmt_ip=instance.management_ip, reason=ex))
             return False
 
-        if not g.check_cluster_exists(instance.cluster):
-            return True
         return False
 
     @cpo.event_wrapper(mark_successful_on_exit=True)
