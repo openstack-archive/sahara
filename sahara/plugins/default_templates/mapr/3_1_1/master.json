@@ -1,0 +1,15 @@
+{
+    "plugin_name": "mapr",
+    "hadoop_version": "3.1.1",
+    "node_processes": [
+        "ZooKeeper",
+        "Webserver",
+        "CLDB",
+        "FileServer",
+        "JobTracker",
+        "Oozie"
+    ],
+    "name": "mapr-311-default-master",
+    "floating_ip_pool": "{floating_ip_pool}",
+    "flavor_id": "{flavor_id}"
+}
