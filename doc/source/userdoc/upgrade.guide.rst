@@ -1,8 +1,9 @@
 Sahara Upgrade Guide
 ====================
 
-This page contains some details about upgrading Sahara from one release to
-another like config file updates, db migrations, architecture changes and etc.
+This page contains details about upgrading sahara between releases such
+as configuration file updates, database migrations, and architectural
+changes.
 
 Icehouse -> Juno
 ----------------
@@ -10,79 +11,102 @@ Icehouse -> Juno
 Main binary renamed to sahara-all
 +++++++++++++++++++++++++++++++++
 
-Please, note that you should use `sahara-all` instead of `sahara-api` to start
-the All-In-One Sahara.
+The All-In-One sahara binary has been renamed from ``sahara-api``
+to ``sahara-all``. The new name should be used in all cases where the
+All-In-One sahara is desired.
 
-sahara.conf upgrade
-+++++++++++++++++++
+Authentication middleware changes
++++++++++++++++++++++++++++++++++
 
-We've migrated from custom auth_token middleware config options to the common
-config options. To update your config file you should replace the following
-old config opts with the new ones.
+The custom auth_token middleware has been deprecated in favor of the
+keystone middleware. This change requires an update to the sahara
+configuration file. To update your configuration file you should replace
+the following parameters from the ``[DEFAULT]`` section with the new
+parameters in the ``[keystone_authtoken]`` section:
 
-* ``os_auth_protocol``, ``os_auth_host``, ``os_auth_port``
-  -> ``[keystone_authtoken]/auth_uri`` and ``[keystone_authtoken]/identity_uri``;
-  it should be the full uri, for example: ``http://127.0.0.1:5000/v2.0/``
-* ``os_admin_username`` -> ``[keystone_authtoken]/admin_user``
-* ``os_admin_password`` -> ``[keystone_authtoken]/admin_password``
-* ``os_admin_tenant_name`` -> ``[keystone_authtoken]/admin_tenant_name``
++----------------------+--------------------+
+| Old parameter name   | New parameter name |
++======================+====================+
+| os_admin_username    | admin_user         |
++----------------------+--------------------+
+| os_admin_password    | admin_password     |
++----------------------+--------------------+
+| os_admin_tenant_name | admin_tenant_name  |
++----------------------+--------------------+
 
-We've replaced oslo code from sahara.openstack.common.db by usage of oslo.db
-library.
+Additionally, the parameters ``os_auth_protocol``, ``os_auth_host``,
+and ``os_auth_port`` have been combined to create the ``auth_uri``
+and ``identity_uri`` parameters. These new parameters should be
+full URIs to the keystone public and admin endpoints, respectively.
 
-Also sqlite database is not supported anymore. Please use MySQL or PostgreSQL
-db backends for Sahara. Sqlite support was dropped because it doesn't support
-(and not going to support, see http://www.sqlite.org/omitted.html) ALTER
-COLUMN and DROP COLUMN commands required for DB migrations between versions.
+For more information about these configuration parameters please see
+the :doc:`configuration.guide`.
 
-You can find more info about config file options in Sahara repository in file
-``etc/sahara/sahara.conf.sample``.
+Database package changes
+++++++++++++++++++++++++
 
-Sahara Dashboard was merged into OpenStack Dashboard
-++++++++++++++++++++++++++++++++++++++++++++++++++++
+The oslo based code from sahara.openstack.common.db has been replaced by
+the usage of the oslo.db package. This change does not require any
+update to sahara's configuration file.
 
-The Sahara Dashboard is not available in Juno release. Instead it's
-functionality is provided by OpenStack Dashboard out of the box.
-The Sahara UI is available in OpenStack Dashboard in
+Additionally, the usage of SQLite databases has been deprecated. Please
+use MySQL or PostgreSQL databases for sahara. SQLite has been
+deprecated because it does not, and is not going to, support the
+``ALTER COLUMN`` and ``DROP COLUMN`` commands required for migrations
+between versions. For more information please see
+http://www.sqlite.org/omitted.html
+
+Sahara integration into OpenStack Dashboard
++++++++++++++++++++++++++++++++++++++++++++
+
+The sahara dashboard package has been deprecated in the Juno release. The
+functionality of the dashboard has been fully incorporated into the
+OpenStack Dashboard. The sahara interface is available under the
 "Project" -> "Data Processing" tab.
 
-Note that you have to properly register Sahara in Keystone in
-order for Sahara UI in the Dashboard to work. For details see
+The Data processing service endpoints must be registered in the Identity
+service catalog for the Dashboard to properly recognize and display
+those user interface components. For more details on this process please see
 :ref:`registering Sahara in installation guide <register-sahara-label>`.
 
-The `sahara-dashboard <https://git.openstack.org/cgit/openstack/sahara-dashboard>`_
-project is now used solely to host Sahara UI integration tests.
+The
+`sahara-dashboard <https://git.openstack.org/cgit/openstack/sahara-dashboard>`_
+project is now used solely to host sahara user interface integration tests.
 
-VM user name changed for HEAT infrastructure engine
-+++++++++++++++++++++++++++++++++++++++++++++++++++
+Virtual machine user name changes
++++++++++++++++++++++++++++++++++
 
-We've updated HEAT infrastructure engine (``infrastructure_engine=heat``) to
-use the same rules for instance user name as in direct engine. Before the
-change user name for VMs created by Sahara using HEAT engine was always
-'ec2-user'. Now user name is taken from the image registry as it is described
-in the documentation.
+The HEAT infrastructure engine has been updated to use the same rules for
+instance user names as the direct engine. In previous releases the user
+name for instances created by sahara using HEAT was always 'ec2-user'. As
+of Juno, the user name is taken from the image registry as described in
+the :doc:`registering_image` document.
 
-Note, this change breaks Sahara backward compatibility for clusters created
-using HEAT infrastructure engine before the change. Clusters will continue to
-operate, but it is not recommended to perform scale operation over them.
+This change breaks backward compatibility for clusters created using the
+HEAT infrastructure engine prior to the Juno release. Clusters will
+continue to operate, but we do not recommended using the scaling operations
+with them.
 
 Anti affinity implementation changed
 ++++++++++++++++++++++++++++++++++++
 
-Starting with Juno release anti affinity feature is implemented using server
-groups. There should not be much difference in Sahara behaviour from user
-perspective, but there are internal changes:
+Starting with the Juno release the anti affinity feature is implemented
+using server groups. From the user prespective there will be no
+noticeable changes with this feature. Internally this change has
+introduced the following behavior:
 
-1) Server group object will be created if anti affinity feature is enabled
-2) New implementation doesn't allow several affected instances on the same
-   host even if they don't have common processes. So, if anti affinity enabled
-   for 'datanode' and 'tasktracker' processes, previous implementation allowed
-   to have instance with 'datanode' process and other instance with
-   'tasktracker' process on one host. New implementation guarantees that
-   instances will be on different hosts.
+1) Server group objects will be created for any clusters with anti affinity
+   enabled.
+2) Affected instances on the same host will not be allowed even if they
+   do not have common processes. Prior to Juno, instances with differing
+   processes were allowed on the same host. The new implementation
+   guarantees that all affected instances will be on different hosts
+   regardless of their processes.
 
-Note, new implementation will be applied for new clusters only. Old
-implementation will be applied if user scales cluster created in Icehouse.
+The new anti affinity implementation will only be applied for new clusters.
+Clusters created with previous versions will continue to operate under
+the older implementation, this applies to scaling operations on these
+clusters as well.
 
 Juno -> Kilo
 ------------
@@ -90,7 +114,8 @@ Juno -> Kilo
 Sahara requires policy configuration
 ++++++++++++++++++++++++++++++++++++
 
-Starting from Kilo Sahara requires policy configuration provided. Place
-``policy.json`` file near Sahara configuration file or specify ``policy_file``
-parameter. For details see :ref:`policy section in configuration guide <policy-configuration-label>`.
-
+Sahara now requires a policy configuration file. The ``policy.json`` file
+should be placed in the same directory as the sahara configuration file or
+specified using the ``policy_file`` parameter. For more details about the
+policy file please see the
+:ref:`policy section in the configuration guide <policy-configuration-label>`.
