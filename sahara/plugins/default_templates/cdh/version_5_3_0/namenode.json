@@ -1,0 +1,14 @@
+{
+    "plugin_name": "cdh",
+    "hadoop_version": "5.3.0",
+    "node_processes": [
+        "HDFS_NAMENODE",
+        "YARN_RESOURCEMANAGER",
+        "HIVE_SERVER2",
+        "HIVE_METASTORE",
+        "CLOUDERA_MANAGER"
+    ],
+    "name": "cdh-530-default-namenode",
+    "floating_ip_pool": "{floating_ip_pool}",
+    "flavor_id": "{flavor_id}"
+}
