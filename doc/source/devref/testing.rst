@@ -17,6 +17,12 @@ We have integration tests for the main Sahara service and they are located in
 run some kind of scenarios to test Sahara using all plugins. You can find more
 info about it in `sahara/tests/integration/README.rst`.
 
+Scenario integration tests
+++++++++++++++++++++++++++
+
+New scenario integration tests were implemented in Sahara, you can see how
+use and run it here: `sahara/tests/scenario/README.rst`
+
 Tempest tests
 +++++++++++++
 
@@ -29,19 +35,3 @@ testing Sahara. Here is a list of currently implemented tests:
 
 * CLI tests are checking read-only operations using the Sahara CLI, more info -
   http://docs.openstack.org/developer/tempest/field_guide/cli.html
-
-Selenium Integration tests
-++++++++++++++++++++++++++
-
-We have a bunch of Selenium-based UI tests for Sahara UI in
-https://git.openstack.org/cgit/openstack/sahara-dashboard repository.
-The following UI parts are covered:
-
-* Clusters
-* Cluster templates
-* Node group templates
-* Image registry
-* Data sources
-* Job binaries
-* Jobs
-* Job executions
