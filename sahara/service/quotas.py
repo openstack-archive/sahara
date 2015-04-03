@@ -23,7 +23,14 @@ from sahara.utils.openstack import cinder as cinder_client
 from sahara.utils.openstack import neutron as neutron_client
 from sahara.utils.openstack import nova as nova_client
 
+
 CONF = cfg.CONF
+
+UNLIMITED = 'unlimited'
+
+
+def _is_unlimited(limit):
+    return limit == -1
 
 
 def _get_zero_limits():
@@ -65,9 +72,10 @@ def _check_limits(req_limits):
 
     avail_limits = _get_avail_limits()
     for quota, quota_name in six.iteritems(limits_name_map):
-        if avail_limits[quota] < req_limits[quota]:
-            raise ex.QuotaException(quota_name, req_limits[quota],
-                                    avail_limits[quota])
+        if avail_limits[quota] != UNLIMITED:
+            if avail_limits[quota] < req_limits[quota]:
+                raise ex.QuotaException(quota_name, req_limits[quota],
+                                        avail_limits[quota])
 
 
 def _get_req_cluster_limits(cluster):
@@ -120,21 +128,30 @@ def _get_avail_limits():
     return limits
 
 
+def _sub_limit(total, used):
+    if _is_unlimited(total):
+        return UNLIMITED
+    else:
+        return total - used
+
+
 def _get_nova_limits():
     limits = {}
     nova = nova_client.client()
     lim = nova.limits.get().to_dict()['absolute']
-    limits['ram'] = lim['maxTotalRAMSize'] - lim['totalRAMUsed']
-    limits['cpu'] = lim['maxTotalCores'] - lim['totalCoresUsed']
-    limits['instances'] = lim['maxTotalInstances'] - lim['totalInstancesUsed']
+    limits['ram'] = _sub_limit(lim['maxTotalRAMSize'], lim['totalRAMUsed'])
+    limits['cpu'] = _sub_limit(lim['maxTotalCores'], lim['totalCoresUsed'])
+    limits['instances'] = _sub_limit(lim['maxTotalInstances'],
+                                     lim['totalInstancesUsed'])
     if CONF.use_neutron:
         return limits
     if CONF.use_floating_ips:
-        limits['floatingips'] = (
-            lim['maxTotalFloatingIps'] - lim['totalFloatingIpsUsed'])
-    limits['security_groups'] = (
-        lim['maxSecurityGroups'] - lim['totalSecurityGroupsUsed'])
-    limits['security_group_rules'] = lim['maxSecurityGroupRules']
+        limits['floatingips'] = _sub_limit(lim['maxTotalFloatingIps'],
+                                           lim['totalFloatingIpsUsed'])
+    limits['security_groups'] = _sub_limit(lim['maxSecurityGroups'],
+                                           lim['totalSecurityGroupsUsed'])
+    limits['security_group_rules'] = _sub_limit(lim['maxSecurityGroupRules'],
+                                                0)
     return limits
 
 
@@ -145,20 +162,26 @@ def _get_neutron_limits():
     neutron = neutron_client.client()
     tenant_id = context.ctx().tenant_id
     total_lim = neutron.show_quota(tenant_id)['quota']
+
     if CONF.use_floating_ips:
         usage_fip = neutron.list_floatingips(
             tenant_id=tenant_id)['floatingips']
-        limits['floatingips'] = total_lim['floatingip'] - len(usage_fip)
-    usage_sg = (
-        neutron.list_security_groups(tenant_id=tenant_id)['security_groups'])
-    limits['security_groups'] = total_lim['security_group'] - len(usage_sg)
+        limits['floatingips'] = _sub_limit(total_lim['floatingip'],
+                                           len(usage_fip))
+
+    usage_sg = neutron.list_security_groups(
+        tenant_id=tenant_id)['security_groups']
+    limits['security_groups'] = _sub_limit(total_lim['security_group'],
+                                           len(usage_sg))
 
     usage_sg_rules = (neutron.list_security_group_rules(
         tenant_id=tenant_id)['security_group_rules'])
-    limits['security_group_rules'] = (
-        total_lim['security_group_rule'] - len(usage_sg_rules))
+    limits['security_group_rules'] = _sub_limit(
+        total_lim['security_group_rule'], len(usage_sg_rules))
+
     usage_ports = neutron.list_ports(tenant_id=tenant_id)['ports']
-    limits['ports'] = total_lim['port'] - len(usage_ports)
+    limits['ports'] = _sub_limit(total_lim['port'], len(usage_ports))
+
     return limits
 
 
@@ -168,7 +191,11 @@ def _get_cinder_limits():
     lim = {}
     for l in cinder.limits.get().absolute:
         lim[l.name] = l.value
-    avail_limits['volumes'] = lim['maxTotalVolumes'] - lim['totalVolumesUsed']
-    avail_limits['volume_gbs'] = (
-        lim['maxTotalVolumeGigabytes'] - lim['totalGigabytesUsed'])
+
+    avail_limits['volumes'] = _sub_limit(lim['maxTotalVolumes'],
+                                         lim['totalVolumesUsed'])
+
+    avail_limits['volume_gbs'] = _sub_limit(lim['maxTotalVolumeGigabytes'],
+                                            lim['totalGigabytesUsed'])
+
     return avail_limits

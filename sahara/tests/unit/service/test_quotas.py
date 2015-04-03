@@ -38,6 +38,12 @@ class TestQuotas(base.SaharaTestCase):
         req_limits = {}
 
         for key in self.LIST_LIMITS:
+            avail_limits[key] = quotas.UNLIMITED
+            req_limits[key] = 100500
+        mock_avail_limits.return_value = avail_limits
+        self.assertIsNone(quotas._check_limits(req_limits))
+
+        for key in self.LIST_LIMITS:
             avail_limits[key] = 2
             req_limits[key] = 1
         mock_avail_limits.return_value = avail_limits
