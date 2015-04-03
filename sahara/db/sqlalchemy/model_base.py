@@ -42,6 +42,11 @@ class _SaharaBase(oslo_models.ModelBase, oslo_models.TimestampMixin):
 
 def datetime_to_str(dct, attr_name):
     if dct.get(attr_name) is not None:
-        dct[attr_name] = dct[attr_name].isoformat(' ')
+        value = dct[attr_name].isoformat('T')
+        ms_delimiter = value.find(".")
+        if ms_delimiter != -1:
+            # Removing ms from time
+            value = value[:ms_delimiter]
+        dct[attr_name] = value
 
 SaharaBase = declarative.declarative_base(cls=_SaharaBase)
