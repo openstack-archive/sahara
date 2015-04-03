@@ -78,6 +78,7 @@ class MapRFS(s.Service):
             vu.at_least(1, CLDB),
             vu.each_node_has(FILE_SERVER),
             vu.on_same_node(CLDB, FILE_SERVER),
+            vu.has_volumes(),
         ]
 
     def service_dir(self, cluster_context):
