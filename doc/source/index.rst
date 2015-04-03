@@ -92,6 +92,7 @@ Developer Guide
     devref/how_to_build_oozie
     devref/adding_database_migrations
     devref/testing
+    devref/log.guidelines
 
 **Background Concepts for Sahara**
 
