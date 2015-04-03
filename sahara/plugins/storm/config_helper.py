@@ -132,7 +132,7 @@ def generate_storm_setup_script(env_configs):
 
 
 def extract_name_values(configs):
-    return dict((cfg['name'], cfg['value']) for cfg in configs)
+    return {cfg['name']: cfg['value'] for cfg in configs}
 
 
 def _set_config(cfg, gen_cfg, name=None):

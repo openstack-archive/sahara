@@ -84,6 +84,18 @@ def check_oslo_namespace_imports(logical_line):
               logical_line))
 
 
+def dict_constructor_with_list_copy(logical_line):
+    """Check to prevent dict constructor with a sequence of key-value pairs.
+
+    S368
+    """
+    dict_constructor_with_list_copy_re = re.compile(r".*\bdict\((\[)?(\(|\[)")
+
+    if dict_constructor_with_list_copy_re.match(logical_line):
+        yield (0, 'S368: Must use a dict comprehension instead of a dict '
+               'constructor with a sequence of key-value pairs.')
+
+
 def factory(register):
     register(import_db_only_in_conductor)
     register(hacking_no_author_attr)
@@ -92,3 +104,4 @@ def factory(register):
     register(commit_message.OnceGitCheckCommitTitleLength)
     register(import_checks.hacking_import_groups)
     register(import_checks.hacking_import_groups_together)
+    register(dict_constructor_with_list_copy)

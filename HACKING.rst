@@ -22,3 +22,10 @@ readable. Follow these guidelines:
 Imports
 -------
 - [S366, S367] Organize your imports according to the ``Import order``
+
+Dictionaries/Lists
+------------------
+
+- [S368] Must use a dict comprehension instead of a dict constructor with a
+         sequence of key-value pairs. For more information, please refer to
+         http://legacy.python.org/dev/peps/pep-0274/

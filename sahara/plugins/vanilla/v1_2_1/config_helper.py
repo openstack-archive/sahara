@@ -450,7 +450,7 @@ def generate_setup_script(storage_paths, env_configs, append_oozie=False):
 
 
 def extract_name_values(configs):
-    return dict((cfg['name'], cfg['value']) for cfg in configs)
+    return {cfg['name']: cfg['value'] for cfg in configs}
 
 
 def extract_hadoop_path(lst, hadoop_dir):

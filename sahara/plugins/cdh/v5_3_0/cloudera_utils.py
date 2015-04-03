@@ -238,7 +238,7 @@ class ClouderaUtilsV530(cu.ClouderaUtils):
             core_site_safety_valve = ''
             if self.pu.c_helper.is_swift_enabled(cluster):
                 configs = swift_helper.get_swift_configs()
-                confs = dict((c['name'], c['value']) for c in configs)
+                confs = {c['name']: c['value'] for c in configs}
                 core_site_safety_valve = xmlutils.create_elements_xml(confs)
             all_confs = {
                 'HDFS': {

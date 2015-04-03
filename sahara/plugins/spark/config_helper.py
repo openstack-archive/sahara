@@ -464,7 +464,7 @@ def generate_job_cleanup_config(cluster):
 
 
 def extract_name_values(configs):
-    return dict((cfg['name'], cfg['value']) for cfg in configs)
+    return {cfg['name']: cfg['value'] for cfg in configs}
 
 
 def make_hadoop_path(base_dirs, suffix):
