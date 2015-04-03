@@ -25,6 +25,7 @@ from mako import template as mako_template
 import yaml
 
 from sahara.openstack.common import fileutils
+from sahara.tests.scenario import validation
 
 
 TEST_TEMPLATE_PATH = 'sahara/tests/scenario/testcase.py.mako'
@@ -122,6 +123,9 @@ def main():
                         test_scenario['edp_jobs_flow'][key])
                 else:
                     raise ValueError('Job flow exist')
+
+    # validate config
+    validation.validate(config)
 
     set_defaults(config)
     credentials = config['credentials']
