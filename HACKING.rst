@@ -29,3 +29,18 @@ Dictionaries/Lists
 - [S368] Must use a dict comprehension instead of a dict constructor with a
          sequence of key-value pairs. For more information, please refer to
          http://legacy.python.org/dev/peps/pep-0274/
+=======
+Logs
+----
+
+- [S369] Check LOG.info translations
+
+- [S370] Check LOG.error translations
+
+- [S371] Check LOG.warning translations
+
+- [S372] Check LOG.critical translation
+
+- [S373] LOG.debug never used for translations
+
+- [S374] You used a deprecated log level
