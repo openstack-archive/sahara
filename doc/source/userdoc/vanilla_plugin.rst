@@ -5,18 +5,9 @@ The vanilla plugin is a reference implementation which allows users to operate
 a cluster with Apache Hadoop.
 
 For cluster provisioning prepared images should be used. They already have
-Apache Hadoop 1.2.1 and Apache Hadoop 2.4.1 installed. Prepared images
-can be found at the following locations:
+Apache Hadoop 1.2.1 and Apache Hadoop 2.6.0 installed.
 
-* http://sahara-files.mirantis.com/sahara-juno-vanilla-1.2.1-ubuntu-14.04.qcow2
-* http://sahara-files.mirantis.com/sahara-juno-vanilla-1.2.1-centos-6.5.qcow2
-* http://sahara-files.mirantis.com/sahara-juno-vanilla-1.2.1-fedora-20.qcow2
-
-* http://sahara-files.mirantis.com/sahara-juno-vanilla-2.4.1-ubuntu-14.04.qcow2
-* http://sahara-files.mirantis.com/sahara-juno-vanilla-2.4.1-centos-6.5.qcow2
-* http://sahara-files.mirantis.com/sahara-juno-vanilla-2.4.1-fedora-20.qcow2
-
-Additionally, you may build images by yourself using :doc:`diskimagebuilder`.
+You may build images by yourself using :doc:`diskimagebuilder`.
 Keep in mind that if you want to use the Swift Integration feature
 ( :doc:`features`),
 Hadoop 1.2.1 must be patched with an implementation of Swift File System.
@@ -39,6 +30,10 @@ for each distribution:
 | CentOS 6.5   | cloud-user |
 +--------------+------------+
 
+Known issue:
+
+* Hive job has "KILLED" state after scaling cluster:
+  https://bugs.launchpad.net/sahara/+bug/1413602
 
 Cluster Validation
 ------------------
@@ -57,6 +52,8 @@ For Vanilla Hadoop version 1.X.X:
     for EDP
   + Cluster can't contain oozie without jobtracker
   + Cluster can't have tasktracker nodes if it doesn't have jobtracker
+  + Cluster can't have hive node if it doesn't have jobtracker.
+  + Cluster can have at most one hive node.
 
 For Vanilla Hadoop version 2.X.X:
 
@@ -68,3 +65,4 @@ For Vanilla Hadoop version 2.X.X:
   + Cluster can't contain oozie without resourcemanager and without
     historyserver
   + Cluster can't have nodemanager nodes if it doesn't have resourcemanager
+  + Cluster can have at most one hiveserver node.
