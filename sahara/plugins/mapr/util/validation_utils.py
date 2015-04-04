@@ -19,6 +19,7 @@ from sahara.conductor import resource as r
 import sahara.exceptions as ex
 from sahara.i18n import _
 import sahara.plugins.exceptions as e
+import sahara.utils.openstack.nova as nova
 
 
 class LessThanCountException(e.InvalidComponentCountException):
@@ -76,6 +77,16 @@ class NodeServiceConflictException(ex.SaharaException):
         }
         self.message = NodeServiceConflictException.MESSAGE % args
         self.code = NodeServiceConflictException.ERROR_CODE
+
+
+class NoVolumesException(ex.SaharaException):
+    MESSAGE = _('%s must have at least 1 volume or ephemeral drive')
+    ERROR_CODE = "NO_VOLUMES"
+
+    def __init__(self, ng_name):
+        super(NoVolumesException, self).__init__()
+        self.message = NoVolumesException.MESSAGE % ng_name
+        self.code = NoVolumesException.ERROR_CODE
 
 
 def at_least(count, component):
@@ -173,3 +184,16 @@ def create_fake_cluster(cluster, existing, additional):
     cluster_dict.update({'node_groups': updated + not_updated})
     fake = r.ClusterResource(cluster_dict)
     return fake
+
+
+def get_ephemeral(node_group):
+    return nova.get_flavor(id=node_group.flavor_id).ephemeral
+
+
+def has_volumes():
+    def validate(cluster_context):
+        for node_group in cluster_context.cluster.node_groups:
+            if not (node_group.volumes_per_node or get_ephemeral(node_group)):
+                raise NoVolumesException(node_group.name)
+
+    return validate

@@ -72,6 +72,7 @@ Every MapR cluster must contain:
 * exactly 1 *Webserver* process
 * odd number of *ZooKeeper* processes but not less than 1
 * *FileServer* process on every node
+* at least 1 Cinder volume or ephemeral drive per instance
 
 Every Hadoop cluster must contain exactly 1 *Oozie* process
 
