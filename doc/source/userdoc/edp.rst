@@ -7,12 +7,12 @@ Overview
 Sahara's Elastic Data Processing facility or :dfn:`EDP` allows the execution of jobs on clusters created from Sahara. EDP supports:
 
 * Hive, Pig, MapReduce, MapReduce.Streaming, Java, and Shell job types on Hadoop clusters
-* Spark jobs on Spark standalone clusters
+* Spark jobs on Spark standalone clusters and MapR spark clusters
 * storage of job binaries in Swift or Sahara's own database
 * access to input and output data sources in
 
   + HDFS for all job types
-  + Swift for all types excluding Spark and Hive
+  + Swift for all types excluding Hive
 
 * configuration of jobs at submission time
 * execution of jobs on existing clusters or transient clusters
@@ -229,7 +229,7 @@ Java jobs use two special configuration values:
 
 * ``edp.java.java_opts`` (optional) Specifies configuration values for the JVM
 
-* ``edp.java.adapt_for_oozie`` (optional) Specifies configuration values for adapting oozie. If this configuration value is unset or set to "False", users will need to modify source code as shown `here <https://github.com/openstack/sahara/blob/master/etc/edp-examples/edp-java/README.rst>` to read Hadoop configuration values from the Oozie job configuration. Setting this configuration value to "True" ensures that the Oozie job configuration values will be set in the Hadoop config automatically with no need for code modification and that exit conditions will be handled correctly by Oozie.
+* ``edp.java.adapt_for_oozie`` (optional) Specifies configuration values for adapting oozie. If this configuration value is unset or set to "False", users will need to modify source code as shown `here <https://github.com/openstack/sahara/blob/master/etc/edp-examples/edp-java/README.rst>`_ to read Hadoop configuration values from the Oozie job configuration. Setting this configuration value to "True" ensures that the Oozie job configuration values will be set in the Hadoop config automatically with no need for code modification and that exit conditions will be handled correctly by Oozie.
 
 A Java job will execute the ``main(String[] args)`` method of the specified main class.  There are two methods of passing
 values to the ``main`` method:
@@ -274,7 +274,7 @@ the main method through the ``args`` array. Any arguments set during job launch 
 program as command-line arguments by *spark-submit*.
 
 Data Source objects are not used with Spark job types. Instead, any input or output paths must be passed to the ``main`` method
-as arguments. Remember that Swift paths are not supported for Spark jobs currently.
+as arguments.
 
 The ``edp-spark`` example bundled with Sahara contains a Spark program for estimating Pi.
 
@@ -350,7 +350,7 @@ to support EDP:
 EDP Technical Considerations
 ============================
 
-There are a several things in EDP which require attention in order
+There are several things in EDP which require attention in order
 to work properly. They are listed on this page.
 
 Transient Clusters
