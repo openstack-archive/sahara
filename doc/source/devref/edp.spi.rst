@@ -24,6 +24,7 @@ values for job types:
 * MapReduce
 * MapReduce.Streaming
 * Spark
+* Shell
 
 Note, constants for job types are defined in *sahara.utils.edp*
 
@@ -39,6 +40,7 @@ where *job_status_value* is one of the following string values:
 
 * DONEWITHERROR
 * FAILED
+* TOBEKILLED
 * KILLED
 * PENDING
 * RUNNING
@@ -209,3 +211,10 @@ on the job configuration but probably should be overloaded to include additional
 checks on the cluster configuration. For example, the job engine returned by the
 Spark plugin checks that the Spark version is >= 1.0.0 to ensure that
 *spark-submit* is available.
+
+get_driver_classpath(self)
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Returns driver class path.
+
+*Returns*: a string of the following format ' --driver-class-path *class_path_value*'
