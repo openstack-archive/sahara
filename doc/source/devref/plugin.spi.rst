@@ -142,6 +142,13 @@ plugin method to get list of ports that need to be opened.
 
 *Returns*: list of ports to be open in auto security group for the given node group
 
+def get_edp_job_types(versions)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Optional method, which provides ability to see all supported job types for specified plugin versions
+
+*Returns*: dict with supported job types for specified versions of plugin
+
 Object Model
 ============
 
