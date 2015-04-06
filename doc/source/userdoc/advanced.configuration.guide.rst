@@ -5,40 +5,42 @@ This guide addresses specific aspects of Sahara configuration that pertain to
 advanced usage. It is divided into sections about various features that can be
 utilized, and their related configurations.
 
-Domain usage for Swift proxy users
-----------------------------------
+Object Storage access using proxy users
+---------------------------------------
 
-To improve security for Sahara clusters accessing Swift objects, Sahara can be
-configured to use proxy users and delegated trusts for access. This behavior
-has been implemented to reduce the need for storing and distributing user
-credentials.
+To improve security for clusters accessing files in Object Storage,
+sahara can be configured to use proxy users and delegated trusts for
+access. This behavior has been implemented to reduce the need for
+storing and distributing user credentials.
 
-The use of proxy users involves creating a domain in Keystone that will be
-designated as the home for any proxy users created. These created users will
-only exist for as long as a job execution runs. The domain created for the
-proxy users must have an identity backend that allows Sahara's admin user to
+The use of proxy users involves creating an Identity domain that will be
+designated as the home for these users. Proxy users will be
+created on demand by sahara and will only exist during a job execution
+which requires Object Storage access. The domain created for the
+proxy users must be backed by a driver that allows sahara's admin user to
 create new user accounts. This new domain should contain no roles, to limit
 the potential access of a proxy user.
 
-Once the domain has been created Sahara must be configured to use it by adding
-the domain name and any potential roles that must be used for Swift access in
-the sahara.conf file. With the domain enabled in Sahara, users will no longer
-be required to enter credentials with their Swift-backed Data Sources and Job
-Binaries.
+Once the domain has been created, sahara must be configured to use it by
+adding the domain name and any potential delegated roles that must be used
+for Object Storage access to the configuration file. With the
+domain enabled in sahara, users will no longer be required to enter
+credentials for their data sources and job binaries referenced in
+Object Storage.
 
 Detailed instructions
 ^^^^^^^^^^^^^^^^^^^^^
 
-First a domain must be created in Keystone to hold proxy users created by
-Sahara. This domain must have an identity backend that allows for Sahara to
-create new users. The default SQL engine is sufficient but if your Keystone
-identity is backed by LDAP or similar then domain specific configurations
-should be used to ensure Sahara's access. See the `Keystone documentation`_
-for more information.
+First a domain must be created in the Identity service to hold proxy
+users created by sahara. This domain must have an identity backend driver
+that allows for sahara to create new users. The default SQL engine is
+sufficient but if your keystone identity is backed by LDAP or similar
+then domain specific configurations should be used to ensure sahara's
+access. Please see the `Keystone documentation`_ for more information.
 
 .. _Keystone documentation: http://docs.openstack.org/developer/keystone/configuration.html#domain-specific-drivers
 
-With the domain created Sahara's configuration file should be updated to
+With the domain created, sahara's configuration file should be updated to
 include the new domain name and any potential roles that will be needed. For
 this example let's assume that the name of the proxy domain is
 ``sahara_proxy`` and the roles needed by proxy users will be ``Member`` and
@@ -55,15 +57,16 @@ this example let's assume that the name of the proxy domain is
 
 A note on the use of roles. In the context of the proxy user, any roles
 specified here are roles intended to be delegated to the proxy user from the
-user with access to the Swift object store. More specifically, any roles that
-are required for Swift access by the project owning the object store must be
-delegated to the proxy user for Swift authentication to be successful.
+user with access to Object Storage. More specifically, any roles that
+are required for Object Storage access by the project owning the object
+store must be delegated to the proxy user for authentication to be
+successful.
 
 Finally, the stack administrator must ensure that images registered with
-Sahara have the latest version of the Hadoop Swift filesystem plugin
+sahara have the latest version of the Hadoop swift filesystem plugin
 installed. The sources for this plugin can be found in the
-`Sahara extra repository`_. For more information on images or Swift
-integration see the Sahara documentation sections
+`sahara extra repository`_. For more information on images or swift
+integration see the sahara documentation sections
 :ref:`diskimage-builder-label` and :ref:`swift-integration-label`.
 
 .. _Sahara extra repository: http://github.com/openstack/sahara-extra
@@ -73,28 +76,30 @@ integration see the Sahara documentation sections
 Custom network topologies
 -------------------------
 
-Sahara accesses VMs at several stages of cluster spawning, both via SSH and
-HTTP. When floating IPs are not assigned to instances, Sahara needs to be able
-to reach them another way.  Floating IPs and network namespaces (see
-:ref:`neutron-nova-network`) are automatically used when present.
+Sahara accesses instances at several stages of cluster spawning through
+SSH and HTTP. Floating IPs and network namespaces
+(see :ref:`neutron-nova-network`) will be automatically used for
+access when present. When floating IPs are not assigned to instances and
+namespaces are not being used, sahara will need an alternative method to
+reach them.
 
-When none of these are enabled, the ``proxy_command`` property can be used to
-give Sahara a command to access VMs. This command is run on the Sahara host and
-must open a netcat socket to the instance destination port. ``{host}`` and
-``{port}`` keywords should be used to describe the destination, they will be
-translated at runtime.  Other keywords can be used: ``{tenant_id}``,
-``{network_id}`` and ``{router_id}``.
+The ``proxy_command`` parameter of the configuration file can be used to
+give sahara a command to access instances. This command is run on the
+sahara host and must open a netcat socket to the instance destination
+port. The ``{host}`` and ``{port}`` keywords should be used to describe the
+destination, they will be substituted at runtime.  Other keywords that
+can be used are: ``{tenant_id}``, ``{network_id}`` and ``{router_id}``.
 
-For instance, the following configuration property in the Sahara configuration
-file would be used if VMs are accessed through a relay machine:
+For example, the following parameter in the sahara configuration file
+would be used if instances are accessed through a relay machine:
 
 .. sourcecode:: cfg
 
     [DEFAULT]
     proxy_command='ssh relay-machine-{tenant_id} nc {host} {port}'
 
-Whereas the following property would be used to access VMs through a custom
-network namespace:
+Whereas the following shows an example of accessing instances though
+a custom network namespace:
 
 .. sourcecode:: cfg
 
@@ -105,11 +110,11 @@ network namespace:
 Non-root users
 --------------
 
-In cases where a proxy command is being used to access cluster VMs (for
-instance when using namespaces or when specifying a custom proxy command),
-rootwrap functionality is provided to allow users other than ``root`` access to
-the needed OS facilities. To use rootwrap the following configuration property
-is required to be set:
+In cases where a proxy command is being used to access cluster instances
+(for example, when using namespaces or when specifying a custom proxy
+command), rootwrap functionality is provided to allow users other than
+``root`` access to the needed operating system facilities. To use rootwrap
+the following configuration parameter is required to be set:
 
 .. sourcecode:: cfg
 
@@ -151,7 +156,7 @@ steps:
     kill: CommandFilter, kill, root
 
 If you wish to use a rootwrap command other than ``sahara-rootwrap`` you can
-set the following configuration property in your sahara configuration file:
+set the following parameter in your sahara configuration file:
 
 .. sourcecode:: cfg
 
@@ -161,17 +166,17 @@ set the following configuration property in your sahara configuration file:
 For more information on rootwrap please refer to the
 `official Rootwrap documentation <https://wiki.openstack.org/wiki/Rootwrap>`_
 
-External key manager usage
---------------------------
+External key manager usage (EXPERIMENTAL)
+-----------------------------------------
 
 Sahara generates and stores several passwords during the course of operation.
-To harden Sahara's usage of passwords it can be instructed to use an
+To harden sahara's usage of passwords it can be instructed to use an
 external key manager for storage and retrieval of these secrets. To enable
 this feature there must first be an OpenStack Key Manager service deployed
-within the stack. Currently, the Barbican project is the only key manager
-supported by Sahara.
+within the stack. Currently, the barbican project is the only key manager
+supported by sahara.
 
-With a Key Manager service deployed on the stack, Sahara must be configured
+With a Key Manager service deployed on the stack, sahara must be configured
 to enable the external storage of secrets. This is accomplished by editing
 the configuration file as follows:
 
@@ -185,7 +190,7 @@ the configuration file as follows:
     section has been created in the configuration file.
 
 Additionally, at this time there are two more values which must be provided
-to ensure proper access for Sahara to the Key Manager service. These are
+to ensure proper access for sahara to the Key Manager service. These are
 the Identity domain for the administrative user and the domain for the
 administrative project. By default these values will appear as:
 
@@ -196,4 +201,4 @@ administrative project. By default these values will appear as:
     admin_project_domain_name=default
 
 With all of these values configured and the Key Manager service deployed,
-Sahara will begin storing its secrets in the external manager.
+sahara will begin storing its secrets in the external manager.
