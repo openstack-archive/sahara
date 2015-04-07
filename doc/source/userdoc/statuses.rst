@@ -3,7 +3,8 @@ Sahara Cluster Statuses Overview
 
 All Sahara Cluster operations are performed in multiple steps. A Cluster object
 has a ``Status`` attribute which changes when Sahara finishes one step of
-operations and starts another one.
+operations and starts another one. Also a Cluster object has a ``Status description``
+attribute which changes each time when some error with the Cluster occurs.
 
 Sahara supports three types of Cluster operations:
  * Create a new Cluster
@@ -24,8 +25,10 @@ There are two types of validations, that are done:
 any constraints like unique naming, etc.
  * Plugin check (optional). The provisioning Plugin may also perform any specific checks like Cluster topology validation.
 
-If any of the validations fails, the Cluster will still be kept in the database with an ``Error``
-status.
+If any of the validations fails during creating, the Cluster will
+still be kept in the database with an ``Error`` status. If any validations fails during scaling the ``Active`` Cluster, it will be
+kept with an ``Active`` status.
+In both cases status description will contain message about the reasons of failure.
 
 2. InfraUpdating
 ~~~~~~~~~~~~~~~~
@@ -137,9 +140,11 @@ Error State
 If the Cluster creation fails, the Cluster will get into an ``Error`` state.
 This state means the Cluster may not be able to perform any operations normally.
 This cluster will stay in the database until it is manually deleted. The reason for
-failure may be found in the Sahara logs.
+failure may be found in the Sahara logs. Also status description will contain short
+information about reasons of failure.
 
 
 If an error occurs during the ``Adding Instances`` operation, Sahara will first
 try to rollback this operation. If a rollback is impossible or fails itself, then
-the Cluster will also go into an ``Error`` state.
+the Cluster will also go into an ``Error`` state. If a rollback was successful, Cluster will get into an ``Active`` state
+and status description will contain short message about the reasons of ``Adding Instances`` failure.
