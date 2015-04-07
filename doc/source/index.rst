@@ -59,12 +59,12 @@ User guide
 
    userdoc/edp
 
-**APIs**
+**API**
 
 .. toctree::
    :maxdepth: 2
 
-   restapi/index
+   restapi
 
 **Miscellaneous**
 
