@@ -18,10 +18,11 @@
 import functools
 
 from keystonemiddleware import auth_token
+from oslo_config import cfg
+from oslo_policy import policy
 
 from sahara import context
 from sahara import exceptions
-from sahara.openstack.common import policy
 
 ENFORCER = None
 
@@ -29,7 +30,7 @@ ENFORCER = None
 def setup_policy():
     global ENFORCER
 
-    ENFORCER = policy.Enforcer()
+    ENFORCER = policy.Enforcer(cfg.CONF)
 
 
 def enforce(rule):
