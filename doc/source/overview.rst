@@ -121,16 +121,11 @@ Integration with Swift
 ----------------------
 
 The Swift service is a standard object storage in OpenStack environment, analog of Amazon S3. As a rule it is deployed
-on bare metal machines. It is natural to expect Hadoop on OpenStack to process data stored there. There are a couple
-of enhancements on the way which can help there.
-
-First, a FileSystem implementation for Swift: `HADOOP-8545 <https://issues.apache.org/jira/browse/HADOOP-8545>`_.
-With that thing in place, Hadoop jobs can work with Swift
-as naturally as with HDFS.
-
-On the Swift side, we have the change request: `Change I6b1ba25b <https://review.openstack.org/#/c/21015/>`_ (merged).
-It implements the ability to list endpoints for an object, account or container, to make it possible to integrate swift
-with software that relies on data locality information to avoid network overhead.
+on bare metal machines. It is natural to expect Hadoop on OpenStack to process data stored there. And it is so.
+With a FileSystem implementation for Swift `HADOOP-8545 <https://issues.apache.org/jira/browse/HADOOP-8545>`_
+and `Change I6b1ba25b <https://review.openstack.org/#/c/21015/>`_ which implements the ability to list endpoints for
+an an object, account or container, to make it possible to integrate swift with software that relies on data locality
+information to avoid network overhead.
 
 To get more information on how to enable Swift support see :doc:`userdoc/hadoop-swift`.
 
