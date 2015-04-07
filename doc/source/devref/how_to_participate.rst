@@ -28,9 +28,8 @@ Getting started
 * Subscribe to code-reviews. Go to your settings on http://review.openstack.org
 
   * Go to ``watched projects``
-  * Add ``openstack/sahara``, ``openstack/sahara-dashboard``,
-    ``openstack/sahara-extra``, ``openstack/python-saharaclient``,
-    ``openstack/sahara-image-elements``
+  * Add ``openstack/sahara``, ``openstack/sahara-extra``,
+    ``openstack/python-saharaclient``, ``openstack/sahara-image-elements``
 
 
 How to stay in touch with the community?
@@ -42,8 +41,9 @@ How to stay in touch with the community?
 
 * Join ``#openstack-sahara`` IRC channel on `freenode <http://freenode.net/>`_
 
-* Join public weekly meetings on *Thursdays at 18:00 UTC* on
-  ``#openstack-meeting-alt`` IRC channel
+* Weekly on Thursdays at 1400 UTC and 1800 UTC (on alternate weeks)
+
+* IRC channel: ``#openstack-meeting-alt`` (1800UTC) and ``#openstack-meeting-3`` (1400UTC)
 
 
 How to send your first patch on review?
