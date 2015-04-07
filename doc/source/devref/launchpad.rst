@@ -46,5 +46,6 @@ Questions related to Sahara should be tagged with 'sahara'.
 
 .. _Launchpad: http://launchpad.net
 .. _Wiki: http://wiki.openstack.org/sahara
-.. _Sahara Team: https://launchpad.net/~sahara-all
+.. _Sahara Drivers: https://launchpad.net/~sahara-drivers
+.. _Sahara Bug Team: https://launchpad.net/~sahara-bugs
 .. _Ask OpenStack: https://ask.openstack.org
