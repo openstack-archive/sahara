@@ -38,13 +38,20 @@ To create cloudera images follow these steps:
    you should use the "-i ubuntu|centos" parameter to assign the operating
    system (the cloudera plugin only supports Ubuntu and Centos). If you want
    to create the image only for a specific Cloudera version, you should use the
-   "-v 5.0|5.3" parameter to assign the version. This script must be run with
-   root privileges. Below is an example to create Cloudera images for both
-   Ubuntu and CentOS with Cloudera Express 5.3.0 version.
+   "-v 5.0|5.3" parameter to assign the version. Below is an example to create
+   Cloudera images for both Ubuntu and CentOS with Cloudera Express 5.3.0
+   version.
 
    .. sourcecode:: console
 
-      sudo bash diskimage-create.sh -p cloudera -v 5.3
+      bash diskimage-create.sh -p cloudera -v 5.3
+
+   If you want to create only an Ubuntu image, you may use following example
+   for that.
+
+   .. sourcecode:: console
+
+      bash diskimage-create.sh -p cloudera -i ubuntu -v 5.3
 
    NOTE: If you don't want to use default values, you should explicitly set the
    values of your required parameters.
