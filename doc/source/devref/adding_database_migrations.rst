@@ -56,7 +56,7 @@ $ mv 507eb70202af_my_new_revision.py 007_my_new_revision.py
 Add Alembic Operations to the Script
 ++++++++++++++++++++++++++++++++++++
 
-The migration script contains two methods, ``upgrade()`` and ``downgrade()``.  Fill in these methods with the appropriate Alembic operations to perform upgrades or downgrades. In the above example, an upgrade will move from revision '006' to revision '007' and a downgrade will move from revision '007' to revision '006'.
+The migration script contains method ``upgrade()``.  Since Kilo release Sahara doesn't support downgrades. Fill in this method with the appropriate Alembic operations to perform upgrades. In the above example, an upgrade will move from revision '006' to revision '007'.
 
 Command Summary for sahara-db-manage
 ++++++++++++++++++++++++++++++++++++
@@ -80,10 +80,6 @@ $ sahara-db-manage --config-file /path/to/sahara.conf upgrade <start version>:<e
 Upgrade the database incrementally::
 
 $ sahara-db-manage --config-file /path/to/sahara.conf upgrade --delta <# of revs>
-
-Downgrade the database by a certain number of revisions::
-
-$ sahara-db-manage --config-file /path/to/sahara.conf downgrade --delta <# of revs>
 
 Create new revision::
 
