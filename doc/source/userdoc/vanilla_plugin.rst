@@ -48,6 +48,7 @@ For Vanilla Hadoop version 1.X.X:
 
   + Cluster must contain exactly one namenode
   + Cluster can contain at most one jobtracker
+  + Cluster can contain at most one secondary namenode
   + Cluster can contain at most one oozie and this process is also required
     for EDP
   + Cluster can't contain oozie without jobtracker
@@ -59,6 +60,7 @@ For Vanilla Hadoop version 2.X.X:
 
   + Cluster must contain exactly one namenode
   + Cluster can contain at most one resourcemanager
+  + Cluster can contain at most one secondary namenode
   + Cluster can contain at most one historyserver
   + Cluster can contain at most one oozie and this process is also required
     for EDP
