@@ -52,11 +52,17 @@ On openSUSE-based distributions (SLES 12, openSUSE, Factory or Tumbleweed)::
     $ git clone git://github.com/openstack/sahara.git
     $ cd sahara
 
-3. Create config file from the sample:
+3.1 Generate Sahara sample using tox:
 
 .. sourcecode:: console
 
-    $ cp ./etc/sahara/sahara.conf.sample-basic ./etc/sahara/sahara.conf
+   tox -e genconfig
+
+3.2 Create config file from the sample:
+
+.. sourcecode:: console
+
+    $ cp ./etc/sahara/sahara.conf.sample ./etc/sahara/sahara.conf
 
 4. Look through the sahara.conf and modify parameter values as needed.
    For details see
@@ -117,5 +123,4 @@ Just run the following command
 
 .. sourcecode:: console
 
-    tools/run_pylint
-
+    tox -e pylint
