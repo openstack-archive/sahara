@@ -231,6 +231,10 @@ Java jobs use two special configuration values:
 
 * ``edp.java.adapt_for_oozie`` (optional) Specifies configuration values for adapting oozie. If this configuration value is unset or set to "False", users will need to modify source code as shown `here <https://github.com/openstack/sahara/blob/master/etc/edp-examples/edp-java/README.rst>`_ to read Hadoop configuration values from the Oozie job configuration. Setting this configuration value to "True" ensures that the Oozie job configuration values will be set in the Hadoop config automatically with no need for code modification and that exit conditions will be handled correctly by Oozie.
 
+* ``oozie.libpath`` (optional) Specifies configuration values for the Oozie share libs, these libs can be shared by different workflows
+
+* Use HBase Common Libs (optional) specifies configuration value for whether using the common HBase libs on HDFS or not if running HBase Job written by Java
+
 A Java job will execute the ``main(String[] args)`` method of the specified main class.  There are two methods of passing
 values to the ``main`` method:
 
