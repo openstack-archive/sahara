@@ -194,6 +194,56 @@ installations of sahara.
 5. For more information on configuring sahara with the OpenStack Dashboard
    please see :doc:`dashboard.guide`.
 
+Optional installation of default templates
+------------------------------------------
+
+Sahara bundles default templates that define simple clusters for the
+supported plugins. These templates may optionally be added to the
+Sahara database using a simple CLI included with Sahara.
+
+The default template CLI is described in detail in a *README* file
+included with the Sahara sources at ``<sahara_home>/db/templates/README.rst``
+but it is summarized here.
+
+Flavor id values must be specified for the default templates included
+with Sahara. The recommended configuration values below correspond to the
+*m1.medium* and *m1.large* flavors in a default OpenStack installation (if
+these flavors have been edited, their corresponding values will be different).
+Values for flavor_id should be added to ``/etc/sahara/sahara.conf`` or another
+configuration file in the sections shown here:
+
+.. sourcecode:: ini
+
+    [DEFAULT]
+    # Use m1.medium for {flavor_id} unless specified in another section
+    flavor_id = 2
+
+    [cdh-5-default-namenode]
+    # Use m1.large for {flavor_id} in the cdh-5-default-namenode template
+    flavor_id = 4
+
+    [cdh-530-default-namenode]
+    # Use m1.large for {flavor_id} in the cdh-530-default-namenode template
+    flavor_id = 4
+
+The above configuration values are included in a sample configuration
+file at ``<sahara_home>/plugins/default_templates/template.conf``
+
+The command to install all of the default templates is as follows, where
+``$TENANT_ID`` should be a valid tenant id and the above configuration values
+have been set in ``myconfig``:
+
+.. sourcecode:: console
+
+    $ sahara-templates --config-file /etc/sahara/sahara.conf --config-file myconfig update -t $TENANT_ID
+
+Help is available from the ``sahara-templates`` command:
+
+.. sourcecode:: console
+
+    $ sahara-templates --help
+    $ sahara-templates update --help
+
 Notes:
 ------
 
