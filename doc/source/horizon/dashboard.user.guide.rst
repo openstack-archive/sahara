@@ -6,6 +6,11 @@ dashboard up and running. Don't forget to make sure that Sahara is registered in
 Keystone. If you require assistance with that, please see the
 `installation guide <../installation.guide.html>`_.
 
+The sections below give a panel by panel overview of setting up clusters
+and running jobs.  For a description of using the guided cluster and job tools,
+look at `Launching a cluster via the Cluster Creation Guide`_ and
+`Running a job via the Job Execution Guide`_.
+
 Launching a cluster via the Sahara UI
 -------------------------------------
 Registering an Image
@@ -364,3 +369,69 @@ Additional Notes
    that the username/password credentials are *not* required. For more
    information on that, please refer to:
    :doc:`Sahara Advanced Configuration Guide <../userdoc/advanced.configuration.guide>`
+
+Launching a cluster via the Cluster Creation Guide
+--------------------------------------------------
+1) Under the Data Processing group, choose "Guides" and then click on the
+   "Cluster Creation Guide" button.
+
+2) Click on the "Choose Plugin" button then select the cluster type from the
+   Plugin Name dropdown and choose your target version. When done, click
+   on "Select" to proceed.
+
+3) Click on "Create a Master Node Group Template".  Give your template a name,
+   choose a flavor and choose which processes should run on nodes launched
+   for this node group.  The processes chosen here should be things that are
+   more server-like in nature (namenode, oozieserver, spark master, etc).
+   Optionally, you can set other options here such as availability zone,
+   storage, security and process specific parameters.  Click on "Create"
+   to proceed.
+
+4) Click on "Create a Worker Node Group Template".  Give your template a name,
+   choose a flavor and choose which processes should run on nodes launched
+   for this node group.  Processes chosen here should be more worker-like in
+   nature (datanode, spark slave, task tracker, etc).  Optionally, you can set
+   other options here such as availability zone, storage, security and process
+   specific parameters.  Click on "Create" to proceed.
+
+5) Click on "Create a Cluster Template".  Give your template a name.  Next,
+   click on the "Node Groups" tab and enter the count for each of the node
+   groups (these are pre-populated from steps 3 and 4).  It would be common
+   to have 1 for the "master" node group type and some larger number of
+   "worker" instances depending on you desired cluster size.  Optionally,
+   you can also set additional parameters for cluster-wide settings via
+   the other tabs on this page.  Click on "Create" to proceed.
+
+6) Click on "Launch a Cluster".  Give your cluster a name and choose the image
+   that you want to use for all instances in your cluster.  The cluster
+   template that you created in step 5 is already pre-populated.  If you want
+   ssh access to the instances of your cluster, select a keypair from the
+   dropdown.  Click on "Launch" to proceed.  You will be taken to the Clusters
+   panel where you can see your cluster progress toward the Active state.
+
+Running a job via the Job Execution Guide
+-----------------------------------------
+1) Under the Data Processing group, choose "Guides" and then click on the
+   "Job Execution Guide" button.
+
+2) Click on "Select type" and choose the type of job that you want to run.
+
+3) If your job requires input/output data sources, you will have the option
+   to create them via the "Create a Data Source" button (Note: This button will
+   not be shown for job types that do not require data sources).  Give your
+   data source a name and choose the type.  If you have chosen swift, you
+   may also enter the username and password.  Enter the URL for your data
+   source.  For more details on what the URL should look like, see
+   `Data Sources`_.
+
+4) Click on "Create a job template".  Give your job template a name.
+   Depending on the type of job that you've chosen, you may need to select
+   your main binary and/or additional libraries (available from the "Libs"
+   tab).  If you have not yet uploaded the files to run your program, you
+   can add them via the "+" icon next to the "Choose a main binary" select box.
+
+5) Click on "Launch job".  Choose the active cluster where you want to run you
+   job.  Optionally, you can click on the "Configure" tab and provide any
+   required configuration, arguments or parameters for your job.  Click on
+   "Launch" to execute your job.  You will be taken to the Jobs panel where
+   you can monitor the state of your job as it progresses.
