@@ -1,14 +1,14 @@
 Sahara Installation Guide
 =========================
 
-We recommend to install Sahara in a way that will keep your system in a
+We recommend installing sahara in a way that will keep your system in a
 consistent state. We suggest the following options:
 
 * Install via `Fuel <http://fuel.mirantis.com/>`_
 
-* Install via `RDO Havana+ <http://openstack.redhat.com/>`_
+* Install via `RDO <http://openstack.redhat.com/>`_
 
-* Install into virtual environment
+* Install into a virtual environment
 
 
 
@@ -19,7 +19,7 @@ To install with Fuel
    <http://software.mirantis.com/quick-start/>`_ to install and setup
    OpenStack.
 
-2. Enable Sahara service during installation.
+2. Enable the sahara service during installation.
 
 
 
@@ -30,25 +30,25 @@ To install with RDO
    <http://openstack.redhat.com/Quickstart>`_ to install and setup
    OpenStack.
 
-2. Install Sahara:
+2. Install sahara:
 
 .. sourcecode:: console
 
     # yum install openstack-sahara
 ..
 
-3. Configure Sahara as needed. The configuration file is located in
+3. Configure sahara as needed. The configuration file is located in
    ``/etc/sahara/sahara.conf``. For details see
    :doc:`Sahara Configuration Guide <configuration.guide>`
 
-4. Create database schema:
+4. Create the database schema:
 
 .. sourcecode:: console
 
     # sahara-db-manage --config-file /etc/sahara/sahara.conf upgrade head
 ..
 
-5. Go through :ref:`common_installation_steps` and make the
+5. Go through :ref:`common_installation_steps` and make any
    necessary changes.
 
 6. Start the sahara-all service:
@@ -58,7 +58,7 @@ To install with RDO
     # systemctl start openstack-sahara-all
 ..
 
-7. *(Optional)* Enable Sahara to start on boot
+7. *(Optional)* Enable sahara to start on boot
 
 .. sourcecode:: console
 
@@ -93,37 +93,40 @@ To install into a virtual environment
     $ sudo easy_install pip
     $ sudo pip install virtualenv
 
-2. Setup virtual environment for Sahara:
+2. Setup a virtual environment for sahara:
 
 .. sourcecode:: console
 
     $ virtualenv sahara-venv
 ..
 
-   This will install python virtual environment into ``sahara-venv`` directory
-   in your current working directory. This command does not require super
-   user privileges and could be executed in any directory current user has
-   write permission.
+   This will install a python virtual environment into ``sahara-venv``
+   directory in your current working directory. This command does not
+   require super user privileges and can be executed in any directory where
+   the current user has write permissions.
 
-3. You can install the latest Sahara release from pypi:
+3. You can install the latest sahara release from pypi:
 
 .. sourcecode:: console
 
     $ sahara-venv/bin/pip install sahara
 ..
 
-   Or you can get Sahara archive from `<http://tarballs.openstack.org/sahara/>`_ and install it using pip:
+   Or you can get a sahara archive from
+   `<http://tarballs.openstack.org/sahara/>`_ and install it using pip:
 
 .. sourcecode:: console
 
     $ sahara-venv/bin/pip install 'http://tarballs.openstack.org/sahara/sahara-master.tar.gz'
 ..
 
-   Note that sahara-master.tar.gz contains the latest changes and might not be stable at the moment.
-   We recommend browsing `<http://tarballs.openstack.org/sahara/>`_ and selecting the latest stable release.
+   Note that ``sahara-master.tar.gz`` contains the latest changes and
+   might not be stable at the moment. We recommend browsing
+   `<http://tarballs.openstack.org/sahara/>`_ and selecting the latest
+   stable release.
 
-4. After installation you should create configuration file from a sample
-   config located in ``sahara-venv/share/sahara/sahara.conf.sample-basic``:
+4. After installation you should create a configuration file from the sample
+   file located in ``sahara-venv/share/sahara/sahara.conf.sample-basic``:
 
 .. sourcecode:: console
 
@@ -131,7 +134,7 @@ To install into a virtual environment
     $ cp sahara-venv/share/sahara/sahara.conf.sample-basic sahara-venv/etc/sahara.conf
 ..
 
-    Make the necessary changes in ``sahara-venv/etc/sahara.conf``.
+    Make any necessary changes to ``sahara-venv/etc/sahara.conf``.
     For details see :doc:`Sahara Configuration Guide <configuration.guide>`
 
 .. _common_installation_steps:
@@ -139,12 +142,13 @@ To install into a virtual environment
 Common installation steps
 -------------------------
 
-The steps below are common for both installing Sahara as part of RDO and
-installing it in virtual environment.
+The steps below are common to both the RDO and virtual environment
+installations of sahara.
 
-1. If you use Sahara with MySQL database, then for storing big Job Binaries
-   in Sahara Internal Database you must configure size of max allowed packet.
-   Edit ``my.cnf`` and change parameter:
+1. If you use sahara with a MySQL database, then for storing big job binaries
+   in the sahara internal database you must configure the size of the maximum
+   allowed packet. Edit the ``my.cnf`` file and change the
+   ``max_allowed_packet`` parameter as follows:
 
 .. sourcecode:: ini
 
@@ -154,16 +158,16 @@ installing it in virtual environment.
    max_allowed_packet          = 256M
 ..
 
-    and restart mysql server.
+    Then restart the mysql server to ensure these changes are active.
 
-2. Create database schema:
+2. Create the database schema:
 
 .. sourcecode:: console
 
     $ sahara-venv/bin/sahara-db-manage --config-file sahara-venv/etc/sahara.conf upgrade head
 ..
 
-3. To start Sahara call:
+3. To start sahara call:
 
 .. sourcecode:: console
 
@@ -172,9 +176,9 @@ installing it in virtual environment.
 
 .. _register-sahara-label:
 
-4. In order for Sahara to be accessible in OpenStack Dashboard and for
-   python-saharaclient to work properly you need to register Sahara in
-   Keystone. For example:
+4. For sahara to be accessible in the OpenStack Dashboard and for
+   python-saharaclient to work properly you must register sahara in
+   the Identity service catalog. For example:
 
 .. sourcecode:: console
 
@@ -187,14 +191,15 @@ installing it in virtual environment.
         --internalurl "http://10.0.0.2:8386/v1.1/%(tenant_id)s"
 ..
 
-5. To adjust OpenStack Dashboard configuration with your Sahara installation
-   please follow the UI configuration guide :doc:`here. <dashboard.guide>`
+5. For more information on configuring sahara with the OpenStack Dashboard
+   please see :doc:`dashboard.guide`.
 
 Notes:
 ------
 
-Make sure that your operating system is not blocking Sahara port (default: 8386).
-You may need to configure iptables in CentOS and some other operating systems.
+Ensure that your operating system is not blocking the sahara port
+(default: 8386). You may need to configure iptables in CentOS and
+other Linux distributions to allow this access.
 
 
 To get the list of all possible options run:
@@ -205,5 +210,5 @@ To get the list of all possible options run:
 ..
 
 
-Further consider reading :doc:`overview` for general Sahara concepts and
+Further, consider reading :doc:`overview` for general sahara concepts and
 :doc:`plugins` for specific plugin features/requirements.
