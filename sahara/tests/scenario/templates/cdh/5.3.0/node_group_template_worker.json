@@ -1,0 +1,9 @@
+{
+    "name": "cdh-530-worker",
+    "flavor_id": "3",
+    "node_processes": [
+        "YARN_NODEMANAGER",
+        "HDFS_DATANODE"
+    ],
+    "auto_security_group": true
+}
