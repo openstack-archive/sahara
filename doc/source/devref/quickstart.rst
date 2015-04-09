@@ -1,23 +1,29 @@
 Quickstart guide
 ================
 
-This guide will help you setup a vanilla Hadoop cluster using
-:doc:`../restapi/rest_api_v1.0`.
+This guide will help you setup a vanilla Hadoop cluster using a combination
+of OpenStack command line tools and the sahara :doc:`REST API <../restapi>`.
 
-1. Install Sahara
+1. Install sahara
 -----------------
 
-* If you want to hack the code follow :doc:`development.environment`.
-* If you just want to install and use Sahara follow :doc:`../userdoc/installation.guide`.
+* If you want to hack the code follow
+  :doc:`development.environment`.
+
+OR
+
+* If you just want to install and use Sahara follow
+  :doc:`../userdoc/installation.guide`.
 
 
-2. Keystone endpoints setup
----------------------------
+2. Identity service configuration
+---------------------------------
 
-To use CLI tools, such as OpenStack's python clients, we should specify
-environment variables with addresses and credentials. Let's mind that we have
-keystone at ``127.0.0.1:5000`` with tenant ``admin``, credentials ``admin:nova``
-and Sahara API at ``127.0.0.1:8386``. Here is a list of commands to set env:
+To use the OpenStack command line tools you should specify
+environment variables with the configuration details for your OpenStack
+installation. The following example assumes that the Identity service is
+at ``127.0.0.1:5000``, with a user ``admin`` in the ``admin`` tenant
+whose password is ``nova``:
 
 .. sourcecode:: console
 
@@ -26,9 +32,8 @@ and Sahara API at ``127.0.0.1:8386``. Here is a list of commands to set env:
    $ export OS_USERNAME=admin
    $ export OS_PASSWORD=nova
 
-
-You can append these lines to the ``.bashrc`` and execute ``source .bashrc``.
-Now you can get an authentication token from the OpenStack Keystone service.
+With these environment variables set you can get an authentication
+token using the ``keystone`` command line client as follows:
 
 .. sourcecode:: console
 
@@ -48,8 +53,11 @@ If authentication succeeds, the output will be as follows:
     |  user_id  | 720fb87141a14fd0b204f977f5f02512 |
     +-----------+----------------------------------+
 
-Save ``tenant_id`` which is obviously your Tenant ID and ``id`` which is your
-authentication token (X-Auth-Token):
+The ``id`` and ``tenant_id`` values will be used for creating REST calls
+to sahara and should be saved. The ``id`` value is the token provided by
+the Identity service, and the ``tenant_id`` is the UUID for the tenant
+name specified earlier. These values should be exported to environment
+variables for ease of use later.
 
 .. sourcecode:: console
 
@@ -57,13 +65,14 @@ authentication token (X-Auth-Token):
    $ export TENANT_ID="62bd2046841e4e94a87b4a22aa886c13"
 
 
-3. Upload image to Glance
--------------------------
+3. Upload an image to the Image service
+---------------------------------------
 
-You can download pre-built images with vanilla Apache Hadoop or build the
-images yourself:
+You will need to upload a virtual machine image to the OpenStack Image
+service. You can download pre-built images with vanilla Apache Hadoop
+installed, or build the images yourself:
 
-* Download and install pre-built image with Ubuntu 13.10
+* Download and install a pre-built image with Ubuntu 13.10
 
 .. sourcecode:: console
 
@@ -72,8 +81,9 @@ images yourself:
    $ glance image-create --name=sahara-icehouse-vanilla-1.2.1-ubuntu-13.10 \
       --disk-format=qcow2 --container-format=bare < ./sahara-icehouse-vanilla-1.2.1-ubuntu-13.10.qcow2
 
+OR
 
-* OR with Fedora 20
+* with Fedora 20
 
 .. sourcecode:: console
 
@@ -82,11 +92,13 @@ images yourself:
    $ glance image-create --name=sahara-icehouse-vanilla-1.2.1-fedora-20 \
       --disk-format=qcow2 --container-format=bare < ./sahara-icehouse-vanilla-1.2.1-fedora-20.qcow2
 
+OR
 
-* OR build the image using :doc:`../userdoc/diskimagebuilder`.
+* build the image using :doc:`../userdoc/diskimagebuilder`.
 
-
-Save the image id. You can get the image id from the command ``glance image-list``:
+Save the image id, this will be used during the image registration with
+sahara. You can get the image id using the ``glance`` command line tool
+as follows:
 
 .. sourcecode:: console
 
@@ -100,45 +112,52 @@ Save the image id. You can get the image id from the command ``glance image-list
    $ export IMAGE_ID="3f9fc974-b484-4756-82a4-bff9e116919b"
 
 
-4. Register image in Image Registry
------------------------------------
+4. Register the image with the sahara image registry
+----------------------------------------------------
 
-* Now we will actually start to interact with Sahara.
+Now you will begin to interact with sahara by registering the virtual
+machine image in the sahara image registry.
 
-* Register the image with username ``ubuntu``.
+Register the image with the username ``ubuntu``. *Note, the username
+will vary depending on the source image used, for more please see*
+:doc:`../userdoc/vanilla_plugin`
 
 .. sourcecode:: console
 
    $ sahara image-register --id $IMAGE_ID --username ubuntu
 
-* Tag the image:
+Tag the image to inform sahara about the plugin with which it shall be used:
 
 .. sourcecode:: console
 
    $ sahara image-add-tag --id $IMAGE_ID --tag vanilla
    $ sahara image-add-tag --id $IMAGE_ID --tag 1.2.1
 
-* Make sure the image is registered correctly:
+Ensure that the image is registered correctly by querying sahara. If
+registered successfully, the image will appear in the output as follows:
 
 .. sourcecode:: console
 
    $ sahara image-list
-
-* Output should look like:
-
-.. sourcecode:: console
-
-    +----------------+---------------+----------+----------------+-------------+
-    | name           | id            | username | tags           | description |
-    +----------------+---------------+----------+----------------+-------------+
-    | sahara-iceh... | 3f9fc...6919b | ubuntu   | vanilla, 1.2.1 | None        |
-    +----------------+---------------+----------+----------------+-------------+
+    +--------------------------------------------+---------------------------------------+----------+----------------+-------------+
+    | name                                       | id                                    | username | tags           | description |
+    +--------------------------------------------+---------------------------------------+----------+----------------+-------------+
+    | sahara-icehouse-vanilla-1.2.1-ubuntu-13.10 | 3f9fc974-b484-4756-82a4-bff9e116919b  | ubuntu   | vanilla, 1.2.1 | None        |
+    +--------------------------------------------+---------------------------------------+----------+----------------+-------------+
 
 
-5. Setup NodeGroup templates
-----------------------------
+5. Create node group templates
+------------------------------
 
-Create a file named ``ng_master_template_create.json`` with the following content:
+Node groups are the building blocks of clusters in sahara. Before you can
+begin provisioning clusters you must define a few node group templates to
+describe their configurations.
+
+*Note, these templates assume that floating IP addresses are not being
+used, for more information please see* :ref:`floating_ip_management`
+
+Create a file named ``ng_master_template_create.json`` with the following
+content:
 
 .. sourcecode:: json
 
@@ -151,7 +170,8 @@ Create a file named ``ng_master_template_create.json`` with the following conten
         "auto_security_group": true
     }
 
-Create a file named ``ng_worker_template_create.json`` with the following content:
+Create a file named ``ng_worker_template_create.json`` with the following
+content:
 
 .. sourcecode:: json
 
@@ -164,35 +184,41 @@ Create a file named ``ng_worker_template_create.json`` with the following conten
         "auto_security_group": true
     }
 
-Use the Sahara client to upload NodeGroup templates:
+Use the ``sahara`` client to upload the node group templates:
 
 .. sourcecode:: console
 
    $ sahara node-group-template-create --json ng_master_template_create.json
    $ sahara node-group-template-create --json ng_worker_template_create.json
 
-List the available NodeGroup templates:
+List the available node group templates to ensure that they have been
+added properly:
 
 .. sourcecode:: console
 
    $ sahara node-group-template-list
-    +--------+--------------------------------------+-------------+-------------------------------------------------+-------------+
-    | name   | id                                   | plugin_name | node_processes                                  | description |
-    +--------+--------------------------------------+-------------+-------------------------------------------------+-------------+
-    | master | b38227dc-64fe-42bf-8792-d1456b453ef3 | vanilla     | namenode, resourcemanager, oozie, historyserver | None        |
-    | worker | 634827b9-6a18-4837-ae15-5371d6ecf02c | vanilla     | datanode, nodemanager                           | None        |
-    +--------+--------------------------------------+-------------+-------------------------------------------------+-------------+
+    +------------------+--------------------------------------+-------------+-----------------------+-------------+
+    | name             | id                                   | plugin_name | node_processes        | description |
+    +------------------+--------------------------------------+-------------+-----------------------+-------------+
+    | test-master-tmpl | b38227dc-64fe-42bf-8792-d1456b453ef3 | vanilla     | jobtracker, namenode  | None        |
+    | test-worker-tmpl | 634827b9-6a18-4837-ae15-5371d6ecf02c | vanilla     | datanode, nodemanager | None        |
+    +------------------+--------------------------------------+-------------+-----------------------+-------------+
 
-Save the id for the master and worker NodeGroup templates. For example:
+Save the id for the master and worker node group templates as they will be
+used during cluster template creation. For example:
 
-* Master NodeGroup template id: ``b38227dc-64fe-42bf-8792-d1456b453ef3``
-* Worker NodeGroup template id: ``634827b9-6a18-4837-ae15-5371d6ecf02c``
+* Master node group template id: ``b38227dc-64fe-42bf-8792-d1456b453ef3``
+* Worker node group template id: ``634827b9-6a18-4837-ae15-5371d6ecf02c``
 
 
-6. Setup Cluster Template
--------------------------
+6. Create a cluster template
+----------------------------
 
-Create a file named ``cluster_template_create.json`` with the following content:
+The last step before provisioning the cluster is to create a template
+that describes the node groups of the cluster.
+
+Create a file named ``cluster_template_create.json`` with the following
+content:
 
 .. sourcecode:: json
 
@@ -214,16 +240,31 @@ Create a file named ``cluster_template_create.json`` with the following content:
         ]
     }
 
-Upload the Cluster template:
+Upload the Cluster template using the ``sahara`` command line tool:
 
 .. sourcecode:: console
 
    $ sahara cluster-template-create --json cluster_template_create.json
 
-Save the template id. For example ``ce897df2-1610-4caa-bdb8-408ef90561cf``.
+Save the template id for use in the cluster provisioning command. The
+cluster id can be found in the output of the creation command or by
+listing the cluster templates as follows:
+
+.. sourcecode:: console
+
+    $ sahara cluster-template-list
+    +-----------------------+--------------------------------------+-------------+-----------------------+-------------+
+    | name                  | id                                   | plugin_name | node_groups           | description |
+    +-----------------------+--------------------------------------+-------------+-----------------------+-------------+
+    | demo-cluster-template | c0609da7-faac-4dcf-9cbc-858a3aa130cd | vanilla     | master: 1, workers: 2 | None        |
+    +-----------------------+--------------------------------------+-------------+-----------------------+-------------+
+
 
 7. Create cluster
 -----------------
+
+Now you will provision the cluster. This step requires a few pieces of
+information that will be found by querying various OpenStack services.
 
 Create a file named ``cluster_create.json`` with the following content:
 
@@ -233,27 +274,29 @@ Create a file named ``cluster_create.json`` with the following content:
         "name": "cluster-1",
         "plugin_name": "vanilla",
         "hadoop_version": "1.2.1",
-        "cluster_template_id" : "ce897df2-1610-4caa-bdb8-408ef90561cf",
+        "cluster_template_id" : "c0609da7-faac-4dcf-9cbc-858a3aa130cd",
         "user_keypair_id": "stack",
         "default_image_id": "3f9fc974-b484-4756-82a4-bff9e116919b"
         "neutron_management_network": "8cccf998-85e4-4c5f-8850-63d33c1c6916"
     }
 
-There is a parameter ``user_keypair_id`` with value ``stack``. You can create
-your own keypair in Horizon UI, or using the command line client:
+The parameter ``user_keypair_id`` with the value ``stack`` is generated by
+creating a keypair. You can create your own keypair in the OpenStack
+Dashboard, or through the ``nova`` command line client as follows:
 
 .. sourcecode:: console
 
    $ nova keypair-add stack --pub-key $PATH_TO_PUBLIC_KEY
 
-If ``use_neutron = true`` is set in sahara.conf, you will also need to include
-the ``neutron_management_network`` parameter in ``cluster_create.json``. Instances
-will get fixed IPs in this network. Find the Neutron network id:
+If sahara is configured to use neutron for networking, you will also need to
+include the ``neutron_management_network`` parameter in
+``cluster_create.json``. Cluster instances will get fixed IP addresses in
+this network. You can determine the neutron network id with the following
+command:
 
 .. sourcecode:: console
 
    $ neutron net-list
-
 
 Create and start the cluster:
 
@@ -309,7 +352,7 @@ Create and start the cluster:
     | id                         | c5e755a2-b3f9-417b-948b-e99ed7fbf1e3            |
     | trust_id                   | None                                            |
     | info                       | {}                                              |
-    | cluster_template_id        | ce897df2-1610-4caa-bdb8-408ef90561cf            |
+    | cluster_template_id        | c0609da7-faac-4dcf-9cbc-858a3aa130cd            |
     | name                       | cluster-1                                       |
     | cluster_configs            | {}                                              |
     | created_at                 | 2013-07-07T19:01:51                             |
@@ -317,7 +360,8 @@ Create and start the cluster:
     | tenant_id                  | 3fd7266fb3b547b1a45307b481bcadfd                |
     +----------------------------+-------------------------------------------------+
 
-Verify the cluster launched successfully:
+Verify the cluster launched successfully by using the ``sahara`` command
+line tool as follows:
 
 .. sourcecode:: console
 
@@ -328,29 +372,34 @@ Verify the cluster launched successfully:
     | cluster-1 | c5e755a2-b3f9-417b-948b-e99ed7fbf1e3 | Active | 3          |
     +-----------+--------------------------------------+--------+------------+
 
+The cluster creation operation may take several minutes to complete. During
+this time the "status" returned from the previous command may show states
+other than "Active".
 
-8. Run MapReduce job
---------------------
+8. Run a MapReduce job
+----------------------
 
-To check that your Hadoop installation works correctly:
+Check that your Hadoop installation is working properly by running an
+example job on the cluster manually.
 
-* Go to NameNode via ssh:
+* Login to the NameNode via ssh:
 
 .. sourcecode:: console
 
    $ ssh ubuntu@<namenode_ip>
 
-* Switch to hadoop user:
+* Switch to the hadoop user:
 
 .. sourcecode:: console
 
    $ sudo su hadoop
 
-* Go to the hadoop home directory and run the simplest MapReduce example:
+* Go to the shared hadoop directory and run the simplest MapReduce example:
 
 .. sourcecode:: console
 
    $ cd /usr/share/hadoop
    $ hadoop jar hadoop-examples-1.2.1.jar pi 10 100
 
-Congratulations! Now you have the Hadoop cluster ready on the OpenStack cloud!
+Congratulations! Now you have the Hadoop cluster ready on the OpenStack
+cloud.
