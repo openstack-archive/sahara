@@ -41,7 +41,7 @@ HADOOP_GROUP = 'hadoop'
 
 
 def configure_cluster(pctx, cluster):
-    LOG.debug("Configuring cluster {cluster}".format(cluster=cluster.name))
+    LOG.debug("Configuring cluster")
     if (CONF.use_identity_api_v3 and CONF.use_domain_for_proxy_users and
             vu.get_hiveserver(cluster) and
             c_helper.is_swift_enabled(pctx, cluster)):

@@ -75,9 +75,7 @@ class HadoopServer(object):
 
     @saharautils.inject_remote('r')
     def install_rpms(self, r):
-        LOG.debug(
-            "{hostname}: Installing rpm's"
-            .format(hostname=self.instance.hostname()))
+        LOG.debug("Installing rpm's")
 
         # TODO(jspeidel): based on image type, use correct command
         curl_cmd = ('curl -f -s -o /etc/yum.repos.d/ambari.repo %s' %
@@ -89,9 +87,9 @@ class HadoopServer(object):
             yum_cmd = 'yum -y install %s' % EPEL_RELEASE_PACKAGE_NAME
             r.execute_command(yum_cmd, run_as_root=True)
         else:
-            LOG.debug("{hostname}: Unable to install rpm's from repo, "
-                      "checking for local install.".format(
-                          hostname=self.instance.hostname()))
+            LOG.debug("Unable to install rpm's from repo, "
+                      "checking for local install.")
+
             if not self.rpms_installed():
                 raise ex.HadoopProvisionError(
                     _('Failed to install Hortonworks Ambari'))
@@ -99,18 +97,15 @@ class HadoopServer(object):
     @cpo.event_wrapper(True, param=('self', 0))
     @saharautils.inject_remote('r')
     def install_swift_integration(self, r):
-        LOG.debug(
-            "{hostname}: Installing swift integration"
-            .format(hostname=self.instance.hostname()))
+        LOG.debug("Installing swift integration")
         base_rpm_cmd = 'rpm -U --quiet '
         rpm_cmd = base_rpm_cmd + HADOOP_SWIFT_RPM
         ret_code, stdout = r.execute_command(rpm_cmd,
                                              run_as_root=True,
                                              raise_when_error=False)
         if ret_code != 0:
-            LOG.debug("{hostname}: Unable to install swift integration from "
-                      "source, checking for local rpm.".format(
-                          hostname=self.instance.hostname()))
+            LOG.debug("Unable to install swift integration from "
+                      "source, checking for local rpm.")
             ret_code, stdout = r.execute_command(
                 'ls ' + HADOOP_SWIFT_LOCAL_RPM,
                 run_as_root=True,
@@ -136,8 +131,7 @@ class HadoopServer(object):
 
     @saharautils.inject_remote('r')
     def _setup_and_start_ambari_server(self, port, jdk_path, r):
-        LOG.debug('{hostname}: Installing ambari-server'.format(
-            hostname=self.instance.hostname()))
+        LOG.debug('Installing ambari-server')
         r.execute_command('yum -y install ambari-server', run_as_root=True)
 
         LOG.debug('Running Ambari Server setup')
@@ -191,13 +185,12 @@ class HadoopServer(object):
 
     @saharautils.inject_remote('r')
     def _setup_and_start_ambari_agent(self, ambari_server_ip, r):
-        LOG.debug('{hostname}: Installing Ambari agent'.format(
-            hostname=self.instance.hostname()))
+        LOG.debug('Installing Ambari agent')
 
         r.execute_command('yum -y install ambari-agent', run_as_root=True)
         LOG.debug(
-            '{hostname}: setting master-ip: {ip} in ambari-agent.ini'.format(
-                hostname=self.instance.hostname(), ip=ambari_server_ip))
+            'Setting master-ip: {ip} in ambari-agent.ini'.format(
+                ip=ambari_server_ip))
         r.replace_remote_string(
             '/etc/ambari-agent/conf/ambari-agent.ini', 'localhost',
             ambari_server_ip)
@@ -208,9 +201,7 @@ class HadoopServer(object):
         # restart since it will either start (if stopped) or restart (if
         # running)
         r.execute_command('ambari-agent restart', run_as_root=True)
-        LOG.info(
-            _LI('{hostname}: Ambari Agent started').format(
-                hostname=self.instance.hostname()))
+        LOG.info(_LI('Ambari Agent started'))
 
     @saharautils.inject_remote('r')
     def set_namenode_safemode(self, jh, r):

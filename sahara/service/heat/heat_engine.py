@@ -101,9 +101,9 @@ class HeatEngine(e.Engine):
 
         if rollback_info.get('shutdown', False):
             self._rollback_cluster_creation(cluster, reason)
-            LOG.warning(_LW("Cluster {name} creation rollback "
-                            "(reason: {reason})").format(name=cluster.name,
-                                                         reason=reason))
+            LOG.warning(_LW("Cluster creation rollback "
+                            "(reason: {reason})").format(reason=reason))
+
             return False
 
         rollback_count = rollback_info.get('rollback_count', {}).copy()
@@ -111,9 +111,8 @@ class HeatEngine(e.Engine):
         if rollback_count or target_count:
             self._rollback_cluster_scaling(
                 cluster, rollback_count, target_count, reason)
-            LOG.warning(_LW("Cluster {name} scaling rollback "
-                            "(reason: {reason})").format(name=cluster.name,
-                                                         reason=reason))
+            LOG.warning(_LW("Cluster scaling rollback "
+                            "(reason: {reason})").format(reason=reason))
 
             return True
 
@@ -182,8 +181,7 @@ class HeatEngine(e.Engine):
             stack = heat.get_stack(cluster.name)
             heat.wait_stack_completion(stack)
         except heat_exc.HTTPNotFound:
-            LOG.warning(_LW('Did not found stack for cluster {cluster_name}')
-                        .format(cluster_name=cluster.name))
+            LOG.warning(_LW('Did not find stack for cluster'))
 
         self._clean_job_executions(cluster)
 

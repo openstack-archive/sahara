@@ -165,16 +165,13 @@ def ops_error_handler(description):
                 cluster = conductor.cluster_get(ctx, cluster_id)
                 # check if cluster still exists (it might have been removed)
                 if cluster is None or cluster.status == 'Deleting':
-                    LOG.debug(
-                        "Cluster id={id} was deleted or marked for "
-                        "deletion. Canceling current operation.".format(
-                            id=cluster_id))
+                    LOG.debug("Cluster was deleted or marked for deletion. "
+                              "Canceling current operation.")
                     return
 
                 msg = six.text_type(ex)
-                LOG.error(
-                    _LE("Error during operating on cluster {name} (reason: "
-                        "{reason})").format(name=cluster.name, reason=msg))
+                LOG.error(_LE("Error during operating on cluster (reason: "
+                              "{reason})").format(reason=msg))
 
                 try:
                     # trying to rollback
@@ -188,16 +185,13 @@ def ops_error_handler(description):
                     # check if cluster still exists (it might have been
                     # removed during rollback)
                     if cluster is None or cluster.status == 'Deleting':
-                        LOG.debug(
-                            "Cluster id={id} was deleted or marked for "
-                            "deletion. Canceling current operation."
-                            .format(id=cluster_id))
+                        LOG.debug("Cluster was deleted or marked for deletion."
+                                  " Canceling current operation.")
                         return
 
                     LOG.error(
-                        _LE("Error during rollback of cluster {name} (reason:"
-                            " {reason})").format(name=cluster.name,
-                                                 reason=six.text_type(rex)))
+                        _LE("Error during rollback of cluster (reason:"
+                            " {reason})").format(reason=six.text_type(rex)))
                     desc = "{0}, {1}".format(msg, six.text_type(rex))
                     g.change_cluster_status(
                         cluster, "Error", description.format(reason=desc))
@@ -341,6 +335,6 @@ def _delete_job_execution(job_execution_id):
             # job_execution was deleted already, nothing to do
             return
     except exceptions.CancelingFailed:
-        LOG.error(_LE("Job execution {j_id} can't be cancelled in time. "
-                      "Deleting it anyway.").format(j_id=job_execution_id))
+        LOG.error(_LE("Job execution can't be cancelled in time. "
+                      "Deleting it anyway."))
     conductor.job_execution_destroy(context.ctx(), job_execution_id)

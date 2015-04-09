@@ -122,8 +122,8 @@ def run_job(job_execution_id):
         _run_job(job_execution_id)
     except Exception as ex:
         LOG.warning(
-            _LW("Can't run job execution {job} (reason: {reason})").format(
-                job=job_execution_id, reason=ex))
+            _LW("Can't run job execution (reason: {reason})").format(
+                reason=ex))
 
         conductor.job_execution_update(
             context.ctx(), job_execution_id,
@@ -155,26 +155,21 @@ def cancel_job(job_execution_id):
                 except Exception as ex:
                     job_info = None
                     LOG.warning(
-                        _LW("Error during cancel of job execution {job}: "
-                            "{error}").format(job=job_execution.id,
-                                              error=ex))
+                        _LW("Error during cancel of job execution: "
+                            "{error}").format(error=ex))
                 if job_info is not None:
                     job_execution = _write_job_status(job_execution, job_info)
-                    LOG.info(_LI("Job execution {job_id} was canceled "
-                                 "successfully").format(
-                                     job_id=job_execution.id))
+                    LOG.info(_LI("Job execution was canceled successfully"))
                     return job_execution
                 context.sleep(3)
                 job_execution = conductor.job_execution_get(
                     ctx, job_execution_id)
                 if not job_execution:
-                    LOG.info(_LI("Job execution {job_exec_id} was deleted. "
-                                 "Canceling current operation.").format(
-                             job_exec_id=job_execution_id))
+                    LOG.info(_LI("Job execution was deleted. "
+                                 "Canceling current operation.").format)
                     return job_execution
             else:
-                LOG.info(_LI("Job execution status {job}: {status}").format(
-                         job=job_execution.id,
+                LOG.info(_LI("Job execution status: {status}").format(
                          status=job_execution.info['status']))
                 return job_execution
         else:

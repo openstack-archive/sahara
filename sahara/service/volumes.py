@@ -86,18 +86,16 @@ def _attach_volumes_to_node(node_group, instance):
             node_group.volume_local_to_instance, display_name,
             node_group.volumes_availability_zone)
         devices.append(device)
-        LOG.debug("Attached volume {device} to instance {uuid}".format(
-                  device=device, uuid=instance.instance_id))
+        LOG.debug("Attached volume {device} to instance".format(device=device))
 
     _await_attach_volumes(instance, devices)
 
     paths = instance.node_group.storage_paths()
     for idx in range(0, instance.node_group.volumes_per_node):
-        LOG.debug("Mounting volume {volume} to instance {id}"
-                  .format(volume=devices[idx], id=instance.instance_id))
+        LOG.debug("Mounting volume {volume} to instance"
+                  .format(volume=devices[idx]))
         _mount_volume(instance, devices[idx], paths[idx])
-        LOG.debug("Mounted volume to instance {id}"
-                  .format(id=instance.instance_id))
+        LOG.debug("Mounted volume to instance")
 
 
 @poll_utils.poll_status(
@@ -177,12 +175,10 @@ def _find_instance_volume_devices(instance):
 
 @cpo.event_wrapper(mark_successful_on_exit=True)
 def _mount_volume_to_node(instance, idx, device):
-    LOG.debug("Mounting volume {device} to instance {id}".format(
-              device=device, id=instance.instance_id))
+    LOG.debug("Mounting volume {device} to instance".format(device=device))
     mount_point = instance.node_group.storage_paths()[idx]
     _mount_volume(instance, device, mount_point)
-    LOG.debug("Mounted volume to instance {id}".format(
-        id=instance.instance_id))
+    LOG.debug("Mounted volume to instance")
 
 
 def _mount_volume(instance, device_path, mount_point):
@@ -203,8 +199,7 @@ def _mount_volume(instance, device_path, mount_point):
             r.execute_command('sudo mount %s %s %s' %
                               (mount_opts, device_path, mount_point))
         except Exception:
-            LOG.error(_LE("Error mounting volume to instance {id}")
-                      .format(id=instance.instance_id))
+            LOG.error(_LE("Error mounting volume to instance"))
             raise
 
 
@@ -226,8 +221,7 @@ def _await_detach(volume_id):
 def _detach_volume(instance, volume_id):
     volume = cinder.get_volume(volume_id)
     try:
-        LOG.debug("Detaching volume {id}  from instance {instance}".format(
-                  id=volume_id, instance=instance.instance_name))
+        LOG.debug("Detaching volume {id} from instance".format(id=volume_id))
         nova.client().volumes.delete_server_volume(instance.instance_id,
                                                    volume_id)
     except Exception:

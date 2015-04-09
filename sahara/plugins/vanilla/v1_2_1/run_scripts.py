@@ -84,9 +84,8 @@ def check_datanodes_count(remote, count):
     return exit_code == 0 and stdout and int(stdout) == count
 
 
-def mysql_start(remote, mysql_instance):
-    LOG.debug("Starting mysql at {host}".format(
-        host=mysql_instance.hostname()))
+def mysql_start(remote):
+    LOG.debug("Starting MySQL")
     remote.execute_command("/opt/start-mysql.sh")
 
 
