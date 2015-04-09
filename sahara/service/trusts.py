@@ -13,10 +13,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import json
-
 from oslo_config import cfg
 from oslo_log import log as logging
+from oslo_serialization import jsonutils as json
 import six
 
 from sahara import conductor as c

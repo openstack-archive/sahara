@@ -16,7 +16,6 @@
 from __future__ import print_function
 import functools
 import glob
-import json
 import logging
 import os
 import sys
@@ -24,6 +23,7 @@ import time
 import traceback
 
 import fixtures
+from oslo_serialization import jsonutils as json
 from oslo_utils import timeutils
 import prettytable
 import six

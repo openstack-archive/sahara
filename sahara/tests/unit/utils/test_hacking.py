@@ -49,3 +49,18 @@ class HackingTestCase(testtools.TestCase):
 
         self.assertEqual(0, len(list(checks.dict_constructor_with_list_copy(
             "      self._render_dict(xml, data_el, data.__dict__)"))))
+
+    def test_use_jsonutils(self):
+        self.assertEqual(0, len(list(checks.use_jsonutils(
+            "import json    # noqa", "path"))))
+        self.assertEqual(0, len(list(checks.use_jsonutils(
+            "from oslo_serialization import jsonutils as json", "path"))))
+        self.assertEqual(0, len(list(checks.use_jsonutils(
+            "import jsonschema", "path"))))
+        self.assertEqual(0, len(list(checks.use_jsonutils(
+            "import json", "sahara/openstack/common/utils.py"))))
+
+        self.assertEqual(1, len(list(checks.use_jsonutils(
+            "import json", "path"))))
+        self.assertEqual(1, len(list(checks.use_jsonutils(
+            "import json as jsonutils", "path"))))

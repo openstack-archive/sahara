@@ -13,12 +13,12 @@
 # limitations under the License.
 
 import copy
-import json
 import tempfile
 import uuid
 
 import jsonschema
 import mock
+from oslo_serialization import jsonutils as json
 from oslo_utils import uuidutils
 
 from sahara import context

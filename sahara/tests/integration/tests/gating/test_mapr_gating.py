@@ -12,13 +12,13 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
-import json
 import random
 import string
 import time
 import uuid
 
 import fixtures
+from oslo_serialization import jsonutils as json
 import six
 
 from sahara.tests.integration.tests import base as b

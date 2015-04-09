@@ -13,9 +13,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import json
 import re
 
+from oslo_serialization import jsonutils as json
 from six.moves.urllib import parse as urlparse
 
 import sahara.exceptions as ex

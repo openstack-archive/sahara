@@ -13,6 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import pep8
 
 import re
 import tokenize
@@ -97,6 +98,25 @@ def dict_constructor_with_list_copy(logical_line):
                'constructor with a sequence of key-value pairs.')
 
 
+def use_jsonutils(logical_line, filename):
+    """Check to prevent importing json in sahara code.
+
+    S375
+    """
+    if pep8.noqa(logical_line):
+        return
+    ignore_dirs = ["sahara/openstack/common"]
+    for dir in ignore_dirs:
+        if dir in filename:
+            return
+    invalid_line = re.compile(r"(import\s+json)")
+    valid_line = re.compile(r"(import\s+jsonschema)")
+    if (re.match(invalid_line, logical_line) and
+            not re.match(valid_line, logical_line)):
+        yield(0, "S375: Use jsonutils from oslo_serialization instead"
+                 " of json")
+
+
 def factory(register):
     register(import_db_only_in_conductor)
     register(hacking_no_author_attr)
@@ -109,3 +129,4 @@ def factory(register):
     register(logging_checks.validate_log_translations)
     register(logging_checks.no_translate_debug_logs)
     register(logging_checks.accepted_log_levels)
+    register(use_jsonutils)

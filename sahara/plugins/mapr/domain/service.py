@@ -13,7 +13,7 @@
 # under the License.
 
 
-import json
+from oslo_serialization import jsonutils as json
 
 from sahara import context
 import sahara.exceptions as e
