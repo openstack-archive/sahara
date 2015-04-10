@@ -17,6 +17,7 @@ import traceback
 
 import flask
 from oslo_log import log as logging
+from oslo_middleware import request_id as oslo_req_id
 from werkzeug import datastructures
 
 from sahara import context
@@ -73,6 +74,7 @@ class Rest(flask.Blueprint):
                     flask.request.status_code = status
 
                 kwargs.pop("tenant_id")
+                req_id = flask.request.environ.get(oslo_req_id.ENV_REQUEST_ID)
                 ctx = context.Context(
                     flask.request.headers['X-User-Id'],
                     flask.request.headers['X-Tenant-Id'],
@@ -80,9 +82,9 @@ class Rest(flask.Blueprint):
                     flask.request.headers['X-Service-Catalog'],
                     flask.request.headers['X-User-Name'],
                     flask.request.headers['X-Tenant-Name'],
-                    flask.request.headers['X-Roles'].split(','))
+                    flask.request.headers['X-Roles'].split(','),
+                    request_id=req_id)
                 context.set_ctx(ctx)
-
                 if flask.request.method in ['POST', 'PUT']:
                     kwargs['data'] = request_data()
 
