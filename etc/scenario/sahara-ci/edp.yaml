@@ -3,13 +3,16 @@ edp_jobs_flow:
     - type: Pig
       input_datasource:
         type: swift
-        source: etc/edp-examples/edp-pig/top-todoers/data/input
+        source: etc/edp-examples/edp-pig/trim-spaces/data/input
       output_datasource:
         type: hdfs
         destination: /user/hadoop/edp-output
       main_lib:
         type: swift
-        source: etc/edp-examples/edp-pig/top-todoers/example.pig
+        source: etc/edp-examples/edp-pig/trim-spaces/example.pig
+      additional_libs:
+        - type: swift
+          source: etc/edp-examples/edp-pig/trim-spaces/udf.jar
     - type: MapReduce
       input_datasource:
         type: swift
@@ -46,13 +49,18 @@ edp_jobs_flow:
     - type: Pig
       input_datasource:
         type: swift
-        source: etc/edp-examples/edp-pig/top-todoers/data/input
+        source: etc/edp-examples/edp-pig/trim-spaces/data/input
       output_datasource:
         type: hdfs
         destination: /user/hadoop/edp-output
       main_lib:
         type: swift
-        source: etc/edp-examples/edp-pig/top-todoers/example.pig
+        source: etc/edp-examples/edp-pig/trim-spaces/example.pig
+      additional_libs:
+        - type: swift
+          source: etc/edp-examples/edp-pig/trim-spaces/udf.jar
+      configs:
+        dfs.replication: 1
     - type: MapReduce
       input_datasource:
         type: swift
@@ -75,14 +83,9 @@ edp_jobs_flow:
         type: hdfs
         destination: /user/hadoop/edp-output
       configs:
+        dfs.replication: 1
         edp.streaming.mapper: /bin/cat
         edp.streaming.reducer: /usr/bin/wc
-    - type: Java
-      additional_libs:
-        - type: database
-          source: etc/edp-examples/hadoop2/edp-java/edp-java.jar
-      configs:
-       edp.java.main_class: org.openstack.sahara.examples.WordCount
   spark_edp:
     - type: Spark
       main_lib:
@@ -92,3 +95,18 @@ edp_jobs_flow:
         edp.java.main_class: org.apache.spark.examples.SparkPi
       args:
         - 4
+  transient:
+    - type: Pig
+      input_datasource:
+        type: swift
+        source: etc/edp-examples/edp-pig/trim-spaces/data/input
+      output_datasource:
+        type: hdfs
+        destination: /user/hadoop/edp-output
+      main_lib:
+        type: swift
+        source: etc/edp-examples/edp-pig/trim-spaces/example.pig
+      additional_libs:
+        - type: swift
+          source: etc/edp-examples/edp-pig/trim-spaces/udf.jar
+

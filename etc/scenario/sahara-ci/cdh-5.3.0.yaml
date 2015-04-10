@@ -1,10 +1,10 @@
 clusters:
   - plugin_name: cdh
     plugin_version: 5.3.0
-    image: ubuntu_sahara_cloudera
+    image: %cdh_image%
     node_group_templates:
       - name: worker-dn
-        flavor_id: '3'
+        flavor_id: %ci_flavor_id%
         node_processes:
           - HDFS_DATANODE
         volumes_per_node: 2
@@ -15,12 +15,12 @@ clusters:
           DATANODE:
             dfs_datanode_du_reserved: 0
       - name: worker-nm
-        flavor_id: '3'
+        flavor_id: %ci_flavor_id%
         node_processes:
           - YARN_NODEMANAGER
         auto_security_group: true
       - name: worker-nm-dn
-        flavor_id: '3'
+        flavor_id: %ci_flavor_id%
         node_processes:
           - YARN_NODEMANAGER
           - HDFS_DATANODE
@@ -30,18 +30,18 @@ clusters:
         node_configs:
           *ng_configs
       - name: manager
-        flavor_id: '3'
+        flavor_id: %medium_flavor_id%
         node_processes:
           - CLOUDERA_MANAGER
         auto_security_group: true
       - name: master-core
-        flavor_id: '3'
+        flavor_id: %medium_flavor_id%
         node_processes:
           - HDFS_NAMENODE
           - YARN_RESOURCEMANAGER
         auto_security_group: true
       - name: master-additional
-        flavor_id: '3'
+        flavor_id: %medium_flavor_id%
         node_processes:
           - OOZIE_SERVER
           - YARN_JOBHISTORY
@@ -50,7 +50,7 @@ clusters:
           - HIVE_SERVER2
         auto_security_group: true
     cluster_template:
-      name: cdh-5-3-0
+      name: cdh530
       node_group_templates:
         manager: 1
         master-core: 1
@@ -62,15 +62,7 @@ clusters:
         HDFS:
           dfs_replication: 1
     cluster:
-      name: scenario-cdh
-    scaling:
-      - operation: add
-        node_group: worker-nm-dn
-        size: 1
-      - operation: resize
-        node_group: worker-nm
-        size: 0
-      - operation: resize
-        node_group: worker-dn
-        size: 0
+      name: %cluster_name%
+    scenario:
+      - run_jobs
     edp_jobs_flow: hadoop_2
