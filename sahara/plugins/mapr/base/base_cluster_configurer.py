@@ -83,6 +83,7 @@ class BaseConfigurer(ac.AbstractConfigurer):
         self._configure_topology(cluster_context, existing)
         if cluster_context.has_control_nodes(instances):
             self._configure_sh_cluster(cluster_context, existing)
+            self._post_configure_sh(cluster_context, existing)
         self._write_config_files(cluster_context, existing)
         self._update_services(cluster_context, existing)
         self._restart_services(cluster_context)
@@ -300,7 +301,7 @@ class BaseConfigurer(ac.AbstractConfigurer):
         for service in c_context.cluster_services:
             updated = c_context.filter_instances(instances, service=service)
             service.post_start(c_context, updated)
-        LOG.debug('Post start hooks execution successfully executed')
+        LOG.info(_LI('Post start hooks successfully executed'))
 
     def _set_cluster_mode(self, cluster_context):
         cluster_mode = cluster_context.cluster_mode
@@ -324,3 +325,9 @@ class BaseConfigurer(ac.AbstractConfigurer):
         restart = cluster_context.should_be_restarted
         for service, instances in six.iteritems(restart):
             service.restart(util.unique_list(instances))
+
+    def _post_configure_sh(self, cluster_context, instances):
+        LOG.debug('Executing post configure.sh hooks')
+        for service in cluster_context.cluster_services:
+            service.post_configure_sh(cluster_context, instances)
+        LOG.info(_LI('Post configure.sh hooks successfully executed'))
