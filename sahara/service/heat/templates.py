@@ -13,11 +13,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import json
 
 from oslo_config import cfg
 from oslo_log import log as logging
 import six
+import yaml
 
 from sahara.utils import general as g
 from sahara.utils.openstack import heat as h
@@ -71,11 +71,11 @@ class ClusterTemplate(object):
         }
 
     def _get_main_template(self):
-        return json.dumps({
-            "AWSTemplateFormatVersion": "2010-09-09",
-            "Description": "Data Processing Cluster by Sahara",
-            "Resources": self._serialize_resources(),
-            "Outputs": {}
+        return yaml.safe_dump({
+            "heat_template_version": "2013-05-23",
+            "description": "Data Processing Cluster by Sahara",
+            "resources": self._serialize_resources(),
+            "outputs": {}
         })
 
     def instantiate(self, update_existing, disable_rollback=True):
@@ -136,8 +136,8 @@ class ClusterTemplate(object):
 
         return {
             security_group_name: {
-                "Type": "AWS::EC2::SecurityGroup",
-                "Properties": {
+                "type": "AWS::EC2::SecurityGroup",
+                "properties": {
                     "GroupDescription": security_group_description,
                     "SecurityGroupIngress": rules
                 }
@@ -213,8 +213,8 @@ class ClusterTemplate(object):
 
         resources.update({
             inst_name: {
-                "Type": "OS::Nova::Server",
-                "Properties": properties
+                "type": "OS::Nova::Server",
+                "properties": properties
             }
         })
 
@@ -235,8 +235,8 @@ class ClusterTemplate(object):
 
         return {
             port_name: {
-                "Type": "OS::Neutron::Port",
-                "Properties": properties
+                "type": "OS::Neutron::Port",
+                "properties": properties
             }
         }
 
@@ -246,8 +246,8 @@ class ClusterTemplate(object):
 
         return {
             floating_ip_name: {
-                "Type": "OS::Neutron::FloatingIP",
-                "Properties": {
+                "type": "OS::Neutron::FloatingIP",
+                "properties": {
                     "floating_network_id": floating_net_id,
                     "port_id": {"Ref": port_name}
                 }
@@ -259,14 +259,14 @@ class ClusterTemplate(object):
         floating_ip_assoc_name = _get_floating_assoc_name(inst_name)
         return {
             floating_ip_name: {
-                "Type": "OS::Nova::FloatingIP",
-                "Properties": {
+                "type": "OS::Nova::FloatingIP",
+                "properties": {
                     "pool": floating_pool_name
                 }
             },
             floating_ip_assoc_name: {
-                "Type": "OS::Nova::FloatingIPAssociation",
-                "Properties": {
+                "type": "OS::Nova::FloatingIPAssociation",
+                "properties": {
                     "floating_ip": {"Ref": floating_ip_name},
                     "server_id": {"Ref": inst_name}
                 }
@@ -292,12 +292,12 @@ class ClusterTemplate(object):
 
         return {
             volume_name: {
-                "Type": "OS::Cinder::Volume",
-                "Properties": properties
+                "type": "OS::Cinder::Volume",
+                "properties": properties
             },
             volume_attach_name: {
-                "Type": "OS::Cinder::VolumeAttachment",
-                "Properties": {
+                "type": "OS::Cinder::VolumeAttachment",
+                "properties": {
                     "instance_uuid": {"Ref": inst_name},
                     "volume_id": {"Ref": volume_name},
                     "mountpoint": None
@@ -316,8 +316,8 @@ class ClusterTemplate(object):
         server_group_name = _get_aa_group_name(self.cluster.name)
         return {
             server_group_name: {
-                "Type": "OS::Nova::ServerGroup",
-                "Properties": {
+                "type": "OS::Nova::ServerGroup",
+                "properties": {
                     "name": server_group_name,
                     "policies": ["anti-affinity"]
                 }
