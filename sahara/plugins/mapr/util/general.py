@@ -182,3 +182,10 @@ def install_ssh_key(remote, user, private_key, public_key):
 def authorize_key(remote, user, public_key):
     authorized_keys = '/home/%s/.ssh/authorized_keys' % user
     remote.append_to_file(authorized_keys, public_key, run_as_root=True)
+
+
+@remote_command(0)
+def download(remote, url, output=None, run_as=None):
+    args = {'url': url, 'output': '-O %s' % output if output else ''}
+    command = _run_as(run_as, 'wget -q %(output)s %(url)s' % args)
+    remote.execute_command(command, timeout=600)

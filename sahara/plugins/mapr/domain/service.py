@@ -214,6 +214,9 @@ class Service(object):
     def conf_dir(self, cluster_context):
         return '%s/conf' % self.home_dir(cluster_context)
 
+    def post_configure_sh(self, cluster_context, instances):
+        pass
+
 
 class Single(type):
     _instances = {}
