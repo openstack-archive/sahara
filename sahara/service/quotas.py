@@ -170,12 +170,12 @@ def _get_neutron_limits():
                                            len(usage_fip))
 
     usage_sg = neutron.list_security_groups(
-        tenant_id=tenant_id)['security_groups']
+        tenant_id=tenant_id).get('security_groups', [])
     limits['security_groups'] = _sub_limit(total_lim['security_group'],
                                            len(usage_sg))
 
-    usage_sg_rules = (neutron.list_security_group_rules(
-        tenant_id=tenant_id)['security_group_rules'])
+    usage_sg_rules = neutron.list_security_group_rules(
+        tenant_id=tenant_id).get('security_group_rules', [])
     limits['security_group_rules'] = _sub_limit(
         total_lim['security_group_rule'], len(usage_sg_rules))
 
