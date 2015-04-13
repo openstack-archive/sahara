@@ -16,7 +16,7 @@ clusters:
           - slave
         auto_security_group: true
     cluster_template:
-      name: spark-1-0-0
+      name: spark100
       node_group_templates:
         master: 1
         worker: 1
@@ -24,7 +24,7 @@ clusters:
         HDFS:
           dfs.replication: 1
     cluster:
-      name: scenario-spark
+      name: spark100
     scaling:
       - operation: add
         node_group: worker

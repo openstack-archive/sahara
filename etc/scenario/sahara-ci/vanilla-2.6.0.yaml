@@ -55,7 +55,7 @@ clusters:
         node_configs:
           *ng_configs
     cluster_template:
-      name: vanilla-2-6
+      name: vanilla260
       node_group_templates:
         master-rm-nn-hvs: 1
         master-oo-hs-sn: 1
@@ -66,7 +66,7 @@ clusters:
         HDFS:
           dfs.replication: 1
     cluster:
-      name: scenario-vanilla2
+      name: vanilla260
     scaling:
       - operation: resize
         node_group: worker-dn-nm

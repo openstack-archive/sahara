@@ -25,7 +25,7 @@ clusters:
             yarn.scheduler.maximum-allocation-mb: 1024
             yarn.nodemanager.vmem-check-enabled: false
     cluster_template:
-      name: vanilla-2-6
+      name: transient
       node_group_templates:
         transient_ng: 1
       cluster_configs:
@@ -37,6 +37,6 @@ clusters:
         YARN:
           yarn.resourcemanager.scheduler.class: org.apache.hadoop.yarn.server.resourcemanager.scheduler.fair.FairScheduler
     cluster:
-      name: scenario-transient
+      name: transient
       is_transient: true
     edp_jobs_flow: hadoop_2

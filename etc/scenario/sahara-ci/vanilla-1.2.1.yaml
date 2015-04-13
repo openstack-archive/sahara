@@ -37,7 +37,7 @@ clusters:
         auto_security_group: true
 
     cluster_template:
-      name: vanilla-1-2-1
+      name: vanilla121
       node_group_templates:
         master-sec-nn-oz: 1
         master-jt-nn: 1
@@ -53,7 +53,7 @@ clusters:
         general:
           'Enable Swift': True
     cluster:
-      name: scenario-vanilla1
+      name: vanilla121
     scaling:
       - operation: resize
         node_group: worker-tt-dn
