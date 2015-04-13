@@ -67,14 +67,14 @@ class VersionHandler(avm.AbstractVersionHandler):
         jt_count = sum([ng.count for ng
                         in utils.get_node_groups(cluster, "jobtracker")])
 
-        if jt_count not in [0, 1]:
+        if jt_count > 1:
             raise ex.InvalidComponentCountException("jobtracker", _('0 or 1'),
                                                     jt_count)
 
         oozie_count = sum([ng.count for ng
                            in utils.get_node_groups(cluster, "oozie")])
 
-        if oozie_count not in [0, 1]:
+        if oozie_count > 1:
             raise ex.InvalidComponentCountException("oozie", _('0 or 1'),
                                                     oozie_count)
 
@@ -96,7 +96,7 @@ class VersionHandler(avm.AbstractVersionHandler):
                 raise ex.RequiredServiceMissingException(
                     "jobtracker", required_by="hive")
 
-        if hive_count not in [0, 1]:
+        if hive_count > 1:
             raise ex.InvalidComponentCountException("hive", _('0 or 1'),
                                                     hive_count)
 

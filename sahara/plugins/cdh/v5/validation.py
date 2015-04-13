@@ -38,12 +38,12 @@ def validate_cluster_creating(cluster):
                                                 snn_count)
 
     rm_count = _get_inst_count(cluster, 'YARN_RESOURCEMANAGER')
-    if rm_count not in [0, 1]:
+    if rm_count > 1:
         raise ex.InvalidComponentCountException('YARN_RESOURCEMANAGER',
                                                 _('0 or 1'), rm_count)
 
     hs_count = _get_inst_count(cluster, 'YARN_JOBHISTORY')
-    if hs_count not in [0, 1]:
+    if hs_count > 1:
         raise ex.InvalidComponentCountException('YARN_JOBHISTORY', _('0 or 1'),
                                                 hs_count)
 
@@ -59,7 +59,7 @@ def validate_cluster_creating(cluster):
 
     oo_count = _get_inst_count(cluster, 'OOZIE_SERVER')
     dn_count = _get_inst_count(cluster, 'HDFS_DATANODE')
-    if oo_count not in [0, 1]:
+    if oo_count > 1:
         raise ex.InvalidComponentCountException('OOZIE_SERVER', _('0 or 1'),
                                                 oo_count)
 
@@ -97,12 +97,12 @@ def validate_cluster_creating(cluster):
             'HIVE_METASTORE', required_by='WEBHCAT')
 
     hue_count = _get_inst_count(cluster, 'HUE_SERVER')
-    if hue_count not in [0, 1]:
+    if hue_count > 1:
         raise ex.InvalidComponentCountException('HUE_SERVER', _('0 or 1'),
                                                 hue_count)
 
     shs_count = _get_inst_count(cluster, 'SPARK_YARN_HISTORY_SERVER')
-    if shs_count not in [0, 1]:
+    if shs_count > 1:
         raise ex.InvalidComponentCountException('SPARK_YARN_HISTORY_SERVER',
                                                 _('0 or 1'), shs_count)
     if shs_count and not rm_count:
