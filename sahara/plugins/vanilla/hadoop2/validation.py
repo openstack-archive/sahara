@@ -27,17 +27,17 @@ def validate_cluster_creating(pctx, cluster):
         raise ex.InvalidComponentCountException('namenode', 1, nn_count)
 
     snn_count = _get_inst_count(cluster, 'secondarynamenode')
-    if snn_count not in [0, 1]:
+    if snn_count > 1:
         raise ex.InvalidComponentCountException('secondarynamenode',
                                                 _('0 or 1'), snn_count)
 
     rm_count = _get_inst_count(cluster, 'resourcemanager')
-    if rm_count not in [0, 1]:
+    if rm_count > 1:
         raise ex.InvalidComponentCountException('resourcemanager', _('0 or 1'),
                                                 rm_count)
 
     hs_count = _get_inst_count(cluster, 'historyserver')
-    if hs_count not in [0, 1]:
+    if hs_count > 1:
         raise ex.InvalidComponentCountException('historyserver', _('0 or 1'),
                                                 hs_count)
 
@@ -49,7 +49,7 @@ def validate_cluster_creating(pctx, cluster):
 
     oo_count = _get_inst_count(cluster, 'oozie')
     dn_count = _get_inst_count(cluster, 'datanode')
-    if oo_count not in [0, 1]:
+    if oo_count > 1:
         raise ex.InvalidComponentCountException('oozie', _('0 or 1'), oo_count)
 
     if oo_count == 1:
@@ -73,7 +73,7 @@ def validate_cluster_creating(pctx, cluster):
                                                 'dfs.replication.'))
 
     hive_count = _get_inst_count(cluster, 'hiveserver')
-    if hive_count not in [0, 1]:
+    if hive_count > 1:
         raise ex.InvalidComponentCountException('hive', _('0 or 1'),
                                                 hive_count)
 
