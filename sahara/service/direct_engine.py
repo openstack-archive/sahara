@@ -13,7 +13,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from novaclient import exceptions as nova_exceptions
 from oslo_config import cfg
 from oslo_log import log as logging
 import six
@@ -197,15 +196,6 @@ class DirectEngine(e.Engine):
         server_group = client.create(name=server_group_name,
                                      policies=['anti-affinity'])
         return server_group.id
-
-    def _delete_aa_server_group(self, cluster):
-        if cluster.anti_affinity:
-            server_group_name = g.generate_aa_group_name(cluster.name)
-            client = nova.client().server_groups
-
-            server_groups = client.findall(name=server_group_name)
-            if len(server_groups) == 1:
-                client.delete(server_groups[0].id)
 
     def _find_aa_server_group(self, cluster):
         server_group_name = g.generate_aa_group_name(cluster.name)
@@ -460,32 +450,6 @@ class DirectEngine(e.Engine):
 
         LOG.info(_LI("All instances are active"))
 
-    @poll_utils.poll_status(
-        'delete_instances_timeout',
-        _("Wait for instances to be deleted"), sleep=1)
-    def _check_deleted(self, deleted_ids, cluster, instances):
-        if not g.check_cluster_exists(cluster):
-            return True
-
-        for instance in instances:
-            if instance.id not in deleted_ids:
-                with context.set_current_instance_id(instance.instance_id):
-                    if self._check_if_deleted(instance):
-                        LOG.debug("Instance is deleted")
-                        deleted_ids.add(instance.id)
-                        cpo.add_successful_event(instance)
-        return len(deleted_ids) == len(instances)
-
-    def _await_deleted(self, cluster, instances):
-        """Await all instances are deleted."""
-        if not instances:
-            return
-        cpo.add_provisioning_step(
-            cluster.id, _("Wait for instances to be deleted"), len(instances))
-
-        deleted_ids = set()
-        self._check_deleted(deleted_ids, cluster, instances)
-
     @cpo.event_wrapper(mark_successful_on_exit=False)
     def _check_if_active(self, instance):
         server = nova.get_instance_info(instance)
@@ -493,15 +457,6 @@ class DirectEngine(e.Engine):
             raise exc.SystemError(_("Node %s has error status") % server.name)
 
         return server.status == 'ACTIVE'
-
-    @cpo.event_wrapper(mark_successful_on_exit=False)
-    def _check_if_deleted(self, instance):
-        try:
-            nova.get_instance_info(instance)
-        except nova_exceptions.NotFound:
-            return True
-
-        return False
 
     def _rollback_cluster_creation(self, cluster, ex):
         """Shutdown all instances and update cluster status."""
@@ -518,64 +473,9 @@ class DirectEngine(e.Engine):
         cluster = conductor.cluster_get(context.ctx(), cluster)
         g.clean_cluster_from_empty_ng(cluster)
 
-    def _shutdown_instances(self, cluster):
-        for node_group in cluster.node_groups:
-            for instance in node_group.instances:
-                with context.set_current_instance_id(instance.instance_id):
-                    self._shutdown_instance(instance)
-
-            self._await_deleted(cluster, node_group.instances)
-            self._delete_auto_security_group(node_group)
-
-    def _delete_auto_security_group(self, node_group):
-        if not node_group.auto_security_group:
-            return
-
-        if not node_group.security_groups:
-            # node group has no security groups
-            # nothing to delete
-            return
-
-        name = node_group.security_groups[-1]
-
-        try:
-            client = nova.client().security_groups
-            security_group = client.get(name)
-            if (security_group.name !=
-                    g.generate_auto_security_group_name(node_group)):
-                LOG.warning(_LW("Auto security group for node group {name} is "
-                                "not found").format(name=node_group.name))
-                return
-            client.delete(name)
-        except Exception:
-            LOG.warning(_LW("Failed to delete security group {name}").format(
-                name=name))
-
-    def _shutdown_instance(self, instance):
-        ctx = context.ctx()
-
-        if instance.node_group.floating_ip_pool:
-            try:
-                networks.delete_floating_ip(instance.instance_id)
-            except nova_exceptions.NotFound:
-                LOG.warning(_LW("Attempted to delete non-existent floating IP "
-                                "in pool {pool} from instance")
-                            .format(pool=instance.node_group.floating_ip_pool))
-
-        try:
-            volumes.detach_from_instance(instance)
-        except Exception:
-            LOG.warning(_LW("Detaching volumes from instance failed"))
-
-        try:
-            nova.client().servers.delete(instance.instance_id)
-        except nova_exceptions.NotFound:
-            LOG.warning(_LW("Attempted to delete non-existent instance"))
-
-        conductor.instance_remove(ctx, instance)
-
     def shutdown_cluster(self, cluster):
         """Shutdown specified cluster and all related resources."""
         self._shutdown_instances(cluster)
         self._clean_job_executions(cluster)
         self._delete_aa_server_group(cluster)
+        self._remove_db_objects(cluster)
