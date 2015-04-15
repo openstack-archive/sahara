@@ -31,6 +31,7 @@ from sahara.api import v11 as api_v11
 from sahara import config
 from sahara import context
 from sahara.i18n import _LI
+from sahara.i18n import _LW
 from sahara.openstack.common import systemd
 from sahara.plugins import base as plugins_base
 from sahara.service import api as service_api
@@ -50,7 +51,7 @@ opts = [
     cfg.StrOpt('os_region_name',
                help='Region name used to get services endpoints.'),
     cfg.StrOpt('infrastructure_engine',
-               default='direct',
+               default='heat',
                help='An engine which will be used to provision '
                     'infrastructure for Hadoop cluster.'),
     cfg.StrOpt('remote',
@@ -178,6 +179,11 @@ def _get_infrastructure_engine():
 
     LOG.debug("Infrastructure engine {engine} is loading".format(
         engine=CONF.infrastructure_engine))
+
+    if CONF.infrastructure_engine == "direct":
+        LOG.warning(_LW("Direct infrastructure engine is deprecated in Liberty"
+                        " release and will be removed after that release."
+                        " Use Heat infrastructure engine instead."))
 
     return _load_driver('sahara.infrastructure.engine',
                         CONF.infrastructure_engine)

@@ -119,3 +119,17 @@ should be placed in the same directory as the sahara configuration file or
 specified using the ``policy_file`` parameter. For more details about the
 policy file please see the
 :ref:`policy section in the configuration guide <policy-configuration-label>`.
+
+Kilo -> Liberty
+---------------
+
+Direct engine deprecation
++++++++++++++++++++++++++
+
+In the Liberty release the direct infrastructure engine has been deprecated
+and the heat infrastructure engine is now default. This means, that it is preferable
+to use heat engine instead now. In the Liberty release you can continue to
+operate clusters with the direct engine (create, delete, scale). Using heat engine only
+the delete operation is available on clusters that were created by the direct engine.
+After the Liberty release the direct engine will be removed, this means that you will
+only be able to delete clusters created with the direct engine.
