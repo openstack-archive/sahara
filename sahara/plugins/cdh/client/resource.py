@@ -22,12 +22,12 @@
 # To satisfy the pep8 and python3 tests, we did some changes to the codes.
 # We also change some importings to use Sahara inherited classes.
 
-import json
 import posixpath
 import socket
 import urllib2
 
 from oslo_log import log as logging
+from oslo_serialization import jsonutils as json
 import six
 
 from sahara import context

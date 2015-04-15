@@ -44,3 +44,9 @@ Logs
 - [S373] LOG.debug never used for translations
 
 - [S374] You used a deprecated log level
+
+Importing json
+--------------
+
+- [S375] It's more preferable to use ``jsonutils`` from ``oslo_serialization``
+         instead of ``json`` for operating with ``json`` objects.

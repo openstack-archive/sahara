@@ -23,13 +23,13 @@
 # We also change some importings to use Sahara inherited classes.
 
 import cookielib
-import json
 import posixpath
 import types
 import urllib
 import urllib2
 
 from oslo_log import log as logging
+from oslo_serialization import jsonutils as json
 import six
 
 from sahara.i18n import _LW

@@ -24,9 +24,9 @@
 
 import copy
 import datetime
-import json
 import time
 
+from oslo_serialization import jsonutils as json
 import six
 
 from sahara import context

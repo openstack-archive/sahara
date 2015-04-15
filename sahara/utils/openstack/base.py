@@ -13,9 +13,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import json
-
 from oslo_config import cfg
+from oslo_serialization import jsonutils as json
 from six.moves.urllib import parse as urlparse
 
 from sahara import context

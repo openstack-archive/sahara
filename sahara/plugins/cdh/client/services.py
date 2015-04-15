@@ -22,8 +22,7 @@
 # To satisfy the pep8 and python3 tests, we did some changes to the codes.
 # We also change some importings to use Sahara inherited classes.
 
-import json
-
+from oslo_serialization import jsonutils as json
 import six
 
 from sahara.plugins.cdh.client import role_config_groups

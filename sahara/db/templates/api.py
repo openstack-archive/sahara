@@ -13,12 +13,12 @@
 # limitations under the License.
 
 import copy
-import json
 import os
 import uuid
 
 import jsonschema
 from oslo_config import cfg
+from oslo_serialization import jsonutils as json
 import six
 
 from sahara import conductor

@@ -13,10 +13,10 @@
 # under the License.
 
 
-import json
 import random
 
 from oslo_log import log as logging
+from oslo_serialization import jsonutils as json
 from oslo_utils import timeutils
 
 from sahara import context

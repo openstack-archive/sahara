@@ -14,10 +14,10 @@
 # limitations under the License.
 
 import itertools
-import json
 import os
 import uuid
 
+from oslo_serialization import jsonutils as json
 import testtools
 
 from sahara.service.validations.edp import data_source
