@@ -64,6 +64,13 @@ class VersionHandler(avm.AbstractVersionHandler):
         if nn_count != 1:
             raise ex.InvalidComponentCountException("namenode", 1, nn_count)
 
+        snn_count = sum(
+            [ng.count for ng
+             in utils.get_node_groups(cluster, 'secondarynamenode')])
+        if snn_count > 1:
+            raise ex.InvalidComponentCountException('secondarynamenode',
+                                                    _('0 or 1'), snn_count)
+
         jt_count = sum([ng.count for ng
                         in utils.get_node_groups(cluster, "jobtracker")])
 
