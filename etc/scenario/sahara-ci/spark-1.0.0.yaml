@@ -25,6 +25,8 @@ clusters:
           dfs.replication: 1
     cluster:
       name: %cluster_name%
-    scenario:
-      - run_jobs
+    scaling:
+      - operation: add
+        node_group: worker
+        size: 1
     edp_jobs_flow: spark_edp
