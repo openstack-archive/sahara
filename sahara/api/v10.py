@@ -155,7 +155,8 @@ def node_group_templates_get(node_group_template_id):
             v_ngt.check_node_group_template_update)
 def node_group_templates_update(node_group_template_id, data):
     return u.render(
-        api.update_node_group_template(node_group_template_id, data))
+        api.update_node_group_template(
+            node_group_template_id, data).to_wrapped_dict())
 
 
 @rest.delete('/node-group-templates/<node_group_template_id>')
