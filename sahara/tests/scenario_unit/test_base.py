@@ -338,7 +338,8 @@ class TestBase(testtools.TestCase):
                 }
             }
         ]
-        self.assertIsNone(self.base_scenario.check_run_jobs())
+        with mock.patch('time.sleep'):
+            self.assertIsNone(self.base_scenario.check_run_jobs())
 
     @mock.patch('sahara.tests.scenario.base.BaseTestCase.'
                 '_poll_cluster_status',
