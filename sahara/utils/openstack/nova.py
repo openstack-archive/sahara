@@ -57,28 +57,8 @@ def client():
     return nova
 
 
-def get_flavors():
-    return [flavor.name for flavor in client().flavors.list()]
-
-
 def get_flavor(**kwargs):
     return client().flavors.find(**kwargs)
-
-
-def get_images():
-    return [image.id for image in client().images.list()]
-
-
-def get_limits():
-    limits = client().limits.get().absolute
-    return {l.name: l.value for l in limits}
-
-
-def get_user_keypair(cluster):
-    try:
-        return client().keypairs.get(cluster.user_keypair_id)
-    except nova_ex.NotFound:
-        return None
 
 
 def get_instance_info(instance):

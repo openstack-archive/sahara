@@ -97,9 +97,5 @@ def check_cinder_exists():
         return False
 
 
-def get_volumes():
-    return [volume.id for volume in client().volumes.list()]
-
-
 def get_volume(volume_id):
     return client().volumes.get(volume_id)
