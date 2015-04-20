@@ -6,9 +6,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: sahara 2015.1.dev216\n"
+"Project-Id-Version: sahara 2015.1.dev1.g7a6e999\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2015-03-17 06:46+0000\n"
+"POT-Creation-Date: 2015-04-20 12:08+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -54,11 +54,11 @@ msgstr ""
 msgid "Timeout issuing GET request for {path}. No retries left"
 msgstr ""
 
-#: sahara/plugins/hdp/versions/version_1_3_2/versionhandler.py:420
+#: sahara/plugins/hdp/versions/version_1_3_2/versionhandler.py:432
 msgid "Finalizing of Ambari cluster state failed. {result}"
 msgstr ""
 
-#: sahara/plugins/hdp/versions/version_1_3_2/versionhandler.py:657
+#: sahara/plugins/hdp/versions/version_1_3_2/versionhandler.py:681
 msgid "HTTP session is not cached"
 msgstr ""
 
@@ -82,12 +82,12 @@ msgid ""
 "{src_config_name} for Hue: {property_name} [{dst_config} -> {src_config}]"
 msgstr ""
 
-#: sahara/plugins/hdp/versions/version_2_0_6/versionhandler.py:404
+#: sahara/plugins/hdp/versions/version_2_0_6/versionhandler.py:416
 msgid "Ambari cluster state not finalized. {result}"
 msgstr ""
 
-#: sahara/plugins/mapr/base/base_cluster_configurer.py:232
-#: sahara/plugins/mapr/base/base_cluster_configurer.py:243
+#: sahara/plugins/mapr/base/base_cluster_configurer.py:235
+#: sahara/plugins/mapr/base/base_cluster_configurer.py:246
 msgid "User \"mapr\" does not exists"
 msgstr ""
 
@@ -97,33 +97,41 @@ msgid ""
 "enable_hypervisor_awareness set to False explicitly"
 msgstr ""
 
-#: sahara/plugins/vanilla/v1_2_1/config_helper.py:391
+#: sahara/plugins/vanilla/v1_2_1/config_helper.py:397
 msgid "Plugin received wrong applicable target {service} in environmental configs"
 msgstr ""
 
-#: sahara/plugins/vanilla/v1_2_1/config_helper.py:413
+#: sahara/plugins/vanilla/v1_2_1/config_helper.py:419
 msgid "Plugin received wrong applicable target {service} for xml configs"
 msgstr ""
 
-#: sahara/service/direct_engine.py:528
+#: sahara/service/direct_engine.py:118 sahara/service/heat/heat_engine.py:104
+msgid "Cluster {name} creation rollback (reason: {reason})"
+msgstr ""
+
+#: sahara/service/direct_engine.py:127 sahara/service/heat/heat_engine.py:114
+msgid "Cluster {name} scaling rollback (reason: {reason})"
+msgstr ""
+
+#: sahara/service/direct_engine.py:535
 msgid "Auto security group for node group {name} is not found"
 msgstr ""
 
-#: sahara/service/direct_engine.py:533
+#: sahara/service/direct_engine.py:540
 msgid "Failed to delete security group {name}"
 msgstr ""
 
-#: sahara/service/direct_engine.py:543
+#: sahara/service/direct_engine.py:550
 msgid ""
 "Attempted to delete non-existent floating IP in pool {pool} from instance"
 " {instance}"
 msgstr ""
 
-#: sahara/service/direct_engine.py:551
+#: sahara/service/direct_engine.py:558
 msgid "Detaching volumes from instance {id} failed"
 msgstr ""
 
-#: sahara/service/direct_engine.py:557
+#: sahara/service/direct_engine.py:564
 msgid "Attempted to delete non-existent instance {id}"
 msgstr ""
 
@@ -131,10 +139,6 @@ msgstr ""
 msgid ""
 "Failed to terminate {description} cluster {cluster} in \"{status}\" state"
 " with id {id}: {error}."
-msgstr ""
-
-#: sahara/service/volumes.py:248
-msgid "Can't detach volume {volume}. Current status of volume: {status}"
 msgstr ""
 
 #: sahara/service/edp/job_manager.py:125
@@ -145,7 +149,7 @@ msgstr ""
 msgid "Error during cancel of job execution {job}: {error}"
 msgstr ""
 
-#: sahara/service/heat/heat_engine.py:191
+#: sahara/service/heat/heat_engine.py:185
 msgid "Did not found stack for cluster {cluster_name}"
 msgstr ""
 
