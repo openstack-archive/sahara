@@ -127,6 +127,7 @@ def list_opts():
     from sahara.service.edp import job_utils
     from sahara.service import periodic
     from sahara.utils import cluster_progress_ops as cpo
+    from sahara.utils.openstack import base
     from sahara.utils.openstack import heat
     from sahara.utils.openstack import neutron
     from sahara.utils.openstack import nova
@@ -151,7 +152,8 @@ def list_opts():
                          periodic.periodic_opts,
                          proxy.opts,
                          cpo.event_log_opts,
-                         wsgi.wsgi_opts)),
+                         wsgi.wsgi_opts,
+                         base.opts)),
         (poll_utils.timeouts.name,
          itertools.chain(poll_utils.timeouts_opts)),
         (api.conductor_group.name,
@@ -167,7 +169,9 @@ def list_opts():
         (swift.swift_group.name,
          itertools.chain(swift.opts)),
         (keystone.keystone_group.name,
-         itertools.chain(keystone.ssl_opts))
+         itertools.chain(keystone.ssl_opts)),
+        (base.retries.name,
+         itertools.chain(base.opts))
     ]
 
 
