@@ -23,80 +23,42 @@ class CheckServicesTest(base.ITestCase):
     @base.skip_test('SKIP_CHECK_SERVICES_TEST', message='Test for Services'
                     ' checking was skipped.')
     def check_hbase_availability(self, cluster_info):
-        namenode_ip = cluster_info['node_info']['namenode_ip']
-        self.open_ssh_connection(namenode_ip)
-        try:
-            self.transfer_helper_script_to_node('hbase_service_test.sh')
-        except Exception as e:
-            with excutils.save_and_reraise_exception():
-                print(str(e))
-        try:
-            self.execute_command('./script.sh create_data')
-            self.execute_command('./script.sh check_get_data')
-            self.execute_command('./script.sh check_delete_data')
-        except Exception as e:
-            with excutils.save_and_reraise_exception():
-                print(str(e))
-        finally:
-            self.close_ssh_connection()
+        parameters = ['create_data', 'check_get_data', 'check_delete_data']
+        self._check_service_availability(cluster_info, 'hbase_service_test.sh',
+                                         script_parameters=parameters,
+                                         conf_files=[])
 
     @base.skip_test('SKIP_CHECK_SERVICES_TEST', message='Test for Services'
                     ' checking was skipped.')
     def check_flume_availability(self, cluster_info):
-        namenode_ip = cluster_info['node_info']['namenode_ip']
-        self.open_ssh_connection(namenode_ip)
-        try:
-            self.transfer_helper_script_to_node('flume_service_test.sh')
-            self.transfer_helper_conf_file_to_node('flume.data')
-            self.transfer_helper_conf_file_to_node('flume.conf')
-            self.execute_command('./script.sh')
-        except Exception as e:
-            with excutils.save_and_reraise_exception():
-                print(six.text_type(e))
-        finally:
-            self.close_ssh_connection()
+        self._check_service_availability(cluster_info, 'flume_service_test.sh',
+                                         script_parameters=[],
+                                         conf_files=['flume.data',
+                                                     'flume.conf'])
 
     @base.skip_test('SKIP_CHECK_SERVICES_TEST', message='Test for Services'
                     ' checking was skipped.')
     def check_sqoop2_availability(self, cluster_info):
-        namenode_ip = cluster_info['node_info']['namenode_ip']
-        self.open_ssh_connection(namenode_ip)
-        try:
-            self.transfer_helper_script_to_node('sqoop2_service_test.sh')
-            self.execute_command('./script.sh')
-        except Exception as e:
-            with excutils.save_and_reraise_exception():
-                print(six.text_type(e))
-        finally:
-            self.close_ssh_connection()
+        self._check_service_availability(cluster_info,
+                                         'sqoop2_service_test.sh')
 
     @base.skip_test('SKIP_CHECK_SERVICES_TEST', message='Test for Services'
                     ' checking was skipped.')
     def check_key_value_store_availability(self, cluster_info):
         namenode_ip = cluster_info['node_info']['namenode_ip']
-        self.open_ssh_connection(namenode_ip)
-        try:
-            self.transfer_helper_script_to_node('key_value_store_service'
-                                                '_test.sh')
-            self.transfer_helper_conf_file_to_node('key_value_store'
-                                                   '_indexer.xml')
-            self.execute_command('./script.sh create_table -ip %s' %
-                                 namenode_ip)
-            self.execute_command('./script.sh create_solr_collection -ip %s' %
-                                 namenode_ip)
-            self.execute_command('./script.sh add_indexer -ip %s' %
-                                 namenode_ip)
-            self.execute_command('./script.sh create_data -ip %s' %
-                                 namenode_ip)
-            self.execute_command('./script.sh check_solr -ip %s' %
-                                 namenode_ip)
-            self.execute_command('./script.sh remove_data -ip %s' %
-                                 namenode_ip)
-        except Exception as e:
-            with excutils.save_and_reraise_exception():
-                print(six.text_type(e))
-        finally:
-            self.close_ssh_connection()
+        para_create_table = 'create_table -ip %s' % namenode_ip
+        para_create_solr = 'create_solr_collection -ip %s' % namenode_ip
+        para_add_indexer = 'add_indexer -ip %s' % namenode_ip
+        para_create_data = 'create_data -ip %s' % namenode_ip
+        para_check_solr = 'check_solr -ip %s' % namenode_ip
+        para_remove_data = 'remove_data -ip %s' % namenode_ip
+        parameters = [para_create_table, para_create_solr, para_add_indexer,
+                      para_create_data, para_check_solr, para_remove_data]
+        self._check_service_availability(cluster_info,
+                                         'key_value_store_service_test.sh',
+                                         script_parameters=parameters,
+                                         conf_files=['key_value_'
+                                                     'store_indexer.xml'])
 
     @base.skip_test('SKIP_CHECK_SERVICES_TEST', message='Test for Services'
                     ' checking was skipped.')
@@ -109,6 +71,15 @@ class CheckServicesTest(base.ITestCase):
         self._check_service_availability(cluster_info,
                                          'sentry_service_test.sh')
 
+    @base.skip_test('SKIP_CHECK_SERVICES_TEST', message='Test for Services'
+                    ' checking was skipped.')
+    def check_impala_services(self, cluster_info):
+        namenode_ip = cluster_info['node_info']['namenode_ip']
+        parameter = 'query -ip %s' % namenode_ip
+        self._check_service_availability(cluster_info, 'impala_test_script.sh',
+                                         script_parameters=[parameter],
+                                         conf_files=[])
+
     def _check_service_availability(self, cluster_info, helper_script,
                                     script_parameters=[], conf_files=[]):
         namenode_ip = cluster_info['node_info']['namenode_ip']
@@ -119,25 +90,11 @@ class CheckServicesTest(base.ITestCase):
                 for conf_file in conf_files:
                     self.transfer_helper_conf_file_to_node(conf_file)
             if script_parameters:
-                parameters = ' '.join(script_parameters)
-                script_command = './script.sh %s' % parameters
-                self.execute_command(script_command)
+                for parameter in script_parameters:
+                    script_command = './script.sh %s' % parameter
+                    self.execute_command(script_command)
             else:
                 self.execute_command('./script.sh')
-        except Exception as e:
-            with excutils.save_and_reraise_exception():
-                print(six.text_type(e))
-        finally:
-            self.close_ssh_connection()
-
-    @base.skip_test('SKIP_CHECK_SERVICES_TEST', message='Test for Services'
-                    ' checking was skipped.')
-    def check_impala_services(self, cluster_info):
-        namenode_ip = cluster_info['node_info']['namenode_ip']
-        self.open_ssh_connection(namenode_ip)
-        try:
-            self.transfer_helper_script_to_node('impala_test_script.sh')
-            self.execute_command('./script.sh query -ip %s' % namenode_ip)
         except Exception as e:
             with excutils.save_and_reraise_exception():
                 print(six.text_type(e))
