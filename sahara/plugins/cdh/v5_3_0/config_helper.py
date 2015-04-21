@@ -53,7 +53,7 @@ CM5_CENTOS_REPO = ('[cloudera-manager]'
 DEFAULT_SWIFT_LIB_URL = ('https://repository.cloudera.com/artifactory/repo/org'
                          '/apache/hadoop/hadoop-openstack/2.5.0-cdh5.3.0'
                          '/hadoop-openstack-2.5.0-cdh5.3.0.jar')
-DEFAULT_EXTJS_LIB_URL = 'http://extjs.com/deploy/ext-2.2.zip'
+DEFAULT_EXTJS_LIB_URL = 'http://dev.sencha.com/deploy/ext-2.2.zip'
 
 HIVE_SERVER2_SENTRY_SAFETY_VALVE = (
     '<property>'
