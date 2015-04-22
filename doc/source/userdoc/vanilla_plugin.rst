@@ -7,7 +7,9 @@ a cluster with Apache Hadoop.
 For cluster provisioning prepared images should be used. They already have
 Apache Hadoop 1.2.1 and Apache Hadoop 2.6.0 installed.
 
-You may build images by yourself using :doc:`diskimagebuilder`.
+You may build images by yourself using :doc:`diskimagebuilder` or you could
+download prepared images from http://sahara-files.mirantis.com/images/upstream/kilo/
+
 Keep in mind that if you want to use the Swift Integration feature
 ( :doc:`features`),
 Hadoop 1.2.1 must be patched with an implementation of Swift File System.

@@ -79,6 +79,9 @@ be built using the tools available in sahara-image-elemnts:
    enabled. This image can be used to provision any versions of HDP supported
    by Sahara.
 
+You could download well tested and up-to-date prepared images from
+http://sahara-files.mirantis.com/images/upstream/kilo/
+
 HDP plugin requires an image to be tagged in Sahara Image Registry with two
 tags: 'hdp' and '<hdp version>' (e.g. '1.3.2').
 
