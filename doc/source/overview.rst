@@ -62,6 +62,7 @@ For the fast cluster provisioning generic workflow will be as following:
 * select base image with or without pre-installed Hadoop:
 
     * for base images without Hadoop pre-installed Sahara will support pluggable deployment engines integrated with vendor tooling;
+    * you could download prepared up-to-date images from http://sahara-files.mirantis.com/images/upstream/kilo/;
 
 * define cluster configuration, including size and topology of the cluster and setting the different type of Hadoop parameters (e.g. heap size):
 
