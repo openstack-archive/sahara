@@ -53,7 +53,7 @@ class BaseNodeManager(s.AbstractNodeManager):
         with random.choice(cldb_instances).remote() as cldb_remote:
             for instance in instances:
                 with instance.remote() as r:
-                    command = GET_SERVER_ID_CMD % instance.management_ip
+                    command = GET_SERVER_ID_CMD % instance.internal_ip
                     ec, out = r.execute_command(command, run_as_root=True)
                     command = MOVE_NODE_CMD % out.strip()
                     cldb_remote.execute_command(command, run_as_root=True)
@@ -65,7 +65,7 @@ class BaseNodeManager(s.AbstractNodeManager):
         with random.choice(cldb_instances).remote() as cldb_remote:
             for instance in instances:
                 args = {
-                    'ip': instance.management_ip,
+                    'ip': instance.internal_ip,
                     'nodes': instance.fqdn(),
                     'zookeepers': c_context.get_zookeeper_nodes_ip_with_port(),
                 }
@@ -109,11 +109,11 @@ class BaseNodeManager(s.AbstractNodeManager):
                     ips = [n['ip'] for n in resp['data']]
                     retry_count += 1
                     for i in instances:
-                        if (i.management_ip not in ips
+                        if (i.internal_ip not in ips
                                 and retry_count > DEFAULT_RETRY_COUNT):
                             raise ex.HadoopProvisionError(_(
                                 "Node failed to connect to CLDB: %s") %
-                                i.management_ip)
+                                i.internal_ip)
                     break
                 else:
                     context.sleep(DELAY)
@@ -161,7 +161,7 @@ class BaseNodeManager(s.AbstractNodeManager):
             cmd = cmd % args
             LOG.debug(
                 'Executing "{command}" on node={ip}'.format(
-                    command=cmd, ip=instance.management_ip))
+                    command=cmd, ip=instance.internal_ip))
             r.execute_command(cmd, run_as_root=True)
 
     def _start_service(self, instance, service):

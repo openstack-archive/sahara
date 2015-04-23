@@ -217,11 +217,11 @@ class BaseClusterContext(cc.AbstractClusterContext):
         return i[0] if i else None
 
     def get_instances_ip(self, node_process):
-        return [i.management_ip for i in self.get_instances(node_process)]
+        return [i.internal_ip for i in self.get_instances(node_process)]
 
     def get_instance_ip(self, node_process):
         i = self.get_instance(node_process)
-        return i.management_ip if i else None
+        return i.internal_ip if i else None
 
     def get_zookeeper_nodes_ip_with_port(self, separator=','):
         return separator.join(['%s:%s' % (ip, mng.ZK_CLIENT_PORT)
