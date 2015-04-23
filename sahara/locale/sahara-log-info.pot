@@ -6,9 +6,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: sahara 2015.1.dev216\n"
+"Project-Id-Version: sahara 2015.1.dev1.g7a6e999\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2015-03-17 06:46+0000\n"
+"POT-Creation-Date: 2015-04-20 12:08+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -21,6 +21,10 @@ msgstr ""
 msgid "Sahara {service} started"
 msgstr ""
 
+#: sahara/main.py:170
+msgid "Driver {name} successfully loaded"
+msgstr ""
+
 #: sahara/openstack/common/periodic_task.py:120
 #, python-format
 msgid "Skipping periodic task %(task)s because its interval is negative"
@@ -31,75 +35,66 @@ msgstr ""
 msgid "Skipping periodic task %(task)s because it is disabled"
 msgstr ""
 
-#: sahara/openstack/common/policy.py:275
-#, python-format
-msgid "Can not find policy directory: %s"
-msgstr ""
-
 #: sahara/plugins/base.py:106
 msgid "Plugin {plugin_name} loaded {entry_point}"
 msgstr ""
 
-#: sahara/plugins/cdh/plugin_utils.py:293
-msgid "Cloudera Manager has been started"
-msgstr ""
-
-#: sahara/plugins/hdp/ambariplugin.py:69
-#: sahara/plugins/hdp/versions/version_2_0_6/versionhandler.py:350
+#: sahara/plugins/hdp/ambariplugin.py:70
+#: sahara/plugins/hdp/versions/version_2_0_6/versionhandler.py:362
 msgid "Install of Hadoop stack successful."
 msgstr ""
 
-#: sahara/plugins/hdp/ambariplugin.py:195
+#: sahara/plugins/hdp/ambariplugin.py:203
 msgid "Cluster provisioned via Ambari Server: {server_ip}"
 msgstr ""
 
-#: sahara/plugins/hdp/ambariplugin.py:250
+#: sahara/plugins/hdp/ambariplugin.py:258
 msgid "Using \"{username}\" as admin user for scaling of cluster"
 msgstr ""
 
-#: sahara/plugins/hdp/ambariplugin.py:350
+#: sahara/plugins/hdp/ambariplugin.py:361
 msgid "AmbariPlugin: decommission_nodes called for HDP version = {version}"
 msgstr ""
 
-#: sahara/plugins/hdp/hadoopserver.py:163
+#: sahara/plugins/hdp/hadoopserver.py:174
 msgid "Ambari started"
 msgstr ""
 
-#: sahara/plugins/hdp/hadoopserver.py:201
+#: sahara/plugins/hdp/hadoopserver.py:212
 msgid "{hostname}: Ambari Agent started"
 msgstr ""
 
-#: sahara/plugins/hdp/versions/version_1_3_2/versionhandler.py:370
+#: sahara/plugins/hdp/versions/version_1_3_2/versionhandler.py:382
 msgid "Hadoop stack installed successfully."
 msgstr ""
 
-#: sahara/plugins/hdp/versions/version_1_3_2/versionhandler.py:424
-#: sahara/plugins/hdp/versions/version_2_0_6/versionhandler.py:408
+#: sahara/plugins/hdp/versions/version_1_3_2/versionhandler.py:436
+#: sahara/plugins/hdp/versions/version_2_0_6/versionhandler.py:420
 msgid "Ambari cluster state finalized."
 msgstr ""
 
-#: sahara/plugins/hdp/versions/version_1_3_2/versionhandler.py:444
-#: sahara/plugins/hdp/versions/version_2_0_6/versionhandler.py:428
+#: sahara/plugins/hdp/versions/version_1_3_2/versionhandler.py:458
+#: sahara/plugins/hdp/versions/version_2_0_6/versionhandler.py:442
 msgid "Successfully started Hadoop cluster '{name}'."
 msgstr ""
 
-#: sahara/plugins/hdp/versions/version_1_3_2/versionhandler.py:446
-#: sahara/plugins/hdp/versions/version_2_0_6/versionhandler.py:430
+#: sahara/plugins/hdp/versions/version_1_3_2/versionhandler.py:460
+#: sahara/plugins/hdp/versions/version_2_0_6/versionhandler.py:444
 msgid "Cluster name: {cluster_name}, Ambari server address: {server_address}"
 msgstr ""
 
-#: sahara/plugins/hdp/versions/version_1_3_2/versionhandler.py:475
-#: sahara/plugins/hdp/versions/version_2_0_6/versionhandler.py:459
+#: sahara/plugins/hdp/versions/version_1_3_2/versionhandler.py:489
+#: sahara/plugins/hdp/versions/version_2_0_6/versionhandler.py:473
 msgid "Successfully changed state of Hadoop components "
 msgstr ""
 
-#: sahara/plugins/hdp/versions/version_1_3_2/versionhandler.py:512
-#: sahara/plugins/hdp/versions/version_2_0_6/versionhandler.py:496
+#: sahara/plugins/hdp/versions/version_1_3_2/versionhandler.py:526
+#: sahara/plugins/hdp/versions/version_2_0_6/versionhandler.py:510
 msgid "Started Hadoop components while scaling up"
 msgstr ""
 
-#: sahara/plugins/hdp/versions/version_1_3_2/versionhandler.py:513
-#: sahara/plugins/hdp/versions/version_2_0_6/versionhandler.py:497
+#: sahara/plugins/hdp/versions/version_1_3_2/versionhandler.py:527
+#: sahara/plugins/hdp/versions/version_2_0_6/versionhandler.py:511
 msgid "Cluster name {cluster_name}, Ambari server ip {ip}"
 msgstr ""
 
@@ -127,47 +122,43 @@ msgstr ""
 msgid "Initial Hue user created on {fqdn}"
 msgstr ""
 
-#: sahara/plugins/hdp/versions/version_2_0_6/services.py:1160
+#: sahara/plugins/hdp/versions/version_2_0_6/services.py:1158
 msgid "Hue (re)started on {fqdn}"
 msgstr ""
 
-#: sahara/plugins/hdp/versions/version_2_0_6/services.py:1242
+#: sahara/plugins/hdp/versions/version_2_0_6/services.py:1240
 msgid ""
 "HDFS client was missed from Hue node. Added it since it is required for "
 "Hue"
 msgstr ""
 
-#: sahara/plugins/hdp/versions/version_2_0_6/services.py:1248
+#: sahara/plugins/hdp/versions/version_2_0_6/services.py:1246
 msgid ""
 "HIVE client was missed from Hue node. Added it since it is required for "
 "Beeswax and HCatalog"
 msgstr ""
 
-#: sahara/plugins/hdp/versions/version_2_0_6/versionhandler.py:549
-msgid "Registered Hosts: {current_number} of {final_number}"
-msgstr ""
-
-#: sahara/plugins/hdp/versions/version_2_0_6/versionhandler.py:678
+#: sahara/plugins/hdp/versions/version_2_0_6/versionhandler.py:702
 msgid "AmbariClient: decommission post request succeeded!"
 msgstr ""
 
-#: sahara/plugins/hdp/versions/version_2_0_6/versionhandler.py:706
+#: sahara/plugins/hdp/versions/version_2_0_6/versionhandler.py:741
 msgid "AmbariClient: decommission status request ok, result = {result}"
 msgstr ""
 
-#: sahara/plugins/hdp/versions/version_2_0_6/versionhandler.py:1004
+#: sahara/plugins/hdp/versions/version_2_0_6/versionhandler.py:1029
 msgid "HDFS-HA: Host component updated successfully: {host} {component}"
 msgstr ""
 
-#: sahara/plugins/mapr/base/base_cluster_configurer.py:88
+#: sahara/plugins/mapr/base/base_cluster_configurer.py:89
 msgid "Existing instances successfully configured"
 msgstr ""
 
-#: sahara/plugins/mapr/base/base_cluster_configurer.py:137
+#: sahara/plugins/mapr/base/base_cluster_configurer.py:140
 msgid "Cluster topology successfully configured"
 msgstr ""
 
-#: sahara/plugins/mapr/base/base_cluster_configurer.py:201
+#: sahara/plugins/mapr/base/base_cluster_configurer.py:204
 msgid "Post install hooks execution successfully executed"
 msgstr ""
 
@@ -191,7 +182,7 @@ msgstr ""
 msgid "Non-control nodes successfully started"
 msgstr ""
 
-#: sahara/plugins/mapr/services/maprfs/maprfs.py:100
+#: sahara/plugins/mapr/services/maprfs/maprfs.py:101
 msgid "MapR FS successfully initialized"
 msgstr ""
 
@@ -200,12 +191,12 @@ msgid "Spark service at {host} has been started"
 msgstr ""
 
 #: sahara/plugins/spark/plugin.py:139
-#: sahara/plugins/vanilla/v1_2_1/versionhandler.py:197
+#: sahara/plugins/vanilla/v1_2_1/versionhandler.py:198
 msgid "Hadoop services in cluster {cluster} have been started"
 msgstr ""
 
 #: sahara/plugins/spark/plugin.py:150 sahara/plugins/storm/plugin.py:99
-#: sahara/plugins/vanilla/v1_2_1/versionhandler.py:204
+#: sahara/plugins/vanilla/v1_2_1/versionhandler.py:205
 msgid "Cluster {cluster} has been started successfully"
 msgstr ""
 
@@ -217,33 +208,24 @@ msgstr ""
 msgid "Storm master at {host} has been started"
 msgstr ""
 
-#: sahara/plugins/vanilla/hadoop2/run_scripts.py:175
-#: sahara/plugins/vanilla/v1_2_1/versionhandler.py:221
-msgid "Datanodes on cluster {cluster} have been started"
-msgstr ""
-
-#: sahara/plugins/vanilla/hadoop2/run_scripts.py:183
-msgid "Stop waiting for datanodes on cluster {cluster} since it has been deleted"
-msgstr ""
-
-#: sahara/plugins/vanilla/hadoop2/run_scripts.py:247
-#: sahara/plugins/vanilla/v1_2_1/versionhandler.py:182
+#: sahara/plugins/vanilla/hadoop2/run_scripts.py:228
+#: sahara/plugins/vanilla/v1_2_1/versionhandler.py:183
 msgid "Hive Metastore server at {host} has been started"
 msgstr ""
 
-#: sahara/plugins/vanilla/v1_2_1/versionhandler.py:159
+#: sahara/plugins/vanilla/v1_2_1/versionhandler.py:160
 msgid "Oozie service at {host} has been started"
 msgstr ""
 
-#: sahara/service/direct_engine.py:441
+#: sahara/service/direct_engine.py:451
 msgid "Cluster {cluster_id}: all instances are active"
 msgstr ""
 
-#: sahara/service/engine.py:87
+#: sahara/service/engine.py:90
 msgid "Cluster {cluster_id}: all instances have IPs assigned"
 msgstr ""
 
-#: sahara/service/engine.py:101
+#: sahara/service/engine.py:104
 msgid "Cluster {cluster_id}: all instances are accessible"
 msgstr ""
 
@@ -263,12 +245,8 @@ msgstr ""
 msgid "Swift would be integrated with the following params: {result}"
 msgstr ""
 
-#: sahara/utils/general.py:106
+#: sahara/utils/general.py:105
 msgid "Cluster status has been changed: id={id}, New status={status}"
-msgstr ""
-
-#: sahara/utils/general.py:198
-msgid "Operation {op_name} was successfully executed in seconds: {sec}"
 msgstr ""
 
 #: sahara/utils/rpc.py:106
@@ -279,21 +257,21 @@ msgstr ""
 msgid "Notifications enabled"
 msgstr ""
 
-#: sahara/utils/wsgi.py:360
+#: sahara/utils/wsgi.py:372
 #, python-format
 msgid "Using HTTPS for port %s"
 msgstr ""
 
-#: sahara/utils/wsgi.py:387
+#: sahara/utils/wsgi.py:399
 msgid "Caught keyboard interrupt. Exiting."
 msgstr ""
 
-#: sahara/utils/wsgi.py:413
+#: sahara/utils/wsgi.py:425
 #, python-format
 msgid "Started child %s"
 msgstr ""
 
-#: sahara/utils/wsgi.py:428
+#: sahara/utils/wsgi.py:440
 msgid "Starting single process server"
 msgstr ""
 
