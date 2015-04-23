@@ -43,6 +43,10 @@ SCHEMA = {
                     "type": "string",
                     "format": "uri"
                 },
+                "sahara_service_type": {
+                    "type": "string",
+                    "minLength": 1
+                },
                 "sahara_url": {
                     "type": "string",
                     "format": "uri"

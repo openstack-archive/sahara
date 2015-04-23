@@ -40,6 +40,7 @@ def set_defaults(config):
     creds['os_tenant'] = creds.get('os_tenant', 'admin')
     creds['os_auth_url'] = creds.get('os_auth_url',
                                      'http://localhost:5000/v2.0')
+    creds.setdefault('sahara_service_type', 'data-processing')
     creds['sahara_url'] = creds.get('sahara_url', None)
 
     # set up network
