@@ -94,7 +94,8 @@ def run_script(instance, script, run_as=None, *args, **kwargs):
         script = files.get_file_text(script) % kwargs
         r.write_file_to(path, script, run_as_root=(run_as == 'root'))
         r.execute_command(_run_as(run_as, 'chmod +x %s' % path))
-        r.execute_command(_run_as(run_as, '%s %s' % (path, ' '.join(args))))
+        r.execute_command(_run_as(run_as, '%s %s' % (path, ' '.join(args))),
+                          timeout=3600)
         # FIXME(aosadchyi): reuse existing remote
         remove(instance, path, run_as=run_as)
 

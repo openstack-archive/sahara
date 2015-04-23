@@ -28,13 +28,18 @@ from sahara.tests.unit import base as b
 from sahara.tests.unit import testutils as tu
 
 
+MANAGEMENT_IP = '1.1.1.1'
+INTERNAL_IP = '1.1.1.2'
+
+
 class TestClusterContext(b.SaharaTestCase):
     def __init__(self, *args, **kwds):
         super(TestClusterContext, self).__init__(*args, **kwds)
         self.fake_np = np.NodeProcess('fake', 'foo', 'bar')
 
     def _get_context(self):
-        i1 = tu.make_inst_dict('id_1', 'instance_1', '1.1.1.1')
+        i1 = tu.make_inst_dict('id_1', 'instance_1', MANAGEMENT_IP)
+        i1['internal_ip'] = INTERNAL_IP
         master_proc = [
             yarn.RESOURCE_MANAGER.ui_name,
             yarn.NODE_MANAGER.ui_name,
@@ -65,7 +70,8 @@ class TestClusterContext(b.SaharaTestCase):
 
     def test_get_oozie_server_uri(self):
         ctx = self._get_context()
-        self.assertEqual('http://1.1.1.1:11000/oozie', ctx.oozie_server_uri)
+        expected = 'http://%s:11000/oozie' % MANAGEMENT_IP
+        self.assertEqual(expected, ctx.oozie_server_uri)
 
     def test_oozie_server(self):
         ctx = self._get_context()
@@ -74,7 +80,8 @@ class TestClusterContext(b.SaharaTestCase):
 
     def test_oozie_http(self):
         ctx = self._get_context()
-        self.assertEqual('1.1.1.1:11000', ctx.oozie_http)
+        expected = '%s:11000' % MANAGEMENT_IP
+        self.assertEqual(expected, ctx.oozie_http)
 
     def test_configure_sh(self):
         ctx = self._get_context()
@@ -83,10 +90,10 @@ class TestClusterContext(b.SaharaTestCase):
                    r'(-no-autostart)\s+(-f)\s+(-RM (\S+))\s(-HS (\S+))')
         self.assertRegex(conf_sh, pattern)
         self.assertIn('/opt/mapr/server/configure.sh', conf_sh)
-        self.assertIn('-C 1.1.1.1', conf_sh)
-        self.assertIn('-Z 1.1.1.1', conf_sh)
-        self.assertIn('-RM 1.1.1.1', conf_sh)
-        self.assertIn('-HS 1.1.1.1', conf_sh)
+        self.assertIn('-C %s' % INTERNAL_IP, conf_sh)
+        self.assertIn('-Z %s' % INTERNAL_IP, conf_sh)
+        self.assertIn('-RM %s' % INTERNAL_IP, conf_sh)
+        self.assertIn('-HS %s' % INTERNAL_IP, conf_sh)
         self.assertIn('-no-autostart', conf_sh)
         self.assertIn('-N ' + ctx.cluster.name, conf_sh)
 
@@ -124,29 +131,33 @@ class TestClusterContext(b.SaharaTestCase):
         ctx = self._get_context()
         ip_list_1 = ctx.get_instances_ip(yarn.RESOURCE_MANAGER)
         self.assertEqual(1, len(ip_list_1))
-        self.assertIn('1.1.1.1', ip_list_1)
+        self.assertIn(INTERNAL_IP, ip_list_1)
         ip_list_2 = ctx.get_instances_ip(yarn.RESOURCE_MANAGER.ui_name)
         self.assertEqual(1, len(ip_list_2))
-        self.assertIn('1.1.1.1', ip_list_2)
+        self.assertIn(INTERNAL_IP, ip_list_2)
         empty_list = ctx.get_instances_ip(self.fake_np)
         self.assertEqual(0, len(empty_list))
 
     def test_get_instance_ip(self):
         ctx = self._get_context()
         ip_1 = ctx.get_instance_ip(yarn.RESOURCE_MANAGER)
-        self.assertEqual('1.1.1.1', ip_1)
+        self.assertEqual(INTERNAL_IP, ip_1)
         ip_2 = ctx.get_instance_ip(yarn.RESOURCE_MANAGER.ui_name)
-        self.assertEqual('1.1.1.1', ip_2)
+        self.assertEqual(INTERNAL_IP, ip_2)
         none_ip = ctx.get_instance_ip(self.fake_np)
         self.assertIsNone(none_ip)
 
     def test_get_zookeeper_nodes_ip_with_port(self):
         ctx = self._get_context()
-        self.assertEqual('1.1.1.1:5181',
-                         ctx.get_zookeeper_nodes_ip_with_port())
+
+        expected = '%s:5181' % INTERNAL_IP
+        actual = ctx.get_zookeeper_nodes_ip_with_port()
+        self.assertEqual(expected, actual)
+
         management.ZK_CLIENT_PORT = '0000'
-        self.assertEqual('1.1.1.1:0000',
-                         ctx.get_zookeeper_nodes_ip_with_port())
+        expected = '%s:0000' % INTERNAL_IP
+        actual = ctx.get_zookeeper_nodes_ip_with_port()
+        self.assertEqual(expected, actual)
 
     def test_filter_instances(self):
         ctx = self._get_context()
@@ -233,32 +244,32 @@ class TestClusterContext(b.SaharaTestCase):
         ctx = self._get_context()
         cldb_list_1 = ctx.get_cldb_nodes_ip()
         self.assertEqual(1, len(cldb_list_1.split(',')))
-        self.assertIn('1.1.1.1', cldb_list_1)
+        self.assertIn(INTERNAL_IP, cldb_list_1)
         cldb_list_2 = ctx.get_cldb_nodes_ip()
         self.assertEqual(1, len(cldb_list_2.split(',')))
-        self.assertIn('1.1.1.1', cldb_list_2)
+        self.assertIn(INTERNAL_IP, cldb_list_2)
         sep = ':'
         cldb_list_3 = ctx.get_cldb_nodes_ip(sep)
         self.assertEqual(1, len(cldb_list_3.split(sep)))
-        self.assertIn('1.1.1.1', cldb_list_3)
+        self.assertIn(INTERNAL_IP, cldb_list_3)
 
     def test_get_zookeeper_nodes_ip(self):
         ctx = self._get_context()
         zk_list_1 = ctx.get_zookeeper_nodes_ip()
         self.assertEqual(1, len(zk_list_1.split(',')))
-        self.assertIn('1.1.1.1', zk_list_1)
+        self.assertIn(INTERNAL_IP, zk_list_1)
         zk_list_2 = ctx.get_zookeeper_nodes_ip()
         self.assertEqual(1, len(zk_list_2.split(',')))
-        self.assertIn('1.1.1.1', zk_list_2)
+        self.assertIn(INTERNAL_IP, zk_list_2)
         sep = ':'
         zk_list_3 = ctx.get_zookeeper_nodes_ip(sep)
         self.assertEqual(1, len(zk_list_3.split(sep)))
-        self.assertIn('1.1.1.1', zk_list_3)
+        self.assertIn(INTERNAL_IP, zk_list_3)
 
     def test_get_resourcemanager_ip(self):
         ctx = self._get_context()
         ip = ctx.get_resourcemanager_ip()
-        self.assertEqual('1.1.1.1', ip)
+        self.assertEqual(INTERNAL_IP, ip)
 
     def test_get_historyserver_ip(self):
         ctx = self._get_context()

@@ -59,7 +59,7 @@ class NodeProcess(object):
         self.execute_action(instances, Action.STOP)
 
     def execute_action(self, instances, action):
-        nodes = ','.join(map(lambda i: i.management_ip, instances))
+        nodes = ','.join(map(lambda i: i.internal_ip, instances))
         args = {'service': self.name, 'action': action.name, 'nodes': nodes}
         command = WARDEN_MANAGED_CMD % args
         with instances[0].remote() as r:
@@ -85,7 +85,7 @@ class NodeProcess(object):
         util.execute_on_instances(instances, poll_status)
 
     def status(self, instance):
-        command = 'maprcli service list -node %s -json' % instance.fqdn()
+        command = 'maprcli service list -node %s -json' % instance.internal_ip
         with instance.remote() as remote:
             ec, out = remote.execute_command(util._run_as('mapr', command))
         node_processes = json.loads(out)['data']
