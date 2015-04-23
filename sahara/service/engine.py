@@ -88,8 +88,7 @@ class Engine(object):
         self._ips_assign(ips_assigned, cluster, instances)
 
         LOG.info(
-            _LI("Cluster {cluster_id}: all instances have IPs assigned")
-            .format(cluster_id=cluster.id))
+            _LI("All instances have IPs assigned"))
 
         cluster = conductor.cluster_get(context.ctx(), cluster)
         instances = g.get_instances(cluster, ips_assigned)
@@ -103,8 +102,7 @@ class Engine(object):
                     tg.spawn("wait-for-ssh-%s" % instance.instance_name,
                              self._wait_until_accessible, instance)
 
-        LOG.info(_LI("Cluster {cluster_id}: all instances are accessible")
-                 .format(cluster_id=cluster.id))
+        LOG.info(_LI("All instances are accessible"))
 
     @poll_utils.poll_status(
         'wait_until_accessible', _("Wait for instance accessibility"),
@@ -119,15 +117,12 @@ class Engine(object):
                 "ls .ssh/authorized_keys", raise_when_error=False)
 
             if exit_code == 0:
-                LOG.debug(
-                    'Instance {instance_name} is accessible'.format(
-                        instance_name=instance.instance_name))
+                LOG.debug('Instance is accessible')
                 return True
         except Exception as ex:
-            LOG.debug("Can't login to node {instance_name} {mgmt_ip}, "
-                      "reason {reason}".format(
-                          instance_name=instance.instance_name,
-                          mgmt_ip=instance.management_ip, reason=ex))
+            LOG.debug("Can't login to node, IP: {mgmt_ip}, "
+                      "reason {reason}".format(mgmt_ip=instance.management_ip,
+                                               reason=ex))
             return False
 
         return False
@@ -157,8 +152,7 @@ class Engine(object):
 
     @cpo.event_wrapper(mark_successful_on_exit=True)
     def _configure_instance(self, instance, hosts_file):
-        LOG.debug('Configuring instance {instance_name}'.format(
-            instance_name=instance.instance_name))
+        LOG.debug('Configuring instance')
 
         with instance.remote() as r:
             r.write_file_to('etc-hosts', hosts_file)

@@ -115,18 +115,16 @@ class DirectEngine(e.Engine):
 
         if rollback_info.get('shutdown', False):
             self._rollback_cluster_creation(cluster, reason)
-            LOG.warning(_LW("Cluster {name} creation rollback "
-                            "(reason: {reason})").format(name=cluster.name,
-                                                         reason=reason))
+            LOG.warning(_LW("Cluster creation rollback "
+                            "(reason: {reason})").format(reason=reason))
             return False
 
         instance_ids = rollback_info.get('instance_ids', [])
         if instance_ids:
             self._rollback_cluster_scaling(
                 cluster, g.get_instances(cluster, instance_ids), reason)
-            LOG.warning(_LW("Cluster {name} scaling rollback "
-                            "(reason: {reason})").format(name=cluster.name,
-                                                         reason=reason))
+            LOG.warning(_LW("Cluster scaling rollback "
+                            "(reason: {reason})").format(reason=reason))
 
             return True
 
@@ -451,8 +449,7 @@ class DirectEngine(e.Engine):
         active_ids = set()
         self._check_active(active_ids, cluster, instances)
 
-        LOG.info(_LI("Cluster {cluster_id}: all instances are active").format(
-                 cluster_id=cluster.id))
+        LOG.info(_LI("All instances are active"))
 
     @poll_utils.poll_status(
         'delete_instances_timeout',
@@ -465,8 +462,7 @@ class DirectEngine(e.Engine):
             if instance.id not in deleted_ids:
                 with context.set_current_instance_id(instance.instance_id):
                     if self._check_if_deleted(instance):
-                        LOG.debug("Instance {instance} is deleted".format(
-                                  instance=instance.instance_name))
+                        LOG.debug("Instance is deleted")
                         deleted_ids.add(instance.id)
                         cpo.add_successful_event(instance)
         return len(deleted_ids) == len(instances)
@@ -554,21 +550,18 @@ class DirectEngine(e.Engine):
                 networks.delete_floating_ip(instance.instance_id)
             except nova_exceptions.NotFound:
                 LOG.warning(_LW("Attempted to delete non-existent floating IP "
-                                "in pool {pool} from instance {instance}")
-                            .format(pool=instance.node_group.floating_ip_pool,
-                                    instance=instance.instance_id))
+                                "in pool {pool} from instance")
+                            .format(pool=instance.node_group.floating_ip_pool))
 
         try:
             volumes.detach_from_instance(instance)
         except Exception:
-            LOG.warning(_LW("Detaching volumes from instance {id} failed")
-                        .format(id=instance.instance_id))
+            LOG.warning(_LW("Detaching volumes from instance failed"))
 
         try:
             nova.client().servers.delete(instance.instance_id)
         except nova_exceptions.NotFound:
-            LOG.warning(_LW("Attempted to delete non-existent instance {id}")
-                        .format(id=instance.instance_id))
+            LOG.warning(_LW("Attempted to delete non-existent instance"))
 
         conductor.instance_remove(ctx, instance)
 

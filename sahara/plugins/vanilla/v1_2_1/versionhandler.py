@@ -161,13 +161,12 @@ class VersionHandler(avm.AbstractVersionHandler):
         with remote.get_remote(oozie) as r:
             with context.set_current_instance_id(oozie.instance_id):
                 if c_helper.is_mysql_enable(cluster):
-                    run.mysql_start(r, oozie)
+                    run.mysql_start(r)
                     run.oozie_create_db(r)
                 run.oozie_share_lib(r, nn_instance.hostname())
                 run.start_oozie(r)
                 LOG.info(
-                    _LI("Oozie service at {host} has been started").format(
-                        host=nn_instance.hostname()))
+                    _LI("Oozie service has been started"))
 
     def start_hiveserver(self, cluster):
         hs = vu.get_hiveserver(cluster)
@@ -187,12 +186,10 @@ class VersionHandler(avm.AbstractVersionHandler):
 
                 if c_helper.is_mysql_enable(cluster):
                     if not oozie or hive_server.hostname() != oozie.hostname():
-                        run.mysql_start(r, hive_server)
+                        run.mysql_start(r)
                     run.hive_create_db(r, cluster.extra['hive_mysql_passwd'])
                     run.hive_metastore_start(r)
-                    LOG.info(_LI("Hive Metastore server at {host} has been "
-                                 "started").format(
-                                     host=hive_server.hostname()))
+                    LOG.info(_LI("Hive Metastore server has been started"))
 
     def start_cluster(self, cluster):
         self.start_namenode(cluster)
@@ -205,15 +202,13 @@ class VersionHandler(avm.AbstractVersionHandler):
 
         self._await_datanodes(cluster)
 
-        LOG.info(_LI("Hadoop services in cluster {cluster} have been started")
-                 .format(cluster=cluster.name))
+        LOG.info(_LI("Hadoop services in cluster have been started"))
 
         self.start_oozie(cluster)
 
         self.start_hiveserver(cluster)
 
-        LOG.info(_LI('Cluster {cluster} has been started successfully')
-                 .format(cluster=cluster.name))
+        LOG.info(_LI('Cluster has been started successfully'))
         self._set_cluster_info(cluster)
 
     @cpo.event_wrapper(

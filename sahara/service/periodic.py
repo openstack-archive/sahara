@@ -83,23 +83,18 @@ def terminate_cluster(ctx, cluster, description):
         trusts.use_os_admin_auth_token(cluster)
         context.set_current_cluster_id(cluster.id)
 
-        LOG.debug('Terminating {description} cluster {cluster} '
-                  'in "{status}" state with id {id}'
-                  .format(cluster=cluster.name,
-                          id=cluster.id,
-                          status=cluster.status,
-                          description=description))
+        LOG.debug('Terminating {description} cluster '
+                  'in "{status}" state'.format(status=cluster.status,
+                                               description=description))
 
         try:
             ops.terminate_cluster(cluster.id)
         except Exception as e:
-            LOG.warning(_LW('Failed to terminate {description} cluster '
-                            '{cluster} in "{status}" state with id {id}: '
-                            '{error}.').format(cluster=cluster.name,
-                                               id=cluster.id,
-                                               error=six.text_type(e),
-                                               status=cluster.status,
-                                               description=description))
+            LOG.warning(_LW(
+                'Failed to terminate {description} cluster in "{status}" '
+                'state: {error}.').format(error=six.text_type(e),
+                                          status=cluster.status,
+                                          description=description))
 
     else:
         if cluster.status != 'AwaitingTermination':

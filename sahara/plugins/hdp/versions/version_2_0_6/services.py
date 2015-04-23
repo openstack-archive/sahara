@@ -1109,8 +1109,7 @@ class HueService(Service):
         with instance.remote() as r:
             r.execute_command('yum -y install hue',
                               run_as_root=True)
-            LOG.info(_LI('Installed Hue on {fqdn}')
-                     .format(fqdn=instance.fqdn()))
+            LOG.info(_LI('Installed Hue'))
 
             r.write_file_to('/etc/hue/conf/hue.ini',
                             hue_ini,
@@ -1126,22 +1125,19 @@ class HueService(Service):
                               '"s/http.*.\\/webhdfs\\/v1\\//http:\\/\\'
                               '/localhost:14000\\/webhdfs\\/v1\\//g" '
                               '/etc/hue/conf/hue.ini', run_as_root=True)
-            LOG.info(_LI('Set Hue configuration on {fqdn}')
-                     .format(fqdn=instance.fqdn()))
+            LOG.info(_LI('Setting Hue configuration'))
 
             r.execute_command(
                 '/usr/lib/hue/build/env/bin/python '
                 '/usr/lib/hue/tools/app_reg/app_reg.py '
                 '--remove shell',
                 run_as_root=True)
-            LOG.info(_LI('Shell uninstalled, if it was installed '
-                         'on {fqdn}').format(fqdn=instance.fqdn()))
+            LOG.info(_LI('Shell uninstalled, if it was installed'))
 
             if create_user:
                 r.execute_command('/usr/lib/hue/build/env/bin/hue '
                                   'create_sandbox_user', run_as_root=True)
-                LOG.info(_LI('Initial Hue user created on {fqdn}')
-                         .format(fqdn=instance.fqdn()))
+                LOG.info(_LI('Initial Hue user created'))
 
             java_home = HueService._get_java_home(cluster_spec)
             if java_home:
@@ -1156,8 +1152,7 @@ class HueService(Service):
             r.execute_command('[ ! -f /tmp/hueini-hdfsha ] || '
                               'service hadoop-httpfs start',
                               run_as_root=True)
-            LOG.info(_LI('Hue (re)started on {fqdn}')
-                     .format(fqdn=instance.fqdn()))
+            LOG.info(_LI('Hue (re)started'))
 
     def finalize_configuration(self, cluster_spec):
         # add Hue-specific properties to the core-site file ideally only on

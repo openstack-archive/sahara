@@ -457,12 +457,10 @@ class AmbariClient(object):
                                             request_id), ambari_info)
             if success:
                 LOG.info(
-                    _LI("Successfully started Hadoop cluster '{name}'.")
-                    .format(name=cluster_name))
-                LOG.info(_LI('Cluster name: {cluster_name}, '
-                             'Ambari server address: {server_address}')
-                         .format(cluster_name=cluster_name,
-                                 server_address=ambari_info.get_address()))
+                    _LI("Successfully started Hadoop cluster."))
+                LOG.info(_LI('Ambari server address: {server_address}')
+                         .format(server_address=ambari_info.get_address()))
+
             else:
                 LOG.error(_LE('Failed to start Hadoop cluster.'))
                 raise ex.HadoopProvisionError(
@@ -526,9 +524,8 @@ class AmbariClient(object):
                            self._get_host_list(servers)))
         self._exec_ambari_command(ambari_info, body, install_uri)
         LOG.info(_LI('Started Hadoop components while scaling up'))
-        LOG.info(_LI('Cluster name {cluster_name}, Ambari server ip {ip}')
-                 .format(cluster_name=cluster_name,
-                         ip=ambari_info.get_address()))
+        LOG.info(_LI('Ambari server ip {ip}')
+                 .format(ip=ambari_info.get_address()))
 
     def _start_components(self, ambari_info, auth, cluster_name, servers,
                           cluster_spec):

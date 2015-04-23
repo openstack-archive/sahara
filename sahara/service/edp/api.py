@@ -130,9 +130,8 @@ def execute_job(job_id, data):
         try:
             p.create_proxy_user_for_job_execution(job_execution)
         except ex.SaharaException as e:
-            LOG.error(_LE("Can't run job execution {job} "
-                          "(reasons: {reason})").format(job=job_execution.id,
-                                                        reason=e))
+            LOG.error(_LE("Can't run job execution. "
+                          "(Reasons: {reason})").format(reason=e))
             conductor.job_execution_destroy(context.ctx(), job_execution)
             raise e
 
