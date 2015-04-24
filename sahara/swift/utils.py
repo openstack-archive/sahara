@@ -58,7 +58,8 @@ def retrieve_preauth_url():
 
     '''
     client = k.client()
-    catalog = client.service_catalog.get_endpoints('object-store')
+    catalog = clients_base.execute_with_retries(
+        client.service_catalog.get_endpoints, 'object-store')
     for ep in catalog.get('object-store'):
         if ep.get('interface') == 'public':
             return ep.get('url')

@@ -26,6 +26,7 @@ from sahara.i18n import _
 from sahara.service.edp import job_utils
 from sahara.service import trusts as t
 from sahara.swift import utils as su
+from sahara.utils.openstack import base as b
 from sahara.utils.openstack import keystone as k
 
 
@@ -165,7 +166,8 @@ def domain_for_proxy():
 
     global PROXY_DOMAIN
     if not PROXY_DOMAIN:
-        domain_list = admin.domains.list(name=CONF.proxy_user_domain_name)
+        domain_list = b.execute_with_retries(
+            admin.domains.list, name=CONF.proxy_user_domain_name)
         if len(domain_list) == 0:
             raise ex.NotFoundException(value=CONF.proxy_user_domain_name,
                                        message=_('Failed to find domain %s'))
@@ -246,7 +248,7 @@ def proxy_domain_users_list():
     admin = k.client_for_admin()
     domain = domain_for_proxy()
     if domain:
-        return admin.users.list(domain=domain.id)
+        return b.execute_with_retries(admin.users.list, domain=domain.id)
     return []
 
 
@@ -262,7 +264,8 @@ def proxy_user_create(username):
     admin = k.client_for_admin()
     domain = domain_for_proxy()
     password = six.text_type(uuid.uuid4())
-    admin.users.create(name=username, password=password, domain=domain.id)
+    b.execute_with_retries(
+        admin.users.create, name=username, password=password, domain=domain.id)
     LOG.debug('Created proxy user {username}'.format(username=username))
     return password
 
@@ -280,7 +283,8 @@ def proxy_user_delete(username=None, user_id=None):
     admin = k.client_for_admin()
     if not user_id:
         domain = domain_for_proxy()
-        user_list = admin.users.list(domain=domain.id, name=username)
+        user_list = b.execute_with_retries(
+            admin.users.list, domain=domain.id, name=username)
         if len(user_list) == 0:
             raise ex.NotFoundException(value=username,
                                        message=_('Failed to find user %s'))
@@ -289,5 +293,5 @@ def proxy_user_delete(username=None, user_id=None):
                                        message=_('Unexpected results found '
                                                  'when searching for user %s'))
         user_id = user_list[0].id
-    admin.users.delete(user_id)
+    b.execute_with_retries(admin.users.delete, user_id)
     LOG.debug('Deleted proxy user id {user_id}'.format(user_id=user_id))
