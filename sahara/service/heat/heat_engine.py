@@ -26,6 +26,7 @@ from sahara.service.heat import templates as ht
 from sahara.service import volumes
 from sahara.utils import cluster_progress_ops as cpo
 from sahara.utils import general as g
+from sahara.utils.openstack import base as b
 from sahara.utils.openstack import heat
 
 conductor = c.API
@@ -39,10 +40,10 @@ class HeatEngine(e.Engine):
 
     def _add_volumes(self, ctx, cluster):
         for instance in g.get_instances(cluster):
-            res_names = heat.client().resources.get(
+            res_names = heat.get_resource(
                 cluster.name, instance.instance_name).required_by
             for res_name in res_names:
-                vol_res = heat.client().resources.get(cluster.name, res_name)
+                vol_res = heat.get_resource(cluster.name, res_name)
                 if vol_res.resource_type == (('OS::Cinder::'
                                               'VolumeAttachment')):
                     volume_id = vol_res.physical_resource_id
@@ -177,7 +178,7 @@ class HeatEngine(e.Engine):
     def shutdown_cluster(self, cluster):
         """Shutdown specified cluster and all related resources."""
         try:
-            heat.client().stacks.delete(cluster.name)
+            b.execute_with_retries(heat.client().stacks.delete, cluster.name)
             stack = heat.get_stack(cluster.name)
             heat.wait_stack_completion(stack)
         except heat_exc.HTTPNotFound:

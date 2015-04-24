@@ -20,6 +20,7 @@ import six
 import yaml
 
 from sahara.utils import general as g
+from sahara.utils.openstack import base as b
 from sahara.utils.openstack import heat as h
 from sahara.utils.openstack import neutron
 
@@ -91,11 +92,11 @@ class ClusterTemplate(object):
             'template': main_tmpl}
 
         if not update_existing:
-            heat.stacks.create(**kwargs)
+            b.execute_with_retries(heat.stacks.create, **kwargs)
         else:
-            for stack in heat.stacks.list():
+            for stack in b.execute_with_retries(heat.stacks.list):
                 if stack.stack_name == self.cluster.name:
-                    stack.update(**kwargs)
+                    b.execute_with_retries(stack.update, **kwargs)
                     break
 
         return ClusterStack(self, h.get_stack(self.cluster.name))
@@ -337,10 +338,9 @@ class ClusterStack(object):
 
         count = self.tmpl.node_groups_extra[node_group.id]['node_count']
 
-        heat = h.client()
         for i in range(0, count):
             name = _get_inst_name(self.tmpl.cluster.name, node_group.name, i)
-            res = heat.resources.get(self.heat_stack.id, name)
+            res = h.get_resource(self.heat_stack.id, name)
             insts.append((name, res.physical_resource_id))
 
         return insts
