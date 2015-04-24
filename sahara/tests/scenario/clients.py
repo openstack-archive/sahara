@@ -25,14 +25,17 @@ from swiftclient import client as swift_client
 from swiftclient import exceptions as swift_exc
 from tempest_lib import exceptions as exc
 
+from sahara.tests.scenario import timeouts
+
 
 class Client(object):
     def is_resource_deleted(self, method, *args, **kwargs):
         raise NotImplementedError
 
     def delete_resource(self, method, *args, **kwargs):
-        # TODO(sreshetniak): make timeout configurable
-        with fixtures.Timeout(300, gentle=True):
+        with fixtures.Timeout(
+                timeouts.Defaults.instance.timeout_delete_resource,
+                gentle=True):
             while True:
                 if self.is_resource_deleted(method, *args, **kwargs):
                     break

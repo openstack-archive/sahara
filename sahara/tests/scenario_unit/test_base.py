@@ -28,6 +28,7 @@ from tempest_lib import exceptions as exc
 import testtools
 
 from sahara.tests.scenario import base
+from sahara.tests.scenario import timeouts
 
 
 class FakeSaharaClient(object):
@@ -95,6 +96,10 @@ class TestBase(testtools.TestCase):
                             'worker': 3
                         }
                 },
+            'timeout_poll_cluster_status': 300,
+            'timeout_delete_resource': 300,
+            'timeout_poll_jobs_status': 2,
+            'timeout_check_transient': 3,
             'retain_resources': True,
             'image': 'image_name',
             "edp_jobs_flow":
@@ -129,6 +134,7 @@ class TestBase(testtools.TestCase):
         self.job = self.base_scenario.testcase["edp_jobs_flow"].get(
             'test_flow')[0]
         self.base_scenario.setUpClass()
+        timeouts.Defaults.init_defaults(self.base_scenario.testcase)
 
     @mock.patch('saharaclient.client.Client', return_value=None)
     @mock.patch('novaclient.client.Client', return_value=None)
