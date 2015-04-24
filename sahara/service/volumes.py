@@ -22,6 +22,7 @@ from sahara import exceptions as ex
 from sahara.i18n import _
 from sahara.i18n import _LE
 from sahara.utils import cluster_progress_ops as cpo
+from sahara.utils.openstack import base as b
 from sahara.utils.openstack import cinder
 from sahara.utils.openstack import nova
 from sahara.utils import poll_utils
@@ -123,7 +124,7 @@ def _create_attach_volume(ctx, instance, size, volume_type,
     if volume_local_to_instance:
         kwargs['scheduler_hints'] = {'local_to_instance': instance.instance_id}
 
-    volume = cinder.client().volumes.create(**kwargs)
+    volume = b.execute_with_retries(cinder.client().volumes.create, **kwargs)
     conductor.append_volume(ctx, instance, volume.id)
     _await_available(volume)
 
@@ -237,7 +238,7 @@ def _delete_volume(volume_id):
     LOG.debug("Deleting volume {volume}".format(volume=volume_id))
     volume = cinder.get_volume(volume_id)
     try:
-        volume.delete()
+        b.execute_with_retries(volume.delete)
     except Exception:
         LOG.error(_LE("Can't delete volume {volume}").format(
             volume=volume.id))

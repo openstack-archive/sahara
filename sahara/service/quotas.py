@@ -193,7 +193,7 @@ def _get_cinder_limits():
     avail_limits = {}
     cinder = cinder_client.client()
     lim = {}
-    for l in cinder.limits.get().absolute:
+    for l in b.execute_with_retries(cinder.limits.get).absolute:
         lim[l.name] = l.value
 
     avail_limits['volumes'] = _sub_limit(lim['maxTotalVolumes'],
