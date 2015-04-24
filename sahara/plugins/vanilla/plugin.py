@@ -92,3 +92,7 @@ class VanillaProvider(p.ProvisioningPluginBase):
     def on_terminate_cluster(self, cluster):
         return self._get_version_handler(
             cluster.hadoop_version).on_terminate_cluster(cluster)
+
+    def recommend_configs(self, cluster):
+        return self._get_version_handler(
+            cluster.hadoop_version).recommend_configs(cluster)

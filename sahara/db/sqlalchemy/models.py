@@ -67,6 +67,7 @@ class Cluster(mb.SaharaBase):
     extra = sa.Column(st.JsonDictType())
     rollback_info = sa.Column(st.JsonDictType())
     sahara_info = sa.Column(st.JsonDictType())
+    use_autoconfig = sa.Column(sa.Boolean(), default=True)
     provision_progress = relationship('ClusterProvisionStep',
                                       cascade="all,delete",
                                       backref='cluster',
@@ -109,6 +110,8 @@ class NodeGroup(mb.SaharaBase):
     volume_mount_prefix = sa.Column(sa.String(80))
     volume_type = sa.Column(sa.String(255))
     count = sa.Column(sa.Integer, nullable=False)
+    use_autoconfig = sa.Column(sa.Boolean(), default=True)
+
     instances = relationship('Instance', cascade="all,delete",
                              backref='node_group',
                              order_by="Instance.instance_name", lazy='joined')
@@ -176,6 +179,7 @@ class ClusterTemplate(mb.SaharaBase):
     node_groups = relationship('TemplatesRelation', cascade="all,delete",
                                backref='cluster_template', lazy='joined')
     is_default = sa.Column(sa.Boolean(), default=False)
+    use_autoconfig = sa.Column(sa.Boolean(), default=True)
 
     def to_dict(self):
         d = super(ClusterTemplate, self).to_dict()
@@ -215,6 +219,7 @@ class NodeGroupTemplate(mb.SaharaBase):
     is_proxy_gateway = sa.Column(sa.Boolean())
     volume_local_to_instance = sa.Column(sa.Boolean())
     is_default = sa.Column(sa.Boolean(), default=False)
+    use_autoconfig = sa.Column(sa.Boolean(), default=True)
 
 
 class TemplatesRelation(mb.SaharaBase):
@@ -238,6 +243,7 @@ class TemplatesRelation(mb.SaharaBase):
     volume_mount_prefix = sa.Column(sa.String(80))
     volume_type = sa.Column(sa.String(255))
     count = sa.Column(sa.Integer, nullable=False)
+    use_autoconfig = sa.Column(sa.Boolean(), default=True)
     cluster_template_id = sa.Column(sa.String(36),
                                     sa.ForeignKey('cluster_templates.id'))
     node_group_template_id = sa.Column(sa.String(36),

@@ -55,7 +55,8 @@ SAMPLE_NGT = {
     "auto_security_group": False,
     "availability_zone": "here",
     "is_proxy_gateway": False,
-    "volume_local_to_instance": False
+    "volume_local_to_instance": False,
+    'use_autoconfig': True,
 }
 
 SAMPLE_CLT = {
@@ -80,6 +81,7 @@ SAMPLE_CLT = {
             "floating_ip_pool": None,
             "security_groups": None,
             "availability_zone": None,
+            'use_autoconfig': True,
         },
         {
             "name": "ng_2",
@@ -89,6 +91,7 @@ SAMPLE_CLT = {
             "floating_ip_pool": None,
             "security_groups": ["group1", "group2"],
             "availability_zone": None,
+            'use_autoconfig': True,
         }
 
     ],
