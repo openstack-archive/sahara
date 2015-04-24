@@ -79,7 +79,8 @@ class NeutronClient(object):
         routers = self.neutron.list_routers()['routers']
         for router in routers:
             device_id = router['id']
-            ports = self.neutron.list_ports(device_id=device_id)['ports']
+            ports = base.execute_with_retries(
+                self.neutron.list_ports, device_id=device_id)['ports']
             port = next((port for port in ports
                          if port['network_id'] == self.network), None)
             if port:
@@ -96,12 +97,13 @@ class NeutronClient(object):
 
 def get_private_network_cidrs(cluster):
     neutron_client = client()
-    private_net = neutron_client.show_network(
-        cluster.neutron_management_network)
+    private_net = base.execute_with_retries(neutron_client.show_network,
+                                            cluster.neutron_management_network)
 
     cidrs = []
     for subnet_id in private_net['network']['subnets']:
-        subnet = neutron_client.show_subnet(subnet_id)
+        subnet = base.execute_with_retries(
+            neutron_client.show_subnet, subnet_id)
         cidrs.append(subnet['subnet']['cidr'])
 
     return cidrs

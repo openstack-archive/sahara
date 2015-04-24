@@ -19,6 +19,7 @@ import six
 
 from sahara import conductor as c
 from sahara import context
+from sahara.utils.openstack import base as b
 from sahara.utils.openstack import neutron
 from sahara.utils.openstack import nova
 
@@ -62,10 +63,12 @@ def init_instances_ips(instance):
                   "Trying to get via Neutron.".format(
                       mgmt_ip=management_ip, internal_ip=internal_ip))
         neutron_client = neutron.client()
-        ports = neutron_client.list_ports(device_id=server.id)["ports"]
+        ports = b.execute_with_retries(
+            neutron_client.list_ports, device_id=server.id)["ports"]
         if ports:
             target_port_id = ports[0]['id']
-            fl_ips = neutron_client.list_floatingips(
+            fl_ips = b.execute_with_retries(
+                neutron_client.list_floatingips,
                 port_id=target_port_id)['floatingips']
             if fl_ips:
                 fl_ip = fl_ips[0]
