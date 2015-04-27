@@ -22,6 +22,7 @@ from sahara import context
 from sahara import exceptions as ex
 from sahara.i18n import _
 from sahara.i18n import _LW
+from sahara.utils.openstack import base as b
 from sahara.utils.openstack import nova
 from sahara.utils import xmlutils as x
 
@@ -116,7 +117,7 @@ def generate_topology_map(cluster, is_node_awareness):
     for ng in cluster.node_groups:
         for i in ng.instances:
             # TODO(alazarev) get all servers info with one request
-            ni = nova_client.servers.get(i.instance_id)
+            ni = b.execute_with_retries(nova_client.servers.get, i.instance_id)
             hostId = ni.hostId
             if hostId not in mapping:
                 raise ex.NotFoundException(

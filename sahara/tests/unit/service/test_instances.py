@@ -42,6 +42,8 @@ class AbstractInstanceTest(base.SaharaWithDbTestCase):
             'sahara.utils.openstack.nova.client')
         self.nova = _create_nova_mock(self.novaclient_patcher.start())
         self.nova.server_groups.findall.return_value = []
+        self.nova.floating_ips.findall.__name__ = 'findall'
+        self.nova.floating_ips.delete.__name__ = 'delete'
 
         self.get_userdata_patcher = mock.patch(
             'sahara.utils.remote.get_userdata_template')

@@ -19,6 +19,7 @@ import six
 from sahara import context
 from sahara import exceptions as ex
 from sahara.i18n import _
+from sahara.utils.openstack import base as b
 from sahara.utils.openstack import cinder as cinder_client
 from sahara.utils.openstack import neutron as neutron_client
 from sahara.utils.openstack import nova as nova_client
@@ -99,7 +100,7 @@ def _update_limits_for_ng(limits, ng, count):
     sign = lambda x: (1, -1)[x < 0]
     nova = nova_client.client()
     limits['instances'] += count
-    flavor = nova.flavors.get(ng.flavor_id)
+    flavor = b.execute_with_retries(nova.flavors.get, ng.flavor_id)
     limits['ram'] += flavor.ram * count
     limits['cpu'] += flavor.vcpus * count
     if ng.floating_ip_pool:

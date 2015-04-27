@@ -155,6 +155,7 @@ def start_patch(patch_templates=True):
     nova().security_groups.list.side_effect = _get_security_groups_list
     nova().keypairs.get.side_effect = _get_keypair
     nova().networks.find.side_effect = _get_network
+    nova().networks.find.__name__ = 'find'
     nova().floating_ip_pools.list.side_effect = _get_fl_ip_pool_list
     nova().availability_zones.list.side_effect = _get_availability_zone_list
 

@@ -26,6 +26,7 @@ from sahara.plugins import provisioning
 from sahara.service import quotas
 from sahara.utils import general as g
 from sahara.utils.notification import sender
+from sahara.utils.openstack import base as b
 from sahara.utils.openstack import nova
 
 
@@ -229,34 +230,36 @@ def get_images(name, tags):
 
 def get_image(**kwargs):
     if len(kwargs) == 1 and 'id' in kwargs:
-        return nova.client().images.get(kwargs['id'])
+        return b.execute_with_retries(nova.client().images.get, kwargs['id'])
     else:
-        return nova.client().images.find(**kwargs)
+        return b.execute_with_retries(nova.client().images.find, **kwargs)
 
 
 def get_registered_image(id):
-    return nova.client().images.get_registered_image(id)
+    return b.execute_with_retries(
+        nova.client().images.get_registered_image, id)
 
 
 def register_image(image_id, username, description=None):
     client = nova.client()
-    client.images.set_description(image_id, username, description)
-    return client.images.get(image_id)
+    b.execute_with_retries(
+        client.images.set_description, image_id, username, description)
+    return b.execute_with_retries(client.images.get, image_id)
 
 
 def unregister_image(image_id):
     client = nova.client()
-    client.images.unset_description(image_id)
-    return client.images.get(image_id)
+    b.execute_with_retries(client.images.unset_description, image_id)
+    return b.execute_with_retries(client.images.get, image_id)
 
 
 def add_image_tags(image_id, tags):
     client = nova.client()
-    client.images.tag(image_id, tags)
-    return client.images.get(image_id)
+    b.execute_with_retries(client.images.tag, image_id, tags)
+    return b.execute_with_retries(client.images.get, image_id)
 
 
 def remove_image_tags(image_id, tags):
     client = nova.client()
-    client.images.untag(image_id, tags)
-    return client.images.get(image_id)
+    b.execute_with_retries(client.images.untag, image_id, tags)
+    return b.execute_with_retries(client.images.get, image_id)

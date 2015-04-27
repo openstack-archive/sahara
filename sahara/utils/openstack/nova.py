@@ -58,15 +58,16 @@ def client():
 
 
 def get_flavor(**kwargs):
-    return client().flavors.find(**kwargs)
+    return base.execute_with_retries(client().flavors.find, **kwargs)
 
 
 def get_instance_info(instance):
-    return client().servers.get(instance.instance_id)
+    return base.execute_with_retries(
+        client().servers.get, instance.instance_id)
 
 
 def get_network(**kwargs):
     try:
-        return client().networks.find(**kwargs)
+        return base.execute_with_retries(client().networks.find, **kwargs)
     except nova_ex.NotFound:
         return None
