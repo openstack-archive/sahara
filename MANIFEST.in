@@ -23,6 +23,10 @@ include sahara/plugins/cdh/v5_3_0/resources/cdh_config.py
 include sahara/plugins/cdh/v5_3_0/resources/*.sh
 include sahara/plugins/cdh/v5_3_0/resources/*.json
 include sahara/plugins/cdh/v5_3_0/resources/*.sql
+include sahara/plugins/cdh/v5_4_0/resources/cdh_config.py
+include sahara/plugins/cdh/v5_4_0/resources/*.sh
+include sahara/plugins/cdh/v5_4_0/resources/*.json
+include sahara/plugins/cdh/v5_4_0/resources/*.sql
 include sahara/plugins/vanilla/hadoop2/resources/*.sh
 include sahara/plugins/vanilla/hadoop2/resources/*.sql
 include sahara/plugins/vanilla/hadoop2/resources/*.template

@@ -296,6 +296,7 @@ VANILLA_TWO_CONFIG_OPTS = [
     cfg.BoolOpt('SKIP_SCALING_TEST', default=False)
 ]
 
+
 CDH_CONFIG_GROUP = cfg.OptGroup(name='CDH')
 CDH_CONFIG_OPTS = [
     cfg.StrOpt('PLUGIN_NAME',
@@ -389,7 +390,6 @@ CDH_CONFIG_OPTS = [
     cfg.BoolOpt('SKIP_SCALING_TEST', default=False),
     cfg.BoolOpt('SKIP_CHECK_SERVICES_TEST', default=True)
 ]
-
 
 HDP_CONFIG_GROUP = cfg.OptGroup(name='HDP')
 HDP_CONFIG_OPTS = [
