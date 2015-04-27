@@ -22,8 +22,11 @@ from sahara.utils import hashabledict as h
 
 class HashableDictTest(testtools.TestCase):
 
-    def test_is_hashable(self):
-        hd = h.HashableDict()
-        hd['one'] = 'oneValue'
+    def test_is_hashable_collection(self):
+        dct = h.HashableDict(one='oneValue')
+        self.assertIsInstance(dct, collections.Hashable)
 
-        self.assertTrue(isinstance(hd, collections.Hashable))
+    def test_hash_consistency(self):
+        dct1 = h.HashableDict(one='oneValue')
+        dct2 = h.HashableDict(one='oneValue')
+        self.assertEqual(hash(dct1), hash(dct2))
