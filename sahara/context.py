@@ -45,6 +45,7 @@ class Context(context.RequestContext):
                  auth_uri=None,
                  resource_uuid=None,
                  current_instance_info=None,
+                 request_id=None,
                  overwrite=True,
                  **kwargs):
         if kwargs:
@@ -55,7 +56,8 @@ class Context(context.RequestContext):
                                       user=user_id,
                                       tenant=tenant_id,
                                       is_admin=is_admin,
-                                      resource_uuid=resource_uuid)
+                                      resource_uuid=resource_uuid,
+                                      request_id=request_id)
         self.service_catalog = service_catalog
         self.username = username
         self.tenant_name = tenant_name
@@ -88,6 +90,7 @@ class Context(context.RequestContext):
             self.auth_uri,
             self.resource_uuid,
             self.current_instance_info,
+            self.request_id,
             overwrite=False)
 
     def to_dict(self):
@@ -102,6 +105,7 @@ class Context(context.RequestContext):
             'roles': self.roles,
             'auth_uri': self.auth_uri,
             'resource_uuid': self.resource_uuid,
+            'request_id': self.request_id,
         }
 
     def is_auth_capable(self):

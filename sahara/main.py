@@ -18,6 +18,7 @@ import os
 import flask
 from oslo_config import cfg
 from oslo_log import log
+from oslo_middleware import request_id
 import six
 import stevedore
 from werkzeug import exceptions as werkzeug_exceptions
@@ -41,7 +42,6 @@ from sahara.utils.openstack import cinder
 from sahara.utils import remote
 from sahara.utils import rpc as messaging
 from sahara.utils import wsgi
-
 
 LOG = log.getLogger(__name__)
 
@@ -157,6 +157,7 @@ def make_app():
 
     app.wsgi_app = auth_valid.wrap(app.wsgi_app)
     app.wsgi_app = acl.wrap(app.wsgi_app)
+    app.wsgi_app = request_id.RequestId(app.wsgi_app)
 
     return app
 
