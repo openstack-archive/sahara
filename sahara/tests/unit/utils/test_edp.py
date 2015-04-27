@@ -13,12 +13,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import mock
 import testtools
 
 from sahara.utils import edp
 
 
-class SplitJobTypeTest(testtools.TestCase):
+class EdpUtilTest(testtools.TestCase):
     def test_split_job_type(self):
         jtype, stype = edp.split_job_type(edp.JOB_TYPE_MAPREDUCE)
         self.assertEqual(edp.JOB_TYPE_MAPREDUCE, jtype)
@@ -47,3 +48,18 @@ class SplitJobTypeTest(testtools.TestCase):
             edp.JOB_TYPE_MAPREDUCE,
             edp.JOB_TYPE_JAVA,
             edp.JOB_TYPE_MAPREDUCE_STREAMING))
+
+    def test_get_builtin_binaries_java_available(self):
+        job = mock.Mock(type=edp.JOB_TYPE_JAVA)
+        configs = {edp.ADAPT_FOR_OOZIE: True}
+        binaries = edp.get_builtin_binaries(job, configs)
+        self.assertEqual(1, len(binaries))
+        binary = binaries[0]
+        self.assertTrue(binary['name'].startswith('builtin-'))
+        self.assertTrue(binary['name'].endswith('.jar'))
+        self.assertIsNotNone(binary['raw'])
+
+    def test_get_builtin_binaries_empty(self):
+        for job_type in edp.JOB_TYPES_ALL:
+            job = mock.Mock(type=job_type)
+            self.assertEqual(0, len(edp.get_builtin_binaries(job, {})))
