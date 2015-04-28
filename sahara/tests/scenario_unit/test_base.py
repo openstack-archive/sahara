@@ -47,6 +47,12 @@ class FakeSaharaClient(object):
             job_binary_internals.JobBinaryInternalsManager(None))
 
 
+class FakeCluster(object):
+    def __init__(self, is_transient, provision_progress):
+        self.is_transient = is_transient
+        self.provision_progress = provision_progress
+
+
 class FakeResponse(object):
     def __init__(self, set_id=None, set_status=None):
         self.id = set_id
@@ -199,11 +205,38 @@ class TestBase(testtools.TestCase):
                 return_value='mock_net')
     @mock.patch('saharaclient.api.base.ResourceManager._get',
                 return_value=FakeResponse(set_status='Active'))
+    @mock.patch('sahara.tests.scenario.base.BaseTestCase.'
+                '_check_event_log_feature')
     def test__poll_cluster_status(self, mock_status, mock_neutron,
-                                  mock_saharaclient):
+                                  mock_saharaclient, mock_check_event_log):
         self.base_scenario._init_clients()
         self.assertIsNone(
             self.base_scenario._poll_cluster_status('id_cluster'))
+
+    @mock.patch('saharaclient.client.Client', return_value=FakeSaharaClient())
+    @mock.patch('saharaclient.api.base.ResourceManager._get')
+    def test_check_event_log_feature(self, mock_resp, mock_saharaclient):
+        self.base_scenario._init_clients()
+        mock_resp.side_effect = [
+            FakeCluster(is_transient=True, provision_progress=[]),
+            FakeCluster(is_transient=False,
+                        provision_progress=[{'successful': True}]),
+            FakeCluster(is_transient=False,
+                        provision_progress=[{'successful': False}]),
+            FakeCluster(is_transient=False,
+                        provision_progress=[{'successful': None}])
+        ]
+
+        self.assertIsNone(
+            self.base_scenario._check_event_log_feature('fake_id'))
+        self.assertIsNone(
+            self.base_scenario._check_event_log_feature('fake_id'))
+
+        with testtools.ExpectedException(exc.TempestException):
+            self.base_scenario._check_event_log_feature('fake_id')
+
+        with testtools.ExpectedException(exc.TempestException):
+            self.base_scenario._check_event_log_feature('fake_id')
 
     @mock.patch('saharaclient.api.base.ResourceManager._update',
                 return_value=FakeResponse(set_id='id_internal_db_data'))
