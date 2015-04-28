@@ -27,7 +27,6 @@ SAMPLE_CLUSTER = {
     "plugin_name": "test_plugin",
     "hadoop_version": "test_version",
     "tenant_id": "tenant_1",
-    "is_transient": True,
     "name": "test_cluster",
     "user_keypair_id": "my_keypair",
     "node_groups": [

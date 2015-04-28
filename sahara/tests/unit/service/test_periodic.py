@@ -83,6 +83,16 @@ class TestPeriodicBack(base.SaharaWithDbTestCase):
         terminate_cluster.assert_has_calls([mock.call(u'1')])
 
     @mock.patch('sahara.service.ops.terminate_cluster')
+    def test_not_transient_cluster_does_not_terminate(self, terminate_cluster):
+
+        timeutils.set_time_override(datetime.datetime(2005, 2, 1, 0, 0))
+        self._make_cluster('1', is_transient=False)
+        timeutils.set_time_override(datetime.datetime(2005, 2, 1, 0, 1))
+        p._make_periodic_tasks().terminate_unneeded_transient_clusters(None)
+
+        self.assertEqual(0, terminate_cluster.call_count)
+
+    @mock.patch('sahara.service.ops.terminate_cluster')
     def test_transient_cluster_not_killed_too_early(self, terminate_cluster):
 
         timeutils.set_time_override(datetime.datetime(2005, 2, 1, second=0))
@@ -152,10 +162,69 @@ class TestPeriodicBack(base.SaharaWithDbTestCase):
         p._make_periodic_tasks().terminate_incomplete_clusters(None)
         self.assertEqual(0, terminate_cluster.call_count)
 
-    def _make_cluster(self, id_name, status='Active'):
+    @mock.patch("sahara.utils.proxy.proxy_domain_users_list")
+    @mock.patch("sahara.utils.proxy.proxy_user_delete")
+    @mock.patch("sahara.service.periodic.conductor.job_execution_get")
+    def test_check_for_zombie_proxy_users(self, mock_conductor_je_get,
+                                          mock_user_delete,
+                                          mock_users_list):
+        user_0 = mock.MagicMock()
+        user_0.name = "admin"
+        user_0.id = 0
+
+        user_1 = mock.MagicMock()
+        user_1.name = "job_0"
+        user_1.id = 1
+
+        user_2 = mock.MagicMock()
+        user_2.name = "job_1"
+        user_2.id = 2
+
+        mock_users_list.return_value = [user_0, user_1, user_2]
+
+        je_0 = mock.MagicMock()
+        je_0.id = 0
+        je_0.info = {"status": "KILLED"}
+
+        je_1 = mock.MagicMock()
+        je_1.id = 1
+        je_1.info = {"status": "WAITING"}
+
+        mock_conductor_je_get.side_effect = [je_0, je_1]
+
+        p._make_periodic_tasks().check_for_zombie_proxy_users(None)
+
+        mock_user_delete.assert_called_once_with(user_id=1)
+
+    @mock.patch("sahara.service.periodic.threadgroup")
+    @mock.patch("sahara.service.periodic.CONF")
+    def test_setup_enabled(self, mock_conf, mock_thread_group):
+        mock_conf.periodic_enable = True
+        mock_conf.periodic_fuzzy_delay = 20
+        mock_conf.periodic_interval_max = 30
+
+        add_timer = mock_thread_group.ThreadGroup().add_dynamic_timer
+
+        p.setup()
+
+        self.assertTrue(add_timer._mock_called)
+
+    @mock.patch("sahara.service.periodic.threadgroup")
+    @mock.patch("sahara.service.periodic.CONF")
+    def test_setup_disabled(self, mock_conf, mock_thread_group):
+        mock_conf.periodic_enable = False
+
+        add_timer = mock_thread_group.ThreadGroup().add_dynamic_timer
+
+        p.setup()
+
+        self.assertFalse(add_timer._mock_called)
+
+    def _make_cluster(self, id_name, status='Active', is_transient=True):
         ctx = context.ctx()
 
         c = tc.SAMPLE_CLUSTER.copy()
+        c["is_transient"] = is_transient
         c["status"] = status
         c["id"] = id_name
         c["name"] = id_name
