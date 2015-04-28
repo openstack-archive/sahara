@@ -1,0 +1,230 @@
+# Copyright (c) 2015 Mirantis Inc.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
+# implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+import mock
+import oslo_messaging
+import six
+import testtools
+
+from sahara import conductor as cond
+from sahara import context
+from sahara import exceptions as exc
+from sahara.plugins import base as pl_base
+from sahara.service import api
+from sahara.tests.unit import base
+
+
+conductor = cond.API
+
+SAMPLE_CLUSTER = {
+    'plugin_name': 'fake',
+    'hadoop_version': 'test_version',
+    'tenant_id': 'tenant_1',
+    'name': 'test_cluster',
+    'user_keypair_id': 'my_keypair',
+    'node_groups': [
+        {
+            'auto_security_group': True,
+            'name': 'ng_1',
+            'flavor_id': '42',
+            'node_processes': ['p1', 'p2'],
+            'count': 1
+        },
+        {
+            'auto_security_group': False,
+            'name': 'ng_2',
+            'flavor_id': '42',
+            'node_processes': ['p3', 'p4'],
+            'count': 3
+        },
+        {
+            'auto_security_group': False,
+            'name': 'ng_3',
+            'flavor_id': '42',
+            'node_processes': ['p3', 'p4'],
+            'count': 1
+        }
+    ],
+    'cluster_configs': {
+        'service_1': {
+            'config_2': 'value_2'
+        },
+        'service_2': {
+            'config_1': 'value_1'
+        }
+    },
+}
+
+SCALE_DATA = {
+    'resize_node_groups': [
+        {
+            'name': 'ng_1',
+            'count': 3,
+        },
+        {
+            'name': 'ng_2',
+            'count': 2,
+        }
+    ],
+    'add_node_groups': [
+        {
+            'auto_security_group': True,
+            'name': 'ng_4',
+            'flavor_id': '42',
+            'node_processes': ['p1', 'p2'],
+            'count': 1
+        },
+    ]
+}
+
+
+class FakePlugin(object):
+    _info = {}
+
+    def __init__(self, calls_order):
+        self.calls_order = calls_order
+
+    def validate(self, cluster):
+        self.calls_order.append('validate')
+
+    def get_open_ports(self, node_group):
+        self.calls_order.append('get_open_ports')
+
+    def validate_scaling(self, cluster, to_be_enlarged, additional):
+        self.calls_order.append('validate_scaling')
+
+    def as_resource(self):
+        return FakePlugin(self.calls_order)
+
+    def get_versions(self):
+        return ['0.1', '0.2']
+
+    def get_required_image_tags(self, version):
+        return ['fake']
+
+    def get_node_processes(self, version):
+        return ['namenode', 'datanode']
+
+    def get_configs(self, version):
+        return {}
+
+
+class FakePluginManager(object):
+    def __init__(self, calls_order):
+        self.calls = calls_order
+
+    def get_plugin(self, plugin_name):
+        if plugin_name == "fake":
+            return FakePlugin(self.calls)
+        return None
+
+
+class FakeOps(object):
+    def __init__(self, calls_order):
+        self.calls_order = calls_order
+
+    def provision_cluster(self, id):
+        self.calls_order.append('ops.provision_cluster')
+        conductor.cluster_update(context.ctx(), id, {'status': 'Active'})
+
+    def provision_scaled_cluster(self, id, to_be_enlarged):
+        self.calls_order.append('ops.provision_scaled_cluster')
+        # Set scaled to see difference between active and scaled
+        for (ng, count) in six.iteritems(to_be_enlarged):
+            conductor.node_group_update(context.ctx(), ng, {'count': count})
+        conductor.cluster_update(context.ctx(), id, {'status': 'Scaled'})
+
+    def terminate_cluster(self, id):
+        self.calls_order.append('ops.terminate_cluster')
+
+
+class TestApi(base.SaharaWithDbTestCase):
+    def setUp(self):
+        super(TestApi, self).setUp()
+        self.calls_order = []
+        pl_base.PLUGINS = FakePluginManager(self.calls_order)
+        api.setup_service_api(FakeOps(self.calls_order))
+        oslo_messaging.notify.notifier.Notifier.info = mock.Mock()
+        self.ctx = context.ctx()
+
+    @mock.patch('sahara.service.quotas.check_cluster', return_value=None)
+    def test_create_cluster_success(self, check_cluster):
+        cluster = api.create_cluster(SAMPLE_CLUSTER)
+        self.assertEqual(1, check_cluster.call_count)
+        result_cluster = api.get_cluster(cluster.id)
+        self.assertEqual('Active', result_cluster.status)
+        expected_count = {
+            'ng_1': 1,
+            'ng_2': 3,
+            'ng_3': 1,
+        }
+        ng_count = 0
+        for ng in result_cluster.node_groups:
+            self.assertEqual(expected_count[ng.name], ng.count)
+            ng_count += 1
+        self.assertEqual(3, ng_count)
+        api.terminate_cluster(result_cluster.id)
+        self.assertEqual(
+            ['get_open_ports', 'validate',
+             'ops.provision_cluster',
+             'ops.terminate_cluster'], self.calls_order)
+
+    @mock.patch('sahara.service.quotas.check_cluster')
+    def test_create_cluster_failed(self, check_cluster):
+        check_cluster.side_effect = exc.QuotaException(
+            'resource', 'requested', 'available')
+        with testtools.ExpectedException(exc.QuotaException):
+            api.create_cluster(SAMPLE_CLUSTER)
+        self.assertEqual('Error', api.get_clusters()[0].status)
+
+    @mock.patch('sahara.service.quotas.check_cluster', return_value=None)
+    @mock.patch('sahara.service.quotas.check_scaling', return_value=None)
+    def test_scale_cluster_success(self, check_scaling, check_cluster):
+        cluster = api.create_cluster(SAMPLE_CLUSTER)
+        api.scale_cluster(cluster.id, SCALE_DATA)
+        result_cluster = api.get_cluster(cluster.id)
+        self.assertEqual('Scaled', result_cluster.status)
+        expected_count = {
+            'ng_1': 3,
+            'ng_2': 2,
+            'ng_3': 1,
+            'ng_4': 1,
+        }
+        ng_count = 0
+        for ng in result_cluster.node_groups:
+            self.assertEqual(expected_count[ng.name], ng.count)
+            ng_count += 1
+        self.assertEqual(4, ng_count)
+        api.terminate_cluster(result_cluster.id)
+        self.assertEqual(
+            ['get_open_ports', 'validate', 'ops.provision_cluster',
+             'get_open_ports', 'get_open_ports', 'validate_scaling',
+             'ops.provision_scaled_cluster',
+             'ops.terminate_cluster'], self.calls_order)
+
+    @mock.patch('sahara.service.quotas.check_cluster', return_value=None)
+    @mock.patch('sahara.service.quotas.check_scaling', return_value=None)
+    def test_scale_cluster_failed(self, check_scaling, check_cluster):
+        cluster = api.create_cluster(SAMPLE_CLUSTER)
+        check_scaling.side_effect = exc.QuotaException(
+            'resource', 'requested', 'available')
+        with testtools.ExpectedException(exc.QuotaException):
+            api.scale_cluster(cluster.id, {})
+
+    def test_get_plugin(self):
+        api.get_plugin('fake', '0.1')
+        api.get_plugin('fake', '0.3')
+        api.get_plugin('fake')
+        self.assertIsNone(api.get_plugin('name1', '0.1'))
