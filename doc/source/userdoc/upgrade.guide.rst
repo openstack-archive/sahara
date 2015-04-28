@@ -91,7 +91,7 @@ Anti affinity implementation changed
 ++++++++++++++++++++++++++++++++++++
 
 Starting with the Juno release the anti affinity feature is implemented
-using server groups. From the user prespective there will be no
+using server groups. From the user perspective there will be no
 noticeable changes with this feature. Internally this change has
 introduced the following behavior:
 
