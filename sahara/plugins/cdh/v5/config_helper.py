@@ -53,7 +53,7 @@ CM5_CENTOS_REPO = ('[cloudera-manager]'
 DEFAULT_SWIFT_LIB_URL = ('https://repository.cloudera.com/artifactory/repo/org'
                          '/apache/hadoop/hadoop-openstack/2.3.0-cdh5.0.0'
                          '/hadoop-openstack-2.3.0-cdh5.0.0.jar')
-DEFAULT_EXTJS_LIB_URL = 'http://extjs.com/deploy/ext-2.2.zip'
+DEFAULT_EXTJS_LIB_URL = 'http://dev.sencha.com/deploy/ext-2.2.zip'
 
 CDH5_REPO_URL = p.Config(
     'CDH5 repo list URL', 'general', 'cluster', priority=1,
