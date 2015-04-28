@@ -100,7 +100,6 @@ class Rest(flask.Blueprint):
             f_rule = "/<tenant_id>" + rule
             self.add_url_rule(f_rule, endpoint, handler, **options)
             self.add_url_rule(f_rule + '.json', endpoint, handler, **options)
-            self.add_url_rule(f_rule + '.xml', endpoint, handler, **options)
 
             return func
 
@@ -108,7 +107,6 @@ class Rest(flask.Blueprint):
 
 
 RT_JSON = datastructures.MIMEAccept([("application/json", 1)])
-RT_XML = datastructures.MIMEAccept([("application/xml", 1)])
 
 
 def _init_resp_type(file_upload):
@@ -116,10 +114,6 @@ def _init_resp_type(file_upload):
 
     # get content type from Accept header
     resp_type = flask.request.accept_mimetypes
-
-    # url /foo.xml
-    if flask.request.path.endswith('.xml'):
-        resp_type = RT_XML
 
     # url /foo.json
     if flask.request.path.endswith('.json'):
@@ -157,9 +151,6 @@ def render(res=None, resp_type=None, status=None, **kwargs):
     if "application/json" in resp_type:
         resp_type = RT_JSON
         serializer = wsgi.JSONDictSerializer()
-    elif "application/xml" in resp_type:
-        resp_type = RT_XML
-        serializer = wsgi.XMLDictSerializer()
     else:
         abort_and_log(400, _("Content type '%s' isn't supported") % resp_type)
 
@@ -185,9 +176,6 @@ def request_data():
     content_type = flask.request.mimetype
     if not content_type or content_type in RT_JSON:
         deserializer = wsgi.JSONDeserializer()
-    elif content_type in RT_XML:
-        abort_and_log(400, _("XML requests are not supported yet"))
-        # deserializer = XMLDeserializer()
     else:
         abort_and_log(400,
                       _("Content type '%s' isn't supported") % content_type)
