@@ -82,6 +82,11 @@ class MutableList(mutable.Mutable, list):
         list.append(self, value)
         self.changed()
 
+    def remove(self, value):
+        """Removes an item by value and emit change events."""
+        list.remove(self, value)
+        self.changed()
+
     def __setitem__(self, key, value):
         """Detect list set events and emit change events."""
         list.__setitem__(self, key, value)
