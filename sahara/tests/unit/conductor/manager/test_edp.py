@@ -16,6 +16,7 @@
 import copy
 import datetime
 
+from sqlalchemy import exc as sa_exc
 import testtools
 
 from sahara import context
@@ -154,8 +155,9 @@ class DataSourceTest(test_base.ConductorManagerTestCase):
         self.assertEqual(0, len(lst))
 
         # Invalid field
-        lst = self.api.data_source_get_all(ctx, **{'badfield': 'somevalue'})
-        self.assertEqual(0, len(lst))
+        self.assertRaises(sa_exc.InvalidRequestError,
+                          self.api.data_source_get_all,
+                          ctx, **{'badfield': 'somevalue'})
 
     def test_data_source_count_in(self):
         ctx = context.ctx()
@@ -324,8 +326,9 @@ class JobExecutionTest(test_base.ConductorManagerTestCase):
         self.assertEqual(0, len(lst))
 
         # Invalid field
-        lst = self.api.job_execution_get_all(ctx, **{'badfield': 'somevalue'})
-        self.assertEqual(0, len(lst))
+        self.assertRaises(sa_exc.InvalidRequestError,
+                          self.api.job_execution_get_all,
+                          ctx, **{'badfield': 'somevalue'})
 
     def test_job_execution_advanced_search(self):
         ctx = context.ctx()
@@ -467,8 +470,9 @@ class JobTest(test_base.ConductorManagerTestCase):
         self.assertEqual(0, len(lst))
 
         # Invalid field
-        lst = self.api.job_get_all(ctx, **{'badfield': 'somevalue'})
-        self.assertEqual(0, len(lst))
+        self.assertRaises(sa_exc.InvalidRequestError,
+                          self.api.job_get_all,
+                          ctx, **{'badfield': 'somevalue'})
 
 
 class JobBinaryInternalTest(test_base.ConductorManagerTestCase):
@@ -554,8 +558,9 @@ class JobBinaryInternalTest(test_base.ConductorManagerTestCase):
         self.assertEqual(0, len(lst))
 
         # Invalid field
-        lst = self.api.job_binary_internal_get_all(ctx, **{'badfield': 'junk'})
-        self.assertEqual(0, len(lst))
+        self.assertRaises(sa_exc.InvalidRequestError,
+                          self.api.job_binary_internal_get_all,
+                          ctx, **{'badfield': 'junk'})
 
 
 class JobBinaryTest(test_base.ConductorManagerTestCase):
@@ -646,5 +651,6 @@ class JobBinaryTest(test_base.ConductorManagerTestCase):
         self.assertEqual(0, len(lst))
 
         # Invalid field
-        lst = self.api.job_binary_get_all(ctx, **{'badfield': 'somevalue'})
-        self.assertEqual(0, len(lst))
+        self.assertRaises(sa_exc.InvalidRequestError,
+                          self.api.job_binary_get_all,
+                          ctx, **{'badfield': 'somevalue'})
