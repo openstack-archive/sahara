@@ -74,8 +74,6 @@ def natural_sort_key(s):
 
 
 def change_cluster_status_description(cluster, status_description):
-    if cluster is None:
-        return None
     try:
         ctx = context.ctx()
         return conductor.cluster_update(
