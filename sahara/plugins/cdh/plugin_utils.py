@@ -217,9 +217,12 @@ class AbstractPluginUtils(object):
     @cpo.event_wrapper(True)
     def _configure_swift_to_inst(self, instance):
         cluster = instance.cluster
+        swift_lib_remote_url = self.c_helper.get_swift_lib_url(cluster)
         with instance.remote() as r:
-            r.execute_command('sudo curl %s -o %s/hadoop-openstack.jar' % (
-                self.c_helper.get_swift_lib_url(cluster), HADOOP_LIB_DIR))
+            if r.execute_command('ls %s/hadoop-openstack.jar' % HADOOP_LIB_DIR,
+                                 raise_when_error=False)[0] != 0:
+                r.execute_command('sudo curl %s -o %s/hadoop-openstack.jar' % (
+                    swift_lib_remote_url, HADOOP_LIB_DIR))
 
     def put_hive_hdfs_xml(self, cluster):
         servers = self.get_hive_servers(cluster)
