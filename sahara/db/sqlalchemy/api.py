@@ -213,22 +213,21 @@ def cluster_create(context, values):
     cluster.update(values)
 
     session = get_session()
-    with session.begin():
-        try:
-            cluster.save(session=session)
-        except db_exc.DBDuplicateEntry as e:
-            raise ex.DBDuplicateEntry(
-                _("Duplicate entry for Cluster: %s") % e.columns)
+    try:
+        with session.begin():
+            session.add(cluster)
+            session.flush(objects=[cluster])
 
-        try:
             for ng in node_groups:
                 node_group = m.NodeGroup()
-                node_group.update({"cluster_id": cluster.id})
                 node_group.update(ng)
-                node_group.save(session=session)
-        except db_exc.DBDuplicateEntry as e:
-            raise ex.DBDuplicateEntry(
-                _("Duplicate entry for NodeGroup: %s") % e.columns)
+                node_group.update({"cluster_id": cluster.id})
+                session.add(node_group)
+
+    except db_exc.DBDuplicateEntry as e:
+        raise ex.DBDuplicateEntry(
+            _("Duplicate entry for object %(object)s. Failed on columns: "
+              "%(columns)s") % {"object": e.value, "columns": e.columns})
 
     return cluster_get(context, cluster.id)
 
@@ -404,23 +403,21 @@ def cluster_template_create(context, values):
     cluster_template.update(values)
 
     session = get_session()
-    with session.begin():
-        try:
-            cluster_template.save(session=session)
-        except db_exc.DBDuplicateEntry as e:
-            raise ex.DBDuplicateEntry(
-                _("Duplicate entry for ClusterTemplate: %s") % e.columns)
+    try:
+        with session.begin():
+            session.add(cluster_template)
+            session.flush(objects=[cluster_template])
 
-        try:
             for ng in node_groups:
                 node_group = m.TemplatesRelation()
                 node_group.update({"cluster_template_id": cluster_template.id})
                 node_group.update(ng)
-                node_group.save(session=session)
+                session.add(node_group)
 
-        except db_exc.DBDuplicateEntry as e:
-            raise ex.DBDuplicateEntry(
-                _("Duplicate entry for TemplatesRelation: %s") % e.columns)
+    except db_exc.DBDuplicateEntry as e:
+        raise ex.DBDuplicateEntry(
+            _("Duplicate entry for object %(object)s. Failed on columns: "
+              "%(columns)s") % {"object": e.value, "columns": e.columns})
 
     return cluster_template_get(context, cluster_template.id)
 
@@ -447,8 +444,8 @@ def cluster_template_update(context, values, ignore_default=False):
     node_groups = values.pop("node_groups", [])
 
     session = get_session()
+    cluster_template_id = values['id']
     with session.begin():
-        cluster_template_id = values['id']
         cluster_template = (_cluster_template_get(
             context, session, cluster_template_id))
         if not cluster_template:
@@ -466,7 +463,7 @@ def cluster_template_update(context, values, ignore_default=False):
         name = values.get('name')
         if name:
             same_name_tmpls = model_query(
-                m.ClusterTemplate, context).filter_by(
+                m.ClusterTemplate, context, session=session).filter_by(
                 name=name).all()
             if (len(same_name_tmpls) > 0 and
                     same_name_tmpls[0].id != cluster_template_id):
@@ -484,15 +481,16 @@ def cluster_template_update(context, values, ignore_default=False):
             )
         cluster_template.update(values)
 
-        model_query(m.TemplatesRelation, context).filter_by(
+        model_query(m.TemplatesRelation, context, session=session).filter_by(
             cluster_template_id=cluster_template_id).delete()
+
         for ng in node_groups:
             node_group = m.TemplatesRelation()
             node_group.update(ng)
             node_group.update({"cluster_template_id": cluster_template_id})
-            node_group.save(session=session)
+            session.add(node_group)
 
-    return cluster_template
+    return cluster_template_get(context, cluster_template_id)
 
 
 # Node Group Template ops
@@ -517,12 +515,12 @@ def node_group_template_create(context, values):
     node_group_template.update(values)
 
     session = get_session()
-    with session.begin():
-        try:
-            node_group_template.save(session=session)
-        except db_exc.DBDuplicateEntry as e:
-            raise ex.DBDuplicateEntry(
-                _("Duplicate entry for NodeGroupTemplate: %s") % e.columns)
+    try:
+        with session.begin():
+            session.add(node_group_template)
+    except db_exc.DBDuplicateEntry as e:
+        raise ex.DBDuplicateEntry(
+            _("Duplicate entry for NodeGroupTemplate: %s") % e.columns)
 
     return node_group_template
 
@@ -632,12 +630,12 @@ def data_source_create(context, values):
     data_source.update(values)
 
     session = get_session()
-    with session.begin():
-        try:
-            data_source.save(session=session)
-        except db_exc.DBDuplicateEntry as e:
-            raise ex.DBDuplicateEntry(
-                _("Duplicate entry for DataSource: %s") % e.columns)
+    try:
+        with session.begin():
+            session.add(data_source)
+    except db_exc.DBDuplicateEntry as e:
+        raise ex.DBDuplicateEntry(
+            _("Duplicate entry for DataSource: %s") % e.columns)
 
     return data_source
 
@@ -728,15 +726,15 @@ def job_execution_count(context, **kwargs):
 
 def job_execution_create(context, values):
     session = get_session()
+    job_ex = m.JobExecution()
+    job_ex.update(values)
 
-    with session.begin():
-        job_ex = m.JobExecution()
-        job_ex.update(values)
-        try:
-            job_ex.save(session=session)
-        except db_exc.DBDuplicateEntry as e:
-            raise ex.DBDuplicateEntry(
-                _("Duplicate entry for JobExecution: %s") % e.columns)
+    try:
+        with session.begin():
+            session.add(job_ex)
+    except db_exc.DBDuplicateEntry as e:
+        raise ex.DBDuplicateEntry(
+            _("Duplicate entry for JobExecution: %s") % e.columns)
 
     return job_ex
 
@@ -750,6 +748,7 @@ def job_execution_update(context, job_execution_id, values):
             raise ex.NotFoundException(job_execution_id,
                                        _("JobExecution id '%s' not found!"))
         job_ex.update(values)
+        session.add(job_ex)
 
     return job_ex
 
@@ -794,22 +793,24 @@ def job_create(context, values):
     libs = values.pop("libs", [])
 
     session = get_session()
-    with session.begin():
-        job = m.Job()
-        job.update(values)
-        # libs and mains are 'lazy' objects. The initialization below
-        # is needed here because it provides libs and mains to be initialized
-        # within a session even if the lists are empty
-        job.mains = []
-        job.libs = []
-        try:
+    try:
+        with session.begin():
+            job = m.Job()
+            job.update(values)
+            # libs and mains are 'lazy' objects. The initialization below
+            # is needed here because it provides libs and mains to be
+            # initialized within a session even if the lists are empty
+            job.mains = []
+            job.libs = []
+
             _append_job_binaries(context, session, mains, job.mains)
             _append_job_binaries(context, session, libs, job.libs)
 
-            job.save(session=session)
-        except db_exc.DBDuplicateEntry as e:
-            raise ex.DBDuplicateEntry(
-                _("Duplicate entry for Job: %s") % e.columns)
+            session.add(job)
+
+    except db_exc.DBDuplicateEntry as e:
+        raise ex.DBDuplicateEntry(
+            _("Duplicate entry for Job: %s") % e.columns)
 
     return job
 
@@ -823,6 +824,7 @@ def job_update(context, job_id, values):
             raise ex.NotFoundException(job_id,
                                        _("Job id '%s' not found!"))
         job.update(values)
+        session.add(job)
 
     return job
 
@@ -875,12 +877,12 @@ def job_binary_create(context, values):
     job_binary.update(values)
 
     session = get_session()
-    with session.begin():
-        try:
-            job_binary.save(session=session)
-        except db_exc.DBDuplicateEntry as e:
-            raise ex.DBDuplicateEntry(
-                _("Duplicate entry for JobBinary: %s") % e.columns)
+    try:
+        with session.begin():
+            session.add(job_binary)
+    except db_exc.DBDuplicateEntry as e:
+        raise ex.DBDuplicateEntry(
+            _("Duplicate entry for JobBinary: %s") % e.columns)
 
     return job_binary
 
@@ -970,12 +972,12 @@ def job_binary_internal_create(context, values):
     job_binary_int.update(values)
 
     session = get_session()
-    with session.begin():
-        try:
-            job_binary_int.save(session=session)
-        except db_exc.DBDuplicateEntry as e:
-            raise ex.DBDuplicateEntry(
-                _("Duplicate entry for JobBinaryInternal: %s") % e.columns)
+    try:
+        with session.begin():
+            session.add(job_binary_int)
+    except db_exc.DBDuplicateEntry as e:
+        raise ex.DBDuplicateEntry(
+            _("Duplicate entry for JobBinaryInternal: %s") % e.columns)
 
     return job_binary_internal_get(context, job_binary_int.id)
 
