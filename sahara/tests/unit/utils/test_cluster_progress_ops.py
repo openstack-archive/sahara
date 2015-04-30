@@ -29,6 +29,9 @@ class FakeInstance(object):
         self.id = uuid.uuid4()
         self.name = uuid.uuid4()
         self.cluster_id = uuid.uuid4()
+        self.node_group_id = uuid.uuid4()
+        self.instance_id = uuid.uuid4()
+        self.instance_name = uuid.uuid4()
 
 
 class ClusterProgressOpsTest(base.SaharaWithDbTestCase):
@@ -190,3 +193,55 @@ class ClusterProgressOpsTest(base.SaharaWithDbTestCase):
         self.assertEqual("Some name", step.step_name)
         self.assertEqual(3, step.total)
         self.assertEqual("INFO", step.events[0].event_info)
+
+    @mock.patch('sahara.context.ctx')
+    @mock.patch(
+        'sahara.utils.cluster_progress_ops.get_current_provisioning_step',
+        return_value='step_id')
+    @mock.patch('sahara.utils.cluster_progress_ops.conductor')
+    def test_add_successful_event(self, conductor, get_step, ctx):
+        instance = FakeInstance()
+
+        self.override_config("disable_event_log", True)
+        cpo.add_successful_event(instance)
+        self.assertEqual(0, conductor.cluster_event_add.call_count)
+
+        self.override_config("disable_event_log", False)
+        cpo.add_successful_event(instance)
+        self.assertEqual(1, conductor.cluster_event_add.call_count)
+        args, kwargs = conductor.cluster_event_add.call_args
+        self.assertEqual('step_id', args[1])
+        req_dict = {
+            'successful': True,
+            'node_group_id': instance.node_group_id,
+            'instance_id': instance.instance_id,
+            'instance_name': instance.instance_name,
+            'event_info': None,
+        }
+        self.assertEqual(req_dict, args[2])
+
+    @mock.patch('sahara.context.ctx')
+    @mock.patch(
+        'sahara.utils.cluster_progress_ops.get_current_provisioning_step',
+        return_value='step_id')
+    @mock.patch('sahara.utils.cluster_progress_ops.conductor')
+    def test_add_fail_event(self, conductor, get_step, ctx):
+        instance = FakeInstance()
+
+        self.override_config("disable_event_log", True)
+        cpo.add_fail_event(instance, Exception('oops'))
+        self.assertEqual(0, conductor.cluster_event_add.call_count)
+
+        self.override_config("disable_event_log", False)
+        cpo.add_fail_event(instance, Exception('oops'))
+        self.assertEqual(1, conductor.cluster_event_add.call_count)
+        args, kwargs = conductor.cluster_event_add.call_args
+        self.assertEqual('step_id', args[1])
+        req_dict = {
+            'successful': False,
+            'node_group_id': instance.node_group_id,
+            'instance_id': instance.instance_id,
+            'instance_name': instance.instance_name,
+            'event_info': 'oops',
+        }
+        self.assertEqual(req_dict, args[2])
