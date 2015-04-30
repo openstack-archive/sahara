@@ -57,13 +57,18 @@ def client(username, password, trust_id=None):
         proxyclient = k.client_for_proxy_user(username, password, trust_id)
         return client_from_token(proxyclient.auth_token)
     else:
-        return swiftclient.Connection(auth_version='2.0',
-                                      cacert=CONF.swift.ca_file,
-                                      insecure=CONF.swift.api_insecure,
-                                      authurl=su.retrieve_auth_url(),
-                                      user=username,
-                                      key=password,
-                                      tenant_name=sh.retrieve_tenant())
+        return swiftclient.Connection(
+            auth_version='2.0',
+            cacert=CONF.swift.ca_file,
+            insecure=CONF.swift.api_insecure,
+            authurl=su.retrieve_auth_url(),
+            user=username,
+            key=password,
+            tenant_name=sh.retrieve_tenant(),
+            retries=CONF.retries.retries_number,
+            retry_on_ratelimit=True,
+            starting_backoff=CONF.retries.retry_after,
+            max_backoff=CONF.retries.retry_after)
 
 
 def client_from_token(token):
@@ -72,4 +77,8 @@ def client_from_token(token):
                                   cacert=CONF.swift.ca_file,
                                   insecure=CONF.swift.api_insecure,
                                   preauthurl=su.retrieve_preauth_url(),
-                                  preauthtoken=token)
+                                  preauthtoken=token,
+                                  retries=CONF.retries.retries_number,
+                                  retry_on_ratelimit=True,
+                                  starting_backoff=CONF.retries.retry_after,
+                                  max_backoff=CONF.retries.retry_after)
