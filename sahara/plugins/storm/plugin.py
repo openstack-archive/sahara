@@ -25,6 +25,7 @@ from sahara.i18n import _LI
 from sahara.plugins import exceptions as ex
 from sahara.plugins import provisioning as p
 from sahara.plugins.storm import config_helper as c_helper
+from sahara.plugins.storm import edp_engine
 from sahara.plugins.storm import run_scripts as run
 from sahara.plugins import utils
 from sahara.utils import cluster_progress_ops as cpo
@@ -99,6 +100,25 @@ class StormProvider(p.ProvisioningPluginBase):
         LOG.info(_LI('Cluster {cluster} has been started successfully').format(
                  cluster=cluster.name))
         self._set_cluster_info(cluster)
+
+    def get_edp_engine(self, cluster, job_type):
+        if job_type in edp_engine.EdpEngine.get_supported_job_types():
+            return edp_engine.EdpEngine(cluster)
+
+        return None
+
+    def get_edp_job_types(self, versions=[]):
+        res = {}
+        for vers in self.get_versions():
+            if not versions or vers in versions:
+                if edp_engine.EdpEngine.edp_supported(vers):
+                    res[vers] = edp_engine.EdpEngine.get_supported_job_types()
+        return res
+
+    def get_edp_config_hints(self, job_type, version):
+        if edp_engine.EdpEngine.edp_supported(version):
+            return edp_engine.EdpEngine.get_possible_job_config(job_type)
+        return {}
 
     def _extract_configs_to_extra(self, cluster):
         st_master = utils.get_instance(cluster, "nimbus")
