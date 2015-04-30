@@ -190,48 +190,6 @@ def drop_db():
     return True
 
 
-# Helpers for building constraints / equality checks
-
-
-def constraint(**conditions):
-    return Constraint(conditions)
-
-
-def equal_any(*values):
-    return EqualityCondition(values)
-
-
-def not_equal(*values):
-    return InequalityCondition(values)
-
-
-class Constraint(object):
-    def __init__(self, conditions):
-        self.conditions = conditions
-
-    def apply(self, model, query):
-        for key, condition in self.conditions.iteritems():
-            for clause in condition.clauses(getattr(model, key)):
-                query = query.filter(clause)
-        return query
-
-
-class EqualityCondition(object):
-    def __init__(self, values):
-        self.values = values
-
-    def clauses(self, field):
-        return sa.or_([field == value for value in self.values])
-
-
-class InequalityCondition(object):
-    def __init__(self, values):
-        self.values = values
-
-    def clauses(self, field):
-        return [field != value for value in self.values]
-
-
 # Cluster ops
 
 def _cluster_get(context, session, cluster_id):
