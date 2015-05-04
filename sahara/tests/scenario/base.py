@@ -93,12 +93,14 @@ class BaseTestCase(base.BaseTestCase):
         password = self.credentials['os_password']
         tenant_name = self.credentials['os_tenant']
         auth_url = self.credentials['os_auth_url']
+        sahara_service_type = self.credentials['sahara_service_type']
         sahara_url = self.credentials['sahara_url']
 
         self.sahara = clients.SaharaClient(username=username,
                                            api_key=password,
                                            project_name=tenant_name,
                                            auth_url=auth_url,
+                                           service_type=sahara_service_type,
                                            sahara_url=sahara_url)
         self.nova = clients.NovaClient(username=username,
                                        api_key=password,

@@ -72,6 +72,8 @@ class TestBase(testtools.TestCase):
                                           'os_tenant': 'admin',
                                           'os_auth_url':
                                               'http://localhost:5000/v2.0',
+                                          'sahara_service_type':
+                                              'data-processing-local',
                                           'sahara_url':
                                               'http://sahara_host:8386/v1.1'}
         self.base_scenario.plugin_opts = {'plugin_name': 'vanilla',
@@ -147,6 +149,7 @@ class TestBase(testtools.TestCase):
                                   api_key='nova',
                                   project_name='admin',
                                   auth_url='http://localhost:5000/v2.0',
+                                  service_type='data-processing-local',
                                   sahara_url='http://sahara_host:8386/v1.1')
         nova.assert_called_with('2',
                                 username='admin',
