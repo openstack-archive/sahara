@@ -314,7 +314,8 @@ class BaseClusterContext(cc.AbstractClusterContext):
         return False
 
     def is_present(self, service):
-        return service in self.cluster_services
+        is_service_subclass = lambda s: isinstance(s, service.__class__)
+        return any(is_service_subclass(s) for s in self.cluster_services)
 
     def filter_instances(self, instances, node_process=None, service=None):
         if node_process:

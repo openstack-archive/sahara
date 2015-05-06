@@ -47,7 +47,7 @@ class VersionHandler(bvh.BaseVersionHandler):
         self._services = [
             maprfs.MapRFS(),
             management.Management(),
-            oozie.Oozie(),
+            oozie.OozieV401(),
             hive.HiveV012(),
             hive.HiveV013(),
             hbase.HBaseV094(),
