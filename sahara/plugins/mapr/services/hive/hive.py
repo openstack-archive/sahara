@@ -85,7 +85,7 @@ class Hive(s.Service):
         jdbc_uri = ('jdbc:mysql://%(db_host)s:%(db_port)s/%(db_name)s?'
                     'createDatabaseIfNotExist=true')
         jdbc_args = {
-            'db_host': mysql.MySQL.get_db_instance(context).fqdn(),
+            'db_host': mysql.MySQL.get_db_instance(context).internal_ip,
             'db_port': mysql.MySQL.MYSQL_SERVER_PORT,
             'db_name': mysql.MySQL.METASTORE_SPECS.db_name,
         }

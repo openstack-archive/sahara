@@ -47,7 +47,7 @@ class Context(bc.BaseClusterContext):
     @property
     def resource_manager_uri(self):
         if not self._resource_manager_uri:
-            ip = self.get_instance(yarn.RESOURCE_MANAGER).management_ip
+            ip = self.get_instance(yarn.RESOURCE_MANAGER).internal_ip
             self._resource_manager_uri = '%s:8032' % ip
         return self._resource_manager_uri
 
