@@ -23,15 +23,30 @@ from sahara import context
 conductor = conductor.API
 
 
-def get_cm_password(cluster):
+def get_password_from_db(cluster, pwname):
     ctx = context.ctx()
     cluster = conductor.cluster_get(ctx, cluster.id)
-    passwd = cluster.extra.get('cm_password') if cluster.extra else None
+    passwd = cluster.extra.get(pwname) if cluster.extra else None
     if passwd:
         return passwd
 
     passwd = six.text_type(uuid.uuid4())
     extra = cluster.extra.to_dict() if cluster.extra else {}
-    extra['cm_password'] = passwd
+    extra[pwname] = passwd
     cluster = conductor.cluster_update(ctx, cluster, {'extra': extra})
     return passwd
+
+
+def get_cm_password(cluster):
+    return get_password_from_db(cluster, 'cm_password')
+
+
+def remote_execute_db_script(remote, script_content):
+    script_name = 'script_to_exec.sql'
+    remote.write_file_to(script_name, script_content)
+
+    psql_cmd = ('PGPASSWORD=$(sudo head -1 /var/lib/cloudera-scm-server-db'
+                '/data/generated_password.txt) psql -U cloudera-scm '
+                '-h localhost -p 7432 -d scm -f %s') % script_name
+    remote.execute_command(psql_cmd)
+    remote.execute_command('rm %s' % script_name)
