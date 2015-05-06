@@ -113,7 +113,7 @@ class Context(context.RequestContext):
                 self.user_id)
 
     # NOTE(adrienverge): The Context class uses the 'user' and 'tenant'
-    # properties internally (inherited from oslo.context), but Sahara code
+    # properties internally (inherited from oslo_context), but Sahara code
     # often uses 'user_id' and 'tenant_id'.
     @property
     def user_id(self):
