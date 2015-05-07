@@ -15,6 +15,7 @@
 
 import copy
 
+from sqlalchemy import exc as sa_ex
 import testtools
 
 from sahara.conductor import manager
@@ -165,8 +166,9 @@ class NodeGroupTemplates(test_base.ConductorManagerTestCase):
         self.assertEqual(0, len(lst))
 
         # Invalid field
-        lst = self.api.node_group_template_get_all(ctx, **{'badfield': 'junk'})
-        self.assertEqual(0, len(lst))
+        self.assertRaises(sa_ex.InvalidRequestError,
+                          self.api.node_group_template_get_all,
+                          ctx, **{'badfield': 'junk'})
 
     def test_ngt_update(self):
         ctx = context.ctx()
@@ -323,8 +325,9 @@ class ClusterTemplates(test_base.ConductorManagerTestCase):
         self.assertEqual(0, len(lst))
 
         # Invalid field
-        lst = self.api.cluster_template_get_all(ctx, **{'badfield': 'junk'})
-        self.assertEqual(0, len(lst))
+        self.assertRaises(sa_ex.InvalidRequestError,
+                          self.api.cluster_template_get_all,
+                          ctx, **{'badfield': 'junk'})
 
     def test_clt_update(self):
         ctx = context.ctx()

@@ -15,6 +15,7 @@
 
 import copy
 
+from sqlalchemy import exc as sa_exc
 import testtools
 
 from sahara.conductor import manager
@@ -310,5 +311,6 @@ class ClusterTest(test_base.ConductorManagerTestCase):
         self.assertEqual(0, len(lst))
 
         # Invalid field
-        lst = self.api.cluster_get_all(ctx, **{'badfield': 'somevalue'})
-        self.assertEqual(0, len(lst))
+        self.assertRaises(sa_exc.InvalidRequestError,
+                          self.api.cluster_get_all,
+                          ctx, **{'badfield': 'somevalue'})
