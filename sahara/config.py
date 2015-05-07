@@ -23,6 +23,7 @@ from oslo_log import log
 from sahara import exceptions as ex
 from sahara.i18n import _
 from sahara.plugins import base as plugins_base
+from sahara.service.castellan import config as castellan
 from sahara.topology import topology_helper
 from sahara.utils.notification import sender
 from sahara.utils.openstack import cinder
@@ -163,7 +164,8 @@ def list_opts():
                          heat_engine.heat_engine_opts,
                          templates.heat_engine_opts,
                          sessions.sessions_opts,
-                         ssh_remote.ssh_config_options)),
+                         ssh_remote.ssh_config_options,
+                         castellan.opts)),
         (poll_utils.timeouts.name,
          itertools.chain(poll_utils.timeouts_opts)),
         (api.conductor_group.name,
@@ -183,7 +185,9 @@ def list_opts():
         (base.retries.name,
          itertools.chain(base.opts)),
         (swift_helper.public_endpoint_cert_group.name,
-         itertools.chain(swift_helper.opts))
+         itertools.chain(swift_helper.opts)),
+        (castellan.castellan_group.name,
+         itertools.chain(castellan.castellan_opts))
     ]
 
 

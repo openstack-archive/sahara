@@ -17,6 +17,7 @@
 import os
 import uuid
 
+from castellan import key_manager
 from oslo_config import cfg
 import six
 
@@ -116,10 +117,12 @@ class SparkJobEngine(base_engine.JobEngine):
         proxy_configs = job_configs.get('proxy_configs')
         configs = {}
         if proxy_configs:
+            key = key_manager.API().get(
+                context.current(), proxy_configs.get('proxy_password'))
+            password = key.get_encoded()
             configs[sw.HADOOP_SWIFT_USERNAME] = proxy_configs.get(
                 'proxy_username')
-            configs[sw.HADOOP_SWIFT_PASSWORD] = proxy_configs.get(
-                'proxy_password')
+            configs[sw.HADOOP_SWIFT_PASSWORD] = password
             configs[sw.HADOOP_SWIFT_TRUST_ID] = proxy_configs.get(
                 'proxy_trust_id')
             configs[sw.HADOOP_SWIFT_DOMAIN_NAME] = CONF.proxy_user_domain_name

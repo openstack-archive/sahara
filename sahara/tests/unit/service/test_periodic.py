@@ -20,6 +20,7 @@ from oslo_utils import timeutils
 
 from sahara.conductor import manager
 from sahara import context
+from sahara.service.castellan import config as castellan
 import sahara.service.periodic as p
 import sahara.tests.unit.base as base
 from sahara.tests.unit.conductor.manager import test_clusters as tc
@@ -32,6 +33,7 @@ class TestPeriodicBack(base.SaharaWithDbTestCase):
     def setUp(self):
         super(TestPeriodicBack, self).setUp()
         self.api = manager.ConductorManager()
+        castellan.validate_config()
 
     @mock.patch('sahara.service.edp.job_manager.get_job_status')
     def test_job_status_update(self, get_job_status):

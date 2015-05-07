@@ -13,6 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from castellan import key_manager
 from oslo_config import cfg
 from oslo_log import log as logging
 import six
@@ -182,9 +183,12 @@ def _get_hadoop_configs(pctx, instance):
 
         proxy_configs = cluster.cluster_configs.get('proxy_configs')
         if proxy_configs and c_helper.is_swift_enabled(pctx, cluster):
+            key = key_manager.API().get(context.current(),
+                                        proxy_configs['proxy_password'])
+            password = key.get_encoded()
             hive_cfg.update({
                 swift.HADOOP_SWIFT_USERNAME: proxy_configs['proxy_username'],
-                swift.HADOOP_SWIFT_PASSWORD: proxy_configs['proxy_password'],
+                swift.HADOOP_SWIFT_PASSWORD: password,
                 swift.HADOOP_SWIFT_TRUST_ID: proxy_configs['proxy_trust_id'],
                 swift.HADOOP_SWIFT_DOMAIN_NAME: CONF.proxy_user_domain_name
             })

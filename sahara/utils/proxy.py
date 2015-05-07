@@ -15,6 +15,8 @@
 
 import uuid
 
+from castellan.common.objects import passphrase
+from castellan import key_manager
 from oslo_config import cfg
 from oslo_log import log as logging
 import six
@@ -60,7 +62,8 @@ def create_proxy_user_for_job_execution(job_execution):
 
     '''
     username = 'job_{0}'.format(job_execution.id)
-    password = proxy_user_create(username)
+    key = passphrase.Passphrase(proxy_user_create(username))
+    password = key_manager.API().store(context.current(), key)
     current_user = k.auth()
     proxy_user = k.auth_for_proxy(username, password)
     trust_id = t.create_trust(trustor=current_user,
@@ -85,13 +88,17 @@ def delete_proxy_user_for_job_execution(job_execution):
     proxy_configs = job_execution.job_configs.get('proxy_configs')
     if proxy_configs is not None:
         proxy_username = proxy_configs.get('proxy_username')
-        proxy_password = proxy_configs.get('proxy_password')
+        key = key_manager.API().get(
+            context.current(), proxy_configs.get('proxy_password'))
+        proxy_password = key.get_encoded()
         proxy_trust_id = proxy_configs.get('proxy_trust_id')
         proxy_user = k.auth_for_proxy(proxy_username,
                                       proxy_password,
                                       proxy_trust_id)
         t.delete_trust(proxy_user, proxy_trust_id)
         proxy_user_delete(proxy_username)
+        key_manager.API().delete(context.current(),
+                                 proxy_configs.get('proxy_password'))
         update = job_execution.job_configs.to_dict()
         del update['proxy_configs']
         return update
@@ -107,7 +114,8 @@ def create_proxy_user_for_cluster(cluster):
     if cluster.cluster_configs.get('proxy_configs'):
         return cluster
     username = 'cluster_{0}'.format(cluster.id)
-    password = proxy_user_create(username)
+    key = passphrase.Passphrase(proxy_user_create(username))
+    password = key_manager.API().store(context.current(), key)
     current_user = k.auth()
     proxy_user = k.auth_for_proxy(username, password)
     trust_id = t.create_trust(trustor=current_user,
@@ -131,13 +139,17 @@ def delete_proxy_user_for_cluster(cluster):
     proxy_configs = cluster.cluster_configs.get('proxy_configs')
     if proxy_configs is not None:
         proxy_username = proxy_configs.get('proxy_username')
-        proxy_password = proxy_configs.get('proxy_password')
+        key = key_manager.API().get(
+            context.current(), proxy_configs.get('proxy_password'))
+        proxy_password = key.get_encoded()
         proxy_trust_id = proxy_configs.get('proxy_trust_id')
         proxy_user = k.auth_for_proxy(proxy_username,
                                       proxy_password,
                                       proxy_trust_id)
         t.delete_trust(proxy_user, proxy_trust_id)
         proxy_user_delete(proxy_username)
+        key_manager.API().delete(context.current(),
+                                 proxy_configs.get('proxy_password'))
         update = {'cluster_configs': cluster.cluster_configs.to_dict()}
         del update['cluster_configs']['proxy_configs']
         conductor.cluster_update(context.ctx(), cluster, update)

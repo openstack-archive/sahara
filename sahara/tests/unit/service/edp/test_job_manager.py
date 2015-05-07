@@ -22,6 +22,7 @@ import testtools
 from sahara import conductor as cond
 from sahara import exceptions as ex
 from sahara.plugins import base as pb
+from sahara.service.castellan import config as castellan
 from sahara.service.edp import job_manager
 from sahara.service.edp import job_utils
 from sahara.service.edp.oozie.workflow_creator import workflow_factory
@@ -45,6 +46,7 @@ class TestJobManager(base.SaharaWithDbTestCase):
         super(TestJobManager, self).setUp()
         p.patch_minidom_writexml()
         pb.setup_plugins()
+        castellan.validate_config()
 
     @mock.patch('uuid.uuid4')
     @mock.patch('sahara.utils.remote.get_remote')

@@ -186,39 +186,42 @@ These options will also be present in the generated sample configuration
 file. For instructions on creating the configuration file please see the
 :doc:`configuration.guide`.
 
-External key manager usage (EXPERIMENTAL)
------------------------------------------
+External key manager usage
+--------------------------
 
 Sahara generates and stores several passwords during the course of operation.
 To harden sahara's usage of passwords it can be instructed to use an
 external key manager for storage and retrieval of these secrets. To enable
 this feature there must first be an OpenStack Key Manager service deployed
-within the stack. Currently, the barbican project is the only key manager
-supported by sahara.
+within the stack.
 
 With a Key Manager service deployed on the stack, sahara must be configured
-to enable the external storage of secrets. This is accomplished by editing
-the sahara configuration file as follows:
+to enable the external storage of secrets. Sahara uses the
+`castellan <https://docs.openstack.org/developer/castellan/>`_ library
+to interface with the OpenStack Key Manager service. This library provides
+configurable access to a key manager. To configure sahara to use barbican as
+the key manager, edit the sahara configuration file as follows:
 
 .. sourcecode:: cfg
 
     [DEFAULT]
-    use_external_key_manager=True
+    use_barbican_key_manager=True
 
-.. TODO (mimccune)
-    this language should be removed once a new keystone authentication
-    section has been created in the configuration file.
+Enabling the ``use_barbican_key_manager`` option will configure castellan
+to use barbican as its key management implementation. By default it will
+attempt to find barbican in the Identity service's service catalog.
 
-Additionally, at this time there are two more values which must be provided
-to ensure proper access for sahara to the Key Manager service. These are
-the Identity domain for the administrative user and the domain for the
-administrative project. By default these values will appear as:
+For added control of the barbican server location, optional configuration
+values may be added to specify the URL for the barbican API server.
 
 .. sourcecode:: cfg
 
-    [DEFAULT]
-    admin_user_domain_name=default
-    admin_project_domain_name=default
+    [castellan]
+    barbican_api_endpoint=http://{barbican controller IP:PORT}/
+    barbican_api_version=v1
+
+The specific values for the barbican endpoint will be dictated by the
+IP address of the controller for your installation.
 
 With all of these values configured and the Key Manager service deployed,
 sahara will begin storing its secrets in the external manager.
