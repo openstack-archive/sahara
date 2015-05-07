@@ -15,12 +15,30 @@
 
 import mock
 import six
+import testtools
 
+from sahara import context
 from sahara.tests.unit import base
 from sahara.utils import poll_utils
 
 
+class FakeCluster(object):
+    def __init__(self, cluster_configs):
+        self.cluster_configs = cluster_configs
+
+
+class FakeOption(object):
+    def __init__(self, default_value, section, name):
+        self.default_value = default_value
+        self.name = name
+        self.applicable_target = section
+
+
 class TestPollUtils(base.SaharaTestCase):
+    def setUp(self):
+        super(TestPollUtils, self).setUp()
+        context.sleep = mock.Mock()
+
     @mock.patch('sahara.utils.poll_utils.LOG.debug')
     def test_poll_success(self, logger):
         poll_utils.poll(**{'get_status': lambda: True,
@@ -30,9 +48,9 @@ class TestPollUtils(base.SaharaTestCase):
         self.assertEqual(1, logger.call_count)
         self.assertEqual([expected_call], logger.call_args_list)
 
-    @mock.patch('sahara.context.sleep', return_value=None)
-    @mock.patch('sahara.utils.poll_utils._get_consumed', return_value=0)
-    def test_poll_failed_first_scenario(self, p_1, p_2):
+    @mock.patch('sahara.utils.poll_utils._get_consumed')
+    def test_poll_failed_first_scenario(self, get_consumed):
+        get_consumed.return_value = 0
         message = ""
         try:
             poll_utils.poll(
@@ -47,9 +65,9 @@ class TestPollUtils(base.SaharaTestCase):
 
         self.assertEqual(expected_message, message)
 
-    @mock.patch('sahara.context.sleep', return_value=None)
-    @mock.patch('sahara.utils.poll_utils._get_consumed', return_value=0)
-    def test_poll_failed_second_scenario(self, p_1, p_2):
+    @mock.patch('sahara.utils.poll_utils._get_consumed')
+    def test_poll_failed_second_scenario(self, get_consumed):
+        get_consumed.return_value = 0
         message = ""
         try:
             poll_utils.poll(
@@ -64,3 +82,52 @@ class TestPollUtils(base.SaharaTestCase):
                             "following timeout was violated: some timeout")
 
         self.assertEqual(expected_message, message)
+
+    @mock.patch('sahara.utils.poll_utils.LOG.debug')
+    @mock.patch('sahara.utils.general.check_cluster_exists')
+    def test_plugin_poll_first_scenario(self, cluster_exists, logger):
+        cluster_exists.return_value = True
+        fake_get_status = mock.Mock()
+        fake_get_status.side_effect = [False, False, True]
+        fake_kwargs = {'kwargs': {'cat': 'tom', 'bond': 'james bond'}}
+        poll_utils.plugin_option_poll(
+            FakeCluster({}), fake_get_status, FakeOption(5, 'target', 'name'),
+            'fake_operation', 5, **fake_kwargs)
+        expected_call = mock.call('Operation with name fake_operation was '
+                                  'executed successfully in timeout 5')
+        self.assertEqual([expected_call], logger.call_args_list)
+
+    @mock.patch('sahara.utils.poll_utils.LOG.debug')
+    @mock.patch('sahara.utils.general.check_cluster_exists')
+    def test_plugin_poll_second_scenario(self, cluster_exists, logger):
+        cluster_exists.return_value = False
+        fake_get_status = mock.Mock()
+        fake_get_status.side_effect = [False, False, True]
+        fake_kwargs = {'kwargs': {'cat': 'tom', 'bond': 'james bond'}}
+        poll_utils.plugin_option_poll(
+            FakeCluster({'target': {'name': 7}}), fake_get_status,
+            FakeOption(5, 'target', 'name'),
+            'fake_operation', 5, **fake_kwargs)
+
+        expected_call = mock.call('Operation with name fake_operation was '
+                                  'executed successfully in timeout 7')
+        self.assertEqual([expected_call], logger.call_args_list)
+
+    def test_poll_exception_strategy_first_scenario(self):
+        fake_get_status = mock.Mock()
+        fake_get_status.side_effect = [False, ValueError()]
+
+        with testtools.ExpectedException(ValueError):
+            poll_utils.poll(fake_get_status)
+
+    def test_poll_exception_strategy_second_scenario(self):
+        fake_get_status = mock.Mock()
+        fake_get_status.side_effect = [False, ValueError()]
+        poll_utils.poll(fake_get_status, exception_strategy='mark_as_true')
+        self.assertEqual(2, fake_get_status.call_count)
+
+    def test_poll_exception_strategy_third_scenario(self):
+        fake_get_status = mock.Mock()
+        fake_get_status.side_effect = [False, ValueError(), True]
+        poll_utils.poll(fake_get_status, exception_strategy='mark_as_false')
+        self.assertEqual(3, fake_get_status.call_count)
