@@ -318,7 +318,7 @@
       "properties" : [
           {
             "name" : "java64_home",
-            "value" : "/opt/jdk1.6.0_31" },
+            "value" : "/usr/lib/jvm/java-openjdk" },
           {
             "name": "security_enabled",
             "value": "false"
