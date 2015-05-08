@@ -204,7 +204,7 @@ class TemplateUpdateTestCase(base.ConductorManagerTestCase):
                    "floating_ip_pool": None}
         template_api.substitute_config_values(configs, ngt, "/path")
         self.assertEqual("2", ngt["flavor_id"])
-        self.assertNotIn("floating_ip_pool", ngt)
+        self.assertIsNone(ngt["floating_ip_pool"])
 
     def test_substitute_config_values_clt(self):
         clt = copy.copy(c.SAMPLE_CLT)
@@ -216,7 +216,7 @@ class TemplateUpdateTestCase(base.ConductorManagerTestCase):
                    "default_image_id": None}
         template_api.substitute_config_values(configs, clt, "/path")
         self.assertEqual(netid, clt["neutron_management_network"])
-        self.assertNotIn("default_image_id", clt)
+        self.assertIsNone(clt["default_image_id"])
 
     def _write_files(self, tempdir, templates):
         files = []

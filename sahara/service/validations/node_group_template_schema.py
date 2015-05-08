@@ -41,53 +41,51 @@ NODE_GROUP_TEMPLATE_SCHEMA = {
             "minItems": 1
         },
         "image_id": {
-            "type": "string",
+            "type": ["string", "null"],
             "format": "uuid",
         },
         "node_configs": {
-            "type": "configs",
+            "type": ["configs", "null"],
         },
         "volumes_per_node": {
             "type": "integer",
             "minimum": 0,
         },
         "volumes_size": {
-            "type": "integer",
+            "type": ["integer", "null"],
             "minimum": 1,
         },
         "volume_type": {
-            "type": "string"
+            "type": ["string", "null"],
         },
         "volumes_availability_zone": {
-            "type": "string",
+            "type": ["string", "null"],
         },
         "volume_mount_prefix": {
-            "type": "string",
+            "type": ["string", "null"],
             "format": "posix_path",
         },
         "description": {
-            "type": "string",
+            "type": ["string", "null"],
         },
         "floating_ip_pool": {
-            "type": "string",
+            "type": ["string", "null"],
         },
         "security_groups": {
-            "type": "array",
-            "items": {
-                "type": "string",
-            },
+            "type": ["array", "null"],
+            "items": {"type": "string"}
         },
         "auto_security_group": {
-            "type": "boolean"
+            "type": ["boolean", "null"],
         },
         "availability_zone": {
-            "type": "string",
+            "type": ["string", "null"],
         },
         "is_proxy_gateway": {
-            "type": "boolean"
+            "type": ["boolean", "null"],
         },
         "volume_local_to_instance": {
-            "type": "boolean"
+            "type": ["boolean", "null"]
         },
     },
     "additionalProperties": False,

@@ -13,6 +13,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import mock
+
 from sahara.service import api
 from sahara.service.validations import node_group_template_schema as ngt_schema
 from sahara.service.validations import node_group_templates as nt
@@ -106,7 +108,14 @@ class TestNGTemplateCreateValidation(u.ValidationTestCase):
                        "['wrong_process']")
         )
 
-    def test_ng_template_create_v_right(self):
+    @mock.patch(
+        "sahara.service.validations.base.check_volume_availability_zone_exist")
+    @mock.patch("sahara.service.validations.base.check_volume_type_exists")
+    @mock.patch(
+        "sahara.service.validations.base.check_availability_zone_exist")
+    @mock.patch("sahara.service.validations.base.check_security_groups_exist")
+    def test_ng_template_create_v_right(self,
+                                        s_groups, a_zone, v_type, v_a_zone):
         self._assert_create_object_validation(
             data={
                 'name': 'a',
@@ -118,16 +127,53 @@ class TestNGTemplateCreateValidation(u.ValidationTestCase):
                                    'secondarynamenode',
                                    'tasktracker',
                                    'jobtracker'],
+                'image_id': '550e8400-e29b-41d4-a716-446655440000',
                 'node_configs': {
                     'HDFS': {
                         u'hadoop.tmp.dir': '/temp/'
                     }
                 },
-                'image_id': '550e8400-e29b-41d4-a716-446655440000',
                 'volumes_per_node': 2,
                 'volumes_size': 10,
-                'description': 'test node template',
-                'floating_ip_pool': 'd9a3bebc-f788-4b81-9a93-aa048022c1ca'
+                'volume_type': 'fish',
+                'volumes_availability_zone': 'ocean',
+                'volume_mount_prefix': '/tmp',
+                'description': "my node group",
+                'floating_ip_pool': 'd9a3bebc-f788-4b81-9a93-aa048022c1ca',
+                'security_groups': ['cat', 'dog'],
+                'auto_security_group': False,
+                'availability_zone': 'here',
+                'is_proxy_gateway': False,
+                'volume_local_to_instance': False
+            }
+        )
+
+    def test_ng_template_create_v_nulls(self):
+        self._assert_create_object_validation(
+            data={
+                'name': 'a',
+                'flavor_id': '42',
+                'plugin_name': 'vanilla',
+                'hadoop_version': '1.2.1',
+                'node_processes': ['namenode',
+                                   'datanode',
+                                   'secondarynamenode',
+                                   'tasktracker',
+                                   'jobtracker'],
+
+                'image_id': None,
+                'node_configs': None,
+                'volumes_size': None,
+                'volume_type': None,
+                'volumes_availability_zone': None,
+                'volume_mount_prefix': None,
+                'description': None,
+                'floating_ip_pool': None,
+                'security_groups': None,
+                'auto_security_group': None,
+                'availability_zone': None,
+                'is_proxy_gateway': None,
+                'volume_local_to_instance': None
             }
         )
 

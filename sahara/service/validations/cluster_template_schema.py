@@ -63,30 +63,30 @@ CLUSTER_TEMPLATE_SCHEMA = {
             "type": "string",
         },
         "default_image_id": {
-            "type": "string",
+            "type": ["string", "null"],
             "format": "uuid",
         },
         "cluster_configs": {
-            "type": "configs",
+            "type": ["configs", "null"],
         },
         "node_groups": {
-            "type": "array",
+            "type": ["array", "null"],
             "items": {
                 "oneOf": [_cluster_tmpl_ng_tmpl_schema,
                           _cluster_tmpl_ng_schema]
             }
         },
         "anti_affinity": {
-            "type": "array",
+            "type": ["array", "null"],
             "items": {
                 "type": "string",
             },
         },
         "description": {
-            "type": "string",
+            "type": ["string", "null"],
         },
         "neutron_management_network": {
-            "type": "string",
+            "type": ["string", "null"],
             "format": "uuid"
         },
     },
