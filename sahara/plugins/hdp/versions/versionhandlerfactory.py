@@ -29,7 +29,8 @@ class VersionHandlerFactory(object):
             src_dir = os.path.join(os.path.dirname(__file__), '')
             versions = [name[8:].replace('_', '.')
                         for name in os.listdir(src_dir)
-                        if os.path.isdir(os.path.join(src_dir, name))]
+                        if os.path.isdir(os.path.join(src_dir, name))
+                        and name.startswith('version_')]
             versions.sort(key=general.natural_sort_key)
             VersionHandlerFactory.versions = versions
 

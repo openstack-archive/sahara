@@ -22,15 +22,13 @@
 # To satisfy the pep8 and python3 tests, we did some changes to the codes.
 # We also change some importings to use Sahara inherited classes.
 
-import cookielib
 import posixpath
 import types
-import urllib
-import urllib2
 
 from oslo_log import log as logging
 from oslo_serialization import jsonutils as json
 import six
+from six.moves import urllib
 
 from sahara.i18n import _LW
 from sahara.plugins.cdh import exceptions as ex
@@ -53,15 +51,15 @@ class HttpClient(object):
         self._headers = {}
 
         # Make a basic auth handler that does nothing. Set credentials later.
-        self._passmgr = urllib2.HTTPPasswordMgrWithDefaultRealm()
-        authhandler = urllib2.HTTPBasicAuthHandler(self._passmgr)
+        self._passmgr = urllib.request.HTTPPasswordMgrWithDefaultRealm()
+        authhandler = urllib.request.HTTPBasicAuthHandler(self._passmgr)
 
         # Make a cookie processor
-        cookiejar = cookielib.CookieJar()
+        cookiejar = six.moves.http_cookiejar.CookieJar()
 
-        self._opener = urllib2.build_opener(
-            urllib2.HTTPErrorProcessor(),
-            urllib2.HTTPCookieProcessor(cookiejar),
+        self._opener = urllib.request.build_opener(
+            urllib.request.HTTPErrorProcessor(),
+            urllib.request.HTTPCookieProcessor(cookiejar),
             authhandler)
 
     def set_basic_auth(self, username, password, realm):
@@ -103,7 +101,7 @@ class HttpClient(object):
         :param data: The data to attach to the body of the request.
         :param headers: The headers to set for this request.
 
-        :return: The result of urllib2.urlopen()
+        :return: The result of urllib.request.urlopen()
         """
         # Prepare URL and params
         url = self._make_url(path, params)
@@ -115,7 +113,7 @@ class HttpClient(object):
                 data = None
 
         # Setup the request
-        request = urllib2.Request(url, data)
+        request = urllib.request.Request(url, data)
         # Hack/workaround because urllib2 only does GET and POST
         request.get_method = lambda: http_method
 
@@ -128,7 +126,7 @@ class HttpClient(object):
                                                         url=url))
         try:
             return self._opener.open(request)
-        except urllib2.HTTPError as ex:
+        except urllib.error.HTTPError as ex:
             message = six.text_type(ex)
             try:
                 json_body = json.loads(message)
@@ -142,7 +140,7 @@ class HttpClient(object):
         if path:
             res += posixpath.normpath('/' + path.lstrip('/'))
         if params:
-            param_str = urllib.urlencode(params, True)
+            param_str = urllib.parse.urlencode(params, True)
             res += '?' + param_str
         return iri_to_uri(res)
 
@@ -169,14 +167,14 @@ def iri_to_uri(iri):
     #     sub-delims  = "!" / "$" / "&" / "'" / "(" / ")"
     #                   / "*" / "+" / "," / ";" / "="
     #     unreserved  = ALPHA / DIGIT / "-" / "." / "_" / "~"
-    # Of the unreserved characters, urllib.quote already considers all but
-    # the ~ safe.
+    # Of the unreserved characters, urllib.parse.quote already considers all
+    # but the ~ safe.
     # The % character is also added to the list of safe characters here, as the
     # end of section 3.1 of RFC 3987 specifically mentions that % must not be
     # converted.
     if iri is None:
         return iri
-    return urllib.quote(smart_str(iri), safe="/#%[]=:;$&()+,!?*@'~")
+    return urllib.parse.quote(smart_str(iri), safe="/#%[]=:;$&()+,!?*@'~")
 
 
 #

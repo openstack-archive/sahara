@@ -24,11 +24,11 @@
 
 import posixpath
 import socket
-import urllib2
 
 from oslo_log import log as logging
 from oslo_serialization import jsonutils as json
 import six
+from six.moves import urllib
 
 from sahara import context
 from sahara.i18n import _
@@ -111,7 +111,7 @@ class Resource(object):
                 context.sleep(self.retry_sleep)
             try:
                 return self.invoke("GET", relpath, params)
-            except (socket.error, urllib2.URLError) as e:
+            except (socket.error, urllib.error.URLError) as e:
                 if "timed out" in six.text_type(e).lower():
                     if retry < self.retries:
                         LOG.warning(_LW("Timeout issuing GET request for "
