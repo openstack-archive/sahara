@@ -15,6 +15,7 @@
 
 from oslo_config import cfg
 from oslo_log import log as logging
+import six
 
 from sahara import conductor as c
 from sahara import context
@@ -135,7 +136,7 @@ PRIORITY_1_CONFS += CLUSTER_WIDE_CONFS
 
 def _initialise_configs():
     configs = []
-    for service, config_lists in XML_CONFS.iteritems():
+    for service, config_lists in six.iteritems(XML_CONFS):
         for config_list in config_lists:
             for config in config_list:
                 if config['name'] not in HIDDEN_CONFS:
@@ -155,8 +156,8 @@ def _initialise_configs():
                         cfg.priority = 1
                     configs.append(cfg)
 
-    for service, config_items in ENV_CONFS.iteritems():
-        for name, param_format_str in config_items.iteritems():
+    for service, config_items in six.iteritems(ENV_CONFS):
+        for name, param_format_str in six.iteritems(config_items):
             configs.append(p.Config(name, service, "node",
                                     default_value=1024, priority=1,
                                     config_type="int"))

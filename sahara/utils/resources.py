@@ -15,6 +15,8 @@
 
 import inspect
 
+import six
+
 
 class BaseResource(object):
     __resource_name__ = 'base'
@@ -43,7 +45,7 @@ class BaseResource(object):
 
     def to_dict(self):
         dictionary = self.__dict__.copy()
-        return {k: v for k, v in dictionary.iteritems()
+        return {k: v for k, v in six.iteritems(dictionary)
                 if not self._filter_field(k)}
 
     def as_resource(self):

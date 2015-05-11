@@ -87,7 +87,7 @@ class Resource(types.FrozenDict):
     def __init__(self, dct):
         super(Resource, self).__setattr__('_initial_dict', dct)
         newdct = dict()
-        for refname, entity in dct.iteritems():
+        for refname, entity in six.iteritems(dct):
             newdct[refname] = self._wrap_entity(refname, entity)
 
         super(Resource, self).__init__(newdct)
@@ -143,7 +143,7 @@ class Resource(types.FrozenDict):
 
     def _to_dict(self, backref):
         dct = dict()
-        for refname, entity in self.iteritems():
+        for refname, entity in six.iteritems(self):
             if refname != backref and refname not in self._filter_fields:
                 childs_backref = None
                 if refname in self._children:

@@ -52,7 +52,7 @@ def _get_plugin_configs(plugin_name, hadoop_version, scope=None):
 def _check_duplicates(lst, message):
     invalid = []
     lst = collections.Counter(lst)
-    for (key, value) in lst.iteritems():
+    for key, value in six.iteritems(lst):
         if value > 1:
             invalid.append(key)
 

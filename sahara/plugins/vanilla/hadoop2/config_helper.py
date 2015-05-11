@@ -14,6 +14,7 @@
 # limitations under the License.
 
 from oslo_config import cfg
+import six
 
 from sahara import exceptions as ex
 from sahara.i18n import _
@@ -90,7 +91,7 @@ PRIORITY_1_CONFS += CLUSTER_WIDE_CONFS
 
 def init_xml_configs(xml_confs):
     configs = []
-    for service, config_lists in xml_confs.iteritems():
+    for service, config_lists in six.iteritems(xml_confs):
         for config_list in config_lists:
             for config in config_list:
                 if config['name'] not in HIDDEN_CONFS:
@@ -150,8 +151,8 @@ DATANODES_STARTUP_TIMEOUT = p.Config(
 
 def init_env_configs(env_confs):
     configs = []
-    for service, config_items in env_confs.iteritems():
-        for name, value in config_items.iteritems():
+    for service, config_items in six.iteritems(env_confs):
+        for name, value in six.iteritems(config_items):
             configs.append(p.Config(name, service, "node",
                                     default_value=value, priority=1,
                                     config_type="int"))
