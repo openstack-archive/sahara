@@ -138,34 +138,41 @@ class TestBase(testtools.TestCase):
             'test_flow')[0]
         self.base_scenario.setUpClass()
 
+    @mock.patch('keystoneclient.auth.identity.v3.Password')
+    @mock.patch('keystoneclient.session.Session')
     @mock.patch('saharaclient.client.Client', return_value=None)
     @mock.patch('novaclient.client.Client', return_value=None)
     @mock.patch('neutronclient.neutron.client.Client', return_value=None)
     @mock.patch('swiftclient.client.Connection', return_value=None)
-    def test__init_clients(self, swift, neutron, nova, sahara):
+    def test__init_clients(self, swift, neutron, nova, sahara, m_session,
+                           m_auth):
+        fake_session = mock.Mock()
+        fake_auth = mock.Mock()
+        m_session.return_value = fake_session
+        m_auth.return_value = fake_auth
+
         self.base_scenario._init_clients()
+
         sahara.assert_called_with('1.1',
-                                  username='admin',
-                                  api_key='nova',
-                                  project_name='admin',
-                                  auth_url='http://localhost:5000/v2.0',
+                                  session=fake_session,
                                   service_type='data-processing-local',
                                   sahara_url='http://sahara_host:8386/v1.1')
-        nova.assert_called_with('2',
-                                username='admin',
-                                api_key='nova',
-                                project_id='admin',
-                                auth_url='http://localhost:5000/v2.0')
-        neutron.assert_called_with('2.0',
-                                   username='admin',
-                                   password='nova',
-                                   tenant_name='admin',
-                                   auth_url='http://localhost:5000/v2.0')
         swift.assert_called_with(auth_version='2.0',
                                  user='admin',
                                  key='nova',
                                  tenant_name='admin',
                                  authurl='http://localhost:5000/v2.0')
+
+        nova.assert_called_with('2', session=fake_session)
+        neutron.assert_called_with('2.0', session=fake_session)
+
+        m_auth.assert_called_with(auth_url='http://localhost:5000/v3',
+                                  username='admin',
+                                  password='nova',
+                                  project_name='admin',
+                                  user_domain_name='default',
+                                  project_domain_name='default')
+        m_session.assert_called_with(auth=fake_auth)
 
     @mock.patch('sahara.tests.scenario.clients.NeutronClient.get_network_id',
                 return_value='mock_net')
