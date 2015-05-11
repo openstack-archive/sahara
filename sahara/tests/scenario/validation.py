@@ -268,7 +268,7 @@ SCHEMA = {
                                 "properties": {
                                     "type": {
                                         "type": "string",
-                                        "enum": ["swift", "hdfs"]
+                                        "enum": ["swift", "hdfs", "maprfs"]
                                     },
                                     "source": {
                                         "type": "string"
@@ -282,7 +282,7 @@ SCHEMA = {
                                 "properties": {
                                     "type": {
                                         "type": "string",
-                                        "enum": ["swift", "hdfs"]
+                                        "enum": ["swift", "hdfs", "maprfs"]
                                     },
                                     "destination": {
                                         "type": "string"
