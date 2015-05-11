@@ -247,7 +247,6 @@ class JavaFactory(BaseFactory):
 class ShellFactory(BaseFactory):
 
     def __init__(self, job):
-        super(ShellFactory, self).__init__()
         self.name, self.file_names = self.get_file_names(job)
 
     def get_file_names(self, job):

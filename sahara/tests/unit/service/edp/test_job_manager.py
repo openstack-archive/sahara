@@ -345,6 +345,21 @@ class TestJobManager(base.SaharaWithDbTestCase):
       <arg>swift://ex.sahara/i</arg>
       <arg>output_path</arg>""" % (_java_main_class, _java_opts), res)
 
+    @mock.patch("sahara.service.edp.oozie.workflow_creator.workflow_factory."
+                "edp.is_adapt_for_oozie_enabled")
+    def test_build_workflow_for_job_java_with_adapter(self, edp_conf_mock):
+        edp_conf_mock.return_value = True
+
+        configs = {"configs": {"edp.java.main_class": "some_main"}}
+        job, job_exec = u.create_job_exec(edp.JOB_TYPE_JAVA, configs)
+        res = workflow_factory.get_workflow_xml(
+            job, u.create_cluster(), job_exec.job_configs)
+
+        self.assertIn(
+            "<main-class>org.openstack.sahara.edp.MainWrapper</main-class>",
+            res)
+        self.assertNotIn("some_main", res)
+
     @mock.patch('sahara.conductor.API.job_binary_get')
     def test_build_workflow_for_job_hive(self, job_binary):
 
@@ -402,6 +417,22 @@ class TestJobManager(base.SaharaWithDbTestCase):
 
             'fs.swift.service.sahara.username':
             'job_00000000-1111-2222-3333-4444444444444444'}, properties)
+
+    def test_build_workflow_for_job_shell(self):
+        configs = {"configs": {"k1": "v1"},
+                   "params": {"p1": "v1"},
+                   "args": ["a1", "a2"]}
+        job, job_exec = u.create_job_exec(edp.JOB_TYPE_SHELL, configs)
+        res = workflow_factory.get_workflow_xml(
+            job, u.create_cluster(), job_exec.job_configs)
+
+        self.assertIn("<name>k1</name>", res)
+        self.assertIn("<value>v1</value>", res)
+
+        self.assertIn("<env-var>p1=v1</env-var>", res)
+
+        self.assertIn("<argument>a1</argument>", res)
+        self.assertIn("<argument>a2</argument>", res)
 
     def test_update_job_dict(self):
         w = workflow_factory.BaseFactory()
