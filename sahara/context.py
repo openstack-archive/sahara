@@ -131,6 +131,14 @@ class Context(context.RequestContext):
     def tenant_id(self, value):
         self.tenant = value
 
+    @property
+    def user_name(self):
+        return self.username
+
+    @property
+    def project_name(self):
+        return self.tenant_name
+
 
 def get_admin_context():
     return Context(is_admin=True)
