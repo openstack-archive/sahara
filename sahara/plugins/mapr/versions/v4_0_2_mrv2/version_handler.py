@@ -58,7 +58,8 @@ class VersionHandler(bvh.BaseVersionHandler):
             hue.Hue(),
             httpfs.HttpFS(),
             mahout.Mahout(),
-            pig.Pig(),
+            pig.PigV013(),
+            pig.PigV014(),
             sqoop2.Sqoop2(),
             swift.Swift(),
             drill.Drill()

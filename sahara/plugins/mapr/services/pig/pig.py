@@ -33,6 +33,19 @@ class Pig(s.Service):
         super(Pig, self).__init__()
         self._name = 'pig'
         self._ui_name = 'Pig'
-        self._version = '0.13'
         self._node_processes = [PIG]
         self._validation_rules = [vu.at_least(1, PIG)]
+
+
+@six.add_metaclass(s.Single)
+class PigV013(Pig):
+    def __init__(self):
+        super(PigV013, self).__init__()
+        self._version = '0.13'
+
+
+@six.add_metaclass(s.Single)
+class PigV014(Pig):
+    def __init__(self):
+        super(PigV014, self).__init__()
+        self._version = '0.14'
