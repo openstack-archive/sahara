@@ -5,8 +5,8 @@
 hacking>=0.10.0,<0.11
 
 Mako>=0.4.0
-MySQL-python
 PrettyTable>=0.7,<0.8
+PyMySQL>=0.6.2  # MIT License
 bashate>=0.2 # Apache-2.0
 coverage>=3.6
 discover
