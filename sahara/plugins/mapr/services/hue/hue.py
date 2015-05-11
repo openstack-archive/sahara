@@ -53,7 +53,6 @@ class Hue(s.Service):
         super(Hue, self).__init__()
         self._name = 'hue'
         self._ui_name = 'Hue'
-        self._version = '3.6.0'
         self._node_processes = [HUE]
         self._ui_info = [('HUE', HUE, 'http://%s:8888')]
         self._validation_rules = [
@@ -65,11 +64,11 @@ class Hue(s.Service):
         return '%s/desktop/conf' % self.home_dir(cluster_context)
 
     def get_config_files(self, cluster_context, configs, instance=None):
-        template = 'plugins/mapr/services/hue/resources/hue_3.6.0.template'
+        template = 'plugins/mapr/services/hue/resources/hue_%s.template'
 
         hue_ini = bcf.TemplateFile("hue.ini")
         hue_ini.remote_path = self.conf_dir(cluster_context)
-        hue_ini.parse(files.get_file_text(template))
+        hue_ini.parse(files.get_file_text(template % self.version))
         hue_ini.add_properties(self._get_hue_ini_props(cluster_context))
 
         # TODO(aosadchyi): rewrite it
@@ -102,7 +101,6 @@ class Hue(s.Service):
             'oozie_host': context.get_instance_ip(oozie.OOZIE),
             'sqoop_host': context.get_instance_ip(sqoop.SQOOP_2_SERVER),
             'impala_host': context.get_instance_ip(impala.IMPALA_STATE_STORE),
-            'hbase_host': context.get_instance_ip(hbase.HBASE_THRIFT),
             'zk_hosts_with_port': context.get_zookeeper_nodes_ip_with_port(),
             'secret_key': self._generate_secret_key(),
         }
@@ -114,6 +112,14 @@ class Hue(s.Service):
                 'hive_host': hive_host.internal_ip,
                 'hive_version': hive_service.version,
                 'hive_conf_dir': hive_service.conf_dir(context),
+            })
+
+        hbase_host = context.get_instance(hbase.HBASE_THRIFT)
+        if hbase_host:
+            hbase_service = context.get_service(hbase.HBASE_THRIFT)
+            result.update({
+                'hbase_host': hbase_host.internal_ip,
+                'hbase_conf_dir': hbase_service.conf_dir(context),
             })
 
         return result
@@ -194,3 +200,17 @@ class Hue(s.Service):
         ascii_alphanum = string.ascii_letters + string.digits
         generator = random.SystemRandom()
         return ''.join(generator.choice(ascii_alphanum) for _ in range(length))
+
+
+@six.add_metaclass(s.Single)
+class HueV360(Hue):
+    def __init__(self):
+        super(HueV360, self).__init__()
+        self._version = '3.6.0'
+
+
+@six.add_metaclass(s.Single)
+class HueV370(Hue):
+    def __init__(self):
+        super(HueV370, self).__init__()
+        self._version = '3.7.0'
