@@ -38,14 +38,17 @@ def get_session(auth_url=None, username=None, password=None,
                                 project_domain_name='default')
     return session.Session(auth=auth)
 
+from sahara.tests.scenario import timeouts
+
 
 class Client(object):
     def is_resource_deleted(self, method, *args, **kwargs):
         raise NotImplementedError
 
     def delete_resource(self, method, *args, **kwargs):
-        # TODO(sreshetniak): make timeout configurable
-        with fixtures.Timeout(300, gentle=True):
+        with fixtures.Timeout(
+                timeouts.Defaults.instance.timeout_delete_resource,
+                gentle=True):
             while True:
                 if self.is_resource_deleted(method, *args, **kwargs):
                     break

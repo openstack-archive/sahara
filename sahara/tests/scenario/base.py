@@ -31,6 +31,7 @@ from tempest_lib import base
 from tempest_lib import exceptions as exc
 
 from sahara.tests.scenario import clients
+from sahara.tests.scenario import timeouts
 from sahara.tests.scenario import utils
 
 
@@ -82,6 +83,7 @@ class BaseTestCase(base.BaseTestCase):
     def setUp(self):
         super(BaseTestCase, self).setUp()
         self._init_clients()
+        timeouts.Defaults.init_defaults(self.testcase)
         self.plugin_opts = {
             'plugin_name': self.testcase['plugin_name'],
             'hadoop_version': self.testcase['plugin_version']
@@ -118,8 +120,9 @@ class BaseTestCase(base.BaseTestCase):
 
     @track_result("Check transient")
     def check_transient(self):
-        # TODO(sreshetniak): make timeout configurable
-        with fixtures.Timeout(300, gentle=True):
+        with fixtures.Timeout(
+                timeouts.Defaults.instance.timeout_check_transient,
+                gentle=True):
             while True:
                 if self.sahara.is_resource_deleted(
                         self.sahara.get_cluster_status, self.cluster_id):
@@ -219,8 +222,9 @@ class BaseTestCase(base.BaseTestCase):
                               configs)
 
     def _poll_jobs_status(self, exec_ids):
-        # TODO(sreshetniak): make timeout configurable
-        with fixtures.Timeout(1800, gentle=True):
+        with fixtures.Timeout(
+                timeouts.Defaults.instance.timeout_poll_jobs_status,
+                gentle=True):
             success = False
             while not success:
                 success = True
@@ -395,8 +399,9 @@ class BaseTestCase(base.BaseTestCase):
         self._poll_cluster_status(cluster_id)
 
     def _poll_cluster_status(self, cluster_id):
-        # TODO(sreshetniak): make timeout configurable
-        with fixtures.Timeout(1800, gentle=True):
+        with fixtures.Timeout(
+                timeouts.Defaults.instance.timeout_poll_cluster_status,
+                gentle=True):
             while True:
                 status = self.sahara.get_cluster_status(cluster_id)
                 if status == 'Active':
