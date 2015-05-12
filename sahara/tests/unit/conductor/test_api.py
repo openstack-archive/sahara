@@ -13,6 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import copy
 
 import testtools
 
@@ -66,10 +67,24 @@ SAMPLE_INSTANCE = {
     'management_ip': '1.2.3.1'
 }
 
+SAMPLE_JOB = {
+    "tenant_id": "test_tenant",
+    "name": "job_test",
+    "description": "test_desc",
+    "type": "pig"
+}
 
-class TestConductorClusterApi(base.SaharaWithDbTestCase):
+SAMPLE_JOB_BINARY = {
+    "tenant_id": "test_tenant",
+    "name": "job_binary_test",
+    "description": "test_dec",
+    "url": "internal-db://test_binary",
+}
+
+
+class TestConductorApi(base.SaharaWithDbTestCase):
     def setUp(self):
-        super(TestConductorClusterApi, self).setUp()
+        super(TestConductorApi, self).setUp()
         self.api = conductor.API
 
     def _make_sample(self):
@@ -103,6 +118,14 @@ class TestConductorClusterApi(base.SaharaWithDbTestCase):
         ng = gu.get_by_id(cluster.node_groups, ng_id)
         self.assertEqual('changed_ng', ng.name)
 
+    def test_remove_node_group(self):
+        ctx, cluster = self._make_sample()
+        ng = cluster.node_groups[0]
+        self.api.node_group_remove(ctx, ng)
+
+        cluster = self.api.cluster_get(ctx, cluster.id)
+        self.assertNotIn(ng, cluster.node_groups)
+
     def test_add_instance_to_node_group_id(self):
         ctx, cluster = self._make_sample()
         inst_id = self.api.instance_add(ctx, cluster.node_groups[0].id,
@@ -119,6 +142,26 @@ class TestConductorClusterApi(base.SaharaWithDbTestCase):
 
         ng = gu.get_by_id(cluster.node_groups, ng_id)
         self.assertEqual('tst123', ng.instances[0].instance_name)
+
+    def test_instance_volume_ops(self):
+        ctx, cluster = self._make_sample()
+        ng_id = cluster.node_groups[0].id
+        inst_id = self.api.instance_add(ctx, ng_id, SAMPLE_INSTANCE)
+
+        self.api.append_volume(ctx, inst_id, 0)
+        self.api.append_volume(ctx, inst_id, 1)
+
+        cluster = self.api.cluster_get(ctx, cluster.id)
+        ng = gu.get_by_id(cluster.node_groups, ng_id)
+
+        self.assertEqual(2, len(gu.get_by_id(ng.instances, inst_id).volumes))
+
+        self.api.remove_volume(ctx, inst_id, 0)
+
+        cluster = self.api.cluster_get(ctx, cluster.id)
+        ng = gu.get_by_id(cluster.node_groups, ng_id)
+
+        self.assertEqual(1, len(gu.get_by_id(ng.instances, inst_id).volumes))
 
     def _get_events(self, ctx, cluster_id, step_id=None):
         cluster = self.api.cluster_get(ctx, cluster_id, show_progress=True)
@@ -175,3 +218,40 @@ class TestConductorClusterApi(base.SaharaWithDbTestCase):
 
         with testtools.ExpectedException(exceptions.NotFoundException):
             self._get_events(ctx, cluster.id, step_id)
+
+    def test_job_main_name(self):
+        ctx = context.ctx()
+        job_binary = self.api.job_binary_create(ctx, SAMPLE_JOB_BINARY)
+        job_binary_id = job_binary["id"]
+
+        job_values = copy.copy(SAMPLE_JOB)
+        job_values["mains"] = [job_binary_id]
+        job = self.api.job_create(ctx, job_values)
+        name = self.api.job_main_name(ctx, job)
+
+        self.assertEqual(SAMPLE_JOB_BINARY["name"], name)
+
+    def test_job_no_main_name(self):
+        ctx = context.ctx()
+        job = self.api.job_create(ctx, SAMPLE_JOB)
+        name = self.api.job_main_name(ctx, job)
+
+        self.assertIsNone(name)
+
+    def test_job_libs_names(self):
+        ctx = context.ctx()
+        job_binary = self.api.job_binary_create(ctx, SAMPLE_JOB_BINARY)
+        job_binary_id_0 = job_binary["id"]
+
+        jb_1_values = copy.copy(SAMPLE_JOB_BINARY)
+        jb_1_values["name"] = "some_other_name"
+        job_binary = self.api.job_binary_create(ctx, jb_1_values)
+        job_binary_id_1 = job_binary["id"]
+
+        job_values = copy.copy(SAMPLE_JOB)
+        job_values["libs"] = [job_binary_id_0, job_binary_id_1]
+        job = self.api.job_create(ctx, job_values)
+
+        names = self.api.job_lib_names(ctx, job)
+
+        self.assertEqual(["job_binary_test", "some_other_name"], names)
