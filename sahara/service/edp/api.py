@@ -117,6 +117,13 @@ def execute_job(job_id, data):
 
     # Since we will use a unified class in the database, we pass
     # a superset for all job types
+    # example configs['start'] = '2015-05-12T08:55Z' frequency = 5 means
+    # the job will starts from 2015-05-12T08:55Z, runs every 5 mins
+
+    job_execution_info = data.get('job_execution_info', {})
+
+    configs['job_execution_info'] = job_execution_info
+
     job_ex_dict = {'input_id': input_id, 'output_id': output_id,
                    'job_id': job_id, 'cluster_id': cluster_id,
                    'info': {'status': edp.JOB_STATUS_PENDING},

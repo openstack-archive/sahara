@@ -16,6 +16,7 @@
 import abc
 import os
 import uuid
+import xml.dom.minidom as xml
 
 from oslo_config import cfg
 import six
@@ -50,9 +51,10 @@ class OozieJobEngine(base_engine.JobEngine):
         return o.OozieClient(self.get_oozie_server_uri(self.cluster),
                              self.get_oozie_server(self.cluster))
 
-    def _get_oozie_job_params(self, hdfs_user, path_to_workflow, oozie_params,
-                              use_hbase_lib):
-        app_path = "oozie.wf.application.path"
+    def _get_oozie_job_params(self, hdfs_user, path_to_workflow,
+                              oozie_params, use_hbase_lib,
+                              scheduled_params=None, job_dir=None,
+                              job_execution_type=None):
         oozie_libpath_key = "oozie.libpath"
         oozie_libpath = ""
         rm_path = self.get_resource_manager_uri(self.cluster)
@@ -66,13 +68,24 @@ class OozieJobEngine(base_engine.JobEngine):
             else:
                 oozie_libpath = hbase_common_lib_path
 
-        job_parameters = {
-            "jobTracker": rm_path,
-            "nameNode": nn_path,
-            "user.name": hdfs_user,
-            oozie_libpath_key: oozie_libpath,
-            app_path: "%s%s" % (nn_path, path_to_workflow),
-            "oozie.use.system.libpath": "true"}
+        if job_execution_type == "scheduled":
+            app_path = "oozie.coord.application.path"
+            job_parameters = {
+                "start": scheduled_params.get('start'),
+                "end": scheduled_params.get('end'),
+                "frequency": scheduled_params.get('frequency'),
+                "workflowAppUri": "%s%s" % (nn_path, job_dir),
+                app_path: "%s%s" % (nn_path, job_dir)}
+        else:
+            app_path = "oozie.wf.application.path"
+            job_parameters = {
+                app_path: "%s%s" % (nn_path, path_to_workflow)}
+
+        job_parameters["nameNode"] = nn_path
+        job_parameters["user.name"] = hdfs_user
+        job_parameters["jobTracker"] = rm_path
+        job_parameters[oozie_libpath_key] = oozie_libpath
+        job_parameters["oozie.use.system.libpath"] = "true"
 
         # Don't let the application path be overwritten, that can't
         # possibly make any sense
@@ -89,6 +102,12 @@ class OozieJobEngine(base_engine.JobEngine):
             h.put_file_to_hdfs(r, wf_xml, "workflow.xml", job_dir, hdfs_user)
         return "%s/workflow.xml" % job_dir
 
+    def _upload_coordinator_file(self, where, job_dir, wf_xml, hdfs_user):
+        with remote.get_remote(where) as r:
+            h.put_file_to_hdfs(r, wf_xml, "coordinator.xml", job_dir,
+                               hdfs_user)
+        return "%s/coordinator.xml" % job_dir
+
     def cancel_job(self, job_execution):
         if job_execution.engine_job_id is not None:
             client = self._get_client()
@@ -99,12 +118,14 @@ class OozieJobEngine(base_engine.JobEngine):
         if job_execution.engine_job_id is not None:
             return self._get_client().get_job_info(job_execution)
 
-    def run_job(self, job_execution):
+    def _prepare_run_job(self, job_execution):
         ctx = context.ctx()
 
         # This will be a dictionary of tuples, (native_url, runtime_url)
         # keyed by data_source id
         data_source_urls = {}
+
+        prepared_job_params = {}
 
         job = conductor.job_get(ctx, job_execution.job_id)
         input_source, output_source = job_utils.get_data_sources(
@@ -173,6 +194,26 @@ class OozieJobEngine(base_engine.JobEngine):
         path_to_workflow = self._upload_workflow_file(oozie_server, wf_dir,
                                                       wf_xml, hdfs_user)
 
+        prepared_job_params['context'] = ctx
+        prepared_job_params['hdfs_user'] = hdfs_user
+        prepared_job_params['path_to_workflow'] = path_to_workflow
+        prepared_job_params['use_hbase_lib'] = use_hbase_lib
+        prepared_job_params['job_execution'] = job_execution
+        prepared_job_params['oozie_params'] = oozie_params
+        prepared_job_params['wf_dir'] = wf_dir
+        prepared_job_params['oozie_server'] = oozie_server
+
+        return prepared_job_params
+
+    def run_job(self, job_execution):
+        prepared_job_params = self._prepare_run_job(job_execution)
+        path_to_workflow = prepared_job_params['path_to_workflow']
+        hdfs_user = prepared_job_params['hdfs_user']
+        oozie_params = prepared_job_params['oozie_params']
+        use_hbase_lib = prepared_job_params['use_hbase_lib']
+        ctx = prepared_job_params['context']
+        job_execution = prepared_job_params['job_execution']
+
         job_params = self._get_oozie_job_params(hdfs_user,
                                                 path_to_workflow,
                                                 oozie_params,
@@ -193,6 +234,43 @@ class OozieJobEngine(base_engine.JobEngine):
         client.run_job(job_execution, oozie_job_id)
         try:
             status = client.get_job_info(job_execution, oozie_job_id)['status']
+        except Exception:
+            status = None
+        return (oozie_job_id, status, None)
+
+    def run_scheduled_job(self, job_execution):
+        prepared_job_params = self._prepare_run_job(job_execution)
+        oozie_server = prepared_job_params['oozie_server']
+        wf_dir = prepared_job_params['wf_dir']
+        hdfs_user = prepared_job_params['hdfs_user']
+        oozie_params = prepared_job_params['oozie_params']
+        use_hbase_lib = prepared_job_params['use_hbase_lib']
+        ctx = prepared_job_params['context']
+        job_execution = prepared_job_params['job_execution']
+
+        coord_configs = {"jobTracker": "${jobTracker}",
+                         "nameNode": "${nameNode}"}
+
+        coord_xml = self._create_coordinator_xml(coord_configs)
+
+        self._upload_coordinator_file(oozie_server, wf_dir, coord_xml,
+                                      hdfs_user)
+        job_params = self._get_oozie_job_params(
+            hdfs_user, None, oozie_params, use_hbase_lib,
+            job_execution.job_configs.job_execution_info, wf_dir,
+            "scheduled")
+
+        client = self._get_client()
+        oozie_job_id = client.add_job(x.create_hadoop_xml(job_params),
+                                      job_execution)
+
+        job_execution = conductor.job_execution_get(ctx, job_execution.id)
+
+        if job_execution.info['status'] == edp.JOB_STATUS_TOBEKILLED:
+            return (None, edp.JOB_STATUS_KILLED, None)
+        try:
+            status = client.get_job_status(job_execution,
+                                           oozie_job_id)['status']
         except Exception:
             status = None
         return (oozie_job_id, status, None)
@@ -298,6 +376,41 @@ class OozieJobEngine(base_engine.JobEngine):
             self.create_hdfs_dir(r, constructed_dir)
 
         return constructed_dir
+
+    def _create_coordinator_xml(self, coord_configs, config_filter=None,
+                                appname='coord'):
+        doc = xml.Document()
+
+        # Create the <coordinator-app> base element
+        coord = doc.createElement('coordinator-app')
+        coord.attributes['name'] = appname
+        coord.attributes['start'] = "${start}"
+        coord.attributes['end'] = "${end}"
+        coord.attributes['frequency'] = "${frequency}"
+        coord.attributes['timezone'] = 'UTC'
+        coord.attributes['xmlns'] = 'uri:oozie:coordinator:0.2'
+
+        doc.appendChild(coord)
+
+        action = doc.createElement('action')
+        workflow = doc.createElement('workflow')
+        coord.appendChild(action)
+        action.appendChild(workflow)
+        x.add_text_element_to_tag(doc, "workflow", 'app-path',
+                                  "${workflowAppUri}")
+        configuration = doc.createElement('configuration')
+        workflow.appendChild(configuration)
+
+        default_configs = []
+        if config_filter is not None:
+            default_configs = [cfg['name'] for cfg in config_filter]
+
+        for name in sorted(coord_configs):
+            if name in default_configs or config_filter is None:
+                x.add_property_to_configuration(doc, name, coord_configs[name])
+
+        # Return newly created XML
+        return doc.toprettyxml(indent="  ")
 
     def _add_postfix(self, constructed_dir):
         def _append_slash_if_needed(path):

@@ -257,6 +257,10 @@ class StormJobEngine(base_engine.JobEngine):
                            "%(status)s, stdout = %(stdout)s") %
                          {'status': ret, 'stdout': stdout})
 
+    def run_scheduled_job(self, job_execution):
+        raise e.NotImplementedException(_("Currently Storm engine does not"
+                                          " support scheduled EDP jobs"))
+
     def validate_job_execution(self, cluster, job, data):
         j.check_main_class_present(data, job)
 

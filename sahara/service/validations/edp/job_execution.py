@@ -13,6 +13,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import time
+
+from oslo_utils import timeutils
+
 from sahara import conductor as c
 from sahara import context
 from sahara import exceptions as ex
@@ -53,8 +57,27 @@ def check_streaming_present(data, job):
             _("%s job must specify streaming mapper and reducer") % job.type)
 
 
+def check_scheduled_job_execution_info(job_execution_info):
+    start = job_execution_info.get('start', None)
+    if start is None:
+        raise ex.InvalidDataException(_(
+            "Scheduled job must specify start time"))
+    try:
+        start = time.strptime(start, "%Y-%m-%d %H:%M:%S")
+        start = timeutils.datetime.datetime.fromtimestamp(time.mktime(start))
+    except Exception:
+        raise ex.InvalidDataException(_("Invalid Time Format"))
+
+    now_time = timeutils.utcnow()
+
+    if timeutils.delta_seconds(now_time, start) < 0:
+        raise ex.InvalidJobExecutionInfoException(_(
+            "Job start time should be later than now"))
+
+
 def check_job_execution(data, job_id):
     ctx = context.ctx()
+    job_execution_info = data.get('job_execution_info', {})
 
     cluster = conductor.cluster_get(ctx, data['cluster_id'])
     if not cluster:
@@ -73,6 +96,11 @@ def check_job_execution(data, job_id):
 
     j_i.check_execution_interface(data, job)
     edp_engine.validate_job_execution(cluster, job, data)
+
+    if 'job_execution_type' in job_execution_info:
+        j_type = job_execution_info.get('job_execution_type', 'workflow')
+        if j_type == 'scheduled':
+            check_scheduled_job_execution_info(job_execution_info)
 
 
 def check_data_sources(data, job):

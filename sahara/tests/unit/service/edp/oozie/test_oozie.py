@@ -42,8 +42,15 @@ class TestOozieEngine(base.SaharaTestCase):
         oje = FakeOozieJobEngine(u.create_cluster())
         oozie_params = {'oozie.libpath': '/mylibpath',
                         'oozie.wf.application.path': '/wrong'}
+        scheduled_params = {'start': '2015-06-10T06:05Z',
+                            'end': '2015-06-10T06:50Z',
+                            'frequency': '10'}
+        job_dir = '/job_dir'
+        job_execution_type = 'workflow'
         job_params = oje._get_oozie_job_params('hadoop',
-                                               '/tmp', oozie_params, True)
+                                               '/tmp', oozie_params, True,
+                                               scheduled_params, job_dir,
+                                               job_execution_type)
         self.assertEqual('http://localhost:50030', job_params["jobTracker"])
         self.assertEqual('hdfs://localhost:8020', job_params["nameNode"])
         self.assertEqual('hadoop', job_params["user.name"])
