@@ -340,6 +340,7 @@ class ClusterTemplates(test_base.ConductorManagerTestCase):
 
         updated_clt = self.api.cluster_template_get(ctx, clt_id)
         self.assertEqual(UPDATE_NAME, updated_clt["name"])
+        self.assertEqual(clt["node_groups"], updated_clt["node_groups"])
 
         # check duplicate name handling
         clt = self.api.cluster_template_create(ctx, SAMPLE_CLT)

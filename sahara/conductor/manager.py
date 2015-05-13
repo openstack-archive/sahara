@@ -258,7 +258,6 @@ class ConductorManager(db_base.Base):
                                 ignore_default=False):
         """Update a cluster_template from the values dictionary."""
         values = copy.deepcopy(values)
-        values = _apply_defaults(values, CLUSTER_DEFAULTS)
         values['tenant_id'] = context.tenant_id
         values['id'] = id
 
