@@ -29,6 +29,7 @@ from sahara.plugins.storm import edp_engine
 from sahara.plugins.storm import run_scripts as run
 from sahara.plugins import utils
 from sahara.utils import cluster_progress_ops as cpo
+from sahara.utils import general as ug
 from sahara.utils import remote
 
 conductor = conductor.API
@@ -295,3 +296,75 @@ class StormProvider(p.ProvisioningPluginBase):
 
     def _push_supervisor_configs(self, r, files):
         r.append_to_files(files, run_as_root=True)
+
+    # Scaling
+
+    def _get_running_topologies_names(self, cluster):
+        master = utils.get_instance(cluster, "nimbus")
+
+        cmd = (
+            "%(storm)s -c nimbus.host=%(host)s "
+            "list | grep ACTIVE | awk '{print $1}'") % (
+            {
+                "storm": "/usr/local/storm/bin/storm",
+                "host": master.hostname()
+            })
+
+        with remote.get_remote(master) as r:
+            ret, stdout = r.execute_command(cmd)
+        names = stdout.split('\n')
+        topology_names = names[0:len(names)-1]
+        return topology_names
+
+    @cpo.event_wrapper(True, step=_("Rebalance Topology"),
+                       param=('cluster', 1))
+    def rebalance_topology(self, cluster):
+        topology_names = self._get_running_topologies_names(cluster)
+        master = utils.get_instance(cluster, "nimbus")
+
+        for topology_name in topology_names:
+            cmd = (
+                '%(rebalance)s -c nimbus.host=%(host)s %(topology_name)s') % (
+                {
+                    "rebalance": "/usr/local/storm/bin/storm rebalance",
+                    "host": master.hostname(),
+                    "topology_name": topology_name
+                })
+
+            with remote.get_remote(master) as r:
+                ret, stdout = r.execute_command(cmd)
+
+    def validate_scaling(self, cluster, existing, additional):
+        self._validate_existing_ng_scaling(cluster, existing)
+        self._validate_additional_ng_scaling(cluster, additional)
+
+    def scale_cluster(self, cluster, instances):
+        self._setup_instances(cluster, instances)
+        # start storm slaves
+        self._start_slave_processes(instances)
+        self.rebalance_topology(cluster)
+        LOG.info(_LI("Storm scaling has been started."))
+
+    def _get_scalable_processes(self):
+        return ["supervisor"]
+
+    def _validate_additional_ng_scaling(self, cluster, additional):
+        scalable_processes = self._get_scalable_processes()
+
+        for ng_id in additional:
+            ng = ug.get_by_id(cluster.node_groups, ng_id)
+            if not set(ng.node_processes).issubset(scalable_processes):
+                raise ex.NodeGroupCannotBeScaled(
+                    ng.name, _("Storm plugin cannot scale nodegroup"
+                               " with processes: %s") %
+                    ' '.join(ng.node_processes))
+
+    def _validate_existing_ng_scaling(self, cluster, existing):
+        scalable_processes = self._get_scalable_processes()
+        for ng in cluster.node_groups:
+            if ng.id in existing:
+                if not set(ng.node_processes).issubset(scalable_processes):
+                    raise ex.NodeGroupCannotBeScaled(
+                        ng.name, _("Storm plugin cannot scale nodegroup"
+                                   " with processes: %s") %
+                        ' '.join(ng.node_processes))
