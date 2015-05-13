@@ -239,7 +239,7 @@ def check_volume_availability_zone_exist(az):
 def check_volume_type_exists(volume_type):
     volume_types = cinder.client().volume_types.list(search_opts={'name':
                                                                   volume_type})
-    if len(volume_types) == 1 and volume_types[0] == volume_type:
+    if len(volume_types) == 1 and volume_types[0].name == volume_type:
         return
     raise ex.NotFoundException(volume_type, _("Volume type '%s' not found"))
 
