@@ -45,7 +45,6 @@ class CDHGatingTest(check_services.CheckServicesTest,
         self.cluster_id = None
         self.cluster_template_id = None
         self.services_cluster_template_id = None
-        self.flavor_id = self.plugin_config.LARGE_FLAVOR
 
     def get_plugin_config(self):
         return cfg.ITConfig().cdh_config
@@ -59,7 +58,8 @@ class CDHGatingTest(check_services.CheckServicesTest,
             'node_processes': ['YARN_NODEMANAGER', 'HDFS_DATANODE'],
             'floating_ip_pool': self.floating_ip_pool,
             'auto_security_group': True,
-            'node_configs': {}
+            'node_configs': {},
+            'flavor_id': self.plugin_config.LARGE_FLAVOR
         }
         self.ng_tmpl_nm_dn_id = self.create_node_group_template(**template)
         self.addCleanup(self.delete_node_group_template, self.ng_tmpl_nm_dn_id)
