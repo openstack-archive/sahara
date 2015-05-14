@@ -40,7 +40,6 @@ class Oozie(s.Service):
         super(Oozie, self).__init__()
         self._name = 'oozie'
         self._ui_name = 'Oozie'
-        self._version = '4.0.1'
         self._node_processes = [OOZIE]
         self._dependencies = [('mapr-oozie-internal', self.version)]
         self._cluster_defaults = ['oozie-default.json']
@@ -138,3 +137,17 @@ class Oozie(s.Service):
         g.execute_on_instances(
             instances, self._rebuild_oozie_war, cluster_context)
         OOZIE.start(instances)
+
+
+@six.add_metaclass(s.Single)
+class OozieV401(Oozie):
+    def __init__(self):
+        super(OozieV401, self).__init__()
+        self._version = '4.0.1'
+
+
+@six.add_metaclass(s.Single)
+class OozieV410(Oozie):
+    def __init__(self):
+        super(OozieV410, self).__init__()
+        self._version = '4.1.0'

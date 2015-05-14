@@ -50,7 +50,7 @@ class VersionHandler(bvh.BaseVersionHandler):
             mapreduce.MapReduce(),
             maprfs.MapRFS(),
             management.Management(),
-            oozie.Oozie(),
+            oozie.OozieV401(),
             hive.HiveV012(),
             hive.HiveV013(),
             hbase.HBaseV094(),

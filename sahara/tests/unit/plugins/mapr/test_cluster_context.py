@@ -55,6 +55,9 @@ class TestClusterContext(b.SaharaTestCase):
                 'key': 'value',
                 'Service Version': '1.1',
             },
+            'Oozie': {
+                'Oozie Version': '4.0.1',
+            }
         }
         cluster = tu.create_cluster(
             name='test_cluster',
@@ -274,3 +277,10 @@ class TestClusterContext(b.SaharaTestCase):
     def test_get_historyserver_ip(self):
         ctx = self._get_context()
         self.assertTrue(ctx.has_control_nodes([self.instance]))
+
+    def test_is_present(self):
+        cluster_context = self._get_context()
+
+        self.assertTrue(cluster_context.is_present(oozie.Oozie()))
+        self.assertTrue(cluster_context.is_present(oozie.OozieV401()))
+        self.assertFalse(cluster_context.is_present(oozie.OozieV410()))
