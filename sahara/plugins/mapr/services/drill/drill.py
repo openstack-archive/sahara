@@ -35,7 +35,6 @@ class Drill(s.Service):
         super(Drill, self).__init__()
         self._name = 'drill'
         self._ui_name = 'Drill'
-        self._version = '0.7'
         self._node_processes = [DRILL]
         self._ui_info = [('Drill', DRILL, 'http://%s:8047')]
         self._validation_rules = [vu.at_least(1, DRILL)]
@@ -50,3 +49,17 @@ class Drill(s.Service):
         for instance in instances:
             cmd.chown(instance, 'mapr:mapr', self.service_dir(cluster_context))
             cmd.re_configure_sh(instance, cluster_context)
+
+
+@six.add_metaclass(s.Single)
+class DrillV07(Drill):
+    def __init__(self):
+        super(DrillV07, self).__init__()
+        self._version = '0.7'
+
+
+@six.add_metaclass(s.Single)
+class DrillV08(Drill):
+    def __init__(self):
+        super(DrillV08, self).__init__()
+        self._version = '0.8'
