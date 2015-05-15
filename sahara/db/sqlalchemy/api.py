@@ -545,45 +545,36 @@ def node_group_template_destroy(context, node_group_template_id,
 
 def node_group_template_update(context, values, ignore_default=False):
     session = get_session()
-    with session.begin():
-        ngt_id = values['id']
-        node_group_template = (
-            _node_group_template_get(context, session, ngt_id))
-        if not node_group_template:
-            raise ex.NotFoundException(
-                ngt_id, _("NodeGroupTemplate id '%s' not found"))
-        elif not ignore_default and node_group_template.is_default:
-            raise ex.UpdateFailedException(
-                ngt_id,
-                _("NodeGroupTemplate id '%s' can not be updated. "
-                  "It is a default template.")
-            )
-
-        name = values.get('name')
-        if name and name != node_group_template.name:
-            same_name_tmpls = model_query(
-                m.NodeGroupTemplate, context).filter_by(name=name).all()
-            if (len(same_name_tmpls) > 0 and
-                    same_name_tmpls[0].id != ngt_id):
-                raise ex.DBDuplicateEntry(
-                    _("Node Group Template can not be updated. "
-                      "Another node group template with name %s "
-                      "already exists.")
-                    % name
-                )
-
-        # Check to see that the node group template to be updated is not in
-        # use by an existing cluster.
-        for template_relationship in node_group_template.templates_relations:
-            if len(template_relationship.cluster_template.clusters) > 0:
+    try:
+        with session.begin():
+            ngt_id = values['id']
+            ngt = _node_group_template_get(context, session, ngt_id)
+            if not ngt:
+                raise ex.NotFoundException(
+                    ngt_id, _("NodeGroupTemplate id '%s' not found"))
+            elif not ignore_default and ngt.is_default:
                 raise ex.UpdateFailedException(
                     ngt_id,
                     _("NodeGroupTemplate id '%s' can not be updated. "
-                      "It is referenced by an existing cluster.")
+                      "It is a default template.")
                 )
 
-        node_group_template.update(values)
-    return node_group_template
+            # Check to see that the node group template to be updated is not in
+            # use by an existing cluster.
+            for template_relationship in ngt.templates_relations:
+                if len(template_relationship.cluster_template.clusters) > 0:
+                    raise ex.UpdateFailedException(
+                        ngt_id,
+                        _("NodeGroupTemplate id '%s' can not be updated. "
+                          "It is referenced by an existing cluster.")
+                    )
+
+            ngt.update(values)
+    except db_exc.DBDuplicateEntry as e:
+        raise ex.DBDuplicateEntry(
+            _("Duplicate entry for NodeGroupTemplate: %s") % e.columns)
+
+    return ngt
 
 
 # Data Source ops
