@@ -24,7 +24,7 @@ resources:
     properties: {network_id: private_net, replacement_policy: AUTO}
     type: OS::Neutron::Port
   cluster-master-001-volume-0:
-    properties: {name: cluster-master-001-volume-0, size: '10', volume_type: null}
+    properties: {name: cluster-master-001-volume-0, size: '10'}
     type: OS::Cinder::Volume
   cluster-master-001-volume-attachment-0:
     properties:
