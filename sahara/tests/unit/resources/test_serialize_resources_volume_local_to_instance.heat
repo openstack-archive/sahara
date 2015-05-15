@@ -93,8 +93,7 @@
             "Type": "OS::Cinder::Volume",
             "Properties": {
                 "name": "cluster-master-001-volume-0",
-                "size": "10",
-                "volume_type": null
+                "size": "10"
             }
         },
         "cluster-master-001-volume-attachment-0": {
