@@ -280,9 +280,11 @@ class ClusterTemplate(object):
         volume_attach_name = _get_volume_attach_name(inst_name, volume_idx)
         properties = {
             "name": volume_name,
-            "size": six.text_type(volumes_size),
-            "volume_type": volume_type
+            "size": six.text_type(volumes_size)
         }
+        if volume_type:
+            properties["volume_type"] = volume_type
+
         if volumes_availability_zone:
             properties["availability_zone"] = volumes_availability_zone
 
