@@ -40,11 +40,18 @@ LOG = logging.getLogger(__name__)
 SSH_PORT = 22
 
 
+def _warning_logger():
+    LOG.warning(_LW("Direct infrastructure engine is deprecated in Liberty"
+                    " release and will be removed after that release."
+                    " Use Heat infrastructure engine instead."))
+
+
 class DirectEngine(e.Engine):
     def get_type_and_version(self):
         return "direct.1.0"
 
     def create_cluster(self, cluster):
+        _warning_logger()
         ctx = context.ctx()
         self._update_rollback_strategy(cluster, shutdown=True)
 
@@ -75,6 +82,7 @@ class DirectEngine(e.Engine):
         self._update_rollback_strategy(cluster)
 
     def scale_cluster(self, cluster, node_group_id_map):
+        _warning_logger()
         ctx = context.ctx()
         cluster = g.change_cluster_status(cluster, "Scaling: Spawning")
 
@@ -110,6 +118,7 @@ class DirectEngine(e.Engine):
         return instance_ids
 
     def rollback_cluster(self, cluster, reason):
+        _warning_logger()
         rollback_info = cluster.rollback_info or {}
         self._update_rollback_strategy(cluster)
 

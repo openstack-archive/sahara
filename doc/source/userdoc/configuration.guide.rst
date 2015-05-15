@@ -195,23 +195,25 @@ in the ``[oslo_messaging_qpid]`` section:
 Orchestration configuration
 ---------------------------
 
-By default sahara is configured to use the direct engine for instance
-creation. This engine makes calls directly to the services required
-for instance provisioning. Sahara can be configured to use the OpenStack
-Orchestration service for this task instead of the direct engine.
+By default sahara is configured to use the heat engine for instance
+creation. The heat engine uses the Openstack Orchestration service to
+provision instances. Sahara can be configured to use the direct engine for
+this purpose, but after the Liberty release it will be removed. This
+engine makes calls directly to the services required for instance
+provisioning. We recommend using the Openstack Orchestration service.
 
-To configure sahara to utilize the Orchestration service for instance
+To configure sahara to use the direct engine for instance
 provisioning the ``infrastructure_engine`` parameter should be modified in
 the configuration file as follows:
 
 .. sourcecode:: cfg
 
     [DEFAULT]
-    infrastructure_engine=heat
+    infrastructure_engine=direct
 
-There is feature parity between the direct and heat infrastructure
-engines. We recommend using the heat engine for provisioning as the
-direct is planned for deprecation.
+.. warning::
+    The direct engine will be removed after the Liberty release, we
+    recommend using the heat engine.
 
 .. _policy-configuration-label:
 
