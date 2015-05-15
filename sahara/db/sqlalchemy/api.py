@@ -445,55 +445,51 @@ def cluster_template_update(context, values, ignore_default=False):
 
     session = get_session()
     cluster_template_id = values['id']
-    with session.begin():
-        cluster_template = (_cluster_template_get(
-            context, session, cluster_template_id))
-        if not cluster_template:
-            raise ex.NotFoundException(
-                cluster_template_id,
-                _("Cluster Template id '%s' not found!"))
+    try:
+        with session.begin():
+            cluster_template = (_cluster_template_get(
+                context, session, cluster_template_id))
+            if not cluster_template:
+                raise ex.NotFoundException(
+                    cluster_template_id,
+                    _("Cluster Template id '%s' not found!"))
 
-        elif not ignore_default and cluster_template.is_default:
-            raise ex.UpdateFailedException(
-                cluster_template_id,
-                _("ClusterTemplate id '%s' can not be updated. "
-                  "It is a default template.")
-            )
-
-        name = values.get('name')
-        if name:
-            same_name_tmpls = model_query(
-                m.ClusterTemplate, context, session=session).filter_by(
-                name=name).all()
-            if (len(same_name_tmpls) > 0 and
-                    same_name_tmpls[0].id != cluster_template_id):
-                raise ex.DBDuplicateEntry(
-                    _("Cluster Template can not be updated. "
-                      "Another cluster template with name %s already exists.")
-                    % name
+            elif not ignore_default and cluster_template.is_default:
+                raise ex.UpdateFailedException(
+                    cluster_template_id,
+                    _("ClusterTemplate id '%s' can not be updated. "
+                      "It is a default template.")
                 )
 
-        if len(cluster_template.clusters) > 0:
-            raise ex.UpdateFailedException(
-                cluster_template_id,
-                _("Cluster Template id '%s' can not be updated. "
-                  "It is referenced by at least one cluster.")
-            )
-        cluster_template.update(values)
+            if len(cluster_template.clusters) > 0:
+                raise ex.UpdateFailedException(
+                    cluster_template_id,
+                    _("Cluster Template id '%s' can not be updated. "
+                      "It is referenced by at least one cluster.")
+                )
+            cluster_template.update(values)
+            # The flush here will cause a duplicate entry exception if
+            # unique constraints are violated, before we go ahead and delete
+            # the node group templates
+            session.flush(objects=[cluster_template])
 
-        # If node_groups has not been specified, then we are
-        # keeping the old ones so don't delete!
-        if node_groups:
-            model_query(m.TemplatesRelation,
-                        context, session=session).filter_by(
-                cluster_template_id=cluster_template_id).delete()
+            # If node_groups has not been specified, then we are
+            # keeping the old ones so don't delete!
+            if node_groups:
+                model_query(m.TemplatesRelation,
+                            context, session=session).filter_by(
+                    cluster_template_id=cluster_template_id).delete()
 
-            for ng in node_groups:
-                node_group = m.TemplatesRelation()
-                node_group.update(ng)
-                node_group.update({"cluster_template_id":
-                                   cluster_template_id})
-                session.add(node_group)
+                for ng in node_groups:
+                    node_group = m.TemplatesRelation()
+                    node_group.update(ng)
+                    node_group.update({"cluster_template_id":
+                                       cluster_template_id})
+                    session.add(node_group)
+
+    except db_exc.DBDuplicateEntry as e:
+        raise ex.DBDuplicateEntry(
+            _("Duplicate entry for ClusterTemplate: %s") % e.columns)
 
     return cluster_template_get(context, cluster_template_id)
 
