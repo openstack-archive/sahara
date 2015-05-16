@@ -41,7 +41,6 @@ class Oozie(s.Service):
         self._name = 'oozie'
         self._ui_name = 'Oozie'
         self._node_processes = [OOZIE]
-        self._dependencies = [('mapr-oozie-internal', self.version)]
         self._cluster_defaults = ['oozie-default.json']
         self._validation_rules = [vu.exactly(1, OOZIE)]
         self._ui_info = [('Oozie', OOZIE, 'http://%s:11000/oozie')]
@@ -144,6 +143,7 @@ class OozieV401(Oozie):
     def __init__(self):
         super(OozieV401, self).__init__()
         self._version = '4.0.1'
+        self._dependencies = [('mapr-oozie-internal', self.version)]
 
 
 @six.add_metaclass(s.Single)
@@ -151,3 +151,4 @@ class OozieV410(Oozie):
     def __init__(self):
         super(OozieV410, self).__init__()
         self._version = '4.1.0'
+        self._dependencies = [('mapr-oozie-internal', self.version)]
