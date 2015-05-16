@@ -359,3 +359,14 @@ class UpdateFailedException(SaharaException):
             self.message = message
         self.message = self.message % value
         super(UpdateFailedException, self).__init__()
+
+
+class MaxRetriesExceeded(SaharaException):
+    code = "MAX_RETRIES_EXCEEDED"
+    message = _("Operation %(operation)s wasn't executed correctly after "
+                "%(attempts)d attempts")
+
+    def __init__(self, attempts, operation):
+        self.message = self.message % {'operation': operation,
+                                       'attempts': attempts}
+        super(MaxRetriesExceeded, self).__init__()
