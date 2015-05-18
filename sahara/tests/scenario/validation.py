@@ -13,6 +13,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import re
+
 import jsonschema
 import rfc3986
 
@@ -101,7 +103,8 @@ SCHEMA = {
                             "properties": {
                                 "name": {
                                     "type": "string",
-                                    "minLength": 1
+                                    "minLength": 1,
+                                    "format": "valid_name"
                                 },
                                 "node_processes": {
                                     "type": "array",
@@ -165,7 +168,8 @@ SCHEMA = {
                         "properties": {
                             "name": {
                                 "type": "string",
-                                "minLength": 1
+                                "minLength": 1,
+                                "format": "valid_name"
                             },
                             "description": {
                                 "type": "string"
@@ -194,7 +198,8 @@ SCHEMA = {
                         "properties": {
                             "name": {
                                 "type": "string",
-                                "minLength": 1
+                                "minLength": 1,
+                                "format": "valid_name"
                             },
                             "description": {
                                 "type": "string"
@@ -360,6 +365,14 @@ SCHEMA = {
 @jsonschema.FormatChecker.cls_checks("uri")
 def validate_uri_format(entry):
     return rfc3986.is_valid_uri(entry)
+
+
+@jsonschema.FormatChecker.cls_checks('valid_name')
+def validate_name_hostname_format(entry):
+    res = re.match(r"^(([a-zA-Z]|[a-zA-Z][a-zA-Z0-9\-]"
+                   r"*[a-zA-Z0-9])\.)*([A-Za-z]|[A-Za-z]"
+                   r"[A-Za-z0-9\-]*[A-Za-z0-9])$", entry)
+    return res is not None
 
 
 class Validator(jsonschema.Draft4Validator):
