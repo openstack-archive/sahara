@@ -118,9 +118,9 @@ class BaseFactory(object):
                 break
         return configs
 
-    def get_params(self, input_data, output_data):
-        return {'INPUT': input_data.url,
-                'OUTPUT': output_data.url}
+    def get_params(self, input_data, output_data, data_source_urls):
+        return {'INPUT': data_source_urls[input_data.id],
+                'OUTPUT': data_source_urls[output_data.id]}
 
 
 class PigFactory(BaseFactory):
@@ -133,11 +133,12 @@ class PigFactory(BaseFactory):
         return conductor.job_main_name(context.ctx(), job)
 
     def get_workflow_xml(self, cluster, job_configs, input_data, output_data,
-                         hdfs_user):
+                         hdfs_user, data_source_urls):
         proxy_configs = job_configs.get('proxy_configs')
         job_dict = {'configs': self.get_configs(input_data, output_data,
                                                 proxy_configs),
-                    'params': self.get_params(input_data, output_data),
+                    'params': self.get_params(input_data, output_data,
+                                              data_source_urls),
                     'args': []}
         self.update_job_dict(job_dict, job_configs)
         creator = pig_workflow.PigWorkflowCreator()
@@ -158,11 +159,12 @@ class HiveFactory(BaseFactory):
         return conductor.job_main_name(context.ctx(), job)
 
     def get_workflow_xml(self, cluster, job_configs, input_data, output_data,
-                         hdfs_user):
+                         hdfs_user, data_source_urls):
         proxy_configs = job_configs.get('proxy_configs')
         job_dict = {'configs': self.get_configs(input_data, output_data,
                                                 proxy_configs),
-                    'params': self.get_params(input_data, output_data)}
+                    'params': self.get_params(input_data, output_data,
+                                              data_source_urls)}
         self.update_job_dict(job_dict, job_configs)
 
         creator = hive_workflow.HiveWorkflowCreator()
@@ -175,12 +177,13 @@ class HiveFactory(BaseFactory):
 
 class MapReduceFactory(BaseFactory):
 
-    def get_configs(self, input_data, output_data, proxy_configs):
+    def get_configs(self, input_data, output_data, proxy_configs,
+                    data_source_urls):
         configs = super(MapReduceFactory, self).get_configs(input_data,
                                                             output_data,
                                                             proxy_configs)
-        configs['mapred.input.dir'] = input_data.url
-        configs['mapred.output.dir'] = output_data.url
+        configs['mapred.input.dir'] = data_source_urls[input_data.id]
+        configs['mapred.output.dir'] = data_source_urls[output_data.id]
         return configs
 
     def _get_streaming(self, job_dict):
@@ -189,10 +192,11 @@ class MapReduceFactory(BaseFactory):
             job_dict['edp_configs']) if k.startswith(prefix)}
 
     def get_workflow_xml(self, cluster, job_configs, input_data, output_data,
-                         hdfs_user):
+                         hdfs_user, data_source_urls):
         proxy_configs = job_configs.get('proxy_configs')
         job_dict = {'configs': self.get_configs(input_data, output_data,
-                                                proxy_configs)}
+                                                proxy_configs,
+                                                data_source_urls)}
         self.update_job_dict(job_dict, job_configs)
         creator = mapreduce_workflow.MapReduceWorkFlowCreator()
         creator.build_workflow_xml(configuration=job_dict['configs'],

@@ -13,6 +13,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import random
+import re
+import string
 import uuid
 
 from oslo_config import cfg
@@ -65,13 +68,22 @@ def create_workflow_dir(where, path, job, use_uuid=None, chmod=""):
     return constructed_dir
 
 
-def get_data_sources(job_execution, job):
+def get_data_sources(job_execution, job, data_source_urls):
     if edp.compare_job_type(job.type, edp.JOB_TYPE_JAVA, edp.JOB_TYPE_SPARK):
         return None, None
 
     ctx = context.ctx()
+
     input_source = conductor.data_source_get(ctx, job_execution.input_id)
+    if input_source and input_source.id not in data_source_urls:
+        data_source_urls[input_source.id] = _construct_data_source_url(
+            input_source.url, job_execution.id)
+
     output_source = conductor.data_source_get(ctx, job_execution.output_id)
+    if output_source and output_source.id not in data_source_urls:
+        data_source_urls[output_source.id] = _construct_data_source_url(
+            output_source.url, job_execution.id)
+
     return input_source, output_source
 
 
@@ -169,7 +181,7 @@ def _add_credentials_for_data_sources(ds_list, configs):
         configs[sw.HADOOP_SWIFT_PASSWORD] = password
 
 
-def resolve_data_source_references(job_configs):
+def resolve_data_source_references(job_configs, job_exec_id, data_source_urls):
     """Resolve possible data_source references in job_configs.
 
     Look for any string values in the 'args', 'configs', and 'params'
@@ -222,7 +234,11 @@ def resolve_data_source_references(job_configs):
             if len(ds) == 1:
                 ds = ds[0]
                 ds_seen[ds.id] = ds
-                return ds.url
+                if ds.id not in data_source_urls:
+                    data_source_urls[ds.id] = _construct_data_source_url(
+                        ds.url, job_exec_id)
+
+                return data_source_urls[ds.id]
         return value
 
     # Loop over configs/params/args and look up each value as a data_source.
@@ -251,3 +267,26 @@ def resolve_data_source_references(job_configs):
             k: v for k, v in six.iteritems(job_configs.get('proxy_configs'))}
 
     return ds_seen, new_configs
+
+
+def _construct_data_source_url(url, job_exec_id):
+    """Resolve placeholders in data_source URL.
+
+    Supported placeholders:
+
+    * %RANDSTR(len)% - will be replaced with random string of lowercase
+                       letters of length `len`.
+    * %JOB_EXEC_ID%  - will be replaced with the job execution ID.
+
+    """
+
+    def _randstr(match):
+        len = int(match.group(1))
+        return ''.join(random.choice(string.ascii_lowercase)
+                       for _ in xrange(len))
+
+    url = url.replace("%JOB_EXEC_ID%", job_exec_id)
+
+    url = re.sub(r"%RANDSTR\((\d+)\)%", _randstr, url)
+
+    return url

@@ -13,8 +13,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import uuid
 
 import mock
+import six
 
 from sahara import conductor as cond
 from sahara.utils import edp
@@ -86,6 +88,7 @@ def create_data_source(url, name=None, id=None):
 
 def _create_job_exec(job_id, type, configs=None):
     j_exec = mock.Mock()
+    j_exec.id = six.text_type(uuid.uuid4())
     j_exec.job_id = job_id
     j_exec.job_configs = configs
     if edp.compare_job_type(type, edp.JOB_TYPE_JAVA):

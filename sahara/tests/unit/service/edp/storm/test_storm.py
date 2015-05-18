@@ -269,6 +269,7 @@ class TestStorm(base.SaharaTestCase):
                        autospec=True,
                        return_value=(
                            "MyJob_ed8347a9-39aa-477c-8108-066202eb6130"))
+    @mock.patch('sahara.conductor.API.job_execution_update')
     @mock.patch('sahara.conductor.API.job_execution_get')
     @mock.patch('sahara.utils.remote.get_remote')
     @mock.patch('sahara.service.edp.job_utils.create_workflow_dir')
@@ -277,7 +278,8 @@ class TestStorm(base.SaharaTestCase):
     @mock.patch('sahara.context.ctx', return_value="ctx")
     def _setup_run_job(self, master_instance, job_configs, files,
                        ctx, job_get, get_instance, create_workflow_dir,
-                       get_remote, job_exec_get, _generate_topology_name):
+                       get_remote, job_exec_get, job_exec_update,
+                       _generate_topology_name):
 
         def _upload_job_files(where, job_dir, job,
                               libs_subdir=True, job_configs=None):

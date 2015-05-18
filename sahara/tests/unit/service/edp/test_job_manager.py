@@ -76,10 +76,12 @@ class TestJobManager(base.SaharaWithDbTestCase):
 
         input_data = u.create_data_source('swift://ex/i')
         output_data = u.create_data_source('swift://ex/o')
+        data_source_urls = {input_data.id: input_data.url,
+                            output_data.id: output_data.url}
 
         res = workflow_factory.get_workflow_xml(
             job, u.create_cluster(), job_exec.job_configs,
-            input_data, output_data, 'hadoop')
+            input_data, output_data, 'hadoop', data_source_urls)
 
         self.assertIn("""
       <param>INPUT=swift://ex.sahara/i</param>
@@ -106,7 +108,7 @@ class TestJobManager(base.SaharaWithDbTestCase):
 
         res = workflow_factory.get_workflow_xml(
             job, u.create_cluster(), job_exec.job_configs,
-            input_data, output_data, 'hadoop')
+            input_data, output_data, 'hadoop', data_source_urls)
 
         self.assertIn("""
       <configuration>
@@ -137,10 +139,12 @@ class TestJobManager(base.SaharaWithDbTestCase):
 
         input_data = u.create_data_source('swift://ex/i')
         output_data = u.create_data_source('hdfs://user/hadoop/out')
+        data_source_urls = {input_data.id: input_data.url,
+                            output_data.id: output_data.url}
 
         res = workflow_factory.get_workflow_xml(
             job, u.create_cluster(), job_exec.job_configs,
-            input_data, output_data, 'hadoop')
+            input_data, output_data, 'hadoop', data_source_urls)
 
         self.assertIn("""
       <configuration>
@@ -156,10 +160,12 @@ class TestJobManager(base.SaharaWithDbTestCase):
 
         input_data = u.create_data_source('hdfs://user/hadoop/in')
         output_data = u.create_data_source('swift://ex/o')
+        data_source_urls = {input_data.id: input_data.url,
+                            output_data.id: output_data.url}
 
         res = workflow_factory.get_workflow_xml(
             job, u.create_cluster(), job_exec.job_configs,
-            input_data, output_data, 'hadoop')
+            input_data, output_data, 'hadoop', data_source_urls)
 
         self.assertIn("""
       <configuration>
@@ -177,10 +183,12 @@ class TestJobManager(base.SaharaWithDbTestCase):
             edp.JOB_TYPE_PIG, configs={'configs': {'dummy': 'value'}})
         input_data = u.create_data_source('hdfs://user/hadoop/in')
         output_data = u.create_data_source('hdfs://user/hadoop/out')
+        data_source_urls = {input_data.id: input_data.url,
+                            output_data.id: output_data.url}
 
         res = workflow_factory.get_workflow_xml(
             job, u.create_cluster(), job_exec.job_configs,
-            input_data, output_data, 'hadoop')
+            input_data, output_data, 'hadoop', data_source_urls)
 
         self.assertIn("""
       <configuration>
@@ -202,10 +210,12 @@ class TestJobManager(base.SaharaWithDbTestCase):
 
         input_data = u.create_data_source('swift://ex/i')
         output_data = u.create_data_source('swift://ex/o')
+        data_source_urls = {input_data.id: input_data.url,
+                            output_data.id: output_data.url}
 
         res = workflow_factory.get_workflow_xml(
             job, u.create_cluster(), job_exec.job_configs,
-            input_data, output_data, 'hadoop')
+            input_data, output_data, 'hadoop', data_source_urls)
 
         if streaming:
             self.assertIn("""
@@ -247,7 +257,7 @@ class TestJobManager(base.SaharaWithDbTestCase):
 
             res = workflow_factory.get_workflow_xml(
                 job, u.create_cluster(), job_exec.job_configs,
-                input_data, output_data, 'hadoop')
+                input_data, output_data, 'hadoop', data_source_urls)
 
             self.assertIn("""
         <property>
@@ -368,10 +378,12 @@ class TestJobManager(base.SaharaWithDbTestCase):
 
         input_data = u.create_data_source('swift://ex/i')
         output_data = u.create_data_source('swift://ex/o')
+        data_source_urls = {input_data.id: input_data.url,
+                            output_data.id: output_data.url}
 
         res = workflow_factory.get_workflow_xml(
             job, u.create_cluster(), job_exec.job_configs,
-            input_data, output_data, 'hadoop')
+            input_data, output_data, 'hadoop', data_source_urls)
 
         doc = xml.parseString(res)
         hive = doc.getElementsByTagName('hive')[0]
@@ -399,7 +411,7 @@ class TestJobManager(base.SaharaWithDbTestCase):
 
         res = workflow_factory.get_workflow_xml(
             job, u.create_cluster(), job_exec.job_configs,
-            input_data, output_data, 'hadoop')
+            input_data, output_data, 'hadoop', data_source_urls)
 
         doc = xml.parseString(res)
         hive = doc.getElementsByTagName('hive')[0]
@@ -520,7 +532,7 @@ class TestJobManager(base.SaharaWithDbTestCase):
     @mock.patch('sahara.conductor.API.data_source_get')
     def test_get_data_sources(self, ds):
         def _conductor_data_source_get(ctx, id):
-            return "obj_" + id
+            return mock.Mock(id=id, url="obj_" + id)
 
         job, job_exec = u.create_job_exec(edp.JOB_TYPE_PIG)
 
@@ -529,10 +541,10 @@ class TestJobManager(base.SaharaWithDbTestCase):
 
         ds.side_effect = _conductor_data_source_get
         input_source, output_source = (
-            job_utils.get_data_sources(job_exec, job))
+            job_utils.get_data_sources(job_exec, job, {}))
 
-        self.assertEqual('obj_s1', input_source)
-        self.assertEqual('obj_s2', output_source)
+        self.assertEqual('obj_s1', input_source.url)
+        self.assertEqual('obj_s2', output_source.url)
 
     def test_get_data_sources_java(self):
         configs = {sw.HADOOP_SWIFT_USERNAME: 'admin',
@@ -547,7 +559,7 @@ class TestJobManager(base.SaharaWithDbTestCase):
         job, job_exec = u.create_job_exec(edp.JOB_TYPE_JAVA, configs)
 
         input_source, output_source = (
-            job_utils.get_data_sources(job_exec, job))
+            job_utils.get_data_sources(job_exec, job, {}))
 
         self.assertIsNone(input_source)
         self.assertIsNone(output_source)
