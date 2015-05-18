@@ -481,14 +481,19 @@ def cluster_template_update(context, values, ignore_default=False):
             )
         cluster_template.update(values)
 
-        model_query(m.TemplatesRelation, context, session=session).filter_by(
-            cluster_template_id=cluster_template_id).delete()
+        # If node_groups has not been specified, then we are
+        # keeping the old ones so don't delete!
+        if node_groups:
+            model_query(m.TemplatesRelation,
+                        context, session=session).filter_by(
+                cluster_template_id=cluster_template_id).delete()
 
-        for ng in node_groups:
-            node_group = m.TemplatesRelation()
-            node_group.update(ng)
-            node_group.update({"cluster_template_id": cluster_template_id})
-            session.add(node_group)
+            for ng in node_groups:
+                node_group = m.TemplatesRelation()
+                node_group.update(ng)
+                node_group.update({"cluster_template_id":
+                                   cluster_template_id})
+                session.add(node_group)
 
     return cluster_template_get(context, cluster_template_id)
 
