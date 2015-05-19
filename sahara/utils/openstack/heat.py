@@ -49,7 +49,7 @@ def client():
 
 def get_stack(stack_name):
     heat = client()
-    for stack in heat.stacks.list():
+    for stack in base.execute_with_retries(heat.stacks.list):
         if stack.stack_name == stack_name:
             return stack
 
@@ -62,7 +62,12 @@ def wait_stack_completion(stack):
     # maybe is not set in heat database
     while stack.status in ['IN_PROGRESS', '']:
         context.sleep(1)
-        stack.get()
+        base.execute_with_retries(stack.get)
 
     if stack.status != 'COMPLETE':
         raise ex.HeatStackException(stack.stack_status)
+
+
+def get_resource(stack, resource):
+    return base.execute_with_retries(
+        client().resources.get, stack, resource)
