@@ -27,10 +27,10 @@ To create cloudera images follow these steps:
 
 1. Clone repository "https://github.com/openstack/sahara-image-elements" locally.
 
-2. Run the diskimage-create.sh script.
+2. Use tox to build images.
 
-   You can run the script diskimage-create.sh in any directory (for example, in
-   your home directory). By default this script will attempt to create cloud
+   You can run "tox -e venv -- sahara-image-create" command in sahara-image-elements
+   directory to build images. By default this script will attempt to create cloud
    images for all versions of supported plugins and all operating systems
    (subset of Ubuntu, Fedora, and CentOS depending on plugin). To only create
    Cloudera images, you should use the "-p cloudera" parameter in the command
@@ -44,21 +44,21 @@ To create cloudera images follow these steps:
 
    .. sourcecode:: console
 
-      bash diskimage-create.sh -p cloudera -v 5.3
+      tox -e venv -- sahara-image-create -p cloudera -v 5.3
 
    If you want to create only an Ubuntu image, you may use following example
    for that.
 
    .. sourcecode:: console
 
-      bash diskimage-create.sh -p cloudera -i ubuntu -v 5.3
+      tox -e venv -- sahara-image-create -p cloudera -i ubuntu -v 5.3
 
    NOTE: If you don't want to use default values, you should explicitly set the
    values of your required parameters.
 
    The script will create required cloud images using image elements that install
    all the necessary packages and configure them. You will find the created
-   images in the current directory.
+   images in the parent directory.
 
 .. note::
 
@@ -77,8 +77,3 @@ To create cloudera images follow these steps:
 
 For finer control of diskimage-create.sh see the `official documentation
 <https://github.com/openstack/sahara-image-elements/blob/master/diskimage-create/README.rst>`_
-or run:
-
-.. sourcecode:: console
-
-   $ diskimage-create.sh -h
