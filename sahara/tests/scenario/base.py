@@ -117,6 +117,10 @@ class BaseTestCase(base.BaseTestCase):
         cl_tmpl_id = self._create_cluster_template()
         self.cluster_id = self._create_cluster(cl_tmpl_id)
         self._poll_cluster_status_tracked(self.cluster_id)
+        cluster = self.sahara.get_cluster(self.cluster_id, show_progress=True)
+        if not getattr(cluster, "provision_progress", None):
+            return
+        self._check_event_logs(cluster)
 
     @track_result("Check transient")
     def check_transient(self):
@@ -356,8 +360,8 @@ class BaseTestCase(base.BaseTestCase):
 
         return self.__create_cluster_template(**kwargs)
 
-    def _check_event_log_feature(self, cluster_id):
-        cluster = self.sahara.get_cluster(cluster_id, show_progress=True)
+    @track_result("Check event logs")
+    def _check_event_logs(self, cluster):
         invalid_steps = []
         if cluster.is_transient:
             # skip event log testing
@@ -409,7 +413,6 @@ class BaseTestCase(base.BaseTestCase):
                 if status == 'Error':
                     raise exc.TempestException("Cluster in %s state" % status)
                 time.sleep(3)
-        self._check_event_log_feature(cluster_id)
 
     # client ops
 
