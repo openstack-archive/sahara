@@ -101,6 +101,8 @@ class Context(context.RequestContext):
             'service_catalog': self.service_catalog,
             'username': self.username,
             'tenant_name': self.tenant_name,
+            'user_name': self.username,
+            'project_name': self.tenant_name,
             'is_admin': self.is_admin,
             'roles': self.roles,
             'auth_uri': self.auth_uri,
@@ -130,14 +132,6 @@ class Context(context.RequestContext):
     @tenant_id.setter
     def tenant_id(self, value):
         self.tenant = value
-
-    @property
-    def user_name(self):
-        return self.username
-
-    @property
-    def project_name(self):
-        return self.tenant_name
 
 
 def get_admin_context():
