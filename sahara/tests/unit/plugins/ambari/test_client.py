@@ -143,3 +143,33 @@ class AmbariClientTestCase(base.SaharaTestCase):
         self.http_client.put.assert_called_with(
             "http://1.2.3.4:8080/api/v1/users/bart", data=exp_req,
             verify=False, auth=client._auth, headers=self.headers)
+
+    def test_create_blueprint(self):
+        client = ambari_client.AmbariClient(self.instance)
+        resp = mock.Mock()
+        resp.text = ""
+        resp.status_code = 200
+        self.http_client.post.return_value = resp
+        client.create_blueprint("cluster_name", {"some": "data"})
+        self.http_client.post.assert_called_with(
+            "http://1.2.3.4:8080/api/v1/blueprints/cluster_name",
+            data=jsonutils.dumps({"some": "data"}), verify=False,
+            auth=client._auth, headers=self.headers)
+
+    def test_create_cluster(self):
+        client = ambari_client.AmbariClient(self.instance)
+        resp = mock.Mock()
+        resp.text = """{
+    "Requests": {
+        "id": 1,
+        "status": "InProgress"
+    }
+}"""
+        resp.status_code = 200
+        self.http_client.post.return_value = resp
+        req_info = client.create_cluster("cluster_name", {"some": "data"})
+        self.assertEqual(1, req_info["id"])
+        self.http_client.post.assert_called_with(
+            "http://1.2.3.4:8080/api/v1/clusters/cluster_name",
+            data=jsonutils.dumps({"some": "data"}), verify=False,
+            auth=client._auth, headers=self.headers)

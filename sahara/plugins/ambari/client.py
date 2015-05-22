@@ -70,6 +70,12 @@ class AmbariClient(object):
         data = self.check_response(resp)
         return data.get("items", [])
 
+    def get_host_info(self, host):
+        url = self._base_url + "/hosts/%s" % host
+        resp = self.get(url)
+        data = self.check_response(resp)
+        return data.get("Hosts", {})
+
     def update_user_password(self, user, old_password, new_password):
         url = self._base_url + "/users/%s" % user
         data = jsonutils.dumps({
@@ -79,4 +85,33 @@ class AmbariClient(object):
             }
         })
         resp = self.put(url, data=data)
+        self.check_response(resp)
+
+    def create_blueprint(self, name, data):
+        url = self._base_url + "/blueprints/%s" % name
+        resp = self.post(url, data=jsonutils.dumps(data))
+        self.check_response(resp)
+
+    def create_cluster(self, name, data):
+        url = self._base_url + "/clusters/%s" % name
+        resp = self.post(url, data=jsonutils.dumps(data))
+        return self.check_response(resp).get("Requests")
+
+    def check_request_status(self, cluster_name, req_id):
+        url = self._base_url + "/clusters/%s/requests/%d" % (cluster_name,
+                                                             req_id)
+        resp = self.get(url)
+        return self.check_response(resp).get("Requests")
+
+    def set_up_mirror(self, stack_version, os_type, repo_id, repo_url):
+        url = self._base_url + (
+            "/stacks/HDP/versions/%s/operating_systems/%s/repositories/%s") % (
+                stack_version, os_type, repo_id)
+        data = {
+            "Repositories": {
+                "base_url": repo_url,
+                "verify_base_url": True
+            }
+        }
+        resp = self.put(url, data=jsonutils.dumps(data))
         self.check_response(resp)

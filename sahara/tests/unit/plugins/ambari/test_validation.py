@@ -40,7 +40,14 @@ class AmbariValidationTestCase(base.SaharaTestCase):
         self.plugin = plugin.AmbariPluginProvider()
 
     def test_cluster_with_ambari(self):
-        cluster = make_cluster({1: [p_common.AMBARI_SERVER]})
+        cluster = make_cluster({1: [p_common.AMBARI_SERVER,
+                                    p_common.ZOOKEEPER_SERVER,
+                                    p_common.NAMENODE,
+                                    p_common.DATANODE,
+                                    p_common.RESOURCEMANAGER,
+                                    p_common.NODEMANAGER,
+                                    p_common.HISTORYSERVER,
+                                    p_common.APP_TIMELINE_SERVER]})
         with mock.patch("sahara.plugins.ambari.validation.conductor") as p:
             p.cluster_get = mock.Mock()
             p.cluster_get.return_value = cluster
