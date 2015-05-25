@@ -149,7 +149,7 @@ in the third section:
   # This is named for the plugin and version.
   # It may contain fields for both node group and cluster templates.
   flavor_id = 4
-  neutron_mangement_network = 9973da0b-68eb-497d-bd48-d85aca37f088
+  neutron_management_network = 9973da0b-68eb-497d-bd48-d85aca37f088
 
   [vanilla]
   # This is named for the plugin.
