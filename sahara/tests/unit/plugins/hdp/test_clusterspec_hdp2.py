@@ -641,8 +641,8 @@ class ClusterSpecTestForHDP2(sahara_base.SaharaTestCase):
 
         node_groups = cluster_config.node_groups
         self.assertEqual(2, len(node_groups))
-        master_node_group = node_groups['master']
-        self.assertEqual('master', master_node_group.name)
+        master_node_group = node_groups['MASTER']
+        self.assertEqual('MASTER', master_node_group.name)
         self.assertIsNone(master_node_group.predicate)
         self.assertEqual('1', master_node_group.cardinality)
         self.assertEqual(8, len(master_node_group.components))
@@ -655,8 +655,8 @@ class ClusterSpecTestForHDP2(sahara_base.SaharaTestCase):
         self.assertIn('AMBARI_SERVER', master_node_group.components)
         self.assertIn('ZOOKEEPER_SERVER', master_node_group.components)
 
-        slave_node_group = node_groups['slave']
-        self.assertEqual('slave', slave_node_group.name)
+        slave_node_group = node_groups['SLAVE']
+        self.assertEqual('SLAVE', slave_node_group.name)
         self.assertIsNone(slave_node_group.predicate)
         self.assertEqual('1+', slave_node_group.cardinality)
         self.assertEqual(5, len(slave_node_group.components))
@@ -735,7 +735,7 @@ class ClusterSpecTestForHDP2(sahara_base.SaharaTestCase):
         for i in range(2):
             node_group = node_groups[i]
             components = node_group.node_processes
-            if node_group.name == "master":
+            if node_group.name == "MASTER":
                 contains_master_group = True
                 self.assertEqual(8, len(components))
                 self.assertIn('NAMENODE', components)
@@ -748,7 +748,7 @@ class ClusterSpecTestForHDP2(sahara_base.SaharaTestCase):
                 self.assertIn('ZOOKEEPER_SERVER', components)
                 # TODO(jspeidel): node configs
                 # TODO(jspeidel): vm_requirements
-            elif node_group.name == 'slave':
+            elif node_group.name == 'SLAVE':
                 contains_slave_group = True
                 self.assertEqual(5, len(components))
                 self.assertIn('DATANODE', components)
