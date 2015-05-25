@@ -20,6 +20,7 @@ from keystoneclient.auth.identity import v3 as identity_v3
 from keystoneclient import session
 from neutronclient.neutron import client as neutron_client
 from novaclient import client as nova_client
+from novaclient import exceptions as nova_exc
 from oslo_utils import uuidutils
 from saharaclient.api import base as saharaclient_base
 from saharaclient import client as sahara_client
@@ -166,6 +167,18 @@ class NovaClient(Client):
                 return image.id
 
         raise exc.NotFound(image_name)
+
+    def delete_keypair(self, key_name):
+        return self.delete_resource(
+            self.nova_client.keypairs.delete, key_name)
+
+    def is_resource_deleted(self, method, *args, **kwargs):
+        try:
+            method(*args, **kwargs)
+        except nova_exc.NotFound as ex:
+            return ex.code == 404
+
+        return False
 
 
 class NeutronClient(Client):

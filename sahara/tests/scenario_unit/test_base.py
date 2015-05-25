@@ -137,6 +137,7 @@ class TestBase(testtools.TestCase):
         }
         self.base_scenario.ng_id_map = {'worker': 'set_id', 'master': 'set_id'}
         self.base_scenario.ng_name_map = {}
+        self.base_scenario.key_name = 'test_key'
         self.base_scenario.template_path = ('sahara/tests/scenario/templates/'
                                             'vanilla/2.6.0')
         self.job = self.base_scenario.testcase["edp_jobs_flow"].get(

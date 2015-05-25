@@ -28,11 +28,13 @@ from oslo_utils import timeutils
 import prettytable
 import six
 from tempest_lib import base
+from tempest_lib.common import ssh as connection
 from tempest_lib import exceptions as exc
 
 from sahara.tests.scenario import clients
 from sahara.tests.scenario import timeouts
 from sahara.tests.scenario import utils
+from sahara.utils import crypto as ssh
 
 
 logger = logging.getLogger('swiftclient')
@@ -84,6 +86,10 @@ class BaseTestCase(base.BaseTestCase):
         super(BaseTestCase, self).setUp()
         self._init_clients()
         timeouts.Defaults.init_defaults(self.testcase)
+        self.testcase['ssh_username'] = self.sahara.sahara_client.images.get(
+            self.nova.get_image_id(self.testcase['image'])).username
+        self.private_key, self.public_key = ssh.generate_key_pair()
+        self.key_name = self.__create_keypair()
         self.plugin_opts = {
             'plugin_name': self.testcase['plugin_name'],
             'hadoop_version': self.testcase['plugin_version']
@@ -325,7 +331,6 @@ class BaseTestCase(base.BaseTestCase):
             kwargs['floating_ip_pool'] = floating_ip_pool
             ng_id = self.__create_node_group_template(**kwargs)
             ng_id_map[ng['name']] = ng_id
-
         return ng_id_map
 
     @track_result("Create cluster template")
@@ -395,6 +400,7 @@ class BaseTestCase(base.BaseTestCase):
         kwargs['cluster_template_id'] = cluster_template_id
         kwargs['default_image_id'] = self.nova.get_image_id(
             self.testcase['image'])
+        kwargs['user_keypair_id'] = self.key_name
 
         return self.__create_cluster(**kwargs)
 
@@ -413,6 +419,11 @@ class BaseTestCase(base.BaseTestCase):
                 if status == 'Error':
                     raise exc.TempestException("Cluster in %s state" % status)
                 time.sleep(3)
+
+    def _run_command_on_node(self, node_ip, command):
+        ssh_session = connection.Client(node_ip, self.testcase['ssh_username'],
+                                        pkey=self.private_key)
+        return ssh_session.exec_command(command)
 
     # client ops
 
@@ -476,6 +487,14 @@ class BaseTestCase(base.BaseTestCase):
         if not self.testcase['retain_resources']:
             self.addCleanup(self.swift.delete_object, container_name,
                             object_name)
+
+    def __create_keypair(self):
+        key = utils.rand_name('scenario_key')
+        self.nova.nova_client.keypairs.create(key,
+                                              public_key=self.public_key)
+        if not self.testcase['retain_resources']:
+            self.addCleanup(self.nova.delete_keypair, key)
+        return key
 
     def tearDown(self):
         tbs = []

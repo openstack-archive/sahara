@@ -68,7 +68,7 @@ class RunnerUnitTest(testtools.TestCase):
                     "plugin_name": "vanilla",
                     "scenario": ['run_jobs', 'scale', 'run_jobs'],
                     "plugin_version": "2.6.0",
-                    "retain_resources": False
+                    "retain_resources": False,
                 }],
         }
 
