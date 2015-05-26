@@ -57,3 +57,7 @@ class PluginUtilsV5(pu.AbstractPluginUtils):
     def start_cloudera_manager(self, cluster):
         self._start_cloudera_manager(
             cluster, c_helper.AWAIT_MANAGER_STARTING_TIMEOUT)
+
+    def get_config_value(self, service, name, cluster=None):
+        configs = c_helper.get_plugin_configs()
+        return self._get_config_value(service, name, configs, cluster)
