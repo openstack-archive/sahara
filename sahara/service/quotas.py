@@ -139,7 +139,7 @@ def _sub_limit(total, used):
 def _get_nova_limits():
     limits = {}
     nova = nova_client.client()
-    lim = nova.limits.get().to_dict()['absolute']
+    lim = b.execute_with_retries(nova.limits.get).to_dict()['absolute']
     limits['ram'] = _sub_limit(lim['maxTotalRAMSize'], lim['totalRAMUsed'])
     limits['cpu'] = _sub_limit(lim['maxTotalCores'], lim['totalCoresUsed'])
     limits['instances'] = _sub_limit(lim['maxTotalInstances'],

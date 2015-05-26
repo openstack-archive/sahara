@@ -22,6 +22,7 @@ from sahara import exceptions as ex
 from sahara.i18n import _
 from sahara.i18n import _LE
 from sahara.utils import cluster_progress_ops as cpo
+from sahara.utils.openstack import base as b
 from sahara.utils.openstack import cinder
 from sahara.utils.openstack import nova
 from sahara.utils import poll_utils
@@ -127,8 +128,8 @@ def _create_attach_volume(ctx, instance, size, volume_type,
     conductor.append_volume(ctx, instance, volume.id)
     _await_available(volume)
 
-    resp = nova.client().volumes.create_server_volume(
-        instance.instance_id, volume.id, None)
+    resp = b.execute_with_retries(nova.client().volumes.create_server_volume,
+                                  instance.instance_id, volume.id, None)
     return resp.device
 
 
@@ -168,7 +169,8 @@ def mount_to_instances(instances):
 
 
 def _find_instance_volume_devices(instance):
-    volumes = nova.client().volumes.get_server_volumes(instance.instance_id)
+    volumes = b.execute_with_retries(nova.client().volumes.get_server_volumes,
+                                     instance.instance_id)
     devices = [volume.device for volume in volumes]
     return devices
 
@@ -222,8 +224,8 @@ def _detach_volume(instance, volume_id):
     volume = cinder.get_volume(volume_id)
     try:
         LOG.debug("Detaching volume {id} from instance".format(id=volume_id))
-        nova.client().volumes.delete_server_volume(instance.instance_id,
-                                                   volume_id)
+        b.execute_with_retries(nova.client().volumes.delete_server_volume,
+                               instance.instance_id, volume_id)
     except Exception:
         LOG.error(_LE("Can't detach volume {id}").format(id=volume.id))
 

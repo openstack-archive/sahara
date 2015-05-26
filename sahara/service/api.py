@@ -225,7 +225,8 @@ def construct_ngs_for_scaling(cluster, additional_node_groups):
 
 
 def get_images(name, tags):
-    return nova.client().images.list_registered(name, tags)
+    return b.execute_with_retries(
+        nova.client().images.list_registered, name, tags)
 
 
 def get_image(**kwargs):
