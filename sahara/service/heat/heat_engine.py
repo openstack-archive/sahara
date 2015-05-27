@@ -38,17 +38,6 @@ class HeatEngine(e.Engine):
     def get_type_and_version(self):
         return "heat.2.0"
 
-    def _add_volumes(self, ctx, cluster):
-        for instance in g.get_instances(cluster):
-            res_names = heat.get_resource(
-                cluster.name, instance.instance_name).required_by
-            for res_name in res_names:
-                vol_res = heat.get_resource(cluster.name, res_name)
-                if vol_res.resource_type == (('OS::Cinder::'
-                                              'VolumeAttachment')):
-                    volume_id = vol_res.physical_resource_id
-                    conductor.append_volume(ctx, instance, volume_id)
-
     def create_cluster(self, cluster):
         self._update_rollback_strategy(cluster, shutdown=True)
 
@@ -58,10 +47,6 @@ class HeatEngine(e.Engine):
         self._nullify_ng_counts(cluster)
 
         launcher.launch_instances(cluster, target_count)
-
-        ctx = context.ctx()
-        cluster = conductor.cluster_get(ctx, cluster)
-        self._add_volumes(ctx, cluster)
 
         self._update_rollback_strategy(cluster)
 
