@@ -184,7 +184,7 @@ def start_patch(patch_templates=True):
             if self.name == 'test':
                 return ['vanilla', '1.2.1']
             else:
-                return ['wrong_tag']
+                return ['vanilla', 'wrong_tag']
 
     def _get_image(id):
         if id == '550e8400-e29b-41d4-a716-446655440000':
@@ -414,7 +414,7 @@ class ValidationTestCase(base.SaharaTestCase):
         self._assert_create_object_validation(
             data=data,
             bad_req_i=(1, 'INVALID_REFERENCE',
-                       "Tags of requested image "
+                       "Requested image "
                        "'813fe450-40d2-4acc-ade5-ea753a1bd5bc' "
-                       "don't contain required tags "
-                       "['vanilla', '1.2.1']"))
+                       "doesn't contain required tags: "
+                       "['1.2.1']"))
