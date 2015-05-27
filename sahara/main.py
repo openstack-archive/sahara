@@ -123,7 +123,8 @@ def make_app():
         context.set_ctx(None)
         return api_utils.render({
             "versions": [
-                {"id": "v1.0", "status": "CURRENT"}
+                {"id": "v1.0", "status": "SUPPORTED"},
+                {"id": "v1.1", "status": "CURRENT"}
             ]
         })
 
