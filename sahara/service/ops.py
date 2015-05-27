@@ -305,6 +305,7 @@ def _provision_scaled_cluster(cluster_id, node_group_id_map):
     _("Terminating cluster failed for the following reason(s): {reason}"))
 def terminate_cluster(cluster_id):
     ctx = context.ctx()
+    job_manager.update_job_statuses(cluster_id=cluster_id)
     cluster = conductor.cluster_get(ctx, cluster_id)
     plugin = plugin_base.PLUGINS.get_plugin(cluster.plugin_name)
 

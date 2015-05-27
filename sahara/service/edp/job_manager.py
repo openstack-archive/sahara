@@ -189,9 +189,12 @@ def get_job_status(job_execution_id):
     return job_execution
 
 
-def update_job_statuses():
+def update_job_statuses(cluster_id=None):
     ctx = context.ctx()
-    for je in conductor.job_execution_get_all(ctx, end_time=None):
+    kwargs = {'end_time': None}
+    if cluster_id:
+        kwargs.update({'cluster_id': cluster_id})
+    for je in conductor.job_execution_get_all(ctx, **kwargs):
         try:
             get_job_status(je.id)
         except Exception as e:
