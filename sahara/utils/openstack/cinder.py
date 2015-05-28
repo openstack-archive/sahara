@@ -98,4 +98,4 @@ def check_cinder_exists():
 
 
 def get_volume(volume_id):
-    return client().volumes.get(volume_id)
+    return base.execute_with_retries(client().volumes.get, volume_id)
