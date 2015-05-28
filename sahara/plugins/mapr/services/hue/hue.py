@@ -87,7 +87,7 @@ class Hue(s.Service):
         rdbms_specs = mysql.MySQL.RDBMS_SPECS
 
         result = {
-            'db_host': db_instance.fqdn(),
+            'db_host': db_instance.internal_ip,
             'hue_name': hue_specs.db_name,
             'hue_user': hue_specs.user,
             'hue_password': hue_specs.password,
@@ -111,7 +111,7 @@ class Hue(s.Service):
         if hive_host:
             hive_service = context.get_service(hive.HIVE_METASTORE)
             result.update({
-                'hive_host': hive_host.management_ip,
+                'hive_host': hive_host.internal_ip,
                 'hive_version': hive_service.version,
                 'hive_conf_dir': hive_service.conf_dir(context),
             })

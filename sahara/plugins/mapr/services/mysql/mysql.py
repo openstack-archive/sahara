@@ -128,7 +128,7 @@ class MySQL(s.Service):
                 args = {
                     'user': MySQL.METASTORE_SPECS.user,
                     'password': MySQL.METASTORE_SPECS.password,
-                    'host': instance.management_ip,
+                    'host': instance.internal_ip,
                     'path': script.remote_path
                 }
                 cmd = 'mysql -h{host} -u{user} -p{password} < {path}'
@@ -197,7 +197,7 @@ class MySQL(s.Service):
     @staticmethod
     def _grant_access(instance, specs, instances):
         f_name = 'grant_access_%s.sql' % specs.db_name
-        ips = [i.management_ip for i in instances]
+        ips = [i.internal_ip for i in instances]
         user_hosts = MySQL.get_user_hosts(instance, specs.user)
         script = MySQL._create_script_obj(f_name, 'grant_access.sql',
                                           hosts=set(ips)-set(user_hosts),

@@ -206,13 +206,14 @@ class BaseConfigurer(ac.AbstractConfigurer):
 
     def _update_cluster_info(self, cluster_context):
         LOG.debug('Updating UI information.')
-        info = dict()
+        info = {}
         for service in cluster_context.cluster_services:
             for uri_info in service.ui_info:
                 title, process, url = uri_info
+                instance = cluster_context.get_instance(process)
                 info.update({
                     title: {
-                        'WebUI': url % cluster_context.get_instance_ip(process)
+                        'WebUI': url % instance.management_ip
                     }
                 })
 
@@ -258,7 +259,7 @@ class BaseConfigurer(ac.AbstractConfigurer):
 
         db_specs = dict(mysql.MySQL.METRICS_SPECS._asdict())
         db_specs.update({
-            'host': mysql.MySQL.get_db_instance(cluster_context).fqdn(),
+            'host': mysql.MySQL.get_db_instance(cluster_context).internal_ip,
             'port': mysql.MySQL.MYSQL_SERVER_PORT,
         })
 

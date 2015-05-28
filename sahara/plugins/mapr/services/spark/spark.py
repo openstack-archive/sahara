@@ -33,7 +33,7 @@ class SparkMaster(np.NodeProcess):
     _submit_port = SPARK_MASTER_PORT
 
     def submit_url(self, cluster_context):
-        host = cluster_context.get_instance(self).fqdn()
+        host = cluster_context.get_instance(self).internal_ip
         args = {'host': host, 'port': self.submit_port(cluster_context)}
         return 'spark://%(host)s:%(port)s' % args
 
@@ -158,7 +158,7 @@ class Spark(s.Service):
 
     def _generate_slaves_file(self, cluster_context):
         slaves = cluster_context.get_instances(SPARK_SLAVE)
-        return '\n'.join(map(lambda i: i.fqdn(), slaves))
+        return '\n'.join(map(lambda i: i.internal_ip, slaves))
 
     def _create_hadoop_spark_dirs(self, cluster_context):
         path = '/apps/spark'
