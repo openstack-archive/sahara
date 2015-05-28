@@ -190,7 +190,7 @@ class ClusterSpec(object):
         # get node_groups from config
         if template_json and not cluster:
             for group in template_json['host_role_mappings']:
-                node_group = NodeGroup(group['name'].lower())
+                node_group = NodeGroup(group['name'])
                 for component in group['components']:
                     node_group.add_component(component['name'])
                 for host in group['hosts']:
@@ -206,7 +206,7 @@ class ClusterSpec(object):
             self.node_groups = {}
             node_groups = cluster.node_groups
             for ng in node_groups:
-                node_group = NodeGroup(ng.name.lower())
+                node_group = NodeGroup(ng.name)
                 node_group.count = ng.count
                 node_group.id = ng.id
                 node_group.components = ng.node_processes[:]
