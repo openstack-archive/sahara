@@ -36,7 +36,7 @@ LOG = logging.getLogger(__name__)
 
 class HeatEngine(e.Engine):
     def get_type_and_version(self):
-        return "heat.2.0"
+        return "heat.3.0"
 
     def create_cluster(self, cluster):
         self._update_rollback_strategy(cluster, shutdown=True)
@@ -127,8 +127,10 @@ class HeatEngine(e.Engine):
         new_ids = []
 
         for node_group in cluster.node_groups:
-            nova_ids = stack.get_node_group_instances(node_group)
-            for name, nova_id in nova_ids:
+            instances = stack.get_node_group_instances(node_group)
+            for instance in instances:
+                nova_id = instance['physical_id']
+                name = instance['name']
                 if nova_id not in old_ids:
                     instance_id = conductor.instance_add(
                         ctx, node_group, {"instance_id": nova_id,
