@@ -170,8 +170,8 @@ def ops_error_handler(description):
                     return
 
                 msg = six.text_type(ex)
-                LOG.error(_LE("Error during operating on cluster (reason: "
-                              "{reason})").format(reason=msg))
+                LOG.exception(_LE("Error during operating on cluster (reason: "
+                                  "{reason})").format(reason=msg))
 
                 try:
                     # trying to rollback
@@ -189,7 +189,7 @@ def ops_error_handler(description):
                                   " Canceling current operation.")
                         return
 
-                    LOG.error(
+                    LOG.exception(
                         _LE("Error during rollback of cluster (reason:"
                             " {reason})").format(reason=six.text_type(rex)))
                     desc = "{0}, {1}".format(msg, six.text_type(rex))
