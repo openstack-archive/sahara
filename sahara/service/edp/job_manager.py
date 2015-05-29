@@ -166,7 +166,7 @@ def cancel_job(job_execution_id):
                     ctx, job_execution_id)
                 if not job_execution:
                     LOG.info(_LI("Job execution was deleted. "
-                                 "Canceling current operation.").format)
+                                 "Canceling current operation."))
                     return job_execution
             else:
                 LOG.info(_LI("Job execution status: {status}").format(
