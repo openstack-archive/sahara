@@ -55,6 +55,7 @@ cloudera plugin versions:
   + Cluster must contain exactly one manager.
   + Cluster must contain exactly one namenode.
   + Cluster must contain exactly one secondarynamenode.
+  + Cluster must contain at least ``dfs_replication`` datanodes.
   + Cluster can contain at most one resourcemanager and this process is also
     required by nodemanager.
   + Cluster can contain at most one jobhistory and this process is also
