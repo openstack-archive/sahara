@@ -254,7 +254,7 @@ SCHEMA = {
                         "type": "array",
                         "items": {
                             "type": "string",
-                            "enum": ["run_jobs", "scale", "transient"]
+                            "minLength": 1
                         }
                     },
                     "edp_jobs_flow": {
