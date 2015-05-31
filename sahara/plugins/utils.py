@@ -13,6 +13,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import itertools
+
 from oslo_utils import netutils
 from six.moves.urllib import parse as urlparse
 
@@ -32,7 +34,7 @@ def get_instances_count(cluster, node_process=None):
 
 def get_instances(cluster, node_process=None):
     nodes = get_node_groups(cluster, node_process)
-    return reduce(lambda a, b: a + b.instances, nodes, [])
+    return list(itertools.chain(*[node.instances for node in nodes]))
 
 
 def get_instance(cluster, node_process):
