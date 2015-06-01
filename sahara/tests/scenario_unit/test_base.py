@@ -55,9 +55,10 @@ class FakeCluster(object):
 
 
 class FakeResponse(object):
-    def __init__(self, set_id=None, set_status=None):
+    def __init__(self, set_id=None, set_status=None, node_groups=None):
         self.id = set_id
         self.status = set_status
+        self.node_groups = node_groups
 
 
 class TestBase(testtools.TestCase):
@@ -142,6 +143,7 @@ class TestBase(testtools.TestCase):
                                             'vanilla/2.6.0')
         self.job = self.base_scenario.testcase["edp_jobs_flow"].get(
             'test_flow')[0]
+        self.base_scenario.cluster_id = 'some_id'
         self.base_scenario.setUpClass()
         timeouts.Defaults.init_defaults(self.base_scenario.testcase)
 
@@ -410,3 +412,31 @@ class TestBase(testtools.TestCase):
         self.base_scenario._init_clients()
         with testtools.ExpectedException(exc.TempestException):
             self.base_scenario._poll_cluster_status('id_cluster')
+
+    @mock.patch('sahara.tests.scenario.clients.SaharaClient.__init__',
+                return_value=None)
+    def test_get_nodes_with_process(self, mock_init):
+        self.base_scenario._init_clients()
+        with mock.patch(
+                'sahara.tests.scenario.clients.SaharaClient.get_cluster',
+                return_value=FakeResponse(node_groups=[
+                    {
+                        'node_processes': 'test',
+                        'instances': ['test_instance']
+                    }
+                ])):
+            self.assertEqual(
+                ['test_instance'],
+                self.base_scenario._get_nodes_with_process('test')
+            )
+
+        with mock.patch(
+                'sahara.tests.scenario.clients.SaharaClient.get_cluster',
+                return_value=FakeResponse(node_groups=[
+                    {
+                        'node_processes': 'test',
+                        'instances': []
+                    }
+                ])):
+            self.assertEqual(
+                [], self.base_scenario._get_nodes_with_process('test'))
