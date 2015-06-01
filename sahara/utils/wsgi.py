@@ -389,9 +389,10 @@ class Server(object):
             try:
                 pid, status = os.wait()
                 if os.WIFEXITED(status) or os.WIFSIGNALED(status):
-                    LOG.error(_LE('Removing dead child %s'), pid)
-                    self.children.remove(pid)
-                    self.run_child()
+                    if pid in self.children:
+                        LOG.error(_LE('Removing dead child %s'), pid)
+                        self.children.remove(pid)
+                        self.run_child()
             except OSError as err:
                 if err.errno not in (errno.EINTR, errno.ECHILD):
                     raise
