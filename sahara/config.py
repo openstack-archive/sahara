@@ -113,6 +113,7 @@ log.set_defaults(default_log_levels=[
     'requests=WARN',
     'iso8601=WARN',
     'oslo_messaging=INFO',
+    'neutronclient=INFO',
 ])
 
 
