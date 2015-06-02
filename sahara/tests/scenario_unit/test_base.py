@@ -332,6 +332,8 @@ class TestBase(testtools.TestCase):
                              ['id_for_job_binaries'],
                              []))
 
+    @mock.patch('sahara.tests.scenario.base.BaseTestCase.check_cinder',
+                return_value=None)
     @mock.patch('sahara.tests.scenario.clients.SaharaClient.get_job_status',
                 return_value='SUCCEEDED')
     @mock.patch('saharaclient.api.base.ResourceManager._get',
@@ -360,7 +362,7 @@ class TestBase(testtools.TestCase):
                             mock_job_binaries, mock_job,
                             mock_node_group_template, mock_cluster_template,
                             mock_cluster, mock_cluster_status, mock_create,
-                            mock_get, mock_client):
+                            mock_get, mock_client, mock_cinder):
         self.base_scenario._init_clients()
         self.base_scenario.create_cluster()
         self.base_scenario.testcase["edp_jobs_flow"] = [
@@ -440,3 +442,27 @@ class TestBase(testtools.TestCase):
                 ])):
             self.assertEqual(
                 [], self.base_scenario._get_nodes_with_process('test'))
+
+    @mock.patch('keystoneclient.session.Session')
+    def test_get_node_list_with_volumes(self, mock_keystone):
+        self.base_scenario._init_clients()
+        with mock.patch(
+                'sahara.tests.scenario.clients.SaharaClient.get_cluster',
+                return_value=FakeResponse(node_groups=[
+                    {
+                        'node_processes': 'test',
+                        'volumes_per_node': 2,
+                        'volume_mount_prefix': 2,
+                        'instances': [
+                            {
+                                'management_ip': 'test_ip'
+                            }
+                        ]
+                    }
+                ])):
+            self.assertEqual(
+                [{
+                    'node_ip': 'test_ip',
+                    'volume_count': 2,
+                    'volume_mount_prefix': 2
+                }], self.base_scenario._get_node_list_with_volumes())
