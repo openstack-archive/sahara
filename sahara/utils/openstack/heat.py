@@ -47,11 +47,13 @@ def client():
                               insecure=CONF.heat.api_insecure)
 
 
-def get_stack(stack_name):
-    heat = client()
-    for stack in base.execute_with_retries(heat.stacks.list):
-        if stack.stack_name == stack_name:
-            return stack
+def get_stack(stack_name, raise_on_missing=True):
+    for stack in base.execute_with_retries(
+            client().stacks.list, filters={'name': stack_name}):
+        return stack
+
+    if not raise_on_missing:
+        return None
 
     raise ex.NotFoundException(_('Failed to find stack %(stack)s')
                                % {'stack': stack_name})
