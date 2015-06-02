@@ -177,7 +177,7 @@ class NodeGroupTemplateResource(Resource, objects.NodeGroupTemplate):
 
 
 class InstanceResource(Resource, objects.Instance):
-    _filter_fields = ['tenant_id', 'node_group_id']
+    _filter_fields = ['tenant_id', 'node_group_id', "volumes"]
 
     @property
     def cluster_id(self):
