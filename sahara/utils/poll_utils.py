@@ -49,9 +49,7 @@ timeouts_opts = [
     # volumes opts
     cfg.IntOpt(
         'detach_volume_timeout', default=300,
-        help='Timeout for detaching volumes from instance, in seconds',
-        deprecated_name='detach_volume_timeout',
-        deprecated_group=None),
+        help='Timeout for detaching volumes from instance, in seconds'),
 
     cfg.IntOpt('volume_available_timeout',
                default=DEFAULT_TIMEOUT,
