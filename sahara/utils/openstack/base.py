@@ -22,7 +22,6 @@ from six.moves.urllib import parse as urlparse
 
 from sahara import context
 from sahara import exceptions as ex
-from sahara.i18n import _LE
 from sahara.i18n import _LW
 
 LOG = logging.getLogger(__name__)
@@ -95,10 +94,9 @@ def execute_with_retries(method, *args, **kwargs):
                 retry_after = getattr(e, 'retry_after', 0)
                 context.sleep(max(retry_after, CONF.retries.retry_after))
             else:
-                LOG.error(_LE('Permanent error occured during "{method}" '
-                              'execution: {error_msg}.').format(
-                          method=method.__name__,
-                          error_msg=e))
+                LOG.debug('Permanent error occured during "{method}" '
+                          'execution: {error_msg}.'.format(
+                              method=method.__name__, error_msg=e))
                 raise e
     else:
         raise ex.MaxRetriesExceeded(attempts, method.__name__)
