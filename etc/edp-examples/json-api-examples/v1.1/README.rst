@@ -48,6 +48,15 @@ When the preconditions for a given example specify that you must have "an
 active Hadoop cluster", that cluster must be running an Oozie process in all
 cases, as sahara's EDP jobs are scheduled through Oozie in all Hadoop plugins.
 
+Swift Objects
+-------------
+
+Several of the examples here call for objects in Swift. To upload all of the
+required files for all examples, use the following:
+
+    $ cd etc/edp-examples
+    $ swift upload edp-examples ./*
+
 Swift credentials
 -----------------
 
@@ -57,6 +66,17 @@ when creating data sources, storing binaries, and executing jobs. Use of a
 store credentials.
 
 .. _swift proxy: http://docs.openstack.org/developer/sahara/userdoc/advanced.configuration.guide.html
+
+Swift containers
+----------------
+
+You may note that the container references in the data source creation JSON
+examples for Swift have the ``.sahara`` suffix on the container name, even
+though the data must be uploaded to the non-suffixed container. This suffix
+informs Hadoop that ``sahara`` is the provider for this data source. See the
+`hadoop swift`_ documentation for more information.
+
+.. _hadoop swift: http://docs.openstack.org/developer/sahara/userdoc/hadoop-swift.html
 
 REST API usage
 --------------
@@ -70,6 +90,7 @@ For new sahara REST users, reference to the `Sahara EDP API Documentation`_
 will be useful throughout these exercises.
 
 .. _Sahara EDP API Documentation: http://developer.openstack.org/api-ref-data-processing-v1.1.html
+
 
 Example 1: Pig, using swift
 ===========================
@@ -85,11 +106,11 @@ This example assumes the following:
    container ``edp-examples``, as follows:
 
    * The file at ``edp-examples/edp-pig/trim-spaces/example.pig`` is stored
-     at path ``pig-job/example.pig``.
-   * The file at ``edp-examples/edp-pig/trim-spaces/udf.jar`` is stored at
-     path ``pig-job/udf.jar``.
+     at path ``swift://edp-examples/edp-pig/trim-spaces/example.pig``.
+   * The file at ``edp-pig/trim-spaces/udf.jar`` is stored at
+     path ``swift://edp-examples/edp-pig/trim-spaces/udf.jar``.
    * The file at ``edp-examples/edp-pig/trim-spaces/data/input`` is stored at
-     path ``pig-job/data/input``.
+     path ``swift://edp-examples/edp-pig/trim-spaces/data/input``.
 
 Steps
 -----
@@ -132,8 +153,8 @@ This example assumes the following:
    master node's HDFS available at URL
    ``hdfs://hadoop-cluster-master-001:8020/``.
 3. In the demo user's project, the file at
-   ``edp-examples/edp-mapreduce/edp-mapreduce.jar`` is stored in swift in the
-   container ``edp-examples``, at path ``edp-mapreduce/edp-mapreduce.jar``.
+   ``edp-examples/edp-mapreduce/edp-mapreduce.jar`` is stored in swift, at
+   path ``swift://edp-examples/edp-mapreduce/edp-mapreduce.jar``.
 4. A text file exists in your Hadoop cluster's HDFS at path
    ``/user/edp-examples/edp-map-reduce/input``.
 
@@ -200,8 +221,8 @@ This example assumes the following:
 1. Usage of an OpenStack user named "demo", with password "password".
 2. An active Spark cluster exists in the demo user's project.
 3. In the demo user's project, the file at
-   ``edp-examples/edp-spark/spark-example.jar`` is stored in swift in the
-   container ``edp-examples``, at path ``edp-spark/spark-example.jar``.
+   ``edp-examples/edp-spark/spark-example.jar`` is stored in swift, at path
+   ``swift://edp-examples/edp-spark/spark-example.jar``.
 
 Steps
 -----

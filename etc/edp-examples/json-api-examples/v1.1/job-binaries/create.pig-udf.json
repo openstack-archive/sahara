@@ -1,7 +1,7 @@
 {
     "name": "udf.jar",
     "description": "An example pig UDF library",
-    "url": "swift://edp-examples/pig-job/udf.jar",
+    "url": "swift://edp-examples/edp-pig/trim-spaces/udf.jar",
     "extra": {
         "user": "demo",
         "password": "password"
