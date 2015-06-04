@@ -78,7 +78,8 @@ class HadoopXML(BaseConfigurationFile):
 
     def parse(self, content):
         configs = xml.parse_hadoop_xml_with_name_and_value(content)
-        map(lambda i: self.add_property(i['name'], i['value']), configs)
+        for cfg in configs:
+            self.add_property(cfg["name"], cfg["value"])
 
     def render(self):
         return xml.create_hadoop_xml(self._config_dict)
@@ -142,7 +143,7 @@ class EnvironmentConfig(BaseConfigurationFile):
 
     def parse(self, content):
         for line in content.splitlines():
-            line = line.strip().decode("utf-8")
+            line = six.text_type(line.strip())
             match = self._regex.match(line)
             if match:
                 name, value = match.groups()

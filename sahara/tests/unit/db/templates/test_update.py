@@ -221,7 +221,7 @@ class TemplateUpdateTestCase(base.ConductorManagerTestCase):
     def _write_files(self, tempdir, templates):
         files = []
         for template in templates:
-            fp = tempfile.NamedTemporaryFile(suffix=".json",
+            fp = tempfile.NamedTemporaryFile(suffix=".json", mode="w",
                                              dir=tempdir, delete=False)
             json.dump(template, fp)
             files.append(fp.name)
@@ -320,7 +320,7 @@ class TemplateUpdateTestCase(base.ConductorManagerTestCase):
         # Invalid JSON should cause all files to be skipped
         fp = tempfile.NamedTemporaryFile(suffix=".json",
                                          dir=tempdir, delete=False)
-        fp.write("not json")
+        fp.write(b"not json")
         files += [fp.name]
         fp.close()
         ng_templates, cl_templates = template_api.process_files(tempdir, files)

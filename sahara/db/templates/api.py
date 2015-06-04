@@ -294,7 +294,8 @@ def process_files(dirname, files):
                 fpath = os.path.join(dirname, fname)
                 with open(fpath, 'r') as fp:
                     try:
-                        template = json.load(fp)
+                        data = fp.read()
+                        template = json.loads(data)
                     except ValueError as e:
                         LOG.warning("Error processing {path}, {reason}".format(
                             path=fpath, reason=e))
@@ -343,7 +344,7 @@ def process_files(dirname, files):
                                   "files".format(path=fpath))
 
     except Handled as e:
-        log_skipping_dir(dirname, e.message)
+        log_skipping_dir(dirname, str(e))
         node_groups = []
         clusters = []
 

@@ -148,15 +148,17 @@ class ExecuteWithRetryTest(testbase.SaharaTestCase):
 
     def test_neutronclient_calls_without_retry(self):
         # check that following errors will not be retried
-        self._check_error_without_retry(neutron_exc.BadRequest, 400)
-        self._check_error_without_retry(neutron_exc.Forbidden, 403)
-        self._check_error_without_retry(neutron_exc.NotFound, 404)
-        self._check_error_without_retry(neutron_exc.Conflict, 409)
+        # neutron exception expects string in constructor
+        self._check_error_without_retry(neutron_exc.BadRequest, "400")
+        self._check_error_without_retry(neutron_exc.Forbidden, "403")
+        self._check_error_without_retry(neutron_exc.NotFound, "404")
+        self._check_error_without_retry(neutron_exc.Conflict, "409")
 
     def test_neutronclient_calls_with_retry(self):
         # check that following errors will be retried
-        self._check_error_with_retry(neutron_exc.InternalServerError, 500)
-        self._check_error_with_retry(neutron_exc.ServiceUnavailable, 503)
+        # neutron exception expects string in constructor
+        self._check_error_with_retry(neutron_exc.InternalServerError, "500")
+        self._check_error_with_retry(neutron_exc.ServiceUnavailable, "503")
 
     def test_heatclient_calls_without_retry(self):
         # check that following errors will not be retried

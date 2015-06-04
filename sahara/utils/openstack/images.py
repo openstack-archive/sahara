@@ -14,6 +14,7 @@
 # limitations under the License.
 
 from novaclient.v2 import images
+import six
 
 from sahara import exceptions as exc
 
@@ -32,7 +33,7 @@ def _iter_tags(meta):
 def _ensure_tags(tags):
     if not tags:
         return []
-    return [tags] if type(tags) in [str, unicode] else tags
+    return [tags] if isinstance(tags, six.string_types) else tags
 
 
 class SaharaImage(images.Image):

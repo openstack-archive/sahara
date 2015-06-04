@@ -78,7 +78,7 @@ class TestHandler(b.SaharaTestCase):
         self.assertIsNotNone(np_dict)
         self.assertIsInstance(np_dict, dict)
         for k, v in six.iteritems(np_dict):
-            self.assertIsInstance(k, basestring)
+            self.assertIsInstance(k, six.string_types)
             self.assertIsInstance(v, list)
             self.assertNotEqual(0, len(v))
 
@@ -101,7 +101,7 @@ class TestHandler(b.SaharaTestCase):
         configs_dict = self.handler.get_configs_dict()
         self.assertIsInstance(configs_dict, dict)
         for k, v in six.iteritems(configs_dict):
-            self.assertIsInstance(k, basestring)
+            self.assertIsInstance(k, six.string_types)
             self.assertIsInstance(v, dict)
 
     def test_get_open_ports(self):
