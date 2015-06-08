@@ -39,6 +39,7 @@ SOLR_SERVICE_TYPE = 'SOLR'
 SQOOP_SERVICE_TYPE = 'SQOOP'
 KS_INDEXER_SERVICE_TYPE = 'KS_INDEXER'
 IMPALA_SERVICE_TYPE = 'IMPALA'
+KMS_SERVICE_TYPE = 'KMS'
 
 
 def _merge_dicts(a, b):
@@ -63,6 +64,7 @@ class ClouderaUtilsV540(cu.ClouderaUtils):
     KS_INDEXER_SERVICE_NAME = 'ks_indexer01'
     IMPALA_SERVICE_NAME = 'impala01'
     SENTRY_SERVICE_NAME = 'sentry01'
+    KMS_SERVICE_NAME = 'kms01'
     CM_API_VERSION = 8
 
     def __init__(self):
@@ -90,6 +92,8 @@ class ClouderaUtilsV540(cu.ClouderaUtils):
             return cm_cluster.get_service(self.KS_INDEXER_SERVICE_NAME)
         elif process in ['CATALOGSERVER', 'STATESTORE', 'IMPALAD', 'LLAMA']:
             return cm_cluster.get_service(self.IMPALA_SERVICE_NAME)
+        elif process in ['KMS']:
+            return cm_cluster.get_service(self.KMS_SERVICE_NAME)
         else:
             return super(ClouderaUtilsV540, self).get_service_by_role(
                 process, cluster, instance)
@@ -145,6 +149,9 @@ class ClouderaUtilsV540(cu.ClouderaUtils):
         if self.pu.get_catalogserver(cluster):
             cm_cluster.create_service(self.IMPALA_SERVICE_NAME,
                                       IMPALA_SERVICE_TYPE)
+        if self.pu.get_kms(cluster):
+            cm_cluster.create_service(self.KMS_SERVICE_NAME,
+                                      KMS_SERVICE_TYPE)
 
     def await_agents(self, cluster, instances):
         self._await_agents(cluster, instances, c_helper.AWAIT_AGENTS_TIMEOUT)
@@ -221,6 +228,11 @@ class ClouderaUtilsV540(cu.ClouderaUtils):
             impala.update_config(self._get_configs(IMPALA_SERVICE_TYPE,
                                                    cluster=cluster))
 
+        if self.pu.get_kms(cluster):
+            kms = cm_cluster.get_service(self.KMS_SERVICE_NAME)
+            kms.update_config(self._get_configs(KMS_SERVICE_TYPE,
+                                                cluster=cluster))
+
     def _get_configs(self, service, cluster=None, node_group=None):
         def get_hadoop_dirs(mount_points, suffix):
             return ','.join([x + suffix for x in mount_points])
@@ -231,6 +243,7 @@ class ClouderaUtilsV540(cu.ClouderaUtils):
             hbm_count = v._get_inst_count(cluster, 'HBASE_MASTER')
             snt_count = v._get_inst_count(cluster, 'SENTRY_SERVER')
             ks_count = v._get_inst_count(cluster, 'KEY_VALUE_STORE_INDEXER')
+            kms_count = v._get_inst_count(cluster, 'KMS')
             imp_count = v._get_inst_count(cluster, 'IMPALA_CATALOGSERVER')
             hive_count = v._get_inst_count(cluster, 'HIVE_METASTORE')
             slr_count = v._get_inst_count(cluster, 'SOLR_SERVER')
@@ -246,6 +259,7 @@ class ClouderaUtilsV540(cu.ClouderaUtils):
                         self.ZOOKEEPER_SERVICE_NAME if zk_count else '',
                     'dfs_block_local_path_access_user':
                         'impala' if imp_count else '',
+                    'kms_service': self.KMS_SERVICE_NAME if kms_count else '',
                     'core_site_safety_valve': core_site_safety_valve
                 },
                 'HIVE': {

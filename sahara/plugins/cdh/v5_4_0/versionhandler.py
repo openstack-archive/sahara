@@ -63,7 +63,8 @@ class VersionHandler(avm.AbstractVersionHandler):
             "KS_INDEXER": ['KEY_VALUE_STORE_INDEXER'],
             "SOLR": ['SOLR_SERVER'],
             "SQOOP": ['SQOOP_SERVER'],
-            "SENTRY": ['SENTRY_SERVER']
+            "SENTRY": ['SENTRY_SERVER'],
+            "KMS": ['KMS']
         }
 
     def validate(self, cluster):

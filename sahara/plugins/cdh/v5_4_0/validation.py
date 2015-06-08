@@ -218,6 +218,11 @@ def validate_cluster_creating(cluster):
             raise ex.RequiredServiceMissingException(
                 'HIVE_METASTORE', required_by='IMPALA')
 
+    kms_count = _get_inst_count(cluster, 'KMS')
+    if kms_count > 1:
+        raise ex.InvalidComponentCountException('KMS',
+                                                _('0 or 1'), kms_count)
+
 
 def validate_additional_ng_scaling(cluster, additional):
     rm = PU.get_resourcemanager(cluster)

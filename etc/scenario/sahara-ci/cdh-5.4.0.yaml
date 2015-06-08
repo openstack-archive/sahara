@@ -33,6 +33,7 @@ clusters:
         flavor_id: %large_flavor_id%
         node_processes:
           - CLOUDERA_MANAGER
+          - KMS
         auto_security_group: true
       - name: master-core
         flavor_id: %medium_flavor_id%

@@ -29,6 +29,7 @@ PACKAGES = [
     'hadoop-hdfs-datanode',
     'hadoop-hdfs-namenode',
     'hadoop-hdfs-secondarynamenode',
+    'hadoop-kms'
     'hadoop-mapreduce',
     'hadoop-mapreduce-historyserver',
     'hadoop-yarn-nodemanager',
@@ -45,6 +46,7 @@ PACKAGES = [
     'impala-state-store',
     'impala-catalog',
     'impala-shell',
+    'keytrustee-keyprovider',
     'ntp',
     'oozie',
     'oracle-j2sdk1.7',
@@ -195,7 +197,8 @@ def get_open_ports(node_group):
         'KEY_VALUE_STORE_INDEXER': [],
         'IMPALA_CATALOGSERVER': [25020, 26000],
         'IMPALA_STATESTORE': [25010, 24000],
-        'IMPALAD': [21050, 21000, 23000, 25000, 28000, 22000]
+        'IMPALAD': [21050, 21000, 23000, 25000, 28000, 22000],
+        'KMS': [16000, 16001],
     }
 
     for process in node_group.node_processes:

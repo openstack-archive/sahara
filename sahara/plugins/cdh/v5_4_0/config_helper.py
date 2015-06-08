@@ -50,6 +50,19 @@ CM5_CENTOS_REPO = ('[cloudera-manager]'
                    '/x86_64/cm/RPM-GPG-KEY-cloudera'
                    '\ngpgcheck = 1')
 
+KEY_TRUSTEE_UBUNTU_REPO_URL = ('http://archive.cloudera.com/navigator-'
+                               'keytrustee5/ubuntu/precise/amd64/navigator-'
+                               'keytrustee/cloudera.list')
+
+DEFAULT_KEY_TRUSTEE_UBUNTU_REPO_KEY_URL = ('http://archive.cloudera.com/'
+                                           'navigator-keytrustee5/ubuntu/'
+                                           'precise/amd64/navigator-keytrustee'
+                                           '/archive.key')
+
+KEY_TRUSTEE_CENTOS_REPO_URL = ('http://archive.cloudera.com/navigator-'
+                               'keytrustee5/redhat/6/x86_64/navigator-'
+                               'keytrustee/navigator-keytrustee5.repo')
+
 DEFAULT_SWIFT_LIB_URL = ('https://repository.cloudera.com/artifactory/repo/org'
                          '/apache/hadoop/hadoop-openstack/2.6.0-cdh5.4.0'
                          '/hadoop-openstack-2.6.0-cdh5.4.0.jar')
@@ -128,6 +141,14 @@ CM5_REPO_KEY_URL = p.Config(
     'CM5 repo key URL (for debian-based only)', 'general', 'cluster',
     priority=1, default_value="")
 
+KMS_REPO_URL = p.Config(
+    'KMS repo list URL', 'general', 'cluster', priority=1,
+    default_value="")
+
+KMS_REPO_KEY_URL = p.Config(
+    'KMS repo key URL (for debian-based only)', 'general', 'cluster',
+    priority=1, default_value="")
+
 ENABLE_SWIFT = p.Config('Enable Swift', 'general', 'cluster',
                         config_type='bool', priority=1,
                         default_value=True)
@@ -163,6 +184,7 @@ AWAIT_MANAGER_STARTING_TIMEOUT = p.Config(
 
 def _get_cluster_plugin_configs():
     return [CDH5_REPO_URL, CDH5_REPO_KEY_URL, CM5_REPO_URL, CM5_REPO_KEY_URL,
+            KMS_REPO_URL, KMS_REPO_KEY_URL,
             ENABLE_SWIFT, ENABLE_HBASE_COMMON_LIB, SWIFT_LIB_URL,
             EXTJS_LIB_URL, AWAIT_AGENTS_TIMEOUT,
             AWAIT_MANAGER_STARTING_TIMEOUT]
@@ -225,6 +247,8 @@ impala_llama_confs = _load_json(path_to_config +
                                 'impala-llama.json')
 impala_statestore_confs = _load_json(path_to_config +
                                      'impala-statestore.json')
+kms_service_confs = _load_json(path_to_config + 'kms-service.json')
+kms_kms_confs = _load_json(path_to_config + 'kms-kms.json')
 
 priority_one_confs = _load_json(path_to_config + 'priority-one-confs.json')
 
@@ -288,6 +312,8 @@ def _get_ng_plugin_configs():
     cfg += _init_configs(impala_catalogserver_confs, 'CATALOGSERVER', 'node')
     cfg += _init_configs(impala_impalad_confs, 'IMPALAD', 'node')
     cfg += _init_configs(impala_statestore_confs, 'STATESTORE', 'node')
+    cfg += _init_configs(kms_service_confs, 'KMS', 'cluster')
+    cfg += _init_configs(kms_kms_confs, 'KMS', 'node')
     return cfg
 
 
@@ -316,6 +342,10 @@ def get_cm5_repo_url(cluster):
 
 def get_cm5_key_url(cluster):
     return _get_config_value(cluster, CM5_REPO_KEY_URL)
+
+
+def get_kms_key_url(cluster):
+    return _get_config_value(cluster, KMS_REPO_KEY_URL)
 
 
 def is_swift_enabled(cluster):

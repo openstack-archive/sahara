@@ -13,11 +13,17 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from oslo_log import log as logging
+
 from sahara.conductor import resource as res
+from sahara.plugins.cdh import commands as cmd
 from sahara.plugins.cdh import plugin_utils as pu
 from sahara.plugins.cdh.v5_4_0 import config_helper as c_helper
 from sahara.plugins.cdh.v5_4_0 import db_helper
 from sahara.plugins import utils as u
+
+
+LOG = logging.getLogger(__name__)
 
 
 class PluginUtilsV540(pu.AbstractPluginUtils):
@@ -39,6 +45,7 @@ class PluginUtilsV540(pu.AbstractPluginUtils):
             'HOSTMONITOR': 'HM',
             'IMPALAD': 'ID',
             'JOBHISTORY': 'JS',
+            'KMS': 'KMS',
             'MASTER': 'M',
             'NAMENODE': 'NN',
             'NODEMANAGER': 'NM',
@@ -82,6 +89,9 @@ class PluginUtilsV540(pu.AbstractPluginUtils):
     def get_impalads(self, cluster):
         return u.get_instances(cluster, 'IMPALAD')
 
+    def get_kms(self, cluster):
+        return u.get_instances(cluster, 'KMS')
+
     def convert_process_configs(self, configs):
         p_dict = {
             "CLOUDERA": ['MANAGER'],
@@ -107,7 +117,8 @@ class PluginUtilsV540(pu.AbstractPluginUtils):
             "KS_INDEXER": ['HBASE_INDEXER'],
             "SENTRY": ['SENTRY_SERVER'],
             "SOLR": ['SOLR_SERVER'],
-            "SQOOP": ['SQOOP_SERVER']
+            "SQOOP": ['SQOOP_SERVER'],
+            "KMS": ['KMS']
         }
         if isinstance(configs, res.Resource):
             configs = configs.to_dict()
@@ -131,3 +142,21 @@ class PluginUtilsV540(pu.AbstractPluginUtils):
     def get_config_value(self, service, name, cluster=None):
         configs = c_helper.get_plugin_configs()
         return self._get_config_value(service, name, configs, cluster)
+
+    def _configure_repo_from_inst(self, instance):
+        super(PluginUtilsV540, self)._configure_repo_from_inst(self, instance)
+
+        cluster = instance.cluster
+        with instance.remote() as r:
+            if cmd.is_ubuntu_os(r):
+                kms_key = (
+                    self.c_helper.get_kms_key_url(cluster) or
+                    self.c_helper.DEFAULT_KEY_TRUSTEE_UBUNTU_REPO_KEY_URL)
+                kms_repo_url = self.c_helper.KEY_TRUSTEE_UBUNTU_REPO_URL
+                cmd.add_ubuntu_repository(r, kms_repo_url, 'kms')
+                cmd.add_apt_key(r, kms_key)
+                cmd.update_repository(r)
+            if cmd.is_centos_os(r):
+                kms_repo_url = self.c_helper.KEY_TRUSTEE_CENTOS_REPO_URL
+                cmd.add_centos_repository(r, kms_repo_url, 'kms')
+                cmd.update_repository(r)
