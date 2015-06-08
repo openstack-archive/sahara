@@ -261,13 +261,7 @@ def substitute_config_values(configs, template, path):
     for opt, value in six.iteritems(configs):
         if opt in opt_names and opt in template:
             if value is None:
-                # TODO(tmckay): someday if we support 'null' in JSON
-                # we should replace this value with None. json.load
-                # will replace 'null' with None, and sqlalchemy will
-                # accept None as a value for a nullable field.
-                del template[opt]
-                LOG.debug("No replacement value specified for {opt} in "
-                          "{path}, removing".format(opt=opt, path=path))
+                template[opt] = None
             else:
                 # Use args to allow for keyword arguments to format
                 args = {opt: value}

@@ -261,7 +261,8 @@ class ConductorManager(db_base.Base):
         values['tenant_id'] = context.tenant_id
         values['id'] = id
 
-        values['node_groups'] = self._populate_node_groups(context, values)
+        if 'node_groups' in values:
+            values['node_groups'] = self._populate_node_groups(context, values)
 
         return self.db.cluster_template_update(context, values, ignore_default)
 

@@ -441,7 +441,11 @@ def cluster_template_destroy(context, cluster_template_id,
 
 
 def cluster_template_update(context, values, ignore_default=False):
-    node_groups = values.pop("node_groups", [])
+    explicit_node_groups = "node_groups" in values
+    if explicit_node_groups:
+        node_groups = values.pop("node_groups")
+        if node_groups is None:
+            node_groups = []
 
     session = get_session()
     cluster_template_id = values['id']
@@ -475,7 +479,7 @@ def cluster_template_update(context, values, ignore_default=False):
 
             # If node_groups has not been specified, then we are
             # keeping the old ones so don't delete!
-            if node_groups:
+            if explicit_node_groups:
                 model_query(m.TemplatesRelation,
                             context, session=session).filter_by(
                     cluster_template_id=cluster_template_id).delete()

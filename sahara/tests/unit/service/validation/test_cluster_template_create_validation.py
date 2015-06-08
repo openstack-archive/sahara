@@ -13,6 +13,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import uuid
+
+import mock
+
 from sahara.service import api
 from sahara.service.validations import cluster_template_schema as ct_schema
 from sahara.service.validations import cluster_templates as ct
@@ -194,12 +198,52 @@ class TestClusterTemplateCreateValidation(u.ValidationTestCase):
                        u"'hadoop_version' is a required property")
         )
 
-    def test_cluster_template_create_v_right(self):
+    @mock.patch("sahara.service.validations.base.check_all_configurations")
+    @mock.patch("sahara.service.validations.base.check_network_exists")
+    @mock.patch("sahara.service.validations.base.check_required_image_tags")
+    @mock.patch("sahara.service.validations.base.check_image_registered")
+    def test_cluster_template_create_v_right(self, image_reg, image_tags,
+                                             net_exists, all_configs):
         self._assert_create_object_validation(
             data={
                 'name': 'testname',
                 'plugin_name': 'vanilla',
-                'hadoop_version': '1.2.1'
+                'hadoop_version': '1.2.1',
+                'default_image_id': str(uuid.uuid4()),
+                'cluster_configs': {
+                    "service_1": {
+                        "config_1": "value_1"
+                    }
+                },
+                'node_groups': [
+                    {
+                        "node_group_template_id": "550e8400-e29b-41d4-a716-"
+                                                  "446655440000",
+                        "name": "charlie",
+                        'count': 3
+                    }
+                ],
+                'anti_affinity': ['datanode'],
+                'description': 'my template',
+                'neutron_management_network': str(uuid.uuid4())
+            })
+
+    @mock.patch("sahara.service.validations.base.check_network_exists")
+    @mock.patch("sahara.service.validations.base.check_required_image_tags")
+    @mock.patch("sahara.service.validations.base.check_image_registered")
+    def test_cluster_template_create_v_right_nulls(self, image_reg, image_tags,
+                                                   net_exists):
+        self._assert_create_object_validation(
+            data={
+                'name': 'testname',
+                'plugin_name': 'vanilla',
+                'hadoop_version': '1.2.1',
+                'default_image_id': None,
+                'cluster_configs': None,
+                'node_groups': None,
+                'anti_affinity': None,
+                'description': None,
+                'neutron_management_network': None
             })
 
     def test_cluster_template_create_v_plugin_name_exists(self):
