@@ -305,6 +305,12 @@ def data_source_destroy(context, data_source):
     IMPL.data_source_destroy(context, data_source)
 
 
+@to_dict
+def data_source_update(context, data_source):
+    """Create a Data Source from the values dictionary."""
+    return IMPL.data_source_update(context, data_source)
+
+
 # JobExecutions ops
 
 @to_dict

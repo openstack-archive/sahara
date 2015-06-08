@@ -651,8 +651,35 @@ def data_source_destroy(context, data_source_id):
                _(" on foreign key constraint") or "")
         raise ex.DeletionFailed(_("Data Source deletion failed%s") % msg)
 
-# JobExecution ops
 
+def data_source_update(context, values):
+    session = get_session()
+    try:
+        with session.begin():
+            ds_id = values['id']
+            data_source = _data_source_get(context, session, ds_id)
+            if not data_source:
+                raise ex.NotFoundException(
+                    ds_id, _("DataSource id '%s' not found"))
+            else:
+                jobs = job_execution_get_all(context)
+                pending_jobs = [job for job in jobs if
+                                job.info["status"] == "PENDING"]
+                for job in pending_jobs:
+                    if job.data_source_urls:
+                        if ds_id in job.data_source_urls:
+                            raise ex.UpdateFailedException(
+                                _("DataSource is used in a "
+                                  "PENDING Job and can not be updated."))
+            data_source.update(values)
+    except db_exc.DBDuplicateEntry as e:
+        raise ex.DBDuplicateEntry(
+            _("Duplicate entry for DataSource: %s") % e.columns)
+
+    return data_source
+
+
+# JobExecution ops
 
 def _job_execution_get(context, session, job_execution_id):
     query = model_query(m.JobExecution, context, session)

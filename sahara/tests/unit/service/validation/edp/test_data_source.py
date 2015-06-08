@@ -19,6 +19,7 @@ import testtools
 import sahara.exceptions as ex
 from sahara.service import api
 from sahara.service.validations.edp import data_source as ds
+from sahara.service.validations.edp import data_source_schema as ds_schema
 from sahara.swift import utils as su
 from sahara.tests.unit.service.validation import utils as u
 
@@ -30,7 +31,7 @@ class TestDataSourceValidation(u.ValidationTestCase):
     def setUp(self):
         super(TestDataSourceValidation, self).setUp()
         self._create_object_fun = ds.check_data_source_create
-        self.scheme = ds.DATA_SOURCE_SCHEMA
+        self.scheme = ds_schema.DATA_SOURCE_SCHEMA
         api.plugin_base.setup_plugins()
 
     def test_swift_creation(self):
