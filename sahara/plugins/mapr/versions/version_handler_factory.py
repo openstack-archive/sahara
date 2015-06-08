@@ -26,14 +26,13 @@ def _load_versions():
     def mapper(v_dir):
         return m_template % v_dir
 
-    def reducer(versions, m_name):
-        m = __import__(m_name, fromlist=['sahara'])
-        versions[m.version] = getattr(m, 'VersionHandler')()
-        return versions
-
     v_dirs = filter(predicate, os.listdir(d_name))
     m_names = map(mapper, v_dirs)
-    return reduce(reducer, m_names, {})
+    versions = {}
+    for m_name in m_names:
+        m = __import__(m_name, fromlist=['sahara'])
+        versions[m.version] = getattr(m, 'VersionHandler')()
+    return versions
 
 
 class VersionHandlerFactory(object):
