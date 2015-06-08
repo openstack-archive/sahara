@@ -27,7 +27,6 @@ import eventlet
 from eventlet import wsgi
 from oslo_config import cfg
 from oslo_log import log as logging
-from oslo_log import loggers
 from oslo_serialization import jsonutils
 
 from sahara import exceptions
@@ -206,7 +205,7 @@ class Server(object):
         wsgi.server(self.sock,
                     self.application,
                     custom_pool=self.pool,
-                    log=loggers.WritableLogger(LOG),
+                    log=LOG,
                     debug=False)
         self.pool.waitall()
 
@@ -215,5 +214,5 @@ class Server(object):
         LOG.info(_LI("Starting single process server"))
         eventlet.wsgi.server(sock, application,
                              custom_pool=self.pool,
-                             log=loggers.WritableLogger(LOG),
+                             log=LOG,
                              debug=False)
