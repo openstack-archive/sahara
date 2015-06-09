@@ -167,14 +167,16 @@ class HeatEngine(e.Engine):
             stack = heat.get_stack(cluster.name)
             heat.wait_stack_completion(stack)
         except heat_exc.HTTPNotFound:
-            LOG.warning(_LW('Did not find stack for cluster'))
+            LOG.warning(_LW('Did not find stack for cluster. Trying to delete '
+                            'cluster manually.'))
+
+            # Stack not found. Trying to delete cluster like direct engine
+            #  do it
+            self._shutdown_instances(cluster)
+            self._delete_aa_server_group(cluster)
 
         self._clean_job_executions(cluster)
-
-        ctx = context.ctx()
-        instances = g.get_instances(cluster)
-        for inst in instances:
-            conductor.instance_remove(ctx, inst)
+        self._remove_db_objects(cluster)
 
 
 class _CreateLauncher(HeatEngine):
