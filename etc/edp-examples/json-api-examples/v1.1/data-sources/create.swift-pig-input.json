@@ -2,7 +2,7 @@
     "name": "demo-pig-input",
     "description": "A data source for Pig input, stored in Swift",
     "type": "swift",
-    "url": "swift://edp-examples.sahara/pig-job/data/input",
+    "url": "swift://edp-examples.sahara/edp-pig/trim-spaces/data/input",
     "credentials": {
         "user": "demo",
         "password": "password"
