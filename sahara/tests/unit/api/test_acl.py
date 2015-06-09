@@ -28,21 +28,21 @@ class TestAcl(base.SaharaTestCase):
         acl.ENFORCER.set_rules(rules, use_conf=False)
 
     def test_policy_allow(self):
-        @acl.enforce("clusters:get_all")
+        @acl.enforce("data-processing:clusters:get_all")
         def test():
             pass
 
-        json = '{"clusters:get_all": ""}'
+        json = '{"data-processing:clusters:get_all": ""}'
         self._set_policy(json)
 
         test()
 
     def test_policy_deny(self):
-        @acl.enforce("clusters:get_all")
+        @acl.enforce("data-processing:clusters:get_all")
         def test():
             pass
 
-        json = '{"clusters:get_all": "!"}'
+        json = '{"data-processing:clusters:get_all": "!"}'
         self._set_policy(json)
 
         self.assertRaises(ex.Forbidden, test)
