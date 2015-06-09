@@ -136,7 +136,7 @@ Data Sources are where the input and output from your jobs are housed.
 
 2) Give your Data Source a name
 
-3) Enter the URL of the the Data Source
+3) Enter the URL of the Data Source
 
   - For a Swift object, enter <container>/<path> (ie: *mycontainer/inputfile*).
     Sahara will prepend *swift://* for you
