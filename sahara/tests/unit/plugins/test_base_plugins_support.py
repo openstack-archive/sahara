@@ -25,6 +25,6 @@ class BasePluginsSupportTest(testtools.TestCase):
         pb.setup_plugins()
 
     def test_plugins_loaded(self):
-        plugins = [p.name for p in pb.PLUGINS.get_plugins(pb.PluginInterface)]
+        plugins = [p.name for p in pb.PLUGINS.get_plugins()]
         self.assertIn('vanilla', plugins)
         self.assertIn('hdp', plugins)

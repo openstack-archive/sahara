@@ -22,7 +22,6 @@ from sahara import context
 from sahara import exceptions as ex
 from sahara.i18n import _LE
 from sahara.plugins import base as plugin_base
-from sahara.plugins import provisioning
 from sahara.service.edp.binary_retrievers import dispatch
 from sahara.service.edp import job_manager as manager
 from sahara.utils import edp
@@ -54,8 +53,7 @@ def get_job_types(**kwargs):
     hints = kwargs.get("hints", ["false"])[0].lower() == "true"
 
     plugin_names = kwargs.get("plugin", [])
-    all_plugins = plugin_base.PLUGINS.get_plugins(
-        base=provisioning.ProvisioningPluginBase)
+    all_plugins = plugin_base.PLUGINS.get_plugins()
     if plugin_names:
         plugins = filter(lambda x: x.name in plugin_names, all_plugins)
     else:
