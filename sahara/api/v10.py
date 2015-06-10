@@ -50,6 +50,13 @@ def clusters_create(data):
     return u.render(api.create_cluster(data).to_wrapped_dict())
 
 
+@rest.post('/clusters/multiple')
+@acl.enforce("data-processing:clusters:create")
+@v.validate(v_c.MULTIPLE_CLUSTER_SCHEMA, v_c.check_multiple_clusters_create)
+def clusters_create_multiple(data):
+    return u.render(api.create_multiple_clusters(data))
+
+
 @rest.put('/clusters/<cluster_id>')
 @acl.enforce("data-processing:clusters:scale")
 @v.check_exists(api.get_cluster, 'cluster_id')

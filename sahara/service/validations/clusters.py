@@ -45,10 +45,29 @@ def _build_cluster_schema():
 
 
 CLUSTER_SCHEMA = _build_cluster_schema()
+MULTIPLE_CLUSTER_SCHEMA = copy.deepcopy(CLUSTER_SCHEMA)
+MULTIPLE_CLUSTER_SCHEMA['properties'].update({
+    "count": {
+        "type": "integer"
+    }})
+MULTIPLE_CLUSTER_SCHEMA['required'].append('count')
 
 
 def check_cluster_create(data, **kwargs):
     b.check_cluster_unique_name(data['name'])
+    _check_cluster_create(data)
+
+
+def check_multiple_clusters_create(data, **kwargs):
+    _check_cluster_create(data)
+    for counter in range(data['count']):
+        cluster_name = api.get_multiple_cluster_name(data['count'],
+                                                     data['name'],
+                                                     counter + 1)
+        b.check_cluster_unique_name(cluster_name)
+
+
+def _check_cluster_create(data):
     b.check_plugin_name_exists(data['plugin_name'])
     b.check_plugin_supports_version(data['plugin_name'],
                                     data['hadoop_version'])
