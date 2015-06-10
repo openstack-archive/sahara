@@ -29,6 +29,7 @@ from sahara.plugins import utils as u
 from sahara.utils import cluster_progress_ops as cpo
 from sahara.utils import edp as edp_u
 from sahara.utils import poll_utils
+from sahara.utils import types
 
 
 PATH_TO_CORE_SITE_XML = '/etc/hadoop/conf/core-site.xml'
@@ -329,10 +330,10 @@ class AbstractPluginUtils(object):
         conf = cluster.cluster_configs
         if cluster:
             if service in conf and name in conf[service]:
-                return conf[service][name]
+                return types.transform_to_num(conf[service][name])
         for config in configs:
             if config.applicable_target == service and config.name == name:
-                return config.default_value
+                return types.transform_to_num(config.default_value)
         raise exc.InvalidDataException(
             _("Unable to find config: {applicable_target: %(target)s, name: "
               "%(name)s").format(target=service, name=name))

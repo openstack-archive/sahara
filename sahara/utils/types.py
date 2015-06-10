@@ -94,3 +94,14 @@ def is_int(s):
         return True
     except Exception:
         return False
+
+
+def transform_to_num(s):
+    # s can be a string or non-string.
+    try:
+        return int(str(s))
+    except ValueError:
+        try:
+            return float(str(s))
+        except ValueError:
+            return s
