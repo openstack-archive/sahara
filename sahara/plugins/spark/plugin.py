@@ -76,8 +76,9 @@ class SparkProvider(p.ProvisioningPluginBase):
             raise ex.InvalidComponentCountException("datanode", _("1 or more"),
                                                     nn_count)
 
-        rep_factor = c_helper.get_config_value('HDFS', "dfs.replication",
-                                               cluster)
+        rep_factor = utils.get_config_value_or_default('HDFS',
+                                                       "dfs.replication",
+                                                       cluster)
         if dn_count < rep_factor:
             raise ex.InvalidComponentCountException(
                 'datanode', _('%s or more') % rep_factor, dn_count,
@@ -149,7 +150,9 @@ class SparkProvider(p.ProvisioningPluginBase):
         self._set_cluster_info(cluster)
 
     def _spark_home(self, cluster):
-        return c_helper.get_config_value("Spark", "Spark home", cluster)
+        return utils.get_config_value_or_default("Spark",
+                                                 "Spark home",
+                                                 cluster)
 
     def _extract_configs_to_extra(self, cluster):
         nn = utils.get_instance(cluster, "namenode")
@@ -378,7 +381,7 @@ class SparkProvider(p.ProvisioningPluginBase):
         info = {}
 
         if nn:
-            address = c_helper.get_config_value(
+            address = utils.get_config_value_or_default(
                 'HDFS', 'dfs.http.address', cluster)
             port = address[address.rfind(':') + 1:]
             info['HDFS'] = {
@@ -387,7 +390,7 @@ class SparkProvider(p.ProvisioningPluginBase):
             info['HDFS']['NameNode'] = 'hdfs://%s:8020' % nn.hostname()
 
         if sp_master:
-            port = c_helper.get_config_value(
+            port = utils.get_config_value_or_default(
                 'Spark', 'Master webui port', cluster)
             if port is not None:
                 info['Spark'] = {
@@ -469,8 +472,9 @@ class SparkProvider(p.ProvisioningPluginBase):
                         ' '.join(ng.node_processes))
 
         dn_amount = len(utils.get_instances(cluster, "datanode"))
-        rep_factor = c_helper.get_config_value('HDFS', "dfs.replication",
-                                               cluster)
+        rep_factor = utils.get_config_value_or_default('HDFS',
+                                                       "dfs.replication",
+                                                       cluster)
 
         if dn_to_delete > 0 and dn_amount - dn_to_delete < rep_factor:
             raise ex.ClusterCannotBeScaled(
@@ -504,14 +508,16 @@ class SparkProvider(p.ProvisioningPluginBase):
             'namenode': [8020, 50070, 50470],
             'datanode': [50010, 1004, 50075, 1006, 50020],
             'master': [
-                int(c_helper.get_config_value("Spark", "Master port",
-                                              cluster)),
-                int(c_helper.get_config_value("Spark", "Master webui port",
-                                              cluster)),
+                int(utils.get_config_value_or_default("Spark", "Master port",
+                                                      cluster)),
+                int(utils.get_config_value_or_default("Spark",
+                                                      "Master webui port",
+                                                      cluster)),
             ],
             'slave': [
-                int(c_helper.get_config_value("Spark", "Worker webui port",
-                                              cluster))
+                int(utils.get_config_value_or_default("Spark",
+                                                      "Worker webui port",
+                                                      cluster))
             ]
         }
 

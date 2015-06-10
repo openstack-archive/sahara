@@ -38,7 +38,7 @@ def decommission_sl(master, inst_to_be_deleted, survived_inst):
         slaves_content = "\n"
 
     cluster = master.cluster
-    sp_home = c_helper.get_config_value("Spark", "Spark home", cluster)
+    sp_home = utils.get_config_value_or_default("Spark", "Spark home", cluster)
     r_master = remote.get_remote(master)
     run.stop_spark(r_master, sp_home)
 

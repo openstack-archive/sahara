@@ -18,7 +18,6 @@ from oslo_log import log as logging
 import six
 
 from sahara import conductor as c
-from sahara.i18n import _
 from sahara.plugins import provisioning as p
 from sahara.plugins import utils
 from sahara.swift import swift_helper as swift
@@ -237,22 +236,6 @@ def get_plugin_configs():
     return PLUGIN_CONFIGS
 
 
-def get_config_value(service, name, cluster=None):
-    if cluster:
-        for ng in cluster.node_groups:
-            if (ng.configuration().get(service) and
-                    ng.configuration()[service].get(name)):
-                return ng.configuration()[service][name]
-
-    for configs in PLUGIN_CONFIGS:
-        if configs.applicable_target == service and configs.name == name:
-            return configs.default_value
-
-    raise RuntimeError(_("Unable to get parameter '%(param_name)s' from "
-                         "service %(service)s"),
-                       {'param_name': name, 'service': service})
-
-
 def generate_cfg_from_general(cfg, configs, general_config,
                               rest_excluded=False):
     if 'general' in configs:
@@ -336,35 +319,49 @@ def generate_spark_env_configs(cluster):
     # to /opt/spark/conf
     configs.append('HADOOP_CONF_DIR=' + HADOOP_CONF_DIR)
 
-    masterport = get_config_value("Spark", "Master port", cluster)
+    masterport = utils.get_config_value_or_default("Spark",
+                                                   "Master port",
+                                                   cluster)
     if masterport and masterport != _get_spark_opt_default("Master port"):
         configs.append('SPARK_MASTER_PORT=' + str(masterport))
 
-    masterwebport = get_config_value("Spark", "Master webui port", cluster)
+    masterwebport = utils.get_config_value_or_default("Spark",
+                                                      "Master webui port",
+                                                      cluster)
     if (masterwebport and
             masterwebport != _get_spark_opt_default("Master webui port")):
         configs.append('SPARK_MASTER_WEBUI_PORT=' + str(masterwebport))
 
     # configuration for workers
-    workercores = get_config_value("Spark", "Worker cores", cluster)
+    workercores = utils.get_config_value_or_default("Spark",
+                                                    "Worker cores",
+                                                    cluster)
     if workercores and workercores != _get_spark_opt_default("Worker cores"):
         configs.append('SPARK_WORKER_CORES=' + str(workercores))
 
-    workermemory = get_config_value("Spark", "Worker memory", cluster)
+    workermemory = utils.get_config_value_or_default("Spark",
+                                                     "Worker memory",
+                                                     cluster)
     if (workermemory and
             workermemory != _get_spark_opt_default("Worker memory")):
         configs.append('SPARK_WORKER_MEMORY=' + str(workermemory))
 
-    workerport = get_config_value("Spark", "Worker port", cluster)
+    workerport = utils.get_config_value_or_default("Spark",
+                                                   "Worker port",
+                                                   cluster)
     if workerport and workerport != _get_spark_opt_default("Worker port"):
         configs.append('SPARK_WORKER_PORT=' + str(workerport))
 
-    workerwebport = get_config_value("Spark", "Worker webui port", cluster)
+    workerwebport = utils.get_config_value_or_default("Spark",
+                                                      "Worker webui port",
+                                                      cluster)
     if (workerwebport and
             workerwebport != _get_spark_opt_default("Worker webui port")):
         configs.append('SPARK_WORKER_WEBUI_PORT=' + str(workerwebport))
 
-    workerinstances = get_config_value("Spark", "Worker instances", cluster)
+    workerinstances = utils.get_config_value_or_default("Spark",
+                                                        "Worker instances",
+                                                        cluster)
     if (workerinstances and
             workerinstances != _get_spark_opt_default("Worker instances")):
         configs.append('SPARK_WORKER_INSTANCES=' + str(workerinstances))
@@ -377,7 +374,9 @@ def generate_spark_slaves_configs(workernames):
 
 
 def generate_spark_executor_classpath(cluster):
-    cp = get_config_value("Spark", "Executor extra classpath", cluster)
+    cp = utils.get_config_value_or_default("Spark",
+                                           "Executor extra classpath",
+                                           cluster)
     if cp:
         return "spark.executor.extraClassPath " + cp
     return "\n"
@@ -444,11 +443,11 @@ def generate_hadoop_setup_script(storage_paths, env_configs):
 
 def generate_job_cleanup_config(cluster):
     args = {
-        'minimum_cleanup_megabytes': get_config_value(
+        'minimum_cleanup_megabytes': utils.get_config_value_or_default(
             "Spark", "Minimum cleanup megabytes", cluster),
-        'minimum_cleanup_seconds': get_config_value(
+        'minimum_cleanup_seconds': utils.get_config_value_or_default(
             "Spark", "Minimum cleanup seconds", cluster),
-        'maximum_cleanup_seconds': get_config_value(
+        'maximum_cleanup_seconds': utils.get_config_value_or_default(
             "Spark", "Maximum cleanup seconds", cluster)
     }
     job_conf = {'valid': (args['maximum_cleanup_seconds'] > 0 and
@@ -510,5 +509,5 @@ def get_decommissioning_timeout(cluster):
 
 
 def get_port_from_config(service, name, cluster=None):
-    address = get_config_value(service, name, cluster)
+    address = utils.get_config_value_or_default(service, name, cluster)
     return utils.get_port_from_address(address)
