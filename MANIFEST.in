@@ -11,6 +11,7 @@ include sahara/db/migration/alembic_migrations/versions/README
 include sahara/db/templates/README.rst
 
 recursive-include sahara/locale *
+recursive-include sahara/db/migration/alembic_migrations *
 
 recursive-include sahara/plugins/default_templates *.json
 include sahara/plugins/default_templates/template.conf
