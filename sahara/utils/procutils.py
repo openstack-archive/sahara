@@ -22,6 +22,7 @@ from eventlet import timeout as e_timeout
 from oslo_log import log as logging
 
 from sahara import context
+from sahara import exceptions
 
 LOG = logging.getLogger(__name__)
 
@@ -49,7 +50,7 @@ def run_in_subprocess(proc, func, args=(), kwargs={}, interactive=False):
             result = pickle.load(proc.stdout)
 
             if 'exception' in result:
-                raise SubprocessException(result['exception'])
+                raise exceptions.SubprocessException(result['exception'])
 
             return result['output']
     finally:
@@ -91,8 +92,3 @@ def kill_subprocess(proc):
     except OSError:
         # could be caused by process already dead, so ignoring
         pass
-
-
-class SubprocessException(Exception):
-    def __init__(self, e):
-        super(SubprocessException, self).__init__(e)

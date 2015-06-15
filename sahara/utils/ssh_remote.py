@@ -705,8 +705,8 @@ class InstanceInteropHelper(remote.Remote):
         session = _sessions.get((host, port), None)
         if session is None:
             raise ex.NotFoundException(
-                _('Session for %(host)s:%(port)s not cached') % {
-                    'host': host, 'port': port})
+                {'host': host, 'port': port},
+                _('Session for %(host)s:%(port)s not cached'))
 
         session.close()
         del _sessions[(host, port)]

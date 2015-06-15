@@ -96,7 +96,7 @@ def check_cluster_create(data, **kwargs):
     else:
         if CONF.use_neutron:
             raise ex.NotFoundException('neutron_management_network',
-                                       message=_("'%s' field is not found"))
+                                       _("'%s' field is not found"))
 
 
 def _get_cluster_field(cluster, field):

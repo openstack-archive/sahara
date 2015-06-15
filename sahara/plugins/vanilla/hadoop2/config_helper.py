@@ -183,8 +183,8 @@ def get_config_value(pctx, service, name, cluster=None):
             return c.default_value
 
     raise ex.NotFoundException(
-        name, _("Unable to get parameter '%(name)s' from service %(service)s")
-        % {"name": name, "service": service})
+        {"name": name, "service": service},
+        _("Unable to get parameter '%(name)s' from service %(service)s"))
 
 
 def is_swift_enabled(pctx, cluster):

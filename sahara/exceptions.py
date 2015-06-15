@@ -25,92 +25,84 @@ class SaharaException(Exception):
     To correctly use this class, inherit from it and define
     a 'message' and 'code' properties.
     """
-    message = _("An unknown exception occurred")
     code = "UNKNOWN_EXCEPTION"
+    message = _("An unknown exception occurred")
 
     def __str__(self):
         return self.message
 
-    def __init__(self):
-        super(SaharaException, self).__init__(
-            '%s: %s' % (self.code, self.message))
+    def __init__(self, message=None, code=None):
         self.uuid = uuidutils.generate_uuid()
+
+        if code:
+            self.code = code
+        if message:
+            self.message = message
+
+        # Add Error UUID to the message
         self.message = (_('%(message)s\nError ID: %(id)s')
                         % {'message': self.message, 'id': self.uuid})
 
+        super(SaharaException, self).__init__(
+            '%s: %s' % (self.code, self.message))
+
 
 class NotFoundException(SaharaException):
-    message = _("Object '%s' is not found")
+    code = "NOT_FOUND"
+    message_template = _("Object '%s' is not found")
     # It could be a various property of object which was not found
-    value = None
 
-    def __init__(self, value, message=None):
-        self.code = "NOT_FOUND"
+    def __init__(self, value, message_template=None):
         self.value = value
-        if message:
-            self.message = message % value
+        if message_template:
+            formatted_message = message_template % value
         else:
-            self.message = self.message % value
-        super(NotFoundException, self).__init__()
+            formatted_message = self.message_template % value
+
+        super(NotFoundException, self).__init__(formatted_message)
 
 
 class NameAlreadyExistsException(SaharaException):
+    code = "NAME_ALREADY_EXISTS"
     message = _("Name already exists")
-
-    def __init__(self, message=None):
-        self.code = "NAME_ALREADY_EXISTS"
-        if message:
-            self.message = message
-        super(NameAlreadyExistsException, self).__init__()
 
 
 class InvalidCredentials(SaharaException):
     message = _("Invalid credentials")
-
-    def __init__(self, message=None):
-        self.code = "INVALID_CREDENTIALS"
-        if message:
-            self.message = message
-        super(InvalidCredentials, self).__init__()
+    code = "INVALID_CREDENTIALS"
 
 
 class InvalidReferenceException(SaharaException):
+    code = "INVALID_REFERENCE"
     message = _("Invalid object reference")
-
-    def __init__(self, message=None):
-        self.code = "INVALID_REFERENCE"
-        if message:
-            self.message = message
-        super(InvalidReferenceException, self).__init__()
 
 
 class RemoteCommandException(SaharaException):
-    message = _("Error during command execution: \"%s\"")
+    code = "REMOTE_COMMAND_FAILED"
+    message_template = _("Error during command execution: \"%s\"")
 
     def __init__(self, cmd, ret_code=None, stdout=None,
                  stderr=None):
-        self.code = "REMOTE_COMMAND_FAILED"
-
         self.cmd = cmd
         self.ret_code = ret_code
         self.stdout = stdout
         self.stderr = stderr
 
-        self.message = self.message % cmd
+        formatted_message = self.message_template % cmd
 
         if ret_code:
-            self.message = '%s\nReturn code: %s' % (self.message,
-                                                    six.text_type(ret_code))
+            formatted_message = '%s\nReturn code: %s' % (
+                formatted_message, six.text_type(ret_code))
 
         if stderr:
-            self.message = '%s\nSTDERR:\n%s' % (
-                self.message, stderr.decode('ascii', 'ignore'))
+            formatted_message = '%s\nSTDERR:\n%s' % (
+                formatted_message, stderr.decode('ascii', 'ignore'))
 
         if stdout:
-            self.message = '%s\nSTDOUT:\n%s' % (
-                self.message, stdout.decode('ascii', 'ignore'))
+            formatted_message = '%s\nSTDOUT:\n%s' % (
+                formatted_message, stdout.decode('ascii', 'ignore'))
 
-        super(RemoteCommandException, self).__init__()
+        super(RemoteCommandException, self).__init__(formatted_message)
 
 
 class InvalidDataException(SaharaException):
@@ -119,83 +111,52 @@ class InvalidDataException(SaharaException):
     A more useful message should be passed to __init__ which
     tells the user more about why the data is invalid.
     """
-    message = _("Data is invalid")
     code = "INVALID_DATA"
-
-    def __init__(self, message=None):
-        if message:
-            self.message = message
-        super(InvalidDataException, self).__init__()
+    message = _("Data is invalid")
 
 
 class BadJobBinaryInternalException(SaharaException):
+    code = "BAD_JOB_BINARY"
     message = _("Job binary internal data must be a string of length "
                 "greater than zero")
 
-    def __init__(self, message=None):
-        if message:
-            self.message = message
-        self.code = "BAD_JOB_BINARY"
-        super(BadJobBinaryInternalException, self).__init__()
-
 
 class BadJobBinaryException(SaharaException):
+    code = "BAD_JOB_BINARY"
     message = _("To work with JobBinary located in internal swift add 'user'"
                 " and 'password' to extra")
 
-    def __init__(self, message=None):
-        if message:
-            self.message = message
-        self.code = "BAD_JOB_BINARY"
-        super(BadJobBinaryException, self).__init__()
-
 
 class DBDuplicateEntry(SaharaException):
-    message = _("Database object already exists")
     code = "DB_DUPLICATE_ENTRY"
-
-    def __init__(self, message=None):
-        if message:
-            self.message = message
-        super(DBDuplicateEntry, self).__init__()
+    message = _("Database object already exists")
 
 
 class CreationFailed(SaharaException):
     message = _("Object was not created")
     code = "CREATION_FAILED"
 
-    def __init__(self, message=None):
-        if message:
-            self.message = message
-        super(CreationFailed, self).__init__()
-
 
 class CancelingFailed(SaharaException):
     message = _("Operation was not canceled")
     code = "CANCELING_FAILED"
 
-    def __init__(self, message=None):
-        if message:
-            self.message = message
-        super(CancelingFailed, self).__init__()
-
 
 class DeletionFailed(SaharaException):
-    message = _("Object was not deleted")
     code = "DELETION_FAILED"
-
-    def __init__(self, message=None):
-        if message:
-            self.message = message
-        super(DeletionFailed, self).__init__()
+    message = _("Object was not deleted")
 
 
 class MissingFloatingNetworkException(SaharaException):
+    code = "MISSING_FLOATING_NETWORK"
+    message_template = _("Node Group %s is missing 'floating_ip_pool' "
+                         "field")
+
     def __init__(self, ng_name):
-        self.message = _("Node Group %s is missing 'floating_ip_pool' "
-                         "field") % ng_name
-        self.code = "MISSING_FLOATING_NETWORK"
-        super(MissingFloatingNetworkException, self).__init__()
+        formatted_message = self.message_template % ng_name
+
+        super(MissingFloatingNetworkException, self).__init__(
+            formatted_message)
 
 
 class SwiftClientException(SaharaException):
@@ -205,168 +166,184 @@ class SwiftClientException(SaharaException):
     swiftclient.ClientException in a SaharaException. The ClientException
     should be caught and an instance of SwiftClientException raised instead.
     '''
-    def __init__(self, message):
-        self.message = message
-        self.code = "SWIFT_CLIENT_EXCEPTION"
-        super(SwiftClientException, self).__init__()
+
+    code = "SWIFT_CLIENT_EXCEPTION"
+    message = _("An error has occured while performing a request to Swift")
 
 
 class DataTooBigException(SaharaException):
-    message = _("Size of data (%(size)s) is greater than maximum "
-                "(%(maximum)s)")
+    code = "DATA_TOO_BIG"
+    message_template = _("Size of data (%(size)s) is greater than maximum "
+                         "(%(maximum)s)")
 
-    def __init__(self, size, maximum, message=None):
-        if message:
-            self.message = message
-        self.message = self.message % ({'size': size, 'maximum': maximum})
-        self.code = "DATA_TOO_BIG"
-        super(DataTooBigException, self).__init__()
+    def __init__(self, size, maximum, message_template=None):
+        if message_template:
+            self.message_template = message_template
+
+        formatted_message = self.message_template % (
+            {'size': size, 'maximum': maximum})
+
+        super(DataTooBigException, self).__init__(formatted_message)
 
 
 class ThreadException(SaharaException):
+    code = "THREAD_EXCEPTION"
+    message_template = _("An error occurred in thread '%(thread)s': %(e)s")
+
     def __init__(self, thread_description, e):
-        self.message = (_("An error occurred in thread '%(thread)s': %(e)s")
-                        % {'thread': thread_description,
-                           'e': six.text_type(e)})
-        self.code = "THREAD_EXCEPTION"
-        super(ThreadException, self).__init__()
+        formatted_message = self.message_template % {
+            'thread': thread_description,
+            'e': six.text_type(e)}
+
+        super(ThreadException, self).__init__(formatted_message)
+
+
+class SubprocessException(SaharaException):
+    code = "SUBPROCESS_EXCEPTION"
+    message = _("Subprocess execution has failed")
 
 
 class NotImplementedException(SaharaException):
     code = "NOT_IMPLEMENTED"
+    message_template = _("Feature '%s' is not implemented")
 
     def __init__(self, feature):
-        self.message = _("Feature '%s' is not implemented") % feature
-        super(NotImplementedException, self).__init__()
+        formatted_message = self.message_template % feature
+
+        super(NotImplementedException, self).__init__(formatted_message)
 
 
 class HeatStackException(SaharaException):
+    code = "HEAT_STACK_EXCEPTION"
+    message_template = _("Heat stack failed with status %s")
+
     def __init__(self, heat_stack_status):
-        self.code = "HEAT_STACK_EXCEPTION"
-        self.message = (_("Heat stack failed with status %s") %
-                        heat_stack_status)
-        super(HeatStackException, self).__init__()
+        formatted_message = self.message_template % heat_stack_status
+
+        super(HeatStackException, self).__init__(formatted_message)
 
 
 class ConfigurationError(SaharaException):
     code = "CONFIGURATION_ERROR"
-
-    def __init__(self, message):
-        self.message = message
-        super(ConfigurationError, self).__init__()
+    message = _("The configuration has failed")
 
 
 class IncorrectStateError(SaharaException):
+    message = _("The object is in an incorrect state")
     code = "INCORRECT_STATE_ERROR"
 
-    def __init__(self, message):
-        self.message = message
-        super(IncorrectStateError, self).__init__()
+
+class FrozenClassError(SaharaException):
+    code = "FROZEN_CLASS_ERROR"
+    message_template = _("Class %s is immutable!")
+
+    def __init__(self, instance):
+        formatted_message = self.message_template % type(instance).__name__
+
+        super(FrozenClassError, self).__init__(formatted_message)
 
 
 class SystemError(SaharaException):
     code = "SYSTEM_ERROR"
-
-    def __init__(self, message):
-        self.message = message
-        super(SystemError, self).__init__()
+    message = _("System error has occured")
 
 
 class EDPError(SaharaException):
     code = "EDP_ERROR"
+    message = _("Failed to complete EDP operation")
 
-    def __init__(self, message):
-        self.message = message
-        super(EDPError, self).__init__()
+
+class OozieException(SaharaException):
+    code = "OOZIE_EXCEPTION"
+    message = _("Failed to perform Oozie request")
 
 
 class TimeoutException(SaharaException):
     code = "TIMEOUT"
-    message = _("'%(operation)s' timed out after %(timeout)i second(s)")
+    message_template = _("'%(operation)s' timed out after %(timeout)i "
+                         "second(s)")
 
     def __init__(self, timeout, op_name=None, timeout_name=None):
         if op_name:
             op_name = _("Operation with name '%s'") % op_name
         else:
             op_name = _("Operation")
-        self.message = self.message % {
+        formatted_message = self.message_template % {
             'operation': op_name, 'timeout': timeout}
 
         if timeout_name:
             desc = _("%(message)s and following timeout was violated: "
                      "%(timeout_name)s")
-            self.message = desc % {
-                'message': self.message, 'timeout_name': timeout_name}
+            formatted_message = desc % {
+                'message': formatted_message, 'timeout_name': timeout_name}
 
-        super(TimeoutException, self).__init__()
+        super(TimeoutException, self).__init__(formatted_message)
 
 
 class DeprecatedException(SaharaException):
     code = "DEPRECATED"
-
-    def __init__(self, message):
-        self.message = message
-        super(DeprecatedException, self).__init__()
+    message = _("The version you are trying to use is deprecated")
 
 
 class Forbidden(SaharaException):
     code = "FORBIDDEN"
-    message = _("You are not authorized to complete this action.")
-
-    def __init__(self, message=None):
-        if message:
-            self.message = message
-        super(Forbidden, self).__init__()
+    message = _("You are not authorized to complete this action")
 
 
 class ImageNotRegistered(SaharaException):
     code = "IMAGE_NOT_REGISTERED"
-    message = _("Image %s is not registered in Sahara")
+    message_template = _("Image %s is not registered in Sahara")
 
     def __init__(self, image):
-        self.message = self.message % image
-        super(ImageNotRegistered, self).__init__()
+        formatted_message = self.message_template % image
+        super(ImageNotRegistered, self).__init__(formatted_message)
 
 
 class MalformedRequestBody(SaharaException):
     code = "MALFORMED_REQUEST_BODY"
-    message = _("Malformed message body: %(reason)s")
+    message_template = _("Malformed message body: %(reason)s")
 
     def __init__(self, reason):
-        self.message = self.message % {"reason": reason}
-        super(MalformedRequestBody, self).__init__()
+        formatted_message = self.message_template % {"reason": reason}
+        super(MalformedRequestBody, self).__init__(formatted_message)
 
 
 class QuotaException(SaharaException):
     code = "QUOTA_ERROR"
-    message = _("Quota exceeded for %(resource)s: Requested %(requested)s,"
-                " but available %(available)s")
+    message_template = _("Quota exceeded for %(resource)s: "
+                         "Requested %(requested)s, "
+                         "but available %(available)s")
 
     def __init__(self, resource, requested, available):
-        self.message = self.message % {'resource': resource,
-                                       'requested': requested,
-                                       'available': available}
-        super(QuotaException, self).__init__()
+        formatted_message = self.message_template % {
+            'resource': resource,
+            'requested': requested,
+            'available': available}
+
+        super(QuotaException, self).__init__(formatted_message)
 
 
 class UpdateFailedException(SaharaException):
-    message = _("Object '%s' could not be updated")
+    code = "UPDATE_FAILED"
+    message_template = _("Object '%s' could not be updated")
     # Object was unable to be updated
 
-    def __init__(self, value, message=None):
-        self.code = "UPDATE_FAILED"
-        if message:
-            self.message = message
-        self.message = self.message % value
-        super(UpdateFailedException, self).__init__()
+    def __init__(self, value, message_template=None):
+        if message_template:
+            self.message_template = message_template
+
+        formatted_message = self.message_template % value
+
+        super(UpdateFailedException, self).__init__(formatted_message)
 
 
 class MaxRetriesExceeded(SaharaException):
     code = "MAX_RETRIES_EXCEEDED"
-    message = _("Operation %(operation)s wasn't executed correctly after "
-                "%(attempts)d attempts")
+    message_template = _("Operation %(operation)s wasn't executed correctly "
+                         "after %(attempts)d attempts")
 
     def __init__(self, attempts, operation):
-        self.message = self.message % {'operation': operation,
-                                       'attempts': attempts}
-        super(MaxRetriesExceeded, self).__init__()
+        formatted_message = self.message_template % {'operation': operation,
+                                                     'attempts': attempts}
+
+        super(MaxRetriesExceeded, self).__init__(formatted_message)
