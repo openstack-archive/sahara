@@ -16,6 +16,7 @@
 import functools
 
 from oslo_log import log as logging
+import six
 
 from sahara import context
 from sahara.i18n import _
@@ -188,7 +189,7 @@ class ClouderaUtils(object):
         cm.create_mgmt_service(setup_info)
         cm.hosts_start_roles([hostname])
 
-    def get_service_by_role(self, process, cluster=None, instance=None):
+    def get_service_by_role(self, role, cluster=None, instance=None):
         cm_cluster = None
         if cluster:
             cm_cluster = self.get_cloudera_cluster(cluster)
@@ -197,26 +198,28 @@ class ClouderaUtils(object):
         else:
             raise ValueError(_("'cluster' or 'instance' argument missed"))
 
-        if process in ['NAMENODE', 'DATANODE', 'SECONDARYNAMENODE']:
+        if role in ['NAMENODE', 'DATANODE', 'SECONDARYNAMENODE',
+                    'HDFS_GATEWAY']:
             return cm_cluster.get_service(self.HDFS_SERVICE_NAME)
-        elif process in ['RESOURCEMANAGER', 'NODEMANAGER', 'JOBHISTORY']:
+        elif role in ['RESOURCEMANAGER', 'NODEMANAGER', 'JOBHISTORY',
+                      'YARN_GATEWAY']:
             return cm_cluster.get_service(self.YARN_SERVICE_NAME)
-        elif process in ['OOZIE_SERVER']:
+        elif role in ['OOZIE_SERVER']:
             return cm_cluster.get_service(self.OOZIE_SERVICE_NAME)
-        elif process in ['HIVESERVER2', 'HIVEMETASTORE', 'WEBHCAT']:
+        elif role in ['HIVESERVER2', 'HIVEMETASTORE', 'WEBHCAT']:
             return cm_cluster.get_service(self.HIVE_SERVICE_NAME)
-        elif process in ['HUE_SERVER']:
+        elif role in ['HUE_SERVER']:
             return cm_cluster.get_service(self.HUE_SERVICE_NAME)
-        elif process in ['SPARK_YARN_HISTORY_SERVER']:
+        elif role in ['SPARK_YARN_HISTORY_SERVER']:
             return cm_cluster.get_service(self.SPARK_SERVICE_NAME)
-        elif process in ['SERVER']:
+        elif role in ['SERVER']:
             return cm_cluster.get_service(self.ZOOKEEPER_SERVICE_NAME)
-        elif process in ['MASTER', 'REGIONSERVER']:
+        elif role in ['MASTER', 'REGIONSERVER']:
             return cm_cluster.get_service(self.HBASE_SERVICE_NAME)
         else:
             raise ValueError(
                 _("Process %(process)s is not supported by CDH plugin") %
-                {'process': process})
+                {'process': role})
 
     def _agents_connected(self, instances, api):
         hostnames = [i.fqdn() for i in instances]
@@ -242,10 +245,33 @@ class ClouderaUtils(object):
         for inst in instances:
             self.configure_instance(inst, cluster)
 
+    def get_roles_list(self, node_processes):
+        current = set(node_processes)
+        extra_roles = {
+            'YARN_GATEWAY': ["YARN_NODEMANAGER"],
+            'HDFS_GATEWAY': ['HDFS_NAMENODE', 'HDFS_DATANODE',
+                             "HDFS_SECONDARYNAMENODE"]
+        }
+        for extra_role in six.iterkeys(extra_roles):
+            valid_processes = extra_roles[extra_role]
+            for valid in valid_processes:
+                if valid in current:
+                    current.add(extra_role)
+                    break
+        return list(current)
+
+    def get_role_type(self, process):
+        mapper = {
+            'YARN_GATEWAY': 'GATEWAY',
+            'HDFS_GATEWAY': 'GATEWAY',
+        }
+        return mapper.get(process, process)
+
     @cpo.event_wrapper(True)
     def configure_instance(self, instance, cluster=None):
-        for process in instance.node_group.node_processes:
-            self._add_role(instance, process, cluster)
+        roles_list = self.get_roles_list(instance.node_group.node_processes)
+        for role in roles_list:
+            self._add_role(instance, role, cluster)
 
     def _add_role(self, instance, process, cluster):
         if process in ['CLOUDERA_MANAGER']:
@@ -253,8 +279,9 @@ class ClouderaUtils(object):
 
         process = self.pu.convert_role_showname(process)
         service = self.get_service_by_role(process, instance=instance)
+        role_type = self.get_role_type(process)
         role = service.create_role(self.pu.get_role_name(instance, process),
-                                   process, instance.fqdn())
+                                   role_type, instance.fqdn())
         role.update_config(self._get_configs(process, cluster,
                                              node_group=instance.node_group))
 

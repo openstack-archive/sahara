@@ -14,6 +14,7 @@
 # limitations under the License.
 
 import mock
+import testtools
 
 from sahara.plugins.cdh.v5_3_0 import cloudera_utils as cu
 from sahara.tests.unit import base
@@ -64,3 +65,29 @@ class ClouderaUtilsTestCase(base.SaharaTestCase):
 
         self.assertEqual('eggs_spam_host',
                          CU.pu.get_role_name(inst_mock, 'eggs'))
+
+    @mock.patch('sahara.plugins.cdh.cloudera_utils.ClouderaUtils.'
+                'get_cloudera_cluster')
+    def test_get_service_by_role(self, get_cloudera_cluster):
+        class Ob(object):
+            def get_service(self, x):
+                return x
+        get_cloudera_cluster.return_value = Ob()
+        roles = ['NAMENODE', 'DATANODE', 'SECONDARYNAMENODE', 'HDFS_GATEWAY',
+                 'RESOURCEMANAGER', 'NODEMANAGER', 'JOBHISTORY',
+                 'YARN_GATEWAY', 'OOZIE_SERVER', 'HIVESERVER2',
+                 'HIVEMETASTORE', 'WEBHCAT', 'HUE_SERVER',
+                 'SPARK_YARN_HISTORY_SERVER', 'SERVER', 'MASTER',
+                 'REGIONSERVER']
+        resps = ['hdfs01', 'hdfs01', 'hdfs01', 'hdfs01', 'yarn01', 'yarn01',
+                 'yarn01', 'yarn01', 'oozie01', 'hive01', 'hive01', 'hive01',
+                 'hue01', 'spark_on_yarn01', 'zookeeper01', 'hbase01',
+                 'hbase01']
+        provider = cu.ClouderaUtilsV530()
+        cluster = mock.Mock()
+        for (role, resp) in zip(roles, resps):
+            self.assertEqual(
+                resp, provider.get_service_by_role(role, cluster=cluster))
+
+        with testtools.ExpectedException(ValueError):
+            provider.get_service_by_role('cat', cluster=cluster)

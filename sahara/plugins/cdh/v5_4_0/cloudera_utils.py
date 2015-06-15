@@ -71,7 +71,7 @@ class ClouderaUtilsV540(cu.ClouderaUtils):
         cu.ClouderaUtils.__init__(self)
         self.pu = pu.PluginUtilsV540()
 
-    def get_service_by_role(self, process, cluster=None, instance=None):
+    def get_service_by_role(self, role, cluster=None, instance=None):
         cm_cluster = None
         if cluster:
             cm_cluster = self.get_cloudera_cluster(cluster)
@@ -80,23 +80,23 @@ class ClouderaUtilsV540(cu.ClouderaUtils):
         else:
             raise ValueError(_("'cluster' or 'instance' argument missed"))
 
-        if process in ['AGENT']:
+        if role in ['AGENT']:
             return cm_cluster.get_service(self.FLUME_SERVICE_NAME)
-        elif process in ['SENTRY_SERVER']:
+        elif role in ['SENTRY_SERVER']:
             return cm_cluster.get_service(self.SENTRY_SERVICE_NAME)
-        elif process in ['SQOOP_SERVER']:
+        elif role in ['SQOOP_SERVER']:
             return cm_cluster.get_service(self.SQOOP_SERVICE_NAME)
-        elif process in ['SOLR_SERVER']:
+        elif role in ['SOLR_SERVER']:
             return cm_cluster.get_service(self.SOLR_SERVICE_NAME)
-        elif process in ['HBASE_INDEXER']:
+        elif role in ['HBASE_INDEXER']:
             return cm_cluster.get_service(self.KS_INDEXER_SERVICE_NAME)
-        elif process in ['CATALOGSERVER', 'STATESTORE', 'IMPALAD', 'LLAMA']:
+        elif role in ['CATALOGSERVER', 'STATESTORE', 'IMPALAD', 'LLAMA']:
             return cm_cluster.get_service(self.IMPALA_SERVICE_NAME)
-        elif process in ['KMS']:
+        elif role in ['KMS']:
             return cm_cluster.get_service(self.KMS_SERVICE_NAME)
         else:
             return super(ClouderaUtilsV540, self).get_service_by_role(
-                process, cluster, instance)
+                role, cluster, instance)
 
     @cpo.event_wrapper(
         True, step=_("First run cluster"), param=('cluster', 1))
