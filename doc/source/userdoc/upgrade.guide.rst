@@ -133,3 +133,10 @@ operate clusters with the direct engine (create, delete, scale). Using heat engi
 the delete operation is available on clusters that were created by the direct engine.
 After the Liberty release the direct engine will be removed, this means that you will
 only be able to delete clusters created with the direct engine.
+
+Policy namespace changed (policy.json)
+++++++++++++++++++++++++++++++++++++++
+
+The "data-processing:" namespace has been added to the beginning of the all
+Sahara's policy based actions, so, you need to update the policy.json file by
+prepending all actions with "data-processing:".
