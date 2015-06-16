@@ -140,6 +140,11 @@ class OozieJobEngine(base_engine.JobEngine):
                     self.cluster, data_source_urls[data_source.id])
                 break
 
+        external_hdfs_urls = self._resolve_external_hdfs_urls(
+            job_execution.job_configs)
+        for url in external_hdfs_urls:
+            h.configure_cluster_for_hdfs(self.cluster, url)
+
         hdfs_user = self.get_hdfs_user()
 
         # TODO(tmckay): this should probably be "get_namenode"
@@ -278,3 +283,16 @@ class OozieJobEngine(base_engine.JobEngine):
             constructed_dir = ''.join([str(constructed_dir),
                                        str(CONF.job_workflow_postfix)])
         return _append_slash_if_needed(constructed_dir)
+
+    def _resolve_external_hdfs_urls(self, job_configs):
+        external_hdfs_urls = []
+        for k, v in six.iteritems(job_configs.get('configs', {})):
+            if isinstance(v, six.string_types) and v.startswith("hdfs://"):
+                external_hdfs_urls.append(v)
+        for k, v in six.iteritems(job_configs.get('params', {})):
+            if isinstance(v, six.string_types) and v.startswith("hdfs://"):
+                external_hdfs_urls.append(v)
+        for v in job_configs.get('args', []):
+            if isinstance(v, six.string_types) and v.startswith("hdfs://"):
+                external_hdfs_urls.append(v)
+        return external_hdfs_urls
