@@ -30,7 +30,7 @@ To support EDP, the following components must also be installed on the guest:
 * mysql
 * hive
 
-See :doc:`diskimagebuilder` for instructions on building images for this plugin.
+See :doc:`vanilla_imagebuilder` for instructions on building images for this plugin.
 
 HDP Plugin
 ----------
