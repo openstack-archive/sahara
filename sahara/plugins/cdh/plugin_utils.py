@@ -327,8 +327,8 @@ class AbstractPluginUtils(object):
                 cmd.update_repository(r)
 
     def _get_config_value(self, service, name, configs, cluster=None):
-        conf = cluster.cluster_configs
         if cluster:
+            conf = cluster.cluster_configs
             if service in conf and name in conf[service]:
                 return types.transform_to_num(conf[service][name])
         for config in configs:
