@@ -268,13 +268,6 @@ class TemplateUpdateTestCase(base.ConductorManagerTestCase):
         self.assertEqual(1, len(cl_templates))
         self.assertEqual(2, len(ng_templates))
 
-        option_values = {"plugin_name": "vanilla",
-                         "plugin_version": "1.2.1"}
-        template_api.set_conf(Config(option_values))
-        ng_templates, cl_templates = template_api.process_files(tempdir, files)
-        self.assertEqual(0, len(cl_templates))
-        self.assertEqual(0, len(ng_templates))
-
         option_values = {"plugin_name": "hdp",
                          "plugin_version": "2.7.1"}
         template_api.set_conf(Config(option_values))

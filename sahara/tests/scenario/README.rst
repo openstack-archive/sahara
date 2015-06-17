@@ -33,7 +33,7 @@ and use the following tox env:
 
 .. sourcecode:: console
 
-    $ tox -e scenario -- -V templatevars.ini etc/scenario/sahara-ci/vanilla-1.2.1.yaml.mako
+    $ tox -e scenario -- -V templatevars.ini etc/scenario/sahara-ci/vanilla-2.7.1.yaml.mako
 ..
 
 If you want to run scenario tests for a few plugins or their versions, you
@@ -41,7 +41,7 @@ should use the several YAML and/or YAML Mako template files:
 
 .. sourcecode:: console
 
-    $ tox -e scenario -- -V templatevars.ini etc/scenario/sahara-ci/vanilla-1.2.1.yaml.mako etc/scenario/sahara-ci/vanilla-2.7.1.yaml.mako ...
+    $ tox -e scenario -- -V templatevars.ini etc/scenario/sahara-ci/cdh-5.4.0.yaml.mako etc/scenario/sahara-ci/vanilla-2.7.1.yaml.mako ...
 ..
 
 Here are a few more examples.

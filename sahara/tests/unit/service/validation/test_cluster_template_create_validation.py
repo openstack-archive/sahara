@@ -38,7 +38,7 @@ class TestClusterTemplateCreateValidation(u.ValidationTestCase):
             data={
                 'name': "test-name",
                 'plugin_name': "vanilla",
-                'hadoop_version': "1.2.1",
+                'hadoop_version': "2.6.0",
                 'node_groups': [
                     {'name': 'a'}
                 ]
@@ -51,7 +51,7 @@ class TestClusterTemplateCreateValidation(u.ValidationTestCase):
             data={
                 'name': "test-name",
                 'plugin_name': "vanilla",
-                'hadoop_version': "1.2.1",
+                'hadoop_version': "2.6.0",
                 'node_groups': [
                     {'name': 'a',
                      'flavor_id': '42'}
@@ -66,7 +66,7 @@ class TestClusterTemplateCreateValidation(u.ValidationTestCase):
             data={
                 'name': "test-name",
                 'plugin_name': "vanilla",
-                'hadoop_version': "1.2.1",
+                'hadoop_version': "2.6.0",
                 'node_groups': [
                     {'name': 'a',
                      'flavor_id': '42',
@@ -83,7 +83,7 @@ class TestClusterTemplateCreateValidation(u.ValidationTestCase):
             data={
                 'name': "test-name",
                 'plugin_name': "vanilla",
-                'hadoop_version': "1.2.1",
+                'hadoop_version': "2.6.0",
                 'node_groups': [
                     {
                         'name': 'a',
@@ -108,7 +108,7 @@ class TestClusterTemplateCreateValidation(u.ValidationTestCase):
             data={
                 'name': "test-name",
                 'plugin_name': "vanilla",
-                'hadoop_version': "1.2.1",
+                'hadoop_version': "2.6.0",
                 'node_groups': [
                     {
                         "node_group_template_id": "",
@@ -125,7 +125,7 @@ class TestClusterTemplateCreateValidation(u.ValidationTestCase):
             data={
                 'name': "test-name",
                 'plugin_name': "vanilla",
-                'hadoop_version': "1.2.1",
+                'hadoop_version': "2.6.0",
                 'node_groups': [
                     {
                         "node_group_template_id": "test",
@@ -147,7 +147,7 @@ class TestClusterTemplateCreateValidation(u.ValidationTestCase):
             data={
                 'name': "test-name",
                 'plugin_name': "vanilla",
-                'hadoop_version': "1.2.1",
+                'hadoop_version': "2.6.0",
                 'node_groups': [
                     {
                         "node_group_template_id": "550e8400-e29b-41d4-a716-"
@@ -164,7 +164,7 @@ class TestClusterTemplateCreateValidation(u.ValidationTestCase):
         data = {
             'name': "testname",
             'plugin_name': "vanilla",
-            'hadoop_version': "1.2.1"
+            'hadoop_version': "2.6.0"
         }
         self._assert_valid_name_hostname_validation(data)
 
@@ -172,7 +172,7 @@ class TestClusterTemplateCreateValidation(u.ValidationTestCase):
         data = {
             'name': "testname",
             'plugin_name': "vanilla",
-            'hadoop_version': "1.2.1"
+            'hadoop_version': "2.6.0"
         }
         self._assert_types(data)
 
@@ -208,7 +208,7 @@ class TestClusterTemplateCreateValidation(u.ValidationTestCase):
             data={
                 'name': 'testname',
                 'plugin_name': 'vanilla',
-                'hadoop_version': '1.2.1',
+                'hadoop_version': '2.6.0',
                 'default_image_id': str(uuid.uuid4()),
                 'cluster_configs': {
                     "service_1": {
@@ -237,7 +237,7 @@ class TestClusterTemplateCreateValidation(u.ValidationTestCase):
             data={
                 'name': 'testname',
                 'plugin_name': 'vanilla',
-                'hadoop_version': '1.2.1',
+                'hadoop_version': '2.6.0',
                 'default_image_id': None,
                 'cluster_configs': None,
                 'node_groups': None,
@@ -251,7 +251,7 @@ class TestClusterTemplateCreateValidation(u.ValidationTestCase):
             data={
                 'name': "test-name",
                 'plugin_name': "wrong_plugin",
-                'hadoop_version': "1.2.1",
+                'hadoop_version': "2.6.0",
             },
             bad_req_i=(1, 'INVALID_REFERENCE',
                        "Sahara doesn't contain plugin "
@@ -262,7 +262,7 @@ class TestClusterTemplateCreateValidation(u.ValidationTestCase):
         data = {
             'name': 'test',
             'plugin_name': 'vanilla',
-            'hadoop_version': '1.2.1'
+            'hadoop_version': '2.6.0'
         }
         self._assert_create_object_validation(
             data=data,
@@ -274,7 +274,7 @@ class TestClusterTemplateCreateValidation(u.ValidationTestCase):
         data = {
             'name': 'test-template',
             'plugin_name': 'vanilla',
-            'hadoop_version': '1.2.1',
+            'hadoop_version': '2.6.0',
             'neutron_management_network': '53a36917-ab9f-4589'
                                           '-94ce-b6df85a68332'
         }
