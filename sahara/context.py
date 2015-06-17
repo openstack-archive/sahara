@@ -13,6 +13,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import traceback
+
 import eventlet
 from eventlet.green import threading
 from eventlet.green import time
@@ -199,6 +201,7 @@ def _wrapper(ctx, thread_description, thread_group, func, *args, **kwargs):
                 thread=thread_description, exception=e))
         if thread_group and not thread_group.exc:
             thread_group.exc = e
+            thread_group.exc_stacktrace = traceback.format_exc()
             thread_group.failed_thread = thread_description
     finally:
         if thread_group:
@@ -224,6 +227,7 @@ class ThreadGroup(object):
     def __init__(self, thread_pool_size=1000):
         self.tg = greenpool.GreenPool(size=thread_pool_size)
         self.exc = None
+        self.exc_stacktrace = None
         self.failed_thread = None
         self.threads = 0
         self.cv = threading.Condition()
@@ -256,7 +260,8 @@ class ThreadGroup(object):
                 self.cv.wait()
 
         if self.exc:
-            raise ex.ThreadException(self.failed_thread, self.exc)
+            raise ex.ThreadException(self.failed_thread, self.exc,
+                                     self.exc_stacktrace)
 
     def __enter__(self):
         return self

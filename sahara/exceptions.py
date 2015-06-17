@@ -193,12 +193,14 @@ class DataTooBigException(SaharaException):
 
 class ThreadException(SaharaException):
     code = "THREAD_EXCEPTION"
-    message_template = _("An error occurred in thread '%(thread)s': %(e)s")
+    message_template = _("An error occurred in thread '%(thread)s': %(e)s"
+                         "\n%(stacktrace)s")
 
-    def __init__(self, thread_description, e):
+    def __init__(self, thread_description, e, stacktrace):
         formatted_message = self.message_template % {
             'thread': thread_description,
-            'e': six.text_type(e)}
+            'e': six.text_type(e),
+            'stacktrace': stacktrace}
 
         super(ThreadException, self).__init__(formatted_message)
 
