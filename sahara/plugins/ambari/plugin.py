@@ -79,7 +79,8 @@ class AmbariPluginProvider(p.ProvisioningPluginBase):
         deploy.wait_ambari_accessible(cluster)
         deploy.update_default_ambari_password(cluster)
         cluster = conductor.cluster_get(context.ctx(), cluster.id)
-        deploy.wait_host_registration(cluster)
+        deploy.wait_host_registration(cluster,
+                                      plugin_utils.get_instances(cluster))
         deploy.set_up_hdp_repos(cluster)
         deploy.create_blueprint(cluster)
 
@@ -164,16 +165,23 @@ class AmbariPluginProvider(p.ProvisioningPluginBase):
         cluster = conductor.cluster_get(ctx, cluster.id)
 
     def validate(self, cluster):
-        validation.validate_creation(cluster.id)
+        validation.validate(cluster.id)
 
     def scale_cluster(self, cluster, instances):
-        pass
+        deploy.setup_agents(cluster, instances)
+        cluster = conductor.cluster_get(context.ctx(), cluster.id)
+        deploy.wait_host_registration(cluster, instances)
+        deploy.add_new_hosts(cluster, instances)
+        deploy.manage_config_groups(cluster, instances)
+        deploy.manage_host_components(cluster, instances)
+        swift_helper.install_ssl_certs(instances)
 
     def decommission_nodes(self, cluster, instances):
-        pass
+        deploy.decommission_hosts(cluster, instances)
+        deploy.remove_services_from_hosts(cluster, instances)
 
     def validate_scaling(self, cluster, existing, additional):
-        pass
+        validation.validate(cluster.id)
 
     def get_edp_engine(self, cluster, job_type):
         if job_type in edp_engine.EDPSparkEngine.get_supported_job_types():

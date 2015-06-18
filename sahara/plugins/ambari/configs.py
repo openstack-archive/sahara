@@ -79,6 +79,22 @@ CFG_PROCESS_MAP = {
 }
 
 
+SERVICES_TO_CONFIGS_MAP = None
+
+
+def get_service_to_configs_map():
+    global SERVICES_TO_CONFIGS_MAP
+    if SERVICES_TO_CONFIGS_MAP:
+        return SERVICES_TO_CONFIGS_MAP
+    data = {}
+    for (key, item) in six.iteritems(CFG_PROCESS_MAP):
+        if item not in data:
+            data[item] = []
+        data[item].append(key)
+    SERVICES_TO_CONFIGS_MAP = data
+    return SERVICES_TO_CONFIGS_MAP
+
+
 ng_confs = [
     "dfs.datanode.data.dir",
     "dtnode_heapsize",
@@ -176,7 +192,7 @@ def _make_paths(dirs, suffix):
     return ",".join([d + suffix for d in dirs])
 
 
-def get_instance_params(inst):
+def get_instance_params_mapping(inst):
     configs = _create_ambari_configs(inst.node_group.node_configs,
                                      inst.node_group.cluster.hadoop_version)
     storage_paths = inst.storage_paths()
@@ -200,8 +216,11 @@ def get_instance_params(inst):
     configs.setdefault("oozie-site", {})
     configs["oozie-site"][
         "oozie.service.AuthorizationService.security.enabled"] = "false"
+    return configs
 
-    return _serialize_ambari_configs(configs)
+
+def get_instance_params(inst):
+    return _serialize_ambari_configs(get_instance_params_mapping(inst))
 
 
 def get_cluster_params(cluster):
@@ -216,3 +235,37 @@ def get_cluster_params(cluster):
         configs["admin-properties"]["db_root_password"] = (
             cluster.extra["ranger_db_password"])
     return _serialize_ambari_configs(configs)
+
+
+def get_config_group(instance):
+    params = get_instance_params_mapping(instance)
+    groups = []
+    for (service, targets) in six.iteritems(get_service_to_configs_map()):
+        current_group = {
+            'cluster_name': instance.cluster.name,
+            'group_name': "%s:%s" % (
+                instance.cluster.name, instance.instance_name),
+            'tag': service,
+            'description': "Config group for scaled "
+                           "node %s" % instance.instance_name,
+            'hosts': [
+                {
+                    'host_name': instance.fqdn()
+                }
+            ],
+            'desired_configs': []
+        }
+        at_least_one_added = False
+        for target in targets:
+            configs = params.get(target, {})
+            if configs:
+                current_group['desired_configs'].append({
+                    'type': target,
+                    'properties': configs,
+                    'tag': instance.instance_name
+                })
+                at_least_one_added = True
+        if at_least_one_added:
+            # Config Group without overridden data is not interesting
+            groups.append({'ConfigGroup': current_group})
+    return groups
