@@ -25,6 +25,7 @@ from sahara import context
 from sahara import exceptions as exc
 from sahara.i18n import _
 from sahara.plugins.cdh import commands as cmd
+from sahara.plugins import recommendations_utils as ru
 from sahara.plugins import utils as u
 from sahara.utils import cluster_progress_ops as cpo
 from sahara.utils import edp as edp_u
@@ -38,6 +39,39 @@ HADOOP_LIB_DIR = '/usr/lib/hadoop-mapreduce'
 CM_API_PORT = 7180
 
 LOG = logging.getLogger(__name__)
+
+AUTO_CONFIGURATION_SCHEMA = {
+    'node_configs': {
+        'yarn.scheduler.minimum-allocation-mb': (
+            'RESOURCEMANAGER', 'yarn_scheduler_minimum_allocation_mb'),
+        'mapreduce.reduce.memory.mb': (
+            'YARN_GATEWAY', 'mapreduce_reduce_memory_mb'),
+        'mapreduce.map.memory.mb': (
+            'YARN_GATEWAY', 'mapreduce_map_memory_mb',),
+        'yarn.scheduler.maximum-allocation-mb': (
+            'RESOURCEMANAGER', 'yarn_scheduler_maximum_allocation_mb'),
+        'yarn.app.mapreduce.am.command-opts': (
+            'YARN_GATEWAY', 'yarn_app_mapreduce_am_command_opts'),
+        'yarn.nodemanager.resource.memory-mb': (
+            'NODEMANAGER', 'yarn_nodemanager_resource_memory_mb'),
+        'mapreduce.task.io.sort.mb': (
+            'YARN_GATEWAY', 'io_sort_mb'),
+        'mapreduce.map.java.opts': (
+            'YARN_GATEWAY', 'mapreduce_map_java_opts'),
+        'mapreduce.reduce.java.opts': (
+            'YARN_GATEWAY', 'mapreduce_reduce_java_opts'),
+        'yarn.app.mapreduce.am.resource.mb': (
+            'YARN_GATEWAY', 'yarn_app_mapreduce_am_resource_mb')
+    },
+    'cluster_configs': {
+        'dfs.replication': ('HDFS', 'dfs_replication')
+    }
+}
+
+
+class CDHPluginAutoConfigsProvider(ru.HadoopAutoConfigsProvider):
+    def get_datanode_name(self):
+        return 'HDFS_DATANODE'
 
 
 class AbstractPluginUtils(object):
@@ -339,3 +373,8 @@ class AbstractPluginUtils(object):
         raise exc.InvalidDataException(
             _("Unable to find config: {applicable_target: %(target)s, name: "
               "%(name)s").format(target=service, name=name))
+
+    def recommend_configs(self, cluster, plugin_configs):
+        provider = CDHPluginAutoConfigsProvider(
+            AUTO_CONFIGURATION_SCHEMA, plugin_configs, cluster)
+        provider.apply_recommended_configs()

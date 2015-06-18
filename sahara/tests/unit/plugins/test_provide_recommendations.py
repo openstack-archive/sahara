@@ -126,6 +126,9 @@ class TestProvidingRecommendations(b.SaharaWithDbTestCase):
                 'cluster_update')
     def test_apply_recommended_configs(self, cond_cluster, cond_node_group,
                                        fake_flavor):
+        class TestProvider(ru.HadoopAutoConfigsProvider):
+            def get_datanode_name(self):
+                return "dog_datanode"
         fake_flavor.return_value = FakeObject(ram=2048, vcpus=1)
         to_tune = {
             'cluster_configs': {
@@ -159,9 +162,8 @@ class TestProvidingRecommendations(b.SaharaWithDbTestCase):
             node_groups=[fake_ng],
             use_autoconfig=True,
         )
-        v = ru.HadoopAutoConfigsProvider(
-            to_tune, fake_plugin_configs, fake_cluster,
-            {'datanode_process_name': "dog_datanode"})
+        v = TestProvider(
+            to_tune, fake_plugin_configs, fake_cluster)
 
         v.apply_recommended_configs()
         self.assertEqual([mock.call(context.ctx(), fake_cluster, {
