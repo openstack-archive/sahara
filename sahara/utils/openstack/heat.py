@@ -44,7 +44,9 @@ def client():
     heat_url = base.url_for(ctx.service_catalog, 'orchestration')
     return heat_client.Client('1', heat_url, token=ctx.auth_token,
                               cert_file=CONF.heat.ca_file,
-                              insecure=CONF.heat.api_insecure)
+                              insecure=CONF.heat.api_insecure,
+                              username=ctx.username,
+                              include_pass=True)
 
 
 def get_stack(stack_name):
