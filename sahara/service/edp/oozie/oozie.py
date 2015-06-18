@@ -84,7 +84,7 @@ def _check_status_code(resp, expected_code):
         message = resp_text.split("<HR size=\"1\" noshade=\"noshade\">")[1]
         message = message.replace("</p><p>", "\n")
         message = re.sub('<[^<]+?>', ' ', message)
-        raise OozieException(message)
+        raise ex.OozieException(message)
 
 
 def get_json(response):
@@ -95,9 +95,3 @@ def get_json(response):
         return response.json()
     else:
         return json.loads(response.content)
-
-
-class OozieException(ex.SaharaException):
-    def __init__(self, message):
-        self.message = message
-        self.code = "OOZIE_EXCEPTION"

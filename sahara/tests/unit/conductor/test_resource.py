@@ -18,9 +18,9 @@ import copy
 import testtools
 
 from sahara.conductor import resource as r
+from sahara import exceptions as ex
 from sahara.swift import swift_helper
 from sahara.utils import edp
-from sahara.utils import types
 
 
 SAMPLE_DICT = {
@@ -147,13 +147,13 @@ class TestResource(testtools.TestCase):
     def test_resource_immutability(self):
         res = r.Resource(SAMPLE_DICT)
 
-        with testtools.ExpectedException(types.FrozenClassError):
+        with testtools.ExpectedException(ex.FrozenClassError):
             res.first.append(123)
 
-        with testtools.ExpectedException(types.FrozenClassError):
+        with testtools.ExpectedException(ex.FrozenClassError):
             res.first = 123
 
-        with testtools.ExpectedException(types.FrozenClassError):
+        with testtools.ExpectedException(ex.FrozenClassError):
             res.second.a = 123
 
     def test_nested_lists(self):

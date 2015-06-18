@@ -169,14 +169,15 @@ def domain_for_proxy():
         domain_list = b.execute_with_retries(
             admin.domains.list, name=CONF.proxy_user_domain_name)
         if len(domain_list) == 0:
-            raise ex.NotFoundException(value=CONF.proxy_user_domain_name,
-                                       message=_('Failed to find domain %s'))
+            raise ex.NotFoundException(
+                value=CONF.proxy_user_domain_name,
+                message_template=_('Failed to find domain %s'))
         # the domain name should be globally unique in Keystone
         if len(domain_list) > 1:
-            raise ex.NotFoundException(value=CONF.proxy_user_domain_name,
-                                       message=_('Unexpected results found '
-                                                 'when searching for domain '
-                                                 '%s'))
+            raise ex.NotFoundException(
+                value=CONF.proxy_user_domain_name,
+                message_template=_('Unexpected results found when searching '
+                                   'for domain %s'))
         PROXY_DOMAIN = domain_list[0]
     return PROXY_DOMAIN
 
@@ -286,12 +287,14 @@ def proxy_user_delete(username=None, user_id=None):
         user_list = b.execute_with_retries(
             admin.users.list, domain=domain.id, name=username)
         if len(user_list) == 0:
-            raise ex.NotFoundException(value=username,
-                                       message=_('Failed to find user %s'))
+            raise ex.NotFoundException(
+                value=username,
+                message_template=_('Failed to find user %s'))
         if len(user_list) > 1:
-            raise ex.NotFoundException(value=username,
-                                       message=_('Unexpected results found '
-                                                 'when searching for user %s'))
+            raise ex.NotFoundException(
+                value=username,
+                message_template=_('Unexpected results found when searching '
+                                   'for user %s'))
         user_id = user_list[0].id
     b.execute_with_retries(admin.users.delete, user_id)
     LOG.debug('Deleted proxy user id {user_id}'.format(user_id=user_id))

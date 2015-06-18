@@ -28,6 +28,7 @@ import datetime
 import six
 
 from sahara.conductor import objects
+from sahara import exceptions as ex
 from sahara.i18n import _
 from sahara.swift import swift_helper
 from sahara.utils import types
@@ -169,7 +170,7 @@ class Resource(types.FrozenDict):
         return self[item]
 
     def __setattr__(self, *args):
-        raise types.FrozenClassError(self)
+        raise ex.FrozenClassError(self)
 
 
 class NodeGroupTemplateResource(Resource, objects.NodeGroupTemplate):

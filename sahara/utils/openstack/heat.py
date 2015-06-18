@@ -55,8 +55,8 @@ def get_stack(stack_name):
         if stack.stack_name == stack_name:
             return stack
 
-    raise ex.NotFoundException(_('Failed to find stack %(stack)s')
-                               % {'stack': stack_name})
+    raise ex.NotFoundException({'stack': stack_name},
+                               _('Failed to find stack %(stack)s'))
 
 
 def wait_stack_completion(stack):

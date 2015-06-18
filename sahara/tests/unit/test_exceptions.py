@@ -149,7 +149,7 @@ class TestExceptions(base.SaharaTestCase):
     def test_forbidden(self):
         self._validate_exc(exc.Forbidden, "message", "message")
         self._validate_exc(exc.Forbidden, "You are not authorized "
-                                          "to complete this action.")
+                                          "to complete this action")
 
     def test_image_not_registered(self):
         self._validate_exc(
