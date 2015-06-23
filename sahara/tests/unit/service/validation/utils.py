@@ -77,8 +77,11 @@ def _get_availability_zone_list(detailed=True):
     return [FakeAvailabilityZone('nova')]
 
 
-def _get_heat_stack_list():
-    return [FakeStack('test-heat')]
+def _get_heat_stack_list(**kwargs):
+    if (kwargs.get('filters') and
+            kwargs.get('filters').get('name') == 'test-heat'):
+        return [FakeStack('test-heat')]
+    return []
 
 
 class FakeStack(object):

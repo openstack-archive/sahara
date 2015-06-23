@@ -256,11 +256,10 @@ def check_cluster_unique_name(name):
 
 def check_heat_stack_name(cluster_name):
     if CONF.infrastructure_engine == 'heat':
-        for stack in heat.client().stacks.list():
-            if stack.stack_name == cluster_name:
-                raise ex.NameAlreadyExistsException(
-                    _("Cluster name '%s' is already used as Heat stack name")
-                    % cluster_name)
+        if heat.get_stack(cluster_name, raise_on_missing=False):
+            raise ex.NameAlreadyExistsException(
+                _("Cluster name '%s' is already used as Heat stack name")
+                % cluster_name)
 
 
 def check_cluster_hostnames_lengths(cluster_name, node_groups):
