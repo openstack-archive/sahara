@@ -19,6 +19,7 @@ import flask
 from oslo_config import cfg
 from oslo_log import log
 from oslo_middleware import request_id
+from oslo_service import systemd
 import six
 import stevedore
 from werkzeug import exceptions as werkzeug_exceptions
@@ -32,7 +33,6 @@ from sahara import config
 from sahara import context
 from sahara.i18n import _LI
 from sahara.i18n import _LW
-from sahara.openstack.common import systemd
 from sahara.plugins import base as plugins_base
 from sahara.service import api as service_api
 from sahara.service.edp import api as edp_api

@@ -28,12 +28,12 @@ from eventlet import wsgi
 from oslo_config import cfg
 from oslo_log import log as logging
 from oslo_serialization import jsonutils
+from oslo_service import sslutils
 
 from sahara import exceptions
 from sahara.i18n import _
 from sahara.i18n import _LE
 from sahara.i18n import _LI
-from sahara.openstack.common import sslutils
 
 LOG = logging.getLogger(__name__)
 
@@ -141,9 +141,9 @@ class Server(object):
 
         self.application = application
         self.sock = eventlet.listen((CONF.host, CONF.port), backlog=500)
-        if sslutils.is_enabled():
+        if sslutils.is_enabled(CONF):
             LOG.info(_LI("Using HTTPS for port %s"), CONF.port)
-            self.sock = sslutils.wrap(self.sock)
+            self.sock = sslutils.wrap(CONF, self.sock)
 
         if CONF.api_workers == 0:
             # Useful for profiling, test, debug etc.
