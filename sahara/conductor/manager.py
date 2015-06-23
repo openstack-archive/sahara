@@ -337,6 +337,12 @@ class ConductorManager(db_base.Base):
         """Destroy the Data Source or raise if it does not exist."""
         return self.db.data_source_destroy(context, data_source)
 
+    def data_source_update(self, context, id, values):
+        """Update the Data Source or raise if it does not exist."""
+        values = copy.deepcopy(values)
+        values["id"] = id
+        return self.db.data_source_update(context, values)
+
     # JobExecution ops
 
     def job_execution_get(self, context, job_execution):

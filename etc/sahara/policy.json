@@ -42,6 +42,7 @@
     "data-processing:data-sources:get": "",
     "data-processing:data-sources:register": "",
     "data-processing:data-sources:delete": "",
+    "data-processing:data-sources:modify": "",
 
     "data-processing:jobs:get_all": "",
     "data-processing:jobs:create": "",

@@ -20,7 +20,7 @@ import uuid
 from oslo_serialization import jsonutils as json
 import testtools
 
-from sahara.service.validations.edp import data_source
+from sahara.service.validations.edp import data_source_schema
 from sahara.service.validations.edp import job
 from sahara.service.validations.edp import job_binary
 from sahara.service.validations.edp import job_execution
@@ -32,7 +32,7 @@ class TestJSONApiExamplesV11(testtools.TestCase):
     EXAMPLES_PATH = 'etc/edp-examples/json-api-examples/v1.1/%s'
 
     def test_data_sources(self):
-        schema = data_source.DATA_SOURCE_SCHEMA
+        schema = data_source_schema.DATA_SOURCE_SCHEMA
         path = self.EXAMPLES_PATH % 'data-sources'
         formatter = self._formatter()
         self._test(schema, path, formatter)

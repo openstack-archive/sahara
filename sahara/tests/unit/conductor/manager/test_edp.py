@@ -210,6 +210,40 @@ class DataSourceTest(test_base.ConductorManagerTestCase):
                                          url='localhost')
         self.assertEqual(0, cnt)
 
+    def test_data_source_update(self):
+        ctx = context.ctx()
+        orig = self.api.data_source_create(ctx, SAMPLE_DATA_SOURCE)
+        update_json = {"name": "updatedName",
+                       "url": "swift://updatedFakeUrl"}
+        updated = self.api.data_source_update(ctx, orig["id"], update_json)
+        self.assertEqual("updatedName", updated["name"])
+        self.assertEqual("swift://updatedFakeUrl", updated["url"])
+
+        self._create_job_execution_ref_data_source(ctx, updated["id"])
+        update_json = {"name": "FailsToupdatedName",
+                       "url": "swift://FailsupdatedFakeUrl"}
+        with testtools.ExpectedException(ex.UpdateFailedException):
+            self.api.data_source_update(ctx, updated["id"], update_json)
+
+    def _create_job_execution_ref_data_source(self, context, ds_id):
+        job = self.api.job_create(context, SAMPLE_JOB)
+        ds_input = self.api.data_source_create(context, SAMPLE_DATA_SOURCE)
+        SAMPLE_DATA_OUTPUT = copy.copy(SAMPLE_DATA_SOURCE)
+        SAMPLE_DATA_OUTPUT['name'] = 'output'
+
+        SAMPLE_JOB_EXECUTION['job_id'] = job['id']
+        SAMPLE_JOB_EXECUTION['input_id'] = ds_input['id']
+        SAMPLE_JOB_EXECUTION['output_id'] = ds_id
+        SAMPLE_JOB_EXECUTION['data_source_urls'] = {ds_id: "fakeurl"}
+
+        self.api.job_execution_create(context, SAMPLE_JOB_EXECUTION)
+
+        lst = self.api.job_execution_get_all(context)
+        job_ex_id = lst[0]['id']
+
+        new_info = {"status": edp.JOB_STATUS_PENDING}
+        self.api.job_execution_update(context, job_ex_id, {'info': new_info})
+
 
 class JobExecutionTest(test_base.ConductorManagerTestCase):
     def test_crud_operation_create_list_delete_update(self):

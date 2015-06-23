@@ -19,6 +19,7 @@ from sahara.api import acl
 from sahara.service.edp import api
 from sahara.service import validation as v
 from sahara.service.validations.edp import data_source as v_d_s
+from sahara.service.validations.edp import data_source_schema as v_d_s_schema
 from sahara.service.validations.edp import job as v_j
 from sahara.service.validations.edp import job_binary as v_j_b
 from sahara.service.validations.edp import job_binary_internal as v_j_b_i
@@ -85,7 +86,7 @@ def data_sources_list():
 
 @rest.post('/data-sources')
 @acl.enforce("data-processing:data-sources:register")
-@v.validate(v_d_s.DATA_SOURCE_SCHEMA, v_d_s.check_data_source_create)
+@v.validate(v_d_s_schema.DATA_SOURCE_SCHEMA, v_d_s.check_data_source_create)
 def data_source_register(data):
     return u.render(api.register_data_source(data).to_wrapped_dict())
 
@@ -103,6 +104,16 @@ def data_source_get(data_source_id):
 def data_source_delete(data_source_id):
     api.delete_data_source(data_source_id)
     return u.render()
+
+
+@rest.put('/data-sources/<data_source_id>')
+@acl.enforce("data-processing:data-sources:modify")
+@v.check_exists(api.get_data_source, 'data_source_id')
+@v.validate(v_d_s_schema.DATA_SOURCE_UPDATE_SCHEMA)
+def data_source_update(data_source_id, data):
+    return u.render(
+        api.data_source_update(
+            data_source_id, data).to_wrapped_dict())
 
 
 # Job ops

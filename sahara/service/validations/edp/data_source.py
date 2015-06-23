@@ -16,40 +16,14 @@
 from oslo_config import cfg
 import six.moves.urllib.parse as urlparse
 
+from sahara import conductor as c
+from sahara import context
 import sahara.exceptions as ex
 from sahara.i18n import _
 import sahara.service.validations.edp.base as b
 from sahara.swift import utils as su
 
 CONF = cfg.CONF
-
-DATA_SOURCE_SCHEMA = {
-    "type": "object",
-    "properties": {
-        "name": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 50,
-            "format": "valid_name"
-        },
-        "description": {
-            "type": "string"
-        },
-        "type": b.data_source_type,
-        "url": {
-            "type": "string",
-        },
-        "credentials": {
-            "type": "object"
-        }
-    },
-    "additionalProperties": False,
-    "required": [
-        "name",
-        "type",
-        "url"
-    ]
-}
 
 
 def check_data_source_create(data, **kwargs):
@@ -113,3 +87,14 @@ def _check_maprfs_data_source_create(data):
     if url.scheme:
         if url.scheme != "maprfs":
             raise ex.InvalidDataException(_("URL scheme must be 'maprfs'"))
+
+
+def check_data_source_update(data, **kwargs):
+    ctx = context.ctx()
+    jobs = c.API.job_execution_get_all(ctx)
+    pending_jobs = [job for job in jobs if job.info.status == "PENDING"]
+    for job in pending_jobs:
+        if kwargs["data_source_id"] in job.data_source_urls:
+            raise ex.UpdateFailedException(
+                _("DataSource is used in a "
+                  "PENDING Job and can not be updated."))
