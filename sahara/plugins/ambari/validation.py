@@ -31,6 +31,8 @@ def validate_creation(cluster_id):
     _check_ambari(cluster)
     _check_hdfs(cluster)
     _check_yarn(cluster)
+    _check_oozie(cluster)
+    _check_hive(cluster)
 
 
 def _check_ambari(cluster):
@@ -71,3 +73,27 @@ def _check_yarn(cluster):
     if nm_count == 0:
         raise ex.InvalidComponentCountException(common.NODEMANAGER,
                                                 _("1 or more"), nm_count)
+
+
+def _check_oozie(cluster):
+    count = utils.get_instances_count(cluster, common.OOZIE_SERVER)
+    if count > 1:
+        raise ex.InvalidComponentCountException(common.OOZIE_SERVER,
+                                                _("0 or 1"), count)
+
+
+def _check_hive(cluster):
+    hs_count = utils.get_instances_count(cluster, common.HIVE_SERVER)
+    hm_count = utils.get_instances_count(cluster, common.HIVE_METASTORE)
+    if hs_count > 1:
+        raise ex.InvalidComponentCountException(common.HIVE_SERVER,
+                                                _("0 or 1"), hs_count)
+    if hm_count > 1:
+        raise ex.InvalidComponentCountException(common.HIVE_METASTORE,
+                                                _("0 or 1"), hm_count)
+    if hs_count == 0 and hm_count == 1:
+        raise ex.RequiredServiceMissingException(
+            common.HIVE_SERVER, required_by=common.HIVE_METASTORE)
+    if hs_count == 1 and hm_count == 0:
+        raise ex.RequiredServiceMissingException(
+            common.HIVE_METASTORE, required_by=common.HIVE_SERVER)
