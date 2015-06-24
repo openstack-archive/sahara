@@ -18,14 +18,14 @@ import random
 
 from oslo_config import cfg
 from oslo_log import log
+from oslo_service import periodic_task
+from oslo_service import threadgroup
 from oslo_utils import timeutils
 import six
 
 from sahara import conductor as c
 from sahara import context
 from sahara.i18n import _LW
-from sahara.openstack.common import periodic_task
-from sahara.openstack.common import threadgroup
 from sahara.service.edp import job_manager
 from sahara.service import ops
 from sahara.service import trusts
@@ -125,6 +125,10 @@ def _make_periodic_tasks():
     zombie_task_spacing = 300 if CONF.use_domain_for_proxy_users else -1
 
     class SaharaPeriodicTasks(periodic_task.PeriodicTasks):
+
+        def __init__(self):
+            super(SaharaPeriodicTasks, self).__init__(CONF)
+
         @periodic_task.periodic_task(spacing=45, run_immediately=True)
         @set_context
         def update_job_statuses(self, ctx):
