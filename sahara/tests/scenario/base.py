@@ -273,6 +273,7 @@ class BaseTestCase(base.BaseTestCase):
     @track_result("Cluster scaling", False)
     def check_scale(self):
         scale_ops = []
+        ng_before_scale = self.sahara.get_cluster(self.cluster_id).node_groups
         if self.testcase.get('scaling'):
             scale_ops = self.testcase['scaling']
         else:
@@ -303,7 +304,31 @@ class BaseTestCase(base.BaseTestCase):
         if body:
             self.sahara.scale_cluster(self.cluster_id, body)
             self._poll_cluster_status(self.cluster_id)
+            ng_after_scale = self.sahara.get_cluster(
+                self.cluster_id).node_groups
+            self._validate_scaling(ng_after_scale,
+                                   self._get_expected_count_of_nodes(
+                                       ng_before_scale, body))
         self.check_cinder()
+
+    def _validate_scaling(self, after, expected_count):
+        for (key, value) in six.iteritems(expected_count):
+            ng = {}
+            for after_ng in after:
+                if after_ng['name'] == key:
+                    ng = after_ng
+                    break
+            self.assertEqual(value, ng.get('count', 0))
+
+    def _get_expected_count_of_nodes(self, before, body):
+        expected_mapper = {}
+        for ng in before:
+            expected_mapper[ng['name']] = ng['count']
+        for ng in body.get('add_node_groups', []):
+            expected_mapper[ng['name']] = ng['count']
+        for ng in body.get('resize_node_groups', []):
+            expected_mapper[ng['name']] = ng['count']
+        return expected_mapper
 
     @track_result("Check cinder volumes")
     def check_cinder(self):
