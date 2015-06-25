@@ -19,6 +19,7 @@ import six
 
 from sahara.plugins.ambari import common
 from sahara.plugins import provisioning
+from sahara.plugins import utils
 from sahara.swift import swift_helper
 from sahara.utils import files
 
@@ -26,6 +27,7 @@ from sahara.utils import files
 configs = {}
 obj_configs = {}
 cfg_process_map = {
+    "admin-properties": common.RANGER_SERVICE,
     "ams-env": common.AMBARI_SERVICE,
     "ams-hbase-env": common.AMBARI_SERVICE,
     "ams-hbase-policy": common.AMBARI_SERVICE,
@@ -35,18 +37,41 @@ cfg_process_map = {
     "capacity-scheduler": common.YARN_SERVICE,
     "cluster-env": "general",
     "core-site": common.HDFS_SERVICE,
+    "falcon-env": common.FALCON_SERVICE,
+    "falcon-runtime.properties": common.FALCON_SERVICE,
+    "falcon-startup.properties": common.FALCON_SERVICE,
+    "flume-env": common.FLUME_SERVICE,
+    "gateway-site": common.KNOX_SERVICE,
     "hadoop-env": common.HDFS_SERVICE,
     "hadoop-policy": common.HDFS_SERVICE,
+    "hbase-env": common.HBASE_SERVICE,
+    "hbase-policy": common.HBASE_SERVICE,
+    "hbase-site": common.HBASE_SERVICE,
     "hdfs-site": common.HDFS_SERVICE,
     "hive-env": common.HIVE_SERVICE,
     "hive-site": common.HIVE_SERVICE,
     "hiveserver2-site": common.HIVE_SERVICE,
-    "oozie-env": common.OOZIE_SERVICE,
-    "oozie-site": common.OOZIE_SERVICE,
+    "kafka-broker": common.KAFKA_SERVICE,
+    "kafka-env": common.KAFKA_SERVICE,
+    "knox-env": common.KNOX_SERVICE,
     "mapred-env": common.YARN_SERVICE,
     "mapred-site": common.YARN_SERVICE,
-    "ranger-hdfs-plugin-properties": common.RANGER_SERVICE,
+    "oozie-env": common.OOZIE_SERVICE,
+    "oozie-site": common.OOZIE_SERVICE,
+    "ranger-env": common.RANGER_SERVICE,
+    "ranger-hbase-plugin-properties": common.HBASE_SERVICE,
+    "ranger-hdfs-plugin-properties": common.HDFS_SERVICE,
+    "ranger-hive-plugin-properties": common.HIVE_SERVICE,
+    "ranger-knox-plugin-properties": common.KNOX_SERVICE,
+    "ranger-site": common.RANGER_SERVICE,
+    "ranger-storm-plugin-properties": common.STORM_SERVICE,
+    "spark-defaults": common.SPARK_SERVICE,
+    "spark-env": common.SPARK_SERVICE,
+    "sqoop-env": common.SQOOP_SERVICE,
+    "storm-env": common.STORM_SERVICE,
+    "storm-site": common.STORM_SERVICE,
     "tez-site": common.OOZIE_SERVICE,
+    "usersync-properties": common.RANGER_SERVICE,
     "yarn-env": common.YARN_SERVICE,
     "yarn-site": common.YARN_SERVICE,
     "zoo.cfg": common.ZOOKEEPER_SERVICE,
@@ -174,4 +199,8 @@ def get_cluster_params(cluster):
                      for x in swift_helper.get_swift_configs()}
     configs.setdefault("core-site", {})
     configs["core-site"].update(swift_configs)
+    if utils.get_instance(cluster, common.RANGER_ADMIN):
+        configs.setdefault("admin-properties", {})
+        configs["admin-properties"]["db_root_password"] = (
+            cluster.extra["ranger_db_password"])
     return _serialize_ambari_configs(configs)

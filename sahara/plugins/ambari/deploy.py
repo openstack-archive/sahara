@@ -99,6 +99,35 @@ def _check_port_accessible(host, port):
         return False
 
 
+def _prepare_ranger(cluster):
+    ranger = plugin_utils.get_instance(cluster, p_common.RANGER_ADMIN)
+    if not ranger:
+        return
+    ambari = plugin_utils.get_instance(cluster, p_common.AMBARI_SERVER)
+    with ambari.remote() as r:
+        r.execute_command("sudo yum install -y mysql-connector-java")
+        r.execute_command(
+            "sudo ambari-server setup --jdbc-db=mysql "
+            "--jdbc-driver=/usr/share/java/mysql-connector-java.jar")
+    init_db_template = """
+create user 'root'@'%' identified by '{password}';
+set password for 'root'@'localhost' = password('{password}');"""
+    password = uuidutils.generate_uuid()
+    extra = cluster.extra.to_dict() if cluster.extra else {}
+    extra["ranger_db_password"] = password
+    ctx = context.ctx()
+    conductor.cluster_update(ctx, cluster, {"extra": extra})
+    with ranger.remote() as r:
+        sudo = functools.partial(r.execute_command, run_as_root=True)
+        # TODO(sreshetnyak): add ubuntu support
+        sudo("yum install -y mysql-server")
+        sudo("service mysqld start")
+        r.write_file_to("/tmp/init.sql",
+                        init_db_template.format(password=password))
+        sudo("mysql < /tmp/init.sql")
+        sudo("rm /tmp/init.sql")
+
+
 def update_default_ambari_password(cluster):
     ambari = plugin_utils.get_instance(cluster, p_common.AMBARI_SERVER)
     new_password = uuidutils.generate_uuid()
@@ -150,6 +179,8 @@ def set_up_hdp_repos(cluster):
 
 
 def create_blueprint(cluster):
+    _prepare_ranger(cluster)
+    cluster = conductor.cluster_get(context.ctx(), cluster.id)
     host_groups = []
     for ng in cluster.node_groups:
         hg = {

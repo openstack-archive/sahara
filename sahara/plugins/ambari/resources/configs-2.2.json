@@ -1,4 +1,28 @@
 {
+    "admin-properties": {
+        "DB_FLAVOR": "MYSQL",
+        "SQL_COMMAND_INVOKER": "mysql",
+        "SQL_CONNECTOR_JAR": "/usr/share/java/mysql-connector-java.jar",
+        "audit_db_name": "ranger_audit",
+        "audit_db_user": "rangerlogger",
+        "authServiceHostName": "localhost",
+        "authServicePort": "5151",
+        "authentication_method": "UNIX",
+        "db_host": "localhost",
+        "db_name": "ranger",
+        "db_root_user": "root",
+        "db_user": "rangeradmin",
+        "policymgr_external_url": "http://localhost:6080",
+        "policymgr_http_enabled": "true",
+        "remoteLoginEnabled": "true",
+        "xa_ldap_ad_domain": "\"xasecure.net\"",
+        "xa_ldap_ad_url": "\"ldap://ad.xasecure.net:389\"",
+        "xa_ldap_groupRoleAttribute": "\"cn\"",
+        "xa_ldap_groupSearchBase": "\"ou=groups,dc=xasecure,dc=net\"",
+        "xa_ldap_groupSearchFilter": "\"(member=uid={0},ou=users,dc=xasecure,dc=net)\"",
+        "xa_ldap_url": "\"ldap://71.127.43.33:389\"",
+        "xa_ldap_userDNpattern": "\"uid={0},ou=users,dc=xasecure,dc=net\""
+    },
     "ams-env": {
         "ambari_metrics_user": "ams",
         "metrics_collector_heapsize": "512m",
@@ -736,6 +760,17 @@
         "oozie.systemmode": "NORMAL",
         "use.system.libpath.for.mapreduce.and.pig.jobs": "false"
     },
+    "ranger-env": {
+        "admin_password": "admin",
+        "admin_username": "admin",
+        "oracle_home": "-",
+        "ranger_admin_log_dir": "/var/log/ranger/admin",
+        "ranger_admin_password": "795aab0c-4a87-4d13-ad3c-2df0c48bb237",
+        "ranger_admin_username": "amb_ranger_admin",
+        "ranger_group": "ranger",
+        "ranger_user": "ranger",
+        "ranger_usersync_log_dir": "/var/log/ranger/usersync"
+    },
     "ranger-hbase-plugin-properties": {
         "REPOSITORY_CONFIG_PASSWORD": "hbase",
         "REPOSITORY_CONFIG_USERNAME": "hbase",
@@ -836,6 +871,15 @@
         "common.name.for.certificate": "-",
         "policy_user": "ambari-qa",
         "ranger-knox-plugin-enabled": "No"
+    },
+    "ranger-site": {
+        "HTTPS_CLIENT_AUTH": "want",
+        "HTTPS_KEYSTORE_FILE": "/etc/ranger/admin/keys/server.jks",
+        "HTTPS_KEYSTORE_PASS": "ranger",
+        "HTTPS_KEY_ALIAS": "myKey",
+        "HTTPS_SERVICE_PORT": "6182",
+        "HTTP_ENABLED": "true",
+        "HTTP_SERVICE_PORT": "6080"
     },
     "ranger-storm-plugin-properties": {
         "REPOSITORY_CONFIG_PASSWORD": "stormtestuser",
@@ -1029,6 +1073,24 @@
         "tez.task.max-events-per-heartbeat": "500",
         "tez.task.resource.memory.mb": "1024",
         "tez.use.cluster.hadoop-libs": "false"
+    },
+    "usersync-properties": {
+        "CRED_KEYSTORE_FILENAME": "/usr/lib/xausersync/.jceks/xausersync.jceks",
+        "MIN_UNIX_USER_ID_TO_SYNC": "1000",
+        "SYNC_INTERVAL": "1",
+        "SYNC_LDAP_BIND_DN": "cn=admin,dc=xasecure,dc=net",
+        "SYNC_LDAP_BIND_PASSWORD": "admin321",
+        "SYNC_LDAP_GROUPNAME_CASE_CONVERSION": "lower",
+        "SYNC_LDAP_URL": "ldap://localhost:389",
+        "SYNC_LDAP_USERNAME_CASE_CONVERSION": "lower",
+        "SYNC_LDAP_USER_GROUP_NAME_ATTRIBUTE": "memberof,ismemberof",
+        "SYNC_LDAP_USER_NAME_ATTRIBUTE": "cn",
+        "SYNC_LDAP_USER_OBJECT_CLASS": "person",
+        "SYNC_LDAP_USER_SEARCH_BASE": "ou=users,dc=xasecure,dc=net",
+        "SYNC_LDAP_USER_SEARCH_FILTER": "-",
+        "SYNC_LDAP_USER_SEARCH_SCOPE": "sub",
+        "SYNC_SOURCE": "unix",
+        "logdir": "logs"
     },
     "webhcat-site": {
         "templeton.exec.timeout": "60000",
