@@ -420,3 +420,84 @@ class ApiServiceSetupInfo(ApiService):
             'type': role_type,
             'hostRef': {'hostId': host_id},
             'config': api_config_list})
+
+    def enable_nn_ha(self, active_name, standby_host_id, nameservice, jns,
+                     standby_name_dir_list=None, qj_name=None,
+                     standby_name=None, active_fc_name=None,
+                     standby_fc_name=None, zk_service_name=None,
+                     force_init_znode=True,
+                     clear_existing_standby_name_dirs=True,
+                     clear_existing_jn_edits_dir=True):
+        """Enable High Availability (HA) with Auto-Failover for HDFS NameNode
+
+        @param active_name: Name of Active NameNode.
+        @param standby_host_id: ID of host where Standby NameNode will be
+                                created.
+        @param nameservice: Nameservice to be used while enabling HA.
+                            Optional if Active NameNode already has this
+                            config set.
+        @param jns: List of Journal Nodes to be created during the command.
+                    Each element of the list must be a dict containing the
+                    following items:
+                    - jns['jnHostId']: ID of the host where the new JournalNode
+                                       will be created.
+                    - jns['jnName']: Name of the JournalNode role (optional)
+                    - jns['jnEditsDir']: Edits dir of the JournalNode. Can be
+                                         omitted if the config is already set
+                                         at RCG level.
+        @param standby_name_dir_list: List of directories for the new Standby
+                                      NameNode. If not provided then it will
+                                      use same dirs as Active NameNode.
+        @param qj_name: Name of the journal located on each JournalNodes'
+                        filesystem. This can be optionally provided if the
+                        config hasn't been already set for the Active NameNode.
+                        If this isn't provided and Active NameNode doesn't
+                        also have the config, then nameservice is used by
+                        default.
+        @param standby_name: Name of the Standby NameNode role to be created
+                             (Optional).
+        @param active_fc_name: Name of the Active Failover Controller role to
+                               be created (Optional).
+        @param standby_fc_name: Name of the Standby Failover Controller role to
+                                be created (Optional).
+        @param zk_service_name: Name of the ZooKeeper service to use for auto-
+                                failover. If HDFS service already depends on a
+                                ZooKeeper service then that ZooKeeper service
+                                will be used for auto-failover and in that case
+                                this parameter can either be omitted or should
+                                be the same ZooKeeper service.
+        @param force_init_znode: Indicates if the ZNode should be force
+                                 initialized if it is already present. Useful
+                                 while re-enabling High Availability. (Default:
+                                 TRUE)
+        @param clear_existing_standby_name_dirs: Indicates if the existing name
+                                                 directories for Standby
+                                                 NameNode should be cleared
+                                                 during the workflow.
+                                                 Useful while re-enabling High
+                                                 Availability. (Default: TRUE)
+        @param clear_existing_jn_edits_dir: Indicates if the existing edits
+                                            directories for the JournalNodes
+                                            for the specified nameservice
+                                            should be cleared during the
+                                            workflow. Useful while re-enabling
+                                            High Availability. (Default: TRUE)
+        @return: Reference to the submitted command.
+        @since: API v6
+        """
+        args = dict(
+            activeNnName=active_name,
+            standbyNnName=standby_name,
+            standbyNnHostId=standby_host_id,
+            standbyNameDirList=standby_name_dir_list,
+            nameservice=nameservice,
+            qjName=qj_name,
+            activeFcName=active_fc_name,
+            standbyFcName=standby_fc_name,
+            zkServiceName=zk_service_name,
+            forceInitZNode=force_init_znode,
+            clearExistingStandbyNameDirs=clear_existing_standby_name_dirs,
+            clearExistingJnEditsDir=clear_existing_jn_edits_dir,
+            jns=jns
+        )
+        return self._cmd('hdfsEnableNnHa', data=args, api_version=6)
