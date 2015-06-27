@@ -198,50 +198,9 @@ class SparkJobEngine(base_engine.JobEngine):
             with remote.get_remote(instance) as r:
                 return self._get_job_status_from_remote(r, pid, job_execution)
 
-    def run_job(self, job_execution):
-        ctx = context.ctx()
-        job = conductor.job_get(ctx, job_execution.job_id)
+    def _build_command(self, wf_dir, paths, builtin_paths,
+                       updated_job_configs):
         indep_params = {}
-
-        # This will be a dictionary of tuples, (native_url, runtime_url)
-        # keyed by data_source id
-        data_source_urls = {}
-        additional_sources, updated_job_configs = (
-            job_utils.resolve_data_source_references(job_execution.job_configs,
-                                                     job_execution.id,
-                                                     data_source_urls,
-                                                     self.cluster)
-        )
-
-        job_execution = conductor.job_execution_update(
-            ctx, job_execution,
-            {"data_source_urls": job_utils.to_url_dict(data_source_urls)})
-
-        # Now that we've recorded the native urls, we can switch to the
-        # runtime urls
-        data_source_urls = job_utils.to_url_dict(data_source_urls,
-                                                 runtime=True)
-
-        for data_source in additional_sources:
-            if data_source and data_source.type == 'hdfs':
-                h.configure_cluster_for_hdfs(self.cluster, data_source)
-                break
-
-        # It is needed in case we are working with Spark plugin
-        self.plugin_params['master'] = (
-            self.plugin_params['master'] % {'host': self.master.hostname()})
-
-        # TODO(tmckay): wf_dir should probably be configurable.
-        # The only requirement is that the dir is writable by the image user
-        wf_dir = job_utils.create_workflow_dir(self.master, '/tmp/spark-edp',
-                                               job, job_execution.id, "700")
-        paths, builtin_paths = self._upload_job_files(
-            self.master, wf_dir, job, updated_job_configs)
-
-        # We can shorten the paths in this case since we'll run out of wf_dir
-        paths = [os.path.basename(p) if p.startswith(wf_dir) else p
-                 for p in paths]
-        builtin_paths = [os.path.basename(p) for p in builtin_paths]
 
         # TODO(tmckay): for now, paths[0] is always assumed to be the app
         # jar and we generate paths in order (mains, then libs).
@@ -313,6 +272,55 @@ class SparkJobEngine(base_engine.JobEngine):
                 ' --deploy-mode %(deploy-mode)s'
                 ' %(app_jar)s%(args)s') % dict(
                 mutual_dict)
+
+        return cmd
+
+    def run_job(self, job_execution):
+        ctx = context.ctx()
+        job = conductor.job_get(ctx, job_execution.job_id)
+        # This will be a dictionary of tuples, (native_url, runtime_url)
+        # keyed by data_source id
+        data_source_urls = {}
+        additional_sources, updated_job_configs = (
+            job_utils.resolve_data_source_references(job_execution.job_configs,
+                                                     job_execution.id,
+                                                     data_source_urls,
+                                                     self.cluster)
+        )
+
+        job_execution = conductor.job_execution_update(
+            ctx, job_execution,
+            {"data_source_urls": job_utils.to_url_dict(data_source_urls)})
+
+        # Now that we've recorded the native urls, we can switch to the
+        # runtime urls
+        data_source_urls = job_utils.to_url_dict(data_source_urls,
+                                                 runtime=True)
+
+        for data_source in additional_sources:
+            if data_source and data_source.type == 'hdfs':
+                h.configure_cluster_for_hdfs(self.cluster, data_source)
+                break
+
+        # It is needed in case we are working with Spark plugin
+        self.plugin_params['master'] = (
+            self.plugin_params['master'] % {'host': self.master.hostname()})
+
+        # TODO(tmckay): wf_dir should probably be configurable.
+        # The only requirement is that the dir is writable by the image user
+        wf_dir = job_utils.create_workflow_dir(self.master, '/tmp/spark-edp',
+                                               job, job_execution.id, "700")
+        paths, builtin_paths = self._upload_job_files(
+            self.master, wf_dir, job, updated_job_configs)
+
+        # We can shorten the paths in this case since we'll run out of wf_dir
+        paths = [os.path.basename(p) if p.startswith(wf_dir) else p
+                 for p in paths]
+        builtin_paths = [os.path.basename(p) for p in builtin_paths]
+
+        cmd = self._build_command(wf_dir, paths, builtin_paths,
+                                  updated_job_configs)
+
         job_execution = conductor.job_execution_get(ctx, job_execution.id)
         if job_execution.info['status'] == edp.JOB_STATUS_TOBEKILLED:
             return (None, edp.JOB_STATUS_KILLED, None)
@@ -355,3 +363,33 @@ class SparkJobEngine(base_engine.JobEngine):
     @staticmethod
     def get_supported_job_types():
         return [edp.JOB_TYPE_SPARK]
+
+
+class SparkShellJobEngine(SparkJobEngine):
+    def _build_command(self, wf_dir, paths, builtin_paths,
+                       updated_job_configs):
+        main_script = paths.pop(0)
+        args = " ".join(updated_job_configs.get('args', []))
+
+        env_params = ""
+        params = updated_job_configs.get('params', {})
+        for key, value in params.items():
+            env_params += "{key}={value} ".format(key=key, value=value)
+
+        cmd = ("{env_params}{cmd} {main_script} {args}".format(
+            cmd='/bin/sh', main_script=main_script, env_params=env_params,
+            args=args))
+
+        return cmd
+
+    def validate_job_execution(self, cluster, job, data):
+        # Shell job doesn't require any special validation
+        pass
+
+    @staticmethod
+    def get_possible_job_config(job_type):
+        return {'job_config': {'configs': {}, 'args': [], 'params': {}}}
+
+    @staticmethod
+    def get_supported_job_types():
+        return [edp.JOB_TYPE_SHELL]
