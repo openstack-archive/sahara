@@ -34,6 +34,24 @@ def make_handler(a):
         log.info("Sent SIGINT to subprocess")
     return handle_signal
 
+
+def parse_env_vars():
+    index = 1
+    env_vars = {}
+    for var in sys.argv[1:]:
+        # all environment parameters should be listed before the
+        # executable, which is not suppose to contain the "=" sign
+        # in the name
+        kv_pair = var.split("=")
+        if len(kv_pair) == 2:
+            key, value = kv_pair
+            env_vars[key.strip()] = value.strip()
+            index += 1
+        else:
+            break
+
+    return env_vars, sys.argv[index:]
+
 log.info("Running %s" % ' '.join(sys.argv[1:]))
 
 try:
@@ -42,8 +60,13 @@ try:
     # (background processes ignore SIGINT)
     signal.signal(signal.SIGINT, signal.SIG_DFL)
 
+    # Separate between command including arguments and
+    # environment variables
+    env, args = parse_env_vars()
+
     # Interpret all command line args as the command to run
-    a = subprocess.Popen(sys.argv[1:],
+    a = subprocess.Popen(args,
+                         env=env,
                          stdout=open("stdout", "w"),
                          stderr=open("stderr", "w"))
 
