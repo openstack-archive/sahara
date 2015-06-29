@@ -594,7 +594,7 @@ SPARK_CONFIG_OPTS = [
                 help='A list of processes that will be launched '
                      'on worker nodes'),
     cfg.StrOpt('HADOOP_VERSION',
-               default='1.0.0',
+               default='1.3.1',
                help='Version of Spark (even though it says "HADOOP".'),
     cfg.StrOpt('HADOOP_USER',
                default='hdfs',
