@@ -283,7 +283,7 @@ def _construct_data_source_url(url, job_exec_id):
     def _randstr(match):
         len = int(match.group(1))
         return ''.join(random.choice(string.ascii_lowercase)
-                       for _ in xrange(len))
+                       for _ in six.moves.range(len))
 
     url = url.replace("%JOB_EXEC_ID%", job_exec_id)
 

@@ -22,3 +22,9 @@ def get_file_text(file_name):
     full_name = pkg.resource_filename(
         version.version_info.package, file_name)
     return open(full_name).read()
+
+
+def get_file_binary(file_name):
+    full_name = pkg.resource_filename(
+        version.version_info.package, file_name)
+    return open(full_name, "rb").read()

@@ -115,6 +115,6 @@ def get_builtin_binaries(job, configs):
         if is_adapt_for_oozie_enabled(configs):
             path = 'service/edp/resources/edp-main-wrapper.jar'
             name = 'builtin-%s.jar' % six.text_type(uuid.uuid4())
-            return [{'raw': files.get_file_text(path),
+            return [{'raw': files.get_file_binary(path),
                      'name': name}]
     return []

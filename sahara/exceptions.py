@@ -13,6 +13,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import string
+
 from oslo_utils import uuidutils
 import six
 
@@ -90,17 +92,20 @@ class RemoteCommandException(SaharaException):
 
         formatted_message = self.message_template % cmd
 
+        def to_printable(s):
+            return "".join(filter(lambda x: x in string.printable, s))
+
         if ret_code:
             formatted_message = '%s\nReturn code: %s' % (
                 formatted_message, six.text_type(ret_code))
 
         if stderr:
             formatted_message = '%s\nSTDERR:\n%s' % (
-                formatted_message, stderr.decode('ascii', 'ignore'))
+                formatted_message, to_printable(stderr))
 
         if stdout:
             formatted_message = '%s\nSTDOUT:\n%s' % (
-                formatted_message, stdout.decode('ascii', 'ignore'))
+                formatted_message, to_printable(stdout))
 
         super(RemoteCommandException, self).__init__(formatted_message)
 

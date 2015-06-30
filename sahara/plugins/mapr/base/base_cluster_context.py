@@ -16,6 +16,7 @@
 import collections
 
 from oslo_config import cfg
+import six
 
 import sahara.exceptions as e
 from sahara.i18n import _
@@ -39,7 +40,7 @@ def _get_node_process_name(node_process):
     name = None
     if isinstance(node_process, np.NodeProcess):
         name = node_process.ui_name
-    elif isinstance(node_process, basestring):
+    elif isinstance(node_process, six.string_types):
         name = node_process
     return name
 
@@ -319,8 +320,8 @@ class BaseClusterContext(cc.AbstractClusterContext):
 
     def filter_instances(self, instances, node_process=None, service=None):
         if node_process:
-            return filter(
-                lambda i: self.check_for_process(i, node_process), instances)
+            return list(filter(
+                lambda i: self.check_for_process(i, node_process), instances))
         if service:
             result = []
             for instance in instances:

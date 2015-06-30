@@ -70,7 +70,7 @@ SAMPLE_CONF_JOB_EXECUTION = {
     }
 }
 
-BINARY_DATA = "vU}\x97\x1c\xdf\xa686\x08\xf2\tf\x0b\xb1}"
+BINARY_DATA = b"vU}\x97\x1c\xdf\xa686\x08\xf2\tf\x0b\xb1}"
 
 SAMPLE_JOB_BINARY_INTERNAL = {
     "tenant_id": "test_tenant",

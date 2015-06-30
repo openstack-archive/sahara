@@ -144,7 +144,7 @@ class TopologyTestCase(base.SaharaTestCase):
     def _read_swift_topology(self, content):
         temp_file = tempfile.NamedTemporaryFile()
         try:
-            temp_file.write(content)
+            temp_file.write(str.encode(content))
             temp_file.flush()
             self.override_config("swift_topology_file", temp_file.name)
             return th._read_swift_topology()

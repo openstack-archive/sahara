@@ -117,7 +117,6 @@ class HDFSHelperTestCase(base.SaharaTestCase):
     @mock.patch(('sahara.service.edp.hdfs_helper._get_cluster_hosts_'
                  'information'))
     def test_configure_cluster_for_hdfs(self, mock_helper, mock_get, mock_six):
-        source = mock.MagicMock(url='www.host.ru')
         inst = mock.MagicMock()
         inst.remote = mock.MagicMock()
         mock_six.return_value = 111
@@ -127,7 +126,7 @@ class HDFSHelperTestCase(base.SaharaTestCase):
                 '/etc/hosts && rm -f /tmp/etc-hosts.111 '
                 '/tmp/etc-hosts-update.111')
         mock_get.return_value = [inst]
-        helper.configure_cluster_for_hdfs(self.cluster, source)
+        helper.configure_cluster_for_hdfs(self.cluster, "www.host.ru")
         inst.remote.assert_has_calls(
             [mock.call(), mock.call().__enter__(),
              mock.call().__enter__().write_file_to(str1, mock_helper()),
