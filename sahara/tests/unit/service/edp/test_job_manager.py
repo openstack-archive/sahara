@@ -489,7 +489,8 @@ class TestJobManager(base.SaharaWithDbTestCase):
 
     @mock.patch('sahara.conductor.API.job_execution_update')
     @mock.patch('sahara.service.edp.job_manager._run_job')
-    def test_run_job_handles_exceptions(self, runjob, job_ex_upd):
+    @mock.patch('sahara.service.edp.job_manager.cancel_job')
+    def test_run_job_handles_exceptions(self, canceljob, runjob, job_ex_upd):
         runjob.side_effect = ex.SwiftClientException("Unauthorised")
         job, job_exec = u.create_job_exec(edp.JOB_TYPE_PIG)
         job_manager.run_job(job_exec.id)
@@ -498,6 +499,7 @@ class TestJobManager(base.SaharaWithDbTestCase):
 
         new_status = job_ex_upd.call_args[0][2]["info"]["status"]
         self.assertEqual(edp.JOB_STATUS_FAILED, new_status)
+        self.assertEqual(1, canceljob.call_count)
 
     def test_get_plugin(self):
         plugin = job_utils.get_plugin(u.create_cluster())
