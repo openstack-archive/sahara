@@ -50,7 +50,8 @@ class AmbariPluginProvider(p.ProvisioningPluginBase):
             p_common.HBASE_SERVICE: [p_common.HBASE_MASTER,
                                      p_common.HBASE_REGIONSERVER],
             p_common.HDFS_SERVICE: [p_common.DATANODE, p_common.NAMENODE,
-                                    p_common.SECONDARY_NAMENODE],
+                                    p_common.SECONDARY_NAMENODE,
+                                    p_common.JOURNAL_NODE],
             p_common.HIVE_SERVICE: [p_common.HIVE_METASTORE,
                                     p_common.HIVE_SERVER],
             p_common.KAFKA_SERVICE: [p_common.KAFKA_BROKER],
@@ -67,7 +68,7 @@ class AmbariPluginProvider(p.ProvisioningPluginBase):
             p_common.YARN_SERVICE: [
                 p_common.APP_TIMELINE_SERVER, p_common.HISTORYSERVER,
                 p_common.NODEMANAGER, p_common.RESOURCEMANAGER],
-            p_common.ZOOKEEPER_SERVICE: [p_common.ZOOKEEPER_SERVER]
+            p_common.ZOOKEEPER_SERVICE: [p_common.ZOOKEEPER_SERVER],
         }
 
     def get_configs(self, hadoop_version):
@@ -102,17 +103,20 @@ class AmbariPluginProvider(p.ProvisioningPluginBase):
                 "Password": cluster.extra["ambari_password"]
             }
         }
-        namenode = plugin_utils.get_instance(cluster, p_common.NAMENODE)
-        if namenode:
-            info[p_common.NAMENODE] = {
-                "Web UI": "http://%s:50070" % namenode.management_ip
-            }
-        resourcemanager = plugin_utils.get_instance(cluster,
-                                                    p_common.RESOURCEMANAGER)
-        if resourcemanager:
-            info[p_common.RESOURCEMANAGER] = {
-                "Web UI": "http://%s:8088" % resourcemanager.management_ip
-            }
+        nns = plugin_utils.get_instances(cluster, p_common.NAMENODE)
+        info[p_common.NAMENODE] = {}
+        for idx, namenode in enumerate(nns):
+            info[p_common.NAMENODE][
+                "Web UI %s" % (idx + 1)] = (
+                "http://%s:50070" % namenode.management_ip)
+
+        rms = plugin_utils.get_instances(cluster, p_common.RESOURCEMANAGER)
+        info[p_common.RESOURCEMANAGER] = {}
+        for idx, resourcemanager in enumerate(rms):
+            info[p_common.RESOURCEMANAGER][
+                "Web UI %s" % (idx + 1)] = (
+                "http://%s:8088" % resourcemanager.management_ip)
+
         historyserver = plugin_utils.get_instance(cluster,
                                                   p_common.HISTORYSERVER)
         if historyserver:
