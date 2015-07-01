@@ -1,0 +1,35 @@
+# Settings needed for the Sahara plugin
+# -------------------------------------
+
+# Set up default directories
+GITDIR["python-saharaclient"]=$DEST/python-saharaclient
+SAHARA_DIR=$DEST/sahara
+
+SAHARA_CONF_DIR=${SAHARA_CONF_DIR:-/etc/sahara}
+SAHARA_CONF_FILE=${SAHARA_CONF_DIR}/sahara.conf
+
+# TODO(slukjanov): Should we append sahara to SSL_ENABLED_SERVICES?
+
+if is_ssl_enabled_service "sahara" || is_service_enabled tls-proxy; then
+    SAHARA_SERVICE_PROTOCOL="https"
+fi
+SAHARA_SERVICE_HOST=${SAHARA_SERVICE_HOST:-$SERVICE_HOST}
+SAHARA_SERVICE_PORT=${SAHARA_SERVICE_PORT:-8386}
+SAHARA_SERVICE_PORT_INT=${SAHARA_SERVICE_PORT_INT:-18386}
+SAHARA_SERVICE_PROTOCOL=${SAHARA_SERVICE_PROTOCOL:-$SERVICE_PROTOCOL}
+
+SAHARA_AUTH_CACHE_DIR=${SAHARA_AUTH_CACHE_DIR:-/var/cache/sahara}
+
+SAHARA_ENABLED_PLUGINS=${SAHARA_ENABLED_PLUGINS:-vanilla,hdp,cdh,spark,fake}
+
+# Support entry points installation of console scripts
+if [[ -d $SAHARA_DIR/bin ]]; then
+    SAHARA_BIN_DIR=$SAHARA_DIR/bin
+else
+    SAHARA_BIN_DIR=$(get_python_exec_prefix)
+fi
+
+# Tell Tempest this project is present
+TEMPEST_SERVICES+=,sahara
+
+enable_service sahara
