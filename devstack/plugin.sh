@@ -161,7 +161,6 @@ function configure_sahara {
 
 # install_sahara() - Collect source and prepare
 function install_sahara {
-    git_clone $SAHARA_REPO $SAHARA_DIR $SAHARA_BRANCH
     setup_develop $SAHARA_DIR
 }
 
