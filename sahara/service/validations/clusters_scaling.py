@@ -69,7 +69,9 @@ CLUSTER_SCALING_SCHEMA = {
 
 def check_cluster_scaling(data, cluster_id, **kwargs):
     cluster = api.get_cluster(id=cluster_id)
-
+    if cluster is None:
+        raise ex.NotFoundException(
+            {'id': cluster_id}, _('Object with %s not found'))
     cluster_engine = cluster.sahara_info.get(
         'infrastructure_engine') if cluster.sahara_info else None
 

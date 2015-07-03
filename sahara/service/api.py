@@ -126,6 +126,9 @@ def _add_ports_for_auto_sg(ctx, cluster, plugin):
 def terminate_cluster(id):
     cluster = g.change_cluster_status(id, "Deleting")
 
+    if cluster is None:
+        return
+
     OPS.terminate_cluster(id)
     sender.notify(context.ctx(), cluster.id, cluster.name, cluster.status,
                   "delete")
