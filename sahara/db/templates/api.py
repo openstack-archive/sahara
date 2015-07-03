@@ -55,8 +55,14 @@ node_group_template_opts = [
                help='Flavor id field for a node group template.'),
 
     cfg.StrOpt('floating_ip_pool',
-               help='Floating ip pool field for a node group template.')
-    ]
+               help='Floating ip pool field for a node group template.'),
+    cfg.BoolOpt('auto_security_group',
+                default=False,
+                help='Auto security group field for node group template.'),
+    cfg.ListOpt('security_groups',
+                default=[],
+                help='Security group field for node group template.')
+]
 
 # Options that we allow to be replaced in a cluster template
 cluster_template_opts = [
@@ -260,12 +266,7 @@ def substitute_config_values(configs, template, path):
 
     for opt, value in six.iteritems(configs):
         if opt in opt_names and opt in template:
-            if value is None:
-                template[opt] = None
-            else:
-                # Use args to allow for keyword arguments to format
-                args = {opt: value}
-                template[opt] = template[opt].format(**args)
+            template[opt] = value
 
 
 def get_configs(section):

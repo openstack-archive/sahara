@@ -7,5 +7,7 @@
     ],
     "name": "mapr-spark-default-worker",
     "floating_ip_pool": "{floating_ip_pool}",
-    "flavor_id": "{flavor_id}"
+    "flavor_id": "{flavor_id}",
+    "auto_security_group": "{auto_security_group}",
+    "security_groups": "{security_groups}"
 }

@@ -57,7 +57,9 @@ master_json = {
     ],
     "name": "vanilla-260-default-master",
     "floating_ip_pool": "{floating_ip_pool}",
-    "flavor_id": "{flavor_id}"
+    "flavor_id": "{flavor_id}",
+    "auto_security_group": "{auto_security_group}",
+    'security_groups': "{security_groups}"
 }
 
 worker_json = {
@@ -69,7 +71,9 @@ worker_json = {
     ],
     "name": "vanilla-260-default-worker",
     "floating_ip_pool": "{floating_ip_pool}",
-    "flavor_id": "{flavor_id}"
+    "flavor_id": "{flavor_id}",
+    "auto_security_group": "{auto_security_group}",
+    'security_groups': "{security_groups}"
 }
 
 
@@ -241,7 +245,8 @@ class TemplateUpdateTestCase(base.ConductorManagerTestCase):
         files = self._write_files(
             tempdir, [cluster_json, master_json, worker_json, some_other_json])
 
-        get_configs.return_value = {"flavor_id": 2}
+        get_configs.return_value = {"flavor_id": '2', 'security_groups': [],
+                                    'auto_security_group': False}
         option_values = {"plugin_name": None,
                          "plugin_version": None}
         template_api.set_conf(Config(option_values))
@@ -286,7 +291,12 @@ class TemplateUpdateTestCase(base.ConductorManagerTestCase):
         files = self._write_files(
             tempdir, [cluster_json, master_json, worker_json])
 
-        get_configs.return_value = {"flavor_id": 2}
+        get_configs.return_value = {
+            "flavor_id": '2',
+            'security_groups': [],
+            'auto_security_group': False
+        }
+
         option_values = {"plugin_name": None,
                          "plugin_version": None}
         template_api.set_conf(Config(option_values))
@@ -312,7 +322,8 @@ class TemplateUpdateTestCase(base.ConductorManagerTestCase):
         files = self._write_files(
             tempdir, [cluster_json, master_json, worker_json])
 
-        get_configs.return_value = {"flavor_id": 2}
+        get_configs.return_value = {"flavor_id": '2', 'security_groups': [],
+                                    'auto_security_group': False}
         option_values = {"plugin_name": None,
                          "plugin_version": None}
         template_api.set_conf(Config(option_values))
@@ -603,7 +614,7 @@ class TemplateUpdateTestCase(base.ConductorManagerTestCase):
 
     @mock.patch("sahara.db.templates.api.get_configs")
     @mock.patch("sahara.db.templates.api.add_config_section_for_template")
-    def test_do_update(self, add_config, get_configs):
+    def test_do_update_trash(self, add_config, get_configs):
         self.logger.clear_log()
         ctx = context.ctx()
 
@@ -611,15 +622,19 @@ class TemplateUpdateTestCase(base.ConductorManagerTestCase):
 
         self._write_files(tempdir, [cluster_json, master_json, worker_json])
 
-        get_configs.return_value = {"flavor_id": 2,
-                                    "neutron_management_network": uuid.uuid4()}
+        get_configs.return_value = {
+            "flavor_id": '2',
+            "neutron_management_network": str(uuid.uuid4()),
+            'auto_security_group': True,
+            'security_groups': [],
+        }
+
         option_values = {"tenant_id": ctx.tenant_id,
                          "directory": tempdir,
                          "norecurse": None,
                          "plugin_name": None,
                          "plugin_version": None}
         template_api.set_conf(Config(option_values))
-
         template_api.do_update()
 
         ngs = self.api.node_group_template_get_all(ctx)
@@ -644,8 +659,11 @@ class TemplateUpdateTestCase(base.ConductorManagerTestCase):
 
         self._write_files(tempdir, [cluster_json, master_json, worker_json])
 
-        get_configs.return_value = {"flavor_id": 2,
-                                    "neutron_management_network": uuid.uuid4()}
+        get_configs.return_value = {
+            "flavor_id": '2',
+            "neutron_management_network": str(uuid.uuid4())
+        }
+
         option_values = {"tenant_id": ctx.tenant_id,
                          "directory": tempdir,
                          "norecurse": None,
@@ -679,8 +697,10 @@ class TemplateUpdateTestCase(base.ConductorManagerTestCase):
 
         self._write_files(tempdir, [cluster_json, master_json, worker_json])
 
-        get_configs.return_value = {"flavor_id": 2,
-                                    "neutron_management_network": uuid.uuid4()}
+        get_configs.return_value = {
+            "flavor_id": '2',
+            "neutron_management_network": str(uuid.uuid4())
+        }
         option_values = {"tenant_id": ctx.tenant_id,
                          "directory": tempdir,
                          "norecurse": None,
@@ -714,8 +734,11 @@ class TemplateUpdateTestCase(base.ConductorManagerTestCase):
 
         self._write_files(tempdir, [cluster_json, master_json, worker_json])
 
-        get_configs.return_value = {"flavor_id": 2,
-                                    "neutron_management_network": uuid.uuid4()}
+        get_configs.return_value = {
+            "flavor_id": '2',
+            "neutron_management_network": str(uuid.uuid4())
+        }
+
         option_values = {"tenant_id": ctx.tenant_id,
                          "directory": tempdir,
                          "norecurse": None,
@@ -755,8 +778,11 @@ class TemplateUpdateTestCase(base.ConductorManagerTestCase):
 
         self._write_files(tempdir, [cluster_json, master_json, worker_json])
 
-        get_configs.return_value = {"flavor_id": 2,
-                                    "neutron_management_network": uuid.uuid4()}
+        get_configs.return_value = {
+            "flavor_id": '2',
+            "neutron_management_network": str(uuid.uuid4())
+        }
+
         option_values = {"tenant_id": ctx.tenant_id,
                          "directory": tempdir,
                          "norecurse": None,
