@@ -46,24 +46,21 @@ def job_executions_list():
 @acl.enforce("data-processing:job-executions:get")
 @v.check_exists(api.get_job_execution, id='job_execution_id')
 def job_executions(job_execution_id):
-    job_execution = api.get_job_execution(job_execution_id)
-    return u.render(job_execution.to_wrapped_dict())
+    return u.to_wrapped_dict(api.get_job_execution, job_execution_id)
 
 
 @rest.get('/job-executions/<job_execution_id>/refresh-status')
 @acl.enforce("data-processing:job-executions:refresh_status")
 @v.check_exists(api.get_job_execution, id='job_execution_id')
 def job_executions_status(job_execution_id):
-    job_execution = api.get_job_execution_status(job_execution_id)
-    return u.render(job_execution.to_wrapped_dict())
+    return u.to_wrapped_dict(api.get_job_execution_status, job_execution_id)
 
 
 @rest.get('/job-executions/<job_execution_id>/cancel')
 @acl.enforce("data-processing:job-executions:cancel")
 @v.check_exists(api.get_job_execution, id='job_execution_id')
 def job_executions_cancel(job_execution_id):
-    job_execution = api.cancel_job_execution(job_execution_id)
-    return u.render(job_execution.to_wrapped_dict())
+    return u.to_wrapped_dict(api.cancel_job_execution, job_execution_id)
 
 
 @rest.delete('/job-executions/<job_execution_id>')
@@ -95,7 +92,7 @@ def data_source_register(data):
 @acl.enforce("data-processing:data-sources:get")
 @v.check_exists(api.get_data_source, 'data_source_id')
 def data_source_get(data_source_id):
-    return u.render(api.get_data_source(data_source_id).to_wrapped_dict())
+    return u.to_wrapped_dict(api.get_data_source, data_source_id)
 
 
 @rest.delete('/data-sources/<data_source_id>')
@@ -111,9 +108,7 @@ def data_source_delete(data_source_id):
 @v.check_exists(api.get_data_source, 'data_source_id')
 @v.validate(v_d_s_schema.DATA_SOURCE_UPDATE_SCHEMA)
 def data_source_update(data_source_id, data):
-    return u.render(
-        api.data_source_update(
-            data_source_id, data).to_wrapped_dict())
+    return u.to_wrapped_dict(api.data_source_update, data_source_id, data)
 
 
 # Job ops
@@ -136,7 +131,7 @@ def job_create(data):
 @acl.enforce("data-processing:jobs:get")
 @v.check_exists(api.get_job, id='job_id')
 def job_get(job_id):
-    return u.render(api.get_job(job_id).to_wrapped_dict())
+    return u.to_wrapped_dict(api.get_job, job_id)
 
 
 @rest.delete('/jobs/<job_id>')
@@ -192,7 +187,7 @@ def job_binary_list():
 @acl.enforce("data-processing:job-binaries:get")
 @v.check_exists(api.get_job_binary, 'job_binary_id')
 def job_binary_get(job_binary_id):
-    return u.render(api.get_job_binary(job_binary_id).to_wrapped_dict())
+    return u.to_wrapped_dict(api.get_job_binary, job_binary_id)
 
 
 @rest.delete('/job-binaries/<job_binary_id>')
@@ -234,8 +229,8 @@ def job_binary_internal_list():
 @acl.enforce("data-processing:job-binary-internals:get")
 @v.check_exists(api.get_job_binary_internal, 'job_binary_internal_id')
 def job_binary_internal_get(job_binary_internal_id):
-    return u.render(api.get_job_binary_internal(job_binary_internal_id
-                                                ).to_wrapped_dict())
+    return u.to_wrapped_dict(
+        api.get_job_binary_internal, job_binary_internal_id)
 
 
 @rest.delete('/job-binary-internals/<job_binary_internal_id>')

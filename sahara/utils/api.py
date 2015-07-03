@@ -264,3 +264,13 @@ def not_found(error):
                                               name=error.code))
 
     return render_error_message(error_code, error.message, error.code)
+
+
+def to_wrapped_dict(func, id, *args, **kwargs):
+    obj = func(id, *args, **kwargs)
+    if obj is None:
+        e = ex.NotFoundException(
+            {'id': id}, _('Object with %s not found'))
+
+        return not_found(e)
+    return render(obj.to_wrapped_dict())
