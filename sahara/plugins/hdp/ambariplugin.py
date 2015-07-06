@@ -209,7 +209,7 @@ class AmbariPlugin(p.ProvisioningPluginBase):
         info = {}
         for service in cluster_spec.services:
             if service.deployed:
-                service.register_service_urls(cluster_spec, info)
+                service.register_service_urls(cluster_spec, info, cluster)
 
         conductor.cluster_update(context.ctx(), cluster, {'info': info})
 
