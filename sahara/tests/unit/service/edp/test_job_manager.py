@@ -563,3 +563,29 @@ class TestJobManager(base.SaharaWithDbTestCase):
 
         self.assertIsNone(input_source)
         self.assertIsNone(output_source)
+
+    @mock.patch('sahara.conductor.API.job_execution_update')
+    @mock.patch('sahara.conductor.API.job_get')
+    @mock.patch('sahara.conductor.API.job_execution_get')
+    @mock.patch('sahara.conductor.API.cluster_get')
+    @mock.patch('oslo_utils.timeutils.delta_seconds')
+    def test_failed_to_cancel_job(self, time_get, cluster_get, job_exec_get,
+                                  job_get, job_execution_update_get):
+        info = {
+            'status': edp.JOB_STATUS_RUNNING
+        }
+
+        job, job_exec = u.create_job_exec(edp.JOB_TYPE_PIG, None, False, info)
+        job_exec_get.return_value = job_exec
+        job_get.return_value = job
+
+        cluster = u.create_cluster()
+        cluster.status = "Active"
+        cluster_get.return_value = cluster
+
+        time_get.return_value = 10000
+
+        job_execution_update_get.return_value = job_exec
+
+        with testtools.ExpectedException(ex.CancelingFailed):
+            job_manager.cancel_job(job_exec.id)
