@@ -43,7 +43,7 @@ class SaharaMigrationsCheckers(object):
         t = db_utils.get_table(engine, table)
         self.assertIn(column, t.c)
 
-    def assertColumnsExists(self, engine, table, columns):
+    def assertColumnsExist(self, engine, table, columns):
         for column in columns:
             self.assertColumnExists(engine, table, column)
 
@@ -90,7 +90,7 @@ class SaharaMigrationsCheckers(object):
             'data',
             'datasize'
         ]
-        self.assertColumnsExists(
+        self.assertColumnsExist(
             engine, 'job_binary_internal', job_binary_internal_columns)
         self.assertColumnCount(
             engine, 'job_binary_internal', job_binary_internal_columns)
@@ -113,7 +113,7 @@ class SaharaMigrationsCheckers(object):
             'volume_mount_prefix',
             'floating_ip_pool'
         ]
-        self.assertColumnsExists(
+        self.assertColumnsExist(
             engine, 'node_group_templates', node_group_templates_columns)
         self.assertColumnCount(
             engine, 'node_group_templates', node_group_templates_columns)
@@ -129,7 +129,7 @@ class SaharaMigrationsCheckers(object):
             'url',
             'credentials'
         ]
-        self.assertColumnsExists(
+        self.assertColumnsExist(
             engine, 'data_sources', data_sources_columns)
         self.assertColumnCount(
             engine, 'data_sources', data_sources_columns)
@@ -148,7 +148,7 @@ class SaharaMigrationsCheckers(object):
             'plugin_name',
             'hadoop_version'
         ]
-        self.assertColumnsExists(
+        self.assertColumnsExist(
             engine, 'cluster_templates', cluster_templates_columns)
         self.assertColumnCount(
             engine, 'cluster_templates', cluster_templates_columns)
@@ -163,7 +163,7 @@ class SaharaMigrationsCheckers(object):
             'url',
             'extra'
         ]
-        self.assertColumnsExists(
+        self.assertColumnsExist(
             engine, 'job_binaries', job_binaries_columns)
         self.assertColumnCount(
             engine, 'job_binaries', job_binaries_columns)
@@ -177,7 +177,7 @@ class SaharaMigrationsCheckers(object):
             'description',
             'type'
         ]
-        self.assertColumnsExists(engine, 'jobs', jobs_columns)
+        self.assertColumnsExist(engine, 'jobs', jobs_columns)
         self.assertColumnCount(engine, 'jobs', jobs_columns)
 
         templates_relations_columns = [
@@ -198,7 +198,7 @@ class SaharaMigrationsCheckers(object):
             'node_group_template_id',
             'floating_ip_pool'
         ]
-        self.assertColumnsExists(
+        self.assertColumnsExist(
             engine, 'templates_relations', templates_relations_columns)
         self.assertColumnCount(
             engine, 'templates_relations', templates_relations_columns)
@@ -207,7 +207,7 @@ class SaharaMigrationsCheckers(object):
             'Job_id',
             'JobBinary_id'
         ]
-        self.assertColumnsExists(
+        self.assertColumnsExist(
             engine, 'mains_association', mains_association_columns)
         self.assertColumnCount(
             engine, 'mains_association', mains_association_columns)
@@ -216,7 +216,7 @@ class SaharaMigrationsCheckers(object):
             'Job_id',
             'JobBinary_id'
         ]
-        self.assertColumnsExists(
+        self.assertColumnsExist(
             engine, 'libs_association', libs_association_columns)
         self.assertColumnCount(
             engine, 'libs_association', libs_association_columns)
@@ -245,7 +245,7 @@ class SaharaMigrationsCheckers(object):
             'extra',
             'cluster_template_id'
         ]
-        self.assertColumnsExists(engine, 'clusters', clusters_columns)
+        self.assertColumnsExist(engine, 'clusters', clusters_columns)
         self.assertColumnCount(engine, 'clusters', clusters_columns)
 
         node_groups_columns = [
@@ -267,7 +267,7 @@ class SaharaMigrationsCheckers(object):
             'node_group_template_id',
             'floating_ip_pool'
         ]
-        self.assertColumnsExists(engine, 'node_groups', node_groups_columns)
+        self.assertColumnsExist(engine, 'node_groups', node_groups_columns)
         self.assertColumnCount(engine, 'node_groups', node_groups_columns)
 
         job_executions_columns = [
@@ -288,7 +288,7 @@ class SaharaMigrationsCheckers(object):
             'job_configs',
             'extra'
         ]
-        self.assertColumnsExists(
+        self.assertColumnsExist(
             engine, 'job_executions', job_executions_columns)
         self.assertColumnCount(
             engine, 'job_executions', job_executions_columns)
@@ -305,7 +305,7 @@ class SaharaMigrationsCheckers(object):
             'management_ip',
             'volumes'
         ]
-        self.assertColumnsExists(engine, 'instances', instances_columns)
+        self.assertColumnsExist(engine, 'instances', instances_columns)
         self.assertColumnCount(engine, 'instances', instances_columns)
 
         self._data_001(engine, data)
@@ -425,11 +425,11 @@ class SaharaMigrationsCheckers(object):
 
         self.assertColumnCount(engine, 'cluster_provision_steps',
                                provision_steps_columns)
-        self.assertColumnsExists(engine, 'cluster_provision_steps',
-                                 provision_steps_columns)
+        self.assertColumnsExist(engine, 'cluster_provision_steps',
+                                provision_steps_columns)
 
         self.assertColumnCount(engine, 'cluster_events', events_columns)
-        self.assertColumnsExists(engine, 'cluster_events', events_columns)
+        self.assertColumnsExist(engine, 'cluster_events', events_columns)
 
     def _check_016(self, engine, data):
         self.assertColumnExists(engine, 'node_group_templates',
@@ -463,6 +463,26 @@ class SaharaMigrationsCheckers(object):
 
     def _check_021(self, engine, data):
         self.assertColumnExists(engine, 'job_executions', 'data_source_urls')
+
+    def _check_022(self, engine, data):
+        columns = [
+            'created_at',
+            'updated_at',
+            'id',
+            'job_id',
+            'tenant_id',
+            'name',
+            'description',
+            'mapping_type',
+            'location',
+            'value_type',
+            'required',
+            'order',
+            'default'
+        ]
+
+        self.assertColumnCount(engine, 'job_interface_arguments', columns)
+        self.assertColumnsExist(engine, 'job_interface_arguments', columns)
 
 
 class TestMigrationsMySQL(SaharaMigrationsCheckers,

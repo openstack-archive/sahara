@@ -259,6 +259,7 @@ class JobExecution(Resource, objects.JobExecution):
     _filter_fields = ['extra']
     _sanitize_fields = {'job_configs': sanitize_job_configs,
                         'info': sanitize_info}
+    # TODO(egafford): Sanitize interface ("secret" bool field on job args?)
 
 
 class JobBinary(Resource, objects.JobBinary):

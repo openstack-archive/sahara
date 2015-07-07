@@ -46,7 +46,7 @@ class TestJobExecValidation(u.ValidationTestCase):
     @mock.patch('sahara.conductor.api.LocalApi.job_get')
     def test_streaming(self, get_job, get_data_source, get_cluster):
         get_job.return_value = mock.Mock(
-            type=edp.JOB_TYPE_MAPREDUCE_STREAMING, libs=[])
+            type=edp.JOB_TYPE_MAPREDUCE_STREAMING, libs=[], interface=[])
 
         ds1_id = six.text_type(uuid.uuid4())
         ds2_id = six.text_type(uuid.uuid4())
@@ -95,7 +95,7 @@ class TestJobExecValidation(u.ValidationTestCase):
     @mock.patch('sahara.conductor.api.LocalApi.job_get')
     def test_data_sources_differ(self, get_job, get_data_source, get_cluster):
         get_job.return_value = mock.Mock(
-            type=edp.JOB_TYPE_MAPREDUCE_STREAMING, libs=[])
+            type=edp.JOB_TYPE_MAPREDUCE_STREAMING, libs=[], interface=[])
 
         ds1_id = six.text_type(uuid.uuid4())
         ds2_id = six.text_type(uuid.uuid4())
@@ -147,7 +147,8 @@ class TestJobExecValidation(u.ValidationTestCase):
     @mock.patch('sahara.conductor.api.LocalApi.cluster_get')
     @mock.patch('sahara.conductor.api.LocalApi.job_get')
     def test_check_edp_no_oozie(self, get_job, get_cluster):
-        get_job.return_value = mock.Mock(type=edp.JOB_TYPE_PIG, libs=[])
+        get_job.return_value = mock.Mock(type=edp.JOB_TYPE_PIG, libs=[],
+                                         interface=[])
 
         ng = tu.make_ng_dict('master', 42, ['namenode'], 1,
                              instances=[tu.make_inst_dict('id', 'name')])
@@ -173,7 +174,7 @@ class TestJobExecValidation(u.ValidationTestCase):
 
         # Note that this means we cannot use assert_create_object_validation()
         # because it calls start_patch() and will override our setting
-        job = mock.Mock(type=edp.JOB_TYPE_SPARK, mains=["main"])
+        job = mock.Mock(type=edp.JOB_TYPE_SPARK, mains=["main"], interface=[])
         get_job.return_value = job
         ng = tu.make_ng_dict('master', 42, [], 1,
                              instances=[tu.make_inst_dict('id', 'name')])
@@ -190,8 +191,8 @@ class TestJobExecValidation(u.ValidationTestCase):
     @mock.patch('sahara.conductor.api.LocalApi.cluster_get')
     @mock.patch('sahara.conductor.api.LocalApi.job_get')
     def test_edp_main_class_java(self, job_get, cluster_get):
-        job_get.return_value = mock.Mock()
-        job_get.return_value.type = edp.JOB_TYPE_JAVA
+        job_get.return_value = mock.Mock(type=edp.JOB_TYPE_JAVA,
+                                         interface=[])
         ng = tu.make_ng_dict('master', 42, ['namenode', 'oozie'], 1,
                              instances=[tu.make_inst_dict('id', 'name')])
         cluster_get.return_value = tu.create_cluster("cluster", "tenant1",
@@ -221,7 +222,8 @@ class TestJobExecValidation(u.ValidationTestCase):
     @mock.patch('sahara.conductor.api.LocalApi.cluster_get')
     @mock.patch('sahara.conductor.api.LocalApi.job_get')
     def test_edp_main_class_spark(self, job_get, cluster_get):
-        job_get.return_value = mock.Mock(type=edp.JOB_TYPE_SPARK)
+        job_get.return_value = mock.Mock(type=edp.JOB_TYPE_SPARK,
+                                         interface=[])
         ng = tu.make_ng_dict('master', 42, ['namenode'], 1,
                              instances=[tu.make_inst_dict('id', 'name')])
         cluster_get.return_value = tu.create_cluster("cluster", "tenant1",

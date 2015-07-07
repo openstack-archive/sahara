@@ -41,6 +41,7 @@ def _create_job(id, job_binary, type):
     job.id = id
     job.type = type
     job.name = 'special_name'
+    job.interface = []
     if edp.compare_job_type(type, edp.JOB_TYPE_PIG, edp.JOB_TYPE_HIVE):
         job.mains = [job_binary]
         job.libs = None
@@ -91,6 +92,8 @@ def _create_job_exec(job_id, type, configs=None):
     j_exec.id = six.text_type(uuid.uuid4())
     j_exec.job_id = job_id
     j_exec.job_configs = configs
+    if not j_exec.job_configs:
+        j_exec.job_configs = {}
     if edp.compare_job_type(type, edp.JOB_TYPE_JAVA):
         j_exec.job_configs['configs']['edp.java.main_class'] = _java_main_class
         j_exec.job_configs['configs']['edp.java.java_opts'] = _java_opts
@@ -100,8 +103,6 @@ def _create_job_exec(job_id, type, configs=None):
 def _create_job_exec_with_proxy(job_id, type, configs=None):
     j_exec = _create_job_exec(job_id, type, configs)
     j_exec.id = '00000000-1111-2222-3333-4444444444444444'
-    if not j_exec.job_configs:
-        j_exec.job_configs = {}
     j_exec.job_configs['proxy_configs'] = {
         'proxy_username': 'job_' + j_exec.id,
         'proxy_password': '55555555-6666-7777-8888-999999999999',

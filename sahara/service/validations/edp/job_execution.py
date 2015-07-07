@@ -19,6 +19,7 @@ from sahara import exceptions as ex
 from sahara.i18n import _
 from sahara.plugins import base as plugin_base
 import sahara.service.validations.edp.base as b
+import sahara.service.validations.edp.job_interface as j_i
 
 JOB_EXEC_SCHEMA = {
     "type": "object",
@@ -34,6 +35,9 @@ JOB_EXEC_SCHEMA = {
         "cluster_id": {
             "type": "string",
             "format": "uuid",
+        },
+        "interface": {
+            "type": "simple_config",
         },
         "job_configs": b.job_configs,
     },
@@ -92,6 +96,7 @@ def check_job_execution(data, job_id):
               "'%(job_type)s'") % {"cluster_id": cluster.id,
                                    "job_type": job.type})
 
+    j_i.check_execution_interface(data, job)
     edp_engine.validate_job_execution(cluster, job, data)
 
 

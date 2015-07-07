@@ -747,13 +747,56 @@ def job_execution_count(context, **kwargs):
     return query.filter_by(**kwargs).first()[0]
 
 
+def _get_config_section(configs, mapping_type):
+    if mapping_type not in configs:
+        configs[mapping_type] = [] if mapping_type == "args" else {}
+    return configs[mapping_type]
+
+
+def _merge_execution_interface(job_ex, job, execution_interface):
+    """Merges the interface for a job execution with that of its job."""
+    configs = job_ex.job_configs or {}
+    nonexistent = object()
+    positional_args = {}
+    for arg in job.interface:
+        value = nonexistent
+        typed_configs = _get_config_section(configs, arg.mapping_type)
+        # Interface args are our first choice for the value.
+        if arg.name in execution_interface:
+            value = execution_interface[arg.name]
+        else:
+            # If a default exists, we can use that, but...
+            if arg.default is not None:
+                value = arg.default
+            # We should prefer an argument passed through the
+            # job_configs that maps to the same location.
+            if arg.mapping_type != "args":
+                value = typed_configs.get(arg.location, value)
+        if value is not nonexistent:
+            if arg.mapping_type != "args":
+                typed_configs[arg.location] = value
+            else:
+                positional_args[int(arg.location)] = value
+    if positional_args:
+        positional_args = [positional_args[i] for i
+                           in range(len(positional_args))]
+        configs["args"] = positional_args + configs["args"]
+    if configs and not job_ex.job_configs:
+        job_ex.job_configs = configs
+
+
 def job_execution_create(context, values):
     session = get_session()
+    execution_interface = values.pop('interface', {})
     job_ex = m.JobExecution()
     job_ex.update(values)
 
     try:
         with session.begin():
+            job_ex.interface = []
+            job = _job_get(context, session, job_ex.job_id)
+            if job.interface:
+                _merge_execution_interface(job_ex, job, execution_interface)
             session.add(job_ex)
     except db_exc.DBDuplicateEntry as e:
         raise ex.DBDuplicateEntry(
@@ -811,23 +854,36 @@ def _append_job_binaries(context, session, from_list, to_list):
             to_list.append(job_binary)
 
 
+def _append_interface(context, from_list, to_list):
+    for order, argument_values in enumerate(from_list):
+        argument_values['tenant_id'] = context.tenant_id
+        argument_values['order'] = order
+        argument = m.JobInterfaceArgument()
+        argument.update(argument_values)
+        to_list.append(argument)
+
+
 def job_create(context, values):
     mains = values.pop("mains", [])
     libs = values.pop("libs", [])
+    interface = values.pop("interface", [])
 
     session = get_session()
     try:
         with session.begin():
             job = m.Job()
             job.update(values)
-            # libs and mains are 'lazy' objects. The initialization below
-            # is needed here because it provides libs and mains to be
-            # initialized within a session even if the lists are empty
+            # These are 'lazy' objects. The initialization below
+            # is needed here because it provides libs, mains, and
+            # interface to be initialized within a session even if
+            # the lists are empty
             job.mains = []
             job.libs = []
+            job.interface = []
 
             _append_job_binaries(context, session, mains, job.mains)
             _append_job_binaries(context, session, libs, job.libs)
+            _append_interface(context, interface, job.interface)
 
             session.add(job)
 

@@ -62,6 +62,17 @@ JOB_TYPES_ALL = [
     JOB_TYPE_STORM
 ]
 
+JOB_TYPES_ACCEPTABLE_CONFIGS = {
+    JOB_TYPE_HIVE: {"configs", "params"},
+    JOB_TYPE_PIG: {"configs", "params", "args"},
+    JOB_TYPE_MAPREDUCE: {"configs"},
+    JOB_TYPE_MAPREDUCE_STREAMING: {"configs"},
+    JOB_TYPE_JAVA: {"configs", "args"},
+    JOB_TYPE_SHELL: {"configs", "params", "args"},
+    JOB_TYPE_SPARK: {"configs", "args"},
+    JOB_TYPE_STORM: {"args"}
+}
+
 ADAPT_FOR_OOZIE = 'edp.java.adapt_for_oozie'
 
 ADAPT_SPARK_FOR_SWIFT = 'edp.spark.adapt_for_swift'

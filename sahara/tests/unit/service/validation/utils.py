@@ -255,7 +255,8 @@ class ValidationTestCase(base.SaharaTestCase):
 
     def _assert_calls(self, mock, call_info):
         if not call_info:
-            self.assertEqual(0, mock.call_count)
+            self.assertEqual(0, mock.call_count, "Unexpected call to %s: %s"
+                             % (mock.name, str(mock.call_args)))
         else:
             self.assertEqual(call_info[0], mock.call_count)
             self.assertEqual(call_info[1], mock.call_args[0][0].code)

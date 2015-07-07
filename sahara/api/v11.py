@@ -127,7 +127,7 @@ def job_list():
 
 @rest.post('/jobs')
 @acl.enforce("data-processing:jobs:create")
-@v.validate(v_j.JOB_SCHEMA, v_j.check_mains_libs)
+@v.validate(v_j.JOB_SCHEMA, v_j.check_mains_libs, v_j.check_interface)
 def job_create(data):
     return u.render(api.create_job(data).to_wrapped_dict())
 

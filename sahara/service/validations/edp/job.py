@@ -16,7 +16,9 @@
 import sahara.exceptions as e
 from sahara.i18n import _
 from sahara.service.edp import api
+from sahara.service.validations.edp import job_interface as j_i
 from sahara.utils import edp
+
 
 JOB_SCHEMA = {
     "type": "object",
@@ -52,7 +54,8 @@ JOB_SCHEMA = {
         },
         "streaming": {
             "type": "boolean"
-        }
+        },
+        "interface": j_i.INTERFACE_ARGUMENT_SCHEMA
     },
     "additionalProperties": False,
     "required": [
@@ -104,3 +107,7 @@ def check_mains_libs(data, **kwargs):
     # Make sure that all referenced binaries exist
     _check_binaries(mains)
     _check_binaries(libs)
+
+
+def check_interface(data, **kwargs):
+    j_i.check_job_interface(data, **kwargs)
