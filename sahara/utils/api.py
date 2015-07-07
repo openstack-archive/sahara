@@ -78,6 +78,7 @@ class Rest(flask.Blueprint):
 
                 kwargs.pop("tenant_id")
                 req_id = flask.request.environ.get(oslo_req_id.ENV_REQUEST_ID)
+                auth_plugin = flask.request.environ.get('keystone.token_auth')
                 ctx = context.Context(
                     flask.request.headers['X-User-Id'],
                     flask.request.headers['X-Tenant-Id'],
@@ -86,6 +87,7 @@ class Rest(flask.Blueprint):
                     flask.request.headers['X-User-Name'],
                     flask.request.headers['X-Tenant-Name'],
                     flask.request.headers['X-Roles'].split(','),
+                    auth_plugin=auth_plugin,
                     request_id=req_id)
                 context.set_ctx(ctx)
                 if flask.request.method in ['POST', 'PUT', 'PATCH']:
