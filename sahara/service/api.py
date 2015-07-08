@@ -22,7 +22,6 @@ from six.moves.urllib import parse as urlparse
 from sahara import conductor as c
 from sahara import context
 from sahara.plugins import base as plugin_base
-from sahara.plugins import provisioning
 from sahara.service import quotas
 from sahara.utils import general as g
 from sahara.utils.notification import sender
@@ -182,8 +181,7 @@ def update_node_group_template(id, values):
 # Plugins ops
 
 def get_plugins():
-    return plugin_base.PLUGINS.get_plugins(
-        base=provisioning.ProvisioningPluginBase)
+    return plugin_base.PLUGINS.get_plugins()
 
 
 def get_plugin(plugin_name, version=None):
