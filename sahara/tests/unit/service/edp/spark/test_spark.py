@@ -366,7 +366,7 @@ class TestSpark(base.SaharaTestCase):
     @mock.patch('sahara.conductor.API.job_execution_update')
     @mock.patch('sahara.conductor.API.job_execution_get')
     @mock.patch('sahara.utils.remote.get_remote')
-    @mock.patch('sahara.plugins.spark.config_helper.get_config_value')
+    @mock.patch('sahara.plugins.utils.get_config_value_or_default')
     @mock.patch('sahara.service.edp.job_utils.create_workflow_dir')
     @mock.patch('sahara.plugins.utils.get_instance')
     @mock.patch('sahara.conductor.API.job_get')

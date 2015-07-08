@@ -23,7 +23,6 @@ from sahara import conductor as c
 from sahara import context
 from sahara import exceptions as e
 from sahara.i18n import _
-from sahara.plugins.spark import config_helper as c_helper
 from sahara.plugins import utils as plugin_utils
 from sahara.service.edp import base_engine
 from sahara.service.edp.binary_retrievers import dispatch
@@ -243,11 +242,13 @@ class SparkJobEngine(base_engine.JobEngine):
 
         # Launch the spark job using spark-submit and deploy_mode = client
         host = master.hostname()
-        port = c_helper.get_config_value("Spark", "Master port", self.cluster)
+        port = plugin_utils.get_config_value_or_default("Spark",
+                                                        "Master port",
+                                                        self.cluster)
         spark_submit = os.path.join(
-            c_helper.get_config_value("Spark",
-                                      "Spark home",
-                                      self.cluster),
+            plugin_utils.get_config_value_or_default("Spark",
+                                                     "Spark home",
+                                                     self.cluster),
             "bin/spark-submit")
 
         # TODO(tmckay): we need to clean up wf_dirs on long running clusters
@@ -332,9 +333,8 @@ class SparkJobEngine(base_engine.JobEngine):
         return [edp.JOB_TYPE_SPARK]
 
     def get_driver_classpath(self):
-        cp = c_helper.get_config_value("Spark",
-                                       "Executor extra classpath",
-                                       self.cluster)
+        cp = plugin_utils.get_config_value_or_default(
+            "Spark", "Executor extra classpath", self.cluster)
         if cp:
             cp = " --driver-class-path " + cp
         return cp

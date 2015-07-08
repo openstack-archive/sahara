@@ -31,7 +31,7 @@ class ConfigHelperUtilsTest(test_base.SaharaTestCase):
         expected = ['/mnt/one/spam', '/mnt/two/spam']
         self.assertEqual(expected, paths)
 
-    @mock.patch('sahara.plugins.spark.config_helper.get_config_value')
+    @mock.patch('sahara.plugins.utils.get_config_value_or_default')
     def test_cleanup_configs(self, get_config_value):
         getter = lambda plugin, key, cluster: plugin_configs[key]
         get_config_value.side_effect = getter
