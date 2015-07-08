@@ -85,7 +85,6 @@ def add_provisioning_step(cluster_id, step_name, total):
         context.ctx(), cluster_id, {
             'step_name': step_name,
             'step_type': step_type,
-            'completed': 0,
             'total': total,
             'started_at': timeutils.utcnow(),
         })
