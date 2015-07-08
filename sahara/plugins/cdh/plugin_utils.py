@@ -148,6 +148,7 @@ class AbstractPluginUtils(object):
             'CLOUDERA_MANAGER': 'MANAGER',
             'HDFS_NAMENODE': 'NAMENODE',
             'HDFS_DATANODE': 'DATANODE',
+            'HDFS_JOURNALNODE': 'JOURNALNODE',
             'HDFS_SECONDARYNAMENODE': 'SECONDARYNAMENODE',
             'YARN_RESOURCEMANAGER': 'RESOURCEMANAGER',
             'YARN_NODEMANAGER': 'NODEMANAGER',

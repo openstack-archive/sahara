@@ -67,7 +67,8 @@ class VersionHandler(avm.AbstractVersionHandler):
             "SENTRY": ['SENTRY_SERVER'],
             "KMS": ['KMS'],
             "YARN_GATEWAY": [],
-            "HDFS_GATEWAY": []
+            "HDFS_GATEWAY": [],
+            "JOURNALNODE": ['HDFS_JOURNALNODE']
         }
 
     def validate(self, cluster):

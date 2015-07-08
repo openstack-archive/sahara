@@ -28,6 +28,7 @@ def validate_cluster_creating(cluster):
         raise ex.InvalidComponentCountException('CLOUDERA_MANAGER',
                                                 1, mng_count)
 
+    zk_count = _get_inst_count(cluster, 'ZOOKEEPER_SERVER')
     nn_count = _get_inst_count(cluster, 'HDFS_NAMENODE')
     if nn_count != 1:
         raise ex.InvalidComponentCountException('HDFS_NAMENODE', 1, nn_count)
@@ -43,6 +44,27 @@ def validate_cluster_creating(cluster):
         raise ex.InvalidComponentCountException(
             'HDFS_DATANODE', replicas, dn_count,
             _('Number of datanodes must be not less than dfs_replication.'))
+
+    jn_count = _get_inst_count(cluster, 'HDFS_JOURNALNODE')
+    if jn_count > 0:
+        if jn_count < 3:
+            raise ex.InvalidComponentCountException('HDFS_JOURNALNODE',
+                                                    _('not less than 3'),
+                                                    jn_count)
+        if not jn_count % 2:
+            raise ex.InvalidComponentCountException('HDFS_JOURNALNODE',
+                                                    _('be odd'), jn_count)
+        if zk_count < 1:
+            raise ex.RequiredServiceMissingException('ZOOKEEPER',
+                                                     required_by='HDFS HA')
+        if 'HDFS_SECONDARYNAMENODE' not in _get_anti_affinity(cluster):
+            raise ex.NameNodeHAConfigurationError(_('HDFS_SECONDARYNAMENODE '
+                                                    'should be enabled '
+                                                    'in affinity_mask.'))
+        if 'HDFS_NAMENODE' not in _get_anti_affinity(cluster):
+            raise ex.NameNodeHAConfigurationError(_('HDFS_NAMENODE '
+                                                    'should be enabled '
+                                                    'in affinity_mask.'))
 
     rm_count = _get_inst_count(cluster, 'YARN_RESOURCEMANAGER')
     if rm_count > 1:
@@ -125,7 +147,6 @@ def validate_cluster_creating(cluster):
 
     hbm_count = _get_inst_count(cluster, 'HBASE_MASTER')
     hbr_count = _get_inst_count(cluster, 'HBASE_REGIONSERVER')
-    zk_count = _get_inst_count(cluster, 'ZOOKEEPER_SERVER')
 
     if hbm_count >= 1:
         if zk_count < 1:
@@ -271,3 +292,7 @@ def _get_scalable_processes():
 
 def _get_inst_count(cluster, process):
     return sum([ng.count for ng in u.get_node_groups(cluster, process)])
+
+
+def _get_anti_affinity(cluster):
+    return cluster.anti_affinity

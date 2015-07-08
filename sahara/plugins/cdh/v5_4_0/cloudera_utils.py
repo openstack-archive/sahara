@@ -66,6 +66,7 @@ class ClouderaUtilsV540(cu.ClouderaUtils):
     SENTRY_SERVICE_NAME = 'sentry01'
     KMS_SERVICE_NAME = 'kms01'
     CM_API_VERSION = 8
+    NAME_SERVICE = 'nameservice01'
 
     def __init__(self):
         cu.ClouderaUtils.__init__(self)
@@ -94,6 +95,8 @@ class ClouderaUtilsV540(cu.ClouderaUtils):
             return cm_cluster.get_service(self.IMPALA_SERVICE_NAME)
         elif role in ['KMS']:
             return cm_cluster.get_service(self.KMS_SERVICE_NAME)
+        elif role in ['JOURNALNODE']:
+            return cm_cluster.get_service(self.HDFS_SERVICE_NAME)
         else:
             return super(ClouderaUtilsV540, self).get_service_by_role(
                 role, cluster, instance)
@@ -417,3 +420,26 @@ class ClouderaUtilsV540(cu.ClouderaUtils):
             all_confs = _merge_dicts(all_confs, ng_default_confs)
 
         return all_confs.get(service, {})
+
+    @cpo.event_wrapper(
+        True, step=_("Enable NameNode HA"), param=('cluster', 1))
+    @cu.cloudera_cmd
+    def enable_namenode_ha(self, cluster):
+        standby_nn = self.pu.get_secondarynamenode(cluster)
+        standby_nn_host_name = standby_nn.fqdn()
+        jns = self.pu.get_jns(cluster)
+        jn_list = []
+        for index, jn in enumerate(jns):
+            jn_host_name = jn.fqdn()
+            jn_list.append({'jnHostId': jn_host_name,
+                            'jnName': 'JN%i' % index,
+                            'jnEditsDir': '/dfs/jn'
+                            })
+        cm_cluster = self.get_cloudera_cluster(cluster)
+        hdfs = cm_cluster.get_service(self.HDFS_SERVICE_NAME)
+        nn = hdfs.get_roles_by_type('NAMENODE')[0]
+
+        yield hdfs.enable_nn_ha(active_name=nn.name,
+                                standby_host_id=standby_nn_host_name,
+                                nameservice=self.NAME_SERVICE, jns=jn_list
+                                )

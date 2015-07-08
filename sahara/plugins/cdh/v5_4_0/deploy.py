@@ -167,6 +167,9 @@ def start_cluster(cluster):
 
     CU.pu.configure_swift(cluster)
 
+    if len(CU.pu.get_jns(cluster)) > 0:
+        CU.enable_namenode_ha(cluster)
+
     _finish_cluster_starting(cluster)
 
 
@@ -199,6 +202,7 @@ def get_open_ports(node_group):
         'IMPALA_STATESTORE': [25010, 24000],
         'IMPALAD': [21050, 21000, 23000, 25000, 28000, 22000],
         'KMS': [16000, 16001],
+        'JOURNALNODE': [8480, 8481, 8485]
     }
 
     for process in node_group.node_processes:
