@@ -21,7 +21,7 @@ from sahara import context
 from sahara.i18n import _LI
 from sahara.i18n import _LW
 from sahara.plugins import provisioning as common_configs
-from sahara.utils import general as g
+from sahara.utils import cluster as c_u
 
 
 CONF = cfg.CONF
@@ -115,7 +115,7 @@ def configure_ntp(cluster_id):
     if not is_ntp_enabled(cluster):
         LOG.debug("Don't configure NTP on cluster")
         return
-    instances = g.get_instances(cluster)
+    instances = c_u.get_instances(cluster)
     url = retrieve_ntp_server_url(cluster)
     with context.ThreadGroup() as tg:
         for instance in instances:

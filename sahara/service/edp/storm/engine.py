@@ -29,9 +29,9 @@ from sahara.service.edp import base_engine
 from sahara.service.edp.binary_retrievers import dispatch
 from sahara.service.edp import job_utils
 from sahara.service.validations.edp import job_execution as j
+from sahara.utils import cluster as cluster_utils
 from sahara.utils import edp
 from sahara.utils import files
-from sahara.utils import general
 from sahara.utils import remote
 
 conductor = c.API
@@ -63,7 +63,7 @@ class StormJobEngine(base_engine.JobEngine):
         # is gone, we should probably change the status somehow.
         # For now, do nothing.
         try:
-            instance = general.get_instances(self.cluster, [inst_id])[0]
+            instance = cluster_utils.get_instances(self.cluster, [inst_id])[0]
         except Exception:
             instance = None
         return topology_name, instance

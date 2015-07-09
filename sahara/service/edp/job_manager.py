@@ -30,6 +30,7 @@ from sahara.service.edp import job_utils
 from sahara.service.edp.oozie import engine as oozie_engine
 from sahara.service.edp.spark import engine as spark_engine
 from sahara.service.edp.storm import engine as storm_engine
+from sahara.utils import cluster as c_u
 from sahara.utils import edp
 from sahara.utils import proxy as p
 
@@ -90,7 +91,7 @@ def _run_job(job_execution_id):
     ctx = context.ctx()
     job_execution = conductor.job_execution_get(ctx, job_execution_id)
     cluster = conductor.cluster_get(ctx, job_execution.cluster_id)
-    if cluster.status != 'Active':
+    if cluster.status != c_u.CLUSTER_STATUS_ACTIVE:
         return
 
     eng = _get_job_engine(cluster, job_execution)
@@ -183,7 +184,8 @@ def get_job_status(job_execution_id):
     ctx = context.ctx()
     job_execution = conductor.job_execution_get(ctx, job_execution_id)
     cluster = conductor.cluster_get(ctx, job_execution.cluster_id)
-    if cluster is not None and cluster.status == 'Active':
+    if (cluster is not None and
+            cluster.status == c_u.CLUSTER_STATUS_ACTIVE):
         engine = _get_job_engine(cluster, job_execution)
         if engine is not None:
             job_execution = _update_job_status(engine,

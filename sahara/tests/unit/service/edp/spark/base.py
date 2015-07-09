@@ -59,7 +59,7 @@ class TestSpark(base.SaharaTestCase):
         pid, inst_id = eng._get_pid_and_inst_id("pid@instance")
         self.assertEqual(("pid", "instance"), (pid, inst_id))
 
-    @mock.patch('sahara.utils.general.get_instances')
+    @mock.patch('sahara.utils.cluster.get_instances')
     def test_get_instance_if_running(self, get_instances):
         '''Test retrieval of pid and instance object for running job
 

@@ -21,7 +21,7 @@ from oslo_utils import timeutils
 
 from sahara import context
 from sahara import exceptions as ex
-from sahara.utils import general
+from sahara.utils import cluster as cluster_utils
 
 LOG = logging.getLogger(__name__)
 
@@ -140,7 +140,7 @@ def plugin_option_poll(cluster, get_status, option, operation_name, sleep_time,
                        kwargs):
 
     def _get(n_cluster, n_kwargs):
-        if not general.check_cluster_exists(n_cluster):
+        if not cluster_utils.check_cluster_exists(n_cluster):
             return True
         return get_status(**n_kwargs)
 

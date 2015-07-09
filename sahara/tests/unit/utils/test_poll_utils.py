@@ -84,7 +84,7 @@ class TestPollUtils(base.SaharaTestCase):
         self.assertEqual(expected_message, message)
 
     @mock.patch('sahara.utils.poll_utils.LOG.debug')
-    @mock.patch('sahara.utils.general.check_cluster_exists')
+    @mock.patch('sahara.utils.cluster.check_cluster_exists')
     def test_plugin_poll_first_scenario(self, cluster_exists, logger):
         cluster_exists.return_value = True
         fake_get_status = mock.Mock()
@@ -98,7 +98,7 @@ class TestPollUtils(base.SaharaTestCase):
         self.assertEqual([expected_call], logger.call_args_list)
 
     @mock.patch('sahara.utils.poll_utils.LOG.debug')
-    @mock.patch('sahara.utils.general.check_cluster_exists')
+    @mock.patch('sahara.utils.cluster.check_cluster_exists')
     def test_plugin_poll_second_scenario(self, cluster_exists, logger):
         cluster_exists.return_value = False
         fake_get_status = mock.Mock()

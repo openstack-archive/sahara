@@ -31,7 +31,7 @@ from sahara.service.edp import job_manager
 from sahara.service import ntp_service
 from sahara.service import shares
 from sahara.service import trusts
-from sahara.utils import general as g
+from sahara.utils import cluster as c_u
 from sahara.utils import remote
 from sahara.utils import rpc as rpc_utils
 
@@ -160,13 +160,14 @@ def ops_error_handler(description):
             ctx = context.ctx()
             try:
                 # Clearing status description before executing
-                g.change_cluster_status_description(cluster_id, "")
+                c_u.change_cluster_status_description(cluster_id, "")
                 f(cluster_id, *args, **kwds)
             except Exception as ex:
                 # something happened during cluster operation
                 cluster = conductor.cluster_get(ctx, cluster_id)
                 # check if cluster still exists (it might have been removed)
-                if cluster is None or cluster.status == 'Deleting':
+                if (cluster is None or
+                        cluster.status == c_u.CLUSTER_STATUS_DELETING):
                     LOG.debug("Cluster was deleted or marked for deletion. "
                               "Canceling current operation.")
                     return
@@ -179,14 +180,17 @@ def ops_error_handler(description):
                     # trying to rollback
                     desc = description.format(reason=msg)
                     if _rollback_cluster(cluster, ex):
-                        g.change_cluster_status(cluster, "Active", desc)
+                        c_u.change_cluster_status(
+                            cluster, c_u.CLUSTER_STATUS_ACTIVE, desc)
                     else:
-                        g.change_cluster_status(cluster, "Error", desc)
+                        c_u.change_cluster_status(
+                            cluster, c_u.CLUSTER_STATUS_ERROR, desc)
                 except Exception as rex:
                     cluster = conductor.cluster_get(ctx, cluster_id)
                     # check if cluster still exists (it might have been
                     # removed during rollback)
-                    if cluster is None or cluster.status == 'Deleting':
+                    if (cluster is None or
+                            cluster.status == c_u.CLUSTER_STATUS_DELETING):
                         LOG.debug("Cluster was deleted or marked for deletion."
                                   " Canceling current operation.")
                         return
@@ -195,8 +199,9 @@ def ops_error_handler(description):
                         _LE("Error during rollback of cluster (reason:"
                             " {reason})").format(reason=six.text_type(rex)))
                     desc = "{0}, {1}".format(msg, six.text_type(rex))
-                    g.change_cluster_status(
-                        cluster, "Error", description.format(reason=desc))
+                    c_u.change_cluster_status(
+                        cluster, c_u.CLUSTER_STATUS_ERROR,
+                        description.format(reason=desc))
         return wrapper
     return decorator
 
@@ -245,7 +250,8 @@ def _provision_cluster(cluster_id):
         cluster = _update_sahara_info(ctx, cluster)
 
         # updating cluster infra
-        cluster = g.change_cluster_status(cluster, "InfraUpdating")
+        cluster = c_u.change_cluster_status(
+            cluster, c_u.CLUSTER_STATUS_INFRAUPDATING)
         plugin.update_infra(cluster)
 
         # creating instances and configuring them
@@ -254,19 +260,24 @@ def _provision_cluster(cluster_id):
         INFRA.create_cluster(cluster)
 
         # configure cluster
-        cluster = g.change_cluster_status(cluster, "Configuring")
+        cluster = c_u.change_cluster_status(
+            cluster, c_u.CLUSTER_STATUS_CONFIGURING)
         shares.mount_shares(cluster)
+
         context.set_step_type(_("Plugin: configure cluster"))
         plugin.configure_cluster(cluster)
 
         # starting prepared and configured cluster
         ntp_service.configure_ntp(cluster_id)
-        cluster = g.change_cluster_status(cluster, "Starting")
+        cluster = c_u.change_cluster_status(
+            cluster, c_u.CLUSTER_STATUS_STARTING)
+
         context.set_step_type(_("Plugin: start cluster"))
         plugin.start_cluster(cluster)
 
         # cluster is now up and ready
-        cluster = g.change_cluster_status(cluster, "Active")
+        cluster = c_u.change_cluster_status(
+            cluster, c_u.CLUSTER_STATUS_ACTIVE)
 
         # schedule execution pending job for cluster
         for je in conductor.job_execution_get_all(ctx, cluster_id=cluster.id):
@@ -284,7 +295,8 @@ def _provision_scaled_cluster(cluster_id, node_group_id_map):
 
     try:
         # Decommissioning surplus nodes with the plugin
-        cluster = g.change_cluster_status(cluster, "Decommissioning")
+        cluster = c_u.change_cluster_status(
+            cluster, c_u.CLUSTER_STATUS_DECOMMISSIONING)
 
         instances_to_delete = []
 
@@ -299,19 +311,21 @@ def _provision_scaled_cluster(cluster_id, node_group_id_map):
             plugin.decommission_nodes(cluster, instances_to_delete)
 
         # Scaling infrastructure
-        cluster = g.change_cluster_status(cluster, "Scaling")
+        cluster = c_u.change_cluster_status(
+            cluster, c_u.CLUSTER_STATUS_SCALING)
         context.set_step_type(_("Engine: scale cluster"))
         instance_ids = INFRA.scale_cluster(cluster, node_group_id_map)
 
         # Setting up new nodes with the plugin
         if instance_ids:
             ntp_service.configure_ntp(cluster_id)
-            cluster = g.change_cluster_status(cluster, "Configuring")
-            instances = g.get_instances(cluster, instance_ids)
+            cluster = c_u.change_cluster_status(
+                cluster, c_u.CLUSTER_STATUS_CONFIGURING)
+            instances = c_u.get_instances(cluster, instance_ids)
             context.set_step_type(_("Plugin: scale cluster"))
             plugin.scale_cluster(cluster, instances)
 
-        g.change_cluster_status(cluster, "Active")
+        c_u.change_cluster_status(cluster, c_u.CLUSTER_STATUS_ACTIVE)
 
     finally:
         if CONF.use_identity_api_v3 and not cluster.is_transient:

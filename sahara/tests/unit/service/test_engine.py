@@ -64,7 +64,7 @@ class TestEngine(base.SaharaWithDbTestCase):
     @mock.patch('sahara.service.networks.init_instances_ips',
                 return_value=True)
     @mock.patch('sahara.context.set_current_instance_id')
-    @mock.patch('sahara.utils.general.check_cluster_exists', return_value=True)
+    @mock.patch('sahara.utils.cluster.check_cluster_exists', return_value=True)
     def test_ips_assign(self, g, ctx, init, ops):
         cluster = mock.Mock()
         instances = [mock.Mock(id='1'), mock.Mock(id='2')]

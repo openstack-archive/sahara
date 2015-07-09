@@ -29,6 +29,7 @@ from sahara.i18n import _LI
 from sahara.i18n import _LW
 from sahara.service import networks
 from sahara.service import volumes
+from sahara.utils import cluster as cluster_utils
 from sahara.utils import cluster_progress_ops as cpo
 from sahara.utils import edp
 from sahara.utils import general as g
@@ -73,7 +74,7 @@ class Engine(object):
 
     @poll_utils.poll_status('ips_assign_timeout', _("Assign IPs"), sleep=1)
     def _ips_assign(self, ips_assigned, cluster, instances):
-        if not g.check_cluster_exists(cluster):
+        if not cluster_utils.check_cluster_exists(cluster):
             return True
         for instance in instances:
             if instance.id not in ips_assigned:
@@ -96,7 +97,7 @@ class Engine(object):
             _LI("All instances have IPs assigned"))
 
         cluster = conductor.cluster_get(context.ctx(), cluster)
-        instances = g.get_instances(cluster, ips_assigned)
+        instances = cluster_utils.get_instances(cluster, ips_assigned)
 
         cpo.add_provisioning_step(
             cluster.id, _("Wait for instance accessibility"), len(instances))
@@ -113,7 +114,7 @@ class Engine(object):
         'wait_until_accessible', _("Wait for instance accessibility"),
         sleep=5)
     def _is_accessible(self, instance):
-        if not g.check_cluster_exists(instance.cluster):
+        if not cluster_utils.check_cluster_exists(instance.cluster):
             return True
         try:
             # check if ssh is accessible and cloud-init
@@ -143,9 +144,10 @@ class Engine(object):
         * setup passwordless login
         * etc.
         """
-        hosts_file = g.generate_etc_hosts(cluster)
+        hosts_file = cluster_utils.generate_etc_hosts(cluster)
         cpo.add_provisioning_step(
-            cluster.id, _("Configure instances"), g.count_instances(cluster))
+            cluster.id, _("Configure instances"),
+            cluster_utils.count_instances(cluster))
 
         with context.ThreadGroup() as tg:
             for node_group in cluster.node_groups:
@@ -271,7 +273,7 @@ sed '/^Defaults    requiretty*/ s/^/#/' -i /etc/sudoers\n
         'delete_instances_timeout',
         _("Wait for instances to be deleted"), sleep=1)
     def _check_deleted(self, deleted_ids, cluster, instances):
-        if not g.check_cluster_exists(cluster):
+        if not cluster_utils.check_cluster_exists(cluster):
             return True
 
         for instance in instances:
@@ -305,6 +307,6 @@ sed '/^Defaults    requiretty*/ s/^/#/' -i /etc/sudoers\n
     def _remove_db_objects(self, cluster):
         ctx = context.ctx()
         cluster = conductor.cluster_get(ctx, cluster)
-        instances = g.get_instances(cluster)
+        instances = cluster_utils.get_instances(cluster)
         for inst in instances:
             conductor.instance_remove(ctx, inst)

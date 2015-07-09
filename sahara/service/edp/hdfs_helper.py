@@ -22,7 +22,7 @@ from sahara import conductor as c
 from sahara import context
 from sahara.plugins import exceptions as ex
 from sahara.plugins import utils as u
-from sahara.utils import general as g
+from sahara.utils import cluster as cluster_utils
 
 conductor = c.API
 
@@ -82,7 +82,7 @@ def _get_cluster_hosts_information(host, cluster):
 
         for i in u.get_instances(clust):
             if i.instance_name == host:
-                return g.generate_etc_hosts(clust)
+                return cluster_utils.generate_etc_hosts(clust)
 
     return None
 

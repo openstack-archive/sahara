@@ -26,6 +26,7 @@ from sahara.i18n import _LW
 from sahara.service import engine as e
 from sahara.service import networks
 from sahara.service import volumes
+from sahara.utils import cluster as c_u
 from sahara.utils import cluster_progress_ops as cpo
 from sahara.utils import general as g
 from sahara.utils.openstack import neutron
@@ -55,12 +56,14 @@ class DirectEngine(e.Engine):
         self._update_rollback_strategy(cluster, shutdown=True)
 
         # create all instances
-        cluster = g.change_cluster_status(cluster, "Spawning")
+        cluster = c_u.change_cluster_status(
+            cluster, c_u.CLUSTER_STATUS_SPAWNING)
         self._create_instances(cluster)
 
         # wait for all instances are up and networks ready
-        cluster = g.change_cluster_status(cluster, "Waiting")
-        instances = g.get_instances(cluster)
+        cluster = c_u.change_cluster_status(
+            cluster, c_u.CLUSTER_STATUS_WAITING)
+        instances = c_u.get_instances(cluster)
 
         self._await_active(cluster, instances)
 
@@ -71,10 +74,11 @@ class DirectEngine(e.Engine):
         cluster = conductor.cluster_get(ctx, cluster)
 
         # attach volumes
-        volumes.attach_to_instances(g.get_instances(cluster))
+        volumes.attach_to_instances(c_u.get_instances(cluster))
 
         # prepare all instances
-        cluster = g.change_cluster_status(cluster, "Preparing")
+        cluster = c_u.change_cluster_status(
+            cluster, c_u.CLUSTER_STATUS_PREPARING)
 
         self._configure_instances(cluster)
 
@@ -83,7 +87,8 @@ class DirectEngine(e.Engine):
     def scale_cluster(self, cluster, node_group_id_map):
         _warning_logger()
         ctx = context.ctx()
-        cluster = g.change_cluster_status(cluster, "Scaling: Spawning")
+        cluster = c_u.change_cluster_status(
+            cluster, c_u.CLUSTER_STATUS_SCALING_SPAWNING)
 
         instance_ids = self._scale_cluster_instances(cluster,
                                                      node_group_id_map)
@@ -91,10 +96,10 @@ class DirectEngine(e.Engine):
         self._update_rollback_strategy(cluster, instance_ids=instance_ids)
 
         cluster = conductor.cluster_get(ctx, cluster)
-        g.clean_cluster_from_empty_ng(cluster)
+        c_u.clean_cluster_from_empty_ng(cluster)
 
         cluster = conductor.cluster_get(ctx, cluster)
-        instances = g.get_instances(cluster, instance_ids)
+        instances = c_u.get_instances(cluster, instance_ids)
 
         self._await_active(cluster, instances)
 
@@ -105,7 +110,7 @@ class DirectEngine(e.Engine):
         cluster = conductor.cluster_get(ctx, cluster)
 
         volumes.attach_to_instances(
-            g.get_instances(cluster, instance_ids))
+            c_u.get_instances(cluster, instance_ids))
 
         # we should be here with valid cluster: if instances creation
         # was not successful all extra-instances will be removed above
@@ -130,7 +135,8 @@ class DirectEngine(e.Engine):
         instance_ids = rollback_info.get('instance_ids', [])
         if instance_ids:
             self._rollback_cluster_scaling(
-                cluster, g.get_instances(cluster, instance_ids), reason)
+                cluster,
+                c_u.get_instances(cluster, instance_ids), reason)
             LOG.warning(_LW("Cluster scaling rollback "
                             "(reason: {reason})").format(reason=reason))
 
@@ -175,7 +181,8 @@ class DirectEngine(e.Engine):
         if cluster.anti_affinity:
             aa_group = self._create_aa_server_group(cluster)
         cpo.add_provisioning_step(
-            cluster.id, _("Run instances"), g.count_instances(cluster))
+            cluster.id, _("Run instances"),
+            c_u.count_instances(cluster))
 
         for node_group in cluster.node_groups:
             count = node_group.count
@@ -276,7 +283,8 @@ class DirectEngine(e.Engine):
                     self._create_auto_security_group(node_group)
 
         if instances_to_delete:
-            cluster = g.change_cluster_status(cluster, "Deleting Instances")
+            cluster = c_u.change_cluster_status(
+                cluster, c_u.CLUSTER_STATUS_DELETING_INSTANCES)
 
             for instance in instances_to_delete:
                 with context.set_current_instance_id(instance.instance_id):
@@ -296,7 +304,8 @@ class DirectEngine(e.Engine):
                 self._count_instances_to_scale(
                     node_groups_to_enlarge, node_group_id_map, cluster))
 
-            cluster = g.change_cluster_status(cluster, "Adding Instances")
+            cluster = c_u.change_cluster_status(
+                cluster, c_u.CLUSTER_STATUS_ADDING_INSTANCES)
             for ng in cluster.node_groups:
                 if ng.id in node_groups_to_enlarge:
                     count = node_group_id_map[ng.id]
@@ -426,7 +435,7 @@ class DirectEngine(e.Engine):
         'await_for_instances_active',
         _("Wait for instances to become active"), sleep=1)
     def _check_active(self, active_ids, cluster, instances):
-        if not g.check_cluster_exists(cluster):
+        if not c_u.check_cluster_exists(cluster):
             return True
         for instance in instances:
             if instance.id not in active_ids:
@@ -471,7 +480,7 @@ class DirectEngine(e.Engine):
                 self._shutdown_instance(i)
 
         cluster = conductor.cluster_get(context.ctx(), cluster)
-        g.clean_cluster_from_empty_ng(cluster)
+        c_u.clean_cluster_from_empty_ng(cluster)
 
     def shutdown_cluster(self, cluster):
         """Shutdown specified cluster and all related resources."""

@@ -23,7 +23,7 @@ import six
 from sahara import conductor as c
 from sahara.conductor import resource
 from sahara import context
-from sahara.utils import general as g
+from sahara.utils import cluster as cluster_utils
 
 conductor = c.API
 CONF = cfg.CONF
@@ -73,7 +73,8 @@ def add_fail_event(instance, exception):
 
 
 def add_provisioning_step(cluster_id, step_name, total):
-    if CONF.disable_event_log or not g.check_cluster_exists(cluster_id):
+    if (CONF.disable_event_log or
+            not cluster_utils.check_cluster_exists(cluster_id)):
         return
 
     prev_step = get_current_provisioning_step(cluster_id)
@@ -93,7 +94,8 @@ def add_provisioning_step(cluster_id, step_name, total):
 
 
 def get_current_provisioning_step(cluster_id):
-    if CONF.disable_event_log or not g.check_cluster_exists(cluster_id):
+    if (CONF.disable_event_log or
+            not cluster_utils.check_cluster_exists(cluster_id)):
         return None
     current_instance_info = context.ctx().current_instance_info
     return current_instance_info.step_id
@@ -123,7 +125,7 @@ def event_wrapper(mark_successful_on_exit, **spec):
             instance = _find_in_args(spec, *args, **kwargs)
             cluster_id = instance.cluster_id
 
-            if not g.check_cluster_exists(cluster_id):
+            if not cluster_utils.check_cluster_exists(cluster_id):
                 return func(*args, **kwargs)
 
             if step_name:
