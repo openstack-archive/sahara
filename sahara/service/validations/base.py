@@ -40,7 +40,7 @@ MAX_HOSTNAME_LENGTH = 64
 def _get_plugin_configs(plugin_name, hadoop_version, scope=None):
     pl_confs = {}
     for config in plugin_base.PLUGINS.get_plugin(
-            plugin_name).get_configs(hadoop_version):
+            plugin_name).get_all_configs(hadoop_version):
         if pl_confs.get(config.applicable_target):
             pl_confs[config.applicable_target].append(config.name)
         else:

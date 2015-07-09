@@ -111,6 +111,9 @@ class FakePlugin(object):
     def get_versions(self):
         return ['0.1', '0.2']
 
+    def get_all_configs(self, version):
+        return self.get_configs(version)
+
     def get_required_image_tags(self, version):
         return ['fake']
 

@@ -431,3 +431,17 @@ set to ``True`` and some extra configurations are needed:
 
 It should be noted that in a situation when the host has no space for volume
 creation, the created volume will have an ``Error`` state and can not be used.
+
+NTP service configuration
+-------------------------
+
+By default sahara will enable the NTP service on all cluster instances if the
+NTP package is included in the image (the sahara disk image builder will
+include NTP in all images it generates). The default NTP server will be
+``pool.ntp.org``; this can be overridden using the ``default_ntp_server``
+setting in the ``DEFAULT`` section of the sahara configuration file.
+If you would like to specify a different NTP server for a particular cluster
+template, use the ``URL of NTP server`` setting in the ``General Parameters``
+section when you create the template. If you would like to disable NTP for a
+particular cluster template, deselect the ``Enable NTP service`` checkbox in
+the ``General Parameters`` section when you create the template.

@@ -28,6 +28,7 @@ from sahara.i18n import _
 from sahara.i18n import _LE
 from sahara.plugins import base as plugin_base
 from sahara.service.edp import job_manager
+from sahara.service import ntp_service
 from sahara.service import trusts
 from sahara.utils import general as g
 from sahara.utils import remote
@@ -257,6 +258,7 @@ def _provision_cluster(cluster_id):
         plugin.configure_cluster(cluster)
 
         # starting prepared and configured cluster
+        ntp_service.configure_ntp(cluster_id)
         cluster = g.change_cluster_status(cluster, "Starting")
         context.set_step_type(_("Plugin: start cluster"))
         plugin.start_cluster(cluster)
@@ -301,6 +303,7 @@ def _provision_scaled_cluster(cluster_id, node_group_id_map):
 
         # Setting up new nodes with the plugin
         if instance_ids:
+            ntp_service.configure_ntp(cluster_id)
             cluster = g.change_cluster_status(cluster, "Configuring")
             instances = g.get_instances(cluster, instance_ids)
             context.set_step_type(_("Plugin: scale cluster"))
