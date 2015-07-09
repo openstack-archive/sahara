@@ -24,7 +24,8 @@ class EdpOozieEngine(edp_engine.OozieJobEngine):
         return 'hdfs'
 
     def get_name_node_uri(self, cluster):
-        return cluster['info']['HDFS']['NameNode']
+        hdfs = cluster['info']['HDFS']
+        return hdfs.get('NameService', hdfs['NameNode'])
 
     def get_oozie_server_uri(self, cluster):
         return cluster['info']['JobFlow']['Oozie'] + "/oozie/"

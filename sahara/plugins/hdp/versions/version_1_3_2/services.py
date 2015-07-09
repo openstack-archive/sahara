@@ -67,7 +67,7 @@ class Service(object):
     def register_user_input_handlers(self, ui_handlers):
         pass
 
-    def register_service_urls(self, cluster_spec, url_info):
+    def register_service_urls(self, cluster_spec, url_info, cluster):
         return url_info
 
     def pre_service_start(self, cluster_spec, ambari_info, started_services):
@@ -178,7 +178,7 @@ class HdfsService(Service):
             global_config['dfs_data_dir'] = self._generate_storage_path(
                 common_paths, '/hadoop/hdfs/data')
 
-    def register_service_urls(self, cluster_spec, url_info):
+    def register_service_urls(self, cluster_spec, url_info, cluster):
         namenode_ip = cluster_spec.determine_component_hosts(
             'NAMENODE').pop().management_ip
 
@@ -267,7 +267,7 @@ class MapReduceService(Service):
             if 'HISTORYSERVER' not in ng.components:
                 ng.components.append('HISTORYSERVER')
 
-    def register_service_urls(self, cluster_spec, url_info):
+    def register_service_urls(self, cluster_spec, url_info, cluster):
         jobtracker_ip = cluster_spec.determine_component_hosts(
             'JOBTRACKER').pop().management_ip
 
@@ -483,7 +483,7 @@ class HBaseService(Service):
         if count != 1:
             raise ex.InvalidComponentCountException('HBASE_MASTER', 1, count)
 
-    def register_service_urls(self, cluster_spec, url_info):
+    def register_service_urls(self, cluster_spec, url_info, cluster):
         master_ip = cluster_spec.determine_component_hosts(
             'HBASE_MASTER').pop().management_ip
 
@@ -617,7 +617,7 @@ class OozieService(Service):
         if 'MAPREDUCE_CLIENT' not in components:
             components.append('MAPREDUCE_CLIENT')
 
-    def register_service_urls(self, cluster_spec, url_info):
+    def register_service_urls(self, cluster_spec, url_info, cluster):
         oozie_ip = cluster_spec.determine_component_hosts(
             'OOZIE_SERVER').pop().management_ip
         port = self._get_port_from_cluster_spec(cluster_spec, 'oozie-site',
@@ -686,7 +686,7 @@ class AmbariService(Service):
         if count != 1:
             raise ex.InvalidComponentCountException('AMBARI_SERVER', 1, count)
 
-    def register_service_urls(self, cluster_spec, url_info):
+    def register_service_urls(self, cluster_spec, url_info, cluster):
         ambari_ip = cluster_spec.determine_component_hosts(
             'AMBARI_SERVER').pop().management_ip
 

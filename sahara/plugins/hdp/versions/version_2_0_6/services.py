@@ -72,7 +72,7 @@ class Service(object):
     def register_user_input_handlers(self, ui_handlers):
         pass
 
-    def register_service_urls(self, cluster_spec, url_info):
+    def register_service_urls(self, cluster_spec, url_info, cluster):
         return url_info
 
     def pre_service_start(self, cluster_spec, ambari_info, started_services):
@@ -207,7 +207,7 @@ class HdfsService(Service):
                 self._generate_storage_path(
                     common_paths, '/hadoop/hdfs/data'))
 
-    def register_service_urls(self, cluster_spec, url_info):
+    def register_service_urls(self, cluster_spec, url_info, cluster):
         namenode_ip = cluster_spec.determine_component_hosts(
             'NAMENODE').pop().management_ip
 
@@ -220,6 +220,9 @@ class HdfsService(Service):
             'Web UI': 'http://%s:%s' % (namenode_ip, ui_port),
             'NameNode': 'hdfs://%s:%s' % (namenode_ip, nn_port)
         }
+        if cluster_spec.is_hdfs_ha_enabled(cluster):
+            url_info['HDFS'].update({
+                'NameService': 'hdfs://%s' % cluster.name})
         return url_info
 
     def finalize_ng_components(self, cluster_spec):
@@ -269,7 +272,7 @@ class MapReduce2Service(Service):
             for prop in th.vm_awareness_mapred_config():
                 mapred_site_config[prop['name']] = prop['value']
 
-    def register_service_urls(self, cluster_spec, url_info):
+    def register_service_urls(self, cluster_spec, url_info, cluster):
         historyserver_ip = cluster_spec.determine_component_hosts(
             'HISTORYSERVER').pop().management_ip
 
@@ -348,7 +351,7 @@ class YarnService(Service):
                 self._generate_storage_path(common_paths,
                                             '/hadoop/yarn/local'))
 
-    def register_service_urls(self, cluster_spec, url_info):
+    def register_service_urls(self, cluster_spec, url_info, cluster):
         resourcemgr_ip = cluster_spec.determine_component_hosts(
             'RESOURCEMANAGER').pop().management_ip
 
@@ -563,7 +566,7 @@ class HBaseService(Service):
         if count != 1:
             raise ex.InvalidComponentCountException('HBASE_MASTER', 1, count)
 
-    def register_service_urls(self, cluster_spec, url_info):
+    def register_service_urls(self, cluster_spec, url_info, cluster):
         master_ip = cluster_spec.determine_component_hosts(
             'HBASE_MASTER').pop().management_ip
 
@@ -724,7 +727,7 @@ class OozieService(Service):
             if 'MAPREDUCE2_CLIENT' not in components:
                 components.append('MAPREDUCE2_CLIENT')
 
-    def register_service_urls(self, cluster_spec, url_info):
+    def register_service_urls(self, cluster_spec, url_info, cluster):
         oozie_ip = cluster_spec.determine_component_hosts(
             'OOZIE_SERVER').pop().management_ip
         port = self._get_port_from_cluster_spec(cluster_spec, 'oozie-site',
@@ -790,7 +793,7 @@ class AmbariService(Service):
         if count != 1:
             raise ex.InvalidComponentCountException('AMBARI_SERVER', 1, count)
 
-    def register_service_urls(self, cluster_spec, url_info):
+    def register_service_urls(self, cluster_spec, url_info, cluster):
         ambari_ip = cluster_spec.determine_component_hosts(
             'AMBARI_SERVER').pop().management_ip
 
@@ -1180,7 +1183,7 @@ class HueService(Service):
         self._merge_configurations(cluster_spec, 'hue-oozie-site',
                                    'oozie-site')
 
-    def register_service_urls(self, cluster_spec, url_info):
+    def register_service_urls(self, cluster_spec, url_info, cluster):
         hosts = cluster_spec.determine_component_hosts('HUE')
 
         if hosts is not None:
