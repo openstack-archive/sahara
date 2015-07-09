@@ -124,6 +124,7 @@ class BaseTestCase(base.BaseTestCase):
         self.cluster_id = self._create_cluster(cl_tmpl_id)
         self._poll_cluster_status_tracked(self.cluster_id)
         cluster = self.sahara.get_cluster(self.cluster_id, show_progress=True)
+        self.check_cinder()
         if not getattr(cluster, "provision_progress", None):
             return
         self._check_event_logs(cluster)
@@ -302,6 +303,40 @@ class BaseTestCase(base.BaseTestCase):
         if body:
             self.sahara.scale_cluster(self.cluster_id, body)
             self._poll_cluster_status(self.cluster_id)
+        self.check_cinder()
+
+    @track_result("Check cinder volumes")
+    def check_cinder(self):
+        if not self._get_node_list_with_volumes():
+            print("All tests for Cinder were skipped")
+            return
+        for node_with_volumes in self._get_node_list_with_volumes():
+            volume_count_on_node = int(self._run_command_on_node(
+                node_with_volumes['node_ip'],
+                'mount | grep %s | wc -l' %
+                node_with_volumes['volume_mount_prefix']
+            ))
+            self.assertEqual(
+                node_with_volumes['volume_count'], volume_count_on_node,
+                'Some volumes were not mounted to node.\n'
+                'Expected count of mounted volumes to node is %s.\n'
+                'Actual count of mounted volumes to node is %s.'
+                % (node_with_volumes['volume_count'], volume_count_on_node)
+            )
+
+    def _get_node_list_with_volumes(self):
+        node_groups = self.sahara.get_cluster(self.cluster_id).node_groups
+        node_list_with_volumes = []
+        for node_group in node_groups:
+            if node_group['volumes_per_node'] != 0:
+                for instance in node_group['instances']:
+                    node_list_with_volumes.append({
+                        'node_ip': instance['management_ip'],
+                        'volume_count': node_group['volumes_per_node'],
+                        'volume_mount_prefix':
+                            node_group['volume_mount_prefix']
+                    })
+        return node_list_with_volumes
 
     @track_result("Create node group templates")
     def _create_node_group_templates(self):
