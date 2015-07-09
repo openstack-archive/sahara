@@ -22,10 +22,10 @@ import sys
 import tempfile
 
 from mako import template as mako_template
+from oslo_utils import fileutils
 from six.moves import configparser
 import yaml
 
-from sahara.openstack.common import fileutils
 from sahara.tests.scenario import validation
 
 
