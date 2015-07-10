@@ -133,10 +133,11 @@ class TemplateUpdateTestCase(base.ConductorManagerTestCase):
         # Named config section
         template_api.add_config_section("section", opts)
 
-        conf.register_group.assert_called()
+        self.assertEqual(1, conf.register_group.call_count)
         config_group = conf.register_group.call_args[0][0]
         self.assertEqual("section", config_group.name)
-        conf.register_opts.assert_called_with(opts, config_group)
+        self.assertEqual([
+            mock.call(opts, config_group)], conf.register_opts.call_args_list)
 
         conf.register_group.reset_mock()
         conf.register_opts.reset_mock()
@@ -415,12 +416,12 @@ class TemplateUpdateTestCase(base.ConductorManagerTestCase):
         ng_info, error = template_api.add_node_group_templates(ctx, ngts)
         new = self.api.node_group_template_get_all(ctx, name=new["name"])[0]
         self.assertTrue(error)
-        reverse_creates.assert_called_once()
+        self.assertEqual(1, reverse_creates.call_count)
 
         # call should have been (ctx, [new])
         self.assertEqual(new["id"], reverse_creates.call_args[0][1][0]["id"])
 
-        reverse_updates.assert_called_once()
+        self.assertEqual(1, reverse_updates.call_count)
         msg = ("Update of node group template {info} failed, mistake".format(
             info=u.name_and_id(existing)))
         self.assertIn(msg, self.logger.warnings)
@@ -459,8 +460,8 @@ class TemplateUpdateTestCase(base.ConductorManagerTestCase):
 
         ng_info, error = template_api.add_node_group_templates(ctx, ngts)
         self.assertTrue(error)
-        reverse_creates.assert_called_once()
-        reverse_updates.assert_called_once()
+        self.assertEqual(1, reverse_creates.call_count)
+        self.assertEqual(1, reverse_updates.call_count)
 
         # call should have been (ctx, [(existing, updated_fields)])
         self.assertEqual({"flavor_id": existing["flavor_id"]},
@@ -540,12 +541,12 @@ class TemplateUpdateTestCase(base.ConductorManagerTestCase):
         error = template_api.add_cluster_templates(ctx, clts, {})
         new = self.api.cluster_template_get_all(ctx, name=new["name"])[0]
         self.assertTrue(error)
-        reverse_creates.assert_called_once()
+        self.assertEqual(1, reverse_creates.call_count)
 
         # call should have been (ctx, [new])
         self.assertEqual(new["id"], reverse_creates.call_args[0][1][0]["id"])
 
-        reverse_updates.assert_called_once()
+        self.assertEqual(1, reverse_updates.call_count)
         msg = ("Update of cluster template {info} failed, mistake".format(
             info=u.name_and_id(existing)))
         self.assertIn(msg, self.logger.warnings)
@@ -584,8 +585,8 @@ class TemplateUpdateTestCase(base.ConductorManagerTestCase):
 
         error = template_api.add_cluster_templates(ctx, clts, {})
         self.assertTrue(error)
-        reverse_creates.assert_called_once()
-        reverse_updates.assert_called_once()
+        self.assertEqual(1, reverse_creates.call_count)
+        self.assertEqual(1, reverse_updates.call_count)
 
         # call should have been (ctx, [(existing, updated_fields)])
         # updated fields will contain hadoop_version and node_groups,
@@ -738,7 +739,7 @@ class TemplateUpdateTestCase(base.ConductorManagerTestCase):
         self.assertIn(msg, self.logger.warnings)
 
     @mock.patch("sahara.db.templates.api.reverse_node_group_template_creates")
-    @mock.patch("sahara.db.templates.api.reverse_node_group_template_creates")
+    @mock.patch("sahara.db.templates.api.reverse_node_group_template_updates")
     @mock.patch("sahara.db.templates.api.add_cluster_templates")
     @mock.patch("sahara.db.templates.api.get_configs")
     @mock.patch("sahara.db.templates.api.add_config_section_for_template")
@@ -746,8 +747,8 @@ class TemplateUpdateTestCase(base.ConductorManagerTestCase):
                                       add_config,
                                       get_configs,
                                       add_clts,
-                                      reverse_ng_creates,
-                                      reverse_ng_updates):
+                                      reverse_ng_updates,
+                                      reverse_ng_creates):
         self.logger.clear_log()
         ctx = context.ctx()
 
@@ -767,8 +768,8 @@ class TemplateUpdateTestCase(base.ConductorManagerTestCase):
         add_clts.return_value = True
 
         template_api.do_update()
-        reverse_ng_creates.assert_called_once()
-        reverse_ng_updates.assert_called_once()
+        self.assertEqual(1, reverse_ng_creates.call_count)
+        self.assertEqual(1, reverse_ng_updates.call_count)
 
         clts = self.api.cluster_template_get_all(ctx)
         self.assertEqual([], clts)
