@@ -75,7 +75,7 @@ def _get_hadoop_configs(pctx, node_group):
         },
         'HDFS': {
             'dfs.namenode.name.dir': ','.join(dirs['hadoop_name_dirs']),
-            'dfs.namenode.data.dir': ','.join(dirs['hadoop_data_dirs']),
+            'dfs.datanode.data.dir': ','.join(dirs['hadoop_data_dirs']),
             'dfs.hosts': '%s/dn-include' % HADOOP_CONF_DIR,
             'dfs.hosts.exclude': '%s/dn-exclude' % HADOOP_CONF_DIR
         }
