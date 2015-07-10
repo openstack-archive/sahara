@@ -1,4 +1,3 @@
-# Copyright (c) 2014 OpenStack Foundation
 # Copyright (c) 2015 ISPRAS
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,21 +13,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from sahara.plugins.spark import edp_engine as spark_edp
+from sahara.plugins.cdh.v5_3_0 import edp_engine
 from sahara.tests.unit.service.edp.spark import base as tests
 
 
-class TestSparkPlugin(tests.TestSpark):
+class TestClouderaPlugin(tests.TestSpark):
     def setUp(self):
-        super(TestSparkPlugin, self).setUp()
-        self.master_host = "master"
-        self.engine_class = spark_edp.EdpEngine
-        self.spark_user = ""
-        self.spark_submit = (
-            "%(spark_home)s/bin/spark-submit" %
-            {"spark_home": self.spark_home})
-        self.master = (
-            "spark://%(master_host)s:%(master_port)s" %
-            {"master_host": self.master_host,
-             "master_port": self.master_port})
-        self.deploy_mode = "client"
+        super(TestClouderaPlugin, self).setUp()
+        self.master_host = "CLOUDERA_MANAGER"
+        self.engine_class = edp_engine.EdpSparkEngine
+        self.spark_user = "sudo -u spark "
+        self.spark_submit = "spark-submit"
+        self.master = "yarn-cluster"
+        self.deploy_mode = "cluster"
