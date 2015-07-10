@@ -74,6 +74,24 @@ class AuthUrlTest(testbase.SaharaTestCase):
         _assert("https://127.0.0.1:8080/v42")
         _assert("https://127.0.0.1:8080/v42/")
 
+    def test_retrieve_auth_url_api_v3_without_port(self):
+        self.override_config('use_identity_api_v3', True)
+        correct = "https://127.0.0.1/v3/"
+
+        def _assert(uri):
+            self.setup_context(auth_uri=uri)
+            self.assertEqual(correct, base.retrieve_auth_url())
+
+        _assert("%s/" % correct)
+        _assert("https://127.0.0.1")
+        _assert("https://127.0.0.1/")
+        _assert("https://127.0.0.1/v2.0")
+        _assert("https://127.0.0.1/v2.0/")
+        _assert("https://127.0.0.1/v3")
+        _assert("https://127.0.0.1/v3/")
+        _assert("https://127.0.0.1/v42")
+        _assert("https://127.0.0.1/v42/")
+
     def test_retrieve_auth_url_api_v20(self):
         self.override_config('use_identity_api_v3', False)
         correct = "https://127.0.0.1:8080/v2.0/"
@@ -91,6 +109,24 @@ class AuthUrlTest(testbase.SaharaTestCase):
         _assert("https://127.0.0.1:8080/v3/")
         _assert("https://127.0.0.1:8080/v42")
         _assert("https://127.0.0.1:8080/v42/")
+
+    def test_retrieve_auth_url_api_v20_without_port(self):
+        self.override_config('use_identity_api_v3', False)
+        correct = "https://127.0.0.1/v2.0/"
+
+        def _assert(uri):
+            self.setup_context(auth_uri=uri)
+            self.assertEqual(correct, base.retrieve_auth_url())
+
+        _assert("%s/" % correct)
+        _assert("https://127.0.0.1")
+        _assert("https://127.0.0.1/")
+        _assert("https://127.0.0.1/v2.0")
+        _assert("https://127.0.0.1/v2.0/")
+        _assert("https://127.0.0.1/v3")
+        _assert("https://127.0.0.1/v3/")
+        _assert("https://127.0.0.1/v42")
+        _assert("https://127.0.0.1/v42/")
 
 
 class ExecuteWithRetryTest(testbase.SaharaTestCase):
