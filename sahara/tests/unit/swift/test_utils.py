@@ -40,3 +40,19 @@ class SwiftUtilsTest(testbase.SaharaTestCase):
         _assert("https://127.0.0.1:8080/v2.0/")
         _assert("https://127.0.0.1:8080/v42/")
         _assert("https://127.0.0.1:8080/foo")
+
+    @mock.patch('sahara.utils.openstack.base.url_for')
+    def test_retrieve_auth_url_without_port(self, url_for_mock):
+        correct = "https://127.0.0.1/v2.0/"
+
+        def _assert(uri):
+            url_for_mock.return_value = uri
+            self.assertEqual(correct, utils.retrieve_auth_url())
+
+        _assert("%s/" % correct)
+        _assert("https://127.0.0.1")
+        _assert("https://127.0.0.1/")
+        _assert("https://127.0.0.1/v2.0")
+        _assert("https://127.0.0.1/v2.0/")
+        _assert("https://127.0.0.1/v42/")
+        _assert("https://127.0.0.1/foo")
