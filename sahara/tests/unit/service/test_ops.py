@@ -34,6 +34,7 @@ class FakeNodeGroup(object):
 
 class FakePlugin(mock.Mock):
     node_groups = [FakeNodeGroup()]
+    is_transient = False
 
     def update_infra(self, cluster):
         TestOPS.SEQUENCE.append('update_infra')
@@ -98,15 +99,17 @@ class TestOPS(base.SaharaWithDbTestCase):
                           'configure_cluster', 'start_cluster'], self.SEQUENCE,
                          'Order of calls is wrong')
 
+    @mock.patch('sahara.service.ops.CONF')
     @mock.patch('sahara.service.ops._prepare_provisioning',
                 return_value=(mock.Mock(), mock.Mock(), FakePlugin()))
     @mock.patch('sahara.utils.general.change_cluster_status',
                 return_value=FakePlugin())
     @mock.patch('sahara.utils.general.get_instances')
     def test_provision_scaled_cluster(self, p_get_instances, p_change_status,
-                                      p_prep_provisioning):
+                                      p_prep_provisioning, p_conf):
         del self.SEQUENCE[:]
         ops.INFRA = FakeINFRA()
+        p_conf.use_identity_api_v3 = True
         ops._provision_scaled_cluster('123', {'id': 1})
         # checking that order of calls is right
         self.assertEqual(['decommission_nodes', 'INFRA.scale_cluster',

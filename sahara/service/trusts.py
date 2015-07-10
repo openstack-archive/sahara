@@ -13,9 +13,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import datetime
+
 from oslo_config import cfg
 from oslo_log import log as logging
 from oslo_serialization import jsonutils as json
+from oslo_utils import timeutils
 import six
 
 from sahara import conductor as c
@@ -25,17 +28,23 @@ from sahara.i18n import _
 from sahara.i18n import _LE
 from sahara.utils.openstack import keystone
 
-
 conductor = c.API
 CONF = cfg.CONF
 LOG = logging.getLogger(__name__)
+
+
+def _get_expiry():
+    '''Get the time at which a trust should expire based on configuration'''
+    return timeutils.utcnow() + datetime.timedelta(
+        hours=CONF.cluster_operation_trust_expiration_hours)
 
 
 def create_trust(trustor,
                  trustee,
                  role_names,
                  impersonation=True,
-                 project_id=None):
+                 project_id=None,
+                 expires=True):
     '''Create a trust and return it's identifier
 
     :param trustor: The Keystone client delegating the trust.
@@ -45,6 +54,7 @@ def create_trust(trustor,
                           default is True.
     :param project_id: The project that the trust will be scoped into,
                        default is the trustor's project id.
+    :param expires: The trust will expire if this is set to True.
     :returns: A valid trust id.
     :raises CreationFailed: If the trust cannot be created.
 
@@ -52,11 +62,13 @@ def create_trust(trustor,
     if project_id is None:
         project_id = trustor.tenant_id
     try:
+        expires_at = _get_expiry() if expires else None
         trust = trustor.trusts.create(trustor_user=trustor.user_id,
                                       trustee_user=trustee.user_id,
                                       impersonation=impersonation,
                                       role_names=role_names,
-                                      project=project_id)
+                                      project=project_id,
+                                      expires_at=expires_at)
         LOG.debug('Created trust {trust_id}'.format(
             trust_id=six.text_type(trust.id)))
         return trust.id
@@ -66,13 +78,14 @@ def create_trust(trustor,
         raise ex.CreationFailed(_('Failed to create trust'))
 
 
-def create_trust_for_cluster(cluster):
+def create_trust_for_cluster(cluster, expires=True):
     '''Create a trust for a cluster
 
     This delegates a trust from the current user to the Sahara admin user
     based on the current context roles, and then adds the trust identifier
     to the cluster object.
 
+    :param expires: The trust will expire if this is set to True.
     '''
     trustor = keystone.client()
     ctx = context.current()
@@ -80,7 +93,8 @@ def create_trust_for_cluster(cluster):
 
     trust_id = create_trust(trustor=trustor,
                             trustee=trustee,
-                            role_names=ctx.roles)
+                            role_names=ctx.roles,
+                            expires=expires)
 
     conductor.cluster_update(ctx,
                              cluster,

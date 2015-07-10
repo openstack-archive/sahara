@@ -51,8 +51,10 @@ class TestPeriodicBack(base.SaharaWithDbTestCase):
         get_job_status.assert_has_calls([mock.call(u'2'),
                                          mock.call(u'3')])
 
+    @mock.patch('sahara.service.trusts.use_os_admin_auth_token')
     @mock.patch('sahara.service.ops.terminate_cluster')
-    def test_transient_cluster_terminate(self, terminate_cluster):
+    def test_transient_cluster_terminate(self, terminate_cluster,
+                                         use_os_admin_auth_token):
 
         timeutils.set_time_override(datetime.datetime(2005, 2, 1, 0, 0))
 
@@ -81,6 +83,7 @@ class TestPeriodicBack(base.SaharaWithDbTestCase):
         p._make_periodic_tasks().terminate_unneeded_transient_clusters(None)
         self.assertEqual(1, terminate_cluster.call_count)
         terminate_cluster.assert_has_calls([mock.call(u'1')])
+        self.assertEqual(1, use_os_admin_auth_token.call_count)
 
     @mock.patch('sahara.service.ops.terminate_cluster')
     def test_not_transient_cluster_does_not_terminate(self, terminate_cluster):
@@ -104,8 +107,10 @@ class TestPeriodicBack(base.SaharaWithDbTestCase):
         p._make_periodic_tasks().terminate_unneeded_transient_clusters(None)
         self.assertEqual(0, terminate_cluster.call_count)
 
+    @mock.patch('sahara.service.trusts.use_os_admin_auth_token')
     @mock.patch('sahara.service.ops.terminate_cluster')
-    def test_transient_cluster_killed_in_time(self, terminate_cluster):
+    def test_transient_cluster_killed_in_time(self, terminate_cluster,
+                                              use_os_admin_auth_token):
 
         timeutils.set_time_override(datetime.datetime(2005, 2, 1, second=0))
 
@@ -116,6 +121,7 @@ class TestPeriodicBack(base.SaharaWithDbTestCase):
         p._make_periodic_tasks().terminate_unneeded_transient_clusters(None)
         self.assertEqual(1, terminate_cluster.call_count)
         terminate_cluster.assert_has_calls([mock.call(u'1')])
+        self.assertEqual(1, use_os_admin_auth_token.call_count)
 
     @mock.patch('sahara.service.ops.terminate_cluster')
     def test_incomplete_cluster_not_killed_too_early(self, terminate_cluster):
@@ -132,8 +138,10 @@ class TestPeriodicBack(base.SaharaWithDbTestCase):
         p._make_periodic_tasks().terminate_incomplete_clusters(None)
         self.assertEqual(0, terminate_cluster.call_count)
 
+    @mock.patch('sahara.service.trusts.use_os_admin_auth_token')
     @mock.patch('sahara.service.ops.terminate_cluster')
-    def test_incomplete_cluster_killed_in_time(self, terminate_cluster):
+    def test_incomplete_cluster_killed_in_time(self, terminate_cluster,
+                                               use_os_admin_auth_token):
 
         self.override_config('cleanup_time_for_incomplete_clusters', 1)
         timeutils.set_time_override(datetime.datetime(2005, 2, 1, second=0))
@@ -146,6 +154,7 @@ class TestPeriodicBack(base.SaharaWithDbTestCase):
         p._make_periodic_tasks().terminate_incomplete_clusters(None)
         self.assertEqual(1, terminate_cluster.call_count)
         terminate_cluster.assert_has_calls([mock.call(u'1')])
+        self.assertEqual(1, use_os_admin_auth_token.call_count)
 
     @mock.patch('sahara.service.ops.terminate_cluster')
     def test_active_cluster_not_killed_as_inactive(
@@ -229,6 +238,7 @@ class TestPeriodicBack(base.SaharaWithDbTestCase):
         c["id"] = id_name
         c["name"] = id_name
         c['updated_at'] = timeutils.utcnow()
+        c['trust_id'] = 'DEADBEEF-DEAD-BEEF-DEAD-BEEFDEADBEEF'
         self.api.cluster_create(ctx, c)
 
     def _create_job_execution(self, values, job, input, output):

@@ -80,7 +80,7 @@ def get_time_since_last_update(cluster):
 
 
 def terminate_cluster(ctx, cluster, description):
-    if CONF.use_identity_api_v3:
+    if CONF.use_identity_api_v3 and cluster.trust_id:
         trusts.use_os_admin_auth_token(cluster)
         context.set_current_cluster_id(cluster.id)
 
