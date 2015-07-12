@@ -4,47 +4,98 @@ System(scenario) tests for Sahara project
 How to run
 ----------
 
-Create the yaml files for scenario tests ``etc/scenario/sahara-ci/simple-testcase.yaml``.
-You can take a look at sample yaml files `How to write scenario files`_.
+Create the YAML and/or the YAML mako template files for scenario tests
+``etc/scenario/sahara-ci/simple-testcase.yaml``.
+You can take a look at sample YAML files `How to write scenario files`_.
 
 If you want to run scenario tests for one plugin, you should use the
-yaml files with a scenario for this plugin:
+YAML files with a scenario for the specific plugin:
 
 .. sourcecode:: console
 
     $ tox -e scenario etc/scenario/sahara-ci/simple-testcase.yaml
 ..
 
-For example, you want to run tests for the Vanilla plugin with the Hadoop
-version 1.2.1. In this case you should use the following tox env:
+or, if the file is a YAML Mako template:
 
 .. sourcecode:: console
 
-    $ tox -e scenario etc/scenario/sahara-ci/vanilla-1-2-1.yaml
+    $ tox -e scenario -V templatevars.ini etc/scenario/sahara-ci/simple-testcase.yaml.mako
+..
+
+where templatevars.ini contains the values of the variables referenced
+by ``simple-testcase.yaml.mako``.
+
+For example, you want to run tests for the Vanilla plugin with the Hadoop
+version 1.2.1. In this case you should create ``templatevars.ini`` with
+the appropriate values (see the section `Variables and sahara-ci templates`_)
+and use the following tox env:
+
+.. sourcecode:: console
+
+    $ tox -e scenario -V templatevars.ini etc/scenario/sahara-ci/vanilla-1-2-1.yaml.mako
 ..
 
 If you want to run scenario tests for a few plugins or their versions, you
-should use the several yaml files:
+should use the several YAML and/or YAML Mako template files:
 
 .. sourcecode:: console
 
-    $ tox -e scenario etc/scenario/sahara-ci/vanilla-1-2-1.yaml etc/scenario/sahara-ci/vanilla-2-6-0.yaml ...
+    $ tox -e scenario -V templatevars.ini etc/scenario/sahara-ci/vanilla-1-2-1.yaml.mako etc/scenario/sahara-ci/vanilla-2-6-0.yaml.mako ...
 ..
 
 Here are a few more examples.
 
-``tox -e scenario etc/scenario/sahara-ci/credential.yaml etc/scenario/sahara-ci/vanilla-2-6-0.yaml``
+``tox -e scenario -V templatevars.ini etc/scenario/sahara-ci/credential.yaml
+etc/scenario/sahara-ci/vanilla-2-6-0.yaml.mako``
+
 will run tests for Vanilla plugin with the Hadoop version 2.6.0 and credential
-located in ``etc/scenario/sahara-ci/credential.yaml``.
-For more information about writing scenario yaml files, see the section
-section ``How to write scenario files``.
+located in ``etc/scenario/sahara-ci/credential.yaml``, replacing the variables
+included into ``vanilla-2-6-0.yaml.mako`` with the values defined into
+``templatevars.ini``.
+For more information about writing scenario YAML files, see the section
+section `How to write scenario files`_.
 
 ``tox -e scenario etc/scenario/sahara-ci`` will run tests from the test directory.
+
+
+Template variables
+------------------
+The variables used in the Mako template files are replaced with the values from a
+INI-style file, whose name is passed to the test runner through the ``-V`` parameter.
+
+Variables and sahara-ci templates
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+The following variables are currently used by sahara-ci templates:
+
++-----------------------------+--------+--------------------------------------------------------------+
+|   Variable                  |  Type  |          Value                                               |
++=============================+========+==============================================================+
+| OS_USERNAME                 | string | user name for login                                          |
++-----------------------------+--------+--------------------------------------------------------------+
+| OS_PASSWORD                 | string | password name for login                                      |
++-----------------------------+--------+--------------------------------------------------------------+
+| OS_TENANT_NAME              | string | tenant name                                                  |
++-----------------------------+--------+--------------------------------------------------------------+
+| OS_AUTH_URL                 | string | url for authentication                                       |
++-----------------------------+--------+--------------------------------------------------------------+
+| network_type                | string | neutron or nova-network                                      |
++-----------------------------+--------+--------------------------------------------------------------+
+| network_private_name        | string | private network name for OS_TENANT_NAME                      |
++-----------------------------+--------+--------------------------------------------------------------+
+| network_public_name         | string | public network name                                          |
++-----------------------------+--------+--------------------------------------------------------------+
+| <plugin_name_version>_name  | string | name of the image to be used for the specific plugin/version |
++-----------------------------+--------+--------------------------------------------------------------+
+| {ci,medium,large}_flavor_id | string | IDs of flavor with different size                            |
++-----------------------------+--------+--------------------------------------------------------------+
+
 
 _`How to write scenario files`
 ==============================
 
-You can write all sections in one or several files.
+You can write all sections in one or several files, which can be simple YAML files
+or YAML-based Mako templates (.yaml.mako or yml.mako).
 
 Field "concurrency"
 -------------------
