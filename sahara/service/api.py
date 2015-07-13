@@ -129,6 +129,9 @@ def terminate_cluster(id):
     context.set_current_cluster_id(id)
     cluster = g.change_cluster_status(id, "Deleting")
 
+    if cluster is None:
+        return
+
     OPS.terminate_cluster(id)
     sender.notify(context.ctx(), cluster.id, cluster.name, cluster.status,
                   "delete")
