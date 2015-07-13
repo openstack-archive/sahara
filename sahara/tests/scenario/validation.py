@@ -329,6 +329,9 @@ SCHEMA = {
                                     },
                                     "source": {
                                         "type": "string"
+                                    },
+                                    "hdfs_username": {
+                                        "type": "string"
                                     }
                                 },
                                 "required": ["type", "source"],
