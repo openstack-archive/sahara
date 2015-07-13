@@ -92,6 +92,7 @@ class AmbariPluginProvider(p.ProvisioningPluginBase):
         cluster_instances = plugin_utils.get_instances(cluster)
         swift_helper.install_ssl_certs(cluster_instances)
         deploy.add_hadoop_swift_jar(cluster_instances)
+        deploy.prepare_hive(cluster)
 
     def _set_cluster_info(self, cluster):
         ambari_ip = plugin_utils.get_instance(
