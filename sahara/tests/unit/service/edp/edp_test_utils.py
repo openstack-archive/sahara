@@ -28,11 +28,11 @@ _java_main_class = "org.apache.hadoop.examples.WordCount"
 _java_opts = "-Dparam1=val1 -Dparam2=val2"
 
 
-def create_job_exec(type, configs=None, proxy=False):
+def create_job_exec(type, configs=None, proxy=False, info=None):
     b = create_job_binary('1', type)
     j = _create_job('2', b, type)
     _cje_func = _create_job_exec_with_proxy if proxy else _create_job_exec
-    e = _cje_func(j.id, type, configs)
+    e = _cje_func(j.id, type, configs, info)
     return j, e
 
 
@@ -87,11 +87,12 @@ def create_data_source(url, name=None, id=None):
     return data_source
 
 
-def _create_job_exec(job_id, type, configs=None):
+def _create_job_exec(job_id, type, configs=None, info=None):
     j_exec = mock.Mock()
     j_exec.id = six.text_type(uuid.uuid4())
     j_exec.job_id = job_id
     j_exec.job_configs = configs
+    j_exec.info = info
     if not j_exec.job_configs:
         j_exec.job_configs = {}
     if edp.compare_job_type(type, edp.JOB_TYPE_JAVA):
@@ -100,9 +101,10 @@ def _create_job_exec(job_id, type, configs=None):
     return j_exec
 
 
-def _create_job_exec_with_proxy(job_id, type, configs=None):
+def _create_job_exec_with_proxy(job_id, type, configs=None, info=None):
     j_exec = _create_job_exec(job_id, type, configs)
     j_exec.id = '00000000-1111-2222-3333-4444444444444444'
+    j_exec.info = info
     j_exec.job_configs['proxy_configs'] = {
         'proxy_username': 'job_' + j_exec.id,
         'proxy_password': '55555555-6666-7777-8888-999999999999',
