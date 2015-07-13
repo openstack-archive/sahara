@@ -13,12 +13,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from sahara import exceptions as ex
 from sahara.plugins.cdh import confighints_helper as ch_helper
 from sahara.plugins.cdh.v5_3_0 import cloudera_utils as cu
-from sahara.plugins import exceptions as ex
+from sahara.plugins import exceptions as pl_ex
 from sahara.plugins import utils as u
 from sahara.service.edp import hdfs_helper
 from sahara.service.edp.oozie import engine as edp_engine
+from sahara.service.edp.spark import engine as edp_spark_engine
 from sahara.utils import edp
 
 CU = cu.ClouderaUtilsV530()
@@ -50,7 +52,7 @@ class EdpOozieEngine(edp_engine.OozieJobEngine):
     def validate_job_execution(self, cluster, job, data):
         oo_count = u.get_instances_count(cluster, 'OOZIE_SERVER')
         if oo_count != 1:
-            raise ex.InvalidComponentCountException(
+            raise pl_ex.InvalidComponentCountException(
                 'OOZIE_SERVER', '1', oo_count)
 
         super(EdpOozieEngine, self).validate_job_execution(cluster, job, data)
@@ -69,3 +71,41 @@ class EdpOozieEngine(edp_engine.OozieJobEngine):
             return {'job_config': ch_helper.get_possible_pig_config_from(
                     'plugins/cdh/v5_3_0/resources/mapred-site.xml')}
         return edp_engine.OozieJobEngine.get_possible_job_config(job_type)
+
+
+class EdpSparkEngine(edp_spark_engine.SparkJobEngine):
+
+    edp_base_version = "5.3.0"
+
+    def __init__(self, cluster):
+        super(EdpSparkEngine, self).__init__(cluster)
+        self.master = u.get_instance(cluster, "CLOUDERA_MANAGER")
+        self.plugin_params["spark-user"] = "sudo -u spark "
+        self.plugin_params["spark-submit"] = "spark-submit"
+        self.plugin_params["deploy-mode"] = "cluster"
+        self.plugin_params["master"] = "yarn-cluster"
+        driver_cp = u.get_config_value_or_default(
+            "Spark", "Executor extra classpath", self.cluster)
+        if driver_cp:
+            driver_cp = " --driver-class-path " + driver_cp
+        self.plugin_params["driver-class-path"] = driver_cp
+
+    @staticmethod
+    def edp_supported(version):
+        return version >= EdpSparkEngine.edp_base_version
+
+    def validate_job_execution(self, cluster, job, data):
+        if not self.edp_supported(cluster.hadoop_version):
+            raise ex.InvalidDataException(
+                _('Cloudera {base} or higher required to run {type}'
+                  'jobs').format(
+                    base=EdpSparkEngine.edp_base_version, type=job.type))
+
+        shs_count = u.get_instances_count(
+            cluster, 'SPARK_YARN_HISTORY_SERVER')
+        if shs_count != 1:
+            raise pl_ex.InvalidComponentCountException(
+                'SPARK_YARN_HISTORY_SERVER', '1', shs_count)
+
+        super(EdpSparkEngine, self).validate_job_execution(
+            cluster, job, data)

@@ -142,7 +142,6 @@ SWIFT_LIB_URL = p.Config(
     description=("Library that adds Swift support to CDH. The file will be "
                  "downloaded from VM."))
 
-
 EXTJS_LIB_URL = p.Config(
     "ExtJS library URL", 'general', 'cluster', priority=1,
     default_value=DEFAULT_EXTJS_LIB_URL,
@@ -160,12 +159,23 @@ AWAIT_MANAGER_STARTING_TIMEOUT = p.Config(
     config_type='int', priority=1, default_value=300, is_optional=True,
     description='Timeout for Cloudera Manager starting, in seconds')
 
+_default_executor_classpath = ":".join(
+    ['/usr/lib/hadoop/lib/jackson-core-asl-1.8.8.jar',
+     '/usr/lib/hadoop/hadoop-swift.jar'])
+
+EXECUTOR_EXTRA_CLASSPATH = p.Config(
+    'Executor extra classpath', 'Spark', 'cluster', priority=2,
+    default_value=_default_executor_classpath,
+    description='Value for spark.executor.extraClassPath in '
+                'spark-defaults.conf (default: %s)'
+                % _default_executor_classpath)
+
 
 def _get_cluster_plugin_configs():
     return [CDH5_REPO_URL, CDH5_REPO_KEY_URL, CM5_REPO_URL, CM5_REPO_KEY_URL,
             ENABLE_SWIFT, ENABLE_HBASE_COMMON_LIB, SWIFT_LIB_URL,
             EXTJS_LIB_URL, AWAIT_AGENTS_TIMEOUT,
-            AWAIT_MANAGER_STARTING_TIMEOUT]
+            AWAIT_MANAGER_STARTING_TIMEOUT, EXECUTOR_EXTRA_CLASSPATH]
 
 
 # ng wide configs

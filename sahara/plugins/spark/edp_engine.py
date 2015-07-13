@@ -1,4 +1,5 @@
 # Copyright (c) 2014 Mirantis Inc.
+# Copyright (c) 2015 ISPRAS
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,14 +14,38 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import os
+
+import six
+
 from sahara import exceptions as ex
 from sahara.i18n import _
+from sahara.plugins import utils as plugin_utils
 from sahara.service.edp.spark import engine as edp_engine
 
 
 class EdpEngine(edp_engine.SparkJobEngine):
 
     edp_base_version = "1.0.0"
+
+    def __init__(self, cluster):
+        super(EdpEngine, self).__init__(cluster)
+        self.master = plugin_utils.get_instance(cluster, "master")
+        self.plugin_params["spark-user"] = ""
+        self.plugin_params["spark-submit"] = os.path.join(
+            plugin_utils.
+            get_config_value_or_default("Spark", "Spark home", self.cluster),
+            "bin/spark-submit")
+        self.plugin_params["deploy-mode"] = "client"
+        port_str = six.text_type(
+            plugin_utils.get_config_value_or_default(
+                "Spark", "Master port", self.cluster))
+        self.plugin_params["master"] = ('spark://%(host)s:' + port_str)
+        driver_cp = plugin_utils.get_config_value_or_default(
+            "Spark", "Executor extra classpath", self.cluster)
+        if driver_cp:
+            driver_cp = " --driver-class-path " + driver_cp
+        self.plugin_params["driver-class-path"] = driver_cp
 
     @staticmethod
     def edp_supported(version):
