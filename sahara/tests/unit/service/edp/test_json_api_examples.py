@@ -22,7 +22,7 @@ import testtools
 
 from sahara.service.validations.edp import data_source_schema
 from sahara.service.validations.edp import job
-from sahara.service.validations.edp import job_binary
+from sahara.service.validations.edp import job_binary_schema
 from sahara.service.validations.edp import job_execution
 from sahara.utils import api_validator
 
@@ -38,7 +38,7 @@ class TestJSONApiExamplesV11(testtools.TestCase):
         self._test(schema, path, formatter)
 
     def test_job_binaries(self):
-        schema = job_binary.JOB_BINARY_SCHEMA
+        schema = job_binary_schema.JOB_BINARY_SCHEMA
         path = self.EXAMPLES_PATH % 'job-binaries'
         formatter = self._formatter("job_binary_internal_id",
                                     "script_binary_internal_id",

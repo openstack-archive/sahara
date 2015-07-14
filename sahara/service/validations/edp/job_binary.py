@@ -21,35 +21,6 @@ from sahara.swift import utils as su
 
 CONF = cfg.CONF
 
-JOB_BINARY_SCHEMA = {
-    "type": "object",
-    "properties": {
-        "name": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 50,
-            "format": "valid_name"
-        },
-        "description": {
-            "type": "string"
-        },
-        "url": {
-            "type": "string",
-            "format": "valid_job_location"
-        },
-        # extra is simple_config for now because we may need not only
-        # user-password it the case of external storage
-        "extra": {
-            "type": "simple_config",
-        }
-    },
-    "additionalProperties": False,
-    "required": [
-        "name",
-        "url"
-    ]
-}
-
 
 def check_job_binary(data, **kwargs):
     job_binary_location_type = data["url"]

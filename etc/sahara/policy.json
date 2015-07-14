@@ -56,6 +56,7 @@
     "data-processing:job-binaries:get": "",
     "data-processing:job-binaries:delete": "",
     "data-processing:job-binaries:get_data": "",
+    "data-processing:job-binaries:modify": "",
 
     "data-processing:job-binary-internals:get_all": "",
     "data-processing:job-binary-internals:create": "",

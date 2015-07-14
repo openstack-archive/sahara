@@ -437,6 +437,13 @@ class ConductorManager(db_base.Base):
         """Destroy the JobBinary or raise if it does not exist."""
         self.db.job_binary_destroy(context, job_binary)
 
+    def job_binary_update(self, context, id, values):
+        """Update a JobBinary from the values dictionary."""
+
+        values = copy.deepcopy(values)
+        values['id'] = id
+        return self.db.job_binary_update(context, values)
+
     # JobBinaryInternal ops
 
     def job_binary_internal_get_all(self, context, **kwargs):

@@ -86,6 +86,23 @@ SAMPLE_JOB_BINARY = {
     "url": "internal-db://test_binary",
 }
 
+SAMPLE_JOB_BINARY_UPDATE = {
+    "name": "updatedName",
+    "url": "internal-db://updated-fake-url"
+}
+
+SAMPLE_JOB_BINARY_SWIFT = {
+    "tenant_id": "test_tenant",
+    "name": "job_binary_test_swift",
+    "description": "the description",
+    "url": "swift://test_swift_url",
+}
+
+SAMPLE_JOB_BINARY_SWIFT_UPDATE = {
+    "name": "SwifterName",
+    "url": "swift://updated-swift"
+}
+
 
 class DataSourceTest(test_base.ConductorManagerTestCase):
     def __init__(self, *args, **kwargs):
@@ -688,3 +705,44 @@ class JobBinaryTest(test_base.ConductorManagerTestCase):
         self.assertRaises(sa_exc.InvalidRequestError,
                           self.api.job_binary_get_all,
                           ctx, **{'badfield': 'somevalue'})
+
+    def test_job_binary_update(self):
+        ctx = context.ctx()
+
+        original = self.api.job_binary_create(ctx, SAMPLE_JOB_BINARY_SWIFT)
+        updated = self.api.job_binary_update(
+            ctx, original["id"], SAMPLE_JOB_BINARY_SWIFT_UPDATE)
+        # Make sure that the update did indeed succeed
+        self.assertEqual(
+            SAMPLE_JOB_BINARY_SWIFT_UPDATE["name"], updated["name"])
+        self.assertEqual(SAMPLE_JOB_BINARY_SWIFT_UPDATE["url"], updated["url"])
+
+        # Make sure we do NOT update a binary in use by a PENDING job
+        self._create_job_execution_ref_job_binary(ctx, original["id"])
+        with testtools.ExpectedException(ex.UpdateFailedException):
+            self.api.job_binary_update(
+                ctx, original["id"], SAMPLE_JOB_BINARY_SWIFT_UPDATE)
+
+        original = self.api.job_binary_create(ctx, SAMPLE_JOB_BINARY)
+        # Make sure that internal URL update fails
+        with testtools.ExpectedException(ex.UpdateFailedException):
+            self.api.job_binary_update(
+                ctx, original["id"], SAMPLE_JOB_BINARY_UPDATE)
+
+    def _create_job_execution_ref_job_binary(self, ctx, jb_id):
+        JOB_REF_BINARY = copy.copy(SAMPLE_JOB)
+        JOB_REF_BINARY["mains"] = [jb_id]
+        job = self.api.job_create(ctx, JOB_REF_BINARY)
+        ds_input = self.api.data_source_create(ctx, SAMPLE_DATA_SOURCE)
+        SAMPLE_DATA_OUTPUT = copy.copy(SAMPLE_DATA_SOURCE)
+        SAMPLE_DATA_OUTPUT['name'] = 'output'
+        ds_output = self.api.data_source_create(ctx, SAMPLE_DATA_OUTPUT)
+        SAMPLE_JOB_EXECUTION['job_id'] = job['id']
+        SAMPLE_JOB_EXECUTION['input_id'] = ds_input['id']
+        SAMPLE_JOB_EXECUTION['output_id'] = ds_output['id']
+
+        self.api.job_execution_create(ctx, SAMPLE_JOB_EXECUTION)
+        lst = self.api.job_execution_get_all(ctx)
+        job_ex_id = lst[0]["id"]
+        new_info = {"status": edp.JOB_STATUS_PENDING}
+        self.api.job_execution_update(ctx, job_ex_id, {"info": new_info})

@@ -409,6 +409,11 @@ class LocalApi(object):
         """Destroy the JobBinary or raise if it does not exist."""
         self._manager.job_binary_destroy(context, _get_id(job_binary))
 
+    @r.wrap(r.JobBinary)
+    def job_binary_update(self, context, id, values):
+        """Update a JobBinary from the values dictionary."""
+        return self._manager.job_binary_update(context, id, values)
+
     # JobBinaryInternal ops
 
     @r.wrap(r.JobBinaryInternal)

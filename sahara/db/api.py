@@ -423,6 +423,12 @@ def job_binary_destroy(context, job_binary):
 
 
 @to_dict
+def job_binary_update(context, values):
+    """Update the JobBinary with the provided values"""
+    return IMPL.job_binary_update(context, values)
+
+
+@to_dict
 def job_binary_internal_get_all(context, **kwargs):
     """Get all JobBinaryInternals filtered by **kwargs.
 

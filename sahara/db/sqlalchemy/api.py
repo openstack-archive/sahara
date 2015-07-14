@@ -966,8 +966,47 @@ def job_binary_create(context, values):
     return job_binary
 
 
-def _check_job_binary_referenced(ctx, session, job_binary_id):
+def job_binary_update(context, values):
+    """Returns a JobBinary updated with the provided values."""
+    jb_id = values["id"]
+    session = get_session()
+    try:
+        with session.begin():
+            jb = _job_binary_get(context, session, jb_id)
+            if not jb:
+                raise ex.NotFoundException(
+                    jb_id, _("JobBinary id '%s' not found"))
+            # We do not want to update the url for internal binaries
+            new_url = values.get("url", None)
+            if new_url and "internal-db://" in jb["url"]:
+                if jb["url"] != new_url:
+                    raise ex.UpdateFailedException(
+                        jb_id,
+                        _("The url for JobBinary Id '%s' can not "
+                          "be updated because it is an internal-db url."))
+            jobs = job_execution_get_all(context)
+            pending_jobs = [job for job in jobs if
+                            job.info["status"] == "PENDING"]
+            if len(pending_jobs) > 0:
+                for job in pending_jobs:
+                    if _check_job_binary_referenced(
+                            context, session, jb_id, job.job_id):
+                        raise ex.UpdateFailedException(
+                            jb_id,
+                            _("JobBinary Id '%s' is used in a PENDING job "
+                              "and can not be updated."))
+            jb.update(values)
+    except db_exc.DBDuplicateEntry as e:
+        raise ex.DBDuplicateEntry(
+            _("Duplicate entry for JobBinary: %s") % e.columns)
+
+    return jb
+
+
+def _check_job_binary_referenced(ctx, session, job_binary_id, job_id=None):
     args = {"JobBinary_id": job_binary_id}
+    if job_id:
+        args["Job_id"] = job_id
     mains = model_query(m.mains_association, ctx, session,
                         project_only=False).filter_by(**args)
     libs = model_query(m.libs_association, ctx, session,

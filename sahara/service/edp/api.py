@@ -213,6 +213,10 @@ def get_job_binary(id):
     return conductor.job_binary_get(context.ctx(), id)
 
 
+def update_job_binary(id, values):
+    return conductor.job_binary_update(context.ctx(), id, values)
+
+
 def delete_job_binary(id):
     conductor.job_binary_destroy(context.ctx(), id)
 
