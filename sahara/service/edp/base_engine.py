@@ -19,8 +19,12 @@ import six
 
 from sahara import conductor as c
 
-
 conductor = c.API
+
+
+def optional(fun):
+    fun.__not_implemented__ = True
+    return fun
 
 
 @six.add_metaclass(abc.ABCMeta)
@@ -54,3 +58,13 @@ class JobEngine(object):
     @abc.abstractmethod
     def get_supported_job_types():
         return None
+
+    @optional
+    def suspend_job(self, job_execution):
+        pass
+
+    def does_engine_implement(self, fun_name):
+        fun = getattr(self, fun_name)
+        if not (fun and callable(fun)):
+            return False
+        return not hasattr(fun, '__not_implemented__')

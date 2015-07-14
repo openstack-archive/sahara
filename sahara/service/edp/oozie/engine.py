@@ -436,3 +436,13 @@ class OozieJobEngine(base_engine.JobEngine):
             if isinstance(v, six.string_types) and v.startswith("hdfs://"):
                 external_hdfs_urls.append(v)
         return external_hdfs_urls
+
+    def suspend_job(self, job_execution):
+        return self._manage_job(job_execution, edp.JOB_ACTION_SUSPEND)
+
+    def _manage_job(self, job_execution, action):
+        if job_execution.oozie_job_id is not None:
+            client = self._get_client()
+            if action == edp.JOB_ACTION_SUSPEND:
+                client.suspend_job(job_execution)
+            return client.get_job_status(job_execution)

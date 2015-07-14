@@ -22,10 +22,11 @@ from sahara import context
 from sahara import exceptions as ex
 from sahara.i18n import _
 from sahara.plugins import base as plugin_base
+from sahara.service.edp import job_utils as j_u
 from sahara.service.validations import acl
 import sahara.service.validations.edp.base as b
 import sahara.service.validations.edp.job_interface as j_i
-
+from sahara.utils import cluster as c_u
 
 conductor = c.API
 
@@ -144,3 +145,23 @@ def check_job_execution_update(job_execution_id, data, **kwargs):
 
     acl.check_tenant_for_update(ctx, je)
     acl.check_protected_from_update(je, data)
+
+
+def check_job_status_update(job_execution_id, data):
+    ctx = context.ctx()
+    job_execution = conductor.job_execution_get(ctx, job_execution_id)
+    # check we are updating status
+    if 'info' in data:
+        if 'status' in data['info']:
+            if len(data) != 1:
+                raise ex.InvalidJobStatus(_("Invalid status parameter"))
+    cluster = conductor.cluster_get(ctx, job_execution.cluster_id)
+    engine = j_u.get_plugin(cluster).get_edp_engine(
+        cluster, conductor.job_get(ctx, job_execution_id).type)
+    if cluster is None or cluster.status != c_u.CLUSTER_STATUS_ACTIVE:
+        raise ex.InvalidDataException(
+            _("Suspending operation can not be performed on an inactive or "
+              "non-existent cluster"))
+    if not (engine.does_engine_implement('suspend_job')):
+        raise ex.InvalidReferenceException(
+            _("Engine doesn't support suspending job feature"))

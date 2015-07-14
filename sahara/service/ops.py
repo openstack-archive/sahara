@@ -78,6 +78,10 @@ class LocalOps(object):
     def get_engine_type_and_version(self):
         return INFRA.get_type_and_version()
 
+    def job_execution_suspend(self, job_execution_id):
+        context.spawn("Suspend Job Execution %s" % job_execution_id,
+                      _suspend_job_execution, job_execution_id)
+
 
 class RemoteOps(rpc_utils.RPCClient):
     def __init__(self):
@@ -107,6 +111,9 @@ class RemoteOps(rpc_utils.RPCClient):
 
     def get_engine_type_and_version(self):
         return self.call('get_engine_type_and_version')
+
+    def job_execution_suspend(self, job_execution_id):
+        self.cast('job_execution_suspend', job_execution_id=job_execution_id)
 
 
 def request_context(func):
@@ -151,6 +158,10 @@ class OpsServer(rpc_utils.RPCServer):
     @request_context
     def get_engine_type_and_version(self):
         return INFRA.get_type_and_version()
+
+    @request_context
+    def job_execution_suspend(self, job_execution_id):
+        _suspend_job_execution(job_execution_id)
 
 
 def _setup_trust_for_cluster(cluster):
@@ -349,6 +360,10 @@ def terminate_cluster(cluster_id):
 
 def _run_edp_job(job_execution_id):
     job_manager.run_job(job_execution_id)
+
+
+def _suspend_job_execution(job_execution_id):
+    job_manager.suspend_job(job_execution_id)
 
 
 def _cancel_job_execution(job_execution_id):

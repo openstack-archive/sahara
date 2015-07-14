@@ -285,7 +285,10 @@ class TestJobExecUpdateValidation(u.ValidationTestCase):
     def test_job_execution_update_types(self):
         data = {
             'is_public': False,
-            'is_protected': False
+            'is_protected': False,
+            'info': {
+                'status': 'suspend'
+            }
         }
         self._assert_types(data)
 
@@ -293,7 +296,10 @@ class TestJobExecUpdateValidation(u.ValidationTestCase):
         self._assert_create_object_validation(
             data={
                 'is_public': False,
-                'is_protected': False
+                'is_protected': False,
+                'info': {
+                    'status': 'suspend'
+                }
             }
         )
 

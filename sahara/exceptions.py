@@ -147,6 +147,16 @@ class CancelingFailed(SaharaException):
     code = "CANCELING_FAILED"
 
 
+class SuspendingFailed(SaharaException):
+    message = _("Operation was not suspended")
+    code = "SUSPENDING_FAILED"
+
+
+class InvalidJobStatus(SaharaException):
+    message = _("Invalid Job Status")
+    code = "INVALID_JOB_STATUS"
+
+
 class DeletionFailed(SaharaException):
     code = "DELETION_FAILED"
     message = _("Object was not deleted")

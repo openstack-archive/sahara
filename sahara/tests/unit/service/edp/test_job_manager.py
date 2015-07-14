@@ -539,12 +539,12 @@ class TestJobManager(base.SaharaWithDbTestCase):
     def test_job_type_supported(self, job_get):
         job, job_exec = u.create_job_exec(edp.JOB_TYPE_PIG)
         job_get.return_value = job
-        self.assertIsNotNone(job_manager._get_job_engine(u.create_cluster(),
-                                                         job_exec))
+        self.assertIsNotNone(job_manager.get_job_engine(u.create_cluster(),
+                                                        job_exec))
 
         job.type = "unsupported_type"
-        self.assertIsNone(job_manager._get_job_engine(u.create_cluster(),
-                                                      job_exec))
+        self.assertIsNone(job_manager.get_job_engine(u.create_cluster(),
+                                                     job_exec))
 
     @mock.patch('sahara.conductor.API.job_get')
     @mock.patch('sahara.conductor.API.job_execution_get')
@@ -649,3 +649,22 @@ class TestJobManager(base.SaharaWithDbTestCase):
         job_manager._run_job(job_exec.id)
 
         self.assertEqual(1, run_scheduled_job.call_count)
+
+    @mock.patch('sahara.conductor.API.job_get')
+    @mock.patch('sahara.conductor.API.job_execution_get')
+    @mock.patch('sahara.conductor.API.cluster_get')
+    @mock.patch('sahara.service.edp.base_engine.JobEngine.suspend_job')
+    def test_suspend_unsuspendible_job(self, suspend_job_get,
+                                       cluster_get, job_exec_get, job_get):
+        info = {
+            'status': edp.JOB_STATUS_SUCCEEDED
+        }
+        job, job_exec = u.create_job_exec(edp.JOB_TYPE_PIG, None, False, info)
+        job_exec_get.return_value = job_exec
+        job_get.return_value = job
+
+        cluster = u.create_cluster()
+        cluster.status = "Active"
+        cluster_get.return_value = cluster
+
+        self.assertEqual(0, suspend_job_get.call_count)

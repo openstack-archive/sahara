@@ -71,8 +71,9 @@ def job_executions_cancel(job_execution_id):
 @rest.patch('/job-executions/<job_execution_id>')
 @acl.enforce("data-processing:job-executions:modify")
 @v.check_exists(api.get_job_execution, id='job_execution_id')
-@v.validate(
-    v_j_e_schema.JOB_EXEC_UPDATE_SCHEMA, v_j_e.check_job_execution_update)
+@v.validate(v_j_e_schema.JOB_EXEC_UPDATE_SCHEMA,
+            v_j_e.check_job_execution_update,
+            v_j_e.check_job_status_update)
 def job_executions_update(job_execution_id, data):
     return u.to_wrapped_dict(api.update_job_execution, job_execution_id, data)
 
