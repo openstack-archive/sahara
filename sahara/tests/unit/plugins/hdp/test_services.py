@@ -60,8 +60,10 @@ class ServicesTest(base.SaharaTestCase):
         instance_mock.management_ip = '127.0.0.1'
         cluster_spec.determine_component_hosts = mock.Mock(
             return_value=[instance_mock])
+        cluster = mock.Mock(cluster_configs={}, name="hdp")
         url_info = {}
-        url_info = service.register_service_urls(cluster_spec, url_info)
+        url_info = service.register_service_urls(cluster_spec, url_info,
+                                                 cluster)
         self.assertEqual(url_info['HDFS']['Web UI'],
                          'http://127.0.0.1:10070')
         self.assertEqual(url_info['HDFS']['NameNode'],
@@ -83,12 +85,42 @@ class ServicesTest(base.SaharaTestCase):
         instance_mock.management_ip = '127.0.0.1'
         cluster_spec.determine_component_hosts = mock.Mock(
             return_value=[instance_mock])
+        cluster = mock.Mock(cluster_configs={}, name="hdp")
         url_info = {}
-        url_info = service.register_service_urls(cluster_spec, url_info)
+        url_info = service.register_service_urls(cluster_spec, url_info,
+                                                 cluster)
         self.assertEqual(url_info['HDFS']['Web UI'],
                          'http://127.0.0.1:10070')
         self.assertEqual(url_info['HDFS']['NameNode'],
                          'hdfs://127.0.0.1:9020')
+
+    def test_hdp2_ha_hdfs_service_register_urls(self):
+        s = self.get_services_processor('2.0.6')
+        service = s.create_service('HDFS')
+        cluster_spec = mock.Mock()
+        cluster_spec.configurations = {
+            'core-site': {
+                'fs.defaultFS': 'hdfs://not_expected.com:9020'
+            },
+            'hdfs-site': {
+                'dfs.namenode.http-address': 'http://not_expected.com:10070'
+            }
+        }
+        instance_mock = mock.Mock()
+        instance_mock.management_ip = '127.0.0.1'
+        cluster_spec.determine_component_hosts = mock.Mock(
+            return_value=[instance_mock])
+        cluster = mock.Mock(cluster_configs={'HDFSHA': {'hdfs.nnha': True}})
+        cluster.name = "hdp-cluster"
+        url_info = {}
+        url_info = service.register_service_urls(cluster_spec, url_info,
+                                                 cluster)
+        self.assertEqual(url_info['HDFS']['Web UI'],
+                         'http://127.0.0.1:10070')
+        self.assertEqual(url_info['HDFS']['NameNode'],
+                         'hdfs://127.0.0.1:9020')
+        self.assertEqual(url_info['HDFS']['NameService'],
+                         'hdfs://hdp-cluster')
 
     def test_create_mr_service(self):
         s = self.get_services_processor()
@@ -126,7 +158,8 @@ class ServicesTest(base.SaharaTestCase):
         cluster_spec.determine_component_hosts = mock.Mock(
             return_value=[instance_mock])
         url_info = {}
-        url_info = service.register_service_urls(cluster_spec, url_info)
+        url_info = service.register_service_urls(cluster_spec, url_info,
+                                                 mock.Mock())
         self.assertEqual(url_info['MapReduce']['Web UI'],
                          'http://127.0.0.1:10030')
         self.assertEqual(url_info['MapReduce']['JobTracker'],
@@ -149,7 +182,8 @@ class ServicesTest(base.SaharaTestCase):
         cluster_spec.determine_component_hosts = mock.Mock(
             return_value=[instance_mock])
         url_info = {}
-        url_info = service.register_service_urls(cluster_spec, url_info)
+        url_info = service.register_service_urls(cluster_spec, url_info,
+                                                 mock.Mock())
         self.assertEqual(url_info['MapReduce2']['Web UI'],
                          'http://127.0.0.1:10030')
         self.assertEqual(url_info['MapReduce2']['History Server'],
@@ -210,7 +244,8 @@ class ServicesTest(base.SaharaTestCase):
             cluster_spec.determine_component_hosts = mock.Mock(
                 return_value=[instance_mock])
             url_info = {}
-            url_info = service.register_service_urls(cluster_spec, url_info)
+            url_info = service.register_service_urls(cluster_spec, url_info,
+                                                     mock.Mock())
             self.assertEqual('http://127.0.0.1:21000',
                              url_info['JobFlow']['Oozie'])
 
@@ -795,7 +830,7 @@ class ServicesTest(base.SaharaTestCase):
             service = s.create_service('HBASE')
 
             url_info = {}
-            service.register_service_urls(cluster_spec, url_info)
+            service.register_service_urls(cluster_spec, url_info, mock.Mock())
             self.assertEqual(1, len(url_info))
             self.assertEqual(6, len(url_info['HBase']))
             self.assertEqual('http://222.22.2222:60010/master-status',
