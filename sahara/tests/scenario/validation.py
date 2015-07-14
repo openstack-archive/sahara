@@ -118,6 +118,10 @@ SCHEMA = {
                                     "type": "string",
                                     "minLength": 1
                                 },
+                                "flavor": {
+                                    "type": "string",
+                                    "minLength": 1
+                                },
                                 "description": {
                                     "type": "string"
                                 },
