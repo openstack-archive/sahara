@@ -89,12 +89,12 @@ class TestBase(testtools.TestCase):
                 {
                     'name': 'master',
                     'node_processes': ['namenode', 'oozie', 'resourcemanager'],
-                    'flavor_id': '2'
+                    'flavor': '2'
                 },
                 {
                     'name': 'worker',
                     'node_processes': ['datanode', 'nodemanager'],
-                    'flavor_id': '2'
+                    'flavor': '2'
                 }],
             'cluster_template':
                 {

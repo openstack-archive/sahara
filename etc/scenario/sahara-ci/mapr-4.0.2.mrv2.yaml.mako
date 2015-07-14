@@ -4,7 +4,7 @@ clusters:
     image: ${mapr_402mrv2_image}
     node_group_templates:
       - name: master
-        flavor_id: ${ci_flavor_id}
+        flavor: ${ci_flavor_id}
         node_processes:
           - Metrics
           - Webserver
@@ -26,7 +26,7 @@ clusters:
         volumes_per_node: 2
         volumes_size: 20
       - name: worker
-        flavor_id: ${ci_flavor_id}
+        flavor: ${ci_flavor_id}
         node_processes:
           - NodeManager
           - FileServer

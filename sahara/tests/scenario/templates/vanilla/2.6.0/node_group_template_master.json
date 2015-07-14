@@ -1,6 +1,6 @@
 {
     "name": "vanilla-master",
-    "flavor_id": "3",
+    "flavor": "3",
     "node_processes": [
         "namenode",
         "resourcemanager",

@@ -1,6 +1,6 @@
 {
     "name": "cdh-530-master-additional",
-    "flavor_id": "4",
+    "flavor": "4",
     "node_processes": [
         "CLOUDERA_MANAGER",
         "OOZIE_SERVER",

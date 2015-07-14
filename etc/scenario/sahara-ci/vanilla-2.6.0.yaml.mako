@@ -4,7 +4,7 @@ clusters:
     image: ${vanilla_two_six_image}
     node_group_templates:
       - name: worker-dn-nm
-        flavor_id: ${ci_flavor_id}
+        flavor: ${ci_flavor_id}
         node_processes:
           - datanode
           - nodemanager
@@ -21,14 +21,14 @@ clusters:
             yarn.scheduler.maximum-allocation-mb: 1024
             yarn.nodemanager.vmem-check-enabled: false
       - name: worker-nm
-        flavor_id: ${ci_flavor_id}
+        flavor: ${ci_flavor_id}
         node_processes:
           - nodemanager
         auto_security_group: true
         node_configs:
           *ng_configs
       - name: worker-dn
-        flavor_id: ${ci_flavor_id}
+        flavor: ${ci_flavor_id}
         node_processes:
           - datanode
         volumes_per_node: 2
@@ -37,7 +37,7 @@ clusters:
         node_configs:
           *ng_configs
       - name: master-rm-nn-hvs
-        flavor_id: ${ci_flavor_id}
+        flavor: ${ci_flavor_id}
         node_processes:
           - namenode
           - resourcemanager
@@ -46,7 +46,7 @@ clusters:
         node_configs:
           *ng_configs
       - name: master-oo-hs-sn
-        flavor_id: ${ci_flavor_id}
+        flavor: ${ci_flavor_id}
         node_processes:
           - oozie
           - historyserver

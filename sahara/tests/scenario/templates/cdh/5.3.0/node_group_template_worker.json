@@ -1,6 +1,6 @@
 {
     "name": "cdh-530-worker",
-    "flavor_id": "3",
+    "flavor": "3",
     "node_processes": [
         "YARN_NODEMANAGER",
         "HDFS_DATANODE"

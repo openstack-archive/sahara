@@ -23,12 +23,12 @@ clusters:
             - oozie
             - historyserver
             - secondarynamenode
-          flavor_id: '2'
+          flavor: '2'
         - name: worker
           node_processes:
             - datanode
             - nodemanager
-          flavor_id: '2'
+          flavor: '2'
       cluster_template:
           name: vanilla
           node_group_templates:

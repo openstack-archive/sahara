@@ -4,7 +4,7 @@ clusters:
     image: ${vanilla_two_six_image}
     node_group_templates:
       - name: worker
-        flavor_id: ${ci_flavor_id}
+        flavor: ${ci_flavor_id}
         node_processes:
           - datanode
           - nodemanager
@@ -21,7 +21,7 @@ clusters:
             yarn.scheduler.maximum-allocation-mb: 1024
             yarn.nodemanager.vmem-check-enabled: false
       - name: master
-        flavor_id: ${ci_flavor_id}
+        flavor: ${ci_flavor_id}
         node_processes:
           - oozie
           - historyserver
