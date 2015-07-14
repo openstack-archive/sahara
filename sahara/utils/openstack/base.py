@@ -106,7 +106,15 @@ def retrieve_auth_url():
     info = urlparse.urlparse(context.current().auth_uri)
     version = 'v3' if CONF.use_identity_api_v3 else 'v2.0'
 
-    return "%s://%s:%s/%s/" % (info.scheme, info.hostname, info.port, version)
+    if info.port:
+        return "%s://%s:%s/%s/" % (info.scheme,
+                                   info.hostname,
+                                   info.port,
+                                   version)
+    else:
+        return "%s://%s/%s/" % (info.scheme,
+                                info.hostname,
+                                version)
 
 
 def execute_with_retries(method, *args, **kwargs):

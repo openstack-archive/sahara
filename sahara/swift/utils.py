@@ -44,10 +44,16 @@ def retrieve_auth_url():
     else:
         url = 'v2.0'
 
-    return '{scheme}://{hostname}:{port}/{url}/'.format(scheme=info.scheme,
-                                                        hostname=info.hostname,
-                                                        port=info.port,
-                                                        url=url)
+    if info.port:
+        returned_url = '{scheme}://{hostname}:{port}/{url}/'
+        return returned_url.format(scheme=info.scheme,
+                                   hostname=info.hostname,
+                                   port=info.port,
+                                   url=url)
+    else:
+        return '{scheme}://{hostname}/{url}/'.format(scheme=info.scheme,
+                                                     hostname=info.hostname,
+                                                     url=url)
 
 
 def retrieve_preauth_url():
