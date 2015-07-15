@@ -22,6 +22,7 @@ import sys
 import tempfile
 
 from mako import template as mako_template
+from six.moves import configparser
 import yaml
 
 from sahara.openstack.common import fileutils
@@ -89,13 +90,71 @@ def recursive_walk(directory):
     return list_of_files
 
 
+def read_template_variables(variable_file, verbose=False):
+    variables = {}
+    try:
+        cp = configparser.ConfigParser()
+        # key-sensitive keys
+        cp.optionxform = lambda option: option
+        cp.readfp(open(variable_file))
+        variables = cp.defaults()
+    except IOError as ioe:
+        print("WARNING: the input contains at least one template, but "
+              "the variable configuration file '%s' is not valid: %s" %
+              (variable_file, ioe))
+    except configparser.Error as cpe:
+        print("WARNING: the input contains at least one template, but "
+              "the variable configuration file '%s' can not be parsed: "
+              "%s" % (variable_file, cpe))
+    finally:
+        if verbose:
+            print("Template variables:\n%s" % (variables))
+    # continue anyway, as the templates could require no variables
+    return variables
+
+
+def is_template_file(config_file):
+    return config_file.endswith(('.yaml.mako', '.yml.mako'))
+
+
+def read_scenario_config(scenario_config, template_vars=None,
+                         verbose=False):
+    """Parse the YAML or the YAML template file.
+
+    If the file is a YAML template file, expand it first.
+    """
+
+    yaml_file = ''
+    if is_template_file(scenario_config):
+        scenario_template = mako_template.Template(filename=scenario_config,
+                                                   strict_undefined=True)
+        template = scenario_template.render_unicode(**template_vars)
+        yaml_file = yaml.load(template)
+    else:
+        with open(scenario_config, 'r') as yaml_file:
+            yaml_file = yaml.load(yaml_file)
+    if verbose:
+        print("YAML from %s:\n%s" % (scenario_config,
+                                     yaml.safe_dump(yaml_file,
+                                                    allow_unicode=True,
+                                                    default_flow_style=False)))
+    return yaml_file
+
+
 def main():
     # parse args
     parser = argparse.ArgumentParser(description="Scenario tests runner.")
     parser.add_argument('scenario_arguments', help="Path to scenario files",
                         nargs='+')
+    parser.add_argument('--variable_file', '-V', default='', nargs='?',
+                        help='Path to the file with template variables')
+    parser.add_argument('--verbose', default=False, action='store_true',
+                        help='Increase output verbosity')
+
     args = parser.parse_args()
     scenario_arguments = args.scenario_arguments
+    variable_file = args.variable_file
+    verbose_run = args.verbose
 
     # parse config
     config = {'credentials': {},
@@ -108,9 +167,15 @@ def main():
             files += recursive_walk(scenario_argument)
         if os.path.isfile(scenario_argument):
             files.append(scenario_argument)
+
+    template_variables = {}
+    if any(is_template_file(config_file) for config_file in files):
+        template_variables = read_template_variables(variable_file,
+                                                     verbose_run)
+
     for scenario_argument in files:
-        with open(scenario_argument, 'r') as yaml_file:
-            test_scenario = yaml.load(yaml_file)
+        test_scenario = read_scenario_config(scenario_argument,
+                                             template_variables, verbose_run)
         config = _merge_dicts_sections(test_scenario, config, 'credentials')
         config = _merge_dicts_sections(test_scenario, config, 'network')
 
