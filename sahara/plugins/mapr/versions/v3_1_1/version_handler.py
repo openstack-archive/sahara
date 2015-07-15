@@ -54,7 +54,7 @@ class VersionHandler(bvh.BaseVersionHandler):
             hive.HiveV012(),
             hive.HiveV013(),
             hbase.HBaseV094(),
-            hbase.HBaseV098(),
+            hbase.HBaseV0987(),
             httpfs.HttpFS(),
             mahout.Mahout(),
             pig.PigV013(),
