@@ -124,7 +124,7 @@ def run_job(job_execution_id):
         LOG.warning(
             _LW("Can't run job execution (reason: {reason})").format(
                 reason=ex))
-
+        cancel_job(job_execution_id)
         conductor.job_execution_update(
             context.ctx(), job_execution_id,
             {'info': {'status': edp.JOB_STATUS_FAILED},
