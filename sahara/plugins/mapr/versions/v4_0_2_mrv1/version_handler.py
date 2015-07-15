@@ -65,7 +65,8 @@ class VersionHandler(bvh.BaseVersionHandler):
             sqoop2.Sqoop2(),
             impala.ImpalaV141(),
             swift.Swift(),
-            drill.Drill()
+            drill.DrillV07(),
+            drill.DrillV08(),
         ]
 
     def get_context(self, cluster, added=None, removed=None):

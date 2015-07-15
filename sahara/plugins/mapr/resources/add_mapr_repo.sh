@@ -1,5 +1,6 @@
 #!/bin/sh
 if [ "$1" = "Ubuntu" ]; then
+    sudo apt-get update
     cat >> /etc/apt/sources.list.d/maprtech.list << EOF
 deb %(ubuntu_mapr_base_repo)s
 deb %(ubuntu_mapr_ecosystem_repo)s

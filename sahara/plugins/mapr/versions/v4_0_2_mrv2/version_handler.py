@@ -65,7 +65,8 @@ class VersionHandler(bvh.BaseVersionHandler):
             pig.PigV014(),
             sqoop2.Sqoop2(),
             swift.Swift(),
-            drill.Drill()
+            drill.DrillV07(),
+            drill.DrillV08(),
         ]
 
     def get_context(self, cluster, added=None, removed=None):
