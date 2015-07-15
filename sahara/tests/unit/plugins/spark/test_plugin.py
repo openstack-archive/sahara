@@ -66,6 +66,19 @@ class SparkPluginTest(base.SaharaWithDbTestCase):
             plugin.get_edp_engine(cluster, edp.JOB_TYPE_SPARK),
             engine.SparkJobEngine)
 
+    def test_plugin13_edp_engine(self):
+        cluster_dict = {
+            'name': 'cluster',
+            'plugin_name': 'spark',
+            'hadoop_version': '1.3.1',
+            'default_image_id': 'image'}
+
+        cluster = conductor.cluster_create(context.ctx(), cluster_dict)
+        plugin = pb.PLUGINS.get_plugin(cluster.plugin_name)
+        self.assertIsInstance(
+            plugin.get_edp_engine(cluster, edp.JOB_TYPE_SPARK),
+            engine.SparkJobEngine)
+
     def test_cleanup_configs(self):
         remote = mock.Mock()
         instance = mock.Mock()
