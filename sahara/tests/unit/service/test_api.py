@@ -181,6 +181,46 @@ class TestApi(base.SaharaWithDbTestCase):
              'ops.provision_cluster',
              'ops.terminate_cluster'], self.calls_order)
 
+    @mock.patch('sahara.service.quotas.check_cluster', return_value=None)
+    def test_create_multiple_clusters_success(self, check_cluster):
+        MULTIPLE_CLUSTERS = SAMPLE_CLUSTER.copy()
+        MULTIPLE_CLUSTERS['count'] = 2
+        clusters = api.create_multiple_clusters(MULTIPLE_CLUSTERS)
+        self.assertEqual(2, check_cluster.call_count)
+        result_cluster1 = api.get_cluster(clusters['clusters'][0])
+        result_cluster2 = api.get_cluster(clusters['clusters'][1])
+        self.assertEqual('Active', result_cluster1.status)
+        self.assertEqual('Active', result_cluster2.status)
+        expected_count = {
+            'ng_1': 1,
+            'ng_2': 3,
+            'ng_3': 1,
+        }
+        ng_count = 0
+        for ng in result_cluster1.node_groups:
+            self.assertEqual(expected_count[ng.name], ng.count)
+            ng_count += 1
+        self.assertEqual(3, ng_count)
+        api.terminate_cluster(result_cluster1.id)
+        api.terminate_cluster(result_cluster2.id)
+        self.assertEqual(
+            ['get_open_ports', 'validate',
+             'ops.provision_cluster',
+             'get_open_ports', 'validate',
+             'ops.provision_cluster',
+             'ops.terminate_cluster',
+             'ops.terminate_cluster'], self.calls_order)
+
+    @mock.patch('sahara.service.quotas.check_cluster')
+    def test_create_multiple_clusters_failed(self, check_cluster):
+        MULTIPLE_CLUSTERS = SAMPLE_CLUSTER.copy()
+        MULTIPLE_CLUSTERS['count'] = 2
+        check_cluster.side_effect = exc.QuotaException(
+            'resource', 'requested', 'available')
+        with testtools.ExpectedException(exc.QuotaException):
+            api.create_cluster(SAMPLE_CLUSTER)
+        self.assertEqual('Error', api.get_clusters()[0].status)
+
     @mock.patch('sahara.service.quotas.check_cluster')
     def test_create_cluster_failed(self, check_cluster):
         check_cluster.side_effect = exc.QuotaException(

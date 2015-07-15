@@ -95,12 +95,34 @@ def scale_cluster(id, data):
 
 
 def create_cluster(values):
+    plugin = plugin_base.PLUGINS.get_plugin(values['plugin_name'])
+    return _cluster_create(values, plugin)
+
+
+def create_multiple_clusters(values):
+    num_of_clusters = values['count']
+    clusters = []
+    plugin = plugin_base.PLUGINS.get_plugin(values['plugin_name'])
+    for counter in range(num_of_clusters):
+        cluster_dict = values.copy()
+        cluster_name = cluster_dict['name']
+        cluster_dict['name'] = get_multiple_cluster_name(num_of_clusters,
+                                                         cluster_name,
+                                                         counter + 1)
+        cluster = _cluster_create(cluster_dict, plugin)
+
+        clusters.append(cluster.id)
+
+    clusters_dict = {'clusters': clusters}
+    return clusters_dict
+
+
+def _cluster_create(values, plugin):
     ctx = context.ctx()
     cluster = conductor.cluster_create(ctx, values)
     context.set_current_cluster_id(cluster.id)
     sender.notify(ctx, cluster.id, cluster.name, "New",
                   "create")
-    plugin = plugin_base.PLUGINS.get_plugin(cluster.plugin_name)
     _add_ports_for_auto_sg(ctx, cluster, plugin)
 
     # validating cluster
@@ -116,6 +138,10 @@ def create_cluster(values):
     OPS.provision_cluster(cluster.id)
 
     return cluster
+
+
+def get_multiple_cluster_name(num_of_clusters, name, counter):
+    return "%%s-%%0%dd" % len(str(num_of_clusters)) % (name, counter)
 
 
 def _add_ports_for_auto_sg(ctx, cluster, plugin):
