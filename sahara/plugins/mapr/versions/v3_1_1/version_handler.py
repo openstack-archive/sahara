@@ -64,7 +64,7 @@ class VersionHandler(bvh.BaseVersionHandler):
             drill.Drill(),
             sqoop2.Sqoop2(),
             impala.ImpalaV123(),
-            hue.Hue(),
+            hue.HueV360(),
         ]
 
     def get_context(self, cluster, added=None, removed=None):

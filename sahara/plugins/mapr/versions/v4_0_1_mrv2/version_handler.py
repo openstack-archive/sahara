@@ -61,7 +61,8 @@ class VersionHandler(bvh.BaseVersionHandler):
             flume.Flume(),
             drill.Drill(),
             sqoop2.Sqoop2(),
-            hue.Hue(),
+            hue.HueV360(),
+            hue.HueV370(),
         ]
 
     def get_context(self, cluster, added=None, removed=None):
