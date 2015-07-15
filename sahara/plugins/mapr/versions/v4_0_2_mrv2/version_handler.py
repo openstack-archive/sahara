@@ -67,6 +67,7 @@ class VersionHandler(bvh.BaseVersionHandler):
             swift.Swift(),
             drill.DrillV07(),
             drill.DrillV08(),
+            drill.DrillV09(),
         ]
 
     def get_context(self, cluster, added=None, removed=None):

@@ -63,6 +63,7 @@ class VersionHandler(bvh.BaseVersionHandler):
             flume.Flume(),
             drill.DrillV07(),
             drill.DrillV08(),
+            drill.DrillV09(),
             sqoop2.Sqoop2(),
             impala.ImpalaV123(),
             hue.HueV360(),
