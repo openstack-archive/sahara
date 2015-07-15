@@ -2,8 +2,11 @@
 # -------------------------------------
 
 # Set up default directories
-GITDIR["python-saharaclient"]=$DEST/python-saharaclient
+SAHARACLIENT_DIR=$DEST/python-saharaclient
 SAHARA_DIR=$DEST/sahara
+
+SAHARACLIENT_REPO=${SAHARACLIENT_REPO:-${GIT_BASE}/openstack/python-saharaclient.git}
+SAHARACLIENT_BRANCH=${SAHARACLIENT_BRANCH:-master}
 
 SAHARA_CONF_DIR=${SAHARA_CONF_DIR:-/etc/sahara}
 SAHARA_CONF_FILE=${SAHARA_CONF_DIR}/sahara.conf

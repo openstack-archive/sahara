@@ -167,8 +167,8 @@ function install_sahara {
 # install_python_saharaclient() - Collect source and prepare
 function install_python_saharaclient {
     if use_library_from_git "python-saharaclient"; then
-        git_clone_by_name "python-saharaclient"
-        setup_dev_lib "python-saharaclient"
+        git_clone $SAHARACLIENT_REPO $SAHARACLIENT_DIR $SAHARACLIENT_BRANCH
+        setup_develop $SAHARACLIENT_DIR
     fi
 }
 
