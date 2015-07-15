@@ -55,6 +55,8 @@ class VersionHandler(avm.AbstractVersionHandler):
             "HBASE": [],
             "MASTER": ['HBASE_MASTER'],
             "REGIONSERVER": ['HBASE_REGIONSERVER'],
+            "YARN_GATEWAY": [],
+            "HDFS_GATEWAY": []
         }
 
     def validate(self, cluster):

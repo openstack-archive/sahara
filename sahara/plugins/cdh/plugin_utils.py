@@ -129,7 +129,9 @@ class AbstractPluginUtils(object):
             "SPARK_ON_YARN": ['SPARK_YARN_HISTORY_SERVER'],
             "ZOOKEEPER": ['SERVER'],
             "MASTER": ['MASTER'],
-            "REGIONSERVER": ['REGIONSERVER']
+            "REGIONSERVER": ['REGIONSERVER'],
+            'YARN_GATEWAY': ['YARN_GATEWAY'],
+            'HDFS_GATEWAY': ['HDFS_GATEWAY']
         }
         if isinstance(configs, res.Resource):
             configs = configs.to_dict()

@@ -60,7 +60,9 @@ class PluginUtilsV540(pu.AbstractPluginUtils):
             'SPARK_YARN_HISTORY_SERVER': 'SHS',
             'SQOOP_SERVER': 'S2S',
             'STATESTORE': 'ISS',
-            'WEBHCAT': 'WHC'
+            'WEBHCAT': 'WHC',
+            'HDFS_GATEWAY': 'HG',
+            'YARN_GATEWAY': 'YG'
         }
         return '%s_%s' % (shortcuts.get(service, service),
                           instance.hostname().replace('-', '_'))
@@ -118,7 +120,9 @@ class PluginUtilsV540(pu.AbstractPluginUtils):
             "SENTRY": ['SENTRY_SERVER'],
             "SOLR": ['SOLR_SERVER'],
             "SQOOP": ['SQOOP_SERVER'],
-            "KMS": ['KMS']
+            "KMS": ['KMS'],
+            'YARN_GATEWAY': ['YARN_GATEWAY'],
+            'HDFS_GATEWAY': ['HDFS_GATEWAY']
         }
         if isinstance(configs, res.Resource):
             configs = configs.to_dict()
