@@ -20,20 +20,20 @@ or, if the file is a YAML Mako template:
 
 .. sourcecode:: console
 
-    $ tox -e scenario -V templatevars.ini etc/scenario/sahara-ci/simple-testcase.yaml.mako
+    $ tox -e scenario -- -V templatevars.ini etc/scenario/sahara-ci/scenario/vanilla-2.6.0.yaml.mako
 ..
 
 where templatevars.ini contains the values of the variables referenced
-by ``simple-testcase.yaml.mako``.
+by ``vanilla-2.6.0.yaml.mako``.
 
 For example, you want to run tests for the Vanilla plugin with the Hadoop
-version 1.2.1. In this case you should create ``templatevars.ini`` with
+version 2.6.0 In this case you should create ``templatevars.ini`` with
 the appropriate values (see the section `Variables and sahara-ci templates`_)
 and use the following tox env:
 
 .. sourcecode:: console
 
-    $ tox -e scenario -V templatevars.ini etc/scenario/sahara-ci/vanilla-1-2-1.yaml.mako
+    $ tox -e scenario -- -V templatevars.ini etc/scenario/sahara-ci/vanilla-1.2.1.yaml.mako
 ..
 
 If you want to run scenario tests for a few plugins or their versions, you
@@ -41,17 +41,20 @@ should use the several YAML and/or YAML Mako template files:
 
 .. sourcecode:: console
 
-    $ tox -e scenario -V templatevars.ini etc/scenario/sahara-ci/vanilla-1-2-1.yaml.mako etc/scenario/sahara-ci/vanilla-2-6-0.yaml.mako ...
+    $ tox -e scenario -- -V templatevars.ini etc/scenario/sahara-ci/vanilla-1.2.1.yaml.mako etc/scenario/sahara-ci/vanilla-2.6.0.yaml.mako ...
 ..
 
 Here are a few more examples.
 
-``tox -e scenario -V templatevars.ini etc/scenario/sahara-ci/credential.yaml
-etc/scenario/sahara-ci/vanilla-2-6-0.yaml.mako``
+.. sourcecode:: console
+
+    $ tox -e scenario -- -V templatevars.ini etc/scenario/sahara-ci/credentials.yaml.mako etc/scenario/sahara-ci/vanilla-2.6.0.yaml.mako
+
+..
 
 will run tests for Vanilla plugin with the Hadoop version 2.6.0 and credential
-located in ``etc/scenario/sahara-ci/credential.yaml``, replacing the variables
-included into ``vanilla-2-6-0.yaml.mako`` with the values defined into
+located in ``etc/scenario/sahara-ci/credential.yaml.mako``, replacing the variables
+included into ``vanilla-2.6.0.yaml.mako`` with the values defined into
 ``templatevars.ini``.
 For more information about writing scenario YAML files, see the section
 section `How to write scenario files`_.
@@ -63,6 +66,9 @@ Template variables
 ------------------
 The variables used in the Mako template files are replaced with the values from a
 INI-style file, whose name is passed to the test runner through the ``-V`` parameter.
+
+Format of recording variables:
+    ``OS_USERNAME: admin``
 
 Variables and sahara-ci templates
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
