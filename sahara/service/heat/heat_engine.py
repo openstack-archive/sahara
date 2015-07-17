@@ -33,6 +33,11 @@ conductor = c.API
 CONF = cfg.CONF
 LOG = logging.getLogger(__name__)
 
+CREATE_STAGES = ["Spawning", "Waiting", "Preparing"]
+SCALE_STAGES = ["Scaling: Spawning", "Scaling: Waiting", "Scaling: Preparing"]
+ROLLBACK_STAGES = ["Rollback: Spawning", "Rollback: Waiting",
+                   "Rollback: Preparing"]
+
 
 class HeatEngine(e.Engine):
     def get_type_and_version(self):
@@ -41,12 +46,10 @@ class HeatEngine(e.Engine):
     def create_cluster(self, cluster):
         self._update_rollback_strategy(cluster, shutdown=True)
 
-        launcher = _CreateLauncher()
-
         target_count = self._get_ng_counts(cluster)
         self._nullify_ng_counts(cluster)
 
-        launcher.launch_instances(cluster, target_count)
+        self._launch_instances(cluster, target_count, CREATE_STAGES)
 
         self._update_rollback_strategy(cluster)
 
@@ -70,16 +73,16 @@ class HeatEngine(e.Engine):
         self._update_rollback_strategy(cluster, rollback_count=rollback_count,
                                        target_count=target_count)
 
-        launcher = _ScaleLauncher()
-
-        launcher.launch_instances(cluster, target_count)
+        inst_ids = self._launch_instances(
+            cluster, target_count, SCALE_STAGES,
+            update_stack=True, disable_rollback=False)
 
         cluster = conductor.cluster_get(ctx, cluster)
         g.clean_cluster_from_empty_ng(cluster)
 
         self._update_rollback_strategy(cluster)
 
-        return launcher.inst_ids
+        return inst_ids
 
     def rollback_cluster(self, cluster, reason):
         rollback_info = cluster.rollback_info or {}
@@ -159,8 +162,8 @@ class HeatEngine(e.Engine):
             if rollback_count[ng] > target_count[ng]:
                 rollback_count[ng] = target_count[ng]
 
-        launcher = _RollbackLauncher()
-        launcher.launch_instances(cluster, rollback_count)
+        self._launch_instances(cluster, rollback_count, ROLLBACK_STAGES,
+                               update_stack=True)
 
     def shutdown_cluster(self, cluster):
         """Shutdown specified cluster and all related resources."""
@@ -180,44 +183,42 @@ class HeatEngine(e.Engine):
         self._clean_job_executions(cluster)
         self._remove_db_objects(cluster)
 
-
-class _CreateLauncher(HeatEngine):
-    STAGES = ["Spawning", "Waiting", "Preparing"]
-    UPDATE_STACK = False
-    DISABLE_ROLLBACK = True
-    inst_ids = []
-
     @cpo.event_wrapper(
         True, step=_('Create Heat stack'), param=('cluster', 1))
-    def create_instances(self, cluster, target_count):
+    def _create_instances(self, cluster, target_count, update_stack=False,
+                          disable_rollback=True):
         tmpl = ht.ClusterTemplate(cluster)
 
         self._configure_template(tmpl, cluster, target_count)
-        stack = tmpl.instantiate(update_existing=self.UPDATE_STACK,
-                                 disable_rollback=self.DISABLE_ROLLBACK)
+        stack = tmpl.instantiate(update_existing=update_stack,
+                                 disable_rollback=disable_rollback)
         heat.wait_stack_completion(stack.heat_stack)
-        self.inst_ids = self._populate_cluster(cluster, stack)
+        return self._populate_cluster(cluster, stack)
 
-    def launch_instances(self, cluster, target_count):
+    def _launch_instances(self, cluster, target_count, stages,
+                          update_stack=False, disable_rollback=True):
         # create all instances
-        cluster = g.change_cluster_status(cluster, self.STAGES[0])
+        cluster = g.change_cluster_status(cluster, stages[0])
 
-        self.create_instances(cluster, target_count)
+        inst_ids = self._create_instances(
+            cluster, target_count, update_stack, disable_rollback)
 
         # wait for all instances are up and networks ready
-        cluster = g.change_cluster_status(cluster, self.STAGES[1])
+        cluster = g.change_cluster_status(cluster, stages[1])
 
-        instances = g.get_instances(cluster, self.inst_ids)
+        instances = g.get_instances(cluster, inst_ids)
 
         self._await_networks(cluster, instances)
 
         # prepare all instances
-        cluster = g.change_cluster_status(cluster, self.STAGES[2])
+        cluster = g.change_cluster_status(cluster, stages[2])
 
-        instances = g.get_instances(cluster, self.inst_ids)
+        instances = g.get_instances(cluster, inst_ids)
         volumes.mount_to_instances(instances)
 
         self._configure_instances(cluster)
+
+        return inst_ids
 
     def _configure_template(self, tmpl, cluster, target_count):
         ctx = context.ctx()
@@ -230,14 +231,3 @@ class _CreateLauncher(HeatEngine):
             # the excessive ones
             for i in range(count, node_group.count):
                 conductor.instance_remove(ctx, node_group.instances[i])
-
-
-class _ScaleLauncher(_CreateLauncher):
-    STAGES = ["Scaling: Spawning", "Scaling: Waiting", "Scaling: Preparing"]
-    UPDATE_STACK = True
-    DISABLE_ROLLBACK = False
-
-
-class _RollbackLauncher(_CreateLauncher):
-    STAGES = ["Rollback: Spawning", "Rollback: Waiting", "Rollback: Preparing"]
-    UPDATE_STACK = True
