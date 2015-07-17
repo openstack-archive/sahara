@@ -94,6 +94,7 @@ class ClusterStack(object):
         self.cluster = cluster
         self.node_groups_extra = {}
         self.heat_stack = None
+        self.files = {}
 
     def add_node_group_extra(self, node_group_id, node_count,
                              gen_userdata_func):
@@ -102,9 +103,9 @@ class ClusterStack(object):
             'gen_userdata_func': gen_userdata_func
         }
 
-    def _get_main_template(self, files):
+    def _get_main_template(self):
         outputs = {}
-        resources = self._serialize_resources(files, outputs)
+        resources = self._serialize_resources(outputs)
         return yaml.safe_dump({
             "heat_template_version": "2013-05-23",
             "description": "Data Processing Cluster by Sahara",
@@ -113,8 +114,7 @@ class ClusterStack(object):
         })
 
     def instantiate(self, update_existing, disable_rollback=True):
-        files = {}
-        main_tmpl = self._get_main_template(files)
+        main_tmpl = self._get_main_template()
 
         heat = h.client()
 
@@ -124,7 +124,7 @@ class ClusterStack(object):
             'disable_rollback': disable_rollback,
             'parameters': {},
             'template': main_tmpl,
-            'files': files}
+            'files': self.files}
 
         if not update_existing:
             b.execute_with_retries(heat.stacks.create, **kwargs)
@@ -147,20 +147,20 @@ class ClusterStack(object):
         return {"scheduler_hints": {"group": {"Ref": _get_aa_group_name(
             self.cluster)}}}
 
-    def _serialize_resources(self, files, outputs):
+    def _serialize_resources(self, outputs):
         resources = {}
 
         if self.cluster.anti_affinity:
             resources.update(self._serialize_aa_server_group())
 
         for ng in self.cluster.node_groups:
-            resources.update(self._serialize_ng_group(ng, files, outputs))
+            resources.update(self._serialize_ng_group(ng, outputs))
 
         return resources
 
-    def _serialize_ng_group(self, ng, files, outputs):
+    def _serialize_ng_group(self, ng, outputs):
         ng_file_name = "file://" + ng.name + ".yaml"
-        files[ng_file_name] = self._serialize_ng_file(ng, files)
+        self.files[ng_file_name] = self._serialize_ng_file(ng)
 
         outputs[ng.name + "-instances"] = {
             "value": {"get_attr": [ng.name, "instance"]}}
@@ -178,7 +178,7 @@ class ClusterStack(object):
             }
         }
 
-    def _serialize_ng_file(self, ng, files):
+    def _serialize_ng_file(self, ng):
         return yaml.safe_dump({
             "heat_template_version": "2013-05-23",
             "description": "Node Group {node_group} of "
@@ -188,7 +188,7 @@ class ClusterStack(object):
                 "instance_index": {
                     "type": "string"
                 }},
-            "resources": self._serialize_instance(ng, files),
+            "resources": self._serialize_instance(ng),
             "outputs": {
                 "instance": {"value": {
                     "physical_id": {"Ref": "inst"},
@@ -235,7 +235,7 @@ class ClusterStack(object):
 
         return rules
 
-    def _serialize_instance(self, ng, files):
+    def _serialize_instance(self, ng):
         resources = {}
         properties = {}
 
@@ -288,7 +288,7 @@ class ClusterStack(object):
             }
         })
 
-        resources.update(self._serialize_volume(ng, files))
+        resources.update(self._serialize_volume(ng))
 
         return resources
 
@@ -336,9 +336,9 @@ class ClusterStack(object):
             }
         }
 
-    def _serialize_volume(self, ng, files):
+    def _serialize_volume(self, ng):
         volume_file_name = "file://" + ng.name + "-volume.yaml"
-        files[volume_file_name] = self._serialize_volume_file(ng)
+        self.files[volume_file_name] = self._serialize_volume_file(ng)
 
         return {
             ng.name: {
