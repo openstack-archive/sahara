@@ -540,6 +540,9 @@ class SaharaMigrationsCheckers(object):
         self.assertColumnExists(engine, 'job_executions',
                                 'engine_job_id')
 
+    def _check_028(self, engine, data):
+        self.assertColumnExists(engine, 'instances', 'storage_devices_number')
+
 
 class TestMigrationsMySQL(SaharaMigrationsCheckers,
                           base.BaseWalkMigrationTestCase,

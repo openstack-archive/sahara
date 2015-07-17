@@ -763,25 +763,32 @@ class ServicesTest(base.SaharaTestCase):
         for version in versions:
             s = self.get_services_processor(version=version)
             service = s.create_service('AMBARI')
-            ng1 = hdp_test_base.TestNodeGroup(None, None, None)
-            ng1.ng_storage_paths = ['/mnt', '/volume/disk1']
-            ng2 = hdp_test_base.TestNodeGroup(None, None, None)
-            ng2.ng_storage_paths = ['/mnt']
+            server1 = hdp_test_base.TestServer(
+                'host1', 'test-master', '11111', 3, '1.1.1.1', '2.2.2.2')
+            server2 = hdp_test_base.TestServer(
+                'host2', 'test-slave', '11111', 3, '3.3.3.3', '4.4.4.4')
+            server3 = hdp_test_base.TestServer(
+                'host3', 'another-test', '11111', 3, '6.6.6.6', '5.5.5.5')
+            ng1 = hdp_test_base.TestNodeGroup('ng1', [server1], None)
+            ng2 = hdp_test_base.TestNodeGroup('ng2', [server2], None)
+            ng3 = hdp_test_base.TestNodeGroup('ng3', [server3], None)
+
+            server1.storage_path = ['/volume/disk1']
+            server2.storage_path = ['/mnt']
 
             paths = service._get_common_paths([ng1, ng2])
-            self.assertEqual(['/mnt'], paths)
+            self.assertEqual([], paths)
 
-            ng3 = hdp_test_base.TestNodeGroup(None, None, None)
-            ng1.ng_storage_paths = ['/mnt', '/volume/disk1', '/volume/disk2']
-            ng2.ng_storage_paths = ['/mnt']
-            ng3.ng_storage_paths = ['/mnt', '/volume/disk1']
+            server1.storage_path = ['/volume/disk1', '/volume/disk2']
+            server2.storage_path = ['/mnt']
+            server3.storage_path = ['/volume/disk1']
 
             paths = service._get_common_paths([ng1, ng2, ng3])
-            self.assertEqual(['/mnt'], paths)
+            self.assertEqual([], paths)
 
-            ng1.ng_storage_paths = ['/mnt', '/volume/disk1', '/volume/disk2']
-            ng2.ng_storage_paths = ['/mnt', '/volume/disk1']
-            ng3.ng_storage_paths = ['/mnt', '/volume/disk1']
+            server1.storage_path = ['/volume/disk1', '/volume/disk2']
+            server2.storage_path = ['/volume/disk1']
+            server3.storage_path = ['/volume/disk1']
 
             paths = service._get_common_paths([ng1, ng2, ng3])
             self.assertEqual(['/volume/disk1'], paths)

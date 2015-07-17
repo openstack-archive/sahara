@@ -210,7 +210,6 @@ class ClusterSpec(object):
                 node_group.count = ng.count
                 node_group.id = ng.id
                 node_group.components = ng.node_processes[:]
-                node_group.ng_storage_paths = ng.storage_paths()
                 for instance in ng.instances:
                     node_group.instances.add(Instance(instance))
                 self.node_groups[node_group.name] = node_group
@@ -266,13 +265,9 @@ class NodeGroup(object):
         self.cardinality = None
         self.count = None
         self.instances = set()
-        self.ng_storage_paths = []
 
     def add_component(self, component):
         self.components.append(component)
-
-    def storage_paths(self):
-        return self.ng_storage_paths
 
 
 class User(object):

@@ -167,10 +167,10 @@ def _make_paths(dirs, suffix):
     return ",".join([d + suffix for d in dirs])
 
 
-def get_ng_params(node_group):
-    configs = _create_ambari_configs(node_group.node_configs,
-                                     node_group.cluster.hadoop_version)
-    storage_paths = node_group.storage_paths()
+def get_instance_params(inst):
+    configs = _create_ambari_configs(inst.node_group.node_configs,
+                                     inst.node_group.cluster.hadoop_version)
+    storage_paths = inst.storage_paths()
     configs.setdefault("hdfs-site", {})
     configs["hdfs-site"]["dfs.datanode.data.dir"] = _make_paths(
         storage_paths, "/hdfs/data")
@@ -188,7 +188,6 @@ def get_ng_params(node_group):
     configs["yarn-site"][
         "yarn.timeline-service.leveldb-timeline-store.path"] = _make_paths(
             storage_paths, "/yarn/timeline")
-
     return _serialize_ambari_configs(configs)
 
 

@@ -183,16 +183,17 @@ def create_blueprint(cluster):
     cluster = conductor.cluster_get(context.ctx(), cluster.id)
     host_groups = []
     for ng in cluster.node_groups:
-        hg = {
-            "name": ng.name,
-            "configurations": configs.get_ng_params(ng),
-            "components": []
-        }
         procs = p_common.get_ambari_proc_list(ng)
         procs.extend(p_common.get_clients(cluster))
-        for proc in procs:
-            hg["components"].append({"name": proc})
-        host_groups.append(hg)
+        for instance in ng.instances:
+            hg = {
+                "name": instance.instance_name,
+                "configurations": configs.get_instance_params(instance),
+                "components": []
+            }
+            for proc in procs:
+                hg["components"].append({"name": proc})
+            host_groups.append(hg)
     bp = {
         "Blueprints": {
             "stack_name": "HDP",
@@ -214,10 +215,11 @@ def start_cluster(cluster):
         "host_groups": []
     }
     for ng in cluster.node_groups:
-        cl_tmpl["host_groups"].append({
-            "name": ng.name,
-            "hosts": map(lambda x: {"fqdn": x.fqdn()}, ng.instances)
-        })
+        for instance in ng.instances:
+            cl_tmpl["host_groups"].append({
+                "name": instance.instance_name,
+                "hosts": [{"fqdn": instance.fqdn()}]
+            })
     ambari = plugin_utils.get_instance(cluster, p_common.AMBARI_SERVER)
     password = cluster.extra["ambari_password"]
     with ambari_client.AmbariClient(ambari, password=password) as client:

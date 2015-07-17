@@ -131,18 +131,6 @@ class NodeGroup(object):
         return configs.merge_configs(self.cluster.cluster_configs,
                                      self.node_configs)
 
-    def storage_paths(self):
-        mp = []
-        for idx in range(1, self.volumes_per_node + 1):
-            mp.append(self.volume_mount_prefix + str(idx))
-
-        # Here we assume that NG's instances use ephemeral
-        # drives for storage if volumes_per_node == 0
-        if not mp:
-            mp = ['/mnt']
-
-        return mp
-
     def get_image_id(self):
         return self.image_id or self.cluster.default_image_id
 
@@ -158,6 +146,7 @@ class Instance(object):
     internal_ip
     management_ip
     volumes
+    storage_devices_number
     """
 
     def hostname(self):
@@ -168,6 +157,16 @@ class Instance(object):
 
     def remote(self):
         return remote.get_remote(self)
+
+    def storage_paths(self):
+        mp = []
+        for idx in range(1, self.storage_devices_number + 1):
+            mp.append(self.node_group.volume_mount_prefix + str(idx))
+
+        if not mp:
+            mp = ['/mnt']
+
+        return mp
 
 
 class ClusterTemplate(object):

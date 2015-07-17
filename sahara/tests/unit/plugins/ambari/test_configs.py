@@ -30,8 +30,10 @@ class AmbariConfigsTestCase(base.SaharaTestCase):
         self.ng.node_configs = {}
         self.ng.cluster = mock.Mock()
         self.ng.cluster.hadoop_version = "2.2"
-        self.ng.storage_paths = mock.Mock()
-        self.ng.storage_paths.return_value = ["/data1", "/data2"]
+        self.instance = mock.Mock()
+        self.instance.node_group = self.ng
+        self.instance.storage_paths = mock.Mock()
+        self.instance.storage_paths.return_value = ["/data1", "/data2"]
 
     def assertConfigEqual(self, expected, actual):
         self.assertEqual(len(expected), len(actual))
@@ -45,8 +47,8 @@ class AmbariConfigsTestCase(base.SaharaTestCase):
         self.assertEqual(len(expected), len(cnt_ex))
         self.assertEqual(len(actual), len(cnt_act))
 
-    def test_get_ng_params_default(self):
-        ng_configs = configs.get_ng_params(self.ng)
+    def test_get_instance_params_default(self):
+        instance_configs = configs.get_instance_params(self.instance)
         expected = [
             {
                 "hdfs-site": {
@@ -71,16 +73,16 @@ class AmbariConfigsTestCase(base.SaharaTestCase):
                 }
             }
         ]
-        self.assertConfigEqual(expected, ng_configs)
+        self.assertConfigEqual(expected, instance_configs)
 
-    def test_get_ng_params(self):
+    def test_get_instance_params(self):
         self.ng.node_configs = {
             "YARN": {
                 "mapreduce.map.java.opts": "-Dk=v",
                 "yarn.scheduler.minimum-allocation-mb": "256"
             }
         }
-        ng_configs = configs.get_ng_params(self.ng)
+        instance_configs = configs.get_instance_params(self.instance)
         expected = [
             {
                 "hdfs-site": {
@@ -111,4 +113,4 @@ class AmbariConfigsTestCase(base.SaharaTestCase):
                 }
             }
         ]
-        self.assertConfigEqual(expected, ng_configs)
+        self.assertConfigEqual(expected, instance_configs)
