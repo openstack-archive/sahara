@@ -187,11 +187,11 @@ class HeatEngine(e.Engine):
         True, step=_('Create Heat stack'), param=('cluster', 1))
     def _create_instances(self, cluster, target_count, update_stack=False,
                           disable_rollback=True):
-        tmpl = ht.ClusterTemplate(cluster)
+        stack = ht.ClusterStack(cluster)
 
-        self._configure_template(tmpl, cluster, target_count)
-        stack = tmpl.instantiate(update_existing=update_stack,
-                                 disable_rollback=disable_rollback)
+        self._configure_template(stack, cluster, target_count)
+        stack.instantiate(update_existing=update_stack,
+                          disable_rollback=disable_rollback)
         heat.wait_stack_completion(stack.heat_stack)
         return self._populate_cluster(cluster, stack)
 

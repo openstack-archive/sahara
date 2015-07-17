@@ -89,10 +89,11 @@ def _get_volume_name(ng):
     }
 
 
-class ClusterTemplate(object):
+class ClusterStack(object):
     def __init__(self, cluster):
         self.cluster = cluster
         self.node_groups_extra = {}
+        self.heat_stack = None
 
     def add_node_group_extra(self, node_group_id, node_count,
                              gen_userdata_func):
@@ -133,7 +134,7 @@ class ClusterTemplate(object):
                     b.execute_with_retries(stack.update, **kwargs)
                     break
 
-        return ClusterStack(self, h.get_stack(self.cluster.name))
+        self.heat_stack = h.get_stack(self.cluster.name)
 
     def _need_aa_server_group(self, node_group):
         for node_process in node_group.node_processes:
@@ -422,12 +423,6 @@ class ClusterTemplate(object):
                 }
             }
         }
-
-
-class ClusterStack(object):
-    def __init__(self, tmpl, heat_stack):
-        self.tmpl = tmpl
-        self.heat_stack = heat_stack
 
     def get_node_group_instances(self, node_group):
         for output in self.heat_stack.outputs:
