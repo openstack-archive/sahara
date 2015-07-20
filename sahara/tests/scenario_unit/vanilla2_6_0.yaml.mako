@@ -29,7 +29,12 @@ clusters:
           node_processes:
             - datanode
             - nodemanager
-          flavor: ${ci_flavor_id}
+          flavor:
+            name: test-flavor
+            id: test-id
+            vcpus: 1
+            ram: 512
+            root_disk: 1
       cluster_template:
           name: vanilla
           node_group_templates:

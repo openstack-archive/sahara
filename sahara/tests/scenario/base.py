@@ -406,13 +406,22 @@ class BaseTestCase(base.BaseTestCase):
         for ng in node_groups:
             kwargs = dict(ng)
             kwargs.update(self.plugin_opts)
-            kwargs['flavor_id'] = self.nova.get_flavor_id(kwargs['flavor'])
+            kwargs['flavor_id'] = self._get_flavor_id(kwargs['flavor'])
             del kwargs['flavor']
             kwargs['name'] = utils.rand_name(kwargs['name'])
             kwargs['floating_ip_pool'] = floating_ip_pool
             ng_id = self.__create_node_group_template(**kwargs)
             ng_id_map[ng['name']] = ng_id
         return ng_id_map
+
+    @track_result("Set flavor")
+    def _get_flavor_id(self, flavor):
+        if isinstance(flavor, str):
+            return self.nova.get_flavor_id(flavor)
+        else:
+            flavor_id = self.nova.create_flavor(flavor).id
+            self.addCleanup(self.nova.delete_flavor, flavor_id)
+            return flavor_id
 
     @track_result("Create cluster template")
     def _create_cluster_template(self):

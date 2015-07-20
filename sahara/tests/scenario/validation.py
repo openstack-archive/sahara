@@ -115,8 +115,38 @@ SCHEMA = {
                                     }
                                 },
                                 "flavor": {
-                                    "type": "string",
-                                    "minLength": 1
+                                    "type": ["object", "string"],
+                                    "properties": {
+                                        "name": {
+                                            "type": "string",
+                                            "minLength": 1
+                                        },
+                                        "id": {
+                                            "type": "string",
+                                            "minLength": 1
+                                        },
+                                        "vcpus": {
+                                            "type": "integer",
+                                            "minimum": 1
+                                        },
+                                        "ram": {
+                                            "type": "integer",
+                                            "minimum": 1
+                                        },
+                                        "root_disk": {
+                                            "type": "integer",
+                                            "minimum": 0
+                                        },
+                                        "ephemeral_disk": {
+                                            "type": "integer",
+                                            "minimum": 0
+                                        },
+                                        "swap_disk": {
+                                            "type": "integer",
+                                            "minimum": 0
+                                        },
+                                    },
+                                    "additionalProperties": True
                                 },
                                 "description": {
                                     "type": "string"

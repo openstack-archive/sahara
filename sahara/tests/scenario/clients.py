@@ -28,6 +28,8 @@ from swiftclient import client as swift_client
 from swiftclient import exceptions as swift_exc
 from tempest_lib import exceptions as exc
 
+from sahara.tests.scenario import utils
+
 
 def get_session(auth_url=None, username=None, password=None,
                 project_name=None):
@@ -179,6 +181,19 @@ class NovaClient(Client):
                 return flavor.id
 
         raise exc.NotFound(flavor_name)
+
+    def create_flavor(self, flavor_object):
+        return self.nova_client.flavors.create(
+            flavor_object.get('name', utils.rand_name('scenario')),
+            flavor_object.get('ram', 1),
+            flavor_object.get('vcpus', 1),
+            flavor_object.get('root_disk', 0),
+            ephemeral=flavor_object.get('ephemeral_disk', 0),
+            swap=flavor_object.get('swap_disk', 0),
+            flavorid=flavor_object.get('id', 'auto'))
+
+    def delete_flavor(self, flavor_id):
+        return self.delete_resource(self.nova_client.flavors.delete, flavor_id)
 
     def delete_keypair(self, key_name):
         return self.delete_resource(
