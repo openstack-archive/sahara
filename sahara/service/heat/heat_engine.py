@@ -189,7 +189,7 @@ class HeatEngine(e.Engine):
                           disable_rollback=True):
         stack = ht.ClusterStack(cluster)
 
-        self._configure_template(stack, cluster, target_count)
+        self._update_instance_count(stack, cluster, target_count)
         stack.instantiate(update_existing=update_stack,
                           disable_rollback=disable_rollback)
         heat.wait_stack_completion(stack.heat_stack)
@@ -220,12 +220,12 @@ class HeatEngine(e.Engine):
 
         return inst_ids
 
-    def _configure_template(self, tmpl, cluster, target_count):
+    def _update_instance_count(self, stack, cluster, target_count):
         ctx = context.ctx()
         for node_group in cluster.node_groups:
             count = target_count[node_group.id]
-            tmpl.add_node_group_extra(node_group.id, count,
-                                      self._generate_user_data_script)
+            stack.add_node_group_extra(node_group.id, count,
+                                       self._generate_user_data_script)
 
             # if number of instances decreases, we need to drop
             # the excessive ones
