@@ -215,6 +215,11 @@ def _prepare_provisioning(cluster_id):
             nodegroup)
         conductor.node_group_update(ctx, nodegroup, update_dict)
 
+    if CONF.use_identity_api_v3:
+        trusts.create_trust_for_cluster(cluster,
+                                        expires=not cluster.is_transient)
+        trusts.use_os_admin_auth_token(cluster)
+
     cluster = conductor.cluster_get(ctx, cluster_id)
 
     return ctx, cluster, plugin
@@ -234,36 +239,38 @@ def _update_sahara_info(ctx, cluster):
 def _provision_cluster(cluster_id):
     ctx, cluster, plugin = _prepare_provisioning(cluster_id)
 
-    cluster = _update_sahara_info(ctx, cluster)
+    try:
+        cluster = _update_sahara_info(ctx, cluster)
 
-    if CONF.use_identity_api_v3 and cluster.is_transient:
-        trusts.create_trust_for_cluster(cluster)
+        # updating cluster infra
+        cluster = g.change_cluster_status(cluster, "InfraUpdating")
+        plugin.update_infra(cluster)
 
-    # updating cluster infra
-    cluster = g.change_cluster_status(cluster, "InfraUpdating")
-    plugin.update_infra(cluster)
+        # creating instances and configuring them
+        cluster = conductor.cluster_get(ctx, cluster_id)
+        context.set_step_type(_("Engine: create cluster"))
+        INFRA.create_cluster(cluster)
 
-    # creating instances and configuring them
-    cluster = conductor.cluster_get(ctx, cluster_id)
-    context.set_step_type(_("Engine: create cluster"))
-    INFRA.create_cluster(cluster)
+        # configure cluster
+        cluster = g.change_cluster_status(cluster, "Configuring")
+        context.set_step_type(_("Plugin: configure cluster"))
+        plugin.configure_cluster(cluster)
 
-    # configure cluster
-    cluster = g.change_cluster_status(cluster, "Configuring")
-    context.set_step_type(_("Plugin: configure cluster"))
-    plugin.configure_cluster(cluster)
+        # starting prepared and configured cluster
+        cluster = g.change_cluster_status(cluster, "Starting")
+        context.set_step_type(_("Plugin: start cluster"))
+        plugin.start_cluster(cluster)
 
-    # starting prepared and configured cluster
-    cluster = g.change_cluster_status(cluster, "Starting")
-    context.set_step_type(_("Plugin: start cluster"))
-    plugin.start_cluster(cluster)
+        # cluster is now up and ready
+        cluster = g.change_cluster_status(cluster, "Active")
 
-    # cluster is now up and ready
-    cluster = g.change_cluster_status(cluster, "Active")
+        # schedule execution pending job for cluster
+        for je in conductor.job_execution_get_all(ctx, cluster_id=cluster.id):
+            job_manager.run_job(je.id)
 
-    # schedule execution pending job for cluster
-    for je in conductor.job_execution_get_all(ctx, cluster_id=cluster.id):
-        job_manager.run_job(je.id)
+    finally:
+        if CONF.use_identity_api_v3 and not cluster.is_transient:
+            trusts.delete_trust_from_cluster(cluster)
 
 
 @ops_error_handler(
@@ -271,34 +278,39 @@ def _provision_cluster(cluster_id):
 def _provision_scaled_cluster(cluster_id, node_group_id_map):
     ctx, cluster, plugin = _prepare_provisioning(cluster_id)
 
-    # Decommissioning surplus nodes with the plugin
-    cluster = g.change_cluster_status(cluster, "Decommissioning")
+    try:
+        # Decommissioning surplus nodes with the plugin
+        cluster = g.change_cluster_status(cluster, "Decommissioning")
 
-    instances_to_delete = []
+        instances_to_delete = []
 
-    for node_group in cluster.node_groups:
-        new_count = node_group_id_map[node_group.id]
-        if new_count < node_group.count:
-            instances_to_delete += node_group.instances[new_count:
-                                                        node_group.count]
+        for node_group in cluster.node_groups:
+            new_count = node_group_id_map[node_group.id]
+            if new_count < node_group.count:
+                instances_to_delete += node_group.instances[new_count:
+                                                            node_group.count]
 
-    if instances_to_delete:
-        context.set_step_type(_("Plugin: decommission cluster"))
-        plugin.decommission_nodes(cluster, instances_to_delete)
+        if instances_to_delete:
+            context.set_step_type(_("Plugin: decommission cluster"))
+            plugin.decommission_nodes(cluster, instances_to_delete)
 
-    # Scaling infrastructure
-    cluster = g.change_cluster_status(cluster, "Scaling")
-    context.set_step_type(_("Engine: scale cluster"))
-    instance_ids = INFRA.scale_cluster(cluster, node_group_id_map)
+        # Scaling infrastructure
+        cluster = g.change_cluster_status(cluster, "Scaling")
+        context.set_step_type(_("Engine: scale cluster"))
+        instance_ids = INFRA.scale_cluster(cluster, node_group_id_map)
 
-    # Setting up new nodes with the plugin
-    if instance_ids:
-        cluster = g.change_cluster_status(cluster, "Configuring")
-        instances = g.get_instances(cluster, instance_ids)
-        context.set_step_type(_("Plugin: scale cluster"))
-        plugin.scale_cluster(cluster, instances)
+        # Setting up new nodes with the plugin
+        if instance_ids:
+            cluster = g.change_cluster_status(cluster, "Configuring")
+            instances = g.get_instances(cluster, instance_ids)
+            context.set_step_type(_("Plugin: scale cluster"))
+            plugin.scale_cluster(cluster, instances)
 
-    g.change_cluster_status(cluster, "Active")
+        g.change_cluster_status(cluster, "Active")
+
+    finally:
+        if CONF.use_identity_api_v3 and not cluster.is_transient:
+            trusts.delete_trust_from_cluster(cluster)
 
 
 @ops_error_handler(
