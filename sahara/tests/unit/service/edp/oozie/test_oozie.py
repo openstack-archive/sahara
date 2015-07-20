@@ -87,6 +87,28 @@ class TestOozieEngine(base.SaharaTestCase):
         res = oje._create_hdfs_workflow_dir(mock.Mock(), job)
         self.assertIn('/user/hadoop/special_name/', res)
 
+    def test__resolve_external_hdfs_urls(self):
+
+        oje = FakeOozieJobEngine(u.create_cluster())
+        job_configs = {
+            "configs": {
+                "mapred.map.tasks": "1",
+                "hdfs1": "hdfs://localhost/hdfs1"},
+            "args": ["hdfs://localhost/hdfs3", "10"],
+            "params": {
+                "param1": "10",
+                "param2": "hdfs://localhost/hdfs2"
+            }
+        }
+
+        expected_external_hdfs_urls = ['hdfs://localhost/hdfs1',
+                                       'hdfs://localhost/hdfs2',
+                                       'hdfs://localhost/hdfs3']
+
+        external_hdfs_urls = oje._resolve_external_hdfs_urls(job_configs)
+
+        self.assertEqual(expected_external_hdfs_urls, external_hdfs_urls)
+
 
 class FakeOozieJobEngine(oe.OozieJobEngine):
     def get_hdfs_user(self):
