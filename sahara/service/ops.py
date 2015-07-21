@@ -29,6 +29,7 @@ from sahara.i18n import _LE
 from sahara.plugins import base as plugin_base
 from sahara.service.edp import job_manager
 from sahara.service import ntp_service
+from sahara.service import shares
 from sahara.service import trusts
 from sahara.utils import general as g
 from sahara.utils import remote
@@ -254,6 +255,7 @@ def _provision_cluster(cluster_id):
 
         # configure cluster
         cluster = g.change_cluster_status(cluster, "Configuring")
+        shares.mount_shares(cluster)
         context.set_step_type(_("Plugin: configure cluster"))
         plugin.configure_cluster(cluster)
 

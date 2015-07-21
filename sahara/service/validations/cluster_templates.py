@@ -18,6 +18,7 @@ from sahara import exceptions as ex
 from sahara.i18n import _
 from sahara.service import api
 import sahara.service.validations.base as b
+from sahara.service.validations import shares
 
 
 def check_cluster_template_create(data, **kwargs):
@@ -40,6 +41,9 @@ def check_cluster_template_create(data, **kwargs):
 
     if data.get('neutron_management_network'):
         b.check_network_exists(data['neutron_management_network'])
+
+    if data.get('shares'):
+        shares.check_shares(data['shares'])
 
 
 def check_cluster_template_usage(cluster_template_id, **kwargs):
@@ -77,3 +81,6 @@ def check_cluster_template_update(data, **kwargs):
 
     if data.get('neutron_management_network'):
         b.check_network_exists(data['neutron_management_network'])
+
+    if data.get('shares'):
+        shares.check_shares(data['shares'])

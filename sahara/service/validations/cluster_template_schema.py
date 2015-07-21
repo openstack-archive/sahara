@@ -16,6 +16,7 @@
 import copy
 
 from sahara.service.validations import node_group_template_schema as ngt_schema
+from sahara.service.validations import shares
 
 
 def _build_ng_schema_for_cluster_tmpl():
@@ -89,6 +90,7 @@ CLUSTER_TEMPLATE_SCHEMA = {
             "type": ["string", "null"],
             "format": "uuid"
         },
+        "shares": copy.deepcopy(shares.SHARE_SCHEMA)
     },
     "additionalProperties": False,
     "required": [

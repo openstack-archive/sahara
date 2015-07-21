@@ -82,6 +82,7 @@ SAMPLE_CLT = {
             "security_groups": None,
             "availability_zone": None,
             'use_autoconfig': True,
+            "shares": None
         },
         {
             "name": "ng_2",
@@ -92,12 +93,14 @@ SAMPLE_CLT = {
             "security_groups": ["group1", "group2"],
             "availability_zone": None,
             'use_autoconfig': True,
+            "shares": None
         }
 
     ],
     "anti_affinity": ["datanode"],
     "description": "my template",
-    "neutron_management_network": str(uuid.uuid4())
+    "neutron_management_network": str(uuid.uuid4()),
+    "shares": None
 }
 
 
