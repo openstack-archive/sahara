@@ -1,16 +1,16 @@
 clusters:
   - plugin_name: spark
     plugin_version: 1.3.1
-    image: %spark_image%
+    image: ${spark_1_3_image}
     node_group_templates:
       - name: master
-        flavor_id: %ci_flavor_id%
+        flavor_id: ${ci_flavor_id}
         node_processes:
           - master
           - namenode
         auto_security_group: true
       - name: worker
-        flavor_id: %ci_flavor_id%
+        flavor_id: ${ci_flavor_id}
         node_processes:
           - datanode
           - slave
@@ -24,7 +24,7 @@ clusters:
         HDFS:
           dfs.replication: 1
     cluster:
-      name: %cluster_name%
+      name: ${cluster_name}
     scaling:
       - operation: add
         node_group: worker
