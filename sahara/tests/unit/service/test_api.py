@@ -123,7 +123,7 @@ class FakePlugin(object):
     def get_configs(self, version):
         return {}
 
-    def recommend_configs(self, cluster):
+    def recommend_configs(self, cluster, scaling=False):
         self.calls_order.append('recommend_configs')
 
 

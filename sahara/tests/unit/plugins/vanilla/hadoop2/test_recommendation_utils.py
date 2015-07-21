@@ -54,7 +54,7 @@ class TestVersionHandler(testtools.TestCase):
                 'HadoopAutoConfigsProvider')
     def test_recommend_configs(self, provider):
         f_cluster, f_configs = mock.Mock(), mock.Mock()
-        ru.recommend_configs(f_cluster, f_configs)
+        ru.recommend_configs(f_cluster, f_configs, False)
         self.assertEqual([
-            mock.call(CONFIGURATION_SCHEMA, f_configs, f_cluster)
+            mock.call(CONFIGURATION_SCHEMA, f_configs, f_cluster, False)
         ], provider.call_args_list)

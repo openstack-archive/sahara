@@ -55,8 +55,8 @@ class TestPluginUtils(b.SaharaTestCase):
         plug_utils = pu.AbstractPluginUtils()
         fake_plugin_utils = mock.Mock()
         fake_cluster = mock.Mock()
-        plug_utils.recommend_configs(fake_cluster, fake_plugin_utils)
+        plug_utils.recommend_configs(fake_cluster, fake_plugin_utils, False)
         self.assertEqual([
             mock.call(CONFIGURATION_SCHEMA,
-                      fake_plugin_utils, fake_cluster)
+                      fake_plugin_utils, fake_cluster, False)
         ], provider.call_args_list)

@@ -374,7 +374,7 @@ class AbstractPluginUtils(object):
             _("Unable to find config: {applicable_target: %(target)s, name: "
               "%(name)s").format(target=service, name=name))
 
-    def recommend_configs(self, cluster, plugin_configs):
+    def recommend_configs(self, cluster, plugin_configs, scaling):
         provider = CDHPluginAutoConfigsProvider(
-            AUTO_CONFIGURATION_SCHEMA, plugin_configs, cluster)
+            AUTO_CONFIGURATION_SCHEMA, plugin_configs, cluster, scaling)
         provider.apply_recommended_configs()
