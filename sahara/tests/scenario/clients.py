@@ -168,6 +168,15 @@ class NovaClient(Client):
 
         raise exc.NotFound(image_name)
 
+    def get_flavor_id(self, flavor_name):
+        if uuidutils.is_uuid_like(flavor_name) or flavor_name.isdigit():
+            return flavor_name
+        for flavor in self.nova_client.flavors.list():
+            if flavor.name == flavor_name:
+                return flavor.id
+
+        raise exc.NotFound(flavor_name)
+
     def delete_keypair(self, key_name):
         return self.delete_resource(
             self.nova_client.keypairs.delete, key_name)
