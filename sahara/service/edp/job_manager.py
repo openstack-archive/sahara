@@ -29,6 +29,7 @@ from sahara.i18n import _LW
 from sahara.service.edp import job_utils
 from sahara.service.edp.oozie import engine as oozie_engine
 from sahara.service.edp.spark import engine as spark_engine
+from sahara.service.edp.storm import engine as storm_engine
 from sahara.utils import edp
 from sahara.utils import proxy as p
 
@@ -40,7 +41,8 @@ CONF = cfg.CONF
 conductor = c.API
 
 ENGINES = [oozie_engine.OozieJobEngine,
-           spark_engine.SparkJobEngine]
+           spark_engine.SparkJobEngine,
+           storm_engine.StormJobEngine]
 
 
 def _get_job_type(job_execution):
