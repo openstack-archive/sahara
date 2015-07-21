@@ -1,6 +1,6 @@
 {
     "name": "hdp-master",
-    "flavor_id": "3",
+    "flavor": "3",
     "node_processes": [
         "NAMENODE",
         "SECONDARY_NAMENODE",

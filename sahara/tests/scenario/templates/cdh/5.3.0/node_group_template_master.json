@@ -1,6 +1,6 @@
 {
     "name": "cdh-530-master",
-    "flavor_id": "4",
+    "flavor": "4",
     "node_processes": [
         "HDFS_NAMENODE",
         "YARN_RESOURCEMANAGER",

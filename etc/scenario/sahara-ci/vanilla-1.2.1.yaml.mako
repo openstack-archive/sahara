@@ -4,7 +4,7 @@ clusters:
     image: ${vanilla_image}
     node_group_templates:
       - name: worker-tt-dn
-        flavor_id: ${ci_flavor_id}
+        flavor: ${ci_flavor_id}
         node_processes:
           - datanode
           - tasktracker
@@ -12,25 +12,25 @@ clusters:
         volumes_size: 2
         auto_security_group: true
       - name: worker-tt
-        flavor_id: ${ci_flavor_id}
+        flavor: ${ci_flavor_id}
         node_processes:
           - tasktracker
         auto_security_group: true
       - name: worker-dn
-        flavor_id: ${ci_flavor_id}
+        flavor: ${ci_flavor_id}
         node_processes:
           - datanode
         volumes_per_node: 2
         volumes_size: 2
         auto_security_group: true
       - name: master-jt-nn
-        flavor_id: ${ci_flavor_id}
+        flavor: ${ci_flavor_id}
         node_processes:
           - namenode
           - jobtracker
         auto_security_group: true
       - name: master-sec-nn-oz
-        flavor_id: ${ci_flavor_id}
+        flavor: ${ci_flavor_id}
         node_processes:
           - oozie
           - secondarynamenode

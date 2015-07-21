@@ -1,6 +1,6 @@
 {
     "name": "vanilla-worker",
-    "flavor_id": "3",
+    "flavor": "3",
     "node_processes": [
         "datanode",
         "nodemanager"

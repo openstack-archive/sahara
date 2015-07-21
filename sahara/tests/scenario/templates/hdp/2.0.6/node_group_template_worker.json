@@ -1,6 +1,6 @@
 {
     "name": "hdp-worker",
-    "flavor_id": "3",
+    "flavor": "3",
     "node_processes": [
         "HDFS_CLIENT",
         "DATANODE",

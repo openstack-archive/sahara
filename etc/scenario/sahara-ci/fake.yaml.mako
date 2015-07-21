@@ -4,7 +4,7 @@ clusters:
     image: ${fake_plugin_image}
     node_group_templates:
       - name: worker
-        flavor_id: ${ci_flavor_id}
+        flavor: ${ci_flavor_id}
         node_processes:
           - datanode
           - tasktracker
@@ -12,7 +12,7 @@ clusters:
         volumes_size: 2
         auto_security_group: true
       - name: master
-        flavor_id: ${ci_flavor_id}
+        flavor: ${ci_flavor_id}
         node_processes:
           - jobtracker
           - namenode

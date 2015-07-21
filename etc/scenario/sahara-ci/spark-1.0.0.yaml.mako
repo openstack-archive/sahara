@@ -4,13 +4,13 @@ clusters:
     image: ${spark_image}
     node_group_templates:
       - name: master
-        flavor_id: ${ci_flavor_id}
+        flavor: ${ci_flavor_id}
         node_processes:
           - master
           - namenode
         auto_security_group: true
       - name: worker
-        flavor_id: ${ci_flavor_id}
+        flavor: ${ci_flavor_id}
         node_processes:
           - datanode
           - slave

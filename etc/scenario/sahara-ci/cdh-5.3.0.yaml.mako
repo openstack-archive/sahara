@@ -4,7 +4,7 @@ clusters:
     image: ${cdh_image}
     node_group_templates:
       - name: worker-dn
-        flavor_id: ${ci_flavor_id}
+        flavor: ${ci_flavor_id}
         node_processes:
           - HDFS_DATANODE
         volumes_per_node: 2
@@ -15,12 +15,12 @@ clusters:
           DATANODE:
             dfs_datanode_du_reserved: 0
       - name: worker-nm
-        flavor_id: ${ci_flavor_id}
+        flavor: ${ci_flavor_id}
         node_processes:
           - YARN_NODEMANAGER
         auto_security_group: true
       - name: worker-nm-dn
-        flavor_id: ${ci_flavor_id}
+        flavor: ${ci_flavor_id}
         node_processes:
           - YARN_NODEMANAGER
           - HDFS_DATANODE
@@ -30,12 +30,12 @@ clusters:
         node_configs:
           *ng_configs
       - name: manager
-        flavor_id: ${medium_flavor_id}
+        flavor: ${medium_flavor_id}
         node_processes:
           - CLOUDERA_MANAGER
         auto_security_group: true
       - name: master-core
-        flavor_id: ${medium_flavor_id}
+        flavor: ${medium_flavor_id}
         node_processes:
           - HDFS_NAMENODE
           - YARN_RESOURCEMANAGER
@@ -43,7 +43,7 @@ clusters:
           - ZOOKEEPER_SERVER
         auto_security_group: true
       - name: master-additional
-        flavor_id: ${medium_flavor_id}
+        flavor: ${medium_flavor_id}
         node_processes:
           - OOZIE_SERVER
           - YARN_JOBHISTORY

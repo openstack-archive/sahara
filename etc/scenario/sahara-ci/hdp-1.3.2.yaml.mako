@@ -4,7 +4,7 @@ clusters:
     image: ${hdp_image}
     node_group_templates:
       - name: master
-        flavor_id: ${ci_flavor_id}
+        flavor: ${ci_flavor_id}
         node_processes:
           - JOBTRACKER
           - NAMENODE
@@ -15,7 +15,7 @@ clusters:
           - OOZIE_SERVER
         auto_security_group: false
       - name: worker
-        flavor_id: ${ci_flavor_id}
+        flavor: ${ci_flavor_id}
         node_processes:
           - TASKTRACKER
           - DATANODE
