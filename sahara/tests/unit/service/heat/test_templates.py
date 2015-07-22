@@ -50,7 +50,7 @@ class TestClusterTemplate(base.SaharaWithDbTestCase):
                                  anti_affinity=anti_affinity)
 
     def _make_heat_template(self, cluster, ng1, ng2):
-        heat_template = h.ClusterTemplate(cluster)
+        heat_template = h.ClusterStack(cluster)
         heat_template.add_node_group_extra(ng1['id'], 1,
                                            get_ud_generator('line1\nline2'))
         heat_template.add_node_group_extra(ng2['id'], 1,
