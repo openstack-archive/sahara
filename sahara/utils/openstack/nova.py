@@ -17,9 +17,10 @@ from novaclient import exceptions as nova_ex
 from novaclient.v2 import client as nova_client
 from oslo_config import cfg
 
-from sahara import context
+from sahara.service import sessions
 import sahara.utils.openstack.base as base
 from sahara.utils.openstack import images
+from sahara.utils.openstack import keystone
 
 
 opts = [
@@ -40,19 +41,8 @@ CONF.register_opts(opts, group=nova_group)
 
 
 def client():
-    ctx = context.current()
-    auth_url = base.retrieve_auth_url()
-    compute_url = base.url_for(ctx.service_catalog, 'compute')
-
-    nova = nova_client.Client(username=ctx.username,
-                              api_key=None,
-                              project_id=ctx.tenant_id,
-                              auth_url=auth_url,
-                              cacert=CONF.nova.ca_file,
-                              insecure=CONF.nova.api_insecure)
-
-    nova.client.auth_token = ctx.auth_token
-    nova.client.management_url = compute_url
+    session = sessions.cache().get_session(sessions.SESSION_TYPE_NOVA)
+    nova = nova_client.Client(session=session, auth=keystone.auth())
     nova.images = images.SaharaImageManager(nova)
     return nova
 

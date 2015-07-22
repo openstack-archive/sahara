@@ -29,6 +29,7 @@ _SESSION_CACHE = None
 
 SESSION_TYPE_GENERIC = 'generic'
 SESSION_TYPE_KEYSTONE = 'keystone'
+SESSION_TYPE_NOVA = 'nova'
 
 
 def cache():
@@ -56,6 +57,7 @@ class SessionCache(object):
         self._session_funcs = {
             SESSION_TYPE_GENERIC: self.get_generic_session,
             SESSION_TYPE_KEYSTONE: self.get_keystone_session,
+            SESSION_TYPE_NOVA: self.get_nova_session,
         }
 
     def _set_session(self, session_type, session):
@@ -103,4 +105,15 @@ class SessionCache(object):
             else:
                 session = self.get_generic_session()
             self._set_session(SESSION_TYPE_KEYSTONE, session)
+        return session
+
+    def get_nova_session(self):
+        session = self._sessions.get(SESSION_TYPE_NOVA)
+        if not session:
+            if CONF.nova.ca_file:
+                session = keystone.Session(cert=CONF.nova.ca_file,
+                                           verify=CONF.nova.api_insecure)
+            else:
+                session = self.get_generic_session()
+            self._sessions[SESSION_TYPE_NOVA] = session
         return session
