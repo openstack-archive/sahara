@@ -137,8 +137,12 @@ class SparkJobEngine(base_engine.JobEngine):
 
         def upload(r, dir, job_file, proxy_configs):
             dst = os.path.join(dir, job_file.name)
-            raw_data = dispatch.get_raw_binary(job_file, proxy_configs)
-            r.write_file_to(dst, raw_data)
+            raw_data = dispatch.get_raw_binary(
+                job_file, proxy_configs=proxy_configs, remote=r)
+            if isinstance(raw_data, dict) and raw_data["type"] == "path":
+                dst = raw_data['path']
+            else:
+                r.write_file_to(dst, raw_data)
             return dst
 
         def upload_builtin(r, dir, builtin):
@@ -217,7 +221,8 @@ class SparkJobEngine(base_engine.JobEngine):
             self.master, wf_dir, job, updated_job_configs)
 
         # We can shorten the paths in this case since we'll run out of wf_dir
-        paths = [os.path.basename(p) for p in paths]
+        paths = [os.path.basename(p) if p.startswith(wf_dir) else p
+                 for p in paths]
         builtin_paths = [os.path.basename(p) for p in builtin_paths]
 
         # TODO(tmckay): for now, paths[0] is always assumed to be the app
@@ -304,6 +309,7 @@ class SparkJobEngine(base_engine.JobEngine):
         if ret == 0:
             # Success, we'll add the wf_dir in job_execution.extra and store
             # pid@instance_id as the job id
+
             # We know the job is running so return "RUNNING"
             return (stdout.strip() + "@" + self.master.id,
                     edp.JOB_STATUS_RUNNING,

@@ -233,6 +233,8 @@ class TestStorm(base.SaharaTestCase):
         remote_instance = mock.Mock()
         get_remote.return_value.__enter__ = mock.Mock(
             return_value=remote_instance)
+        remote_instance.instance.node_group.cluster.shares = []
+        remote_instance.instance.node_group.shares = []
 
         get_raw_binary.return_value = "data"
 
