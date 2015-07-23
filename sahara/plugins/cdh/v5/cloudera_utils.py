@@ -13,8 +13,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import six
-
 from sahara.i18n import _
 from sahara.plugins.cdh import cloudera_utils as cu
 from sahara.plugins.cdh.v5 import config_helper as c_helper
@@ -22,6 +20,7 @@ from sahara.plugins.cdh.v5 import plugin_utils as pu
 from sahara.plugins.cdh.v5 import validation as v
 from sahara.swift import swift_helper
 from sahara.utils import cluster_progress_ops as cpo
+from sahara.utils import configs as s_cfg
 from sahara.utils import xmlutils
 
 
@@ -33,21 +32,6 @@ HUE_SERVICE_TYPE = 'HUE'
 SPARK_SERVICE_TYPE = 'SPARK_ON_YARN'
 ZOOKEEPER_SERVICE_TYPE = 'ZOOKEEPER'
 HBASE_SERVICE_TYPE = 'HBASE'
-
-
-def _merge_dicts(a, b):
-    res = {}
-
-    def update(cfg):
-        for service, configs in six.iteritems(cfg):
-            if not res.get(service):
-                res[service] = {}
-
-            res[service].update(configs)
-
-    update(a)
-    update(b)
-    return res
 
 
 class ClouderaUtilsV5(cu.ClouderaUtils):
@@ -226,9 +210,9 @@ class ClouderaUtilsV5(cu.ClouderaUtils):
                 }
             }
 
-            all_confs = _merge_dicts(all_confs, hue_confs)
-            all_confs = _merge_dicts(all_confs, hive_confs)
-            all_confs = _merge_dicts(all_confs, cluster.cluster_configs)
+            all_confs = s_cfg.merge_configs(all_confs, hue_confs)
+            all_confs = s_cfg.merge_configs(all_confs, hive_confs)
+            all_confs = s_cfg.merge_configs(all_confs, cluster.cluster_configs)
 
         if node_group:
             paths = node_group.storage_paths()
@@ -257,7 +241,7 @@ class ClouderaUtilsV5(cu.ClouderaUtils):
 
             ng_user_confs = self.pu.convert_process_configs(
                 node_group.node_configs)
-            all_confs = _merge_dicts(all_confs, ng_user_confs)
-            all_confs = _merge_dicts(all_confs, ng_default_confs)
+            all_confs = s_cfg.merge_configs(all_confs, ng_user_confs)
+            all_confs = s_cfg.merge_configs(all_confs, ng_default_confs)
 
         return all_confs.get(service, {})

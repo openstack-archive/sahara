@@ -26,6 +26,7 @@ from sahara.plugins.vanilla import utils as vu
 from sahara.swift import swift_helper as swift
 from sahara.topology import topology_helper as th
 from sahara.utils import cluster_progress_ops as cpo
+from sahara.utils import configs as s_cfg
 from sahara.utils import files as f
 from sahara.utils import proxy
 from sahara.utils import xmlutils as x
@@ -83,8 +84,8 @@ def _provisioning_configs(pctx, instance):
 def _generate_configs(pctx, node_group):
     hadoop_xml_confs = _get_hadoop_configs(pctx, node_group)
     user_xml_confs, user_env_confs = _get_user_configs(pctx, node_group)
-    xml_confs = _merge_configs(user_xml_confs, hadoop_xml_confs)
-    env_confs = _merge_configs(pctx['env_confs'], user_env_confs)
+    xml_confs = s_cfg.merge_configs(user_xml_confs, hadoop_xml_confs)
+    env_confs = s_cfg.merge_configs(pctx['env_confs'], user_env_confs)
 
     return xml_confs, env_confs
 
@@ -190,8 +191,8 @@ def _get_user_configs(pctx, node_group):
     cl_xml_confs, cl_env_confs = _separate_configs(
         node_group.cluster.cluster_configs, pctx['env_confs'])
 
-    xml_confs = _merge_configs(cl_xml_confs, ng_xml_confs)
-    env_confs = _merge_configs(cl_env_confs, ng_env_confs)
+    xml_confs = s_cfg.merge_configs(cl_xml_confs, ng_xml_confs)
+    env_confs = s_cfg.merge_configs(cl_env_confs, ng_env_confs)
     return xml_confs, env_confs
 
 
@@ -334,21 +335,6 @@ def _get_hadoop_dirs(node_group):
 
 def _make_hadoop_paths(paths, hadoop_dir):
     return [path + hadoop_dir for path in paths]
-
-
-def _merge_configs(a, b):
-    res = {}
-
-    def update(cfg):
-        for service, configs in six.iteritems(cfg):
-            if not res.get(service):
-                res[service] = {}
-
-            res[service].update(configs)
-
-    update(a)
-    update(b)
-    return res
 
 
 @cpo.event_wrapper(

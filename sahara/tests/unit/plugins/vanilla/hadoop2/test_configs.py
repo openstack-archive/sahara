@@ -32,36 +32,6 @@ class VanillaTwoConfigTestCase(base.SaharaTestCase):
         }
         self.assertEqual(expected, dirs)
 
-    def test_merge_configs(self):
-        a = {
-            'HDFS': {
-                'param1': 'value1',
-                'param2': 'value2'
-            }
-        }
-        b = {
-            'HDFS': {
-                'param1': 'value3',
-                'param3': 'value4'
-            },
-            'YARN': {
-                'param5': 'value5'
-            }
-        }
-
-        res = c._merge_configs(a, b)
-        expected = {
-            'HDFS': {
-                'param1': 'value3',
-                'param2': 'value2',
-                'param3': 'value4'
-            },
-            'YARN': {
-                'param5': 'value5'
-            }
-        }
-        self.assertEqual(expected, res)
-
 
 class FakeNG(object):
     def __init__(self, storage_paths=None):
