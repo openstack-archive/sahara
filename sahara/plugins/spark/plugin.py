@@ -25,6 +25,7 @@ from sahara.i18n import _
 from sahara.i18n import _LI
 from sahara.plugins import exceptions as ex
 from sahara.plugins import provisioning as p
+from sahara.plugins import recommendations_utils as ru
 from sahara.plugins.spark import config_helper as c_helper
 from sahara.plugins.spark import edp_engine
 from sahara.plugins.spark import run_scripts as run
@@ -533,3 +534,14 @@ class SparkProvider(p.ProvisioningPluginBase):
                 ports.extend(ports_map[process])
 
         return ports
+
+    def recommend_configs(self, cluster):
+        want_to_configure = {
+            'cluster_configs': {
+                'dfs.replication': ('HDFS', 'dfs.replication')
+            }
+        }
+        provider = ru.HadoopAutoConfigsProvider(
+            want_to_configure, self.get_configs(
+                cluster.hadoop_version), cluster)
+        provider.apply_recommended_configs()
