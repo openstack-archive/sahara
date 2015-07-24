@@ -23,8 +23,8 @@ import sahara.exceptions as ex
 
 class OozieClient(object):
     def __init__(self, url, oozie_server):
-        self.job_url = url + "/v1/job/%s"
-        self.jobs_url = url + "/v1/jobs"
+        self.job_url = url + "/v2/job/%s"
+        self.jobs_url = url + "/v2/jobs"
         self.oozie_server = oozie_server
         self.port = urlparse.urlparse(url).port
 
