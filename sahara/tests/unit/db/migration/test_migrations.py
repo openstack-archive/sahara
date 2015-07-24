@@ -47,6 +47,11 @@ class SaharaMigrationsCheckers(object):
         for column in columns:
             self.assertColumnExists(engine, table, column)
 
+    def assertColumnType(self, engine, table, column, column_type):
+        t = db_utils.get_table(engine, table)
+        column_ref_type = str(t.c[column].type)
+        self.assertEqual(column_ref_type, column_type)
+
     def assertColumnCount(self, engine, table, columns):
         t = db_utils.get_table(engine, table)
         self.assertEqual(len(columns), len(t.columns))
@@ -507,6 +512,12 @@ class SaharaMigrationsCheckers(object):
 
         for table in tables:
             self.assertColumnExists(engine, table, 'shares')
+
+    def _check_025(self, engine, data):
+        self.assertColumnType(engine, 'instances', 'internal_ip',
+                              'VARCHAR(45)')
+        self.assertColumnType(engine, 'instances', 'management_ip',
+                              'VARCHAR(45)')
 
 
 class TestMigrationsMySQL(SaharaMigrationsCheckers,
