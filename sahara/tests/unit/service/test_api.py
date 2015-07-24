@@ -120,6 +120,9 @@ class FakePlugin(object):
     def get_configs(self, version):
         return {}
 
+    def recommend_configs(self, cluster):
+        self.calls_order.append('recommend_configs')
+
 
 class FakePluginManager(object):
     def __init__(self, calls_order):
@@ -177,7 +180,7 @@ class TestApi(base.SaharaWithDbTestCase):
         self.assertEqual(3, ng_count)
         api.terminate_cluster(result_cluster.id)
         self.assertEqual(
-            ['get_open_ports', 'validate',
+            ['get_open_ports', 'recommend_configs', 'validate',
              'ops.provision_cluster',
              'ops.terminate_cluster'], self.calls_order)
 
@@ -204,9 +207,9 @@ class TestApi(base.SaharaWithDbTestCase):
         api.terminate_cluster(result_cluster1.id)
         api.terminate_cluster(result_cluster2.id)
         self.assertEqual(
-            ['get_open_ports', 'validate',
+            ['get_open_ports', 'recommend_configs', 'validate',
              'ops.provision_cluster',
-             'get_open_ports', 'validate',
+             'get_open_ports', 'recommend_configs', 'validate',
              'ops.provision_cluster',
              'ops.terminate_cluster',
              'ops.terminate_cluster'], self.calls_order)
@@ -249,8 +252,9 @@ class TestApi(base.SaharaWithDbTestCase):
         self.assertEqual(4, ng_count)
         api.terminate_cluster(result_cluster.id)
         self.assertEqual(
-            ['get_open_ports', 'validate', 'ops.provision_cluster',
-             'get_open_ports', 'get_open_ports', 'validate_scaling',
+            ['get_open_ports', 'recommend_configs', 'validate',
+             'ops.provision_cluster', 'get_open_ports', 'get_open_ports',
+             'recommend_configs', 'validate_scaling',
              'ops.provision_scaled_cluster',
              'ops.terminate_cluster'], self.calls_order)
 

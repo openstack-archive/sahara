@@ -484,6 +484,18 @@ class SaharaMigrationsCheckers(object):
         self.assertColumnCount(engine, 'job_interface_arguments', columns)
         self.assertColumnsExist(engine, 'job_interface_arguments', columns)
 
+    def _check_023(self, engine, data):
+        self.assertColumnExists(engine, 'clusters',
+                                'use_autoconfig')
+        self.assertColumnExists(engine, 'cluster_templates',
+                                'use_autoconfig')
+        self.assertColumnExists(engine, 'node_group_templates',
+                                'use_autoconfig')
+        self.assertColumnExists(engine, 'node_groups',
+                                'use_autoconfig')
+        self.assertColumnExists(engine, 'templates_relations',
+                                'use_autoconfig')
+
 
 class TestMigrationsMySQL(SaharaMigrationsCheckers,
                           base.BaseWalkMigrationTestCase,

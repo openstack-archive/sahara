@@ -594,3 +594,7 @@ class VersionHandler(avm.AbstractVersionHandler):
 
     def on_terminate_cluster(self, cluster):
         proxy.delete_proxy_user_for_cluster(cluster)
+
+    def recommend_configs(self, cluster):
+        # We don't support any recommendations in Vanilla 1 plugin
+        pass

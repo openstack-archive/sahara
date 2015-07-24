@@ -90,6 +90,10 @@ class ProvisioningPluginBase(plugins_base.PluginInterface):
     def on_terminate_cluster(self, cluster):
         pass
 
+    @plugins_base.optional
+    def recommend_configs(self, cluster):
+        pass
+
     def to_dict(self):
         res = super(ProvisioningPluginBase, self).to_dict()
         res['versions'] = self.get_versions()
