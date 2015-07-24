@@ -44,7 +44,6 @@ class Context(context.RequestContext):
                  roles=None,
                  is_admin=None,
                  remote_semaphore=None,
-                 auth_uri=None,
                  resource_uuid=None,
                  current_instance_info=None,
                  request_id=None,
@@ -66,10 +65,6 @@ class Context(context.RequestContext):
         self.remote_semaphore = remote_semaphore or semaphore.Semaphore(
             CONF.cluster_remote_threshold)
         self.roles = roles
-        if auth_uri:
-            self.auth_uri = auth_uri
-        else:
-            self.auth_uri = _get_auth_uri()
         if overwrite or not hasattr(context._request_store, 'context'):
             self.update_store()
 
@@ -89,7 +84,6 @@ class Context(context.RequestContext):
             self.roles,
             self.is_admin,
             self.remote_semaphore,
-            self.auth_uri,
             self.resource_uuid,
             self.current_instance_info,
             self.request_id,
@@ -107,7 +101,6 @@ class Context(context.RequestContext):
             'project_name': self.tenant_name,
             'is_admin': self.is_admin,
             'roles': self.roles,
-            'auth_uri': self.auth_uri,
             'resource_uuid': self.resource_uuid,
             'request_id': self.request_id,
         }
@@ -167,28 +160,6 @@ def set_ctx(new_ctx):
     if new_ctx:
         setattr(_CTX_STORE, _CTX_KEY, new_ctx)
         setattr(context._request_store, 'context', new_ctx)
-
-
-def _get_auth_uri():
-    if CONF.keystone_authtoken.auth_uri is not None:
-        auth_uri = CONF.keystone_authtoken.auth_uri
-    else:
-        if CONF.keystone_authtoken.identity_uri is not None:
-            identity_uri = CONF.keystone_authtoken.identity_uri
-        else:
-            host = CONF.keystone_authtoken.auth_host
-            port = CONF.keystone_authtoken.auth_port
-            protocol = CONF.keystone_authtoken.auth_protocol
-            identity_uri = '%s://%s:%s' % (protocol, host, port)
-
-        if CONF.use_identity_api_v3 is False:
-            auth_version = 'v2.0'
-        else:
-            auth_version = 'v3'
-
-        auth_uri = '%s/%s' % (identity_uri, auth_version)
-
-    return auth_uri
 
 
 def _wrapper(ctx, thread_description, thread_group, func, *args, **kwargs):

@@ -33,7 +33,7 @@ SERVICE_SPECIFIC = ["auth.url", "tenant",
 
 
 class SwiftIntegrationTestCase(base.SaharaTestCase):
-    @mock.patch('sahara.utils.openstack.base.url_for')
+    @mock.patch('sahara.utils.openstack.base.retrieve_auth_url')
     def test_get_swift_configs(self, url_for_mock):
         url_for_mock.return_value = 'http://localhost:5000/v2.0'
         self.setup_context(tenant_name='test_tenant')

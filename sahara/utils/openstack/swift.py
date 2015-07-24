@@ -18,6 +18,7 @@ import swiftclient
 
 from sahara.swift import swift_helper as sh
 from sahara.swift import utils as su
+from sahara.utils.openstack import base
 from sahara.utils.openstack import keystone as k
 
 opts = [
@@ -76,7 +77,8 @@ def client_from_token(token):
     return swiftclient.Connection(auth_version='2.0',
                                   cacert=CONF.swift.ca_file,
                                   insecure=CONF.swift.api_insecure,
-                                  preauthurl=su.retrieve_preauth_url(),
+                                  preauthurl=base.url_for(
+                                      service_type="object-store"),
                                   preauthtoken=token,
                                   retries=CONF.retries.retries_number,
                                   retry_on_ratelimit=True,

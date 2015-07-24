@@ -29,6 +29,8 @@ class FakeImage(object):
 class TestImages(base.SaharaTestCase):
     @mock.patch('sahara.utils.openstack.base.url_for', return_value='')
     def test_list_registered_images(self, url_for_mock):
+        self.override_config('auth_uri', 'https://127.0.0.1:8080/v3/',
+                             'keystone_authtoken')
         some_images = [
             FakeImage('foo', ['bar', 'baz'], 'test'),
             FakeImage('baz', [], 'test'),

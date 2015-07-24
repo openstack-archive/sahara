@@ -18,9 +18,7 @@ from oslo_config import cfg
 import six
 from six.moves.urllib import parse as urlparse
 
-from sahara import context
 from sahara.utils.openstack import base as clients_base
-from sahara.utils.openstack import keystone as k
 
 
 CONF = cfg.CONF
@@ -35,8 +33,7 @@ def retrieve_auth_url():
 
     Hadoop Swift library doesn't support keystone v3 api.
     """
-    auth_url = clients_base.url_for(context.current().service_catalog,
-                                    'identity')
+    auth_url = clients_base.retrieve_auth_url()
     info = urlparse.urlparse(auth_url)
 
     if CONF.use_domain_for_proxy_users:
@@ -54,22 +51,6 @@ def retrieve_auth_url():
         return '{scheme}://{hostname}/{url}/'.format(scheme=info.scheme,
                                                      hostname=info.hostname,
                                                      url=url)
-
-
-def retrieve_preauth_url():
-    '''This function returns the storage URL for Swift in the current project.
-
-    :returns: The storage URL for the current project's Swift store, or None
-              if it can't be found.
-
-    '''
-    client = k.client()
-    catalog = clients_base.execute_with_retries(
-        client.service_catalog.get_endpoints, 'object-store')
-    for ep in catalog.get('object-store'):
-        if ep.get('interface') == 'public':
-            return ep.get('url')
-    return None
 
 
 def inject_swift_url_suffix(url):

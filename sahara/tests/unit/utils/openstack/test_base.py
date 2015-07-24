@@ -58,10 +58,10 @@ class AuthUrlTest(testbase.SaharaTestCase):
 
     def test_retrieve_auth_url_api_v3(self):
         self.override_config('use_identity_api_v3', True)
-        correct = "https://127.0.0.1:8080/v3/"
+        correct = "https://127.0.0.1:8080/v3"
 
         def _assert(uri):
-            self.setup_context(auth_uri=uri)
+            self.override_config('auth_uri', uri, 'keystone_authtoken')
             self.assertEqual(correct, base.retrieve_auth_url())
 
         _assert("%s/" % correct)
@@ -74,12 +74,14 @@ class AuthUrlTest(testbase.SaharaTestCase):
         _assert("https://127.0.0.1:8080/v42")
         _assert("https://127.0.0.1:8080/v42/")
 
-    def test_retrieve_auth_url_api_v3_without_port(self):
+    @mock.patch("sahara.utils.openstack.base.url_for")
+    def test_retrieve_auth_url_api_v3_without_port(self, mock_url_for):
         self.override_config('use_identity_api_v3', True)
-        correct = "https://127.0.0.1/v3/"
+        self.setup_context(service_catalog=True)
+        correct = "https://127.0.0.1/v3"
 
         def _assert(uri):
-            self.setup_context(auth_uri=uri)
+            mock_url_for.return_value = uri
             self.assertEqual(correct, base.retrieve_auth_url())
 
         _assert("%s/" % correct)
@@ -94,10 +96,10 @@ class AuthUrlTest(testbase.SaharaTestCase):
 
     def test_retrieve_auth_url_api_v20(self):
         self.override_config('use_identity_api_v3', False)
-        correct = "https://127.0.0.1:8080/v2.0/"
+        correct = "https://127.0.0.1:8080/v2.0"
 
         def _assert(uri):
-            self.setup_context(auth_uri=uri)
+            self.override_config('auth_uri', uri, 'keystone_authtoken')
             self.assertEqual(correct, base.retrieve_auth_url())
 
         _assert("%s/" % correct)
@@ -110,12 +112,14 @@ class AuthUrlTest(testbase.SaharaTestCase):
         _assert("https://127.0.0.1:8080/v42")
         _assert("https://127.0.0.1:8080/v42/")
 
-    def test_retrieve_auth_url_api_v20_without_port(self):
+    @mock.patch("sahara.utils.openstack.base.url_for")
+    def test_retrieve_auth_url_api_v20_without_port(self, mock_url_for):
         self.override_config('use_identity_api_v3', False)
-        correct = "https://127.0.0.1/v2.0/"
+        self.setup_context(service_catalog=True)
+        correct = "https://127.0.0.1/v2.0"
 
         def _assert(uri):
-            self.setup_context(auth_uri=uri)
+            mock_url_for.return_value = uri
             self.assertEqual(correct, base.retrieve_auth_url())
 
         _assert("%s/" % correct)

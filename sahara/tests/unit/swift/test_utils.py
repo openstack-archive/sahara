@@ -25,7 +25,7 @@ class SwiftUtilsTest(testbase.SaharaTestCase):
         super(SwiftUtilsTest, self).setUp()
         self.override_config('use_identity_api_v3', True)
 
-    @mock.patch('sahara.utils.openstack.base.url_for')
+    @mock.patch('sahara.utils.openstack.base.retrieve_auth_url')
     def test_retrieve_auth_url(self, url_for_mock):
         correct = "https://127.0.0.1:8080/v2.0/"
 
@@ -41,7 +41,7 @@ class SwiftUtilsTest(testbase.SaharaTestCase):
         _assert("https://127.0.0.1:8080/v42/")
         _assert("https://127.0.0.1:8080/foo")
 
-    @mock.patch('sahara.utils.openstack.base.url_for')
+    @mock.patch('sahara.utils.openstack.base.retrieve_auth_url')
     def test_retrieve_auth_url_without_port(self, url_for_mock):
         correct = "https://127.0.0.1/v2.0/"
 
