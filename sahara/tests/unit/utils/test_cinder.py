@@ -36,10 +36,10 @@ class TestCinder(test_base.SaharaTestCase):
         service_catalog = '''[
             { "type": "volume",
               "endpoints": [ { "region": "RegionOne",
-                               "publicURL": "http://localhost/" } ] },
+                               "internalURL": "http://localhost/" } ] },
             { "type": "volumev2",
               "endpoints": [ { "region": "RegionOne",
-                               "publicURL": "http://localhost/" } ] } ]'''
+                               "internalURL": "http://localhost/" } ] } ]'''
 
         super(TestCinder, self).setup_context(
             username=username, tenant_id=tenant_id, token=token,

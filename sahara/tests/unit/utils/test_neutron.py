@@ -14,12 +14,12 @@
 # limitations under the License.
 
 import mock
-import testtools
 
+from sahara.tests.unit import base
 from sahara.utils.openstack import neutron as neutron_client
 
 
-class NeutronClientTest(testtools.TestCase):
+class NeutronClientTest(base.SaharaTestCase):
     @mock.patch("sahara.utils.openstack.keystone.token_auth")
     @mock.patch("neutronclient.neutron.client.Client")
     def test_get_router(self, patched, token_auth):

@@ -29,7 +29,10 @@ opts = [
                 help='Allow to perform insecure SSL requests to nova.'),
     cfg.StrOpt('ca_file',
                help='Location of ca certificates file to use for nova '
-                    'client requests.')
+                    'client requests.'),
+    cfg.StrOpt("endpoint_type",
+               default="internalURL",
+               help="Endpoint type for nova client requests")
 ]
 
 nova_group = cfg.OptGroup(name='nova',
@@ -42,7 +45,8 @@ CONF.register_opts(opts, group=nova_group)
 
 def client():
     session = sessions.cache().get_session(sessions.SESSION_TYPE_NOVA)
-    nova = nova_client.Client(session=session, auth=keystone.auth())
+    nova = nova_client.Client(session=session, auth=keystone.auth(),
+                              endpoint_type=CONF.nova.endpoint_type)
     nova.images = images.SaharaImageManager(nova)
     return nova
 

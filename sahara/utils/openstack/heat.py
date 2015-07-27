@@ -28,7 +28,10 @@ opts = [
                 help='Allow to perform insecure SSL requests to heat.'),
     cfg.StrOpt('ca_file',
                help='Location of ca certificates file to use for heat '
-                    'client requests.')
+                    'client requests.'),
+    cfg.StrOpt("endpoint_type",
+               default="internalURL",
+               help="Endpoint type for heat client requests")
 ]
 
 heat_group = cfg.OptGroup(name='heat',
@@ -41,7 +44,8 @@ CONF.register_opts(opts, group=heat_group)
 
 def client():
     ctx = context.current()
-    heat_url = base.url_for(ctx.service_catalog, 'orchestration')
+    heat_url = base.url_for(ctx.service_catalog, 'orchestration',
+                            endpoint_type=CONF.heat.endpoint_type)
     return heat_client.Client('1', heat_url, token=ctx.auth_token,
                               cert_file=CONF.heat.ca_file,
                               insecure=CONF.heat.api_insecure,

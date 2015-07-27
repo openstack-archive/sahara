@@ -27,7 +27,10 @@ opts = [
                 help='Allow to perform insecure SSL requests to swift.'),
     cfg.StrOpt('ca_file',
                help='Location of ca certificates file to use for swift '
-                    'client requests.')
+                    'client requests.'),
+    cfg.StrOpt("endpoint_type",
+               default="internalURL",
+               help="Endpoint type for swift client requests")
 ]
 
 swift_group = cfg.OptGroup(name='swift',
@@ -78,7 +81,8 @@ def client_from_token(token):
                                   cacert=CONF.swift.ca_file,
                                   insecure=CONF.swift.api_insecure,
                                   preauthurl=base.url_for(
-                                      service_type="object-store"),
+                                      service_type="object-store",
+                                      endpoint_type=CONF.swift.endpoint_type),
                                   preauthtoken=token,
                                   retries=CONF.retries.retries_number,
                                   retry_on_ratelimit=True,

@@ -48,7 +48,7 @@ CONF.register_opts(opts, group=retries)
 
 
 def url_for(service_catalog=None, service_type='identity',
-            endpoint_type='publicURL'):
+            endpoint_type="internalURL"):
     if not service_catalog:
         service_catalog = context.current().service_catalog
     try:
@@ -65,11 +65,12 @@ def url_for(service_catalog=None, service_type='identity',
                 region_name=CONF.os_region_name)
 
 
-def retrieve_auth_url():
+def retrieve_auth_url(endpoint_type="internalURL"):
     version = 'v3' if CONF.use_identity_api_v3 else 'v2.0'
     ctx = context.current()
     if ctx.service_catalog:
-        info = urlparse.urlparse(url_for(ctx.service_catalog, 'identity'))
+        info = urlparse.urlparse(url_for(ctx.service_catalog, 'identity',
+                                         endpoint_type))
     else:
         info = urlparse.urlparse(CONF.keystone_authtoken.auth_uri)
     return "%s://%s/%s" % (info[:2] + (version,))
