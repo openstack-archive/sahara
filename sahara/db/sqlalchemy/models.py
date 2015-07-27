@@ -314,13 +314,23 @@ class JobExecution(mb.SaharaBase):
     cluster_id = sa.Column(sa.String(36),
                            sa.ForeignKey('clusters.id'))
     info = sa.Column(st.JsonDictType())
-    oozie_job_id = sa.Column(sa.String(100))
+    engine_job_id = sa.Column(sa.String(100))
     return_code = sa.Column(sa.String(80))
     job_configs = sa.Column(st.JsonDictType())
     extra = sa.Column(st.JsonDictType())
     data_source_urls = sa.Column(st.JsonDictType())
     is_public = sa.Column(sa.Boolean())
     is_protected = sa.Column(sa.Boolean())
+
+    def to_dict(self):
+        d = super(JobExecution, self).to_dict()
+        # The oozie_job_id filed is renamed to engine_job_id
+        # to make this field more universal. But, we need to
+        # carry both engine_job_id and oozie_job_id until we
+        # can deprecate "oozie_job_id".
+        d['oozie_job_id'] = self.engine_job_id
+
+        return d
 
 
 mains_association = sa.Table("mains_association",

@@ -53,7 +53,7 @@ class StormJobEngine(base_engine.JobEngine):
 
     def _get_instance_if_running(self, job_execution):
         topology_name, inst_id = self._get_topology_and_inst_id(
-            job_execution.oozie_job_id)
+            job_execution.engine_job_id)
         if not topology_name or not inst_id or (
            job_execution.info['status'] in edp.JOB_STATUSES_TERMINATED):
             return None, None
@@ -70,7 +70,7 @@ class StormJobEngine(base_engine.JobEngine):
 
     def _get_topology_name(self, job_execution):
         topology_name, inst_id = self._get_topology_and_inst_id(
-            job_execution.oozie_job_id)
+            job_execution.engine_job_id)
 
         return topology_name
 

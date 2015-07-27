@@ -70,11 +70,11 @@ class TestStorm(base.SaharaTestCase):
         job_exec = mock.Mock()
         eng = se.StormJobEngine("cluster")
 
-        job_exec.oozie_job_id = "invalid id"
+        job_exec.engine_job_id = "invalid id"
         self.assertEqual((None, None),
                          eng._get_instance_if_running(job_exec))
 
-        job_exec.oozie_job_id = "topology_name@inst_id"
+        job_exec.engine_job_id = "topology_name@inst_id"
         for state in edp.JOB_STATUSES_TERMINATED:
             job_exec.info = {'status': state}
             self.assertEqual((None, None),
@@ -119,7 +119,7 @@ class TestStorm(base.SaharaTestCase):
         get_instances.return_value = ["instance"]
 
         # Pretend process is running
-        job_exec.oozie_job_id = "topology_name@inst_id"
+        job_exec.engine_job_id = "topology_name@inst_id"
         job_exec.info = {'status': edp.JOB_STATUS_RUNNING}
         job_exec.job_configs = {"configs": {"topology_name": "topology_name"}}
         status = eng._get_job_status_from_remote(job_exec)
@@ -199,7 +199,7 @@ class TestStorm(base.SaharaTestCase):
             return_value=master_instance)
         eng = se.StormJobEngine("cluster")
         job_exec = mock.Mock()
-        job_exec.oozie_job_id = "topology_name@inst_id"
+        job_exec.engine_job_id = "topology_name@inst_id"
         job_exec.info = {'status': edp.JOB_STATUS_RUNNING}
         job_exec.job_configs = {"configs": {"topology_name": "topology_name"}}
         status = eng.cancel_job(job_exec)

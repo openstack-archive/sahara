@@ -77,11 +77,11 @@ class TestSpark(base.SaharaTestCase):
         job_exec = mock.Mock()
         eng = se.SparkJobEngine("cluster")
 
-        job_exec.oozie_job_id = "invalid id"
+        job_exec.engine_job_id = "invalid id"
         self.assertEqual((None, None),
                          eng._get_instance_if_running(job_exec))
 
-        job_exec.oozie_job_id = "pid@inst_id"
+        job_exec.engine_job_id = "pid@inst_id"
         for state in edp.JOB_STATUSES_TERMINATED:
             job_exec.info = {'status': state}
             self.assertEqual((None, None),

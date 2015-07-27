@@ -25,7 +25,7 @@ class FakeJobEngine(base_engine.JobEngine):
         pass
 
     def run_job(self, job_execution):
-        return 'oozie_job_id', edp.JOB_STATUS_SUCCEEDED, None
+        return 'engine_job_id', edp.JOB_STATUS_SUCCEEDED, None
 
     def validate_job_execution(self, cluster, job, data):
         pass
