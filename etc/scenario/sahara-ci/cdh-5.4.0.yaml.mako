@@ -40,6 +40,8 @@ clusters:
         node_processes:
           - HDFS_NAMENODE
           - YARN_RESOURCEMANAGER
+          - SENTRY_SERVER
+          - ZOOKEEPER_SERVER
         auto_security_group: true
       - name: master-additional
         flavor: ${medium_flavor_id}
@@ -66,4 +68,5 @@ clusters:
       name: ${cluster_name}
     scenario:
       - run_jobs
+      - sentry
     edp_jobs_flow: hadoop_2
