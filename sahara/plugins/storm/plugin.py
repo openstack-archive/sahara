@@ -86,10 +86,10 @@ class StormProvider(p.ProvisioningPluginBase):
     def start_cluster(self, cluster):
         sm_instance = utils.get_instance(cluster, "nimbus")
         sl_instances = utils.get_instances(cluster, "supervisor")
-        zk_instance = utils.get_instances(cluster, "zookeeper")
+        zk_instances = utils.get_instances(cluster, "zookeeper")
 
-        if zk_instance:
-            self._start_zookeeper_processes(zk_instance)
+        # start zookeeper processes
+        self._start_zookeeper_processes(zk_instances)
 
         # start storm master
         if sm_instance:
