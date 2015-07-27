@@ -466,3 +466,19 @@ class TestBase(testtools.TestCase):
                     'volume_count': 2,
                     'volume_mount_prefix': 2
                 }], self.base_scenario._get_node_list_with_volumes())
+
+    @mock.patch('sahara.tests.scenario.clients.SaharaClient.__init__',
+                return_value=None)
+    @mock.patch('sahara.tests.scenario.clients.SaharaClient.get_datasource')
+    def test_put_io_data_to_configs(self, get_datasources, sahara_mock):
+        self.base_scenario._init_clients()
+        get_datasources.side_effect = [
+            mock.Mock(id='1', url="swift://cont/input"),
+            mock.Mock(id='2', url="hdfs://cont/output")
+        ]
+        configs = {'args': ['2', "{input_datasource}",
+                            "{output_datasource}"]}
+        self.assertEqual({'args': ['2', 'swift://cont/input',
+                                   'hdfs://cont/output']},
+                         self.base_scenario._put_io_data_to_configs(
+            configs, '1', '2'))

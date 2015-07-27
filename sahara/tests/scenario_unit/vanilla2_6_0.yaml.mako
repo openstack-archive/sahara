@@ -96,3 +96,19 @@ edp_jobs_flow:
           main_lib:
               type: swift
               source: etc/edp-examples/edp-hive/script.q
+        - type: MapReduce
+          configs:
+              mapred.mapper.class: org.apache.oozie.example.SampleMapper
+              mapred.reducer.class: org.apache.oozie.example.SampleReducer
+          additional_libs:
+              - type: database
+                source: etc/edp-examples/edp-java/edp-java.jar
+          input_datasource:
+              type: swift
+              source: etc/edp-examples/edp-pig/top-todoers/data/input
+          output_datasource:
+              type: hdfs
+              destination: /user/hadoop/edp-output
+          args:
+              - {input_datasource}
+              - {output_datasource}

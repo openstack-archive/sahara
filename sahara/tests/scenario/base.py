@@ -140,6 +140,23 @@ class BaseTestCase(base.BaseTestCase):
                     break
                 time.sleep(5)
 
+    def _inject_datasources_data(self, arg, input_url, output_url):
+        return arg.format(
+            input_datasource=input_url, output_datasource=output_url)
+
+    def _put_io_data_to_configs(self, configs, input_id, output_id):
+        input_url, output_url = None, None
+        if input_id is not None:
+            input_url = self.sahara.get_datasource(
+                data_source_id=input_id).url
+        if output_id is not None:
+            output_url = self.sahara.get_datasource(
+                data_source_id=output_id).url
+        pl = lambda x: self._inject_datasources_data(x, input_url, output_url)
+        args = list(map(pl, configs.get('args', [])))
+        configs['args'] = args
+        return configs
+
     @track_result("Check EDP jobs", False)
     def check_run_jobs(self):
         jobs = {}
@@ -154,6 +171,8 @@ class BaseTestCase(base.BaseTestCase):
             main_libs, additional_libs = self._create_job_binaries(job)
             job_id = self._create_job(job['type'], main_libs, additional_libs)
             configs = self._parse_job_configs(job)
+            configs = self._put_io_data_to_configs(
+                configs, input_id, output_id)
             pre_exec.append([job_id, input_id, output_id, configs])
 
         job_exec_ids = []
