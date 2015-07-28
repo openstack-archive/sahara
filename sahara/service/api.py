@@ -221,7 +221,7 @@ def get_plugin(plugin_name, version=None):
         res = plugin.as_resource()
         if version:
             if version in plugin.get_versions():
-                configs = plugin.get_configs(version)
+                configs = plugin.get_all_configs(version)
                 res._info['configs'] = [c.dict for c in configs]
                 processes = plugin.get_node_processes(version)
                 res._info['node_processes'] = processes

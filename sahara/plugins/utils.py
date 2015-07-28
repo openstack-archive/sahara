@@ -87,7 +87,7 @@ def get_config_value_or_default(service, name, cluster):
     # Find and return the default
 
     plugin = plugins_base.PLUGINS.get_plugin(cluster.plugin_name)
-    configs = plugin.get_configs(cluster.hadoop_version)
+    configs = plugin.get_all_configs(cluster.hadoop_version)
 
     for config in configs:
         if config.applicable_target == service and config.name == name:

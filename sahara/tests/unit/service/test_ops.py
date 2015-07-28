@@ -99,6 +99,7 @@ class TestOPS(base.SaharaWithDbTestCase):
                           'configure_cluster', 'start_cluster'], self.SEQUENCE,
                          'Order of calls is wrong')
 
+    @mock.patch('sahara.service.ntp_service.configure_ntp')
     @mock.patch('sahara.service.ops.CONF')
     @mock.patch('sahara.service.ops._prepare_provisioning',
                 return_value=(mock.Mock(), mock.Mock(), FakePlugin()))
@@ -106,7 +107,7 @@ class TestOPS(base.SaharaWithDbTestCase):
                 return_value=FakePlugin())
     @mock.patch('sahara.utils.general.get_instances')
     def test_provision_scaled_cluster(self, p_get_instances, p_change_status,
-                                      p_prep_provisioning, p_conf):
+                                      p_prep_provisioning, p_conf, p_ntp):
         del self.SEQUENCE[:]
         ops.INFRA = FakeINFRA()
         p_conf.use_identity_api_v3 = True

@@ -94,6 +94,13 @@ class ProvisioningPluginBase(plugins_base.PluginInterface):
     def recommend_configs(self, cluster):
         pass
 
+    def get_all_configs(self, hadoop_version):
+        common = list_of_common_configs()
+        plugin_specific_configs = self.get_configs(hadoop_version)
+        if plugin_specific_configs:
+            common.extend(plugin_specific_configs)
+        return common
+
     def to_dict(self):
         res = super(ProvisioningPluginBase, self).to_dict()
         res['versions'] = self.get_versions()
@@ -102,7 +109,7 @@ class ProvisioningPluginBase(plugins_base.PluginInterface):
     # Some helpers for plugins
 
     def _map_to_user_inputs(self, hadoop_version, configs):
-        config_objs = self.get_configs(hadoop_version)
+        config_objs = self.get_all_configs(hadoop_version)
 
         # convert config objects to applicable_target -> config_name -> obj
         config_objs_map = {}
@@ -203,3 +210,23 @@ class ValidationError(object):
 
     def __repr__(self):
         return "<ValidationError %s>" % self.config.name
+
+# COMMON FOR ALL PLUGINS CONFIGS
+
+NTP_URL = Config(
+    "URL of NTP server", 'general', 'cluster', priority=1,
+    default_value='', is_optional=True,
+    description='URL of the NTP server for synchronization time on cluster'
+                ' instances'
+)
+
+NTP_ENABLED = Config(
+    "Enable NTP service", 'general', 'cluster', priority=1, default_value=True,
+    config_type="bool",
+    description='Enables NTP service for synchronization time on cluster '
+                'instances'
+)
+
+
+def list_of_common_configs():
+    return [NTP_ENABLED, NTP_URL]
