@@ -556,11 +556,12 @@ class TestSpark(base.SaharaTestCase):
             'cd %(workflow_dir)s; '
             './launch_command %(spark_user)s%(spark_submit)s '
             '--driver-class-path %(driver_cp)s '
+            '--files spark.xml '
             '--class org.openstack.sahara.edp.SparkWrapper '
-            '--jars app.jar,jar1.jar,jar2.jar '
+            '--jars wrapper.jar,jar1.jar,jar2.jar '
             '--master %(master)s '
             '--deploy-mode %(deploy_mode)s '
-            'wrapper.jar spark.xml org.me.myclass input_arg output_arg '
+            'app.jar spark.xml org.me.myclass input_arg output_arg '
             '> /dev/null 2>&1 & echo $!' % {"workflow_dir": self.workflow_dir,
                                             "spark_user": self.spark_user,
                                             "spark_submit": self.spark_submit,
@@ -593,11 +594,12 @@ class TestSpark(base.SaharaTestCase):
             'cd %(workflow_dir)s; '
             './launch_command %(spark_user)s%(spark_submit)s '
             '--driver-class-path %(driver_cp)s '
+            '--files spark.xml '
             '--class org.openstack.sahara.edp.SparkWrapper '
-            '--jars app.jar '
+            '--jars wrapper.jar '
             '--master %(master)s '
             '--deploy-mode %(deploy_mode)s '
-            'wrapper.jar spark.xml org.me.myclass input_arg output_arg '
+            'app.jar spark.xml org.me.myclass input_arg output_arg '
             '> /dev/null 2>&1 & echo $!' % {"workflow_dir": self.workflow_dir,
                                             "spark_user": self.spark_user,
                                             "spark_submit": self.spark_submit,
@@ -629,11 +631,12 @@ class TestSpark(base.SaharaTestCase):
             'cd %(workflow_dir)s; '
             './launch_command %(spark_user)s%(spark_submit)s '
             '--driver-class-path %(driver_cp)s '
+            '--files spark.xml '
             '--class org.openstack.sahara.edp.SparkWrapper '
-            '--jars app.jar '
+            '--jars wrapper.jar '
             '--master %(master)s '
             '--deploy-mode %(deploy_mode)s '
-            'wrapper.jar spark.xml org.me.myclass '
+            'app.jar spark.xml org.me.myclass '
             '> /dev/null 2>&1 & echo $!' % {"workflow_dir": self.workflow_dir,
                                             "spark_user": self.spark_user,
                                             "spark_submit": self.spark_submit,
