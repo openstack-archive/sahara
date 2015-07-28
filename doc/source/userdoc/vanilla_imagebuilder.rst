@@ -40,7 +40,7 @@ To create vanilla images follow these steps:
 
       tox -e venv -- sahara-image-create
 
-   Tox will create a virtualenv and install requried python packages in it,
+   Tox will create a virtualenv and install required python packages in it,
    clone the repositories "https://github.com/openstack/diskimage-builder" and "https://github.com/openstack/sahara-image-elements" and export necessary parameters.
         * ``DIB_HADOOP_VERSION`` - version of Hadoop to install
         * ``JAVA_DOWNLOAD_URL`` - download link for JDK (tarball or bin)
