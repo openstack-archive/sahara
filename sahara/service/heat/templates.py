@@ -129,10 +129,8 @@ class ClusterStack(object):
         if not update_existing:
             b.execute_with_retries(heat.stacks.create, **kwargs)
         else:
-            for stack in b.execute_with_retries(heat.stacks.list):
-                if stack.stack_name == self.cluster.name:
-                    b.execute_with_retries(stack.update, **kwargs)
-                    break
+            stack = h.get_stack(self.cluster.name)
+            b.execute_with_retries(stack.update, **kwargs)
 
         self.heat_stack = h.get_stack(self.cluster.name)
 
