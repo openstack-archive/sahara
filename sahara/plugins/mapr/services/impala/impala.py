@@ -77,31 +77,6 @@ class Impala(s.Service):
 
 
 @six.add_metaclass(s.Single)
-class ImpalaV123(Impala):
-    def __init__(self):
-        super(ImpalaV123, self).__init__()
-        self._version = '1.2.3'
-        self._dependencies = [
-            ('mapr-hive', hive.HiveV012().version),
-            ('mapr-impala', self.version),
-        ]
-        self._validation_rules = [
-            vu.depends_on(hive.HiveV012(), self),
-            vu.on_same_node(IMPALA_CATALOG, hive.HIVE_SERVER_2),
-            vu.exactly(1, IMPALA_STATE_STORE),
-            vu.exactly(1, IMPALA_CATALOG),
-            vu.at_least(1, IMPALA_SERVER),
-        ]
-
-    def _get_impala_env_props(self, context):
-        return {
-            'impala_version': self.version,
-            'statestore_host': context.get_instance_ip(IMPALA_STATE_STORE),
-            'catalog_host': context.get_instance_ip(IMPALA_CATALOG),
-        }
-
-
-@six.add_metaclass(s.Single)
 class ImpalaV141(Impala):
     def __init__(self):
         super(ImpalaV141, self).__init__()

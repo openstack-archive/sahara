@@ -20,7 +20,6 @@ from sahara.plugins.mapr.services.hbase import hbase
 from sahara.plugins.mapr.services.hive import hive
 from sahara.plugins.mapr.services.httpfs import httpfs
 from sahara.plugins.mapr.services.hue import hue
-from sahara.plugins.mapr.services.impala import impala
 from sahara.plugins.mapr.services.mahout import mahout
 from sahara.plugins.mapr.services.management import management
 from sahara.plugins.mapr.services.mapreduce import mapreduce
@@ -51,7 +50,6 @@ class VersionHandler(bvh.BaseVersionHandler):
             maprfs.MapRFS(),
             management.Management(),
             oozie.OozieV401(),
-            hive.HiveV012(),
             hive.HiveV013(),
             hbase.HBaseV094(),
             hbase.HBaseV0987(),
@@ -65,7 +63,6 @@ class VersionHandler(bvh.BaseVersionHandler):
             drill.DrillV08(),
             drill.DrillV09(),
             sqoop2.Sqoop2(),
-            impala.ImpalaV123(),
             hue.HueV360(),
         ]
 

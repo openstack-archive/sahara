@@ -51,7 +51,6 @@ class VersionHandler(bvh.BaseVersionHandler):
             mng.Management(),
             oozie.OozieV401(),
             oozie.OozieV410(),
-            hive.HiveV012(),
             hive.HiveV013(),
             flume.Flume(),
             hbase.HBaseV0987(),
