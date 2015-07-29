@@ -89,7 +89,10 @@ NODE_GROUP_TEMPLATE_SCHEMA = {
         "volume_local_to_instance": {
             "type": ["boolean", "null"]
         },
-        "shares": copy.deepcopy(shares.SHARE_SCHEMA)
+        "shares": copy.deepcopy(shares.SHARE_SCHEMA),
+        "use_autoconfig": {
+            "type": ["boolean", "null"]
+        }
     },
     "additionalProperties": False,
     "required": [
