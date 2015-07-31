@@ -113,14 +113,6 @@ class Hive(s.Service):
 
 
 @six.add_metaclass(s.Single)
-class HiveV012(Hive):
-    def __init__(self):
-        super(HiveV012, self).__init__()
-        self._version = '0.12'
-        self._dependencies = [('mapr-hive', self.version)]
-
-
-@six.add_metaclass(s.Single)
 class HiveV013(Hive):
     def __init__(self):
         super(HiveV013, self).__init__()
