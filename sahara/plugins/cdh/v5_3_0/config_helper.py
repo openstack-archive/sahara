@@ -161,7 +161,7 @@ AWAIT_MANAGER_STARTING_TIMEOUT = p.Config(
 
 _default_executor_classpath = ":".join(
     ['/usr/lib/hadoop/lib/jackson-core-asl-1.8.8.jar',
-     '/usr/lib/hadoop/hadoop-swift.jar'])
+     '/usr/lib/hadoop-mapreduce/hadoop-openstack.jar'])
 
 EXECUTOR_EXTRA_CLASSPATH = p.Config(
     'Executor extra classpath', 'Spark', 'cluster', priority=2,

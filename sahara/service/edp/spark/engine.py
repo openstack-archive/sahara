@@ -241,8 +241,10 @@ class SparkJobEngine(base_engine.JobEngine):
             indep_params["wrapper_args"] = "%s %s" % (
                 wrapper_xml, indep_params["job_class"])
 
+            indep_params["addnl_files"] = wrapper_xml
+
             indep_params["addnl_jars"] = ",".join(
-                [indep_params["app_jar"]] + paths + builtin_paths)
+                [indep_params["wrapper_jar"]] + paths + builtin_paths)
 
         else:
             indep_params["addnl_jars"] = ",".join(paths)
@@ -268,10 +270,11 @@ class SparkJobEngine(base_engine.JobEngine):
             # embedded if they are non-empty
             cmd = (
                 '%(spark-user)s%(spark-submit)s%(driver-class-path)s'
+                ' --files %(addnl_files)s'
                 ' --class %(wrapper_class)s%(addnl_jars)s'
                 ' --master %(master)s'
                 ' --deploy-mode %(deploy-mode)s'
-                ' %(wrapper_jar)s %(wrapper_args)s%(args)s') % dict(
+                ' %(app_jar)s %(wrapper_args)s%(args)s') % dict(
                 mutual_dict)
         else:
             cmd = (
