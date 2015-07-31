@@ -77,6 +77,16 @@ class TestOozieEngine(base.SaharaTestCase):
         self.assertEqual(['job_prefix/lib/main.jar'], res)
 
     @mock.patch('sahara.utils.remote.get_remote')
+    def test_upload_workflow_file(self, remote_get):
+        oje = FakeOozieJobEngine(u.create_cluster())
+        remote_class = mock.MagicMock()
+        remote_class.__exit__.return_value = 'closed'
+        remote_get.return_value = remote_class
+        res = oje._upload_workflow_file(remote_get, "test", "hadoop.xml",
+                                        'hdfs')
+        self.assertEqual("test/workflow.xml", res)
+
+    @mock.patch('sahara.utils.remote.get_remote')
     def test_hdfs_create_workflow_dir(self, remote):
         remote_class = mock.MagicMock()
         remote_class.__exit__.return_value = 'closed'
