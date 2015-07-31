@@ -496,6 +496,18 @@ class SaharaMigrationsCheckers(object):
         self.assertColumnExists(engine, 'templates_relations',
                                 'use_autoconfig')
 
+    def _check_024(self, engine, data):
+        tables = [
+            'node_group_templates',
+            'node_groups',
+            'templates_relations',
+            'clusters',
+            'cluster_templates'
+        ]
+
+        for table in tables:
+            self.assertColumnExists(engine, table, 'shares')
+
 
 class TestMigrationsMySQL(SaharaMigrationsCheckers,
                           base.BaseWalkMigrationTestCase,

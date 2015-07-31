@@ -78,6 +78,7 @@ class Cluster(mb.SaharaBase):
                                     sa.ForeignKey('cluster_templates.id'))
     cluster_template = relationship('ClusterTemplate',
                                     backref="clusters", lazy='joined')
+    shares = sa.Column(st.JsonListType())
 
     def to_dict(self, show_progress=False):
         d = super(Cluster, self).to_dict()
@@ -128,6 +129,7 @@ class NodeGroup(mb.SaharaBase):
     open_ports = sa.Column(st.JsonListType())
     is_proxy_gateway = sa.Column(sa.Boolean())
     volume_local_to_instance = sa.Column(sa.Boolean())
+    shares = sa.Column(st.JsonListType())
 
     def to_dict(self):
         d = super(NodeGroup, self).to_dict()
@@ -180,6 +182,7 @@ class ClusterTemplate(mb.SaharaBase):
                                backref='cluster_template', lazy='joined')
     is_default = sa.Column(sa.Boolean(), default=False)
     use_autoconfig = sa.Column(sa.Boolean(), default=True)
+    shares = sa.Column(st.JsonListType())
 
     def to_dict(self):
         d = super(ClusterTemplate, self).to_dict()
@@ -220,6 +223,7 @@ class NodeGroupTemplate(mb.SaharaBase):
     volume_local_to_instance = sa.Column(sa.Boolean())
     is_default = sa.Column(sa.Boolean(), default=False)
     use_autoconfig = sa.Column(sa.Boolean(), default=True)
+    shares = sa.Column(st.JsonListType())
 
 
 class TemplatesRelation(mb.SaharaBase):
@@ -258,6 +262,7 @@ class TemplatesRelation(mb.SaharaBase):
     availability_zone = sa.Column(sa.String(255))
     is_proxy_gateway = sa.Column(sa.Boolean())
     volume_local_to_instance = sa.Column(sa.Boolean())
+    shares = sa.Column(st.JsonListType())
 
 
 # EDP objects: DataSource, Job, Job Execution, JobBinary

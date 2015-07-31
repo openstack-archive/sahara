@@ -18,6 +18,7 @@ from sahara import exceptions as ex
 from sahara.i18n import _
 from sahara.service import api
 import sahara.service.validations.base as b
+from sahara.service.validations import shares
 
 
 def check_node_group_template_create(data, **kwargs):
@@ -27,6 +28,8 @@ def check_node_group_template_create(data, **kwargs):
                                     data['hadoop_version'])
     b.check_node_group_basic_fields(data['plugin_name'],
                                     data['hadoop_version'], data)
+    if data.get('shares'):
+        shares.check_shares(data['shares'])
 
 
 def check_node_group_template_usage(node_group_template_id, **kwargs):
@@ -59,6 +62,7 @@ def check_node_group_template_update(data, **kwargs):
         raise ex.InvalidReferenceException(
             _("You must specify a hadoop_version value"
               "for your plugin_name"))
+
     if data.get('hadoop_version') and not data.get('plugin_name'):
         raise ex.InvalidReferenceException(
             _("You must specify a plugin_name"
@@ -70,3 +74,6 @@ def check_node_group_template_update(data, **kwargs):
                                         data['hadoop_version'])
         b.check_node_group_basic_fields(data['plugin_name'],
                                         data['hadoop_version'], data)
+
+    if data.get('shares'):
+        shares.check_shares(data['shares'])

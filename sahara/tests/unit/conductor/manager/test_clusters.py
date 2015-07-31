@@ -38,6 +38,7 @@ SAMPLE_CLUSTER = {
             "count": 1,
             "security_groups": None,
             'use_autoconfig': True,
+            "shares": None
         },
         {
             "name": "ng_2",
@@ -46,6 +47,7 @@ SAMPLE_CLUSTER = {
             "count": 3,
             "security_groups": ["group1", "group2"],
             'use_autoconfig': True,
+            "shares": None
         }
     ],
     "cluster_configs": {

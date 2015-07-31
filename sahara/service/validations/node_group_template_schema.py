@@ -15,6 +15,8 @@
 
 import copy
 
+from sahara.service.validations import shares
+
 NODE_GROUP_TEMPLATE_SCHEMA = {
     "type": "object",
     "properties": {
@@ -87,6 +89,7 @@ NODE_GROUP_TEMPLATE_SCHEMA = {
         "volume_local_to_instance": {
             "type": ["boolean", "null"]
         },
+        "shares": copy.deepcopy(shares.SHARE_SCHEMA)
     },
     "additionalProperties": False,
     "required": [
