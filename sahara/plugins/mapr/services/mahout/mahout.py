@@ -19,7 +19,6 @@ import sahara.plugins.mapr.domain.node_process as np
 import sahara.plugins.mapr.domain.service as s
 import sahara.plugins.mapr.util.validation_utils as vu
 
-
 MAHOUT = np.NodeProcess(
     name='mahout',
     ui_name='Mahout',
@@ -34,6 +33,19 @@ class Mahout(s.Service):
         super(Mahout, self).__init__()
         self._name = 'mahout'
         self._ui_name = 'Mahout'
-        self._version = '0.9'
         self._node_processes = [MAHOUT]
         self._validation_rules = [vu.at_least(1, MAHOUT)]
+
+
+@six.add_metaclass(s.Single)
+class MahoutV09(Mahout):
+    def __init__(self):
+        super(MahoutV09, self).__init__()
+        self._version = '0.9'
+
+
+@six.add_metaclass(s.Single)
+class MahoutV010(Mahout):
+    def __init__(self):
+        super(MahoutV010, self).__init__()
+        self._version = '0.10.0'
