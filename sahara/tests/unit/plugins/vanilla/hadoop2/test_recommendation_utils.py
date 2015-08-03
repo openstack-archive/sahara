@@ -16,7 +16,7 @@
 import mock
 import testtools
 
-from sahara.plugins.vanilla.v2_6_0 import versionhandler
+from sahara.plugins.vanilla.hadoop2 import recommendations_utils as ru
 
 CONFIGURATION_SCHEMA = {
     'cluster_configs': {
@@ -52,12 +52,9 @@ CONFIGURATION_SCHEMA = {
 class TestVersionHandler(testtools.TestCase):
     @mock.patch('sahara.plugins.recommendations_utils.'
                 'HadoopAutoConfigsProvider')
-    @mock.patch('sahara.plugins.vanilla.v2_6_0.versionhandler.VersionHandler.'
-                'get_plugin_configs')
-    def test_recommend_configs(self, fake_plugin_configs, provider):
+    def test_recommend_configs(self, provider):
         f_cluster, f_configs = mock.Mock(), mock.Mock()
-        fake_plugin_configs.return_value = f_configs
-        versionhandler.VersionHandler().recommend_configs(f_cluster)
+        ru.recommend_configs(f_cluster, f_configs)
         self.assertEqual([
             mock.call(CONFIGURATION_SCHEMA, f_configs, f_cluster)
         ], provider.call_args_list)
