@@ -88,3 +88,11 @@ class HBaseV0989(HBase):
         super(HBaseV0989, self).__init__()
         self._version = '0.98.9'
         self._dependencies = [('mapr-hbase', self.version)]
+
+
+@six.add_metaclass(s.Single)
+class HBaseV09812(HBase):
+    def __init__(self):
+        super(HBaseV09812, self).__init__()
+        self._version = "0.98.12"
+        self._dependencies = [("mapr-hbase", self.version)]
