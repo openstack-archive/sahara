@@ -70,3 +70,10 @@ class DrillV09(Drill):
     def __init__(self):
         super(DrillV09, self).__init__()
         self._version = '0.9'
+
+
+@six.add_metaclass(s.Single)
+class DrillV11(Drill):
+    def __init__(self):
+        super(DrillV11, self).__init__()
+        self._version = "1.1"
