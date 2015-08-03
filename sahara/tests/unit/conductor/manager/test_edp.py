@@ -328,6 +328,21 @@ class JobExecutionTest(test_base.ConductorManagerTestCase):
         }
         self.assertEqual(configs, job_ex['job_configs'])
 
+    def test_null_data_sources(self):
+        ctx = context.ctx()
+        job = self.api.job_create(ctx, SAMPLE_JOB)
+
+        SAMPLE_CONF_JOB_EXECUTION['job_id'] = job['id']
+        SAMPLE_CONF_JOB_EXECUTION['input_id'] = None
+        SAMPLE_CONF_JOB_EXECUTION['output_id'] = None
+
+        id = self.api.job_execution_create(ctx,
+                                           SAMPLE_CONF_JOB_EXECUTION)['id']
+        job_exec = self.api.job_execution_get(ctx, id)
+
+        self.assertIsNone(job_exec['input_id'])
+        self.assertIsNone(job_exec['output_id'])
+
     def test_deletion_constraints_on_data_and_jobs(self):
         ctx = context.ctx()
         job = self.api.job_create(ctx, SAMPLE_JOB)
