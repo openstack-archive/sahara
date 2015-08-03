@@ -122,19 +122,15 @@ class VersionHandler(avm.AbstractVersionHandler):
             run.format_namenode(r)
             run.start_processes(r, "namenode")
 
-    def start_secondarynamenodes(self, cluster):
-        snns = vu.get_secondarynamenodes(cluster)
-        if len(snns) == 0:
+    def start_secondarynamenode(self, cluster):
+        snn = vu.get_secondarynamenode(cluster)
+        if snn is None:
             return
-        cpo.add_provisioning_step(
-            cluster.id,
-            utils.start_process_event_message("SecondaryNameNodes"),
-            len(snns))
 
-        for snn in snns:
-            self._start_secondarynamenode(snn)
+        self._start_secondarynamenode(snn)
 
-    @cpo.event_wrapper(True)
+    @cpo.event_wrapper(
+        True, step=utils.start_process_event_message("SecondaryNameNode"))
     def _start_secondarynamenode(self, snn):
         run.start_processes(remote.get_remote(snn), "secondarynamenode")
 
@@ -194,7 +190,7 @@ class VersionHandler(avm.AbstractVersionHandler):
     def start_cluster(self, cluster):
         self.start_namenode(cluster)
 
-        self.start_secondarynamenodes(cluster)
+        self.start_secondarynamenode(cluster)
 
         self.start_jobtracker(cluster)
 
