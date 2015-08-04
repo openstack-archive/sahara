@@ -56,7 +56,7 @@ edp_jobs_flow:
         - type: Java
           additional_libs:
               - type: database
-                source: etc/edp-examples/hadoop2/edp-java/hadoop-mapreduce-examples-2.4.1.jar
+                source: etc/edp-examples/hadoop2/edp-java/hadoop-mapreduce-examples-2.6.0.jar
           configs:
               edp.java.main_class: org.apache.hadoop.examples.QuasiMonteCarlo
           args:
