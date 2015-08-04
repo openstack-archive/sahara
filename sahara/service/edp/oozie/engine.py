@@ -184,6 +184,12 @@ class OozieJobEngine(base_engine.JobEngine):
         job_execution = conductor.job_execution_get(ctx, job_execution.id)
         if job_execution.info['status'] == edp.JOB_STATUS_TOBEKILLED:
             return (None, edp.JOB_STATUS_KILLED, None)
+
+        conductor.job_execution_update(
+            context.ctx(), job_execution.id,
+            {'info': {'status': edp.JOB_STATUS_READYTORUN},
+             'engine_job_id': oozie_job_id})
+
         client.run_job(job_execution, oozie_job_id)
         try:
             status = client.get_job_status(job_execution,
