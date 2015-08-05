@@ -21,7 +21,11 @@ def _load_versions():
     m_template = 'sahara.plugins.mapr.versions.%s.version_handler'
 
     def predicate(v_dir):
-        return os.path.isdir(os.path.join(d_name, v_dir))
+        if v_dir != "__pycache__":
+            v_dir = os.path.join(d_name, v_dir)
+            return os.path.isdir(v_dir) and os.listdir(v_dir)
+
+        return False
 
     def mapper(v_dir):
         return m_template % v_dir
