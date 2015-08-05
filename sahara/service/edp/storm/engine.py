@@ -169,6 +169,8 @@ class StormJobEngine(base_engine.JobEngine):
         ctx = context.ctx()
         job = conductor.job_get(ctx, job_execution.job_id)
 
+        # This will be a dictionary of tuples, (native_url, runtime_url)
+        # keyed by data_source id
         data_source_urls = {}
 
         additional_sources, updated_job_configs = (
@@ -177,7 +179,13 @@ class StormJobEngine(base_engine.JobEngine):
         )
 
         job_execution = conductor.job_execution_update(
-            ctx, job_execution, {"data_source_urls": data_source_urls})
+            ctx, job_execution,
+            {"data_source_urls": job_utils.to_url_dict(data_source_urls)})
+
+        # Now that we've recorded the native urls, we can switch to the
+        # runtime urls
+        data_source_urls = job_utils.to_url_dict(data_source_urls,
+                                                 runtime=True)
 
         # We'll always run the driver program on the master
         master = plugin_utils.get_instance(self.cluster, "nimbus")

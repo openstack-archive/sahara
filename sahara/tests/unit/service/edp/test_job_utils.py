@@ -163,7 +163,8 @@ class JobUtilsTestCase(testtools.TestCase):
         name_ref = job_utils.DATA_SOURCE_PREFIX+'input'
         job_exec_id = six.text_type(uuid.uuid4())
 
-        input = u.create_data_source("swift://container/input",
+        input_url = "swift://container/input"
+        input = u.create_data_source(input_url,
                                      name="input",
                                      id=six.text_type(uuid.uuid4()))
 
@@ -200,9 +201,9 @@ class JobUtilsTestCase(testtools.TestCase):
                 job_utils.DATA_SOURCE_SUBST_NAME: True,
                 job_utils.DATA_SOURCE_SUBST_UUID: True},
             'args': [name_ref, output.id, input.id]}
-
+        urls = {}
         ds, nc = job_utils.resolve_data_source_references(job_configs,
-                                                          job_exec_id, {})
+                                                          job_exec_id, urls)
         self.assertEqual(2, len(ds))
         self.assertEqual([input.url, output_url, input.url], nc['args'])
         # Swift configs should be filled in since they were blank
@@ -210,6 +211,9 @@ class JobUtilsTestCase(testtools.TestCase):
                          nc['configs']['fs.swift.service.sahara.username'])
         self.assertEqual(input.credentials['password'],
                          nc['configs']['fs.swift.service.sahara.password'])
+        self.assertEqual(2, len(urls))
+        self.assertItemsEqual({input.id: (input_url, input_url),
+                               output.id: (output_url, output_url)}, urls)
 
         job_configs['configs'] = {'fs.swift.service.sahara.username': 'sam',
                                   'fs.swift.service.sahara.password': 'gamgee',
@@ -254,6 +258,18 @@ class JobUtilsTestCase(testtools.TestCase):
         self.assertEqual(0, len(ds))
         self.assertEqual(nc['args'], job_configs['args'])
         self.assertEqual(nc['configs'], job_configs['configs'])
+
+    def test_to_url_dict(self):
+        data_source_urls = {'1': ('1_native', '1_runtime'),
+                            '2': ('2_native', '2_runtime')}
+        self.assertItemsEqual({'1': '1_native',
+                               '2': '2_native'},
+                              job_utils.to_url_dict(data_source_urls))
+
+        self.assertItemsEqual({'1': '1_runtime',
+                               '2': '2_runtime'},
+                              job_utils.to_url_dict(data_source_urls,
+                                                    runtime=True))
 
     def test_construct_data_source_url_no_placeholders(self):
         base_url = "swift://container/input"

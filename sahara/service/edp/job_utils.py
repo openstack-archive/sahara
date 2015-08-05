@@ -72,17 +72,17 @@ def get_data_sources(job_execution, job, data_source_urls):
     if edp.compare_job_type(job.type, edp.JOB_TYPE_JAVA, edp.JOB_TYPE_SPARK):
         return None, None
 
+    def _construct(ctx, ds_id):
+        source = conductor.data_source_get(ctx, ds_id)
+        if source and source.id not in data_source_urls:
+            url = _construct_data_source_url(source.url, job_execution.id)
+            runtime_url = _runtime_url(url)
+            data_source_urls[source.id] = (url, runtime_url)
+        return source
+
     ctx = context.ctx()
-
-    input_source = conductor.data_source_get(ctx, job_execution.input_id)
-    if input_source and input_source.id not in data_source_urls:
-        data_source_urls[input_source.id] = _construct_data_source_url(
-            input_source.url, job_execution.id)
-
-    output_source = conductor.data_source_get(ctx, job_execution.output_id)
-    if output_source and output_source.id not in data_source_urls:
-        data_source_urls[output_source.id] = _construct_data_source_url(
-            output_source.url, job_execution.id)
+    input_source = _construct(ctx, job_execution.input_id)
+    output_source = _construct(ctx, job_execution.output_id)
 
     return input_source, output_source
 
@@ -235,10 +235,11 @@ def resolve_data_source_references(job_configs, job_exec_id, data_source_urls):
                 ds = ds[0]
                 ds_seen[ds.id] = ds
                 if ds.id not in data_source_urls:
-                    data_source_urls[ds.id] = _construct_data_source_url(
-                        ds.url, job_exec_id)
+                    url = _construct_data_source_url(ds.url, job_exec_id)
+                    runtime_url = _runtime_url(url)
+                    data_source_urls[ds.id] = (url, runtime_url)
 
-                return data_source_urls[ds.id]
+                return data_source_urls[ds.id][1]
         return value
 
     # Loop over configs/params/args and look up each value as a data_source.
@@ -290,3 +291,12 @@ def _construct_data_source_url(url, job_exec_id):
     url = re.sub(r"%RANDSTR\((\d+)\)%", _randstr, url)
 
     return url
+
+
+def _runtime_url(url):
+    return url
+
+
+def to_url_dict(data_source_urls, runtime=False):
+    idx = 1 if runtime else 0
+    return {id: urls[idx] for id, urls in six.iteritems(data_source_urls)}

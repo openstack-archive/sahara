@@ -102,6 +102,8 @@ class OozieJobEngine(base_engine.JobEngine):
     def run_job(self, job_execution):
         ctx = context.ctx()
 
+        # This will be a dictionary of tuples, (native_url, runtime_url)
+        # keyed by data_source id
         data_source_urls = {}
 
         job = conductor.job_get(ctx, job_execution.job_id)
@@ -120,7 +122,13 @@ class OozieJobEngine(base_engine.JobEngine):
         )
 
         job_execution = conductor.job_execution_update(
-            ctx, job_execution, {"data_source_urls": data_source_urls})
+            ctx, job_execution,
+            {"data_source_urls": job_utils.to_url_dict(data_source_urls)})
+
+        # Now that we've recorded the native urls, we can switch to the
+        # runtime urls
+        data_source_urls = job_utils.to_url_dict(data_source_urls,
+                                                 runtime=True)
 
         proxy_configs = updated_job_configs.get('proxy_configs')
         configs = updated_job_configs.get('configs', {})

@@ -195,6 +195,9 @@ class SparkJobEngine(base_engine.JobEngine):
         ctx = context.ctx()
         job = conductor.job_get(ctx, job_execution.job_id)
         indep_params = {}
+
+        # This will be a dictionary of tuples, (native_url, runtime_url)
+        # keyed by data_source id
         data_source_urls = {}
         additional_sources, updated_job_configs = (
             job_utils.resolve_data_source_references(
@@ -202,7 +205,13 @@ class SparkJobEngine(base_engine.JobEngine):
         )
 
         job_execution = conductor.job_execution_update(
-            ctx, job_execution, {"data_source_urls": data_source_urls})
+            ctx, job_execution,
+            {"data_source_urls": job_utils.to_url_dict(data_source_urls)})
+
+        # Now that we've recorded the native urls, we can switch to the
+        # runtime urls
+        data_source_urls = job_utils.to_url_dict(data_source_urls,
+                                                 runtime=True)
 
         for data_source in additional_sources:
             if data_source and data_source.type == 'hdfs':
