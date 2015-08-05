@@ -31,11 +31,14 @@ class _FakeShare(object):
 
     def __init__(self, id='12345678-1234-1234-1234-123456789012',
                  share_proto='NFS',
-                 export_location='192.168.122.1:/path'):
+                 export_location='192.168.122.1:/path',
+                 access_list=None):
         self.id = id
         self.share_proto = share_proto
         self.export_location = export_location
         self.allow = mock.Mock()
+        self.deny = mock.Mock()
+        self.access_list = mock.Mock(return_value=access_list or [])
 
 
 def _mock_node_group(ips, share_list):
@@ -114,6 +117,7 @@ class TestShares(base.SaharaTestCase):
 
         for executor in namenode_executors:
             executor.assert_has_calls(
+                _setup_calls() +
                 _expected_calls('/mnt/localpath', '192.168.122.1:/path', '-w'))
         for executor in datanode_executors:
             self.assertEqual(0, executor.call_count)
@@ -183,6 +187,7 @@ class TestShares(base.SaharaTestCase):
 
         for executor in datanode_executors:
             executor.assert_has_calls(
+                _setup_calls() +
                 _expected_calls('/mnt/somanylocalpaths',
                                 '192.168.122.1:/path', '-r'))
             self.assertEqual(4, executor.call_count)
@@ -224,3 +229,120 @@ class TestShares(base.SaharaTestCase):
 
         with testtools.ExpectedException(exceptions.NotFoundException):
             shares.mount_shares(cluster)
+
+    @mock.patch('sahara.context.set_current_instance_id')
+    @mock.patch('sahara.utils.openstack.manila.client')
+    def test_acl_exists_unexpected_type(self, f_manilaclient, f_context):
+
+        share = _FakeShare(access_list=[mock.Mock(
+            access_level='wat', access_to=ip, access_type='ip')
+            for ip in _NAMENODE_IPS])
+        f_manilaclient.return_value = mock.Mock(
+            shares=mock.Mock(
+                get=mock.Mock(return_value=share)))
+
+        namenode_group, namenode_executors = _mock_node_group(
+            _NAMENODE_IPS,
+            [{
+                'id': '12345678-1234-1234-1234-123456789012',
+                'access_level': 'rw',
+                'path': '/mnt/localpath'
+            }])
+
+        datanode_group, datanode_executors = _mock_node_group(
+            _DATANODE_IPS, [])
+
+        cluster = mock.Mock(
+            node_groups=[namenode_group, datanode_group], shares=[])
+
+        shares.mount_shares(cluster)
+
+        self.assertEqual(0, share.allow.call_count)
+
+        for executor in namenode_executors:
+            executor.assert_has_calls(
+                _setup_calls() +
+                _expected_calls('/mnt/localpath', '192.168.122.1:/path', '-w'))
+
+        for executor in datanode_executors:
+            self.assertEqual(0, executor.call_count)
+
+    @mock.patch('sahara.context.set_current_instance_id')
+    @mock.patch('sahara.utils.openstack.manila.client')
+    def test_acl_exists_no_recreate(self, f_manilaclient, f_context):
+
+        share = _FakeShare(access_list=[mock.Mock(
+            access_level='rw', access_to=ip, access_type='ip')
+            for ip in _NAMENODE_IPS])
+        f_manilaclient.return_value = mock.Mock(
+            shares=mock.Mock(
+                get=mock.Mock(return_value=share)))
+
+        namenode_group, namenode_executors = _mock_node_group(
+            _NAMENODE_IPS,
+            [{
+                'id': '12345678-1234-1234-1234-123456789012',
+                'access_level': 'ro',
+                'path': '/mnt/localpath'
+            }])
+
+        datanode_group, datanode_executors = _mock_node_group(
+            _DATANODE_IPS, [])
+
+        cluster = mock.Mock(
+            node_groups=[namenode_group, datanode_group], shares=[])
+
+        shares.mount_shares(cluster)
+
+        self.assertEqual(0, share.allow.call_count)
+
+        for executor in namenode_executors:
+            executor.assert_has_calls(
+                _setup_calls() +
+                _expected_calls('/mnt/localpath', '192.168.122.1:/path', '-r'))
+
+        for executor in datanode_executors:
+            self.assertEqual(0, executor.call_count)
+
+    @mock.patch('sahara.context.set_current_instance_id')
+    @mock.patch('sahara.utils.openstack.manila.client')
+    def test_acl_exists_recreate(self, f_manilaclient, f_context):
+
+        share = _FakeShare(access_list=[mock.Mock(
+            access_level='ro', access_to=ip, access_type='ip', id="access_id")
+            for ip in _NAMENODE_IPS])
+        f_manilaclient.return_value = mock.Mock(
+            shares=mock.Mock(
+                get=mock.Mock(return_value=share)))
+
+        namenode_group, namenode_executors = _mock_node_group(
+            _NAMENODE_IPS,
+            [{
+                'id': '12345678-1234-1234-1234-123456789012',
+                'access_level': 'rw',
+                'path': '/mnt/localpath'
+            }])
+
+        datanode_group, datanode_executors = _mock_node_group(
+            _DATANODE_IPS, [])
+
+        cluster = mock.Mock(
+            node_groups=[namenode_group, datanode_group], shares=[])
+
+        shares.mount_shares(cluster)
+
+        namenode_denials = [mock.call('access_id')
+                            for ip in _NAMENODE_IPS]
+        share.deny.assert_has_calls(namenode_denials)
+
+        namenode_permissions = [mock.call('ip', ip, 'rw')
+                                for ip in _NAMENODE_IPS]
+        share.allow.assert_has_calls(namenode_permissions,
+                                     any_order=True)
+
+        for executor in namenode_executors:
+            executor.assert_has_calls(
+                _setup_calls() +
+                _expected_calls('/mnt/localpath', '192.168.122.1:/path', '-w'))
+        for executor in datanode_executors:
+            self.assertEqual(0, executor.call_count)

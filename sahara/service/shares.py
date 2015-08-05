@@ -153,7 +153,24 @@ class _ShareHandler(object):
     def allow_access_to_instance(self, instance, share_config):
         """Mounts a specific share to a specific instance."""
         access_level = self._get_access_level(share_config)
-        self.share.allow('ip', instance.internal_ip, access_level)
+        ip_filter = lambda x: (x.access_type == 'ip' and
+                               x.access_to == instance.internal_ip)
+        accesses = list(filter(ip_filter, self.share.access_list()))
+        if accesses:
+            access = accesses[0]
+            if access.access_level not in ('ro', 'rw'):
+                LOG.warning(
+                    _LW("Unknown permission level %(access_level)s on share "
+                        "id %(share_id)s for ip %(ip)s. Leaving pre-existing "
+                        "permissions.").format(
+                            access_level=access.access_level,
+                            share_id=self.share.id,
+                            ip=instance.internal_ip))
+            elif access.access_level == 'ro' and access_level == 'rw':
+                self.share.deny(access.id)
+                self.share.allow('ip', instance.internal_ip, access_level)
+        else:
+            self.share.allow('ip', instance.internal_ip, access_level)
 
     @abc.abstractmethod
     def mount_to_instance(self, remote, share_info):
