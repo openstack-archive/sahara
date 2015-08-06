@@ -90,7 +90,10 @@ CLUSTER_TEMPLATE_SCHEMA = {
             "type": ["string", "null"],
             "format": "uuid"
         },
-        "shares": copy.deepcopy(shares.SHARE_SCHEMA)
+        "shares": copy.deepcopy(shares.SHARE_SCHEMA),
+        "use_autoconfig": {
+            "type": ["boolean", "null"],
+        }
     },
     "additionalProperties": False,
     "required": [
