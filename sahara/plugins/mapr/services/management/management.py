@@ -55,6 +55,6 @@ class Management(s.Service):
         ]
         self._validation_rules = [
             vu.at_least(1, ZOOKEEPER),
-            vu.exactly(1, WEB_SERVER),
+            vu.at_least(1, WEB_SERVER),
             vu.odd_count_of(ZOOKEEPER),
         ]
