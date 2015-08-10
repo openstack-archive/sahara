@@ -157,7 +157,7 @@ Setting fixed IP address for VMware Fusion VM
             fixed-address 192.168.55.20;
     }
 
-6. Now quit all the VmWare Fusion applications and restart vmnet:
+6. Now quit all the VMware Fusion applications and restart vmnet:
 
 .. sourcecode:: console
 

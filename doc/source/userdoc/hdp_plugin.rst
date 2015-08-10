@@ -62,7 +62,7 @@ For more information about HDP images, refer to
 https://github.com/openstack/sahara-image-elements.
 
 There are three VM images provided for use with the HDP Plugin, that can also
-be built using the tools available in sahara-image-elemnts:
+be built using the tools available in sahara-image-elements:
 
 1. `sahara-juno-hdp-1.3.2-centos-6.5.qcow2 <http://sahara-files.mirantis.com/sahara-juno-hdp-1.3.2-centos-6.5.qcow2>`_:
    This image contains most of the requisite packages necessary for HDP

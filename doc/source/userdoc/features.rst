@@ -77,7 +77,7 @@ machines simultaneously. Running in distributed mode allows sahara to
 offload intensive tasks to the engine processes while keeping the API
 process free to handle requests.
 
-For an expanded discussion of configuring sahara to run in distrbuted
+For an expanded discussion of configuring sahara to run in distributed
 mode please see the :ref:`distributed-mode-configuration` documentation.
 
 Hadoop HDFS High Availability
@@ -86,7 +86,7 @@ Hadoop HDFS High Availability
 Hadoop HDFS High Availability (HDFS HA) provides an architecture to ensure
 that HDFS will continue to work in the result of an active namenode failure.
 It uses 2 namenodes in an active/standby configuration to provide this
-availibility.
+availability.
 
 High availability is achieved by using a set of journalnodes and Zookeeper
 servers along with ZooKeeper Failover Controllers (ZKFC) and additional
@@ -180,7 +180,7 @@ Volume-to-instance locality
 Having an instance and an attached volume on the same physical host can
 be very helpful in order to achieve high-performance disk I/O operations.
 To achieve this, sahara provides access to the Block Storage
-volume intance locality functionality.
+volume instance locality functionality.
 
 For more information on using volume instance locality with sahara,
 please see the :ref:`volume_instance_locality_configuration`
