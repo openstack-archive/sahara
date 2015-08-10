@@ -50,8 +50,8 @@ def get_tasktrackers(cluster):
     return u.get_instances(cluster, 'tasktracker')
 
 
-def get_secondarynamenodes(cluster):
-    return u.get_instances(cluster, 'secondarynamenode')
+def get_secondarynamenode(cluster):
+    return u.get_instance(cluster, 'secondarynamenode')
 
 
 def get_historyserver(cluster):
