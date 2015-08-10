@@ -7,6 +7,7 @@
     "data-processing:clusters:scale": "",
     "data-processing:clusters:get": "",
     "data-processing:clusters:delete": "",
+    "data-processing:clusters:modify": "",
 
     "data-processing:cluster-templates:get_all": "",
     "data-processing:cluster-templates:create": "",

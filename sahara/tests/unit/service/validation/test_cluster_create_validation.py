@@ -21,6 +21,7 @@ from sahara import exceptions
 from sahara import main
 from sahara.service import api
 from sahara.service.validations import clusters as c
+from sahara.service.validations import clusters_schema as c_schema
 from sahara.tests.unit import base
 from sahara.tests.unit.service.validation import utils as u
 
@@ -29,7 +30,7 @@ class TestClusterCreateValidation(u.ValidationTestCase):
     def setUp(self):
         super(TestClusterCreateValidation, self).setUp()
         self._create_object_fun = c.check_cluster_create
-        self.scheme = c.CLUSTER_SCHEMA
+        self.scheme = c_schema.CLUSTER_SCHEMA
         api.plugin_base.setup_plugins()
 
     def test_cluster_create_v_plugin_vers(self):

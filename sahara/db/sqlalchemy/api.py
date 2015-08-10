@@ -235,12 +235,16 @@ def cluster_create(context, values):
 def cluster_update(context, cluster_id, values):
     session = get_session()
 
-    with session.begin():
-        cluster = _cluster_get(context, session, cluster_id)
-        if cluster is None:
-            raise ex.NotFoundException(cluster_id,
-                                       _("Cluster id '%s' not found!"))
-        cluster.update(values)
+    try:
+        with session.begin():
+            cluster = _cluster_get(context, session, cluster_id)
+            if cluster is None:
+                raise ex.NotFoundException(cluster_id,
+                                           _("Cluster id '%s' not found!"))
+            cluster.update(values)
+    except db_exc.DBDuplicateEntry as e:
+        raise ex.DBDuplicateEntry(
+            _("Duplicate entry for Cluster: %s") % e.columns)
 
     return cluster
 
