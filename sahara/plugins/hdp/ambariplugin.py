@@ -27,7 +27,6 @@ from sahara.plugins.hdp.versions import versionhandlerfactory as vhf
 from sahara.plugins import provisioning as p
 from sahara.topology import topology_helper as th
 from sahara.utils import cluster_progress_ops as cpo
-from sahara.utils import general as g
 
 
 conductor = c.API
@@ -73,12 +72,12 @@ class AmbariPlugin(p.ProvisioningPluginBase):
 
         # check if HDFS HA is enabled; set it up if so
         if cluster_spec.is_hdfs_ha_enabled(cluster):
-            cluster = g.change_cluster_status(cluster, "Configuring HA")
             self.configure_hdfs_ha(cluster)
 
     @cpo.event_wrapper(
         True, step=_("Add configurations to cluster"), param=('cluster', 1))
     def configure_hdfs_ha(self, cluster):
+        LOG.debug("Configuring HDFS HA")
         version = cluster.hadoop_version
         handler = self.version_factory.get_version_handler(version)
 
@@ -100,6 +99,7 @@ class AmbariPlugin(p.ProvisioningPluginBase):
         ambari_client = handler.get_ambari_client()
         ambari_client.setup_hdfs_ha(cluster_spec, servers, ambari_info,
                                     cluster.name)
+        LOG.info(_LI("Configure HDFS HA successful."))
 
     def _get_servers(self, cluster):
         servers = []
