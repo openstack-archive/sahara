@@ -449,6 +449,12 @@ class LocalApi(object):
             context,
             job_binary_internal_id)
 
+    @r.wrap(r.JobBinaryInternal)
+    def job_binary_internal_update(self, context, job_binary_internal, values):
+        """Update a JobBinaryInternal from the values dictionary."""
+        return self._manager.job_binary_internal_update(
+            context, _get_id(job_binary_internal), values)
+
     # Events ops
 
     def cluster_provision_step_add(self, context, cluster_id, values):

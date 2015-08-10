@@ -63,6 +63,7 @@
     "data-processing:job-binary-internals:get": "",
     "data-processing:job-binary-internals:delete": "",
     "data-processing:job-binary-internals:get_data": "",
+    "data-processing:job-binary-internals:modify": "",
 
     "data-processing:job-types:get_all": ""
 }

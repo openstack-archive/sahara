@@ -461,6 +461,13 @@ def job_binary_internal_get_raw_data(context, job_binary_internal_id):
     return IMPL.job_binary_internal_get_raw_data(context,
                                                  job_binary_internal_id)
 
+
+@to_dict
+def job_binary_internal_update(context, job_binary_internal, values):
+    """Update the JobBinaryInternal with the provided values"""
+    return IMPL.job_binary_internal_update(
+        context, job_binary_internal, values)
+
 # Events ops
 
 

@@ -533,7 +533,7 @@ class JobBinaryInternalTest(test_base.ConductorManagerTestCase):
                 lambda: SAMPLE_JOB_BINARY_INTERNAL
             ], *args, **kwargs)
 
-    def test_crud_operation_create_list_delete(self):
+    def test_crud_operation_create_list_delete_update(self):
         ctx = context.ctx()
 
         self.api.job_binary_internal_create(ctx, SAMPLE_JOB_BINARY_INTERNAL)
@@ -542,6 +542,12 @@ class JobBinaryInternalTest(test_base.ConductorManagerTestCase):
         self.assertEqual(1, len(lst))
 
         job_bin_int_id = lst[0]['id']
+
+        update_jbi = self.api.job_binary_internal_update(
+            ctx, job_bin_int_id, {'name': 'newname'})
+
+        self.assertEqual('newname', update_jbi['name'])
+
         self.api.job_binary_internal_destroy(ctx, job_bin_int_id)
 
         lst = self.api.job_binary_internal_get_all(ctx)

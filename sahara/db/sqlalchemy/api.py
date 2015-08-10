@@ -1112,6 +1112,26 @@ def job_binary_internal_destroy(context, job_binary_internal_id):
 
         session.delete(job_binary_internal)
 
+
+def job_binary_internal_update(context, job_binary_internal_id, values):
+    """Returns a JobBinary updated with the provided values."""
+    session = get_session()
+    try:
+        with session.begin():
+            j_b_i = _job_binary_internal_get(
+                context, session, job_binary_internal_id)
+            if not j_b_i:
+                raise ex.NotFoundException(
+                    job_binary_internal_id,
+                    _("JobBinaryInternal id '%s' not found!"))
+            j_b_i.update(values)
+    except db_exc.DBDuplicateEntry as e:
+        raise ex.DBDuplicateEntry(
+            _("Duplicate entry for JobBinaryInternal: %s") % e.columns)
+
+    return j_b_i
+
+
 # Events ops
 
 
