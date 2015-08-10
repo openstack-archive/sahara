@@ -18,10 +18,10 @@ from oslo_log import log as logging
 
 from sahara import conductor
 from sahara import context
-from sahara.plugins import recommendations_utils as ru
 from sahara.plugins import utils
 from sahara.plugins.vanilla import abstractversionhandler as avm
 from sahara.plugins.vanilla.hadoop2 import config as c
+from sahara.plugins.vanilla.hadoop2 import recommendations_utils as ru
 from sahara.plugins.vanilla.hadoop2 import run_scripts as run
 from sahara.plugins.vanilla.hadoop2 import scaling as sc
 from sahara.plugins.vanilla.hadoop2 import validation as vl
@@ -192,32 +192,4 @@ class VersionHandler(avm.AbstractVersionHandler):
         return c.get_open_ports(node_group)
 
     def recommend_configs(self, cluster):
-        yarn_configs = [
-            'yarn.nodemanager.resource.memory-mb',
-            'yarn.scheduler.minimum-allocation-mb',
-            'yarn.scheduler.maximum-allocation-mb',
-            'yarn.nodemanager.vmem-check-enabled',
-        ]
-        mapred_configs = [
-            'yarn.app.mapreduce.am.resource.mb',
-            'yarn.app.mapreduce.am.command-opts',
-            'mapreduce.map.memory.mb',
-            'mapreduce.reduce.memory.mb',
-            'mapreduce.map.java.opts',
-            'mapreduce.reduce.java.opts',
-            'mapreduce.task.io.sort.mb',
-        ]
-        configs_to_configure = {
-            'cluster_configs': {
-                'dfs.replication': ('HDFS', 'dfs.replication')
-            },
-            'node_configs': {
-            }
-        }
-        for mapr in mapred_configs:
-            configs_to_configure['node_configs'][mapr] = ("MapReduce", mapr)
-        for yarn in yarn_configs:
-            configs_to_configure['node_configs'][yarn] = ('YARN', yarn)
-        provider = ru.HadoopAutoConfigsProvider(
-            configs_to_configure, self.get_plugin_configs(), cluster)
-        provider.apply_recommended_configs()
+        ru.recommend_configs(cluster, self.get_plugin_configs())
