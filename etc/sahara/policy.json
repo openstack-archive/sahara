@@ -51,6 +51,7 @@
     "data-processing:jobs:delete": "",
     "data-processing:jobs:get_config_hints": "",
     "data-processing:jobs:execute": "",
+    "data-processing:jobs:modify": "",
 
     "data-processing:job-binaries:get_all": "",
     "data-processing:job-binaries:create": "",

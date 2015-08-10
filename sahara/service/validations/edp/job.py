@@ -20,51 +20,6 @@ from sahara.service.validations.edp import job_interface as j_i
 from sahara.utils import edp
 
 
-JOB_SCHEMA = {
-    "type": "object",
-    "properties": {
-        "name": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 50,
-            "format": "valid_name"
-        },
-        "description": {
-            "type": "string"
-        },
-        "type": {
-            "type": "string",
-            "enum": edp.JOB_TYPES_ALL,
-        },
-        "mains": {
-            "type": "array",
-            "uniqueItems": True,
-            "items": {
-                "type": "string",
-                "minLength": 1,
-            }
-        },
-        "libs": {
-            "type": "array",
-            "uniqueItems": True,
-            "items": {
-                "type": "string",
-                "minLength": 1,
-            }
-        },
-        "streaming": {
-            "type": "boolean"
-        },
-        "interface": j_i.INTERFACE_ARGUMENT_SCHEMA
-    },
-    "additionalProperties": False,
-    "required": [
-        "name",
-        "type",
-    ]
-}
-
-
 def _check_binaries(values):
     for job_binary in values:
         if not api.get_job_binary(job_binary):

@@ -386,6 +386,7 @@ def job_create(context, values):
     return IMPL.job_create(context, values)
 
 
+@to_dict
 def job_update(context, job, values):
     """Update a Job from the values dictionary."""
     return IMPL.job_update(context, job, values)

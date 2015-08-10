@@ -21,6 +21,7 @@ import mock
 from sahara.service.validations.edp import job as j
 from sahara.service.validations.edp import job_execution_schema as j_e_schema
 from sahara.service.validations.edp import job_interface as j_i
+from sahara.service.validations.edp import job_schema as j_schema
 from sahara.tests.unit.service.validation import utils as u
 from sahara.utils import edp
 
@@ -88,7 +89,7 @@ class TestJobInterfaceValidation(u.ValidationTestCase):
     def setUp(self):
         super(TestJobInterfaceValidation, self).setUp()
         self._create_object_fun = j.check_interface
-        self.scheme = j.JOB_SCHEMA
+        self.scheme = j_schema.JOB_SCHEMA
 
     def test_interface(self):
         for job in _job_types:

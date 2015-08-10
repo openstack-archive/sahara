@@ -17,16 +17,17 @@ import mock
 
 from sahara import exceptions as ex
 from sahara.service.validations.edp import job as j
+from sahara.service.validations.edp import job_schema as j_schema
 from sahara.tests.unit.service.validation import utils as u
 from sahara.utils import edp
 
 
-class TestJobValidation(u.ValidationTestCase):
+class TestJobCreateValidation(u.ValidationTestCase):
 
     def setUp(self):
-        super(TestJobValidation, self).setUp()
+        super(TestJobCreateValidation, self).setUp()
         self._create_object_fun = j.check_mains_libs
-        self.scheme = j.JOB_SCHEMA
+        self.scheme = j_schema.JOB_SCHEMA
 
     def test_bad_job_type_rejected(self):
         self._assert_create_object_validation(
@@ -202,3 +203,41 @@ class TestJobValidation(u.ValidationTestCase):
         self._assert_create_object_validation(data=data)
         _check_binaries._assert_called_with(data["libs"])
         _check_binaries._assert_called_with(data["mains"])
+
+
+class TestJobUpdateValidation(u.ValidationTestCase):
+
+    def setUp(self):
+        super(TestJobUpdateValidation, self).setUp()
+        self._create_object_fun = mock.Mock()
+        self.scheme = j_schema.JOB_UPDATE_SCHEMA
+
+    def test_job_update_types(self):
+        self._assert_types({
+            'name': 'job',
+            'description': 'very fast job'
+        })
+
+    def test_job_update_nothing_required(self):
+        self._assert_create_object_validation(
+            data={}
+        )
+
+    def test_job_update(self):
+        data = {
+            'name': 'job',
+            'description': 'very fast job'
+        }
+        self._assert_types(data)
+
+        self._assert_create_object_validation(data=data)
+
+        self._assert_create_object_validation(
+            data={
+                'name': 'job',
+                'id': '1'
+            },
+            bad_req_i=(1, "VALIDATION_ERROR",
+                       "Additional properties are not allowed "
+                       "('id' was unexpected)")
+        )

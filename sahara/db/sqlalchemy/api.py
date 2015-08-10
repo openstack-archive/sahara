@@ -897,13 +897,17 @@ def job_create(context, values):
 def job_update(context, job_id, values):
     session = get_session()
 
-    with session.begin():
-        job = _job_get(context, session, job_id)
-        if not job:
-            raise ex.NotFoundException(job_id,
-                                       _("Job id '%s' not found!"))
-        job.update(values)
-        session.add(job)
+    try:
+        with session.begin():
+            job = _job_get(context, session, job_id)
+            if not job:
+                raise ex.NotFoundException(job_id,
+                                           _("Job id '%s' not found!"))
+            job.update(values)
+            session.add(job)
+    except db_exc.DBDuplicateEntry as e:
+        raise ex.DBDuplicateEntry(
+            _("Duplicate entry for Job: %s") % e.columns)
 
     return job
 
