@@ -59,7 +59,7 @@ class VersionHandler(bvh.BaseVersionHandler):
             hue.HueV360(),
             hue.HueV370(),
             httpfs.HttpFS(),
-            mahout.Mahout(),
+            mahout.MahoutV09(),
             pig.PigV013(),
             pig.PigV014(),
             sqoop2.Sqoop2(),

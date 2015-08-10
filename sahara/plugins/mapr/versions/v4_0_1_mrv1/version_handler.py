@@ -52,7 +52,7 @@ class VersionHandler(bvh.BaseVersionHandler):
             hbase.HBaseV0987(),
             hbase.HBaseV0989(),
             httpfs.HttpFS(),
-            mahout.Mahout(),
+            mahout.MahoutV09(),
             pig.PigV013(),
             pig.PigV014(),
             swift.Swift(),
