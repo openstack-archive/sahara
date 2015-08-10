@@ -39,8 +39,11 @@ class EdpOozieEngine(edp_engine.OozieJobEngine):
         return 'http://%s:11000/oozie' % oozie_ip
 
     def get_name_node_uri(self, cluster):
-        namenode_ip = CU.pu.get_namenode(cluster).fqdn()
-        return 'hdfs://%s:8020' % namenode_ip
+        if len(CU.pu.get_jns(cluster)) > 0:
+            return 'hdfs://%s' % CU.NAME_SERVICE
+        else:
+            namenode_ip = CU.pu.get_namenode(cluster).fqdn()
+            return 'hdfs://%s:8020' % namenode_ip
 
     def get_resource_manager_uri(self, cluster):
         resourcemanager_ip = CU.pu.get_resourcemanager(cluster).fqdn()

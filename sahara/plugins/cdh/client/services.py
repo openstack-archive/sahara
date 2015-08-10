@@ -374,53 +374,6 @@ class ApiService(types.BaseApiResource):
         """
         return self._cmd('hiveCreateHiveUserDir')
 
-
-class ApiServiceSetupInfo(ApiService):
-    _ATTRIBUTES = {
-        'name': None,
-        'type': None,
-        'config': types.Attr(types.ApiConfig),
-        'roles': types.Attr(roles.ApiRole),
-    }
-
-    def __init__(self, name=None, type=None,
-                 config=None, roles=None):
-        # The BaseApiObject expects a resource_root, which we don't care about
-        resource_root = None
-        # Unfortunately, the json key is called "type". So our input arg
-        # needs to be called "type" as well, despite it being a python keyword.
-        types.BaseApiObject.init(self, None, locals())
-
-    def set_config(self, config):
-        """Set the service configuration
-
-        :param config: A dictionary of config key/value
-        """
-        if self.config is None:
-            self.config = {}
-        self.config.update(types.config_to_api_list(config))
-
-    def add_role_info(self, role_name, role_type, host_id, config=None):
-        """Add a role info
-
-        The role will be created along with the service setup.
-
-        :param role_name: Role name
-        :param role_type: Role type
-        :param host_id: The host where the role should run
-        :param config: (Optional) A dictionary of role config values
-        """
-        if self.roles is None:
-            self.roles = []
-        api_config_list = (config is not None
-                           and types.config_to_api_list(config)
-                           or None)
-        self.roles.append({
-            'name': role_name,
-            'type': role_type,
-            'hostRef': {'hostId': host_id},
-            'config': api_config_list})
-
     def enable_nn_ha(self, active_name, standby_host_id, nameservice, jns,
                      standby_name_dir_list=None, qj_name=None,
                      standby_name=None, active_fc_name=None,
@@ -501,3 +454,50 @@ class ApiServiceSetupInfo(ApiService):
             jns=jns
         )
         return self._cmd('hdfsEnableNnHa', data=args, api_version=6)
+
+
+class ApiServiceSetupInfo(ApiService):
+    _ATTRIBUTES = {
+        'name': None,
+        'type': None,
+        'config': types.Attr(types.ApiConfig),
+        'roles': types.Attr(roles.ApiRole),
+    }
+
+    def __init__(self, name=None, type=None,
+                 config=None, roles=None):
+        # The BaseApiObject expects a resource_root, which we don't care about
+        resource_root = None
+        # Unfortunately, the json key is called "type". So our input arg
+        # needs to be called "type" as well, despite it being a python keyword.
+        types.BaseApiObject.init(self, None, locals())
+
+    def set_config(self, config):
+        """Set the service configuration
+
+        :param config: A dictionary of config key/value
+        """
+        if self.config is None:
+            self.config = {}
+        self.config.update(types.config_to_api_list(config))
+
+    def add_role_info(self, role_name, role_type, host_id, config=None):
+        """Add a role info
+
+        The role will be created along with the service setup.
+
+        :param role_name: Role name
+        :param role_type: Role type
+        :param host_id: The host where the role should run
+        :param config: (Optional) A dictionary of role config values
+        """
+        if self.roles is None:
+            self.roles = []
+        api_config_list = (config is not None
+                           and types.config_to_api_list(config)
+                           or None)
+        self.roles.append({
+            'name': role_name,
+            'type': role_type,
+            'hostRef': {'hostId': host_id},
+            'config': api_config_list})

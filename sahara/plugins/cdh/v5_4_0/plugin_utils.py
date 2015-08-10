@@ -45,6 +45,7 @@ class PluginUtilsV540(pu.AbstractPluginUtils):
             'HOSTMONITOR': 'HM',
             'IMPALAD': 'ID',
             'JOBHISTORY': 'JS',
+            'JOURNALNODE': 'JN',
             'KMS': 'KMS',
             'MASTER': 'M',
             'NAMENODE': 'NN',
@@ -94,6 +95,9 @@ class PluginUtilsV540(pu.AbstractPluginUtils):
     def get_kms(self, cluster):
         return u.get_instances(cluster, 'KMS')
 
+    def get_jns(self, cluster):
+        return u.get_instances(cluster, 'HDFS_JOURNALNODE')
+
     def convert_process_configs(self, configs):
         p_dict = {
             "CLOUDERA": ['MANAGER'],
@@ -122,7 +126,8 @@ class PluginUtilsV540(pu.AbstractPluginUtils):
             "SQOOP": ['SQOOP_SERVER'],
             "KMS": ['KMS'],
             'YARN_GATEWAY': ['YARN_GATEWAY'],
-            'HDFS_GATEWAY': ['HDFS_GATEWAY']
+            'HDFS_GATEWAY': ['HDFS_GATEWAY'],
+            "JOURNALNODE": ['JOURNALNODE']
         }
         if isinstance(configs, res.Resource):
             configs = configs.to_dict()
