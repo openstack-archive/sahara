@@ -49,6 +49,9 @@ class Rest(flask.Blueprint):
     def delete(self, rule, status_code=204):
         return self._mroute('DELETE', rule, status_code)
 
+    def patch(self, rule, status_code=202):
+        return self._mroute('PATCH', rule, status_code)
+
     def _mroute(self, methods, rule, status_code=None, **kw):
         if type(methods) is str:
             methods = [methods]
@@ -85,7 +88,7 @@ class Rest(flask.Blueprint):
                     flask.request.headers['X-Roles'].split(','),
                     request_id=req_id)
                 context.set_ctx(ctx)
-                if flask.request.method in ['POST', 'PUT']:
+                if flask.request.method in ['POST', 'PUT', 'PATCH']:
                     kwargs['data'] = request_data()
 
                 try:
