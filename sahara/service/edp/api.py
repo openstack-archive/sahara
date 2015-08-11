@@ -160,6 +160,10 @@ def cancel_job_execution(id):
     return job_execution
 
 
+def update_job_execution(id, values):
+    return conductor.job_execution_update(context.ctx(), id, values)
+
+
 def delete_job_execution(id):
     context.set_current_job_execution_id(id)
     OPS.delete_job_execution(id)
