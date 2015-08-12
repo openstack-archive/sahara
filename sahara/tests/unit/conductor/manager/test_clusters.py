@@ -229,6 +229,14 @@ class ClusterTest(test_base.ConductorManagerTestCase):
         }
         return self.api.instance_add(ctx, ng_id, instance)
 
+    def _add_instance_ipv6(self, ctx, ng_id, instance_name):
+        instance = {
+            "instance_name": instance_name,
+            "internal_ip": "FE80:0000:0000:0000:0202:B3FF:FE1E:8329",
+            "management_ip": "FE80:0000:0000:0000:0202:B3FF:FE1E:8329"
+        }
+        return self.api.instance_add(ctx, ng_id, instance)
+
     def test_add_instance(self):
         ctx = context.ctx()
         cluster_db_obj = self.api.cluster_create(ctx, SAMPLE_CLUSTER)
@@ -249,6 +257,27 @@ class ClusterTest(test_base.ConductorManagerTestCase):
             self.assertEqual("additional_vm",
                              ng["instances"][0]["instance_name"])
 
+    def test_add_instance_ipv6(self):
+        ctx = context.ctx()
+        cluster_db_obj = self.api.cluster_create(ctx, SAMPLE_CLUSTER)
+        _id = cluster_db_obj["id"]
+
+        ng_id = cluster_db_obj["node_groups"][-1]["id"]
+        count = cluster_db_obj["node_groups"][-1]["count"]
+
+        instance_name = "additional_vm_ipv6"
+        self._add_instance_ipv6(ctx, ng_id, instance_name)
+
+        cluster_db_obj = self.api.cluster_get(ctx, _id)
+        for ng in cluster_db_obj["node_groups"]:
+            if ng["id"] != ng_id:
+                continue
+
+            ng.pop('tenant_id')
+            self.assertEqual(count + 1, ng["count"])
+            self.assertEqual(instance_name,
+                             ng["instances"][0]["instance_name"])
+
     def test_update_instance(self):
         ctx = context.ctx()
         cluster_db_obj = self.api.cluster_create(ctx, SAMPLE_CLUSTER)
@@ -267,6 +296,25 @@ class ClusterTest(test_base.ConductorManagerTestCase):
                 continue
 
             self.assertEqual("1.1.1.1", ng["instances"][0]["management_ip"])
+
+    def test_update_instance_ipv6(self):
+        ctx = context.ctx()
+        ip = "FE80:0000:0000:0000:0202:B3FF:FE1E:8329"
+        cluster_db_obj = self.api.cluster_create(ctx, SAMPLE_CLUSTER)
+        _id = cluster_db_obj["id"]
+
+        ng_id = cluster_db_obj["node_groups"][-1]["id"]
+
+        instance_id = self._add_instance(ctx, ng_id)
+
+        self.api.instance_update(ctx, instance_id, {"management_ip": ip})
+
+        cluster_db_obj = self.api.cluster_get(ctx, _id)
+        for ng in cluster_db_obj["node_groups"]:
+            if ng["id"] != ng_id:
+                continue
+
+            self.assertEqual(ip, ng["instances"][0]["management_ip"])
 
     def test_remove_instance(self):
         ctx = context.ctx()
