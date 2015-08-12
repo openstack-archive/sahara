@@ -24,4 +24,4 @@ testrepository>=0.0.18
 testscenarios>=0.4
 testtools>=1.4.0
 
-python-saharaclient>=0.9.0
+python-saharaclient>=0.10.0
