@@ -46,7 +46,9 @@ class RunnerUnitTest(testtools.TestCase):
                 "sahara_url": None,
                 "sahara_service_type": "data-processing",
                 "os_password": "nova",
-                "os_tenant": "admin"
+                "os_tenant": "admin",
+                "ssl_cert": None,
+                "ssl_verify": True
             }
         }
 
@@ -87,7 +89,8 @@ class RunnerUnitTest(testtools.TestCase):
                 "os_auth_url": "http://127.0.0.1:5000/v2.0",
                 "sahara_url": "http://127.0.0.1",
                 "os_password": "changed_nova",
-                "os_tenant": "changed_admin"
+                "os_tenant": "changed_admin",
+                "ssl_cert": "/etc/tests/cert.crt"
             },
             "network": {
                 "type": "neutron",
@@ -145,7 +148,9 @@ class RunnerUnitTest(testtools.TestCase):
                 "sahara_url": "http://127.0.0.1",
                 "os_password": "changed_nova",
                 "os_tenant": "changed_admin",
-                "sahara_service_type": "data-processing"
+                "sahara_service_type": "data-processing",
+                "ssl_cert": "/etc/tests/cert.crt",
+                "ssl_verify": True
             },
         }
 

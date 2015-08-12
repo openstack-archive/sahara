@@ -43,6 +43,8 @@ def set_defaults(config):
                                      'http://localhost:5000/v2.0')
     creds.setdefault('sahara_service_type', 'data-processing')
     creds['sahara_url'] = creds.get('sahara_url', None)
+    creds['ssl_verify'] = creds.get('ssl_verify', True)
+    creds['ssl_cert'] = creds.get('ssl_cert', None)
 
     # set up network
     config['network'] = config.get('network', {})

@@ -77,7 +77,9 @@ class TestBase(testtools.TestCase):
                                           'sahara_service_type':
                                               'data-processing-local',
                                           'sahara_url':
-                                              'http://sahara_host:8386/v1.1'}
+                                              'http://sahara_host:8386/v1.1',
+                                          'ssl_cert': '/etc/tests/cert.crt',
+                                          'ssl_verify': True}
         self.base_scenario.plugin_opts = {'plugin_name': 'vanilla',
                                           'hadoop_version': '2.6.0'}
         self.base_scenario.network = {'type': 'neutron',
@@ -181,7 +183,9 @@ class TestBase(testtools.TestCase):
                                   project_name='admin',
                                   user_domain_name='default',
                                   project_domain_name='default')
-        m_session.assert_called_with(auth=fake_auth)
+        m_session.assert_called_with(auth=fake_auth,
+                                     cert='/etc/tests/cert.crt',
+                                     verify=True)
 
     @mock.patch('sahara.tests.scenario.clients.NeutronClient.get_network_id',
                 return_value='mock_net')

@@ -52,6 +52,13 @@ SCHEMA = {
                 "sahara_url": {
                     "type": "string",
                     "format": "uri"
+                },
+                "ssl_verify": {
+                    "type": "boolean"
+                },
+                "ssl_cert": {
+                    "type": "string",
+                    "minLength": 1
                 }
             },
             "additionalProperties": False

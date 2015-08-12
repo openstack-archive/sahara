@@ -104,8 +104,10 @@ class BaseTestCase(base.BaseTestCase):
         sahara_service_type = self.credentials['sahara_service_type']
         sahara_url = self.credentials['sahara_url']
 
-        session = clients.get_session(
-            auth_url, username, password, tenant_name)
+        session = clients.get_session(auth_url, username, password,
+                                      tenant_name,
+                                      self.credentials['ssl_verify'],
+                                      self.credentials['ssl_cert'])
 
         self.sahara = clients.SaharaClient(session=session,
                                            service_type=sahara_service_type,
