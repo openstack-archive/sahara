@@ -27,4 +27,4 @@ Main URLs
 ---------
 
 https://sahara.mirantis.com/jenkins - Sahara CI Jenkins
-https://github.com/stackforge/sahara-ci-config/ - Sahara CI Config repo
+https://github.com/openstack/sahara-ci-config/ - Sahara CI Config repo
