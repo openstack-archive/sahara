@@ -92,8 +92,9 @@ High availability is achieved by using a set of journalnodes and Zookeeper
 servers along with ZooKeeper Failover Controllers (ZKFC) and additional
 configuration changes to HDFS and other services that use HDFS.
 
-Currently HDFS HA is only supported with the HDP 2.0.6 plugin. The feature
-is enabled through a ``cluster_configs`` parameter in the cluster's JSON:
+Currently HDFS HA is supported with the HDP 2.0.6 plugin and CDH 5.4.0 plugin.
+In HDP 2.0.6 plugin, the feature is enabled through a ``cluster_configs``
+parameter in the cluster's JSON:
 
 .. sourcecode:: cfg
 
@@ -102,6 +103,20 @@ is enabled through a ``cluster_configs`` parameter in the cluster's JSON:
                         "hdfs.nnha": true
                 }
         }
+
+In CDH 5.4.0 plugin, the HDFS HA is enabled through adding several
+HDFS_JOURNALNODE roles in the node group templates of cluster template.
+When HDFS_JOURNALNODE roles are added and the roles setup meets below
+requirements, the HDFS HA is enabled.
+
+* HDFS_JOURNALNODE number is odd, and at least 3.
+* Zookeeper is enabled.
+* NameNode and SecondaryNameNode are on different physical hosts by setting
+  anti-affinity.
+
+In this case, the original SecondrayNameNode node will be used as the
+Standby NameNode.
+
 
 Networking support
 ------------------
