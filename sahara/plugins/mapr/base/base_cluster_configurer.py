@@ -24,6 +24,7 @@ from sahara import context
 from sahara.i18n import _LI
 from sahara.i18n import _LW
 import sahara.plugins.mapr.abstract.configurer as ac
+from sahara.plugins.mapr.domain import distro as d
 import sahara.plugins.mapr.services.management.management as mng
 import sahara.plugins.mapr.services.mapreduce.mapreduce as mr
 from sahara.plugins.mapr.services.maprfs import maprfs
@@ -48,6 +49,7 @@ INSTALL_JAVA_SCRIPT = 'plugins/mapr/resources/install_java.sh'
 INSTALL_SCALA_SCRIPT = 'plugins/mapr/resources/install_scala.sh'
 INSTALL_MYSQL_CLIENT = 'plugins/mapr/resources/install_mysql_client.sh'
 ADD_MAPR_REPO_SCRIPT = 'plugins/mapr/resources/add_mapr_repo.sh'
+ADD_SECURITY_REPO_SCRIPT = 'plugins/mapr/resources/add_security_repos.sh'
 
 SERVICE_INSTALL_PRIORITY = [
     mng.Management(),
@@ -107,6 +109,12 @@ class BaseConfigurer(ac.AbstractConfigurer):
 
     def _prepare_bare_image(self, cluster_context, instances):
         LOG.debug('Preparing bare image')
+
+        if d.UBUNTU == cluster_context.distro:
+            LOG.debug("Installing security repos")
+            util.execute_on_instances(
+                instances, util.run_script, ADD_SECURITY_REPO_SCRIPT, 'root')
+
         d_name = cluster_context.distro.name
 
         LOG.debug('Installing Java')
