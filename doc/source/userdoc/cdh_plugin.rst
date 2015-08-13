@@ -11,10 +11,11 @@ explicitly enable or disable it in "plugins" line.
 You need to build images using :doc:`cdh_imagebuilder` to produce images used
 to provision cluster or you could download prepared images from
 http://sahara-files.mirantis.com/images/upstream/kilo/
-They already have Cloudera Express installed (5.0.0 or 5.3.0 version).
+They already have Cloudera Express installed (5.0.0, 5.3.0, or 5.4.0 version).
 
 The cloudera plugin requires an image to be tagged in Sahara Image Registry with
-two tags: 'cdh' and '<cloudera version>' (e.g. '5' or '5.3.0').
+two tags: 'cdh' and '<cloudera version>' (e.g. '5', '5.3.0' or '5.4.0', here '5'
+stands for '5.0.0').
 
 The default username specified for these images is different for each
 distribution:
@@ -24,7 +25,7 @@ distribution:
 +==============+============+
 | Ubuntu 12.04 | ubuntu     |
 +--------------+------------+
-| CentOS 6.5   | cloud-user |
+| CentOS 6.6   | cloud-user |
 +--------------+------------+
 
 Services Supported
@@ -33,7 +34,8 @@ Services Supported
 Currently below services are supported in both versions of Cloudera plugin:
 HDFS, Oozie, YARN, Spark, Zookeeper, Hive, Hue, HBase. 5.3.0 version
 of Cloudera Plugin also supported following services: Impala, Flume, Solr, Sqoop,
-and Key-value Store Indexer.
+and Key-value Store Indexer. 5.4.0 version added KMS service support based on
+5.3.0 version.
 
 .. note::
 
@@ -42,6 +44,16 @@ and Key-value Store Indexer.
     functionality, using Sentry service will not really take any effect, and
     other services depending on Sentry will not do any authentication too.
 
+High Availablity Support
+------------------------
+
+Currently HDFS NameNode High Availability is supported in Cloudera 5.4.0 version.
+You can refer to :doc:`features` for the detail info.
+
+YARN ResourceManager High Availability is supported in Cloudera 5.4.0 version.
+This feature adds redundancy in the form of an Active/Standby ResourceManager
+pair to avoid the failure of single RM. Upon failover, the Standby RM become
+Active so that the applications can resume from their last check-pointed state.
 
 Cluster Validation
 ------------------
