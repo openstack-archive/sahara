@@ -60,16 +60,34 @@ def validate_cluster_creating(cluster):
         if 'HDFS_SECONDARYNAMENODE' not in _get_anti_affinity(cluster):
             raise ex.NameNodeHAConfigurationError(_('HDFS_SECONDARYNAMENODE '
                                                     'should be enabled '
-                                                    'in affinity_mask.'))
+                                                    'in anti_affinity.'))
         if 'HDFS_NAMENODE' not in _get_anti_affinity(cluster):
             raise ex.NameNodeHAConfigurationError(_('HDFS_NAMENODE '
                                                     'should be enabled '
-                                                    'in affinity_mask.'))
+                                                    'in anti_affinity.'))
 
     rm_count = _get_inst_count(cluster, 'YARN_RESOURCEMANAGER')
     if rm_count > 1:
         raise ex.InvalidComponentCountException('YARN_RESOURCEMANAGER',
                                                 _('0 or 1'), rm_count)
+
+    stdb_rm_count = _get_inst_count(cluster, 'YARN_STANDBYRM')
+    if stdb_rm_count > 1:
+        raise ex.InvalidComponentCountException('YARN_STANDBYRM',
+                                                _('0 or 1'), stdb_rm_count)
+    if stdb_rm_count > 0:
+        if rm_count < 1:
+            raise ex.RequiredServiceMissingException('YARN_RESOURCEMANAGER',
+                                                     required_by='RM HA')
+        if zk_count < 1:
+            raise ex.RequiredServiceMissingException('ZOOKEEPER',
+                                                     required_by='RM HA')
+        if 'YARN_RESOURCEMANAGER' not in _get_anti_affinity(cluster):
+            raise ex.ResourceManagerHAConfigurationError(
+                _('YARN_RESOURCEMANAGER should be enabled in anti_affinity.'))
+        if 'YARN_STANDBYRM' not in _get_anti_affinity(cluster):
+            raise ex.ResourceManagerHAConfigurationError(
+                _('YARN_STANDBYRM should be enabled in anti_affinity.'))
 
     hs_count = _get_inst_count(cluster, 'YARN_JOBHISTORY')
     if hs_count > 1:

@@ -455,6 +455,25 @@ class ApiService(types.BaseApiResource):
         )
         return self._cmd('hdfsEnableNnHa', data=args, api_version=6)
 
+    def enable_rm_ha(self, new_rm_host_id, zk_service_name=None):
+        """Enable high availability for a YARN ResourceManager.
+
+        @param new_rm_host_id: id of the host where the second ResourceManager
+                               will be added.
+        @param zk_service_name: Name of the ZooKeeper service to use for auto-
+                                failover. If YARN service depends on a
+                                ZooKeeper service then that ZooKeeper service
+                                will be used for auto-failover and in that case
+                                this parameter can be omitted.
+        @return: Reference to the submitted command.
+        @since: API v6
+        """
+        args = dict(
+            newRmHostId=new_rm_host_id,
+            zkServiceName=zk_service_name
+        )
+        return self._cmd('enableRmHa', data=args)
+
 
 class ApiServiceSetupInfo(ApiService):
     _ATTRIBUTES = {

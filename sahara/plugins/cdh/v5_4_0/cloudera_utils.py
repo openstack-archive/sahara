@@ -81,6 +81,8 @@ class ClouderaUtilsV540(cu.ClouderaUtils):
             return cm_cluster.get_service(self.KMS_SERVICE_NAME)
         elif role in ['JOURNALNODE']:
             return cm_cluster.get_service(self.HDFS_SERVICE_NAME)
+        elif role in ['YARN_STANDBYRM']:
+            return cm_cluster.get_service(self.YARN_SERVICE_NAME)
         else:
             return super(ClouderaUtilsV540, self).get_service_by_role(
                 role, cluster, instance)
@@ -427,3 +429,13 @@ class ClouderaUtilsV540(cu.ClouderaUtils):
                                 standby_host_id=standby_nn_host_name,
                                 nameservice=self.NAME_SERVICE, jns=jn_list
                                 )
+
+    @cpo.event_wrapper(
+        True, step=_("Enable ResourceManager HA"), param=('cluster', 1))
+    @cu.cloudera_cmd
+    def enable_resourcemanager_ha(self, cluster):
+        new_rm = self.pu.get_stdb_rm(cluster)
+        new_rm_host_name = new_rm.fqdn()
+        cm_cluster = self.get_cloudera_cluster(cluster)
+        yarn = cm_cluster.get_service(self.YARN_SERVICE_NAME)
+        yield yarn.enable_rm_ha(new_rm_host_id=new_rm_host_name)

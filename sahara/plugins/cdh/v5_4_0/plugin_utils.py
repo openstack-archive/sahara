@@ -98,6 +98,9 @@ class PluginUtilsV540(pu.AbstractPluginUtils):
     def get_jns(self, cluster):
         return u.get_instances(cluster, 'HDFS_JOURNALNODE')
 
+    def get_stdb_rm(self, cluster):
+        return u.get_instance(cluster, 'YARN_STANDBYRM')
+
     def convert_process_configs(self, configs):
         p_dict = {
             "CLOUDERA": ['MANAGER'],

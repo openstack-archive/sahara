@@ -178,6 +178,8 @@ class AbstractPluginUtils(object):
         return res.Resource(configs)
 
     def convert_role_showname(self, showname):
+        # Yarn ResourceManager and Standby ResourceManager will
+        # be converted to ResourceManager.
         name_dict = {
             'CLOUDERA_MANAGER': 'MANAGER',
             'HDFS_NAMENODE': 'NAMENODE',
@@ -185,6 +187,7 @@ class AbstractPluginUtils(object):
             'HDFS_JOURNALNODE': 'JOURNALNODE',
             'HDFS_SECONDARYNAMENODE': 'SECONDARYNAMENODE',
             'YARN_RESOURCEMANAGER': 'RESOURCEMANAGER',
+            'YARN_STANDBYRM': 'RESOURCEMANAGER',
             'YARN_NODEMANAGER': 'NODEMANAGER',
             'YARN_JOBHISTORY': 'JOBHISTORY',
             'OOZIE_SERVER': 'OOZIE_SERVER',
