@@ -81,7 +81,7 @@ class TestBase(testtools.TestCase):
                                           'ssl_cert': '/etc/tests/cert.crt',
                                           'ssl_verify': True}
         self.base_scenario.plugin_opts = {'plugin_name': 'vanilla',
-                                          'hadoop_version': '2.6.0'}
+                                          'hadoop_version': '2.7.1'}
         self.base_scenario.network = {'type': 'neutron',
                                       'private_network': 'changed_private',
                                       'public_network': 'changed_public',
@@ -142,7 +142,7 @@ class TestBase(testtools.TestCase):
         self.base_scenario.ng_name_map = {}
         self.base_scenario.key_name = 'test_key'
         self.base_scenario.template_path = ('sahara/tests/scenario/templates/'
-                                            'vanilla/2.6.0')
+                                            'vanilla/2.7.1')
         self.job = self.base_scenario.testcase["edp_jobs_flow"].get(
             'test_flow')[0]
         self.base_scenario.cluster_id = 'some_id'
@@ -260,7 +260,7 @@ class TestBase(testtools.TestCase):
         self.base_scenario._init_clients()
         self.assertEqual('internal-db://id_internal_db_data',
                          self.base_scenario._create_internal_db_data(
-                             'sahara/tests/scenario_unit/vanilla2_6_0.yaml'))
+                             'sahara/tests/scenario_unit/vanilla2_7_1.yaml'))
 
     @mock.patch('swiftclient.client.Connection.put_container',
                 return_value=None)

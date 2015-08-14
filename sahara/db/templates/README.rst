@@ -29,7 +29,7 @@ A very simple cluster template JSON file might look like this:
 
   {
       "plugin_name": "vanilla",
-      "hadoop_version": "2.6.0",
+      "hadoop_version": "2.7.1",
       "node_groups": [
           {
               "name": "master",
@@ -76,7 +76,7 @@ of a node group template file that uses substitution for *flavor_id*:
 
   {
       "plugin_name": "vanilla",
-      "hadoop_version": "2.6.0",
+      "hadoop_version": "2.7.1",
       "node_processes": [
           "namenode",
           "resourcemanager",
@@ -139,13 +139,13 @@ in the third section:
 
 .. code:: python
 
-  [vanilla_2.6.0_master]
+  [vanilla_2.7.1_master]
   # This is named for the plugin, version, and template.
   # It may contain only node group template fields.
   flavor_id = 5
   image_id = b7883f8a-9a7f-42cc-89a2-d3c8b1cc7b28
 
-  [vanilla_2.6.0]
+  [vanilla_2.7.1]
   # This is named for the plugin and version.
   # It may contain fields for both node group and cluster templates.
   flavor_id = 4
@@ -243,23 +243,23 @@ Create/update default templates bundled with Sahara for just the vanilla plugin:
 
   $ sahara-templates --config-file myconfig update -t $TENANT_ID -p vanilla
 
-Create/update default templates bundled with Sahara for just version 2.6.0
+Create/update default templates bundled with Sahara for just version 2.7.1
 of the vanilla plugin::
 
-  $ sahara-templates --config-file myconfig update -t $TENANT_ID -p vanilla -pv 2.6.0
+  $ sahara-templates --config-file myconfig update -t $TENANT_ID -p vanilla -pv 2.7.1
 
-Create/update default templates bundled with Sahara for just version 2.6.0
+Create/update default templates bundled with Sahara for just version 2.7.1
 of the vanilla plugin and version 2.0.6 of the hdp plugin::
 
-  $ sahara-templates --config-file myconfig update -t $TENANT_ID -p vanilla -pv vanilla.2.6.0 -p hdp -pv hdp.2.0.6
+  $ sahara-templates --config-file myconfig update -t $TENANT_ID -p vanilla -pv vanilla.2.7.1 -p hdp -pv hdp.2.0.6
 
 Delete default templates for the vanilla plugin::
 
   $ sahara-templates --config-file myconfig delete -t $TENANT_ID -p vanilla
 
-Delete default templates for version 2.6.0 of the vanilla plugin::
+Delete default templates for version 2.7.1 of the vanilla plugin::
 
-  $ sahara-templates --config-file myconfig delete -t $TENANT_ID -p vanilla -pv 2.6.0
+  $ sahara-templates --config-file myconfig delete -t $TENANT_ID -p vanilla -pv 2.7.1
 
 Delete a specific node group template by ID::
 

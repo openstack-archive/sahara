@@ -20,14 +20,14 @@ or, if the file is a YAML Mako template:
 
 .. sourcecode:: console
 
-    $ tox -e scenario -- -V templatevars.ini etc/scenario/sahara-ci/scenario/vanilla-2.6.0.yaml.mako
+    $ tox -e scenario -- -V templatevars.ini etc/scenario/sahara-ci/scenario/vanilla-2.7.1.yaml.mako
 ..
 
 where templatevars.ini contains the values of the variables referenced
-by ``vanilla-2.6.0.yaml.mako``.
+by ``vanilla-2.7.1.yaml.mako``.
 
 For example, you want to run tests for the Vanilla plugin with the Hadoop
-version 2.6.0 In this case you should create ``templatevars.ini`` with
+version 2.7.1 In this case you should create ``templatevars.ini`` with
 the appropriate values (see the section `Variables and sahara-ci templates`_)
 and use the following tox env:
 
@@ -41,20 +41,20 @@ should use the several YAML and/or YAML Mako template files:
 
 .. sourcecode:: console
 
-    $ tox -e scenario -- -V templatevars.ini etc/scenario/sahara-ci/vanilla-1.2.1.yaml.mako etc/scenario/sahara-ci/vanilla-2.6.0.yaml.mako ...
+    $ tox -e scenario -- -V templatevars.ini etc/scenario/sahara-ci/vanilla-1.2.1.yaml.mako etc/scenario/sahara-ci/vanilla-2.7.1.yaml.mako ...
 ..
 
 Here are a few more examples.
 
 .. sourcecode:: console
 
-    $ tox -e scenario -- -V templatevars.ini etc/scenario/sahara-ci/credentials.yaml.mako etc/scenario/sahara-ci/vanilla-2.6.0.yaml.mako
+    $ tox -e scenario -- -V templatevars.ini etc/scenario/sahara-ci/credentials.yaml.mako etc/scenario/sahara-ci/vanilla-2.7.1.yaml.mako
 
 ..
 
-will run tests for Vanilla plugin with the Hadoop version 2.6.0 and credential
+will run tests for Vanilla plugin with the Hadoop version 2.7.1 and credential
 located in ``etc/scenario/sahara-ci/credential.yaml.mako``, replacing the variables
-included into ``vanilla-2.6.0.yaml.mako`` with the values defined into
+included into ``vanilla-2.7.1.yaml.mako`` with the values defined into
 ``templatevars.ini``.
 For more information about writing scenario YAML files, see the section
 section `How to write scenario files`_.
