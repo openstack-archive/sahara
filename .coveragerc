@@ -11,3 +11,4 @@ source = sahara
 
 [report]
 ignore-errors = True
+precision = 3
