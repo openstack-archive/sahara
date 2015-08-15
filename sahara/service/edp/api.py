@@ -241,6 +241,10 @@ def get_job_binary_internal_data(id):
     return conductor.job_binary_internal_get_raw_data(context.ctx(), id)
 
 
+def update_job_binary_internal(id, values):
+    return conductor.job_binary_internal_update(context.ctx(), id, values)
+
+
 def get_job_binary_data(id):
     job_binary = conductor.job_binary_get(context.ctx(), id)
     return dispatch.get_raw_binary(job_binary, with_context=True)

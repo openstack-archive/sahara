@@ -483,6 +483,10 @@ class ConductorManager(db_base.Base):
             context,
             job_binary_internal_id)
 
+    def job_binary_internal_update(self, context, id, values):
+        """Updates a Job from the values dictionary."""
+        return self.db.job_binary_internal_update(context, id, values)
+
     # Events ops
 
     def cluster_provision_step_add(self, context, cluster_id, values):

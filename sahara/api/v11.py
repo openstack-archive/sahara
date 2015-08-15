@@ -23,6 +23,7 @@ from sahara.service.validations.edp import data_source_schema as v_d_s_schema
 from sahara.service.validations.edp import job as v_j
 from sahara.service.validations.edp import job_binary as v_j_b
 from sahara.service.validations.edp import job_binary_internal as v_j_b_i
+from sahara.service.validations.edp import job_binary_internal_schema as vjbi_s
 from sahara.service.validations.edp import job_binary_schema as v_j_b_schema
 from sahara.service.validations.edp import job_execution as v_j_e
 import sahara.utils.api as u
@@ -255,3 +256,12 @@ def job_binary_internal_delete(job_binary_internal_id):
 @v.check_exists(api.get_job_binary_internal, 'job_binary_internal_id')
 def job_binary_internal_data(job_binary_internal_id):
     return api.get_job_binary_internal_data(job_binary_internal_id)
+
+
+@rest.patch('/job-binary-internals/<job_binary_internal_id>')
+@acl.enforce("data-processing:job-binaries:modify")
+@v.check_exists(api.get_job_binary_internal, 'job_binary_internal_id')
+@v.validate(vjbi_s.JOB_BINARY_UPDATE_SCHEMA)
+def job_binary_internal_update(job_binary_internal_id, data):
+    return u.to_wrapped_dict(
+        api.update_job_binary_internal, job_binary_internal_id, data)
