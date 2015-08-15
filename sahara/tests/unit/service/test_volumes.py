@@ -21,7 +21,7 @@ from sahara.conductor import resource as r
 from sahara import exceptions as ex
 from sahara.service import volumes
 from sahara.tests.unit import base
-from sahara.utils import general as g
+from sahara.utils import cluster as cluster_utils
 
 
 class TestAttachVolume(base.SaharaWithDbTestCase):
@@ -112,7 +112,7 @@ class TestAttachVolume(base.SaharaWithDbTestCase):
 
         cluster = r.ClusterResource({'node_groups': [ng]})
 
-        volumes.attach_to_instances(g.get_instances(cluster))
+        volumes.attach_to_instances(cluster_utils.get_instances(cluster))
         self.assertEqual(4, p_create_attach_vol.call_count)
         self.assertEqual(2, p_await.call_count)
         self.assertEqual(4, p_mount.call_count)

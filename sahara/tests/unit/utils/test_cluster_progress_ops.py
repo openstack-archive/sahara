@@ -165,7 +165,7 @@ class ClusterProgressOpsTest(base.SaharaWithDbTestCase):
         pass
 
     @mock.patch('sahara.utils.cluster_progress_ops._find_in_args')
-    @mock.patch('sahara.utils.general.check_cluster_exists')
+    @mock.patch('sahara.utils.cluster.check_cluster_exists')
     def test_event_wrapper(self, p_check_cluster_exists, p_find):
         self.override_config("disable_event_log", True)
         self._do_nothing()

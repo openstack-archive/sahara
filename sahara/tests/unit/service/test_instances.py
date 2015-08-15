@@ -21,8 +21,8 @@ from sahara import context
 from sahara.service import direct_engine as e
 from sahara.service import ops
 from sahara.tests.unit import base
-import sahara.utils.crypto as c
-from sahara.utils import general as g
+from sahara.utils import cluster as cluster_utils
+from sahara.utils import crypto as c
 
 
 conductor = cond.API
@@ -220,7 +220,7 @@ class IpManagementTest(AbstractInstanceTest):
         self.engine._create_instances(cluster)
 
         cluster = conductor.cluster_get(ctx, cluster)
-        instances_list = g.get_instances(cluster)
+        instances_list = cluster_utils.get_instances(cluster)
 
         self.engine._assign_floating_ips(instances_list)
 
@@ -245,7 +245,7 @@ class ShutdownClusterTest(AbstractInstanceTest):
         self.engine._create_instances(cluster)
 
         cluster = conductor.cluster_get(ctx, cluster)
-        instances_list = g.get_instances(cluster)
+        instances_list = cluster_utils.get_instances(cluster)
 
         self.engine._assign_floating_ips(instances_list)
 

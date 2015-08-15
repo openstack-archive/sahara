@@ -23,6 +23,7 @@ from sahara import conductor as c
 from sahara import context
 from sahara.plugins import base as plugin_base
 from sahara.service import quotas
+from sahara.utils import cluster as c_u
 from sahara.utils import general as g
 from sahara.utils.notification import sender
 from sahara.utils.openstack import base as b
@@ -74,14 +75,16 @@ def scale_cluster(id, data):
     _add_ports_for_auto_sg(ctx, cluster, plugin)
 
     try:
-        cluster = g.change_cluster_status(cluster, "Validating")
+        cluster = c_u.change_cluster_status(
+            cluster, c_u.CLUSTER_STATUS_VALIDATING)
         quotas.check_scaling(cluster, to_be_enlarged, additional)
         plugin.recommend_configs(cluster)
         plugin.validate_scaling(cluster, to_be_enlarged, additional)
     except Exception as e:
         with excutils.save_and_reraise_exception():
-            g.clean_cluster_from_empty_ng(cluster)
-            g.change_cluster_status(cluster, "Active", six.text_type(e))
+            c_u.clean_cluster_from_empty_ng(cluster)
+            c_u.change_cluster_status(
+                cluster, c_u.CLUSTER_STATUS_ACTIVE, six.text_type(e))
 
     # If we are here validation is successful.
     # So let's update to_be_enlarged map:
@@ -129,13 +132,14 @@ def _cluster_create(values, plugin):
     # validating cluster
     try:
         plugin.recommend_configs(cluster)
-        cluster = g.change_cluster_status(cluster, "Validating")
+        cluster = c_u.change_cluster_status(
+            cluster, c_u.CLUSTER_STATUS_VALIDATING)
         quotas.check_cluster(cluster)
         plugin.validate(cluster)
     except Exception as e:
         with excutils.save_and_reraise_exception():
-            g.change_cluster_status(cluster, "Error",
-                                    six.text_type(e))
+            c_u.change_cluster_status(
+                cluster, c_u.CLUSTER_STATUS_ERROR, six.text_type(e))
 
     OPS.provision_cluster(cluster.id)
 
@@ -155,7 +159,7 @@ def _add_ports_for_auto_sg(ctx, cluster, plugin):
 
 def terminate_cluster(id):
     context.set_current_cluster_id(id)
-    cluster = g.change_cluster_status(id, "Deleting")
+    cluster = c_u.change_cluster_status(id, c_u.CLUSTER_STATUS_DELETING)
 
     if cluster is None:
         return

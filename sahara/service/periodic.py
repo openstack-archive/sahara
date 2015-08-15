@@ -29,6 +29,7 @@ from sahara.i18n import _LW
 from sahara.service.edp import job_manager
 from sahara.service import ops
 from sahara.service import trusts
+from sahara.utils import cluster as c_u
 from sahara.utils import edp
 from sahara.utils import proxy as p
 
@@ -98,11 +99,11 @@ def terminate_cluster(ctx, cluster, description):
                                           description=description))
 
     else:
-        if cluster.status != 'AwaitingTermination':
+        if (cluster.status !=
+                c_u.CLUSTER_STATUS_AWAITINGTERMINATION):
             conductor.cluster_update(
-                ctx,
-                cluster,
-                {'status': 'AwaitingTermination'})
+                ctx, cluster,
+                {'status': c_u.CLUSTER_STATUS_AWAITINGTERMINATION})
 
 
 def set_context(func):
@@ -139,7 +140,8 @@ def _make_periodic_tasks():
         @set_context
         def terminate_unneeded_transient_clusters(self, ctx):
             LOG.debug('Terminating unneeded transient clusters')
-            for cluster in conductor.cluster_get_all(ctx, status='Active'):
+            for cluster in conductor.cluster_get_all(
+                    ctx, status=c_u.CLUSTER_STATUS_ACTIVE):
                 if not cluster.is_transient:
                     continue
 
@@ -183,7 +185,10 @@ def _make_periodic_tasks():
             # Criteria support need to be implemented in sahara db API to
             # have SQL filtering.
             for cluster in conductor.cluster_get_all(ctx):
-                if cluster.status in ['Active', 'Error', 'Deleting']:
+                if (cluster.status in
+                        [c_u.CLUSTER_STATUS_ACTIVE,
+                         c_u.CLUSTER_STATUS_ERROR,
+                         c_u.CLUSTER_STATUS_DELETING]):
                     continue
 
                 spacing = get_time_since_last_update(cluster)

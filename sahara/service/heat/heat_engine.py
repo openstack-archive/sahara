@@ -24,8 +24,8 @@ from sahara.i18n import _LW
 from sahara.service import engine as e
 from sahara.service.heat import templates as ht
 from sahara.service import volumes
+from sahara.utils import cluster as c_u
 from sahara.utils import cluster_progress_ops as cpo
-from sahara.utils import general as g
 from sahara.utils.openstack import base as b
 from sahara.utils.openstack import heat
 
@@ -33,10 +33,14 @@ conductor = c.API
 CONF = cfg.CONF
 LOG = logging.getLogger(__name__)
 
-CREATE_STAGES = ["Spawning", "Waiting", "Preparing"]
-SCALE_STAGES = ["Scaling: Spawning", "Scaling: Waiting", "Scaling: Preparing"]
-ROLLBACK_STAGES = ["Rollback: Spawning", "Rollback: Waiting",
-                   "Rollback: Preparing"]
+CREATE_STAGES = [c_u.CLUSTER_STATUS_SPAWNING, c_u.CLUSTER_STATUS_WAITING,
+                 c_u.CLUSTER_STATUS_PREPARING]
+SCALE_STAGES = [c_u.CLUSTER_STATUS_SCALING_SPAWNING,
+                c_u.CLUSTER_STATUS_SCALING_WAITING,
+                c_u.CLUSTER_STATUS_SCALING_PREPARING]
+ROLLBACK_STAGES = [c_u.CLUSTER_STATUS_ROLLBACK_SPAWNING,
+                   c_u.CLUSTER_STATUS_ROLLBACK_WAITING,
+                   c_u.CLUSTER_STATUS_ROLLBACK__PREPARING]
 
 
 class HeatEngine(e.Engine):
@@ -78,7 +82,7 @@ class HeatEngine(e.Engine):
             update_stack=True, disable_rollback=False)
 
         cluster = conductor.cluster_get(ctx, cluster)
-        g.clean_cluster_from_empty_ng(cluster)
+        c_u.clean_cluster_from_empty_ng(cluster)
 
         self._update_rollback_strategy(cluster)
 
@@ -126,7 +130,7 @@ class HeatEngine(e.Engine):
 
     def _populate_cluster(self, cluster, stack):
         ctx = context.ctx()
-        old_ids = [i.instance_id for i in g.get_instances(cluster)]
+        old_ids = [i.instance_id for i in c_u.get_instances(cluster)]
         new_ids = []
 
         for node_group in cluster.node_groups:
@@ -198,22 +202,22 @@ class HeatEngine(e.Engine):
     def _launch_instances(self, cluster, target_count, stages,
                           update_stack=False, disable_rollback=True):
         # create all instances
-        cluster = g.change_cluster_status(cluster, stages[0])
+        cluster = c_u.change_cluster_status(cluster, stages[0])
 
         inst_ids = self._create_instances(
             cluster, target_count, update_stack, disable_rollback)
 
         # wait for all instances are up and networks ready
-        cluster = g.change_cluster_status(cluster, stages[1])
+        cluster = c_u.change_cluster_status(cluster, stages[1])
 
-        instances = g.get_instances(cluster, inst_ids)
+        instances = c_u.get_instances(cluster, inst_ids)
 
         self._await_networks(cluster, instances)
 
         # prepare all instances
-        cluster = g.change_cluster_status(cluster, stages[2])
+        cluster = c_u.change_cluster_status(cluster, stages[2])
 
-        instances = g.get_instances(cluster, inst_ids)
+        instances = c_u.get_instances(cluster, inst_ids)
         volumes.mount_to_instances(instances)
 
         self._configure_instances(cluster)

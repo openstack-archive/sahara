@@ -31,9 +31,9 @@ from sahara.service.edp import job_utils
 from sahara.service.validations.edp import job_execution as j
 from sahara.swift import swift_helper as sw
 from sahara.swift import utils as su
+from sahara.utils import cluster as c_u
 from sahara.utils import edp
 from sahara.utils import files
-from sahara.utils import general
 from sahara.utils import remote
 from sahara.utils import xmlutils
 
@@ -73,7 +73,7 @@ class SparkJobEngine(base_engine.JobEngine):
         # is gone, we should probably change the status somehow.
         # For now, do nothing.
         try:
-            instance = general.get_instances(self.cluster, [inst_id])[0]
+            instance = c_u.get_instances(self.cluster, [inst_id])[0]
         except Exception:
             instance = None
         return pid, instance

@@ -15,17 +15,8 @@
 
 import re
 
-from oslo_log import log as logging
 import six
 
-from sahara import conductor as c
-from sahara import context
-from sahara import exceptions as e
-from sahara.i18n import _LI
-from sahara.utils.notification import sender
-
-conductor = c.API
-LOG = logging.getLogger(__name__)
 
 NATURAL_SORT_RE = re.compile('([0-9]+)')
 
@@ -71,83 +62,6 @@ def get_by_id(lst, id):
 def natural_sort_key(s):
     return [int(text) if text.isdigit() else text.lower()
             for text in re.split(NATURAL_SORT_RE, s)]
-
-
-def change_cluster_status_description(cluster, status_description):
-    try:
-        ctx = context.ctx()
-        return conductor.cluster_update(
-            ctx, cluster, {'status_description': status_description})
-    except e.NotFoundException:
-        return None
-
-
-def change_cluster_status(cluster, status, status_description=None):
-    ctx = context.ctx()
-
-    # Update cluster status. Race conditions with deletion are still possible,
-    # but this reduces probability at least.
-    cluster = conductor.cluster_get(ctx, cluster) if cluster else None
-
-    if status_description is not None:
-        change_cluster_status_description(cluster, status_description)
-
-    # 'Deleting' is final and can't be changed
-    if cluster is None or cluster.status == 'Deleting':
-        return cluster
-
-    update_dict = {"status": status}
-    cluster = conductor.cluster_update(ctx, cluster, update_dict)
-    conductor.cluster_provision_progress_update(ctx, cluster.id)
-
-    LOG.info(_LI("Cluster status has been changed. New status="
-                 "{status}").format(status=cluster.status))
-
-    sender.notify(ctx, cluster.id, cluster.name, cluster.status,
-                  "update")
-
-    return cluster
-
-
-def count_instances(cluster):
-    return sum([node_group.count for node_group in cluster.node_groups])
-
-
-def check_cluster_exists(cluster):
-    ctx = context.ctx()
-    # check if cluster still exists (it might have been removed)
-    cluster = conductor.cluster_get(ctx, cluster)
-    return cluster is not None
-
-
-def get_instances(cluster, instances_ids=None):
-    inst_map = {}
-    for node_group in cluster.node_groups:
-        for instance in node_group.instances:
-            inst_map[instance.id] = instance
-
-    if instances_ids is not None:
-        return [inst_map[id] for id in instances_ids]
-    else:
-        return [v for v in six.itervalues(inst_map)]
-
-
-def clean_cluster_from_empty_ng(cluster):
-    ctx = context.ctx()
-    for ng in cluster.node_groups:
-        if ng.count == 0:
-            conductor.node_group_remove(ctx, ng)
-
-
-def generate_etc_hosts(cluster):
-    hosts = "127.0.0.1 localhost\n"
-    for node_group in cluster.node_groups:
-        for instance in node_group.instances:
-            hosts += "%s %s %s\n" % (instance.internal_ip,
-                                     instance.fqdn(),
-                                     instance.hostname())
-
-    return hosts
 
 
 def generate_instance_name(cluster_name, node_group_name, index):

@@ -21,6 +21,7 @@ import sahara.plugins.base as plugin_base
 import sahara.service.api as api
 import sahara.service.validations.base as b
 import sahara.service.validations.cluster_template_schema as ct_schema
+from sahara.utils import cluster as c_u
 
 
 def _build_node_groups_schema():
@@ -99,7 +100,7 @@ def check_cluster_scaling(data, cluster_id, **kwargs):
             _("Requested plugin '%s' doesn't support cluster scaling feature")
             % cluster.plugin_name)
 
-    if cluster.status != 'Active':
+    if cluster.status != c_u.CLUSTER_STATUS_ACTIVE:
         raise ex.InvalidReferenceException(
             _("Cluster cannot be scaled not in 'Active' status. "
               "Cluster status: %s") % cluster.status)

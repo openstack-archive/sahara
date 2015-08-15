@@ -51,7 +51,7 @@ class TestStorm(base.SaharaTestCase):
         self.assertEqual(("topology_name", "instance"),
                          (topology_name, inst_id))
 
-    @mock.patch('sahara.utils.general.get_instances')
+    @mock.patch('sahara.utils.cluster.get_instances')
     def test_get_instance_if_running(self, get_instances):
         '''Test retrieval of topology_name and instance object for running job
 
@@ -96,7 +96,7 @@ class TestStorm(base.SaharaTestCase):
         self.assertIsNone(instance)
 
     @mock.patch('sahara.plugins.utils.get_instance')
-    @mock.patch('sahara.utils.general.get_instances')
+    @mock.patch('sahara.utils.cluster.get_instances')
     @mock.patch('sahara.utils.remote.get_remote')
     @mock.patch('sahara.conductor.API.job_get')
     @mock.patch('sahara.context.ctx', return_value="ctx")
@@ -184,7 +184,7 @@ class TestStorm(base.SaharaTestCase):
                        '_get_job_status_from_remote',
                        autospec=True,
                        return_value={"status": edp.JOB_STATUS_KILLED})
-    @mock.patch('sahara.utils.general.get_instances')
+    @mock.patch('sahara.utils.cluster.get_instances')
     @mock.patch('sahara.plugins.utils.get_instance')
     @mock.patch('sahara.utils.remote.get_remote')
     def test_cancel_job(self, get_remote, get_instance, get_instances,

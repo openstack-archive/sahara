@@ -71,7 +71,7 @@ class HDFSHelperTestCase(base.SaharaTestCase):
         self.cluster.execute_command.assert_called_once_with(
             'sudo su - -c "hadoop dfs -mkdir -p Earth" BigBang')
 
-    @mock.patch('sahara.utils.general.generate_etc_hosts')
+    @mock.patch('sahara.utils.cluster.generate_etc_hosts')
     @mock.patch('sahara.plugins.utils.get_instances')
     @mock.patch('sahara.conductor.api.LocalApi.cluster_get_all')
     def test_get_cluster_hosts_information_smthg_wrong(self, mock_get_all,
@@ -81,7 +81,7 @@ class HDFSHelperTestCase(base.SaharaTestCase):
         self.assertIsNone(res)
 
     @mock.patch('sahara.context.ctx')
-    @mock.patch('sahara.utils.general.generate_etc_hosts')
+    @mock.patch('sahara.utils.cluster.generate_etc_hosts')
     @mock.patch('sahara.plugins.utils.get_instances')
     @mock.patch('sahara.conductor.api.LocalApi.cluster_get_all')
     def test_get_cluster_hosts_information_c_id(self, mock_get_all,
@@ -97,7 +97,7 @@ class HDFSHelperTestCase(base.SaharaTestCase):
         self.assertIsNone(res)
 
     @mock.patch('sahara.context.ctx')
-    @mock.patch('sahara.utils.general.generate_etc_hosts')
+    @mock.patch('sahara.utils.cluster.generate_etc_hosts')
     @mock.patch('sahara.plugins.utils.get_instances')
     @mock.patch('sahara.conductor.api.LocalApi.cluster_get_all')
     def test_get_cluster_hosts_information_i_name(self, mock_get_all,
