@@ -15,18 +15,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# This script is executed inside pre_test_hook function in devstack gate.
-
-set -ex
-
-source commons $@
-
-echo "IMAGE_URLS=$SAHARA_FAKE_PLUGIN_IMAGE" >> $LOCALRC_PATH
-
-# Here we can set some configurations for localrc
-# echo "SAHARA_INFRA_ENGINE=heat" >> $LOCALRC_PATH
-
-# Here we can set some configurations for local.conf
-# for example, to pass some config options directly to sahara.conf file
-# echo -e '[[post-config|$SAHARA_CONF]]\n[DEFAULT]\n' >> $LOCALCONF_PATH
-# echo -e 'infrastructure_engine=true\n' >> $LOCALCONF_PATH
+#TODO(slukjanov): replace with special image for fake plugin (cloud ubuntu?)
+export SAHARA_FAKE_PLUGIN_IMAGE=http://tarballs.openstack.org/heat-test-image/fedora-heat-test-image.qcow2
+export SAHARA_FAKE_PLUGIN_IMAGE_NAME=$(basename $SAHARA_FAKE_PLUGIN_IMAGE .qcow2)
+export SAHARA_FAKE_PLUGIN_IMAGE_USERNAME=fedora
