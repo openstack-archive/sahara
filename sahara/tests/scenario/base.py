@@ -90,6 +90,11 @@ class BaseTestCase(base.BaseTestCase):
             self.nova.get_image_id(self.testcase['image'])).username
         self.private_key, self.public_key = ssh.generate_key_pair()
         self.key_name = self.__create_keypair()
+        # save the private key if retain_resources is specified
+        # (useful for debugging purposes)
+        if self.testcase['retain_resources']:
+            with open(self.key_name + '.key', 'a') as private_key_file:
+                private_key_file.write(self.private_key)
         self.plugin_opts = {
             'plugin_name': self.testcase['plugin_name'],
             'hadoop_version': self.testcase['plugin_version']
