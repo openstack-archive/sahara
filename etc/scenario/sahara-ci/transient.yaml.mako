@@ -1,7 +1,7 @@
 clusters:
   - plugin_name: vanilla
-    plugin_version: 2.6.0
-    image: ${vanilla_two_six_image}
+    plugin_version: 2.7.1
+    image: ${vanilla_two_seven_one_image}
     node_group_templates:
       - name: worker
         flavor: ${ci_flavor_id}
