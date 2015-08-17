@@ -94,6 +94,9 @@ class SaharaClient(Client):
         data = self.sahara_client.data_sources.create(*args, **kwargs)
         return data.id
 
+    def get_datasource(self, *args, **kwargs):
+        return self.sahara_client.data_sources.get(*args, **kwargs)
+
     def delete_datasource(self, datasource_id):
         return self.delete_resource(
             self.sahara_client.data_sources.delete,
