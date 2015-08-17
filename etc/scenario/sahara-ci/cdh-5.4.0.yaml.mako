@@ -41,6 +41,7 @@ clusters:
           - HDFS_NAMENODE
           - YARN_RESOURCEMANAGER
           - SENTRY_SERVER
+          - YARN_NODEMANAGER
           - ZOOKEEPER_SERVER
         auto_security_group: true
       - name: master-additional
@@ -48,6 +49,7 @@ clusters:
         node_processes:
           - OOZIE_SERVER
           - YARN_JOBHISTORY
+          - YARN_NODEMANAGER
           - HDFS_SECONDARYNAMENODE
           - HIVE_METASTORE
           - HIVE_SERVER2

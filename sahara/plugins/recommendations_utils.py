@@ -29,7 +29,7 @@ LOG = logging.getLogger(__name__)
 
 @six.add_metaclass(abc.ABCMeta)
 class AutoConfigsProvider(object):
-    def __init__(self, mapper, plugin_configs, cluster, extra_spec=None):
+    def __init__(self, mapper, plugin_configs, cluster):
         """This meta class provides general recommendation utils for cluster
 
         configuration.
@@ -42,13 +42,11 @@ class AutoConfigsProvider(object):
         with almost same configs and configuring principles.
         :param plugin_configs: all plugins_configs for specified plugin
         :param cluster: cluster which is required to configure
-        :param extra_spec: extra helpful information about AutoConfigs
         """
         self.plugin_configs = plugin_configs
         self.cluster = cluster
         self.node_configs_to_update = mapper.get('node_configs', {})
         self.cluster_configs_to_update = mapper.get('cluster_configs', {})
-        self.extra_spec = {} if not extra_spec else extra_spec
 
     @abc.abstractmethod
     def _get_recommended_node_configs(self, node_group):
@@ -223,10 +221,9 @@ class AutoConfigsProvider(object):
 
 
 class HadoopAutoConfigsProvider(AutoConfigsProvider):
-    def __init__(self, mapper, plugin_configs, cluster, extra_spec=None,
-                 hbase=False):
+    def __init__(self, mapper, plugin_configs, cluster, hbase=False):
         super(HadoopAutoConfigsProvider, self).__init__(
-            mapper, plugin_configs, cluster, extra_spec)
+            mapper, plugin_configs, cluster)
         self.requested_flavors = {}
         self.is_hbase_enabled = hbase
 
@@ -330,6 +327,9 @@ class HadoopAutoConfigsProvider(AutoConfigsProvider):
             0.4 * data['mapMemory'], 1024))
         return r
 
+    def get_datanode_name(self):
+        return "datanode"
+
     def _get_recommended_cluster_configs(self):
         """Method recommends dfs_replication for cluster.
 
@@ -338,9 +338,7 @@ class HadoopAutoConfigsProvider(AutoConfigsProvider):
         if not self._can_be_recommended(['dfs.replication']):
             return {}
         datanode_count = 0
-        datanode_proc_name = "datanode"
-        if 'datanode_process_name' in self.extra_spec:
-            datanode_proc_name = self.extra_spec['datanode_process_name']
+        datanode_proc_name = self.get_datanode_name()
         for ng in self.cluster.node_groups:
             if datanode_proc_name in ng.node_processes:
                 datanode_count += ng.count

@@ -21,11 +21,13 @@ from sahara.plugins.cdh.v5 import cloudera_utils as cu
 from sahara.plugins.cdh.v5 import config_helper as c_helper
 from sahara.plugins.cdh.v5 import deploy as dp
 from sahara.plugins.cdh.v5 import edp_engine
+from sahara.plugins.cdh.v5 import plugin_utils as pu
 from sahara.plugins.cdh.v5 import validation as vl
 
 
 conductor = conductor.API
 CU = cu.ClouderaUtilsV5()
+PU = pu.PluginUtilsV5()
 
 
 class VersionHandler(avm.AbstractVersionHandler):
@@ -111,3 +113,6 @@ class VersionHandler(avm.AbstractVersionHandler):
 
     def get_open_ports(self, node_group):
         return dp.get_open_ports(node_group)
+
+    def recommend_configs(self, cluster):
+        PU.recommend_configs(cluster, self.get_plugin_configs())
