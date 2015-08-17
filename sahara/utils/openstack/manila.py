@@ -41,6 +41,8 @@ CONF = cfg.CONF
 CONF.register_group(manila_group)
 CONF.register_opts(opts, group=manila_group)
 
+MANILA_PREFIX = "manila://"
+
 
 def client():
     ctx = context.ctx()

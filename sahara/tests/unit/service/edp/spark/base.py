@@ -347,6 +347,8 @@ class TestSpark(base.SaharaTestCase):
 
         # This is to mock "with remote.get_remote(instance) as r"
         remote_instance = mock.Mock()
+        remote_instance.instance.node_group.cluster.shares = []
+        remote_instance.instance.node_group.shares = []
         get_remote.return_value.__enter__ = mock.Mock(
             return_value=remote_instance)
 

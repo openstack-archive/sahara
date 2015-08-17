@@ -437,7 +437,8 @@ def generate_hadoop_setup_script(storage_paths, env_configs):
 
     for path in storage_paths:
         script_lines.append("chown -R hadoop:hadoop %s" % path)
-        script_lines.append("chmod -R 755 %s" % path)
+        script_lines.append("chmod -f -R 755 %s ||"
+                            "echo 'Permissions unchanged'" % path)
     return "\n".join(script_lines)
 
 

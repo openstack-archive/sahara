@@ -110,8 +110,13 @@ class StormJobEngine(base_engine.JobEngine):
 
         def upload(r, dir, job_file, proxy_configs):
             dst = os.path.join(dir, job_file.name)
-            raw_data = dispatch.get_raw_binary(job_file, proxy_configs)
-            r.write_file_to(dst, raw_data)
+            raw_data = dispatch.get_raw_binary(job_file,
+                                               proxy_configs=proxy_configs,
+                                               remote=remote)
+            if isinstance(raw_data, dict) and raw_data["type"] == "path":
+                dst = raw_data['path']
+            else:
+                r.write_file_to(dst, raw_data)
             return dst
 
         uploaded_paths = []
