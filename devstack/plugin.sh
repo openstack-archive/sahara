@@ -11,7 +11,6 @@
 # install_sahara
 # install_python_saharaclient
 # configure_sahara
-# sahara_register_images
 # start_sahara
 # stop_sahara
 # cleanup_sahara
@@ -172,17 +171,6 @@ function install_python_saharaclient {
     fi
 }
 
-# sahara_register_images() - Registers images in sahara image registry
-function sahara_register_images {
-    if is_service_enabled heat && [[ ! -z "$HEAT_CFN_IMAGE_URL" ]]; then
-        # Register heat image for Fake plugin
-        local fake_plugin_properties="--property _sahara_tag_0.1=True"
-        fake_plugin_properties+=" --property _sahara_tag_fake=True"
-        fake_plugin_properties+=" --property _sahara_username=fedora"
-        openstack --os-url $GLANCE_SERVICE_PROTOCOL://$GLANCE_HOSTPORT image set $(basename "$HEAT_CFN_IMAGE_URL" ".qcow2") $fake_plugin_properties
-    fi
-}
-
 # start_sahara() - Start running processes, including screen
 function start_sahara {
     local service_port=$SAHARA_SERVICE_PORT
@@ -228,7 +216,6 @@ if is_service_enabled sahara; then
         create_sahara_accounts
     elif [[ "$1" == "stack" && "$2" == "extra" ]]; then
         echo_summary "Initializing sahara"
-        sahara_register_images
         start_sahara
     fi
 
