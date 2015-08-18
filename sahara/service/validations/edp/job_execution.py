@@ -21,32 +21,6 @@ from sahara.plugins import base as plugin_base
 import sahara.service.validations.edp.base as b
 import sahara.service.validations.edp.job_interface as j_i
 
-JOB_EXEC_SCHEMA = {
-    "type": "object",
-    "properties": {
-        "input_id": {
-            "type": "string",
-            "format": "uuid",
-        },
-        "output_id": {
-            "type": "string",
-            "format": "uuid",
-        },
-        "cluster_id": {
-            "type": "string",
-            "format": "uuid",
-        },
-        "interface": {
-            "type": "simple_config",
-        },
-        "job_configs": b.job_configs,
-    },
-    "additionalProperties": False,
-    "required": [
-        "cluster_id"
-    ]
-}
-
 
 conductor = c.API
 

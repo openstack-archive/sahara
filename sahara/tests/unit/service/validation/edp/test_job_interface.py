@@ -19,7 +19,7 @@ import itertools
 import mock
 
 from sahara.service.validations.edp import job as j
-from sahara.service.validations.edp import job_execution as j_e
+from sahara.service.validations.edp import job_execution_schema as j_e_schema
 from sahara.service.validations.edp import job_interface as j_i
 from sahara.tests.unit.service.validation import utils as u
 from sahara.utils import edp
@@ -219,7 +219,7 @@ class TestJobExecutionInterfaceValidation(u.ValidationTestCase):
     def setUp(self):
         super(TestJobExecutionInterfaceValidation, self).setUp()
         self._create_object_fun = j_e_i_wrapper
-        self.scheme = j_e.JOB_EXEC_SCHEMA
+        self.scheme = j_e_schema.JOB_EXEC_SCHEMA
 
     def test_valid_execution(self):
         data = {"cluster_id": "DEADBEEF-DEAD-BEEF-DEAD-BEEFDEADBEEF",

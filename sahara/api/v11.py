@@ -26,6 +26,7 @@ from sahara.service.validations.edp import job_binary_internal as v_j_b_i
 from sahara.service.validations.edp import job_binary_internal_schema as vjbi_s
 from sahara.service.validations.edp import job_binary_schema as v_j_b_schema
 from sahara.service.validations.edp import job_execution as v_j_e
+from sahara.service.validations.edp import job_execution_schema as v_j_e_schema
 import sahara.utils.api as u
 
 
@@ -63,6 +64,14 @@ def job_executions_status(job_execution_id):
 @v.check_exists(api.get_job_execution, id='job_execution_id')
 def job_executions_cancel(job_execution_id):
     return u.to_wrapped_dict(api.cancel_job_execution, job_execution_id)
+
+
+@rest.patch('/job-executions/<job_execution_id>')
+@acl.enforce("data-processing:job-executions:modify")
+@v.check_exists(api.get_job_execution, id='job_execution_id')
+@v.validate(v_j_e_schema.JOB_EXEC_UPDATE_SCHEMA)
+def job_executions_update(job_execution_id, data):
+    return u.to_wrapped_dict(api.update_job_execution, job_execution_id, data)
 
 
 @rest.delete('/job-executions/<job_execution_id>')
@@ -147,7 +156,7 @@ def job_delete(job_id):
 @rest.post('/jobs/<job_id>/execute')
 @acl.enforce("data-processing:jobs:execute")
 @v.check_exists(api.get_job, id='job_id')
-@v.validate(v_j_e.JOB_EXEC_SCHEMA, v_j_e.check_job_execution)
+@v.validate(v_j_e_schema.JOB_EXEC_SCHEMA, v_j_e.check_job_execution)
 def job_execute(job_id, data):
     return u.render(job_execution=api.execute_job(job_id, data).to_dict())
 

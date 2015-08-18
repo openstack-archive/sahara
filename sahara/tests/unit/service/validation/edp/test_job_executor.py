@@ -21,6 +21,7 @@ import six
 from sahara import main
 from sahara.service import api
 from sahara.service.validations.edp import job_execution as je
+from sahara.service.validations.edp import job_execution_schema as je_schema
 from sahara.tests.unit.service.validation import utils as u
 from sahara.tests.unit import testutils as tu
 from sahara.utils import edp
@@ -30,12 +31,12 @@ def wrap_it(data):
     je.check_job_execution(data, 0)
 
 
-class TestJobExecValidation(u.ValidationTestCase):
+class TestJobExecCreateValidation(u.ValidationTestCase):
 
     def setUp(self):
-        super(TestJobExecValidation, self).setUp()
+        super(TestJobExecCreateValidation, self).setUp()
         self._create_object_fun = wrap_it
-        self.scheme = je.JOB_EXEC_SCHEMA
+        self.scheme = je_schema.JOB_EXEC_SCHEMA
         # Make sure that the spark plugin is loaded
         if 'spark' not in main.CONF['plugins']:
             self.override_config('plugins', main.CONF['plugins'] + ['spark'])
@@ -249,3 +250,20 @@ class TestJobExecValidation(u.ValidationTestCase):
                     "params": {},
                     "args": []}
             })
+
+
+class TestJobExecUpdateValidation(u.ValidationTestCase):
+
+    def setUp(self):
+        super(TestJobExecUpdateValidation, self).setUp()
+        self._create_object_fun = mock.Mock()
+        self.scheme = je_schema.JOB_EXEC_UPDATE_SCHEMA
+
+    def test_job_execution_update_types(self):
+        data = {}
+        self._assert_types(data)
+
+    def test_job_execution_update_nothing_required(self):
+        self._assert_create_object_validation(
+            data={}
+        )
