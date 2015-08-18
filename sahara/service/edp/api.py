@@ -201,6 +201,10 @@ def create_job(values):
     return conductor.job_create(context.ctx(), values)
 
 
+def update_job(id, values):
+    return conductor.job_update(context.ctx(), id, values)
+
+
 def delete_job(job_id):
     return conductor.job_destroy(context.ctx(), job_id)
 

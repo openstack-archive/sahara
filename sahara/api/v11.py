@@ -27,6 +27,7 @@ from sahara.service.validations.edp import job_binary_internal_schema as vjbi_s
 from sahara.service.validations.edp import job_binary_schema as v_j_b_schema
 from sahara.service.validations.edp import job_execution as v_j_e
 from sahara.service.validations.edp import job_execution_schema as v_j_e_schema
+from sahara.service.validations.edp import job_schema as v_j_schema
 import sahara.utils.api as u
 
 
@@ -133,7 +134,7 @@ def job_list():
 
 @rest.post('/jobs')
 @acl.enforce("data-processing:jobs:create")
-@v.validate(v_j.JOB_SCHEMA, v_j.check_mains_libs, v_j.check_interface)
+@v.validate(v_j_schema.JOB_SCHEMA, v_j.check_mains_libs, v_j.check_interface)
 def job_create(data):
     return u.render(api.create_job(data).to_wrapped_dict())
 
@@ -143,6 +144,14 @@ def job_create(data):
 @v.check_exists(api.get_job, id='job_id')
 def job_get(job_id):
     return u.to_wrapped_dict(api.get_job, job_id)
+
+
+@rest.patch('/jobs/<job_id>')
+@acl.enforce("data-processing:jobs:modify")
+@v.check_exists(api.get_job, id='job_id')
+@v.validate(v_j_schema.JOB_UPDATE_SCHEMA)
+def job_update(job_id, data):
+    return u.to_wrapped_dict(api.update_job, job_id, data)
 
 
 @rest.delete('/jobs/<job_id>')

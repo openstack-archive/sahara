@@ -352,6 +352,7 @@ class LocalApi(object):
         """Create a Job from the values dictionary."""
         return self._manager.job_create(context, values)
 
+    @r.wrap(r.Job)
     def job_update(self, context, job, values):
         """Update the Job or raise if it does not exist."""
         return self._manager.job_update(context, _get_id(job),
