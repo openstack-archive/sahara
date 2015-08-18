@@ -380,6 +380,7 @@ class ConductorManager(db_base.Base):
 
     def job_execution_update(self, context, job_execution, values):
         """Updates a JobExecution from the values dictionary."""
+        values = copy.deepcopy(values)
         return self.db.job_execution_update(context, job_execution, values)
 
     def job_execution_destroy(self, context, job_execution):

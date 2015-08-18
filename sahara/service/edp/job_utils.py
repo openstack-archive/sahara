@@ -25,7 +25,9 @@ import six
 from sahara import conductor as c
 from sahara import context
 from sahara.plugins import base as plugin_base
+from sahara.service import shares as shares_service
 from sahara.swift import swift_helper as sw
+from sahara.utils.openstack import manila as m
 from sahara.utils import remote
 
 
@@ -67,13 +69,13 @@ def create_workflow_dir(where, path, job, use_uuid=None, chmod=""):
     return constructed_dir
 
 
-def get_data_sources(job_execution, job, data_source_urls):
+def get_data_sources(job_execution, job, data_source_urls, cluster=None):
 
     def _construct(ctx, ds_id):
         source = conductor.data_source_get(ctx, ds_id)
         if source and source.id not in data_source_urls:
             url = _construct_data_source_url(source.url, job_execution.id)
-            runtime_url = _runtime_url(url)
+            runtime_url = _runtime_url(url, cluster)
             data_source_urls[source.id] = (url, runtime_url)
         return source
 
@@ -178,7 +180,10 @@ def _add_credentials_for_data_sources(ds_list, configs):
         configs[sw.HADOOP_SWIFT_PASSWORD] = password
 
 
-def resolve_data_source_references(job_configs, job_exec_id, data_source_urls):
+def resolve_data_source_references(job_configs,
+                                   job_exec_id,
+                                   data_source_urls,
+                                   cluster=None):
     """Resolve possible data_source references in job_configs.
 
     Look for any string values in the 'args', 'configs', and 'params'
@@ -233,7 +238,7 @@ def resolve_data_source_references(job_configs, job_exec_id, data_source_urls):
                 ds_seen[ds.id] = ds
                 if ds.id not in data_source_urls:
                     url = _construct_data_source_url(ds.url, job_exec_id)
-                    runtime_url = _runtime_url(url)
+                    runtime_url = _runtime_url(url, cluster)
                     data_source_urls[ds.id] = (url, runtime_url)
 
                 return data_source_urls[ds.id][1]
@@ -290,10 +295,40 @@ def _construct_data_source_url(url, job_exec_id):
     return url
 
 
-def _runtime_url(url):
+def _runtime_url(url, cluster):
+    if url.startswith(m.MANILA_PREFIX) and cluster:
+        path = shares_service.get_share_path(url, cluster.shares or [])
+        if path is None:
+            path = mount_share_at_default_path(url, cluster)
+        # This gets us the mount point, but we need a file:// scheme to
+        # indicate a local filesystem path
+        return "file://{path}".format(path=path)
     return url
 
 
 def to_url_dict(data_source_urls, runtime=False):
     idx = 1 if runtime else 0
     return {id: urls[idx] for id, urls in six.iteritems(data_source_urls)}
+
+
+def mount_share_at_default_path(url, cluster):
+    # Automount this share to the cluster with default path
+    # url example: 'manila://ManilaShare-uuid/path_to_file'
+    share_id = six.moves.urllib.parse.urlparse(url).netloc
+    if cluster.shares:
+        cluster_shares = [dict(s) for s in cluster.shares]
+    else:
+        cluster_shares = []
+
+    needed_share = {
+        'id': share_id,
+        'path': shares_service.default_mount(share_id),
+        'access_level': 'rw'
+    }
+
+    cluster_shares.append(needed_share)
+    cluster = conductor.cluster_update(
+        context.ctx(), cluster, {'shares': cluster_shares})
+    shares_service.mount_shares(cluster)
+
+    return shares_service.get_share_path(url, cluster.shares)

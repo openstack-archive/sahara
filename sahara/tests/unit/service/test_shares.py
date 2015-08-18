@@ -346,3 +346,40 @@ class TestShares(base.SaharaTestCase):
                 _expected_calls('/mnt/localpath', '192.168.122.1:/path', '-w'))
         for executor in datanode_executors:
             self.assertEqual(0, executor.call_count)
+
+    def test_get_share_path(self):
+        share_list = [
+            {'id': 'the_share_id',
+             'path': '/mnt/mymountpoint'},
+            {'id': 'the_share_id',
+             'path': '/mnt/othermountpoint'},
+            {'id': '123456',
+             'path': '/mnt/themountpoint'}
+        ]
+        url = 'manila://the_share_id/the_path'
+
+        path = shares.get_share_path(url, share_list)
+        self.assertEqual("/mnt/mymountpoint/the_path", path)
+
+        share_list.pop(0)
+        path = shares.get_share_path(url, share_list)
+        self.assertEqual("/mnt/othermountpoint/the_path", path)
+
+        share_list.pop(0)
+        path = shares.get_share_path(url, share_list)
+        self.assertIsNone(path)
+
+    @mock.patch('sahara.utils.openstack.manila.client')
+    def test_get_share_path_default(self, f_manilaclient):
+        share_list = [
+            {'id': 'i_have_no_mnt'}
+        ]
+
+        share = _FakeShare(share_list[0]['id'])
+        f_manilaclient.return_value = mock.Mock(
+            shares=mock.Mock(
+                get=mock.Mock(return_value=share)))
+
+        url = 'manila://i_have_no_mnt/the_path'
+        path = shares.get_share_path(url, share_list)
+        self.assertEqual("/mnt/i_have_no_mnt/the_path", path)

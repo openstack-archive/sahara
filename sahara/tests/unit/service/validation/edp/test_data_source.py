@@ -13,6 +13,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import uuid
+
 import mock
 import testtools
 
@@ -274,3 +276,67 @@ class TestDataSourceValidation(u.ValidationTestCase):
                             " absolute path on local maprfs")
         }
         ds.check_data_source_create(data)
+
+    @mock.patch("sahara.service.validations."
+                "edp.base.check_data_source_unique_name")
+    def test_manila_creation_wrong_schema(self, check_ds_unique_name):
+        check_ds_unique_name.return_value = True
+        data = {
+            "name": "test_data_data_source",
+            "url": "man://%s" % uuid.uuid4(),
+            "type": "manila",
+            "description": ("incorrect url schema for")
+        }
+        with testtools.ExpectedException(ex.InvalidDataException):
+            ds.check_data_source_create(data)
+
+    @mock.patch("sahara.service.validations."
+                "edp.base.check_data_source_unique_name")
+    def test_manila_creation_empty_url(self, check_ds_unique_name):
+        check_ds_unique_name.return_value = True
+        data = {
+            "name": "test_data_data_source",
+            "url": "",
+            "type": "manila",
+            "description": ("empty url")
+        }
+        with testtools.ExpectedException(ex.InvalidDataException):
+            ds.check_data_source_create(data)
+
+    @mock.patch("sahara.service.validations."
+                "edp.base.check_data_source_unique_name")
+    def test_manila_creation_no_uuid(self, check_ds_unique_name):
+        check_ds_unique_name.return_value = True
+        data = {
+            "name": "test_data_data_source",
+            "url": "manila://bob",
+            "type": "manila",
+            "description": ("netloc is not a uuid")
+        }
+        with testtools.ExpectedException(ex.InvalidDataException):
+            ds.check_data_source_create(data)
+
+    @mock.patch("sahara.service.validations."
+                "edp.base.check_data_source_unique_name")
+    def test_manila_creation_no_path(self, check_ds_unique_name):
+        check_ds_unique_name.return_value = True
+        data = {
+            "name": "test_data_data_source",
+            "url": "manila://%s" % uuid.uuid4(),
+            "type": "manila",
+            "description": ("netloc is not a uuid")
+        }
+        with testtools.ExpectedException(ex.InvalidDataException):
+            ds.check_data_source_create(data)
+
+    @mock.patch("sahara.service.validations."
+                "edp.base.check_data_source_unique_name")
+    def test_manila_correct(self, check_ds_unique_name):
+        check_ds_unique_name.return_value = True
+        data = {
+            "name": "test_data_data_source",
+            "url": "manila://%s/foo" % uuid.uuid4(),
+            "type": "manila",
+            "description": ("correct url")
+        }
+        self._assert_types(data)
