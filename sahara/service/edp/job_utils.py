@@ -26,7 +26,6 @@ from sahara import conductor as c
 from sahara import context
 from sahara.plugins import base as plugin_base
 from sahara.swift import swift_helper as sw
-from sahara.utils import edp
 from sahara.utils import remote
 
 
@@ -69,8 +68,6 @@ def create_workflow_dir(where, path, job, use_uuid=None, chmod=""):
 
 
 def get_data_sources(job_execution, job, data_source_urls):
-    if edp.compare_job_type(job.type, edp.JOB_TYPE_JAVA, edp.JOB_TYPE_SPARK):
-        return None, None
 
     ctx = context.ctx()
 

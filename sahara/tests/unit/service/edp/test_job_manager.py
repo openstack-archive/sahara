@@ -548,7 +548,7 @@ class TestJobManager(base.SaharaWithDbTestCase):
         self.assertEqual('obj_s1', input_source.url)
         self.assertEqual('obj_s2', output_source.url)
 
-    def test_get_data_sources_java(self):
+    def test_get_data_sources_with_null_id(self):
         configs = {sw.HADOOP_SWIFT_USERNAME: 'admin',
                    sw.HADOOP_SWIFT_PASSWORD: 'admin1'}
 
@@ -559,6 +559,9 @@ class TestJobManager(base.SaharaWithDbTestCase):
         }
 
         job, job_exec = u.create_job_exec(edp.JOB_TYPE_JAVA, configs)
+
+        job_exec.input_id = None
+        job_exec.output_id = None
 
         input_source, output_source = (
             job_utils.get_data_sources(job_exec, job, {}))
