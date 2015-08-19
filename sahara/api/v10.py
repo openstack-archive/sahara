@@ -22,6 +22,7 @@ from sahara.service.validations import cluster_template_schema as ct_schema
 from sahara.service.validations import cluster_templates as v_ct
 from sahara.service.validations import clusters as v_c
 from sahara.service.validations import clusters_scaling as v_c_s
+from sahara.service.validations import clusters_schema as v_c_schema
 from sahara.service.validations import images as v_images
 from sahara.service.validations import node_group_template_schema as ngt_schema
 from sahara.service.validations import node_group_templates as v_ngt
@@ -45,14 +46,15 @@ def clusters_list():
 
 @rest.post('/clusters')
 @acl.enforce("data-processing:clusters:create")
-@v.validate(v_c.CLUSTER_SCHEMA, v_c.check_cluster_create)
+@v.validate(v_c_schema.CLUSTER_SCHEMA, v_c.check_cluster_create)
 def clusters_create(data):
     return u.render(api.create_cluster(data).to_wrapped_dict())
 
 
 @rest.post('/clusters/multiple')
 @acl.enforce("data-processing:clusters:create")
-@v.validate(v_c.MULTIPLE_CLUSTER_SCHEMA, v_c.check_multiple_clusters_create)
+@v.validate(
+    v_c_schema.MULTIPLE_CLUSTER_SCHEMA, v_c.check_multiple_clusters_create)
 def clusters_create_multiple(data):
     return u.render(api.create_multiple_clusters(data))
 
@@ -60,7 +62,7 @@ def clusters_create_multiple(data):
 @rest.put('/clusters/<cluster_id>')
 @acl.enforce("data-processing:clusters:scale")
 @v.check_exists(api.get_cluster, 'cluster_id')
-@v.validate(v_c_s.CLUSTER_SCALING_SCHEMA, v_c_s.check_cluster_scaling)
+@v.validate(v_c_schema.CLUSTER_SCALING_SCHEMA, v_c_s.check_cluster_scaling)
 def clusters_scale(cluster_id, data):
     return u.to_wrapped_dict(api.scale_cluster, cluster_id, data)
 
@@ -72,6 +74,14 @@ def clusters_get(cluster_id):
     data = u.get_request_args()
     show_events = unicode(data.get('show_progress', 'false')).lower() == 'true'
     return u.to_wrapped_dict(api.get_cluster, cluster_id, show_events)
+
+
+@rest.patch('/clusters/<cluster_id>')
+@acl.enforce("data-processing:clusters:modify")
+@v.check_exists(api.get_cluster, 'cluster_id')
+@v.validate(v_c_schema.CLUSTER_UPDATE_SCHEMA)
+def clusters_update(cluster_id, data):
+    return u.to_wrapped_dict(api.update_cluster, cluster_id, data)
 
 
 @rest.delete('/clusters/<cluster_id>')

@@ -13,59 +13,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import copy
-
 import sahara.exceptions as ex
 from sahara.i18n import _
 import sahara.plugins.base as plugin_base
 import sahara.service.api as api
 import sahara.service.validations.base as b
-import sahara.service.validations.cluster_template_schema as ct_schema
 from sahara.utils import cluster as c_u
-
-
-def _build_node_groups_schema():
-    schema = copy.deepcopy(ct_schema.CLUSTER_TEMPLATE_SCHEMA)
-    return schema['properties']['node_groups']
-
-
-CLUSTER_SCALING_SCHEMA = {
-    "type": "object",
-    "properties": {
-        "resize_node_groups": {
-            "type": "array",
-            "items": {
-                "type": "object",
-                "properties": {
-                    "name": {
-                        "type": "string",
-                    },
-                    "count": {
-                        "type": "integer",
-                        "minimum": 0,
-                    },
-                },
-                "additionalProperties": False,
-                "required": [
-                    "name",
-                    "count",
-                ]
-            },
-            "minItems": 1
-        },
-        "add_node_groups": _build_node_groups_schema(),
-    },
-    "additionalProperties": False,
-    "anyOf": [
-        {
-            "required": ["resize_node_groups"]
-        },
-        {
-            "required": ["add_node_groups"]
-        }
-    ]
-
-}
 
 
 def check_cluster_scaling(data, cluster_id, **kwargs):

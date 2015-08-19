@@ -168,8 +168,12 @@ def terminate_cluster(id):
     sender.notify(context.ctx(), cluster.id, cluster.name, cluster.status,
                   "delete")
 
-# ClusterTemplate ops
 
+def update_cluster(id, values):
+    return conductor.cluster_update(context.ctx(), id, values)
+
+
+# ClusterTemplate ops
 
 def get_cluster_templates(**kwargs):
     return conductor.cluster_template_get_all(context.ctx(), **kwargs)

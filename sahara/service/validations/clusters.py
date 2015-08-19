@@ -13,44 +13,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import copy
-
 from oslo_config import cfg
 
 import sahara.exceptions as ex
 from sahara.i18n import _
 import sahara.service.api as api
 import sahara.service.validations.base as b
-import sahara.service.validations.cluster_template_schema as ct_schema
 
 
 CONF = cfg.CONF
-
-
-def _build_cluster_schema():
-    cluster_schema = copy.deepcopy(ct_schema.CLUSTER_TEMPLATE_SCHEMA)
-    cluster_schema['properties'].update({
-        "is_transient": {
-            "type": "boolean"
-        },
-        "user_keypair_id": {
-            "type": "string",
-            "format": "valid_keypair_name",
-        },
-        "cluster_template_id": {
-            "type": "string",
-            "format": "uuid",
-        }})
-    return cluster_schema
-
-
-CLUSTER_SCHEMA = _build_cluster_schema()
-MULTIPLE_CLUSTER_SCHEMA = copy.deepcopy(CLUSTER_SCHEMA)
-MULTIPLE_CLUSTER_SCHEMA['properties'].update({
-    "count": {
-        "type": "integer"
-    }})
-MULTIPLE_CLUSTER_SCHEMA['required'].append('count')
 
 
 def check_cluster_create(data, **kwargs):
