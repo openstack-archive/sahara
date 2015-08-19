@@ -83,6 +83,11 @@ function configure_sahara {
 
     configure_auth_token_middleware $SAHARA_CONF_FILE sahara $SAHARA_AUTH_CACHE_DIR
 
+    # Set admin user parameters needed for trusts creation
+    iniset $SAHARA_CONF_FILE keystone_authtoken admin_tenant_name $SERVICE_TENANT_NAME
+    iniset $SAHARA_CONF_FILE keystone_authtoken admin_user sahara
+    iniset $SAHARA_CONF_FILE keystone_authtoken admin_password $SERVICE_PASSWORD
+
     iniset_rpc_backend sahara $SAHARA_CONF_FILE DEFAULT
 
     # Set configuration to send notifications
