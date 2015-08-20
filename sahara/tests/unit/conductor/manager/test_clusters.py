@@ -58,6 +58,8 @@ SAMPLE_CLUSTER = {
             "config_1": "value_1"
         }
     },
+    "is_public": False,
+    "is_protected": False
 }
 
 
