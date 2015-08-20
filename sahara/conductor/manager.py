@@ -180,6 +180,8 @@ class ConductorManager(db_base.Base):
             del c_tmpl['created_at']
             del c_tmpl['updated_at']
             del c_tmpl['id']
+            del c_tmpl['is_public']
+            del c_tmpl['is_protected']
 
             # updating with cluster_template values
             merged_values.update(c_tmpl)
@@ -516,7 +518,7 @@ class ConductorManager(db_base.Base):
             job_binary_internal_id)
 
     def job_binary_internal_update(self, context, id, values):
-        """Updates a Job from the values dictionary."""
+        """Updates a JobBinaryInternal from the values dictionary."""
         return self.db.job_binary_internal_update(context, id, values)
 
     # Events ops

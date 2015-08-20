@@ -23,6 +23,12 @@ JOB_BINARY_UPDATE_SCHEMA = {
             "maxLength": 50,
             "format": "valid_name"
         },
+        "is_public": {
+            "type": ["boolean", "null"],
+        },
+        "is_protected": {
+            "type": ["boolean", "null"],
+        }
     },
     "additionalProperties": False,
     "required": []

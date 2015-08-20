@@ -29,6 +29,7 @@ from sahara.db.sqlalchemy import models as m
 from sahara import exceptions as ex
 from sahara.i18n import _
 from sahara.i18n import _LW
+from sahara.service.validations import acl as validate
 
 
 LOG = logging.getLogger(__name__)
@@ -83,7 +84,9 @@ def model_query(model, context, session=None, project_only=True):
     query = session.query(model)
 
     if project_only and not context.is_admin:
-        query = query.filter_by(tenant_id=context.tenant_id)
+        query = query.filter(
+            (model.tenant_id == context.tenant_id) |
+            getattr(model, 'is_public', False))
 
     return query
 
@@ -241,6 +244,10 @@ def cluster_update(context, cluster_id, values):
             if cluster is None:
                 raise ex.NotFoundException(cluster_id,
                                            _("Cluster id '%s' not found!"))
+
+            validate.check_tenant_for_update(context, cluster)
+            validate.check_protected_from_update(cluster, values)
+
             cluster.update(values)
     except db_exc.DBDuplicateEntry as e:
         raise ex.DBDuplicateEntry(
@@ -441,6 +448,9 @@ def cluster_template_destroy(context, cluster_template_id,
                 _("Cluster template id '%s' "
                   "is a default template") % cluster_template.id)
 
+        validate.check_tenant_for_delete(context, cluster_template)
+        validate.check_protected_from_delete(cluster_template)
+
         session.delete(cluster_template)
 
 
@@ -468,6 +478,9 @@ def cluster_template_update(context, values, ignore_default=False):
                     _("ClusterTemplate id '%s' can not be updated. "
                       "It is a default template.")
                 )
+
+            validate.check_tenant_for_update(context, cluster_template)
+            validate.check_protected_from_update(cluster_template, values)
 
             if len(cluster_template.clusters) > 0:
                 raise ex.UpdateFailedException(
@@ -549,6 +562,9 @@ def node_group_template_destroy(context, node_group_template_id,
                 _("Node group template id '%s' "
                   "is a default template") % node_group_template_id)
 
+        validate.check_tenant_for_delete(context, node_group_template)
+        validate.check_protected_from_delete(node_group_template)
+
         session.delete(node_group_template)
 
 
@@ -567,6 +583,9 @@ def node_group_template_update(context, values, ignore_default=False):
                     _("NodeGroupTemplate id '%s' can not be updated. "
                       "It is a default template.")
                 )
+
+            validate.check_tenant_for_update(context, ngt)
+            validate.check_protected_from_update(ngt, values)
 
             # Check to see that the node group template to be updated is not in
             # use by an existing cluster.
@@ -649,6 +668,10 @@ def data_source_destroy(context, data_source_id):
                 raise ex.NotFoundException(
                     data_source_id,
                     _("Data Source id '%s' not found!"))
+
+            validate.check_tenant_for_delete(context, data_source)
+            validate.check_protected_from_delete(data_source)
+
             session.delete(data_source)
     except db_exc.DBError as e:
         msg = ("foreign key constraint" in six.text_type(e) and
@@ -665,16 +688,21 @@ def data_source_update(context, values):
             if not data_source:
                 raise ex.NotFoundException(
                     ds_id, _("DataSource id '%s' not found"))
-            else:
-                jobs = job_execution_get_all(context)
-                pending_jobs = [job for job in jobs if
-                                job.info["status"] == "PENDING"]
-                for job in pending_jobs:
-                    if job.data_source_urls:
-                        if ds_id in job.data_source_urls:
-                            raise ex.UpdateFailedException(
-                                _("DataSource is used in a "
-                                  "PENDING Job and can not be updated."))
+
+            validate.check_tenant_for_update(context, data_source)
+            validate.check_protected_from_update(data_source, values)
+
+            jobs = job_execution_get_all(context)
+            pending_jobs = [job for job in jobs if
+                            job.info["status"] == "PENDING"]
+
+            for job in pending_jobs:
+                if job.data_source_urls:
+                    if ds_id in job.data_source_urls:
+                        raise ex.UpdateFailedException(
+                            _("DataSource is used in a "
+                              "PENDING Job and can not be updated."))
+
             data_source.update(values)
     except db_exc.DBDuplicateEntry as e:
         raise ex.DBDuplicateEntry(
@@ -817,6 +845,12 @@ def job_execution_update(context, job_execution_id, values):
         if not job_ex:
             raise ex.NotFoundException(job_execution_id,
                                        _("JobExecution id '%s' not found!"))
+
+        # Skip this check for periodic tasks
+        if context.tenant_id:
+            validate.check_tenant_for_update(context, job_ex)
+        validate.check_protected_from_update(job_ex, values)
+
         job_ex.update(values)
         session.add(job_ex)
 
@@ -900,13 +934,16 @@ def job_create(context, values):
 
 def job_update(context, job_id, values):
     session = get_session()
-
     try:
         with session.begin():
             job = _job_get(context, session, job_id)
             if not job:
                 raise ex.NotFoundException(job_id,
                                            _("Job id '%s' not found!"))
+
+            validate.check_tenant_for_update(context, job)
+            validate.check_protected_from_update(job, values)
+
             job.update(values)
             session.add(job)
     except db_exc.DBDuplicateEntry as e:
@@ -924,6 +961,10 @@ def job_destroy(context, job_id):
             if not job:
                 raise ex.NotFoundException(job_id,
                                            _("Job id '%s' not found!"))
+
+            validate.check_tenant_for_delete(context, job)
+            validate.check_protected_from_delete(job)
+
             session.delete(job)
     except db_exc.DBError as e:
         msg = ("foreign key constraint" in six.text_type(e) and
@@ -984,6 +1025,10 @@ def job_binary_update(context, values):
             if not jb:
                 raise ex.NotFoundException(
                     jb_id, _("JobBinary id '%s' not found"))
+
+            validate.check_tenant_for_update(context, jb)
+            validate.check_protected_from_update(jb, values)
+
             # We do not want to update the url for internal binaries
             new_url = values.get("url", None)
             if new_url and "internal-db://" in jb["url"]:
@@ -1030,6 +1075,9 @@ def job_binary_destroy(context, job_binary_id):
         if not job_binary:
             raise ex.NotFoundException(job_binary_id,
                                        _("JobBinary id '%s' not found!"))
+
+        validate.check_tenant_for_delete(context, job_binary)
+        validate.check_protected_from_delete(job_binary)
 
         if _check_job_binary_referenced(context, session, job_binary_id):
             raise ex.DeletionFailed(
@@ -1118,6 +1166,9 @@ def job_binary_internal_destroy(context, job_binary_internal_id):
                 job_binary_internal_id,
                 _("JobBinaryInternal id '%s' not found!"))
 
+        validate.check_tenant_for_delete(context, job_binary_internal)
+        validate.check_protected_from_delete(job_binary_internal)
+
         session.delete(job_binary_internal)
 
 
@@ -1132,6 +1183,10 @@ def job_binary_internal_update(context, job_binary_internal_id, values):
                 raise ex.NotFoundException(
                     job_binary_internal_id,
                     _("JobBinaryInternal id '%s' not found!"))
+
+            validate.check_tenant_for_update(context, j_b_i)
+            validate.check_protected_from_update(j_b_i, values)
+
             j_b_i.update(values)
     except db_exc.DBDuplicateEntry as e:
         raise ex.DBDuplicateEntry(

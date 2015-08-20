@@ -144,7 +144,9 @@ class TestNGTemplateCreateValidation(u.ValidationTestCase):
                 'auto_security_group': False,
                 'availability_zone': 'here',
                 'is_proxy_gateway': False,
-                'volume_local_to_instance': False
+                'volume_local_to_instance': False,
+                'is_public': False,
+                'is_protected': False
             }
         )
 
@@ -173,7 +175,9 @@ class TestNGTemplateCreateValidation(u.ValidationTestCase):
                 'auto_security_group': None,
                 'availability_zone': None,
                 'is_proxy_gateway': None,
-                'volume_local_to_instance': None
+                'volume_local_to_instance': None,
+                'is_public': None,
+                'is_protected': None
             }
         )
 

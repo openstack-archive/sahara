@@ -60,6 +60,12 @@ CLUSTER_UPDATE_SCHEMA = {
             "minLength": 1,
             "maxLength": 50,
             "format": "valid_name_hostname",
+        },
+        "is_public": {
+            "type": ["boolean", "null"],
+        },
+        "is_protected": {
+            "type": ["boolean", "null"],
         }
     },
     "additionalProperties": False,

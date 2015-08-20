@@ -36,6 +36,12 @@ JOB_EXEC_SCHEMA = {
             "type": "simple_config",
         },
         "job_configs": b.job_configs,
+        "is_public": {
+            "type": ["boolean", "null"],
+        },
+        "is_protected": {
+            "type": ["boolean", "null"],
+        }
     },
     "additionalProperties": False,
     "required": [
@@ -46,7 +52,14 @@ JOB_EXEC_SCHEMA = {
 
 JOB_EXEC_UPDATE_SCHEMA = {
     "type": "object",
-    "properties": {},
+    "properties": {
+        "is_public": {
+            "type": ["boolean", "null"],
+        },
+        "is_protected": {
+            "type": ["boolean", "null"],
+        }
+    },
     "additionalProperties": False,
     "required": []
 }

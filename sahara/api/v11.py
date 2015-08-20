@@ -63,6 +63,7 @@ def job_executions_status(job_execution_id):
 @rest.get('/job-executions/<job_execution_id>/cancel')
 @acl.enforce("data-processing:job-executions:cancel")
 @v.check_exists(api.get_job_execution, id='job_execution_id')
+@v.validate(None, v_j_e.check_job_execution_cancel)
 def job_executions_cancel(job_execution_id):
     return u.to_wrapped_dict(api.cancel_job_execution, job_execution_id)
 
@@ -78,6 +79,7 @@ def job_executions_update(job_execution_id, data):
 @rest.delete('/job-executions/<job_execution_id>')
 @acl.enforce("data-processing:job-executions:delete")
 @v.check_exists(api.get_job_execution, id='job_execution_id')
+@v.validate(None, v_j_e.check_job_execution_delete)
 def job_executions_delete(job_execution_id):
     api.delete_job_execution(job_execution_id)
     return u.render()

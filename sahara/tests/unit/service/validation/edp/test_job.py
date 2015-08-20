@@ -226,7 +226,9 @@ class TestJobUpdateValidation(u.ValidationTestCase):
     def test_job_update(self):
         data = {
             'name': 'job',
-            'description': 'very fast job'
+            'description': 'very fast job',
+            'is_public': False,
+            'is_protected': False
         }
         self._assert_types(data)
 

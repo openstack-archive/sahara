@@ -43,7 +43,9 @@ SAMPLE_DATA = {
     'volumes_per_node': 2,
     'volumes_size': 10,
     'description': 'test node template',
-    'floating_ip_pool': 'd9a3bebc-f788-4b81-9a93-aa048022c1ca'
+    'floating_ip_pool': 'd9a3bebc-f788-4b81-9a93-aa048022c1ca',
+    'is_public': False,
+    'is_protected': False
 }
 
 

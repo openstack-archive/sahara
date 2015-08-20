@@ -31,6 +31,12 @@ JOB_BINARY_SCHEMA = {
             "type": "string",
             "format": "valid_job_location"
         },
+        "is_public": {
+            "type": ["boolean", "null"],
+        },
+        "is_protected": {
+            "type": ["boolean", "null"],
+        },
         # extra is simple_config for now because we may need not only
         # user-password it the case of external storage
         "extra": {

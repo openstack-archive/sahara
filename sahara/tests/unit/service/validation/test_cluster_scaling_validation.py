@@ -40,6 +40,7 @@ class TestScalingValidation(u.ValidationTestCase):
         self._create_object_fun = mock.Mock()
         self.duplicates_detected = ("Duplicates in node group names are"
                                     " detected: ['a']")
+        self.setup_context(tenant_id='tenant1')
 
     @mock.patch('sahara.service.api.get_cluster')
     @mock.patch('sahara.plugins.base.PluginManager.get_plugin')
@@ -111,7 +112,7 @@ class TestScalingValidation(u.ValidationTestCase):
     def test_check_cluster_scaling_add_ng(self, ops):
         ops.get_engine_type_and_version.return_value = "direct.1.1"
         ng1 = tu.make_ng_dict('ng', '42', ['namenode'], 1)
-        cluster = tu.create_cluster("test-cluster", "tenant", "vanilla",
+        cluster = tu.create_cluster("test-cluster", "tenant1", "vanilla",
                                     "1.2.1", [ng1], status='Active',
                                     id='12321')
         data = {
@@ -329,6 +330,7 @@ class TestScalingValidation(u.ValidationTestCase):
 
     @mock.patch("sahara.service.api.OPS")
     def test_cluster_scaling_v_right_data(self, ops):
+        self.setup_context(tenant_id='t')
         ops.get_engine_type_and_version.return_value = "direct.1.1"
         self._create_object_fun = c_s.check_cluster_scaling
 

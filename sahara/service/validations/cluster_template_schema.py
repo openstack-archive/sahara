@@ -93,6 +93,12 @@ CLUSTER_TEMPLATE_SCHEMA = {
         "shares": copy.deepcopy(shares.SHARE_SCHEMA),
         "use_autoconfig": {
             "type": ["boolean", "null"],
+        },
+        "is_public": {
+            "type": ["boolean", "null"],
+        },
+        "is_protected": {
+            "type": ["boolean", "null"],
         }
     },
     "additionalProperties": False,
