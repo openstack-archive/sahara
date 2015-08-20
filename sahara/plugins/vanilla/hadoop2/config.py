@@ -20,6 +20,7 @@ import six
 from sahara import context
 from sahara.i18n import _
 from sahara.i18n import _LW
+from sahara.plugins import utils
 from sahara.plugins.vanilla.hadoop2 import config_helper as c_helper
 from sahara.plugins.vanilla.hadoop2 import oozie_helper as o_helper
 from sahara.plugins.vanilla import utils as vu
@@ -48,11 +49,7 @@ def configure_cluster(pctx, cluster):
             c_helper.is_swift_enabled(pctx, cluster)):
         cluster = proxy.create_proxy_user_for_cluster(cluster)
 
-    instances = []
-    for node_group in cluster.node_groups:
-        for instance in node_group.instances:
-            instances.append(instance)
-
+    instances = utils.get_instances(cluster)
     configure_instances(pctx, instances)
     configure_topology_data(pctx, cluster)
 
