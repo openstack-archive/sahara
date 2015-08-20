@@ -133,3 +133,15 @@ class YARNv251(YARN):
             vu.at_least(1, NODE_MANAGER),
             vu.exactly(1, HISTORY_SERVER),
         ]
+
+
+@six.add_metaclass(s.Single)
+class YARNv270(YARN):
+    def __init__(self):
+        super(YARNv270, self).__init__()
+        self._version = "2.7.0"
+        self._validation_rules = [
+            vu.at_least(1, RESOURCE_MANAGER),
+            vu.at_least(1, NODE_MANAGER),
+            vu.exactly(1, HISTORY_SERVER),
+        ]
