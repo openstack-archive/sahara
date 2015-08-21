@@ -1,0 +1,17 @@
+{
+    "name": "cluster-template-grenade",
+    "plugin_name": "fake",
+    "hadoop_version": "0.1",
+    "node_groups": [
+        {
+            "name": "master",
+            "node_group_template_id": "NG_MASTER_ID",
+            "count": 1
+        },
+        {
+            "name": "worker",
+            "node_group_template_id": "NG_WORKER_ID",
+            "count": 1
+        }
+    ]
+}
