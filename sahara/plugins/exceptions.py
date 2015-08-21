@@ -85,6 +85,20 @@ class InvalidComponentCountException(e.SaharaException):
         super(InvalidComponentCountException, self).__init__()
 
 
+class InvalidClusterTopology(e.SaharaException):
+    """Exception indicating another problems in a cluster topology,
+
+    which is different from InvalidComponentCountException and
+    RequiredServiceMissingException.
+    """
+    code = "INVALID_TOPOLOGY"
+    message = _("Cluster has invalid topology: {description}")
+
+    def __init__(self, description):
+        self.message = self.message.format(description=description)
+        super(InvalidClusterTopology, self).__init__()
+
+
 class HadoopProvisionError(e.SaharaException):
     """Exception indicating that cluster provisioning failed.
 

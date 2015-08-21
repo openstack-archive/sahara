@@ -75,7 +75,7 @@ cloudera plugin versions:
     and at least one hbase regionserver.
   + Cluster can't contain hbase regionserver without at least one hbase maser.
 
-In case of 5.3.0 version of Cloudera Plugin there are few extra limitations
+In case of 5.3.0 or 5.4.0 version of Cloudera Plugin there are few extra limitations
 in the cluster topology:
 
   + Cluster can't contain flume without at least one datanode.
@@ -93,3 +93,4 @@ in the cluster topology:
   + Cluster can contain at most one impala statestore.
   + Cluster can't contain impala catalogserver without impala statestore,
     at least one impalad service, at least one datanode, and metastore.
+  + If using Imapala, the daemons must be installed on every datanode.
