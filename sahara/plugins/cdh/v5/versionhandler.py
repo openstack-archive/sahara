@@ -16,7 +16,6 @@
 from sahara import conductor
 from sahara import context
 from sahara.plugins.cdh import abstractversionhandler as avm
-from sahara.plugins.cdh import db_helper
 from sahara.plugins.cdh.v5 import cloudera_utils as cu
 from sahara.plugins.cdh.v5 import config_helper as c_helper
 from sahara.plugins.cdh.v5 import deploy as dp
@@ -66,6 +65,9 @@ class VersionHandler(avm.AbstractVersionHandler):
 
     def configure_cluster(self, cluster):
         dp.configure_cluster(cluster)
+        conductor.cluster_update(
+            context.ctx(), cluster, {
+                'info': CU.get_cloudera_manager_info(cluster)})
 
     def start_cluster(self, cluster):
         dp.start_cluster(cluster)
@@ -83,14 +85,7 @@ class VersionHandler(avm.AbstractVersionHandler):
         dp.scale_cluster(cluster, instances)
 
     def _set_cluster_info(self, cluster):
-        mng = CU.pu.get_manager(cluster)
-        info = {
-            'Cloudera Manager': {
-                'Web UI': 'http://%s:7180' % mng.management_ip,
-                'Username': 'admin',
-                'Password': db_helper.get_cm_password(cluster)
-            }
-        }
+        info = CU.get_cloudera_manager_info(cluster)
         hue = CU.pu.get_hue(cluster)
         if hue:
             info['Hue Dashboard'] = {

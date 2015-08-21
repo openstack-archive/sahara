@@ -285,6 +285,17 @@ class ClouderaUtils(object):
         role.update_config(self._get_configs(process, cluster,
                                              node_group=instance.node_group))
 
+    def get_cloudera_manager_info(self, cluster):
+        mng = self.pu.get_manager(cluster)
+        info = {
+            'Cloudera Manager': {
+                'Web UI': 'http://%s:7180' % mng.management_ip,
+                'Username': 'admin',
+                'Password': db_helper.get_cm_password(cluster)
+            }
+        }
+        return info
+
     def _get_configs(self, service, cluster=None, node_group=None):
         # Defined in derived class.
         return
