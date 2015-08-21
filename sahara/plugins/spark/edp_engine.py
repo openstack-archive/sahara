@@ -43,8 +43,6 @@ class EdpEngine(edp_engine.SparkJobEngine):
         self.plugin_params["master"] = ('spark://%(host)s:' + port_str)
         driver_cp = plugin_utils.get_config_value_or_default(
             "Spark", "Executor extra classpath", self.cluster)
-        if driver_cp:
-            driver_cp = " --driver-class-path " + driver_cp
         self.plugin_params["driver-class-path"] = driver_cp
 
     @staticmethod
