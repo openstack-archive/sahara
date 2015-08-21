@@ -52,14 +52,6 @@ def start_manager(remote):
     _root(remote, 'service cloudera-scm-server start')
 
 
-def start_ntp(remote):
-    distrib = _get_os_distrib(remote)
-    if distrib == 'centos':
-        _root(remote, 'service ntpd start')
-    elif distrib == 'ubuntu':
-        _root(remote, 'service ntp start')
-
-
 def configure_agent(remote, manager_address):
     remote.replace_remote_string('/etc/cloudera-scm-agent/config.ini',
                                  'server_host=.*',
