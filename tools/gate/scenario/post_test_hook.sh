@@ -51,4 +51,9 @@ echo "Running scenario tests"
 sudo -u jenkins tox -e scenario -- --verbose -V template_vars.ini \
     etc/scenario/gate/credentials.yaml.mako \
     etc/scenario/gate/edp.yaml.mako \
-    etc/scenario/gate/fake.yaml.mako
+    etc/scenario/gate/fake.yaml.mako \
+    | tee scenario.log
+
+if grep -q FAILED scenario.log; then
+    exit 1
+fi
