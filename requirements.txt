@@ -24,7 +24,7 @@ requests!=2.4.0,<=2.2.1,>=2.1.0
 python-cinderclient<=1.1.1,>=1.1.0
 python-keystoneclient<1.2.0,>=0.10.0
 python-novaclient<=2.20.0,>=2.18.0
-python-swiftclient<=2.3.1,>=2.2.0
+python-swiftclient<2.4.0,>=2.2.0
 python-neutronclient<2.4.0,>=2.3.6
 python-heatclient<0.3.0,>=0.2.9
 six<=1.9.0,>=1.7.0
