@@ -26,7 +26,13 @@ source $DEVSTACK_DIR/stackrc
 source $DEVSTACK_DIR/openrc admin admin
 set -x
 
+# Make public and register in Sahara as admin
 sahara_register_fake_plugin_image
+
+# Use demo user for running scenario tests
+set +x
+source $DEVSTACK_DIR/openrc demo demo
+set -x
 
 sudo -E chown -R jenkins:stack $SAHARA_DIR
 cd $SAHARA_DIR
