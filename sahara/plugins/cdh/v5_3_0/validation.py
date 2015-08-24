@@ -205,6 +205,12 @@ def validate_cluster_creating(cluster):
         raise ex.InvalidComponentCountException('IMPALA_STATESTORE',
                                                 _('0 or 1'), iss_count)
     if ics_count == 1:
+        datanodes = set(u.get_instances(cluster, "HDFS_DATANODE"))
+        impalads = set(u.get_instances(cluster, "IMPALAD"))
+        if len(datanodes ^ impalads) > 0:
+            raise ex.InvalidClusterTopology(
+                _("IMPALAD must be installed on every HDFS_DATANODE"))
+
         if iss_count != 1:
             raise ex.RequiredServiceMissingException(
                 'IMPALA_STATESTORE', required_by='IMPALA')
