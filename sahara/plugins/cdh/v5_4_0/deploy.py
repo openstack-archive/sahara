@@ -47,7 +47,6 @@ PACKAGES = [
     'impala-catalog',
     'impala-shell',
     'keytrustee-keyprovider',
-    'ntp',
     'oozie',
     'oracle-j2sdk1.7',
     'sentry',

@@ -46,7 +46,6 @@ PACKAGES = [
     'hive-server2',
     'hive-webhcat-server',
     'hue',
-    'ntp',
     'oozie',
     'oracle-j2sdk1.7',
     'spark-core',

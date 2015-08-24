@@ -45,7 +45,6 @@ PACKAGES = [
     'impala-state-store',
     'impala-catalog',
     'impala-shell',
-    'ntp',
     'oozie',
     'oracle-j2sdk1.7',
     'sentry',

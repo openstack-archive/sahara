@@ -237,7 +237,6 @@ class AbstractPluginUtils(object):
     def _start_cloudera_agent(self, instance):
         mng_hostname = self.get_manager(instance.cluster).hostname()
         with instance.remote() as r:
-            cmd.start_ntp(r)
             cmd.configure_agent(r, mng_hostname)
             cmd.start_agent(r)
 
