@@ -36,7 +36,6 @@ EOF
         echo "Unsupported distribution version"
         exit 1
     fi
-    rpm -q libevent || rpm -Uvh ftp://rpmfind.net/linux/centos/6.6/os/x86_64/Packages/libevent-1.4.13-4.el6.x86_64.rpm
 else
     echo "Unknown distribution"
     exit 1
