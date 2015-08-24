@@ -5,6 +5,8 @@ credentials:
     os_password: ${OS_PASSWORD}
     os_tenant: ${OS_TENANT_NAME}
     os_auth_url: ${OS_AUTH_URL}
+    ssl_cert: /etc/tests/cert.crt
+    ssl_verify: True
 
 network:
     type: ${network_type}
