@@ -486,3 +486,20 @@ class TestBase(testtools.TestCase):
                                    'hdfs://cont/output']},
                          self.base_scenario._put_io_data_to_configs(
             configs, '1', '2'))
+
+    @mock.patch('sahara.tests.scenario.base.BaseTestCase.addCleanup')
+    @mock.patch('novaclient.v2.flavors.FlavorManager.create',
+                return_value=FakeResponse(set_id='flavor_id'))
+    @mock.patch('keystoneclient.session.Session')
+    def test_get_flavor_id(self, mock_keystone, mock_create_flavor, mock_base):
+        self.base_scenario._init_clients()
+        self.assertEqual('flavor_id',
+                         self.base_scenario._get_flavor_id({
+                             'name': 'test-flavor',
+                             "id": 'created_flavor_id',
+                             "vcpus": 1,
+                             "ram": 512,
+                             "root_disk": 1,
+                             "ephemeral_disk": 1,
+                             "swap_disk": 1
+                         }))
