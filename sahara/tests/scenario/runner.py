@@ -18,6 +18,7 @@
 from __future__ import print_function
 import argparse
 import os
+import subprocess
 import sys
 import tempfile
 
@@ -215,7 +216,7 @@ def main():
     command = 'bash tools/pretty_tox.sh'
     if concurrency:
         command = command + ' -- --concurrency %d' % concurrency
-    return_code = os.system(command)
+    return_code = subprocess.call(command, shell=True)
     sys.exit(return_code)
 
 
