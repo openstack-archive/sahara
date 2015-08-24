@@ -863,7 +863,7 @@ class AmbariClient(object):
             hbase_site = self._hdfs_ha_get_config(hac, 'hbase-site',
                                                   hbase_site_tag)
             hbase_site_ha = self._hdfs_ha_update_hbase_site(hac, hbase_site)
-            self._hdfs_ha_put_config(hac, 'hbase_site', hac['config_ver'],
+            self._hdfs_ha_put_config(hac, 'hbase-site', hac['config_ver'],
                                      hbase_site_ha)
 
         # force the deployment of HDFS HA configs on namenodes by re-installing
