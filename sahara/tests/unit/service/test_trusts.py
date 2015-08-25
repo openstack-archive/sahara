@@ -27,20 +27,27 @@ class FakeTrust(object):
 
 class TestTrusts(base.SaharaTestCase):
 
-    def _trustor(self):
+    def _client(self):
         create = mock.Mock()
         create.return_value = FakeTrust("trust_id")
-        trustor_trusts = mock.Mock(create=create)
-        trustor = mock.Mock(user_id="trustor_id", tenant_id="tenant_id",
-                            trusts=trustor_trusts)
-        return trustor
+        client_trusts = mock.Mock(create=create)
+        client = mock.Mock(trusts=client_trusts)
+        return client
 
-    def test_create_trust(self):
-        trustor = self._trustor()
-        trustee = mock.Mock(user_id="trustee_id")
+    @mock.patch('sahara.utils.openstack.keystone.client_from_auth')
+    @mock.patch('sahara.utils.openstack.keystone.project_id_from_auth')
+    @mock.patch('sahara.utils.openstack.keystone.user_id_from_auth')
+    def test_create_trust(self, user_id_from_auth, project_id_from_auth,
+                          client_from_auth):
+        project_id_from_auth.return_value = 'tenant_id'
+        user_id_from_auth.side_effect = ['trustor_id', 'trustee_id']
+        trustor = 'trustor_id'
+        trustee = 'trustee_id'
+        client = self._client()
+        client_from_auth.return_value = client
         trust_id = trusts.create_trust(trustor, trustee,
                                        "role_names", expires=True)
-        trustor.trusts.create.assert_called_with(
+        client.trusts.create.assert_called_with(
             trustor_user="trustor_id",
             trustee_user="trustee_id",
             impersonation=True,
@@ -50,29 +57,42 @@ class TestTrusts(base.SaharaTestCase):
         )
         self.assertEqual("trust_id", trust_id)
 
-    @mock.patch('sahara.utils.openstack.keystone.client_for_admin')
-    @mock.patch('sahara.utils.openstack.keystone.client')
-    @mock.patch('sahara.conductor.API.cluster_update')
-    @mock.patch('sahara.context.current')
-    def test_create_trust_for_cluster(self, m_current, m_cluster_update,
-                                      m_client, m_client_for_admin):
-        ctx = mock.Mock(roles="role_names")
-        trustee = mock.Mock(user_id="trustee_id")
-        trustor = self._trustor()
+        user_id_from_auth.side_effect = ['trustor_id', 'trustee_id']
+        client = self._client()
+        client_from_auth.return_value = client
+        trust_id = trusts.create_trust(trustor, trustee, "role_names",
+                                       project_id='injected_project',
+                                       expires=False)
+        client.trusts.create.assert_called_with(trustor_user="trustor_id",
+                                                trustee_user="trustee_id",
+                                                impersonation=True,
+                                                role_names="role_names",
+                                                project="injected_project",
+                                                expires_at=None)
+        self.assertEqual("trust_id", trust_id)
 
-        m_current.return_value = ctx
-        m_client_for_admin.return_value = trustee
-        m_client.return_value = trustor
+    @mock.patch('sahara.conductor.API.cluster_update')
+    @mock.patch('sahara.service.trusts.create_trust')
+    @mock.patch('sahara.utils.openstack.keystone.auth_for_admin')
+    @mock.patch('sahara.context.current')
+    def test_create_trust_for_cluster(self, context_current, auth_for_admin,
+                                      create_trust, cluster_update):
+        self.override_config('admin_tenant_name', 'admin_project',
+                             group='keystone_authtoken')
+        trustor_auth = mock.Mock()
+        ctx = mock.Mock(roles="role_names", auth_plugin=trustor_auth)
+        context_current.return_value = ctx
+        trustee_auth = mock.Mock()
+        auth_for_admin.return_value = trustee_auth
+        create_trust.return_value = 'trust_id'
 
         trusts.create_trust_for_cluster("cluster")
 
-        trustor.trusts.create.assert_called_with(
-            trustor_user="trustor_id",
-            trustee_user="trustee_id",
-            impersonation=True,
-            role_names="role_names",
-            project="tenant_id",
-            expires_at=mock.ANY
-        )
-        m_cluster_update.assert_called_with(ctx, "cluster",
-                                            {"trust_id": "trust_id"})
+        auth_for_admin.assert_called_with(project_name='admin_project')
+        create_trust.assert_called_with(trustor=trustor_auth,
+                                        trustee=trustee_auth,
+                                        role_names='role_names',
+                                        expires=True)
+
+        cluster_update.assert_called_with(ctx, "cluster",
+                                          {"trust_id": "trust_id"})

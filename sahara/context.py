@@ -47,6 +47,7 @@ class Context(context.RequestContext):
                  resource_uuid=None,
                  current_instance_info=None,
                  request_id=None,
+                 auth_plugin=None,
                  overwrite=True,
                  **kwargs):
         if kwargs:
@@ -64,6 +65,7 @@ class Context(context.RequestContext):
         self.tenant_name = tenant_name
         self.remote_semaphore = remote_semaphore or semaphore.Semaphore(
             CONF.cluster_remote_threshold)
+        self.auth_plugin = auth_plugin
         self.roles = roles
         if overwrite or not hasattr(context._request_store, 'context'):
             self.update_store()
@@ -87,6 +89,7 @@ class Context(context.RequestContext):
             self.resource_uuid,
             self.current_instance_info,
             self.request_id,
+            self.auth_plugin,
             overwrite=False)
 
     def to_dict(self):
