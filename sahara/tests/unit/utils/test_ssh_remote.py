@@ -123,9 +123,10 @@ class TestInstanceInteropHelper(base.SaharaTestCase):
     # When use_floating_ips=False and use_namespaces=True, a netcat socket
     # created with 'ip netns exec qrouter-...' should be used to access
     # instances.
+    @mock.patch("sahara.utils.openstack.keystone.token_auth")
     @mock.patch('sahara.utils.ssh_remote._simple_exec_func')
     @mock.patch('sahara.utils.ssh_remote.ProxiedHTTPAdapter')
-    def test_use_namespaces(self, p_adapter, p_simple_exec_func):
+    def test_use_namespaces(self, p_adapter, p_simple_exec_func, token_auth):
         self.override_config('use_floating_ips', False)
         self.override_config('use_namespaces', True)
 
