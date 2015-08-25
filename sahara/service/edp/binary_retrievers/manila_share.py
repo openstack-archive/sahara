@@ -13,13 +13,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import six
-
-from sahara import conductor as c
-from sahara import context
+from sahara.service.edp import job_utils
 from sahara.service import shares as shares_service
-
-conductor = c.API
 
 
 def get_file_info(job_binary, remote):
@@ -28,34 +23,10 @@ def get_file_info(job_binary, remote):
         shares.extend(remote.instance.node_group.cluster.shares)
     if remote.instance.node_group.shares:
         shares.extend(remote.instance.node_group.shares)
-    # url example: 'manila://ManilaShare-uuid/path_to_file'
-    url = six.moves.urllib.parse.urlparse(job_binary.url)
-    share_id = url.netloc
-    if not any(s['id'] == share_id for s in shares):
-        # Automount this share to the cluster
-        cluster = remote.instance.node_group.cluster
-        if cluster.shares:
-            cluster_shares = [dict(s) for s in cluster.shares]
-        else:
-            cluster_shares = []
-        needed_share = {
-            'id': share_id,
-            'path': '/mnt/{0}'.format(share_id),
-            'access_level': 'rw'
-        }
-
-        cluster_shares.append(needed_share)
-        cluster = conductor.cluster_update(
-            context.ctx(), cluster, {'shares': cluster_shares})
-        shares_service.mount_shares(cluster)
-        shares = cluster.shares
-
-    # using list() as a python2/3 workaround
-    share = list(filter(lambda s: s['id'] == share_id, shares))[0]
-    mount_point = share.get('path', "/mnt/%s" % share_id)
-
-    res = {
-        'type': 'path',
-        'path': "{0}{1}".format(mount_point, url.path)
-    }
-    return res
+    path = shares_service.get_share_path(job_binary.url, shares)
+    if path is None:
+        path = job_utils.mount_share_at_default_path(
+            job_binary.url,
+            remote.instance.node_group.cluster)
+    return {'type': 'path',
+            'path': path}

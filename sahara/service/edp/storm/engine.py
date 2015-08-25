@@ -174,8 +174,10 @@ class StormJobEngine(base_engine.JobEngine):
         data_source_urls = {}
 
         additional_sources, updated_job_configs = (
-            job_utils.resolve_data_source_references(
-                job_execution.job_configs, job_execution.id, data_source_urls)
+            job_utils.resolve_data_source_references(job_execution.job_configs,
+                                                     job_execution.id,
+                                                     data_source_urls,
+                                                     self.cluster)
         )
 
         job_execution = conductor.job_execution_update(

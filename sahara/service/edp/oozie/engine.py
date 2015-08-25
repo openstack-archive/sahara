@@ -108,7 +108,7 @@ class OozieJobEngine(base_engine.JobEngine):
 
         job = conductor.job_get(ctx, job_execution.job_id)
         input_source, output_source = job_utils.get_data_sources(
-            job_execution, job, data_source_urls)
+            job_execution, job, data_source_urls, self.cluster)
 
         # Updated_job_configs will be a copy of job_execution.job_configs with
         # any name or uuid references to data_sources resolved to paths
@@ -117,8 +117,10 @@ class OozieJobEngine(base_engine.JobEngine):
         # just be a reference to job_execution.job_configs to avoid a copy.
         # Additional_sources will be a list of any data_sources found.
         additional_sources, updated_job_configs = (
-            job_utils.resolve_data_source_references(
-                job_execution.job_configs, job_execution.id, data_source_urls)
+            job_utils.resolve_data_source_references(job_execution.job_configs,
+                                                     job_execution.id,
+                                                     data_source_urls,
+                                                     self.cluster)
         )
 
         job_execution = conductor.job_execution_update(

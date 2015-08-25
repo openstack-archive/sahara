@@ -14,6 +14,7 @@
 # limitations under the License.
 
 from oslo_config import cfg
+from oslo_utils import uuidutils
 import six.moves.urllib.parse as urlparse
 
 from sahara import conductor as c
@@ -32,11 +33,14 @@ def check_data_source_create(data, **kwargs):
     if "swift" == data["type"]:
         _check_swift_data_source_create(data)
 
-    if "hdfs" == data["type"]:
+    elif "hdfs" == data["type"]:
         _check_hdfs_data_source_create(data)
 
-    if "maprfs" == data["type"]:
+    elif "maprfs" == data["type"]:
         _check_maprfs_data_source_create(data)
+
+    elif "manila" == data["type"]:
+        _check_manila_data_source_create(data)
 
 
 def _check_swift_data_source_create(data):
@@ -87,6 +91,18 @@ def _check_maprfs_data_source_create(data):
     if url.scheme:
         if url.scheme != "maprfs":
             raise ex.InvalidDataException(_("URL scheme must be 'maprfs'"))
+
+
+def _check_manila_data_source_create(data):
+    if len(data['url']) == 0:
+        raise ex.InvalidDataException(_("Manila url must not be empty"))
+    url = urlparse.urlparse(data['url'])
+    if url.scheme != "manila":
+        raise ex.InvalidDataException(_("Manila url scheme must be 'manila'"))
+    if not uuidutils.is_uuid_like(url.netloc):
+        raise ex.InvalidDataException(_("Manila url netloc must be a uuid"))
+    if not url.path:
+        raise ex.InvalidDataException(_("Manila url path must not be empty"))
 
 
 def check_data_source_update(data, **kwargs):

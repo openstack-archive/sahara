@@ -180,9 +180,11 @@ class _ShareHandler(object):
     def _get_access_level(self, share_config):
         return share_config.get('access_level', 'rw')
 
-    @abc.abstractmethod
+    def _default_mount(self):
+        return '/mnt/{0}'.format(self.share.id)
+
     def _get_path(self, share_info):
-        pass
+        return share_info.get('path', self._default_mount())
 
 
 class _NFSMounter(_ShareHandler):
@@ -230,9 +232,40 @@ class _NFSMounter(_ShareHandler):
             "access_arg": access_arg}
         remote.execute_command(mount_command, run_as_root=True)
 
-    def _get_path(self, share_info):
-        return share_info.get('path', '/mnt/%s' % self.share.id)
-
 
 _share_types = {"NFS": _NFSMounter}
 SUPPORTED_SHARE_TYPES = _share_types.keys()
+
+
+def _make_share_path(mount_point, path):
+    return "{0}{1}".format(mount_point, path)
+
+
+def default_mount(share_id):
+    client = manila.client()
+    return _ShareHandler.create_from_id(share_id, client)._default_mount()
+
+
+def get_share_path(url, shares):
+    # url example: 'manila://ManilaShare-uuid/path_to_file'
+    url = six.moves.urllib.parse.urlparse(url)
+    # using list() as a python2/3 workaround
+    share_list = list(filter(lambda s: s['id'] == url.netloc, shares))
+    if not share_list:
+        # Share id is not in the share list, let the caller
+        # determine a default path if possible
+        path = None
+    else:
+        # We will always select the first one.  Let the
+        # caller determine whether duplicates are okay
+        mount_point = share_list[0].get('path', None)
+
+        # Do this in two steps instead of passing the default
+        # expression to get(), because it's a big side effect
+        if mount_point is None:
+            # The situation here is that the user specified a
+            # share without a path, so the default mnt was used
+            # during cluster provisioning.
+            mount_point = default_mount(share_list[0]['id'])
+        path = _make_share_path(mount_point, url.path)
+    return path
