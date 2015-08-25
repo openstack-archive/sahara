@@ -79,6 +79,8 @@ class Cluster(mb.SaharaBase):
     cluster_template = relationship('ClusterTemplate',
                                     backref="clusters", lazy='joined')
     shares = sa.Column(st.JsonListType())
+    is_public = sa.Column(sa.Boolean())
+    is_protected = sa.Column(sa.Boolean())
 
     def to_dict(self, show_progress=False):
         d = super(Cluster, self).to_dict()
@@ -183,6 +185,8 @@ class ClusterTemplate(mb.SaharaBase):
     is_default = sa.Column(sa.Boolean(), default=False)
     use_autoconfig = sa.Column(sa.Boolean(), default=True)
     shares = sa.Column(st.JsonListType())
+    is_public = sa.Column(sa.Boolean())
+    is_protected = sa.Column(sa.Boolean())
 
     def to_dict(self):
         d = super(ClusterTemplate, self).to_dict()
@@ -224,6 +228,8 @@ class NodeGroupTemplate(mb.SaharaBase):
     is_default = sa.Column(sa.Boolean(), default=False)
     use_autoconfig = sa.Column(sa.Boolean(), default=True)
     shares = sa.Column(st.JsonListType())
+    is_public = sa.Column(sa.Boolean())
+    is_protected = sa.Column(sa.Boolean())
 
 
 class TemplatesRelation(mb.SaharaBase):
@@ -286,6 +292,8 @@ class DataSource(mb.SaharaBase):
     type = sa.Column(sa.String(80), nullable=False)
     url = sa.Column(sa.String(256), nullable=False)
     credentials = sa.Column(st.JsonDictType())
+    is_public = sa.Column(sa.Boolean())
+    is_protected = sa.Column(sa.Boolean())
 
 
 class JobExecution(mb.SaharaBase):
@@ -311,6 +319,8 @@ class JobExecution(mb.SaharaBase):
     job_configs = sa.Column(st.JsonDictType())
     extra = sa.Column(st.JsonDictType())
     data_source_urls = sa.Column(st.JsonDictType())
+    is_public = sa.Column(sa.Boolean())
+    is_protected = sa.Column(sa.Boolean())
 
 
 mains_association = sa.Table("mains_association",
@@ -349,6 +359,8 @@ class Job(mb.SaharaBase):
     name = sa.Column(sa.String(80), nullable=False)
     description = sa.Column(sa.Text())
     type = sa.Column(sa.String(80), nullable=False)
+    is_public = sa.Column(sa.Boolean())
+    is_protected = sa.Column(sa.Boolean())
 
     mains = relationship("JobBinary",
                          secondary=mains_association, lazy="joined")
@@ -408,6 +420,8 @@ class JobBinaryInternal(mb.SaharaBase):
     name = sa.Column(sa.String(80), nullable=False)
     data = sa.orm.deferred(sa.Column(st.LargeBinary()))
     datasize = sa.Column(sa.BIGINT)
+    is_public = sa.Column(sa.Boolean())
+    is_protected = sa.Column(sa.Boolean())
 
 
 class JobBinary(mb.SaharaBase):
@@ -425,6 +439,8 @@ class JobBinary(mb.SaharaBase):
     description = sa.Column(sa.Text())
     url = sa.Column(sa.String(256), nullable=False)
     extra = sa.Column(st.JsonDictType())
+    is_public = sa.Column(sa.Boolean())
+    is_protected = sa.Column(sa.Boolean())
 
 
 class ClusterEvent(mb.SaharaBase):

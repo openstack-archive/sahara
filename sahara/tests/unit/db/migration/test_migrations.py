@@ -519,6 +519,21 @@ class SaharaMigrationsCheckers(object):
         self.assertColumnType(engine, 'instances', 'management_ip',
                               'VARCHAR(45)')
 
+    def _check_026(self, engine, data):
+        tables = [
+            'clusters',
+            'cluster_templates',
+            'node_group_templates',
+            'data_sources',
+            'job_executions',
+            'jobs',
+            'job_binary_internal',
+            'job_binaries',
+        ]
+        for table in tables:
+            self.assertColumnExists(engine, table, 'is_public')
+            self.assertColumnExists(engine, table, 'is_protected')
+
 
 class TestMigrationsMySQL(SaharaMigrationsCheckers,
                           base.BaseWalkMigrationTestCase,

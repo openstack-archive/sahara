@@ -62,6 +62,8 @@ class Cluster(object):
     cluster_template_id
     cluster_template - ClusterTemplate object
     use_autoconfig
+    is_public
+    is_protected
     """
 
     def has_proxy_gateway(self):
@@ -182,6 +184,8 @@ class ClusterTemplate(object):
     plugin_name
     hadoop_version
     node_groups - list of NodeGroup objects
+    is_public
+    is_protected
     """
 
 
@@ -210,6 +214,8 @@ class NodeGroupTemplate(object):
     availability_zone
     is_proxy_gateway
     volume_local_to_instance
+    is_public
+    is_protected
     """
 
 
@@ -225,6 +231,8 @@ class DataSource(object):
     type
     url
     credentials
+    is_public
+    is_protected
     """
 
 
@@ -246,6 +254,8 @@ class JobExecution(object):
     interface
     extra
     data_source_urls
+    is_public
+    is_protected
     """
 
 
@@ -260,6 +270,8 @@ class Job(object):
     mains
     libs
     interface
+    is_public
+    is_protected
     """
 
 
@@ -272,6 +284,8 @@ class JobBinary(object):
     description
     url -  URLs may be the following: internal-db://URL, swift://
     extra - extra may contain not only user-password but e.g. auth-token
+    is_public
+    is_protected
     """
 
 
@@ -286,6 +300,8 @@ class JobBinaryInternal(object):
     tenant_id
     name
     datasize
+    is_public
+    is_protected
     """
 
 # Events ops

@@ -57,6 +57,8 @@ SAMPLE_NGT = {
     "is_proxy_gateway": False,
     "volume_local_to_instance": False,
     'use_autoconfig': True,
+    "is_public": False,
+    "is_protected": False
 }
 
 SAMPLE_CLT = {
@@ -100,7 +102,9 @@ SAMPLE_CLT = {
     "anti_affinity": ["datanode"],
     "description": "my template",
     "neutron_management_network": str(uuid.uuid4()),
-    "shares": None
+    "shares": None,
+    "is_public": False,
+    "is_protected": False
 }
 
 
