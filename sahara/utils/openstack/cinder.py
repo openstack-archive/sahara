@@ -23,7 +23,9 @@ from oslo_log import log as logging
 from sahara import context
 from sahara import exceptions as ex
 from sahara.i18n import _LW
+from sahara.service import sessions
 from sahara.utils.openstack import base
+from sahara.utils.openstack import keystone
 
 
 LOG = logging.getLogger(__name__)
@@ -65,23 +67,13 @@ def validate_config():
 
 
 def client():
-    ctx = context.current()
-    args = {
-        'insecure': CONF.cinder.api_insecure,
-        'cacert': CONF.cinder.ca_file
-    }
+    session = sessions.cache().get_session(sessions.SESSION_TYPE_CINDER)
+    auth = keystone.auth()
+
     if CONF.cinder.api_version == 1:
-        volume_url = base.url_for(ctx.service_catalog, 'volume')
-        cinder = cinder_client_v1.Client(ctx.username, ctx.auth_token,
-                                         ctx.tenant_id, volume_url, **args)
+        cinder = cinder_client_v1.Client(session=session, auth=auth)
     else:
-        volume_url = base.url_for(ctx.service_catalog, 'volumev2')
-        cinder = cinder_client_v2.Client(ctx.username, ctx.auth_token,
-                                         ctx.tenant_id, volume_url, **args)
-
-    cinder.client.auth_token = ctx.auth_token
-    cinder.client.management_url = volume_url
-
+        cinder = cinder_client_v2.Client(session=session, auth=auth)
     return cinder
 
 

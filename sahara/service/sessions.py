@@ -27,6 +27,7 @@ LOG = logging.getLogger(__name__)
 
 _SESSION_CACHE = None
 
+SESSION_TYPE_CINDER = 'cinder'
 SESSION_TYPE_GENERIC = 'generic'
 SESSION_TYPE_KEYSTONE = 'keystone'
 SESSION_TYPE_NOVA = 'nova'
@@ -55,6 +56,7 @@ class SessionCache(object):
         '''create a new SessionCache'''
         self._sessions = {}
         self._session_funcs = {
+            SESSION_TYPE_CINDER: self.get_cinder_session,
             SESSION_TYPE_GENERIC: self.get_generic_session,
             SESSION_TYPE_KEYSTONE: self.get_keystone_session,
             SESSION_TYPE_NOVA: self.get_nova_session,
@@ -89,6 +91,17 @@ class SessionCache(object):
                 _('Session type {type} not recognized').
                 format(type=session_type))
 
+    def get_cinder_session(self):
+        session = self._sessions.get(SESSION_TYPE_CINDER)
+        if not session:
+            if CONF.cinder.ca_file:
+                session = keystone.Session(cert=CONF.cinder.ca_file,
+                                           verify=CONF.cinder.api_insecure)
+            else:
+                session = self.get_generic_session()
+            self._set_session(SESSION_TYPE_CINDER, session)
+        return session
+
     def get_generic_session(self):
         session = self._sessions.get(SESSION_TYPE_GENERIC)
         if not session:
@@ -115,5 +128,5 @@ class SessionCache(object):
                                            verify=CONF.nova.api_insecure)
             else:
                 session = self.get_generic_session()
-            self._sessions[SESSION_TYPE_NOVA] = session
+            self._set_session(SESSION_TYPE_NOVA, session)
         return session
