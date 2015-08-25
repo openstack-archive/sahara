@@ -23,12 +23,10 @@ source commons $@
 
 echo "IMAGE_URLS=$SAHARA_FAKE_PLUGIN_IMAGE" >> $LOCALRC_PATH
 
-if [[ $ENGINE == heat ]]; then
+if [ "$ENGINE" == "heat" ]; then
     echo "enable_service heat h-eng h-api h-api-cfn h-api-cw" >> $LOCALRC_PATH
 fi
-
-# Here we can set some configurations for localrc
-# echo "SAHARA_INFRA_ENGINE=heat" >> $LOCALRC_PATH
+echo "SAHARA_INFRA_ENGINE=$ENGINE" >> $LOCALRC_PATH
 
 # Here we can set some configurations for local.conf
 # for example, to pass some config options directly to sahara.conf file
