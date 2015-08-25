@@ -31,6 +31,7 @@ and eventlet together. The private high-level module methods are
 implementations which are run in a separate process.
 """
 
+import copy
 import logging
 import time
 import uuid
@@ -337,7 +338,9 @@ class InstanceInteropHelper(remote.Remote):
         neutron_info['tenant'] = ctx.tenant_name
         neutron_info['host'] = self.instance.management_ip
 
-        LOG.debug('Returning neutron info: {0}'.format(neutron_info))
+        log_info = copy.deepcopy(neutron_info)
+        del log_info['token']
+        LOG.debug('Returning neutron info: {info}'.format(info=log_info))
         return neutron_info
 
     def _get_conn_params(self):
