@@ -32,6 +32,21 @@ HADOOP_SWIFT_REGION = 'fs.swift.service.sahara.region'
 HADOOP_SWIFT_TRUST_ID = 'fs.swift.service.sahara.trust.id'
 HADOOP_SWIFT_DOMAIN_NAME = 'fs.swift.service.sahara.domain.name'
 
+opts = [
+    cfg.StrOpt("public_identity_ca_file",
+               help=("Location of ca certificate file to use for identity "
+                     "client requests via public endpoint")),
+    cfg.StrOpt("public_object_store_ca_file",
+               help=("Location of ca certificate file to use for object-store "
+                     "client requests via public endpoint"))
+]
+
+public_endpoint_cert_group = cfg.OptGroup(
+    name="object_store_access", title="Auth options for Swift access from VM")
+
+CONF.register_group(public_endpoint_cert_group)
+CONF.register_opts(opts, group=public_endpoint_cert_group)
+
 
 def retrieve_tenant():
     return context.current().tenant_name
@@ -55,3 +70,33 @@ def get_swift_configs():
 
 def read_default_swift_configs():
     return x.load_hadoop_xml_defaults('swift/resources/conf-template.xml')
+
+
+def install_ssl_certs(instances):
+    certs = []
+    if CONF.object_store_access.public_identity_ca_file:
+        certs.append(CONF.object_store_access.public_identity_ca_file)
+    if CONF.object_store_access.public_object_store_ca_file:
+        certs.append(CONF.object_store_access.public_object_store_ca_file)
+    if not certs:
+        return
+    with context.ThreadGroup() as tg:
+        for inst in instances:
+            tg.spawn("configure-ssl-cert-%s" % inst.instance_id,
+                     _install_ssl_certs, inst, certs)
+
+
+def _install_ssl_certs(instance, certs):
+    register_cmd = (
+        "sudo su - -c \"keytool -import -alias sahara-%d -keystore "
+        "`cut -f2 -d \\\"=\\\" /etc/profile.d/99-java.sh | head -1`"
+        "/lib/security/cacerts -file /tmp/cert.pem -noprompt -storepass "
+        "changeit\"")
+    with instance.remote() as r:
+        for idx, cert in enumerate(certs):
+            data = open(cert).read()
+            r.write_file_to("/tmp/cert.pem", data)
+            try:
+                r.execute_command(register_cmd % idx)
+            finally:
+                r.execute_command("rm /tmp/cert.pem")

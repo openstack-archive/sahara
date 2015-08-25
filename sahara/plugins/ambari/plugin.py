@@ -24,6 +24,7 @@ from sahara.plugins.ambari import edp_engine
 from sahara.plugins.ambari import validation
 from sahara.plugins import provisioning as p
 from sahara.plugins import utils as plugin_utils
+from sahara.swift import swift_helper
 
 
 conductor = conductor.API
@@ -84,6 +85,7 @@ class AmbariPluginProvider(p.ProvisioningPluginBase):
     def start_cluster(self, cluster):
         self._set_cluster_info(cluster)
         deploy.start_cluster(cluster)
+        swift_helper.install_ssl_certs(plugin_utils.get_instances(cluster))
 
     def _set_cluster_info(self, cluster):
         ambari_ip = plugin_utils.get_instance(
