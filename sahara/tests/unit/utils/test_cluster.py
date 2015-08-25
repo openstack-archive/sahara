@@ -13,6 +13,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import mock
+
 from sahara import conductor
 from sahara import context
 from sahara.tests.unit import base
@@ -104,10 +106,17 @@ class UtilsClusterTest(base.SaharaWithDbTestCase):
                     'internal_ip': str(idx),
                 })
         cluster = self.api.cluster_get(ctx, cluster)
-        value = cluster_utils.generate_etc_hosts(cluster)
+        with mock.patch("sahara.utils.openstack.base.url_for") as mock_url:
+            mock_url.side_effect = ["http://keystone.local:1234/v13",
+                                    "http://swift.local:5678/v42"]
+            with mock.patch("socket.gethostbyname") as mock_get_host:
+                mock_get_host.side_effect = ["1.2.3.4", "5.6.7.8"]
+                value = cluster_utils.generate_etc_hosts(cluster)
         expected = ("127.0.0.1 localhost\n"
                     "1 1.novalocal 1\n"
                     "2 2.novalocal 2\n"
                     "3 3.novalocal 3\n"
-                    "4 4.novalocal 4\n")
+                    "4 4.novalocal 4\n"
+                    "1.2.3.4 keystone.local\n"
+                    "5.6.7.8 swift.local\n")
         self.assertEqual(expected, value)
