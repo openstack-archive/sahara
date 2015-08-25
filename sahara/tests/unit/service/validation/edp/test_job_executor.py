@@ -17,7 +17,9 @@ import uuid
 
 import mock
 import six
+import testtools
 
+from sahara import exceptions as ex
 from sahara import main
 from sahara.service import api
 from sahara.service.validations.edp import job_execution as je
@@ -260,10 +262,63 @@ class TestJobExecUpdateValidation(u.ValidationTestCase):
         self.scheme = je_schema.JOB_EXEC_UPDATE_SCHEMA
 
     def test_job_execution_update_types(self):
-        data = {}
+        data = {
+            'is_public': False,
+            'is_protected': False
+        }
         self._assert_types(data)
 
     def test_job_execution_update_nothing_required(self):
         self._assert_create_object_validation(
-            data={}
+            data={
+                'is_public': False,
+                'is_protected': False
+            }
         )
+
+
+class TestJobExecutionCancelDeleteValidation(u.ValidationTestCase):
+    def setUp(self):
+        super(TestJobExecutionCancelDeleteValidation, self).setUp()
+        self.setup_context(tenant_id='tenant1')
+
+    @mock.patch('sahara.conductor.api.LocalApi.job_execution_get')
+    def test_je_cancel_delete_when_protected(self, get_je_p):
+
+        job_exec = mock.Mock(id='123', tenant_id='tenant1', is_protected=True)
+        get_je_p.return_value = job_exec
+
+        with testtools.ExpectedException(ex.CancelingFailed):
+            try:
+                je.check_job_execution_cancel(job_exec)
+            except ex.CancelingFailed as e:
+                self.assert_protected_resource_exception(e)
+                raise e
+
+        with testtools.ExpectedException(ex.DeletionFailed):
+            try:
+                je.check_job_execution_delete(job_exec)
+            except ex.DeletionFailed as e:
+                self.assert_protected_resource_exception(e)
+                raise e
+
+    @mock.patch('sahara.conductor.api.LocalApi.job_execution_get')
+    def test_public_je_cancel_delete_from_another_tenant(self, get_je_p):
+
+        job_exec = mock.Mock(id='123', tenant_id='tenant2', is_protected=False,
+                             is_public=True)
+        get_je_p.return_value = job_exec
+
+        with testtools.ExpectedException(ex.CancelingFailed):
+            try:
+                je.check_job_execution_cancel(job_exec)
+            except ex.CancelingFailed as e:
+                self.assert_created_in_another_tenant_exception(e)
+                raise e
+
+        with testtools.ExpectedException(ex.DeletionFailed):
+            try:
+                je.check_job_execution_delete(job_exec)
+            except ex.DeletionFailed as e:
+                self.assert_created_in_another_tenant_exception(e)
+                raise e

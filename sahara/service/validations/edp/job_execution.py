@@ -18,6 +18,7 @@ from sahara import context
 from sahara import exceptions as ex
 from sahara.i18n import _
 from sahara.plugins import base as plugin_base
+from sahara.service.validations import acl
 import sahara.service.validations.edp.base as b
 import sahara.service.validations.edp.job_interface as j_i
 
@@ -83,3 +84,27 @@ def check_data_sources(data, job):
     b.check_data_source_exists(data['output_id'])
 
     b.check_data_sources_are_different(data['input_id'], data['output_id'])
+
+
+def check_job_execution_cancel(job_execution_id, **kwargs):
+    ctx = context.current()
+    je = conductor.job_execution_get(ctx, job_execution_id)
+
+    if je.tenant_id != ctx.tenant_id:
+            raise ex.CancelingFailed(
+                _("Job execution with id '%s' cannot be canceled "
+                  "because it wasn't created in this tenant")
+                % job_execution_id)
+
+    if je.is_protected:
+        raise ex.CancelingFailed(
+            _("Job Execution with id '%s' cannot be canceled "
+              "because it's marked as protected") % job_execution_id)
+
+
+def check_job_execution_delete(job_execution_id, **kwargs):
+    ctx = context.current()
+    je = conductor.job_execution_get(ctx, job_execution_id)
+
+    acl.check_tenant_for_delete(ctx, je)
+    acl.check_protected_from_delete(je)

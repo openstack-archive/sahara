@@ -53,7 +53,13 @@ JOB_SCHEMA = {
         "streaming": {
             "type": "boolean"
         },
-        "interface": j_i.INTERFACE_ARGUMENT_SCHEMA
+        "interface": j_i.INTERFACE_ARGUMENT_SCHEMA,
+        "is_public": {
+            "type": ["boolean", "null"],
+        },
+        "is_protected": {
+            "type": ["boolean", "null"],
+        }
     },
     "additionalProperties": False,
     "required": [
@@ -74,6 +80,12 @@ JOB_UPDATE_SCHEMA = {
         },
         "description": {
             "type": ["string", "null"]
+        },
+        "is_public": {
+            "type": ["boolean", "null"],
+        },
+        "is_protected": {
+            "type": ["boolean", "null"],
         }
     },
     "additionalProperties": False,

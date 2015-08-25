@@ -44,3 +44,9 @@ class ConductorManagerTestCase(base.SaharaWithDbTestCase):
             self.assertEqual(self._results[idx], check_val,
                              message="Check '%s' failed" % idx)
         super(ConductorManagerTestCase, self).tearDown()
+
+    def assert_protected_resource_exception(self, ex):
+        self.assertIn("marked as protected", str(ex))
+
+    def assert_created_in_another_tenant_exception(self, ex):
+        self.assertIn("wasn't created in this tenant", str(ex))

@@ -45,7 +45,9 @@ class TestJobBinaryInternalUpdateValidation(u.ValidationTestCase):
 
     def test_job_binary_internal_update_types(self):
         data = {
-            'name': 'jb'
+            'name': 'jb',
+            'is_public': False,
+            'is_protected': False
         }
         self._assert_types(data)
 
@@ -53,7 +55,9 @@ class TestJobBinaryInternalUpdateValidation(u.ValidationTestCase):
         self._assert_create_object_validation(data={'name': 'jb'})
 
         self._assert_create_object_validation(
-            data={'id': '1'},
+            data={'id': '1',
+                  'is_public': False,
+                  'is_protected': False},
             bad_req_i=(1, "VALIDATION_ERROR",
                        "Additional properties are not allowed "
                        "('id' was unexpected)"))

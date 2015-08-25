@@ -13,19 +13,28 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+
+from sahara import context
 import sahara.exceptions as ex
 from sahara.i18n import _
 import sahara.plugins.base as plugin_base
 import sahara.service.api as api
+from sahara.service.validations import acl
 import sahara.service.validations.base as b
 from sahara.utils import cluster as c_u
 
 
 def check_cluster_scaling(data, cluster_id, **kwargs):
+    ctx = context.current()
     cluster = api.get_cluster(id=cluster_id)
+
     if cluster is None:
         raise ex.NotFoundException(
             {'id': cluster_id}, _('Object with %s not found'))
+
+    acl.check_tenant_for_update(ctx, cluster)
+    acl.check_protected_from_update(cluster, data)
+
     cluster_engine = cluster.sahara_info.get(
         'infrastructure_engine') if cluster.sahara_info else None
 

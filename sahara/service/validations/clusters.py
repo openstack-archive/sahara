@@ -15,9 +15,11 @@
 
 from oslo_config import cfg
 
+from sahara import context
 import sahara.exceptions as ex
 from sahara.i18n import _
 import sahara.service.api as api
+from sahara.service.validations import acl
 import sahara.service.validations.base as b
 
 
@@ -101,3 +103,10 @@ def _get_cluster_field(cluster, field):
             return cluster_template[field]
 
     return None
+
+
+def check_cluster_delete(cluster_id, **kwargs):
+    cluster = api.get_cluster(cluster_id)
+
+    acl.check_tenant_for_delete(context.current(), cluster)
+    acl.check_protected_from_delete(cluster)

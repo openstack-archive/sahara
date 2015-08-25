@@ -35,6 +35,12 @@ DATA_SOURCE_SCHEMA = {
         },
         "credentials": {
             "type": "object"
+        },
+        "is_public": {
+            "type": ["boolean", "null"],
+        },
+        "is_protected": {
+            "type": ["boolean", "null"],
         }
     },
     "additionalProperties": False,

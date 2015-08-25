@@ -431,3 +431,9 @@ class ValidationTestCase(base.SaharaTestCase):
                        "'813fe450-40d2-4acc-ade5-ea753a1bd5bc' "
                        "doesn't contain required tags: "
                        "['1.2.1']"))
+
+    def assert_protected_resource_exception(self, ex):
+        self.assertIn("marked as protected", six.text_type(ex))
+
+    def assert_created_in_another_tenant_exception(self, ex):
+        self.assertIn("wasn't created in this tenant", six.text_type(ex))

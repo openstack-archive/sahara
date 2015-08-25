@@ -31,7 +31,9 @@ class TestClusterUpdateValidation(u.ValidationTestCase):
     def test_cluster_update_types(self):
         self._assert_types({
             'name': 'cluster',
-            'description': 'very big cluster'
+            'description': 'very big cluster',
+            'is_public': False,
+            'is_protected': False
         })
 
     def test_cluster_update_nothing_required(self):
@@ -43,7 +45,9 @@ class TestClusterUpdateValidation(u.ValidationTestCase):
         self._assert_create_object_validation(
             data={
                 'name': 'cluster',
-                'description': 'very big cluster'
+                'description': 'very big cluster',
+                'is_public': False,
+                'is_protected': False
             }
         )
 

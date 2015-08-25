@@ -36,6 +36,7 @@ class TemplateDeleteTestCase(base.ConductorManagerTestCase):
 
     def test_node_group_template_delete_by_id(self):
         self.logger.clear_log()
+        self.setup_context(tenant_id=None)
         ctx = context.ctx()
         t = self.api.node_group_template_create(ctx, c.SAMPLE_NGT)
 
@@ -53,6 +54,7 @@ class TemplateDeleteTestCase(base.ConductorManagerTestCase):
 
     def test_node_group_template_delete_by_id_skipped(self):
         self.logger.clear_log()
+        self.setup_context(tenant_id=None)
         ctx = context.ctx()
         template_values = copy.copy(c.SAMPLE_NGT)
         template_values["is_default"] = False
@@ -163,6 +165,7 @@ class TemplateDeleteTestCase(base.ConductorManagerTestCase):
 
     def test_cluster_template_delete_by_id(self):
         self.logger.clear_log()
+        self.setup_context(tenant_id=None)
         ctx = context.ctx()
         t = self.api.cluster_template_create(ctx, c.SAMPLE_CLT)
 
