@@ -35,7 +35,6 @@ from sahara.topology import topology_helper as th
 import sahara.utils.configs as sahara_configs
 import sahara.utils.files as files
 
-
 LOG = logging.getLogger(__name__)
 conductor = conductor.API
 
@@ -89,6 +88,7 @@ class BaseConfigurer(ac.AbstractConfigurer):
         self._write_config_files(cluster_context, existing)
         self._update_services(cluster_context, existing)
         self._restart_services(cluster_context)
+        self._update_cluster_info(cluster_context)
         LOG.info(_LI('Existing instances successfully configured'))
 
     def _configure_services(self, cluster_context, instances):
@@ -216,14 +216,21 @@ class BaseConfigurer(ac.AbstractConfigurer):
         LOG.debug('Updating UI information.')
         info = {}
         for service in cluster_context.cluster_services:
-            for uri_info in service.ui_info:
-                title, process, url = uri_info
-                instance = cluster_context.get_instance(process)
-                info.update({
-                    title: {
-                        'WebUI': url % instance.management_ip
-                    }
-                })
+            for title, node_process, url_template in service.ui_info:
+                removed = cluster_context.removed_instances(node_process)
+                instances = cluster_context.get_instances(node_process)
+                instances = [i for i in instances if i not in removed]
+
+                if len(instances) == 1:
+                    display_name_template = "%(title)s"
+                else:
+                    display_name_template = "%(title)s %(index)s"
+
+                for index, instance in enumerate(instances, start=1):
+                    args = {"title": title, "index": index}
+                    display_name = display_name_template % args
+                    url = url_template % instance.management_ip
+                    info.update({display_name: {"WebUI": url}})
 
         ctx = context.ctx()
         conductor.cluster_update(ctx, cluster_context.cluster, {'info': info})
@@ -299,10 +306,10 @@ class BaseConfigurer(ac.AbstractConfigurer):
         util.execute_on_instances(instances, keep_alive_connection)
 
     def mapr_user_exists(self, instance):
-            with instance.remote() as r:
-                ec, out = r.execute_command(
-                    'id -u mapr', run_as_root=True, raise_when_error=False)
-            return ec == 0
+        with instance.remote() as r:
+            ec, __ = r.execute_command(
+                "id -u mapr", run_as_root=True, raise_when_error=False)
+        return ec == 0
 
     def post_start(self, c_context, instances=None):
         instances = instances or c_context.get_instances()
