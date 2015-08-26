@@ -65,10 +65,23 @@ section `How to write scenario files`_.
 Template variables
 ------------------
 The variables used in the Mako template files are replaced with the values from a
-INI-style file, whose name is passed to the test runner through the ``-V`` parameter.
+config file, whose name is passed to the test runner through the ``-V`` parameter.
 
-Format of recording variables:
-    ``OS_USERNAME: admin``
+The format of the config file is an INI-style file, as accepted by the Python
+ConfigParser module. The key/values must be specified in the DEFAULT section.
+
+Example of template variables file:
+.. sourcecode:: ini
+
+    [DEFAULT]
+    OS_USERNAME: demo
+    OS_TENANT_NAME: demo
+    OS_PASSWORD: foobar
+    ...
+    network_type: neutron
+    ...
+
+..
 
 Variables and sahara-ci templates
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
