@@ -42,7 +42,7 @@ network_type: ${NETWORK}
 network_private_name: ${PRIVATE_NETWORK_NAME}
 network_public_name: ${PUBLIC_NETWORK_NAME}
 fake_plugin_image: ${SAHARA_FAKE_PLUGIN_IMAGE_NAME}
-ci_flavor_id: '2'
+ci_flavor_id: '1'
 cluster_name: fake-cluster
 EOF
 

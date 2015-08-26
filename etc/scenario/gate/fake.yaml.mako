@@ -11,7 +11,7 @@ clusters:
           - datanode
           - tasktracker
         volumes_per_node: 2
-        volumes_size: 2
+        volumes_size: 1
         auto_security_group: true
       - name: worker
         flavor: ${ci_flavor_id}
@@ -19,7 +19,7 @@ clusters:
           - datanode
           - jobtracker
         volumes_per_node: 2
-        volumes_size: 2
+        volumes_size: 1
         auto_security_group: true
     cluster_template:
       name: fake01
