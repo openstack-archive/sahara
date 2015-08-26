@@ -46,6 +46,13 @@ HUE = np.NodeProcess(
     open_ports=[8002, 8888]
 )
 
+HUE_LIVY = np.NodeProcess(
+    name="hue-livy",
+    ui_name="Hue Livy",
+    package="mapr-hue-livy",
+    open_ports=[8998]
+)
+
 
 @six.add_metaclass(s.Single)
 class Hue(s.Service):
@@ -214,3 +221,13 @@ class HueV370(Hue):
     def __init__(self):
         super(HueV370, self).__init__()
         self._version = '3.7.0'
+
+
+@six.add_metaclass(s.Single)
+class HueV381(Hue):
+    def __init__(self):
+        super(HueV381, self).__init__()
+        self._version = "3.8.1"
+        self._dependencies = [("mapr-hue-base", self.version)]
+        self._node_processes = [HUE, HUE_LIVY]
+        self._validation_rules.append(vu.at_most(1, HUE_LIVY))
