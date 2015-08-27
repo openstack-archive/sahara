@@ -42,8 +42,9 @@ def init_instances_ips(instance):
     management_ip = None
     internal_ip = None
 
-    for network_label, addresses in six.iteritems(server.addresses):
-        for address in addresses:
+    for addresses in six.itervalues(server.addresses):
+        # selects IPv4 preferentially
+        for address in sorted(addresses, key=lambda addr: addr['version']):
             if address['OS-EXT-IPS:type'] == 'fixed':
                 internal_ip = internal_ip or address['addr']
             else:
