@@ -86,8 +86,6 @@ class EdpSparkEngine(edp_spark_engine.SparkJobEngine):
         self.plugin_params["master"] = "yarn-cluster"
         driver_cp = u.get_config_value_or_default(
             "Spark", "Executor extra classpath", self.cluster)
-        if driver_cp:
-            driver_cp = " --driver-class-path " + driver_cp
         self.plugin_params["driver-class-path"] = driver_cp
 
     @staticmethod
