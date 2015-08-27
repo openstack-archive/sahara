@@ -169,6 +169,9 @@ def start_cluster(cluster):
     if len(CU.pu.get_jns(cluster)) > 0:
         CU.enable_namenode_ha(cluster)
 
+    if CU.pu.get_stdb_rm(cluster):
+        CU.enable_resourcemanager_ha(cluster)
+
     _finish_cluster_starting(cluster)
 
 
@@ -182,6 +185,7 @@ def get_open_ports(node_group):
         'HDFS_SECONDARYNAMENODE': [50090, 50495],
         'HDFS_DATANODE': [50010, 1004, 50075, 1006, 50020],
         'YARN_RESOURCEMANAGER': [8030, 8031, 8032, 8033, 8088],
+        'YARN_STANDBYRM': [8030, 8031, 8032, 8033, 8088],
         'YARN_NODEMANAGER': [8040, 8041, 8042],
         'YARN_JOBHISTORY': [10020, 19888],
         'HIVE_METASTORE': [9083],

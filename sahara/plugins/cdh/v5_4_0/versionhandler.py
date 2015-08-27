@@ -70,7 +70,8 @@ class VersionHandler(avm.AbstractVersionHandler):
             "KMS": ['KMS'],
             "YARN_GATEWAY": [],
             "HDFS_GATEWAY": [],
-            "JOURNALNODE": ['HDFS_JOURNALNODE']
+            "JOURNALNODE": ['HDFS_JOURNALNODE'],
+            "STANDBYRESOURCEMANAGER": ['YARN_STANDBYRM']
         }
 
     def validate(self, cluster):

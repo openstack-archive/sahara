@@ -274,7 +274,8 @@ class ClouderaUtils(object):
             self._add_role(instance, role, cluster)
 
     def _add_role(self, instance, process, cluster):
-        if process in ['CLOUDERA_MANAGER', 'HDFS_JOURNALNODE']:
+        if process in ['CLOUDERA_MANAGER', 'HDFS_JOURNALNODE',
+                       'YARN_STANDBYRM']:
             return
 
         process = self.pu.convert_role_showname(process)
