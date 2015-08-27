@@ -148,3 +148,19 @@ in module ``sahara/utils/cluster_progress_ops.py``.
 
 .. note::
     It's strictly recommended to use ``event_wrapper`` for events handling
+
+OpenStack client usage guidelines
+---------------------------------
+
+The sahara project uses several OpenStack clients internally. These clients
+are all wrapped by utility functions which make using them more convenient.
+When developing sahara, if you need to use a OpenStack client you should
+check the ``sahara.utils.openstack`` package for the appropriate one.
+
+When developing new OpenStack client interactions in sahara, it is important
+to understand the ``sahara.service.sessions`` package and the usage of
+keystone ``Session`` and auth plugin objects(for example, ``Token`` or
+``Password``). Sahara is migrating all clients to use this authentication
+methodology, where available. For more information on using sessions with
+keystone, please see
+http://docs.openstack.org/developer/python-keystoneclient/using-sessions.html
