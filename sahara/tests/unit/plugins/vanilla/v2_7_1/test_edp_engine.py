@@ -15,7 +15,7 @@
 
 import mock
 
-from sahara.plugins.vanilla.v2_6_0 import edp_engine
+from sahara.plugins.vanilla.v2_7_1 import edp_engine
 from sahara.tests.unit import base as sahara_base
 from sahara.utils import edp
 
@@ -31,7 +31,7 @@ class Vanilla2ConfigHintsTest(sahara_base.SaharaTestCase):
         actual_config = edp_engine.EdpOozieEngine.get_possible_job_config(
             edp.JOB_TYPE_HIVE)
         get_possible_hive_config_from.assert_called_once_with(
-            'plugins/vanilla/v2_6_0/resources/hive-default.xml')
+            'plugins/vanilla/v2_7_1/resources/hive-default.xml')
         self.assertEqual(expected_config, actual_config)
 
     @mock.patch('sahara.plugins.vanilla.hadoop2.edp_engine.EdpOozieEngine')
@@ -55,7 +55,7 @@ class Vanilla2ConfigHintsTest(sahara_base.SaharaTestCase):
         actual_config = edp_engine.EdpOozieEngine.get_possible_job_config(
             edp.JOB_TYPE_MAPREDUCE)
         get_possible_mapreduce_config_from.assert_called_once_with(
-            'plugins/vanilla/v2_6_0/resources/mapred-default.xml')
+            'plugins/vanilla/v2_7_1/resources/mapred-default.xml')
         self.assertEqual(expected_config, actual_config)
 
     @mock.patch(
@@ -68,7 +68,7 @@ class Vanilla2ConfigHintsTest(sahara_base.SaharaTestCase):
         actual_config = edp_engine.EdpOozieEngine.get_possible_job_config(
             edp.JOB_TYPE_MAPREDUCE_STREAMING)
         get_possible_mapreduce_config_from.assert_called_once_with(
-            'plugins/vanilla/v2_6_0/resources/mapred-default.xml')
+            'plugins/vanilla/v2_7_1/resources/mapred-default.xml')
         self.assertEqual(expected_config, actual_config)
 
     @mock.patch(
@@ -81,7 +81,7 @@ class Vanilla2ConfigHintsTest(sahara_base.SaharaTestCase):
         actual_config = edp_engine.EdpOozieEngine.get_possible_job_config(
             edp.JOB_TYPE_PIG)
         get_possible_pig_config_from.assert_called_once_with(
-            'plugins/vanilla/v2_6_0/resources/mapred-default.xml')
+            'plugins/vanilla/v2_7_1/resources/mapred-default.xml')
         self.assertEqual(expected_config, actual_config)
 
     @mock.patch('sahara.plugins.vanilla.hadoop2.edp_engine.EdpOozieEngine')

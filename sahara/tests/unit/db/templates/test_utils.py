@@ -59,29 +59,29 @@ class TemplateUtilsTestCase(base.ConductorManagerTestCase):
     def test_check_plugin_version(self):
 
         template = {"plugin_name": "vanilla",
-                    "hadoop_version": "2.6.0"}
+                    "hadoop_version": "2.7.1"}
 
         self.assertTrue(utils.check_plugin_version(template, None))
-        self.assertTrue(utils.check_plugin_version(template, ["2.6.0"]))
+        self.assertTrue(utils.check_plugin_version(template, ["2.7.1"]))
         self.assertTrue(utils.check_plugin_version(template,
-                                                   ["vanilla.2.6.0"]))
+                                                   ["vanilla.2.7.1"]))
         self.assertFalse(utils.check_plugin_version(template, ["1.2.1"]))
 
     def test_check_plugin_name_and_version(self):
 
         template = {"plugin_name": "vanilla",
-                    "hadoop_version": "2.6.0"}
+                    "hadoop_version": "2.7.1"}
 
         self.assertTrue(utils.check_plugin_name_and_version(
-            template, None, ["2.6.0"]))
+            template, None, ["2.7.1"]))
         self.assertTrue(utils.check_plugin_name_and_version(
             template, ["vanilla"], None))
         self.assertTrue(utils.check_plugin_name_and_version(
-            template, ["vanilla"], ["2.6.0"]))
+            template, ["vanilla"], ["2.7.1"]))
         self.assertTrue(utils.check_plugin_name_and_version(
-            template, ["vanilla"], ["vanilla.2.6.0"]))
+            template, ["vanilla"], ["vanilla.2.7.1"]))
         self.assertFalse(utils.check_plugin_name_and_version(
-            template, ["hdp"], ["2.6.0"]))
+            template, ["hdp"], ["2.7.1"]))
 
     def test_check_node_group_template_usage(self):
 

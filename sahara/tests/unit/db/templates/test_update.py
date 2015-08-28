@@ -29,7 +29,7 @@ from sahara.tests.unit.db.templates import common as c
 
 cluster_json = {
     "plugin_name": "vanilla",
-    "hadoop_version": "2.6.0",
+    "hadoop_version": "2.7.1",
     "node_groups": [
         {
             "name": "worker",
@@ -49,7 +49,7 @@ cluster_json = {
 
 master_json = {
     "plugin_name": "vanilla",
-    "hadoop_version": "2.6.0",
+    "hadoop_version": "2.7.1",
     "node_processes": [
         "namenode",
         "resourcemanager",
@@ -64,7 +64,7 @@ master_json = {
 
 worker_json = {
     "plugin_name": "vanilla",
-    "hadoop_version": "2.6.0",
+    "hadoop_version": "2.7.1",
     "node_processes": [
         "nodemanager",
         "datanode"
@@ -262,7 +262,7 @@ class TemplateUpdateTestCase(base.ConductorManagerTestCase):
 
         # Plugin name/version filtering applied
         option_values = {"plugin_name": "vanilla",
-                         "plugin_version": "2.6.0"}
+                         "plugin_version": "2.7.1"}
         template_api.set_conf(Config(option_values))
         ng_templates, cl_templates = template_api.process_files(tempdir, files)
         self.assertEqual(1, len(cl_templates))
@@ -276,7 +276,7 @@ class TemplateUpdateTestCase(base.ConductorManagerTestCase):
         self.assertEqual(0, len(ng_templates))
 
         option_values = {"plugin_name": "hdp",
-                         "plugin_version": "2.6.0"}
+                         "plugin_version": "2.7.1"}
         template_api.set_conf(Config(option_values))
         ng_templates, cl_templates = template_api.process_files(tempdir, files)
         self.assertEqual(0, len(cl_templates))

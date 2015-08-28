@@ -12,8 +12,8 @@ network:
 
 clusters:
     - plugin_name: vanilla
-      plugin_version: 2.6.0
-      image: sahara-juno-vanilla-2.6.0-ubuntu-14.04
+      plugin_version: 2.7.1
+      image: sahara-liberty-vanilla-2.7.1-ubuntu-14.04
       edp_jobs_flow: test_flow
     - plugin_name: hdp
       plugin_version: 2.0.6
@@ -48,7 +48,7 @@ edp_jobs_flow:
         - type: Java
           additional_libs:
               - type: database
-                source: etc/edp-examples/hadoop2/edp-java/hadoop-mapreduce-examples-2.6.0.jar
+                source: etc/edp-examples/hadoop2/edp-java/hadoop-mapreduce-examples-2.7.1.jar
           configs:
               edp.java.main_class: org.apache.hadoop.examples.QuasiMonteCarlo
           args:

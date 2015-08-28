@@ -32,7 +32,7 @@ class VanillaPluginTest(base.SaharaWithDbTestCase):
 
     @mock.patch('sahara.service.edp.hdfs_helper.create_dir_hadoop2')
     def test_edp_calls_hadoop2_create_dir(self, create_dir):
-        for version in ['2.6.0']:
+        for version in ['2.7.1']:
             cluster_dict = {
                 'name': 'cluster' + version.replace('.', '_'),
                 'plugin_name': 'vanilla',

@@ -1,6 +1,6 @@
 clusters:
   - plugin_name: vanilla
-    plugin_version: 2.6.0
+    plugin_version: 2.7.1
     image: ${vanilla_two_six_image}
     node_group_templates:
       - name: worker-dn-nm
@@ -55,7 +55,7 @@ clusters:
         node_configs:
           *ng_configs
     cluster_template:
-      name: vanilla260
+      name: vanilla271
       node_group_templates:
         master-rm-nn-hvs: 1
         master-oo-hs-sn: 1
