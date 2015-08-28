@@ -95,6 +95,20 @@ edp_jobs_flow:
         edp.java.main_class: org.apache.spark.examples.SparkPi
       args:
         - 4
+    - type: Spark
+      input_datasource:
+        type: swift
+        source: etc/edp-examples/edp-spark/sample_input.txt
+      main_lib:
+        type: database
+        source: etc/edp-examples/edp-spark/spark-wordcount.jar
+      configs:
+        edp.java.main_class: sahara.edp.spark.SparkWordCount
+        edp.spark.adapt_for_swift: true
+        fs.swift.service.sahara.username: ${OS_USERNAME}
+        fs.swift.service.sahara.password: ${OS_PASSWORD}
+      args:
+        - '{input_datasource}'
   transient:
     - type: Pig
       input_datasource:
@@ -155,5 +169,3 @@ edp_jobs_flow:
       args:
         - 10
         - 10
-
-
