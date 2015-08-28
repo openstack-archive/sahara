@@ -275,4 +275,4 @@ Delete a specific node group template by name::
 
 Delete a specific cluster template by name::
 
-  $ sahara-templates --config-file myconfig cluster-template-delete-id --name NAME -t $TENANT_ID
+  $ sahara-templates --config-file myconfig cluster-template-delete --name NAME -t $TENANT_ID
