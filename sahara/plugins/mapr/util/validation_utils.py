@@ -38,6 +38,22 @@ class LessThanCountException(e.InvalidComponentCountException):
         self.message = LessThanCountException.MESSAGE % args
 
 
+class MoreThanCountException(e.InvalidComponentCountException):
+    MESSAGE = _("Hadoop cluster should contain at most"
+                " %(expected_count)d %(component)s component(s)."
+                " Actual %(component)s count is %(actual_count)d")
+
+    def __init__(self, component, expected_count, count):
+        super(MoreThanCountException, self).__init__(
+            component, expected_count, count)
+        args = {
+            "expected_count": expected_count,
+            "component": component,
+            "actual_count": count,
+        }
+        self.message = MoreThanCountException.MESSAGE % args
+
+
 class EvenCountException(ex.SaharaException):
     MESSAGE = _("Hadoop cluster should contain odd number of %(component)s"
                 " but %(actual_count)s found.")
@@ -94,6 +110,16 @@ def at_least(count, component):
         actual_count = cluster_context.get_instances_count(component)
         if not actual_count >= count:
             raise LessThanCountException(
+                component.ui_name, count, actual_count)
+
+    return ft.partial(validate, component=component, count=count)
+
+
+def at_most(count, component):
+    def validate(cluster_context, component, count):
+        actual_count = cluster_context.get_instances_count(component)
+        if actual_count > count:
+            raise MoreThanCountException(
                 component.ui_name, count, actual_count)
 
     return ft.partial(validate, component=component, count=count)
