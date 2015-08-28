@@ -74,8 +74,8 @@ nodes and racks in the following format:
 .. sourcecode:: cfg
 
     compute1 /rack1
-    compute1 /rack2
-    compute1 /rack2
+    compute2 /rack2
+    compute3 /rack2
 
 Note that the Compute node names must be exactly the same as configured in
 OpenStack (``host`` column in admin list for instances).
