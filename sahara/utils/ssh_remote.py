@@ -31,6 +31,7 @@ and eventlet together. The private high-level module methods are
 implementations which are run in a separate process.
 """
 
+import copy
 import os
 import shlex
 import sys
@@ -551,7 +552,9 @@ class InstanceInteropHelper(remote.Remote):
         neutron_info['tenant'] = ctx.tenant_name
         neutron_info['host'] = instance.management_ip
 
-        LOG.debug('Returning neutron info: {info}'.format(info=neutron_info))
+        log_info = copy.deepcopy(neutron_info)
+        del log_info['token']
+        LOG.debug('Returning neutron info: {info}'.format(info=log_info))
         return neutron_info
 
     def _build_proxy_command(self, command, instance=None, port=None,
