@@ -20,11 +20,12 @@ from sahara.utils.openstack import neutron as neutron_client
 
 
 class NeutronClientTest(testtools.TestCase):
+    @mock.patch("sahara.utils.openstack.keystone.token_auth")
     @mock.patch("neutronclient.neutron.client.Client")
-    def test_get_router(self, patched):
+    def test_get_router(self, patched, token_auth):
         patched.side_effect = _test_get_neutron_client
         neutron = neutron_client.NeutronClient(
-            '33b47310-b7a8-4559-bf95-45ba669a448e', None, None, None)
+            '33b47310-b7a8-4559-bf95-45ba669a448e', None, None)
         self.assertEqual('6c4d4e32-3667-4cd4-84ea-4cc1e98d18be',
                          neutron.get_router())
 

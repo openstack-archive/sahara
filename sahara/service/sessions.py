@@ -30,6 +30,7 @@ _SESSION_CACHE = None
 SESSION_TYPE_CINDER = 'cinder'
 SESSION_TYPE_GENERIC = 'generic'
 SESSION_TYPE_KEYSTONE = 'keystone'
+SESSION_TYPE_NEUTRON = 'neutron'
 SESSION_TYPE_NOVA = 'nova'
 
 
@@ -59,6 +60,7 @@ class SessionCache(object):
             SESSION_TYPE_CINDER: self.get_cinder_session,
             SESSION_TYPE_GENERIC: self.get_generic_session,
             SESSION_TYPE_KEYSTONE: self.get_keystone_session,
+            SESSION_TYPE_NEUTRON: self.get_neutron_session,
             SESSION_TYPE_NOVA: self.get_nova_session,
         }
 
@@ -118,6 +120,17 @@ class SessionCache(object):
             else:
                 session = self.get_generic_session()
             self._set_session(SESSION_TYPE_KEYSTONE, session)
+        return session
+
+    def get_neutron_session(self):
+        session = self._sessions.get(SESSION_TYPE_NEUTRON)
+        if not session:
+            if CONF.neutron.ca_file:
+                session = keystone.Session(cert=CONF.neutron.ca_file,
+                                           verify=CONF.neutron.api_insecure)
+            else:
+                session = self.get_generic_session()
+            self._set_session(SESSION_TYPE_NEUTRON, session)
         return session
 
     def get_nova_session(self):

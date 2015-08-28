@@ -91,3 +91,23 @@ class TestSessionCache(base.SaharaTestCase):
         keystone_session.reset_mock()
         sc.get_session(sessions.SESSION_TYPE_CINDER)
         self.assertFalse(keystone_session.called)
+
+    @mock.patch('keystoneclient.session.Session')
+    def test_get_neutron_session(self, keystone_session):
+        sc = sessions.SessionCache()
+        self.override_config('ca_file', '/some/cacert', group='neutron')
+        self.override_config('api_insecure', True, group='neutron')
+        sc.get_session(sessions.SESSION_TYPE_NEUTRON)
+        keystone_session.assert_called_once_with(cert='/some/cacert',
+                                                 verify=True)
+
+        sc = sessions.SessionCache()
+        keystone_session.reset_mock()
+        self.override_config('ca_file', None, group='neutron')
+        self.override_config('api_insecure', None, group='neutron')
+        sc.get_session(sessions.SESSION_TYPE_NEUTRON)
+        keystone_session.assert_called_once_with()
+
+        keystone_session.reset_mock()
+        sc.get_session(sessions.SESSION_TYPE_NEUTRON)
+        self.assertFalse(keystone_session.called)

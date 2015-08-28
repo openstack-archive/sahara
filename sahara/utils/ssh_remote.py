@@ -55,7 +55,6 @@ from sahara import exceptions as ex
 from sahara.i18n import _
 from sahara.i18n import _LE
 from sahara.utils import crypto
-from sahara.utils.openstack import base
 from sahara.utils.openstack import neutron
 from sahara.utils import procutils
 from sahara.utils import remote
@@ -546,7 +545,6 @@ class InstanceInteropHelper(remote.Remote):
         neutron_info = dict()
         neutron_info['network'] = instance.cluster.neutron_management_network
         ctx = context.current()
-        neutron_info['uri'] = base.url_for(ctx.service_catalog, 'network')
         neutron_info['token'] = ctx.auth_token
         neutron_info['tenant'] = ctx.tenant_name
         neutron_info['host'] = instance.management_ip
@@ -569,8 +567,8 @@ class InstanceInteropHelper(remote.Remote):
 
         # Query Neutron only if needed
         if '{router_id}' in command:
-            client = neutron.NeutronClient(info['network'], info['uri'],
-                                           info['token'], info['tenant'])
+            client = neutron.NeutronClient(info['network'], info['token'],
+                                           info['tenant'])
             keywords['router_id'] = client.get_router()
 
         keywords['host'] = instance.management_ip

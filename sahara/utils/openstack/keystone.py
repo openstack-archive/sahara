@@ -77,7 +77,8 @@ CONF.register_opts(ssl_opts, group=keystone_group)
 def auth():
     '''Return a token auth plugin for the current context.'''
     ctx = context.current()
-    return ctx.auth_plugin or _token_auth(ctx.auth_token, ctx.tenant_id)
+    return ctx.auth_plugin or token_auth(token=ctx.auth_token,
+                                         project_id=ctx.tenant_id)
 
 
 def auth_for_admin(project_name=None, trust_id=None):
@@ -188,6 +189,36 @@ def session_for_admin():
     return keystone_session.Session(auth=auth)
 
 
+def token_auth(token, project_id=None, project_name=None,
+               project_domain_name='Default'):
+    '''Return a token auth plugin object.
+
+    :param token: the token to use for authentication.
+
+    :param project_id: the project(ex. tenant) id to scope the auth.
+
+    :returns: a token auth plugin object.
+    '''
+    token_kwargs = dict(
+        auth_url=base.retrieve_auth_url(),
+        token=token
+    )
+    if CONF.use_identity_api_v3:
+        token_kwargs.update(dict(
+            project_id=project_id,
+            project_name=project_name,
+            project_domain_name=project_domain_name,
+        ))
+        auth = keystone_identity.v3.Token(**token_kwargs)
+    else:
+        token_kwargs.update(dict(
+            tenant_id=project_id,
+            tenant_name=project_name,
+        ))
+        auth = keystone_identity.v2.Token(**token_kwargs)
+    return auth
+
+
 def token_from_auth(auth):
     '''Return an authentication token from an auth plugin.
 
@@ -277,31 +308,4 @@ def _password_auth(username, password, project_name, user_domain_name=None,
             trust_id=trust_id
         ))
         auth = keystone_identity.v2.Password(**passwd_kwargs)
-    return auth
-
-
-def _token_auth(token, project_id, project_domain_name='Default'):
-    '''Return a token auth plugin object.
-
-    :param token: the token to use for authentication.
-
-    :param project_id: the project(ex. tenant) id to scope the auth.
-
-    :returns: a token auth plugin object.
-    '''
-    token_kwargs = dict(
-        auth_url=base.retrieve_auth_url(),
-        token=token
-    )
-    if CONF.use_identity_api_v3:
-        token_kwargs.update(dict(
-            project_id=project_id,
-            project_domain_name=project_domain_name,
-        ))
-        auth = keystone_identity.v3.Token(**token_kwargs)
-    else:
-        token_kwargs.update(dict(
-            tenant_id=project_id
-        ))
-        auth = keystone_identity.v2.Token(**token_kwargs)
     return auth
