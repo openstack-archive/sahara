@@ -45,9 +45,10 @@ class TestCinder(test_base.SaharaTestCase):
             username=username, tenant_id=tenant_id, token=token,
             tenant_name=tenant_name, service_catalog=service_catalog, **kwargs)
 
+    @mock.patch('sahara.utils.openstack.keystone.auth')
     @mock.patch('cinderclient.v2.client.Client')
     @mock.patch('cinderclient.v1.client.Client')
-    def test_get_cinder_client_api_v1(self, patched1, patched2):
+    def test_get_cinder_client_api_v1(self, patched1, patched2, auth):
         self.override_config('api_version', 1, group='cinder')
         patched1.return_value = FakeCinderClient(1)
         patched2.return_value = FakeCinderClient(2)
@@ -55,9 +56,10 @@ class TestCinder(test_base.SaharaTestCase):
         client = cinder.client()
         self.assertEqual(1, client.client.api_version)
 
+    @mock.patch('sahara.utils.openstack.keystone.auth')
     @mock.patch('cinderclient.v2.client.Client')
     @mock.patch('cinderclient.v1.client.Client')
-    def test_get_cinder_client_api_v2(self, patched1, patched2):
+    def test_get_cinder_client_api_v2(self, patched1, patched2, auth):
         self.override_config('api_version', 2, group='cinder')
         patched1.return_value = FakeCinderClient(1)
         patched2.return_value = FakeCinderClient(2)
