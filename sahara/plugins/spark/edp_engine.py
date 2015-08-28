@@ -49,6 +49,10 @@ class EdpEngine(edp_engine.SparkJobEngine):
     def edp_supported(version):
         return version >= EdpEngine.edp_base_version
 
+    @staticmethod
+    def job_type_supported(job_type):
+        return job_type in edp_engine.SparkJobEngine.get_supported_job_types()
+
     def validate_job_execution(self, cluster, job, data):
         if not self.edp_supported(cluster.hadoop_version):
             raise ex.InvalidDataException(

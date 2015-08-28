@@ -30,6 +30,7 @@ from sahara.plugins.spark import config_helper as c_helper
 from sahara.plugins.spark import edp_engine
 from sahara.plugins.spark import run_scripts as run
 from sahara.plugins.spark import scaling as sc
+from sahara.plugins.spark import shell_engine
 from sahara.plugins import utils
 from sahara.topology import topology_helper as th
 from sahara.utils import cluster_progress_ops as cpo
@@ -491,8 +492,11 @@ class SparkProvider(p.ProvisioningPluginBase):
                 rep_factor)
 
     def get_edp_engine(self, cluster, job_type):
-        if job_type in edp_engine.EdpEngine.get_supported_job_types():
+        if edp_engine.EdpEngine.job_type_supported(job_type):
             return edp_engine.EdpEngine(cluster)
+
+        if shell_engine.ShellEngine.job_type_supported(job_type):
+            return shell_engine.ShellEngine(cluster)
 
         return None
 
@@ -500,13 +504,22 @@ class SparkProvider(p.ProvisioningPluginBase):
         res = {}
         for vers in self.get_versions():
             if not versions or vers in versions:
+                res[vers] = shell_engine.ShellEngine.get_supported_job_types()
+
                 if edp_engine.EdpEngine.edp_supported(vers):
-                    res[vers] = edp_engine.EdpEngine.get_supported_job_types()
+                    res[vers].extend(
+                        edp_engine.EdpEngine.get_supported_job_types())
+
         return res
 
     def get_edp_config_hints(self, job_type, version):
-        if edp_engine.EdpEngine.edp_supported(version):
+        if (edp_engine.EdpEngine.edp_supported(version) and
+                edp_engine.EdpEngine.job_type_supported(job_type)):
             return edp_engine.EdpEngine.get_possible_job_config(job_type)
+
+        if shell_engine.ShellEngine.job_type_supported(job_type):
+            return shell_engine.ShellEngine.get_possible_job_config(job_type)
+
         return {}
 
     def get_open_ports(self, node_group):
