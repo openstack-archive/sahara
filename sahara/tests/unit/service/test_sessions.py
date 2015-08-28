@@ -14,6 +14,7 @@
 # limitations under the License.
 
 from keystoneclient import session as keystone
+import mock
 
 from sahara import exceptions as ex
 from sahara.service import sessions
@@ -23,11 +24,50 @@ from sahara.tests.unit import base
 class TestSessionCache(base.SaharaTestCase):
 
     def test_get_session(self):
-        sc = sessions.cache()
-
+        sc = sessions.SessionCache()
         session = sc.get_session()
         self.assertTrue(isinstance(session, keystone.Session))
 
         self.assertRaises(ex.SaharaException,
                           sc.get_session,
                           session_type='bad service')
+
+    @mock.patch('keystoneclient.session.Session')
+    def test_get_keystone_session(self, keystone_session):
+        sc = sessions.SessionCache()
+        self.override_config('ca_file', '/some/cacert', group='keystone')
+        self.override_config('api_insecure', True, group='keystone')
+        sc.get_session(sessions.SESSION_TYPE_KEYSTONE)
+        keystone_session.assert_called_once_with(cert='/some/cacert',
+                                                 verify=True)
+
+        sc = sessions.SessionCache()
+        keystone_session.reset_mock()
+        self.override_config('ca_file', None, group='keystone')
+        self.override_config('api_insecure', None, group='keystone')
+        sc.get_session(sessions.SESSION_TYPE_KEYSTONE)
+        keystone_session.assert_called_once_with()
+
+        keystone_session.reset_mock()
+        sc.get_session(sessions.SESSION_TYPE_KEYSTONE)
+        self.assertFalse(keystone_session.called)
+
+    @mock.patch('keystoneclient.session.Session')
+    def test_get_nova_session(self, keystone_session):
+        sc = sessions.SessionCache()
+        self.override_config('ca_file', '/some/cacert', group='nova')
+        self.override_config('api_insecure', True, group='nova')
+        sc.get_session(sessions.SESSION_TYPE_NOVA)
+        keystone_session.assert_called_once_with(cert='/some/cacert',
+                                                 verify=True)
+
+        sc = sessions.SessionCache()
+        keystone_session.reset_mock()
+        self.override_config('ca_file', None, group='nova')
+        self.override_config('api_insecure', None, group='nova')
+        sc.get_session(sessions.SESSION_TYPE_NOVA)
+        keystone_session.assert_called_once_with()
+
+        keystone_session.reset_mock()
+        sc.get_session(sessions.SESSION_TYPE_NOVA)
+        self.assertFalse(keystone_session.called)
