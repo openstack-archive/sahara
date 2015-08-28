@@ -258,7 +258,7 @@ class ClusterStack(object):
             if ng.floating_ip_pool:
                 resources.update(self._serialize_nova_floating(ng))
 
-            if ng.security_groups:
+            if ng.security_groups or ng.auto_security_group:
                 properties["security_groups"] = self._get_security_groups(ng)
 
         # Check if cluster contains user key-pair and include it to template.
