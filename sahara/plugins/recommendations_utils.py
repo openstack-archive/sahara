@@ -29,7 +29,7 @@ LOG = logging.getLogger(__name__)
 
 @six.add_metaclass(abc.ABCMeta)
 class AutoConfigsProvider(object):
-    def __init__(self, mapper, plugin_configs, cluster):
+    def __init__(self, mapper, plugin_configs, cluster, scaling):
         """This meta class provides general recommendation utils for cluster
 
         configuration.
@@ -42,11 +42,13 @@ class AutoConfigsProvider(object):
         with almost same configs and configuring principles.
         :param plugin_configs: all plugins_configs for specified plugin
         :param cluster: cluster which is required to configure
+        :param scaling: indicates that current cluster operation is scaling
         """
         self.plugin_configs = plugin_configs
         self.cluster = cluster
         self.node_configs_to_update = mapper.get('node_configs', {})
         self.cluster_configs_to_update = mapper.get('cluster_configs', {})
+        self.scaling = scaling
 
     @abc.abstractmethod
     def _get_recommended_node_configs(self, node_group):
@@ -146,6 +148,18 @@ class AutoConfigsProvider(object):
                 result.update({section: configs})
         return result
 
+    def _get_cluster_extra(self):
+        cluster = self.cluster
+        return cluster.extra.to_dict() if cluster.extra else {}
+
+    def finalize_autoconfiguration(self):
+        if not self.cluster.use_autoconfig:
+            return
+        cluster_extra = self._get_cluster_extra()
+        cluster_extra['auto-configured'] = True
+        conductor.cluster_update(
+            context.ctx(), self.cluster, {'extra': cluster_extra})
+
     def apply_node_configs(self, node_group):
         """Method applies configs for node_group using conductor api,
 
@@ -211,6 +225,13 @@ class AutoConfigsProvider(object):
         node_groups using conductor api.
         :return: None.
         """
+        if self.scaling:
+            # Validate cluster is not an old created cluster
+            cluster_extra = self._get_cluster_extra()
+            if 'auto-configured' not in cluster_extra:
+                # Don't configure
+                return
+
         for ng in self.cluster.node_groups:
             self.apply_node_configs(ng)
         self.apply_cluster_configs()
@@ -218,12 +239,13 @@ class AutoConfigsProvider(object):
         configs.extend(list(self.node_configs_to_update.keys()))
         LOG.debug("Following configs were auto-configured: {configs}".format(
             configs=configs))
+        self.finalize_autoconfiguration()
 
 
 class HadoopAutoConfigsProvider(AutoConfigsProvider):
-    def __init__(self, mapper, plugin_configs, cluster, hbase=False):
+    def __init__(self, mapper, plugin_configs, cluster, scaling, hbase=False):
         super(HadoopAutoConfigsProvider, self).__init__(
-            mapper, plugin_configs, cluster)
+            mapper, plugin_configs, cluster, scaling)
         self.requested_flavors = {}
         self.is_hbase_enabled = hbase
 

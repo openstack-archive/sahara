@@ -91,7 +91,7 @@ class ProvisioningPluginBase(plugins_base.PluginInterface):
         pass
 
     @plugins_base.optional
-    def recommend_configs(self, cluster):
+    def recommend_configs(self, cluster, scaling=False):
         pass
 
     def get_all_configs(self, hadoop_version):

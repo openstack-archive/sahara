@@ -78,7 +78,7 @@ def scale_cluster(id, data):
         cluster = c_u.change_cluster_status(
             cluster, c_u.CLUSTER_STATUS_VALIDATING)
         quotas.check_scaling(cluster, to_be_enlarged, additional)
-        plugin.recommend_configs(cluster)
+        plugin.recommend_configs(cluster, scaling=True)
         plugin.validate_scaling(cluster, to_be_enlarged, additional)
     except Exception as e:
         with excutils.save_and_reraise_exception():

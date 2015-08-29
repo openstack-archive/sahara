@@ -548,7 +548,7 @@ class SparkProvider(p.ProvisioningPluginBase):
 
         return ports
 
-    def recommend_configs(self, cluster):
+    def recommend_configs(self, cluster, scaling=False):
         want_to_configure = {
             'cluster_configs': {
                 'dfs.replication': ('HDFS', 'dfs.replication')
@@ -556,5 +556,5 @@ class SparkProvider(p.ProvisioningPluginBase):
         }
         provider = ru.HadoopAutoConfigsProvider(
             want_to_configure, self.get_configs(
-                cluster.hadoop_version), cluster)
+                cluster.hadoop_version), cluster, scaling)
         provider.apply_recommended_configs()

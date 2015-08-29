@@ -46,7 +46,7 @@ class TestProvidingRecommendations(b.SaharaWithDbTestCase):
         cl = FakeObject(cluster_configs=Configs({}))
         fake_flavor.return_value = FakeObject(ram=4096, vcpus=2)
         observed = ru.HadoopAutoConfigsProvider(
-            {}, [], cl)._get_recommended_node_configs(ng)
+            {}, [], cl, False)._get_recommended_node_configs(ng)
         self.assertEqual({
             'mapreduce.reduce.memory.mb': 768,
             'mapreduce.map.java.opts': '-Xmx307m',
@@ -68,7 +68,7 @@ class TestProvidingRecommendations(b.SaharaWithDbTestCase):
         cl = FakeObject(cluster_configs=Configs({}))
         fake_flavor.return_value = FakeObject(ram=2048, vcpus=1)
         observed = ru.HadoopAutoConfigsProvider(
-            {'node_configs': {}, 'cluster_configs': {}}, [], cl
+            {'node_configs': {}, 'cluster_configs': {}}, [], cl, False,
         )._get_recommended_node_configs(ng)
         self.assertEqual({
             'mapreduce.reduce.java.opts': '-Xmx409m',
@@ -85,7 +85,7 @@ class TestProvidingRecommendations(b.SaharaWithDbTestCase):
         }, observed)
 
     def test_merge_configs(self):
-        provider = ru.HadoopAutoConfigsProvider({}, None, None)
+        provider = ru.HadoopAutoConfigsProvider({}, None, None, False)
         initial_configs = {
             'cat': {
                 'talk': 'meow',
@@ -161,9 +161,10 @@ class TestProvidingRecommendations(b.SaharaWithDbTestCase):
             }),
             node_groups=[fake_ng],
             use_autoconfig=True,
+            extra=Configs({})
         )
         v = TestProvider(
-            to_tune, fake_plugin_configs, fake_cluster)
+            to_tune, fake_plugin_configs, fake_cluster, False)
 
         v.apply_recommended_configs()
         self.assertEqual([mock.call(context.ctx(), fake_cluster, {
@@ -175,7 +176,10 @@ class TestProvidingRecommendations(b.SaharaWithDbTestCase):
                     'replica': 2
                 }
             }
-        })], cond_cluster.call_args_list)
+        }), mock.call(
+            context.ctx(), fake_cluster,
+            {'extra': {'auto-configured': True}})],
+            cond_cluster.call_args_list)
         self.assertEqual([mock.call(context.ctx(), fake_ng, {
             'node_configs': {
                 'bond': {
@@ -224,12 +228,16 @@ class TestProvidingRecommendations(b.SaharaWithDbTestCase):
             }),
             node_groups=[fake_ng],
             use_autoconfig=True,
+            extra=Configs({})
         )
         v = ru.HadoopAutoConfigsProvider(
-            to_tune, fake_plugin_configs, fake_cluster)
+            to_tune, fake_plugin_configs, fake_cluster, False)
         v.apply_recommended_configs()
-        self.assertEqual(0, cond_cluster.call_count)
         self.assertEqual(0, cond_node_group.call_count)
+        self.assertEqual(
+            [mock.call(context.ctx(), fake_cluster,
+                       {'extra': {'auto-configured': True}})],
+            cond_cluster.call_args_list)
 
     def test_correct_use_autoconfig_value(self):
         ctx = context.ctx()
@@ -274,3 +282,11 @@ class TestProvidingRecommendations(b.SaharaWithDbTestCase):
                 self.assertTrue(ng.use_autoconfig)
             else:
                 self.assertFalse(ng.use_autoconfig)
+
+    @mock.patch('sahara.plugins.recommendations_utils.conductor.'
+                'cluster_update')
+    def test_not_autonconfigured(self, cluster_update):
+        fake_cluster = FakeObject(extra=Configs({}))
+        v = ru.HadoopAutoConfigsProvider({}, [], fake_cluster, True)
+        v.apply_recommended_configs()
+        self.assertEqual(0, cluster_update.call_count)

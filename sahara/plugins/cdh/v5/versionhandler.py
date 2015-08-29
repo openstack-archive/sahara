@@ -109,5 +109,5 @@ class VersionHandler(avm.AbstractVersionHandler):
     def get_open_ports(self, node_group):
         return dp.get_open_ports(node_group)
 
-    def recommend_configs(self, cluster):
-        PU.recommend_configs(cluster, self.get_plugin_configs())
+    def recommend_configs(self, cluster, scaling):
+        PU.recommend_configs(cluster, self.get_plugin_configs(), scaling)

@@ -88,6 +88,6 @@ class CDHPluginProvider(p.ProvisioningPluginBase):
         return self._get_version_handler(
             node_group.cluster.hadoop_version).get_open_ports(node_group)
 
-    def recommend_configs(self, cluster):
+    def recommend_configs(self, cluster, scaling=False):
         return self._get_version_handler(
-            cluster.hadoop_version).recommend_configs(cluster)
+            cluster.hadoop_version).recommend_configs(cluster, scaling)

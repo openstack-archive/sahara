@@ -16,7 +16,7 @@
 from sahara.plugins import recommendations_utils as ru
 
 
-def recommend_configs(cluster, plugin_configs):
+def recommend_configs(cluster, plugin_configs, scaling):
     yarn_configs = [
         'yarn.nodemanager.resource.memory-mb',
         'yarn.scheduler.minimum-allocation-mb',
@@ -44,5 +44,5 @@ def recommend_configs(cluster, plugin_configs):
     for yarn in yarn_configs:
         configs_to_configure['node_configs'][yarn] = ('YARN', yarn)
     provider = ru.HadoopAutoConfigsProvider(
-        configs_to_configure, plugin_configs, cluster)
+        configs_to_configure, plugin_configs, cluster, scaling)
     provider.apply_recommended_configs()
