@@ -91,30 +91,8 @@ class Oozie(s.Service):
                 r.execute_command(symlink_cmd, run_as_root=True,
                                   raise_when_error=False)
 
-    def _install_share_libs(self, cluster_context):
-        check_sharelib = 'sudo -u mapr hadoop fs -ls /oozie/share/lib'
-        create_sharelib_dir = 'sudo -u mapr hadoop fs -mkdir /oozie'
-        is_yarn = cluster_context.cluster_mode == 'yarn'
-        upload_args = {
-            'oozie_home': self.home_dir(cluster_context),
-            'share': 'share2' if is_yarn else 'share1'
-        }
-        upload_sharelib = ('sudo -u mapr hadoop fs -copyFromLocal '
-                           '%(oozie_home)s/%(share)s /oozie/share')
-        oozie_inst = cluster_context.get_instance(OOZIE)
-        with oozie_inst.remote() as r:
-            LOG.debug("Installing Oozie sharelibs")
-            command = '%(check)s || (%(mkdir)s && %(upload)s)'
-            args = {
-                'check': check_sharelib,
-                'mkdir': create_sharelib_dir,
-                'upload': upload_sharelib % upload_args,
-            }
-            r.execute_command(command % args, raise_when_error=False)
-
     def post_start(self, cluster_context, instances):
         instances = cluster_context.filter_instances(instances, OOZIE)
-        self._install_share_libs(cluster_context)
         self._install_ui(cluster_context, instances)
 
     @g.remote_command(1)
