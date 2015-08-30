@@ -46,11 +46,11 @@ class TestBase(testbase.SaharaTestCase):
             '  "name": "nova"}]')
 
         self.override_config("os_region_name", "RegionOne")
-        self.assertEqual("http://172.18.184.5:8774/v2",
+        self.assertEqual("http://192.168.0.5:8774/v2",
                          base.url_for(service_catalog, "compute"))
 
         self.override_config("os_region_name", "RegionTwo")
-        self.assertEqual("http://172.18.184.6:8774/v2",
+        self.assertEqual("http://192.168.0.6:8774/v2",
                          base.url_for(service_catalog, "compute"))
 
 

@@ -31,7 +31,10 @@ opts = [
                 help='Allow to perform insecure SSL requests to neutron.'),
     cfg.StrOpt('ca_file',
                help='Location of ca certificates file to use for neutron '
-                    'client requests.')
+                    'client requests.'),
+    cfg.StrOpt("endpoint_type",
+               default="internalURL",
+               help="Endpoint type for neutron client requests")
 ]
 
 neutron_group = cfg.OptGroup(name='neutron',
@@ -46,7 +49,8 @@ LOG = logging.getLogger(__name__)
 
 def client():
     session = sessions.cache().get_session(sessions.SESSION_TYPE_NEUTRON)
-    neutron = neutron_cli.Client('2.0', session=session, auth=keystone.auth())
+    neutron = neutron_cli.Client('2.0', session=session, auth=keystone.auth(),
+                                 endpoint_type=CONF.neutron.endpoint_type)
     return neutron
 
 

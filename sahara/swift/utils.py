@@ -33,7 +33,7 @@ def retrieve_auth_url():
 
     Hadoop Swift library doesn't support keystone v3 api.
     """
-    auth_url = clients_base.retrieve_auth_url()
+    auth_url = clients_base.retrieve_auth_url(endpoint_type="publicURL")
     info = urlparse.urlparse(auth_url)
 
     if CONF.use_domain_for_proxy_users:

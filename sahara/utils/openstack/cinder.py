@@ -40,7 +40,10 @@ opts = [
                 help='Allow to perform insecure SSL requests to cinder.'),
     cfg.StrOpt('ca_file',
                help='Location of ca certificates file to use for cinder '
-                    'client requests.')
+                    'client requests.'),
+    cfg.StrOpt("endpoint_type",
+               default="internalURL",
+               help="Endpoint type for cinder client requests")
 ]
 
 cinder_group = cfg.OptGroup(name='cinder',
@@ -71,9 +74,13 @@ def client():
     auth = keystone.auth()
 
     if CONF.cinder.api_version == 1:
-        cinder = cinder_client_v1.Client(session=session, auth=auth)
+        cinder = cinder_client_v1.Client(
+            session=session, auth=auth,
+            endpoint_type=CONF.cinder.endpoint_type)
     else:
-        cinder = cinder_client_v2.Client(session=session, auth=auth)
+        cinder = cinder_client_v2.Client(
+            session=session, auth=auth,
+            endpoint_type=CONF.cinder.endpoint_type)
     return cinder
 
 
@@ -83,7 +90,8 @@ def check_cinder_exists():
     else:
         service_type = 'volumev2'
     try:
-        base.url_for(context.current().service_catalog, service_type)
+        base.url_for(context.current().service_catalog, service_type,
+                     endpoint_type=CONF.cinder.endpoint_type)
         return True
     except ex.SystemError:
         return False

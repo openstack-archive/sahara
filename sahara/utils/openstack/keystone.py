@@ -62,7 +62,10 @@ ssl_opts = [
                 help='Allow to perform insecure SSL requests to keystone.'),
     cfg.StrOpt('ca_file',
                help='Location of ca certificates file to use for keystone '
-                    'client requests.')
+                    'client requests.'),
+    cfg.StrOpt("endpoint_type",
+               default="internalURL",
+               help="Endpoint type for keystone client requests")
 ]
 
 keystone_group = cfg.OptGroup(name='keystone',
@@ -248,7 +251,8 @@ def _client(username, password=None, token=None, tenant_name=None,
         raise Exception("Trusts aren't implemented in keystone api"
                         " less than v3")
 
-    auth_url = base.retrieve_auth_url()
+    auth_url = base.retrieve_auth_url(
+        endpoint_type=CONF.keystone.endpoint_type)
 
     client_kwargs = {'username': username,
                      'password': password,
@@ -290,7 +294,7 @@ def _password_auth(username, password, project_name, user_domain_name=None,
     :returns: a password auth plugin object.
     '''
     passwd_kwargs = dict(
-        auth_url=base.retrieve_auth_url(),
+        auth_url=base.retrieve_auth_url(CONF.keystone.endpoint_type),
         username=username,
         password=password
     )
