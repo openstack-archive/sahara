@@ -33,7 +33,8 @@ export LOCALRC_PATH=$DEVSTACK_DIR/localrc
 export LOCALCONF_PATH=$DEVSTACK_DIR/local.conf
 
 function sahara_register_fake_plugin_image {
-    local props="--property _sahara_tag_0.1=True"
+    local props="--public"
+    props+=" --property _sahara_tag_0.1=True"
     props+=" --property _sahara_tag_fake=True"
     props+=" --property _sahara_username=$SAHARA_FAKE_PLUGIN_IMAGE_USERNAME"
 
