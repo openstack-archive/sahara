@@ -20,6 +20,8 @@ import sys
 
 from oslo_config import cfg
 
+from sahara import config
+
 
 def singleton(cls):
     instances = {}
@@ -53,6 +55,7 @@ COMMON_CONFIG_OPTS = [
                default='127.0.0.1',
                help='Host for Sahara.'),
     cfg.IntOpt('SAHARA_PORT',
+               type=config.PORT_TYPE,
                default=8386,
                help='Port for Sahara.'),
     cfg.StrOpt('SAHARA_API_VERSION',
