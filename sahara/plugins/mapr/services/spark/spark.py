@@ -12,6 +12,8 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
+
+from oslo_log import log as logging
 import six
 
 import sahara.plugins.mapr.domain.configuration_file as bcf
@@ -21,8 +23,12 @@ import sahara.plugins.mapr.util.general as g
 import sahara.plugins.mapr.util.maprfs_helper as mfs
 import sahara.plugins.mapr.util.validation_utils as vu
 
-
 SPARK_MASTER_PORT = 7077
+SPARK_MASTER_UI_PORT = 8080
+SPARK_SLAVE_UI_PORT = 8081
+SPARK_HS_UI_PORT = 18080
+
+LOG = logging.getLogger(__name__)
 
 
 class SparkNodeProcess(np.NodeProcess):
@@ -30,47 +36,72 @@ class SparkNodeProcess(np.NodeProcess):
 
 
 class SparkMaster(np.NodeProcess):
-    _submit_port = SPARK_MASTER_PORT
-
     def submit_url(self, cluster_context):
-        host = cluster_context.get_instance(self).internal_ip
-        args = {'host': host, 'port': self.submit_port(cluster_context)}
-        return 'spark://%(host)s:%(port)s' % args
+        args = {
+            "host": cluster_context.get_instance(self).fqdn(),
+            "port": SPARK_MASTER_PORT,
+        }
 
-    def submit_port(self, cluster_context):
-        return self._submit_port
+        return "spark://%(host)s:%(port)s" % args
 
 
 class SparkWorker(SparkNodeProcess):
-    _start_script = 'sbin/start-slave.sh'
-
     def start(self, cluster_context, instances=None):
-        master_url = SPARK_MASTER.submit_url(cluster_context)
+        start_command = self._get_start_command(cluster_context, run_as="mapr")
+        g.execute_command(instances, start_command)
+
+    def stop(self, cluster_context, instances=None):
+        stop_command = self._get_stop_command(cluster_context, run_as="mapr")
+        g.execute_command(instances, stop_command)
+
+    def _get_start_command(self, cluster_context, run_as=None):
+        command_template = ("%(start_script)s 1 %(master_url)s"
+                            " --webui-port %(web_ui_port)s")
         args = {
-            'spark_home': Spark().home_dir(cluster_context),
-            'start_slave': self._start_script,
-            'master_url': master_url,
+            "master_url": SPARK_MASTER.submit_url(cluster_context),
+            "start_script": self._get_start_script_path(cluster_context),
+            "web_ui_port": SPARK_SLAVE_UI_PORT,
         }
-        command = g._run_as('mapr', '%(start_slave)s 1 %(master_url)s')
-        command = ('cd %(spark_home)s && ' + command) % args
-        g.execute_command(instances, command)
+
+        return g._run_as(run_as, command_template % args)
+
+    def _get_stop_command(self, cluster_context, run_as=None):
+        command_template = ("%(stop_script)s stop"
+                            " org.apache.spark.deploy.worker.Worker 1")
+        args = {"stop_script": self._get_stop_script_path(cluster_context)}
+
+        return g._run_as(run_as, command_template % args)
+
+    def _get_start_script_path(self, cluster_context):
+        path_template = "%(spark_home)s/sbin/start-slave.sh"
+        args = {"spark_home": Spark().home_dir(cluster_context)}
+
+        return path_template % args
+
+    def _get_stop_script_path(self, cluster_context):
+        path_template = "%(spark_home)s/sbin/spark-daemons.sh"
+        args = {"spark_home": Spark().home_dir(cluster_context)}
+
+        return path_template % args
 
 
 SPARK_MASTER = SparkMaster(
     name='spark-master',
     ui_name='Spark Master',
     package='mapr-spark-master',
-    open_ports=[SPARK_MASTER_PORT],
+    open_ports=[SPARK_MASTER_PORT, SPARK_MASTER_UI_PORT],
 )
 SPARK_HISTORY_SERVER = SparkNodeProcess(
     name='spark-historyserver',
     ui_name='Spark HistoryServer',
     package='mapr-spark-historyserver',
+    open_ports=[SPARK_HS_UI_PORT]
 )
 SPARK_SLAVE = SparkWorker(
     name='spark-master',
     ui_name='Spark Slave',
     package='mapr-spark',
+    open_ports=[SPARK_SLAVE_UI_PORT]
 )
 
 
@@ -80,14 +111,18 @@ class Spark(s.Service):
         super(Spark, self).__init__()
         self._name = 'spark'
         self._ui_name = 'Spark'
-        self._version = '1.2.1'
+        self._version = '1.3.1'
         self._node_processes = [
             SPARK_HISTORY_SERVER,
             SPARK_MASTER,
             SPARK_SLAVE,
         ]
         self._dependencies = [('mapr-spark', self.version)]
-        self._ui_info = [('SPARK', SPARK_MASTER, 'http://%s:8080')]
+        self._ui_info = [
+            ('Spark Master', SPARK_MASTER,
+             'http://%%s:%s' % SPARK_MASTER_UI_PORT),
+            ('Spark History Server', SPARK_HISTORY_SERVER,
+             'http://%%s:%s' % SPARK_HS_UI_PORT)]
         self._validation_rules = [
             vu.exactly(1, SPARK_MASTER),
             vu.exactly(1, SPARK_HISTORY_SERVER),
@@ -137,6 +172,7 @@ class Spark(s.Service):
         g.execute_on_instances(
             instances, g.install_ssh_key, 'mapr', private_key, public_key)
         g.execute_on_instances(instances, g.authorize_key, 'mapr', public_key)
+        LOG.debug("SSH keys successfully installed.")
 
     def _get_spark_ha_props(self, cluster_context):
         zookeepers = cluster_context.get_zookeeper_nodes_ip_with_port()
@@ -155,10 +191,11 @@ class Spark(s.Service):
         data = self._generate_slaves_file(cluster_context)
         master = cluster_context.get_instance(SPARK_MASTER)
         g.write_file(master, path, data, owner='root')
+        LOG.debug("Spark slaves list successfully written.")
 
     def _generate_slaves_file(self, cluster_context):
         slaves = cluster_context.get_instances(SPARK_SLAVE)
-        return '\n'.join(map(lambda i: i.internal_ip, slaves))
+        return "\n".join(instance.fqdn() for instance in slaves)
 
     def _create_hadoop_spark_dirs(self, cluster_context):
         path = '/apps/spark'
@@ -173,3 +210,4 @@ class Spark(s.Service):
         package = [(SPARK_HISTORY_SERVER.package, self.version)]
         command = cluster_context.distro.create_install_cmd(package)
         g.execute_command(h_servers, command, run_as='root')
+        LOG.debug("Spark History Server successfully installed.")
