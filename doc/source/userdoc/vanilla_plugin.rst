@@ -5,10 +5,10 @@ The vanilla plugin is a reference implementation which allows users to operate
 a cluster with Apache Hadoop.
 
 For cluster provisioning prepared images should be used. They already have
-Apache Hadoop 1.2.1 and Apache Hadoop 2.6.0 installed.
+Apache Hadoop 1.2.1 and Apache Hadoop 2.7.1 installed.
 
 You may build images by yourself using :doc:`vanilla_imagebuilder` or you could
-download prepared images from http://sahara-files.mirantis.com/images/upstream/kilo/
+download prepared images from http://sahara-files.mirantis.com/images/upstream/liberty/
 
 Keep in mind that if you want to use the Swift Integration feature
 ( :doc:`features`),
@@ -29,7 +29,9 @@ for each distribution:
 +--------------+------------+
 | Fedora 20    | fedora     |
 +--------------+------------+
-| CentOS 6.5   | cloud-user |
+| CentOS 6.6   | cloud-user |
++--------------+------------+
+| CentOS 7     | centos     |
 +--------------+------------+
 
 Known issue:
