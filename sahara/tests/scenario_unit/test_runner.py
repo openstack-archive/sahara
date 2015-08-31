@@ -216,22 +216,22 @@ class RunnerUnitTest(testtools.TestCase):
             expected_cluster, config))
 
     @mock.patch('sys.exit', return_value=None)
-    @mock.patch('os.system', return_value=None)
-    def test_runner_main(self, mock_os, mock_sys):
+    @mock.patch('subprocess.call', return_value=None)
+    def test_runner_main(self, mock_sub, mock_sys):
         sys.argv = ['sahara/tests/scenario/runner.py',
                     'sahara/tests/scenario_unit/vanilla2_7_1.yaml']
         runner.main()
 
     @mock.patch('sys.exit', return_value=None)
-    @mock.patch('os.system', return_value=None)
-    def test_runner_template_missing_varfile(self, mock_os, mock_sys):
+    @mock.patch('subprocess.call', return_value=None)
+    def test_runner_template_missing_varfile(self, mock_sub, mock_sys):
         sys.argv = ['sahara/tests/scenario/runner.py',
                     'sahara/tests/scenario_unit/vanilla2_7_1.yaml.mako']
         self.assertRaises(NameError, runner.main)
 
     @mock.patch('sys.exit', return_value=None)
-    @mock.patch('os.system', return_value=None)
-    def test_runner_template_wrong_varfile(self, mock_os, mock_sys):
+    @mock.patch('subprocess.call', return_value=None)
+    def test_runner_template_wrong_varfile(self, mock_sub, mock_sys):
         sys.argv = ['sahara/tests/scenario/runner.py',
                     '-V',
                     'sahara/tests/scenario_unit/templatevars_nodefault.ini',
@@ -239,8 +239,8 @@ class RunnerUnitTest(testtools.TestCase):
         self.assertRaises(NameError, runner.main)
 
     @mock.patch('sys.exit', return_value=None)
-    @mock.patch('os.system', return_value=None)
-    def test_runner_template_incomplete_varfile(self, mock_os, mock_sys):
+    @mock.patch('subprocess.call', return_value=None)
+    def test_runner_template_incomplete_varfile(self, mock_sub, mock_sys):
         sys.argv = ['sahara/tests/scenario/runner.py',
                     '-V',
                     'sahara/tests/scenario_unit/templatevars_incomplete.ini',
@@ -248,8 +248,8 @@ class RunnerUnitTest(testtools.TestCase):
         self.assertRaises(NameError, runner.main)
 
     @mock.patch('sys.exit', return_value=None)
-    @mock.patch('os.system', return_value=None)
-    def test_runner_template_working(self, mock_os, mock_sys):
+    @mock.patch('subprocess.call', return_value=None)
+    def test_runner_template_working(self, mock_sub, mock_sys):
         sys.argv = ['sahara/tests/scenario/runner.py',
                     '-V',
                     'sahara/tests/scenario_unit/templatevars_complete.ini',
