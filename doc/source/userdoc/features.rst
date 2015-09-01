@@ -122,6 +122,13 @@ a patch. For additional information about enabling this support,
 including patching Hadoop and configuring sahara, please refer to
 the :doc:`hadoop-swift` documentation.
 
+Shared Filesystem support
+-------------------------
+
+Sahara can also use NFS shares through the OpenStack Shared Filesystem service
+(manila) to store job binaries and data sources. See :doc:`edp` for more
+information on this feature.
+
 Orchestration support
 ---------------------
 
