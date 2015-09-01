@@ -3,7 +3,7 @@ Features Overview
 
 This page highlights some of the most prominent features available in
 sahara. The guidance provided here is primarily focused on the
-runtime aspects of sahara, for discussions about configuring the sahara
+runtime aspects of sahara. For discussions about configuring the sahara
 server processes please see the :doc:`configuration.guide` and
 :doc:`advanced.configuration.guide`.
 
@@ -14,11 +14,11 @@ One of the problems with running data processing applications on OpenStack
 is the inability to control where an instance is actually running. It is
 not always possible to ensure that two new virtual machines are started on
 different physical machines. As a result, any replication within the cluster
-is not reliable because all replicas may turn up on one physical machine.
-To remedy this, sahara provides the anti-affinity feature to explicitly
-command all instances of the specified processes to spawn on different
-Compute nodes. This is especially useful for Hadoop data node processes
-to increase HDFS replica reliability.
+is not reliable because all replicas may be co-located on one physical
+machine. To remedy this, sahara provides the anti-affinity feature to
+explicitly command all instances of the specified processes to spawn on
+different Compute nodes. This is especially useful for Hadoop data node
+processes to increase HDFS replica reliability.
 
 Starting with the Juno release, sahara can create server groups with the
 ``anti-affinity`` policy to enable this feature. Sahara creates one server
@@ -36,12 +36,11 @@ Block Storage support
 
 OpenStack Block Storage (cinder) can be used as an alternative for
 ephemeral drives on instances. Using Block Storage volumes increases the
-reliability of data which is important for HDFS service.
+reliability of data which is important for HDFS services.
 
 A user can set how many volumes will be attached to each instance in a
-node group, and the size of each volume.
-
-All volumes are attached during cluster creation/scaling operations.
+node group and the size of each volume. All volumes are attached during
+cluster creation and scaling operations.
 
 Cluster scaling
 ---------------
@@ -49,23 +48,34 @@ Cluster scaling
 Cluster scaling allows users to change the number of running instances
 in a cluster without needing to recreate the cluster. Users may
 increase or decrease the number of instances in node groups or add
-new node groups to existing clusters.
+new node groups to existing clusters. If a cluster fails to scale
+properly, all changes will be rolled back.
 
-If a cluster fails to scale properly, all changes will be rolled back.
-
-Data-locality
+Data locality
 -------------
 
-It is extremely important for data processing applications to perform
-work locally on the same rack, OpenStack Compute node, or virtual
-machine. Hadoop supports a data-locality feature and can schedule jobs
-to task tracker nodes that are local for the input stream. In this
+For optimal performance, it is best for data processing applications
+to work on data local to the same rack, OpenStack Compute node, or
+virtual machine. Hadoop supports a data locality feature and can schedule
+jobs to task tracker nodes that are local for the input stream. In this
 manner the task tracker nodes can communicate directly with the local
 data nodes.
 
 Sahara supports topology configuration for HDFS and Object Storage
 data sources. For more information on configuring this option please
 see the :ref:`data_locality_configuration` documentation.
+
+Volume-to-instance locality
+---------------------------
+
+Having an instance and an attached volume on the same physical host can
+be very helpful in order to achieve high-performance disk I/O operations.
+To achieve this, sahara provides access to the Block Storage
+volume instance locality functionality.
+
+For more information on using volume instance locality with sahara,
+please see the :ref:`volume_instance_locality_configuration`
+documentation.
 
 Distributed Mode
 ----------------
@@ -85,11 +95,11 @@ Hadoop HDFS High Availability
 
 Hadoop HDFS High Availability (HDFS HA) provides an architecture to ensure
 that HDFS will continue to work in the result of an active namenode failure.
-It uses 2 namenodes in an active/standby configuration to provide this
+It uses 2 namenodes in an active/passive configuration to provide this
 availability.
 
-High availability is achieved by using a set of journalnodes and Zookeeper
-servers along with ZooKeeper Failover Controllers (ZKFC) and additional
+High availability is achieved by using a set of journalnodes. Zookeeper
+servers, and ZooKeeper Failover Controllers (ZKFC), as well as additional
 configuration changes to HDFS and other services that use HDFS.
 
 Currently HDFS HA is only supported with the HDP 2.0.6 plugin. The feature
@@ -145,7 +155,7 @@ The following table provides a plugin capability matrix:
 +--------------------------+---------+----------+----------+-------+
 | Cluster Scaling          | x       | Scale Up | x        | x     |
 +--------------------------+---------+----------+----------+-------+
-| Swift Integration        | x       | x        | x        | N/A   |
+| Swift Integration        | x       | x        | x        | x     |
 +--------------------------+---------+----------+----------+-------+
 | Cinder Support           | x       | x        | x        | x     |
 +--------------------------+---------+----------+----------+-------+
@@ -173,15 +183,3 @@ instance processes and the sahara engine. This option is useful
 for development and for when your installation is secured from outside
 environments. For production environments we recommend controlling the
 security group policy manually.
-
-Volume-to-instance locality
----------------------------
-
-Having an instance and an attached volume on the same physical host can
-be very helpful in order to achieve high-performance disk I/O operations.
-To achieve this, sahara provides access to the Block Storage
-volume instance locality functionality.
-
-For more information on using volume instance locality with sahara,
-please see the :ref:`volume_instance_locality_configuration`
-documentation.
