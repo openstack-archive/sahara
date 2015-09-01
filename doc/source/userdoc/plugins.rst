@@ -2,8 +2,9 @@ Provisioning Plugins
 ====================
 
 This page lists all available provisioning plugins. In general a plugin
-enables Sahara to deploy a specific data intensive application (Hadoop, Spark)
-distribution in various topologies and with management/monitoring tools.
+enables sahara to deploy a specific data processing framework (for example,
+Hadoop) or distribution, and allows configuration of topology and
+management/monitoring tools.
 
 * :doc:`vanilla_plugin` - deploys Vanilla Apache Hadoop
 * :doc:`hdp_plugin` - deploys Hortonworks Data Platform
