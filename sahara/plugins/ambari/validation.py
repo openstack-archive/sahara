@@ -33,6 +33,10 @@ def validate_creation(cluster_id):
     _check_yarn(cluster)
     _check_oozie(cluster)
     _check_hive(cluster)
+    _check_hbase(cluster)
+    _check_spark(cluster)
+    _check_ranger(cluster)
+    _check_storm(cluster)
 
 
 def _check_ambari(cluster):
@@ -97,3 +101,72 @@ def _check_hive(cluster):
     if hs_count == 1 and hm_count == 0:
         raise ex.RequiredServiceMissingException(
             common.HIVE_METASTORE, required_by=common.HIVE_SERVER)
+
+
+def _check_hbase(cluster):
+    hm_count = utils.get_instances_count(cluster, common.HBASE_MASTER)
+    hr_count = utils.get_instances_count(cluster, common.HBASE_REGIONSERVER)
+    if hm_count > 1:
+        raise ex.InvalidComponentCountException(common.HBASE_MASTER,
+                                                _("0 or 1"), hm_count)
+    if hm_count == 1 and hr_count == 0:
+        raise ex.RequiredServiceMissingException(
+            common.HBASE_REGIONSERVER, required_by=common.HBASE_MASTER)
+    if hr_count > 0 and hm_count == 0:
+        raise ex.RequiredServiceMissingException(
+            common.HBASE_MASTER, required_by=common.HBASE_REGIONSERVER)
+
+
+def _check_spark(cluster):
+    count = utils.get_instances_count(cluster, common.SPARK_JOBHISTORYSERVER)
+    if count > 1:
+        raise ex.InvalidComponentCountException(common.SPARK_JOBHISTORYSERVER,
+                                                _("0 or 1"), count)
+
+
+def _check_ranger(cluster):
+    ra_count = utils.get_instances_count(cluster, common.RANGER_ADMIN)
+    ru_count = utils.get_instances_count(cluster, common.RANGER_USERSYNC)
+    if ra_count > 1:
+        raise ex.InvalidComponentCountException(common.RANGER_ADMIN,
+                                                _("0 or 1"), ra_count)
+    if ru_count > 1:
+        raise ex.InvalidComponentCountException(common.RANGER_USERSYNC,
+                                                _("0 or 1"), ru_count)
+    if ra_count == 1 and ru_count == 0:
+        raise ex.RequiredServiceMissingException(
+            common.RANGER_USERSYNC, required_by=common.RANGER_ADMIN)
+    if ra_count == 0 and ru_count == 1:
+        raise ex.RequiredServiceMissingException(
+            common.RANGER_ADMIN, required_by=common.RANGER_USERSYNC)
+
+
+def _check_storm(cluster):
+    dr_count = utils.get_instances_count(cluster, common.DRPC_SERVER)
+    ni_count = utils.get_instances_count(cluster, common.NIMBUS)
+    su_count = utils.get_instances_count(cluster, common.STORM_UI_SERVER)
+    sv_count = utils.get_instances_count(cluster, common.SUPERVISOR)
+    if dr_count > 1:
+        raise ex.InvalidComponentCountException(common.DRPC_SERVER,
+                                                _("0 or 1"), dr_count)
+    if ni_count > 1:
+        raise ex.InvalidComponentCountException(common.NIMBUS,
+                                                _("0 or 1"), ni_count)
+    if su_count > 1:
+        raise ex.InvalidComponentCountException(common.STORM_UI_SERVER,
+                                                _("0 or 1"), su_count)
+    if dr_count == 0 and ni_count == 1:
+        raise ex.RequiredServiceMissingException(
+            common.DRPC_SERVER, required_by=common.NIMBUS)
+    if dr_count == 1 and ni_count == 0:
+        raise ex.RequiredServiceMissingException(
+            common.NIMBUS, required_by=common.DRPC_SERVER)
+    if su_count == 1 and (dr_count == 0 or ni_count == 0):
+        raise ex.RequiredServiceMissingException(
+            common.NIMBUS, required_by=common.STORM_UI_SERVER)
+    if dr_count == 1 and sv_count == 0:
+        raise ex.RequiredServiceMissingException(
+            common.SUPERVISOR, required_by=common.DRPC_SERVER)
+    if sv_count > 0 and dr_count == 0:
+        raise ex.RequiredServiceMissingException(
+            common.DRPC_SERVER, required_by=common.SUPERVISOR)

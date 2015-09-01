@@ -43,11 +43,25 @@ class AmbariPluginProvider(p.ProvisioningPluginBase):
     def get_node_processes(self, hadoop_version):
         return {
             p_common.AMBARI_SERVICE: [p_common.AMBARI_SERVER],
+            p_common.FALCON_SERVICE: [p_common.FALCON_SERVER],
+            p_common.FLUME_SERVICE: [p_common.FLUME_HANDLER],
+            p_common.HBASE_SERVICE: [p_common.HBASE_MASTER,
+                                     p_common.HBASE_REGIONSERVER],
             p_common.HDFS_SERVICE: [p_common.DATANODE, p_common.NAMENODE,
                                     p_common.SECONDARY_NAMENODE],
             p_common.HIVE_SERVICE: [p_common.HIVE_METASTORE,
                                     p_common.HIVE_SERVER],
+            p_common.KAFKA_SERVICE: [p_common.KAFKA_BROKER],
+            p_common.KNOX_SERVICE: [p_common.KNOX_GATEWAY],
             p_common.OOZIE_SERVICE: [p_common.OOZIE_SERVER],
+            p_common.RANGER_SERVICE: [p_common.RANGER_ADMIN,
+                                      p_common.RANGER_USERSYNC],
+            p_common.SLIDER_SERVICE: [p_common.SLIDER],
+            p_common.SPARK_SERVICE: [p_common.SPARK_JOBHISTORYSERVER],
+            p_common.SQOOP_SERVICE: [p_common.SQOOP],
+            p_common.STORM_SERVICE: [
+                p_common.DRPC_SERVER, p_common.NIMBUS,
+                p_common.STORM_UI_SERVER, p_common.SUPERVISOR],
             p_common.YARN_SERVICE: [
                 p_common.APP_TIMELINE_SERVER, p_common.HISTORYSERVER,
                 p_common.NODEMANAGER, p_common.RESOURCEMANAGER],
@@ -111,6 +125,36 @@ class AmbariPluginProvider(p.ProvisioningPluginBase):
             info[p_common.OOZIE_SERVER] = {
                 "Web UI": "http://%s:11000/oozie" % oozie.management_ip
             }
+        hbase_master = plugin_utils.get_instance(cluster,
+                                                 p_common.HBASE_MASTER)
+        if hbase_master:
+            info[p_common.HBASE_MASTER] = {
+                "Web UI": "http://%s:60010" % hbase_master.management_ip
+            }
+        falcon = plugin_utils.get_instance(cluster, p_common.FALCON_SERVER)
+        if falcon:
+            info[p_common.FALCON_SERVER] = {
+                "Web UI": "http://%s:15000" % falcon.management_ip
+            }
+        storm_ui = plugin_utils.get_instance(cluster, p_common.STORM_UI_SERVER)
+        if storm_ui:
+            info[p_common.STORM_UI_SERVER] = {
+                "Web UI": "http://%s:8744" % storm_ui.management_ip
+            }
+        ranger_admin = plugin_utils.get_instance(cluster,
+                                                 p_common.RANGER_ADMIN)
+        if ranger_admin:
+            info[p_common.RANGER_ADMIN] = {
+                "Web UI": "http://%s:6080" % ranger_admin.management_ip,
+                "Username": "admin",
+                "Password": "admin"
+            }
+        spark_hs = plugin_utils.get_instance(cluster,
+                                             p_common.SPARK_JOBHISTORYSERVER)
+        if spark_hs:
+            info[p_common.SPARK_JOBHISTORYSERVER] = {
+                "Web UI": "http://%s:18080" % spark_hs.management_ip
+            }
         info.update(cluster.info.to_dict())
         ctx = context.ctx()
         conductor.cluster_update(ctx, cluster, {"info": info})
@@ -145,14 +189,23 @@ class AmbariPluginProvider(p.ProvisioningPluginBase):
             p_common.AMBARI_SERVER: [8080],
             p_common.APP_TIMELINE_SERVER: [8188, 8190, 10200],
             p_common.DATANODE: [50075, 50475],
+            p_common.DRPC_SERVER: [3772, 3773],
+            p_common.FALCON_SERVER: [15000],
+            p_common.FLUME_HANDLER: [8020, 41414],
+            p_common.HBASE_MASTER: [60000, 60010],
+            p_common.HBASE_REGIONSERVER: [60020, 60030],
             p_common.HISTORYSERVER: [10020, 19888],
             p_common.HIVE_METASTORE: [9933],
             p_common.HIVE_SERVER: [9999, 10000],
             p_common.NAMENODE: [8020, 9000, 50070, 50470],
+            p_common.NIMBUS: [6627],
             p_common.NODEMANAGER: [8042, 8044, 45454],
             p_common.OOZIE_SERVER: [11000, 11443],
+            p_common.RANGER_ADMIN: [6080],
             p_common.RESOURCEMANAGER: [8025, 8030, 8050, 8088, 8141],
-            p_common.SECONDARY_NAMENODE: [50090]
+            p_common.SECONDARY_NAMENODE: [50090],
+            p_common.SPARK_JOBHISTORYSERVER: [18080],
+            p_common.STORM_UI_SERVER: [8000, 8080, 8744]
         }
         ports = []
         for service in node_group.node_processes:
