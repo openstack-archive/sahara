@@ -13,7 +13,7 @@ on installing and configuring DevStack with Sahara.
 
 After Horizon installation, it will contain a Data Processing tab under Projects tab.
 Sahara UI source code will be located at
-``$DEST/horizon/openstack_dashboard/dashboards/project/data_processing``
+``$DEST/horizon/openstack_dashboard/contrib/sahara/content/data_processing``
 where ``$DEST/`` is usually ``/opt/stack/``.
 
 Isolated Dashboard for Sahara
@@ -126,7 +126,7 @@ You can list the registered services with this command:
 7. Applying changes
 
   If you have changed any ``*.py`` files in
-  ``horizon/openstack_dashboard/dashboards/project/data_processing`` directory,
+  ``horizon/openstack_dashboard/contrib/sahara/content/data_processing`` directory,
   Horizon will notice that and reload automatically. However changes made to
   non-python files may not be noticed, so you have to restart Horizon again
   manually, as described in step 6.
@@ -141,7 +141,7 @@ modified so that the Sahara URL can be known and so service-based
 permissions do not prevent the Data Processing dashboard from displaying.
 
 
-1. Modify ``openstack_dashboard/api/sahara.py``:
+1. Modify ``openstack_dashboard/contrib/sahara/api/sahara.py``:
 
    Add the following lines before ``def client(request)``:
 
@@ -183,9 +183,9 @@ permissions do not prevent the Data Processing dashboard from displaying.
             if hasattr(panel, 'permissions'):
                panel.permissions = tuple(
                    [perm for perm in panel.permissions if not perm.startswith(
-                       'openstack.services.data_processing')])
+                       'openstack.services.data-processing')])
             super(Project, cls).register(panel)
    ..
 
    Alternatively the ``data-processing`` permissions can be removed
-   manually from each panel under ``openstack_dashboard/dashboards/project/data_processing``
+   manually from each panel under ``openstack_dashboard/contrib/sahara/content/data_processing``
