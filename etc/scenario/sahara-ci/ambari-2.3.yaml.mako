@@ -14,6 +14,13 @@ clusters:
           - YARN Timeline Server
           - ZooKeeper
         auto_security_group: true
+      - name: master-edp
+        flavor: ${ci_flavor_id}
+        node_processes:
+          - Hive Metastore
+          - HiveServer
+          - Oozie
+        auto_security_group: true
       - name: worker
         flavor: ${ci_flavor_id}
         node_processes:
@@ -26,6 +33,7 @@ clusters:
       name: ambari21
       node_group_templates:
         master: 1
+        master-edp: 1
         worker: 3
       cluster_configs:
         HDFS:
@@ -33,4 +41,5 @@ clusters:
     cluster:
       name: ${cluster_name}
     scenario:
-      - cinder
+      - run_jobs
+    edp_jobs_flow: hadoop_2

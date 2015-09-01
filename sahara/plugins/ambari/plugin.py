@@ -20,6 +20,7 @@ from sahara.i18n import _
 from sahara.plugins.ambari import common as p_common
 from sahara.plugins.ambari import configs
 from sahara.plugins.ambari import deploy
+from sahara.plugins.ambari import edp_engine
 from sahara.plugins.ambari import validation
 from sahara.plugins import provisioning as p
 from sahara.plugins import utils as plugin_utils
@@ -44,6 +45,9 @@ class AmbariPluginProvider(p.ProvisioningPluginBase):
             p_common.AMBARI_SERVICE: [p_common.AMBARI_SERVER],
             p_common.HDFS_SERVICE: [p_common.DATANODE, p_common.NAMENODE,
                                     p_common.SECONDARY_NAMENODE],
+            p_common.HIVE_SERVICE: [p_common.HIVE_METASTORE,
+                                    p_common.HIVE_SERVER],
+            p_common.OOZIE_SERVICE: [p_common.OOZIE_SERVER],
             p_common.YARN_SERVICE: [
                 p_common.APP_TIMELINE_SERVER, p_common.HISTORYSERVER,
                 p_common.NODEMANAGER, p_common.RESOURCEMANAGER],
@@ -102,6 +106,11 @@ class AmbariPluginProvider(p.ProvisioningPluginBase):
             info[p_common.APP_TIMELINE_SERVER] = {
                 "Web UI": "http://%s:8188" % atlserver.management_ip
             }
+        oozie = plugin_utils.get_instance(cluster, p_common.OOZIE_SERVER)
+        if oozie:
+            info[p_common.OOZIE_SERVER] = {
+                "Web UI": "http://%s:11000/oozie" % oozie.management_ip
+            }
         info.update(cluster.info.to_dict())
         ctx = context.ctx()
         conductor.cluster_update(ctx, cluster, {"info": info})
@@ -120,13 +129,16 @@ class AmbariPluginProvider(p.ProvisioningPluginBase):
         pass
 
     def get_edp_engine(self, cluster, job_type):
-        pass
+        if job_type in edp_engine.EDPOozieEngine.get_supported_job_types():
+            return edp_engine.EDPOozieEngine(cluster)
+        return None
 
     def get_edp_job_types(self, versions=None):
-        pass
+        return edp_engine.EDPOozieEngine.get_supported_job_types()
 
     def get_edp_config_hints(self, job_type, version):
-        pass
+        if job_type in edp_engine.EDPOozieEngine.get_supported_job_types():
+            return edp_engine.EDPOozieEngine.get_possible_job_config(job_type)
 
     def get_open_ports(self, node_group):
         ports_map = {
@@ -134,8 +146,11 @@ class AmbariPluginProvider(p.ProvisioningPluginBase):
             p_common.APP_TIMELINE_SERVER: [8188, 8190, 10200],
             p_common.DATANODE: [50075, 50475],
             p_common.HISTORYSERVER: [10020, 19888],
+            p_common.HIVE_METASTORE: [9933],
+            p_common.HIVE_SERVER: [9999, 10000],
             p_common.NAMENODE: [8020, 9000, 50070, 50470],
             p_common.NODEMANAGER: [8042, 8044, 45454],
+            p_common.OOZIE_SERVER: [11000, 11443],
             p_common.RESOURCEMANAGER: [8025, 8030, 8050, 8088, 8141],
             p_common.SECONDARY_NAMENODE: [50090]
         }
