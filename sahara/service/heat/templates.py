@@ -127,9 +127,13 @@ class ClusterStack(object):
             'files': self.files}
 
         if not update_existing:
+            LOG.debug("Creating Heat stack with args: {args}"
+                      .format(args=kwargs))
             b.execute_with_retries(heat.stacks.create, **kwargs)
         else:
             stack = h.get_stack(self.cluster.name)
+            LOG.debug("Updating Heat stack {stack} with args: "
+                      "{args}".format(stack=stack, args=kwargs))
             b.execute_with_retries(stack.update, **kwargs)
 
         self.heat_stack = h.get_stack(self.cluster.name)
