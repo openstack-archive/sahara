@@ -199,14 +199,14 @@ Optional installation of default templates
 
 Sahara bundles default templates that define simple clusters for the
 supported plugins. These templates may optionally be added to the
-Sahara database using a simple CLI included with Sahara.
+sahara database using a simple CLI included with sahara.
 
 The default template CLI is described in detail in a *README* file
-included with the Sahara sources at ``<sahara_home>/db/templates/README.rst``
+included with the sahara sources at ``<sahara_home>/db/templates/README.rst``
 but it is summarized here.
 
 Flavor id values must be specified for the default templates included
-with Sahara. The recommended configuration values below correspond to the
+with sahara. The recommended configuration values below correspond to the
 *m1.medium* and *m1.large* flavors in a default OpenStack installation (if
 these flavors have been edited, their corresponding values will be different).
 Values for flavor_id should be added to ``/etc/sahara/sahara.conf`` or another
