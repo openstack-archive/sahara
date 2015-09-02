@@ -79,7 +79,7 @@ Networking configuration
 ------------------------
 
 By default sahara is configured to use the nova-network implementation
-of OpenStack Networking. If an OpenStack cluster uses Neutron,
+of OpenStack Networking. If an OpenStack cluster uses neutron,
 then the ``use_neutron`` parameter should be set to ``True`` in the
 sahara configuration file. Additionally, if the cluster supports network
 namespaces the ``use_namespaces`` property can be used to enable their usage.
@@ -245,8 +245,8 @@ Example 2. Disallow image registry manipulations to non-admin users.
     {
         "default": "",
 
-        "images:register": "role:admin",
-        "images:unregister": "role:admin",
-        "images:add_tags": "role:admin",
-        "images:remove_tags": "role:admin"
+        "data-processing:images:register": "role:admin",
+        "data-processing:images:unregister": "role:admin",
+        "data-processing:images:add_tags": "role:admin",
+        "data-processing:images:remove_tags": "role:admin"
     }
