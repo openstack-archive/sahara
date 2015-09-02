@@ -21,7 +21,7 @@ On OS X Systems:
 .. sourcecode:: console
 
     # we actually need pip, which is part of python package
-    $ brew install python mysql postgresql
+    $ brew install python mysql postgresql rabbitmq
     $ pip install virtualenv tox
 
 On Ubuntu:
@@ -29,15 +29,18 @@ On Ubuntu:
 .. sourcecode:: console
 
     $ sudo apt-get update
-    $ sudo apt-get install git-core python-dev python-virtualenv gcc libpq-dev libmysqlclient-dev python-pip
+    $ sudo apt-get install git-core python-dev python-virtualenv gcc libpq-dev libmysqlclient-dev python-pip rabbitmq-server
     $ sudo pip install tox
 
 On Fedora-based distributions (e.g., Fedora/RHEL/CentOS/Scientific Linux):
 
 .. sourcecode:: console
 
-    $ sudo yum install git-core python-devel python-virtualenv gcc python-pip mariadb-devel postgresql-devel
+    $ sudo yum install git-core python-devel python-virtualenv gcc python-pip mariadb-devel postgresql-devel erlang
     $ sudo pip install tox
+    $ sudo wget http://www.rabbitmq.com/releases/rabbitmq-server/v3.2.2/rabbitmq-server-3.2.2-1.noarch.rpm
+    $ sudo rpm --import http://www.rabbitmq.com/rabbitmq-signing-key-public.asc
+    $ sudo yum install rabbitmq-server-3.2.2-1.noarch.rpm
 
 On openSUSE-based distributions (SLES 12, openSUSE, Factory or Tumbleweed)::
 
@@ -74,11 +77,12 @@ On openSUSE-based distributions (SLES 12, openSUSE, Factory or Tumbleweed)::
 
     $ tox -e venv -- sahara-db-manage --config-file etc/sahara/sahara.conf upgrade head
 
-6. To start Sahara call:
+6. To start Sahara API and Engine processes call:
 
 .. sourcecode:: console
 
-    $ tox -e venv -- sahara-all --config-file etc/sahara/sahara.conf --debug
+    $ tox -e venv -- sahara-api --config-file etc/sahara/sahara.conf --debug
+    $ tox -e venv -- sahara-engine --config-file etc/sahara/sahara.conf --debug
 
 
 Setup local OpenStack dashboard with Sahara plugin
