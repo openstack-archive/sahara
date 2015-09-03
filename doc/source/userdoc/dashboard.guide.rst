@@ -32,7 +32,7 @@ Example:
 2. Different endpoint
 ---------------------
 
-Sahara UI panels normally use ``data_processing`` endpoint from Keystone to
+Sahara UI panels normally use ``data-processing`` endpoint from Keystone to
 talk to Sahara service. In some cases it may be useful to switch to another
 endpoint, for example use locally installed Sahara instead of the one on the
 OpenStack controller.
@@ -55,7 +55,7 @@ Local endpoint example:
 ..
 
 Then the endpoint name should be changed in ``sahara.py`` under the
-`openstack_dashboard.api module. <https://github.com/openstack/horizon/blob/master/openstack_dashboard/api/sahara.py>`_
+`openstack_dashboard.contrib.sahara.api module. <https://github.com/openstack/horizon/blob/master/openstack_dashboard/contrib/sahara/api/sahara.py>`_
 
 .. sourcecode:: python
 
