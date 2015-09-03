@@ -171,6 +171,8 @@ class TestBase(testtools.TestCase):
         swift.assert_called_with(auth_version='2.0',
                                  user='admin',
                                  key='nova',
+                                 insecure=True,
+                                 cacert='/etc/tests/cert.crt',
                                  tenant_name='admin',
                                  authurl='http://localhost:5000/v2.0')
 

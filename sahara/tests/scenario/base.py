@@ -120,10 +120,13 @@ class BaseTestCase(base.BaseTestCase):
         self.nova = clients.NovaClient(session=session)
         self.neutron = clients.NeutronClient(session=session)
         # swiftclient doesn't support keystone sessions
-        self.swift = clients.SwiftClient(authurl=auth_url,
-                                         user=username,
-                                         key=password,
-                                         tenant_name=tenant_name)
+        self.swift = clients.SwiftClient(
+            authurl=auth_url,
+            user=username,
+            key=password,
+            insecure=self.credentials['ssl_verify'],
+            cacert=self.credentials['ssl_cert'],
+            tenant_name=tenant_name)
 
     def create_cluster(self):
         self.ng_id_map = self._create_node_group_templates()
