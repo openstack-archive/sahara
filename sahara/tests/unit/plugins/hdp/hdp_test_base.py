@@ -41,7 +41,7 @@ def get_instance_info(*args, **kwargs):
     return args[0].instance_info
 
 
-def create_clusterspec(hdp_version='1.3.2'):
+def create_clusterspec(hdp_version='2.0.6'):
     version_suffix = hdp_version.replace('.', '_')
     cluster_config_file = pkg.resource_string(
         version.version_info.package,

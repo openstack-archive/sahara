@@ -28,7 +28,7 @@ from sahara.utils import edp
 from sahara import version
 
 
-GET_REST_REQ = ("sahara.plugins.hdp.versions.version_1_3_2.versionhandler."
+GET_REST_REQ = ("sahara.plugins.hdp.versions.version_2_0_6.versionhandler."
                 "AmbariClient._get_http_session")
 
 
@@ -43,66 +43,33 @@ class AmbariPluginTest(sahara_base.SaharaTestCase):
 
     def test_get_node_processes(self):
         plugin = ap.AmbariPlugin()
-        service_components = plugin.get_node_processes('1.3.2')
-
-        self.assertEqual(13, len(service_components))
-        components = service_components['HDFS']
-        self.assertIn('NAMENODE', components)
-        self.assertIn('DATANODE', components)
-        self.assertIn('SECONDARY_NAMENODE', components)
-        self.assertIn('HDFS_CLIENT', components)
-
-        components = service_components['MAPREDUCE']
-        self.assertIn('JOBTRACKER', components)
-        self.assertIn('TASKTRACKER', components)
-        self.assertIn('MAPREDUCE_CLIENT', components)
-
-        components = service_components['GANGLIA']
-        self.assertIn('GANGLIA_SERVER', components)
-
-        components = service_components['NAGIOS']
-        self.assertIn('NAGIOS_SERVER', components)
-
-        components = service_components['AMBARI']
-        self.assertIn('AMBARI_SERVER', components)
-
-        components = service_components['HCATALOG']
-        self.assertIn('HCAT', components)
-
-        components = service_components['ZOOKEEPER']
-        self.assertIn('ZOOKEEPER_SERVER', components)
-        self.assertIn('ZOOKEEPER_CLIENT', components)
-
-        components = service_components['HIVE']
-        self.assertIn('HIVE_SERVER', components)
-        self.assertIn('HIVE_METASTORE', components)
-        self.assertIn('HIVE_CLIENT', components)
-        self.assertIn('MYSQL_SERVER', components)
-
-        components = service_components['PIG']
-        self.assertIn('PIG', components)
-
-        components = service_components['WEBHCAT']
-        self.assertIn('WEBHCAT_SERVER', components)
-
-        components = service_components['OOZIE']
-        self.assertIn('OOZIE_SERVER', components)
-        self.assertIn('OOZIE_CLIENT', components)
-
-        self.assertIn('SQOOP', service_components['SQOOP'])
-
-        components = service_components['HBASE']
-        self.assertIn('HBASE_MASTER', components)
-        self.assertIn('HBASE_REGIONSERVER', components)
-        self.assertIn('HBASE_CLIENT', components)
+        service_components = plugin.get_node_processes('2.0.6')
+        self.assertEqual({
+            'YARN': ['RESOURCEMANAGER', 'YARN_CLIENT', 'NODEMANAGER'],
+            'GANGLIA': ['GANGLIA_SERVER'],
+            'HUE': ['HUE'],
+            'HIVE': ['HIVE_SERVER', 'HIVE_METASTORE', 'HIVE_CLIENT',
+                     'MYSQL_SERVER'],
+            'OOZIE': ['OOZIE_SERVER', 'OOZIE_CLIENT'],
+            'HDFS': ['NAMENODE', 'DATANODE', 'SECONDARY_NAMENODE',
+                     'HDFS_CLIENT', 'JOURNALNODE', 'ZKFC'],
+            'SQOOP': ['SQOOP'],
+            'MAPREDUCE2': ['HISTORYSERVER', 'MAPREDUCE2_CLIENT'],
+            'ZOOKEEPER': ['ZOOKEEPER_SERVER', 'ZOOKEEPER_CLIENT'],
+            'HBASE': ['HBASE_MASTER', 'HBASE_REGIONSERVER', 'HBASE_CLIENT'],
+            'HCATALOG': ['HCAT'],
+            'NAGIOS': ['NAGIOS_SERVER'],
+            'AMBARI': ['AMBARI_SERVER'],
+            'WEBHCAT': ['WEBHCAT_SERVER'],
+            'PIG': ['PIG']}, service_components)
 
     def test_convert(self):
         plugin = ap.AmbariPlugin()
         cluster_config_file = pkg.resource_string(
             version.version_info.package,
-            'plugins/hdp/versions/version_1_3_2/resources/'
+            'plugins/hdp/versions/version_2_0_6/resources/'
             'default-cluster.template')
-        cluster = plugin.convert(cluster_config_file, 'ambari', '1.3.2',
+        cluster = plugin.convert(cluster_config_file, 'ambari', '2.0.6',
                                  'test-plugin', create_cluster_template)
         normalized_config = cs.ClusterSpec(cluster_config_file).normalize()
 
@@ -119,13 +86,13 @@ class AmbariPluginTest(sahara_base.SaharaTestCase):
 
         cluster_config_file = pkg.resource_string(
             version.version_info.package,
-            'plugins/hdp/versions/version_1_3_2/resources/'
+            'plugins/hdp/versions/version_2_0_6/resources/'
             'default-cluster.template')
         cluster_spec = cs.ClusterSpec(cluster_config_file)
 
         ambari_info = ap.AmbariInfo(TestHost('111.11.1111'),
                                     '8080', 'admin', 'old-pwd')
-        plugin._set_ambari_credentials(cluster_spec, ambari_info, '1.3.2')
+        plugin._set_ambari_credentials(cluster_spec, ambari_info, '2.0.6')
 
         self.assertEqual(1, len(self.requests))
         request = self.requests[0]
@@ -146,7 +113,7 @@ class AmbariPluginTest(sahara_base.SaharaTestCase):
 
         cluster_config_file = pkg.resource_string(
             version.version_info.package,
-            'plugins/hdp/versions/version_1_3_2/resources/'
+            'plugins/hdp/versions/version_2_0_6/resources/'
             'default-cluster.template')
         cluster_spec = cs.ClusterSpec(cluster_config_file)
 
@@ -158,7 +125,7 @@ class AmbariPluginTest(sahara_base.SaharaTestCase):
 
         ambari_info = ap.AmbariInfo(TestHost('111.11.1111'), '8080',
                                     'admin', 'old-pwd')
-        plugin._set_ambari_credentials(cluster_spec, ambari_info, '1.3.2')
+        plugin._set_ambari_credentials(cluster_spec, ambari_info, '2.0.6')
         self.assertEqual(2, len(self.requests))
 
         request = self.requests[0]
@@ -186,7 +153,7 @@ class AmbariPluginTest(sahara_base.SaharaTestCase):
 
         cluster_config_file = pkg.resource_string(
             version.version_info.package,
-            'plugins/hdp/versions/version_1_3_2/resources/'
+            'plugins/hdp/versions/version_2_0_6/resources/'
             'default-cluster.template')
         cluster_spec = cs.ClusterSpec(cluster_config_file)
 
@@ -197,7 +164,7 @@ class AmbariPluginTest(sahara_base.SaharaTestCase):
 
         ambari_info = ap.AmbariInfo(TestHost('111.11.1111'), '8080',
                                     'admin', 'old-pwd')
-        plugin._set_ambari_credentials(cluster_spec, ambari_info, '1.3.2')
+        plugin._set_ambari_credentials(cluster_spec, ambari_info, '2.0.6')
         self.assertEqual(2, len(self.requests))
 
         request = self.requests[0]
@@ -228,7 +195,7 @@ class AmbariPluginTest(sahara_base.SaharaTestCase):
 
         cluster_config_file = pkg.resource_string(
             version.version_info.package,
-            'plugins/hdp/versions/version_1_3_2/resources/'
+            'plugins/hdp/versions/version_2_0_6/resources/'
             'default-cluster.template')
         cluster_spec = cs.ClusterSpec(cluster_config_file)
 
@@ -244,16 +211,16 @@ class AmbariPluginTest(sahara_base.SaharaTestCase):
 
         self.assertRaises(ex.HadoopProvisionError,
                           plugin._set_ambari_credentials,
-                          cluster_spec, ambari_info, '1.3.2')
+                          cluster_spec, ambari_info, '2.0.6')
 
     @mock.patch("sahara.utils.openstack.nova.get_instance_info",
                 base.get_instance_info)
-    @mock.patch('sahara.plugins.hdp.versions.version_1_3_2.services.'
+    @mock.patch('sahara.plugins.hdp.versions.version_2_0_6.services.'
                 'HdfsService._get_swift_properties', return_value=[])
     def test__get_ambari_info(self, patched):
         cluster_config_file = pkg.resource_string(
             version.version_info.package,
-            'plugins/hdp/versions/version_1_3_2/resources/'
+            'plugins/hdp/versions/version_2_0_6/resources/'
             'default-cluster.template')
 
         test_host = base.TestServer(
@@ -262,7 +229,10 @@ class AmbariPluginTest(sahara_base.SaharaTestCase):
 
         node_group = base.TestNodeGroup(
             'ng1', [test_host], ["AMBARI_SERVER", "NAMENODE", "DATANODE",
-                                 "JOBTRACKER", "TASKTRACKER"])
+                                 'RESOURCEMANAGER', 'YARN_CLIENT',
+                                 'NODEMANAGER',
+                                 'HISTORYSERVER', 'MAPREDUCE2_CLIENT',
+                                 'ZOOKEEPER_SERVER', 'ZOOKEEPER_CLIENT'])
         cluster = base.TestCluster([node_group])
         cluster_config = cs.ClusterSpec(cluster_config_file)
         cluster_config.create_operational_config(cluster, [])
@@ -285,7 +255,7 @@ class AmbariPluginTest(sahara_base.SaharaTestCase):
 
         cluster_config_file = pkg.resource_string(
             version.version_info.package,
-            'plugins/hdp/versions/version_1_3_2/resources/'
+            'plugins/hdp/versions/version_2_0_6/resources/'
             'default-cluster.template')
         cluster_spec = cs.ClusterSpec(cluster_config_file)
 
@@ -303,7 +273,7 @@ class AmbariPluginTest(sahara_base.SaharaTestCase):
 
         node_group = base.TestNodeGroup(
             'ng1', [test_host], ["AMBARI_SERVER", "NAMENODE", "DATANODE",
-                                 "JOBTRACKER", "TASKTRACKER", "OOZIE_SERVER"])
+                                 "OOZIE_SERVER"])
         cluster = base.TestCluster([node_group])
         cluster.hadoop_version = '2.0.6'
         plugin = ap.AmbariPlugin()
@@ -313,22 +283,11 @@ class AmbariPluginTest(sahara_base.SaharaTestCase):
 
         node_group = base.TestNodeGroup(
             'ng1', [test_host], ["AMBARI_SERVER", "NAMENODE", "DATANODE",
-                                 "JOBTRACKER", "TASKTRACKER", "NOT_OOZIE"])
+                                 "NOT_OOZIE"])
         cluster = base.TestCluster([node_group])
         cluster.hadoop_version = '2.0.6'
         self.assertIsNone(plugin.get_edp_engine(
             cluster, edp.JOB_TYPE_PIG).get_oozie_server(cluster))
-
-    @mock.patch('sahara.service.edp.hdfs_helper.create_dir_hadoop1')
-    def test_edp132_calls_hadoop1_create_dir(self, create_dir):
-        cluster = base.TestCluster([])
-        cluster.plugin_name = 'hdp'
-        cluster.hadoop_version = '1.3.2'
-        plugin = ap.AmbariPlugin()
-        plugin.get_edp_engine(cluster, edp.JOB_TYPE_PIG).create_hdfs_dir(
-            mock.Mock(), '/tmp')
-
-        self.assertEqual(1, create_dir.call_count)
 
     @mock.patch('sahara.service.edp.hdfs_helper.create_dir_hadoop2')
     def test_edp206_calls_hadoop2_create_dir(self, create_dir):

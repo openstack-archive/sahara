@@ -33,9 +33,6 @@ include sahara/plugins/vanilla/hadoop2/resources/*.sql
 include sahara/plugins/vanilla/hadoop2/resources/*.template
 include sahara/plugins/vanilla/v2_6_0/resources/*.xml
 include sahara/plugins/vanilla/v2_7_1/resources/*.xml
-include sahara/plugins/hdp/versions/version_1_3_2/resources/*.template
-include sahara/plugins/hdp/versions/version_1_3_2/resources/*.json
-include sahara/plugins/hdp/versions/version_1_3_2/resources/*.sh
 include sahara/plugins/hdp/versions/version_2_0_6/resources/*.template
 include sahara/plugins/hdp/versions/version_2_0_6/resources/*.json
 include sahara/plugins/hdp/versions/version_2_0_6/resources/*.sh

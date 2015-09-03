@@ -52,7 +52,7 @@ def validate_number_of_datanodes(cluster, scaled_groups, default_configs):
 
 
 class ClusterSpec(object):
-    def __init__(self, config, version='1.3.2'):
+    def __init__(self, config, version='2.0.6'):
         self._config_template = config
         self.services = []
         self.configurations = {}

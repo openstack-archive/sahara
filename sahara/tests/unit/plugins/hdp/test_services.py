@@ -21,14 +21,14 @@ from sahara.plugins.hdp.versions import versionhandlerfactory as vhf
 from sahara.tests.unit import base
 from sahara.tests.unit.plugins.hdp import hdp_test_base
 
-versions = ['1.3.2', '2.0.6']
+versions = ['2.0.6']
 
 
 class ServicesTest(base.SaharaTestCase):
     # TODO(jspeidel): test remaining service functionality which isn't
     # tested by coarser grained unit tests.
 
-    def get_services_processor(self, version='1.3.2'):
+    def get_services_processor(self, version='2.0.6'):
         handler = (vhf.VersionHandlerFactory.get_instance().
                    get_version_handler(version))
         s = handler.get_services_processor()
@@ -43,31 +43,6 @@ class ServicesTest(base.SaharaTestCase):
             self.assertEqual(expected_configs,
                              expected_configs & service.configurations)
             self.assertTrue(service.is_mandatory())
-
-    def test_hdfs_service_register_urls(self):
-        s = self.get_services_processor()
-        service = s.create_service('HDFS')
-        cluster_spec = mock.Mock()
-        cluster_spec.configurations = {
-            'core-site': {
-                'fs.default.name': 'hdfs://not_expected.com:9020'
-            },
-            'hdfs-site': {
-                'dfs.http.address': 'http://not_expected.com:10070'
-            }
-        }
-        instance_mock = mock.Mock()
-        instance_mock.management_ip = '127.0.0.1'
-        cluster_spec.determine_component_hosts = mock.Mock(
-            return_value=[instance_mock])
-        cluster = mock.Mock(cluster_configs={}, name="hdp")
-        url_info = {}
-        url_info = service.register_service_urls(cluster_spec, url_info,
-                                                 cluster)
-        self.assertEqual(url_info['HDFS']['Web UI'],
-                         'http://127.0.0.1:10070')
-        self.assertEqual(url_info['HDFS']['NameNode'],
-                         'hdfs://127.0.0.1:9020')
 
     def test_hdp2_hdfs_service_register_urls(self):
         s = self.get_services_processor('2.0.6')
@@ -122,15 +97,6 @@ class ServicesTest(base.SaharaTestCase):
         self.assertEqual(url_info['HDFS']['NameService'],
                          'hdfs://hdp-cluster')
 
-    def test_create_mr_service(self):
-        s = self.get_services_processor()
-        service = s.create_service('MAPREDUCE')
-        self.assertEqual('MAPREDUCE', service.name)
-        expected_configs = set(['global', 'core-site', 'mapred-site'])
-        self.assertEqual(expected_configs,
-                         expected_configs & service.configurations)
-        self.assertTrue(service.is_mandatory())
-
     def test_create_mr2_service(self):
         s = self.get_services_processor('2.0.6')
         service = s.create_service('MAPREDUCE2')
@@ -139,31 +105,6 @@ class ServicesTest(base.SaharaTestCase):
         self.assertEqual(expected_configs,
                          expected_configs & service.configurations)
         self.assertTrue(service.is_mandatory())
-
-    def test_mr_service_register_urls(self):
-        s = self.get_services_processor()
-        service = s.create_service('MAPREDUCE')
-        cluster_spec = mock.Mock()
-        cluster_spec.configurations = {
-            'mapred-site': {
-                'mapred.job.tracker': 'hdfs://not_expected.com:10300',
-                'mapred.job.tracker.http.address':
-                'http://not_expected.com:10030',
-                'mapreduce.jobhistory.webapp.address':
-                'http://not_expected.com:10030'
-            }
-        }
-        instance_mock = mock.Mock()
-        instance_mock.management_ip = '127.0.0.1'
-        cluster_spec.determine_component_hosts = mock.Mock(
-            return_value=[instance_mock])
-        url_info = {}
-        url_info = service.register_service_urls(cluster_spec, url_info,
-                                                 mock.Mock())
-        self.assertEqual(url_info['MapReduce']['Web UI'],
-                         'http://127.0.0.1:10030')
-        self.assertEqual(url_info['MapReduce']['JobTracker'],
-                         '127.0.0.1:10300')
 
     def test_hdp2_mr2_service_register_urls(self):
         s = self.get_services_processor('2.0.6')
@@ -217,7 +158,7 @@ class ServicesTest(base.SaharaTestCase):
             expected_configs = set(['global', 'core-site'])
             self.assertEqual(expected_configs,
                              expected_configs & service.configurations)
-            self.assertFalse(service.is_mandatory())
+            self.assertTrue(service.is_mandatory())
 
     def test_create_oozie_service(self):
         for version in versions:
@@ -272,49 +213,6 @@ class ServicesTest(base.SaharaTestCase):
     @mock.patch("sahara.utils.openstack.nova.get_instance_info",
                 hdp_test_base.get_instance_info)
     @mock.patch(
-        'sahara.plugins.hdp.versions.version_1_3_2.services.HdfsService.'
-        '_get_swift_properties',
-        return_value=[])
-    def test_create_sqoop_service(self, patched):
-        s = self.get_services_processor()
-        service = s.create_service('SQOOP')
-        self.assertEqual('SQOOP', service.name)
-        expected_configs = set(['global', 'core-site'])
-        self.assertEqual(expected_configs,
-                         expected_configs & service.configurations)
-        self.assertFalse(service.is_mandatory())
-
-        # ensure that hdfs and mr clients are added implicitly
-        master_host = hdp_test_base.TestServer(
-            'master.novalocal', 'master', '11111', 3,
-            '111.11.1111', '222.11.1111')
-        master_ng = hdp_test_base.TestNodeGroup(
-            'master',
-            [master_host],
-            ["NAMENODE",
-             "JOBTRACKER",
-             "SECONDARY_NAMENODE",
-             "TASKTRACKER",
-             "DATANODE",
-             "AMBARI_SERVER"])
-        sqoop_host = hdp_test_base.TestServer(
-            'sqoop.novalocal', 'sqoop', '11111', 3,
-            '111.11.1111', '222.11.1111')
-        sqoop_ng = hdp_test_base.TestNodeGroup(
-            'sqoop', [sqoop_host], ["SQOOP"])
-        cluster = hdp_test_base.TestCluster([master_ng, sqoop_ng])
-
-        cluster_spec = hdp_test_base.create_clusterspec()
-        cluster_spec.create_operational_config(cluster, [])
-
-        components = cluster_spec.get_node_groups_containing_component(
-            'SQOOP')[0].components
-        self.assertIn('HDFS_CLIENT', components)
-        self.assertIn('MAPREDUCE_CLIENT', components)
-
-    @mock.patch("sahara.utils.openstack.nova.get_instance_info",
-                hdp_test_base.get_instance_info)
-    @mock.patch(
         'sahara.plugins.hdp.versions.version_2_0_6.services.HdfsService.'
         '_get_swift_properties',
         return_value=[])
@@ -354,7 +252,7 @@ class ServicesTest(base.SaharaTestCase):
     @mock.patch("sahara.utils.openstack.nova.get_instance_info",
                 hdp_test_base.get_instance_info)
     @mock.patch(
-        'sahara.plugins.hdp.versions.version_1_3_2.services.HdfsService.'
+        'sahara.plugins.hdp.versions.version_2_0_6.services.HdfsService.'
         '_get_swift_properties',
         return_value=[])
     def test_create_hbase_service(self, patched):
@@ -378,14 +276,10 @@ class ServicesTest(base.SaharaTestCase):
     @mock.patch("sahara.utils.openstack.nova.get_instance_info",
                 hdp_test_base.get_instance_info)
     @mock.patch(
-        'sahara.plugins.hdp.versions.version_1_3_2.services.HdfsService.'
-        '_get_swift_properties',
-        return_value=[])
-    @mock.patch(
         'sahara.plugins.hdp.versions.version_2_0_6.services.HdfsService.'
         '_get_swift_properties',
         return_value=[])
-    def test_create_hdp2_hbase_service(self, patched2, patched):
+    def test_create_hdp2_hbase_service(self, patched):
         for version in versions:
             s = self.get_services_processor(version=version)
             service = s.create_service('HBASE')
@@ -395,7 +289,7 @@ class ServicesTest(base.SaharaTestCase):
                              expected_configs & service.configurations)
             self.assertFalse(service.is_mandatory())
 
-            cluster = self._create_hbase_cluster(version=version)
+            cluster = self._create_hbase_cluster()
 
             cluster_spec = hdp_test_base.create_clusterspec(
                 hdp_version=version)
@@ -417,16 +311,12 @@ class ServicesTest(base.SaharaTestCase):
     @mock.patch("sahara.utils.openstack.nova.get_instance_info",
                 hdp_test_base.get_instance_info)
     @mock.patch(
-        'sahara.plugins.hdp.versions.version_1_3_2.services.HdfsService.'
-        '_get_swift_properties',
-        return_value=[])
-    @mock.patch(
         'sahara.plugins.hdp.versions.version_2_0_6.services.HdfsService.'
         '_get_swift_properties',
         return_value=[])
-    def test_hbase_properties(self, patched2, patched):
+    def test_hbase_properties(self, patched):
         for version in versions:
-            cluster = self._create_hbase_cluster(version=version)
+            cluster = self._create_hbase_cluster()
 
             cluster_spec = hdp_test_base.create_clusterspec(
                 hdp_version=version)
@@ -667,7 +557,7 @@ class ServicesTest(base.SaharaTestCase):
     @mock.patch("sahara.utils.openstack.nova.get_instance_info",
                 hdp_test_base.get_instance_info)
     @mock.patch(
-        'sahara.plugins.hdp.versions.version_1_3_2.services.HdfsService.'
+        'sahara.plugins.hdp.versions.version_2_0_6.services.HdfsService.'
         '_get_swift_properties',
         return_value=[])
     def test_hbase_validation(self, patched):
@@ -675,10 +565,14 @@ class ServicesTest(base.SaharaTestCase):
             'master.novalocal', 'master', '11111', 3,
             '111.11.1111', '222.11.1111')
         master_ng = hdp_test_base.TestNodeGroup(
-            'master', [master_host], ["NAMENODE", "JOBTRACKER",
+            'master', [master_host], ["NAMENODE",
+                                      'RESOURCEMANAGER', 'YARN_CLIENT',
+                                      'NODEMANAGER',
                                       "SECONDARY_NAMENODE",
-                                      "TASKTRACKER", "DATANODE",
-                                      "AMBARI_SERVER"])
+                                      "DATANODE",
+                                      "AMBARI_SERVER",
+                                      'HISTORYSERVER', 'MAPREDUCE2_CLIENT',
+                                      'ZOOKEEPER_SERVER', 'ZOOKEEPER_CLIENT'])
         hbase_host = hdp_test_base.TestServer(
             'hbase.novalocal', 'hbase', '11111', 3,
             '111.11.1111', '222.11.1111')
@@ -813,16 +707,12 @@ class ServicesTest(base.SaharaTestCase):
     @mock.patch("sahara.utils.openstack.nova.get_instance_info",
                 hdp_test_base.get_instance_info)
     @mock.patch(
-        'sahara.plugins.hdp.versions.version_1_3_2.services.HdfsService.'
-        '_get_swift_properties',
-        return_value=[])
-    @mock.patch(
         'sahara.plugins.hdp.versions.version_2_0_6.services.HdfsService.'
         '_get_swift_properties',
         return_value=[])
-    def test_hbase_service_urls(self, patched2, patched):
+    def test_hbase_service_urls(self, patched):
         for version in versions:
-            cluster = self._create_hbase_cluster(version=version)
+            cluster = self._create_hbase_cluster()
             cluster_spec = hdp_test_base.create_clusterspec(
                 hdp_version=version)
             cluster_spec.create_operational_config(cluster, [])
@@ -849,16 +739,12 @@ class ServicesTest(base.SaharaTestCase):
     @mock.patch("sahara.utils.openstack.nova.get_instance_info",
                 hdp_test_base.get_instance_info)
     @mock.patch(
-        'sahara.plugins.hdp.versions.version_1_3_2.services.HdfsService.'
-        '_get_swift_properties',
-        return_value=[])
-    @mock.patch(
         'sahara.plugins.hdp.versions.version_2_0_6.services.HdfsService.'
         '_get_swift_properties',
         return_value=[])
-    def test_hbase_replace_tokens(self, patched2, patched):
+    def test_hbase_replace_tokens(self, patched):
         for version in versions:
-            cluster = self._create_hbase_cluster(version=version)
+            cluster = self._create_hbase_cluster()
             cluster_spec = hdp_test_base.create_clusterspec(
                 hdp_version=version)
             cluster_spec.create_operational_config(cluster, [])
@@ -900,22 +786,15 @@ class ServicesTest(base.SaharaTestCase):
             paths = service._get_common_paths([ng1, ng2, ng3])
             self.assertEqual(['/volume/disk1'], paths)
 
-    def _create_hbase_cluster(self, version='1.3.2'):
+    def _create_hbase_cluster(self):
         master_host = hdp_test_base.TestServer(
             'master.novalocal', 'master', '11111', 3,
             '111.11.1111', '222.11.1111')
-        if version == '1.3.2':
-            master_ng = hdp_test_base.TestNodeGroup(
-                'master', [master_host], ["NAMENODE", "JOBTRACKER",
-                                          "SECONDARY_NAMENODE", "TASKTRACKER",
-                                          "DATANODE", "AMBARI_SERVER",
-                                          "ZOOKEEPER_SERVER"])
-        elif version == '2.0.6':
-            master_ng = hdp_test_base.TestNodeGroup(
-                'master', [master_host], ["NAMENODE", "RESOURCEMANAGER",
-                                          "SECONDARY_NAMENODE", "NODEMANAGER",
-                                          "DATANODE", "AMBARI_SERVER",
-                                          "HISTORYSERVER", "ZOOKEEPER_SERVER"])
+        master_ng = hdp_test_base.TestNodeGroup(
+            'master', [master_host], ["NAMENODE", "RESOURCEMANAGER",
+                                      "SECONDARY_NAMENODE", "NODEMANAGER",
+                                      "DATANODE", "AMBARI_SERVER",
+                                      "HISTORYSERVER", "ZOOKEEPER_SERVER"])
         extra_zk_host = hdp_test_base.TestServer(
             'zk.novalocal', 'zk', '11112', 3,
             '111.11.1112', '222.11.1112')

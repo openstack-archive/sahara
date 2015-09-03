@@ -123,7 +123,7 @@ class HadoopServer(object):
         r.write_file_to(
             '/etc/hadoop/conf/topology.sh',
             f.get_file_text(
-                'plugins/hdp/versions/version_1_3_2/resources/topology.sh'))
+                'plugins/hdp/versions/version_2_0_6/resources/topology.sh'))
         r.execute_command(
             'chmod +x /etc/hadoop/conf/topology.sh', run_as_root=True
         )
