@@ -29,6 +29,9 @@ set -x
 # Make public and register in Sahara as admin
 sahara_register_fake_plugin_image
 
+# Register sahara specific flavor for gate
+sahara_register_flavor
+
 # Use demo user for running scenario tests
 set +x
 source $DEVSTACK_DIR/openrc demo demo
@@ -48,7 +51,7 @@ network_type: ${NETWORK}
 network_private_name: ${PRIVATE_NETWORK_NAME}
 network_public_name: ${PUBLIC_NETWORK_NAME}
 fake_plugin_image: ${SAHARA_FAKE_PLUGIN_IMAGE_NAME}
-ci_flavor_id: '1'
+ci_flavor_id: '${SAHARA_FLAVOR_ID}'
 cluster_name: fake-cluster
 EOF
 
