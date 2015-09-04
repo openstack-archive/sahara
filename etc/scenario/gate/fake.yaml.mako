@@ -18,8 +18,6 @@ clusters:
         node_processes:
           - datanode
           - jobtracker
-        volumes_per_node: 2
-        volumes_size: 1
         auto_security_group: true
     cluster_template:
       name: fake01
