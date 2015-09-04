@@ -1,9 +1,10 @@
 Welcome to Sahara!
 ===================
 
-Sahara project aims to provide users with simple means to provision a Hadoop
-cluster at OpenStack by specifying several parameters like Hadoop version,
-cluster topology, nodes hardware details and a few more.
+The sahara project aims to provide users with a simple means to provision data
+processing frameworks (such as Hadoop, Spark and Storm) on OpenStack. This is
+accomplished by specifying configuration parameters such as the framework
+version, cluster topology, node hardware details and more.
 
 Overview
 --------
