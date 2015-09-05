@@ -9,19 +9,27 @@ Architecture
 
 The Sahara architecture consists of several components:
 
-* Auth component - responsible for client authentication & authorization, communicates with Keystone
+* Auth component - responsible for client authentication & authorization,
+  communicates with the OpenStack Identity service (keystone).
 
-* DAL - Data Access Layer, persists internal models in DB
+* DAL - Data Access Layer, persists internal models in DB.
 
-* Provisioning Engine - component responsible for communication with Nova, Heat, Cinder and Glance
+* Provisioning Engine - component responsible for communication with
+  the Openstack Compute (nova), Orchestration (heat), Block Storage (cinder)
+  and Image (glance) services.
 
-* Vendor Plugins - pluggable mechanism responsible for configuring and launching Hadoop on provisioned VMs;
-  existing management solutions like Apache Ambari and Cloudera Management Console could be utilized for that matter
+* Vendor Plugins - pluggable mechanism responsible for configuring and
+  launching data processing frameworks on provisioned VMs. Existing
+  management solutions like Apache Ambari and Cloudera Management Console
+  could be utilized for that purpose as well.
 
-* EDP - :doc:`../userdoc/edp` responsible for scheduling and managing Hadoop jobs on clusters provisioned by Sahara
+* EDP - :doc:`../userdoc/edp` responsible for scheduling and managing
+  data processing jobs on clusters provisioned by sahara.
 
-* REST API - exposes Sahara functionality via REST
+* REST API - exposes sahara functionality via REST HTTP interface.
 
-* Python Sahara Client - similar to other OpenStack components Sahara has its own python client
+* Python Sahara Client - like other OpenStack components, sahara has
+  its own python client
 
-* Sahara pages - GUI for the Sahara is located on Horizon
+* Sahara pages - a GUI for the sahara is located in the OpenStack Dashboard
+  (horizon).
