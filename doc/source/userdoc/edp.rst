@@ -42,11 +42,13 @@ These components are supplied through the objects described below.
 Job Binaries
 ++++++++++++
 
-A :dfn:`Job Binary` object stores a URL to a single script or Jar file and any credentials needed to retrieve the file.  The file itself may be stored in the Sahara internal database or in Swift.
+A :dfn:`Job Binary` object stores a URL to a single script or Jar file and any credentials needed to retrieve the file.  The file itself may be stored in the Sahara internal database, in Swift, or in Manila.
 
 Files in the Sahara database are stored as raw bytes in a :dfn:`Job Binary Internal` object.  This object's sole purpose is to store a file for later retrieval.  No extra credentials need to be supplied for files stored internally.
 
 Sahara requires credentials (username and password) to access files stored in Swift unless Swift proxy users are configured as described in :doc:`../userdoc/advanced.configuration.guide`. The Swift service must be running in the same OpenStack installation referenced by Sahara.
+
+To reference a binary file stored in Manila, create the job binary with the URL ``manila//{share_id}/{path}``. This assumes that you have already stored that file in the appropriate path on the share. The share will be automatically mounted to any cluster nodes which require access to the file, if it is not mounted already.
 
 There is a configurable limit on the size of a single job binary that may be retrieved by Sahara.  This limit is 5MB and may be set with the *job_binary_max_KB* setting in the :file:`sahara.conf` configuration file.
 
@@ -82,6 +84,8 @@ A :dfn:`Data Source` object stores a URL which designates the location of input 
 Sahara supports data sources in Swift. The Swift service must be running in the same OpenStack installation referenced by Sahara.
 
 Sahara also supports data sources in HDFS. Any HDFS instance running on a Sahara cluster in the same OpenStack installation is accessible without manual configuration. Other instances of HDFS may be used as well provided that the URL is resolvable from the node executing the job.
+
+Sahara supports data sources in Manila as well. To reference a path on an NFS share as a data source, create the data source with the URL ``manila//{share_id}/{path}``. As in the case of job binaries, the specified share will be automatically mounted to your cluster's nodes as needed to access the data source.
 
 Some job types require the use of data source objects to specify input and output when a job is launched. For example, when running a Pig job the UI will prompt the user for input and output data source objects.
 
