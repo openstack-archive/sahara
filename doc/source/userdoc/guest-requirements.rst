@@ -22,7 +22,7 @@ If the Vanilla Plugin is used for cluster deployment the guest is required to ha
 * Apache Hadoop installed
 * 'hadoop' user created
 
-See :doc:`hadoop-swift` for information on using Swift with your Sahara cluster (for EDP support Swift integration is currently required).
+See :doc:`hadoop-swift` for information on using Swift with your sahara cluster (for EDP support Swift integration is currently required).
 
 To support EDP, the following components must also be installed on the guest:
 
@@ -32,17 +32,15 @@ To support EDP, the following components must also be installed on the guest:
 
 See :doc:`vanilla_imagebuilder` for instructions on building images for this plugin.
 
-HDP Plugin
-----------
+Hortonworks Plugin Requirements
+-------------------------------
 
-This plugin does not have any additional requirements.  Currently, only the CentOS Linux distribution is supported but other distributions will be supported in the future.
+This plugin does not have any additional requirements. Currently, only the CentOS Linux distribution is supported but other distributions will be supported in the future.
 To speed up provisioning, the HDP packages can be pre-installed on the image used. The packages' versions depend on the HDP version being used.
 
 Cloudera Plugin Requirements
 ----------------------------
 
-If the Cloudera Plugin is used for cluster deployment the guest is required to have
-
-* Cloudera Express installed
+Cloudera Plugin does not have any additional requirements, just build a CDH image to deploy the cluster.
 
 See :doc:`cdh_imagebuilder` for instructions on building images for this plugin.
