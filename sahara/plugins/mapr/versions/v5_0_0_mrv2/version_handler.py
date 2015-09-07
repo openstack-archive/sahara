@@ -62,7 +62,6 @@ class VersionHandler(bvh.BaseVersionHandler):
             yarn.YARNv270(),
             maprfs.MapRFS(),
             mng.Management(),
-            impala.ImpalaV141(),
             httpfs.HttpFS(),
             swift.Swift(),
         ]
