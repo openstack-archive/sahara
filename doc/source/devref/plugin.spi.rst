@@ -75,7 +75,7 @@ For instance, plugin can ask for additional VMs for the management tool.
 configure_cluster(cluster)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Configures cluster on provisioned by Sahara VMs.
+Configures cluster on provisioned by sahara VMs.
 In this function plugin should perform all actions like adjusting OS, installing required packages (including Hadoop, if needed), configuring Hadoop, etc.
 
 *Returns*: None
@@ -90,7 +90,7 @@ Start already configured cluster. This method is guaranteed to be called only on
 scale_cluster(cluster, instances)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Scale an existing Cluster with additional instances. Instances argument is a list
+Scale an existing cluster with additional instances. Instances argument is a list
 of ready-to-configure instances. Plugin should do all configuration operations in this
 method and start all services on those instances.
 
@@ -129,25 +129,32 @@ See “Cluster Lifecycle for Config File Mode” section below for clarification
 on_terminate_cluster(cluster)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-When user terminates cluster, Sahara simply shuts down all the cluster VMs. This method is guaranteed to be invoked before that, allowing plugin to do some clean-up.
+When user terminates cluster, sahara simply shuts down all the cluster VMs. This method is guaranteed to be invoked before that, allowing plugin to do some clean-up.
 
 *Returns*: None
 
 get_open_ports(node_group)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-When user requests Sahara to automatically create security group for the node
-group (``auto_security_group`` property set to True), Sahara will call this
+When user requests sahara to automatically create security group for the node
+group (``auto_security_group`` property set to True), sahara will call this
 plugin method to get list of ports that need to be opened.
 
 *Returns*: list of ports to be open in auto security group for the given node group
 
 def get_edp_job_types(versions)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Optional method, which provides ability to see all supported job types for specified plugin versions
 
 *Returns*: dict with supported job types for specified versions of plugin
+
+def recommend_configs(self, cluster, scaling=False)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Optional method, which provides recommendations for cluster configuration before creating/scaling operation.
+
+*Returns*: None
 
 Object Model
 ============
@@ -234,7 +241,7 @@ An instance created for cluster.
 +---------------+---------+---------------------------------------------------------+
 | nova_info     | object  | Nova Instance object.                                   |
 +---------------+---------+---------------------------------------------------------+
-| username      | string  | Username, that Sahara uses for establishing remote      |
+| username      | string  | Username, that sahara uses for establishing remote      |
 |               |         | connections to instance.                                |
 +---------------+---------+---------------------------------------------------------+
 | hostname      | string  | Same as instance_name.                                  |
@@ -275,7 +282,7 @@ Group of instances.
 +----------------------+--------+--------------------------------------------------------+
 | count                | int    | Number of instances in this Node Group.                |
 +----------------------+--------+--------------------------------------------------------+
-| username             | string | Username used by Sahara to establish remote            |
+| username             | string | Username used by sahara to establish remote            |
 |                      |        | connections to instances.                              |
 +----------------------+--------+--------------------------------------------------------+
 | configuration        | dict   | Merged dictionary of node configurations and cluster   |
