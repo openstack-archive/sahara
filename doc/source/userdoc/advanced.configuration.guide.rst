@@ -432,6 +432,12 @@ set to ``True`` and some extra configurations are needed:
 It should be noted that in a situation when the host has no space for volume
 creation, the created volume will have an ``Error`` state and can not be used.
 
+Autoconfiguration for templates
+-------------------------------
+
+:doc:`../userdoc/configs_recommendations`
+
+
 NTP service configuration
 -------------------------
 
