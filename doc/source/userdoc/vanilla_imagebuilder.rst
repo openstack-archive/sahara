@@ -4,7 +4,7 @@ Building Images for Vanilla Plugin
 ==================================
 
 In this document you will find instruction on how to build Ubuntu, Fedora, and
-CentOS images with Apache Hadoop versions 1.x.x and 2.x.x.
+CentOS images with Apache Hadoop version 2.x.x.
 
 As of now the vanilla plugin works with images with pre-installed versions of
 Apache Hadoop. To simplify the task of building such images we use
@@ -14,8 +14,8 @@ Apache Hadoop. To simplify the task of building such images we use
 particular set of code that alters how the image is built, or runs within the
 chroot to prepare the image.
 
-Elements for building vanilla images are stored in
-`Sahara extra repository <https://github.com/openstack/sahara-image-elements>`_
+Elements for building vanilla images are stored in the
+`Sahara image elements repository <https://github.com/openstack/sahara-image-elements>`_
 
 .. note::
 
@@ -30,22 +30,21 @@ To create vanilla images follow these steps:
 
 2. Use tox to build images.
 
-   You can run "tox -e venv -- sahara-image-create" command in sahara-image-elements
+   You can run the command below in sahara-image-elements
    directory to build images. By default this script will attempt to create cloud
    images for all versions of supported plugins and all operating systems
-   (subset of Ubuntu, Fedora, and CentOS depending on plugin). This command
-   must be run with root privileges.
+   (subset of Ubuntu, Fedora, and CentOS depending on plugin).
 
    .. sourcecode:: console
 
-      tox -e venv -- sahara-image-create
+      tox -e venv -- sahara-image-create -u
 
    Tox will create a virtualenv and install required python packages in it,
    clone the repositories "https://github.com/openstack/diskimage-builder" and "https://github.com/openstack/sahara-image-elements" and export necessary parameters.
         * ``DIB_HADOOP_VERSION`` - version of Hadoop to install
         * ``JAVA_DOWNLOAD_URL`` - download link for JDK (tarball or bin)
         * ``OOZIE_DOWNLOAD_URL`` - download link for OOZIE (we have built
-          Oozie libs here: http://sahara-files.mirantis.com/oozie-4.0.0.tar.gz)
+          Oozie libs here: ``http://sahara-files.mirantis.com/oozie-4.2.0-hadoop-2.7.1.tar.gz``)
         * ``HIVE_VERSION`` - version of Hive to install (currently supports only 0.11.0)
         * ``ubuntu_image_name``
         * ``fedora_image_name``
