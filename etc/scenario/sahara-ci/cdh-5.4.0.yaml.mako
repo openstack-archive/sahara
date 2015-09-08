@@ -53,6 +53,7 @@ clusters:
           - HDFS_SECONDARYNAMENODE
           - HIVE_METASTORE
           - HIVE_SERVER2
+          - SPARK_YARN_HISTORY_SERVER
         auto_security_group: true
     cluster_template:
       name: cdh540
@@ -71,4 +72,4 @@ clusters:
     scenario:
       - run_jobs
       - sentry
-    edp_jobs_flow: hadoop_2
+    edp_jobs_flow: cdh_flow

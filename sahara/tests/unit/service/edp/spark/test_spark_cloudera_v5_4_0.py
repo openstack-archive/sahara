@@ -20,7 +20,7 @@ from sahara.tests.unit.service.edp.spark import base as tests
 class TestClouderaPlugin(tests.TestSpark):
     def setUp(self):
         super(TestClouderaPlugin, self).setUp()
-        self.master_host = "CLOUDERA_MANAGER"
+        self.master_host = "SPARK_YARN_HISTORY_SERVER"
         self.engine_class = edp_engine.EdpSparkEngine
         self.spark_user = "sudo -u spark "
         self.spark_submit = "spark-submit"

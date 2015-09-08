@@ -82,7 +82,7 @@ class EdpSparkEngine(edp_spark_engine.SparkJobEngine):
 
     def __init__(self, cluster):
         super(EdpSparkEngine, self).__init__(cluster)
-        self.master = u.get_instance(cluster, "CLOUDERA_MANAGER")
+        self.master = u.get_instance(cluster, "SPARK_YARN_HISTORY_SERVER")
         self.plugin_params["spark-user"] = "sudo -u spark "
         self.plugin_params["spark-submit"] = "spark-submit"
         self.plugin_params["deploy-mode"] = "cluster"
