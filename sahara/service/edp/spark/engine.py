@@ -177,7 +177,8 @@ class SparkJobEngine(base_engine.JobEngine):
 
     def _check_driver_class_path(self, param_dict):
         cp = param_dict['driver-class-path'] or ""
-        if not (cp.startswith(":") or cp.endswith(":")):
+        if param_dict['deploy-mode'] == 'client' and not (
+                cp.startswith(":") or cp.endswith(":")):
             cp += ":"
         param_dict['driver-class-path'] = " --driver-class-path " + cp
 
