@@ -205,37 +205,55 @@ class ClusterStack(object):
         security_group_description = (
             "Auto security group created by Sahara for Node Group "
             "'%s' of cluster '%s'." % (ng.name, ng.cluster.name))
-        rules = self._serialize_auto_security_group_rules(ng)
+
+        if CONF.use_neutron:
+            res_type = "OS::Neutron::SecurityGroup"
+            desc_key = "description"
+            rules_key = "rules"
+            create_rule = lambda ip_version, cidr, proto, from_port, to_port: {
+                "ethertype": "IPv{}".format(ip_version),
+                "remote_ip_prefix": cidr,
+                "protocol": proto,
+                "port_range_min": six.text_type(from_port),
+                "port_range_max": six.text_type(to_port)}
+        else:
+            res_type = "AWS::EC2::SecurityGroup"
+            desc_key = "GroupDescription"
+            rules_key = "SecurityGroupIngress"
+            create_rule = lambda _, cidr, proto, from_port, to_port: {
+                "CidrIp": cidr,
+                "IpProtocol": proto,
+                "FromPort": six.text_type(from_port),
+                "ToPort": six.text_type(to_port)}
+
+        rules = self._serialize_auto_security_group_rules(ng, create_rule)
 
         return {
             security_group_name: {
-                "type": "AWS::EC2::SecurityGroup",
+                "type": res_type,
                 "properties": {
-                    "GroupDescription": security_group_description,
-                    "SecurityGroupIngress": rules
+                    desc_key: security_group_description,
+                    rules_key: rules
                 }
             }
         }
 
-    def _serialize_auto_security_group_rules(self, ng):
-        create_rule = lambda cidr, proto, from_port, to_port: {
-            "CidrIp": cidr,
-            "IpProtocol": proto,
-            "FromPort": six.text_type(from_port),
-            "ToPort": six.text_type(to_port)}
-
+    def _serialize_auto_security_group_rules(self, ng, create_rule):
         rules = []
         for port in ng.open_ports:
-            rules.append(create_rule('0.0.0.0/0', 'tcp', port, port))
+            rules.append(create_rule(4, '0.0.0.0/0', 'tcp', port, port))
+            rules.append(create_rule(6, '::/0', 'tcp', port, port))
 
-        rules.append(create_rule('0.0.0.0/0', 'tcp', SSH_PORT, SSH_PORT))
+        rules.append(create_rule(4, '0.0.0.0/0', 'tcp', SSH_PORT, SSH_PORT))
+        rules.append(create_rule(6, '::/0', 'tcp', SSH_PORT, SSH_PORT))
 
         # open all traffic for private networks
         if CONF.use_neutron:
             for cidr in neutron.get_private_network_cidrs(ng.cluster):
+                ip_ver = 6 if ':' in cidr else 4
                 for protocol in ['tcp', 'udp']:
-                    rules.append(create_rule(cidr, protocol, 1, 65535))
-                rules.append(create_rule(cidr, 'icmp', -1, -1))
+                    rules.append(create_rule(ip_ver, cidr, protocol, 1, 65535))
+                rules.append(create_rule(ip_ver, cidr, 'icmp', 0, 255))
 
         return rules
 
