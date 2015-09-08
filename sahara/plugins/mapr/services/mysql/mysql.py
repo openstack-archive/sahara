@@ -119,7 +119,7 @@ class MySQL(s.Service):
             MySQL._grant_access(instance, MySQL.METASTORE_SPECS, instances)
             with hive_meta.remote() as r:
                 hive_serv = cluster_context.get_service(hive.HIVE_METASTORE)
-                schema_path = MySQL.SCHEMA_PATH.format(hive_serv.version)
+                schema_path = hive_serv.get_schema_path(cluster_context)
                 script = MySQL._create_script_obj('hive_schema.sql',
                                                   'hive_schema.sql',
                                                   db_name=db_name,
@@ -200,7 +200,7 @@ class MySQL(s.Service):
         ips = [i.internal_ip for i in instances]
         user_hosts = MySQL.get_user_hosts(instance, specs.user)
         script = MySQL._create_script_obj(f_name, 'grant_access.sql',
-                                          hosts=set(ips)-set(user_hosts),
+                                          hosts=set(ips) - set(user_hosts),
                                           db_name=specs.db_name,
                                           user=specs.user,
                                           password=specs.password)
