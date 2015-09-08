@@ -275,7 +275,8 @@ def _client(username, password=None, token=None, tenant_name=None,
     return keystone
 
 
-def _password_auth(username, password, project_name, user_domain_name=None,
+def _password_auth(username, password,
+                   project_name=None, user_domain_name=None,
                    project_domain_name=None, trust_id=None):
     '''Return a password auth plugin object.
 
