@@ -4,7 +4,8 @@
     "node_processes": [
         "HDFS_SECONDARYNAMENODE",
         "OOZIE_SERVER",
-        "YARN_JOBHISTORY"
+        "YARN_JOBHISTORY",
+        "SPARK_YARN_HISTORY_SERVER"
     ],
     "name": "cdh-540-default-secondary-namenode",
     "floating_ip_pool": "{floating_ip_pool}",
