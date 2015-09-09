@@ -1,11 +1,11 @@
 
 Log Guidelines
-======================
+==============
 
 Levels Guidelines
 -----------------
 
-During Kilo release cycle Sahara community defined the following log levels:
+During the Kilo release cycle the sahara community defined the following log levels:
 
 
 * Debug: Shows everything and is likely not suitable for normal production
@@ -13,22 +13,22 @@ During Kilo release cycle Sahara community defined the following log levels:
   process execution, etc.).
 * Info: Usually indicates successful service start/stop, versions and such
   non-error related data. This should include largely positive units of work
-  that are accomplished (e.g. service setup, cluster start, successful job
-  execution).
+  that are accomplished (e.g. service setup and configuration, cluster start,
+  job execution information).
 * Warning: Indicates that there might be a systemic issue;
   potential predictive failure notice (e.g. job execution failed).
-* Error: An error has occurred and an administrator should research the event
-  (e.g. cluster failed to start, plugin violations of operation).
+* Error: An error has occurred and the administrator should research the error
+  information (e.g. cluster failed to start, plugin violations of operation).
 * Critical: An error has occurred and the system might be unstable, anything
-  that eliminates part of Sahara's intended functionality; immediately get
-  administrator assistance (e.g. failed to access keystone/database, plugin
-  load failed).
+  that eliminates part of sahara's intended functionalities; immediately get
+  administrator assistance (e.g. failed to access keystone/database, failed to
+  load plugin).
 
 
 Formatting Guidelines
-----------------------
+---------------------
 
-Now Sahara uses string formatting defined in `PEP 3101`_ for logs.
+Now sahara uses string formatting defined in `PEP 3101`_ for logs.
 
 .. code:: python
 
@@ -42,7 +42,7 @@ Translation Guidelines
 ----------------------
 
 All log levels except Debug requires translation. None of the separate cli tools packaged
-with Sahara contain log translations.
+with sahara contain log translations.
 
 * Debug: no translation
 * Info: _LI
