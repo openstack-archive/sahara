@@ -18,6 +18,7 @@ import os
 import flask
 from oslo_config import cfg
 from oslo_log import log
+import oslo_middleware.cors as cors_middleware
 from oslo_middleware import request_id
 from oslo_service import systemd
 import six
@@ -153,6 +154,15 @@ def make_app():
     if CONF.debug and not CONF.log_exchange:
         LOG.debug('Logging of request/response exchange could be enabled using'
                   ' flag --log-exchange')
+
+    # Create a CORS wrapper, and attach sahara-specific defaults that must be
+    # included in all CORS responses.
+    app.wsgi_app = cors_middleware.CORS(app.wsgi_app, CONF)
+    app.wsgi_app.set_latent(
+        allow_headers=['X-Auth-Token', 'X-Server-Management-Url'],
+        allow_methods=['GET', 'PUT', 'POST', 'DELETE', 'PATCH'],
+        expose_headers=['X-Auth-Token', 'X-Server-Management-Url']
+    )
 
     if CONF.log_exchange:
         app.wsgi_app = log_exchange.LogExchange.factory(CONF)(app.wsgi_app)
