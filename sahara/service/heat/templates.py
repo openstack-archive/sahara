@@ -419,7 +419,6 @@ class ClusterStack(object):
                     "properties": {
                         "instance_uuid": {"get_param": "instance"},
                         "volume_id": {"Ref": "volume"},
-                        "mountpoint": None
                     }
                 }},
             "outputs": {}
