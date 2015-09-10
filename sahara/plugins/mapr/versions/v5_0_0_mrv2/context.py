@@ -25,7 +25,7 @@ class Context(bc.BaseClusterContext):
         self._hadoop_conf = None
         self._cluster_mode = yarn.YARNv270.cluster_mode
         self._node_aware = True
-        self._resource_manager_uri = None
+        self._resource_manager_uri = "maprfs:///"
         self._mapr_version = "5.0.0"
         self._ubuntu_ecosystem_repo = (
             "http://package.mapr.com/releases/ecosystem-5.x/ubuntu binary/")
@@ -46,20 +46,15 @@ class Context(bc.BaseClusterContext):
 
     @property
     def resource_manager_uri(self):
-        # FIXME(aosadchyi): Wait for RM HA to work properly
-        if not self._resource_manager_uri:
-            ip = self.get_instance(yarn.RESOURCE_MANAGER).internal_ip
-            self._resource_manager_uri = "%s:8032" % ip
         return self._resource_manager_uri
 
     @property
     def configure_sh(self):
         if not self._configure_sh:
-            f = "%(base)s -RM %(resource_manager)s -HS %(history_server)s"
+            configure_sh_template = "%(base)s -HS %(history_server)s"
             args = {
                 "base": super(Context, self).configure_sh,
-                "resource_manager": self.get_resourcemanager_ip(),
                 "history_server": self.get_historyserver_ip(),
             }
-            self._configure_sh = f % args
+            self._configure_sh = configure_sh_template % args
         return self._configure_sh
