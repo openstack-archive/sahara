@@ -15,7 +15,7 @@ Start VM and set up OS
 ----------------------
 
 In order to run DevStack in a local VM, you need to start by installing
-a guest with Ubuntu 12.04 server. Download an image file from
+a guest with Ubuntu 14.04 server. Download an image file from
 `Ubuntu's web site <http://www.ubuntu.com/download/server>`_ and create
 a new guest from it. Virtualization solution must support
 nested virtualization. Without nested virtualization VMs running inside
@@ -26,7 +26,7 @@ On Linux QEMU/KVM supports nested virtualization, on Mac OS - VMware Fusion.
 VMware Fusion requires adjustments to run VM with fixed IP. You may find
 instructions which can help :ref:`below <fusion-fixed-ip>`.
 
-Start a new VM with Ubuntu Server 12.04. Recommended settings:
+Start a new VM with Ubuntu Server 14.04. Recommended settings:
 
 - Processor - at least 2 cores
 - Memory - at least 8GB
@@ -45,7 +45,7 @@ Install DevStack
 ----------------
 
 The instructions assume that you've decided to install DevStack into
-Ubuntu 12.04 system.
+Ubuntu 14.04 system.
 
 1. Clone DevStack:
 
