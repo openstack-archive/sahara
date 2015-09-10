@@ -205,3 +205,28 @@ instance processes and the sahara engine. This option is useful
 for development and for when your installation is secured from outside
 environments. For production environments we recommend controlling the
 security group policy manually.
+
+Shared and protected resources support
+--------------------------------------
+
+Sahara allows you to create resources that can be shared across tenants and
+protected from modifications.
+
+To provide this feature all sahara objects that can be accessed through
+REST API have ``is_public`` and ``is_protected`` boolean fields. They can be
+initially created with enabled ``is_public`` and ``is_protected``
+parameters or these parameters can be updated after creation. Both fields are
+set to ``False`` by default.
+
+If some object has its ``is_public`` field set to ``True``, it means that it's
+visible not only from the tenant in which it was created, but from any other
+tenants too.
+
+If some object has its ``is_protected`` field set to ``True``, it means that it
+can not be modified (updated, scaled, canceled or deleted) unless this field
+is set to ``False``.
+
+Public objects created in one tenant can be used from other tenants (for
+example, a cluster can be created from a public cluster template which is
+created in another tenant), but modification operations are possible only from
+the tenant in which object was created.
