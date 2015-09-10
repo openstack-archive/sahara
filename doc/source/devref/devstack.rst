@@ -92,7 +92,7 @@ Ubuntu 14.04 system.
     # access to install prerequisites and fetch repositories.
     # OFFLINE=True
 
-    # Enable Sahara
+    # Enable sahara
     enable_plugin sahara git://git.openstack.org/openstack/sahara
 
 In cases where you need to specify a git refspec (branch, tag, or commit hash)
@@ -124,12 +124,12 @@ appended after the git repo URL as follows:
 6. Congratulations! You have OpenStack running in your VM and ready to launch VMs inside that VM :)
 
 
-Managing Sahara in DevStack
+Managing sahara in DevStack
 ---------------------------
 
-If you install DevStack with Sahara included you can rejoin screen with
+If you install DevStack with sahara included you can rejoin screen with
 ``rejoin-stack.sh`` command and switch to ``sahara`` tab. Here you can manage
-the Sahara service as other OpenStack services. Sahara source code is located
+the sahara service as other OpenStack services. Sahara source code is located
 at ``$DEST/sahara`` which is usually ``/opt/stack/sahara``.
 
 
