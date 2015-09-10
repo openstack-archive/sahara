@@ -41,3 +41,8 @@ function sahara_register_fake_plugin_image {
     openstack --os-url $GLANCE_SERVICE_PROTOCOL://$GLANCE_HOSTPORT image set \
         $SAHARA_FAKE_PLUGIN_IMAGE_NAME $props
 }
+
+function sahara_register_flavor {
+    nova flavor-create $SAHARA_FLAVOR_NAME $SAHARA_FLAVOR_ID $SAHARA_FLAVOR_RAM \
+        $SAHARA_FLAVOR_DISK $SAHARA_FLAVOR_VCPUS
+}

@@ -19,3 +19,8 @@
 export SAHARA_FAKE_PLUGIN_IMAGE=http://tarballs.openstack.org/heat-test-image/fedora-heat-test-image.qcow2
 export SAHARA_FAKE_PLUGIN_IMAGE_NAME=$(basename $SAHARA_FAKE_PLUGIN_IMAGE .qcow2)
 export SAHARA_FAKE_PLUGIN_IMAGE_USERNAME=fedora
+export SAHARA_FLAVOR_NAME=sahara-flavor
+export SAHARA_FLAVOR_ID=20
+export SAHARA_FLAVOR_RAM=512
+export SAHARA_FLAVOR_DISK=4
+export SAHARA_FLAVOR_VCPUS=1
