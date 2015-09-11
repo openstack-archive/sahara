@@ -13,8 +13,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from novaclient import client as nova_client
 from novaclient import exceptions as nova_ex
-from novaclient.v2 import client as nova_client
 from oslo_config import cfg
 
 from sahara.service import sessions
@@ -45,7 +45,7 @@ CONF.register_opts(opts, group=nova_group)
 
 def client():
     session = sessions.cache().get_session(sessions.SESSION_TYPE_NOVA)
-    nova = nova_client.Client(session=session, auth=keystone.auth(),
+    nova = nova_client.Client('2', session=session, auth=keystone.auth(),
                               endpoint_type=CONF.nova.endpoint_type)
     nova.images = images.SaharaImageManager(nova)
     return nova
