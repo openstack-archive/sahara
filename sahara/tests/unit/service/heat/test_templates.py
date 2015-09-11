@@ -69,7 +69,13 @@ class TestClusterTemplate(base.SaharaWithDbTestCase):
         ng1 = [ng for ng in cluster.node_groups if ng.name == "master"][0]
         ng2 = [ng for ng in cluster.node_groups if ng.name == "worker"][0]
 
-        expected = {"scheduler_hints": {"group": {"Ref": "cluster-aa-group"}}}
+        expected = {
+            "scheduler_hints": {
+                "group": {
+                    "get_resource": "cluster-aa-group"
+                }
+            }
+        }
         actual = heat_template._get_anti_affinity_scheduler_hints(ng2)
         self.assertEqual(expected, actual)
 
@@ -91,7 +97,7 @@ class TestClusterTemplate(base.SaharaWithDbTestCase):
         actual = heat_template._get_security_groups(ng1)
         self.assertEqual(expected, actual)
 
-        expected = ['3', '4', {'Ref': 'cluster-worker-2'}]
+        expected = ['3', '4', {'get_resource': 'cluster-worker-2'}]
         actual = heat_template._get_security_groups(ng2)
         self.assertEqual(expected, actual)
 

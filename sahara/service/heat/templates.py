@@ -148,8 +148,14 @@ class ClusterStack(object):
         if not self._need_aa_server_group(node_group):
             return {}
 
-        return {"scheduler_hints": {"group": {"Ref": _get_aa_group_name(
-            self.cluster)}}}
+        return {
+            "scheduler_hints": {
+                "group": {
+                    "get_resource": _get_aa_group_name(
+                        self.cluster)
+                }
+            }
+        }
 
     def _serialize_resources(self, outputs):
         resources = {}
@@ -195,7 +201,7 @@ class ClusterStack(object):
             "resources": self._serialize_instance(ng),
             "outputs": {
                 "instance": {"value": {
-                    "physical_id": {"Ref": "inst"},
+                    "physical_id": {"get_resource": "inst"},
                     "name": {"get_attr": ["inst", "name"]}
                 }}}
         })
@@ -272,7 +278,7 @@ class ClusterStack(object):
                 port_name, self.cluster.neutron_management_network,
                 self._get_security_groups(ng)))
 
-            properties["networks"] = [{"port": {"Ref": "port"}}]
+            properties["networks"] = [{"port": {"get_resource": "port"}}]
 
             if ng.floating_ip_pool:
                 resources.update(self._serialize_neutron_floating(ng))
@@ -336,7 +342,7 @@ class ClusterStack(object):
                 "type": "OS::Neutron::FloatingIP",
                 "properties": {
                     "floating_network_id": ng.floating_ip_pool,
-                    "port_id": {"Ref": "port"}
+                    "port_id": {"get_resource": "port"}
                 }
             }
         }
@@ -352,8 +358,8 @@ class ClusterStack(object):
             "floating_ip_assoc": {
                 "type": "OS::Nova::FloatingIPAssociation",
                 "properties": {
-                    "floating_ip": {"Ref": "floating_ip"},
-                    "server_id": {"Ref": "inst"}
+                    "floating_ip": {"get_resource": "floating_ip"},
+                    "server_id": {"get_resource": "inst"}
                 }
             }
         }
@@ -372,7 +378,7 @@ class ClusterStack(object):
                         "properties": {
                             "volume_index": "%index%",
                             "instance_index": {"get_param": "instance_index"},
-                            "instance": {"Ref": "inst"}}
+                            "instance": {"get_resource": "inst"}}
                     }
                 }
             }
@@ -418,7 +424,7 @@ class ClusterStack(object):
                     "type": "OS::Cinder::VolumeAttachment",
                     "properties": {
                         "instance_uuid": {"get_param": "instance"},
-                        "volume_id": {"Ref": "volume"},
+                        "volume_id": {"get_resource": "volume"},
                     }
                 }},
             "outputs": {}
@@ -427,9 +433,11 @@ class ClusterStack(object):
     def _get_security_groups(self, node_group):
         if not node_group.auto_security_group:
             return node_group.security_groups
-
-        return (list(node_group.security_groups or []) +
-                [{"Ref": g.generate_auto_security_group_name(node_group)}])
+        node_group_sg = list(node_group.security_groups or [])
+        node_group_sg += [
+            {"get_resource": g.generate_auto_security_group_name(node_group)}
+        ]
+        return node_group_sg
 
     def _serialize_aa_server_group(self):
         server_group_name = _get_aa_group_name(self.cluster)
