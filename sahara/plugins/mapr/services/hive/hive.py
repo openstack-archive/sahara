@@ -39,6 +39,9 @@ HIVE_SERVER_2 = np.NodeProcess(
 
 
 class Hive(s.Service):
+    SCHEMA_PATH_TEMPLATE = ("%(hive_home)s/scripts/metastore/upgrade/mysql/"
+                            "hive-schema-%(hive_version)s.0.mysql.sql")
+
     def __init__(self):
         super(Hive, self).__init__()
         self._name = 'hive'
@@ -110,6 +113,13 @@ class Hive(s.Service):
             LOG.debug("Creating Hive warehouse dir")
             r.execute_command(cmd % args, raise_when_error=False)
 
+    def get_schema_path(self, cluster_context):
+        args = {
+            "hive_home": self.home_dir(cluster_context),
+            "hive_version": self.version,
+        }
+        return self.SCHEMA_PATH_TEMPLATE % args
+
 
 @six.add_metaclass(s.Single)
 class HiveV013(Hive):
@@ -125,3 +135,11 @@ class HiveV10(Hive):
         super(HiveV10, self).__init__()
         self._version = "1.0"
         self._dependencies = [("mapr-hive", self.version)]
+
+    def get_schema_path(self, cluster_context):
+        args = {
+            "hive_home": self.home_dir(cluster_context),
+            # Hive 1.0 uses schema for Hive 0.14
+            "hive_version": "0.14",
+        }
+        return self.SCHEMA_PATH_TEMPLATE % args
