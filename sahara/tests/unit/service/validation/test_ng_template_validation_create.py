@@ -336,3 +336,17 @@ class TestNGTemplateCreateValidation(u.ValidationTestCase):
             bad_req_i=(1, 'NOT_FOUND', "Floating IP pool network_bad "
                                        "not found")
         )
+
+    def test_volumes_per_node_without_volumes_size(self):
+        self._assert_create_object_validation(
+            data={
+                'name': 'a',
+                'flavor_id': '42',
+                'plugin_name': 'fake',
+                'hadoop_version': '0.1',
+                'node_processes': ['datanode', 'tasktracker'],
+                'volumes_per_node': 1
+            },
+            bad_req_i=(1, 'INVALID_REFERENCE', "You must specify a "
+                                               "volumes_size parameter")
+        )

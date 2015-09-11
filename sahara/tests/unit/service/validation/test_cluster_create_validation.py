@@ -418,6 +418,7 @@ class TestClusterCreateValidation(u.ValidationTestCase):
                             'd9a3bebc-f788-4b81-9a93-aa048022c1ca',
                         'availability_zone': 'nova',
                         'volumes_per_node': 1,
+                        'volumes_size': 1,
                         'volumes_availability_zone': 'nova'
                     }
                 ]

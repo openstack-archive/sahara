@@ -57,23 +57,27 @@ def check_node_group_template_usage(node_group_template_id, **kwargs):
              'clusters': cluster_users and ', '.join(cluster_users) or 'N/A'})
 
 
-def check_node_group_template_update(data, **kwargs):
+def check_node_group_template_update(node_group_template_id, data, **kwargs):
     if data.get('plugin_name') and not data.get('hadoop_version'):
         raise ex.InvalidReferenceException(
-            _("You must specify a hadoop_version value"
+            _("You must specify a hadoop_version value "
               "for your plugin_name"))
 
-    if data.get('hadoop_version') and not data.get('plugin_name'):
-        raise ex.InvalidReferenceException(
-            _("You must specify a plugin_name"
-              "for your hadoop_version value"))
-
     if data.get('plugin_name'):
-        b.check_plugin_name_exists(data['plugin_name'])
-        b.check_plugin_supports_version(data['plugin_name'],
-                                        data['hadoop_version'])
-        b.check_node_group_basic_fields(data['plugin_name'],
-                                        data['hadoop_version'], data)
+        plugin = data.get('plugin_name')
+        version = data.get('hadoop_version')
+        b.check_plugin_name_exists(plugin)
+        b.check_plugin_supports_version(plugin, version)
+    else:
+        ngt = api.get_node_group_template(node_group_template_id)
+        plugin = ngt.plugin_name
+        if data.get('hadoop_version'):
+            version = data.get('hadoop_version')
+            b.check_plugin_supports_version(plugin, version)
+        else:
+            version = ngt.hadoop_version
+
+    b.check_node_group_basic_fields(plugin, version, data)
 
     if data.get('shares'):
         shares.check_shares(data['shares'])
