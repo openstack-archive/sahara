@@ -125,7 +125,7 @@ function create {
     resource_save sahara cluster_id $cluster_id
 
     # wait until cluster moves to active state
-    local timeleft=300
+    local timeleft=1000
     while [[ $timeleft -gt 0 ]]; do
         local cluster_state=$(sahara cluster-show --id $cluster_id | awk '$2 ~ /^status/ { print $4;exit }')
         if [[ "$cluster_state" != "Active" ]]; then
@@ -133,7 +133,7 @@ function create {
             sleep 10
             timeleft=$((timeleft - 10))
             if [[ $timeleft == 0 ]]; then
-                die $LINENO "Cluster hasn't moved to Active state during 300 seconds"
+                die $LINENO "Cluster hasn't moved to Active state during 1000 seconds"
             fi
         else
             break
@@ -166,7 +166,7 @@ function destroy {
     local cluster_id=$(resource_get sahara cluster_id)
     sahara cluster-delete --id $cluster_id > /dev/null
     # wait for cluster deletion
-    local timeleft=100
+    local timeleft=500
     while [[ $timeleft -gt 0 ]]; do
         sahara cluster-show --id $cluster_id > /dev/null
         local rc=$?
@@ -176,7 +176,7 @@ function destroy {
             sleep 5
             timeleft=$((timeleft - 5))
             if [[ $timeleft == 0 ]]; then
-                die $LINENO "Cluster hasn't been deleted during 100 seconds"
+                die $LINENO "Cluster hasn't been deleted during 500 seconds"
             fi
         else
             break
