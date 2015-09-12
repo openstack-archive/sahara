@@ -1,0 +1,3 @@
+---
+fixes:
+  - Heat engine shows reasons in case of failure

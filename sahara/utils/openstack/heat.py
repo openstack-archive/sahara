@@ -84,7 +84,7 @@ def wait_stack_completion(stack, is_update=False, last_updated_time=None):
         base.execute_with_retries(stack.get)
 
     if stack.status != 'COMPLETE':
-        raise ex.HeatStackException(stack.stack_status)
+        raise ex.HeatStackException(stack.stack_status_reason)
 
 
 def get_resource(stack, resource):

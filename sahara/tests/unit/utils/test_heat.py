@@ -54,12 +54,14 @@ class FakeHeatStack(object):
                  updated_time=None):
         self.stack_status = stack_status or ''
         self.new_statuses = new_statuses or []
+        self.stack_status_reason = stack_status or ''
         self.idx = 0
         self.stack_name = stack_name or ''
         self.updated_time = updated_time
 
     def get(self):
         self.stack_status = self.new_statuses[self.idx]
+        self.stack_status_reason = self.new_statuses[self.idx]
         self.idx += 1
         if self.idx > 0 and self.stack_status == 'UPDATE_COMPLETE':
             self.updated_time = self.idx
