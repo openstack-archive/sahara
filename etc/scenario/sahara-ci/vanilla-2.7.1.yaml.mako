@@ -39,6 +39,7 @@ clusters:
           - secondarynamenode
           - nodemanager
         auto_security_group: true
+        is_proxy_gateway: true
     cluster_template:
       name: vanilla271
       node_group_templates:

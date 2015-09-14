@@ -91,7 +91,8 @@ class TestBase(testtools.TestCase):
                 {
                     'name': 'master',
                     'node_processes': ['namenode', 'oozie', 'resourcemanager'],
-                    'flavor': '2'
+                    'flavor': '2',
+                    'is_proxy_gateway': True
                 },
                 {
                     'name': 'worker',

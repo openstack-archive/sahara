@@ -28,6 +28,7 @@ clusters:
           - resourcemanager
           - namenode
         auto_security_group: true
+        is_proxy_gateway: true
     cluster_template:
       name: transient
       node_group_templates:

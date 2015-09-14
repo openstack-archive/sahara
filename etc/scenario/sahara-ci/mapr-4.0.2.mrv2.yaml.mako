@@ -25,6 +25,7 @@ clusters:
         auto_security_group: true
         volumes_per_node: 2
         volumes_size: 20
+        is_proxy_gateway: true
       - name: worker
         flavor: ${ci_flavor_id}
         node_processes:
