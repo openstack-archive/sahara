@@ -34,7 +34,7 @@ class GeneralUtilsTest(testtools.TestCase):
                               [i2, i3, i4])
         ng3 = tu.make_ng_dict("sn", "f1", ["dn"], 1, [i5])
 
-        self.c1 = tu.create_cluster("cluster1", "tenant1", "general", "1.2.1",
+        self.c1 = tu.create_cluster("cluster1", "tenant1", "general", "2.6.0",
                                     [ng1, ng2, ng3])
 
         self.ng1 = self.c1.node_groups[0]

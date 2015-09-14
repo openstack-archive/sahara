@@ -24,10 +24,11 @@ class TestJobPossibleConfigs(testtools.TestCase):
     def test_possible_configs(self):
         res = w_f.get_possible_job_config(edp.JOB_TYPE_MAPREDUCE)
         sample_config_property = {
-            'name': 'mapred.map.tasks',
-            'value': '2',
-            'description': 'The default number of map tasks per job.'
-            'Ignored when mapred.job.tracker is "local".  '
+            'name': 'mapreduce.jobtracker.expire.trackers.interval',
+            'value': '600000',
+            'description': "Expert: The time-interval, in miliseconds, after "
+                           "whicha tasktracker is declared 'lost' if it "
+                           "doesn't send heartbeats."
         }
         self.assertIn(sample_config_property, res['job_config']["configs"])
 

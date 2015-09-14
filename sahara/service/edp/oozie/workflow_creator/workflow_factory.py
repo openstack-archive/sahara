@@ -317,13 +317,13 @@ def get_possible_job_config(job_type):
                             edp.JOB_TYPE_MAPREDUCE, edp.JOB_TYPE_PIG):
         # TODO(nmakhotkin): Here we need return config based on specific plugin
         cfg = xmlutils.load_hadoop_xml_defaults(
-            'plugins/vanilla/v1_2_1/resources/mapred-default.xml')
+            'plugins/vanilla/v2_6_0/resources/mapred-default.xml')
         if edp.compare_job_type(job_type, edp.JOB_TYPE_MAPREDUCE):
             cfg += get_possible_mapreduce_configs()
     elif edp.compare_job_type(job_type, edp.JOB_TYPE_HIVE):
         # TODO(nmakhotkin): Here we need return config based on specific plugin
         cfg = xmlutils.load_hadoop_xml_defaults(
-            'plugins/vanilla/v1_2_1/resources/hive-default.xml')
+            'plugins/vanilla/v2_6_0/resources/hive-default.xml')
 
     config = {'configs': cfg}
     if edp.compare_job_type(job_type, edp.JOB_TYPE_PIG, edp.JOB_TYPE_HIVE):

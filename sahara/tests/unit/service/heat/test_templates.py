@@ -46,7 +46,7 @@ class TestClusterTemplate(base.SaharaWithDbTestCase):
 
     def _make_cluster(self, mng_network, ng1, ng2, anti_affinity=[]):
         return tu.create_cluster("cluster", "tenant1", "general",
-                                 "1.2.1", [ng1, ng2],
+                                 "2.6.0", [ng1, ng2],
                                  user_keypair_id='user_key',
                                  neutron_management_network=mng_network,
                                  default_image_id='1', image_id=None,
@@ -87,7 +87,6 @@ class TestClusterTemplate(base.SaharaWithDbTestCase):
 
         ng1 = [ng for ng in cluster.node_groups if ng.name == "master"][0]
         ng2 = [ng for ng in cluster.node_groups if ng.name == "worker"][0]
-
         expected = ['1', '2']
         actual = heat_template._get_security_groups(ng1)
         self.assertEqual(expected, actual)

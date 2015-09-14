@@ -28,15 +28,15 @@ SAMPLE_DATA = {
     'name': 'a',
     'flavor_id': '42',
     'plugin_name': 'vanilla',
-    'hadoop_version': '1.2.1',
+    'hadoop_version': '2.6.0',
     'node_processes': ['namenode',
                        'datanode',
                        'secondarynamenode',
-                       'tasktracker',
-                       'jobtracker'],
+                       'nodemanager',
+                       'resourcemanager'],
     'node_configs': {
         'HDFS': {
-            u'hadoop.tmp.dir': '/temp/'
+            u'mapreduce.task.tmp.dir': '/temp/'
         }
     },
     'image_id': '550e8400-e29b-41d4-a716-446655440000',

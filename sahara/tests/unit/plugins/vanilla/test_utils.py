@@ -31,17 +31,17 @@ class TestUtils(base.SaharaWithDbTestCase):
         self.ng_namenode = tu.make_ng_dict(
             'nn', 'f1', ['namenode'], 1,
             [tu.make_inst_dict('nn1', 'namenode')])
-        self.ng_jobtracker = tu.make_ng_dict(
-            'jt', 'f1', ['jobtracker'], 1,
-            [tu.make_inst_dict('jt1', 'jobtracker')])
+        self.ng_resourcemanager = tu.make_ng_dict(
+            'jt', 'f1', ['resourcemanager'], 1,
+            [tu.make_inst_dict('jt1', 'resourcemanager')])
         self.ng_datanode = tu.make_ng_dict(
             'dn', 'f1', ['datanode'], 2,
             [tu.make_inst_dict('dn1', 'datanode-1'),
              tu.make_inst_dict('dn2', 'datanode-2')])
-        self.ng_tasktracker = tu.make_ng_dict(
-            'tt', 'f1', ['tasktracker'], 2,
-            [tu.make_inst_dict('tt1', 'tasktracker-1'),
-             tu.make_inst_dict('tt2', 'tasktracker-2')])
+        self.ng_nodemanager = tu.make_ng_dict(
+            'tt', 'f1', ['nodemanager'], 2,
+            [tu.make_inst_dict('tt1', 'nodemanager-1'),
+             tu.make_inst_dict('tt2', 'nodemanager-2')])
         self.ng_oozie = tu.make_ng_dict(
             'ooz1', 'f1', ['oozie'], 1,
             [tu.make_inst_dict('ooz1', 'oozie')])
@@ -53,43 +53,34 @@ class TestUtils(base.SaharaWithDbTestCase):
             [tu.make_inst_dict('snn1', 'secondarynamenode')])
 
     def test_get_namenode(self):
-        cl = tu.create_cluster('cl1', 't1', 'vanilla', '1.2.1',
+        cl = tu.create_cluster('cl1', 't1', 'vanilla', '2.6.0',
                                [self.ng_manager, self.ng_namenode])
         self.assertEqual('nn1', u.get_namenode(cl).instance_id)
 
-        cl = tu.create_cluster('cl1', 't1', 'vanilla', '1.2.1',
+        cl = tu.create_cluster('cl1', 't1', 'vanilla', '2.6.0',
                                [self.ng_manager])
         self.assertIsNone(u.get_namenode(cl))
 
-    def test_get_jobtracker(self):
-        cl = tu.create_cluster('cl1', 't1', 'vanilla', '1.2.1',
-                               [self.ng_manager, self.ng_jobtracker])
-        self.assertEqual('jt1', u.get_jobtracker(cl).instance_id)
-
-        cl = tu.create_cluster('cl1', 't1', 'vanilla', '1.2.1',
-                               [self.ng_manager])
-        self.assertIsNone(u.get_jobtracker(cl))
-
     def test_get_oozie(self):
-        cl = tu.create_cluster('cl1', 't1', 'vanilla', '1.2.1',
+        cl = tu.create_cluster('cl1', 't1', 'vanilla', '2.6.0',
                                [self.ng_manager, self.ng_oozie])
         self.assertEqual('ooz1', u.get_oozie(cl).instance_id)
 
-        cl = tu.create_cluster('cl1', 't1', 'vanilla', '1.2.1',
+        cl = tu.create_cluster('cl1', 't1', 'vanilla', '2.6.0',
                                [self.ng_manager])
         self.assertIsNone(u.get_oozie(cl))
 
     def test_get_hiveserver(self):
-        cl = tu.create_cluster('cl1', 't1', 'vanilla', '1.2.1',
+        cl = tu.create_cluster('cl1', 't1', 'vanilla', '2.6.0',
                                [self.ng_manager, self.ng_hiveserver])
         self.assertEqual('hs1', u.get_hiveserver(cl).instance_id)
 
-        cl = tu.create_cluster('cl1', 't1', 'vanilla', '1.2.1',
+        cl = tu.create_cluster('cl1', 't1', 'vanilla', '2.6.0',
                                [self.ng_manager])
         self.assertIsNone(u.get_hiveserver(cl))
 
     def test_get_datanodes(self):
-        cl = tu.create_cluster('cl1', 't1', 'vanilla', '1.2.1',
+        cl = tu.create_cluster('cl1', 't1', 'vanilla', '2.6.0',
                                [self.ng_manager, self.ng_namenode,
                                 self.ng_datanode])
         datanodes = u.get_datanodes(cl)
@@ -98,30 +89,16 @@ class TestUtils(base.SaharaWithDbTestCase):
                          set([datanodes[0].instance_id,
                               datanodes[1].instance_id]))
 
-        cl = tu.create_cluster('cl1', 't1', 'vanilla', '1.2.1',
+        cl = tu.create_cluster('cl1', 't1', 'vanilla', '2.6.0',
                                [self.ng_manager])
         self.assertEqual([], u.get_datanodes(cl))
 
-    def test_get_tasktrackers(self):
-        cl = tu.create_cluster('cl1', 't1', 'vanilla', '1.2.1',
-                               [self.ng_manager, self.ng_jobtracker,
-                                self.ng_tasktracker])
-        tasktrackers = u.get_tasktrackers(cl)
-        self.assertEqual(2, len(tasktrackers))
-        self.assertEqual(set(['tt1', 'tt2']),
-                         set([tasktrackers[0].instance_id,
-                              tasktrackers[1].instance_id]))
-
-        cl = tu.create_cluster('cl1', 't1', 'vanilla', '1.2.1',
-                               [self.ng_manager])
-        self.assertEqual([], u.get_tasktrackers(cl))
-
     def test_get_secondarynamenodes(self):
-        cl = tu.create_cluster('cl1', 't1', 'vanilla', '1.2.1',
+        cl = tu.create_cluster('cl1', 't1', 'vanilla', '2.6.0',
                                [self.ng_manager, self.ng_namenode,
                                 self.ng_secondarynamenode])
         self.assertEqual('snn1', u.get_secondarynamenode(cl).instance_id)
 
-        cl = tu.create_cluster('cl1', 't1', 'vanilla', '1.2.1',
+        cl = tu.create_cluster('cl1', 't1', 'vanilla', '2.6.0',
                                [self.ng_manager])
         self.assertEqual(None, u.get_secondarynamenode(cl))
