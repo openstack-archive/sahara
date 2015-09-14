@@ -61,29 +61,11 @@ to be downloaded from the package repository.
 For more information about HDP images, refer to
 https://github.com/openstack/sahara-image-elements.
 
-There are three VM images provided for use with the HDP Plugin, that can also
-be built using the tools available in sahara-image-elements:
-
-1. `sahara-juno-hdp-1.3.2-centos-6.5.qcow2 <http://sahara-files.mirantis.com/sahara-juno-hdp-1.3.2-centos-6.5.qcow2>`_:
-   This image contains most of the requisite packages necessary for HDP
-   deployment. The packages contained herein correspond to the HDP 1.3 release.
-   The operating system is a minimal CentOS 6.5 cloud-init enabled install.
-   This image can only be used to provision HDP 1.3 hadoop clusters.
-2. `sahara-juno-hdp-2.0.6-centos-6.5.qcow2 <http://sahara-files.mirantis.com/sahara-juno-hdp-2.0.6-centos-6.5.qcow2>`_:
-   This image contains most of the requisite packages necessary for HDP
-   deployment. The packages contained herein correspond to the HDP 2.0.6
-   release. The operating system is a minimal CentOS 6.5 cloud-init enabled
-   install. This image can only be used to provision HDP 2.0.6 hadoop clusters.
-3. `sahara-juno-hdp-plain-centos-6.5.qcow2 <http://sahara-files.mirantis.com/sahara-juno-hdp-plain-centos-6.5.qcow2>`_:
-   This image provides only a minimal install of CentOS 6.5  and is cloud-init
-   enabled. This image can be used to provision any versions of HDP supported
-   by Sahara.
-
 You could download well tested and up-to-date prepared images from
 http://sahara-files.mirantis.com/images/upstream/kilo/
 
 HDP plugin requires an image to be tagged in Sahara Image Registry with two
-tags: 'hdp' and '<hdp version>' (e.g. '1.3.2').
+tags: 'hdp' and '<hdp version>' (e.g. '2.0.6').
 
 Also in the Image Registry you will need to specify username for an image.
 The username specified should be 'cloud-user'.
@@ -130,8 +112,7 @@ The HDP plugin currently has the following limitations:
 
 HDP Version Support
 -------------------
-The HDP plugin currently supports HDP 1.3.2 and HDP 2.0.6. Support for future
-version of HDP will be provided shortly after software is generally available.
+The HDP plugin currently supports HDP 2.0.6.
 
 Cluster Validation
 ------------------
@@ -145,5 +126,5 @@ validation checks to ensure a successful Hadoop deployment:
 * Ensure that each defined node group had an associated Ambari Agent configured
 
 The HDP Plugin and Sahara Support
-----------------------------------
+---------------------------------
 For more information, please contact Hortonworks.

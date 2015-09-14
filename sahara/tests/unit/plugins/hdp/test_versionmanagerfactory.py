@@ -23,8 +23,7 @@ class VersionManagerFactoryTest(base.SaharaTestCase):
         factory = versionhandlerfactory.VersionHandlerFactory.get_instance()
         versions = factory.get_versions()
 
-        self.assertEqual(2, len(versions))
-        self.assertIn('1.3.2', versions)
+        self.assertEqual(1, len(versions))
         self.assertIn('2.0.6', versions)
 
     def test_get_version_handlers(self):
