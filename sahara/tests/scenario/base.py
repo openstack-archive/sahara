@@ -124,7 +124,7 @@ class BaseTestCase(base.BaseTestCase):
             authurl=auth_url,
             user=username,
             key=password,
-            insecure=self.credentials['ssl_verify'],
+            insecure=not self.credentials['ssl_verify'],
             cacert=self.credentials['ssl_cert'],
             tenant_name=tenant_name)
 
