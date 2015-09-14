@@ -66,10 +66,20 @@ def get_stack(stack_name, raise_on_missing=True):
                                _('Failed to find stack %(stack)s'))
 
 
-def wait_stack_completion(stack):
+def _verify_completion(stack, is_update=False, last_update_time=None):
     # NOTE: expected empty status because status of stack
     # maybe is not set in heat database
-    while stack.status in ['IN_PROGRESS', '']:
+    if stack.status in ['IN_PROGRESS', '']:
+        return False
+    if is_update and stack.status == 'COMPLETE':
+        if stack.updated_time == last_update_time:
+            return False
+    return True
+
+
+def wait_stack_completion(stack, is_update=False, last_updated_time=None):
+    base.execute_with_retries(stack.get)
+    while not _verify_completion(stack, is_update, last_updated_time):
         context.sleep(1)
         base.execute_with_retries(stack.get)
 
