@@ -27,8 +27,8 @@ def empty(data, **kwargs):
 SAMPLE_DATA = {
     'name': 'a',
     'flavor_id': '42',
-    'plugin_name': 'vanilla',
-    'hadoop_version': '2.6.0',
+    'plugin_name': 'fake',
+    'hadoop_version': '0.1',
     'node_processes': ['namenode',
                        'datanode',
                        'secondarynamenode',
