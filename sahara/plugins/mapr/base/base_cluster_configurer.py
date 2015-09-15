@@ -54,6 +54,7 @@ SERVICE_INSTALL_PRIORITY = [
     mng.Management(),
     yarn.YARNv251(),
     yarn.YARNv241(),
+    yarn.YARNv270(),
     mr.MapReduce(),
     maprfs.MapRFS(),
 ]
