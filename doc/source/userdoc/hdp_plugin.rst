@@ -1,11 +1,11 @@
 
 Hortonworks Data Platform Plugin
 ================================
-The Hortonworks Data Platform (HDP) Sahara plugin provides a way to provision
+The Hortonworks Data Platform (HDP) sahara plugin provides a way to provision
 HDP clusters on OpenStack using templates in a single click and in an easily
-repeatable fashion. As seen from the architecture diagram below, the Sahara
+repeatable fashion. As seen from the architecture diagram below, the sahara
 controller serves as the glue between Hadoop and OpenStack. The HDP plugin
-mediates between the Sahara controller and Apache Ambari in order to deploy
+mediates between the sahara controller and Apache Ambari in order to deploy
 and configure Hadoop on OpenStack. Core to the HDP Plugin is Apache Ambari
 which is used as the orchestrator for deploying HDP on OpenStack.
 
@@ -47,7 +47,7 @@ creation:
 
 Images
 ------
-The Sahara HDP plugin can make use of either minimal (operating system only)
+The sahara HDP plugin can make use of either minimal (operating system only)
 images or pre-populated HDP images. The base requirement for both is that the
 image is cloud-init enabled and contains a supported operating system
 (see http://docs.hortonworks.com/HDPDocuments/HDP1/HDP-1.2.4/bk_hdp1-system-admin-guide/content/sysadminguides_ha_chap2_3.html).
@@ -62,9 +62,9 @@ For more information about HDP images, refer to
 https://github.com/openstack/sahara-image-elements.
 
 You could download well tested and up-to-date prepared images from
-http://sahara-files.mirantis.com/images/upstream/kilo/
+http://sahara-files.mirantis.com/images/upstream/liberty/
 
-HDP plugin requires an image to be tagged in Sahara Image Registry with two
+HDP plugin requires an image to be tagged in sahara Image Registry with two
 tags: 'hdp' and '<hdp version>' (e.g. '2.0.6').
 
 Also in the Image Registry you will need to specify username for an image.
@@ -74,7 +74,7 @@ HDFS NameNode High Availability
 -------------------------------
 HDFS NameNode High Availability (Using the Quorum Journal Manager) can be deployed
 automatically with HDP 2.0.6. Currently the only way to deploy it is through the
-command line client (python-saharaclient) or Sahara REST API by simply adding the
+command line client (python-saharaclient) or sahara REST API by simply adding the
 following cluster_configs parameter in the cluster's JSON :
 
 .. sourcecode:: cfg
@@ -84,9 +84,6 @@ following cluster_configs parameter in the cluster's JSON :
                         "hdfs.nnha": true
                 }
         }
-
-Support for deploying the NameNode High Availability through Sahara Dashboard
-will be added in the future.
 
 The NameNode High Availability is deployed using 2 NameNodes, one active and
 one standby. The NameNodes use a set of JOURNALNODES and ZOOKEEPER_SERVERS to
@@ -108,7 +105,7 @@ Limitations
 The HDP plugin currently has the following limitations:
 
 * It is not possible to decrement the number of node-groups or hosts per node
-  group in a Sahara generated cluster.
+  group in a sahara generated cluster.
 
 HDP Version Support
 -------------------
@@ -125,6 +122,6 @@ validation checks to ensure a successful Hadoop deployment:
 * Ensure the deployment of one Ambari Server instance to the cluster
 * Ensure that each defined node group had an associated Ambari Agent configured
 
-The HDP Plugin and Sahara Support
+The HDP Plugin and sahara support
 ---------------------------------
 For more information, please contact Hortonworks.
