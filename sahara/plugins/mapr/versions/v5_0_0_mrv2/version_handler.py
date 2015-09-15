@@ -29,7 +29,7 @@ from sahara.plugins.mapr.services.pig import pig
 from sahara.plugins.mapr.services.sqoop import sqoop2
 from sahara.plugins.mapr.services.swift import swift
 from sahara.plugins.mapr.services.yarn import yarn
-import sahara.plugins.mapr.versions.v4_0_2_mrv2.context as c
+import sahara.plugins.mapr.versions.v5_0_0_mrv2.context as c
 
 
 version = "5.0.0.mrv2"
