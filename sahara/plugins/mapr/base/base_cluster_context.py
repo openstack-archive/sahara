@@ -16,33 +16,22 @@
 import collections
 
 from oslo_config import cfg
-import six
 
 import sahara.exceptions as e
 from sahara.i18n import _
 import sahara.plugins.mapr.abstract.cluster_context as cc
 import sahara.plugins.mapr.domain.distro as distro
-import sahara.plugins.mapr.domain.node_process as np
 import sahara.plugins.mapr.services.management.management as mng
 import sahara.plugins.mapr.services.maprfs.maprfs as mfs
 import sahara.plugins.mapr.services.oozie.oozie as oozie
 from sahara.plugins.mapr.services.swift import swift
 import sahara.plugins.mapr.services.yarn.yarn as yarn
 import sahara.plugins.mapr.util.general as g
+import sahara.plugins.mapr.util.service_utils as su
 import sahara.plugins.utils as u
-
 
 CONF = cfg.CONF
 CONF.import_opt("enable_data_locality", "sahara.topology.topology_helper")
-
-
-def _get_node_process_name(node_process):
-    name = None
-    if isinstance(node_process, np.NodeProcess):
-        name = node_process.ui_name
-    elif isinstance(node_process, six.string_types):
-        name = node_process
-    return name
 
 
 class BaseClusterContext(cc.AbstractClusterContext):
@@ -209,13 +198,14 @@ class BaseClusterContext(cc.AbstractClusterContext):
             return config.default_value
 
     def get_instances(self, node_process=None):
-        name = _get_node_process_name(node_process)
-        return u.get_instances(self.cluster, name)
+        if node_process is not None:
+            node_process = su.get_node_process_name(node_process)
+        return u.get_instances(self.cluster, node_process)
 
     def get_instance(self, node_process):
-        name = _get_node_process_name(node_process)
-        i = u.get_instances(self.cluster, name)
-        return i[0] if i else None
+        node_process_name = su.get_node_process_name(node_process)
+        instances = u.get_instances(self.cluster, node_process_name)
+        return instances[0] if instances else None
 
     def get_instances_ip(self, node_process):
         return [i.internal_ip for i in self.get_instances(node_process)]
@@ -229,9 +219,7 @@ class BaseClusterContext(cc.AbstractClusterContext):
                                for ip in self.get_instances_ip(mng.ZOOKEEPER)])
 
     def check_for_process(self, instance, process):
-        processes = instance.node_group.node_processes
-        name = _get_node_process_name(process)
-        return name in processes
+        return su.has_node_process(instance, process)
 
     def get_services_configs_dict(self, services=None):
         if not services:
@@ -279,19 +267,22 @@ class BaseClusterContext(cc.AbstractClusterContext):
                 return service
 
     def get_service_name_by_node_process(self, node_process):
-        node_process = _get_node_process_name(node_process)
+        node_process_name = su.get_node_process_name(node_process)
         for service in self.all_services:
-            node_processes = [np.ui_name for np in service.node_processes]
-            if node_process in node_processes:
+            service_node_processes = [np.ui_name
+                                      for np in service.node_processes]
+            if node_process_name in service_node_processes:
                 return service.ui_name
 
     def get_instances_count(self, node_process=None):
-        name = _get_node_process_name(node_process)
-        return u.get_instances_count(self.cluster, name)
+        if node_process is not None:
+            node_process = su.get_node_process_name(node_process)
+        return u.get_instances_count(self.cluster, node_process)
 
     def get_node_groups(self, node_process=None):
-        name = _get_node_process_name(node_process)
-        return u.get_node_groups(self.cluster, name)
+        if node_process is not None:
+            node_process = su.get_node_process_name(node_process)
+        return u.get_node_groups(self.cluster, node_process)
 
     def get_cldb_nodes_ip(self, separator=','):
         return separator.join(self.get_instances_ip(mfs.CLDB))
@@ -320,16 +311,9 @@ class BaseClusterContext(cc.AbstractClusterContext):
 
     def filter_instances(self, instances, node_process=None, service=None):
         if node_process:
-            return list(filter(
-                lambda i: self.check_for_process(i, node_process), instances))
+            return su.filter_by_node_process(instances, node_process)
         if service:
-            result = []
-            for instance in instances:
-                for node_process in service.node_processes:
-                    if self.check_for_process(instance, node_process):
-                        result += [instance]
-                        break
-            return result
+            return su.filter_by_service(instances, service)
         return list(instances)
 
     def removed_instances(self, node_process=None, service=None):

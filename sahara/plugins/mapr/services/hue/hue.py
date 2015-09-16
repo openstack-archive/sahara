@@ -36,7 +36,6 @@ import sahara.plugins.mapr.util.general as g
 import sahara.plugins.mapr.util.validation_utils as vu
 import sahara.utils.files as files
 
-
 LOG = logging.getLogger(__name__)
 
 HUE = np.NodeProcess(
