@@ -316,7 +316,8 @@ class ClusterStack(object):
             }
         })
 
-        resources.update(self._serialize_volume(ng))
+        if ng.volumes_per_node > 0 and ng.volumes_size > 0:
+            resources.update(self._serialize_volume(ng))
 
         return resources
 
