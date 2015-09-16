@@ -55,7 +55,8 @@ def client():
 
 def get_stack(stack_name, raise_on_missing=True):
     for stack in base.execute_with_retries(
-            client().stacks.list, filters={'name': stack_name}):
+            client().stacks.list, show_hidden=True,
+            filters={'name': stack_name}):
         return stack
 
     if not raise_on_missing:

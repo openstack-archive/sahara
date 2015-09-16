@@ -42,6 +42,13 @@ ROLLBACK_STAGES = [c_u.CLUSTER_STATUS_ROLLBACK_SPAWNING,
                    c_u.CLUSTER_STATUS_ROLLBACK_WAITING,
                    c_u.CLUSTER_STATUS_ROLLBACK__PREPARING]
 
+heat_engine_opts = [
+    cfg.ListOpt('heat_stack_tags', default=['data-processing-cluster'],
+                help="List of tags to be used during operating with stack.")
+]
+
+CONF.register_opts(heat_engine_opts)
+
 
 class HeatEngine(e.Engine):
     def get_type_and_version(self):
