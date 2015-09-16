@@ -88,7 +88,10 @@ def _configure_ntp_on_instance(instance, url):
                 "/etc/ntp.conf", "server {url}".format(url=url),
                 run_as_root=True)
             _restart_ntp(r)
-            _sudo(r, "ntpdate -u {url}".format(url=url))
+            try:
+                _sudo(r, "ntpdate -u {url}".format(url=url))
+            except Exception as e:
+                LOG.debug("Update time on VM failed with error: %s", e)
             LOG.info(_LI("NTP successfully configured"))
 
 
