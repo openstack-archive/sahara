@@ -40,7 +40,7 @@ class BaseDataProcessingTest(manager.ScenarioTest):
         catalog_type = TEMPEST_CONF.data_processing.catalog_type
         auth_url = TEMPEST_CONF.identity.uri
 
-        credentials = cls.credentials()
+        credentials = cls.os_primary.credentials
 
         cls.client = sahara_client.Client(
             CONF.data_processing.saharaclient_version,
@@ -52,9 +52,9 @@ class BaseDataProcessingTest(manager.ScenarioTest):
             auth_url=auth_url,
             sahara_url=CONF.data_processing.sahara_url)
 
-        cls.object_client = cls.manager.object_client
-        cls.container_client = cls.manager.container_client
-        cls.networks_client = cls.manager.networks_client
+        cls.object_client = cls.os_primary.object_client
+        cls.container_client = cls.os_primary.container_client
+        cls.networks_client = cls.os_primary.compute_networks_client
 
         cls.floating_ip_pool = CONF.data_processing.floating_ip_pool
         if TEMPEST_CONF.service_available.neutron:
