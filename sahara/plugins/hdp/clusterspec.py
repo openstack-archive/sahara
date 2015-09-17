@@ -229,6 +229,10 @@ class ClusterSpec(object):
 
     def _process_user_inputs(self, user_inputs):
         for ui in user_inputs:
+            # if it doesn't have a tag then it's not part of the
+            # operational config that Ambari knows about
+            if not hasattr(ui.config, 'tag'):
+                continue
             user_input_handler = self.user_input_handlers.get(
                 '{0}/{1}'.format(ui.config.tag, ui.config.name),
                 self._default_user_input_handler)
