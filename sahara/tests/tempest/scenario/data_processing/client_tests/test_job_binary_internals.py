@@ -12,9 +12,10 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-from tempest.scenario.data_processing.client_tests import base
 from tempest import test
 from tempest_lib.common.utils import data_utils
+
+from sahara.tests.tempest.scenario.data_processing.client_tests import base
 
 
 class JobBinaryInternalsTest(base.BaseDataProcessingTest):
