@@ -17,6 +17,7 @@ clusters:
           - jobtracker
           - namenode
         auto_security_group: true
+        is_proxy_gateway: true
     cluster_template:
       name: fake01
       node_group_templates:

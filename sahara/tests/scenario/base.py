@@ -413,13 +413,22 @@ class BaseTestCase(base.BaseTestCase):
                 with open(template_file) as data:
                     node_groups.append(json.load(data))
 
+        check_indirect_access = False
+        for ng in node_groups:
+            if ng.get('is_proxy_gateway'):
+                check_indirect_access = True
+
         for ng in node_groups:
             kwargs = dict(ng)
             kwargs.update(self.plugin_opts)
             kwargs['flavor_id'] = self._get_flavor_id(kwargs['flavor'])
             del kwargs['flavor']
             kwargs['name'] = utils.rand_name(kwargs['name'])
-            kwargs['floating_ip_pool'] = floating_ip_pool
+            if (not kwargs.get('is_proxy_gateway',
+                               False)) and (check_indirect_access):
+                kwargs['floating_ip_pool'] = None
+            else:
+                kwargs['floating_ip_pool'] = floating_ip_pool
             ng_id = self.__create_node_group_template(**kwargs)
             ng_id_map[ng['name']] = ng_id
         return ng_id_map

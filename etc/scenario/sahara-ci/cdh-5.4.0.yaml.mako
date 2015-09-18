@@ -44,6 +44,7 @@ clusters:
           - YARN_NODEMANAGER
           - ZOOKEEPER_SERVER
         auto_security_group: true
+        is_proxy_gateway: true
       - name: master-additional
         flavor: ${medium_flavor_id}
         node_processes:

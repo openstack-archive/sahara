@@ -9,6 +9,7 @@ clusters:
           - master
           - namenode
         auto_security_group: true
+        is_proxy_gateway: true
       - name: worker
         flavor: ${ci_flavor_id}
         node_processes:
