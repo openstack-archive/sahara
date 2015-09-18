@@ -488,13 +488,40 @@ class TestJobManager(base.SaharaWithDbTestCase):
         self.assertEqual(['test'], su.inject_swift_url_suffix(['test']))
 
     @mock.patch('sahara.conductor.API.job_execution_update')
+    @mock.patch('sahara.conductor.API.job_execution_get')
     @mock.patch('sahara.service.edp.job_manager._run_job')
     @mock.patch('sahara.service.edp.job_manager.cancel_job')
-    def test_run_job_handles_exceptions(self, canceljob, runjob, job_ex_upd):
+    def test_run_job_handles_exceptions(self, canceljob, runjob,
+                                        job_ex_get, job_ex_upd):
         runjob.side_effect = ex.SwiftClientException("Unauthorised")
         job, job_exec = u.create_job_exec(edp.JOB_TYPE_PIG)
+
+        job_exec.engine_job_id = None
+        job_ex_get.return_value = job_exec
+
         job_manager.run_job(job_exec.id)
 
+        self.assertEqual(1, job_ex_get.call_count)
+        self.assertEqual(1, job_ex_upd.call_count)
+
+        new_status = job_ex_upd.call_args[0][2]["info"]["status"]
+        self.assertEqual(edp.JOB_STATUS_FAILED, new_status)
+        self.assertEqual(0, canceljob.call_count)
+
+    @mock.patch('sahara.conductor.API.job_execution_update')
+    @mock.patch('sahara.conductor.API.job_execution_get')
+    @mock.patch('sahara.service.edp.job_manager._run_job')
+    @mock.patch('sahara.service.edp.job_manager.cancel_job')
+    def test_run_job_handles_exceptions_with_run_job(self, canceljob, runjob,
+                                                     job_ex_get, job_ex_upd):
+        runjob.side_effect = ex.OozieException("run_job failed")
+        job, job_exec = u.create_job_exec(edp.JOB_TYPE_PIG)
+        job_exec.engine_job_id = "fake_oozie_id"
+        job_ex_get.return_value = job_exec
+
+        job_manager.run_job(job_exec.id)
+
+        self.assertEqual(1, job_ex_get.call_count)
         self.assertEqual(1, job_ex_upd.call_count)
 
         new_status = job_ex_upd.call_args[0][2]["info"]["status"]
