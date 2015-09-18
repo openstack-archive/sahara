@@ -46,13 +46,13 @@ class OozieClient(object):
 
     def kill_job(self, job_execution):
         session = self._get_http_session(job_execution.extra.get('neutron'))
-        resp = session.put(self.job_url % job_execution.oozie_job_id +
+        resp = session.put(self.job_url % job_execution.engine_job_id +
                            "?action=kill")
         _check_status_code(resp, 200)
 
     def get_job_status(self, job_execution, job_id=None):
         if job_id is None:
-            job_id = job_execution.oozie_job_id
+            job_id = job_execution.engine_job_id
         session = self._get_http_session(job_execution.extra.get('neutron'))
         resp = session.get(self.job_url % job_id + "?show=info")
         _check_status_code(resp, 200)
@@ -60,7 +60,7 @@ class OozieClient(object):
 
     def get_job_logs(self, job_execution):
         session = self._get_http_session(job_execution.extra.get('neutron'))
-        resp = session.get(self.job_url % job_execution.oozie_job_id +
+        resp = session.get(self.job_url % job_execution.engine_job_id +
                            "?show=log")
         _check_status_code(resp, 200)
         return resp.text

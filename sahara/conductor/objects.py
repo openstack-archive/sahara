@@ -248,7 +248,7 @@ class JobExecution(object):
     end_time
     cluster_id
     info
-    oozie_job_id
+    engine_job_id
     return_code
     job_configs
     interface

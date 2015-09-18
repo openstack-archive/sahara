@@ -534,6 +534,12 @@ class SaharaMigrationsCheckers(object):
             self.assertColumnExists(engine, table, 'is_public')
             self.assertColumnExists(engine, table, 'is_protected')
 
+    def _check_027(self, engine, data):
+        self.assertColumnNotExists(engine, 'job_executions',
+                                   'oozie_job_id')
+        self.assertColumnExists(engine, 'job_executions',
+                                'engine_job_id')
+
 
 class TestMigrationsMySQL(SaharaMigrationsCheckers,
                           base.BaseWalkMigrationTestCase,

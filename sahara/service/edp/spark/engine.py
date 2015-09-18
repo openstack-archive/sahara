@@ -64,7 +64,7 @@ class SparkJobEngine(base_engine.JobEngine):
         return "", ""
 
     def _get_instance_if_running(self, job_execution):
-        pid, inst_id = self._get_pid_and_inst_id(job_execution.oozie_job_id)
+        pid, inst_id = self._get_pid_and_inst_id(job_execution.engine_job_id)
         if not pid or not inst_id or (
            job_execution.info['status'] in edp.JOB_STATUSES_TERMINATED):
             return None, None
