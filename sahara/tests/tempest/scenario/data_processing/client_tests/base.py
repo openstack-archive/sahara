@@ -20,11 +20,9 @@ from saharaclient.api import base as sab
 from saharaclient import client as sahara_client
 from tempest import config
 from tempest import exceptions
-from tempest.scenario.data_processing import config as sahara_test_config
 from tempest.scenario import manager
 
 
-CONF = sahara_test_config.SAHARA_TEST_CONF
 TEMPEST_CONF = config.CONF
 
 LOG = logging.getLogger(__name__)
@@ -43,20 +41,20 @@ class BaseDataProcessingTest(manager.ScenarioTest):
         credentials = cls.os_primary.credentials
 
         cls.client = sahara_client.Client(
-            CONF.data_processing.saharaclient_version,
+            TEMPEST_CONF.data_processing.saharaclient_version,
             credentials.username,
             credentials.password,
             project_name=credentials.tenant_name,
             endpoint_type=endpoint_type,
             service_type=catalog_type,
             auth_url=auth_url,
-            sahara_url=CONF.data_processing.sahara_url)
+            sahara_url=TEMPEST_CONF.data_processing.sahara_url)
 
         cls.object_client = cls.os_primary.object_client
         cls.container_client = cls.os_primary.container_client
         cls.networks_client = cls.os_primary.compute_networks_client
 
-        cls.floating_ip_pool = CONF.data_processing.floating_ip_pool
+        cls.floating_ip_pool = TEMPEST_CONF.network.floating_network_name
         if TEMPEST_CONF.service_available.neutron:
             cls.floating_ip_pool = cls.get_floating_ip_pool_id_for_neutron()
 
@@ -68,7 +66,7 @@ class BaseDataProcessingTest(manager.ScenarioTest):
                 'datanode',
                 'tasktracker'
             ],
-            'flavor_id': CONF.data_processing.flavor_id,
+            'flavor_id': TEMPEST_CONF.compute.flavor_ref,
             'floating_ip_pool': cls.floating_ip_pool
         }
 
@@ -80,7 +78,7 @@ class BaseDataProcessingTest(manager.ScenarioTest):
                 'namenode',
                 'jobtracker'
             ],
-            'flavor_id': CONF.data_processing.flavor_id,
+            'flavor_id': TEMPEST_CONF.compute.flavor_ref,
             'floating_ip_pool': cls.floating_ip_pool,
             'auto_security_group': True
         }
@@ -116,21 +114,21 @@ class BaseDataProcessingTest(manager.ScenarioTest):
     @classmethod
     def get_floating_ip_pool_id_for_neutron(cls):
         net_id = cls._find_network_by_name(
-            CONF.data_processing.floating_ip_pool)
+            TEMPEST_CONF.network.floating_network_name)
         if not net_id:
             raise exceptions.NotFound(
                 'Floating IP pool \'%s\' not found in pool list.'
-                % CONF.data_processing.floating_ip_pool)
+                % TEMPEST_CONF.network.floating_network_name)
         return net_id
 
     @classmethod
     def get_private_network_id(cls):
         net_id = cls._find_network_by_name(
-            CONF.data_processing.private_network)
+            TEMPEST_CONF.compute.fixed_network_name)
         if not net_id:
             raise exceptions.NotFound(
                 'Private network \'%s\' not found in network list.'
-                % CONF.data_processing.private_network)
+                % TEMPEST_CONF.compute.fixed_network_name)
         return net_id
 
     @classmethod
@@ -216,7 +214,7 @@ class BaseDataProcessingTest(manager.ScenarioTest):
         return resp_body
 
     def check_cluster_active(self, cluster_id):
-        timeout = CONF.data_processing.cluster_timeout
+        timeout = TEMPEST_CONF.data_processing.cluster_timeout
         s_time = timeutils.utcnow()
         while timeutils.delta_seconds(s_time, timeutils.utcnow()) < timeout:
             cluster = self.client.clusters.get(cluster_id)
@@ -225,7 +223,7 @@ class BaseDataProcessingTest(manager.ScenarioTest):
             if cluster.status == 'Error':
                 raise exceptions.BuildErrorException(
                     'Cluster failed to build and is in "Error" status.')
-            time.sleep(CONF.data_processing.request_timeout)
+            time.sleep(TEMPEST_CONF.data_processing.request_timeout)
         raise exceptions.TimeoutException(
             'Cluster failed to get to "Active status within %d seconds.'
             % timeout)
@@ -255,7 +253,7 @@ class BaseDataProcessingTest(manager.ScenarioTest):
 
     def delete_timeout(
             self, resource_client, resource_id,
-            timeout=CONF.data_processing.cluster_timeout):
+            timeout=TEMPEST_CONF.data_processing.cluster_timeout):
 
         start = timeutils.utcnow()
         while timeutils.delta_seconds(start, timeutils.utcnow()) < timeout:
@@ -266,7 +264,7 @@ class BaseDataProcessingTest(manager.ScenarioTest):
                     return
                 raise sahara_api_exception
 
-            time.sleep(CONF.data_processing.request_timeout)
+            time.sleep(TEMPEST_CONF.data_processing.request_timeout)
 
         raise exceptions.TimeoutException(
             'Failed to delete resource "%s" in %d seconds.'

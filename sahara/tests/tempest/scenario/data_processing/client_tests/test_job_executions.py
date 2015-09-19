@@ -18,24 +18,24 @@ from oslo_utils import timeutils
 from saharaclient.api import base as sab
 from tempest import config
 from tempest import exceptions
-from tempest.scenario.data_processing.client_tests import base
-from tempest.scenario.data_processing import config as sahara_test_config
 from tempest import test
 from tempest_lib.common.utils import data_utils
 from tempest_lib import decorators
 
-CONF = sahara_test_config.SAHARA_TEST_CONF
+from sahara.tests.tempest.scenario.data_processing.client_tests import base
+
+
 TEMPEST_CONF = config.CONF
 
 
 class JobExecutionTest(base.BaseDataProcessingTest):
     def _check_register_image(self, image_id):
         self.client.images.update_image(
-            image_id, CONF.data_processing.ssh_username, '')
+            image_id, TEMPEST_CONF.scenario.ssh_user, '')
         reg_image = self.client.images.get(image_id)
 
         self.assertDictContainsSubset(
-            {'_sahara_username': CONF.data_processing.ssh_username},
+            {'_sahara_username': TEMPEST_CONF.scenario.ssh_user},
             reg_image.metadata)
 
     def _check_image_get(self, image_id):
@@ -106,7 +106,7 @@ class JobExecutionTest(base.BaseDataProcessingTest):
             'plugin_name': 'fake',
             'hadoop_version': '0.1',
             'cluster_template_id': cluster_template.id,
-            'default_image_id': CONF.data_processing.fake_image_id
+            'default_image_id': TEMPEST_CONF.data_processing.fake_image_id
         }
 
         # create cluster
@@ -180,7 +180,7 @@ class JobExecutionTest(base.BaseDataProcessingTest):
         cluster = self.client.clusters.get(cluster_id)
         self.assertEqual('Deleting', cluster.status)
 
-        timeout = CONF.data_processing.cluster_timeout
+        timeout = TEMPEST_CONF.data_processing.cluster_timeout
         s_time = timeutils.utcnow()
         while timeutils.delta_seconds(s_time, timeutils.utcnow()) < timeout:
             try:
@@ -188,7 +188,7 @@ class JobExecutionTest(base.BaseDataProcessingTest):
             except sab.APIException:
                 # cluster is deleted
                 return
-            time.sleep(CONF.data_processing.request_timeout)
+            time.sleep(TEMPEST_CONF.data_processing.request_timeout)
 
         raise exceptions.TimeoutException('Cluster failed to terminate'
                                           'in %d seconds.' % timeout)
@@ -271,7 +271,7 @@ class JobExecutionTest(base.BaseDataProcessingTest):
     @test.attr(type='slow')
     @test.services('data_processing')
     def test_job_executions(self):
-        image_id = CONF.data_processing.fake_image_id
+        image_id = TEMPEST_CONF.data_processing.fake_image_id
         self._check_register_image(image_id)
         self._check_image_get(image_id)
         self._check_image_list(image_id)
@@ -294,7 +294,7 @@ class JobExecutionTest(base.BaseDataProcessingTest):
     @classmethod
     def tearDownClass(cls):
         image_list = cls.client.images.list()
-        image_id = CONF.data_processing.fake_image_id
+        image_id = TEMPEST_CONF.data_processing.fake_image_id
         if image_id in [image.id for image in image_list]:
             cls.client.images.unregister_image(image_id)
         super(JobExecutionTest, cls).tearDownClass()

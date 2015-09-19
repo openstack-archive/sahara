@@ -4,7 +4,21 @@ Tests for Sahara Client in Tempest
 How to run
 ----------
 
-Get the latest tempest resources from GitHub:
+Get the latest sahara resources from the appropriate mirror:
+
+.. sourcecode:: console
+
+    $ git clone https://github.com/openstack/sahara.git
+..
+
+Install sahara, in order to register the tempest plugin interface:
+
+.. sourcecode:: console
+
+    $ pip install $SAHARA_ROOT_DIR
+..
+
+Get the latest tempest resources from the appropriate mirror:
 
 .. sourcecode:: console
 
@@ -22,58 +36,68 @@ from ``tempest/etc/tempest.conf.sample``:
 
 Some configuration options are required for running tests. Here is the list:
 
-[DEFAULT]
-lock_path=
+.. sourcecode:: ini
 
-[identity]
-uri=
-uri_v3=
-username=
-tenant_name=
-password=
-admin_username=
-admin_tenant_name=
-admin_password=
+    [DEFAULT]
 
-[service_available]
-sahara=true
-neutron=true
+    [identity]
+    uri=
+    uri_v3=
+    username=
+    tenant_name=
+    password=
+    admin_username=
+    admin_tenant_name=
+    admin_password=
 
-Get the latest sahara resources from GitHub:
+    [compute]
+    fixed_network_name=
+    flavor_ref=
 
-.. sourcecode:: console
+    [network]
+    floating_network_name=
 
-    $ git clone https://github.com/openstack/sahara.git
+    [data_processing]
+    fake_image_id=
+
+    [scenario]
+    ssh_user=
+
+    [service_available]
+    sahara=true
+    neutron=true
+
 ..
 
-Copy Sahara Tempest tests directory to tempest:
+All the parameters above are defined by tempest, with the exception of
+data_processing.fake_image_id, which is defined by the scenario python
+client tests here.
 
-.. sourcecode:: console
+Other relevant parameters (all defined by scenario python client tests):
 
-    $ cp -r $SAHARA_ROOT_DIR/sahara/tests/tempest .
+.. sourcecode:: ini
+
+    [data_processing]
+    ...
+    endpoint_type=
+    catalog_type=
+    saharaclient_version=1.1
+    sahara_url=
+    cluster_timeout=1800
+    request_timeout=10
+
 ..
 
-Create a configuration file ``tempest/scenario/data_processing/etc/sahara_tests.conf`` from
-``tempest/scenario/data_processing/etc/sahara_tests.conf.sample``:
+When configuration is finished, you can launch the tests from tempest with:
 
 .. sourcecode:: console
 
-    $ cp tempest/scenario/data_processing/etc/sahara_tests.conf.sample tempest/scenario/data_processing/etc/sahara_tests.conf
-..
-
-All options should be set. Some of them are defaults and can be left without changing,
-other should be specified.
-
-When configuration is finished, you can launch the tests with:
-
-.. sourcecode:: console
-
-    $ tox -e all -- tempest.scenario.data_processing.client_tests
+    $ tox -e all-plugin -- tempest.scenario.data_processing.client_tests
 ..
 
 If you want to launch all Sahara tests in Tempest, you can do this with ``data_processing`` tag:
 
 .. sourcecode:: console
 
-    $ tox -e all -- data_processing
+    $ tox -e all-plugin -- data_processing
 ..
