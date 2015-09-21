@@ -150,6 +150,10 @@ def check_node_group_basic_fields(plugin_name, hadoop_version, ng,
         if ng.get('volume_type'):
             check_volume_type_exists(ng['volume_type'])
 
+        if not ng.get('volumes_size'):
+            raise ex.InvalidReferenceException(
+                _("You must specify a volumes_size parameter"))
+
     if ng.get('floating_ip_pool'):
         check_floatingip_pool_exists(ng['name'], ng['floating_ip_pool'])
 
