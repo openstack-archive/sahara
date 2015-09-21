@@ -205,7 +205,7 @@ class ClouderaUtilsV530(cu.ClouderaUtils):
             impala.update_config(self._get_configs(IMPALA_SERVICE_TYPE,
                                                    cluster=cluster))
 
-    def _get_configs(self, service, cluster=None, node_group=None):
+    def _get_configs(self, service, cluster=None, instance=None):
         def get_hadoop_dirs(mount_points, suffix):
             return ','.join([x + suffix for x in mount_points])
 
@@ -344,10 +344,10 @@ class ClouderaUtilsV530(cu.ClouderaUtils):
             all_confs = s_cfg.merge_configs(all_confs, sentry_confs)
             all_confs = s_cfg.merge_configs(all_confs, cluster.cluster_configs)
 
-        if node_group:
-            paths = node_group.storage_paths()
+        if instance:
+            paths = instance.storage_paths()
 
-            ng_default_confs = {
+            instance_default_confs = {
                 'NAMENODE': {
                     'dfs_name_dir_list': get_hadoop_dirs(paths, '/fs/nn')
                 },
@@ -382,8 +382,8 @@ class ClouderaUtilsV530(cu.ClouderaUtils):
             }
 
             ng_user_confs = self.pu.convert_process_configs(
-                node_group.node_configs)
+                instance.node_group.node_configs)
             all_confs = s_cfg.merge_configs(all_confs, ng_user_confs)
-            all_confs = s_cfg.merge_configs(all_confs, ng_default_confs)
+            all_confs = s_cfg.merge_configs(all_confs, instance_default_confs)
 
         return all_confs.get(service, {})

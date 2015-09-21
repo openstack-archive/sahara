@@ -107,7 +107,7 @@ class MapRFS(s.Service):
     def _generate_disk_list_file(self, instance, path_to_disk_setup_script):
         LOG.debug('Creating disk list file')
         g.run_script(instance, path_to_disk_setup_script, 'root',
-                     *instance.node_group.storage_paths())
+                     *instance.storage_paths())
 
     def _execute_disksetup(self, instance):
         with instance.remote() as rmt:

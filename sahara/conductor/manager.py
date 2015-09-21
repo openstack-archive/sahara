@@ -55,7 +55,8 @@ NODE_GROUP_TEMPLATE_DEFAULTS.update({"is_public": False,
                                      "is_protected": False})
 
 INSTANCE_DEFAULTS = {
-    "volumes": []
+    "volumes": [],
+    "storage_devices_number": 0
 }
 
 DATA_SOURCE_DEFAULTS = {

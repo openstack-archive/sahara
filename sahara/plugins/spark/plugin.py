@@ -163,7 +163,6 @@ class SparkProvider(p.ProvisioningPluginBase):
                                                  cluster)
 
     def _extract_configs_to_extra(self, cluster):
-        nn = utils.get_instance(cluster, "namenode")
         sp_master = utils.get_instance(cluster, "master")
         sp_slaves = utils.get_instances(cluster, "slave")
 
@@ -186,28 +185,29 @@ class SparkProvider(p.ProvisioningPluginBase):
         config_defaults = c_helper.generate_spark_executor_classpath(cluster)
 
         extra['job_cleanup'] = c_helper.generate_job_cleanup_config(cluster)
-        for ng in cluster.node_groups:
-            extra[ng.id] = {
-                'xml': c_helper.generate_xml_configs(
-                    ng.configuration(),
-                    ng.storage_paths(),
-                    nn.hostname(), None
-                ),
-                'setup_script': c_helper.generate_hadoop_setup_script(
-                    ng.storage_paths(),
-                    c_helper.extract_hadoop_environment_confs(
-                        ng.configuration())
-                ),
-                'sp_master': config_master,
-                'sp_slaves': config_slaves,
-                'sp_defaults': config_defaults
-            }
+
+        extra['sp_master'] = config_master
+        extra['sp_slaves'] = config_slaves
+        extra['sp_defaults'] = config_defaults
 
         if c_helper.is_data_locality_enabled(cluster):
             topology_data = th.generate_topology_map(
                 cluster, CONF.enable_hypervisor_awareness)
             extra['topology_data'] = "\n".join(
                 [k + " " + v for k, v in topology_data.items()]) + "\n"
+
+        return extra
+
+    def _add_instance_ng_related_to_extra(self, cluster, instance, extra):
+        extra = extra.copy()
+        ng = instance.node_group
+        nn = utils.get_instance(cluster, "namenode")
+
+        extra['xml'] = c_helper.generate_xml_configs(
+            ng.configuration(), instance.storage_paths(), nn.hostname(), None)
+        extra['setup_script'] = c_helper.generate_hadoop_setup_script(
+            instance.storage_paths(),
+            c_helper.extract_hadoop_environment_confs(ng.configuration()))
 
         return extra
 
@@ -243,6 +243,8 @@ class SparkProvider(p.ProvisioningPluginBase):
             cluster.id, _("Push configs to nodes"), len(all_instances))
         with context.ThreadGroup() as tg:
             for instance in all_instances:
+                extra = self._add_instance_ng_related_to_extra(
+                    cluster, instance, extra)
                 if instance in new_instances:
                     tg.spawn('spark-configure-%s' % instance.instance_name,
                              self._push_configs_to_new_node, cluster,
@@ -254,25 +256,23 @@ class SparkProvider(p.ProvisioningPluginBase):
 
     @cpo.event_wrapper(mark_successful_on_exit=True)
     def _push_configs_to_new_node(self, cluster, extra, instance):
-        ng_extra = extra[instance.node_group.id]
-
         files_hadoop = {
             os.path.join(c_helper.HADOOP_CONF_DIR,
-                         "core-site.xml"): ng_extra['xml']['core-site'],
+                         "core-site.xml"): extra['xml']['core-site'],
             os.path.join(c_helper.HADOOP_CONF_DIR,
-                         "hdfs-site.xml"): ng_extra['xml']['hdfs-site'],
+                         "hdfs-site.xml"): extra['xml']['hdfs-site'],
         }
 
         sp_home = self._spark_home(cluster)
         files_spark = {
-            os.path.join(sp_home, 'conf/spark-env.sh'): ng_extra['sp_master'],
-            os.path.join(sp_home, 'conf/slaves'): ng_extra['sp_slaves'],
+            os.path.join(sp_home, 'conf/spark-env.sh'): extra['sp_master'],
+            os.path.join(sp_home, 'conf/slaves'): extra['sp_slaves'],
             os.path.join(sp_home,
-                         'conf/spark-defaults.conf'): ng_extra['sp_defaults']
+                         'conf/spark-defaults.conf'): extra['sp_defaults']
         }
 
         files_init = {
-            '/tmp/sahara-hadoop-init.sh': ng_extra['setup_script'],
+            '/tmp/sahara-hadoop-init.sh': extra['setup_script'],
             'id_rsa': cluster.management_private_key,
             'authorized_keys': cluster.management_public_key
         }
@@ -283,7 +283,7 @@ class SparkProvider(p.ProvisioningPluginBase):
                    'sudo chown $USER $HOME/.ssh/id_rsa; '
                    'sudo chmod 600 $HOME/.ssh/id_rsa')
 
-        storage_paths = instance.node_group.storage_paths()
+        storage_paths = instance.storage_paths()
         dn_path = ' '.join(c_helper.make_hadoop_path(storage_paths,
                                                      '/dfs/dn'))
         nn_path = ' '.join(c_helper.make_hadoop_path(storage_paths,
@@ -336,15 +336,14 @@ class SparkProvider(p.ProvisioningPluginBase):
                              'slave' in node_processes)
 
         if need_update_spark:
-            ng_extra = extra[instance.node_group.id]
             sp_home = self._spark_home(cluster)
             files = {
                 os.path.join(sp_home,
-                             'conf/spark-env.sh'): ng_extra['sp_master'],
-                os.path.join(sp_home, 'conf/slaves'): ng_extra['sp_slaves'],
+                             'conf/spark-env.sh'): extra['sp_master'],
+                os.path.join(sp_home, 'conf/slaves'): extra['sp_slaves'],
                 os.path.join(
                     sp_home,
-                    'conf/spark-defaults.conf'): ng_extra['sp_defaults']
+                    'conf/spark-defaults.conf'): extra['sp_defaults']
             }
             r = remote.get_remote(instance)
             r.write_files_to(files)

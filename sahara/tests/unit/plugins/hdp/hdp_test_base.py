@@ -29,6 +29,11 @@ class TestServer(object):
         self.public_ip = public_ip
         self.internal_ip = private_ip
         self.node_group = None
+        self.sahara_instance = self
+        self.storage_path = ['/mnt']
+
+    def storage_paths(self):
+        return self.storage_path
 
     def fqdn(self):
         return self.inst_fqdn
@@ -81,10 +86,6 @@ class TestNodeGroup(object):
         self.node_processes = node_processes
         self.count = count
         self.id = name
-        self.ng_storage_paths = []
-
-    def storage_paths(self):
-        return self.ng_storage_paths
 
 
 class TestUserInputConfig(object):

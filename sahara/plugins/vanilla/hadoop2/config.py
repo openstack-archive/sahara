@@ -73,24 +73,25 @@ def _configure_instance(pctx, instance):
 
 
 def _provisioning_configs(pctx, instance):
-    xmls, env = _generate_configs(pctx, instance.node_group)
+    xmls, env = _generate_configs(pctx, instance)
     _push_xml_configs(instance, xmls)
     _push_env_configs(instance, env)
 
 
-def _generate_configs(pctx, node_group):
-    hadoop_xml_confs = _get_hadoop_configs(pctx, node_group)
-    user_xml_confs, user_env_confs = _get_user_configs(pctx, node_group)
+def _generate_configs(pctx, instance):
+    hadoop_xml_confs = _get_hadoop_configs(pctx, instance)
+    user_xml_confs, user_env_confs = _get_user_configs(
+        pctx, instance.node_group)
     xml_confs = s_cfg.merge_configs(user_xml_confs, hadoop_xml_confs)
     env_confs = s_cfg.merge_configs(pctx['env_confs'], user_env_confs)
 
     return xml_confs, env_confs
 
 
-def _get_hadoop_configs(pctx, node_group):
-    cluster = node_group.cluster
+def _get_hadoop_configs(pctx, instance):
+    cluster = instance.node_group.cluster
     nn_hostname = vu.get_instance_hostname(vu.get_namenode(cluster))
-    dirs = _get_hadoop_dirs(node_group)
+    dirs = _get_hadoop_dirs(instance)
     confs = {
         'Hadoop': {
             'fs.defaultFS': 'hdfs://%s:9000' % nn_hostname
@@ -282,8 +283,7 @@ def _push_configs_to_instance(instance, configs):
 
 
 def _post_configuration(pctx, instance):
-    node_group = instance.node_group
-    dirs = _get_hadoop_dirs(node_group)
+    dirs = _get_hadoop_dirs(instance)
     args = {
         'hadoop_user': HADOOP_USER,
         'hadoop_group': HADOOP_GROUP,
@@ -313,9 +313,9 @@ def _post_configuration(pctx, instance):
             r.execute_command('chmod +x ' + t_script, run_as_root=True)
 
 
-def _get_hadoop_dirs(node_group):
+def _get_hadoop_dirs(instance):
     dirs = {}
-    storage_paths = node_group.storage_paths()
+    storage_paths = instance.storage_paths()
     dirs['hadoop_name_dirs'] = _make_hadoop_paths(
         storage_paths, '/hdfs/namenode')
     dirs['hadoop_data_dirs'] = _make_hadoop_paths(

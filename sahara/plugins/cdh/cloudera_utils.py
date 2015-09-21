@@ -284,7 +284,7 @@ class ClouderaUtils(object):
         role = service.create_role(self.pu.get_role_name(instance, process),
                                    role_type, instance.fqdn())
         role.update_config(self._get_configs(process, cluster,
-                                             node_group=instance.node_group))
+                                             instance=instance))
 
     def get_cloudera_manager_info(self, cluster):
         mng = self.pu.get_manager(cluster)
@@ -297,6 +297,6 @@ class ClouderaUtils(object):
         }
         return info
 
-    def _get_configs(self, service, cluster=None, node_group=None):
+    def _get_configs(self, service, cluster=None, instance=None):
         # Defined in derived class.
         return

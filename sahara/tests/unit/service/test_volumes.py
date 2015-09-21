@@ -79,13 +79,13 @@ class TestAttachVolume(base.SaharaWithDbTestCase):
             volumes.detach_from_instance(instance))
 
     @base.mock_thread_group
-    @mock.patch('sahara.service.volumes._mount_volume')
+    @mock.patch('sahara.service.volumes.mount_to_instances')
     @mock.patch('sahara.service.volumes._await_attach_volumes')
     @mock.patch('sahara.service.volumes._create_attach_volume')
     @mock.patch('sahara.utils.cluster_progress_ops.add_successful_event')
     @mock.patch('sahara.utils.cluster_progress_ops.add_provisioning_step')
-    def test_attach(self, add_step, add_event,
-                    p_create_attach_vol, p_await, p_mount):
+    def test_attach(self, add_step, add_event, p_create_attach_vol, p_await,
+                    p_mount):
         p_create_attach_vol.side_effect = ['/dev/vdb', '/dev/vdc'] * 2
         p_await.return_value = None
         p_mount.return_value = None
@@ -115,7 +115,7 @@ class TestAttachVolume(base.SaharaWithDbTestCase):
         volumes.attach_to_instances(cluster_utils.get_instances(cluster))
         self.assertEqual(4, p_create_attach_vol.call_count)
         self.assertEqual(2, p_await.call_count)
-        self.assertEqual(4, p_mount.call_count)
+        self.assertEqual(1, p_mount.call_count)
 
     @mock.patch('sahara.utils.poll_utils._get_consumed', return_value=0)
     @mock.patch('sahara.context.sleep')
@@ -157,3 +157,35 @@ class TestAttachVolume(base.SaharaWithDbTestCase):
         inst.remote.return_value = inst_remote
 
         return inst
+
+    def test_find_instance_volume_devices(self):
+        instance = self._get_instance()
+        ex_cmd = instance.remote().execute_command
+
+        attached_info = '/dev/vda /dev/vda1 /dev/vdb /dev/vdc'
+        mounted_info = '/dev/vda1'
+        ex_cmd.side_effect = [(0, attached_info), (0, mounted_info)]
+
+        diff = volumes._find_instance_devices(instance)
+        self.assertEqual(['/dev/vdb', '/dev/vdc'], diff)
+
+        attached_info = '/dev/vda /dev/vda1 /dev/vdb /dev/vdb1 /dev/vdb2'
+        mounted_info = '/dev/vda1'
+        ex_cmd.side_effect = [(0, attached_info), (0, mounted_info)]
+
+        diff = volumes._find_instance_devices(instance)
+        self.assertEqual(['/dev/vdb'], diff)
+
+        attached_info = '/dev/vda /dev/vda1 /dev/vdb /dev/vdb1 /dev/vdb2'
+        mounted_info = '/dev/vda1 /dev/vdb1'
+        ex_cmd.side_effect = [(0, attached_info), (0, mounted_info)]
+
+        diff = volumes._find_instance_devices(instance)
+        self.assertEqual(['/dev/vdb2'], diff)
+
+        attached_info = '/dev/vda /dev/vda1 /dev/vdb /dev/vdb1 /dev/vdb2'
+        mounted_info = '/dev/vda1 /dev/vdb2'
+        ex_cmd.side_effect = [(0, attached_info), (0, mounted_info)]
+
+        diff = volumes._find_instance_devices(instance)
+        self.assertEqual(['/dev/vdb1'], diff)

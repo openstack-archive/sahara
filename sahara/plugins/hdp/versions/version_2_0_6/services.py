@@ -102,16 +102,12 @@ class Service(object):
             config[prop_name] = value
 
     def _get_common_paths(self, node_groups):
-        if len(node_groups) == 1:
-            paths = node_groups[0].storage_paths()
-        else:
-            sets = [set(ng.storage_paths()) for ng in node_groups]
-            paths = list(set.intersection(*sets))
+        sets = []
+        for node_group in node_groups:
+            for instance in node_group.instances:
+                sets.append(set(instance.sahara_instance.storage_paths()))
 
-        if len(paths) > 1 and '/mnt' in paths:
-            paths.remove('/mnt')
-
-        return paths
+        return list(set.intersection(*sets)) if sets else []
 
     def _generate_storage_path(self, storage_paths, path):
         return ",".join([p + path for p in storage_paths])
@@ -201,7 +197,7 @@ class HdfsService(Service):
         hdfs_site_config = cluster_spec.configurations['hdfs-site']
         hdfs_site_config['dfs.namenode.name.dir'] = (
             self._generate_storage_path(
-                nn_ng.storage_paths(), '/hadoop/hdfs/namenode'))
+                self._get_common_paths([nn_ng]), '/hadoop/hdfs/namenode'))
         if common_paths:
             hdfs_site_config['dfs.datanode.data.dir'] = (
                 self._generate_storage_path(

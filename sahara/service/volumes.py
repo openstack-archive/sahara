@@ -13,6 +13,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import re
+import threading
+
 from oslo_config import cfg
 from oslo_log import log as logging
 
@@ -21,6 +24,7 @@ from sahara import context
 from sahara import exceptions as ex
 from sahara.i18n import _
 from sahara.i18n import _LE
+from sahara.i18n import _LW
 from sahara.utils import cluster_progress_ops as cpo
 from sahara.utils.openstack import base as b
 from sahara.utils.openstack import cinder
@@ -51,6 +55,7 @@ def _count_volumes_to_mount(instances):
 def attach_to_instances(instances):
     instances_to_attach = _count_instances_to_attach(instances)
     if instances_to_attach == 0:
+        mount_to_instances(instances)
         return
 
     cpo.add_provisioning_step(
@@ -65,6 +70,8 @@ def attach_to_instances(instances):
                         'attach-volumes-for-instance-%s'
                         % instance.instance_name, _attach_volumes_to_node,
                         instance.node_group, instance)
+
+    mount_to_instances(instances)
 
 
 @poll_utils.poll_status(
@@ -90,13 +97,6 @@ def _attach_volumes_to_node(node_group, instance):
         LOG.debug("Attached volume {device} to instance".format(device=device))
 
     _await_attach_volumes(instance, devices)
-
-    paths = instance.node_group.storage_paths()
-    for idx in range(0, instance.node_group.volumes_per_node):
-        LOG.debug("Mounting volume {volume} to instance"
-                  .format(volume=devices[idx]))
-        _mount_volume(instance, devices[idx], paths[idx])
-        LOG.debug("Mounted volume to instance")
 
 
 @poll_utils.poll_status(
@@ -155,51 +155,90 @@ def mount_to_instances(instances):
         instances[0].cluster_id,
         _("Mount volumes to instances"), _count_volumes_to_mount(instances))
 
-    with context.ThreadGroup() as tg:
-        for instance in instances:
-            with context.set_current_instance_id(instance.instance_id):
-                devices = _find_instance_volume_devices(instance)
+    for instance in instances:
+        with context.set_current_instance_id(instance.instance_id):
+            devices = _find_instance_devices(instance)
+            formatted_devices = []
+            lock = threading.Lock()
+            with context.ThreadGroup() as tg:
                 # Since formating can take several minutes (for large disks)
                 # and can be done in parallel, launch one thread per disk.
-                for idx in range(0, instance.node_group.volumes_per_node):
-                    tg.spawn(
-                        'mount-volume-%d-to-node-%s' %
-                        (idx, instance.instance_name),
-                        _mount_volume_to_node, instance, idx, devices[idx])
+                for device in devices:
+                    tg.spawn('format-device-%s' % device, _format_device,
+                             instance, device, formatted_devices, lock)
+
+            conductor.instance_update(
+                context.current(), instance,
+                {"storage_devices_number": len(formatted_devices)})
+            for idx, dev in enumerate(formatted_devices):
+                _mount_volume_to_node(instance, idx+1, dev)
 
 
-def _find_instance_volume_devices(instance):
-    volumes = b.execute_with_retries(nova.client().volumes.get_server_volumes,
-                                     instance.instance_id)
-    devices = [volume.device for volume in volumes]
-    return devices
+def _find_instance_devices(instance):
+    with instance.remote() as r:
+        code, attached_info = r.execute_command(
+            "lsblk -r | awk '$6 ~ /disk/ || /part/ {print \"/dev/\" $1}'")
+        attached_dev = attached_info.split()
+        code, mounted_info = r.execute_command(
+            "mount | awk '$1 ~ /^\/dev/ {print $1}'")
+        mounted_dev = mounted_info.split()
+
+        # filtering attached devices, that should not be mounted
+        for dev in attached_dev[:]:
+            idx = re.sub("\D", "", dev)
+            if idx:
+                if dev in mounted_dev:
+                    attached_dev.remove(re.sub("\d", "", dev))
+                    attached_dev.remove(dev)
+
+        for dev in attached_dev[:]:
+            if re.sub("\D", "", dev):
+                if re.sub("\d", "", dev) in attached_dev:
+                    attached_dev.remove(dev)
+
+    return attached_dev
 
 
 @cpo.event_wrapper(mark_successful_on_exit=True)
-def _mount_volume_to_node(instance, idx, device):
+def _mount_volume_to_node(instance, index, device):
     LOG.debug("Mounting volume {device} to instance".format(device=device))
-    mount_point = instance.node_group.storage_paths()[idx]
+    mount_point = instance.node_group.volume_mount_prefix + str(index)
     _mount_volume(instance, device, mount_point)
     LOG.debug("Mounted volume to instance")
+
+
+def _format_device(instance, device, formatted_devices=None, lock=None):
+    with instance.remote() as r:
+        try:
+            # Format devices with better performance options:
+            # - reduce number of blocks reserved for root to 1%
+            # - use 'dir_index' for faster directory listings
+            # - use 'extents' to work faster with large files
+            # - disable journaling
+            fs_opts = '-F -m 1 -O dir_index,extents,^has_journal'
+            r.execute_command('sudo mkfs.ext4 %s %s' % (fs_opts, device))
+            if lock:
+                with lock:
+                    formatted_devices.append(device)
+        except Exception:
+            LOG.warning(
+                _LW("Device {dev} cannot be formatted").format(dev=device))
 
 
 def _mount_volume(instance, device_path, mount_point):
     with instance.remote() as r:
         try:
             # Mount volumes with better performance options:
-            # - reduce number of blocks reserved for root to 1%
-            # - use 'dir_index' for faster directory listings
-            # - use 'extents' to work faster with large files
-            # - disable journaling
             # - enable write-back
             # - do not store access time
-            fs_opts = '-m 1 -O dir_index,extents,^has_journal'
             mount_opts = '-o data=writeback,noatime,nodiratime'
 
             r.execute_command('sudo mkdir -p %s' % mount_point)
-            r.execute_command('sudo mkfs.ext4 %s %s' % (fs_opts, device_path))
             r.execute_command('sudo mount %s %s %s' %
                               (mount_opts, device_path, mount_point))
+            r.execute_command(
+                'sudo sh -c "grep %s /etc/mtab >> /etc/fstab"' % device_path)
+
         except Exception:
             LOG.error(_LE("Error mounting volume to instance"))
             raise

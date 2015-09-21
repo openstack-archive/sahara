@@ -157,6 +157,7 @@ class Instance(mb.SaharaBase):
     internal_ip = sa.Column(sa.String(45))
     management_ip = sa.Column(sa.String(45))
     volumes = sa.Column(st.JsonListType())
+    storage_devices_number = sa.Column(sa.Integer)
 
 
 # Template objects: ClusterTemplate, NodeGroupTemplate, TemplatesRelation
