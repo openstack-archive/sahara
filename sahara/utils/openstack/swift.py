@@ -58,7 +58,7 @@ def client(username, password, trust_id=None):
 
     '''
     if trust_id:
-        proxyauth = k.auth_for_proxy_user(username, password, trust_id)
+        proxyauth = k.auth_for_proxy(username, password, trust_id)
         return client_from_token(k.token_from_auth(proxyauth))
     else:
         return swiftclient.Connection(
