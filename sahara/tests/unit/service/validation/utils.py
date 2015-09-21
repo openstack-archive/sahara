@@ -21,7 +21,7 @@ import novaclient.exceptions as nova_ex
 import six
 
 from sahara.conductor import resource as r
-from sahara.plugins.vanilla import plugin
+from sahara.plugins.fake import plugin
 import sahara.service.validation as v
 from sahara.tests.unit import base
 from sahara.tests.unit import testutils as tu
@@ -44,16 +44,16 @@ def _update_data(data, update):
 
 
 def _get_plugins():
-    vanilla = plugin.VanillaProvider
-    vanilla.name = 'vanilla'
-    return [vanilla]
+    fake = plugin.FakePluginProvider
+    fake.name = 'fake'
+    return [fake]
 
 
 def _get_plugin(name):
-    if name == 'vanilla':
-        vanilla = plugin.VanillaProvider
-        vanilla.name = 'vanilla'
-        return vanilla
+    if name == 'fake':
+        fake = plugin.FakePluginProvider
+        fake.name = 'fake'
+        return fake
     return None
 
 
@@ -186,9 +186,9 @@ def start_patch(patch_templates=True):
         @property
         def tags(self):
             if self.name == 'test':
-                return ['vanilla', '2.6.0']
+                return ['fake', '0.1']
             else:
-                return ['vanilla', 'wrong_tag']
+                return ['fake', 'wrong_tag']
 
     def _get_image(id):
         if id == '550e8400-e29b-41d4-a716-446655440000':
@@ -200,7 +200,7 @@ def start_patch(patch_templates=True):
     nova().images.list_registered.return_value = [Image(),
                                                   Image(name='wrong_name')]
     ng_dict = tu.make_ng_dict('ng', '42', ['namenode'], 1)
-    cluster = tu.create_cluster('test', 't', 'vanilla', '2.6.0', [ng_dict],
+    cluster = tu.create_cluster('test', 't', 'fake', '0.1', [ng_dict],
                                 id=1, status='Active')
     # stub clusters list
     get_clusters.return_value = [cluster]
@@ -209,14 +209,14 @@ def start_patch(patch_templates=True):
     # stub node templates
     if patch_templates:
         ngt_dict = {'name': 'test', 'tenant_id': 't', 'flavor_id': '42',
-                    'plugin_name': 'vanilla', 'hadoop_version': '2.6.0',
+                    'plugin_name': 'fake', 'hadoop_version': '0.1',
                     'id': '550e8400-e29b-41d4-a716-446655440000',
                     'node_processes': ['namenode']}
 
         get_ng_templates.return_value = [r.NodeGroupTemplateResource(ngt_dict)]
 
         ct_dict = {'name': 'test', 'tenant_id': 't',
-                   'plugin_name': 'vanilla', 'hadoop_version': '2.6.0'}
+                   'plugin_name': 'fake', 'hadoop_version': '0.1'}
 
         get_cl_templates.return_value = [r.ClusterTemplateResource(ct_dict)]
 
@@ -248,6 +248,7 @@ class ValidationTestCase(base.SaharaTestCase):
         super(ValidationTestCase, self).setUp()
         self._create_object_fun = None
         self.scheme = None
+        self.override_config('plugins', ['fake'])
 
     def tearDown(self):
         self._create_object_fun = None
@@ -369,8 +370,8 @@ class ValidationTestCase(base.SaharaTestCase):
     def _assert_cluster_configs_validation(self, require_image_id=False):
         data = {
             'name': 'test-cluster',
-            'plugin_name': 'vanilla',
-            'hadoop_version': '2.6.0',
+            'plugin_name': 'fake',
+            'hadoop_version': '0.1',
             'cluster_configs': {
                 'HDFS': {
                     u'mapreduce.task.tmp.dir': '/temp/'
@@ -400,28 +401,28 @@ class ValidationTestCase(base.SaharaTestCase):
         self._assert_create_object_validation(
             data=_update_data(data.copy(), {
                 'cluster_configs': {
-                    'HDFS': {
+                    'general': {
                         u's': '/temp/'
                     }
                 }
             }),
             bad_req_i=(1, 'INVALID_REFERENCE',
-                       "Plugin's applicable target 'HDFS' doesn't "
+                       "Plugin's applicable target 'general' doesn't "
                        "contain config with name 's'")
         )
 
     def _assert_cluster_default_image_tags_validation(self):
         data = {
             'name': 'test-cluster',
-            'plugin_name': 'vanilla',
-            'hadoop_version': '2.6.0',
+            'plugin_name': 'fake',
+            'hadoop_version': '0.1',
             'default_image_id': '550e8400-e29b-41d4-a716-446655440000'
         }
         self._assert_create_object_validation(data=data)
         data = {
             'name': 'test-cluster',
-            'plugin_name': 'vanilla',
-            'hadoop_version': '2.6.0',
+            'plugin_name': 'fake',
+            'hadoop_version': '0.1',
             'default_image_id': '813fe450-40d2-4acc-ade5-ea753a1bd5bc'
         }
         self._assert_create_object_validation(
@@ -430,7 +431,7 @@ class ValidationTestCase(base.SaharaTestCase):
                        "Requested image "
                        "'813fe450-40d2-4acc-ade5-ea753a1bd5bc' "
                        "doesn't contain required tags: "
-                       "['2.6.0']"))
+                       "['0.1']"))
 
     def assert_protected_resource_exception(self, ex):
         self.assertIn("marked as protected", six.text_type(ex))

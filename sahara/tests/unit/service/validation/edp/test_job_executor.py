@@ -41,7 +41,8 @@ class TestJobExecCreateValidation(u.ValidationTestCase):
         self.scheme = je_schema.JOB_EXEC_SCHEMA
         # Make sure that the spark plugin is loaded
         if 'spark' not in main.CONF['plugins']:
-            self.override_config('plugins', main.CONF['plugins'] + ['spark'])
+            self.override_config('plugins', main.CONF['plugins'] + ['spark',
+                                                                    'vanilla'])
         api.plugin_base.setup_plugins()
 
     @mock.patch('sahara.conductor.api.LocalApi.cluster_get')

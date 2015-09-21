@@ -23,8 +23,8 @@ from sahara.tests.unit.service.validation import utils as u
 
 SAMPLE_DATA = {
     'name': 'testname',
-    'plugin_name': 'vanilla',
-    'hadoop_version': '2.7.1',
+    'plugin_name': 'fake',
+    'hadoop_version': '0.1',
     'is_public': False,
     'is_protected': False
 }

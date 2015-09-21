@@ -37,11 +37,11 @@ class TestClusterCreateValidation(u.ValidationTestCase):
         self._assert_create_object_validation(
             data={
                 'name': 'testname',
-                'plugin_name': 'vanilla',
+                'plugin_name': 'fake',
                 'hadoop_version': '1'
             },
             bad_req_i=(1, "INVALID_REFERENCE",
-                       "Requested plugin 'vanilla' "
+                       "Requested plugin 'fake' "
                        "doesn't support version '1'"),
         )
 
@@ -61,7 +61,7 @@ class TestClusterCreateValidation(u.ValidationTestCase):
         self._assert_create_object_validation(
             data={
                 'name': 'testname',
-                'plugin_name': 'vanilla'
+                'plugin_name': 'fake'
             },
             bad_req_i=(1, "VALIDATION_ERROR",
                        u"'hadoop_version' is a required property")
@@ -70,24 +70,24 @@ class TestClusterCreateValidation(u.ValidationTestCase):
     def test_cluster_create_v_types(self):
         data = {
             'name': "testname",
-            'plugin_name': "vanilla",
-            'hadoop_version': "2.6.0"
+            'plugin_name': "fake",
+            'hadoop_version': "0.1"
         }
         self._assert_types(data)
 
     def test_cluster_create_v_name_base(self):
         data = {
             'name': "testname",
-            'plugin_name': "vanilla",
-            'hadoop_version': "2.6.0"
+            'plugin_name': "fake",
+            'hadoop_version': "0.1"
         }
         self._assert_valid_name_hostname_validation(data)
 
     def test_cluster_create_v_unique_cl(self):
         data = {
             'name': 'test',
-            'plugin_name': 'vanilla',
-            'hadoop_version': '2.6.0'
+            'plugin_name': 'fake',
+            'hadoop_version': '0.1'
         }
         self._assert_create_object_validation(
             data=data,
@@ -100,8 +100,8 @@ class TestClusterCreateValidation(u.ValidationTestCase):
         self.addCleanup(main.CONF.clear_override, 'infrastructure_engine')
         data = {
             'name': 'test-heat',
-            'plugin_name': 'vanilla',
-            'hadoop_version': '2.6.0'
+            'plugin_name': 'fake',
+            'hadoop_version': '0.1'
         }
         self._assert_create_object_validation(
             data=data,
@@ -114,8 +114,8 @@ class TestClusterCreateValidation(u.ValidationTestCase):
         self._assert_create_object_validation(
             data={
                 'name': "testname",
-                'plugin_name': "vanilla",
-                'hadoop_version': "2.6.0",
+                'plugin_name': "fake",
+                'hadoop_version': "0.1",
                 'user_keypair_id': 'wrong_keypair'
             },
             bad_req_i=(1, 'NOT_FOUND',
@@ -126,8 +126,8 @@ class TestClusterCreateValidation(u.ValidationTestCase):
         self._assert_create_object_validation(
             data={
                 'name': "test-name",
-                'plugin_name': "vanilla",
-                'hadoop_version': "2.6.0",
+                'plugin_name': "fake",
+                'hadoop_version': "0.1",
                 'user_keypair_id': '!'},
             bad_req_i=(1, 'VALIDATION_ERROR',
                        "'!' is not a 'valid_keypair_name'")
@@ -137,8 +137,8 @@ class TestClusterCreateValidation(u.ValidationTestCase):
         self._assert_create_object_validation(
             data={
                 'name': "test-name",
-                'plugin_name': "vanilla",
-                'hadoop_version': "2.6.0",
+                'plugin_name': "fake",
+                'hadoop_version': "0.1",
                 'default_image_id': '550e8400-e29b-41d4-a616-446655440000'
             },
             bad_req_i=(1, 'INVALID_REFERENCE',
@@ -151,7 +151,7 @@ class TestClusterCreateValidation(u.ValidationTestCase):
             data={
                 'name': "test-name",
                 'plugin_name': "wrong_plugin",
-                'hadoop_version': "2.6.0",
+                'hadoop_version': "0.1",
             },
             bad_req_i=(1, 'INVALID_REFERENCE',
                        "Sahara doesn't contain plugin "
@@ -163,8 +163,8 @@ class TestClusterCreateValidation(u.ValidationTestCase):
         self._assert_create_object_validation(
             data={
                 'name': "test-name",
-                'plugin_name': "vanilla",
-                'hadoop_version': "2.6.0",
+                'plugin_name': "fake",
+                'hadoop_version': "0.1",
                 'default_image_id': '550e8400-e29b-41d4-a716-446655440000',
                 'neutron_management_network': '53a36917-ab9f-4589-'
                                               '94ce-b6df85a68332'
@@ -177,8 +177,8 @@ class TestClusterCreateValidation(u.ValidationTestCase):
         self._assert_create_object_validation(
             data={
                 'name': "test-name",
-                'plugin_name': "vanilla",
-                'hadoop_version': "2.6.0",
+                'plugin_name': "fake",
+                'hadoop_version': "0.1",
                 'default_image_id': '550e8400-e29b-41d4-a716-446655440000',
                 'neutron_management_network': '53a36917-ab9f-4589-'
                                               '94ce-b6df85a68332'
@@ -193,8 +193,8 @@ class TestClusterCreateValidation(u.ValidationTestCase):
         self._assert_create_object_validation(
             data={
                 'name': "test-name",
-                'plugin_name': "vanilla",
-                'hadoop_version': "2.6.0",
+                'plugin_name': "fake",
+                'hadoop_version': "0.1",
                 'default_image_id': '550e8400-e29b-41d4-a716-446655440000'
             },
             bad_req_i=(1, 'NOT_FOUND',
@@ -205,8 +205,8 @@ class TestClusterCreateValidation(u.ValidationTestCase):
         self._assert_create_object_validation(
             data={
                 'name': "long-long-cluster-name",
-                'plugin_name': "vanilla",
-                'hadoop_version': "2.6.0",
+                'plugin_name': "fake",
+                'hadoop_version': "0.1",
                 'default_image_id': '550e8400-e29b-41d4-a716-446655440000',
                 'neutron_management_network': 'd9a3bebc-f788-4b81-'
                                               '9a93-aa048022c1ca',
@@ -234,12 +234,12 @@ class TestClusterCreateValidation(u.ValidationTestCase):
         self._assert_create_object_validation(
             data={
                 'name': "testname",
-                'plugin_name': "vanilla",
-                'hadoop_version': "2.6.0",
+                'plugin_name': "fake",
+                'hadoop_version': "0.1",
                 'user_keypair_id': 'test_keypair',
                 'cluster_configs': {
-                    'HDFS': {
-                        u'hadoop.hdfs.configuration.version': '2'
+                    'general': {
+                        u'Enable NTP service': True
                     }
                 },
                 'default_image_id': '550e8400-e29b-41d4-a716-446655440000',
@@ -256,8 +256,8 @@ class TestClusterCreateValidation(u.ValidationTestCase):
         self._assert_create_object_validation(
             data={
                 'name': "testname",
-                'plugin_name': "vanilla",
-                'hadoop_version': "2.6.0",
+                'plugin_name': "fake",
+                'hadoop_version': "0.1",
                 'user_keypair_id': 'test_keypair',
                 'default_image_id': '550e8400-e29b-41d4-a716-446655440000',
                 'neutron_management_network': 'd9a3bebc-f788-4b81-'
@@ -281,8 +281,8 @@ class TestClusterCreateValidation(u.ValidationTestCase):
         self._assert_create_object_validation(
             data={
                 'name': "testname",
-                'plugin_name': "vanilla",
-                'hadoop_version': "2.6.0",
+                'plugin_name': "fake",
+                'hadoop_version': "0.1",
                 'user_keypair_id': 'test_keypair',
                 'default_image_id': '550e8400-e29b-41d4-a716-446655440000',
                 'neutron_management_network': 'd9a3bebc-f788-4b81-'
@@ -316,8 +316,8 @@ class TestClusterCreateValidation(u.ValidationTestCase):
         self._assert_create_object_validation(
             data={
                 'name': "testname",
-                'plugin_name': "vanilla",
-                'hadoop_version': "2.6.0",
+                'plugin_name': "fake",
+                'hadoop_version': "0.1",
                 'user_keypair_id': 'test_keypair',
                 'default_image_id': '550e8400-e29b-41d4-a716-446655440000',
                 'neutron_management_network': 'd9a3bebc-f788-4b81-'
@@ -349,8 +349,8 @@ class TestClusterCreateValidation(u.ValidationTestCase):
         self._assert_create_object_validation(
             data={
                 'name': "testname",
-                'plugin_name': "vanilla",
-                'hadoop_version': "2.6.0",
+                'plugin_name': "fake",
+                'hadoop_version': "0.1",
                 'user_keypair_id': 'test_keypair',
                 'default_image_id': '550e8400-e29b-41d4-a716-446655440000',
                 'neutron_management_network': 'd9a3bebc-f788-4b81-'
@@ -374,8 +374,8 @@ class TestClusterCreateValidation(u.ValidationTestCase):
         self._assert_create_object_validation(
             data={
                 'name': "testname",
-                'plugin_name': "vanilla",
-                'hadoop_version': "2.6.0",
+                'plugin_name': "fake",
+                'hadoop_version': "0.1",
                 'user_keypair_id': 'test_keypair',
                 'default_image_id': '550e8400-e29b-41d4-a716-446655440000',
                 'neutron_management_network': 'd9a3bebc-f788-4b81-'
@@ -401,8 +401,8 @@ class TestClusterCreateValidation(u.ValidationTestCase):
         self._assert_create_object_validation(
             data={
                 'name': 'testname',
-                'plugin_name': 'vanilla',
-                'hadoop_version': '2.6.0',
+                'plugin_name': 'fake',
+                'hadoop_version': '0.1',
                 'user_keypair_id': 'test_keypair',
                 'default_image_id': '550e8400-e29b-41d4-a716-446655440000',
                 'neutron_management_network': 'd9a3bebc-f788-4b81-'
@@ -429,8 +429,8 @@ class TestClusterCreateValidation(u.ValidationTestCase):
         self._assert_create_object_validation(
             data={
                 'name': 'testname',
-                'plugin_name': 'vanilla',
-                'hadoop_version': '2.6.0',
+                'plugin_name': 'fake',
+                'hadoop_version': '0.1',
                 'user_keypair_id': 'test_keypair',
                 'default_image_id': '550e8400-e29b-41d4-a716-446655440000',
                 'neutron_management_network': 'd9a3bebc-f788-4b81-'
@@ -457,8 +457,8 @@ class TestClusterCreateValidation(u.ValidationTestCase):
         self._assert_create_object_validation(
             data={
                 'name': 'testname',
-                'plugin_name': 'vanilla',
-                'hadoop_version': '2.6.0',
+                'plugin_name': 'fake',
+                'hadoop_version': '0.1',
                 'user_keypair_id': 'test_keypair',
                 'default_image_id': '550e8400-e29b-41d4-a716-446655440000',
                 'neutron_management_network': 'd9a3bebc-f788-4b81-'
@@ -495,6 +495,7 @@ class TestClusterCreateFlavorValidation(base.SaharaWithDbTestCase):
 
     def setUp(self):
         super(TestClusterCreateFlavorValidation, self).setUp()
+        self.override_config('plugins', ['fake'])
         modules = [
             "sahara.service.validations.base.check_plugin_name_exists",
             "sahara.service.validations.base.check_plugin_supports_version",
@@ -520,8 +521,8 @@ class TestClusterCreateFlavorValidation(base.SaharaWithDbTestCase):
 
     def _create_node_group_template(self, flavor='42'):
         ng_tmpl = {
-            "plugin_name": "vanilla",
-            "hadoop_version": "2.6.0",
+            "plugin_name": "fake",
+            "hadoop_version": "0.1",
             "node_processes": ["namenode"],
             "name": "master",
             "flavor_id": flavor
@@ -530,8 +531,8 @@ class TestClusterCreateFlavorValidation(base.SaharaWithDbTestCase):
 
     def _create_cluster_template(self, ng_id):
         cl_tmpl = {
-            "plugin_name": "vanilla",
-            "hadoop_version": "2.6.0",
+            "plugin_name": "fake",
+            "hadoop_version": "0.1",
             "node_groups": [
                 {"name": "master",
                  "count": 1,
@@ -547,8 +548,8 @@ class TestClusterCreateFlavorValidation(base.SaharaWithDbTestCase):
 
         data = {
             "name": "testname",
-            "plugin_name": "vanilla",
-            "hadoop_version": "2.6.0",
+            "plugin_name": "fake",
+            "hadoop_version": "0.1",
             "cluster_template_id": '%s' % ctmpl_id,
             'default_image_id': '550e8400-e29b-41d4-a716-446655440000'
         }
@@ -558,8 +559,8 @@ class TestClusterCreateFlavorValidation(base.SaharaWithDbTestCase):
 
         data1 = {
             "name": "testwithnodegroups",
-            "plugin_name": "vanilla",
-            "hadoop_version": "2.6.0",
+            "plugin_name": "fake",
+            "hadoop_version": "0.1",
             "node_groups": [
                 {
                     "name": "allinone",
@@ -567,9 +568,9 @@ class TestClusterCreateFlavorValidation(base.SaharaWithDbTestCase):
                     "flavor_id": "42",
                     "node_processes": [
                         "namenode",
-                        "resourcemanager",
+                        "jobtracker",
                         "datanode",
-                        "nodemanager"
+                        "tasktracker"
                     ]
                 }
             ],
@@ -585,15 +586,15 @@ class TestClusterCreateFlavorValidation(base.SaharaWithDbTestCase):
 
         data = {
             "name": "testname",
-            "plugin_name": "vanilla",
-            "hadoop_version": "2.6.0",
+            "plugin_name": "fake",
+            "hadoop_version": "0.1",
             "cluster_template_id": '%s' % ctmpl_id,
             'default_image_id': '550e8400-e29b-41d4-a716-446655440000'
         }
         data1 = {
             "name": "testwithnodegroups",
-            "plugin_name": "vanilla",
-            "hadoop_version": "2.6.0",
+            "plugin_name": "fake",
+            "hadoop_version": "0.1",
             "node_groups": [
                 {
                     "name": "allinone",
@@ -629,8 +630,8 @@ class TestClusterCreateFlavorValidation(base.SaharaWithDbTestCase):
 
         data = {
             "name": "testtmplnodegroups",
-            "plugin_name": "vanilla",
-            "hadoop_version": "2.6.0",
+            "plugin_name": "fake",
+            "hadoop_version": "0.1",
             "cluster_template_id": '%s' % ctmpl_id,
             'default_image_id': '550e8400-e29b-41d4-a716-446655440000',
             "node_groups": [
@@ -655,8 +656,8 @@ class TestClusterCreateFlavorValidation(base.SaharaWithDbTestCase):
         ng_id = self._create_node_group_template(flavor='23')
         data = {
             "name": "testtmplnodegroups",
-            "plugin_name": "vanilla",
-            "hadoop_version": "2.6.0",
+            "plugin_name": "fake",
+            "hadoop_version": "0.1",
             "node_groups": [
                 {
                     "node_group_template_id": '%s' % ng_id,

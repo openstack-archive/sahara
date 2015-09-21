@@ -29,8 +29,8 @@ class TestClusterDeleteValidation(u.ValidationTestCase):
 
     @mock.patch('sahara.service.api.get_cluster')
     def test_cluster_delete_when_protected(self, get_cluster_p):
-        cluster = tu.create_cluster("cluster1", "tenant1", "vanilla",
-                                    "1.2.1", ['ng1'], is_protected=True)
+        cluster = tu.create_cluster("cluster1", "tenant1", "fake",
+                                    "0.1", ['ng1'], is_protected=True)
         get_cluster_p.return_value = cluster
 
         with testtools.ExpectedException(ex.DeletionFailed):
@@ -42,8 +42,8 @@ class TestClusterDeleteValidation(u.ValidationTestCase):
 
     @mock.patch('sahara.service.api.get_cluster')
     def test_public_cluster_delete_from_another_tenant(self, get_cluster_p):
-        cluster = tu.create_cluster("cluster1", "tenant2", "vanilla",
-                                    "1.2.1", ['ng1'], is_public=True)
+        cluster = tu.create_cluster("cluster1", "tenant2", "fake",
+                                    "0.1", ['ng1'], is_public=True)
         get_cluster_p.return_value = cluster
 
         with testtools.ExpectedException(ex.DeletionFailed):
