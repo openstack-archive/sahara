@@ -88,11 +88,13 @@ class BaseTestCase(base.BaseTestCase):
         timeouts.Defaults.init_defaults(self.testcase)
         self.testcase['ssh_username'] = self.sahara.sahara_client.images.get(
             self.nova.get_image_id(self.testcase['image'])).username
-        self.private_key, self.public_key = ssh.generate_key_pair()
-        self.key_name = self.__create_keypair()
+        self.key = self.testcase.get('key_name')
+        if self.key is None:
+            self.private_key, self.public_key = ssh.generate_key_pair()
+            self.key_name = self.__create_keypair()
         # save the private key if retain_resources is specified
         # (useful for debugging purposes)
-        if self.testcase['retain_resources']:
+        if self.testcase['retain_resources'] or self.key is None:
             with open(self.key_name + '.key', 'a') as private_key_file:
                 private_key_file.write(self.private_key)
         self.plugin_opts = {
@@ -100,6 +102,7 @@ class BaseTestCase(base.BaseTestCase):
             'hadoop_version': self.testcase['plugin_version']
         }
         self.template_path = DEFAULT_TEMPLATES_PATH % self.plugin_opts
+        self.cinder = True
 
     def _init_clients(self):
         username = self.credentials['os_username']
@@ -129,9 +132,15 @@ class BaseTestCase(base.BaseTestCase):
             tenant_name=tenant_name)
 
     def create_cluster(self):
-        self.ng_id_map = self._create_node_group_templates()
-        cl_tmpl_id = self._create_cluster_template()
-        self.cluster_id = self._create_cluster(cl_tmpl_id)
+        self.cluster_id = self.sahara.get_cluster_id(
+            self.testcase.get('existing_cluster'))
+        self.ng_id_map = {}
+        if self.cluster_id is None:
+            self.ng_id_map = self._create_node_group_templates()
+            cl_tmpl_id = self._create_cluster_template()
+            self.cluster_id = self._create_cluster(cl_tmpl_id)
+        elif self.key is None:
+            self.cinder = False
         self._poll_cluster_status_tracked(self.cluster_id)
         cluster = self.sahara.get_cluster(self.cluster_id, show_progress=True)
         self.check_cinder()
@@ -341,20 +350,25 @@ class BaseTestCase(base.BaseTestCase):
 
         body = {}
         for op in scale_ops:
+            node_scale = op['node_group']
             if op['operation'] == 'add':
                 if 'add_node_groups' not in body:
                     body['add_node_groups'] = []
                 body['add_node_groups'].append({
                     'node_group_template_id':
-                    self.ng_id_map[op['node_group']],
+                    self.ng_id_map.get(node_scale,
+                                       self.sahara.get_node_group_template_id(
+                                           node_scale)),
                     'count': op['size'],
-                    'name': utils.rand_name(op['node_group'])
+                    'name': utils.rand_name(node_scale)
                 })
             if op['operation'] == 'resize':
                 if 'resize_node_groups' not in body:
                     body['resize_node_groups'] = []
                 body['resize_node_groups'].append({
-                    'name': self.ng_name_map[op['node_group']],
+                    'name': self.ng_name_map.get(
+                        node_scale,
+                        self.sahara.get_node_group_template_id(node_scale)),
                     'count': op['size']
                 })
 
@@ -366,7 +380,6 @@ class BaseTestCase(base.BaseTestCase):
             self._validate_scaling(ng_after_scale,
                                    self._get_expected_count_of_nodes(
                                        ng_before_scale, body))
-        self.check_cinder()
 
     def _validate_scaling(self, after, expected_count):
         for (key, value) in six.iteritems(expected_count):
@@ -389,7 +402,7 @@ class BaseTestCase(base.BaseTestCase):
 
     @track_result("Check cinder volumes")
     def check_cinder(self):
-        if not self._get_node_list_with_volumes():
+        if not self._get_node_list_with_volumes() or not self.cinder:
             print("All tests for Cinder were skipped")
             return
         for node_with_volumes in self._get_node_list_with_volumes():

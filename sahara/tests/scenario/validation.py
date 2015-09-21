@@ -90,6 +90,14 @@ SCHEMA = {
             "items": {
                 "type": "object",
                 "properties": {
+                    "existing_cluster": {
+                        "type": "string",
+                        "minLength": 1
+                    },
+                    "key_name": {
+                        "type": "string",
+                        "minLength": 1
+                    },
                     "plugin_name": {
                         "type": "string",
                         "minLength": 1

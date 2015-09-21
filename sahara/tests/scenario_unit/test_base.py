@@ -142,6 +142,7 @@ class TestBase(testtools.TestCase):
         self.base_scenario.ng_id_map = {'worker': 'set_id', 'master': 'set_id'}
         self.base_scenario.ng_name_map = {}
         self.base_scenario.key_name = 'test_key'
+        self.base_scenario.key = 'key_from_yaml'
         self.base_scenario.template_path = ('sahara/tests/scenario/templates/'
                                             'vanilla/2.7.1')
         self.job = self.base_scenario.testcase["edp_jobs_flow"].get(
@@ -339,6 +340,8 @@ class TestBase(testtools.TestCase):
                              ['id_for_job_binaries'],
                              []))
 
+    @mock.patch('sahara.tests.scenario.clients.SaharaClient.get_cluster_id',
+                return_value='cluster_id')
     @mock.patch('sahara.tests.scenario.base.BaseTestCase.check_cinder',
                 return_value=None)
     @mock.patch('sahara.tests.scenario.clients.SaharaClient.get_job_status',
@@ -369,7 +372,8 @@ class TestBase(testtools.TestCase):
                             mock_job_binaries, mock_job,
                             mock_node_group_template, mock_cluster_template,
                             mock_cluster, mock_cluster_status, mock_create,
-                            mock_get, mock_client, mock_cinder):
+                            mock_get, mock_client, mock_cinder,
+                            mock_get_cluster_id):
         self.base_scenario._init_clients()
         self.base_scenario.create_cluster()
         self.base_scenario.testcase["edp_jobs_flow"] = [
