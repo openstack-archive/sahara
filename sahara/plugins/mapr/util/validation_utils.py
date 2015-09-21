@@ -164,11 +164,15 @@ def on_same_node(component, dependency):
     return ft.partial(validate, component=component, dependency=dependency)
 
 
-def depends_on(service, required_by=None):
+def depends_on(service, required_by):
     def validate(cluster_context, service, required_by):
         if not cluster_context.is_present(service):
+            service_name = service.ui_name
+            if service.version:
+                service_name += " %s" % service.version
+
             raise e.RequiredServiceMissingException(
-                service.ui_name, required_by.ui_name)
+                service_name, required_by.ui_name)
 
     return ft.partial(validate, service=service, required_by=required_by)
 
