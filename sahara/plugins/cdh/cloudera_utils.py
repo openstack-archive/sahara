@@ -141,9 +141,9 @@ class ClouderaUtils(object):
         # instances non-empty
         cpo.add_provisioning_step(
             instances[0].cluster_id, _("Update configs"), len(instances))
-        with context.ThreadGroup as tg:
+        with context.ThreadGroup() as tg:
             for instance in instances:
-                tg.spawn("update-configs-%s" % instances.instance_name,
+                tg.spawn("update-configs-%s" % instance.instance_name,
                          self._update_configs, instance)
 
     @cpo.event_wrapper(True)
