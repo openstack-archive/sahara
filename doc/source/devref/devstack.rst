@@ -108,9 +108,7 @@ appended after the git repo URL as follows:
 
 .. sourcecode:: bash
 
-    enable_service ceilometer-acompute ceilometer-acentral ceilometer-anotification ceilometer-collector
-    enable_service ceilometer-alarm-evaluator,ceilometer-alarm-notifier
-    enable_service ceilometer-api
+    enable_plugin ceilometer git://git.openstack.org/openstack/ceilometer
 
 4. Start DevStack:
 
