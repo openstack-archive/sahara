@@ -126,6 +126,9 @@ class ClusterStack(object):
             'template': main_tmpl,
             'files': self.files}
 
+        if CONF.heat_stack_tags:
+            kwargs['tags'] = ",".join(CONF.heat_stack_tags)
+
         if not update_existing:
             LOG.debug("Creating Heat stack with args: {args}"
                       .format(args=kwargs))
