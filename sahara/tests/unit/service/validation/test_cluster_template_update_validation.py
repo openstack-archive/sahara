@@ -15,9 +15,10 @@
 
 import copy
 
+import mock
+
 from sahara.service import api
 from sahara.service.validations import cluster_template_schema as ct_schema
-from sahara.service.validations import cluster_templates as ct
 from sahara.tests.unit.service.validation import utils as u
 
 
@@ -33,7 +34,7 @@ SAMPLE_DATA = {
 class TestClusterTemplateUpdateValidation(u.ValidationTestCase):
     def setUp(self):
         super(TestClusterTemplateUpdateValidation, self).setUp()
-        self._create_object_fun = ct.check_cluster_template_update
+        self._create_object_fun = mock.Mock()
         self.scheme = ct_schema.CLUSTER_TEMPLATE_UPDATE_SCHEMA
         api.plugin_base.setup_plugins()
 
