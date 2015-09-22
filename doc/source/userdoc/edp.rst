@@ -273,6 +273,91 @@ when the job is launched:
   available through the UI or the sahara command line client. A user may
   simply use the id as a value.
 
+Creating an Interface for Your Job
+++++++++++++++++++++++++++++++++++
+
+In order to better document your job for cluster operators (or for yourself
+in the future), sahara allows the addition of an interface (or method
+signature) to your job template. A sample interface for the Teragen Hadoop
+example might be:
+
+      +---------------+--------------+------------------+-------------+----------+---------------------+
+      | Name          | Mapping Type | Location         | Value Type  | Required | Default             |
+      +===============+==============+==================+=============+==========+=====================+
+      | Example Class | args         | 0                | string      | false    | teragen             |
+      +---------------+--------------+------------------+-------------+----------+---------------------+
+      | Rows          | args         | 1                | number      | true     | ``unset``           |
+      +---------------+--------------+------------------+-------------+----------+---------------------+
+      | Output Path   | args         | 2                | data_source | false    | hdfs://ip:port/path |
+      +---------------+--------------+------------------+-------------+----------+---------------------+
+      | Mapper Count  | configs      | mapred.map.tasks | number      | false    | ``unset``           |
+      +---------------+--------------+------------------+-------------+----------+---------------------+
+
+A "Description" field may also be added to each interface argument.
+
+To create such an interface via the REST API, provide an "interface" argument,
+the value of which consists of a list of JSON objects, as below:
+
+.. sourcecode:: json
+
+    [
+        {
+            "name": "Example Class",
+            "description": "Indicates which example job class should be used."
+            "mapping_type": "args",
+            "location": "0",
+            "value_type": "string",
+            "required": false,
+            "default": "teragen"
+        },
+        # Other arguments above here, as JSON objects
+    ]
+
+Creating this interface would allow you to specify a configuration for any
+execution of the job template by passing an "interface" map similar to:
+
+.. sourcecode:: json
+
+    {
+        "Rows": "1000000",
+        "Mapper Count": "3",
+        "Output Path": "hdfs://mycluster:8020/user/myuser/teragen-output"
+    }
+
+The specified arguments would be automatically placed into the args, configs,
+and params for the job, according to the mapping type and location fields of
+each interface argument. The final ``job_configs`` map would be:
+
+.. sourcecode:: json
+
+    {
+        "job_configs": {
+            "configs": {"mapred.map.tasks": "3"},
+            "args" ["teragen", "1000000", "hdfs://mycluster:8020/user/myuser/teragen-output"]
+        }
+    }
+
+Rules for specifying an interface are as follows:
+
+- Mapping Type must be one of ``configs``, ``params``, or ``args``. Only types
+  supported for your job type are allowed (see above.)
+- Location must be a string for configs and params, and an integer for args.
+  The set of ``args`` locations must be an unbroken series of integers
+  starting from 0.
+- Value Type must be one of ``string``, ``number``, or ``data_source``. Data
+  sources may be passed as UUIDs or as valid paths (see above.) All values
+  should be sent as JSON strings. (Note that booleans and null values are
+  serialized differently in different languages. Please specify them as a
+  string representation of the appropriate constants for your data processing
+  engine.)
+- ``args`` that are not required must be given a default value.
+
+The additional one-time complexity of specifying an interface on your template
+allows a simpler repeated execution path, and also allows us to generate a
+customized form for your job in the Horizon UI. This may be particularly
+useful in cases in which an operator who is not a data processing job
+developer will be running and administering the jobs.
+
 Generation of Swift Properties for Data Sources
 +++++++++++++++++++++++++++++++++++++++++++++++
 
