@@ -138,3 +138,27 @@ class TestNetworks(base.SaharaTestCase):
         neutron.return_value = neutron_client
 
         self.assertEqual('10.2.2.2', networks.init_instances_ips(mock.Mock()))
+
+    @mock.patch('sahara.service.networks.conductor.instance_update')
+    @mock.patch('sahara.utils.openstack.nova.get_instance_info')
+    def test_init_instances_ips_with_ipv6_subnet(self, nova, upd):
+        self.override_config('use_floating_ips', False)
+        instance = mock.Mock()
+        server = mock.Mock()
+        server.addresses = {
+            'network': [
+                {
+                    'version': 6,
+                    'OS-EXT-IPS:type': 'fixed',
+                    'addr': 'fe80::1234:5678:9abc:def0'
+                },
+                {
+                    'version': 4,
+                    'OS-EXT-IPS:type': 'fixed',
+                    'addr': '10.2.2.2'
+                }
+            ]
+        }
+        nova.return_value = server
+
+        self.assertEqual('10.2.2.2', networks.init_instances_ips(instance))
