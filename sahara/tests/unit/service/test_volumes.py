@@ -33,12 +33,13 @@ class TestAttachVolume(base.SaharaWithDbTestCase):
         instance = self._get_instance()
         execute_com = instance.remote().execute_command
 
-        self.assertIsNone(volumes._mount_volume(instance, '123', '456'))
+        self.assertIsNone(volumes._mount_volume(instance, '123', '456',
+                                                False))
         self.assertEqual(3, execute_com.call_count)
 
         execute_com.side_effect = ex.RemoteCommandException('cmd')
         self.assertRaises(ex.RemoteCommandException, volumes._mount_volume,
-                          instance, '123', '456')
+                          instance, '123', '456', False)
 
     @mock.patch('sahara.conductor.manager.ConductorManager.cluster_get')
     @mock.patch('cinderclient.v1.volumes.Volume.delete')

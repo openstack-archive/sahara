@@ -213,6 +213,12 @@ class ValidationError(object):
 
 # COMMON FOR ALL PLUGINS CONFIGS
 
+XFS_ENABLED = Config(
+    "Enable XFS", 'general', 'cluster', priority=1,
+    default_value=True, config_type="bool", is_optional=True,
+    description='Enables XFS for formatting'
+)
+
 DISKS_PREPARING_TIMEOUT = Config(
     "Timeout for disk preparing", 'general', 'cluster', priority=1,
     default_value=300, config_type="int", is_optional=True,
@@ -242,4 +248,4 @@ HEAT_WAIT_CONDITION_TIMEOUT = Config(
 
 def list_of_common_configs():
     return [DISKS_PREPARING_TIMEOUT, NTP_ENABLED, NTP_URL,
-            HEAT_WAIT_CONDITION_TIMEOUT]
+            HEAT_WAIT_CONDITION_TIMEOUT, XFS_ENABLED]

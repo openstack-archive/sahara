@@ -51,6 +51,58 @@ def _get_timeout_for_disk_preparing(cluster):
         return int(plugin_base.DISKS_PREPARING_TIMEOUT.default_value)
 
 
+def _is_xfs_enabled(cluster):
+    configs = cluster.cluster_configs.to_dict()
+    option_name = plugin_base.XFS_ENABLED.name
+    option_target = plugin_base.XFS_ENABLED.applicable_target
+    try:
+        return bool(configs[option_target][option_name])
+    except Exception:
+        return bool(plugin_base.XFS_ENABLED.default_value)
+
+
+def _get_os_distrib(remote):
+    return remote.execute_command('lsb_release -is')[1].strip().lower()
+
+
+def _check_installed_xfs(instance):
+    redhat = "rpm -q xfsprogs || yum install -y xfsprogs"
+    debian = "dpkg -s xfsprogs || apt-get -y install xfsprogs"
+
+    cmd_map = {
+        "centos": redhat,
+        "fedora": redhat,
+        "redhatenterpriseserver": redhat,
+        "ubuntu": debian,
+        'debian': debian
+    }
+
+    with instance.remote() as r:
+        distro = _get_os_distrib(r)
+        if not cmd_map.get(distro):
+            LOG.warning(
+                _LW("Cannot verify installation of XFS tools for "
+                    "unknown distro {distro}.").format(distro=distro))
+            return False
+        try:
+            r.execute_command(cmd_map.get(distro), run_as_root=True)
+            return True
+        except Exception as e:
+            LOG.warning(
+                _LW("Cannot install xfsprogs: {reason}").format(reason=e))
+            return False
+
+
+def _can_use_xfs(instances):
+    cluster = instances[0].cluster
+    if not _is_xfs_enabled(cluster):
+        return False
+    for instance in instances:
+        if not _check_installed_xfs(instance):
+            return False
+    return True
+
+
 def _count_instances_to_attach(instances):
     result = 0
     for instance in instances:
@@ -166,6 +218,8 @@ def mount_to_instances(instances):
         instances[0].cluster_id,
         _("Mount volumes to instances"), _count_volumes_to_mount(instances))
 
+    use_xfs = _can_use_xfs(instances)
+
     for instance in instances:
         with context.set_current_instance_id(instance.instance_id):
             devices = _find_instance_devices(instance)
@@ -176,13 +230,14 @@ def mount_to_instances(instances):
                 # and can be done in parallel, launch one thread per disk.
                 for device in devices:
                     tg.spawn('format-device-%s' % device, _format_device,
-                             instance, device, formatted_devices, lock)
+                             instance, device, use_xfs, formatted_devices,
+                             lock)
 
             conductor.instance_update(
                 context.current(), instance,
                 {"storage_devices_number": len(formatted_devices)})
             for idx, dev in enumerate(formatted_devices):
-                _mount_volume_to_node(instance, idx+1, dev)
+                _mount_volume_to_node(instance, idx+1, dev, use_xfs)
 
 
 def _find_instance_devices(instance):
@@ -211,14 +266,15 @@ def _find_instance_devices(instance):
 
 
 @cpo.event_wrapper(mark_successful_on_exit=True)
-def _mount_volume_to_node(instance, index, device):
+def _mount_volume_to_node(instance, index, device, use_xfs):
     LOG.debug("Mounting volume {device} to instance".format(device=device))
     mount_point = instance.node_group.volume_mount_prefix + str(index)
-    _mount_volume(instance, device, mount_point)
+    _mount_volume(instance, device, mount_point, use_xfs)
     LOG.debug("Mounted volume to instance")
 
 
-def _format_device(instance, device, formatted_devices=None, lock=None):
+def _format_device(
+        instance, device, use_xfs, formatted_devices=None, lock=None):
     with instance.remote() as r:
         try:
             timeout = _get_timeout_for_disk_preparing(instance.cluster)
@@ -228,10 +284,11 @@ def _format_device(instance, device, formatted_devices=None, lock=None):
             # - use 'dir_index' for faster directory listings
             # - use 'extents' to work faster with large files
             # - disable journaling
-
             fs_opts = '-F -m 1 -O dir_index,extents,^has_journal'
-            r.execute_command('sudo mkfs.ext4 %s %s' % (fs_opts, device),
-                              timeout=timeout)
+            command = 'sudo mkfs.ext4 %s %s' % (fs_opts, device)
+            if use_xfs:
+                command = 'sudo mkfs.xfs %s' % device
+            r.execute_command(command, timeout=timeout)
             if lock:
                 with lock:
                     formatted_devices.append(device)
@@ -241,17 +298,21 @@ def _format_device(instance, device, formatted_devices=None, lock=None):
                     dev=device, reason=e))
 
 
-def _mount_volume(instance, device_path, mount_point):
+def _mount_volume(instance, device_path, mount_point, use_xfs):
     with instance.remote() as r:
         try:
             timeout = _get_timeout_for_disk_preparing(instance.cluster)
 
             # Mount volumes with better performance options:
-            # - enable write-back
+            # - enable write-back for ext4
             # - do not store access time
-            mount_opts = '-o data=writeback,noatime,nodiratime'
+            # - disable barrier for xfs
 
             r.execute_command('sudo mkdir -p %s' % mount_point)
+            mount_opts = '-o data=writeback,noatime,nodiratime'
+            if use_xfs:
+                mount_opts = "-t xfs -o noatime,nodiratime,nobarrier"
+
             r.execute_command('sudo mount %s %s %s' %
                               (mount_opts, device_path, mount_point),
                               timeout=timeout)
