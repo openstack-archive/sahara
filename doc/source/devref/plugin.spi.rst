@@ -15,8 +15,8 @@ as well as configs and whatever else that plugin needs to create the Hadoop clus
 
 *Example return value*: [“1.2.1”, “2.3.0”, “2.4.1”]
 
-get_configs(hadoop_version)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~
+get_configs( hadoop_version)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Lists all configs supported by plugin with descriptions, defaults and targets for which this config is applicable.
 
@@ -24,8 +24,8 @@ Lists all configs supported by plugin with descriptions, defaults and targets fo
 
 *Example return value*: ((“JobTracker heap size”, "JobTracker heap size, in MB", "int", “512”, `“mapreduce”`, "node", True, 1))
 
-get_node_processes(hadoop_version)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+get_node_processes( hadoop_version)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Returns all supported services and node processes for a given Hadoop version.
 Each node process belongs to a single service and that relationship is reflected in the returned dict object.
@@ -35,8 +35,8 @@ See example for details.
 
 *Example return value*: {"mapreduce": ["tasktracker", "jobtracker"], "hdfs": ["datanode", "namenode"]}
 
-get_required_image_tags(hadoop_version)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+get_required_image_tags( hadoop_version)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Lists tags, that should be added to OpenStack Image via Image Registry. Tags are used to filter Images by plugin and hadoop version.
 
