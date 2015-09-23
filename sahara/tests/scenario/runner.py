@@ -24,7 +24,7 @@ import tempfile
 
 from mako import template as mako_template
 from oslo_utils import fileutils
-from six.moves import configparser
+import six
 import yaml
 
 from sahara.tests.scenario import validation
@@ -65,9 +65,13 @@ def set_defaults(config):
             testcase['plugin_version'].replace('.', '_')])
         testcase['retain_resources'] = testcase.get('retain_resources', False)
         testcase['scenario'] = testcase.get('scenario', default_scenario)
-        testcase['edp_jobs_flow'] = (
-            config.get('edp_jobs_flow', {}).get(
-                testcase.get('edp_jobs_flow', None), None))
+        if isinstance(testcase.get('edp_jobs_flow'), six.string_types):
+            testcase['edp_jobs_flow'] = [testcase['edp_jobs_flow']]
+        edp_jobs_flow = []
+        for edp_flow in testcase.get('edp_jobs_flow', []):
+            edp_jobs_flow.extend(config.get('edp_jobs_flow',
+                                            {}).get(edp_flow))
+        testcase['edp_jobs_flow'] = edp_jobs_flow
 
 
 def _merge_dicts_sections(dict_with_section, dict_for_merge, section):
@@ -96,7 +100,7 @@ def recursive_walk(directory):
 def read_template_variables(variable_file, verbose=False):
     variables = {}
     try:
-        cp = configparser.ConfigParser()
+        cp = six.moves.configparser.ConfigParser()
         # key-sensitive keys
         cp.optionxform = lambda option: option
         cp.readfp(open(variable_file))
@@ -105,7 +109,7 @@ def read_template_variables(variable_file, verbose=False):
         print("WARNING: the input contains at least one template, but "
               "the variable configuration file '%s' is not valid: %s" %
               (variable_file, ioe))
-    except configparser.Error as cpe:
+    except six.moves.configparser.Error as cpe:
         print("WARNING: the input contains at least one template, but "
               "the variable configuration file '%s' can not be parsed: "
               "%s" % (variable_file, cpe))

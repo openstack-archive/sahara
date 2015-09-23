@@ -294,8 +294,7 @@ SCHEMA = {
                         }
                     },
                     "edp_jobs_flow": {
-                        "type": "string",
-                        "minLength": 1
+                        "type": ["string", "array"]
                     },
                     "retain_resources": {
                         "type": "boolean"
