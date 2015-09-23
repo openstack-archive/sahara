@@ -27,7 +27,6 @@ import sahara.plugins.base as plugin_base
 import sahara.service.api as api
 from sahara.utils import general as g
 import sahara.utils.openstack.cinder as cinder
-import sahara.utils.openstack.heat as heat
 import sahara.utils.openstack.nova as nova
 
 
@@ -255,15 +254,6 @@ def check_cluster_unique_name(name):
     if name in [cluster.name for cluster in api.get_clusters()]:
         raise ex.NameAlreadyExistsException(
             _("Cluster with name '%s' already exists") % name)
-    check_heat_stack_name(name)
-
-
-def check_heat_stack_name(cluster_name):
-    if CONF.infrastructure_engine == 'heat':
-        if heat.get_stack(cluster_name, raise_on_missing=False):
-            raise ex.NameAlreadyExistsException(
-                _("Cluster name '%s' is already used as Heat stack name")
-                % cluster_name)
 
 
 def check_cluster_hostnames_lengths(cluster_name, node_groups):

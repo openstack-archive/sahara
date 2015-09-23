@@ -25,7 +25,6 @@ from sahara.utils.openstack import base as b
 from sahara.utils.openstack import heat as h
 from sahara.utils.openstack import neutron
 
-
 CONF = cfg.CONF
 LOG = logging.getLogger(__name__)
 
@@ -130,7 +129,7 @@ class ClusterStack(object):
         heat = h.client()
 
         kwargs = {
-            'stack_name': self.cluster.name,
+            'stack_name': self.cluster.stack_name,
             'timeout_mins': 180,
             'disable_rollback': disable_rollback,
             'parameters': {},
@@ -145,13 +144,13 @@ class ClusterStack(object):
                       .format(args=kwargs))
             b.execute_with_retries(heat.stacks.create, **kwargs)
         else:
-            stack = h.get_stack(self.cluster.name)
+            stack = h.get_stack(self.cluster.stack_name)
             self.last_updated_time = stack.updated_time
             LOG.debug("Updating Heat stack {stack} with args: "
                       "{args}".format(stack=stack, args=kwargs))
             b.execute_with_retries(stack.update, **kwargs)
 
-        self.heat_stack = h.get_stack(self.cluster.name)
+        self.heat_stack = h.get_stack(self.cluster.stack_name)
 
     def _need_aa_server_group(self, node_group):
         for node_process in node_group.node_processes:

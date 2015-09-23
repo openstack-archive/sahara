@@ -82,6 +82,11 @@ class Cluster(object):
 
         return None
 
+    @property
+    def stack_name(self):
+        extra = self.extra or {}
+        return extra.get('heat_stack_name', self.name)
+
 
 class NodeGroup(object):
     """An object representing Node Group.
