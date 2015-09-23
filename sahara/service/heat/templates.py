@@ -19,6 +19,7 @@ from oslo_log import log as logging
 import six
 import yaml
 
+from sahara.plugins import provisioning as plugin_provisioning
 from sahara.utils import general as g
 from sahara.utils.openstack import base as b
 from sahara.utils.openstack import heat as h
@@ -29,6 +30,7 @@ CONF = cfg.CONF
 LOG = logging.getLogger(__name__)
 
 SSH_PORT = 22
+INSTANCE_RESOURCE_NAME = "inst"
 
 
 def _get_inst_name(ng):
@@ -87,6 +89,14 @@ def _get_volume_name(ng):
              "volume", {"get_param": "volume_index"}]
         ]
     }
+
+
+def _get_wc_handle_name(inst_name):
+    return '%s-wc-handle' % inst_name
+
+
+def _get_wc_waiter_name(inst_name):
+    return '%s-wc-waiter' % inst_name
 
 
 class ClusterStack(object):
@@ -204,8 +214,8 @@ class ClusterStack(object):
             "resources": self._serialize_instance(ng),
             "outputs": {
                 "instance": {"value": {
-                    "physical_id": {"get_resource": "inst"},
-                    "name": {"get_attr": ["inst", "name"]}
+                    "physical_id": {"get_resource": INSTANCE_RESOURCE_NAME},
+                    "name": {"get_attr": [INSTANCE_RESOURCE_NAME, "name"]}
                 }}}
         })
 
@@ -266,6 +276,15 @@ class ClusterStack(object):
 
         return rules
 
+    @staticmethod
+    def _get_wait_condition_timeout(ng):
+        configs = ng.cluster.cluster_configs
+        timeout_cfg = plugin_provisioning.HEAT_WAIT_CONDITION_TIMEOUT
+        cfg_target = timeout_cfg.applicable_target
+        cfg_name = timeout_cfg.name
+        return int(configs.get(cfg_target,
+                               {}).get(cfg_name, timeout_cfg.default_value))
+
     def _serialize_instance(self, ng):
         resources = {}
         properties = {}
@@ -297,7 +316,22 @@ class ClusterStack(object):
             properties["key_name"] = self.cluster.user_keypair_id
 
         gen_userdata_func = self.node_groups_extra[ng.id]['gen_userdata_func']
-        userdata = gen_userdata_func(ng, inst_name)
+        key_script = gen_userdata_func(ng, inst_name)
+        wait_condition_script = (
+            "wc_notify --data-binary '{\"status\": \"SUCCESS\"}'")
+        userdata = {
+            "str_replace": {
+                "template": "\n".join([key_script, wait_condition_script]),
+                "params": {
+                    "wc_notify": {
+                        "get_attr": [
+                            _get_wc_handle_name(ng.name),
+                            "curl_cli"
+                        ]
+                    }
+                }
+            }
+        }
 
         if ng.availability_zone:
             properties["availability_zone"] = ng.availability_zone
@@ -313,7 +347,7 @@ class ClusterStack(object):
         })
 
         resources.update({
-            "inst": {
+            INSTANCE_RESOURCE_NAME: {
                 "type": "OS::Nova::Server",
                 "properties": properties
             }
@@ -322,6 +356,20 @@ class ClusterStack(object):
         if ng.volumes_per_node > 0 and ng.volumes_size > 0:
             resources.update(self._serialize_volume(ng))
 
+        resources.update(self._serialize_volume(ng))
+        resources.update({
+            _get_wc_handle_name(ng.name): {
+                "type": "OS::Heat::WaitConditionHandle"
+            },
+            _get_wc_waiter_name(ng.name): {
+                "type": "OS::Heat::WaitCondition",
+                "depends_on": INSTANCE_RESOURCE_NAME,
+                "properties": {
+                    "timeout": self._get_wait_condition_timeout(ng),
+                    "handle": {"get_resource": _get_wc_handle_name(ng.name)}
+                }
+            }
+        })
         return resources
 
     def _serialize_port(self, port_name, fixed_net_id, security_groups):
@@ -363,7 +411,7 @@ class ClusterStack(object):
                 "type": "OS::Nova::FloatingIPAssociation",
                 "properties": {
                     "floating_ip": {"get_resource": "floating_ip"},
-                    "server_id": {"get_resource": "inst"}
+                    "server_id": {"get_resource": INSTANCE_RESOURCE_NAME}
                 }
             }
         }
@@ -382,7 +430,8 @@ class ClusterStack(object):
                         "properties": {
                             "volume_index": "%index%",
                             "instance_index": {"get_param": "instance_index"},
-                            "instance": {"get_resource": "inst"}}
+                            "instance": {"get_resource":
+                                         INSTANCE_RESOURCE_NAME}}
                     }
                 }
             }

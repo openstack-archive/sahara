@@ -227,6 +227,11 @@ NTP_ENABLED = Config(
                 'instances'
 )
 
+HEAT_WAIT_CONDITION_TIMEOUT = Config(
+    "Heat Wait Condition timeout", "general", "cluster", priority=1,
+    config_type="int", default_value=3600, is_optional=True,
+    description="The number of seconds to wait for the instance to boot")
+
 
 def list_of_common_configs():
-    return [NTP_ENABLED, NTP_URL]
+    return [NTP_ENABLED, NTP_URL, HEAT_WAIT_CONDITION_TIMEOUT]

@@ -21,7 +21,7 @@ from sahara.tests.unit import base
 from sahara.tests.unit import testutils as tu
 
 
-class TestClusterTemplate(base.SaharaWithDbTestCase):
+class BaseTestClusterTemplate(base.SaharaWithDbTestCase):
     """Checks valid structure of Resources section in generated Heat templates.
 
     1. It checks templates generation with different OpenStack
@@ -52,6 +52,8 @@ class TestClusterTemplate(base.SaharaWithDbTestCase):
                                  default_image_id='1', image_id=None,
                                  anti_affinity=anti_affinity)
 
+
+class TestClusterTemplate(BaseTestClusterTemplate):
     def _make_heat_template(self, cluster, ng1, ng2):
         heat_template = h.ClusterStack(cluster)
         heat_template.add_node_group_extra(ng1['id'], 1,
@@ -165,6 +167,46 @@ class TestClusterTemplate(base.SaharaWithDbTestCase):
         }}
         actual = self._generate_auto_security_group_template(False)
         self.assertEqual(expected, actual)
+
+
+class TestClusterTemplateWaitCondition(BaseTestClusterTemplate):
+    def _make_heat_template(self, cluster, ng1, ng2):
+        heat_template = h.ClusterStack(cluster)
+        heat_template.add_node_group_extra(ng1.id, 1,
+                                           get_ud_generator('line1\nline2'))
+        heat_template.add_node_group_extra(ng2.id, 1,
+                                           get_ud_generator('line2\nline3'))
+        return heat_template
+
+    def setUp(self):
+        super(TestClusterTemplateWaitCondition, self).setUp()
+        _ng1, _ng2 = self._make_node_groups("floating")
+        _cluster = self._make_cluster("private_net", _ng1, _ng2)
+        _ng1["cluster"] = _ng2["cluster"] = _cluster
+        self.ng1 = mock.Mock()
+        self.ng1.configure_mock(**_ng1)
+        self.ng2 = mock.Mock()
+        self.ng2.configure_mock(**_ng2)
+        self.cluster = mock.Mock()
+        self.cluster.configure_mock(**_cluster)
+        self.template = self._make_heat_template(self.cluster,
+                                                 self.ng1, self.ng2)
+
+    def test_use_wait_condition(self):
+        instance = self.template._serialize_instance(self.ng1)
+        expected_wc_handle = {
+            "type": "OS::Heat::WaitConditionHandle"
+        }
+        expected_wc_waiter = {
+            "type": "OS::Heat::WaitCondition",
+            "depends_on": "inst",
+            "properties": {
+                "timeout": 3600,
+                "handle": {"get_resource": "master-wc-handle"}
+            }
+        }
+        self.assertEqual(expected_wc_handle, instance["master-wc-handle"])
+        self.assertEqual(expected_wc_waiter, instance["master-wc-waiter"])
 
 
 def get_ud_generator(s):
