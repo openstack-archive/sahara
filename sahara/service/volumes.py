@@ -25,6 +25,7 @@ from sahara import exceptions as ex
 from sahara.i18n import _
 from sahara.i18n import _LE
 from sahara.i18n import _LW
+from sahara.plugins import provisioning as plugin_base
 from sahara.utils import cluster_progress_ops as cpo
 from sahara.utils.openstack import base as b
 from sahara.utils.openstack import cinder
@@ -38,6 +39,16 @@ LOG = logging.getLogger(__name__)
 CONF = cfg.CONF
 CONF.import_opt('api_version', 'sahara.utils.openstack.cinder',
                 group='cinder')
+
+
+def _get_timeout_for_disk_preparing(cluster):
+    configs = cluster.cluster_configs.to_dict()
+    option_name = plugin_base.DISKS_PREPARING_TIMEOUT.name
+    option_target = plugin_base.DISKS_PREPARING_TIMEOUT.applicable_target
+    try:
+        return int(configs[option_target][option_name])
+    except Exception:
+        return int(plugin_base.DISKS_PREPARING_TIMEOUT.default_value)
 
 
 def _count_instances_to_attach(instances):
@@ -210,24 +221,31 @@ def _mount_volume_to_node(instance, index, device):
 def _format_device(instance, device, formatted_devices=None, lock=None):
     with instance.remote() as r:
         try:
+            timeout = _get_timeout_for_disk_preparing(instance.cluster)
+
             # Format devices with better performance options:
             # - reduce number of blocks reserved for root to 1%
             # - use 'dir_index' for faster directory listings
             # - use 'extents' to work faster with large files
             # - disable journaling
+
             fs_opts = '-F -m 1 -O dir_index,extents,^has_journal'
-            r.execute_command('sudo mkfs.ext4 %s %s' % (fs_opts, device))
+            r.execute_command('sudo mkfs.ext4 %s %s' % (fs_opts, device),
+                              timeout=timeout)
             if lock:
                 with lock:
                     formatted_devices.append(device)
-        except Exception:
+        except Exception as e:
             LOG.warning(
-                _LW("Device {dev} cannot be formatted").format(dev=device))
+                _LW("Device {dev} cannot be formatted: {reason}").format(
+                    dev=device, reason=e))
 
 
 def _mount_volume(instance, device_path, mount_point):
     with instance.remote() as r:
         try:
+            timeout = _get_timeout_for_disk_preparing(instance.cluster)
+
             # Mount volumes with better performance options:
             # - enable write-back
             # - do not store access time
@@ -235,7 +253,8 @@ def _mount_volume(instance, device_path, mount_point):
 
             r.execute_command('sudo mkdir -p %s' % mount_point)
             r.execute_command('sudo mount %s %s %s' %
-                              (mount_opts, device_path, mount_point))
+                              (mount_opts, device_path, mount_point),
+                              timeout=timeout)
             r.execute_command(
                 'sudo sh -c "grep %s /etc/mtab >> /etc/fstab"' % device_path)
 

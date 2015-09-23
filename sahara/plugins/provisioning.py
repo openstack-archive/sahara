@@ -213,6 +213,13 @@ class ValidationError(object):
 
 # COMMON FOR ALL PLUGINS CONFIGS
 
+DISKS_PREPARING_TIMEOUT = Config(
+    "Timeout for disk preparing", 'general', 'cluster', priority=1,
+    default_value=300, config_type="int", is_optional=True,
+    description='Timeout for preparing disks, formatting and mounting'
+)
+
+
 NTP_URL = Config(
     "URL of NTP server", 'general', 'cluster', priority=1,
     default_value='', is_optional=True,
@@ -234,4 +241,5 @@ HEAT_WAIT_CONDITION_TIMEOUT = Config(
 
 
 def list_of_common_configs():
-    return [NTP_ENABLED, NTP_URL, HEAT_WAIT_CONDITION_TIMEOUT]
+    return [DISKS_PREPARING_TIMEOUT, NTP_ENABLED, NTP_URL,
+            HEAT_WAIT_CONDITION_TIMEOUT]
