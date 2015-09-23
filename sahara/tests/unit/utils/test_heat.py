@@ -23,16 +23,25 @@ from sahara.utils.openstack import heat as h
 class TestClusterStack(testtools.TestCase):
     @mock.patch("sahara.context.sleep", return_value=None)
     def test_wait_completion(self, _):
-        stack = FakeHeatStack('CREATE_IN_PROGRESS', 'CREATE_COMPLETE')
+        stack = FakeHeatStack('CREATE_IN_PROGRESS', ['CREATE_COMPLETE'])
         h.wait_stack_completion(stack)
 
-        stack = FakeHeatStack('UPDATE_IN_PROGRESS', 'UPDATE_COMPLETE')
+        stack = FakeHeatStack('UPDATE_IN_PROGRESS', ['UPDATE_COMPLETE'])
         h.wait_stack_completion(stack)
 
-        stack = FakeHeatStack('DELETE_IN_PROGRESS', 'DELETE_COMPLETE')
+        stack = FakeHeatStack('DELETE_IN_PROGRESS', ['DELETE_COMPLETE'])
         h.wait_stack_completion(stack)
 
-        stack = FakeHeatStack('CREATE_IN_PROGRESS', 'CREATE_FAILED')
+        stack = FakeHeatStack('CREATE_COMPLETE', [
+            'CREATE_COMPLETE', 'UPDATE_IN_PROGRESS', 'UPDATE_COMPLETE'])
+        h.wait_stack_completion(stack, is_update=True)
+
+        stack = FakeHeatStack('UPDATE_COMPLETE', [
+            'UPDATE_IN_PROGRESS', 'UPDATE_COMPLETE'],
+            updated_time=-3)
+        h.wait_stack_completion(stack, is_update=True)
+
+        stack = FakeHeatStack('CREATE_IN_PROGRESS', ['CREATE_FAILED'])
         with testtools.ExpectedException(
                 ex.HeatStackException,
                 value_re=("Heat stack failed with status "
@@ -41,13 +50,19 @@ class TestClusterStack(testtools.TestCase):
 
 
 class FakeHeatStack(object):
-    def __init__(self, stack_status=None, new_status=None, stack_name=None):
+    def __init__(self, stack_status=None, new_statuses=None, stack_name=None,
+                 updated_time=None):
         self.stack_status = stack_status or ''
-        self.new_status = new_status or ''
+        self.new_statuses = new_statuses or []
+        self.idx = 0
         self.stack_name = stack_name or ''
+        self.updated_time = updated_time
 
     def get(self):
-        self.stack_status = self.new_status
+        self.stack_status = self.new_statuses[self.idx]
+        self.idx += 1
+        if self.idx > 0 and self.stack_status == 'UPDATE_COMPLETE':
+            self.updated_time = self.idx
 
     @property
     def status(self):

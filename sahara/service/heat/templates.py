@@ -105,6 +105,7 @@ class ClusterStack(object):
         self.node_groups_extra = {}
         self.heat_stack = None
         self.files = {}
+        self.last_updated_time = None
 
     def add_node_group_extra(self, node_group_id, node_count,
                              gen_userdata_func):
@@ -145,6 +146,7 @@ class ClusterStack(object):
             b.execute_with_retries(heat.stacks.create, **kwargs)
         else:
             stack = h.get_stack(self.cluster.name)
+            self.last_updated_time = stack.updated_time
             LOG.debug("Updating Heat stack {stack} with args: "
                       "{args}".format(stack=stack, args=kwargs))
             b.execute_with_retries(stack.update, **kwargs)

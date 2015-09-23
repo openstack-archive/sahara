@@ -203,7 +203,9 @@ class HeatEngine(e.Engine):
         self._update_instance_count(stack, cluster, target_count)
         stack.instantiate(update_existing=update_stack,
                           disable_rollback=disable_rollback)
-        heat.wait_stack_completion(stack.heat_stack)
+        heat.wait_stack_completion(
+            stack.heat_stack,
+            is_update=update_stack, last_updated_time=stack.last_updated_time)
         return self._populate_cluster(cluster, stack)
 
     def _launch_instances(self, cluster, target_count, stages,
