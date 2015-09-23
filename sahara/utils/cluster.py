@@ -13,13 +13,18 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import socket
+
+from keystoneclient import exceptions as keystone_ex
 from oslo_log import log as logging
+from six.moves.urllib import parse
 
 from sahara import conductor as c
 from sahara import context
 from sahara import exceptions as e
 from sahara.i18n import _LI
 from sahara.utils.notification import sender
+from sahara.utils.openstack import base as auth_base
 
 conductor = c.API
 LOG = logging.getLogger(__name__)
@@ -134,5 +139,15 @@ def generate_etc_hosts(cluster):
             hosts += "%s %s %s\n" % (instance.internal_ip,
                                      instance.fqdn(),
                                      instance.hostname())
+    # add alias for keystone and swift
+    for service in ["identity", "object-store"]:
+        try:
+            hostname = parse.urlparse(
+                auth_base.url_for(service_type=service,
+                                  endpoint_type="publicURL")).hostname
+        except keystone_ex.EndpointNotFound:
+            LOG.debug("Endpoint not found for service: \"%s\"", service)
+            continue
+        hosts += "%s %s\n" % (socket.gethostbyname(hostname), hostname)
 
     return hosts
