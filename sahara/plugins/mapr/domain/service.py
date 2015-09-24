@@ -19,9 +19,9 @@ from sahara import context
 import sahara.exceptions as e
 from sahara.i18n import _
 import sahara.plugins.exceptions as ex
+from sahara.plugins.mapr.util import service_utils as su
 import sahara.plugins.provisioning as p
 from sahara.utils import files as files
-
 
 _INSTALL_PACKAGES_TIMEOUT = 3600
 
@@ -197,7 +197,10 @@ class Service(object):
 
     def restart(self, instances):
         for node_process in self.node_processes:
-            node_process.restart(instances)
+            filtered_instances = su.filter_by_node_process(instances,
+                                                           node_process)
+            if filtered_instances:
+                node_process.restart(filtered_instances)
 
     def service_dir(self, cluster_context):
         args = {'mapr_home': cluster_context.mapr_home, 'name': self.name}
