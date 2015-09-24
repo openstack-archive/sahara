@@ -131,6 +131,7 @@ def list_opts():
     from sahara.service.edp import job_utils
     from sahara.service.heat import heat_engine
     from sahara.service import periodic
+    from sahara.swift import swift_helper
     from sahara.utils import cluster_progress_ops as cpo
     from sahara.utils.openstack import base
     from sahara.utils.openstack import heat
@@ -177,7 +178,9 @@ def list_opts():
         (keystone.keystone_group.name,
          itertools.chain(keystone.ssl_opts)),
         (base.retries.name,
-         itertools.chain(base.opts))
+         itertools.chain(base.opts)),
+        (swift_helper.public_endpoint_cert_group.name,
+         itertools.chain(swift_helper.opts))
     ]
 
 

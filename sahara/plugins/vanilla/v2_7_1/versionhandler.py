@@ -29,6 +29,8 @@ from sahara.plugins.vanilla.hadoop2 import validation as vl
 from sahara.plugins.vanilla import utils as vu
 from sahara.plugins.vanilla.v2_7_1 import config_helper as c_helper
 from sahara.plugins.vanilla.v2_7_1 import edp_engine
+from sahara.swift import swift_helper
+from sahara.utils import cluster as cluster_utils
 
 
 conductor = conductor.API
@@ -76,6 +78,8 @@ class VersionHandler(avm.AbstractVersionHandler):
         s_scripts.start_historyserver(cluster)
         s_scripts.start_oozie(self.pctx, cluster)
         s_scripts.start_hiveserver(self.pctx, cluster)
+
+        swift_helper.install_ssl_certs(cluster_utils.get_instances(cluster))
 
         self._set_cluster_info(cluster)
 

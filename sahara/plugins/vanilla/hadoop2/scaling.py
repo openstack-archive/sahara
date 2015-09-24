@@ -20,6 +20,7 @@ from sahara.plugins.vanilla.hadoop2 import config_helper as c_helper
 from sahara.plugins.vanilla.hadoop2 import run_scripts as run
 from sahara.plugins.vanilla.hadoop2 import utils as pu
 from sahara.plugins.vanilla import utils as vu
+from sahara.swift import swift_helper
 from sahara.utils import cluster_progress_ops as cpo
 from sahara.utils import poll_utils
 
@@ -37,6 +38,7 @@ def scale_cluster(pctx, cluster, instances):
 
     config.configure_topology_data(pctx, cluster)
     run.start_dn_nm_processes(instances)
+    swift_helper.install_ssl_certs(instances)
 
 
 def _get_instances_with_service(instances, service):

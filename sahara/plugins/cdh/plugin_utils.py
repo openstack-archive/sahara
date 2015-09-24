@@ -27,6 +27,7 @@ from sahara.i18n import _
 from sahara.plugins.cdh import commands as cmd
 from sahara.plugins import recommendations_utils as ru
 from sahara.plugins import utils as u
+from sahara.swift import swift_helper
 from sahara.utils import cluster_progress_ops as cpo
 from sahara.utils import edp as edp_u
 from sahara.utils import poll_utils
@@ -254,6 +255,7 @@ class AbstractPluginUtils(object):
                 for i in instances:
                     tg.spawn('cdh-swift-conf-%s' % i.instance_name,
                              self._configure_swift_to_inst, i)
+            swift_helper.install_ssl_certs(instances)
 
     @cpo.event_wrapper(True)
     def _configure_swift_to_inst(self, instance):

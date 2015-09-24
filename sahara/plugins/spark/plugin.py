@@ -32,6 +32,7 @@ from sahara.plugins.spark import run_scripts as run
 from sahara.plugins.spark import scaling as sc
 from sahara.plugins.spark import shell_engine
 from sahara.plugins import utils
+from sahara.swift import swift_helper
 from sahara.topology import topology_helper as th
 from sahara.utils import cluster_progress_ops as cpo
 from sahara.utils import files as f
@@ -153,6 +154,7 @@ class SparkProvider(p.ProvisioningPluginBase):
 
         # start spark nodes
         self.start_spark(cluster)
+        swift_helper.install_ssl_certs(utils.get_instances(cluster))
 
         LOG.info(_LI('Cluster has been started successfully'))
         self._set_cluster_info(cluster)
@@ -447,6 +449,7 @@ class SparkProvider(p.ProvisioningPluginBase):
                         'datanode' in instance.node_group.node_processes]
         self._start_datanode_processes(dn_instances)
 
+        swift_helper.install_ssl_certs(instances)
         run.start_spark_master(r_master, self._spark_home(cluster))
         LOG.info(_LI("Spark master service has been restarted"))
 
