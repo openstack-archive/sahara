@@ -39,6 +39,12 @@ HBASE_THRIFT = np.NodeProcess(
     package='mapr-hbasethrift',
     open_ports=[9090]
 )
+HBASE_REST = np.NodeProcess(
+    name="hbaserestgateway",
+    ui_name="HBase REST",
+    package="mapr-hbase-rest",
+    open_ports=[8080, 8085],
+)
 
 
 class HBase(s.Service):
@@ -55,6 +61,9 @@ class HBase(s.Service):
         self._validation_rules = [
             vu.at_least(1, HBASE_MASTER),
             vu.at_least(1, HBASE_REGION_SERVER),
+        ]
+        self._ui_info = [
+            ("HBase Master", HBASE_MASTER, "http://%s:60010"),
         ]
 
     def get_config_files(self, cluster_context, configs, instance=None):
@@ -88,6 +97,10 @@ class HBaseV0989(HBase):
         super(HBaseV0989, self).__init__()
         self._version = '0.98.9'
         self._dependencies = [('mapr-hbase', self.version)]
+        self._node_processes.append(HBASE_REST)
+        self._ui_info.append(
+            ("HBase REST", HBASE_REST, "http://%s:8085"),
+        )
 
 
 @six.add_metaclass(s.Single)
@@ -96,3 +109,7 @@ class HBaseV09812(HBase):
         super(HBaseV09812, self).__init__()
         self._version = "0.98.12"
         self._dependencies = [("mapr-hbase", self.version)]
+        self._node_processes.append(HBASE_REST)
+        self._ui_info.append(
+            ("HBase REST", HBASE_REST, "http://%s:8085"),
+        )
