@@ -51,4 +51,6 @@ def main():
     server.setup_sahara_engine()
 
     ops_server = ops.OpsServer()
-    ops_server.start()
+    launcher = server.get_process_launcher()
+    launcher.launch_service(ops_server.get_service())
+    launcher.wait()

@@ -89,9 +89,8 @@ class RPCServer(object):
             endpoints=[self],
             executor='eventlet')
 
-    def start(self):
-        self.__server.start()
-        self.__server.wait()
+    def get_service(self):
+        return self.__server
 
 
 def setup():
