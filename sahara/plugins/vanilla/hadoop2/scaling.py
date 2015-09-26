@@ -42,12 +42,8 @@ def scale_cluster(pctx, cluster, instances):
 
 
 def _get_instances_with_service(instances, service):
-    ret = []
-    for instance in instances:
-        if service in instance.node_group.node_processes:
-            ret.append(instance)
-
-    return ret
+    return [instance for instance in instances
+            if service in instance.node_group.node_processes]
 
 
 @cpo.event_wrapper(True, step=_("Update include files"), param=('cluster', 0))
