@@ -46,8 +46,7 @@ class VersionHandlerFactory(object):
                 # would prefer to use __init__ or some constructor, but keep
                 # getting exceptions...
                 module._set_version(version)
-                key = version.replace('_', '.')
-                VersionHandlerFactory.modules[key] = module
+                VersionHandlerFactory.modules[version] = module
 
             VersionHandlerFactory.initialized = True
 

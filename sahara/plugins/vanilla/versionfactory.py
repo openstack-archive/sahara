@@ -44,8 +44,7 @@ class VersionFactory(object):
                     __import__(module_name, fromlist=['sahara']),
                     'VersionHandler')
                 module = module_class()
-                key = version.replace('_', '.')
-                VersionFactory.modules[key] = module
+                VersionFactory.modules[version] = module
 
             VersionFactory.initialized = True
 
