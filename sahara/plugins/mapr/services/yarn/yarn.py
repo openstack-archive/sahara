@@ -13,8 +13,6 @@
 # under the License.
 
 
-import six
-
 import sahara.plugins.mapr.domain.configuration_file as bcf
 import sahara.plugins.mapr.domain.node_process as np
 import sahara.plugins.mapr.domain.service as s
@@ -111,7 +109,6 @@ class YARN(s.Service):
         return template % file_name
 
 
-@six.add_metaclass(s.Single)
 class YARNv241(YARN):
     def __init__(self):
         super(YARNv241, self).__init__()
@@ -123,7 +120,6 @@ class YARNv241(YARN):
         ]
 
 
-@six.add_metaclass(s.Single)
 class YARNv251(YARN):
     def __init__(self):
         super(YARNv251, self).__init__()
@@ -135,7 +131,6 @@ class YARNv251(YARN):
         ]
 
 
-@six.add_metaclass(s.Single)
 class YARNv270(YARN):
     def __init__(self):
         super(YARNv270, self).__init__()

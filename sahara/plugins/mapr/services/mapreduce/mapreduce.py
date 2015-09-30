@@ -12,8 +12,6 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
-import six
-
 import sahara.plugins.mapr.domain.configuration_file as bcf
 import sahara.plugins.mapr.domain.node_process as np
 import sahara.plugins.mapr.domain.service as s
@@ -42,7 +40,6 @@ JACKSON_MAPPER_ASL = ('plugins/mapr/services/swift/resources/'
                       'jackson-mapper-asl-1.9.13.jar')
 
 
-@six.add_metaclass(s.Single)
 class MapReduce(s.Service):
     cluster_mode = 'classic'
 

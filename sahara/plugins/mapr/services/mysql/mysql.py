@@ -30,7 +30,6 @@ LOG = logging.getLogger(__name__)
 db_spec = c.namedtuple('DatabaseSpec', ['db_name', 'user', 'password'])
 
 
-@six.add_metaclass(s.Single)
 class MySQL(s.Service):
     METRICS_SPECS = db_spec('metrics', 'maprmetrics', 'mapr')
     HUE_SPECS = db_spec('hue', 'maprhue', 'mapr')

@@ -14,11 +14,13 @@
 
 
 from oslo_serialization import jsonutils as json
+import six
 
 from sahara import context
 import sahara.exceptions as e
 from sahara.i18n import _
 import sahara.plugins.exceptions as ex
+from sahara.plugins.mapr.util import general as g
 from sahara.plugins.mapr.util import service_utils as su
 import sahara.plugins.provisioning as p
 from sahara.utils import files as files
@@ -26,6 +28,7 @@ from sahara.utils import files as files
 _INSTALL_PACKAGES_TIMEOUT = 3600
 
 
+@six.add_metaclass(g.Singleton)
 class Service(object):
     def __init__(self):
         self._name = None
@@ -219,12 +222,3 @@ class Service(object):
 
     def post_configure_sh(self, cluster_context, instances):
         pass
-
-
-class Single(type):
-    _instances = {}
-
-    def __call__(cls, *args, **kwargs):
-        if cls not in cls._instances:
-            cls._instances[cls] = super(Single, cls).__call__(*args, **kwargs)
-        return cls._instances[cls]

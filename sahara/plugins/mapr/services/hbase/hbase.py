@@ -13,8 +13,6 @@
 # under the License.
 
 
-import six
-
 import sahara.plugins.mapr.domain.configuration_file as bcf
 import sahara.plugins.mapr.domain.node_process as np
 import sahara.plugins.mapr.domain.service as s
@@ -75,7 +73,6 @@ class HBase(s.Service):
         return [hbase_site]
 
 
-@six.add_metaclass(s.Single)
 class HBaseV094(HBase):
     def __init__(self):
         super(HBaseV094, self).__init__()
@@ -83,7 +80,6 @@ class HBaseV094(HBase):
         self._dependencies = [('mapr-hbase', self.version)]
 
 
-@six.add_metaclass(s.Single)
 class HBaseV0987(HBase):
     def __init__(self):
         super(HBaseV0987, self).__init__()
@@ -91,7 +87,6 @@ class HBaseV0987(HBase):
         self._dependencies = [('mapr-hbase', self.version)]
 
 
-@six.add_metaclass(s.Single)
 class HBaseV0989(HBase):
     def __init__(self):
         super(HBaseV0989, self).__init__()
@@ -103,7 +98,6 @@ class HBaseV0989(HBase):
         )
 
 
-@six.add_metaclass(s.Single)
 class HBaseV09812(HBase):
     def __init__(self):
         super(HBaseV09812, self).__init__()

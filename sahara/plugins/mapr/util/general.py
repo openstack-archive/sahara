@@ -190,3 +190,14 @@ def download(remote, url, output=None, run_as=None):
     args = {'url': url, 'output': '-O %s' % output if output else ''}
     command = _run_as(run_as, 'wget -q %(output)s %(url)s' % args)
     remote.execute_command(command, timeout=600)
+
+
+class Singleton(type):
+    instances = {}
+
+    def __call__(cls, *args, **kwargs):
+        if cls not in cls.instances:
+            new_instance = super(Singleton, cls).__call__(*args, **kwargs)
+            cls.instances[cls] = new_instance
+
+        return cls.instances[cls]

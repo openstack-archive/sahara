@@ -14,7 +14,6 @@
 
 
 from oslo_log import log as logging
-import six
 
 import sahara.plugins.mapr.domain.service as s
 import sahara.plugins.mapr.services.maprfs.maprfs as maprfs
@@ -23,7 +22,6 @@ import sahara.utils.files as f
 LOG = logging.getLogger(__name__)
 
 
-@six.add_metaclass(s.Single)
 class Swift(s.Service):
     HADOOP_SWIFT_JAR = ('plugins/mapr/services/swift/'
                         'resources/hadoop-swift-latest.jar')

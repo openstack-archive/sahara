@@ -13,8 +13,6 @@
 # under the License.
 
 
-import six
-
 import sahara.plugins.mapr.domain.node_process as np
 import sahara.plugins.mapr.domain.service as s
 import sahara.plugins.mapr.util.validation_utils as vu
@@ -27,7 +25,6 @@ MAHOUT = np.NodeProcess(
 )
 
 
-@six.add_metaclass(s.Single)
 class Mahout(s.Service):
     def __init__(self):
         super(Mahout, self).__init__()
@@ -37,14 +34,12 @@ class Mahout(s.Service):
         self._validation_rules = [vu.at_least(1, MAHOUT)]
 
 
-@six.add_metaclass(s.Single)
 class MahoutV09(Mahout):
     def __init__(self):
         super(MahoutV09, self).__init__()
         self._version = '0.9'
 
 
-@six.add_metaclass(s.Single)
 class MahoutV010(Mahout):
     def __init__(self):
         super(MahoutV010, self).__init__()

@@ -14,7 +14,6 @@
 
 
 from oslo_log import log as logging
-import six
 
 import sahara.plugins.mapr.domain.configuration_file as bcf
 import sahara.plugins.mapr.domain.node_process as np
@@ -121,7 +120,6 @@ class Hive(s.Service):
         return self.SCHEMA_PATH_TEMPLATE % args
 
 
-@six.add_metaclass(s.Single)
 class HiveV013(Hive):
     def __init__(self):
         super(HiveV013, self).__init__()
@@ -129,7 +127,6 @@ class HiveV013(Hive):
         self._dependencies = [('mapr-hive', self.version)]
 
 
-@six.add_metaclass(s.Single)
 class HiveV10(Hive):
     def __init__(self):
         super(HiveV10, self).__init__()

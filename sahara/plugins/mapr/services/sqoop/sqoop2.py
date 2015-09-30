@@ -13,8 +13,6 @@
 # under the License.
 
 
-import six
-
 import sahara.plugins.mapr.domain.node_process as np
 import sahara.plugins.mapr.domain.service as s
 import sahara.plugins.mapr.util.commands as cmd
@@ -34,7 +32,6 @@ SQOOP_2_CLIENT = np.NodeProcess(
 )
 
 
-@six.add_metaclass(s.Single)
 class Sqoop2(s.Service):
     def __init__(self):
         super(Sqoop2, self).__init__()
