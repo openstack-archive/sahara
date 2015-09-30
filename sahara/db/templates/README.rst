@@ -95,7 +95,7 @@ If a configuration value is found for the substitution, the value will
 be replaced. If a configuration value is not found, the field will be
 omitted from the template. (In this example, *flavor_id* is a required
 field of node group templates and the template will fail validation
-if there is no substitution value specifed. However, *floating_ip_pool*
+if there is no substitution value specified. However, *floating_ip_pool*
 is not required and so the template will still pass validation if it
 is omitted).
 
