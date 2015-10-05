@@ -41,6 +41,17 @@ HIVE_CONF_DIR = '/opt/hive/conf'
 HADOOP_USER = 'hadoop'
 HADOOP_GROUP = 'hadoop'
 
+PORTS_MAP = {
+    "namenode": [50070, 9000],
+    "secondarynamenode": [50090],
+    "resourcemanager": [8088, 8032],
+    "historyserver": [19888],
+    "datanode": [50010, 50075, 50020],
+    "nodemanager": [8042],
+    "oozie": [11000],
+    "hiveserver": [9999, 10000]
+    }
+
 
 def configure_cluster(pctx, cluster):
     LOG.debug("Configuring cluster")
@@ -352,34 +363,7 @@ def configure_topology_data(pctx, cluster):
 
 def get_open_ports(node_group):
     ports = []
-
-    if "namenode" in node_group.node_processes:
-        ports.append(50070)
-        ports.append(9000)
-
-    if "secondarynamenode" in node_group.node_processes:
-        ports.append(50090)
-
-    if "resourcemanager" in node_group.node_processes:
-        ports.append(8088)
-        ports.append(8032)
-
-    if "historyserver" in node_group.node_processes:
-        ports.append(19888)
-
-    if "datanode" in node_group.node_processes:
-        ports.append(50010)
-        ports.append(50075)
-        ports.append(50020)
-
-    if "nodemanager" in node_group.node_processes:
-        ports.append(8042)
-
-    if "oozie" in node_group.node_processes:
-        ports.append(11000)
-
-    if "hiveserver" in node_group.node_processes:
-        ports.append(9999)
-        ports.append(10000)
-
+    for key in PORTS_MAP:
+        if key in node_group.node_processes:
+            ports += PORTS_MAP[key]
     return ports
