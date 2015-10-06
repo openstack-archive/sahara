@@ -13,8 +13,6 @@
 # under the License.
 
 
-import six
-
 import sahara.plugins.mapr.domain.node_process as np
 import sahara.plugins.mapr.domain.service as s
 import sahara.plugins.mapr.util.commands as cmd
@@ -29,7 +27,6 @@ DRILL = np.NodeProcess(
 )
 
 
-@six.add_metaclass(s.Single)
 class Drill(s.Service):
     def __init__(self):
         super(Drill, self).__init__()
@@ -51,28 +48,24 @@ class Drill(s.Service):
             cmd.re_configure_sh(instance, cluster_context)
 
 
-@six.add_metaclass(s.Single)
 class DrillV07(Drill):
     def __init__(self):
         super(DrillV07, self).__init__()
         self._version = '0.7'
 
 
-@six.add_metaclass(s.Single)
 class DrillV08(Drill):
     def __init__(self):
         super(DrillV08, self).__init__()
         self._version = '0.8'
 
 
-@six.add_metaclass(s.Single)
 class DrillV09(Drill):
     def __init__(self):
         super(DrillV09, self).__init__()
         self._version = '0.9'
 
 
-@six.add_metaclass(s.Single)
 class DrillV11(Drill):
     def __init__(self):
         super(DrillV11, self).__init__()

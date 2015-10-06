@@ -14,7 +14,6 @@
 
 
 from oslo_log import log as logging
-import six
 
 import sahara.plugins.mapr.domain.configuration_file as bcf
 import sahara.plugins.mapr.domain.node_process as np
@@ -34,7 +33,6 @@ OOZIE = np.NodeProcess(
 )
 
 
-@six.add_metaclass(s.Single)
 class Oozie(s.Service):
     def __init__(self):
         super(Oozie, self).__init__()
@@ -116,7 +114,6 @@ class Oozie(s.Service):
         OOZIE.start(instances)
 
 
-@six.add_metaclass(s.Single)
 class OozieV401(Oozie):
     def __init__(self):
         super(OozieV401, self).__init__()
@@ -124,7 +121,6 @@ class OozieV401(Oozie):
         self._dependencies = [('mapr-oozie-internal', self.version)]
 
 
-@six.add_metaclass(s.Single)
 class OozieV410(Oozie):
     def __init__(self):
         super(OozieV410, self).__init__()

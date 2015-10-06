@@ -13,8 +13,6 @@
 # under the License.
 
 
-import six
-
 import sahara.plugins.mapr.domain.node_process as np
 import sahara.plugins.mapr.domain.service as s
 import sahara.plugins.mapr.util.commands as cmd
@@ -29,7 +27,6 @@ HTTP_FS = np.NodeProcess(
 )
 
 
-@six.add_metaclass(s.Single)
 class HttpFS(s.Service):
     def __init__(self):
         super(HttpFS, self).__init__()

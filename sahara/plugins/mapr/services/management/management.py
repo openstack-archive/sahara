@@ -13,8 +13,6 @@
 # under the License.
 
 
-import six
-
 import sahara.plugins.mapr.domain.node_process as np
 import sahara.plugins.mapr.domain.service as s
 import sahara.plugins.mapr.util.validation_utils as vu
@@ -44,7 +42,6 @@ METRICS = np.NodeProcess(
 )
 
 
-@six.add_metaclass(s.Single)
 class Management(s.Service):
     def __init__(self):
         super(Management, self).__init__()

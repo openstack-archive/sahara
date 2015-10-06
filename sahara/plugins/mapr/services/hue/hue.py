@@ -18,7 +18,6 @@ import random
 import string
 
 from oslo_log import log as logging
-import six
 
 import sahara.plugins.mapr.domain.configuration_file as bcf
 import sahara.plugins.mapr.domain.node_process as np
@@ -53,7 +52,6 @@ HUE_LIVY = np.NodeProcess(
 )
 
 
-@six.add_metaclass(s.Single)
 class Hue(s.Service):
     def __init__(self):
         super(Hue, self).__init__()
@@ -208,21 +206,18 @@ class Hue(s.Service):
         return ''.join(generator.choice(ascii_alphanum) for _ in range(length))
 
 
-@six.add_metaclass(s.Single)
 class HueV360(Hue):
     def __init__(self):
         super(HueV360, self).__init__()
         self._version = '3.6.0'
 
 
-@six.add_metaclass(s.Single)
 class HueV370(Hue):
     def __init__(self):
         super(HueV370, self).__init__()
         self._version = '3.7.0'
 
 
-@six.add_metaclass(s.Single)
 class HueV381(Hue):
     def __init__(self):
         super(HueV381, self).__init__()

@@ -74,7 +74,6 @@ SPARK_SLAVE = SparkWorker(
 )
 
 
-@six.add_metaclass(s.Single)
 class Spark(s.Service):
     def __init__(self):
         super(Spark, self).__init__()

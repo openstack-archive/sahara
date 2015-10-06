@@ -13,8 +13,6 @@
 # under the License.
 
 
-import six
-
 import sahara.plugins.mapr.domain.node_process as np
 import sahara.plugins.mapr.domain.service as s
 import sahara.plugins.mapr.util.validation_utils as vu
@@ -27,7 +25,6 @@ PIG = np.NodeProcess(
 )
 
 
-@six.add_metaclass(s.Single)
 class Pig(s.Service):
     def __init__(self):
         super(Pig, self).__init__()
@@ -37,14 +34,12 @@ class Pig(s.Service):
         self._validation_rules = [vu.at_least(1, PIG)]
 
 
-@six.add_metaclass(s.Single)
 class PigV013(Pig):
     def __init__(self):
         super(PigV013, self).__init__()
         self._version = '0.13'
 
 
-@six.add_metaclass(s.Single)
 class PigV014(Pig):
     def __init__(self):
         super(PigV014, self).__init__()

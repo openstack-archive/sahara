@@ -13,8 +13,6 @@
 # under the License.
 
 
-import six
-
 import sahara.plugins.mapr.domain.node_process as np
 import sahara.plugins.mapr.domain.service as s
 import sahara.plugins.mapr.util.validation_utils as vu
@@ -28,7 +26,6 @@ FLUME = np.NodeProcess(
 )
 
 
-@six.add_metaclass(s.Single)
 class Flume(s.Service):
     def __init__(self):
         super(Flume, self).__init__()

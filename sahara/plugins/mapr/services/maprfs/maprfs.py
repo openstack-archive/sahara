@@ -14,7 +14,6 @@
 
 
 from oslo_log import log as logging
-import six
 
 from sahara import context
 from sahara.i18n import _
@@ -50,7 +49,6 @@ NFS = np.NodeProcess(
 )
 
 
-@six.add_metaclass(s.Single)
 class MapRFS(s.Service):
     _CREATE_DISK_LIST = 'plugins/mapr/resources/create_disk_list_file.sh'
     _DISK_SETUP_CMD = '/opt/mapr/server/disksetup -F /tmp/disk.list'

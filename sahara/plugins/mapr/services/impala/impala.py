@@ -13,8 +13,6 @@
 # under the License.
 
 
-import six
-
 import sahara.plugins.mapr.domain.configuration_file as bcf
 import sahara.plugins.mapr.domain.node_process as np
 import sahara.plugins.mapr.domain.service as s
@@ -76,7 +74,6 @@ class Impala(s.Service):
             cmd.chown(instance, 'mapr:mapr', self.service_dir(cluster_context))
 
 
-@six.add_metaclass(s.Single)
 class ImpalaV141(Impala):
     def __init__(self):
         super(ImpalaV141, self).__init__()
