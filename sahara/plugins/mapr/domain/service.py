@@ -92,8 +92,7 @@ class Service(object):
             cmd = cluster_context.distro.create_install_cmd(packages)
             with instance.remote() as r:
                 r.execute_command(cmd, run_as_root=True,
-                                  timeout=_INSTALL_PACKAGES_TIMEOUT,
-                                  raise_when_error=False)
+                                  timeout=_INSTALL_PACKAGES_TIMEOUT)
 
     def _get_packages(self, node_processes):
         result = []
