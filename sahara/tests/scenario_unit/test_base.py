@@ -506,3 +506,24 @@ class TestBase(testtools.TestCase):
                              "ephemeral_disk": 1,
                              "swap_disk": 1
                          }))
+
+    @mock.patch('sahara.tests.scenario.base.BaseTestCase._run_command_on_node')
+    @mock.patch('keystoneclient.session.Session')
+    def test_create_hdfs_data(self, mock_session, mock_ssh):
+        self.base_scenario._init_clients()
+        output_path = '/user/test/data/output'
+        self.assertEqual(output_path,
+                         self.base_scenario._create_hdfs_data(output_path,
+                                                              None))
+        input_path = 'etc/edp-examples/edp-pig/trim-spaces/data/input'
+        with mock.patch(
+            'sahara.tests.scenario.clients.SaharaClient.get_cluster',
+            return_value=FakeResponse(node_groups=[
+                {
+                    'instances': [
+                        {
+                            'management_ip': 'test_ip'
+                        }]
+                }])):
+            self.assertTrue('/user/test/data-' in (
+                self.base_scenario._create_hdfs_data(input_path, 'test')))

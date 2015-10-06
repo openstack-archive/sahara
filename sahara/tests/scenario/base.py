@@ -198,7 +198,10 @@ class BaseTestCase(base.BaseTestCase):
                 location = utils.rand_name(ds['destination'])
             if ds['type'] == 'swift':
                 url = self._create_swift_data(location)
-            if ds['type'] == 'hdfs' or ds['type'] == 'maprfs':
+            if ds['type'] == 'hdfs':
+                url = self._create_hdfs_data(location, ds.get('hdfs_username',
+                                                              'oozie'))
+            if ds['type'] == 'maprfs':
                 url = location
             return self.__create_datasource(
                 name=utils.rand_name(name),
@@ -287,6 +290,31 @@ class BaseTestCase(base.BaseTestCase):
         self.__upload_to_container(container, path, data)
 
         return 'swift://%s.sahara/%s' % (container, path)
+
+    def _create_hdfs_data(self, source, hdfs_username):
+
+        def to_hex_present(string):
+            return "".join(map(lambda x: hex(ord(x)).replace("0x", "\\x"),
+                               string))
+
+        if 'user' in source:
+            return source
+        hdfs_dir = utils.rand_name("/user/%s/data" % hdfs_username)
+        inst_ip = self._get_nodes_with_process()[0]["management_ip"]
+        self._run_command_on_node(
+            inst_ip,
+            "sudo su - -c \"hdfs dfs -mkdir -p %(path)s \" %(user)s" % {
+                "path": hdfs_dir, "user": hdfs_username})
+        hdfs_filepath = utils.rand_name(hdfs_dir + "/file")
+        data = open(source).read()
+        self._run_command_on_node(
+            inst_ip,
+            ("echo -e \"%(data)s\" | sudo su - -c \"hdfs dfs"
+             " -put - %(path)s\" %(user)s") % {
+                 "data": to_hex_present(data),
+                 "path": hdfs_filepath,
+                 "user": hdfs_username})
+        return hdfs_filepath
 
     def _create_internal_db_data(self, source):
         data = open(source).read()
@@ -534,11 +562,11 @@ class BaseTestCase(base.BaseTestCase):
                                         pkey=self.private_key)
         return ssh_session.exec_command(command)
 
-    def _get_nodes_with_process(self, process):
+    def _get_nodes_with_process(self, process=None):
         nodegroups = self.sahara.get_cluster(self.cluster_id).node_groups
         nodes_with_process = []
         for nodegroup in nodegroups:
-            if process in nodegroup['node_processes']:
+            if not process or process in nodegroup['node_processes']:
                 nodes_with_process.extend(nodegroup['instances'])
         return nodes_with_process
 

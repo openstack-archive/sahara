@@ -2,7 +2,8 @@ edp_jobs_flow:
   hadoop_2:
     - type: Pig
       input_datasource:
-        type: swift
+        type: hdfs
+        hdfs_username: hadoop
         source: etc/edp-examples/edp-pig/trim-spaces/data/input
       output_datasource:
         type: hdfs
