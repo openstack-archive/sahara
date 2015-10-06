@@ -18,6 +18,20 @@ Install sahara, in order to register the tempest plugin interface:
     $ pip install $SAHARA_ROOT_DIR
 ..
 
+Get the latest python-saharaclient resources from the appropriate mirror:
+
+.. sourcecode:: console
+
+    $ git clone https://github.com/openstack/python-saharaclient.git
+..
+
+Install python-saharaclient:
+
+.. sourcecode:: console
+
+    $ pip install $SAHARACLIENT_ROOT_DIR
+..
+
 Get the latest tempest resources from the appropriate mirror:
 
 .. sourcecode:: console
@@ -25,20 +39,19 @@ Get the latest tempest resources from the appropriate mirror:
     $ git clone https://github.com/openstack/tempest.git
 ..
 
-Create a configuration file ``tempest/etc/tempest.conf`` for tempest using the sample file
-from ``tempest/etc/tempest.conf.sample``:
+Create a configuration file ``tempest/etc/tempest.conf`` for tempest.
+The sample file can be generated and used for this purpose:
 
 .. sourcecode:: console
 
     $ cd $TEMPEST_ROOT_DIR
+    $ tox -e genconfig
     $ cp etc/tempest.conf.sample etc/tempest.conf
 ..
 
 Some configuration options are required for running tests. Here is the list:
 
 .. sourcecode:: ini
-
-    [DEFAULT]
 
     [identity]
     uri=
@@ -56,6 +69,7 @@ Some configuration options are required for running tests. Here is the list:
 
     [network]
     floating_network_name=
+    public_network_id=
 
     [data_processing]
     fake_image_id=

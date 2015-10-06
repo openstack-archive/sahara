@@ -133,7 +133,7 @@ class BaseDataProcessingTest(manager.ScenarioTest):
 
     @classmethod
     def _find_network_by_name(cls, network_name):
-        for network in cls.networks_client.list_networks():
+        for network in cls.networks_client.list_networks()['networks']:
             if network['label'] == network_name:
                 return network['id']
         return None
