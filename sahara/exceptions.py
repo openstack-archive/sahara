@@ -173,7 +173,7 @@ class SwiftClientException(SaharaException):
     '''
 
     code = "SWIFT_CLIENT_EXCEPTION"
-    message = _("An error has occured while performing a request to Swift")
+    message = _("An error has occurred while performing a request to Swift")
 
 
 class DataTooBigException(SaharaException):
@@ -252,7 +252,7 @@ class FrozenClassError(SaharaException):
 
 class SystemError(SaharaException):
     code = "SYSTEM_ERROR"
-    message = _("System error has occured")
+    message = _("System error has occurred")
 
 
 class EDPError(SaharaException):
