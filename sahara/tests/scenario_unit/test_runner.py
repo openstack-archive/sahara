@@ -65,7 +65,7 @@ class RunnerUnitTest(testtools.TestCase):
             "clusters": [
                 {
                     "image": "sahara-vanilla-2.7.1-ubuntu-14.04",
-                    "edp_jobs_flow": None,
+                    "edp_jobs_flow": [],
                     "class_name": "vanilla2_7_1",
                     "plugin_name": "vanilla",
                     "scenario": ['run_jobs', 'scale', 'run_jobs'],
@@ -138,6 +138,20 @@ class RunnerUnitTest(testtools.TestCase):
                         "args": [10, 10]
                     },
                     ],
+                "test_flow2": [
+                    {
+                        "type": "Java",
+                        "additional_libs": [
+                            {
+                                "type": "database",
+                                "source": "sahara/tests/integration/tests/"
+                                          "resources/"
+                            }],
+                        "configs": "edp.java.main_class: org.apache.hadoop."
+                                   "examples.QuasiMonteCarlo",
+                        "args": [20, 20]
+                    },
+                ],
                 },
             }
 
