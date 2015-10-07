@@ -15,23 +15,14 @@
 
 import os
 
-import flask
 from oslo_config import cfg
 from oslo_log import log
-import oslo_middleware.cors as cors_middleware
-from oslo_middleware import request_id
 from oslo_service import systemd
-import six
+from oslo_service import wsgi as oslo_wsgi
 import stevedore
-from werkzeug import exceptions as werkzeug_exceptions
 
 from sahara.api import acl
-from sahara.api.middleware import auth_valid
-from sahara.api.middleware import log_exchange
-from sahara.api import v10 as api_v10
-from sahara.api import v11 as api_v11
 from sahara import config
-from sahara import context
 from sahara.i18n import _LI
 from sahara.i18n import _LW
 from sahara.plugins import base as plugins_base
@@ -39,7 +30,6 @@ from sahara.service import api as service_api
 from sahara.service.edp import api as edp_api
 from sahara.service import ops as service_ops
 from sahara.service import periodic
-from sahara.utils import api as api_utils
 from sahara.utils.openstack import cinder
 from sahara.utils import remote
 from sahara.utils import rpc as messaging
@@ -113,65 +103,8 @@ def setup_auth_policy():
 
 
 def make_app():
-    """App builder (wsgi)
-
-    Entry point for Sahara REST API server
-    """
-    app = flask.Flask('sahara.api')
-
-    @app.route('/', methods=['GET'])
-    def version_list():
-        context.set_ctx(None)
-        return api_utils.render({
-            "versions": [
-                {"id": "v1.0", "status": "SUPPORTED"},
-                {"id": "v1.1", "status": "CURRENT"}
-            ]
-        })
-
-    @app.teardown_request
-    def teardown_request(_ex=None):
-        context.set_ctx(None)
-
-    app.register_blueprint(api_v10.rest, url_prefix='/v1.0')
-    app.register_blueprint(api_v10.rest, url_prefix='/v1.1')
-    app.register_blueprint(api_v11.rest, url_prefix='/v1.1')
-
-    def make_json_error(ex):
-        status_code = (ex.code
-                       if isinstance(ex, werkzeug_exceptions.HTTPException)
-                       else 500)
-        description = (ex.description
-                       if isinstance(ex, werkzeug_exceptions.HTTPException)
-                       else str(ex))
-        return api_utils.render({'error': status_code,
-                                 'error_message': description},
-                                status=status_code)
-
-    for code in six.iterkeys(werkzeug_exceptions.default_exceptions):
-        app.error_handler_spec[None][code] = make_json_error
-
-    if CONF.debug and not CONF.log_exchange:
-        LOG.debug('Logging of request/response exchange could be enabled using'
-                  ' flag --log-exchange')
-
-    # Create a CORS wrapper, and attach sahara-specific defaults that must be
-    # included in all CORS responses.
-    app.wsgi_app = cors_middleware.CORS(app.wsgi_app, CONF)
-    app.wsgi_app.set_latent(
-        allow_headers=['X-Auth-Token', 'X-Server-Management-Url'],
-        allow_methods=['GET', 'PUT', 'POST', 'DELETE', 'PATCH'],
-        expose_headers=['X-Auth-Token', 'X-Server-Management-Url']
-    )
-
-    if CONF.log_exchange:
-        app.wsgi_app = log_exchange.LogExchange.factory(CONF)(app.wsgi_app)
-
-    app.wsgi_app = auth_valid.wrap(app.wsgi_app)
-    app.wsgi_app = acl.wrap(app.wsgi_app)
-    app.wsgi_app = request_id.RequestId(app.wsgi_app)
-
-    return app
+    app_loader = oslo_wsgi.Loader(CONF)
+    return app_loader.load_app("sahara")
 
 
 def _load_driver(namespace, name):

@@ -14,6 +14,8 @@
 # limitations under the License.
 
 from oslo_log import log as logging
+from oslo_middleware import base
+import webob
 import webob.exc as ex
 
 from sahara.i18n import _
@@ -24,13 +26,12 @@ import sahara.openstack.commons as commons
 LOG = logging.getLogger(__name__)
 
 
-class AuthValidator(object):
+class AuthValidator(base.Middleware):
+
     """Handles token auth results and tenants."""
 
-    def __init__(self, app):
-        self.app = app
-
-    def __call__(self, env, start_response):
+    @webob.dec.wsgify
+    def __call__(self, req):
         """Ensures that tenants in url and token are equal.
 
         Handle incoming request by checking tenant info prom the headers and
@@ -40,30 +41,20 @@ class AuthValidator(object):
         Reject request if tenant_id from headers not equals to tenant_id from
         url.
         """
-        token_tenant = env['HTTP_X_TENANT_ID']
+        token_tenant = req.environ.get("HTTP_X_TENANT_ID")
         if not token_tenant:
             LOG.warning(_LW("Can't get tenant_id from env"))
-            resp = ex.HTTPServiceUnavailable()
-            return resp(env, start_response)
+            raise ex.HTTPServiceUnavailable()
 
-        path = env['PATH_INFO']
+        path = req.environ['PATH_INFO']
         if path != '/':
             version, url_tenant, rest = commons.split_path(path, 3, 3, True)
             if not version or not url_tenant or not rest:
                 LOG.warning(_LW("Incorrect path: {path}").format(path=path))
-                resp = ex.HTTPNotFound(_("Incorrect path"))
-                return resp(env, start_response)
+                raise ex.HTTPNotFound(_("Incorrect path"))
 
             if token_tenant != url_tenant:
                 LOG.debug("Unauthorized: token tenant != requested tenant")
-                resp = ex.HTTPUnauthorized(
+                raise ex.HTTPUnauthorized(
                     _('Token tenant != requested tenant'))
-                return resp(env, start_response)
-
-        return self.app(env, start_response)
-
-
-def wrap(app):
-    """Wrap wsgi application with auth validator check."""
-
-    return AuthValidator(app)
+        return self.application

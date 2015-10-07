@@ -17,7 +17,6 @@
 
 import functools
 
-from keystonemiddleware import auth_token
 from oslo_config import cfg
 from oslo_policy import policy
 
@@ -45,8 +44,3 @@ def enforce(rule):
         return handler
 
     return decorator
-
-
-def wrap(app):
-    """Wrap wsgi application with ACL check."""
-    return auth_token.AuthProtocol(app, {})

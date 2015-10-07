@@ -250,3 +250,12 @@ Example 2. Disallow image registry manipulations to non-admin users.
         "data-processing:images:add_tags": "role:admin",
         "data-processing:images:remove_tags": "role:admin"
     }
+
+API configuration
+-----------------
+
+Sahara uses the ``api-paste.ini`` file to configure the data processing API
+service. For middleware injection sahara uses pastedeploy library. The location
+of the api-paste file is controlled by the ``api_paste_config`` parameter in
+the ``[default]`` section. By default sahara will search for a
+``api-paste.ini`` file in the same directory as the configuration file.
