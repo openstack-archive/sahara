@@ -73,4 +73,9 @@ clusters:
     scenario:
       - run_jobs
       - sentry
-    edp_jobs_flow: cdh_flow
+    edp_jobs_flow:
+      - pig_job
+      - mapreduce_job
+      - mapreduce_streaming_job
+      - java_job
+      - spark_wordcount

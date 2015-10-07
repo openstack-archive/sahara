@@ -29,4 +29,4 @@ clusters:
       - operation: add
         node_group: worker
         size: 1
-    edp_jobs_flow: transient
+    edp_jobs_flow: pig_job

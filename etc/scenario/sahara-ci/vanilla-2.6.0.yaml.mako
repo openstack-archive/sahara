@@ -83,4 +83,8 @@ clusters:
       - operation: add
         node_group: worker-nm
         size: 1
-    edp_jobs_flow: hadoop_2
+    edp_jobs_flow:
+      - pig_job
+      - mapreduce_job
+      - mapreduce_streaming_job
+      - java_job
