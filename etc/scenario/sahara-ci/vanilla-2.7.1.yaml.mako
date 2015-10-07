@@ -74,3 +74,4 @@ clusters:
       - mapreduce_job
       - mapreduce_streaming_job
       - java_job
+      - hive_job
