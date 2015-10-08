@@ -209,7 +209,7 @@ function stop_sahara {
 }
 
 # Dispatcher for Sahara plugin
-if is_service_enabled sahara; then
+if is_service_enabled sahara || is_service_enabled sahara-api || is_service_enabled sahara-eng; then
     if [[ "$1" == "stack" && "$2" == "install" ]]; then
         echo_summary "Installing sahara"
         install_sahara

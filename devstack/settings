@@ -31,4 +31,4 @@ SAHARA_BIN_DIR=$(get_python_exec_prefix)
 # Tell Tempest this project is present
 TEMPEST_SERVICES+=,sahara
 
-enable_service sahara
+enable_service sahara-api sahara-eng
