@@ -485,12 +485,12 @@ class ClusterStack(object):
         })
 
     def _get_security_groups(self, node_group):
-        if not node_group.auto_security_group:
-            return node_group.security_groups
         node_group_sg = list(node_group.security_groups or [])
-        node_group_sg += [
-            {"get_resource": g.generate_auto_security_group_name(node_group)}
-        ]
+        if node_group.auto_security_group:
+            node_group_sg += [
+                {"get_resource": g.generate_auto_security_group_name(
+                    node_group)}
+            ]
         return node_group_sg
 
     def _serialize_aa_server_group(self):
