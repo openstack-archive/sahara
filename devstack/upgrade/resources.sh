@@ -21,7 +21,7 @@ DEFAULT_INSTANCE_TYPE=${DEFAULT_INSTANCE_TYPE:-m1.small}
 PUBLIC_NETWORK_NAME=${PUBLIC_NETWORK_NAME:-public}
 PRIVATE_NETWORK_NAME=${PRIVATE_NETWORK_NAME:-private}
 # cirros image is not appropriate for cluster creation
-SAHARA_IMAGE_NAME=${SAHARA_IMAGE_NAME:-fedora-20.x86_64}
+SAHARA_IMAGE_NAME=${SAHARA_IMAGE_NAME:-fedora-heat-test-image}
 SAHARA_IMAGE_USER=${SAHARA_IMAGE_USER:-fedora}
 
 function _sahara_set_user {
@@ -31,7 +31,7 @@ function _sahara_set_user {
 }
 
 function register_image {
-    eval $(openstack image show -f shell -c id $SAHARA_IMAGE_NAME)
+    eval $(openstack --os-image-api-version 1 image show -f shell -c id $SAHARA_IMAGE_NAME)
     resource_save sahara image_id $id
     sahara image-register --id $id --username $SAHARA_IMAGE_USER
     sahara image-add-tag --id $id --tag fake
@@ -129,6 +129,9 @@ function create {
     while [[ $timeleft -gt 0 ]]; do
         local cluster_state=$(sahara cluster-show --id $cluster_id | awk '$2 ~ /^status/ { print $4;exit }')
         if [[ "$cluster_state" != "Active" ]]; then
+            if [[ "$cluster_state" == "Error" ]]; then
+                die $LINENO "Cluster is in Error state"
+            fi
             echo "Cluster is still not in Active state"
             sleep 10
             timeleft=$((timeleft - 10))
