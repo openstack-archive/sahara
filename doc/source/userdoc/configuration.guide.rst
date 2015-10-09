@@ -8,7 +8,7 @@ manner.
 Basic configuration
 -------------------
 
-Sahara is packaged with a basic sample configration file:
+Sahara is packaged with a basic sample configuration file:
 ``sahara.conf.sample-basic``. This file contains all the essential
 parameters that are required for sahara. We recommend creating your
 configuration file based on this basic example.
@@ -64,7 +64,7 @@ in the ``[DEFAULT]`` section:
 If you are using nova-network for networking then this parameter should
 be set to ``false``.
 
-With these paramaters set, sahara is ready to run.
+With these parameters set, sahara is ready to run.
 
 If you wish to increase the logging levels for troubleshooting there
 are two parameters in the ``[DEFAULT]`` section of the configuration
