@@ -48,4 +48,5 @@ clusters:
     scenario:
       - run_jobs
       - transient
-    edp_jobs_flow: transient
+    edp_jobs_flow: pig_job
+

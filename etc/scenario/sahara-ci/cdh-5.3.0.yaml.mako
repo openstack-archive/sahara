@@ -68,4 +68,8 @@ clusters:
     scenario:
       - run_jobs
       - sentry
-    edp_jobs_flow: hadoop_2
+    edp_jobs_flow:
+      - pig_job
+      - mapreduce_job
+      - mapreduce_streaming_job
+      - java_job
