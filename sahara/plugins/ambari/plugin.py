@@ -176,6 +176,8 @@ class AmbariPluginProvider(p.ProvisioningPluginBase):
         pass
 
     def get_edp_engine(self, cluster, job_type):
+        if job_type in edp_engine.EDPSparkEngine.get_supported_job_types():
+            return edp_engine.EDPSparkEngine(cluster)
         if job_type in edp_engine.EDPOozieEngine.get_supported_job_types():
             return edp_engine.EDPOozieEngine(cluster)
         return None
@@ -185,10 +187,14 @@ class AmbariPluginProvider(p.ProvisioningPluginBase):
         for version in self.get_versions():
             if not versions or version in versions:
                 oozie_engine = edp_engine.EDPOozieEngine
-                res[version] = oozie_engine.get_supported_job_types()
+                spark_engine = edp_engine.EDPSparkEngine
+                res[version] = (oozie_engine.get_supported_job_types() +
+                                spark_engine.get_supported_job_types())
         return res
 
     def get_edp_config_hints(self, job_type, version):
+        if job_type in edp_engine.EDPSparkEngine.get_supported_job_types():
+            return edp_engine.EDPSparkEngine.get_possible_job_config(job_type)
         if job_type in edp_engine.EDPOozieEngine.get_supported_job_types():
             return edp_engine.EDPOozieEngine.get_possible_job_config(job_type)
 

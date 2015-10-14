@@ -26,14 +26,14 @@ class TestPlugin(test_base.SaharaTestCase):
         self.assertEqual({
             '2.2': [
                 'Hive', 'Java', 'MapReduce', 'MapReduce.Streaming',
-                'Pig', 'Shell'],
+                'Pig', 'Shell', 'Spark'],
             '2.3': [
                 'Hive', 'Java', 'MapReduce', 'MapReduce.Streaming',
-                'Pig', 'Shell']
+                'Pig', 'Shell', 'Spark']
         }, self.plugin.get_edp_job_types())
 
         self.assertEqual({
             '2.3': [
                 'Hive', 'Java', 'MapReduce', 'MapReduce.Streaming',
-                'Pig', 'Shell'],
+                'Pig', 'Shell', 'Spark'],
         }, self.plugin.get_edp_job_types(versions=['2.3']))
