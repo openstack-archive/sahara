@@ -11,7 +11,7 @@ plugin_name_pattern: '*.py'
 #output_colors:
 #    DEFAULT: '\033[0m'
 #    HEADER: '\033[95m'
-#    INFO: '\033[94m'
+#    LOW: '\033[94m'
 #    WARN: '\033[93m'
 #    ERROR: '\033[91m'
 
@@ -42,7 +42,7 @@ profiles:
             - jinja2_autoescape_false
             - use_of_mako_templates
 
-blacklist_functions:
+blacklist_calls:
     bad_name_sets:
         - pickle:
             qualnames: [pickle.loads, pickle.load, pickle.Unpickler,
@@ -95,8 +95,11 @@ blacklist_imports:
             message: "Telnet is considered insecure. Use SSH or some other encrypted protocol."
         - info_libs:
             imports: [pickle, cPickle, subprocess, Crypto]
-            level: INFO
+            level: LOW
             message: "Consider possible security implications associated with {module} module."
+
+hardcoded_tmp_directory:
+    tmp_dirs:  [/tmp, /var/tmp, /dev/shm]
 
 hardcoded_password:
     word_list: "wordlist/default-passwords"
@@ -123,3 +126,6 @@ execute_with_run_as_root_equals_true:
         - neutron.agent.linux.utils.execute
         - nova.utils.execute
         - nova.utils.trycmd
+
+try_except_pass:
+  check_typed_exception: True
