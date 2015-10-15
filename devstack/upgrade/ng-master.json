@@ -4,7 +4,7 @@
     "plugin_name": "fake",
     "hadoop_version": "0.1",
     "node_processes": ["jobtracker", "namenode"],
-    "auto_security_group": false,
+    "auto_security_group": true,
     "security_groups": ["SEC_GROUP"],
     "floating_ip_pool": "FLOATING_IP_POOL"
 }
