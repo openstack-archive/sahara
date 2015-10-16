@@ -10,6 +10,8 @@ include sahara/db/migration/alembic_migrations/versions/*.py
 include sahara/db/migration/alembic_migrations/versions/README
 include sahara/db/templates/README.rst
 
+include etc/sahara/api-paste.ini
+
 recursive-include sahara/locale *
 recursive-include sahara/db/migration/alembic_migrations *
 

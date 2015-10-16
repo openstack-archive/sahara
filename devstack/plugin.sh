@@ -76,6 +76,8 @@ function configure_sahara {
         cp -p $SAHARA_DIR/etc/sahara/policy.json $SAHARA_CONF_DIR
     fi
 
+    cp -p $SAHARA_DIR/etc/sahara/api-paste.ini $SAHARA_CONF_DIR
+
     # Create auth cache dir
     sudo install -d -o $STACK_USER -m 700 $SAHARA_AUTH_CACHE_DIR
     rm -rf $SAHARA_AUTH_CACHE_DIR/*

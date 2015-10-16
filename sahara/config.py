@@ -15,6 +15,8 @@
 
 import itertools
 
+# loading keystonemiddleware opts because sahara uses these options in code
+from keystonemiddleware import opts  # noqa
 from oslo_config import cfg
 from oslo_config import types
 from oslo_log import log
