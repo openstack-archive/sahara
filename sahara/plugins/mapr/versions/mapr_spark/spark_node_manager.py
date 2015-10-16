@@ -12,9 +12,12 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
+from oslo_log import log as logging
 
 from sahara.plugins.mapr.base import base_node_manager
 from sahara.plugins.mapr.services.spark import spark
+
+LOG = logging.getLogger(__name__)
 
 
 class SparkNodeManager(base_node_manager.BaseNodeManager):
@@ -25,3 +28,13 @@ class SparkNodeManager(base_node_manager.BaseNodeManager):
         slaves = cluster_context.filter_instances(instances, spark.SPARK_SLAVE)
         if slaves:
             spark.SPARK_SLAVE.start(cluster_context, slaves)
+            LOG.debug("Spark workers successfully started.")
+
+    def stop(self, cluster_context, instances=None):
+        super(SparkNodeManager, self).stop(cluster_context, instances)
+
+        instances = instances or cluster_context.removed_instances()
+        slaves = cluster_context.filter_instances(instances, spark.SPARK_SLAVE)
+        if slaves:
+            spark.SPARK_SLAVE.stop(cluster_context, slaves)
+            LOG.debug("Spark workers successfully stopped.")
