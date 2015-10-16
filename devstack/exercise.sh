@@ -33,7 +33,7 @@ source $TOP_DIR/exerciserc
 
 is_service_enabled sahara || exit 55
 
-if is_ssl_enabled_service "sahara" || is_service_enabled tls-proxy; then
+if is_ssl_enabled_service "sahara" || is_ssl_enabled_service "sahara-api" || is_service_enabled tls-proxy; then
     SAHARA_SERVICE_PROTOCOL="https"
 fi
 
