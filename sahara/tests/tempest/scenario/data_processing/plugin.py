@@ -31,7 +31,7 @@ class SaharaClientsScenarioPlugin(plugins.TempestPlugin):
     def register_opts(self, conf):
         # additional options in the data_processing section
         conf.register_opts(sahara_config.DataProcessingGroup,
-                           'data_processing')
+                           'data-processing')
 
     def get_opt_lists(self):
-        return [('data_processing', sahara_config.DataProcessingGroup)]
+        return [('data-processing', sahara_config.DataProcessingGroup)]
