@@ -280,14 +280,15 @@ def _format_device(
             timeout = _get_timeout_for_disk_preparing(instance.cluster)
 
             # Format devices with better performance options:
+            # - force formatting
             # - reduce number of blocks reserved for root to 1%
             # - use 'dir_index' for faster directory listings
             # - use 'extents' to work faster with large files
             # - disable journaling
-            fs_opts = '-F -m 1 -O dir_index,extents,^has_journal'
+            fs_opts = '-f -F -m 1 -O dir_index,extents,^has_journal'
             command = 'sudo mkfs.ext4 %s %s' % (fs_opts, device)
             if use_xfs:
-                command = 'sudo mkfs.xfs %s' % device
+                command = 'sudo mkfs.xfs -f %s' % device
             r.execute_command(command, timeout=timeout)
             if lock:
                 with lock:
