@@ -121,6 +121,18 @@ class StormProvider(p.ProvisioningPluginBase):
             return edp_engine.EdpEngine.get_possible_job_config(job_type)
         return {}
 
+    def get_open_ports(self, node_group):
+        ports_map = {
+            'nimbus': [8080]
+        }
+
+        ports = []
+        for process in node_group.node_processes:
+            if process in ports_map:
+                ports.extend(ports_map[process])
+
+        return ports
+
     def _extract_configs_to_extra(self, cluster):
         st_master = utils.get_instance(cluster, "nimbus")
         zk_servers = utils.get_instances(cluster, "zookeeper")
