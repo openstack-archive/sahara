@@ -34,25 +34,13 @@ function create_sahara_accounts {
 
     if [[ "$KEYSTONE_CATALOG_BACKEND" = 'sql' ]]; then
 
-        # TODO: remove "data_processing" service when #1356053 will be fixed
-        local sahara_service_old=$(openstack service create \
-            "data_processing" \
-            --name "sahara" \
-            --description "Sahara Data Processing" \
-            -f value -c id
-        )
-        local sahara_service_new=$(openstack service create \
+        local sahara_service=$(openstack service create \
             "data-processing" \
             --name "sahara" \
             --description "Sahara Data Processing" \
             -f value -c id
         )
-        get_or_create_endpoint $sahara_service_old \
-            "$REGION_NAME" \
-            "$SAHARA_SERVICE_PROTOCOL://$SAHARA_SERVICE_HOST:$SAHARA_SERVICE_PORT/v1.1/\$(tenant_id)s" \
-            "$SAHARA_SERVICE_PROTOCOL://$SAHARA_SERVICE_HOST:$SAHARA_SERVICE_PORT/v1.1/\$(tenant_id)s" \
-            "$SAHARA_SERVICE_PROTOCOL://$SAHARA_SERVICE_HOST:$SAHARA_SERVICE_PORT/v1.1/\$(tenant_id)s"
-        get_or_create_endpoint $sahara_service_new \
+        get_or_create_endpoint $sahara_service \
             "$REGION_NAME" \
             "$SAHARA_SERVICE_PROTOCOL://$SAHARA_SERVICE_HOST:$SAHARA_SERVICE_PORT/v1.1/\$(tenant_id)s" \
             "$SAHARA_SERVICE_PROTOCOL://$SAHARA_SERVICE_HOST:$SAHARA_SERVICE_PORT/v1.1/\$(tenant_id)s" \
