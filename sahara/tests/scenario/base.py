@@ -178,14 +178,10 @@ class BaseTestCase(base.BaseTestCase):
 
     @track_result("Check EDP jobs", False)
     def check_run_jobs(self):
-        jobs = {}
         batching = self.testcase.get('edp_batching',
                                      len(self.testcase['edp_jobs_flow']))
         batching_size = batching
-        if self.testcase['edp_jobs_flow']:
-            jobs = self.testcase['edp_jobs_flow']
-        else:
-            jobs = []
+        jobs = self.testcase.get('edp_jobs_flow', [])
 
         pre_exec = []
         for job in jobs:
@@ -283,20 +279,38 @@ class BaseTestCase(base.BaseTestCase):
                               configs)
 
     def _poll_jobs_status(self, exec_ids):
-        with fixtures.Timeout(
-                timeouts.Defaults.instance.timeout_poll_jobs_status,
-                gentle=True):
-            success = False
-            while not success:
-                success = True
-                for exec_id in exec_ids:
-                    status = self.sahara.get_job_status(exec_id)
-                    if status in ['FAILED', 'KILLED', 'DONEWITHERROR']:
-                        self.fail("Job %s in %s status" % (exec_id, status))
-                    if status != 'SUCCEEDED':
-                        success = False
-
-                time.sleep(5)
+        try:
+            with fixtures.Timeout(
+                    timeouts.Defaults.instance.timeout_poll_jobs_status,
+                    gentle=True):
+                success = False
+                polling_ids = list(exec_ids)
+                while not success:
+                    current_ids = list(polling_ids)
+                    success = True
+                    for exec_id in polling_ids:
+                        status = self.sahara.get_job_status(exec_id)
+                        if status not in ['FAILED', 'KILLED', 'DONEWITHERROR',
+                                          "SUCCEEDED"]:
+                            success = False
+                        else:
+                            current_ids.remove(exec_id)
+                    polling_ids = list(current_ids)
+                    time.sleep(5)
+        finally:
+            report = []
+            for exec_id in exec_ids:
+                status = self.sahara.get_job_status(exec_id)
+                if status != "SUCCEEDED":
+                    info = self.sahara.get_job_info(exec_id)
+                    report.append("Job with id={id}, name={name}, "
+                                  "type={type} has status "
+                                  "{status}".format(id=exec_id,
+                                                    name=info.name,
+                                                    type=info.type,
+                                                    status=status))
+            if report:
+                self.fail("\n".join(report))
 
     def _create_swift_data(self, source=None):
         container = self._get_swift_container()

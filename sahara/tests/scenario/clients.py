@@ -151,6 +151,10 @@ class SaharaClient(Client):
         data = self.sahara_client.job_executions.get(exec_id)
         return str(data.info['status'])
 
+    def get_job_info(self, exec_id):
+        job_execution = self.sahara_client.job_executions.get(exec_id)
+        return self.sahara_client.jobs.get(job_execution.job_id)
+
     def get_cluster_id(self, name):
         if uuidutils.is_uuid_like(name):
             return name

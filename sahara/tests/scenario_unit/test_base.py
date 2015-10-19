@@ -55,10 +55,15 @@ class FakeCluster(object):
 
 
 class FakeResponse(object):
-    def __init__(self, set_id=None, set_status=None, node_groups=None):
+    def __init__(self, set_id=None, set_status=None, node_groups=None,
+                 url=None, job_id=None, name=None, job_type=None):
         self.id = set_id
         self.status = set_status
         self.node_groups = node_groups
+        self.url = url
+        self.job_id = job_id
+        self.name = name
+        self.type = job_type
 
 
 class TestBase(testtools.TestCase):
@@ -346,9 +351,11 @@ class TestBase(testtools.TestCase):
     @mock.patch('sahara.tests.scenario.base.BaseTestCase.check_cinder',
                 return_value=None)
     @mock.patch('sahara.tests.scenario.clients.SaharaClient.get_job_status',
-                return_value='SUCCEEDED')
+                return_value='KILLED')
     @mock.patch('saharaclient.api.base.ResourceManager._get',
-                return_value=FakeResponse(set_id='id_for_run_job_get'))
+                return_value=FakeResponse(set_id='id_for_run_job_get',
+                                          job_type='Java',
+                                          name='test_job'))
     @mock.patch('saharaclient.api.base.ResourceManager._create',
                 return_value=FakeResponse(set_id='id_for_run_job_create'))
     @mock.patch('sahara.tests.scenario.base.BaseTestCase.'
@@ -398,6 +405,9 @@ class TestBase(testtools.TestCase):
         ]
         with mock.patch('time.sleep'):
             self.assertIsNone(self.base_scenario.check_run_jobs())
+        self.assertIn("Job with id=id_for_run_job_create, name=test_job, "
+                      "type=Java has status KILLED",
+                      self.base_scenario._results[-1]['traceback'][-1])
 
     @mock.patch('sahara.tests.scenario.base.BaseTestCase.'
                 '_poll_cluster_status',
