@@ -47,6 +47,7 @@ clusters:
           - scale
           - run_jobs
       edp_jobs_flow: test_flow
+      edp_batching: 1
       retain_resources: true
 
 edp_jobs_flow:

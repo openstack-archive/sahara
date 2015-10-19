@@ -179,6 +179,9 @@ class BaseTestCase(base.BaseTestCase):
     @track_result("Check EDP jobs", False)
     def check_run_jobs(self):
         jobs = {}
+        batching = self.testcase.get('edp_batching',
+                                     len(self.testcase['edp_jobs_flow']))
+        batching_size = batching
         if self.testcase['edp_jobs_flow']:
             jobs = self.testcase['edp_jobs_flow']
         else:
@@ -193,7 +196,13 @@ class BaseTestCase(base.BaseTestCase):
             configs = self._put_io_data_to_configs(
                 configs, input_id, output_id)
             pre_exec.append([job_id, input_id, output_id, configs])
+            batching -= 1
+            if not batching:
+                self._job_batching(pre_exec)
+                pre_exec = []
+                batching = batching_size
 
+    def _job_batching(self, pre_exec):
         job_exec_ids = []
         for job_exec in pre_exec:
             job_exec_ids.append(self._run_job(*job_exec))

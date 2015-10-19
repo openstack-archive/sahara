@@ -114,6 +114,7 @@ class TestBase(testtools.TestCase):
             'timeout_check_transient': 3,
             'retain_resources': True,
             'image': 'image_name',
+            'edp_batching': 1,
             "edp_jobs_flow":
                 {
                     "test_flow":
