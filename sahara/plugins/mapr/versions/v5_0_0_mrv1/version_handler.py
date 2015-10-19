@@ -59,6 +59,7 @@ class VersionHandler(bvh.BaseVersionHandler):
             hbase.HBaseV0989(),
             hbase.HBaseV09812(),
             drill.DrillV11(),
+            drill.DrillV12(),
             mapreduce.MapReduce(),
             maprfs.MapRFS(),
             mng.Management(),

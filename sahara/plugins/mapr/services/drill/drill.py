@@ -70,3 +70,9 @@ class DrillV11(Drill):
     def __init__(self):
         super(DrillV11, self).__init__()
         self._version = "1.1"
+
+
+class DrillV12(Drill):
+    def __init__(self):
+        super(DrillV12, self).__init__()
+        self._version = "1.2"
