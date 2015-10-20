@@ -73,6 +73,7 @@ class AmbariPluginProvider(p.ProvisioningPluginBase):
         return configs.load_configs(hadoop_version)
 
     def configure_cluster(self, cluster):
+        deploy.disable_repos(cluster)
         deploy.setup_ambari(cluster)
         deploy.setup_agents(cluster)
         deploy.wait_ambari_accessible(cluster)

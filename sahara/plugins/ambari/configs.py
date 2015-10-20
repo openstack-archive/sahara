@@ -97,6 +97,9 @@ ng_confs = [
 ]
 
 
+use_base_repos_cfg = provisioning.Config(
+    "Enable external repos on instances", 'general', 'cluster', priority=1,
+    default_value=True, config_type="bool")
 hdp_repo_cfg = provisioning.Config(
     "HDP repo URL", "general", "cluster", priority=1, default_value="")
 hdp_utils_repo_cfg = provisioning.Config(
@@ -128,7 +131,7 @@ def load_configs(version):
     cfg_path = "plugins/ambari/resources/configs-%s.json" % version
     vanilla_cfg = jsonutils.loads(files.get_file_text(cfg_path))
     CONFIGS[version] = vanilla_cfg
-    sahara_cfg = [hdp_repo_cfg, hdp_utils_repo_cfg]
+    sahara_cfg = [hdp_repo_cfg, hdp_utils_repo_cfg, use_base_repos_cfg]
     for service, confs in vanilla_cfg.items():
         for k, v in confs.items():
             sahara_cfg.append(provisioning.Config(
@@ -141,6 +144,10 @@ def load_configs(version):
 def _get_config_value(cluster, key):
     return cluster.cluster_configs.get("general", {}).get(key.name,
                                                           key.default_value)
+
+
+def use_base_repos_needed(cluster):
+    return _get_config_value(cluster, use_base_repos_cfg)
 
 
 def get_hdp_repo_url(cluster):
