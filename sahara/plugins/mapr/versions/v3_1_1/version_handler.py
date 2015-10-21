@@ -62,6 +62,7 @@ class VersionHandler(bvh.BaseVersionHandler):
             drill.DrillV07(),
             drill.DrillV08(),
             drill.DrillV09(),
+            drill.DrillV12(),
             sqoop2.Sqoop2(),
             hue.HueV360(),
         ]
