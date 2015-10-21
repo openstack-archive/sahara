@@ -4,7 +4,11 @@ clusters:
     image: ${mapr_500mrv2_image}
     node_group_templates:
       - name: master
-        flavor: ${ci_flavor_id}
+        flavor:
+          vcpus: 4
+          ram: 8192
+          root_disk: 80
+          ephemeral_disk: 40
         node_processes:
           - Metrics
           - Webserver
@@ -23,16 +27,16 @@ clusters:
           - Sqoop2-Client
           - Sqoop2-Server
         auto_security_group: true
-        volumes_per_node: 2
-        volumes_size: 20
       - name: worker
-        flavor: ${ci_flavor_id}
+        flavor:
+          vcpus: 2
+          ram: 4096
+          root_disk: 40
+          ephemeral_disk: 40
         node_processes:
           - NodeManager
           - FileServer
         auto_security_group: true
-        volumes_per_node: 2
-        volumes_size: 20
     cluster_template:
       name: mapr500mrv2
       node_group_templates:
@@ -44,4 +48,5 @@ clusters:
       - operation: add
         node_group: worker
         size: 1
-    edp_jobs_flow: mapr
+    scenario:
+      - scale
