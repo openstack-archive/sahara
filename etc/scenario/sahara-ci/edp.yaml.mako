@@ -48,6 +48,18 @@ edp_jobs_flow:
       args:
         - 10
         - 10
+  hive_job:
+    - type: Hive
+      main_lib:
+        type: swift
+        source: etc/edp-examples/edp-hive/script.q
+      input_datasource:
+        type: hdfs
+        hdfs_username: hadoop
+        source: etc/edp-examples/edp-hive/input.csv
+      output_datasource:
+        type: hdfs
+        destination: /user/edp-output
   spark_pi:
     - type: Spark
       main_lib:
