@@ -30,6 +30,7 @@ User guide
    userdoc/dashboard.guide
    userdoc/advanced.configuration.guide
    userdoc/upgrade.guide
+   userdoc/sampleconfig
 
 **How To**
 
