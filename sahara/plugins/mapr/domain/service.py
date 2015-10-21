@@ -16,10 +16,10 @@
 from oslo_serialization import jsonutils as json
 import six
 
-from sahara import context
 import sahara.exceptions as e
 from sahara.i18n import _
 import sahara.plugins.exceptions as ex
+from sahara.plugins.mapr.util import event_log as el
 from sahara.plugins.mapr.util import general as g
 from sahara.plugins.mapr.util import service_utils as su
 import sahara.plugins.provisioning as p
@@ -78,13 +78,11 @@ class Service(object):
         return self._validation_rules
 
     def install(self, cluster_context, instances):
-        with context.ThreadGroup() as tg:
-            for instance in instances:
-                tg.spawn('install-packages-%s' % instance.id,
-                         self._install_packages_on_instance, cluster_context,
-                         instance)
+        g.execute_on_instances(instances, self._install_packages_on_instance,
+                               cluster_context)
 
-    def _install_packages_on_instance(self, cluster_context, instance):
+    @el.provision_event(instance_reference=1)
+    def _install_packages_on_instance(self, instance, cluster_context):
         processes = [p for p in self.node_processes if
                      p.ui_name in instance.node_group.node_processes]
         if processes is not None and len(processes) > 0:

@@ -29,6 +29,8 @@ import sahara.plugins.mapr.services.yarn.yarn as yarn
 import sahara.plugins.mapr.util.general as g
 import sahara.plugins.mapr.util.service_utils as su
 import sahara.plugins.utils as u
+from sahara.topology import topology_helper as th
+import sahara.utils.configs as sahara_configs
 
 CONF = cfg.CONF
 CONF.import_opt("enable_data_locality", "sahara.topology.topology_helper")
@@ -381,3 +383,30 @@ class BaseClusterContext(cc.AbstractClusterContext):
     @property
     def centos_ecosystem_repo(self):
         return self._centos_ecosystem_repo
+
+    def get_configuration(self, node_group):
+        services = self.get_cluster_services(node_group)
+        user_configs = node_group.configuration()
+        default_configs = self.get_services_configs_dict(services)
+        return sahara_configs.merge_configs(default_configs, user_configs)
+
+    def get_config_files(self, node_group):
+        services = self.get_cluster_services(node_group)
+        configuration = self.get_configuration(node_group)
+        instance = node_group.instances[0]
+
+        config_files = {}
+        for service in services:
+            service_conf_files = service.get_config_files(
+                cluster_context=self,
+                configs=configuration[service.ui_name],
+                instance=instance,
+            )
+            for conf_file in service_conf_files:
+                config_files[conf_file.remote_path] = conf_file.render()
+
+        return config_files
+
+    @property
+    def topology_map(self):
+        return th.generate_topology_map(self.cluster, self.is_node_aware)
