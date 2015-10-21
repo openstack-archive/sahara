@@ -231,7 +231,11 @@ SCHEMA = {
                                 }
                             },
                             "anti_affinity": {
-                                "type": "boolean"
+                                "type": "array",
+                                "items": {
+                                    "type": "string",
+                                    "minLength": 1
+                                }
                             }
                         },
                         "required": ["name", "node_group_templates"],

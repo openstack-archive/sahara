@@ -41,6 +41,9 @@ clusters:
           node_group_templates:
               master: 1
               worker: 3
+          anti_affinity:
+            - namenode
+            - datanode
       scenario:
           - run_jobs
           - scale
