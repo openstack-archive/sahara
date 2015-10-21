@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+
+# ``upgrade-sahara``
+
+function configure_sahara_upgrade {
+    XTRACE=$(set +o | grep xtrace)
+    set -o xtrace
+
+    # Copy api-paste.ini to configuration directory
+    cp -p $SAHARA_DIR/etc/sahara/api-paste.ini $SAHARA_CONF_DIR
+
+    # reset to previous state
+    $XTRACE
+}
