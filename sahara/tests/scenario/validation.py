@@ -306,6 +306,10 @@ SCHEMA = {
                     },
                     "retain_resources": {
                         "type": "boolean"
+                    },
+                    "edp_batching": {
+                        "type": "integer",
+                        "minimum": 1
                     }
                 },
                 "required": ["plugin_name", "plugin_version", "image"],
