@@ -1,0 +1,4 @@
+---
+fixes:
+  - Fixed problems with validation of job binaries update,
+    closed bug #1508507
