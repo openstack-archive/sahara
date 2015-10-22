@@ -253,18 +253,20 @@ def _find_instance_devices(instance):
             "mount | awk '$1 ~ /^\/dev/ {print $1}'")
         mounted_dev = mounted_info.split()
 
-        # filtering attached devices, that should not be mounted
-        for dev in attached_dev[:]:
-            idx = re.sub("\D", "", dev)
-            if idx:
-                if dev in mounted_dev:
-                    attached_dev.remove(re.sub("\d", "", dev))
-                    attached_dev.remove(dev)
+    # filtering attached devices, that should not be mounted
+    for dev in attached_dev[:]:
+        idx = re.sub("\D", "", dev)
+        if idx:
+            if dev in mounted_dev:
+                attached_dev.remove(re.sub("\d", "", dev))
+                attached_dev.remove(dev)
 
-        for dev in attached_dev[:]:
-            if re.sub("\D", "", dev):
-                if re.sub("\d", "", dev) in attached_dev:
-                    attached_dev.remove(dev)
+    for dev in attached_dev[:]:
+        if re.sub("\D", "", dev):
+            if re.sub("\d", "", dev) in attached_dev:
+                attached_dev.remove(dev)
+
+    attached_dev = [dev for dev in attached_dev if dev not in mounted_dev]
 
     return attached_dev
 

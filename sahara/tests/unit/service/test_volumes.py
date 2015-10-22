@@ -190,3 +190,10 @@ class TestAttachVolume(base.SaharaWithDbTestCase):
 
         diff = volumes._find_instance_devices(instance)
         self.assertEqual(['/dev/vdb1'], diff)
+
+        attached_info = '/dev/vda /dev/vda1 /dev/vdb'
+        mounted_info = '/dev/vda1 /dev/vdb'
+        ex_cmd.side_effect = [(0, attached_info), (0, mounted_info)]
+
+        diff = volumes._find_instance_devices(instance)
+        self.assertEqual([], diff)
