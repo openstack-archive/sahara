@@ -13,6 +13,8 @@ Quickstart guide: http://docs.openstack.org/developer/sahara/devref/quickstart.h
 
 How to participate: http://docs.openstack.org/developer/sahara/devref/how_to_participate.html
 
+Source: http://git.openstack.org/cgit/openstack/sahara
+
 
 License
 -------
