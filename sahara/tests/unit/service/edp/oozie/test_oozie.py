@@ -119,6 +119,23 @@ class TestOozieEngine(base.SaharaTestCase):
 
         self.assertEqual(expected_external_hdfs_urls, external_hdfs_urls)
 
+    @mock.patch('sahara.service.edp.oozie.oozie.OozieClient.get_job_status')
+    @mock.patch('sahara.service.edp.oozie.oozie.OozieClient.kill_job')
+    def test_cancel_job(self, kill_get, status_get):
+        status_get.return_value = {}
+        oje = FakeOozieJobEngine(u.create_cluster())
+        _, job_exec = u.create_job_exec(edp.JOB_TYPE_PIG)
+
+        # test cancel job without engine_job_id
+        job_exec.engine_job_id = None
+        oje.cancel_job(job_exec)
+        self.assertEqual(0, kill_get.call_count)
+
+        # test cancel job with engine_job_id
+        job_exec.engine_job_id = 123
+        oje.cancel_job(job_exec)
+        self.assertEqual(1, kill_get.call_count)
+
 
 class FakeOozieJobEngine(oe.OozieJobEngine):
     def get_hdfs_user(self):
