@@ -29,10 +29,11 @@ within tenants to which the user has access.
 The sahara API supports the JSON data serialization format. This means that
 for requests that contain a body, the ``Content-Type`` header must be set to
 the MIME type value ``application/json``. Also, clients should accept JSON
-serialized responses by specifying the Accept header with the MIME type
+serialized responses by specifying the ``Accept`` header with the MIME type
 value ``application/json`` or adding the ``.json`` extension to the resource
 name. The default response format is ``application/json`` if the client does
-not specify an Accept header or append the ``.json`` extension in the URL path.
+not specify an ``Accept`` header or append the ``.json`` extension in the URL
+path.
 
 Example:
 
