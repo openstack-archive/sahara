@@ -27,10 +27,13 @@ class FakeImage(object):
 
 
 class TestImages(base.SaharaTestCase):
-    @mock.patch('sahara.utils.openstack.base.url_for', return_value='')
-    def test_list_registered_images(self, url_for_mock):
+    def setUp(self):
+        super(TestImages, self).setUp()
         self.override_config('auth_uri', 'https://127.0.0.1:8080/v3/',
                              'keystone_authtoken')
+
+    @mock.patch('sahara.utils.openstack.base.url_for', return_value='')
+    def test_list_registered_images(self, url_for_mock):
         some_images = [
             FakeImage('foo', ['bar', 'baz'], 'test'),
             FakeImage('baz', [], 'test'),
@@ -57,3 +60,17 @@ class TestImages(base.SaharaTestCase):
 
             images = nova.images.list_registered(tags=['bar', 'eggs'])
             self.assertEqual(0, len(images))
+
+    @mock.patch('novaclient.v2.images.ImageManager.set_meta')
+    def test_set_description(self, set_meta):
+        with mock.patch('sahara.utils.openstack.base.url_for'):
+            nova = nova_client.client()
+            nova.images.set_description('id', 'ubuntu')
+            self.assertEqual(
+                ('id', {'_sahara_username': 'ubuntu'}), set_meta.call_args[0])
+
+            nova.images.set_description('id', 'ubuntu', 'descr')
+            self.assertEqual(
+                ('id', {'_sahara_description': 'descr',
+                        '_sahara_username': 'ubuntu'}),
+                set_meta.call_args[0])

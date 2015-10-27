@@ -85,10 +85,10 @@ class SaharaImageManager(images.ImageManager):
 
             Ubuntu 13.04 x64 with Java 1.7u21 and Apache Hadoop 1.1.1, ubuntu
         """
-        self.set_meta(image, {
-            PROP_DESCR: description,
-            PROP_USERNAME: username,
-        })
+        meta = {PROP_USERNAME: username}
+        if description:
+            meta[PROP_DESCR] = description
+        self.set_meta(image, meta)
 
     def unset_description(self, image):
         """Unsets all Sahara-related information.
