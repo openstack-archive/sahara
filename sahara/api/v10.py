@@ -79,7 +79,7 @@ def clusters_get(cluster_id):
 @rest.patch('/clusters/<cluster_id>')
 @acl.enforce("data-processing:clusters:modify")
 @v.check_exists(api.get_cluster, 'cluster_id')
-@v.validate(v_c_schema.CLUSTER_UPDATE_SCHEMA)
+@v.validate(v_c_schema.CLUSTER_UPDATE_SCHEMA, v_c.check_cluster_update)
 def clusters_update(cluster_id, data):
     return u.to_wrapped_dict(api.update_cluster, cluster_id, data)
 
