@@ -78,7 +78,7 @@ class ClusterProgressOpsTest(base.SaharaWithDbTestCase):
         result_cluster = self.api.cluster_get(ctx, cluster.id)
         result_step = result_cluster.provision_progress[0]
 
-        self.assertEqual(True, result_step.successful)
+        self.assertTrue(result_step.successful)
 
         # check updating in case of failed provision step
 
@@ -98,7 +98,7 @@ class ClusterProgressOpsTest(base.SaharaWithDbTestCase):
 
         for step in result_cluster.provision_progress:
             if step.id == step_id2:
-                self.assertEqual(False, step.successful)
+                self.assertFalse(step.successful)
 
         # check that it's possible to add provision step after failed step
         step_id3 = cpo.add_provisioning_step(cluster.id, "some_name", 2)

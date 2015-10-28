@@ -211,7 +211,7 @@ class TestConductorApi(base.SaharaWithDbTestCase):
         events = self._get_events(ctx, cluster.id, step_id)
         self.assertEqual(1, len(events))
         self.assertEqual(st_name, events[0].instance_name)
-        self.assertEqual(True, events[0].successful)
+        self.assertTrue(events[0].successful)
         self.assertEqual(st_info, events[0].event_info)
 
         self.api.cluster_destroy(ctx, cluster.id)
