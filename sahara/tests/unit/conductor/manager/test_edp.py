@@ -532,59 +532,6 @@ class JobExecutionTest(test_base.ConductorManagerTestCase):
         lst = self.api.job_execution_get_all(ctx, **kwargs)
         self.assertEqual(0, len(lst))
 
-    def test_je_update_when_protected(self):
-        ctx = context.ctx()
-        job = self.api.job_create(ctx, SAMPLE_JOB)
-        ds_input = self.api.data_source_create(ctx, SAMPLE_DATA_SOURCE)
-        SAMPLE_DATA_OUTPUT = copy.deepcopy(SAMPLE_DATA_SOURCE)
-        SAMPLE_DATA_OUTPUT['name'] = 'output'
-        ds_output = self.api.data_source_create(ctx, SAMPLE_DATA_OUTPUT)
-
-        sample = copy.deepcopy(SAMPLE_JOB_EXECUTION)
-        sample['is_protected'] = True
-        sample['job_id'] = job['id']
-        sample['input_id'] = ds_input['id']
-        sample['output_id'] = ds_output['id']
-
-        je = self.api.job_execution_create(ctx, sample)
-        je_id = je["id"]
-
-        with testtools.ExpectedException(ex.UpdateFailedException):
-            try:
-                self.api.job_execution_update(ctx, je_id, {"is_public": True})
-            except ex.UpdateFailedException as e:
-                self.assert_protected_resource_exception(e)
-                raise e
-
-        self.api.job_execution_update(ctx, je_id, {"is_protected": False,
-                                                   "is_public": True})
-
-    def test_public_je_update_from_another_tenant(self):
-        ctx = context.ctx()
-        job = self.api.job_create(ctx, SAMPLE_JOB)
-        ds_input = self.api.data_source_create(ctx, SAMPLE_DATA_SOURCE)
-        SAMPLE_DATA_OUTPUT = copy.deepcopy(SAMPLE_DATA_SOURCE)
-        SAMPLE_DATA_OUTPUT['name'] = 'output'
-        ds_output = self.api.data_source_create(ctx, SAMPLE_DATA_OUTPUT)
-
-        sample = copy.deepcopy(SAMPLE_JOB_EXECUTION)
-        sample['is_public'] = True
-        sample['job_id'] = job['id']
-        sample['input_id'] = ds_input['id']
-        sample['output_id'] = ds_output['id']
-
-        je = self.api.job_execution_create(ctx, sample)
-        je_id = je["id"]
-
-        ctx.tenant_id = 'tenant_2'
-
-        with testtools.ExpectedException(ex.UpdateFailedException):
-            try:
-                self.api.job_execution_update(ctx, je_id, {"is_public": True})
-            except ex.UpdateFailedException as e:
-                self.assert_created_in_another_tenant_exception(e)
-                raise e
-
 
 class JobTest(test_base.ConductorManagerTestCase):
     def __init__(self, *args, **kwargs):

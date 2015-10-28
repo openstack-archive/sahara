@@ -277,6 +277,39 @@ class TestJobExecUpdateValidation(u.ValidationTestCase):
             }
         )
 
+    @mock.patch('sahara.conductor.api.LocalApi.job_execution_get')
+    def test_je_update_when_protected(self, get_je_p):
+
+        job_exec = mock.Mock(id='123', tenant_id='tenant_1', is_protected=True)
+        get_je_p.return_value = job_exec
+
+        # job execution can't be updated if it's marked as protected
+        with testtools.ExpectedException(ex.UpdateFailedException):
+            try:
+                je.check_job_execution_update(job_exec, {'is_public': True})
+            except ex.UpdateFailedException as e:
+                self.assert_protected_resource_exception(e)
+                raise e
+        # job execution can be updated because is_protected flag was
+        # set to False
+        je.check_job_execution_update(
+            job_exec, {'is_protected': False, 'is_public': True})
+
+    @mock.patch('sahara.conductor.api.LocalApi.job_execution_get')
+    def test_public_je_cancel_delete_from_another_tenant(self, get_je_p):
+
+        job_exec = mock.Mock(id='123', tenant_id='tenant2', is_protected=False,
+                             is_public=True)
+        get_je_p.return_value = job_exec
+
+        with testtools.ExpectedException(ex.UpdateFailedException):
+            try:
+                je.check_job_execution_update(
+                    job_exec, data={'is_public': False})
+            except ex.UpdateFailedException as e:
+                self.assert_created_in_another_tenant_exception(e)
+                raise e
+
 
 class TestJobExecutionCancelDeleteValidation(u.ValidationTestCase):
     def setUp(self):
