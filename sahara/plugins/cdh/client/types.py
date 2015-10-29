@@ -437,7 +437,7 @@ class ApiList(BaseApiObject):
     def __getitem__(self, i):
         return self.objects.__getitem__(i)
 
-    def __getslice(self, i, j):
+    def __getslice__(self, i, j):
         return self.objects.__getslice__(i, j)
 
     @classmethod
