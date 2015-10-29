@@ -28,11 +28,6 @@ for each distribution:
 | CentOS 7     | centos     |
 +--------------+------------+
 
-Known issue:
-
-* Hive job has "KILLED" state after scaling cluster:
-  https://bugs.launchpad.net/sahara/+bug/1413602
-
 Cluster Validation
 ------------------
 
