@@ -104,11 +104,8 @@ def _can_use_xfs(instances):
 
 
 def _count_instances_to_attach(instances):
-    result = 0
-    for instance in instances:
-        if instance.node_group.volumes_per_node > 0:
-            result += 1
-    return result
+    return len([inst for inst in instances if
+                inst.node_group.volumes_per_node > 0])
 
 
 def _count_volumes_to_mount(instances):
