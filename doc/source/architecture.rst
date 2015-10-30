@@ -29,7 +29,7 @@ The Sahara architecture consists of several components:
 * REST API - exposes sahara functionality via REST HTTP interface.
 
 * Python Sahara Client - like other OpenStack components, sahara has
-  its own python client
+  its own python client.
 
 * Sahara pages - a GUI for the sahara is located in the OpenStack Dashboard
   (horizon).
