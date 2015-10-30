@@ -207,7 +207,6 @@ class VanillaTwoGatingTest(cluster_configs.ClusterConfigTest,
         if utils_edp.JOB_TYPE_SHELL not in skipped_edp_job_types:
             yield self._edp_shell_test()
 
-    # TODO(esikachev): Until fix bug 1413602
     def _run_edp_tests_after_scaling(self):
         skipped_edp_job_types = self.plugin_config.SKIP_EDP_JOB_TYPES
 
@@ -221,6 +220,8 @@ class VanillaTwoGatingTest(cluster_configs.ClusterConfigTest,
             yield self._edp_java_test()
         if utils_edp.JOB_TYPE_SHELL not in skipped_edp_job_types:
             yield self._edp_shell_test()
+        if utils_edp.JOB_TYPE_HIVE not in skipped_edp_job_types:
+            yield self._check_edp_hive()
 
     def _edp_pig_test(self):
         pig_job = self.edp_info.read_pig_example_script()
