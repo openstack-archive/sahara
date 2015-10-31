@@ -842,11 +842,6 @@ def job_execution_update(context, job_execution_id, values):
             raise ex.NotFoundException(job_execution_id,
                                        _("JobExecution id '%s' not found!"))
 
-        # Skip this check for periodic tasks
-        if context.tenant_id:
-            validate.check_tenant_for_update(context, job_ex)
-        validate.check_protected_from_update(job_ex, values)
-
         job_ex.update(values)
         session.add(job_ex)
 
