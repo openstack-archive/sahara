@@ -143,7 +143,7 @@ class EnvironmentConfig(BaseConfigurationFile):
 
     def parse(self, content):
         for line in content.splitlines():
-            line = six.text_type(line.strip())
+            line = self._escape(line)
             match = self._regex.match(line)
             if match:
                 name, value = match.groups()
@@ -152,6 +152,16 @@ class EnvironmentConfig(BaseConfigurationFile):
                 self.add_property(name, value)
             else:
                 self._lines.append(line)
+
+    @staticmethod
+    def _escape(string):
+        try:
+            string = string.decode("utf-8")
+        except AttributeError:
+            pass
+        string = six.text_type(string).strip()
+        string = string.replace("\"", "")
+        return string
 
     def render(self):
         result = []

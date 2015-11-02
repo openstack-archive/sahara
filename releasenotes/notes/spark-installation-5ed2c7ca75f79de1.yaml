@@ -1,0 +1,3 @@
+---
+fixes:
+  - Escape unhandled unicode characters in environment configuration files
