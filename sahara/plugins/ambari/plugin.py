@@ -204,6 +204,7 @@ class AmbariPluginProvider(p.ProvisioningPluginBase):
             p_common.HISTORYSERVER: [10020, 19888],
             p_common.HIVE_METASTORE: [9933],
             p_common.HIVE_SERVER: [9999, 10000],
+            p_common.KAFKA_BROKER: [6667],
             p_common.NAMENODE: [8020, 9000, 50070, 50470],
             p_common.NIMBUS: [6627],
             p_common.NODEMANAGER: [8042, 8044, 45454],
@@ -212,7 +213,8 @@ class AmbariPluginProvider(p.ProvisioningPluginBase):
             p_common.RESOURCEMANAGER: [8025, 8030, 8050, 8088, 8141],
             p_common.SECONDARY_NAMENODE: [50090],
             p_common.SPARK_JOBHISTORYSERVER: [18080],
-            p_common.STORM_UI_SERVER: [8000, 8080, 8744]
+            p_common.STORM_UI_SERVER: [8000, 8080, 8744],
+            p_common.ZOOKEEPER_SERVER: [2181],
         }
         ports = []
         for service in node_group.node_processes:
