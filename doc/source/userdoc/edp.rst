@@ -66,7 +66,7 @@ swift unless swift proxy users are configured as described in
 running in the same OpenStack installation referenced by sahara.
 
 To reference a binary file stored in manila, create the job binary with the
-URL ``manila//{share_id}/{path}``. This assumes that you have already stored
+URL ``manila://{share_id}/{path}``. This assumes that you have already stored
 that file in the appropriate path on the share. The share will be
 automatically mounted to any cluster nodes which require access to the file,
 if it is not mounted already.
@@ -80,7 +80,7 @@ Jobs
 
 A :dfn:`Job` object specifies the type of the job and lists all of the
 individual Job Binary objects that are required for execution. An individual
-Job Binary may be referenced by multiple Jos.  A Job object specifies a main
+Job Binary may be referenced by multiple Jobs.  A Job object specifies a main
 binary and/or supporting libraries depending on its type:
 
       +-------------------------+-------------+-----------+
@@ -118,7 +118,7 @@ that the URL is resolvable from the node executing the job.
 
 Sahara supports data sources in manila as well. To reference a path on an NFS
 share as a data source, create the data source with the URL
-``manila//{share_id}/{path}``. As in the case of job binaries, the specified
+``manila://{share_id}/{path}``. As in the case of job binaries, the specified
 share will be automatically mounted to your cluster's nodes as needed to
 access the data source.
 
