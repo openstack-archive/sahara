@@ -16,6 +16,7 @@
 import copy
 
 import sahara.service.validations.cluster_template_schema as ct_schema
+from sahara.service.validations import shares
 
 
 def _build_node_groups_schema():
@@ -66,7 +67,8 @@ CLUSTER_UPDATE_SCHEMA = {
         },
         "is_protected": {
             "type": ["boolean", "null"],
-        }
+        },
+        "shares": copy.deepcopy(shares.SHARE_SCHEMA),
     },
     "additionalProperties": False,
     "required": []

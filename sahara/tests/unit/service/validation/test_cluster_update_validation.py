@@ -37,7 +37,8 @@ class TestClusterUpdateValidation(u.ValidationTestCase):
             'name': 'cluster',
             'description': 'very big cluster',
             'is_public': False,
-            'is_protected': False
+            'is_protected': False,
+            'shares': []
         })
 
     def test_cluster_update_nothing_required(self):
@@ -51,7 +52,8 @@ class TestClusterUpdateValidation(u.ValidationTestCase):
                 'name': 'cluster',
                 'description': 'very big cluster',
                 'is_public': False,
-                'is_protected': False
+                'is_protected': False,
+                'shares': []
             }
         )
 
