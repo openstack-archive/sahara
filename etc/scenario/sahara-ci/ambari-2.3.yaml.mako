@@ -43,7 +43,4 @@ clusters:
     scenario:
       - run_jobs
     edp_jobs_flow:
-      - pig_job
-      - mapreduce_job
-      - mapreduce_streaming_job
       - java_job

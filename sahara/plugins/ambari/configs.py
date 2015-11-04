@@ -190,6 +190,10 @@ def get_instance_params(inst):
     configs["yarn-site"][
         "yarn.timeline-service.leveldb-timeline-store.path"] = _make_paths(
             storage_paths, "/yarn/timeline")
+    configs.setdefault("oozie-site", {})
+    configs["oozie-site"][
+        "oozie.service.AuthorizationService.security.enabled"] = "false"
+
     return _serialize_ambari_configs(configs)
 
 

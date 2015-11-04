@@ -71,6 +71,12 @@ class AmbariConfigsTestCase(base.SaharaTestCase):
                     "yarn.timeline-service.leveldb-timeline-store.path":
                     "/data1/yarn/timeline,/data2/yarn/timeline"
                 }
+            },
+            {
+                "oozie-site": {
+                    "oozie.service.AuthorizationService.security.enabled":
+                    "false"
+                }
             }
         ]
         self.assertConfigEqual(expected, instance_configs)
@@ -111,6 +117,13 @@ class AmbariConfigsTestCase(base.SaharaTestCase):
                     "yarn.timeline-service.leveldb-timeline-store.path":
                     "/data1/yarn/timeline,/data2/yarn/timeline"
                 }
+            },
+            {
+                "oozie-site": {
+                    "oozie.service.AuthorizationService.security.enabled":
+                    "false"
+                }
+
             }
         ]
         self.assertConfigEqual(expected, instance_configs)
