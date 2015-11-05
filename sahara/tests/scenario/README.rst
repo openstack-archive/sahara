@@ -61,6 +61,13 @@ section `How to write scenario files`_.
 
 ``tox -e scenario etc/scenario/sahara-ci`` will run tests from the test directory.
 
+Also, you can validate your yaml-files using flag ``--validate`` via command:
+
+.. sourcecode:: console
+
+    $ tox -e scenario -- --validate -V templatevars.ini etc/scenario/sahara-ci/credantials.yaml.mako etc/scenario/sahara-ci/vanilla-2.7.1.yaml.mako
+
+..
 
 Template variables
 ------------------
