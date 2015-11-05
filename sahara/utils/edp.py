@@ -75,7 +75,7 @@ JOB_TYPES_ACCEPTABLE_CONFIGS = {
 }
 
 ADAPT_FOR_OOZIE = 'edp.java.adapt_for_oozie'
-
+SPARK_DRIVER_CLASSPATH = 'edp.spark.driver.classpath'
 ADAPT_SPARK_FOR_SWIFT = 'edp.spark.adapt_for_swift'
 
 
@@ -120,6 +120,11 @@ def is_adapt_for_oozie_enabled(configs):
 
 def is_adapt_spark_for_swift_enabled(configs):
     return configs.get(ADAPT_SPARK_FOR_SWIFT, False)
+
+
+def spark_driver_classpath(configs):
+    # Return None in case when you need to use default value
+    return configs.get(SPARK_DRIVER_CLASSPATH)
 
 
 def get_builtin_binaries(job, configs):

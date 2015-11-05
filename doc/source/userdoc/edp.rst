@@ -544,6 +544,11 @@ Spark jobs use some special configuration values:
   accessed. Without this configuration value, swift paths will not be
   accessible to Spark jobs. The default is **False**.
 
+* ``edp.spark.driver.classpath`` (optional) If set to empty string sahara
+  will use default classpath for the cluster during job execution.
+  Otherwise this will override default value for the cluster for particular
+  job execution.
+
 The **edp-spark** example bundled with sahara contains a Spark program for
 estimating Pi.
 
