@@ -1,0 +1,3 @@
+---
+fixes:
+  - Spark workers are found by fqdn
