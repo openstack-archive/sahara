@@ -177,6 +177,15 @@ class BaseTestCase(base.BaseTestCase):
         configs['args'] = args
         return configs
 
+    def _prepare_job_running(self, job):
+        input_id, output_id = self._create_datasources(job)
+        main_libs, additional_libs = self._create_job_binaries(job)
+        job_id = self._create_job(job['type'], main_libs, additional_libs)
+        configs = self._parse_job_configs(job)
+        configs = self._put_io_data_to_configs(
+            configs, input_id, output_id)
+        return [job_id, input_id, output_id, configs]
+
     @track_result("Check EDP jobs", False)
     def check_run_jobs(self):
         batching = self.testcase.get('edp_batching',
@@ -186,13 +195,7 @@ class BaseTestCase(base.BaseTestCase):
 
         pre_exec = []
         for job in jobs:
-            input_id, output_id = self._create_datasources(job)
-            main_libs, additional_libs = self._create_job_binaries(job)
-            job_id = self._create_job(job['type'], main_libs, additional_libs)
-            configs = self._parse_job_configs(job)
-            configs = self._put_io_data_to_configs(
-                configs, input_id, output_id)
-            pre_exec.append([job_id, input_id, output_id, configs])
+            pre_exec.append(self._prepare_job_running(job))
             batching -= 1
             if not batching:
                 self._job_batching(pre_exec)
