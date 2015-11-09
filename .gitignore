@@ -23,3 +23,6 @@ sdist
 target
 tools/lintstack.head.py
 tools/pylint_exceptions
+
+# Files created by releasenotes build
+releasenotes/build
