@@ -29,15 +29,17 @@ The solution will address the following use cases:
 
 Key features are:
 
-* designed as an OpenStack component;
+* designed as an OpenStack component.
 * managed through a REST API with a user interface(UI) available as part of
-  OpenStack Dashboard;
+  OpenStack Dashboard.
 * support for a variety of data processing frameworks:
-    * multiple Hadoop vendor distributions
-    * Apache Spark and Storm
-    * pluggable system of Hadoop installation engines
+
+    * multiple Hadoop vendor distributions.
+    * Apache Spark and Storm.
+    * pluggable system of Hadoop installation engines.
     * integration with vendor specific management tools, such as Apache
-      Ambari and Cloudera Management Console
+      Ambari and Cloudera Management Console.
+
 * predefined configuration templates with the ability to modify parameters.
 
 Details
