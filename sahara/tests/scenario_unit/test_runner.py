@@ -269,3 +269,12 @@ class RunnerUnitTest(testtools.TestCase):
                     'sahara/tests/scenario_unit/templatevars_complete.ini',
                     'sahara/tests/scenario_unit/vanilla2_7_1.yaml.mako']
         runner.main()
+
+    @mock.patch('sys.exit', return_value=None)
+    def test_runner_validate(self, mock_sys):
+        sys.argv = ['sahara/tests/scenario/runner.py',
+                    '--validate',
+                    '-V',
+                    'sahara/tests/scenario_unit/templatevars_complete.ini',
+                    'sahara/tests/scenario_unit/vanilla2_7_1.yaml.mako']
+        runner.main()

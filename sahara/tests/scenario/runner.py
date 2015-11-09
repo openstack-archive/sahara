@@ -157,6 +157,8 @@ def main():
                         help='Path to the file with template variables')
     parser.add_argument('--verbose', default=False, action='store_true',
                         help='Increase output verbosity')
+    parser.add_argument('--validate', default=False, action='store_true',
+                        help='Validate yaml-files, tests will not be runned')
 
     args = parser.parse_args()
     scenario_arguments = args.scenario_arguments
@@ -199,6 +201,9 @@ def main():
 
     # validate config
     validation.validate(config)
+
+    if args.validate:
+        return
 
     set_defaults(config)
     credentials = config['credentials']
