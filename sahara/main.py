@@ -41,19 +41,22 @@ LOG = log.getLogger(__name__)
 opts = [
     cfg.StrOpt('os_region_name',
                help='Region name used to get services endpoints.'),
-    cfg.StrOpt('infrastructure_engine',
-               default='heat',
-               help='An engine which will be used to provision '
-                    'infrastructure for Hadoop cluster.'),
     cfg.StrOpt('remote',
                default='ssh',
                help='A method for Sahara to execute commands '
                     'on VMs.'),
     cfg.IntOpt('api_workers', default=1,
                help="Number of workers for Sahara API service (0 means "
-                    "all-in-one-thread configuration).")
+                    "all-in-one-thread configuration)."),
+    # TODO(vgridnev): Remove in N release
+    cfg.StrOpt('infrastructure_engine',
+               default='heat',
+               help='An engine which will be used to provision '
+                    'infrastructure for Hadoop cluster.',
+               deprecated_for_removal=True),
 ]
 
+INFRASTRUCTURE_ENGINE = 'heat'
 CONF = cfg.CONF
 CONF.register_opts(opts)
 
@@ -127,17 +130,13 @@ def _load_driver(namespace, name):
 
 def _get_infrastructure_engine():
     """Import and return one of sahara.service.*_engine.py modules."""
-
+    if CONF.infrastructure_engine != "heat":
+        LOG.warning(_LW("Engine {engine} is not supported. Loading Heat "
+                        "infrastructure engine instead.").format(
+            engine=CONF.infrastructure_engine))
     LOG.debug("Infrastructure engine {engine} is loading".format(
-        engine=CONF.infrastructure_engine))
-
-    if CONF.infrastructure_engine == "direct":
-        LOG.warning(_LW("Direct infrastructure engine is deprecated in Liberty"
-                        " release and will be removed after that release."
-                        " Use Heat infrastructure engine instead."))
-
-    return _load_driver('sahara.infrastructure.engine',
-                        CONF.infrastructure_engine)
+        engine=INFRASTRUCTURE_ENGINE))
+    return _load_driver('sahara.infrastructure.engine', INFRASTRUCTURE_ENGINE)
 
 
 def _get_remote_driver():
