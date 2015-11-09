@@ -368,3 +368,26 @@ class ClusterTest(test_base.ConductorManagerTestCase):
         self.assertRaises(sa_exc.InvalidRequestError,
                           self.api.cluster_get_all,
                           ctx, **{'badfield': 'somevalue'})
+
+    def test_cluster_update_shares(self):
+        ctx = context.ctx()
+        cluster_db_obj = self.api.cluster_create(ctx, SAMPLE_CLUSTER)
+        _id = cluster_db_obj["id"]
+
+        test_shares = [
+            {
+                "id": "bd71d2d5-60a0-4ed9-a3d2-ad312c368880",
+                "path": "/mnt/manila",
+                "access_level": "rw"
+            }
+        ]
+
+        updated_cl = self.api.cluster_update(ctx, _id, {"shares": test_shares})
+        self.assertIsInstance(updated_cl, dict)
+        self.assertEqual(test_shares, updated_cl["shares"])
+
+        get_cl_obj = self.api.cluster_get(ctx, _id)
+        self.assertEqual(updated_cl, get_cl_obj)
+
+        with testtools.ExpectedException(ex.NotFoundException):
+            self.api.cluster_update(ctx, "bad_id", {"shares": test_shares})
