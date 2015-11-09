@@ -134,8 +134,4 @@ run_wordcount_job() {
     sudo -u $HADOOP_USER bash -lc "hadoop fs -rmr /map-reduce-test"
     check_return_code_after_command_execution -exit `echo "$?"`
 }
-
-run_hive_job() {
-    # Implement
-}
 $FUNC
