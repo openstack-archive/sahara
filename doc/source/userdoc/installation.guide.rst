@@ -182,13 +182,16 @@ installations of sahara.
 
 .. sourcecode:: console
 
-    keystone service-create --name sahara --type data-processing \
-        --description "Sahara Data Processing"
+    openstack service create --name sahara --description \
+        "Sahara Data Processing" data-processing
 
-    keystone endpoint-create --service sahara --region RegionOne \
-        --publicurl "http://10.0.0.2:8386/v1.1/%(tenant_id)s" \
-        --adminurl "http://10.0.0.2:8386/v1.1/%(tenant_id)s" \
-        --internalurl "http://10.0.0.2:8386/v1.1/%(tenant_id)s"
+    openstack endpoint create --region RegionOne \
+    --publicurl http://10.0.0.2:8386/v1.1/%\(tenant_id\)s \
+    --adminurl http://10.0.0.2:8386/v1.1/%\(tenant_id\)s \
+    --internalurl http://10.0.0.2:8386/v1.1/%\(tenant_id\)s \
+    data-processing
+.. note::
+   You must have installed the openstack-client package.
 ..
 
 5. For more information on configuring sahara with the OpenStack Dashboard
