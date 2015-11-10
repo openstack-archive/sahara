@@ -1,3 +1,5 @@
+#!/bin/bash
+
 register_project_for_upgrade sahara
 register_db_to_save sahara
 devstack_localrc base disable_service n-net
