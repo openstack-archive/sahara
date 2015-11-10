@@ -23,3 +23,4 @@ sdist
 target
 tools/lintstack.head.py
 tools/pylint_exceptions
+doc/source/sample.config
