@@ -46,6 +46,7 @@ def validate_cluster_creating(cluster):
             _('Number of datanodes must be not less than dfs_replication.'))
 
     jn_count = _get_inst_count(cluster, 'HDFS_JOURNALNODE')
+    require_anti_affinity = PU.c_helper.get_required_anti_affinity(cluster)
     if jn_count > 0:
         if jn_count < 3:
             raise ex.InvalidComponentCountException('HDFS_JOURNALNODE',
@@ -57,14 +58,14 @@ def validate_cluster_creating(cluster):
         if zk_count < 1:
             raise ex.RequiredServiceMissingException('ZOOKEEPER',
                                                      required_by='HDFS HA')
-        if 'HDFS_SECONDARYNAMENODE' not in _get_anti_affinity(cluster):
-            raise ex.NameNodeHAConfigurationError(_('HDFS_SECONDARYNAMENODE '
-                                                    'should be enabled '
-                                                    'in anti_affinity.'))
-        if 'HDFS_NAMENODE' not in _get_anti_affinity(cluster):
-            raise ex.NameNodeHAConfigurationError(_('HDFS_NAMENODE '
-                                                    'should be enabled '
-                                                    'in anti_affinity.'))
+        if require_anti_affinity:
+            if 'HDFS_SECONDARYNAMENODE' not in _get_anti_affinity(cluster):
+                raise ex.NameNodeHAConfigurationError(
+                    _('HDFS_SECONDARYNAMENODE should be enabled '
+                      'in anti_affinity.'))
+            if 'HDFS_NAMENODE' not in _get_anti_affinity(cluster):
+                raise ex.NameNodeHAConfigurationError(
+                    _('HDFS_NAMENODE should be enabled in anti_affinity.'))
 
     rm_count = _get_inst_count(cluster, 'YARN_RESOURCEMANAGER')
     if rm_count > 1:
@@ -82,12 +83,14 @@ def validate_cluster_creating(cluster):
         if zk_count < 1:
             raise ex.RequiredServiceMissingException('ZOOKEEPER',
                                                      required_by='RM HA')
-        if 'YARN_RESOURCEMANAGER' not in _get_anti_affinity(cluster):
-            raise ex.ResourceManagerHAConfigurationError(
-                _('YARN_RESOURCEMANAGER should be enabled in anti_affinity.'))
-        if 'YARN_STANDBYRM' not in _get_anti_affinity(cluster):
-            raise ex.ResourceManagerHAConfigurationError(
-                _('YARN_STANDBYRM should be enabled in anti_affinity.'))
+        if require_anti_affinity:
+            if 'YARN_RESOURCEMANAGER' not in _get_anti_affinity(cluster):
+                raise ex.ResourceManagerHAConfigurationError(
+                    _('YARN_RESOURCEMANAGER should be enabled in '
+                      'anti_affinity.'))
+            if 'YARN_STANDBYRM' not in _get_anti_affinity(cluster):
+                raise ex.ResourceManagerHAConfigurationError(
+                    _('YARN_STANDBYRM should be enabled in anti_affinity.'))
 
     hs_count = _get_inst_count(cluster, 'YARN_JOBHISTORY')
     if hs_count > 1:

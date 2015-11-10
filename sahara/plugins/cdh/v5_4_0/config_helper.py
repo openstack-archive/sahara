@@ -157,6 +157,10 @@ ENABLE_HBASE_COMMON_LIB = p.Config('Enable HBase Common Lib',
                                    'general', 'cluster', config_type='bool',
                                    priority=1, default_value=True)
 
+REQUIRE_ANTI_AFFINITY = p.Config('Require Anti Affinity',
+                                 'general', 'cluster', config_type='bool',
+                                 priority=2, default_value=True)
+
 SWIFT_LIB_URL = p.Config(
     'Hadoop OpenStack library URL', 'general', 'cluster', priority=1,
     default_value=DEFAULT_SWIFT_LIB_URL,
@@ -196,8 +200,8 @@ EXECUTOR_EXTRA_CLASSPATH = p.Config(
 def _get_cluster_plugin_configs():
     return [CDH5_REPO_URL, CDH5_REPO_KEY_URL, CM5_REPO_URL, CM5_REPO_KEY_URL,
             KMS_REPO_URL, KMS_REPO_KEY_URL,
-            ENABLE_SWIFT, ENABLE_HBASE_COMMON_LIB, SWIFT_LIB_URL,
-            EXTJS_LIB_URL, AWAIT_AGENTS_TIMEOUT,
+            ENABLE_SWIFT, REQUIRE_ANTI_AFFINITY, ENABLE_HBASE_COMMON_LIB,
+            SWIFT_LIB_URL, EXTJS_LIB_URL, AWAIT_AGENTS_TIMEOUT,
             AWAIT_MANAGER_STARTING_TIMEOUT, EXECUTOR_EXTRA_CLASSPATH]
 
 
@@ -341,6 +345,10 @@ def get_plugin_configs():
 def _get_config_value(cluster, key):
     return cluster.cluster_configs.get(
         'general', {}).get(key.name, key.default_value)
+
+
+def get_required_anti_affinity(cluster):
+    return _get_config_value(cluster, REQUIRE_ANTI_AFFINITY)
 
 
 def get_cdh5_repo_url(cluster):
