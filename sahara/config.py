@@ -142,6 +142,7 @@ def list_opts():
     from sahara.utils.openstack import swift
     from sahara.utils import poll_utils
     from sahara.utils import proxy
+    from sahara.utils import ssh_remote
     from sahara.utils import wsgi
 
     return [
@@ -162,7 +163,8 @@ def list_opts():
                          cpo.event_log_opts,
                          wsgi.wsgi_opts,
                          base.opts,
-                         heat_engine.heat_engine_opts)),
+                         heat_engine.heat_engine_opts,
+                         ssh_remote.ssh_config_options)),
         (poll_utils.timeouts.name,
          itertools.chain(poll_utils.timeouts_opts)),
         (api.conductor_group.name,
