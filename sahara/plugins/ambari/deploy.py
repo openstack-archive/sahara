@@ -74,6 +74,28 @@ def setup_agents(cluster):
     LOG.debug("Ambari agents has been installed")
 
 
+def _disable_repos_on_inst(instance):
+    with context.set_current_instance_id(instance_id=instance.instance_id):
+        with instance.remote() as r:
+            tmp_name = "/tmp/yum.repos.d-%s" % instance.instance_id[:8]
+            sudo = functools.partial(r.execute_command, run_as_root=True)
+            # moving to other folder
+            sudo("mv /etc/yum.repos.d/ {fold_name}".format(
+                fold_name=tmp_name))
+            sudo("mkdir /etc/yum.repos.d")
+
+
+def disable_repos(cluster):
+    if configs.use_base_repos_needed(cluster):
+        LOG.debug("Using base repos")
+        return
+    instances = plugin_utils.get_instances(cluster)
+    with context.ThreadGroup() as tg:
+        for inst in instances:
+            tg.spawn("disable-repos-%s" % inst.instance_name,
+                     _disable_repos_on_inst, inst)
+
+
 def _setup_agent(instance, ambari_address):
     with instance.remote() as r:
         sudo = functools.partial(r.execute_command, run_as_root=True)
