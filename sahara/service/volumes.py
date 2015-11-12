@@ -214,30 +214,34 @@ def mount_to_instances(instances):
     if len(instances) == 0:
         return
 
-    cpo.add_provisioning_step(
-        instances[0].cluster_id,
-        _("Mount volumes to instances"), _count_volumes_to_mount(instances))
-
     use_xfs = _can_use_xfs(instances)
 
     for instance in instances:
         with context.set_current_instance_id(instance.instance_id):
             devices = _find_instance_devices(instance)
-            formatted_devices = []
-            lock = threading.Lock()
-            with context.ThreadGroup() as tg:
-                # Since formating can take several minutes (for large disks)
-                # and can be done in parallel, launch one thread per disk.
-                for device in devices:
-                    tg.spawn('format-device-%s' % device, _format_device,
-                             instance, device, use_xfs, formatted_devices,
-                             lock)
 
-            conductor.instance_update(
-                context.current(), instance,
-                {"storage_devices_number": len(formatted_devices)})
-            for idx, dev in enumerate(formatted_devices):
-                _mount_volume_to_node(instance, idx+1, dev, use_xfs)
+            if devices:
+                cpo.add_provisioning_step(
+                    instance.cluster_id,
+                    _("Mount volumes to {inst_name} instance").format(
+                        inst_name=instance.instance_name), len(devices))
+
+                formatted_devices = []
+                lock = threading.Lock()
+                with context.ThreadGroup() as tg:
+                    # Since formating can take several minutes (for large
+                    # disks) and can be done in parallel, launch one thread
+                    # per disk.
+                    for device in devices:
+                        tg.spawn('format-device-%s' % device, _format_device,
+                                 instance, device, use_xfs, formatted_devices,
+                                 lock)
+
+                conductor.instance_update(
+                    context.current(), instance,
+                    {"storage_devices_number": len(formatted_devices)})
+                for idx, dev in enumerate(formatted_devices):
+                    _mount_volume_to_node(instance, idx+1, dev, use_xfs)
 
 
 def _find_instance_devices(instance):
@@ -296,6 +300,7 @@ def _format_device(
             LOG.warning(
                 _LW("Device {dev} cannot be formatted: {reason}").format(
                     dev=device, reason=e))
+            cpo.add_fail_event(instance, e)
 
 
 def _mount_volume(instance, device_path, mount_point, use_xfs):
