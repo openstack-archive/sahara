@@ -108,3 +108,11 @@ def check_job_execution_delete(job_execution_id, **kwargs):
 
     acl.check_tenant_for_delete(ctx, je)
     acl.check_protected_from_delete(je)
+
+
+def check_job_execution_update(job_execution_id, data, **kwargs):
+    ctx = context.current()
+    je = conductor.job_execution_get(ctx, job_execution_id)
+
+    acl.check_tenant_for_update(ctx, je)
+    acl.check_protected_from_update(je, data)
