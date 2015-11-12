@@ -50,7 +50,7 @@ class OozieClient(object):
                            "?action=kill")
         _check_status_code(resp, 200)
 
-    def get_job_status(self, job_execution, job_id=None):
+    def get_job_info(self, job_execution, job_id=None):
         if job_id is None:
             job_id = job_execution.engine_job_id
         session = self._get_http_session(job_execution.extra.get('neutron'))

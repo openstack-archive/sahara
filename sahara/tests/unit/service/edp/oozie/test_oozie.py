@@ -119,10 +119,10 @@ class TestOozieEngine(base.SaharaTestCase):
 
         self.assertEqual(expected_external_hdfs_urls, external_hdfs_urls)
 
-    @mock.patch('sahara.service.edp.oozie.oozie.OozieClient.get_job_status')
+    @mock.patch('sahara.service.edp.oozie.oozie.OozieClient.get_job_info')
     @mock.patch('sahara.service.edp.oozie.oozie.OozieClient.kill_job')
-    def test_cancel_job(self, kill_get, status_get):
-        status_get.return_value = {}
+    def test_cancel_job(self, kill_get, info_get):
+        info_get.return_value = {}
         oje = FakeOozieJobEngine(u.create_cluster())
         _, job_exec = u.create_job_exec(edp.JOB_TYPE_PIG)
 

@@ -93,11 +93,11 @@ class OozieJobEngine(base_engine.JobEngine):
         if job_execution.engine_job_id is not None:
             client = self._get_client()
             client.kill_job(job_execution)
-            return client.get_job_status(job_execution)
+            return client.get_job_info(job_execution)
 
     def get_job_status(self, job_execution):
         if job_execution.engine_job_id is not None:
-            return self._get_client().get_job_status(job_execution)
+            return self._get_client().get_job_info(job_execution)
 
     def run_job(self, job_execution):
         ctx = context.ctx()
@@ -192,8 +192,7 @@ class OozieJobEngine(base_engine.JobEngine):
 
         client.run_job(job_execution, oozie_job_id)
         try:
-            status = client.get_job_status(job_execution,
-                                           oozie_job_id)['status']
+            status = client.get_job_info(job_execution, oozie_job_id)['status']
         except Exception:
             status = None
         return (oozie_job_id, status, None)
