@@ -57,4 +57,6 @@ def main():
     server.setup_sahara_engine()
     server.setup_auth_policy()
 
-    server.start_server(app)
+    launcher = server.get_process_launcher()
+    launcher.launch_service(server.SaharaWSGIService("sahara-all", app))
+    launcher.wait()
