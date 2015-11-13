@@ -26,13 +26,14 @@ Elements for building vanilla images are stored in the
 
 To create vanilla images follow these steps:
 
-1. Clone repository "https://github.com/openstack/sahara-image-elements" locally.
+1. Clone repository "https://github.com/openstack/sahara-image-elements"
+   locally.
 
 2. Use tox to build images.
 
    You can run the command below in sahara-image-elements
-   directory to build images. By default this script will attempt to create cloud
-   images for all versions of supported plugins and all operating systems
+   directory to build images. By default this script will attempt to create
+   cloud images for all versions of supported plugins and all operating systems
    (subset of Ubuntu, Fedora, and CentOS depending on plugin).
 
    .. sourcecode:: console
@@ -40,7 +41,10 @@ To create vanilla images follow these steps:
       tox -e venv -- sahara-image-create -u
 
    Tox will create a virtualenv and install required python packages in it,
-   clone the repositories "https://github.com/openstack/diskimage-builder" and "https://github.com/openstack/sahara-image-elements" and export necessary parameters.
+   clone the repositories "https://github.com/openstack/diskimage-builder" and
+   "https://github.com/openstack/sahara-image-elements" and export necessary
+   parameters.
+
         * ``DIB_HADOOP_VERSION`` - version of Hadoop to install
         * ``JAVA_DOWNLOAD_URL`` - download link for JDK (tarball or bin)
         * ``OOZIE_DOWNLOAD_URL`` - download link for OOZIE (we have built

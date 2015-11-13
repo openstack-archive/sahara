@@ -43,7 +43,8 @@ How to stay in touch with the community?
 
 * Weekly on Thursdays at 1400 UTC and 1800 UTC (on alternate weeks)
 
-* IRC channel: ``#openstack-meeting-alt`` (1800UTC) and ``#openstack-meeting-3`` (1400UTC)
+* IRC channel: ``#openstack-meeting-alt`` (1800UTC) and
+  ``#openstack-meeting-3`` (1400UTC)
 
 
 How to send your first patch on review?

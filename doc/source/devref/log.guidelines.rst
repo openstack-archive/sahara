@@ -5,8 +5,8 @@ Log Guidelines
 Levels Guidelines
 -----------------
 
-During the Kilo release cycle the sahara community defined the following log levels:
-
+During the Kilo release cycle the sahara community defined the following
+log levels:
 
 * Debug: Shows everything and is likely not suitable for normal production
   operation due to the sheer size of logs generated (e.g. scripts executions,
@@ -41,8 +41,8 @@ Now sahara uses string formatting defined in `PEP 3101`_ for logs.
 Translation Guidelines
 ----------------------
 
-All log levels except Debug requires translation. None of the separate cli tools packaged
-with sahara contain log translations.
+All log levels except Debug requires translation. None of the separate
+cli tools packaged with sahara contain log translations.
 
 * Debug: no translation
 * Info: _LI

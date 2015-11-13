@@ -47,13 +47,18 @@ instances using this template:
 
 There are two types of configs here:
 
-1. General. The ``${name}`` in this case equals to ``fs.swift``. Here is the list of ``${config}``:
+1. General. The ``${name}`` in this case equals to ``fs.swift``. Here is the
+   list of ``${config}``:
 
-   * ``.impl`` - Swift FileSystem implementation. The ${value} is ``org.apache.hadoop.fs.swift.snative.SwiftNativeFileSystem``
+   * ``.impl`` - Swift FileSystem implementation. The ${value} is
+     ``org.apache.hadoop.fs.swift.snative.SwiftNativeFileSystem``
    * ``.connect.timeout`` - timeout for all connections by default: 15000
-   * ``.socket.timeout`` - how long the connection waits for responses from servers. by default: 60000
-   * ``.connect.retry.count`` - connection retry count for all connections. by default: 3
-   * ``.connect.throttle.delay`` - delay in millis between bulk (delete, rename, copy operations). by default: 0
+   * ``.socket.timeout`` - how long the connection waits for responses from
+     servers. by default: 60000
+   * ``.connect.retry.count`` - connection retry count for all connections. by
+     default: 3
+   * ``.connect.throttle.delay`` - delay in millis between bulk (delete,
+     rename, copy operations). by default: 0
    * ``.blocksize`` - blocksize for filesystem. By default: 32Mb
    * ``.partsize`` - the partition size for uploads. By default: 4608*1024Kb
    * ``.requestsize`` - request size for reads in KB. By default: 64Kb
@@ -76,8 +81,9 @@ There are two types of configs here:
    * ``.http.port``
    * ``.https.port``
    * ``.region`` - Swift region is used when cloud has more than one Swift
-     installation. If region param is not set first region from Keystone endpoint
-     list will be chosen. If region param not found exception will be thrown.
+     installation. If region param is not set first region from Keystone
+     endpoint list will be chosen. If region param not found exception will be
+     thrown.
    * ``.location-aware`` - turn On location awareness. Is false by default
    * ``.apikey``
    * ``.public``

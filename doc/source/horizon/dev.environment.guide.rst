@@ -2,8 +2,8 @@ Sahara UI Dev Environment Setup
 ===============================
 
 This page describes how to setup Horizon for developing Sahara by either
-installing it as part of DevStack with Sahara or installing it in an isolated environment
-and running from the command line.
+installing it as part of DevStack with Sahara or installing it in an
+isolated environment and running from the command line.
 
 Install as a part of DevStack
 -----------------------------
@@ -11,8 +11,8 @@ Install as a part of DevStack
 See the `DevStack guide <../devref/devstack.html>`_ for more information
 on installing and configuring DevStack with Sahara.
 
-After Horizon installation, it will contain a Data Processing tab under Projects tab.
-Sahara UI source code will be located at
+After Horizon installation, it will contain a Data Processing tab under
+Projects tab.  Sahara UI source code will be located at
 ``$DEST/horizon/openstack_dashboard/contrib/sahara/content/data_processing``
 where ``$DEST/`` is usually ``/opt/stack/``.
 
@@ -42,7 +42,8 @@ You can list the registered services with this command:
   .. sourcecode:: console
 
       $ sudo apt-get update
-      $ sudo apt-get install git-core python-dev gcc python-setuptools python-virtualenv node-less libssl-dev libffi-dev libxslt-dev
+      $ sudo apt-get install git-core python-dev gcc python-setuptools \
+                python-virtualenv node-less libssl-dev libffi-dev libxslt-dev
   ..
 
   On Ubuntu 12.10 and higher you have to install the following lib as well:
@@ -72,7 +73,8 @@ You can list the registered services with this command:
 
   .. sourcecode:: console
 
-      $ cp openstack_dashboard/local/local_settings.py.example openstack_dashboard/local/local_settings.py
+      $ cp openstack_dashboard/local/local_settings.py.example
+                openstack_dashboard/local/local_settings.py
   ..
 
 4. Modify ``openstack_dashboard/local/local_settings.py``
@@ -84,16 +86,18 @@ You can list the registered services with this command:
      OPENSTACK_HOST = "ip of your controller"
   ..
 
-  If you are using Nova-Network with ``auto_assign_floating_ip=True`` add the following parameter:
+  If you are using Nova-Network with ``auto_assign_floating_ip=True`` add the
+  following parameter:
 
   .. sourcecode:: python
 
      SAHARA_AUTO_IP_ALLOCATION_ENABLED = True
   ..
 
-5. If Sahara is not registered with the keystone service catalog, it may be added
-   with the following commands.  To use Sahara from Horizon without keystone
-   registration, see `Using the Data Processing Dashboard without Keystone Registration`_.
+5. If Sahara is not registered with the keystone service catalog, it may be
+   added with the following commands.  To use Sahara from Horizon without keystone
+   registration, see `Using the Data Processing Dashboard without Keystone
+   Registration`_.
 
    .. sourcecode:: console
 
@@ -109,8 +113,9 @@ You can list the registered services with this command:
       $ tools/with_venv.sh python manage.py runserver 0.0.0.0:8080
   ..
 
-  This will start Horizon in debug mode. That means the logs will be written to console
-  and if any exceptions happen, you will see the stack-trace rendered as a web-page.
+  This will start Horizon in debug mode. That means the logs will be written to
+  console and if any exceptions happen, you will see the stack-trace rendered
+  as a web-page.
 
   Debug mode can be disabled by changing ``DEBUG=True`` to ``False`` in
   ``local_settings.py``. In that case Horizon should be started slightly
@@ -126,10 +131,10 @@ You can list the registered services with this command:
 7. Applying changes
 
   If you have changed any ``*.py`` files in
-  ``horizon/openstack_dashboard/contrib/sahara/content/data_processing`` directory,
-  Horizon will notice that and reload automatically. However changes made to
-  non-python files may not be noticed, so you have to restart Horizon again
-  manually, as described in step 6.
+  ``horizon/openstack_dashboard/contrib/sahara/content/data_processing``
+  directory, Horizon will notice that and reload automatically. However
+  changes made to non-python files may not be noticed, so you have to restart
+  Horizon again manually, as described in step 6.
 
 Using the Data Processing Dashboard without Keystone Registration
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++

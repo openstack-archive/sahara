@@ -1,9 +1,8 @@
 Sahara Upgrade Guide
 ====================
 
-This page contains details about upgrading sahara between releases such
-as configuration file updates, database migrations, and architectural
-changes.
+This page contains details about upgrading sahara between releases such as
+configuration file updates, database migrations, and architectural changes.
 
 Icehouse -> Juno
 ----------------
@@ -18,11 +17,11 @@ All-In-One sahara is desired.
 Authentication middleware changes
 +++++++++++++++++++++++++++++++++
 
-The custom auth_token middleware has been deprecated in favor of the
-keystone middleware. This change requires an update to the sahara
-configuration file. To update your configuration file you should replace
-the following parameters from the ``[DEFAULT]`` section with the new
-parameters in the ``[keystone_authtoken]`` section:
+The custom auth_token middleware has been deprecated in favor of the keystone
+middleware. This change requires an update to the sahara configuration file. To
+update your configuration file you should replace the following parameters from
+the ``[DEFAULT]`` section with the new parameters in the
+``[keystone_authtoken]`` section:
 
 +----------------------+--------------------+
 | Old parameter name   | New parameter name |
@@ -49,12 +48,11 @@ The oslo based code from sahara.openstack.common.db has been replaced by
 the usage of the oslo.db package. This change does not require any
 update to sahara's configuration file.
 
-Additionally, the usage of SQLite databases has been deprecated. Please
-use MySQL or PostgreSQL databases for sahara. SQLite has been
-deprecated because it does not, and is not going to, support the
-``ALTER COLUMN`` and ``DROP COLUMN`` commands required for migrations
-between versions. For more information please see
-http://www.sqlite.org/omitted.html
+Additionally, the usage of SQLite databases has been deprecated. Please use
+MySQL or PostgreSQL databases for sahara. SQLite has been deprecated because it
+does not, and is not going to, support the ``ALTER COLUMN`` and ``DROP COLUMN``
+commands required for migrations between versions. For more information please
+see http://www.sqlite.org/omitted.html
 
 Sahara integration into OpenStack Dashboard
 +++++++++++++++++++++++++++++++++++++++++++
@@ -82,10 +80,9 @@ name for instances created by sahara using HEAT was always 'ec2-user'. As
 of Juno, the user name is taken from the image registry as described in
 the :doc:`registering_image` document.
 
-This change breaks backward compatibility for clusters created using the
-HEAT infrastructure engine prior to the Juno release. Clusters will
-continue to operate, but we do not recommended using the scaling operations
-with them.
+This change breaks backward compatibility for clusters created using the HEAT
+infrastructure engine prior to the Juno release. Clusters will continue to
+operate, but we do not recommended using the scaling operations with them.
 
 Anti affinity implementation changed
 ++++++++++++++++++++++++++++++++++++
@@ -126,13 +123,14 @@ Kilo -> Liberty
 Direct engine deprecation
 +++++++++++++++++++++++++
 
-In the Liberty release the direct infrastructure engine has been deprecated
-and the heat infrastructure engine is now default. This means, that it is preferable
-to use heat engine instead now. In the Liberty release you can continue to
-operate clusters with the direct engine (create, delete, scale). Using heat engine only
-the delete operation is available on clusters that were created by the direct engine.
-After the Liberty release the direct engine will be removed, this means that you will
-only be able to delete clusters created with the direct engine.
+In the Liberty release the direct infrastructure engine has been deprecated and
+the heat infrastructure engine is now default. This means, that it is
+preferable to use heat engine instead now. In the Liberty release you can
+continue to operate clusters with the direct engine (create, delete, scale).
+Using heat engine only the delete operation is available on clusters that were
+created by the direct engine.  After the Liberty release the direct engine will
+be removed, this means that you will only be able to delete clusters created
+with the direct engine.
 
 Policy namespace changed (policy.json)
 ++++++++++++++++++++++++++++++++++++++

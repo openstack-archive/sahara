@@ -2,8 +2,8 @@ Sahara (Data Processing) UI User Guide
 ======================================
 
 This guide assumes that you already have the Sahara service and Horizon
-dashboard up and running. Don't forget to make sure that Sahara is registered in
-Keystone. If you require assistance with that, please see the
+dashboard up and running. Don't forget to make sure that Sahara is
+registered in Keystone. If you require assistance with that, please see the
 `installation guide <../installation.guide.html>`_.
 
 The sections below give a panel by panel overview of setting up clusters
@@ -25,8 +25,8 @@ Registering an Image
 
 4) Enter the username of the cloud-init user on the image
 
-5) Click on the tags that you want to add to the image. (A version ie: 1.2.1 and
-   a type ie: vanilla are required for cluster functionality)
+5) Click on the tags that you want to add to the image. (A version ie: 1.2.1
+   and a type ie: vanilla are required for cluster functionality)
 
 6) Click the "Done" button to finish the registration
 
@@ -46,8 +46,8 @@ Create Node Group Templates
 5) Choose a flavor for this template (based on your CPU/memory/disk needs)
 
 6) Choose the storage location for your instance, this can be either "Ephemeral
-   Drive" or "Cinder Volume".  If you choose "Cinder Volume", you will need to add
-   additional configuration
+   Drive" or "Cinder Volume".  If you choose "Cinder Volume", you will need to
+   add additional configuration
 
 7) Choose which processes should be run for any instances that are spawned from
    this Node Group Template
@@ -131,8 +131,8 @@ Data Sources
 ------------
 Data Sources are where the input and output from your jobs are housed.
 
-1) From the Data Processing/Data Sources page, click on the "Create Data Source"
-   button at the top right
+1) From the Data Processing/Data Sources page, click on the "Create Data
+   Source" button at the top right
 
 2) Give your Data Source a name
 
@@ -223,8 +223,8 @@ status of your job to see when it has completed its run
 
   - Additional configuration properties can be defined by clicking on the "Add"
     button
-  - An example configuration entry might be mapred.mapper.class for the Name and
-    org.apache.oozie.example.SampleMapper for the Value
+  - An example configuration entry might be mapred.mapper.class for the Name
+    and org.apache.oozie.example.SampleMapper for the Value
 
 5) Click on "Launch".  To monitor the status of your job, you can navigate to
    the Data Processing/Jobs panel
@@ -241,8 +241,9 @@ status of your job to see when it has completed its run
 Example Jobs
 ------------
 There are sample jobs located in the Sahara repository. In this section, we
-will give a walkthrough on how to run those jobs via the Horizon UI. These steps
-assume that you already have a cluster up and running (in the "Active" state).
+will give a walkthrough on how to run those jobs via the Horizon UI. These
+steps assume that you already have a cluster up and running (in the "Active"
+state).
 
 1) Sample Pig job -
    https://github.com/openstack/sahara/tree/master/etc/edp-examples/edp-pig/trim-spaces
@@ -287,8 +288,8 @@ assume that you already have a cluster up and running (in the "Active" state).
 
     - Name = pigsample, Job Type = Pig, Choose "example.pig" as the main binary
 
-    - Click on the "Libs" tab and choose "udf.jar", then hit the "Choose" button
-      beneath the dropdown, then click on "Create"
+    - Click on the "Libs" tab and choose "udf.jar", then hit the "Choose"
+      button beneath the dropdown, then click on "Create"
 
   - Launch your job
 
@@ -364,11 +365,11 @@ Additional Notes
    existing Job.  In order to be able to delete that job, you would
    first need to delete any Job Templates that relate to that job.
 
-2) In the examples above, we mention adding your username/password for the Swift
-   Data Sources. It should be noted that it is possible to configure Sahara such
-   that the username/password credentials are *not* required. For more
-   information on that, please refer to:
-   :doc:`Sahara Advanced Configuration Guide <../userdoc/advanced.configuration.guide>`
+2) In the examples above, we mention adding your username/password for the
+   Swift Data Sources. It should be noted that it is possible to configure
+   Sahara such that the username/password credentials are *not* required. For
+   more information on that, please refer to: :doc:`Sahara Advanced
+   Configuration Guide <../userdoc/advanced.configuration.guide>`
 
 Launching a cluster via the Cluster Creation Guide
 --------------------------------------------------

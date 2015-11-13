@@ -119,7 +119,8 @@ appended after the git repo URL as follows:
 5. Once previous step is finished Devstack will print Horizon URL. Navigate to
    this URL and login with login "admin" and password from ``local.conf``.
 
-6. Congratulations! You have OpenStack running in your VM and ready to launch VMs inside that VM :)
+6. Congratulations! You have OpenStack running in your VM and ready to launch
+   VMs inside that VM :)
 
 
 Managing sahara in DevStack
@@ -137,6 +138,7 @@ Setting fixed IP address for VMware Fusion VM
 ---------------------------------------------
 
 1. Open file ``/Library/Preferences/VMware Fusion/vmnet8/dhcpd.conf``
+
 2. There is a block named "subnet". It might look like this:
 
 .. sourcecode:: text
@@ -144,9 +146,11 @@ Setting fixed IP address for VMware Fusion VM
     subnet 192.168.55.0 netmask 255.255.255.0 {
             range 192.168.55.128 192.168.55.254;
 
-3. You need to pick an IP address outside of that range. For example - ``192.168.55.20``
-4. Copy VM MAC address from VM settings->Network->Advanced
-5. Append the following block to file ``dhcpd.conf`` (don't forget to replace ``VM_HOSTNAME`` and ``VM_MAC_ADDRESS`` with actual values):
+3. You need to pick an IP address outside of that range. For example -
+   ``192.168.55.20`` 4. Copy VM MAC address from VM settings->Network->Advanced
+
+5. Append the following block to file ``dhcpd.conf`` (don't forget to replace
+   ``VM_HOSTNAME`` and ``VM_MAC_ADDRESS`` with actual values):
 
 .. sourcecode:: text
 

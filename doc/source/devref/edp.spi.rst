@@ -1,13 +1,13 @@
 Elastic Data Processing (EDP) SPI
 =================================
 
-EDP job engine objects provide methods for creating, monitoring, and terminating
-jobs on Sahara clusters. Provisioning plugins that support EDP must return an
-EDP job engine object from the :ref:`get_edp_engine` method described in
-:doc:`plugin.spi`.
+EDP job engine objects provide methods for creating, monitoring, and
+terminating jobs on Sahara clusters. Provisioning plugins that support EDP must
+return an EDP job engine object from the :ref:`get_edp_engine` method described
+in :doc:`plugin.spi`.
 
-Sahara provides subclasses of the base job engine interface that support EDP on
-clusters running Oozie or on Spark standalone clusters. These are described
+Sahara provides subclasses of the base job engine interface that support EDP
+on clusters running Oozie or on Spark standalone clusters. These are described
 below.
 
 .. _edp_spi_job_types:
@@ -60,8 +60,8 @@ cancel_job(job_execution)
 
 Stops the running job whose id is stored in the job_execution object.
 
-*Returns*: None if the operation was unsuccessful or an updated job status value
-
+*Returns*: None if the operation was unsuccessful or an updated job status
+value
 
 get_job_status(job_execution)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -133,10 +133,10 @@ JobEngine. It provides implementations for all of the methods in the base
 interface but adds a few more abstract methods.
 
 Note, the *validate_job_execution(cluster, job, data)* method does basic checks
-on the job configuration but probably should be overloaded to include additional
-checks on the cluster configuration. For example, the job engines for plugins
-that support Oozie add checks to make sure that the Oozie service is up and
-running.
+on the job configuration but probably should be overloaded to include
+additional checks on the cluster configuration. For example, the job engines
+for plugins that support Oozie add checks to make sure that the Oozie service
+is up and running.
 
 
 get_hdfs_user()
@@ -160,8 +160,8 @@ creates the HDFS directory *dir_name* under the user specified by
 if the HDFS user is 'hadoop' and the dir_name is 'test' this method would
 create '/user/hadoop/test'.
 
-The reason that this method is broken out in the interface as an abstract method
-is that different versions of Hadoop treat path creation differently.
+The reason that this method is broken out in the interface as an abstract
+method is that different versions of Hadoop treat path creation differently.
 
 *Returns*: None
 
@@ -207,14 +207,15 @@ The sahara.service.edp.spark.engine.SparkJobEngine class provides a full EDP
 implementation for Spark standalone clusters.
 
 Note, the *validate_job_execution(cluster, job, data)* method does basic checks
-on the job configuration but probably should be overloaded to include additional
-checks on the cluster configuration. For example, the job engine returned by the
-Spark plugin checks that the Spark version is >= 1.0.0 to ensure that
-*spark-submit* is available.
+on the job configuration but probably should be overloaded to include
+additional checks on the cluster configuration. For example, the job engine
+returned by the Spark plugin checks that the Spark version is >= 1.0.0 to
+ensure that *spark-submit* is available.
 
 get_driver_classpath(self)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Returns driver class path.
 
-*Returns*: a string of the following format ' --driver-class-path *class_path_value*'
+*Returns*: a string of the following format ' --driver-class-path
+*class_path_value*'

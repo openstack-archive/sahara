@@ -18,11 +18,11 @@ The HDP plugin can make use of Ambari Blueprints for cluster provisioning.
 
 Apache Ambari Blueprints
 ------------------------
-Apache Ambari Blueprints is a portable document definition, which provides
-a complete definition for an Apache Hadoop cluster, including cluster topology,
+Apache Ambari Blueprints is a portable document definition, which provides a
+complete definition for an Apache Hadoop cluster, including cluster topology,
 components, services and their configurations. Ambari Blueprints can be
-consumed by the HDP plugin to instantiate a Hadoop cluster on OpenStack.
-The benefits of this approach is that it allows for Hadoop clusters to be
+consumed by the HDP plugin to instantiate a Hadoop cluster on OpenStack.  The
+benefits of this approach is that it allows for Hadoop clusters to be
 configured and deployed using an Ambari native format that can be used with as
 well as outside of OpenStack allowing for clusters to be re-instantiated in a
 variety of environments.
@@ -49,8 +49,8 @@ Images
 ------
 The sahara HDP plugin can make use of either minimal (operating system only)
 images or pre-populated HDP images. The base requirement for both is that the
-image is cloud-init enabled and contains a supported operating system
-(see http://docs.hortonworks.com/HDPDocuments/HDP1/HDP-1.2.4/bk_hdp1-system-admin-guide/content/sysadminguides_ha_chap2_3.html).
+image is cloud-init enabled and contains a supported operating system (see
+http://docs.hortonworks.com/HDPDocuments/HDP1/HDP-1.2.4/bk_hdp1-system-admin-guide/content/sysadminguides_ha_chap2_3.html).
 
 The advantage of a pre-populated image is that provisioning time is reduced,
 as packages do not need to be downloaded and installed which make up the
@@ -72,10 +72,10 @@ The username specified should be 'cloud-user'.
 
 HDFS NameNode High Availability
 -------------------------------
-HDFS NameNode High Availability (Using the Quorum Journal Manager) can be deployed
-automatically with HDP 2.0.6. Currently the only way to deploy it is through the
-command line client (python-saharaclient) or sahara REST API by simply adding the
-following cluster_configs parameter in the cluster's JSON :
+HDFS NameNode High Availability (Using the Quorum Journal Manager) can be
+deployed automatically with HDP 2.0.6. Currently the only way to deploy it is
+through the command line client (python-saharaclient) or sahara REST API by
+simply adding the following cluster_configs parameter in the cluster's JSON :
 
 .. sourcecode:: cfg
 
@@ -89,8 +89,8 @@ The NameNode High Availability is deployed using 2 NameNodes, one active and
 one standby. The NameNodes use a set of JOURNALNODES and ZOOKEEPER_SERVERS to
 ensure the necessary synchronization.
 
-A typical Highly available HDP 2.0.6 cluster uses 2 separate NameNodes, at least 3
-JOURNALNODES and at least 3 ZOOKEEPER_SERVERS.
+A typical Highly available HDP 2.0.6 cluster uses 2 separate NameNodes, at
+least 3 JOURNALNODES and at least 3 ZOOKEEPER_SERVERS.
 
 When HDFS NameNode High Availability is enabled, the plugin will perform the
 following additional validations:

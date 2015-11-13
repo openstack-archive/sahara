@@ -12,8 +12,8 @@ The sample configuration file is available `here. <https://github.com/openstack/
 1. Networking
 -------------
 
-Depending on the Networking backend (Nova Network or Neutron) used in the cloud,
-Sahara panels will determine automatically which input fields should be
+Depending on the Networking backend (Nova Network or Neutron) used in the
+cloud, Sahara panels will determine automatically which input fields should be
 displayed.
 
 While using Nova Network backend the cloud may be configured to automatically

@@ -1,8 +1,8 @@
 Project hosting
 ===============
 
-`Launchpad`_ hosts the Sahara project. The Sahara project homepage on Launchpad is
-http://launchpad.net/sahara.
+`Launchpad`_ hosts the Sahara project. The Sahara project homepage on Launchpad
+is http://launchpad.net/sahara.
 
 Launchpad credentials
 ---------------------
@@ -18,9 +18,9 @@ OpenStack-related sites. These sites include:
 Mailing list
 ------------
 
-The mailing list email is ``openstack-dev@lists.openstack.org`` with subject prefix
-``[sahara]``. To participate in the mailing list subscribe to the list at
-http://lists.openstack.org/cgi-bin/mailman/listinfo
+The mailing list email is ``openstack-dev@lists.openstack.org`` with subject
+prefix ``[sahara]``. To participate in the mailing list subscribe to the list
+at http://lists.openstack.org/cgi-bin/mailman/listinfo
 
 Bug tracking
 ------------

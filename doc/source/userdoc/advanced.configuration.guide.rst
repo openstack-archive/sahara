@@ -446,18 +446,19 @@ NTP package is included in the image (the sahara disk image builder will
 include NTP in all images it generates). The default NTP server will be
 ``pool.ntp.org``; this can be overridden using the ``default_ntp_server``
 setting in the ``DEFAULT`` section of the sahara configuration file.
-If you are creating cluster templates using the sahara UI and would like to specify
-a different NTP server for a particular cluster template, use the
-``URL of NTP server`` setting in the ``General Parameters``
-section when you create the template. If you would like to disable NTP for a
-particular cluster template, deselect the ``Enable NTP service`` checkbox in
-the ``General Parameters`` section when you create the template.
 
-If you are creating clusters using the sahara CLI, you can specify another NTP server
-or disable NTP service using the examples below.
+If you are creating cluster templates using the sahara UI and would like to
+specify a different NTP server for a particular cluster template, use the ``URL
+of NTP server`` setting in the ``General Parameters`` section when you create
+the template. If you would like to disable NTP for a particular cluster
+template, deselect the ``Enable NTP service`` checkbox in the ``General
+Parameters`` section when you create the template.
 
-If you want to disable configuring the NTP service, you should specify the following
-configs for the cluster:
+If you are creating clusters using the sahara CLI, you can specify another NTP
+server or disable NTP service using the examples below.
+
+If you want to disable configuring the NTP service, you should specify the
+following configs for the cluster:
 
 .. sourcecode:: json
 
@@ -467,8 +468,8 @@ configs for the cluster:
       }
   }
 
-If you want to disable configuring NTP service, you should specify following configs
-for the cluster:
+If you want to disable configuring NTP service, you should specify following
+configs for the cluster:
 
 .. sourcecode:: json
 
