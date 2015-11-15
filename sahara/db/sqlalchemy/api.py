@@ -244,10 +244,6 @@ def cluster_update(context, cluster_id, values):
             if cluster is None:
                 raise ex.NotFoundException(cluster_id,
                                            _("Cluster id '%s' not found!"))
-
-            validate.check_tenant_for_update(context, cluster)
-            validate.check_protected_from_update(cluster, values)
-
             cluster.update(values)
     except db_exc.DBDuplicateEntry as e:
         raise ex.DBDuplicateEntry(

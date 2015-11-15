@@ -368,35 +368,3 @@ class ClusterTest(test_base.ConductorManagerTestCase):
         self.assertRaises(sa_exc.InvalidRequestError,
                           self.api.cluster_get_all,
                           ctx, **{'badfield': 'somevalue'})
-
-    def test_cluster_update_when_protected(self):
-        ctx = context.ctx()
-        sample = copy.deepcopy(SAMPLE_CLUSTER)
-        sample['is_protected'] = True
-        cl = self.api.cluster_create(ctx, sample)
-        cl_id = cl["id"]
-
-        with testtools.ExpectedException(ex.UpdateFailedException):
-            try:
-                self.api.cluster_update(ctx, cl_id, {"name": "cluster"})
-            except ex.UpdateFailedException as e:
-                self.assert_protected_resource_exception(e)
-                raise e
-
-        self.api.cluster_update(ctx, cl_id, {"name": "cluster",
-                                             "is_protected": False})
-
-    def test_public_cluster_update_from_another_tenant(self):
-        ctx = context.ctx()
-        sample = copy.deepcopy(SAMPLE_CLUSTER)
-        sample['is_public'] = True
-        cl = self.api.cluster_create(ctx, sample)
-        cl_id = cl["id"]
-        ctx.tenant_id = 'tenant_2'
-
-        with testtools.ExpectedException(ex.UpdateFailedException):
-            try:
-                self.api.cluster_update(ctx, cl_id, {"name": "cluster"})
-            except ex.UpdateFailedException as e:
-                self.assert_created_in_another_tenant_exception(e)
-                raise e

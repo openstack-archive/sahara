@@ -110,3 +110,10 @@ def check_cluster_delete(cluster_id, **kwargs):
 
     acl.check_tenant_for_delete(context.current(), cluster)
     acl.check_protected_from_delete(cluster)
+
+
+def check_cluster_update(cluster_id, data, **kwargs):
+    cluster = api.get_cluster(cluster_id)
+
+    acl.check_tenant_for_update(context.current(), cluster)
+    acl.check_protected_from_update(cluster, data)
