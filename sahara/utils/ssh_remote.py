@@ -64,6 +64,20 @@ LOG = logging.getLogger(__name__)
 CONF = cfg.CONF
 
 
+ssh_config_options = [
+    cfg.IntOpt(
+        'ssh_timeout_common', default=300, min=1,
+        help="Overrides timeout for common ssh operations, in seconds"),
+    cfg.IntOpt(
+        'ssh_timeout_interactive', default=1800, min=1,
+        help="Overrides timeout for interactive ssh operations, in seconds"),
+    cfg.IntOpt(
+        'ssh_timeout_files', default=120, min=1,
+        help="Overrides timeout for ssh operations with files, in seconds"),
+]
+
+CONF.register_opts(ssh_config_options)
+
 _ssh = None
 _proxy_ssh = None
 _sessions = {}
@@ -71,8 +85,21 @@ _sessions = {}
 
 INFRA = None
 
+SSH_TIMEOUTS_MAPPING = {
+    '_execute_command': 'ssh_timeout_common',
+    '_execute_command_interactive': 'ssh_timeout_interactive'
+}
 
 _global_remote_semaphore = None
+
+
+def _default_timeout(func):
+    timeout = SSH_TIMEOUTS_MAPPING.get(func.__name__, 'ssh_timeout_files')
+    return getattr(CONF, timeout, CONF.ssh_timeout_common)
+
+
+def _get_ssh_timeout(func, timeout):
+    return timeout if timeout else _default_timeout(func)
 
 
 def _connect(host, username, private_key, proxy_command=None,
@@ -645,6 +672,7 @@ class InstanceInteropHelper(remote.Remote):
                 func.__name__, time.time() - start_time))
 
     def _run_s(self, func, timeout, *args, **kwargs):
+        timeout = _get_ssh_timeout(func, timeout)
         _acquire_remote_semaphore()
         try:
             return self._run_with_log(func, timeout, *args, **kwargs)
@@ -712,39 +740,40 @@ class InstanceInteropHelper(remote.Remote):
         del _sessions[(host, port)]
 
     def execute_command(self, cmd, run_as_root=False, get_stderr=False,
-                        raise_when_error=True, timeout=300):
+                        raise_when_error=True, timeout=None):
         self._log_command('Executing "%s"' % cmd)
         return self._run_s(_execute_command, timeout, cmd, run_as_root,
                            get_stderr, raise_when_error)
 
-    def write_file_to(self, remote_file, data, run_as_root=False, timeout=120):
+    def write_file_to(self, remote_file, data, run_as_root=False,
+                      timeout=None):
         self._log_command('Writing file "%s"' % remote_file)
         self._run_s(_write_file_to, timeout, remote_file, data, run_as_root)
 
-    def write_files_to(self, files, run_as_root=False, timeout=120):
+    def write_files_to(self, files, run_as_root=False, timeout=None):
         self._log_command('Writing files "%s"' % files.keys())
         self._run_s(_write_files_to, timeout, files, run_as_root)
 
-    def append_to_file(self, r_file, data, run_as_root=False, timeout=120):
+    def append_to_file(self, r_file, data, run_as_root=False, timeout=None):
         self._log_command('Appending to file "%s"' % r_file)
         self._run_s(_append_to_file, timeout, r_file, data, run_as_root)
 
-    def append_to_files(self, files, run_as_root=False, timeout=120):
+    def append_to_files(self, files, run_as_root=False, timeout=None):
         self._log_command('Appending to files "%s"' % files.keys())
         self._run_s(_append_to_files, timeout, files, run_as_root)
 
-    def read_file_from(self, remote_file, run_as_root=False, timeout=120):
+    def read_file_from(self, remote_file, run_as_root=False, timeout=None):
         self._log_command('Reading file "%s"' % remote_file)
         return self._run_s(_read_file_from, timeout, remote_file, run_as_root)
 
     def replace_remote_string(self, remote_file, old_str, new_str,
-                              timeout=120):
+                              timeout=None):
         self._log_command('In file "%s" replacing string "%s" '
                           'with "%s"' % (remote_file, old_str, new_str))
         self._run_s(_replace_remote_string, timeout, remote_file, old_str,
                     new_str)
 
-    def execute_on_vm_interactive(self, cmd, matcher, timeout=1800):
+    def execute_on_vm_interactive(self, cmd, matcher, timeout=None):
         """Runs given command and responds to prompts.
 
         'cmd' is a command to execute.
@@ -785,6 +814,7 @@ class BulkInstanceInteropHelper(InstanceInteropHelper):
         return procutils.run_in_subprocess(self.proc, func, args, kwargs)
 
     def _run_s(self, func, timeout, *args, **kwargs):
+        timeout = _get_ssh_timeout(func, timeout)
         return self._run_with_log(func, timeout, *args, **kwargs)
 
 
