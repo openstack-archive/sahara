@@ -33,7 +33,7 @@ class SparkMaster(np.NodeProcess):
     _submit_port = SPARK_MASTER_PORT
 
     def submit_url(self, cluster_context):
-        host = cluster_context.get_instance(self).internal_ip
+        host = cluster_context.get_instance(self).fqdn()
         args = {'host': host, 'port': self.submit_port(cluster_context)}
         return 'spark://%(host)s:%(port)s' % args
 
