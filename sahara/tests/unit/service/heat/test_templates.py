@@ -193,6 +193,7 @@ class TestClusterTemplateWaitCondition(BaseTestClusterTemplate):
                                                  self.ng1, self.ng2)
 
     def test_use_wait_condition(self):
+        self.override_config('heat_enable_wait_condition', True)
         instance = self.template._serialize_instance(self.ng1)
         expected_wc_handle = {
             "type": "OS::Heat::WaitConditionHandle"
