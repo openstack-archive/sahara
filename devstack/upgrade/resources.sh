@@ -21,7 +21,7 @@ DEFAULT_INSTANCE_TYPE=${DEFAULT_INSTANCE_TYPE:-m1.small}
 PUBLIC_NETWORK_NAME=${PUBLIC_NETWORK_NAME:-public}
 PRIVATE_NETWORK_NAME=${PRIVATE_NETWORK_NAME:-private}
 # cirros image is not appropriate for cluster creation
-SAHARA_IMAGE_NAME=${SAHARA_IMAGE_NAME:-fedora-20.x86_64}
+SAHARA_IMAGE_NAME=${SAHARA_IMAGE_NAME:-fedora-heat-test-image}
 SAHARA_IMAGE_USER=${SAHARA_IMAGE_USER:-fedora}
 
 function _sahara_set_user {
