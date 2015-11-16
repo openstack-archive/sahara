@@ -20,6 +20,7 @@ import six
 import yaml
 
 from sahara.plugins import provisioning as plugin_provisioning
+from sahara.service.heat import commons as heat_common
 from sahara.utils import general as g
 from sahara.utils.openstack import base as b
 from sahara.utils.openstack import heat as h
@@ -105,6 +106,26 @@ class ClusterStack(object):
         self.heat_stack = None
         self.files = {}
         self.last_updated_time = None
+        self.base_info = (
+            "Data Processing Cluster by Sahara\n"
+            "Sahara cluster name: {cluster}\n"
+            "Sahara engine: {version}".format(
+                cluster=cluster.name, version=heat_common.HEAT_ENGINE_VERSION)
+        )
+
+    def _node_group_description(self, ng):
+        return "{info}\nNode group {node_group}".format(
+            info=self.base_info, node_group=ng.name)
+
+    def _asg_for_node_group_description(self, ng):
+        return ("{info}\n"
+                "Auto security group for Sahara Node Group: "
+                "{node_group}".format(info=self.base_info, node_group=ng.name))
+
+    def _volume_for_node_group_description(self, ng):
+        return ("{info}\n"
+                "Volume for Sahara Node Group {node_group}".format(
+                    node_group=ng.name, info=self.base_info))
 
     def add_node_group_extra(self, node_group_id, node_count,
                              gen_userdata_func):
@@ -118,7 +139,7 @@ class ClusterStack(object):
         resources = self._serialize_resources(outputs)
         return yaml.safe_dump({
             "heat_template_version": "2013-05-23",
-            "description": "Data Processing Cluster by Sahara",
+            "description": self.base_info,
             "resources": resources,
             "outputs": outputs
         })
@@ -205,9 +226,7 @@ class ClusterStack(object):
     def _serialize_ng_file(self, ng):
         return yaml.safe_dump({
             "heat_template_version": "2013-05-23",
-            "description": "Node Group {node_group} of "
-                           "cluster {cluster}".format(node_group=ng.name,
-                                                      cluster=ng.cluster.name),
+            "description": self._node_group_description(ng),
             "parameters": {
                 "instance_index": {
                     "type": "string"
@@ -222,9 +241,7 @@ class ClusterStack(object):
 
     def _serialize_auto_security_group(self, ng):
         security_group_name = g.generate_auto_security_group_name(ng)
-        security_group_description = (
-            "Auto security group created by Sahara for Node Group "
-            "'%s' of cluster '%s'." % (ng.name, ng.cluster.name))
+        security_group_description = self._asg_for_node_group_description(ng)
 
         if CONF.use_neutron:
             res_type = "OS::Neutron::SecurityGroup"
@@ -456,9 +473,7 @@ class ClusterStack(object):
 
         return yaml.safe_dump({
             "heat_template_version": "2013-05-23",
-            "description": "Volume for node Group {node_group} of "
-                           "cluster {cluster}".format(node_group=ng.name,
-                                                      cluster=ng.cluster.name),
+            "description": self._volume_for_node_group_description(ng),
             "parameters": {
                 "volume_index": {
                     "type": "string"

@@ -32,7 +32,6 @@ class BaseTestClusterTemplate(base.SaharaWithDbTestCase):
     4. Anti-affinity feature with proper nova scheduler hints included
     into Heat templates.
     """
-
     def _make_node_groups(self, floating_ip_pool=None, volume_type=None):
         ng1 = tu.make_ng_dict('master', 42, ['namenode'], 1,
                               floating_ip_pool=floating_ip_pool, image_id=None,
@@ -132,8 +131,11 @@ class TestClusterTemplate(BaseTestClusterTemplate):
         expected = {'cluster-master-1': {
             'type': 'OS::Neutron::SecurityGroup',
             'properties': {
-                'description': 'Auto security group created by Sahara '
-                    'for Node Group \'master\' of cluster \'cluster\'.',
+                'description': 'Data Processing Cluster by Sahara\n'
+                               'Sahara cluster name: cluster\n'
+                               'Sahara engine: heat.3.0\n'
+                               'Auto security group for Sahara Node '
+                               'Group: master',
                 'rules': [{
                     'remote_ip_prefix': rule[0],
                     'ethertype': rule[1],
@@ -150,8 +152,11 @@ class TestClusterTemplate(BaseTestClusterTemplate):
         expected = {'cluster-master-1': {
             'type': 'AWS::EC2::SecurityGroup',
             'properties': {
-                'GroupDescription': 'Auto security group created by Sahara'
-                    ' for Node Group \'master\' of cluster \'cluster\'.',
+                'GroupDescription': 'Data Processing Cluster by Sahara\n'
+                                    'Sahara cluster name: cluster\n'
+                                    'Sahara engine: heat.3.0\n'
+                                    'Auto security group for Sahara '
+                                    'Node Group: master',
                 'SecurityGroupIngress': [{
                     'ToPort': '22',
                     'CidrIp': '0.0.0.0/0',
