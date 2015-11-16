@@ -11,6 +11,14 @@
     </property>
 
     <property>
+        <name>datanucleus.autoCreateSchema</name>
+        <value>true</value>
+        <description>
+            creates necessary schema on a startup if one doesn't exist.
+        </description>
+    </property>
+
+    <property>
         <name>javax.jdo.option.ConnectionDriverName</name>
         <value>com.mysql.jdbc.Driver</value>
         <description>Driver class name for a JDBC metastore</description>

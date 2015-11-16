@@ -43,9 +43,6 @@ class MySQL(s.Service):
         SELECT_DATA % "SELECT Host FROM mysql.user WHERE mysql.user.User='%s'"
     )
 
-    SCHEMA_PATH = (
-        '/opt/mapr/hive/hive-{0}/scripts/metastore/upgrade/mysql/'
-        'hive-schema-{0}.0.mysql.sql')
     DRIVER_CLASS = 'com.mysql.jdbc.Driver'
     MYSQL_SERVER_PORT = 3306
     MYSQL_INSTALL_SCRIPT = 'plugins/mapr/resources/install_mysql.sh'
@@ -115,25 +112,7 @@ class MySQL(s.Service):
         db_name = MySQL.METASTORE_SPECS.db_name
         if db_name not in databases:
             MySQL._create_service_db(instance, MySQL.METASTORE_SPECS)
-            MySQL._grant_access(instance, MySQL.METASTORE_SPECS, instances)
-            with hive_meta.remote() as r:
-                hive_serv = cluster_context.get_service(hive.HIVE_METASTORE)
-                schema_path = hive_serv.get_schema_path(cluster_context)
-                script = MySQL._create_script_obj('hive_schema.sql',
-                                                  'hive_schema.sql',
-                                                  db_name=db_name,
-                                                  path=schema_path)
-                r.write_file_to(script.remote_path, script.render())
-                args = {
-                    'user': MySQL.METASTORE_SPECS.user,
-                    'password': MySQL.METASTORE_SPECS.password,
-                    'host': instance.internal_ip,
-                    'path': script.remote_path
-                }
-                cmd = 'mysql -h{host} -u{user} -p{password} < {path}'
-                r.execute_command(cmd.format(**args), run_as_root=True)
-        else:
-            MySQL._grant_access(instance, MySQL.METASTORE_SPECS, instances)
+        MySQL._grant_access(instance, MySQL.METASTORE_SPECS, instances)
 
     @staticmethod
     def _create_oozie_db(instance, databases, instances):
