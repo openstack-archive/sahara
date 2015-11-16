@@ -668,3 +668,35 @@ class TestSpark(base.SaharaTestCase):
         self._setup_run_job(master_instance, job_configs, files)
 
         configurer.assert_called_with("cluster", data_source)
+
+    @mock.patch('sahara.service.edp.hdfs_helper.configure_cluster_for_hdfs')
+    @mock.patch('sahara.service.edp.job_utils.resolve_data_source_references')
+    def test_overridden_driver_classpath(self, resolver, configurer):
+        job_configs = {
+            'configs': {"edp.java.main_class": "org.me.myclass",
+                        'edp.spark.driver.classpath': "my-classpath.jar"},
+        }
+
+        files = {'jars': ["app.jar"]}
+
+        data_source = mock.Mock()
+        data_source.type = 'hdfs'
+        resolver.return_value = ([data_source], job_configs)
+
+        master_instance = self._make_master_instance()
+        self._setup_run_job(master_instance, job_configs, files)
+
+        # check that overridden value was applied
+        master_instance.execute_command.assert_called_with(
+            'cd %(workflow_dir)s; '
+            './launch_command %(spark_user)s%(spark_submit)s '
+            '--driver-class-path my-classpath.jar '
+            '--class org.me.myclass '
+            '--master %(master)s '
+            '--deploy-mode %(deploy_mode)s '
+            'app.jar '
+            '> /dev/null 2>&1 & echo $!' % {"workflow_dir": self.workflow_dir,
+                                            "spark_user": self.spark_user,
+                                            "spark_submit": self.spark_submit,
+                                            "master": self.master,
+                                            "deploy_mode": self.deploy_mode})
