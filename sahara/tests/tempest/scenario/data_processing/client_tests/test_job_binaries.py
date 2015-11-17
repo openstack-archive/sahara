@@ -69,6 +69,15 @@ class JobBinariesTest(base.BaseDataProcessingTest):
         self.assertEqual(binary_name, binary.name)
         self.assertDictContainsSubset(self.swift_job_binary, binary.__dict__)
 
+    def _check_swift_job_binary_update(self, binary_id):
+        values = {
+            'url': 'swift://user/foo',
+            'description': 'description'
+        }
+        # check updating of job binary in swift
+        binary = self.client.job_binaries.update(binary_id, values)
+        self.assertDictContainsSubset(values, binary.__dict__)
+
     def _check_internal_db_job_binary_create(self):
         name = data_utils.rand_name('sahara-internal-job-binary')
         self.job_binary_data = 'Some data'
@@ -96,6 +105,14 @@ class JobBinariesTest(base.BaseDataProcessingTest):
         self.assertEqual(binary_name, binary.name)
         self.assertDictContainsSubset(self.internal_db_binary, binary.__dict__)
 
+    def _check_internal_db_job_binary_update(self, binary_id):
+        values = {
+            'description': 'description'
+        }
+        # check updating of job binary in internal db
+        binary = self.client.job_binaries.update(binary_id, values)
+        self.assertDictContainsSubset(values, binary.__dict__)
+
     def _check_job_binary_get_file(self, binary_id):
         data = self.client.job_binaries.get_file(binary_id)
         self.assertEqual(self.job_binary_data, data)
@@ -105,6 +122,7 @@ class JobBinariesTest(base.BaseDataProcessingTest):
         binary_id, binary_name = self._check_swift_job_binary_create()
         self._check_job_binary_list(binary_id, binary_name)
         self._check_swift_job_binary_get(binary_id, binary_name)
+        self._check_swift_job_binary_update(binary_id)
         self._check_job_binary_delete(binary_id)
 
     @test.services('data_processing')
@@ -113,4 +131,5 @@ class JobBinariesTest(base.BaseDataProcessingTest):
         self._check_job_binary_list(binary_id, binary_name)
         self._check_internal_db_job_binary_get(binary_id, binary_name)
         self._check_job_binary_get_file(binary_id)
+        self._check_internal_db_job_binary_update(binary_id)
         self._check_job_binary_delete(binary_id)

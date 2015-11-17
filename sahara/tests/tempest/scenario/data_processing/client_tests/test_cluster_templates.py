@@ -70,6 +70,17 @@ class ClusterTemplateTest(base.BaseDataProcessingTest):
         self.assertEqual(template_name, template.name)
         self.assertDictContainsSubset(self.cluster_template, template.__dict__)
 
+    def _check_cluster_template_update(self, template_id):
+        values = {
+            'name': data_utils.rand_name('updated-sahara-ct'),
+            'description': 'description',
+        }
+
+        # check updating of cluster template
+        template = self.client.cluster_templates.update(
+            template_id, **values)
+        self.assertDictContainsSubset(values, template.__dict__)
+
     def _check_cluster_template_delete(self, template_id):
         # delete cluster template by id
         self.client.cluster_templates.delete(
@@ -84,4 +95,5 @@ class ClusterTemplateTest(base.BaseDataProcessingTest):
         template_id, template_name = self._check_create_cluster_template()
         self._check_cluster_template_list(template_id, template_name)
         self._check_cluster_template_get(template_id, template_name)
+        self._check_cluster_template_update(template_id)
         self._check_cluster_template_delete(template_id)

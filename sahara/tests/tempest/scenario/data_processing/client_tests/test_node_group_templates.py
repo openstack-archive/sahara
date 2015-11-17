@@ -47,6 +47,19 @@ class NodeGroupTemplateTest(base.BaseDataProcessingTest):
         self.assertDictContainsSubset(self.worker_template,
                                       template.__dict__)
 
+    def _check_create_node_group_template_update(self, template_id):
+        values = {
+            'name': data_utils.rand_name('updated-sahara-ng-template'),
+            'description': 'description',
+            'volumes_per_node': 2,
+            'volumes_size': 2,
+        }
+
+        resp_body = self.update_node_group_template(template_id, **values)
+        # check that template updated successfully
+        self.assertDictContainsSubset(values,
+                                      resp_body.__dict__)
+
     def _check_node_group_template_delete(self, template_id):
         # delete node group template by id
         self.client.node_group_templates.delete(template_id)
