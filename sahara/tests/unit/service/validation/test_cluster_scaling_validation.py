@@ -25,6 +25,7 @@ from sahara.service.validations import clusters_scaling as c_s
 from sahara.service.validations import clusters_schema as c_schema
 from sahara.tests.unit.service.validation import utils as u
 from sahara.tests.unit import testutils as tu
+from sahara.utils import cluster as c_u
 
 
 def _get_plugin(plugin_name):
@@ -77,7 +78,8 @@ class TestScalingValidation(u.ValidationTestCase):
                              "Validating")
 
         cluster = tu.create_cluster("cluster1", "tenant1", "fake", "0.1",
-                                    [ng1], status='Active', id='12321')
+                                    [ng1], status=c_u.CLUSTER_STATUS_ACTIVE,
+                                    id='12321')
         data = {
             'resize_node_groups': [
                 {
@@ -113,7 +115,8 @@ class TestScalingValidation(u.ValidationTestCase):
         ops.get_engine_type_and_version.return_value = "direct.1.1"
         ng1 = tu.make_ng_dict('ng', '42', ['namenode'], 1)
         cluster = tu.create_cluster("test-cluster", "tenant1", "fake",
-                                    "0.1", [ng1], status='Active',
+                                    "0.1",
+                                    [ng1], status=c_u.CLUSTER_STATUS_ACTIVE,
                                     id='12321')
         data = {
             'add_node_groups': [
@@ -360,7 +363,7 @@ class TestScalingValidation(u.ValidationTestCase):
         ng1 = tu.make_ng_dict('ng', '42', ['namenode'], 1)
         cluster = tu.create_cluster(
             "cluster1", "tenant1", "fake", "0.1", [ng1],
-            status='Active', id='12321',
+            status=c_u.CLUSTER_STATUS_ACTIVE, id='12321',
             sahara_info={"infrastructure_engine": "heat.1.1"})
 
         self._assert_check_scaling(
@@ -373,7 +376,8 @@ class TestScalingValidation(u.ValidationTestCase):
         ops.get_engine_type_and_version.return_value = "heat.1.1"
         ng1 = tu.make_ng_dict('ng', '42', ['namenode'], 1)
         cluster = tu.create_cluster("cluster1", "tenant1", "fake", "0.1",
-                                    [ng1], status='Active', id='12321')
+                                    [ng1], status=c_u.CLUSTER_STATUS_ACTIVE,
+                                    id='12321')
 
         self._assert_check_scaling(
             data={}, cluster=cluster,

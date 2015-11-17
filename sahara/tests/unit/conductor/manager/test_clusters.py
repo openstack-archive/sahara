@@ -22,6 +22,7 @@ from sahara.conductor import manager
 from sahara import context
 from sahara import exceptions as ex
 import sahara.tests.unit.conductor.base as test_base
+from sahara.utils import cluster as c_u
 
 
 SAMPLE_CLUSTER = {
@@ -152,15 +153,17 @@ class ClusterTest(test_base.ConductorManagerTestCase):
         cluster_db_obj = self.api.cluster_create(ctx, SAMPLE_CLUSTER)
         _id = cluster_db_obj["id"]
 
-        updated_cl = self.api.cluster_update(ctx, _id, {"status": "Active"})
+        updated_cl = self.api.cluster_update(
+            ctx, _id, {"status": c_u.CLUSTER_STATUS_ACTIVE})
         self.assertIsInstance(updated_cl, dict)
-        self.assertEqual("Active", updated_cl["status"])
+        self.assertEqual(c_u.CLUSTER_STATUS_ACTIVE, updated_cl["status"])
 
         get_cl_obj = self.api.cluster_get(ctx, _id)
         self.assertEqual(updated_cl, get_cl_obj)
 
         with testtools.ExpectedException(ex.NotFoundException):
-            self.api.cluster_update(ctx, "bad_id", {"status": "Active"})
+            self.api.cluster_update(
+                ctx, "bad_id", {"status": c_u.CLUSTER_STATUS_ACTIVE})
 
     def _ng_in_cluster(self, cluster_db_obj, ng_id):
         for ng in cluster_db_obj["node_groups"]:

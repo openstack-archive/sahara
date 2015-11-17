@@ -24,7 +24,7 @@ from sahara import exceptions as exc
 from sahara.plugins import base as pl_base
 from sahara.service import api
 from sahara.tests.unit import base
-
+from sahara.utils import cluster as c_u
 
 conductor = cond.API
 
@@ -143,7 +143,8 @@ class FakeOps(object):
 
     def provision_cluster(self, id):
         self.calls_order.append('ops.provision_cluster')
-        conductor.cluster_update(context.ctx(), id, {'status': 'Active'})
+        conductor.cluster_update(
+            context.ctx(), id, {'status': c_u.CLUSTER_STATUS_ACTIVE})
 
     def provision_scaled_cluster(self, id, to_be_enlarged):
         self.calls_order.append('ops.provision_scaled_cluster')
@@ -170,7 +171,7 @@ class TestApi(base.SaharaWithDbTestCase):
         cluster = api.create_cluster(SAMPLE_CLUSTER)
         self.assertEqual(1, check_cluster.call_count)
         result_cluster = api.get_cluster(cluster.id)
-        self.assertEqual('Active', result_cluster.status)
+        self.assertEqual(c_u.CLUSTER_STATUS_ACTIVE, result_cluster.status)
         expected_count = {
             'ng_1': 1,
             'ng_2': 3,
@@ -195,8 +196,8 @@ class TestApi(base.SaharaWithDbTestCase):
         self.assertEqual(2, check_cluster.call_count)
         result_cluster1 = api.get_cluster(clusters['clusters'][0])
         result_cluster2 = api.get_cluster(clusters['clusters'][1])
-        self.assertEqual('Active', result_cluster1.status)
-        self.assertEqual('Active', result_cluster2.status)
+        self.assertEqual(c_u.CLUSTER_STATUS_ACTIVE, result_cluster1.status)
+        self.assertEqual(c_u.CLUSTER_STATUS_ACTIVE, result_cluster2.status)
         expected_count = {
             'ng_1': 1,
             'ng_2': 3,

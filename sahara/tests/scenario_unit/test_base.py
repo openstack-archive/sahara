@@ -237,7 +237,8 @@ class TestBase(testtools.TestCase):
     @mock.patch('sahara.tests.scenario.clients.NeutronClient.get_network_id',
                 return_value='mock_net')
     @mock.patch('saharaclient.api.base.ResourceManager._get',
-                return_value=FakeResponse(set_status='Active'))
+                return_value=FakeResponse(
+                    set_status=base.CLUSTER_STATUS_ACTIVE))
     @mock.patch('sahara.tests.scenario.base.BaseTestCase._check_event_logs')
     def test__poll_cluster_status(self, mock_status, mock_neutron,
                                   mock_saharaclient, mock_check_event_logs):

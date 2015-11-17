@@ -25,7 +25,7 @@ from sahara.plugins.fake import plugin
 import sahara.service.validation as v
 from sahara.tests.unit import base
 from sahara.tests.unit import testutils as tu
-
+from sahara.utils import cluster as c_u
 
 m = {}
 
@@ -201,7 +201,7 @@ def start_patch(patch_templates=True):
                                                   Image(name='wrong_name')]
     ng_dict = tu.make_ng_dict('ng', '42', ['namenode'], 1)
     cluster = tu.create_cluster('test', 't', 'fake', '0.1', [ng_dict],
-                                id=1, status='Active')
+                                id=1, status=c_u.CLUSTER_STATUS_ACTIVE)
     # stub clusters list
     get_clusters.return_value = [cluster]
     get_cluster.return_value = cluster

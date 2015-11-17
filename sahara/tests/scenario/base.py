@@ -36,7 +36,6 @@ from sahara.tests.scenario import timeouts
 from sahara.tests.scenario import utils
 from sahara.utils import crypto as ssh
 
-
 logger = logging.getLogger('swiftclient')
 logger.setLevel(logging.CRITICAL)
 
@@ -44,6 +43,8 @@ DEFAULT_TEMPLATES_PATH = (
     'sahara/tests/scenario/templates/%(plugin_name)s/%(hadoop_version)s')
 CHECK_OK_STATUS = "OK"
 CHECK_FAILED_STATUS = "FAILED"
+CLUSTER_STATUS_ACTIVE = "Active"
+CLUSTER_STATUS_ERROR = "Error"
 
 
 def track_result(check_name, exit_with_error=True):
@@ -587,9 +588,9 @@ class BaseTestCase(base.BaseTestCase):
                 gentle=True):
             while True:
                 status = self.sahara.get_cluster_status(cluster_id)
-                if status == 'Active':
+                if status == CLUSTER_STATUS_ACTIVE:
                     break
-                if status == 'Error':
+                if status == CLUSTER_STATUS_ERROR:
                     raise exc.TempestException("Cluster in %s state" % status)
                 time.sleep(3)
 
