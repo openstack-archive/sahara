@@ -29,9 +29,9 @@ SAMPLE_SWIFT_URL = "swift://1234/object"
 SAMPLE_SWIFT_URL_WITH_SUFFIX = "swift://1234%s/object" % su.SWIFT_URL_SUFFIX
 
 
-class TestDataSourceValidation(u.ValidationTestCase):
+class TestDataSourceCreateValidation(u.ValidationTestCase):
     def setUp(self):
-        super(TestDataSourceValidation, self).setUp()
+        super(TestDataSourceCreateValidation, self).setUp()
         self._create_object_fun = ds.check_data_source_create
         self.scheme = ds_schema.DATA_SOURCE_SCHEMA
         api.plugin_base.setup_plugins()
@@ -340,3 +340,137 @@ class TestDataSourceValidation(u.ValidationTestCase):
             "description": ("correct url")
         }
         self._assert_types(data)
+
+
+class TestDataSourceUpdateValidation(u.ValidationTestCase):
+    def _update_swift(self):
+        with testtools.ExpectedException(ex.InvalidDataException):
+            ds.check_data_source_update({'url': 'swift://cont/obj'}, 'ds_id')
+
+        with testtools.ExpectedException(ex.InvalidDataException):
+            ds.check_data_source_update({'type': 'swift'}, 'ds_id')
+
+        with testtools.ExpectedException(ex.InvalidCredentials):
+            ds.check_data_source_update(
+                {'type': 'swift', 'url': 'swift://cont/obj'}, 'ds_id')
+
+        ds.check_data_source_update(
+            {'type': 'swift', 'url': 'swift://cont/obj',
+             'credentials': {'user': 'user', 'password': 'pass'}}, 'ds_id')
+
+    def _update_hdfs(self):
+        with testtools.ExpectedException(ex.InvalidDataException):
+            ds.check_data_source_update({'url': 'hdfs://cl/data'}, 'ds_id')
+
+        with testtools.ExpectedException(ex.InvalidDataException):
+            ds.check_data_source_update({'type': 'hdfs'}, 'ds_id')
+
+        ds.check_data_source_update(
+            {'url': 'hdfs://cl/data', 'type': 'hdfs'}, 'ds_id')
+
+    def _update_maprfs(self):
+        with testtools.ExpectedException(ex.InvalidDataException):
+            ds.check_data_source_update({'type': 'maprfs'}, 'ds_id')
+
+        with testtools.ExpectedException(ex.InvalidDataException):
+            ds.check_data_source_update({'url': 'maprfs://cluster'}, 'ds_id')
+
+        ds.check_data_source_update(
+            {'type': 'maprfs', 'url': 'maprfs://cluster'}, 'ds_id')
+
+    def _update_manilla(self):
+        with testtools.ExpectedException(ex.InvalidDataException):
+            ds.check_data_source_update({'type': 'manila'}, 'ds_id')
+
+        with testtools.ExpectedException(ex.InvalidDataException):
+            ds.check_data_source_update(
+                {"url": "manila://%s/foo" % uuid.uuid4()}, 'ds_id')
+
+        ds.check_data_source_update(
+            {'type': 'manila',
+             'url': 'manila://%s/foo' % uuid.uuid4()}, 'ds_id')
+
+    @mock.patch('sahara.conductor.API.job_execution_get_all')
+    def test_update_referenced_data_source(self, je_all):
+        je_all.return_value = [mock.Mock(
+            info={"status": "PENDING"},
+            data_source_urls={"ds_id": "ds_url"})]
+        with testtools.ExpectedException(ex.UpdateFailedException):
+            ds.check_data_source_update({'name': 'ds'}, 'ds_id')
+
+    @mock.patch('sahara.conductor.API.job_execution_get_all')
+    @mock.patch('sahara.conductor.API.data_source_get_all')
+    @mock.patch('sahara.conductor.API.data_source_get')
+    def test_update_data_source_name(self, je_all, ds_all, ds_get):
+        ds1 = mock.Mock()
+        ds1.name = 'ds1'
+        ds_all.return_value = [ds1]
+        ds.check_data_source_update({'name': 'ds'}, 'ds_id')
+
+        ds1.name = 'ds'
+        with testtools.ExpectedException(ex.NameAlreadyExistsException):
+            ds.check_data_source_update({'name': 'ds'}, 'ds_id')
+
+    @mock.patch('sahara.conductor.API.job_execution_get_all')
+    @mock.patch('sahara.conductor.API.data_source_get')
+    def test_update_data_source_swift(self, ds_get, je_all):
+        old_ds = mock.Mock(id='ds_id', type='swift', url='swift://cont/obj',
+                           credentials={'user': 'user', 'password': 'pass'})
+        ds_get.return_value = old_ds
+
+        ds.check_data_source_update({'url': 'swift://cont/obj2'}, 'ds_id')
+
+        self._update_hdfs()
+        self._update_maprfs()
+        self._update_manilla()
+
+        with testtools.ExpectedException(ex.InvalidDataException):
+            ds.check_data_source_update({'url': '/tmp/file'}, 'ds_id')
+
+    @mock.patch('sahara.conductor.API.job_execution_get_all')
+    @mock.patch('sahara.conductor.API.data_source_get')
+    def test_update_data_source_hdfs(self, ds_get, je_all):
+        old_ds = mock.Mock(id='ds_id', type='hdfs', url='hdfs://cl/data',
+                           credentials={})
+        ds_get.return_value = old_ds
+
+        ds.check_data_source_update({'url': 'hdfs://cl/data1'}, 'ds_id')
+
+        self._update_swift()
+        self._update_maprfs()
+        self._update_manilla()
+
+        ds.check_data_source_update({'url': '/tmp/file'}, 'ds_id')
+
+    @mock.patch('sahara.conductor.API.job_execution_get_all')
+    @mock.patch('sahara.conductor.API.data_source_get')
+    def test_update_data_source_maprfs(self, ds_get, je_all):
+        old_ds = mock.Mock(id='ds_id', type='maprfs', url='maprfs://cluster',
+                           credentials={})
+        ds_get.return_value = old_ds
+
+        ds.check_data_source_update({'url': 'maprfs://cluster/data'}, 'ds_id')
+
+        self._update_swift()
+        self._update_hdfs()
+        self._update_manilla()
+
+        ds.check_data_source_update({'url': '/tmp/file'}, 'ds_id')
+
+    @mock.patch('sahara.conductor.API.job_execution_get_all')
+    @mock.patch('sahara.conductor.API.data_source_get')
+    def test_update_data_source_manila(self, ds_get, je_all):
+        old_ds = mock.Mock(id='ds_id', type='manila',
+                           url='manila://%s/foo' % uuid.uuid4(),
+                           credentials={})
+        ds_get.return_value = old_ds
+
+        ds.check_data_source_update(
+            {'url': 'manila://%s/foo' % uuid.uuid4()}, 'ds_id')
+
+        self._update_swift()
+        self._update_hdfs()
+        self._update_maprfs()
+
+        with testtools.ExpectedException(ex.InvalidDataException):
+            ds.check_data_source_update({'url': '/tmp/file'}, 'ds_id')

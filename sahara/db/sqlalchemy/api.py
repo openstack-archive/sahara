@@ -771,17 +771,6 @@ def data_source_update(context, values):
             validate.check_tenant_for_update(context, data_source)
             validate.check_protected_from_update(data_source, values)
 
-            jobs = job_execution_get_all(context)
-            pending_jobs = [job for job in jobs if
-                            job.info["status"] == "PENDING"]
-
-            for job in pending_jobs:
-                if job.data_source_urls:
-                    if ds_id in job.data_source_urls:
-                        raise ex.UpdateFailedException(
-                            _("DataSource is used in a "
-                              "PENDING Job and can not be updated."))
-
             data_source.update(values)
     except db_exc.DBDuplicateEntry as e:
         raise ex.DBDuplicateEntry(
