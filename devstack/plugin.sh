@@ -175,7 +175,7 @@ function start_sahara {
         service_protocol="http"
     fi
 
-    run_process sahara "$SAHARA_BIN_DIR/sahara-all --config-file $SAHARA_CONF_FILE"
+    run_process sahara-all "$SAHARA_BIN_DIR/sahara-all --config-file $SAHARA_CONF_FILE"
     run_process sahara-api "$SAHARA_BIN_DIR/sahara-api --config-file $SAHARA_CONF_FILE"
     run_process sahara-eng "$SAHARA_BIN_DIR/sahara-engine --config-file $SAHARA_CONF_FILE"
 
@@ -193,7 +193,7 @@ function start_sahara {
 # stop_sahara() - Stop running processes
 function stop_sahara {
     # Kill the Sahara screen windows
-    stop_process sahara
+    stop_process sahara-all
     stop_process sahara-api
     stop_process sahara-eng
 }
@@ -201,7 +201,7 @@ function stop_sahara {
 # is_sahara_enabled. This allows is_service_enabled sahara work
 # correctly throughout devstack.
 function is_sahara_enabled {
-    if is_service_enabled sahara-api || is_service_enabled sahara-eng; then
+    if is_service_enabled sahara-api || is_service_enabled sahara-eng || is_service_enabled sahara-all; then
         return 0
     else
         return 1
