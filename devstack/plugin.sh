@@ -198,8 +198,18 @@ function stop_sahara {
     stop_process sahara-eng
 }
 
+# is_sahara_enabled. This allows is_service_enabled sahara work
+# correctly throughout devstack.
+function is_sahara_enabled {
+    if is_service_enabled sahara-api || is_service_enabled sahara-eng; then
+        return 0
+    else
+        return 1
+    fi
+}
+
 # Dispatcher for Sahara plugin
-if is_service_enabled sahara || is_service_enabled sahara-api || is_service_enabled sahara-eng; then
+if is_service_enabled sahara; then
     if [[ "$1" == "stack" && "$2" == "install" ]]; then
         echo_summary "Installing sahara"
         install_sahara
