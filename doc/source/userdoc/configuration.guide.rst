@@ -118,11 +118,11 @@ address:
 
 .. warning::
     When using floating IP addresses for management
-    (``use_floating_ip=True``) **every** instance in the cluster must have
+    (``use_floating_ips=True``) **every** instance in the cluster must have
     a floating IP address, otherwise sahara will not be able to utilize
     that cluster.
 
-If not using floating IP addresses (``use_floating_ip=False``) sahara
+If not using floating IP addresses (``use_floating_ips=False``) sahara
 will use fixed IP addresses for instance management. When using neutron
 for the Networking service the user will be able to choose the
 fixed IP network for all instances in a cluster. Whether using nova-network
