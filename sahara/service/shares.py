@@ -77,6 +77,22 @@ def mount_shares(cluster):
         node_group_shares.mount_shares_to_node_group()
 
 
+def unmount_shares(cluster, unmount_share_list):
+    """Unmounts all shares in unmount_share_list on the given cluster
+
+    :param cluster: The cluster model.
+    :param unmount_share_list: list of shares to unmount
+    """
+    client = manila.client()
+    unmount_share_ids = (set(s['id'] for s in unmount_share_list))
+    handlers_by_share_id = {id: _ShareHandler.create_from_id(id, client)
+                            for id in unmount_share_ids}
+    for share in unmount_share_list:
+        for ng in cluster.node_groups:
+            for instance in ng.instances:
+                handlers_by_share_id[share['id']].unmount_from_instance(
+                    instance.remote(), share)
+
 _mount = collections.namedtuple('Mount', ['node_group', 'share_config'])
 
 
@@ -177,6 +193,11 @@ class _ShareHandler(object):
         """Mounts the share to the instance as configured."""
         pass
 
+    @abc.abstractmethod
+    def unmount_from_instance(self, remote, share_info):
+        """Unmounts the share from the instance."""
+        pass
+
     def _get_access_level(self, share_config):
         return share_config.get('access_level', 'rw')
 
@@ -204,6 +225,8 @@ class _NFSMounter(_ShareHandler):
     _MOUNT_COMMAND = ("mount | grep '%(remote)s' | grep '%(local)s' | "
                       "grep nfs || mount -t nfs %(access_arg)s %(remote)s "
                       "%(local)s")
+    _UNMOUNT_COMMAND = ("umount -f %s ")
+    _RMDIR_COMMAND = 'rmdir %s'
 
     @classmethod
     def setup_instance(cls, remote):
@@ -231,6 +254,15 @@ class _NFSMounter(_ShareHandler):
             "local": local_path,
             "access_arg": access_arg}
         remote.execute_command(mount_command, run_as_root=True)
+
+    def unmount_from_instance(self, remote, share_info):
+        """Unounts the share from the instance."""
+        local_path = self._get_path(share_info)
+
+        unmount_command = self._UNMOUNT_COMMAND % local_path
+        rmdir_command = self._RMDIR_COMMAND % local_path
+        remote.execute_command(unmount_command, run_as_root=True)
+        remote.execute_command(rmdir_command, run_as_root=True)
 
 
 _share_types = {"NFS": _NFSMounter}

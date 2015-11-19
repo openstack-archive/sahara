@@ -218,6 +218,14 @@ class ConductorManager(db_base.Base):
                 if share not in original_shares:
                     shares.mount_shares(r.ClusterResource(updated_cluster))
                     break
+            # Any shares that were on the original, but not on the updated
+            # list will be unmounted
+            unmount_list = [share for share in original_shares
+                            if share not in update_shares]
+            if len(unmount_list) > 0:
+                shares.unmount_shares(r.ClusterResource(updated_cluster),
+                                      unmount_list)
+
         return updated_cluster
 
     def cluster_destroy(self, context, cluster):
