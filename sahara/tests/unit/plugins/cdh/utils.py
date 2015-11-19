@@ -25,6 +25,8 @@ def get_fake_cluster(**kwargs):
                                               'HDFS_SECONDARYNAMENODE',
                                               'YARN_RESOURCEMANAGER',
                                               'YARN_JOBHISTORY',
+                                              'HIVE_SERVER2',
+                                              'HIVE_METASTORE',
                                               'OOZIE_SERVER'], 1, [mst])
 
     wkrs = _get_workers()
