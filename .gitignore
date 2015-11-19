@@ -18,7 +18,6 @@ eggs
 etc/sahara.conf
 etc/sahara/*.conf
 etc/sahara/*.topology
-sahara/tests/integration/configs/itest.conf
 sdist
 target
 tools/lintstack.head.py

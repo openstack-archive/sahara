@@ -9,14 +9,6 @@ Unit Tests
 In most Sahara sub repositories we have `_package_/tests/unit` or
 `_package_/tests` that contains Python unit tests.
 
-Integration tests
-+++++++++++++++++
-
-We have integration tests for the main Sahara service and they are located in
-`sahara/tests/integration`. The main purpose of these integration tests is to
-run some kind of scenarios to test Sahara using all plugins. You can find more
-info about it in `sahara/tests/integration/README.rst`.
-
 Scenario integration tests
 ++++++++++++++++++++++++++
 
