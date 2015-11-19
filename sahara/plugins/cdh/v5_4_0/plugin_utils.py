@@ -156,7 +156,7 @@ class PluginUtilsV540(pu.AbstractPluginUtils):
         return self._get_config_value(service, name, configs, cluster)
 
     def _configure_repo_from_inst(self, instance):
-        super(PluginUtilsV540, self)._configure_repo_from_inst(self, instance)
+        super(PluginUtilsV540, self)._configure_repo_from_inst(instance)
 
         cluster = instance.cluster
         with instance.remote() as r:
