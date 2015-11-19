@@ -18,7 +18,6 @@ import itertools
 # loading keystonemiddleware opts because sahara uses these options in code
 from keystonemiddleware import opts  # noqa
 from oslo_config import cfg
-from oslo_config import types
 from oslo_log import log
 
 from sahara import exceptions as ex
@@ -31,14 +30,12 @@ from sahara.utils.openstack import keystone
 from sahara.utils import remote
 from sahara import version
 
-PORT_TYPE = types.Integer(1, 65535)
-
 
 cli_opts = [
     cfg.StrOpt('host', default='',
                help='Hostname or IP address that will be used to listen on.'),
-    cfg.Opt('port', default=8386, type=PORT_TYPE,
-            help='Port that will be used to listen on.'),
+    cfg.IntOpt('port', default=8386, min=1, max=65535,
+               help='Port that will be used to listen on.'),
     cfg.BoolOpt('log-exchange', default=False,
                 help='Log request/response exchange details: environ, '
                      'headers and bodies.')
