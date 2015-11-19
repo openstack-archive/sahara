@@ -66,7 +66,7 @@ def validate_config():
                         '{supported}). Falling back to Cinder API version 2.')
                     .format(bad=CONF.cinder.api_version,
                             supported=[1, 2]))
-        CONF.set_override('api_version', 2, group='cinder')
+        CONF.set_override('api_version', 2, group='cinder', enforce_type=True)
 
 
 def client():
