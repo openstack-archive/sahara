@@ -46,7 +46,7 @@ class TestSessionCache(base.SaharaTestCase):
         self.override_config('ca_file', None, group='keystone')
         self.override_config('api_insecure', None, group='keystone')
         sc.get_session(sessions.SESSION_TYPE_KEYSTONE)
-        keystone_session.assert_called_once_with()
+        keystone_session.assert_called_once_with(verify=True)
 
         keystone_session.reset_mock()
         sc.get_session(sessions.SESSION_TYPE_KEYSTONE)
@@ -66,7 +66,7 @@ class TestSessionCache(base.SaharaTestCase):
         self.override_config('ca_file', None, group='nova')
         self.override_config('api_insecure', None, group='nova')
         sc.get_session(sessions.SESSION_TYPE_NOVA)
-        keystone_session.assert_called_once_with()
+        keystone_session.assert_called_once_with(verify=True)
 
         keystone_session.reset_mock()
         sc.get_session(sessions.SESSION_TYPE_NOVA)
@@ -86,7 +86,7 @@ class TestSessionCache(base.SaharaTestCase):
         self.override_config('ca_file', None, group='cinder')
         self.override_config('api_insecure', None, group='cinder')
         sc.get_session(sessions.SESSION_TYPE_CINDER)
-        keystone_session.assert_called_once_with()
+        keystone_session.assert_called_once_with(verify=True)
 
         keystone_session.reset_mock()
         sc.get_session(sessions.SESSION_TYPE_CINDER)
@@ -106,8 +106,15 @@ class TestSessionCache(base.SaharaTestCase):
         self.override_config('ca_file', None, group='neutron')
         self.override_config('api_insecure', None, group='neutron')
         sc.get_session(sessions.SESSION_TYPE_NEUTRON)
-        keystone_session.assert_called_once_with()
+        keystone_session.assert_called_once_with(verify=True)
 
         keystone_session.reset_mock()
         sc.get_session(sessions.SESSION_TYPE_NEUTRON)
         self.assertFalse(keystone_session.called)
+
+    @mock.patch('keystoneclient.session.Session')
+    def test_generic_session_no_verify(self, session):
+        sc = sessions.SessionCache()
+        self.override_config('generic_session_verify', False)
+        sc.get_session(sessions.SESSION_TYPE_GENERIC)
+        session.assert_called_once_with(verify=False)
