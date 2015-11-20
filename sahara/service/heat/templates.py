@@ -354,9 +354,6 @@ class ClusterStack(object):
             }
         })
 
-        if ng.volumes_per_node > 0 and ng.volumes_size > 0:
-            resources.update(self._serialize_volume(ng))
-
         resources.update(self._serialize_volume(ng))
         resources.update({
             _get_wc_handle_name(ng.name): {
@@ -418,6 +415,8 @@ class ClusterStack(object):
         }
 
     def _serialize_volume(self, ng):
+        if not ng.volumes_size or not ng.volumes_per_node:
+            return {}
         volume_file_name = "file://" + ng.name + "-volume.yaml"
         self.files[volume_file_name] = self._serialize_volume_file(ng)
 
