@@ -43,6 +43,18 @@ class DataSourceTest(base.BaseDataProcessingTest):
         self.assertEqual(source_name, source.name)
         self.assertDictContainsSubset(source_body, source.__dict__)
 
+    def _check_data_source_update(self, source_id):
+        values = {
+            'name': data_utils.rand_name('updated-sahara-data-source'),
+            'description': 'description',
+            'type': 'hdfs',
+            'url': 'hdfs://user/foo'
+        }
+
+        source = self.client.data_sources.update(source_id, values)
+
+        self.assertDictContainsSubset(values, source.data_source)
+
     def _check_data_source_delete(self, source_id):
         # delete data source
         self.client.data_sources.delete(source_id)
@@ -80,4 +92,5 @@ class DataSourceTest(base.BaseDataProcessingTest):
         self._check_data_source_list(source_id, source_name)
         self._check_data_source_get(source_id, source_name,
                                     self.external_hdfs_data_source)
+        self._check_data_source_update(source_id)
         self._check_data_source_delete(source_id)

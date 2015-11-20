@@ -133,6 +133,15 @@ class JobExecutionTest(base.BaseDataProcessingTest):
         self.assertEqual(cluster_name, cluster.name)
         self.assertDictContainsSubset(self.cluster_info, cluster.__dict__)
 
+    def _check_cluster_update(self, cluster_id):
+        values = {
+            'name': data_utils.rand_name('updated-sahara-cluster'),
+            'description': 'description'
+        }
+        # check updating of cluster
+        cluster = self.client.clusters.update(cluster_id)
+        self.assertDictContainsSubset(values, cluster.__dict__)
+
     def _check_cluster_scale(self, cluster_id):
         big_worker = self.create_node_group_template(
             data_utils.rand_name('sahara-ng-template'), **self.worker_template)
@@ -259,6 +268,13 @@ class JobExecutionTest(base.BaseDataProcessingTest):
         del job_exec_info['configs']
         self.assertDictContainsSubset(job_exec_info, job_exec.__dict__)
 
+    def _check_job_execution_update(self, job_exec_id):
+        values = {
+            'is_public': True
+        }
+        job_exec = self.client.job_executions.update(job_exec_id, **values)
+        self.assertDictContainsSubset(values, job_exec.__dict__)
+
     def _check_job_execution_delete(self, job_exec_id):
         # delete job_execution by id
         self.client.job_executions.delete(job_exec_id)
@@ -280,11 +296,13 @@ class JobExecutionTest(base.BaseDataProcessingTest):
         cluster_id, cluster_name = self._check_cluster_create()
         self._check_cluster_list(cluster_id, cluster_name)
         self._check_cluster_get(cluster_id, cluster_name)
+        self._check_cluster_update(cluster_id)
         self._check_cluster_scale(cluster_id)
 
         job_exec_id = self._check_job_execution_create(cluster_id)
         self._check_job_execution_list(job_exec_id)
         self._check_job_execution_get(job_exec_id)
+        self._check_job_execution_update(job_exec_id)
 
         self._check_job_execution_delete(job_exec_id)
         self._check_cluster_delete(cluster_id)

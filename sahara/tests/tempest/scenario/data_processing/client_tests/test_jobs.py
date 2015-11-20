@@ -55,6 +55,16 @@ class JobTest(base.BaseDataProcessingTest):
         job = self.client.jobs.get(job_id)
         self.assertEqual(job_name, job.name)
 
+    def _check_job_update(self, job_id):
+        # check updating of job
+        values = {
+            'name': data_utils.rand_name('updated-sahara-job'),
+            'description': 'description'
+
+        }
+        job = self.client.jobs.update(job_id, **values)
+        self.assertDictContainsSubset(values, job.job)
+
     def _check_delete_job(self, job_id):
         # delete job by id
         self.client.jobs.delete(job_id)
@@ -67,4 +77,5 @@ class JobTest(base.BaseDataProcessingTest):
         job_id, job_name = self._check_create_job()
         self._check_job_list(job_id, job_name)
         self._check_get_job(job_id, job_name)
+        self._check_job_update(job_id)
         self._check_delete_job(job_id)
