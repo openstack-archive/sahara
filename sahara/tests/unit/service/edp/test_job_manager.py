@@ -29,6 +29,7 @@ from sahara.swift import swift_helper as sw
 from sahara.swift import utils as su
 from sahara.tests.unit import base
 from sahara.tests.unit.service.edp import edp_test_utils as u
+from sahara.utils import cluster as c_u
 from sahara.utils import edp
 from sahara.utils import patches as p
 from sahara.utils import xmlutils
@@ -553,7 +554,7 @@ class TestJobManager(base.SaharaWithDbTestCase):
         job_get.return_value = job
 
         cluster = u.create_cluster()
-        cluster.status = "Active"
+        cluster.status = c_u.CLUSTER_STATUS_ACTIVE
         cluster_get.return_value = cluster
         with testtools.ExpectedException(ex.EDPError):
             job_manager._run_job(job_exec.id)
@@ -612,7 +613,7 @@ class TestJobManager(base.SaharaWithDbTestCase):
         job_get.return_value = job
 
         cluster = u.create_cluster()
-        cluster.status = "Active"
+        cluster.status = c_u.CLUSTER_STATUS_ACTIVE
         cluster_get.return_value = cluster
 
         time_get.return_value = 10000

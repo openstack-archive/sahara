@@ -24,6 +24,7 @@ import sahara.service.periodic as p
 import sahara.tests.unit.base as base
 from sahara.tests.unit.conductor.manager import test_clusters as tc
 from sahara.tests.unit.conductor.manager import test_edp as te
+from sahara.utils import cluster as c_u
 
 
 class TestPeriodicBack(base.SaharaWithDbTestCase):
@@ -229,7 +230,9 @@ class TestPeriodicBack(base.SaharaWithDbTestCase):
 
         self.assertFalse(add_timer._mock_called)
 
-    def _make_cluster(self, id_name, status='Active', is_transient=True):
+    def _make_cluster(self, id_name, status=c_u.CLUSTER_STATUS_ACTIVE,
+
+                      is_transient=True):
         ctx = context.ctx()
 
         c = tc.SAMPLE_CLUSTER.copy()

@@ -18,6 +18,7 @@ import mock
 from sahara.plugins import base as base_plugins
 from sahara.service import ops
 from sahara.tests.unit import base
+from sahara.utils import cluster as c_u
 
 
 class FakeCluster(object):
@@ -148,7 +149,7 @@ class TestOPS(base.SaharaWithDbTestCase):
         p__prepare_provisioning.side_effect = ValueError('error1')
 
         expected = [
-            mock.call(fake_cluster, 'Active',
+            mock.call(fake_cluster, c_u.CLUSTER_STATUS_ACTIVE,
                       'Scaling cluster failed for the following '
                       'reason(s): error1')
         ]
