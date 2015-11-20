@@ -17,7 +17,9 @@
 
 import copy
 
+from sahara.conductor import resource as r
 from sahara.db import base as db_base
+from sahara.service import shares
 from sahara.utils import configs
 from sahara.utils import crypto
 
@@ -203,7 +205,20 @@ class ConductorManager(db_base.Base):
     def cluster_update(self, context, cluster, values):
         """Set the given properties on cluster and update it."""
         values = copy.deepcopy(values)
-        return self.db.cluster_update(context, cluster, values)
+        update_shares = values.get('shares')
+        if update_shares:
+            original_shares = (
+                self.db.cluster_get(context, cluster).get('shares', []))
+
+        updated_cluster = self.db.cluster_update(context, cluster, values)
+        if update_shares:
+            for share in update_shares:
+                # Only call mount_shares if we have new shares to mount.
+                # We only need one positive case to bother calling mount_shares
+                if share not in original_shares:
+                    shares.mount_shares(r.ClusterResource(updated_cluster))
+                    break
+        return updated_cluster
 
     def cluster_destroy(self, context, cluster):
         """Destroy the cluster or raise if it does not exist."""
