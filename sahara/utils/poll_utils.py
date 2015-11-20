@@ -42,22 +42,11 @@ timeouts_opts = [
     cfg.IntOpt('delete_instances_timeout',
                default=DEFAULT_TIMEOUT,
                help="Wait for instances to be deleted, in seconds"),
-    cfg.IntOpt('await_for_instances_active',
-               default=DEFAULT_TIMEOUT,
-               help="Wait for instances to become active, in seconds"),
 
     # volumes opts
     cfg.IntOpt(
         'detach_volume_timeout', default=300,
         help='Timeout for detaching volumes from instance, in seconds'),
-
-    cfg.IntOpt('volume_available_timeout',
-               default=DEFAULT_TIMEOUT,
-               help="Wait for volumes to become available, in seconds"),
-
-    cfg.IntOpt('await_attach_volumes',
-               default=10,
-               help="Wait for attaching volumes to instances, in seconds")
 ]
 
 timeouts = cfg.OptGroup(name='timeouts',
