@@ -1,0 +1,3 @@
+---
+fixes:
+  - Removed unneeded volume serialization
