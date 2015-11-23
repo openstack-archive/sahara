@@ -33,14 +33,10 @@ function create_sahara_accounts {
     create_service_user "sahara"
 
     if [[ "$KEYSTONE_CATALOG_BACKEND" = 'sql' ]]; then
-
-        local sahara_service=$(openstack service create \
-            "data-processing" \
-            --name "sahara" \
-            --description "Sahara Data Processing" \
-            -f value -c id
-        )
-        get_or_create_endpoint $sahara_service \
+        get_or_create_service "sahara" \
+                                "data-processing" \
+                                "Sahara Data Processing"
+        get_or_create_endpoint "data-processing" \
             "$REGION_NAME" \
             "$SAHARA_SERVICE_PROTOCOL://$SAHARA_SERVICE_HOST:$SAHARA_SERVICE_PORT/v1.1/\$(tenant_id)s" \
             "$SAHARA_SERVICE_PROTOCOL://$SAHARA_SERVICE_HOST:$SAHARA_SERVICE_PORT/v1.1/\$(tenant_id)s" \
@@ -70,12 +66,15 @@ function configure_sahara {
     sudo install -d -o $STACK_USER -m 700 $SAHARA_AUTH_CACHE_DIR
     rm -rf $SAHARA_AUTH_CACHE_DIR/*
 
-    configure_auth_token_middleware $SAHARA_CONF_FILE sahara $SAHARA_AUTH_CACHE_DIR
+    configure_auth_token_middleware \
+        $SAHARA_CONF_FILE sahara $SAHARA_AUTH_CACHE_DIR
 
     # Set admin user parameters needed for trusts creation
-    iniset $SAHARA_CONF_FILE keystone_authtoken admin_tenant_name $SERVICE_TENANT_NAME
+    iniset $SAHARA_CONF_FILE \
+        keystone_authtoken admin_tenant_name $SERVICE_TENANT_NAME
     iniset $SAHARA_CONF_FILE keystone_authtoken admin_user sahara
-    iniset $SAHARA_CONF_FILE keystone_authtoken admin_password $SERVICE_PASSWORD
+    iniset $SAHARA_CONF_FILE \
+        keystone_authtoken admin_password $SERVICE_PASSWORD
 
     iniset_rpc_backend sahara $SAHARA_CONF_FILE DEFAULT
 
@@ -91,12 +90,14 @@ function configure_sahara {
 
     iniset $SAHARA_CONF_FILE DEFAULT plugins $SAHARA_ENABLED_PLUGINS
 
-    iniset $SAHARA_CONF_FILE database connection `database_connection_url sahara`
+    iniset $SAHARA_CONF_FILE \
+        database connection `database_connection_url sahara`
 
     if is_service_enabled neutron; then
         iniset $SAHARA_CONF_FILE DEFAULT use_neutron true
 
-        if is_ssl_enabled_service "neutron" || is_service_enabled tls-proxy; then
+        if is_ssl_enabled_service "neutron" \
+            || is_service_enabled tls-proxy; then
             iniset $SAHARA_CONF_FILE neutron ca_file $SSL_BUNDLE_FILE
         fi
     else
@@ -150,7 +151,8 @@ function configure_sahara {
     fi
 
     recreate_database sahara
-    $SAHARA_BIN_DIR/sahara-db-manage --config-file $SAHARA_CONF_FILE upgrade head
+    $SAHARA_BIN_DIR/sahara-db-manage \
+        --config-file $SAHARA_CONF_FILE upgrade head
 }
 
 # install_sahara() - Collect source and prepare
@@ -175,18 +177,24 @@ function start_sahara {
         service_protocol="http"
     fi
 
-    run_process sahara-all "$SAHARA_BIN_DIR/sahara-all --config-file $SAHARA_CONF_FILE"
-    run_process sahara-api "$SAHARA_BIN_DIR/sahara-api --config-file $SAHARA_CONF_FILE"
-    run_process sahara-eng "$SAHARA_BIN_DIR/sahara-engine --config-file $SAHARA_CONF_FILE"
+    run_process sahara-all "$SAHARA_BIN_DIR/sahara-all \
+        --config-file $SAHARA_CONF_FILE"
+    run_process sahara-api "$SAHARA_BIN_DIR/sahara-api \
+        --config-file $SAHARA_CONF_FILE"
+    run_process sahara-eng "$SAHARA_BIN_DIR/sahara-engine \
+        --config-file $SAHARA_CONF_FILE"
 
     echo "Waiting for Sahara to start..."
-    if ! wait_for_service $SERVICE_TIMEOUT $service_protocol://$SAHARA_SERVICE_HOST:$service_port; then
+    if ! wait_for_service $SERVICE_TIMEOUT \
+                $service_protocol://$SAHARA_SERVICE_HOST:$service_port; then
         die $LINENO "Sahara did not start"
     fi
 
     # Start proxies if enabled
     if is_service_enabled tls-proxy; then
-        start_tls_proxy '*' $SAHARA_SERVICE_PORT $SAHARA_SERVICE_HOST $SAHARA_SERVICE_PORT_INT &
+        start_tls_proxy '*' $SAHARA_SERVICE_PORT \
+                            $SAHARA_SERVICE_HOST \
+                            $SAHARA_SERVICE_PORT_INT &
     fi
 }
 
@@ -201,7 +209,9 @@ function stop_sahara {
 # is_sahara_enabled. This allows is_service_enabled sahara work
 # correctly throughout devstack.
 function is_sahara_enabled {
-    if is_service_enabled sahara-api || is_service_enabled sahara-eng || is_service_enabled sahara-all; then
+    if is_service_enabled sahara-api || \
+        is_service_enabled sahara-eng || \
+        is_service_enabled sahara-all; then
         return 0
     else
         return 1
