@@ -91,7 +91,9 @@ def _run_job(job_execution_id):
     ctx = context.ctx()
     job_execution = conductor.job_execution_get(ctx, job_execution_id)
     cluster = conductor.cluster_get(ctx, job_execution.cluster_id)
-    if cluster.status != c_u.CLUSTER_STATUS_ACTIVE:
+    if cluster is None or cluster.status != c_u.CLUSTER_STATUS_ACTIVE:
+        LOG.info(_LI("Can not run this job on a non-existant cluster or a"
+                     " inactive cluster."))
         return
 
     eng = _get_job_engine(cluster, job_execution)
