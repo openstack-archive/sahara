@@ -31,6 +31,14 @@ LOG = logging.getLogger(__name__)
 SSH_PORT = 22
 INSTANCE_RESOURCE_NAME = "inst"
 
+heat_engine_opts = [
+    cfg.BoolOpt(
+        'heat_enable_wait_condition', default=False,
+        help="Enable wait condition feature to reduce polling during cluster "
+             "creation")
+]
+CONF.register_opts(heat_engine_opts)
+
 
 def _get_inst_name(ng):
     return {
@@ -318,21 +326,25 @@ class ClusterStack(object):
 
         gen_userdata_func = self.node_groups_extra[ng.id]['gen_userdata_func']
         key_script = gen_userdata_func(ng, inst_name)
-        wait_condition_script = (
-            "wc_notify --data-binary '{\"status\": \"SUCCESS\"}'")
-        userdata = {
-            "str_replace": {
-                "template": "\n".join([key_script, wait_condition_script]),
-                "params": {
-                    "wc_notify": {
-                        "get_attr": [
-                            _get_wc_handle_name(ng.name),
-                            "curl_cli"
-                        ]
+        if CONF.heat_enable_wait_condition:
+            wait_condition_script = (
+                "wc_notify --data-binary '{\"status\": \"SUCCESS\"}'")
+            userdata = {
+                "str_replace": {
+                    "template": "\n".join(
+                        [key_script, wait_condition_script]),
+                    "params": {
+                        "wc_notify": {
+                            "get_attr": [
+                                _get_wc_handle_name(ng.name),
+                                "curl_cli"
+                            ]
+                        }
                     }
                 }
             }
-        }
+        else:
+            userdata = key_script
 
         if ng.availability_zone:
             properties["availability_zone"] = ng.availability_zone
@@ -355,7 +367,13 @@ class ClusterStack(object):
         })
 
         resources.update(self._serialize_volume(ng))
-        resources.update({
+        resources.update(self._serialize_wait_condition(ng))
+        return resources
+
+    def _serialize_wait_condition(self, ng):
+        if not CONF.heat_enable_wait_condition:
+            return {}
+        return {
             _get_wc_handle_name(ng.name): {
                 "type": "OS::Heat::WaitConditionHandle"
             },
@@ -367,8 +385,7 @@ class ClusterStack(object):
                     "handle": {"get_resource": _get_wc_handle_name(ng.name)}
                 }
             }
-        })
-        return resources
+        }
 
     def _serialize_port(self, port_name, fixed_net_id, security_groups):
         properties = {
