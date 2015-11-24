@@ -33,7 +33,7 @@ INSTANCE_RESOURCE_NAME = "inst"
 
 heat_engine_opts = [
     cfg.BoolOpt(
-        'heat_enable_wait_condition', default=False,
+        'heat_enable_wait_condition', default=True,
         help="Enable wait condition feature to reduce polling during cluster "
              "creation")
 ]

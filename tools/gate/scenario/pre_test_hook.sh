@@ -32,3 +32,8 @@ echo "SAHARA_INFRA_ENGINE=$ENGINE" >> $LOCALRC_PATH
 # for example, to pass some config options directly to sahara.conf file
 # echo -e '[[post-config|$SAHARA_CONF]]\n[DEFAULT]\n' >> $LOCALCONF_PATH
 # echo -e 'infrastructure_engine=true\n' >> $LOCALCONF_PATH
+
+if [ "$NETWORK" == "nova-network" ]; then
+    echo -e '[[post-config|$SAHARA_CONF_FILE]]\n[DEFAULT]\n' >> $LOCALCONF_PATH
+    echo -e 'heat_enable_wait_condition=false\n' >> $LOCALCONF_PATH
+fi
