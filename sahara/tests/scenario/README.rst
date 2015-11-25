@@ -53,7 +53,7 @@ Here are a few more examples.
 ..
 
 will run tests for Vanilla plugin with the Hadoop version 2.7.1 and credential
-located in ``etc/scenario/sahara-ci/credential.yaml.mako``, replacing the variables
+located in ``etc/scenario/sahara-ci/credentials.yaml.mako``, replacing the variables
 included into ``vanilla-2.7.1.yaml.mako`` with the values defined into
 ``templatevars.ini``.
 For more information about writing scenario YAML files, see the section
@@ -99,7 +99,7 @@ The following variables are currently used by sahara-ci templates:
 +=============================+========+==============================================================+
 | OS_USERNAME                 | string | user name for login                                          |
 +-----------------------------+--------+--------------------------------------------------------------+
-| OS_PASSWORD                 | string | password name for login                                      |
+| OS_PASSWORD                 | string | password for login                                           |
 +-----------------------------+--------+--------------------------------------------------------------+
 | OS_TENANT_NAME              | string | tenant name                                                  |
 +-----------------------------+--------+--------------------------------------------------------------+
@@ -131,7 +131,7 @@ This field has integer value, and set concurrency for run tests
 For example:
      ``concurrency: 2``
 
-Section "credential"
+Section "credentials"
 --------------------
 
 This section is dictionary-type.
@@ -141,7 +141,7 @@ This section is dictionary-type.
 +=====================+========+==========+==============================+=================================+
 | os_username         | string | True     | admin                        | user name for login             |
 +---------------------+--------+----------+------------------------------+---------------------------------+
-| os_password         | string | True     | nova                         | password name for login         |
+| os_password         | string | True     | nova                         | password for login              |
 +---------------------+--------+----------+------------------------------+---------------------------------+
 | os_tenant           | string | True     | admin                        | tenant name                     |
 +---------------------+--------+----------+------------------------------+---------------------------------+
@@ -336,23 +336,23 @@ This section has an object with a name from the `section "clusters"`_ field "edp
 Object has sections of array-type.
 Required: type
 
-+-------------------+--------+----------+-----------+----------------------------------------------------------------------+
-|       Fields      |  Type  | Required |  Default  |                                 Value                                |
-+===================+========+==========+===========+======================================================================+
-| type              | string | True     |           | "Pig", "Java", "MapReduce", "MapReduce.Streaming", "Hive", "Spark"   |
-+-------------------+--------+----------+-----------+----------------------------------------------------------------------+
-| input_datasource  | object |          |           | see `section "input_datasource"`_                                    |
-+-------------------+--------+----------+-----------+----------------------------------------------------------------------+
-| output_datasource | object |          |           | see `section "output_datasource"`_                                   |
-+-------------------+--------+----------+-----------+----------------------------------------------------------------------+
-| main_lib          | object |          |           | see `section "main_lib"`_                                            |
-+-------------------+--------+----------+-----------+----------------------------------------------------------------------+
-| additional_libs   | object |          |           | see `section "additional_libs"`_                                     |
-+-------------------+--------+----------+-----------+----------------------------------------------------------------------+
-| configs           | dict   |          | Empty     | config: value                                                        |
-+-------------------+--------+----------+-----------+----------------------------------------------------------------------+
-| args              | array  |          | Empty     | array of args                                                        |
-+-------------------+--------+----------+-----------+----------------------------------------------------------------------+
++-------------------+--------+----------+-----------+-----------------------------------------------------------------------------+
+|       Fields      |  Type  | Required |  Default  |                                 Value                                       |
++===================+========+==========+===========+=============================================================================+
+| type              | string | True     |           | "Pig", "Java", "MapReduce", "MapReduce.Streaming", "Hive", "Spark", "Shell" |
++-------------------+--------+----------+-----------+-----------------------------------------------------------------------------+
+| input_datasource  | object |          |           | see `section "input_datasource"`_                                           |
++-------------------+--------+----------+-----------+-----------------------------------------------------------------------------+
+| output_datasource | object |          |           | see `section "output_datasource"`_                                          |
++-------------------+--------+----------+-----------+-----------------------------------------------------------------------------+
+| main_lib          | object |          |           | see `section "main_lib"`_                                                   |
++-------------------+--------+----------+-----------+-----------------------------------------------------------------------------+
+| additional_libs   | object |          |           | see `section "additional_libs"`_                                            |
++-------------------+--------+----------+-----------+-----------------------------------------------------------------------------+
+| configs           | dict   |          | Empty     | config: value                                                               |
++-------------------+--------+----------+-----------+-----------------------------------------------------------------------------+
+| args              | array  |          | Empty     | array of args                                                               |
++-------------------+--------+----------+-----------+-----------------------------------------------------------------------------+
 
 
 Section "input_datasource"
