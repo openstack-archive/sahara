@@ -22,6 +22,7 @@ from sahara import context
 from sahara.i18n import _
 from sahara.i18n import _LW
 from sahara.service import engine as e
+from sahara.service.heat import commons as heat_common
 from sahara.service.heat import templates as ht
 from sahara.service import volumes
 from sahara.utils import cluster as c_u
@@ -52,7 +53,7 @@ CONF.register_opts(heat_engine_opts)
 
 class HeatEngine(e.Engine):
     def get_type_and_version(self):
-        return "heat.3.0"
+        return heat_common.HEAT_ENGINE_VERSION
 
     def create_cluster(self, cluster):
         self._update_rollback_strategy(cluster, shutdown=True)
