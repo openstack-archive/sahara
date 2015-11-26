@@ -17,12 +17,15 @@ SAHARA_KEY=sahara_key
 SAHARA_KEY_FILE=$SAVE_DIR/sahara_key.pem
 
 JSON_PATH=`dirname $BASH_SOURCE`
-DEFAULT_INSTANCE_TYPE=${DEFAULT_INSTANCE_TYPE:-m1.small}
 PUBLIC_NETWORK_NAME=${PUBLIC_NETWORK_NAME:-public}
 PRIVATE_NETWORK_NAME=${PRIVATE_NETWORK_NAME:-private}
 # cirros image is not appropriate for cluster creation
 SAHARA_IMAGE_NAME=${SAHARA_IMAGE_NAME:-fedora-heat-test-image}
 SAHARA_IMAGE_USER=${SAHARA_IMAGE_USER:-fedora}
+# custom flavor parameters
+SAHARA_FLAVOR_NAME=${SAHARA_FLAVOR_NAME:-sahara_flavor}
+SAHARA_FLAVOR_RAM=${SAHARA_FLAVOR_RAM:-1024}
+SAHARA_FLAVOR_DISK=${SAHARA_FLAVOR_DISK:-10}
 
 function _sahara_set_user {
     OS_TENANT_NAME=$SAHARA_PROJECT
@@ -40,7 +43,7 @@ function register_image {
     echo $id
 }
 
-# args: <template> <floating_ip_pool> <security group>
+# args: <template> <floating_ip_pool> <security_group> <flavor_id>
 function create_node_group_template {
     local tmp_file
     tmp_file=$(mktemp)
@@ -49,9 +52,8 @@ function create_node_group_template {
         eval $(openstack network show $2 -f shell -c id)
         local floating_pool=$id
     fi
-    eval $(openstack flavor show $DEFAULT_INSTANCE_TYPE -f shell -c id)
-    local flavor_id=$id
-    sed -e "s/FLAVOR_ID/$flavor_id/g" \
+
+    sed -e "s/FLAVOR_ID/$4/g" \
         -e "s/FLOATING_IP_POOL/$floating_pool/g" \
         -e "s/SEC_GROUP/$3/g" $1 > $tmp_file
     local template_id
@@ -60,11 +62,11 @@ function create_node_group_template {
     echo $template_id
 }
 
-# args: <template> <node_group_1_id> <node_group_2_id>
+# args: <template> <node_group_id>
 function create_cluster_template {
     local tmp_file
     tmp_file=$(mktemp)
-    sed -e "s/NG_MASTER_ID/$2/g" -e "s/NG_WORKER_ID/$3/g" $1 > $tmp_file
+    sed -e "s/NG_ID/$2/g" $1 > $tmp_file
     local cluster_template_id
     cluster_template_id=$(sahara cluster-template-create --json $tmp_file \
                                             | awk '$2 ~ /^id/ { print $4 }')
@@ -111,6 +113,12 @@ function create {
     fi
     resource_save sahara user_id $id
 
+    # create flavor
+
+    eval $(openstack flavor create -f shell -c id --ram $SAHARA_FLAVOR_RAM \
+                            --disk $SAHARA_FLAVOR_DISK $SAHARA_FLAVOR_NAME)
+    flavor_id=$id
+
     # register image
     image_id=$(register_image)
 
@@ -125,17 +133,15 @@ function create {
     openstack keypair create $SAHARA_KEY > $SAHARA_KEY_FILE
     chmod 600 $SAHARA_KEY_FILE
 
-    # create node group templates
-    ng_worker_id=$(create_node_group_template $JSON_PATH/ng-worker.json \
-                                        $PUBLIC_NETWORK_NAME $SAHARA_USER)
-    ng_master_id=$(create_node_group_template $JSON_PATH/ng-master.json \
-                                        $PUBLIC_NETWORK_NAME $SAHARA_USER)
-    resource_save sahara ng_worker_id $ng_worker_id
-    resource_save sahara ng_master_id $ng_master_id
+    # create node group template
+    ng_id=$(create_node_group_template $JSON_PATH/ng-template.json \
+                                $PUBLIC_NETWORK_NAME $SAHARA_USER $flavor_id)
+
+    resource_save sahara ng_id $ng_id
 
     # create cluster template
     cluster_template_id=$(create_cluster_template \
-                $JSON_PATH/cluster-template.json $ng_master_id $ng_worker_id)
+                $JSON_PATH/cluster-template.json $ng_id)
     resource_save sahara cluster_template_id $cluster_template_id
 
     # create cluster
@@ -219,14 +225,13 @@ function destroy {
     cluster_template_id=$(resource_get sahara cluster_template_id)
     sahara cluster-template-delete --id $cluster_template_id
 
-    # delete node group templates
-    local ng_master_id
-    ng_master_id=$(resource_get sahara ng_master_id)
-    local ng_worker_id
-    ng_worker_id=$(resource_get sahara ng_worker_id)
-    sahara node-group-template-delete --id $ng_master_id
-    sahara node-group-template-delete --id $ng_worker_id
+    # delete node group template
+    local ng_id
+    ng_id=$(resource_get sahara ng_id)
 
+    sahara node-group-template-delete --id $ng_id
+
+    # delete security group
     nova secgroup-delete $SAHARA_USER
 
     source_quiet $TOP_DIR/openrc admin admin
@@ -235,6 +240,9 @@ function destroy {
     local image_id
     image_id=$(resource_get sahara image_id)
     sahara image-unregister --id $image_id
+
+    # delete flavor
+    openstack flavor delete $SAHARA_FLAVOR_NAME
 
     # delete user and project
     local user_id
