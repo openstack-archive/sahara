@@ -39,6 +39,14 @@ class JobBinaryInternalsTest(base.BaseDataProcessingTest):
         binary = self.client.job_binary_internals.get(binary_id)
         self.assertEqual(binary_name, binary.name)
 
+    def _check_job_binary_internal_update(self, binary_id):
+        values = {
+            'name': data_utils.rand_name('sahara-internal-job-binary'),
+            'is_public': True
+        }
+        binary = self.client.job_binary_internals.update(binary_id, **values)
+        self.assertDictContainsSubset(values, binary.job_binary_internal)
+
     def _check_job_binary_internal_delete(self, binary_id):
         # delete job binary internal by id
         self.client.job_binary_internals.delete(binary_id)
@@ -51,4 +59,5 @@ class JobBinaryInternalsTest(base.BaseDataProcessingTest):
         binary_id, binary_name = self._check_job_binary_internal_create()
         self._check_job_binary_internal_list(binary_id, binary_name)
         self._check_job_binary_internal_get(binary_id, binary_name)
+        self._check_job_binary_internal_update(binary_id)
         self._check_job_binary_internal_delete(binary_id)
