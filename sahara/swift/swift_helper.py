@@ -94,7 +94,8 @@ def _install_ssl_certs(instance, certs):
         "changeit\"")
     with instance.remote() as r:
         for idx, cert in enumerate(certs):
-            data = open(cert).read()
+            with open(cert) as cert_fd:
+                data = cert_fd.read()
             r.write_file_to("/tmp/cert.pem", data)
             try:
                 r.execute_command(register_cmd % idx)

@@ -49,10 +49,12 @@ def generate_key_pair(key_length=2048):
         processutils.execute(*args)
         if not os.path.exists(keyfile):
             raise ex.SystemError(_("Private key file hasn't been created"))
-        private_key = open(keyfile).read()
+        with open(keyfile) as keyfile_fd:
+            private_key = keyfile_fd.read()
         public_key_path = keyfile + '.pub'
         if not os.path.exists(public_key_path):
             raise ex.SystemError(_("Public key file hasn't been created"))
-        public_key = open(public_key_path).read()
+        with open(public_key_path) as public_key_path_fd:
+            public_key = public_key_path_fd.read()
 
         return private_key, public_key
