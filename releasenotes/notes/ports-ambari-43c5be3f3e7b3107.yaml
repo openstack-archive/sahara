@@ -1,4 +1,4 @@
 ---
 fixes:
   - Open ports for Kafka in Ambari plugin, closed bug
-    #1512661
+    1512661

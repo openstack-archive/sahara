@@ -1,4 +1,4 @@
 ---
 fixes:
   - Event log hanling fixed in case of problems with volumes
-    formatting, closed bug #1506839
+    formatting, closed bug 1506839

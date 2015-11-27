@@ -1,4 +1,4 @@
 ---
 fixes:
   - Fixed search of devices that need to be mounted,
-    closed bug #1508872
+    closed bug 1508872

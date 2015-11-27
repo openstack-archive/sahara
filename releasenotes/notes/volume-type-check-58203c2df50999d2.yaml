@@ -1,4 +1,4 @@
 ---
 fixes:
   - Added additional filter to volume_type check,
-    closed bug #1508017
+    closed bug 1508017
