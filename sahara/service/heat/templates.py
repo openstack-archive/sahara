@@ -111,7 +111,6 @@ class ClusterStack(object):
     def __init__(self, cluster):
         self.cluster = cluster
         self.node_groups_extra = {}
-        self.heat_stack = None
         self.files = {}
         self.last_updated_time = None
         self.base_info = (
@@ -155,8 +154,6 @@ class ClusterStack(object):
     def instantiate(self, update_existing, disable_rollback=True):
         main_tmpl = self._get_main_template()
 
-        heat = h.client()
-
         kwargs = {
             'stack_name': self.cluster.stack_name,
             'timeout_mins': 180,
@@ -171,15 +168,13 @@ class ClusterStack(object):
         if not update_existing:
             LOG.debug("Creating Heat stack with args: {args}"
                       .format(args=kwargs))
-            b.execute_with_retries(heat.stacks.create, **kwargs)
+            b.execute_with_retries(h.client().stacks.create, **kwargs)
         else:
             stack = h.get_stack(self.cluster.stack_name)
             self.last_updated_time = stack.updated_time
             LOG.debug("Updating Heat stack {stack} with args: "
                       "{args}".format(stack=stack, args=kwargs))
             b.execute_with_retries(stack.update, **kwargs)
-
-        self.heat_stack = h.get_stack(self.cluster.stack_name)
 
     def _need_aa_server_group(self, node_group):
         for node_process in node_group.node_processes:
@@ -537,7 +532,9 @@ class ClusterStack(object):
         }
 
     def get_node_group_instances(self, node_group):
-        for output in self.heat_stack.outputs:
+        cluster = node_group.cluster
+        outputs = h.get_stack_outputs(cluster)
+        for output in outputs:
             if output['output_key'] == node_group.name + "-instances":
                 return output["output_value"]
 

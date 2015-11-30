@@ -20,53 +20,49 @@ from sahara import exceptions as ex
 from sahara.utils.openstack import heat as h
 
 
+def stack(status, upd_time=None):
+    status_reason = status
+    status = status[status.index('_') + 1:]
+    return mock.Mock(status=status, updated_time=upd_time,
+                     stack_status_reason=status_reason)
+
+
 class TestClusterStack(testtools.TestCase):
+    @mock.patch('sahara.utils.openstack.heat.get_stack')
     @mock.patch("sahara.context.sleep", return_value=None)
-    def test_wait_completion(self, _):
-        stack = FakeHeatStack('CREATE_IN_PROGRESS', ['CREATE_COMPLETE'])
-        h.wait_stack_completion(stack)
+    def test_wait_completion(self, sleep, client):
+        cl = mock.Mock(stack_name='cluster')
+        client.side_effect = [stack(
+            'CREATE_IN_PROGRESS'), stack('CREATE_COMPLETE')]
+        h.wait_stack_completion(cl)
+        self.assertEqual(2, client.call_count)
 
-        stack = FakeHeatStack('UPDATE_IN_PROGRESS', ['UPDATE_COMPLETE'])
-        h.wait_stack_completion(stack)
+        client.side_effect = [
+            stack('UPDATE_IN_PROGRESS'), stack('UPDATE_COMPLETE')]
+        h.wait_stack_completion(cl)
+        self.assertEqual(4, client.call_count)
 
-        stack = FakeHeatStack('DELETE_IN_PROGRESS', ['DELETE_COMPLETE'])
-        h.wait_stack_completion(stack)
+        client.side_effect = [
+            stack('DELETE_IN_PROGRESS'), stack('DELETE_COMPLETE')]
+        h.wait_stack_completion(cl)
+        self.assertEqual(6, client.call_count)
 
-        stack = FakeHeatStack('CREATE_COMPLETE', [
-            'CREATE_COMPLETE', 'UPDATE_IN_PROGRESS', 'UPDATE_COMPLETE'])
-        h.wait_stack_completion(stack, is_update=True)
+        client.side_effect = [
+            stack('CREATE_COMPLETE'), stack('CREATE_COMPLETE'),
+            stack('UPDATE_IN_PROGRESS'), stack('UPDATE_COMPLETE', 1)]
 
-        stack = FakeHeatStack('UPDATE_COMPLETE', [
-            'UPDATE_IN_PROGRESS', 'UPDATE_COMPLETE'],
-            updated_time=-3)
-        h.wait_stack_completion(stack, is_update=True)
+        h.wait_stack_completion(cl, is_update=True)
+        self.assertEqual(10, client.call_count)
 
-        stack = FakeHeatStack('CREATE_IN_PROGRESS', ['CREATE_FAILED'])
+        client.side_effect = [stack('UPDATE_COMPLETE'), stack(
+            'UPDATE_IN_PROGRESS'), stack('UPDATE_COMPLETE', 1)]
+        h.wait_stack_completion(cl, is_update=True)
+        self.assertEqual(13, client.call_count)
+
+        client.side_effect = [
+            stack('CREATE_IN_PROGRESS'), stack('CREATE_FAILED')]
         with testtools.ExpectedException(
                 ex.HeatStackException,
                 value_re=("Heat stack failed with status "
                           "CREATE_FAILED\nError ID: .*")):
-            h.wait_stack_completion(stack)
-
-
-class FakeHeatStack(object):
-    def __init__(self, stack_status=None, new_statuses=None, stack_name=None,
-                 updated_time=None):
-        self.stack_status = stack_status or ''
-        self.new_statuses = new_statuses or []
-        self.stack_status_reason = stack_status or ''
-        self.idx = 0
-        self.stack_name = stack_name or ''
-        self.updated_time = updated_time
-
-    def get(self):
-        self.stack_status = self.new_statuses[self.idx]
-        self.stack_status_reason = self.new_statuses[self.idx]
-        self.idx += 1
-        if self.idx > 0 and self.stack_status == 'UPDATE_COMPLETE':
-            self.updated_time = self.idx
-
-    @property
-    def status(self):
-        s = self.stack_status
-        return s[s.index('_') + 1:]
+            h.wait_stack_completion(cl)
