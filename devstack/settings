@@ -28,11 +28,10 @@ SAHARA_AUTH_CACHE_DIR=${SAHARA_AUTH_CACHE_DIR:-/var/cache/sahara}
 
 SAHARA_ENABLED_PLUGINS=${SAHARA_ENABLED_PLUGINS:-\
 vanilla,hdp,cdh,mapr,spark,storm,fake}
-SAHARA_INFRA_ENGINE=${SAHARA_INFRA_ENGINE:-heat}
-
 SAHARA_BIN_DIR=$(get_python_exec_prefix)
 
 # Tell Tempest this project is present
 TEMPEST_SERVICES+=,sahara
 
 enable_service sahara-api sahara-eng
+enable_service heat h-eng h-api h-api-cfn h-api-cw
