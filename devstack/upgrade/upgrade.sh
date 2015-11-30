@@ -10,9 +10,9 @@ echo "*********************************************************************"
 cleanup() {
     set +o errexit
 
-    echo "*********************************************************************"
+    echo "********************************************************************"
     echo "ERROR: Abort $0"
-    echo "*********************************************************************"
+    echo "********************************************************************"
 
     # Kill ourselves to signal any calling process
     trap 2; kill -2 $$
@@ -57,7 +57,8 @@ install_python_saharaclient
 upgrade_project sahara $RUN_DIR $BASE_DEVSTACK_BRANCH $TARGET_DEVSTACK_BRANCH
 
 # Migrate the database
-$SAHARA_BIN_DIR/sahara-db-manage --config-file $SAHARA_CONF_FILE upgrade head || die $LINENO "DB sync error"
+$SAHARA_BIN_DIR/sahara-db-manage --config-file $SAHARA_CONF_FILE \
+                                    upgrade head || die $LINENO "DB sync error"
 
 # Start Sahara
 start_sahara
