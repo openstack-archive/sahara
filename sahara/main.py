@@ -157,4 +157,5 @@ def get_process_launcher():
 
 def launch_api_service(launcher, service):
     launcher.launch_service(service, workers=CONF.api_workers)
+    service.start()
     launcher.wait()
