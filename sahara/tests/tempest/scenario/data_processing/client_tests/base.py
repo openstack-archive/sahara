@@ -25,6 +25,10 @@ from tempest.scenario import manager
 
 TEMPEST_CONF = config.CONF
 
+# cluster status
+CLUSTER_STATUS_ACTIVE = "Active"
+CLUSTER_STATUS_ERROR = "Error"
+
 LOG = logging.getLogger(__name__)
 
 
@@ -218,15 +222,16 @@ class BaseDataProcessingTest(manager.ScenarioTest):
         s_time = timeutils.utcnow()
         while timeutils.delta_seconds(s_time, timeutils.utcnow()) < timeout:
             cluster = self.client.clusters.get(cluster_id)
-            if cluster.status == 'Active':
+            if cluster.status == CLUSTER_STATUS_ACTIVE:
                 return
-            if cluster.status == 'Error':
+            if cluster.status == CLUSTER_STATUS_ERROR:
                 raise exceptions.BuildErrorException(
-                    'Cluster failed to build and is in "Error" status.')
+                    'Cluster failed to build and is in %s status.' %
+                    CLUSTER_STATUS_ERROR)
             time.sleep(TEMPEST_CONF.data_processing.request_timeout)
         raise exceptions.TimeoutException(
-            'Cluster failed to get to "Active status within %d seconds.'
-            % timeout)
+            'Cluster failed to get to %s status within %d seconds.'
+            % (CLUSTER_STATUS_ACTIVE, timeout))
 
     def create_job_execution(self, **kwargs):
 

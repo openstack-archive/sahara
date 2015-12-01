@@ -131,7 +131,7 @@ class TestPeriodicBack(base.SaharaWithDbTestCase):
 
         timeutils.set_time_override(datetime.datetime(2005, 2, 1, second=0))
 
-        self._make_cluster('1', status='Pending')
+        self._make_cluster('1', c_u.CLUSTER_STATUS_SPAWNING)
 
         timeutils.set_time_override(datetime.datetime(
             2005, 2, 1, minute=59, second=50))
@@ -147,7 +147,7 @@ class TestPeriodicBack(base.SaharaWithDbTestCase):
         self.override_config('cleanup_time_for_incomplete_clusters', 1)
         timeutils.set_time_override(datetime.datetime(2005, 2, 1, second=0))
 
-        self._make_cluster('1', status='Pending')
+        self._make_cluster('1', c_u.CLUSTER_STATUS_SPAWNING)
 
         timeutils.set_time_override(datetime.datetime(
             2005, 2, 1, hour=1, second=10))
