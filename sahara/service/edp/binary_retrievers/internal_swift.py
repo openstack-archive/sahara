@@ -18,7 +18,6 @@ from oslo_config import cfg
 import six
 import swiftclient
 
-import sahara.context as context
 import sahara.exceptions as ex
 from sahara.i18n import _
 from sahara.swift import utils as su
@@ -94,5 +93,5 @@ def get_raw_data(job_binary, proxy_configs=None):
 
 @_validate_job_binary_url
 def get_raw_data_with_context(job_binary):
-    conn = sw.client_from_token(context.ctx().auth_token)
+    conn = sw.client_from_token()
     return _get_raw_data(job_binary, conn)

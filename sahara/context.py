@@ -27,6 +27,7 @@ from oslo_log import log as logging
 from sahara import exceptions as ex
 from sahara.i18n import _
 from sahara.i18n import _LW
+from sahara.service import sessions
 
 
 CONF = cfg.CONF
@@ -314,3 +315,13 @@ class SetCurrentInstanceId(object):
 
 def set_current_instance_id(instance_id):
     return SetCurrentInstanceId(instance_id)
+
+
+def get_auth_token():
+    cur = current()
+    if cur.auth_plugin:
+        try:
+            cur.auth_token = sessions.cache().token_for_auth(cur.auth_plugin)
+        except Exception as e:
+            LOG.warning(_LW("Cannot update token, reason: {reason}"), e)
+    return cur.auth_token

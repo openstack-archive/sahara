@@ -572,7 +572,7 @@ class InstanceInteropHelper(remote.Remote):
         neutron_info = dict()
         neutron_info['network'] = instance.cluster.neutron_management_network
         ctx = context.current()
-        neutron_info['token'] = ctx.auth_token
+        neutron_info['token'] = context.get_auth_token()
         neutron_info['tenant'] = ctx.tenant_name
         neutron_info['host'] = instance.management_ip
 

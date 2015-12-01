@@ -50,7 +50,7 @@ def client():
         'username': ctx.username,
         'project_name': ctx.tenant_name,
         'project_id': ctx.tenant_id,
-        'input_auth_token': ctx.auth_token,
+        'input_auth_token': context.get_auth_token(),
         'auth_url': base.retrieve_auth_url(),
         'service_catalog_url': base.url_for(ctx.service_catalog, 'share'),
         'ca_cert': CONF.manila.ca_file,

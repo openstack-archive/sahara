@@ -46,7 +46,7 @@ def client():
     ctx = context.current()
     heat_url = base.url_for(ctx.service_catalog, 'orchestration',
                             endpoint_type=CONF.heat.endpoint_type)
-    return heat_client.Client('1', heat_url, token=ctx.auth_token,
+    return heat_client.Client('1', heat_url, token=context.get_auth_token(),
                               cert_file=CONF.heat.ca_file,
                               insecure=CONF.heat.api_insecure,
                               username=ctx.username,

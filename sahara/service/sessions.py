@@ -151,3 +151,7 @@ class SessionCache(object):
                 session = self.get_generic_session()
             self._set_session(SESSION_TYPE_NOVA, session)
         return session
+
+    def token_for_auth(self, auth):
+        return self.get_generic_session().get_auth_headers(auth).get(
+            'X-Auth-Token')
