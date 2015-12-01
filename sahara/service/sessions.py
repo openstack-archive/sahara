@@ -25,6 +25,14 @@ from sahara.i18n import _LE
 CONF = cfg.CONF
 LOG = logging.getLogger(__name__)
 
+sessions_opts = [
+    cfg.BoolOpt(
+        'generic_session_verify', default=True,
+        help='Option to configure verification of a certificate for generic '
+             'sessions')
+]
+CONF.register_opts(sessions_opts)
+
 _SESSION_CACHE = None
 
 SESSION_TYPE_CINDER = 'cinder'
@@ -107,7 +115,7 @@ class SessionCache(object):
     def get_generic_session(self):
         session = self._sessions.get(SESSION_TYPE_GENERIC)
         if not session:
-            session = keystone.Session()
+            session = keystone.Session(verify=CONF.generic_session_verify)
             self._set_session(SESSION_TYPE_GENERIC, session)
         return session
 
