@@ -13,12 +13,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import datetime
-
 from oslo_config import cfg
 from oslo_log import log as logging
 from oslo_serialization import jsonutils as json
-from oslo_utils import timeutils
 import six
 
 from sahara import conductor as c
@@ -33,14 +30,8 @@ CONF = cfg.CONF
 LOG = logging.getLogger(__name__)
 
 
-def _get_expiry():
-    '''Get the time at which a trust should expire based on configuration'''
-    return timeutils.utcnow() + datetime.timedelta(
-        hours=CONF.cluster_operation_trust_expiration_hours)
-
-
 def create_trust(trustor, trustee, role_names, impersonation=True,
-                 project_id=None, expires=True):
+                 project_id=None, allow_redelegation=False):
     '''Create a trust and return it's identifier
 
     :param trustor: The user delegating the trust, this is an auth plugin.
@@ -55,7 +46,8 @@ def create_trust(trustor, trustee, role_names, impersonation=True,
     :param project_id: The project that the trust will be scoped into,
                        default is the trustor's project id.
 
-    :param expires: The trust will expire if this is set to True.
+    :param allow_redelegation: Allow redelegation parameter for cluster
+                               trusts.
 
     :returns: A valid trust id.
 
@@ -65,7 +57,6 @@ def create_trust(trustor, trustee, role_names, impersonation=True,
     if project_id is None:
         project_id = keystone.project_id_from_auth(trustor)
     try:
-        expires_at = _get_expiry() if expires else None
         trustor_user_id = keystone.user_id_from_auth(trustor)
         trustee_user_id = keystone.user_id_from_auth(trustee)
         client = keystone.client_from_auth(trustor)
@@ -74,7 +65,7 @@ def create_trust(trustor, trustee, role_names, impersonation=True,
                                      impersonation=impersonation,
                                      role_names=role_names,
                                      project=project_id,
-                                     expires_at=expires_at)
+                                     allow_redelegation=allow_redelegation)
         LOG.debug('Created trust {trust_id}'.format(
             trust_id=six.text_type(trust.id)))
         return trust.id
@@ -94,18 +85,20 @@ def create_trust_for_cluster(cluster, expires=True):
     :param expires: The trust will expire if this is set to True.
     '''
     ctx = context.current()
-    trustor = keystone.auth()
-    trustee = keystone.auth_for_admin(
-        project_name=CONF.keystone_authtoken.admin_tenant_name)
+    cluster = conductor.cluster_get(ctx, cluster)
+    if CONF.use_identity_api_v3 and not cluster.trust_id:
+        trustor = keystone.auth()
+        trustee = keystone.auth_for_admin(
+            project_name=CONF.keystone_authtoken.admin_tenant_name)
 
-    trust_id = create_trust(trustor=trustor,
-                            trustee=trustee,
-                            role_names=ctx.roles,
-                            expires=expires)
+        trust_id = create_trust(trustor=trustor,
+                                trustee=trustee,
+                                role_names=ctx.roles,
+                                allow_redelegation=True)
 
-    conductor.cluster_update(ctx,
-                             cluster,
-                             {'trust_id': trust_id})
+        conductor.cluster_update(ctx,
+                                 cluster,
+                                 {'trust_id': trust_id})
 
 
 def delete_trust(trustee, trust_id):
@@ -139,10 +132,11 @@ def delete_trust_from_cluster(cluster):
     :param cluster: The cluster to delete the trust from.
 
     '''
-    if cluster.trust_id:
+    ctx = context.current()
+    cluster = conductor.cluster_get(ctx, cluster)
+    if CONF.use_identity_api_v3 and cluster.trust_id:
         keystone_auth = keystone.auth_for_admin(trust_id=cluster.trust_id)
         delete_trust(keystone_auth, cluster.trust_id)
-        ctx = context.current()
         conductor.cluster_update(ctx,
                                  cluster,
                                  {'trust_id': None})
@@ -159,8 +153,9 @@ def use_os_admin_auth_token(cluster):
     :param cluster: The cluster to use for tenant and trust identification.
 
     '''
-    if cluster.trust_id:
-        ctx = context.current()
+    ctx = context.current()
+    cluster = conductor.cluster_get(ctx, cluster)
+    if CONF.use_identity_api_v3 and cluster.trust_id:
         ctx.username = CONF.keystone_authtoken.admin_user
         ctx.tenant_id = cluster.tenant_id
         ctx.auth_plugin = keystone.auth_for_admin(

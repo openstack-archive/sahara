@@ -46,14 +46,14 @@ class TestTrusts(base.SaharaTestCase):
         client = self._client()
         client_from_auth.return_value = client
         trust_id = trusts.create_trust(trustor, trustee,
-                                       "role_names", expires=True)
+                                       "role_names")
         client.trusts.create.assert_called_with(
             trustor_user="trustor_id",
             trustee_user="trustee_id",
             impersonation=True,
             role_names="role_names",
             project="tenant_id",
-            expires_at=mock.ANY
+            allow_redelegation=False,
         )
         self.assertEqual("trust_id", trust_id)
 
@@ -61,25 +61,27 @@ class TestTrusts(base.SaharaTestCase):
         client = self._client()
         client_from_auth.return_value = client
         trust_id = trusts.create_trust(trustor, trustee, "role_names",
-                                       project_id='injected_project',
-                                       expires=False)
+                                       project_id='injected_project')
         client.trusts.create.assert_called_with(trustor_user="trustor_id",
                                                 trustee_user="trustee_id",
                                                 impersonation=True,
                                                 role_names="role_names",
                                                 project="injected_project",
-                                                expires_at=None)
+                                                allow_redelegation=False)
         self.assertEqual("trust_id", trust_id)
 
+    @mock.patch('sahara.conductor.API.cluster_get')
     @mock.patch('sahara.conductor.API.cluster_update')
     @mock.patch('sahara.service.trusts.create_trust')
     @mock.patch('sahara.utils.openstack.keystone.auth_for_admin')
     @mock.patch('sahara.context.current')
     def test_create_trust_for_cluster(self, context_current, auth_for_admin,
-                                      create_trust, cluster_update):
+                                      create_trust, cluster_update, cl_get):
         self.override_config('admin_tenant_name', 'admin_project',
                              group='keystone_authtoken')
         trustor_auth = mock.Mock()
+        fake_cluster = mock.Mock(trust_id=None)
+        cl_get.return_value = fake_cluster
         ctx = mock.Mock(roles="role_names", auth_plugin=trustor_auth)
         context_current.return_value = ctx
         trustee_auth = mock.Mock()
@@ -92,7 +94,7 @@ class TestTrusts(base.SaharaTestCase):
         create_trust.assert_called_with(trustor=trustor_auth,
                                         trustee=trustee_auth,
                                         role_names='role_names',
-                                        expires=True)
+                                        allow_redelegation=True)
 
-        cluster_update.assert_called_with(ctx, "cluster",
+        cluster_update.assert_called_with(ctx, fake_cluster,
                                           {"trust_id": "trust_id"})

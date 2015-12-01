@@ -32,18 +32,6 @@ opts = [
                      'If that flag is disabled, '
                      'per-job clusters will not be terminated '
                      'automatically.'),
-    cfg.IntOpt('cluster_operation_trust_expiration_hours',
-               default=24,
-               help='Defines the period of time (in hours) after which trusts '
-                    'created to allow sahara to create or scale a cluster '
-                    'will expire. Note that this value should be '
-                    'significantly larger than the value of the '
-                    'cleanup_time_for_incomplete_clusters configuration key '
-                    'if use of the cluster cleanup feature is desired (the '
-                    'trust must last at least as long as a cluster could '
-                    'validly take to stall in its creation, plus the '
-                    'timeout value set in that key, plus one hour for the '
-                    'period of the cleanup job).'),
     # TODO(mimccune) The following should be integrated into a custom
     # auth section
     cfg.StrOpt('admin_user_domain_name',
