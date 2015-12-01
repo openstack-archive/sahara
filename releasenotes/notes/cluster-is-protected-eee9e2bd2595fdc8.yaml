@@ -1,4 +1,4 @@
 ---
 fixes:
   - Cluster with 'is_protected' field can be created now,
-    closed bug #1510929
+    closed bug 1510929

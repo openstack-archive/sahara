@@ -1,4 +1,4 @@
 ---
 fixes:
   - Job execution can be created with 'is_protected' field,
-    closed bug #1510994
+    closed bug 1510994
