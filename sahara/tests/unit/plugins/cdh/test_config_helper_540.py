@@ -19,19 +19,29 @@ from sahara.tests.unit.plugins.cdh import utils as ctu
 
 
 class ConfigHelperTestCase(base.SaharaTestCase):
+    def setUp(self):
+        super(ConfigHelperTestCase, self).setUp()
+        self.cluster = ctu.get_fake_cluster(cluster_configs={})
+
     def test_is_swift_enabled(self):
-        cluster = ctu.get_fake_cluster(cluster_configs={})
-        self.assertTrue(c_h.is_swift_enabled(cluster))
+        self.assertTrue(c_h.is_swift_enabled(self.cluster))
 
         cluster = ctu.get_fake_cluster(
             cluster_configs={'general': {c_h.ENABLE_SWIFT.name: False}})
         self.assertFalse(c_h.is_swift_enabled(cluster))
 
     def test_get_swift_lib_url(self):
-        cluster = ctu.get_fake_cluster(cluster_configs={})
         self.assertEqual(c_h.DEFAULT_SWIFT_LIB_URL,
-                         c_h.get_swift_lib_url(cluster))
+                         c_h.get_swift_lib_url(self.cluster))
 
         cluster = ctu.get_fake_cluster(
             cluster_configs={'general': {c_h.SWIFT_LIB_URL.name: 'spam'}})
         self.assertEqual('spam', c_h.get_swift_lib_url(cluster))
+
+    def test_get_required_anti_affinity(self):
+        self.assertTrue(c_h.get_required_anti_affinity(self.cluster))
+
+        cluster = ctu.get_fake_cluster(
+            cluster_configs={'general': {
+                c_h.REQUIRE_ANTI_AFFINITY.name: False}})
+        self.assertFalse(c_h.get_required_anti_affinity(cluster))
