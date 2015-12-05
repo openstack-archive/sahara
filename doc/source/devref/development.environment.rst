@@ -42,42 +42,42 @@ On Fedora-based distributions (e.g., Fedora/RHEL/CentOS/Scientific Linux):
     $ sudo rpm --import http://www.rabbitmq.com/rabbitmq-signing-key-public.asc
     $ sudo yum install rabbitmq-server-3.2.2-1.noarch.rpm
 
-On openSUSE-based distributions (SLES 12, openSUSE, Factory or Tumbleweed)::
+On openSUSE-based distributions (SLES 12, openSUSE, Factory or Tumbleweed):
 
 .. sourcecode:: console
 
     $ sudo zypper in gcc git libmysqlclient-devel postgresql-devel python-devel python-pip python-tox python-virtualenv
 
-2. Grab the code:
+2. Grab the code
 
 .. sourcecode:: console
 
     $ git clone git://github.com/openstack/sahara.git
     $ cd sahara
 
-3.1 Generate Sahara sample using tox:
+3. Generate Sahara sample using tox
 
 .. sourcecode:: console
 
    tox -e genconfig
 
-3.2 Create config file from the sample:
+4. Create config file from the sample
 
 .. sourcecode:: console
 
     $ cp ./etc/sahara/sahara.conf.sample ./etc/sahara/sahara.conf
 
-4. Look through the sahara.conf and modify parameter values as needed.
+5. Look through the sahara.conf and modify parameter values as needed
    For details see
    :doc:`Sahara Configuration Guide </userdoc/configuration.guide>`
 
-5. Create database schema:
+6. Create database schema
 
 .. sourcecode:: console
 
     $ tox -e venv -- sahara-db-manage --config-file etc/sahara/sahara.conf upgrade head
 
-6. To start Sahara API and Engine processes call:
+7. To start Sahara API and Engine processes call
 
 .. sourcecode:: console
 
