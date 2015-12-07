@@ -524,7 +524,7 @@ class NetcatSocket(object):
 
     def _terminate(self):
         if self.rootwrap_command:
-            os.system('{0} kill {1}'.format(self.rootwrap_command,
+            os.system('{0} kill {1}'.format(self.rootwrap_command,  # nosec
                                             self.process.pid))
         else:
             self.process.terminate()
