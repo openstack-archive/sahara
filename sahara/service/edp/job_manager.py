@@ -147,9 +147,12 @@ def cancel_job(job_execution_id):
     ctx = context.ctx()
     job_execution = conductor.job_execution_get(ctx, job_execution_id)
     if job_execution.info['status'] in edp.JOB_STATUSES_TERMINATED:
+        LOG.info(_LI("Job execution is already finished and shouldn't be"
+                     " canceled"))
         return job_execution
     cluster = conductor.cluster_get(ctx, job_execution.cluster_id)
     if cluster is None:
+        LOG.info(_LI("Can not cancel this job on a non-existant cluster."))
         return job_execution
     engine = _get_job_engine(cluster, job_execution)
     if engine is not None:
