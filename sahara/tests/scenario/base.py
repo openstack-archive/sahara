@@ -318,7 +318,8 @@ class BaseTestCase(base.BaseTestCase):
         path = utils.rand_name('test')
         data = None
         if source:
-            data = open(source).read()
+            with open(source) as source_fd:
+                data = source_fd.read()
 
         self.__upload_to_container(container, path, data)
 
@@ -339,7 +340,8 @@ class BaseTestCase(base.BaseTestCase):
             "sudo su - -c \"hdfs dfs -mkdir -p %(path)s \" %(user)s" % {
                 "path": hdfs_dir, "user": hdfs_username})
         hdfs_filepath = utils.rand_name(hdfs_dir + "/file")
-        data = open(source).read()
+        with open(source) as source_fd:
+            data = source_fd.read()
         self._run_command_on_node(
             inst_ip,
             ("echo -e \"%(data)s\" | sudo su - -c \"hdfs dfs"
@@ -350,7 +352,8 @@ class BaseTestCase(base.BaseTestCase):
         return hdfs_filepath
 
     def _create_internal_db_data(self, source):
-        data = open(source).read()
+        with open(source) as source_fd:
+            data = source_fd.read()
         id = self.__create_internal_db_data(utils.rand_name('test'), data)
         return 'internal-db://%s' % id
 
