@@ -144,8 +144,7 @@ should be set in the ``[DEFAULT]`` section of the configuration file:
     notification_driver = messaging
 ..
 
-By default sahara is configured to use RabbitMQ as its message broker,
-but it can be configured to use Qpid instead if needed.
+By default sahara is configured to use RabbitMQ as its message broker.
 
 If you are using RabbitMQ as the message broker, then you should set the
 following parameter in the ``[DEFAULT]`` section:
@@ -168,26 +167,6 @@ adjustment:
     rabbit_userid=guest
     rabbit_password=guest
     rabbit_virtual_host=/
-..
-
-If you are using Qpid as the message broker, then you should
-set the ``rpc_backend`` as follows:
-
-.. sourcecode:: cfg
-
-    rpc_backend = qpid
-..
-
-You may also need to adjust the following default connection parameters
-in the ``[oslo_messaging_qpid]`` section:
-
-.. sourcecode:: cfg
-
-    qpid_hostname=localhost
-    qpid_port=5672
-    qpid_hosts=$qpid_hostname:$qpid_port
-    qpid_username=
-    qpid_password=
 ..
 
 .. _orchestration-configuration:
