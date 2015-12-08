@@ -20,12 +20,6 @@ def get_namenode(cluster):
     return u.get_instance(cluster, "namenode")
 
 
-def get_jobtracker(cluster):
-    instance = u.get_instance(cluster, "jobtracker")
-
-    return instance
-
-
 def get_resourcemanager(cluster):
     return u.get_instance(cluster, 'resourcemanager')
 
@@ -44,10 +38,6 @@ def get_hiveserver(cluster):
 
 def get_datanodes(cluster):
     return u.get_instances(cluster, 'datanode')
-
-
-def get_tasktrackers(cluster):
-    return u.get_instances(cluster, 'tasktracker')
 
 
 def get_secondarynamenode(cluster):
