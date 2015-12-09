@@ -64,7 +64,7 @@ def create_job_binary(id, type):
     return binary
 
 
-def create_cluster(plugin_name='vanilla', hadoop_version='2.6.0'):
+def create_cluster(plugin_name='vanilla', hadoop_version='2.7.1'):
     cluster = mock.Mock()
     cluster.plugin_name = plugin_name
     cluster.hadoop_version = hadoop_version
