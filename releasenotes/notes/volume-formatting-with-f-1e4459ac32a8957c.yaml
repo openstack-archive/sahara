@@ -1,0 +1,3 @@
+---
+fixes:
+  - In case of XFS volume will be formatted with '-f' option.

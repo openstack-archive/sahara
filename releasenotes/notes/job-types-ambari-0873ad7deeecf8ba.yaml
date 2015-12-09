@@ -1,0 +1,4 @@
+---
+fixes:
+  - Issues with job types call are fixed. Jobs can be launched
+    from UI if ambari plugin enabled.
