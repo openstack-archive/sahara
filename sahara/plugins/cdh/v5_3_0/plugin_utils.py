@@ -15,14 +15,15 @@
 
 from sahara.conductor import resource as res
 from sahara.plugins.cdh import plugin_utils as pu
-from sahara.plugins.cdh.v5_3_0 import config_helper as c_helper
+from sahara.plugins.cdh.v5_3_0 import config_helper
 from sahara.plugins.cdh.v5_3_0 import db_helper
 from sahara.plugins import utils as u
 
 
 class PluginUtilsV530(pu.AbstractPluginUtils):
+
     def __init__(self):
-        self.c_helper = c_helper
+        self.c_helper = config_helper.ConfigHelperV530()
         self.db_helper = db_helper
 
     def get_role_name(self, instance, service):
@@ -130,8 +131,8 @@ class PluginUtilsV530(pu.AbstractPluginUtils):
 
     def start_cloudera_manager(self, cluster):
         self._start_cloudera_manager(
-            cluster, c_helper.AWAIT_MANAGER_STARTING_TIMEOUT)
+            cluster, self.c_helper.AWAIT_MANAGER_STARTING_TIMEOUT)
 
     def get_config_value(self, service, name, cluster=None):
-        configs = c_helper.get_plugin_configs()
+        configs = self.c_helper.get_plugin_configs()
         return self._get_config_value(service, name, configs, cluster)

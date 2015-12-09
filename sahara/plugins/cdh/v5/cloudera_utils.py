@@ -15,7 +15,7 @@
 
 from sahara.i18n import _
 from sahara.plugins.cdh import cloudera_utils as cu
-from sahara.plugins.cdh.v5 import config_helper as c_helper
+from sahara.plugins.cdh.v5 import config_helper
 from sahara.plugins.cdh.v5 import plugin_utils as pu
 from sahara.plugins.cdh.v5 import validation
 from sahara.swift import swift_helper
@@ -32,6 +32,8 @@ HUE_SERVICE_TYPE = 'HUE'
 SPARK_SERVICE_TYPE = 'SPARK_ON_YARN'
 ZOOKEEPER_SERVICE_TYPE = 'ZOOKEEPER'
 HBASE_SERVICE_TYPE = 'HBASE'
+
+c_helper = config_helper.ConfigHelperV5()
 
 
 class ClouderaUtilsV5(cu.ClouderaUtils):

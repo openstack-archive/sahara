@@ -15,11 +15,12 @@
 
 from oslo_serialization import jsonutils as json
 
-from sahara.plugins.cdh.v5_4_0 import config_helper as c_h
+from sahara.plugins.cdh.v5_4_0 import config_helper
 from sahara.tests.unit import base
 from sahara.tests.unit.plugins.cdh import utils as ctu
 from sahara.utils import files as f
 
+c_h = config_helper.ConfigHelperV540()
 
 path_to_config = 'plugins/cdh/v5_4_0/resources/'
 json_files = [
