@@ -104,14 +104,8 @@ function configure_sahara {
         iniset $SAHARA_CONF_FILE DEFAULT use_neutron false
     fi
 
-    if is_service_enabled heat && [ "$SAHARA_INFRA_ENGINE" == "heat" ]; then
-        iniset $SAHARA_CONF_FILE DEFAULT infrastructure_engine heat
-
-        if is_ssl_enabled_service "heat" || is_service_enabled tls-proxy; then
-            iniset $SAHARA_CONF_FILE heat ca_file $SSL_BUNDLE_FILE
-        fi
-    else
-        iniset $SAHARA_CONF_FILE DEFAULT infrastructure_engine direct
+    if is_ssl_enabled_service "heat" || is_service_enabled tls-proxy; then
+        iniset $SAHARA_CONF_FILE heat ca_file $SSL_BUNDLE_FILE
     fi
 
     if is_ssl_enabled_service "cinder" || is_service_enabled tls-proxy; then
