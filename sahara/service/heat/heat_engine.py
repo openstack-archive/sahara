@@ -27,7 +27,6 @@ from sahara.service.heat import templates as ht
 from sahara.service import volumes
 from sahara.utils import cluster as c_u
 from sahara.utils import cluster_progress_ops as cpo
-from sahara.utils.openstack import base as b
 from sahara.utils.openstack import heat
 
 conductor = c.API
@@ -189,10 +188,7 @@ class HeatEngine(e.Engine):
     def shutdown_cluster(self, cluster):
         """Shutdown specified cluster and all related resources."""
         try:
-            b.execute_with_retries(
-                heat.client().stacks.delete, cluster.stack_name)
-            stack = heat.get_stack(cluster.stack_name)
-            heat.wait_stack_completion(stack)
+            heat.delete_stack(cluster)
         except heat_exc.HTTPNotFound:
             LOG.warning(_LW('Did not find stack for cluster. Trying to delete '
                             'cluster manually.'))
@@ -215,8 +211,8 @@ class HeatEngine(e.Engine):
         stack.instantiate(update_existing=update_stack,
                           disable_rollback=disable_rollback)
         heat.wait_stack_completion(
-            stack.heat_stack,
-            is_update=update_stack, last_updated_time=stack.last_updated_time)
+            cluster, is_update=update_stack,
+            last_updated_time=stack.last_updated_time)
         return self._populate_cluster(cluster, stack)
 
     def _launch_instances(self, cluster, target_count, stages,

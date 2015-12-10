@@ -66,6 +66,30 @@ def get_stack(stack_name, raise_on_missing=True):
                                _('Failed to find stack %(stack)s'))
 
 
+def delete_stack(cluster):
+    stack_name = cluster.stack_name
+    base.execute_with_retries(client().stacks.delete, stack_name)
+    stack = get_stack(stack_name, raise_on_missing=False)
+    while stack is not None:
+        # Valid states: IN_PROGRESS, empty and COMPLETE
+        if stack.status in ['IN_PROGRESS', '', 'COMPLETE']:
+            context.sleep(5)
+        else:
+            raise ex.HeatStackException(
+                message=_(
+                    "Cannot delete heat stack {name}, reason: "
+                    "stack status: {status}, status reason: {reason}").format(
+                    name=stack_name, status=stack.status,
+                    reason=stack.stack_status_reason))
+        stack = get_stack(stack_name, raise_on_missing=False)
+
+
+def get_stack_outputs(cluster):
+    stack = get_stack(cluster.stack_name)
+    stack.get()
+    return stack.outputs
+
+
 def _verify_completion(stack, is_update=False, last_update_time=None):
     # NOTE: expected empty status because status of stack
     # maybe is not set in heat database
@@ -77,16 +101,12 @@ def _verify_completion(stack, is_update=False, last_update_time=None):
     return True
 
 
-def wait_stack_completion(stack, is_update=False, last_updated_time=None):
-    base.execute_with_retries(stack.get)
+def wait_stack_completion(cluster, is_update=False, last_updated_time=None):
+    stack_name = cluster.stack_name
+    stack = get_stack(stack_name)
     while not _verify_completion(stack, is_update, last_updated_time):
         context.sleep(1)
-        base.execute_with_retries(stack.get)
+        stack = get_stack(stack_name)
 
     if stack.status != 'COMPLETE':
         raise ex.HeatStackException(stack.stack_status_reason)
-
-
-def get_resource(stack, resource):
-    return base.execute_with_retries(
-        client().resources.get, stack, resource)
