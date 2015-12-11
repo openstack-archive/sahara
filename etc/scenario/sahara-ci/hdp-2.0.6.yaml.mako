@@ -1,3 +1,5 @@
+<%page args="is_proxy_gateway='true'"/>
+
 clusters:
   - plugin_name: hdp
     plugin_version: 2.0.6
@@ -16,7 +18,7 @@ clusters:
           - SECONDARY_NAMENODE
           - ZOOKEEPER_SERVER
         auto_security_group: true
-        is_proxy_gateway: true
+        is_proxy_gateway: ${is_proxy_gateway}
       - name: worker
         flavor: ${ci_flavor_id}
         node_processes:

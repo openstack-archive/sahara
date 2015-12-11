@@ -1,3 +1,5 @@
+<%page args="is_proxy_gateway='true'"/>
+
 clusters:
   - plugin_name: mapr
     plugin_version: 4.0.2.mrv2
@@ -25,7 +27,7 @@ clusters:
         auto_security_group: true
         volumes_per_node: 2
         volumes_size: 20
-        is_proxy_gateway: true
+        is_proxy_gateway: ${is_proxy_gateway}
       - name: worker
         flavor: ${ci_flavor_id}
         node_processes:

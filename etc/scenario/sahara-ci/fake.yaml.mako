@@ -1,3 +1,5 @@
+<%page args="is_proxy_gateway='true'"/>
+
 clusters:
   - plugin_name: fake
     plugin_version: "0.1"
@@ -17,7 +19,7 @@ clusters:
           - jobtracker
           - namenode
         auto_security_group: true
-        is_proxy_gateway: true
+        is_proxy_gateway: ${is_proxy_gateway}
     cluster_template:
       name: fake01
       node_group_templates:
