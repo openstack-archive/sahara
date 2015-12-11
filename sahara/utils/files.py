@@ -13,6 +13,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from os import path
+
 import pkg_resources as pkg
 
 from sahara import version
@@ -28,3 +30,11 @@ def get_file_binary(file_name):
     full_name = pkg.resource_filename(
         version.version_info.package, file_name)
     return open(full_name, "rb").read()
+
+
+def try_get_file_text(file_name):
+    full_name = pkg.resource_filename(
+        version.version_info.package, file_name)
+    return (
+        open(full_name, "rb").read()
+        if path.isfile(full_name) else False)
