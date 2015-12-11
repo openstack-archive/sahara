@@ -98,21 +98,31 @@ class TestInternalSwift(base.SaharaTestCase):
                                         trust_id='proxytrust')
         _get_raw_data.assert_called_with(job_binary, client_instance)
 
+    @mock.patch('sahara.utils.openstack.base.url_for')
     @mock.patch('sahara.context.ctx')
     @mock.patch(
         'sahara.service.edp.binary_retrievers.internal_swift._get_raw_data')
-    @mock.patch('sahara.utils.openstack.swift.client_from_token')
-    def test_get_raw_data_with_context(self, swift_client, _get_raw_data, ctx):
+    @mock.patch('swiftclient.Connection')
+    def test_get_raw_data_with_context(self, swift_client, _get_raw_data, ctx,
+                                       url_for):
         client_instance = mock.Mock()
         swift_client.return_value = client_instance
         test_context = mock.Mock()
         test_context.auth_token = 'testtoken'
+        test_context.auth_plugin = None
         ctx.return_value = test_context
-
+        url_for.return_value = 'url_for'
         job_binary = mock.Mock()
         job_binary.url = 'swift://container/object'
 
         job_binary.extra = dict(user='test', password='secret')
         i_s.get_raw_data_with_context(job_binary)
-        swift_client.assert_called_with('testtoken')
+        self.assertEqual([mock.call(
+            auth_version='2.0',
+            cacert=None, insecure=False,
+            max_backoff=10,
+            preauthtoken='testtoken',
+            preauthurl='url_for', retries=5,
+            retry_on_ratelimit=True, starting_backoff=10)],
+            swift_client.call_args_list)
         _get_raw_data.assert_called_with(job_binary, client_instance)

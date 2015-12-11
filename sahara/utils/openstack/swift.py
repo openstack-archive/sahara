@@ -16,6 +16,7 @@
 from oslo_config import cfg
 import swiftclient
 
+from sahara import context
 from sahara.swift import swift_helper as sh
 from sahara.swift import utils as su
 from sahara.utils.openstack import base
@@ -75,7 +76,9 @@ def client(username, password, trust_id=None):
             max_backoff=CONF.retries.retry_after)
 
 
-def client_from_token(token):
+def client_from_token(token=None):
+    if not token:
+        token = context.get_auth_token()
     '''return a Swift client authenticated from a token.'''
     return swiftclient.Connection(auth_version='2.0',
                                   cacert=CONF.swift.ca_file,

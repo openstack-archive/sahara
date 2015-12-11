@@ -57,9 +57,8 @@ def url_for(service_catalog=None, service_type='identity',
                 service_type=service_type, endpoint_type=endpoint_type,
                 region_name=CONF.os_region_name)
     except keystone_ex.EndpointNotFound:
-        ctx = context.current()
         return keystone_service_catalog.ServiceCatalogV3(
-            ctx.auth_token,
+            context.get_auth_token(),
             {'catalog': json.loads(service_catalog)}).url_for(
                 service_type=service_type, endpoint_type=endpoint_type,
                 region_name=CONF.os_region_name)
