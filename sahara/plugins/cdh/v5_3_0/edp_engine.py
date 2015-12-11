@@ -14,6 +14,7 @@
 # limitations under the License.
 
 from sahara import exceptions as ex
+from sahara.i18n import _
 from sahara.plugins.cdh import confighints_helper as ch_helper
 from sahara.plugins.cdh.v5_3_0 import cloudera_utils as cu
 from sahara.plugins import exceptions as pl_ex
