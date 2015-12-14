@@ -1,3 +1,5 @@
+<%page args="is_proxy_gateway='true'"/>
+
 clusters:
   - plugin_name: cdh
     plugin_version: 5.4.0
@@ -44,7 +46,7 @@ clusters:
           - YARN_NODEMANAGER
           - ZOOKEEPER_SERVER
         auto_security_group: true
-        is_proxy_gateway: true
+        is_proxy_gateway: ${is_proxy_gateway}
       - name: master-additional
         flavor: ${medium_flavor_id}
         node_processes:

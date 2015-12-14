@@ -1,3 +1,5 @@
+<%page args="is_proxy_gateway='true'"/>
+
 clusters:
   - plugin_name: vanilla
     plugin_version: 2.7.1
@@ -39,7 +41,7 @@ clusters:
           - secondarynamenode
           - nodemanager
         auto_security_group: true
-        is_proxy_gateway: true
+        is_proxy_gateway: ${is_proxy_gateway}
     cluster_template:
       name: vanilla271
       node_group_templates:

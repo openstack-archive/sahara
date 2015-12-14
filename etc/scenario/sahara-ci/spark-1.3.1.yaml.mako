@@ -1,3 +1,5 @@
+<%page args="is_proxy_gateway='true'"/>
+
 clusters:
   - plugin_name: spark
     plugin_version: 1.3.1
@@ -9,7 +11,7 @@ clusters:
           - master
           - namenode
         auto_security_group: true
-        is_proxy_gateway: true
+        is_proxy_gateway: ${is_proxy_gateway}
       - name: worker
         flavor: ${ci_flavor_id}
         node_processes:
