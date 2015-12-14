@@ -76,9 +76,11 @@ class CDHPluginAutoConfigsProvider(ru.HadoopAutoConfigsProvider):
 
 
 class AbstractPluginUtils(object):
-    # c_helper and db_helper will be defined in derived classes.
-    c_helper = None
-    db_helper = None
+
+    def __init__(self):
+        # c_helper and db_helper will be defined in derived classes.
+        self.c_helper = None
+        self.db_helper = None
 
     def get_role_name(self, instance, service):
         # NOTE: role name must match regexp "[_A-Za-z][-_A-Za-z0-9]{0,63}"
