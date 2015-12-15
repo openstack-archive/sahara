@@ -68,14 +68,16 @@ class TestScalingValidation(u.ValidationTestCase):
         ops.get_engine_type_and_version.return_value = "direct.1.1"
         ng1 = tu.make_ng_dict('ng', '42', ['namenode'], 1)
         cluster = tu.create_cluster("cluster1", "tenant1", "fake", "0.1",
-                                    [ng1], status='Validating', id='12321')
+                                    [ng1],
+                                    status=c_u.CLUSTER_STATUS_VALIDATING,
+                                    id='12321')
 
         self._assert_check_scaling(
             data={}, cluster=cluster,
             expected_message="Cluster cannot be scaled "
-                             "not in 'Active' "
-                             "status. Cluster status: "
-                             "Validating")
+                             "not in '" + c_u.CLUSTER_STATUS_ACTIVE +
+            "' status. Cluster status: " +
+            c_u.CLUSTER_STATUS_VALIDATING)
 
         cluster = tu.create_cluster("cluster1", "tenant1", "fake", "0.1",
                                     [ng1], status=c_u.CLUSTER_STATUS_ACTIVE,

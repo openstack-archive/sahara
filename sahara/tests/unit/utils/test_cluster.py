@@ -35,11 +35,12 @@ class UtilsClusterTest(base.SaharaWithDbTestCase):
     def test_change_cluster_status(self):
         cluster = self._make_sample()
         cluster = cluster_utils.change_cluster_status(
-            cluster, "Deleting", "desc")
-        self.assertEqual("Deleting", cluster.status)
+            cluster, cluster_utils.CLUSTER_STATUS_DELETING, "desc")
+        self.assertEqual(cluster_utils.CLUSTER_STATUS_DELETING, cluster.status)
         self.assertEqual("desc", cluster.status_description)
-        cluster_utils.change_cluster_status(cluster, "Spawning")
-        self.assertEqual("Deleting", cluster.status)
+        cluster_utils.change_cluster_status(
+            cluster, cluster_utils.CLUSTER_STATUS_SPAWNING)
+        self.assertEqual(cluster_utils.CLUSTER_STATUS_DELETING, cluster.status)
 
     def test_change_status_description(self):
         ctx = context.ctx()
