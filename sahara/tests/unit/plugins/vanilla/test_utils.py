@@ -101,4 +101,4 @@ class TestUtils(base.SaharaWithDbTestCase):
 
         cl = tu.create_cluster('cl1', 't1', 'vanilla', '2.6.0',
                                [self.ng_manager])
-        self.assertEqual(None, u.get_secondarynamenode(cl))
+        self.assertIsNone(u.get_secondarynamenode(cl))
