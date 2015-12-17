@@ -104,6 +104,8 @@ class BaseTestCase(base.BaseTestCase):
         }
         self.template_path = DEFAULT_TEMPLATES_PATH % self.plugin_opts
         self.cinder = True
+        self.proxy_ng_name = False
+        self.proxy = False
 
     def _init_clients(self):
         username = self.credentials['os_username']
@@ -144,6 +146,11 @@ class BaseTestCase(base.BaseTestCase):
             self.cinder = False
         self._poll_cluster_status_tracked(self.cluster_id)
         cluster = self.sahara.get_cluster(self.cluster_id, show_progress=True)
+        if self.proxy_ng_name:
+            for ng in cluster.node_groups:
+                if ng['name'] == self.proxy_ng_name:
+                    self.proxy = ng['instances'][0]['management_ip']
+
         self.check_cinder()
         if not getattr(cluster, "provision_progress", None):
             return
@@ -498,6 +505,7 @@ class BaseTestCase(base.BaseTestCase):
             if (not kwargs.get('is_proxy_gateway',
                                False)) and (check_indirect_access):
                 kwargs['floating_ip_pool'] = None
+                self.proxy_ng_name = kwargs['name']
             else:
                 kwargs['floating_ip_pool'] = floating_ip_pool
             ng_id = self.__create_node_group_template(**kwargs)
@@ -601,7 +609,11 @@ class BaseTestCase(base.BaseTestCase):
                 time.sleep(3)
 
     def _run_command_on_node(self, node_ip, command):
-        ssh_session = connection.Client(node_ip, self.testcase['ssh_username'],
+        host_ip = node_ip
+        if self.proxy:
+            host_ip = self.proxy
+            command = "ssh %s %s" % (node_ip, command)
+        ssh_session = connection.Client(host_ip, self.testcase['ssh_username'],
                                         pkey=self.private_key)
         return ssh_session.exec_command(command)
 

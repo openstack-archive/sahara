@@ -154,6 +154,8 @@ class TestBase(testtools.TestCase):
         self.job = self.base_scenario.testcase["edp_jobs_flow"].get(
             'test_flow')[0]
         self.base_scenario.cluster_id = 'some_id'
+        self.base_scenario.proxy_ng_name = False
+        self.base_scenario.proxy = False
         self.base_scenario.setUpClass()
         timeouts.Defaults.init_defaults(self.base_scenario.testcase)
 
