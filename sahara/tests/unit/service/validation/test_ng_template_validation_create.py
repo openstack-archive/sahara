@@ -236,6 +236,59 @@ class TestNGTemplateCreateValidation(u.ValidationTestCase):
                        "Requested flavor '1' not found")
         )
 
+    def test_ng_template_create_validate_image(self):
+        self._assert_create_object_validation(
+            data={
+                'name': 'test-ng',
+                'flavor_id': '42',
+                'plugin_name': 'fake',
+                'hadoop_version': '0.1',
+                'node_processes': ['namenode'],
+                'image_id': '12345'
+            },
+            bad_req_i=(1, 'VALIDATION_ERROR',
+                       "'12345' is not a 'uuid'")
+        )
+        self._assert_create_object_validation(
+            data={
+                'name': 'test-ng',
+                'flavor_id': '42',
+                'plugin_name': 'fake',
+                'hadoop_version': '0.1',
+                'node_processes': ['namenode'],
+                'image_id': '12345678-1234-1234-1234-123456789000'
+            },
+            bad_req_i=(1, 'INVALID_REFERENCE',
+                       "Requested image "
+                       "'12345678-1234-1234-1234-123456789000' "
+                       "is not registered")
+        )
+        self._assert_create_object_validation(
+            data={
+                'name': 'test-ng',
+                'flavor_id': '42',
+                'plugin_name': 'fake',
+                'hadoop_version': '0.1',
+                'node_processes': ['namenode'],
+                'image_id': '813fe450-40d2-4acc-ade5-ea753a1bd5bc'
+            },
+            bad_req_i=(1, 'INVALID_REFERENCE',
+                       "Requested image "
+                       "'813fe450-40d2-4acc-ade5-ea753a1bd5bc' "
+                       "doesn't contain required tags: "
+                       "['0.1']")
+        )
+        self._assert_create_object_validation(
+            data={
+                'name': 'test-ng',
+                'flavor_id': '42',
+                'plugin_name': 'fake',
+                'hadoop_version': '0.1',
+                'node_processes': ['namenode'],
+                'image_id': '550e8400-e29b-41d4-a716-446655440000'
+            }
+        )
+
     def test_ng_template_create_v_ng_configs(self):
         self._assert_create_object_validation(
             data={
