@@ -265,8 +265,6 @@ def generate_xml_configs(configs, storage_path, nn_hostname, hadoop_port):
                                                      '/dfs/nn'),
         'dfs.datanode.data.dir': extract_hadoop_path(storage_path,
                                                      '/dfs/dn'),
-        'hadoop.tmp.dir': extract_hadoop_path(storage_path,
-                                              '/dfs'),
         'dfs.hosts': '/etc/hadoop/dn.incl',
         'dfs.hosts.exclude': '/etc/hadoop/dn.excl'
     }
