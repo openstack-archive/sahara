@@ -17,7 +17,7 @@ from sahara.i18n import _
 from sahara.plugins.cdh import cloudera_utils as cu
 from sahara.plugins.cdh.v5_3_0 import config_helper as c_helper
 from sahara.plugins.cdh.v5_3_0 import plugin_utils as pu
-from sahara.plugins.cdh.v5_3_0 import validation as v
+from sahara.plugins.cdh.v5_3_0 import validation
 from sahara.swift import swift_helper
 from sahara.utils import cluster_progress_ops as cpo
 from sahara.utils import configs as s_cfg
@@ -52,6 +52,7 @@ class ClouderaUtilsV530(cu.ClouderaUtils):
     def __init__(self):
         cu.ClouderaUtils.__init__(self)
         self.pu = pu.PluginUtilsV530()
+        self.validator = validation.ValidatorV530
 
     def get_service_by_role(self, role, cluster=None, instance=None):
         cm_cluster = None
@@ -141,7 +142,7 @@ class ClouderaUtilsV530(cu.ClouderaUtils):
         if len(self.pu.get_zookeepers(cluster)) > 0:
             zookeeper = cm_cluster.get_service(self.ZOOKEEPER_SERVICE_NAME)
             zookeeper.update_config(self._get_configs(ZOOKEEPER_SERVICE_TYPE,
-                                    cluster=cluster))
+                                                      cluster=cluster))
 
         hdfs = cm_cluster.get_service(self.HDFS_SERVICE_NAME)
         hdfs.update_config(self._get_configs(HDFS_SERVICE_TYPE,
@@ -211,14 +212,20 @@ class ClouderaUtilsV530(cu.ClouderaUtils):
 
         all_confs = {}
         if cluster:
-            zk_count = v._get_inst_count(cluster, 'ZOOKEEPER_SERVER')
-            hbm_count = v._get_inst_count(cluster, 'HBASE_MASTER')
-            snt_count = v._get_inst_count(cluster, 'SENTRY_SERVER')
-            ks_count = v._get_inst_count(cluster, 'KEY_VALUE_STORE_INDEXER')
-            imp_count = v._get_inst_count(cluster, 'IMPALA_CATALOGSERVER')
-            hive_count = v._get_inst_count(cluster, 'HIVE_METASTORE')
-            slr_count = v._get_inst_count(cluster, 'SOLR_SERVER')
-            sqp_count = v._get_inst_count(cluster, 'SQOOP_SERVER')
+            zk_count = self.validator._get_inst_count(cluster,
+                                                      'ZOOKEEPER_SERVER')
+            hbm_count = self.validator._get_inst_count(cluster, 'HBASE_MASTER')
+            snt_count = self.validator._get_inst_count(cluster,
+                                                       'SENTRY_SERVER')
+            ks_count =\
+                self.validator._get_inst_count(cluster,
+                                               'KEY_VALUE_STORE_INDEXER')
+            imp_count = self.validator._get_inst_count(cluster,
+                                                       'IMPALA_CATALOGSERVER')
+            hive_count = self.validator._get_inst_count(cluster,
+                                                        'HIVE_METASTORE')
+            slr_count = self.validator._get_inst_count(cluster, 'SOLR_SERVER')
+            sqp_count = self.validator._get_inst_count(cluster, 'SQOOP_SERVER')
             core_site_safety_valve = ''
             if self.pu.c_helper.is_swift_enabled(cluster):
                 configs = swift_helper.get_swift_configs()

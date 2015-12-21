@@ -17,7 +17,7 @@ from sahara.i18n import _
 from sahara.plugins.cdh import cloudera_utils as cu
 from sahara.plugins.cdh.v5 import config_helper as c_helper
 from sahara.plugins.cdh.v5 import plugin_utils as pu
-from sahara.plugins.cdh.v5 import validation as v
+from sahara.plugins.cdh.v5 import validation
 from sahara.swift import swift_helper
 from sahara.utils import cluster_progress_ops as cpo
 from sahara.utils import configs as s_cfg
@@ -35,9 +35,11 @@ HBASE_SERVICE_TYPE = 'HBASE'
 
 
 class ClouderaUtilsV5(cu.ClouderaUtils):
+
     def __init__(self):
         cu.ClouderaUtils.__init__(self)
         self.pu = pu.PluginUtilsV5()
+        self.validator = validation.ValidatorV5
 
     @cu.cloudera_cmd
     def format_namenode(self, hdfs_service):
@@ -151,7 +153,8 @@ class ClouderaUtilsV5(cu.ClouderaUtils):
 
         all_confs = {}
         if cluster:
-            zk_count = v._get_inst_count(cluster, 'ZOOKEEPER_SERVER')
+            zk_count = self.validator._get_inst_count(cluster,
+                                                      'ZOOKEEPER_SERVER')
             core_site_safety_valve = ''
             if self.pu.c_helper.is_swift_enabled(cluster):
                 configs = swift_helper.get_swift_configs()
