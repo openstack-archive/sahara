@@ -275,6 +275,14 @@ SCHEMA = {
                         "type": "integer",
                         "minimum": 1
                     },
+                    "custom_checks": {
+                        "type": "object",
+                        "properties": {
+                            ".*": {
+                                "type": "object",
+                            }
+                        }
+                    },
                     "scaling": {
                         "type": "array",
                         "minItems": 1,
