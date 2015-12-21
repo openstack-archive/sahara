@@ -28,6 +28,11 @@ def check_node_group_template_create(data, **kwargs):
                                     data['hadoop_version'])
     b.check_node_group_basic_fields(data['plugin_name'],
                                     data['hadoop_version'], data)
+    if data.get('image_id'):
+        b.check_image_registered(data['image_id'])
+        b.check_required_image_tags(data['plugin_name'],
+                                    data['hadoop_version'],
+                                    data['image_id'])
     if data.get('shares'):
         shares.check_shares(data['shares'])
 
@@ -76,6 +81,12 @@ def check_node_group_template_update(node_group_template_id, data, **kwargs):
             b.check_plugin_supports_version(plugin, version)
         else:
             version = ngt.hadoop_version
+
+    if data.get('image_id'):
+        b.check_image_registered(data['image_id'])
+        b.check_required_image_tags(plugin,
+                                    version,
+                                    data['image_id'])
 
     b.check_node_group_basic_fields(plugin, version, data)
 
