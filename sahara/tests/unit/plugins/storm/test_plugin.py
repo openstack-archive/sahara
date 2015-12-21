@@ -66,9 +66,8 @@ class StormPluginTest(base.SaharaWithDbTestCase):
         plugin = pb.PLUGINS.get_plugin(cluster.plugin_name)
         supervisor_id = [node.id for node in cluster.node_groups
                          if node.name == 'supervisor']
-        self.assertEqual(None,
-                         plugin._validate_existing_ng_scaling(cluster,
-                                                              supervisor_id))
+        self.assertIsNone(plugin._validate_existing_ng_scaling(cluster,
+                                                               supervisor_id))
 
     def test_validate_additional_ng_scaling(self):
         data = {'name': "cluster",
@@ -97,9 +96,9 @@ class StormPluginTest(base.SaharaWithDbTestCase):
         plugin = pb.PLUGINS.get_plugin(cluster.plugin_name)
         supervisor_id = [node.id for node in cluster.node_groups
                          if node.name == 'supervisor']
-        self.assertEqual(None,
-                         plugin._validate_additional_ng_scaling(cluster,
-                                                                supervisor_id))
+        self.assertIsNone(plugin._validate_additional_ng_scaling(cluster,
+                                                                 supervisor_id)
+                          )
 
     def test_validate_existing_ng_scaling_raises(self):
         data = {'name': "cluster",
