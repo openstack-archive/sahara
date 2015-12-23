@@ -16,6 +16,7 @@
 import mock
 
 import sahara.exceptions as ex
+from sahara.service.castellan import config as castellan
 from sahara.service.edp.binary_retrievers import internal_swift as i_s
 from sahara.tests.unit import base
 
@@ -23,6 +24,7 @@ from sahara.tests.unit import base
 class TestInternalSwift(base.SaharaTestCase):
     def setUp(self):
         super(TestInternalSwift, self).setUp()
+        castellan.validate_config()
 
     def test__get_raw_data(self):
         client_instance = mock.Mock()

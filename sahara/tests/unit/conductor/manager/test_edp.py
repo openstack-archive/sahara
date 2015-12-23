@@ -21,6 +21,7 @@ import testtools
 
 from sahara import context
 from sahara import exceptions as ex
+from sahara.service.castellan import config as castellan
 import sahara.tests.unit.conductor.base as test_base
 from sahara.tests.unit.conductor.manager import test_clusters
 from sahara.utils import edp
@@ -120,6 +121,10 @@ class DataSourceTest(test_base.ConductorManagerTestCase):
             checks=[
                 lambda: SAMPLE_DATA_SOURCE
             ], *args, **kwargs)
+
+    def setUp(self):
+        super(DataSourceTest, self).setUp()
+        castellan.validate_config()
 
     def test_crud_operation_create_list_delete(self):
         ctx = context.ctx()
@@ -319,6 +324,10 @@ class DataSourceTest(test_base.ConductorManagerTestCase):
 
 
 class JobExecutionTest(test_base.ConductorManagerTestCase):
+    def setUp(self):
+        super(JobExecutionTest, self).setUp()
+        castellan.validate_config()
+
     def test_crud_operation_create_list_delete_update(self):
         ctx = context.ctx()
         job = self.api.job_create(ctx, SAMPLE_JOB)
@@ -792,6 +801,10 @@ class JobBinaryTest(test_base.ConductorManagerTestCase):
             checks=[
                 lambda: SAMPLE_JOB_BINARY
             ], *args, **kwargs)
+
+    def setUp(self):
+        super(JobBinaryTest, self).setUp()
+        castellan.validate_config()
 
     def test_crud_operation_create_list_delete(self):
         ctx = context.ctx()
