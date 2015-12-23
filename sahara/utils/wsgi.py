@@ -23,6 +23,7 @@ import datetime
 from oslo_config import cfg
 from oslo_log import log as logging
 from oslo_serialization import jsonutils
+import six
 
 from sahara import exceptions
 from sahara.i18n import _
@@ -63,7 +64,7 @@ class JSONDictSerializer(DictSerializer):
             if isinstance(obj, datetime.datetime):
                 _dtime = obj - datetime.timedelta(microseconds=obj.microsecond)
                 return _dtime.isoformat()
-            return unicode(obj)
+            return six.text_type(obj)
         return jsonutils.dumps(data, default=sanitizer)
 
 

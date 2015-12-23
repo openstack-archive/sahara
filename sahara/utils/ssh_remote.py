@@ -108,7 +108,7 @@ def _connect(host, username, private_key, proxy_command=None,
     global _proxy_ssh
 
     LOG.debug('Creating SSH connection')
-    if type(private_key) in [str, unicode]:
+    if isinstance(private_key, six.string_types):
         private_key = crypto.to_paramiko_private_key(private_key)
 
     _ssh = paramiko.SSHClient()

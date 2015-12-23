@@ -14,6 +14,7 @@
 # limitations under the License.
 
 from oslo_log import log as logging
+import six
 
 from sahara.api import acl
 from sahara.service import api
@@ -72,7 +73,8 @@ def clusters_scale(cluster_id, data):
 @v.check_exists(api.get_cluster, 'cluster_id')
 def clusters_get(cluster_id):
     data = u.get_request_args()
-    show_events = unicode(data.get('show_progress', 'false')).lower() == 'true'
+    show_events = six.text_type(
+        data.get('show_progress', 'false')).lower() == 'true'
     return u.to_wrapped_dict(api.get_cluster, cluster_id, show_events)
 
 
