@@ -127,13 +127,13 @@ def _prepare_ranger(cluster):
         return
     ambari = plugin_utils.get_instance(cluster, p_common.AMBARI_SERVER)
     with ambari.remote() as r:
-        r.execute_command("sudo yum install -y mysql-connector-java")
-        r.execute_command(
-            "sudo ambari-server setup --jdbc-db=mysql "
-            "--jdbc-driver=/usr/share/java/mysql-connector-java.jar")
-    init_db_template = """
-create user 'root'@'%' identified by '{password}';
-set password for 'root'@'localhost' = password('{password}');"""
+        sudo = functools.partial(r.execute_command, run_as_root=True)
+        sudo("yum install -y mysql-connector-java")
+        sudo("ambari-server setup --jdbc-db=mysql "
+             "--jdbc-driver=/usr/share/java/mysql-connector-java.jar")
+    init_db_template = (
+        "create user 'root'@'%' identified by '{password}';\n"
+        "set password for 'root'@'localhost' = password('{password}');")
     password = uuidutils.generate_uuid()
     extra = cluster.extra.to_dict() if cluster.extra else {}
     extra["ranger_db_password"] = password
