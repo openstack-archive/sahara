@@ -114,7 +114,8 @@ def check_plugin_name_and_version(template, plugin_names, plugin_versions):
 # that the node group template usage checks there can be reused
 # without incurring unnecessary dependencies
 def check_node_group_template_usage(node_group_template_id,
-                                    cluster_list, cluster_template_list=[]):
+                                    cluster_list, cluster_template_list=None):
+    cluster_template_list = cluster_template_list or []
     cluster_users = []
     template_users = []
 

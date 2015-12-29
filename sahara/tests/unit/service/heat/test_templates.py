@@ -43,13 +43,13 @@ class BaseTestClusterTemplate(base.SaharaWithDbTestCase):
                               image_username='root', volume_type=volume_type)
         return ng1, ng2
 
-    def _make_cluster(self, mng_network, ng1, ng2, anti_affinity=[]):
+    def _make_cluster(self, mng_network, ng1, ng2, anti_affinity=None):
         return tu.create_cluster("cluster", "tenant1", "general",
                                  "2.6.0", [ng1, ng2],
                                  user_keypair_id='user_key',
                                  neutron_management_network=mng_network,
                                  default_image_id='1', image_id=None,
-                                 anti_affinity=anti_affinity)
+                                 anti_affinity=anti_affinity or [])
 
 
 class TestClusterTemplate(BaseTestClusterTemplate):

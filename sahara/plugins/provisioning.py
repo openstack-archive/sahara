@@ -66,7 +66,7 @@ class ProvisioningPluginBase(plugins_base.PluginInterface):
         pass
 
     @plugins_base.optional
-    def get_edp_job_types(self, versions=[]):
+    def get_edp_job_types(self, versions=None):
         return {}
 
     @plugins_base.optional

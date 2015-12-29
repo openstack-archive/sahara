@@ -24,9 +24,14 @@ class HiveWorkflowCreator(base_workflow.OozieWorkflowCreator):
         hive_elem = self.doc.getElementsByTagName('hive')[0]
         hive_elem.setAttribute('xmlns', 'uri:oozie:hive-action:0.2')
 
-    def build_workflow_xml(self, script, job_xml, prepare={},
-                           configuration=None, params={},
-                           files=[], archives=[]):
+    def build_workflow_xml(self, script, job_xml, prepare=None,
+                           configuration=None, params=None,
+                           files=None, archives=None):
+
+        prepare = prepare or {}
+        params = params or {}
+        files = files or []
+        archives = archives or []
 
         for k in sorted(prepare):
             self._add_to_prepare_element(k, prepare[k])

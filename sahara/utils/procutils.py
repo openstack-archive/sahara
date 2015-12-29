@@ -39,7 +39,9 @@ def start_subprocess():
                             stderr=subprocess.PIPE)
 
 
-def run_in_subprocess(proc, func, args=(), kwargs={}, interactive=False):
+def run_in_subprocess(proc, func, args=None, kwargs=None, interactive=False):
+    args = args or ()
+    kwargs = kwargs or {}
     try:
         pickle.dump(func, proc.stdin)
         pickle.dump(args, proc.stdin)

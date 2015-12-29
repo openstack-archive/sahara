@@ -21,10 +21,15 @@ class MapReduceWorkFlowCreator(base_workflow.OozieWorkflowCreator):
     def __init__(self):
         super(MapReduceWorkFlowCreator, self).__init__('map-reduce')
 
-    def build_workflow_xml(self, prepare={},
+    def build_workflow_xml(self, prepare=None,
                            job_xml=None, configuration=None,
-                           files=[], archives=[],
-                           streaming={}):
+                           files=None, archives=None,
+                           streaming=None):
+
+        prepare = prepare or {}
+        files = files or []
+        archives = archives or []
+        streaming = streaming or {}
 
         for k in sorted(prepare):
             self._add_to_prepare_element(k, prepare[k])

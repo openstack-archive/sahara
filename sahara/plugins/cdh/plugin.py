@@ -71,7 +71,7 @@ class CDHPluginProvider(p.ProvisioningPluginBase):
         return self._get_version_handler(
             cluster.hadoop_version).get_edp_engine(cluster, job_type)
 
-    def get_edp_job_types(self, versions=[]):
+    def get_edp_job_types(self, versions=None):
         res = {}
         for vers in self.version_factory.get_versions():
             if not versions or vers in versions:

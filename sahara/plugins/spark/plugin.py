@@ -502,7 +502,7 @@ class SparkProvider(p.ProvisioningPluginBase):
 
         return None
 
-    def get_edp_job_types(self, versions=[]):
+    def get_edp_job_types(self, versions=None):
         res = {}
         for vers in self.get_versions():
             if not versions or vers in versions:

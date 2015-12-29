@@ -182,7 +182,7 @@ class AmbariPluginProvider(p.ProvisioningPluginBase):
             return edp_engine.EDPOozieEngine(cluster)
         return None
 
-    def get_edp_job_types(self, versions=[]):
+    def get_edp_job_types(self, versions=None):
         res = {}
         for version in self.get_versions():
             if not versions or version in versions:

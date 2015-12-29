@@ -26,9 +26,9 @@ class FakeNGT(object):
 
 
 class FakeCluster(object):
-    def __init__(self, name, node_groups=[], cluster_template_id=None):
+    def __init__(self, name, node_groups=None, cluster_template_id=None):
         self.name = name
-        self.node_groups = node_groups
+        self.node_groups = node_groups or []
         self.cluster_template_id = cluster_template_id
 
 
