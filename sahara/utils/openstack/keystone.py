@@ -203,7 +203,7 @@ def token_auth(token, project_id=None, project_name=None,
     :returns: a token auth plugin object.
     '''
     token_kwargs = dict(
-        auth_url=base.retrieve_auth_url(),
+        auth_url=base.retrieve_auth_url(CONF.keystone.endpoint_type),
         token=token
     )
     if CONF.use_identity_api_v3:
