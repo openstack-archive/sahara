@@ -26,8 +26,8 @@ import six
 from sahara import conductor as c
 from sahara import context
 from sahara.i18n import _LW
+from sahara.service import api
 from sahara.service.edp import job_manager
-from sahara.service import ops
 from sahara.service import trusts
 from sahara.utils import cluster as c_u
 from sahara.utils import edp
@@ -90,7 +90,7 @@ def terminate_cluster(ctx, cluster, description):
                                                description=description))
 
         try:
-            ops.terminate_cluster(cluster.id)
+            api.terminate_cluster(cluster.id)
         except Exception as e:
             LOG.warning(_LW(
                 'Failed to terminate {description} cluster in "{status}" '
