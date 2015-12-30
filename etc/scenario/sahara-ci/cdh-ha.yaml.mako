@@ -19,7 +19,6 @@ clusters:
         flavor: ${ci_flavor_id}
         node_processes:
           - YARN_NODEMANAGER
-          - HDFS_JOURNALNODE
         auto_security_group: true
       - name: worker-nm-dn
         flavor: ${ci_flavor_id}
@@ -45,11 +44,13 @@ clusters:
           - ZOOKEEPER_SERVER
         auto_security_group: true
       - name: master-additional
-        flavor: ${medium_flavor_id}
+        flavor: ${large_flavor_id}
         node_processes:
           - OOZIE_SERVER
+          - ZOOKEEPER_SERVER
           - YARN_JOBHISTORY
           - HDFS_SECONDARYNAMENODE
+          - HDFS_JOURNALNODE
         auto_security_group: true
     cluster_template:
       name: cdh540
@@ -58,17 +59,17 @@ clusters:
         master-core: 1
         master-additional: 1
         worker-nm-dn: 1
-        worker-nm: 1
+        worker-nm: 2
         worker-dn: 1
       cluster_configs:
         HDFS:
           dfs_replication: 1
+        general:
+          'Require Anti Affinity': False
     cluster:
       name: ${cluster_name}
     scenario:
       - run_jobs
     edp_jobs_flow:
-      - pig_job
       - mapreduce_job
-      - mapreduce_streaming_job
       - java_job
