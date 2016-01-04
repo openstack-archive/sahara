@@ -24,10 +24,15 @@ class ShellWorkflowCreator(base_workflow.OozieWorkflowCreator):
     def __init__(self):
         super(ShellWorkflowCreator, self).__init__('shell')
 
-    def build_workflow_xml(self, script_name, prepare={},
-                           job_xml=None, configuration=None, env_vars={},
-                           arguments=[], files=[]):
+    def build_workflow_xml(self, script_name, prepare=None,
+                           job_xml=None, configuration=None, env_vars=None,
+                           arguments=None, files=None):
         x.add_attributes_to_element(self.doc, self.tag_name, self.SHELL_XMLNS)
+
+        prepare = prepare or {}
+        env_vars = env_vars or {}
+        arguments = arguments or []
+        files = files or []
 
         for k in sorted(prepare):
             self._add_to_prepare_element(k, prepare[k])

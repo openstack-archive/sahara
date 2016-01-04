@@ -22,8 +22,8 @@ class Command(object):
 
 
 class Config(object):
-    def __init__(self, option_values={}):
-        self.command = Command(option_values)
+    def __init__(self, option_values=None):
+        self.command = Command(option_values or {})
 
 
 class Logger(object):

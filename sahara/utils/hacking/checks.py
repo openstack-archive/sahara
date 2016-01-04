@@ -117,6 +117,17 @@ def use_jsonutils(logical_line, filename):
                  " of json")
 
 
+def no_mutable_default_args(logical_line):
+    """Check to prevent mutable default argument in sahara code.
+
+    S360
+    """
+    msg = "S360: Method's default argument shouldn't be mutable!"
+    mutable_default_args = re.compile(r"^\s*def .+\((.+=\{\}|.+=\[\])")
+    if mutable_default_args.match(logical_line):
+        yield (0, msg)
+
+
 def factory(register):
     register(import_db_only_in_conductor)
     register(hacking_no_author_attr)
@@ -130,3 +141,4 @@ def factory(register):
     register(logging_checks.no_translate_debug_logs)
     register(logging_checks.accepted_log_levels)
     register(use_jsonutils)
+    register(no_mutable_default_args)

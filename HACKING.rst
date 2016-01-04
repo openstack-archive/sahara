@@ -26,6 +26,7 @@ Imports
 Dictionaries/Lists
 ------------------
 
+- [S360] Ensure default arguments are not mutable.
 - [S368] Must use a dict comprehension instead of a dict constructor with a
          sequence of key-value pairs. For more information, please refer to
          http://legacy.python.org/dev/peps/pep-0274/

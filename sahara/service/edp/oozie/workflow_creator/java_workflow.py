@@ -23,12 +23,18 @@ class JavaWorkflowCreator(base_workflow.OozieWorkflowCreator):
         super(JavaWorkflowCreator, self).__init__('java')
 
     def build_workflow_xml(self, main_class,
-                           prepare={},
+                           prepare=None,
                            job_xml=None,
                            configuration=None,
                            java_opts=None,
-                           arguments=[],
-                           files=[], archives=[]):
+                           arguments=None,
+                           files=None,
+                           archives=None):
+
+        prepare = prepare or {}
+        arguments = arguments or []
+        files = files or []
+        archives = archives or []
 
         for k in sorted(prepare):
             self._add_to_prepare_element(k, prepare[k])

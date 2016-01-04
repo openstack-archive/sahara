@@ -78,7 +78,8 @@ worker_json = {
 
 
 class Config(c.Config):
-    def __init__(self, option_values={}):
+    def __init__(self, option_values=None):
+        option_values = option_values or {}
         if "name" not in option_values:
             option_values["name"] = "update"
         super(Config, self).__init__(option_values)

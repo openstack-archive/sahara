@@ -349,7 +349,7 @@ class AmbariPlugin(p.ProvisioningPluginBase):
             self.version_factory.get_version_handler(cluster.hadoop_version))
         return version_handler.get_edp_engine(cluster, job_type)
 
-    def get_edp_job_types(self, versions=[]):
+    def get_edp_job_types(self, versions=None):
         res = {}
         for vers in self.version_factory.get_versions():
             if not versions or vers in versions:

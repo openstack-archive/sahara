@@ -22,7 +22,8 @@ from sahara.tests.unit.db.templates import common as c
 
 
 class Config(c.Config):
-    def __init__(self, option_values={}):
+    def __init__(self, option_values=None):
+        option_values = option_values or {}
         if "name" not in option_values:
             option_values["name"] = "delete"
         super(Config, self).__init__(option_values)

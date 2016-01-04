@@ -64,3 +64,11 @@ class HackingTestCase(testtools.TestCase):
             "import json", "path"))))
         self.assertEqual(1, len(list(checks.use_jsonutils(
             "import json as jsonutils", "path"))))
+
+    def test_no_mutable_default_args(self):
+        self.assertEqual(0, len(list(checks.no_mutable_default_args(
+            "def foo (bar):"))))
+        self.assertEqual(1, len(list(checks.no_mutable_default_args(
+            "def foo (bar=[]):"))))
+        self.assertEqual(1, len(list(checks.no_mutable_default_args(
+            "def foo (bar={}):"))))
