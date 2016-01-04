@@ -20,7 +20,7 @@ or, if the file is a YAML Mako template:
 
 .. sourcecode:: console
 
-    $ tox -e scenario -- -V templatevars.ini etc/scenario/sahara-ci/scenario/vanilla-2.7.1.yaml.mako
+    $ tox -e scenario -- -V templatevars.ini etc/scenario/sahara-ci/vanilla-2.7.1.yaml.mako
 ..
 
 where templatevars.ini contains the values of the variables referenced
