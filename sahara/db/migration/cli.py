@@ -70,12 +70,11 @@ def add_command_parsers(subparsers):
     parser = subparsers.add_parser('check_migration')
     parser.set_defaults(func=do_check_migration)
 
-    for name in ['upgrade']:
-        parser = subparsers.add_parser(name)
-        parser.add_argument('--delta', type=int)
-        parser.add_argument('--sql', action='store_true')
-        parser.add_argument('revision', nargs='?')
-        parser.set_defaults(func=do_upgrade_downgrade)
+    parser = subparsers.add_parser('upgrade')
+    parser.add_argument('--delta', type=int)
+    parser.add_argument('--sql', action='store_true')
+    parser.add_argument('revision', nargs='?')
+    parser.set_defaults(func=do_upgrade_downgrade)
 
     parser = subparsers.add_parser('stamp')
     parser.add_argument('--sql', action='store_true')
