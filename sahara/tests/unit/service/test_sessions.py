@@ -26,7 +26,7 @@ class TestSessionCache(base.SaharaTestCase):
     def test_get_session(self):
         sc = sessions.SessionCache()
         session = sc.get_session()
-        self.assertTrue(isinstance(session, keystone.Session))
+        self.assertIsInstance(session, keystone.Session)
 
         self.assertRaises(ex.SaharaException,
                           sc.get_session,
