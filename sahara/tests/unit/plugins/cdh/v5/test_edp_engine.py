@@ -1,4 +1,4 @@
-# Copyright (c) 2015 Intel Inc.
+# Copyright (c) 2015 Intel Corporation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -15,12 +15,77 @@
 
 import mock
 
+from sahara.plugins import base as pb
 from sahara.plugins.cdh.v5 import edp_engine
+from sahara.plugins import exceptions as ex
 from sahara.tests.unit import base as sahara_base
+from sahara.tests.unit.plugins.cdh import utils as c_u
 from sahara.utils import edp
 
 
-class CDH5ConfigHintsTest(sahara_base.SaharaTestCase):
+def get_cluster():
+    cluster = c_u.get_fake_cluster(plugin_name='CDH', hadoop_version='5.0.0')
+    return cluster
+
+
+class EdpEngineTestV5(sahara_base.SaharaTestCase):
+
+    def setUp(self):
+        super(EdpEngineTestV5, self).setUp()
+        pb.setup_plugins()
+
+    def test_get_hdfs_user(self):
+        eng = edp_engine.EdpOozieEngine(get_cluster())
+        self.assertEqual('hdfs', eng.get_hdfs_user())
+
+    @mock.patch('sahara.service.edp.hdfs_helper.create_dir_hadoop2')
+    def test_create_hdfs_dir(self, create_dir_hadoop2):
+        eng = edp_engine.EdpOozieEngine(get_cluster())
+        remote = mock.Mock()
+        dir_name = mock.Mock()
+        eng.create_hdfs_dir(remote, dir_name)
+        create_dir_hadoop2.assert_called_once_with(remote,
+                                                   dir_name,
+                                                   eng.get_hdfs_user())
+
+    def test_get_oozie_server_uri(self):
+        cluster = get_cluster()
+        eng = edp_engine.EdpOozieEngine(cluster)
+        uri = eng.get_oozie_server_uri(cluster)
+        self.assertEqual("http://1.2.3.5:11000/oozie", uri)
+
+    def test_get_name_node_uri(self):
+        cluster = get_cluster()
+        eng = edp_engine.EdpOozieEngine(cluster)
+        uri = eng.get_name_node_uri(cluster)
+        self.assertEqual("hdfs://master_inst.novalocal:8020", uri)
+
+    def test_get_resource_manager_uri(self):
+        cluster = get_cluster()
+        eng = edp_engine.EdpOozieEngine(cluster)
+        uri = eng.get_resource_manager_uri(cluster)
+        self.assertEqual("master_inst.novalocal:8032", uri)
+
+    def test_get_oozie_server(self):
+        cluster = get_cluster()
+        eng = edp_engine.EdpOozieEngine(cluster)
+        actual = eng.get_oozie_server(cluster)
+        expect = cluster.node_groups[1].instances[0]
+        self.assertEqual(expect, actual)
+
+    @mock.patch('sahara.service.edp.oozie.engine.'
+                'OozieJobEngine.validate_job_execution')
+    def test_validate_job_execution(self, c):
+        cluster = get_cluster()
+        eng = edp_engine.EdpOozieEngine(cluster)
+        eng.validate_job_execution(cluster, mock.Mock(), mock.Mock())
+
+        # more than one oozie server
+        dict.__setitem__(cluster.node_groups[1], 'count', 2)
+        self.assertRaises(ex.InvalidComponentCountException,
+                          eng.validate_job_execution, cluster,
+                          mock.Mock(), mock.Mock())
+
     @mock.patch(
         'sahara.plugins.cdh.confighints_helper.get_possible_hive_config_from',
         return_value={})
