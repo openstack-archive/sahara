@@ -21,6 +21,7 @@ from sahara import context
 from sahara.plugins import utils
 from sahara.plugins.vanilla import abstractversionhandler as avm
 from sahara.plugins.vanilla.hadoop2 import config as c
+from sahara.plugins.vanilla.hadoop2 import keypairs
 from sahara.plugins.vanilla.hadoop2 import recommendations_utils as ru
 from sahara.plugins.vanilla.hadoop2 import run_scripts as run
 from sahara.plugins.vanilla.hadoop2 import scaling as sc
@@ -68,6 +69,8 @@ class VersionHandler(avm.AbstractVersionHandler):
         c.configure_cluster(self.pctx, cluster)
 
     def start_cluster(self, cluster):
+        keypairs.provision_keypairs(cluster)
+
         s_scripts.start_namenode(cluster)
         s_scripts.start_secondarynamenode(cluster)
         s_scripts.start_resourcemanager(cluster)
@@ -91,6 +94,7 @@ class VersionHandler(avm.AbstractVersionHandler):
         vl.validate_existing_ng_scaling(self.pctx, cluster, existing)
 
     def scale_cluster(self, cluster, instances):
+        keypairs.provision_keypairs(cluster, instances)
         sc.scale_cluster(self.pctx, cluster, instances)
 
     def _set_cluster_info(self, cluster):
@@ -136,6 +140,9 @@ class VersionHandler(avm.AbstractVersionHandler):
 
     def get_edp_config_hints(self, job_type):
         return edp_engine.EdpOozieEngine.get_possible_job_config(job_type)
+
+    def on_terminate_cluster(self, cluster):
+        keypairs.drop_key(cluster)
 
     def get_open_ports(self, node_group):
         return c.get_open_ports(node_group)
