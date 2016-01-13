@@ -18,7 +18,7 @@ from sahara.utils import files
 
 
 def get_hive_db_password(cluster):
-    return dh.get_password_from_db(cluster, 'hive_db_password')
+    return dh.get_password_from_db(cluster, dh.HIVE_DB_PASSWORD)
 
 
 def create_hive_database(cluster, remote):

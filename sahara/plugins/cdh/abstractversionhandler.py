@@ -17,6 +17,8 @@ import abc
 
 import six
 
+from sahara.plugins.cdh import db_helper as dh
+
 
 @six.add_metaclass(abc.ABCMeta)
 class AbstractVersionHandler(object):
@@ -70,4 +72,4 @@ class AbstractVersionHandler(object):
         return
 
     def on_terminate_cluster(self, cluster):
-        pass
+        dh.delete_passwords_from_keymanager(cluster)
