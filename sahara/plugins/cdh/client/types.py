@@ -297,7 +297,7 @@ class BaseApiObject(object):
         Default implementation of __str__. Uses the type name and the first
         attribute retrieved from the attribute map to create the string.
         """
-        name = self._get_attributes().keys()[0]
+        name = list(self._get_attributes().keys())[0]
         value = getattr(self, name, None)
         return "<%s>: %s = %s" % (self.__class__.__name__, name, value)
 
