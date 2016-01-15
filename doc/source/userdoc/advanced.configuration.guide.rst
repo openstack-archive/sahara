@@ -193,6 +193,8 @@ These options will also be present in the generated sample configuration
 file. For instructions on creating the configuration file please see the
 :doc:`configuration.guide`.
 
+.. _external_key_manager_usage:
+
 External key manager usage
 --------------------------
 

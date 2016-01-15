@@ -20,22 +20,24 @@ from sahara import context
 
 
 def delete_secret(id, ctx=None):
-    '''delete a secret from the external key manager
+    """delete a secret from the external key manager
 
-    if no context is provided, the current context is used.
-
-    '''
+    :param id: The identifier of the secret to delete
+    :param ctx: The context, and associated authentication, to use with
+                this operation (defaults to the current context)
+    """
     if ctx is None:
         ctx = context.current()
     key_manager.API().delete(ctx, id)
 
 
 def get_secret(id, ctx=None):
-    '''get a secret associated with an id
+    """get a secret associated with an id
 
-    if no context is provided, the current context is used.
-
-    '''
+    :param id: The identifier of the secret to retrieve
+    :param ctx: The context, and associated authentication, to use with
+                this operation (defaults to the current context)
+    """
     if ctx is None:
         ctx = context.current()
     key = key_manager.API().get(ctx, id)
@@ -43,11 +45,12 @@ def get_secret(id, ctx=None):
 
 
 def store_secret(secret, ctx=None):
-    '''store a secret and return its identifier
+    """store a secret and return its identifier
 
-    if no context is provided, the current context is used.
-
-    '''
+    :param secret: The secret to store, this should be a string
+    :param ctx: The context, and associated authentication, to use with
+                this operation (defaults to the current context)
+    """
     if ctx is None:
         ctx = context.current()
     key = passphrase.Passphrase(secret)

@@ -181,3 +181,60 @@ keystone ``Session`` and auth plugin objects(for example, ``Token`` or
 methodology, where available. For more information on using sessions with
 keystone, please see
 http://docs.openstack.org/developer/python-keystoneclient/using-sessions.html
+
+Storing sensitive information
+-----------------------------
+
+During the course of development, there is often cause to store sensitive
+information (for example, login credentials) in the records for a cluster,
+job, or some other record. Storing secret information this way is **not**
+safe. To mitigate the risk of storing this information, sahara provides
+access to the OpenStack Key Manager service (implemented by the
+`barbican project <http://docs.openstack.org/developer/barbican/>`_) through
+the `castellan library <http://docs.openstack.org/developer/castellan/>`_.
+
+To utilize the external key manager, the functions in
+``sahara.service.castellan.utils`` are provided as wrappers around the
+castellan library. These functions allow a developer to store, retrieve, and
+delete secrets from the manager. Secrets that are managed through the key
+manager have an identifier associated with them. These identifiers are
+considered safe to store in the database.
+
+The following are some examples of working with secrets in the sahara
+codebase. These examples are considered basic, any developer wishing to
+learn more about the advanced features of storing secrets should look to
+the code and docstrings contained in the ``sahara.service.castellan`` module.
+
+**Storing a secret**
+
+.. sourcecode:: python
+
+    from sahara.service.castellan import utils as key_manager
+
+    password = 'SooperSecretPassword'
+    identifier = key_manager.store_secret(password)
+
+**Retrieving a secret**
+
+.. sourcecode:: python
+
+    from sahara.service.castellan import utils as key_manager
+
+    password = key_manager.get_secret(identifier)
+
+**Deleting a secret**
+
+.. sourcecode:: python
+
+    from sahara.service.castellan import utils as key_manager
+
+    key_manager.delete_secret(identifier)
+
+When storing secrets through this interface it is important to remember that
+if an external key manager is being used, each stored secret creates an
+entry in an external service. When you are finished using the secret it is
+good practice to delete it, as not doing so may leave artifacts in those
+external services.
+
+For more information on configuring sahara to use the OpenStack Key
+Manager service, see :ref:`external_key_manager_usage`.
