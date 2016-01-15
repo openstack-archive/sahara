@@ -13,12 +13,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from castellan import key_manager
 from oslo_config import cfg
 import six
 
 from sahara import conductor as c
 from sahara import context
+from sahara.service.castellan import utils as key_manager
 from sahara.service.edp.oozie.workflow_creator import hive_workflow
 from sahara.service.edp.oozie.workflow_creator import java_workflow
 from sahara.service.edp.oozie.workflow_creator import mapreduce_workflow
@@ -100,11 +100,10 @@ class BaseFactory(object):
         configs = {}
 
         if proxy_configs:
-            key = key_manager.API().get(
-                context.current(), proxy_configs.get('proxy_password'))
             configs[sw.HADOOP_SWIFT_USERNAME] = proxy_configs.get(
                 'proxy_username')
-            configs[sw.HADOOP_SWIFT_PASSWORD] = key.get_encoded()
+            configs[sw.HADOOP_SWIFT_PASSWORD] = key_manager.get_secret(
+                proxy_configs.get('proxy_password'))
             configs[sw.HADOOP_SWIFT_TRUST_ID] = proxy_configs.get(
                 'proxy_trust_id')
             configs[sw.HADOOP_SWIFT_DOMAIN_NAME] = CONF.proxy_user_domain_name
@@ -115,9 +114,8 @@ class BaseFactory(object):
                 if "user" in src.credentials:
                     configs[sw.HADOOP_SWIFT_USERNAME] = src.credentials['user']
                 if "password" in src.credentials:
-                    key = key_manager.API().get(
-                        context.current(), src.credentials['password'])
-                    configs[sw.HADOOP_SWIFT_PASSWORD] = key.get_encoded()
+                    configs[sw.HADOOP_SWIFT_PASSWORD] = (
+                        key_manager.get_secret(src.credentials['password']))
                 break
         return configs
 
@@ -225,12 +223,10 @@ class JavaFactory(BaseFactory):
         configs = {}
 
         if proxy_configs:
-            key = key_manager.API().get(
-                context.current(), proxy_configs.get('proxy_password'))
-            password = key.get_encoded()
             configs[sw.HADOOP_SWIFT_USERNAME] = proxy_configs.get(
                 'proxy_username')
-            configs[sw.HADOOP_SWIFT_PASSWORD] = password
+            configs[sw.HADOOP_SWIFT_PASSWORD] = key_manager.get_secret(
+                proxy_configs.get('proxy_password'))
             configs[sw.HADOOP_SWIFT_TRUST_ID] = proxy_configs.get(
                 'proxy_trust_id')
             configs[sw.HADOOP_SWIFT_DOMAIN_NAME] = CONF.proxy_user_domain_name
