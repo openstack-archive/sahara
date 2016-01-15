@@ -37,8 +37,8 @@ set +x
 source $DEVSTACK_DIR/openrc demo demo
 set -x
 
-sudo -E chown -R jenkins:stack $SAHARA_DIR
-cd $SAHARA_DIR
+sudo -E chown -R jenkins:stack $SAHARA_TESTS_DIR
+cd $SAHARA_TESTS_DIR
 
 echo "Generating scenario tests config file"
 sudo -E -u jenkins tee template_vars.ini <<EOF
@@ -57,7 +57,7 @@ EOF
 
 echo "Running scenario tests"
 # TODO(slukjanov): Create separated list of templates for fake plugin in gate
-sudo -u jenkins tox -e scenario -- --verbose -V template_vars.ini \
+sudo -u jenkins tox -e venv -- sahara-scenario --verbose -V template_vars.ini \
     etc/scenario/gate/credentials.yaml.mako \
     etc/scenario/gate/edp.yaml.mako \
     etc/scenario/gate/fake.yaml.mako \
