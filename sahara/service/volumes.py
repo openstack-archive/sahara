@@ -21,7 +21,6 @@ from oslo_log import log as logging
 
 from sahara import conductor as c
 from sahara import context
-from sahara import exceptions as ex
 from sahara.i18n import _
 from sahara.i18n import _LE
 from sahara.i18n import _LW
@@ -37,8 +36,6 @@ conductor = c.API
 LOG = logging.getLogger(__name__)
 
 CONF = cfg.CONF
-CONF.import_opt('api_version', 'sahara.utils.openstack.cinder',
-                group='cinder')
 
 
 def _get_timeout_for_disk_preparing(cluster):
@@ -101,110 +98,6 @@ def _can_use_xfs(instances):
         if not _check_installed_xfs(instance):
             return False
     return True
-
-
-def _count_instances_to_attach(instances):
-    return len([inst for inst in instances if
-                inst.node_group.volumes_per_node > 0])
-
-
-def _count_volumes_to_mount(instances):
-    return sum([inst.node_group.volumes_per_node for inst in instances])
-
-
-def attach_to_instances(instances):
-    instances_to_attach = _count_instances_to_attach(instances)
-    if instances_to_attach == 0:
-        mount_to_instances(instances)
-        return
-
-    cpo.add_provisioning_step(
-        instances[0].cluster_id, _("Attach volumes to instances"),
-        instances_to_attach)
-
-    with context.ThreadGroup() as tg:
-        for instance in instances:
-            if instance.node_group.volumes_per_node > 0:
-                with context.set_current_instance_id(instance.instance_id):
-                    tg.spawn(
-                        'attach-volumes-for-instance-%s'
-                        % instance.instance_name, _attach_volumes_to_node,
-                        instance.node_group, instance)
-
-    mount_to_instances(instances)
-
-
-@poll_utils.poll_status(
-    'await_attach_volumes', _("Await for attaching volumes to instances"),
-    sleep=2)
-def _await_attach_volumes(instance, devices):
-    return _count_attached_devices(instance, devices) == len(devices)
-
-
-@cpo.event_wrapper(mark_successful_on_exit=True)
-def _attach_volumes_to_node(node_group, instance):
-    ctx = context.ctx()
-    size = node_group.volumes_size
-    volume_type = node_group.volume_type
-    devices = []
-    for idx in range(1, node_group.volumes_per_node + 1):
-        display_name = "volume_" + instance.instance_name + "_" + str(idx)
-        device = _create_attach_volume(
-            ctx, instance, size, volume_type,
-            node_group.volume_local_to_instance, display_name,
-            node_group.volumes_availability_zone)
-        devices.append(device)
-        LOG.debug("Attached volume {device} to instance".format(device=device))
-
-    _await_attach_volumes(instance, devices)
-
-
-@poll_utils.poll_status(
-    'volume_available_timeout', _("Await for volume become available"),
-    sleep=1)
-def _await_available(volume):
-    volume = cinder.get_volume(volume.id)
-    if volume.status == 'error':
-        raise ex.SystemError(_("Volume %s has error status") % volume.id)
-    return volume.status == 'available'
-
-
-def _create_attach_volume(ctx, instance, size, volume_type,
-                          volume_local_to_instance, name=None,
-                          availability_zone=None):
-    if CONF.cinder.api_version == 1:
-        kwargs = {'size': size, 'display_name': name}
-    else:
-        kwargs = {'size': size, 'name': name}
-
-    kwargs['volume_type'] = volume_type
-    if availability_zone is not None:
-        kwargs['availability_zone'] = availability_zone
-
-    if volume_local_to_instance:
-        kwargs['scheduler_hints'] = {'local_to_instance': instance.instance_id}
-
-    volume = b.execute_with_retries(cinder.client().volumes.create, **kwargs)
-    conductor.append_volume(ctx, instance, volume.id)
-    _await_available(volume)
-
-    resp = b.execute_with_retries(nova.client().volumes.create_server_volume,
-                                  instance.instance_id, volume.id, None)
-    return resp.device
-
-
-def _count_attached_devices(instance, devices):
-    code, part_info = instance.remote().execute_command('cat /proc/partitions')
-
-    count = 0
-    for line in part_info.split('\n')[1:]:
-        tokens = line.split()
-        if len(tokens) > 3:
-            dev = '/dev/' + tokens[3]
-            if dev in devices:
-                count += 1
-
-    return count
 
 
 def mount_to_instances(instances):
