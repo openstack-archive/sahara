@@ -14,11 +14,16 @@
 # limitations under the License.
 
 import barbicanclient.client as barbican_client
+from oslo_config import cfg
 
 from sahara.utils.openstack import keystone
+
+
+CONF = cfg.CONF
 
 
 def client_for_admin():
     '''return a barbican client for the admin user.'''
     session = keystone.session_for_admin()
-    return barbican_client.Client(session=session)
+    return barbican_client.Client(session=session,
+                                  region_name=CONF.os_region_name)

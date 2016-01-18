@@ -50,7 +50,8 @@ LOG = logging.getLogger(__name__)
 def client():
     session = sessions.cache().get_session(sessions.SESSION_TYPE_NEUTRON)
     neutron = neutron_cli.Client('2.0', session=session, auth=keystone.auth(),
-                                 endpoint_type=CONF.neutron.endpoint_type)
+                                 endpoint_type=CONF.neutron.endpoint_type,
+                                 region_name=CONF.os_region_name)
     return neutron
 
 
@@ -61,7 +62,8 @@ class NeutronClient(object):
     def __init__(self, network, token, tenant_name):
         session = sessions.cache().get_session(sessions.SESSION_TYPE_NEUTRON)
         auth = keystone.token_auth(token=token, project_name=tenant_name)
-        self.neutron = neutron_cli.Client('2.0', session=session, auth=auth)
+        self.neutron = neutron_cli.Client('2.0', session=session, auth=auth,
+                                          region_name=CONF.os_region_name)
         self.network = network
 
     def get_router(self):
