@@ -109,7 +109,7 @@ def add_centos_repository(r, repo_list_url, repo_name):
 
 def write_centos_repository(r, repo_content, repo_name):
     r.write_file_to('/etc/yum.repos.d/%s.repo' % repo_name,
-                    repo_content, root_as_root=True)
+                    repo_content, run_as_root=True)
 
 
 def start_mysql_server(remote):
