@@ -82,7 +82,7 @@ function configure_sahara {
 
     if is_service_enabled ceilometer; then
         iniset $SAHARA_CONF_FILE DEFAULT enable_notifications "true"
-        iniset $SAHARA_CONF_FILE DEFAULT notification_driver "messaging"
+        iniset $SAHARA_CONF_FILE oslo_messaging_notifications driver "messaging"
     fi
 
     iniset $SAHARA_CONF_FILE DEFAULT verbose True
