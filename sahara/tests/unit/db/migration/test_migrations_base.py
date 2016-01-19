@@ -60,7 +60,8 @@ class BaseWalkMigrationTestCase(object):
         should use oslo_config and openstack.commom.db.sqlalchemy.session with
         database functionality (reset default settings and session cleanup).
         """
-        CONF.set_override('connection', str(engine.url), group='database')
+        CONF.set_override('connection', str(engine.url), group='database',
+                          enforce_type=True)
         sa.cleanup()
 
     def _alembic_command(self, alembic_command, engine, *args, **kwargs):
@@ -69,7 +70,8 @@ class BaseWalkMigrationTestCase(object):
         We should redefine this setting for getting info.
         """
         self.ALEMBIC_CONFIG.stdout = buf = io.StringIO()
-        CONF.set_override('connection', str(engine.url), group='database')
+        CONF.set_override('connection', str(engine.url), group='database',
+                          enforce_type=True)
         sa.cleanup()
         getattr(command, alembic_command)(*args, **kwargs)
         res = buf.getvalue().strip()
@@ -171,7 +173,8 @@ class TestModelsMigrationsSync(t_m.ModelsMigrationsSync):
         return self.engine
 
     def db_sync(self, engine):
-        CONF.set_override('connection', str(engine.url), group='database')
+        CONF.set_override('connection', str(engine.url), group='database',
+                          enforce_type=True)
         alembic.command.upgrade(self.ALEMBIC_CONFIG, 'head')
 
     def get_metadata(self):
