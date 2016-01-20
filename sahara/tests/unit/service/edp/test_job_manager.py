@@ -624,3 +624,28 @@ class TestJobManager(base.SaharaWithDbTestCase):
 
         with testtools.ExpectedException(ex.CancelingFailed):
             job_manager.cancel_job(job_exec.id)
+
+    @mock.patch('sahara.conductor.API.job_execution_get')
+    @mock.patch('sahara.conductor.API.cluster_get')
+    @mock.patch('sahara.conductor.API.job_get')
+    @mock.patch(
+        'sahara.service.edp.oozie.engine.OozieJobEngine.run_scheduled_job')
+    def test_scheduled_edp_job_run(self, job_exec_get, cluster_get,
+                                   job_get, run_scheduled_job):
+        configs = {
+            'job_execution_info': {
+                'job_execution_type': 'scheduled',
+                'start': '2015-5-15T01:00Z'
+            }
+        }
+        job, job_exec = u.create_job_exec(edp.JOB_TYPE_PIG, configs)
+        job_exec_get.return_value = job_exec
+        job_get.return_value = job
+
+        cluster = u.create_cluster()
+        cluster.status = "Active"
+        cluster_get.return_value = cluster
+
+        job_manager._run_job(job_exec.id)
+
+        self.assertEqual(1, run_scheduled_job.call_count)

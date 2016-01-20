@@ -27,6 +27,9 @@ class FakeJobEngine(base_engine.JobEngine):
     def run_job(self, job_execution):
         return 'engine_job_id', edp.JOB_STATUS_SUCCEEDED, None
 
+    def run_scheduled_job(self, job_execution):
+        pass
+
     def validate_job_execution(self, cluster, job, data):
         pass
 

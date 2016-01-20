@@ -41,6 +41,9 @@ job_configs = {
             "items": {
                 "type": "string"
             }
+        },
+        "job_execution_info": {
+            "type": "simple_config",
         }
     },
     "additionalProperties": False,

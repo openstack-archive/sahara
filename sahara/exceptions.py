@@ -358,3 +358,13 @@ class MaxRetriesExceeded(SaharaException):
                                                      'attempts': attempts}
 
         super(MaxRetriesExceeded, self).__init__(formatted_message)
+
+
+class InvalidJobExecutionInfoException(SaharaException):
+    message = _("Job execution information is invalid")
+
+    def __init__(self, message=None):
+        if message:
+            self.message = message
+        self.code = "INVALID_JOB_EXECUTION_INFO"
+        super(InvalidJobExecutionInfoException, self).__init__()

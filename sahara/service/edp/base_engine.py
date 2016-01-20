@@ -38,6 +38,10 @@ class JobEngine(object):
         pass
 
     @abc.abstractmethod
+    def run_scheduled_job(self, job_execution):
+        pass
+
+    @abc.abstractmethod
     def validate_job_execution(self, cluster, job, data):
         pass
 

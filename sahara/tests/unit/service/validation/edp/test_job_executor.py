@@ -13,9 +13,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import time
 import uuid
 
 import mock
+from oslo_utils import timeutils
 import six
 import testtools
 
@@ -74,7 +76,8 @@ class TestJobExecCreateValidation(u.ValidationTestCase):
                 "output_id": ds2_id,
                 "job_configs": {"configs": {},
                                 "params": {},
-                                "args": []}
+                                "args": [],
+                                "job_execution_info": {}}
             },
             bad_req_i=(1, "INVALID_DATA",
                           "MapReduce.Streaming job "
@@ -91,6 +94,7 @@ class TestJobExecCreateValidation(u.ValidationTestCase):
                         "edp.streaming.mapper": "/bin/cat",
                         "edp.streaming.reducer": "/usr/bin/wc"},
                     "params": {},
+                    "job_execution_info": {},
                     "args": []}
             })
 
@@ -126,6 +130,7 @@ class TestJobExecCreateValidation(u.ValidationTestCase):
                         "edp.streaming.mapper": "/bin/cat",
                         "edp.streaming.reducer": "/usr/bin/wc"},
                     "params": {},
+                    "job_execution_info": {},
                     "args": []}
             })
 
@@ -144,6 +149,7 @@ class TestJobExecCreateValidation(u.ValidationTestCase):
                         "edp.streaming.mapper": "/bin/cat",
                         "edp.streaming.reducer": "/usr/bin/wc"},
                     "params": {},
+                    "job_execution_info": {},
                     "args": []}
             },
             bad_req_i=(1, "INVALID_DATA", err_msg))
@@ -207,7 +213,8 @@ class TestJobExecCreateValidation(u.ValidationTestCase):
                 "cluster_id": six.text_type(uuid.uuid4()),
                 "job_configs": {"configs": {},
                                 "params": {},
-                                "args": []}
+                                "args": [],
+                                "job_execution_info": {}}
             },
             bad_req_i=(1, "INVALID_DATA",
                           "%s job must "
@@ -220,6 +227,7 @@ class TestJobExecCreateValidation(u.ValidationTestCase):
                     "configs": {
                         "edp.java.main_class": "org.me.myclass"},
                     "params": {},
+                    "job_execution_info": {},
                     "args": []}
             })
 
@@ -238,7 +246,8 @@ class TestJobExecCreateValidation(u.ValidationTestCase):
                 "cluster_id": six.text_type(uuid.uuid4()),
                 "job_configs": {"configs": {},
                                 "params": {},
-                                "args": []}
+                                "args": [],
+                                "job_execution_info": {}}
             },
             bad_req_i=(1, "INVALID_DATA",
                           "%s job must "
@@ -251,8 +260,19 @@ class TestJobExecCreateValidation(u.ValidationTestCase):
                     "configs": {
                         "edp.java.main_class": "org.me.myclass"},
                     "params": {},
+                    "job_execution_info": {},
                     "args": []}
             })
+
+    @mock.patch('oslo_utils.timeutils.utcnow')
+    def test_invalid_start_time_in_job_execution_info(self, now_get):
+        configs = {"start": "2015-07-21 14:32:52"}
+        now = time.strptime("2015-07-22 14:39:14", "%Y-%m-%d %H:%M:%S")
+        now = timeutils.datetime.datetime.fromtimestamp(time.mktime(now))
+        now_get.return_value = now
+
+        with testtools.ExpectedException(ex.InvalidJobExecutionInfoException):
+            je.check_scheduled_job_execution_info(configs)
 
 
 class TestJobExecUpdateValidation(u.ValidationTestCase):

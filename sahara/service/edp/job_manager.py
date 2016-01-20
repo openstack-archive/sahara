@@ -105,7 +105,11 @@ def _run_job(job_execution_id):
     # Job id is a string
     # Status is a string
     # Extra is a dictionary to add to extra in the job_execution
-    jid, status, extra = eng.run_job(job_execution)
+    if job_execution.job_configs.job_execution_info.get('job_execution_type'
+                                                        ) == 'scheduled':
+        jid, status, extra = eng.run_scheduled_job(job_execution)
+    else:
+        jid, status, extra = eng.run_job(job_execution)
 
     # Set the job id and the start time
     # Optionally, update the status and the 'extra' field
