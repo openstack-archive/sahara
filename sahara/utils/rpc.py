@@ -101,7 +101,7 @@ def setup():
 
     TRANSPORT = messaging.get_transport(cfg.CONF, aliases=_ALIASES)
 
-    if not cfg.CONF.enable_notifications:
+    if not cfg.CONF.oslo_messaging_notifications.enable:
         LOG.info(_LI("Notifications disabled"))
         return
     LOG.info(_LI("Notifications enabled"))

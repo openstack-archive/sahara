@@ -135,12 +135,14 @@ Notifications configuration
 ---------------------------
 
 Sahara can be configured to send notifications to the OpenStack
-Telemetry module. To enable this functionality the following parameters
-should be set in the ``[DEFAULT]`` section of the configuration file:
+Telemetry module. To enable this functionality the following parameter
+``enable`` should be set in the ``[oslo_messaging_notifications]`` section
+of the configuration file:
 
 .. sourcecode:: cfg
 
-    enable_notifications = true
+    [oslo_messaging_notifications]
+    enable = true
 ..
 
 And the following parameter ``driver`` should be set in the

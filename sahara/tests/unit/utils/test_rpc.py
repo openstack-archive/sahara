@@ -30,7 +30,8 @@ class TestMessagingSetup(base.SaharaTestCase):
 
     def setUp(self):
         super(TestMessagingSetup, self).setUp()
-        self.override_config('enable_notifications', True)
+        self.override_config('enable', True,
+                             group='oslo_messaging_notifications')
 
     def _install(self):
         messaging.setup()
