@@ -18,9 +18,10 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
-import ConfigParser
 import os
 import sys
+
+from six.moves import configparser
 
 import install_venv_common as install_venv  # flake8: noqa
 
@@ -57,7 +58,7 @@ def main(argv):
     pip_requires = os.path.join(root, 'requirements.txt')
     test_requires = os.path.join(root, 'test-requirements.txt')
     py_version = "python%s.%s" % (sys.version_info[0], sys.version_info[1])
-    setup_cfg = ConfigParser.ConfigParser()
+    setup_cfg = configparser.configparser()
     setup_cfg.read('setup.cfg')
     project = setup_cfg.get('metadata', 'name')
 
