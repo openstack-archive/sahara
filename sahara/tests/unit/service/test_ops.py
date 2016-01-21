@@ -118,10 +118,11 @@ class TestOPS(base.SaharaWithDbTestCase):
                           'plugin.scale_cluster'], self.SEQUENCE,
                          'Order of calls is wrong')
 
+    @mock.patch('sahara.service.ops._setup_trust_for_cluster')
     @mock.patch('sahara.service.ops.CONF')
     @mock.patch('sahara.service.trusts.delete_trust_from_cluster')
     @mock.patch('sahara.context.ctx')
-    def test_terminate_cluster(self, p_ctx, p_delete_trust, p_conf):
+    def test_terminate_cluster(self, p_ctx, p_delete_trust, p_conf, p_set):
         del self.SEQUENCE[:]
         base_plugins.PLUGINS = FakePlugin()
         base_plugins.PLUGINS.get_plugin.return_value = FakePlugin()
