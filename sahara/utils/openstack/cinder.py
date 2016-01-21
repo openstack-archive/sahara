@@ -15,7 +15,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from cinderclient.v1 import client as cinder_client_v1
 from cinderclient.v2 import client as cinder_client_v2
 from oslo_config import cfg
 from oslo_log import log as logging
@@ -55,42 +54,27 @@ CONF.register_opts(opts, group=cinder_group)
 
 
 def validate_config():
-    if CONF.cinder.api_version == 1:
-        LOG.warning(_LW('The Cinder v1 API is deprecated and will be removed '
-                        'after the Juno release.  You should set '
-                        'cinder.api_version=2 in your sahara.conf file.'))
-    elif CONF.cinder.api_version != 2:
+    if CONF.cinder.api_version != 2:
         LOG.warning(_LW('Unsupported Cinder API version: {bad}.  Please set a '
                         'correct value for cinder.api_version in your '
                         'sahara.conf file (currently supported versions are: '
                         '{supported}). Falling back to Cinder API version 2.')
                     .format(bad=CONF.cinder.api_version,
-                            supported=[1, 2]))
+                            supported=[2]))
         CONF.set_override('api_version', 2, group='cinder', enforce_type=True)
 
 
 def client():
     session = sessions.cache().get_session(sessions.SESSION_TYPE_CINDER)
-    auth = keystone.auth()
-
-    if CONF.cinder.api_version == 1:
-        cinder = cinder_client_v1.Client(
-            session=session, auth=auth,
-            endpoint_type=CONF.cinder.endpoint_type,
-            region_name=CONF.os_region_name)
-    else:
-        cinder = cinder_client_v2.Client(
-            session=session, auth=auth,
-            endpoint_type=CONF.cinder.endpoint_type,
-            region_name=CONF.os_region_name)
+    cinder = cinder_client_v2.Client(
+        session=session, auth=keystone.auth(),
+        endpoint_type=CONF.cinder.endpoint_type,
+        region_name=CONF.os_region_name)
     return cinder
 
 
 def check_cinder_exists():
-    if CONF.cinder.api_version == 1:
-        service_type = 'volume'
-    else:
-        service_type = 'volumev2'
+    service_type = 'volumev2'
     try:
         base.url_for(context.current().service_catalog, service_type,
                      endpoint_type=CONF.cinder.endpoint_type)

@@ -34,9 +34,6 @@ class TestCinder(test_base.SaharaTestCase):
 
         # Fake service_catalog with both volume and volumev2 services available
         service_catalog = '''[
-            { "type": "volume",
-              "endpoints": [ { "region": "RegionOne",
-                               "internalURL": "http://localhost/" } ] },
             { "type": "volumev2",
               "endpoints": [ { "region": "RegionOne",
                                "internalURL": "http://localhost/" } ] } ]'''
@@ -47,28 +44,15 @@ class TestCinder(test_base.SaharaTestCase):
 
     @mock.patch('sahara.utils.openstack.keystone.auth')
     @mock.patch('cinderclient.v2.client.Client')
-    @mock.patch('cinderclient.v1.client.Client')
-    def test_get_cinder_client_api_v1(self, patched1, patched2, auth):
-        self.override_config('api_version', 1, group='cinder')
-        patched1.return_value = FakeCinderClient(1)
-        patched2.return_value = FakeCinderClient(2)
-
-        client = cinder.client()
-        self.assertEqual(1, client.client.api_version)
-
-    @mock.patch('sahara.utils.openstack.keystone.auth')
-    @mock.patch('cinderclient.v2.client.Client')
-    @mock.patch('cinderclient.v1.client.Client')
-    def test_get_cinder_client_api_v2(self, patched1, patched2, auth):
+    def test_get_cinder_client_api_v2(self, patched, auth):
         self.override_config('api_version', 2, group='cinder')
-        patched1.return_value = FakeCinderClient(1)
-        patched2.return_value = FakeCinderClient(2)
+        patched.return_value = FakeCinderClient(2)
 
         client = cinder.client()
         self.assertEqual(2, client.client.api_version)
 
     def test_cinder_bad_api_version(self):
-        self.override_config('api_version', 0, group='cinder')
+        self.override_config('api_version', 1, group='cinder')
         cinder.validate_config()
 
         # Check bad version falls back to latest supported version
