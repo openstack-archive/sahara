@@ -28,6 +28,8 @@ source settings
 export DEST=${DEST:-$BASE/new}
 export DEVSTACK_DIR=${DEVSTACK_DIR:-$DEST/devstack}
 export SAHARA_DIR=${SAHARA_DIR:-$DEST/sahara}
+export SAHARA_TESTS_DIR=${SAHARA_TESTS_DIR:-$DEST/sahara-scenario}
+
 
 export LOCALRC_PATH=$DEVSTACK_DIR/localrc
 export LOCALCONF_PATH=$DEVSTACK_DIR/local.conf
