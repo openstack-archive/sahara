@@ -439,13 +439,10 @@ def cluster_template_destroy(context, cluster_template_id,
             raise ex.NotFoundException(
                 cluster_template_id,
                 _("Cluster Template id '%s' not found!"))
-        elif not ignore_default and cluster_template.is_default:
-            raise ex.DeletionFailed(
-                _("Cluster template id '%s' "
-                  "is a default template") % cluster_template.id)
 
         validate.check_tenant_for_delete(context, cluster_template)
-        validate.check_protected_from_delete(cluster_template)
+        if not (cluster_template.is_default and ignore_default):
+            validate.check_protected_from_delete(cluster_template)
 
         session.delete(cluster_template)
 
@@ -468,15 +465,9 @@ def cluster_template_update(context, values, ignore_default=False):
                     cluster_template_id,
                     _("Cluster Template id '%s' not found!"))
 
-            elif not ignore_default and cluster_template.is_default:
-                raise ex.UpdateFailedException(
-                    cluster_template_id,
-                    _("ClusterTemplate id '%s' can not be updated. "
-                      "It is a default template.")
-                )
-
             validate.check_tenant_for_update(context, cluster_template)
-            validate.check_protected_from_update(cluster_template, values)
+            if not (cluster_template.is_default and ignore_default):
+                validate.check_protected_from_update(cluster_template, values)
 
             if len(cluster_template.clusters) > 0:
                 raise ex.UpdateFailedException(
@@ -553,13 +544,10 @@ def node_group_template_destroy(context, node_group_template_id,
             raise ex.NotFoundException(
                 node_group_template_id,
                 _("Node Group Template id '%s' not found!"))
-        elif not ignore_default and node_group_template.is_default:
-            raise ex.DeletionFailed(
-                _("Node group template id '%s' "
-                  "is a default template") % node_group_template_id)
 
         validate.check_tenant_for_delete(context, node_group_template)
-        validate.check_protected_from_delete(node_group_template)
+        if not (node_group_template.is_default and ignore_default):
+            validate.check_protected_from_delete(node_group_template)
 
         session.delete(node_group_template)
 
@@ -573,15 +561,10 @@ def node_group_template_update(context, values, ignore_default=False):
             if not ngt:
                 raise ex.NotFoundException(
                     ngt_id, _("NodeGroupTemplate id '%s' not found"))
-            elif not ignore_default and ngt.is_default:
-                raise ex.UpdateFailedException(
-                    ngt_id,
-                    _("NodeGroupTemplate id '%s' can not be updated. "
-                      "It is a default template.")
-                )
 
             validate.check_tenant_for_update(context, ngt)
-            validate.check_protected_from_update(ngt, values)
+            if not (ngt.is_default and ignore_default):
+                validate.check_protected_from_update(ngt, values)
 
             # Check to see that the node group template to be updated is not in
             # use by an existing cluster.
