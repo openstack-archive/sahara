@@ -1,7 +1,0 @@
-[
-    {
-        "operation": "add",
-        "node_group": "cdh-530-worker",
-        "size": 1
-    }
-]

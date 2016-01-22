@@ -1,8 +1,0 @@
-{
-    "name": "cdh-530",
-    "node_group_templates": {
-        "cdh-530-master": 1,
-        "cdh-530-master-additional": 1,
-        "cdh-530-worker": 2
-    }
-}

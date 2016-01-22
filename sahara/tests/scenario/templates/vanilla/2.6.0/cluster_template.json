@@ -1,7 +1,0 @@
-{
-    "name": "vanilla-26",
-    "node_group_templates": {
-        "vanilla-master": 1,
-        "vanilla-worker": 3
-    }
-}

@@ -1,6 +1,0 @@
-{
-    "name": "shell-example.txt",
-    "description": "An example text file",
-    "url": "internal-db://%(text_binary_internal_id)s",
-    "extra": {}
-}

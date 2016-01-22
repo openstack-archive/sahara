@@ -1,7 +1,0 @@
-[
-    {
-        "operation": "resize",
-        "node_group": "hdp-worker",
-        "size": 4
-    }
-]

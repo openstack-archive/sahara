@@ -1,9 +1,0 @@
-{
-    "name": "example.pig",
-    "description": "An example pig script",
-    "url": "swift://edp-examples/edp-pig/trim-spaces/example.pig",
-    "extra": {
-        "user": "demo",
-        "password": "password"
-    }
-}

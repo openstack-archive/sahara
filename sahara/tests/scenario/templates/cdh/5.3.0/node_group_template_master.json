@@ -1,9 +1,0 @@
-{
-    "name": "cdh-530-master",
-    "flavor": "4",
-    "node_processes": [
-        "HDFS_NAMENODE",
-        "YARN_RESOURCEMANAGER",
-    ],
-    "auto_security_group": true
-}
