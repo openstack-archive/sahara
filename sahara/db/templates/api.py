@@ -388,7 +388,7 @@ def delete_node_group_template(ctx, template, rollback=False):
 
     try:
         conductor.API.node_group_template_destroy(ctx, template["id"],
-                                                  ignore_default=True)
+                                                  ignore_prot_on_def=True)
     except Exception as e:
         LOG.warning("Deletion of node group template {info} failed{rollback}"
                     ", {reason}".format(info=u.name_and_id(template),
@@ -410,7 +410,7 @@ def reverse_node_group_template_updates(ctx, update_info):
         try:
             conductor.API.node_group_template_update(ctx,
                                                      template["id"], values,
-                                                     ignore_default=True)
+                                                     ignore_prot_on_def=True)
         except Exception as e:
             LOG.warning("Rollback of update for node group "
                         "template {info} failed, {reason}".format(
@@ -454,7 +454,7 @@ def add_node_group_templates(ctx, node_groups):
                 # mark it as updated.
                 try:
                     template = conductor.API.node_group_template_update(
-                        ctx, current['id'], template, ignore_default=True)
+                        ctx, current['id'], template, ignore_prot_on_def=True)
                 except Exception as e:
                     LOG.warning("Update of node group template {info} "
                                 "failed, {reason}".format(
@@ -526,7 +526,7 @@ def delete_cluster_template(ctx, template, rollback=False):
 
     try:
         conductor.API.cluster_template_destroy(ctx, template["id"],
-                                               ignore_default=True)
+                                               ignore_prot_on_def=True)
     except Exception as e:
         LOG.warning("Deletion of cluster template {info} failed{rollback}"
                     ", {reason}".format(info=u.name_and_id(template),
@@ -548,7 +548,7 @@ def reverse_cluster_template_updates(ctx, update_info):
         try:
             conductor.API.cluster_template_update(ctx,
                                                   template["id"], values,
-                                                  ignore_default=True)
+                                                  ignore_prot_on_def=True)
         except Exception as e:
             LOG.warning("Rollback of update for cluster "
                         "template {info} failed, {reason}".format(
@@ -617,7 +617,7 @@ def add_cluster_templates(ctx, clusters, ng_dict):
                 # Probably a bug
                 try:
                     template = conductor.API.cluster_template_update(
-                        ctx, current['id'], template, ignore_default=True)
+                        ctx, current['id'], template, ignore_prot_on_def=True)
                 except Exception as e:
                     LOG.warning("Update of cluster template {info} "
                                 "failed, {reason}".format(

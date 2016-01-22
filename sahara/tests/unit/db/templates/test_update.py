@@ -387,9 +387,9 @@ class TemplateUpdateTestCase(base.ConductorManagerTestCase):
         self.assertIn(msg, self.logger.infos)
 
         self.api.node_group_template_destroy(ctx, new["id"],
-                                             ignore_default=True)
+                                             ignore_prot_on_def=True)
         self.api.node_group_template_destroy(ctx, existing["id"],
-                                             ignore_default=True)
+                                             ignore_prot_on_def=True)
 
     @mock.patch("sahara.conductor.API.node_group_template_update")
     @mock.patch("sahara.db.templates.api.reverse_node_group_template_creates")
@@ -432,9 +432,9 @@ class TemplateUpdateTestCase(base.ConductorManagerTestCase):
         self.assertIn(msg, self.logger.warnings)
 
         self.api.node_group_template_destroy(ctx, new["id"],
-                                             ignore_default=True)
+                                             ignore_prot_on_def=True)
         self.api.node_group_template_destroy(ctx, existing["id"],
-                                             ignore_default=True)
+                                             ignore_prot_on_def=True)
 
     @mock.patch("sahara.conductor.API.node_group_template_create")
     @mock.patch("sahara.db.templates.api.reverse_node_group_template_creates")
@@ -476,7 +476,7 @@ class TemplateUpdateTestCase(base.ConductorManagerTestCase):
         self.assertIn(msg, self.logger.warnings)
 
         self.api.node_group_template_destroy(ctx, existing["id"],
-                                             ignore_default=True)
+                                             ignore_prot_on_def=True)
 
     def test_add_cluster_templates(self):
         self.logger.clear_log()
@@ -512,9 +512,9 @@ class TemplateUpdateTestCase(base.ConductorManagerTestCase):
         self.assertIn(msg, self.logger.infos)
 
         self.api.cluster_template_destroy(ctx, new["id"],
-                                          ignore_default=True)
+                                          ignore_prot_on_def=True)
         self.api.cluster_template_destroy(ctx, existing["id"],
-                                          ignore_default=True)
+                                          ignore_prot_on_def=True)
 
     @mock.patch("sahara.conductor.API.cluster_template_update")
     @mock.patch("sahara.db.templates.api.reverse_cluster_template_creates")
@@ -557,9 +557,9 @@ class TemplateUpdateTestCase(base.ConductorManagerTestCase):
         self.assertIn(msg, self.logger.warnings)
 
         self.api.cluster_template_destroy(ctx, new["id"],
-                                          ignore_default=True)
+                                          ignore_prot_on_def=True)
         self.api.cluster_template_destroy(ctx, existing["id"],
-                                          ignore_default=True)
+                                          ignore_prot_on_def=True)
 
     @mock.patch("sahara.conductor.API.cluster_template_create")
     @mock.patch("sahara.db.templates.api.reverse_cluster_template_creates")
@@ -605,7 +605,7 @@ class TemplateUpdateTestCase(base.ConductorManagerTestCase):
         self.assertIn(msg, self.logger.warnings)
 
         self.api.cluster_template_destroy(ctx, existing["id"],
-                                          ignore_default=True)
+                                          ignore_prot_on_def=True)
 
     @mock.patch("sahara.db.templates.api.get_configs")
     @mock.patch("sahara.db.templates.api.add_config_section_for_template")

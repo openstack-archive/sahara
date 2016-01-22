@@ -175,13 +175,13 @@ class NodeGroupTemplates(test_base.ConductorManagerTestCase):
         ngt_prot_def_id = ngt_prot_def['id']
 
         # We should not be able to delete ngt_prot until we remove
-        # the protected flag, even if we pass ignore_default
+        # the protected flag, even if we pass ignore_prot_on_def
         with testtools.ExpectedException(ex.DeletionFailed):
             self.api.node_group_template_destroy(ctx, ngt_prot_id)
 
         with testtools.ExpectedException(ex.DeletionFailed):
             self.api.node_group_template_destroy(ctx, ngt_prot_id,
-                                                 ignore_default=True)
+                                                 ignore_prot_on_def=True)
 
         update_values = {"is_protected": False}
         self.api.node_group_template_update(ctx,
@@ -193,12 +193,12 @@ class NodeGroupTemplates(test_base.ConductorManagerTestCase):
             self.api.node_group_template_destroy(ctx, ngt_prot_id)
 
         # However, for the protected_default we should be able to
-        # override the protected check by passing ignore_default
+        # override the protected check by passing ignore_prot_on_def
         with testtools.ExpectedException(ex.DeletionFailed):
             self.api.node_group_template_destroy(ctx, ngt_prot_def_id)
 
         self.api.node_group_template_destroy(ctx, ngt_prot_def_id,
-                                             ignore_default=True)
+                                             ignore_prot_on_def=True)
 
         with testtools.ExpectedException(ex.NotFoundException):
             self.api.node_group_template_destroy(ctx, ngt_prot_def_id)
@@ -263,7 +263,7 @@ class NodeGroupTemplates(test_base.ConductorManagerTestCase):
         ngt_prot_def_id = ngt_prot_def["id"]
 
         # We should not be able to update ngt_prot until we remove
-        # the is_protected flag, even if we pass ignore_default
+        # the is_protected flag, even if we pass ignore_prot_on_def
         UPDATE_NAME = "UpdatedSampleNGTName"
         update_values = {"name": UPDATE_NAME}
         with testtools.ExpectedException(ex.UpdateFailedException):
@@ -275,7 +275,7 @@ class NodeGroupTemplates(test_base.ConductorManagerTestCase):
             self.api.node_group_template_update(ctx,
                                                 ngt_prot_id,
                                                 update_values,
-                                                ignore_default=True)
+                                                ignore_prot_on_def=True)
         update_values["is_protected"] = False
         updated_ngt = self.api.node_group_template_update(ctx,
                                                           ngt_prot_id,
@@ -283,17 +283,16 @@ class NodeGroupTemplates(test_base.ConductorManagerTestCase):
         self.assertEqual(UPDATE_NAME, updated_ngt["name"])
 
         # However, for the ngt_prot_def we should be able to
-        # override the is_protected check by passing ignore_default
+        # override the is_protected check by passing ignore_prot_on_def
         update_values = {"name": UPDATE_NAME+"default"}
         with testtools.ExpectedException(ex.UpdateFailedException):
             self.api.node_group_template_update(ctx,
                                                 ngt_prot_def_id,
                                                 update_values)
 
-        updated_ngt = self.api.node_group_template_update(ctx,
-                                                          ngt_prot_def_id,
-                                                          update_values,
-                                                          ignore_default=True)
+        updated_ngt = self.api.node_group_template_update(
+            ctx, ngt_prot_def_id, update_values, ignore_prot_on_def=True)
+
         self.assertEqual(UPDATE_NAME+"default", updated_ngt["name"])
         self.assertTrue(updated_ngt["is_protected"])
         self.assertTrue(updated_ngt["is_default"])
@@ -455,13 +454,13 @@ class ClusterTemplates(test_base.ConductorManagerTestCase):
         clt_prot_def_id = clt_prot_def['id']
 
         # We should not be able to delete clt_prot until we remove
-        # the is_protected flag, even if we pass ignore_default
+        # the is_protected flag, even if we pass ignore_prot_on_def
         with testtools.ExpectedException(ex.DeletionFailed):
             self.api.cluster_template_destroy(ctx, clt_prot_id)
 
         with testtools.ExpectedException(ex.DeletionFailed):
             self.api.cluster_template_destroy(ctx, clt_prot_id,
-                                              ignore_default=True)
+                                              ignore_prot_on_def=True)
 
         update_values = {"is_protected": False}
         self.api.cluster_template_update(ctx,
@@ -473,12 +472,12 @@ class ClusterTemplates(test_base.ConductorManagerTestCase):
             self.api.cluster_template_destroy(ctx, clt_prot_id)
 
         # However, for clt_prot_def we should be able to override
-        # the is_protected check by passing ignore_default
+        # the is_protected check by passing ignore_prot_on_def
         with testtools.ExpectedException(ex.DeletionFailed):
             self.api.cluster_template_destroy(ctx, clt_prot_def_id)
 
         self.api.cluster_template_destroy(ctx, clt_prot_def_id,
-                                          ignore_default=True)
+                                          ignore_prot_on_def=True)
 
         with testtools.ExpectedException(ex.NotFoundException):
             self.api.cluster_template_destroy(ctx, clt_prot_def_id)
@@ -555,7 +554,7 @@ class ClusterTemplates(test_base.ConductorManagerTestCase):
         clt_prot_def_id = clt_prot_def["id"]
 
         # We should not be able to update clt_prot until we remove
-        # the is_protected flag, even if we pass ignore_default
+        # the is_protected flag, even if we pass ignore_prot_on_def
         UPDATE_NAME = "UpdatedClusterTemplate"
         update_values = {"name": UPDATE_NAME}
         with testtools.ExpectedException(ex.UpdateFailedException):
@@ -567,7 +566,7 @@ class ClusterTemplates(test_base.ConductorManagerTestCase):
             self.api.cluster_template_update(ctx,
                                              clt_prot_id,
                                              update_values,
-                                             ignore_default=True)
+                                             ignore_prot_on_def=True)
         update_values["is_protected"] = False
         updated_clt = self.api.cluster_template_update(ctx,
                                                        clt_prot_id,
@@ -575,7 +574,7 @@ class ClusterTemplates(test_base.ConductorManagerTestCase):
         self.assertEqual(UPDATE_NAME, updated_clt["name"])
 
         # However, for the clt_prot_def we should be able to
-        # override the is_protected check by passing ignore_default
+        # override the is_protected check by passing ignore_prot_on_def
         update_values = {"name": UPDATE_NAME+"default"}
         with testtools.ExpectedException(ex.UpdateFailedException):
             self.api.cluster_template_update(ctx,
@@ -585,7 +584,7 @@ class ClusterTemplates(test_base.ConductorManagerTestCase):
         updated_clt = self.api.cluster_template_update(ctx,
                                                        clt_prot_def_id,
                                                        update_values,
-                                                       ignore_default=True)
+                                                       ignore_prot_on_def=True)
         self.assertEqual(UPDATE_NAME+"default", updated_clt["name"])
         self.assertTrue(updated_clt["is_default"])
         self.assertTrue(updated_clt["is_protected"])
