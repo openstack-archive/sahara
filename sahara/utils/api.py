@@ -111,6 +111,59 @@ class Rest(flask.Blueprint):
         return decorator
 
 
+class RestV2(Rest):
+    def route(self, rule, **options):
+        status = options.pop('status_code', None)
+        file_upload = options.pop('file_upload', False)
+
+        def decorator(func):
+            endpoint = options.pop('endpoint', func.__name__)
+
+            def handler(**kwargs):
+                context.set_ctx(None)
+
+                LOG.debug("Rest.route.decorator.handler, kwargs={kwargs}"
+                          .format(kwargs=kwargs))
+
+                _init_resp_type(file_upload)
+
+                # update status code
+                if status:
+                    flask.request.status_code = status
+
+                req_id = flask.request.environ.get(oslo_req_id.ENV_REQUEST_ID)
+                auth_plugin = flask.request.environ.get('keystone.token_auth')
+                ctx = context.Context(
+                    flask.request.headers['X-User-Id'],
+                    flask.request.headers['X-Tenant-Id'],
+                    flask.request.headers['X-Auth-Token'],
+                    flask.request.headers['X-Service-Catalog'],
+                    flask.request.headers['X-User-Name'],
+                    flask.request.headers['X-Tenant-Name'],
+                    flask.request.headers['X-Roles'].split(','),
+                    auth_plugin=auth_plugin,
+                    request_id=req_id)
+                context.set_ctx(ctx)
+                if flask.request.method in ['POST', 'PUT', 'PATCH']:
+                    kwargs['data'] = request_data()
+
+                try:
+                    return func(**kwargs)
+                except ex.Forbidden as e:
+                    return access_denied(e)
+                except ex.SaharaException as e:
+                    return bad_request(e)
+                except Exception as e:
+                    return internal_error(500, 'Internal Server Error', e)
+
+            self.add_url_rule(rule, endpoint, handler, **options)
+            self.add_url_rule(rule + '.json', endpoint, handler, **options)
+
+            return func
+
+        return decorator
+
+
 RT_JSON = datastructures.MIMEAccept([("application/json", 1)])
 
 

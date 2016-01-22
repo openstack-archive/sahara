@@ -20,6 +20,7 @@ from werkzeug import exceptions as werkzeug_exceptions
 
 from sahara.api import v10 as api_v10
 from sahara.api import v11 as api_v11
+from sahara.api import v2 as api_v2
 from sahara import context
 from sahara.utils import api as api_utils
 
@@ -27,22 +28,25 @@ from sahara.utils import api as api_utils
 CONF = cfg.CONF
 
 
-def build_app():
+def build_app(version_response=None):
     """App builder (wsgi).
 
     Entry point for Sahara REST API server
     """
     app = flask.Flask('sahara.api')
 
+    version_response = (version_response or
+                        {
+                            "versions": [
+                                {"id": "v1.0", "status": "SUPPORTED"},
+                                {"id": "v1.1", "status": "CURRENT"}
+                            ]
+                        })
+
     @app.route('/', methods=['GET'])
     def version_list():
         context.set_ctx(None)
-        return api_utils.render({
-            "versions": [
-                {"id": "v1.0", "status": "SUPPORTED"},
-                {"id": "v1.1", "status": "CURRENT"}
-            ]
-        })
+        return api_utils.render(version_response)
 
     @app.teardown_request
     def teardown_request(_ex=None):
@@ -69,6 +73,25 @@ def build_app():
     return app
 
 
+def build_v2_app():
+    """App builder (wsgi).
+
+    Entry point for Experimental V2 Sahara REST API server
+    """
+    version_response = {
+        "versions": [
+            {"id": "v1.0", "status": "SUPPORTED"},
+            {"id": "v1.1", "status": "CURRENT"},
+            {"id": "v2", "status": "EXPERIMENTAL"}
+        ]
+    }
+    app = build_app(version_response)
+
+    api_v2.register_blueprints(app, url_prefix='/v2')
+
+    return app
+
+
 class Router(object):
     def __call__(self, environ, response):
         return self.app(environ, response)
@@ -76,4 +99,14 @@ class Router(object):
     @classmethod
     def factory(cls, global_config, **local_config):
         cls.app = build_app()
+        return cls(**local_config)
+
+
+class RouterV2(object):
+    def __call__(self, environ, response):
+        return self.app(environ, response)
+
+    @classmethod
+    def factory(cls, global_config, **local_config):
+        cls.app = build_v2_app()
         return cls(**local_config)

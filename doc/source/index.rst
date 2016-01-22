@@ -95,6 +95,7 @@ Developer Guide
     devref/adding_database_migrations
     devref/testing
     devref/log.guidelines
+    devref/apiv2
 
 **Background Concepts for Sahara**
 
