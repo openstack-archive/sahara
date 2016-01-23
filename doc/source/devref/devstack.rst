@@ -54,7 +54,8 @@ Ubuntu 14.04 system.
     $ sudo apt-get install git-core
     $ git clone https://git.openstack.org/openstack-dev/devstack.git
 
-2. Create file ``local.conf`` in devstack directory with the following content:
+2. Create file ``local.conf`` in devstack directory with the following
+   content:
 
 .. sourcecode:: bash
 
@@ -75,21 +76,24 @@ Ubuntu 14.04 system.
     # Force checkout prerequisites
     # FORCE_PREREQ=1
 
-    # keystone is now configured by default to use PKI as the token format which produces huge tokens.
-    # set UUID as keystone token format which is much shorter and easier to work with.
+    # keystone is now configured by default to use PKI as the token format
+    # which produces huge tokens.
+    # set UUID as keystone token format which is much shorter and easier to
+    # work with.
     KEYSTONE_TOKEN_FORMAT=UUID
 
     # Change the FLOATING_RANGE to whatever IPs VM is working in.
-    # In NAT mode it is subnet VMware Fusion provides, in bridged mode it is your local network.
-    # But only use the top end of the network by using a /27 and starting at the 224 octet.
+    # In NAT mode it is the subnet VMware Fusion provides, in bridged mode
+    # it is your local network. But only use the top end of the network by
+    # using a /27 and starting at the 224 octet.
     FLOATING_RANGE=192.168.55.224/27
 
     # Enable logging
     SCREEN_LOGDIR=$DEST/logs/screen
 
-    # Set ``OFFLINE`` to ``True`` to configure ``stack.sh`` to run cleanly without
-    # Internet access. ``stack.sh`` must have been previously run with Internet
-    # access to install prerequisites and fetch repositories.
+    # Set ``OFFLINE`` to ``True`` to configure ``stack.sh`` to run cleanly
+    # without Internet access. ``stack.sh`` must have been previously run
+    # with Internet access to install prerequisites and fetch repositories.
     # OFFLINE=True
 
     # Enable sahara
@@ -147,7 +151,9 @@ Setting fixed IP address for VMware Fusion VM
             range 192.168.55.128 192.168.55.254;
 
 3. You need to pick an IP address outside of that range. For example -
-   ``192.168.55.20`` 4. Copy VM MAC address from VM settings->Network->Advanced
+   ``192.168.55.20``
+
+4. Copy VM MAC address from VM settings->Network->Advanced
 
 5. Append the following block to file ``dhcpd.conf`` (don't forget to replace
    ``VM_HOSTNAME`` and ``VM_MAC_ADDRESS`` with actual values):
