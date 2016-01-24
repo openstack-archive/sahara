@@ -54,8 +54,8 @@ Local endpoint example:
 
 ..
 
-Then the endpoint name should be changed in ``sahara.py`` under the
-`openstack_dashboard.contrib.sahara.api module. <https://github.com/openstack/horizon/blob/master/openstack_dashboard/contrib/sahara/api/sahara.py>`_
+Then the endpoint name should be changed in ``sahara.py`` under the module of
+`sahara-dashboard/sahara_dashboard/api/sahara.py. <https://github.com/openstack/sahara-dashboard/blob/master/sahara_dashboard/api/sahara.py>`_
 
 .. sourcecode:: python
 
