@@ -353,7 +353,7 @@ class SaharaMigrationsCheckers(object):
 
     def _check_007(self, engine, data):
         t = db_utils.get_table(engine, 'clusters')
-        res = engine.execute(t.select(), id='123').first()
+        res = engine.execute(t.select().where(t.c.id == '123')).first()
         self.assertEqual('magic', res['status_description'])
         engine.execute(t.delete())
 
