@@ -20,6 +20,7 @@ from oslo_log import log
 import pkg_resources as pkg
 
 from sahara.db.templates import api
+from sahara.i18n import _LI
 from sahara import version
 
 LOG = log.getLogger(__name__)
@@ -48,8 +49,8 @@ def extra_option_checks():
         # will be loaded by Sahara
         if not CONF.command.plugin_name:
             if "plugins" in CONF and CONF.plugins:
-                LOG.info("Using plugin list {plugins} from config".format(
-                    plugins=CONF.plugins))
+                LOG.info(_LI("Using plugin list {plugins} from config"
+                             ).format(plugins=CONF.plugins))
             else:
                 print("No plugins specified with --plugin-name "
                       "or config", file=sys.stderr)
@@ -198,11 +199,11 @@ def main():
 
     # Since this may be scripted, record the command in the log
     # so a user can know exactly what was done
-    LOG.info("Command: {command}".format(command=' '.join(sys.argv)))
+    LOG.info(_LI("Command: {command}").format(command=' '.join(sys.argv)))
 
     api.set_logger(LOG)
     api.set_conf(CONF)
 
     CONF.command.func()
 
-    LOG.info("Finished {command}".format(command=CONF.command.name))
+    LOG.info(_LI("Finished {command}").format(command=CONF.command.name))
