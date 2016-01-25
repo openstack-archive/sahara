@@ -1,5 +1,5 @@
 ---
 features:
-  - OpenStack Key Manager service can now be uses by sahara to
+  - OpenStack Key Manager service can now be used by sahara to
     enable storage of sensitive information in an external service
     such as barbican.
