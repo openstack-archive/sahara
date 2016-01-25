@@ -306,14 +306,14 @@ class TestJobExecUpdateValidation(u.ValidationTestCase):
         # job execution can't be updated if it's marked as protected
         with testtools.ExpectedException(ex.UpdateFailedException):
             try:
-                je.check_job_execution_update(job_exec, {'is_public': True})
+                je.check_job_execution_update(job_exec, {'job_configs': {}})
             except ex.UpdateFailedException as e:
                 self.assert_protected_resource_exception(e)
                 raise e
         # job execution can be updated because is_protected flag was
         # set to False
         je.check_job_execution_update(
-            job_exec, {'is_protected': False, 'is_public': True})
+            job_exec, {'is_protected': False, 'job_configs': {}})
 
     @mock.patch('sahara.conductor.api.LocalApi.job_execution_get')
     def test_public_je_cancel_delete_from_another_tenant(self, get_je_p):

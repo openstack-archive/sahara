@@ -13,6 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import six
 
 from sahara import exceptions as ex
 from sahara.i18n import _
@@ -45,6 +46,15 @@ def check_protected_from_delete(object):
 
 def check_protected_from_update(object, data):
     if object.is_protected and data.get('is_protected', True):
+        # Okay, the only thing we can allow here is a change
+        # to 'is_public', so we have to make sure no other values
+        # are changing
+        if 'is_public' in data:
+            obj = object.to_dict()
+            if all(k == 'is_public' or (
+                    k in obj and obj[k] == v) for k, v in six.iteritems(data)):
+                return
+
         raise ex.UpdateFailedException(
             object.id,
             _("{object} with id '%s' could not be updated "
