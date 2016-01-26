@@ -73,7 +73,7 @@ class TestClusterTemplate(BaseTestClusterTemplate):
         expected = {
             "scheduler_hints": {
                 "group": {
-                    "get_resource": "cluster-aa-group"
+                    "get_param": h.SERVER_GROUP_PARAM_NAME
                 }
             }
         }

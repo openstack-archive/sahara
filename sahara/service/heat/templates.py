@@ -31,6 +31,7 @@ LOG = logging.getLogger(__name__)
 
 SSH_PORT = 22
 INSTANCE_RESOURCE_NAME = "inst"
+SERVER_GROUP_PARAM_NAME = "servgroup"
 
 heat_engine_opts = [
     cfg.BoolOpt(
@@ -189,8 +190,7 @@ class ClusterStack(object):
         return {
             "scheduler_hints": {
                 "group": {
-                    "get_resource": _get_aa_group_name(
-                        self.cluster)
+                    "get_param": SERVER_GROUP_PARAM_NAME,
                 }
             }
         }
@@ -212,7 +212,10 @@ class ClusterStack(object):
 
         outputs[ng.name + "-instances"] = {
             "value": {"get_attr": [ng.name, "instance"]}}
-
+        properties = {"instance_index": "%index%"}
+        if ng.cluster.anti_affinity:
+            properties[SERVER_GROUP_PARAM_NAME] = {
+                'get_resource': _get_aa_group_name(ng.cluster)}
         return {
             ng.name: {
                 "type": "OS::Heat::ResourceGroup",
@@ -220,20 +223,20 @@ class ClusterStack(object):
                     "count": self.node_groups_extra[ng.id]['node_count'],
                     "resource_def": {
                         "type": ng_file_name,
-                        "properties": {"instance_index": "%index%"}
+                        "properties": properties
                     }
                 }
             }
         }
 
     def _serialize_ng_file(self, ng):
+        parameters = {"instance_index": {"type": "string"}}
+        if ng.cluster.anti_affinity:
+            parameters[SERVER_GROUP_PARAM_NAME] = {'type': "string"}
         return yaml.safe_dump({
             "heat_template_version": "2013-05-23",
             "description": self._node_group_description(ng),
-            "parameters": {
-                "instance_index": {
-                    "type": "string"
-                }},
+            "parameters": parameters,
             "resources": self._serialize_instance(ng),
             "outputs": {
                 "instance": {"value": {
