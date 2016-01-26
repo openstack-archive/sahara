@@ -46,7 +46,8 @@ CONF.register_opts(opts, group=nova_group)
 def client():
     session = sessions.cache().get_session(sessions.SESSION_TYPE_NOVA)
     nova = nova_client.Client('2', session=session, auth=keystone.auth(),
-                              endpoint_type=CONF.nova.endpoint_type)
+                              endpoint_type=CONF.nova.endpoint_type,
+                              region_name=CONF.os_region_name)
     nova.images = images.SaharaImageManager(nova)
     return nova
 

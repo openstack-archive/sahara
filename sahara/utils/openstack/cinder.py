@@ -76,11 +76,13 @@ def client():
     if CONF.cinder.api_version == 1:
         cinder = cinder_client_v1.Client(
             session=session, auth=auth,
-            endpoint_type=CONF.cinder.endpoint_type)
+            endpoint_type=CONF.cinder.endpoint_type,
+            region_name=CONF.os_region_name)
     else:
         cinder = cinder_client_v2.Client(
             session=session, auth=auth,
-            endpoint_type=CONF.cinder.endpoint_type)
+            endpoint_type=CONF.cinder.endpoint_type,
+            region_name=CONF.os_region_name)
     return cinder
 
 
