@@ -1,0 +1,7 @@
+---
+fixes:
+  - Add regular expression matching on search values for
+    certain string fields of sahara objects. This
+    applies to list operations through the REST
+    API and therefore applies to the dashboard
+    and sahara client as well. Closes bug 1503345.

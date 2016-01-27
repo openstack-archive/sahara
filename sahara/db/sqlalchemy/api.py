@@ -15,6 +15,7 @@
 
 """Implementation of SQLAlchemy backend."""
 
+import copy
 import sys
 import threading
 
@@ -167,6 +168,53 @@ def like_filter(query, cls, search_opts):
                 '%' in v and k in cls.__table__.columns):
             col = cls.__table__.columns[k]
             query = query.filter(col.like(v))
+        else:
+            remaining[k] = v
+    return query, remaining
+
+
+def _get_regex_op(connection):
+    db = connection.split(':')[0].split('+')[0]
+    regexp_op_map = {
+        'postgresql': '~',
+        'mysql': 'REGEXP'
+    }
+    return regexp_op_map.get(db, None)
+
+
+def regex_filter(query, cls, regex_cols, search_opts):
+    """Add regex filters for specified columns.
+
+    Add a regex filter to the query for any entry in the
+    'search_opts' dict where the key is the name of a column in
+    'cls' and listed in 'regex_cols' and the value is a string.
+
+    Return the modified query and any entries in search_opts
+    whose keys do not match columns or whose values are not
+    strings.
+
+    This is only supported for mysql and postgres. For other
+    databases, the query is not altered.
+
+    :param query: a non-null query object
+    :param cls: the database model class the filters will apply to
+    :param regex_cols: a list of columns for which regex is supported
+    :param search_opts: a dictionary whose key/value entries are interpreted as
+    column names and search patterns
+    :returns: a tuple containing the modified query and a dictionary of
+    unused search_opts
+    """
+
+    regex_op = _get_regex_op(CONF.database.connection)
+    if not regex_op:
+        return query, copy.copy(search_opts)
+
+    remaining = {}
+    for k, v in six.iteritems(search_opts):
+        if isinstance(v, six.string_types) and (
+                k in cls.__table__.columns and k in regex_cols):
+            col = cls.__table__.columns[k]
+            query = query.filter(col.op(regex_op)(v))
         else:
             remaining[k] = v
     return query, remaining
@@ -398,8 +446,14 @@ def cluster_template_get(context, cluster_template_id):
     return _cluster_template_get(context, get_session(), cluster_template_id)
 
 
-def cluster_template_get_all(context, **kwargs):
+def cluster_template_get_all(context, regex_search=False, **kwargs):
+
+    regex_cols = ['name', 'description', 'plugin_name']
+
     query = model_query(m.ClusterTemplate, context)
+    if regex_search:
+        query, kwargs = regex_filter(query,
+                                     m.ClusterTemplate, regex_cols, kwargs)
     return query.filter_by(**kwargs).all()
 
 

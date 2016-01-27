@@ -176,7 +176,8 @@ def update_cluster(id, values):
 # ClusterTemplate ops
 
 def get_cluster_templates(**kwargs):
-    return conductor.cluster_template_get_all(context.ctx(), **kwargs)
+    return conductor.cluster_template_get_all(context.ctx(),
+                                              regex_search=True, **kwargs)
 
 
 def get_cluster_template(id):

@@ -16,12 +16,14 @@
 import copy
 import uuid
 
+import mock
 import six
 from sqlalchemy import exc as sa_ex
 import testtools
 
 from sahara.conductor import manager
 from sahara import context
+from sahara.db.sqlalchemy import models as m
 from sahara import exceptions as ex
 from sahara.service.validations import cluster_template_schema as cl_schema
 from sahara.service.validations import node_group_template_schema as ngt_schema
@@ -399,18 +401,28 @@ class ClusterTemplates(test_base.ConductorManagerTestCase):
 
     def test_clt_search(self):
         ctx = context.ctx()
-        self.api.cluster_template_create(ctx, SAMPLE_CLT)
+        clt = copy.deepcopy(SAMPLE_CLT)
+        clt["name"] = "frederica"
+        clt["plugin_name"] = "test_plugin"
 
+        self.api.cluster_template_create(ctx, clt)
         lst = self.api.cluster_template_get_all(ctx)
         self.assertEqual(1, len(lst))
 
-        kwargs = {'name': SAMPLE_CLT['name'],
-                  'plugin_name': SAMPLE_CLT['plugin_name']}
+        # Exact match
+        kwargs = {'name': clt['name'],
+                  'plugin_name': clt['plugin_name']}
         lst = self.api.cluster_template_get_all(ctx, **kwargs)
         self.assertEqual(1, len(lst))
 
         # Valid field but no matching value
-        kwargs = {'name': SAMPLE_CLT['name']+"foo"}
+        kwargs = {'name': clt['name']+"foo"}
+        lst = self.api.cluster_template_get_all(ctx, **kwargs)
+        self.assertEqual(0, len(lst))
+
+        # Valid field with substrings
+        kwargs = {'name': "red",
+                  'plugin_name': "test"}
         lst = self.api.cluster_template_get_all(ctx, **kwargs)
         self.assertEqual(0, len(lst))
 
@@ -418,6 +430,26 @@ class ClusterTemplates(test_base.ConductorManagerTestCase):
         self.assertRaises(sa_ex.InvalidRequestError,
                           self.api.cluster_template_get_all,
                           ctx, **{'badfield': 'junk'})
+
+    @mock.patch('sahara.db.sqlalchemy.api.regex_filter')
+    def test_clt_search_regex(self, regex_filter):
+
+        # do this so we can return the correct value
+        def _regex_filter(query, cls, regex_cols, search_opts):
+            return query, search_opts
+
+        regex_filter.side_effect = _regex_filter
+
+        ctx = context.ctx()
+        self.api.cluster_template_get_all(ctx)
+        self.assertEqual(0, regex_filter.call_count)
+
+        self.api.cluster_template_get_all(ctx, regex_search=True, name="fox")
+        self.assertEqual(1, regex_filter.call_count)
+        args, kwargs = regex_filter.call_args
+        self.assertTrue(type(args[1] is m.ClusterTemplate))
+        self.assertEqual(args[2], ["name", "description", "plugin_name"])
+        self.assertEqual(args[3], {"name": "fox"})
 
     def test_clt_update(self):
         ctx = context.ctx()
