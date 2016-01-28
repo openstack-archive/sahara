@@ -1369,3 +1369,113 @@ def cluster_event_add(context, step_id, values):
         session.add(event)
 
     return event.id
+
+
+# Cluster verifications / health check ops
+
+def _cluster_verification_get(context, session, verification_id):
+    # tenant id is not presented
+    query = model_query(m.ClusterVerification, context, session,
+                        project_only=False)
+    return query.filter_by(id=verification_id).first()
+
+
+def cluster_verification_get(context, verification_id):
+    return _cluster_verification_get(context, get_session(), verification_id)
+
+
+def cluster_verification_add(context, cluster_id, values):
+    session = get_session()
+
+    with session.begin():
+        cluster = _cluster_get(context, session, cluster_id)
+
+        if not cluster:
+            raise ex.NotFoundException(
+                cluster_id, _("Cluster id '%s' not found!"))
+
+        verification = m.ClusterVerification()
+        values['cluster_id'] = cluster_id
+        verification.update(values)
+        session.add(verification)
+
+    return verification
+
+
+def cluster_verification_update(context, verification_id, values):
+    session = get_session()
+
+    with session.begin():
+        verification = _cluster_verification_get(
+            context, session, verification_id)
+
+        if not verification:
+            raise ex.NotFoundException(
+                verification_id, _("Verification id '%s' not found!"))
+
+        verification.update(values)
+    return verification
+
+
+def cluster_verification_delete(context, verification_id):
+    session = get_session()
+
+    with session.begin():
+        verification = _cluster_verification_get(
+            context, session, verification_id)
+
+        if not verification:
+            raise ex.NotFoundException(
+                verification_id, _("Verification id '%s' not found!"))
+
+        for check in verification.checks:
+            session.delete(check)
+
+        session.delete(verification)
+
+
+def _cluster_health_check_get(context, session, health_check_id):
+    # tenant id is not presented
+    query = model_query(m.ClusterHealthCheck, context, session,
+                        project_only=False)
+    return query.filter_by(id=health_check_id).first()
+
+
+def cluster_health_check_get(context, health_check_id):
+    return _cluster_health_check_get(context, get_session(), health_check_id)
+
+
+def cluster_health_check_add(context, verification_id, values):
+    session = get_session()
+
+    with session.begin():
+        verification = _cluster_verification_get(
+            context, session, verification_id)
+
+        if not verification:
+            raise ex.NotFoundException(
+                verification_id, _("Verification id '%s' not found!"))
+
+        health_check = m.ClusterHealthCheck()
+        values['verification_id'] = verification_id
+        values['tenant_id'] = context.tenant_id
+        health_check.update(values)
+        session.add(health_check)
+
+    return health_check
+
+
+def cluster_health_check_update(context, health_check_id, values):
+    session = get_session()
+
+    with session.begin():
+        health_check = _cluster_health_check_get(
+            context, session, health_check_id)
+
+        if not health_check:
+            raise ex.NotFoundException(
+                health_check_id, _("Health check id '%s' not found!"))
+
+        health_check.update(values)
+
+    return health_check

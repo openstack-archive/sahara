@@ -19,9 +19,9 @@ from sahara import context
 import sahara.exceptions as ex
 from sahara.i18n import _
 import sahara.service.api as api
+from sahara.service.health import verification_base
 from sahara.service.validations import acl
 import sahara.service.validations.base as b
-
 
 CONF = cfg.CONF
 
@@ -115,5 +115,8 @@ def check_cluster_delete(cluster_id, **kwargs):
 def check_cluster_update(cluster_id, data, **kwargs):
     cluster = api.get_cluster(cluster_id)
 
+    verification = verification_base.validate_verification_ops(
+        cluster, data)
     acl.check_tenant_for_update(context.current(), cluster)
-    acl.check_protected_from_update(cluster, data)
+    if not verification:
+        acl.check_protected_from_update(cluster, data)

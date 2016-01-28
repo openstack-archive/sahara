@@ -22,6 +22,7 @@ from six.moves.urllib import parse as urlparse
 from sahara import conductor as c
 from sahara import context
 from sahara.plugins import base as plugin_base
+from sahara.service.health import verification_base
 from sahara.service import quotas
 from sahara.utils import cluster as c_u
 from sahara.utils import general as g
@@ -171,6 +172,9 @@ def terminate_cluster(id):
 
 
 def update_cluster(id, values):
+    if verification_base.update_verification_required(values):
+        OPS.handle_verification(id, values)
+        return conductor.cluster_get(context.ctx(), id)
     return conductor.cluster_update(context.ctx(), id, values)
 
 

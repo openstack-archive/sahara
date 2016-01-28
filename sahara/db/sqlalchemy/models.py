@@ -72,6 +72,8 @@ class Cluster(mb.SaharaBase):
                                       cascade="all,delete",
                                       backref='cluster',
                                       lazy='joined')
+    verification = relationship('ClusterVerification', cascade="all,delete",
+                                backref="cluster", lazy='joined')
     node_groups = relationship('NodeGroup', cascade="all,delete",
                                backref='cluster', lazy='joined')
     cluster_template_id = sa.Column(sa.String(36),
@@ -87,6 +89,8 @@ class Cluster(mb.SaharaBase):
         d['node_groups'] = [ng.to_dict() for ng in self.node_groups]
         d['provision_progress'] = [pp.to_dict(show_progress) for pp in
                                    self.provision_progress]
+        if self.verification:
+            d['verification'] = self.verification[0].to_dict()
         return d
 
 
@@ -498,3 +502,38 @@ class ClusterProvisionStep(mb.SaharaBase):
         if show_progress:
             d['events'] = [event.to_dict() for event in self.events]
         return d
+
+
+class ClusterVerification(mb.SaharaBase):
+    """ClusterVerification represent results of cluster health checks."""
+
+    __tablename__ = 'cluster_verifications'
+
+    __table_args__ = (sa.UniqueConstraint('id', 'cluster_id'),)
+
+    id = _id_column()
+    cluster_id = sa.Column(
+        sa.String(36), sa.ForeignKey('clusters.id'))
+    status = sa.Column(sa.String(15))
+    checks = relationship(
+        'ClusterHealthCheck', cascade="all,delete",
+        backref='ClusterVerification', lazy='joined')
+
+    def to_dict(self):
+        base = super(ClusterVerification, self).to_dict()
+        base['checks'] = [check.to_dict() for check in self.checks]
+        return base
+
+
+class ClusterHealthCheck(mb.SaharaBase):
+    """ClusterHealthCheck respresent cluster health check."""
+
+    __tablename__ = 'cluster_health_checks'
+    __table_args__ = (sa.UniqueConstraint('id', 'verification_id'),)
+
+    id = _id_column()
+    verification_id = sa.Column(
+        sa.String(36), sa.ForeignKey('cluster_verifications.id'))
+    status = sa.Column(sa.String(15))
+    description = sa.Column(sa.Text)
+    name = sa.Column(sa.String(80))

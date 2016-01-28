@@ -28,13 +28,13 @@ from sahara.i18n import _
 from sahara.i18n import _LE
 from sahara.plugins import base as plugin_base
 from sahara.service.edp import job_manager
+from sahara.service.health import verification_base as ver_base
 from sahara.service import ntp_service
 from sahara.service import shares
 from sahara.service import trusts
 from sahara.utils import cluster as c_u
 from sahara.utils import remote
 from sahara.utils import rpc as rpc_utils
-
 
 conductor = c.API
 CONF = cfg.CONF
@@ -75,6 +75,10 @@ class LocalOps(object):
         context.spawn("Deleting Job Execution %s" % job_execution_id,
                       _delete_job_execution, job_execution_id)
 
+    def handle_verification(self, cluster_id, values):
+        context.spawn('Handling Verification for cluster %s' % cluster_id,
+                      _handle_verification, cluster_id, values)
+
     def get_engine_type_and_version(self):
         return INFRA.get_type_and_version()
 
@@ -104,6 +108,9 @@ class RemoteOps(rpc_utils.RPCClient):
     def delete_job_execution(self, job_execution_id):
         self.cast('delete_job_execution',
                   job_execution_id=job_execution_id)
+
+    def handle_verification(self, cluster_id, values):
+        self.cast('handle_verification', cluster_id=cluster_id, values=values)
 
     def get_engine_type_and_version(self):
         return self.call('get_engine_type_and_version')
@@ -147,6 +154,10 @@ class OpsServer(rpc_utils.RPCServer):
     @request_context
     def delete_job_execution(self, job_execution_id):
         _delete_job_execution(job_execution_id)
+
+    @request_context
+    def handle_verification(self, cluster_id, values):
+        _handle_verification(cluster_id, values)
 
     @request_context
     def get_engine_type_and_version(self):
@@ -365,3 +376,7 @@ def _delete_job_execution(job_execution_id):
         LOG.error(_LE("Job execution can't be cancelled in time. "
                       "Deleting it anyway."))
     conductor.job_execution_destroy(context.ctx(), job_execution_id)
+
+
+def _handle_verification(cluster_id, values):
+    ver_base.handle_verification(cluster_id, values)

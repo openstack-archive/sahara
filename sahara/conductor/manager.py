@@ -714,3 +714,36 @@ class ConductorManager(db_base.Base):
     def cluster_event_add(self, context, provision_step, values):
         """Assign new event to the specified provision step."""
         return self.db.cluster_event_add(context, provision_step, values)
+
+    # Cluster verifications / health checks ops
+
+    def cluster_verification_add(self, context, cluster_id, values):
+        """Return created verification for the specified cluster."""
+        return self.db.cluster_verification_add(context, cluster_id, values)
+
+    def cluster_verification_get(self, context, verification_id):
+        """Return verification with the specified verification_id."""
+        return self.db.cluster_verification_get(context, verification_id)
+
+    def cluster_verification_update(self, context, verification_id, values):
+        """Return updated verification with the specified verification_id."""
+        return self.db.cluster_verification_update(
+            context, verification_id, values)
+
+    def cluster_verification_delete(self, context, verification_id):
+        """"Delete verification with the specified id."""
+        return self.db.cluster_verification_delete(context, verification_id)
+
+    def cluster_health_check_add(self, context, verification_id, values):
+        """Return created health check in the specified verification."""
+        return self.db.cluster_health_check_add(
+            context, verification_id, values)
+
+    def cluster_health_check_get(self, context, health_check_id):
+        """Return health check with the specified health_check_id."""
+        return self.db.cluster_health_check_get(context, health_check_id)
+
+    def cluster_health_check_update(self, context, health_check_id, values):
+        """Return updated health check with the specified health_check_id."""
+        return self.db.cluster_health_check_update(
+            context, health_check_id, values)

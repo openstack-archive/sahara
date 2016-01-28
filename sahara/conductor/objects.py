@@ -336,3 +336,24 @@ class ClusterEvent(object):
     successful
     step_id
     """
+
+
+class ClusterVerification(object):
+    """An object representing cluster verification
+
+    id
+    cluster_id
+    status
+    checks
+    """
+
+
+class ClusterHealthCheck(object):
+    """An object representing health check
+
+    id
+    verification_id
+    status
+    description
+    name
+    """

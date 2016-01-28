@@ -578,6 +578,35 @@ class SaharaMigrationsCheckers(object):
         self.assertFalse(res['is_protected'])
         engine.execute(t.delete())
 
+    def _check_030(self, engine, data):
+        health_check_columns = [
+            'status',
+            'name',
+            'description',
+            'id',
+            'verification_id',
+            'created_at',
+            'updated_at'
+        ]
+
+        verification_columns = [
+            'status',
+            'id',
+            'cluster_id',
+            'created_at',
+            'updated_at'
+        ]
+
+        self.assertColumnCount(engine, 'cluster_verifications',
+                               verification_columns)
+        self.assertColumnsExist(engine, 'cluster_verifications',
+                                verification_columns)
+
+        self.assertColumnCount(engine, 'cluster_health_checks',
+                               health_check_columns)
+        self.assertColumnsExist(engine, 'cluster_health_checks',
+                                health_check_columns)
+
 
 class TestMigrationsMySQL(SaharaMigrationsCheckers,
                           base.BaseWalkMigrationTestCase,

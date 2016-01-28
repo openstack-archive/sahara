@@ -546,6 +546,47 @@ class LocalApi(object):
         return self._manager.cluster_event_add(
             context, provision_step, values)
 
+    @r.wrap(r.ClusterVerificationResource)
+    def cluster_verification_add(self, context, cluster_id, values):
+        """Return created verification for the specified cluster."""
+        return self._manager.cluster_verification_add(
+            context, _get_id(cluster_id), values)
+
+    @r.wrap(r.ClusterVerificationResource)
+    def cluster_verification_get(self, context, verification_id):
+        """Return verification with the specified verification_id."""
+        return self._manager.cluster_verification_get(
+            context, _get_id(verification_id))
+
+    @r.wrap(r.ClusterVerificationResource)
+    def cluster_verification_update(self, context, verification_id, values):
+        """Return updated verification with the specified verification_id."""
+        return self._manager.cluster_verification_update(
+            context, _get_id(verification_id), values)
+
+    def cluster_verification_delete(self, context, verification_id):
+        """"Delete verification with the specified id."""
+        return self._manager.cluster_verification_delete(
+            context, _get_id(verification_id))
+
+    @r.wrap(r.ClusterHealthCheckResource)
+    def cluster_health_check_add(self, context, verification_id, values):
+        """Return created health check in the specified verification."""
+        return self._manager.cluster_health_check_add(
+            context, _get_id(verification_id), values)
+
+    @r.wrap(r.ClusterHealthCheckResource)
+    def cluster_health_check_get(self, context, health_check_id):
+        """Return health check with the specified health_check_id."""
+        return self._manager.cluster_health_check_get(
+            context, _get_id(health_check_id))
+
+    @r.wrap(r.ClusterHealthCheckResource)
+    def cluster_health_check_update(self, context, health_check_id, values):
+        """Return updated health check with the specified health_check_id."""
+        return self._manager.cluster_health_check_update(
+            context, _get_id(health_check_id), values)
+
 
 class RemoteApi(LocalApi):
     """Conductor API that does updates via RPC to the ConductorManager."""

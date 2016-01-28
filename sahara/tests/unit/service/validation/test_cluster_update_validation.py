@@ -19,6 +19,7 @@ import testtools
 
 from sahara import exceptions as ex
 from sahara.service import api
+from sahara.service.health import verification_base
 from sahara.service.validations import clusters as c_val
 from sahara.service.validations import clusters_schema as c_schema
 from sahara.tests.unit.service.validation import utils as u
@@ -97,4 +98,45 @@ class TestClusterUpdateValidation(u.ValidationTestCase):
                 c_val.check_cluster_update(cluster.id, {'name': 'new'})
             except ex.UpdateFailedException as e:
                 self.assert_created_in_another_tenant_exception(e)
+                raise e
+
+    @mock.patch('sahara.conductor.API.cluster_get')
+    def test_verifications_ops(self, get_cluster_mock):
+        cluster = tu.create_cluster(
+            'cluster1', "tenant_1", "fake", "0.1", ['ng1'], status='Active')
+        get_cluster_mock.return_value = cluster
+        self.assertIsNone(c_val.check_cluster_update(
+            cluster, {'verification': {'status': "START"}}))
+        cluster = tu.create_cluster(
+            'cluster1', "tenant_1", "fake", "0.1", ['ng1'],
+            status='Active', verification={'status': "CHECKING"})
+        get_cluster_mock.return_value = cluster
+        with testtools.ExpectedException(verification_base.CannotVerifyError):
+            c_val.check_cluster_update(
+                cluster, {'verification': {'status': 'START'}})
+
+        cluster = tu.create_cluster(
+            'cluster1', "tenant_1", "fake", "0.1", ['ng1'],
+            status='Active', verification={'status': "RED"})
+        get_cluster_mock.return_value = cluster
+        self.assertIsNone(c_val.check_cluster_update(
+            cluster, {'verification': {'status': "START"}}))
+
+        with testtools.ExpectedException(verification_base.CannotVerifyError):
+            c_val.check_cluster_update(cluster, {
+                'is_public': True, 'verification': {'status': "START"}})
+
+        # allow verification for protected resource
+        cluster = tu.create_cluster(
+            'cluster1', "tenant_1", "fake", "0.1", ['ng1'],
+            is_protected=True, status='Active')
+        get_cluster_mock.return_value = cluster
+        self.assertIsNone(c_val.check_cluster_update(
+            cluster, {'verification': {'status': "START"}}))
+        # just for sure that protected works nicely for other
+        with testtools.ExpectedException(ex.UpdateFailedException):
+            try:
+                c_val.check_cluster_update(cluster.id, {'name': 'new'})
+            except ex.UpdateFailedException as e:
+                self.assert_protected_resource_exception(e)
                 raise e
