@@ -179,18 +179,28 @@ class NodeGroupTemplates(test_base.ConductorManagerTestCase):
 
     def test_ngt_search(self):
         ctx = context.ctx()
-        self.api.node_group_template_create(ctx, SAMPLE_NGT)
+        ngt = copy.deepcopy(SAMPLE_NGT)
+        ngt["name"] = "frederica"
+        ngt["plugin_name"] = "test plugin"
 
+        self.api.node_group_template_create(ctx, ngt)
         lst = self.api.node_group_template_get_all(ctx)
         self.assertEqual(1, len(lst))
 
-        kwargs = {'name': SAMPLE_NGT['name'],
-                  'plugin_name': SAMPLE_NGT['plugin_name']}
+        # Exact match
+        kwargs = {'name': ngt['name'],
+                  'plugin_name': ngt['plugin_name']}
         lst = self.api.node_group_template_get_all(ctx, **kwargs)
         self.assertEqual(1, len(lst))
 
         # Valid field but no matching value
-        kwargs = {'name': SAMPLE_NGT['name']+"foo"}
+        kwargs = {'name': ngt['name']+"foo"}
+        lst = self.api.node_group_template_get_all(ctx, **kwargs)
+        self.assertEqual(0, len(lst))
+
+        # Valid field with substrings
+        kwargs = {'name': "red",
+                  'plugin_name': "test"}
         lst = self.api.node_group_template_get_all(ctx, **kwargs)
         self.assertEqual(0, len(lst))
 
@@ -198,6 +208,27 @@ class NodeGroupTemplates(test_base.ConductorManagerTestCase):
         self.assertRaises(sa_ex.InvalidRequestError,
                           self.api.node_group_template_get_all,
                           ctx, **{'badfield': 'junk'})
+
+    @mock.patch('sahara.db.sqlalchemy.api.regex_filter')
+    def test_ngt_search_regex(self, regex_filter):
+
+        # do this so we can return the correct value
+        def _regex_filter(query, cls, regex_cols, search_opts):
+            return query, search_opts
+
+        regex_filter.side_effect = _regex_filter
+
+        ctx = context.ctx()
+        self.api.node_group_template_get_all(ctx)
+        self.assertEqual(0, regex_filter.call_count)
+
+        self.api.node_group_template_get_all(ctx,
+                                             regex_search=True, name="fox")
+        self.assertEqual(1, regex_filter.call_count)
+        args, kwargs = regex_filter.call_args
+        self.assertTrue(type(args[1] is m.NodeGroupTemplate))
+        self.assertEqual(args[2], ["name", "description", "plugin_name"])
+        self.assertEqual(args[3], {"name": "fox"})
 
     def test_ngt_update(self):
         ctx = context.ctx()

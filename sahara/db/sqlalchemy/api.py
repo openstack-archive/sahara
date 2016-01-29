@@ -577,8 +577,14 @@ def node_group_template_get(context, node_group_template_id):
                                     node_group_template_id)
 
 
-def node_group_template_get_all(context, **kwargs):
+def node_group_template_get_all(context, regex_search=False, **kwargs):
+
+    regex_cols = ['name', 'description', 'plugin_name']
+
     query = model_query(m.NodeGroupTemplate, context)
+    if regex_search:
+        query, kwargs = regex_filter(query,
+                                     m.NodeGroupTemplate, regex_cols, kwargs)
     return query.filter_by(**kwargs).all()
 
 
