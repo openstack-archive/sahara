@@ -26,12 +26,23 @@ import sahara.utils.xmlutils as xml
 
 
 @six.add_metaclass(abc.ABCMeta)
+class FileAttr(object):
+    def __init__(self, path, data, mode, owner):
+        self.path = path
+        self.data = data
+        self.mode = mode
+        self.owner = owner
+
+
+@six.add_metaclass(abc.ABCMeta)
 class BaseConfigurationFile(object):
     def __init__(self, file_name):
         self.f_name = file_name
         self._config_dict = dict()
         self._local_path = None
         self._remote_path = None
+        self.mode = None
+        self.owner = None
 
     @property
     def remote_path(self):
