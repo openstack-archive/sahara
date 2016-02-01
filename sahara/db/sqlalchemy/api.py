@@ -689,8 +689,14 @@ def data_source_count(context, **kwargs):
     return query.filter_by(**kwargs).count()
 
 
-def data_source_get_all(context, **kwargs):
+def data_source_get_all(context, regex_search=False, **kwargs):
+
+    regex_cols = ['name', 'description', 'url']
+
     query = model_query(m.DataSource, context)
+    if regex_search:
+        query, kwargs = regex_filter(query,
+                                     m.DataSource, regex_cols, kwargs)
     return query.filter_by(**kwargs).all()
 
 

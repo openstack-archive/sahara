@@ -264,12 +264,22 @@ class LocalApi(object):
         return self._manager.data_source_get(context, _get_id(data_source))
 
     @r.wrap(r.DataSource)
-    def data_source_get_all(self, context, **kwargs):
+    def data_source_get_all(self, context, regex_search=False, **kwargs):
         """Get all Data Sources filtered by **kwargs.
 
-        e.g.  data_source_get_all(name='myfile', type='swift')
+        :param context: The context, and associated authentication, to use with
+                        this operation
+
+        :param regex_search: If True, enable regex matching for filter
+                             values. See the user guide for more information
+                             on how regex matching is handled. If False,
+                             no regex matching is done.
+
+        :param kwargs: Specifies values for named fields by which
+                       to constrain the search
         """
-        return self._manager.data_source_get_all(context, **kwargs)
+        return self._manager.data_source_get_all(context,
+                                                 regex_search, **kwargs)
 
     def data_source_count(self, context, **kwargs):
         """Count Data Sources filtered by **kwargs.
