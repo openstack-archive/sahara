@@ -63,6 +63,7 @@ class Hue(s.Service):
             vu.exactly(1, HUE),
             vu.on_same_node(HUE, httpfs.HTTP_FS),
         ]
+        self._priority = 2
 
     def conf_dir(self, cluster_context):
         return '%s/desktop/conf' % self.home_dir(cluster_context)

@@ -112,7 +112,7 @@ class BaseConfigurer(ac.AbstractConfigurer):
         def key(service):
             if service in SERVICE_INSTALL_PRIORITY:
                 return SERVICE_INSTALL_PRIORITY.index(service)
-            return -1
+            return -service._priority
 
         return sorted(cluster_context.cluster_services, key=key, reverse=True)
 
