@@ -12,19 +12,19 @@ EOF
 
 elif [ "$1" = 'CentOS' -o "$1" = 'RedHatEnterpriseServer' ]; then
     cat >> /etc/yum.repos.d/maprtech.repo <<- EOF
-    [maprtech]
-    name=MapR Technologies
-    baseurl=%(centos_mapr_base_repo)s
-    enabled=1
-    gpgcheck=0
-    protect=1
+[maprtech]
+name=MapR Technologies
+baseurl=%(centos_mapr_base_repo)s
+enabled=1
+gpgcheck=0
+protect=1
 
-    [maprecosystem]
-    name=MapR Technologies
-    baseurl=%(centos_mapr_ecosystem_repo)s
-    enabled=1
-    gpgcheck=0
-    protect=1
+[maprecosystem]
+name=MapR Technologies
+baseurl=%(centos_mapr_ecosystem_repo)s
+enabled=1
+gpgcheck=0
+protect=1
 EOF
     rpm --import http://package.mapr.com/releases/pub/maprgpg.key
     yum install -y wget
