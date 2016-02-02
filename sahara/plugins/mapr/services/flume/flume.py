@@ -31,6 +31,17 @@ class Flume(s.Service):
         super(Flume, self).__init__()
         self._name = 'flume'
         self._ui_name = 'Flume'
-        self._version = '1.5.0'
         self._node_processes = [FLUME]
         self._validation_rules = [vu.at_least(1, FLUME)]
+
+
+class FlumeV15(Flume):
+    def __init__(self):
+        super(FlumeV15, self).__init__()
+        self._version = '1.5.0'
+
+
+class FlumeV16(Flume):
+    def __init__(self):
+        super(FlumeV16, self).__init__()
+        self._version = '1.6.0'
