@@ -161,12 +161,21 @@ class ConductorManager(db_base.Base):
         """Return the cluster or None if it does not exist."""
         return self.db.cluster_get(context, cluster, show_progress)
 
-    def cluster_get_all(self, context, **kwargs):
+    def cluster_get_all(self, context, regex_search=False, **kwargs):
         """Get all clusters filtered by **kwargs.
 
-        e.g. cluster_get_all(plugin_name='vanilla', hadoop_version='1.1')
+        :param context: The context, and associated authentication, to use with
+                        this operation
+
+        :param regex_search: If True, enable regex matching for filter
+                             values. See the user guide for more information
+                             on how regex matching is handled. If False,
+                             no regex matching is done.
+
+        :param kwargs: Specifies values for named fields by which
+                       to constrain the search
         """
-        return self.db.cluster_get_all(context, **kwargs)
+        return self.db.cluster_get_all(context, regex_search, **kwargs)
 
     def cluster_create(self, context, values):
         """Create a cluster from the values dictionary."""
