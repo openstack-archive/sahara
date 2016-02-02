@@ -22,7 +22,6 @@ import sahara.plugins.mapr.services.mysql.mysql as mysql
 import sahara.plugins.mapr.util.general as g
 import sahara.plugins.mapr.util.validation_utils as vu
 
-
 LOG = logging.getLogger(__name__)
 
 OOZIE = np.NodeProcess(
@@ -76,9 +75,14 @@ class Oozie(s.Service):
         }
         return jdbc_uri % jdbc_args
 
+    def _set_owner(remote):
+        remote.execute_command('chown -R mapr:mapr /opt/mapr/oozie',
+                               run_as_root=True)
+
     def post_install(self, cluster_context, instances):
         oozie_inst = cluster_context.get_instance(OOZIE)
         oozie_service = cluster_context.get_service(OOZIE)
+
         if oozie_service:
             oozie_version = oozie_service.version
             symlink_cmd = ('cp /usr/share/java/mysql-connector-java.jar '
@@ -88,6 +92,7 @@ class Oozie(s.Service):
                 LOG.debug('Installing MySQL connector for Oozie')
                 r.execute_command(symlink_cmd, run_as_root=True,
                                   raise_when_error=False)
+                self._set_owner(r)
 
     def post_start(self, cluster_context, instances):
         instances = cluster_context.filter_instances(instances, OOZIE)
@@ -126,3 +131,25 @@ class OozieV410(Oozie):
         super(OozieV410, self).__init__()
         self._version = '4.1.0'
         self._dependencies = [('mapr-oozie-internal', self.version)]
+
+
+class OozieV420(Oozie):
+    def __init__(self):
+        super(OozieV420, self).__init__()
+        self._version = '4.2.0'
+        self._dependencies = [('mapr-oozie-internal', self.version)]
+
+    def post_install(self, cluster_context, instances):
+        oozie_inst = cluster_context.get_instance(OOZIE)
+        oozie_service = cluster_context.get_service(OOZIE)
+
+        if oozie_service:
+            oozie_version = oozie_service.version
+            symlink_cmd = ('cp /usr/share/java/mysql-connector-java.jar '
+                           '/opt/mapr/oozie/oozie-%s'
+                           '/libext') % oozie_version
+            with oozie_inst.remote() as r:
+                LOG.debug('Installing MySQL connector for Oozie')
+                r.execute_command(symlink_cmd, run_as_root=True,
+                                  raise_when_error=False)
+                self._set_owner(r)
