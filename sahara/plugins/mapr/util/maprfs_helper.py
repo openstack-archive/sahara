@@ -24,6 +24,12 @@ import sahara.plugins.mapr.util.general as g
 MV_TO_MAPRFS_CMD = ('sudo -u %(user)s'
                     ' hadoop fs -copyFromLocal %(source)s %(target)s'
                     ' && sudo rm -f %(source)s')
+CP_TO_MAPRFS_CMD = ('sudo -u %(user)s'
+                    ' hadoop fs -copyFromLocal %(source)s %(target)s')
+
+CP_FROM_MAPRFS_CMD = ('sudo hadoop fs -copyToLocal %(source)s %(target)s')
+
+RM_CMD = ('sudo -u %(user)s hadoop fs -rm %(path)s')
 MKDIR_CMD_MAPR4 = 'sudo -u %(user)s hadoop fs -mkdir -p %(path)s'
 MKDIR_CMD_MAPR3 = 'sudo -u %(user)s hadoop fs -mkdir %(path)s'
 
@@ -38,6 +44,27 @@ def put_file_to_maprfs(r, content, file_name, path, hdfs_user):
 def move_from_local(r, source, target, hdfs_user):
     args = {'user': hdfs_user, 'source': source, 'target': target}
     r.execute_command(MV_TO_MAPRFS_CMD % args)
+
+
+def copy_from_local(r, source, target, hdfs_user):
+    args = {'user': hdfs_user, 'source': source, 'target': target}
+    r.execute_command(CP_TO_MAPRFS_CMD % args)
+
+
+def copy_to_local(r, hdfs_source, target, hdfs_user):
+    args = {'source': hdfs_source, 'target': target}
+    r.execute_command(CP_FROM_MAPRFS_CMD % args)
+
+
+def exchange(source, target, src_path, trg_path, hdfs_user):
+    copy_from_local(source, src_path, "/user/mapr/servlet.jar", hdfs_user)
+    copy_to_local(target, "/user/mapr/servlet.jar", trg_path, hdfs_user)
+    remove(source, "/user/mapr/servlet.jar", hdfs_user)
+
+
+def remove(r, path, hdfs_user):
+    args = {'user': hdfs_user, 'path': path}
+    r.execute_command(RM_CMD % args)
 
 
 def create_maprfs4_dir(remote, dir_name, hdfs_user):
