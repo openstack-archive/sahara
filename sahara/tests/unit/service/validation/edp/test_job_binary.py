@@ -62,5 +62,5 @@ class TestJobBinaryValidation(u.ValidationTestCase):
                 "url": "internal-db://abacaba",
             },
             bad_req_i=(1, "VALIDATION_ERROR",
-                       "'internal-db://abacaba' is not a "
+                       "url: 'internal-db://abacaba' is not a "
                        "'valid_job_location'"))

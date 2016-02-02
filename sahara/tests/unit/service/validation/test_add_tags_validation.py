@@ -40,11 +40,11 @@ class TestTagsAddingValidation(u.ValidationTestCase):
             self._assert_create_object_validation(
                 data=data,
                 bad_req_i=(1, 'VALIDATION_ERROR',
-                           u"'%s' is not a 'valid_tag'" % tag))
+                           u"tags[0]: '%s' is not a 'valid_tag'" % tag))
         for symb in wrong_symbols:
             tag = "a%sa" % symb
             data['tags'] = [tag]
             self._assert_create_object_validation(
                 data=data,
                 bad_req_i=(1, 'VALIDATION_ERROR',
-                           u"'%s' is not a 'valid_tag'" % tag))
+                           u"tags[0]: '%s' is not a 'valid_tag'" % tag))

@@ -317,25 +317,25 @@ class ValidationTestCase(base.SaharaTestCase):
         self._assert_create_object_validation(
             data=data,
             bad_req_i=(1, "VALIDATION_ERROR",
-                       u"None is not of type 'string'")
+                       u"name: None is not of type 'string'")
         )
         data.update({'name': ""})
         self._assert_create_object_validation(
             data=data,
             bad_req_i=(1, "VALIDATION_ERROR",
-                       u"'' is too short")
+                       u"name: '' is too short")
         )
         data.update({'name': ('a' * 51)})
         self._assert_create_object_validation(
             data=data,
             bad_req_i=(1, "VALIDATION_ERROR",
-                       u"'%s' is too long" % ('a' * 51))
+                       u"name: '%s' is too long" % ('a' * 51))
         )
         data.update({'name': 'a-!'})
         self._assert_create_object_validation(
             data=data,
             bad_req_i=(1, "VALIDATION_ERROR",
-                       u"'a-!' is not a 'valid_name_hostname'")
+                       u"name: 'a-!' is not a 'valid_name_hostname'")
         )
 
     def _prop_types_str(self, prop_types):
@@ -356,12 +356,13 @@ class ValidationTestCase(base.SaharaTestCase):
                         if isinstance(value, str):
                             value_str = "'%s'" % value_str
                         data.update({p_name: value})
-                        message = ("%s is not of type %s" %
-                                   (value_str,
+                        message = ("%s: %s is not of type %s" %
+                                   (p_name, value_str,
                                     self._prop_types_str(prop_types)))
                         if "enum" in prop:
-                            message = [message, "%s is not one of %s" %
-                                                (value_str, prop["enum"])]
+                            message = [message, "%s: %s is not one of %s" %
+                                                (p_name, value_str,
+                                                 prop["enum"])]
                         self._assert_create_object_validation(
                             data=data,
                             bad_req_i=(1, 'VALIDATION_ERROR', message)
