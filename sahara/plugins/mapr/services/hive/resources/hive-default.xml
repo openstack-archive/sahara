@@ -42,11 +42,6 @@
     </property>
 
     <property>
-        <name>hive.server2.authentication</name>
-        <value>NOSASL</value>
-    </property>
-
-    <property>
         <name>hive.zookeeper.property.clientPort</name>
         <value>5181</value>
     </property>

@@ -38,7 +38,6 @@ HIVE_SERVER_2 = np.NodeProcess(
 
 
 class Hive(s.Service):
-
     def __init__(self):
         super(Hive, self).__init__()
         self._name = 'hive'
@@ -122,4 +121,11 @@ class HiveV10(Hive):
     def __init__(self):
         super(HiveV10, self).__init__()
         self._version = "1.0"
+        self._dependencies = [("mapr-hive", self.version)]
+
+
+class HiveV12(Hive):
+    def __init__(self):
+        super(HiveV12, self).__init__()
+        self._version = "1.2"
         self._dependencies = [("mapr-hive", self.version)]

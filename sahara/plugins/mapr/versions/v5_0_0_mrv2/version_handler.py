@@ -48,6 +48,7 @@ class VersionHandler(bvh.BaseVersionHandler):
         self._services = [
             hive.HiveV013(),
             hive.HiveV10(),
+            hive.HiveV12(),
             impala.ImpalaV141(),
             pig.PigV014(),
             flume.Flume(),
