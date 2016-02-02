@@ -28,7 +28,7 @@ class ValidationTestCase(bvt.BaseValidationTestCase):
 
     def setUp(self):
         super(ValidationTestCase, self).setUp()
-        self.module = validation
+        self.module = validation.ValidatorV540
 
     def _get_test_cases(self):
         cases = super(ValidationTestCase, self)._get_test_cases()

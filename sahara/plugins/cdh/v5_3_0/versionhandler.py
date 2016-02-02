@@ -22,11 +22,12 @@ from sahara.plugins.cdh.v5_3_0 import config_helper as c_helper
 from sahara.plugins.cdh.v5_3_0 import deploy as dp
 from sahara.plugins.cdh.v5_3_0 import edp_engine
 from sahara.plugins.cdh.v5_3_0 import plugin_utils as pu
-from sahara.plugins.cdh.v5_3_0 import validation as vl
+from sahara.plugins.cdh.v5_3_0 import validation
 
 conductor = conductor.API
 CU = cu.ClouderaUtilsV530()
 PU = pu.PluginUtilsV530()
+vl = validation.ValidatorV530
 
 
 class VersionHandler(avm.AbstractVersionHandler):
