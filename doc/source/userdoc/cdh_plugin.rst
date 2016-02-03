@@ -44,8 +44,8 @@ and Key-value Store Indexer. 5.4.0 version added KMS service support based on
     functionality, using Sentry service will not really take any effect, and
     other services depending on Sentry will not do any authentication too.
 
-High Availablity Support
-------------------------
+High Availability Support
+-------------------------
 
 Currently HDFS NameNode High Availability is supported in Cloudera 5.4.0
 version.  You can refer to :doc:`features` for the detail info.

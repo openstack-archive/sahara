@@ -99,7 +99,7 @@ def add_command_parsers(subparsers):
                                  'only valid if --plugin-name is specified '
                                  'as well. A version specified '
                                  'here may optionally be prefixed with a '
-                                 'plugin name and a dot, for exmaple '
+                                 'plugin name and a dot, for example '
                                  '"vanilla.1.2.1". Dotted versions only '
                                  'apply to the plugin named in the '
                                  'prefix. Versions without a prefix apply to '
