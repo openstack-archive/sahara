@@ -49,6 +49,7 @@ INSTALL_SCALA_SCRIPT = 'plugins/mapr/resources/install_scala.sh'
 INSTALL_MYSQL_CLIENT = 'plugins/mapr/resources/install_mysql_client.sh'
 ADD_MAPR_REPO_SCRIPT = 'plugins/mapr/resources/add_mapr_repo.sh'
 ADD_SECURITY_REPO_SCRIPT = 'plugins/mapr/resources/add_security_repos.sh'
+ADD_MAPR_USER = 'plugins/mapr/resources/add_mapr_user.sh'
 
 SERVICE_INSTALL_PRIORITY = [
     mng.Management(),
@@ -68,6 +69,7 @@ class BaseConfigurer(ac.AbstractConfigurer):
         self._install_mapr_repo(cluster_context, instances)
         if not cluster_context.is_prebuilt:
             self._prepare_bare_image(cluster_context, instances)
+        self.configure_general_environment(cluster_context, instances)
         self._install_services(cluster_context, instances)
         if cluster_context.is_node_aware:
             self._configure_topology(cluster_context, instances)
@@ -213,7 +215,6 @@ class BaseConfigurer(ac.AbstractConfigurer):
         LOG.debug("Config files are successfully written")
 
     def _configure_environment(self, cluster_context, instances):
-        self.configure_general_environment(cluster_context, instances)
         self._post_install_services(cluster_context, instances)
 
     def _configure_database(self, cluster_context, instances):
@@ -258,6 +259,9 @@ class BaseConfigurer(ac.AbstractConfigurer):
         if not instances:
             instances = cluster_context.get_instances()
 
+        def create_user(instance):
+            return util.run_script(instance, ADD_MAPR_USER, "root")
+
         def set_user_password(instance):
             LOG.debug('Setting password for user "mapr"')
             if self.mapr_user_exists(instance):
@@ -279,6 +283,7 @@ class BaseConfigurer(ac.AbstractConfigurer):
             else:
                 LOG.warning(_LW('User "mapr" does not exists'))
 
+        util.execute_on_instances(instances, create_user)
         util.execute_on_instances(instances, set_user_password)
         util.execute_on_instances(instances, create_home_mapr)
 
