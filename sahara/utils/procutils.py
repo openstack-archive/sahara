@@ -91,6 +91,7 @@ def kill_subprocess(proc):
 
     try:
         proc.kill()
+        proc.wait()
     except OSError:
         # could be caused by process already dead, so ignoring
         pass
