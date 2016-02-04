@@ -27,6 +27,7 @@ from sahara import conductor as c
 from sahara import context
 from sahara.i18n import _LW
 from sahara.service import api
+from sahara.service import coordinator
 from sahara.service.edp import job_manager
 from sahara.service import trusts
 from sahara.utils import cluster as c_u
@@ -62,7 +63,13 @@ periodic_opts = [
                     'and last update of it was longer than '
                     '"cleanup_time_for_incomplete_clusters" hours ago then it '
                     'will be deleted automatically. (0 value means that '
-                    'automatic clean up is disabled).')
+                    'automatic clean up is disabled).'),
+    cfg.StrOpt('periodic_coordinator_backend_url',
+               help='The backend URL to use for distributed periodic tasks '
+                    'coordination.'),
+    cfg.IntOpt('periodic_workers_number',
+               default=1,
+               help='Number of threads to run periodic tasks.'),
 ]
 
 CONF = cfg.CONF
@@ -124,27 +131,40 @@ def _make_periodic_tasks():
 
     '''
     zombie_task_spacing = 300 if CONF.use_domain_for_proxy_users else -1
+    heartbeat_interval = (CONF.coordinator_heartbeat_interval if
+                          CONF.periodic_coordinator_backend_url else -1)
 
     class SaharaPeriodicTasks(periodic_task.PeriodicTasks):
+        hr = coordinator.HashRing(
+            CONF.periodic_coordinator_backend_url, 'sahara-periodic-tasks')
 
         def __init__(self):
             super(SaharaPeriodicTasks, self).__init__(CONF)
 
-        @periodic_task.periodic_task(spacing=45, run_immediately=True)
+        @periodic_task.periodic_task(
+            spacing=heartbeat_interval, run_immediately=True)
+        @set_context
+        def heartbeat(self, ctx):
+            self.hr.heartbeat()
+
+        @periodic_task.periodic_task(spacing=45)
         @set_context
         def update_job_statuses(self, ctx):
             LOG.debug('Updating job statuses')
-            job_manager.update_job_statuses()
+            all_je = conductor.job_execution_get_all(ctx, end_time=None)
+            je_to_manage = self.hr.get_subset(all_je)
+            for job in je_to_manage:
+                job_manager.update_job_status(job.id)
 
         @periodic_task.periodic_task(spacing=90)
         @set_context
         def terminate_unneeded_transient_clusters(self, ctx):
             LOG.debug('Terminating unneeded transient clusters')
-            for cluster in conductor.cluster_get_all(
-                    ctx, status=c_u.CLUSTER_STATUS_ACTIVE):
-                if not cluster.is_transient:
-                    continue
+            all_clusters = conductor.cluster_get_all(
+                ctx, status=c_u.CLUSTER_STATUS_ACTIVE, is_transient=True)
+            clusters_to_manage = self.hr.get_subset(all_clusters)
 
+            for cluster in clusters_to_manage:
                 jc = conductor.job_execution_count(ctx,
                                                    end_time=None,
                                                    cluster_id=cluster.id)
@@ -163,7 +183,9 @@ def _make_periodic_tasks():
         @periodic_task.periodic_task(spacing=zombie_task_spacing)
         @set_context
         def check_for_zombie_proxy_users(self, ctx):
-            for user in p.proxy_domain_users_list():
+            all_users = p.proxy_domain_users_list()
+            users_to_manage = self.hr.get_subset(all_users)
+            for user in users_to_manage:
                 if user.name.startswith('job_'):
                     je_id = user.name[4:]
                     je = conductor.job_execution_get(ctx, je_id)
@@ -184,12 +206,15 @@ def _make_periodic_tasks():
             # NOTE(alazarev) Retrieving all clusters once in hour for now.
             # Criteria support need to be implemented in sahara db API to
             # have SQL filtering.
-            for cluster in conductor.cluster_get_all(ctx):
-                if (cluster.status in
-                        [c_u.CLUSTER_STATUS_ACTIVE,
-                         c_u.CLUSTER_STATUS_ERROR,
-                         c_u.CLUSTER_STATUS_DELETING]):
-                    continue
+            all_clusters = [
+                cluster for cluster in conductor.cluster_get_all(ctx) if
+                (cluster.status not in [
+                    c_u.CLUSTER_STATUS_ACTIVE, c_u.CLUSTER_STATUS_ERROR,
+                    c_u.CLUSTER_STATUS_DELETING])
+                ]
+            clusters_to_manage = self.hr.get_subset(all_clusters)
+
+            for cluster in clusters_to_manage:
 
                 spacing = get_time_since_last_update(cluster)
                 if spacing < CONF.cleanup_time_for_incomplete_clusters * 3600:
@@ -212,9 +237,13 @@ def setup():
             initial_delay = None
 
         tg = threadgroup.ThreadGroup()
-        pt = _make_periodic_tasks()
-        tg.add_dynamic_timer(
-            pt.run_periodic_tasks,
-            initial_delay=initial_delay,
-            periodic_interval_max=CONF.periodic_interval_max,
-            context=None)
+        workers_number = (CONF.periodic_workers_number
+                          if CONF.periodic_coordinator_backend_url else 1)
+
+        for t in range(workers_number):
+            pt = _make_periodic_tasks()
+            tg.add_dynamic_timer(
+                pt.run_periodic_tasks,
+                initial_delay=initial_delay,
+                periodic_interval_max=CONF.periodic_interval_max,
+                context=None)

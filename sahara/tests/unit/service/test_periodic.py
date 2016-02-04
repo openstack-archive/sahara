@@ -214,6 +214,8 @@ class TestPeriodicBack(base.SaharaWithDbTestCase):
         mock_conf.periodic_enable = True
         mock_conf.periodic_fuzzy_delay = 20
         mock_conf.periodic_interval_max = 30
+        mock_conf.periodic_workers_number = 1
+        mock_conf.periodic_coordinator_backend_url = ''
 
         add_timer = mock_thread_group.ThreadGroup().add_dynamic_timer
 
