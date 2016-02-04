@@ -15,7 +15,7 @@ The Sahara architecture consists of several components:
 * DAL - Data Access Layer, persists internal models in DB.
 
 * Provisioning Engine - component responsible for communication with
-  the Openstack Compute (nova), Orchestration (heat), Block Storage (cinder)
+  the OpenStack Compute (nova), Orchestration (heat), Block Storage (cinder)
   and Image (glance) services.
 
 * Vendor Plugins - pluggable mechanism responsible for configuring and

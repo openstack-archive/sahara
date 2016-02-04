@@ -175,11 +175,11 @@ Orchestration configuration
 ---------------------------
 
 By default sahara is configured to use the heat engine for instance
-creation. The heat engine uses the Openstack Orchestration service to
+creation. The heat engine uses the OpenStack Orchestration service to
 provision instances. Sahara can be configured to use the direct engine for
 this purpose, but after the Liberty release it will be removed. This
 engine makes calls directly to the services required for instance
-provisioning. We recommend using the Openstack Orchestration service.
+provisioning. We recommend using the OpenStack Orchestration service.
 
 To configure sahara to use the direct engine for instance
 provisioning the ``infrastructure_engine`` parameter should be modified in
