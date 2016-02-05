@@ -32,10 +32,6 @@ SAHARA_BIN_DIR=$(get_python_exec_prefix)
 
 # Tell Tempest this project is present
 TEMPEST_SERVICES+=,sahara
-if is_service_enabled horizon; then
-    enable_plugin sahara-dashboard \
-        git://git.openstack.org/openstack/sahara-dashboard
-    enable_service sahara-dashboard
-fi
+
 enable_service sahara-api sahara-eng
 enable_service heat h-eng h-api h-api-cfn h-api-cw
