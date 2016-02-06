@@ -203,7 +203,8 @@ Sahara’s public API calls may be restricted to certain sets of users by
 using a policy configuration file. The location of the policy file(s)
 is controlled by the ``policy_file`` and ``policy_dirs`` parameters
 in the ``[oslo_policy]`` section. By default sahara will search for
-a ``policy.json`` file in the same directory as the configuration file.
+a ``policy.json`` file in the same directory as the ``sahara.conf``
+configuration file.
 
 Examples
 ++++++++
