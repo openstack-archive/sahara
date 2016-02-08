@@ -75,7 +75,7 @@ User guide
 
    userdoc/guest-requirements
    userdoc/hadoop-swift
-   userdoc/diskimagebuilder
+   userdoc/vanilla_imagebuilder
    userdoc/cdh_imagebuilder
 
 Developer Guide
