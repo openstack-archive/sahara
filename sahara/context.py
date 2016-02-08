@@ -323,5 +323,5 @@ def get_auth_token():
         try:
             cur.auth_token = sessions.cache().token_for_auth(cur.auth_plugin)
         except Exception as e:
-            LOG.warning(_LW("Cannot update token, reason: {reason}"), e)
+            LOG.warning(_LW("Cannot update token, reason: %s"), e)
     return cur.auth_token
