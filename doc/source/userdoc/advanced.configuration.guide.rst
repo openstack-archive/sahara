@@ -193,6 +193,60 @@ These options will also be present in the generated sample configuration
 file. For instructions on creating the configuration file please see the
 :doc:`configuration.guide`.
 
+.. _distributed-periodic-tasks:
+
+Distributed periodic tasks configuration
+----------------------------------------
+
+If sahara is configured to run in distributed mode (see
+:ref:`distributed-mode-configuration`), periodic tasks can also be launched in
+distributed mode. In this case tasks will be split across all ``sahara-engine``
+processes. This will reduce overall load.
+
+Distributed periodic tasks are based on Hash Ring implementation and the Tooz
+library that provides group membership support for a set of backends. In order
+to use periodic tasks distribution, the following steps are required:
+
+ * One of the `supported backends <http://docs.openstack.org/developer/tooz/
+   compatibility.html#driver-support>`_ should be configured and started.
+ * Backend URL should be set in the sahara configuration file with the
+   ``periodic_coordinator_backend_url`` parameter. For example, if the
+   ZooKeeper backend is being used:
+
+   .. sourcecode:: cfg
+
+       [DEFAULT]
+       periodic_coordinator_backend_url=kazoo://IP:PORT
+
+ * Periodic tasks can be performed in parallel. Number of threads to run
+   periodic tasks on a single engine can be set with
+   ``periodic_workers_number`` parameter (only 1 thread will be launched by
+   default). Example:
+
+   .. sourcecode:: cfg
+
+       [DEFAULT]
+       periodic_workers_number=2
+
+ * ``coordinator_heartbeat_interval`` can be set to change the interval between
+   heartbeat execution (1 second by default). Heartbeats are needed to make
+   sure that connection to the coordination backend is active. Example:
+
+   .. sourcecode:: cfg
+
+       [DEFAULT]
+       coordinator_heartbeat_interval=2
+
+ * ``hash_ring_replicas_count`` can be set to change the number of replicas for
+   each engine on a Hash Ring. Each replica is a point on a Hash Ring that
+   belongs to a particular engine. A larger number of replicas leads to better
+   task distribution across the set of engines. (40 by default). Example:
+
+   .. sourcecode:: cfg
+
+       [DEFAULT]
+       hash_ring_replicas_count=100
+
 .. _external_key_manager_usage:
 
 External key manager usage
