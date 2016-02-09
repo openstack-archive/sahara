@@ -40,6 +40,7 @@ class Service(object):
         self._cluster_defaults = []
         self._node_defaults = []
         self._validation_rules = []
+        self._priority = 1
 
     @property
     def name(self):
