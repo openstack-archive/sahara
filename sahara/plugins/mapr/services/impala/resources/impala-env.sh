@@ -1,3 +1,4 @@
+#!/bin/bash
 # these are configured automatically when impala is installed
 export IMPALA_HOME=/opt/mapr/impala/impala-{{ impala_version }}
 export MAPR_HOME=/opt/mapr
@@ -7,9 +8,9 @@ export IMPALA_VERSION={{ impala_version }}
 [ -f ${MAPR_HOME}/conf/env.sh ] && . ${MAPR_HOME}/conf/env.sh
 
 # This MUST point to the node running statestore
-IMPALA_STATE_STORE_HOST={{ statestore_host | default("localhost", True) }}
-IMPALA_STATE_STORE_PORT={{ statestore_port | default("24000", True) }}
-CATALOG_SERVICE_HOST={{ catalog_host | default("localhost", True) }}
+IMPALA_STATE_STORE_HOST=$(statestore_host | default("localhost", True))
+IMPALA_STATE_STORE_PORT=$(statestore_port | default("24000", True))
+CATALOG_SERVICE_HOST=$(catalog_host | default("localhost", True))
 
 # By default, we use the Hive configuration.
 # Uncomment this If hive is not configured, or we wish to override it.
