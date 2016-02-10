@@ -504,12 +504,21 @@ class ConductorManager(db_base.Base):
         """Return the Job or None if it does not exist."""
         return self.db.job_get(context, job)
 
-    def job_get_all(self, context, **kwargs):
+    def job_get_all(self, context, regex_search=False, **kwargs):
         """Get all Jobs filtered by **kwargs.
 
-        e.g.  job_get_all(name='myjob', type='MapReduce')
+        :param context: The context, and associated authentication, to use with
+                        this operation
+
+        :param regex_search: If True, enable regex matching for filter
+                             values. See the user guide for more information
+                             on how regex matching is handled. If False,
+                             no regex matching is done.
+
+        :param kwargs: Specifies values for named fields by which
+                       to constrain the search
         """
-        return self.db.job_get_all(context, **kwargs)
+        return self.db.job_get_all(context, regex_search, **kwargs)
 
     def job_create(self, context, values):
         """Create a Job from the values dictionary."""

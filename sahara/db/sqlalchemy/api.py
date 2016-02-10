@@ -924,8 +924,14 @@ def job_get(context, job_id):
     return _job_get(context, get_session(), job_id)
 
 
-def job_get_all(context, **kwargs):
+def job_get_all(context, regex_search=False, **kwargs):
+
+    regex_cols = ['name', 'description']
+
     query = model_query(m.Job, context)
+    if regex_search:
+        query, kwargs = regex_filter(query,
+                                     m.Job, regex_cols, kwargs)
     return query.filter_by(**kwargs).all()
 
 
