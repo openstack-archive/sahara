@@ -1024,12 +1024,13 @@ def _job_binary_get(context, session, job_binary_id):
     return query.filter_by(id=job_binary_id).first()
 
 
-def job_binary_get_all(context, **kwargs):
-    """Returns JobBinary objects that do not contain a data field
+def job_binary_get_all(context, regex_search=False, **kwargs):
 
-    The data column uses deferred loading.
-    """
+    regex_cols = ['name', 'description', 'url']
     query = model_query(m.JobBinary, context)
+    if regex_search:
+        query, kwargs = regex_filter(query,
+                                     m.JobBinary, regex_cols, kwargs)
     return query.filter_by(**kwargs).all()
 
 
