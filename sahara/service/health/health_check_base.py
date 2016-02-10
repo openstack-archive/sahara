@@ -23,9 +23,9 @@ from sahara import context
 from sahara import exceptions
 from sahara.i18n import _
 from sahara.i18n import _LE
+from sahara.plugins import base as plugin_base
 from sahara.service.health import common
 from sahara.utils import cluster as cluster_utils
-
 
 cond = conductor.API
 LOG = logging.getLogger(__name__)
@@ -147,4 +147,7 @@ def get_basic(cluster):
 
 
 def get_health_checks(cluster):
-    return get_basic(cluster)
+    plugin = plugin_base.PLUGINS.get_plugin(cluster.plugin_name)
+    plugin_specific = plugin.get_health_checks(cluster)
+    plugin_specific.extend(get_basic(cluster))
+    return plugin_specific

@@ -164,3 +164,17 @@ class ApiCluster(types.BaseApiResource):
         :since: API v3
         """
         return self._delete("hosts/" + hostId, types.ApiHostRef, api_version=3)
+
+    def get_service_health_status(self):
+        """Lookup a service health status by name
+
+        :return: A dict with cluster health status
+        """
+        health_dict = {}
+        cl_services = services.get_all_services(self._get_resource_root(),
+                                                cluster_name=self.name)
+        for curr in cl_services:
+            health_dict[curr.name] = {
+                'summary': curr.get_health_summary(),
+                'checks': curr.get_health_checks_status()}
+        return health_dict

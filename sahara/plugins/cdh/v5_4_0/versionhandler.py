@@ -19,6 +19,7 @@ from sahara.plugins.cdh.v5_4_0 import cloudera_utils
 from sahara.plugins.cdh.v5_4_0 import config_helper
 from sahara.plugins.cdh.v5_4_0 import deploy
 from sahara.plugins.cdh.v5_4_0 import edp_engine
+from sahara.plugins.cdh.v5_4_0 import health
 from sahara.plugins.cdh.v5_4_0 import plugin_utils
 from sahara.plugins.cdh.v5_4_0 import validation
 
@@ -70,3 +71,6 @@ class VersionHandler(avm.BaseVersionHandler):
     def get_edp_job_types(self):
         return (edp_engine.EdpOozieEngine.get_supported_job_types() +
                 edp_engine.EdpSparkEngine.get_supported_job_types())
+
+    def get_health_checks(self):
+        return [health.CDH540HealthCheck]

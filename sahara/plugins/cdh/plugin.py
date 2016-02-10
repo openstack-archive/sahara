@@ -91,3 +91,7 @@ class CDHPluginProvider(p.ProvisioningPluginBase):
     def recommend_configs(self, cluster, scaling=False):
         return self._get_version_handler(
             cluster.hadoop_version).recommend_configs(cluster, scaling)
+
+    def get_health_checks(self, cluster):
+        return self._get_version_handler(
+            cluster.hadoop_version).get_health_checks()
