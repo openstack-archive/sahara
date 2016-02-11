@@ -144,6 +144,7 @@ class SparkProvider(p.ProvisioningPluginBase):
 
         # start the data nodes
         self._start_datanode_processes(dn_instances)
+        run.await_datanodes(cluster)
 
         LOG.info(_LI("Hadoop services have been started"))
 

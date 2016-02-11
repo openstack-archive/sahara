@@ -156,6 +156,11 @@ ENABLE_SWIFT = p.Config('Enable Swift', 'general', 'cluster',
                         config_type="bool", priority=1,
                         default_value=True, is_optional=False)
 
+DATANODES_STARTUP_TIMEOUT = p.Config(
+    'DataNodes startup timeout', 'general', 'cluster', config_type='int',
+    priority=1, default_value=10800, is_optional=True,
+    description='Timeout for DataNodes startup, in seconds')
+
 # Default set to 1 day, which is the default Keystone token
 # expiration time. After the token is expired we can't continue
 # scaling anyway.
@@ -223,6 +228,7 @@ def _initialise_configs():
 
     configs.append(DECOMMISSIONING_TIMEOUT)
     configs.append(ENABLE_SWIFT)
+    configs.append(DATANODES_STARTUP_TIMEOUT)
     if CONF.enable_data_locality:
         configs.append(ENABLE_DATA_LOCALITY)
 
