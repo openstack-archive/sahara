@@ -1138,12 +1138,18 @@ def _job_binary_internal_get(context, session, job_binary_internal_id):
     return query.filter_by(id=job_binary_internal_id).first()
 
 
-def job_binary_internal_get_all(context, **kwargs):
+def job_binary_internal_get_all(context, regex_search=False, **kwargs):
     """Returns JobBinaryInternal objects that do not contain a data field
 
     The data column uses deferred loading.
     """
+
+    regex_cols = ['name']
+
     query = model_query(m.JobBinaryInternal, context)
+    if regex_search:
+        query, kwargs = regex_filter(query,
+                                     m.JobBinaryInternal, regex_cols, kwargs)
     return query.filter_by(**kwargs).all()
 
 

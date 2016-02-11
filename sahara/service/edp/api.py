@@ -241,7 +241,8 @@ def create_job_binary_internal(values):
 
 
 def get_job_binary_internals(**kwargs):
-    return conductor.job_binary_internal_get_all(context.ctx(), **kwargs)
+    return conductor.job_binary_internal_get_all(context.ctx(),
+                                                 regex_search=True, **kwargs)
 
 
 def get_job_binary_internal(id):
