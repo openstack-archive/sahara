@@ -16,6 +16,7 @@
 import functools
 
 import jsonschema
+from oslo_utils import reflection
 
 from sahara import exceptions as ex
 from sahara.i18n import _
@@ -66,7 +67,8 @@ def check_exists(get_func, *id_prop, **get_args):
             try:
                 obj = get_func(**get_kwargs)
             except Exception as e:
-                if 'notfound' not in e.__class__.__name__.lower():
+                cls_name = reflection.get_class_name(e, fully_qualified=False)
+                if 'notfound' not in cls_name.lower():
                     raise e
             if obj is None:
                 e = ex.NotFoundException(get_kwargs,

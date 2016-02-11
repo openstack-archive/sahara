@@ -17,6 +17,8 @@ import pickle
 import sys
 import traceback
 
+from oslo_utils import reflection
+
 
 def main():
     # NOTE(dmitryme): since we do not read stderr in the main process,
@@ -33,7 +35,8 @@ def main():
 
                 result['output'] = func(*args, **kwargs)
             except BaseException as e:
-                result['exception'] = e.__class__.__name__ + ': ' + str(e)
+                cls_name = reflection.get_class_name(e, fully_qualified=False)
+                result['exception'] = cls_name + ': ' + str(e)
                 result['traceback'] = traceback.format_exc()
 
             pickle.dump(result, sys.stdout)

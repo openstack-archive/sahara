@@ -27,6 +27,7 @@ import datetime
 import time
 
 from oslo_serialization import jsonutils as json
+from oslo_utils import reflection
 import six
 
 from sahara import context
@@ -245,16 +246,17 @@ class BaseApiObject(object):
         object.__setattr__(self, name, val)
 
     def _check_attr(self, name, allow_ro):
+        cls_name = reflection.get_class_name(self, fully_qualified=False)
         if name not in self._get_attributes():
             raise ex.CMApiAttributeError(
                 _('Invalid property %(attname)s for class %(classname)s.')
-                % {'attname': name, 'classname': self.__class__.__name__})
+                % {'attname': name, 'classname': cls_name})
         attr = self._get_attributes()[name]
         if not allow_ro and attr and not attr.rw:
             raise ex.CMApiAttributeError(
                 _('Attribute %(attname)s of class %(classname)s '
                   'is read only.')
-                % {'attname': name, 'classname': self.__class__.__name__})
+                % {'attname': name, 'classname': cls_name})
         return attr
 
     def _get_resource_root(self):
@@ -297,9 +299,10 @@ class BaseApiObject(object):
         Default implementation of __str__. Uses the type name and the first
         attribute retrieved from the attribute map to create the string.
         """
+        cls_name = reflection.get_class_name(self, fully_qualified=False)
         name = list(self._get_attributes().keys())[0]
         value = getattr(self, name, None)
-        return "<%s>: %s = %s" % (self.__class__.__name__, name, value)
+        return "<%s>: %s = %s" % (cls_name, name, value)
 
     @classmethod
     def from_json_dict(cls, dic, resource_root):
