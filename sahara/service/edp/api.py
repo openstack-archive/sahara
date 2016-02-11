@@ -152,7 +152,8 @@ def get_job_execution_status(id):
 
 
 def job_execution_list(**kwargs):
-    return conductor.job_execution_get_all(context.ctx(), **kwargs)
+    return conductor.job_execution_get_all(context.ctx(),
+                                           regex_search=True, **kwargs)
 
 
 def get_job_execution(id):
