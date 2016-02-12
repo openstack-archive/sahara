@@ -103,6 +103,8 @@ class EDPSparkEngine(spark_engine.SparkJobEngine):
             _get_hadoop_openstack_jar_location(self.master),
             _get_jackson_core(self.master)]
         self.plugin_params['driver-class-path'] = ":".join(driver_classpath)
+        self.plugin_params['drivers-to-jars'] = driver_classpath
+
         return super(EDPSparkEngine, self).run_job(job_execution)
 
     def validate_job_execution(self, cluster, job, data):
