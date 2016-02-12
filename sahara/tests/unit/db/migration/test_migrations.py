@@ -543,6 +543,41 @@ class SaharaMigrationsCheckers(object):
     def _check_028(self, engine, data):
         self.assertColumnExists(engine, 'instances', 'storage_devices_number')
 
+    def _pre_upgrade_029(self, engine):
+        t = db_utils.get_table(engine, 'node_group_templates')
+        engine.execute(t.insert(), id='123', name='first', plugin_name='plg',
+                       hadoop_version='1', flavor_id='1', volumes_per_node=0,
+                       is_default=True, is_protected=False)
+
+        engine.execute(t.insert(), id='124', name='second', plugin_name='plg',
+                       hadoop_version='1', flavor_id='1', volumes_per_node=0,
+                       is_default=False, is_protected=False)
+
+        t = db_utils.get_table(engine, 'cluster_templates')
+        engine.execute(t.insert(), id='123', name='name', plugin_name='plg',
+                       hadoop_version='1', is_default=True, is_protected=False)
+
+        engine.execute(t.insert(), id='124', name='name', plugin_name='plg',
+                       hadoop_version='1', is_default=False,
+                       is_protected=False)
+
+    def _check_029(self, engine, data):
+        t = db_utils.get_table(engine, 'node_group_templates')
+        res = engine.execute(t.select().where(t.c.id == '123')).first()
+        self.assertTrue(res['is_protected'])
+
+        res = engine.execute(t.select().where(t.c.id == '124')).first()
+        self.assertFalse(res['is_protected'])
+        engine.execute(t.delete())
+
+        t = db_utils.get_table(engine, 'cluster_templates')
+        res = engine.execute(t.select().where(t.c.id == '123')).first()
+        self.assertTrue(res['is_protected'])
+
+        res = engine.execute(t.select().where(t.c.id == '124')).first()
+        self.assertFalse(res['is_protected'])
+        engine.execute(t.delete())
+
 
 class TestMigrationsMySQL(SaharaMigrationsCheckers,
                           base.BaseWalkMigrationTestCase,
