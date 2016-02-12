@@ -751,7 +751,7 @@ class InstanceInteropHelper(remote.Remote):
         self._run_s(_write_file_to, timeout, remote_file, data, run_as_root)
 
     def write_files_to(self, files, run_as_root=False, timeout=None):
-        self._log_command('Writing files "%s"' % files.keys())
+        self._log_command('Writing files "%s"' % list(files.keys()))
         self._run_s(_write_files_to, timeout, files, run_as_root)
 
     def append_to_file(self, r_file, data, run_as_root=False, timeout=None):
@@ -759,7 +759,7 @@ class InstanceInteropHelper(remote.Remote):
         self._run_s(_append_to_file, timeout, r_file, data, run_as_root)
 
     def append_to_files(self, files, run_as_root=False, timeout=None):
-        self._log_command('Appending to files "%s"' % files.keys())
+        self._log_command('Appending to files "%s"' % list(files.keys()))
         self._run_s(_append_to_files, timeout, files, run_as_root)
 
     def read_file_from(self, remote_file, run_as_root=False, timeout=None):

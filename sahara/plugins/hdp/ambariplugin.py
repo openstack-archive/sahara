@@ -385,7 +385,8 @@ class AmbariPlugin(p.ProvisioningPluginBase):
 
         # results in validation
         handler.get_cluster_spec(
-            cluster, [], dict(existing.items() + additional.items()))
+            cluster, [],
+            dict(list(existing.items()) + list(additional.items())))
 
     def _get_num_hosts(self, cluster):
         count = 0
