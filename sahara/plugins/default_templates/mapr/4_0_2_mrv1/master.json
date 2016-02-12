@@ -11,5 +11,6 @@
     ],
     "name": "mapr-402mr1-default-master",
     "floating_ip_pool": "{floating_ip_pool}",
-    "flavor_id": "{flavor_id}"
+    "flavor_id": "{flavor_id}",
+    "is_protected": true
 }

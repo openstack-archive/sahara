@@ -15,5 +15,6 @@
     ],
     "name": "mapr-500mr2-default-cluster",
     "neutron_management_network": "{neutron_management_network}",
-    "cluster_configs": {}
+    "cluster_configs": {},
+    "is_protected": true
 }
