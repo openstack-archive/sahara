@@ -190,18 +190,18 @@ class LocalApi(object):
         return self._manager.cluster_template_create(context, values)
 
     def cluster_template_destroy(self, context, cluster_template,
-                                 ignore_default=False):
+                                 ignore_prot_on_def=False):
         """Destroy the cluster template or raise if it does not exist.
 
         :returns: None
         """
         self._manager.cluster_template_destroy(context,
                                                _get_id(cluster_template),
-                                               ignore_default)
+                                               ignore_prot_on_def)
 
     @r.wrap(r.ClusterTemplateResource)
     def cluster_template_update(self, context, id, cluster_template,
-                                ignore_default=False):
+                                ignore_prot_on_def=False):
         """Update the cluster template or raise if it does not exist.
 
         :returns: the updated cluster template
@@ -209,7 +209,7 @@ class LocalApi(object):
         return self._manager.cluster_template_update(context,
                                                      id,
                                                      cluster_template,
-                                                     ignore_default)
+                                                     ignore_prot_on_def)
 
     # Node Group Template ops
 
@@ -237,24 +237,24 @@ class LocalApi(object):
         return self._manager.node_group_template_create(context, values)
 
     def node_group_template_destroy(self, context, node_group_template,
-                                    ignore_default=False):
+                                    ignore_prot_on_def=False):
         """Destroy the node group template or raise if it does not exist.
 
         :returns: None
         """
         self._manager.node_group_template_destroy(context,
                                                   _get_id(node_group_template),
-                                                  ignore_default)
+                                                  ignore_prot_on_def)
 
     @r.wrap(r.NodeGroupTemplateResource)
     def node_group_template_update(self, context, id, values,
-                                   ignore_default=False):
+                                   ignore_prot_on_def=False):
         """Update a node group template from the values dictionary.
 
         :returns: the updated node group template
         """
         return self._manager.node_group_template_update(context, id, values,
-                                                        ignore_default)
+                                                        ignore_prot_on_def)
 
     # Data Source ops
 
