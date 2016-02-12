@@ -24,9 +24,6 @@ class TestPlugin(test_base.SaharaTestCase):
 
     def test_job_types(self):
         self.assertEqual({
-            '2.2': [
-                'Hive', 'Java', 'MapReduce', 'MapReduce.Streaming',
-                'Pig', 'Shell', 'Spark'],
             '2.3': [
                 'Hive', 'Java', 'MapReduce', 'MapReduce.Streaming',
                 'Pig', 'Shell', 'Spark']

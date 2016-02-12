@@ -36,10 +36,6 @@ conductor = conductor.API
 
 
 repo_id_map = {
-    "2.2": {
-        "HDP": "HDP-2.2",
-        "HDP-UTILS": "HDP-UTILS-1.1.0.20"
-    },
     "2.3": {
         "HDP": "HDP-2.3",
         "HDP-UTILS": "HDP-UTILS-1.1.0.20"
