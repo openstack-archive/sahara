@@ -139,6 +139,8 @@ class TestExceptions(base.SaharaTestCase):
         self._validate_exc(
             exc.NotImplementedException, "Feature 'bond' is not implemented",
             "bond")
+        self._validate_exc(
+            exc.NotImplementedException, "feature", "feature", "%s")
 
     def test_incorrect_state(self):
         self._validate_exc(exc.IncorrectStateError, "message", "message")
