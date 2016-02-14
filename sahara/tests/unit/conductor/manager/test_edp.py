@@ -188,10 +188,36 @@ class DataSourceTest(test_base.ConductorManagerTestCase):
         lst = self.api.data_source_get_all(ctx, **kwargs)
         self.assertEqual(0, len(lst))
 
+        # Valid field with substrings
+        kwargs = {'name': 'ngt',
+                  'tenant_id': SAMPLE_DATA_SOURCE['tenant_id']}
+        lst = self.api.data_source_get_all(ctx, **kwargs)
+        self.assertEqual(0, len(lst))
+
         # Invalid field
         self.assertRaises(sa_exc.InvalidRequestError,
                           self.api.data_source_get_all,
                           ctx, **{'badfield': 'somevalue'})
+
+    @mock.patch('sahara.db.sqlalchemy.api.regex_filter')
+    def test_data_source_search_regex(self, regex_filter):
+
+        # do this so we can return the correct value
+        def _regex_filter(query, cls, regex_cols, search_opts):
+            return query, search_opts
+
+        regex_filter.side_effect = _regex_filter
+
+        ctx = context.ctx()
+        self.api.data_source_get_all(ctx)
+        self.assertEqual(0, regex_filter.call_count)
+
+        self.api.data_source_get_all(ctx, regex_search=True, name="fox")
+        self.assertEqual(1, regex_filter.call_count)
+        args, kwargs = regex_filter.call_args
+        self.assertTrue(type(args[1] is m.DataSource))
+        self.assertEqual(args[2], ["name", "description", "url"])
+        self.assertEqual(args[3], {"name": "fox"})
 
     def test_data_source_count_in(self):
         ctx = context.ctx()

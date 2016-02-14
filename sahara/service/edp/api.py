@@ -177,7 +177,8 @@ def delete_job_execution(id):
 
 
 def get_data_sources(**kwargs):
-    return conductor.data_source_get_all(context.ctx(), **kwargs)
+    return conductor.data_source_get_all(context.ctx(),
+                                         regex_search=True, **kwargs)
 
 
 def get_data_source(id):

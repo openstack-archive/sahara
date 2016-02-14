@@ -303,12 +303,21 @@ def data_source_get(context, data_source):
 
 
 @to_dict
-def data_source_get_all(context, **kwargs):
+def data_source_get_all(context, regex_search=False, **kwargs):
     """Get all Data Sources filtered by **kwargs.
 
-    e.g.  data_source_get_all(name='myfile', type='swift')
+    :param context: The context, and associated authentication, to use with
+                    this operation
+
+    :param regex_search: If True, enable regex matching for filter
+                         values. See the user guide for more information
+                         on how regex matching is handled. If False,
+                         no regex matching is done.
+
+    :param kwargs: Specifies values for named fields by which
+                   to constrain the search
     """
-    return IMPL.data_source_get_all(context, **kwargs)
+    return IMPL.data_source_get_all(context, regex_search, **kwargs)
 
 
 def data_source_count(context, **kwargs):
