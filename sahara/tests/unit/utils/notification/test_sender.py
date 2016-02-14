@@ -51,7 +51,8 @@ class NotificationTest(base.SaharaTestCase):
 
     @mock.patch('oslo_messaging.notify.notifier.Notifier.info')
     def test_update_cluster(self, mock_notify):
-        self.override_config("enable_notifications", True)
+        self.override_config("enable", True,
+                             group='oslo_messaging_notifications')
         messaging.setup()
 
         self._make_sample()

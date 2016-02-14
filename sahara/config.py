@@ -152,7 +152,6 @@ def list_opts():
                          db_opts,
                          plugins_base.opts,
                          topology_helper.opts,
-                         sender.notifier_opts,
                          keystone.opts,
                          remote.ssh_opts,
                          sahara_main.opts,
@@ -187,7 +186,8 @@ def list_opts():
         (swift_helper.public_endpoint_cert_group.name,
          itertools.chain(swift_helper.opts)),
         (castellan.castellan_group.name,
-         itertools.chain(castellan.castellan_opts))
+         itertools.chain(castellan.castellan_opts)),
+        (sender.notifier_opts_group, sender.notifier_opts)
     ]
 
 

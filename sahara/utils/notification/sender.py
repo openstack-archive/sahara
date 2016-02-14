@@ -24,22 +24,30 @@ SERVICE = 'sahara'
 EVENT_TEMPLATE = "sahara.cluster.%s"
 
 notifier_opts = [
-    cfg.StrOpt('notification_level',
+    cfg.StrOpt('level',
                default='INFO',
+               deprecated_name='notification_level',
+               deprecated_group='DEFAULT',
                help='Notification level for outgoing notifications'),
-    cfg.StrOpt('notification_publisher_id',
+    cfg.StrOpt('publisher_id',
+               deprecated_name='notification_publisher_id',
+               deprecated_group='DEFAULT',
                help='Notification publisher_id for outgoing notifications'),
-    cfg.BoolOpt('enable_notifications',
+    cfg.BoolOpt('enable',
+                deprecated_name='enable_notifications',
+                deprecated_group='DEFAULT',
                 default=False,
                 help='Enables sending notifications to Ceilometer')
 ]
 
+notifier_opts_group = 'oslo_messaging_notifications'
+
 CONF = cfg.CONF
-CONF.register_opts(notifier_opts)
+CONF.register_opts(notifier_opts, group=notifier_opts_group)
 
 
 def _get_publisher():
-    publisher_id = CONF.notification_publisher_id
+    publisher_id = CONF.oslo_messaging_notifications.publisher_id
     if publisher_id is None:
         publisher_id = SERVICE
     return publisher_id
@@ -70,14 +78,14 @@ def _body(
 
 def notify(context, cluster_id, cluster_name, cluster_status, ev_type):
     """Sends notification about creating/updating/deleting cluster."""
-    if not cfg.CONF.enable_notifications:
+    if not cfg.CONF.oslo_messaging_notifications.enable:
         return
 
     LOG.debug("Notification about cluster is going to be sent. Notification "
               "type={type}, cluster status = {status}"
               .format(type=ev_type, status=cluster_status))
 
-    level = CONF.notification_level
+    level = CONF.oslo_messaging_notifications.level
 
     _notify(context, EVENT_TEMPLATE % ev_type, level,
             _body(cluster_id, cluster_name, cluster_status, context.tenant_id,
