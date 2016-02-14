@@ -427,12 +427,22 @@ class LocalApi(object):
     # JobBinary ops
 
     @r.wrap(r.JobBinary)
-    def job_binary_get_all(self, context, **kwargs):
+    def job_binary_get_all(self, context, regex_search=False, **kwargs):
         """Get all JobBinarys filtered by **kwargs.
 
-        e.g.  job_binary_get_all(name='wordcount.jar')
+        :param context: The context, and associated authentication, to use with
+                        this operation
+
+        :param regex_search: If True, enable regex matching for filter
+                             values. See the user guide for more information
+                             on how regex matching is handled. If False,
+                             no regex matching is done.
+
+        :param kwargs: Specifies values for named fields by which
+                       to constrain the search
         """
-        return self._manager.job_binary_get_all(context, **kwargs)
+        return self._manager.job_binary_get_all(context,
+                                                regex_search, **kwargs)
 
     @r.wrap(r.JobBinary)
     def job_binary_get(self, context, job_binary):

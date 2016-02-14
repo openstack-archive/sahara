@@ -222,7 +222,8 @@ def create_job_binary(values):
 
 
 def get_job_binaries(**kwargs):
-    return conductor.job_binary_get_all(context.ctx(), **kwargs)
+    return conductor.job_binary_get_all(context.ctx(),
+                                        regex_search=True, **kwargs)
 
 
 def get_job_binary(id):

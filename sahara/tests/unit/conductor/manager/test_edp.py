@@ -926,19 +926,28 @@ class JobBinaryTest(test_base.ConductorManagerTestCase):
 
     def test_job_binary_search(self):
         ctx = context.ctx()
-        ctx.tenant_id = SAMPLE_JOB_BINARY['tenant_id']
-        self.api.job_binary_create(ctx, SAMPLE_JOB_BINARY)
+        jb = copy.copy(SAMPLE_JOB_BINARY)
+        jb["name"] = "frederica"
+        jb["url"] = "http://thebestbinary"
+        ctx.tenant_id = jb['tenant_id']
+        self.api.job_binary_create(ctx, jb)
 
         lst = self.api.job_binary_get_all(ctx)
         self.assertEqual(1, len(lst))
 
-        kwargs = {'name': SAMPLE_JOB_BINARY['name'],
-                  'tenant_id': SAMPLE_JOB_BINARY['tenant_id']}
+        kwargs = {'name': jb['name'],
+                  'tenant_id': jb['tenant_id']}
         lst = self.api.job_binary_get_all(ctx, **kwargs)
         self.assertEqual(1, len(lst))
 
         # Valid field but no matching value
-        kwargs = {'name': SAMPLE_JOB_BINARY['name']+"foo"}
+        kwargs = {'name': jb['name']+"foo"}
+        lst = self.api.job_binary_get_all(ctx, **kwargs)
+        self.assertEqual(0, len(lst))
+
+        # Valid field with substrings
+        kwargs = {'name': "red",
+                  'url': "best"}
         lst = self.api.job_binary_get_all(ctx, **kwargs)
         self.assertEqual(0, len(lst))
 
@@ -946,6 +955,26 @@ class JobBinaryTest(test_base.ConductorManagerTestCase):
         self.assertRaises(sa_exc.InvalidRequestError,
                           self.api.job_binary_get_all,
                           ctx, **{'badfield': 'somevalue'})
+
+    @mock.patch('sahara.db.sqlalchemy.api.regex_filter')
+    def test_job_binary_search_regex(self, regex_filter):
+
+        # do this so we can return the correct value
+        def _regex_filter(query, cls, regex_cols, search_opts):
+            return query, search_opts
+
+        regex_filter.side_effect = _regex_filter
+
+        ctx = context.ctx()
+        self.api.job_binary_get_all(ctx)
+        self.assertEqual(0, regex_filter.call_count)
+
+        self.api.job_binary_get_all(ctx, regex_search=True, name="fox")
+        self.assertEqual(1, regex_filter.call_count)
+        args, kwargs = regex_filter.call_args
+        self.assertTrue(type(args[1] is m.JobBinary))
+        self.assertEqual(args[2], ["name", "description", "url"])
+        self.assertEqual(args[3], {"name": "fox"})
 
     def test_job_binary_update(self):
         ctx = context.ctx()
