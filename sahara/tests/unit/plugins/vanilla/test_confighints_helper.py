@@ -29,7 +29,7 @@ class ConfigHintsHelperTest(sahara_base.SaharaTestCase):
         }
         actual_config = ch_helper.get_possible_hive_config_from(
             'sample-config.xml')
-        load_hadoop_xml_defaults.called_once_with('sample-config.xml')
+        load_hadoop_xml_defaults.assert_called_once_with('sample-config.xml')
         self.assertEqual(expected_config, actual_config)
 
     @mock.patch('sahara.utils.xmlutils.load_hadoop_xml_defaults',
@@ -41,7 +41,7 @@ class ConfigHintsHelperTest(sahara_base.SaharaTestCase):
         }
         actual_config = ch_helper.get_possible_mapreduce_config_from(
             'sample-config.xml')
-        load_hadoop_xml_defaults.called_once_with('sample-config.xml')
+        load_hadoop_xml_defaults.assert_any_call('sample-config.xml')
         self.assertEqual(expected_config, actual_config)
 
     @mock.patch('sahara.utils.xmlutils.load_hadoop_xml_defaults',
@@ -55,5 +55,5 @@ class ConfigHintsHelperTest(sahara_base.SaharaTestCase):
         }
         actual_config = ch_helper.get_possible_pig_config_from(
             'sample-config.xml')
-        load_hadoop_xml_defaults.called_once_with('sample-config.xml')
+        load_hadoop_xml_defaults.assert_called_once_with('sample-config.xml')
         self.assertEqual(expected_config, actual_config)
