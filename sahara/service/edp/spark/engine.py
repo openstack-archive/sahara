@@ -176,7 +176,7 @@ class SparkJobEngine(base_engine.JobEngine):
 
         return uploaded_paths, builtin_paths
 
-    def _check_driver_class_path(self, job_configs, param_dict):
+    def _check_driver_class_path(self, job_configs, param_dict, wf_dir):
         overridden = edp.spark_driver_classpath(
             job_configs.get('configs', {}))
         if overridden:
@@ -190,7 +190,7 @@ class SparkJobEngine(base_engine.JobEngine):
         cp = param_dict['driver-class-path'] or ""
         if param_dict['deploy-mode'] == 'client' and not (
                 cp.startswith(":") or cp.endswith(":")):
-            cp += ":"
+            cp += ":" + wf_dir
         param_dict['driver-class-path'] = " --driver-class-path " + cp
 
     def cancel_job(self, job_execution):
@@ -212,6 +212,7 @@ class SparkJobEngine(base_engine.JobEngine):
 
     def _build_command(self, wf_dir, paths, builtin_paths,
                        updated_job_configs):
+
         indep_params = {}
 
         # TODO(tmckay): for now, paths[0] is always assumed to be the app
@@ -263,7 +264,7 @@ class SparkJobEngine(base_engine.JobEngine):
         # Handle driver classpath. Because of the way the hadoop
         # configuration is handled in the wrapper class, using
         # wrapper_xml, the working directory must be on the classpath
-        self._check_driver_class_path(updated_job_configs, mutual_dict)
+        self._check_driver_class_path(updated_job_configs, mutual_dict, wf_dir)
 
         if mutual_dict.get("wrapper_jar"):
             # Substrings which may be empty have spaces
