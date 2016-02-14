@@ -1,0 +1,12 @@
+<property>
+   <name>hive.security.authorization.task.factory</name>
+   <value>org.apache.sentry.binding.hive.SentryHiveAuthorizationTaskFactoryImpl</value>
+</property>
+<property>
+   <name>hive.server2.session.hook</name>
+   <value>org.apache.sentry.binding.hive.HiveAuthzBindingSessionHook</value>
+</property>
+<property>
+   <name>hive.sentry.conf.url</name>
+   <value>file:///{{CMF_CONF_DIR}}/sentry-site.xml</value>
+</property>
