@@ -21,6 +21,7 @@ import testtools
 
 from sahara.conductor import manager
 from sahara import context
+from sahara.db.sqlalchemy import models as m
 from sahara import exceptions as ex
 import sahara.tests.unit.conductor.base as test_base
 from sahara.utils import cluster as c_u
@@ -354,18 +355,25 @@ class ClusterTest(test_base.ConductorManagerTestCase):
 
     def test_cluster_search(self):
         ctx = context.ctx()
-        self.api.cluster_create(ctx, SAMPLE_CLUSTER)
+        vals = copy.deepcopy(SAMPLE_CLUSTER)
+        vals['name'] = "test_name"
+        self.api.cluster_create(ctx, vals)
 
         lst = self.api.cluster_get_all(ctx)
         self.assertEqual(1, len(lst))
 
-        kwargs = {'name': SAMPLE_CLUSTER['name'],
-                  'plugin_name': SAMPLE_CLUSTER['plugin_name']}
+        kwargs = {'name': vals['name'],
+                  'plugin_name': vals['plugin_name']}
         lst = self.api.cluster_get_all(ctx, **kwargs)
         self.assertEqual(1, len(lst))
 
         # Valid field but no matching value
-        kwargs = {'name': SAMPLE_CLUSTER['name']+'foo'}
+        kwargs = {'name': vals['name']+'foo'}
+        lst = self.api.cluster_get_all(ctx, **kwargs)
+        self.assertEqual(0, len(lst))
+
+        # Valid field with substrings
+        kwargs = {'name': 'test'}
         lst = self.api.cluster_get_all(ctx, **kwargs)
         self.assertEqual(0, len(lst))
 
@@ -373,6 +381,26 @@ class ClusterTest(test_base.ConductorManagerTestCase):
         self.assertRaises(sa_exc.InvalidRequestError,
                           self.api.cluster_get_all,
                           ctx, **{'badfield': 'somevalue'})
+
+    @mock.patch('sahara.db.sqlalchemy.api.regex_filter')
+    def test_cluster_search_regex(self, regex_filter):
+
+        # do this so we can return the correct value
+        def _regex_filter(query, cls, regex_cols, search_opts):
+            return query, search_opts
+
+        regex_filter.side_effect = _regex_filter
+
+        ctx = context.ctx()
+        self.api.cluster_get_all(ctx)
+        self.assertEqual(0, regex_filter.call_count)
+
+        self.api.cluster_get_all(ctx, regex_search=True, name="fox")
+        self.assertEqual(1, regex_filter.call_count)
+        args, kwargs = regex_filter.call_args
+        self.assertTrue(type(args[1] is m.Cluster))
+        self.assertEqual(args[2], ["name", "description", "plugin_name"])
+        self.assertEqual(args[3], {"name": "fox"})
 
     @mock.patch("sahara.service.shares.mount_shares")
     def test_cluster_update_shares(self, mount_shares):

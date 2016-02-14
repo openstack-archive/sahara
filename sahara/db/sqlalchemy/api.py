@@ -252,8 +252,14 @@ def cluster_get(context, cluster_id):
     return _cluster_get(context, get_session(), cluster_id)
 
 
-def cluster_get_all(context, **kwargs):
+def cluster_get_all(context, regex_search=False, **kwargs):
+
+    regex_cols = ['name', 'description', 'plugin_name']
+
     query = model_query(m.Cluster, context)
+    if regex_search:
+        query, kwargs = regex_filter(query,
+                                     m.Cluster, regex_cols, kwargs)
     return query.filter_by(**kwargs).all()
 
 
