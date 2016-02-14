@@ -448,14 +448,23 @@ def job_binary_update(context, values):
 
 
 @to_dict
-def job_binary_internal_get_all(context, **kwargs):
+def job_binary_internal_get_all(context, regex_search=False, **kwargs):
     """Get all JobBinaryInternals filtered by **kwargs.
 
-    e.g.  job_binary_internal_get_all(ctx, name='wordcount.jar')
-
     The JobBinaryInternals returned do not contain a data field.
+
+    :param context: The context, and associated authentication, to use with
+                    this operation
+
+    :param regex_search: If True, enable regex matching for filter
+                          values. See the user guide for more information
+                          on how regex matching is handled. If False,
+                          no regex matching is done.
+
+    :param kwargs: Specifies values for named fields by which
+                   to constrain the search
     """
-    return IMPL.job_binary_internal_get_all(context, **kwargs)
+    return IMPL.job_binary_internal_get_all(context, regex_search, **kwargs)
 
 
 @to_dict
