@@ -198,7 +198,7 @@ def data_source_update(id, values):
 
 
 def get_jobs(**kwargs):
-    return conductor.job_get_all(context.ctx(), **kwargs)
+    return conductor.job_get_all(context.ctx(), regex_search=True, **kwargs)
 
 
 def get_job(id):
