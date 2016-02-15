@@ -128,6 +128,7 @@ def list_opts():
 
     from sahara.conductor import api
     from sahara import main as sahara_main
+    from sahara.service import coordinator
     from sahara.service.edp import job_utils
     from sahara.service.heat import heat_engine
     from sahara.service.heat import templates
@@ -157,6 +158,7 @@ def list_opts():
                          sahara_main.opts,
                          job_utils.opts,
                          periodic.periodic_opts,
+                         coordinator.coordinator_opts,
                          proxy.opts,
                          cpo.event_log_opts,
                          base.opts,
