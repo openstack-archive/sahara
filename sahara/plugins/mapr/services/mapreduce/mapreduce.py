@@ -16,10 +16,8 @@ import sahara.plugins.mapr.domain.configuration_file as bcf
 import sahara.plugins.mapr.domain.node_process as np
 import sahara.plugins.mapr.domain.service as s
 import sahara.plugins.mapr.util.validation_utils as vu
-from sahara.plugins.mapr.versions import version_handler_factory as vhf
 from sahara.swift import swift_helper
 from sahara.topology import topology_helper as topo
-from sahara.utils import files as f
 
 JOB_TRACKER = np.NodeProcess(
     name='jobtracker',
@@ -33,11 +31,6 @@ TASK_TRACKER = np.NodeProcess(
     package='mapr-tasktracker',
     open_ports=[50060]
 )
-
-JACKSON_CORE_ASL = ('plugins/mapr/services/swift/resources/'
-                    'jackson-core-asl-1.9.13.jar')
-JACKSON_MAPPER_ASL = ('plugins/mapr/services/swift/resources/'
-                      'jackson-mapper-asl-1.9.13.jar')
 
 
 class MapReduce(s.Service):
@@ -127,28 +120,6 @@ class MapReduce(s.Service):
             {'name': 'hadoop.proxyuser.mapr.groups', 'value': '*'},
             {'name': 'hadoop.proxyuser.mapr.hosts', 'value': '*'}
         ]
-
-    def configure(self, cluster_context, instances=None):
-        version = cluster_context.cluster.hadoop_version
-        handler = vhf.VersionHandlerFactory.get().get_handler(version)
-        if handler._version == '3.1.1':
-            self._update_jackson_libs(cluster_context, instances)
-
-    def _update_jackson_libs(self, context, instances):
-        hadoop_lib = context.hadoop_lib
-        core_asl = f.get_file_text(JACKSON_CORE_ASL)
-        mapper_asl = f.get_file_text(JACKSON_MAPPER_ASL)
-        core_asl_path = '%s/%s' % (hadoop_lib, 'jackson-core-asl-1.9.13.jar')
-        mapper_path = '%s/%s' % (hadoop_lib, 'jackson-mapper-asl-1.9.13.jar')
-        libs = {
-            core_asl_path: core_asl,
-            mapper_path: mapper_asl
-        }
-        for instance in instances:
-            with instance.remote() as r:
-                r.execute_command('rm %s/jackson-*.jar' % hadoop_lib,
-                                  run_as_root=True)
-                r.write_files_to(libs, run_as_root=True)
 
     def get_file_path(self, file_name):
         template = 'plugins/mapr/services/mapreduce/resources/%s'

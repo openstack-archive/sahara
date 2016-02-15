@@ -21,8 +21,8 @@ from sahara.plugins.mapr.services.maprfs import maprfs
 from sahara.plugins.mapr.services.oozie import oozie
 from sahara.plugins.mapr.services.swift import swift
 from sahara.plugins.mapr.services.yarn import yarn
-import sahara.plugins.mapr.versions.v4_0_1_mrv2.context as cc
-import sahara.plugins.mapr.versions.v4_0_1_mrv2.version_handler as handler
+import sahara.plugins.mapr.versions.v5_0_0_mrv2.context as cc
+import sahara.plugins.mapr.versions.v5_0_0_mrv2.version_handler as handler
 from sahara.plugins import provisioning as p
 from sahara.tests.unit import base as b
 from sahara.tests.unit import testutils as tu
@@ -56,14 +56,14 @@ class TestClusterContext(b.SaharaTestCase):
                 'Service Version': '1.1',
             },
             'Oozie': {
-                'Oozie Version': '4.0.1',
+                'Oozie Version': '4.1.0',
             }
         }
         cluster = tu.create_cluster(
             name='test_cluster',
             tenant='large',
             plugin='mapr',
-            version='4.0.1.mrv1',
+            version='5.0.0.mrv2',
             node_groups=[master_ng],
             cluster_configs=cluster_configs,
         )
@@ -90,12 +90,11 @@ class TestClusterContext(b.SaharaTestCase):
         ctx = self._get_context()
         conf_sh = ctx.configure_sh
         pattern = (r'^(\S+)\s+(-N (\S+))\s+(-C (\S+))\s+(-Z (\S+))\s+'
-                   r'(-no-autostart)\s+(-f)\s+(-RM (\S+))\s(-HS (\S+))')
+                   r'(-no-autostart)\s+(-f)\s+\s(-HS (\S+))')
         self.assertRegex(conf_sh, pattern)
         self.assertIn('/opt/mapr/server/configure.sh', conf_sh)
         self.assertIn('-C %s' % INTERNAL_IP, conf_sh)
         self.assertIn('-Z %s' % INTERNAL_IP, conf_sh)
-        self.assertIn('-RM %s' % INTERNAL_IP, conf_sh)
         self.assertIn('-HS %s' % INTERNAL_IP, conf_sh)
         self.assertIn('-no-autostart', conf_sh)
         self.assertIn('-N ' + ctx.cluster.name, conf_sh)
@@ -282,5 +281,5 @@ class TestClusterContext(b.SaharaTestCase):
         cluster_context = self._get_context()
 
         self.assertTrue(cluster_context.is_present(oozie.Oozie()))
-        self.assertTrue(cluster_context.is_present(oozie.OozieV401()))
-        self.assertFalse(cluster_context.is_present(oozie.OozieV410()))
+        self.assertFalse(cluster_context.is_present(oozie.OozieV401()))
+        self.assertTrue(cluster_context.is_present(oozie.OozieV410()))
