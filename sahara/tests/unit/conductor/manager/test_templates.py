@@ -726,3 +726,21 @@ class ClusterTemplates(test_base.ConductorManagerTestCase):
             except ex.DeletionFailed as e:
                 self.assert_created_in_another_tenant_exception(e)
                 raise e
+
+    def test_update_clt_on_ngt_update(self):
+        # Prove that cluster templates get updated with proper values
+        # after a referenced node group template is updated
+        ctx = context.ctx()
+        ngt = self.api.node_group_template_create(ctx, SAMPLE_NGT)
+        sample = copy.deepcopy(SAMPLE_CLT)
+        sample["node_groups"] = [
+            {"node_group_template_id": ngt['id'],
+             "count": 1}
+        ]
+        ct = self.api.cluster_template_create(ctx, sample)
+        UPDATE_FLAVOR = "41"
+        update_values = {"flavor_id": UPDATE_FLAVOR}
+        self.api.node_group_template_update(ctx, ngt["id"], update_values)
+        updated_ct = self.api.cluster_template_get(ctx, ct["id"])
+        self.assertEqual(UPDATE_FLAVOR,
+                         updated_ct["node_groups"][0]["flavor_id"])

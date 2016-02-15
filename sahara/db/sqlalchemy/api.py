@@ -643,6 +643,34 @@ def node_group_template_update(context, values, ignore_prot_on_def=False):
                     )
 
             ngt.update(values)
+
+            # Here we update any cluster templates that reference the
+            # updated node group template
+            for template_relationship in ngt.templates_relations:
+                ct_id = template_relationship.cluster_template_id
+                ct = cluster_template_get(
+                    context, template_relationship.cluster_template_id)
+                node_groups = ct.node_groups
+                ct_node_groups = []
+                for ng in node_groups:
+                    # Need to fill in all node groups, not just
+                    # the modified group
+                    ng_to_add = ng
+                    if ng.node_group_template_id == ngt_id:
+                        # use the updated node group template
+                        ng_to_add = ngt
+                    ng_to_add = ng_to_add.to_dict()
+                    ng_to_add.update(
+                        {"count": ng["count"],
+                         "node_group_template_id": ng.node_group_template_id})
+                    ng_to_add.pop("updated_at", None)
+                    ng_to_add.pop("created_at", None)
+                    ng_to_add.pop("id", None)
+                    ct_node_groups.append(ng_to_add)
+                ct_update = {"id": ct_id,
+                             "node_groups": ct_node_groups}
+                cluster_template_update(context, ct_update)
+
     except db_exc.DBDuplicateEntry as e:
         raise ex.DBDuplicateEntry(
             _("Duplicate entry for NodeGroupTemplate: %s") % e.columns)
