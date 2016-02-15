@@ -58,6 +58,12 @@ class AmbariClient(object):
         kwargs.update(self._default_client_args)
         return self._http_client.delete(*args, **kwargs)
 
+    def get_alerts_data(self, cluster):
+        url = self._base_url + "/clusters/%s/alerts?fields=*" % cluster.name
+        resp = self.get(url)
+        data = self.check_response(resp)
+        return data.get('items', [])
+
     @staticmethod
     def check_response(resp):
         resp.raise_for_status()

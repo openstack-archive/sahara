@@ -21,6 +21,7 @@ from sahara.plugins.ambari import common as p_common
 from sahara.plugins.ambari import configs
 from sahara.plugins.ambari import deploy
 from sahara.plugins.ambari import edp_engine
+from sahara.plugins.ambari import health
 from sahara.plugins.ambari import validation
 from sahara.plugins import provisioning as p
 from sahara.plugins import utils as plugin_utils
@@ -227,3 +228,6 @@ class AmbariPluginProvider(p.ProvisioningPluginBase):
         for service in node_group.node_processes:
             ports.extend(ports_map.get(service, []))
         return ports
+
+    def get_health_checks(self, cluster):
+        return health.get_health_checks(cluster)
