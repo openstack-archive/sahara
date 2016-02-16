@@ -51,5 +51,7 @@ def main():
 
     ops_server = ops.OpsServer()
     launcher = server.get_process_launcher()
-    launcher.launch_service(ops_server.get_service())
+    service = ops_server.get_service()
+    launcher.launch_service(service)
+    service.start()
     launcher.wait()
