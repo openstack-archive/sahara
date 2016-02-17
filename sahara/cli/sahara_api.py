@@ -14,7 +14,7 @@
 # limitations under the License.
 
 from sahara.utils import patches
-patches.patch_all()
+patches.patch_minidom_writexml()
 
 import os
 import sys
@@ -45,13 +45,18 @@ import sahara.main as server
 LOG = logging.getLogger(__name__)
 
 
-def main():
+def setup_api():
     server.setup_common(possible_topdir, 'API')
 
     app = server.make_app()
 
     server.setup_sahara_api('distributed')
     server.setup_auth_policy()
+    return app
+
+
+def main():
+    app = setup_api()
 
     launcher = server.get_process_launcher()
     api_service = server.SaharaWSGIService("sahara-api", app)
