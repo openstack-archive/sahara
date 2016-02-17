@@ -35,8 +35,8 @@ class TestMessagingSetup(base.SaharaTestCase):
 
     def _install(self):
         messaging.setup()
-        self.assertNotEqual(None, messaging.TRANSPORT)
-        self.assertNotEqual(None, messaging.NOTIFIER)
+        self.assertIsNotNone(messaging.TRANSPORT)
+        self.assertIsNotNone(messaging.NOTIFIER)
 
     def _remove_install(self):
         if messaging.TRANSPORT:
