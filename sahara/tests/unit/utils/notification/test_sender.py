@@ -34,8 +34,8 @@ class NotificationTest(base.SaharaTestCase):
         self.cluster_name = 'someName'
         self.cluster_status = 'someStatus'
 
-        sender.notify(ctx, self.cluster_id, self.cluster_name,
-                      self.cluster_status, "update")
+        sender.status_notify(self.cluster_id, self.cluster_name,
+                             self.cluster_status, "update")
 
         self.create_mock('update')
 

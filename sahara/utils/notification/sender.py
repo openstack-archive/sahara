@@ -16,12 +16,14 @@
 from oslo_config import cfg
 from oslo_log import log as logging
 
+from sahara import context
 from sahara.utils import rpc as messaging
 
 LOG = logging.getLogger(__name__)
 
 SERVICE = 'sahara'
-EVENT_TEMPLATE = "sahara.cluster.%s"
+CLUSTER_EVENT_TEMPLATE = "sahara.cluster.%s"
+HEALTH_EVENT_TYPE = CLUSTER_EVENT_TEMPLATE % "health"
 
 notifier_opts = [
     cfg.StrOpt('level',
@@ -53,40 +55,44 @@ def _get_publisher():
     return publisher_id
 
 
-def _notify(context, event_type, level, body):
-    client = messaging.get_notifier(_get_publisher())
-
-    method = getattr(client, level.lower())
-    method(context, event_type, body)
-
-
-def _body(
-        cluster_id,
-        cluster_name,
-        cluster_status,
-        tenant_id,
-        user_id):
-    result = {
-        'cluster_id': cluster_id,
-        'cluster_name': cluster_name,
-        'cluster_status': cluster_status,
-        'project_id': tenant_id,
-        'user_id': user_id,
-    }
-    return result
-
-
-def notify(context, cluster_id, cluster_name, cluster_status, ev_type):
-    """Sends notification about creating/updating/deleting cluster."""
+def _notify(event_type, body):
     if not cfg.CONF.oslo_messaging_notifications.enable:
         return
 
     LOG.debug("Notification about cluster is going to be sent. Notification "
-              "type={type}, cluster status = {status}"
-              .format(type=ev_type, status=cluster_status))
-
+              "type={type}".format(type=event_type))
+    ctx = context.ctx()
     level = CONF.oslo_messaging_notifications.level
 
-    _notify(context, EVENT_TEMPLATE % ev_type, level,
-            _body(cluster_id, cluster_name, cluster_status, context.tenant_id,
-                  context.user_id))
+    body.update({'project_id': ctx.tenant_id, 'user_id': ctx.user_id})
+    client = messaging.get_notifier(_get_publisher())
+
+    method = getattr(client, level.lower())
+    method(ctx, event_type, body)
+
+
+def _health_notification_body(cluster, health_check):
+    verification = cluster.verification
+    return {
+        'cluster_id': cluster.id,
+        'cluster_name': cluster.name,
+        'verification_id': verification['id'],
+        'health_check_status': health_check['status'],
+        'health_check_name': health_check['name'],
+        'health_check_description': health_check['description'],
+        'created_at': health_check['created_at'],
+        'updated_at': health_check['updated_at']
+    }
+
+
+def status_notify(cluster_id, cluster_name, cluster_status, ev_type):
+    """Sends notification about creating/updating/deleting cluster."""
+    _notify(CLUSTER_EVENT_TEMPLATE % ev_type, {
+        'cluster_id': cluster_id, 'cluster_name': cluster_name,
+        'cluster_status': cluster_status})
+
+
+def health_notify(cluster, health_check):
+    """Sends notification about current cluster health."""
+    _notify(HEALTH_EVENT_TYPE,
+            _health_notification_body(cluster, health_check))
