@@ -10,20 +10,33 @@ explicitly enable or disable it in "plugins" line.
 
 You need to build images using :doc:`cdh_imagebuilder` to produce images used
 to provision cluster or you could download prepared images from
-http://sahara-files.mirantis.com/images/upstream/kilo/
-They already have Cloudera Express installed (5.0.0, 5.3.0, or 5.4.0 version).
+http://sahara-files.mirantis.com/images/upstream/
+They already have Cloudera Express installed (5.0.0, 5.3.0, 5.4.0 or 5.5.0
+version).
 
 The cloudera plugin requires an image to be tagged in Sahara Image Registry
-with two tags: 'cdh' and '<cloudera version>' (e.g. '5', '5.3.0' or '5.4.0',
-here '5' stands for '5.0.0').
+with two tags: 'cdh' and '<cloudera version>' (e.g. '5', '5.3.0', '5.4.0'
+or '5.5.0', here '5' stands for '5.0.0').
 
 The default username specified for these images is different for each
 distribution:
+
+for 5.0.0, 5.3.0 and 5.4.0 version:
 
 +--------------+------------+
 | OS           | username   |
 +==============+============+
 | Ubuntu 12.04 | ubuntu     |
++--------------+------------+
+| CentOS 6.6   | cloud-user |
++--------------+------------+
+
+for 5.5.0 version:
+
++--------------+------------+
+| OS           | username   |
++==============+============+
+| Ubuntu 14.04 | ubuntu     |
 +--------------+------------+
 | CentOS 6.6   | cloud-user |
 +--------------+------------+
@@ -47,13 +60,15 @@ and Key-value Store Indexer. 5.4.0 version added KMS service support based on
 High Availability Support
 -------------------------
 
-Currently HDFS NameNode High Availability is supported in Cloudera 5.4.0
-version.  You can refer to :doc:`features` for the detail info.
+Currently HDFS NameNode High Availability is supported beginning with
+Cloudera 5.4.0 version.  You can refer to :doc:`features` for the detail
+info.
 
-YARN ResourceManager High Availability is supported in Cloudera 5.4.0 version.
-This feature adds redundancy in the form of an Active/Standby ResourceManager
-pair to avoid the failure of single RM. Upon failover, the Standby RM become
-Active so that the applications can resume from their last check-pointed state.
+YARN ResourceManager High Availability is supported beginning with Cloudera
+5.4.0 version. This feature adds redundancy in the form of an Active/Standby
+ResourceManager pair to avoid the failure of single RM. Upon failover, the
+Standby RM become Active so that the applications can resume from their last
+check-pointed state.
 
 Cluster Validation
 ------------------
@@ -87,7 +102,7 @@ cloudera plugin versions:
     and at least one hbase regionserver.
   + Cluster can't contain hbase regionserver without at least one hbase maser.
 
-In case of 5.3.0 or 5.4.0 version of Cloudera Plugin there are few extra
+In case of 5.3.0, 5.4.0 or 5.5.0 version of Cloudera Plugin there are few extra
 limitations in the cluster topology:
 
   + Cluster can't contain flume without at least one datanode.
