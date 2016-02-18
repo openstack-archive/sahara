@@ -61,7 +61,7 @@ blacklist_calls:
             qualnames: [eval]
             message: "Use of possibly insecure function - consider using safer ast.literal_eval."
         - mark_safe:
-            names: [mark_safe]
+            qualnames: [mark_safe]
             message: "Use of mark_safe() may expose cross-site scripting vulnerabilities and should be reviewed."
         - httpsconnection:
             qualnames: [httplib.HTTPSConnection]
