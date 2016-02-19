@@ -57,7 +57,7 @@ class Impala(s.Service):
         return {}
 
     def get_config_files(self, cluster_context, configs, instance=None):
-        defaults = 'plugins/mapr/services/impala/resources/impala-env.sh'
+        defaults = 'plugins/mapr/services/impala/resources/impala-env.sh.j2'
 
         impala_env = bcf.TemplateFile("env.sh")
         impala_env.remote_path = self.conf_dir(cluster_context)
