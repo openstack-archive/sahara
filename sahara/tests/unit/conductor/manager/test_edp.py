@@ -459,28 +459,38 @@ class JobExecutionTest(test_base.ConductorManagerTestCase):
 
     def test_job_execution_search(self):
         ctx = context.ctx()
-        job = self.api.job_create(ctx, SAMPLE_JOB)
+        jvals = copy.copy(SAMPLE_JOB)
+        jvals["name"] = "frederica"
+        job = self.api.job_create(ctx, jvals)
+
         ds_input = self.api.data_source_create(ctx, SAMPLE_DATA_SOURCE)
         SAMPLE_DATA_OUTPUT = copy.copy(SAMPLE_DATA_SOURCE)
         SAMPLE_DATA_OUTPUT['name'] = 'output'
         ds_output = self.api.data_source_create(ctx, SAMPLE_DATA_OUTPUT)
 
-        SAMPLE_JOB_EXECUTION['job_id'] = job['id']
-        SAMPLE_JOB_EXECUTION['input_id'] = ds_input['id']
-        SAMPLE_JOB_EXECUTION['output_id'] = ds_output['id']
+        job_exec = copy.copy(SAMPLE_JOB_EXECUTION)
 
-        ctx.tenant_id = SAMPLE_JOB_EXECUTION['tenant_id']
-        self.api.job_execution_create(ctx, SAMPLE_JOB_EXECUTION)
+        job_exec['job_id'] = job['id']
+        job_exec['input_id'] = ds_input['id']
+        job_exec['output_id'] = ds_output['id']
+
+        ctx.tenant_id = job_exec['tenant_id']
+        self.api.job_execution_create(ctx, job_exec)
 
         lst = self.api.job_execution_get_all(ctx)
         self.assertEqual(1, len(lst))
 
-        kwargs = {'tenant_id': SAMPLE_JOB_EXECUTION['tenant_id']}
+        kwargs = {'tenant_id': job_exec['tenant_id']}
         lst = self.api.job_execution_get_all(ctx, **kwargs)
         self.assertEqual(1, len(lst))
 
         # Valid field but no matching value
-        kwargs = {'job_id': SAMPLE_JOB_EXECUTION['job_id']+"foo"}
+        kwargs = {'job_id': job_exec['job_id']+"foo"}
+        lst = self.api.job_execution_get_all(ctx, **kwargs)
+        self.assertEqual(0, len(lst))
+
+        # Valid field with substrings
+        kwargs = {'job.name': "red"}
         lst = self.api.job_execution_get_all(ctx, **kwargs)
         self.assertEqual(0, len(lst))
 
@@ -488,6 +498,44 @@ class JobExecutionTest(test_base.ConductorManagerTestCase):
         self.assertRaises(sa_exc.InvalidRequestError,
                           self.api.job_execution_get_all,
                           ctx, **{'badfield': 'somevalue'})
+
+    @mock.patch('sahara.db.sqlalchemy.api.regex_filter')
+    def test_job_execution_search_regex(self, regex_filter):
+
+        # do this so we can return the correct value
+        def _regex_filter(query, cls, regex_cols, search_opts):
+            return query, search_opts
+
+        regex_filter.side_effect = _regex_filter
+
+        ctx = context.ctx()
+        self.api.job_execution_get_all(ctx)
+        self.assertEqual(0, regex_filter.call_count)
+
+        self.api.job_execution_get_all(ctx, regex_search=True,
+                                       **{"job.name": "fox",
+                                          "cluster.name": "jack",
+                                          "id": "124"})
+
+        self.assertEqual(3, regex_filter.call_count)
+
+        # First call, after externals were removed
+        args, kwargs = regex_filter.call_args_list[0]
+        self.assertTrue(type(args[1] is m.JobExecution))
+        self.assertEqual(args[2], ["job.name", "cluster.name"])
+        self.assertEqual(args[3], {"id": "124"})
+
+        # Second call, looking for cluster.name
+        args, kwargs = regex_filter.call_args_list[1]
+        self.assertTrue(type(args[1] is m.Cluster))
+        self.assertEqual(args[2], ["name"])
+        self.assertEqual(args[3], {"name": "jack"})
+
+        # Third call, looking for job.name
+        args, kwargs = regex_filter.call_args_list[2]
+        self.assertTrue(type(args[1] is m.Job))
+        self.assertEqual(args[2], ["name"])
+        self.assertEqual(args[3], {"name": "fox"})
 
     def test_job_execution_advanced_search(self):
         ctx = context.ctx()

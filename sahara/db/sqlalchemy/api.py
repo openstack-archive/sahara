@@ -801,7 +801,7 @@ def job_execution_get(context, job_execution_id):
     return _job_execution_get(context, get_session(), job_execution_id)
 
 
-def job_execution_get_all(context, **kwargs):
+def job_execution_get_all(context, regex_search=False, **kwargs):
     """Get all JobExecutions filtered by **kwargs.
 
     kwargs key values may be the names of fields in a JobExecution
@@ -815,13 +815,23 @@ def job_execution_get_all(context, **kwargs):
          job_execution_get_all(**{'cluster.name': 'test',
                                   'job.name': 'wordcount'})
     """
-    query = model_query(m.JobExecution, context)
+
+    regex_cols = ['job.name', 'cluster.name']
 
     # Remove the external fields if present, they'll
     # be handled with a join and filter
     externals = {k: kwargs.pop(k) for k in ['cluster.name',
                                             'job.name',
                                             'status'] if k in kwargs}
+
+    # At this time, none of the fields in m.JobExecution itself
+    # are candidates for regex search, however this code fragment
+    # should remain in case that changes. This is the correct place
+    # to insert regex filters on the m.JobExecution class
+    query = model_query(m.JobExecution, context)
+    if regex_search:
+        query, kwargs = regex_filter(query,
+                                     m.JobExecution, regex_cols, kwargs)
 
     # Filter JobExecution by the remaining kwargs. This has to be done
     # before application of the joins and filters because those
@@ -830,12 +840,20 @@ def job_execution_get_all(context, **kwargs):
 
     # Now add the joins and filters for the externals
     if 'cluster.name' in externals:
-        query = query.join(m.Cluster).filter(
-            m.Cluster.name == externals['cluster.name'])
+        search_opts = {'name': externals['cluster.name']}
+        query = query.join(m.Cluster)
+        if regex_filter and 'cluster.name' in regex_cols:
+            query, search_opts = regex_filter(query,
+                                              m.Cluster, ['name'], search_opts)
+        query = query.filter_by(**search_opts)
 
     if 'job.name' in externals:
-        query = query.join(m.Job).filter(
-            m.Job.name == externals['job.name'])
+        search_opts = {'name': externals['job.name']}
+        query = query.join(m.Job)
+        if regex_filter and 'job.name' in regex_cols:
+            query, search_opts = regex_filter(query,
+                                              m.Job, ['name'], search_opts)
+        query = query.filter_by(**search_opts)
 
     res = query.all()
 

@@ -355,9 +355,8 @@ def job_execution_get(context, job_execution):
 
 
 @to_dict
-def job_execution_get_all(context, **kwargs):
+def job_execution_get_all(context, regex_search=False, **kwargs):
     """Get all JobExecutions filtered by **kwargs.
-
 
     kwargs key values may be the names of fields in a JobExecution
     plus the following special values with the indicated meaning:
@@ -366,11 +365,18 @@ def job_execution_get_all(context, **kwargs):
     'job.name' -- name of the Job referenced by the JobExecution
     'status' -- JobExecution['info']['status']
 
-    e.g. job_execution_get_all(cluster_id=12, input_id=123)
-         job_execution_get_all(**{'cluster.name': 'test',
-                                  'job.name': 'wordcount'})
+    :param context: The context, and associated authentication, to use with
+                    this operation
+
+    :param regex_search: If True, enable regex matching for filter
+                          values. See the user guide for more information
+                          on how regex matching is handled. If False,
+                          no regex matching is done.
+
+    :param kwargs: Specifies values for named fields by which
+                   to constrain the search
     """
-    return IMPL.job_execution_get_all(context, **kwargs)
+    return IMPL.job_execution_get_all(context, regex_search, **kwargs)
 
 
 def job_execution_count(context, **kwargs):
