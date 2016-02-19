@@ -44,8 +44,7 @@ XML_CONFS = {
 }
 
 _default_executor_classpath = ":".join(
-    ['/usr/lib/hadoop/lib/jackson-core-asl-1.8.8.jar',
-     '/usr/lib/hadoop/hadoop-swift.jar'])
+    ['/usr/lib/hadoop/hadoop-swift.jar'])
 
 SPARK_CONFS = {
     'Spark': {
