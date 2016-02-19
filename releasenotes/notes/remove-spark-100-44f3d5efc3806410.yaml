@@ -1,0 +1,3 @@
+---
+deprecations:
+  - Removed support for the Spark 1.0.0 plugin.

@@ -26,7 +26,7 @@ from sahara.service.edp.spark import engine as edp_engine
 
 class EdpEngine(edp_engine.SparkJobEngine):
 
-    edp_base_version = "1.0.0"
+    edp_base_version = "1.3.1"
 
     def __init__(self, cluster):
         super(EdpEngine, self).__init__(cluster)

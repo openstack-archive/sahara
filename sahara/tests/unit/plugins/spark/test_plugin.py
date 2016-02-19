@@ -54,20 +54,24 @@ class SparkPluginTest(base.SaharaWithDbTestCase):
         edp_engine = plugin.get_edp_engine(cluster, edp.JOB_TYPE_SPARK)
         with testtools.ExpectedException(
                 ex.InvalidDataException,
-                value_re="Spark 1.0.0 or higher required to run "
+                value_re="Spark 1.3.1 or higher required to run "
                          "Spark jobs\nError ID: .*"):
             edp_engine.validate_job_execution(cluster, job, mock.Mock())
 
     def test_plugin10_edp_engine(self):
-        self._test_engine('1.0.0', edp.JOB_TYPE_SPARK,
+        self._test_engine('1.3.1', edp.JOB_TYPE_SPARK,
                           engine.SparkJobEngine)
 
-    def test_plugin09_shell_engine(self):
-        self._test_engine('0.9.1', edp.JOB_TYPE_SHELL,
+    def test_plugin10_shell_engine(self):
+        self._test_engine('1.3.1', edp.JOB_TYPE_SHELL,
                           engine.SparkShellJobEngine)
 
-    def test_plugin10_shell_engine(self):
-        self._test_engine('1.0.0', edp.JOB_TYPE_SHELL,
+    def test_plugin11_edp_engine(self):
+        self._test_engine('1.6.0', edp.JOB_TYPE_SPARK,
+                          engine.SparkJobEngine)
+
+    def test_plugin12_shell_engine(self):
+        self._test_engine('1.6.0', edp.JOB_TYPE_SHELL,
                           engine.SparkShellJobEngine)
 
     def _test_engine(self, version, job_type, eng):
@@ -100,7 +104,7 @@ class SparkPluginTest(base.SaharaWithDbTestCase):
             'cron': 'cron_text'}}
         instance.node_group.node_processes = ["master"]
         instance.node_group.id = id
-        cluster_dict = self._init_cluster_dict('1.0.0')
+        cluster_dict = self._init_cluster_dict('1.3.1')
 
         cluster = conductor.cluster_create(context.ctx(), cluster_dict)
         plugin = pb.PLUGINS.get_plugin(cluster.plugin_name)
@@ -133,25 +137,25 @@ class SparkProviderTest(base.SaharaTestCase):
 
         res = provider.get_edp_job_types()
         self.assertEqual([edp.JOB_TYPE_SHELL, edp.JOB_TYPE_SPARK],
-                         res['1.0.0'])
-        self.assertEqual([edp.JOB_TYPE_SHELL, edp.JOB_TYPE_SPARK],
                          res['1.3.1'])
+        self.assertEqual([edp.JOB_TYPE_SHELL, edp.JOB_TYPE_SPARK],
+                         res['1.6.0'])
 
     def test_edp_config_hints(self):
         provider = pl.SparkProvider()
-
-        res = provider.get_edp_config_hints(edp.JOB_TYPE_SHELL, "1.0.0")
-        self.assertEqual({'configs': {}, 'args': [], 'params': {}},
-                         res['job_config'])
 
         res = provider.get_edp_config_hints(edp.JOB_TYPE_SHELL, "1.3.1")
         self.assertEqual({'configs': {}, 'args': [], 'params': {}},
                          res['job_config'])
 
-        res = provider.get_edp_config_hints(edp.JOB_TYPE_SPARK, "1.0.0")
-        self.assertEqual({'args': [], 'configs': []},
+        res = provider.get_edp_config_hints(edp.JOB_TYPE_SHELL, "1.6.0")
+        self.assertEqual({'configs': {}, 'args': [], 'params': {}},
                          res['job_config'])
 
         res = provider.get_edp_config_hints(edp.JOB_TYPE_SPARK, "1.3.1")
+        self.assertEqual({'args': [], 'configs': []},
+                         res['job_config'])
+
+        res = provider.get_edp_config_hints(edp.JOB_TYPE_SPARK, "1.6.0")
         self.assertEqual({'args': [], 'configs': []},
                          res['job_config'])
