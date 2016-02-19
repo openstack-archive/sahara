@@ -623,6 +623,9 @@ class SaharaMigrationsCheckers(object):
         self.assertColumnsExist(engine, 'plugin_data',
                                 plugins_data_columns)
 
+    def _check_033(self, engine, data):
+        self.assertColumnExists(engine, 'clusters', 'anti_affinity_ratio')
+
 
 class TestMigrationsMySQL(SaharaMigrationsCheckers,
                           base.BaseWalkMigrationTestCase,

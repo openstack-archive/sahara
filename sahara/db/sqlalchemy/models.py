@@ -58,6 +58,7 @@ class Cluster(mb.SaharaBase):
     default_image_id = sa.Column(sa.String(36))
     neutron_management_network = sa.Column(sa.String(36))
     anti_affinity = sa.Column(st.JsonListType())
+    anti_affinity_ratio = sa.Column(sa.Integer, default=1)
     management_private_key = sa.Column(sa.Text, nullable=False)
     management_public_key = sa.Column(sa.Text, nullable=False)
     user_keypair_id = sa.Column(sa.String(80))

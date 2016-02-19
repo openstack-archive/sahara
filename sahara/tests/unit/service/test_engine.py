@@ -167,7 +167,7 @@ class TestDeletion(base.SaharaTestCase):
 
         self.assertEqual(0, client.security_groups.delete.call_count)
 
-    @mock.patch('sahara.service.engine.Engine._delete_aa_server_group')
+    @mock.patch('sahara.service.engine.Engine._delete_aa_server_groups')
     @mock.patch('sahara.service.engine.Engine._shutdown_instances')
     @mock.patch('sahara.service.engine.Engine._remove_db_objects')
     @mock.patch('sahara.service.engine.Engine._clean_job_executions')
@@ -192,15 +192,15 @@ class TestDeletion(base.SaharaTestCase):
                 self.order.append('shutdown_instances')
                 super(FakeHeatEngine, self)._shutdown_instances(cluster)
 
-            def _delete_aa_server_group(self, cluster):
-                self.order.append('delete_aa_server_group')
-                super(FakeHeatEngine, self)._delete_aa_server_group(cluster)
+            def _delete_aa_server_groups(self, cluster):
+                self.order.append('delete_aa_server_groups')
+                super(FakeHeatEngine, self)._delete_aa_server_groups(cluster)
 
         fake_cluster = mock.Mock()
         heat_client.side_effect = heat_exc.HTTPNotFound()
         engine = FakeHeatEngine()
         engine.shutdown_cluster(fake_cluster)
-        self.assertEqual(['shutdown_instances', 'delete_aa_server_group',
+        self.assertEqual(['shutdown_instances', 'delete_aa_server_groups',
                           'clean_job_executions', 'remove_db_objects'],
                          engine.order)
         self.assertEqual(

@@ -45,6 +45,7 @@ conductor = c.API
 
 @six.add_metaclass(abc.ABCMeta)
 class Engine(object):
+
     @abc.abstractmethod
     def create_cluster(self, cluster):
         pass
@@ -251,15 +252,27 @@ sed '/^Defaults    requiretty*/ s/^/#/' -i /etc/sudoers\n
             LOG.warning(_LW("Failed to delete security group {name}").format(
                 name=name))
 
-    def _delete_aa_server_group(self, cluster):
+    def _delete_aa_server_groups(self, cluster):
         if cluster.anti_affinity:
-            server_group_name = g.generate_aa_group_name(cluster.name)
-            client = nova.client().server_groups
+            for i in range(1, cluster.anti_affinity_ratio):
+                server_group_name = g.generate_aa_group_name(cluster.name, i)
 
-            server_groups = b.execute_with_retries(client.findall,
-                                                   name=server_group_name)
-            if len(server_groups) == 1:
-                b.execute_with_retries(client.delete, server_groups[0].id)
+                client = nova.client().server_groups
+
+                server_groups = b.execute_with_retries(client.findall,
+                                                       name=server_group_name)
+                if len(server_groups) == 1:
+                    b.execute_with_retries(client.delete, server_groups[0].id)
+
+                '''In case the server group is created
+                using mitaka or older version'''
+                old_server_group_name = server_group_name.rsplit('-', 1)[0]
+                server_groups_old = b.execute_with_retries(
+                    client.findall,
+                    name=old_server_group_name)
+                if len(server_groups_old) == 1:
+                    b.execute_with_retries(client.delete,
+                                           server_groups_old[0].id)
 
     def _shutdown_instance(self, instance):
         # tmckay-fp perfect, already testing the right thing

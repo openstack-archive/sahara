@@ -53,7 +53,8 @@ class BaseTestClusterTemplate(base.SaharaWithDbTestCase):
                                  neutron_management_network=mng_network,
                                  default_image_id='1', image_id=None,
                                  anti_affinity=anti_affinity or [],
-                                 domain_name=domain_name)
+                                 domain_name=domain_name,
+                                 anti_affinity_ratio=1)
 
 
 class TestClusterTemplate(BaseTestClusterTemplate):
@@ -70,17 +71,18 @@ class TestClusterTemplate(BaseTestClusterTemplate):
         cluster = self._make_cluster('private_net', ng1, ng2,
                                      anti_affinity=["datanode"])
         heat_template = self._make_heat_template(cluster, ng1, ng2)
-
         ng1 = [ng for ng in cluster.node_groups if ng.name == "master"][0]
         ng2 = [ng for ng in cluster.node_groups if ng.name == "worker"][0]
 
         expected = {
             "scheduler_hints": {
                 "group": {
-                    "get_param": h.SERVER_GROUP_PARAM_NAME
+                    "get_param": [h.SERVER_GROUP_NAMES, {"get_param":
+                                                         "instance_index"}]
                 }
             }
         }
+
         actual = heat_template._get_anti_affinity_scheduler_hints(ng2)
         self.assertEqual(expected, actual)
 
