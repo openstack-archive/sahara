@@ -19,6 +19,7 @@ import string
 
 from oslo_log import log as logging
 
+from sahara.i18n import _
 import sahara.plugins.mapr.domain.configuration_file as bcf
 import sahara.plugins.mapr.domain.node_process as np
 import sahara.plugins.mapr.domain.service as s
@@ -29,10 +30,13 @@ import sahara.plugins.mapr.services.impala.impala as impala
 import sahara.plugins.mapr.services.mapreduce.mapreduce as mr
 import sahara.plugins.mapr.services.mysql.mysql as mysql
 import sahara.plugins.mapr.services.oozie.oozie as oozie
+import sahara.plugins.mapr.services.spark.spark as spark
 import sahara.plugins.mapr.services.sqoop.sqoop2 as sqoop
 import sahara.plugins.mapr.services.yarn.yarn as yarn
 import sahara.plugins.mapr.util.general as g
+from sahara.plugins.mapr.util import service_utils as su
 import sahara.plugins.mapr.util.validation_utils as vu
+import sahara.plugins.provisioning as p
 import sahara.utils.files as files
 
 LOG = logging.getLogger(__name__)
@@ -53,6 +57,18 @@ HUE_LIVY = np.NodeProcess(
 
 
 class Hue(s.Service):
+    THRIFT_VERSIONS = [5, 7]
+    THRIFT_VERSION = p.Config(
+        name="Thrift version",
+        applicable_target="Hue",
+        scope='cluster',
+        config_type="dropdown",
+        config_values=[(v, v) for v in THRIFT_VERSIONS],
+        priority=1,
+        description=_(
+            'Specifies thrift version.')
+    )
+
     def __init__(self):
         super(Hue, self).__init__()
         self._name = 'hue'
@@ -64,24 +80,44 @@ class Hue(s.Service):
             vu.on_same_node(HUE, httpfs.HTTP_FS),
         ]
 
+    def get_configs(self):
+        return [Hue.THRIFT_VERSION]
+
     def conf_dir(self, cluster_context):
         return '%s/desktop/conf' % self.home_dir(cluster_context)
 
     def get_config_files(self, cluster_context, configs, instance=None):
         template = 'plugins/mapr/services/hue/resources/hue_%s.template'
-
+        # hue.ini
         hue_ini = bcf.TemplateFile("hue.ini")
         hue_ini.remote_path = self.conf_dir(cluster_context)
         hue_ini.parse(files.get_file_text(template % self.version))
         hue_ini.add_properties(self._get_hue_ini_props(cluster_context))
+        hue_ini.add_property("thrift_version",
+                             configs[self.THRIFT_VERSION.name])
 
-        # TODO(aosadchyi): rewrite it
+        # # hue.sh
+        hue_sh_template = 'plugins/mapr/services/hue/' \
+                          'resources/hue_sh_%s.template'
+        hue_sh = bcf.TemplateFile("hue.sh")
+        hue_sh.remote_path = self.home_dir(cluster_context) + '/bin'
+        hue_sh.parse(files.get_file_text(hue_sh_template % self.version))
+        hue_sh.add_property('hadoop_version', cluster_context.hadoop_version)
+        hue_sh.mode = 777
+
         hue_instances = cluster_context.get_instances(HUE)
         for instance in hue_instances:
             if instance not in cluster_context.changed_instances():
                 cluster_context.should_be_restarted[self] += [instance]
 
-        return [hue_ini]
+        return [hue_ini, hue_sh]
+
+    def _get_packages(self, node_processes):
+        result = []
+
+        result += self.dependencies
+        result += [(np.package, self.version) for np in [HUE]]
+        return result
 
     def _get_hue_ini_props(self, context):
         db_instance = mysql.MySQL.get_db_instance(context)
@@ -106,7 +142,7 @@ class Hue(s.Service):
             'sqoop_host': context.get_instance_ip(sqoop.SQOOP_2_SERVER),
             'impala_host': context.get_instance_ip(impala.IMPALA_STATE_STORE),
             'zk_hosts_with_port': context.get_zookeeper_nodes_ip_with_port(),
-            'secret_key': self._generate_secret_key(),
+            'secret_key': self._generate_secret_key()
         }
 
         hive_host = context.get_instance(hive.HIVE_METASTORE)
@@ -124,6 +160,14 @@ class Hue(s.Service):
             result.update({
                 'hbase_host': hbase_host.internal_ip,
                 'hbase_conf_dir': hbase_service.conf_dir(context),
+            })
+
+        livy_host = context.get_instance(HUE_LIVY)
+        spark_instance = context.get_instance(
+            spark.SPARK_HISTORY_SERVER)
+        if livy_host and spark_instance:
+            result.update({
+                'livy_host': livy_host.internal_ip
             })
 
         return result
@@ -155,6 +199,13 @@ class Hue(s.Service):
             self._copy_hive_configs(cluster_context, hue_instance)
             self._install_jt_plugin(cluster_context, hue_instance)
 
+    def _set_hue_sh_chmod(self, cluster_context):
+        cmd = 'chmod 777 %s' % (self.home_dir(cluster_context) + '/bin/hue.sh')
+        hue_instance = cluster_context.get_instance(HUE)
+        if hue_instance:
+            with hue_instance.remote() as r:
+                r.execute_command(cmd, run_as_root=True)
+
     def _copy_hive_configs(self, cluster_context, hue_instance):
         hive_server = cluster_context.get_instance(hive.HIVE_SERVER_2)
         if not hive_server or hive_server == hue_instance:
@@ -169,12 +220,36 @@ class Hue(s.Service):
             hue_instance = cluster_context.get_instance(HUE)
             self.restart([hue_instance])
 
+    def post_start(self, cluster_context, instances):
+        self._install_livy(cluster_context, instances=instances)
+        self.update(cluster_context, instances=instances)
+
+    def restart(self, instances):
+        for node_process in [HUE]:
+            filtered_instances = su.filter_by_node_process(instances,
+                                                           node_process)
+            if filtered_instances:
+                node_process.restart(filtered_instances)
+
+    # need to be installed after cldb start
+    def _install_livy(self, cluster_context, instances):
+        hue_livy_instance = cluster_context.get_instance(HUE_LIVY)
+        spark_instance = cluster_context.get_instance(
+            spark.SPARK_HISTORY_SERVER)
+        if hue_livy_instance and spark_instance:
+            with hue_livy_instance.remote() as r:
+                cmd = cluster_context.distro.create_install_cmd(
+                    [(HUE_LIVY.package, self.version)])
+                r.execute_command(cmd, run_as_root=True,
+                                  timeout=s._INSTALL_PACKAGES_TIMEOUT)
+
     def _should_restart(self, c_context, instances):
         app_services = [
             impala.Impala(),
             hive.Hive(),
             hbase.HBase(),
             sqoop.Sqoop2(),
+            spark.Spark(),
         ]
         instances = [c_context.filter_instances(instances, service=service)
                      for service in app_services]
@@ -225,3 +300,24 @@ class HueV381(Hue):
         self._dependencies = [("mapr-hue-base", self.version)]
         self._node_processes = [HUE, HUE_LIVY]
         self._validation_rules.append(vu.at_most(1, HUE_LIVY))
+
+
+class HueV390(Hue):
+    def __init__(self):
+        super(HueV390, self).__init__()
+        self._version = "3.9.0"
+        self._dependencies = [("mapr-hue-base", self.version)]
+        self._node_processes = [HUE, HUE_LIVY]
+        self._validation_rules.append(vu.at_most(1, HUE_LIVY))
+
+    def _get_hue_ini_props(self, context):
+        result = super(HueV390, self)._get_hue_ini_props(context)
+        ssl_cert_file = 'cert.pem'
+        ssl_key_file = 'hue_private_keystore.pem'
+        result.update({
+            'ssl_cert': '%(home)s/%(file)s' % {'home': self.home_dir(context),
+                                               'file': ssl_cert_file},
+            'ssl_key': '%(home)s/%(file)s' % {'home': self.home_dir(context),
+                                              'file': ssl_key_file}
+        })
+        return result

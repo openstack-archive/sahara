@@ -19,6 +19,9 @@
   # Set this to a random string, the longer the better.
   # This is used for secure hashing in the session store.
   secret_key={{ secret_key }}
+  # Execute this script to produce the Django secret key. This will be used when
+  # `secret_key` is not set.
+  ## secret_key_script=
 
   # Webserver listens on this address and port
   http_host=0.0.0.0
@@ -82,8 +85,18 @@
   ## ssl_password_script=
 
   # List of allowed and disallowed ciphers in cipher list format.
-  # See http://www.openssl.org/docs/apps/ciphers.html for more information on cipher list format.
-  ## ssl_cipher_list=DEFAULT:!aNULL:!eNULL:!LOW:!EXPORT:!SSLv2
+  # See http://www.openssl.org/docs/apps/ciphers.html for more information on
+  # cipher list format. This list is from
+  # https://wiki.mozilla.org/Security/Server_Side_TLS v3.7 intermediate
+  # recommendation, which should be compatible with Firefox 1, Chrome 1, IE 7,
+  # Opera 5 and Safari 1.
+  ## ssl_cipher_list=ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES256-GCM-SHA384:DHE-RSA-AES128-GCM-SHA256:DHE-DSS-AES128-GCM-SHA256:kEDH+AESGCM:ECDHE-RSA-AES128-SHA256:ECDHE-ECDSA-AES128-SHA256:ECDHE-RSA-AES128-SHA:ECDHE-ECDSA-AES128-SHA:ECDHE-RSA-AES256-SHA384:ECDHE-ECDSA-AES256-SHA384:ECDHE-RSA-AES256-SHA:ECDHE-ECDSA-AES256-SHA:DHE-RSA-AES128-SHA256:DHE-RSA-AES128-SHA:DHE-DSS-AES128-SHA256:DHE-RSA-AES256-SHA256:DHE-DSS-AES256-SHA:DHE-RSA-AES256-SHA:AES128-GCM-SHA256:AES256-GCM-SHA384:AES128-SHA256:AES256-SHA256:AES128-SHA:AES256-SHA:AES:CAMELLIA:DES-CBC3-SHA:!aNULL:!eNULL:!EXPORT:!DES:!RC4:!MD5:!PSK:!aECDH:!EDH-DSS-DES-CBC3-SHA:!EDH-RSA-DES-CBC3-SHA:!KRB5-DES-CBC3-SHA
+
+  # Path to default Certificate Authority certificates.
+  ## ssl_cacerts=/opt/mapr/hue/hue-3.9.0/cert.pem
+
+  # Choose whether Hue should validate certificates received from the server.
+  ## validate=true
 
   # LDAP username and password of the hue user used for LDAP authentications.
   # Set it to use LDAP Authentication with HiveServer2 and Impala.
@@ -203,7 +216,7 @@
     # - libsaml.backend.SAML2Backend
     # - libopenid.backend.OpenIDBackend
     # - liboauth.backend.OAuthBackend
-    #     (Support Twitter, Facebook, Google+ and Linkedin
+    #     (New oauth, support Twitter, Facebook, Google+ and Linkedin
     backend=desktop.auth.backend.PamBackend
 
     # The service to use when querying PAM.
@@ -233,6 +246,9 @@
 
     # Apply 'expires_after' to superusers.
     ## expire_superusers=true
+
+    # Force users to change password on first login with desktop.auth.backend.AllowFirstUserDjangoBackend
+    ## change_default_password=false
 
   # Configuration options for connecting to LDAP and Active Directory
   # -------------------------------------------------------------------
@@ -280,11 +296,10 @@
     ## sync_groups_on_login=false
 
     # Ignore the case of usernames when searching for existing users in Hue.
-    ## ignore_username_case=false
+    ## ignore_username_case=true
 
-    # Ignore the case of usernames when searching for existing users to authenticate with.
-    # Only supported in remoteUserDjangoBackend.
-    ## force_username_lowercase=false
+    # Force usernames to lowercase when creating new users from LDAP.
+    ## force_username_lowercase=true
 
     # Use search bind authentication.
     # If set to true, hue will perform ldap search using bind credentials above (bind_dn, bind_password)
@@ -409,6 +424,7 @@
     # Note that for sqlite3, 'name', below is a path to the filename. For other backends, it is the database name.
     # Note for Oracle, options={'threaded':true} must be set in order to avoid crashes.
     # Note for Oracle, you can use the Oracle Service Name by setting "port=0" and then "name=<host>:<port>/<service_name>".
+    # Note for MariaDB use the 'mysql' engine.
     engine=mysql
     host={{ db_host }}
     port=3306
@@ -430,7 +446,7 @@
     ## secure=false
 
     # The cookie containing the users' session ID will use the HTTP only flag.
-    ## http_only=false
+    ## http_only=true
 
     # Use session-length cookies. Logs out the user when she closes the browser window.
     ## expire_at_browser_close=false
@@ -525,7 +541,7 @@
   # Have Hue initiated logout requests be signed and provide a certificate.
   ## logout_requests_signed=false
 
-  ## Username can be sourced from 'attributes' or 'nameid'.
+  # Username can be sourced from 'attributes' or 'nameid'.
   ## username_source=attributes
 
   # Performs the logout or not.
@@ -628,7 +644,7 @@
       ## nice_name=SQLite
 
       # For SQLite, name defines the path to the database.
-      ## name=/opt/mapr/hue/hue-3.8.1/desktop/desktop.db
+      ## name=/opt/mapr/hue/hue-3.9.0/desktop/desktop.db
 
       # Database backend to use.
       ## engine=sqlite
@@ -704,6 +720,11 @@
       # Security mechanism of authentication none/GSSAPI/MAPR-SECURITY
       mechanism=${mechanism}
 
+      #Enable mutual ssl authentication
+      mutual_ssl_auth=False
+      ssl_cert={{ssl_cert}}
+      ssl_key={{ssl_key}}
+
       # In secure mode (HTTPS), if SSL certificates from YARN Rest APIs
       # have to be verified against certificate authority
       ## ssl_cert_ca_verify=True
@@ -747,7 +768,7 @@
       # URL of the HistoryServer API
       history_server_api_url=http://{{ hs_host | default(rm_host, True) }}:{{ hs_api_port | default("19888", True)}}
 
-      # In secure mode (HTTPS), if SSL certificates from from YARN Rest APIs
+      # In secure mode (HTTPS), if SSL certificates from  YARN Rest APIs
       # have to be verified against certificate authority
       ## ssl_cert_ca_verify=True
 
@@ -842,7 +863,7 @@
   remote_data_dir=/oozie/workspaces
 
   # Maximum of Oozie workflows or coodinators to retrieve in one API call.
-  ## oozie_jobs_count=100
+  ## oozie_jobs_count=50
 
   # Use Cron format for defining the frequency of a Coordinator instead of the old frequency number/unit.
   ## enable_cron_scheduling=true
@@ -868,6 +889,8 @@
   # Timeout in seconds for thrift calls to Hive service
   ## server_conn_timeout=120
 
+  # Change this if your Hive is secured
+  security_enabled=${security_enabled}
   # Security mechanism of authentication none/GSSAPI/MAPR-SECURITY
   mechanism=${mechanism}
 
@@ -923,7 +946,7 @@
   # Number of initial rows of a result set to ask Impala to cache in order
   # to support re-fetching them for downloading them.
   # Set to 0 for disabling the option and backward compatibility.
-  querycache_rows=0
+  querycache_rows=50000
 
   # Timeout in seconds for thrift calls
   ## server_conn_timeout=120
@@ -960,7 +983,7 @@
 
 
 ###########################################################################
-# Settings to configure Sqoop
+# Settings to configure Sqoop2
 ###########################################################################
 {%- if sqoop_host %}
 [sqoop]
@@ -1032,6 +1055,9 @@
   ## Query sent when no term is entered
   ## empty_query=*:*
 
+  # Use latest Solr 5.2+ features.
+  ## latest=false
+
 
 ###########################################################################
 # Settings to configure Solr Indexer
@@ -1042,8 +1068,6 @@
   # Location of the solrctl binary.
   ## solrctl_path=/usr/bin/solrctl
 
-  # Zookeeper ensemble.
-  ## solr_zk_ensemble=localhost:2181/solr
 
 
 ###########################################################################
@@ -1067,6 +1091,9 @@
   # Share submitted jobs information with all users. If set to false,
   # submitted jobs are visible only to the owner and administrators.
   ## share_jobs=true
+
+  # Whether to disalbe the job kill button for all users in the jobbrowser
+  ## disable_killing_jobs=false
 
 
 ###########################################################################
@@ -1110,7 +1137,6 @@
   ## languages='[{"name": "Scala Shell", "type": "scala"},{"name": "PySpark Shell", "type": "python"},{"name": "R Shell", "type": "r"},{"name": "Jar", "type": "Jar"},{"name": "Python", "type": "py"},{"name": "Impala SQL", "type": "impala"},{"name": "Hive SQL", "type": "hive"},{"name": "Text", "type": "text"}]'
 {%- endif %}
 
-
 ###########################################################################
 # Settings for the User Admin application
 ###########################################################################
@@ -1128,6 +1154,7 @@
     ## pwd_hint="The password must be at least 8 characters long, and must contain both uppercase and lowercase letters, at least one number, and at least one special character."
     ## pwd_error_message="The password must be at least 8 characters long, and must contain both uppercase and lowercase letters, at least one number, and at least one special character."
 
+
 ###########################################################################
 # Settings for the Sentry lib
 ###########################################################################
@@ -1141,3 +1168,16 @@
 
   # Sentry configuration directory, where sentry-site.xml is located.
   ## sentry_conf_dir=/opt/mapr/sentry/sentry-1.4.0/conf
+
+
+  ###########################################################################
+  # Settings to configure the ZooKeeper Lib
+  ###########################################################################
+
+[libzookeeper]
+  # ZooKeeper ensemble. Comma separated list of Host/Port.
+  # e.g. localhost:2181,localhost:2182,localhost:2183
+  ## ensemble=localhost:2181
+
+  # Name of Kerberos principal when using security.
+  ## principal_name=zookeeper
