@@ -13,6 +13,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import six
+
 import time
 
 from oslo_utils import timeutils
@@ -31,8 +33,12 @@ conductor = c.API
 
 
 def _is_main_class_present(data):
-    return data and 'edp.java.main_class' in data.get('job_configs',
-                                                      {}).get('configs', {})
+    if data:
+        val = data.get(
+            'job_configs', {}).get(
+                'configs', {}).get('edp.java.main_class', None)
+        return val and isinstance(val, six.string_types)
+    return False
 
 
 def check_main_class_present(data, job):

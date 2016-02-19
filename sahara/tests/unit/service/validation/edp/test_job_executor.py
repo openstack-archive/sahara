@@ -225,6 +225,20 @@ class TestJobExecCreateValidation(u.ValidationTestCase):
                 "cluster_id": six.text_type(uuid.uuid4()),
                 "job_configs": {
                     "configs": {
+                        "edp.java.main_class": ""},
+                    "params": {},
+                    "args": [],
+                    "job_execution_info": {}}
+            },
+            bad_req_i=(1, "INVALID_DATA",
+                          "%s job must "
+                          "specify edp.java.main_class" % edp.JOB_TYPE_JAVA))
+
+        self._assert_create_object_validation(
+            data={
+                "cluster_id": six.text_type(uuid.uuid4()),
+                "job_configs": {
+                    "configs": {
                         "edp.java.main_class": "org.me.myclass"},
                     "params": {},
                     "job_execution_info": {},
@@ -248,6 +262,20 @@ class TestJobExecCreateValidation(u.ValidationTestCase):
                                 "params": {},
                                 "args": [],
                                 "job_execution_info": {}}
+            },
+            bad_req_i=(1, "INVALID_DATA",
+                          "%s job must "
+                          "specify edp.java.main_class" % edp.JOB_TYPE_SPARK))
+
+        self._assert_create_object_validation(
+            data={
+                "cluster_id": six.text_type(uuid.uuid4()),
+                "job_configs": {
+                    "configs": {
+                        "edp.java.main_class": ""},
+                    "params": {},
+                    "args": [],
+                    "job_execution_info": {}}
             },
             bad_req_i=(1, "INVALID_DATA",
                           "%s job must "
