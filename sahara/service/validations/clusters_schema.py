@@ -15,6 +15,7 @@
 
 import copy
 
+from sahara.service.health import verification_base
 import sahara.service.validations.cluster_template_schema as ct_schema
 from sahara.service.validations import shares
 
@@ -67,6 +68,14 @@ CLUSTER_UPDATE_SCHEMA = {
         },
         "is_protected": {
             "type": ["boolean", "null"],
+        },
+        "verification": {
+            "type": "object",
+            "properties": {
+                "status": {
+                    "enum": verification_base.get_possible_ops(),
+                }
+            },
         },
         "shares": copy.deepcopy(shares.SHARE_SCHEMA),
     },

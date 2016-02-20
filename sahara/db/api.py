@@ -558,3 +558,46 @@ def cluster_provision_progress_update(context, cluster_id):
 def cluster_event_add(context, provision_step, values):
     """Assign new event to the specified provision step."""
     return IMPL.cluster_event_add(context, provision_step, values)
+
+
+# Health verifications / checks ops
+
+@to_dict
+def cluster_verification_add(context, cluster_id, values):
+    """Return created verification for the specified cluster."""
+    return IMPL.cluster_verification_add(context, cluster_id, values)
+
+
+@to_dict
+def cluster_verification_get(context, verification_id):
+    """Return verification with the specified verification_id."""
+    return IMPL.cluster_verification_get(context, verification_id)
+
+
+@to_dict
+def cluster_verification_update(context, verification_id, values):
+    """Return updated verification with the specified verification_id."""
+    return IMPL.cluster_verification_update(context, verification_id, values)
+
+
+def cluster_verification_delete(context, verification_id):
+    """"Delete verification with the specified id."""
+    return IMPL.cluster_verification_delete(context, verification_id)
+
+
+@to_dict
+def cluster_health_check_add(context, verification_id, values):
+    """Return created health check in the specified verification."""
+    return IMPL.cluster_health_check_add(context, verification_id, values)
+
+
+@to_dict
+def cluster_health_check_get(context, health_check_id):
+    """Return health check with the specified health_check_id."""
+    return IMPL.cluster_health_check_get(context, health_check_id)
+
+
+@to_dict
+def cluster_health_check_update(context, health_check_id, values):
+    """Return updated health check with the specified health_check_id."""
+    return IMPL.cluster_health_check_update(context, health_check_id, values)

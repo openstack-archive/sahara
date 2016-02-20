@@ -29,6 +29,7 @@ from sahara.i18n import _LW
 from sahara.service import api
 from sahara.service import coordinator
 from sahara.service.edp import job_manager
+from sahara.service.health import verification_base as vb
 from sahara.service import trusts
 from sahara.utils import cluster as c_u
 from sahara.utils import edp
@@ -223,6 +224,21 @@ def _make_periodic_tasks():
                 terminate_cluster(ctx, cluster, description='incomplete')
                 # Add event log info cleanup
                 context.ctx().current_instance_info = context.InstanceInfo()
+
+        @periodic_task.periodic_task(
+            spacing=vb.get_verification_periodic_interval())
+        @set_context
+        def run_verifications(self, ctx):
+            LOG.debug("Executing health checks for the clusters")
+            start_dict = {'verification': {'status': 'START'}}
+            for cluster in conductor.cluster_get_all(
+                    context.ctx(), status=c_u.CLUSTER_STATUS_ACTIVE):
+                try:
+                    vb.validate_verification_start(cluster)
+                    api.update_cluster(cluster.id, start_dict)
+                except vb.CannotVerifyError:
+                    LOG.debug("Skipping running verification "
+                              "on the cluster %s" % cluster.name)
 
     return SaharaPeriodicTasks()
 

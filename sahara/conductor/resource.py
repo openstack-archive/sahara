@@ -207,6 +207,17 @@ class ClusterTemplateResource(Resource, objects.ClusterTemplate):
     }
 
 
+class ClusterHealthCheckResource(Resource, objects.ClusterHealthCheck):
+    _resource_name = 'cluster_health_check'
+
+
+class ClusterVerificationResource(Resource, objects.ClusterVerification):
+    _resource_name = 'cluster_verification'
+    _children = {
+        'checks': (ClusterHealthCheckResource, 'verification')
+    }
+
+
 class ClusterResource(Resource, objects.Cluster):
 
     def sanitize_cluster_configs(self, cluster_configs):
@@ -218,7 +229,8 @@ class ClusterResource(Resource, objects.Cluster):
 
     _children = {
         'node_groups': (NodeGroupResource, 'cluster'),
-        'cluster_template': (ClusterTemplateResource, None)
+        'cluster_template': (ClusterTemplateResource, None),
+        'verification': (ClusterVerificationResource, 'cluster')
     }
 
     _filter_fields = ['management_private_key', 'extra', 'rollback_info',
