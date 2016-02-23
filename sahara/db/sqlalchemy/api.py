@@ -669,7 +669,7 @@ def node_group_template_update(context, values, ignore_prot_on_def=False):
                     ct_node_groups.append(ng_to_add)
                 ct_update = {"id": ct_id,
                              "node_groups": ct_node_groups}
-                cluster_template_update(context, ct_update)
+                cluster_template_update(context, ct_update, ignore_prot_on_def)
 
     except db_exc.DBDuplicateEntry as e:
         raise ex.DBDuplicateEntry(
