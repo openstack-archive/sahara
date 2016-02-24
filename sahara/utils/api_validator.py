@@ -27,7 +27,7 @@ from sahara.utils.openstack import manila as m
 @jsonschema.FormatChecker.cls_checks('valid_name_hostname')
 def validate_name_hostname_format(entry):
     if not isinstance(entry, six.string_types) or not entry:
-        # shoud fail type or length validation
+        # should fail type or length validation
         return True
 
     res = re.match(r"^(([a-zA-Z]|[a-zA-Z][a-zA-Z0-9\-]"
@@ -39,7 +39,7 @@ def validate_name_hostname_format(entry):
 @jsonschema.FormatChecker.cls_checks('valid_name')
 def validate_name_format(entry):
     if not isinstance(entry, six.string_types):
-        # shoud fail type validation
+        # should fail type validation
         return True
 
     res = re.match(r"^[a-zA-Z0-9][a-zA-Z0-9\-_\.]*$", entry)
@@ -60,7 +60,7 @@ def validate_keypair_name_format(entry):
 @jsonschema.FormatChecker.cls_checks('valid_job_location')
 def validate_job_location_format(entry):
     if not isinstance(entry, six.string_types):
-        # shoud fail type validation
+        # should fail type validation
         return True
 
     if entry.startswith('internal-db://'):
@@ -81,7 +81,7 @@ def validate_job_location_format(entry):
 @jsonschema.FormatChecker.cls_checks('valid_tag')
 def validate_valid_tag_format(entry):
     if not isinstance(entry, six.string_types):
-        # shoud fail type validation
+        # should fail type validation
         return True
 
     res = re.match(r"^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-_]"
@@ -93,7 +93,7 @@ def validate_valid_tag_format(entry):
 @jsonschema.FormatChecker.cls_checks('uuid')
 def validate_uuid_format(entry):
     if not isinstance(entry, six.string_types):
-        # shoud fail type validation
+        # should fail type validation
         return True
 
     return uuidutils.is_uuid_like(entry)
@@ -102,7 +102,7 @@ def validate_uuid_format(entry):
 @jsonschema.FormatChecker.cls_checks('posix_path')
 def validate_posix_path(entry):
     if not isinstance(entry, six.string_types):
-        # shoud fail type validation
+        # should fail type validation
         return True
 
     res = re.match("^(/([A-Z]|[a-z]|[0-9]|\-|_)+)+$", entry)
