@@ -94,6 +94,10 @@ class ProvisioningPluginBase(plugins_base.PluginInterface):
     def recommend_configs(self, cluster, scaling=False):
         pass
 
+    @plugins_base.required_with_default
+    def get_health_checks(self, cluster):
+        return []
+
     def get_all_configs(self, hadoop_version):
         common = list_of_common_configs()
         plugin_specific_configs = self.get_configs(hadoop_version)

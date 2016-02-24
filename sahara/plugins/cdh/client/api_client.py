@@ -134,3 +134,12 @@ class ApiResource(resource.Resource):
         @return: An ApiUser object
         """
         return users.update_user(self, user)
+
+    def get_service_health_status(self, cluster):
+        """Get clusters service health status
+
+        :param cluster: Cluster name.
+        :return: A dict with cluster health status
+        """
+        cluster = clusters.get_cluster(self, cluster)
+        return cluster.get_service_health_status()

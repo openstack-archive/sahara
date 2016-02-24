@@ -264,6 +264,12 @@ class ApiService(types.BaseApiResource):
         """
         return self._cmd('restart')
 
+    def get_health_summary(self):
+        return getattr(self, 'healthSummary', None)
+
+    def get_health_checks_status(self):
+        return getattr(self, 'healthChecks', None)
+
     def start_roles(self, *role_names):
         """Start a list of roles
 

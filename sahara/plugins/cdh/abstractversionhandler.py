@@ -148,3 +148,6 @@ class BaseVersionHandler(AbstractVersionHandler):
     def recommend_configs(self, cluster, scaling):
         self.plugin_utils.recommend_configs(
             cluster, self.get_plugin_configs(), scaling)
+
+    def get_health_checks(self):
+        return []
