@@ -16,7 +16,7 @@
 # cloudera_utils the functios are cm_api involved.
 
 import os
-import telnetlib
+import telnetlib  # nosec
 
 from oslo_log import log as logging
 
