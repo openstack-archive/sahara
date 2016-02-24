@@ -50,6 +50,12 @@ class OozieClient(object):
                            "?action=kill")
         _check_status_code(resp, 200)
 
+    def manage_job(self, job_execution, action):
+        session = self._get_http_session(job_execution.extra.get('neutron'))
+        resp = session.put(self.job_url % job_execution.oozie_job_id +
+                           "?action=" + action)
+        _check_status_code(resp, 200)
+
     def get_job_info(self, job_execution, job_id=None):
         if job_id is None:
             job_id = job_execution.engine_job_id

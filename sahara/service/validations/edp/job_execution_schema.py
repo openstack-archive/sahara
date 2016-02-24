@@ -58,6 +58,15 @@ JOB_EXEC_UPDATE_SCHEMA = {
         },
         "is_protected": {
             "type": ["boolean", "null"],
+        },
+        "info": {
+            "type": "simple_config",
+            "properties": {
+                    "status": {
+                        "enum": ["suspend"]
+                    }
+            },
+            "additionalProperties": False
         }
     },
     "additionalProperties": False,

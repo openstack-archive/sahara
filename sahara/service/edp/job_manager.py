@@ -50,7 +50,7 @@ def _get_job_type(job_execution):
     return conductor.job_get(context.ctx(), job_execution.job_id).type
 
 
-def _get_job_engine(cluster, job_execution):
+def get_job_engine(cluster, job_execution):
     return job_utils.get_plugin(cluster).get_edp_engine(cluster,
                                                         _get_job_type(
                                                             job_execution))
@@ -96,7 +96,7 @@ def _run_job(job_execution_id):
                      " inactive cluster."))
         return
 
-    eng = _get_job_engine(cluster, job_execution)
+    eng = get_job_engine(cluster, job_execution)
     if eng is None:
         raise e.EDPError(_("Cluster does not support job type %s")
                          % _get_job_type(job_execution))
@@ -158,7 +158,7 @@ def cancel_job(job_execution_id):
     if cluster is None:
         LOG.info(_LI("Can not cancel this job on a non-existant cluster."))
         return job_execution
-    engine = _get_job_engine(cluster, job_execution)
+    engine = get_job_engine(cluster, job_execution)
     if engine is not None:
         job_execution = conductor.job_execution_update(
             ctx, job_execution_id,
@@ -201,7 +201,7 @@ def get_job_status(job_execution_id):
     cluster = conductor.cluster_get(ctx, job_execution.cluster_id)
     if (cluster is not None and
             cluster.status == c_u.CLUSTER_STATUS_ACTIVE):
-        engine = _get_job_engine(cluster, job_execution)
+        engine = get_job_engine(cluster, job_execution)
         if engine is not None:
             job_execution = _update_job_status(engine,
                                                job_execution)
@@ -229,3 +229,36 @@ def get_job_config_hints(job_type):
     for eng in ENGINES:
         if job_type in eng.get_supported_job_types():
             return eng.get_possible_job_config(job_type)
+
+
+def suspend_job(job_execution_id):
+    ctx = context.ctx()
+    job_execution = conductor.job_execution_get(ctx, job_execution_id)
+    if job_execution.info['status'] not in edp.JOB_STATUSES_SUSPENDIBLE:
+        raise e.SuspendingFailed(_("Suspending operation can not be performed"
+                                 " on status: {status}")).format(
+                                     status=job_execution.info['status'])
+    cluster = conductor.cluster_get(ctx, job_execution.cluster_id)
+    engine = get_job_engine(cluster, job_execution)
+    job_execution = conductor.job_execution_update(
+        ctx, job_execution_id, {
+            'info': {'status': edp.JOB_STATUS_TOBESUSPENDED}})
+    try:
+        job_info = engine.suspend_job(job_execution)
+    except Exception as ex:
+        job_info = None
+        conductor.job_execution_update(
+            ctx, job_execution_id, {'info': {
+                'status': edp.JOB_STATUS_SUSPEND_FAILED}})
+        raise e.SuspendingFailed(_("Error during suspending of job execution: "
+                                   "{error}")).format(error=ex)
+    if job_info is not None:
+        job_execution = _write_job_status(job_execution, job_info)
+        LOG.info(_LI("Job execution was suspended successfully"))
+        return job_execution
+
+    conductor.job_execution_update(
+        ctx, job_execution_id, {'info': {
+            'status': edp.JOB_STATUS_SUSPEND_FAILED}})
+    raise e.SuspendingFailed(_("Failed to suspend job execution"
+                               "{jid}")).format(jid=job_execution_id)
