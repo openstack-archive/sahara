@@ -15,7 +15,7 @@
 
 
 import functools
-import telnetlib
+import telnetlib  # nosec
 
 from oslo_log import log as logging
 from oslo_utils import uuidutils

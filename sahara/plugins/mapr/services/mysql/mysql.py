@@ -40,7 +40,8 @@ class MySQL(s.Service):
     SELECT_DATA = 'mysql -uroot --skip-column-names -e "%s"| grep -E "\w+"'
     GET_DBS_LIST = SELECT_DATA % 'SHOW DATABASES'
     GET_USERS_HOSTS = (
-        SELECT_DATA % "SELECT Host FROM mysql.user WHERE mysql.user.User='%s'"
+        SELECT_DATA %
+        "SELECT Host FROM mysql.user WHERE mysql.user.User='%s'"  # nosec
     )
 
     DRIVER_CLASS = 'com.mysql.jdbc.Driver'
