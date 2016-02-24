@@ -28,7 +28,7 @@ def get_raw_binary(job_binary, proxy_configs=None,
     This will retrieve the raw data for a job binary from it's source. In the
     case of Swift based binaries there is a precedence of credentials for
     authenticating the client. Requesting a context based authentication takes
-    precendence over proxy user which takes precendence over embedded
+    precedence over proxy user which takes precedence over embedded
     credentials.
 
     :param job_binary: The job binary to retrieve
