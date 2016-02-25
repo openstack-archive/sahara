@@ -142,4 +142,5 @@ def update_verification_required(values):
 
 
 def get_verification_periodic_interval():
-    return CONF.cluster_verifications.verification_periodic_interval
+    return (CONF.cluster_verifications.verification_periodic_interval if
+            CONF.cluster_verifications.verification_enable else -1)
