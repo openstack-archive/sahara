@@ -1,27 +1,27 @@
 Sahara (Data Processing) UI User Guide
 ======================================
 
-This guide assumes that you already have the Sahara service and Horizon
-dashboard up and running. Don't forget to make sure that Sahara is
+This guide assumes that you already have the sahara service and Horizon
+dashboard up and running. Don't forget to make sure that sahara is
 registered in Keystone. If you require assistance with that, please see the
-`installation guide <../installation.guide.html>`_.
+`installation guide <../userdoc/installation.guide.html>`_.
 
 The sections below give a panel by panel overview of setting up clusters
 and running jobs.  For a description of using the guided cluster and job tools,
 look at `Launching a cluster via the Cluster Creation Guide`_ and
 `Running a job via the Job Execution Guide`_.
 
-Launching a cluster via the Sahara UI
+Launching a cluster via the sahara UI
 -------------------------------------
 Registering an Image
 --------------------
 
 1) Navigate to the "Project" dashboard, then the "Data Processing" tab, then
-   click on the "Image Registry" panel
+   click on the "Clusters" panel and finally the "Image Registry" tab.
 
 2) From that page, click on the "Register Image" button at the top right
 
-3) Choose the image that you'd like to register with Sahara
+3) Choose the image that you'd like to register with sahara
 
 4) Enter the username of the cloud-init user on the image
 
@@ -34,7 +34,7 @@ Create Node Group Templates
 ---------------------------
 
 1) Navigate to the "Project" dashboard, then the "Data Processing" tab, then
-   click on the "Node Group Templates" panel
+   click on the "Clusters" panel and then the "Node Group Templates" tab.
 
 2) From that page, click on the "Create Template" button at the top right
 
@@ -58,7 +58,7 @@ Create a Cluster Template
 -------------------------
 
 1) Navigate to the "Project" dashboard, then the "Data Processing" tab, then
-   click on the "Cluster Templates" panel
+   click on the "Clusters" panel and finally the "Cluster Templates" tab.
 
 2) From that page, click on the "Create Template" button at the top right
 
@@ -85,7 +85,7 @@ Launching a Cluster
 -------------------
 
 1) Navigate to the "Project" dashboard, then the "Data Processing" tab, then
-   click on the "Clusters" panel
+   click on the "Clusters" panel and lastly, click on the "Clusters" tab.
 
 2) Click on the "Launch Cluster" button at the top right
 
@@ -109,8 +109,9 @@ Launching a Cluster
 
 Scaling a Cluster
 -----------------
-1) From the Data Processing/Clusters page, click on the "Scale Cluster" button
-   of the row that contains the cluster that you want to scale
+1) From the Data Processing/Clusters page (Clusters tab), click on the
+   "Scale Cluster" button of the row that contains the cluster that you want to
+   scale
 
 2) You can adjust the numbers of instances for existing Node Group Templates
 
@@ -131,15 +132,15 @@ Data Sources
 ------------
 Data Sources are where the input and output from your jobs are housed.
 
-1) From the Data Processing/Data Sources page, click on the "Create Data
-   Source" button at the top right
+1) From the Data Processing/Jobs page (Data Sources tab), click on the
+   "Create Data Source" button at the top right
 
 2) Give your Data Source a name
 
 3) Enter the URL of the Data Source
 
-  - For a Swift object, enter <container>/<path> (ie: *mycontainer/inputfile*).
-    Sahara will prepend *swift://* for you
+  - For a swift object, enter <container>/<path> (ie: *mycontainer/inputfile*).
+    sahara will prepend *swift://* for you
   - For an HDFS object, enter an absolute path, a relative path or a full URL:
 
     + */my/absolute/path* indicates an absolute path in the cluster HDFS
@@ -161,14 +162,14 @@ Job Binaries
 Job Binaries are where you define/upload the source code (mains and libraries)
 for your job.
 
-1) From the Data Processing/Job Binaries page, click on the "Create Job Binary"
-   button at the top right
+1) From the Data Processing/Jobs (Job Binaries tab), click on the
+   "Create Job Binary" button at the top right
 
 2) Give your Job Binary a name (this can be different than the actual filename)
 
 3) Choose the type of storage for your Job Binary
 
-  - For "Swift", enter the URL of your binary (<container>/<path>) as well as
+  - For "swift", enter the URL of your binary (<container>/<path>) as well as
     the username and password (also see `Additional Notes`_)
   - For "Internal database", you can choose from "Create a script" or "Upload
     a new file"
@@ -184,8 +185,8 @@ Job Templates (Known as "Jobs" in the API)
 Job templates are where you define the type of job you'd like to run as well
 as which "Job Binaries" are required.
 
-1) From the Data Processing/Jobs page, click on the "Create Job Template"
-   button at the top right
+1) From the Data Processing/Jobs page (Job Templates tab),
+   click on the "Create Job Template" button at the top right
 
 2) Give your Job Template a name
 
@@ -210,9 +211,10 @@ Jobs (Known as "Job Executions" in the API)
 Jobs are what you get by "Launching" a job template.  You can monitor the
 status of your job to see when it has completed its run
 
-1) From the Data Processing/Job Templates page, find the row that contains the
-   job template you  want to launch and click either "Launch on New Cluster" or
-   "Launch on Existing Cluster" the right side of that row
+1) From the Data Processing/Jobs page (Job Templates tab), find the row
+   that contains the job template you  want to launch and click either
+   "Launch on New Cluster" or "Launch on Existing Cluster" the right side
+   of that row
 
 2) Choose the cluster (already running--see `Launching a Cluster`_ above) on
    which you would like the job to run
@@ -227,7 +229,7 @@ status of your job to see when it has completed its run
     and org.apache.oozie.example.SampleMapper for the Value
 
 5) Click on "Launch".  To monitor the status of your job, you can navigate to
-   the Data Processing/Jobs panel
+   the Data Processing/Jobs panel and click on the Jobs tab.
 
 6) You can relaunch a Job from the Jobs page by using the
    "Relaunch on New Cluster" or "Relaunch on Existing Cluster" links
@@ -240,16 +242,17 @@ status of your job to see when it has completed its run
 
 Example Jobs
 ------------
-There are sample jobs located in the Sahara repository. In this section, we
+There are sample jobs located in the sahara repository. In this section, we
 will give a walkthrough on how to run those jobs via the Horizon UI. These
 steps assume that you already have a cluster up and running (in the "Active"
-state).
+state).  You may want to clone into https://github.com/openstack/sahara-tests
+so that you will have all of the source code and inputs stored locally.
 
 1) Sample Pig job -
-   https://github.com/openstack/sahara/tree/master/etc/edp-examples/edp-pig/trim-spaces
+   https://github.com/openstack/sahara-tests/tree/master/etc/edp-examples/edp-pig/trim-spaces
 
   - Load the input data file from
-    https://github.com/openstack/sahara/tree/master/etc/edp-examples/edp-pig/trim-spaces/data/input
+    https://github.com/openstack/sahara-tests/blob/master/etc/edp-examples/edp-pig/trim-spaces/data/input
     into swift
 
     - Click on Project/Object Store/Containers and create a container with any
@@ -258,7 +261,7 @@ state).
     - Click on Upload Object and give the object a name
       ("piginput" in this case)
 
-  - Navigate to Data Processing/Data Sources, Click on Create Data Source
+  - Navigate to Data Processing/Jobs/Data Sources, Click on Create Data Source
 
     - Name your Data Source ("pig-input-ds" in this sample)
 
@@ -270,21 +273,22 @@ state).
     - Name = pig-output-ds, Type = Swift, URL = samplecontainer/pigoutput,
       Source username/password, "Create"
 
-  - Store your Job Binaries in the Sahara database
+  - Store your Job Binaries in the sahara database
 
-    - Navigate to Data Processing/Job Binaries, Click on Create Job Binary
+    - Navigate to Data Processing/Jobs/Job Binaries, Click on Create Job Binary
 
     - Name = example.pig, Storage type = Internal database, click Browse and
       find example.pig wherever you checked out the sahara project
-      <sahara root>/etc/edp-examples/edp-pig/trim-spaces
+      <sahara-tests root>/etc/edp-examples/edp-pig/trim-spaces
 
     - Create another Job Binary:  Name = udf.jar, Storage type = Internal
       database, click Browse and find udf.jar wherever you checked out the
-      sahara project <sahara root>/etc/edp-examples/edp-pig/trim-spaces
+      sahara project <sahara-tests root>/etc/edp-examples/edp-pig/trim-spaces
 
   - Create a Job Template
 
-    - Navigate to Data Processing/Job Templates, Click on Create Job Template
+    - Navigate to Data Processing/Jobs/Job Templates, Click on
+      Create Job Template
 
     - Name = pigsample, Job Type = Pig, Choose "example.pig" as the main binary
 
@@ -311,14 +315,16 @@ state).
       It should be in the "pigoutput" folder
 
 2) Sample Spark job -
-   https://github.com/openstack/sahara/tree/master/etc/edp-examples/edp-spark
+   https://github.com/openstack/sahara-tests/tree/master/etc/edp-examples/edp-spark
+   You can clone into https://github.com/openstack/sahara-tests for quicker
+   access to the files for this sample job.
 
-  - Store the Job Binary in the Sahara database
+  - Store the Job Binary in the sahara database
 
-    - Navigate to Data Processing/Job Binaries, Click on Create Job Binary
+    - Navigate to Data Processing/Jobs/Job Binaries, Click on Create Job Binary
 
     - Name = sparkexample.jar, Storage type = Internal database, Browse to the
-      location <sahara root>/etc/edp-examples/edp-spark and choose
+      location <sahara-tests root>/etc/edp-examples/edp-spark and choose
       spark-example.jar, Click "Create"
 
   - Create a Job Template
@@ -359,22 +365,23 @@ state).
 
 Additional Notes
 ----------------
-1) Throughout the Sahara UI, you will find that if you try to delete an object
+1) Throughout the sahara UI, you will find that if you try to delete an object
    that you will not be able to delete it if another object depends on it.
    An example of this would be trying to delete a Job Template that has an
    existing Job.  In order to be able to delete that job, you would
    first need to delete any Job Templates that relate to that job.
 
 2) In the examples above, we mention adding your username/password for the
-   Swift Data Sources. It should be noted that it is possible to configure
-   Sahara such that the username/password credentials are *not* required. For
+   swift Data Sources. It should be noted that it is possible to configure
+   sahara such that the username/password credentials are *not* required. For
    more information on that, please refer to: :doc:`Sahara Advanced
    Configuration Guide <../userdoc/advanced.configuration.guide>`
 
 Launching a cluster via the Cluster Creation Guide
 --------------------------------------------------
-1) Under the Data Processing group, choose "Guides" and then click on the
-   "Cluster Creation Guide" button.
+1) Under the Data Processing group, choose "Clusters" and then click on the
+   "Clusters" tab.  The "Cluster Creation Guide" button is above that table.
+   Click on it.
 
 2) Click on the "Choose Plugin" button then select the cluster type from the
    Plugin Name dropdown and choose your target version. When done, click
@@ -412,8 +419,9 @@ Launching a cluster via the Cluster Creation Guide
 
 Running a job via the Job Execution Guide
 -----------------------------------------
-1) Under the Data Processing group, choose "Guides" and then click on the
-   "Job Execution Guide" button.
+1) Under the Data Processing group, choose "Jobs" and then click on the
+   "Jobs" tab.  The "Job Execution Guide" button is above that table. Click
+   on it.
 
 2) Click on "Select type" and choose the type of job that you want to run.
 
@@ -434,5 +442,5 @@ Running a job via the Job Execution Guide
 5) Click on "Launch job".  Choose the active cluster where you want to run you
    job.  Optionally, you can click on the "Configure" tab and provide any
    required configuration, arguments or parameters for your job.  Click on
-   "Launch" to execute your job.  You will be taken to the Jobs panel where
+   "Launch" to execute your job.  You will be taken to the Jobs tab where
    you can monitor the state of your job as it progresses.
