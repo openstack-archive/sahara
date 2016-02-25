@@ -20,6 +20,7 @@ import six
 from sahara import conductor
 from sahara import context
 from sahara.plugins.cdh import db_helper as dh
+from sahara.plugins.cdh import health
 
 
 @six.add_metaclass(abc.ABCMeta)
@@ -149,5 +150,5 @@ class BaseVersionHandler(AbstractVersionHandler):
         self.plugin_utils.recommend_configs(
             cluster, self.get_plugin_configs(), scaling)
 
-    def get_health_checks(self):
-        return []
+    def get_health_checks(self, cluster):
+        return health.get_health_checks(cluster, self.cloudera_utils)
