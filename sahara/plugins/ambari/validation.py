@@ -25,7 +25,7 @@ from sahara.plugins import utils
 conductor = conductor.API
 
 
-def validate_creation(cluster_id):
+def validate(cluster_id):
     ctx = context.ctx()
     cluster = conductor.cluster_get(ctx, cluster_id)
     _check_ambari(cluster)

@@ -18,6 +18,7 @@ import mock
 from oslo_serialization import jsonutils
 
 from sahara.plugins.ambari import client as ambari_client
+from sahara.plugins import exceptions as p_exc
 from sahara.tests.unit import base
 
 
@@ -39,6 +40,11 @@ class AmbariClientTestCase(base.SaharaTestCase):
         self.instance = mock.Mock()
         self.instance.remote.return_value = self.remote
         self.instance.management_ip = "1.2.3.4"
+
+        self.good_pending_resp = mock.MagicMock()
+        self.good_pending_resp.status_code = 200
+        self.good_pending_resp.text = ('{"Requests": '
+                                       '{"id": 1, "status": "PENDING"}}')
 
     def test_init_client_default(self):
         client = ambari_client.AmbariClient(self.instance)
@@ -173,3 +179,75 @@ class AmbariClientTestCase(base.SaharaTestCase):
             "http://1.2.3.4:8080/api/v1/clusters/cluster_name",
             data=jsonutils.dumps({"some": "data"}), verify=False,
             auth=client._auth, headers=self.headers)
+
+    def test_start_process_on_host(self):
+        client = ambari_client.AmbariClient(self.instance)
+        self.http_client.put.return_value = self.good_pending_resp
+        client.wait_ambari_request = mock.MagicMock()
+
+        instance = mock.MagicMock()
+        instance.fqdn.return_value = "i1"
+        instance.cluster.name = "cl"
+
+        client.start_service_on_host(instance, "HDFS", 'STATE')
+        self.http_client.put.assert_called_with(
+            "http://1.2.3.4:8080/api/v1/clusters/"
+            "cl/hosts/i1/host_components/HDFS",
+            data=jsonutils.dumps(
+                {
+                    "HostRoles": {"state": "STATE"},
+                    "RequestInfo": {
+                        "context": "Starting service HDFS, "
+                                   "moving to state STATE"}
+                }),
+            verify=False, auth=client._auth, headers=self.headers)
+
+    def test_stop_process_on_host(self):
+        client = ambari_client.AmbariClient(self.instance)
+        check_mock = mock.MagicMock()
+        check_mock.status_code = 200
+        check_mock.text = '{"HostRoles": {"state": "SOME_STATE"}}'
+        self.http_client.get.return_value = check_mock
+        self.http_client.put.return_value = self.good_pending_resp
+        client.wait_ambari_request = mock.MagicMock()
+        instance = mock.MagicMock()
+        instance.fqdn.return_value = "i1"
+
+        client.stop_process_on_host("cluster_name", instance, "p1")
+        self.http_client.put.assert_called_with(
+            "http://1.2.3.4:8080/api/v1/clusters/"
+            "cluster_name/hosts/i1/host_components/p1",
+            data=jsonutils.dumps(
+                {
+                    "HostRoles": {"state": "INSTALLED"},
+                    "RequestInfo": {"context": "Stopping p1"}
+                }),
+            verify=False, auth=client._auth, headers=self.headers)
+
+    @mock.patch("sahara.plugins.ambari.client.context")
+    def test_wait_ambari_request(self, mock_context):
+        client = ambari_client.AmbariClient(self.instance)
+        check_mock = mock.MagicMock()
+        d1 = {"request_context": "r1", "request_status": "PENDING",
+              "progress_percent": 42}
+        d2 = {"request_context": "r1", "request_status": "COMPLETED",
+              "progress_percent": 100}
+        check_mock.side_effect = [d1, d2]
+        client.check_request_status = check_mock
+
+        client.wait_ambari_request("id1", "c1")
+
+        check_mock.assert_has_calls([mock.call("c1", "id1"),
+                                     mock.call("c1", "id1")])
+
+    @mock.patch("sahara.plugins.ambari.client.context")
+    def test_wait_ambari_request_error(self, mock_context):
+        client = ambari_client.AmbariClient(self.instance)
+        check_mock = mock.MagicMock()
+        d1 = {"request_context": "r1", "request_status": "ERROR",
+              "progress_percent": 146}
+        check_mock.return_value = d1
+        client.check_request_status = check_mock
+
+        self.assertRaises(p_exc.HadoopProvisionError,
+                          client.wait_ambari_request, "id1", "c1")

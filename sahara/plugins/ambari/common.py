@@ -133,3 +133,11 @@ def get_clients(cluster):
     clients = list(set(clients))
     clients.extend(ALL_LIST)
     return clients
+
+
+def instances_have_process(instances, process):
+    for i in instances:
+        if process in i.node_group.node_processes:
+            return True
+
+    return False
