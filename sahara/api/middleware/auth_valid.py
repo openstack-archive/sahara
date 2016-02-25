@@ -58,3 +58,45 @@ class AuthValidator(base.Middleware):
                 raise ex.HTTPUnauthorized(
                     _('Token tenant != requested tenant'))
         return self.application
+
+
+class AuthValidatorV2(base.Middleware):
+
+    """Handles token auth results and tenants."""
+
+    @webob.dec.wsgify
+    def __call__(self, req):
+        """Ensures that the requested and token tenants match
+
+        Handle incoming requests by checking tenant info from the
+        headers and url ({tenant_id} url attribute), if using v1 or v1.1
+        APIs. If using the v2 API, this function will check the token
+        tenant and the requested tenent in the headers.
+
+        Pass request downstream on success.
+        Reject request if tenant_id from headers is not equal to the
+        tenant_id from url or v2 project header.
+        """
+        path = req.environ['PATH_INFO']
+        if path != '/':
+            token_tenant = req.environ.get("HTTP_X_TENANT_ID")
+            if not token_tenant:
+                LOG.warning(_LW("Can't get tenant_id from env"))
+                raise ex.HTTPServiceUnavailable()
+
+            if path.startswith('/v2'):
+                version, rest = commons.split_path(path, 2, 2, True)
+                requested_tenant = req.headers.get('OpenStack-Project-ID')
+            else:
+                version, requested_tenant, rest = commons.split_path(
+                    path, 3, 3, True)
+
+            if not version or not requested_tenant or not rest:
+                LOG.warning(_LW("Incorrect path: {path}").format(path=path))
+                raise ex.HTTPNotFound(_("Incorrect path"))
+
+            if token_tenant != requested_tenant:
+                LOG.debug("Unauthorized: token tenant != requested tenant")
+                raise ex.HTTPUnauthorized(
+                    _('Token tenant != requested tenant'))
+        return self.application
