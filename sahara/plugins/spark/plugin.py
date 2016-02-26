@@ -20,7 +20,6 @@ from oslo_log import log as logging
 
 from sahara import conductor
 from sahara import context
-from sahara import exceptions
 from sahara.i18n import _
 from sahara.i18n import _LI
 from sahara.plugins import exceptions as ex
@@ -60,7 +59,7 @@ class SparkProvider(p.ProvisioningPluginBase):
                  "CDH cluster without any management consoles.")
 
     def get_versions(self):
-        return ['1.6.0', '1.3.1', '1.0.0']
+        return ['1.6.0', '1.3.1']
 
     def get_configs(self, hadoop_version):
         return c_helper.get_plugin_configs()
@@ -69,11 +68,6 @@ class SparkProvider(p.ProvisioningPluginBase):
         return self.processes
 
     def validate(self, cluster):
-        if cluster.hadoop_version == "1.0.0":
-            raise exceptions.DeprecatedException(
-                _("Support for Spark version 1.0.0 is now deprecated and will"
-                  " be removed in the 2016.1 release."))
-
         nn_count = sum([ng.count for ng
                         in utils.get_node_groups(cluster, "namenode")])
         if nn_count != 1:
