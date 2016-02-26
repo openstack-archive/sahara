@@ -127,8 +127,8 @@ def _cluster_create(values, plugin):
     ctx = context.ctx()
     cluster = conductor.cluster_create(ctx, values)
     context.set_current_cluster_id(cluster.id)
-    sender.notify(ctx, cluster.id, cluster.name, "New",
-                  "create")
+    sender.status_notify(cluster.id, cluster.name, "New",
+                         "create")
     _add_ports_for_auto_sg(ctx, cluster, plugin)
 
     # validating cluster
@@ -167,8 +167,8 @@ def terminate_cluster(id):
         return
 
     OPS.terminate_cluster(id)
-    sender.notify(context.ctx(), cluster.id, cluster.name, cluster.status,
-                  "delete")
+    sender.status_notify(cluster.id, cluster.name, cluster.status,
+                         "delete")
 
 
 def update_cluster(id, values):

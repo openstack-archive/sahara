@@ -96,8 +96,8 @@ def change_cluster_status(cluster, status, status_description=None):
     LOG.info(_LI("Cluster status has been changed. New status="
                  "{status}").format(status=cluster.status))
 
-    sender.notify(ctx, cluster.id, cluster.name, cluster.status,
-                  "update")
+    sender.status_notify(cluster.id, cluster.name, cluster.status,
+                         "update")
 
     return cluster
 

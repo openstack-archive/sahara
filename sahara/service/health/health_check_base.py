@@ -26,6 +26,7 @@ from sahara.i18n import _LE
 from sahara.plugins import base as plugin_base
 from sahara.service.health import common
 from sahara.utils import cluster as cluster_utils
+from sahara.utils.notification import sender
 
 cond = conductor.API
 LOG = logging.getLogger(__name__)
@@ -91,11 +92,17 @@ class BasicHealthCheck(object):
         self.health_check_id = cond.cluster_health_check_add(
             context.ctx(), vid, {'status': common.HEALTH_STATUS_CHECKING,
                                  'name': self.get_health_check_name()}).id
+        self.health_check = cond.cluster_health_check_get(
+            context.ctx(), self.health_check_id)
+        sender.health_notify(self.cluster, self.health_check)
 
     def _write_result(self, status, description):
         cond.cluster_health_check_update(
             context.ctx(), self.health_check_id,
             {'status': status, 'description': description})
+        self.health_check = cond.cluster_health_check_get(
+            context.ctx(), self.health_check_id)
+        sender.health_notify(self.cluster, self.health_check)
 
     def execute(self):
         if not self.is_available():
