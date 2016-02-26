@@ -231,8 +231,11 @@ def _make_periodic_tasks():
         def run_verifications(self, ctx):
             LOG.debug("Executing health checks for the clusters")
             start_dict = {'verification': {'status': 'START'}}
-            for cluster in conductor.cluster_get_all(
-                    context.ctx(), status=c_u.CLUSTER_STATUS_ACTIVE):
+            all_clusters = conductor.cluster_get_all(
+                ctx, status=c_u.CLUSTER_STATUS_ACTIVE)
+            clusters_to_manage = self.hr.get_subset(all_clusters)
+
+            for cluster in clusters_to_manage:
                 try:
                     vb.validate_verification_start(cluster)
                     api.update_cluster(cluster.id, start_dict)

@@ -208,6 +208,25 @@ class TestPeriodicBack(base.SaharaWithDbTestCase):
 
         mock_user_delete.assert_called_once_with(user_id=1)
 
+    @mock.patch(
+        'sahara.service.health.verification_base.validate_verification_start')
+    @mock.patch('sahara.service.api.update_cluster')
+    def test_run_verifications_executed(self, cluster_update, ver_valid):
+        self._make_cluster('1')
+        p._make_periodic_tasks().run_verifications(None)
+        self.assertEqual(1, ver_valid.call_count)
+        cluster_update.assert_called_once_with(
+            '1', {'verification': {'status': 'START'}})
+
+    @mock.patch(
+        'sahara.service.health.verification_base.validate_verification_start')
+    @mock.patch('sahara.service.api.update_cluster')
+    def test_run_verifications_not_executed(self, cluster_update, ver_valid):
+        self._make_cluster('1', status=c_u.CLUSTER_STATUS_ERROR)
+        p._make_periodic_tasks().run_verifications(None)
+        ver_valid.assert_not_called()
+        cluster_update.assert_not_called()
+
     @mock.patch("sahara.service.periodic.threadgroup")
     @mock.patch("sahara.service.periodic.CONF")
     def test_setup_enabled(self, mock_conf, mock_thread_group):
