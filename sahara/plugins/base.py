@@ -30,7 +30,7 @@ LOG = logging.getLogger(__name__)
 
 opts = [
     cfg.ListOpt('plugins',
-                default=['vanilla', 'hdp', 'spark', 'cdh'],
+                default=['vanilla', 'hdp', 'spark', 'cdh', 'ambari'],
                 help='List of plugins to be loaded. Sahara preserves the '
                      'order of the list when returning it.'),
 ]
