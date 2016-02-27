@@ -10,4 +10,4 @@ omit =
 source = sahara
 
 [report]
-ignore-errors = True
+ignore_errors = True
