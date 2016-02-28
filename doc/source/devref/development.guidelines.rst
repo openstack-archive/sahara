@@ -48,7 +48,7 @@ files will usually be found in ``resource`` directories with an accompanying
 .. sourcecode:: console
 
   $ pwd
-  /home/me/sahara/sahara/plugins/vanilla/v2_6_0/resources
+  /home/me/sahara/sahara/plugins/vanilla/v2_7_1/resources
 
   $ ls
   core-default.xml     hdfs-default.xml    oozie-default.xml   README.rst
