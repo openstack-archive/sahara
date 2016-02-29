@@ -17,7 +17,6 @@ import sahara.plugins.mapr.domain.node_process as np
 import sahara.plugins.mapr.domain.service as s
 import sahara.plugins.mapr.util.validation_utils as vu
 
-
 PIG = np.NodeProcess(
     name='pig',
     ui_name='Pig',
@@ -44,3 +43,9 @@ class PigV014(Pig):
     def __init__(self):
         super(PigV014, self).__init__()
         self._version = '0.14'
+
+
+class PigV015(Pig):
+    def __init__(self):
+        super(PigV015, self).__init__()
+        self._version = '0.15'

@@ -52,6 +52,7 @@ class VersionHandler(bvh.BaseVersionHandler):
             hive.HiveV12(),
             impala.ImpalaV141(),
             pig.PigV014(),
+            pig.PigV015(),
             flume.Flume(),
             spark.SparkOnYarn(),
             sqoop2.Sqoop2(),
