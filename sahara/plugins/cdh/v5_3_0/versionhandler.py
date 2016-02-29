@@ -27,7 +27,7 @@ class VersionHandler(avm.BaseVersionHandler):
 
     def __init__(self):
         super(VersionHandler, self).__init__()
-        self.config_helper = config_helper
+        self.config_helper = config_helper.ConfigHelperV530()
         self.cloudera_utils = cloudera_utils.ClouderaUtilsV530()
         self.plugin_utils = plugin_utils.PluginUtilsV530()
         self.deploy = deploy

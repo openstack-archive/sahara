@@ -13,229 +13,104 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from oslo_serialization import jsonutils as json
-
-from sahara.plugins import provisioning as p
-from sahara.utils import files as f
-
-CDH5_UBUNTU_REPO = ('deb [arch=amd64] http://archive.cloudera.com/cdh5'
-                    '/ubuntu/precise/amd64/cdh precise-cdh5.0.0 contrib'
-                    '\ndeb-src http://archive.cloudera.com/cdh5/ubuntu'
-                    '/precise/amd64/cdh precise-cdh5.0.0 contrib')
-
-DEFAULT_CDH5_UBUNTU_REPO_KEY_URL = ('http://archive.cloudera.com/cdh5/ubuntu'
-                                    '/precise/amd64/cdh/archive.key')
-
-CM5_UBUNTU_REPO = ('deb [arch=amd64] http://archive.cloudera.com/cm5'
-                   '/ubuntu/precise/amd64/cm precise-cm5.0.0 contrib'
-                   '\ndeb-src http://archive.cloudera.com/cm5/ubuntu'
-                   '/precise/amd64/cm precise-cm5.0.0 contrib')
-
-DEFAULT_CM5_UBUNTU_REPO_KEY_URL = ('http://archive.cloudera.com/cm5/ubuntu'
-                                   '/precise/amd64/cm/archive.key')
-
-CDH5_CENTOS_REPO = ('[cloudera-cdh5]'
-                    '\nname=Cloudera\'s Distribution for Hadoop, Version 5'
-                    '\nbaseurl=http://archive.cloudera.com/cdh5/redhat/6'
-                    '/x86_64/cdh/5.0.0/'
-                    '\ngpgkey = http://archive.cloudera.com/cdh5/redhat/6'
-                    '/x86_64/cdh/RPM-GPG-KEY-cloudera'
-                    '\ngpgcheck = 1')
-
-CM5_CENTOS_REPO = ('[cloudera-manager]'
-                   '\nname=Cloudera Manager'
-                   '\nbaseurl=http://archive.cloudera.com/cm5/redhat/6'
-                   '/x86_64/cm/5.0.0/'
-                   '\ngpgkey = http://archive.cloudera.com/cm5/redhat/6'
-                   '/x86_64/cm/RPM-GPG-KEY-cloudera'
-                   '\ngpgcheck = 1')
-
-DEFAULT_SWIFT_LIB_URL = ('https://repository.cloudera.com/artifactory/repo/org'
-                         '/apache/hadoop/hadoop-openstack/2.3.0-cdh5.0.0'
-                         '/hadoop-openstack-2.3.0-cdh5.0.0.jar')
-DEFAULT_EXTJS_LIB_URL = 'http://dev.sencha.com/deploy/ext-2.2.zip'
-
-CDH5_REPO_URL = p.Config(
-    'CDH5 repo list URL', 'general', 'cluster', priority=1,
-    default_value="")
-
-CDH5_REPO_KEY_URL = p.Config(
-    'CDH5 repo key URL (for debian-based only)', 'general', 'cluster',
-    priority=1, default_value="")
-
-CM5_REPO_URL = p.Config(
-    'CM5 repo list URL', 'general', 'cluster', priority=1,
-    default_value="")
-
-CM5_REPO_KEY_URL = p.Config(
-    'CM5 repo key URL (for debian-based only)', 'general', 'cluster',
-    priority=1, default_value="")
-
-ENABLE_SWIFT = p.Config('Enable Swift', 'general', 'cluster',
-                        config_type='bool', priority=1,
-                        default_value=True)
-
-ENABLE_HBASE_COMMON_LIB = p.Config('Enable HBase Common Lib',
-                                   'general', 'cluster', config_type='bool',
-                                   priority=1, default_value=True)
-
-SWIFT_LIB_URL = p.Config(
-    'Hadoop OpenStack library URL', 'general', 'cluster', priority=1,
-    default_value=DEFAULT_SWIFT_LIB_URL,
-    description=("Library that adds Swift support to CDH. The file will be "
-                 "downloaded from VM."))
+from sahara.plugins.cdh import config_helper as c_h
 
 
-EXTJS_LIB_URL = p.Config(
-    "ExtJS library URL", 'general', 'cluster', priority=1,
-    default_value=DEFAULT_EXTJS_LIB_URL,
-    description=("Ext 2.2 library is required for Oozie Web Console. "
-                 "The file will be downloaded from VM with oozie."))
+class ConfigHelperV5(c_h.ConfigHelper):
+    path_to_config = 'plugins/cdh/v5/resources/'
 
-AWAIT_AGENTS_TIMEOUT = p.Config(
-    'Await Cloudera agents timeout', 'general', 'cluster', config_type='int',
-    priority=1, default_value=300, is_optional=True,
-    description="Timeout for Cloudera agents connecting to Coudera Manager, "
-                "in seconds")
+    CDH5_UBUNTU_REPO = (
+        'deb [arch=amd64] http://archive.cloudera.com/cdh5'
+        '/ubuntu/precise/amd64/cdh precise-cdh5.0.0 contrib'
+        '\ndeb-src http://archive.cloudera.com/cdh5/ubuntu'
+        '/precise/amd64/cdh precise-cdh5.0.0 contrib')
 
-AWAIT_MANAGER_STARTING_TIMEOUT = p.Config(
-    'Timeout for Cloudera Manager starting', 'general', 'cluster',
-    config_type='int', priority=1, default_value=300, is_optional=True,
-    description='Timeout for Cloudera Manager starting, in seconds')
+    DEFAULT_CDH5_UBUNTU_REPO_KEY_URL = (
+        'http://archive.cloudera.com/cdh5/ubuntu'
+        '/precise/amd64/cdh/archive.key')
 
+    CM5_UBUNTU_REPO = (
+        'deb [arch=amd64] http://archive.cloudera.com/cm5'
+        '/ubuntu/precise/amd64/cm precise-cm5.0.0 contrib'
+        '\ndeb-src http://archive.cloudera.com/cm5/ubuntu'
+        '/precise/amd64/cm precise-cm5.0.0 contrib')
 
-def _get_cluster_plugin_configs():
-    return [CDH5_REPO_URL, CDH5_REPO_KEY_URL, CM5_REPO_URL, CM5_REPO_KEY_URL,
-            ENABLE_SWIFT, ENABLE_HBASE_COMMON_LIB, SWIFT_LIB_URL,
-            EXTJS_LIB_URL, AWAIT_MANAGER_STARTING_TIMEOUT,
-            AWAIT_AGENTS_TIMEOUT]
+    DEFAULT_CM5_UBUNTU_REPO_KEY_URL = (
+        'http://archive.cloudera.com/cm5/ubuntu'
+        '/precise/amd64/cm/archive.key')
 
+    CDH5_CENTOS_REPO = (
+        '[cloudera-cdh5]'
+        '\nname=Cloudera\'s Distribution for Hadoop, Version 5'
+        '\nbaseurl=http://archive.cloudera.com/cdh5/redhat/6'
+        '/x86_64/cdh/5.0.0/'
+        '\ngpgkey = http://archive.cloudera.com/cdh5/redhat/6'
+        '/x86_64/cdh/RPM-GPG-KEY-cloudera'
+        '\ngpgcheck = 1')
 
-# ng wide configs
+    CM5_CENTOS_REPO = (
+        '[cloudera-manager]'
+        '\nname=Cloudera Manager'
+        '\nbaseurl=http://archive.cloudera.com/cm5/redhat/6'
+        '/x86_64/cm/5.0.0/'
+        '\ngpgkey = http://archive.cloudera.com/cm5/redhat/6'
+        '/x86_64/cm/RPM-GPG-KEY-cloudera'
+        '\ngpgcheck = 1')
 
-def _load_json(path_to_file):
-    data = f.get_file_text(path_to_file)
-    return json.loads(data)
+    def __init__(self):
+        super(ConfigHelperV5, self).__init__()
+        self.priority_one_confs = self._load_json(
+            self.path_to_config + 'priority-one-confs.json')
+        self._load_ng_plugin_configs()
 
-
-path_to_config = 'plugins/cdh/v5/resources/'
-hdfs_confs = _load_json(path_to_config + 'hdfs-service.json')
-namenode_confs = _load_json(path_to_config + 'hdfs-namenode.json')
-datanode_confs = _load_json(path_to_config + 'hdfs-datanode.json')
-secnamenode_confs = _load_json(path_to_config + 'hdfs-secondarynamenode.json')
-hdfs_gateway_confs = _load_json(path_to_config + 'hdfs-gateway.json')
-yarn_confs = _load_json(path_to_config + 'yarn-service.json')
-resourcemanager_confs = _load_json(
-    path_to_config + 'yarn-resourcemanager.json')
-nodemanager_confs = _load_json(path_to_config + 'yarn-nodemanager.json')
-jobhistory_confs = _load_json(path_to_config + 'yarn-jobhistory.json')
-yarn_gateway = _load_json(path_to_config + 'yarn-gateway.json')
-oozie_service_confs = _load_json(path_to_config + 'oozie-service.json')
-oozie_role_confs = _load_json(path_to_config + 'oozie-oozie.json')
-hive_service_confs = _load_json(path_to_config + 'hive-service.json')
-hive_metastore_confs = _load_json(path_to_config + 'hive-metastore.json')
-hive_hiveserver_confs = _load_json(path_to_config + 'hive-hiveserver2.json')
-hive_webhcat_confs = _load_json(path_to_config + 'hive-webhcat.json')
-hue_service_confs = _load_json(path_to_config + 'hue-service.json')
-hue_role_confs = _load_json(path_to_config + 'hue-hue.json')
-spark_service_confs = _load_json(path_to_config + 'spark-service.json')
-spark_role_confs = _load_json(path_to_config + 'spark-history.json')
-zookeeper_server_confs = _load_json(path_to_config + 'zookeeper-server.json')
-zookeeper_service_confs = _load_json(path_to_config + 'zookeeper-service.json')
-hbase_confs = _load_json(path_to_config + 'hbase-service.json')
-master_confs = _load_json(path_to_config + 'hbase-master.json')
-regionserver_confs = _load_json(path_to_config + 'hbase-regionserver.json')
-
-priority_one_confs = _load_json(path_to_config + 'priority-one-confs.json')
-
-
-def _prepare_value(value):
-    if not value:
-        return ""
-
-    return value.replace('\n', ' ')
-
-
-def _init_configs(confs, app_target, scope):
-    cfgs = []
-    for cfg in confs:
-        priority = 1 if cfg['name'] in priority_one_confs else 2
-        c = p.Config(cfg['name'], app_target, scope, priority=priority,
-                     default_value=_prepare_value(cfg['value']),
-                     description=cfg['desc'], is_optional=True)
-        cfgs.append(c)
-
-    return cfgs
-
-
-def _get_ng_plugin_configs():
-    cfg = []
-    cfg += _init_configs(hdfs_confs, 'HDFS', 'cluster')
-    cfg += _init_configs(namenode_confs, 'NAMENODE', 'node')
-    cfg += _init_configs(datanode_confs, 'DATANODE', 'node')
-    cfg += _init_configs(secnamenode_confs, 'SECONDARYNAMENODE', 'node')
-    cfg += _init_configs(hdfs_gateway_confs, 'HDFS_GATEWAY', 'node')
-    cfg += _init_configs(yarn_confs, 'YARN', 'cluster')
-    cfg += _init_configs(yarn_gateway, 'YARN_GATEWAY', 'node')
-    cfg += _init_configs(resourcemanager_confs, 'RESOURCEMANAGER', 'node')
-    cfg += _init_configs(nodemanager_confs, 'NODEMANAGER', 'node')
-    cfg += _init_configs(jobhistory_confs, 'JOBHISTORY', 'node')
-    cfg += _init_configs(oozie_service_confs, 'OOZIE', 'cluster')
-    cfg += _init_configs(oozie_role_confs, 'OOZIE', 'node')
-    cfg += _init_configs(hive_service_confs, 'HIVE', 'cluster')
-    cfg += _init_configs(hive_metastore_confs, 'HIVEMETASTORE', 'node')
-    cfg += _init_configs(hive_hiveserver_confs, 'HIVESERVER', 'node')
-    cfg += _init_configs(hive_webhcat_confs, 'WEBHCAT', 'node')
-    cfg += _init_configs(hue_service_confs, 'HUE', 'cluster')
-    cfg += _init_configs(hue_role_confs, 'HUE', 'node')
-    cfg += _init_configs(spark_service_confs, 'SPARK_ON_YARN', 'cluster')
-    cfg += _init_configs(spark_role_confs, 'SPARK_ON_YARN', 'node')
-    cfg += _init_configs(zookeeper_service_confs, 'ZOOKEEPER', 'cluster')
-    cfg += _init_configs(zookeeper_server_confs, 'ZOOKEEPER', 'node')
-    cfg += _init_configs(hbase_confs, 'HBASE', 'cluster')
-    cfg += _init_configs(master_confs, 'MASTER', 'node')
-    cfg += _init_configs(regionserver_confs, 'REGIONSERVER', 'node')
-    return cfg
-
-
-def get_plugin_configs():
-    cluster_wide = _get_cluster_plugin_configs()
-    ng_wide = _get_ng_plugin_configs()
-    return cluster_wide + ng_wide
-
-
-def _get_config_value(cluster, key):
-    return cluster.cluster_configs.get(
-        'general', {}).get(key.name, key.default_value)
-
-
-def get_cdh5_repo_url(cluster):
-    return _get_config_value(cluster, CDH5_REPO_URL)
-
-
-def get_cdh5_key_url(cluster):
-    return _get_config_value(cluster, CDH5_REPO_KEY_URL)
-
-
-def get_cm5_repo_url(cluster):
-    return _get_config_value(cluster, CM5_REPO_URL)
-
-
-def get_cm5_key_url(cluster):
-    return _get_config_value(cluster, CM5_REPO_KEY_URL)
-
-
-def is_swift_enabled(cluster):
-    return _get_config_value(cluster, ENABLE_SWIFT)
-
-
-def is_hbase_common_lib_enabled(cluster):
-    return _get_config_value(cluster, ENABLE_HBASE_COMMON_LIB)
-
-
-def get_swift_lib_url(cluster):
-    return _get_config_value(cluster, SWIFT_LIB_URL)
-
-
-def get_extjs_lib_url(cluster):
-    return _get_config_value(cluster, EXTJS_LIB_URL)
+    def _load_ng_plugin_configs(self):
+        self.hdfs_confs = self._load_and_init_configs(
+            'hdfs-service.json', 'HDFS', 'cluster')
+        self.namenode_confs = self._load_and_init_configs(
+            'hdfs-namenode.json', 'NAMENODE', 'node')
+        self.datanode_confs = self._load_and_init_configs(
+            'hdfs-datanode.json', 'DATANODE', 'node')
+        self.secnamenode_confs = self._load_and_init_configs(
+            'hdfs-secondarynamenode.json', 'SECONDARYNAMENODE', 'node')
+        self.hdfs_gateway_confs = self._load_and_init_configs(
+            'hdfs-gateway.json', 'HDFS_GATEWAY', 'node')
+        self.yarn_confs = self._load_and_init_configs(
+            'yarn-service.json', 'YARN', 'cluster')
+        self.resourcemanager_confs = self._load_and_init_configs(
+            'yarn-resourcemanager.json', 'YARN_GATEWAY', 'node')
+        self.nodemanager_confs = self._load_and_init_configs(
+            'yarn-nodemanager.json', 'RESOURCEMANAGER', 'node')
+        self.jobhistory_confs = self._load_and_init_configs(
+            'yarn-jobhistory.json', 'NODEMANAGER', 'node')
+        self.yarn_gateway = self._load_and_init_configs(
+            'yarn-gateway.json', 'JOBHISTORY', 'node')
+        self.oozie_service_confs = self._load_and_init_configs(
+            'oozie-service.json', 'OOZIE', 'cluster')
+        self.oozie_role_confs = self._load_and_init_configs(
+            'oozie-oozie.json', 'OOZIE', 'node')
+        self.hive_service_confs = self._load_and_init_configs(
+            'hive-service.json', 'HIVE', 'cluster')
+        self.hive_metastore_confs = self._load_and_init_configs(
+            'hive-metastore.json', 'HIVEMETASTORE', 'node')
+        self.hive_hiveserver_confs = self._load_and_init_configs(
+            'hive-hiveserver2.json', 'HIVESERVER', 'node')
+        self.hive_webhcat_confs = self._load_and_init_configs(
+            'hive-webhcat.json', 'WEBHCAT', 'node')
+        self.hue_service_confs = self._load_and_init_configs(
+            'hue-service.json', 'HUE', 'cluster')
+        self.hue_role_confs = self._load_and_init_configs(
+            'hue-hue.json', 'HUE', 'node')
+        self.spark_service_confs = self._load_and_init_configs(
+            'spark-service.json', 'SPARK_ON_YARN', 'cluster')
+        self.spark_role_confs = self._load_and_init_configs(
+            'spark-history.json', 'SPARK_ON_YARN', 'node')
+        self.zookeeper_server_confs = self._load_and_init_configs(
+            'zookeeper-server.json', 'ZOOKEEPER', 'cluster')
+        self.zookeeper_service_confs = self._load_and_init_configs(
+            'zookeeper-service.json', 'ZOOKEEPER', 'node')
+        self.hbase_confs = self._load_and_init_configs(
+            'hbase-service.json', 'HBASE', 'cluster')
+        self.master_confs = self._load_and_init_configs(
+            'hbase-master.json', 'MASTER', 'node')
+        self.regionserver_confs = self._load_and_init_configs(
+            'hbase-regionserver.json', 'REGIONSERVER', 'node')

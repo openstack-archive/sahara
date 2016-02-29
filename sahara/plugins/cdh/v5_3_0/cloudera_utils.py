@@ -15,7 +15,7 @@
 
 from sahara.i18n import _
 from sahara.plugins.cdh import cloudera_utils as cu
-from sahara.plugins.cdh.v5_3_0 import config_helper as c_helper
+from sahara.plugins.cdh.v5_3_0 import config_helper
 from sahara.plugins.cdh.v5_3_0 import plugin_utils as pu
 from sahara.plugins.cdh.v5_3_0 import validation
 from sahara.swift import swift_helper
@@ -38,6 +38,8 @@ SOLR_SERVICE_TYPE = 'SOLR'
 SQOOP_SERVICE_TYPE = 'SQOOP'
 KS_INDEXER_SERVICE_TYPE = 'KS_INDEXER'
 IMPALA_SERVICE_TYPE = 'IMPALA'
+
+c_helper = config_helper.ConfigHelperV530()
 
 
 class ClouderaUtilsV530(cu.ClouderaUtils):
