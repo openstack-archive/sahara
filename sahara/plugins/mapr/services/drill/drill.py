@@ -18,7 +18,6 @@ import sahara.plugins.mapr.domain.service as s
 import sahara.plugins.mapr.util.commands as cmd
 import sahara.plugins.mapr.util.validation_utils as vu
 
-
 DRILL = np.NodeProcess(
     name='drill-bits',
     ui_name='Drill',
@@ -76,3 +75,9 @@ class DrillV12(Drill):
     def __init__(self):
         super(DrillV12, self).__init__()
         self._version = "1.2"
+
+
+class DrillV14(Drill):
+    def __init__(self):
+        super(DrillV14, self).__init__()
+        self._version = "1.4"
