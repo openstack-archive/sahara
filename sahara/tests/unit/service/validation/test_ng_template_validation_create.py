@@ -70,7 +70,7 @@ class TestNGTemplateCreateValidation(u.ValidationTestCase):
                 'node_processes': []
             },
             bad_req_i=(1, 'VALIDATION_ERROR',
-                       u'\[\] is too short')
+                       u'node_processes: \[\] is too short')
         )
 
     def test_ng_template_create_v_names(self):
@@ -186,7 +186,8 @@ class TestNGTemplateCreateValidation(u.ValidationTestCase):
                 'volumes_per_node': -1
             },
             bad_req_i=(1, 'VALIDATION_ERROR',
-                       u'-1(.0)? is less than the minimum of 0')
+                       u'volumes_per_node: -1(.0)? is less than the minimum '
+                       u'of 0')
         )
         self._assert_create_object_validation(
             data={
@@ -198,7 +199,7 @@ class TestNGTemplateCreateValidation(u.ValidationTestCase):
                 'volumes_size': 0
             },
             bad_req_i=(1, 'VALIDATION_ERROR',
-                       u'0(.0)? is less than the minimum of 1')
+                       u'volumes_size: 0(.0)? is less than the minimum of 1')
         )
 
     def test_ng_template_create_v_types(self):
@@ -247,7 +248,7 @@ class TestNGTemplateCreateValidation(u.ValidationTestCase):
                 'image_id': '12345'
             },
             bad_req_i=(1, 'VALIDATION_ERROR',
-                       "'12345' is not a 'uuid'")
+                       "image_id: '12345' is not a 'uuid'")
         )
         self._assert_create_object_validation(
             data={
@@ -335,7 +336,8 @@ class TestNGTemplateCreateValidation(u.ValidationTestCase):
                 'volumes_per_node': -1
             },
             bad_req_i=(1, 'VALIDATION_ERROR',
-                       u'-1(.0)? is less than the minimum of 0')
+                       u'volumes_per_node: -1(.0)? is less than the minimum '
+                       u'of 0')
         )
         self._assert_create_object_validation(
             data={
@@ -347,7 +349,7 @@ class TestNGTemplateCreateValidation(u.ValidationTestCase):
                 'volumes_size': 0
             },
             bad_req_i=(1, 'VALIDATION_ERROR',
-                       u'0(.0)? is less than the minimum of 1')
+                       u'volumes_size: 0(.0)? is less than the minimum of 1')
         )
         self._assert_create_object_validation(
             data={
@@ -373,7 +375,8 @@ class TestNGTemplateCreateValidation(u.ValidationTestCase):
         }
         self._assert_create_object_validation(
             data=data,
-            bad_req_i=(1, 'VALIDATION_ERROR', "'qwerty' is not a 'posix_path'")
+            bad_req_i=(1, 'VALIDATION_ERROR', "volume_mount_prefix: 'qwerty' "
+                                              "is not a 'posix_path'")
         )
 
     def test_wrong_floating_ip_pool(self):

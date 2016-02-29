@@ -44,7 +44,7 @@ class TestClusterTemplateCreateValidation(u.ValidationTestCase):
                 ]
             },
             bad_req_i=(1, 'VALIDATION_ERROR',
-                       "{'name': 'a'} is not valid under "
+                       "node_groups[0]: {'name': 'a'} is not valid under "
                        "any of the given schemas")
         )
         self._assert_create_object_validation(
@@ -58,7 +58,7 @@ class TestClusterTemplateCreateValidation(u.ValidationTestCase):
                 ]
             },
             bad_req_i=(1, "VALIDATION_ERROR",
-                       "{'name': 'a', 'flavor_id': '42'} "
+                       "node_groups[0]: {'name': 'a', 'flavor_id': '42'} "
                        "is not valid under any of the given schemas")
 
         )
@@ -74,7 +74,7 @@ class TestClusterTemplateCreateValidation(u.ValidationTestCase):
                 ]
             },
             bad_req_i=(1, "VALIDATION_ERROR",
-                       "{'node_processes': ['namenode'], "
+                       "node_groups[0]: {'node_processes': ['namenode'], "
                        "'name': 'a', "
                        "'flavor_id': '42'} "
                        "is not valid under any of the given schemas")
@@ -117,7 +117,8 @@ class TestClusterTemplateCreateValidation(u.ValidationTestCase):
                 ]
             },
             bad_req_i=(1, "VALIDATION_ERROR",
-                       "{'node_group_template_id': '', 'name': 'test'} "
+                       "node_groups[0]: {'node_group_template_id': '', "
+                       "'name': 'test'} "
                        "is not valid under any of the given schemas")
 
         )
@@ -135,7 +136,7 @@ class TestClusterTemplateCreateValidation(u.ValidationTestCase):
                 ]
             },
             bad_req_i=(1, "VALIDATION_ERROR",
-                       "{'count': 3, "
+                       "node_groups[0]: {'count': 3, "
                        "'node_group_template_id': 'test', "
                        "'name': 'test'} "
                        "is not valid under any of the given schemas")

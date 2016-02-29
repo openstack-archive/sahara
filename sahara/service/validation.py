@@ -15,13 +15,27 @@
 
 import functools
 
-import jsonschema
 from oslo_utils import reflection
 
 from sahara import exceptions as ex
 from sahara.i18n import _
 from sahara.utils import api as u
 from sahara.utils import api_validator
+
+
+def _get_path(path):
+    if path:
+        path_string = path[0]
+        for x in path[1:]:
+            path_string += '[%s]' % str(x)
+        return path_string + ': '
+    return ''
+
+
+def _generate_error(errors):
+    message = [_get_path(list(e.path)) + e.message for e in errors]
+    if message:
+        return ex.SaharaException('\n'.join(message), "VALIDATION_ERROR")
 
 
 def validate(schema, *validators):
@@ -32,13 +46,13 @@ def validate(schema, *validators):
             try:
                 if schema:
                     validator = api_validator.ApiValidator(schema)
-                    validator.validate(request_data)
+                    errors = validator.iter_errors(request_data)
+                    error = _generate_error(errors)
+                    if error:
+                        return u.bad_request(error)
                 if validators:
                     for validator in validators:
                         validator(**kwargs)
-            except jsonschema.ValidationError as e:
-                e.code = "VALIDATION_ERROR"
-                return u.bad_request(e)
             except ex.SaharaException as e:
                 return u.bad_request(e)
             except Exception as e:

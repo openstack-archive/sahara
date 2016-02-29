@@ -36,7 +36,7 @@ class TestJobCreateValidation(u.ValidationTestCase):
                 "type": "Jar",
             },
             bad_req_i=(1, "VALIDATION_ERROR",
-                       "'Jar' is not one of " + str(edp.JOB_TYPES_ALL)))
+                       "type: 'Jar' is not one of " + str(edp.JOB_TYPES_ALL)))
 
     @mock.patch('sahara.service.edp.api.get_job_binary')
     def test_check_binaries(self, get_job_binary):

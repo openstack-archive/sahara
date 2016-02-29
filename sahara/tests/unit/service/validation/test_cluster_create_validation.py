@@ -114,7 +114,7 @@ class TestClusterCreateValidation(u.ValidationTestCase):
                 'hadoop_version': "0.1",
                 'user_keypair_id': '!'},
             bad_req_i=(1, 'VALIDATION_ERROR',
-                       "'!' is not a 'valid_keypair_name'")
+                       "user_keypair_id: '!' is not a 'valid_keypair_name'")
         )
 
     def test_cluster_create_v_image_exists(self):
