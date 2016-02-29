@@ -53,34 +53,34 @@ class TestUtils(base.SaharaWithDbTestCase):
             [tu.make_inst_dict('snn1', 'secondarynamenode')])
 
     def test_get_namenode(self):
-        cl = tu.create_cluster('cl1', 't1', 'vanilla', '2.6.0',
+        cl = tu.create_cluster('cl1', 't1', 'vanilla', '2.7.1',
                                [self.ng_manager, self.ng_namenode])
         self.assertEqual('nn1', u.get_namenode(cl).instance_id)
 
-        cl = tu.create_cluster('cl1', 't1', 'vanilla', '2.6.0',
+        cl = tu.create_cluster('cl1', 't1', 'vanilla', '2.7.1',
                                [self.ng_manager])
         self.assertIsNone(u.get_namenode(cl))
 
     def test_get_oozie(self):
-        cl = tu.create_cluster('cl1', 't1', 'vanilla', '2.6.0',
+        cl = tu.create_cluster('cl1', 't1', 'vanilla', '2.7.1',
                                [self.ng_manager, self.ng_oozie])
         self.assertEqual('ooz1', u.get_oozie(cl).instance_id)
 
-        cl = tu.create_cluster('cl1', 't1', 'vanilla', '2.6.0',
+        cl = tu.create_cluster('cl1', 't1', 'vanilla', '2.7.1',
                                [self.ng_manager])
         self.assertIsNone(u.get_oozie(cl))
 
     def test_get_hiveserver(self):
-        cl = tu.create_cluster('cl1', 't1', 'vanilla', '2.6.0',
+        cl = tu.create_cluster('cl1', 't1', 'vanilla', '2.7.1',
                                [self.ng_manager, self.ng_hiveserver])
         self.assertEqual('hs1', u.get_hiveserver(cl).instance_id)
 
-        cl = tu.create_cluster('cl1', 't1', 'vanilla', '2.6.0',
+        cl = tu.create_cluster('cl1', 't1', 'vanilla', '2.7.1',
                                [self.ng_manager])
         self.assertIsNone(u.get_hiveserver(cl))
 
     def test_get_datanodes(self):
-        cl = tu.create_cluster('cl1', 't1', 'vanilla', '2.6.0',
+        cl = tu.create_cluster('cl1', 't1', 'vanilla', '2.7.1',
                                [self.ng_manager, self.ng_namenode,
                                 self.ng_datanode])
         datanodes = u.get_datanodes(cl)
@@ -89,16 +89,16 @@ class TestUtils(base.SaharaWithDbTestCase):
                          set([datanodes[0].instance_id,
                               datanodes[1].instance_id]))
 
-        cl = tu.create_cluster('cl1', 't1', 'vanilla', '2.6.0',
+        cl = tu.create_cluster('cl1', 't1', 'vanilla', '2.7.1',
                                [self.ng_manager])
         self.assertEqual([], u.get_datanodes(cl))
 
     def test_get_secondarynamenodes(self):
-        cl = tu.create_cluster('cl1', 't1', 'vanilla', '2.6.0',
+        cl = tu.create_cluster('cl1', 't1', 'vanilla', '2.7.1',
                                [self.ng_manager, self.ng_namenode,
                                 self.ng_secondarynamenode])
         self.assertEqual('snn1', u.get_secondarynamenode(cl).instance_id)
 
-        cl = tu.create_cluster('cl1', 't1', 'vanilla', '2.6.0',
+        cl = tu.create_cluster('cl1', 't1', 'vanilla', '2.7.1',
                                [self.ng_manager])
         self.assertIsNone(u.get_secondarynamenode(cl))

@@ -67,7 +67,7 @@ class TestJobExecCreateValidation(u.ValidationTestCase):
         ng = tu.make_ng_dict('master', 42, ['oozie'], 1,
                              instances=[tu.make_inst_dict('id', 'name')])
         get_cluster.return_value = tu.create_cluster("cluster", "tenant1",
-                                                     "vanilla", "2.6.0", [ng])
+                                                     "vanilla", "2.7.1", [ng])
 
         self._assert_create_object_validation(
             data={
@@ -118,7 +118,7 @@ class TestJobExecCreateValidation(u.ValidationTestCase):
         ng = tu.make_ng_dict('master', 42, ['oozie'], 1,
                              instances=[tu.make_inst_dict('id', 'name')])
         get_cluster.return_value = tu.create_cluster("cluster", "tenant1",
-                                                     "vanilla", "2.6.0", [ng])
+                                                     "vanilla", "2.7.1", [ng])
 
         self._assert_create_object_validation(
             data={
@@ -163,7 +163,7 @@ class TestJobExecCreateValidation(u.ValidationTestCase):
         ng = tu.make_ng_dict('master', 42, ['namenode'], 1,
                              instances=[tu.make_inst_dict('id', 'name')])
         get_cluster.return_value = tu.create_cluster("cluster", "tenant1",
-                                                     "vanilla", "2.6.0", [ng])
+                                                     "vanilla", "2.7.1", [ng])
 
         self._assert_create_object_validation(
             data={
@@ -206,7 +206,7 @@ class TestJobExecCreateValidation(u.ValidationTestCase):
         ng = tu.make_ng_dict('master', 42, ['namenode', 'oozie'], 1,
                              instances=[tu.make_inst_dict('id', 'name')])
         cluster_get.return_value = tu.create_cluster("cluster", "tenant1",
-                                                     "vanilla", "2.6.0", [ng])
+                                                     "vanilla", "2.7.1", [ng])
 
         self._assert_create_object_validation(
             data={
