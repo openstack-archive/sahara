@@ -38,17 +38,12 @@ be built using the tools available in sahara-image-elements:
 
 * https://s3-us-west-2.amazonaws.com/sahara-images/ubuntu_trusty_mapr_plain_latest.qcow2
 * https://s3-us-west-2.amazonaws.com/sahara-images/centos_6.5_mapr_plain_latest.qcow2
-* https://s3-us-west-2.amazonaws.com/sahara-images/ubuntu_trusty_mapr_3.1.1_latest.qcow2
-* https://s3-us-west-2.amazonaws.com/sahara-images/centos_6.5_mapr_3.1.1_latest.qcow2
-* https://s3-us-west-2.amazonaws.com/sahara-images/ubuntu_trusty_mapr_4.0.1_latest.qcow2
-* https://s3-us-west-2.amazonaws.com/sahara-images/centos_6.5_mapr_4.0.1_latest.qcow2
-* https://s3-us-west-2.amazonaws.com/sahara-images/ubuntu_trusty_mapr_4.0.2_latest.qcow2
-* https://s3-us-west-2.amazonaws.com/sahara-images/centos_6.5_mapr_4.0.2_latest.qcow2
+* https://s3-us-west-2.amazonaws.com/sahara-images/ubuntu_trusty_mapr_5.0.0_latest.qcow2
+* https://s3-us-west-2.amazonaws.com/sahara-images/centos_6.5_mapr_5.0.0_latest.qcow2
 
 MapR plugin needs an image to be tagged in Sahara Image Registry with
-two tags: 'mapr' and '<MapR version>' (e.g. '4.0.1.mrv2').
+two tags: 'mapr' and '<MapR version>' (e.g. '5.0.0.mrv2').
 
-Note that Spark should be run on plain or 4.0.1 images.
 
 The default username specified for these images is different for each
 distribution:
@@ -64,9 +59,7 @@ distribution:
 
 Hadoop Version Support
 ----------------------
-The MapR plugin currently supports Hadoop 0.20.2 (3.1.1, 4.0.1.mrv1,
-4.0.2.mrv1),
-Hadoop 2.4.1 (4.0.2.mrv2) and Hadoop 2.5.1 (4.0.2.mrv2).
+The MapR plugin currently supports Hadoop 2.7.0 (5.0.0.mrv2).
 
 Cluster Validation
 ------------------
