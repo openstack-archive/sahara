@@ -29,7 +29,10 @@ CONF = cfg.CONF
 
 def check_data_source_create(data, **kwargs):
     b.check_data_source_unique_name(data['name'])
+    _check_data_source_url(data)
 
+
+def _check_data_source_url(data):
     if "swift" == data["type"]:
         _check_swift_data_source_create(data)
 
@@ -105,12 +108,22 @@ def _check_manila_data_source_create(data):
         raise ex.InvalidDataException(_("Manila url path must not be empty"))
 
 
-def check_data_source_update(data, **kwargs):
+def check_data_source_update(data, data_source_id):
     ctx = context.ctx()
     jobs = c.API.job_execution_get_all(ctx)
-    pending_jobs = [job for job in jobs if job.info.status == "PENDING"]
+    pending_jobs = [job for job in jobs if job.info["status"] == "PENDING"]
     for job in pending_jobs:
-        if kwargs["data_source_id"] in job.data_source_urls:
+        if data_source_id in job.data_source_urls:
             raise ex.UpdateFailedException(
                 _("DataSource is used in a "
                   "PENDING Job and can not be updated."))
+
+    if 'name' in data:
+        b.check_data_source_unique_name(data['name'])
+
+    ds = c.API.data_source_get(ctx, data_source_id)
+    check_data = {'type': data.get('type', None) or ds.type,
+                  'url': data.get('url', None) or ds.url,
+                  'credentials': data.get(
+                      'credentials', None) or ds.credentials}
+    _check_data_source_url(check_data)

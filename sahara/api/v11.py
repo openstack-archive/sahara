@@ -122,7 +122,8 @@ def data_source_delete(data_source_id):
 @rest.put('/data-sources/<data_source_id>')
 @acl.enforce("data-processing:data-sources:modify")
 @v.check_exists(api.get_data_source, 'data_source_id')
-@v.validate(v_d_s_schema.DATA_SOURCE_UPDATE_SCHEMA)
+@v.validate(
+    v_d_s_schema.DATA_SOURCE_UPDATE_SCHEMA, v_d_s.check_data_source_update)
 def data_source_update(data_source_id, data):
     return u.to_wrapped_dict(api.data_source_update, data_source_id, data)
 
