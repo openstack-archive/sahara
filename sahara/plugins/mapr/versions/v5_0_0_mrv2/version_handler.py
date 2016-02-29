@@ -58,6 +58,7 @@ class VersionHandler(bvh.BaseVersionHandler):
             sqoop2.Sqoop2(),
             mahout.MahoutV010(),
             oozie.OozieV410(),
+            oozie.OozieV420(),
             hue.HueV370(),
             hue.HueV381(),
             hbase.HBaseV0989(),
