@@ -30,8 +30,17 @@ SAHARA_ENABLED_PLUGINS=${SAHARA_ENABLED_PLUGINS:-\
 vanilla,hdp,cdh,mapr,spark,storm,fake}
 SAHARA_BIN_DIR=$(get_python_exec_prefix)
 
+SAHARA_ENABLE_DISTRIBUTED_PERIODICS=${SAHARA_ENABLE_DISTRIBUTED_PERIODICS:-\
+True}
+SAHARA_PERIODIC_COORDINATOR_URL=${SAHARA_PERIODIC_COORDINATOR_URL:-\
+kazoo://127.0.0.1:2181}
+
 # Tell Tempest this project is present
 TEMPEST_SERVICES+=,sahara
 
 enable_service sahara-api sahara-eng
 enable_service heat h-eng h-api h-api-cfn h-api-cw
+
+if [ "$SAHARA_ENABLE_DISTRIBUTED_PERIODICS" == "True" ]; then
+    enable_service zookeeper
+fi

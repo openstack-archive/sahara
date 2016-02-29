@@ -144,6 +144,12 @@ function configure_sahara {
         iniset $SAHARA_CONF_FILE DEFAULT port $SAHARA_SERVICE_PORT_INT
     fi
 
+    if [ "$SAHARA_ENABLE_DISTRIBUTED_PERIODICS" == "True" ]; then
+        # Enable distributed periodic tasks
+        iniset $SAHARA_CONF_FILE DEFAULT periodic_coordinator_backend_url\
+            $SAHARA_PERIODIC_COORDINATOR_URL
+    fi
+
     recreate_database sahara
     $SAHARA_BIN_DIR/sahara-db-manage \
         --config-file $SAHARA_CONF_FILE upgrade head
