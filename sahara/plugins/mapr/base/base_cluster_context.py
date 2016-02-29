@@ -20,6 +20,7 @@ from oslo_config import cfg
 import sahara.exceptions as e
 from sahara.i18n import _
 import sahara.plugins.mapr.abstract.cluster_context as cc
+import sahara.plugins.mapr.domain.configuration_file as bcf
 import sahara.plugins.mapr.domain.distro as distro
 import sahara.plugins.mapr.services.management.management as mng
 import sahara.plugins.mapr.services.maprfs.maprfs as mfs
@@ -395,7 +396,7 @@ class BaseClusterContext(cc.AbstractClusterContext):
         configuration = self.get_configuration(node_group)
         instance = node_group.instances[0]
 
-        config_files = {}
+        config_files = []
         for service in services:
             service_conf_files = service.get_config_files(
                 cluster_context=self,
@@ -403,7 +404,10 @@ class BaseClusterContext(cc.AbstractClusterContext):
                 instance=instance,
             )
             for conf_file in service_conf_files:
-                config_files[conf_file.remote_path] = conf_file.render()
+                file_atr = bcf.FileAttr(conf_file.remote_path,
+                                        conf_file.render(), conf_file.mode,
+                                        conf_file.owner)
+                config_files.append(file_atr)
 
         return config_files
 
