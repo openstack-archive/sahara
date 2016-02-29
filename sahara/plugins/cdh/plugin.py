@@ -94,4 +94,4 @@ class CDHPluginProvider(p.ProvisioningPluginBase):
 
     def get_health_checks(self, cluster):
         return self._get_version_handler(
-            cluster.hadoop_version).get_health_checks()
+            cluster.hadoop_version).get_health_checks(cluster)
