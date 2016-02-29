@@ -133,7 +133,6 @@ def list_opts():
     from sahara.service.heat import heat_engine
     from sahara.service.heat import templates
     from sahara.service import periodic
-    from sahara.service import sessions
     from sahara.swift import swift_helper
     from sahara.utils import cluster_progress_ops as cpo
     from sahara.utils.openstack import base
@@ -164,7 +163,6 @@ def list_opts():
                          base.opts,
                          heat_engine.heat_engine_opts,
                          templates.heat_engine_opts,
-                         sessions.sessions_opts,
                          ssh_remote.ssh_config_options,
                          castellan.opts)),
         (poll_utils.timeouts.name,

@@ -25,21 +25,13 @@ from sahara.i18n import _LE
 CONF = cfg.CONF
 LOG = logging.getLogger(__name__)
 
-sessions_opts = [
-    cfg.BoolOpt(
-        'generic_session_verify', default=True,
-        help='Option to configure verification of a certificate for generic '
-             'sessions')
-]
-CONF.register_opts(sessions_opts)
-
 _SESSION_CACHE = None
 
 SESSION_TYPE_CINDER = 'cinder'
-SESSION_TYPE_GENERIC = 'generic'
 SESSION_TYPE_KEYSTONE = 'keystone'
 SESSION_TYPE_NEUTRON = 'neutron'
 SESSION_TYPE_NOVA = 'nova'
+SESSION_TYPE_INSECURE = 'insecure'
 
 
 def cache():
@@ -66,10 +58,10 @@ class SessionCache(object):
         self._sessions = {}
         self._session_funcs = {
             SESSION_TYPE_CINDER: self.get_cinder_session,
-            SESSION_TYPE_GENERIC: self.get_generic_session,
             SESSION_TYPE_KEYSTONE: self.get_keystone_session,
             SESSION_TYPE_NEUTRON: self.get_neutron_session,
             SESSION_TYPE_NOVA: self.get_nova_session,
+            SESSION_TYPE_INSECURE: self.get_insecure_session,
         }
 
     def _set_session(self, session_type, session):
@@ -81,10 +73,10 @@ class SessionCache(object):
         '''
         self._sessions[session_type] = session
 
-    def get_session(self, session_type=SESSION_TYPE_GENERIC):
+    def get_session(self, session_type=SESSION_TYPE_INSECURE):
         '''Return a Session for the requested type
 
-        :param session_type: the type of Session to get, if None a generic
+        :param session_type: the type of Session to get, if None an insecure
         session will be returned.
 
         :raises SaharaException: if the requested session type is not
@@ -101,57 +93,57 @@ class SessionCache(object):
                 _('Session type {type} not recognized').
                 format(type=session_type))
 
+    def get_insecure_session(self):
+        session = self._sessions.get(SESSION_TYPE_INSECURE)
+        if not session:
+            session = keystone.Session(verify=False)
+            self._set_session(SESSION_TYPE_INSECURE, session)
+        return session
+
     def get_cinder_session(self):
         session = self._sessions.get(SESSION_TYPE_CINDER)
         if not session:
-            if CONF.cinder.ca_file:
-                session = keystone.Session(cert=CONF.cinder.ca_file,
-                                           verify=CONF.cinder.api_insecure)
+            if not CONF.cinder.api_insecure and CONF.cinder.ca_file:
+                session = keystone.Session(
+                    cert=CONF.cinder.ca_file, verify=True)
             else:
-                session = self.get_generic_session()
+                session = self.get_insecure_session()
             self._set_session(SESSION_TYPE_CINDER, session)
-        return session
-
-    def get_generic_session(self):
-        session = self._sessions.get(SESSION_TYPE_GENERIC)
-        if not session:
-            session = keystone.Session(verify=CONF.generic_session_verify)
-            self._set_session(SESSION_TYPE_GENERIC, session)
         return session
 
     def get_keystone_session(self):
         session = self._sessions.get(SESSION_TYPE_KEYSTONE)
         if not session:
-            if CONF.keystone.ca_file:
-                session = keystone.Session(cert=CONF.keystone.ca_file,
-                                           verify=CONF.keystone.api_insecure)
+            if not CONF.keystone.api_insecure and CONF.keystone.ca_file:
+                session = keystone.Session(
+                    cert=CONF.keystone.ca_file, verify=True)
             else:
-                session = self.get_generic_session()
+                session = self.get_insecure_session()
             self._set_session(SESSION_TYPE_KEYSTONE, session)
         return session
 
     def get_neutron_session(self):
         session = self._sessions.get(SESSION_TYPE_NEUTRON)
         if not session:
-            if CONF.neutron.ca_file:
-                session = keystone.Session(cert=CONF.neutron.ca_file,
-                                           verify=CONF.neutron.api_insecure)
+            if not CONF.neutron.api_insecure and CONF.neutron.ca_file:
+                session = keystone.Session(
+                    cert=CONF.neutron.ca_file, verify=True)
             else:
-                session = self.get_generic_session()
+                session = self.get_insecure_session()
             self._set_session(SESSION_TYPE_NEUTRON, session)
         return session
 
     def get_nova_session(self):
         session = self._sessions.get(SESSION_TYPE_NOVA)
         if not session:
-            if CONF.nova.ca_file:
-                session = keystone.Session(cert=CONF.nova.ca_file,
-                                           verify=CONF.nova.api_insecure)
+            if not CONF.nova.api_insecure and CONF.nova.ca_file:
+                session = keystone.Session(
+                    cert=CONF.nova.ca_file, verify=True)
             else:
-                session = self.get_generic_session()
+                session = self.get_insecure_session()
             self._set_session(SESSION_TYPE_NOVA, session)
         return session
 
     def token_for_auth(self, auth):
-        return self.get_generic_session().get_auth_headers(auth).get(
+        return self.get_keystone_session().get_auth_headers(auth).get(
             'X-Auth-Token')
