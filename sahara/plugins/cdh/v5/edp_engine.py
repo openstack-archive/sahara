@@ -14,46 +14,17 @@
 # limitations under the License.
 
 from sahara.plugins.cdh import confighints_helper as ch_helper
+from sahara.plugins.cdh import edp_engine
 from sahara.plugins.cdh.v5 import cloudera_utils as cu
-from sahara.plugins import exceptions as ex
-from sahara.plugins import utils as u
-from sahara.service.edp import hdfs_helper
-from sahara.service.edp.oozie import engine as edp_engine
+from sahara.service.edp.oozie import engine as oozie_engine
 from sahara.utils import edp
 
-CU = cu.ClouderaUtilsV5()
 
+class EdpOozieEngine(edp_engine.EdpOozieEngine):
 
-class EdpOozieEngine(edp_engine.OozieJobEngine):
-
-    def get_hdfs_user(self):
-        return 'hdfs'
-
-    def create_hdfs_dir(self, remote, dir_name):
-        hdfs_helper.create_dir_hadoop2(remote, dir_name, self.get_hdfs_user())
-
-    def get_oozie_server_uri(self, cluster):
-        oozie_ip = CU.pu.get_oozie(cluster).management_ip
-        return 'http://%s:11000/oozie' % oozie_ip
-
-    def get_name_node_uri(self, cluster):
-        namenode_ip = CU.pu.get_namenode(cluster).fqdn()
-        return 'hdfs://%s:8020' % namenode_ip
-
-    def get_resource_manager_uri(self, cluster):
-        resourcemanager_ip = CU.pu.get_resourcemanager(cluster).fqdn()
-        return '%s:8032' % resourcemanager_ip
-
-    def get_oozie_server(self, cluster):
-        return CU.pu.get_oozie(cluster)
-
-    def validate_job_execution(self, cluster, job, data):
-        oo_count = u.get_instances_count(cluster, 'OOZIE_SERVER')
-        if oo_count != 1:
-            raise ex.InvalidComponentCountException(
-                'OOZIE_SERVER', '1', oo_count)
-
-        super(EdpOozieEngine, self).validate_job_execution(cluster, job, data)
+    def __init__(self, cluster):
+        super(EdpOozieEngine, self).__init__(cluster)
+        self.cloudera_utils = cu.ClouderaUtilsV5()
 
     @staticmethod
     def get_possible_job_config(job_type):
@@ -68,4 +39,4 @@ class EdpOozieEngine(edp_engine.OozieJobEngine):
         if edp.compare_job_type(job_type, edp.JOB_TYPE_PIG):
             return {'job_config': ch_helper.get_possible_pig_config_from(
                     'plugins/cdh/v5/resources/mapred-site.xml')}
-        return edp_engine.OozieJobEngine.get_possible_job_config(job_type)
+        return oozie_engine.OozieJobEngine.get_possible_job_config(job_type)
