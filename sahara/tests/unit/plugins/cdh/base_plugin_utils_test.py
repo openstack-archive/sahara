@@ -141,18 +141,6 @@ class TestPluginUtils(b.SaharaTestCase):
             r.execute_command.assert_has_calls(calls, any_order=False)
 
     @mock.patch('sahara.config.CONF.disable_event_log')
-    def test_create_hive_hive_directory(self, log_cfg):
-        cluster = get_concrete_cluster()
-        namenode = cluster.node_groups[1].instances[0]
-        self.plug_utils.create_hive_hive_directory(cluster)
-        with namenode.remote() as r:
-            calls = [mock.call('sudo su - -c "hadoop fs -mkdir -p'
-                               ' /tmp/hive-hive" hdfs'),
-                     mock.call('sudo su - -c "hadoop fs -chown hive'
-                               ' /tmp/hive-hive" hdfs')]
-            r.execute_command.assert_has_calls(calls, any_order=False)
-
-    @mock.patch('sahara.config.CONF.disable_event_log')
     def test_configure_swift(self, log_cfg):
 
         cluster = get_concrete_cluster()
