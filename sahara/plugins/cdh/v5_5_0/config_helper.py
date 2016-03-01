@@ -104,7 +104,7 @@ class ConfigHelperV550(c_h.ConfigHelper):
         'Hadoop OpenStack library URL', 'general', 'cluster', priority=1,
         default_value=DEFAULT_SWIFT_LIB_URL,
         description=("Library that adds Swift support to CDH. The file"
-                     " will be downloaded from VM."))
+                     " will be downloaded by VMs."))
 
     KMS_REPO_URL = p.Config(
         'KMS repo list URL', 'general', 'cluster', priority=1,
