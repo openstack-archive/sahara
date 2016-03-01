@@ -100,11 +100,8 @@ class ClouderaUtilsV540(cu.ClouderaUtils):
     @cpo.event_wrapper(True, step=_("Create services"), param=('cluster', 1))
     def create_services(self, cluster):
         api = self.get_api_client(cluster)
-
-        fullversion = ('5.0.0' if cluster.hadoop_version == '5'
-                       else cluster.hadoop_version)
         cm_cluster = api.create_cluster(cluster.name,
-                                        fullVersion=fullversion)
+                                        fullVersion=cluster.hadoop_version)
 
         if len(self.pu.get_zookeepers(cluster)) > 0:
             cm_cluster.create_service(self.ZOOKEEPER_SERVICE_NAME,
