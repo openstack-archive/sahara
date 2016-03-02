@@ -26,7 +26,6 @@ import sahara.plugins.mapr.util.validation_utils as vu
 import sahara.plugins.provisioning as p
 from sahara.utils import files
 
-
 LOG = logging.getLogger(__name__)
 
 CLDB = np.NodeProcess(
@@ -55,6 +54,8 @@ class MapRFS(s.Service):
     _DISK_SETUP_TIMEOUT = 600
 
     ENABLE_MAPR_DB_NAME = 'Enable MapR-DB'
+    HEAP_SIZE_PERCENT_NAME = 'MapR-FS heap size percent'
+
     ENABLE_MAPR_DB_CONFIG = p.Config(
         name=ENABLE_MAPR_DB_NAME,
         applicable_target='general',
@@ -63,6 +64,17 @@ class MapRFS(s.Service):
         priority=1,
         default_value=True,
         description=_('Specifies that MapR-DB is in use.')
+    )
+
+    HEAP_SIZE_PERCENT = p.Config(
+        name=HEAP_SIZE_PERCENT_NAME,
+        applicable_target='MapRFS',
+        scope='cluster',
+        config_type="int",
+        priority=1,
+        default_value=8,
+        description=_(
+            'Specifies heap size for MapR-FS in percents of maximum value.')
     )
 
     def __init__(self):
@@ -114,7 +126,7 @@ class MapRFS(s.Service):
                 timeout=self._DISK_SETUP_TIMEOUT)
 
     def get_configs(self):
-        return [MapRFS.ENABLE_MAPR_DB_CONFIG]
+        return [MapRFS.ENABLE_MAPR_DB_CONFIG, MapRFS.HEAP_SIZE_PERCENT]
 
     def get_config_files(self, cluster_context, configs, instance=None):
         default_path = 'plugins/mapr/services/maprfs/resources/cldb.conf'
@@ -125,7 +137,15 @@ class MapRFS(s.Service):
         cldb_conf.parse(files.get_file_text(default_path))
         cldb_conf.add_properties(self._get_cldb_conf_props(cluster_context))
 
-        return [cldb_conf]
+        warden_conf = bcf.PropertiesFile("warden.conf")
+        warden_conf.remote_path = "/opt/mapr/conf/"
+        if instance:
+            warden_conf.fetch(instance)
+        warden_conf.add_properties(
+            {'service.command.mfs.heapsize.percent': configs[
+                self.HEAP_SIZE_PERCENT_NAME]})
+
+        return [cldb_conf, warden_conf]
 
     def _get_cldb_conf_props(self, context):
         zookeepers = context.get_zookeeper_nodes_ip_with_port()
