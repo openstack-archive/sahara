@@ -146,7 +146,7 @@ class ClusterStack(object):
         outputs = {}
         resources = self._serialize_resources(outputs)
         return yaml.safe_dump({
-            "heat_template_version": "2013-05-23",
+            "heat_template_version": heat_common.HEAT_TEMPLATE_VERSION,
             "description": self.base_info,
             "resources": resources,
             "outputs": outputs
@@ -234,7 +234,7 @@ class ClusterStack(object):
         if ng.cluster.anti_affinity:
             parameters[SERVER_GROUP_PARAM_NAME] = {'type': "string"}
         return yaml.safe_dump({
-            "heat_template_version": "2013-05-23",
+            "heat_template_version": heat_common.HEAT_TEMPLATE_VERSION,
             "description": self._node_group_description(ng),
             "parameters": parameters,
             "resources": self._serialize_instance(ng),
@@ -486,7 +486,7 @@ class ClusterStack(object):
                 "local_to_instance": {"get_param": "instance"}}
 
         return yaml.safe_dump({
-            "heat_template_version": "2013-05-23",
+            "heat_template_version": heat_common.HEAT_TEMPLATE_VERSION,
             "description": self._volume_for_node_group_description(ng),
             "parameters": {
                 "volume_index": {
