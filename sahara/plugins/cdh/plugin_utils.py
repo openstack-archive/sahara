@@ -285,15 +285,6 @@ class AbstractPluginUtils(object):
         with manager.remote() as r:
             self.db_helper.create_hive_database(cluster, r)
 
-    def create_hive_hive_directory(self, cluster):
-        # Hive requires /tmp/hive-hive directory
-        namenode = self.get_namenode(cluster)
-        with namenode.remote() as r:
-            r.execute_command(
-                'sudo su - -c "hadoop fs -mkdir -p /tmp/hive-hive" hdfs')
-            r.execute_command(
-                'sudo su - -c "hadoop fs -chown hive /tmp/hive-hive" hdfs')
-
     def install_extjs(self, cluster):
         extjs_remote_location = self.c_helper.get_extjs_lib_url(cluster)
         extjs_vm_location_dir = '/var/lib/oozie'
@@ -385,3 +376,11 @@ class AbstractPluginUtils(object):
         provider = CDHPluginAutoConfigsProvider(
             AUTO_CONFIGURATION_SCHEMA, plugin_configs, cluster, scaling)
         provider.apply_recommended_configs()
+
+    def start_cloudera_manager(self, cluster):
+        self._start_cloudera_manager(
+            cluster, self.c_helper.AWAIT_MANAGER_STARTING_TIMEOUT)
+
+    def get_config_value(self, service, name, cluster=None):
+        configs = self.c_helper.get_plugin_configs()
+        return self._get_config_value(service, name, configs, cluster)

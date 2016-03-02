@@ -128,11 +128,3 @@ class PluginUtilsV530(pu.AbstractPluginUtils):
         manager = self.get_manager(cluster)
         with manager.remote() as r:
             self.db_helper.create_sentry_database(cluster, r)
-
-    def start_cloudera_manager(self, cluster):
-        self._start_cloudera_manager(
-            cluster, self.c_helper.AWAIT_MANAGER_STARTING_TIMEOUT)
-
-    def get_config_value(self, service, name, cluster=None):
-        configs = self.c_helper.get_plugin_configs()
-        return self._get_config_value(service, name, configs, cluster)
