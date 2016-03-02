@@ -56,13 +56,13 @@ class ConfigHelper(object):
         'Hadoop OpenStack library URL', 'general', 'cluster', priority=1,
         default_value=DEFAULT_SWIFT_LIB_URL,
         description=("Library that adds Swift support to CDH. The file"
-                     " will be downloaded from VM."))
+                     " will be downloaded by VMs."))
 
     EXTJS_LIB_URL = p.Config(
         "ExtJS library URL", 'general', 'cluster', priority=1,
         default_value=DEFAULT_EXTJS_LIB_URL,
         description=("Ext 2.2 library is required for Oozie Web Console. "
-                     "The file will be downloaded from VM with oozie."))
+                     "The file will be downloaded by VMs with oozie."))
 
     AWAIT_AGENTS_TIMEOUT = p.Config(
         'Await Cloudera agents timeout', 'general', 'cluster',
