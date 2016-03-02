@@ -25,8 +25,8 @@ Registering an Image
 
 4) Enter the username of the cloud-init user on the image
 
-5) Click on the tags that you want to add to the image. (A version ie: 1.2.1
-   and a type ie: vanilla are required for cluster functionality)
+5) Choose plugin and version to make the image available only for the intended
+   clusters
 
 6) Click the "Done" button to finish the registration
 
@@ -49,8 +49,8 @@ Create Node Group Templates
    Drive" or "Cinder Volume".  If you choose "Cinder Volume", you will need to
    add additional configuration
 
-7) Choose which processes should be run for any instances that are spawned from
-   this Node Group Template
+7) Switch to the Node processes tab and choose which processes should be run
+   for all instances that are spawned from this Node Group Template
 
 8) Click on the "Create" button to finish creating your Node Group Template
 
