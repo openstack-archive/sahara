@@ -48,6 +48,7 @@ class AmbariValidationTestCase(base.SaharaTestCase):
                                     p_common.NODEMANAGER,
                                     p_common.HISTORYSERVER,
                                     p_common.APP_TIMELINE_SERVER]})
+        cluster.cluster_configs = {"general": {}}
         with mock.patch("sahara.plugins.ambari.validation.conductor") as p:
             p.cluster_get = mock.Mock()
             p.cluster_get.return_value = cluster

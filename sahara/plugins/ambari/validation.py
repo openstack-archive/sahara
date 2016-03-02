@@ -53,8 +53,18 @@ def _check_ambari(cluster):
 def _check_hdfs(cluster):
     nn_count = utils.get_instances_count(cluster, common.NAMENODE)
     dn_count = utils.get_instances_count(cluster, common.DATANODE)
-    if nn_count != 1:
-        raise ex.InvalidComponentCountException(common.NAMENODE, 1, nn_count)
+
+    if cluster.cluster_configs.get("general", {}).get("NameNode_HA"):
+        _check_zk_ha(cluster)
+        _check_jn_ha(cluster)
+
+        if nn_count != 2:
+            raise ex.InvalidComponentCountException(common.NAMENODE, 2,
+                                                    nn_count)
+    else:
+        if nn_count != 1:
+            raise ex.InvalidComponentCountException(common.NAMENODE, 1,
+                                                    nn_count)
     if dn_count == 0:
         raise ex.InvalidComponentCountException(
             common.DATANODE, _("1 or more"), dn_count)
@@ -65,9 +75,18 @@ def _check_yarn(cluster):
     nm_count = utils.get_instances_count(cluster, common.NODEMANAGER)
     hs_count = utils.get_instances_count(cluster, common.HISTORYSERVER)
     at_count = utils.get_instances_count(cluster, common.APP_TIMELINE_SERVER)
-    if rm_count != 1:
-        raise ex.InvalidComponentCountException(common.RESOURCEMANAGER, 1,
-                                                rm_count)
+
+    if cluster.cluster_configs.get("general", {}).get("ResourceManager_HA"):
+        _check_zk_ha(cluster)
+
+        if rm_count != 2:
+            raise ex.InvalidComponentCountException(common.RESOURCEMANAGER, 2,
+                                                    rm_count)
+    else:
+        if rm_count != 1:
+            raise ex.InvalidComponentCountException(common.RESOURCEMANAGER, 1,
+                                                    rm_count)
+
     if hs_count != 1:
         raise ex.InvalidComponentCountException(common.HISTORYSERVER, 1,
                                                 hs_count)
@@ -77,6 +96,34 @@ def _check_yarn(cluster):
     if nm_count == 0:
         raise ex.InvalidComponentCountException(common.NODEMANAGER,
                                                 _("1 or more"), nm_count)
+
+
+def _check_zk_ha(cluster):
+    zk_count = utils.get_instances_count(cluster, common.ZOOKEEPER_SERVER)
+    if zk_count < 3:
+        raise ex.InvalidComponentCountException(
+            common.ZOOKEEPER_SERVER,
+            _("3 or more. Odd number"),
+            zk_count, _("At least 3 ZooKeepers are required for HA"))
+    if zk_count % 2 != 1:
+        raise ex.InvalidComponentCountException(
+            common.ZOOKEEPER_SERVER,
+            _("Odd number"),
+            zk_count, _("Odd number of ZooKeepers are required for HA"))
+
+
+def _check_jn_ha(cluster):
+    jn_count = utils.get_instances_count(cluster, common.JOURNAL_NODE)
+    if jn_count < 3:
+        raise ex.InvalidComponentCountException(
+            common.JOURNAL_NODE,
+            _("3 or more. Odd number"),
+            jn_count, _("At least 3 JournalNodes are required for HA"))
+    if jn_count % 2 != 1:
+        raise ex.InvalidComponentCountException(
+            common.JOURNAL_NODE,
+            _("Odd number"),
+            jn_count, _("Odd number of JournalNodes are required for HA"))
 
 
 def _check_oozie(cluster):

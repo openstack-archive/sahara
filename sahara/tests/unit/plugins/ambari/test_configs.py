@@ -123,7 +123,6 @@ class AmbariConfigsTestCase(base.SaharaTestCase):
                     "oozie.service.AuthorizationService.security.enabled":
                     "false"
                 }
-
             }
         ]
         self.assertConfigEqual(expected, instance_configs)

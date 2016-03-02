@@ -25,6 +25,7 @@ from sahara import context
 from sahara.plugins.ambari import client as ambari_client
 from sahara.plugins.ambari import common as p_common
 from sahara.plugins.ambari import configs
+from sahara.plugins.ambari import ha_helper
 from sahara.plugins import utils as plugin_utils
 from sahara.utils import poll_utils
 
@@ -223,6 +224,22 @@ def create_blueprint(cluster):
     }
     ambari = plugin_utils.get_instance(cluster, p_common.AMBARI_SERVER)
     password = cluster.extra["ambari_password"]
+
+    general_configs = cluster.cluster_configs.get("general", {})
+    if (general_configs.get("NameNode_HA") or
+            general_configs.get("ResourceManager_HA") or
+            general_configs.get("HBase_RegionServer_HA")):
+        bp = ha_helper.update_bp_ha_common(cluster, bp)
+
+    if general_configs.get("NameNode_HA"):
+        bp = ha_helper.update_bp_for_namenode_ha(cluster, bp)
+
+    if general_configs.get("ResourceManager_HA"):
+        bp = ha_helper.update_bp_for_resourcemanager_ha(cluster, bp)
+
+    if general_configs.get("HBase_RegionServer_HA"):
+        bp = ha_helper.update_bp_for_hbase_ha(cluster, bp)
+
     with ambari_client.AmbariClient(ambari, password=password) as client:
         return client.create_blueprint(cluster.name, bp)
 

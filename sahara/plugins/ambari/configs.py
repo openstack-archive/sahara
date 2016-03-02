@@ -17,6 +17,7 @@
 from oslo_serialization import jsonutils
 import six
 
+from sahara.i18n import _
 from sahara.plugins.ambari import common
 from sahara.plugins import provisioning
 from sahara.plugins import utils
@@ -141,6 +142,42 @@ def _get_param_scope(param):
         return "cluster"
 
 
+def _get_ha_params():
+    enable_namenode_ha = provisioning.Config(
+        name="NameNode HA",
+        applicable_target="general",
+        scope="cluster",
+        config_type="bool",
+        default_value=False,
+        is_optional=True,
+        description=_("Enable NameNode HA"),
+        priority=1)
+
+    enable_resourcemanager_ha = provisioning.Config(
+        name="ResourceManager HA",
+        applicable_target="general",
+        scope="cluster",
+        config_type="bool",
+        default_value=False,
+        is_optional=True,
+        description=_("Enable ResourceManager HA"),
+        priority=1)
+
+    enable_regionserver_ha = provisioning.Config(
+        name="HBase RegionServer HA",
+        applicable_target="general",
+        scope="cluster",
+        config_type="bool",
+        default_value=False,
+        is_optional=True,
+        description=_("Enable HBase RegionServer HA"),
+        priority=1)
+
+    return [enable_namenode_ha,
+            enable_resourcemanager_ha,
+            enable_regionserver_ha]
+
+
 def load_configs(version):
     if OBJ_CONFIGS.get(version):
         return OBJ_CONFIGS[version]
@@ -153,6 +190,8 @@ def load_configs(version):
             sahara_cfg.append(provisioning.Config(
                 k, _get_service_name(service), _get_param_scope(k),
                 default_value=v))
+
+    sahara_cfg.extend(_get_ha_params())
     OBJ_CONFIGS[version] = sahara_cfg
     return sahara_cfg
 
@@ -181,6 +220,9 @@ def _serialize_ambari_configs(configs):
 def _create_ambari_configs(sahara_configs, plugin_version):
     configs = {}
     for service, params in six.iteritems(sahara_configs):
+        if service == "general":
+            # General configs are designed for Sahara, not for the plugin
+            continue
         for k, v in six.iteritems(params):
             group = _get_config_group(service, k, plugin_version)
             configs.setdefault(group, {})

@@ -53,13 +53,16 @@ class EDPOozieEngine(oozie_engine.OozieJobEngine):
         return "http://%s:11000/oozie" % oozie.management_ip
 
     def get_name_node_uri(self, cluster):
-        namenode = plugin_utils.get_instance(cluster, p_common.NAMENODE)
-        return "hdfs://%s:8020" % namenode.fqdn()
+        namenodes = plugin_utils.get_instances(cluster, p_common.NAMENODE)
+        if len(namenodes) == 1:
+            return "hdfs://%s:8020" % namenodes[0].fqdn()
+        else:
+            return "hdfs://hdfs-ha"
 
     def get_resource_manager_uri(self, cluster):
-        resourcemanager = plugin_utils.get_instance(cluster,
-                                                    p_common.RESOURCEMANAGER)
-        return "%s:8050" % resourcemanager.fqdn()
+        resourcemanagers = plugin_utils.get_instances(cluster,
+                                                      p_common.RESOURCEMANAGER)
+        return "%s:8050" % resourcemanagers[0].fqdn()
 
     def get_oozie_server(self, cluster):
         return plugin_utils.get_instance(cluster, p_common.OOZIE_SERVER)
