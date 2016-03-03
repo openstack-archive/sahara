@@ -50,6 +50,7 @@ class MapReduce(s.Service):
             vu.at_least(1, JOB_TRACKER),
             vu.at_least(1, TASK_TRACKER),
         ]
+        self._cluster_defaults = ['mapreduce-cluster.json']
 
     def _get_packages(self, node_processes):
         result = []
