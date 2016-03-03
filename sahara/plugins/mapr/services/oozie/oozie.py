@@ -12,7 +12,6 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
-
 from oslo_log import log as logging
 
 import sahara.plugins.mapr.domain.configuration_file as bcf
@@ -41,6 +40,8 @@ class Oozie(s.Service):
         self._cluster_defaults = ['oozie-default.json']
         self._validation_rules = [vu.exactly(1, OOZIE)]
         self._ui_info = [('Oozie', OOZIE, 'http://%s:11000/oozie')]
+        self._libext_path = '/opt/mapr/oozie/oozie-%s/oozie-server/lib/' % \
+                            self.version
 
     def get_config_files(self, cluster_context, configs, instance=None):
         oozie_site = bcf.HadoopXML("oozie-site.xml")
@@ -75,7 +76,7 @@ class Oozie(s.Service):
         }
         return jdbc_uri % jdbc_args
 
-    def _set_owner(remote):
+    def _set_owner(self, remote):
         remote.execute_command('chown -R mapr:mapr /opt/mapr/oozie',
                                run_as_root=True)
 
@@ -84,10 +85,9 @@ class Oozie(s.Service):
         oozie_service = cluster_context.get_service(OOZIE)
 
         if oozie_service:
-            oozie_version = oozie_service.version
-            symlink_cmd = ('cp /usr/share/java/mysql-connector-java.jar '
-                           '/opt/mapr/oozie/oozie-%s'
-                           '/oozie-server/lib/') % oozie_version
+            symlink_cmd = (
+                'cp /usr/share/java/mysql-connector-java.jar %s' %
+                self._libext_path)
             with oozie_inst.remote() as r:
                 LOG.debug('Installing MySQL connector for Oozie')
                 r.execute_command(symlink_cmd, run_as_root=True,
@@ -96,23 +96,22 @@ class Oozie(s.Service):
 
     def post_start(self, cluster_context, instances):
         instances = cluster_context.filter_instances(instances, OOZIE)
-        self._install_ui(cluster_context, instances)
+        self._rebuild(cluster_context, instances)
 
     @g.remote_command(1)
     def _rebuild_oozie_war(self, remote, cluster_context):
-        extjs_url = 'http://dev.sencha.com/deploy/ext-2.2.zip'
-        extjs_file = '/tmp/extjs.zip'
-        g.download(remote, extjs_url, extjs_file)
-        cmd = '%(home)s/bin/oozie-setup.sh prepare-war -extjs %(ext)s'
-        args = {'home': self.home_dir(cluster_context), 'ext': extjs_file}
+        cmd = '%(home)s/bin/oozie-setup.sh -hadoop %(version)s' \
+              ' /opt/mapr/hadoop/hadoop-%(version)s'
+        args = {'home': self.home_dir(cluster_context),
+                'version': cluster_context.hadoop_version}
         remote.execute_command(cmd % args, run_as_root=True)
 
     def update(self, cluster_context, instances=None):
         instances = instances or cluster_context.get_instances()
         instances = cluster_context.filter_instances(instances, OOZIE)
-        self._install_ui(cluster_context, instances)
+        self._rebuild(cluster_context, instances)
 
-    def _install_ui(self, cluster_context, instances):
+    def _rebuild(self, cluster_context, instances):
         OOZIE.stop(filter(OOZIE.is_started, instances))
         g.execute_on_instances(
             instances, self._rebuild_oozie_war, cluster_context)
@@ -138,18 +137,5 @@ class OozieV420(Oozie):
         super(OozieV420, self).__init__()
         self._version = '4.2.0'
         self._dependencies = [('mapr-oozie-internal', self.version)]
-
-    def post_install(self, cluster_context, instances):
-        oozie_inst = cluster_context.get_instance(OOZIE)
-        oozie_service = cluster_context.get_service(OOZIE)
-
-        if oozie_service:
-            oozie_version = oozie_service.version
-            symlink_cmd = ('cp /usr/share/java/mysql-connector-java.jar '
-                           '/opt/mapr/oozie/oozie-%s'
-                           '/libext') % oozie_version
-            with oozie_inst.remote() as r:
-                LOG.debug('Installing MySQL connector for Oozie')
-                r.execute_command(symlink_cmd, run_as_root=True,
-                                  raise_when_error=False)
-                self._set_owner(r)
+        self._libext_path = '/opt/mapr/oozie/oozie-%s/libext/' % \
+                            self.version
