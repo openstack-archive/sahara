@@ -13,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import pickle
+import pickle  # nosec
 import sys
 import traceback
 
@@ -29,9 +29,12 @@ def main():
             result = dict()
 
             try:
-                func = pickle.load(sys.stdin)
-                args = pickle.load(sys.stdin)
-                kwargs = pickle.load(sys.stdin)
+                # TODO(elmiko) these pickle usages should be
+                # reinvestigated to determine a more secure manner to
+                # deploy remote commands.
+                func = pickle.load(sys.stdin)  # nosec
+                args = pickle.load(sys.stdin)  # nosec
+                kwargs = pickle.load(sys.stdin)  # nosec
 
                 result['output'] = func(*args, **kwargs)
             except BaseException as e:
@@ -39,5 +42,5 @@ def main():
                 result['exception'] = cls_name + ': ' + str(e)
                 result['traceback'] = traceback.format_exc()
 
-            pickle.dump(result, sys.stdout)
+            pickle.dump(result, sys.stdout)  # nosec
             sys.stdout.flush()
