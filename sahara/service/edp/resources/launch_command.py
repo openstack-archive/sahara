@@ -17,7 +17,7 @@
 
 import logging
 import signal
-import subprocess
+import subprocess  # nosec
 import sys
 
 log = logging.getLogger()
@@ -64,8 +64,11 @@ try:
     # environment variables
     env, args = parse_env_vars()
 
+    # TODO(elmiko) this script should be evaluated to insure that
+    # arguments sent to the subprocess from sahara are valid in
+    # some manner.
     # Interpret all command line args as the command to run
-    a = subprocess.Popen(args,
+    a = subprocess.Popen(args,  # nosec
                          env=env,
                          stdout=open("stdout", "w"),
                          stderr=open("stderr", "w"))
