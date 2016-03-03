@@ -14,7 +14,7 @@
 # limitations under the License.
 
 import os
-import pickle
+import pickle  # nosec
 import sys
 
 from eventlet.green import subprocess
@@ -43,13 +43,15 @@ def run_in_subprocess(proc, func, args=None, kwargs=None, interactive=False):
     args = args or ()
     kwargs = kwargs or {}
     try:
-        pickle.dump(func, proc.stdin)
-        pickle.dump(args, proc.stdin)
-        pickle.dump(kwargs, proc.stdin)
+        # TODO(elmiko) these pickle usages should be reinvestigated to
+        # determine a more secure manner to deploy remote commands.
+        pickle.dump(func, proc.stdin)  # nosec
+        pickle.dump(args, proc.stdin)  # nosec
+        pickle.dump(kwargs, proc.stdin)  # nosec
         proc.stdin.flush()
 
         if not interactive:
-            result = pickle.load(proc.stdout)
+            result = pickle.load(proc.stdout)  # nosec
 
             if 'exception' in result:
                 raise exceptions.SubprocessException(result['exception'])
