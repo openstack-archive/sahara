@@ -37,11 +37,11 @@ def _ensure_tags(tags):
 
 
 class SaharaImage(images.Image):
-    def __init__(self, manager, info, loaded=False):
+    def __init__(self, manager, info, **kwargs):
         info['description'] = info.get('metadata', {}).get(PROP_DESCR)
         info['username'] = info.get('metadata', {}).get(PROP_USERNAME)
         info['tags'] = [tag for tag in _iter_tags(info.get('metadata', {}))]
-        super(SaharaImage, self).__init__(manager, info, loaded)
+        super(SaharaImage, self).__init__(manager, info, **kwargs)
 
     def tag(self, tags):
         self.manager.tag(self, tags)
