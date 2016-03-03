@@ -102,7 +102,7 @@ class HashRing(Coordinator):
 
     @staticmethod
     def _hash(key):
-        return int(hashlib.md5(str(key)).hexdigest(), 16)
+        return int(hashlib.md5(str(key)).hexdigest(), 16)  # nosec
 
     def _build_ring(self):
         ring = {}
