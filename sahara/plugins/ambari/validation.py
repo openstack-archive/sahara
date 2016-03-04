@@ -54,7 +54,7 @@ def _check_hdfs(cluster):
     nn_count = utils.get_instances_count(cluster, common.NAMENODE)
     dn_count = utils.get_instances_count(cluster, common.DATANODE)
 
-    if cluster.cluster_configs.get("general", {}).get("NameNode HA"):
+    if cluster.cluster_configs.get("general", {}).get(common.NAMENODE_HA):
         _check_zk_ha(cluster)
         _check_jn_ha(cluster)
 
@@ -76,7 +76,8 @@ def _check_yarn(cluster):
     hs_count = utils.get_instances_count(cluster, common.HISTORYSERVER)
     at_count = utils.get_instances_count(cluster, common.APP_TIMELINE_SERVER)
 
-    if cluster.cluster_configs.get("general", {}).get("ResourceManager HA"):
+    if cluster.cluster_configs.get("general", {}).get(
+            common.RESOURCEMANAGER_HA):
         _check_zk_ha(cluster)
 
         if rm_count != 2:

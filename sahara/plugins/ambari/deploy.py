@@ -226,18 +226,18 @@ def create_blueprint(cluster):
     password = cluster.extra["ambari_password"]
 
     general_configs = cluster.cluster_configs.get("general", {})
-    if (general_configs.get("NameNode HA") or
-            general_configs.get("ResourceManager HA") or
-            general_configs.get("HBase RegionServer HA")):
+    if (general_configs.get(p_common.NAMENODE_HA) or
+            general_configs.get(p_common.RESOURCEMANAGER_HA) or
+            general_configs.get(p_common.HBASE_REGIONSERVER_HA)):
         bp = ha_helper.update_bp_ha_common(cluster, bp)
 
-    if general_configs.get("NameNode HA"):
+    if general_configs.get(p_common.NAMENODE_HA):
         bp = ha_helper.update_bp_for_namenode_ha(cluster, bp)
 
-    if general_configs.get("ResourceManager HA"):
+    if general_configs.get(p_common.RESOURCEMANAGER_HA):
         bp = ha_helper.update_bp_for_resourcemanager_ha(cluster, bp)
 
-    if general_configs.get("HBase RegionServer HA"):
+    if general_configs.get(p_common.HBASE_REGIONSERVER_HA):
         bp = ha_helper.update_bp_for_hbase_ha(cluster, bp)
 
     with ambari_client.AmbariClient(ambari, password=password) as client:

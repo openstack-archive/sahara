@@ -144,7 +144,7 @@ def _get_param_scope(param):
 
 def _get_ha_params():
     enable_namenode_ha = provisioning.Config(
-        name="NameNode HA",
+        name=common.NAMENODE_HA,
         applicable_target="general",
         scope="cluster",
         config_type="bool",
@@ -154,7 +154,7 @@ def _get_ha_params():
         priority=1)
 
     enable_resourcemanager_ha = provisioning.Config(
-        name="ResourceManager HA",
+        name=common.RESOURCEMANAGER_HA,
         applicable_target="general",
         scope="cluster",
         config_type="bool",
@@ -164,7 +164,7 @@ def _get_ha_params():
         priority=1)
 
     enable_regionserver_ha = provisioning.Config(
-        name="HBase RegionServer HA",
+        name=common.HBASE_REGIONSERVER_HA,
         applicable_target="general",
         scope="cluster",
         config_type="bool",

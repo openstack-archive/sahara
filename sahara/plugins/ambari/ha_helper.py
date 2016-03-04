@@ -17,8 +17,16 @@ from sahara.plugins.ambari import common as p_common
 from sahara.plugins import utils
 
 
+CORE_SITE = "core-site"
+YARN_SITE = "yarn-site"
+HBASE_SITE = "hbase-site"
+HDFS_SITE = "hdfs-site"
+HADOOP_ENV = "hadoop-env"
+ZOO_CFG = "zoo.cfg"
+
+
 def update_bp_ha_common(cluster, blueprint):
-    blueprint = _set_default_fs(cluster, blueprint)
+    blueprint = _set_default_fs(cluster, blueprint, p_common.NAMENODE_HA)
     blueprint = _set_high_zk_limits(blueprint)
 
     return blueprint
@@ -26,7 +34,7 @@ def update_bp_ha_common(cluster, blueprint):
 
 def update_bp_for_namenode_ha(cluster, blueprint):
     blueprint = _add_zkfc_to_namenodes(blueprint)
-    blueprint = _set_zk_quorum(cluster, blueprint)
+    blueprint = _set_zk_quorum(cluster, blueprint, CORE_SITE)
     blueprint = _configure_hdfs_site(cluster, blueprint)
 
     return blueprint
@@ -34,7 +42,9 @@ def update_bp_for_namenode_ha(cluster, blueprint):
 
 def update_bp_for_resourcemanager_ha(cluster, blueprint):
     blueprint = _configure_yarn_site(cluster, blueprint)
-
+    blueprint = _set_zk_quorum(cluster, blueprint, YARN_SITE)
+    blueprint = _set_default_fs(cluster, blueprint,
+                                p_common.RESOURCEMANAGER_HA)
     return blueprint
 
 
@@ -62,39 +72,47 @@ def _find_create_properties_section(blueprint, section_name):
 
 
 def _find_hdfs_site(blueprint):
-    return _find_create_properties_section(blueprint, "hdfs-site")
+    return _find_create_properties_section(blueprint, HDFS_SITE)
 
 
 def _find_yarn_site(blueprint):
-    return _find_create_properties_section(blueprint, "yarn-site")
+    return _find_create_properties_section(blueprint, YARN_SITE)
 
 
 def _find_core_site(blueprint):
-    return _find_create_properties_section(blueprint, "core-site")
+    return _find_create_properties_section(blueprint, CORE_SITE)
 
 
 def _find_hadoop_env(blueprint):
-    return _find_create_properties_section(blueprint, "hadoop-env")
+    return _find_create_properties_section(blueprint, HADOOP_ENV)
 
 
 def _find_zoo_cfg(blueprint):
-    return _find_create_properties_section(blueprint, "zoo.cfg")
+    return _find_create_properties_section(blueprint, ZOO_CFG)
 
 
 def _find_hbase_site(blueprint):
-    return _find_create_properties_section(blueprint, "hbase-site")
+    return _find_create_properties_section(blueprint, HBASE_SITE)
 
 
-def _set_default_fs(cluster, blueprint):
-    _find_core_site(blueprint)["fs.defaultFS"] = "hdfs://hdfs-ha"
+def _set_default_fs(cluster, blueprint, ha_type):
+    if ha_type == p_common.NAMENODE_HA:
+        _find_core_site(blueprint)["fs.defaultFS"] = "hdfs://hdfs-ha"
+    elif ha_type == p_common.RESOURCEMANAGER_HA:
+        nn_instance = utils.get_instances(cluster, p_common.NAMENODE)[0]
+        _find_core_site(blueprint)["fs.defaultFS"] = (
+            "hdfs://%s:8020" % nn_instance.fqdn())
     return blueprint
 
 
-def _set_zk_quorum(cluster, blueprint):
+def _set_zk_quorum(cluster, blueprint, conf_type):
     zk_instances = utils.get_instances(cluster, p_common.ZOOKEEPER_SERVER)
 
     value = ",".join(["%s:2181" % i.fqdn() for i in zk_instances])
-    _find_core_site(blueprint)["ha.zookeeper.quorum"] = value
+    if conf_type == CORE_SITE:
+        _find_core_site(blueprint)["ha.zookeeper.quorum"] = value
+    elif conf_type == YARN_SITE:
+        _find_yarn_site(blueprint)["hadoop.registry.zk.quorum"] = value
 
     return blueprint
 
@@ -176,6 +194,10 @@ def _configure_yarn_site(cluster, blueprint):
 
     for i in rm_instances:
         props["yarn.resourcemanager.hostname.%s" % i.instance_name] = i.fqdn()
+        props["yarn.resourcemanager.webapp.address.%s" %
+              i.instance_name] = "%s:8088" % i.fqdn()
+        props["yarn.resourcemanager.webapp.https.address.%s" %
+              i.instance_name] = "%s:8090" % i.fqdn()
 
     props["yarn.resourcemanager.hostname"] = rm_instances[0].fqdn()
     props["yarn.resourcemanager.recovery.enabled"] = "true"
@@ -188,6 +210,8 @@ def _configure_yarn_site(cluster, blueprint):
         "ZKRMStateStore")
     props["yarn.resourcemanager.webapp.address"] = (
         "%s:8088" % rm_instances[0].fqdn())
+    props["yarn.resourcemanager.webapp.https.address"] = (
+        "%s:8090" % rm_instances[0].fqdn())
 
     tls_instance = utils.get_instance(cluster, p_common.APP_TIMELINE_SERVER)
     props["yarn.timeline-service.address"] = "%s:10200" % tls_instance.fqdn()

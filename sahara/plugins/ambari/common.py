@@ -116,6 +116,11 @@ CLIENT_MAP = {
 
 ALL_LIST = ["METRICS_MONITOR"]
 
+# types of HA
+NAMENODE_HA = "NameNode HA"
+RESOURCEMANAGER_HA = "ResourceManager HA"
+HBASE_REGIONSERVER_HA = "HBase RegionServer HA"
+
 
 def get_ambari_proc_list(node_group):
     procs = []
