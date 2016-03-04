@@ -12,7 +12,7 @@
 
 import os
 import re
-import subprocess
+import subprocess  # nosec
 
 from hacking import core
 
@@ -23,7 +23,7 @@ class GitCheck(core.GlobalCheck):
     def _get_commit_title(self):
         # Check if we're inside a git checkout
         try:
-            subp = subprocess.Popen(
+            subp = subprocess.Popen(  # nosec
                 ['git', 'rev-parse', '--show-toplevel'],
                 stdout=subprocess.PIPE, stderr=subprocess.PIPE)
             gitdir = subp.communicate()[0].rstrip()
@@ -35,7 +35,7 @@ class GitCheck(core.GlobalCheck):
             return None
 
         # Get title of most recent commit
-        subp = subprocess.Popen(
+        subp = subprocess.Popen(  # nosec
             ['git', 'log', '--no-merges', '--pretty=%s', '-1'],
             stdout=subprocess.PIPE)
         title = subp.communicate()[0]
