@@ -14,6 +14,7 @@
 
 from oslo_log import log as logging
 
+import sahara.context as con
 import sahara.plugins.mapr.domain.configuration_file as bcf
 import sahara.plugins.mapr.domain.node_process as np
 import sahara.plugins.mapr.domain.service as s
@@ -21,7 +22,9 @@ import sahara.plugins.mapr.services.mysql.mysql as mysql
 import sahara.plugins.mapr.util.general as g
 import sahara.plugins.mapr.util.validation_utils as vu
 
+
 LOG = logging.getLogger(__name__)
+OOZIE_START_DELAY = 30
 
 OOZIE = np.NodeProcess(
     name='oozie',
@@ -116,6 +119,7 @@ class Oozie(s.Service):
         g.execute_on_instances(
             instances, self._rebuild_oozie_war, cluster_context)
         OOZIE.start(instances)
+        con.sleep(OOZIE_START_DELAY)
 
 
 class OozieV401(Oozie):

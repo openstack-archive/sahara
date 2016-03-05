@@ -263,7 +263,8 @@ class BaseClusterContext(cc.AbstractClusterContext):
         return service
 
     def _find_service_instance(self, ui_name, version):
-        for service in self.all_services:
+        # if version is None, the latest service version is returned
+        for service in self.all_services[::-1]:
             if service.ui_name == ui_name:
                 if version is not None and service.version != version:
                     continue
