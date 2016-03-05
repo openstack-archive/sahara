@@ -23,6 +23,7 @@ from oslo_service import wsgi as oslo_wsgi
 import stevedore
 
 from sahara.api import acl
+from sahara.common import config as common_config
 from sahara import config
 from sahara.i18n import _LI
 from sahara.i18n import _LW
@@ -79,6 +80,7 @@ def setup_common(possible_topdir, service_name):
         config_files = [dev_conf]
 
     config.parse_configs(config_files)
+    common_config.set_config_defaults()
     log.setup(CONF, "sahara")
 
     # Validate other configurations (that may produce logs) here
