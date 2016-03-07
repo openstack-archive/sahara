@@ -119,6 +119,8 @@ def _run_job(job_execution_id):
         update_dict['info'] = {'status': status}
     if extra:
         curr_extra = job_execution.extra.copy()
+        if 'neutron' in curr_extra:
+            curr_extra['neutron'] = curr_extra['neutron'].copy()
         curr_extra.update(extra)
         update_dict['extra'] = curr_extra
 
