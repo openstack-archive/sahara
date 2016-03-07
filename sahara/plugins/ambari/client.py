@@ -229,30 +229,43 @@ class AmbariClient(object):
         resp = self.put(url, data=jsonutils.dumps(data))
         self.check_response(resp)
 
-    def get_request_status(self, cluster_name, request_id):
+    def get_request_info(self, cluster_name, request_id):
         url = self._base_url + ("/clusters/%s/requests/%s" %
                                 (cluster_name, request_id))
         resp = self.check_response(self.get(url))
-        return resp.get('Requests').get("request_status")
+        return resp.get('Requests')
 
     def wait_ambari_requests(self, requests, cluster_name):
         requests = set(requests)
+        failed = []
         while len(requests) > 0:
             completed, not_completed = set(), set()
-            for request in requests:
-                status = self.get_request_status(cluster_name, request)
+            for req_id in requests:
+                request = self.get_request_info(cluster_name, req_id)
+                status = request.get("request_status")
                 if status == 'COMPLETED':
-                    completed.add(request)
+                    completed.add(req_id)
                 elif status in ['IN_PROGRESS', 'PENDING']:
-                    not_completed.add(request)
+                    not_completed.add(req_id)
                 else:
-                    raise p_exc.HadoopProvisionError(
-                        _("Some Ambari request(s) not in COMPLETED state"))
+                    failed.append(request)
+            if failed:
+                msg = _("Some Ambari request(s) "
+                        "not in COMPLETED state: %(description)s.")
+                descrs = []
+                for req in failed:
+                    descr = _(
+                        "request %(id)d: %(name)s - in status %(status)s")
+                    descrs.append(descr %
+                                  {'id': req.get("id"),
+                                   'name': req.get("request_context"),
+                                   'status': req.get("request_status")})
+                raise p_exc.HadoopProvisionError(msg % {'description': descrs})
             requests = not_completed
             context.sleep(5)
-            LOG.debug("Waiting for ambari %d requests to be completed",
+            LOG.debug("Waiting for %d ambari request(s) to be completed",
                       len(not_completed))
-        LOG.debug("Waiting for ambari requests completed")
+        LOG.debug("All ambari requests have been completed")
 
     def wait_ambari_request(self, request_id, cluster_name):
         while True:
