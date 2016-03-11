@@ -401,7 +401,7 @@ class TestDataSourceUpdateValidation(u.ValidationTestCase):
     @mock.patch('sahara.conductor.API.job_execution_get_all')
     @mock.patch('sahara.conductor.API.data_source_get_all')
     @mock.patch('sahara.conductor.API.data_source_get')
-    def test_update_data_source_name(self, je_all, ds_all, ds_get):
+    def test_update_data_source_name(self, ds_get, ds_all, je_all):
         ds1 = mock.Mock()
         ds1.name = 'ds1'
         ds_all.return_value = [ds1]
@@ -410,6 +410,9 @@ class TestDataSourceUpdateValidation(u.ValidationTestCase):
         ds1.name = 'ds'
         with testtools.ExpectedException(ex.NameAlreadyExistsException):
             ds.check_data_source_update({'name': 'ds'}, 'ds_id')
+
+        ds_get.return_value = ds1
+        ds.check_data_source_update({'name': 'ds'}, 'ds_id')
 
     @mock.patch('sahara.conductor.API.job_execution_get_all')
     @mock.patch('sahara.conductor.API.data_source_get')

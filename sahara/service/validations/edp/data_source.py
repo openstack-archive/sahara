@@ -118,10 +118,10 @@ def check_data_source_update(data, data_source_id):
                 _("DataSource is used in a "
                   "PENDING Job and can not be updated."))
 
-    if 'name' in data:
+    ds = c.API.data_source_get(ctx, data_source_id)
+    if 'name' in data and data['name'] != ds.name:
         b.check_data_source_unique_name(data['name'])
 
-    ds = c.API.data_source_get(ctx, data_source_id)
     check_data = {'type': data.get('type', None) or ds.type,
                   'url': data.get('url', None) or ds.url,
                   'credentials': data.get(
