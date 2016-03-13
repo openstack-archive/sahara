@@ -308,6 +308,8 @@ def _provision_cluster(cluster_id):
     for je in conductor.job_execution_get_all(ctx, cluster_id=cluster.id):
         job_manager.run_job(je.id)
 
+    _refresh_health_for_cluster(cluster_id)
+
 
 @ops_error_handler(
     _("Scaling cluster failed for the following reason(s): {reason}"))
@@ -346,6 +348,7 @@ def _provision_scaled_cluster(cluster_id, node_group_id_map):
         plugin.scale_cluster(cluster, instances)
 
     c_u.change_cluster_status(cluster, c_u.CLUSTER_STATUS_ACTIVE)
+    _refresh_health_for_cluster(cluster_id)
 
 
 @ops_error_handler(
@@ -391,6 +394,21 @@ def _delete_job_execution(job_execution_id):
         LOG.error(_LE("Job execution can't be cancelled in time. "
                       "Deleting it anyway."))
     conductor.job_execution_destroy(context.ctx(), job_execution_id)
+
+
+def _refresh_health_for_cluster(cluster_id):
+    st_dict = {'verification': {'status': 'START'}}
+    try:
+        ver_base.validate_verification_start(cluster_id)
+        ver_base.handle_verification(cluster_id, st_dict)
+    except ver_base.CannotVerifyError:
+        LOG.debug("Cannot verify cluster because verifications are disabled "
+                  "or cluster already is verifying")
+    except Exception:
+        # if occasional error occurred, there is no reason to move
+        # cluster into error state
+        LOG.debug("Skipping refreshing cluster health")
+        ver_base.clean_verification_data(cluster_id)
 
 
 def _handle_verification(cluster_id, values):

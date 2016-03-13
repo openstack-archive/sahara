@@ -65,6 +65,16 @@ def validate_verification_ops(cluster, data):
         return validate_verification_start(cluster)
 
 
+def clean_verification_data(cluster):
+    cluster = cond.cluster_get(context.ctx(), cluster)
+    if verification_exists(cluster):
+        try:
+            vid = cluster.verification.id
+            cond.cluster_verification_delete(context.ctx(), vid)
+        except exceptions.NotFoundException:
+            LOG.debug("Verification data already cleaned")
+
+
 def validate_verification_start(cluster):
     if not CONF.cluster_verifications.verification_enable:
         raise CannotVerifyError(_("All verifications are disabled"))

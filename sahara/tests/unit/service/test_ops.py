@@ -77,6 +77,7 @@ class FakeINFRA(object):
 class TestOPS(base.SaharaWithDbTestCase):
     SEQUENCE = []
 
+    @mock.patch('sahara.service.ops._refresh_health_for_cluster')
     @mock.patch('sahara.utils.cluster.change_cluster_status_description',
                 return_value=FakeCluster())
     @mock.patch('sahara.service.ops._update_sahara_info')
@@ -91,7 +92,7 @@ class TestOPS(base.SaharaWithDbTestCase):
     def test_provision_cluster(self, p_run_job, p_job_exec, p_create_trust,
                                p_conf, p_cluster_get, p_change_status,
                                p_prep_provisioning, p_update_sahara_info,
-                               p_change_cluster_status_desc):
+                               p_change_cluster_status_desc, refresh):
         del self.SEQUENCE[:]
         ops.INFRA = FakeINFRA()
         ops._provision_cluster('123')
@@ -99,7 +100,9 @@ class TestOPS(base.SaharaWithDbTestCase):
         self.assertEqual(['update_infra', 'create_cluster',
                           'configure_cluster', 'start_cluster'], self.SEQUENCE,
                          'Order of calls is wrong')
+        self.assertEqual(1, refresh.call_count)
 
+    @mock.patch('sahara.service.ops._refresh_health_for_cluster')
     @mock.patch('sahara.service.ntp_service.configure_ntp')
     @mock.patch('sahara.service.ops.CONF')
     @mock.patch('sahara.service.ops._prepare_provisioning',
@@ -108,7 +111,8 @@ class TestOPS(base.SaharaWithDbTestCase):
                 return_value=FakePlugin())
     @mock.patch('sahara.utils.cluster.get_instances')
     def test_provision_scaled_cluster(self, p_get_instances, p_change_status,
-                                      p_prep_provisioning, p_conf, p_ntp):
+                                      p_prep_provisioning, p_conf, p_ntp,
+                                      refresh):
         del self.SEQUENCE[:]
         ops.INFRA = FakeINFRA()
         p_conf.use_identity_api_v3 = True
@@ -117,6 +121,7 @@ class TestOPS(base.SaharaWithDbTestCase):
         self.assertEqual(['decommission_nodes', 'INFRA.scale_cluster',
                           'plugin.scale_cluster'], self.SEQUENCE,
                          'Order of calls is wrong')
+        self.assertEqual(1, refresh.call_count)
 
     @mock.patch('sahara.service.ops._setup_trust_for_cluster')
     @mock.patch('sahara.service.ops.CONF')
