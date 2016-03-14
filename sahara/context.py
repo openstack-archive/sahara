@@ -134,7 +134,7 @@ class Context(context.RequestContext):
 
 
 def get_admin_context():
-    return Context(is_admin=True)
+    return Context(is_admin=True, overwrite=False)
 
 
 _CTX_STORE = threading.local()
