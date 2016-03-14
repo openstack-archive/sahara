@@ -54,8 +54,28 @@ class VersionHandler(avm.BaseVersionHandler):
             "SQOOP": ['SQOOP_SERVER'],
             "SENTRY": ['SENTRY_SERVER'],
             "KMS": ['KMS'],
+
             "YARN_GATEWAY": [],
-            "HDFS_GATEWAY": []
+            "RESOURCEMANAGER": [],
+            "NODEMANAGER": [],
+            "JOBHISTORY": [],
+
+            "HDFS_GATEWAY": [],
+            'DATANODE': [],
+            'NAMENODE': [],
+            'SECONDARYNAMENODE': [],
+            'JOURNALNODE': [],
+
+            'REGIONSERVER': [],
+            'MASTER': [],
+
+            'HIVEMETASTORE': [],
+            'HIVESERVER': [],
+            'WEBCAT': [],
+
+            'CATALOGSERVER': [],
+            'STATESTORE': [],
+            'IMPALAD': [],
         }
 
     def get_edp_engine(self, cluster, job_type):
