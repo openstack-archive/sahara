@@ -32,6 +32,17 @@ LOG = logging.getLogger(__name__)
 SSH_PORT = 22
 INSTANCE_RESOURCE_NAME = "inst"
 SERVER_GROUP_PARAM_NAME = "servgroup"
+# TODO(vgridnev): Using insecure flag until correct way to pass certificate
+# will be invented
+WAIT_CONDITION_SCRIPT_TEMPLATE = '''
+while true; do
+    wc_notify --insecure --data-binary '{"status": "SUCCESS"}'
+    if [ $? -eq 0 ]; then
+        break
+    fi
+    sleep 10
+done
+'''
 
 heat_engine_opts = [
     cfg.BoolOpt(
@@ -342,12 +353,10 @@ class ClusterStack(object):
         gen_userdata_func = self.node_groups_extra[ng.id]['gen_userdata_func']
         key_script = gen_userdata_func(ng, inst_name)
         if CONF.heat_enable_wait_condition:
-            wait_condition_script = (
-                "wc_notify --data-binary '{\"status\": \"SUCCESS\"}'")
             userdata = {
                 "str_replace": {
-                    "template": "\n".join(
-                        [key_script, wait_condition_script]),
+                    "template": "\n".join([
+                        key_script, WAIT_CONDITION_SCRIPT_TEMPLATE]),
                     "params": {
                         "wc_notify": {
                             "get_attr": [
