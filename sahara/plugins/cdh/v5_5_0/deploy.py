@@ -168,9 +168,14 @@ def start_cluster(cluster):
 
     if len(CU.pu.get_jns(cluster)) > 0:
         CU.enable_namenode_ha(cluster)
+        # updating configs for NameNode role on needed nodes
+        CU.update_role_config(CU.pu.get_secondarynamenode(cluster),
+                              'HDFS_NAMENODE')
 
     if CU.pu.get_stdb_rm(cluster):
         CU.enable_resourcemanager_ha(cluster)
+        # updating configs for ResourceManager on needed nodes
+        CU.update_role_config(CU.pu.get_stdb_rm(cluster), 'YARN_STANDBYRM')
 
     _finish_cluster_starting(cluster)
 

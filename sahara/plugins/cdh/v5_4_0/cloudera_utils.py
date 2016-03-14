@@ -371,6 +371,8 @@ class ClouderaUtilsV540(cu.ClouderaUtils):
             all_confs = s_cfg.merge_configs(all_confs, cluster.cluster_configs)
 
         if instance:
+            snt_count = self.validator._get_inst_count(instance.cluster,
+                                                       'SENTRY_SERVER')
             paths = instance.storage_paths()
 
             instance_default_confs = {
