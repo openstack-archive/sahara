@@ -1,0 +1,5 @@
+---
+deprecations:
+  - The HDP 2.0.6 plugin is deprecated in Mitaka release and
+    will be removed in Newton release. Please, use the Ambari 2.3
+    instead.
