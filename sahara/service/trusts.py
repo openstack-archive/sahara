@@ -163,3 +163,21 @@ def use_os_admin_auth_token(cluster):
         ctx.auth_token = context.get_auth_token()
         ctx.service_catalog = json.dumps(
             keystone.service_catalog_from_auth(ctx.auth_plugin))
+
+
+def get_os_admin_auth_plugin(cluster):
+    '''Return an admin auth plugin based on the cluster trust id or project
+
+    If a trust id is available for the cluster, then it is used
+    to create an auth plugin scoped to the trust. If not, the
+    project name from the current context is used to scope the
+    auth plugin.
+
+    :param cluster: The id of the cluster to use for trust identification.
+
+    '''
+    ctx = context.current()
+    cluster = conductor.cluster_get(ctx, cluster)
+    if CONF.use_identity_api_v3 and cluster.trust_id:
+        return keystone.auth_for_admin(trust_id=cluster.trust_id)
+    return keystone.auth_for_admin(project_name=ctx.tenant_name)

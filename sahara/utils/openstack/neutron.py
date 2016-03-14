@@ -59,9 +59,10 @@ class NeutronClient(object):
     neutron = None
     routers = {}
 
-    def __init__(self, network, token, tenant_name):
+    def __init__(self, network, token, tenant_name, auth=None):
         session = sessions.cache().get_session(sessions.SESSION_TYPE_NEUTRON)
-        auth = keystone.token_auth(token=token, project_name=tenant_name)
+        if auth is None:
+            auth = keystone.token_auth(token=token, project_name=tenant_name)
         self.neutron = neutron_cli.Client('2.0', session=session, auth=auth,
                                           region_name=CONF.os_region_name)
         self.network = network
