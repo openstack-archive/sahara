@@ -222,7 +222,8 @@ class SparkJobEngine(base_engine.JobEngine):
         indep_params["app_jar"] = paths.pop(0)
         indep_params["job_class"] = (
             updated_job_configs["configs"]["edp.java.main_class"])
-
+        if self.plugin_params.get('drivers-to-jars', None):
+            paths.extend(self.plugin_params['drivers-to-jars'])
         # If we uploaded builtins then we are using a wrapper jar. It will
         # be the first one on the builtin list and the original app_jar needs
         # to be added to the  'additional' jars
