@@ -18,6 +18,7 @@ from oslo_log import log as logging
 
 from sahara import conductor as c
 from sahara import context
+from sahara import exceptions as base_exc
 from sahara.i18n import _
 from sahara.i18n import _LI
 from sahara.plugins import exceptions as ex
@@ -296,12 +297,10 @@ class AmbariPlugin(p.ProvisioningPluginBase):
                  'of the Hortonworks Data Platform (HDP) on OpenStack.')
 
     def validate(self, cluster):
-        # creating operational config results in validation
-        handler = self.version_factory.get_version_handler(
-            cluster.hadoop_version)
-
-        handler.get_cluster_spec(cluster, self._map_to_user_inputs(
-            cluster.hadoop_version, cluster.cluster_configs))
+        raise base_exc.DeprecatedException(
+            _("The HDP 2.0.6 plugin is deprecated in Mitaka release and "
+              "will be removed in Newton release. Please, use the Ambari 2.3 "
+              "instead."))
 
     def scale_cluster(self, cluster, instances):
         handler = self.version_factory.get_version_handler(
