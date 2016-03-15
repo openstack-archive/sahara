@@ -329,22 +329,15 @@ class ClusterStack(object):
         if ng.auto_security_group:
             resources.update(self._serialize_auto_security_group(ng))
 
+        if ng.floating_ip_pool:
+            resources.update(self._serialize_nova_floating(ng))
+
         if CONF.use_neutron:
-            port_name = _get_port_name(ng)
-            resources.update(self._serialize_port(
-                port_name, self.cluster.neutron_management_network,
-                self._get_security_groups(ng)))
+            properties["networks"] = [{
+                "network": self.cluster.neutron_management_network}]
 
-            properties["networks"] = [{"port": {"get_resource": "port"}}]
-
-            if ng.floating_ip_pool:
-                resources.update(self._serialize_neutron_floating(ng))
-        else:
-            if ng.floating_ip_pool:
-                resources.update(self._serialize_nova_floating(ng))
-
-            if ng.security_groups or ng.auto_security_group:
-                properties["security_groups"] = self._get_security_groups(ng)
+        if ng.security_groups or ng.auto_security_group:
+            properties["security_groups"] = self._get_security_groups(ng)
 
         # Check if cluster contains user key-pair and include it to template.
         if self.cluster.user_keypair_id:
@@ -407,33 +400,6 @@ class ClusterStack(object):
                 "properties": {
                     "timeout": self._get_wait_condition_timeout(ng),
                     "handle": {"get_resource": _get_wc_handle_name(ng.name)}
-                }
-            }
-        }
-
-    def _serialize_port(self, port_name, fixed_net_id, security_groups):
-        properties = {
-            "network_id": fixed_net_id,
-            "replacement_policy": "AUTO",
-            "name": port_name
-        }
-        if security_groups:
-            properties["security_groups"] = security_groups
-
-        return {
-            "port": {
-                "type": "OS::Neutron::Port",
-                "properties": properties,
-            }
-        }
-
-    def _serialize_neutron_floating(self, ng):
-        return {
-            "floating_ip": {
-                "type": "OS::Neutron::FloatingIP",
-                "properties": {
-                    "floating_network_id": ng.floating_ip_pool,
-                    "port_id": {"get_resource": "port"}
                 }
             }
         }
