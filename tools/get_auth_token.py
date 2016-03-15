@@ -38,10 +38,10 @@ cli_opts = [
 ]
 
 CONF = cfg.CONF
-CONF.import_opt('auth_uri', 'keystoneclient.middleware.auth_token', group='keystone_authtoken')
-CONF.import_opt('admin_user', 'keystoneclient.middleware.auth_token', group='keystone_authtoken')
-CONF.import_opt('admin_password', 'keystoneclient.middleware.auth_token', group='keystone_authtoken')
-CONF.import_opt('admin_tenant_name', 'keystoneclient.middleware.auth_token', group='keystone_authtoken')
+CONF.import_opt('auth_uri', 'keystonemiddleware.auth_token', group='keystone_authtoken')
+CONF.import_opt('admin_user', 'keystonemiddleware.auth_token', group='keystone_authtoken')
+CONF.import_opt('admin_password', 'keystonemiddleware.auth_token', group='keystone_authtoken')
+CONF.import_opt('admin_tenant_name', 'keystonemiddleware.auth_token', group='keystone_authtoken')
 CONF.register_cli_opts(cli_opts)
 
 
