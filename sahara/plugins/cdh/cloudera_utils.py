@@ -286,6 +286,29 @@ class ClouderaUtils(object):
         role.update_config(self._get_configs(process, cluster,
                                              instance=instance))
 
+    @cloudera_cmd
+    def restart_service(self, process, instance):
+        service = self.get_service_by_role(process, instance=instance)
+        yield service.restart()
+
+    def update_role_config(self, instance, process):
+        process = self.pu.convert_role_showname(process)
+        service = self.get_service_by_role(process, instance=instance)
+        api = self.get_api_client(instance.cluster)
+        hosts = api.get_all_hosts(view='full')
+        ihost_id = None
+        for host in hosts:
+            if instance.fqdn() == host.hostname:
+                ihost_id = host.hostId
+                break
+        role_type = self.get_role_type(process)
+        roles = service.get_roles_by_type(role_type)
+        for role in roles:
+            if role.hostRef.hostId == ihost_id:
+                role.update_config(
+                    self._get_configs(role_type, instance=instance))
+        self.restart_service(process, instance)
+
     def get_cloudera_manager_info(self, cluster):
         mng = self.pu.get_manager(cluster)
         info = {
