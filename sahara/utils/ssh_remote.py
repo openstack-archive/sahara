@@ -54,6 +54,7 @@ from sahara import context
 from sahara import exceptions as ex
 from sahara.i18n import _
 from sahara.i18n import _LE
+from sahara.service import trusts
 from sahara.utils import crypto
 from sahara.utils.openstack import neutron
 from sahara.utils import procutils
@@ -594,8 +595,9 @@ class InstanceInteropHelper(remote.Remote):
 
         # Query Neutron only if needed
         if '{router_id}' in command:
+            auth = trusts.get_os_admin_auth_plugin(instance.cluster)
             client = neutron.NeutronClient(info['network'], info['token'],
-                                           info['tenant'])
+                                           info['tenant'], auth=auth)
             keywords['router_id'] = client.get_router()
 
         keywords['host'] = instance.management_ip
