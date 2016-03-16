@@ -1,9 +1,9 @@
 Architecture
 ============
 
-.. image:: images/sahara-architecture.png
+.. image:: images/sahara-architecture.svg
     :width: 800 px
-    :scale: 99 %
+    :scale: 100 %
     :align: left
 
 
@@ -13,6 +13,9 @@ The Sahara architecture consists of several components:
   communicates with the OpenStack Identity service (keystone).
 
 * DAL - Data Access Layer, persists internal models in DB.
+
+* Secure Storage Access Layer - persists the authentication data like passwords
+  and private keys in a secure storage.
 
 * Provisioning Engine - component responsible for communication with
   the OpenStack Compute (nova), Orchestration (heat), Block Storage (cinder)
