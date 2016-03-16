@@ -42,7 +42,7 @@ class TestSpark(base.SaharaTestCase):
         self.spark_pid = "12345"
         self.spark_home = "/opt/spark"
         self.workflow_dir = "/wfdir"
-        self.driver_cp = "/usr/lib/hadoop/hadoop-swift.jar:"
+        self.driver_cp = "/usr/lib/hadoop-mapreduce/hadoop-openstack.jar:"
 
     def test_get_pid_and_inst_id(self):
         '''Test parsing of job ids

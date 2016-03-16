@@ -22,6 +22,7 @@ from oslo_utils import uuidutils
 
 from sahara import conductor
 from sahara import context
+from sahara.i18n import _LW
 from sahara.plugins.ambari import client as ambari_client
 from sahara.plugins.ambari import common as p_common
 from sahara.plugins.ambari import configs
@@ -388,3 +389,28 @@ def _wait_all_processes_removed(cluster, instance):
             if not hdp_processes:
                 return
             context.sleep(5)
+
+
+def add_hadoop_swift_jar(instances):
+    new_jar = "/opt/hadoop-openstack.jar"
+    for inst in instances:
+        with inst.remote() as r:
+            code, out = r.execute_command("test -f %s" % new_jar,
+                                          raise_when_error=False)
+            if code == 0:
+                # get ambari hadoop version (e.g.: 2.7.1.2.3.4.0-3485)
+                code, amb_hadoop_version = r.execute_command(
+                    "sudo hadoop version | grep 'Hadoop' | awk '{print $2}'")
+                amb_hadoop_version = amb_hadoop_version.strip()
+                # get special code of ambari hadoop version(e.g.:2.3.4.0-3485)
+                amb_code = '.'.join(amb_hadoop_version.split('.')[3:])
+                origin_jar = (
+                    "/usr/hdp/%s/hadoop-mapreduce/hadoop-openstack-%s.jar" % (
+                        amb_code, amb_hadoop_version))
+                r.execute_command("sudo cp %s %s" % (new_jar, origin_jar))
+            else:
+                LOG.warning(_LW("The {jar_file} file cannot be found "
+                                "in the {dir} directory so Keystone API v3 "
+                                "is not enabled for this cluster.")
+                            .format(jar_file="hadoop-openstack.jar",
+                                    dir="/opt"))
