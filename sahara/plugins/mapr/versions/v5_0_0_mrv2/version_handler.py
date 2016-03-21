@@ -62,6 +62,7 @@ class VersionHandler(bvh.BaseVersionHandler):
             oozie.OozieV420(),
             hue.HueV370(),
             hue.HueV381(),
+            hue.HueV390(),
             hbase.HBaseV0989(),
             hbase.HBaseV09812(),
             drill.DrillV11(),
