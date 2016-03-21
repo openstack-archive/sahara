@@ -42,6 +42,18 @@ A user can set how many volumes will be attached to each instance in a
 node group and the size of each volume. All volumes are attached during
 cluster creation and scaling operations.
 
+If volumes are used for the HDFS storage it's important to make sure that
+the linear read-write operations as well as IOpS level are high enough to
+handle the workload. Volumes placed on the same compute host provide a higher
+level of performance.
+
+In some cases cinder volumes can be backed by a distributed storage like Ceph.
+In this type of installation it's important to make sure that the network
+latency and speed do not become a blocker for HDFS. Distributed storage
+solutions usually provide their own replication mechanism. HDFS replication
+should be disabled so that it does not generate redundant traffic across the
+cloud.
+
 Cluster scaling
 ---------------
 
