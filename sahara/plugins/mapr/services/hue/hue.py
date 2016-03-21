@@ -78,6 +78,7 @@ class Hue(s.Service):
         self._validation_rules = [
             vu.exactly(1, HUE),
             vu.on_same_node(HUE, httpfs.HTTP_FS),
+            vu.on_same_node(HUE_LIVY, spark.SPARK_SLAVE),
         ]
         self._priority = 2
 
@@ -146,9 +147,9 @@ class Hue(s.Service):
             'secret_key': self._generate_secret_key()
         }
 
-        hive_host = context.get_instance(hive.HIVE_METASTORE)
+        hive_host = context.get_instance(hive.HIVE_SERVER_2)
         if hive_host:
-            hive_service = context.get_service(hive.HIVE_METASTORE)
+            hive_service = context.get_service(hive.HIVE_SERVER_2)
             result.update({
                 'hive_host': hive_host.internal_ip,
                 'hive_version': hive_service.version,
@@ -199,6 +200,12 @@ class Hue(s.Service):
                 set_owner(r)
             self._copy_hive_configs(cluster_context, hue_instance)
             self._install_jt_plugin(cluster_context, hue_instance)
+
+        hue_livy_instance = cluster_context.get_instance(HUE_LIVY)
+        if hue_livy_instance:
+            with hue_livy_instance.remote() as r:
+                LOG.debug("Changing Hue home dir owner")
+                set_owner(r)
 
     def _set_hue_sh_chmod(self, cluster_context):
         cmd = 'chmod 777 %s' % (self.home_dir(cluster_context) + '/bin/hue.sh')
