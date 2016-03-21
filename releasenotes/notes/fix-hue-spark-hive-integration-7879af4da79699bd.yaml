@@ -1,0 +1,3 @@
+---
+fixes:
+  - Fix Hue intergation with Spark and Hive on different nodes
