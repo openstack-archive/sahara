@@ -57,7 +57,14 @@ class Hive(s.Service):
             hive_site.fetch(instance)
         hive_site.parse(files.get_file_text(hive_default))
         hive_site.add_properties(self._get_hive_site_props(cluster_context))
+        hue_version = cluster_context.get_chosen_service_version('Hue')
+        if self.require_no_sasl(hue_version):
+            hive_site.add_property('hive.server2.authentication', 'NOSASL')
+
         return [hive_site]
+
+    def require_no_sasl(self, version):
+        return version not in ['3.9.0']
 
     def _get_hive_site_props(self, context):
         # Import here to resolve circular dependency
