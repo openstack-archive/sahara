@@ -13,8 +13,11 @@
 #    under the License.
 
 from tempest import config
+try:
+    from tempest.lib.common.utils import data_utils
+except ImportError:
+    from tempest_lib.common.utils import data_utils
 from tempest import test
-from tempest_lib.common.utils import data_utils
 
 from sahara.tests.tempest.scenario.data_processing.client_tests import base
 
