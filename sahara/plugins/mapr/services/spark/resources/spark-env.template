@@ -71,7 +71,7 @@ MAPR_HADOOP_HBASE_VERSION=$(ls -1 /opt/mapr/hadoop/hadoop-0.20.2/lib/mapr-hbase-
 MAPR_HADOOP_CLASSPATH=`hadoop classpath`
 MAPR_HADOOP_JNI_PATH=`hadoop jnipath`
 MAPR_SPARK_CLASSPATH="$MAPR_HADOOP_CLASSPATH:$MAPR_HADOOP_HBASE_VERSION"
-SPARK_SUBMIT_CLASSPATH=$SPARK_SUBMIT_CLASSPATH:/opt/mapr/spark/spark-spark-{{ version }}/lib/javax.servlet-api-3.1.0.jar:$MAPR_SPARK_CLASSPATH
+SPARK_SUBMIT_CLASSPATH=$SPARK_SUBMIT_CLASSPATH:/opt/mapr/spark/spark-spark-{{ version }}/lib/{{ servlet_api_jar }}:$MAPR_SPARK_CLASSPATH
 
 # Load the classpath generator script
 source /opt/mapr/spark/spark-{{ version }}/mapr-util/generate-classpath.sh
