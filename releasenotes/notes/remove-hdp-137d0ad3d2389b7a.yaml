@@ -1,0 +1,4 @@
+---
+deprecations:
+  - Support of HDP 2.0.6 plugin was removed. Use Ambari plugin
+    instead.
