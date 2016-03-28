@@ -7,6 +7,7 @@ hacking<0.11,>=0.10.0
 Mako>=0.4.0 # MIT
 PrettyTable<0.8,>=0.7 # BSD
 PyMySQL>=0.6.2 # MIT License
+bandit>=0.17.3  # Apache-2.0
 bashate>=0.2 # Apache-2.0
 coverage>=3.6 # Apache-2.0
 doc8 # Apache-2.0
