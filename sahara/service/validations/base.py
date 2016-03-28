@@ -24,7 +24,7 @@ from sahara import context
 import sahara.exceptions as ex
 from sahara.i18n import _
 import sahara.plugins.base as plugin_base
-import sahara.service.api as api
+from sahara.service.api import v10 as api
 from sahara.utils import general as g
 import sahara.utils.openstack.cinder as cinder
 import sahara.utils.openstack.nova as nova

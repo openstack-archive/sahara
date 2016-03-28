@@ -15,7 +15,7 @@
 
 
 from sahara.api import acl
-from sahara.service.edp import api
+from sahara.service.api.v2 import job_executions as api
 from sahara.service import validation as v
 from sahara.service.validations.edp import job_execution as v_j_e
 from sahara.service.validations.edp import job_execution_schema as v_j_e_schema

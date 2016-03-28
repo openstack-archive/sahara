@@ -22,6 +22,7 @@ from six.moves.urllib import parse as urlparse
 from sahara import conductor as c
 from sahara import context
 from sahara.plugins import base as plugin_base
+from sahara.service import api
 from sahara.service.health import verification_base
 from sahara.service import quotas
 from sahara.utils import cluster as c_u
@@ -34,15 +35,6 @@ from sahara.utils.openstack import nova
 conductor = c.API
 CONF = cfg.CONF
 LOG = logging.getLogger(__name__)
-
-
-OPS = None
-
-
-def setup_service_api(ops):
-    global OPS
-
-    OPS = ops
 
 
 # Cluster ops
@@ -96,7 +88,7 @@ def scale_cluster(id, data):
         if node_group.id not in to_be_enlarged:
             to_be_enlarged[node_group.id] = node_group.count
 
-    OPS.provision_scaled_cluster(id, to_be_enlarged)
+    api.OPS.provision_scaled_cluster(id, to_be_enlarged)
     return cluster
 
 
@@ -143,7 +135,7 @@ def _cluster_create(values, plugin):
             c_u.change_cluster_status(
                 cluster, c_u.CLUSTER_STATUS_ERROR, six.text_type(e))
 
-    OPS.provision_cluster(cluster.id)
+    api.OPS.provision_cluster(cluster.id)
 
     return cluster
 
@@ -166,14 +158,14 @@ def terminate_cluster(id):
     if cluster is None:
         return
 
-    OPS.terminate_cluster(id)
+    api.OPS.terminate_cluster(id)
     sender.status_notify(cluster.id, cluster.name, cluster.status,
                          "delete")
 
 
 def update_cluster(id, values):
     if verification_base.update_verification_required(values):
-        OPS.handle_verification(id, values)
+        api.OPS.handle_verification(id, values)
         return conductor.cluster_get(context.ctx(), id)
     return conductor.cluster_update(context.ctx(), id, values)
 

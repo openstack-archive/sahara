@@ -19,7 +19,7 @@ import mock
 import testtools
 
 import sahara.exceptions as ex
-from sahara.service import api
+from sahara.service.api import v10 as api
 from sahara.service.validations.edp import data_source as ds
 from sahara.service.validations.edp import data_source_schema as ds_schema
 from sahara.swift import utils as su

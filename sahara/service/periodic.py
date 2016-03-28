@@ -26,7 +26,7 @@ import six
 from sahara import conductor as c
 from sahara import context
 from sahara.i18n import _LW
-from sahara.service import api
+from sahara.service.api import v10 as api
 from sahara.service import coordinator
 from sahara.service.edp import job_manager
 from sahara.service.health import verification_base as vb

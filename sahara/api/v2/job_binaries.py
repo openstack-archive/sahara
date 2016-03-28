@@ -14,7 +14,7 @@
 # limitations under the License.
 
 from sahara.api import acl
-from sahara.service.edp import api
+from sahara.service.api.v2 import job_binaries as api
 from sahara.service import validation as v
 from sahara.service.validations.edp import job_binary as v_j_b
 from sahara.service.validations.edp import job_binary_internal as v_j_b_i

@@ -16,7 +16,7 @@
 from oslo_log import log as logging
 
 from sahara.api import acl
-from sahara.service.edp import api
+from sahara.service.api import v11 as api
 from sahara.service import validation as v
 from sahara.service.validations.edp import data_source as v_d_s
 from sahara.service.validations.edp import data_source_schema as v_d_s_schema

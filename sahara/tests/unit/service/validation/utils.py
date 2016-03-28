@@ -121,24 +121,24 @@ def _get_security_groups_list():
 
 
 def start_patch(patch_templates=True):
-    get_clusters_p = mock.patch("sahara.service.api.get_clusters")
-    get_cluster_p = mock.patch("sahara.service.api.get_cluster")
+    get_clusters_p = mock.patch("sahara.service.api.v10.get_clusters")
+    get_cluster_p = mock.patch("sahara.service.api.v10.get_cluster")
     if patch_templates:
         get_ng_templates_p = mock.patch(
-            "sahara.service.api.get_node_group_templates")
+            "sahara.service.api.v10.get_node_group_templates")
         get_ng_template_p = mock.patch(
-            "sahara.service.api.get_node_group_template")
+            "sahara.service.api.v10.get_node_group_template")
     if patch_templates:
         get_cl_templates_p = mock.patch(
-            "sahara.service.api.get_cluster_templates")
+            "sahara.service.api.v10.get_cluster_templates")
         get_cl_template_p = mock.patch(
-            "sahara.service.api.get_cluster_template")
+            "sahara.service.api.v10.get_cluster_template")
     nova_p = mock.patch("sahara.utils.openstack.nova.client")
     heat_p = mock.patch("sahara.utils.openstack.heat.client")
     cinder_p = mock.patch("sahara.utils.openstack.cinder.client")
     cinder_exists_p = mock.patch(
         "sahara.utils.openstack.cinder.check_cinder_exists")
-    get_image_p = mock.patch("sahara.service.api.get_image")
+    get_image_p = mock.patch("sahara.service.api.v10.get_image")
 
     get_image = get_image_p.start()
     get_clusters = get_clusters_p.start()

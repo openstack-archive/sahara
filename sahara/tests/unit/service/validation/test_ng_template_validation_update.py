@@ -15,7 +15,7 @@
 
 import copy
 
-from sahara.service import api
+from sahara.service.api import v10 as api
 from sahara.service.validations import node_group_template_schema as nt
 from sahara.tests.unit.service.validation import utils as u
 

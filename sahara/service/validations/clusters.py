@@ -18,7 +18,7 @@ from oslo_config import cfg
 from sahara import context
 import sahara.exceptions as ex
 from sahara.i18n import _
-import sahara.service.api as api
+from sahara.service.api import v10 as api
 from sahara.service.health import verification_base
 from sahara.service.validations import acl
 import sahara.service.validations.base as b

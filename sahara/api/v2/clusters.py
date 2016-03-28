@@ -16,7 +16,7 @@
 import six
 
 from sahara.api import acl
-from sahara.service import api
+from sahara.service.api.v2 import clusters as api
 from sahara.service import validation as v
 from sahara.service.validations import clusters as v_c
 from sahara.service.validations import clusters_scaling as v_c_s

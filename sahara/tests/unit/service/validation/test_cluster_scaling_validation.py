@@ -19,7 +19,7 @@ import testtools
 
 from sahara import exceptions as ex
 from sahara.plugins.fake import plugin
-from sahara.service import api
+from sahara.service.api import v10 as api
 import sahara.service.validation as v
 from sahara.service.validations import clusters_scaling as c_s
 from sahara.service.validations import clusters_schema as c_schema
@@ -43,7 +43,7 @@ class TestScalingValidation(u.ValidationTestCase):
                                     " detected: ['a']")
         self.setup_context(tenant_id='tenant1')
 
-    @mock.patch('sahara.service.api.get_cluster')
+    @mock.patch('sahara.service.api.v10.get_cluster')
     @mock.patch('sahara.plugins.base.PluginManager.get_plugin')
     def _assert_check_scaling(self,
                               get_plugin_p=None,

@@ -14,7 +14,7 @@
 # limitations under the License.
 
 from sahara.api import acl
-from sahara.service.edp import api
+from sahara.service.api.v2 import data_sources as api
 from sahara.service import validation as v
 from sahara.service.validations.edp import data_source as v_d_s
 from sahara.service.validations.edp import data_source_schema as v_d_s_schema

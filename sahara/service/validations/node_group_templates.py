@@ -16,7 +16,7 @@
 
 from sahara import exceptions as ex
 from sahara.i18n import _
-from sahara.service import api
+from sahara.service.api import v10 as api
 import sahara.service.validations.base as b
 from sahara.service.validations import shares
 

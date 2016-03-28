@@ -14,7 +14,8 @@
 # limitations under the License.
 
 from sahara.api import acl
-from sahara.service.edp import api
+from sahara.service.api.v2 import job_executions as j_e_api
+from sahara.service.api.v2 import jobs as api
 from sahara.service import validation as v
 from sahara.service.validations.edp import job as v_j
 from sahara.service.validations.edp import job_execution as v_j_e
@@ -68,7 +69,7 @@ def job_delete(job_id):
 @v.check_exists(api.get_job, id='job_id')
 @v.validate(v_j_e_schema.JOB_EXEC_SCHEMA, v_j_e.check_job_execution)
 def job_execute(job_id, data):
-    return u.render(job_execution=api.execute_job(job_id, data).to_dict())
+    return u.render(job_execution=j_e_api.execute_job(job_id, data).to_dict())
 
 
 @rest.get('/jobs/config-hints/<job_type>')

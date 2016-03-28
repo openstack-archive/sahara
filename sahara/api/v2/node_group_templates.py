@@ -15,7 +15,7 @@
 
 
 from sahara.api import acl
-from sahara.service import api
+from sahara.service.api.v2 import node_group_templates as api
 from sahara.service import validation as v
 from sahara.service.validations import node_group_template_schema as ngt_schema
 from sahara.service.validations import node_group_templates as v_ngt
