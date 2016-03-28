@@ -37,11 +37,11 @@ sys.path.append(os.path.abspath('../bin'))
 # Add any Sphinx extension module names here, as strings. They can be extensions
 # coming with Sphinx (named 'sphinx.ext.*') or your custom ones.
 extensions = ['sphinx.ext.autodoc', 'sphinx.ext.doctest', 'sphinx.ext.todo', 'sphinx.ext.coverage',
-              'sphinx.ext.viewcode', 'sphinxcontrib.httpdomain',
-              'oslo_config.sphinxconfiggen']
+              'sphinx.ext.viewcode', 'sphinxcontrib.httpdomain']
 
 if not on_rtd:
     extensions.append('oslosphinx')
+    extensions.append('oslo_config.sphinxconfiggen')
 
 config_generator_config_file = 'config-generator.conf'
 config_sample_basename = 'sahara'
