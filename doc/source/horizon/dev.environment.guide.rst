@@ -14,10 +14,10 @@ on installing and configuring DevStack with Sahara.
 Sahara UI can be installed as a DevStack plugin by adding the following line
 to your ``local.conf`` file
 
-.. sourececode:: bash
+.. sourcecode:: bash
+
     # Enable sahara-dashboard
     enable_plugin sahara-dashboard git://git.openstack.org/openstack/sahara-dashboard
-..
 
 
 Isolated Dashboard for Sahara
