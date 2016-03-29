@@ -43,8 +43,9 @@ class Oozie(s.Service):
         self._cluster_defaults = ['oozie-default.json']
         self._validation_rules = [vu.exactly(1, OOZIE)]
         self._ui_info = [('Oozie', OOZIE, 'http://%s:11000/oozie')]
-        self._libext_path = '/opt/mapr/oozie/oozie-%s/oozie-server/lib/' % \
-                            self.version
+
+    def libext_path(self):
+        return '/opt/mapr/oozie/oozie-%s/oozie-server/lib/' % self.version
 
     def get_config_files(self, cluster_context, configs, instance=None):
         oozie_site = bcf.HadoopXML("oozie-site.xml")
@@ -90,7 +91,7 @@ class Oozie(s.Service):
         if oozie_service:
             symlink_cmd = (
                 'cp /usr/share/java/mysql-connector-java.jar %s' %
-                self._libext_path)
+                self.libext_path())
             with oozie_inst.remote() as r:
                 LOG.debug('Installing MySQL connector for Oozie')
                 r.execute_command(symlink_cmd, run_as_root=True,
@@ -141,5 +142,6 @@ class OozieV420(Oozie):
         super(OozieV420, self).__init__()
         self._version = '4.2.0'
         self._dependencies = [('mapr-oozie-internal', self.version)]
-        self._libext_path = '/opt/mapr/oozie/oozie-%s/libext/' % \
-                            self.version
+
+    def libext_path(self):
+        return '/opt/mapr/oozie/oozie-%s/libext/' % self.version
