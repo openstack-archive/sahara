@@ -30,7 +30,7 @@ exclude_dirs:
 profiles:
     sahara_default:
         include:
-            - general_hardcoded_password
+            - hardcoded_password
             - blacklist_calls
             - blacklist_imports
             - subprocess_popen_with_shell_equals_true
