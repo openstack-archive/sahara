@@ -1,0 +1,3 @@
+---
+fixes:
+  - Make Oozie use correct maprfs jar in MapR plugin
