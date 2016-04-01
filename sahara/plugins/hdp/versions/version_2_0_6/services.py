@@ -1255,7 +1255,8 @@ class HueService(Service):
             username = config.get('useradmin/default_username', '')
             password = config.get('useradmin/default_user_password', '')
 
-            create_user = username != '' and password != ''
+            # NOTE(tkelsey): test prevents creation of user with defaults
+            create_user = username != '' and password != ''  # nosec(tkelsey)
 
         # Install Hue on the appropriate node(s)...
         hue_ngs = cluster_spec.get_node_groups_containing_component("HUE")
