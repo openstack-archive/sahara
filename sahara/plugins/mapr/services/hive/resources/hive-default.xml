@@ -11,7 +11,7 @@
     </property>
 
     <property>
-        <name>datanucleus.autoCreateSchema</name>
+        <name>datanucleus.schema.autoCreateAll</name>
         <value>true</value>
         <description>
             creates necessary schema on a startup if one doesn't exist.
