@@ -145,3 +145,27 @@ class OozieV420(Oozie):
 
     def libext_path(self):
         return '/opt/mapr/oozie/oozie-%s/libext/' % self.version
+
+    def post_install(self, cluster_context, instances):
+        super(OozieV420, self).post_install(cluster_context, instances)
+        self.fix_oozie_bug(cluster_context)
+
+    def fix_oozie_bug(self, cluster_context):
+        """Wrong maprfs jar bug
+
+        On some environments Oozie installation
+        process takes incorrect jar that causes failure
+        to run jobs. This is a temporary bug in Oozie and
+        is going to be fixed soon.
+        """
+
+        if cluster_context.mapr_version != '5.1.0':
+            return
+        oozie_inst = cluster_context.get_instance(OOZIE)
+        command = "sudo rm /opt/mapr/hadoop/hadoop-2.7.0/share/hadoop/kms/" \
+                  "tomcat/webapps/kms/WEB-INF/lib/maprfs-5.1.0-mapr.jar" \
+                  " && sudo ln -s /opt/mapr/lib/maprfs-5.1.0-mapr.jar" \
+                  " /opt/mapr/hadoop/hadoop-2.7.0/share/hadoop/kms/" \
+                  "tomcat/webapps/kms/WEB-INF/lib/maprfs-5.1.0-mapr.jar"
+        with oozie_inst.remote() as r:
+            r.execute_command(command, run_as_root=True)
