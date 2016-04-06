@@ -550,7 +550,7 @@ CORS (Cross Origin Resource Sharing) Configuration
 
 Sahara provides direct API access to user-agents (browsers) via the HTTP
 CORS protocol. Detailed documentation, as well as troubleshooting examples,
-may be found in the OpenStack `Cloud Admin Guide`_.
+may be found in the OpenStack `Administrator Guide`_.
 
 To get started quickly, use the example configuration block below, replacing
 the :code:`allowed origin` field with the host(s) from which your API expects
@@ -574,5 +574,5 @@ access.
 For more information on Cross Origin Resource Sharing, please review the `W3C
 CORS specification`_.
 
-.. _Cloud Admin Guide: http://docs.openstack.org/admin-guide-cloud/cross_project_cors.html
+.. _Administrator Guide: http://docs.openstack.org/admin-guide/cross_project_cors.html
 .. _W3C CORS specification: www.w3.org/TR/cors/
