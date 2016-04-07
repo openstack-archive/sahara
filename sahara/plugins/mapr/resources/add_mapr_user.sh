@@ -1,2 +1,2 @@
 #!/bin/sh
-useradd -p `openssl passwd -1 mapr` mapr
+useradd -p `openssl passwd -1 $2` $1

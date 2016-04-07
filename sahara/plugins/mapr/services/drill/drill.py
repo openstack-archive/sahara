@@ -32,7 +32,7 @@ class Drill(s.Service):
         self._name = 'drill'
         self._ui_name = 'Drill'
         self._node_processes = [DRILL]
-        self._ui_info = [('Drill', DRILL, 'http://%s:8047')]
+        self._ui_info = [('Drill', DRILL, {s.SERVICE_UI: 'http://%s:8047'})]
         self._validation_rules = [vu.at_least(1, DRILL)]
 
     def install(self, cluster_context, instances):

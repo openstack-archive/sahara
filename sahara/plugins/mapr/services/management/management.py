@@ -16,6 +16,7 @@
 import sahara.plugins.mapr.domain.node_process as np
 import sahara.plugins.mapr.domain.service as s
 import sahara.plugins.mapr.util.commands as cmd
+import sahara.plugins.mapr.util.password_utils as pu
 import sahara.plugins.mapr.util.validation_utils as vu
 
 
@@ -50,9 +51,8 @@ class Management(s.Service):
         super(Management, self).__init__()
         self._ui_name = 'Management'
         self._node_processes = [ZOOKEEPER, WEB_SERVER, METRICS]
-        self._ui_info = [
-            ('MapR Control System (MCS)', WEB_SERVER, 'https://%s:8443'),
-        ]
+
+        self._ui_info = None
         self._validation_rules = [
             vu.at_least(1, ZOOKEEPER),
             vu.at_least(1, WEB_SERVER),
@@ -62,3 +62,10 @@ class Management(s.Service):
     def post_install(self, cluster_context, instances):
         instance = cluster_context.get_instance(WEB_SERVER)
         cmd.chown(instance, 'mapr:mapr', self.SSL_KEYSTORE)
+
+    def get_ui_info(self, cluster_context):
+        # MCS uses credentials of the administrative user (PAM auth)
+        return [('MapR Control System (MCS)', WEB_SERVER,
+                 {s.SERVICE_UI: 'https://%s:8443',
+                  'Username': pu.MAPR_USER_NAME,
+                  'Password': pu.get_mapr_password(cluster_context.cluster)})]

@@ -25,6 +25,8 @@ from sahara.plugins.mapr.util import service_utils as su
 import sahara.plugins.provisioning as p
 from sahara.utils import files as files
 
+SERVICE_UI = 'Web UI'
+
 _INSTALL_PACKAGES_TIMEOUT = 3600
 
 
@@ -63,10 +65,6 @@ class Service(object):
         return self._dependencies
 
     @property
-    def ui_info(self):
-        return self._ui_info
-
-    @property
     def cluster_defaults(self):
         return self._cluster_defaults
 
@@ -77,6 +75,9 @@ class Service(object):
     @property
     def validation_rules(self):
         return self._validation_rules
+
+    def get_ui_info(self, cluster_context):
+        return self._ui_info
 
     def install(self, cluster_context, instances):
         g.execute_on_instances(instances, self._install_packages_on_instance,

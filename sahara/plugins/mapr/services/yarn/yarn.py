@@ -50,9 +50,11 @@ class YARN(s.Service):
         self._ui_name = 'YARN'
         self._node_processes = [RESOURCE_MANAGER, NODE_MANAGER, HISTORY_SERVER]
         self._ui_info = [
-            ('NodeManager', NODE_MANAGER, 'http://%s:8042'),
-            ('ResourceManager', RESOURCE_MANAGER, 'http://%s:8088'),
-            ('HistoryServer', RESOURCE_MANAGER, 'http://%s:19888'),
+            ('NodeManager', NODE_MANAGER, {s.SERVICE_UI: 'http://%s:8042'}),
+            ('ResourceManager', RESOURCE_MANAGER,
+             {s.SERVICE_UI: 'http://%s:8088'}),
+            ('HistoryServer', RESOURCE_MANAGER,
+             {s.SERVICE_UI: 'http://%s:19888'}),
         ]
         self._cluster_defaults = ['yarn-cluster.json']
         self._node_defaults = ['yarn-node.json']

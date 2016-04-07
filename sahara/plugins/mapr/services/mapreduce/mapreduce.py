@@ -43,8 +43,8 @@ class MapReduce(s.Service):
         self._version = '0.20.2'
         self._node_processes = [JOB_TRACKER, TASK_TRACKER]
         self._ui_info = [
-            ('JobTracker', JOB_TRACKER, 'http://%s:50030'),
-            ('TaskTracker', TASK_TRACKER, 'http://%s:50060'),
+            ('JobTracker', JOB_TRACKER, {s.SERVICE_UI: 'http://%s:50030'}),
+            ('TaskTracker', TASK_TRACKER, {s.SERVICE_UI: 'http://%s:50060'}),
         ]
         self._validation_rules = [
             vu.at_least(1, JOB_TRACKER),

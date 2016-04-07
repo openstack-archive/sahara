@@ -42,7 +42,8 @@ class Oozie(s.Service):
         self._node_processes = [OOZIE]
         self._cluster_defaults = ['oozie-default.json']
         self._validation_rules = [vu.exactly(1, OOZIE)]
-        self._ui_info = [('Oozie', OOZIE, 'http://%s:11000/oozie')]
+        self._ui_info = [('Oozie', OOZIE,
+                          {s.SERVICE_UI: 'http://%s:11000/oozie'})]
 
     def libext_path(self):
         return '/opt/mapr/oozie/oozie-%s/oozie-server/lib/' % self.version
