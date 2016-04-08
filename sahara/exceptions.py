@@ -225,7 +225,10 @@ class NotImplementedException(SaharaException):
     code = "NOT_IMPLEMENTED"
     message_template = _("Feature '%s' is not implemented")
 
-    def __init__(self, feature):
+    def __init__(self, feature, message_template=None):
+        if message_template:
+            self.message_template = message_template
+
         formatted_message = self.message_template % feature
 
         super(NotImplementedException, self).__init__(formatted_message)

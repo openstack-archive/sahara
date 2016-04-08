@@ -29,6 +29,97 @@ class TestEscapeQuotes(testtools.TestCase):
         self.assertEqual(r'echo \"\\\"Hello, world!\\\"\"', s)
 
 
+class TestGetOsDistrib(testtools.TestCase):
+    @mock.patch('sahara.utils.ssh_remote._execute_command',
+                return_value=[1, 'Ubuntu'])
+    def test_get_os_distrib(self, p_execute_command):
+        d = ssh_remote._get_os_distrib()
+        p_execute_command.assert_called_once_with(
+            ('printf "import platform\nprint(platform.linux_distribution('
+             'full_distribution_name=0)[0])" | python'),
+            run_as_root=False)
+        self.assertEqual('ubuntu', d)
+
+
+class TestInstallPackages(testtools.TestCase):
+    @mock.patch('sahara.utils.ssh_remote._get_os_distrib')
+    @mock.patch('sahara.utils.ssh_remote._execute_command')
+    def test_install_packages(self, p_execute_command, p_get_os_distrib):
+        packages = ('git', 'emacs', 'tree')
+
+        # test ubuntu
+        p_get_os_distrib.return_value = 'ubuntu'
+        ssh_remote._install_packages(packages)
+        p_execute_command.assert_called_with(
+            'RUNLEVEL=1 apt-get install -y git emacs tree', run_as_root=True)
+
+        # test centos
+        p_get_os_distrib.return_value = 'centos'
+        ssh_remote._install_packages(packages)
+        p_execute_command.assert_called_with(
+            'yum install -y git emacs tree',
+            run_as_root=True)
+
+        # test fedora
+        p_get_os_distrib.return_value = 'fedora'
+        ssh_remote._install_packages(packages)
+        p_execute_command.assert_called_with(
+            'yum install -y git emacs tree',
+            run_as_root=True)
+
+        # test redhat
+        p_get_os_distrib.return_value = 'redhat'
+        ssh_remote._install_packages(packages)
+        p_execute_command.assert_called_with(
+            'yum install -y git emacs tree',
+            run_as_root=True)
+
+    @mock.patch('sahara.utils.ssh_remote._get_os_distrib',
+                return_value='windows me')
+    def test_install_packages_bad(self, p_get_os_distrib):
+        with testtools.ExpectedException(
+                ex.NotImplementedException,
+                'Package Installation is not implemented for OS windows me.*'):
+            ssh_remote._install_packages(('git', 'emacs', 'tree'))
+
+
+class TestUpdateRepository(testtools.TestCase):
+    @mock.patch('sahara.utils.ssh_remote._get_os_distrib')
+    @mock.patch('sahara.utils.ssh_remote._execute_command')
+    def test_update_repository(self, p_execute_command, p_get_os_distrib):
+        # test ubuntu
+        p_get_os_distrib.return_value = 'ubuntu'
+        ssh_remote._update_repository()
+        p_execute_command.assert_called_with(
+            'apt-get update', run_as_root=True)
+
+        # test centos
+        p_get_os_distrib.return_value = 'centos'
+        ssh_remote._update_repository()
+        p_execute_command.assert_called_with(
+            'yum clean all', run_as_root=True)
+
+        # test fedora
+        p_get_os_distrib.return_value = 'fedora'
+        ssh_remote._update_repository()
+        p_execute_command.assert_called_with(
+            'yum clean all', run_as_root=True)
+
+        # test redhat
+        p_get_os_distrib.return_value = 'redhat'
+        ssh_remote._update_repository()
+        p_execute_command.assert_called_with(
+            'yum clean all', run_as_root=True)
+
+    @mock.patch('sahara.utils.ssh_remote._get_os_distrib',
+                return_value='windows me')
+    def test_update_repository_bad(self, p_get_os_distrib):
+        with testtools.ExpectedException(
+                ex.NotImplementedException,
+                'Repository Update is not implemented for OS windows me.*'):
+            ssh_remote._update_repository()
+
+
 class FakeCluster(object):
     def __init__(self, priv_key):
         self.management_private_key = priv_key
@@ -72,7 +163,6 @@ class TestInstanceInteropHelper(base.SaharaTestCase):
             'sahara.utils.openstack.neutron.NeutronClient.get_router',
             return_value='fakerouter')
         p_neutron_router.start()
-
         # During tests subprocesses are not used (because _sahara-subprocess
         # is not installed in /bin and Mock objects cannot be pickled).
         p_start_subp = mock.patch('sahara.utils.procutils.start_subprocess',
@@ -182,3 +272,28 @@ class TestInstanceInteropHelper(base.SaharaTestCase):
         self.assertRaises(ex.SystemError, remote.execute_command, '/bin/true')
         # Test HTTP
         self.assertRaises(ex.SystemError, remote.get_http_client, 8080)
+
+    @mock.patch('sahara.utils.ssh_remote.InstanceInteropHelper._run_s')
+    def test_get_os_distrib(self, p_run_s):
+        instance = FakeInstance('inst4', '123', '10.0.0.4', 'user4', 'key4')
+        remote = ssh_remote.InstanceInteropHelper(instance)
+
+        remote.get_os_distrib()
+        p_run_s.assert_called_with(ssh_remote._get_os_distrib, None)
+
+    @mock.patch('sahara.utils.ssh_remote.InstanceInteropHelper._run_s')
+    def test_install_packages(self, p_run_s):
+        instance = FakeInstance('inst5', '123', '10.0.0.5', 'user5', 'key5')
+        remote = ssh_remote.InstanceInteropHelper(instance)
+
+        remote.install_packages(['pkg1', 'pkg2'])
+        p_run_s.assert_called_once_with(
+            ssh_remote._install_packages, None, ['pkg1', 'pkg2'])
+
+    @mock.patch('sahara.utils.ssh_remote.InstanceInteropHelper._run_s')
+    def test_update_repository(self, p_run_s):
+        instance = FakeInstance('inst6', '123', '10.0.0.6', 'user6', 'key6')
+        remote = ssh_remote.InstanceInteropHelper(instance)
+
+        remote.update_repository()
+        p_run_s.assert_called_once_with(ssh_remote._update_repository, None)

@@ -353,6 +353,42 @@ def _read_file_from(remote_file, run_as_root=False):
                 'rm %s' % fl, run_as_root=True, raise_when_error=False)
 
 
+def _get_os_distrib():
+    return _execute_command(
+        ('printf "import platform\nprint(platform.linux_distribution('
+         'full_distribution_name=0)[0])" | python'),
+        run_as_root=False)[1].lower()
+
+
+def _install_packages(packages):
+    distrib = _get_os_distrib()
+    if distrib == 'ubuntu':
+        cmd = 'RUNLEVEL=1 apt-get install -y %(pkgs)s'
+    elif distrib in ('redhat', 'centos', 'fedora'):
+        cmd = 'yum install -y %(pkgs)s'
+    else:
+        raise ex.NotImplementedException(
+            _('Package Installation'),
+            _('%(fmt)s is not implemented for OS %(distrib)s') % {
+                'fmt': '%s', 'distrib': distrib})
+    cmd = cmd % {'pkgs': ' '.join(packages)}
+    _execute_command(cmd, run_as_root=True)
+
+
+def _update_repository():
+    distrib = _get_os_distrib()
+    if distrib == 'ubuntu':
+        cmd = 'apt-get update'
+    elif distrib in ('redhat', 'centos', 'fedora'):
+        cmd = 'yum clean all'
+    else:
+        raise ex.NotImplementedException(
+            _('Repository Update'),
+            _('%(fmt)s is not implemented for OS %(distrib)s') % {
+                'fmt': '%s', 'distrib': distrib})
+    _execute_command(cmd, run_as_root=True)
+
+
 def _replace_remote_string(remote_file, old_str, new_str):
     old_str = old_str.replace("\'", "\''")
     new_str = new_str.replace("\'", "\''")
@@ -767,6 +803,17 @@ class InstanceInteropHelper(remote.Remote):
     def read_file_from(self, remote_file, run_as_root=False, timeout=None):
         self._log_command('Reading file "%s"' % remote_file)
         return self._run_s(_read_file_from, timeout, remote_file, run_as_root)
+
+    def get_os_distrib(self, timeout=None):
+        return self._run_s(_get_os_distrib, timeout)
+
+    def install_packages(self, packages, timeout=None):
+        self._log_command('Installing packages "%s"' % list(packages))
+        self._run_s(_install_packages, timeout, packages)
+
+    def update_repository(self, timeout=None):
+        self._log_command('Updating repository')
+        self._run_s(_update_repository, timeout)
 
     def replace_remote_string(self, remote_file, old_str, new_str,
                               timeout=None):
