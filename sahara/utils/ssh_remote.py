@@ -360,11 +360,23 @@ def _get_os_distrib():
         run_as_root=False)[1].lower()
 
 
+def _get_os_version():
+    return _execute_command(
+        ('printf "import platform\nprint(platform.linux_distribution()[1])"'
+         ' | python'), run_as_root=False)
+
+
 def _install_packages(packages):
     distrib = _get_os_distrib()
     if distrib == 'ubuntu':
         cmd = 'RUNLEVEL=1 apt-get install -y %(pkgs)s'
-    elif distrib in ('redhat', 'centos', 'fedora'):
+    elif distrib == 'fedora':
+        fversion = _get_os_version()
+        if fversion >= 22:
+            cmd = 'dnf install -y %(pkgs)s'
+        else:
+            cmd = 'yum install -y %(pkgs)s'
+    elif distrib in ('redhat', 'centos'):
         cmd = 'yum install -y %(pkgs)s'
     else:
         raise ex.NotImplementedException(
@@ -379,7 +391,13 @@ def _update_repository():
     distrib = _get_os_distrib()
     if distrib == 'ubuntu':
         cmd = 'apt-get update'
-    elif distrib in ('redhat', 'centos', 'fedora'):
+    elif distrib == 'fedora':
+        fversion = _get_os_version()
+        if fversion >= 22:
+            cmd = 'dnf clean all'
+        else:
+            cmd = 'yum clean all'
+    elif distrib in ('redhat', 'centos'):
         cmd = 'yum clean all'
     else:
         raise ex.NotImplementedException(
