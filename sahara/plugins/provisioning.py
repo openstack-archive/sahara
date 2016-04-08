@@ -82,6 +82,10 @@ class ProvisioningPluginBase(plugins_base.PluginInterface):
         pass
 
     @plugins_base.optional
+    def validate_images(self, cluster, reconcile=True):
+        pass
+
+    @plugins_base.optional
     def convert(self, config, plugin_name, version, template_name,
                 cluster_template_create):
         pass
