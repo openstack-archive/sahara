@@ -60,14 +60,14 @@ class Context(context.RequestContext):
                                       tenant=tenant_id,
                                       is_admin=is_admin,
                                       resource_uuid=resource_uuid,
-                                      request_id=request_id)
+                                      request_id=request_id,
+                                      roles=roles)
         self.service_catalog = service_catalog
         self.username = username
         self.tenant_name = tenant_name
         self.remote_semaphore = remote_semaphore or semaphore.Semaphore(
             CONF.cluster_remote_threshold)
         self.auth_plugin = auth_plugin
-        self.roles = roles
         if overwrite or not hasattr(context._request_store, 'context'):
             self.update_store()
 
@@ -94,20 +94,16 @@ class Context(context.RequestContext):
             overwrite=False)
 
     def to_dict(self):
-        return {
+        d = super(Context, self).to_dict()
+        d.update({
             'user_id': self.user_id,
             'tenant_id': self.tenant_id,
-            'auth_token': self.auth_token,
             'service_catalog': self.service_catalog,
             'username': self.username,
             'tenant_name': self.tenant_name,
             'user_name': self.username,
-            'project_name': self.tenant_name,
-            'is_admin': self.is_admin,
-            'roles': self.roles,
-            'resource_uuid': self.resource_uuid,
-            'request_id': self.request_id,
-        }
+            'project_name': self.tenant_name})
+        return d
 
     def is_auth_capable(self):
         return (self.service_catalog and self.auth_token and self.tenant and
