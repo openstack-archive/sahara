@@ -97,3 +97,19 @@ https://wiki.openstack.org/wiki/Sahara/api-v2
 
 This page will help to coordinate the various reviews, specs, and work
 items that are a continuing facet of this work.
+
+The API service layer
+---------------------
+
+When contributing to the version 2 API, it will be necessary to add code
+that modifies the data and behavior of HTTP calls as they are sent to
+and from the processing engine and data abstraction layers. Most
+frequently in the sahara codebase, these interactions are handled in the
+modules of the ``sahara.service.api`` package. This package contains
+code for all versions of the API and follows a namespace mapping that is
+similar to the routing functions of ``sahara.api``
+
+Although these modules are not the definitive end of all answers to API
+related code questions, they are a solid starting point when examining
+the extent of new work. Furthermore, they serve as a central point to
+begin API debugging efforts when the need arises.

@@ -15,7 +15,7 @@
 
 import sahara.exceptions as e
 from sahara.i18n import _
-from sahara.service.edp import api
+from sahara.service.api import v11 as api
 from sahara.service.validations.edp import job_interface as j_i
 from sahara.utils import edp
 

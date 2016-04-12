@@ -22,7 +22,8 @@ from sahara import conductor as cond
 from sahara import context
 from sahara import exceptions as exc
 from sahara.plugins import base as pl_base
-from sahara.service import api
+from sahara.service import api as service_api
+from sahara.service.api import v10 as api
 from sahara.tests.unit import base
 from sahara.utils import cluster as c_u
 
@@ -162,7 +163,7 @@ class TestApi(base.SaharaWithDbTestCase):
         super(TestApi, self).setUp()
         self.calls_order = []
         pl_base.PLUGINS = FakePluginManager(self.calls_order)
-        api.setup_service_api(FakeOps(self.calls_order))
+        service_api.setup_api(FakeOps(self.calls_order))
         oslo_messaging.notify.notifier.Notifier.info = mock.Mock()
         self.ctx = context.ctx()
 

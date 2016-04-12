@@ -18,7 +18,8 @@ from sahara import context
 import sahara.exceptions as ex
 from sahara.i18n import _
 import sahara.plugins.base as plugin_base
-import sahara.service.api as api
+from sahara.service import api as service_api
+from sahara.service.api import v10 as api
 from sahara.service.validations import acl
 import sahara.service.validations.base as b
 from sahara.utils import cluster as c_u
@@ -38,7 +39,7 @@ def check_cluster_scaling(data, cluster_id, **kwargs):
     cluster_engine = cluster.sahara_info.get(
         'infrastructure_engine') if cluster.sahara_info else None
 
-    engine_type_and_version = api.OPS.get_engine_type_and_version()
+    engine_type_and_version = service_api.OPS.get_engine_type_and_version()
     if (not cluster_engine and
             not engine_type_and_version.startswith('direct')):
         raise ex.InvalidReferenceException(

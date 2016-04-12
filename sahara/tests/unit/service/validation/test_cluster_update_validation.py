@@ -18,7 +18,7 @@ import mock
 import testtools
 
 from sahara import exceptions as ex
-from sahara.service import api
+from sahara.service.api import v10 as api
 from sahara.service.health import verification_base
 from sahara.service.validations import clusters as c_val
 from sahara.service.validations import clusters_schema as c_schema
@@ -68,7 +68,7 @@ class TestClusterUpdateValidation(u.ValidationTestCase):
                        "('id' was unexpected)")
         )
 
-    @mock.patch('sahara.service.api.get_cluster')
+    @mock.patch('sahara.service.api.v10.get_cluster')
     def test_cluster_update_when_protected(self, get_cluster_p):
         cluster = tu.create_cluster("cluster1", "tenant_1", "fake",
                                     "0.1", ['ng1'], is_protected=True)
@@ -86,7 +86,7 @@ class TestClusterUpdateValidation(u.ValidationTestCase):
         c_val.check_cluster_update(
             cluster.id, {'is_protected': False, 'name': 'new'})
 
-    @mock.patch('sahara.service.api.get_cluster')
+    @mock.patch('sahara.service.api.v10.get_cluster')
     def test_public_cluster_update_from_another_tenant(self, get_cluster_p):
         cluster = tu.create_cluster("cluster1", "tenant_2", "fake",
                                     "0.1", ['ng1'], is_public=True)

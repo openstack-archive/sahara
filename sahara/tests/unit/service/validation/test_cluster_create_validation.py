@@ -18,7 +18,7 @@ import six
 import testtools
 
 from sahara import exceptions
-from sahara.service import api
+from sahara.service.api import v10 as api
 from sahara.service.validations import clusters as c
 from sahara.service.validations import clusters_schema as c_schema
 from sahara.tests.unit import base

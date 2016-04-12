@@ -23,7 +23,7 @@ import testtools
 
 from sahara import exceptions as ex
 from sahara import main
-from sahara.service import api
+from sahara.service.api import v10 as api
 from sahara.service.validations.edp import job_execution as je
 from sahara.service.validations.edp import job_execution_schema as je_schema
 from sahara.tests.unit.service.validation import utils as u

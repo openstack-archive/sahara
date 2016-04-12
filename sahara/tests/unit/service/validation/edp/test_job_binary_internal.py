@@ -15,7 +15,7 @@
 
 import mock
 
-from sahara.service import api
+from sahara.service.api import v10 as api
 from sahara.service.validations.edp import job_binary_internal as jb
 from sahara.service.validations.edp import job_binary_internal_schema as jbs
 from sahara.tests.unit.service.validation import utils as u

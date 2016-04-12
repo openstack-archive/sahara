@@ -13,19 +13,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from sahara.api import acl
-from sahara.service.api.v2 import job_types as api
-import sahara.utils.api as u
+
+OPS = None
 
 
-rest = u.RestV2('job-types', __name__)
+def setup_api(ops):
+    global OPS
 
-
-@rest.get('/job-types')
-@acl.enforce("data-processing:job-types:get_all")
-def job_types_get():
-    # We want to use flat=False with to_dict() so that
-    # the value of each arg is given as a list. This supports
-    # filters of the form ?type=Pig&type=Java, etc.
-    return u.render(job_types=api.get_job_types(
-        **u.get_request_args().to_dict(flat=False)))
+    OPS = ops

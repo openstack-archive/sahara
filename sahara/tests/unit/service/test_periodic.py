@@ -55,7 +55,7 @@ class TestPeriodicBack(base.SaharaWithDbTestCase):
                                          mock.call(u'3')])
 
     @mock.patch('sahara.service.trusts.use_os_admin_auth_token')
-    @mock.patch('sahara.service.api.terminate_cluster')
+    @mock.patch('sahara.service.api.v10.terminate_cluster')
     def test_transient_cluster_terminate(self, terminate_cluster,
                                          use_os_admin_auth_token):
 
@@ -88,7 +88,7 @@ class TestPeriodicBack(base.SaharaWithDbTestCase):
         terminate_cluster.assert_has_calls([mock.call(u'1')])
         self.assertEqual(1, use_os_admin_auth_token.call_count)
 
-    @mock.patch('sahara.service.api.terminate_cluster')
+    @mock.patch('sahara.service.api.v10.terminate_cluster')
     def test_not_transient_cluster_does_not_terminate(self, terminate_cluster):
 
         timeutils.set_time_override(datetime.datetime(2005, 2, 1, 0, 0))
@@ -98,7 +98,7 @@ class TestPeriodicBack(base.SaharaWithDbTestCase):
 
         self.assertEqual(0, terminate_cluster.call_count)
 
-    @mock.patch('sahara.service.api.terminate_cluster')
+    @mock.patch('sahara.service.api.v10.terminate_cluster')
     def test_transient_cluster_not_killed_too_early(self, terminate_cluster):
 
         timeutils.set_time_override(datetime.datetime(2005, 2, 1, second=0))
@@ -111,7 +111,7 @@ class TestPeriodicBack(base.SaharaWithDbTestCase):
         self.assertEqual(0, terminate_cluster.call_count)
 
     @mock.patch('sahara.service.trusts.use_os_admin_auth_token')
-    @mock.patch('sahara.service.api.terminate_cluster')
+    @mock.patch('sahara.service.api.v10.terminate_cluster')
     def test_transient_cluster_killed_in_time(self, terminate_cluster,
                                               use_os_admin_auth_token):
 
@@ -126,7 +126,7 @@ class TestPeriodicBack(base.SaharaWithDbTestCase):
         terminate_cluster.assert_has_calls([mock.call(u'1')])
         self.assertEqual(1, use_os_admin_auth_token.call_count)
 
-    @mock.patch('sahara.service.api.terminate_cluster')
+    @mock.patch('sahara.service.api.v10.terminate_cluster')
     def test_incomplete_cluster_not_killed_too_early(self, terminate_cluster):
 
         self.override_config('cleanup_time_for_incomplete_clusters', 1)
@@ -142,7 +142,7 @@ class TestPeriodicBack(base.SaharaWithDbTestCase):
         self.assertEqual(0, terminate_cluster.call_count)
 
     @mock.patch('sahara.service.trusts.use_os_admin_auth_token')
-    @mock.patch('sahara.service.api.terminate_cluster')
+    @mock.patch('sahara.service.api.v10.terminate_cluster')
     def test_incomplete_cluster_killed_in_time(self, terminate_cluster,
                                                use_os_admin_auth_token):
 
@@ -159,7 +159,7 @@ class TestPeriodicBack(base.SaharaWithDbTestCase):
         terminate_cluster.assert_has_calls([mock.call(u'1')])
         self.assertEqual(1, use_os_admin_auth_token.call_count)
 
-    @mock.patch('sahara.service.api.terminate_cluster')
+    @mock.patch('sahara.service.api.v10.terminate_cluster')
     def test_active_cluster_not_killed_as_inactive(
             self, terminate_cluster):
         self.override_config('cleanup_time_for_incomplete_clusters', 1)
@@ -210,7 +210,7 @@ class TestPeriodicBack(base.SaharaWithDbTestCase):
 
     @mock.patch(
         'sahara.service.health.verification_base.validate_verification_start')
-    @mock.patch('sahara.service.api.update_cluster')
+    @mock.patch('sahara.service.api.v10.update_cluster')
     def test_run_verifications_executed(self, cluster_update, ver_valid):
         self._make_cluster('1')
         p._make_periodic_tasks().run_verifications(None)
@@ -220,7 +220,7 @@ class TestPeriodicBack(base.SaharaWithDbTestCase):
 
     @mock.patch(
         'sahara.service.health.verification_base.validate_verification_start')
-    @mock.patch('sahara.service.api.update_cluster')
+    @mock.patch('sahara.service.api.v10.update_cluster')
     def test_run_verifications_not_executed(self, cluster_update, ver_valid):
         self._make_cluster('1', status=c_u.CLUSTER_STATUS_ERROR)
         p._make_periodic_tasks().run_verifications(None)

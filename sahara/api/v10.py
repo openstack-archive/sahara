@@ -17,7 +17,7 @@ from oslo_log import log as logging
 import six
 
 from sahara.api import acl
-from sahara.service import api
+from sahara.service.api import v10 as api
 from sahara.service import validation as v
 from sahara.service.validations import cluster_template_schema as ct_schema
 from sahara.service.validations import cluster_templates as v_ct

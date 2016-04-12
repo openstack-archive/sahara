@@ -14,7 +14,7 @@
 # limitations under the License.
 
 from sahara.api import acl
-from sahara.service import api
+from sahara.service.api.v2 import cluster_templates as api
 from sahara.service import validation as v
 from sahara.service.validations import cluster_template_schema as ct_schema
 from sahara.service.validations import cluster_templates as v_ct

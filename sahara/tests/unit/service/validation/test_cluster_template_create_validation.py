@@ -17,7 +17,7 @@ import uuid
 
 import mock
 
-from sahara.service import api
+from sahara.service.api import v10 as api
 from sahara.service.validations import cluster_template_schema as ct_schema
 from sahara.service.validations import cluster_templates as ct
 from sahara.tests.unit.service.validation import utils as u

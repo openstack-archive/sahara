@@ -22,6 +22,7 @@ from sahara import context
 from sahara import exceptions as ex
 from sahara.i18n import _LE
 from sahara.plugins import base as plugin_base
+from sahara.service import api
 from sahara.service.edp.binary_retrievers import dispatch
 from sahara.service.edp import job_manager as manager
 from sahara.utils import edp
@@ -31,15 +32,6 @@ from sahara.utils import proxy as p
 conductor = c.API
 LOG = logging.getLogger(__name__)
 CONF = cfg.CONF
-
-
-OPS = None
-
-
-def setup_edp_api(ops):
-    global OPS
-
-    OPS = ops
 
 
 def get_job_types(**kwargs):
@@ -142,7 +134,7 @@ def execute_job(job_id, data):
             conductor.job_execution_destroy(context.ctx(), job_execution)
             raise e
 
-    OPS.run_edp_job(job_execution.id)
+    api.OPS.run_edp_job(job_execution.id)
 
     return job_execution
 
@@ -163,7 +155,7 @@ def get_job_execution(id):
 def cancel_job_execution(id):
     context.set_current_job_execution_id(id)
     job_execution = conductor.job_execution_get(context.ctx(), id)
-    OPS.cancel_job_execution(id)
+    api.OPS.cancel_job_execution(id)
 
     return job_execution
 
@@ -177,12 +169,12 @@ def _update_status(info):
     if info:
         status = info.get("status", None)
         if status == edp.JOB_ACTION_SUSPEND:
-            OPS.job_execution_suspend(id)
+            api.OPS.job_execution_suspend(id)
 
 
 def delete_job_execution(id):
     context.set_current_job_execution_id(id)
-    OPS.delete_job_execution(id)
+    api.OPS.delete_job_execution(id)
 
 
 def get_data_sources(**kwargs):
