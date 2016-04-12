@@ -1,0 +1,4 @@
+---
+fixes:
+  - Remove hive.server2.authentication property from
+    hive-site.xml for Hue 3.9.0 in MapR plugin.
