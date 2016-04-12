@@ -1,0 +1,4 @@
+---
+deprecations:
+  - Remove Impala 1.4.1, HBase 0.98.9, Hive 1.0, Hue 3.7
+    support in MapR 5.1.0 plugin
