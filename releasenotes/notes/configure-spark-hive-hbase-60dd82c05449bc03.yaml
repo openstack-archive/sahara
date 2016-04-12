@@ -1,0 +1,4 @@
+---
+fixes:
+  - Correctly configure Spark with Hive and HBase on
+    different nodes.

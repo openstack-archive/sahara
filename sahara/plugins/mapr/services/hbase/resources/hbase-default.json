@@ -22,5 +22,10 @@
     "value": 64,
     "name": "fs.mapr.threads",
     "config_type": "int"
+  },
+  {
+    "value": false,
+    "name": "hbase.table.sanity.checks",
+    "config_type": "bool"
   }
 ]

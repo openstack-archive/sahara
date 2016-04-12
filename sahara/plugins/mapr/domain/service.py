@@ -87,13 +87,13 @@ class Service(object):
         processes = [p for p in self.node_processes if
                      p.ui_name in instance.node_group.node_processes]
         if processes is not None and len(processes) > 0:
-            packages = self._get_packages(processes)
+            packages = self._get_packages(cluster_context, processes)
             cmd = cluster_context.distro.create_install_cmd(packages)
             with instance.remote() as r:
                 r.execute_command(cmd, run_as_root=True,
                                   timeout=_INSTALL_PACKAGES_TIMEOUT)
 
-    def _get_packages(self, node_processes):
+    def _get_packages(self, cluster_context, node_processes):
         result = []
 
         result += self.dependencies

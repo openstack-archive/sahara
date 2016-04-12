@@ -19,6 +19,8 @@ import six
 import sahara.plugins.mapr.domain.configuration_file as bcf
 import sahara.plugins.mapr.domain.node_process as np
 import sahara.plugins.mapr.domain.service as s
+import sahara.plugins.mapr.services.hbase.hbase as hbase
+import sahara.plugins.mapr.services.hive.hive as hive
 import sahara.plugins.mapr.util.general as g
 import sahara.plugins.mapr.util.maprfs_helper as mfs
 import sahara.plugins.mapr.util.validation_utils as vu
@@ -216,6 +218,7 @@ class Spark(s.Service):
 class SparkOnYarn(Spark):
     JAR_FILE_TARGET = '/apps/spark/lib'
     MFS_DIR = '/apps/spark'
+    SERVLET_JAR = 'javax.servlet-api.jar'
 
     def __init__(self):
         super(SparkOnYarn, self).__init__()
@@ -229,9 +232,31 @@ class SparkOnYarn(Spark):
             vu.at_least(1, SPARK_SLAVE),
         ]
 
+    def _get_hbase_version(self, cluster_context):
+        return (self._hbase(cluster_context).version
+                if self._hbase(cluster_context) else None)
+
+    def _get_hive_version(self, cluster_context):
+        return (self._hive(cluster_context).version
+                if self._hive(cluster_context) else None)
+
+    def _get_packages(self, cluster_context, node_processes):
+        result = []
+
+        result += self.dependencies
+        result += [(np.package, self.version) for np in node_processes]
+        hbase_version = self._get_hbase_version(cluster_context)
+        hive_version = self._get_hive_version(cluster_context)
+        if hbase_version:
+            result += [('mapr-hbase', hbase_version)]
+        if hive_version:
+            result += [('mapr-hive', hbase_version)]
+
+        return result
+
     def get_config_files(self, cluster_context, configs, instance=None):
-        hbase_version = self._hbase(cluster_context).version
-        hive_version = self._hive(cluster_context).version
+        hbase_version = self._get_hbase_version(cluster_context)
+        hive_version = self._get_hive_version(cluster_context)
         # spark-env-sh
         template = 'plugins/mapr/services/' \
                    'spark/resources/spark-env.template'
@@ -239,6 +264,7 @@ class SparkOnYarn(Spark):
         env_sh.remote_path = self.conf_dir(cluster_context)
         env_sh.parse(files.get_file_text(template))
         env_sh.add_property('version', self.version)
+        env_sh.add_property('servlet_api_jar', self.SERVLET_JAR)
 
         # spark-defaults
         conf = bcf.PropertiesFile('spark-defaults.conf', separator=' ')
@@ -263,8 +289,8 @@ class SparkOnYarn(Spark):
         if hbase_version:
             versions.add_property('hbase_versions', hbase_version)
             conf.add_property('spark.executor.extraClassPath',
-                              '%s/lib/*' % self._hbase(
-                                  cluster_context).home_dir(cluster_context))
+                              '%s/lib/*' % self._hbase(cluster_context)
+                              .home_dir(cluster_context))
         return [conf, versions, env_sh]
 
     def update(self, cluster_context, instances=None):
@@ -280,35 +306,49 @@ class SparkOnYarn(Spark):
         self._create_hadoop_spark_dirs(cluster_context)
         self._copy_jar_files_to_mfs(cluster_context)
         self._copy_hive_site(cluster_context)
+        self._copy_hbase_site(cluster_context)
         self._copy_jar_from_hue(cluster_context)
 
     def _copy_jar_files_to_mfs(self, cluster_context):
         hive_service = self._hive(cluster_context)
-
-        paths = [self._assembly_jar_path(cluster_context)]
-
+        target = self.JAR_FILE_TARGET
+        hdfs_user = 'mapr'
+        with cluster_context.get_instance(SPARK_HISTORY_SERVER).remote() as r:
+            mfs.copy_from_local(r, self._assembly_jar_path(cluster_context),
+                                target, hdfs_user)
+        # copy hive datanucleus libs and hive-site.xml
+        paths = []
         if hive_service:
             hive_conf = self._hive(cluster_context).conf_dir(cluster_context)
             paths.append('%s/hive-site.xml' % hive_conf)
             paths += self._hive_datanucleus_libs_paths(cluster_context)
-
-        target = self.JAR_FILE_TARGET
-        hdfs_user = 'mapr'
-        with cluster_context.get_instance(SPARK_HISTORY_SERVER).remote() as r:
-            for path in paths:
-                mfs.copy_from_local(r, path, target, hdfs_user)
+            with cluster_context.get_instance(
+                    hive.HIVE_METASTORE).remote() as r:
+                for path in paths:
+                    mfs.copy_from_local(r, path, target, hdfs_user)
 
     def _copy_hive_site(self, cluster_context):
         if not self._hive(cluster_context):
             return
         hive_conf = self._hive(cluster_context).conf_dir(cluster_context)
-        cp_cmd = (
-            'cp %(hive_conf)s/hive-site.xml %(spark_conf)s' % {
-                'hive_conf': hive_conf,
-                'spark_conf': self.conf_dir(
-                    cluster_context)})
-        with cluster_context.get_instance(SPARK_HISTORY_SERVER).remote() as r:
-            r.execute_command(cp_cmd, run_as_root=True, timeout=600)
+        with cluster_context.get_instance(hive.HIVE_SERVER_2).remote() as h:
+            with cluster_context.get_instance(
+                    SPARK_HISTORY_SERVER).remote() as s:
+                mfs.exchange(h, s, hive_conf + '/hive-site.xml',
+                             self.conf_dir(cluster_context) + '/hive-site.xml',
+                             hdfs_user='mapr')
+
+    def _copy_hbase_site(self, cluster_context):
+        if not self._hbase(cluster_context):
+            return
+        hbase_conf = self._hbase(cluster_context).conf_dir(cluster_context)
+        with cluster_context.get_instance(hbase.HBASE_MASTER).remote() as h:
+            with cluster_context.get_instance(
+                    SPARK_HISTORY_SERVER).remote() as s:
+                mfs.exchange(h, s, hbase_conf + '/hbase-site.xml',
+                             self.conf_dir(
+                                 cluster_context) + '/hbase-site.xml',
+                             hdfs_user='mapr')
 
     def _create_hadoop_spark_dirs(self, cluster_context):
         home = '/apps/spark'
@@ -346,7 +386,7 @@ class SparkOnYarn(Spark):
     def _hive_libs_paths(self, context):
         cmd = "find %s -name '*.jar'" % (
             self._hive(context).home_dir(context) + '/lib')
-        with context.get_instance(SPARK_HISTORY_SERVER).remote() as r:
+        with context.get_instance(hive.HIVE_METASTORE).remote() as r:
             result = r.execute_command(cmd, run_as_root=True, timeout=600)
         return [x for x in list(result[1].split('\n')) if x]
 
@@ -361,9 +401,9 @@ class SparkOnYarn(Spark):
             raise Exception("no spark-assembly lib found!")
 
     def _hive_datanucleus_libs_paths(self, context):
-        cmd = "find %s -name 'datanucleus-*.jar'" % (self._hive(
-            context).home_dir(context) + '/lib')
-        with context.get_instance(SPARK_HISTORY_SERVER).remote() as r:
+        cmd = "find %s -name 'datanucleus-*.jar'" % (
+            self._hive(context).home_dir(context) + '/lib')
+        with context.get_instance(hive.HIVE_METASTORE).remote() as r:
             result = r.execute_command(cmd, run_as_root=True, timeout=600)
         return [x for x in list(result[1].split('\n')) if x]
 
@@ -375,24 +415,37 @@ class SparkOnYarn(Spark):
     def _format_hive_version(self, version):
         return version + '.0'
 
-    # hive service instance
+    # hive installed service instance
     def _hive(self, context):
+        hive_instance = context.get_instance(hive.HIVE_SERVER_2)
+        if not hive_instance:
+            return None
         hive_version = context.get_chosen_service_version('Hive')
         return context._find_service_instance('Hive', hive_version)
 
-    # hbase service instance
+    # hbase installed service instance
     def _hbase(self, context):
+        hbase_instance = context.get_instance(hbase.HBASE_MASTER)
+        if not hbase_instance:
+            return None
         hbase_version = context.get_chosen_service_version('Hbase')
         return context._find_service_instance('HBase', hbase_version)
 
+    # hue installed service instance
     def _hue(self, context):
+        hue_instance = context.get_instance('Hue')
+        if not hue_instance:
+            return None
         hue_version = context.get_chosen_service_version('Hue')
         return context._find_service_instance('Hue', hue_version)
 
     def _copy_jar_from_hue(self, context):
+        if not self._hue(context):
+            return
         jar_path = "%s/apps/spark/java-lib/javax.servlet-api-*.jar" % \
                    self._hue(context).home_dir(context)
-        path = '%s/lib/' % self.home_dir(context)
-        with context.get_instance('Hue Livy').remote() as r1:
-            with context.get_instance(SPARK_HISTORY_SERVER).remote() as r2:
-                mfs.exchange(r1, r2, jar_path, path, 'mapr')
+        path = '%s/lib/' % self.home_dir(context) + self.SERVLET_JAR
+        with context.get_instance('Hue').remote() as r1:
+            for instance in context.get_instances(SPARK_SLAVE):
+                with instance.remote() as r2:
+                    mfs.exchange(r1, r2, jar_path, path, 'mapr')

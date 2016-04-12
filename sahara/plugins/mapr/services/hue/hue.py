@@ -114,7 +114,7 @@ class Hue(s.Service):
 
         return [hue_ini, hue_sh]
 
-    def _get_packages(self, node_processes):
+    def _get_packages(self, cluster_context, node_processes):
         result = []
 
         result += self.dependencies
