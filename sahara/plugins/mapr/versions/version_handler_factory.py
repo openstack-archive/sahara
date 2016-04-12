@@ -51,7 +51,7 @@ class VersionHandlerFactory(object):
         return VersionHandlerFactory.instance
 
     def get_versions(self):
-        return VersionHandlerFactory.versions.keys()
+        return list(VersionHandlerFactory.versions.keys())
 
     def get_handler(self, version):
         return VersionHandlerFactory.versions[version]

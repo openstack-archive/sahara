@@ -1,0 +1,4 @@
+---
+fixes:
+  - Fix visualization of MapR versions when running
+    on python 3
