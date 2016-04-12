@@ -23,9 +23,8 @@ import sahara.plugins.mapr.services.mysql.mysql as mysql
 import sahara.plugins.mapr.util.general as g
 import sahara.plugins.mapr.util.validation_utils as vu
 
-
 LOG = logging.getLogger(__name__)
-
+OOZIE_LIBEXT_TEMPLATE = '/opt/mapr/oozie/oozie-%s/oozie-server/lib/'
 OOZIE = np.NodeProcess(
     name='oozie',
     ui_name='Oozie',
@@ -45,7 +44,11 @@ class Oozie(s.Service):
         self._validation_rules = [vu.exactly(1, OOZIE)]
         self._ui_info = [('Oozie', OOZIE, 'http://%s:11000/oozie')]
 
+    def libext_path(self):
+        return OOZIE_LIBEXT_TEMPLATE % self.version
+
     def get_config_files(self, cluster_context, configs, instance=None):
+        super(Oozie, self).install(cluster_context, [instance])
         oozie_site = bcf.HadoopXML("oozie-site.xml")
         oozie_site.remote_path = self.conf_dir(cluster_context)
         if instance:
@@ -78,38 +81,42 @@ class Oozie(s.Service):
         }
         return jdbc_uri % jdbc_args
 
+    def _set_owner(self, remote):
+        remote.execute_command('chown -R mapr:mapr /opt/mapr/oozie',
+                               run_as_root=True)
+
     def post_install(self, cluster_context, instances):
         oozie_inst = cluster_context.get_instance(OOZIE)
         oozie_service = cluster_context.get_service(OOZIE)
+
         if oozie_service:
-            oozie_version = oozie_service.version
-            symlink_cmd = ('cp /usr/share/java/mysql-connector-java.jar '
-                           '/opt/mapr/oozie/oozie-%s'
-                           '/oozie-server/lib/') % oozie_version
+            symlink_cmd = (
+                'cp /usr/share/java/mysql-connector-java.jar %s' %
+                self.libext_path())
             with oozie_inst.remote() as r:
                 LOG.debug('Installing MySQL connector for Oozie')
                 r.execute_command(symlink_cmd, run_as_root=True,
                                   raise_when_error=False)
+                self._set_owner(r)
 
     def post_start(self, cluster_context, instances):
         instances = cluster_context.filter_instances(instances, OOZIE)
-        self._install_ui(cluster_context, instances)
+        self._rebuild(cluster_context, instances)
 
     @g.remote_command(1)
     def _rebuild_oozie_war(self, remote, cluster_context):
-        extjs_url = 'http://dev.sencha.com/deploy/ext-2.2.zip'
-        extjs_file = '/tmp/extjs.zip'
-        g.download(remote, extjs_url, extjs_file)
-        cmd = '%(home)s/bin/oozie-setup.sh prepare-war -extjs %(ext)s'
-        args = {'home': self.home_dir(cluster_context), 'ext': extjs_file}
+        cmd = ('%(home)s/bin/oozie-setup.sh -hadoop %(version)s '
+               '/opt/mapr/hadoop/hadoop-%(version)s')
+        args = {'home': self.home_dir(cluster_context),
+                'version': cluster_context.hadoop_version}
         remote.execute_command(cmd % args, run_as_root=True)
 
     def update(self, cluster_context, instances=None):
         instances = instances or cluster_context.get_instances()
         instances = cluster_context.filter_instances(instances, OOZIE)
-        self._install_ui(cluster_context, instances)
+        self._rebuild(cluster_context, instances)
 
-    def _install_ui(self, cluster_context, instances):
+    def _rebuild(self, cluster_context, instances):
         OOZIE.stop(filter(OOZIE.is_started, instances))
         g.execute_on_instances(
             instances, self._rebuild_oozie_war, cluster_context)
