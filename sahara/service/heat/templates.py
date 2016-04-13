@@ -13,9 +13,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import copy
 
 from oslo_config import cfg
 from oslo_log import log as logging
+from oslo_serialization import jsonutils as json
 import six
 import yaml
 
@@ -165,7 +167,6 @@ class ClusterStack(object):
 
     def instantiate(self, update_existing, disable_rollback=True):
         main_tmpl = self._get_main_template()
-
         kwargs = {
             'stack_name': self.cluster.stack_name,
             'timeout_mins': 180,
@@ -177,15 +178,22 @@ class ClusterStack(object):
         if CONF.heat_stack_tags:
             kwargs['tags'] = ",".join(CONF.heat_stack_tags)
 
+        log_kwargs = copy.deepcopy(kwargs)
+        log_kwargs['template'] = yaml.safe_load(log_kwargs['template'])
+        for filename in log_kwargs['files'].keys():
+            log_kwargs['files'][filename] = yaml.safe_load(
+                log_kwargs['files'][filename])
+        log_kwargs = json.dumps(log_kwargs)
+
         if not update_existing:
-            LOG.debug("Creating Heat stack with args: {args}"
-                      .format(args=kwargs))
+            LOG.debug("Creating Heat stack with args: \n{args}"
+                      .format(args=log_kwargs))
             b.execute_with_retries(h.client().stacks.create, **kwargs)
         else:
             stack = h.get_stack(self.cluster.stack_name)
             self.last_updated_time = stack.updated_time
-            LOG.debug("Updating Heat stack {stack} with args: "
-                      "{args}".format(stack=stack, args=kwargs))
+            LOG.debug("Updating Heat stack {stack} with args: \n"
+                      "{args}".format(stack=stack, args=log_kwargs))
             b.execute_with_retries(stack.update, **kwargs)
 
     def _need_aa_server_group(self, node_group):
