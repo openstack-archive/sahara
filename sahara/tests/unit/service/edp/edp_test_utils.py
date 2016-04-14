@@ -93,6 +93,10 @@ def _create_job_exec(job_id, type, configs=None, info=None):
     j_exec.job_id = job_id
     j_exec.job_configs = configs
     j_exec.info = info
+    j_exec.input_id = 4
+    j_exec.output_id = 5
+    j_exec.engine_job_id = None
+    j_exec.data_source_urls = {}
     if not j_exec.job_configs:
         j_exec.job_configs = {}
     if edp.compare_job_type(type, edp.JOB_TYPE_JAVA):
