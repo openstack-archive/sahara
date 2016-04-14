@@ -15,7 +15,7 @@
 
 import socket
 
-from keystoneclient import exceptions as keystone_ex
+from keystoneauth1 import exceptions as keystone_ex
 from oslo_log import log as logging
 from six.moves.urllib import parse
 

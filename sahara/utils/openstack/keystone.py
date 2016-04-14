@@ -13,8 +13,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from keystoneclient.auth import identity as keystone_identity
-from keystoneclient import session as keystone_session
+from keystoneauth1 import identity as keystone_identity
+from keystoneauth1 import session as keystone_session
 from keystoneclient.v2_0 import client as keystone_client
 from keystoneclient.v3 import client as keystone_client_v3
 from oslo_config import cfg
@@ -160,12 +160,12 @@ def service_catalog_from_auth(auth):
 
     :returns: a list containing the service catalog.
     '''
-    if CONF.use_identity_api_v3:
-        return auth.get_access(
-            sessions.cache().get_session()).get('catalog', [])
+    access_info = auth.get_access(
+        sessions.cache().get_session(sessions.SESSION_TYPE_KEYSTONE))
+    if access_info.has_service_catalog():
+        return access_info.service_catalog.catalog
     else:
-        return auth.get_access(
-            sessions.cache().get_session()).get('serviceCatalog', [])
+        return []
 
 
 # TODO(elmiko) factor this out when redoing the barbicanclient
@@ -217,8 +217,7 @@ def token_from_auth(auth):
 
     :returns: an auth token in string format.
     '''
-    return keystone_session.Session(
-        auth=auth, verify=CONF.generic_session_verify).get_token()
+    return sessions.cache().token_for_auth(auth)
 
 
 def user_id_from_auth(auth):
