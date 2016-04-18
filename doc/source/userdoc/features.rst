@@ -257,7 +257,7 @@ There are 2 types of string currently supported:
 
 * ``%JOB_EXEC_ID%`` - this string will be replaced with the job execution ID.
 * ``%RANDSTR(len)%`` - this string will be replaced with random string of
-  lowercase letters of length ``len``.
+  lowercase letters of length ``len``. ``len`` must be less than 1024.
 
 After placeholders are replaced, the real URLs are stored in the
 ``data_source_urls`` field of the job execution object. This is used later to

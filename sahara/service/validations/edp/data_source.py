@@ -13,6 +13,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import re
+
 from oslo_config import cfg
 from oslo_utils import uuidutils
 import six.moves.urllib.parse as urlparse
@@ -32,7 +34,30 @@ def check_data_source_create(data, **kwargs):
     _check_data_source_url(data)
 
 
+def _check_datasource_placeholder(url):
+    if url is None:
+        return
+    total_length = 0
+    substrings = re.findall(r"%RANDSTR\(([\-]?\d+)\)%", url)
+    for length in map(int, substrings):
+        if length <= 0:
+            total_length = -1
+            break
+        total_length += length
+
+    if total_length > 1024:
+        raise ex.InvalidDataException(_("Requested RANDSTR length is"
+                                        " too long, please choose a "
+                                        "value less than 1024."))
+
+    if total_length < 0:
+        raise ex.InvalidDataException(_("Requested RANDSTR length"
+                                        " must be positive."))
+
+
 def _check_data_source_url(data):
+    _check_datasource_placeholder(data["url"])
+
     if "swift" == data["type"]:
         _check_swift_data_source_create(data)
 
