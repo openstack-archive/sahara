@@ -44,7 +44,7 @@ XML_CONFS = {
 }
 
 _default_executor_classpath = ":".join(
-    ['/usr/lib/hadoop/hadoop-swift.jar'])
+    ['/usr/lib/hadoop-mapreduce/hadoop-openstack.jar'])
 
 SPARK_CONFS = {
     'Spark': {

@@ -17,6 +17,11 @@ the most current features enabled.
 * The latest compiled version of the jar for this component can be downloaded
   from http://sahara-files.mirantis.com/hadoop-swift/hadoop-swift-latest.jar
 
+Now the latest version of this jar (which uses Keystone API v3) is used in
+the plugins' images automatically during build of these images. But for
+Ambari plugin we need to explicitly put this jar into /opt directory of the
+base image **before** cluster launching.
+
 Hadoop patching
 ---------------
 You may build the jar file yourself by choosing the latest patch from the
@@ -25,9 +30,9 @@ provided. Or you may get the latest jar pre-built from the CDN at
 http://sahara-files.mirantis.com/hadoop-swift/hadoop-swift-latest.jar
 
 You will need to put this file into the hadoop libraries
-(e.g. /usr/lib/share/hadoop/lib) on each job-tracker and task-tracker node
-for Hadoop 1.x, or each ResourceManager and NodeManager node for Hadoop 2.x
-in the cluster.
+(e.g. /usr/lib/share/hadoop/lib, it depends on the plugin which you use) on
+each job-tracker and task-tracker node for Hadoop 1.x, or each ResourceManager
+and NodeManager node for Hadoop 2.x in the cluster.
 
 Hadoop configurations
 ---------------------

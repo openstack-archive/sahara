@@ -1,0 +1,4 @@
+---
+fixes:
+  - This patch adds ability to work with swift by using Keystone
+    API v3

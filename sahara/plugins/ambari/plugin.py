@@ -89,7 +89,9 @@ class AmbariPluginProvider(p.ProvisioningPluginBase):
     def start_cluster(self, cluster):
         self._set_cluster_info(cluster)
         deploy.start_cluster(cluster)
-        swift_helper.install_ssl_certs(plugin_utils.get_instances(cluster))
+        cluster_instances = plugin_utils.get_instances(cluster)
+        swift_helper.install_ssl_certs(cluster_instances)
+        deploy.add_hadoop_swift_jar(cluster_instances)
 
     def _set_cluster_info(self, cluster):
         ambari_ip = plugin_utils.get_instance(
@@ -180,6 +182,7 @@ class AmbariPluginProvider(p.ProvisioningPluginBase):
         deploy.manage_config_groups(cluster, instances)
         deploy.manage_host_components(cluster, instances)
         swift_helper.install_ssl_certs(instances)
+        deploy.add_hadoop_swift_jar(instances)
 
     def decommission_nodes(self, cluster, instances):
         deploy.decommission_hosts(cluster, instances)
