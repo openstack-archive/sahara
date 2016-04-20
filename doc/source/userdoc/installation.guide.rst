@@ -51,18 +51,20 @@ To install with RDO
 5. Go through :ref:`common_installation_steps` and make any
    necessary changes.
 
-6. Start the sahara-all service:
+6. Start the sahara-api and sahara-engine services:
 
 .. sourcecode:: console
 
-    # systemctl start openstack-sahara-all
+    # systemctl start openstack-sahara-api
+    # systemctl start openstack-sahara-engine
 ..
 
-7. *(Optional)* Enable sahara to start on boot
+7. *(Optional)* Enable sahara services to start on boot
 
 .. sourcecode:: console
 
-    # systemctl enable openstack-sahara-all
+    # systemctl enable openstack-sahara-api
+    # systemctl enable openstack-sahara-engine
 ..
 
 
@@ -167,11 +169,15 @@ installations of sahara.
     $ sahara-venv/bin/sahara-db-manage --config-file sahara-venv/etc/sahara.conf upgrade head
 ..
 
-3. To start sahara call:
+3. Start sahara services from different terminals:
 
 .. sourcecode:: console
 
-    $ sahara-venv/bin/sahara-all --config-file sahara-venv/etc/sahara.conf
+    # first terminal
+    $ sahara-venv/bin/sahara-api --config-file sahara-venv/etc/sahara.conf
+
+    # second terminal
+    $ sahara-venv/bin/sahara-engine --config-file sahara-venv/etc/sahara.conf
 ..
 
 .. _register-sahara-label:
@@ -259,7 +265,8 @@ To get the list of all possible options run:
 
 .. sourcecode:: console
 
-    $ sahara-venv/bin/python sahara-venv/bin/sahara-all --help
+    $ sahara-venv/bin/python sahara-venv/bin/sahara-api --help
+    $ sahara-venv/bin/python sahara-venv/bin/sahara-engine --help
 ..
 
 
