@@ -6,7 +6,7 @@ consistent state. We suggest the following options:
 
 * Install via `Fuel <http://fuel.mirantis.com/>`_
 
-* Install via `RDO <http://openstack.redhat.com/>`_
+* Install via `RDO <https://www.rdoproject.org/>`_
 
 * Install into a virtual environment
 
@@ -27,7 +27,7 @@ To install with RDO
 -------------------
 
 1. Start by following the `RDO Quickstart
-   <http://openstack.redhat.com/Quickstart>`_ to install and setup
+   <https://www.rdoproject.org/install/quickstart/>`_ to install and setup
    OpenStack.
 
 2. Install sahara:
