@@ -184,6 +184,7 @@ class AmbariPluginProvider(p.ProvisioningPluginBase):
     def decommission_nodes(self, cluster, instances):
         deploy.decommission_hosts(cluster, instances)
         deploy.remove_services_from_hosts(cluster, instances)
+        deploy.restart_nns_and_rms(cluster)
 
     def validate_scaling(self, cluster, existing, additional):
         validation.validate(cluster.id)

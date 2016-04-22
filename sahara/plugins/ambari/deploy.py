@@ -344,6 +344,32 @@ def decommission_datanodes(cluster, instances):
         client.decommission_datanodes(cluster.name, instances)
 
 
+def restart_namenode(cluster, instance):
+    ambari = plugin_utils.get_instance(cluster, p_common.AMBARI_SERVER)
+    password = cluster.extra["ambari_password"]
+
+    with ambari_client.AmbariClient(ambari, password=password) as client:
+        client.restart_namenode(cluster.name, instance)
+
+
+def restart_resourcemanager(cluster, instance):
+    ambari = plugin_utils.get_instance(cluster, p_common.AMBARI_SERVER)
+    password = cluster.extra["ambari_password"]
+
+    with ambari_client.AmbariClient(ambari, password=password) as client:
+        client.restart_resourcemanager(cluster.name, instance)
+
+
+def restart_nns_and_rms(cluster):
+    nns = plugin_utils.get_instances(cluster, p_common.NAMENODE)
+    for nn in nns:
+        restart_namenode(cluster, nn)
+
+    rms = plugin_utils.get_instances(cluster, p_common.RESOURCEMANAGER)
+    for rm in rms:
+        restart_resourcemanager(cluster, rm)
+
+
 def remove_services_from_hosts(cluster, instances):
     for inst in instances:
         LOG.debug("Stopping and removing processes from host %s" % inst.fqdn())

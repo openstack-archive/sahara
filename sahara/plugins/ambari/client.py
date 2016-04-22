@@ -194,6 +194,19 @@ class AmbariClient(object):
 
             self.wait_ambari_request(self.req_id(resp), cluster_name)
 
+    def restart_namenode(self, cluster_name, instance):
+        url = self._base_url + "/clusters/%s/requests" % cluster_name
+        data = d_helper.build_namenode_restart_request(cluster_name, instance)
+        resp = self.post(url, data=jsonutils.dumps(data))
+        self.wait_ambari_request(self.req_id(resp), cluster_name)
+
+    def restart_resourcemanager(self, cluster_name, instance):
+        url = self._base_url + "/clusters/%s/requests" % cluster_name
+        data = d_helper.build_resourcemanager_restart_request(cluster_name,
+                                                              instance)
+        resp = self.post(url, data=jsonutils.dumps(data))
+        self.wait_ambari_request(self.req_id(resp), cluster_name)
+
     def delete_host(self, cluster_name, instance):
         url = self._base_url + "/clusters/%s/hosts/%s" % (cluster_name,
                                                           instance.fqdn())
