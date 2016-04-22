@@ -12,14 +12,14 @@ In most Sahara sub repositories we have `_package_/tests/unit` or
 Scenario integration tests
 ++++++++++++++++++++++++++
 
-New scenario integration tests were implemented in Sahara, you can see how
-use and run it here: `sahara/tests/scenario/README.rst`
+New scenario integration tests were implemented for Sahara, they are available
+in the sahara-tests repository (https://git.openstack.org/cgit/openstack/sahara-tests).
 
 Tempest tests
 +++++++++++++
 
-We have some tests in Tempest (https://github.com/openstack/tempest) that are
-testing Sahara. Here is a list of currently implemented tests:
+We have some tests based on Tempest (https://git.openstack.org/cgit/openstack/tempest)
+that tests Sahara. Here is a list of currently implemented tests:
 
 * REST API tests are checking how the Sahara REST API works.
   The only part that is not tested is cluster creation, more info about api
