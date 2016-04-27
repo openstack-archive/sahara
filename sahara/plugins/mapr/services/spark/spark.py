@@ -250,7 +250,7 @@ class SparkOnYarn(Spark):
         if hbase_version:
             result += [('mapr-hbase', hbase_version)]
         if hive_version:
-            result += [('mapr-hive', hbase_version)]
+            result += [('mapr-hive', hive_version)]
 
         return result
 
