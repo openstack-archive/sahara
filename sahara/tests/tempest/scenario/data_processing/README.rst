@@ -53,15 +53,14 @@ Some configuration options are required for running tests. Here is the list:
 
 .. sourcecode:: ini
 
+    [auth]
+    admin_username=
+    admin_project_name=
+    admin_password=
+
     [identity]
     uri=
     uri_v3=
-    username=
-    tenant_name=
-    password=
-    admin_username=
-    admin_tenant_name=
-    admin_password=
 
     [compute]
     fixed_network_name=
@@ -71,11 +70,11 @@ Some configuration options are required for running tests. Here is the list:
     floating_network_name=
     public_network_id=
 
-    [data_processing]
+    [data-processing]
     fake_image_id=
 
-    [scenario]
-    ssh_user=
+    [validation]
+    image_ssh_user=
 
     [service_available]
     sahara=true
@@ -91,7 +90,7 @@ Other relevant parameters (all defined by scenario python client tests):
 
 .. sourcecode:: ini
 
-    [data_processing]
+    [data-processing]
     ...
     endpoint_type=
     catalog_type=
