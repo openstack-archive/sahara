@@ -40,7 +40,7 @@ class AmbariPluginProvider(p.ProvisioningPluginBase):
         return _("HDP plugin with Ambari")
 
     def get_versions(self):
-        return ["2.3"]
+        return ["2.3", "2.4"]
 
     def get_node_processes(self, hadoop_version):
         return {

@@ -26,6 +26,9 @@ class TestPlugin(test_base.SaharaTestCase):
         self.assertEqual({
             '2.3': [
                 'Hive', 'Java', 'MapReduce', 'MapReduce.Streaming',
+                'Pig', 'Shell', 'Spark'],
+            '2.4': [
+                'Hive', 'Java', 'MapReduce', 'MapReduce.Streaming',
                 'Pig', 'Shell', 'Spark']
         }, self.plugin.get_edp_job_types())
 
@@ -34,3 +37,9 @@ class TestPlugin(test_base.SaharaTestCase):
                 'Hive', 'Java', 'MapReduce', 'MapReduce.Streaming',
                 'Pig', 'Shell', 'Spark'],
         }, self.plugin.get_edp_job_types(versions=['2.3']))
+
+        self.assertEqual({
+            '2.4': [
+                'Hive', 'Java', 'MapReduce', 'MapReduce.Streaming',
+                'Pig', 'Shell', 'Spark'],
+        }, self.plugin.get_edp_job_types(versions=['2.4']))
