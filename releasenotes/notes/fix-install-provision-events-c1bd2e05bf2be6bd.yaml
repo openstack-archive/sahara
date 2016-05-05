@@ -1,0 +1,3 @@
+---
+fixes:
+  - Fix uncompleted event logs for Oozie and Drill in MapR plugin.
