@@ -157,5 +157,5 @@ fi
 if [ $coverage -eq 1 ]; then
     echo "Generating coverage report in covhtml/"
     ${wrapper} coverage combine
-    ${wrapper} coverage html --include='sahara/*' --omit='sahara/openstack/common/*' -d covhtml -i
+    ${wrapper} coverage html --include='sahara/*' -d covhtml -i
 fi

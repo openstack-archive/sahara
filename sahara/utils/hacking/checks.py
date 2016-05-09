@@ -105,10 +105,6 @@ def use_jsonutils(logical_line, filename):
     """
     if pep8.noqa(logical_line):
         return
-    ignore_dirs = ["sahara/openstack/common"]
-    for dir in ignore_dirs:
-        if dir in filename:
-            return
     invalid_line = re.compile(r"(import\s+json)")
     valid_line = re.compile(r"(import\s+jsonschema)")
     if (re.match(invalid_line, logical_line) and

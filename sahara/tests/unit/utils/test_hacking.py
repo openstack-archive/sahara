@@ -57,9 +57,6 @@ class HackingTestCase(testtools.TestCase):
             "from oslo_serialization import jsonutils as json", "path"))))
         self.assertEqual(0, len(list(checks.use_jsonutils(
             "import jsonschema", "path"))))
-        self.assertEqual(0, len(list(checks.use_jsonutils(
-            "import json", "sahara/openstack/common/utils.py"))))
-
         self.assertEqual(1, len(list(checks.use_jsonutils(
             "import json", "path"))))
         self.assertEqual(1, len(list(checks.use_jsonutils(
