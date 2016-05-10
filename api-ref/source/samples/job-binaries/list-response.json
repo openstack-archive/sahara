@@ -1,0 +1,37 @@
+{
+    "binaries": [
+        {
+            "is_public": false,
+            "description": "",
+            "url": "internal-db://d2498cbf-4589-484a-a814-81436c18beb3",
+            "tenant_id": "11587919cc534bcbb1027a161c82cf58",
+            "created_at": "2013-10-15 12:36:59.375060",
+            "updated_at": null,
+            "id": "84248975-3c82-4206-a58d-6e7fb3a563fd",
+            "name": "example.pig",
+            "is_protected": false
+        },
+        {
+            "is_public": false,
+            "description": "",
+            "url": "internal-db://22f1d87a-23c8-483e-a0dd-cb4a16dde5f9",
+            "tenant_id": "11587919cc534bcbb1027a161c82cf58",
+            "created_at": "2013-10-15 12:43:52.265899",
+            "updated_at": null,
+            "id": "508fc62d-1d58-4412-b603-bdab307bb926",
+            "name": "udf.jar",
+            "is_protected": false
+        },
+        {
+            "is_public": false,
+            "description": "",
+            "url": "swift://container/jar-example.jar",
+            "tenant_id": "11587919cc534bcbb1027a161c82cf58",
+            "created_at": "2013-10-15 14:25:04.970513",
+            "updated_at": null,
+            "id": "a716a9cd-9add-4b12-b1b6-cdb71aaef350",
+            "name": "jar-example.jar",
+            "is_protected": false
+        }
+    ]
+}

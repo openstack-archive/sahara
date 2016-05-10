@@ -1,0 +1,24 @@
+{
+    "image": {
+        "updated": "2015-02-03T10:29:32Z",
+        "metadata": {
+            "_sahara_username": "ubuntu",
+            "_sahara_tag_vanilla": true,
+            "_sahara_tag_2.6.0": true
+        },
+        "id": "bb8d12b5-f9bb-49f0-aecb-739b8a9bec89",
+        "minDisk": 0,
+        "status": "ACTIVE",
+        "tags": [
+            "vanilla",
+            "2.6.0"
+        ],
+        "minRam": 0,
+        "progress": 100,
+        "username": "ubuntu",
+        "created": "2015-02-03T10:28:39Z",
+        "name": "sahara-vanilla-2.6.0-ubuntu-14.04",
+        "description": null,
+        "OS-EXT-IMG-SIZE:size": 1101856768
+    }
+}

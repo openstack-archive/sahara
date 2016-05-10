@@ -1,0 +1,72 @@
+{
+    "status": "Error",
+    "neutron_management_network": "7e31648b-4b2e-4f32-9b0a-113581c27076",
+    "is_transient": false,
+    "description": "",
+    "user_keypair_id": "vgridnev",
+    "updated_at": "2015-03-31 14:10:59",
+    "plugin_name": "spark",
+    "provision_progress": [
+        {
+            "successful": false,
+            "tenant_id": "9cd1314a0a31493282b6712b76a8fcda",
+            "created_at": "2015-03-31 14:10:20",
+            "step_type": "Engine: create cluster",
+            "updated_at": "2015-03-31 14:10:35",
+            "events": [
+                {
+                    "instance_name": "sample-worker-spark-004",
+                    "successful": false,
+                    "created_at": "2015-03-31 14:10:35",
+                    "updated_at": null,
+                    "event_info": "Node sample-worker-spark-004 has error status\nError ID: 3e238c82-d1f5-4560-8ed8-691e923e16a0",
+                    "instance_id": "b5ba5ba8-e9c1-47f7-9355-3ce0ec0e449d",
+                    "node_group_id": "145cf2fb-dcdf-42af-a4b9-a4047d2919d4",
+                    "step_id": "3f243c67-2c27-47c7-a0c0-0834ad17f8b6",
+                    "id": "34afcfc7-bdb0-43cb-b142-283d560dc6ad"
+                },
+                {
+                    "instance_name": "sample-worker-spark-001",
+                    "successful": true,
+                    "created_at": "2015-03-31 14:10:35",
+                    "updated_at": null,
+                    "event_info": null,
+                    "instance_id": "c532ab71-38da-475a-95f8-f8eb93b8f1c2",
+                    "node_group_id": "145cf2fb-dcdf-42af-a4b9-a4047d2919d4",
+                    "step_id": "3f243c67-2c27-47c7-a0c0-0834ad17f8b6",
+                    "id": "4ba50414-5216-4161-bc7a-12716122b99d"
+                }
+            ],
+            "cluster_id": "c26ec982-ba6b-4d75-818c-a50240164af0",
+            "step_name": "Wait for instances to become active",
+            "total": 5,
+            "id": "3f243c67-2c27-47c7-a0c0-0834ad17f8b6"
+        },
+        {
+            "successful": true,
+            "tenant_id": "9cd1314a0a31493282b6712b76a8fcda",
+            "created_at": "2015-03-31 14:10:12",
+            "step_type": "Engine: create cluster",
+            "updated_at": "2015-03-31 14:10:19",
+            "events": [],
+            "cluster_id": "c26ec982-ba6b-4d75-818c-a50240164af0",
+            "step_name": "Run instances",
+            "total": 5,
+            "id": "407ba50a-c799-46af-9dfb-6aa5f6ade426"
+        }
+    ],
+    "anti_affinity": [],
+    "node_groups": [],
+    "management_public_key": "Sahara",
+    "status_description": "Creating cluster failed for the following reason(s): Node sample-worker-spark-004 has error status\nError ID: 3e238c82-d1f5-4560-8ed8-691e923e16a0",
+    "hadoop_version": "1.0.0",
+    "id": "c26ec982-ba6b-4d75-1f8c-a50240164af0",
+    "trust_id": null,
+    "info": {},
+    "cluster_template_id": "5a9a09a3-9349-43bd-9058-16c401fad2d5",
+    "name": "sample",
+    "cluster_configs": {},
+    "created_at": "2015-03-31 14:10:07",
+    "default_image_id": "e6a6c5da-67be-4017-a7d2-81f466efe67e",
+    "tenant_id": "9cd1314a0a31493282b6712b76a8fcda"
+}

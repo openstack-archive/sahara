@@ -1,0 +1,13 @@
+{
+    "job_binary": {
+        "is_public": false,
+        "description": "This is a new job binary",
+        "url": "swift://container/new-jar-example.jar",
+        "tenant_id": "11587919cc534bcbb1027a161c82cf58",
+        "created_at": "2015-09-15 12:42:51.421542",
+        "updated_at": null,
+        "id": "b713d7ad-4add-4f12-g1b6-cdg71aaef350",
+        "name": "new-jar-example.jar",
+        "is_protected": false
+    }
+}

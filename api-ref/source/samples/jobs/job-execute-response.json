@@ -1,0 +1,30 @@
+{
+    "job_execution": {
+        "input_id": "3e1bc8e6-8c69-4749-8e52-90d9341d15bc",
+        "is_protected": false,
+        "job_id": "310b0fc6-e1db-408e-8798-312e7500f3ac",
+        "cluster_id": "811e1134-666f-4c48-bc92-afb5b10c9d8c",
+        "output_id": "52146b52-6540-4aac-a024-fee253cf52a9",
+        "created_at": "2015-09-15T09:49:24",
+        "is_public": false,
+        "id": "20da9edb-12ce-4b45-a473-41baeefef997",
+        "tenant_id": "808d5032ea0446889097723bfc8e919d",
+        "job_configs": {
+            "configs": {
+                "mapred.reduce.tasks": "1",
+                "mapred.map.tasks": "1"
+            },
+            "args": [
+                "arg1",
+                "arg2"
+            ],
+            "params": {
+                "param2": "value2",
+                "param1": "value1"
+            }
+        },
+        "info": {
+            "status": "PENDING"
+        }
+    }
+}

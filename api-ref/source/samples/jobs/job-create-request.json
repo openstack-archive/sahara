@@ -1,0 +1,11 @@
+{
+    "description": "This is pig job example",
+    "mains": [
+        "90d9d5ec-11aa-48bd-bc8c-34936ce0db6e"
+    ],
+    "libs": [
+        "320a2ca7-25fd-4b48-9bc3-4fb1b6c4ff27"
+    ],
+    "type": "Pig",
+    "name": "pig-job-example"
+}

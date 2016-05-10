@@ -1,0 +1,66 @@
+{
+    "cluster_template": {
+        "is_public": false,
+        "anti_affinity": [],
+        "name": "vanilla-updated",
+        "created_at": "2015-08-21T08:41:24",
+        "tenant_id": "808d5032ea0446889097723bfc8e919d",
+        "cluster_configs": {
+            "HDFS": {
+                "dfs.replication": 2
+            }
+        },
+        "shares": null,
+        "id": "84d47e85-6094-473f-bf6d-5a7e6e86564e",
+        "default_image_id": null,
+        "is_default": false,
+        "updated_at": "2015-09-14T10:45:57",
+        "plugin_name": "vanilla",
+        "node_groups": [
+            {
+                "image_id": null,
+                "shares": null,
+                "floating_ip_pool": "033debed-aeb8-488c-b7d0-adb74c61faa5",
+                "node_configs": {
+                    "YARN": {},
+                    "JobFlow": {},
+                    "MapReduce": {},
+                    "Hive": {},
+                    "Hadoop": {},
+                    "HDFS": {}
+                },
+                "auto_security_group": true,
+                "availability_zone": "",
+                "count": 1,
+                "flavor_id": "3",
+                "id": "57b966ab-617e-4735-bf60-0cb991208a52",
+                "security_groups": [],
+                "use_autoconfig": true,
+                "volumes_availability_zone": null,
+                "created_at": "2015-08-21T08:41:24",
+                "node_group_template_id": "a5533187-3f14-42c3-ba3a-196c13fe0fb5",
+                "updated_at": null,
+                "volumes_per_node": 0,
+                "is_proxy_gateway": false,
+                "name": "all",
+                "volume_mount_prefix": "/volumes/disk",
+                "node_processes": [
+                    "namenode",
+                    "datanode",
+                    "historyserver",
+                    "resourcemanager",
+                    "nodemanager",
+                    "oozie"
+                ],
+                "volumes_size": 0,
+                "volume_local_to_instance": false,
+                "volume_type": null
+            }
+        ],
+        "neutron_management_network": null,
+        "hadoop_version": "2.7.1",
+        "use_autoconfig": true,
+        "description": "Updated template",
+        "is_protected": false
+    }
+}

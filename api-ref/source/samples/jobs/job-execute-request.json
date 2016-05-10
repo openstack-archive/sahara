@@ -1,0 +1,19 @@
+{
+    "cluster_id": "811e1134-666f-4c48-bc92-afb5b10c9d8c",
+    "input_id": "3e1bc8e6-8c69-4749-8e52-90d9341d15bc",
+    "output_id": "52146b52-6540-4aac-a024-fee253cf52a9",
+    "job_configs": {
+        "configs": {
+            "mapred.map.tasks": "1",
+            "mapred.reduce.tasks": "1"
+        },
+        "args": [
+            "arg1",
+            "arg2"
+        ],
+        "params": {
+            "param2": "value2",
+            "param1": "value1"
+        }
+    }
+}
