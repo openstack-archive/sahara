@@ -98,7 +98,7 @@ class TestClusterTemplate(BaseTestClusterTemplate):
         actual = heat_template._get_security_groups(ng1)
         self.assertEqual(expected, actual)
 
-        expected = ['3', '4', {'get_resource': 'cluster-worker-2'}]
+        expected = ['3', '4', {'get_param': 'autosecgroup'}]
         actual = heat_template._get_security_groups(ng2)
         self.assertEqual(expected, actual)
 
