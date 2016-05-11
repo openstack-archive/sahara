@@ -55,7 +55,9 @@ def setup_ambari(cluster):
         sudo = functools.partial(r.execute_command, run_as_root=True)
         sudo("ambari-server setup -s -j"
              " `cut -f2 -d \"=\" /etc/profile.d/99-java.sh`", timeout=1800)
-        sudo("service ambari-server start")
+        redirect_file = "/tmp/%s" % uuidutils.generate_uuid()
+        sudo("service ambari-server start >{rfile} && "
+             "cat {rfile} && rm {rfile}".format(rfile=redirect_file))
     LOG.debug("Ambari management console installed")
 
 
