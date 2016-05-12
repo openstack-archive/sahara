@@ -42,9 +42,11 @@ class TestGetOsDistrib(testtools.TestCase):
 
 
 class TestInstallPackages(testtools.TestCase):
+    @mock.patch('sahara.utils.ssh_remote._get_os_version')
     @mock.patch('sahara.utils.ssh_remote._get_os_distrib')
     @mock.patch('sahara.utils.ssh_remote._execute_command')
-    def test_install_packages(self, p_execute_command, p_get_os_distrib):
+    def test_install_packages(self, p_execute_command, p_get_os_distrib,
+                              p_get_os_version):
         packages = ('git', 'emacs', 'tree')
 
         # test ubuntu
@@ -60,11 +62,20 @@ class TestInstallPackages(testtools.TestCase):
             'yum install -y git emacs tree',
             run_as_root=True)
 
-        # test fedora
+        # test fedora < 22
         p_get_os_distrib.return_value = 'fedora'
+        p_get_os_version.return_value = 20
         ssh_remote._install_packages(packages)
         p_execute_command.assert_called_with(
             'yum install -y git emacs tree',
+            run_as_root=True)
+
+        # test fedora >=22
+        p_get_os_distrib.return_value = 'fedora'
+        p_get_os_version.return_value = 23
+        ssh_remote._install_packages(packages)
+        p_execute_command.assert_called_with(
+            'dnf install -y git emacs tree',
             run_as_root=True)
 
         # test redhat
@@ -84,9 +95,11 @@ class TestInstallPackages(testtools.TestCase):
 
 
 class TestUpdateRepository(testtools.TestCase):
+    @mock.patch('sahara.utils.ssh_remote._get_os_version')
     @mock.patch('sahara.utils.ssh_remote._get_os_distrib')
     @mock.patch('sahara.utils.ssh_remote._execute_command')
-    def test_update_repository(self, p_execute_command, p_get_os_distrib):
+    def test_update_repository(self, p_execute_command, p_get_os_distrib,
+                               p_get_os_version):
         # test ubuntu
         p_get_os_distrib.return_value = 'ubuntu'
         ssh_remote._update_repository()
@@ -99,12 +112,19 @@ class TestUpdateRepository(testtools.TestCase):
         p_execute_command.assert_called_with(
             'yum clean all', run_as_root=True)
 
-        # test fedora
+        # test fedora < 22
         p_get_os_distrib.return_value = 'fedora'
+        p_get_os_version.return_value = 20
         ssh_remote._update_repository()
         p_execute_command.assert_called_with(
             'yum clean all', run_as_root=True)
 
+        # test fedora >=22
+        p_get_os_distrib.return_value = 'fedora'
+        p_get_os_version.return_value = 23
+        ssh_remote._update_repository()
+        p_execute_command.assert_called_with(
+            'dnf clean all', run_as_root=True)
         # test redhat
         p_get_os_distrib.return_value = 'redhat'
         ssh_remote._update_repository()
