@@ -19,6 +19,7 @@ from sahara.conductor import resource as r
 import sahara.exceptions as ex
 from sahara.i18n import _
 import sahara.plugins.exceptions as e
+from sahara.service.api import v10 as api
 import sahara.utils.openstack.nova as nova
 
 
@@ -103,6 +104,18 @@ class NoVolumesException(ex.SaharaException):
         super(NoVolumesException, self).__init__()
         self.message = NoVolumesException.MESSAGE % ng_name
         self.code = NoVolumesException.ERROR_CODE
+
+
+class NotRequiredImageException(ex.SaharaException):
+    MESSAGE = _('Service %(service)s requires %(os)s OS.'
+                ' Use %(os)s image and add "%(os)s" tag to it.')
+    ERROR_CODE = "INVALID_IMAGE"
+
+    def __init__(self, service, os):
+        super(NotRequiredImageException, self).__init__()
+        self.message = NotRequiredImageException.MESSAGE % {'service': service,
+                                                            'os': os}
+        self.code = NotRequiredImageException.ERROR_CODE
 
 
 def at_least(count, component):
@@ -193,6 +206,21 @@ def assert_present(service, cluster_context):
         raise e.RequiredServiceMissingException(service.ui_name)
 
 
+def required_os(os, required_by):
+    def validate(cluster_context, os, required_by):
+        for ng in cluster_context.get_node_groups():
+            nps = ng.node_processes
+            for node_process in required_by.node_processes:
+                if node_process.ui_name in nps:
+                    image_id = (ng.image_id or
+                                cluster_context.cluster.default_image_id)
+                    if not image_has_tag(image_id, os):
+                        raise NotRequiredImageException(required_by.ui_name,
+                                                        os)
+
+    return ft.partial(validate, os=os, required_by=required_by)
+
+
 def create_fake_cluster(cluster, existing, additional):
     counts = existing.copy()
     counts.update(additional)
@@ -227,3 +255,8 @@ def has_volumes():
                 raise NoVolumesException(node_group.name)
 
     return validate
+
+
+def image_has_tag(image_id, tag):
+    image = api.get_registered_image(image_id)
+    return tag in image.tags
