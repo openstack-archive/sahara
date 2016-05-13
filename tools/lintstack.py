@@ -32,9 +32,6 @@ ignore_codes = ["E1103"]
 # Note(maoy): the error message is the pattern of E0202. It should be ignored
 # for sahara.tests modules
 ignore_messages = ["An attribute affected in sahara.tests"]
-# We ignore all errors in openstack.common because it should be checked 
-# elsewhere.
-ignore_modules = ["sahara/openstack/common/"]
 
 KNOWN_PYLINT_EXCEPTIONS_FILE = "tools/pylint_exceptions"
 
@@ -87,8 +84,6 @@ class LintOutput(object):
 
     def is_ignored(self):
         if self.code in ignore_codes:
-            return True
-        if any(self.filename.startswith(name) for name in ignore_modules):
             return True
         if any(msg in self.message for msg in ignore_messages):
             return True

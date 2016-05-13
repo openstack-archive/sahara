@@ -58,7 +58,7 @@ def run_in_subprocess(proc, func, args=None, kwargs=None, interactive=False):
 
             return result['output']
     finally:
-        # NOTE(dmitryme): in openstack/common/processutils.py it
+        # NOTE(dmitryme): in oslo.concurrency's file processutils.py it
         # is suggested to sleep a little between calls to multiprocessing.
         # That should allow it make some necessary cleanup
         context.sleep(0)

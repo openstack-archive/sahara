@@ -42,13 +42,11 @@ def validate_log_translations(logical_line, filename):
     """
 
     # NOTE(Kezar): sahara/tests included because we don't require translations
-    # in tests. sahara/openstack/common included because it's part imported
-    # from oslo and we don't change it forever and ever. sahara/db/templates
-    # provide separate cli interface so we don't want to translate it.
+    # in tests. sahara/db/templates provide separate cli interface so we don't
+    # want to translate it.
 
     ignore_dirs = ["sahara/db/templates",
-                   "sahara/tests",
-                   "sahara/openstack/common"]
+                   "sahara/tests"]
     for directory in ignore_dirs:
         if directory in filename:
             return
@@ -98,13 +96,11 @@ def accepted_log_levels(logical_line, filename):
     """
 
     # NOTE(Kezar): sahara/tests included because we don't require translations
-    # in tests. sahara/openstack/common included because it's part imported
-    # from oslo and we don't change it forever and ever. sahara/db/templates
-    # provide separate cli interface so we don't want to translate it.
+    # in tests. sahara/db/templates provide separate cli interface so we don't
+    # want to translate it.
 
     ignore_dirs = ["sahara/db/templates",
-                   "sahara/tests",
-                   "sahara/openstack/common"]
+                   "sahara/tests"]
     for directory in ignore_dirs:
         if directory in filename:
             return
