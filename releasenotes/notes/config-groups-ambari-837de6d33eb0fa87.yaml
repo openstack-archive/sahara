@@ -1,0 +1,4 @@
+---
+fixes:
+  - After decommissioning hosts all assoicated configs groups
+    will be removed in ambari plugin.

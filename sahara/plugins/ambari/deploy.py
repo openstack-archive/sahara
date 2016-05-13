@@ -291,6 +291,22 @@ def manage_config_groups(cluster, instances):
         client.create_config_group(cluster, groups)
 
 
+def cleanup_config_groups(cluster, instances):
+    to_remove = set()
+    for instance in instances:
+        cfg_name = "%s:%s" % (cluster.name, instance.instance_name)
+        to_remove.add(cfg_name)
+    with _get_ambari_client(cluster) as client:
+        config_groups = client.get_config_groups(cluster)
+        for group in config_groups['items']:
+            cfg_id = group['ConfigGroup']['id']
+            detailed = client.get_detailed_config_group(cluster, cfg_id)
+            cfg_name = detailed['ConfigGroup']['group_name']
+            # we have config group per host
+            if cfg_name in to_remove:
+                client.remove_config_group(cluster, cfg_id)
+
+
 def manage_host_components(cluster, instances):
     requests_ids = []
     with _get_ambari_client(cluster) as client:

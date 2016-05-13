@@ -131,6 +131,23 @@ class AmbariClient(object):
         resp = self.post(url)
         self.check_response(resp)
 
+    def get_config_groups(self, cluster):
+        url = self._base_url + "/clusters/%s/config_groups" % cluster.name
+        resp = self.get(url)
+        return self.check_response(resp)
+
+    def get_detailed_config_group(self, cluster, cfg_id):
+        url = self._base_url + "/clusters/%s/config_groups/%s" % (
+            cluster.name, cfg_id)
+        resp = self.get(url)
+        return self.check_response(resp)
+
+    def remove_config_group(self, cluster, cfg_id):
+        url = self._base_url + "/clusters/%s/config_groups/%s" % (
+            cluster.name, cfg_id)
+        resp = self.delete(url)
+        return self.check_response(resp)
+
     def create_config_group(self, cluster, data):
         url = self._base_url + "/clusters/%s/config_groups" % cluster.name
         resp = self.post(url, data=jsonutils.dumps(data))
