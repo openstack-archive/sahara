@@ -37,7 +37,9 @@ class AmbariPluginProvider(p.ProvisioningPluginBase):
         return "HDP Plugin"
 
     def get_description(self):
-        return _("HDP plugin with Ambari")
+        return _("The Ambari Sahara plugin provides the ability to launch "
+                 "clusters with Hortonworks Data Platform (HDP) on OpenStack "
+                 "using Apache Ambari")
 
     def get_versions(self):
         return ["2.3"]
