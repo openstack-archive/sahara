@@ -14,7 +14,7 @@ devstack_localrc base IMAGE_URLS=\
 http://tarballs.openstack.org/heat-test-image/fedora-heat-test-image.qcow2"
 devstack_localrc base enable_plugin sahara \
                                     git://git.openstack.org/openstack/sahara \
-                                    stable/liberty
+                                    stable/mitaka
 devstack_localrc base DEFAULT_IMAGE_NAME="cirros-0.3.2-x86_64-uec"
 devstack_localrc target disable_service n-net
 devstack_localrc target enable_service \

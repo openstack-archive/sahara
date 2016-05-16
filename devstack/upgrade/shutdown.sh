@@ -16,7 +16,8 @@ source ${GITDIR[sahara]}/devstack/plugin.sh
 
 set -o xtrace
 
+export ENABLED_SERVICES+=,sahara-api,sahara-eng,
 stop_sahara
 
 # sanity check that service is actually down
-ensure_services_stopped sahara-all
+ensure_services_stopped sahara-api sahara-eng
