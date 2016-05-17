@@ -49,7 +49,7 @@ User guide
 
    userdoc/plugins
    userdoc/vanilla_plugin
-   userdoc/hdp_plugin
+   userdoc/ambari_plugin
    userdoc/spark_plugin
    userdoc/cdh_plugin
    userdoc/mapr_plugin
