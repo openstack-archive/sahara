@@ -85,7 +85,6 @@ function configure_sahara {
         iniset $SAHARA_CONF_FILE oslo_messaging_notifications driver "messaging"
     fi
 
-    iniset $SAHARA_CONF_FILE DEFAULT verbose True
     iniset $SAHARA_CONF_FILE DEFAULT debug $ENABLE_DEBUG_LOG_LEVEL
 
     iniset $SAHARA_CONF_FILE DEFAULT plugins $SAHARA_ENABLED_PLUGINS
