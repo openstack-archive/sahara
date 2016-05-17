@@ -405,14 +405,14 @@ class TestDataSourceUpdateValidation(u.ValidationTestCase):
         ds1 = mock.Mock()
         ds1.name = 'ds1'
         ds_all.return_value = [ds1]
-        ds.check_data_source_update({'name': 'ds'}, 'ds_id')
+        ds.check_data_source_update({'name': 'ds', 'url': '/ds1'}, 'ds_id')
 
         ds1.name = 'ds'
         with testtools.ExpectedException(ex.NameAlreadyExistsException):
-            ds.check_data_source_update({'name': 'ds'}, 'ds_id')
+            ds.check_data_source_update({'name': 'ds', 'url': '/ds1'}, 'ds_id')
 
         ds_get.return_value = ds1
-        ds.check_data_source_update({'name': 'ds'}, 'ds_id')
+        ds.check_data_source_update({'name': 'ds', 'url': '/ds1'}, 'ds_id')
 
     @mock.patch('sahara.conductor.API.job_execution_get_all')
     @mock.patch('sahara.conductor.API.data_source_get')
@@ -477,3 +477,16 @@ class TestDataSourceUpdateValidation(u.ValidationTestCase):
 
         with testtools.ExpectedException(ex.InvalidDataException):
             ds.check_data_source_update({'url': '/tmp/file'}, 'ds_id')
+
+    def test_check_datasource_placeholder(self):
+        with testtools.ExpectedException(ex.InvalidDataException):
+            ds._check_datasource_placeholder("/tmp/%RANDSTR(-1)%")
+        with testtools.ExpectedException(ex.InvalidDataException):
+            ds._check_datasource_placeholder("/tmp/%RANDSTR(2345)%")
+        with testtools.ExpectedException(ex.InvalidDataException):
+
+            ds._check_datasource_placeholder(
+                "/tmp/%RANDSTR(513)%-%RANDSTR(513)%")
+
+        result = ds._check_datasource_placeholder("/tmp/%RANDSTR(42)%")
+        self.assertIsNone(result)
