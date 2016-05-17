@@ -25,22 +25,22 @@ import sahara.utils.api as u
 rest = u.RestV2('job-executions', __name__)
 
 
-@rest.get('/job-executions')
+@rest.get('/jobs')
 @acl.enforce("data-processing:job-executions:get_all")
 def job_executions_list():
-    job_executions = [je.to_dict() for je in api.job_execution_list(
+    jobs = [je.to_dict() for je in api.job_execution_list(
         **u.get_request_args().to_dict())]
-    return u.render(job_executions=job_executions)
+    return u.render(jobs=jobs)
 
 
-@rest.get('/job-executions/<job_execution_id>')
+@rest.get('/jobs/<job_execution_id>')
 @acl.enforce("data-processing:job-executions:get")
 @v.check_exists(api.get_job_execution, id='job_execution_id')
 def job_executions(job_execution_id):
     return u.to_wrapped_dict(api.get_job_execution, job_execution_id)
 
 
-@rest.get('/job-executions/<job_execution_id>/refresh-status')
+@rest.get('/jobs/<job_execution_id>/refresh-status')
 @acl.enforce("data-processing:job-executions:refresh_status")
 @v.check_exists(api.get_job_execution, id='job_execution_id')
 def job_executions_status(job_execution_id):
@@ -48,7 +48,7 @@ def job_executions_status(job_execution_id):
         api.get_job_execution_status, job_execution_id)
 
 
-@rest.get('/job-executions/<job_execution_id>/cancel')
+@rest.get('/jobs/<job_execution_id>/cancel')
 @acl.enforce("data-processing:job-executions:cancel")
 @v.check_exists(api.get_job_execution, id='job_execution_id')
 @v.validate(None, v_j_e.check_job_execution_cancel)
@@ -56,7 +56,7 @@ def job_executions_cancel(job_execution_id):
     return u.to_wrapped_dict(api.cancel_job_execution, job_execution_id)
 
 
-@rest.patch('/job-executions/<job_execution_id>')
+@rest.patch('/jobs/<job_execution_id>')
 @acl.enforce("data-processing:job-executions:modify")
 @v.check_exists(api.get_job_execution, id='job_execution_id')
 @v.validate(
@@ -66,7 +66,7 @@ def job_executions_update(job_execution_id, data):
         api.update_job_execution, job_execution_id, data)
 
 
-@rest.delete('/job-executions/<job_execution_id>')
+@rest.delete('/jobs/<job_execution_id>')
 @acl.enforce("data-processing:job-executions:delete")
 @v.check_exists(api.get_job_execution, id='job_execution_id')
 @v.validate(None, v_j_e.check_job_execution_delete)

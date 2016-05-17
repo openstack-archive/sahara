@@ -27,28 +27,28 @@ import sahara.utils.api as u
 rest = u.RestV2('jobs', __name__)
 
 
-@rest.get('/jobs')
+@rest.get('/job-templates')
 @acl.enforce("data-processing:jobs:get_all")
 def job_list():
-    return u.render(jobs=[j.to_dict() for j in api.get_jobs(
+    return u.render(job_templates=[j.to_dict() for j in api.get_jobs(
         **u.get_request_args().to_dict())])
 
 
-@rest.post('/jobs')
+@rest.post('/job-templates')
 @acl.enforce("data-processing:jobs:create")
 @v.validate(v_j_schema.JOB_SCHEMA, v_j.check_mains_libs, v_j.check_interface)
 def job_create(data):
     return u.render(api.create_job(data).to_wrapped_dict())
 
 
-@rest.get('/jobs/<job_id>')
+@rest.get('/job-templates/<job_id>')
 @acl.enforce("data-processing:jobs:get")
 @v.check_exists(api.get_job, id='job_id')
 def job_get(job_id):
     return u.to_wrapped_dict(api.get_job, job_id)
 
 
-@rest.patch('/jobs/<job_id>')
+@rest.patch('/job-templates/<job_id>')
 @acl.enforce("data-processing:jobs:modify")
 @v.check_exists(api.get_job, id='job_id')
 @v.validate(v_j_schema.JOB_UPDATE_SCHEMA)
@@ -56,7 +56,7 @@ def job_update(job_id, data):
     return u.to_wrapped_dict(api.update_job, job_id, data)
 
 
-@rest.delete('/jobs/<job_id>')
+@rest.delete('/job-templates/<job_id>')
 @acl.enforce("data-processing:jobs:delete")
 @v.check_exists(api.get_job, id='job_id')
 def job_delete(job_id):
@@ -64,7 +64,7 @@ def job_delete(job_id):
     return u.render()
 
 
-@rest.post('/jobs/<job_id>/execute')
+@rest.post('/job-templates/<job_id>/execute')
 @acl.enforce("data-processing:jobs:execute")
 @v.check_exists(api.get_job, id='job_id')
 @v.validate(v_j_e_schema.JOB_EXEC_SCHEMA, v_j_e.check_job_execution)
@@ -72,7 +72,7 @@ def job_execute(job_id, data):
     return u.render(job_execution=j_e_api.execute_job(job_id, data).to_dict())
 
 
-@rest.get('/jobs/config-hints/<job_type>')
+@rest.get('/job-templates/config-hints/<job_type>')
 @acl.enforce("data-processing:jobs:get_config_hints")
 @v.check_exists(api.get_job_config_hints, job_type='job_type')
 def job_config_hints_get(job_type):
