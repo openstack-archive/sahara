@@ -92,10 +92,9 @@ documentation.
 Distributed Mode
 ----------------
 
-The :doc:`installation.guide` suggests launching sahara as a single
-``sahara-all`` process. It is also possible to run sahara in distributed
-mode with ``sahara-api`` and ``sahara-engine`` processes running on several
-machines simultaneously. Running in distributed mode allows sahara to
+The :doc:`installation.guide` suggests launching sahara in distributed mode
+with ``sahara-api`` and ``sahara-engine`` processes potentially running on
+several machines simultaneously. Running in distributed mode allows sahara to
 offload intensive tasks to the engine processes while keeping the API
 process free to handle requests.
 
