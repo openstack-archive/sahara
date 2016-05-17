@@ -67,7 +67,7 @@ def install_packages(remote, packages, timeout=1800):
     if distrib == 'ubuntu':
         cmd = 'RUNLEVEL=1 apt-get install -y %s'
     elif distrib == 'centos':
-        cmd = 'yum install %s'
+        cmd = 'yum install -y %s'
     else:
         raise ex.HadoopProvisionError(
             _("OS on image is not supported by CDH plugin"))
