@@ -428,7 +428,7 @@ class SparkOnYarn(Spark):
         hbase_instance = context.get_instance(hbase.HBASE_MASTER)
         if not hbase_instance:
             return None
-        hbase_version = context.get_chosen_service_version('Hbase')
+        hbase_version = context.get_chosen_service_version('HBase')
         return context._find_service_instance('HBase', hbase_version)
 
     # hue installed service instance
