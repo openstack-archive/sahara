@@ -180,7 +180,7 @@ keystone ``Session`` and auth plugin objects(for example, ``Token`` or
 ``Password``). Sahara is migrating all clients to use this authentication
 methodology, where available. For more information on using sessions with
 keystone, please see
-http://docs.openstack.org/developer/python-keystoneclient/using-sessions.html
+http://docs.openstack.org/developer/keystoneauth/using-sessions.html
 
 Storing sensitive information
 -----------------------------

@@ -16,7 +16,7 @@
 
 from cinderclient import exceptions as cinder_exc
 from heatclient import exc as heat_exc
-from keystoneclient import exceptions as keystone_exc
+from keystoneauth1 import exceptions as keystone_exc
 import mock
 from neutronclient.common import exceptions as neutron_exc
 from novaclient import exceptions as nova_exc

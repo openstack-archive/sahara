@@ -13,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from keystoneclient import session as keystone
+from keystoneauth1 import session as keystone
 import mock
 
 from sahara import exceptions as ex
@@ -32,7 +32,7 @@ class TestSessionCache(base.SaharaTestCase):
                           sc.get_session,
                           session_type='bad service')
 
-    @mock.patch('keystoneclient.session.Session')
+    @mock.patch('keystoneauth1.session.Session')
     def test_get_keystone_session(self, keystone_session):
         sc = sessions.SessionCache()
         self.override_config('ca_file', '/some/cacert', group='keystone')
@@ -52,7 +52,7 @@ class TestSessionCache(base.SaharaTestCase):
         sc.get_session(sessions.SESSION_TYPE_KEYSTONE)
         self.assertFalse(keystone_session.called)
 
-    @mock.patch('keystoneclient.session.Session')
+    @mock.patch('keystoneauth1.session.Session')
     def test_get_nova_session(self, keystone_session):
         sc = sessions.SessionCache()
         self.override_config('ca_file', '/some/cacert', group='nova')
@@ -72,7 +72,7 @@ class TestSessionCache(base.SaharaTestCase):
         sc.get_session(sessions.SESSION_TYPE_NOVA)
         self.assertFalse(keystone_session.called)
 
-    @mock.patch('keystoneclient.session.Session')
+    @mock.patch('keystoneauth1.session.Session')
     def test_get_cinder_session(self, keystone_session):
         sc = sessions.SessionCache()
         self.override_config('ca_file', '/some/cacert', group='cinder')
@@ -92,7 +92,7 @@ class TestSessionCache(base.SaharaTestCase):
         sc.get_session(sessions.SESSION_TYPE_CINDER)
         self.assertFalse(keystone_session.called)
 
-    @mock.patch('keystoneclient.session.Session')
+    @mock.patch('keystoneauth1.session.Session')
     def test_get_neutron_session(self, keystone_session):
         sc = sessions.SessionCache()
         self.override_config('ca_file', '/some/cacert', group='neutron')
@@ -112,7 +112,7 @@ class TestSessionCache(base.SaharaTestCase):
         sc.get_session(sessions.SESSION_TYPE_NEUTRON)
         self.assertFalse(keystone_session.called)
 
-    @mock.patch('keystoneclient.session.Session')
+    @mock.patch('keystoneauth1.session.Session')
     def test_insecure_session(self, session):
         sc = sessions.SessionCache()
         sc.get_session(sessions.SESSION_TYPE_INSECURE)

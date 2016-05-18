@@ -13,8 +13,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from keystoneclient import exceptions as keystone_ex
-from keystoneclient import service_catalog as keystone_service_catalog
+from keystoneauth1.access import service_catalog as keystone_service_catalog
+from keystoneauth1 import exceptions as keystone_ex
 from oslo_config import cfg
 from oslo_log import log as logging
 from oslo_serialization import jsonutils as json
@@ -53,14 +53,13 @@ def url_for(service_catalog=None, service_type='identity',
         service_catalog = context.current().service_catalog
     try:
         return keystone_service_catalog.ServiceCatalogV2(
-            {'serviceCatalog': json.loads(service_catalog)}).url_for(
-                service_type=service_type, endpoint_type=endpoint_type,
+            json.loads(service_catalog)).url_for(
+                service_type=service_type, interface=endpoint_type,
                 region_name=CONF.os_region_name)
     except keystone_ex.EndpointNotFound:
         return keystone_service_catalog.ServiceCatalogV3(
-            context.get_auth_token(),
-            {'catalog': json.loads(service_catalog)}).url_for(
-                service_type=service_type, endpoint_type=endpoint_type,
+            json.loads(service_catalog)).url_for(
+                service_type=service_type, interface=endpoint_type,
                 region_name=CONF.os_region_name)
 
 

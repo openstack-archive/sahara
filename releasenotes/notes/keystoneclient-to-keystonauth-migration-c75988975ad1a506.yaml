@@ -1,0 +1,4 @@
+---
+upgrade:
+  - migration from keystoneclient to keystoneauth is done for
+    using auth features of keystone.
