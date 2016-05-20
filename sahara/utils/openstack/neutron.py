@@ -47,9 +47,11 @@ CONF.register_opts(opts, group=neutron_group)
 LOG = logging.getLogger(__name__)
 
 
-def client():
+def client(auth=None):
+    if not auth:
+        auth = keystone.auth()
     session = sessions.cache().get_session(sessions.SESSION_TYPE_NEUTRON)
-    neutron = neutron_cli.Client('2.0', session=session, auth=keystone.auth(),
+    neutron = neutron_cli.Client('2.0', session=session, auth=auth,
                                  endpoint_type=CONF.neutron.endpoint_type,
                                  region_name=CONF.os_region_name)
     return neutron
@@ -60,11 +62,9 @@ class NeutronClient(object):
     routers = {}
 
     def __init__(self, network, token, tenant_name, auth=None):
-        session = sessions.cache().get_session(sessions.SESSION_TYPE_NEUTRON)
-        if auth is None:
+        if not auth:
             auth = keystone.token_auth(token=token, project_name=tenant_name)
-        self.neutron = neutron_cli.Client('2.0', session=session, auth=auth,
-                                          region_name=CONF.os_region_name)
+        self.neutron = client(auth)
         self.network = network
 
     def get_router(self):

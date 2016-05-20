@@ -1,0 +1,4 @@
+---
+fixes:
+  - Fixed issue with handling endpoint_type during creation neutron
+    client, closed bug 1564805
