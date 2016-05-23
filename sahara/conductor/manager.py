@@ -199,6 +199,7 @@ class ConductorManager(db_base.Base):
             del c_tmpl['id']
             del c_tmpl['is_public']
             del c_tmpl['is_protected']
+            del c_tmpl['tenant_id']
 
             # updating with cluster_template values
             merged_values.update(c_tmpl)
