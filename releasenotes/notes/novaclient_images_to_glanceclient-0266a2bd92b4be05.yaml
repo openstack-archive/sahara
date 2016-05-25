@@ -1,0 +1,3 @@
+---
+upgrade:
+  - Migration from novaclient.v2.images to glanceclient

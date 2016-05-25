@@ -123,6 +123,10 @@ function configure_sahara {
         iniset $SAHARA_CONF_FILE keystone ca_file $SSL_BUNDLE_FILE
     fi
 
+    if is_ssl_enabled_service "glance" || is_service_enabled tls-proxy; then
+        iniset $SAHARA_CONF_FILE glance ca_file $SSL_BUNDLE_FILE
+    fi
+
     # Register SSL certificates if provided
     if is_ssl_enabled_service sahara; then
         ensure_certificates SAHARA
