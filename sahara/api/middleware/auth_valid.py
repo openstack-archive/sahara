@@ -15,12 +15,12 @@
 
 from oslo_log import log as logging
 from oslo_middleware import base
+from oslo_utils import strutils
 import webob
 import webob.exc as ex
 
 from sahara.i18n import _
 from sahara.i18n import _LW
-import sahara.openstack.commons as commons
 
 
 LOG = logging.getLogger(__name__)
@@ -48,8 +48,10 @@ class AuthValidator(base.Middleware):
 
         path = req.environ['PATH_INFO']
         if path != '/':
-            version, url_tenant, rest = commons.split_path(path, 3, 3, True)
-            if not version or not url_tenant or not rest:
+            try:
+                version, url_tenant, rest = strutils.split_path(path, 3, 3,
+                                                                True)
+            except ValueError:
                 LOG.warning(_LW("Incorrect path: {path}").format(path=path))
                 raise ex.HTTPNotFound(_("Incorrect path"))
 
@@ -84,14 +86,15 @@ class AuthValidatorV2(base.Middleware):
                 LOG.warning(_LW("Can't get tenant_id from env"))
                 raise ex.HTTPServiceUnavailable()
 
-            if path.startswith('/v2'):
-                version, rest = commons.split_path(path, 2, 2, True)
-                requested_tenant = req.headers.get('OpenStack-Project-ID')
-            else:
-                version, requested_tenant, rest = commons.split_path(
-                    path, 3, 3, True)
+            try:
+                if path.startswith('/v2'):
+                    version, rest = strutils.split_path(path, 2, 2, True)
+                    requested_tenant = req.headers.get('OpenStack-Project-ID')
+                else:
 
-            if not version or not requested_tenant or not rest:
+                    version, requested_tenant, rest = strutils.split_path(
+                        path, 3, 3, True)
+            except ValueError:
                 LOG.warning(_LW("Incorrect path: {path}").format(path=path))
                 raise ex.HTTPNotFound(_("Incorrect path"))
 
