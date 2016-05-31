@@ -1,0 +1,3 @@
+---
+issues:
+  - Fixed issue with incorrect retrieving of auth url.
